@@ -3,10 +3,12 @@
   "label": "Serpentine",
   "description": "Profil pour créatures longues, souples, ondulantes ou aquatiques.",
   "idle": {
-    "bobY": 6,
-    "swayRotate": 3,
-    "swayX": 5,
-    "durationMs": 1800
+    "bobY": 10,
+    "swayRotate": 0.6,
+    "swayX": 0.75,
+    "scaleXDelta": 0.004,
+    "scaleYDelta": -0.004,
+    "durationMs": 1900
   },
   "attack": {
     "lungeX": 40,
