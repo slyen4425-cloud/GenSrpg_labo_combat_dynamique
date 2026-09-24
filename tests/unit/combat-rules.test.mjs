@@ -9,7 +9,6 @@ import {
 } from "../../src/core/combat/distance.js";
 import {
   createCombatState,
-  regenerateEnergy,
   withFighterEnergy
 } from "../../src/core/combat/combat-state.js";
 import {
@@ -44,7 +43,10 @@ const claw = normalizeSkillDefinition(
 function state(distance = "medium") {
   return createCombatState({
     distance,
-    fighters: [maraileronConfig, braisombreConfig]
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 100 },
+      { ...braisombreConfig, initialEnergy: 100 }
+    ]
   });
 }
 
@@ -206,6 +208,7 @@ test("skill result exposes configurable preparation travel and recovery timeline
   });
 
   assert.deepEqual(result.timelineMs, {
+    basePreparation: 700,
     preparation: 700,
     travel: 550,
     recovery: 650,
@@ -226,22 +229,29 @@ test("skill result exposes configurable preparation travel and recovery timeline
   );
 });
 
-test("energy regeneration stays configurable per fighter", () => {
-  let initial = state();
-  initial = withFighterEnergy(initial, "maraileron", 50);
-  initial = withFighterEnergy(initial, "braisombre", 50);
+test("legacy second-based advance delegates to configurable energy ticks", () => {
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 100 },
+      { ...braisombreConfig, initialEnergy: 100 }
+    ]
+  });
 
-  const regenerated = regenerateEnergy(initial, 2);
+  session.advance(2);
 
-  assert.equal(regenerated.fighters.maraileron.energy, 66);
-  assert.equal(regenerated.fighters.braisombre.energy, 62);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 1);
+  assert.equal(session.snapshot().fighters.braisombre.energy, 1);
 });
 
 
 test("combat session owns current state while previews stay side-effect free", () => {
   const session = createCombatSession({
     distance: "short",
-    fighters: [maraileronConfig, braisombreConfig]
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 100 },
+      { ...braisombreConfig, initialEnergy: 100 }
+    ]
   });
 
   const preview = session.previewMovement("maraileron", "long");
@@ -270,8 +280,8 @@ test("combat session commits skill energy and explicit regeneration", () => {
   assert.equal(result.outcome, "hit");
   assert.equal(session.snapshot().fighters.maraileron.energy, 82);
 
-  session.advance(1);
-  assert.equal(session.snapshot().fighters.maraileron.energy, 90);
+  session.advance(2);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 83);
 });
 
 
