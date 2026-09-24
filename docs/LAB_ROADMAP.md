@@ -102,6 +102,21 @@ Critère GREEN final : CI verte + vrai chemin données -> Combat Rules -> Presen
 
 
 
+### Extension V3 — impact, esquive et commandes tactiques
+
+- dégâts appliqués uniquement à l'impact réel ;
+- séparation `form` / `approachMode` ;
+- approches `ground / aerial / teleport` ;
+- esquives ciblant forme et/ou approche ;
+- commandes séparées des compétences : Objet / Rappel / Invocation ;
+- coût énergie et temps de préparation configurables pour chaque commande ;
+- commandes interruptibles pendant leur préparation ;
+- effet Stun produisant une interruption uniquement à son impact ;
+- refus d'interruption après release ;
+- test laboratoire du Stun hors de l'interface joueur principale.
+
+Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de roster séparé : ce lot valide le contrat, le coût, le timing, la completion et l'interruption.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
