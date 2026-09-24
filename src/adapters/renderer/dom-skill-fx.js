@@ -121,19 +121,24 @@ export function createDomSkillFxRenderer({
     });
   }
 
-  function dispose() {
-    if (disposed) {
-      return;
-    }
-    disposed = true;
+  function cancelAll() {
     for (const record of [...active]) {
       record.animation?.cancel?.();
       cleanup(record);
     }
   }
 
+  function dispose() {
+    if (disposed) {
+      return;
+    }
+    cancelAll();
+    disposed = true;
+  }
+
   return Object.freeze({
     play,
+    cancelAll,
     dispose,
     get activeCount() {
       return active.size;
