@@ -19,6 +19,7 @@ const required = [
   "src/core/animation/animation-plan.js",
   "src/core/combat/distance.js",
   "src/core/combat/combat-state.js",
+  "src/core/combat/combat-session.js",
   "src/core/combat/action-resolver.js",
   "src/core/fx/README.md",
   "src/core/profiles/README.md",
