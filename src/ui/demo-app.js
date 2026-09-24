@@ -252,8 +252,9 @@ function createSlot({
       profile: meta.profile,
       asset,
       view,
-      scale: meta.scale ?? 1,
-      position: meta.offset ?? { x: 0, y: 0 }
+      scale: meta.displayScale?.[view] ?? meta.scale ?? 1,
+      position: meta.offset ?? { x: 0, y: 0 },
+      transformOrigin: meta.transformOrigin ?? { x: "50%", y: "50%" }
     });
 
     renderer = createDomActorRenderer({
