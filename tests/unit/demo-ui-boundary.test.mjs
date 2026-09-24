@@ -219,9 +219,10 @@ test("scene scale is owned by distance presenter through one CSS variable", asyn
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
   assert.match(source, /--distance-scale/);
-  assert.match(source, /short:[\s\S]*scale: 1\.00/);
-  assert.match(source, /medium:[\s\S]*scale: 0\.96/);
-  assert.match(source, /long:[\s\S]*scale: 0\.90/);
+  assert.match(source, /SCALE_BY_DISTANCE/);
+  assert.match(source, /short: 1\.00/);
+  assert.match(source, /medium: 0\.96/);
+  assert.match(source, /long: 0\.90/);
   assert.match(css, /scale\(var\(--distance-scale, 0\.96\)\)/);
   assert.doesNotMatch(css, /arena\[data-combat-distance/);
 });
