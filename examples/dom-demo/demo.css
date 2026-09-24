@@ -345,6 +345,23 @@ h1 {
   border-color: rgba(255, 166, 166, 0.5);
 }
 
+.utility-group {
+  min-width: 0;
+  padding: 0.38rem;
+  border-radius: 0.68rem;
+  background: rgba(18, 40, 50, 0.58);
+}
+
+.utility-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+
+.skill-card--utility .skill-card__charge {
+  accent-color: #c7b5ff;
+}
+
 .ability-zone {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -600,7 +617,8 @@ input[type="range"] {
     grid-template-columns: 1fr;
   }
 
-  .ability-group {
+  .ability-group,
+  .utility-group {
     padding: 0.3rem;
   }
 
@@ -608,7 +626,8 @@ input[type="range"] {
     min-height: 4.65rem;
   }
 
-  .skill-grid--reactions {
+  .skill-grid--reactions,
+  .utility-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
