@@ -477,3 +477,17 @@ Propriétaires :
 - Demo UI : affichage des progressions fournies par le runtime.
 
 Un timer de match optionnel pourra être ajouté plus tard au Combat Runtime ou à un service de temps voisin, jamais dans les boutons UI.
+
+
+### PV / HP dans Combat State
+
+Les PV appartiennent au domaine Combat Rules.
+
+`Combat State` porte :
+
+- `hp` ;
+- `maxHp`.
+
+La Demo UI ne stocke ni ne calcule les PV. Elle affiche uniquement le snapshot courant.
+
+Les dégâts réels ne sont pas encore implémentés dans ce sous-lot : la barre est prête architecturalement, mais reste pleine tant qu'aucune règle de dégâts ne modifie `hp`.
