@@ -22,22 +22,30 @@ test("demo loads bundled creatures before optional user replacement", async () =
   assert.match(source, /runtimePreview/);
   assert.match(source, /new URL\(runtimeAsset, meta\.assetBaseUrl\)/);
   assert.match(source, /rebuildActor\(runtimeUrl\)/);
-  assert.match(source, /chargés automatiquement/);
+  assert.doesNotMatch(source, /fileInput\.files.*rebuildActor\(runtimeUrl\)/s);
 });
 
-test("demo page is mobile-first and keeps optional file inputs", async () => {
+test("both creatures enter idle by default and transient actions return to idle", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /function startIdleFor/);
+  assert.match(source, /startIdleFor\("player"\)/);
+  assert.match(source, /startIdleFor\("opponent"\)/);
+  assert.match(source, /type !== "idle"[\s\S]*startIdleFor\(slotKey\)/);
+});
+
+test("demo page is mobile-first and keeps optional laboratory file inputs", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
   assert.match(html, /name="viewport"/);
-  assert.match(html, /distance \+ énergie \+ capacités typées/i);
-  assert.match(html, /optionnel/g);
-  assert.match(html, /data-demo-file/g);
+  assert.match(html, /data-combat-arena/);
+  assert.match(html, /data-demo-file="player"/);
+  assert.match(html, /data-demo-file="opponent"/);
   assert.match(html, /data-demo-event="idle"/);
   assert.match(html, /data-demo-event="attack"/);
   assert.match(html, /data-demo-event="hit"/);
   assert.match(html, /data-demo-event="ko"/);
   assert.match(html, /src="\.\/demo\.js"/);
-  assert.doesNotMatch(html, /Chargez une vue joueur et une vue adversaire/);
   assert.doesNotMatch(html, /<script(?![^>]*src=)[^>]*>/);
 });
 
@@ -81,7 +89,7 @@ test("runtime preview assets exist in creature metadata", async () => {
   );
 });
 
-test("demo bootstrap disposes the mounted controller on pagehide", async () => {
+test("demo bootstrap disposes combat and visual controllers on pagehide", async () => {
   const source = await readFile("examples/dom-demo/demo.js", "utf8");
 
   assert.match(source, /mountCombatDemo/);
@@ -118,37 +126,63 @@ test("demo derives actor scale and anchor from metadata instead of CSS", async (
   assert.match(source, /transformOrigin: meta\.transformOrigin/);
 });
 
-
-test("combat test UI delegates all rules to the combat session", async () => {
+test("combat test UI delegates rules and timing to session/runtime", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
   assert.match(source, /createCombatSession/);
+  assert.match(source, /createCombatRuntime/);
   assert.match(source, /createCombatResolutionPresenter/);
   assert.match(source, /createDomSkillFxRenderer/);
+  assert.match(source, /createDomDistancePresenter/);
   assert.match(source, /session\.previewMovement/);
   assert.match(source, /session\.previewSkill/);
   assert.match(source, /session\.move/);
-  assert.match(source, /session\.useSkill/);
+  assert.match(source, /runtime\.startSkill/);
+  assert.match(source, /runtime\.react/);
 
   assert.doesNotMatch(source, /resolveMovement/);
   assert.doesNotMatch(source, /resolveSkill/);
   assert.doesNotMatch(source, /movementEnergyCost/);
   assert.doesNotMatch(source, /distanceSteps/);
-  assert.doesNotMatch(source, /movementEnergyPerStep\s*:/);
-  assert.doesNotMatch(source, /energyCost\s*:/);
+  assert.doesNotMatch(source, /energyChargeIntervalMs\s*:/);
+  assert.doesNotMatch(source, /chargeTimeModifierPct\s*:/);
 });
 
-test("combat interface exposes distance energy reaction and skill controls", async () => {
+test("live combat interface keeps arena abilities energy and reactions together", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
-  assert.match(html, /data-combat-distance-value/);
+  assert.match(html, /class="combat-live"/);
+  assert.match(html, /class="arena"/);
+  assert.match(html, /class="combat-dock"/);
   assert.match(html, /data-combat-energy="maraileron"/);
   assert.match(html, /data-combat-energy="braisombre"/);
   assert.match(html, /data-combat-move="short"/);
   assert.match(html, /data-combat-move="medium"/);
   assert.match(html, /data-combat-move="long"/);
-  assert.match(html, /data-combat-reaction/);
   assert.match(html, /data-combat-skills/);
-  assert.match(html, /data-combat-advance/);
+  assert.match(html, /data-combat-reactions/);
+  assert.match(html, /data-combat-live-status/);
   assert.match(html, /data-combat-reset/);
+
+  assert.doesNotMatch(html, /data-combat-distance-value/);
+  assert.doesNotMatch(html, /data-combat-band/);
+  assert.doesNotMatch(html, /data-combat-advance/);
+  assert.doesNotMatch(html, /data-combat-reaction/);
+});
+
+test("every generated ability card owns a visible charge progress bar", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /skill-card__charge/);
+  assert.match(source, /charge\.max = 1/);
+  assert.match(source, /charge\.value = 0/);
+  assert.match(source, /progress\.chargeProgress/);
+  assert.match(source, /progress\.reaction\.progress/);
+});
+
+test("CSS no longer moves both fighters from a shared distance selector", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.doesNotMatch(css, /arena\[data-combat-distance/);
+  assert.match(css, /\.fighter\s*\{[\s\S]*transition:\s*left/);
 });
