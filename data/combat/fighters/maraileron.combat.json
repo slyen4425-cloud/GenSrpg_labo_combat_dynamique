@@ -1,0 +1,7 @@
+{
+  "id": "maraileron",
+  "maxEnergy": 100,
+  "energy": 100,
+  "energyRegenPerSecond": 8,
+  "movementEnergyPerStep": 1
+}
