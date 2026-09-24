@@ -138,6 +138,7 @@ test("fireball cannot be used at short range but works at medium range", () => {
   assert.equal(hit.ok, true);
   assert.equal(hit.outcome, "hit");
   assert.equal(hit.state.fighters.maraileron.energy, 7);
+  assert.equal(hit.state.fighters.braisombre.hp, 70);
 });
 
 test("projectile reflection is independent from the fire element", () => {
@@ -153,6 +154,8 @@ test("projectile reflection is independent from the fire element", () => {
   assert.equal(result.reactionApplied, "mirror-shield");
   assert.equal(result.state.fighters.maraileron.energy, 7);
   assert.equal(result.state.fighters.braisombre.energy, 8);
+  assert.equal(result.state.fighters.maraileron.hp, 70);
+  assert.equal(result.state.fighters.braisombre.hp, 100);
 
   const reflectedHit = result.events.find(
     (item) => item.type === "hit" && item.reflected === true
@@ -171,6 +174,8 @@ test("fire immunity targets the element regardless of projectile form", () => {
 
   assert.equal(result.outcome, "immune");
   assert.equal(result.reactionApplied, "fire-immunity");
+  assert.equal(result.state.fighters.maraileron.hp, 100);
+  assert.equal(result.state.fighters.braisombre.hp, 100);
   assert.equal(
     result.events.some((item) => item.type === "skill-immune"),
     true
@@ -187,6 +192,8 @@ test("contact counter only counters contact attacks", () => {
   });
 
   assert.equal(countered.outcome, "countered");
+  assert.equal(countered.state.fighters.maraileron.hp, 100);
+  assert.equal(countered.state.fighters.braisombre.hp, 100);
 
   const unrelated = resolveSkill({
     state: state("medium"),
@@ -368,4 +375,57 @@ test("combat session skill preview and reset do not leak UI authority", () => {
   assert.equal(session.snapshot().distance, "medium");
   assert.equal(session.snapshot().fighters.maraileron.energy, 10);
   assert.equal(session.snapshot().fighters.braisombre.energy, 10);
+});
+
+
+test("damage is clamped at zero by resolved hits", () => {
+  const fragile = createCombatState({
+    distance: "medium",
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 10, initialHp: 100 },
+      { ...braisombreConfig, initialEnergy: 10, initialHp: 20 }
+    ]
+  });
+
+  const result = resolveSkill({
+    state: fragile,
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  assert.equal(result.outcome, "hit");
+  assert.equal(result.state.fighters.braisombre.hp, 0);
+
+  const hitEvent = result.events.find((item) => item.type === "hit");
+  assert.equal(hitEvent.hpBefore, 20);
+  assert.equal(hitEvent.hpAfter, 0);
+});
+
+test("combat session preview does not mutate HP but committed skill does", () => {
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 10, initialHp: 100 },
+      { ...braisombreConfig, initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+
+  const preview = session.previewSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  assert.equal(preview.state.fighters.braisombre.hp, 70);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  const committed = session.useSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  assert.equal(committed.state.fighters.braisombre.hp, 70);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 70);
 });
