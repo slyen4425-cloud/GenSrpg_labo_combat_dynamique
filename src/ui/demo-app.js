@@ -114,12 +114,15 @@ export async function mountCombatDemo({
     status.dataset.state = state;
   }
 
-  async function playEvent(type) {
+  function playEventFor(slotKey, type) {
     if (disposed) {
-      return;
+      return Promise.resolve({ status: "disposed" });
     }
 
-    const slot = selectedSlot();
+    const slot = slots[slotKey];
+    if (!slot) {
+      return Promise.reject(new RangeError(`Unknown demo slot: ${slotKey}`));
+    }
     const target = otherSlot(slot);
     const intensity = Number(intensityInput.value);
 
@@ -143,21 +146,37 @@ export async function mountCombatDemo({
         "running"
       );
 
-      handle.finished.then((result) => {
+      return handle.finished.then((result) => {
         if (!disposed && result.status !== "running") {
           setStatus(
             `${slot.meta.name} — ${result.status}`,
             result.status === "finished" ? "ok" : "info"
           );
         }
+        return result;
       });
     } catch (error) {
       setStatus(error.message, "error");
+      return Promise.reject(error);
     }
   }
 
+  function playEvent(type) {
+    return playEventFor(selectedSlot().key, type);
+  }
+
+  function cancelFor(slotKey) {
+    const slot = slots[slotKey];
+    if (!slot) {
+      throw new RangeError(`Unknown demo slot: ${slotKey}`);
+    }
+    slot.renderer.cancel();
+  }
+
   for (const button of root.querySelectorAll("[data-demo-event]")) {
-    listen(button, "click", () => playEvent(button.dataset.demoEvent));
+    listen(button, "click", () => {
+      playEvent(button.dataset.demoEvent).catch(() => {});
+    });
   }
 
   listen(stopButton, "click", () => {
@@ -195,6 +214,8 @@ export async function mountCombatDemo({
 
   return Object.freeze({
     playEvent,
+    playEventFor,
+    cancelFor,
     dispose() {
       if (disposed) {
         return;
