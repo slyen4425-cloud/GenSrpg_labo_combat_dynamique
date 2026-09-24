@@ -1,5 +1,5 @@
 import { effectivePreparationMs } from "./combat-timing.js";
-import { withFighterEnergy } from "./combat-state.js";
+import { withFighterEnergy, withFighterHp } from "./combat-state.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -69,5 +69,56 @@ export function resolveTimedActionStart({
       releaseAtMs: preparationMs,
       impactAtMs: preparationMs + travelMs
     })
+  });
+}
+
+
+export function resolveTimedActionInterruption({
+  state,
+  action,
+  reaction
+}) {
+  if (!reaction || reaction.outcome !== "interrupted") {
+    throw new TypeError("an interrupted reaction is required");
+  }
+
+  const actor = fighterOf(state, action.actorId);
+  const damage = Math.max(
+    0,
+    Number(reaction.skill?.effect?.damage) || 0
+  );
+  const nextState = withFighterHp(
+    state,
+    action.actorId,
+    actor.hp - damage
+  );
+  const hpAfter = fighterOf(nextState, action.actorId).hp;
+
+  return Object.freeze({
+    ok: true,
+    outcome: "interrupted",
+    state: nextState,
+    events: Object.freeze([
+      Object.freeze({
+        type: "action-interrupted",
+        atMs: reaction.readyAtMs,
+        actorId: action.actorId,
+        actionId: action.id,
+        sourceActorId: reaction.actorId,
+        sourceSkillId: reaction.skillId,
+        reason: "stun"
+      }),
+      Object.freeze({
+        type: "hit",
+        atMs: reaction.readyAtMs,
+        actorId: action.actorId,
+        sourceActorId: reaction.actorId,
+        skillId: reaction.skillId,
+        damage,
+        hpBefore: actor.hp,
+        hpAfter,
+        tags: reaction.skill?.effect?.tags ?? []
+      })
+    ])
   });
 }
