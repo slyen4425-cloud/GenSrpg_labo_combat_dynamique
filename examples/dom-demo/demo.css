@@ -136,12 +136,14 @@ h1 {
 }
 
 .fighter--player {
+  z-index: 4;
   left: 28%;
   bottom: 2%;
   width: min(42%, 23rem);
 }
 
 .fighter--opponent {
+  z-index: 3;
   left: 72%;
   top: 7%;
   width: min(34%, 19rem);
