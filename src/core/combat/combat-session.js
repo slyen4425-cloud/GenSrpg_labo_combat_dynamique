@@ -103,20 +103,32 @@ export function createCombatSession({
     return result;
   }
 
-  function previewReaction({ action, reactionSkill, elapsedMs }) {
+  function previewReaction({
+    action,
+    reactionSkill,
+    elapsedMs,
+    reactionActorId = null
+  }) {
     return resolveReaction({
       state,
       action,
       reactionSkill,
-      elapsedMs
+      elapsedMs,
+      reactionActorId
     });
   }
 
-  function reactToSkill({ action, reactionSkill, elapsedMs }) {
+  function reactToSkill({
+    action,
+    reactionSkill,
+    elapsedMs,
+    reactionActorId = null
+  }) {
     const result = previewReaction({
       action,
       reactionSkill,
-      elapsedMs
+      elapsedMs,
+      reactionActorId
     });
     if (result.ok) {
       state = result.state;
@@ -136,10 +148,11 @@ export function createCombatSession({
     return result;
   }
 
-  function completeUtilityAction({ action }) {
+  function completeUtilityAction({ action, reaction = null }) {
     const result = resolveUtilityActionCompletion({
       state,
-      action
+      action,
+      reaction
     });
     if (result.ok) {
       state = result.state;
@@ -151,7 +164,7 @@ export function createCombatSession({
     if (action.kind === "skill") {
       return completeSkill({ action, reaction });
     }
-    return completeUtilityAction({ action });
+    return completeUtilityAction({ action, reaction });
   }
 
   function advanceMs(deltaMs) {
