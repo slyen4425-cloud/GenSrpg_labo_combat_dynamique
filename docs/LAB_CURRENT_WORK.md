@@ -6,11 +6,11 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-24
 
-Phase active : fin de Phase 0 — Fondation et gouvernance.
+Phase active : Phase 1 — Core animation mono-image.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
-## Fondation
+## Fondation validée
 
 Dépôt :
 
@@ -24,14 +24,18 @@ Premier commit d'initialisation :
 
 `c4f970558ae984ad965cf66672caf9d6b3684a3e`
 
-Dernier SHA de structure validé avant création de ce document :
+SHA GREEN de fondation :
 
-`71a6b1fd98594046907b50ee545a5390900e9eb1`
+`3197388f2b3ee7491be6e6125a015315158cffa2`
 
-CI correspondante :
+Checkpoint GREEN :
+
+`checkpoint/lab-foundation-green-2026-09-24`
+
+CI du SHA GREEN :
 
 - workflow : `Laboratory CI`
-- run : `36043529254`
+- run : `36043623014`
 - conclusion : SUCCESS
 
 ## Documents obligatoires de reprise
@@ -46,68 +50,62 @@ Lire dans cet ordre :
 
 Puis vérifier les branches, SHA et CI réels sur GitHub.
 
-## Dernier jalon
-
-Jalon : fondation du laboratoire.
-
-Checkpoint final prévu :
-
-`checkpoint/lab-foundation-green-2026-09-24`
-
-Ce checkpoint doit être créé sur le SHA exact contenant l'ensemble de la fondation et ce fichier de reprise, après CI verte.
-
-## Prochain chantier
+## Chantier courant
 
 Nom :
 
 `mono-image-animation-core`
 
-Objectif :
-
-Créer le premier contrat et Core minimal permettant de transformer une image unique en acteur visuel animable, sans encore dépendre d'un gameplay ou de GenSrpG.
-
-Checkpoint de départ prévu :
+Checkpoint de départ :
 
 `checkpoint/lab-start-mono-image-animation-core-2026-09-24`
 
-Branche de travail prévue :
+SHA de base :
+
+`3197388f2b3ee7491be6e6125a015315158cffa2`
+
+Branche de travail :
 
 `work/lab-mono-image-animation-core-2026-09-24`
 
-La branche devra partir exactement du checkpoint GREEN de fondation.
+Le checkpoint de départ et la branche de travail partent exactement du SHA GREEN de fondation.
 
-## Périmètre du prochain chantier
+## Objectif
 
-Autorisé :
+Créer le premier contrat et Core minimal permettant de transformer une image unique en acteur visuel animable, sans dépendre d'un gameplay, d'un renderer spécifique ou de GenSrpG.
+
+## Périmètre autorisé
 
 - contrats d'événements visuels ;
 - modèle `VisualActor` ;
 - profil générique minimal ;
 - plan d'animation pur ;
 - tests unitaires ;
-- exemple de test avec asset fourni ultérieurement.
+- fixtures neutres ;
+- premier adaptateur de rendu uniquement lorsqu'il devient nécessaire au test visuel.
 
-Protégé / hors périmètre :
+## Domaines protégés / hors périmètre
 
-- GenSrpG ;
 - dépôt `Zombicide-40k` ;
+- code GenSrpG ;
 - règles de gameplay Capture ;
 - sauvegardes GenSrpG ;
-- vraie intégration combat ;
+- intégration au runtime Capture ;
 - FX avancés ;
 - caméra avancée ;
 - sprite sheets ;
-- moteur Canvas/WebGL.
+- moteur Canvas/WebGL lourd ;
+- dépendance à un framework non justifié.
 
 ## Inputs utilisateur attendus
 
-Avant le test visuel réel :
+Avant validation visuelle réelle :
 
 - une ou plusieurs images de créatures de test ;
 - éventuellement un fond/arène de test ;
-- contraintes ou références visuelles souhaitées.
+- références visuelles ou contraintes souhaitées.
 
-Le Core peut être développé avec des fixtures neutres, mais aucune supposition sur les assets GenSrpG ne doit être codée.
+Le Core peut être préparé avec des fixtures neutres, mais aucune supposition sur les assets GenSrpG ne doit être codée.
 
 ## Tests prévus
 
@@ -116,7 +114,8 @@ Le Core peut être développé avec des fixtures neutres, mais aucune suppositio
 - génération déterministe d'un plan d'animation ;
 - retour à l'état stable ;
 - indépendance vis-à-vis du DOM pour le planner ;
-- sentinelle d'absence de dépendance GenSrpG.
+- sentinelle d'absence de dépendance GenSrpG ;
+- annulation propre d'une séquence lorsque le runtime existera.
 
 ## Risques principaux
 
@@ -124,11 +123,16 @@ Le Core peut être développé avec des fixtures neutres, mais aucune suppositio
 - nombres magiques non configurables ;
 - couplage prématuré avec Capture ;
 - animation non annulable ;
-- choix trop précoce d'un renderer lourd.
+- choix trop précoce d'un renderer lourd ;
+- duplication d'autorité entre planner et renderer.
 
-## Critère de fin du prochain chantier
+## Critère de fin
 
 Un acteur mono-image doit pouvoir recevoir un événement générique et produire un plan d'animation testable indépendamment de l'UI, avec CI verte et checkpoint GREEN.
+
+## Dernier checkpoint GREEN
+
+`checkpoint/lab-foundation-green-2026-09-24`
 
 ## Règle de reprise
 
