@@ -211,27 +211,47 @@ export async function mountCombatTest({
     braisombreConfig,
     fireballRaw,
     clawRaw,
+    aerialDiveRaw,
+    teleportStrikeRaw,
     mirrorShieldRaw,
     fireImmunityRaw,
-    contactCounterRaw
+    contactCounterRaw,
+    dodgeRaw,
+    itemRaw,
+    recallRaw,
+    summonRaw
   ] = await Promise.all([
     fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
     fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
     fetchJson(DATA_URLS.skills.fireball, fetchImpl),
     fetchJson(DATA_URLS.skills.claw, fetchImpl),
+    fetchJson(DATA_URLS.skills.aerialDive, fetchImpl),
+    fetchJson(DATA_URLS.skills.teleportStrike, fetchImpl),
     fetchJson(DATA_URLS.skills.mirrorShield, fetchImpl),
     fetchJson(DATA_URLS.skills.fireImmunity, fetchImpl),
-    fetchJson(DATA_URLS.skills.contactCounter, fetchImpl)
+    fetchJson(DATA_URLS.skills.contactCounter, fetchImpl),
+    fetchJson(DATA_URLS.skills.dodge, fetchImpl),
+    fetchJson(DATA_URLS.commands.item, fetchImpl),
+    fetchJson(DATA_URLS.commands.recall, fetchImpl),
+    fetchJson(DATA_URLS.commands.summon, fetchImpl)
   ]);
 
   const offensiveSkills = Object.freeze([
     normalizeSkillDefinition(fireballRaw),
-    normalizeSkillDefinition(clawRaw)
+    normalizeSkillDefinition(clawRaw),
+    normalizeSkillDefinition(aerialDiveRaw),
+    normalizeSkillDefinition(teleportStrikeRaw)
   ]);
   const reactionSkills = Object.freeze([
     normalizeSkillDefinition(mirrorShieldRaw),
     normalizeSkillDefinition(fireImmunityRaw),
-    normalizeSkillDefinition(contactCounterRaw)
+    normalizeSkillDefinition(contactCounterRaw),
+    normalizeSkillDefinition(dodgeRaw)
+  ]);
+  const combatCommands = Object.freeze([
+    normalizeCombatCommandDefinition(itemRaw),
+    normalizeCombatCommandDefinition(recallRaw),
+    normalizeCombatCommandDefinition(summonRaw)
   ]);
 
   const session = createCombatSession({
@@ -243,6 +263,7 @@ export async function mountCombatTest({
   const moverSelect = requiredElement(root, "[data-combat-mover]");
   const skillContainer = requiredElement(root, "[data-combat-skills]");
   const reactionContainer = requiredElement(root, "[data-combat-reactions]");
+  const commandContainer = requiredElement(root, "[data-combat-commands]");
   const logList = requiredElement(root, "[data-combat-log]");
   const liveStatus = requiredElement(root, "[data-combat-live-status]");
   const resetButton = requiredElement(root, "[data-combat-reset]");
@@ -317,6 +338,7 @@ export async function mountCombatTest({
 
   const skillRefs = new Map();
   const reactionRefs = new Map();
+  const commandRefs = new Map();
 
   function listen(element, type, handler) {
     element.addEventListener(type, handler);
