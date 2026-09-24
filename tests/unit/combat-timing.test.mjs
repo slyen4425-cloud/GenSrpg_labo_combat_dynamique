@@ -311,3 +311,110 @@ test("live skill completion commits resolved HP damage to session state", () => 
 
   runtime.dispose();
 });
+
+
+test("projectile damage is committed only when projectile reaches impact", () => {
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [
+      { ...maraileron, initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+  const clock = fakeClock();
+  const releases = [];
+  const resolutions = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onRelease(value) {
+      releases.push(value);
+    },
+    onResolved(value) {
+      resolutions.push(value);
+    }
+  });
+
+  runtime.start();
+  runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  clock.setTime(1999);
+  clock.fireNext();
+  assert.equal(releases.length, 0);
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2000);
+  clock.fireNext();
+  assert.equal(releases.length, 1);
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2699);
+  clock.fireNext();
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2700);
+  clock.fireNext();
+  assert.equal(resolutions.length, 1);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 70);
+
+  runtime.dispose();
+});
+
+test("contact damage is committed exactly when the creature reaches impact", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+  const clock = fakeClock();
+  const releases = [];
+  const resolutions = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onRelease(value) {
+      releases.push(value);
+    },
+    onResolved(value) {
+      resolutions.push(value);
+    }
+  });
+
+  runtime.start();
+  runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw
+  });
+
+  clock.setTime(1199);
+  clock.fireNext();
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+  assert.equal(releases.length, 0);
+  assert.equal(resolutions.length, 0);
+
+  clock.setTime(1200);
+  clock.fireNext();
+  assert.equal(releases.length, 1);
+  assert.equal(resolutions.length, 1);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 82);
+
+  runtime.dispose();
+});
