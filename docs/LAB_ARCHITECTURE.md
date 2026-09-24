@@ -257,3 +257,60 @@ Le premier prototype doit privilégier :
 - testabilité.
 
 Un framework ou moteur externe ne sera ajouté que s'il résout un besoin démontré.
+
+
+## 12. Combat Rules Lab
+
+Le prototype de règles de combat est un domaine séparé du moteur visuel.
+
+Chaîne autorisée :
+
+```
+Data Combat
+   |
+   v
+Skill Contract
+   |
+   v
+Combat Rules (distance / énergie / action resolver)
+   |
+   +----> résultat sémantique + chronologie
+   |
+   v
+Demo UI / futur adaptateur
+   |
+   v
+CombatVisualEvent
+   |
+   v
+Animation Core -> Render Adapter
+```
+
+### Propriétaires
+
+- contrat de compétence : `src/contracts/skill-definition.js` ;
+- distance relative : `src/core/combat/distance.js` ;
+- énergie et état de combat : `src/core/combat/combat-state.js` ;
+- résultat d'une action : `src/core/combat/action-resolver.js` ;
+- données configurables : `data/combat/`.
+
+### Frontières
+
+Le Combat Rules Lab :
+
+- ne dépend pas du DOM ;
+- ne dépend pas du Render Adapter ;
+- ne dépend pas de GenSrpG ;
+- ne modifie pas directement une animation ;
+- produit des résultats et événements sémantiques.
+
+L'Animation Core :
+
+- ne calcule ni énergie, ni portée, ni immunité, ni blocage, ni renvoi, ni contre ;
+- ne décide jamais si une compétence réussit.
+
+La Demo UI :
+
+- ne calcule ni coût, ni résultat ;
+- demande une résolution au Combat Rules Lab ;
+- affiche l'état retourné et déclenche uniquement la présentation visuelle correspondante.
