@@ -137,3 +137,45 @@ test("unsupported V1 event fails instead of silently inventing behavior", () => 
     event: normalizeCombatVisualEvent({ type: "dodge", actorId: actor.id })
   }), /No V1 animation planner/);
 });
+
+test("VisualActor carries a stable transform origin", () => {
+  const actor = normalizeVisualActor({
+    id: "b-anchor",
+    creatureId: "braisombre",
+    profile: "drake",
+    asset: "braisombre_player.png",
+    view: "player",
+    transformOrigin: { x: "50%", y: "88%" }
+  });
+
+  assert.deepEqual(actor.transformOrigin, { x: "50%", y: "88%" });
+});
+
+test("idle profiles encode the requested morphology differences", () => {
+  assert.ok(serpentine.idle.bobY > serpentine.idle.swayX);
+  assert.ok(drake.idle.bobY < serpentine.idle.bobY);
+  assert.ok(drake.idle.swayX <= 0.5);
+  assert.ok(drake.idle.swayRotate < serpentine.idle.swayRotate);
+  assert.ok(drake.idle.scaleYDelta > 0);
+});
+
+test("planner consumes idle scale deltas from profile data", () => {
+  const actor = normalizeVisualActor({
+    id: "drake-idle",
+    creatureId: "braisombre",
+    profile: "drake",
+    asset: "braisombre_opponent.png",
+    view: "opponent"
+  });
+
+  const plan = planAnimation({
+    actor,
+    profile: registry.get("drake"),
+    event: normalizeCombatVisualEvent({ type: "idle", actorId: actor.id })
+  });
+
+  assert.equal(plan.segments[0].transform.scaleX, 0.997);
+  assert.equal(plan.segments[0].transform.scaleY, 1.012);
+  assert.equal(plan.segments[0].transform.translateX, 0);
+  assert.equal(plan.segments[0].transform.translateY, -0.5);
+});
