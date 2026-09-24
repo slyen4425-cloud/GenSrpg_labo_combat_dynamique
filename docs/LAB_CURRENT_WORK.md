@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-24
 
-Phase active : Phase 2 — Renderer DOM/CSS + démo visuelle V1.
+Phase active : Phase 2 — Renderer DOM/CSS + démo visuelle V1 — pré-audit.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -182,6 +182,61 @@ Protégé / hors périmètre :
 - aucun calcul gameplay dans le renderer ;
 - aucune dépendance GenSrpG ;
 - interface utilisable sur mobile.
+
+## État du chantier DOM renderer V1
+
+Implémentation présente :
+
+- adaptateur pur `AnimationPlan -> DOM timeline` ;
+- composition état de base + transformation transitoire ;
+- runtime DOM d'acteur à propriétaire unique ;
+- annulation/restauration propre ;
+- prise en charge explicite de `Animation.finished` / `AbortError` ;
+- Asset Input avec validation PNG/WebP/JPEG et révocation Object URL ;
+- démo navigateur autonome mobile-first ;
+- configuration initiale Maraileron joueur / Braisombre adversaire ;
+- contrôles : Idle, Attaque, Hit, KO, Stop ;
+- intensité configurable ;
+- documentation `LAB_RENDERER_V1.md` ;
+- sentinelles de frontières renforcées.
+
+SHA d'implémentation structurelle validé :
+
+`dce3f648875627e116ae66d005691f04572d82fa`
+
+CI :
+
+- run : `36049398880`
+- conclusion : SUCCESS
+
+### Incident CI traité
+
+Une première CI rouge a détecté un rejet asynchrone `AbortError` lors de l'annulation d'un idle en boucle.
+
+Cause démontrée : le renderer ne consommait pas `animation.finished` pour les animations infinies.
+
+Correction : l'observation et la résolution de l'annulation appartiennent désormais au renderer pour toutes les animations. Aucun contournement n'a été ajouté dans l'UI ou dans le test.
+
+### Validation restante
+
+Le chantier n'est pas encore GREEN final.
+
+Obligatoire avant clôture :
+
+- test manuel smartphone ;
+- validation ergonomique des contrôles ;
+- validation visuelle Idle / Attaque / Hit / KO ;
+- vérification de l'absence d'état résiduel après Stop ou changement d'animation.
+
+### Assets
+
+Les planches Maraileron et Braisombre sont reçues.
+
+Le découpage/raccord binaire reste un lot asset séparé. La démo actuelle accepte les images depuis l'appareil afin que le renderer reste testable sans couplage asset.
+
+Checkpoint intermédiaire prévu :
+
+`checkpoint/lab-dom-renderer-demo-v1-preaudit-green-2026-09-24`
 
 ## Dernier checkpoint GREEN
 
