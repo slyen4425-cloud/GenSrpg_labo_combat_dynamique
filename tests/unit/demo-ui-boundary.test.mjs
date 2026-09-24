@@ -147,7 +147,7 @@ test("combat test UI delegates rules and timing to session/runtime", async () =>
   assert.doesNotMatch(source, /chargeTimeModifierPct\s*:/);
 });
 
-test("live combat interface keeps arena abilities energy and reactions together", async () => {
+test("live combat interface keeps arena abilities energy and reactions together while test settings stay below", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
   assert.match(html, /class="combat-live"/);
@@ -161,7 +161,16 @@ test("live combat interface keeps arena abilities energy and reactions together"
   assert.match(html, /data-combat-skills/);
   assert.match(html, /data-combat-reactions/);
   assert.match(html, /data-combat-live-status/);
+  assert.match(html, /class="test-settings"/);
+  assert.match(html, /data-combat-mover/);
   assert.match(html, /data-combat-reset/);
+
+  const dockStart = html.indexOf('class="combat-dock"');
+  const settingsStart = html.indexOf('class="test-settings"');
+  const moverStart = html.indexOf("data-combat-mover");
+  assert.ok(dockStart >= 0);
+  assert.ok(settingsStart > dockStart);
+  assert.ok(moverStart > settingsStart);
 
   assert.doesNotMatch(html, /data-combat-distance-value/);
   assert.doesNotMatch(html, /data-combat-band/);
@@ -184,4 +193,35 @@ test("CSS no longer moves both fighters from a shared distance selector", async 
 
   assert.doesNotMatch(css, /arena\[data-combat-distance/);
   assert.match(css, /\.fighter\s*\{[\s\S]*transition:\s*left/);
+});
+
+
+test("prominent fighter charge bars mirror runtime progress below creature names", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(html, /data-combat-actor-charge="maraileron"/);
+  assert.match(html, /data-combat-actor-charge="braisombre"/);
+  assert.match(html, /fighter__caption[\s\S]*data-demo-label[\s\S]*data-combat-actor-charge="maraileron"/);
+  assert.match(source, /function setActorCharge/);
+  assert.match(source, /progress\.chargeProgress/);
+  assert.match(source, /progress\.reaction\.progress/);
+  assert.match(source, /setActorCharge\(\s*"maraileron"/);
+  assert.match(source, /setActorCharge\(\s*"braisombre"/);
+  assert.match(source, /onRelease[\s\S]*setActorCharge\("maraileron", 0, false\)/);
+});
+
+test("scene scale is owned by distance presenter through one CSS variable", async () => {
+  const source = await readFile(
+    "src/adapters/renderer/dom-distance-presenter.js",
+    "utf8"
+  );
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(source, /--distance-scale/);
+  assert.match(source, /short:[\s\S]*scale: 1\.00/);
+  assert.match(source, /medium:[\s\S]*scale: 0\.96/);
+  assert.match(source, /long:[\s\S]*scale: 0\.90/);
+  assert.match(css, /scale\(var\(--distance-scale, 0\.96\)\)/);
+  assert.doesNotMatch(css, /arena\[data-combat-distance/);
 });
