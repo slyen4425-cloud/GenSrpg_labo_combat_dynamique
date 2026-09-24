@@ -10,11 +10,16 @@ const required = [
   "docs/LAB_CURRENT_WORK.md",
   "docs/LAB_CONTRACTS_V1.md",
   "docs/LAB_RENDERER_V1.md",
+  "docs/LAB_COMBAT_MODEL_V1.md",
   "src/contracts/README.md",
   "src/contracts/combat-visual-event.js",
   "src/contracts/visual-actor.js",
+  "src/contracts/skill-definition.js",
   "src/core/animation/README.md",
   "src/core/animation/animation-plan.js",
+  "src/core/combat/distance.js",
+  "src/core/combat/combat-state.js",
+  "src/core/combat/action-resolver.js",
   "src/core/fx/README.md",
   "src/core/profiles/README.md",
   "src/core/profiles/profile-registry.js",
@@ -27,6 +32,13 @@ const required = [
   "src/assets/image-source-manager.js",
   "data/profiles/serpentine.profile.json",
   "data/profiles/drake.profile.json",
+  "data/combat/fighters/maraileron.combat.json",
+  "data/combat/fighters/braisombre.combat.json",
+  "data/combat/skills/fireball.skill.json",
+  "data/combat/skills/mirror-shield.skill.json",
+  "data/combat/skills/fire-immunity.skill.json",
+  "data/combat/skills/contact-counter.skill.json",
+  "data/combat/skills/claw.skill.json",
   "assets/test/README.md",
   "assets/test/creatures/README.md",
   "assets/test/creatures/maraileron/maraileron.meta.json",
@@ -45,7 +57,8 @@ const required = [
   "tests/unit/contracts-and-planner.test.mjs",
   "tests/unit/dom-renderer.test.mjs",
   "tests/unit/image-source-manager.test.mjs",
-  "tests/unit/demo-ui-boundary.test.mjs"
+  "tests/unit/demo-ui-boundary.test.mjs",
+  "tests/unit/combat-rules.test.mjs",
 ];
 
 const missing = required.filter((path) => !existsSync(path));
@@ -88,6 +101,18 @@ for (const file of walk("src")) {
   if (file.startsWith(join("src", "core"))) {
     if (/from\s+["'][^"']*\.\.\/\.\.\/(?:adapters|ui|assets)\//.test(fileContent)) {
       fail(`Core boundary violation detected in ${file}`);
+    }
+  }
+
+  if (file.startsWith(join("src", "core", "animation"))) {
+    if (/from\s+["'][^"']*(?:\.\.\/combat\/|core\/combat\/)/.test(fileContent)) {
+      fail(`Animation-to-combat boundary violation detected in ${file}`);
+    }
+  }
+
+  if (file.startsWith(join("src", "core", "combat"))) {
+    if (/from\s+["'][^"']*(?:animation|fx|profiles|adapters|ui|assets)\//.test(fileContent)) {
+      fail(`Combat rules boundary violation detected in ${file}`);
     }
   }
 
