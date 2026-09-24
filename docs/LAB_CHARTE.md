@@ -389,3 +389,22 @@ Quand deux solutions sont possibles, choisir celle qui :
 - rend une future intégration possible sans dette cachée.
 
 Cette charte prime sur la solution la plus rapide.
+
+
+## 30. Séparation Combat Rules / moteur visuel
+
+Le laboratoire peut héberger un prototype de règles de combat à condition de préserver une frontière stricte.
+
+Chaîne autorisée :
+
+`Combat Data -> Combat Rules -> résolution sémantique -> adaptateur de présentation -> Animation / FX -> Renderer`
+
+Interdictions :
+
+- Animation Core ne modifie jamais énergie, portée, distance ou résultat d'une compétence ;
+- FX Core ne décide jamais d'un hit, blocage, renvoi, immunité ou contre ;
+- Demo UI ne recalcule jamais les coûts ou la portée à la place de Combat Rules ;
+- Combat Rules n'importe jamais Animation Core, FX Core, renderer, UI ou assets ;
+- une valeur de gameplay réglable provient d'un contrat ou d'une donnée explicite, pas d'un nombre magique dans l'UI.
+
+L'état courant du combat appartient à un propriétaire unique : Combat Session / Combat State.
