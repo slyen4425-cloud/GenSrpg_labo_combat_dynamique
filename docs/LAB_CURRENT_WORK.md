@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-24
 
-Phase active : Phase 1 — Core animation mono-image.
+Phase active : fin de Phase 1 — Core animation mono-image.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -20,10 +20,6 @@ Branche stable :
 
 `main`
 
-Premier commit d'initialisation :
-
-`c4f970558ae984ad965cf66672caf9d6b3684a3e`
-
 SHA GREEN de fondation :
 
 `3197388f2b3ee7491be6e6125a015315158cffa2`
@@ -32,7 +28,7 @@ Checkpoint GREEN :
 
 `checkpoint/lab-foundation-green-2026-09-24`
 
-CI du SHA GREEN :
+CI :
 
 - workflow : `Laboratory CI`
 - run : `36043623014`
@@ -50,7 +46,7 @@ Lire dans cet ordre :
 
 Puis vérifier les branches, SHA et CI réels sur GitHub.
 
-## Chantier courant
+## Chantier terminé
 
 Nom :
 
@@ -68,71 +64,118 @@ Branche de travail :
 
 `work/lab-mono-image-animation-core-2026-09-24`
 
-Le checkpoint de départ et la branche de travail partent exactement du SHA GREEN de fondation.
+### Résultat
 
-## Objectif
+Le laboratoire possède maintenant :
 
-Créer le premier contrat et Core minimal permettant de transformer une image unique en acteur visuel animable, sans dépendre d'un gameplay, d'un renderer spécifique ou de GenSrpG.
+- contrat `CombatVisualEvent` ;
+- contrat `VisualActor` ;
+- contrat `AnimationPlan` ;
+- planner pur V1 ;
+- animations planifiées : `idle`, `attack`, `hit`, `ko` ;
+- orientation gauche/droite pilotée par l'acteur ;
+- profils de données `serpentine` et `drake` ;
+- registre de profils ;
+- métadonnées Maraileron et Braisombre ;
+- format standard des assets de créature ;
+- spécification `LAB_CONTRACTS_V1.md` ;
+- sentinelles CI renforcées.
 
-## Périmètre autorisé
+Aucune logique DOM, Canvas, gameplay Capture ou dépendance GenSrpG n'est entrée dans le Core.
 
-- contrats d'événements visuels ;
-- modèle `VisualActor` ;
-- profil générique minimal ;
-- plan d'animation pur ;
-- tests unitaires ;
-- fixtures neutres ;
-- premier adaptateur de rendu uniquement lorsqu'il devient nécessaire au test visuel.
+### SHA validé avant clôture documentaire
 
-## Domaines protégés / hors périmètre
+`a31d505496f5cb706d5c1ff74389e40f22af1cef`
+
+### CI correspondante
+
+- run : `36047308553`
+- conclusion : SUCCESS
+
+## Assets utilisateur reçus
+
+Deux planches de test ont été fournies :
+
+- Maraileron — profil `serpentine` ;
+- Braisombre — profil `drake`.
+
+Convention validée :
+
+- vue adversaire : 3/4 face ;
+- vue joueur : 3/4 dos ;
+- icône : portrait ;
+- deux vues recommandées, mais une seule image devra rester suffisante pour une créature utilisateur.
+
+Les chemins cibles sont déjà réservés dans les métadonnées :
+
+`assets/test/creatures/maraileron/maraileron_opponent.png`
+`assets/test/creatures/maraileron/maraileron_player.png`
+`assets/test/creatures/maraileron/maraileron_icon.png`
+
+`assets/test/creatures/braisombre/braisombre_opponent.png`
+`assets/test/creatures/braisombre/braisombre_player.png`
+`assets/test/creatures/braisombre/braisombre_icon.png`
+
+Le raccord binaire des PNG est un lot asset séparé : il ne doit pas contaminer le Core.
+
+## Checkpoint GREEN à créer après CI de ce document
+
+`checkpoint/lab-mono-image-animation-core-green-2026-09-24`
+
+## Prochain chantier
+
+Nom :
+
+`dom-renderer-demo-v1`
+
+Objectif :
+
+Créer un premier adaptateur DOM/CSS et une démo autonome permettant de jouer les plans V1 sans déplacer la logique d'animation dans l'UI.
+
+Checkpoint de départ prévu :
+
+`checkpoint/lab-start-dom-renderer-demo-v1-2026-09-24`
+
+Branche de travail prévue :
+
+`work/lab-dom-renderer-demo-v1-2026-09-24`
+
+## Périmètre du prochain chantier
+
+Autorisé :
+
+- adaptateur DOM/CSS ;
+- conversion `AnimationPlan -> keyframes` ;
+- montage/démontage propre d'un acteur ;
+- annulation/restauration ;
+- interface de laboratoire minimale ;
+- chargement de PNG utilisateur ;
+- test visuel Maraileron/Braisombre dès que les assets sont disponibles.
+
+Protégé / hors périmètre :
 
 - dépôt `Zombicide-40k` ;
-- code GenSrpG ;
-- règles de gameplay Capture ;
-- sauvegardes GenSrpG ;
-- intégration au runtime Capture ;
+- intégration GenSrpG ;
+- règles de dégâts ;
+- tour par tour ;
+- sauvegardes ;
 - FX avancés ;
 - caméra avancée ;
-- sprite sheets ;
-- moteur Canvas/WebGL lourd ;
-- dépendance à un framework non justifié.
-
-## Inputs utilisateur attendus
-
-Avant validation visuelle réelle :
-
-- une ou plusieurs images de créatures de test ;
-- éventuellement un fond/arène de test ;
-- références visuelles ou contraintes souhaitées.
-
-Le Core peut être préparé avec des fixtures neutres, mais aucune supposition sur les assets GenSrpG ne doit être codée.
+- Canvas/WebGL ;
+- framework lourd.
 
 ## Tests prévus
 
-- validation d'événement ;
-- validation d'acteur ;
-- génération déterministe d'un plan d'animation ;
-- retour à l'état stable ;
-- indépendance vis-à-vis du DOM pour le planner ;
-- sentinelle d'absence de dépendance GenSrpG ;
-- annulation propre d'une séquence lorsque le runtime existera.
-
-## Risques principaux
-
-- glissement de logique UI vers le Core ;
-- nombres magiques non configurables ;
-- couplage prématuré avec Capture ;
-- animation non annulable ;
-- choix trop précoce d'un renderer lourd ;
-- duplication d'autorité entre planner et renderer.
-
-## Critère de fin
-
-Un acteur mono-image doit pouvoir recevoir un événement générique et produire un plan d'animation testable indépendamment de l'UI, avec CI verte et checkpoint GREEN.
+- plan -> keyframes ;
+- restauration après animation ;
+- annulation sans état résiduel ;
+- aucun calcul gameplay dans le renderer ;
+- aucune dépendance GenSrpG ;
+- interface utilisable sur mobile.
 
 ## Dernier checkpoint GREEN
 
-`checkpoint/lab-foundation-green-2026-09-24`
+En attente de création après validation CI du présent état.
 
 ## Règle de reprise
 
