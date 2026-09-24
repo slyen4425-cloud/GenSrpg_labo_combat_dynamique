@@ -57,11 +57,27 @@ test("runtime preview assets exist in creature metadata", async () => {
 
   assert.equal(
     maraileron.runtimePreview.player,
-    "maraileron_player_preview.webp"
+    "runtime/maraileron_player.webp"
   );
   assert.equal(
     braisombre.runtimePreview.opponent,
-    "braisombre_opponent_preview.webp"
+    "runtime/braisombre_opponent.webp"
+  );
+  assert.equal(
+    maraileron.runtimePreview.opponent,
+    "runtime/maraileron_opponent.webp"
+  );
+  assert.equal(
+    maraileron.runtimePreview.icon,
+    "runtime/maraileron_icon.webp"
+  );
+  assert.equal(
+    braisombre.runtimePreview.player,
+    "runtime/braisombre_player.webp"
+  );
+  assert.equal(
+    braisombre.runtimePreview.icon,
+    "runtime/braisombre_icon.webp"
   );
 });
 
