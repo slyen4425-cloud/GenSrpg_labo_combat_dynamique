@@ -39,6 +39,15 @@ const contactCounter = normalizeSkillDefinition(
 const claw = normalizeSkillDefinition(
   await json("data/combat/skills/claw.skill.json")
 );
+const aerialDive = normalizeSkillDefinition(
+  await json("data/combat/skills/aerial-dive.skill.json")
+);
+const teleportStrike = normalizeSkillDefinition(
+  await json("data/combat/skills/teleport-strike.skill.json")
+);
+const dodge = normalizeSkillDefinition(
+  await json("data/combat/skills/dodge.skill.json")
+);
 
 function state(distance = "medium") {
   return createCombatState({
@@ -54,9 +63,11 @@ test("skill classification separates category, form and element", () => {
   assert.equal(fireball.category, "offensive");
   assert.equal(fireball.form, "projectile");
   assert.equal(fireball.element, "fire");
+  assert.equal(fireball.approachMode, "none");
 
   assert.equal(mirrorShield.category, "defensive");
   assert.equal(mirrorShield.form, "self");
+  assert.equal(claw.approachMode, "ground");
   assert.deepEqual(mirrorShield.reaction.reflectForms, ["projectile"]);
 });
 
@@ -428,4 +439,92 @@ test("combat session preview does not mutate HP but committed skill does", () =>
 
   assert.equal(committed.state.fighters.braisombre.hp, 70);
   assert.equal(session.snapshot().fighters.braisombre.hp, 70);
+});
+
+
+test("aerial and teleport are approach modes independent from contact form", () => {
+  assert.equal(aerialDive.form, "contact");
+  assert.equal(aerialDive.approachMode, "aerial");
+  assert.equal(teleportStrike.form, "contact");
+  assert.equal(teleportStrike.approachMode, "teleport");
+  assert.deepEqual(dodge.reaction.evadeForms, ["contact", "projectile"]);
+  assert.deepEqual(
+    dodge.reaction.evadeApproaches,
+    ["ground", "aerial", "teleport"]
+  );
+});
+
+test("evasion can target attack form or approach mode without dealing damage", () => {
+  const aerial = resolveSkill({
+    state: state("medium"),
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: aerialDive,
+    reactionSkill: dodge
+  });
+
+  assert.equal(aerial.outcome, "evaded");
+  assert.equal(aerial.state.fighters.maraileron.hp, 100);
+  assert.equal(aerial.state.fighters.braisombre.hp, 100);
+  assert.equal(
+    aerial.events.some((item) => item.type === "skill-evaded"),
+    true
+  );
+});
+
+test("different approach travel times create different dodge windows", () => {
+  const slowDodge = normalizeSkillDefinition({
+    id: "slow-dodge",
+    name: "Slow Dodge",
+    category: "defensive",
+    form: "self",
+    approachMode: "none",
+    energyCost: 1,
+    preparationMs: 1400,
+    allowedDistances: ["short", "medium", "long"],
+    reaction: {
+      evadeApproaches: ["aerial", "teleport"]
+    }
+  });
+
+  const aerial = resolveSkill({
+    state: state("medium"),
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: aerialDive,
+    reactionSkill: slowDodge
+  });
+
+  const teleport = resolveSkill({
+    state: state("medium"),
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: teleportStrike,
+    reactionSkill: slowDodge
+  });
+
+  assert.equal(aerial.outcome, "evaded");
+  assert.equal(aerial.timelineMs.preparation, 900);
+  assert.equal(aerial.timelineMs.travel, 850);
+  assert.equal(aerial.timelineMs.reactionReady, 1400);
+
+  assert.equal(teleport.outcome, "hit");
+  assert.equal(teleport.timelineMs.preparation, 1200);
+  assert.equal(teleport.timelineMs.travel, 120);
+  assert.equal(teleport.timelineMs.reactionReady, null);
+});
+
+test("release and impact events expose attack approach mode", () => {
+  const result = resolveSkill({
+    state: state("medium"),
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: aerialDive
+  });
+
+  const release = result.events.find((item) => item.type === "skill-release");
+  const arrive = result.events.find((item) => item.type === "skill-arrive");
+
+  assert.equal(release.approachMode, "aerial");
+  assert.equal(arrive.approachMode, "aerial");
 });
