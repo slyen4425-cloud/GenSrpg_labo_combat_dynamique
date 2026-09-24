@@ -63,3 +63,22 @@ Le rendu de position est séparé : seul le combattant qui choisit une nouvelle 
 Les contrôles Idle / Attaque / Hit / KO et l'import d'images restent disponibles dans le panneau `Outils visuels du laboratoire`.
 
 Ils ne sont pas nécessaires pour utiliser le prototype de combat.
+
+
+## Ajustement visibilité / barre principale
+
+Le sous-lot de présentation conserve les règles V2 intactes et modifie seulement la projection visuelle :
+
+- taille générale des créatures légèrement réduite ;
+- position longue bornée dans l'arène ;
+- scale de scène léger selon la distance :
+  - Courte : 1,00 ;
+  - Moyenne : 0,96 ;
+  - Longue : 0,90 ;
+- seul le combattant qui se déplace change de position et de scale de scène ;
+- le choix de la créature déplacée et le reset sont rangés dans `Réglages du test`, sous l'interface principale ;
+- une barre de charge principale est visible sous le nom de chaque créature ;
+- cette barre reflète directement la progression du Combat Runtime ;
+- Boule de feu utilise 2,0 s de préparation dans les données de test avant le départ du projectile.
+
+Les petites barres présentes sur les cartes de capacité restent un détail de laboratoire. La barre sous le nom est la lecture principale pendant le combat.
