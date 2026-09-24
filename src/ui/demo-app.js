@@ -114,6 +114,28 @@ export async function mountCombatDemo({
     status.dataset.state = state;
   }
 
+  function startIdleFor(slotKey) {
+    if (disposed) {
+      return null;
+    }
+    const slot = slots[slotKey];
+    if (!slot) {
+      throw new RangeError(`Unknown demo slot: ${slotKey}`);
+    }
+
+    const event = normalizeCombatVisualEvent({
+      type: "idle",
+      actorId: slot.actor.id,
+      intensity: 1
+    });
+    const plan = planAnimation({
+      event,
+      actor: slot.actor,
+      profile: profiles.get(slot.actor.profile)
+    });
+    return slot.renderer.play(plan);
+  }
+
   function playEventFor(slotKey, type) {
     if (disposed) {
       return Promise.resolve({ status: "disposed" });
@@ -141,17 +163,23 @@ export async function mountCombatDemo({
       });
 
       const handle = slot.renderer.play(plan);
-      setStatus(
-        `${slot.meta.name} — ${type} × ${intensity.toFixed(2)}`,
-        "running"
-      );
+
+      if (type !== "idle") {
+        setStatus(
+          `${slot.meta.name} — ${type} × ${intensity.toFixed(2)}`,
+          "running"
+        );
+      }
 
       return handle.finished.then((result) => {
-        if (!disposed && result.status !== "running") {
-          setStatus(
-            `${slot.meta.name} — ${result.status}`,
-            result.status === "finished" ? "ok" : "info"
-          );
+        if (!disposed && type !== "idle") {
+          startIdleFor(slotKey);
+          if (result.status !== "running") {
+            setStatus(
+              `${slot.meta.name} — ${result.status}`,
+              result.status === "finished" ? "ok" : "info"
+            );
+          }
         }
         return result;
       });
@@ -171,6 +199,7 @@ export async function mountCombatDemo({
       throw new RangeError(`Unknown demo slot: ${slotKey}`);
     }
     slot.renderer.cancel();
+    startIdleFor(slotKey);
   }
 
   for (const button of root.querySelectorAll("[data-demo-event]")) {
@@ -210,8 +239,11 @@ export async function mountCombatDemo({
     });
   }
 
+  startIdleFor("player");
+  startIdleFor("opponent");
+
   setStatus(
-    "Démo prête — Maraileron et Braisombre sont chargés automatiquement.",
+    "Démo prête — Maraileron et Braisombre restent en idle par défaut.",
     "ok"
   );
 
@@ -219,6 +251,7 @@ export async function mountCombatDemo({
     playEvent,
     playEventFor,
     cancelFor,
+    startIdleFor,
     dispose() {
       if (disposed) {
         return;
