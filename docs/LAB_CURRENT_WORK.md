@@ -1101,6 +1101,23 @@ CI :
 - run : `36067840558`
 - conclusion : SUCCESS
 
+Checkpoint pré-audit GREEN :
+
+`checkpoint/lab-distance-z-hp-resolution-v2-preaudit-green-2026-09-24`
+
+Branche de prévisualisation :
+
+`preview/lab-distance-z-hp-resolution-v2-2026-09-24`
+
+SHA technique :
+
+`a02d8560a655b82adaf984eccee4b5d146b2ae02`
+
+CI :
+
+- run : `36067913906`
+- conclusion : SUCCESS
+
 Ce lot peut servir de base au chantier suivant Objets / Rappel / Invocation / interruption par Stun.
 
 ## Dernier checkpoint GREEN
