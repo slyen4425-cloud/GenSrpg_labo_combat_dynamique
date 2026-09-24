@@ -49,6 +49,10 @@ const DATA_URLS = Object.freeze({
     dodge: new URL(
       "../../data/combat/skills/dodge.skill.json",
       import.meta.url
+    ),
+    stunBolt: new URL(
+      "../../data/combat/skills/stun-bolt.skill.json",
+      import.meta.url
     )
   }),
   commands: Object.freeze({
@@ -223,6 +227,7 @@ export async function mountCombatTest({
     fireImmunityRaw,
     contactCounterRaw,
     dodgeRaw,
+    stunBoltRaw,
     itemRaw,
     recallRaw,
     summonRaw
@@ -237,6 +242,7 @@ export async function mountCombatTest({
     fetchJson(DATA_URLS.skills.fireImmunity, fetchImpl),
     fetchJson(DATA_URLS.skills.contactCounter, fetchImpl),
     fetchJson(DATA_URLS.skills.dodge, fetchImpl),
+    fetchJson(DATA_URLS.skills.stunBolt, fetchImpl),
     fetchJson(DATA_URLS.commands.item, fetchImpl),
     fetchJson(DATA_URLS.commands.recall, fetchImpl),
     fetchJson(DATA_URLS.commands.summon, fetchImpl)
@@ -259,6 +265,7 @@ export async function mountCombatTest({
     normalizeCombatCommandDefinition(recallRaw),
     normalizeCombatCommandDefinition(summonRaw)
   ]);
+  const stunBolt = normalizeSkillDefinition(stunBoltRaw);
 
   const session = createCombatSession({
     distance: "medium",
@@ -273,6 +280,10 @@ export async function mountCombatTest({
   const logList = requiredElement(root, "[data-combat-log]");
   const liveStatus = requiredElement(root, "[data-combat-live-status]");
   const resetButton = requiredElement(root, "[data-combat-reset]");
+  const stunTestButton = requiredElement(
+    root,
+    "[data-combat-simulate-stun]"
+  );
 
   const fighterContainers = {
     player: requiredElement(root, '[data-demo-slot="player"]'),
@@ -809,6 +820,41 @@ export async function mountCombatTest({
   }
 
   listen(moverSelect, "change", () => render(session.snapshot()));
+
+  listen(stunTestButton, "click", () => {
+    if (!runtime.hasActiveAction) {
+      writeLog(
+        "Stun test : aucune action de Maraileron n'est en charge.",
+        "warn"
+      );
+      return;
+    }
+
+    const resolution = session.previewSkill({
+      actorId: "braisombre",
+      targetId: "maraileron",
+      skill: stunBolt
+    });
+
+    if (!resolution.ok) {
+      writeLog(
+        `Stun test : ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
+        "warn"
+      );
+      return;
+    }
+
+    const result = runtime.applyResolutionInterrupt(resolution);
+
+    writeLog(
+      result.ok
+        ? "Impact Stun simulé → charge interrompue."
+        : `Impact Stun simulé → ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
+      result.ok ? "accent" : "warn"
+    );
+
+    render(session.snapshot());
+  });
 
   listen(resetButton, "click", () => {
     runtime.cancelActive();
