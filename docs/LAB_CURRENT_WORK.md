@@ -357,6 +357,47 @@ Ces deux refs doivent pointer sur le SHA final documenté après CI du présent 
 
 Le chantier reste en attente du test utilisateur mobile avant GREEN final.
 
+
+## Sous-lot actif — idle/scale polish
+
+Base :
+
+`0d435a14c7913718fdb246df4836635f4626eb59`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-idle-scale-polish-2026-09-24`
+
+Objectif :
+
+- rendre la créature joueur plus grande que l'adversaire via les métadonnées de vue ;
+- rendre l'idle Maraileron majoritairement vertical ;
+- réduire fortement l'amplitude idle Braisombre ;
+- ancrer Braisombre plus bas pour stabiliser visuellement les pieds ;
+- ne pas modifier le comportement KO dans ce lot.
+
+Propriétaires autorisés :
+
+- metadata créature : échelle de vue + ancrage ;
+- Creature Profile : amplitudes/timing idle ;
+- VisualActor : contrat d'ancrage ;
+- Render Adapter : application de l'ancrage.
+
+Interdits :
+
+- aucune règle spécifique dans le CSS de la démo ;
+- aucune animation calculée dans l'UI ;
+- aucun second moteur ou fallback concurrent ;
+- aucun changement GenSrpG/Zombicide-40k.
+
+Tests :
+
+- joueur > adversaire ;
+- idle serpentine vertical dominant ;
+- idle drake amplitude réduite ;
+- transformOrigin normalisé et appliqué par le renderer ;
+- sentinelles existantes intactes.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
