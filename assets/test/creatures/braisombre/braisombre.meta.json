@@ -7,6 +7,9 @@
     "player": "braisombre_player.png",
     "icon": "braisombre_icon.png"
   },
+  "runtimePreview": {
+    "opponent": "braisombre_opponent_preview.webp"
+  },
   "defaultFacing": {
     "opponent": "left",
     "player": "right"
