@@ -1,22 +1,38 @@
-const SCENE_BY_DISTANCE = Object.freeze({
-  short: Object.freeze({ separation: 0.38, scale: 1.00 }),
-  medium: Object.freeze({ separation: 0.54, scale: 0.96 }),
-  long: Object.freeze({ separation: 0.68, scale: 0.90 })
+const DISTANCE_INDEX = Object.freeze({
+  short: 0,
+  medium: 1,
+  long: 2
+});
+
+const SCALE_BY_DISTANCE = Object.freeze({
+  short: 1.00,
+  medium: 0.96,
+  long: 0.90
 });
 
 const RESET_POSITIONS = Object.freeze({
-  player: 0.23,
-  opponent: 0.77
+  player: 0.28,
+  opponent: 0.72
 });
+
+const STEP_X = 0.10;
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+function distanceIndex(value) {
+  const index = DISTANCE_INDEX[value];
+  if (!Number.isInteger(index)) {
+    throw new RangeError(`Unsupported visual distance: ${value}`);
+  }
+  return index;
+}
+
 export function createDomDistancePresenter({
   fighters,
-  minX = 0.14,
-  maxX = 0.86
+  minX = 0.20,
+  maxX = 0.80
 }) {
   if (
     !fighters?.player?.style ||
@@ -31,8 +47,8 @@ export function createDomDistancePresenter({
   };
 
   const scales = {
-    player: SCENE_BY_DISTANCE.medium.scale,
-    opponent: SCENE_BY_DISTANCE.medium.scale
+    player: SCALE_BY_DISTANCE.medium,
+    opponent: SCALE_BY_DISTANCE.medium
   };
 
   function apply(slot) {
@@ -46,8 +62,8 @@ export function createDomDistancePresenter({
   function reset() {
     positions.player = RESET_POSITIONS.player;
     positions.opponent = RESET_POSITIONS.opponent;
-    scales.player = SCENE_BY_DISTANCE.medium.scale;
-    scales.opponent = SCENE_BY_DISTANCE.medium.scale;
+    scales.player = SCALE_BY_DISTANCE.medium;
+    scales.opponent = SCALE_BY_DISTANCE.medium;
     apply("player");
     apply("opponent");
   }
@@ -67,26 +83,29 @@ export function createDomDistancePresenter({
       throw new Error("movement result has no distance-changed event");
     }
 
-    const scene = SCENE_BY_DISTANCE[distanceEvent.to];
-    if (!scene) {
-      throw new RangeError(`Unsupported visual distance: ${distanceEvent.to}`);
-    }
+    const fromIndex = distanceIndex(distanceEvent.from);
+    const toIndex = distanceIndex(distanceEvent.to);
+    const deltaBands = toIndex - fromIndex;
 
-    const otherSlot = actorSlot === "player" ? "opponent" : "player";
-    const direction = actorSlot === "player" ? -1 : 1;
+    const sideSign = actorSlot === "player" ? -1 : 1;
+    const deltaX = sideSign * deltaBands * STEP_X;
 
     positions[actorSlot] = clamp(
-      positions[otherSlot] + direction * scene.separation,
+      positions[actorSlot] + deltaX,
       minX,
       maxX
     );
-    scales[actorSlot] = scene.scale;
+    scales[actorSlot] = SCALE_BY_DISTANCE[distanceEvent.to];
 
     apply(actorSlot);
+
+    const otherSlot = actorSlot === "player" ? "opponent" : "player";
 
     return Object.freeze({
       status: "moved",
       actorSlot,
+      from: distanceEvent.from,
+      to: distanceEvent.to,
       x: positions[actorSlot],
       scale: scales[actorSlot],
       stationarySlot: otherSlot,
