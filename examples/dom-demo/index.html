@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Combat Dynamique — Laboratoire V1</title>
+  <link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+  <main class="demo" data-combat-demo>
+    <header class="demo__header">
+      <p class="eyebrow">GenSrpG — laboratoire autonome</p>
+      <h1>Combat dynamique V1</h1>
+      <p class="intro">
+        Chargez une vue joueur et une vue adversaire, puis testez les plans mono-image.
+      </p>
+    </header>
+
+    <section class="arena" aria-label="Arène de démonstration">
+      <div class="arena__ground" aria-hidden="true"></div>
+
+      <article class="fighter fighter--player" data-demo-slot="player">
+        <div class="fighter__caption">
+          <strong data-demo-label>Maraileron</strong>
+          <span data-demo-profile>serpentine</span>
+        </div>
+
+        <div class="fighter__motion" data-demo-motion>
+          <div class="fighter__placeholder" data-demo-placeholder>
+            Chargez la vue joueur
+          </div>
+          <img
+            class="fighter__image"
+            data-demo-image
+            alt="Vue joueur de Maraileron"
+            hidden
+          >
+        </div>
+
+        <label class="file-control">
+          <span>Vue joueur</span>
+          <input
+            data-demo-file
+            type="file"
+            accept="image/png,image/webp,image/jpeg"
+          >
+        </label>
+      </article>
+
+      <article class="fighter fighter--opponent" data-demo-slot="opponent">
+        <div class="fighter__caption">
+          <strong data-demo-label>Braisombre</strong>
+          <span data-demo-profile>drake</span>
+        </div>
+
+        <div class="fighter__motion" data-demo-motion>
+          <div class="fighter__placeholder" data-demo-placeholder>
+            Chargez la vue adversaire
+          </div>
+          <img
+            class="fighter__image"
+            data-demo-image
+            alt="Vue adversaire de Braisombre"
+            hidden
+          >
+        </div>
+
+        <label class="file-control">
+          <span>Vue adversaire</span>
+          <input
+            data-demo-file
+            type="file"
+            accept="image/png,image/webp,image/jpeg"
+          >
+        </label>
+      </article>
+    </section>
+
+    <section class="controls" aria-label="Contrôles du laboratoire">
+      <div class="control-row">
+        <label>
+          <span>Créature ciblée</span>
+          <select data-demo-target>
+            <option value="player">Maraileron — joueur</option>
+            <option value="opponent">Braisombre — adversaire</option>
+          </select>
+        </label>
+
+        <label>
+          <span>
+            Intensité
+            <output data-demo-intensity-value>1.00</output>
+          </span>
+          <input
+            data-demo-intensity
+            type="range"
+            min="0.5"
+            max="1.5"
+            value="1"
+            step="0.05"
+          >
+        </label>
+      </div>
+
+      <div class="button-grid">
+        <button type="button" data-demo-event="idle">Idle</button>
+        <button type="button" data-demo-event="attack">Attaque</button>
+        <button type="button" data-demo-event="hit">Hit</button>
+        <button type="button" data-demo-event="ko">KO</button>
+        <button type="button" class="button-secondary" data-demo-stop>Stop</button>
+      </div>
+
+      <p class="status" data-demo-status data-state="info" role="status">
+        Initialisation…
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="./demo.js"></script>
+</body>
+</html>
