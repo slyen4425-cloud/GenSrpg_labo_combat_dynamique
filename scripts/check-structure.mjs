@@ -22,11 +22,14 @@ const required = [
   "src/core/combat/combat-session.js",
   "src/core/combat/action-resolver.js",
   "src/core/fx/README.md",
+  "src/core/fx/skill-fx-plan.js",
   "src/core/profiles/README.md",
   "src/core/profiles/profile-registry.js",
   "src/adapters/renderer/README.md",
   "src/adapters/renderer/dom-keyframes.js",
   "src/adapters/renderer/dom-actor-renderer.js",
+  "src/adapters/renderer/combat-resolution-presenter.js",
+  "src/adapters/renderer/dom-skill-fx.js",
   "src/ui/README.md",
   "src/ui/demo-app.js",
   "src/assets/README.md",
@@ -60,6 +63,8 @@ const required = [
   "tests/unit/image-source-manager.test.mjs",
   "tests/unit/demo-ui-boundary.test.mjs",
   "tests/unit/combat-rules.test.mjs",
+  "tests/unit/combat-resolution-presenter.test.mjs",
+  "tests/unit/skill-fx.test.mjs",
 ];
 
 const missing = required.filter((path) => !existsSync(path));
