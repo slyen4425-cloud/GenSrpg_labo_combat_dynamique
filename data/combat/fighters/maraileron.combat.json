@@ -1,7 +1,9 @@
 {
   "id": "maraileron",
   "maxEnergy": 100,
-  "energy": 100,
-  "energyRegenPerSecond": 8,
-  "movementEnergyPerStep": 1
+  "initialEnergy": 0,
+  "energyChargeAmount": 1,
+  "energyChargeIntervalMs": 2000,
+  "movementEnergyPerStep": 1,
+  "chargeTimeModifierPct": 0
 }
