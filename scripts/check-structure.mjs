@@ -7,20 +7,33 @@ const required = [
   "docs/LAB_ROADMAP.md",
   "docs/LAB_ARCHITECTURE.md",
   "docs/LAB_CHECKPOINT_POLICY.md",
+  "docs/LAB_CURRENT_WORK.md",
+  "docs/LAB_CONTRACTS_V1.md",
   "src/contracts/README.md",
+  "src/contracts/combat-visual-event.js",
+  "src/contracts/visual-actor.js",
   "src/core/animation/README.md",
+  "src/core/animation/animation-plan.js",
+  "src/core/animation/plan-animation.js",
   "src/core/fx/README.md",
   "src/core/profiles/README.md",
+  "src/core/profiles/profile-registry.js",
   "src/adapters/renderer/README.md",
   "src/ui/README.md",
   "src/assets/README.md",
+  "data/profiles/serpentine.profile.json",
+  "data/profiles/drake.profile.json",
   "assets/test/README.md",
-  "tests/unit/foundation.test.mjs"
+  "assets/test/creatures/README.md",
+  "assets/test/creatures/maraileron/maraileron.meta.json",
+  "assets/test/creatures/braisombre/braisombre.meta.json",
+  "tests/unit/foundation.test.mjs",
+  "tests/unit/contracts-and-planner.test.mjs"
 ];
 
 const missing = required.filter((path) => !existsSync(path));
 if (missing.length) {
-  console.error("Missing required foundation files:", missing);
+  console.error("Missing required laboratory files:", missing);
   process.exit(1);
 }
 
@@ -41,13 +54,13 @@ const forbidden = [
 ];
 
 for (const file of walk("src")) {
-  const content = readFileSync(file, "utf8");
+  const fileContent = readFileSync(file, "utf8");
   for (const rule of forbidden) {
-    if (rule.test(content)) {
+    if (rule.test(fileContent)) {
       console.error(`Forbidden GenSrpG dependency detected in ${file}`);
       process.exit(1);
     }
   }
 }
 
-console.log("Foundation structure: OK");
+console.log("Laboratory structure and independence guards: OK");
