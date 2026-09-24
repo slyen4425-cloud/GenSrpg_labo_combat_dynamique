@@ -32,6 +32,7 @@ const required = [
   "src/adapters/renderer/dom-skill-fx.js",
   "src/ui/README.md",
   "src/ui/demo-app.js",
+  "src/ui/combat-test-ui.js",
   "src/assets/README.md",
   "src/assets/image-source-manager.js",
   "data/profiles/serpentine.profile.json",
