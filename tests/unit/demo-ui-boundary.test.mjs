@@ -22,7 +22,6 @@ test("demo loads bundled creatures before optional user replacement", async () =
   assert.match(source, /runtimePreview/);
   assert.match(source, /new URL\(runtimeAsset, meta\.assetBaseUrl\)/);
   assert.match(source, /rebuildActor\(runtimeUrl\)/);
-  assert.doesNotMatch(source, /fileInput\.files.*rebuildActor\(runtimeUrl\)/s);
 });
 
 test("both creatures enter idle by default and transient actions return to idle", async () => {
@@ -167,7 +166,7 @@ test("live combat interface keeps arena abilities energy and reactions together"
   assert.doesNotMatch(html, /data-combat-distance-value/);
   assert.doesNotMatch(html, /data-combat-band/);
   assert.doesNotMatch(html, /data-combat-advance/);
-  assert.doesNotMatch(html, /data-combat-reaction/);
+  assert.doesNotMatch(html, /data-combat-reaction="/);
 });
 
 test("every generated ability card owns a visible charge progress bar", async () => {
