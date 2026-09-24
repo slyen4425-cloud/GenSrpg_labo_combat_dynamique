@@ -41,6 +41,12 @@ function preparationFor(state, fighterId, skill) {
 
 function reactionOutcome(skill, reactionSkill) {
   if (
+    reactionSkill.reaction.evadeForms.includes(skill.form) ||
+    reactionSkill.reaction.evadeApproaches.includes(skill.approachMode)
+  ) {
+    return "evaded";
+  }
+  if (
     skill.element &&
     reactionSkill.reaction.immuneElements.includes(skill.element)
   ) {
@@ -283,7 +289,8 @@ export function resolveSkillCompletion({
       targetId,
       skillId: skill.id,
       form: skill.form,
-      element: skill.element
+      element: skill.element,
+      approachMode: skill.approachMode
     }));
   }
 
@@ -305,7 +312,9 @@ export function resolveSkillCompletion({
       actorId,
       targetId,
       skillId: skill.id,
-      outcome
+      outcome,
+      form: skill.form,
+      approachMode: skill.approachMode
     }));
 
     if (outcome === "hit") {
