@@ -10,6 +10,10 @@ import {
   resolveSkillCompletion,
   resolveSkillStart
 } from "./action-resolver.js";
+import {
+  resolveCommandCompletion,
+  resolveCommandStart
+} from "./command-resolver.js";
 
 export function createCombatSession({
   distance = "medium",
@@ -74,6 +78,22 @@ export function createCombatSession({
     return result;
   }
 
+  function previewCommand({ actorId, command }) {
+    return resolveCommandStart({
+      state,
+      actorId,
+      command
+    });
+  }
+
+  function startCommand({ actorId, command }) {
+    const result = previewCommand({ actorId, command });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
+  }
+
   function previewReaction({ action, reactionSkill, elapsedMs }) {
     return resolveReaction({
       state,
@@ -107,6 +127,23 @@ export function createCombatSession({
     return result;
   }
 
+  function completeCommand({ action }) {
+    const result = resolveCommandCompletion({
+      state,
+      action
+    });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
+  }
+
+  function completeAction({ action, reaction = null }) {
+    return action.actionType === "command"
+      ? completeCommand({ action })
+      : completeSkill({ action, reaction });
+  }
+
   function advanceMs(deltaMs) {
     state = advanceCombatTime(state, deltaMs);
     return state;
@@ -133,12 +170,16 @@ export function createCombatSession({
     snapshot,
     previewMovement,
     previewSkill,
+    previewCommand,
     move,
     useSkill,
     startSkill,
+    startCommand,
     previewReaction,
     reactToSkill,
     completeSkill,
+    completeCommand,
+    completeAction,
     advanceMs,
     advance,
     addChargeEffect,
