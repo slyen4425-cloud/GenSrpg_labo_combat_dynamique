@@ -1,4 +1,7 @@
-import { planSkillFx } from "../../core/fx/skill-fx-plan.js";
+import {
+  planSkillFx,
+  planSkillReleaseFx
+} from "../../core/fx/skill-fx-plan.js";
 
 function defaultSetTimer(callback, delayMs) {
   return setTimeout(callback, delayMs);
@@ -14,7 +17,11 @@ export function createCombatResolutionPresenter({
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer
 }) {
-  if (!visuals || typeof visuals.playEventFor !== "function" || typeof visuals.cancelFor !== "function") {
+  if (
+    !visuals ||
+    typeof visuals.playEventFor !== "function" ||
+    typeof visuals.cancelFor !== "function"
+  ) {
     throw new TypeError("visuals must provide playEventFor() and cancelFor()");
   }
   if (fx && typeof fx.play !== "function") {
@@ -38,11 +45,86 @@ export function createCombatResolutionPresenter({
     return timerId;
   }
 
-  function impactTime(resolution) {
+  function outcomeTime(resolution) {
     if (resolution.outcome === "countered") {
-      return resolution.events.find((item) => item.type === "skill-countered")?.atMs ?? 0;
+      return (
+        resolution.events.find((item) => item.type === "skill-countered")?.atMs ??
+        0
+      );
     }
-    return resolution.events.find((item) => item.type === "skill-arrive")?.atMs ?? 0;
+    return (
+      resolution.events.find((item) => item.type === "skill-arrive")?.atMs ?? 0
+    );
+  }
+
+  function presentRelease({
+    action,
+    actorSlot = "player",
+    targetSlot = "opponent"
+  }) {
+    if (disposed) {
+      return Object.freeze({ status: "disposed" });
+    }
+
+    visuals.playEventFor(actorSlot, "attack").catch(() => {});
+
+    for (const fxPlan of planSkillReleaseFx({
+      action,
+      actorSlot,
+      targetSlot
+    })) {
+      fx?.play(fxPlan);
+    }
+
+    return Object.freeze({
+      status: "released",
+      travelMs: action.travelMs
+    });
+  }
+
+  function presentOutcome({
+    resolution,
+    actorSlot = "player",
+    targetSlot = "opponent"
+  }) {
+    if (disposed) {
+      return Object.freeze({ status: "disposed" });
+    }
+    if (!resolution?.ok) {
+      return Object.freeze({ status: "rejected" });
+    }
+
+    switch (resolution.outcome) {
+      case "hit":
+        visuals.playEventFor(targetSlot, "hit").catch(() => {});
+        break;
+
+      case "reflected":
+        visuals.cancelFor(actorSlot);
+        visuals.playEventFor(actorSlot, "hit").catch(() => {});
+        break;
+
+      case "countered":
+        visuals.cancelFor(actorSlot);
+        visuals
+          .playEventFor(targetSlot, "attack")
+          .then(() => visuals.playEventFor(actorSlot, "hit"))
+          .catch(() => {});
+        break;
+
+      case "blocked":
+      case "immune":
+        visuals.cancelFor(actorSlot);
+        break;
+
+      default:
+        break;
+    }
+
+    return Object.freeze({
+      status: "resolved",
+      outcome: resolution.outcome
+    });
   }
 
   function present({
@@ -58,7 +140,12 @@ export function createCombatResolutionPresenter({
       return Object.freeze({ status: "rejected" });
     }
 
-    visuals.playEventFor(actorSlot, "attack").catch(() => {});
+    const release = resolution.events.find((item) => item.type === "skill-release");
+    if (release) {
+      schedule(() => {
+        visuals.playEventFor(actorSlot, "attack").catch(() => {});
+      }, release.atMs);
+    }
 
     for (const fxPlan of planSkillFx({
       resolution,
@@ -66,38 +153,13 @@ export function createCombatResolutionPresenter({
       targetSlot
     })) {
       schedule(() => {
-        fx?.play(fxPlan);
+        fx?.play({ ...fxPlan, delayMs: 0 });
       }, fxPlan.delayMs);
     }
 
-    const atMs = impactTime(resolution);
-
+    const atMs = outcomeTime(resolution);
     schedule(() => {
-      switch (resolution.outcome) {
-        case "hit":
-          visuals.playEventFor(targetSlot, "hit").catch(() => {});
-          break;
-
-        case "reflected":
-          visuals.cancelFor(actorSlot);
-          visuals.playEventFor(actorSlot, "hit").catch(() => {});
-          break;
-
-        case "countered":
-          visuals.cancelFor(actorSlot);
-          visuals.playEventFor(targetSlot, "attack")
-            .then(() => visuals.playEventFor(actorSlot, "hit"))
-            .catch(() => {});
-          break;
-
-        case "blocked":
-        case "immune":
-          visuals.cancelFor(actorSlot);
-          break;
-
-        default:
-          break;
-      }
+      presentOutcome({ resolution, actorSlot, targetSlot });
     }, atMs);
 
     return Object.freeze({
@@ -124,6 +186,8 @@ export function createCombatResolutionPresenter({
 
   return Object.freeze({
     present,
+    presentRelease,
+    presentOutcome,
     cancelPending,
     dispose,
     get pendingCount() {
