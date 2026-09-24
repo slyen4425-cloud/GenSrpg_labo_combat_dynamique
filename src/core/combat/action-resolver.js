@@ -5,6 +5,7 @@ import {
   withFighterHp
 } from "./combat-state.js";
 import {
+  effectiveActionPreparationMs,
   resolveTimedActionInterruption,
   resolveTimedActionStart
 } from "./timed-action-resolver.js";
@@ -217,7 +218,11 @@ export function resolveReaction({
     });
   }
 
-  const preparationMs = preparationFor(state, action.targetId, reactionSkill);
+  const preparationMs = effectiveActionPreparationMs({
+    state,
+    actorId: reactorId,
+    baseMs: reactionSkill.preparationMs
+  });
   const readyAtMs = elapsed + preparationMs;
 
   const missesImpactWindow =
