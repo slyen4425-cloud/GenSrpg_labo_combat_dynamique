@@ -252,14 +252,26 @@ test("fighter HP bars are state-driven and placed below names", async () => {
   assert.doesNotMatch(source, /hp\s*=\s*100/);
 });
 
-test("player distance presenter uses semantic transition instead of opponent-relative repositioning", async () => {
+test("distance presenter projects explicit short medium long separation from stationary fighter", async () => {
   const source = await readFile(
     "src/adapters/renderer/dom-distance-presenter.js",
     "utf8"
   );
 
-  assert.match(source, /deltaBands = toIndex - fromIndex/);
-  assert.match(source, /sideSign = actorSlot === "player" \? -1 : 1/);
-  assert.match(source, /deltaX = sideSign \* deltaBands \* STEP_X/);
-  assert.doesNotMatch(source, /positions\[otherSlot\] \+ direction/);
+  assert.match(source, /SEPARATION_BY_DISTANCE/);
+  assert.match(source, /short: 0\.30/);
+  assert.match(source, /medium: 0\.44/);
+  assert.match(source, /long: 0\.56/);
+  assert.match(source, /positions\[otherSlot\] - separation/);
+  assert.match(source, /positions\[otherSlot\] \+ separation/);
+  assert.doesNotMatch(source, /deltaBands/);
+  assert.doesNotMatch(source, /STEP_X/);
+});
+
+
+test("player fighter renders above opponent fighter on overlap", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(css, /\.fighter--player\s*\{[\s\S]*?z-index:\s*4/);
+  assert.match(css, /\.fighter--opponent\s*\{[\s\S]*?z-index:\s*3/);
 });
