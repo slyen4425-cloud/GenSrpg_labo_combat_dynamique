@@ -5,5 +5,7 @@
   "energyChargeAmount": 1,
   "energyChargeIntervalMs": 2000,
   "movementEnergyPerStep": 3,
-  "chargeTimeModifierPct": 0
+  "chargeTimeModifierPct": 0,
+  "maxHp": 100,
+  "initialHp": 100
 }
