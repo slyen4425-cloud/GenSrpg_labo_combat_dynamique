@@ -1000,6 +1000,64 @@ Validation restante :
 
 Le sous-lot reste pré-audit jusqu'au retour utilisateur.
 
+
+## Sous-lot actif — distance-z-hp-resolution-v2
+
+Base :
+
+`987bb0f523bed310753763a5f6f67c681396b524`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-distance-z-hp-resolution-v2-2026-09-24`
+
+Branche :
+
+`work/lab-distance-z-hp-resolution-v2-2026-09-24`
+
+Objectif :
+
+1. corriger définitivement la perception Courte/Moyenne/Longue du joueur ;
+2. garantir que le joueur passe visuellement devant l'adversaire lorsque leurs silhouettes se chevauchent ;
+3. raccorder les dégâts déjà portés par les capacités aux PV du Combat State ;
+4. ne démarrer le lot Objets / Rappel / Invocation / Stun qu'après GREEN technique de ces trois corrections.
+
+Diagnostic / choix :
+
+- la distance logique est relative entre les deux combattants ; une projection incrémentale du seul acteur peut dériver si l'autre a déjà bougé ;
+- le Render Adapter recalculera donc la position cible du combattant mobile à partir de la position du combattant stationnaire + une séparation explicite par bande ;
+- convention visuelle :
+  - Courte = séparation minimale ;
+  - Moyenne = séparation intermédiaire ;
+  - Longue = séparation maximale ;
+- le joueur reste à gauche et l'adversaire à droite ;
+- `player z-index > opponent z-index` appartient au layout/rendering, pas aux règles de combat ;
+- les dégâts sont déjà définis dans `skill.effect.damage` et les événements `hit` existent ; le raccord manquant est la mutation HP dans `Action Resolver` ;
+- `resolveSkillCompletion` reste l'unique propriétaire de l'application du résultat sémantique sur le Combat State.
+
+Interdits :
+
+- aucun correctif de direction dans les boutons UI ;
+- aucun échange de labels Courte/Longue ;
+- aucun calcul de dégâts dans le Presenter ou l'UI ;
+- aucune animation utilisée comme source de dégâts ;
+- aucun deuxième état HP ;
+- aucun ajout Objets/Rappel/Invocation avant CI GREEN de ce lot.
+
+Tests :
+
+- joueur à gauche : Courte plus proche du centre que Moyenne, Moyenne plus proche que Longue ;
+- adversaire symétrique ;
+- seul le combattant mobile change ;
+- relation de séparation réelle Courte < Moyenne < Longue ;
+- z-index joueur > adversaire ;
+- hit retire `skill.effect.damage` à la cible ;
+- reflected retire les dégâts à l'attaquant ;
+- blocked / immune / countered ne retirent pas de PV ;
+- PV clampés à zéro ;
+- preview de compétence ne doit pas muter l'état de session ;
+- completion live doit réellement committer les PV dans Combat Session.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
