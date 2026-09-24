@@ -2,7 +2,10 @@ import {
   withFighterHp,
   withFighterPresence
 } from "./combat-state.js";
-import { resolveTimedActionStart } from "./timed-action-resolver.js";
+import {
+  resolveTimedActionInterruption,
+  resolveTimedActionStart
+} from "./timed-action-resolver.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -65,9 +68,33 @@ export function resolveUtilityActionStart({
 
 export function resolveUtilityActionCompletion({
   state,
-  action
+  action,
+  reaction = null
 }) {
   const { definition, actorId } = action;
+
+  if (reaction?.outcome === "interrupted") {
+    const interrupted = resolveTimedActionInterruption({
+      state,
+      action,
+      reaction
+    });
+
+    return Object.freeze({
+      ...interrupted,
+      events: Object.freeze([
+        ...interrupted.events,
+        Object.freeze({
+          type: "utility-cancelled",
+          atMs: reaction.readyAtMs,
+          actorId,
+          actionId: definition.id,
+          reason: "stun"
+        })
+      ])
+    });
+  }
+
   let nextState = state;
   const events = [];
 
