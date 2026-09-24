@@ -19,7 +19,8 @@ export function createCombatRuntime({
   onState = () => {},
   onProgress = () => {},
   onRelease = () => {},
-  onResolved = () => {}
+  onResolved = () => {},
+  onInterrupted = () => {}
 }) {
   if (!session || typeof session.advanceMs !== "function") {
     throw new TypeError("session with advanceMs() is required");
@@ -81,6 +82,20 @@ export function createCombatRuntime({
       : record.action.impactAtMs;
   }
 
+  function idleProgress() {
+    return Object.freeze({
+      actionType: null,
+      actionId: null,
+      skillId: null,
+      commandId: null,
+      elapsedMs: 0,
+      chargeProgress: 0,
+      phase: "idle",
+      released: false,
+      reaction: null
+    });
+  }
+
   function progressSnapshot(record, elapsedMs) {
     const preparationMs = record.action.preparationMs;
     const chargeProgress =
@@ -107,7 +122,16 @@ export function createCombatRuntime({
     }
 
     return Object.freeze({
-      skillId: record.action.skill.id,
+      actionType: record.action.actionType,
+      actionId: record.action.actionId,
+      skillId:
+        record.action.actionType === "skill"
+          ? record.action.actionId
+          : null,
+      commandId:
+        record.action.actionType === "command"
+          ? record.action.actionId
+          : null,
       elapsedMs,
       chargeProgress,
       phase,
@@ -143,13 +167,14 @@ export function createCombatRuntime({
       return;
     }
 
-    const resolution = session.completeSkill({
+    const resolution = session.completeAction({
       action: active.action,
       reaction: active.reaction
     });
 
     active = null;
     onResolved(resolution);
+    onProgress(idleProgress());
     emitStateIfChanged({ force: true });
   }
 
@@ -186,18 +211,7 @@ export function createCombatRuntime({
     timerId = setTimer(tick, tickMs);
   }
 
-  function startSkill({ actorId, targetId, skill }) {
-    if (disposed) {
-      return Object.freeze({ ok: false, outcome: "disposed" });
-    }
-    if (active) {
-      return Object.freeze({
-        ok: false,
-        outcome: "action_in_progress"
-      });
-    }
-
-    const result = session.startSkill({ actorId, targetId, skill });
+  function beginAction(result) {
     if (!result.ok) {
       return result;
     }
@@ -222,6 +236,7 @@ export function createCombatRuntime({
     }
 
     settleActive(current);
+
     return Object.freeze({
       ok: true,
       outcome: "started",
@@ -229,11 +244,52 @@ export function createCombatRuntime({
     });
   }
 
-  function react(reactionSkill) {
+  function canStartAction() {
+    if (disposed) {
+      return Object.freeze({ ok: false, outcome: "disposed" });
+    }
+    if (active) {
+      return Object.freeze({
+        ok: false,
+        outcome: "action_in_progress"
+      });
+    }
+    return null;
+  }
+
+  function startSkill({ actorId, targetId, skill }) {
+    const rejected = canStartAction();
+    if (rejected) {
+      return rejected;
+    }
+
+    return beginAction(
+      session.startSkill({ actorId, targetId, skill })
+    );
+  }
+
+  function startCommand({ actorId, command }) {
+    const rejected = canStartAction();
+    if (rejected) {
+      return rejected;
+    }
+
+    return beginAction(
+      session.startCommand({ actorId, command })
+    );
+  }
+
+  function previewReaction(reactionSkill) {
     if (!active) {
       return Object.freeze({
         ok: false,
         outcome: "no_action"
+      });
+    }
+    if (active.action.actionType !== "skill") {
+      return Object.freeze({
+        ok: false,
+        outcome: "reaction_not_supported"
       });
     }
     if (active.reaction) {
@@ -241,6 +297,19 @@ export function createCombatRuntime({
         ok: false,
         outcome: "reaction_already_selected"
       });
+    }
+
+    return session.previewReaction({
+      action: active.action,
+      reactionSkill,
+      elapsedMs: elapsedForActive(now())
+    });
+  }
+
+  function react(reactionSkill) {
+    const preview = previewReaction(reactionSkill);
+    if (!preview.ok) {
+      return preview;
     }
 
     const elapsedMs = elapsedForActive(now());
@@ -260,24 +329,73 @@ export function createCombatRuntime({
     return result;
   }
 
-  function previewReaction(reactionSkill) {
+  function interruptActive({
+    targetActorId,
+    reason = "stun"
+  }) {
     if (!active) {
       return Object.freeze({
         ok: false,
         outcome: "no_action"
       });
     }
-    if (active.reaction) {
+
+    if (active.action.actorId !== targetActorId) {
       return Object.freeze({
         ok: false,
-        outcome: "reaction_already_selected"
+        outcome: "wrong_target"
       });
     }
 
-    return session.previewReaction({
-      action: active.action,
-      reactionSkill,
-      elapsedMs: elapsedForActive(now())
+    const elapsedMs = elapsedForActive(now());
+
+    if (!active.action.interruptibleDuringPreparation) {
+      return Object.freeze({
+        ok: false,
+        outcome: "not_interruptible",
+        elapsedMs
+      });
+    }
+
+    if (elapsedMs >= active.action.releaseAtMs) {
+      return Object.freeze({
+        ok: false,
+        outcome: "too_late",
+        elapsedMs
+      });
+    }
+
+    const interruptedAction = active.action;
+    active = null;
+
+    const result = Object.freeze({
+      ok: true,
+      outcome: "interrupted",
+      reason,
+      elapsedMs,
+      action: interruptedAction
+    });
+
+    onProgress(idleProgress());
+    onInterrupted(result);
+    return result;
+  }
+
+  function applyResolutionInterrupt(resolution) {
+    const interruptEvent = resolution?.events?.find(
+      (item) => item.type === "charge-interrupt"
+    );
+
+    if (!interruptEvent) {
+      return Object.freeze({
+        ok: false,
+        outcome: "no_interrupt_effect"
+      });
+    }
+
+    return interruptActive({
+      targetActorId: interruptEvent.actorId,
+      reason: interruptEvent.reason ?? "stun"
     });
   }
 
@@ -285,14 +403,7 @@ export function createCombatRuntime({
     const cancelled = active !== null;
     active = null;
     if (cancelled) {
-      onProgress(Object.freeze({
-        skillId: null,
-        elapsedMs: 0,
-        chargeProgress: 0,
-        phase: "idle",
-        released: false,
-        reaction: null
-      }));
+      onProgress(idleProgress());
     }
     return cancelled;
   }
@@ -310,8 +421,11 @@ export function createCombatRuntime({
   return Object.freeze({
     start,
     startSkill,
+    startCommand,
     previewReaction,
     react,
+    interruptActive,
+    applyResolutionInterrupt,
     cancelActive,
     dispose,
     get isRunning() {
@@ -319,6 +433,9 @@ export function createCombatRuntime({
     },
     get hasActiveAction() {
       return active !== null;
+    },
+    get activeAction() {
+      return active?.action ?? null;
     }
   });
 }
