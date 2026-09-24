@@ -569,6 +569,23 @@ CI de ce HEAD :
 - run : `36060087396`
 - conclusion : SUCCESS
 
+Checkpoint pré-audit GREEN technique :
+
+`checkpoint/lab-combat-distance-skills-v1-preaudit-green-2026-09-24`
+
+Branche de prévisualisation :
+
+`preview/lab-combat-distance-skills-v1-2026-09-24`
+
+SHA pré-audit :
+
+`f864f25057c7c850aadb8bf0d8fc0c2f193f214e`
+
+CI :
+
+- run : `36060350286`
+- conclusion : SUCCESS
+
 Validation restante avant GREEN final :
 
 - test smartphone de l'interface ;
