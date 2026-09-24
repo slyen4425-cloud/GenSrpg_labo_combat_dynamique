@@ -144,6 +144,8 @@ export function resolveSkillStart({
 
   const preparationMs = preparationFor(state, actorId, skill);
   const action = Object.freeze({
+    actionType: "skill",
+    actionId: skill.id,
     actorId,
     targetId,
     skill,
@@ -151,7 +153,8 @@ export function resolveSkillStart({
     travelMs: skill.travelMs,
     recoveryMs: skill.recoveryMs,
     releaseAtMs: preparationMs,
-    impactAtMs: preparationMs + skill.travelMs
+    impactAtMs: preparationMs + skill.travelMs,
+    interruptibleDuringPreparation: skill.interruptibleDuringPreparation
   });
 
   return Object.freeze({
@@ -330,6 +333,16 @@ export function resolveSkillCompletion({
         hpBefore: before,
         hpAfter: after
       }));
+
+      if (skill.effect.interruptsPreparation) {
+        events.push(event("charge-interrupt", impactAtMs, {
+          actorId: targetId,
+          sourceActorId: actorId,
+          skillId: skill.id,
+          reason: "stun",
+          stunMs: skill.effect.stunMs
+        }));
+      }
     } else if (outcome === "reflected") {
       const before = fighterOf(nextState, actorId).hp;
       nextState = applyDamage(nextState, actorId, skill.effect.damage);
