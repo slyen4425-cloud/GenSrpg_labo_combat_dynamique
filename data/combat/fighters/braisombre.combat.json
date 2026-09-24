@@ -1,6 +1,6 @@
 {
   "id": "braisombre",
-  "maxEnergy": 100,
+  "maxEnergy": 10,
   "initialEnergy": 0,
   "energyChargeAmount": 1,
   "energyChargeIntervalMs": 2000,
