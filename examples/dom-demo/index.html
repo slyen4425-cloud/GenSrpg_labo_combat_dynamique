@@ -14,7 +14,6 @@
           <p class="eyebrow">GenSrpG — laboratoire autonome</p>
           <h1>Combat dynamique V2</h1>
         </div>
-        <button type="button" class="reset-button" data-combat-reset>Reset</button>
       </header>
 
       <section
@@ -26,8 +25,17 @@
 
         <article class="fighter fighter--player" data-demo-slot="player">
           <div class="fighter__caption">
-            <strong data-demo-label>Maraileron</strong>
-            <span data-demo-profile>serpentine</span>
+            <div class="fighter__caption-line">
+              <strong data-demo-label>Maraileron</strong>
+              <span data-demo-profile>serpentine</span>
+            </div>
+            <progress
+              class="fighter__charge"
+              data-combat-actor-charge="maraileron"
+              max="1"
+              value="0"
+              aria-label="Charge de la capacité de Maraileron"
+            ></progress>
           </div>
 
           <div class="fighter__motion" data-demo-motion>
@@ -41,8 +49,17 @@
 
         <article class="fighter fighter--opponent" data-demo-slot="opponent">
           <div class="fighter__caption">
-            <strong data-demo-label>Braisombre</strong>
-            <span data-demo-profile>drake</span>
+            <div class="fighter__caption-line">
+              <strong data-demo-label>Braisombre</strong>
+              <span data-demo-profile>drake</span>
+            </div>
+            <progress
+              class="fighter__charge fighter__charge--reaction"
+              data-combat-actor-charge="braisombre"
+              max="1"
+              value="0"
+              aria-label="Charge de la capacité de Braisombre"
+            ></progress>
           </div>
 
           <div class="fighter__motion" data-demo-motion>
@@ -86,15 +103,8 @@
           </article>
         </div>
 
-        <div class="movement-strip">
-          <label class="compact-field">
-            <span>Déplacer</span>
-            <select data-combat-mover>
-              <option value="maraileron">Maraileron · 1⚡/palier</option>
-              <option value="braisombre">Braisombre · 3⚡/palier</option>
-            </select>
-          </label>
-
+        <div class="movement-actions">
+          <span class="movement-actions__label">Déplacement</span>
           <div class="distance-buttons" aria-label="Changer la distance">
             <button type="button" data-combat-move="short">Courte</button>
             <button type="button" data-combat-move="medium">Moyenne</button>
@@ -135,6 +145,23 @@
         </details>
       </section>
     </section>
+
+    <details class="test-settings">
+      <summary>Réglages du test</summary>
+      <section class="test-settings__body">
+        <label class="compact-field">
+          <span>Créature déplacée</span>
+          <select data-combat-mover>
+            <option value="maraileron">Maraileron · 1⚡/palier</option>
+            <option value="braisombre">Braisombre · 3⚡/palier</option>
+          </select>
+        </label>
+
+        <button type="button" class="button-secondary" data-combat-reset>
+          Réinitialiser le combat
+        </button>
+      </section>
+    </details>
 
     <details class="lab-debug">
       <summary>Outils visuels du laboratoire</summary>
