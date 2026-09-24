@@ -4,11 +4,13 @@
   "category": "offensive",
   "form": "contact",
   "element": null,
-  "energyCost": 10,
-  "preparationMs": 250,
+  "energyCost": 2,
+  "preparationMs": 1200,
   "travelMs": 0,
-  "recoveryMs": 400,
-  "allowedDistances": ["short"],
+  "recoveryMs": 500,
+  "allowedDistances": [
+    "short"
+  ],
   "effect": {
     "damage": 18
   }
