@@ -30,6 +30,15 @@ function normalizeFighter(input) {
     throw new TypeError("fighter.id must be a non-empty string");
   }
 
+  const maxHp = finiteNonNegative(input.maxHp ?? 100, `${id}.maxHp`);
+  const hp = finiteNonNegative(
+    input.initialHp ?? input.hp ?? maxHp,
+    `${id}.initialHp`
+  );
+  if (hp > maxHp) {
+    throw new RangeError(`${id}.initialHp cannot exceed maxHp`);
+  }
+
   const maxEnergy = finiteNonNegative(input.maxEnergy, `${id}.maxEnergy`);
   const energy = finiteNonNegative(
     input.initialEnergy ?? input.energy ?? 0,
@@ -45,6 +54,8 @@ function normalizeFighter(input) {
 
   return Object.freeze({
     id,
+    maxHp,
+    hp,
     maxEnergy,
     energy,
     energyChargeAmount: finiteNonNegative(
@@ -107,6 +118,25 @@ export function withFighterEnergy(state, fighterId, energy) {
       [fighterId]: Object.freeze({
         ...fighter,
         energy: nextEnergy
+      })
+    })
+  });
+}
+
+export function withFighterHp(state, fighterId, hp) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
+  }
+
+  const nextHp = Math.max(0, Math.min(fighter.maxHp, Number(hp)));
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: Object.freeze({
+        ...fighter,
+        hp: nextHp
       })
     })
   });
