@@ -1,0 +1,30 @@
+{
+  "id": "stun-interrupt",
+  "name": "Coup étourdissant",
+  "category": "counter",
+  "form": "contact",
+  "element": null,
+  "energyCost": 2,
+  "preparationMs": 350,
+  "travelMs": 0,
+  "recoveryMs": 500,
+  "allowedDistances": [
+    "short",
+    "medium",
+    "long"
+  ],
+  "reaction": {
+    "interruptForms": [
+      "contact",
+      "projectile",
+      "beam",
+      "area"
+    ]
+  },
+  "effect": {
+    "damage": 8,
+    "tags": [
+      "stun"
+    ]
+  }
+}
