@@ -208,8 +208,8 @@ test("skill result exposes configurable preparation travel and recovery timeline
   });
 
   assert.deepEqual(result.timelineMs, {
-    basePreparation: 1800,
-    preparation: 1800,
+    basePreparation: 2000,
+    preparation: 2000,
     travel: 700,
     recovery: 700,
     reactionReady: null
@@ -217,15 +217,15 @@ test("skill result exposes configurable preparation travel and recovery timeline
 
   assert.equal(
     result.events.find((item) => item.type === "skill-release").atMs,
-    1800
+    2000
   );
   assert.equal(
     result.events.find((item) => item.type === "skill-arrive").atMs,
-    2500
+    2700
   );
   assert.equal(
     result.events.find((item) => item.type === "skill-recovery-complete").atMs,
-    3200
+    3400
   );
 });
 
