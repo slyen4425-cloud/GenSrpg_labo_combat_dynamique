@@ -1058,6 +1058,51 @@ Tests :
 - preview de compétence ne doit pas muter l'état de session ;
 - completion live doit réellement committer les PV dans Combat Session.
 
+
+## Résultat technique — distance-z-hp-resolution-v2
+
+Corrections validées techniquement :
+
+- la projection incrémentale précédente a été supprimée ;
+- position cible calculée depuis le combattant stationnaire ;
+- séparations explicites : Courte 0,30 / Moyenne 0,44 / Longue 0,56 ;
+- joueur : Courte vers le centre, Longue vers l'extérieur ;
+- adversaire : comportement symétrique ;
+- un seul combattant bouge visuellement ;
+- positions canonisées pour éviter les dérives flottantes ;
+- bornes d'arène conservées ;
+- joueur `z-index: 4`, adversaire `z-index: 3` ;
+- `Action Resolver` applique désormais `skill.effect.damage` aux PV ;
+- hit : cible perd les PV ;
+- reflected : attaquant perd les PV ;
+- blocked / immune / countered : aucun dégât de l'attaque annulée ;
+- `Combat Session.completeSkill()` commit les PV lors d'une résolution live ;
+- les barres PV existantes reçoivent donc maintenant l'état réellement modifié.
+
+Sentinelles :
+
+- Courte < Moyenne < Longue en séparation réelle ;
+- symétrie adversaire ;
+- seul le combattant mobile change position/scale ;
+- joueur au-dessus de l'adversaire ;
+- dégâts hit ;
+- dégâts reflected ;
+- immunité / contre sans dégâts ;
+- clamp PV à zéro ;
+- preview sans mutation de session ;
+- completion live commit HP.
+
+HEAD fonctionnel avant documentation :
+
+`d87cbe84ceec5bfb3a1f4756e39adf8db56a857b`
+
+CI :
+
+- run : `36067840558`
+- conclusion : SUCCESS
+
+Ce lot peut servir de base au chantier suivant Objets / Rappel / Invocation / interruption par Stun.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
