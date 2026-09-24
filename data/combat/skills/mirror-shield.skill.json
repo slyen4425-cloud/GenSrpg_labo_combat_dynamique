@@ -1,0 +1,16 @@
+{
+  "id": "mirror-shield",
+  "name": "Bouclier miroir",
+  "category": "defensive",
+  "form": "self",
+  "element": null,
+  "energyCost": 16,
+  "preparationMs": 120,
+  "travelMs": 0,
+  "recoveryMs": 500,
+  "allowedDistances": ["short", "medium", "long"],
+  "reaction": {
+    "blockForms": ["projectile"],
+    "reflectForms": ["projectile"]
+  }
+}
