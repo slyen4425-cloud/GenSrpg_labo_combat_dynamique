@@ -25,6 +25,9 @@ const braisombre = await json("data/combat/fighters/braisombre.combat.json");
 const claw = normalizeSkillDefinition(
   await json("data/combat/skills/claw.skill.json")
 );
+const fireball = normalizeSkillDefinition(
+  await json("data/combat/skills/fireball.skill.json")
+);
 const contactCounter = normalizeSkillDefinition(
   await json("data/combat/skills/contact-counter.skill.json")
 );
@@ -264,4 +267,47 @@ test("fighter HP is normalized and clamped by combat state", () => {
 
   state = withFighterHp(state, "maraileron", -20);
   assert.equal(state.fighters.maraileron.hp, 0);
+});
+
+
+test("live skill completion commits resolved HP damage to session state", () => {
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [
+      { ...maraileron, initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+  const clock = fakeClock();
+  const resolutions = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onResolved(value) {
+      resolutions.push(value);
+    }
+  });
+
+  runtime.start();
+  const started = runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+  assert.equal(started.ok, true);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2700);
+  clock.fireNext();
+
+  assert.equal(resolutions.length, 1);
+  assert.equal(resolutions[0].outcome, "hit");
+  assert.equal(resolutions[0].state.fighters.braisombre.hp, 70);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 70);
+
+  runtime.dispose();
 });
