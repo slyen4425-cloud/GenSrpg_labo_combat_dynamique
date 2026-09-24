@@ -20,7 +20,7 @@ test("demo loads bundled creatures before optional user replacement", async () =
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
   assert.match(source, /runtimePreview/);
-  assert.match(source, /new URL\(runtimeAsset, meta\.assetBaseUrl\)/);
+  assert.match(source, /new URL\(runtimeAsset, nextMeta\.assetBaseUrl\)/);
   assert.match(source, /rebuildActor\(runtimeUrl\)/);
 });
 
@@ -121,8 +121,8 @@ test("creature metadata keeps player larger and carries morphology anchors", asy
 test("demo derives actor scale and anchor from metadata instead of CSS", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
-  assert.match(source, /meta\.displayScale\?\.\[view\]/);
-  assert.match(source, /transformOrigin: meta\.transformOrigin/);
+  assert.match(source, /currentMeta\.displayScale\?\.\[currentView\]/);
+  assert.match(source, /transformOrigin:[\s\S]*currentMeta\.transformOrigin/);
 });
 
 test("combat test UI delegates rules and timing to session/runtime", async () => {
@@ -206,9 +206,9 @@ test("prominent fighter charge bars mirror runtime progress below creature names
   assert.match(source, /function setActorCharge/);
   assert.match(source, /progress\.chargeProgress/);
   assert.match(source, /progress\.reaction\.progress/);
-  assert.match(source, /setActorCharge\(\s*"maraileron"/);
-  assert.match(source, /setActorCharge\(\s*"braisombre"/);
-  assert.match(source, /onRelease[\s\S]*setActorCharge\("maraileron", 0, false\)/);
+  assert.match(source, /setActorCharge\(\s*"player"/);
+  assert.match(source, /setActorCharge\(\s*"opponent"/);
+  assert.match(source, /onRelease[\s\S]*setActorCharge\("player", 0, false\)/);
 });
 
 test("scene scale is owned by distance presenter through one CSS variable", async () => {
@@ -246,8 +246,9 @@ test("fighter HP bars are state-driven and placed below names", async () => {
   );
 
   assert.match(source, /const hpRefs =/);
-  assert.match(source, /fighter\.maxHp/);
-  assert.match(source, /fighter\.hp/);
+  assert.match(source, /player\.maxHp/);
+  assert.match(source, /player\.hp/);
+  assert.match(source, /opponent\.maxHp/);
   assert.match(source, /renderHp\(state\)/);
   assert.doesNotMatch(source, /hp\s*=\s*100/);
 });
@@ -274,4 +275,43 @@ test("player fighter renders above opponent fighter on overlap", async () => {
 
   assert.match(css, /\.fighter--player\s*\{[\s\S]*?z-index:\s*4/);
   assert.match(css, /\.fighter--opponent\s*\{[\s\S]*?z-index:\s*3/);
+});
+
+
+test("utility combat actions share runtime ownership and stay data driven", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(html, /data-combat-utilities/);
+  assert.match(source, /normalizeTimedActionDefinition/);
+  assert.match(source, /runtime\.startUtilityAction/);
+  assert.match(source, /runtime\.react\(skill, "braisombre"\)/);
+  assert.match(source, /visuals\.setSlotEmpty\("player"\)/);
+  assert.match(source, /visuals\.loadBundledCreature/);
+
+  assert.doesNotMatch(source, /withFighterHp/);
+  assert.doesNotMatch(source, /withFighterPresence/);
+  assert.doesNotMatch(source, /resolveUtilityAction/);
+  assert.doesNotMatch(source, /setTimeout\s*\(/);
+  assert.doesNotMatch(source, /setInterval\s*\(/);
+});
+
+test("visual slot controller owns recall and bundled summon presentation", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /function setSlotEmpty/);
+  assert.match(source, /function loadBundledCreature/);
+  assert.match(source, /function loadMeta/);
+  assert.match(source, /function setEmpty/);
+  assert.match(source, /startIdleFor\(slotKey\)/);
+});
+
+test("combat scene exposes object recall and summon actions", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(html, /Objet · Rappel · Invocation/);
+  assert.match(html, /data-combat-utilities/);
+  assert.match(css, /\.utility-grid/);
+  assert.match(css, /\.skill-card--utility/);
 });
