@@ -19,6 +19,20 @@ function finiteNumber(value, field) {
   return number;
 }
 
+function normalizeTransformOrigin(input) {
+  if (input == null) {
+    return Object.freeze({ x: "50%", y: "50%" });
+  }
+  if (typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError("transformOrigin must be an object");
+  }
+
+  return Object.freeze({
+    x: nonEmptyString(input.x ?? "50%", "transformOrigin.x"),
+    y: nonEmptyString(input.y ?? "50%", "transformOrigin.y")
+  });
+}
+
 export function normalizeVisualActor(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new TypeError("VisualActor must be an object");
@@ -48,6 +62,8 @@ export function normalizeVisualActor(input) {
     throw new RangeError("scale must be greater than 0");
   }
 
+  const transformOrigin = normalizeTransformOrigin(input.transformOrigin);
+
   return Object.freeze({
     id,
     creatureId,
@@ -56,6 +72,7 @@ export function normalizeVisualActor(input) {
     view,
     facing,
     position: Object.freeze({ x, y }),
-    scale
+    scale,
+    transformOrigin
   });
 }
