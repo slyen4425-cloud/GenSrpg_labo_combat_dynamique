@@ -253,6 +253,23 @@ Branche de prévisualisation :
 
 Cette prévisualisation reste hors `main` et doit servir au test manuel smartphone avant GREEN final.
 
+
+## Correction de périmètre — assets de test fournis par l'utilisateur
+
+Le lien de prévisualisation précédent demandait de charger manuellement les images depuis le téléphone.
+
+Ce comportement ne correspond pas au flux validé pour les deux créatures de laboratoire déjà fournies.
+
+Décision :
+
+- Maraileron et Braisombre doivent être découpés depuis les planches fournies ;
+- leurs vues `player`, `opponent` et `icon` doivent être préparées comme assets du laboratoire ;
+- la démo doit charger automatiquement les assets de laboratoire par défaut ;
+- le sélecteur de fichier reste autorisé uniquement comme fonction optionnelle future pour tester une créature utilisateur externe ;
+- aucun test utilisateur final du renderer ne doit être demandé tant que ces assets par défaut ne sont pas raccordés.
+
+La prévisualisation actuelle est donc considérée comme **pré-audit technique uniquement**, pas comme version de validation utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
