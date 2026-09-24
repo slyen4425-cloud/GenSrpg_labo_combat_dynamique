@@ -107,19 +107,24 @@ export function createCombatResolutionPresenter({
     });
   }
 
-  function dispose() {
-    if (disposed) {
-      return;
-    }
-    disposed = true;
+  function cancelPending() {
     for (const timerId of timers) {
       clearTimer(timerId);
     }
     timers.clear();
   }
 
+  function dispose() {
+    if (disposed) {
+      return;
+    }
+    cancelPending();
+    disposed = true;
+  }
+
   return Object.freeze({
     present,
+    cancelPending,
     dispose,
     get pendingCount() {
       return timers.size;
