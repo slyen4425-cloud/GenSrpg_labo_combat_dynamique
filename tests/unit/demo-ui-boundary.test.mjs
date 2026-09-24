@@ -88,3 +88,30 @@ test("demo bootstrap disposes the mounted controller on pagehide", async () => {
   assert.match(source, /pagehide/);
   assert.match(source, /demo\.dispose\(\)/);
 });
+
+test("creature metadata keeps player larger and carries morphology anchors", async () => {
+  const maraileron = JSON.parse(
+    await readFile(
+      "assets/test/creatures/maraileron/maraileron.meta.json",
+      "utf8"
+    )
+  );
+  const braisombre = JSON.parse(
+    await readFile(
+      "assets/test/creatures/braisombre/braisombre.meta.json",
+      "utf8"
+    )
+  );
+
+  assert.ok(maraileron.displayScale.player > maraileron.displayScale.opponent);
+  assert.ok(braisombre.displayScale.player > braisombre.displayScale.opponent);
+  assert.equal(maraileron.transformOrigin.y, "78%");
+  assert.equal(braisombre.transformOrigin.y, "88%");
+});
+
+test("demo derives actor scale and anchor from metadata instead of CSS", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /meta\.displayScale\?\.\[view\]/);
+  assert.match(source, /transformOrigin: meta\.transformOrigin/);
+});
