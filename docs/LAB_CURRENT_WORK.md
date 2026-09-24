@@ -436,6 +436,87 @@ CI :
 - run : `36055509771`
 - conclusion : SUCCESS
 
+
+## Chantier actif — combat-distance-skills-v1
+
+Base :
+
+`4f6ec4dcdee52dd953c2e07a6b4f97afa6d4f396`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-distance-skills-v1-2026-09-24`
+
+Branche :
+
+`work/lab-combat-distance-skills-v1-2026-09-24`
+
+Objectif :
+
+Construire un petit moteur de test indépendant pour valider les décisions de gameplay suivantes avant toute intégration GenSrpG :
+
+- trois bandes de distance : `short`, `medium`, `long` ;
+- déplacement libre entre bandes tant que l'énergie disponible suffit ;
+- coût de déplacement configurable par créature et par palier traversé ;
+- énergie partagée entre mouvement et capacités ;
+- compétences configurables avec catégorie fonctionnelle, forme d'action et élément indépendants ;
+- coût énergie, préparation, temps de trajet, récupération et portée configurables ;
+- défenses pouvant bloquer/renvoyer une forme d'action (ex. projectile) ;
+- immunités pouvant cibler un élément (ex. feu) ;
+- contres pouvant cibler une ou plusieurs formes d'action ;
+- le moteur de combat décide du résultat ; le moteur visuel ne fait qu'afficher les événements décidés.
+
+Architecture / propriétaires :
+
+- `src/contracts/skill-definition.js` : contrat de compétence ;
+- `src/core/combat/distance.js` : bandes et coût de déplacement ;
+- `src/core/combat/combat-state.js` : état énergie/distance ;
+- `src/core/combat/action-resolver.js` : validation et résolution pure des actions ;
+- `data/combat/` : configurations de test modifiables ;
+- `src/ui/combat-test-ui.js` : adaptateur UI du prototype, sans autorité de règles ;
+- Animation Core / Render Adapter existants : uniquement événements visuels résultants.
+
+Périmètre V1 du test :
+
+- Maraileron : coût déplacement 1 énergie/palier ;
+- Braisombre : coût déplacement 3 énergie/palier ;
+- trois capacités de démonstration minimum :
+  - projectile Feu offensif ;
+  - défense contre projectile avec possibilité de renvoi ;
+  - immunité Feu ;
+- déplacement Courte/Moyenne/Longue directement testable sur mobile ;
+- journal expliquant coût, refus, blocage, renvoi ou immunité.
+
+Hors périmètre :
+
+- IA de combat ;
+- dégâts complets/statistiques finales ;
+- sauvegarde GenSrpG ;
+- intégration `Zombicide-40k` ;
+- réseau ;
+- éditeur complet de compétences ;
+- nouveaux FX avancés.
+
+Contraintes :
+
+- aucune règle distance/énergie dans le DOM ou le CSS ;
+- aucune animation ne décide si une action touche ;
+- aucune valeur gameplay importante codée dans un gestionnaire de bouton ;
+- une seule autorité de résolution : `action-resolver` ;
+- toutes les valeurs de test proviennent de données configurables.
+
+Tests prévus :
+
+- coût de déplacement par nombre de paliers ;
+- refus si énergie insuffisante ;
+- portée de compétence ;
+- séparation catégorie / forme / élément ;
+- blocage projectile sans immunité élémentaire ;
+- immunité Feu indépendamment de la forme ;
+- renvoi projectile ;
+- UI sans logique de résolution ;
+- vraie chaîne données -> resolver -> UI/adaptateur visuel.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
