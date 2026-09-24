@@ -4,7 +4,7 @@ import {
   withFighterEnergy,
   withFighterHp
 } from "./combat-state.js";
-import { effectivePreparationMs } from "./combat-timing.js";
+import { resolveTimedActionStart } from "./timed-action-resolver.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -29,16 +29,6 @@ function event(type, atMs, data = {}) {
   return Object.freeze({ type, atMs, ...data });
 }
 
-function preparationFor(state, fighterId, skill) {
-  const fighter = fighterOf(state, fighterId);
-  return effectivePreparationMs({
-    baseMs: skill.preparationMs,
-    permanentPct: fighter.chargeTimeModifierPct,
-    effects: fighter.chargeTimeEffects,
-    atMs: state.elapsedMs
-  });
-}
-
 function reactionOutcome(skill, reactionSkill) {
   if (
     skill.element &&
@@ -51,6 +41,12 @@ function reactionOutcome(skill, reactionSkill) {
   }
   if (reactionSkill.reaction.counterForms.includes(skill.form)) {
     return "countered";
+  }
+  if (
+    reactionSkill.effect.tags.includes("stun") &&
+    reactionSkill.reaction.interruptForms.includes(skill.form)
+  ) {
+    return "interrupted";
   }
   if (reactionSkill.reaction.blockForms.includes(skill.form)) {
     return "blocked";
@@ -103,7 +99,7 @@ export function resolveSkillStart({
   targetId,
   skill
 }) {
-  const actor = fighterOf(state, actorId);
+  fighterOf(state, actorId);
   fighterOf(state, targetId);
 
   if (!isSkillInRange(skill, state.distance)) {
@@ -121,44 +117,48 @@ export function resolveSkillStart({
     });
   }
 
-  if (actor.energy < skill.energyCost) {
+  const started = resolveTimedActionStart({
+    state,
+    actorId,
+    targetId,
+    definition: {
+      id: skill.id,
+      name: skill.name,
+      kind: "skill",
+      energyCost: skill.energyCost,
+      preparationMs: skill.preparationMs,
+      recoveryMs: skill.recoveryMs
+    },
+    travelMs: skill.travelMs
+  });
+
+  if (!started.ok) {
     return Object.freeze({
-      ok: false,
-      outcome: "insufficient_energy",
-      state,
+      ...started,
       events: Object.freeze([
         event("skill-rejected", 0, {
           actorId,
           skillId: skill.id,
-          reason: "insufficient_energy"
+          reason: started.outcome
         })
       ])
     });
   }
 
-  const preparationMs = preparationFor(state, actorId, skill);
   const action = Object.freeze({
-    actorId,
-    targetId,
-    skill,
-    preparationMs,
-    travelMs: skill.travelMs,
-    recoveryMs: skill.recoveryMs,
-    releaseAtMs: preparationMs,
-    impactAtMs: preparationMs + skill.travelMs
+    ...started.action,
+    skill
   });
 
   return Object.freeze({
-    ok: true,
-    outcome: "started",
-    state: spendEnergy(state, actorId, skill.energyCost),
+    ...started,
     action,
     events: Object.freeze([
       event("skill-start", 0, {
         actorId,
         targetId,
         skillId: skill.id,
-        preparationMs
+        preparationMs: action.preparationMs
       })
     ])
   });
@@ -208,7 +208,12 @@ export function resolveReaction({
   const preparationMs = preparationFor(state, action.targetId, reactionSkill);
   const readyAtMs = elapsed + preparationMs;
 
-  if (elapsed > action.impactAtMs || readyAtMs > action.impactAtMs) {
+  const missesImpactWindow =
+    elapsed > action.impactAtMs || readyAtMs > action.impactAtMs;
+  const missesChargeWindow =
+    outcome === "interrupted" && readyAtMs >= action.releaseAtMs;
+
+  if (missesImpactWindow || missesChargeWindow) {
     return Object.freeze({
       ok: false,
       outcome: "too_late",
@@ -277,7 +282,11 @@ export function resolveSkillCompletion({
     }));
   }
 
-  if (!(outcome === "countered" && reactionReadyAt < releaseAtMs)) {
+  const cancelsBeforeRelease =
+    (outcome === "countered" || outcome === "interrupted") &&
+    reactionReadyAt < releaseAtMs;
+
+  if (!cancelsBeforeRelease) {
     events.push(event("skill-release", releaseAtMs, {
       actorId,
       targetId,
@@ -299,6 +308,34 @@ export function resolveSkillCompletion({
       targetId,
       skillId: skill.id,
       reason: "countered"
+    }));
+  } else if (outcome === "interrupted") {
+    const stunDamage = reaction.skill.effect.damage;
+    const before = fighterOf(nextState, actorId).hp;
+    nextState = applyDamage(nextState, actorId, stunDamage);
+    const after = fighterOf(nextState, actorId).hp;
+
+    events.push(event("skill-interrupted", reactionReadyAt, {
+      actorId,
+      targetId,
+      skillId: skill.id,
+      reactionSkillId: reaction.skillId,
+      reason: "stun"
+    }));
+    events.push(event("skill-cancelled", reactionReadyAt, {
+      actorId,
+      targetId,
+      skillId: skill.id,
+      reason: "stun"
+    }));
+    events.push(event("hit", reactionReadyAt, {
+      actorId,
+      sourceActorId: targetId,
+      skillId: reaction.skillId,
+      damage: stunDamage,
+      hpBefore: before,
+      hpAfter: after,
+      tags: reaction.skill.effect.tags
     }));
   } else {
     events.push(event("skill-arrive", impactAtMs, {
@@ -346,7 +383,9 @@ export function resolveSkillCompletion({
   }
 
   const resolutionAt =
-    outcome === "countered" ? reactionReadyAt : impactAtMs;
+    outcome === "countered" || outcome === "interrupted"
+      ? reactionReadyAt
+      : impactAtMs;
 
   events.push(event("skill-recovery-complete", resolutionAt + recoveryMs, {
     actorId,
