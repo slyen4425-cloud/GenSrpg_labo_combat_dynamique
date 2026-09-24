@@ -44,8 +44,8 @@ function state(distance = "medium") {
   return createCombatState({
     distance,
     fighters: [
-      { ...maraileronConfig, initialEnergy: 100 },
-      { ...braisombreConfig, initialEnergy: 100 }
+      { ...maraileronConfig, initialEnergy: 10 },
+      { ...braisombreConfig, initialEnergy: 10 }
     ]
   });
 }
@@ -98,8 +98,8 @@ test("movement spends energy and changes the shared distance", () => {
   assert.equal(result.outcome, "moved");
   assert.equal(result.cost, 2);
   assert.equal(result.state.distance, "long");
-  assert.equal(result.state.fighters.maraileron.energy, 98);
-  assert.equal(result.state.fighters.braisombre.energy, 100);
+  assert.equal(result.state.fighters.maraileron.energy, 8);
+  assert.equal(result.state.fighters.braisombre.energy, 10);
 });
 
 test("movement is rejected when the actor cannot pay the configured cost", () => {
@@ -137,7 +137,7 @@ test("fireball cannot be used at short range but works at medium range", () => {
 
   assert.equal(hit.ok, true);
   assert.equal(hit.outcome, "hit");
-  assert.equal(hit.state.fighters.maraileron.energy, 82);
+  assert.equal(hit.state.fighters.maraileron.energy, 7);
 });
 
 test("projectile reflection is independent from the fire element", () => {
@@ -151,8 +151,8 @@ test("projectile reflection is independent from the fire element", () => {
 
   assert.equal(result.outcome, "reflected");
   assert.equal(result.reactionApplied, "mirror-shield");
-  assert.equal(result.state.fighters.maraileron.energy, 82);
-  assert.equal(result.state.fighters.braisombre.energy, 84);
+  assert.equal(result.state.fighters.maraileron.energy, 7);
+  assert.equal(result.state.fighters.braisombre.energy, 8);
 
   const reflectedHit = result.events.find(
     (item) => item.type === "hit" && item.reflected === true
@@ -208,24 +208,24 @@ test("skill result exposes configurable preparation travel and recovery timeline
   });
 
   assert.deepEqual(result.timelineMs, {
-    basePreparation: 700,
-    preparation: 700,
-    travel: 550,
-    recovery: 650,
+    basePreparation: 1800,
+    preparation: 1800,
+    travel: 700,
+    recovery: 700,
     reactionReady: null
   });
 
   assert.equal(
     result.events.find((item) => item.type === "skill-release").atMs,
-    700
+    1800
   );
   assert.equal(
     result.events.find((item) => item.type === "skill-arrive").atMs,
-    1250
+    2500
   );
   assert.equal(
     result.events.find((item) => item.type === "skill-recovery-complete").atMs,
-    1900
+    3200
   );
 });
 
@@ -233,8 +233,8 @@ test("legacy second-based advance delegates to configurable energy ticks", () =>
   const session = createCombatSession({
     distance: "medium",
     fighters: [
-      { ...maraileronConfig, initialEnergy: 100 },
-      { ...braisombreConfig, initialEnergy: 100 }
+      { ...maraileronConfig, initialEnergy: 10 },
+      { ...braisombreConfig, initialEnergy: 10 }
     ]
   });
 
@@ -249,26 +249,29 @@ test("combat session owns current state while previews stay side-effect free", (
   const session = createCombatSession({
     distance: "short",
     fighters: [
-      { ...maraileronConfig, initialEnergy: 100 },
-      { ...braisombreConfig, initialEnergy: 100 }
+      { ...maraileronConfig, initialEnergy: 10 },
+      { ...braisombreConfig, initialEnergy: 10 }
     ]
   });
 
   const preview = session.previewMovement("maraileron", "long");
   assert.equal(preview.cost, 2);
   assert.equal(session.snapshot().distance, "short");
-  assert.equal(session.snapshot().fighters.maraileron.energy, 100);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 10);
 
   const moved = session.move("maraileron", "long");
   assert.equal(moved.ok, true);
   assert.equal(session.snapshot().distance, "long");
-  assert.equal(session.snapshot().fighters.maraileron.energy, 98);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 8);
 });
 
 test("combat session commits skill energy and explicit regeneration", () => {
   const session = createCombatSession({
     distance: "medium",
-    fighters: [maraileronConfig, braisombreConfig]
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 10 },
+      { ...braisombreConfig, initialEnergy: 10 }
+    ]
   });
 
   const result = session.useSkill({
@@ -278,10 +281,10 @@ test("combat session commits skill energy and explicit regeneration", () => {
   });
 
   assert.equal(result.outcome, "hit");
-  assert.equal(session.snapshot().fighters.maraileron.energy, 82);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 7);
 
   session.advance(2);
-  assert.equal(session.snapshot().fighters.maraileron.energy, 83);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 8);
 });
 
 
@@ -295,18 +298,18 @@ test("reaction timing can interrupt before release", () => {
   });
 
   assert.equal(result.outcome, "countered");
-  assert.equal(result.timelineMs.reactionReady, 100);
+  assert.equal(result.timelineMs.reactionReady, 400);
   assert.equal(
     result.events.some((item) => item.type === "skill-release"),
     false
   );
   assert.equal(
     result.events.find((item) => item.type === "skill-countered").atMs,
-    100
+    400
   );
   assert.equal(
     result.events.find((item) => item.type === "skill-cancelled").atMs,
-    100
+    400
   );
 });
 
@@ -316,8 +319,8 @@ test("reaction that becomes ready after impact does not apply or spend energy", 
     name: "Slow Counter",
     category: "counter",
     form: "self",
-    energyCost: 12,
-    preparationMs: 400,
+    energyCost: 2,
+    preparationMs: 1500,
     allowedDistances: ["short", "medium", "long"],
     reaction: {
       counterForms: ["contact"]
@@ -334,7 +337,7 @@ test("reaction that becomes ready after impact does not apply or spend energy", 
 
   assert.equal(result.outcome, "hit");
   assert.equal(result.reactionApplied, null);
-  assert.equal(result.state.fighters.braisombre.energy, 100);
+  assert.equal(result.state.fighters.braisombre.energy, 10);
 });
 
 test("combat session skill preview and reset do not leak UI authority", () => {
@@ -351,18 +354,18 @@ test("combat session skill preview and reset do not leak UI authority", () => {
   });
 
   assert.equal(preview.outcome, "reflected");
-  assert.equal(session.snapshot().fighters.maraileron.energy, 100);
-  assert.equal(session.snapshot().fighters.braisombre.energy, 100);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 10);
+  assert.equal(session.snapshot().fighters.braisombre.energy, 10);
 
   session.useSkill({
     actorId: "maraileron",
     targetId: "braisombre",
     skill: fireball
   });
-  assert.equal(session.snapshot().fighters.maraileron.energy, 82);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 7);
 
   session.reset();
   assert.equal(session.snapshot().distance, "medium");
-  assert.equal(session.snapshot().fighters.maraileron.energy, 100);
-  assert.equal(session.snapshot().fighters.braisombre.energy, 100);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 10);
+  assert.equal(session.snapshot().fighters.braisombre.energy, 10);
 });
