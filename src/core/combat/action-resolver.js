@@ -4,7 +4,10 @@ import {
   withFighterEnergy,
   withFighterHp
 } from "./combat-state.js";
-import { resolveTimedActionStart } from "./timed-action-resolver.js";
+import {
+  resolveTimedActionInterruption,
+  resolveTimedActionStart
+} from "./timed-action-resolver.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -168,15 +171,24 @@ export function resolveReaction({
   state,
   action,
   reactionSkill,
-  elapsedMs
+  elapsedMs,
+  reactionActorId = null
 }) {
   const elapsed = Number(elapsedMs);
   if (!Number.isFinite(elapsed) || elapsed < 0) {
     throw new RangeError("elapsedMs must be a non-negative finite number");
   }
 
-  const target = fighterOf(state, action.targetId);
-  const outcome = reactionOutcome(action.skill, reactionSkill);
+  const reactorId = reactionActorId ?? action.targetId;
+  const target = fighterOf(state, reactorId);
+  const outcome =
+    action.kind === "skill"
+      ? reactionOutcome(action.skill, reactionSkill)
+      : (
+          reactionSkill.effect.tags.includes("stun")
+            ? "interrupted"
+            : null
+        );
 
   if (!outcome) {
     return Object.freeze({
@@ -224,6 +236,7 @@ export function resolveReaction({
   }
 
   const reaction = Object.freeze({
+    actorId: reactorId,
     skill: reactionSkill,
     skillId: reactionSkill.id,
     outcome,
@@ -235,7 +248,7 @@ export function resolveReaction({
   return Object.freeze({
     ok: true,
     outcome,
-    state: spendEnergy(state, action.targetId, reactionSkill.energyCost),
+    state: spendEnergy(state, reactorId, reactionSkill.energyCost),
     reaction
   });
 }
@@ -310,10 +323,12 @@ export function resolveSkillCompletion({
       reason: "countered"
     }));
   } else if (outcome === "interrupted") {
-    const stunDamage = reaction.skill.effect.damage;
-    const before = fighterOf(nextState, actorId).hp;
-    nextState = applyDamage(nextState, actorId, stunDamage);
-    const after = fighterOf(nextState, actorId).hp;
+    const interrupted = resolveTimedActionInterruption({
+      state: nextState,
+      action,
+      reaction
+    });
+    nextState = interrupted.state;
 
     events.push(event("skill-interrupted", reactionReadyAt, {
       actorId,
@@ -328,15 +343,7 @@ export function resolveSkillCompletion({
       skillId: skill.id,
       reason: "stun"
     }));
-    events.push(event("hit", reactionReadyAt, {
-      actorId,
-      sourceActorId: targetId,
-      skillId: reaction.skillId,
-      damage: stunDamage,
-      hpBefore: before,
-      hpAfter: after,
-      tags: reaction.skill.effect.tags
-    }));
+    events.push(...interrupted.events);
   } else {
     events.push(event("skill-arrive", impactAtMs, {
       actorId,
