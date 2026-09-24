@@ -110,14 +110,7 @@ export function resolveSkill({
   }
 
   const events = [
-    event("skill-start", 0, { actorId, targetId, skillId: skill.id }),
-    event("skill-release", releaseAt, {
-      actorId,
-      targetId,
-      skillId: skill.id,
-      form: skill.form,
-      element: skill.element
-    })
+    event("skill-start", 0, { actorId, targetId, skillId: skill.id })
   ];
 
   if (reaction) {
@@ -140,6 +133,16 @@ export function resolveSkill({
     } else if (reaction.reaction.blockForms.includes(skill.form)) {
       outcome = "blocked";
     }
+  }
+
+  if (!(outcome === "countered" && reactionReadyAt < releaseAt)) {
+    events.push(event("skill-release", releaseAt, {
+      actorId,
+      targetId,
+      skillId: skill.id,
+      form: skill.form,
+      element: skill.element
+    }));
   }
 
   if (outcome === "countered") {
