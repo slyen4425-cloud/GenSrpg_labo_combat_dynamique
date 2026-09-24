@@ -974,6 +974,23 @@ CI :
 - run : `36066616228`
 - conclusion : SUCCESS
 
+Checkpoint pré-audit GREEN du sous-lot :
+
+`checkpoint/lab-player-distance-hpbar-polish-v2-preaudit-green-2026-09-24`
+
+Branche de prévisualisation :
+
+`preview/lab-player-distance-hpbar-polish-v2-2026-09-24`
+
+SHA technique documenté avant synchronisation finale :
+
+`b8aacc6b9cfa05bb0397b1d4b71f8f4d72f17f76`
+
+CI :
+
+- run : `36066676259`
+- conclusion : SUCCESS
+
 Validation restante :
 
 - smartphone : confirmer que Courte rapproche bien Maraileron vers le centre ;
