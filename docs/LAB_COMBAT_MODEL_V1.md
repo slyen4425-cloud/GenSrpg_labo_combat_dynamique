@@ -277,3 +277,60 @@ Le rendu calcule la position du combattant mobile depuis la position du combatta
 Le joueur est projeté à gauche de l'adversaire ; l'adversaire à droite du joueur.
 
 Ainsi, Courte est toujours visuellement plus proche que Moyenne, elle-même plus proche que Longue, même après des déplacements successifs des deux combattants.
+
+
+## Extension V3 — impact, aérien, téléportation et esquive
+
+### Règle d'impact
+
+Les dégâts ne sont jamais appliqués avant que l'attaque touche réellement.
+
+Chronologie :
+
+`charge -> release -> trajet/approche -> impact -> dégâts -> récupération`
+
+Pour Boule de feu de test :
+
+- préparation : 2000 ms ;
+- release : 2000 ms ;
+- trajet : 700 ms ;
+- impact : 2700 ms.
+
+Les PV restent donc inchangés à 2000 ms et à 2699 ms, puis sont modifiés à 2700 ms.
+
+Pour une attaque contact sans temps de trajet, release et impact peuvent coïncider.
+
+### Mode d'approche
+
+Nouvel axe indépendant de `form` :
+
+- `none` ;
+- `ground` ;
+- `aerial` ;
+- `teleport`.
+
+Exemples de données de test :
+
+- Boule de feu : `projectile + none` ;
+- Griffe : `contact + ground` ;
+- Plongeon aérien : `contact + aerial` ;
+- Frappe téléportée : `contact + teleport`.
+
+Le temps de trajet reste configurable séparément.
+
+Une téléportation peut donc avoir un trajet presque instantané alors qu'un plongeon aérien laisse une fenêtre d'esquive plus longue.
+
+### Esquive
+
+Une réaction d'esquive peut cibler :
+
+- une ou plusieurs formes via `evadeForms` ;
+- un ou plusieurs modes d'approche via `evadeApproaches`.
+
+Le résultat `evaded` n'applique aucun dégât.
+
+Le succès dépend du timing réel :
+
+`reaction.readyAtMs <= action.impactAtMs`
+
+Cela permet à une même esquive d'être assez rapide contre une attaque aérienne mais trop lente contre une frappe téléportée.
