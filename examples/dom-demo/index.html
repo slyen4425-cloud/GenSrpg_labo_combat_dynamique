@@ -3,150 +3,136 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Combat Dynamique — Laboratoire V1</title>
+  <title>Combat Dynamique — Laboratoire V2</title>
   <link rel="stylesheet" href="./demo.css">
 </head>
 <body>
   <main class="demo" data-combat-demo>
-    <header class="demo__header">
-      <p class="eyebrow">GenSrpG — laboratoire autonome</p>
-      <h1>Combat dynamique V1</h1>
-      <p class="intro">
-        Test distance + énergie + capacités typées. Les règles sont résolues par le moteur combat, puis seulement présentées visuellement.
-      </p>
-    </header>
-
-    <section
-      class="arena"
-      data-combat-arena
-      data-combat-distance="medium"
-      aria-label="Arène de démonstration"
-    >
-      <div class="arena__ground" aria-hidden="true"></div>
-
-      <div class="distance-hud" aria-live="polite">
-        <span>Distance</span>
-        <strong data-combat-distance-value>Moyenne</strong>
-        <div class="distance-hud__bands" aria-hidden="true">
-          <i data-combat-band="short">C</i>
-          <i data-combat-band="medium">M</i>
-          <i data-combat-band="long">L</i>
+    <section class="combat-live" aria-label="Prototype de combat dynamique">
+      <header class="combat-live__header">
+        <div>
+          <p class="eyebrow">GenSrpG — laboratoire autonome</p>
+          <h1>Combat dynamique V2</h1>
         </div>
-      </div>
+        <button type="button" class="reset-button" data-combat-reset>Reset</button>
+      </header>
 
-      <article class="fighter fighter--player" data-demo-slot="player">
-        <div class="fighter__caption">
-          <strong data-demo-label>Maraileron</strong>
-          <span data-demo-profile>serpentine</span>
-        </div>
+      <section
+        class="arena"
+        data-combat-arena
+        aria-label="Arène de démonstration"
+      >
+        <div class="arena__ground" aria-hidden="true"></div>
 
-        <div class="fighter__motion" data-demo-motion>
-          <img
-            class="fighter__image"
-            data-demo-image
-            alt="Vue joueur de Maraileron"
-          >
-        </div>
-      </article>
-
-      <article class="fighter fighter--opponent" data-demo-slot="opponent">
-        <div class="fighter__caption">
-          <strong data-demo-label>Braisombre</strong>
-          <span data-demo-profile>drake</span>
-        </div>
-
-        <div class="fighter__motion" data-demo-motion>
-          <img
-            class="fighter__image"
-            data-demo-image
-            alt="Vue adversaire de Braisombre"
-          >
-        </div>
-      </article>
-    </section>
-
-    <section class="combat-panel" aria-label="Prototype de combat">
-      <div class="energy-grid">
-        <article class="energy-card">
-          <header>
-            <strong>Maraileron</strong>
-            <span data-combat-energy-value="maraileron">100 / 100⚡</span>
-          </header>
-          <progress
-            data-combat-energy="maraileron"
-            max="100"
-            value="100"
-            aria-label="Énergie de Maraileron"
-          ></progress>
-          <small>Déplacement : 1⚡ / palier</small>
-        </article>
-
-        <article class="energy-card">
-          <header>
-            <strong>Braisombre</strong>
-            <span data-combat-energy-value="braisombre">100 / 100⚡</span>
-          </header>
-          <progress
-            data-combat-energy="braisombre"
-            max="100"
-            value="100"
-            aria-label="Énergie de Braisombre"
-          ></progress>
-          <small>Déplacement : 3⚡ / palier</small>
-        </article>
-      </div>
-
-      <section class="combat-box">
-        <div class="combat-box__heading">
-          <div>
-            <p class="combat-kicker">Positionnement</p>
-            <h2>Déplacement</h2>
+        <article class="fighter fighter--player" data-demo-slot="player">
+          <div class="fighter__caption">
+            <strong data-demo-label>Maraileron</strong>
+            <span data-demo-profile>serpentine</span>
           </div>
 
+          <div class="fighter__motion" data-demo-motion>
+            <img
+              class="fighter__image"
+              data-demo-image
+              alt="Vue joueur de Maraileron"
+            >
+          </div>
+        </article>
+
+        <article class="fighter fighter--opponent" data-demo-slot="opponent">
+          <div class="fighter__caption">
+            <strong data-demo-label>Braisombre</strong>
+            <span data-demo-profile>drake</span>
+          </div>
+
+          <div class="fighter__motion" data-demo-motion>
+            <img
+              class="fighter__image"
+              data-demo-image
+              alt="Vue adversaire de Braisombre"
+            >
+          </div>
+        </article>
+      </section>
+
+      <section class="combat-dock" aria-label="Commandes du combat">
+        <div class="energy-grid">
+          <article class="energy-card">
+            <header>
+              <strong>Maraileron</strong>
+              <span data-combat-energy-value="maraileron">0 / 10⚡</span>
+            </header>
+            <progress
+              data-combat-energy="maraileron"
+              max="10"
+              value="0"
+              aria-label="Énergie de Maraileron"
+            ></progress>
+            <small data-combat-energy-rate="maraileron">+1 toutes les 2 s</small>
+          </article>
+
+          <article class="energy-card">
+            <header>
+              <strong>Braisombre</strong>
+              <span data-combat-energy-value="braisombre">0 / 10⚡</span>
+            </header>
+            <progress
+              data-combat-energy="braisombre"
+              max="10"
+              value="0"
+              aria-label="Énergie de Braisombre"
+            ></progress>
+            <small data-combat-energy-rate="braisombre">+1 toutes les 2 s</small>
+          </article>
+        </div>
+
+        <div class="movement-strip">
           <label class="compact-field">
-            <span>Créature</span>
+            <span>Déplacer</span>
             <select data-combat-mover>
-              <option value="maraileron">Maraileron</option>
-              <option value="braisombre">Braisombre</option>
+              <option value="maraileron">Maraileron · 1⚡/palier</option>
+              <option value="braisombre">Braisombre · 3⚡/palier</option>
             </select>
           </label>
-        </div>
 
-        <div class="distance-buttons">
-          <button type="button" data-combat-move="short">Courte</button>
-          <button type="button" data-combat-move="medium">Moyenne</button>
-          <button type="button" data-combat-move="long">Longue</button>
-        </div>
-      </section>
-
-      <section class="combat-box">
-        <div class="combat-box__heading">
-          <div>
-            <p class="combat-kicker">Capacités</p>
-            <h2>Action de Maraileron</h2>
+          <div class="distance-buttons" aria-label="Changer la distance">
+            <button type="button" data-combat-move="short">Courte</button>
+            <button type="button" data-combat-move="medium">Moyenne</button>
+            <button type="button" data-combat-move="long">Longue</button>
           </div>
-
-          <label class="compact-field reaction-field">
-            <span>Réaction de Braisombre</span>
-            <select data-combat-reaction></select>
-          </label>
         </div>
 
-        <div class="skill-grid" data-combat-skills></div>
-      </section>
+        <div class="ability-zone">
+          <section class="ability-group ability-group--player">
+            <div class="ability-group__title">
+              <span>Maraileron</span>
+              <strong>Capacités</strong>
+            </div>
+            <div class="skill-grid" data-combat-skills></div>
+          </section>
 
-      <div class="combat-utility">
-        <button type="button" class="button-secondary" data-combat-advance>
-          +1 s d'énergie
-        </button>
-        <button type="button" class="button-secondary" data-combat-reset>
-          Réinitialiser
-        </button>
-      </div>
+          <section class="ability-group ability-group--reaction">
+            <div class="ability-group__title">
+              <span>Braisombre</span>
+              <strong>Réactions</strong>
+            </div>
+            <div class="skill-grid skill-grid--reactions" data-combat-reactions></div>
+          </section>
+        </div>
 
-      <section class="combat-log-wrap" aria-label="Journal du test">
-        <h2>Journal</h2>
-        <ol class="combat-log" data-combat-log aria-live="polite"></ol>
+        <p
+          class="live-status"
+          data-combat-live-status
+          data-tone="info"
+          role="status"
+        >
+          Énergie en charge…
+        </p>
+
+        <details class="combat-history">
+          <summary>Journal du test</summary>
+          <ol class="combat-log" data-combat-log aria-live="polite"></ol>
+        </details>
       </section>
     </section>
 
