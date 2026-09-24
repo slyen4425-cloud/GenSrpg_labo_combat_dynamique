@@ -1,0 +1,11 @@
+{
+  "id": "potion",
+  "name": "Potion",
+  "kind": "item",
+  "energyCost": 2,
+  "preparationMs": 1000,
+  "recoveryMs": 400,
+  "effect": {
+    "heal": 25
+  }
+}
