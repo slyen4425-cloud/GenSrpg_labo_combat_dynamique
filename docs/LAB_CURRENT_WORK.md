@@ -345,7 +345,17 @@ CI :
 - run : `36053453627`
 - conclusion : SUCCESS
 
-Le prochain checkpoint doit figer cet état avant le test utilisateur mobile.
+Checkpoint runtime créé :
+
+`checkpoint/lab-dom-renderer-demo-v1-runtime-pack-green-2026-09-24`
+
+Branche de prévisualisation :
+
+`preview/lab-dom-renderer-demo-v1-2026-09-24`
+
+Ces deux refs doivent pointer sur le SHA final documenté après CI du présent fichier.
+
+Le chantier reste en attente du test utilisateur mobile avant GREEN final.
 
 ## Dernier checkpoint GREEN
 
