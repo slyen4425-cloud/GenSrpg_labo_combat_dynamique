@@ -753,6 +753,64 @@ Validation restante :
 
 Le chantier reste pré-audit jusqu'au retour utilisateur.
 
+
+## Sous-lot actif — combat-visibility-chargebar-polish-v2
+
+Base :
+
+`f0cda9e5b68d9f4208e76ee43de435cfe6281f59`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-visibility-chargebar-polish-v2-2026-09-24`
+
+Branche :
+
+`work/lab-combat-visibility-chargebar-polish-v2-2026-09-24`
+
+Objectif :
+
+- éviter que les créatures sortent visuellement de l'arène à longue portée ;
+- réduire légèrement leur taille générale à l'écran ;
+- permettre au Render Adapter de distance d'ajuster aussi légèrement le scale visuel selon Courte / Moyenne / Longue, sans modifier le scale métier de l'acteur ;
+- déplacer les réglages de laboratoire et le choix de la créature à déplacer hors de la zone principale de combat ;
+- garder l'interface principale proche du rendu réel joueur ;
+- afficher une barre de charge principale sous le nom de la créature qui lance une capacité ;
+- cette barre doit suivre exclusivement la progression fournie par Combat Runtime ;
+- au clic Boule de feu : barre 0 -> 100 % pendant la préparation, puis disparition/reset au release ;
+- même principe pour une réaction de Braisombre.
+
+Propriétaires autorisés :
+
+- `DOM Distance Presenter` : position et scale de scène selon distance ;
+- `Demo UI` : emplacement des contrôles de test et affichage de progression ;
+- `Demo CSS/HTML` : composition visuelle ;
+- `Combat Runtime` reste source unique de progression.
+
+Interdits :
+
+- aucune durée de charge codée en CSS/HTML ;
+- aucune seconde barre avec sa propre horloge ;
+- aucune modification du calcul de coût/portée ;
+- aucun déplacement simultané automatique des deux combattants ;
+- aucun changement dans Animation Core pour compenser un problème de layout ;
+- aucun changement GenSrpG principal.
+
+Tests :
+
+- long reste dans les bornes visuelles ;
+- seul le combattant déplacé change position/scale ;
+- scale court > moyen > long de façon légère et déclarative ;
+- aucun contrôle de test principal superposé à l'arène ;
+- barre de charge principale présente sous chaque nom ;
+- barre alimentée par `progress.chargeProgress` / réaction runtime ;
+- reset de la barre après release/résolution/reset ;
+- CI et sentinelles existantes vertes.
+
+Critère de fin :
+
+pré-audit GREEN technique + test smartphone utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
