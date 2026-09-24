@@ -118,6 +118,8 @@ export function normalizeSkillDefinition(input) {
     preparationMs: nonNegativeNumber(input.preparationMs, "preparationMs"),
     travelMs: nonNegativeNumber(input.travelMs, "travelMs"),
     recoveryMs: nonNegativeNumber(input.recoveryMs, "recoveryMs"),
+    interruptibleDuringPreparation:
+      input.interruptibleDuringPreparation !== false,
     allowedDistances,
     reaction: Object.freeze({
       blockForms: stringArray(reaction.blockForms, "reaction.blockForms", FORM_SET),
@@ -134,6 +136,8 @@ export function normalizeSkillDefinition(input) {
     effect: Object.freeze({
       damage: nonNegativeNumber(effect.damage, "effect.damage"),
       heal: nonNegativeNumber(effect.heal, "effect.heal"),
+      interruptsPreparation: effect.interruptsPreparation === true,
+      stunMs: nonNegativeNumber(effect.stunMs, "effect.stunMs"),
       tags: stringArray(effect.tags, "effect.tags")
     })
   });
