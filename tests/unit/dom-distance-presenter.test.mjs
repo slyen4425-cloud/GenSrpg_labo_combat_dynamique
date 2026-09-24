@@ -30,73 +30,17 @@ function moved(from, to) {
   };
 }
 
-test("player medium to short moves toward center and keeps opponent fixed", () => {
+function setup() {
   const player = { style: styleHarness() };
   const opponent = { style: styleHarness() };
   const presenter = createDomDistancePresenter({
     fighters: { player, opponent }
   });
+  return { player, opponent, presenter };
+}
 
-  const opponentBefore = presenter.snapshot().opponent;
-  const result = presenter.presentMovement({
-    result: moved("medium", "short"),
-    actorSlot: "player"
-  });
-
-  assert.equal(result.status, "moved");
-  assert.equal(result.from, "medium");
-  assert.equal(result.to, "short");
-  assert.equal(result.x, 0.38);
-  assert.equal(presenter.snapshot().opponent, opponentBefore);
-  assert.equal(player.style.left, "38.00%");
-  assert.equal(player.style.getPropertyValue("--distance-scale"), "1.00");
-});
-
-test("player medium to long moves outward without leaving arena", () => {
-  const player = { style: styleHarness() };
-  const opponent = { style: styleHarness() };
-  const presenter = createDomDistancePresenter({
-    fighters: { player, opponent }
-  });
-
-  const result = presenter.presentMovement({
-    result: moved("medium", "long"),
-    actorSlot: "player"
-  });
-
-  assert.equal(result.x, 0.20);
-  assert.equal(player.style.left, "20.00%");
-  assert.equal(player.style.getPropertyValue("--distance-scale"), "0.90");
-  assert.ok(result.x >= 0.20);
-});
-
-test("opponent follows the symmetric distance direction convention", () => {
-  const player = { style: styleHarness() };
-  const opponent = { style: styleHarness() };
-  const presenter = createDomDistancePresenter({
-    fighters: { player, opponent }
-  });
-
-  presenter.presentMovement({
-    result: moved("medium", "short"),
-    actorSlot: "opponent"
-  });
-  assert.equal(presenter.snapshot().opponent, 0.62);
-
-  presenter.reset();
-  presenter.presentMovement({
-    result: moved("medium", "long"),
-    actorSlot: "opponent"
-  });
-  assert.equal(presenter.snapshot().opponent, 0.80);
-});
-
-test("two-band player transition preserves intuitive direction", () => {
-  const player = { style: styleHarness() };
-  const opponent = { style: styleHarness() };
-  const presenter = createDomDistancePresenter({
-    fighters: { player, opponent }
-  });
+test("player short is closer to center than medium, and long is farther out", () => {
+  const { presenter } = setup();
 
   presenter.presentMovement({
     result: moved("medium", "short"),
@@ -104,22 +48,111 @@ test("two-band player transition preserves intuitive direction", () => {
   });
   const shortX = presenter.snapshot().player;
 
+  presenter.reset();
+  const mediumX = presenter.snapshot().player;
+
   presenter.presentMovement({
-    result: moved("short", "long"),
+    result: moved("medium", "long"),
     actorSlot: "player"
   });
   const longX = presenter.snapshot().player;
 
-  assert.ok(shortX > longX);
+  assert.ok(shortX > mediumX);
+  assert.ok(mediumX > longX);
+  assert.equal(shortX, 0.42);
+  assert.equal(mediumX, 0.28);
   assert.equal(longX, 0.20);
 });
 
-test("distance reset restores medium positions and scales", () => {
-  const player = { style: styleHarness() };
-  const opponent = { style: styleHarness() };
-  const presenter = createDomDistancePresenter({
-    fighters: { player, opponent }
+test("player target is derived from stationary opponent and explicit separation", () => {
+  const { presenter } = setup();
+
+  presenter.presentMovement({
+    result: moved("medium", "short"),
+    actorSlot: "opponent"
   });
+  const opponentX = presenter.snapshot().opponent;
+  const playerBefore = presenter.snapshot().player;
+
+  const result = presenter.presentMovement({
+    result: moved("short", "medium"),
+    actorSlot: "player"
+  });
+
+  assert.equal(opponentX, 0.58);
+  assert.equal(result.stationaryX, 0.58);
+  assert.equal(result.separation, 0.44);
+  assert.equal(result.x, 0.20);
+  assert.equal(presenter.snapshot().opponent, opponentX);
+  assert.notEqual(result.x, playerBefore);
+});
+
+test("opponent uses symmetric short medium long ordering", () => {
+  const { presenter } = setup();
+
+  presenter.presentMovement({
+    result: moved("medium", "short"),
+    actorSlot: "opponent"
+  });
+  const shortX = presenter.snapshot().opponent;
+
+  presenter.reset();
+  const mediumX = presenter.snapshot().opponent;
+
+  presenter.presentMovement({
+    result: moved("medium", "long"),
+    actorSlot: "opponent"
+  });
+  const longX = presenter.snapshot().opponent;
+
+  assert.ok(shortX < mediumX);
+  assert.ok(mediumX < longX);
+  assert.equal(shortX, 0.58);
+  assert.equal(mediumX, 0.72);
+  assert.equal(longX, 0.80);
+});
+
+test("only the fighter that moved changes position and scene scale", () => {
+  const { presenter } = setup();
+  const before = presenter.snapshot();
+
+  presenter.presentMovement({
+    result: moved("medium", "short"),
+    actorSlot: "player"
+  });
+
+  const after = presenter.snapshot();
+  assert.notEqual(after.player, before.player);
+  assert.notEqual(after.playerScale, before.playerScale);
+  assert.equal(after.opponent, before.opponent);
+  assert.equal(after.opponentScale, before.opponentScale);
+});
+
+test("distance scale remains light and ordered short greater than medium greater than long", () => {
+  const { presenter } = setup();
+
+  presenter.presentMovement({
+    result: moved("medium", "short"),
+    actorSlot: "player"
+  });
+  const shortScale = presenter.snapshot().playerScale;
+
+  presenter.reset();
+  const mediumScale = presenter.snapshot().playerScale;
+
+  presenter.presentMovement({
+    result: moved("medium", "long"),
+    actorSlot: "player"
+  });
+  const longScale = presenter.snapshot().playerScale;
+
+  assert.ok(shortScale > mediumScale);
+  assert.ok(mediumScale > longScale);
+  assert.ok(shortScale - longScale <= 0.12);
+});
+
+test("distance reset restores medium positions and scales", () => {
+  const { player, opponent, presenter } = setup();
 
   presenter.presentMovement({
     result: moved("medium", "short"),
