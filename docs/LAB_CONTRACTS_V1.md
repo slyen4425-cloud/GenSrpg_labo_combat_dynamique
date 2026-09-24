@@ -66,3 +66,18 @@ Le futur runtime devra garantir que l'acteur retrouve un état cohérent après 
 - Braisombre -> `drake`
 
 Les profils sont des données JSON modifiables ; ils ne sont pas codés en dur dans l'UI.
+
+
+## Extension V1 — ancrage visuel
+
+`VisualActor` porte désormais un `transformOrigin` explicite :
+
+```js
+{
+  transformOrigin: { x: "50%", y: "88%" }
+}
+```
+
+Le contrat appartient à l'acteur visuel. Le Render Adapter l'applique ; l'UI et les profils ne doivent pas le redéfinir implicitement.
+
+Les métadonnées de créature peuvent aussi fournir un `displayScale` par vue. La Demo UI ne fait que transmettre cette donnée au `VisualActor`.
