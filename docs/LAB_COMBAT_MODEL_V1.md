@@ -247,3 +247,33 @@ L'`idle` est l'état visuel par défaut des deux combattants.
 Toute animation transitoire revient ensuite vers l'idle.
 
 Cette règle appartient au contrôleur visuel, pas à Combat Rules.
+
+
+## Extension V2 — dégâts et projection de distance
+
+### Dégâts
+
+Les dégâts de base utilisent `skill.effect.damage`.
+
+Le seul propriétaire de leur application est `Action Resolver`.
+
+- hit : dégâts sur la cible ;
+- reflected : mêmes dégâts sur l'attaquant ;
+- blocked / immune / countered : aucun dégât du projectile/attaque annulée ;
+- les PV sont clampés entre 0 et `maxHp`.
+
+Le `hit` sémantique contient `hpBefore` et `hpAfter` pour les consommateurs visuels ou de journalisation, sans leur donner d'autorité sur l'état.
+
+### Projection de distance
+
+La distance logique reste unique : Courte / Moyenne / Longue.
+
+Le rendu calcule la position du combattant mobile depuis la position du combattant stationnaire et une séparation explicite :
+
+- Courte : 0,30 de largeur normalisée ;
+- Moyenne : 0,44 ;
+- Longue : 0,56.
+
+Le joueur est projeté à gauche de l'adversaire ; l'adversaire à droite du joueur.
+
+Ainsi, Courte est toujours visuellement plus proche que Moyenne, elle-même plus proche que Longue, même après des déplacements successifs des deux combattants.
