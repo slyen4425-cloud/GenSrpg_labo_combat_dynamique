@@ -270,6 +270,26 @@ Décision :
 
 La prévisualisation actuelle est donc considérée comme **pré-audit technique uniquement**, pas comme version de validation utilisateur.
 
+## Raccord assets runtime par défaut — GREEN technique
+
+Les deux créatures de laboratoire sont désormais présentes directement dans le dépôt et chargées automatiquement par la démo :
+
+- Maraileron côté joueur : `maraileron_player_preview.webp` ;
+- Braisombre côté adversaire : `braisombre_opponent_preview.webp`.
+
+L'import utilisateur reste disponible uniquement comme remplacement optionnel.
+
+SHA validé :
+
+`51a7dd14cade5b46b6e44886060e77d4865e47a1`
+
+CI :
+
+- run : `36052841899`
+- conclusion : SUCCESS
+
+La validation utilisateur mobile reste nécessaire avant de déclarer le chantier GREEN final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
