@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-24
 
-Phase active : fin de Phase 1 — Core animation mono-image.
+Phase active : Phase 2 — Renderer DOM/CSS + démo visuelle V1.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -46,7 +46,7 @@ Lire dans cet ordre :
 
 Puis vérifier les branches, SHA et CI réels sur GitHub.
 
-## Chantier terminé
+## Chantier précédent terminé
 
 Nom :
 
@@ -118,11 +118,17 @@ Les chemins cibles sont déjà réservés dans les métadonnées :
 
 Le raccord binaire des PNG est un lot asset séparé : il ne doit pas contaminer le Core.
 
-## Checkpoint GREEN à créer après CI de ce document
+## Checkpoint GREEN créé
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
 
-## Prochain chantier
+SHA GREEN :
+
+`120d0b2eaa311572867ad2f7955edc14c2ae0786`
+
+CI : SUCCESS
+
+## Chantier courant
 
 Nom :
 
@@ -132,11 +138,15 @@ Objectif :
 
 Créer un premier adaptateur DOM/CSS et une démo autonome permettant de jouer les plans V1 sans déplacer la logique d'animation dans l'UI.
 
-Checkpoint de départ prévu :
+Checkpoint de départ :
 
 `checkpoint/lab-start-dom-renderer-demo-v1-2026-09-24`
 
-Branche de travail prévue :
+SHA de base :
+
+`120d0b2eaa311572867ad2f7955edc14c2ae0786`
+
+Branche de travail :
 
 `work/lab-dom-renderer-demo-v1-2026-09-24`
 
@@ -175,7 +185,7 @@ Protégé / hors périmètre :
 
 ## Dernier checkpoint GREEN
 
-En attente de création après validation CI du présent état.
+`checkpoint/lab-mono-image-animation-core-green-2026-09-24`
 
 ## Règle de reprise
 
