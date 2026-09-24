@@ -4,6 +4,10 @@ import {
   createCombatState
 } from "./combat-state.js";
 import {
+  resolveUtilityActionCompletion,
+  resolveUtilityActionStart
+} from "./utility-action-resolver.js";
+import {
   resolveMovement,
   resolveReaction,
   resolveSkill,
@@ -24,6 +28,15 @@ export function createCombatSession({
 
   function snapshot() {
     return state;
+  }
+
+  function fighterIdByPresence(side, presence) {
+    return (
+      Object.values(state.fighters).find(
+        (fighter) =>
+          fighter.side === side && fighter.presence === presence
+      )?.id ?? null
+    );
   }
 
   function previewMovement(actorId, toDistance) {
@@ -55,6 +68,22 @@ export function createCombatSession({
       skill,
       reactionSkill
     });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
+  }
+
+  function previewUtilityAction({ actorId, definition }) {
+    return resolveUtilityActionStart({
+      state,
+      actorId,
+      definition
+    });
+  }
+
+  function startUtilityAction({ actorId, definition }) {
+    const result = previewUtilityAction({ actorId, definition });
     if (result.ok) {
       state = result.state;
     }
@@ -107,6 +136,24 @@ export function createCombatSession({
     return result;
   }
 
+  function completeUtilityAction({ action }) {
+    const result = resolveUtilityActionCompletion({
+      state,
+      action
+    });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
+  }
+
+  function completeAction({ action, reaction = null }) {
+    if (action.kind === "skill") {
+      return completeSkill({ action, reaction });
+    }
+    return completeUtilityAction({ action });
+  }
+
   function advanceMs(deltaMs) {
     state = advanceCombatTime(state, deltaMs);
     return state;
@@ -131,14 +178,19 @@ export function createCombatSession({
 
   return Object.freeze({
     snapshot,
+    fighterIdByPresence,
     previewMovement,
     previewSkill,
     move,
     useSkill,
+    previewUtilityAction,
+    startUtilityAction,
     startSkill,
     previewReaction,
     reactToSkill,
     completeSkill,
+    completeUtilityAction,
+    completeAction,
     advanceMs,
     advance,
     addChargeEffect,
