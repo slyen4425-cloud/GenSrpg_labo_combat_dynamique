@@ -1,3 +1,24 @@
+export function planSkillReleaseFx({
+  action,
+  actorSlot = "player",
+  targetSlot = "opponent"
+}) {
+  if (!action?.skill || action.skill.form !== "projectile") {
+    return Object.freeze([]);
+  }
+
+  return Object.freeze([
+    Object.freeze({
+      type: "projectile",
+      element: action.skill.element ?? null,
+      fromSlot: actorSlot,
+      targetSlot,
+      delayMs: 0,
+      durationMs: Math.max(0, Number(action.travelMs) || 0)
+    })
+  ]);
+}
+
 export function planSkillFx({
   resolution,
   actorSlot = "player",
