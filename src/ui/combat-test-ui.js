@@ -1,4 +1,5 @@
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
+import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
@@ -36,6 +37,32 @@ const DATA_URLS = Object.freeze({
     contactCounter: new URL(
       "../../data/combat/skills/contact-counter.skill.json",
       import.meta.url
+    ),
+    aerialDive: new URL(
+      "../../data/combat/skills/aerial-dive.skill.json",
+      import.meta.url
+    ),
+    teleportStrike: new URL(
+      "../../data/combat/skills/teleport-strike.skill.json",
+      import.meta.url
+    ),
+    dodge: new URL(
+      "../../data/combat/skills/dodge.skill.json",
+      import.meta.url
+    )
+  }),
+  commands: Object.freeze({
+    item: new URL(
+      "../../data/combat/commands/item.command.json",
+      import.meta.url
+    ),
+    recall: new URL(
+      "../../data/combat/commands/recall.command.json",
+      import.meta.url
+    ),
+    summon: new URL(
+      "../../data/combat/commands/summon.command.json",
+      import.meta.url
     )
   })
 });
@@ -63,6 +90,13 @@ const FORM_LABELS = Object.freeze({
   aura: "Aura"
 });
 
+const APPROACH_LABELS = Object.freeze({
+  none: null,
+  ground: "Sol",
+  aerial: "Aérien",
+  teleport: "Téléportation"
+});
+
 const ELEMENT_LABELS = Object.freeze({
   fire: "Feu",
   water: "Eau",
@@ -78,6 +112,12 @@ const OUTCOME_LABELS = Object.freeze({
   reflected: "renvoyée",
   immune: "annulée par immunité",
   countered: "contrée",
+  evaded: "esquivée",
+  completed: "terminée",
+  interrupted: "interrompue",
+  reaction_not_supported: "aucune réaction directe pour cette action",
+  wrong_target: "mauvaise cible",
+  not_interruptible: "action non interruptible",
   out_of_range: "hors portée",
   insufficient_energy: "énergie insuffisante",
   action_in_progress: "une action est déjà en cours",
@@ -121,6 +161,10 @@ function skillMetaText(skill) {
   if (skill.element) {
     parts.push(ELEMENT_LABELS[skill.element] ?? skill.element);
   }
+  const approach = APPROACH_LABELS[skill.approachMode];
+  if (approach) {
+    parts.push(approach);
+  }
   return parts.join(" · ");
 }
 
@@ -133,6 +177,13 @@ function skillTimingText(skill) {
     parts.push(`trajet ${formatSeconds(skill.travelMs)}`);
   }
   return parts.join(" · ");
+}
+
+function commandTimingText(command) {
+  return [
+    `${formatEnergy(command.energyCost)}⚡`,
+    `charge ${formatSeconds(command.preparationMs)}`
+  ].join(" · ");
 }
 
 function fighterLabel(id) {
