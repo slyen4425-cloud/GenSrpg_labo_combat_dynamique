@@ -664,6 +664,78 @@ Tests V2 :
 - arène + capacités visibles ensemble ;
 - barre de charge présente pour chaque capacité.
 
+
+## État technique — combat-timing-ui-v2
+
+Corrections implémentées :
+
+- les deux créatures démarrent en idle et reviennent en idle après une animation transitoire ;
+- le déplacement logique reste Courte / Moyenne / Longue ;
+- le Render Adapter de distance déplace uniquement le combattant qui effectue l'action ;
+- l'écart visuel initial entre les combattants a été augmenté ;
+- le HUD distance superposé à l'arène a été supprimé ;
+- l'arène, les jauges, le déplacement et les capacités sont réunis dans un écran combat compact ;
+- chaque capacité offensive et chaque réaction possède une barre de charge visible ;
+- l'énergie démarre à 0 ;
+- données de test : +1 énergie toutes les 2 secondes, réserve maximale 10 ;
+- Maraileron : 1 énergie par palier ;
+- Braisombre : 3 énergies par palier ;
+- Boule de feu coûte 3, Griffe 2, réactions 2 ;
+- Combat Runtime propriétaire unique du temps actif, avec timer nettoyé par `dispose()` ;
+- les ticks d'énergie sont déterministes et conservent la progression partielle ;
+- `chargeTimeModifierPct` est configurable par créature ;
+- +X % augmente le temps de préparation, -X % le réduit ;
+- les effets temporaires de temps de charge sont pris en charge avec expiration ;
+- le calcul de temps effectif appartient à `Combat Timing`, jamais à l'UI ;
+- les réactions peuvent maintenant être déclenchées pendant l'action en cours ;
+- un contre assez rapide peut toujours interrompre avant release ;
+- le Presenter sépare désormais release visuel et résultat final pour suivre le runtime réel.
+
+Réglages de rythme du test :
+
+- Boule de feu : charge 1,8 s + trajet 0,7 s ;
+- Griffe : charge 1,2 s ;
+- Bouclier miroir : réaction 0,5 s ;
+- Immunité feu : réaction 0,3 s ;
+- Riposte : réaction 0,4 s.
+
+Ces valeurs sont des données de laboratoire et ne constituent pas des constantes GenSrpG.
+
+Sentinelles ajoutées :
+
+- énergie initiale zéro ;
+- tick configurable +1 / 2000 ms ;
+- modificateur permanent +X/-X % ;
+- modificateur temporaire + expiration ;
+- runtime réel + nettoyage timer ;
+- contre live avant release ;
+- un seul sprite déplacé ;
+- idle par défaut ;
+- absence de sélecteur HUD distance superposé ;
+- arène + capacités dans le même écran ;
+- barre de charge sur toutes les capacités.
+
+Dernier HEAD fonctionnel avant clôture documentaire :
+
+`f561f4cd7fc97e10ca79860cf5d47be1e945e3e3`
+
+CI :
+
+- run : `36063415254`
+- conclusion : SUCCESS
+
+Validation restante :
+
+- test smartphone réel de la compacité de l'écran ;
+- vérifier que l'arène reste visible pendant toute décision ;
+- vérifier le ressenti du +1 énergie / 2 s ;
+- vérifier le déplacement individuel Maraileron puis Braisombre ;
+- vérifier les barres de charge offensive et réaction ;
+- vérifier Boule de feu / renvoi / immunité ;
+- vérifier Griffe / Riposte.
+
+Le chantier reste pré-audit jusqu'au retour utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
