@@ -1,0 +1,13 @@
+{
+  "id": "item",
+  "name": "Objet",
+  "kind": "item",
+  "energyCost": 1,
+  "preparationMs": 700,
+  "recoveryMs": 300,
+  "interruptibleDuringPreparation": true,
+  "effect": {
+    "heal": 20,
+    "itemId": "potion-test"
+  }
+}
