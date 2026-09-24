@@ -46,7 +46,10 @@ export function createCombatResolutionPresenter({
   }
 
   function outcomeTime(resolution) {
-    if (resolution.outcome === "countered") {
+    if (
+      resolution.outcome === "countered" ||
+      resolution.outcome === "interrupted"
+    ) {
       return (
         resolution.events.find((item) => item.type === "skill-countered")?.atMs ??
         0
@@ -105,6 +108,7 @@ export function createCombatResolutionPresenter({
         break;
 
       case "countered":
+      case "interrupted":
         visuals.cancelFor(actorSlot);
         visuals
           .playEventFor(targetSlot, "attack")
