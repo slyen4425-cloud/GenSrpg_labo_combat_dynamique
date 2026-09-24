@@ -290,6 +290,25 @@ CI :
 
 La validation utilisateur mobile reste nécessaire avant de déclarer le chantier GREEN final.
 
+## Checkpoint assets intégrés
+
+Checkpoint intermédiaire GREEN créé :
+
+`checkpoint/lab-dom-renderer-demo-v1-bundled-assets-green-2026-09-24`
+
+SHA :
+
+`2030deaa09d272d2d954f5cfd8972e779a2c09cc`
+
+CI :
+
+- run : `36052895496`
+- conclusion : SUCCESS
+
+La branche de prévisualisation pointe sur ce même SHA.
+
+Le chantier reste en attente de validation utilisateur smartphone avant GREEN final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
