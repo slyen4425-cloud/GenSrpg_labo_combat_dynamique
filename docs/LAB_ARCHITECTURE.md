@@ -314,3 +314,126 @@ La Demo UI :
 - ne calcule ni coût, ni résultat ;
 - demande une résolution au Combat Rules Lab ;
 - affiche l'état retourné et déclenche uniquement la présentation visuelle correspondante.
+
+
+## 12. Sous-système Combat Rules
+
+Le prototype de combat temps réel est un client du moteur visuel, pas une extension de l'Animation Core.
+
+```
+Combat Data
+    |
+    v
+Skill Contract
+    |
+    v
+Combat Session ---- Distance / Energy State
+    |
+    v
+Action Resolver
+    |
+    v
+Semantic Resolution / Timeline
+    |
+    v
+Combat Resolution Presenter
+    |                    |
+    v                    v
+Animation Events       FX Plan
+    |                    |
+    v                    v
+Actor Renderer         FX Renderer
+```
+
+### Propriétaires
+
+`src/contracts/skill-definition.js`
+
+- catégorie fonctionnelle ;
+- forme d'action ;
+- élément ;
+- coût énergie ;
+- préparation ;
+- trajet ;
+- récupération ;
+- portée ;
+- règles de blocage, renvoi, immunité et contre.
+
+`src/core/combat/distance.js`
+
+- bandes `short / medium / long` ;
+- nombre de paliers ;
+- coût de déplacement ;
+- validation de portée.
+
+`src/core/combat/combat-state.js`
+
+- snapshot immutable de distance et énergie.
+
+`src/core/combat/combat-session.js`
+
+- propriétaire unique de l'état courant du test ;
+- preview sans effet de bord ;
+- commit des mouvements/actions ;
+- régénération explicite ;
+- reset.
+
+`src/core/combat/action-resolver.js`
+
+- décide uniquement du résultat sémantique ;
+- produit une timeline relative ;
+- ne rend rien.
+
+`src/adapters/renderer/combat-resolution-presenter.js`
+
+- transforme une résolution déjà décidée en intentions visuelles ;
+- peut annuler une animation lors d'un contre ;
+- ne recalcule aucune règle.
+
+`src/core/fx/skill-fx-plan.js` + `src/adapters/renderer/dom-skill-fx.js`
+
+- plan et rendu du projectile générique de test ;
+- aucune autorité gameplay.
+
+### Distance V1
+
+La distance est relative et possède trois bandes :
+
+`short <-> medium <-> long`
+
+Un changement coûte :
+
+`nombre de paliers × coût de déplacement de la créature`
+
+La même réserve d'énergie alimente déplacement et capacités.
+
+### Compétence V1
+
+La classification est multidimensionnelle.
+
+Exemple :
+
+`Boule de feu = offensive + projectile + fire`
+
+Une réaction peut donc cibler indépendamment :
+
+- la forme : `reflect projectile` ;
+- l'élément : `immune fire` ;
+- la forme pour un contre : `counter contact`.
+
+Aucune catégorie d'affichage ne remplace ces propriétés techniques.
+
+### Temps V1
+
+La résolution distingue :
+
+- préparation ;
+- release ;
+- trajet ;
+- impact ;
+- récupération ;
+- préparation d'une réaction.
+
+Une réaction n'est applicable que si elle devient prête avant l'impact.
+
+Un contre qui devient prêt avant le release peut annuler la compétence avant son départ.
