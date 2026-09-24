@@ -12,12 +12,27 @@
       <p class="eyebrow">GenSrpG — laboratoire autonome</p>
       <h1>Combat dynamique V1</h1>
       <p class="intro">
-        Maraileron et Braisombre sont chargés automatiquement. Testez directement les animations mono-image.
+        Test distance + énergie + capacités typées. Les règles sont résolues par le moteur combat, puis seulement présentées visuellement.
       </p>
     </header>
 
-    <section class="arena" aria-label="Arène de démonstration">
+    <section
+      class="arena"
+      data-combat-arena
+      data-combat-distance="medium"
+      aria-label="Arène de démonstration"
+    >
       <div class="arena__ground" aria-hidden="true"></div>
+
+      <div class="distance-hud" aria-live="polite">
+        <span>Distance</span>
+        <strong data-combat-distance-value>Moyenne</strong>
+        <div class="distance-hud__bands" aria-hidden="true">
+          <i data-combat-band="short">C</i>
+          <i data-combat-band="medium">M</i>
+          <i data-combat-band="long">L</i>
+        </div>
+      </div>
 
       <article class="fighter fighter--player" data-demo-slot="player">
         <div class="fighter__caption">
@@ -32,15 +47,6 @@
             alt="Vue joueur de Maraileron"
           >
         </div>
-
-        <label class="file-control">
-          <span>Tester une autre image joueur (optionnel)</span>
-          <input
-            data-demo-file
-            type="file"
-            accept="image/png,image/webp,image/jpeg"
-          >
-        </label>
       </article>
 
       <article class="fighter fighter--opponent" data-demo-slot="opponent">
@@ -56,56 +62,156 @@
             alt="Vue adversaire de Braisombre"
           >
         </div>
-
-        <label class="file-control">
-          <span>Tester une autre image adversaire (optionnel)</span>
-          <input
-            data-demo-file
-            type="file"
-            accept="image/png,image/webp,image/jpeg"
-          >
-        </label>
       </article>
     </section>
 
-    <section class="controls" aria-label="Contrôles du laboratoire">
-      <div class="control-row">
-        <label>
-          <span>Créature ciblée</span>
-          <select data-demo-target>
-            <option value="player">Maraileron — joueur</option>
-            <option value="opponent">Braisombre — adversaire</option>
-          </select>
-        </label>
+    <section class="combat-panel" aria-label="Prototype de combat">
+      <div class="energy-grid">
+        <article class="energy-card">
+          <header>
+            <strong>Maraileron</strong>
+            <span data-combat-energy-value="maraileron">100 / 100⚡</span>
+          </header>
+          <progress
+            data-combat-energy="maraileron"
+            max="100"
+            value="100"
+            aria-label="Énergie de Maraileron"
+          ></progress>
+          <small>Déplacement : 1⚡ / palier</small>
+        </article>
 
-        <label>
-          <span>
-            Intensité
-            <output data-demo-intensity-value>1.00</output>
-          </span>
-          <input
-            data-demo-intensity
-            type="range"
-            min="0.5"
-            max="1.5"
-            value="1"
-            step="0.05"
-          >
-        </label>
+        <article class="energy-card">
+          <header>
+            <strong>Braisombre</strong>
+            <span data-combat-energy-value="braisombre">100 / 100⚡</span>
+          </header>
+          <progress
+            data-combat-energy="braisombre"
+            max="100"
+            value="100"
+            aria-label="Énergie de Braisombre"
+          ></progress>
+          <small>Déplacement : 3⚡ / palier</small>
+        </article>
       </div>
 
-      <div class="button-grid">
-        <button type="button" data-demo-event="idle">Idle</button>
-        <button type="button" data-demo-event="attack">Attaque</button>
-        <button type="button" data-demo-event="hit">Hit</button>
-        <button type="button" data-demo-event="ko">KO</button>
-        <button type="button" class="button-secondary" data-demo-stop>Stop</button>
+      <section class="combat-box">
+        <div class="combat-box__heading">
+          <div>
+            <p class="combat-kicker">Positionnement</p>
+            <h2>Déplacement</h2>
+          </div>
+
+          <label class="compact-field">
+            <span>Créature</span>
+            <select data-combat-mover>
+              <option value="maraileron">Maraileron</option>
+              <option value="braisombre">Braisombre</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="distance-buttons">
+          <button type="button" data-combat-move="short">Courte</button>
+          <button type="button" data-combat-move="medium">Moyenne</button>
+          <button type="button" data-combat-move="long">Longue</button>
+        </div>
+      </section>
+
+      <section class="combat-box">
+        <div class="combat-box__heading">
+          <div>
+            <p class="combat-kicker">Capacités</p>
+            <h2>Action de Maraileron</h2>
+          </div>
+
+          <label class="compact-field reaction-field">
+            <span>Réaction de Braisombre</span>
+            <select data-combat-reaction></select>
+          </label>
+        </div>
+
+        <div class="skill-grid" data-combat-skills></div>
+      </section>
+
+      <div class="combat-utility">
+        <button type="button" class="button-secondary" data-combat-advance>
+          +1 s d'énergie
+        </button>
+        <button type="button" class="button-secondary" data-combat-reset>
+          Réinitialiser
+        </button>
       </div>
 
-      <p class="status" data-demo-status data-state="info" role="status">
-        Initialisation…
-      </p>
+      <section class="combat-log-wrap" aria-label="Journal du test">
+        <h2>Journal</h2>
+        <ol class="combat-log" data-combat-log aria-live="polite"></ol>
+      </section>
     </section>
+
+    <details class="lab-debug">
+      <summary>Outils visuels du laboratoire</summary>
+
+      <section class="controls" aria-label="Contrôles visuels bruts">
+        <div class="control-row">
+          <label>
+            <span>Créature ciblée</span>
+            <select data-demo-target>
+              <option value="player">Maraileron — joueur</option>
+              <option value="opponent">Braisombre — adversaire</option>
+            </select>
+          </label>
+
+          <label>
+            <span>
+              Intensité
+              <output data-demo-intensity-value>1.00</output>
+            </span>
+            <input
+              data-demo-intensity
+              type="range"
+              min="0.5"
+              max="1.5"
+              value="1"
+              step="0.05"
+            >
+          </label>
+        </div>
+
+        <div class="button-grid">
+          <button type="button" data-demo-event="idle">Idle</button>
+          <button type="button" data-demo-event="attack">Attaque</button>
+          <button type="button" data-demo-event="hit">Hit</button>
+          <button type="button" data-demo-event="ko">KO</button>
+          <button type="button" class="button-secondary" data-demo-stop>Stop</button>
+        </div>
+
+        <div class="debug-upload-grid">
+          <label class="file-control">
+            <span>Image joueur personnalisée (optionnel)</span>
+            <input
+              data-demo-file="player"
+              type="file"
+              accept="image/png,image/webp,image/jpeg"
+            >
+          </label>
+
+          <label class="file-control">
+            <span>Image adversaire personnalisée (optionnel)</span>
+            <input
+              data-demo-file="opponent"
+              type="file"
+              accept="image/png,image/webp,image/jpeg"
+            >
+          </label>
+        </div>
+
+        <p class="status" data-demo-status data-state="info" role="status">
+          Initialisation…
+        </p>
+      </section>
+    </details>
   </main>
 
   <script type="module" src="./demo.js"></script>
