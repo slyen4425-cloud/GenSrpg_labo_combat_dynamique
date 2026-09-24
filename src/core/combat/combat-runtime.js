@@ -33,6 +33,31 @@ export function createCombatRuntime({
   let timerId = null;
   let lastNowMs = null;
   let active = null;
+  let lastStateSignal = null;
+
+  function stateSignal(state) {
+    return JSON.stringify({
+      distance: state.distance,
+      fighters: Object.fromEntries(
+        Object.values(state.fighters).map((fighter) => [
+          fighter.id,
+          {
+            energy: fighter.energy,
+            effects: fighter.chargeTimeEffects.map((effect) => effect.id)
+          }
+        ])
+      )
+    });
+  }
+
+  function emitStateIfChanged({ force = false } = {}) {
+    const state = session.snapshot();
+    const signal = stateSignal(state);
+    if (force || signal !== lastStateSignal) {
+      lastStateSignal = signal;
+      onState(state);
+    }
+  }
 
   function clearScheduledTick() {
     if (timerId !== null) {
@@ -123,7 +148,7 @@ export function createCombatRuntime({
 
     active = null;
     onResolved(resolution);
-    onState(session.snapshot());
+    emitStateIfChanged({ force: true });
   }
 
   function tick() {
@@ -137,7 +162,7 @@ export function createCombatRuntime({
 
     if (delta > 0) {
       session.advanceMs(delta);
-      onState(session.snapshot());
+      emitStateIfChanged();
     }
 
     settleActive(current);
@@ -155,7 +180,7 @@ export function createCombatRuntime({
     }
     running = true;
     lastNowMs = now();
-    onState(session.snapshot());
+    emitStateIfChanged({ force: true });
     timerId = setTimer(tick, tickMs);
   }
 
@@ -183,7 +208,7 @@ export function createCombatRuntime({
       released: false
     };
 
-    onState(session.snapshot());
+    emitStateIfChanged({ force: true });
     onProgress(progressSnapshot(active, 0));
 
     if (result.action.releaseAtMs === 0) {
@@ -228,9 +253,24 @@ export function createCombatRuntime({
     }
 
     active.reaction = result.reaction;
-    onState(session.snapshot());
+    emitStateIfChanged({ force: true });
     onProgress(progressSnapshot(active, elapsedMs));
     return result;
+  }
+
+  function previewReaction(reactionSkill) {
+    if (!active) {
+      return Object.freeze({
+        ok: false,
+        outcome: "no_action"
+      });
+    }
+
+    return session.previewReaction({
+      action: active.action,
+      reactionSkill,
+      elapsedMs: elapsedForActive(now())
+    });
   }
 
   function cancelActive() {
@@ -262,6 +302,7 @@ export function createCombatRuntime({
   return Object.freeze({
     start,
     startSkill,
+    previewReaction,
     react,
     cancelActive,
     dispose,
