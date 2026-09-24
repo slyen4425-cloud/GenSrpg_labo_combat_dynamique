@@ -225,3 +225,40 @@ test("scene scale is owned by distance presenter through one CSS variable", asyn
   assert.match(css, /scale\(var\(--distance-scale, 0\.96\)\)/);
   assert.doesNotMatch(css, /arena\[data-combat-distance/);
 });
+
+
+test("fighter HP bars are state-driven and placed below names", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(html, /data-combat-hp="maraileron"/);
+  assert.match(html, /data-combat-hp-value="maraileron"/);
+  assert.match(html, /data-combat-hp="braisombre"/);
+  assert.match(html, /data-combat-hp-value="braisombre"/);
+  assert.match(
+    html,
+    /data-demo-label>Maraileron[\s\S]*data-combat-hp="maraileron"[\s\S]*data-combat-actor-charge="maraileron"/
+  );
+  assert.match(
+    html,
+    /data-demo-label>Braisombre[\s\S]*data-combat-hp="braisombre"[\s\S]*data-combat-actor-charge="braisombre"/
+  );
+
+  assert.match(source, /const hpRefs =/);
+  assert.match(source, /fighter\.maxHp/);
+  assert.match(source, /fighter\.hp/);
+  assert.match(source, /renderHp\(state\)/);
+  assert.doesNotMatch(source, /hp\s*=\s*100/);
+});
+
+test("player distance presenter uses semantic transition instead of opponent-relative repositioning", async () => {
+  const source = await readFile(
+    "src/adapters/renderer/dom-distance-presenter.js",
+    "utf8"
+  );
+
+  assert.match(source, /deltaBands = toIndex - fromIndex/);
+  assert.match(source, /sideSign = actorSlot === "player" \? -1 : 1/);
+  assert.match(source, /deltaX = sideSign \* deltaBands \* STEP_X/);
+  assert.doesNotMatch(source, /positions\[otherSlot\] \+ direction/);
+});
