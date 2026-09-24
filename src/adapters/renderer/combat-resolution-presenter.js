@@ -39,6 +39,9 @@ export function createCombatResolutionPresenter({
   }
 
   function impactTime(resolution) {
+    if (resolution.outcome === "countered") {
+      return resolution.events.find((item) => item.type === "skill-countered")?.atMs ?? 0;
+    }
     return resolution.events.find((item) => item.type === "skill-arrive")?.atMs ?? 0;
   }
 
