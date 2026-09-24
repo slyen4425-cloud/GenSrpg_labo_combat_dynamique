@@ -212,6 +212,17 @@ export async function mountCombatTest({
     )
   };
 
+  const hpRefs = {
+    maraileron: {
+      bar: requiredElement(root, '[data-combat-hp="maraileron"]'),
+      value: requiredElement(root, '[data-combat-hp-value="maraileron"]')
+    },
+    braisombre: {
+      bar: requiredElement(root, '[data-combat-hp="braisombre"]'),
+      value: requiredElement(root, '[data-combat-hp-value="braisombre"]')
+    }
+  };
+
   const energyRefs = {
     maraileron: {
       bar: requiredElement(root, '[data-combat-energy="maraileron"]'),
@@ -386,6 +397,16 @@ export async function mountCombatTest({
     }
   }
 
+  function renderHp(state) {
+    for (const [fighterId, refs] of Object.entries(hpRefs)) {
+      const fighter = state.fighters[fighterId];
+      refs.bar.max = fighter.maxHp;
+      refs.bar.value = fighter.hp;
+      refs.value.textContent =
+        `${Math.round(fighter.hp)} / ${Math.round(fighter.maxHp)} PV`;
+    }
+  }
+
   function renderEnergy(state) {
     for (const [fighterId, refs] of Object.entries(energyRefs)) {
       const fighter = state.fighters[fighterId];
@@ -454,6 +475,7 @@ export async function mountCombatTest({
       return;
     }
     lastState = state;
+    renderHp(state);
     renderEnergy(state);
     renderMovement(state);
     renderOffensiveAvailability();
