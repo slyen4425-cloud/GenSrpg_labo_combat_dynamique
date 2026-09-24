@@ -1,9 +1,21 @@
 import { assertCombatDistance } from "./distance.js";
+import {
+  advanceEnergyTicks,
+  normalizeChargeTimeEffect
+} from "./combat-timing.js";
 
 function finiteNonNegative(value, field) {
   const number = Number(value);
   if (!Number.isFinite(number) || number < 0) {
     throw new RangeError(`${field} must be a non-negative finite number`);
+  }
+  return number;
+}
+
+function finiteNumber(value, field) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    throw new RangeError(`${field} must be a finite number`);
   }
   return number;
 }
@@ -19,27 +31,51 @@ function normalizeFighter(input) {
   }
 
   const maxEnergy = finiteNonNegative(input.maxEnergy, `${id}.maxEnergy`);
-  const energy = finiteNonNegative(input.energy ?? maxEnergy, `${id}.energy`);
+  const energy = finiteNonNegative(
+    input.initialEnergy ?? input.energy ?? 0,
+    `${id}.initialEnergy`
+  );
   if (energy > maxEnergy) {
-    throw new RangeError(`${id}.energy cannot exceed maxEnergy`);
+    throw new RangeError(`${id}.initialEnergy cannot exceed maxEnergy`);
   }
+
+  const effects = (input.chargeTimeEffects ?? []).map((effect) =>
+    normalizeChargeTimeEffect(effect, effect.appliedAtMs ?? 0)
+  );
 
   return Object.freeze({
     id,
     maxEnergy,
     energy,
-    energyRegenPerSecond: finiteNonNegative(
-      input.energyRegenPerSecond ?? 0,
-      `${id}.energyRegenPerSecond`
+    energyChargeAmount: finiteNonNegative(
+      input.energyChargeAmount ?? 1,
+      `${id}.energyChargeAmount`
+    ),
+    energyChargeIntervalMs: finiteNonNegative(
+      input.energyChargeIntervalMs ?? 2000,
+      `${id}.energyChargeIntervalMs`
+    ),
+    energyChargeProgressMs: finiteNonNegative(
+      input.energyChargeProgressMs ?? 0,
+      `${id}.energyChargeProgressMs`
     ),
     movementEnergyPerStep: finiteNonNegative(
       input.movementEnergyPerStep ?? 0,
       `${id}.movementEnergyPerStep`
-    )
+    ),
+    chargeTimeModifierPct: finiteNumber(
+      input.chargeTimeModifierPct ?? 0,
+      `${id}.chargeTimeModifierPct`
+    ),
+    chargeTimeEffects: Object.freeze(effects)
   });
 }
 
-export function createCombatState({ distance = "medium", fighters }) {
+export function createCombatState({
+  distance = "medium",
+  fighters,
+  elapsedMs = 0
+}) {
   assertCombatDistance(distance);
   if (!Array.isArray(fighters) || fighters.length < 2) {
     throw new TypeError("fighters must contain at least two fighters");
@@ -52,6 +88,7 @@ export function createCombatState({ distance = "medium", fighters }) {
 
   return Object.freeze({
     distance,
+    elapsedMs: finiteNonNegative(elapsedMs, "elapsedMs"),
     fighters: Object.freeze(Object.fromEntries(entries))
   });
 }
@@ -80,19 +117,61 @@ export function withDistance(state, distance) {
   return Object.freeze({ ...state, distance });
 }
 
-export function regenerateEnergy(state, seconds) {
-  const elapsed = Number(seconds);
-  if (!Number.isFinite(elapsed) || elapsed < 0) {
-    throw new RangeError("seconds must be a non-negative finite number");
+export function addChargeTimeEffect(state, fighterId, effect) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
   }
 
-  let next = state;
-  for (const fighter of Object.values(state.fighters)) {
-    next = withFighterEnergy(
-      next,
-      fighter.id,
-      fighter.energy + fighter.energyRegenPerSecond * elapsed
-    );
+  const normalized = normalizeChargeTimeEffect(effect, state.elapsedMs);
+
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: Object.freeze({
+        ...fighter,
+        chargeTimeEffects: Object.freeze([
+          ...fighter.chargeTimeEffects.filter((item) => item.id !== normalized.id),
+          normalized
+        ])
+      })
+    })
+  });
+}
+
+export function advanceCombatTime(state, deltaMs) {
+  const delta = finiteNonNegative(deltaMs, "deltaMs");
+  if (delta === 0) {
+    return state;
   }
-  return next;
+
+  const elapsedMs = state.elapsedMs + delta;
+  const fighters = {};
+
+  for (const fighter of Object.values(state.fighters)) {
+    const charged = advanceEnergyTicks({
+      energy: fighter.energy,
+      maxEnergy: fighter.maxEnergy,
+      progressMs: fighter.energyChargeProgressMs,
+      amount: fighter.energyChargeAmount,
+      intervalMs: fighter.energyChargeIntervalMs,
+      deltaMs: delta
+    });
+
+    fighters[fighter.id] = Object.freeze({
+      ...fighter,
+      energy: charged.energy,
+      energyChargeProgressMs: charged.progressMs,
+      chargeTimeEffects: Object.freeze(
+        fighter.chargeTimeEffects.filter((effect) => effect.expiresAtMs > elapsedMs)
+      )
+    });
+  }
+
+  return Object.freeze({
+    ...state,
+    elapsedMs,
+    fighters: Object.freeze(fighters)
+  });
 }
