@@ -1,7 +1,9 @@
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
+import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
 
 const DATA_URLS = Object.freeze({
   fighters: Object.freeze({
@@ -77,7 +79,12 @@ const OUTCOME_LABELS = Object.freeze({
   immune: "annulée par immunité",
   countered: "contrée",
   out_of_range: "hors portée",
-  insufficient_energy: "énergie insuffisante"
+  insufficient_energy: "énergie insuffisante",
+  action_in_progress: "une action est déjà en cours",
+  no_action: "aucune capacité à contrer",
+  reaction_already_selected: "une réaction est déjà engagée",
+  no_effect: "cette réaction ne répond pas à cette attaque",
+  too_late: "réaction trop lente"
 });
 
 async function fetchJson(url, fetchImpl) {
@@ -102,7 +109,8 @@ function formatEnergy(value) {
 }
 
 function formatSeconds(ms) {
-  return `${(ms / 1000).toFixed(ms % 1000 === 0 ? 0 : 2)} s`;
+  const seconds = ms / 1000;
+  return `${seconds.toFixed(Number.isInteger(seconds) ? 0 : 1)} s`;
 }
 
 function skillMetaText(skill) {
@@ -119,12 +127,16 @@ function skillMetaText(skill) {
 function skillTimingText(skill) {
   const parts = [`${formatEnergy(skill.energyCost)}⚡`];
   if (skill.preparationMs > 0) {
-    parts.push(`prépa ${formatSeconds(skill.preparationMs)}`);
+    parts.push(`charge ${formatSeconds(skill.preparationMs)}`);
   }
   if (skill.travelMs > 0) {
     parts.push(`trajet ${formatSeconds(skill.travelMs)}`);
   }
   return parts.join(" · ");
+}
+
+function fighterLabel(id) {
+  return id === "maraileron" ? "Maraileron" : "Braisombre";
 }
 
 export async function mountCombatTest({
@@ -165,16 +177,11 @@ export async function mountCombatTest({
     normalizeSkillDefinition(fireballRaw),
     normalizeSkillDefinition(clawRaw)
   ]);
-
   const reactionSkills = Object.freeze([
     normalizeSkillDefinition(mirrorShieldRaw),
     normalizeSkillDefinition(fireImmunityRaw),
     normalizeSkillDefinition(contactCounterRaw)
   ]);
-
-  const reactionById = new Map(
-    reactionSkills.map((skill) => [skill.id, skill])
-  );
 
   const session = createCombatSession({
     distance: "medium",
@@ -182,29 +189,35 @@ export async function mountCombatTest({
   });
 
   const arena = requiredElement(root, "[data-combat-arena]");
-  const distanceValue = requiredElement(root, "[data-combat-distance-value]");
   const moverSelect = requiredElement(root, "[data-combat-mover]");
-  const reactionSelect = requiredElement(root, "[data-combat-reaction]");
   const skillContainer = requiredElement(root, "[data-combat-skills]");
+  const reactionContainer = requiredElement(root, "[data-combat-reactions]");
   const logList = requiredElement(root, "[data-combat-log]");
-  const advanceButton = requiredElement(root, "[data-combat-advance]");
+  const liveStatus = requiredElement(root, "[data-combat-live-status]");
   const resetButton = requiredElement(root, "[data-combat-reset]");
+
+  const fighterContainers = {
+    player: requiredElement(root, '[data-demo-slot="player"]'),
+    opponent: requiredElement(root, '[data-demo-slot="opponent"]')
+  };
 
   const energyRefs = {
     maraileron: {
       bar: requiredElement(root, '[data-combat-energy="maraileron"]'),
-      value: requiredElement(root, '[data-combat-energy-value="maraileron"]')
+      value: requiredElement(root, '[data-combat-energy-value="maraileron"]'),
+      rate: requiredElement(root, '[data-combat-energy-rate="maraileron"]')
     },
     braisombre: {
       bar: requiredElement(root, '[data-combat-energy="braisombre"]'),
-      value: requiredElement(root, '[data-combat-energy-value="braisombre"]')
+      value: requiredElement(root, '[data-combat-energy-value="braisombre"]'),
+      rate: requiredElement(root, '[data-combat-energy-rate="braisombre"]')
     }
   };
 
   const movementButtons = [...root.querySelectorAll("[data-combat-move]")];
-  const bandIndicators = [...root.querySelectorAll("[data-combat-band]")];
   const cleanups = [];
   let disposed = false;
+  let lastState = session.snapshot();
 
   const fx = createDomSkillFxRenderer({
     arena,
@@ -225,76 +238,84 @@ export async function mountCombatTest({
     fx
   });
 
+  const distancePresenter = createDomDistancePresenter({
+    fighters: fighterContainers
+  });
+
+  const skillRefs = new Map();
+  const reactionRefs = new Map();
+
   function listen(element, type, handler) {
     element.addEventListener(type, handler);
     cleanups.push(() => element.removeEventListener(type, handler));
   }
 
+  function setLiveStatus(message, tone = "info") {
+    liveStatus.textContent = message;
+    liveStatus.dataset.tone = tone;
+  }
+
   function writeLog(message, tone = "info") {
+    setLiveStatus(message, tone);
     const item = root.ownerDocument.createElement("li");
     item.textContent = message;
     item.dataset.tone = tone;
     logList.prepend(item);
-    while (logList.children.length > 8) {
+    while (logList.children.length > 10) {
       logList.lastElementChild?.remove();
     }
   }
 
-  function selectedReaction() {
-    const id = reactionSelect.value;
-    return id === "none" ? null : reactionById.get(id) ?? null;
+  function createSkillCard(skill, mode) {
+    const button = root.ownerDocument.createElement("button");
+    button.type = "button";
+    button.className = `skill-card skill-card--${mode}`;
+    button.dataset.combatSkill = skill.id;
+
+    const name = root.ownerDocument.createElement("strong");
+    name.textContent = skill.name;
+
+    const meta = root.ownerDocument.createElement("span");
+    meta.className = "skill-card__meta";
+    meta.textContent = skillMetaText(skill);
+
+    const timing = root.ownerDocument.createElement("span");
+    timing.className = "skill-card__timing";
+    timing.textContent = skillTimingText(skill);
+
+    const charge = root.ownerDocument.createElement("progress");
+    charge.className = "skill-card__charge";
+    charge.max = 1;
+    charge.value = 0;
+    charge.setAttribute("aria-label", `Charge de ${skill.name}`);
+
+    const state = root.ownerDocument.createElement("span");
+    state.className = "skill-card__state";
+    state.dataset.skillState = "";
+    state.textContent = "En attente";
+
+    button.append(name, meta, timing, charge, state);
+    return { button, charge, state };
   }
 
-  function createReactionOptions() {
-    const none = root.ownerDocument.createElement("option");
-    none.value = "none";
-    none.textContent = "Aucune réaction";
-    reactionSelect.append(none);
-
-    for (const skill of reactionSkills) {
-      const option = root.ownerDocument.createElement("option");
-      option.value = skill.id;
-      option.textContent =
-        `${skill.name} · ${formatEnergy(skill.energyCost)}⚡ · ${skillMetaText(skill)}`;
-      reactionSelect.append(option);
+  function resetChargeBars() {
+    for (const refs of [...skillRefs.values(), ...reactionRefs.values()]) {
+      refs.charge.value = 0;
+      refs.button.dataset.charging = "false";
     }
   }
 
-  const skillButtons = new Map();
-
-  function createSkillButtons() {
+  function createCards() {
     for (const skill of offensiveSkills) {
-      const button = root.ownerDocument.createElement("button");
-      button.type = "button";
-      button.className = "skill-card";
-      button.dataset.combatSkill = skill.id;
+      const refs = createSkillCard(skill, "offense");
+      skillContainer.append(refs.button);
+      skillRefs.set(skill.id, { ...refs, skill });
 
-      const name = root.ownerDocument.createElement("strong");
-      name.textContent = skill.name;
-
-      const meta = root.ownerDocument.createElement("span");
-      meta.className = "skill-card__meta";
-      meta.textContent = skillMetaText(skill);
-
-      const timing = root.ownerDocument.createElement("span");
-      timing.className = "skill-card__timing";
-      timing.textContent = skillTimingText(skill);
-
-      const state = root.ownerDocument.createElement("span");
-      state.className = "skill-card__state";
-      state.dataset.skillState = "";
-
-      button.append(name, meta, timing, state);
-      skillContainer.append(button);
-      skillButtons.set(skill.id, { button, state });
-
-      listen(button, "click", () => {
-        const reactionSkill = selectedReaction();
-        const result = session.useSkill({
+      listen(refs.button, "click", () => {
+        const result = runtime.startSkill({
           actorId: "maraileron",
           targetId: "braisombre",
-          skill,
-          reactionSkill
+          skill
         });
 
         if (!result.ok) {
@@ -302,32 +323,46 @@ export async function mountCombatTest({
             `${skill.name} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
             "warn"
           );
-          render();
+          render(lastState);
           return;
         }
 
-        presenter.present({
-          resolution: result,
-          actorSlot: "player",
-          targetSlot: "opponent"
-        });
-
-        const reactionText = result.reactionApplied
-          ? ` avec ${reactionById.get(result.reactionApplied)?.name ?? result.reactionApplied}`
-          : "";
-
-        const timing =
-          result.outcome === "countered"
-            ? result.events.find((item) => item.type === "skill-countered")?.atMs
-            : result.events.find((item) => item.type === "skill-arrive")?.atMs;
-
+        refs.button.dataset.charging = "true";
+        refs.state.textContent =
+          `Charge ${formatSeconds(result.action.preparationMs)}`;
         writeLog(
-          `${skill.name}${reactionText} → ${OUTCOME_LABELS[result.outcome] ?? result.outcome}` +
-          (Number.isFinite(timing) ? ` à ${formatSeconds(timing)}.` : "."),
-          result.outcome === "hit" ? "ok" : "accent"
+          `${skill.name} se prépare — Braisombre peut réagir.`,
+          "accent"
         );
+        render(lastState);
+      });
+    }
 
-        render();
+    for (const skill of reactionSkills) {
+      const refs = createSkillCard(skill, "reaction");
+      reactionContainer.append(refs.button);
+      reactionRefs.set(skill.id, { ...refs, skill });
+
+      listen(refs.button, "click", () => {
+        const result = runtime.react(skill);
+
+        if (!result.ok) {
+          writeLog(
+            `${skill.name} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
+            "warn"
+          );
+          render(lastState);
+          return;
+        }
+
+        refs.button.dataset.charging = "true";
+        refs.state.textContent =
+          `Réaction ${formatSeconds(result.reaction.preparationMs)}`;
+        writeLog(
+          `${skill.name} lancé — résolution dans ${formatSeconds(result.reaction.preparationMs)}.`,
+          "accent"
+        );
+        render(lastState);
       });
     }
   }
@@ -339,18 +374,12 @@ export async function mountCombatTest({
       refs.bar.value = fighter.energy;
       refs.value.textContent =
         `${formatEnergy(fighter.energy)} / ${formatEnergy(fighter.maxEnergy)}⚡`;
+      refs.rate.textContent =
+        `+${formatEnergy(fighter.energyChargeAmount)} toutes les ${formatSeconds(fighter.energyChargeIntervalMs)}`;
     }
   }
 
-  function renderDistance(state) {
-    distanceValue.textContent = DISTANCE_LABELS[state.distance];
-    arena.dataset.combatDistance = state.distance;
-
-    for (const indicator of bandIndicators) {
-      indicator.dataset.active =
-        indicator.dataset.combatBand === state.distance ? "true" : "false";
-    }
-
+  function renderMovement(state) {
     const actorId = moverSelect.value;
     for (const button of movementButtons) {
       const toDistance = button.dataset.combatMove;
@@ -365,86 +394,176 @@ export async function mountCombatTest({
     }
   }
 
-  function renderSkills() {
-    const reactionSkill = selectedReaction();
-
-    for (const skill of offensiveSkills) {
-      const refs = skillButtons.get(skill.id);
+  function renderOffensiveAvailability() {
+    for (const { skill, button, state } of skillRefs.values()) {
       const preview = session.previewSkill({
         actorId: "maraileron",
         targetId: "braisombre",
-        skill,
-        reactionSkill
+        skill
       });
 
-      refs.button.disabled = !preview.ok;
-      refs.button.dataset.available = preview.ok ? "true" : "false";
-      refs.state.textContent = preview.ok
-        ? `→ ${OUTCOME_LABELS[preview.outcome] ?? preview.outcome}`
-        : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
+      const available = preview.ok && !runtime.hasActiveAction;
+      button.disabled = !available;
+      button.dataset.available = available ? "true" : "false";
+
+      if (button.dataset.charging !== "true") {
+        state.textContent = runtime.hasActiveAction
+          ? "Action en cours"
+          : preview.ok
+            ? "Disponible"
+            : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
+      }
     }
   }
 
-  function render() {
+  function renderReactionAvailability() {
+    for (const { skill, button, state } of reactionRefs.values()) {
+      const preview = runtime.previewReaction(skill);
+      button.disabled = !preview.ok;
+      button.dataset.available = preview.ok ? "true" : "false";
+
+      if (button.dataset.charging !== "true") {
+        state.textContent = preview.ok
+          ? "Réagir maintenant"
+          : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
+      }
+    }
+  }
+
+  function render(state = session.snapshot()) {
     if (disposed) {
       return;
     }
-    const state = session.snapshot();
+    lastState = state;
     renderEnergy(state);
-    renderDistance(state);
-    renderSkills();
+    renderMovement(state);
+    renderOffensiveAvailability();
+    renderReactionAvailability();
   }
+
+  const runtime = createCombatRuntime({
+    session,
+    onState(state) {
+      render(state);
+    },
+    onProgress(progress) {
+      if (!progress.skillId) {
+        resetChargeBars();
+        renderReactionAvailability();
+        return;
+      }
+
+      for (const [skillId, refs] of skillRefs) {
+        if (skillId === progress.skillId) {
+          refs.charge.value = progress.chargeProgress;
+          refs.button.dataset.charging = "true";
+          refs.state.textContent =
+            progress.phase === "preparation"
+              ? `Charge ${Math.round(progress.chargeProgress * 100)} %`
+              : progress.phase === "travel"
+                ? "En trajet"
+                : "Impact";
+        }
+      }
+
+      if (progress.reaction) {
+        const refs = reactionRefs.get(progress.reaction.skillId);
+        if (refs) {
+          refs.charge.value = progress.reaction.progress;
+          refs.button.dataset.charging = "true";
+          refs.state.textContent =
+            progress.reaction.progress < 1
+              ? `Réaction ${Math.round(progress.reaction.progress * 100)} %`
+              : "Prête";
+        }
+      }
+
+      renderReactionAvailability();
+    },
+    onRelease({ action }) {
+      presenter.presentRelease({
+        action,
+        actorSlot: "player",
+        targetSlot: "opponent"
+      });
+      writeLog(
+        `${action.skill.name} est lancée.`,
+        "accent"
+      );
+    },
+    onResolved(resolution) {
+      presenter.presentOutcome({
+        resolution,
+        actorSlot: "player",
+        targetSlot: "opponent"
+      });
+
+      const name = offensiveSkills.find(
+        (skill) =>
+          resolution.events.some(
+            (event) => event.skillId === skill.id
+          )
+      )?.name ?? "Capacité";
+
+      writeLog(
+        `${name} → ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
+        resolution.outcome === "hit" ? "ok" : "accent"
+      );
+
+      resetChargeBars();
+      render(session.snapshot());
+    }
+  });
 
   for (const button of movementButtons) {
     listen(button, "click", () => {
       const actorId = moverSelect.value;
-      const from = session.snapshot().distance;
       const result = session.move(actorId, button.dataset.combatMove);
 
       if (!result.ok) {
         writeLog(
-          `${actorId === "maraileron" ? "Maraileron" : "Braisombre"} : énergie insuffisante pour ce déplacement (${formatEnergy(result.cost)}⚡).`,
+          `${fighterLabel(actorId)} : énergie insuffisante pour ce déplacement (${formatEnergy(result.cost)}⚡).`,
           "warn"
         );
-      } else {
-        writeLog(
-          `${actorId === "maraileron" ? "Maraileron" : "Braisombre"} : ${DISTANCE_LABELS[from]} → ${DISTANCE_LABELS[result.state.distance]} · -${formatEnergy(result.cost)}⚡.`,
-          "info"
-        );
+        render(session.snapshot());
+        return;
       }
-      render();
+
+      distancePresenter.presentMovement({
+        result,
+        actorSlot: actorId === "maraileron" ? "player" : "opponent"
+      });
+
+      writeLog(
+        `${fighterLabel(actorId)} se déplace vers ${DISTANCE_LABELS[result.state.distance]} · -${formatEnergy(result.cost)}⚡.`,
+        "info"
+      );
+      render(result.state);
     });
   }
 
-  listen(moverSelect, "change", render);
-  listen(reactionSelect, "change", render);
-
-  listen(advanceButton, "click", () => {
-    session.advance(1);
-    writeLog(
-      `+1 s : énergie régénérée selon chaque créature (+${formatEnergy(maraileronConfig.energyRegenPerSecond)} / +${formatEnergy(braisombreConfig.energyRegenPerSecond)}).`,
-      "info"
-    );
-    render();
-  });
+  listen(moverSelect, "change", () => render(session.snapshot()));
 
   listen(resetButton, "click", () => {
+    runtime.cancelActive();
     presenter.cancelPending();
     fx.cancelAll();
+    session.reset();
+    distancePresenter.reset();
     visuals.cancelFor("player");
     visuals.cancelFor("opponent");
-    session.reset();
-    reactionSelect.value = "none";
+    resetChargeBars();
+    logList.replaceChildren();
     writeLog("Combat de test réinitialisé.", "info");
-    render();
+    render(session.snapshot());
   });
 
-  createReactionOptions();
-  createSkillButtons();
-  render();
+  createCards();
+  runtime.start();
+  render(session.snapshot());
 
   writeLog(
-    "Test prêt : déplacez-vous entre Courte / Moyenne / Longue, choisissez une réaction puis lancez une capacité.",
+    "Énergie à 0 : attendez les premiers ticks puis testez déplacement, charge et réaction.",
     "info"
   );
 
@@ -458,6 +577,7 @@ export async function mountCombatTest({
       for (const cleanup of cleanups.splice(0)) {
         cleanup();
       }
+      runtime.dispose();
       presenter.dispose();
       fx.dispose();
     }
