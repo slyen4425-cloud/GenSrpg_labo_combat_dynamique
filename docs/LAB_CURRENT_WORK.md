@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-24
 
-Phase active : Phase 2 — Renderer DOM/CSS + démo visuelle V1 — pré-audit.
+Phase active : Phase 2B — Prototype combat distance / énergie / capacités — pré-audit mobile.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -518,6 +518,68 @@ Tests prévus :
 - renvoi projectile ;
 - UI sans logique de résolution ;
 - vraie chaîne données -> resolver -> UI/adaptateur visuel.
+
+
+## État technique du chantier combat-distance-skills-v1
+
+Implémentation présente :
+
+- contrat `SkillDefinition` séparant catégorie / forme / élément ;
+- Combat State immutable ;
+- Combat Session propriétaire unique de l'état courant ;
+- bandes de distance `short / medium / long` ;
+- coût de déplacement par palier et par créature ;
+- énergie commune aux déplacements et capacités ;
+- preview de mouvement/capacité sans effet de bord ;
+- résolution de portée et énergie ;
+- préparation / release / trajet / impact / récupération ;
+- préparation propre des réactions ;
+- contre pouvant annuler une attaque avant son release ;
+- renvoi de projectile ;
+- immunité élémentaire ;
+- contre par forme d'action ;
+- projectile générique minimal dérivé de la timeline résolue ;
+- Presenter séparé reliant résolution -> événements visuels ;
+- interface mobile avec jauges énergie, distance, déplacement, capacités, réaction et journal ;
+- outils d'animation bruts conservés dans un panneau laboratoire séparé.
+
+Données de test :
+
+- Maraileron : 1 énergie par palier, régénération 8/s ;
+- Braisombre : 3 énergie par palier, régénération 6/s ;
+- Boule de feu : Offensive / Projectile / Feu ;
+- Griffe : Offensive / Contact ;
+- Bouclier miroir : renvoi Projectile ;
+- Immunité feu : immunité Feu ;
+- Riposte : contre Contact.
+
+Frontières protégées :
+
+- Combat Rules n'importe aucun moteur animation/FX/renderer/UI ;
+- Animation Core ne connaît pas distance, énergie ou résultat de compétence ;
+- Demo UI ne calcule pas coût, portée ou résultat ;
+- le projectile n'influence jamais la résolution.
+
+Dernier HEAD technique avant documentation de gouvernance :
+
+`138acc941506a021a9f4a7cff5ba03caad71a522`
+
+CI de ce HEAD :
+
+- run : `36060087396`
+- conclusion : SUCCESS
+
+Validation restante avant GREEN final :
+
+- test smartphone de l'interface ;
+- validation utilisateur de l'intuitivité des trois distances ;
+- validation visuelle Boule de feu -> hit ;
+- Boule de feu -> Bouclier miroir -> renvoi ;
+- Boule de feu -> Immunité feu ;
+- Griffe -> Riposte -> interruption avant release ;
+- vérification que les coûts de déplacement sont compréhensibles pour Maraileron et Braisombre.
+
+Le chantier ne doit pas être déclaré GREEN final avant ce retour utilisateur.
 
 ## Dernier checkpoint GREEN
 
