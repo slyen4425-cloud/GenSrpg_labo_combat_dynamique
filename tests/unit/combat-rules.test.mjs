@@ -16,6 +16,7 @@ import {
   resolveMovement,
   resolveSkill
 } from "../../src/core/combat/action-resolver.js";
+import { createCombatSession } from "../../src/core/combat/combat-session.js";
 
 async function json(path) {
   return JSON.parse(await readFile(path, "utf8"));
@@ -233,4 +234,41 @@ test("energy regeneration stays configurable per fighter", () => {
 
   assert.equal(regenerated.fighters.maraileron.energy, 66);
   assert.equal(regenerated.fighters.braisombre.energy, 62);
+});
+
+
+test("combat session owns current state while previews stay side-effect free", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [maraileronConfig, braisombreConfig]
+  });
+
+  const preview = session.previewMovement("maraileron", "long");
+  assert.equal(preview.cost, 2);
+  assert.equal(session.snapshot().distance, "short");
+  assert.equal(session.snapshot().fighters.maraileron.energy, 100);
+
+  const moved = session.move("maraileron", "long");
+  assert.equal(moved.ok, true);
+  assert.equal(session.snapshot().distance, "long");
+  assert.equal(session.snapshot().fighters.maraileron.energy, 98);
+});
+
+test("combat session commits skill energy and explicit regeneration", () => {
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [maraileronConfig, braisombreConfig]
+  });
+
+  const result = session.useSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  assert.equal(result.outcome, "hit");
+  assert.equal(session.snapshot().fighters.maraileron.energy, 82);
+
+  session.advance(1);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 90);
 });
