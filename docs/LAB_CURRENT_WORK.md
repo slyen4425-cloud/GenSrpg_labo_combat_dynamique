@@ -883,6 +883,55 @@ Validation restante :
 
 Le sous-lot reste pré-audit jusqu'au retour utilisateur.
 
+
+## Sous-lot actif — player-distance-hpbar-polish-v2
+
+Base :
+
+`fefab76a531d07a47d863ce6e6989750f939b869`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-player-distance-hpbar-polish-v2-2026-09-24`
+
+Branche :
+
+`work/lab-player-distance-hpbar-polish-v2-2026-09-24`
+
+Retour utilisateur ciblé :
+
+- le déplacement du joueur doit être sans ambiguïté :
+  - vers Courte = rapprochement visuel vers le centre ;
+  - vers Longue = éloignement visuel vers l'extérieur ;
+- le rapprochement joueur doit aller légèrement plus vers le centre ;
+- l'éloignement doit rester assez contenu pour que le bandeau nom / PV / charge ne sorte pas de l'arène ;
+- ajouter une barre de PV sous le nom des deux créatures ;
+- la barre de PV doit provenir du Combat State et non d'une valeur décorative du HTML.
+
+Choix d'architecture :
+
+- `DOM Distance Presenter` n'infère plus la position depuis la position courante de l'adversaire ;
+- il applique un delta signé à partir de la transition sémantique `from -> to` :
+  - côté joueur : distance plus courte => x augmente ; distance plus longue => x diminue ;
+  - côté adversaire : inverse ;
+- la projection reste bornée dans l'arène ;
+- le scale visuel continue d'être piloté par la distance cible ;
+- `Combat State` devient propriétaire de `hp / maxHp` ;
+- Demo UI ne fait qu'afficher le snapshot HP.
+
+Tests prévus :
+
+- joueur Moyenne -> Courte se déplace vers le centre ;
+- joueur Moyenne -> Longue se déplace vers l'extérieur ;
+- adversaire conserve la convention symétrique ;
+- seul le combattant déplacé change de position/scale ;
+- bornes de scène respectées ;
+- HP initial normalisé depuis les données ;
+- HP borné entre 0 et maxHp ;
+- barres PV présentes sous le nom ;
+- UI alimentée par `state.fighters[id].hp/maxHp` ;
+- CI et sentinelles existantes vertes.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
