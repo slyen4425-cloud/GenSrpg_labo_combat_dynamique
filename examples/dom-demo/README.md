@@ -1,81 +1,65 @@
-# DOM Demo V1
-
-Démo autonome du laboratoire de combat dynamique.
+# DOM Demo — Combat Dynamique V2
 
 ## But
 
-Deux chemins sont visibles dans la même page mais restent séparés.
+Valider sur smartphone le vrai chemin :
 
-Chemin visuel brut :
+`Combat data -> Combat State/Timing -> Combat Session -> Combat Runtime -> Presenter -> Animation / FX`
 
-`CombatVisualEvent -> profile -> AnimationPlan -> DOM renderer`
+sans dépendance à GenSrpG.
 
-Chemin prototype combat :
+## Comportement par défaut
 
-`Combat data -> Combat Session -> Action Resolver -> Resolution Presenter -> Animation / FX`
-
-Le moteur visuel ne décide jamais du résultat du combat.
-
-## Utilisation
-
-Servir la racine du dépôt avec un serveur HTTP statique, puis ouvrir :
-
-`/examples/dom-demo/`
-
-La page fonctionne sans build ni dépendance npm côté navigateur.
-
-## Test distance / énergie
-
-État initial :
-
-- distance : Moyenne ;
-- Maraileron : 100 énergie, déplacement 1 énergie par palier ;
-- Braisombre : 100 énergie, déplacement 3 énergie par palier.
-
-Le joueur peut déplacer l'une ou l'autre créature entre :
-
-- Courte ;
-- Moyenne ;
-- Longue.
-
-Le coût affiché provient du moteur Combat Rules.
-
-L'énergie utilisée pour se déplacer est la même que celle utilisée pour lancer ou répondre à une capacité.
-
-Le bouton `+1 s d'énergie` applique explicitement la régénération configurée sans installer de boucle globale.
+- Maraileron et Braisombre restent en idle ;
+- l'énergie démarre à 0 ;
+- chaque créature gagne +1 énergie toutes les 2 secondes dans les données de test ;
+- Maraileron paie 1 énergie par palier de déplacement ;
+- Braisombre paie 3 énergies par palier ;
+- seule la créature déplacée bouge visuellement ;
+- l'arène et les capacités restent visibles simultanément.
 
 ## Capacités de test
 
 Maraileron :
 
-- `Boule de feu` : Offensive + Projectile + Feu, moyenne/longue ;
-- `Griffe` : Offensive + Contact, courte.
+- Boule de feu : Offensive / Projectile / Feu, coût 3 ;
+- Griffe : Offensive / Contact, coût 2.
 
-Réactions Braisombre :
+Braisombre peut réagir en temps réel :
 
-- `Bouclier miroir` : renvoie Projectile ;
-- `Immunité feu` : immunise Feu ;
-- `Riposte` : contre Contact.
+- Bouclier miroir : renvoie Projectile, coût 2 ;
+- Immunité feu : immunise Feu, coût 2 ;
+- Riposte : contre Contact, coût 2.
 
-Chaque capacité porte ses propres coûts et timings.
+Chaque carte de capacité possède une barre de charge liée au Combat Runtime.
 
-Une réaction trop lente n'est pas appliquée.
+Une réaction est déclenchée en appuyant sur sa carte pendant qu'une capacité adverse est en préparation ou en trajet.
 
-Une Riposte prête avant le départ d'une attaque de contact peut annuler l'attaque avant son release.
+## Charge
 
-## FX minimal
+Les temps affichés viennent des données.
 
-La Boule de feu utilise un projectile DOM générique uniquement pour vérifier la chronologie :
+Le temps effectif peut ensuite être modifié par :
 
-préparation -> release -> trajet -> impact.
+- `chargeTimeModifierPct` de la créature ;
+- effets temporaires avec pourcentage et durée.
 
-Ce FX n'a aucune autorité sur les règles.
+Convention : +X % ralentit la charge, -X % l'accélère.
 
-## Assets par défaut
+## Distance
 
-La démo charge automatiquement :
+Les trois boutons restent :
 
-- Maraileron : vue joueur, profil `serpentine` ;
-- Braisombre : vue adversaire, profil `drake`.
+- Courte ;
+- Moyenne ;
+- Longue.
 
-Les champs fichier sont rangés dans `Outils visuels du laboratoire` et restent optionnels.
+La distance logique sert aux règles de portée.
+
+Le rendu de position est séparé : seul le combattant qui choisit une nouvelle distance se déplace à l'écran.
+
+## Outils laboratoire
+
+Les contrôles Idle / Attaque / Hit / KO et l'import d'images restent disponibles dans le panneau `Outils visuels du laboratoire`.
+
+Ils ne sont pas nécessaires pour utiliser le prototype de combat.
