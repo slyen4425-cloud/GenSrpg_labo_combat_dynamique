@@ -12,6 +12,10 @@ function scaled(value, intensity) {
   return value * intensity;
 }
 
+function directed(value, sign) {
+  return value === 0 ? 0 : value * sign;
+}
+
 export function planAnimation({ event, actor, profile }) {
   if (!event || !actor || !profile) {
     throw new TypeError("event, actor and profile are required");
@@ -37,9 +41,9 @@ export function planAnimation({ event, actor, profile }) {
             durationMs: half,
             easing: "ease-in-out",
             transform: {
-              translateX: scaled(cfg.swayX, intensity) * sign,
+              translateX: directed(scaled(cfg.swayX, intensity), sign),
               translateY: -scaled(cfg.bobY, intensity),
-              rotateDeg: scaled(cfg.swayRotate, intensity) * sign,
+              rotateDeg: directed(scaled(cfg.swayRotate, intensity), sign),
               scaleX: 1 + scaled(cfg.scaleXDelta ?? 0, intensity),
               scaleY: 1 + scaled(cfg.scaleYDelta ?? 0, intensity)
             }
@@ -73,11 +77,11 @@ export function planAnimation({ event, actor, profile }) {
             durationMs: anticipationMs,
             easing: "ease-out",
             transform: {
-              translateX: -scaled(cfg.lungeX * 0.12, intensity) * sign,
+              translateX: directed(-scaled(cfg.lungeX * 0.12, intensity), sign),
               translateY: 0,
               scaleX: 1 - scaled(cfg.squashY * 0.35, intensity),
               scaleY: 1 + scaled(cfg.squashY * 0.2, intensity),
-              rotateDeg: -2 * sign * intensity
+              rotateDeg: directed(-2 * intensity, sign)
             }
           },
           {
@@ -85,11 +89,11 @@ export function planAnimation({ event, actor, profile }) {
             durationMs: strikeMs,
             easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
             transform: {
-              translateX: scaled(cfg.lungeX, intensity) * sign,
+              translateX: directed(scaled(cfg.lungeX, intensity), sign),
               translateY: scaled(cfg.lungeY, intensity),
               scaleX: 1 + scaled(cfg.stretchX, intensity),
               scaleY: 1 - scaled(cfg.squashY, intensity),
-              rotateDeg: 3 * sign * intensity
+              rotateDeg: directed(3 * intensity, sign)
             }
           },
           {
@@ -119,9 +123,9 @@ export function planAnimation({ event, actor, profile }) {
             durationMs: cfg.durationMs,
             easing: "ease-out",
             transform: {
-              translateX: scaled(cfg.recoilX, intensity) * sign,
+              translateX: directed(scaled(cfg.recoilX, intensity), sign),
               translateY: 0,
-              rotateDeg: scaled(cfg.recoilRotate, intensity) * sign,
+              rotateDeg: directed(scaled(cfg.recoilRotate, intensity), sign),
               scaleX: 0.98,
               scaleY: 1.02
             }
@@ -155,7 +159,7 @@ export function planAnimation({ event, actor, profile }) {
             transform: {
               translateX: 0,
               translateY: scaled(cfg.fallY, intensity),
-              rotateDeg: scaled(cfg.rotate, intensity) * sign,
+              rotateDeg: directed(scaled(cfg.rotate, intensity), sign),
               scaleX: 1,
               scaleY: 0.96
             },
