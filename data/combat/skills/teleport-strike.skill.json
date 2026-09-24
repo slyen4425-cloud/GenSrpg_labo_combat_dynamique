@@ -1,0 +1,23 @@
+{
+  "id": "teleport-strike",
+  "name": "Frappe téléportée",
+  "category": "offensive",
+  "form": "contact",
+  "element": null,
+  "approachMode": "teleport",
+  "energyCost": 3,
+  "preparationMs": 1200,
+  "travelMs": 120,
+  "recoveryMs": 650,
+  "allowedDistances": [
+    "short",
+    "medium",
+    "long"
+  ],
+  "effect": {
+    "damage": 24,
+    "tags": [
+      "teleport"
+    ]
+  }
+}
