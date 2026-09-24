@@ -1120,6 +1120,90 @@ CI :
 
 Ce lot peut servir de base au chantier suivant Objets / Rappel / Invocation / interruption par Stun.
 
+
+## Chantier actif — utility-actions-interrupt-v1
+
+Base GREEN :
+
+`0df6d3bcfc94cf11abf05824a273b91c6287756a`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-utility-actions-interrupt-v1-2026-09-24`
+
+Branche :
+
+`work/lab-utility-actions-interrupt-v1-2026-09-24`
+
+Objectif :
+
+Ajouter à la scène de combat des actions non offensives utilisant le même socle temps réel que les compétences :
+
+- Objet utilisable ;
+- Rappel du monstre actif ;
+- Invocation d'un monstre de réserve ;
+- interruption d'une action en charge par un effet de type Stun.
+
+Architecture visée :
+
+- introduire un contrat générique `TimedActionDefinition` pour les propriétés communes :
+  - coût énergie ;
+  - temps de préparation ;
+  - récupération ;
+  - type d'action ;
+- les compétences conservent `SkillDefinition` pour leurs propriétés propres (forme, élément, dégâts, portée) ;
+- `Combat Runtime` devient propriétaire d'une action temporisée générique en cours, pas seulement d'une compétence ;
+- `Action Resolver` conserve l'autorité des résultats de compétence ;
+- un nouveau `Utility Action Resolver` possède les effets Objet / Rappel / Invocation ;
+- l'interruption est un événement sémantique du Runtime : une action annulée ne déclenche jamais son effet final ;
+- un Stun peut demander l'interruption d'une action en charge si sa cible est l'acteur qui charge ;
+- l'UI ne fait que lancer une action et afficher charge / annulation / résultat.
+
+Premier test de données :
+
+- Potion de test :
+  - coût énergie configurable ;
+  - charge configurable ;
+  - soin configurable ;
+- Rappel :
+  - coût énergie configurable ;
+  - charge configurable ;
+  - retire le combattant joueur actif de la scène après résolution ;
+- Invocation :
+  - coût énergie configurable ;
+  - charge configurable ;
+  - remet un combattant de réserve sur le slot joueur après résolution ;
+- Coup étourdissant :
+  - capacité portant le tag `stun` ;
+  - si le Stun est résolu pendant la préparation d'une action adverse, la charge est interrompue ;
+  - l'énergie déjà dépensée reste dépensée dans ce prototype sauf règle future configurable de remboursement.
+
+Limite d'asset :
+
+Le dépôt ne contient actuellement que Maraileron et Braisombre. Le test d'invocation utilisera donc un slot de réserve logique avec asset de laboratoire existant ; aucun nouvel art ne sera inventé dans ce chantier.
+
+Interdits :
+
+- aucun deuxième timer pour Objet/Rappel/Invocation ;
+- aucun `setTimeout` métier dans les boutons UI ;
+- aucun effet appliqué directement par le DOM ;
+- aucun Stun implémenté comme simple masquage d'animation ;
+- aucune mutation d'énergie/PV/préparation dans Presenter ;
+- aucun changement GenSrpG principal.
+
+Tests :
+
+- Timed Action normalisée et configurable ;
+- Objet dépense énergie à start, n'applique son soin qu'à completion ;
+- Rappel n'agit qu'après completion ;
+- Invocation n'agit qu'après completion ;
+- action interrompue n'applique aucun effet final ;
+- Stun interrompt une action en charge ;
+- runtime ne garde qu'une seule action propriétaire par acteur/slot dans le prototype ;
+- dispose/reset nettoient charge et interruption ;
+- UI boutons Objet / Rappel / Invocation présents dans la scène de combat ;
+- charge principale sous le nom reflète aussi ces actions.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
