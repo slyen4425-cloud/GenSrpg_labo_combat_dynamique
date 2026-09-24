@@ -26,6 +26,14 @@
       384
     ]
   },
+  "displayScale": {
+    "player": 1.18,
+    "opponent": 0.92
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "78%"
+  },
   "scale": 1,
   "offset": {
     "x": 0,
