@@ -82,3 +82,33 @@ Le sous-lot de présentation conserve les règles V2 intactes et modifie seuleme
 - Boule de feu utilise 2,0 s de préparation dans les données de test avant le départ du projectile.
 
 Les petites barres présentes sur les cartes de capacité restent un détail de laboratoire. La barre sous le nom est la lecture principale pendant le combat.
+
+
+## Actions tactiques V3
+
+L'interface principale affiche maintenant :
+
+- Objet ;
+- Rappel ;
+- Invocation.
+
+Chaque action affiche son coût et sa charge, consomme la même énergie que les compétences et utilise la barre de charge principale de Maraileron.
+
+Réglages de test :
+
+- Objet : 1 énergie / 0,7 s ;
+- Rappel : 2 énergies / 1,4 s ;
+- Invocation : 3 énergies / 2,2 s.
+
+Objet soigne de 20 PV à completion.
+
+Rappel et Invocation valident pour l'instant le timing et l'événement sémantique. Le changement réel de créature/roster sera un lot séparé.
+
+Dans `Réglages du test`, le bouton `Simuler impact Stun` permet de tester une interruption adverse :
+
+1. démarrer Rappel ou Invocation ;
+2. pendant la barre de charge, appuyer sur `Simuler impact Stun` ;
+3. la charge doit être annulée ;
+4. si l'action a déjà atteint son release, l'interruption doit être refusée.
+
+Ce bouton n'appartient pas à l'interface joueur.
