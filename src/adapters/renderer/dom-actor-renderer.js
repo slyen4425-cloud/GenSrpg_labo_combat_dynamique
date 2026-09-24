@@ -37,6 +37,8 @@ export function createDomActorRenderer({
 
   function restoreBaseState() {
     element.style.transform = composeDomTransform(actor);
+    element.style.transformOrigin =
+      `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = "1";
   }
 
