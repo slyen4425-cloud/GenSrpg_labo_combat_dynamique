@@ -127,32 +127,40 @@ h1 {
   display: grid;
   gap: 0.35rem;
   left: 50%;
-  width: min(40%, 22rem);
-  transform: translateX(-50%);
-  transition: left 260ms ease;
+  width: min(38%, 21rem);
+  transform: translateX(-50%) scale(var(--distance-scale, 0.96));
+  transform-origin: center center;
+  transition:
+    left 260ms ease,
+    transform 260ms ease;
 }
 
 .fighter--player {
-  left: 20%;
-  bottom: 1.5%;
-  width: min(44%, 24rem);
+  left: 23%;
+  bottom: 2%;
+  width: min(42%, 23rem);
 }
 
 .fighter--opponent {
-  left: 80%;
-  top: 6%;
-  width: min(36%, 20rem);
+  left: 77%;
+  top: 7%;
+  width: min(34%, 19rem);
 }
 
 .fighter__caption {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.34rem 0.48rem 0.38rem;
+  border-radius: 0.62rem;
+  background: rgba(4, 13, 18, 0.74);
+  backdrop-filter: blur(6px);
+}
+
+.fighter__caption-line {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.4rem;
-  padding: 0.32rem 0.48rem;
-  border-radius: 0.62rem;
-  background: rgba(4, 13, 18, 0.68);
-  backdrop-filter: blur(6px);
 }
 
 .fighter__caption strong {
@@ -162,6 +170,23 @@ h1 {
 .fighter__caption span {
   color: #9bc2cc;
   font-size: 0.62rem;
+}
+
+.fighter__charge {
+  width: 100%;
+  height: 0.34rem;
+  margin: 0;
+  opacity: 0.22;
+  accent-color: #f6cf72;
+  transition: opacity 120ms ease;
+}
+
+.fighter__charge[data-active="true"] {
+  opacity: 1;
+}
+
+.fighter__charge--reaction {
+  accent-color: #9bdcff;
 }
 
 .fighter__motion {
@@ -254,10 +279,18 @@ h1 {
   accent-color: #8be8f8;
 }
 
-.movement-strip {
+.movement-actions {
   display: grid;
-  grid-template-columns: minmax(7rem, 0.75fr) minmax(0, 2.25fr);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
   gap: 0.42rem;
+}
+
+.movement-actions__label {
+  color: #bdd0d7;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .compact-field {
@@ -437,6 +470,7 @@ h1 {
   color: #ffb5b5;
 }
 
+.test-settings,
 .lab-debug {
   margin-top: 0.7rem;
   border: 1px solid rgba(137, 223, 240, 0.14);
@@ -444,12 +478,21 @@ h1 {
   background: rgba(7, 18, 24, 0.72);
 }
 
+.test-settings > summary,
 .lab-debug > summary {
   padding: 0.72rem 0.85rem;
   cursor: pointer;
   color: #bdd0d7;
   font-size: 0.75rem;
   font-weight: 800;
+}
+
+.test-settings__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.6rem;
+  padding: 0 0.8rem 0.8rem;
 }
 
 .controls {
@@ -524,16 +567,11 @@ input[type="range"] {
   }
 
   .fighter--player {
-    width: 46%;
+    width: 44%;
   }
 
   .fighter--opponent {
-    width: 37%;
-  }
-
-  .fighter__caption {
-    display: grid;
-    gap: 0.05rem;
+    width: 35%;
   }
 
   .ability-zone {
@@ -589,14 +627,23 @@ input[type="range"] {
     padding: 0.36rem;
   }
 
-  .movement-strip {
+  .movement-actions {
     grid-template-columns: 1fr;
-    gap: 0.3rem;
+    gap: 0.22rem;
+  }
+
+  .movement-actions__label {
+    display: none;
   }
 
   .compact-field {
     grid-template-columns: auto 1fr;
     align-items: center;
+  }
+
+  .test-settings__body {
+    grid-template-columns: 1fr;
+    align-items: stretch;
   }
 
   .energy-card {
