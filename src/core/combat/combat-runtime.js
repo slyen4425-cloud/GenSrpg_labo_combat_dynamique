@@ -45,6 +45,8 @@ export function createCombatRuntime({
             hp: fighter.hp,
             maxHp: fighter.maxHp,
             energy: fighter.energy,
+            side: fighter.side,
+            presence: fighter.presence,
             effects: fighter.chargeTimeEffects.map((effect) => effect.id)
           }
         ])
@@ -75,10 +77,25 @@ export function createCombatRuntime({
     return Math.max(0, atNowMs - active.startedAtClockMs);
   }
 
+  function isEarlyCancellation(record) {
+    return (
+      record.reaction &&
+      (
+        record.reaction.outcome === "countered" ||
+        record.reaction.outcome === "interrupted"
+      ) &&
+      record.reaction.readyAtMs < record.action.releaseAtMs
+    );
+  }
+
   function resolutionAtMs(record) {
-    return record.reaction?.outcome === "countered"
-      ? record.reaction.readyAtMs
-      : record.action.impactAtMs;
+    if (
+      record.reaction?.outcome === "countered" ||
+      record.reaction?.outcome === "interrupted"
+    ) {
+      return record.reaction.readyAtMs;
+    }
+    return record.action.impactAtMs;
   }
 
   function progressSnapshot(record, elapsedMs) {
@@ -88,7 +105,10 @@ export function createCombatRuntime({
 
     let phase = "preparation";
     if (elapsedMs >= record.action.releaseAtMs) {
-      phase = elapsedMs < record.action.impactAtMs ? "travel" : "impact";
+      phase =
+        elapsedMs < record.action.impactAtMs
+          ? "travel"
+          : "impact";
     }
 
     let reaction = null;
@@ -100,14 +120,23 @@ export function createCombatRuntime({
       );
       reaction = Object.freeze({
         skillId: record.reaction.skillId,
+        actorId: record.reaction.actorId,
+        outcome: record.reaction.outcome,
         progress:
-          duration <= 0 ? 1 : Math.min(1, reactionElapsed / duration),
+          duration <= 0
+            ? 1
+            : Math.min(1, reactionElapsed / duration),
         readyAtMs: record.reaction.readyAtMs
       });
     }
 
     return Object.freeze({
-      skillId: record.action.skill.id,
+      actionId: record.action.id,
+      actionKind: record.action.kind,
+      skillId:
+        record.action.kind === "skill"
+          ? record.action.skill.id
+          : null,
       elapsedMs,
       chargeProgress,
       phase,
@@ -124,12 +153,8 @@ export function createCombatRuntime({
     const elapsedMs = elapsedForActive(atNowMs);
 
     if (!active.released && elapsedMs >= active.action.releaseAtMs) {
-      const earlyCounter =
-        active.reaction?.outcome === "countered" &&
-        active.reaction.readyAtMs < active.action.releaseAtMs;
-
       active.released = true;
-      if (!earlyCounter) {
+      if (!isEarlyCancellation(active)) {
         onRelease(Object.freeze({
           action: active.action,
           elapsedMs: active.action.releaseAtMs
@@ -143,7 +168,7 @@ export function createCombatRuntime({
       return;
     }
 
-    const resolution = session.completeSkill({
+    const resolution = session.completeAction({
       action: active.action,
       reaction: active.reaction
     });
@@ -186,18 +211,7 @@ export function createCombatRuntime({
     timerId = setTimer(tick, tickMs);
   }
 
-  function startSkill({ actorId, targetId, skill }) {
-    if (disposed) {
-      return Object.freeze({ ok: false, outcome: "disposed" });
-    }
-    if (active) {
-      return Object.freeze({
-        ok: false,
-        outcome: "action_in_progress"
-      });
-    }
-
-    const result = session.startSkill({ actorId, targetId, skill });
+  function begin(result) {
     if (!result.ok) {
       return result;
     }
@@ -229,7 +243,74 @@ export function createCombatRuntime({
     });
   }
 
-  function react(reactionSkill) {
+  function canBegin() {
+    if (disposed) {
+      return Object.freeze({
+        ok: false,
+        outcome: "disposed"
+      });
+    }
+    if (active) {
+      return Object.freeze({
+        ok: false,
+        outcome: "action_in_progress"
+      });
+    }
+    return null;
+  }
+
+  function startSkill({ actorId, targetId, skill }) {
+    const blocked = canBegin();
+    if (blocked) {
+      return blocked;
+    }
+
+    return begin(
+      session.startSkill({
+        actorId,
+        targetId,
+        skill
+      })
+    );
+  }
+
+  function startUtilityAction({ actorId, definition }) {
+    const blocked = canBegin();
+    if (blocked) {
+      return blocked;
+    }
+
+    return begin(
+      session.startUtilityAction({
+        actorId,
+        definition
+      })
+    );
+  }
+
+  function previewReaction(reactionSkill, reactionActorId = null) {
+    if (!active) {
+      return Object.freeze({
+        ok: false,
+        outcome: "no_action"
+      });
+    }
+    if (active.reaction) {
+      return Object.freeze({
+        ok: false,
+        outcome: "reaction_already_selected"
+      });
+    }
+
+    return session.previewReaction({
+      action: active.action,
+      reactionSkill,
+      elapsedMs: elapsedForActive(now()),
+      reactionActorId
+    });
+  }
+
+  function react(reactionSkill, reactionActorId = null) {
     if (!active) {
       return Object.freeze({
         ok: false,
@@ -247,7 +328,8 @@ export function createCombatRuntime({
     const result = session.reactToSkill({
       action: active.action,
       reactionSkill,
-      elapsedMs
+      elapsedMs,
+      reactionActorId
     });
 
     if (!result.ok) {
@@ -260,32 +342,13 @@ export function createCombatRuntime({
     return result;
   }
 
-  function previewReaction(reactionSkill) {
-    if (!active) {
-      return Object.freeze({
-        ok: false,
-        outcome: "no_action"
-      });
-    }
-    if (active.reaction) {
-      return Object.freeze({
-        ok: false,
-        outcome: "reaction_already_selected"
-      });
-    }
-
-    return session.previewReaction({
-      action: active.action,
-      reactionSkill,
-      elapsedMs: elapsedForActive(now())
-    });
-  }
-
   function cancelActive() {
     const cancelled = active !== null;
     active = null;
     if (cancelled) {
       onProgress(Object.freeze({
+        actionId: null,
+        actionKind: null,
         skillId: null,
         elapsedMs: 0,
         chargeProgress: 0,
@@ -310,6 +373,7 @@ export function createCombatRuntime({
   return Object.freeze({
     start,
     startSkill,
+    startUtilityAction,
     previewReaction,
     react,
     cancelActive,
@@ -319,6 +383,9 @@ export function createCombatRuntime({
     },
     get hasActiveAction() {
       return active !== null;
+    },
+    get activeActionKind() {
+      return active?.action.kind ?? null;
     }
   });
 }
