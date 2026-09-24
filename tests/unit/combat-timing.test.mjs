@@ -9,7 +9,8 @@ import {
 import {
   addChargeTimeEffect,
   advanceCombatTime,
-  createCombatState
+  createCombatState,
+  withFighterHp
 } from "../../src/core/combat/combat-state.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
@@ -242,4 +243,25 @@ test("live reaction can counter a charging contact skill before release", () => 
   assert.ok(progress.some((item) => item.reaction?.skillId === "contact-counter"));
 
   runtime.dispose();
+});
+
+
+test("fighter HP is normalized and clamped by combat state", () => {
+  let state = createCombatState({
+    fighters: [maraileron, braisombre]
+  });
+
+  assert.equal(state.fighters.maraileron.hp, 100);
+  assert.equal(state.fighters.maraileron.maxHp, 100);
+  assert.equal(state.fighters.braisombre.hp, 100);
+  assert.equal(state.fighters.braisombre.maxHp, 100);
+
+  state = withFighterHp(state, "maraileron", 42);
+  assert.equal(state.fighters.maraileron.hp, 42);
+
+  state = withFighterHp(state, "maraileron", 999);
+  assert.equal(state.fighters.maraileron.hp, 100);
+
+  state = withFighterHp(state, "maraileron", -20);
+  assert.equal(state.fighters.maraileron.hp, 0);
 });
