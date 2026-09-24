@@ -71,8 +71,8 @@ test("charge time modifier uses +percent as slower and -percent as faster", () =
 test("temporary charge modifier expires from combat state", () => {
   let state = createCombatState({
     fighters: [
-      { ...maraileron, initialEnergy: 100 },
-      { ...braisombre, initialEnergy: 100 }
+      { ...maraileron, initialEnergy: 10 },
+      { ...braisombre, initialEnergy: 10 }
     ]
   });
 
@@ -102,8 +102,8 @@ test("session applies temporary charge modifier to actual skill start", () => {
   const session = createCombatSession({
     distance: "short",
     fighters: [
-      { ...maraileron, initialEnergy: 100 },
-      { ...braisombre, initialEnergy: 100 }
+      { ...maraileron, initialEnergy: 10 },
+      { ...braisombre, initialEnergy: 10 }
     ]
   });
 
@@ -120,8 +120,8 @@ test("session applies temporary charge modifier to actual skill start", () => {
   });
 
   assert.equal(started.ok, true);
-  assert.equal(started.action.preparationMs, 200);
-  assert.equal(started.action.releaseAtMs, 200);
+  assert.equal(started.action.preparationMs, 960);
+  assert.equal(started.action.releaseAtMs, 960);
 });
 
 function fakeClock() {
@@ -193,8 +193,8 @@ test("live reaction can counter a charging contact skill before release", () => 
   const session = createCombatSession({
     distance: "short",
     fighters: [
-      { ...maraileron, initialEnergy: 100 },
-      { ...braisombre, initialEnergy: 100 }
+      { ...maraileron, initialEnergy: 10 },
+      { ...braisombre, initialEnergy: 10 }
     ]
   });
   const clock = fakeClock();
@@ -230,9 +230,9 @@ test("live reaction can counter a charging contact skill before release", () => 
 
   const reacted = runtime.react(contactCounter);
   assert.equal(reacted.ok, true);
-  assert.equal(reacted.reaction.readyAtMs, 100);
+  assert.equal(reacted.reaction.readyAtMs, 400);
 
-  clock.setTime(100);
+  clock.setTime(400);
   clock.fireNext();
 
   assert.equal(releases.length, 0);
