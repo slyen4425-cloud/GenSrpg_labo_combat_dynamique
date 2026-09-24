@@ -9,6 +9,7 @@ const required = [
   "docs/LAB_CHECKPOINT_POLICY.md",
   "docs/LAB_CURRENT_WORK.md",
   "docs/LAB_CONTRACTS_V1.md",
+  "docs/LAB_RENDERER_V1.md",
   "src/contracts/README.md",
   "src/contracts/combat-visual-event.js",
   "src/contracts/visual-actor.js",
