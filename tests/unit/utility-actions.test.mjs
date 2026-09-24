@@ -33,6 +33,9 @@ const summon = normalizeTimedActionDefinition(
 const stun = normalizeSkillDefinition(
   await json("data/combat/skills/stun-interrupt.skill.json")
 );
+const fireball = normalizeSkillDefinition(
+  await json("data/combat/skills/fireball.skill.json")
+);
 
 function fundedState({ hp = 50, presence = "active" } = {}) {
   return createCombatState({
@@ -279,4 +282,96 @@ test("runtime stun cancels utility before completion and keeps energy spent", ()
   assert.equal(runtime.hasActiveAction, false);
 
   runtime.dispose();
+});
+
+
+test("stun can interrupt a skill while it is still charging", () => {
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [
+      { ...maraileron, initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, initialEnergy: 10, initialHp: 100 },
+      reserve
+    ]
+  });
+
+  const started = session.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  assert.equal(started.ok, true);
+  assert.equal(started.action.releaseAtMs, 2000);
+
+  const reaction = session.reactToSkill({
+    action: started.action,
+    reactionSkill: stun,
+    elapsedMs: 0,
+    reactionActorId: "braisombre"
+  });
+
+  assert.equal(reaction.ok, true);
+  assert.equal(reaction.outcome, "interrupted");
+  assert.equal(reaction.reaction.readyAtMs, 350);
+
+  const resolution = session.completeSkill({
+    action: started.action,
+    reaction: reaction.reaction
+  });
+
+  assert.equal(resolution.outcome, "interrupted");
+  assert.equal(
+    resolution.events.some((event) => event.type === "skill-release"),
+    false
+  );
+  assert.equal(
+    resolution.events.some((event) => event.type === "skill-cancelled"),
+    true
+  );
+  assert.equal(session.snapshot().fighters.maraileron.hp, 92);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+});
+
+test("stun that becomes ready after skill release cannot interrupt charge", () => {
+  const lateStun = normalizeSkillDefinition({
+    id: "late-stun",
+    name: "Stun lent",
+    category: "counter",
+    form: "contact",
+    energyCost: 2,
+    preparationMs: 2200,
+    travelMs: 0,
+    recoveryMs: 400,
+    allowedDistances: ["short", "medium", "long"],
+    reaction: {
+      interruptForms: ["projectile"]
+    },
+    effect: {
+      damage: 8,
+      tags: ["stun"]
+    }
+  });
+
+  const initial = fundedState({ hp: 100 });
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: Object.values(initial.fighters)
+  });
+
+  const started = session.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  const reaction = session.previewReaction({
+    action: started.action,
+    reactionSkill: lateStun,
+    elapsedMs: 0,
+    reactionActorId: "braisombre"
+  });
+
+  assert.equal(reaction.ok, false);
+  assert.equal(reaction.outcome, "too_late");
 });
