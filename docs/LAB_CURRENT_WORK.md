@@ -724,6 +724,23 @@ CI :
 - run : `36063415254`
 - conclusion : SUCCESS
 
+Checkpoint pré-audit GREEN V2 :
+
+`checkpoint/lab-combat-timing-ui-v2-preaudit-green-2026-09-24`
+
+Branche de prévisualisation V2 :
+
+`preview/lab-combat-timing-ui-v2-2026-09-24`
+
+SHA pré-audit avant synchronisation finale du présent document :
+
+`a987040b38b4e12b8a68e66e9288c910cb639657`
+
+CI :
+
+- run : `36063563535`
+- conclusion : SUCCESS
+
 Validation restante :
 
 - test smartphone réel de la compacité de l'écran ;
