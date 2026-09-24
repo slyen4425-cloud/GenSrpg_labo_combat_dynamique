@@ -490,4 +490,12 @@ Les PV appartiennent au domaine Combat Rules.
 
 La Demo UI ne stocke ni ne calcule les PV. Elle affiche uniquement le snapshot courant.
 
-Les dégâts réels ne sont pas encore implémentés dans ce sous-lot : la barre est prête architecturalement, mais reste pleine tant qu'aucune règle de dégâts ne modifie `hp`.
+Les dégâts de base sont désormais appliqués par `Action Resolver` à partir de `skill.effect.damage` lorsqu'un résultat sémantique est `hit` ou `reflected`.
+
+Règles :
+
+- `hit` retire les dégâts à la cible ;
+- `reflected` retire les dégâts à l'attaquant ;
+- `blocked`, `immune` et `countered` ne retirent pas de PV dans le socle V2 ;
+- `Combat Session.completeSkill()` commit le nouvel état HP lors d'une résolution live ;
+- Presenter / Animation / FX / UI n'ont aucune autorité sur les dégâts.
