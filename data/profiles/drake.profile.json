@@ -3,10 +3,12 @@
   "label": "Drake",
   "description": "Profil pour drakes, petits dragons et créatures ailées trapues.",
   "idle": {
-    "bobY": 4,
-    "swayRotate": 2,
-    "swayX": 2,
-    "durationMs": 1600
+    "bobY": 0.5,
+    "swayRotate": 0.2,
+    "swayX": 0,
+    "scaleXDelta": -0.003,
+    "scaleYDelta": 0.012,
+    "durationMs": 1850
   },
   "attack": {
     "lungeX": 48,
