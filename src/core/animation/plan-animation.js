@@ -40,8 +40,8 @@ export function planAnimation({ event, actor, profile }) {
               translateX: scaled(cfg.swayX, intensity) * sign,
               translateY: -scaled(cfg.bobY, intensity),
               rotateDeg: scaled(cfg.swayRotate, intensity) * sign,
-              scaleX: 1 + 0.01 * intensity,
-              scaleY: 1 - 0.01 * intensity
+              scaleX: 1 + scaled(cfg.scaleXDelta ?? 0, intensity),
+              scaleY: 1 + scaled(cfg.scaleYDelta ?? 0, intensity)
             }
           },
           {
