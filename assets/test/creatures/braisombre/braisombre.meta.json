@@ -8,15 +8,23 @@
     "icon": "braisombre_icon.png"
   },
   "runtimePreview": {
-    "opponent": "braisombre_opponent_preview.webp"
+    "opponent": "runtime/braisombre_opponent.webp",
+    "player": "runtime/braisombre_player.webp",
+    "icon": "runtime/braisombre_icon.webp"
   },
   "defaultFacing": {
     "opponent": "left",
     "player": "right"
   },
   "canvas": {
-    "combat": [1024, 1024],
-    "icon": [384, 384]
+    "combat": [
+      1024,
+      1024
+    ],
+    "icon": [
+      384,
+      384
+    ]
   },
   "scale": 1,
   "offset": {
