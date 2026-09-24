@@ -1162,6 +1162,75 @@ CI :
 - run : `36070381590`
 - conclusion : SUCCESS
 
+
+## Chantier actif — combat-commands-evasion-v3
+
+Base GREEN :
+
+`6556827221cd79b9401a27ae2b01ec5cf391b4b4`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-commands-evasion-v3-2026-09-25`
+
+Branche :
+
+`work/lab-combat-commands-evasion-v3-2026-09-25`
+
+Objectifs :
+
+1. verrouiller la règle d'impact :
+   - aucun dégât au clic ;
+   - aucun dégât pendant la préparation ;
+   - aucun dégât au release tant que la cible n'est pas touchée ;
+   - dégâts uniquement à `impactAtMs` ;
+2. rendre le mode d'approche indépendant de la forme de compétence :
+   - `none` ;
+   - `ground` ;
+   - `aerial` ;
+   - `teleport` ;
+3. préparer les esquives en fonction de la forme et/ou du mode d'approche ;
+4. permettre plus tard à une attaque Stun qui touche avant le release d'interrompre une action en charge ;
+5. ajouter ensuite les commandes de combat :
+   - Objet ;
+   - Rappel ;
+   - Invocation ;
+   avec coût énergie + préparation + interruption possible.
+
+Architecture :
+
+- `form` décrit ce qui touche : contact / projectile / beam / area / etc. ;
+- `approachMode` décrit comment l'action atteint sa cible : none / ground / aerial / teleport ;
+- `travelMs` reste l'autorité sur le temps release -> impact ;
+- `Combat Runtime` reste l'unique horloge ;
+- `Action Resolver` reste l'unique propriétaire des dégâts à l'impact ;
+- l'UI ne déduit jamais si une esquive ou interruption réussit.
+
+Exemples :
+
+- Boule de feu = projectile + none ;
+- Griffe = contact + ground ;
+- Plongeon = contact + aerial ;
+- Frappe éclair = contact + teleport.
+
+Règle temporelle :
+
+`préparation -> release -> trajet/approche -> impact -> dégâts -> récupération`
+
+Une esquive doit être prête au plus tard avant `impactAtMs`.
+
+Une attaque qui produit un Stun n'interrompt une charge que si son propre impact arrive avant le release de l'action ciblée.
+
+Tests obligatoires :
+
+- projectile : HP inchangés à release, changés à impact ;
+- contact : HP inchangés juste avant impact, changés à impact ;
+- approche aerial/teleport normalisée par contrat ;
+- aucune confusion entre `form` et `approachMode` ;
+- esquive calculée contre forme et/ou approche ;
+- aucun calcul de dégâts dans UI/Presenter/FX ;
+- avant ajout des commandes Objet/Rappel/Invocation, CI GREEN de ce socle.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
