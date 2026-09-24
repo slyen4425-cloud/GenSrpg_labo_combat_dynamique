@@ -58,6 +58,34 @@ Contraintes :
 - aucune téléportation résiduelle ;
 - état final déterministe.
 
+## Phase 2B — Prototype règles de combat distance/énergie
+
+Objectif : tester l'expérience cible sans intégrer GenSrpG et sans contaminer le moteur visuel.
+
+Socle :
+
+- trois bandes de distance : courte / moyenne / longue ;
+- énergie commune aux compétences et au déplacement ;
+- coût de déplacement configurable par créature et par palier ;
+- compétences séparant catégorie, forme et élément ;
+- préparation, trajet et récupération configurables ;
+- blocage, renvoi, immunité et contre ;
+- réactions soumises à leur propre temps de préparation ;
+- résolution sémantique avant toute animation.
+
+Interface test :
+
+- jauges d'énergie ;
+- déplacement tactile entre les trois bandes ;
+- coûts visibles ;
+- capacités data-driven ;
+- réaction adverse sélectionnable ;
+- journal de résolution ;
+- projectile générique minimal ;
+- outils d'animation bruts relégués en panneau laboratoire.
+
+Critère GREEN final : CI verte + vrai chemin données -> Combat Rules -> Presenter -> Animation/FX + validation smartphone de la lisibilité et de l'intuitivité.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
