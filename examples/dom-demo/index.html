@@ -96,7 +96,7 @@
         <div class="energy-grid">
           <article class="energy-card">
             <header>
-              <strong>Maraileron</strong>
+              <strong data-combat-energy-name="player">Maraileron</strong>
               <span data-combat-energy-value="maraileron">0 / 10⚡</span>
             </header>
             <progress
@@ -131,6 +131,14 @@
             <button type="button" data-combat-move="long">Longue</button>
           </div>
         </div>
+
+        <section class="utility-group" aria-label="Actions de combat">
+          <div class="ability-group__title">
+            <span>Actions</span>
+            <strong>Objet · Rappel · Invocation</strong>
+          </div>
+          <div class="utility-grid" data-combat-utilities></div>
+        </section>
 
         <div class="ability-zone">
           <section class="ability-group ability-group--player">
