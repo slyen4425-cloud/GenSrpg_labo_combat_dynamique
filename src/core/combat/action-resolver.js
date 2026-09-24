@@ -60,6 +60,22 @@ function reactionOutcome(skill, reactionSkill) {
 
 export function resolveMovement({ state, actorId, toDistance }) {
   const actor = fighterOf(state, actorId);
+
+  if (actor.presence !== "active") {
+    return Object.freeze({
+      ok: false,
+      outcome: "actor_not_active",
+      cost: 0,
+      state,
+      events: Object.freeze([
+        event("movement-rejected", 0, {
+          actorId,
+          reason: "actor_not_active"
+        })
+      ])
+    });
+  }
+
   const cost = movementEnergyCost({
     from: state.distance,
     to: toDistance,
@@ -103,8 +119,38 @@ export function resolveSkillStart({
   targetId,
   skill
 }) {
-  fighterOf(state, actorId);
-  fighterOf(state, targetId);
+  const actor = fighterOf(state, actorId);
+  const target = fighterOf(state, targetId);
+
+  if (actor.presence !== "active") {
+    return Object.freeze({
+      ok: false,
+      outcome: "actor_not_active",
+      state,
+      events: Object.freeze([
+        event("skill-rejected", 0, {
+          actorId,
+          skillId: skill.id,
+          reason: "actor_not_active"
+        })
+      ])
+    });
+  }
+
+  if (target.presence !== "active") {
+    return Object.freeze({
+      ok: false,
+      outcome: "target_not_active",
+      state,
+      events: Object.freeze([
+        event("skill-rejected", 0, {
+          actorId,
+          skillId: skill.id,
+          reason: "target_not_active"
+        })
+      ])
+    });
+  }
 
   if (!isSkillInRange(skill, state.distance)) {
     return Object.freeze({
