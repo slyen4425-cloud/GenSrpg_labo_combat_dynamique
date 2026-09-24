@@ -16,17 +16,53 @@ test("demo delegates animation authority to Core and renderer", async () => {
   assert.doesNotMatch(source, /rotateDeg\s*:/);
 });
 
-test("demo page is mobile-first and keeps JavaScript external", async () => {
+test("demo loads bundled creatures before optional user replacement", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /runtimePreview/);
+  assert.match(source, /new URL\(runtimeAsset, meta\.assetBaseUrl\)/);
+  assert.match(source, /rebuildActor\(runtimeUrl\)/);
+  assert.match(source, /chargés automatiquement/);
+});
+
+test("demo page is mobile-first and keeps optional file inputs", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
   assert.match(html, /name="viewport"/);
+  assert.match(html, /chargés automatiquement/);
+  assert.match(html, /optionnel/g);
   assert.match(html, /data-demo-file/g);
   assert.match(html, /data-demo-event="idle"/);
   assert.match(html, /data-demo-event="attack"/);
   assert.match(html, /data-demo-event="hit"/);
   assert.match(html, /data-demo-event="ko"/);
   assert.match(html, /src="\.\/demo\.js"/);
+  assert.doesNotMatch(html, /Chargez une vue joueur et une vue adversaire/);
   assert.doesNotMatch(html, /<script(?![^>]*src=)[^>]*>/);
+});
+
+test("runtime preview assets exist in creature metadata", async () => {
+  const maraileron = JSON.parse(
+    await readFile(
+      "assets/test/creatures/maraileron/maraileron.meta.json",
+      "utf8"
+    )
+  );
+  const braisombre = JSON.parse(
+    await readFile(
+      "assets/test/creatures/braisombre/braisombre.meta.json",
+      "utf8"
+    )
+  );
+
+  assert.equal(
+    maraileron.runtimePreview.player,
+    "maraileron_player_preview.webp"
+  );
+  assert.equal(
+    braisombre.runtimePreview.opponent,
+    "braisombre_opponent_preview.webp"
+  );
 });
 
 test("demo bootstrap disposes the mounted controller on pagehide", async () => {
