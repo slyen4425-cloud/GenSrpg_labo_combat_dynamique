@@ -655,14 +655,15 @@ export async function mountCombatTest({
       render(state);
     },
     onProgress(progress) {
-      if (!progress.skillId) {
+      if (!progress.actionId) {
         resetChargeBars();
         renderReactionAvailability();
         return;
       }
 
-      for (const [skillId, refs] of skillRefs) {
-        if (skillId === progress.skillId) {
+      if (progress.skillId) {
+        const refs = skillRefs.get(progress.skillId);
+        if (refs) {
           refs.charge.value = progress.chargeProgress;
           refs.button.dataset.charging = "true";
           refs.state.textContent =
@@ -671,14 +672,26 @@ export async function mountCombatTest({
               : progress.phase === "travel"
                 ? "En trajet"
                 : "Impact";
-
-          setActorCharge(
-            "maraileron",
-            progress.phase === "preparation" ? progress.chargeProgress : 0,
-            progress.phase === "preparation"
-          );
         }
       }
+
+      if (progress.commandId) {
+        const refs = commandRefs.get(progress.commandId);
+        if (refs) {
+          refs.charge.value = progress.chargeProgress;
+          refs.button.dataset.charging = "true";
+          refs.state.textContent =
+            progress.phase === "preparation"
+              ? `Charge ${Math.round(progress.chargeProgress * 100)} %`
+              : "Exécution";
+        }
+      }
+
+      setActorCharge(
+        "maraileron",
+        progress.phase === "preparation" ? progress.chargeProgress : 0,
+        progress.phase === "preparation"
+      );
 
       if (progress.reaction) {
         const refs = reactionRefs.get(progress.reaction.skillId);
@@ -702,35 +715,67 @@ export async function mountCombatTest({
     },
     onRelease({ action }) {
       setActorCharge("maraileron", 0, false);
-      presenter.presentRelease({
-        action,
-        actorSlot: "player",
-        targetSlot: "opponent"
-      });
+
+      if (action.actionType === "skill") {
+        presenter.presentRelease({
+          action,
+          actorSlot: "player",
+          targetSlot: "opponent"
+        });
+        writeLog(
+          `${action.skill.name} est lancée.`,
+          "accent"
+        );
+        return;
+      }
+
       writeLog(
-        `${action.skill.name} est lancée.`,
+        `${action.command.name} s'exécute.`,
         "accent"
       );
     },
     onResolved(resolution) {
-      presenter.presentOutcome({
-        resolution,
-        actorSlot: "player",
-        targetSlot: "opponent"
-      });
+      if (resolution.actionType === "command") {
+        const command = combatCommands.find(
+          (item) => item.id === resolution.commandId
+        );
+        writeLog(
+          `${command?.name ?? "Commande"} → terminée.`,
+          "ok"
+        );
+      } else {
+        presenter.presentOutcome({
+          resolution,
+          actorSlot: "player",
+          targetSlot: "opponent"
+        });
 
-      const name = offensiveSkills.find(
-        (skill) =>
-          resolution.events.some(
-            (event) => event.skillId === skill.id
-          )
-      )?.name ?? "Capacité";
+        const name = offensiveSkills.find(
+          (skill) =>
+            resolution.events.some(
+              (event) => event.skillId === skill.id
+            )
+        )?.name ?? "Capacité";
+
+        writeLog(
+          `${name} → ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
+          resolution.outcome === "hit" ? "ok" : "accent"
+        );
+      }
+
+      resetChargeBars();
+      render(session.snapshot());
+    },
+    onInterrupted(result) {
+      const label =
+        result.action.actionType === "command"
+          ? result.action.command.name
+          : result.action.skill.name;
 
       writeLog(
-        `${name} → ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
-        resolution.outcome === "hit" ? "ok" : "accent"
+        `${label} → interrompue (${result.reason}).`,
+        "warn"
       );
-
       resetChargeBars();
       render(session.snapshot());
     }
