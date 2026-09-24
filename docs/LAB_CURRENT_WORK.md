@@ -398,6 +398,35 @@ Tests :
 - transformOrigin normalisé et appliqué par le renderer ;
 - sentinelles existantes intactes.
 
+
+## Résultat sous-lot idle/scale polish — GREEN technique
+
+Corrections validées :
+
+- créature joueur plus grande que la vue adversaire via `displayScale` des métadonnées ;
+- Maraileron : idle majoritairement vertical, dérive latérale et rotation réduites ;
+- Braisombre : idle fortement réduit, sans dérive horizontale ;
+- Braisombre : respiration légère par déformation autour d'un ancrage bas `50% 88%` afin de stabiliser visuellement les pieds ;
+- `VisualActor` possède désormais explicitement `transformOrigin` ;
+- le Render Adapter applique seul cet ancrage ;
+- les amplitudes de scale idle sont pilotées par le profil, plus par une constante cachée du planner ;
+- comportement KO inchangé dans ce lot.
+
+Incident de test rencontré :
+
+- un plan orienté gauche produisait `-0` quand `swayX = 0` ;
+- la cause a été corrigée dans le Core par normalisation des transformations dirigées à zéro ;
+- aucun contournement UI/CSS/test n'a été ajouté.
+
+SHA fonctionnel avant documentation finale :
+
+`f49ac04b4bff8d9ce8c75e9438027b61249c227f`
+
+CI :
+
+- run : `36055509771`
+- conclusion : SUCCESS
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
