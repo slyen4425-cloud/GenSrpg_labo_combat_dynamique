@@ -1120,6 +1120,48 @@ CI :
 
 Ce lot peut servir de base au chantier suivant Objets / Rappel / Invocation / interruption par Stun.
 
+
+## Correctif ciblé — distance-anchor-fix — GREEN technique
+
+Base :
+
+`0df6d3bcfc94cf11abf05824a273b91c6287756a`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-distance-anchor-fix-2026-09-25`
+
+Décision :
+
+La projection relative au combattant stationnaire est supprimée pour l'affichage des bandes de distance.
+
+Le Render Adapter possède désormais des ancres explicites par côté et par bande :
+
+- joueur : Longue 18 % / Moyenne 28 % / Courte 42 % ;
+- adversaire : Courte 58 % / Moyenne 72 % / Longue 82 % ;
+- scale : Courte 1,00 / Moyenne 0,96 / Longue 0,90.
+
+Un déplacement ne modifie toujours que le combattant qui agit.
+
+Cette projection est volontairement indépendante de l'état visuel précédent : cliquer Longue donne toujours l'ancre Longue du joueur, cliquer Courte donne toujours l'ancre Courte.
+
+Tests :
+
+- ordre joueur `Longue < Moyenne < Courte` ;
+- ordre adversaire symétrique ;
+- combattant stationnaire inchangé ;
+- reset Moyenne ;
+- sentinelle d'architecture adaptée.
+
+HEAD technique :
+
+`d8bf6d1c30a8e43910ec44c64d8a990fae76480f`
+
+CI :
+
+- run : `36070381590`
+- conclusion : SUCCESS
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
