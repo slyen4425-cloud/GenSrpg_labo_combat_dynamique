@@ -232,10 +232,7 @@ test("skill result exposes configurable preparation travel and recovery timeline
 test("legacy second-based advance delegates to configurable energy ticks", () => {
   const session = createCombatSession({
     distance: "medium",
-    fighters: [
-      { ...maraileronConfig, initialEnergy: 10 },
-      { ...braisombreConfig, initialEnergy: 10 }
-    ]
+    fighters: [maraileronConfig, braisombreConfig]
   });
 
   session.advance(2);
@@ -343,7 +340,10 @@ test("reaction that becomes ready after impact does not apply or spend energy", 
 test("combat session skill preview and reset do not leak UI authority", () => {
   const session = createCombatSession({
     distance: "medium",
-    fighters: [maraileronConfig, braisombreConfig]
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 10 },
+      { ...braisombreConfig, initialEnergy: 10 }
+    ]
   });
 
   const preview = session.previewSkill({
