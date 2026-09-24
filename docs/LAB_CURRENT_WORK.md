@@ -1392,6 +1392,23 @@ CI de ce HEAD :
 - run : `36072367866`
 - conclusion : SUCCESS
 
+Checkpoint GREEN :
+
+`checkpoint/lab-combat-commands-stun-v3-green-2026-09-25`
+
+Branche de prévisualisation :
+
+`preview/lab-combat-commands-stun-v3-2026-09-25`
+
+SHA GREEN avant synchronisation finale du présent document :
+
+`c99f9010df2389dce17f46ac7a713cb97b5902ab`
+
+CI :
+
+- run : `36072510231`
+- conclusion : SUCCESS
+
 Validation utilisateur restante :
 
 - smartphone : visibilité des trois boutons tactiques ;
