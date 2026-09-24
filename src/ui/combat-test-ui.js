@@ -201,6 +201,17 @@ export async function mountCombatTest({
     opponent: requiredElement(root, '[data-demo-slot="opponent"]')
   };
 
+  const actorChargeRefs = {
+    maraileron: requiredElement(
+      root,
+      '[data-combat-actor-charge="maraileron"]'
+    ),
+    braisombre: requiredElement(
+      root,
+      '[data-combat-actor-charge="braisombre"]'
+    )
+  };
+
   const energyRefs = {
     maraileron: {
       bar: requiredElement(root, '[data-combat-energy="maraileron"]'),
@@ -298,11 +309,19 @@ export async function mountCombatTest({
     return { button, charge, state };
   }
 
+  function setActorCharge(fighterId, value, active) {
+    const bar = actorChargeRefs[fighterId];
+    bar.value = Math.max(0, Math.min(1, Number(value) || 0));
+    bar.dataset.active = active ? "true" : "false";
+  }
+
   function resetChargeBars() {
     for (const refs of [...skillRefs.values(), ...reactionRefs.values()]) {
       refs.charge.value = 0;
       refs.button.dataset.charging = "false";
     }
+    setActorCharge("maraileron", 0, false);
+    setActorCharge("braisombre", 0, false);
   }
 
   function createCards() {
@@ -463,6 +482,12 @@ export async function mountCombatTest({
               : progress.phase === "travel"
                 ? "En trajet"
                 : "Impact";
+
+          setActorCharge(
+            "maraileron",
+            progress.phase === "preparation" ? progress.chargeProgress : 0,
+            progress.phase === "preparation"
+          );
         }
       }
 
@@ -475,12 +500,19 @@ export async function mountCombatTest({
             progress.reaction.progress < 1
               ? `Réaction ${Math.round(progress.reaction.progress * 100)} %`
               : "Prête";
+
+          setActorCharge(
+            "braisombre",
+            progress.reaction.progress,
+            progress.reaction.progress < 1
+          );
         }
       }
 
       renderReactionAvailability();
     },
     onRelease({ action }) {
+      setActorCharge("maraileron", 0, false);
       presenter.presentRelease({
         action,
         actorSlot: "player",
