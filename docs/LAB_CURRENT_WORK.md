@@ -309,6 +309,44 @@ La branche de prévisualisation pointe sur ce même SHA.
 
 Le chantier reste en attente de validation utilisateur smartphone avant GREEN final.
 
+
+## Pack runtime complet — GREEN technique
+
+Le pack runtime léger est désormais complet pour les deux créatures de laboratoire.
+
+Maraileron :
+
+- `runtime/maraileron_player.webp`
+- `runtime/maraileron_opponent.webp`
+- `runtime/maraileron_icon.webp`
+
+Braisombre :
+
+- `runtime/braisombre_player.webp`
+- `runtime/braisombre_opponent.webp`
+- `runtime/braisombre_icon.webp`
+
+Caractéristiques runtime :
+
+- vues combat : 320×320 WebP transparent ;
+- icônes : 192×192 WebP transparent ;
+- les PNG 1024×1024 / 384×384 restent les sources maîtres hors runtime léger.
+
+Les métadonnées `runtimePreview` pointent désormais uniquement vers ce pack `runtime/`.
+
+Les deux anciens fichiers `*_preview.webp` ont été supprimés après bascule afin d'éviter deux sources runtime concurrentes.
+
+SHA validé après nettoyage :
+
+`ad92ca81a41731680ea477b70eb67a92d33162a3`
+
+CI :
+
+- run : `36053453627`
+- conclusion : SUCCESS
+
+Le prochain checkpoint doit figer cet état avant le test utilisateur mobile.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
