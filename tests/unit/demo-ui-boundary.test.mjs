@@ -273,3 +273,40 @@ test("player fighter renders above opponent fighter on overlap", async () => {
   assert.match(css, /\.fighter--player\s*\{[\s\S]*?z-index:\s*4/);
   assert.match(css, /\.fighter--opponent\s*\{[\s\S]*?z-index:\s*3/);
 });
+
+
+test("combat command buttons stay in main UI while stun simulator stays in test settings", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  const dockStart = html.indexOf('class="combat-dock"');
+  const commandsStart = html.indexOf("data-combat-commands");
+  const settingsStart = html.indexOf('class="test-settings"');
+  const stunStart = html.indexOf("data-combat-simulate-stun");
+
+  assert.ok(dockStart >= 0);
+  assert.ok(commandsStart > dockStart);
+  assert.ok(settingsStart > commandsStart);
+  assert.ok(stunStart > settingsStart);
+
+  assert.match(source, /normalizeCombatCommandDefinition/);
+  assert.match(source, /runtime\.startCommand/);
+  assert.match(source, /session\.previewCommand/);
+  assert.match(source, /runtime\.applyResolutionInterrupt/);
+  assert.match(source, /DATA_URLS\.skills\.stunBolt/);
+
+  assert.doesNotMatch(source, /resolveCommandStart/);
+  assert.doesNotMatch(source, /resolveCommandCompletion/);
+});
+
+test("command cards expose energy charge and runtime progress without UI timing authority", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /createCommandCard/);
+  assert.match(source, /commandTimingText/);
+  assert.match(source, /progress\.commandId/);
+  assert.match(source, /progress\.chargeProgress/);
+  assert.doesNotMatch(source, /preparationMs\s*:\s*700/);
+  assert.doesNotMatch(source, /preparationMs\s*:\s*1400/);
+  assert.doesNotMatch(source, /preparationMs\s*:\s*2200/);
+});
