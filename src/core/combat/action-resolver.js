@@ -94,17 +94,21 @@ export function resolveSkill({
   }
 
   let next = spendEnergy(state, actorId, skill.energyCost);
-  let reaction = null;
-
-  if (reactionSkill) {
-    if (target.energy >= reactionSkill.energyCost) {
-      next = spendEnergy(next, targetId, reactionSkill.energyCost);
-      reaction = reactionSkill;
-    }
-  }
 
   const releaseAt = skill.preparationMs;
   const impactAt = releaseAt + skill.travelMs;
+  const reactionReadyAt = reactionSkill?.preparationMs ?? null;
+
+  let reaction = null;
+  if (
+    reactionSkill &&
+    target.energy >= reactionSkill.energyCost &&
+    reactionReadyAt <= impactAt
+  ) {
+    next = spendEnergy(next, targetId, reactionSkill.energyCost);
+    reaction = reactionSkill;
+  }
+
   const events = [
     event("skill-start", 0, { actorId, targetId, skillId: skill.id }),
     event("skill-release", releaseAt, {
@@ -115,6 +119,14 @@ export function resolveSkill({
       element: skill.element
     })
   ];
+
+  if (reaction) {
+    events.push(event("reaction-ready", reactionReadyAt, {
+      actorId: targetId,
+      targetId: actorId,
+      skillId: reaction.id
+    }));
+  }
 
   let outcome = "hit";
 
@@ -130,38 +142,55 @@ export function resolveSkill({
     }
   }
 
-  events.push(event("skill-arrive", impactAt, {
-    actorId,
-    targetId,
-    skillId: skill.id,
-    outcome
-  }));
-
-  if (outcome === "hit") {
-    events.push(event("hit", impactAt, {
-      actorId: targetId,
-      sourceActorId: actorId,
-      skillId: skill.id,
-      damage: skill.effect.damage
-    }));
-  } else if (outcome === "reflected") {
-    events.push(event("hit", impactAt, {
-      actorId,
-      sourceActorId: targetId,
-      skillId: skill.id,
-      reflected: true,
-      damage: skill.effect.damage
-    }));
-  } else {
-    events.push(event(`skill-${outcome}`, impactAt, {
+  if (outcome === "countered") {
+    events.push(event("skill-countered", reactionReadyAt, {
       actorId,
       targetId,
       skillId: skill.id,
-      reactionSkillId: reaction?.id ?? null
+      reactionSkillId: reaction.id
     }));
+    events.push(event("skill-cancelled", reactionReadyAt, {
+      actorId,
+      targetId,
+      skillId: skill.id,
+      reason: "countered"
+    }));
+  } else {
+    events.push(event("skill-arrive", impactAt, {
+      actorId,
+      targetId,
+      skillId: skill.id,
+      outcome
+    }));
+
+    if (outcome === "hit") {
+      events.push(event("hit", impactAt, {
+        actorId: targetId,
+        sourceActorId: actorId,
+        skillId: skill.id,
+        damage: skill.effect.damage
+      }));
+    } else if (outcome === "reflected") {
+      events.push(event("hit", impactAt, {
+        actorId,
+        sourceActorId: targetId,
+        skillId: skill.id,
+        reflected: true,
+        damage: skill.effect.damage
+      }));
+    } else {
+      events.push(event(`skill-${outcome}`, impactAt, {
+        actorId,
+        targetId,
+        skillId: skill.id,
+        reactionSkillId: reaction?.id ?? null
+      }));
+    }
   }
 
-  events.push(event("skill-recovery-complete", impactAt + skill.recoveryMs, {
+  const resolutionAt = outcome === "countered" ? reactionReadyAt : impactAt;
+
+  events.push(event("skill-recovery-complete", resolutionAt + skill.recoveryMs, {
     actorId,
     skillId: skill.id
   }));
@@ -174,8 +203,9 @@ export function resolveSkill({
     timelineMs: Object.freeze({
       preparation: skill.preparationMs,
       travel: skill.travelMs,
-      recovery: skill.recoveryMs
+      recovery: skill.recoveryMs,
+      reactionReady: reaction ? reactionReadyAt : null
     }),
-    events: Object.freeze(events)
+    events: Object.freeze(events.sort((a, b) => a.atMs - b.atMs))
   });
 }
