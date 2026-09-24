@@ -1231,6 +1231,45 @@ Tests obligatoires :
 - aucun calcul de dégâts dans UI/Presenter/FX ;
 - avant ajout des commandes Objet/Rappel/Invocation, CI GREEN de ce socle.
 
+
+## Résultat intermédiaire — impact-evasion-foundation-v3
+
+Socle validé techniquement :
+
+- `SkillDefinition` possède maintenant `approachMode` ;
+- valeurs autorisées : none / ground / aerial / teleport ;
+- `form` et `approachMode` restent deux axes indépendants ;
+- réactions : `evadeForms` et `evadeApproaches` ;
+- nouveau résultat sémantique : `evaded` ;
+- Boule de feu explicitement `projectile + none` ;
+- Griffe explicitement `contact + ground` ;
+- prototype `Plongeon aérien` ;
+- prototype `Frappe téléportée` ;
+- prototype `Esquive` ;
+- release et impact exposent le mode d'approche ;
+- dégâts live verrouillés à `impactAtMs`.
+
+Sentinelles temporelles :
+
+- projectile : HP inchangés à 1999 ms ;
+- release à 2000 ms : HP toujours inchangés ;
+- 2699 ms : HP toujours inchangés ;
+- impact 2700 ms : dégâts appliqués ;
+- contact : HP inchangés juste avant l'impact ;
+- contact : dégâts appliqués à l'instant impact ;
+- une esquive lente peut réussir contre une approche aérienne longue et échouer contre une téléportation courte.
+
+HEAD technique avant documentation :
+
+`baeb98bacf813b32e92edff7e01da9b55dcefd0e`
+
+CI :
+
+- run : `36070860128`
+- conclusion : SUCCESS
+
+Le lot suivant peut maintenant construire Objet / Rappel / Invocation / Stun sur cette chronologie sans modifier l'autorité des dégâts.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
