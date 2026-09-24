@@ -234,9 +234,24 @@ Les planches Maraileron et Braisombre sont reçues.
 
 Le découpage/raccord binaire reste un lot asset séparé. La démo actuelle accepte les images depuis l'appareil afin que le renderer reste testable sans couplage asset.
 
-Checkpoint intermédiaire prévu :
+Checkpoint intermédiaire créé :
 
 `checkpoint/lab-dom-renderer-demo-v1-preaudit-green-2026-09-24`
+
+SHA de l'état pré-audit validé :
+
+`cef6bf75919f2fc68e24a47ee02670a6e151ff45`
+
+CI :
+
+- run : `36049457429`
+- conclusion : SUCCESS
+
+Branche de prévisualisation :
+
+`preview/lab-dom-renderer-demo-v1-2026-09-24`
+
+Cette prévisualisation reste hors `main` et doit servir au test manuel smartphone avant GREEN final.
 
 ## Dernier checkpoint GREEN
 
