@@ -537,3 +537,64 @@ Les réactions peuvent déclarer :
 - `evadeApproaches`.
 
 Une esquive n'est valide que si sa préparation est terminée au plus tard avant l'impact.
+
+
+### Commandes tactiques et interruption V3
+
+Objet, Rappel et Invocation ne sont pas des compétences.
+
+Chaîne :
+
+```
+CombatCommand Data
+    |
+    v
+CombatCommandDefinition
+    |
+    v
+Command Resolver
+    |
+    v
+Combat Session
+    |
+    v
+Combat Runtime
+    |
+    +---- charge
+    +---- release/completion
+    +---- interruption avant release
+```
+
+Propriétaires :
+
+- `combat-command-definition.js` : type, coût, préparation, récupération, interruptibilité et effet déclaratif ;
+- `command-resolver.js` : validation énergie, construction de l'action et completion ;
+- `combat-runtime.js` : progression temporelle et interruption de l'action active ;
+- Demo UI : affichage et déclenchement seulement.
+
+Types V3 :
+
+- `item` ;
+- `recall` ;
+- `summon`.
+
+Le prototype Item peut appliquer un soin à completion.
+
+Rappel et Invocation produisent des événements sémantiques. Le vrai changement de roster/asset n'est pas simulé par l'UI de ce lot et devra appartenir à un futur propriétaire de roster.
+
+#### Stun
+
+Une compétence peut déclarer :
+
+- `effect.interruptsPreparation = true` ;
+- `effect.stunMs`.
+
+Action Resolver émet `charge-interrupt` uniquement lorsque l'attaque aboutit à un `hit`, au même timestamp que l'impact.
+
+Combat Runtime accepte cette intention d'interruption uniquement si :
+
+- la cible est l'acteur de l'action active ;
+- l'action est déclarée interruptible ;
+- l'impact arrive avant `releaseAtMs`.
+
+Le Stun ne décide jamais lui-même du rendu et ne peut pas annuler rétroactivement une action déjà release.
