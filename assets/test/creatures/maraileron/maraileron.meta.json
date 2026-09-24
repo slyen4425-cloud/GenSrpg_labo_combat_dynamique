@@ -8,15 +8,23 @@
     "icon": "maraileron_icon.png"
   },
   "runtimePreview": {
-    "player": "maraileron_player_preview.webp"
+    "opponent": "runtime/maraileron_opponent.webp",
+    "player": "runtime/maraileron_player.webp",
+    "icon": "runtime/maraileron_icon.webp"
   },
   "defaultFacing": {
     "opponent": "left",
     "player": "right"
   },
   "canvas": {
-    "combat": [1024, 1024],
-    "icon": [384, 384]
+    "combat": [
+      1024,
+      1024
+    ],
+    "icon": [
+      384,
+      384
+    ]
   },
   "scale": 1,
   "offset": {
