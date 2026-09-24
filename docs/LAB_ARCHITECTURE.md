@@ -499,3 +499,41 @@ Règles :
 - `blocked`, `immune` et `countered` ne retirent pas de PV dans le socle V2 ;
 - `Combat Session.completeSkill()` commit le nouvel état HP lors d'une résolution live ;
 - Presenter / Animation / FX / UI n'ont aucune autorité sur les dégâts.
+
+
+### Impact, approche et esquive V3
+
+Le moteur distingue désormais cinq moments :
+
+`préparation -> release -> trajet/approche -> impact -> récupération`
+
+Autorité :
+
+- `Combat Runtime` détermine quand l'action atteint `impactAtMs` ;
+- `Action Resolver` applique les dégâts uniquement lors de la résolution à l'impact ;
+- Presenter / Animation / FX illustrent le résultat mais ne peuvent ni avancer ni retarder les dégâts.
+
+Invariant permanent :
+
+**aucun PV ne change au clic, pendant la charge ou au release tant qu'aucun impact n'a eu lieu.**
+
+Exemples :
+
+- projectile : le release lance le projectile, l'impact applique les dégâts ;
+- contact au sol : l'impact correspond au moment où l'attaquant atteint la cible ;
+- aérien : l'impact correspond à la fin de l'approche aérienne ;
+- téléportation : l'impact correspond à la réapparition/connexion avec la cible.
+
+La compétence sépare :
+
+- `form` : nature de ce qui touche (`contact`, `projectile`, etc.) ;
+- `approachMode` : manière d'atteindre la cible (`none`, `ground`, `aerial`, `teleport`).
+
+Cette séparation permet à deux attaques `contact` d'avoir des fenêtres d'esquive très différentes sans inventer deux moteurs.
+
+Les réactions peuvent déclarer :
+
+- `evadeForms` ;
+- `evadeApproaches`.
+
+Une esquive n'est valide que si sa préparation est terminée au plus tard avant l'impact.
