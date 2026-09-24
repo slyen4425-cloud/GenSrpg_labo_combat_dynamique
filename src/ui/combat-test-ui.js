@@ -1,4 +1,5 @@
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
+import { normalizeTimedActionDefinition } from "../contracts/timed-action-definition.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
@@ -13,6 +14,10 @@ const DATA_URLS = Object.freeze({
     ),
     braisombre: new URL(
       "../../data/combat/fighters/braisombre.combat.json",
+      import.meta.url
+    ),
+    reserve: new URL(
+      "../../data/combat/fighters/braisombre-ally.combat.json",
       import.meta.url
     )
   }),
@@ -35,6 +40,24 @@ const DATA_URLS = Object.freeze({
     ),
     contactCounter: new URL(
       "../../data/combat/skills/contact-counter.skill.json",
+      import.meta.url
+    ),
+    stunInterrupt: new URL(
+      "../../data/combat/skills/stun-interrupt.skill.json",
+      import.meta.url
+    )
+  }),
+  actions: Object.freeze({
+    potion: new URL(
+      "../../data/combat/actions/potion.action.json",
+      import.meta.url
+    ),
+    recall: new URL(
+      "../../data/combat/actions/recall.action.json",
+      import.meta.url
+    ),
+    summon: new URL(
+      "../../data/combat/actions/summon.action.json",
       import.meta.url
     )
   })
@@ -72,19 +95,33 @@ const ELEMENT_LABELS = Object.freeze({
   shadow: "Ombre"
 });
 
+const ACTION_KIND_LABELS = Object.freeze({
+  item: "Objet",
+  recall: "Rappel",
+  summon: "Invocation"
+});
+
 const OUTCOME_LABELS = Object.freeze({
   hit: "touche",
   blocked: "bloquée",
   reflected: "renvoyée",
   immune: "annulée par immunité",
   countered: "contrée",
+  interrupted: "interrompue par Stun",
+  item: "objet utilisé",
+  recall: "monstre rappelé",
+  summon: "monstre invoqué",
   out_of_range: "hors portée",
   insufficient_energy: "énergie insuffisante",
   action_in_progress: "une action est déjà en cours",
-  no_action: "aucune capacité à contrer",
+  no_action: "aucune action à interrompre",
   reaction_already_selected: "une réaction est déjà engagée",
-  no_effect: "cette réaction ne répond pas à cette attaque",
-  too_late: "réaction trop lente"
+  no_effect: "cette réaction ne répond pas à cette action",
+  too_late: "réaction trop lente",
+  actor_not_active: "monstre non actif",
+  target_not_active: "cible non active",
+  recall_required: "rappel requis",
+  reserve_unavailable: "réserve indisponible"
 });
 
 async function fetchJson(url, fetchImpl) {
@@ -135,8 +172,19 @@ function skillTimingText(skill) {
   return parts.join(" · ");
 }
 
+function utilityMetaText(action) {
+  return [
+    ACTION_KIND_LABELS[action.kind] ?? action.kind,
+    `${formatEnergy(action.energyCost)}⚡`,
+    `charge ${formatSeconds(action.preparationMs)}`
+  ].join(" · ");
+}
+
 function fighterLabel(id) {
-  return id === "maraileron" ? "Maraileron" : "Braisombre";
+  if (id === "maraileron") return "Maraileron";
+  if (id === "braisombre") return "Braisombre";
+  if (id === "braisombre-ally") return "Braisombre allié";
+  return id;
 }
 
 export async function mountCombatTest({
@@ -150,51 +198,82 @@ export async function mountCombatTest({
   if (
     !visuals ||
     typeof visuals.playEventFor !== "function" ||
-    typeof visuals.cancelFor !== "function"
+    typeof visuals.cancelFor !== "function" ||
+    typeof visuals.setSlotEmpty !== "function" ||
+    typeof visuals.loadBundledCreature !== "function"
   ) {
-    throw new TypeError("visuals must expose playEventFor() and cancelFor()");
+    throw new TypeError(
+      "visuals must expose combat presentation and slot lifecycle methods"
+    );
   }
 
   const [
     maraileronConfig,
     braisombreConfig,
+    reserveConfig,
     fireballRaw,
     clawRaw,
     mirrorShieldRaw,
     fireImmunityRaw,
-    contactCounterRaw
+    contactCounterRaw,
+    stunInterruptRaw,
+    potionRaw,
+    recallRaw,
+    summonRaw
   ] = await Promise.all([
     fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
     fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
+    fetchJson(DATA_URLS.fighters.reserve, fetchImpl),
     fetchJson(DATA_URLS.skills.fireball, fetchImpl),
     fetchJson(DATA_URLS.skills.claw, fetchImpl),
     fetchJson(DATA_URLS.skills.mirrorShield, fetchImpl),
     fetchJson(DATA_URLS.skills.fireImmunity, fetchImpl),
-    fetchJson(DATA_URLS.skills.contactCounter, fetchImpl)
+    fetchJson(DATA_URLS.skills.contactCounter, fetchImpl),
+    fetchJson(DATA_URLS.skills.stunInterrupt, fetchImpl),
+    fetchJson(DATA_URLS.actions.potion, fetchImpl),
+    fetchJson(DATA_URLS.actions.recall, fetchImpl),
+    fetchJson(DATA_URLS.actions.summon, fetchImpl)
   ]);
 
   const offensiveSkills = Object.freeze([
     normalizeSkillDefinition(fireballRaw),
     normalizeSkillDefinition(clawRaw)
   ]);
+
   const reactionSkills = Object.freeze([
     normalizeSkillDefinition(mirrorShieldRaw),
     normalizeSkillDefinition(fireImmunityRaw),
-    normalizeSkillDefinition(contactCounterRaw)
+    normalizeSkillDefinition(contactCounterRaw),
+    normalizeSkillDefinition(stunInterruptRaw)
+  ]);
+
+  const utilityActions = Object.freeze([
+    normalizeTimedActionDefinition(potionRaw),
+    normalizeTimedActionDefinition(recallRaw),
+    normalizeTimedActionDefinition(summonRaw)
   ]);
 
   const session = createCombatSession({
     distance: "medium",
-    fighters: [maraileronConfig, braisombreConfig]
+    fighters: [
+      maraileronConfig,
+      braisombreConfig,
+      reserveConfig
+    ]
   });
 
   const arena = requiredElement(root, "[data-combat-arena]");
   const moverSelect = requiredElement(root, "[data-combat-mover]");
   const skillContainer = requiredElement(root, "[data-combat-skills]");
   const reactionContainer = requiredElement(root, "[data-combat-reactions]");
+  const utilityContainer = requiredElement(root, "[data-combat-utilities]");
   const logList = requiredElement(root, "[data-combat-log]");
   const liveStatus = requiredElement(root, "[data-combat-live-status]");
   const resetButton = requiredElement(root, "[data-combat-reset]");
+  const playerEnergyName = requiredElement(
+    root,
+    '[data-combat-energy-name="player"]'
+  );
 
   const fighterContainers = {
     player: requiredElement(root, '[data-demo-slot="player"]'),
@@ -202,34 +281,34 @@ export async function mountCombatTest({
   };
 
   const actorChargeRefs = {
-    maraileron: requiredElement(
+    player: requiredElement(
       root,
       '[data-combat-actor-charge="maraileron"]'
     ),
-    braisombre: requiredElement(
+    opponent: requiredElement(
       root,
       '[data-combat-actor-charge="braisombre"]'
     )
   };
 
   const hpRefs = {
-    maraileron: {
+    player: {
       bar: requiredElement(root, '[data-combat-hp="maraileron"]'),
       value: requiredElement(root, '[data-combat-hp-value="maraileron"]')
     },
-    braisombre: {
+    opponent: {
       bar: requiredElement(root, '[data-combat-hp="braisombre"]'),
       value: requiredElement(root, '[data-combat-hp-value="braisombre"]')
     }
   };
 
   const energyRefs = {
-    maraileron: {
+    player: {
       bar: requiredElement(root, '[data-combat-energy="maraileron"]'),
       value: requiredElement(root, '[data-combat-energy-value="maraileron"]'),
       rate: requiredElement(root, '[data-combat-energy-rate="maraileron"]')
     },
-    braisombre: {
+    opponent: {
       bar: requiredElement(root, '[data-combat-energy="braisombre"]'),
       value: requiredElement(root, '[data-combat-energy-value="braisombre"]'),
       rate: requiredElement(root, '[data-combat-energy-rate="braisombre"]')
@@ -266,10 +345,23 @@ export async function mountCombatTest({
 
   const skillRefs = new Map();
   const reactionRefs = new Map();
+  const utilityRefs = new Map();
 
   function listen(element, type, handler) {
     element.addEventListener(type, handler);
     cleanups.push(() => element.removeEventListener(type, handler));
+  }
+
+  function activePlayerId() {
+    return session.fighterIdByPresence("player", "active");
+  }
+
+  function recalledPlayerId() {
+    return session.fighterIdByPresence("player", "recalled");
+  }
+
+  function displayedPlayerId() {
+    return activePlayerId() ?? recalledPlayerId() ?? "maraileron";
   }
 
   function setLiveStatus(message, tone = "info") {
@@ -288,65 +380,87 @@ export async function mountCombatTest({
     }
   }
 
-  function createSkillCard(skill, mode) {
+  function createActionCard({
+    id,
+    name,
+    metaText,
+    mode,
+    ariaLabel
+  }) {
     const button = root.ownerDocument.createElement("button");
     button.type = "button";
     button.className = `skill-card skill-card--${mode}`;
-    button.dataset.combatSkill = skill.id;
+    button.dataset.combatAction = id;
 
-    const name = root.ownerDocument.createElement("strong");
-    name.textContent = skill.name;
+    const nameNode = root.ownerDocument.createElement("strong");
+    nameNode.textContent = name;
 
     const meta = root.ownerDocument.createElement("span");
     meta.className = "skill-card__meta";
-    meta.textContent = skillMetaText(skill);
-
-    const timing = root.ownerDocument.createElement("span");
-    timing.className = "skill-card__timing";
-    timing.textContent = skillTimingText(skill);
+    meta.textContent = metaText;
 
     const charge = root.ownerDocument.createElement("progress");
     charge.className = "skill-card__charge";
     charge.max = 1;
     charge.value = 0;
-    charge.setAttribute("aria-label", `Charge de ${skill.name}`);
+    charge.setAttribute("aria-label", ariaLabel);
 
     const state = root.ownerDocument.createElement("span");
     state.className = "skill-card__state";
     state.dataset.skillState = "";
     state.textContent = "En attente";
 
-    button.append(name, meta, timing, charge, state);
+    button.append(nameNode, meta, charge, state);
     return { button, charge, state };
   }
 
-  function setActorCharge(fighterId, value, active) {
-    const bar = actorChargeRefs[fighterId];
+  function setActorCharge(slot, value, active) {
+    const bar = actorChargeRefs[slot];
     bar.value = Math.max(0, Math.min(1, Number(value) || 0));
     bar.dataset.active = active ? "true" : "false";
   }
 
   function resetChargeBars() {
-    for (const refs of [...skillRefs.values(), ...reactionRefs.values()]) {
+    for (const refs of [
+      ...skillRefs.values(),
+      ...reactionRefs.values(),
+      ...utilityRefs.values()
+    ]) {
       refs.charge.value = 0;
       refs.button.dataset.charging = "false";
     }
-    setActorCharge("maraileron", 0, false);
-    setActorCharge("braisombre", 0, false);
+    setActorCharge("player", 0, false);
+    setActorCharge("opponent", 0, false);
+  }
+
+  function utilityActorId(action) {
+    if (action.kind === "summon") {
+      return recalledPlayerId();
+    }
+    return activePlayerId();
   }
 
   function createCards() {
     for (const skill of offensiveSkills) {
-      const refs = createSkillCard(skill, "offense");
+      const refs = createActionCard({
+        id: skill.id,
+        name: skill.name,
+        metaText: skillMetaText(skill) + " · " + skillTimingText(skill),
+        mode: "offense",
+        ariaLabel: `Charge de ${skill.name}`
+      });
       skillContainer.append(refs.button);
       skillRefs.set(skill.id, { ...refs, skill });
 
       listen(refs.button, "click", () => {
-        const result = runtime.startSkill({
-          actorId: "maraileron",
-          targetId: "braisombre",
-          skill
-        });
+        const actorId = activePlayerId();
+        const result = actorId
+          ? runtime.startSkill({
+              actorId,
+              targetId: "braisombre",
+              skill
+            })
+          : { ok: false, outcome: "actor_not_active" };
 
         if (!result.ok) {
           writeLog(
@@ -368,13 +482,65 @@ export async function mountCombatTest({
       });
     }
 
+    for (const action of utilityActions) {
+      const refs = createActionCard({
+        id: action.id,
+        name: action.name,
+        metaText: utilityMetaText(action),
+        mode: "utility",
+        ariaLabel: `Charge de ${action.name}`
+      });
+      utilityContainer.append(refs.button);
+      utilityRefs.set(action.id, { ...refs, action });
+
+      listen(refs.button, "click", () => {
+        const actorId = utilityActorId(action);
+        const result = actorId
+          ? runtime.startUtilityAction({
+              actorId,
+              definition: action
+            })
+          : {
+              ok: false,
+              outcome:
+                action.kind === "summon"
+                  ? "recall_required"
+                  : "actor_not_active"
+            };
+
+        if (!result.ok) {
+          writeLog(
+            `${action.name} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
+            "warn"
+          );
+          render(lastState);
+          return;
+        }
+
+        refs.button.dataset.charging = "true";
+        refs.state.textContent =
+          `Charge ${formatSeconds(result.action.preparationMs)}`;
+        writeLog(
+          `${action.name} se prépare — cette charge peut être interrompue.`,
+          "accent"
+        );
+        render(lastState);
+      });
+    }
+
     for (const skill of reactionSkills) {
-      const refs = createSkillCard(skill, "reaction");
+      const refs = createActionCard({
+        id: skill.id,
+        name: skill.name,
+        metaText: skillMetaText(skill) + " · " + skillTimingText(skill),
+        mode: "reaction",
+        ariaLabel: `Charge de ${skill.name}`
+      });
       reactionContainer.append(refs.button);
       reactionRefs.set(skill.id, { ...refs, skill });
 
       listen(refs.button, "click", () => {
-        const result = runtime.react(skill);
+        const result = runtime.react(skill, "braisombre");
 
         if (!result.ok) {
           writeLog(
@@ -398,18 +564,33 @@ export async function mountCombatTest({
   }
 
   function renderHp(state) {
-    for (const [fighterId, refs] of Object.entries(hpRefs)) {
-      const fighter = state.fighters[fighterId];
-      refs.bar.max = fighter.maxHp;
-      refs.bar.value = fighter.hp;
-      refs.value.textContent =
-        `${Math.round(fighter.hp)} / ${Math.round(fighter.maxHp)} PV`;
-    }
+    const playerId = displayedPlayerId();
+    const player = state.fighters[playerId];
+    const opponent = state.fighters.braisombre;
+
+    hpRefs.player.bar.max = player.maxHp;
+    hpRefs.player.bar.value = player.hp;
+    hpRefs.player.value.textContent =
+      `${Math.round(player.hp)} / ${Math.round(player.maxHp)} PV`;
+
+    hpRefs.opponent.bar.max = opponent.maxHp;
+    hpRefs.opponent.bar.value = opponent.hp;
+    hpRefs.opponent.value.textContent =
+      `${Math.round(opponent.hp)} / ${Math.round(opponent.maxHp)} PV`;
   }
 
   function renderEnergy(state) {
-    for (const [fighterId, refs] of Object.entries(energyRefs)) {
-      const fighter = state.fighters[fighterId];
+    const playerId = displayedPlayerId();
+    const player = state.fighters[playerId];
+    const opponent = state.fighters.braisombre;
+
+    playerEnergyName.textContent = fighterLabel(playerId);
+
+    for (const [slot, fighter] of [
+      ["player", player],
+      ["opponent", opponent]
+    ]) {
+      const refs = energyRefs[slot];
       refs.bar.max = fighter.maxEnergy;
       refs.bar.value = fighter.energy;
       refs.value.textContent =
@@ -426,21 +607,57 @@ export async function mountCombatTest({
       const preview = session.previewMovement(actorId, toDistance);
       const isCurrent = toDistance === state.distance;
 
-      button.disabled = isCurrent;
+      button.disabled = isCurrent || !preview.ok;
       button.dataset.affordable = preview.ok ? "true" : "false";
       button.textContent = isCurrent
         ? `${DISTANCE_LABELS[toDistance]} · ici`
-        : `${DISTANCE_LABELS[toDistance]} · ${formatEnergy(preview.cost)}⚡`;
+        : preview.ok
+          ? `${DISTANCE_LABELS[toDistance]} · ${formatEnergy(preview.cost)}⚡`
+          : `${DISTANCE_LABELS[toDistance]}`;
     }
   }
 
   function renderOffensiveAvailability() {
+    const actorId = activePlayerId();
+
     for (const { skill, button, state } of skillRefs.values()) {
-      const preview = session.previewSkill({
-        actorId: "maraileron",
-        targetId: "braisombre",
-        skill
-      });
+      const preview = actorId
+        ? session.previewSkill({
+            actorId,
+            targetId: "braisombre",
+            skill
+          })
+        : { ok: false, outcome: "actor_not_active" };
+
+      const available = preview.ok && !runtime.hasActiveAction;
+      button.disabled = !available;
+      button.dataset.available = available ? "true" : "false";
+
+      if (button.dataset.charging !== "true") {
+        state.textContent = runtime.hasActiveAction
+          ? "Action en cours"
+          : preview.ok
+            ? "Disponible"
+            : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
+      }
+    }
+  }
+
+  function renderUtilityAvailability() {
+    for (const { action, button, state } of utilityRefs.values()) {
+      const actorId = utilityActorId(action);
+      const preview = actorId
+        ? session.previewUtilityAction({
+            actorId,
+            definition: action
+          })
+        : {
+            ok: false,
+            outcome:
+              action.kind === "summon"
+                ? "recall_required"
+                : "actor_not_active"
+          };
 
       const available = preview.ok && !runtime.hasActiveAction;
       button.disabled = !available;
@@ -458,7 +675,7 @@ export async function mountCombatTest({
 
   function renderReactionAvailability() {
     for (const { skill, button, state } of reactionRefs.values()) {
-      const preview = runtime.previewReaction(skill);
+      const preview = runtime.previewReaction(skill, "braisombre");
       button.disabled = !preview.ok;
       button.dataset.available = preview.ok ? "true" : "false";
 
@@ -479,6 +696,7 @@ export async function mountCombatTest({
     renderEnergy(state);
     renderMovement(state);
     renderOffensiveAvailability();
+    renderUtilityAvailability();
     renderReactionAvailability();
   }
 
@@ -487,15 +705,17 @@ export async function mountCombatTest({
     onState(state) {
       render(state);
     },
+
     onProgress(progress) {
-      if (!progress.skillId) {
+      if (!progress.actionId) {
         resetChargeBars();
         renderReactionAvailability();
         return;
       }
 
-      for (const [skillId, refs] of skillRefs) {
-        if (skillId === progress.skillId) {
+      if (progress.actionKind === "skill") {
+        const refs = skillRefs.get(progress.skillId);
+        if (refs) {
           refs.charge.value = progress.chargeProgress;
           refs.button.dataset.charging = "true";
           refs.state.textContent =
@@ -504,14 +724,24 @@ export async function mountCombatTest({
               : progress.phase === "travel"
                 ? "En trajet"
                 : "Impact";
-
-          setActorCharge(
-            "maraileron",
-            progress.phase === "preparation" ? progress.chargeProgress : 0,
-            progress.phase === "preparation"
-          );
+        }
+      } else {
+        const refs = utilityRefs.get(progress.actionId);
+        if (refs) {
+          refs.charge.value = progress.chargeProgress;
+          refs.button.dataset.charging = "true";
+          refs.state.textContent =
+            `Charge ${Math.round(progress.chargeProgress * 100)} %`;
         }
       }
+
+      setActorCharge(
+        "player",
+        progress.phase === "preparation"
+          ? progress.chargeProgress
+          : 0,
+        progress.phase === "preparation"
+      );
 
       if (progress.reaction) {
         const refs = reactionRefs.get(progress.reaction.skillId);
@@ -524,7 +754,7 @@ export async function mountCombatTest({
               : "Prête";
 
           setActorCharge(
-            "braisombre",
+            "opponent",
             progress.reaction.progress,
             progress.reaction.progress < 1
           );
@@ -533,35 +763,69 @@ export async function mountCombatTest({
 
       renderReactionAvailability();
     },
+
     onRelease({ action }) {
-      setActorCharge("maraileron", 0, false);
-      presenter.presentRelease({
-        action,
-        actorSlot: "player",
-        targetSlot: "opponent"
-      });
+      setActorCharge("player", 0, false);
+
+      if (action.kind === "skill") {
+        presenter.presentRelease({
+          action,
+          actorSlot: "player",
+          targetSlot: "opponent"
+        });
+        writeLog(
+          `${action.skill.name} est lancée.`,
+          "accent"
+        );
+        return;
+      }
+
       writeLog(
-        `${action.skill.name} est lancée.`,
+        `${action.name} termine sa charge.`,
         "accent"
       );
     },
-    onResolved(resolution) {
-      presenter.presentOutcome({
-        resolution,
-        actorSlot: "player",
-        targetSlot: "opponent"
-      });
 
-      const name = offensiveSkills.find(
-        (skill) =>
-          resolution.events.some(
-            (event) => event.skillId === skill.id
-          )
-      )?.name ?? "Capacité";
+    onResolved(resolution) {
+      if (
+        ["hit", "reflected", "blocked", "immune", "countered", "interrupted"]
+          .includes(resolution.outcome)
+      ) {
+        presenter.presentOutcome({
+          resolution,
+          actorSlot: "player",
+          targetSlot: "opponent"
+        });
+      }
+
+      if (resolution.outcome === "recall") {
+        visuals.setSlotEmpty("player");
+      }
+
+      if (resolution.outcome === "summon") {
+        visuals.loadBundledCreature(
+          "player",
+          "braisombre",
+          "player"
+        );
+      }
+
+      const actionEvent = resolution.events.find(
+        (event) => event.actionId
+      );
+      const skillEvent = resolution.events.find(
+        (event) => event.skillId
+      );
+      const name =
+        utilityActions.find((action) => action.id === actionEvent?.actionId)?.name ??
+        offensiveSkills.find((skill) => skill.id === skillEvent?.skillId)?.name ??
+        "Action";
 
       writeLog(
         `${name} → ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
-        resolution.outcome === "hit" ? "ok" : "accent"
+        resolution.outcome === "hit" || resolution.outcome === "item"
+          ? "ok"
+          : "accent"
       );
 
       resetChargeBars();
@@ -576,7 +840,7 @@ export async function mountCombatTest({
 
       if (!result.ok) {
         writeLog(
-          `${fighterLabel(actorId)} : énergie insuffisante pour ce déplacement (${formatEnergy(result.cost)}⚡).`,
+          `${fighterLabel(actorId)} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
           "warn"
         );
         render(session.snapshot());
@@ -585,7 +849,8 @@ export async function mountCombatTest({
 
       distancePresenter.presentMovement({
         result,
-        actorSlot: actorId === "maraileron" ? "player" : "opponent"
+        actorSlot:
+          stateSideSlot(result.state.fighters[actorId].side)
       });
 
       writeLog(
@@ -596,6 +861,10 @@ export async function mountCombatTest({
     });
   }
 
+  function stateSideSlot(side) {
+    return side === "opponent" ? "opponent" : "player";
+  }
+
   listen(moverSelect, "change", () => render(session.snapshot()));
 
   listen(resetButton, "click", () => {
@@ -604,6 +873,7 @@ export async function mountCombatTest({
     fx.cancelAll();
     session.reset();
     distancePresenter.reset();
+    visuals.loadBundledCreature("player", "maraileron", "player");
     visuals.cancelFor("player");
     visuals.cancelFor("opponent");
     resetChargeBars();
@@ -617,7 +887,7 @@ export async function mountCombatTest({
   render(session.snapshot());
 
   writeLog(
-    "Énergie à 0 : attendez les premiers ticks puis testez déplacement, charge et réaction.",
+    "Énergie à 0 : les actions, objets, rappel et invocation partagent maintenant la même charge interruptible.",
     "info"
   );
 
