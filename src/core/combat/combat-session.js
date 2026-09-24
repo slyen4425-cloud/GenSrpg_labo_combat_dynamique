@@ -1,5 +1,15 @@
-import { createCombatState, regenerateEnergy } from "./combat-state.js";
-import { resolveMovement, resolveSkill } from "./action-resolver.js";
+import {
+  addChargeTimeEffect,
+  advanceCombatTime,
+  createCombatState
+} from "./combat-state.js";
+import {
+  resolveMovement,
+  resolveReaction,
+  resolveSkill,
+  resolveSkillCompletion,
+  resolveSkillStart
+} from "./action-resolver.js";
 
 export function createCombatSession({
   distance = "medium",
@@ -51,8 +61,51 @@ export function createCombatSession({
     return result;
   }
 
+  function startSkill({ actorId, targetId, skill }) {
+    const result = resolveSkillStart({
+      state,
+      actorId,
+      targetId,
+      skill
+    });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
+  }
+
+  function reactToSkill({ action, reactionSkill, elapsedMs }) {
+    const result = resolveReaction({
+      state,
+      action,
+      reactionSkill,
+      elapsedMs
+    });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
+  }
+
+  function completeSkill({ action, reaction = null }) {
+    return resolveSkillCompletion({
+      state,
+      action,
+      reaction
+    });
+  }
+
+  function advanceMs(deltaMs) {
+    state = advanceCombatTime(state, deltaMs);
+    return state;
+  }
+
   function advance(seconds) {
-    state = regenerateEnergy(state, seconds);
+    return advanceMs(Number(seconds) * 1000);
+  }
+
+  function addChargeEffect(fighterId, effect) {
+    state = addChargeTimeEffect(state, fighterId, effect);
     return state;
   }
 
@@ -70,7 +123,12 @@ export function createCombatSession({
     previewSkill,
     move,
     useSkill,
+    startSkill,
+    reactToSkill,
+    completeSkill,
+    advanceMs,
     advance,
+    addChargeEffect,
     reset
   });
 }
