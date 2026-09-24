@@ -1,0 +1,286 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #071016;
+  color: #eef7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(28, 99, 116, 0.28), transparent 34rem),
+    linear-gradient(180deg, #071016, #0c1820);
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+.demo {
+  width: min(100%, 72rem);
+  margin: 0 auto;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem
+    max(2rem, env(safe-area-inset-bottom));
+}
+
+.demo__header {
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #89dff0;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 5vw, 2.5rem);
+}
+
+.intro {
+  max-width: 50rem;
+  margin: 0.6rem 0 0;
+  color: #b7c7cf;
+}
+
+.arena {
+  position: relative;
+  min-height: clamp(24rem, 65vh, 40rem);
+  overflow: hidden;
+  border: 1px solid rgba(137, 223, 240, 0.2);
+  border-radius: 1.4rem;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(58, 155, 177, 0.24), transparent 38%),
+    linear-gradient(180deg, #16303c 0%, #13282f 55%, #1d2b26 100%);
+  box-shadow: 0 1.2rem 4rem rgba(0, 0, 0, 0.28);
+}
+
+.arena__ground {
+  position: absolute;
+  inset: auto -10% -18% -10%;
+  height: 48%;
+  border-radius: 50% 50% 0 0;
+  background:
+    radial-gradient(ellipse at center, rgba(124, 160, 111, 0.32), transparent 55%),
+    linear-gradient(180deg, rgba(58, 85, 66, 0.72), rgba(21, 34, 29, 0.95));
+}
+
+.fighter {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 0.55rem;
+  width: min(42%, 24rem);
+}
+
+.fighter--player {
+  left: 4%;
+  bottom: 5%;
+}
+
+.fighter--opponent {
+  right: 4%;
+  top: 7%;
+}
+
+.fighter__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.75rem;
+  background: rgba(4, 13, 18, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.fighter__caption span {
+  font-size: 0.72rem;
+  color: #9bc2cc;
+}
+
+.fighter__motion {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  transform-origin: 50% 72%;
+}
+
+.fighter__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 1rem 1.2rem rgba(0, 0, 0, 0.35));
+  user-select: none;
+  pointer-events: none;
+}
+
+.fighter__placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  border: 1px dashed rgba(205, 236, 243, 0.38);
+  border-radius: 1rem;
+  background: rgba(5, 18, 24, 0.42);
+  color: #bed2d8;
+  text-align: center;
+  font-size: clamp(0.72rem, 2vw, 0.95rem);
+}
+
+.file-control {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #bfd0d7;
+}
+
+.file-control input {
+  width: 100%;
+  min-width: 0;
+  font-size: 0.72rem;
+}
+
+.controls {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(137, 223, 240, 0.16);
+  border-radius: 1rem;
+  background: rgba(9, 24, 31, 0.88);
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.control-row label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #bdd0d7;
+}
+
+select,
+button {
+  min-height: 2.8rem;
+  border: 1px solid rgba(137, 223, 240, 0.22);
+  border-radius: 0.75rem;
+  background: #122832;
+  color: #f2fbff;
+}
+
+select {
+  padding: 0 0.7rem;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+button {
+  padding: 0.55rem 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.button-secondary {
+  background: #1d2328;
+  color: #d7e1e5;
+}
+
+.status {
+  min-height: 1.4rem;
+  margin: 0;
+  color: #b8c9cf;
+  font-size: 0.82rem;
+}
+
+.status[data-state="ok"] {
+  color: #a8efc1;
+}
+
+.status[data-state="running"] {
+  color: #9be9f8;
+}
+
+.status[data-state="error"] {
+  color: #ffb5b5;
+}
+
+@media (max-width: 680px) {
+  .demo {
+    padding-inline: 0.65rem;
+  }
+
+  .arena {
+    min-height: 29rem;
+    border-radius: 1rem;
+  }
+
+  .fighter {
+    width: 47%;
+  }
+
+  .fighter--player {
+    left: 1.5%;
+    bottom: 4%;
+  }
+
+  .fighter--opponent {
+    right: 1.5%;
+    top: 5%;
+  }
+
+  .fighter__caption {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .control-row {
+    grid-template-columns: 1fr;
+  }
+
+  .button-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .button-grid button:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:active {
+    transform: none;
+  }
+}
