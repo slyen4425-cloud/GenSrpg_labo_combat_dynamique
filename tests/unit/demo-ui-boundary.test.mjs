@@ -252,20 +252,18 @@ test("fighter HP bars are state-driven and placed below names", async () => {
   assert.doesNotMatch(source, /hp\s*=\s*100/);
 });
 
-test("distance presenter projects explicit short medium long separation from stationary fighter", async () => {
+test("distance presenter uses explicit per-slot anchors for unambiguous player movement", async () => {
   const source = await readFile(
     "src/adapters/renderer/dom-distance-presenter.js",
     "utf8"
   );
 
-  assert.match(source, /SEPARATION_BY_DISTANCE/);
-  assert.match(source, /short: 0\.30/);
-  assert.match(source, /medium: 0\.44/);
-  assert.match(source, /long: 0\.56/);
-  assert.match(source, /positions\[otherSlot\] - separation/);
-  assert.match(source, /positions\[otherSlot\] \+ separation/);
-  assert.doesNotMatch(source, /deltaBands/);
-  assert.doesNotMatch(source, /STEP_X/);
+  assert.match(source, /POSITION_BY_SLOT_AND_DISTANCE/);
+  assert.match(source, /player:[\s\S]*long: 0\.18[\s\S]*medium: 0\.28[\s\S]*short: 0\.42/);
+  assert.match(source, /opponent:[\s\S]*short: 0\.58[\s\S]*medium: 0\.72[\s\S]*long: 0\.82/);
+  assert.match(source, /positionFor\(actorSlot, distanceEvent\.to\)/);
+  assert.doesNotMatch(source, /positions\[otherSlot\] - separation/);
+  assert.doesNotMatch(source, /positions\[otherSlot\] \+ separation/);
 });
 
 
