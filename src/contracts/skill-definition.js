@@ -15,10 +15,18 @@ export const SKILL_FORMS = Object.freeze([
   "aura"
 ]);
 
+export const SKILL_APPROACH_MODES = Object.freeze([
+  "none",
+  "ground",
+  "aerial",
+  "teleport"
+]);
+
 export const COMBAT_DISTANCES = Object.freeze(["short", "medium", "long"]);
 
 const CATEGORY_SET = new Set(SKILL_CATEGORIES);
 const FORM_SET = new Set(SKILL_FORMS);
+const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
 const DISTANCE_SET = new Set(COMBAT_DISTANCES);
 
 function nonEmptyString(value, field) {
@@ -75,6 +83,14 @@ export function normalizeSkillDefinition(input) {
     ? null
     : nonEmptyString(input.element, "element");
 
+  const approachMode = nonEmptyString(
+    input.approachMode ?? "none",
+    "approachMode"
+  );
+  if (!APPROACH_SET.has(approachMode)) {
+    throw new RangeError(`Unsupported skill approachMode: ${approachMode}`);
+  }
+
   const allowedDistances = stringArray(
     input.allowedDistances ?? COMBAT_DISTANCES,
     "allowedDistances",
@@ -97,6 +113,7 @@ export function normalizeSkillDefinition(input) {
     category,
     form,
     element,
+    approachMode,
     energyCost: nonNegativeNumber(input.energyCost, "energyCost"),
     preparationMs: nonNegativeNumber(input.preparationMs, "preparationMs"),
     travelMs: nonNegativeNumber(input.travelMs, "travelMs"),
@@ -106,7 +123,13 @@ export function normalizeSkillDefinition(input) {
       blockForms: stringArray(reaction.blockForms, "reaction.blockForms", FORM_SET),
       reflectForms: stringArray(reaction.reflectForms, "reaction.reflectForms", FORM_SET),
       immuneElements: stringArray(reaction.immuneElements, "reaction.immuneElements"),
-      counterForms: stringArray(reaction.counterForms, "reaction.counterForms", FORM_SET)
+      counterForms: stringArray(reaction.counterForms, "reaction.counterForms", FORM_SET),
+      evadeForms: stringArray(reaction.evadeForms, "reaction.evadeForms", FORM_SET),
+      evadeApproaches: stringArray(
+        reaction.evadeApproaches,
+        "reaction.evadeApproaches",
+        APPROACH_SET
+      )
     }),
     effect: Object.freeze({
       damage: nonNegativeNumber(effect.damage, "effect.damage"),
