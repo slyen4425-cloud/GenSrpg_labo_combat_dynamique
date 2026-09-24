@@ -172,6 +172,26 @@ h1 {
   font-size: 0.62rem;
 }
 
+.fighter__hp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fighter__hp {
+  width: 100%;
+  height: 0.38rem;
+  accent-color: #8eea8e;
+}
+
+.fighter__hp-row span {
+  color: #b8d9bd;
+  font-size: 0.52rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .fighter__charge {
   width: 100%;
   height: 0.34rem;
