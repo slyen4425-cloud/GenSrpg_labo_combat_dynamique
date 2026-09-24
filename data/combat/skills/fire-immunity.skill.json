@@ -1,0 +1,15 @@
+{
+  "id": "fire-immunity",
+  "name": "Immunité feu",
+  "category": "buff_debuff",
+  "form": "self",
+  "element": null,
+  "energyCost": 10,
+  "preparationMs": 0,
+  "travelMs": 0,
+  "recoveryMs": 300,
+  "allowedDistances": ["short", "medium", "long"],
+  "reaction": {
+    "immuneElements": ["fire"]
+  }
+}
