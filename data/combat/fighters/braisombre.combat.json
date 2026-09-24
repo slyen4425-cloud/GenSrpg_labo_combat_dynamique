@@ -1,7 +1,9 @@
 {
   "id": "braisombre",
   "maxEnergy": 100,
-  "energy": 100,
-  "energyRegenPerSecond": 6,
-  "movementEnergyPerStep": 3
+  "initialEnergy": 0,
+  "energyChargeAmount": 1,
+  "energyChargeIntervalMs": 2000,
+  "movementEnergyPerStep": 3,
+  "chargeTimeModifierPct": 0
 }
