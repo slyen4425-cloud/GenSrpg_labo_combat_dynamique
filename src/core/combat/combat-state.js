@@ -4,6 +4,9 @@ import {
   normalizeChargeTimeEffect
 } from "./combat-timing.js";
 
+const FIGHTER_SIDES = new Set(["player", "opponent"]);
+const FIGHTER_PRESENCE = new Set(["active", "reserve", "recalled"]);
+
 function finiteNonNegative(value, field) {
   const number = Number(value);
   if (!Number.isFinite(number) || number < 0) {
@@ -30,6 +33,16 @@ function normalizeFighter(input) {
     throw new TypeError("fighter.id must be a non-empty string");
   }
 
+  const side = String(input.side ?? "").trim();
+  if (!FIGHTER_SIDES.has(side)) {
+    throw new RangeError(`${id}.side must be player or opponent`);
+  }
+
+  const presence = String(input.presence ?? "active").trim();
+  if (!FIGHTER_PRESENCE.has(presence)) {
+    throw new RangeError(`${id}.presence is unsupported`);
+  }
+
   const maxHp = finiteNonNegative(input.maxHp ?? 100, `${id}.maxHp`);
   const hp = finiteNonNegative(
     input.initialHp ?? input.hp ?? maxHp,
@@ -54,6 +67,8 @@ function normalizeFighter(input) {
 
   return Object.freeze({
     id,
+    side,
+    presence,
     maxHp,
     hp,
     maxEnergy,
@@ -137,6 +152,27 @@ export function withFighterHp(state, fighterId, hp) {
       [fighterId]: Object.freeze({
         ...fighter,
         hp: nextHp
+      })
+    })
+  });
+}
+
+export function withFighterPresence(state, fighterId, presence) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
+  }
+  if (!FIGHTER_PRESENCE.has(presence)) {
+    throw new RangeError(`Unsupported fighter presence: ${presence}`);
+  }
+
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: Object.freeze({
+        ...fighter,
+        presence
       })
     })
   });
