@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-24
 
-Phase active : Phase 2B/V2 — Timing temps réel, énergie à ticks et UI combat persistante.
+Phase active : Phase 2B/V3 — Impact réel, esquive, commandes tactiques et interruption de charge.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -1335,6 +1335,72 @@ Tests exigés :
 - structure CI exige les nouveaux contrats/resolvers/données/tests ;
 - UI principale expose Objet/Rappel/Invocation ;
 - outil Stun de validation uniquement dans Réglages du test.
+
+
+## Résultat technique — combat-commands-stun-v3
+
+Implémentation présente :
+
+- contrat `CombatCommandDefinition` séparé du contrat de compétence ;
+- types : Item / Rappel / Invocation ;
+- `Command Resolver` indépendant de l'UI et du renderer ;
+- commandes partageant le Combat Runtime de charge ;
+- coût énergie configurable ;
+- préparation configurable ;
+- récupération configurable ;
+- interruptibilité pendant la préparation configurable ;
+- Item laboratoire : +20 PV uniquement à completion ;
+- Rappel laboratoire : événement sémantique de completion ;
+- Invocation laboratoire : événement sémantique avec `summonCreatureId` ;
+- boutons Objet / Rappel / Invocation visibles dans l'interface principale ;
+- progression de commande raccordée à la barre de charge principale ;
+- Stun prototype : 500 ms préparation + 350 ms trajet ;
+- `charge-interrupt` produit uniquement à l'impact 850 ms ;
+- Runtime refuse l'interruption si le release de la cible est déjà atteint ;
+- contrôle `Simuler impact Stun` placé uniquement dans Réglages du test ;
+- fichiers V3 rendus obligatoires par la sentinelle de structure.
+
+Frontières conservées :
+
+- UI ne calcule ni coût, ni durée, ni interruption ;
+- Command Resolver ne dépend ni de l'animation ni du DOM ;
+- Action Resolver décide si un Stun a réellement touché ;
+- Combat Runtime décide si l'action active est encore interruptible ;
+- Rappel/Invocation ne sont pas de fausses compétences ;
+- le vrai changement de roster/asset lors d'un Rappel/Invocation reste hors de ce lot.
+
+Tests ajoutés :
+
+- contrat Item/Rappel/Invocation ;
+- coût énergie ;
+- soin uniquement à completion ;
+- événements Rappel/Invocation ;
+- progression runtime d'une commande ;
+- interruption avant release ;
+- refus après release ;
+- Stun : interruption émise exactement à l'impact ;
+- résolution sémantique Stun -> interruption de la commande en charge ;
+- UI principale commandes / panneau test Stun séparés ;
+- absence de valeurs de timing de commande codées dans l'UI.
+
+HEAD fonctionnel avant documentation finale :
+
+`2da10b2960449368d59875aa7c8a242dd69fa9a1`
+
+CI de ce HEAD :
+
+- run : `36072367866`
+- conclusion : SUCCESS
+
+Validation utilisateur restante :
+
+- smartphone : visibilité des trois boutons tactiques ;
+- vérifier les coûts et barres de charge ;
+- Objet doit soigner uniquement à la fin de sa charge ;
+- Rappel/Invocation doivent terminer leur charge et produire le journal ;
+- pendant une charge Rappel/Invocation, `Simuler impact Stun` doit l'annuler ;
+- après release, la même interruption doit être refusée ;
+- confirmer le rythme avant d'engager le vrai roster de réserve.
 
 ## Dernier checkpoint GREEN
 
