@@ -1,0 +1,24 @@
+{
+  "id": "stun-bolt",
+  "name": "Impact étourdissant",
+  "category": "offensive",
+  "form": "projectile",
+  "element": null,
+  "approachMode": "none",
+  "energyCost": 2,
+  "preparationMs": 500,
+  "travelMs": 350,
+  "recoveryMs": 500,
+  "allowedDistances": [
+    "medium",
+    "long"
+  ],
+  "effect": {
+    "damage": 5,
+    "interruptsPreparation": true,
+    "stunMs": 1200,
+    "tags": [
+      "stun"
+    ]
+  }
+}
