@@ -437,3 +437,43 @@ La résolution distingue :
 Une réaction n'est applicable que si elle devient prête avant l'impact.
 
 Un contre qui devient prêt avant le release peut annuler la compétence avant son départ.
+
+
+### Runtime temps réel V2
+
+Le sous-système Combat Rules distingue désormais l'état, le calcul et l'horloge :
+
+```
+Combat Data
+    |
+    v
+Combat State <---- Combat Timing
+    |
+    v
+Combat Session
+    |
+    v
+Combat Runtime
+    |
+    +---- progression de charge
+    +---- ticks énergie
+    +---- fenêtre de réaction
+    +---- release / résolution
+    |
+    v
+Combat Resolution Presenter
+    |
+    +---- Animation
+    +---- FX
+```
+
+Propriétaires :
+
+- `combat-state.js` : snapshot énergie/temps/effets ;
+- `combat-timing.js` : formules pures de tick et charge ;
+- `combat-session.js` : mutation contrôlée du snapshot ;
+- `combat-runtime.js` : horloge active et action en cours ;
+- `dom-distance-presenter.js` : déplacement visuel d'un seul combattant ;
+- Demo UI : affichage des progressions fournies par le runtime.
+
+Un timer de match optionnel pourra être ajouté plus tard au Combat Runtime ou à un service de temps voisin, jamais dans les boutons UI.
