@@ -1,7 +1,7 @@
-const DISTANCE_INDEX = Object.freeze({
-  short: 0,
-  medium: 1,
-  long: 2
+const SEPARATION_BY_DISTANCE = Object.freeze({
+  short: 0.30,
+  medium: 0.44,
+  long: 0.56
 });
 
 const SCALE_BY_DISTANCE = Object.freeze({
@@ -15,18 +15,16 @@ const RESET_POSITIONS = Object.freeze({
   opponent: 0.72
 });
 
-const STEP_X = 0.10;
-
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function distanceIndex(value) {
-  const index = DISTANCE_INDEX[value];
-  if (!Number.isInteger(index)) {
-    throw new RangeError(`Unsupported visual distance: ${value}`);
+function separationFor(distance) {
+  const separation = SEPARATION_BY_DISTANCE[distance];
+  if (!Number.isFinite(separation)) {
+    throw new RangeError(`Unsupported visual distance: ${distance}`);
   }
-  return index;
+  return separation;
 }
 
 export function createDomDistancePresenter({
@@ -83,23 +81,18 @@ export function createDomDistancePresenter({
       throw new Error("movement result has no distance-changed event");
     }
 
-    const fromIndex = distanceIndex(distanceEvent.from);
-    const toIndex = distanceIndex(distanceEvent.to);
-    const deltaBands = toIndex - fromIndex;
+    const otherSlot = actorSlot === "player" ? "opponent" : "player";
+    const separation = separationFor(distanceEvent.to);
 
-    const sideSign = actorSlot === "player" ? -1 : 1;
-    const deltaX = sideSign * deltaBands * STEP_X;
+    const rawTarget =
+      actorSlot === "player"
+        ? positions[otherSlot] - separation
+        : positions[otherSlot] + separation;
 
-    positions[actorSlot] = clamp(
-      positions[actorSlot] + deltaX,
-      minX,
-      maxX
-    );
+    positions[actorSlot] = clamp(rawTarget, minX, maxX);
     scales[actorSlot] = SCALE_BY_DISTANCE[distanceEvent.to];
 
     apply(actorSlot);
-
-    const otherSlot = actorSlot === "player" ? "opponent" : "player";
 
     return Object.freeze({
       status: "moved",
@@ -108,6 +101,7 @@ export function createDomDistancePresenter({
       to: distanceEvent.to,
       x: positions[actorSlot],
       scale: scales[actorSlot],
+      separation,
       stationarySlot: otherSlot,
       stationaryX: positions[otherSlot],
       stationaryScale: scales[otherSlot]
