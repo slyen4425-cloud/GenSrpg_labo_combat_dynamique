@@ -51,6 +51,32 @@ export function createDomActorRenderer({
     }
   }
 
+  function settleAnimation({ animation, plan, token }) {
+    const sourceFinished = animation.finished && typeof animation.finished.then === "function"
+      ? animation.finished
+      : Promise.resolve();
+
+    return Promise.resolve(sourceFinished)
+      .then(() => {
+        if (!disposed && active?.token === token) {
+          active = null;
+          restoreBaseState();
+        }
+        return { status: "finished", plan };
+      })
+      .catch((error) => {
+        if (!disposed && active?.token === token) {
+          active = null;
+          restoreBaseState();
+        }
+
+        if (error?.name === "AbortError") {
+          return { status: "cancelled", plan };
+        }
+        throw error;
+      });
+  }
+
   function play(plan) {
     assertActiveRenderer();
 
@@ -76,34 +102,11 @@ export function createDomActorRenderer({
     };
     active = record;
 
-    let finished;
-    if (plan.loop) {
-      finished = Promise.resolve({ status: "running", plan });
-    } else {
-      const sourceFinished = animation.finished && typeof animation.finished.then === "function"
-        ? animation.finished
-        : Promise.resolve();
-
-      finished = Promise.resolve(sourceFinished)
-        .then(() => {
-          if (!disposed && active?.token === token) {
-            active = null;
-            restoreBaseState();
-          }
-          return { status: "finished", plan };
-        })
-        .catch((error) => {
-          if (!disposed && active?.token === token) {
-            active = null;
-            restoreBaseState();
-          }
-
-          if (error?.name === "AbortError") {
-            return { status: "cancelled", plan };
-          }
-          throw error;
-        });
-    }
+    // Always observe Animation.finished, including infinite/looping animations.
+    // Web Animations rejects this promise with AbortError when cancel() is called.
+    // Consuming that rejection here keeps cancellation owned by the renderer and
+    // prevents unhandled promise rejections in clients that do not await the handle.
+    const finished = settleAnimation({ animation, plan, token });
 
     return Object.freeze({
       animation,
