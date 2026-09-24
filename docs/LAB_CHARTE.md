@@ -30,7 +30,8 @@ Le laboratoire est découpé en domaines distincts :
 4. Render Adapter — application des résultats visuels au renderer ;
 5. Creature Profile — paramètres de morphologie et presets ;
 6. Demo UI — interface de test uniquement ;
-7. Asset Input — chargement et validation des images de test.
+7. Asset Input — chargement et validation des images de test ;
+8. Combat Rules Lab — distance, énergie et résolution des interactions de compétences pour les prototypes de gameplay.
 
 Un domaine ne prend jamais silencieusement l'autorité d'un autre.
 
@@ -47,7 +48,10 @@ Une seule autorité active est permise pour chaque responsabilité :
 - lecture du fichier image : Asset Input ;
 - affichage DOM/Canvas/WebGL : Render Adapter ;
 - boutons, curseurs et prévisualisation : Demo UI ;
-- contrat `attack/hit/ko/idle/etc.` : Event Contract.
+- contrat `attack/hit/ko/idle/etc.` : Event Contract ;
+- définition d'une compétence : Skill Contract ;
+- distance et énergie de combat : Combat Rules Lab ;
+- résultat `hit/blocked/reflected/immune/countered` : Combat Rules Lab.
 
 Si deux modules pensent posséder la même responsabilité, le développement s'arrête jusqu'à clarification.
 
