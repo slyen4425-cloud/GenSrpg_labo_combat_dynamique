@@ -190,6 +190,9 @@ export async function mountCombatDemo({
   });
 
   for (const slot of Object.values(slots)) {
+    if (!slot.fileInput) {
+      continue;
+    }
     listen(slot.fileInput, "change", () => {
       const [file] = slot.fileInput.files ?? [];
       if (!file) {
@@ -245,7 +248,7 @@ function createSlot({
   const container = requiredElement(root, `[data-demo-slot="${key}"]`);
   const motion = requiredElement(container, "[data-demo-motion]");
   const image = requiredElement(container, "[data-demo-image]");
-  const fileInput = requiredElement(container, "[data-demo-file]");
+  const fileInput = root.querySelector(`[data-demo-file="${key}"]`);
   const label = requiredElement(container, "[data-demo-label]");
   const profileLabel = requiredElement(container, "[data-demo-profile]");
 
