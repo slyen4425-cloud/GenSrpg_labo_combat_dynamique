@@ -1,0 +1,11 @@
+{
+  "id": "summon",
+  "name": "Invoquer réserve",
+  "kind": "summon",
+  "energyCost": 3,
+  "preparationMs": 1800,
+  "recoveryMs": 500,
+  "effect": {
+    "summonFighterId": "braisombre-ally"
+  }
+}
