@@ -208,7 +208,8 @@ test("skill result exposes configurable preparation travel and recovery timeline
   assert.deepEqual(result.timelineMs, {
     preparation: 700,
     travel: 550,
-    recovery: 650
+    recovery: 650,
+    reactionReady: null
   });
 
   assert.equal(
@@ -271,4 +272,87 @@ test("combat session commits skill energy and explicit regeneration", () => {
 
   session.advance(1);
   assert.equal(session.snapshot().fighters.maraileron.energy, 90);
+});
+
+
+test("reaction timing can interrupt before release", () => {
+  const result = resolveSkill({
+    state: state("short"),
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw,
+    reactionSkill: contactCounter
+  });
+
+  assert.equal(result.outcome, "countered");
+  assert.equal(result.timelineMs.reactionReady, 100);
+  assert.equal(
+    result.events.some((item) => item.type === "skill-release"),
+    false
+  );
+  assert.equal(
+    result.events.find((item) => item.type === "skill-countered").atMs,
+    100
+  );
+  assert.equal(
+    result.events.find((item) => item.type === "skill-cancelled").atMs,
+    100
+  );
+});
+
+test("reaction that becomes ready after impact does not apply or spend energy", () => {
+  const slowCounter = normalizeSkillDefinition({
+    id: "slow-counter",
+    name: "Slow Counter",
+    category: "counter",
+    form: "self",
+    energyCost: 12,
+    preparationMs: 400,
+    allowedDistances: ["short", "medium", "long"],
+    reaction: {
+      counterForms: ["contact"]
+    }
+  });
+
+  const result = resolveSkill({
+    state: state("short"),
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw,
+    reactionSkill: slowCounter
+  });
+
+  assert.equal(result.outcome, "hit");
+  assert.equal(result.reactionApplied, null);
+  assert.equal(result.state.fighters.braisombre.energy, 100);
+});
+
+test("combat session skill preview and reset do not leak UI authority", () => {
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [maraileronConfig, braisombreConfig]
+  });
+
+  const preview = session.previewSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball,
+    reactionSkill: mirrorShield
+  });
+
+  assert.equal(preview.outcome, "reflected");
+  assert.equal(session.snapshot().fighters.maraileron.energy, 100);
+  assert.equal(session.snapshot().fighters.braisombre.energy, 100);
+
+  session.useSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+  assert.equal(session.snapshot().fighters.maraileron.energy, 82);
+
+  session.reset();
+  assert.equal(session.snapshot().distance, "medium");
+  assert.equal(session.snapshot().fighters.maraileron.energy, 100);
+  assert.equal(session.snapshot().fighters.braisombre.energy, 100);
 });
