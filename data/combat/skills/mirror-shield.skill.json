@@ -4,13 +4,21 @@
   "category": "defensive",
   "form": "self",
   "element": null,
-  "energyCost": 16,
-  "preparationMs": 120,
+  "energyCost": 2,
+  "preparationMs": 500,
   "travelMs": 0,
   "recoveryMs": 500,
-  "allowedDistances": ["short", "medium", "long"],
+  "allowedDistances": [
+    "short",
+    "medium",
+    "long"
+  ],
   "reaction": {
-    "blockForms": ["projectile"],
-    "reflectForms": ["projectile"]
+    "blockForms": [
+      "projectile"
+    ],
+    "reflectForms": [
+      "projectile"
+    ]
   }
 }
