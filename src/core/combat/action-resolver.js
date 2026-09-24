@@ -1,5 +1,9 @@
 import { movementEnergyCost, isSkillInRange } from "./distance.js";
-import { withDistance, withFighterEnergy } from "./combat-state.js";
+import {
+  withDistance,
+  withFighterEnergy,
+  withFighterHp
+} from "./combat-state.js";
 import { effectivePreparationMs } from "./combat-timing.js";
 
 function fighterOf(state, fighterId) {
@@ -13,6 +17,12 @@ function fighterOf(state, fighterId) {
 function spendEnergy(state, fighterId, amount) {
   const fighter = fighterOf(state, fighterId);
   return withFighterEnergy(state, fighterId, fighter.energy - amount);
+}
+
+function applyDamage(state, fighterId, amount) {
+  const fighter = fighterOf(state, fighterId);
+  const damage = Math.max(0, Number(amount) || 0);
+  return withFighterHp(state, fighterId, fighter.hp - damage);
 }
 
 function event(type, atMs, data = {}) {
@@ -243,6 +253,7 @@ export function resolveSkillCompletion({
 
   const outcome = reaction?.outcome ?? "hit";
   const reactionReadyAt = reaction?.readyAtMs ?? null;
+  let nextState = state;
   const events = [
     event("skill-start", 0, {
       actorId,
@@ -298,19 +309,31 @@ export function resolveSkillCompletion({
     }));
 
     if (outcome === "hit") {
+      const before = fighterOf(nextState, targetId).hp;
+      nextState = applyDamage(nextState, targetId, skill.effect.damage);
+      const after = fighterOf(nextState, targetId).hp;
+
       events.push(event("hit", impactAtMs, {
         actorId: targetId,
         sourceActorId: actorId,
         skillId: skill.id,
-        damage: skill.effect.damage
+        damage: skill.effect.damage,
+        hpBefore: before,
+        hpAfter: after
       }));
     } else if (outcome === "reflected") {
+      const before = fighterOf(nextState, actorId).hp;
+      nextState = applyDamage(nextState, actorId, skill.effect.damage);
+      const after = fighterOf(nextState, actorId).hp;
+
       events.push(event("hit", impactAtMs, {
         actorId,
         sourceActorId: targetId,
         skillId: skill.id,
         reflected: true,
-        damage: skill.effect.damage
+        damage: skill.effect.damage,
+        hpBefore: before,
+        hpAfter: after
       }));
     } else {
       events.push(event(`skill-${outcome}`, impactAtMs, {
@@ -333,7 +356,7 @@ export function resolveSkillCompletion({
   return Object.freeze({
     ok: true,
     outcome,
-    state,
+    state: nextState,
     reactionApplied: reaction?.skillId ?? null,
     timelineMs: Object.freeze({
       basePreparation: skill.preparationMs,
