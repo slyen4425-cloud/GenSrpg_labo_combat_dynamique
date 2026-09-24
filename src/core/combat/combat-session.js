@@ -76,6 +76,7 @@ export function createCombatSession({
 
   function previewReaction({ action, reactionSkill, elapsedMs }) {
     return resolveReaction({
+      state,
       action,
       reactionSkill,
       elapsedMs
@@ -84,7 +85,6 @@ export function createCombatSession({
 
   function reactToSkill({ action, reactionSkill, elapsedMs }) {
     const result = previewReaction({
-      state,
       action,
       reactionSkill,
       elapsedMs
