@@ -96,11 +96,15 @@ export function createCombatSession({
   }
 
   function completeSkill({ action, reaction = null }) {
-    return resolveSkillCompletion({
+    const result = resolveSkillCompletion({
       state,
       action,
       reaction
     });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
   }
 
   function advanceMs(deltaMs) {
