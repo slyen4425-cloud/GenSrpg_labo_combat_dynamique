@@ -73,6 +73,12 @@ const DISTANCE_LABELS = Object.freeze({
   long: "Longue"
 });
 
+const COMMAND_KIND_LABELS = Object.freeze({
+  item: "Objet",
+  recall: "Rappel",
+  summon: "Invocation"
+});
+
 const CATEGORY_LABELS = Object.freeze({
   offensive: "Offensive",
   defensive: "Défensive",
@@ -393,6 +399,37 @@ export async function mountCombatTest({
     return { button, charge, state };
   }
 
+  function createCommandCard(command) {
+    const button = root.ownerDocument.createElement("button");
+    button.type = "button";
+    button.className = "skill-card skill-card--command";
+    button.dataset.combatCommand = command.id;
+
+    const name = root.ownerDocument.createElement("strong");
+    name.textContent = command.name;
+
+    const meta = root.ownerDocument.createElement("span");
+    meta.className = "skill-card__meta";
+    meta.textContent = COMMAND_KIND_LABELS[command.kind] ?? command.kind;
+
+    const timing = root.ownerDocument.createElement("span");
+    timing.className = "skill-card__timing";
+    timing.textContent = commandTimingText(command);
+
+    const charge = root.ownerDocument.createElement("progress");
+    charge.className = "skill-card__charge";
+    charge.max = 1;
+    charge.value = 0;
+    charge.setAttribute("aria-label", `Charge de ${command.name}`);
+
+    const state = root.ownerDocument.createElement("span");
+    state.className = "skill-card__state";
+    state.textContent = "En attente";
+
+    button.append(name, meta, timing, charge, state);
+    return { button, charge, state };
+  }
+
   function setActorCharge(fighterId, value, active) {
     const bar = actorChargeRefs[fighterId];
     bar.value = Math.max(0, Math.min(1, Number(value) || 0));
@@ -400,7 +437,11 @@ export async function mountCombatTest({
   }
 
   function resetChargeBars() {
-    for (const refs of [...skillRefs.values(), ...reactionRefs.values()]) {
+    for (const refs of [
+      ...skillRefs.values(),
+      ...reactionRefs.values(),
+      ...commandRefs.values()
+    ]) {
       refs.charge.value = 0;
       refs.button.dataset.charging = "false";
     }
@@ -468,6 +509,37 @@ export async function mountCombatTest({
         render(lastState);
       });
     }
+
+    for (const command of combatCommands) {
+      const refs = createCommandCard(command);
+      commandContainer.append(refs.button);
+      commandRefs.set(command.id, { ...refs, command });
+
+      listen(refs.button, "click", () => {
+        const result = runtime.startCommand({
+          actorId: "maraileron",
+          command
+        });
+
+        if (!result.ok) {
+          writeLog(
+            `${command.name} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
+            "warn"
+          );
+          render(lastState);
+          return;
+        }
+
+        refs.button.dataset.charging = "true";
+        refs.state.textContent =
+          `Charge ${formatSeconds(result.action.preparationMs)}`;
+        writeLog(
+          `${command.name} se prépare — cette action peut être interrompue.`,
+          "accent"
+        );
+        render(lastState);
+      });
+    }
   }
 
   function renderHp(state) {
@@ -529,6 +601,27 @@ export async function mountCombatTest({
     }
   }
 
+  function renderCommandAvailability() {
+    for (const { command, button, state } of commandRefs.values()) {
+      const preview = session.previewCommand({
+        actorId: "maraileron",
+        command
+      });
+
+      const available = preview.ok && !runtime.hasActiveAction;
+      button.disabled = !available;
+      button.dataset.available = available ? "true" : "false";
+
+      if (button.dataset.charging !== "true") {
+        state.textContent = runtime.hasActiveAction
+          ? "Action en cours"
+          : preview.ok
+            ? "Disponible"
+            : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
+      }
+    }
+  }
+
   function renderReactionAvailability() {
     for (const { skill, button, state } of reactionRefs.values()) {
       const preview = runtime.previewReaction(skill);
@@ -552,6 +645,7 @@ export async function mountCombatTest({
     renderEnergy(state);
     renderMovement(state);
     renderOffensiveAvailability();
+    renderCommandAvailability();
     renderReactionAvailability();
   }
 
