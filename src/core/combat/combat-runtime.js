@@ -42,6 +42,8 @@ export function createCombatRuntime({
         Object.values(state.fighters).map((fighter) => [
           fighter.id,
           {
+            hp: fighter.hp,
+            maxHp: fighter.maxHp,
             energy: fighter.energy,
             effects: fighter.chargeTimeEffects.map((effect) => effect.id)
           }
