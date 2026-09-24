@@ -531,7 +531,7 @@ h1 {
 
 .test-settings__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: end;
   gap: 0.6rem;
   padding: 0 0.8rem 0.8rem;
