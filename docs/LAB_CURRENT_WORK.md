@@ -474,7 +474,8 @@ Architecture / propriétaires :
 - `src/core/combat/action-resolver.js` : validation et résolution pure des actions ;
 - `data/combat/` : configurations de test modifiables ;
 - `src/ui/combat-test-ui.js` : adaptateur UI du prototype, sans autorité de règles ;
-- Animation Core / Render Adapter existants : uniquement événements visuels résultants.
+- Animation Core / Render Adapter existants : uniquement événements visuels résultants ;
+- FX minimal : plan visuel dérivé des événements résolus, rendu par un adaptateur DOM dédié, sans aucune autorité sur les règles.
 
 Périmètre V1 du test :
 
@@ -495,7 +496,8 @@ Hors périmètre :
 - intégration `Zombicide-40k` ;
 - réseau ;
 - éditeur complet de compétences ;
-- nouveaux FX avancés.
+- FX avancés (particules, caméra, bibliothèque d'effets) ;
+- seul un projectile générique minimal piloté par `skill-release` est autorisé dans ce lot pour valider visuellement la chronologie.
 
 Contraintes :
 
