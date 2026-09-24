@@ -1,0 +1,7 @@
+{
+  "id": "braisombre",
+  "maxEnergy": 100,
+  "energy": 100,
+  "energyRegenPerSecond": 6,
+  "movementEnergyPerStep": 3
+}
