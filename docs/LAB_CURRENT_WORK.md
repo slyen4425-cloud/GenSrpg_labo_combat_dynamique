@@ -1270,6 +1270,72 @@ CI :
 
 Le lot suivant peut maintenant construire Objet / Rappel / Invocation / Stun sur cette chronologie sans modifier l'autorité des dégâts.
 
+
+## Sous-lot actif — combat-commands-stun-v3
+
+Base :
+
+`f204b6193e1addb46d6787a28b9c5911a8af53ba`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-commands-stun-v3-2026-09-25`
+
+Branche :
+
+`work/lab-combat-commands-stun-v3-2026-09-25`
+
+Objectif :
+
+- ajouter trois commandes de combat séparées des compétences :
+  - Objet ;
+  - Rappel ;
+  - Invocation ;
+- chaque commande possède coût énergie, préparation, récupération et interruptibilité configurables ;
+- partager le même Combat Runtime de charge que les compétences ;
+- permettre à un impact sémantique de type Stun d'interrompre une action encore en préparation ;
+- ne jamais interrompre une action déjà release ;
+- conserver le Stun de validation dans les outils de test, pas dans l'interface joueur principale.
+
+Propriétaires :
+
+- `CombatCommandDefinition` : contrat des commandes ;
+- `Command Resolver` : coût, préparation et résultat de commande ;
+- `Combat Session` : commit de l'état ;
+- `Combat Runtime` : progression et interruption de la charge ;
+- `Action Resolver` : produit `charge-interrupt` uniquement lorsqu'une compétence Stun touche réellement ;
+- Demo UI : boutons et lecture de progression uniquement.
+
+Données laboratoire :
+
+- Objet : 1 énergie, 0,7 s de charge, potion test +20 PV ;
+- Rappel : 2 énergies, 1,4 s de charge ;
+- Invocation : 3 énergies, 2,2 s de charge ;
+- Impact étourdissant : projectile, 0,5 s de préparation + 0,35 s de trajet, 5 dégâts, effet Stun.
+
+Invariants :
+
+- l'énergie d'une commande est dépensée au démarrage ;
+- l'effet de la commande n'est appliqué qu'à sa completion ;
+- toute commande est interruptible pendant sa préparation sauf configuration contraire ;
+- un Stun n'existe comme interruption qu'après son propre impact ;
+- `interruptActive()` refuse l'interruption si la cible n'est pas l'acteur actif, si l'action n'est pas interruptible ou si le release est déjà atteint ;
+- Objet/Rappel/Invocation ne sont jamais modélisés comme de fausses compétences.
+
+Tests exigés :
+
+- contrat des trois commandes ;
+- énergie insuffisante ;
+- potion soigne uniquement à completion ;
+- Rappel/Invocation produisent leurs événements sémantiques ;
+- charge commandée via Combat Runtime ;
+- interruption avant release ;
+- refus après release ;
+- `charge-interrupt` émis à l'impact du Stun, pas au start/release ;
+- structure CI exige les nouveaux contrats/resolvers/données/tests ;
+- UI principale expose Objet/Rappel/Invocation ;
+- outil Stun de validation uniquement dans Réglages du test.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
