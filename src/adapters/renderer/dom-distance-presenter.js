@@ -1,7 +1,12 @@
-const SEPARATION_BY_DISTANCE = Object.freeze({
-  short: 0.44,
-  medium: 0.60,
-  long: 0.78
+const SCENE_BY_DISTANCE = Object.freeze({
+  short: Object.freeze({ separation: 0.38, scale: 1.00 }),
+  medium: Object.freeze({ separation: 0.54, scale: 0.96 }),
+  long: Object.freeze({ separation: 0.68, scale: 0.90 })
+});
+
+const RESET_POSITIONS = Object.freeze({
+  player: 0.23,
+  opponent: 0.77
 });
 
 function clamp(value, min, max) {
@@ -10,8 +15,8 @@ function clamp(value, min, max) {
 
 export function createDomDistancePresenter({
   fighters,
-  minX = 0.05,
-  maxX = 0.95
+  minX = 0.14,
+  maxX = 0.86
 }) {
   if (
     !fighters?.player?.style ||
@@ -21,17 +26,28 @@ export function createDomDistancePresenter({
   }
 
   const positions = {
-    player: 0.2,
-    opponent: 0.8
+    player: RESET_POSITIONS.player,
+    opponent: RESET_POSITIONS.opponent
+  };
+
+  const scales = {
+    player: SCENE_BY_DISTANCE.medium.scale,
+    opponent: SCENE_BY_DISTANCE.medium.scale
   };
 
   function apply(slot) {
     fighters[slot].style.left = `${(positions[slot] * 100).toFixed(2)}%`;
+    fighters[slot].style.setProperty?.(
+      "--distance-scale",
+      scales[slot].toFixed(2)
+    );
   }
 
   function reset() {
-    positions.player = 0.2;
-    positions.opponent = 0.8;
+    positions.player = RESET_POSITIONS.player;
+    positions.opponent = RESET_POSITIONS.opponent;
+    scales.player = SCENE_BY_DISTANCE.medium.scale;
+    scales.opponent = SCENE_BY_DISTANCE.medium.scale;
     apply("player");
     apply("opponent");
   }
@@ -51,18 +67,20 @@ export function createDomDistancePresenter({
       throw new Error("movement result has no distance-changed event");
     }
 
-    const separation = SEPARATION_BY_DISTANCE[distanceEvent.to];
-    if (!Number.isFinite(separation)) {
+    const scene = SCENE_BY_DISTANCE[distanceEvent.to];
+    if (!scene) {
       throw new RangeError(`Unsupported visual distance: ${distanceEvent.to}`);
     }
 
     const otherSlot = actorSlot === "player" ? "opponent" : "player";
     const direction = actorSlot === "player" ? -1 : 1;
+
     positions[actorSlot] = clamp(
-      positions[otherSlot] + direction * separation,
+      positions[otherSlot] + direction * scene.separation,
       minX,
       maxX
     );
+    scales[actorSlot] = scene.scale;
 
     apply(actorSlot);
 
@@ -70,8 +88,10 @@ export function createDomDistancePresenter({
       status: "moved",
       actorSlot,
       x: positions[actorSlot],
+      scale: scales[actorSlot],
       stationarySlot: otherSlot,
-      stationaryX: positions[otherSlot]
+      stationaryX: positions[otherSlot],
+      stationaryScale: scales[otherSlot]
     });
   }
 
@@ -81,7 +101,12 @@ export function createDomDistancePresenter({
     presentMovement,
     reset,
     snapshot() {
-      return Object.freeze({ ...positions });
+      return Object.freeze({
+        player: positions.player,
+        opponent: positions.opponent,
+        playerScale: scales.player,
+        opponentScale: scales.opponent
+      });
     }
   });
 }
