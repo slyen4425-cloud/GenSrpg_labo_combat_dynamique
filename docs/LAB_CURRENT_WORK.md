@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-24
 
-Phase active : Phase 2B — Prototype combat distance / énergie / capacités — pré-audit mobile.
+Phase active : Phase 2B/V2 — Timing temps réel, énergie à ticks et UI combat persistante.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -597,6 +597,72 @@ Validation restante avant GREEN final :
 - vérification que les coûts de déplacement sont compréhensibles pour Maraileron et Braisombre.
 
 Le chantier ne doit pas être déclaré GREEN final avant ce retour utilisateur.
+
+
+## Chantier actif — combat-timing-ui-v2
+
+Base GREEN de reprise :
+
+`8dd435f5f1ed8744b2ee545d4d5e1d724f13e116`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-timing-ui-v2-2026-09-24`
+
+Branche :
+
+`work/lab-combat-timing-ui-v2-2026-09-24`
+
+Retour utilisateur à corriger :
+
+- les deux créatures doivent être en `idle` par défaut et y revenir après toute action ;
+- un changement Courte / Moyenne / Longue modifie la distance logique, mais visuellement seul le combattant qui se déplace change de position ;
+- augmenter l'écart visuel entre les combattants ;
+- supprimer le HUD distance superposé à l'arène ;
+- conserver l'arène et les capacités visibles simultanément pour permettre le timing ;
+- chaque capacité doit afficher une barre de préparation visible ;
+- l'énergie démarre à 0 et se recharge automatiquement par ticks configurables, exemple +1 toutes les 2 secondes ;
+- la recharge d'énergie et tous ses paramètres restent configurables ;
+- chaque créature possède un modificateur permanent de temps de charge en pourcentage ;
+- valeur positive = temps de charge plus long ; valeur négative = temps de charge réduit ;
+- des effets temporaires doivent pouvoir ajouter un modificateur de charge pendant une durée, par exemple -20 % pendant 5 secondes ;
+- le système doit pouvoir accueillir plus tard un timer de combat configuré sans coupler celui-ci à l'UI.
+
+Architecture / propriétaires V2 :
+
+- `Combat State` : énergie, temps écoulé, progression des ticks et modificateurs temporaires ;
+- `Combat Timing` : calcul pur des ticks d'énergie et des temps de préparation effectifs ;
+- `Combat Session` : propriétaire unique de l'état courant ;
+- `Action Runtime` : horloge d'une capacité en cours, progression de charge, fenêtre de réaction et résolution ;
+- `Distance Presenter` : position visuelle individuelle des combattants, sans modifier la règle de distance ;
+- `Demo Visual Controller` : idle par défaut et retour à idle ;
+- `Combat Test UI` : affichage uniquement, aucune formule gameplay.
+
+Contraintes :
+
+- aucun `setInterval` sans propriétaire et `dispose()` explicite ;
+- aucune régénération d'énergie calculée dans l'UI ;
+- aucune durée effective calculée dans l'UI ;
+- aucun déplacement simultané des deux sprites pour représenter une action d'un seul combattant ;
+- aucun CSS basé sur la distance logique qui déplace automatiquement les deux combattants ;
+- Animation Core ne devient pas horloge de combat ;
+- le runtime de combat ne calcule aucune animation ;
+- tous les paramètres restent pilotés par les données.
+
+Tests V2 :
+
+- énergie initiale 0 ;
+- tick +1/2000 ms configurable ;
+- accumulation déterministe des ticks ;
+- modificateur permanent +X/-X % du temps de préparation ;
+- modificateur temporaire avec expiration ;
+- résolution utilisant le temps de préparation effectif ;
+- runtime de charge annulable et nettoyable ;
+- seul le combattant ayant bougé reçoit un changement de position visuelle ;
+- idle lancé par défaut et restauré après action ;
+- interface mobile sans HUD distance superposé ;
+- arène + capacités visibles ensemble ;
+- barre de charge présente pour chaque capacité.
 
 ## Dernier checkpoint GREEN
 
