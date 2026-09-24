@@ -79,6 +79,11 @@ export async function mountCombatDemo({
   let disposed = false;
   const cleanups = [];
 
+  const bundledCreatures = Object.freeze({
+    maraileron,
+    braisombre
+  });
+
   const slots = {
     player: createSlot({
       key: "player",
@@ -202,6 +207,34 @@ export async function mountCombatDemo({
     startIdleFor(slotKey);
   }
 
+  function setSlotEmpty(slotKey) {
+    const slot = slots[slotKey];
+    if (!slot) {
+      throw new RangeError(`Unknown demo slot: ${slotKey}`);
+    }
+    slot.renderer.cancel();
+    slot.setEmpty();
+  }
+
+  function loadBundledCreature(slotKey, creatureId, view = null) {
+    const slot = slots[slotKey];
+    const meta = bundledCreatures[creatureId];
+    if (!slot) {
+      throw new RangeError(`Unknown demo slot: ${slotKey}`);
+    }
+    if (!meta) {
+      throw new RangeError(`Unknown bundled creature: ${creatureId}`);
+    }
+
+    slot.loadMeta(meta, view ?? slot.view);
+    startIdleFor(slotKey);
+    return Object.freeze({
+      slotKey,
+      creatureId: meta.id,
+      name: meta.name
+    });
+  }
+
   for (const button of root.querySelectorAll("[data-demo-event]")) {
     listen(button, "click", () => {
       playEvent(button.dataset.demoEvent).catch(() => {});
@@ -252,6 +285,8 @@ export async function mountCombatDemo({
     playEventFor,
     cancelFor,
     startIdleFor,
+    setSlotEmpty,
+    loadBundledCreature,
     dispose() {
       if (disposed) {
         return;
@@ -274,8 +309,13 @@ function createSlot({
   root,
   profiles
 }) {
-  if (!profiles.has(meta.profile)) {
-    throw new Error(`Unknown profile ${meta.profile} for ${meta.id}`);
+  let currentMeta = meta;
+  let currentView = view;
+
+  if (!profiles.has(currentMeta.profile)) {
+    throw new Error(
+      `Unknown profile ${currentMeta.profile} for ${currentMeta.id}`
+    );
   }
 
   const container = requiredElement(root, `[data-demo-slot="${key}"]`);
@@ -285,14 +325,20 @@ function createSlot({
   const label = requiredElement(container, "[data-demo-label]");
   const profileLabel = requiredElement(container, "[data-demo-profile]");
 
-  label.textContent = meta.name;
-  profileLabel.textContent = meta.profile;
+  label.textContent = currentMeta.name;
+  profileLabel.textContent = currentMeta.profile;
 
-  const runtimeAsset = meta.runtimePreview?.[view] ?? meta.views[view];
-  const runtimeUrl = new URL(runtimeAsset, meta.assetBaseUrl).href;
+  function runtimeUrlFor(nextMeta, nextView) {
+    const runtimeAsset =
+      nextMeta.runtimePreview?.[nextView] ?? nextMeta.views[nextView];
+    return new URL(runtimeAsset, nextMeta.assetBaseUrl).href;
+  }
+
+  let runtimeUrl = runtimeUrlFor(currentMeta, currentView);
 
   image.src = runtimeUrl;
   image.hidden = false;
+  motion.hidden = false;
 
   const sourceManager = createImageSourceManager();
   let actor = null;
@@ -304,14 +350,18 @@ function createSlot({
     }
 
     actor = normalizeVisualActor({
-      id: `${meta.id}-${key}`,
-      creatureId: meta.id,
-      profile: meta.profile,
+      id: `${currentMeta.id}-${key}`,
+      creatureId: currentMeta.id,
+      profile: currentMeta.profile,
       asset,
-      view,
-      scale: meta.displayScale?.[view] ?? meta.scale ?? 1,
-      position: meta.offset ?? { x: 0, y: 0 },
-      transformOrigin: meta.transformOrigin ?? { x: "50%", y: "50%" }
+      view: currentView,
+      scale:
+        currentMeta.displayScale?.[currentView] ??
+        currentMeta.scale ??
+        1,
+      position: currentMeta.offset ?? { x: 0, y: 0 },
+      transformOrigin:
+        currentMeta.transformOrigin ?? { x: "50%", y: "50%" }
     });
 
     renderer = createDomActorRenderer({
@@ -320,16 +370,48 @@ function createSlot({
     });
   }
 
+  function loadMeta(nextMeta, nextView = currentView) {
+    if (!profiles.has(nextMeta.profile)) {
+      throw new Error(
+        `Unknown profile ${nextMeta.profile} for ${nextMeta.id}`
+      );
+    }
+
+    currentMeta = nextMeta;
+    currentView = nextView;
+    runtimeUrl = runtimeUrlFor(currentMeta, currentView);
+
+    label.textContent = currentMeta.name;
+    profileLabel.textContent = currentMeta.profile;
+    image.src = runtimeUrl;
+    image.hidden = false;
+    motion.hidden = false;
+    rebuildActor(runtimeUrl);
+  }
+
+  function setEmpty() {
+    motion.hidden = true;
+    image.hidden = true;
+    label.textContent = "Aucun monstre";
+    profileLabel.textContent = "";
+  }
+
   rebuildActor(runtimeUrl);
 
   return {
     key,
-    meta,
-    view,
     image,
     fileInput,
     sourceManager,
     rebuildActor,
+    loadMeta,
+    setEmpty,
+    get meta() {
+      return currentMeta;
+    },
+    get view() {
+      return currentView;
+    },
     get actor() {
       return actor;
     },
