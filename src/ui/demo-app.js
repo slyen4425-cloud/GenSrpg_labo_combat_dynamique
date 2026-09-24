@@ -30,6 +30,14 @@ async function fetchJson(url, fetchImpl) {
   return response.json();
 }
 
+async function fetchCreatureMeta(url, fetchImpl) {
+  const meta = await fetchJson(url, fetchImpl);
+  return Object.freeze({
+    ...meta,
+    assetBaseUrl: new URL(".", url).href
+  });
+}
+
 function requiredElement(root, selector) {
   const element = root.querySelector(selector);
   if (!element) {
@@ -57,8 +65,8 @@ export async function mountCombatDemo({
   ] = await Promise.all([
     fetchJson(DATA_URLS.profiles.serpentine, fetchImpl),
     fetchJson(DATA_URLS.profiles.drake, fetchImpl),
-    fetchJson(DATA_URLS.creatures.maraileron, fetchImpl),
-    fetchJson(DATA_URLS.creatures.braisombre, fetchImpl)
+    fetchCreatureMeta(DATA_URLS.creatures.maraileron, fetchImpl),
+    fetchCreatureMeta(DATA_URLS.creatures.braisombre, fetchImpl)
   ]);
 
   const profiles = createProfileRegistry([serpentine, drake]);
@@ -172,17 +180,18 @@ export async function mountCombatDemo({
       try {
         const url = slot.sourceManager.load(file);
         slot.image.src = url;
-        slot.image.hidden = false;
-        slot.placeholder.hidden = true;
         slot.rebuildActor(url);
-        setStatus(`${slot.meta.name} — image chargée`, "ok");
+        setStatus(`${slot.meta.name} — image temporaire chargée`, "ok");
       } catch (error) {
         setStatus(error.message, "error");
       }
     });
   }
 
-  setStatus("Démo prête — chargez les vues PNG puis lancez une animation.", "ok");
+  setStatus(
+    "Démo prête — Maraileron et Braisombre sont chargés automatiquement.",
+    "ok"
+  );
 
   return Object.freeze({
     playEvent,
@@ -215,14 +224,18 @@ function createSlot({
   const container = requiredElement(root, `[data-demo-slot="${key}"]`);
   const motion = requiredElement(container, "[data-demo-motion]");
   const image = requiredElement(container, "[data-demo-image]");
-  const placeholder = requiredElement(container, "[data-demo-placeholder]");
   const fileInput = requiredElement(container, "[data-demo-file]");
   const label = requiredElement(container, "[data-demo-label]");
   const profileLabel = requiredElement(container, "[data-demo-profile]");
 
   label.textContent = meta.name;
   profileLabel.textContent = meta.profile;
-  placeholder.textContent = `Chargez ${meta.views[view]}`;
+
+  const runtimeAsset = meta.runtimePreview?.[view] ?? meta.views[view];
+  const runtimeUrl = new URL(runtimeAsset, meta.assetBaseUrl).href;
+
+  image.src = runtimeUrl;
+  image.hidden = false;
 
   const sourceManager = createImageSourceManager();
   let actor = null;
@@ -249,14 +262,13 @@ function createSlot({
     });
   }
 
-  rebuildActor(meta.views[view]);
+  rebuildActor(runtimeUrl);
 
   return {
     key,
     meta,
     view,
     image,
-    placeholder,
     fileInput,
     sourceManager,
     rebuildActor,
