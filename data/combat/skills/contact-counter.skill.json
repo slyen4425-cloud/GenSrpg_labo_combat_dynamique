@@ -4,12 +4,18 @@
   "category": "counter",
   "form": "self",
   "element": null,
-  "energyCost": 12,
-  "preparationMs": 100,
+  "energyCost": 2,
+  "preparationMs": 400,
   "travelMs": 0,
-  "recoveryMs": 450,
-  "allowedDistances": ["short", "medium", "long"],
+  "recoveryMs": 500,
+  "allowedDistances": [
+    "short",
+    "medium",
+    "long"
+  ],
   "reaction": {
-    "counterForms": ["contact"]
+    "counterForms": [
+      "contact"
+    ]
   }
 }
