@@ -932,6 +932,57 @@ Tests prévus :
 - UI alimentée par `state.fighters[id].hp/maxHp` ;
 - CI et sentinelles existantes vertes.
 
+
+## Résultat technique — player-distance-hpbar-polish-v2
+
+Corrections :
+
+- le déplacement visuel n'est plus recalculé relativement à la position de l'autre combattant ;
+- il dérive directement de la transition sémantique `from -> to` ;
+- joueur Moyenne -> Courte : déplacement vers le centre ;
+- joueur Moyenne -> Longue : déplacement vers l'extérieur ;
+- adversaire : convention symétrique ;
+- pas de déplacement du combattant stationnaire ;
+- bornes renforcées : 20 % / 80 % ;
+- reset visuel : joueur 28 % / adversaire 72 % ;
+- pas visuel : 10 % de largeur d'arène par palier ;
+- scale scène conservé : Courte 1,00 / Moyenne 0,96 / Longue 0,90 ;
+- `Combat State` porte maintenant `hp / maxHp` ;
+- données test : 100 / 100 PV pour les deux créatures ;
+- `withFighterHp()` borne les PV entre 0 et maxHp ;
+- Runtime inclut HP dans son signal d'état ;
+- barre PV ajoutée sous le nom de chaque créature, avant la barre de charge ;
+- la barre PV lit uniquement le snapshot `state.fighters[id]` ;
+- aucun système de dégâts n'a été inventé dans ce lot.
+
+Tests :
+
+- direction joueur Courte/Longue explicitement protégée ;
+- transition deux bandes protégée ;
+- symétrie adversaire protégée ;
+- bornes de scène protégées ;
+- HP initial, max et clamp protégés ;
+- barres PV et raccord UI état -> PV protégés ;
+- CI complète verte.
+
+HEAD fonctionnel avant documentation finale :
+
+`fcee96f341a869432904d727f25c70447a5445a4`
+
+CI :
+
+- run : `36066616228`
+- conclusion : SUCCESS
+
+Validation restante :
+
+- smartphone : confirmer que Courte rapproche bien Maraileron vers le centre ;
+- confirmer que Longue l'éloigne sans faire sortir son bandeau ;
+- vérifier lisibilité Nom -> PV -> Charge ;
+- confirmer que la nouvelle marge de scène est suffisante.
+
+Le sous-lot reste pré-audit jusqu'au retour utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
