@@ -418,6 +418,15 @@ Incident de test rencontré :
 - la cause a été corrigée dans le Core par normalisation des transformations dirigées à zéro ;
 - aucun contournement UI/CSS/test n'a été ajouté.
 
+
+Checkpoint GREEN du sous-lot :
+
+`checkpoint/lab-idle-scale-polish-green-2026-09-24`
+
+Branche de prévisualisation :
+
+`preview/lab-dom-renderer-demo-v1-2026-09-24`
+
 SHA fonctionnel avant documentation finale :
 
 `f49ac04b4bff8d9ce8c75e9438027b61249c227f`
