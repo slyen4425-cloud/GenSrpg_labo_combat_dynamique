@@ -1,3 +1,5 @@
+import { planSkillFx } from "../../core/fx/skill-fx-plan.js";
+
 function defaultSetTimer(callback, delayMs) {
   return setTimeout(callback, delayMs);
 }
@@ -8,11 +10,15 @@ function defaultClearTimer(timerId) {
 
 export function createCombatResolutionPresenter({
   visuals,
+  fx = null,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer
 }) {
   if (!visuals || typeof visuals.playEventFor !== "function" || typeof visuals.cancelFor !== "function") {
     throw new TypeError("visuals must provide playEventFor() and cancelFor()");
+  }
+  if (fx && typeof fx.play !== "function") {
+    throw new TypeError("fx must provide play() when supplied");
   }
   if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
     throw new TypeError("timer functions are required");
@@ -50,6 +56,16 @@ export function createCombatResolutionPresenter({
     }
 
     visuals.playEventFor(actorSlot, "attack").catch(() => {});
+
+    for (const fxPlan of planSkillFx({
+      resolution,
+      actorSlot,
+      targetSlot
+    })) {
+      schedule(() => {
+        fx?.play(fxPlan);
+      }, fxPlan.delayMs);
+    }
 
     const atMs = impactTime(resolution);
 
