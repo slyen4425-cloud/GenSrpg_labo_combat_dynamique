@@ -1,0 +1,15 @@
+{
+  "id": "contact-counter",
+  "name": "Riposte",
+  "category": "counter",
+  "form": "self",
+  "element": null,
+  "energyCost": 12,
+  "preparationMs": 100,
+  "travelMs": 0,
+  "recoveryMs": 450,
+  "allowedDistances": ["short", "medium", "long"],
+  "reaction": {
+    "counterForms": ["contact"]
+  }
+}
