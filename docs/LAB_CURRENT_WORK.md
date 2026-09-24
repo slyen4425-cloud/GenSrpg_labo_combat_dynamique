@@ -811,6 +811,61 @@ Critère de fin :
 
 pré-audit GREEN technique + test smartphone utilisateur.
 
+
+## Résultat technique — combat-visibility-chargebar-polish-v2
+
+Corrections présentes :
+
+- taille visuelle générale légèrement réduite ;
+- positions de longue portée bornées entre 14 % et 86 % du centre de l'arène ;
+- projection visuelle distance centralisée dans `DOM Distance Presenter` ;
+- scale de scène : Courte 1,00 / Moyenne 0,96 / Longue 0,90 ;
+- seul le combattant qui paie le déplacement change de position et de scale ;
+- positions reset : joueur 23 % / adversaire 77 % ;
+- sélecteur de créature à déplacer sorti de l'interface principale ;
+- reset sorti de l'interface principale ;
+- ces contrôles sont regroupés plus bas dans `Réglages du test` ;
+- arène, énergie, déplacement et capacités restent dans l'écran principal ;
+- nouvelle barre de charge principale sous le nom de Maraileron ;
+- nouvelle barre de réaction principale sous le nom de Braisombre ;
+- ces barres consomment uniquement `Combat Runtime progress` ;
+- aucune horloge CSS ou UI parallèle n'a été créée ;
+- la barre Maraileron se remplit pendant la préparation puis se remet à zéro au release ;
+- la barre Braisombre reflète la préparation de la réaction ;
+- reset/résolution nettoient toutes les barres ;
+- Boule de feu réglée à 2000 ms de préparation pour le test demandé.
+
+Tests ajoutés / renforcés :
+
+- long reste dans les bornes de scène ;
+- scale court > moyen > long avec amplitude légère ;
+- combattant stationnaire conserve position et scale ;
+- réglages de test situés après le dock principal ;
+- barres principales sous les noms présentes ;
+- raccord `progress.chargeProgress` et `progress.reaction.progress` vérifié ;
+- CSS n'invente aucune distance partagée ;
+- CI complète verte.
+
+HEAD fonctionnel avant documentation finale :
+
+`b91954b10a146007ae862740aea57fc4e9a61eed`
+
+CI :
+
+- run : `36064955000`
+- conclusion : SUCCESS
+
+Validation restante :
+
+- smartphone : vérifier que les créatures ne sortent plus en Longue ;
+- vérifier que la réduction de taille reste légère ;
+- vérifier le rendu du scale Courte / Moyenne / Longue ;
+- vérifier que les réglages de test plus bas donnent une interface principale crédible ;
+- lancer Boule de feu et observer la barre sous Maraileron pendant 2 s puis le projectile ;
+- lancer une réaction et observer la barre sous Braisombre.
+
+Le sous-lot reste pré-audit jusqu'au retour utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
