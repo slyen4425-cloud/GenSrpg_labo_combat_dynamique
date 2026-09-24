@@ -13,5 +13,6 @@
   ],
   "effect": {
     "damage": 18
-  }
+  },
+  "approachMode": "ground"
 }
