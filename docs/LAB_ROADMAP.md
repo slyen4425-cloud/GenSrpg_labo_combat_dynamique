@@ -86,6 +86,22 @@ Interface test :
 
 Critère GREEN final : CI verte + vrai chemin données -> Combat Rules -> Presenter -> Animation/FX + validation smartphone de la lisibilité et de l'intuitivité.
 
+### Extension V2 timing / UI persistante
+
+- idle permanent hors actions transitoires ;
+- énergie initiale configurable, zéro par défaut du test ;
+- recharge discrète configurable en quantité / intervalle ;
+- temps de charge effectif modifié par la créature en pourcentage ;
+- modificateurs temporaires de charge avec expiration ;
+- Combat Runtime propriétaire de l'horloge ;
+- barre de charge visible pour chaque capacité ;
+- réactions déclenchables pendant une action en cours ;
+- seul le combattant qui change la distance bouge visuellement ;
+- arène et capacités visibles simultanément sur smartphone ;
+- HUD distance superposé supprimé.
+
+
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
