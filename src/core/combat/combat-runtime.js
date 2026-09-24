@@ -141,7 +141,9 @@ export function createCombatRuntime({
     }
 
     settleActive(current);
-    timerId = setTimer(tick, tickMs);
+    if (!disposed && running) {
+      timerId = setTimer(tick, tickMs);
+    }
   }
 
   function start() {
