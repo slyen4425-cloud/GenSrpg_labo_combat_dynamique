@@ -5,7 +5,7 @@
   "form": "projectile",
   "element": "fire",
   "energyCost": 3,
-  "preparationMs": 1800,
+  "preparationMs": 2000,
   "travelMs": 700,
   "recoveryMs": 700,
   "allowedDistances": [
