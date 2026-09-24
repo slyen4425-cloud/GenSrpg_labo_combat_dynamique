@@ -50,6 +50,8 @@ Une seule autorité active est permise pour chaque responsabilité :
 - boutons, curseurs et prévisualisation : Demo UI ;
 - contrat `attack/hit/ko/idle/etc.` : Event Contract ;
 - définition d'une compétence : Skill Contract ;
+- définition d'une commande tactique : Combat Command Contract ;
+- progression/interruption temporelle de l'action active : Combat Runtime ;
 - distance et énergie de combat : Combat Rules Lab ;
 - résultat `hit/blocked/reflected/immune/countered` : Combat Rules Lab.
 
