@@ -3,19 +3,9 @@ import assert from "node:assert/strict";
 
 import { createCombatResolutionPresenter } from "../../src/adapters/renderer/combat-resolution-presenter.js";
 
-function fakeResolution(outcome, atMs = 250) {
-  return {
-    ok: true,
-    outcome,
-    events: [
-      { type: "skill-start", atMs: 0 },
-      { type: "skill-arrive", atMs }
-    ]
-  };
-}
-
 function createHarness() {
   const calls = [];
+  const fxCalls = [];
   const queue = [];
   let nextId = 1;
 
@@ -31,9 +21,16 @@ function createHarness() {
 
   const presenter = createCombatResolutionPresenter({
     visuals,
+    fx: {
+      play(plan) {
+        fxCalls.push(plan);
+        return { status: "running" };
+      }
+    },
     setTimer(callback, delayMs) {
       const item = { id: nextId++, callback, delayMs };
       queue.push(item);
+      queue.sort((a, b) => a.delayMs - b.delayMs);
       return item.id;
     },
     clearTimer(id) {
@@ -44,6 +41,7 @@ function createHarness() {
 
   return {
     calls,
+    fxCalls,
     queue,
     presenter,
     fireNext() {
@@ -54,69 +52,123 @@ function createHarness() {
   };
 }
 
-test("presenter starts attacker animation immediately", () => {
+function resolution(outcome = "hit") {
+  return {
+    ok: true,
+    outcome,
+    events: [
+      { type: "skill-start", atMs: 0, skillId: "fireball" },
+      {
+        type: "skill-release",
+        atMs: 700,
+        skillId: "fireball",
+        form: "projectile",
+        element: "fire"
+      },
+      {
+        type: "skill-arrive",
+        atMs: 1250,
+        skillId: "fireball",
+        outcome
+      }
+    ]
+  };
+}
+
+test("scheduled presenter waits for semantic release before attack animation", () => {
   const h = createHarness();
 
   const result = h.presenter.present({
-    resolution: fakeResolution("hit", 600)
+    resolution: resolution("hit")
   });
 
   assert.equal(result.status, "scheduled");
-  assert.equal(result.impactAtMs, 600);
+  assert.equal(h.calls.length, 0);
+  assert.equal(h.queue[0].delayMs, 700);
+
+  h.fireNext();
   assert.deepEqual(h.calls[0], ["play", "player", "attack"]);
-  assert.equal(h.queue[0].delayMs, 600);
 });
 
-test("counter cancels the attacker before presenting retaliation", async () => {
+test("live release starts attack and projectile without recomputing combat rules", () => {
+  const h = createHarness();
+
+  h.presenter.presentRelease({
+    action: {
+      travelMs: 550,
+      skill: {
+        form: "projectile",
+        element: "fire"
+      }
+    }
+  });
+
+  assert.deepEqual(h.calls, [["play", "player", "attack"]]);
+  assert.equal(h.fxCalls.length, 1);
+  assert.equal(h.fxCalls[0].type, "projectile");
+  assert.equal(h.fxCalls[0].durationMs, 550);
+});
+
+test("live outcome reflection and immunity only present resolved result", () => {
+  const reflected = createHarness();
+  reflected.presenter.presentOutcome({
+    resolution: { ok: true, outcome: "reflected" }
+  });
+
+  assert.deepEqual(reflected.calls, [
+    ["cancel", "player"],
+    ["play", "player", "hit"]
+  ]);
+
+  const immune = createHarness();
+  immune.presenter.presentOutcome({
+    resolution: { ok: true, outcome: "immune" }
+  });
+
+  assert.deepEqual(immune.calls, [["cancel", "player"]]);
+});
+
+test("early counter can resolve without ever presenting attacker release", async () => {
   const h = createHarness();
 
   h.presenter.present({
-    resolution: fakeResolution("countered", 250)
+    resolution: {
+      ok: true,
+      outcome: "countered",
+      events: [
+        { type: "skill-start", atMs: 0, skillId: "claw" },
+        { type: "skill-countered", atMs: 400, skillId: "claw" }
+      ]
+    }
   });
+
+  assert.equal(h.queue.length, 1);
+  assert.equal(h.queue[0].delayMs, 400);
 
   h.fireNext();
   await Promise.resolve();
   await Promise.resolve();
 
   assert.deepEqual(h.calls.slice(0, 3), [
-    ["play", "player", "attack"],
     ["cancel", "player"],
-    ["play", "opponent", "attack"]
-  ]);
-});
-
-test("reflection hits the original attacker while immunity cancels without hit", () => {
-  const reflected = createHarness();
-  reflected.presenter.present({
-    resolution: fakeResolution("reflected", 100)
-  });
-  reflected.fireNext();
-
-  assert.deepEqual(reflected.calls, [
-    ["play", "player", "attack"],
-    ["cancel", "player"],
+    ["play", "opponent", "attack"],
     ["play", "player", "hit"]
   ]);
-
-  const immune = createHarness();
-  immune.presenter.present({
-    resolution: fakeResolution("immune", 100)
-  });
-  immune.fireNext();
-
-  assert.deepEqual(immune.calls, [
-    ["play", "player", "attack"],
-    ["cancel", "player"]
-  ]);
+  assert.equal(
+    h.calls.some((call) =>
+      call[0] === "play" && call[1] === "player" && call[2] === "attack"
+    ),
+    false
+  );
 });
 
 test("dispose clears pending presentation timers", () => {
   const h = createHarness();
   h.presenter.present({
-    resolution: fakeResolution("hit", 500)
+    resolution: resolution("hit")
   });
 
-  assert.equal(h.presenter.pendingCount, 1);
+  assert.ok(h.presenter.pendingCount > 0);
   h.presenter.dispose();
   assert.equal(h.presenter.pendingCount, 0);
   assert.equal(h.queue.length, 0);
