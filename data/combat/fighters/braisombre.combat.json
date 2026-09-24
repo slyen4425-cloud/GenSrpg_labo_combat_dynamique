@@ -1,5 +1,7 @@
 {
   "id": "braisombre",
+  "side": "opponent",
+  "presence": "active",
   "maxEnergy": 10,
   "initialEnergy": 0,
   "energyChargeAmount": 1,
