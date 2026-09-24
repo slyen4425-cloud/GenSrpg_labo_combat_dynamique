@@ -7,6 +7,9 @@
     "player": "maraileron_player.png",
     "icon": "maraileron_icon.png"
   },
+  "runtimePreview": {
+    "player": "maraileron_player_preview.webp"
+  },
   "defaultFacing": {
     "opponent": "left",
     "player": "right"
