@@ -106,7 +106,12 @@ export function normalizeSkillDefinition(input) {
       blockForms: stringArray(reaction.blockForms, "reaction.blockForms", FORM_SET),
       reflectForms: stringArray(reaction.reflectForms, "reaction.reflectForms", FORM_SET),
       immuneElements: stringArray(reaction.immuneElements, "reaction.immuneElements"),
-      counterForms: stringArray(reaction.counterForms, "reaction.counterForms", FORM_SET)
+      counterForms: stringArray(reaction.counterForms, "reaction.counterForms", FORM_SET),
+      interruptForms: stringArray(
+        reaction.interruptForms,
+        "reaction.interruptForms",
+        FORM_SET
+      )
     }),
     effect: Object.freeze({
       damage: nonNegativeNumber(effect.damage, "effect.damage"),
