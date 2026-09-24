@@ -1,0 +1,24 @@
+{
+  "id": "braisombre",
+  "name": "Braisombre",
+  "profile": "drake",
+  "views": {
+    "opponent": "braisombre_opponent.png",
+    "player": "braisombre_player.png",
+    "icon": "braisombre_icon.png"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [1024, 1024],
+    "icon": [384, 384]
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Jeune drake de test pour le laboratoire."
+}
