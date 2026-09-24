@@ -20,5 +20,6 @@
     "reflectForms": [
       "projectile"
     ]
-  }
+  },
+  "approachMode": "none"
 }
