@@ -211,3 +211,28 @@ test("renderer adapter does not import Demo UI or GenSrpG", async () => {
 
   assert.doesNotMatch(source, /src\/ui|Zombicide-40k|GenSrpG\/Capture/);
 });
+
+test("renderer applies actor-owned transform origin", () => {
+  const actor = normalizeVisualActor({
+    id: "braisombre-anchor",
+    creatureId: "braisombre",
+    profile: "drake",
+    asset: "braisombre_opponent.png",
+    view: "opponent",
+    transformOrigin: { x: "50%", y: "88%" }
+  });
+  const element = { style: {} };
+
+  createDomActorRenderer({
+    element,
+    actor,
+    animate() {
+      return {
+        finished: Promise.resolve(),
+        cancel() {}
+      };
+    }
+  });
+
+  assert.equal(element.style.transformOrigin, "50% 88%");
+});
