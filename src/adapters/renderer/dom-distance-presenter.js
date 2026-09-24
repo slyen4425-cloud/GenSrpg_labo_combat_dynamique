@@ -19,6 +19,10 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+function canonicalPosition(value) {
+  return Math.round(value * 10000) / 10000;
+}
+
 function separationFor(distance) {
   const separation = SEPARATION_BY_DISTANCE[distance];
   if (!Number.isFinite(separation)) {
@@ -89,7 +93,9 @@ export function createDomDistancePresenter({
         ? positions[otherSlot] - separation
         : positions[otherSlot] + separation;
 
-    positions[actorSlot] = clamp(rawTarget, minX, maxX);
+    positions[actorSlot] = canonicalPosition(
+      clamp(rawTarget, minX, maxX)
+    );
     scales[actorSlot] = SCALE_BY_DISTANCE[distanceEvent.to];
 
     apply(actorSlot);
