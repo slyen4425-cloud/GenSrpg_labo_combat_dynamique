@@ -129,3 +129,121 @@ Les résultats possibles sont :
 - `countered`.
 
 Chaque résolution produit aussi des événements sémantiques horodatés relatifs afin de préparer le futur séquenceur temps réel.
+
+
+## Extension V2 — énergie, charge et runtime temps réel
+
+### Énergie
+
+Le modèle V2 ne démarre plus avec une réserve pleine.
+
+Chaque combattant configure :
+
+- `maxEnergy` ;
+- `initialEnergy` ;
+- `energyChargeAmount` ;
+- `energyChargeIntervalMs` ;
+- `movementEnergyPerStep`.
+
+Exemple de test :
+
+`initialEnergy = 0`
+
+`energyChargeAmount = 1`
+
+`energyChargeIntervalMs = 2000`
+
+signifie : départ à 0, puis +1 énergie toutes les 2 secondes.
+
+La progression est discrète et déterministe. Le temps partiel d'un tick est conservé tant que la jauge n'est pas pleine.
+
+L'énergie reste une ressource unique partagée par déplacements et capacités.
+
+### Temps de charge d'une capacité
+
+La compétence possède une valeur de base :
+
+`preparationMs`
+
+La créature possède :
+
+`chargeTimeModifierPct`
+
+Convention :
+
+- valeur positive = temps de charge augmenté ;
+- valeur négative = temps de charge réduit.
+
+Formule :
+
+`temps effectif = temps de base × max(0, 1 + totalPct / 100)`
+
+Exemple :
+
+- compétence : 1000 ms ;
+- créature : -20 % ;
+- temps effectif : 800 ms.
+
+### Effets temporaires
+
+Le Combat State peut porter des effets temporaires de charge :
+
+```js
+{
+  id: "quick-cast",
+  modifierPct: -25,
+  durationMs: 5000
+}
+```
+
+Ils s'ajoutent au modificateur permanent de la créature et expirent selon le temps du combat.
+
+Cela permet plus tard une capacité du type :
+
+`Réduit le temps de charge de 25 % pendant 5 secondes.`
+
+Le calcul appartient à Combat Timing, jamais à l'UI.
+
+### Runtime temps réel
+
+`Combat Runtime` est l'unique propriétaire de l'horloge active du prototype.
+
+Il :
+
+- avance le Combat State ;
+- déclenche les ticks d'énergie ;
+- suit la progression d'une capacité en préparation ;
+- ouvre la fenêtre de réaction ;
+- signale le release ;
+- signale la résolution ;
+- est annulable et libère son timer via `dispose()`.
+
+Il ne calcule aucune animation.
+
+### Barre de charge
+
+L'UI reçoit uniquement une progression normalisée `0..1` produite par le runtime.
+
+Chaque capacité possède sa propre barre de charge visible.
+
+Le remplissage n'est donc pas une minuterie CSS indépendante : il reflète l'état du runtime de combat.
+
+### Déplacement visuel
+
+La distance logique reste une propriété du combat.
+
+En revanche, son affichage est individualisé :
+
+- seul le combattant qui effectue le déplacement change de position visuelle ;
+- l'autre combattant reste immobile ;
+- le Render Adapter de distance est le seul propriétaire de cette projection visuelle.
+
+Le CSS ne déplace jamais automatiquement les deux combattants en fonction de la distance logique.
+
+### Idle
+
+L'`idle` est l'état visuel par défaut des deux combattants.
+
+Toute animation transitoire revient ensuite vers l'idle.
+
+Cette règle appartient au contrôleur visuel, pas à Combat Rules.
