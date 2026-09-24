@@ -265,6 +265,12 @@ export function createCombatRuntime({
         outcome: "no_action"
       });
     }
+    if (active.reaction) {
+      return Object.freeze({
+        ok: false,
+        outcome: "reaction_already_selected"
+      });
+    }
 
     return session.previewReaction({
       action: active.action,
