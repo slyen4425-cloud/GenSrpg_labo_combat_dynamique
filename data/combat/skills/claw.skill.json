@@ -1,0 +1,15 @@
+{
+  "id": "claw",
+  "name": "Griffe",
+  "category": "offensive",
+  "form": "contact",
+  "element": null,
+  "energyCost": 10,
+  "preparationMs": 250,
+  "travelMs": 0,
+  "recoveryMs": 400,
+  "allowedDistances": ["short"],
+  "effect": {
+    "damage": 18
+  }
+}
