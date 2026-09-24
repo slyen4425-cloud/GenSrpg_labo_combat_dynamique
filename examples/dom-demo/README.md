@@ -18,13 +18,13 @@ Servir la racine du dépôt avec un serveur HTTP statique, puis ouvrir :
 
 La page fonctionne sans build ni dépendance npm côté navigateur.
 
-## Assets
+## Assets par défaut
 
-La V1 charge les vues de combat depuis l'appareil avec les champs fichier.
-
-Configuration initiale :
+La démo charge automatiquement :
 
 - Maraileron : vue joueur, profil `serpentine` ;
 - Braisombre : vue adversaire, profil `drake`.
 
-Les PNG normalisés du dépôt seront raccordés dans un lot asset séparé.
+Les images runtime de prévisualisation sont stockées directement avec les métadonnées de chaque créature.
+
+Les champs fichier restent disponibles uniquement pour tester temporairement une autre image utilisateur ; ils ne sont pas nécessaires pour la démo standard.
