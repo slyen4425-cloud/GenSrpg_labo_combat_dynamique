@@ -855,6 +855,23 @@ CI :
 - run : `36064955000`
 - conclusion : SUCCESS
 
+Checkpoint pré-audit GREEN du sous-lot :
+
+`checkpoint/lab-combat-visibility-chargebar-polish-v2-preaudit-green-2026-09-24`
+
+Branche de prévisualisation :
+
+`preview/lab-combat-visibility-chargebar-polish-v2-2026-09-24`
+
+SHA technique documenté :
+
+`8e266cf2f146d3c5d2e63614e4648147e9b21ee6`
+
+CI :
+
+- run : `36065018526`
+- conclusion : SUCCESS
+
 Validation restante :
 
 - smartphone : vérifier que les créatures ne sortent plus en Longue ;
