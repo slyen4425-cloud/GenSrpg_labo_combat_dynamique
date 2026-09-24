@@ -29,7 +29,7 @@ test("demo page is mobile-first and keeps optional file inputs", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
   assert.match(html, /name="viewport"/);
-  assert.match(html, /chargés automatiquement/);
+  assert.match(html, /distance \+ énergie \+ capacités typées/i);
   assert.match(html, /optionnel/g);
   assert.match(html, /data-demo-file/g);
   assert.match(html, /data-demo-event="idle"/);
@@ -85,8 +85,10 @@ test("demo bootstrap disposes the mounted controller on pagehide", async () => {
   const source = await readFile("examples/dom-demo/demo.js", "utf8");
 
   assert.match(source, /mountCombatDemo/);
+  assert.match(source, /mountCombatTest/);
   assert.match(source, /pagehide/);
-  assert.match(source, /demo\.dispose\(\)/);
+  assert.match(source, /combat\.dispose\(\)/);
+  assert.match(source, /visuals\.dispose\(\)/);
 });
 
 test("creature metadata keeps player larger and carries morphology anchors", async () => {
@@ -114,4 +116,39 @@ test("demo derives actor scale and anchor from metadata instead of CSS", async (
 
   assert.match(source, /meta\.displayScale\?\.\[view\]/);
   assert.match(source, /transformOrigin: meta\.transformOrigin/);
+});
+
+
+test("combat test UI delegates all rules to the combat session", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /createCombatSession/);
+  assert.match(source, /createCombatResolutionPresenter/);
+  assert.match(source, /createDomSkillFxRenderer/);
+  assert.match(source, /session\.previewMovement/);
+  assert.match(source, /session\.previewSkill/);
+  assert.match(source, /session\.move/);
+  assert.match(source, /session\.useSkill/);
+
+  assert.doesNotMatch(source, /resolveMovement/);
+  assert.doesNotMatch(source, /resolveSkill/);
+  assert.doesNotMatch(source, /movementEnergyCost/);
+  assert.doesNotMatch(source, /distanceSteps/);
+  assert.doesNotMatch(source, /movementEnergyPerStep\s*:/);
+  assert.doesNotMatch(source, /energyCost\s*:/);
+});
+
+test("combat interface exposes distance energy reaction and skill controls", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+
+  assert.match(html, /data-combat-distance-value/);
+  assert.match(html, /data-combat-energy="maraileron"/);
+  assert.match(html, /data-combat-energy="braisombre"/);
+  assert.match(html, /data-combat-move="short"/);
+  assert.match(html, /data-combat-move="medium"/);
+  assert.match(html, /data-combat-move="long"/);
+  assert.match(html, /data-combat-reaction/);
+  assert.match(html, /data-combat-skills/);
+  assert.match(html, /data-combat-advance/);
+  assert.match(html, /data-combat-reset/);
 });
