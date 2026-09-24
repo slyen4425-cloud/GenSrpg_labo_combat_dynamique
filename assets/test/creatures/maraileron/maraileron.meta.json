@@ -1,0 +1,24 @@
+{
+  "id": "maraileron",
+  "name": "Maraileron",
+  "profile": "serpentine",
+  "views": {
+    "opponent": "maraileron_opponent.png",
+    "player": "maraileron_player.png",
+    "icon": "maraileron_icon.png"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [1024, 1024],
+    "icon": [384, 384]
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Créature aquatique serpentine de test pour le laboratoire."
+}
