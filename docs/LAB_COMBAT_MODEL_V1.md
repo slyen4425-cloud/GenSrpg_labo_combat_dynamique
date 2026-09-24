@@ -334,3 +334,60 @@ Le succès dépend du timing réel :
 `reaction.readyAtMs <= action.impactAtMs`
 
 Cela permet à une même esquive d'être assez rapide contre une attaque aérienne mais trop lente contre une frappe téléportée.
+
+
+## Extension V3 — commandes tactiques
+
+### Objet
+
+Exemple laboratoire :
+
+- coût : 1 énergie ;
+- charge : 700 ms ;
+- récupération : 300 ms ;
+- effet : potion test +20 PV ;
+- interruptible avant release.
+
+Le soin n'est appliqué qu'à la completion.
+
+### Rappel
+
+Exemple laboratoire :
+
+- coût : 2 énergies ;
+- charge : 1400 ms ;
+- récupération : 500 ms ;
+- interruptible avant release.
+
+Le résultat V3 est un événement sémantique `recall`. Le roster réel n'est pas encore modifié.
+
+### Invocation
+
+Exemple laboratoire :
+
+- coût : 3 énergies ;
+- charge : 2200 ms ;
+- récupération : 600 ms ;
+- cible déclarative : `reserve-creature-test` ;
+- interruptible avant release.
+
+Le résultat V3 est un événement sémantique `summon`. Le raccord à une vraie créature de réserve est un lot séparé.
+
+### Interruption Stun
+
+Prototype :
+
+- préparation du Stun : 500 ms ;
+- trajet : 350 ms ;
+- impact : 850 ms ;
+- l'événement `charge-interrupt` n'existe qu'à 850 ms.
+
+Si l'action cible n'a pas encore atteint son release, elle passe à `interrupted`.
+
+Si son release est déjà atteint, le résultat est `too_late`.
+
+Invariant :
+
+`stun start != stun release != stun impact`
+
+Seul l'impact peut demander l'interruption.
