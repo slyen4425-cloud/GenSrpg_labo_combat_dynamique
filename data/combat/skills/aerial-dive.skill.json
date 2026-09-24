@@ -1,0 +1,22 @@
+{
+  "id": "aerial-dive",
+  "name": "Plongeon aérien",
+  "category": "offensive",
+  "form": "contact",
+  "element": null,
+  "approachMode": "aerial",
+  "energyCost": 2,
+  "preparationMs": 900,
+  "travelMs": 850,
+  "recoveryMs": 600,
+  "allowedDistances": [
+    "medium",
+    "long"
+  ],
+  "effect": {
+    "damage": 22,
+    "tags": [
+      "aerial"
+    ]
+  }
+}
