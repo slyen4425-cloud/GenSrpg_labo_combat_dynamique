@@ -4,12 +4,18 @@
   "category": "buff_debuff",
   "form": "self",
   "element": null,
-  "energyCost": 10,
-  "preparationMs": 0,
+  "energyCost": 2,
+  "preparationMs": 300,
   "travelMs": 0,
-  "recoveryMs": 300,
-  "allowedDistances": ["short", "medium", "long"],
+  "recoveryMs": 400,
+  "allowedDistances": [
+    "short",
+    "medium",
+    "long"
+  ],
   "reaction": {
-    "immuneElements": ["fire"]
+    "immuneElements": [
+      "fire"
+    ]
   }
 }
