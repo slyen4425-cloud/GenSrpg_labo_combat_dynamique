@@ -1,10 +1,21 @@
 import { mountCombatDemo } from "../../src/ui/demo-app.js";
+import { mountCombatTest } from "../../src/ui/combat-test-ui.js";
 
 const root = document.querySelector("[data-combat-demo]");
 
-mountCombatDemo({ root })
-  .then((demo) => {
-    window.addEventListener("pagehide", () => demo.dispose(), { once: true });
+Promise.resolve()
+  .then(async () => {
+    const visuals = await mountCombatDemo({ root });
+    const combat = await mountCombatTest({ root, visuals });
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        combat.dispose();
+        visuals.dispose();
+      },
+      { once: true }
+    );
   })
   .catch((error) => {
     const status = document.querySelector("[data-demo-status]");
