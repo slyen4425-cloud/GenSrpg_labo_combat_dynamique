@@ -1,0 +1,30 @@
+{
+  "id": "serpentine",
+  "label": "Serpentine",
+  "description": "Profil pour créatures longues, souples, ondulantes ou aquatiques.",
+  "idle": {
+    "bobY": 6,
+    "swayRotate": 3,
+    "swayX": 5,
+    "durationMs": 1800
+  },
+  "attack": {
+    "lungeX": 40,
+    "lungeY": -8,
+    "stretchX": 0.06,
+    "squashY": 0.05,
+    "durationMs": 420,
+    "recoveryMs": 260
+  },
+  "hit": {
+    "recoilX": -28,
+    "recoilRotate": -4,
+    "durationMs": 220
+  },
+  "ko": {
+    "fallY": 30,
+    "fadeTo": 0.65,
+    "rotate": -10,
+    "durationMs": 700
+  }
+}
