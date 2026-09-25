@@ -1,7 +1,0 @@
-sequence,frames,format,size,background
-cast,6,png,256x256,transparent
-travel_lr,8,png,256x256,transparent
-travel_rl,8,png,256x256,transparent
-travel_dr,8,png,256x256,transparent
-travel_dl,8,png,256x256,transparent
-impact,6,png,256x256,transparent
