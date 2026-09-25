@@ -221,18 +221,17 @@ test("ground approach perspective uses measured arena geometry rather than gamep
   );
 });
 
-test("V9 saving strategy retries only from Combat Runtime state updates", async () => {
+test("V9 opponent initiative is driven by Runtime state changes without waiting for player input", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
-  assert.match(source, /let aiWaitingForEnergy = false/);
   assert.match(source, /decision\.status === "saving"/);
   assert.match(
     source,
-    /onState\(state\)[\s\S]*aiWaitingForEnergy[\s\S]*runOpponentTurn\(\)/
+    /onState\(state\)[\s\S]*opponentAi[\s\S]*!runtime\.hasActiveActionFor\("opponent"\)[\s\S]*runOpponentTurn\(\)/
   );
-  assert.match(
+  assert.doesNotMatch(
     source,
-    /!runtime\.hasActiveActionFor\("opponent"\)/
+    /onState\(state\)[\s\S]{0,260}aiWaitingForEnergy\s*&&/
   );
   assert.match(source, /aiDecisionInProgress/);
   assert.doesNotMatch(source, /setInterval/);
