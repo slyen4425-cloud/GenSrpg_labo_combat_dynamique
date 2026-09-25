@@ -36,11 +36,16 @@
       "returnMs": 150
     },
     "aerial": {
-      "riseRatio": 0.35,
-      "repositionRatio": 0.15,
-      "riseY": -115,
-      "diveHeight": 135,
-      "returnMs": 220
+      "riseRatio": 0.38,
+      "repositionRatio": 0.12,
+      "riseY": -430,
+      "diveHeight": 500,
+      "returnMs": 260
+    },
+    "ground": {
+      "returnMs": 360,
+      "impactScaleX": 1.05,
+      "impactScaleY": 0.96
     }
   }
 }
