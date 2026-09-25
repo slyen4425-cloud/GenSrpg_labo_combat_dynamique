@@ -117,7 +117,31 @@ Aucune autorité sur le moteur.
 
 ### `src/assets/`
 
-Validation et normalisation des assets entrants.
+Domaine Asset Input.
+
+Responsabilités :
+
+- validation des fichiers médias entrants ;
+- normalisation des sources utilisables ;
+- création / révocation des Object URLs lorsque nécessaire ;
+- futurs chargeurs image / audio ;
+- aucune autorité gameplay.
+
+Le module image existant reste la première implémentation.
+
+La future bibliothèque d'assets est séparée en concepts :
+
+- `AssetDefinition` : métadonnées d'un asset logique ;
+- `AssetCatalog` : index / lookup / filtres ;
+- `AssetPack` : groupe versionné d'assets ;
+- `AssetBinding` : liaison présentation -> `assetId` ;
+- `Storage Adapter` : persistance ou récupération des octets.
+
+Référence détaillée :
+
+`docs/LAB_ASSET_LIBRARY.md`
+
+Le catalogue ne doit jamais devenir propriétaire du stockage ni des règles de combat.
 
 ## 4. État
 
@@ -242,6 +266,7 @@ docs/
   LAB_CHARTE.md
   LAB_ROADMAP.md
   LAB_ARCHITECTURE.md
+  LAB_ASSET_LIBRARY.md
   LAB_CURRENT_WORK.md
   LAB_CHECKPOINT_POLICY.md
 
@@ -261,6 +286,14 @@ assets/
     creatures/
     arenas/
     effects/
+  library/              # cible future, non créée par le lot architecture
+    core/
+
+data/
+  assets/               # cible future
+    catalog/
+    packs/
+    bindings/
 
 tests/
   unit/
