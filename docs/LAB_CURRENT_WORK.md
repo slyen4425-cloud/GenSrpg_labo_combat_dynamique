@@ -1782,6 +1782,65 @@ Validation utilisateur restante :
 
 Le lot est GREEN technique, en attente de validation visuelle smartphone.
 
+
+## Chantier actif — ko-air-hud-polish-v6
+
+Base GREEN :
+
+`c8ca895f64d69d8b6a4bc615e05b26a066a3fd58`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-ko-air-hud-polish-v6-2026-09-25`
+
+Branche :
+
+`work/lab-ko-air-hud-polish-v6-2026-09-25`
+
+Retours utilisateur ciblés :
+
+- KO adverse toujours insuffisamment visible / remplacement non perçu ;
+- attaque aérienne doit monter beaucoup plus haut, jusqu'à pouvoir sortir complètement de l'arène avant le piqué ;
+- surface de combat encore légèrement plus grande ;
+- les attaques de contact au sol doivent posséder un vrai temps d'approche configurable avant impact ;
+- exemple Griffe : environ 1,5 s pour atteindre la cible ;
+- une future capacité Sprint pourra utiliser le même moteur avec 0,9 s, 0,5 s ou toute valeur configurée ;
+- la barre de charge sous le nom doit être plus grande ;
+- elle doit afficher le nom de l'action en préparation et le temps restant ;
+- l'UI doit continuer à se rapprocher d'un écran de combat de type jeu de monstres temps réel : grande scène, HUD compact, capacités immédiatement disponibles.
+
+Choix d'architecture :
+
+- `travelMs` reste l'unique donnée gameplay qui définit le temps release -> impact ;
+- aucun délai d'approche n'est codé dans l'animation ou l'UI ;
+- ajout d'une présentation visuelle `ground-attack` qui consomme le `travelMs` déjà décidé par Combat Rules ;
+- `ground / aerial / teleport` utilisent la même géométrie réelle acteur -> cible ;
+- l'Animation Core garantit que le segment de contact atteint la cible exactement à `travelMs` ;
+- le retour visuel après impact ne retarde jamais les dégâts ;
+- Combat Runtime enrichit son snapshot de progression avec le libellé d'action, la durée de préparation et le temps restant ;
+- l'UI affiche ces informations sans recalculer le timer ;
+- KO devient un état visuel terminal : `playEventFor("ko")` ne redémarre pas automatiquement idle avant le remplacement roster ;
+- le remplacement adverse reste exclusivement `Roster Session.replaceKnockedOut()`.
+
+Tests prévus :
+
+- Griffe `travelMs = 1500` ;
+- ground-attack atteint la cible exactement à 1500 ms ;
+- une capacité identique avec 500/900 ms utilise ces valeurs sans changement de code ;
+- dégâts de contact uniquement à impact ;
+- aerial monte au-dessus de l'arène puis touche à `travelMs` ;
+- KO ne retourne pas idle avant remplacement ;
+- chaîne Hit -> KO -> Roster replacement -> nouveau visuel adverse ;
+- progress runtime expose actionLabel / preparationMs / remainingPreparationMs ;
+- barre de charge principale plus haute avec nom et timer ;
+- arène plus haute sur mobile ;
+- aucune logique de timing dans CSS/UI ;
+- sentinelles V1-V5 intactes.
+
+Critère de fin :
+
+CI verte + checkpoint GREEN + preview smartphone permettant de vérifier KO, Griffe 1,5 s, Plongeon haut et HUD de charge lisible.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
