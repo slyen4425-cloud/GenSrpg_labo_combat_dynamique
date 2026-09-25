@@ -2178,6 +2178,94 @@ Validation smartphone restante :
 - vérifier que la coloration disparaît immédiatement après ;
 - vérifier qu'un KO continue à disparaître puis être remplacé normalement.
 
+
+## Validation utilisateur — hit-impact-feedback-v7
+
+Retour smartphone du 2026-09-25 :
+
+- flash d'impact validé visuellement par Sylvain ;
+- KO/remplacement précédemment validé ;
+- V7 peut servir de base fonctionnelle au chantier UI suivant.
+
+## Chantier actif — fullscreen-player-ui-v8
+
+Base GREEN :
+
+`b97b161cc8172ece1fa902dcbbe9a840147bd8ea`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-fullscreen-player-ui-v8-2026-09-25`
+
+Branche de travail :
+
+`work/lab-fullscreen-player-ui-v8-2026-09-25`
+
+Référence ergonomique fournie par Sylvain :
+
+- arène presque plein écran ;
+- HUD adverse fixé en haut à droite ;
+- HUD joueur fixé en bas à gauche ;
+- capacités principales sous forme de grosses touches de jeu directement pressables ;
+- nom de capacité conservé pour le moment ;
+- future compatibilité icône seule ou icône + nom ;
+- boutons Objets / Équipe / déplacement intégrés dans la même UI de combat.
+
+Objectif du lot :
+
+- transformer uniquement la couche joueur de la démo en HUD de combat plein écran ;
+- détacher les informations PV/charge des conteneurs mobiles des créatures ;
+- garder les créatures et leurs déplacements dans l'arène ;
+- intégrer toutes les commandes dans l'arène ;
+- conserver le vrai chemin existant des compétences et commandes.
+
+Propriétaire :
+
+- Demo UI pour la structure, les contrôles et la projection visuelle ;
+- aucun transfert d'autorité depuis Combat Runtime / Combat Session / Roster Session.
+
+Fichiers autorisés :
+
+- `examples/dom-demo/index.html` ;
+- `examples/dom-demo/demo.css` ;
+- `src/ui/combat-test-ui.js` uniquement pour projeter noms/états dans le nouveau HUD et conserver les boutons data-driven ;
+- `tests/unit/demo-ui-boundary.test.mjs` ;
+- documentation laboratoire.
+
+Domaines protégés :
+
+- `src/core/combat/**` ;
+- `src/core/animation/**` ;
+- `src/core/fx/**` ;
+- `src/adapters/renderer/**` ;
+- contrats de compétences/commandes ;
+- dégâts, portée, coûts, énergie, impact, KO, remplacement roster ;
+- dépôt `Zombicide-40k`.
+
+Tests prévus :
+
+- l'arène contient directement le HUD et les commandes joueur ;
+- les quatre capacités restent directement visibles et data-driven ;
+- Objets / Équipe restent accessibles dans l'arène ;
+- les trois commandes de distance restent présentes ;
+- PV, énergie et charge restent projetés depuis l'état/runtime ;
+- noms actifs joueur/adversaire proviennent du roster, sans duplication métier ;
+- aucune logique de résolution n'est ajoutée à l'UI ;
+- sentinelles KO/impact/timing inchangées via CI complète.
+
+Risques :
+
+- masquer une commande sur petit écran ;
+- gêner les interactions par superposition ;
+- faire bouger le HUD avec les créatures ;
+- réduire excessivement la zone de combat en portrait.
+
+Critère de fin :
+
+- CI verte ;
+- checkpoint GREEN ;
+- preview smartphone où l'arène occupe presque tout l'écran et où les capacités se jouent comme des touches directement intégrées au HUD.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
