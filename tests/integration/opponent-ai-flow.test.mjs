@@ -85,7 +85,7 @@ function rosterFor(session) {
   });
 }
 
-test("V9 normal combat lets player damage opponent, then AI moves and damages player", () => {
+test("V9 normal combat lets player damage opponent, then quick AI damages player", () => {
   const session = createCombatSession({
     distance: "medium",
     fighters: [
@@ -140,14 +140,10 @@ test("V9 normal combat lets player damage opponent, then AI moves and damages pl
   );
   assert.equal(session.snapshot().fighters.opponent.hp, 70);
 
-  const move = ai.takeTurn();
-  assert.equal(move.status, "moved");
-  assert.equal(move.result.state.distance, "short");
-  assert.equal(runtime.hasActiveAction, false);
-
   const attack = ai.takeTurn();
   assert.equal(attack.status, "skill_started");
-  assert.equal(attack.skillId, "claw");
+  assert.equal(attack.mode, "quick");
+  assert.equal(attack.skillId, "aerial-dive");
   assert.equal(runtime.activeAction.actorId, "opponent");
 
   const hpBefore = session.snapshot().fighters.player.hp;
@@ -163,8 +159,55 @@ test("V9 normal combat lets player damage opponent, then AI moves and damages pl
   assert.equal(resolutions[1].outcome, "hit");
   assert.equal(
     session.snapshot().fighters.player.hp,
-    hpBefore - offensive.claw.effect.damage
+    hpBefore - offensive["aerial-dive"].effect.damage
   );
+
+  runtime.dispose();
+});
+
+test("V9 strong mode keeps saving until Runtime energy recharge makes the strong skill affordable", () => {
+  const strongPolicy = normalizeOpponentAiPolicy({
+    ...policy,
+    energyStrategy: {
+      ...policy.energyStrategy,
+      decisionModes: ["strong"]
+    }
+  });
+
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [
+      { ...maraileron, id: "player", initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, id: "opponent", initialEnergy: 2, initialHp: 100 }
+    ]
+  });
+  const roster = rosterFor(session);
+  const runtime = createCombatRuntime({
+    session,
+    now: () => 0,
+    setTimer: () => 1,
+    clearTimer: () => {}
+  });
+  const ai = createOpponentDecisionController({
+    session,
+    runtime,
+    roster,
+    policy: strongPolicy,
+    skillsById: offensive,
+    reactionsById: reactions
+  });
+
+  const saving = ai.takeTurn();
+  assert.equal(saving.status, "saving");
+  assert.equal(saving.skillId, "fireball");
+  assert.equal(saving.requiredEnergy, offensive.fireball.energyCost);
+
+  session.advanceMs(braisombre.energyChargeIntervalMs);
+
+  const started = ai.takeTurn();
+  assert.equal(started.status, "skill_started");
+  assert.equal(started.skillId, "fireball");
+  assert.equal(runtime.activeAction.skill.id, "fireball");
 
   runtime.dispose();
 });
