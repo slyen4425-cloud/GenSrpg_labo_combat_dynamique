@@ -51,6 +51,8 @@ export function createOpponentDecisionController({
   requiredMethod(runtime, "previewReaction", "runtime");
   requiredMethod(runtime, "react", "runtime");
   requiredMethod(runtime, "startSkill", "runtime");
+  requiredMethod(runtime, "hasActiveActionFor", "runtime");
+  requiredMethod(runtime, "activeActionFor", "runtime");
   requiredMethod(roster, "snapshot", "roster");
 
   if (!policy?.actorId || !policy?.targetId) {
@@ -279,7 +281,7 @@ export function createOpponentDecisionController({
   }
 
   function maybeReactToActiveAction() {
-    const action = runtime.activeAction;
+    const action = runtime.activeActionFor(policy.targetId);
     if (
       !action ||
       action.actionType !== "skill" ||
@@ -302,12 +304,18 @@ export function createOpponentDecisionController({
         rule.skillId,
         "reaction skill"
       );
-      const preview = runtime.previewReaction(reactionSkill);
+      const preview = runtime.previewReaction(
+        reactionSkill,
+        { againstActorId: policy.targetId }
+      );
       if (!preview.ok) {
         continue;
       }
 
-      const result = runtime.react(reactionSkill);
+      const result = runtime.react(
+        reactionSkill,
+        { againstActorId: policy.targetId }
+      );
       if (!result.ok) {
         continue;
       }
@@ -328,7 +336,7 @@ export function createOpponentDecisionController({
   }
 
   function takeTurn() {
-    if (runtime.hasActiveAction) {
+    if (runtime.hasActiveActionFor(policy.actorId)) {
       return Object.freeze({
         status: "busy",
         reason: "action_in_progress"
