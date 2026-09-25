@@ -3217,6 +3217,39 @@ Statut :
 - V9 reste en attente de validation smartphone ;
 - pas de checkpoint GREEN V9 final avant validation utilisateur.
 
+
+## Invariant confirmé — compétences 100 % configurables
+
+Clarification utilisateur du 2026-09-25 :
+
+GenSrpG doit rester data-driven. Aucun comportement IA, UI ou animation ne doit embarquer des valeurs gameplay cachées qui appartiennent à une compétence.
+
+Doivent être configurables au niveau de la définition de compétence :
+
+- coût énergie ;
+- `preparationMs` ;
+- `travelMs` ;
+- `recoveryMs` ;
+- futur `cooldownMs` ;
+- dégâts / puissance ;
+- distances autorisées ;
+- forme / élément / `approachMode` ;
+- futurs paramètres de charge, usages limités ou autres contraintes de disponibilité.
+
+Conséquences architecture :
+
+- l'IA lit ces valeurs mais ne les invente pas ;
+- l'UI les affiche mais ne les calcule pas ;
+- Combat Runtime reste l'unique propriétaire du temps réel ;
+- Combat Rules / Session restent propriétaires de la légalité ;
+- tout futur cooldown sera ajouté au contrat Skill Definition et à l'état de combat, jamais codé en dur dans l'IA ;
+- les profils d'animation ne doivent contenir que des paramètres visuels, pas des règles gameplay.
+
+Pour le correctif IA actuel :
+
+- aucune valeur de cooldown n'est introduite ;
+- le futur comportement « attaque rapide ou économie pour une compétence forte » devra s'appuyer uniquement sur les coûts/puissances/timings déclarés dans les skills.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
