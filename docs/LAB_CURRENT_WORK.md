@@ -3628,6 +3628,106 @@ Critère de fin :
 - remplacement KO sans réapparition de l'ancien monstre ;
 - validation smartphone avant GREEN final.
 
+
+## Résultat technique candidat — V9 concurrent-actions-ko-swap
+
+Micro-lot A — concurrence réelle :
+
+- `Combat Runtime` ne possède plus une action globale unique ;
+- il conserve au maximum une action active par `actorId` ;
+- API ajoutée :
+  - `hasActiveActionFor(actorId)` ;
+  - `activeActionFor(actorId)` ;
+  - `activeActions` ;
+- `hasActiveAction` reste disponible et signifie seulement qu'au moins une action existe ;
+- une deuxième action du même acteur reste refusée ;
+- un autre acteur libre peut démarrer une compétence en parallèle ;
+- release et impact sont ordonnés par timestamp absolu dans chaque tick ;
+- chaque résolution utilise l'état courant du Combat Session ;
+- un KO annule les actions restantes du slot KO et les actions encore ciblées sur ce slot avant remplacement roster.
+
+Raccord IA :
+
+- l'Opponent Decision Controller vérifie uniquement `hasActiveActionFor(policy.actorId)` ;
+- une compétence joueur en cours ne bloque donc plus mécaniquement la décision adverse ;
+- le moteur de réactions peut cibler explicitement l'action attaquante via `againstActorId`.
+
+Raccord UI :
+
+- les quatre compétences joueur sont verrouillées uniquement lorsque `player` possède lui-même une action active ;
+- pendant une Griffe adverse, une compétence joueur légale et financée reste pressable ;
+- les deux barres de charge sont projetées indépendamment ;
+- la fin d'une action n'efface plus la barre de l'autre acteur ;
+- dans ce premier jalon :
+  - déplacement ;
+  - Objet ;
+  - Rappel ;
+  - Invocation
+  restent globalement verrouillés tant qu'une action existe.
+
+Vrai chemin protégé :
+
+`adversaire Griffe t=0 -> joueur Téléportation t=500 -> Téléportation impact t=1820 -> Griffe reste active -> Griffe impact t=2700`
+
+Résultat test :
+
+- après Téléportation :
+  - adversaire 100 -> 76 PV ;
+  - joueur encore 100 PV ;
+  - Griffe adverse toujours active ;
+- après Griffe :
+  - joueur 100 -> 82 PV.
+
+Invariant :
+
+- frapper avant l'adversaire ne supprime pas automatiquement son attaque ;
+- seule une règle explicitement interruptive ou un KO peut l'annuler.
+
+Micro-lot B — remplacement KO atomique :
+
+Cause du flash ancien visuel :
+
+- changer `img.src` n'efface pas nécessairement immédiatement l'ancien bitmap rendu ;
+- le renderer restaurait son état visible avant que le nouvel asset soit prêt.
+
+Correction :
+
+- l'image du slot est masquée avant le changement de source ;
+- l'ancien `src` est retiré ;
+- un token de chargement protège contre une réponse d'asset obsolète ;
+- `assetReady` devient vrai uniquement après le `load` du nouvel asset ou si l'image est déjà réellement disponible en cache ;
+- l'image n'est réaffichée que si le slot est visible ET le nouvel asset prêt ;
+- Roster Session reste seul propriétaire du membre de remplacement.
+
+Tests sentinelles :
+
+- deux actions de deux acteurs simultanées ;
+- deuxième action même acteur refusée ;
+- impact plus rapide résolu avant une action commencée plus tôt ;
+- action concurrente non interrompue reste active ;
+- KO annule les actions survivantes liées au slot ;
+- IA actor-local ;
+- disponibilité UI skill actor-local ;
+- barres de charge actor-local ;
+- remplacement visuel ne réaffiche pas l'ancien bitmap ;
+- vrai chemin Griffe adverse + Téléportation joueur concurrente.
+
+CI fonctionnelle avant synchronisation docs :
+
+- SHA : `6c2a32dce25359e3c1986eadff65b3e1227ad546` ;
+- run : `36131885180` ;
+- conclusion : SUCCESS.
+
+Risques explicitement conservés pour test smartphone :
+
+- si un acteur est touché alors que sa propre animation d'attaque est en cours, le renderer mono-canal peut faire entrer en concurrence l'animation Hit et l'animation d'approche ;
+- ce point doit être observé visuellement et fera l'objet d'un sous-lot séparé seulement si la régression est réellement constatée.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone obligatoire avant checkpoint GREEN final V9.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
