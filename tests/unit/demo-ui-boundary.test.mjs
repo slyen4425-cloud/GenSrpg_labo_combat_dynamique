@@ -596,7 +596,7 @@ test("demo arena background is presentation-driven and keeps a CSS fallback", as
   assert.match(assets, /core:arena-forest-01/);
   assert.match(
     assets,
-    /arenas\/forest\/arena_forest_01\.webp/
+    /arenas\/forest\/arena_forest_01\.png/
   );
   assert.match(
     css,
