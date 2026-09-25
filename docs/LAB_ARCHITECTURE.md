@@ -201,6 +201,26 @@ Exemple conceptuel :
 
 Les valeurs seront ajustées par tests visuels, pas figées aujourd'hui comme spécification définitive.
 
+### Perspective caméra des approches spatiales
+
+La profondeur visuelle appartient à Animation Core et aux Creature Profiles, pas aux règles de combat.
+
+Pour toute approche qui déplace réellement un combattant vers la position de l'autre (`ground`, `aerial`, `teleport`) :
+
+- la géométrie réelle fournit `targetTranslateY` et `arenaHeight` ;
+- un déplacement vers le bas de l'arène représente un rapprochement de la caméra joueur et augmente l'échelle ;
+- un déplacement vers le haut / la profondeur représente un éloignement de la caméra joueur et réduit l'échelle ;
+- le calcul est partagé entre les approches, sans condition codée sur `player` ou `opponent` ;
+- les bornes et l'intensité proviennent d'un preset unique `specialMoves.perspective` du profil ;
+- le retour à la position stable restaure toujours l'échelle de base ;
+- cette perspective n'influence jamais portée, dégâts, esquive ou timestamp d'impact.
+
+Invariant de lecture :
+
+`joueur -> adversaire = rétrécissement`
+
+`adversaire -> joueur = grossissement`
+
 ## 8. FX
 
 Le FX Core reçoit des intentions telles que :
