@@ -184,7 +184,24 @@ test("dispose clears pending presentation timers", () => {
 });
 
 
-test("special live release delegates aerial and teleport motion to visual controller", () => {
+test("live release delegates ground aerial and teleport motion to visual controller", () => {
+  const ground = createHarness();
+  ground.presenter.presentRelease({
+    action: {
+      travelMs: 1500,
+      skill: {
+        form: "contact",
+        approachMode: "ground",
+        element: null
+      }
+    }
+  });
+
+  assert.deepEqual(ground.calls, [
+    ["approach", "player", "ground", 1500]
+  ]);
+
+
   const teleport = createHarness();
   teleport.presenter.presentRelease({
     action: {
@@ -236,6 +253,7 @@ test("KO presentation chains hit then KO and exposes real completion", async () 
   });
 
   assert.equal(result.ko, true);
+  assert.equal(result.koActorId, "opponent");
   await result.finished;
 
   assert.deepEqual(h.calls, [
