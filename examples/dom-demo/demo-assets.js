@@ -14,10 +14,12 @@ const ASSETS = Object.freeze({
   "pack:capture:sprite-fireball-travel-01": Object.freeze({
     assetId: "pack:capture:sprite-fireball-travel-01",
     url: new URL(
-      "sprites/skills/fireball/atlases/sprite_skill_fireball_travel_lr_atlas_01.png",
+      "sprites/skills/fireball/atlases/sprite_skill_fireball_travel_rl_atlas_01.png",
       CAPTURE_ROOT
     ).href,
-    frameCount: 8
+    frameCount: 8,
+    coreAnchor: Object.freeze({ x: 0.29, y: 0.5 }),
+    headingRad: Math.PI
   }),
   "pack:capture:sprite-fireball-impact-01": Object.freeze({
     assetId: "pack:capture:sprite-fireball-impact-01",
