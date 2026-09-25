@@ -96,6 +96,19 @@ test("V8 simplified HUD removes decorative clutter and collapses idle-only surfa
   assert.match(css, /\.action-bar--utility\s*\{[\s\S]*grid-template-rows:\s*repeat\(2/);
 });
 
+test("V8 never hides the opponent roster container", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(
+    css,
+    /\.reserve--opponent,\s*\.reserve--player\s*\{[\s\S]*inset:\s*auto/
+  );
+  assert.doesNotMatch(
+    css,
+    /\.reserve--opponent[^\{]*\{[\s\S]{0,120}?display:\s*none/
+  );
+});
+
 test("V8 roster portraits live inside fighter card headers and charge starts hidden", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
