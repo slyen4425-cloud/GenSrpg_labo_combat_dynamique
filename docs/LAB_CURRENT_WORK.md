@@ -4519,3 +4519,101 @@ Critère du premier lot :
 - premier sous-ensemble cohérent de médias ajouté avec provenance/licence ;
 - aucun raccord runtime ;
 - CI non rouge / état GitHub explicitement rapporté.
+
+
+## Résultat micro-lot — Capture Cartoon Skill Icons 01
+
+Premier pack visuel Core ajouté.
+
+Branche :
+
+`work/lab-asset-library-content-2026-09-25`
+
+Commit média :
+
+`b5fa589bac92af747b8e13b8f5c54d0d82db383b`
+
+Contenu :
+
+- 30 icônes de compétences en WebP 256×256 ;
+- emplacement :
+  - `assets/library/core/icons/skills/` ;
+- source maître conservée :
+  - `assets/library/core/icons/skills/source/icon_skill_capture_cartoon_sheet_source_01.png` ;
+- inventaire documentaire :
+  - `assets/library/core/README.md`.
+
+Direction graphique validée pour ce lot :
+
+- Capture / cartoon ;
+- formes simples et expressives ;
+- contraste fort ;
+- lecture smartphone ;
+- nettement moins RPG réaliste / fantasy classique ;
+- cette patte sert de référence de cohérence pour les prochaines icônes de la bibliothèque vitrine.
+
+Exemples présents :
+
+- Griffe ;
+- Boule de feu ;
+- Souffle de feu ;
+- Plongeon aérien ;
+- Frappe téléportée ;
+- Foudre ;
+- Glace ;
+- Eau ;
+- Tornade ;
+- Terre ;
+- Bouclier ;
+- Soin ;
+- Poison ;
+- Lumière ;
+- Néant ;
+- Dash ;
+- Météores ;
+- Ronces ;
+- Cristal ;
+- Invocation ;
+- Rappel ;
+- KO ;
+- Sceau ;
+- Rayon ;
+- Impact rocheux ;
+- Charge aquatique ;
+- Déluge de feu ;
+- Cercle arcanique ;
+- Portail ;
+- Barrière.
+
+Provenance / statut :
+
+- création originale générée spécifiquement pour GenSrpG avec OpenAI sous direction de Sylvain ;
+- aucune ressource de jeu commercial extraite ;
+- aucune attribution tierce identifiée ;
+- usage prévu : bibliothèque Core commune / créateur.
+
+Important :
+
+- les futurs `assetId` du README sont documentaires uniquement ;
+- aucun AssetDefinition runtime ;
+- aucun Asset Catalog ;
+- aucun binding ;
+- aucun raccord Combat Runtime ;
+- aucun SkillDefinition modifié ;
+- aucun JS gameplay modifié.
+
+Revue diff du commit média depuis son parent :
+
+- 30 fichiers WebP ajoutés ;
+- 1 planche source ajoutée ;
+- 1 README d'inventaire ajouté ;
+- aucun fichier JS ;
+- aucun fichier Combat Rules / Runtime / Animation / FX existant modifié ;
+- aucun fichier de `Zombicide-40k` touché.
+
+Incident de concurrence Git traité proprement :
+
+- un commit documentaire est arrivé sur la même branche pendant l'envoi ;
+- aucun force-push ;
+- aucun écrasement ;
+- le pack média a été reappliqué au-dessus du HEAD réel via commit fast-forward.
