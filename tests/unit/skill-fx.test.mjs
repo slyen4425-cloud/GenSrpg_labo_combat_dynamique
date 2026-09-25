@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   planSkillFx,
   planSkillOutcomeFx,
+  planSkillPreparationFx,
   planSkillReleaseFx
 } from "../../src/core/fx/skill-fx-plan.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
@@ -396,6 +397,101 @@ test("DOM projectile adapter dispose cancels and removes active FX", () => {
 });
 
 
+test("skill preparation FX follows the real action preparation duration", () => {
+  assert.deepEqual(
+    planSkillPreparationFx({
+      action: {
+        skill: { id: "fireball" },
+        preparationMs: 2000
+      },
+      actorSlot: "player"
+    }),
+    [
+      {
+        type: "cast",
+        skillId: "fireball",
+        actorSlot: "player",
+        durationMs: 2000
+      }
+    ]
+  );
+});
+
+test("DOM cast adapter renders on the source anchor for the preparation duration", async () => {
+  const done = deferred();
+  const appended = [];
+  let capturedOptions = null;
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 10, top: 20, width: 300, height: 200 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 30, top: 100, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill(skillId) {
+      assert.equal(skillId, "fireball");
+      return {
+        cast: {
+          assetId: "pack:capture:sprite-fireball-cast-01",
+          url: "fireball-cast.png",
+          frameCount: 6,
+          displayScale: 1.35
+        }
+      };
+    },
+    animate(_node, _keyframes, options) {
+      capturedOptions = options;
+      return {
+        finished: done.promise,
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "cast",
+    skillId: "fireball",
+    actorSlot: "player",
+    durationMs: 2000
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended.length, 1);
+  assert.equal(appended[0].dataset.skillFx, "cast");
+  assert.equal(appended[0].dataset.assetId, "pack:capture:sprite-fireball-cast-01");
+  assert.equal(appended[0].style.left, "40px");
+  assert.equal(appended[0].style.top, "100px");
+  assert.equal(appended[0].style.backgroundSize, "600% 100%");
+  assert.equal(capturedOptions.duration, 2000);
+
+  done.resolve();
+  assert.deepEqual(await handle.finished, { status: "finished" });
+});
+
 test("live projectile release carries the skill identity for presentation binding", () => {
   assert.deepEqual(
     planSkillReleaseFx({
@@ -496,7 +592,8 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
           url: "fireball-atlas.png",
           frameCount: 8,
           coreAnchor: { x: 0.29, y: 0.5 },
-          headingRad: Math.PI
+          headingRad: Math.PI,
+          displayScale: 1.75
         }
       };
     },
@@ -555,6 +652,10 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
   assert.match(
     capturedKeyframes[2].transform,
     /translate3d\(260px, -100px, 0\)/
+  );
+  assert.match(
+    capturedKeyframes[2].transform,
+    /scale\(1\.7149999999999999\)/
   );
   assert.equal(capturedOptions.duration, 700);
 
