@@ -6,7 +6,7 @@
   "element": null,
   "energyCost": 2,
   "preparationMs": 1200,
-  "travelMs": 0,
+  "travelMs": 1500,
   "recoveryMs": 500,
   "allowedDistances": [
     "short"
