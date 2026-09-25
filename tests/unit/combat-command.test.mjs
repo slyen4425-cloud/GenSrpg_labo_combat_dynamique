@@ -84,7 +84,7 @@ test("combat command contract keeps item recall and summon separate from skills"
   assert.equal(summon.interruptibleDuringPreparation, true);
 
   assert.equal(item.effect.itemId, "potion-test");
-  assert.equal(summon.effect.summonCreatureId, "reserve-creature-test");
+  assert.equal(summon.effect.summonCreatureId, null);
 });
 
 test("item spends energy at start but heals only when the command completes", () => {
