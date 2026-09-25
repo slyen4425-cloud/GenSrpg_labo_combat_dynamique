@@ -4039,6 +4039,77 @@ Critère de fin :
 - preview smartphone ;
 - validation utilisateur avant checkpoint GREEN final.
 
+
+## Résultat technique candidat — V9 projectile-target-evasion-feedback
+
+Ciblage projectile :
+
+Cause prouvée :
+
+- le renderer projectile utilisait `[data-demo-motion]` à la fois comme source et comme cible ;
+- cet élément subit les transformations transitoires des attaques aériennes / téléportées ;
+- une Boule de feu pouvait donc viser visuellement la position haute de la cible.
+
+Correction :
+
+- `createDomSkillFxRenderer()` accepte maintenant :
+  - `anchors` : positions visuelles/transitoires utilisées pour la source ;
+  - `targetAnchors` : positions stables utilisées pour la destination ;
+- Demo UI fournit :
+  - source = `[data-demo-motion]` ;
+  - destination = `fighterContainers` stables ;
+- une Boule de feu classique part donc bien du lanceur visible mais vise la position stable attendue de la cible ;
+- aucun calcul de hit/esquive n'a été ajouté au renderer.
+
+Test géométrique :
+
+- cible motion simulée à `top=20` ;
+- slot stable cible à `top=120` ;
+- le projectile utilise explicitement la destination stable ;
+- le test interdit l'ancienne trajectoire aérienne.
+
+Esquive projectile :
+
+Un vrai test d'intégration utilise désormais la Boule de feu elle-même :
+
+- distance moyenne ;
+- Boule de feu adverse démarre à t=0 ;
+- Téléportation joueur démarre à t=1450 ;
+- release Téléportation à t=2650 ;
+- impact Boule de feu à t=2700 ;
+- impact Téléportation à t=2770 ;
+- au moment de l'impact Boule de feu, le joueur est dans `travel` Téléportation ;
+- outcome = `evaded` ;
+- `evasionApplied = "teleport-strike"` ;
+- aucun événement `hit` ;
+- PV joueur = 100 avant et après.
+
+Lisibilité :
+
+- le statut UI `evaded` devient explicitement :
+  - `Esquive · 0 dégât`
+- l'objectif est de rendre le résultat vérifiable sur smartphone sans interpréter uniquement l'animation.
+
+Extension future notée :
+
+- projectile générique actuel = ciblage classique sur slot stable ;
+- une capacité future `tracking / homing / anti-air` pourra être ajoutée comme stratégie distincte et configurable ;
+- elle ne doit pas devenir le comportement implicite de toutes les compétences projectile.
+
+CI :
+
+- test FX stable target : SUCCESS ;
+- test intégration Boule de feu -> Téléportation -> 0 PV : SUCCESS ;
+- test feedback UI : SUCCESS ;
+- SHA fonctionnel : `f4bb8c6c6a315d3a2fe555ddf96118faa4301a06` ;
+- run : `36139675583` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone requise avant checkpoint GREEN final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
