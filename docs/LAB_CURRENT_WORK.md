@@ -2266,6 +2266,53 @@ Critère de fin :
 - checkpoint GREEN ;
 - preview smartphone où l'arène occupe presque tout l'écran et où les capacités se jouent comme des touches directement intégrées au HUD.
 
+
+## Résultat technique — fullscreen-player-ui-v8
+
+Implémentation candidate :
+
+- l'arène occupe maintenant le viewport du laboratoire ;
+- le HUD joueur et le HUD adverse sont fixés aux bords de l'arène et ne suivent plus les déplacements des créatures ;
+- les capacités principales restent générées depuis les données de compétences mais sont présentées comme quatre touches de jeu permanentes ;
+- le nom reste visible aujourd'hui ; la structure CSS permet une future couche d'icônes sans changer le Runtime ;
+- énergie, charge et temps restant continuent de venir du Combat Runtime ;
+- Objets, Équipe et les trois distances restent intégrés dans l'arène ;
+- les réserves restent visibles sous forme compacte ;
+- le nom affiché du combattant actif est projeté depuis le snapshot du Roster Session ;
+- aucune règle de portée, coût, dégâts, KO ou remplacement n'a été déplacée vers l'UI.
+
+Revue du diff depuis V7 GREEN :
+
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ROADMAP.md` ;
+- `examples/dom-demo/index.html` ;
+- `examples/dom-demo/demo.css` ;
+- `src/ui/combat-test-ui.js` ;
+- `tests/unit/demo-ui-boundary.test.mjs`.
+
+Aucun fichier `src/core/**`, contrat gameplay, FX ou renderer n'a été modifié.
+
+CI du HEAD fonctionnel :
+
+- SHA : `43b02576f799d6ddc20f3bed5b6a1d00b5b4123d` ;
+- run : `36121781493` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone V8 obligatoire avant checkpoint GREEN final.
+
+À tester sur smartphone :
+
+1. l'arène remplit pratiquement tout l'écran ;
+2. les quatre capacités ressemblent à des touches de jeu et restent immédiatement pressables ;
+3. PV joueur/adversaire restent lisibles ;
+4. énergie et charge restent lisibles ;
+5. Courte / Moyenne / Longue restent accessibles ;
+6. Objets et Équipe s'ouvrent sans masquer durablement les capacités ;
+7. les créatures restent visibles et leurs attaques/KO/flash d'impact continuent à fonctionner.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
