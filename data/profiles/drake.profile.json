@@ -28,5 +28,19 @@
     "fadeTo": 0.6,
     "rotate": -14,
     "durationMs": 650
+  },
+  "specialMoves": {
+    "teleport": {
+      "vanishRatio": 0.4,
+      "returnVanishMs": 90,
+      "returnMs": 150
+    },
+    "aerial": {
+      "riseRatio": 0.35,
+      "repositionRatio": 0.15,
+      "riseY": -115,
+      "diveHeight": 135,
+      "returnMs": 220
+    }
   }
 }
