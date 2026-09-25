@@ -679,7 +679,7 @@ export async function mountCombatTest({
 
       button.disabled =
         koTransitionPending ||
-        runtime.hasActiveActionFor("player") ||
+        runtime.hasActiveAction ||
         !active ||
         current ||
         !preview.ok;
@@ -722,7 +722,7 @@ export async function mountCombatTest({
           })
         : { ok: false };
       itemRef.button.disabled =
-        runtime.hasActiveActionFor("player") || !preview.ok;
+        runtime.hasActiveAction || !preview.ok;
     }
 
     const recallRef = commandRefs.get("recall");
@@ -734,7 +734,7 @@ export async function mountCombatTest({
           })
         : { ok: false };
       recallRef.button.disabled =
-        runtime.hasActiveActionFor("player") || !preview.ok;
+        runtime.hasActiveAction || !preview.ok;
     }
 
     const summonRef = commandRefs.get("summon");
@@ -751,7 +751,7 @@ export async function mountCombatTest({
           : { ok: false };
 
       summonRef.button.disabled =
-        runtime.hasActiveActionFor("player") || !preview.ok;
+        runtime.hasActiveAction || !preview.ok;
     }
   }
 
