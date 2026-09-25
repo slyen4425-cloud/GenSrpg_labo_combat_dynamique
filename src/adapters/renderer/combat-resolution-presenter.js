@@ -123,7 +123,11 @@ export function createCombatResolutionPresenter({
             item.actorId ===
               (targetSlot === "opponent" ? "opponent" : "player")
         );
-        ko = hitEvent?.hpAfter === 0;
+        const targetHp =
+          resolution.state?.fighters?.[targetSlot]?.hp;
+        ko =
+          hitEvent?.hpAfter === 0 ||
+          targetHp === 0;
 
         finished = visuals
           .playEventFor(targetSlot, "hit")
@@ -142,7 +146,11 @@ export function createCombatResolutionPresenter({
             item.type === "hit" &&
             item.reflected === true
         );
-        ko = reflectedHit?.hpAfter === 0;
+        const actorHp =
+          resolution.state?.fighters?.[actorSlot]?.hp;
+        ko =
+          reflectedHit?.hpAfter === 0 ||
+          actorHp === 0;
         visuals.cancelFor(actorSlot);
         finished = visuals
           .playEventFor(actorSlot, "hit")
