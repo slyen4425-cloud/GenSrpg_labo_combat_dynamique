@@ -63,6 +63,51 @@ test("game page is mobile-first and contains only player-facing combat controls"
   assert.doesNotMatch(html, /data-combat-mover/);
 });
 
+test("V8 keeps the complete player HUD inside a fullscreen combat arena", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(
+    html,
+    /<section class="arena"[^>]*data-combat-arena[\s\S]*data-combat-skills[\s\S]*data-combat-items[\s\S]*data-combat-team-actions[\s\S]*<\/section>/
+  );
+  assert.match(html, /data-combat-name="player"/);
+  assert.match(html, /data-combat-name="opponent"/);
+  assert.match(html, /class="combat-controls"/);
+
+  assert.match(css, /\.game\s*\{[\s\S]*height:\s*100svh/);
+  assert.match(css, /\.arena\s*\{[\s\S]*height:\s*100%/);
+  assert.match(css, /\.combat-controls\s*\{[\s\S]*position:\s*absolute/);
+  assert.match(css, /\.combat-card--opponent\s*\{[\s\S]*top:/);
+  assert.match(css, /\.combat-card--player\s*\{[\s\S]*bottom:/);
+});
+
+test("V8 exposes abilities as permanent game keys while retaining runtime availability", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(html, /class="skill-bar"[\s\S]*data-combat-skills/);
+  assert.match(source, /className:\s*"action-option--skill"/);
+  assert.match(source, /runtime\.startSkill/);
+  assert.match(source, /session\.previewSkill/);
+  assert.match(css, /\.action-option--skill/);
+  assert.match(css, /touch-action:\s*manipulation/);
+});
+
+test("V8 fighter names are projected from roster active members rather than hard-coded combat state", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(html, /data-combat-name="player"/);
+  assert.match(html, /data-combat-name="opponent"/);
+  assert.match(source, /const fighterNameRefs/);
+  assert.match(source, /activeMemberId/);
+  assert.match(source, /displayName/);
+  assert.doesNotMatch(source, /fighterNameRefs\.player\.textContent\s*=\s*"Marai"/);
+  assert.doesNotMatch(source, /fighterNameRefs\.opponent\.textContent\s*=\s*"Drakon"/);
+});
+
 test("abilities stay directly visible while items and team remain compact menus", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
