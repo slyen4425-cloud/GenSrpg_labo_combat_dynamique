@@ -127,6 +127,48 @@ export function planAnimation({ event, actor, profile }) {
       });
     }
 
+    case "ground-attack": {
+      const cfg = profile.specialMoves?.ground;
+      if (!cfg) {
+        throw new RangeError(`Profile ${profile.id} has no ground preset`);
+      }
+
+      const target = visualTarget(event);
+
+      return createAnimationPlan({
+        actorId: actor.id,
+        eventType: event.type,
+        segments: [
+          {
+            label: "ground-approach-impact",
+            durationMs: target.travelMs,
+            easing: "cubic-bezier(0.18, 0.72, 0.2, 1)",
+            transform: {
+              translateX: target.x,
+              translateY: target.y,
+              scaleX: cfg.impactScaleX ?? 1.04,
+              scaleY: cfg.impactScaleY ?? 0.97,
+              rotateDeg: directed(3 * intensity, sign)
+            },
+            opacity: 1
+          },
+          {
+            label: "ground-return",
+            durationMs: cfg.returnMs,
+            easing: "ease-out",
+            transform: {
+              translateX: 0,
+              translateY: 0,
+              scaleX: 1,
+              scaleY: 1,
+              rotateDeg: 0
+            },
+            opacity: 1
+          }
+        ]
+      });
+    }
+
     case "teleport-attack": {
       const cfg = profile.specialMoves?.teleport;
       if (!cfg) {
