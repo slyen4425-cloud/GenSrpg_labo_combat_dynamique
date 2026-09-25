@@ -5729,3 +5729,39 @@ Validation technique du lot icônes :
 - test ajouté pour vérifier les quatre capacités actives et l'absence de faux FX sur les bindings icon-only ;
 - architecture d'arène par biome documentée uniquement, non implémentée ;
 - `main` et le dépôt `Zombicide-40k` inchangés.
+
+
+### Lot UI — capacités plus hautes sur smartphone
+
+Décision utilisateur du 2026-09-25 :
+
+- agrandir légèrement l'UI des capacités ;
+- privilégier l'augmentation en hauteur ;
+- conserver la largeur générale du panneau de combat ;
+- améliorer la lecture des icônes ;
+- ne modifier aucun gameplay.
+
+Branches :
+
+- départ : `checkpoint/lab-start-skill-ui-height-v9-2026-09-25` ;
+- travail : `work/lab-skill-ui-height-v9-2026-09-25` ;
+- preview : `preview/lab-skill-ui-height-v9-2026-09-25` ;
+- base exacte : `33b34dd7d1b8846c190f3f95b6c05008306ca021`.
+
+Diagnostic :
+
+- les touches de capacité étaient contraintes par `aspect-ratio: 1`, donc carrées ;
+- leur largeur dépend déjà correctement de la grille quatre colonnes ;
+- le propriétaire correct du changement est uniquement le CSS de la Demo UI.
+
+Correction retenue :
+
+- ratio des touches : `1` -> `0.8`, soit environ +25 % de hauteur à largeur identique ;
+- icône : `72 %` -> `78 %` du bouton ;
+- aucune modification de Combat Rules, Runtime, compétences, timings, énergie, dégâts ou bindings d'assets ;
+- sentinelle UI adaptée pour verrouiller le nouveau ratio et la nouvelle occupation de l'icône.
+
+Statut :
+
+- lot fonctionnel en validation CI ;
+- validation visuelle smartphone requise avant checkpoint GREEN.
