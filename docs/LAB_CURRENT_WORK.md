@@ -1519,6 +1519,88 @@ Critère de fin :
 
 CI verte + checkpoint GREEN + preview smartphone permettant de jouer Marai/Drakon contre Drakon/Marai avec Rappel/Invocation réels.
 
+
+## Résultat technique — player-ui-roster-v4
+
+Implémentation présente :
+
+- vue laboratoire remplacée par une vue de partie propre ;
+- aucun Réglages du test / simulateur Stun / Idle-Hit-KO / import / intensité dans l'écran utilisateur ;
+- seuls les contrôles joueur restent visibles ;
+- menus déroulants :
+  - Capacités ;
+  - Objets ;
+  - Équipe ;
+- réserve joueur visible ;
+- réserve adverse visible mais non contrôlable ;
+- roster 2v2 :
+  - joueur : Marai + Drakon ;
+  - adversaire : Drakon + Marai ;
+- nouveau `Roster Session` propriétaire unique de actif/réserve ;
+- slots combat stables : `player` / `opponent` ;
+- `Combat Session.replaceFighter()` remplace proprement le fighter d'un slot ;
+- chaque membre conserve son snapshot PV/énergie ;
+- Rappel sauvegarde le membre actif puis vide le slot visuel joueur ;
+- Invocation utilise le membre de réserve sélectionné et remplace réellement :
+  - stats du slot ;
+  - asset ;
+  - profil ;
+  - nom affiché ;
+- le membre rappelé redevient ensuite disponible en réserve ;
+- le joueur peut sélectionner sa réserve via les cartes de réserve ;
+- l'adversaire ne possède aucun bouton d'action ;
+- coût énergie + charge + interruption des commandes conservés ;
+- la fausse cible `reserve-creature-test` a été supprimée : la cible d'invocation appartient maintenant au Roster Session ;
+- listener de réserve délégué sur un seul conteneur pour éviter les accumulations lors des rerenders.
+
+Frontières conservées :
+
+- UI ne copie aucune stat de membre ;
+- Roster Session ne connaît ni DOM ni animation ;
+- Visual Controller change seulement le visuel du slot demandé ;
+- Combat Runtime reste l'autorité temporelle Rappel/Invocation ;
+- Command Resolver reste propriétaire coût/charge/completion ;
+- Combat Session reste propriétaire des fighters actuellement engagés.
+
+Tests ajoutés / réécrits :
+
+- roster initial Marai/Drakon vs Drakon/Marai ;
+- un reserve par équipe au départ ;
+- Rappel conserve HP/énergie ;
+- Invocation sélectionnée remplace le slot joueur ;
+- réinvocation d'un membre restaure son snapshot ;
+- opérations joueur ne mutent pas l'adversaire ;
+- command-complete recall/summon délègue au Roster Session ;
+- structure exige core/data/tests roster ;
+- aucun contrôle laboratoire restant dans le HTML ;
+- trois menus déroulants présents ;
+- aucun contrôle direct adversaire ;
+- vrai raccord `Roster -> Combat slot -> visuel` protégé ;
+- sentinelles Animation / Distance / Impact / Commands existantes conservées.
+
+Dernier HEAD fonctionnel avant documentation de clôture :
+
+`34e80fe3240a4b07c23bd48ebec38bacc9931b9e`
+
+CI de ce HEAD :
+
+- run : `36078895649`
+- conclusion : SUCCESS
+
+Validation utilisateur restante :
+
+- smartphone : vérifier lisibilité globale sans panneaux laboratoire ;
+- ouvrir/fermer les trois menus ;
+- vérifier que les capacités ne prennent plus tout l'écran ;
+- sélectionner Drakon en réserve ;
+- lancer Rappel et attendre la fin de charge ;
+- vérifier disparition de Marai ;
+- lancer Invocation et attendre la fin de charge ;
+- vérifier entrée réelle de Drakon avec son visuel ;
+- rappeler Drakon puis réinvoquer Marai ;
+- vérifier persistance des PV/énergie ;
+- vérifier que la réserve adverse reste seulement informative.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
