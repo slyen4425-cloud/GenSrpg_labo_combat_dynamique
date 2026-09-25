@@ -5227,3 +5227,24 @@ Validation smartphone requise :
 4. l'impact doit être remplacé par la nouvelle déflagration circulaire ;
 5. vérifier aussi une Boule de feu adverse : la source doit utiliser la bouche correspondante à la vue adverse ;
 6. aucun checkpoint GREEN final avant validation visuelle explicite.
+
+
+### Retour smartphone — fireball visual fix nettement amélioré
+
+Retour utilisateur :
+
+- le rendu Boule de feu est désormais jugé **beaucoup mieux** ;
+- quelques micro-détails peuvent encore être ajustés plus tard ;
+- l'utilisateur demande encore un projectile visuellement plus gros.
+
+Micro-ajustement présentation :
+
+- `travel.displayScale` passe de `2.3` à `2.8` ;
+- aucun timing, dégât, coût, portée ou règle de combat modifié ;
+- ce changement reste strictement dans le binding de présentation.
+
+Important :
+
+- une nouvelle demande gameplay est apparue séparément : deux projectiles compatibles qui se rencontrent devraient pouvoir s'annuler mutuellement ;
+- cette règle ne sera pas ajoutée dans le chantier visuel ;
+- elle doit partir d'un nouveau checkpoint / nouvelle branche avec configuration éditable dans `SkillDefinition`.
