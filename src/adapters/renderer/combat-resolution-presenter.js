@@ -121,8 +121,7 @@ export function createCombatResolutionPresenter({
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&
-            item.actorId ===
-              (targetSlot === "opponent" ? "opponent" : "player")
+            item.reflected !== true
         );
         ko = Number(hitEvent?.hpAfter) <= 0;
         koActorId = ko ? hitEvent?.actorId ?? null : null;
