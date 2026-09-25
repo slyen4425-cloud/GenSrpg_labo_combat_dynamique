@@ -5910,3 +5910,15 @@ Correction architecture :
 - Combat Rules, Runtime, SkillDefinition, dégâts, énergie et timings restent inchangés.
 
 Le remplacement binaire de `braisombre_player.webp` est effectué séparément dans ce même petit chantier, avec mise à jour des anchors de la vue player pour le nouveau visuel.
+
+
+### Source visuelle face Braisombre validée
+
+Retour utilisateur du 2026-09-25 :
+
+- la nouvelle planche `7104.png` fournit la **vue face** à utiliser ;
+- la vue dos présente sur cette nouvelle planche ne doit **pas** être utilisée car elle est signalée comme buguée ;
+- la vue dos reste celle extraite de la planche précédente `7103.png` ;
+- le remplacement doit donc composer deux sources distinctes :
+  - `braisombre_opponent.webp` <- face de `7104.png` ;
+  - `braisombre_player.webp` <- dos validé de `7103.png`.
