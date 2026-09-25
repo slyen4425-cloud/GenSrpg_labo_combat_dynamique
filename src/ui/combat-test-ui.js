@@ -269,14 +269,34 @@ export async function mountCombatTest({
   };
 
   const chargeRefs = {
-    player: requiredElement(
-      root,
-      '[data-combat-actor-charge="player"]'
-    ),
-    opponent: requiredElement(
-      root,
-      '[data-combat-actor-charge="opponent"]'
-    )
+    player: {
+      bar: requiredElement(
+        root,
+        '[data-combat-actor-charge="player"]'
+      ),
+      label: requiredElement(
+        root,
+        '[data-combat-charge-label="player"]'
+      ),
+      timer: requiredElement(
+        root,
+        '[data-combat-charge-timer="player"]'
+      )
+    },
+    opponent: {
+      bar: requiredElement(
+        root,
+        '[data-combat-actor-charge="opponent"]'
+      ),
+      label: requiredElement(
+        root,
+        '[data-combat-charge-label="opponent"]'
+      ),
+      timer: requiredElement(
+        root,
+        '[data-combat-charge-timer="opponent"]'
+      )
+    }
   };
 
   const playerEnergy = {
@@ -340,13 +360,27 @@ export async function mountCombatTest({
     status.dataset.tone = tone;
   }
 
-  function setCharge(value, active) {
-    chargeRefs.player.value = Math.max(
+  function setCharge(
+    slotId,
+    {
+      value = 0,
+      active = false,
+      label = "Prêt",
+      remainingMs = null
+    } = {}
+  ) {
+    const refs = chargeRefs[slotId];
+    refs.bar.value = Math.max(
       0,
       Math.min(1, Number(value) || 0)
     );
-    chargeRefs.player.dataset.active =
+    refs.bar.dataset.active =
       active ? "true" : "false";
+    refs.label.textContent = label;
+    refs.timer.textContent =
+      remainingMs == null
+        ? ""
+        : formatSeconds(Math.max(0, remainingMs));
   }
 
   function createActionButton({
@@ -814,22 +848,36 @@ export async function mountCombatTest({
     },
     onProgress(progress) {
       if (!progress.actionId) {
-        setCharge(0, false);
+        setCharge("player");
         renderAvailability();
         return;
       }
 
-      setCharge(
-        progress.phase === "preparation"
-          ? progress.chargeProgress
-          : 0,
-        progress.phase === "preparation"
-      );
+      if (progress.phase === "preparation") {
+        setCharge("player", {
+          value: progress.chargeProgress,
+          active: true,
+          label: progress.actionLabel,
+          remainingMs: progress.remainingPreparationMs
+        });
+      } else if (progress.phase === "travel") {
+        setCharge("player", {
+          value: progress.phaseProgress,
+          active: true,
+          label: `${progress.actionLabel} · impact`,
+          remainingMs: progress.remainingImpactMs
+        });
+      } else {
+        setCharge("player", {
+          value: 1,
+          active: true,
+          label: progress.actionLabel,
+          remainingMs: 0
+        });
+      }
       renderAvailability();
     },
     onRelease({ action }) {
-      setCharge(0, false);
-
       if (action.actionType === "skill") {
         presenter.presentRelease({
           action,
@@ -848,7 +896,7 @@ export async function mountCombatTest({
       }
     },
     onResolved(resolution) {
-      setCharge(0, false);
+      setCharge("player");
 
       if (resolution.actionType === "skill") {
         const presentation = presenter.presentOutcome({
@@ -882,7 +930,7 @@ export async function mountCombatTest({
       render(session.snapshot());
     },
     onInterrupted(result) {
-      setCharge(0, false);
+      setCharge("player");
       setStatus(
         `Action ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
         "warn"
