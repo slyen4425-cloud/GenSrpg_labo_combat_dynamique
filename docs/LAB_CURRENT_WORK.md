@@ -3172,6 +3172,51 @@ Critère de sortie :
 - IA visible utilisant déplacement + quatre capacités offensives ;
 - validation utilisateur avant GREEN V9 final.
 
+
+## Résultat technique — V9 normal-offense-fix
+
+Correction appliquée :
+
+- la policy IA active possède désormais `reactionRules: []` ;
+- aucune Riposte, Immunité feu, Esquive ou Bouclier miroir n'est déclenché automatiquement dans le combat normal ;
+- les anciens skills de réaction restent disponibles dans le laboratoire pour de futurs profils spécialisés ;
+- la démo normale ne charge plus ces skills de réaction ;
+- le contrôleur IA conserve son architecture générique et son moteur de réactions testable séparément.
+
+Cycle offensif adverse conservé :
+
+1. Griffe à courte ;
+2. Boule de feu à moyenne ;
+3. Plongeon aérien à longue ;
+4. Frappe téléportée à moyenne.
+
+Preuve dégâts / HP :
+
+- test vrai chemin joueur Boule de feu à moyenne ;
+- aucune réaction automatique ;
+- outcome : `hit` ;
+- PV adversaire : `100 -> 70` ;
+- la perte de PV provient toujours de Combat Rules à l'impact ;
+- aucun changement n'a été effectué dans les formules de dégâts ni dans `renderHp()`.
+
+Moteur de réaction préservé :
+
+- une policy dédiée de test peut encore activer Immunité feu ;
+- Runtime preview/react reste l'autorité ;
+- une réaction trop coûteuse reste refusée.
+
+CI du correctif :
+
+- SHA : `cad79a564914e766ec37b5a0b38812b617205897` ;
+- run : `36128018910` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique du correctif ;
+- V9 reste en attente de validation smartphone ;
+- pas de checkpoint GREEN V9 final avant validation utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
