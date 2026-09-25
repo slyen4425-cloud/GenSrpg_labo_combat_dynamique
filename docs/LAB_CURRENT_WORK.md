@@ -3094,6 +3094,84 @@ Test utilisateur attendu :
 6. continuer plusieurs échanges pour observer le cycle Griffe -> Boule de feu -> Plongeon -> Téléportation ;
 7. si le joueur tombe à 0 PV, vérifier Hit -> KO -> remplacement automatique par sa réserve.
 
+
+## Correctif actif V9 — normal-offense-fix
+
+Retour smartphone utilisateur :
+
+- les PV adverses semblent ne jamais diminuer ;
+- l'IA déclenche trop souvent des réactions défensives ;
+- `Riposte` est perçue comme une capacité inconnue et beaucoup trop rapide ;
+- l'adversaire doit d'abord utiliser les capacités offensives normales déjà visibles dans le prototype.
+
+Diagnostic démontré :
+
+La policy V9 candidate couvrait pratiquement chaque capacité joueur :
+
+- Boule de feu -> Immunité feu ;
+- Griffe au sol -> Riposte ;
+- Plongeon aérien -> Esquive ;
+- Frappe téléportée -> Esquive.
+
+Conséquence :
+
+tant que l'adversaire avait assez d'énergie, le joueur pouvait légitimement observer zéro perte de PV adverse malgré des attaques répétées.
+
+Origine de `Riposte` :
+
+- ancien skill de réaction du laboratoire : `data/combat/skills/contact-counter.skill.json` ;
+- créé initialement pour tester le système de contre Contact ;
+- préparation 400 ms ;
+- ce n'est pas une des quatre capacités offensives principales de la démo joueur.
+
+Décision corrective :
+
+- conserver le moteur de réactions comme capacité laboratoire générique ;
+- retirer toutes les réactions automatiques de la policy IA active V9 ;
+- ne pas supprimer les fichiers de réaction du laboratoire ;
+- l'adversaire actif utilise uniquement le cycle offensif normal :
+  1. Griffe ;
+  2. Boule de feu ;
+  3. Plongeon aérien ;
+  4. Frappe téléportée ;
+- déplacement vers la distance nécessaire inchangé ;
+- aucune modification du calcul de dégâts ou du rendu HP tant que leur faute n'est pas démontrée.
+
+Base du correctif :
+
+`a05b872adf44cf4c55a85cbb4c2960141ccb48e0`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-v9-normal-offense-fix-2026-09-25`
+
+Branche :
+
+`work/lab-v9-normal-offense-fix-2026-09-25`
+
+Fichiers autorisés :
+
+- policy IA active ;
+- chargement UI des réactions devenues inutiles pour cette policy ;
+- tests policy / décision / vrai chemin ;
+- documentation.
+
+Tests obligatoires :
+
+- policy active : zéro réaction automatique ;
+- Boule de feu joueur à moyenne -> hit réel -> adversaire 100 -> 70 PV ;
+- après cette résolution, l'IA prend une décision offensive normale ;
+- le moteur de réaction générique reste testable avec une policy dédiée de test ;
+- aucun changement aux formules HP/dégâts ;
+- CI complète verte.
+
+Critère de sortie :
+
+- preview smartphone où les attaques joueur peuvent réellement enlever des PV ;
+- plus aucune `Riposte` automatique dans le combat normal ;
+- IA visible utilisant déplacement + quatre capacités offensives ;
+- validation utilisateur avant GREEN V9 final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
