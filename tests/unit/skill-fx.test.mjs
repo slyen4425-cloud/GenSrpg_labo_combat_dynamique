@@ -144,6 +144,89 @@ test("DOM projectile adapter owns and cleans its temporary node", async () => {
   assert.equal(removed, true);
 });
 
+test("DOM projectile source follows live motion but target uses stable slot anchor", async () => {
+  const done = deferred();
+  let capturedKeyframes = null;
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append() {},
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 40, top: 220, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      // Simulates a transient aerial motion anchor.
+      getBoundingClientRect() {
+        return { left: 300, top: 20, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const targetAnchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 40, top: 220, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      // Stable combat slot stays on the ground.
+      getBoundingClientRect() {
+        return { left: 300, top: 120, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    targetAnchors,
+    animate(_element, keyframes) {
+      capturedKeyframes = keyframes;
+      return {
+        finished: done.promise,
+        cancel() {}
+      };
+    }
+  });
+
+  renderer.play({
+    type: "projectile",
+    element: "fire",
+    fromSlot: "player",
+    targetSlot: "opponent",
+    durationMs: 700
+  });
+
+  assert.match(
+    capturedKeyframes[1].transform,
+    /translate3d\(260px, -100px, 0\)/
+  );
+  assert.doesNotMatch(
+    capturedKeyframes[1].transform,
+    /translate3d\(260px, -200px, 0\)/
+  );
+
+  done.resolve();
+  await Promise.resolve();
+});
+
 test("DOM projectile adapter dispose cancels and removes active FX", () => {
   let cancelled = false;
   let removed = false;
