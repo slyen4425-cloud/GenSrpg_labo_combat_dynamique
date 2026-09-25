@@ -69,7 +69,194 @@ export function createOpponentDecisionController({
     }
   }
 
+  if (policy.energyStrategy) {
+    for (const skillId of [
+      ...policy.energyStrategy.quickSkillIds,
+      ...policy.energyStrategy.strongSkillIds
+    ]) {
+      lookup(skillsById, skillId, "energy strategy skill");
+    }
+  }
+
   let planIndex = 0;
+  let energyModeIndex = 0;
+
+  function distanceIndex(value) {
+    const index = COMBAT_DISTANCES.indexOf(value);
+    if (index < 0) {
+      throw new RangeError(`Unsupported combat distance: ${value}`);
+    }
+    return index;
+  }
+
+  function nearestAllowedDistance(skill, fromDistance) {
+    const fromIndex = distanceIndex(fromDistance);
+    return [...skill.allowedDistances].sort((left, right) => {
+      const leftDistance =
+        Math.abs(distanceIndex(left) - fromIndex);
+      const rightDistance =
+        Math.abs(distanceIndex(right) - fromIndex);
+      if (leftDistance !== rightDistance) {
+        return leftDistance - rightDistance;
+      }
+      return distanceIndex(left) - distanceIndex(right);
+    })[0];
+  }
+
+  function skillCandidatesForMode(mode) {
+    const ids =
+      mode === "strong"
+        ? policy.energyStrategy.strongSkillIds
+        : policy.energyStrategy.quickSkillIds;
+    return ids.map((skillId) =>
+      lookup(skillsById, skillId, "energy strategy skill")
+    );
+  }
+
+  function chooseInRangeSkill(candidates, state) {
+    return candidates.find((skill) =>
+      skill.allowedDistances.includes(state.distance)
+    ) ?? null;
+  }
+
+  function savingDecision({
+    mode,
+    skill,
+    currentEnergy,
+    requiredEnergy,
+    movementCost = 0,
+    targetDistance = null
+  }) {
+    return Object.freeze({
+      status: "saving",
+      mode,
+      skillId: skill.id,
+      skillName: skill.name,
+      currentEnergy,
+      requiredEnergy,
+      movementCost,
+      targetDistance
+    });
+  }
+
+  function takeEnergyStrategyTurn() {
+    const state = session.snapshot();
+    const actor = state.fighters[policy.actorId];
+    const mode =
+      policy.energyStrategy.decisionModes[energyModeIndex];
+    const candidates = skillCandidatesForMode(mode);
+
+    let skill = chooseInRangeSkill(candidates, state);
+
+    if (skill) {
+      if (actor.energy < skill.energyCost) {
+        return savingDecision({
+          mode,
+          skill,
+          currentEnergy: actor.energy,
+          requiredEnergy: skill.energyCost
+        });
+      }
+
+      const preview = session.previewSkill({
+        actorId: policy.actorId,
+        targetId: policy.targetId,
+        skill
+      });
+
+      if (!preview.ok) {
+        return Object.freeze({
+          status: "waiting",
+          reason: preview.outcome,
+          mode,
+          plannedSkillId: skill.id
+        });
+      }
+
+      const started = runtime.startSkill({
+        actorId: policy.actorId,
+        targetId: policy.targetId,
+        skill
+      });
+
+      if (!started.ok) {
+        return Object.freeze({
+          status: "waiting",
+          reason: started.outcome,
+          mode,
+          plannedSkillId: skill.id
+        });
+      }
+
+      energyModeIndex =
+        (energyModeIndex + 1) %
+        policy.energyStrategy.decisionModes.length;
+
+      return Object.freeze({
+        status: "skill_started",
+        actorId: policy.actorId,
+        targetId: policy.targetId,
+        mode,
+        skillId: skill.id,
+        skillName: skill.name,
+        preferredDistance: state.distance,
+        result: started
+      });
+    }
+
+    skill = candidates[0];
+    const targetDistance = nearestAllowedDistance(
+      skill,
+      state.distance
+    );
+    const toDistance = nextDistanceTowards(
+      state.distance,
+      targetDistance
+    );
+    const previewMove = session.previewMovement(
+      policy.actorId,
+      toDistance
+    );
+
+    if (!previewMove.ok) {
+      return Object.freeze({
+        status: "waiting",
+        reason: previewMove.outcome,
+        mode,
+        plannedSkillId: skill.id,
+        targetDistance
+      });
+    }
+
+    const requiredEnergy =
+      previewMove.cost + skill.energyCost;
+
+    if (actor.energy < requiredEnergy) {
+      return savingDecision({
+        mode,
+        skill,
+        currentEnergy: actor.energy,
+        requiredEnergy,
+        movementCost: previewMove.cost,
+        targetDistance
+      });
+    }
+
+    const result = session.move(
+      policy.actorId,
+      toDistance
+    );
+
+    return Object.freeze({
+      status: "moved",
+      actorId: policy.actorId,
+      targetId: policy.targetId,
+      mode,
+      plannedSkillId: skill.id,
+      preferredDistance: targetDistance,
+      result
+    });
+  }
 
   function activeRosterReady() {
     const state = roster.snapshot();
@@ -154,6 +341,10 @@ export function createOpponentDecisionController({
         status: "waiting",
         reason: rosterReady.outcome
       });
+    }
+
+    if (policy.energyStrategy) {
+      return takeEnergyStrategyTurn();
     }
 
     const step = policy.turnPlan[planIndex];
@@ -243,6 +434,7 @@ export function createOpponentDecisionController({
 
   function reset() {
     planIndex = 0;
+    energyModeIndex = 0;
   }
 
   return Object.freeze({
@@ -252,7 +444,14 @@ export function createOpponentDecisionController({
     snapshot() {
       return Object.freeze({
         planIndex,
-        currentStep: policy.turnPlan[planIndex]
+        currentStep:
+          policy.turnPlan.length > 0
+            ? policy.turnPlan[planIndex]
+            : null,
+        energyModeIndex,
+        currentMode: policy.energyStrategy
+          ? policy.energyStrategy.decisionModes[energyModeIndex]
+          : null
       });
     }
   });
