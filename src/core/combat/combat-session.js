@@ -1,7 +1,8 @@
 import {
   addChargeTimeEffect,
   advanceCombatTime,
-  createCombatState
+  createCombatState,
+  replaceFighter as replaceCombatFighter
 } from "./combat-state.js";
 import {
   resolveMovement,
@@ -158,6 +159,11 @@ export function createCombatSession({
     return state;
   }
 
+  function replaceFighter(fighterId, fighter) {
+    state = replaceCombatFighter(state, fighterId, fighter);
+    return state;
+  }
+
   function reset() {
     state = createCombatState({
       distance: initialDistance,
@@ -183,6 +189,7 @@ export function createCombatSession({
     advanceMs,
     advance,
     addChargeEffect,
+    replaceFighter,
     reset
   });
 }
