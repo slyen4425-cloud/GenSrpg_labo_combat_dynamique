@@ -146,6 +146,21 @@ Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de
 - point d'impact visuel aligné sur `travelMs` ;
 - retour visuel après impact sans retarder les dégâts.
 
+### Extension V6 — approche au sol, KO explicite et HUD temporel
+
+- événement sémantique `fighter-ko` produit par Combat Rules ;
+- remplacement adverse déclenché depuis ce signal explicite ;
+- vrai test Runtime -> Resolver -> KO -> Presenter -> Roster ;
+- approche `ground` animée jusqu'à la cible ;
+- `travelMs` configurable par compétence et utilisé comme temps exact jusqu'à l'impact ;
+- Griffe de démonstration : 1,5 s de trajet ;
+- une compétence future peut choisir 0,9 s, 0,5 s ou toute autre durée sans modifier le moteur ;
+- attaque aérienne avec montée plus haute ;
+- arène encore légèrement agrandie ;
+- HUD de charge plus grand ;
+- HUD affiche le nom de l'action et le temps restant fourni par Combat Runtime ;
+- pendant le trajet, le même HUD affiche la progression jusqu'à l'impact.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
