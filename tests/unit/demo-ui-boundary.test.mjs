@@ -270,3 +270,48 @@ test("combat arena is taller while keeping direct reflex ability controls", asyn
   assert.match(css, /\.distance-buttons\s*\{[\s\S]*repeat\(3/);
   assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
 });
+
+
+test("KO stays terminal until roster replacement", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(
+    source,
+    /!\["idle", "ko"\]\.includes\(type\)/
+  );
+  assert.match(source, /setCreatureFor[\s\S]*startIdleFor\(slotKey\)/);
+});
+
+test("ground aerial and teleport approaches all use real target geometry", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /\["ground", "teleport", "aerial"\]/);
+  assert.match(source, /"ground-attack"/);
+  assert.match(source, /"teleport-attack"/);
+  assert.match(source, /"aerial-attack"/);
+  assert.match(source, /targetTranslateX/);
+  assert.match(source, /targetTranslateY/);
+  assert.match(source, /travelMs/);
+});
+
+test("charge HUD shows action label and runtime countdown", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const runtime = await readFile("src/core/combat/combat-runtime.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(html, /data-combat-charge-label="player"/);
+  assert.match(html, /data-combat-charge-time="player"/);
+  assert.match(source, /progress\.actionName/);
+  assert.match(source, /progress\.preparationRemainingMs/);
+  assert.match(runtime, /preparationRemainingMs/);
+  assert.match(css, /\.fighter__charge\s*\{[\s\S]*height:\s*0\.58rem/);
+});
+
+test("V6 arena is larger on desktop and mobile", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(css, /min-height:\s*min\(62svh, 38rem\)/);
+  assert.match(css, /@media \(max-width: 680px\)[\s\S]*min-height:\s*56svh/);
+  assert.match(css, /@media \(max-width: 430px\)[\s\S]*min-height:\s*53svh/);
+});
