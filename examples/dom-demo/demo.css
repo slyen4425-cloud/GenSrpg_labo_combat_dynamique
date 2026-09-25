@@ -105,45 +105,6 @@ summary {
   box-shadow: inset 0 2px 0 rgba(180, 236, 196, 0.08);
 }
 
-.combat-topbar {
-  position: absolute;
-  z-index: 10;
-  top: 0.45rem;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: min(42rem, 68vw);
-  pointer-events: none;
-}
-
-.combat-topbar__title {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-height: 2.15rem;
-  padding: 0.35rem 0.72rem;
-  border: 1px solid rgba(139, 232, 248, 0.22);
-  border-radius: 999px;
-  background: rgba(5, 16, 22, 0.78);
-  box-shadow: 0 0.45rem 1.4rem rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(8px);
-}
-
-.combat-topbar__title span {
-  color: #8be8f8;
-  font-size: 0.55rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.combat-topbar__title strong {
-  overflow: hidden;
-  color: #f2fbff;
-  font-size: 0.67rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .fighter {
   position: absolute;
   left: 50%;
@@ -196,16 +157,13 @@ summary {
   position: absolute;
   z-index: 12;
   display: grid;
-  gap: 0.18rem;
-  width: min(23rem, 35vw);
-  padding: 0.48rem 0.58rem 0.52rem;
-  border: 1px solid rgba(139, 232, 248, 0.28);
-  background:
-    linear-gradient(135deg, rgba(24, 48, 62, 0.95), rgba(7, 20, 27, 0.92));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0.55rem 1.5rem rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
+  gap: 0.12rem;
+  width: min(14.5rem, 38vw);
+  padding: 0.34rem 0.42rem 0.36rem;
+  border: 1px solid rgba(139, 232, 248, 0.24);
+  background: rgba(7, 20, 27, 0.9);
+  box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(7px);
 }
 
 .combat-card--opponent {
@@ -229,16 +187,13 @@ summary {
 
 .combat-card__title strong {
   overflow: hidden;
-  font-size: clamp(0.78rem, 2.2vw, 1rem);
+  font-size: clamp(0.72rem, 1.8vw, 0.88rem);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .combat-card__title span {
-  color: #91cbd8;
-  font-size: 0.46rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  display: none;
 }
 
 .combat-card__hp-row {
@@ -250,13 +205,13 @@ summary {
 
 .fighter__hp {
   width: 100%;
-  height: 0.48rem;
+  height: 0.38rem;
   accent-color: #75ec82;
 }
 
 .combat-card__hp-row > span {
   color: #c7eccb;
-  font-size: 0.52rem;
+  font-size: 0.46rem;
   font-weight: 900;
   white-space: nowrap;
 }
@@ -286,19 +241,22 @@ summary {
 
 .fighter__charge {
   width: 100%;
-  height: 0.56rem;
+  height: 0.42rem;
   margin: 0;
-  opacity: 0.2;
+  opacity: 1;
   accent-color: #f6cf72;
-  transition: opacity 120ms ease;
 }
 
 .fighter__charge[data-active="true"] {
-  opacity: 1;
+  display: block;
 }
 
 .fighter__charge-info[data-active="false"] {
-  opacity: 0.42;
+  display: none;
+}
+
+.fighter__charge-info[data-active="false"] + .fighter__charge {
+  display: none;
 }
 
 .fighter__charge--reaction {
@@ -325,14 +283,7 @@ summary {
 }
 
 .reserve__title {
-  padding: 0.13rem 0.34rem;
-  border-radius: 999px;
-  background: rgba(4, 13, 18, 0.76);
-  color: #9bc2cc;
-  font-size: 0.47rem;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  display: none;
 }
 
 .reserve__list {
@@ -341,17 +292,19 @@ summary {
 }
 
 .reserve-card {
-  display: flex;
-  align-items: center;
-  gap: 0.27rem;
-  min-width: 0;
-  min-height: 2.25rem;
-  padding: 0.2rem 0.3rem;
-  border: 1px solid rgba(137, 223, 240, 0.16);
-  border-radius: 0.62rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.08rem;
+  overflow: hidden;
+  border: 1px solid rgba(137, 223, 240, 0.2);
+  border-radius: 50%;
   background: rgba(6, 19, 25, 0.88);
   color: #edf8fb;
-  box-shadow: 0 0.28rem 0.9rem rgba(0, 0, 0, 0.22);
+  box-shadow: 0 0.22rem 0.7rem rgba(0, 0, 0, 0.24);
 }
 
 button.reserve-card {
@@ -371,15 +324,13 @@ button.reserve-card {
 }
 
 .reserve-card__icon {
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
 .reserve-card__text {
-  display: grid;
-  min-width: 0;
-  text-align: left;
+  display: none;
 }
 
 .reserve-card__text strong {
@@ -421,20 +372,17 @@ button.reserve-card {
 .combat-controls {
   position: absolute;
   z-index: 15;
-  right: 0.58rem;
-  bottom: 0.58rem;
+  right: 0.48rem;
+  bottom: 0.48rem;
   display: grid;
-  gap: 0.38rem;
-  width: min(27rem, 46vw);
-  padding: 0.38rem;
-  border: 1px solid rgba(139, 232, 248, 0.22);
-  border-radius: 0.95rem;
-  background:
-    linear-gradient(145deg, rgba(7, 18, 24, 0.94), rgba(11, 28, 37, 0.9));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 0.75rem 2rem rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
+  gap: 0.22rem;
+  width: min(20rem, 39vw);
+  padding: 0.28rem;
+  border: 1px solid rgba(139, 232, 248, 0.18);
+  border-radius: 0.8rem;
+  background: rgba(7, 18, 24, 0.9);
+  box-shadow: 0 0.45rem 1.3rem rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(8px);
 }
 
 .hud__energy {
@@ -445,8 +393,8 @@ button.reserve-card {
 .hud__energy-line {
   display: flex;
   justify-content: space-between;
-  gap: 0.4rem;
-  font-size: 0.61rem;
+  gap: 0.3rem;
+  font-size: 0.52rem;
 }
 
 .hud__energy-line strong {
@@ -462,27 +410,30 @@ button.reserve-card {
 
 .hud__energy progress {
   width: 100%;
-  height: 0.45rem;
+  height: 0.32rem;
   accent-color: #75dff7;
 }
 
 .skill-bar {
+  min-width: 0;
+}
+
+.combat-controls__actions {
   display: grid;
-  gap: 0.25rem;
+  grid-template-columns: minmax(0, 1fr) 3.2rem;
+  gap: 0.24rem;
+  align-items: stretch;
 }
 
 .skill-bar__title {
-  color: #b9d7df;
-  font-size: 0.52rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  display: none;
 }
 
 .skill-bar__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.24rem;
+  gap: 0.18rem;
+  height: 100%;
 }
 
 .action-option {
@@ -501,17 +452,14 @@ button.reserve-card {
 .action-option--skill {
   position: relative;
   aspect-ratio: 1;
-  min-height: 0;
   min-width: 0;
-  padding: 0.32rem;
+  min-height: 0;
+  padding: 0.2rem;
   overflow: hidden;
   place-items: center;
-  border-color: rgba(133, 226, 244, 0.3);
-  background:
-    linear-gradient(145deg, rgba(25, 66, 80, 0.98), rgba(10, 31, 40, 0.98));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 0.28rem 0.7rem rgba(0, 0, 0, 0.28);
+  border-color: rgba(133, 226, 244, 0.26);
+  background: linear-gradient(145deg, rgba(25, 66, 80, 0.94), rgba(10, 31, 40, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   text-align: center;
   cursor: pointer;
   touch-action: manipulation;
@@ -539,8 +487,8 @@ button.reserve-card {
   position: relative;
   z-index: 1;
   max-width: 100%;
-  font-size: clamp(0.56rem, 1.35vw, 0.74rem);
-  line-height: 1.05;
+  font-size: clamp(0.48rem, 1.1vw, 0.62rem);
+  line-height: 1.02;
   text-align: center;
   overflow-wrap: anywhere;
 }
@@ -574,19 +522,21 @@ button.reserve-card {
 .distance-buttons {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.3rem;
+  gap: 0.18rem;
 }
 
 .distance-buttons button {
-  min-height: 2rem;
-  padding: 0.22rem 0.16rem;
-  border: 1px solid rgba(137, 223, 240, 0.2);
-  border-radius: 0.62rem;
-  background:
-    linear-gradient(180deg, #17333e, #10242d);
+  min-height: 1.55rem;
+  padding: 0.12rem 0.14rem;
+  overflow: hidden;
+  border: 1px solid rgba(137, 223, 240, 0.16);
+  border-radius: 0.5rem;
+  background: rgba(16, 36, 45, 0.9);
   color: #f2fbff;
-  font-size: 0.62rem;
+  font-size: 0.48rem;
   font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -597,8 +547,12 @@ button.reserve-card {
 
 .action-bar {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.3rem;
+  gap: 0.18rem;
+}
+
+.action-bar--utility {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .action-menu {
@@ -608,15 +562,16 @@ button.reserve-card {
 
 .action-menu > summary {
   display: grid;
-  min-height: 2rem;
+  height: 100%;
+  min-height: 0;
   place-items: center;
-  border: 1px solid rgba(137, 223, 240, 0.22);
-  border-radius: 0.62rem;
-  background:
-    linear-gradient(180deg, #253b47, #152832);
+  padding: 0.16rem;
+  border: 1px solid rgba(137, 223, 240, 0.18);
+  border-radius: 0.5rem;
+  background: rgba(21, 40, 50, 0.94);
   color: #f5fbfd;
   cursor: pointer;
-  font-size: 0.64rem;
+  font-size: 0.5rem;
   font-weight: 900;
   list-style: none;
   touch-action: manipulation;
@@ -658,25 +613,26 @@ button.reserve-card {
 .live-status {
   position: absolute;
   z-index: 14;
+  top: 0.42rem;
   left: 50%;
-  bottom: 0.58rem;
-  max-width: min(31rem, 42vw);
-  min-height: 1.4rem;
+  bottom: auto;
+  max-width: min(18rem, 28vw);
+  min-height: 0;
   margin: 0;
-  padding: 0.25rem 0.6rem;
+  padding: 0.18rem 0.42rem;
   overflow: hidden;
   transform: translateX(-50%);
-  border: 1px solid rgba(139, 232, 248, 0.15);
+  border: 0;
   border-radius: 999px;
-  background: rgba(5, 16, 22, 0.75);
+  background: rgba(5, 16, 22, 0.45);
   color: #b8c9cf;
-  font-size: 0.58rem;
-  line-height: 1.2;
+  font-size: 0.48rem;
+  line-height: 1.15;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
   pointer-events: none;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
 }
 
 .live-status[data-tone="ok"] {
@@ -692,20 +648,12 @@ button.reserve-card {
 }
 
 @media (max-width: 900px) {
-  .combat-topbar {
-    max-width: 48vw;
-  }
-
-  .combat-topbar__title strong {
-    display: none;
-  }
-
   .combat-card {
-    width: min(21rem, 42vw);
+    width: min(14rem, 40vw);
   }
 
   .combat-controls {
-    width: min(25rem, 48vw);
+    width: min(19rem, 43vw);
   }
 
   .fighter--player {
@@ -731,23 +679,9 @@ button.reserve-card {
     border-radius: 0.78rem;
   }
 
-  .combat-topbar {
-    top: 0.32rem;
-    max-width: 40vw;
-  }
-
-  .combat-topbar__title {
-    min-height: 1.8rem;
-    padding: 0.25rem 0.46rem;
-  }
-
-  .combat-topbar__title span {
-    font-size: 0.47rem;
-  }
-
   .combat-card {
-    width: min(18rem, 54vw);
-    padding: 0.38rem 0.44rem 0.42rem;
+    width: min(13.5rem, 44vw);
+    padding: 0.3rem 0.36rem 0.32rem;
   }
 
   .combat-card--opponent {
@@ -757,125 +691,106 @@ button.reserve-card {
 
   .combat-card--player {
     left: 0.35rem;
-    bottom: 16.2rem;
+    bottom: 0.35rem;
   }
 
   .combat-card__title strong {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
   }
 
   .combat-card__hp-row > span {
-    font-size: 0.44rem;
+    font-size: 0.4rem;
   }
 
   .fighter--player {
-    left: 29%;
-    bottom: 27%;
-    width: 45%;
+    left: 28%;
+    bottom: 8%;
+    width: 44%;
   }
 
   .fighter--opponent {
     left: 73%;
-    top: 13%;
-    width: 35%;
+    top: 12%;
+    width: 34%;
   }
 
   .reserve--opponent {
-    top: 3.75rem;
+    top: 2.75rem;
     right: 0.35rem;
   }
 
   .reserve--player {
     left: 0.35rem;
-    bottom: 20.55rem;
+    bottom: 3.15rem;
   }
 
-  .reserve-card__text small {
-    display: none;
+  .reserve-card {
+    width: 1.75rem;
+    height: 1.75rem;
+    min-width: 1.75rem;
+    min-height: 1.75rem;
   }
 
   .combat-controls {
     right: 0.35rem;
     bottom: 0.35rem;
-    left: auto;
-    width: min(24rem, 66vw);
-    padding: 0.3rem;
-    gap: 0.28rem;
+    width: min(19rem, 50vw);
+    padding: 0.24rem;
+    gap: 0.18rem;
+  }
+
+  .combat-controls__actions {
+    grid-template-columns: minmax(0, 1fr) 2.7rem;
+    gap: 0.18rem;
   }
 
   .skill-bar__grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.2rem;
+    gap: 0.14rem;
   }
 
   .action-option--skill {
-    min-height: 0;
-    padding: 0.22rem;
+    padding: 0.14rem;
   }
 
-  .combat-controls__utility {
-    grid-template-columns: minmax(0, 1.2fr) minmax(5.8rem, 0.8fr);
+  .action-option--skill strong {
+    font-size: 0.48rem;
+  }
+
+  .action-menu__panel {
+    min-width: min(15rem, 86vw);
   }
 
   .live-status {
-    top: 2.55rem;
-    bottom: auto;
-    max-width: 55vw;
-    font-size: 0.52rem;
+    top: 0.35rem;
+    max-width: 27vw;
+    font-size: 0.44rem;
   }
 }
 
 @media (max-width: 520px) {
   .combat-card {
-    width: 58vw;
-  }
-
-  .combat-card--player {
-    bottom: 15.6rem;
-  }
-
-  .reserve--player {
-    bottom: 19.7rem;
-  }
-
-  .fighter--player {
-    bottom: 28%;
-    width: 47%;
-  }
-
-  .fighter--opponent {
-    width: 37%;
+    width: 42vw;
   }
 
   .combat-controls {
-    gap: 0.3rem;
+    width: 53vw;
   }
 
-  .skill-bar__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .fighter--player {
+    width: 46%;
   }
 
-  .action-option--skill {
-    min-height: 0;
-    padding: 0.18rem;
+  .fighter--opponent {
+    width: 36%;
   }
 
-  .action-option--skill strong {
-    font-size: 0.54rem;
+  .distance-buttons button {
+    font-size: 0.44rem;
   }
 
-  .combat-controls__utility {
-    grid-template-columns: 1fr;
-  }
-
-  .distance-buttons button,
   .action-menu > summary {
-    min-height: 2.2rem;
-    font-size: 0.58rem;
-  }
-
-  .action-menu__panel {
-    min-width: min(16rem, 94vw);
+    font-size: 0.46rem;
   }
 }
 
@@ -884,106 +799,64 @@ button.reserve-card {
     min-height: 51svh;
   }
 
-  .combat-topbar {
-    left: 0.38rem;
-    transform: none;
-    max-width: 34vw;
-  }
-
-  .combat-card--opponent {
-    width: 61vw;
-  }
-
-  .combat-card--player {
-    bottom: 15.35rem;
-    width: 62vw;
-  }
-
-  .fighter__charge {
-    height: 0.5rem;
-  }
-
-  .fighter__charge-info strong,
-  .fighter__charge-info span {
-    font-size: 0.48rem;
-  }
-
-  .reserve__title {
-    display: none;
-  }
-
-  .reserve--player {
-    bottom: 19.15rem;
-  }
-
-  .reserve-card {
-    min-height: 1.9rem;
-    padding: 0.16rem 0.2rem;
-  }
-
-  .reserve-card__icon {
-    width: 1.52rem;
-    height: 1.52rem;
-  }
-
-  .reserve-card__text strong {
-    font-size: 0.52rem;
-  }
-
-  .fighter--player {
-    left: 27%;
-    bottom: 29%;
-    width: 48%;
-  }
-
-  .fighter--opponent {
-    left: 73%;
-    top: 15%;
-    width: 38%;
+  .combat-card {
+    width: 39vw;
   }
 
   .combat-controls {
-    width: min(22rem, 72vw);
-    padding: 0.26rem;
+    width: 56vw;
   }
 
-  .action-option--skill {
-    min-height: 0;
+  .combat-card__hp-row {
+    grid-template-columns: 1fr;
+  }
+
+  .combat-card__hp-row > span {
+    display: none;
+  }
+
+  .reserve-card {
+    width: 1.6rem;
+    height: 1.6rem;
+    min-width: 1.6rem;
+    min-height: 1.6rem;
+  }
+
+  .action-option--skill strong {
+    font-size: 0.44rem;
+  }
+
+  .hud__energy-line strong {
+    display: none;
   }
 
   .live-status {
-    top: 2.25rem;
-    max-width: 60vw;
-    padding-inline: 0.44rem;
+    max-width: 24vw;
   }
 }
 
 @media (max-height: 700px) and (orientation: landscape) {
   .combat-card--player {
-    bottom: 0.4rem;
+    bottom: 0.35rem;
   }
 
   .reserve--player {
-    bottom: 4.65rem;
+    bottom: 3.15rem;
   }
 
   .fighter--player {
-    bottom: 7%;
+    bottom: 5%;
     width: 34%;
   }
 
   .fighter--opponent {
-    top: 10%;
+    top: 9%;
     width: 28%;
   }
 
   .combat-controls {
-    width: min(24rem, 43vw);
-    padding: 0.28rem;
-  }
-
-  .action-option--skill {
-    min-height: 0;
+    width: min(18rem, 40vw);
+    padding: 0.22rem;
   }
 }
 
