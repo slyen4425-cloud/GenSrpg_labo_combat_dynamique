@@ -3862,6 +3862,98 @@ Critère de fin :
 - preview smartphone ;
 - validation utilisateur avant checkpoint GREEN final.
 
+
+## Résultat technique candidat — V9 autonomy-mobility-evasion
+
+Autonomie adverse :
+
+- la cause du comportement « l'IA attend que le joueur agisse » était le raccord UI ;
+- `onState` ne relançait auparavant l'IA que si `aiWaitingForEnergy` avait déjà été positionné par une décision précédente ;
+- au démarrage, cette condition était fausse ;
+- désormais toute mise à jour d'état du Combat Runtime peut provoquer une décision adverse si :
+  - `opponentAi` existe ;
+  - l'adversaire n'a pas déjà une action active ;
+  - aucune transition KO n'est en cours ;
+  - aucune décision IA n'est déjà en ré-entrée ;
+- aucune horloge, `setInterval` ou `setTimeout` IA ajouté ;
+- le flag `aiWaitingForEnergy` devenu inutile a été supprimé ;
+- avec énergie initiale 0, l'IA peut donc :
+  - décider immédiatement d'économiser ;
+  - recevoir les ticks énergie du Runtime ;
+  - lancer seule une compétence dès qu'elle devient finançable.
+
+Mobilité évasive configurable :
+
+- nouveau champ normalisé `SkillDefinition.evasion` :
+  - `window` : `travel` ;
+  - `incomingForms` : liste des formes entrantes évitées ;
+- compétence sans configuration :
+  - `window: null` ;
+  - `incomingForms: []` ;
+  - aucun changement de comportement ;
+- Téléportation et Plongeon aérien du prototype :
+  - fenêtre `travel` ;
+  - évitent `contact` et `projectile`.
+
+Chaîne d'autorité :
+
+`Skill data -> Runtime concurrent timing context -> Combat Session -> Action Resolver -> semantic outcome evaded -> Presenter`
+
+Le Runtime ne décide pas du résultat :
+
+- il récupère l'action active de la cible ;
+- calcule son elapsed au timestamp absolu exact de l'impact entrant ;
+- transmet ce contexte à Combat Session.
+
+Action Resolver décide `evaded` uniquement si :
+
+1. l'action de la cible est une compétence ;
+2. elle déclare `evasion.window = "travel"` ;
+3. la forme entrante est listée ;
+4. l'impact entrant tombe entre release et impact de la compétence mobile.
+
+Effet :
+
+- outcome `evaded` ;
+- aucun événement `hit` ;
+- aucun PV retiré ;
+- `evasionApplied` expose l'id de la compétence mobile responsable.
+
+Vrai chemin protégé :
+
+- Griffe adverse à courte : impact t=2700 ;
+- Téléportation joueur démarre à t=1450 ;
+- release Téléportation t=2650 ;
+- impact Téléportation t=2770 ;
+- à t=2700 la Griffe arrive pendant le travel Téléportation ;
+- résultat Griffe : `evaded` ;
+- joueur reste à 100 PV ;
+- Téléportation reste active puis impacte à t=2770.
+
+Cas négatifs protégés :
+
+- Téléportation encore en préparation lors de l'impact -> Griffe touche ;
+- Téléportation déjà résolue avant l'impact -> Griffe touche ;
+- compétence sans `evasion` -> comportement historique inchangé ;
+- fenêtre non supportée refusée par le contrat.
+
+CI du vrai chemin après correction du test de portée :
+
+- SHA : `d97643e77b5f82c02529ae676c9eb3b0724c59f4` ;
+- run : `36133842247` ;
+- conclusion : SUCCESS.
+
+Nettoyage suivant :
+
+- suppression du flag UI obsolète `aiWaitingForEnergy` ;
+- aucune modification gameplay associée.
+
+Statut :
+
+- GREEN technique ;
+- documentation synchronisée ;
+- validation smartphone obligatoire avant checkpoint GREEN final V9.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
