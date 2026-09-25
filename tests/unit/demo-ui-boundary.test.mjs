@@ -28,15 +28,13 @@ test("visual controller can replace a slot creature without owning combat rules"
   assert.doesNotMatch(source, /resolveSkill/);
 });
 
-test("both visual slots still start idle and transient actions return idle", async () => {
+test("both visual slots start idle, transient actions return idle, KO does not restart defeated idle", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
   assert.match(source, /startIdleFor\("player"\)/);
   assert.match(source, /startIdleFor\("opponent"\)/);
-  assert.match(
-    source,
-    /type !== "idle"[\s\S]*startIdleFor\(slotKey\)/
-  );
+  assert.match(source, /!\["idle", "ko"\]\.includes\(type\)/);
+  assert.match(source, /startIdleFor\(slotKey\)/);
 });
 
 test("game page is mobile-first and contains only player-facing combat controls", async () => {
@@ -265,8 +263,39 @@ test("visual controller computes target geometry for teleport and aerial moves w
 test("combat arena is taller while keeping direct reflex ability controls", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
-  assert.match(css, /min-height:\s*min\(54svh, 32rem\)/);
+  assert.match(css, /min-height:\s*min\(59svh, 35rem\)/);
   assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
   assert.match(css, /\.distance-buttons\s*\{[\s\S]*repeat\(3/);
   assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
+});
+
+
+test("primary charge display shows runtime action name and authoritative remaining time", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const runtime = await readFile("src/core/combat/combat-runtime.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(html, /data-combat-charge-name="player"/);
+  assert.match(html, /data-combat-charge-time="player"/);
+  assert.match(runtime, /actionName/);
+  assert.match(runtime, /remainingPreparationMs/);
+  assert.match(source, /progress\.actionName/);
+  assert.match(source, /progress\.remainingPreparationMs/);
+  assert.match(css, /\.fighter__charge\s*\{[\s\S]*height:\s*0\.56rem/);
+  assert.doesNotMatch(source, /Date\.now/);
+  assert.doesNotMatch(source, /setInterval/);
+});
+
+test("ground aerial and teleport approaches all use visual target geometry", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+  const presenter = await readFile(
+    "src/adapters/renderer/combat-resolution-presenter.js",
+    "utf8"
+  );
+
+  assert.match(source, /\["ground", "teleport", "aerial"\]\.includes\(approachMode\)/);
+  assert.match(source, /arenaExitTranslateY/);
+  assert.match(source, /"ground-attack"/);
+  assert.match(presenter, /\["ground", "teleport", "aerial"\]\.includes\(approachMode\)/);
 });
