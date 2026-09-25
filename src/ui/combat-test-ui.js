@@ -932,6 +932,230 @@ export async function mountCombatTest({
     return result;
   }
 
+  function renderProgressCharges(progress) {
+    resetAllCharges();
+
+    if (!progress.actionId || !progress.actorId) {
+      return;
+    }
+
+    setCharge({
+      slotId: progress.actorId,
+      value:
+        progress.phase === "preparation"
+          ? progress.chargeProgress
+          : 0,
+      active: progress.phase === "preparation",
+      actionName: progress.actionName,
+      remainingMs: progress.remainingPreparationMs
+    });
+
+    if (progress.reaction?.actorId) {
+      setCharge({
+        slotId: progress.reaction.actorId,
+        value: progress.reaction.progress,
+        active: progress.reaction.remainingPreparationMs > 0,
+        actionName: progress.reaction.actionName,
+        remainingMs: progress.reaction.remainingPreparationMs
+      });
+    }
+  }
+
+  function maybeStartOpponentReaction(progress) {
+    if (
+      progress.actionType !== "skill" ||
+      progress.actorId !== "player" ||
+      progress.targetId !== "opponent" ||
+      progress.reaction ||
+      !runtime.activeAction
+    ) {
+      return false;
+    }
+
+    const rosterState = roster.snapshot();
+    if (!rosterState.opponent.activeMemberId) {
+      return false;
+    }
+
+    const decision = opponentAi.chooseReaction({
+      action: runtime.activeAction,
+      previewReaction(reactionSkill) {
+        return runtime.previewReaction(reactionSkill);
+      }
+    });
+
+    if (decision.kind !== "reaction") {
+      return false;
+    }
+
+    const result = runtime.react(decision.skill);
+    if (!result.ok) {
+      return false;
+    }
+
+    setStatus(
+      `${activeDisplayName("opponent")} réagit : ${decision.skill.name}.`,
+      "accent"
+    );
+    return true;
+  }
+
+  function runOpponentTurn() {
+    if (
+      disposed ||
+      koTransitionPending ||
+      runtime.hasActiveAction
+    ) {
+      return null;
+    }
+
+    const rosterState = roster.snapshot();
+    if (
+      !rosterState.opponent.activeMemberId ||
+      !rosterState.player.activeMemberId
+    ) {
+      opponentTurnPending = false;
+      render();
+      return null;
+    }
+
+    opponentTurnPending = true;
+    renderAvailability();
+    renderMovement(session.snapshot());
+
+    let movementActionsUsed = 0;
+
+    while (!runtime.hasActiveAction) {
+      const decision = opponentAi.chooseAction({
+        currentDistance: session.snapshot().distance,
+        previewSkill(skill) {
+          return session.previewSkill({
+            actorId: "opponent",
+            targetId: "player",
+            skill
+          });
+        },
+        previewMovement(toDistance) {
+          return session.previewMovement(
+            "opponent",
+            toDistance
+          );
+        },
+        movementActionsUsed
+      });
+
+      if (decision.kind === "move") {
+        const moved = session.move(
+          "opponent",
+          decision.toDistance
+        );
+        if (!moved.ok) {
+          break;
+        }
+
+        distancePresenter.presentMovement({
+          result: moved,
+          actorSlot: "opponent"
+        });
+        movementActionsUsed += 1;
+        setStatus(
+          `${activeDisplayName("opponent")} se place à distance ${DISTANCE_LABELS[moved.state.distance]}.`,
+          "info"
+        );
+        render(moved.state);
+        continue;
+      }
+
+      if (decision.kind === "skill") {
+        const started = runtime.startSkill({
+          actorId: "opponent",
+          targetId: "player",
+          skill: decision.skill
+        });
+
+        if (!started.ok) {
+          break;
+        }
+
+        opponentAi.confirm(decision);
+        setStatus(
+          `${activeDisplayName("opponent")} prépare ${decision.skill.name}…`,
+          "accent"
+        );
+        render();
+        return started;
+      }
+
+      break;
+    }
+
+    opponentTurnPending = false;
+    setStatus(
+      `${activeDisplayName("opponent")} attend une ouverture.`,
+      "info"
+    );
+    render();
+    return null;
+  }
+
+  async function handleSkillResolution(resolution) {
+    const actorSlot = resolution.actorId;
+    const targetSlot = resolution.targetId;
+
+    if (
+      !["player", "opponent"].includes(actorSlot) ||
+      !["player", "opponent"].includes(targetSlot)
+    ) {
+      throw new RangeError("skill resolution must expose combat slot ids");
+    }
+
+    const presentation = presenter.presentOutcome({
+      resolution,
+      actorSlot: resolution.actorId,
+      targetSlot: resolution.targetId
+    });
+
+    if (presentation.ko && presentation.koActorId) {
+      setStatus(
+        presentation.koActorId === "opponent"
+          ? "Adversaire KO… remplacement en cours."
+          : "Votre monstre est KO… remplacement en cours.",
+        "accent"
+      );
+      await replaceKnockedOutSlot(
+        presentation.koActorId,
+        presentation
+      );
+    } else {
+      await presentation.finished;
+      if (disposed) {
+        return;
+      }
+
+      const actorName = activeDisplayName(actorSlot);
+      setStatus(
+        actorSlot === "player"
+          ? `${resolution.outcome === "hit" ? "Impact réussi" : OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`
+          : `${actorName} : ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
+        resolution.outcome === "hit" ? "ok" : "info"
+      );
+    }
+
+    if (disposed) {
+      return;
+    }
+
+    renderRoster();
+    render(session.snapshot());
+
+    if (actorSlot === "player") {
+      runOpponentTurn();
+    } else {
+      opponentTurnPending = false;
+      render();
+    }
+  }
+
   const runtime = createCombatRuntime({
     session,
     onState(state) {
