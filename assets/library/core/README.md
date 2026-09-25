@@ -64,3 +64,22 @@ Elle reste une ressource de production et n'est pas une clé métier.
 - aucun binding Combat Runtime n'est ajouté ici ;
 - `SkillDefinition` reste inchangé ;
 - aucun Asset Catalog runtime n'est implémenté par ce lot.
+
+
+## Pack sprite — Fireball 01
+
+- Type : `sprite`
+- Catégorie : `skill / projectile`
+- Emplacement : `sprites/skills/fireball/`
+- Format : WebP transparent
+- Structure : 6 bandes de séquences contenant 44 frames de 256×256
+- Séquences : cast (6), travel_lr (8), travel_rl (8), travel_dr (8), travel_dl (8), impact (6)
+- Manifeste documentaire : `sprites/skills/fireball/sprite_skill_fireball_sequences_01.json`
+- Direction graphique : Capture / cartoon, cohérente avec la banque d’icônes
+- Auteur / origine : direction GenSrpG / Sylvain, génération originale pour le projet avec OpenAI
+- Statut d’utilisation : asset créé pour le projet ; aucune ressource d’un jeu commercial n’a été extraite
+- Raccord runtime : aucun dans ce chantier
+
+### Règle d’utilisation future
+
+La couche de présentation choisira la séquence de trajet selon la position écran attaquant/cible. Les sprites ne portent aucune règle de dégâts, portée ou timing gameplay.
