@@ -60,7 +60,7 @@ h1 {
 
 .arena {
   position: relative;
-  min-height: min(49svh, 29rem);
+  min-height: min(54svh, 32rem);
   overflow: hidden;
   border: 1px solid rgba(137, 223, 240, 0.2);
   border-radius: 1rem;
@@ -331,7 +331,7 @@ button.reserve-card {
 
 .distance-buttons {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.34rem;
 }
 
@@ -348,6 +348,40 @@ button.reserve-card {
 
 .distance-buttons button:disabled {
   opacity: 0.4;
+}
+
+.skill-bar {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.skill-bar__title {
+  color: #b9d7df;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.skill-bar__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+
+.skill-bar__grid .action-option {
+  min-height: 4.35rem;
+  padding: 0.38rem 0.4rem;
+  touch-action: manipulation;
+}
+
+.skill-bar__grid .action-option strong {
+  font-size: 0.68rem;
+}
+
+.skill-bar__grid .action-option span,
+.skill-bar__grid .action-option small {
+  font-size: 0.5rem;
 }
 
 .action-bar {
@@ -410,6 +444,12 @@ button.reserve-card {
 .action-menu:nth-child(3) .action-menu__panel {
   left: auto;
   right: 0;
+}
+
+.action-bar--utility .action-menu:nth-child(2) .action-menu__panel {
+  left: auto;
+  right: 0;
+  transform: none;
 }
 
 .action-option {
@@ -485,7 +525,7 @@ button.reserve-card {
   }
 
   .arena {
-    min-height: 44svh;
+    min-height: 49svh;
   }
 
   .fighter--player {
@@ -505,13 +545,19 @@ button.reserve-card {
   }
 }
 
+@media (max-width: 520px) {
+  .skill-bar__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 430px) {
   .game__header {
     min-height: 2.25rem;
   }
 
   .arena {
-    min-height: 42svh;
+    min-height: 46svh;
   }
 
   .fighter__caption {
