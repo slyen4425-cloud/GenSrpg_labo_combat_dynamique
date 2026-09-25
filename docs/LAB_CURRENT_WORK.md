@@ -1782,6 +1782,77 @@ Validation utilisateur restante :
 
 Le lot est GREEN technique, en attente de validation visuelle smartphone.
 
+
+## Chantier actif — impact-mobility-ko-ui-v6
+
+Base GREEN :
+
+`c8ca895f64d69d8b6a4bc615e05b26a066a3fd58`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-impact-mobility-ko-ui-v6-2026-09-25`
+
+Branche :
+
+`work/lab-impact-mobility-ko-ui-v6-2026-09-25`
+
+Retour utilisateur ciblé :
+
+- le KO adverse n'entraîne pas encore le remplacement visible attendu ;
+- l'attaque aérienne doit monter nettement plus haut, jusqu'à pouvoir sortir temporairement du cadre supérieur avant de piquer ;
+- l'arène peut être encore un peu plus haute ;
+- les attaques corps à corps doivent utiliser un temps d'approche configurable par compétence ;
+- exemples attendus :
+  - Griffe : approche relativement lente, environ 1,5 s ;
+  - Sprint : approche plus rapide, par exemple 0,9 s ou 0,5 s si configuré ;
+- la barre de charge principale doit être plus grande et afficher :
+  - nom de l'action en préparation ;
+  - temps restant ;
+  - progression ;
+- aucun timing ne doit être dupliqué dans l'UI.
+
+Architecture / propriétaires :
+
+- `SkillDefinition.travelMs` reste l'autorité gameplay sur release -> impact ;
+- `approachMode=ground` doit utiliser ce `travelMs` pour le déplacement visuel jusqu'à la cible ;
+- `approachMode=aerial` utilise le même `travelMs` pour montée/reposition/piqué jusqu'à impact ;
+- `approachMode=teleport` utilise le même `travelMs` pour disparition/réapparition à impact ;
+- l'Animation Core consomme `travelMs`, il ne l'invente pas ;
+- les dégâts restent appliqués uniquement par Action Resolver à `impactAtMs` ;
+- `Roster Session` reste seul propriétaire du remplacement après KO ;
+- le Presenter expose l'achèvement réel Hit/KO, aucune attente magique UI ;
+- la Demo UI affiche nom/temps restant à partir des snapshots du Combat Runtime.
+
+Diagnostic obligatoire KO :
+
+- vérifier l'événement `hit` réel et son `hpAfter` ;
+- vérifier la détection KO dans le Presenter ;
+- vérifier l'attente de la promesse Hit -> KO ;
+- vérifier `Roster Session.replaceKnockedOut("opponent")` ;
+- vérifier le remplacement Combat Session + asset `opponent` ;
+- corriger la première frontière fautive, pas ajouter de fallback concurrent.
+
+Tests :
+
+- Griffe : HP inchangés pendant les 1,5 s d'approche, dégâts à impact ;
+- une compétence ground peut choisir 0,5 s / 0,9 s / 1,5 s sans changer le moteur ;
+- animation ground atteint la cible à `travelMs` puis revient ;
+- aérien monte au-dessus du cadre avant piqué ;
+- teleport/aerial/ground utilisent la géométrie réelle cible ;
+- KO adverse : Hit -> KO -> remplacement roster -> changement asset ;
+- arène augmentée sans masquer le HUD ;
+- barre de charge principale plus grande ;
+- nom action + temps restant proviennent du Runtime ;
+- sentinelles existantes intactes.
+
+Hors périmètre :
+
+- IA adverse complète ;
+- nouveau moteur de dégâts ;
+- intégration GenSrpG principal ;
+- génération/modification d'images.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
