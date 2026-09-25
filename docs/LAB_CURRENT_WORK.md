@@ -2703,6 +2703,29 @@ Statut :
 - GREEN technique ;
 - validation smartphone du rendu de perspective toujours requise avant checkpoint GREEN final V8.
 
+
+## Retour smartphone V8 — portraits de roster mal positionnés
+
+Capture utilisateur analysée :
+
+- positions et échelles de distance validées ;
+- les portraits roster sont visibles mais flottent encore sur les coins des cartes PV ;
+- l'état initial de charge affiche encore visuellement `Prêt` + une barre vide avant la première action.
+
+Diagnostic :
+
+- les réserves sont positionnées absolument indépendamment des cartes de combattant ;
+- leur position peut donc chevaucher une carte dont la hauteur varie ;
+- le HTML initial ne déclare pas explicitement `data-active="false"` sur les surfaces de charge.
+
+Correction autorisée :
+
+- rattacher chaque mini-roster à l'en-tête de sa carte de combattant ;
+- conserver les mêmes hooks `data-roster-reserve` et le même propriétaire Roster Session ;
+- rendre l'état de charge initial explicitement inactif ;
+- aucune modification des distances X/Y/scale validées ;
+- aucun changement gameplay.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
