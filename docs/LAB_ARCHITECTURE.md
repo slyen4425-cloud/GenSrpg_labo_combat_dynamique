@@ -472,11 +472,35 @@ Propriétaires :
 - `combat-state.js` : snapshot énergie/temps/effets ;
 - `combat-timing.js` : formules pures de tick et charge ;
 - `combat-session.js` : mutation contrôlée du snapshot ;
-- `combat-runtime.js` : horloge active et action en cours ;
+- `combat-runtime.js` : horloge active et au plus une action en cours par acteur ;
 - `dom-distance-presenter.js` : déplacement visuel d'un seul combattant ;
 - Demo UI : affichage des progressions fournies par le runtime.
 
 Un timer de match optionnel pourra être ajouté plus tard au Combat Runtime ou à un service de temps voisin, jamais dans les boutons UI.
+
+#### Concurrence d'actions V9
+
+Le temps réel n'est plus modélisé par une action globale unique.
+
+`Combat Runtime` possède une collection d'actions indexées par `actorId` avec les invariants suivants :
+
+- un acteur ne possède jamais plus d'une action active ;
+- deux acteurs différents peuvent agir simultanément ;
+- toutes les actions utilisent la même horloge Runtime ;
+- chaque action conserve son propre `startedAtClockMs`, release, impact et réaction ;
+- les releases / impacts arrivés dans un même tick sont triés par timestamp absolu puis ordre déterministe ;
+- `Combat Session.completeAction()` reçoit toujours l'état courant au moment réel de l'impact, donc une seconde résolution ne réapplique jamais un ancien snapshot ;
+- `hasActiveActionFor(actorId)` est l'autorité de disponibilité locale ;
+- `hasActiveAction` signifie seulement « au moins une action existe » et ne doit plus verrouiller toutes les compétences du combat.
+
+Règle initiale :
+
+- un Hit normal n'interrompt pas automatiquement l'action concurrente ;
+- un effet explicitement interruptif reste propriétaire de l'interruption ;
+- un KO annule les actions encore actives du slot KO ainsi que les actions encore ciblées sur ce slot avant remplacement roster, afin qu'aucune action de l'ancien membre ne puisse affecter le nouveau.
+
+La Demo UI peut donc autoriser une compétence joueur pendant une compétence adverse, mais elle ne crée ni horloge, ni résolution, ni ordre d'impact.
+
 
 
 ### PV / HP dans Combat State
