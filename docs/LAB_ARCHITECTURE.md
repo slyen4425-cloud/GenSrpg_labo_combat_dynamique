@@ -562,6 +562,39 @@ Les réactions peuvent déclarer :
 
 Une esquive n'est valide que si sa préparation est terminée au plus tard avant l'impact.
 
+#### Esquive par mobilité concurrente V9
+
+Une compétence offensive mobile peut elle-même créer une fenêtre d'esquive, sans passer par une réaction séparée.
+
+Configuration dans `SkillDefinition` :
+
+```js
+evasion: {
+  window: "travel",
+  incomingForms: ["contact", "projectile"]
+}
+```
+
+Responsabilités :
+
+- SkillDefinition / data : déclare la fenêtre et les formes entrantes évitées ;
+- Combat Runtime : fournit uniquement l'action concurrente de la cible et son temps relatif au timestamp exact de l'impact entrant ;
+- Action Resolver : décide si cette configuration produit `evaded` ;
+- Presenter : affiche le résultat déjà décidé ;
+- Animation / FX : n'ont aucune autorité sur l'esquive.
+
+Fenêtre `travel` :
+
+- avant `releaseAtMs` : la cible reste touchable ;
+- de `releaseAtMs` à `impactAtMs` inclus : la cible peut être hors cible pour les formes configurées ;
+- après résolution de l'action mobile : cette esquive cesse ;
+- le retour purement visuel après impact ne prolonge pas la règle gameplay.
+
+Exemple :
+
+`Griffe en approche -> cible lance Téléportation -> impact Griffe pendant travel Téléportation -> evaded -> 0 PV retiré`.
+
+
 
 ### Commandes tactiques et interruption V3
 
