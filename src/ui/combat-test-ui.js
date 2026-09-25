@@ -1,8 +1,10 @@
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
+import { normalizeOpponentAiPolicy } from "../contracts/opponent-ai-policy.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createRosterSession } from "../core/combat/roster-session.js";
+import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
@@ -40,6 +42,28 @@ const DATA_URLS = Object.freeze({
       import.meta.url
     )
   }),
+  reactions: Object.freeze({
+    dodge: new URL(
+      "../../data/combat/skills/dodge.skill.json",
+      import.meta.url
+    ),
+    mirrorShield: new URL(
+      "../../data/combat/skills/mirror-shield.skill.json",
+      import.meta.url
+    ),
+    fireImmunity: new URL(
+      "../../data/combat/skills/fire-immunity.skill.json",
+      import.meta.url
+    ),
+    contactCounter: new URL(
+      "../../data/combat/skills/contact-counter.skill.json",
+      import.meta.url
+    )
+  }),
+  aiPolicy: new URL(
+    "../../data/combat/ai/linear-opponent.policy.json",
+    import.meta.url
+  ),
   commands: Object.freeze({
     item: new URL(
       "../../data/combat/commands/item.command.json",
@@ -185,6 +209,11 @@ export async function mountCombatTest({
     clawRaw,
     aerialDiveRaw,
     teleportStrikeRaw,
+    dodgeRaw,
+    mirrorShieldRaw,
+    fireImmunityRaw,
+    contactCounterRaw,
+    aiPolicyRaw,
     itemRaw,
     recallRaw,
     summonRaw
@@ -196,6 +225,11 @@ export async function mountCombatTest({
     fetchJson(DATA_URLS.skills.claw, fetchImpl),
     fetchJson(DATA_URLS.skills.aerialDive, fetchImpl),
     fetchJson(DATA_URLS.skills.teleportStrike, fetchImpl),
+    fetchJson(DATA_URLS.reactions.dodge, fetchImpl),
+    fetchJson(DATA_URLS.reactions.mirrorShield, fetchImpl),
+    fetchJson(DATA_URLS.reactions.fireImmunity, fetchImpl),
+    fetchJson(DATA_URLS.reactions.contactCounter, fetchImpl),
+    fetchJson(DATA_URLS.aiPolicy, fetchImpl),
     fetchJson(DATA_URLS.commands.item, fetchImpl),
     fetchJson(DATA_URLS.commands.recall, fetchImpl),
     fetchJson(DATA_URLS.commands.summon, fetchImpl)
@@ -207,6 +241,28 @@ export async function mountCombatTest({
     normalizeSkillDefinition(aerialDiveRaw),
     normalizeSkillDefinition(teleportStrikeRaw)
   ]);
+
+  const offensiveSkillsById = Object.freeze(
+    Object.fromEntries(
+      skills.map((skill) => [skill.id, skill])
+    )
+  );
+
+  const reactionSkills = Object.freeze([
+    normalizeSkillDefinition(dodgeRaw),
+    normalizeSkillDefinition(mirrorShieldRaw),
+    normalizeSkillDefinition(fireImmunityRaw),
+    normalizeSkillDefinition(contactCounterRaw)
+  ]);
+
+  const reactionSkillsById = Object.freeze(
+    Object.fromEntries(
+      reactionSkills.map((skill) => [skill.id, skill])
+    )
+  );
+
+  const opponentAiPolicy =
+    normalizeOpponentAiPolicy(aiPolicyRaw);
 
   const commands = Object.freeze({
     item: normalizeCombatCommandDefinition(itemRaw),
