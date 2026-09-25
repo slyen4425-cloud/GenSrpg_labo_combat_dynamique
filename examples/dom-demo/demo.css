@@ -385,6 +385,59 @@ button.reserve-card {
   filter: blur(2px);
 }
 
+
+@keyframes skill-fx-strip {
+  from {
+    background-position: 0% 0%;
+  }
+
+  to {
+    background-position: 100% 0%;
+  }
+}
+
+.skill-fx--sprite {
+  width: clamp(2.9rem, 7.5vw, 5rem);
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  image-rendering: auto;
+}
+
+.skill-fx--sprite::after {
+  display: none;
+}
+
+.skill-fx--impact {
+  z-index: 10;
+  width: clamp(4rem, 11vw, 7rem);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
+.action-option__icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+  filter: drop-shadow(0 0.18rem 0.24rem rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+
+.action-option--skill.action-option--with-icon strong {
+  position: absolute;
+  right: 0.14rem;
+  bottom: 0.12rem;
+  left: 0.14rem;
+  z-index: 2;
+  padding: 0.08rem 0.1rem;
+  border-radius: 0.28rem;
+  background: rgba(4, 15, 20, 0.68);
+  text-shadow: 0 0.06rem 0.16rem rgba(0, 0, 0, 0.8);
+}
+
 .combat-controls {
   position: absolute;
   z-index: 15;
