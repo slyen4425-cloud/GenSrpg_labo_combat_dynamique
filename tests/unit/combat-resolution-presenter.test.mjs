@@ -14,6 +14,15 @@ function createHarness() {
       calls.push(["play", slot, event]);
       return Promise.resolve({ status: "finished" });
     },
+    playApproachFor(slot, approachMode, options) {
+      calls.push([
+        "approach",
+        slot,
+        approachMode,
+        options?.travelMs
+      ]);
+      return Promise.resolve({ status: "finished" });
+    },
     cancelFor(slot) {
       calls.push(["cancel", slot]);
     }
@@ -172,4 +181,65 @@ test("dispose clears pending presentation timers", () => {
   h.presenter.dispose();
   assert.equal(h.presenter.pendingCount, 0);
   assert.equal(h.queue.length, 0);
+});
+
+
+test("special live release delegates aerial and teleport motion to visual controller", () => {
+  const teleport = createHarness();
+  teleport.presenter.presentRelease({
+    action: {
+      travelMs: 120,
+      skill: {
+        form: "contact",
+        approachMode: "teleport",
+        element: null
+      }
+    }
+  });
+
+  assert.deepEqual(teleport.calls, [
+    ["approach", "player", "teleport", 120]
+  ]);
+
+  const aerial = createHarness();
+  aerial.presenter.presentRelease({
+    action: {
+      travelMs: 850,
+      skill: {
+        form: "contact",
+        approachMode: "aerial",
+        element: null
+      }
+    }
+  });
+
+  assert.deepEqual(aerial.calls, [
+    ["approach", "player", "aerial", 850]
+  ]);
+});
+
+test("KO presentation chains hit then KO and exposes real completion", async () => {
+  const h = createHarness();
+  const result = h.presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      outcome: "hit",
+      events: [
+        {
+          type: "hit",
+          actorId: "opponent",
+          hpBefore: 20,
+          hpAfter: 0
+        }
+      ]
+    }
+  });
+
+  assert.equal(result.ko, true);
+  await result.finished;
+
+  assert.deepEqual(h.calls, [
+    ["play", "opponent", "hit"],
+    ["play", "opponent", "ko"]
+  ]);
 });
