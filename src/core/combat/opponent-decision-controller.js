@@ -162,7 +162,8 @@ export function createOpponentDecisionController({
   function chooseAction({
     currentDistance,
     previewSkill,
-    previewMovement
+    previewMovement,
+    movementActionsUsed = 0
   }) {
     if (typeof previewSkill !== "function") {
       throw new TypeError("previewSkill must be a function");
@@ -187,7 +188,8 @@ export function createOpponentDecisionController({
 
     if (
       desiredPreview?.outcome === "out_of_range" &&
-      normalizedPolicy.maxMovementActionsPerTurn > 0
+      Number(movementActionsUsed) <
+        normalizedPolicy.maxMovementActionsPerTurn
     ) {
       for (const toDistance of desired.skill.allowedDistances) {
         if (toDistance === currentDistance) {
