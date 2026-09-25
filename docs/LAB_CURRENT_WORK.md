@@ -5470,3 +5470,88 @@ Statut :
 - aucune fusion sur `main` ;
 - validation smartphone requise pour confirmer que les deux Boules de feu disparaissent bien visuellement à leur rencontre ;
 - aucun checkpoint GREEN final avant cette validation.
+
+
+## Chantier actif — approach-perspective-v9
+
+Date : 2026-09-25
+
+Base exacte :
+
+`4f12d3742ee23cebe37ed8587e9a42f3b77389e6`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-approach-perspective-v9-2026-09-25`
+
+Branche :
+
+`work/lab-approach-perspective-v9-2026-09-25`
+
+Retour utilisateur :
+
+- la perspective doit rester identique pour toutes les approches spatiales ;
+- quand le joueur attaque vers l'adversaire, l'attaquant s'éloigne de la caméra et doit rétrécir ;
+- quand l'adversaire attaque vers le joueur, l'attaquant se rapproche de la caméra et doit grossir ;
+- l'attaque aérienne montre actuellement le comportement inverse / incohérent ;
+- les autres approches doivent être auditées pour le même défaut.
+
+Diagnostic avant code :
+
+- `ground-attack` possède déjà une correction de profondeur basée sur `targetTranslateY / arenaHeight` ;
+- `aerial-attack` utilise encore des scales fixes indépendants de la profondeur ;
+- `teleport-attack` utilise également des scales fixes à l'apparition cible ;
+- ces deux approches ne suivent donc pas la règle de perspective déjà validée pour `ground-attack`.
+
+Objectif :
+
+- centraliser le calcul de perspective des approches spatiales ;
+- appliquer le même sens caméra à `ground`, `aerial` et `teleport` ;
+- joueur -> profondeur : scale < 1 ;
+- adversaire -> caméra : scale > 1 ;
+- conserver tous les timings / impacts / dégâts inchangés.
+
+Propriétaire :
+
+- Animation Core pour le calcul de transform visuel ;
+- Creature Profile pour les bornes / intensité visuelles de perspective.
+
+Fichiers autorisés :
+
+- `src/core/animation/plan-animation.js` ;
+- `data/profiles/drake.profile.json` ;
+- `data/profiles/serpentine.profile.json` ;
+- `tests/unit/special-attack-animation.test.mjs` ;
+- documentation laboratoire si nécessaire.
+
+Domaines protégés :
+
+- SkillDefinition ;
+- Combat Rules ;
+- Action Resolver ;
+- Combat Runtime ;
+- dégâts / énergie / portée / timings ;
+- projectile clash ;
+- Boule de feu / assets / anchors / FX ;
+- Roster Session ;
+- Demo UI ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+Tests prévus :
+
+- ground conserve le comportement actuel ;
+- aerial rétrécit vers la profondeur et grossit vers la caméra ;
+- teleport rétrécit vers la profondeur et grossit vers la caméra ;
+- les bornes configurées restent respectées ;
+- `travelMs` et le timestamp d'impact restent inchangés ;
+- retour à l'échelle 1 au home ;
+- CI complète verte.
+
+Critère de fin :
+
+- une seule règle de perspective partagée par les approches spatiales ;
+- aucun calcul spécifique joueur/adversaire codé en dur ;
+- le signe provient uniquement de la géométrie réelle `targetTranslateY` ;
+- preview smartphone fournie ;
+- aucun checkpoint GREEN final avant validation visuelle explicite.
