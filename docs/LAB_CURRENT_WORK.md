@@ -5248,3 +5248,135 @@ Important :
 - une nouvelle demande gameplay est apparue séparément : deux projectiles compatibles qui se rencontrent devraient pouvoir s'annuler mutuellement ;
 - cette règle ne sera pas ajoutée dans le chantier visuel ;
 - elle doit partir d'un nouveau checkpoint / nouvelle branche avec configuration éditable dans `SkillDefinition`.
+
+
+## Chantier actif — projectile-clash-v9
+
+Date : 2026-09-25
+
+Base exacte :
+
+`966d1742c7c0f9ccbf0f66cc5095d189efcd2758`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-projectile-clash-v9-2026-09-25`
+
+Branche :
+
+`work/lab-projectile-clash-v9-2026-09-25`
+
+Retour utilisateur :
+
+- deux Boules de feu peuvent être lancées simultanément ;
+- lorsqu'elles se rencontrent en vol, elles doivent pouvoir s'annuler mutuellement ;
+- cette règle doit être **éditable / data-driven comme le reste**, jamais codée en dur pour `fireball`.
+
+Objectif :
+
+- ajouter une règle générique de clash entre projectiles concurrents ;
+- conserver Combat Runtime comme horloge unique ;
+- conserver Combat Rules comme autorité du résultat ;
+- faire disparaître les deux projectiles au moment du clash ;
+- aucune des deux compétences annulées ne doit infliger ses dégâts à la cible ;
+- rendre le comportement configurable dans `SkillDefinition`.
+
+Contrat gameplay retenu pour ce premier jalon :
+
+`projectileClash` :
+
+- `mode` :
+  - `none` — comportement par défaut ;
+  - `mutual_cancel` — le projectile peut s'annuler avec un projectile compatible ;
+- `group` :
+  - identifiant éditable de compatibilité ;
+  - un clash `mutual_cancel` n'est possible que si les deux projectiles portent le même groupe non vide.
+
+Exemple Boule de feu laboratoire :
+
+```json
+"projectileClash": {
+  "mode": "mutual_cancel",
+  "group": "fire-orb"
+}
+```
+
+Le moteur ne connaît jamais le nom `fireball`.
+
+Règle temporelle :
+
+- seuls deux skills de forme `projectile` mutuellement ciblés sont candidats ;
+- les deux doivent être réellement en phase de trajet ;
+- le point / temps de rencontre est calculé depuis leurs vrais timestamps de release et leurs vrais `travelMs` ;
+- aucune durée de collision supplémentaire n'est inventée ;
+- si le temps calculé se situe hors de la fenêtre de trajet commune, aucun clash ;
+- à l'instant de rencontre :
+  - les deux actions deviennent `clashed` ;
+  - aucun hit / dégât ;
+  - leurs projectiles visuels actifs sont annulés ;
+  - les autres actions concurrentes restent inchangées.
+
+Propriétaires :
+
+- `SkillDefinition` + data : configuration éditable du clash ;
+- Combat Rules / helper projectile clash : compatibilité et calcul pur du temps de rencontre ;
+- `Combat Runtime` : programmation de l'événement de clash sur l'horloge existante ;
+- Presenter / FX Renderer : arrêt visuel des projectiles déjà décidés comme `clashed` ;
+- Demo UI : libellé seulement.
+
+Fichiers autorisés :
+
+- `src/contracts/skill-definition.js` ;
+- `data/combat/skills/fireball.skill.json` ;
+- nouveau helper sous `src/core/combat/` si nécessaire ;
+- `src/core/combat/combat-runtime.js` ;
+- `src/adapters/renderer/combat-resolution-presenter.js` ;
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `src/ui/combat-test-ui.js` pour le libellé uniquement ;
+- tests unitaires / intégration correspondants ;
+- documentation laboratoire.
+
+Domaines protégés :
+
+- formule de dégâts ;
+- coût énergie ;
+- portée ;
+- préparation / trajet / récupération des compétences ;
+- Action Resolver hors besoin démontré ;
+- Animation Core ;
+- Roster Session ;
+- anchors / cast / impact Boule de feu validés ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+Tests prévus :
+
+- SkillDefinition : défaut `none` ;
+- validation de `mutual_cancel` + `group` ;
+- configuration invalide rejetée ;
+- deux projectiles même groupe, trajectoires opposées et fenêtres qui se croisent -> clash ;
+- groupes différents -> aucun clash ;
+- mode `none` -> aucun clash ;
+- rencontre simultanée Boule de feu / Boule de feu -> zéro dégât des deux côtés ;
+- rencontre décalée -> temps de collision calculé depuis les vrais timings ;
+- projectile qui a déjà impacté avant le point de rencontre -> aucun clash ;
+- deux projectiles visuels annulés au clash sans `cancelAll()` global ;
+- aucune animation / FX ne décide du résultat ;
+- CI complète verte.
+
+Risques :
+
+- annuler visuellement trop de FX avec une méthode globale ;
+- résoudre le clash après un impact qui aurait déjà eu lieu ;
+- coder un cas spécial sur l'id `fireball` ;
+- recalculer une seconde horloge dans le renderer ;
+- faire dépendre la collision de la position DOM au lieu des timings gameplay.
+
+Critère de fin :
+
+- vrai chemin data -> SkillDefinition -> Combat Rules -> Combat Runtime -> résolution `clashed` -> Presenter -> arrêt des deux projectiles ;
+- aucune perte de PV pour les deux projectiles annulés ;
+- comportement entièrement éditable dans les données skill ;
+- CI verte ;
+- preview smartphone ;
+- aucun checkpoint GREEN final avant validation utilisateur.
