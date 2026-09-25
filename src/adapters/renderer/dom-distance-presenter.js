@@ -1,13 +1,13 @@
-const POSITION_BY_SLOT_AND_DISTANCE = Object.freeze({
+const ANCHOR_BY_SLOT_AND_DISTANCE = Object.freeze({
   player: Object.freeze({
-    long: 0.18,
-    medium: 0.28,
-    short: 0.42
+    long: Object.freeze({ x: 0.16, y: 0.72 }),
+    medium: Object.freeze({ x: 0.28, y: 0.64 }),
+    short: Object.freeze({ x: 0.39, y: 0.56 })
   }),
   opponent: Object.freeze({
-    short: 0.58,
-    medium: 0.72,
-    long: 0.82
+    short: Object.freeze({ x: 0.61, y: 0.40 }),
+    medium: Object.freeze({ x: 0.72, y: 0.32 }),
+    long: Object.freeze({ x: 0.84, y: 0.24 })
   })
 });
 
@@ -17,12 +17,18 @@ const SCALE_BY_DISTANCE = Object.freeze({
   long: 0.90
 });
 
-function positionFor(slot, distance) {
-  const position = POSITION_BY_SLOT_AND_DISTANCE[slot]?.[distance];
-  if (!Number.isFinite(position)) {
-    throw new RangeError(`Unsupported visual slot/distance: ${slot}/${distance}`);
+function anchorFor(slot, distance) {
+  const anchor = ANCHOR_BY_SLOT_AND_DISTANCE[slot]?.[distance];
+  if (
+    !anchor ||
+    !Number.isFinite(anchor.x) ||
+    !Number.isFinite(anchor.y)
+  ) {
+    throw new RangeError(
+      `Unsupported visual slot/distance: ${slot}/${distance}`
+    );
   }
-  return position;
+  return anchor;
 }
 
 function scaleFor(distance) {
@@ -35,12 +41,14 @@ function scaleFor(distance) {
 
 export function createDomDistancePresenter({ fighters }) {
   if (!fighters?.player?.style || !fighters?.opponent?.style) {
-    throw new TypeError("fighters.player and fighters.opponent with style are required");
+    throw new TypeError(
+      "fighters.player and fighters.opponent with style are required"
+    );
   }
 
-  const positions = {
-    player: positionFor("player", "medium"),
-    opponent: positionFor("opponent", "medium")
+  const anchors = {
+    player: { ...anchorFor("player", "medium") },
+    opponent: { ...anchorFor("opponent", "medium") }
   };
 
   const scales = {
@@ -49,7 +57,10 @@ export function createDomDistancePresenter({ fighters }) {
   };
 
   function apply(slot) {
-    fighters[slot].style.left = `${(positions[slot] * 100).toFixed(2)}%`;
+    fighters[slot].style.left =
+      `${(anchors[slot].x * 100).toFixed(2)}%`;
+    fighters[slot].style.top =
+      `${(anchors[slot].y * 100).toFixed(2)}%`;
     fighters[slot].style.setProperty?.(
       "--distance-scale",
       scales[slot].toFixed(2)
@@ -57,8 +68,8 @@ export function createDomDistancePresenter({ fighters }) {
   }
 
   function reset() {
-    positions.player = positionFor("player", "medium");
-    positions.opponent = positionFor("opponent", "medium");
+    anchors.player = { ...anchorFor("player", "medium") };
+    anchors.opponent = { ...anchorFor("opponent", "medium") };
     scales.player = scaleFor("medium");
     scales.opponent = scaleFor("medium");
     apply("player");
@@ -80,9 +91,12 @@ export function createDomDistancePresenter({ fighters }) {
       throw new Error("movement result has no distance-changed event");
     }
 
-    const otherSlot = actorSlot === "player" ? "opponent" : "player";
+    const otherSlot =
+      actorSlot === "player" ? "opponent" : "player";
 
-    positions[actorSlot] = positionFor(actorSlot, distanceEvent.to);
+    anchors[actorSlot] = {
+      ...anchorFor(actorSlot, distanceEvent.to)
+    };
     scales[actorSlot] = scaleFor(distanceEvent.to);
     apply(actorSlot);
 
@@ -91,10 +105,12 @@ export function createDomDistancePresenter({ fighters }) {
       actorSlot,
       from: distanceEvent.from,
       to: distanceEvent.to,
-      x: positions[actorSlot],
+      x: anchors[actorSlot].x,
+      y: anchors[actorSlot].y,
       scale: scales[actorSlot],
       stationarySlot: otherSlot,
-      stationaryX: positions[otherSlot],
+      stationaryX: anchors[otherSlot].x,
+      stationaryY: anchors[otherSlot].y,
       stationaryScale: scales[otherSlot]
     });
   }
@@ -106,8 +122,10 @@ export function createDomDistancePresenter({ fighters }) {
     reset,
     snapshot() {
       return Object.freeze({
-        player: positions.player,
-        opponent: positions.opponent,
+        player: anchors.player.x,
+        playerY: anchors.player.y,
+        opponent: anchors.opponent.x,
+        opponentY: anchors.opponent.y,
         playerScale: scales.player,
         opponentScale: scales.opponent
       });
