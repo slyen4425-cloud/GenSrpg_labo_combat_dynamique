@@ -68,7 +68,7 @@ export function createCombatResolutionPresenter({
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
-      ["teleport", "aerial"].includes(approachMode) &&
+      ["ground", "teleport", "aerial"].includes(approachMode) &&
       typeof visuals.playApproachFor === "function"
     ) {
       visuals
