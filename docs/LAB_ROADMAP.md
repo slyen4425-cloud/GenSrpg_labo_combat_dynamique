@@ -221,11 +221,18 @@ Pré-requis de raccord identifiés :
 - router Presenter/FX selon l'actorId réel au lieu d'assumer `player -> opponent` ;
 - définir le comportement de KO du joueur lorsque l'adversaire peut infliger les derniers dégâts.
 
-Limite du premier prototype :
+Concurrence V9 :
 
-- `Combat Runtime` reste propriétaire d'une seule action active globale ;
-- le moteur de réactions reste disponible via `runtime.react()`, mais il est désactivé dans la policy de combat normal V9 ;
-- deux attaques autonomes simultanément en charge ne sont pas introduites dans V9.
+- `Combat Runtime` reste l'unique horloge gameplay ;
+- il autorise au maximum une action active par combattant ;
+- joueur et adversaire peuvent donc charger / voyager / impacter en parallèle ;
+- les releases et impacts dus dans un même tick sont triés par timestamp absolu ;
+- le premier impact réel est résolu en premier sur l'état courant ;
+- un simple Hit n'annule pas automatiquement l'autre action ;
+- une interruption explicite ou un KO peut annuler l'action concernée ;
+- au premier jalon, seules les compétences sont concurrentes dans l'UI ;
+- déplacement, Objet, Rappel et Invocation restent globalement verrouillés pendant une action afin de ne pas changer silencieusement cible/distance en vol ;
+- le moteur de réactions reste disponible via `runtime.react()`, mais il est désactivé dans la policy de combat normal V9.
 
 ### Disponibilité future des compétences
 
