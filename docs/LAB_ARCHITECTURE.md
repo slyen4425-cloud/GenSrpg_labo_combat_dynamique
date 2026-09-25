@@ -691,3 +691,66 @@ Aérien :
 Invariant :
 
 **les dégâts restent appliqués par Combat Rules à `impactAtMs`, même si l'animation visuelle continue ensuite pour revenir à sa position stable.**
+
+
+### Approches configurables et HUD de charge V6
+
+Les attaques de contact au sol utilisent désormais le même principe temporel que les projectiles, téléportations et attaques aériennes.
+
+```
+préparation -> release -> approche -> impact -> dégâts -> retour visuel
+```
+
+Le champ gameplay `travelMs` est l'unique autorité sur la durée release -> impact.
+
+Exemple :
+
+- Griffe : `travelMs = 1500` ;
+- un Sprint pourra utiliser `900`, `500` ou toute valeur fournie par les données ;
+- aucune durée n'est recodée dans l'Animation Core ou l'UI.
+
+#### Ground attack
+
+Le Visual Controller mesure la géométrie réelle acteur/cible puis émet `ground-attack`.
+
+L'Animation Core :
+
+- approche la cible pendant exactement `travelMs` ;
+- atteint le point de contact à l'impact ;
+- revient ensuite à l'origine selon le preset visuel du profil.
+
+Le retour n'influence pas le timestamp de dégâts.
+
+#### Aerial attack
+
+Le Visual Controller calcule aussi un offset vertical permettant à la créature de sortir complètement du rectangle de l'arène.
+
+Le preset de profil fournit uniquement la marge de dépassement visuelle.
+
+Séquence :
+
+`montée -> sortie complète de l'arène -> reposition invisible -> piqué -> impact -> retour`
+
+#### KO
+
+`ko` est désormais terminal jusqu'au remplacement roster :
+
+- Hit ;
+- KO ;
+- aucune relance Idle automatique ;
+- `Roster Session.replaceKnockedOut()` ;
+- changement du slot visuel ;
+- Idle du nouveau membre.
+
+#### HUD de charge
+
+Combat Runtime expose dans son snapshot de progression :
+
+- `actionLabel` ;
+- `preparationMs` ;
+- `remainingPreparationMs` ;
+- `travelMs` ;
+- `remainingImpactMs` ;
+- `phaseProgress`.
+
+La Demo UI affiche seulement ces valeurs. Elle ne calcule aucun timer de gameplay.
