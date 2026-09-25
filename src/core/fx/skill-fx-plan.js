@@ -10,6 +10,7 @@ export function planSkillReleaseFx({
   return Object.freeze([
     Object.freeze({
       type: "projectile",
+      skillId: action.skill.id,
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
@@ -41,6 +42,7 @@ export function planSkillFx({
   return Object.freeze([
     Object.freeze({
       type: "projectile",
+      ...(release.skillId ? { skillId: release.skillId } : {}),
       element: release.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
@@ -55,15 +57,30 @@ export function planSkillOutcomeFx({
   resolution,
   targetSlot = "opponent"
 }) {
-  if (!resolution?.ok || resolution.outcome !== "evaded") {
+  if (!resolution?.ok) {
     return Object.freeze([]);
   }
 
-  return Object.freeze([
-    Object.freeze({
-      type: "miss",
-      targetSlot,
-      durationMs: 650
-    })
-  ]);
+  if (resolution.outcome === "evaded") {
+    return Object.freeze([
+      Object.freeze({
+        type: "miss",
+        targetSlot,
+        durationMs: 650
+      })
+    ]);
+  }
+
+  if (resolution.outcome === "hit" && resolution.skillId) {
+    return Object.freeze([
+      Object.freeze({
+        type: "impact",
+        skillId: resolution.skillId,
+        targetSlot,
+        durationMs: 420
+      })
+    ]);
+  }
+
+  return Object.freeze([]);
 }
