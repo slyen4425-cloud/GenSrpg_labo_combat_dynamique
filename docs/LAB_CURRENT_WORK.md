@@ -3505,6 +3505,129 @@ Statut :
 - GREEN technique ;
 - validation smartphone requise avant checkpoint GREEN V9 final.
 
+
+## Sous-lot actif V9 — concurrent-actions-ko-swap
+
+Base technique :
+
+`5332a94188995cd76850de8ee394fba25b227fcc`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-v9-concurrent-actions-ko-swap-2026-09-25`
+
+Branche :
+
+`work/lab-v9-concurrent-actions-ko-swap-2026-09-25`
+
+Retour utilisateur :
+
+- pendant une attaque adverse, le joueur est actuellement complètement figé ;
+- comportement attendu : chaque combattant peut préparer / lancer sa propre action en parallèle si son énergie et les règles le permettent ;
+- exemple cible :
+  - adversaire commence Griffe ;
+  - joueur peut lancer Téléportation pendant cette action ;
+  - chaque action garde sa propre timeline ;
+  - l'impact qui arrive réellement en premier est résolu en premier ;
+- défaut KO séparé :
+  - après le KO, l'ancien visuel peut réapparaître brièvement avant que le remplaçant soit affiché.
+
+Diagnostic prouvé :
+
+1. `Combat Runtime` possède un unique enregistrement `active` global ;
+2. `canStartAction()` refuse toute nouvelle action tant que cet enregistrement existe ;
+3. Demo UI désactive capacités / déplacement / commandes avec `runtime.hasActiveAction`, donc une action adverse bloque le joueur ;
+4. `setCreatureFor()` restaure immédiatement l'opacité du renderer lors d'un remplacement alors que le nouvel asset image peut ne pas être encore rendu ; l'ancien bitmap peut donc apparaître brièvement avant le nouveau.
+
+Objectif micro-lot A — actions concurrentes :
+
+- remplacer l'unique action active par une action active maximum par acteur ;
+- autoriser joueur et adversaire à agir en parallèle ;
+- interdire toujours deux actions simultanées pour le même acteur ;
+- conserver une seule horloge Combat Runtime ;
+- trier release / impact par leur timestamp absolu afin que l'ordre réel soit déterministe ;
+- chaque impact applique les règles sur l'état de combat courant, jamais sur un snapshot ancien ;
+- exposer :
+  - `hasActiveActionFor(actorId)` ;
+  - `activeActionFor(actorId)` ;
+  - `activeActions` ;
+- conserver `hasActiveAction` comme « au moins une action existe » pour compatibilité ;
+- UI joueur ne doit être désactivée que si le joueur lui-même possède une action active ou si une transition KO/roster l'interdit ;
+- IA ne doit être bloquée que par sa propre action active.
+
+Règle de dynamique initiale :
+
+- recevoir un simple `hit` ne supprime pas automatiquement l'action concurrente ;
+- un effet explicitement interruptif reste propriétaire de l'interruption ;
+- un KO annule immédiatement les actions encore actives de ce slot afin qu'aucune action d'un membre mort ne puisse frapper après son remplacement ;
+- les actions ciblant un slot KO sont également annulées avant remplacement afin qu'un ancien projectile ne touche pas la créature de réserve qui vient d'entrer.
+
+Objectif micro-lot B — remplacement KO sans flash de l'ancien visuel :
+
+- conserver le slot KO visuellement disparu ;
+- masquer l'image avant changement de `src` ;
+- ne réafficher l'image qu'une fois le nouvel asset prêt ;
+- ne jamais restaurer l'ancien bitmap visible entre KO et nouveau membre ;
+- Roster Session reste seul propriétaire du choix du remplaçant.
+
+Propriétaires autorisés :
+
+- Combat Runtime : actions temporelles concurrentes et annulation KO ;
+- Combat Session / Action Resolver : inchangés sauf test d'intégration ; ils appliquent déjà les résolutions sur l'état courant ;
+- Opponent Decision Controller : lecture actor-local de l'état Runtime ;
+- Demo UI : disponibilité actor-local et projection des progressions ;
+- Visual Controller / Asset Input : remplacement visuel atomique du slot ;
+- Roster Session : inchangé ;
+- tests + documentation.
+
+Fichiers autorisés :
+
+- `src/core/combat/combat-runtime.js` ;
+- `src/core/combat/opponent-decision-controller.js` ;
+- `src/ui/combat-test-ui.js` ;
+- `src/ui/demo-app.js` ;
+- tests unitaires / intégration correspondants ;
+- documentation laboratoire.
+
+Domaines protégés :
+
+- SkillDefinition et données des compétences ;
+- coûts / dégâts / portée ;
+- positions et scales V8 ;
+- Animation Core / FX Core sauf comportement déjà appelé ;
+- choix du roster ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+Tests prévus :
+
+- joueur et adversaire peuvent avoir chacun une action active simultanément ;
+- une deuxième action du même acteur est refusée ;
+- impact le plus tôt est résolu le premier même si son action a commencé plus tard ;
+- une action concurrente non touchée par un interrupt reste active après l'impact adverse ;
+- un KO annule les actions restantes du slot KO et les actions encore ciblées sur ce slot ;
+- UI ne désactive pas les capacités joueur lorsque seule l'action adverse est active ;
+- IA n'est pas bloquée par une action joueur si l'adversaire est libre ;
+- barres de charge peuvent afficher deux actions simultanément ;
+- remplacement KO n'expose jamais l'ancien asset entre disparition et nouvel asset prêt ;
+- CI complète verte.
+
+Risques :
+
+- ordre de résolution faux lorsque deux impacts tombent dans le même tick ;
+- une progression d'un acteur efface visuellement la barre de charge de l'autre ;
+- une ancienne action survit au remplacement roster ;
+- collision visuelle entre une animation d'attaque et une animation Hit sur le même acteur : ce point doit rester explicitement observé au test mobile et ne doit pas être masqué par une rustine.
+
+Critère de fin :
+
+- CI verte ;
+- vrai test navigateur : attaque adverse en cours + compétence joueur lancée simultanément ;
+- impacts réellement ordonnés par le temps ;
+- pas de verrou global UI ;
+- remplacement KO sans réapparition de l'ancien monstre ;
+- validation smartphone avant GREEN final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
