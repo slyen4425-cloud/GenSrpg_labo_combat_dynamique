@@ -2023,6 +2023,51 @@ Critère de fin :
 
 CI verte + checkpoint GREEN + preview smartphone où Drakon adverse tombe KO puis est remplacé par Marai adverse.
 
+
+## Résultat technique — ko-runtime-true-path-v6
+
+Causes prouvées et corrigées :
+
+1. `resolveSkillCompletion()` renvoie désormais explicitement :
+   - `actionType: "skill"` ;
+   - `skillId` ;
+   ce qui permet au vrai callback `Combat Runtime -> onResolved` de prendre la branche compétence et de déclencher le Presenter Hit/KO ;
+
+2. le test KO d'intégration ne contourne plus le Runtime :
+   - démarrage de la compétence via `Combat Runtime` ;
+   - attente jusqu'à `impactAtMs` ;
+   - vérification de `actionType === "skill"` ;
+   - HP adverse à 0 ;
+   - Presenter Hit -> KO ;
+   - `Roster Session.replaceKnockedOut("opponent")` ;
+   - remplacement réel par Marai adverse ;
+
+3. le contrat `AnimationPlan` possède maintenant une politique explicite `restoreBaseState` ;
+   - Hit/Attaque et autres animations transitoires restaurent toujours l'état normal ;
+   - KO utilise `restoreBaseState: false` ;
+   - le DOM Actor Renderer applique alors réellement le dernier segment du plan au lieu de remettre opacity à 1 ;
+   - l'état KO reste donc invisible jusqu'au remplacement du slot.
+
+Sentinelles ajoutées :
+
+- identité skill conservée par une résolution live Runtime ;
+- vrai flux Runtime -> Presenter -> KO -> Roster ;
+- plan KO déclaré terminal ;
+- renderer conserve l'opacité et la transformation terminales du KO ;
+- animations transitoires continuent de restaurer l'état de base.
+
+CI du HEAD fonctionnel :
+
+- run : `36119322379`
+- conclusion : SUCCESS
+
+Validation smartphone restante :
+
+- réduire Drakon adverse à 0 PV ;
+- vérifier disparition visuelle du Drakon ;
+- vérifier apparition automatique de Marai adverse ;
+- vérifier que le nom, les PV et le visuel correspondent au nouveau membre.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-impact-mobility-ko-ui-v6-green-2026-09-25`
