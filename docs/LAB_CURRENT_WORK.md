@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-25
 
-Phase active : Phase 2B/V6 — Mobilité d’impact, KO réel et HUD de charge lisible.
+Phase active : Phase 2B/V8 — Interface combat plein écran, spatialité et roster compact.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -2832,6 +2832,28 @@ Décision :
 - V8 est déclarée fonctionnellement GREEN ;
 - aucune fusion sur `main` ;
 - le prochain chantier partira exclusivement du checkpoint GREEN V8.
+
+
+## Validation utilisateur finale — V8
+
+Retour smartphone du 2026-09-25 :
+
+- interface plein écran validée ;
+- capacités compactes validées ;
+- hiérarchie visuelle simplifiée validée ;
+- distances joueur Courte / Moyenne / Longue validées ;
+- perspective d'échelle validée ;
+- portraits joueur validés ;
+- portraits adverses restaurés puis validés ;
+- KO / remplacement / feedback d'impact précédemment validés et protégés.
+
+Conclusion :
+
+V8 est fonctionnellement validé sur smartphone et peut devenir la base GREEN du chantier V9 IA adverse.
+
+Checkpoint GREEN final attendu :
+
+`checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
 
 ## Dernier checkpoint GREEN
 
