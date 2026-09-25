@@ -24,10 +24,15 @@ export const SKILL_APPROACH_MODES = Object.freeze([
 
 export const COMBAT_DISTANCES = Object.freeze(["short", "medium", "long"]);
 
+export const SKILL_EVASION_WINDOWS = Object.freeze([
+  "travel"
+]);
+
 const CATEGORY_SET = new Set(SKILL_CATEGORIES);
 const FORM_SET = new Set(SKILL_FORMS);
 const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
 const DISTANCE_SET = new Set(COMBAT_DISTANCES);
+const EVASION_WINDOW_SET = new Set(SKILL_EVASION_WINDOWS);
 
 function nonEmptyString(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -102,6 +107,40 @@ export function normalizeSkillDefinition(input) {
     throw new TypeError("reaction must be an object");
   }
 
+  const evasion = input.evasion ?? {};
+  if (typeof evasion !== "object" || Array.isArray(evasion)) {
+    throw new TypeError("evasion must be an object");
+  }
+
+  const evasionWindow =
+    evasion.window == null
+      ? null
+      : nonEmptyString(evasion.window, "evasion.window");
+
+  if (
+    evasionWindow !== null &&
+    !EVASION_WINDOW_SET.has(evasionWindow)
+  ) {
+    throw new RangeError(
+      `Unsupported evasion.window: ${evasionWindow}`
+    );
+  }
+
+  const evasionIncomingForms = stringArray(
+    evasion.incomingForms,
+    "evasion.incomingForms",
+    FORM_SET
+  );
+
+  if (
+    evasionWindow === null &&
+    evasionIncomingForms.length > 0
+  ) {
+    throw new TypeError(
+      "evasion.window is required when evasion.incomingForms is configured"
+    );
+  }
+
   const effect = input.effect ?? {};
   if (typeof effect !== "object" || Array.isArray(effect)) {
     throw new TypeError("effect must be an object");
@@ -121,6 +160,10 @@ export function normalizeSkillDefinition(input) {
     interruptibleDuringPreparation:
       input.interruptibleDuringPreparation !== false,
     allowedDistances,
+    evasion: Object.freeze({
+      window: evasionWindow,
+      incomingForms: evasionIncomingForms
+    }),
     reaction: Object.freeze({
       blockForms: stringArray(reaction.blockForms, "reaction.blockForms", FORM_SET),
       reflectForms: stringArray(reaction.reflectForms, "reaction.reflectForms", FORM_SET),
