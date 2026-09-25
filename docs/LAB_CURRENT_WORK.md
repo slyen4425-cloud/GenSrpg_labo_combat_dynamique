@@ -2815,9 +2815,27 @@ Statut :
 - GREEN technique ;
 - validation smartphone du mini-roster adverse requise avant clôture V8.
 
+
+## Validation fonctionnelle utilisateur — V8
+
+Validation smartphone reçue le 2026-09-25 :
+
+- HUD plein écran validé ;
+- capacités compactes validées ;
+- portraits joueur validés ;
+- portraits adverses restaurés et validés ;
+- positions Courte / Moyenne / Longue validées ;
+- perspective d'échelle joueur/adversaire validée.
+
+Décision :
+
+- V8 est déclarée fonctionnellement GREEN ;
+- aucune fusion sur `main` ;
+- le prochain chantier partira exclusivement du checkpoint GREEN V8.
+
 ## Dernier checkpoint GREEN
 
-`checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
+`checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
 
 ## Règle de reprise
 
