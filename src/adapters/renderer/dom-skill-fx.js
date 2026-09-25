@@ -16,6 +16,7 @@ export function createDomSkillFxRenderer({
   arena,
   anchors,
   targetAnchors = anchors,
+  missLabel = "RATÉ",
   animate = defaultAnimate
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
@@ -60,7 +61,7 @@ export function createDomSkillFxRenderer({
         finished: Promise.resolve({ status: "disposed" })
       });
     }
-    if (type !== "projectile") {
+    if (!["projectile", "miss"].includes(type)) {
       return Object.freeze({
         status: "ignored",
         finished: Promise.resolve({ status: "ignored" })
@@ -68,6 +69,69 @@ export function createDomSkillFxRenderer({
     }
 
     const arenaRect = arena.getBoundingClientRect();
+
+    if (type === "miss") {
+      const to = centerRelativeTo(
+        anchor(targetAnchors, targetSlot, "target").getBoundingClientRect(),
+        arenaRect
+      );
+
+      const node = arena.ownerDocument.createElement("span");
+      node.className = "skill-fx skill-fx--miss";
+      node.dataset.skillFx = "miss";
+      node.textContent = missLabel;
+      node.style.left = `${to.x}px`;
+      node.style.top = `${to.y}px`;
+      arena.append(node);
+
+      const record = { node, animation: null };
+      active.add(record);
+
+      const animation = animate(
+        node,
+        [
+          {
+            transform: "translate(-50%, -50%) translate3d(0, 0.35rem, 0) scale(0.82)",
+            opacity: 0
+          },
+          {
+            transform: "translate(-50%, -50%) translate3d(0, 0, 0) scale(1)",
+            opacity: 1,
+            offset: 0.18
+          },
+          {
+            transform: "translate(-50%, -50%) translate3d(0, -1.2rem, 0) scale(1.04)",
+            opacity: 0
+          }
+        ],
+        {
+          duration: Math.max(1, Number(durationMs) || 650),
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+
+      record.animation = animation;
+
+      const finished = Promise.resolve(animation.finished)
+        .then(() => {
+          cleanup(record);
+          return { status: "finished" };
+        })
+        .catch((error) => {
+          cleanup(record);
+          if (error?.name === "AbortError") {
+            return { status: "cancelled" };
+          }
+          throw error;
+        });
+
+      return Object.freeze({
+        status: "running",
+        animation,
+        finished
+      });
+    }
     const from = centerRelativeTo(
       anchor(anchors, fromSlot, "source").getBoundingClientRect(),
       arenaRect
