@@ -2726,6 +2726,46 @@ Correction autorisée :
 - aucune modification des distances X/Y/scale validées ;
 - aucun changement gameplay.
 
+
+## Résultat technique — portraits roster intégrés au HUD
+
+Correction appliquée :
+
+- les mini-rosters joueur/adversaire ne flottent plus indépendamment dans l'arène ;
+- chaque mini-roster est maintenant intégré à l'en-tête de sa carte de combattant ;
+- les hooks `data-roster-reserve` sont inchangés : `Roster Session` reste l'unique propriétaire des membres actifs/réserve ;
+- les portraits restent circulaires, compacts et accessibles ;
+- aucun chevauchement possible avec les barres PV/charge dû à une variation de hauteur de carte ;
+- l'état initial de charge est explicitement `data-active="false"`, donc `Prêt` et la barre vide ne sont plus affichés avant une vraie préparation.
+
+Domaines inchangés :
+
+- positions X/Y validées ;
+- courbes de scale validées ;
+- coûts/distance sémantique ;
+- Combat Runtime ;
+- KO/roster ;
+- IA future.
+
+Sentinelles :
+
+- roster adversaire inclus dans l'en-tête HUD adverse ;
+- roster joueur inclus dans l'en-tête HUD joueur ;
+- charge initiale inactive ;
+- réserve en position statique dans la carte ;
+- ancienne sentinelle `z-index 13` supprimée car devenue obsolète.
+
+CI :
+
+- SHA fonctionnel : `a47ef2251637ae393feb9d43adb8581a48a4449e` ;
+- run : `36125018103` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone du placement final des portraits toujours requise avant checkpoint GREEN V8 final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
