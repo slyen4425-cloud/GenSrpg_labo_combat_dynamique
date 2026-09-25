@@ -2313,6 +2313,32 @@ Statut :
 6. Objets et Équipe s'ouvrent sans masquer durablement les capacités ;
 7. les créatures restent visibles et leurs attaques/KO/flash d'impact continuent à fonctionner.
 
+
+## Retour smartphone V8 — compacité des capacités
+
+Validation partielle :
+
+- la direction plein écran est meilleure ;
+- le bloc de capacités est encore trop volumineux et mange trop l'arène.
+
+Référence ergonomique confirmée :
+
+- dans la référence fournie, les capacités sont des touches/icônes compactes alignées ;
+- le laboratoire conserve temporairement le nom de la capacité dans chaque touche ;
+- les métadonnées techniques (forme, élément, charge, trajet) ne doivent plus occuper la surface principale des touches ;
+- le dock de commandes doit rester compact et ancré en bas à droite, y compris sur smartphone.
+
+Correction autorisée dans le même lot V8 non encore GREEN :
+
+- CSS de présentation des capacités et du dock ;
+- sentinelles UI de compacité ;
+- aucune modification du Runtime, des règles, des données de compétence ou des handlers.
+
+Critère visuel supplémentaire :
+
+- quatre capacités immédiatement accessibles avec une empreinte nettement inférieure à la candidate V8 précédente ;
+- davantage d'arène visible derrière et autour du dock.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
