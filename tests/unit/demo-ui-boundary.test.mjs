@@ -117,7 +117,7 @@ test("recall and summon are real roster changes rather than log-only commands", 
 
   assert.match(
     source,
-    /resolution\.commandKind[\s\S]*\["recall", "summon"\]/
+    /\["recall", "summon"\]\.includes\([\s\S]*resolution\.commandKind/
   );
   assert.match(source, /roster\.applyCommandResolution/);
   assert.match(source, /visuals\.setSlotVisible\("player", false\)/);
