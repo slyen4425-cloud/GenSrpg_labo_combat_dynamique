@@ -82,6 +82,19 @@ test("V8 keeps the complete player HUD inside a fullscreen combat arena", async 
   assert.match(css, /\.combat-card--player\s*\{[\s\S]*bottom:/);
 });
 
+test("V8 ability dock stays compact and icon-ready on mobile", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
+  assert.match(css, /\.action-option--skill\s*\{[\s\S]*aspect-ratio:\s*1/);
+  assert.match(css, /\.action-option--skill span,[\s\S]*display:\s*none/);
+  assert.match(css, /@media \(max-width: 680px\)[\s\S]*\.combat-controls\s*\{[\s\S]*width:\s*min\(/);
+  assert.doesNotMatch(
+    css,
+    /@media \(max-width: 680px\)[\s\S]*\.skill-bar__grid\s*\{[\s\S]*repeat\(2/
+  );
+});
+
 test("V8 exposes abilities as permanent game keys while retaining runtime availability", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
