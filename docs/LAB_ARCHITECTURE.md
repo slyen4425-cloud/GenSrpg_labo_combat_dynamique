@@ -691,3 +691,54 @@ Aérien :
 Invariant :
 
 **les dégâts restent appliqués par Combat Rules à `impactAtMs`, même si l'animation visuelle continue ensuite pour revenir à sa position stable.**
+
+
+### V6 — contact au sol, KO terminal et HUD de charge
+
+#### KO terminal
+
+`ko` n'est plus traité comme une animation transitoire.
+
+Le Visual Controller ne relance pas `idle` après un événement `ko`.
+
+Chaîne :
+
+`impact -> HP=0 -> Hit -> KO terminal -> Roster replacement -> nouvel acteur -> idle`
+
+Le nouvel `idle` vient uniquement de `setCreatureFor()` sur le membre remplaçant.
+
+Le Presenter détecte le KO depuis le `hit.hpAfter` résolu par Combat Rules, sans dépendre du nom du slot DOM.
+
+#### Approche contact au sol
+
+`approachMode=ground` possède maintenant un événement visuel dédié :
+
+`ground-attack`
+
+Le temps de trajet est entièrement piloté par `skill.travelMs`.
+
+Exemple :
+
+- Griffe : `travelMs = 1500` ;
+- future compétence Sprint : `travelMs = 900`, `500` ou toute autre valeur de données.
+
+Le Visual Controller mesure la position réelle de la cible et l'Animation Core atteint cette position exactement à `travelMs`.
+
+Les dégâts restent appliqués au même instant par Combat Rules : `impactAtMs = releaseAtMs + travelMs`.
+
+#### Aérien
+
+Le preset aérien autorise volontairement une montée hors des limites visibles de l'arène avant repositionnement et piqué.
+
+La sortie de l'image par le haut est un effet visuel ; elle ne change ni portée ni règles d'impact.
+
+#### HUD de charge
+
+Combat Runtime expose désormais :
+
+- nom de l'action ;
+- temps total de préparation ;
+- temps restant ;
+- progression normalisée.
+
+L'UI affiche ces valeurs sans posséder de timer parallèle.
