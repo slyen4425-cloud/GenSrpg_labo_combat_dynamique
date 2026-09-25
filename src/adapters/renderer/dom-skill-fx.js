@@ -95,6 +95,7 @@ export function createDomSkillFxRenderer({
     type,
     skillId = null,
     element = null,
+    actorSlot = null,
     fromSlot,
     targetSlot,
     durationMs
@@ -105,7 +106,7 @@ export function createDomSkillFxRenderer({
         finished: Promise.resolve({ status: "disposed" })
       });
     }
-    if (!["projectile", "impact", "miss"].includes(type)) {
+    if (!["cast", "projectile", "impact", "miss"].includes(type)) {
       return Object.freeze({
         status: "ignored",
         finished: Promise.resolve({ status: "ignored" })
@@ -116,6 +117,83 @@ export function createDomSkillFxRenderer({
     const presentation = skillId
       ? presentationForSkill(skillId)
       : null;
+
+    if (type === "cast") {
+      const visual = presentation?.cast ?? null;
+      if (!visual?.url) {
+        return Object.freeze({
+          status: "ignored",
+          finished: Promise.resolve({ status: "ignored" })
+        });
+      }
+
+      const sourceSlot = actorSlot ?? fromSlot;
+      const from = centerRelativeTo(
+        anchor(anchors, sourceSlot, "source").getBoundingClientRect(),
+        arenaRect
+      );
+      const node = arena.ownerDocument.createElement("span");
+      const displayScale = Math.min(
+        4,
+        Math.max(0.25, Number(visual.displayScale) || 1)
+      );
+
+      node.className = "skill-fx skill-fx--cast";
+      node.dataset.skillFx = "cast";
+      node.dataset.skillId = skillId ?? "";
+      node.style.left = `${from.x}px`;
+      node.style.top = `${from.y}px`;
+      applySpriteStrip(node, visual, durationMs);
+      arena.append(node);
+
+      const record = { node, animation: null };
+      active.add(record);
+
+      const animation = animate(
+        node,
+        [
+          {
+            transform: `translate(-50%, -50%) scale(${0.7 * displayScale})`,
+            opacity: 0.35
+          },
+          {
+            transform: `translate(-50%, -50%) scale(${1.08 * displayScale})`,
+            opacity: 1,
+            offset: 0.72
+          },
+          {
+            transform: `translate(-50%, -50%) scale(${displayScale})`,
+            opacity: 1
+          }
+        ],
+        {
+          duration: Math.max(1, Number(durationMs) || 1),
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+
+      record.animation = animation;
+
+      const finished = Promise.resolve(animation.finished)
+        .then(() => {
+          cleanup(record);
+          return { status: "finished" };
+        })
+        .catch((error) => {
+          cleanup(record);
+          if (error?.name === "AbortError") {
+            return { status: "cancelled" };
+          }
+          throw error;
+        });
+
+      return Object.freeze({
+        status: "running",
+        animation,
+        finished
+      });
+    }
 
     if (type === "miss") {
       const to = centerRelativeTo(
@@ -275,6 +353,10 @@ export function createDomSkillFxRenderer({
     const travelVisual = presentation?.travel ?? null;
     const deltaX = to.x - from.x;
     const deltaY = to.y - from.y;
+    const travelDisplayScale = Math.min(
+      4,
+      Math.max(0.25, Number(travelVisual?.displayScale) || 1)
+    );
     let spriteBound = false;
 
     if (travelVisual?.url) {
@@ -309,16 +391,16 @@ export function createDomSkillFxRenderer({
     const keyframes = spriteBound
       ? [
           {
-            transform: "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.94)",
+            transform: `translate(-50%, -50%) translate3d(0, 0, 0) scale(${0.94 * travelDisplayScale})`,
             opacity: 0.95
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(1.04)`,
+            transform: `translate(-50%, -50%) translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(${1.04 * travelDisplayScale})`,
             opacity: 1,
             offset: 0.5
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(0.98)`,
+            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(${0.98 * travelDisplayScale})`,
             opacity: 1
           }
         ]
