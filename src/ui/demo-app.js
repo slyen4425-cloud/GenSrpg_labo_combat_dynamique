@@ -350,6 +350,8 @@ function createSlot({
   let actor = null;
   let renderer = null;
   let visible = true;
+  let assetReady = false;
+  let imageLoadToken = 0;
 
   function rebuildActor(asset) {
     renderer?.dispose();
@@ -372,6 +374,30 @@ function createSlot({
     });
   }
 
+  function loadRuntimeAsset(runtimeUrl) {
+    const token = ++imageLoadToken;
+    assetReady = false;
+    image.hidden = true;
+    image.removeAttribute("src");
+
+    const markReady = () => {
+      if (token !== imageLoadToken) {
+        return;
+      }
+      assetReady = true;
+      image.hidden = !visible;
+    };
+
+    image.addEventListener("load", markReady, {
+      once: true
+    });
+    image.src = runtimeUrl;
+
+    if (image.complete && image.naturalWidth > 0) {
+      markReady();
+    }
+  }
+
   function setCreature(nextMeta, displayName = null) {
     if (!profiles.has(nextMeta.profile)) {
       throw new Error(
@@ -392,14 +418,14 @@ function createSlot({
       meta.assetBaseUrl
     ).href;
 
-    image.src = runtimeUrl;
-    image.hidden = false;
+    loadRuntimeAsset(runtimeUrl);
     rebuildActor(runtimeUrl);
   }
 
   function setVisible(nextVisible) {
     visible = Boolean(nextVisible);
     container.hidden = !visible;
+    image.hidden = !visible || !assetReady;
     if (!visible) {
       renderer?.cancel();
     }
