@@ -100,28 +100,67 @@ export function createCombatResolutionPresenter({
     targetSlot = "opponent"
   }) {
     if (disposed) {
-      return Object.freeze({ status: "disposed" });
+      return Object.freeze({
+        status: "disposed",
+        finished: Promise.resolve({ status: "disposed" })
+      });
     }
     if (!resolution?.ok) {
-      return Object.freeze({ status: "rejected" });
+      return Object.freeze({
+        status: "rejected",
+        finished: Promise.resolve({ status: "rejected" })
+      });
     }
 
-    switch (resolution.outcome) {
-      case "hit":
-        visuals.playEventFor(targetSlot, "hit").catch(() => {});
-        break;
+    let ko = false;
+    let finished = Promise.resolve({ status: "presented" });
 
-      case "reflected":
-        visuals.cancelFor(actorSlot);
-        visuals.playEventFor(actorSlot, "hit").catch(() => {});
+    switch (resolution.outcome) {
+      case "hit": {
+        const hitEvent = resolution.events?.find(
+          (item) =>
+            item.type === "hit" &&
+            item.actorId ===
+              (targetSlot === "opponent" ? "opponent" : "player")
+        );
+        ko = hitEvent?.hpAfter === 0;
+
+        finished = visuals
+          .playEventFor(targetSlot, "hit")
+          .then(() =>
+            ko
+              ? visuals.playEventFor(targetSlot, "ko")
+              : { status: "finished" }
+          )
+          .catch(() => ({ status: "cancelled" }));
         break;
+      }
+
+      case "reflected": {
+        const reflectedHit = resolution.events?.find(
+          (item) =>
+            item.type === "hit" &&
+            item.reflected === true
+        );
+        ko = reflectedHit?.hpAfter === 0;
+        visuals.cancelFor(actorSlot);
+        finished = visuals
+          .playEventFor(actorSlot, "hit")
+          .then(() =>
+            ko
+              ? visuals.playEventFor(actorSlot, "ko")
+              : { status: "finished" }
+          )
+          .catch(() => ({ status: "cancelled" }));
+        break;
+      }
 
       case "countered":
         visuals.cancelFor(actorSlot);
-        visuals
+        finished = visuals
           .playEventFor(targetSlot, "attack")
           .then(() => visuals.playEventFor(actorSlot, "hit"))
-          .catch(() => {});
+          .catch(() => ({ status: "cancelled" }));
         break;
 
       case "blocked":
@@ -135,7 +174,9 @@ export function createCombatResolutionPresenter({
 
     return Object.freeze({
       status: "resolved",
-      outcome: resolution.outcome
+      outcome: resolution.outcome,
+      ko,
+      finished
     });
   }
 
