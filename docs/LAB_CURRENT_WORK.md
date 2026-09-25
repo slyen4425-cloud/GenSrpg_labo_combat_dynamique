@@ -2068,6 +2068,80 @@ Validation smartphone restante :
 - vérifier apparition automatique de Marai adverse ;
 - vérifier que le nom, les PV et le visuel correspondent au nouveau membre.
 
+
+## Chantier actif — hit-impact-feedback-v7
+
+Base GREEN :
+
+`07665e46983a1977de8f39c4525ce4b14a343ea5`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-hit-impact-feedback-v7-2026-09-25`
+
+Branche de travail :
+
+`work/lab-hit-impact-feedback-v7-2026-09-25`
+
+Retour utilisateur :
+
+- le recul `hit` existe déjà ;
+- il manque un feedback visuel immédiat au moment où la créature subit l'impact ;
+- objectif demandé : petit clignotement / coloration rouge lisible, en attendant de futurs sprites/FX plus riches.
+
+Objectif :
+
+- ajouter un canal visuel `filter` au contrat `AnimationPlan` ;
+- piloter le flash d'impact depuis le profil de créature, pas depuis l'UI ;
+- appliquer le flash uniquement pendant l'animation `hit` puis restaurer l'apparence normale ;
+- conserver KO, dégâts, timing d'impact, roster et logique de combat inchangés.
+
+Propriétaires autorisés :
+
+- Creature Profile : paramètres du flash `hit` ;
+- Animation Core : segment `hit` avec filter ;
+- Render Adapter DOM : traduction du canal filter vers Web Animations ;
+- tests Animation/Renderer ;
+- documentation.
+
+Fichiers autorisés :
+
+- `data/profiles/*.profile.json` ;
+- `src/core/animation/animation-plan.js` ;
+- `src/core/animation/plan-animation.js` ;
+- `src/adapters/renderer/dom-keyframes.js` ;
+- `src/adapters/renderer/dom-actor-renderer.js` si restauration du canal nécessaire ;
+- tests unitaires correspondants ;
+- documentation laboratoire.
+
+Fonctions protégées :
+
+- aucun changement de `Action Resolver` ;
+- aucun changement de PV/dégâts ;
+- aucun changement de `impactAtMs` ;
+- aucun changement du KO/remplacement ;
+- aucun changement de `Combat Runtime` ;
+- aucun code spécifique GenSrpG/Capture.
+
+Tests prévus :
+
+- le plan `hit` contient un filter d'impact fourni par le profil ;
+- le segment de récupération revient à `filter: none` ;
+- le DOM timeline expose le filter ;
+- le renderer restaure `filter: none` après une animation transitoire ;
+- KO terminal reste fonctionnel ;
+- CI complète verte.
+
+Risque principal :
+
+- laisser un filtre résiduel après Hit ou KO.
+
+Critère de fin :
+
+- CI verte ;
+- checkpoint GREEN ;
+- preview smartphone où une créature touchée affiche un flash rouge bref au moment de l'impact puis revient immédiatement à son rendu normal.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-ko-runtime-true-path-v6-green-2026-09-25`
