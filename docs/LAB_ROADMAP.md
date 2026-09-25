@@ -213,7 +213,12 @@ Premier périmètre retenu :
 4. choix d'une compétence uniquement parmi les skills autorisés par la policy et validés par Combat Session ;
 5. déplacement vers une distance utile uniquement si le budget réel couvre mouvement + compétence ciblée ;
 6. réévaluation d'une IA en attente uniquement depuis les mises à jour du Combat Runtime ;
-7. politique configurable afin de pouvoir tester plusieurs comportements.
+7. politique configurable afin de pouvoir tester plusieurs comportements ;
+8. initiative adverse autonome déclenchée depuis les mises à jour d'état du Combat Runtime, sans attendre une action joueur ;
+9. mobilité évasive data-driven :
+   - une compétence peut déclarer une fenêtre d'esquive pendant son trajet ;
+   - les formes d'attaques entrantes évitées sont configurées dans la compétence ;
+   - Combat Rules décide `evaded` à l'impact réel.
 
 Pré-requis de raccord identifiés :
 
