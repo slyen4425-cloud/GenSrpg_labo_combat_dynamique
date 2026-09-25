@@ -5811,3 +5811,13 @@ Arène forêt :
 - le binaire exact n'est pas encore écrit dans Git parce que l'upload image du chat n'expose actuellement aucun flux de bytes téléchargeable aux outils de dépôt ;
 - aucun faux asset ni substitut n'est créé ;
 - dès que le même fichier est fourni avec un backing téléchargeable, il sera ajouté à ce chemin sans changer l'architecture.
+
+
+Validation technique du lot arènes / UI :
+
+- SHA fonctionnel : `0b6818a9ed3b9336c5ea1cb040cd2e5c54328520` ;
+- CI work : run `36187645047` — SUCCESS ;
+- diff limité à la présentation UI, la documentation et la nouvelle structure d'assets d'arènes ;
+- aucun fichier Combat Rules / Runtime / Action Resolver / compétence gameplay modifié ;
+- aucun asset binaire d'arène substitué tant que le fichier exact fourni dans le chat n'est pas exposé aux outils avec ses octets ;
+- `main` et `Zombicide-40k` inchangés.
