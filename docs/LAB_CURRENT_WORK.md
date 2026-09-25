@@ -2656,6 +2656,53 @@ Interdits :
 - aucun changement des coordonnées X/Y validées ;
 - aucun changement du Combat Runtime ou de l'IA.
 
+
+## Résultat technique — perspective d'échelle V8 corrigée
+
+Clarification utilisateur appliquée :
+
+La perspective est évaluée depuis la caméra joueur.
+
+Courbe joueur :
+
+- longue : `1.08` ;
+- moyenne : `0.98` ;
+- courte : `0.88`.
+
+Donc le joueur est plus gros en bas-gauche et rétrécit en allant vers le centre.
+
+Courbe adversaire :
+
+- longue : `0.88` ;
+- moyenne : `0.98` ;
+- courte : `1.08`.
+
+Donc l'adversaire est petit très loin en haut-droite et grossit lorsqu'il se rapproche du centre / de la caméra joueur.
+
+Implémentation :
+
+- `SCALE_BY_DISTANCE` remplacé par `SCALE_BY_SLOT_AND_DISTANCE` ;
+- les ancrages X/Y validés restent inchangés ;
+- seul le scale du slot qui se déplace change ;
+- aucune règle de distance, coût, runtime ou gameplay modifiée.
+
+Sentinelle ajoutée :
+
+- joueur : `long > medium > short` ;
+- adversaire : `long < medium < short` ;
+- reset moyen : `0.98` pour les deux.
+
+CI :
+
+- SHA fonctionnel : `55005de38860b17ada66a42b0f3b15c3b36072b7` ;
+- run : `36124553487` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone du rendu de perspective toujours requise avant checkpoint GREEN final V8.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
