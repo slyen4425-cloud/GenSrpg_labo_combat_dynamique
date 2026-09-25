@@ -2766,6 +2766,29 @@ Statut :
 - GREEN technique ;
 - validation smartphone du placement final des portraits toujours requise avant checkpoint GREEN V8 final.
 
+
+## Correctif V8 — mini-roster adverse masqué
+
+Retour utilisateur :
+
+- mini-roster joueur validé ;
+- mini-roster adverse absent.
+
+Cause prouvée :
+
+- après l'intégration des portraits dans les en-têtes HUD, une règle CSS incomplète a créé involontairement le groupe :
+  `.reserve--opponent, .reserve__title { display: none; }` ;
+- la réserve adverse entière était donc masquée ;
+- la réserve joueur n'était pas concernée.
+
+Correction autorisée :
+
+- restaurer une règle commune neutre pour `.reserve--opponent, .reserve--player` ;
+- conserver `display: none` uniquement sur `.reserve__title` ;
+- ajouter une sentinelle empêchant `.reserve--opponent` d'être masqué.
+
+Aucun autre comportement V8 ne doit changer.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
