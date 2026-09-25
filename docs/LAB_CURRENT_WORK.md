@@ -5664,5 +5664,7 @@ Correction de données retenue :
 
 Statut :
 
-- micro-lot correctif en validation CI ;
-- aucun checkpoint GREEN final avant nouveau test smartphone.
+- SHA fonctionnel du micro-lot : `e75cc08d5dce04d70f176e4a59f6971d731fa481` ;
+- CI work : run `36184067123` — SUCCESS ;
+- correction toujours en attente de validation visuelle smartphone ;
+- aucun checkpoint GREEN final avant ce nouveau test.
