@@ -268,6 +268,11 @@ export async function mountCombatTest({
     }
   };
 
+  const fighterNameRefs = {
+    player: requiredElement(root, '[data-combat-name="player"]'),
+    opponent: requiredElement(root, '[data-combat-name="opponent"]')
+  };
+
   const chargeRefs = {
     player: {
       bar: requiredElement(
@@ -416,7 +421,8 @@ export async function mountCombatTest({
       const button = createActionButton({
         title: skill.name,
         meta: skillMetaText(skill),
-        timing: skillTimingText(skill)
+        timing: skillTimingText(skill),
+        className: "action-option--skill"
       });
       button.dataset.combatSkill = skill.id;
       skillContainer.append(button);
@@ -570,6 +576,15 @@ export async function mountCombatTest({
 
   function renderRoster() {
     const state = roster.snapshot();
+
+    for (const slotId of ["player", "opponent"]) {
+      const team = state[slotId];
+      const activeMember = team.members.find(
+        (member) => member.id === team.activeMemberId
+      );
+      fighterNameRefs[slotId].textContent =
+        activeMember?.displayName ?? "—";
+    }
 
     playerReserve.replaceChildren(
       ...state.player.members.map((member) =>
