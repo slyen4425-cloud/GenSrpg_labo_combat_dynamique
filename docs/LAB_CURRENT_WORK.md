@@ -3445,6 +3445,66 @@ Tests prévus :
 - `saving` peut être réévalué depuis une mise à jour Runtime sans timer IA ;
 - CI complète verte.
 
+
+## Résultat technique — V9 energy-strategy
+
+Policy active :
+
+- `decisionModes: ["quick", "strong"]` ;
+- `quickSkillIds: ["claw", "aerial-dive"]` ;
+- `strongSkillIds: ["fireball", "teleport-strike"]`.
+
+Règles :
+
+- mode `quick` :
+  - cherche d'abord une compétence rapide compatible avec la distance actuelle ;
+  - vérifie sa vraie légalité via `session.previewSkill()` ;
+  - utilise son vrai `energyCost` depuis `SkillDefinition` ;
+- mode `strong` :
+  - vise une compétence forte compatible avec la distance actuelle ;
+  - si l'énergie est insuffisante, retourne `saving` et ne dépense rien ;
+  - le mode ne change pas tant que la compétence forte n'est pas réellement lancée ;
+- si aucun skill du mode courant n'est utilisable à la distance actuelle :
+  - sélection d'une distance autorisée depuis `skill.allowedDistances` ;
+  - coût du déplacement obtenu depuis `session.previewMovement()` ;
+  - aucun déplacement si `movementCost + skill.energyCost` n'est pas finançable.
+
+Déclenchement énergie :
+
+- Demo UI conserve uniquement l'état `aiWaitingForEnergy` ;
+- une mise à jour `onState` provenant du Combat Runtime peut relancer la décision ;
+- garde `aiDecisionInProgress` contre toute ré-entrée ;
+- aucun `setTimeout` / `setInterval` ajouté à l'IA.
+
+Preuves :
+
+- quick à moyenne avec 2 énergie -> Plongeon aérien ;
+- strong à moyenne avec 2 énergie -> `saving` pour Boule de feu à 3 énergie ;
+- après une recharge réelle de 1 énergie -> Boule de feu démarre ;
+- déplacement Griffe moyen -> court :
+  - énergie 4 -> aucun mouvement, économie ;
+  - énergie 5 -> mouvement coût 3, reste 2 pour Griffe ;
+- le mode avance uniquement après un skill réellement lancé.
+
+Configurabilité :
+
+- la policy classe les skills comme rapides / forts ;
+- les valeurs gameplay restent exclusivement dans les fichiers skill ;
+- futur cooldown documenté comme champ de Skill Definition / Combat State, jamais comme valeur IA cachée.
+
+CI :
+
+- SHA fonctionnel : `5daccdb850696e1887b31c02e077905af975fa25` ;
+- run : `36129830241` ;
+- conclusion : SUCCESS.
+
+Le HEAD documenté `958006ba89c169d7687d754eabca3a05d580b879` conserve la même implémentation fonctionnelle et aligne également la roadmap sur cette architecture.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone requise avant checkpoint GREEN V9 final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
