@@ -221,6 +221,21 @@ test("ground approach perspective uses measured arena geometry rather than gamep
   );
 });
 
+test("V9 saving strategy retries only from Combat Runtime state updates", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /let aiWaitingForEnergy = false/);
+  assert.match(source, /decision\.status === "saving"/);
+  assert.match(
+    source,
+    /onState\(state\)[\s\S]*aiWaitingForEnergy[\s\S]*runOpponentTurn\(\)/
+  );
+  assert.match(source, /!runtime\.hasActiveAction/);
+  assert.match(source, /aiDecisionInProgress/);
+  assert.doesNotMatch(source, /setInterval/);
+  assert.doesNotMatch(source, /setTimeout/);
+});
+
 test("V9 UI delegates opponent decisions and routes skill visuals by real actor slots", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
