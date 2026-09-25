@@ -1015,6 +1015,14 @@ export async function mountCombatTest({
         runOpponentTurn();
       }
     },
+    onStarted({ action }) {
+      if (action.actionType === "skill") {
+        presenter.presentPreparation({
+          action,
+          actorSlot: action.actorId
+        });
+      }
+    },
     onProgress(progress) {
       if (!progress.actionId) {
         if (progress.actorId) {
@@ -1122,6 +1130,9 @@ export async function mountCombatTest({
       render(session.snapshot());
     },
     onInterrupted(result) {
+      presenter.cancelPreparation(
+        result.action?.actorId ?? "player"
+      );
       setCharge({
         slotId: result.action?.actorId ?? "player"
       });
