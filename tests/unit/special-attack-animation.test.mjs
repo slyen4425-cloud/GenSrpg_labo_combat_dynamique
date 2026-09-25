@@ -133,3 +133,63 @@ test("special attack event contract rejects missing positive travel time in plan
     /travelMs/
   );
 });
+
+
+test("ground attack reaches target exactly at configured travel time then returns", () => {
+  const current = actor();
+  const travelMs = 1500;
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: 170,
+        targetTranslateY: -6,
+        travelMs
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.deepEqual(
+    plan.segments.map((segment) => segment.label),
+    ["ground-approach-impact", "ground-home"]
+  );
+  assert.equal(plan.segments[0].durationMs, travelMs);
+  assert.equal(plan.segments[0].transform.translateX, 170);
+  assert.equal(plan.segments[0].transform.translateY, -6);
+  assert.equal(plan.segments.at(-1).transform.translateX, 0);
+  assert.equal(plan.segments.at(-1).transform.translateY, 0);
+});
+
+test("aerial attack can rise completely above arena before diving", () => {
+  const current = actor("drake");
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "aerial-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: 140,
+        targetTranslateY: 10,
+        arenaExitTranslateY: -340,
+        travelMs: 850
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.equal(plan.segments[0].label, "aerial-rise");
+  assert.equal(plan.segments[0].transform.translateY, -340);
+  assert.equal(plan.segments[1].opacity, 0);
+  assert.ok(plan.segments[1].transform.translateY <= -340);
+
+  const impactMs =
+    plan.segments[0].durationMs +
+    plan.segments[1].durationMs +
+    plan.segments[2].durationMs;
+  assert.equal(impactMs, 850);
+});
