@@ -75,6 +75,30 @@ test("serpentine attack planner is deterministic and facing-aware", () => {
   assert.equal(plan.segments.at(-1).transform.translateX, 0);
 });
 
+test("hit planner uses profile-driven impact filter then returns neutral", () => {
+  const actor = normalizeVisualActor({
+    id: "hit-filter",
+    creatureId: "maraileron",
+    profile: "serpentine",
+    asset: "maraileron_player.png",
+    view: "player"
+  });
+
+  const plan = planAnimation({
+    actor,
+    profile: registry.get("serpentine"),
+    event: normalizeCombatVisualEvent({ type: "hit", actorId: actor.id })
+  });
+
+  assert.deepEqual(plan.segments[0].filter, serpentine.hit.filter);
+  assert.deepEqual(plan.segments.at(-1).filter, {
+    brightness: 1,
+    saturate: 1,
+    sepia: 0,
+    hueRotateDeg: 0
+  });
+});
+
 test("opponent facing mirrors horizontal attack direction", () => {
   const actor = normalizeVisualActor({
     id: "braisombre-a",
