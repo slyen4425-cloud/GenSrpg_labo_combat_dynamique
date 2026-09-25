@@ -75,6 +75,7 @@ export async function mountCombatDemo({
   ]);
 
   const profiles = createProfileRegistry([serpentine, drake]);
+  const arena = requiredElement(root, "[data-combat-arena]");
   const creatureMetas = new Map([
     [maraileron.id, maraileron],
     [braisombre.id, braisombre]
@@ -166,7 +167,11 @@ export async function mountCombatDemo({
       const handle = slot.renderer.play(plan);
 
       return handle.finished.then((result) => {
-        if (!disposed && type !== "idle" && slot.visible) {
+        const returnToIdle =
+          type !== "idle" &&
+          type !== "ko";
+
+        if (!disposed && returnToIdle && slot.visible) {
           startIdleFor(slotKey);
         }
         return result;
@@ -185,7 +190,7 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "disposed" });
     }
 
-    if (!["teleport", "aerial"].includes(approachMode)) {
+    if (!["ground", "teleport", "aerial"].includes(approachMode)) {
       return playEventFor(slotKey, "attack");
     }
 
@@ -197,24 +202,36 @@ export async function mountCombatDemo({
 
     const actorRect = slot.motion.getBoundingClientRect();
     const targetRect = target.motion.getBoundingClientRect();
+    const arenaRect = arena.getBoundingClientRect();
 
     const actorCenterX = actorRect.left + actorRect.width / 2;
     const actorCenterY = actorRect.top + actorRect.height / 2;
     const targetCenterX = targetRect.left + targetRect.width / 2;
     const targetCenterY = targetRect.top + targetRect.height / 2;
+    const profile = profiles.get(slot.actor.profile);
+    const aerialOvershoot =
+      profile.specialMoves?.aerial?.exitOvershootPx ?? 0;
+    const arenaExitTranslateY =
+      arenaRect.top - actorRect.bottom - aerialOvershoot;
 
     const event = normalizeCombatVisualEvent({
       type:
-        approachMode === "teleport"
-          ? "teleport-attack"
-          : "aerial-attack",
+        approachMode === "ground"
+          ? "ground-attack"
+          : approachMode === "teleport"
+            ? "teleport-attack"
+            : "aerial-attack",
       actorId: slot.actor.id,
       targetId: target.actor.id,
       intensity: 1,
       metadata: {
         targetTranslateX: targetCenterX - actorCenterX,
         targetTranslateY: targetCenterY - actorCenterY,
-        travelMs
+        travelMs,
+        arenaExitTranslateY:
+          approachMode === "aerial"
+            ? arenaExitTranslateY
+            : null
       }
     });
 
