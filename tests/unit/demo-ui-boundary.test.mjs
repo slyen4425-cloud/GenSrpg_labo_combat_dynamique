@@ -96,6 +96,29 @@ test("V8 simplified HUD removes decorative clutter and collapses idle-only surfa
   assert.match(css, /\.action-bar--utility\s*\{[\s\S]*grid-template-rows:\s*repeat\(2/);
 });
 
+test("V8 roster portraits live inside fighter card headers and charge starts hidden", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(
+    html,
+    /combat-card--opponent[\s\S]*combat-card__title[\s\S]*data-roster-reserve="opponent"/
+  );
+  assert.match(
+    html,
+    /combat-card--player[\s\S]*combat-card__title[\s\S]*data-roster-reserve="player"/
+  );
+  assert.match(
+    html,
+    /data-combat-charge-name="player"[\s\S]*data-active="false"/
+  );
+  assert.match(
+    html,
+    /data-combat-charge-name="opponent"[\s\S]*data-active="false"/
+  );
+  assert.match(css, /\.reserve\s*\{[\s\S]*position:\s*static/);
+});
+
 test("V8 reserve portraits stay above HUD cards and fighters use top-based spatial anchors", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
