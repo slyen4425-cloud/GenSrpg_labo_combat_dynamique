@@ -209,7 +209,7 @@ test("V9 UI delegates opponent decisions and routes skill visuals by real actor 
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
   assert.match(source, /createOpponentDecisionController/);
-  assert.match(source, /opponentAi\.maybeReactToActiveAction\(\)/);
+  assert.match(source, /opponentAi\?\.maybeReactToActiveAction\(\)/);
   assert.match(source, /opponentAi\.takeTurn\(\)/);
   assert.match(source, /actorSlot:\s*resolution\.actorId/);
   assert.match(source, /targetSlot:\s*resolution\.targetId/);
