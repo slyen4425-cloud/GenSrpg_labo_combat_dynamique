@@ -15,6 +15,7 @@ function centerRelativeTo(rect, arenaRect) {
 export function createDomSkillFxRenderer({
   arena,
   anchors,
+  targetAnchors = anchors,
   animate = defaultAnimate
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
@@ -23,14 +24,17 @@ export function createDomSkillFxRenderer({
   if (!anchors || typeof anchors !== "object") {
     throw new TypeError("anchors are required");
   }
+  if (!targetAnchors || typeof targetAnchors !== "object") {
+    throw new TypeError("targetAnchors are required");
+  }
 
   let disposed = false;
   const active = new Set();
 
-  function anchor(slot) {
-    const element = anchors[slot];
+  function anchor(collection, slot, label) {
+    const element = collection[slot];
     if (!element || typeof element.getBoundingClientRect !== "function") {
-      throw new RangeError(`Unknown FX anchor: ${slot}`);
+      throw new RangeError(`Unknown FX ${label} anchor: ${slot}`);
     }
     return element;
   }
@@ -64,8 +68,14 @@ export function createDomSkillFxRenderer({
     }
 
     const arenaRect = arena.getBoundingClientRect();
-    const from = centerRelativeTo(anchor(fromSlot).getBoundingClientRect(), arenaRect);
-    const to = centerRelativeTo(anchor(targetSlot).getBoundingClientRect(), arenaRect);
+    const from = centerRelativeTo(
+      anchor(anchors, fromSlot, "source").getBoundingClientRect(),
+      arenaRect
+    );
+    const to = centerRelativeTo(
+      anchor(targetAnchors, targetSlot, "target").getBoundingClientRect(),
+      arenaRect
+    );
 
     const node = arena.ownerDocument.createElement("span");
     node.className = "skill-fx skill-fx--projectile";
