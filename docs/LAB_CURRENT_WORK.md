@@ -3354,6 +3354,97 @@ Statut :
 - GREEN technique ;
 - validation smartphone requise dans la prochaine preview combinée V9.
 
+
+## Sous-lot actif V9 — energy-strategy
+
+Base :
+
+`b64c037fecb6e89e3b270850847e1fd5b16661cc`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-v9-energy-strategy-2026-09-25`
+
+Branche :
+
+`work/lab-v9-energy-strategy-2026-09-25`
+
+Retour utilisateur :
+
+- l'IA normale est désormais plus cohérente mais reste trop passive ;
+- comportement attendu :
+  - attaquer avec une compétence rapide si l'énergie le permet ;
+  - sinon pouvoir économiser pour une compétence plus forte ;
+- les futurs cooldowns doivent être configurés sur les skills et non codés dans l'IA.
+
+Diagnostic :
+
+- Drakon commence à 0 énergie et recharge 1 énergie toutes les 2 s ;
+- son déplacement coûte 3 énergie par palier ;
+- l'ancien cycle pouvait donc dépenser toute l'énergie en mouvement avant même une attaque ;
+- le contrôleur ne distinguait pas « attaque rapide » et « économie pour attaque forte ».
+
+Objectif :
+
+- ajouter une stratégie énergie data-driven à la policy IA ;
+- ne jamais dupliquer les coûts/dégâts/timings des compétences dans la policy ;
+- alterner des décisions `quick` / `strong` configurables ;
+- `quick` :
+  - choisir parmi une liste de skills rapides configurée dans la policy ;
+  - utiliser la première compétence légale et finançable à la distance actuelle ;
+- `strong` :
+  - choisir parmi une liste de skills forts configurée dans la policy ;
+  - si la meilleure compétence légale n'est pas finançable, attendre et conserver l'énergie ;
+- si un déplacement est nécessaire :
+  - calculer le coût réel via `session.previewMovement()` ;
+  - ne déplacer que si l'énergie couvre mouvement + coût du skill ciblé ;
+- aucune valeur de coût, dommage, temps ou cooldown du skill dans le code IA.
+
+Policy prévue :
+
+- `decisionModes: ["quick", "strong"]` ;
+- `quickSkillIds: ["claw", "aerial-dive"]` ;
+- `strongSkillIds: ["fireball", "teleport-strike"]`.
+
+Déclenchement temps réel :
+
+- si l'IA répond `saving`, le Demo UI attend une future mise à jour d'état issue du Combat Runtime ;
+- quand l'énergie augmente et que Runtime est libre, la décision est réévaluée ;
+- aucun `setTimeout` / `setInterval` IA ajouté.
+
+Fichiers autorisés :
+
+- policy IA ;
+- contrat policy ;
+- Opponent Decision Controller ;
+- Demo UI uniquement pour réessayer une décision `saving` sur `onState` ;
+- tests unitaires / intégration ;
+- documentation.
+
+Domaines protégés :
+
+- Skill Definition existante hors futur cooldown séparé ;
+- dégâts ;
+- Combat Runtime comme horloge ;
+- Animation Core ;
+- FX ;
+- V8 spatialité ;
+- HUD structure ;
+- `main` ;
+- `Zombicide-40k`.
+
+Tests prévus :
+
+- policy stratégie énergie normalisée ;
+- quick utilise un skill rapide abordable ;
+- strong attend si énergie insuffisante ;
+- strong attaque dès énergie suffisante ;
+- déplacement refusé si mouvement + skill non financés ;
+- déplacement autorisé si budget complet disponible ;
+- mode avance uniquement après un skill effectivement lancé ;
+- `saving` peut être réévalué depuis une mise à jour Runtime sans timer IA ;
+- CI complète verte.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
