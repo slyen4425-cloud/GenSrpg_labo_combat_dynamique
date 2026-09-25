@@ -1853,6 +1853,94 @@ Hors périmètre :
 - intégration GenSrpG principal ;
 - génération/modification d'images.
 
+
+## Résultat technique — impact-mobility-ko-ui-v6
+
+Corrections implémentées :
+
+### Corps à corps configurable
+
+- nouvel événement visuel `ground-attack` ;
+- `approachMode=ground` utilise désormais le vrai `travelMs` de la compétence ;
+- Griffe : `travelMs = 1500 ms` ;
+- le contact visuel avec la cible se produit exactement à la fin de ces 1,5 s ;
+- les dégâts restent appliqués uniquement à cet impact ;
+- le retour à la position d'origine est purement visuel ;
+- tests avec `travelMs = 500 / 900 / 1500 ms` démontrent que le moteur reste entièrement configurable.
+
+### Aérien
+
+- l'arène est mesurée au moment de l'attaque ;
+- le Visual Controller calcule une translation suffisante pour faire sortir l'acteur au-dessus du cadre ;
+- l'Animation Core utilise la montée la plus haute entre le preset et cette sortie réelle ;
+- montée / disparition / repositionnement haut / piqué / impact / retour ;
+- impact toujours aligné sur `travelMs`.
+
+### KO
+
+Cause renforcée :
+
+- l'ancien contrôleur visuel redémarrait un idle après toute animation transitoire, y compris après `ko` ;
+- ce comportement annulait visuellement l'état vaincu juste avant le remplacement.
+
+Correction :
+
+- `ko` ne redémarre plus l'idle du membre vaincu ;
+- opacity KO finale = 0 ;
+- Presenter dérive le KO directement de l'événement `hit` et expose `koActorId` ;
+- l'UI ne déclenche le remplacement adverse que pour `koActorId === "opponent"` ;
+- Roster Session reste le seul propriétaire du remplacement ;
+- vrai test d'intégration ajouté :
+  `damage -> hp 0 -> Hit -> KO -> presentation.finished -> replaceKnockedOut -> nouveau fighter opponent`.
+
+### Barre de charge
+
+Combat Runtime expose maintenant :
+
+- `actionName` ;
+- `preparationMs` ;
+- `remainingPreparationMs` ;
+- progression de charge.
+
+UI :
+
+- barre principale agrandie à `0.56rem` ;
+- nom de l'action affiché au-dessus ;
+- temps restant affiché en secondes ;
+- aucune horloge UI, aucun `setInterval`, aucun `Date.now()` de gameplay.
+
+### Surface de combat
+
+- desktop/tablette : `min(59svh, 35rem)` ;
+- mobile <= 680 px : `54svh` ;
+- petit mobile <= 430 px : `51svh`.
+
+Sentinelles V6 :
+
+- timing ground configurable 0,5 / 0,9 / 1,5 s ;
+- Griffe sans dégâts avant impact 2,7 s total (1,2 s charge + 1,5 s approche) ;
+- ground atteint la géométrie cible exactement à `travelMs` ;
+- aerial peut sortir réellement du cadre ;
+- KO ne revient pas à idle ;
+- KO actor identity protégée ;
+- vrai flux KO/remplacement protégé en intégration ;
+- nom action + temps restant fournis par Runtime ;
+- barre charge et arène agrandies protégées ;
+- frontières Core / UI / Renderer intactes.
+
+CI technique avant documentation :
+
+- run : `36117658014`
+- conclusion : SUCCESS
+
+Validation smartphone restante :
+
+- Griffe doit prendre environ 1,5 s pour parcourir le terrain après la charge ;
+- Plongeon aérien doit sortir franchement du haut du cadre avant le piqué ;
+- KO adverse doit disparaître puis être remplacé par Marai adverse ;
+- nom + compte à rebours de la charge doivent être immédiatement lisibles ;
+- confirmer que l'arène plus haute reste confortable avec les boutons.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
