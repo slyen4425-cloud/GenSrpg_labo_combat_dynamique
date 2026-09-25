@@ -81,6 +81,7 @@ export async function mountCombatDemo({
   ]);
 
   let disposed = false;
+  const arena = requiredElement(root, "[data-combat-arena]");
 
   const slots = {
     player: createSlot({
@@ -166,7 +167,11 @@ export async function mountCombatDemo({
       const handle = slot.renderer.play(plan);
 
       return handle.finished.then((result) => {
-        if (!disposed && type !== "idle" && slot.visible) {
+        if (
+          !disposed &&
+          !["idle", "ko"].includes(type) &&
+          slot.visible
+        ) {
           startIdleFor(slotKey);
         }
         return result;
@@ -185,7 +190,7 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "disposed" });
     }
 
-    if (!["teleport", "aerial"].includes(approachMode)) {
+    if (!["ground", "teleport", "aerial"].includes(approachMode)) {
       return playEventFor(slotKey, "attack");
     }
 
@@ -197,23 +202,32 @@ export async function mountCombatDemo({
 
     const actorRect = slot.motion.getBoundingClientRect();
     const targetRect = target.motion.getBoundingClientRect();
+    const arenaRect = arena.getBoundingClientRect();
 
     const actorCenterX = actorRect.left + actorRect.width / 2;
     const actorCenterY = actorRect.top + actorRect.height / 2;
     const targetCenterX = targetRect.left + targetRect.width / 2;
     const targetCenterY = targetRect.top + targetRect.height / 2;
 
-    const event = normalizeCombatVisualEvent({
-      type:
-        approachMode === "teleport"
+    const visualType =
+      approachMode === "ground"
+        ? "ground-attack"
+        : approachMode === "teleport"
           ? "teleport-attack"
-          : "aerial-attack",
+          : "aerial-attack";
+
+    const arenaExitTranslateY =
+      -(actorRect.bottom - arenaRect.top + 24);
+
+    const event = normalizeCombatVisualEvent({
+      type: visualType,
       actorId: slot.actor.id,
       targetId: target.actor.id,
       intensity: 1,
       metadata: {
         targetTranslateX: targetCenterX - actorCenterX,
         targetTranslateY: targetCenterY - actorCenterY,
+        arenaExitTranslateY,
         travelMs
       }
     });
