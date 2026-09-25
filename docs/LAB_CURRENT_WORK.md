@@ -4,9 +4,9 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## État global
 
-Date : 2026-09-24
+Date : 2026-09-25
 
-Phase active : Phase 2B/V3 — Impact réel, esquive, commandes tactiques et interruption de charge.
+Phase active : Phase 2B/V6 — Mobilité d’impact, KO réel et HUD de charge lisible.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -1960,7 +1960,7 @@ Validation smartphone restante :
 
 ## Dernier checkpoint GREEN
 
-`checkpoint/lab-mono-image-animation-core-green-2026-09-24`
+`checkpoint/lab-impact-mobility-ko-ui-v6-green-2026-09-25`
 
 ## Règle de reprise
 
