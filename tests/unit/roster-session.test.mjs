@@ -150,3 +150,70 @@ test("completed recall and summon command resolutions delegate to roster owner",
   assert.equal(summonResult.outcome, "summoned");
   assert.equal(summonResult.memberId, "player-drakon");
 });
+
+
+test("KO opponent is replaced automatically from reserve and defeated snapshot is kept", () => {
+  const { session, roster } = createHarness();
+
+  session.replaceFighter("opponent", {
+    ...session.snapshot().fighters.opponent,
+    initialHp: 0,
+    initialEnergy: 2
+  });
+
+  const result = roster.replaceKnockedOut("opponent");
+
+  assert.equal(result.ok, true);
+  assert.equal(result.outcome, "ko_replaced");
+  assert.equal(result.defeatedMemberId, "opponent-drakon");
+  assert.equal(result.replacementMemberId, "opponent-marai");
+  assert.equal(result.creatureId, "maraileron");
+
+  const rosterState = roster.snapshot();
+  assert.equal(rosterState.opponent.activeMemberId, "opponent-marai");
+
+  const defeated = rosterState.opponent.members.find(
+    (member) => member.id === "opponent-drakon"
+  );
+  assert.equal(defeated.hp, 0);
+  assert.equal(defeated.energy, 2);
+
+  const active = session.snapshot().fighters.opponent;
+  assert.equal(active.hp, maraileron.initialHp);
+  assert.equal(
+    active.movementEnergyPerStep,
+    maraileron.movementEnergyPerStep
+  );
+});
+
+test("KO replacement returns team_defeated when no living reserve remains", () => {
+  const { session, roster } = createHarness();
+
+  roster.recall("opponent");
+  roster.selectReserve("opponent", "opponent-marai");
+  roster.summon("opponent");
+
+  session.replaceFighter("opponent", {
+    ...session.snapshot().fighters.opponent,
+    initialHp: 0
+  });
+  roster.replaceKnockedOut("opponent");
+
+  const restoredDrakon = roster.snapshot().opponent.members.find(
+    (member) => member.id === "opponent-drakon"
+  );
+  assert.equal(restoredDrakon.hp, 90);
+
+  roster.recall("opponent");
+  roster.selectReserve("opponent", "opponent-drakon");
+  roster.summon("opponent");
+  session.replaceFighter("opponent", {
+    ...session.snapshot().fighters.opponent,
+    initialHp: 0
+  });
+
+  const result = roster.replaceKnockedOut("opponent");
+  assert.equal(result.ok, true);
+  assert.equal(result.outcome, "team_defeated");
+  assert.equal(roster.snapshot().opponent.activeMemberId, null);
+});
