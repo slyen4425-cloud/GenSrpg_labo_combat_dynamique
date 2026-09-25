@@ -42,6 +42,17 @@ export function createDomActorRenderer({
     element.style.opacity = "1";
   }
 
+  function applyFinalPlanState(plan) {
+    const finalSegment = plan.segments.at(-1);
+    element.style.transform = composeDomTransform(
+      actor,
+      finalSegment?.transform
+    );
+    element.style.transformOrigin =
+      `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
+    element.style.opacity = String(finalSegment?.opacity ?? 1);
+  }
+
   function cancel({ restore = true } = {}) {
     sequence += 1;
     if (active?.animation && typeof active.animation.cancel === "function") {
@@ -62,7 +73,11 @@ export function createDomActorRenderer({
       .then(() => {
         if (!disposed && active?.token === token) {
           active = null;
-          restoreBaseState();
+          if (plan.restoreBaseState) {
+            restoreBaseState();
+          } else {
+            applyFinalPlanState(plan);
+          }
         }
         return { status: "finished", plan };
       })
