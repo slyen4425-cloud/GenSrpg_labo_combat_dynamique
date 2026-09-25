@@ -166,7 +166,11 @@ export async function mountCombatDemo({
       const handle = slot.renderer.play(plan);
 
       return handle.finished.then((result) => {
-        if (!disposed && type !== "idle" && slot.visible) {
+        if (
+          !disposed &&
+          !["idle", "ko"].includes(type) &&
+          slot.visible
+        ) {
           startIdleFor(slotKey);
         }
         return result;
@@ -185,7 +189,7 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "disposed" });
     }
 
-    if (!["teleport", "aerial"].includes(approachMode)) {
+    if (!["ground", "teleport", "aerial"].includes(approachMode)) {
       return playEventFor(slotKey, "attack");
     }
 
@@ -203,11 +207,15 @@ export async function mountCombatDemo({
     const targetCenterX = targetRect.left + targetRect.width / 2;
     const targetCenterY = targetRect.top + targetRect.height / 2;
 
-    const event = normalizeCombatVisualEvent({
-      type:
-        approachMode === "teleport"
+    const eventType =
+      approachMode === "ground"
+        ? "ground-attack"
+        : approachMode === "teleport"
           ? "teleport-attack"
-          : "aerial-attack",
+          : "aerial-attack";
+
+    const event = normalizeCombatVisualEvent({
+      type: eventType,
       actorId: slot.actor.id,
       targetId: target.actor.id,
       intensity: 1,
