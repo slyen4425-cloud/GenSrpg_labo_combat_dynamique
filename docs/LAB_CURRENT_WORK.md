@@ -1958,6 +1958,71 @@ Validation smartphone restante :
 - nom + compte à rebours de la charge doivent être immédiatement lisibles ;
 - confirmer que l'arène plus haute reste confortable avec les boutons.
 
+
+## Correctif actif — ko-runtime-true-path-v6
+
+Base GREEN :
+
+`a5da1af255ca9ccf5aeda10e402fc2c855337897`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-ko-runtime-true-path-v6-2026-09-25`
+
+Branche :
+
+`work/lab-ko-runtime-true-path-v6-2026-09-25`
+
+Retour utilisateur reproduit :
+
+- les PV adverses atteignent bien 0 dans l'interface réelle ;
+- aucune animation KO ne reste visible ;
+- aucun remplacement automatique du monstre adverse n'est observé.
+
+Diagnostic démontré :
+
+1. `resolveSkillCompletion()` ne renvoie pas `actionType: "skill"`, alors que `resolveCommandCompletion()` renvoie explicitement `actionType: "command"`;
+2. le vrai `Combat Runtime` transmet cette résolution à l'UI ;
+3. `Combat Test UI.onResolved()` branche sur `resolution.actionType === "skill"`;
+4. une compétence live est donc classée à tort comme une commande, ce qui court-circuite le Presenter Hit -> KO et le raccord roster ;
+5. le test d'intégration KO précédent appelait directement le Presenter et ne couvrait pas ce raccord Runtime réel ;
+6. indépendamment, le DOM Actor Renderer restaure toujours l'état de base après toute animation terminée, ce qui remet l'opacité KO à 1 même si le plan KO termine à 0.
+
+Objectif :
+
+- réparer le contrat de résolution skill à la source ;
+- protéger le vrai chemin `Combat Runtime -> onResolved -> Presenter -> KO -> Roster Session`;
+- préserver visuellement l'état terminal KO jusqu'au remplacement du slot ;
+- ne toucher ni aux dégâts, ni au timing d'impact, ni au choix du remplaçant.
+
+Propriétaires autorisés :
+
+- Action Resolver : contrat de résolution skill ;
+- DOM Actor Renderer / Animation Plan : politique explicite de restauration terminale ;
+- tests Runtime/UI/Renderer/KO ;
+- documentation de reprise.
+
+Interdits :
+
+- aucun `if hp === 0` ajouté dans les boutons UI ;
+- aucun second système de remplacement ;
+- aucun timer KO parallèle ;
+- aucun changement de dégâts ou de `impactAtMs`;
+- aucun changement dans `Zombicide-40k`.
+
+Tests exigés :
+
+- une résolution live skill expose `actionType: "skill"`;
+- le Runtime appelle la branche skill réelle à l'impact ;
+- HP adverses 0 -> Presenter détecte KO -> Hit -> KO -> roster replacement ;
+- un plan KO peut conserver son état final sans restauration automatique à opacity 1 ;
+- les animations non terminales continuent de restaurer l'état de base ;
+- sentinelles V6 complètes vertes.
+
+Critère de fin :
+
+CI verte + checkpoint GREEN + preview smartphone où Drakon adverse tombe KO puis est remplacé par Marai adverse.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-impact-mobility-ko-ui-v6-green-2026-09-25`
