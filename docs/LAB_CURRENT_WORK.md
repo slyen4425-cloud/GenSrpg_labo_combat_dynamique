@@ -3954,6 +3954,91 @@ Statut :
 - documentation synchronisée ;
 - validation smartphone obligatoire avant checkpoint GREEN final V9.
 
+
+## Sous-lot actif V9 — projectile-target-evasion-feedback
+
+Base technique :
+
+`a61e96c0e2d691088a7f999cb3c0c6f43a5debda`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-v9-projectile-target-evasion-feedback-2026-09-25`
+
+Branche :
+
+`work/lab-v9-projectile-target-evasion-feedback-2026-09-25`
+
+Retour utilisateur :
+
+- lorsque la cible exécute une mobilité aérienne, la Boule de feu adverse vise visuellement la créature en l'air ;
+- pour la Boule de feu classique du prototype, ce comportement n'est pas souhaité ;
+- une future capacité spéciale de projectile suiveur / anti-aérien pourra en revanche exploiter volontairement ce type de ciblage ;
+- l'utilisateur a du mal à confirmer visuellement si une esquive enlève réellement 0 PV.
+
+Diagnostic :
+
+1. `dom-skill-fx.js` calcule actuellement la destination du projectile depuis le même anchor animé `[data-demo-motion]` utilisé pour les mouvements transitoires ;
+2. une cible en Plongeon / Téléportation déplace donc physiquement cet anchor et la Boule de feu prend cette position transitoire comme destination ;
+3. Combat Rules est déjà protégé par test : `outcome = evaded` n'applique aucun dégât ;
+4. il manque cependant :
+   - un test spécifique projectile réel `Boule de feu -> Téléportation -> evaded -> 0 PV` ;
+   - un feedback utilisateur non ambigu indiquant explicitement `0 dégât`.
+
+Objectif A — ciblage projectile classique :
+
+- conserver la source du projectile sur la position visuelle réelle du lanceur ;
+- viser la position stable du slot cible, indépendante de son animation transitoire ;
+- aucune modification des règles de hit/esquive ;
+- préparer le renderer à accepter séparément :
+  - `sourceAnchors` visuels/transitoires ;
+  - `targetAnchors` stables ;
+- ne pas implémenter encore un projectile homing gameplay sans contrat dédié.
+
+Objectif B — lisibilité de l'esquive :
+
+- le résultat `evaded` affiche clairement `Esquive · 0 dégât` ;
+- aucun Hit visuel ne doit être joué ;
+- aucun PV ne doit changer ;
+- ajouter un vrai test d'intégration avec la Boule de feu, pas seulement Griffe.
+
+Propriétaires autorisés :
+
+- FX Renderer : choix géométrique source / cible ;
+- Demo UI : wiring des anchors et libellé de résultat ;
+- tests ;
+- documentation.
+
+Domaines protégés :
+
+- Action Resolver et règle d'esquive déjà validée ;
+- Combat Runtime ;
+- Animation Core ;
+- Roster Session ;
+- coûts, dégâts et timings ;
+- positions/scales V8 hors point stable utilisé comme cible FX ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+Tests prévus :
+
+- projectile source = anchor animé du lanceur ;
+- projectile destination = anchor stable de la cible ;
+- cible visuellement déplacée vers le haut n'entraîne plus une destination aérienne pour le projectile classique ;
+- Boule de feu à l'impact pendant travel Téléportation -> `evaded` ;
+- PV joueur inchangés ;
+- statut UI contient explicitement `0 dégât` pour `evaded` ;
+- aucune logique de dégâts ajoutée dans FX/UI ;
+- CI complète verte.
+
+Critère de fin :
+
+- Boule de feu classique ne vise plus une cible transitoirement en l'air ;
+- esquive projectile vérifiable sans ambiguïté par le joueur ;
+- CI verte ;
+- preview smartphone ;
+- validation utilisateur avant checkpoint GREEN final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
