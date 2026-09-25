@@ -297,6 +297,45 @@ Fonctions :
 
 La Demo UI reste un client du Core.
 
+## Phase 5B — Bibliothèque d'assets créateurs
+
+Objectif : préparer une bibliothèque commune d'icônes, sprites / FX et sons utilisable par les créateurs, sans rendre le gameplay dépendant des médias.
+
+Ordre obligatoire :
+
+1. architecture et classification ;
+2. contrats `AssetDefinition / AssetPack / AssetBinding` ;
+3. Asset Catalog pur ;
+4. Audio Asset Input ;
+5. bindings de présentation de quelques compétences de test ;
+6. petit pack d'assets autorisés ;
+7. import créateur dans le laboratoire ;
+8. stockage persistant GenSrpG seulement lors d'un futur chantier d'intégration explicite.
+
+Invariants :
+
+- références par `assetId`, jamais par chemin physique dans le gameplay ;
+- séparation `core / pack / project / user` ;
+- Asset Input reste propriétaire de la validation des fichiers ;
+- SkillDefinition reste propriétaire du gameplay ;
+- les bindings de présentation restent séparés ;
+- un asset optionnel absent déclenche un fallback et ne casse pas le combat ;
+- provenance / auteur / licence doivent être traçables ;
+- une image unique reste un fallback valide pour une créature.
+
+Document de référence :
+
+`docs/LAB_ASSET_LIBRARY.md`
+
+Critère GREEN de la phase complète :
+
+- contrats et catalogue testés ;
+- au moins un vrai chemin icon / FX / audio via assetId ;
+- import personnel de laboratoire testable ;
+- aucun lien à `Zombicide-40k` ;
+- CI verte ;
+- validation utilisateur.
+
 ## Phase 6 — Performance et robustesse mobile
 
 Objectif : garantir une animation fluide et propre sur smartphone.
