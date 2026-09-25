@@ -3250,6 +3250,74 @@ Pour le correctif IA actuel :
 - aucune valeur de cooldown n'est introduite ;
 - le futur comportement « attaque rapide ou économie pour une compétence forte » devra s'appuyer uniquement sur les coûts/puissances/timings déclarés dans les skills.
 
+
+## Sous-lot actif V9 — ground-perspective-approach
+
+Base :
+
+`f7b6bf1fe9a2e5c5ad7106c0feb5abb6300b886e`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-v9-ground-perspective-approach-2026-09-25`
+
+Branche :
+
+`work/lab-v9-ground-perspective-approach-2026-09-25`
+
+Retour utilisateur :
+
+- le déplacement spatial V8 est validé ;
+- lorsqu'un adversaire utilise une attaque de contact au sol comme Griffe et se rapproche du joueur, sa taille continue à paraître trop faible / à rétrécir ;
+- visuellement, un acteur qui descend vers la caméra joueur doit grossir ;
+- un acteur qui remonte vers le fond de l'arène doit rétrécir.
+
+Cause :
+
+- `ground-attack` applique seulement `impactScaleX/Y` fixes depuis le profil ;
+- le planner ne connaît pas actuellement la profondeur relative parcourue dans l'arène ;
+- aucune modulation de perspective n'est appliquée pendant l'approche.
+
+Objectif :
+
+- ajouter au metadata visuel la hauteur réelle de l'arène ;
+- calculer dans Animation Core un multiplicateur de perspective depuis `targetTranslateY / arenaHeight` ;
+- garder la force et les limites de cet effet dans le profil visuel, donc entièrement configurables ;
+- appliquer ce multiplicateur uniquement à l'approche contact au sol dans ce sous-lot ;
+- préserver `travelMs` et l'impact exact.
+
+Configuration visuelle prévue par profil :
+
+- `perspectiveScaleStrength` ;
+- `perspectiveScaleMin` ;
+- `perspectiveScaleMax`.
+
+Propriétaires autorisés :
+
+- Visual Controller : géométrie réelle / `arenaHeight` ;
+- Creature Profile : paramètres de perspective visuelle ;
+- Animation Core : composition du scale transitoire ;
+- tests spéciaux d'animation ;
+- documentation.
+
+Interdits :
+
+- aucun changement aux dégâts ;
+- aucun changement à `impactAtMs` ;
+- aucun changement aux distances X/Y V8 ;
+- aucun changement aux scales de position V8 ;
+- aucune logique gameplay dans le profil visuel ;
+- aucun changement IA dans ce sous-lot.
+
+Tests prévus :
+
+- approche vers le bas => multiplicateur > 1 ;
+- approche vers le haut => multiplicateur < 1 ;
+- bornes min/max respectées ;
+- durée du segment d'approche reste exactement `travelMs` ;
+- retour maison reste scale 1 ;
+- CI complète verte.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
