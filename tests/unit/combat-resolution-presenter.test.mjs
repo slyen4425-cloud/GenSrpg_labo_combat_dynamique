@@ -6,6 +6,7 @@ import { createCombatResolutionPresenter } from "../../src/adapters/renderer/com
 function createHarness() {
   const calls = [];
   const fxCalls = [];
+  let fxCancelCount = 0;
   const queue = [];
   let nextId = 1;
 
@@ -33,7 +34,15 @@ function createHarness() {
     fx: {
       play(plan) {
         fxCalls.push(plan);
-        return { status: "running" };
+        return {
+          status: "running",
+          animation: {
+            cancel() {
+              fxCancelCount += 1;
+            }
+          },
+          finished: new Promise(() => {})
+        };
       }
     },
     setTimer(callback, delayMs) {
@@ -51,6 +60,9 @@ function createHarness() {
   return {
     calls,
     fxCalls,
+    get fxCancelCount() {
+      return fxCancelCount;
+    },
     queue,
     presenter,
     fireNext() {
@@ -97,6 +109,48 @@ test("scheduled presenter waits for semantic release before attack animation", (
 
   h.fireNext();
   assert.deepEqual(h.calls[0], ["play", "player", "attack"]);
+});
+
+test("preparation cast is presentation-only and is cancelled at real release", () => {
+  const h = createHarness();
+  const action = {
+    actionType: "skill",
+    actorId: "player",
+    targetId: "opponent",
+    preparationMs: 2000,
+    travelMs: 700,
+    skill: {
+      id: "fireball",
+      name: "Boule de feu",
+      form: "projectile",
+      element: "fire",
+      approachMode: "none"
+    }
+  };
+
+  const preparing = h.presenter.presentPreparation({
+    action,
+    actorSlot: "player"
+  });
+
+  assert.equal(preparing.status, "preparing");
+  assert.deepEqual(h.fxCalls[0], {
+    type: "cast",
+    skillId: "fireball",
+    actorSlot: "player",
+    durationMs: 2000
+  });
+  assert.equal(h.fxCancelCount, 0);
+
+  h.presenter.presentRelease({
+    action,
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.equal(h.fxCancelCount, 1);
+  assert.equal(h.fxCalls[1].type, "projectile");
+  assert.equal(h.fxCalls[1].durationMs, 700);
 });
 
 test("live release starts attack and projectile without recomputing combat rules", () => {
