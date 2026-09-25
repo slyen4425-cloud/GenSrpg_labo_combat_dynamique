@@ -154,3 +154,22 @@ Invocation :
 6. change réellement l'asset et le profil affichés.
 
 La réserve adverse est visible mais n'offre aucun contrôle joueur.
+
+
+## V5 — boutons directs, KO et mouvements spéciaux
+
+- les capacités principales sont visibles directement dans le HUD ;
+- Objets / Équipe restent des menus secondaires ;
+- l'arène est légèrement plus haute ;
+- lorsqu'un adversaire atteint 0 PV :
+  1. Hit ;
+  2. KO ;
+  3. remplacement automatique par le membre vivant de réserve ;
+- aucun bouton joueur ne contrôle la réserve adverse.
+
+Mouvements spéciaux :
+
+- Frappe téléportée : disparition -> apparition sur l'adversaire -> impact -> retour ;
+- Plongeon aérien : montée -> disparition -> piqué sur l'adversaire -> impact -> retour.
+
+Le contact visuel avec la cible correspond au timestamp d'impact du moteur de combat. Les dégâts ne sont pas liés à la fin du retour visuel.
