@@ -334,6 +334,14 @@ export function resolveSkillCompletion({
         hpAfter: after
       }));
 
+      if (before > 0 && after === 0) {
+        events.push(event("fighter-ko", impactAtMs, {
+          actorId: targetId,
+          sourceActorId: actorId,
+          skillId: skill.id
+        }));
+      }
+
       if (skill.effect.interruptsPreparation) {
         events.push(event("charge-interrupt", impactAtMs, {
           actorId: targetId,
@@ -357,6 +365,15 @@ export function resolveSkillCompletion({
         hpBefore: before,
         hpAfter: after
       }));
+
+      if (before > 0 && after === 0) {
+        events.push(event("fighter-ko", impactAtMs, {
+          actorId,
+          sourceActorId: targetId,
+          skillId: skill.id,
+          reflected: true
+        }));
+      }
     } else {
       events.push(event(`skill-${outcome}`, impactAtMs, {
         actorId,
