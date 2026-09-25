@@ -1,5 +1,6 @@
 import {
   planSkillFx,
+  planSkillOutcomeFx,
   planSkillReleaseFx
 } from "../../core/fx/skill-fx-plan.js";
 
@@ -115,6 +116,13 @@ export function createCombatResolutionPresenter({
     let ko = false;
     let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
+
+    for (const fxPlan of planSkillOutcomeFx({
+      resolution,
+      targetSlot
+    })) {
+      fx?.play(fxPlan);
+    }
 
     switch (resolution.outcome) {
       case "hit": {
