@@ -2625,20 +2625,23 @@ Validation utilisateur :
 - comportement adversaire pas encore testable manuellement ;
 - défaut identifié : la taille actuelle suit encore l'ancienne logique `short > medium > long`, alors que la perspective écran demandée est l'inverse.
 
-Règle visuelle cible :
+Règle visuelle cible corrigée après clarification utilisateur :
+
+La perspective est celle de la caméra du joueur, donc les deux camps n'utilisent pas la même courbe de scale.
 
 - joueur :
-  - plus à gauche / bas-gauche = plus proche de la caméra joueur = plus gros ;
-  - plus proche du centre = plus petit ;
+  - `long` = bas-gauche, proche de la caméra joueur = plus gros ;
+  - `medium` = intermédiaire ;
+  - `short` = plus près du centre et plus loin de la caméra joueur = plus petit ;
 - adversaire :
-  - plus à droite / haut-droite = plus proche de la caméra adverse = plus gros ;
-  - plus proche du centre = plus petit.
+  - `long` = haut-droite, le plus loin de la caméra joueur = plus petit ;
+  - `medium` = intermédiaire ;
+  - `short` = plus près du centre et donc plus proche de la caméra joueur = plus gros.
 
-Conséquence :
+Courbes visuelles prévues :
 
-- `long` doit être le plus grand aux deux extrémités ;
-- `medium` intermédiaire ;
-- `short` le plus petit près du centre.
+- joueur : `long 1.08 -> medium 0.98 -> short 0.88` ;
+- adversaire : `long 0.88 -> medium 0.98 -> short 1.08`.
 
 Correction autorisée :
 
