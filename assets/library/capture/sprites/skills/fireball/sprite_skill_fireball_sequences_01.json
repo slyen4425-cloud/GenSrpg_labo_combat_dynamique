@@ -1,0 +1,88 @@
+{
+  "frame_size": [
+    256,
+    256
+  ],
+  "sequences": {
+    "cast": {
+      "frame_count": 6,
+      "frames": [
+        "frames/sprite_skill_fireball_cast_01.png",
+        "frames/sprite_skill_fireball_cast_02.png",
+        "frames/sprite_skill_fireball_cast_03.png",
+        "frames/sprite_skill_fireball_cast_04.png",
+        "frames/sprite_skill_fireball_cast_05.png",
+        "frames/sprite_skill_fireball_cast_06.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_cast_atlas_01.png"
+    },
+    "impact": {
+      "frame_count": 6,
+      "frames": [
+        "frames/sprite_skill_fireball_impact_01.png",
+        "frames/sprite_skill_fireball_impact_02.png",
+        "frames/sprite_skill_fireball_impact_03.png",
+        "frames/sprite_skill_fireball_impact_04.png",
+        "frames/sprite_skill_fireball_impact_05.png",
+        "frames/sprite_skill_fireball_impact_06.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_impact_atlas_01.png"
+    },
+    "travel_lr": {
+      "frame_count": 8,
+      "frames": [
+        "frames/sprite_skill_fireball_travel_lr_01.png",
+        "frames/sprite_skill_fireball_travel_lr_02.png",
+        "frames/sprite_skill_fireball_travel_lr_03.png",
+        "frames/sprite_skill_fireball_travel_lr_04.png",
+        "frames/sprite_skill_fireball_travel_lr_05.png",
+        "frames/sprite_skill_fireball_travel_lr_06.png",
+        "frames/sprite_skill_fireball_travel_lr_07.png",
+        "frames/sprite_skill_fireball_travel_lr_08.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_travel_lr_atlas_01.png"
+    },
+    "travel_rl": {
+      "frame_count": 8,
+      "frames": [
+        "frames/sprite_skill_fireball_travel_rl_01.png",
+        "frames/sprite_skill_fireball_travel_rl_02.png",
+        "frames/sprite_skill_fireball_travel_rl_03.png",
+        "frames/sprite_skill_fireball_travel_rl_04.png",
+        "frames/sprite_skill_fireball_travel_rl_05.png",
+        "frames/sprite_skill_fireball_travel_rl_06.png",
+        "frames/sprite_skill_fireball_travel_rl_07.png",
+        "frames/sprite_skill_fireball_travel_rl_08.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_travel_rl_atlas_01.png"
+    },
+    "travel_dr": {
+      "frame_count": 8,
+      "frames": [
+        "frames/sprite_skill_fireball_travel_dr_01.png",
+        "frames/sprite_skill_fireball_travel_dr_02.png",
+        "frames/sprite_skill_fireball_travel_dr_03.png",
+        "frames/sprite_skill_fireball_travel_dr_04.png",
+        "frames/sprite_skill_fireball_travel_dr_05.png",
+        "frames/sprite_skill_fireball_travel_dr_06.png",
+        "frames/sprite_skill_fireball_travel_dr_07.png",
+        "frames/sprite_skill_fireball_travel_dr_08.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_travel_dr_atlas_01.png"
+    },
+    "travel_dl": {
+      "frame_count": 8,
+      "frames": [
+        "frames/sprite_skill_fireball_travel_dl_01.png",
+        "frames/sprite_skill_fireball_travel_dl_02.png",
+        "frames/sprite_skill_fireball_travel_dl_03.png",
+        "frames/sprite_skill_fireball_travel_dl_04.png",
+        "frames/sprite_skill_fireball_travel_dl_05.png",
+        "frames/sprite_skill_fireball_travel_dl_06.png",
+        "frames/sprite_skill_fireball_travel_dl_07.png",
+        "frames/sprite_skill_fireball_travel_dl_08.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_travel_dl_atlas_01.png"
+    }
+  }
+}
