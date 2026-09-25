@@ -679,7 +679,7 @@ export async function mountCombatTest({
 
       button.disabled =
         koTransitionPending ||
-        runtime.hasActiveAction ||
+        runtime.hasActiveActionFor("player") ||
         !active ||
         current ||
         !preview.ok;
@@ -709,7 +709,7 @@ export async function mountCombatTest({
 
       button.disabled =
         koTransitionPending ||
-        runtime.hasActiveAction ||
+        runtime.hasActiveActionFor("player") ||
         !preview.ok;
     }
 
@@ -722,7 +722,7 @@ export async function mountCombatTest({
           })
         : { ok: false };
       itemRef.button.disabled =
-        runtime.hasActiveAction || !preview.ok;
+        runtime.hasActiveActionFor("player") || !preview.ok;
     }
 
     const recallRef = commandRefs.get("recall");
@@ -734,7 +734,7 @@ export async function mountCombatTest({
           })
         : { ok: false };
       recallRef.button.disabled =
-        runtime.hasActiveAction || !preview.ok;
+        runtime.hasActiveActionFor("player") || !preview.ok;
     }
 
     const summonRef = commandRefs.get("summon");
@@ -751,7 +751,7 @@ export async function mountCombatTest({
           : { ok: false };
 
       summonRef.button.disabled =
-        runtime.hasActiveAction || !preview.ok;
+        runtime.hasActiveActionFor("player") || !preview.ok;
     }
   }
 
@@ -986,7 +986,7 @@ export async function mountCombatTest({
 
       if (
         aiWaitingForEnergy &&
-        !runtime.hasActiveAction &&
+        !runtime.hasActiveActionFor("opponent") &&
         !koTransitionPending &&
         !aiDecisionInProgress
       ) {
@@ -994,10 +994,13 @@ export async function mountCombatTest({
       }
     },
     onProgress(progress) {
-      setCharge({ slotId: "player" });
-      setCharge({ slotId: "opponent" });
-
       if (!progress.actionId) {
+        if (progress.actorId) {
+          setCharge({ slotId: progress.actorId });
+        } else {
+          setCharge({ slotId: "player" });
+          setCharge({ slotId: "opponent" });
+        }
         renderAvailability();
         return;
       }
@@ -1050,8 +1053,7 @@ export async function mountCombatTest({
       }
     },
     onResolved(resolution) {
-      setCharge({ slotId: "player" });
-      setCharge({ slotId: "opponent" });
+      setCharge({ slotId: resolution.actorId });
 
       if (resolution.actionType === "skill") {
         const presentation = presenter.presentOutcome({
