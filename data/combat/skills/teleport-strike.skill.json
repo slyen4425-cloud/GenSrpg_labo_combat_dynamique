@@ -19,5 +19,12 @@
     "tags": [
       "teleport"
     ]
+  },
+  "evasion": {
+    "window": "travel",
+    "incomingForms": [
+      "contact",
+      "projectile"
+    ]
   }
 }
