@@ -4836,3 +4836,83 @@ Invariants :
 - FX / Renderer n'a aucune autorité gameplay ;
 - dégâts uniquement à l'impact décidé par Combat Rules / Runtime ;
 - les visuels Boule de feu restent sous `assets/library/capture/`.
+
+
+## Sous-lot actif — fireball-visual-fix
+
+Base exacte :
+
+`b4b4d85977c64278ea292c7581c0d5590d978e1d`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-fireball-visual-fix-2026-09-25`
+
+Branche :
+
+`work/lab-fireball-visual-fix-2026-09-25`
+
+Objectif :
+
+- diagnostiquer puis corriger le mauvais rendu visuel de la Boule de feu existante ;
+- obtenir un lancement lisible, un projectile animé et correctement cadré pendant tout le trajet, puis un impact/explosion propre ;
+- conserver intégralement les règles gameplay et l'horloge existantes.
+
+Fichiers autorisés après diagnostic :
+
+- `examples/dom-demo/demo.js` ;
+- `examples/dom-demo/demo-assets.js` ;
+- `examples/dom-demo/demo.css` ;
+- `src/ui/combat-test-ui.js` uniquement si le binding de présentation l'exige ;
+- `src/core/fx/skill-fx-plan.js` uniquement pour transporter une intention visuelle déjà décidée ;
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `src/adapters/renderer/combat-resolution-presenter.js` uniquement si la séquence visuelle existante est fautive ;
+- `tests/unit/skill-fx.test.mjs` ;
+- `tests/unit/demo-ui-boundary.test.mjs` ;
+- assets Capture Boule de feu existants uniquement si le diagnostic démontre un défaut réel de cadrage/atlas ;
+- documentation laboratoire.
+
+Domaines protégés :
+
+- `data/combat/skills/*.json` ;
+- dégâts, énergie, portée, `preparationMs`, `travelMs`, `recoveryMs` ;
+- Combat Rules ;
+- Combat Runtime ;
+- Action Resolver ;
+- Roster Session ;
+- Animation Core hors preuve contraire ;
+- `main` ;
+- dépôt `slyen4425-cloud/Zombicide-40k`.
+
+Diagnostic obligatoire avant code :
+
+- frames réelles / alpha / cadrage ;
+- dimensions des atlas et orientation ;
+- CSS `background-size` / `background-position` / `steps` ;
+- dimensions et ratio du node FX ;
+- transform / rotation ;
+- source, cible stable et trajectoire ;
+- synchronisation travel / impact ;
+- coexistence éventuelle du fallback ;
+- nettoyage des nodes temporaires ;
+- rendu mobile.
+
+Tests prévus :
+
+- une seule représentation projectile Boule de feu active ;
+- frame/atlas correctement cadré sans rectangle ni planche visible ;
+- progression d'animation sur toute la durée `travelMs` sans changer `travelMs` ;
+- impact séparé au point cible et nettoyé ensuite ;
+- fallback générique inchangé pour les autres compétences ;
+- aucune valeur gameplay ajoutée aux bindings/assets ;
+- CI complète verte.
+
+Risque principal :
+
+- masquer le défaut par du CSS compensatoire alors que la cause est dans le découpage/atlas ou inversement.
+
+Critère de fin :
+
+- GREEN technique uniquement après tests/CI ;
+- preview smartphone obligatoire ;
+- aucun checkpoint GREEN final avant validation visuelle explicite de Sylvain.
