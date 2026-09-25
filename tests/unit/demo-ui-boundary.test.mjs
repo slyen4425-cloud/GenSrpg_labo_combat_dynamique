@@ -65,15 +65,19 @@ test("game page is mobile-first and contains only player-facing combat controls"
   assert.doesNotMatch(html, /data-combat-mover/);
 });
 
-test("abilities items and team actions are collapsed player menus", async () => {
+test("abilities stay directly visible while items and team remain compact menus", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
   const menuCount = (html.match(/data-action-menu/g) ?? []).length;
-  assert.equal(menuCount, 3);
+  assert.equal(menuCount, 2);
 
   assert.match(
     html,
-    /<details class="action-menu" data-action-menu>[\s\S]*?<summary>Capacités<\/summary>[\s\S]*?data-combat-skills/
+    /<section class="skill-bar"[\s\S]*?data-combat-skills/
+  );
+  assert.doesNotMatch(
+    html,
+    /<summary>Capacités<\/summary>/
   );
   assert.match(
     html,
@@ -222,4 +226,47 @@ test("creature metadata keeps runtime player/opponent/icon views", async () => {
     assert.ok(meta.runtimePreview.icon);
     assert.ok(meta.displayScale.player > meta.displayScale.opponent);
   }
+});
+
+
+test("KO opponent replacement is roster-owned and updates the visual slot after KO presentation", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const rosterSource = await readFile(
+    "src/core/combat/roster-session.js",
+    "utf8"
+  );
+
+  assert.match(rosterSource, /function replaceKnockedOut/);
+  assert.match(source, /roster\.replaceKnockedOut\("opponent"\)/);
+  assert.match(source, /await presentation\.finished/);
+  assert.match(
+    source,
+    /visuals\.setCreatureFor\(\s*"opponent"/
+  );
+  assert.match(
+    source,
+    /visuals\.setSlotVisible\("opponent", false\)/
+  );
+});
+
+test("visual controller computes target geometry for teleport and aerial moves without gameplay authority", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /function playApproachFor/);
+  assert.match(source, /getBoundingClientRect\(\)/);
+  assert.match(source, /"teleport-attack"/);
+  assert.match(source, /"aerial-attack"/);
+  assert.match(source, /targetTranslateX/);
+  assert.match(source, /targetTranslateY/);
+  assert.doesNotMatch(source, /effect\.damage/);
+  assert.doesNotMatch(source, /hpAfter/);
+});
+
+test("combat arena is taller while keeping direct reflex ability controls", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(css, /min-height:\s*min\(54svh, 32rem\)/);
+  assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
+  assert.match(css, /\.distance-buttons\s*\{[\s\S]*repeat\(3/);
+  assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
 });
