@@ -243,7 +243,15 @@ test("live reaction can counter a charging contact skill before release", () => 
   assert.equal(resolutions.length, 1);
   assert.equal(resolutions[0].outcome, "countered");
   assert.equal(runtime.hasActiveAction, false);
-  assert.ok(progress.some((item) => item.reaction?.skillId === "contact-counter"));
+  const reactionProgress = progress.find(
+    (item) => item.reaction?.skillId === "contact-counter"
+  );
+  assert.ok(reactionProgress);
+  assert.equal(reactionProgress.actorId, "maraileron");
+  assert.equal(reactionProgress.targetId, "braisombre");
+  assert.equal(reactionProgress.reaction.actorId, "braisombre");
+  assert.equal(reactionProgress.reaction.targetId, "maraileron");
+  assert.equal(reactionProgress.reaction.actionName, contactCounter.name);
 
   runtime.dispose();
 });
@@ -306,6 +314,8 @@ test("live skill completion commits resolved HP damage to session state", () => 
 
   assert.equal(resolutions.length, 1);
   assert.equal(resolutions[0].actionType, "skill");
+  assert.equal(resolutions[0].actorId, "maraileron");
+  assert.equal(resolutions[0].targetId, "braisombre");
   assert.equal(resolutions[0].skillId, fireball.id);
   assert.equal(resolutions[0].outcome, "hit");
   assert.equal(resolutions[0].state.fighters.braisombre.hp, 70);
