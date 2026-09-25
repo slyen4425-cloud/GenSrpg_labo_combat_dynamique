@@ -7,6 +7,7 @@ function styleHarness() {
   const values = {};
   return {
     left: "",
+    top: "",
     setProperty(name, value) {
       values[name] = value;
     },
@@ -33,65 +34,99 @@ function setup() {
   return { player, opponent, presenter };
 }
 
-test("player anchors are unambiguous: long < medium < short", () => {
+test("player anchors move diagonally from bottom-left toward center", () => {
   const { presenter } = setup();
 
   presenter.presentMovement({
     result: moved("medium", "long"),
     actorSlot: "player"
   });
-  const longX = presenter.snapshot().player;
+  const long = presenter.snapshot();
 
   presenter.presentMovement({
     result: moved("long", "medium"),
     actorSlot: "player"
   });
-  const mediumX = presenter.snapshot().player;
+  const medium = presenter.snapshot();
 
   presenter.presentMovement({
     result: moved("medium", "short"),
     actorSlot: "player"
   });
-  const shortX = presenter.snapshot().player;
+  const short = presenter.snapshot();
 
   assert.deepEqual(
-    { longX, mediumX, shortX },
-    { longX: 0.18, mediumX: 0.28, shortX: 0.42 }
+    {
+      longX: long.player,
+      longY: long.playerY,
+      mediumX: medium.player,
+      mediumY: medium.playerY,
+      shortX: short.player,
+      shortY: short.playerY
+    },
+    {
+      longX: 0.16,
+      longY: 0.72,
+      mediumX: 0.28,
+      mediumY: 0.64,
+      shortX: 0.39,
+      shortY: 0.56
+    }
   );
-  assert.ok(longX < mediumX);
-  assert.ok(mediumX < shortX);
+
+  assert.ok(long.player < medium.player);
+  assert.ok(medium.player < short.player);
+  assert.ok(long.playerY > medium.playerY);
+  assert.ok(medium.playerY > short.playerY);
 });
 
-test("opponent anchors are symmetric: short < medium < long", () => {
+test("opponent anchors mirror the diagonal from top-right toward center", () => {
   const { presenter } = setup();
-
-  presenter.presentMovement({
-    result: moved("medium", "short"),
-    actorSlot: "opponent"
-  });
-  const shortX = presenter.snapshot().opponent;
-
-  presenter.presentMovement({
-    result: moved("short", "medium"),
-    actorSlot: "opponent"
-  });
-  const mediumX = presenter.snapshot().opponent;
 
   presenter.presentMovement({
     result: moved("medium", "long"),
     actorSlot: "opponent"
   });
-  const longX = presenter.snapshot().opponent;
+  const long = presenter.snapshot();
+
+  presenter.presentMovement({
+    result: moved("long", "medium"),
+    actorSlot: "opponent"
+  });
+  const medium = presenter.snapshot();
+
+  presenter.presentMovement({
+    result: moved("medium", "short"),
+    actorSlot: "opponent"
+  });
+  const short = presenter.snapshot();
 
   assert.deepEqual(
-    { shortX, mediumX, longX },
-    { shortX: 0.58, mediumX: 0.72, longX: 0.82 }
+    {
+      longX: long.opponent,
+      longY: long.opponentY,
+      mediumX: medium.opponent,
+      mediumY: medium.opponentY,
+      shortX: short.opponent,
+      shortY: short.opponentY
+    },
+    {
+      longX: 0.84,
+      longY: 0.24,
+      mediumX: 0.72,
+      mediumY: 0.32,
+      shortX: 0.61,
+      shortY: 0.40
+    }
   );
-  assert.ok(shortX < mediumX);
-  assert.ok(mediumX < longX);
+
+  assert.ok(long.opponent > medium.opponent);
+  assert.ok(medium.opponent > short.opponent);
+  assert.ok(long.opponentY < medium.opponentY);
+  assert.ok(medium.opponentY < short.opponentY);
 });
 
-test("only the moving fighter changes anchor and scale", () => {
+test("only the moving fighter changes x y and scale", () => {
   const { presenter } = setup();
   const before = presenter.snapshot();
 
@@ -101,13 +136,15 @@ test("only the moving fighter changes anchor and scale", () => {
   });
 
   const after = presenter.snapshot();
-  assert.equal(after.player, 0.42);
+  assert.equal(after.player, 0.39);
+  assert.equal(after.playerY, 0.56);
   assert.equal(after.playerScale, 1);
   assert.equal(after.opponent, before.opponent);
+  assert.equal(after.opponentY, before.opponentY);
   assert.equal(after.opponentScale, before.opponentScale);
 });
 
-test("reset restores medium anchors and scales", () => {
+test("reset restores medium x y anchors and scales", () => {
   const { player, opponent, presenter } = setup();
 
   presenter.presentMovement({
@@ -118,12 +155,16 @@ test("reset restores medium anchors and scales", () => {
 
   assert.deepEqual(presenter.snapshot(), {
     player: 0.28,
+    playerY: 0.64,
     opponent: 0.72,
+    opponentY: 0.32,
     playerScale: 0.96,
     opponentScale: 0.96
   });
   assert.equal(player.style.left, "28.00%");
+  assert.equal(player.style.top, "64.00%");
   assert.equal(opponent.style.left, "72.00%");
+  assert.equal(opponent.style.top, "32.00%");
   assert.equal(player.style.getPropertyValue("--distance-scale"), "0.96");
   assert.equal(opponent.style.getPropertyValue("--distance-scale"), "0.96");
 });
