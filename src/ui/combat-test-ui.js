@@ -269,14 +269,34 @@ export async function mountCombatTest({
   };
 
   const chargeRefs = {
-    player: requiredElement(
-      root,
-      '[data-combat-actor-charge="player"]'
-    ),
-    opponent: requiredElement(
-      root,
-      '[data-combat-actor-charge="opponent"]'
-    )
+    player: {
+      bar: requiredElement(
+        root,
+        '[data-combat-actor-charge="player"]'
+      ),
+      name: requiredElement(
+        root,
+        '[data-combat-charge-name="player"]'
+      ),
+      time: requiredElement(
+        root,
+        '[data-combat-charge-time="player"]'
+      )
+    },
+    opponent: {
+      bar: requiredElement(
+        root,
+        '[data-combat-actor-charge="opponent"]'
+      ),
+      name: requiredElement(
+        root,
+        '[data-combat-charge-name="opponent"]'
+      ),
+      time: requiredElement(
+        root,
+        '[data-combat-charge-time="opponent"]'
+      )
+    }
   };
 
   const playerEnergy = {
@@ -340,13 +360,28 @@ export async function mountCombatTest({
     status.dataset.tone = tone;
   }
 
-  function setCharge(value, active) {
-    chargeRefs.player.value = Math.max(
+  function setCharge({
+    slotId = "player",
+    value = 0,
+    active = false,
+    actionName = null,
+    remainingMs = 0
+  } = {}) {
+    const refs = chargeRefs[slotId];
+    refs.bar.value = Math.max(
       0,
       Math.min(1, Number(value) || 0)
     );
-    chargeRefs.player.dataset.active =
+    refs.bar.dataset.active = active ? "true" : "false";
+    refs.name.parentElement.dataset.active =
       active ? "true" : "false";
+    refs.name.textContent = active && actionName
+      ? actionName
+      : "Prêt";
+    refs.time.textContent =
+      active && Number(remainingMs) > 0
+        ? `${(remainingMs / 1000).toFixed(1)} s`
+        : "";
   }
 
   function createActionButton({
@@ -814,21 +849,25 @@ export async function mountCombatTest({
     },
     onProgress(progress) {
       if (!progress.actionId) {
-        setCharge(0, false);
+        setCharge({ slotId: "player" });
         renderAvailability();
         return;
       }
 
-      setCharge(
-        progress.phase === "preparation"
-          ? progress.chargeProgress
-          : 0,
-        progress.phase === "preparation"
-      );
+      setCharge({
+        slotId: "player",
+        value:
+          progress.phase === "preparation"
+            ? progress.chargeProgress
+            : 0,
+        active: progress.phase === "preparation",
+        actionName: progress.actionName,
+        remainingMs: progress.remainingPreparationMs
+      });
       renderAvailability();
     },
     onRelease({ action }) {
-      setCharge(0, false);
+      setCharge({ slotId: "player" });
 
       if (action.actionType === "skill") {
         presenter.presentRelease({
@@ -848,7 +887,7 @@ export async function mountCombatTest({
       }
     },
     onResolved(resolution) {
-      setCharge(0, false);
+      setCharge({ slotId: "player" });
 
       if (resolution.actionType === "skill") {
         const presentation = presenter.presentOutcome({
@@ -857,7 +896,10 @@ export async function mountCombatTest({
           targetSlot: "opponent"
         });
 
-        if (presentation.ko) {
+        if (
+          presentation.ko &&
+          presentation.koActorId === "opponent"
+        ) {
           setStatus("Adversaire KO… remplacement en cours.", "accent");
           void replaceOpponentAfterKo(presentation);
         } else {
@@ -882,7 +924,7 @@ export async function mountCombatTest({
       render(session.snapshot());
     },
     onInterrupted(result) {
-      setCharge(0, false);
+      setCharge({ slotId: "player" });
       setStatus(
         `Action ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
         "warn"
