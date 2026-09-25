@@ -159,6 +159,32 @@ Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de
 - barre de charge principale plus grande ;
 - nom de l'action et temps restant issus du Combat Runtime.
 
+
+### Extension V7 — feedback visuel d'impact
+
+- le recul `hit` reste l'animation de réaction principale ;
+- un flash/coloration bref rend l'impact immédiatement lisible ;
+- le feedback est piloté par le profil de créature ;
+- le canal visuel reste indépendant des règles de dégâts ;
+- le renderer restaure l'apparence normale après le Hit ;
+- le KO terminal reste prioritaire et protégé.
+
+### Extension V8 — interface joueur plein écran inspirée d'un jeu de capture
+
+Objectif : transformer la démo technique en interface de combat tactile lisible sans déplacer aucune autorité gameplay dans l'UI.
+
+- arène occupant pratiquement tout le viewport ;
+- HUD joueur et adversaire intégrés aux bords de l'arène ;
+- capacités principales visibles en permanence comme de vraies touches de jeu ;
+- nom de capacité conservé aujourd'hui, structure compatible avec future icône ou icône + nom ;
+- énergie, charge et disponibilité projetées depuis le Runtime existant ;
+- Objets / Équipe / déplacement intégrés dans le HUD de combat ;
+- réserve visible mais compacte ;
+- aucun calcul de portée, coût, dégâts, KO ou roster dans la couche de présentation ;
+- smartphone prioritaire, paysage et portrait supportés.
+
+Critère GREEN V8 : CI verte + contrôles tactiles présents dans l'arène + aucun panneau de démo technique séparé + validation smartphone de la lisibilité et de l'accès aux actions.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
