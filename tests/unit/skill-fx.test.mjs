@@ -602,7 +602,7 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
           frameCount: 8,
           coreAnchor: { x: 0.29, y: 0.5 },
           headingRad: Math.PI,
-          displayScale: 2.3
+          displayScale: 2.8
         },
         travelSourceAnchor: "mouth"
       };
@@ -669,9 +669,12 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
     capturedKeyframes[2].transform,
     /translate3d\(250px, -50px, 0\)/
   );
-  assert.match(
-    capturedKeyframes[2].transform,
-    /scale\(2\.254\)/
+  const finalScaleMatch = capturedKeyframes[2].transform.match(
+    /scale\(([-0-9.]+)\)/
+  );
+  assert.ok(finalScaleMatch);
+  assert.ok(
+    Math.abs(Number(finalScaleMatch[1]) - 0.98 * 2.8) < 1e-9
   );
   assert.equal(capturedOptions.duration, 700);
 
