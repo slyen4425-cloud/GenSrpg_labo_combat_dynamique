@@ -3,267 +3,145 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Combat Dynamique — Laboratoire V2</title>
+  <title>Combat Dynamique — Vue joueur</title>
   <link rel="stylesheet" href="./demo.css">
 </head>
 <body>
-  <main class="demo" data-combat-demo>
-    <section class="combat-live" aria-label="Prototype de combat dynamique">
-      <header class="combat-live__header">
-        <div>
-          <p class="eyebrow">GenSrpG — laboratoire autonome</p>
-          <h1>Combat dynamique V2</h1>
-        </div>
-      </header>
+  <main class="game" data-combat-demo>
+    <header class="game__header">
+      <div>
+        <p class="eyebrow">Combat Capture</p>
+        <h1>Marai & Drakon vs Drakon & Marai</h1>
+      </div>
+    </header>
 
-      <section
-        class="arena"
-        data-combat-arena
-        aria-label="Arène de démonstration"
-      >
-        <div class="arena__ground" aria-hidden="true"></div>
+    <section class="arena" data-combat-arena aria-label="Arène de combat">
+      <div class="arena__ground" aria-hidden="true"></div>
 
-        <article class="fighter fighter--player" data-demo-slot="player">
-          <div class="fighter__caption">
-            <div class="fighter__caption-line">
-              <strong data-demo-label>Maraileron</strong>
-              <span data-demo-profile>serpentine</span>
-            </div>
-            <div class="fighter__hp-row">
-              <progress
-                class="fighter__hp"
-                data-combat-hp="maraileron"
-                max="100"
-                value="100"
-                aria-label="PV de Maraileron"
-              ></progress>
-              <span data-combat-hp-value="maraileron">100 / 100 PV</span>
-            </div>
-            <progress
-              class="fighter__charge"
-              data-combat-actor-charge="maraileron"
-              max="1"
-              value="0"
-              aria-label="Charge de la capacité de Maraileron"
-            ></progress>
+      <aside class="reserve reserve--opponent" aria-label="Réserve adverse">
+        <span class="reserve__title">Réserve adverse</span>
+        <div class="reserve__list" data-roster-reserve="opponent"></div>
+      </aside>
+
+      <article class="fighter fighter--player" data-demo-slot="player">
+        <div class="fighter__caption">
+          <div class="fighter__caption-line">
+            <strong data-demo-label>Marai</strong>
           </div>
 
-          <div class="fighter__motion" data-demo-motion>
-            <img
-              class="fighter__image"
-              data-demo-image
-              alt="Vue joueur de Maraileron"
-            >
-          </div>
-        </article>
-
-        <article class="fighter fighter--opponent" data-demo-slot="opponent">
-          <div class="fighter__caption">
-            <div class="fighter__caption-line">
-              <strong data-demo-label>Braisombre</strong>
-              <span data-demo-profile>drake</span>
-            </div>
-            <div class="fighter__hp-row">
-              <progress
-                class="fighter__hp"
-                data-combat-hp="braisombre"
-                max="100"
-                value="100"
-                aria-label="PV de Braisombre"
-              ></progress>
-              <span data-combat-hp-value="braisombre">100 / 100 PV</span>
-            </div>
+          <div class="fighter__hp-row">
             <progress
-              class="fighter__charge fighter__charge--reaction"
-              data-combat-actor-charge="braisombre"
-              max="1"
-              value="0"
-              aria-label="Charge de la capacité de Braisombre"
+              class="fighter__hp"
+              data-combat-hp="player"
+              max="100"
+              value="100"
+              aria-label="PV du monstre joueur"
             ></progress>
+            <span data-combat-hp-value="player">100 / 100 PV</span>
           </div>
 
-          <div class="fighter__motion" data-demo-motion>
-            <img
-              class="fighter__image"
-              data-demo-image
-              alt="Vue adversaire de Braisombre"
-            >
-          </div>
-        </article>
-      </section>
-
-      <section class="combat-dock" aria-label="Commandes du combat">
-        <div class="energy-grid">
-          <article class="energy-card">
-            <header>
-              <strong>Maraileron</strong>
-              <span data-combat-energy-value="maraileron">0 / 10⚡</span>
-            </header>
-            <progress
-              data-combat-energy="maraileron"
-              max="10"
-              value="0"
-              aria-label="Énergie de Maraileron"
-            ></progress>
-            <small data-combat-energy-rate="maraileron">+1 toutes les 2 s</small>
-          </article>
-
-          <article class="energy-card">
-            <header>
-              <strong>Braisombre</strong>
-              <span data-combat-energy-value="braisombre">0 / 10⚡</span>
-            </header>
-            <progress
-              data-combat-energy="braisombre"
-              max="10"
-              value="0"
-              aria-label="Énergie de Braisombre"
-            ></progress>
-            <small data-combat-energy-rate="braisombre">+1 toutes les 2 s</small>
-          </article>
+          <progress
+            class="fighter__charge"
+            data-combat-actor-charge="player"
+            max="1"
+            value="0"
+            aria-label="Charge de la capacité du monstre joueur"
+          ></progress>
         </div>
 
-        <div class="movement-actions">
-          <span class="movement-actions__label">Déplacement</span>
-          <div class="distance-buttons" aria-label="Changer la distance">
-            <button type="button" data-combat-move="short">Courte</button>
-            <button type="button" data-combat-move="medium">Moyenne</button>
-            <button type="button" data-combat-move="long">Longue</button>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="Monstre du joueur">
+        </div>
+      </article>
+
+      <article class="fighter fighter--opponent" data-demo-slot="opponent">
+        <div class="fighter__caption">
+          <div class="fighter__caption-line">
+            <strong data-demo-label>Drakon</strong>
           </div>
+
+          <div class="fighter__hp-row">
+            <progress
+              class="fighter__hp"
+              data-combat-hp="opponent"
+              max="100"
+              value="100"
+              aria-label="PV du monstre adverse"
+            ></progress>
+            <span data-combat-hp-value="opponent">100 / 100 PV</span>
+          </div>
+
+          <progress
+            class="fighter__charge fighter__charge--reaction"
+            data-combat-actor-charge="opponent"
+            max="1"
+            value="0"
+            aria-label="Charge de la capacité du monstre adverse"
+          ></progress>
         </div>
 
-        <div class="ability-zone">
-          <section class="ability-group ability-group--player">
-            <div class="ability-group__title">
-              <span>Maraileron</span>
-              <strong>Capacités</strong>
-            </div>
-            <div class="skill-grid" data-combat-skills></div>
-          </section>
-
-          <section class="ability-group ability-group--reaction">
-            <div class="ability-group__title">
-              <span>Braisombre</span>
-              <strong>Réactions</strong>
-            </div>
-            <div class="skill-grid skill-grid--reactions" data-combat-reactions></div>
-          </section>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="Monstre adverse">
         </div>
+      </article>
 
-        <section class="command-group" aria-label="Actions tactiques">
-          <div class="ability-group__title">
-            <span>Actions tactiques</span>
-            <strong>Objet · Rappel · Invocation</strong>
-          </div>
-          <div
-            class="skill-grid skill-grid--commands"
-            data-combat-commands
-          ></div>
-        </section>
-
-        <p
-          class="live-status"
-          data-combat-live-status
-          data-tone="info"
-          role="status"
-        >
-          Énergie en charge…
-        </p>
-
-        <details class="combat-history">
-          <summary>Journal du test</summary>
-          <ol class="combat-log" data-combat-log aria-live="polite"></ol>
-        </details>
-      </section>
+      <aside class="reserve reserve--player" aria-label="Ma réserve">
+        <span class="reserve__title">Ma réserve</span>
+        <div class="reserve__list" data-roster-reserve="player"></div>
+      </aside>
     </section>
 
-    <details class="test-settings">
-      <summary>Réglages du test</summary>
-      <section class="test-settings__body">
-        <label class="compact-field">
-          <span>Créature déplacée</span>
-          <select data-combat-mover>
-            <option value="maraileron">Maraileron · 1⚡/palier</option>
-            <option value="braisombre">Braisombre · 3⚡/palier</option>
-          </select>
-        </label>
-
-        <button
-          type="button"
-          class="button-secondary"
-          data-combat-simulate-stun
-        >
-          Simuler impact Stun
-        </button>
-
-        <button type="button" class="button-secondary" data-combat-reset>
-          Réinitialiser le combat
-        </button>
-      </section>
-    </details>
-
-    <details class="lab-debug">
-      <summary>Outils visuels du laboratoire</summary>
-
-      <section class="controls" aria-label="Contrôles visuels bruts">
-        <div class="control-row">
-          <label>
-            <span>Créature ciblée</span>
-            <select data-demo-target>
-              <option value="player">Maraileron — joueur</option>
-              <option value="opponent">Braisombre — adversaire</option>
-            </select>
-          </label>
-
-          <label>
-            <span>
-              Intensité
-              <output data-demo-intensity-value>1.00</output>
-            </span>
-            <input
-              data-demo-intensity
-              type="range"
-              min="0.5"
-              max="1.5"
-              value="1"
-              step="0.05"
-            >
-          </label>
+    <section class="hud" aria-label="Commandes du joueur">
+      <div class="hud__energy">
+        <div class="hud__energy-line">
+          <strong>Énergie</strong>
+          <span data-combat-energy-value="player">0 / 10⚡</span>
         </div>
+        <progress
+          data-combat-energy="player"
+          max="10"
+          value="0"
+          aria-label="Énergie du monstre joueur"
+        ></progress>
+      </div>
 
-        <div class="button-grid">
-          <button type="button" data-demo-event="idle">Idle</button>
-          <button type="button" data-demo-event="attack">Attaque</button>
-          <button type="button" data-demo-event="hit">Hit</button>
-          <button type="button" data-demo-event="ko">KO</button>
-          <button type="button" class="button-secondary" data-demo-stop>Stop</button>
-        </div>
+      <div class="distance-buttons" aria-label="Distance">
+        <button type="button" data-combat-move="short">Courte</button>
+        <button type="button" data-combat-move="medium">Moyenne</button>
+        <button type="button" data-combat-move="long">Longue</button>
+      </div>
 
-        <div class="debug-upload-grid">
-          <label class="file-control">
-            <span>Image joueur personnalisée (optionnel)</span>
-            <input
-              data-demo-file="player"
-              type="file"
-              accept="image/png,image/webp,image/jpeg"
-            >
-          </label>
+      <div class="action-bar" aria-label="Actions">
+        <details class="action-menu" data-action-menu>
+          <summary>Capacités</summary>
+          <div class="action-menu__panel" data-combat-skills></div>
+        </details>
 
-          <label class="file-control">
-            <span>Image adversaire personnalisée (optionnel)</span>
-            <input
-              data-demo-file="opponent"
-              type="file"
-              accept="image/png,image/webp,image/jpeg"
-            >
-          </label>
-        </div>
+        <details class="action-menu" data-action-menu>
+          <summary>Objets</summary>
+          <div class="action-menu__panel" data-combat-items></div>
+        </details>
 
-        <p class="status" data-demo-status data-state="info" role="status">
-          Initialisation…
-        </p>
-      </section>
-    </details>
+        <details class="action-menu" data-action-menu>
+          <summary>Équipe</summary>
+          <div class="action-menu__panel">
+            <p class="team-selection" data-team-selection>
+              Réserve sélectionnée : Drakon
+            </p>
+            <div data-combat-team-actions></div>
+          </div>
+        </details>
+      </div>
+
+      <p
+        class="live-status"
+        data-combat-live-status
+        data-tone="info"
+        role="status"
+      >
+        Marai contre Drakon — choisis une action.
+      </p>
+    </section>
   </main>
 
   <script type="module" src="./demo.js"></script>
