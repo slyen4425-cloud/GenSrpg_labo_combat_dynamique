@@ -173,3 +173,19 @@ Mouvements spéciaux :
 - Plongeon aérien : montée -> disparition -> piqué sur l'adversaire -> impact -> retour.
 
 Le contact visuel avec la cible correspond au timestamp d'impact du moteur de combat. Les dégâts ne sont pas liés à la fin du retour visuel.
+
+
+## V6 — vitesse d'approche, KO et HUD de charge
+
+- arène encore agrandie ;
+- barre de charge principale plus épaisse ;
+- nom de l'action en cours affiché sous le nom du monstre ;
+- compte à rebours fourni directement par Combat Runtime ;
+- pendant l'approche, le HUD affiche le temps restant avant impact ;
+- Griffe utilise désormais 1,5 s de déplacement réel avant impact ;
+- ce temps vient uniquement de `travelMs` et peut être réglé librement ;
+- attaque aérienne monte jusqu'à sortir complètement de l'arène avant le piqué ;
+- KO ne revient plus en Idle avant le remplacement du roster ;
+- la détection KO utilise également l'état combat résolu comme sentinelle robuste.
+
+Référence d'ergonomie : grande scène centrale et HUD compact de jeu de monstres temps réel, tout en conservant les contrôles tactiles propres au laboratoire.
