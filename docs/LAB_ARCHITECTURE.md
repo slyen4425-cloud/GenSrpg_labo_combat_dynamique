@@ -561,6 +561,33 @@ Règle initiale :
 La Demo UI peut donc autoriser une compétence joueur pendant une compétence adverse, mais elle ne crée ni horloge, ni résolution, ni ordre d'impact.
 
 
+#### Clash de projectiles concurrents V9
+
+Le clash de deux projectiles est une règle Combat Rules, jamais une déduction du DOM.
+
+Configuration dans `SkillDefinition` :
+
+```js
+projectileClash: {
+  mode: "none" | "mutual_cancel",
+  group: "identifiant-compatible"
+}
+```
+
+Règles du premier jalon :
+
+- `none` est le comportement par défaut ;
+- `mutual_cancel` nécessite `form = "projectile"` et un `group` non vide ;
+- deux projectiles ne peuvent s'annuler que si les deux déclarent `mutual_cancel`, portent le même groupe et se ciblent mutuellement ;
+- Combat Rules calcule le temps de rencontre à partir des vrais timestamps de release et des vrais `travelMs` ;
+- Combat Runtime insère ce clash dans la même horloge que releases et impacts ;
+- le clash produit deux résolutions sémantiques `clashed` sans événement `hit` ni dégâts ;
+- Presenter / FX arrêtent uniquement les projectiles déjà déclarés `clashed` ;
+- la géométrie DOM ne décide jamais si un clash gameplay existe.
+
+Un futur mode `pierce`, priorité de projectile ou autre comportement devra être ajouté au contrat de données avant toute implémentation moteur.
+
+
 
 ### PV / HP dans Combat State
 
