@@ -225,6 +225,54 @@ export function createRosterSession({
     });
   }
 
+  function replaceKnockedOut(teamId) {
+    const team = teamOf(teamId);
+    if (!team.activeMemberId) {
+      return Object.freeze({ ok: false, outcome: "no_active_member" });
+    }
+
+    const fighter = combatSession.snapshot().fighters[team.slotId];
+    if (!fighter || fighter.hp > 0) {
+      return Object.freeze({ ok: false, outcome: "active_member_not_ko" });
+    }
+
+    syncActiveSnapshot(team);
+    const defeatedMemberId = team.activeMemberId;
+    team.activeMemberId = null;
+
+    const replacement = [...team.members.values()].find((member) => {
+      if (member.id === defeatedMemberId) {
+        return false;
+      }
+      const hp =
+        member.savedFighter?.hp ??
+        member.fighterConfig.initialHp ??
+        member.fighterConfig.maxHp;
+      return hp > 0;
+    });
+
+    if (!replacement) {
+      team.selectedReserveMemberId = null;
+      return Object.freeze({
+        ok: true,
+        outcome: "team_defeated",
+        teamId,
+        slotId: team.slotId,
+        defeatedMemberId
+      });
+    }
+
+    team.selectedReserveMemberId = replacement.id;
+    const summoned = summon(teamId, replacement.id);
+
+    return Object.freeze({
+      ...summoned,
+      outcome: "ko_replaced",
+      defeatedMemberId,
+      replacementMemberId: replacement.id
+    });
+  }
+
   function applyCommandResolution(teamId, resolution) {
     if (!resolution?.ok || resolution.outcome !== "completed") {
       return Object.freeze({ ok: false, outcome: "command_not_completed" });
@@ -245,6 +293,7 @@ export function createRosterSession({
     selectReserve,
     recall,
     summon,
+    replaceKnockedOut,
     applyCommandResolution
   });
 }
