@@ -309,6 +309,43 @@ Il ne devient jamais la clé métier.
 
 ---
 
+
+## 7.1 Organisation physique officielle — arènes
+
+Les arènes disposent d'une famille dédiée dans la bibliothèque, au même niveau logique que les icônes, sprites et FX.
+
+Arborescence cible initiale :
+
+```
+assets/library/core/
+  icons/
+  sprites/
+  fx/
+  arenas/
+    forest/
+    cave/
+    snow/
+    desert/
+    city/
+    sci-fi/
+```
+
+Chaque biome possède son propre sous-dossier. Les fichiers ne doivent pas être mélangés avec les textures de tuiles, sprites de créatures ou FX.
+
+Convention de nommage :
+
+`arena_<biome>_<variant>.webp`
+
+Exemples :
+
+- `arena_forest_01.webp`
+- `arena_cave_01.webp`
+- `arena_snow_01.webp`
+
+Le PNG source maître peut être conservé hors runtime si nécessaire, mais la ressource runtime privilégiée est WebP.
+
+Une arène est un asset de présentation de type `background`. Son identité de biome n'a aucune autorité gameplay.
+
 ## 8. AssetDefinition — modèle conceptuel
 
 Exemple image :

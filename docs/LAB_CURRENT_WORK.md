@@ -5766,3 +5766,48 @@ Statut :
 - SHA fonctionnel : `0946237f0efcf477130c323b653045bfc7f069f6` ;
 - CI work : run `36187017741` — SUCCESS ;
 - validation visuelle smartphone requise avant checkpoint GREEN.
+
+
+### Lot — rangement officiel des arènes + second agrandissement UI capacités
+
+Décision utilisateur du 2026-09-25 :
+
+- créer une famille dédiée aux arènes dans la bibliothèque, comme pour les icônes / sprites / FX ;
+- organiser les arènes par biome ;
+- réserver la première arène forêt sous le nom `arena_forest_01.webp` ;
+- agrandir encore légèrement les touches de capacités, surtout en hauteur ;
+- respecter strictement les frontières gameplay / présentation.
+
+Branches :
+
+- départ : `checkpoint/lab-start-arena-library-ui-v9-2026-09-25` ;
+- travail : `work/lab-arena-library-ui-v9-2026-09-25` ;
+- preview : `preview/lab-arena-library-ui-v9-2026-09-25` ;
+- base : `3b250a90310fca1f279d248b89ec10087a1eb666`.
+
+Organisation ajoutée :
+
+```
+assets/library/core/arenas/
+  README.md
+  forest/
+    README.md
+```
+
+Les futurs biomes suivront la même convention : `cave/`, `snow/`, etc.
+
+UI capacités :
+
+- ratio `0.8` -> `0.72` ;
+- hauteur supplémentaire à largeur identique ;
+- icône `78 %` -> `82 %` ;
+- aucune modification du dock en largeur ;
+- aucun changement Combat Rules / Runtime / dégâts / énergie / timings.
+
+Arène forêt :
+
+- l'image visuelle fournie est validée comme première arène forêt ;
+- nom runtime réservé : `assets/library/core/arenas/forest/arena_forest_01.webp` ;
+- le binaire exact n'est pas encore écrit dans Git parce que l'upload image du chat n'expose actuellement aucun flux de bytes téléchargeable aux outils de dépôt ;
+- aucun faux asset ni substitut n'est créé ;
+- dès que le même fichier est fourni avec un backing téléchargeable, il sera ajouté à ce chemin sans changer l'architecture.
