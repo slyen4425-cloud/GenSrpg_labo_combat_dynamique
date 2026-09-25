@@ -1,12 +1,17 @@
 import { mountCombatDemo } from "../../src/ui/demo-app.js";
 import { mountCombatTest } from "../../src/ui/combat-test-ui.js";
+import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");
 
 Promise.resolve()
   .then(async () => {
     const visuals = await mountCombatDemo({ root });
-    const combat = await mountCombatTest({ root, visuals });
+    const combat = await mountCombatTest({
+      root,
+      visuals,
+      presentationAssets: demoPresentationAssets
+    });
 
     window.addEventListener(
       "pagehide",
