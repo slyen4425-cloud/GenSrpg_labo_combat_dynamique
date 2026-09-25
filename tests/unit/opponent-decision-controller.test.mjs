@@ -295,17 +295,27 @@ test("reaction engine never forces an unaffordable configured reaction", () => {
   assert.equal(reaction.reason, "no_legal_reaction");
 });
 
-test("linear opponent does not take a normal turn while Runtime is busy", () => {
-  const { runtime, ai } = harness();
+test("opponent can decide while player is active but remains blocked by its own action", () => {
+  const { runtime, ai } = harness({
+    opponentEnergy: 10,
+    distance: "medium"
+  });
 
-  runtime.startSkill({
+  const player = runtime.startSkill({
     actorId: "player",
     targetId: "opponent",
     skill: offensive.fireball
   });
+  assert.equal(player.ok, true);
 
-  const decision = ai.takeTurn();
-  assert.deepEqual(decision, {
+  const concurrent = ai.takeTurn();
+  assert.equal(concurrent.status, "skill_started");
+  assert.equal(concurrent.actorId, "opponent");
+  assert.equal(runtime.hasActiveActionFor("player"), true);
+  assert.equal(runtime.hasActiveActionFor("opponent"), true);
+
+  const blocked = ai.takeTurn();
+  assert.deepEqual(blocked, {
     status: "busy",
     reason: "action_in_progress"
   });
