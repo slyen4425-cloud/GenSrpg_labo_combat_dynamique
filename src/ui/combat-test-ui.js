@@ -527,20 +527,6 @@ export async function mountCombatTest({
 
     if (teamId === "player") {
       node.disabled = member.active;
-      listen(node, "click", () => {
-        const result = roster.selectReserve(
-          "player",
-          member.id
-        );
-        if (result.ok) {
-          setStatus(
-            `${member.displayName} sélectionné en réserve.`,
-            "info"
-          );
-          renderRoster();
-          renderAvailability();
-        }
-      });
     }
 
     return node;
@@ -830,6 +816,35 @@ export async function mountCombatTest({
         "warn"
       );
       render();
+    }
+  });
+
+  listen(playerReserve, "click", (event) => {
+    const button = event.target.closest?.("[data-member-id]");
+    if (!button || button.disabled) {
+      return;
+    }
+
+    const rosterState = roster.snapshot();
+    const member = rosterState.player.members.find(
+      (item) => item.id === button.dataset.memberId
+    );
+    if (!member) {
+      return;
+    }
+
+    const result = roster.selectReserve(
+      "player",
+      member.id
+    );
+
+    if (result.ok) {
+      setStatus(
+        `${member.displayName} sélectionné en réserve.`,
+        "info"
+      );
+      renderRoster();
+      renderAvailability();
     }
   });
 
