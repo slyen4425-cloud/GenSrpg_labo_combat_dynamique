@@ -483,7 +483,7 @@ test("DOM projectile adapter uses a bound sprite strip while retaining movement 
   const renderer = createDomSkillFxRenderer({
     arena,
     anchors,
-    resolveSkillPresentation(skillId) {
+    presentationForSkill(skillId) {
       assert.equal(skillId, "fireball");
       return {
         travel: {
@@ -571,7 +571,7 @@ test("DOM impact adapter uses the bound fireball impact strip on the target anch
   const renderer = createDomSkillFxRenderer({
     arena,
     anchors,
-    resolveSkillPresentation() {
+    presentationForSkill() {
       return {
         impact: {
           assetId: "pack:capture:sprite-fireball-impact-01",
