@@ -346,7 +346,8 @@ export function planAnimation({ event, actor, profile }) {
               rotateDeg: directed(scaled(cfg.recoilRotate, intensity), sign),
               scaleX: 0.98,
               scaleY: 1.02
-            }
+            },
+            filter: cfg.filter
           },
           {
             label: "recover",
