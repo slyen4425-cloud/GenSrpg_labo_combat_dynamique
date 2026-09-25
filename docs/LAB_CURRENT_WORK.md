@@ -4916,3 +4916,31 @@ Critère de fin :
 - GREEN technique uniquement après tests/CI ;
 - preview smartphone obligatoire ;
 - aucun checkpoint GREEN final avant validation visuelle explicite de Sylvain.
+
+
+### Diagnostic affiné — lecture projectile
+
+Clarification utilisateur :
+
+- le défaut principal n'est pas la qualité artistique brute des frames ;
+- le rendu ne donne pas la sensation d'une vraie Boule de feu quittant un monstre et atteignant l'autre ;
+- le noyau du projectile ne semble pas coïncider avec la trajectoire.
+
+Causes techniques démontrées dans le raccord actuel :
+
+1. la démo utilise toujours l'atlas `travel_lr`, quel que soit le sens réel du tir ;
+2. le renderer calcule bien l'angle de trajectoire dans `--skill-fx-angle`, mais cet angle n'est jamais appliqué au visuel ;
+3. la trajectoire DOM suit le centre du node, alors que le noyau lumineux de la séquence de travel est décentré dans la frame ;
+4. la séquence sprite possède son propre mouvement interne, qui se superpose donc au déplacement du node et brouille la lecture du projectile.
+
+Correction retenue :
+
+- utiliser une séquence de travel Capture cohérente comme sprite canonique ;
+- garder le déplacement du projectile exclusivement au renderer ;
+- ancrer le noyau lumineux du sprite sur la trajectoire ;
+- orienter le visuel selon l'angle réel source -> cible sans modifier la trajectoire ni `travelMs` ;
+- séparer le shell qui se déplace du visuel sprite qui s'oriente / s'anime ;
+- conserver l'impact séparé au point cible ;
+- fallback générique inchangé pour les compétences sans binding.
+
+Aucune modification gameplay n'est autorisée pour cette correction.
