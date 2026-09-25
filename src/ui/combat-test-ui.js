@@ -168,7 +168,8 @@ function commandTimingText(command) {
 export async function mountCombatTest({
   root,
   visuals,
-  fetchImpl = fetch
+  fetchImpl = fetch,
+  presentationAssets = null
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -352,7 +353,13 @@ export async function mountCombatTest({
         '[data-demo-slot="opponent"] [data-demo-motion]'
       )
     },
-    targetAnchors: fighterContainers
+    targetAnchors: fighterContainers,
+    resolveSkillPresentation(skillId) {
+      return (
+        presentationAssets?.resolveSkillPresentation?.(skillId) ??
+        null
+      );
+    }
   });
 
   const presenter = createCombatResolutionPresenter({
@@ -415,12 +422,25 @@ export async function mountCombatTest({
     title,
     meta,
     timing,
-    className = ""
+    className = "",
+    icon = null
   }) {
     const button = root.ownerDocument.createElement("button");
     button.type = "button";
     button.className =
       `action-option ${className}`.trim();
+
+    if (icon?.url) {
+      const iconNode =
+        root.ownerDocument.createElement("img");
+      iconNode.className = "action-option__icon";
+      iconNode.src = icon.url;
+      iconNode.alt = "";
+      iconNode.setAttribute("aria-hidden", "true");
+      iconNode.dataset.assetId = icon.assetId ?? "";
+      button.classList.add("action-option--with-icon");
+      button.append(iconNode);
+    }
 
     const titleNode =
       root.ownerDocument.createElement("strong");
@@ -440,11 +460,15 @@ export async function mountCombatTest({
 
   function createSkillButtons() {
     for (const skill of skills) {
+      const presentation =
+        presentationAssets?.resolveSkillPresentation?.(skill.id) ??
+        null;
       const button = createActionButton({
         title: skill.name,
         meta: skillMetaText(skill),
         timing: skillTimingText(skill),
-        className: "action-option--skill"
+        className: "action-option--skill",
+        icon: presentation?.icon ?? null
       });
       button.dataset.combatSkill = skill.id;
       skillContainer.append(button);
