@@ -3,12 +3,17 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
-import { createImageSourceManager } from "../assets/image-source-manager.js";
 
 const DATA_URLS = Object.freeze({
   profiles: Object.freeze({
-    serpentine: new URL("../../data/profiles/serpentine.profile.json", import.meta.url),
-    drake: new URL("../../data/profiles/drake.profile.json", import.meta.url)
+    serpentine: new URL(
+      "../../data/profiles/serpentine.profile.json",
+      import.meta.url
+    ),
+    drake: new URL(
+      "../../data/profiles/drake.profile.json",
+      import.meta.url
+    )
   }),
   creatures: Object.freeze({
     maraileron: new URL(
@@ -70,57 +75,50 @@ export async function mountCombatDemo({
   ]);
 
   const profiles = createProfileRegistry([serpentine, drake]);
-  const status = requiredElement(root, "[data-demo-status]");
-  const targetSelect = requiredElement(root, "[data-demo-target]");
-  const intensityInput = requiredElement(root, "[data-demo-intensity]");
-  const intensityValue = requiredElement(root, "[data-demo-intensity-value]");
-  const stopButton = requiredElement(root, "[data-demo-stop]");
+  const creatureMetas = new Map([
+    [maraileron.id, maraileron],
+    [braisombre.id, braisombre]
+  ]);
 
   let disposed = false;
-  const cleanups = [];
 
   const slots = {
     player: createSlot({
       key: "player",
-      meta: maraileron,
+      initialMeta: maraileron,
       view: "player",
       root,
       profiles
     }),
     opponent: createSlot({
       key: "opponent",
-      meta: braisombre,
+      initialMeta: braisombre,
       view: "opponent",
       root,
       profiles
     })
   };
 
-  function listen(element, type, handler) {
-    element.addEventListener(type, handler);
-    cleanups.push(() => element.removeEventListener(type, handler));
-  }
-
-  function selectedSlot() {
-    return slots[targetSelect.value] ?? slots.player;
+  function slotOf(slotKey) {
+    const slot = slots[slotKey];
+    if (!slot) {
+      throw new RangeError(`Unknown demo slot: ${slotKey}`);
+    }
+    return slot;
   }
 
   function otherSlot(slot) {
     return slot.key === "player" ? slots.opponent : slots.player;
   }
 
-  function setStatus(message, state = "info") {
-    status.textContent = message;
-    status.dataset.state = state;
-  }
-
   function startIdleFor(slotKey) {
     if (disposed) {
       return null;
     }
-    const slot = slots[slotKey];
-    if (!slot) {
-      throw new RangeError(`Unknown demo slot: ${slotKey}`);
+
+    const slot = slotOf(slotKey);
+    if (!slot.visible) {
+      return null;
     }
 
     const event = normalizeCombatVisualEvent({
@@ -141,19 +139,22 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "disposed" });
     }
 
-    const slot = slots[slotKey];
-    if (!slot) {
-      return Promise.reject(new RangeError(`Unknown demo slot: ${slotKey}`));
+    const slot = slotOf(slotKey);
+    if (!slot.visible) {
+      return Promise.resolve({ status: "hidden" });
     }
+
     const target = otherSlot(slot);
-    const intensity = Number(intensityInput.value);
 
     try {
       const event = normalizeCombatVisualEvent({
         type,
         actorId: slot.actor.id,
-        targetId: type === "attack" ? target.actor.id : null,
-        intensity
+        targetId:
+          type === "attack" && target.visible
+            ? target.actor.id
+            : null,
+        intensity: 1
       });
 
       const plan = planAnimation({
@@ -164,102 +165,77 @@ export async function mountCombatDemo({
 
       const handle = slot.renderer.play(plan);
 
-      if (type !== "idle") {
-        setStatus(
-          `${slot.meta.name} — ${type} × ${intensity.toFixed(2)}`,
-          "running"
-        );
-      }
-
       return handle.finished.then((result) => {
-        if (!disposed && type !== "idle") {
+        if (!disposed && type !== "idle" && slot.visible) {
           startIdleFor(slotKey);
-          if (result.status !== "running") {
-            setStatus(
-              `${slot.meta.name} — ${result.status}`,
-              result.status === "finished" ? "ok" : "info"
-            );
-          }
         }
         return result;
       });
     } catch (error) {
-      setStatus(error.message, "error");
       return Promise.reject(error);
     }
   }
 
-  function playEvent(type) {
-    return playEventFor(selectedSlot().key, type);
-  }
-
   function cancelFor(slotKey) {
-    const slot = slots[slotKey];
-    if (!slot) {
-      throw new RangeError(`Unknown demo slot: ${slotKey}`);
-    }
+    const slot = slotOf(slotKey);
     slot.renderer.cancel();
+    if (slot.visible) {
+      startIdleFor(slotKey);
+    }
+  }
+
+  function setCreatureFor(
+    slotKey,
+    creatureId,
+    { displayName = null } = {}
+  ) {
+    if (disposed) {
+      throw new Error("combat visual controller has been disposed");
+    }
+
+    const meta = creatureMetas.get(creatureId);
+    if (!meta) {
+      throw new RangeError(`Unknown demo creature: ${creatureId}`);
+    }
+
+    const slot = slotOf(slotKey);
+    slot.setCreature(meta, displayName);
+    slot.setVisible(true);
     startIdleFor(slotKey);
-  }
 
-  for (const button of root.querySelectorAll("[data-demo-event]")) {
-    listen(button, "click", () => {
-      playEvent(button.dataset.demoEvent).catch(() => {});
+    return Object.freeze({
+      slotKey,
+      creatureId,
+      displayName: displayName ?? meta.name,
+      profile: meta.profile
     });
   }
 
-  listen(stopButton, "click", () => {
-    const slot = selectedSlot();
-    slot.renderer.cancel();
-    setStatus(`${slot.meta.name} — animation arrêtée`, "info");
-  });
-
-  listen(intensityInput, "input", () => {
-    intensityValue.textContent = Number(intensityInput.value).toFixed(2);
-  });
-
-  for (const slot of Object.values(slots)) {
-    if (!slot.fileInput) {
-      continue;
+  function setSlotVisible(slotKey, visible) {
+    const slot = slotOf(slotKey);
+    slot.setVisible(Boolean(visible));
+    if (slot.visible) {
+      startIdleFor(slotKey);
     }
-    listen(slot.fileInput, "change", () => {
-      const [file] = slot.fileInput.files ?? [];
-      if (!file) {
-        return;
-      }
-
-      try {
-        const url = slot.sourceManager.load(file);
-        slot.image.src = url;
-        slot.rebuildActor(url);
-        setStatus(`${slot.meta.name} — image temporaire chargée`, "ok");
-      } catch (error) {
-        setStatus(error.message, "error");
-      }
-    });
   }
 
   startIdleFor("player");
   startIdleFor("opponent");
 
-  setStatus(
-    "Démo prête — Maraileron et Braisombre restent en idle par défaut.",
-    "ok"
-  );
-
   return Object.freeze({
-    playEvent,
     playEventFor,
     cancelFor,
     startIdleFor,
+    setCreatureFor,
+    setSlotVisible,
+    getCreatureFor(slotKey) {
+      return slotOf(slotKey).meta.id;
+    },
     dispose() {
       if (disposed) {
         return;
       }
       disposed = true;
-      for (const cleanup of cleanups.splice(0)) {
-        cleanup();
-      }
       for (const slot of Object.values(slots)) {
         slot.dispose();
       }
@@ -269,39 +245,24 @@ export async function mountCombatDemo({
 
 function createSlot({
   key,
-  meta,
+  initialMeta,
   view,
   root,
   profiles
 }) {
-  if (!profiles.has(meta.profile)) {
-    throw new Error(`Unknown profile ${meta.profile} for ${meta.id}`);
-  }
-
   const container = requiredElement(root, `[data-demo-slot="${key}"]`);
   const motion = requiredElement(container, "[data-demo-motion]");
   const image = requiredElement(container, "[data-demo-image]");
-  const fileInput = root.querySelector(`[data-demo-file="${key}"]`);
   const label = requiredElement(container, "[data-demo-label]");
-  const profileLabel = requiredElement(container, "[data-demo-profile]");
+  const profileLabel = container.querySelector("[data-demo-profile]");
 
-  label.textContent = meta.name;
-  profileLabel.textContent = meta.profile;
-
-  const runtimeAsset = meta.runtimePreview?.[view] ?? meta.views[view];
-  const runtimeUrl = new URL(runtimeAsset, meta.assetBaseUrl).href;
-
-  image.src = runtimeUrl;
-  image.hidden = false;
-
-  const sourceManager = createImageSourceManager();
+  let meta = null;
   let actor = null;
   let renderer = null;
+  let visible = true;
 
   function rebuildActor(asset) {
-    if (renderer) {
-      renderer.dispose();
-    }
+    renderer?.dispose();
 
     actor = normalizeVisualActor({
       id: `${meta.id}-${key}`,
@@ -311,7 +272,8 @@ function createSlot({
       view,
       scale: meta.displayScale?.[view] ?? meta.scale ?? 1,
       position: meta.offset ?? { x: 0, y: 0 },
-      transformOrigin: meta.transformOrigin ?? { x: "50%", y: "50%" }
+      transformOrigin:
+        meta.transformOrigin ?? { x: "50%", y: "50%" }
     });
 
     renderer = createDomActorRenderer({
@@ -320,25 +282,61 @@ function createSlot({
     });
   }
 
-  rebuildActor(runtimeUrl);
+  function setCreature(nextMeta, displayName = null) {
+    if (!profiles.has(nextMeta.profile)) {
+      throw new Error(
+        `Unknown profile ${nextMeta.profile} for ${nextMeta.id}`
+      );
+    }
+
+    meta = nextMeta;
+    label.textContent = displayName ?? meta.name;
+    if (profileLabel) {
+      profileLabel.textContent = meta.profile;
+    }
+
+    const runtimeAsset =
+      meta.runtimePreview?.[view] ?? meta.views[view];
+    const runtimeUrl = new URL(
+      runtimeAsset,
+      meta.assetBaseUrl
+    ).href;
+
+    image.src = runtimeUrl;
+    image.hidden = false;
+    rebuildActor(runtimeUrl);
+  }
+
+  function setVisible(nextVisible) {
+    visible = Boolean(nextVisible);
+    container.hidden = !visible;
+    if (!visible) {
+      renderer?.cancel();
+    }
+  }
+
+  setCreature(initialMeta);
 
   return {
     key,
-    meta,
     view,
     image,
-    fileInput,
-    sourceManager,
-    rebuildActor,
+    setCreature,
+    setVisible,
+    get meta() {
+      return meta;
+    },
     get actor() {
       return actor;
     },
     get renderer() {
       return renderer;
     },
+    get visible() {
+      return visible;
+    },
     dispose() {
       renderer?.dispose();
-      sourceManager.dispose();
       image.removeAttribute("src");
     }
   };
