@@ -88,6 +88,9 @@ export function createCombatRuntime({
       actionId: null,
       skillId: null,
       commandId: null,
+      actionName: null,
+      preparationMs: 0,
+      preparationRemainingMs: 0,
       elapsedMs: 0,
       chargeProgress: 0,
       phase: "idle",
@@ -121,9 +124,20 @@ export function createCombatRuntime({
       });
     }
 
+    const actionName =
+      record.action.skill?.name ??
+      record.action.command?.name ??
+      record.action.actionId;
+
     return Object.freeze({
       actionType: record.action.actionType,
       actionId: record.action.actionId,
+      actionName,
+      preparationMs,
+      preparationRemainingMs: Math.max(
+        0,
+        preparationMs - Math.min(elapsedMs, preparationMs)
+      ),
       skillId:
         record.action.actionType === "skill"
           ? record.action.actionId
