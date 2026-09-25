@@ -33,8 +33,9 @@ export function createCombatRuntime({
   let running = false;
   let timerId = null;
   let lastNowMs = null;
-  let active = null;
+  let sequence = 0;
   let lastStateSignal = null;
+  const activeByActor = new Map();
 
   function stateSignal(state) {
     return JSON.stringify({
@@ -69,11 +70,11 @@ export function createCombatRuntime({
     }
   }
 
-  function elapsedForActive(atNowMs) {
-    if (!active) {
+  function elapsedFor(record, atNowMs) {
+    if (!record) {
       return 0;
     }
-    return Math.max(0, atNowMs - active.startedAtClockMs);
+    return Math.max(0, atNowMs - record.startedAtClockMs);
   }
 
   function resolutionAtMs(record) {
@@ -82,11 +83,19 @@ export function createCombatRuntime({
       : record.action.impactAtMs;
   }
 
-  function idleProgress() {
+  function absoluteReleaseAt(record) {
+    return record.startedAtClockMs + record.action.releaseAtMs;
+  }
+
+  function absoluteResolutionAt(record) {
+    return record.startedAtClockMs + resolutionAtMs(record);
+  }
+
+  function idleProgress(actorId = null) {
     return Object.freeze({
       actionType: null,
       actionId: null,
-      actorId: null,
+      actorId,
       targetId: null,
       skillId: null,
       commandId: null,
@@ -168,42 +177,172 @@ export function createCombatRuntime({
     });
   }
 
-  function settleActive(atNowMs) {
-    if (!active) {
+  function activeRecords() {
+    return [...activeByActor.values()];
+  }
+
+  function koActorIdFromResolution(resolution) {
+    const hit = resolution?.events?.find(
+      (item) =>
+        item.type === "hit" &&
+        Number(item.hpAfter) <= 0
+    );
+    return hit?.actorId ?? null;
+  }
+
+  function emitInterrupted(record, reason, atNowMs) {
+    const result = Object.freeze({
+      ok: true,
+      outcome: "interrupted",
+      reason,
+      elapsedMs: elapsedFor(record, atNowMs),
+      action: record.action
+    });
+    onProgress(idleProgress(record.action.actorId));
+    onInterrupted(result);
+    return result;
+  }
+
+  function cancelActionsForActor(
+    actorId,
+    {
+      includeTargeted = false,
+      reason = "cancelled"
+    } = {}
+  ) {
+    const current = now();
+    const cancelled = [];
+
+    for (const record of activeRecords()) {
+      const matchesActor = record.action.actorId === actorId;
+      const matchesTarget =
+        includeTargeted &&
+        record.action.targetId === actorId;
+
+      if (!matchesActor && !matchesTarget) {
+        continue;
+      }
+
+      if (
+        activeByActor.get(record.action.actorId) !== record
+      ) {
+        continue;
+      }
+
+      activeByActor.delete(record.action.actorId);
+      cancelled.push(
+        emitInterrupted(record, reason, current)
+      );
+    }
+
+    return Object.freeze({
+      ok: cancelled.length > 0,
+      outcome:
+        cancelled.length > 0
+          ? "actions_cancelled"
+          : "no_action",
+      actorId,
+      includeTargeted,
+      cancelled: Object.freeze(cancelled)
+    });
+  }
+
+  function processRelease(record) {
+    if (
+      activeByActor.get(record.action.actorId) !== record ||
+      record.released
+    ) {
       return;
     }
 
-    const elapsedMs = elapsedForActive(atNowMs);
+    const earlyCounter =
+      record.reaction?.outcome === "countered" &&
+      record.reaction.readyAtMs < record.action.releaseAtMs;
 
-    if (!active.released && elapsedMs >= active.action.releaseAtMs) {
-      const earlyCounter =
-        active.reaction?.outcome === "countered" &&
-        active.reaction.readyAtMs < active.action.releaseAtMs;
+    record.released = true;
 
-      active.released = true;
-      if (!earlyCounter) {
-        onRelease(Object.freeze({
-          action: active.action,
-          elapsedMs: active.action.releaseAtMs
-        }));
-      }
+    if (!earlyCounter) {
+      onRelease(Object.freeze({
+        action: record.action,
+        elapsedMs: record.action.releaseAtMs
+      }));
     }
+  }
 
-    onProgress(progressSnapshot(active, elapsedMs));
-
-    if (elapsedMs < resolutionAtMs(active)) {
+  function processResolution(record, atNowMs) {
+    if (
+      activeByActor.get(record.action.actorId) !== record
+    ) {
       return;
     }
 
     const resolution = session.completeAction({
-      action: active.action,
-      reaction: active.reaction
+      action: record.action,
+      reaction: record.reaction
     });
 
-    active = null;
+    activeByActor.delete(record.action.actorId);
+    onProgress(idleProgress(record.action.actorId));
+
+    const koActorId = koActorIdFromResolution(resolution);
+    if (koActorId) {
+      cancelActionsForActor(koActorId, {
+        includeTargeted: true,
+        reason: "ko"
+      });
+    }
+
     onResolved(resolution);
-    onProgress(idleProgress());
     emitStateIfChanged({ force: true });
+  }
+
+  function settleDue(atNowMs) {
+    const due = [];
+
+    for (const record of activeRecords()) {
+      if (!record.released) {
+        due.push({
+          type: "release",
+          at: absoluteReleaseAt(record),
+          sequence: record.sequence,
+          record
+        });
+      }
+      due.push({
+        type: "resolution",
+        at: absoluteResolutionAt(record),
+        sequence: record.sequence,
+        record
+      });
+    }
+
+    due
+      .filter((item) => item.at <= atNowMs)
+      .sort((left, right) => {
+        if (left.at !== right.at) {
+          return left.at - right.at;
+        }
+        if (left.type !== right.type) {
+          return left.type === "release" ? -1 : 1;
+        }
+        return left.sequence - right.sequence;
+      })
+      .forEach((item) => {
+        if (item.type === "release") {
+          processRelease(item.record);
+        } else {
+          processResolution(item.record, atNowMs);
+        }
+      });
+
+    for (const record of activeRecords()) {
+      onProgress(
+        progressSnapshot(
+          record,
+          elapsedFor(record, atNowMs)
+        )
+      );
+    }
   }
 
   function tick() {
@@ -220,7 +359,8 @@ export function createCombatRuntime({
       emitStateIfChanged();
     }
 
-    settleActive(current);
+    settleDue(current);
+
     if (!disposed && running) {
       timerId = setTimer(tick, tickMs);
     }
@@ -239,44 +379,14 @@ export function createCombatRuntime({
     timerId = setTimer(tick, tickMs);
   }
 
-  function beginAction(result) {
-    if (!result.ok) {
-      return result;
-    }
-
-    const current = now();
-    active = {
-      action: result.action,
-      reaction: null,
-      startedAtClockMs: current,
-      released: false
-    };
-
-    emitStateIfChanged({ force: true });
-    onProgress(progressSnapshot(active, 0));
-
-    if (result.action.releaseAtMs === 0) {
-      active.released = true;
-      onRelease(Object.freeze({
-        action: result.action,
-        elapsedMs: 0
-      }));
-    }
-
-    settleActive(current);
-
-    return Object.freeze({
-      ok: true,
-      outcome: "started",
-      action: result.action
-    });
-  }
-
-  function canStartAction() {
+  function canStartAction(actorId) {
     if (disposed) {
-      return Object.freeze({ ok: false, outcome: "disposed" });
+      return Object.freeze({
+        ok: false,
+        outcome: "disposed"
+      });
     }
-    if (active) {
+    if (activeByActor.has(actorId)) {
       return Object.freeze({
         ok: false,
         outcome: "action_in_progress"
@@ -285,8 +395,46 @@ export function createCombatRuntime({
     return null;
   }
 
+  function beginAction(result) {
+    if (!result.ok) {
+      return result;
+    }
+
+    const actorId = result.action.actorId;
+    const rejected = canStartAction(actorId);
+    if (rejected) {
+      return rejected;
+    }
+
+    const current = now();
+    const record = {
+      action: result.action,
+      reaction: null,
+      startedAtClockMs: current,
+      released: false,
+      sequence: sequence++
+    };
+
+    activeByActor.set(actorId, record);
+
+    emitStateIfChanged({ force: true });
+    onProgress(progressSnapshot(record, 0));
+
+    if (result.action.releaseAtMs === 0) {
+      processRelease(record);
+    }
+
+    settleDue(current);
+
+    return Object.freeze({
+      ok: true,
+      outcome: "started",
+      action: result.action
+    });
+  }
+
   function startSkill({ actorId, targetId, skill }) {
-    const rejected = canStartAction();
+    const rejected = canStartAction(actorId);
     if (rejected) {
       return rejected;
     }
@@ -297,7 +445,7 @@ export function createCombatRuntime({
   }
 
   function startCommand({ actorId, command }) {
-    const rejected = canStartAction();
+    const rejected = canStartAction(actorId);
     if (rejected) {
       return rejected;
     }
@@ -307,20 +455,43 @@ export function createCombatRuntime({
     );
   }
 
-  function previewReaction(reactionSkill) {
-    if (!active) {
+  function reactionRecord(againstActorId = null) {
+    if (againstActorId !== null) {
+      const record = activeByActor.get(againstActorId);
+      return record?.action.actionType === "skill"
+        ? record
+        : null;
+    }
+
+    const candidates = activeRecords().filter(
+      (record) =>
+        record.action.actionType === "skill" &&
+        !record.reaction
+    );
+
+    return candidates.length === 1
+      ? candidates[0]
+      : null;
+  }
+
+  function previewReaction(
+    reactionSkill,
+    { againstActorId = null } = {}
+  ) {
+    const record = reactionRecord(againstActorId);
+
+    if (!record) {
       return Object.freeze({
         ok: false,
-        outcome: "no_action"
+        outcome:
+          activeByActor.size > 1 &&
+          againstActorId === null
+            ? "reaction_ambiguous"
+            : "no_action"
       });
     }
-    if (active.action.actionType !== "skill") {
-      return Object.freeze({
-        ok: false,
-        outcome: "reaction_not_supported"
-      });
-    }
-    if (active.reaction) {
+
+    if (record.reaction) {
       return Object.freeze({
         ok: false,
         outcome: "reaction_already_selected"
@@ -328,21 +499,35 @@ export function createCombatRuntime({
     }
 
     return session.previewReaction({
-      action: active.action,
+      action: record.action,
       reactionSkill,
-      elapsedMs: elapsedForActive(now())
+      elapsedMs: elapsedFor(record, now())
     });
   }
 
-  function react(reactionSkill) {
-    const preview = previewReaction(reactionSkill);
+  function react(
+    reactionSkill,
+    { againstActorId = null } = {}
+  ) {
+    const record = reactionRecord(againstActorId);
+    if (!record) {
+      return previewReaction(
+        reactionSkill,
+        { againstActorId }
+      );
+    }
+
+    const preview = previewReaction(
+      reactionSkill,
+      { againstActorId }
+    );
     if (!preview.ok) {
       return preview;
     }
 
-    const elapsedMs = elapsedForActive(now());
+    const elapsedMs = elapsedFor(record, now());
     const result = session.reactToSkill({
-      action: active.action,
+      action: record.action,
       reactionSkill,
       elapsedMs
     });
@@ -351,9 +536,9 @@ export function createCombatRuntime({
       return result;
     }
 
-    active.reaction = result.reaction;
+    record.reaction = result.reaction;
     emitStateIfChanged({ force: true });
-    onProgress(progressSnapshot(active, elapsedMs));
+    onProgress(progressSnapshot(record, elapsedMs));
     return result;
   }
 
@@ -361,23 +546,18 @@ export function createCombatRuntime({
     targetActorId,
     reason = "stun"
   }) {
-    if (!active) {
+    const record = activeByActor.get(targetActorId);
+
+    if (!record) {
       return Object.freeze({
         ok: false,
         outcome: "no_action"
       });
     }
 
-    if (active.action.actorId !== targetActorId) {
-      return Object.freeze({
-        ok: false,
-        outcome: "wrong_target"
-      });
-    }
+    const elapsedMs = elapsedFor(record, now());
 
-    const elapsedMs = elapsedForActive(now());
-
-    if (!active.action.interruptibleDuringPreparation) {
+    if (!record.action.interruptibleDuringPreparation) {
       return Object.freeze({
         ok: false,
         outcome: "not_interruptible",
@@ -385,7 +565,7 @@ export function createCombatRuntime({
       });
     }
 
-    if (elapsedMs >= active.action.releaseAtMs) {
+    if (elapsedMs >= record.action.releaseAtMs) {
       return Object.freeze({
         ok: false,
         outcome: "too_late",
@@ -393,18 +573,17 @@ export function createCombatRuntime({
       });
     }
 
-    const interruptedAction = active.action;
-    active = null;
+    activeByActor.delete(targetActorId);
 
     const result = Object.freeze({
       ok: true,
       outcome: "interrupted",
       reason,
       elapsedMs,
-      action: interruptedAction
+      action: record.action
     });
 
-    onProgress(idleProgress());
+    onProgress(idleProgress(targetActorId));
     onInterrupted(result);
     return result;
   }
@@ -427,13 +606,25 @@ export function createCombatRuntime({
     });
   }
 
-  function cancelActive() {
-    const cancelled = active !== null;
-    active = null;
-    if (cancelled) {
-      onProgress(idleProgress());
+  function cancelActive(actorId = null) {
+    if (actorId !== null) {
+      const record = activeByActor.get(actorId);
+      if (!record) {
+        return false;
+      }
+      activeByActor.delete(actorId);
+      onProgress(idleProgress(actorId));
+      return true;
     }
-    return cancelled;
+
+    const records = activeRecords();
+    activeByActor.clear();
+
+    for (const record of records) {
+      onProgress(idleProgress(record.action.actorId));
+    }
+
+    return records.length > 0;
   }
 
   function dispose() {
@@ -454,16 +645,28 @@ export function createCombatRuntime({
     react,
     interruptActive,
     applyResolutionInterrupt,
+    cancelActionsForActor,
     cancelActive,
     dispose,
+    hasActiveActionFor(actorId) {
+      return activeByActor.has(actorId);
+    },
+    activeActionFor(actorId) {
+      return activeByActor.get(actorId)?.action ?? null;
+    },
     get isRunning() {
       return running && !disposed;
     },
     get hasActiveAction() {
-      return active !== null;
+      return activeByActor.size > 0;
     },
     get activeAction() {
-      return active?.action ?? null;
+      return activeRecords()[0]?.action ?? null;
+    },
+    get activeActions() {
+      return Object.freeze(
+        activeRecords().map((record) => record.action)
+      );
     }
   });
 }
