@@ -335,7 +335,7 @@ test("reaction that becomes ready after impact does not apply or spend energy", 
     category: "counter",
     form: "self",
     energyCost: 2,
-    preparationMs: 1500,
+    preparationMs: 3000,
     allowedDistances: ["short", "medium", "long"],
     reaction: {
       counterForms: ["contact"]
@@ -527,4 +527,34 @@ test("release and impact events expose attack approach mode", () => {
 
   assert.equal(release.approachMode, "aerial");
   assert.equal(arrive.approachMode, "aerial");
+});
+
+
+test("fighter-ko semantic event is emitted exactly when HP reaches zero", () => {
+  const fragileState = createCombatState({
+    distance: "medium",
+    fighters: [
+      { ...maraileronConfig, initialEnergy: 10, initialHp: 100 },
+      { ...braisombreConfig, initialEnergy: 10, initialHp: 20 }
+    ]
+  });
+
+  const result = resolveSkill({
+    state: fragileState,
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fireball
+  });
+
+  const koEvents = result.events.filter(
+    (item) => item.type === "fighter-ko"
+  );
+
+  assert.equal(result.state.fighters.braisombre.hp, 0);
+  assert.equal(koEvents.length, 1);
+  assert.equal(koEvents[0].actorId, "braisombre");
+  assert.equal(
+    koEvents[0].atMs,
+    result.events.find((item) => item.type === "hit").atMs
+  );
 });
