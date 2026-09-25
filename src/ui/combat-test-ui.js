@@ -354,9 +354,9 @@ export async function mountCombatTest({
       )
     },
     targetAnchors: fighterContainers,
-    resolveSkillPresentation(skillId) {
+    presentationForSkill(skillId) {
       return (
-        presentationAssets?.resolveSkillPresentation?.(skillId) ??
+        presentationAssets?.presentationForSkill?.(skillId) ??
         null
       );
     }
@@ -461,7 +461,7 @@ export async function mountCombatTest({
   function createSkillButtons() {
     for (const skill of skills) {
       const presentation =
-        presentationAssets?.resolveSkillPresentation?.(skill.id) ??
+        presentationAssets?.presentationForSkill?.(skill.id) ??
         null;
       const button = createActionButton({
         title: skill.name,
