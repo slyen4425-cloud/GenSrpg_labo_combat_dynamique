@@ -291,6 +291,7 @@ export async function mountCombatTest({
   const menus = [...root.querySelectorAll("[data-action-menu]")];
   const cleanups = [];
   let disposed = false;
+  let koTransitionPending = false;
   let lastState = session.snapshot();
 
   const fx = createDomSkillFxRenderer({
@@ -592,7 +593,11 @@ export async function mountCombatTest({
       const current = target === state.distance;
 
       button.disabled =
-        !active || current || !preview.ok;
+        koTransitionPending ||
+        runtime.hasActiveAction ||
+        !active ||
+        current ||
+        !preview.ok;
       button.textContent = current
         ? `${DISTANCE_LABELS[target]} · ici`
         : `${DISTANCE_LABELS[target]} · ${formatEnergy(
@@ -605,9 +610,11 @@ export async function mountCombatTest({
     const rosterState = roster.snapshot();
     const hasActive =
       rosterState.player.activeMemberId !== null;
+    const hasOpponent =
+      rosterState.opponent.activeMemberId !== null;
 
     for (const { skill, button } of skillRefs.values()) {
-      const preview = hasActive
+      const preview = hasActive && hasOpponent
         ? session.previewSkill({
             actorId: "player",
             targetId: "opponent",
@@ -616,7 +623,9 @@ export async function mountCombatTest({
         : { ok: false };
 
       button.disabled =
-        runtime.hasActiveAction || !preview.ok;
+        koTransitionPending ||
+        runtime.hasActiveAction ||
+        !preview.ok;
     }
 
     const itemRef = commandRefs.get("item");
@@ -672,7 +681,7 @@ export async function mountCombatTest({
     renderAvailability();
   }
 
-  function projectPlayerToCurrentDistance() {
+  function projectSlotToCurrentDistance(slotId) {
     const distance = session.snapshot().distance;
     distancePresenter.presentMovement({
       result: {
@@ -686,8 +695,65 @@ export async function mountCombatTest({
           }
         ]
       },
-      actorSlot: "player"
+      actorSlot: slotId
     });
+  }
+
+  function projectPlayerToCurrentDistance() {
+    projectSlotToCurrentDistance("player");
+  }
+
+  function projectOpponentToCurrentDistance() {
+    projectSlotToCurrentDistance("opponent");
+  }
+
+  async function replaceOpponentAfterKo(presentation) {
+    if (!presentation?.ko) {
+      return null;
+    }
+
+    koTransitionPending = true;
+    renderAvailability();
+
+    await presentation.finished;
+
+    if (disposed) {
+      return null;
+    }
+
+    const result = roster.replaceKnockedOut("opponent");
+
+    if (!result.ok) {
+      koTransitionPending = false;
+      setStatus(
+        OUTCOME_LABELS[result.outcome] ?? result.outcome,
+        "warn"
+      );
+      renderAvailability();
+      return result;
+    }
+
+    if (result.outcome === "team_defeated") {
+      visuals.setSlotVisible("opponent", false);
+      setStatus("Équipe adverse vaincue.", "ok");
+    } else if (result.outcome === "ko_replaced") {
+      visuals.setCreatureFor(
+        "opponent",
+        result.creatureId,
+        { displayName: result.displayName }
+      );
+      visuals.setSlotVisible("opponent", true);
+      projectOpponentToCurrentDistance();
+      setStatus(
+        `${result.displayName} adverse entre en combat.`,
+        "accent"
+      );
+    }
+
+    koTransitionPending = false;
+    renderRoster();
+    render(session.snapshot());
+    return result;
   }
 
   function applyRosterResolution(resolution) {
@@ -785,15 +851,21 @@ export async function mountCombatTest({
       setCharge(0, false);
 
       if (resolution.actionType === "skill") {
-        presenter.presentOutcome({
+        const presentation = presenter.presentOutcome({
           resolution,
           actorSlot: "player",
           targetSlot: "opponent"
         });
-        setStatus(
-          `${resolution.outcome === "hit" ? "Impact réussi" : OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
-          resolution.outcome === "hit" ? "ok" : "info"
-        );
+
+        if (presentation.ko) {
+          setStatus("Adversaire KO… remplacement en cours.", "accent");
+          void replaceOpponentAfterKo(presentation);
+        } else {
+          setStatus(
+            `${resolution.outcome === "hit" ? "Impact réussi" : OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
+            resolution.outcome === "hit" ? "ok" : "info"
+          );
+        }
       } else {
         const rosterResult =
           applyRosterResolution(resolution);
