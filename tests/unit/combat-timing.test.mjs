@@ -305,6 +305,8 @@ test("live skill completion commits resolved HP damage to session state", () => 
   clock.fireNext();
 
   assert.equal(resolutions.length, 1);
+  assert.equal(resolutions[0].actionType, "skill");
+  assert.equal(resolutions[0].skillId, fireball.id);
   assert.equal(resolutions[0].outcome, "hit");
   assert.equal(resolutions[0].state.fighters.braisombre.hp, 70);
   assert.equal(session.snapshot().fighters.braisombre.hp, 70);
