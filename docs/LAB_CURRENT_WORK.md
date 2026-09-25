@@ -1782,6 +1782,76 @@ Validation utilisateur restante :
 
 Le lot est GREEN technique, en attente de validation visuelle smartphone.
 
+
+## Chantier actif — ko-ground-approach-chargehud-v6
+
+Base GREEN :
+
+`c8ca895f64d69d8b6a4bc615e05b26a066a3fd58`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-ko-ground-approach-chargehud-v6-2026-09-25`
+
+Branche :
+
+`work/lab-ko-ground-approach-chargehud-v6-2026-09-25`
+
+Retours utilisateur :
+
+- KO adverse non fonctionnel en test réel ;
+- attaque aérienne doit monter plus haut ;
+- surface de combat encore légèrement plus haute ;
+- les attaques corps-à-corps doivent réellement se déplacer jusqu'à la cible ;
+- le temps release -> impact d'un corps-à-corps doit être entièrement configurable par `travelMs` ;
+- exemple de calibration :
+  - Griffe : 1,5 s pour atteindre la cible ;
+  - une future capacité Sprint pourra être 0,9 s, 0,5 s ou toute autre valeur choisie dans les données ;
+- les dégâts restent appliqués uniquement lorsque la créature atteint réellement la cible ;
+- barre de charge plus grande ;
+- barre de charge affiche le nom de l'action en préparation et le temps restant.
+
+Architecture :
+
+- `travelMs` reste l'unique autorité gameplay du délai release -> impact ;
+- `approachMode: ground` déclenche un mouvement visuel corps-à-corps vers la géométrie réelle de la cible ;
+- l'Animation Core consomme `travelMs` et termine son segment d'approche exactement au timestamp d'impact ;
+- aucun timer de déplacement codé dans l'UI ;
+- le HUD de charge consomme uniquement la progression fournie par Combat Runtime ;
+- le KO doit être prouvé par un test du vrai chemin :
+  `Skill data -> Runtime -> Resolver -> HP=0 -> Presenter Hit/KO -> Roster replacement -> Combat slot + visual descriptor`.
+
+Propriétaires :
+
+- Combat Runtime : phase, temps écoulé/restant, impact ;
+- Action Resolver : dégâts à l'impact ;
+- Roster Session : remplacement KO ;
+- Combat Resolution Presenter : séquence Hit/KO et mouvement d'approche ;
+- Animation Core : ground/aerial/teleport motion ;
+- Demo UI : affichage nom + timer seulement.
+
+Interdits :
+
+- aucun délai corps-à-corps en CSS ou bouton ;
+- aucun KO détecté via lecture DOM de la barre PV ;
+- aucun remplacement adverse décidé par l'UI ;
+- aucun dégât à la fin d'une animation de retour ;
+- aucune seconde horloge pour le HUD de charge.
+
+Tests :
+
+- vrai chemin KO avec données réelles et runtime ;
+- Griffe conserve HP cible jusqu'à 1499 ms après release puis frappe à 1500 ms ;
+- mouvement ground atteint la cible exactement à `travelMs` ;
+- changement de `travelMs` change automatiquement la durée de déplacement sans modifier le code ;
+- aérien utilise une hauteur supérieure au V5 ;
+- barre HUD lit nom + temps restant depuis Runtime ;
+- CI complète et sentinelles V1-V5 vertes.
+
+Critère de fin :
+
+preview smartphone avec KO adverse réellement remplacé, Griffe visible en déplacement lent configurable, aérien plus haut, arène plus grande et HUD de charge lisible.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
