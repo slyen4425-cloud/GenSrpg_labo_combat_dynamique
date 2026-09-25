@@ -29,7 +29,7 @@ const ASSETS = Object.freeze({
     frameCount: 8,
     coreAnchor: Object.freeze({ x: 0.29, y: 0.5 }),
     headingRad: Math.PI,
-    displayScale: 2.3
+    displayScale: 2.8
   }),
   "pack:capture:sprite-fireball-impact-01": Object.freeze({
     assetId: "pack:capture:sprite-fireball-impact-01",
