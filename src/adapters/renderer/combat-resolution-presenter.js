@@ -1,6 +1,7 @@
 import {
   planSkillFx,
   planSkillOutcomeFx,
+  planSkillPreparationFx,
   planSkillReleaseFx
 } from "../../core/fx/skill-fx-plan.js";
 
@@ -34,6 +35,7 @@ export function createCombatResolutionPresenter({
 
   let disposed = false;
   const timers = new Set();
+  const preparationFxByActor = new Map();
 
   function schedule(callback, delayMs) {
     const timerId = setTimer(() => {
@@ -58,6 +60,55 @@ export function createCombatResolutionPresenter({
     );
   }
 
+  function cancelPreparation(actorSlot = "player") {
+    const handle = preparationFxByActor.get(actorSlot);
+    if (!handle) {
+      return false;
+    }
+
+    preparationFxByActor.delete(actorSlot);
+    handle.animation?.cancel?.();
+    return true;
+  }
+
+  function presentPreparation({
+    action,
+    actorSlot = "player"
+  }) {
+    if (disposed) {
+      return Object.freeze({ status: "disposed" });
+    }
+
+    cancelPreparation(actorSlot);
+
+    let handle = null;
+    for (const fxPlan of planSkillPreparationFx({
+      action,
+      actorSlot
+    })) {
+      const next = fx?.play(fxPlan) ?? null;
+      if (next?.status === "running") {
+        handle = next;
+      }
+    }
+
+    if (handle) {
+      preparationFxByActor.set(actorSlot, handle);
+      Promise.resolve(handle.finished)
+        .finally(() => {
+          if (preparationFxByActor.get(actorSlot) === handle) {
+            preparationFxByActor.delete(actorSlot);
+          }
+        })
+        .catch(() => {});
+    }
+
+    return Object.freeze({
+      status: handle ? "preparing" : "no_fx",
+      preparationMs: action?.preparationMs ?? 0
+    });
+  }
+
   function presentRelease({
     action,
     actorSlot = "player",
@@ -66,6 +117,8 @@ export function createCombatResolutionPresenter({
     if (disposed) {
       return Object.freeze({ status: "disposed" });
     }
+
+    cancelPreparation(actorSlot);
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
@@ -245,13 +298,18 @@ export function createCombatResolutionPresenter({
       return;
     }
     cancelPending();
+    for (const actorSlot of [...preparationFxByActor.keys()]) {
+      cancelPreparation(actorSlot);
+    }
     disposed = true;
   }
 
   return Object.freeze({
     present,
+    presentPreparation,
     presentRelease,
     presentOutcome,
+    cancelPreparation,
     cancelPending,
     dispose,
     get pendingCount() {
