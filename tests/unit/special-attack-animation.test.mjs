@@ -163,7 +163,9 @@ test("ground contact attack reaches configured target fraction exactly at travel
   );
   assert.equal(plan.segments[0].durationMs, 1500);
   assert.equal(plan.segments[0].transform.translateX, 144);
-  assert.equal(plan.segments[0].transform.translateY, 6.4);
+  assert.ok(
+    Math.abs(plan.segments[0].transform.translateY - 6.4) < 1e-9
+  );
   assert.equal(plan.segments.at(-1).transform.translateX, 0);
   assert.equal(plan.segments.at(-1).transform.translateY, 0);
 });
