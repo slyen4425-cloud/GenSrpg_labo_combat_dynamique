@@ -243,3 +243,22 @@ test("KO presentation chains hit then KO and exposes real completion", async () 
     ["play", "opponent", "ko"]
   ]);
 });
+
+
+test("ground live release uses configured travel time", () => {
+  const h = createHarness();
+  h.presenter.presentRelease({
+    action: {
+      travelMs: 1500,
+      skill: {
+        form: "contact",
+        approachMode: "ground",
+        element: null
+      }
+    }
+  });
+
+  assert.deepEqual(h.calls, [
+    ["approach", "player", "ground", 1500]
+  ]);
+});
