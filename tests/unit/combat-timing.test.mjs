@@ -413,8 +413,113 @@ test("contact damage is committed exactly when the creature reaches impact", () 
   clock.setTime(1200);
   clock.fireNext();
   assert.equal(releases.length, 1);
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2699);
+  clock.fireNext();
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2700);
+  clock.fireNext();
   assert.equal(resolutions.length, 1);
   assert.equal(session.snapshot().fighters.braisombre.hp, 82);
 
   runtime.dispose();
+});
+
+
+test("runtime progress exposes action label and remaining preparation without UI timing math", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10 },
+      { ...braisombre, initialEnergy: 10 }
+    ]
+  });
+  const clock = fakeClock();
+  const progress = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onProgress(value) {
+      progress.push(value);
+    }
+  });
+
+  runtime.start();
+  runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw
+  });
+
+  assert.equal(progress.at(-1).actionLabel, "Griffe");
+  assert.equal(progress.at(-1).preparationMs, 1200);
+  assert.equal(progress.at(-1).remainingPreparationMs, 1200);
+  assert.equal(progress.at(-1).travelMs, 1500);
+
+  clock.setTime(600);
+  clock.fireNext();
+  assert.equal(progress.at(-1).phase, "preparation");
+  assert.equal(progress.at(-1).remainingPreparationMs, 600);
+  assert.equal(progress.at(-1).chargeProgress, 0.5);
+
+  clock.setTime(1200);
+  clock.fireNext();
+  assert.equal(progress.at(-1).phase, "travel");
+  assert.equal(progress.at(-1).remainingPreparationMs, 0);
+  assert.equal(progress.at(-1).remainingImpactMs, 1500);
+  assert.equal(progress.at(-1).phaseProgress, 0);
+
+  runtime.dispose();
+});
+
+test("ground contact impact timing follows skill travelMs without code changes", () => {
+  const fastClaw = normalizeSkillDefinition({
+    ...claw,
+    id: "fast-claw",
+    name: "Sprint",
+    travelMs: 500
+  });
+  const mediumClaw = normalizeSkillDefinition({
+    ...claw,
+    id: "medium-claw",
+    name: "Sprint moyen",
+    travelMs: 900
+  });
+
+  const makeSession = () =>
+    createCombatSession({
+      distance: "short",
+      fighters: [
+        { ...maraileron, initialEnergy: 10 },
+        { ...braisombre, initialEnergy: 10 }
+      ]
+    });
+
+  const fast = makeSession().startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fastClaw
+  });
+  const medium = makeSession().startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: mediumClaw
+  });
+
+  assert.equal(
+    fast.action.impactAtMs - fast.action.releaseAtMs,
+    500
+  );
+  assert.equal(
+    medium.action.impactAtMs - medium.action.releaseAtMs,
+    900
+  );
 });
