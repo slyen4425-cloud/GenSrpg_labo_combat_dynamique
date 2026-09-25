@@ -44,8 +44,8 @@ const braisombre = await json("data/combat/fighters/braisombre.combat.json");
 const claw = normalizeSkillDefinition(
   await json("data/combat/skills/claw.skill.json")
 );
-const aerial = normalizeSkillDefinition(
-  await json("data/combat/skills/aerial-dive.skill.json")
+const teleport = normalizeSkillDefinition(
+  await json("data/combat/skills/teleport-strike.skill.json")
 );
 
 function harness() {
@@ -71,7 +71,7 @@ function harness() {
   return { session, clock, runtime, resolutions };
 }
 
-test("incoming claw misses when target is near the end of configured aerial travel", () => {
+test("incoming claw misses when target is inside configured teleport travel", () => {
   const { session, clock, runtime, resolutions } = harness();
 
   const attack = runtime.startSkill({
@@ -81,11 +81,11 @@ test("incoming claw misses when target is near the end of configured aerial trav
   });
   assert.equal(attack.ok, true);
 
-  clock.setTime(1000);
+  clock.setTime(1450);
   const escape = runtime.startSkill({
     actorId: "player",
     targetId: "opponent",
-    skill: aerial
+    skill: teleport
   });
   assert.equal(escape.ok, true);
 
@@ -96,22 +96,22 @@ test("incoming claw misses when target is near the end of configured aerial trav
   assert.equal(resolutions[0].actorId, "opponent");
   assert.equal(resolutions[0].skillId, "claw");
   assert.equal(resolutions[0].outcome, "evaded");
-  assert.equal(resolutions[0].evasionApplied, "aerial-dive");
+  assert.equal(resolutions[0].evasionApplied, "teleport-strike");
   assert.equal(session.snapshot().fighters.player.hp, 100);
   assert.equal(runtime.hasActiveActionFor("player"), true);
 
-  clock.setTime(2750);
+  clock.setTime(2770);
   clock.fireNext();
 
   assert.equal(resolutions.length, 2);
   assert.equal(resolutions[1].actorId, "player");
-  assert.equal(resolutions[1].skillId, "aerial-dive");
+  assert.equal(resolutions[1].skillId, "teleport-strike");
   assert.equal(resolutions[1].outcome, "hit");
 
   runtime.dispose();
 });
 
-test("incoming claw still hits while aerial skill is only preparing", () => {
+test("incoming claw still hits while teleport skill is only preparing", () => {
   const { session, clock, runtime, resolutions } = harness();
 
   runtime.startSkill({
@@ -124,7 +124,7 @@ test("incoming claw still hits while aerial skill is only preparing", () => {
   runtime.startSkill({
     actorId: "player",
     targetId: "opponent",
-    skill: aerial
+    skill: teleport
   });
 
   clock.setTime(2700);
@@ -137,13 +137,13 @@ test("incoming claw still hits while aerial skill is only preparing", () => {
   runtime.dispose();
 });
 
-test("incoming claw hits normally after the target mobility action has already resolved", () => {
+test("incoming claw hits normally after the target teleport action has already resolved", () => {
   const { session, clock, runtime, resolutions } = harness();
 
   runtime.startSkill({
     actorId: "player",
     targetId: "opponent",
-    skill: aerial
+    skill: teleport
   });
 
   runtime.startSkill({
@@ -152,10 +152,10 @@ test("incoming claw hits normally after the target mobility action has already r
     skill: claw
   });
 
-  clock.setTime(1750);
+  clock.setTime(1320);
   clock.fireNext();
   assert.equal(resolutions.length, 1);
-  assert.equal(resolutions[0].skillId, "aerial-dive");
+  assert.equal(resolutions[0].skillId, "teleport-strike");
 
   clock.setTime(2700);
   clock.fireNext();
