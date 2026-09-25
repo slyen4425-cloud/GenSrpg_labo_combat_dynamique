@@ -86,9 +86,15 @@ export function createCombatRuntime({
     return Object.freeze({
       actionType: null,
       actionId: null,
+      actionName: null,
       skillId: null,
       commandId: null,
       elapsedMs: 0,
+      preparationMs: 0,
+      preparationRemainingMs: 0,
+      travelMs: 0,
+      travelProgress: 0,
+      impactRemainingMs: 0,
       chargeProgress: 0,
       phase: "idle",
       released: false,
@@ -121,9 +127,23 @@ export function createCombatRuntime({
       });
     }
 
+    const travelMs = record.action.travelMs ?? 0;
+    const travelElapsed = Math.max(
+      0,
+      elapsedMs - record.action.releaseAtMs
+    );
+    const travelProgress =
+      travelMs <= 0
+        ? phase === "impact" ? 1 : 0
+        : Math.min(1, travelElapsed / travelMs);
+
     return Object.freeze({
       actionType: record.action.actionType,
       actionId: record.action.actionId,
+      actionName:
+        record.action.actionType === "skill"
+          ? record.action.skill?.name ?? record.action.actionId
+          : record.action.command?.name ?? record.action.actionId,
       skillId:
         record.action.actionType === "skill"
           ? record.action.actionId
@@ -133,6 +153,17 @@ export function createCombatRuntime({
           ? record.action.actionId
           : null,
       elapsedMs,
+      preparationMs,
+      preparationRemainingMs: Math.max(
+        0,
+        record.action.releaseAtMs - elapsedMs
+      ),
+      travelMs,
+      travelProgress,
+      impactRemainingMs: Math.max(
+        0,
+        record.action.impactAtMs - elapsedMs
+      ),
       chargeProgress,
       phase,
       released: record.released,
