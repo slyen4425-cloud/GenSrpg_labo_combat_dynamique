@@ -28,14 +28,14 @@ test("visual controller can replace a slot creature without owning combat rules"
   assert.doesNotMatch(source, /resolveSkill/);
 });
 
-test("both visual slots still start idle and transient actions return idle", async () => {
+test("both visual slots start idle and transient non-KO actions return idle", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
   assert.match(source, /startIdleFor\("player"\)/);
   assert.match(source, /startIdleFor\("opponent"\)/);
   assert.match(
     source,
-    /type !== "idle"[\s\S]*startIdleFor\(slotKey\)/
+    /!\["idle", "ko"\]\.includes\(type\)[\s\S]*startIdleFor\(slotKey\)/
   );
 });
 
@@ -265,7 +265,7 @@ test("visual controller computes target geometry for teleport and aerial moves w
 test("combat arena is taller while keeping direct reflex ability controls", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
-  assert.match(css, /min-height:\s*min\(54svh, 32rem\)/);
+  assert.match(css, /min-height:\s*min\(62svh, 38rem\)/);
   assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
   assert.match(css, /\.distance-buttons\s*\{[\s\S]*repeat\(3/);
   assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
