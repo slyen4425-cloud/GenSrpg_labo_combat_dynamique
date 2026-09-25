@@ -190,6 +190,17 @@ Le FX Core reçoit des intentions telles que :
 
 Il ne décide pas si une attaque touche ou combien de dégâts elle inflige.
 
+### Géométrie projectile classique
+
+Pour le projectile générique du laboratoire :
+
+- la source visuelle utilise l'anchor transitoire du lanceur afin qu'un projectile parte bien de sa position réellement affichée ;
+- la destination utilise le slot spatial stable de la cible, indépendamment d'une animation temporaire `aerial / teleport / hit` ;
+- une esquive gameplay n'est jamais déduite de cette géométrie : elle reste décidée par Combat Rules ;
+- un résultat `evaded` peut donc être visualisé naturellement par un projectile qui continue vers l'ancienne position stable pendant que la cible est ailleurs.
+
+Une future famille de projectiles `tracking / homing / anti-air` pourra avoir une stratégie de ciblage distincte et data-driven. Elle ne doit pas être simulée en réutilisant silencieusement l'anchor animé comme comportement par défaut.
+
 ## 9. Frontière future GenSrpG
 
 Raccord potentiel seulement :
