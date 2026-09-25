@@ -179,7 +179,8 @@ export async function mountCombatTest({
     typeof visuals.playEventFor !== "function" ||
     typeof visuals.setCreatureFor !== "function" ||
     typeof visuals.setSlotVisible !== "function" ||
-    typeof visuals.getCreatureDescriptor !== "function"
+    typeof visuals.getCreatureDescriptor !== "function" ||
+    typeof visuals.getFxAnchorFor !== "function"
   ) {
     throw new TypeError("visuals must provide roster-aware visual controls");
   }
@@ -354,6 +355,9 @@ export async function mountCombatTest({
       )
     },
     targetAnchors: fighterContainers,
+    sourceAnchorFor(slotId, anchorName) {
+      return visuals.getFxAnchorFor(slotId, anchorName);
+    },
     presentationForSkill(skillId) {
       return (
         presentationAssets?.presentationForSkill?.(skillId) ??
