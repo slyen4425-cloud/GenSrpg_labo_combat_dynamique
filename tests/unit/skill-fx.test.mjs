@@ -452,8 +452,10 @@ test("DOM cast adapter renders on the source anchor for the preparation duration
   const renderer = createDomSkillFxRenderer({
     arena,
     anchors,
-    presentationForSkill(skillId) {
+    presentationForSkill(skillId, context) {
       assert.equal(skillId, "fireball");
+      assert.equal(context.sourceView, "player");
+      assert.equal(context.fxType, "cast");
       return {
         cast: {
           assetId: "pack:capture:sprite-fireball-cast-01",
@@ -753,4 +755,78 @@ test("DOM impact adapter uses the bound fireball impact strip on the target anch
 
   done.resolve();
   assert.deepEqual(await handle.finished, { status: "finished" });
+});
+
+
+test("opponent cast presentation stays in front without renderer side special-casing", async () => {
+  const done = deferred();
+  const appended = [];
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 300, height: 200 };
+    }
+  };
+
+  const anchors = {
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 200, top: 50, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill(_skillId, context) {
+      return {
+        cast: {
+          assetId: "cast",
+          url: "cast.svg",
+          frameCount: 1
+        },
+        castLayer:
+          context.sourceView === "opponent"
+            ? "front"
+            : "behind"
+      };
+    },
+    animate() {
+      return {
+        finished: done.promise,
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "cast",
+    skillId: "fireball",
+    actorSlot: "opponent",
+    durationMs: 500
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended.length, 1);
+  assert.doesNotMatch(
+    appended[0].className,
+    /skill-fx--layer-behind/
+  );
+
+  done.resolve();
+  await handle.finished;
 });

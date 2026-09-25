@@ -64,3 +64,21 @@ test("forest arena resolves through presentation assets only", () => {
     null
   );
 });
+
+
+test("fireball cast layer is data-driven by source view", () => {
+  assert.equal(
+    demoPresentationAssets.presentationForSkill(
+      "fireball",
+      { sourceView: "player" }
+    ).castLayer,
+    "behind"
+  );
+  assert.equal(
+    demoPresentationAssets.presentationForSkill(
+      "fireball",
+      { sourceView: "opponent" }
+    ).castLayer,
+    "front"
+  );
+});

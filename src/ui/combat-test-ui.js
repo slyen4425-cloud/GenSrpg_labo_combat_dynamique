@@ -359,9 +359,12 @@ export async function mountCombatTest({
     sourceAnchorFor(slotId, anchorName) {
       return visuals.getFxAnchorFor(slotId, anchorName);
     },
-    presentationForSkill(skillId) {
+    presentationForSkill(skillId, context = {}) {
       return (
-        presentationAssets?.presentationForSkill?.(skillId) ??
+        presentationAssets?.presentationForSkill?.(
+          skillId,
+          context
+        ) ??
         null
       );
     }

@@ -136,8 +136,12 @@ export function createDomSkillFxRenderer({
     }
 
     const arenaRect = arena.getBoundingClientRect();
+    const sourceSlot = actorSlot ?? fromSlot ?? null;
     const presentation = skillId
-      ? presentationForSkill(skillId)
+      ? presentationForSkill(skillId, {
+          sourceView: sourceSlot,
+          fxType: type
+        })
       : null;
 
     if (type === "cast") {
@@ -149,7 +153,6 @@ export function createDomSkillFxRenderer({
         });
       }
 
-      const sourceSlot = actorSlot ?? fromSlot;
       const castAnchor = presentation?.castAnchor ?? null;
       const from = centerRelativeTo(
         sourceRect(sourceSlot, castAnchor),

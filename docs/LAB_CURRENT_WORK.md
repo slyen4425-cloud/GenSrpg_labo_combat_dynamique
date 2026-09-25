@@ -5880,3 +5880,33 @@ Validation smartphone reçue le 2026-09-25 après intégration de la première a
 Cette validation confirme visuellement le cadrage général de l'arène forêt et l'intégration du fond dans la démo au SHA `dd2d371a18b27dc0b3fc2efa472b8056a1432b1d`.
 
 Le lot arène / UI est considéré visuellement validé à cette étape.
+
+
+### Lot — remplacement dos Braisombre + layering FX adverse
+
+Retour visuel utilisateur du 2026-09-25 :
+
+1. la vue actuelle du dragon comporte des défauts ;
+2. remplacer uniquement la vue de dos pour le moment à partir du visuel fourni ;
+3. la bonne vue face sera fournie ultérieurement ;
+4. la Boule de feu en charge côté adversaire passe derrière la créature alors qu'elle doit être devant ;
+5. vérifier aussi le principe pour les futurs sprites / FX.
+
+Diagnostic :
+
+- la vue de dos utilisée par le slot joueur est `runtime/braisombre_player.webp` ;
+- la vue face adverse reste `runtime/braisombre_opponent.webp` et ne doit pas être modifiée dans ce lot ;
+- le projectile Boule de feu est déjà au-dessus des fighters via `z-index: 7` ;
+- l'impact est déjà au-dessus via `z-index: 10` ;
+- la cause prouvée est le cast : le binding Fireball imposait `castLayer: "behind"` aux deux vues ;
+- le renderer n'a pas besoin d'un `if player/opponent`.
+
+Correction architecture :
+
+- le binding de présentation porte maintenant `castLayerBySourceView` ;
+- `player -> behind` conserve le rendu validé côté joueur ;
+- `opponent -> front` affiche la charge adverse devant sa créature ;
+- le renderer transmet seulement le contexte de vue source au Presentation Binding ;
+- Combat Rules, Runtime, SkillDefinition, dégâts, énergie et timings restent inchangés.
+
+Le remplacement binaire de `braisombre_player.webp` est effectué séparément dans ce même petit chantier, avec mise à jour des anchors de la vue player pour le nouveau visuel.

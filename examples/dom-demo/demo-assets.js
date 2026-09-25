@@ -86,7 +86,10 @@ const SKILL_BINDINGS = Object.freeze({
     icon: "pack:capture:icon-skill-fireball-01",
     castFx: "pack:capture:sprite-fireball-cast-01",
     castAnchor: "mouth",
-    castLayer: "behind",
+    castLayerBySourceView: Object.freeze({
+      player: "behind",
+      opponent: "front"
+    }),
     travelFx: "pack:capture:sprite-fireball-travel-01",
     travelSourceAnchor: "mouth",
     impactFx: "pack:capture:sprite-fireball-impact-01"
@@ -117,7 +120,7 @@ export const demoPresentationAssets = Object.freeze({
       background: resolveAsset(binding.background)
     });
   },
-  presentationForSkill(skillId) {
+  presentationForSkill(skillId, { sourceView = null } = {}) {
     const binding = SKILL_BINDINGS[skillId];
     if (!binding) {
       return null;
@@ -127,7 +130,10 @@ export const demoPresentationAssets = Object.freeze({
       icon: resolveAsset(binding.icon),
       cast: resolveAsset(binding.castFx),
       castAnchor: binding.castAnchor ?? null,
-      castLayer: binding.castLayer ?? "front",
+      castLayer:
+        binding.castLayerBySourceView?.[sourceView] ??
+        binding.castLayer ??
+        "front",
       travel: resolveAsset(binding.travelFx),
       travelSourceAnchor: binding.travelSourceAnchor ?? null,
       impact: resolveAsset(binding.impactFx)
