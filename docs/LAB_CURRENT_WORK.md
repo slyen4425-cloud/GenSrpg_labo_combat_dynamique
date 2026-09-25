@@ -1618,6 +1618,74 @@ Validation utilisateur restante :
 - vérifier persistance des PV/énergie ;
 - vérifier que la réserve adverse reste seulement informative.
 
+
+## Chantier actif — player-ui-ko-special-moves-v5
+
+Base GREEN :
+
+`a09ea4d5b60e6bad3881f2b2e83e2ce880a3e648`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-player-ui-ko-special-moves-v5-2026-09-25`
+
+Branche :
+
+`work/lab-player-ui-ko-special-moves-v5-2026-09-25`
+
+Objectifs :
+
+- remplacer le menu déroulant Capacités par des boutons directs, adaptés à un jeu de réflexe ;
+- conserver Objets / Équipe compacts si nécessaire, mais ne pas cacher les attaques principales ;
+- augmenter légèrement la hauteur de l'arène de combat ;
+- lorsqu'un adversaire tombe à 0 PV :
+  - sauvegarder son snapshot roster ;
+  - passer automatiquement au membre de réserve adverse disponible ;
+  - remplacer réellement stats + visuel + nom du slot adversaire ;
+  - ne donner aucun contrôle joueur sur ce choix ;
+- ajouter deux mouvements visuels spécialisés :
+  - `teleport-attack` : disparition -> réapparition sur la cible -> disparition -> retour au point de départ ;
+  - `aerial-attack` : montée -> disparition -> piqué sur la cible -> retour ;
+- ces mouvements sont déclenchés depuis `approachMode`, sans changer les règles de dégâts ;
+- les dégâts restent appliqués uniquement par Combat Rules au timestamp d'impact ;
+- l'animation peut finir après l'impact sans retarder artificiellement les dégâts.
+
+Propriétaires :
+
+- UI : composition des boutons uniquement ;
+- Roster Session : remplacement automatique après KO ;
+- Combat Session : PV et slot engagé ;
+- Visual Controller : remplacement asset/profil et lecture du mouvement spécialisé ;
+- Animation Core : séquence visuelle teleport/aerial ;
+- Combat Runtime / Action Resolver : timing release/impact/dégâts inchangé.
+
+Interdits :
+
+- aucun KO géré uniquement par un if DOM ;
+- aucun swap adverse direct dans l'UI sans passer par Roster Session ;
+- aucun dégât décidé par la fin de l'animation ;
+- aucune duplication d'horloge pour teleport/aerial ;
+- aucun déplacement visuel spécial codé dans un bouton ;
+- aucun retour des anciens outils laboratoire.
+
+Tests :
+
+- capacités principales visibles sans ouvrir un menu ;
+- arène plus haute sur mobile ;
+- KO adverse déclenche remplacement automatique par la réserve ;
+- snapshot du membre KO conservé ;
+- nouveau membre adverse garde son propre snapshot ;
+- aucun bouton de réserve adverse ;
+- teleport : opacity 1 -> 0 -> réapparition cible -> retour ;
+- aerial : montée -> disparition -> piqué -> retour ;
+- plans finissent sur état stable ;
+- impact/dégâts restent pilotés par Combat Runtime/Resolver ;
+- CI complète verte.
+
+Critère de fin :
+
+preview smartphone propre avec boutons directs, arène plus haute, KO adverse remplacé automatiquement, et mouvements Aérien/Téléportation visibles.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
