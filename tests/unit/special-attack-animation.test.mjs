@@ -80,7 +80,8 @@ test("aerial attack rises, vanishes, dives to target at impact, then returns", (
       metadata: {
         targetTranslateX: 150,
         targetTranslateY: 8,
-        travelMs
+        travelMs,
+        arenaExitTranslateY: -360
       }
     }),
     actor: current,
@@ -103,7 +104,7 @@ test("aerial attack rises, vanishes, dives to target at impact, then returns", (
     plan.segments[2].durationMs;
 
   assert.equal(impactMs, travelMs);
-  assert.ok(plan.segments[0].transform.translateY < 0);
+  assert.equal(plan.segments[0].transform.translateY, -360);
   assert.equal(plan.segments[1].opacity, 0);
   assert.equal(plan.segments[2].transform.translateX, 150);
   assert.equal(plan.segments[2].transform.translateY, 8);
@@ -132,4 +133,83 @@ test("special attack event contract rejects missing positive travel time in plan
       }),
     /travelMs/
   );
+});
+
+
+test("ground contact attack reaches configured target fraction exactly at travelMs", () => {
+  const current = actor("serpentine");
+  const travelMs = 1500;
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: 200,
+        targetTranslateY: 20,
+        travelMs
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.deepEqual(
+    plan.segments.map((segment) => segment.label),
+    [
+      "ground-approach-impact",
+      "ground-home"
+    ]
+  );
+  assert.equal(plan.segments[0].durationMs, 1500);
+  assert.equal(plan.segments[0].transform.translateX, 144);
+  assert.equal(plan.segments[0].transform.translateY, 6.4);
+  assert.equal(plan.segments.at(-1).transform.translateX, 0);
+  assert.equal(plan.segments.at(-1).transform.translateY, 0);
+});
+
+test("ground animation consumes arbitrary configured travel timing", () => {
+  const current = actor();
+
+  for (const travelMs of [500, 900, 1500]) {
+    const plan = planAnimation({
+      event: normalizeCombatVisualEvent({
+        type: "ground-attack",
+        actorId: current.id,
+        targetId: "opponent-actor",
+        metadata: {
+          targetTranslateX: 160,
+          targetTranslateY: 0,
+          travelMs
+        }
+      }),
+      actor: current,
+      profile: registry.get(current.profile)
+    });
+
+    assert.equal(plan.segments[0].durationMs, travelMs);
+  }
+});
+
+test("aerial rise uses the arena exit offset and can fully leave the combat viewport", () => {
+  const current = actor("drake");
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "aerial-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: 120,
+        targetTranslateY: 0,
+        travelMs: 850,
+        arenaExitTranslateY: -480
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.equal(plan.segments[0].transform.translateY, -480);
+  assert.equal(plan.segments[1].transform.translateY, -480);
+  assert.equal(plan.segments[1].opacity, 0);
 });
