@@ -11,11 +11,6 @@
     <section class="arena" data-combat-arena aria-label="Arène de combat">
       <div class="arena__ground" aria-hidden="true"></div>
 
-      <aside class="reserve reserve--opponent" aria-label="Réserve adverse">
-        <span class="reserve__title">Réserve adverse</span>
-        <div class="reserve__list" data-roster-reserve="opponent"></div>
-      </aside>
-
       <article class="fighter fighter--player" data-demo-slot="player">
         <span class="visually-hidden" data-demo-label aria-hidden="true">Marai</span>
         <div class="fighter__motion" data-demo-motion>
@@ -33,7 +28,10 @@
       <section class="combat-card combat-card--opponent" aria-label="Statut du monstre adverse">
         <div class="combat-card__title">
           <strong data-combat-name="opponent">Drakon</strong>
-          <span>ADVERSAIRE</span>
+          <aside class="reserve reserve--opponent" aria-label="Réserve adverse">
+            <span class="reserve__title">Réserve adverse</span>
+            <div class="reserve__list" data-roster-reserve="opponent"></div>
+          </aside>
         </div>
         <div class="combat-card__hp-row">
           <progress
@@ -45,13 +43,14 @@
           ></progress>
           <span data-combat-hp-value="opponent">100 / 100 PV</span>
         </div>
-        <div class="fighter__charge-info">
+        <div class="fighter__charge-info" data-active="false">
           <strong data-combat-charge-name="opponent">Prêt</strong>
           <span data-combat-charge-time="opponent"></span>
         </div>
         <progress
           class="fighter__charge fighter__charge--reaction"
           data-combat-actor-charge="opponent"
+          data-active="false"
           max="1"
           value="0"
           aria-label="Charge de la capacité du monstre adverse"
@@ -61,7 +60,10 @@
       <section class="combat-card combat-card--player" aria-label="Statut du monstre joueur">
         <div class="combat-card__title">
           <strong data-combat-name="player">Marai</strong>
-          <span>JOUEUR</span>
+          <aside class="reserve reserve--player" aria-label="Ma réserve">
+            <span class="reserve__title">Ma réserve</span>
+            <div class="reserve__list" data-roster-reserve="player"></div>
+          </aside>
         </div>
         <div class="combat-card__hp-row">
           <progress
@@ -73,23 +75,19 @@
           ></progress>
           <span data-combat-hp-value="player">100 / 100 PV</span>
         </div>
-        <div class="fighter__charge-info">
+        <div class="fighter__charge-info" data-active="false">
           <strong data-combat-charge-name="player">Prêt</strong>
           <span data-combat-charge-time="player"></span>
         </div>
         <progress
           class="fighter__charge"
           data-combat-actor-charge="player"
+          data-active="false"
           max="1"
           value="0"
           aria-label="Charge de la capacité du monstre joueur"
         ></progress>
       </section>
-
-      <aside class="reserve reserve--player" aria-label="Ma réserve">
-        <span class="reserve__title">Ma réserve</span>
-        <div class="reserve__list" data-roster-reserve="player"></div>
-      </aside>
 
       <section class="combat-controls" aria-label="Commandes du joueur">
         <div class="hud__energy">
