@@ -365,6 +365,7 @@ export async function mountCombatTest({
   const cleanups = [];
   let disposed = false;
   let koTransitionPending = false;
+  let opponentTurnPending = false;
   let lastState = session.snapshot();
 
   const fx = createDomSkillFxRenderer({
@@ -411,6 +412,30 @@ export async function mountCombatTest({
   function setStatus(message, tone = "info") {
     status.textContent = message;
     status.dataset.tone = tone;
+  }
+
+  function playerInputLocked() {
+    return (
+      koTransitionPending ||
+      opponentTurnPending ||
+      runtime.hasActiveAction
+    );
+  }
+
+  function resetAllCharges() {
+    setCharge({ slotId: "player" });
+    setCharge({ slotId: "opponent" });
+  }
+
+  function activeDisplayName(slotId) {
+    const state = roster.snapshot();
+    const team = state[slotId];
+    return (
+      team.members.find(
+        (member) => member.id === team.activeMemberId
+      )?.displayName ??
+      (slotId === "player" ? "Joueur" : "Adversaire")
+    );
   }
 
   function setCharge({
@@ -693,8 +718,7 @@ export async function mountCombatTest({
       const current = target === state.distance;
 
       button.disabled =
-        koTransitionPending ||
-        runtime.hasActiveAction ||
+        playerInputLocked() ||
         !active ||
         current ||
         !preview.ok;
@@ -723,8 +747,7 @@ export async function mountCombatTest({
         : { ok: false };
 
       button.disabled =
-        koTransitionPending ||
-        runtime.hasActiveAction ||
+        playerInputLocked() ||
         !preview.ok;
     }
 
@@ -737,7 +760,7 @@ export async function mountCombatTest({
           })
         : { ok: false };
       itemRef.button.disabled =
-        runtime.hasActiveAction || !preview.ok;
+        playerInputLocked() || !preview.ok;
     }
 
     const recallRef = commandRefs.get("recall");
@@ -749,7 +772,7 @@ export async function mountCombatTest({
           })
         : { ok: false };
       recallRef.button.disabled =
-        runtime.hasActiveAction || !preview.ok;
+        playerInputLocked() || !preview.ok;
     }
 
     const summonRef = commandRefs.get("summon");
@@ -766,7 +789,7 @@ export async function mountCombatTest({
           : { ok: false };
 
       summonRef.button.disabled =
-        runtime.hasActiveAction || !preview.ok;
+        playerInputLocked() || !preview.ok;
     }
   }
 
