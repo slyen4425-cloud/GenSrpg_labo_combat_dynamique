@@ -20,7 +20,7 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function groundPerspectiveScale(target, cfg) {
+function approachPerspectiveScale(target, cfg) {
   const arenaHeight = target.arenaHeight > 0
     ? target.arenaHeight
     : 1;
@@ -42,7 +42,7 @@ function groundPerspectiveScale(target, cfg) {
     min > max
   ) {
     throw new RangeError(
-      "ground perspective scale config must be finite and ordered"
+      "approach perspective scale config must be finite and ordered"
     );
   }
 
@@ -179,7 +179,10 @@ export function planAnimation({ event, actor, profile }) {
 
       const target = visualTarget(event);
       const perspectiveScale =
-        groundPerspectiveScale(target, cfg);
+        approachPerspectiveScale(
+          target,
+          profile.specialMoves?.perspective ?? {}
+        );
 
       return createAnimationPlan({
         actorId: actor.id,
@@ -224,6 +227,11 @@ export function planAnimation({ event, actor, profile }) {
       }
 
       const target = visualTarget(event);
+      const perspectiveScale =
+        approachPerspectiveScale(
+          target,
+          profile.specialMoves?.perspective ?? {}
+        );
       const vanishMs = Math.max(
         1,
         Math.round(target.travelMs * cfg.vanishRatio)
@@ -254,8 +262,8 @@ export function planAnimation({ event, actor, profile }) {
             transform: {
               translateX: target.x,
               translateY: target.y,
-              scaleX: 1.04,
-              scaleY: 0.98,
+              scaleX: 1.04 * perspectiveScale,
+              scaleY: 0.98 * perspectiveScale,
               rotateDeg: 0
             },
             opacity: 1
@@ -267,8 +275,8 @@ export function planAnimation({ event, actor, profile }) {
             transform: {
               translateX: target.x,
               translateY: target.y,
-              scaleX: 0.96,
-              scaleY: 1.02,
+              scaleX: 0.96 * perspectiveScale,
+              scaleY: 1.02 * perspectiveScale,
               rotateDeg: 0
             },
             opacity: 0
@@ -297,6 +305,11 @@ export function planAnimation({ event, actor, profile }) {
       }
 
       const target = visualTarget(event);
+      const perspectiveScale =
+        approachPerspectiveScale(
+          target,
+          profile.specialMoves?.perspective ?? {}
+        );
       const riseY =
         target.exitY < 0
           ? Math.min(cfg.riseY, target.exitY)
@@ -325,8 +338,8 @@ export function planAnimation({ event, actor, profile }) {
             transform: {
               translateX: 0,
               translateY: riseY,
-              scaleX: 0.98,
-              scaleY: 1.02,
+              scaleX: 0.98 * perspectiveScale,
+              scaleY: 1.02 * perspectiveScale,
               rotateDeg: 0
             },
             opacity: 1
@@ -341,8 +354,8 @@ export function planAnimation({ event, actor, profile }) {
                 riseY,
                 target.y - cfg.diveHeight
               ),
-              scaleX: 0.94,
-              scaleY: 1.06,
+              scaleX: 0.94 * perspectiveScale,
+              scaleY: 1.06 * perspectiveScale,
               rotateDeg: directed(4, sign)
             },
             opacity: 0
@@ -354,8 +367,8 @@ export function planAnimation({ event, actor, profile }) {
             transform: {
               translateX: target.x,
               translateY: target.y,
-              scaleX: 1.05,
-              scaleY: 0.96,
+              scaleX: 1.05 * perspectiveScale,
+              scaleY: 0.96 * perspectiveScale,
               rotateDeg: directed(7, sign)
             },
             opacity: 1
