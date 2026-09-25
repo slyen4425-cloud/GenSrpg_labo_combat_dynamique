@@ -172,7 +172,15 @@ export function createRosterSession({
     syncActiveSnapshot(team);
     const recalledMemberId = team.activeMemberId;
     team.activeMemberId = null;
-    team.selectedReserveMemberId = recalledMemberId;
+
+    if (
+      !team.selectedReserveMemberId ||
+      team.selectedReserveMemberId === recalledMemberId
+    ) {
+      team.selectedReserveMemberId =
+        [...team.members.keys()].find((id) => id !== recalledMemberId) ??
+        recalledMemberId;
+    }
 
     return Object.freeze({
       ok: true,
