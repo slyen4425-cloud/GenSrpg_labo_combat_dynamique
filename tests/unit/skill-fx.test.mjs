@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 
 import {
   planSkillFx,
-  planSkillOutcomeFx
+  planSkillOutcomeFx,
+  planSkillReleaseFx
 } from "../../src/core/fx/skill-fx-plan.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
 
@@ -392,4 +393,214 @@ test("DOM projectile adapter dispose cancels and removes active FX", () => {
   assert.equal(cancelled, true);
   assert.equal(removed, true);
   assert.equal(renderer.activeCount, 0);
+});
+
+
+test("live projectile release carries the skill identity for presentation binding", () => {
+  assert.deepEqual(
+    planSkillReleaseFx({
+      action: {
+        skill: {
+          id: "fireball",
+          form: "projectile",
+          element: "fire"
+        },
+        travelMs: 700
+      }
+    }),
+    [
+      {
+        type: "projectile",
+        skillId: "fireball",
+        element: "fire",
+        fromSlot: "player",
+        targetSlot: "opponent",
+        delayMs: 0,
+        durationMs: 700
+      }
+    ]
+  );
+});
+
+test("resolved fireball hit can request a presentation-only impact FX", () => {
+  assert.deepEqual(
+    planSkillOutcomeFx({
+      resolution: {
+        ok: true,
+        outcome: "hit",
+        skillId: "fireball"
+      },
+      targetSlot: "opponent"
+    }),
+    [
+      {
+        type: "impact",
+        skillId: "fireball",
+        targetSlot: "opponent",
+        durationMs: 420
+      }
+    ]
+  );
+});
+
+test("DOM projectile adapter uses a bound sprite strip while retaining movement ownership", async () => {
+  const done = deferred();
+  const appended = [];
+  let capturedKeyframes = null;
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 40, top: 220, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 300, top: 120, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    resolveSkillPresentation(skillId) {
+      assert.equal(skillId, "fireball");
+      return {
+        travel: {
+          assetId: "pack:capture:sprite-fireball-travel-01",
+          url: "fireball-atlas.png",
+          frameCount: 8
+        }
+      };
+    },
+    animate(_node, keyframes) {
+      capturedKeyframes = keyframes;
+      return {
+        finished: done.promise,
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "projectile",
+    skillId: "fireball",
+    element: "fire",
+    fromSlot: "player",
+    targetSlot: "opponent",
+    durationMs: 700
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended.length, 1);
+  assert.match(appended[0].className, /skill-fx--sprite/);
+  assert.equal(
+    appended[0].dataset.assetId,
+    "pack:capture:sprite-fireball-travel-01"
+  );
+  assert.equal(
+    appended[0].style.backgroundImage,
+    'url("fireball-atlas.png")'
+  );
+  assert.equal(appended[0].style.backgroundSize, "800% 100%");
+  assert.match(
+    capturedKeyframes[1].transform,
+    /translate3d\(260px, -100px, 0\)/
+  );
+
+  done.resolve();
+  assert.deepEqual(await handle.finished, { status: "finished" });
+});
+
+test("DOM impact adapter uses the bound fireball impact strip on the target anchor", async () => {
+  const done = deferred();
+  const appended = [];
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 10, top: 20, width: 300, height: 200 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 30, top: 100, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 230, top: 60, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    resolveSkillPresentation() {
+      return {
+        impact: {
+          assetId: "pack:capture:sprite-fireball-impact-01",
+          url: "fireball-impact.png",
+          frameCount: 6
+        }
+      };
+    },
+    animate() {
+      return {
+        finished: done.promise,
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "impact",
+    skillId: "fireball",
+    targetSlot: "opponent",
+    durationMs: 420
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended[0].dataset.skillFx, "impact");
+  assert.equal(appended[0].style.left, "240px");
+  assert.equal(appended[0].style.top, "60px");
+  assert.equal(appended[0].style.backgroundSize, "600% 100%");
+
+  done.resolve();
+  assert.deepEqual(await handle.finished, { status: "finished" });
 });
