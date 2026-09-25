@@ -99,6 +99,7 @@ const OUTCOME_LABELS = Object.freeze({
   immune: "immunisée",
   countered: "contrée",
   evaded: "Esquive · 0 dégât",
+  clashed: "Projectiles annulés",
   completed: "terminée",
   interrupted: "interrompue",
   out_of_range: "hors portée",
