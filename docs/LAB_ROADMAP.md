@@ -117,6 +117,21 @@ Critère GREEN final : CI verte + vrai chemin données -> Combat Rules -> Presen
 
 Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de roster séparé : ce lot valide le contrat, le coût, le timing, la completion et l'interruption.
 
+### Extension V4 — vue joueur et roster 2v2
+
+- démo nettoyée pour ressembler à une vraie partie ;
+- uniquement contrôles du joueur ;
+- Capacités / Objets / Équipe en menus déroulants ;
+- suppression des outils laboratoire du rendu utilisateur ;
+- équipe joueur : Marai + Drakon ;
+- équipe adverse : Drakon + Marai ;
+- réserve visible pour les deux camps ;
+- Rappel réellement retire le monstre actif de la scène ;
+- Invocation réellement remplace le slot joueur par le membre sélectionné ;
+- PV/énergie persistants par membre entre les changements ;
+- changement réel d'asset et de profil visuel lors d'une invocation ;
+- aucun contrôle direct de l'adversaire.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
