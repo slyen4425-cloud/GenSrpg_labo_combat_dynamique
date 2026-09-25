@@ -164,6 +164,124 @@ test("ground attack reaches target exactly at configured travel time then return
   assert.equal(plan.segments.at(-1).transform.translateY, 0);
 });
 
+test("ground approach grows toward player camera and shrinks toward arena depth", () => {
+  const current = actor("drake");
+  const profile = registry.get("drake");
+
+  const towardCamera = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: -140,
+        targetTranslateY: 200,
+        arenaHeight: 800,
+        travelMs: 900
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  const towardDepth = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: 140,
+        targetTranslateY: -200,
+        arenaHeight: 800,
+        travelMs: 900
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  assert.ok(
+    towardCamera.segments[0].transform.scaleX >
+      profile.specialMoves.ground.impactScaleX
+  );
+  assert.ok(
+    towardCamera.segments[0].transform.scaleY >
+      profile.specialMoves.ground.impactScaleY
+  );
+  assert.ok(
+    towardDepth.segments[0].transform.scaleX <
+      profile.specialMoves.ground.impactScaleX
+  );
+  assert.ok(
+    towardDepth.segments[0].transform.scaleY <
+      profile.specialMoves.ground.impactScaleY
+  );
+
+  assert.equal(
+    towardCamera.segments[0].durationMs,
+    900
+  );
+  assert.equal(
+    towardDepth.segments[0].durationMs,
+    900
+  );
+  assert.equal(
+    towardCamera.segments.at(-1).transform.scaleX,
+    1
+  );
+  assert.equal(
+    towardCamera.segments.at(-1).transform.scaleY,
+    1
+  );
+});
+
+test("ground perspective scale respects configured visual bounds", () => {
+  const current = actor("drake");
+  const profile = registry.get("drake");
+  const ground = profile.specialMoves.ground;
+
+  const near = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: 0,
+        targetTranslateY: 10000,
+        arenaHeight: 100,
+        travelMs: 500
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  const far = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: 0,
+        targetTranslateY: -10000,
+        arenaHeight: 100,
+        travelMs: 500
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  assert.equal(
+    near.segments[0].transform.scaleX,
+    ground.impactScaleX * ground.perspectiveScaleMax
+  );
+  assert.equal(
+    far.segments[0].transform.scaleX,
+    ground.impactScaleX * ground.perspectiveScaleMin
+  );
+});
+
 test("aerial attack can rise completely above arena before diving", () => {
   const current = actor("drake");
   const plan = planAnimation({
