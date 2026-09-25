@@ -230,10 +230,34 @@ test("V9 saving strategy retries only from Combat Runtime state updates", async 
     source,
     /onState\(state\)[\s\S]*aiWaitingForEnergy[\s\S]*runOpponentTurn\(\)/
   );
-  assert.match(source, /!runtime\.hasActiveAction/);
+  assert.match(
+    source,
+    /!runtime\.hasActiveActionFor\("opponent"\)/
+  );
   assert.match(source, /aiDecisionInProgress/);
   assert.doesNotMatch(source, /setInterval/);
   assert.doesNotMatch(source, /setTimeout/);
+});
+
+test("concurrent combat keeps player controls available while only opponent acts", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(
+    source,
+    /runtime\.hasActiveActionFor\("player"\)/
+  );
+  assert.doesNotMatch(
+    source,
+    /button\.disabled\s*=[\s\S]{0,180}?runtime\.hasActiveAction\s*\|\|/
+  );
+  assert.match(
+    source,
+    /if \(!progress\.actionId\)[\s\S]*progress\.actorId[\s\S]*setCharge\(\{ slotId: progress\.actorId \}\)/
+  );
+  assert.match(
+    source,
+    /onResolved\(resolution\)[\s\S]*setCharge\(\{ slotId: resolution\.actorId \}\)/
+  );
 });
 
 test("V9 UI delegates opponent decisions and routes skill visuals by real actor slots", async () => {
