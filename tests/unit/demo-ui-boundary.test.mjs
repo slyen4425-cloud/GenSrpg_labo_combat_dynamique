@@ -437,6 +437,41 @@ test("demo bootstrap disposes combat and visual controllers on pagehide", async 
   assert.match(source, /visuals\.dispose\(\)/);
 });
 
+test("creature metadata exposes reusable FX anchors per combat view", async () => {
+  for (const creatureId of ["maraileron", "braisombre"]) {
+    const meta = JSON.parse(
+      await readFile(
+        `assets/test/creatures/${creatureId}/${creatureId}.meta.json`,
+        "utf8"
+      )
+    );
+
+    for (const view of ["player", "opponent"]) {
+      for (const anchor of [
+        "head",
+        "mouth",
+        "handLeft",
+        "handRight",
+        "tail"
+      ]) {
+        assert.ok(meta.fxAnchors?.[view]?.[anchor]);
+        assert.ok(meta.fxAnchors[view][anchor].x >= 0);
+        assert.ok(meta.fxAnchors[view][anchor].x <= 1);
+        assert.ok(meta.fxAnchors[view][anchor].y >= 0);
+        assert.ok(meta.fxAnchors[view][anchor].y <= 1);
+      }
+    }
+  }
+
+  const visualController = await readFile("src/ui/demo-app.js", "utf8");
+  const combatUi = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(visualController, /function getFxAnchor/);
+  assert.match(visualController, /getFxAnchorFor/);
+  assert.match(combatUi, /sourceAnchorFor\(slotId, anchorName\)/);
+  assert.match(combatUi, /visuals\.getFxAnchorFor\(slotId, anchorName\)/);
+});
+
 test("creature metadata keeps runtime player/opponent/icon views", async () => {
   for (const creatureId of ["maraileron", "braisombre"]) {
     const meta = JSON.parse(
@@ -532,7 +567,12 @@ test("fireball demo binding uses stable Capture asset IDs and stays outside game
   assert.match(source, /pack:capture:sprite-fireball-travel-01/);
   assert.match(source, /pack:capture:sprite-fireball-impact-01/);
   assert.match(source, /castFx:\s*"pack:capture:sprite-fireball-cast-01"/);
-  assert.match(source, /displayScale:\s*1\.75/);
+  assert.match(source, /castAnchor:\s*"mouth"/);
+  assert.match(source, /castLayer:\s*"behind"/);
+  assert.match(source, /travelSourceAnchor:\s*"mouth"/);
+  assert.match(source, /displayScale:\s*2\.3/);
+  assert.match(source, /fx_skill_fireball_cast_orb_01\.svg/);
+  assert.match(source, /fx_skill_fireball_impact_burst_01\.svg/);
   assert.match(source, /sprite_skill_fireball_travel_rl_atlas_01\.png/);
   assert.match(source, /coreAnchor:\s*Object\.freeze\(\{\s*x:\s*0\.29,\s*y:\s*0\.5\s*\}\)/);
   assert.match(source, /headingRad:\s*Math\.PI/);
