@@ -16,6 +16,21 @@ function directed(value, sign) {
   return value === 0 ? 0 : value * sign;
 }
 
+function visualTarget(event) {
+  const x = Number(event.metadata?.targetTranslateX ?? 0);
+  const y = Number(event.metadata?.targetTranslateY ?? 0);
+  const travelMs = Number(event.metadata?.travelMs ?? 0);
+
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    throw new TypeError("special attack target offsets must be finite");
+  }
+  if (!Number.isFinite(travelMs) || travelMs <= 0) {
+    throw new RangeError("special attack travelMs must be greater than 0");
+  }
+
+  return Object.freeze({ x, y, travelMs });
+}
+
 export function planAnimation({ event, actor, profile }) {
   if (!event || !actor || !profile) {
     throw new TypeError("event, actor and profile are required");
@@ -107,6 +122,159 @@ export function planAnimation({ event, actor, profile }) {
               scaleY: 1,
               rotateDeg: 0
             }
+          }
+        ]
+      });
+    }
+
+    case "teleport-attack": {
+      const cfg = profile.specialMoves?.teleport;
+      if (!cfg) {
+        throw new RangeError(`Profile ${profile.id} has no teleport preset`);
+      }
+
+      const target = visualTarget(event);
+      const vanishMs = Math.max(
+        1,
+        Math.round(target.travelMs * cfg.vanishRatio)
+      );
+      const appearMs = Math.max(1, target.travelMs - vanishMs);
+
+      return createAnimationPlan({
+        actorId: actor.id,
+        eventType: event.type,
+        segments: [
+          {
+            label: "teleport-vanish",
+            durationMs: vanishMs,
+            easing: "ease-in",
+            transform: {
+              translateX: 0,
+              translateY: 0,
+              scaleX: 0.96,
+              scaleY: 1.04,
+              rotateDeg: 0
+            },
+            opacity: 0
+          },
+          {
+            label: "teleport-impact",
+            durationMs: appearMs,
+            easing: "linear",
+            transform: {
+              translateX: target.x,
+              translateY: target.y,
+              scaleX: 1.04,
+              scaleY: 0.98,
+              rotateDeg: 0
+            },
+            opacity: 1
+          },
+          {
+            label: "teleport-return-vanish",
+            durationMs: cfg.returnVanishMs,
+            easing: "ease-in",
+            transform: {
+              translateX: target.x,
+              translateY: target.y,
+              scaleX: 0.96,
+              scaleY: 1.02,
+              rotateDeg: 0
+            },
+            opacity: 0
+          },
+          {
+            label: "teleport-home",
+            durationMs: cfg.returnMs,
+            easing: "ease-out",
+            transform: {
+              translateX: 0,
+              translateY: 0,
+              scaleX: 1,
+              scaleY: 1,
+              rotateDeg: 0
+            },
+            opacity: 1
+          }
+        ]
+      });
+    }
+
+    case "aerial-attack": {
+      const cfg = profile.specialMoves?.aerial;
+      if (!cfg) {
+        throw new RangeError(`Profile ${profile.id} has no aerial preset`);
+      }
+
+      const target = visualTarget(event);
+      const riseMs = Math.max(
+        1,
+        Math.round(target.travelMs * cfg.riseRatio)
+      );
+      const repositionMs = Math.max(
+        1,
+        Math.round(target.travelMs * cfg.repositionRatio)
+      );
+      const diveMs = Math.max(
+        1,
+        target.travelMs - riseMs - repositionMs
+      );
+
+      return createAnimationPlan({
+        actorId: actor.id,
+        eventType: event.type,
+        segments: [
+          {
+            label: "aerial-rise",
+            durationMs: riseMs,
+            easing: "ease-out",
+            transform: {
+              translateX: 0,
+              translateY: cfg.riseY,
+              scaleX: 0.98,
+              scaleY: 1.02,
+              rotateDeg: 0
+            },
+            opacity: 1
+          },
+          {
+            label: "aerial-reposition",
+            durationMs: repositionMs,
+            easing: "ease-in",
+            transform: {
+              translateX: target.x,
+              translateY: target.y - cfg.diveHeight,
+              scaleX: 0.94,
+              scaleY: 1.06,
+              rotateDeg: directed(4, sign)
+            },
+            opacity: 0
+          },
+          {
+            label: "aerial-dive-impact",
+            durationMs: diveMs,
+            easing: "cubic-bezier(0.15, 0.8, 0.2, 1)",
+            transform: {
+              translateX: target.x,
+              translateY: target.y,
+              scaleX: 1.05,
+              scaleY: 0.96,
+              rotateDeg: directed(7, sign)
+            },
+            opacity: 1
+          },
+          {
+            label: "aerial-home",
+            durationMs: cfg.returnMs,
+            easing: "ease-out",
+            transform: {
+              translateX: 0,
+              translateY: 0,
+              scaleX: 1,
+              scaleY: 1,
+              rotateDeg: 0
+            },
+            opacity: 1
           }
         ]
       });
