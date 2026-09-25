@@ -8,15 +8,15 @@
 </head>
 <body>
   <main class="game" data-combat-demo>
-    <header class="game__header">
-      <div>
-        <p class="eyebrow">Combat Capture</p>
-        <h1>Marai & Drakon vs Drakon & Marai</h1>
-      </div>
-    </header>
-
     <section class="arena" data-combat-arena aria-label="Arène de combat">
       <div class="arena__ground" aria-hidden="true"></div>
+
+      <header class="combat-topbar">
+        <div class="combat-topbar__title">
+          <span>Combat Capture</span>
+          <strong>Marai & Drakon · VS · Drakon & Marai</strong>
+        </div>
+      </header>
 
       <aside class="reserve reserve--opponent" aria-label="Réserve adverse">
         <span class="reserve__title">Réserve adverse</span>
@@ -24,122 +24,124 @@
       </aside>
 
       <article class="fighter fighter--player" data-demo-slot="player">
-        <div class="fighter__caption">
-          <div class="fighter__caption-line">
-            <strong data-demo-label>Marai</strong>
-          </div>
-
-          <div class="fighter__hp-row">
-            <progress
-              class="fighter__hp"
-              data-combat-hp="player"
-              max="100"
-              value="100"
-              aria-label="PV du monstre joueur"
-            ></progress>
-            <span data-combat-hp-value="player">100 / 100 PV</span>
-          </div>
-
-          <div class="fighter__charge-info">
-            <strong data-combat-charge-name="player">Prêt</strong>
-            <span data-combat-charge-time="player"></span>
-          </div>
-          <progress
-            class="fighter__charge"
-            data-combat-actor-charge="player"
-            max="1"
-            value="0"
-            aria-label="Charge de la capacité du monstre joueur"
-          ></progress>
-        </div>
-
+        <span class="visually-hidden" data-demo-label aria-hidden="true">Marai</span>
         <div class="fighter__motion" data-demo-motion>
           <img class="fighter__image" data-demo-image alt="Monstre du joueur">
         </div>
       </article>
 
       <article class="fighter fighter--opponent" data-demo-slot="opponent">
-        <div class="fighter__caption">
-          <div class="fighter__caption-line">
-            <strong data-demo-label>Drakon</strong>
-          </div>
-
-          <div class="fighter__hp-row">
-            <progress
-              class="fighter__hp"
-              data-combat-hp="opponent"
-              max="100"
-              value="100"
-              aria-label="PV du monstre adverse"
-            ></progress>
-            <span data-combat-hp-value="opponent">100 / 100 PV</span>
-          </div>
-
-          <div class="fighter__charge-info">
-            <strong data-combat-charge-name="opponent">Prêt</strong>
-            <span data-combat-charge-time="opponent"></span>
-          </div>
-          <progress
-            class="fighter__charge fighter__charge--reaction"
-            data-combat-actor-charge="opponent"
-            max="1"
-            value="0"
-            aria-label="Charge de la capacité du monstre adverse"
-          ></progress>
-        </div>
-
+        <span class="visually-hidden" data-demo-label aria-hidden="true">Drakon</span>
         <div class="fighter__motion" data-demo-motion>
           <img class="fighter__image" data-demo-image alt="Monstre adverse">
         </div>
       </article>
 
+      <section class="combat-card combat-card--opponent" aria-label="Statut du monstre adverse">
+        <div class="combat-card__title">
+          <strong data-combat-name="opponent">Drakon</strong>
+          <span>ADVERSAIRE</span>
+        </div>
+        <div class="combat-card__hp-row">
+          <progress
+            class="fighter__hp"
+            data-combat-hp="opponent"
+            max="100"
+            value="100"
+            aria-label="PV du monstre adverse"
+          ></progress>
+          <span data-combat-hp-value="opponent">100 / 100 PV</span>
+        </div>
+        <div class="fighter__charge-info">
+          <strong data-combat-charge-name="opponent">Prêt</strong>
+          <span data-combat-charge-time="opponent"></span>
+        </div>
+        <progress
+          class="fighter__charge fighter__charge--reaction"
+          data-combat-actor-charge="opponent"
+          max="1"
+          value="0"
+          aria-label="Charge de la capacité du monstre adverse"
+        ></progress>
+      </section>
+
+      <section class="combat-card combat-card--player" aria-label="Statut du monstre joueur">
+        <div class="combat-card__title">
+          <strong data-combat-name="player">Marai</strong>
+          <span>JOUEUR</span>
+        </div>
+        <div class="combat-card__hp-row">
+          <progress
+            class="fighter__hp"
+            data-combat-hp="player"
+            max="100"
+            value="100"
+            aria-label="PV du monstre joueur"
+          ></progress>
+          <span data-combat-hp-value="player">100 / 100 PV</span>
+        </div>
+        <div class="fighter__charge-info">
+          <strong data-combat-charge-name="player">Prêt</strong>
+          <span data-combat-charge-time="player"></span>
+        </div>
+        <progress
+          class="fighter__charge"
+          data-combat-actor-charge="player"
+          max="1"
+          value="0"
+          aria-label="Charge de la capacité du monstre joueur"
+        ></progress>
+      </section>
+
       <aside class="reserve reserve--player" aria-label="Ma réserve">
         <span class="reserve__title">Ma réserve</span>
         <div class="reserve__list" data-roster-reserve="player"></div>
       </aside>
-    </section>
 
-    <section class="hud" aria-label="Commandes du joueur">
-      <div class="hud__energy">
-        <div class="hud__energy-line">
-          <strong>Énergie</strong>
-          <span data-combat-energy-value="player">0 / 10⚡</span>
-        </div>
-        <progress
-          data-combat-energy="player"
-          max="10"
-          value="0"
-          aria-label="Énergie du monstre joueur"
-        ></progress>
-      </div>
-
-      <div class="distance-buttons" aria-label="Distance">
-        <button type="button" data-combat-move="short">Courte</button>
-        <button type="button" data-combat-move="medium">Moyenne</button>
-        <button type="button" data-combat-move="long">Longue</button>
-      </div>
-
-      <section class="skill-bar" aria-label="Capacités">
-        <span class="skill-bar__title">Capacités</span>
-        <div class="skill-bar__grid" data-combat-skills></div>
-      </section>
-
-      <div class="action-bar action-bar--utility" aria-label="Actions secondaires">
-        <details class="action-menu" data-action-menu>
-          <summary>Objets</summary>
-          <div class="action-menu__panel" data-combat-items></div>
-        </details>
-
-        <details class="action-menu" data-action-menu>
-          <summary>Équipe</summary>
-          <div class="action-menu__panel">
-            <p class="team-selection" data-team-selection>
-              Réserve sélectionnée : Drakon
-            </p>
-            <div data-combat-team-actions></div>
+      <section class="combat-controls" aria-label="Commandes du joueur">
+        <div class="hud__energy">
+          <div class="hud__energy-line">
+            <strong>Énergie</strong>
+            <span data-combat-energy-value="player">0 / 10⚡</span>
           </div>
-        </details>
-      </div>
+          <progress
+            data-combat-energy="player"
+            max="10"
+            value="0"
+            aria-label="Énergie du monstre joueur"
+          ></progress>
+        </div>
+
+        <section class="skill-bar" aria-label="Capacités">
+          <span class="skill-bar__title">Capacités</span>
+          <div class="skill-bar__grid" data-combat-skills></div>
+        </section>
+
+        <div class="combat-controls__utility">
+          <div class="distance-buttons" aria-label="Distance">
+            <button type="button" data-combat-move="short">Courte</button>
+            <button type="button" data-combat-move="medium">Moyenne</button>
+            <button type="button" data-combat-move="long">Longue</button>
+          </div>
+
+          <div class="action-bar action-bar--utility" aria-label="Actions secondaires">
+            <details class="action-menu" data-action-menu>
+              <summary>Objets</summary>
+              <div class="action-menu__panel" data-combat-items></div>
+            </details>
+
+            <details class="action-menu" data-action-menu>
+              <summary>Équipe</summary>
+              <div class="action-menu__panel">
+                <p class="team-selection" data-team-selection>
+                  Réserve sélectionnée : Drakon
+                </p>
+                <div data-combat-team-actions></div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
 
       <p
         class="live-status"
