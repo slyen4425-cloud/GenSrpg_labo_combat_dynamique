@@ -203,11 +203,26 @@ assets/
     creatures/
     arenas/
     effects/
+  library/
+    core/
+      icons/
+      sprites/
+      fx/
+      audio/
+      portraits/
+      backgrounds/
+      ui/
 ```
 
-Les assets de test servent au laboratoire et ne sont pas des assets GenSrpG officiels.
+`assets/test/` reste réservé aux ressources propres au laboratoire et aux prototypes. Ces fichiers ne sont pas des assets GenSrpG officiels.
+
+`assets/library/core/` contient la bibliothèque commune destinée à devenir transportable vers GenSrpG principal et réutilisable par plusieurs modes.
+
+Les deux zones ne doivent jamais être mélangées silencieusement.
 
 Le dépôt ne doit jamais dépendre d'un chemin situé dans `Zombicide-40k`.
+
+Aucun consommateur métier ne doit utiliser une URL GitHub brute ou un chemin dépendant du nom du dépôt comme clé d'asset.
 
 ## 15. Travail toujours sur une base connue
 
@@ -393,7 +408,6 @@ Quand deux solutions sont possibles, choisir celle qui :
 
 Cette charte prime sur la solution la plus rapide.
 
-
 ## 30. Séparation Combat Rules / moteur visuel
 
 Le laboratoire peut héberger un prototype de règles de combat à condition de préserver une frontière stricte.
@@ -412,7 +426,6 @@ Interdictions :
 
 L'état courant du combat appartient à un propriétaire unique : Combat Session / Combat State.
 
-
 ## 31. Roster de combat
 
 Lorsqu'un prototype manipule plusieurs créatures par équipe :
@@ -427,3 +440,30 @@ Lorsqu'un prototype manipule plusieurs créatures par équipe :
 Chaîne autorisée :
 
 `Command Runtime -> command-complete -> Roster Session -> Combat Session slot -> Visual Controller`
+
+## 32. Bibliothèque d'assets commune, portable et multi-modes
+
+La bibliothèque `core` est conçue comme une ressource commune de GenSrpG, et non comme une bibliothèque privée du laboratoire Combat ou du seul mode Capture.
+
+Objectif permanent : un asset correctement classé dans `assets/library/core/` doit pouvoir être transporté vers le dépôt principal sans reconstruction de sa logique métier et, lorsqu'il est générique, pouvoir être réutilisé par plusieurs modes.
+
+Règles obligatoires :
+
+- les assets `core` sont considérés multi-modes par défaut ; une restriction à un mode doit être explicite dans les métadonnées de compatibilité ;
+- Survie, Aventure/RPG, Capture, Duel/Affrontement et les futurs modes doivent pouvoir piocher dans la même bibliothèque commune lorsque l'asset est compatible ;
+- les sons génériques de combat, d'interface, d'ambiance ou de feedback doivent être pensés comme réutilisables et ne doivent pas être dupliqués uniquement parce que deux modes les utilisent ;
+- un son, une icône, un sprite ou un FX ne possède jamais d'autorité gameplay : il illustre un événement ou une présentation mais ne décide ni des dégâts, ni des coûts, ni des timings métier, ni du résultat ;
+- les consommateurs référencent un `assetId` stable dès que le contrat correspondant existe ; le nom du fichier, son URL GitHub ou son chemin physique ne devient jamais une clé métier ;
+- les `assetId` doivent rester stables lors d'un déplacement du laboratoire vers le dépôt principal ;
+- la structure relative de la bibliothèque et les métadonnées doivent être conservées autant que possible lors du transfert ;
+- média, inventaire, provenance, auteur, licence, tags et compatibilités voyagent ensemble ;
+- un asset spécifique à un monde ou à un créateur relève des scopes `project` ou `user`, pas de `core` ;
+- un pack thématique réutilisable relève du scope `pack` et ne doit pas écraser silencieusement la bibliothèque `core` ;
+- le transfert futur vers `Zombicide-40k` doit être un transport/synchronisation + raccord de catalogue, pas une reconstruction manuelle de la bibliothèque ;
+- aucune intégration effective au dépôt principal n'est réalisée sans validation explicite, conformément à la section 25.
+
+Exemple attendu :
+
+`core:sound-hit-light-01` peut servir à Capture, Survie ou RPG sans dupliquer le fichier, tandis qu'un asset strictement propre à un monde reste dans son scope spécifique.
+
+Toute nouvelle organisation d'assets qui empêcherait cette portabilité ou créerait une bibliothèque séparée par mode doit être justifiée explicitement avant implémentation.
