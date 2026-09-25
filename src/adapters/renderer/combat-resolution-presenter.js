@@ -226,6 +226,10 @@ export function createCombatResolutionPresenter({
           .catch(() => ({ status: "cancelled" }));
         break;
 
+      case "clashed":
+        fx?.cancelProjectileFor?.(actorSlot);
+        break;
+
       case "blocked":
       case "immune":
         visuals.cancelFor(actorSlot);
