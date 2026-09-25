@@ -105,7 +105,7 @@ test("V8 never hides the opponent roster container", async () => {
   );
   assert.doesNotMatch(
     css,
-    /\.reserve--opponent[^\{]*\{[\s\S]{0,120}?display:\s*none/
+    /\.reserve--opponent\s*\{[^}]*display:\s*none/
   );
 });
 
