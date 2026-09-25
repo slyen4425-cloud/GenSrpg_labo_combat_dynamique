@@ -4617,3 +4617,90 @@ Incident de concurrence Git traité proprement :
 - aucun force-push ;
 - aucun écrasement ;
 - le pack média a été reappliqué au-dessus du HEAD réel via commit fast-forward.
+
+
+## Sous-lot actif — fireball-sprites-clean-capture
+
+Base :
+
+`ac2628ac55bbae00ba09fdab543461b2f774e182`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-fireball-sprites-clean-capture-2026-09-25`
+
+Branche :
+
+`work/lab-fireball-sprites-clean-capture-2026-09-25`
+
+Retour utilisateur :
+
+- la planche complète Boule de feu a été fournie de nouveau ;
+- le précédent découpage GitHub n'est pas exploitable visuellement : fonds/panneaux de la planche encore visibles ;
+- le précédent emplacement `assets/library/core/sprites/...` est désormais contraire à la charte corrigée ;
+- les visuels doivent rester dédiés Capture pour l'instant.
+
+Diagnostic :
+
+- les bandes existantes contiennent bien les séquences cast / impact / travel dans quatre directions ;
+- elles constituent une matière source utile mais ne sont pas des sprites runtime propres ;
+- la charte corrigée impose :
+  - audio commun -> `assets/library/core/audio/` ;
+  - visuels Capture -> `assets/library/capture/icons|sprites|fx/`.
+
+Objectif :
+
+- refaire le pack Boule de feu avec transparence réellement exploitable ;
+- produire des frames individuelles 256×256 ;
+- produire aussi des bandes horizontales propres pour lecture atlas ;
+- conserver cast, impact et quatre directions de travel ;
+- préparer des variantes documentaires optionnelles à partir des frames existantes lorsque possible ;
+- conserver une provenance claire ;
+- déposer le résultat sous `assets/library/capture/sprites/skills/fireball/` ;
+- supprimer les anciennes bandes Boule de feu sous `core/sprites` une fois le remplacement vérifié.
+
+Fichiers autorisés :
+
+- `assets/library/capture/sprites/skills/fireball/**` ;
+- anciens `assets/library/core/sprites/skills/fireball/**` uniquement pour remplacement/suppression ;
+- documentation d'inventaire associée ;
+- script/outillage temporaire de génération si nécessaire, à retirer avant clôture ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+Domaines protégés :
+
+- Combat Rules ;
+- Combat Runtime ;
+- Animation Core ;
+- SkillDefinition ;
+- damage / energy / timing ;
+- UI combat ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+Règles de traitement :
+
+- aucun redessin gameplay ;
+- suppression du texte, numéros, cadres et fonds de planche ;
+- alpha propre autour de la flamme ;
+- taille de frame normalisée 256×256 ;
+- noms techniques anglais et stables ;
+- trajectoire écran reste responsabilité du Presenter/Renderer ;
+- aucun sprite ne décide du timing ni des dégâts.
+
+Tests / vérifications :
+
+- chaque frame est réellement RGBA avec alpha ;
+- coins des frames transparents ;
+- aucun chiffre / cadre / bande de titre visible ;
+- bandes atlas ont exactement `frames × 256` de largeur et 256 px de hauteur ;
+- manifest et séquences correspondent aux fichiers ;
+- aucun asset Boule de feu visuel final ne reste sous `core` ;
+- CI existante reste verte.
+
+Critère de fin :
+
+- pack Capture Boule de feu propre et documenté ;
+- anciennes bandes erronées retirées ;
+- CI verte ;
+- SHA exact communiqué.
