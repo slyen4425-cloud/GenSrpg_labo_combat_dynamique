@@ -132,6 +132,20 @@ Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de
 - changement réel d'asset et de profil visuel lors d'une invocation ;
 - aucun contrôle direct de l'adversaire.
 
+### Extension V5 — réflexes, KO et mouvements spéciaux
+
+- capacités offensives visibles directement, sans menu déroulant ;
+- Objets et Équipe restent en menus secondaires compacts ;
+- arène légèrement plus haute pour améliorer la lisibilité ;
+- KO adverse suivi d'un remplacement réel depuis la réserve ;
+- snapshot du membre KO conservé ;
+- aucun contrôle direct joueur sur le remplacement adverse ;
+- événement visuel `teleport-attack` ;
+- événement visuel `aerial-attack` ;
+- ciblage visuel calculé depuis la géométrie réelle des deux acteurs ;
+- point d'impact visuel aligné sur `travelMs` ;
+- retour visuel après impact sans retarder les dégâts.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
