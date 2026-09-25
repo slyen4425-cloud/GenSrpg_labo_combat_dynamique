@@ -4944,3 +4944,56 @@ Correction retenue :
 - fallback générique inchangé pour les compétences sans binding.
 
 Aucune modification gameplay n'est autorisée pour cette correction.
+
+
+### Candidat technique — fireball-visual-fix
+
+Correctif de présentation uniquement :
+
+- l'ancien binding `travel_lr` imposé à tous les tirs a été remplacé par une séquence canonique Capture cohérente ;
+- le binding déclare désormais le point du noyau lumineux du projectile (`coreAnchor`) et son orientation native (`headingRad`) ;
+- le renderer sépare :
+  - le shell DOM qui suit la trajectoire source -> cible ;
+  - le sprite interne qui s'anime et s'oriente ;
+- le noyau lumineux reste donc attaché à la trajectoire au lieu de faire suivre la trajectoire au centre arbitraire de la frame ;
+- le sprite est orienté depuis l'angle réel source -> cible ;
+- le déplacement reste entièrement piloté par le renderer pendant le `travelMs` gameplay existant ;
+- le projectile lié démarre visible au niveau du lanceur, reste lisible pendant tout le trajet et termine sur le point cible ;
+- l'impact Capture existant reste séparé et est toujours déclenché par le résultat sémantique ;
+- le fallback générique des compétences sans binding reste inchangé.
+
+Aucun changement :
+
+- `SkillDefinition` ;
+- dégâts ;
+- énergie ;
+- portée ;
+- `preparationMs` ;
+- `travelMs` ;
+- `recoveryMs` ;
+- Combat Runtime ;
+- Action Resolver ;
+- Roster Session ;
+- Animation Core ;
+- dépôt `Zombicide-40k`.
+
+SHA candidat code :
+
+`107a43e892a2a0a910e24b16e238ac134f9489ce`
+
+CI de validation du candidat :
+
+- workflow : `Laboratory CI` ;
+- run : `36166614668` ;
+- job `foundation` : SUCCESS ;
+- étape `npm run ci` : SUCCESS.
+
+Branche preview :
+
+`preview/lab-fireball-visual-fix-2026-09-25`
+
+Statut :
+
+- GREEN technique uniquement ;
+- validation visuelle smartphone toujours **REQUise** ;
+- aucun checkpoint GREEN final avant confirmation explicite de Sylvain que la Boule de feu ressemble enfin à un vrai projectile allant du lanceur à la cible.
