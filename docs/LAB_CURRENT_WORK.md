@@ -2142,9 +2142,45 @@ Critère de fin :
 - checkpoint GREEN ;
 - preview smartphone où une créature touchée affiche un flash rouge bref au moment de l'impact puis revient immédiatement à son rendu normal.
 
+
+## Résultat technique — hit-impact-feedback-v7
+
+Implémentation :
+
+- `AnimationPlan` possède maintenant un canal visuel `filter` neutre et renderer-agnostic ;
+- les profils `serpentine` et `drake` configurent le feedback `hit` via :
+  - `brightness` ;
+  - `saturate` ;
+  - `sepia` ;
+  - `hueRotateDeg` ;
+- le planner `hit` applique ce filter uniquement pendant le recul d'impact ;
+- le segment de récupération revient à un filter neutre ;
+- le DOM Render Adapter est l'unique propriétaire de la traduction vers CSS ;
+- le renderer restaure explicitement `filter: none` après les animations transitoires ;
+- le comportement terminal KO reste inchangé et protégé.
+
+Sentinelles ajoutées :
+
+- le planner consomme les paramètres `hit.filter` du profil ;
+- la timeline DOM démarre neutre, applique le flash puis revient neutre ;
+- le renderer ne laisse aucun filtre résiduel après Hit ;
+- le KO terminal conserve toujours son état final.
+
+CI du HEAD fonctionnel :
+
+- run : `36120512640`
+- conclusion : SUCCESS
+
+Validation smartphone restante :
+
+- toucher Marai puis Drakon ;
+- vérifier un flash rouge bref exactement au moment du recul `hit` ;
+- vérifier que la coloration disparaît immédiatement après ;
+- vérifier qu'un KO continue à disparaître puis être remplacé normalement.
+
 ## Dernier checkpoint GREEN
 
-`checkpoint/lab-ko-runtime-true-path-v6-green-2026-09-25`
+`checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
 
 ## Règle de reprise
 
