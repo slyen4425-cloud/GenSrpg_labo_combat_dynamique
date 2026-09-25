@@ -231,6 +231,8 @@ test("live reaction can counter a charging contact skill before release", () => 
   });
 
   assert.equal(started.ok, true);
+  assert.equal(progress.at(-1).actorId, "maraileron");
+  assert.equal(progress.at(-1).targetId, "braisombre");
 
   const reacted = runtime.react(contactCounter);
   assert.equal(reacted.ok, true);
@@ -243,7 +245,14 @@ test("live reaction can counter a charging contact skill before release", () => 
   assert.equal(resolutions.length, 1);
   assert.equal(resolutions[0].outcome, "countered");
   assert.equal(runtime.hasActiveAction, false);
-  assert.ok(progress.some((item) => item.reaction?.skillId === "contact-counter"));
+  const reactionProgress = progress.find(
+    (item) => item.reaction?.skillId === "contact-counter"
+  );
+  assert.ok(reactionProgress);
+  assert.equal(reactionProgress.reaction.actorId, "braisombre");
+  assert.equal(reactionProgress.reaction.targetId, "maraileron");
+  assert.equal(reactionProgress.reaction.actionName, "Riposte");
+  assert.equal(reactionProgress.reaction.remainingPreparationMs, 400);
 
   runtime.dispose();
 });
@@ -307,6 +316,8 @@ test("live skill completion commits resolved HP damage to session state", () => 
   assert.equal(resolutions.length, 1);
   assert.equal(resolutions[0].actionType, "skill");
   assert.equal(resolutions[0].skillId, fireball.id);
+  assert.equal(resolutions[0].actorId, "maraileron");
+  assert.equal(resolutions[0].targetId, "braisombre");
   assert.equal(resolutions[0].outcome, "hit");
   assert.equal(resolutions[0].state.fighters.braisombre.hp, 70);
   assert.equal(session.snapshot().fighters.braisombre.hp, 70);
@@ -493,6 +504,8 @@ test("runtime progress exposes action name and authoritative remaining charge ti
     skill: claw
   });
 
+  assert.equal(progress.at(-1).actorId, "maraileron");
+  assert.equal(progress.at(-1).targetId, "braisombre");
   assert.equal(progress.at(-1).actionName, "Griffe");
   assert.equal(progress.at(-1).preparationMs, 1200);
   assert.equal(progress.at(-1).remainingPreparationMs, 1200);
