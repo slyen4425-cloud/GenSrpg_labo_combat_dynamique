@@ -235,10 +235,11 @@ test("ground approach grows toward player camera and shrinks toward arena depth"
   );
 });
 
-test("ground perspective scale respects configured visual bounds", () => {
+test("shared perspective scale respects configured visual bounds", () => {
   const current = actor("drake");
   const profile = registry.get("drake");
   const ground = profile.specialMoves.ground;
+  const perspective = profile.specialMoves.perspective;
 
   const near = planAnimation({
     event: normalizeCombatVisualEvent({
@@ -274,11 +275,11 @@ test("ground perspective scale respects configured visual bounds", () => {
 
   assert.equal(
     near.segments[0].transform.scaleX,
-    ground.impactScaleX * ground.perspectiveScaleMax
+    ground.impactScaleX * perspective.perspectiveScaleMax
   );
   assert.equal(
     far.segments[0].transform.scaleX,
-    ground.impactScaleX * ground.perspectiveScaleMin
+    ground.impactScaleX * perspective.perspectiveScaleMin
   );
 });
 
@@ -310,4 +311,161 @@ test("aerial attack can rise completely above arena before diving", () => {
     plan.segments[1].durationMs +
     plan.segments[2].durationMs;
   assert.equal(impactMs, 850);
+});
+
+
+test("aerial approach shrinks toward arena depth and grows toward player camera", () => {
+  const current = actor("drake");
+  const profile = registry.get("drake");
+
+  const towardDepth = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "aerial-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: 140,
+        targetTranslateY: -200,
+        arenaHeight: 800,
+        arenaExitTranslateY: -340,
+        travelMs: 850
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  const towardCamera = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "aerial-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: -140,
+        targetTranslateY: 200,
+        arenaHeight: 800,
+        arenaExitTranslateY: -340,
+        travelMs: 850
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  const depthImpact = towardDepth.segments.find(
+    (segment) => segment.label === "aerial-dive-impact"
+  );
+  const cameraImpact = towardCamera.segments.find(
+    (segment) => segment.label === "aerial-dive-impact"
+  );
+
+  assert.ok(depthImpact.transform.scaleX < 1.05);
+  assert.ok(depthImpact.transform.scaleY < 0.96);
+  assert.ok(cameraImpact.transform.scaleX > 1.05);
+  assert.ok(cameraImpact.transform.scaleY > 0.96);
+
+  const depthImpactMs =
+    towardDepth.segments[0].durationMs +
+    towardDepth.segments[1].durationMs +
+    towardDepth.segments[2].durationMs;
+  const cameraImpactMs =
+    towardCamera.segments[0].durationMs +
+    towardCamera.segments[1].durationMs +
+    towardCamera.segments[2].durationMs;
+
+  assert.equal(depthImpactMs, 850);
+  assert.equal(cameraImpactMs, 850);
+  assert.equal(towardDepth.segments.at(-1).transform.scaleX, 1);
+  assert.equal(towardDepth.segments.at(-1).transform.scaleY, 1);
+  assert.equal(towardCamera.segments.at(-1).transform.scaleX, 1);
+  assert.equal(towardCamera.segments.at(-1).transform.scaleY, 1);
+});
+
+test("teleport approach uses the same camera-depth perspective rule", () => {
+  const current = actor("drake");
+  const profile = registry.get("drake");
+
+  const towardDepth = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "teleport-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: 140,
+        targetTranslateY: -200,
+        arenaHeight: 800,
+        travelMs: 500
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  const towardCamera = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "teleport-attack",
+      actorId: current.id,
+      targetId: "target",
+      metadata: {
+        targetTranslateX: -140,
+        targetTranslateY: 200,
+        arenaHeight: 800,
+        travelMs: 500
+      }
+    }),
+    actor: current,
+    profile
+  });
+
+  const depthImpact = towardDepth.segments.find(
+    (segment) => segment.label === "teleport-impact"
+  );
+  const cameraImpact = towardCamera.segments.find(
+    (segment) => segment.label === "teleport-impact"
+  );
+
+  assert.ok(depthImpact.transform.scaleX < 1.04);
+  assert.ok(depthImpact.transform.scaleY < 0.98);
+  assert.ok(cameraImpact.transform.scaleX > 1.04);
+  assert.ok(cameraImpact.transform.scaleY > 0.98);
+
+  assert.equal(
+    towardDepth.segments[0].durationMs +
+      towardDepth.segments[1].durationMs,
+    500
+  );
+  assert.equal(
+    towardCamera.segments[0].durationMs +
+      towardCamera.segments[1].durationMs,
+    500
+  );
+  assert.equal(towardDepth.segments.at(-1).transform.scaleX, 1);
+  assert.equal(towardDepth.segments.at(-1).transform.scaleY, 1);
+  assert.equal(towardCamera.segments.at(-1).transform.scaleX, 1);
+  assert.equal(towardCamera.segments.at(-1).transform.scaleY, 1);
+});
+
+test("profiles expose one shared perspective preset instead of ground-only duplicates", () => {
+  for (const profile of [registry.get("drake"), registry.get("serpentine")]) {
+    assert.deepEqual(
+      Object.keys(profile.specialMoves.perspective).sort(),
+      [
+        "perspectiveScaleMax",
+        "perspectiveScaleMin",
+        "perspectiveScaleStrength"
+      ]
+    );
+    assert.equal(
+      "perspectiveScaleStrength" in profile.specialMoves.ground,
+      false
+    );
+    assert.equal(
+      "perspectiveScaleMin" in profile.specialMoves.ground,
+      false
+    );
+    assert.equal(
+      "perspectiveScaleMax" in profile.specialMoves.ground,
+      false
+    );
+  }
 });
