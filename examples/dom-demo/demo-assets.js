@@ -42,7 +42,7 @@ function resolveAsset(assetId) {
 }
 
 export const demoPresentationAssets = Object.freeze({
-  resolveSkillPresentation(skillId) {
+  presentationForSkill(skillId) {
     const binding = SKILL_BINDINGS[skillId];
     if (!binding) {
       return null;
