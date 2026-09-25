@@ -5668,3 +5668,21 @@ Statut :
 - CI work : run `36184067123` — SUCCESS ;
 - correction toujours en attente de validation visuelle smartphone ;
 - aucun checkpoint GREEN final avant ce nouveau test.
+
+
+### Décisions gameplay à conserver pour chantier ultérieur — déplacement et cooldowns
+
+Décision utilisateur du 2026-09-25 :
+
+- conserver pour l'instant la mécanique de déplacement existante ;
+- le déplacement devra pouvoir être déclenché même pendant qu'un adversaire agit ou charge une capacité ;
+- ne pas retravailler immédiatement cette mécanique dans le chantier perspective en cours ;
+- les compétences devront disposer de temps de recharge configurables ;
+- les cooldowns devront être traités de manière data-driven lors du futur chantier d'édition / correction de l'éditeur de compétences ;
+- aucune rustine UI ou exception player/opponent ne doit être introduite pour ces besoins.
+
+Statut :
+
+- exigences enregistrées ;
+- aucun changement fonctionnel effectué dans ce lot ;
+- perspective visuelle conservée telle quelle pour le moment et à réévaluer plus tard.
