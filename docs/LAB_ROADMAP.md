@@ -202,17 +202,18 @@ Principes :
 - décisions déterministes et testables avant ajout éventuel d'aléatoire ;
 - l'IA choisit uniquement parmi des actions déjà déclarées légales par les propriétaires existants.
 
-Premier périmètre envisagé :
+Premier périmètre retenu :
 
-1. réactions automatiques aux actions joueur :
-   - Esquive ;
-   - Bouclier miroir ;
-   - Immunité feu ;
-   - Riposte ;
-2. choix d'une compétence offensive légale lorsque le Runtime est libre ;
-3. déplacement vers une distance utile lorsqu'aucune compétence souhaitée n'est disponible ;
-4. prise en compte simple des PV/énergie/distance ;
-5. politique configurable afin de pouvoir tester plusieurs comportements.
+1. comportement offensif normal sans réaction automatique permanente ;
+2. moteur de réactions générique conservé pour de futurs profils spécialisés ;
+3. stratégie énergie configurable :
+   - mode rapide ;
+   - mode fort ;
+   - économie d'énergie si la compétence forte n'est pas encore finançable ;
+4. choix d'une compétence uniquement parmi les skills autorisés par la policy et validés par Combat Session ;
+5. déplacement vers une distance utile uniquement si le budget réel couvre mouvement + compétence ciblée ;
+6. réévaluation d'une IA en attente uniquement depuis les mises à jour du Combat Runtime ;
+7. politique configurable afin de pouvoir tester plusieurs comportements.
 
 Pré-requis de raccord identifiés :
 
@@ -223,7 +224,19 @@ Pré-requis de raccord identifiés :
 Limite du premier prototype :
 
 - `Combat Runtime` reste propriétaire d'une seule action active globale ;
-- les réactions restent concurrentes via `runtime.react()`, mais deux attaques autonomes simultanément en charge ne sont pas introduites dans V9.
+- le moteur de réactions reste disponible via `runtime.react()`, mais il est désactivé dans la policy de combat normal V9 ;
+- deux attaques autonomes simultanément en charge ne sont pas introduites dans V9.
+
+### Disponibilité future des compétences
+
+À traiter dans un chantier gameplay séparé après stabilisation de V9 :
+
+- système de disponibilité 100 % data-driven au niveau `SkillDefinition` ;
+- possibilité d'ajouter un `cooldownMs` configurable par compétence ;
+- possibilité future de charges, nombre d'utilisations ou autres contraintes ;
+- aucun cooldown codé en dur dans l'IA ou l'UI ;
+- Combat Runtime / Combat State resteront propriétaires du temps et de la disponibilité réelle ;
+- l'IA ne fera que consulter cette disponibilité pour décider.
 
 ## Phase 3 — FX génériques
 
