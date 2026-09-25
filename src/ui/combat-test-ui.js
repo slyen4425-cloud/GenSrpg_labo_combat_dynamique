@@ -534,6 +534,8 @@ export async function mountCombatTest({
       node.type = "button";
     }
     node.className = "reserve-card";
+    node.title = member.displayName;
+    node.setAttribute("aria-label", member.displayName);
     node.dataset.memberId = member.id;
     node.dataset.active = member.active ? "true" : "false";
     node.dataset.selected =
