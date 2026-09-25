@@ -6,6 +6,7 @@ import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.j
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
 import { createOpponentDecisionController } from "../../src/core/combat/opponent-decision-controller.js";
+import { createRosterSession } from "../../src/core/combat/roster-session.js";
 
 async function json(path) {
   return JSON.parse(await readFile(path, "utf8"));
@@ -51,7 +52,8 @@ const [
   mirrorRaw,
   immunityRaw,
   counterRaw,
-  policy
+  policy,
+  rosterData
 ] = await Promise.all([
   json("data/combat/fighters/maraileron.combat.json"),
   json("data/combat/fighters/braisombre.combat.json"),
@@ -63,7 +65,8 @@ const [
   json("data/combat/skills/mirror-shield.skill.json"),
   json("data/combat/skills/fire-immunity.skill.json"),
   json("data/combat/skills/contact-counter.skill.json"),
-  json("data/combat/ai/opponent-aggressive.policy.json")
+  json("data/combat/ai/opponent-aggressive.policy.json"),
+  json("data/combat/rosters/demo-2v2.roster.json")
 ]);
 
 const fireball = normalizeSkillDefinition(fireballRaw);
@@ -205,6 +208,89 @@ test("true V9 flow: player attack -> AI reaction -> AI movement -> AI attack -> 
   assert.equal(resolutions[1].outcome, "hit");
   assert.equal(session.snapshot().fighters.player.hp, 52);
   assert.equal(ai.skillCursor, 1);
+
+  runtime.dispose();
+});
+
+
+test("opponent runtime KO of player is replaced by player Roster Session", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      {
+        ...maraileron,
+        id: "player",
+        initialEnergy: 10,
+        initialHp: 18
+      },
+      {
+        ...braisombre,
+        id: "opponent",
+        initialEnergy: 10,
+        initialHp: 100
+      }
+    ]
+  });
+
+  const roster = createRosterSession({
+    combatSession: session,
+    roster: rosterData,
+    fighterConfigs: {
+      maraileron,
+      braisombre
+    }
+  });
+
+  const clock = fakeClock();
+  const resolutions = [];
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onResolved(value) {
+      resolutions.push(value);
+    }
+  });
+
+  runtime.start();
+
+  const started = runtime.startSkill({
+    actorId: "opponent",
+    targetId: "player",
+    skill: claw
+  });
+
+  assert.equal(started.ok, true);
+
+  clock.setTime(started.action.impactAtMs);
+  clock.fireNext();
+
+  assert.equal(resolutions.length, 1);
+  assert.equal(resolutions[0].actorId, "opponent");
+  assert.equal(resolutions[0].targetId, "player");
+  assert.equal(resolutions[0].outcome, "hit");
+
+  const hit = resolutions[0].events.find(
+    (event) => event.type === "hit"
+  );
+  assert.equal(hit.actorId, "player");
+  assert.equal(hit.hpAfter, 0);
+  assert.equal(session.snapshot().fighters.player.hp, 0);
+
+  const replacement = roster.replaceKnockedOut("player");
+  assert.equal(replacement.ok, true);
+  assert.equal(replacement.outcome, "ko_replaced");
+  assert.equal(replacement.creatureId, "braisombre");
+  assert.equal(
+    roster.snapshot().player.activeMemberId,
+    "player-drakon"
+  );
+  assert.equal(
+    session.snapshot().fighters.player.hp,
+    braisombre.initialHp
+  );
 
   runtime.dispose();
 });
