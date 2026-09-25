@@ -2455,6 +2455,113 @@ Statut :
 - GREEN technique ;
 - validation smartphone toujours requise avant checkpoint GREEN V8 final.
 
+
+## Sous-lot actif V8 — spatial-reserve-fix
+
+Base technique :
+
+`4381de6b248a3cc3d04dbe8c7adcdd2879721ad3`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-v8-spatial-reserve-fix-2026-09-25`
+
+Branche :
+
+`work/lab-v8-spatial-reserve-fix-2026-09-25`
+
+Retour smartphone :
+
+- l'UI générale est nettement meilleure ;
+- les portraits de créatures disponibles restent partiellement masqués ;
+- la projection Courte / Moyenne / Longue manque de profondeur : le Presenter ne pilote actuellement que l'axe horizontal.
+
+Diagnostic :
+
+1. `.reserve` est en `z-index: 11` alors que les cartes de combat sont en `z-index: 12` ; lorsqu'ils se chevauchent, les portraits passent derrière le HUD ;
+2. `DomDistancePresenter` ne possède qu'un ancrage X par slot/distance ; aucun ancrage Y n'existe ;
+3. les positions verticales sont actuellement figées par CSS (`bottom` joueur / `top` adversaire), donc une transition de distance ne peut pas produire la diagonale demandée.
+
+Objectifs :
+
+- rendre les portraits de réserve visibles au-dessus des cartes sans créer une nouvelle couche UI ;
+- faire posséder les ancrages X/Y au `DomDistancePresenter` ;
+- joueur :
+  - longue = bas-gauche ;
+  - moyenne = plus proche du centre et légèrement plus haut ;
+  - courte = encore plus proche du centre et plus haut, sans coller la cible ;
+- adversaire :
+  - longue = haut-droite ;
+  - moyenne = plus proche du centre et légèrement plus bas ;
+  - courte = encore plus proche du centre et plus bas ;
+- conserver l'invariant : seul le combattant qui change la distance bouge visuellement.
+
+Propriétaires autorisés :
+
+- Demo UI/CSS : ordre de couche et présentation des portraits ;
+- `DomDistancePresenter` : ancrages visuels X/Y/scale ;
+- tests du Presenter et sentinelles UI ;
+- documentation.
+
+Fichiers autorisés :
+
+- `examples/dom-demo/demo.css` ;
+- `src/adapters/renderer/dom-distance-presenter.js` ;
+- `tests/unit/dom-distance-presenter.test.mjs` ;
+- `tests/unit/demo-ui-boundary.test.mjs` ;
+- documentation.
+
+Domaines protégés :
+
+- Combat State et distance sémantique ;
+- coûts de déplacement ;
+- Combat Runtime ;
+- Action Resolver ;
+- Animation Core ;
+- dégâts, impact, KO et Roster Session ;
+- dépôt `Zombicide-40k`.
+
+Tests prévus :
+
+- portraits de réserve au-dessus des cartes de combat ;
+- ancrages joueur ordonnés en X : longue < moyenne < courte ;
+- ancrages joueur ordonnés en Y : longue > moyenne > courte ;
+- ancrages adversaire miroir en X : longue > moyenne > courte ;
+- ancrages adversaire ordonnés en Y : longue < moyenne < courte ;
+- déplacement d'un slot ne modifie pas l'autre ;
+- reset restaure les ancrages moyens X/Y ;
+- CI complète verte.
+
+## Pré-audit futur — IA adverse
+
+Aucun code IA dans ce sous-lot.
+
+Briques déjà disponibles :
+
+- `Combat Runtime.startSkill()` accepte un `actorId` ;
+- `Combat Runtime.previewReaction()` et `react()` existent ;
+- compétences de réaction de laboratoire déjà présentes :
+  - Esquive ;
+  - Bouclier miroir ;
+  - Immunité feu ;
+  - Riposte.
+
+Architecture cible envisagée :
+
+`Combat State/Session snapshot -> Opponent Decision Controller -> preview légale -> Combat Runtime / Session -> Presenter`
+
+Le futur contrôleur IA :
+
+- ne possédera pas une deuxième horloge de combat ;
+- ne calculera pas lui-même dégâts, portée ou coûts ;
+- choisira uniquement parmi des actions déjà validées par les propriétaires existants ;
+- pourra d'abord gérer réactions, déplacements et choix de compétence ;
+- devra être testable avec une décision déterministe/injectable avant toute notion de hasard.
+
+Point à traiter dans le futur lot IA :
+
+- le Runtime possède actuellement une seule action active globale, ce qui convient aux réactions via `react()`, mais le HUD de charge devra devenir actor-aware avant d'afficher proprement une charge initiée par l'adversaire.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
