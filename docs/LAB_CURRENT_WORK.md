@@ -5045,3 +5045,58 @@ Réglage visuel Boule de feu demandé :
 - cast visible sur le lanceur pendant la préparation ;
 - projectile au release ;
 - explosion à l'impact.
+
+
+### Candidat technique — pipeline visuel cast / projectile / impact
+
+Implémentation :
+
+- binding Boule de feu enrichi avec trois phases de présentation distinctes :
+  - `cast` ;
+  - `travel` ;
+  - `impact` ;
+- le `cast` utilise l'atlas Capture existant `sprite_skill_fireball_cast_atlas_01.png` ;
+- le `travel` conserve le projectile ancré/orienté du correctif précédent ;
+- taille visuelle du projectile augmentée via `displayScale: 1.75` dans le binding de présentation ;
+- taille visuelle du cast configurée séparément via `displayScale: 1.35` ;
+- aucun paramètre gameplay n'a été ajouté aux assets.
+
+Raccord temporel :
+
+- `Combat Runtime` expose désormais un callback `onStarted` purement informatif ;
+- ce signal ne modifie ni l'action ni ses timestamps ;
+- `Combat Test UI` route uniquement les actions de type skill vers `Presenter.presentPreparation()` ;
+- `Presenter` affiche le cast pendant la vraie `preparationMs` ;
+- au vrai `release`, le cast actif de cet acteur est annulé/nettoyé puis le projectile démarre ;
+- si l'action est interrompue avant release, le cast est également annulé ;
+- l'impact reste déclenché uniquement depuis la résolution sémantique existante.
+
+Tests ajoutés / renforcés :
+
+- plan FX de préparation suit exactement `action.preparationMs` ;
+- renderer cast utilise l'anchor réel du lanceur ;
+- handoff Presenter `cast -> release projectile` protégé ;
+- signal Runtime `onStarted` vérifié sans modification de `releaseAtMs / impactAtMs / travelMs` ;
+- binding Boule de feu protège les trois assetIds et le scale de projectile ;
+- sentinelles existantes conservées.
+
+SHA candidat avant synchronisation documentaire :
+
+`3ea9f7e06bd56f2aebc0815e3dc21f07025e8273`
+
+CI :
+
+- workflow : `Laboratory CI` ;
+- run : `36168245446` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique uniquement ;
+- validation smartphone requise sur :
+  1. apparition du cast pendant la charge ;
+  2. disparition du cast exactement au départ ;
+  3. projectile nettement plus gros et lisible ;
+  4. trajet jusqu'à la cible ;
+  5. explosion à l'impact ;
+- aucun checkpoint GREEN final avant validation visuelle explicite de Sylvain.
