@@ -5843,3 +5843,19 @@ Comportement :
 - aucun Combat Rules / Runtime / SkillDefinition ne connaît le biome ou le chemin du fichier.
 
 Le binaire `arena_forest_01.webp` doit être ajouté par upload dans le dossier forêt. Aucun substitut n'est utilisé.
+
+
+### Intégration réelle — arène forêt
+
+Upload utilisateur détecté sur la branche de travail :
+
+- fichier reçu : `file_00000000a6bc81f4af7be4fe1e0521f3.png` ;
+- blob GitHub : `9334800acde9cdc1e3a2b639b50f7f4902d70fa4` ;
+- rangement nettoyé : `assets/library/core/arenas/forest/arena_forest_01.png` ;
+- l'ancien nom brut est supprimé du tree ;
+- le binding logique reste `core:arena-forest-01` ;
+- la démo résout maintenant `forest -> core:arena-forest-01 -> arena_forest_01.png` ;
+- la couche de sol procédurale est masquée quand l'image d'arène est active ;
+- aucun gameplay n'est modifié.
+
+Le format runtime courant de cette première arène est PNG, car il s'agit du binaire effectivement déposé. Une future optimisation WebP ne devra pas modifier l'asset ID logique ni le contrat d'arène.

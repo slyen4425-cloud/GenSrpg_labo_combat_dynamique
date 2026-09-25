@@ -12,7 +12,7 @@ const ASSETS = Object.freeze({
   "core:arena-forest-01": Object.freeze({
     assetId: "core:arena-forest-01",
     url: new URL(
-      "arenas/forest/arena_forest_01.webp",
+      "arenas/forest/arena_forest_01.png",
       CORE_ROOT
     ).href
   }),

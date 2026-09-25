@@ -56,7 +56,7 @@ test("forest arena resolves through presentation assets only", () => {
   );
   assert.ok(
     presentation.background?.url.endsWith(
-      "assets/library/core/arenas/forest/arena_forest_01.webp"
+      "assets/library/core/arenas/forest/arena_forest_01.png"
     )
   );
   assert.equal(

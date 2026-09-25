@@ -4,7 +4,7 @@ Arènes visuelles du biome forêt.
 
 Premier asset réservé :
 
-- `arena_forest_01.webp`
+- `arena_forest_01.png`
 
 Direction validée :
 
@@ -15,4 +15,4 @@ Direction validée :
 - grande zone centrale dégagée ;
 - forêt surtout en périphérie et arrière-plan.
 
-L'image fournie par l'utilisateur le 2026-09-25 est la source visuelle validée pour ce premier asset. Son binaire doit être ajouté ici sans substitution lorsqu'il est exposé aux outils de dépôt.
+L'image fournie par l'utilisateur le 2026-09-25 est la source visuelle validée pour ce premier asset. Elle est intégrée ici sous `arena_forest_01.png`. Une optimisation WebP pourra être faite plus tard sans changer l'ID logique `core:arena-forest-01`.
