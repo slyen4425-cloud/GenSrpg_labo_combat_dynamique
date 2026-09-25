@@ -265,8 +265,46 @@ test("visual controller computes target geometry for teleport and aerial moves w
 test("combat arena is taller while keeping direct reflex ability controls", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
-  assert.match(css, /min-height:\s*min\(54svh, 32rem\)/);
+  assert.match(css, /min-height:\s*min\(58svh, 35rem\)/);
   assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
   assert.match(css, /\.distance-buttons\s*\{[\s\S]*repeat\(3/);
   assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
+});
+
+
+test("charge HUD shows runtime-owned action name and countdown", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const runtime = await readFile("src/core/combat/combat-runtime.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(html, /data-combat-charge-label="player"/);
+  assert.match(html, /data-combat-charge-time="player"/);
+  assert.match(runtime, /actionName/);
+  assert.match(runtime, /preparationRemainingMs/);
+  assert.match(runtime, /impactRemainingMs/);
+  assert.match(runtime, /travelProgress/);
+  assert.match(source, /Prépare : \$\{progress\.actionName\}/);
+  assert.match(source, /progress\.preparationRemainingMs/);
+  assert.match(source, /progress\.impactRemainingMs/);
+  assert.match(css, /\.fighter__charge\s*\{[\s\S]*height:\s*0\.56rem/);
+});
+
+test("ground approach is routed by travelMs rather than a UI delay", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+  const presenter = await readFile(
+    "src/adapters/renderer/combat-resolution-presenter.js",
+    "utf8"
+  );
+  const claw = JSON.parse(
+    await readFile("data/combat/skills/claw.skill.json", "utf8")
+  );
+
+  assert.equal(claw.approachMode, "ground");
+  assert.equal(claw.travelMs, 1500);
+  assert.match(source, /\["ground", "teleport", "aerial"\]/);
+  assert.match(source, /"ground-attack"/);
+  assert.match(presenter, /\["ground", "teleport", "aerial"\]/);
+  assert.doesNotMatch(source, /1500/);
+  assert.doesNotMatch(presenter, /1500/);
 });
