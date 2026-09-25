@@ -205,6 +205,20 @@ test("abilities stay directly visible while items and team remain compact menus"
   );
 });
 
+test("V9 UI delegates opponent decisions and routes skill visuals by real actor slots", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /createOpponentDecisionController/);
+  assert.match(source, /opponentAi\.maybeReactToActiveAction\(\)/);
+  assert.match(source, /opponentAi\.takeTurn\(\)/);
+  assert.match(source, /actorSlot:\s*resolution\.actorId/);
+  assert.match(source, /targetSlot:\s*resolution\.targetId/);
+  assert.match(source, /progress\.actorId/);
+  assert.match(source, /progress\.reaction\.actorId/);
+  assert.doesNotMatch(source, /runtime\.react\(/);
+  assert.doesNotMatch(source, /setInterval/);
+});
+
 test("combat UI delegates gameplay to session runtime roster and presenters", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
@@ -349,7 +363,7 @@ test("creature metadata keeps runtime player/opponent/icon views", async () => {
 });
 
 
-test("KO opponent replacement is roster-owned and updates the visual slot after KO presentation", async () => {
+test("KO replacement is roster-owned and generic for player or opponent slots", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
   const rosterSource = await readFile(
     "src/core/combat/roster-session.js",
@@ -357,16 +371,11 @@ test("KO opponent replacement is roster-owned and updates the visual slot after 
   );
 
   assert.match(rosterSource, /function replaceKnockedOut/);
-  assert.match(source, /roster\.replaceKnockedOut\("opponent"\)/);
+  assert.match(source, /roster\.replaceKnockedOut\(slotId\)/);
   assert.match(source, /await presentation\.finished/);
-  assert.match(
-    source,
-    /visuals\.setCreatureFor\(\s*"opponent"/
-  );
-  assert.match(
-    source,
-    /visuals\.setSlotVisible\("opponent", false\)/
-  );
+  assert.match(source, /visuals\.setCreatureFor\(\s*slotId/);
+  assert.match(source, /visuals\.setSlotVisible\(slotId, false\)/);
+  assert.doesNotMatch(source, /replaceOpponentAfterKo/);
 });
 
 test("visual controller computes target geometry for teleport and aerial moves without gameplay authority", async () => {
