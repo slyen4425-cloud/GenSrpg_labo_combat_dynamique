@@ -266,17 +266,21 @@ test("HP energy and charge remain state-driven", async () => {
   assert.doesNotMatch(source, /hp\s*=\s*100/);
 });
 
-test("distance presenter keeps explicit player anchors and player z-order", async () => {
+test("distance presenter keeps explicit diagonal anchors and player z-order", async () => {
   const presenter = await readFile(
     "src/adapters/renderer/dom-distance-presenter.js",
     "utf8"
   );
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
-  assert.match(presenter, /POSITION_BY_SLOT_AND_DISTANCE/);
+  assert.match(presenter, /ANCHOR_BY_SLOT_AND_DISTANCE/);
   assert.match(
     presenter,
-    /player:[\s\S]*long: 0\.18[\s\S]*medium: 0\.28[\s\S]*short: 0\.42/
+    /player:[\s\S]*long:[\s\S]*x: 0\.16, y: 0\.72[\s\S]*medium:[\s\S]*x: 0\.28, y: 0\.64[\s\S]*short:[\s\S]*x: 0\.39, y: 0\.56/
+  );
+  assert.match(
+    presenter,
+    /opponent:[\s\S]*short:[\s\S]*x: 0\.61, y: 0\.40[\s\S]*medium:[\s\S]*x: 0\.72, y: 0\.32[\s\S]*long:[\s\S]*x: 0\.84, y: 0\.24/
   );
   assert.match(css, /\.fighter--player\s*\{[\s\S]*?z-index:\s*4/);
   assert.match(css, /\.fighter--opponent\s*\{[\s\S]*?z-index:\s*3/);
