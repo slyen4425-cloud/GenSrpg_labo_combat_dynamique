@@ -219,6 +219,21 @@ export async function mountCombatDemo({
     }
   }
 
+  function getCreatureDescriptor(creatureId) {
+    const meta = creatureMetas.get(creatureId);
+    if (!meta) {
+      throw new RangeError(`Unknown demo creature: ${creatureId}`);
+    }
+    const iconAsset =
+      meta.runtimePreview?.icon ?? meta.views.icon;
+    return Object.freeze({
+      id: meta.id,
+      name: meta.name,
+      profile: meta.profile,
+      iconUrl: new URL(iconAsset, meta.assetBaseUrl).href
+    });
+  }
+
   startIdleFor("player");
   startIdleFor("opponent");
 
@@ -228,6 +243,7 @@ export async function mountCombatDemo({
     startIdleFor,
     setCreatureFor,
     setSlotVisible,
+    getCreatureDescriptor,
     getCreatureFor(slotKey) {
       return slotOf(slotKey).meta.id;
     },
