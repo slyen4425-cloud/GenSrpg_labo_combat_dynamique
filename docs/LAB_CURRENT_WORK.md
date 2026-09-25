@@ -2375,6 +2375,37 @@ Statut :
 - V8 toujours en validation smartphone ;
 - aucun checkpoint GREEN final tant que la compacité réelle n'est pas validée par Sylvain.
 
+
+## Retour smartphone V8 — hiérarchie visuelle encore trop dense
+
+Capture smartphone analysée le 2026-09-25.
+
+Constat :
+
+- le problème n'est plus seulement la taille des quatre capacités ;
+- trop de blocs sont visibles simultanément ;
+- HUD joueur, réserves, statut, énergie, capacités, distances et menus secondaires ont encore tous leur propre surface ;
+- le HUD joueur remonte trop haut parce que le dock inférieur reste trop profond ;
+- la référence cible utilise au contraire des informations plates aux bords et un dock de commandes très compact.
+
+Correction autorisée dans V8 :
+
+- supprimer le bandeau décoratif `Combat Capture` ;
+- compacter les cartes PV joueur/adversaire ;
+- masquer complètement l'affichage de charge lorsqu'il est inactif et le faire apparaître uniquement pendant une préparation réelle ;
+- rendre les réserves icon-only dans la vue principale ;
+- supprimer le titre visuel `Capacités` ;
+- placer les quatre capacités et Objets/Équipe sur la même ligne fonctionnelle ;
+- garder la distance dans une ligne segmentée très compacte ;
+- maintenir joueur bas-gauche et commandes bas-droite sans empilement vertical.
+
+Domaines protégés inchangés :
+
+- aucun Core ;
+- aucun Runtime ;
+- aucune règle gameplay ;
+- aucun calcul de disponibilité, coût, distance ou KO dans le CSS/HTML.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
