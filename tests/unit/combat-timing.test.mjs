@@ -413,8 +413,62 @@ test("contact damage is committed exactly when the creature reaches impact", () 
   clock.setTime(1200);
   clock.fireNext();
   assert.equal(releases.length, 1);
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2699);
+  clock.fireNext();
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2700);
+  clock.fireNext();
   assert.equal(resolutions.length, 1);
   assert.equal(session.snapshot().fighters.braisombre.hp, 82);
+
+  runtime.dispose();
+});
+
+
+test("runtime progress exposes action name and remaining preparation time", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10 },
+      { ...braisombre, initialEnergy: 10 }
+    ]
+  });
+  const clock = fakeClock();
+  const progress = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onProgress(value) {
+      progress.push(value);
+    }
+  });
+
+  runtime.start();
+  runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw
+  });
+
+  assert.equal(progress.at(-1).actionName, "Griffe");
+  assert.equal(progress.at(-1).preparationMs, 1200);
+  assert.equal(progress.at(-1).preparationRemainingMs, 1200);
+
+  clock.setTime(700);
+  clock.fireNext();
+
+  assert.equal(progress.at(-1).actionName, "Griffe");
+  assert.equal(progress.at(-1).preparationRemainingMs, 500);
+  assert.ok(progress.at(-1).chargeProgress > 0.5);
 
   runtime.dispose();
 });
