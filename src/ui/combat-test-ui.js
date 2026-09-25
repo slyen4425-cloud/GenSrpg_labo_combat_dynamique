@@ -98,7 +98,7 @@ const OUTCOME_LABELS = Object.freeze({
   reflected: "renvoyée",
   immune: "immunisée",
   countered: "contrée",
-  evaded: "esquivée",
+  evaded: "Esquive · 0 dégât",
   completed: "terminée",
   interrupted: "interrompue",
   out_of_range: "hors portée",
@@ -351,7 +351,8 @@ export async function mountCombatTest({
         root,
         '[data-demo-slot="opponent"] [data-demo-motion]'
       )
-    }
+    },
+    targetAnchors: fighterContainers
   });
 
   const presenter = createCombatResolutionPresenter({
