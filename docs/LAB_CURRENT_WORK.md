@@ -2562,6 +2562,60 @@ Point à traiter dans le futur lot IA :
 
 - le Runtime possède actuellement une seule action active globale, ce qui convient aux réactions via `react()`, mais le HUD de charge devra devenir actor-aware avant d'afficher proprement une charge initiée par l'adversaire.
 
+
+## Résultat technique — V8 spatial-reserve-fix
+
+Corrections :
+
+- portraits de réserve élevés au-dessus des cartes de combat dans l'ordre des couches ;
+- le `DomDistancePresenter` possède désormais des ancrages X/Y explicites en plus du scale ;
+- le CSS ne possède plus l'autorité verticale sur les positions de distance ;
+- les fighters utilisent un centre d'ancrage `translate(-50%, -50%)` ;
+- les transitions animent maintenant `left` et `top`.
+
+Ancrages joueur :
+
+- longue : X 0.16 / Y 0.72 ;
+- moyenne : X 0.28 / Y 0.64 ;
+- courte : X 0.39 / Y 0.56.
+
+Ancrages adversaire :
+
+- longue : X 0.84 / Y 0.24 ;
+- moyenne : X 0.72 / Y 0.32 ;
+- courte : X 0.61 / Y 0.40.
+
+Invariant conservé :
+
+- seul le combattant qui change la distance change d'ancrage et de scale.
+
+Sentinelles :
+
+- ordre X/Y joueur ;
+- ordre X/Y adversaire ;
+- slot stationnaire inchangé ;
+- reset moyen X/Y ;
+- portraits de réserve au-dessus du HUD ;
+- positions verticales détenues par le Presenter.
+
+CI :
+
+- SHA fonctionnel : `10674f96d7e2265fd0017ff9fbeb7c6365c32f13` ;
+- run : `36123908044` ;
+- conclusion : SUCCESS.
+
+Pré-audit IA :
+
+- le Runtime peut déjà lancer une compétence avec `actorId: "opponent"` ;
+- `previewReaction()` / `react()` fournissent le vrai chemin de réaction ;
+- les données de réaction nécessaires existent déjà ;
+- trois raccords sont à généraliser dans V9 : charge actor-aware, routing Presenter actor/target, KO joueur.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone des portraits et des trois positions requise avant checkpoint GREEN final de ce sous-lot.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
