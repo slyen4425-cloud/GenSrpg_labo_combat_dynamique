@@ -176,6 +176,64 @@ export async function mountCombatDemo({
     }
   }
 
+  function playApproachFor(
+    slotKey,
+    approachMode,
+    { travelMs } = {}
+  ) {
+    if (disposed) {
+      return Promise.resolve({ status: "disposed" });
+    }
+
+    if (!["teleport", "aerial"].includes(approachMode)) {
+      return playEventFor(slotKey, "attack");
+    }
+
+    const slot = slotOf(slotKey);
+    const target = otherSlot(slot);
+    if (!slot.visible || !target.visible) {
+      return Promise.resolve({ status: "hidden" });
+    }
+
+    const actorRect = slot.motion.getBoundingClientRect();
+    const targetRect = target.motion.getBoundingClientRect();
+
+    const actorCenterX = actorRect.left + actorRect.width / 2;
+    const actorCenterY = actorRect.top + actorRect.height / 2;
+    const targetCenterX = targetRect.left + targetRect.width / 2;
+    const targetCenterY = targetRect.top + targetRect.height / 2;
+
+    const event = normalizeCombatVisualEvent({
+      type:
+        approachMode === "teleport"
+          ? "teleport-attack"
+          : "aerial-attack",
+      actorId: slot.actor.id,
+      targetId: target.actor.id,
+      intensity: 1,
+      metadata: {
+        targetTranslateX: targetCenterX - actorCenterX,
+        targetTranslateY: targetCenterY - actorCenterY,
+        travelMs
+      }
+    });
+
+    const plan = planAnimation({
+      event,
+      actor: slot.actor,
+      profile: profiles.get(slot.actor.profile)
+    });
+
+    const handle = slot.renderer.play(plan);
+
+    return handle.finished.then((result) => {
+      if (!disposed && slot.visible) {
+        startIdleFor(slotKey);
+      }
+      return result;
+    });
+  }
+
   function cancelFor(slotKey) {
     const slot = slotOf(slotKey);
     slot.renderer.cancel();
@@ -239,6 +297,7 @@ export async function mountCombatDemo({
 
   return Object.freeze({
     playEventFor,
+    playApproachFor,
     cancelFor,
     startIdleFor,
     setCreatureFor,
@@ -337,6 +396,7 @@ function createSlot({
     key,
     view,
     image,
+    motion,
     setCreature,
     setVisible,
     get meta() {
