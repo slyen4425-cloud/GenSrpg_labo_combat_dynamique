@@ -275,6 +275,9 @@ summary {
 }
 
 .reserve--opponent,
+.reserve--player {
+  inset: auto;
+}
 
 .reserve__title {
   display: none;
