@@ -39,7 +39,7 @@ button {
 }
 
 .game__header {
-  min-height: 2.8rem;
+  min-height: 2.25rem;
   display: flex;
   align-items: center;
 }
@@ -55,12 +55,12 @@ button {
 
 h1 {
   margin: 0;
-  font-size: clamp(1rem, 4vw, 1.45rem);
+  font-size: clamp(0.95rem, 3.5vw, 1.3rem);
 }
 
 .arena {
   position: relative;
-  min-height: min(54svh, 32rem);
+  min-height: min(60svh, 36rem);
   overflow: hidden;
   border: 1px solid rgba(137, 223, 240, 0.2);
   border-radius: 1rem;
@@ -153,11 +153,28 @@ h1 {
   white-space: nowrap;
 }
 
+.fighter__charge-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  min-height: 0.85rem;
+  color: #f6df9c;
+  font-size: 0.54rem;
+  font-weight: 800;
+}
+
+.fighter__charge-status strong {
+  color: #fff2bd;
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .fighter__charge {
   width: 100%;
-  height: 0.34rem;
+  height: 0.58rem;
   margin: 0;
-  opacity: 0.2;
+  opacity: 0.32;
   accent-color: #f6cf72;
   transition: opacity 120ms ease;
 }
@@ -525,7 +542,7 @@ button.reserve-card {
   }
 
   .arena {
-    min-height: 49svh;
+    min-height: 56svh;
   }
 
   .fighter--player {
@@ -557,7 +574,7 @@ button.reserve-card {
   }
 
   .arena {
-    min-height: 46svh;
+    min-height: 53svh;
   }
 
   .fighter__caption {
