@@ -11,6 +11,29 @@ function formatNumber(value) {
   return Object.is(rounded, -0) ? "0" : String(rounded);
 }
 
+export function composeDomFilter(filter = {}) {
+  const brightness = finite(filter.brightness ?? 1, "filter.brightness");
+  const saturate = finite(filter.saturate ?? 1, "filter.saturate");
+  const sepia = finite(filter.sepia ?? 0, "filter.sepia");
+  const hueRotateDeg = finite(filter.hueRotateDeg ?? 0, "filter.hueRotateDeg");
+
+  if (
+    brightness === 1 &&
+    saturate === 1 &&
+    sepia === 0 &&
+    hueRotateDeg === 0
+  ) {
+    return "none";
+  }
+
+  return [
+    `brightness(${formatNumber(brightness)})`,
+    `saturate(${formatNumber(saturate)})`,
+    `sepia(${formatNumber(sepia)})`,
+    `hue-rotate(${formatNumber(hueRotateDeg)}deg)`
+  ].join(" ");
+}
+
 export function composeDomTransform(actor, transient = {}) {
   if (!actor || typeof actor !== "object") {
     throw new TypeError("actor is required");
@@ -63,6 +86,7 @@ export function animationPlanToDomTimeline(plan, actor) {
     offset: 0,
     transform: composeDomTransform(actor),
     opacity: 1,
+    filter: "none",
     easing: plan.segments[0].easing ?? "linear"
   }];
 
@@ -75,6 +99,7 @@ export function animationPlanToDomTimeline(plan, actor) {
       offset: elapsed / totalDurationMs,
       transform: composeDomTransform(actor, segment.transform),
       opacity: segment.opacity ?? 1,
+      filter: composeDomFilter(segment.filter),
       easing: plan.segments[index + 1]?.easing ?? "linear"
     });
   }
