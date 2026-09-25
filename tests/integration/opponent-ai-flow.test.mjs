@@ -165,6 +165,77 @@ test("V9 normal combat lets player damage opponent, then quick AI damages player
   runtime.dispose();
 });
 
+test("dynamic true path lets player teleport during opponent claw and resolves the faster impact first", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, id: "player", initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, id: "opponent", initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+  const roster = rosterFor(session);
+  const clock = fakeClock();
+  const resolutions = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onResolved(value) {
+      resolutions.push(value);
+    }
+  });
+
+  const ai = createOpponentDecisionController({
+    session,
+    runtime,
+    roster,
+    policy,
+    skillsById: offensive,
+    reactionsById: reactions
+  });
+
+  runtime.start();
+
+  const opponent = ai.takeTurn();
+  assert.equal(opponent.status, "skill_started");
+  assert.equal(opponent.skillId, "claw");
+  assert.equal(runtime.hasActiveActionFor("opponent"), true);
+
+  clock.setTime(500);
+  const player = runtime.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: offensive["teleport-strike"]
+  });
+
+  assert.equal(player.ok, true);
+  assert.equal(runtime.hasActiveActionFor("player"), true);
+  assert.equal(runtime.activeActions.length, 2);
+
+  clock.setTime(1820);
+  clock.fireNext();
+
+  assert.equal(resolutions.length, 1);
+  assert.equal(resolutions[0].actorId, "player");
+  assert.equal(resolutions[0].skillId, "teleport-strike");
+  assert.equal(session.snapshot().fighters.opponent.hp, 76);
+  assert.equal(session.snapshot().fighters.player.hp, 100);
+  assert.equal(runtime.hasActiveActionFor("opponent"), true);
+  assert.equal(runtime.hasActiveActionFor("player"), false);
+
+  clock.setTime(2700);
+  clock.fireNext();
+
+  assert.equal(resolutions.length, 2);
+  assert.equal(resolutions[1].actorId, "opponent");
+  assert.equal(resolutions[1].skillId, "claw");
+  assert.equal(session.snapshot().fighters.player.hp, 82);
+
+  runtime.dispose();
+});
+
 test("V9 strong mode keeps saving until Runtime energy recharge makes the strong skill affordable", () => {
   const strongPolicy = normalizeOpponentAiPolicy({
     ...policy,
