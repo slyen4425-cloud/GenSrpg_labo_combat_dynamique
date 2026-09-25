@@ -4186,6 +4186,49 @@ Critère de fin :
 - preview smartphone ;
 - validation utilisateur.
 
+
+## Résultat technique — V9 miss-impact-feedback
+
+Implémentation :
+
+- nouvel intent FX `miss` produit uniquement lorsque `resolution.outcome === "evaded"` ;
+- Combat Resolution Presenter relaie cet intent sans recalculer le résultat ;
+- DOM Skill FX Renderer affiche `RATÉ` au centre de l'anchor stable de la cible ;
+- animation courte :
+  - apparition ;
+  - légère montée ;
+  - disparition ;
+- durée visuelle : 650 ms ;
+- statut global `Esquive · 0 dégât` conservé.
+
+Invariants :
+
+- outcome `hit` ne produit aucun `RATÉ` ;
+- aucun calcul de PV/dégât dans FX ou CSS ;
+- point du label = point d'impact stable ;
+- nettoyage du node après animation ;
+- compatible avec projectile et attaque de contact puisque le feedback dépend du résultat sémantique, pas de la forme.
+
+Tests :
+
+- `evaded` -> intent `miss` ;
+- `hit` -> aucun intent `miss` ;
+- Presenter n'appelle aucun Hit visuel pour `evaded` ;
+- renderer affiche exactement `RATÉ` au bon anchor ;
+- node temporaire supprimé après animation ;
+- CSS du feedback protégé comme couche purement visuelle.
+
+CI :
+
+- SHA fonctionnel : `c56954e25ef21b1bcb6d26343d034400aeb96853` ;
+- run : `36140647607` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone requise avant checkpoint GREEN final V9.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
