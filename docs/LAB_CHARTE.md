@@ -193,7 +193,9 @@ Un fichier ne doit pas devenir simultanément moteur, UI, renderer et stockage.
 
 Si un fichier grossit au point de posséder plusieurs responsabilités, il doit être découpé avant de poursuivre l'empilement fonctionnel.
 
-## 14. Découpage des assets
+## 14. Découpage des assets et portabilité
+
+Trois périmètres d'assets doivent rester explicitement séparés.
 
 Structure cible :
 
@@ -203,11 +205,28 @@ assets/
     creatures/
     arenas/
     effects/
+  library/
+    core/
+      audio/
+    capture/
+      icons/
+      sprites/
+      fx/
 ```
 
-Les assets de test servent au laboratoire et ne sont pas des assets GenSrpG officiels.
+Règles permanentes :
 
-Le dépôt ne doit jamais dépendre d'un chemin situé dans `Zombicide-40k`.
+- `assets/test/` reste réservé aux ressources de test du laboratoire et ne devient jamais silencieusement une bibliothèque GenSrpG officielle ;
+- la bibliothèque `assets/library/core/audio/` est conçue comme une banque sonore commune, portable vers le dépôt principal GenSrpG et réutilisable par tous les modes qui en ont besoin ;
+- les sons communs ne doivent dépendre ni d'un monde, ni du mode Capture, ni d'un chemin propre au dépôt laboratoire ;
+- les références futures doivent utiliser des identifiants stables (`assetId`) plutôt que des URL GitHub ou des chemins de dépôt codés dans le gameplay ;
+- provenance, auteur et licence doivent rester transportables avec les sons ;
+- les assets visuels créés dans ce chantier (`icons`, `sprites`, `fx`) restent dédiés au mode Capture pour l'instant ;
+- aucun autre mode ne doit consommer automatiquement ces visuels sans décision explicite ultérieure ;
+- une éventuelle généralisation future des visuels fera l'objet d'un lot documenté séparé ;
+- le dépôt ne doit jamais dépendre d'un chemin situé dans `Zombicide-40k`.
+
+En cas de contradiction avec une documentation asset plus ancienne, la présente règle de charte prime : **audio commun multi-modes ; visuels Capture uniquement tant qu'aucune décision explicite ne change ce périmètre**.
 
 ## 15. Travail toujours sur une base connue
 
@@ -331,6 +350,8 @@ Une future intégration devra pouvoir suivre un modèle de type :
 `GenSrpG/Capture -> Adapter -> Dynamic Combat Lab Core -> Render Adapter`
 
 Le Core doit rester utilisable indépendamment.
+
+Les ressources transportables suivent la règle du §14 : banque audio commune multi-modes, visuels limités à Capture tant qu'une décision explicite n'élargit pas leur portée.
 
 ## 25. Pas d'intégration à GenSrpG sans décision explicite
 
