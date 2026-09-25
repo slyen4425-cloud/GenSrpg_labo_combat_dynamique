@@ -3063,6 +3063,8 @@ CI du HEAD fonctionnel avant synchronisation documentaire :
 Statut :
 
 - GREEN technique / pré-audit ;
+- checkpoint pré-audit : `checkpoint/lab-opponent-ai-v9-preaudit-green-2026-09-25` ;
+- preview : `preview/lab-opponent-ai-v9-2026-09-25` ;
 - validation smartphone obligatoire avant checkpoint GREEN V9 final.
 
 À tester :
