@@ -265,8 +265,46 @@ test("visual controller computes target geometry for teleport and aerial moves w
 test("combat arena is taller while keeping direct reflex ability controls", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
-  assert.match(css, /min-height:\s*min\(54svh, 32rem\)/);
+  assert.match(css, /min-height:\s*min\(60svh, 36rem\)/);
   assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
   assert.match(css, /\.distance-buttons\s*\{[\s\S]*repeat\(3/);
   assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
+});
+
+
+test("charge HUD displays runtime action label and remaining timer without timing math", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const runtime = await readFile("src/core/combat/combat-runtime.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(html, /data-combat-charge-label="player"/);
+  assert.match(html, /data-combat-charge-timer="player"/);
+  assert.match(source, /progress\.actionLabel/);
+  assert.match(source, /progress\.remainingPreparationMs/);
+  assert.match(source, /progress\.remainingImpactMs/);
+  assert.match(runtime, /actionLabel/);
+  assert.match(runtime, /remainingPreparationMs/);
+  assert.match(runtime, /remainingImpactMs/);
+  assert.doesNotMatch(source, /preparationMs\s*-\s*progress\.elapsedMs/);
+  assert.match(css, /\.fighter__charge\s*\{[\s\S]*height:\s*0\.58rem/);
+});
+
+test("KO is terminal until roster replacement instead of auto-returning to idle", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /type !== "ko"/);
+  assert.match(source, /function setCreatureFor/);
+  assert.match(source, /startIdleFor\(slotKey\)/);
+});
+
+test("ground aerial and teleport approaches share target geometry but no gameplay authority", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /\["ground", "teleport", "aerial"\]/);
+  assert.match(source, /"ground-attack"/);
+  assert.match(source, /arenaExitTranslateY/);
+  assert.match(source, /arena\.getBoundingClientRect\(\)/);
+  assert.doesNotMatch(source, /effect\.damage/);
+  assert.doesNotMatch(source, /impactAtMs/);
 });
