@@ -2339,6 +2339,42 @@ Critère visuel supplémentaire :
 - quatre capacités immédiatement accessibles avec une empreinte nettement inférieure à la candidate V8 précédente ;
 - davantage d'arène visible derrière et autour du dock.
 
+
+## Correction ergonomique V8 — dock capacités compact
+
+Suite au test smartphone de Sylvain :
+
+- les touches de capacités de la première candidate V8 étaient trop grandes ;
+- elles consommaient trop de surface de combat par rapport à la référence fournie.
+
+Correction :
+
+- quatre touches carrées conservées en permanence ;
+- disposition sur une seule rangée ;
+- nom de la capacité conservé ;
+- métadonnées secondaires masquées sur la touche principale ;
+- structure prête à recevoir ultérieurement une icône ;
+- dock global réduit et maintenu en bas à droite sur mobile ;
+- commandes de distance et menus secondaires compactés sans modifier leurs handlers.
+
+Sentinelle ajoutée :
+
+- quatre colonnes obligatoires ;
+- touches `aspect-ratio: 1` ;
+- métadonnées secondaires non affichées dans la touche ;
+- aucun retour en grille 2x2 dans le breakpoint mobile principal.
+
+CI :
+
+- SHA fonctionnel : `c39345ba6c0debf51e7cb61cd84d22efddc2c705` ;
+- run : `36122256673` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- V8 toujours en validation smartphone ;
+- aucun checkpoint GREEN final tant que la compacité réelle n'est pas validée par Sylvain.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
