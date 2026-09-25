@@ -1,0 +1,49 @@
+{
+  "id": "linear-opponent-v1",
+  "actorId": "opponent",
+  "targetId": "player",
+  "reactionRules": [
+    {
+      "skillId": "fire-immunity",
+      "when": {
+        "element": "fire"
+      }
+    },
+    {
+      "skillId": "mirror-shield",
+      "when": {
+        "form": "projectile"
+      }
+    },
+    {
+      "skillId": "contact-counter",
+      "when": {
+        "approachMode": "ground"
+      }
+    },
+    {
+      "skillId": "dodge",
+      "when": {
+        "form": "contact"
+      }
+    }
+  ],
+  "turnPlan": [
+    {
+      "skillId": "claw",
+      "preferredDistance": "short"
+    },
+    {
+      "skillId": "fireball",
+      "preferredDistance": "medium"
+    },
+    {
+      "skillId": "aerial-dive",
+      "preferredDistance": "long"
+    },
+    {
+      "skillId": "teleport-strike",
+      "preferredDistance": "medium"
+    }
+  ]
+}
