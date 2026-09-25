@@ -1848,6 +1848,70 @@ Critère de fin :
 
 preview smartphone avec KO/remplacement visible, Griffe parcourant la scène en 1,5 s, Plongeon sortant par le haut, arène agrandie et charge lisible.
 
+
+## Résultat technique — ko-ground-travel-hud-v6
+
+Implémentation :
+
+- KO visuel terminal : aucun retour automatique en idle après `ko` ;
+- remplacement adverse déclenché après la vraie fin Hit -> KO ;
+- détection KO fondée sur `hit.hpAfter <= 0`, sans dépendance au nom de slot ;
+- test vrai chemin ajouté :
+  - dégâts à l'impact ;
+  - PV adverses à 0 ;
+  - Hit ;
+  - KO ;
+  - `Roster Session.replaceKnockedOut()` ;
+  - remplacement Drakon adverse -> Marai adverse ;
+- nouveau `ground-attack` générique ;
+- `approachMode=ground` utilise la géométrie réelle de la cible ;
+- durée d'approche = `skill.travelMs` ;
+- Griffe de test : `travelMs = 1500` ;
+- changer `travelMs` à 500 ms produit réellement une approche 3x plus rapide sans modifier l'Animation Core ;
+- dégâts de Griffe uniquement après `1200 ms charge + 1500 ms trajet = 2700 ms` ;
+- presets Aérien relevés fortement :
+  - serpentine riseY -390 ;
+  - drake riseY -430 ;
+  - piqué depuis une hauteur allant jusqu'à 500 px ;
+- arène :
+  - grand écran `min(62svh, 38rem)` ;
+  - <=680 px : 56svh ;
+  - <=430 px : 53svh ;
+- barre de charge passée à 0,58 rem ;
+- Runtime expose `actionName`, `preparationMs`, `preparationRemainingMs` ;
+- HUD affiche nom de l'action + compte à rebours sans timer UI parallèle.
+
+Sentinelles :
+
+- KO ne retourne pas idle ;
+- ground / teleport / aerial utilisent la géométrie réelle de cible ;
+- ground atteint la cible exactement à travelMs ;
+- deux travelMs différents produisent deux vitesses réelles différentes ;
+- aerial monte suffisamment haut pour quitter l'arène ;
+- dégâts contact restent absents avant impact ;
+- charge HUD lit le Runtime ;
+- vrai chemin KO roster protégé ;
+- toutes les sentinelles historiques conservées.
+
+HEAD technique documenté avant synchronisation finale :
+
+`873a5f09312a2ec1c9b1d047cdba5888cd5a004a`
+
+CI :
+
+- run : `36107392191`
+- conclusion : SUCCESS
+
+Validation utilisateur restante :
+
+- vérifier sur smartphone que le KO adverse est enfin visible puis remplacé ;
+- vérifier Griffe : charge, déplacement 1,5 s, impact puis retour ;
+- vérifier Plongeon aérien : sortie vers le haut puis piqué ;
+- vérifier la hauteur supplémentaire de l'arène ;
+- vérifier lisibilité du bandeau `nom de l'action + temps restant`.
+
+Le lot est GREEN technique, en attente de validation visuelle.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
