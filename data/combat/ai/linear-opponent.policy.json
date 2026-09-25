@@ -20,5 +20,19 @@
       "skillId": "teleport-strike",
       "preferredDistance": "medium"
     }
-  ]
+  ],
+  "energyStrategy": {
+    "decisionModes": [
+      "quick",
+      "strong"
+    ],
+    "quickSkillIds": [
+      "claw",
+      "aerial-dive"
+    ],
+    "strongSkillIds": [
+      "fireball",
+      "teleport-strike"
+    ]
+  }
 }
