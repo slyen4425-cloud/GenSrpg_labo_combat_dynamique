@@ -570,7 +570,7 @@ test("fireball demo binding uses stable Capture asset IDs and stays outside game
   assert.match(source, /castAnchor:\s*"mouth"/);
   assert.match(source, /castLayer:\s*"behind"/);
   assert.match(source, /travelSourceAnchor:\s*"mouth"/);
-  assert.match(source, /displayScale:\s*2\.3/);
+  assert.match(source, /displayScale:\s*2\.8/);
   assert.match(source, /fx_skill_fireball_cast_orb_01\.svg/);
   assert.match(source, /fx_skill_fireball_impact_burst_01\.svg/);
   assert.match(source, /sprite_skill_fireball_travel_rl_atlas_01\.png/);
