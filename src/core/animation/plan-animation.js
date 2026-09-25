@@ -16,20 +16,63 @@ function directed(value, sign) {
   return value === 0 ? 0 : value * sign;
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function groundPerspectiveScale(target, cfg) {
+  const arenaHeight = target.arenaHeight > 0
+    ? target.arenaHeight
+    : 1;
+  const depthRatio = clamp(
+    target.y / arenaHeight,
+    -1,
+    1
+  );
+  const strength = Number(cfg.perspectiveScaleStrength ?? 0);
+  const min = Number(cfg.perspectiveScaleMin ?? 1);
+  const max = Number(cfg.perspectiveScaleMax ?? 1);
+
+  if (
+    !Number.isFinite(strength) ||
+    !Number.isFinite(min) ||
+    !Number.isFinite(max) ||
+    min <= 0 ||
+    max <= 0 ||
+    min > max
+  ) {
+    throw new RangeError(
+      "ground perspective scale config must be finite and ordered"
+    );
+  }
+
+  return clamp(
+    1 + depthRatio * strength,
+    min,
+    max
+  );
+}
+
 function visualTarget(event) {
   const x = Number(event.metadata?.targetTranslateX ?? 0);
   const y = Number(event.metadata?.targetTranslateY ?? 0);
   const travelMs = Number(event.metadata?.travelMs ?? 0);
   const exitY = Number(event.metadata?.arenaExitTranslateY ?? 0);
+  const arenaHeight = Number(event.metadata?.arenaHeight ?? 0);
 
-  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(exitY)) {
+  if (
+    !Number.isFinite(x) ||
+    !Number.isFinite(y) ||
+    !Number.isFinite(exitY) ||
+    !Number.isFinite(arenaHeight)
+  ) {
     throw new TypeError("special attack target offsets must be finite");
   }
   if (!Number.isFinite(travelMs) || travelMs <= 0) {
     throw new RangeError("special attack travelMs must be greater than 0");
   }
 
-  return Object.freeze({ x, y, travelMs, exitY });
+  return Object.freeze({ x, y, travelMs, exitY, arenaHeight });
 }
 
 export function planAnimation({ event, actor, profile }) {
@@ -135,6 +178,8 @@ export function planAnimation({ event, actor, profile }) {
       }
 
       const target = visualTarget(event);
+      const perspectiveScale =
+        groundPerspectiveScale(target, cfg);
 
       return createAnimationPlan({
         actorId: actor.id,
@@ -147,8 +192,10 @@ export function planAnimation({ event, actor, profile }) {
             transform: {
               translateX: target.x,
               translateY: target.y,
-              scaleX: cfg.impactScaleX,
-              scaleY: cfg.impactScaleY,
+              scaleX:
+                cfg.impactScaleX * perspectiveScale,
+              scaleY:
+                cfg.impactScaleY * perspectiveScale,
               rotateDeg: directed(3 * intensity, sign)
             },
             opacity: 1
