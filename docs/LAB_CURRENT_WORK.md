@@ -1587,6 +1587,23 @@ CI de ce HEAD :
 - run : `36078895649`
 - conclusion : SUCCESS
 
+Checkpoint GREEN V4 :
+
+`checkpoint/lab-player-ui-roster-v4-green-2026-09-25`
+
+Branche de prévisualisation :
+
+`preview/lab-player-ui-roster-v4-2026-09-25`
+
+SHA GREEN avant synchronisation finale du présent document :
+
+`1a18c110614a3631d97f6e42ccf266d69163deb1`
+
+CI :
+
+- run : `36078999667`
+- conclusion : SUCCESS
+
 Validation utilisateur restante :
 
 - smartphone : vérifier lisibilité globale sans panneaux laboratoire ;
