@@ -142,6 +142,25 @@ export function withFighterHp(state, fighterId, hp) {
   });
 }
 
+export function replaceFighter(state, fighterId, input) {
+  if (!state.fighters[fighterId]) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
+  }
+
+  const normalized = normalizeFighter({
+    ...input,
+    id: fighterId
+  });
+
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: normalized
+    })
+  });
+}
+
 export function withDistance(state, distance) {
   assertCombatDistance(distance);
   return Object.freeze({ ...state, distance });
