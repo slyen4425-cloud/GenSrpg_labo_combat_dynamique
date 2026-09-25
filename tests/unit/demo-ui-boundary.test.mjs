@@ -253,16 +253,20 @@ test("KO replacement hides the old bitmap until the new creature asset is ready"
   );
 });
 
-test("concurrent combat keeps player controls available while only opponent acts", async () => {
+test("concurrent combat keeps skills actor-local while movement and roster commands stay globally gated", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
   assert.match(
     source,
-    /runtime\.hasActiveActionFor\("player"\)/
+    /for \(const \{ skill, button \} of skillRefs\.values\(\)\)[\s\S]*button\.disabled =[\s\S]*runtime\.hasActiveActionFor\("player"\)/
   );
-  assert.doesNotMatch(
+  assert.match(
     source,
-    /button\.disabled\s*=[\s\S]{0,180}?runtime\.hasActiveAction\s*\|\|/
+    /function renderMovement\([\s\S]*runtime\.hasActiveAction \|\|/
+  );
+  assert.match(
+    source,
+    /itemRef\.button\.disabled =[\s\S]*runtime\.hasActiveAction \|\|/
   );
   assert.match(
     source,
