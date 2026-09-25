@@ -3728,6 +3728,140 @@ Statut :
 - GREEN technique ;
 - validation smartphone obligatoire avant checkpoint GREEN final V9.
 
+
+## Sous-lot actif V9 — autonomy-mobility-evasion
+
+Base technique :
+
+`c11e2badc050b3a4f6723d6b690cdeda8ee6541b`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-v9-autonomy-mobility-evasion-2026-09-25`
+
+Branche :
+
+`work/lab-v9-autonomy-mobility-evasion-2026-09-25`
+
+Retour utilisateur :
+
+1. malgré la concurrence des compétences, l'adversaire semble encore attendre une action joueur avant d'attaquer ;
+2. une attaque devrait pouvoir rater si, à son impact, la cible est absente de sa position parce qu'elle exécute une mobilité évasive, par exemple Téléportation ou Plongeon aérien.
+
+Diagnostic A — autonomie IA :
+
+- `runtime.start()` émet bien un état initial ;
+- mais Demo UI ne rappelle `runOpponentTurn()` depuis `onState` que si `aiWaitingForEnergy === true` ;
+- cette variable vaut faux au démarrage ;
+- l'IA reçoit donc sa première décision surtout après une résolution ou un déplacement joueur ;
+- le Runtime concurrent n'est pas en faute : c'est le raccord de décision qui n'initialise pas l'autonomie adverse.
+
+Objectif A :
+
+- démarrer la prise de décision adverse depuis les mises à jour d'état du Combat Runtime ;
+- aucune seconde horloge IA ;
+- l'IA agit dès qu'elle est libre et que sa policy / énergie le permettent ;
+- si elle doit économiser, elle continue d'attendre les ticks énergie du Runtime ;
+- une action joueur ne doit plus être nécessaire pour réveiller l'adversaire ;
+- garde anti-réentrée conservée.
+
+Diagnostic B — esquive par mobilité :
+
+- actuellement `Action Resolver` considère une attaque sans réaction explicite comme `hit` ;
+- le Runtime connaît pourtant simultanément l'action de la cible et son temps relatif ;
+- il manque un contrat gameplay permettant à une compétence de déclarer qu'elle rend son utilisateur hors cible pendant une fenêtre temporelle.
+
+Objectif B :
+
+- ajouter une configuration data-driven à `SkillDefinition` :
+  - `evasion.window` : première valeur supportée `travel` ;
+  - `evasion.incomingForms` : formes entrantes évitées ;
+- aucune valeur d'esquive codée dans l'UI ;
+- Téléportation et Plongeon aérien du prototype déclarent une esquive pendant leur trajet ;
+- Griffe reste non évasive ;
+- Combat Runtime fournit uniquement le contexte de l'action concurrente de la cible ;
+- Action Resolver décide `evaded` si, au timestamp exact de l'impact entrant :
+  - la cible possède une compétence active ;
+  - cette compétence déclare une fenêtre `travel` ;
+  - son elapsed est compris entre release et impact ;
+  - la forme de l'attaque entrante est listée dans `incomingForms`;
+- aucun dégât n'est appliqué dans ce cas.
+
+Règle temporelle initiale :
+
+- préparation de la compétence mobile : cible encore présente, donc pas d'esquive ;
+- trajet `release <= elapsed <= impact` : esquive active ;
+- après résolution de sa propre action : l'esquive cesse ;
+- aucune prolongation implicite pendant le retour purement visuel.
+
+Exemples attendus :
+
+- Griffe arrive pendant le trajet de Téléportation -> `evaded`, 0 dégât ;
+- Griffe arrive pendant la préparation de Téléportation -> hit normal ;
+- Boule de feu peut également être évitée si `projectile` est déclaré dans `incomingForms`;
+- une compétence non configurée n'esquive rien.
+
+Propriétaires autorisés :
+
+- Skill Contract / données skill : définition de la fenêtre d'esquive ;
+- Combat Runtime : contexte temporel concurrent seulement ;
+- Combat Session / Action Resolver : décision sémantique `evaded` ;
+- Opponent Decision Controller / Demo UI : autonomie adverse depuis l'horloge existante ;
+- Presenter : réutilisation du résultat `evaded` sans calcul gameplay ;
+- tests + documentation.
+
+Fichiers autorisés :
+
+- `src/contracts/skill-definition.js` ;
+- `data/combat/skills/*.skill.json` concernés ;
+- `src/core/combat/combat-runtime.js` ;
+- `src/core/combat/combat-session.js` ;
+- `src/core/combat/action-resolver.js` ;
+- `src/ui/combat-test-ui.js` ;
+- tests unitaires / intégration ;
+- documentation.
+
+Domaines protégés :
+
+- Animation Core ;
+- FX Core ;
+- dégâts de base ;
+- énergie / coûts ;
+- positions/scales ;
+- Roster Session ;
+- `main` ;
+- `Zombicide-40k`.
+
+Tests prévus :
+
+- IA démarre sans action joueur dès qu'un tick Runtime lui donne assez d'énergie ;
+- aucune seconde horloge ou timer IA ;
+- joueur et IA restent capables d'agir simultanément ;
+- SkillDefinition normalise l'esquive mobilité ;
+- compétence sans evasion reste inchangée ;
+- impact pendant préparation mobile -> hit ;
+- impact pendant trajet mobile -> `evaded`, 0 dégât ;
+- impact après fin de l'action mobile -> hit ;
+- Téléportation et Plongeon utilisent les données configurées ;
+- vrai chemin navigateur : IA autonome + contre-mobilité ;
+- CI complète verte.
+
+Risques :
+
+- relancer l'IA trop souvent depuis `onState` ;
+- faire de Combat Runtime une seconde autorité de résultat ;
+- ambiguïté aux impacts exactement simultanés ;
+- une animation Hit pourrait encore visuellement interrompre une mobilité même si le résultat gameplay devient `evaded` : Presenter ne doit jouer Hit que sur `hit`.
+
+Critère de fin :
+
+- l'IA initie seule le combat sans clic joueur ;
+- une mobilité configurée peut réellement faire rater une attaque au moment de l'impact ;
+- aucune logique d'esquive dans UI/Animation ;
+- CI verte ;
+- preview smartphone ;
+- validation utilisateur avant checkpoint GREEN final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
