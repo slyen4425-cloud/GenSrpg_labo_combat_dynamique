@@ -119,11 +119,11 @@ test("V8 roster portraits live inside fighter card headers and charge starts hid
   assert.match(css, /\.reserve\s*\{[\s\S]*position:\s*static/);
 });
 
-test("V8 reserve portraits stay above HUD cards and fighters use top-based spatial anchors", async () => {
+test("V8 fighter HUD owns roster portraits while spatial fighters remain top-based", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
   assert.match(css, /\.combat-card\s*\{[\s\S]*z-index:\s*12/);
-  assert.match(css, /\.reserve\s*\{[\s\S]*z-index:\s*13/);
+  assert.match(css, /\.reserve\s*\{[\s\S]*position:\s*static/);
   assert.match(css, /\.fighter\s*\{[\s\S]*top:\s*50%/);
   assert.match(css, /transform:\s*translate\(-50%,\s*-50%\)\s*scale\(var\(--distance-scale/);
   assert.match(css, /transition:[\s\S]*top 260ms ease/);
