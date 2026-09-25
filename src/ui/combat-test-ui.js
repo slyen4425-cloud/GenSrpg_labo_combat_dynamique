@@ -2,6 +2,7 @@ import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
+import { createRosterSession } from "../core/combat/roster-session.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
@@ -17,6 +18,10 @@ const DATA_URLS = Object.freeze({
       import.meta.url
     )
   }),
+  roster: new URL(
+    "../../data/combat/rosters/demo-2v2.roster.json",
+    import.meta.url
+  ),
   skills: Object.freeze({
     fireball: new URL(
       "../../data/combat/skills/fireball.skill.json",
@@ -26,32 +31,12 @@ const DATA_URLS = Object.freeze({
       "../../data/combat/skills/claw.skill.json",
       import.meta.url
     ),
-    mirrorShield: new URL(
-      "../../data/combat/skills/mirror-shield.skill.json",
-      import.meta.url
-    ),
-    fireImmunity: new URL(
-      "../../data/combat/skills/fire-immunity.skill.json",
-      import.meta.url
-    ),
-    contactCounter: new URL(
-      "../../data/combat/skills/contact-counter.skill.json",
-      import.meta.url
-    ),
     aerialDive: new URL(
       "../../data/combat/skills/aerial-dive.skill.json",
       import.meta.url
     ),
     teleportStrike: new URL(
       "../../data/combat/skills/teleport-strike.skill.json",
-      import.meta.url
-    ),
-    dodge: new URL(
-      "../../data/combat/skills/dodge.skill.json",
-      import.meta.url
-    ),
-    stunBolt: new URL(
-      "../../data/combat/skills/stun-bolt.skill.json",
       import.meta.url
     )
   }),
@@ -75,20 +60,6 @@ const DISTANCE_LABELS = Object.freeze({
   short: "Courte",
   medium: "Moyenne",
   long: "Longue"
-});
-
-const COMMAND_KIND_LABELS = Object.freeze({
-  item: "Objet",
-  recall: "Rappel",
-  summon: "Invocation"
-});
-
-const CATEGORY_LABELS = Object.freeze({
-  offensive: "Offensive",
-  defensive: "Défensive",
-  heal: "Soin",
-  buff_debuff: "Buff/Debuff",
-  counter: "Contre"
 });
 
 const FORM_LABELS = Object.freeze({
@@ -118,23 +89,18 @@ const ELEMENT_LABELS = Object.freeze({
 
 const OUTCOME_LABELS = Object.freeze({
   hit: "touche",
-  blocked: "bloquée",
   reflected: "renvoyée",
-  immune: "annulée par immunité",
+  immune: "immunisée",
   countered: "contrée",
   evaded: "esquivée",
   completed: "terminée",
   interrupted: "interrompue",
-  reaction_not_supported: "aucune réaction directe pour cette action",
-  wrong_target: "mauvaise cible",
-  not_interruptible: "action non interruptible",
   out_of_range: "hors portée",
   insufficient_energy: "énergie insuffisante",
-  action_in_progress: "une action est déjà en cours",
-  no_action: "aucune capacité à contrer",
-  reaction_already_selected: "une réaction est déjà engagée",
-  no_effect: "cette réaction ne répond pas à cette attaque",
-  too_late: "réaction trop lente"
+  action_in_progress: "action déjà en cours",
+  no_active_member: "aucun monstre actif",
+  active_member_present: "rappelle d'abord ton monstre",
+  no_reserve_selected: "aucun monstre de réserve sélectionné"
 });
 
 async function fetchJson(url, fetchImpl) {
@@ -148,7 +114,7 @@ async function fetchJson(url, fetchImpl) {
 function requiredElement(root, selector) {
   const element = root.querySelector(selector);
   if (!element) {
-    throw new Error(`Combat test element not found: ${selector}`);
+    throw new Error(`Combat game element not found: ${selector}`);
   }
   return element;
 }
@@ -164,10 +130,7 @@ function formatSeconds(ms) {
 }
 
 function skillMetaText(skill) {
-  const parts = [
-    CATEGORY_LABELS[skill.category] ?? skill.category,
-    FORM_LABELS[skill.form] ?? skill.form
-  ];
+  const parts = [FORM_LABELS[skill.form] ?? skill.form];
   if (skill.element) {
     parts.push(ELEMENT_LABELS[skill.element] ?? skill.element);
   }
@@ -196,10 +159,6 @@ function commandTimingText(command) {
   ].join(" · ");
 }
 
-function fighterLabel(id) {
-  return id === "maraileron" ? "Maraileron" : "Braisombre";
-}
-
 export async function mountCombatTest({
   root,
   visuals,
@@ -211,78 +170,86 @@ export async function mountCombatTest({
   if (
     !visuals ||
     typeof visuals.playEventFor !== "function" ||
-    typeof visuals.cancelFor !== "function"
+    typeof visuals.setCreatureFor !== "function" ||
+    typeof visuals.setSlotVisible !== "function" ||
+    typeof visuals.getCreatureDescriptor !== "function"
   ) {
-    throw new TypeError("visuals must expose playEventFor() and cancelFor()");
+    throw new TypeError("visuals must provide roster-aware visual controls");
   }
 
   const [
     maraileronConfig,
     braisombreConfig,
+    rosterData,
     fireballRaw,
     clawRaw,
     aerialDiveRaw,
     teleportStrikeRaw,
-    mirrorShieldRaw,
-    fireImmunityRaw,
-    contactCounterRaw,
-    dodgeRaw,
-    stunBoltRaw,
     itemRaw,
     recallRaw,
     summonRaw
   ] = await Promise.all([
     fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
     fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
+    fetchJson(DATA_URLS.roster, fetchImpl),
     fetchJson(DATA_URLS.skills.fireball, fetchImpl),
     fetchJson(DATA_URLS.skills.claw, fetchImpl),
     fetchJson(DATA_URLS.skills.aerialDive, fetchImpl),
     fetchJson(DATA_URLS.skills.teleportStrike, fetchImpl),
-    fetchJson(DATA_URLS.skills.mirrorShield, fetchImpl),
-    fetchJson(DATA_URLS.skills.fireImmunity, fetchImpl),
-    fetchJson(DATA_URLS.skills.contactCounter, fetchImpl),
-    fetchJson(DATA_URLS.skills.dodge, fetchImpl),
-    fetchJson(DATA_URLS.skills.stunBolt, fetchImpl),
     fetchJson(DATA_URLS.commands.item, fetchImpl),
     fetchJson(DATA_URLS.commands.recall, fetchImpl),
     fetchJson(DATA_URLS.commands.summon, fetchImpl)
   ]);
 
-  const offensiveSkills = Object.freeze([
+  const skills = Object.freeze([
     normalizeSkillDefinition(fireballRaw),
     normalizeSkillDefinition(clawRaw),
     normalizeSkillDefinition(aerialDiveRaw),
     normalizeSkillDefinition(teleportStrikeRaw)
   ]);
-  const reactionSkills = Object.freeze([
-    normalizeSkillDefinition(mirrorShieldRaw),
-    normalizeSkillDefinition(fireImmunityRaw),
-    normalizeSkillDefinition(contactCounterRaw),
-    normalizeSkillDefinition(dodgeRaw)
-  ]);
-  const combatCommands = Object.freeze([
-    normalizeCombatCommandDefinition(itemRaw),
-    normalizeCombatCommandDefinition(recallRaw),
-    normalizeCombatCommandDefinition(summonRaw)
-  ]);
-  const stunBolt = normalizeSkillDefinition(stunBoltRaw);
+
+  const commands = Object.freeze({
+    item: normalizeCombatCommandDefinition(itemRaw),
+    recall: normalizeCombatCommandDefinition(recallRaw),
+    summon: normalizeCombatCommandDefinition(summonRaw)
+  });
 
   const session = createCombatSession({
     distance: "medium",
-    fighters: [maraileronConfig, braisombreConfig]
+    fighters: [
+      { ...maraileronConfig, id: "player" },
+      { ...braisombreConfig, id: "opponent" }
+    ]
+  });
+
+  const roster = createRosterSession({
+    combatSession: session,
+    roster: rosterData,
+    fighterConfigs: {
+      maraileron: maraileronConfig,
+      braisombre: braisombreConfig
+    }
   });
 
   const arena = requiredElement(root, "[data-combat-arena]");
-  const moverSelect = requiredElement(root, "[data-combat-mover]");
+  const status = requiredElement(root, "[data-combat-live-status]");
   const skillContainer = requiredElement(root, "[data-combat-skills]");
-  const reactionContainer = requiredElement(root, "[data-combat-reactions]");
-  const commandContainer = requiredElement(root, "[data-combat-commands]");
-  const logList = requiredElement(root, "[data-combat-log]");
-  const liveStatus = requiredElement(root, "[data-combat-live-status]");
-  const resetButton = requiredElement(root, "[data-combat-reset]");
-  const stunTestButton = requiredElement(
+  const itemContainer = requiredElement(root, "[data-combat-items]");
+  const teamActionContainer = requiredElement(
     root,
-    "[data-combat-simulate-stun]"
+    "[data-combat-team-actions]"
+  );
+  const playerReserve = requiredElement(
+    root,
+    '[data-roster-reserve="player"]'
+  );
+  const opponentReserve = requiredElement(
+    root,
+    '[data-roster-reserve="opponent"]'
+  );
+  const teamSelectionLabel = requiredElement(
+    root,
+    "[data-team-selection]"
   );
 
   const fighterContainers = {
@@ -290,42 +257,38 @@ export async function mountCombatTest({
     opponent: requiredElement(root, '[data-demo-slot="opponent"]')
   };
 
-  const actorChargeRefs = {
-    maraileron: requiredElement(
+  const hpRefs = {
+    player: {
+      bar: requiredElement(root, '[data-combat-hp="player"]'),
+      value: requiredElement(root, '[data-combat-hp-value="player"]')
+    },
+    opponent: {
+      bar: requiredElement(root, '[data-combat-hp="opponent"]'),
+      value: requiredElement(root, '[data-combat-hp-value="opponent"]')
+    }
+  };
+
+  const chargeRefs = {
+    player: requiredElement(
       root,
-      '[data-combat-actor-charge="maraileron"]'
+      '[data-combat-actor-charge="player"]'
     ),
-    braisombre: requiredElement(
+    opponent: requiredElement(
       root,
-      '[data-combat-actor-charge="braisombre"]'
+      '[data-combat-actor-charge="opponent"]'
     )
   };
 
-  const hpRefs = {
-    maraileron: {
-      bar: requiredElement(root, '[data-combat-hp="maraileron"]'),
-      value: requiredElement(root, '[data-combat-hp-value="maraileron"]')
-    },
-    braisombre: {
-      bar: requiredElement(root, '[data-combat-hp="braisombre"]'),
-      value: requiredElement(root, '[data-combat-hp-value="braisombre"]')
-    }
+  const playerEnergy = {
+    bar: requiredElement(root, '[data-combat-energy="player"]'),
+    value: requiredElement(root, '[data-combat-energy-value="player"]')
   };
 
-  const energyRefs = {
-    maraileron: {
-      bar: requiredElement(root, '[data-combat-energy="maraileron"]'),
-      value: requiredElement(root, '[data-combat-energy-value="maraileron"]'),
-      rate: requiredElement(root, '[data-combat-energy-rate="maraileron"]')
-    },
-    braisombre: {
-      bar: requiredElement(root, '[data-combat-energy="braisombre"]'),
-      value: requiredElement(root, '[data-combat-energy-value="braisombre"]'),
-      rate: requiredElement(root, '[data-combat-energy-rate="braisombre"]')
-    }
-  };
+  const movementButtons = [
+    ...root.querySelectorAll("[data-combat-move]")
+  ];
 
-  const movementButtons = [...root.querySelectorAll("[data-combat-move]")];
+  const menus = [...root.querySelectorAll("[data-action-menu]")];
   const cleanups = [];
   let disposed = false;
   let lastState = session.snapshot();
@@ -354,296 +317,361 @@ export async function mountCombatTest({
   });
 
   const skillRefs = new Map();
-  const reactionRefs = new Map();
   const commandRefs = new Map();
 
   function listen(element, type, handler) {
     element.addEventListener(type, handler);
-    cleanups.push(() => element.removeEventListener(type, handler));
+    cleanups.push(() =>
+      element.removeEventListener(type, handler)
+    );
   }
 
-  function setLiveStatus(message, tone = "info") {
-    liveStatus.textContent = message;
-    liveStatus.dataset.tone = tone;
-  }
-
-  function writeLog(message, tone = "info") {
-    setLiveStatus(message, tone);
-    const item = root.ownerDocument.createElement("li");
-    item.textContent = message;
-    item.dataset.tone = tone;
-    logList.prepend(item);
-    while (logList.children.length > 10) {
-      logList.lastElementChild?.remove();
+  function closeMenus(except = null) {
+    for (const menu of menus) {
+      if (menu !== except) {
+        menu.open = false;
+      }
     }
   }
 
-  function createSkillCard(skill, mode) {
+  function setStatus(message, tone = "info") {
+    status.textContent = message;
+    status.dataset.tone = tone;
+  }
+
+  function setCharge(value, active) {
+    chargeRefs.player.value = Math.max(
+      0,
+      Math.min(1, Number(value) || 0)
+    );
+    chargeRefs.player.dataset.active =
+      active ? "true" : "false";
+  }
+
+  function createActionButton({
+    title,
+    meta,
+    timing,
+    className = ""
+  }) {
     const button = root.ownerDocument.createElement("button");
     button.type = "button";
-    button.className = `skill-card skill-card--${mode}`;
-    button.dataset.combatSkill = skill.id;
+    button.className =
+      `action-option ${className}`.trim();
 
-    const name = root.ownerDocument.createElement("strong");
-    name.textContent = skill.name;
+    const titleNode =
+      root.ownerDocument.createElement("strong");
+    titleNode.textContent = title;
 
-    const meta = root.ownerDocument.createElement("span");
-    meta.className = "skill-card__meta";
-    meta.textContent = skillMetaText(skill);
+    const metaNode =
+      root.ownerDocument.createElement("span");
+    metaNode.textContent = meta;
 
-    const timing = root.ownerDocument.createElement("span");
-    timing.className = "skill-card__timing";
-    timing.textContent = skillTimingText(skill);
+    const timingNode =
+      root.ownerDocument.createElement("small");
+    timingNode.textContent = timing;
 
-    const charge = root.ownerDocument.createElement("progress");
-    charge.className = "skill-card__charge";
-    charge.max = 1;
-    charge.value = 0;
-    charge.setAttribute("aria-label", `Charge de ${skill.name}`);
-
-    const state = root.ownerDocument.createElement("span");
-    state.className = "skill-card__state";
-    state.dataset.skillState = "";
-    state.textContent = "En attente";
-
-    button.append(name, meta, timing, charge, state);
-    return { button, charge, state };
+    button.append(titleNode, metaNode, timingNode);
+    return button;
   }
 
-  function createCommandCard(command) {
-    const button = root.ownerDocument.createElement("button");
-    button.type = "button";
-    button.className = "skill-card skill-card--command";
-    button.dataset.combatCommand = command.id;
+  function createSkillButtons() {
+    for (const skill of skills) {
+      const button = createActionButton({
+        title: skill.name,
+        meta: skillMetaText(skill),
+        timing: skillTimingText(skill)
+      });
+      button.dataset.combatSkill = skill.id;
+      skillContainer.append(button);
+      skillRefs.set(skill.id, { button, skill });
 
-    const name = root.ownerDocument.createElement("strong");
-    name.textContent = command.name;
+      listen(button, "click", () => {
+        const rosterState = roster.snapshot();
+        if (!rosterState.player.activeMemberId) {
+          setStatus("Invoque d'abord un monstre.", "warn");
+          return;
+        }
 
-    const meta = root.ownerDocument.createElement("span");
-    meta.className = "skill-card__meta";
-    meta.textContent = COMMAND_KIND_LABELS[command.kind] ?? command.kind;
-
-    const timing = root.ownerDocument.createElement("span");
-    timing.className = "skill-card__timing";
-    timing.textContent = commandTimingText(command);
-
-    const charge = root.ownerDocument.createElement("progress");
-    charge.className = "skill-card__charge";
-    charge.max = 1;
-    charge.value = 0;
-    charge.setAttribute("aria-label", `Charge de ${command.name}`);
-
-    const state = root.ownerDocument.createElement("span");
-    state.className = "skill-card__state";
-    state.textContent = "En attente";
-
-    button.append(name, meta, timing, charge, state);
-    return { button, charge, state };
-  }
-
-  function setActorCharge(fighterId, value, active) {
-    const bar = actorChargeRefs[fighterId];
-    bar.value = Math.max(0, Math.min(1, Number(value) || 0));
-    bar.dataset.active = active ? "true" : "false";
-  }
-
-  function resetChargeBars() {
-    for (const refs of [
-      ...skillRefs.values(),
-      ...reactionRefs.values(),
-      ...commandRefs.values()
-    ]) {
-      refs.charge.value = 0;
-      refs.button.dataset.charging = "false";
-    }
-    setActorCharge("maraileron", 0, false);
-    setActorCharge("braisombre", 0, false);
-  }
-
-  function createCards() {
-    for (const skill of offensiveSkills) {
-      const refs = createSkillCard(skill, "offense");
-      skillContainer.append(refs.button);
-      skillRefs.set(skill.id, { ...refs, skill });
-
-      listen(refs.button, "click", () => {
         const result = runtime.startSkill({
-          actorId: "maraileron",
-          targetId: "braisombre",
+          actorId: "player",
+          targetId: "opponent",
           skill
         });
 
         if (!result.ok) {
-          writeLog(
-            `${skill.name} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
+          setStatus(
+            OUTCOME_LABELS[result.outcome] ??
+              result.outcome,
             "warn"
           );
-          render(lastState);
+          render();
           return;
         }
 
-        refs.button.dataset.charging = "true";
-        refs.state.textContent =
-          `Charge ${formatSeconds(result.action.preparationMs)}`;
-        writeLog(
-          `${skill.name} se prépare — Braisombre peut réagir.`,
+        closeMenus();
+        setStatus(
+          `${skill.name} se prépare…`,
           "accent"
         );
-        render(lastState);
-      });
-    }
-
-    for (const skill of reactionSkills) {
-      const refs = createSkillCard(skill, "reaction");
-      reactionContainer.append(refs.button);
-      reactionRefs.set(skill.id, { ...refs, skill });
-
-      listen(refs.button, "click", () => {
-        const result = runtime.react(skill);
-
-        if (!result.ok) {
-          writeLog(
-            `${skill.name} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
-            "warn"
-          );
-          render(lastState);
-          return;
-        }
-
-        refs.button.dataset.charging = "true";
-        refs.state.textContent =
-          `Réaction ${formatSeconds(result.reaction.preparationMs)}`;
-        writeLog(
-          `${skill.name} lancé — résolution dans ${formatSeconds(result.reaction.preparationMs)}.`,
-          "accent"
-        );
-        render(lastState);
-      });
-    }
-
-    for (const command of combatCommands) {
-      const refs = createCommandCard(command);
-      commandContainer.append(refs.button);
-      commandRefs.set(command.id, { ...refs, command });
-
-      listen(refs.button, "click", () => {
-        const result = runtime.startCommand({
-          actorId: "maraileron",
-          command
-        });
-
-        if (!result.ok) {
-          writeLog(
-            `${command.name} : ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
-            "warn"
-          );
-          render(lastState);
-          return;
-        }
-
-        refs.button.dataset.charging = "true";
-        refs.state.textContent =
-          `Charge ${formatSeconds(result.action.preparationMs)}`;
-        writeLog(
-          `${command.name} se prépare — cette action peut être interrompue.`,
-          "accent"
-        );
-        render(lastState);
+        render();
       });
     }
   }
 
+  function startCommand(command) {
+    const result = runtime.startCommand({
+      actorId: "player",
+      command
+    });
+
+    if (!result.ok) {
+      setStatus(
+        OUTCOME_LABELS[result.outcome] ??
+          result.outcome,
+        "warn"
+      );
+      render();
+      return;
+    }
+
+    closeMenus();
+    setStatus(
+      `${command.name} se prépare…`,
+      "accent"
+    );
+    render();
+  }
+
+  function createCommandButtons() {
+    const itemButton = createActionButton({
+      title: commands.item.name,
+      meta: "Soin +20 PV",
+      timing: commandTimingText(commands.item),
+      className: "action-option--item"
+    });
+    itemButton.dataset.combatCommand = "item";
+    itemContainer.append(itemButton);
+    commandRefs.set("item", {
+      button: itemButton,
+      command: commands.item
+    });
+    listen(itemButton, "click", () =>
+      startCommand(commands.item)
+    );
+
+    for (const command of [
+      commands.recall,
+      commands.summon
+    ]) {
+      const button = createActionButton({
+        title: command.name,
+        meta:
+          command.kind === "recall"
+            ? "Ranger le monstre actif"
+            : "Envoyer le monstre sélectionné",
+        timing: commandTimingText(command),
+        className: "action-option--team"
+      });
+      button.dataset.combatCommand = command.kind;
+      teamActionContainer.append(button);
+      commandRefs.set(command.kind, {
+        button,
+        command
+      });
+      listen(button, "click", () => startCommand(command));
+    }
+  }
+
+  function reserveCard(member, teamId) {
+    const node =
+      root.ownerDocument.createElement(
+        teamId === "player" ? "button" : "div"
+      );
+    if (teamId === "player") {
+      node.type = "button";
+    }
+    node.className = "reserve-card";
+    node.dataset.memberId = member.id;
+    node.dataset.active = member.active ? "true" : "false";
+    node.dataset.selected =
+      member.selected ? "true" : "false";
+
+    const descriptor =
+      visuals.getCreatureDescriptor(member.creatureId);
+
+    const image =
+      root.ownerDocument.createElement("img");
+    image.src = descriptor.iconUrl;
+    image.alt = "";
+    image.className = "reserve-card__icon";
+
+    const text =
+      root.ownerDocument.createElement("span");
+    text.className = "reserve-card__text";
+
+    const name =
+      root.ownerDocument.createElement("strong");
+    name.textContent = member.displayName;
+
+    const state =
+      root.ownerDocument.createElement("small");
+    state.textContent = member.active
+      ? "Combat"
+      : `${Math.round(member.hp)}/${Math.round(
+          member.maxHp
+        )} PV`;
+
+    text.append(name, state);
+    node.append(image, text);
+
+    if (teamId === "player") {
+      node.disabled = member.active;
+      listen(node, "click", () => {
+        const result = roster.selectReserve(
+          "player",
+          member.id
+        );
+        if (result.ok) {
+          setStatus(
+            `${member.displayName} sélectionné en réserve.`,
+            "info"
+          );
+          renderRoster();
+          renderAvailability();
+        }
+      });
+    }
+
+    return node;
+  }
+
+  function renderRoster() {
+    const state = roster.snapshot();
+
+    playerReserve.replaceChildren(
+      ...state.player.members.map((member) =>
+        reserveCard(member, "player")
+      )
+    );
+    opponentReserve.replaceChildren(
+      ...state.opponent.members.map((member) =>
+        reserveCard(member, "opponent")
+      )
+    );
+
+    const selected = state.player.members.find(
+      (member) =>
+        member.id ===
+        state.player.selectedReserveMemberId
+    );
+
+    teamSelectionLabel.textContent = selected
+      ? `Réserve sélectionnée : ${selected.displayName}`
+      : "Aucune réserve sélectionnée";
+  }
+
   function renderHp(state) {
-    for (const [fighterId, refs] of Object.entries(hpRefs)) {
-      const fighter = state.fighters[fighterId];
-      refs.bar.max = fighter.maxHp;
-      refs.bar.value = fighter.hp;
-      refs.value.textContent =
-        `${Math.round(fighter.hp)} / ${Math.round(fighter.maxHp)} PV`;
+    for (const slotId of ["player", "opponent"]) {
+      const fighter = state.fighters[slotId];
+      hpRefs[slotId].bar.max = fighter.maxHp;
+      hpRefs[slotId].bar.value = fighter.hp;
+      hpRefs[slotId].value.textContent =
+        `${Math.round(fighter.hp)} / ${Math.round(
+          fighter.maxHp
+        )} PV`;
     }
   }
 
   function renderEnergy(state) {
-    for (const [fighterId, refs] of Object.entries(energyRefs)) {
-      const fighter = state.fighters[fighterId];
-      refs.bar.max = fighter.maxEnergy;
-      refs.bar.value = fighter.energy;
-      refs.value.textContent =
-        `${formatEnergy(fighter.energy)} / ${formatEnergy(fighter.maxEnergy)}⚡`;
-      refs.rate.textContent =
-        `+${formatEnergy(fighter.energyChargeAmount)} toutes les ${formatSeconds(fighter.energyChargeIntervalMs)}`;
-    }
+    const fighter = state.fighters.player;
+    playerEnergy.bar.max = fighter.maxEnergy;
+    playerEnergy.bar.value = fighter.energy;
+    playerEnergy.value.textContent =
+      `${formatEnergy(fighter.energy)} / ${formatEnergy(
+        fighter.maxEnergy
+      )}⚡`;
   }
 
   function renderMovement(state) {
-    const actorId = moverSelect.value;
+    const active =
+      roster.snapshot().player.activeMemberId !== null;
+
     for (const button of movementButtons) {
-      const toDistance = button.dataset.combatMove;
-      const preview = session.previewMovement(actorId, toDistance);
-      const isCurrent = toDistance === state.distance;
+      const target = button.dataset.combatMove;
+      const preview = session.previewMovement(
+        "player",
+        target
+      );
+      const current = target === state.distance;
 
-      button.disabled = isCurrent;
-      button.dataset.affordable = preview.ok ? "true" : "false";
-      button.textContent = isCurrent
-        ? `${DISTANCE_LABELS[toDistance]} · ici`
-        : `${DISTANCE_LABELS[toDistance]} · ${formatEnergy(preview.cost)}⚡`;
+      button.disabled =
+        !active || current || !preview.ok;
+      button.textContent = current
+        ? `${DISTANCE_LABELS[target]} · ici`
+        : `${DISTANCE_LABELS[target]} · ${formatEnergy(
+            preview.cost
+          )}⚡`;
     }
   }
 
-  function renderOffensiveAvailability() {
-    for (const { skill, button, state } of skillRefs.values()) {
-      const preview = session.previewSkill({
-        actorId: "maraileron",
-        targetId: "braisombre",
-        skill
-      });
+  function renderAvailability() {
+    const rosterState = roster.snapshot();
+    const hasActive =
+      rosterState.player.activeMemberId !== null;
 
-      const available = preview.ok && !runtime.hasActiveAction;
-      button.disabled = !available;
-      button.dataset.available = available ? "true" : "false";
+    for (const { skill, button } of skillRefs.values()) {
+      const preview = hasActive
+        ? session.previewSkill({
+            actorId: "player",
+            targetId: "opponent",
+            skill
+          })
+        : { ok: false };
 
-      if (button.dataset.charging !== "true") {
-        state.textContent = runtime.hasActiveAction
-          ? "Action en cours"
-          : preview.ok
-            ? "Disponible"
-            : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
-      }
+      button.disabled =
+        runtime.hasActiveAction || !preview.ok;
     }
-  }
 
-  function renderCommandAvailability() {
-    for (const { command, button, state } of commandRefs.values()) {
-      const preview = session.previewCommand({
-        actorId: "maraileron",
-        command
-      });
-
-      const available = preview.ok && !runtime.hasActiveAction;
-      button.disabled = !available;
-      button.dataset.available = available ? "true" : "false";
-
-      if (button.dataset.charging !== "true") {
-        state.textContent = runtime.hasActiveAction
-          ? "Action en cours"
-          : preview.ok
-            ? "Disponible"
-            : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
-      }
+    const itemRef = commandRefs.get("item");
+    if (itemRef) {
+      const preview = hasActive
+        ? session.previewCommand({
+            actorId: "player",
+            command: itemRef.command
+          })
+        : { ok: false };
+      itemRef.button.disabled =
+        runtime.hasActiveAction || !preview.ok;
     }
-  }
 
-  function renderReactionAvailability() {
-    for (const { skill, button, state } of reactionRefs.values()) {
-      const preview = runtime.previewReaction(skill);
-      button.disabled = !preview.ok;
-      button.dataset.available = preview.ok ? "true" : "false";
+    const recallRef = commandRefs.get("recall");
+    if (recallRef) {
+      const preview = hasActive
+        ? session.previewCommand({
+            actorId: "player",
+            command: recallRef.command
+          })
+        : { ok: false };
+      recallRef.button.disabled =
+        runtime.hasActiveAction || !preview.ok;
+    }
 
-      if (button.dataset.charging !== "true") {
-        state.textContent = preview.ok
-          ? "Réagir maintenant"
-          : OUTCOME_LABELS[preview.outcome] ?? preview.outcome;
-      }
+    const summonRef = commandRefs.get("summon");
+    if (summonRef) {
+      const hasSelection = Boolean(
+        rosterState.player.selectedReserveMemberId
+      );
+      const preview =
+        !hasActive && hasSelection
+          ? session.previewCommand({
+              actorId: "player",
+              command: summonRef.command
+            })
+          : { ok: false };
+
+      summonRef.button.disabled =
+        runtime.hasActiveAction || !preview.ok;
     }
   }
 
@@ -655,9 +683,76 @@ export async function mountCombatTest({
     renderHp(state);
     renderEnergy(state);
     renderMovement(state);
-    renderOffensiveAvailability();
-    renderCommandAvailability();
-    renderReactionAvailability();
+    renderAvailability();
+  }
+
+  function projectPlayerToCurrentDistance() {
+    const distance = session.snapshot().distance;
+    distancePresenter.presentMovement({
+      result: {
+        ok: true,
+        outcome: "moved",
+        events: [
+          {
+            type: "distance-changed",
+            from: distance,
+            to: distance
+          }
+        ]
+      },
+      actorSlot: "player"
+    });
+  }
+
+  function applyRosterResolution(resolution) {
+    if (
+      resolution.actionType !== "command" ||
+      !["recall", "summon"].includes(
+        resolution.commandKind
+      )
+    ) {
+      return null;
+    }
+
+    const result = roster.applyCommandResolution(
+      "player",
+      resolution
+    );
+
+    if (!result.ok) {
+      setStatus(
+        OUTCOME_LABELS[result.outcome] ??
+          result.outcome,
+        "warn"
+      );
+      return result;
+    }
+
+    if (result.outcome === "recalled") {
+      visuals.setSlotVisible("player", false);
+      setStatus(
+        "Monstre rappelé. Choisis une réserve puis Invocation.",
+        "accent"
+      );
+    }
+
+    if (result.outcome === "summoned") {
+      visuals.setCreatureFor(
+        "player",
+        result.creatureId,
+        { displayName: result.displayName }
+      );
+      visuals.setSlotVisible("player", true);
+      projectPlayerToCurrentDistance();
+      setStatus(
+        `${result.displayName} entre en combat.`,
+        "ok"
+      );
+    }
+
+    renderRoster();
+    render(session.snapshot());
+    return result;
   }
 
   const runtime = createCombatRuntime({
@@ -667,65 +762,21 @@ export async function mountCombatTest({
     },
     onProgress(progress) {
       if (!progress.actionId) {
-        resetChargeBars();
-        renderReactionAvailability();
+        setCharge(0, false);
+        renderAvailability();
         return;
       }
 
-      if (progress.skillId) {
-        const refs = skillRefs.get(progress.skillId);
-        if (refs) {
-          refs.charge.value = progress.chargeProgress;
-          refs.button.dataset.charging = "true";
-          refs.state.textContent =
-            progress.phase === "preparation"
-              ? `Charge ${Math.round(progress.chargeProgress * 100)} %`
-              : progress.phase === "travel"
-                ? "En trajet"
-                : "Impact";
-        }
-      }
-
-      if (progress.commandId) {
-        const refs = commandRefs.get(progress.commandId);
-        if (refs) {
-          refs.charge.value = progress.chargeProgress;
-          refs.button.dataset.charging = "true";
-          refs.state.textContent =
-            progress.phase === "preparation"
-              ? `Charge ${Math.round(progress.chargeProgress * 100)} %`
-              : "Exécution";
-        }
-      }
-
-      setActorCharge(
-        "maraileron",
-        progress.phase === "preparation" ? progress.chargeProgress : 0,
+      setCharge(
+        progress.phase === "preparation"
+          ? progress.chargeProgress
+          : 0,
         progress.phase === "preparation"
       );
-
-      if (progress.reaction) {
-        const refs = reactionRefs.get(progress.reaction.skillId);
-        if (refs) {
-          refs.charge.value = progress.reaction.progress;
-          refs.button.dataset.charging = "true";
-          refs.state.textContent =
-            progress.reaction.progress < 1
-              ? `Réaction ${Math.round(progress.reaction.progress * 100)} %`
-              : "Prête";
-
-          setActorCharge(
-            "braisombre",
-            progress.reaction.progress,
-            progress.reaction.progress < 1
-          );
-        }
-      }
-
-      renderReactionAvailability();
+      renderAvailability();
     },
     onRelease({ action }) {
-      setActorCharge("maraileron", 0, false);
+      setCharge(0, false);
 
       if (action.actionType === "skill") {
         presenter.presentRelease({
@@ -733,154 +784,124 @@ export async function mountCombatTest({
           actorSlot: "player",
           targetSlot: "opponent"
         });
-        writeLog(
-          `${action.skill.name} est lancée.`,
+        setStatus(
+          `${action.skill.name} est lancé.`,
           "accent"
         );
-        return;
+      } else {
+        setStatus(
+          `${action.command.name} s'exécute.`,
+          "accent"
+        );
       }
-
-      writeLog(
-        `${action.command.name} s'exécute.`,
-        "accent"
-      );
     },
     onResolved(resolution) {
-      if (resolution.actionType === "command") {
-        const command = combatCommands.find(
-          (item) => item.id === resolution.commandId
-        );
-        writeLog(
-          `${command?.name ?? "Commande"} → terminée.`,
-          "ok"
-        );
-      } else {
+      setCharge(0, false);
+
+      if (resolution.actionType === "skill") {
         presenter.presentOutcome({
           resolution,
           actorSlot: "player",
           targetSlot: "opponent"
         });
-
-        const name = offensiveSkills.find(
-          (skill) =>
-            resolution.events.some(
-              (event) => event.skillId === skill.id
-            )
-        )?.name ?? "Capacité";
-
-        writeLog(
-          `${name} → ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
-          resolution.outcome === "hit" ? "ok" : "accent"
+        setStatus(
+          `${resolution.outcome === "hit" ? "Impact réussi" : OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
+          resolution.outcome === "hit" ? "ok" : "info"
         );
+      } else {
+        const rosterResult =
+          applyRosterResolution(resolution);
+
+        if (!rosterResult) {
+          setStatus(
+            `${commands.item.name} terminé.`,
+            "ok"
+          );
+        }
       }
 
-      resetChargeBars();
+      renderRoster();
       render(session.snapshot());
     },
     onInterrupted(result) {
-      const label =
-        result.action.actionType === "command"
-          ? result.action.command.name
-          : result.action.skill.name;
-
-      writeLog(
-        `${label} → interrompue (${result.reason}).`,
+      setCharge(0, false);
+      setStatus(
+        `Action ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
         "warn"
       );
-      resetChargeBars();
-      render(session.snapshot());
+      render();
     }
   });
 
   for (const button of movementButtons) {
     listen(button, "click", () => {
-      const actorId = moverSelect.value;
-      const result = session.move(actorId, button.dataset.combatMove);
+      const rosterState = roster.snapshot();
+      if (!rosterState.player.activeMemberId) {
+        setStatus("Aucun monstre actif.", "warn");
+        return;
+      }
+
+      const result = session.move(
+        "player",
+        button.dataset.combatMove
+      );
 
       if (!result.ok) {
-        writeLog(
-          `${fighterLabel(actorId)} : énergie insuffisante pour ce déplacement (${formatEnergy(result.cost)}⚡).`,
+        setStatus(
+          OUTCOME_LABELS[result.outcome] ??
+            result.outcome,
           "warn"
         );
-        render(session.snapshot());
         return;
       }
 
       distancePresenter.presentMovement({
         result,
-        actorSlot: actorId === "maraileron" ? "player" : "opponent"
+        actorSlot: "player"
       });
 
-      writeLog(
-        `${fighterLabel(actorId)} se déplace vers ${DISTANCE_LABELS[result.state.distance]} · -${formatEnergy(result.cost)}⚡.`,
+      setStatus(
+        `Distance ${DISTANCE_LABELS[result.state.distance]}.`,
         "info"
       );
       render(result.state);
     });
   }
 
-  listen(moverSelect, "change", () => render(session.snapshot()));
-
-  listen(stunTestButton, "click", () => {
-    if (!runtime.hasActiveAction) {
-      writeLog(
-        "Stun test : aucune action de Maraileron n'est en charge.",
-        "warn"
-      );
-      return;
-    }
-
-    const resolution = session.previewSkill({
-      actorId: "braisombre",
-      targetId: "maraileron",
-      skill: stunBolt
+  for (const menu of menus) {
+    listen(menu, "toggle", () => {
+      if (menu.open) {
+        closeMenus(menu);
+      }
     });
+  }
 
-    if (!resolution.ok) {
-      writeLog(
-        `Stun test : ${OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
-        "warn"
-      );
-      return;
-    }
+  createSkillButtons();
+  createCommandButtons();
 
-    const result = runtime.applyResolutionInterrupt(resolution);
+  visuals.setCreatureFor(
+    "player",
+    "maraileron",
+    { displayName: "Marai" }
+  );
+  visuals.setCreatureFor(
+    "opponent",
+    "braisombre",
+    { displayName: "Drakon" }
+  );
 
-    writeLog(
-      result.ok
-        ? "Impact Stun simulé → charge interrompue."
-        : `Impact Stun simulé → ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
-      result.ok ? "accent" : "warn"
-    );
-
-    render(session.snapshot());
-  });
-
-  listen(resetButton, "click", () => {
-    runtime.cancelActive();
-    presenter.cancelPending();
-    fx.cancelAll();
-    session.reset();
-    distancePresenter.reset();
-    visuals.cancelFor("player");
-    visuals.cancelFor("opponent");
-    resetChargeBars();
-    logList.replaceChildren();
-    writeLog("Combat de test réinitialisé.", "info");
-    render(session.snapshot());
-  });
-
-  createCards();
+  renderRoster();
   runtime.start();
-  render(session.snapshot());
+  render(lastState);
 
-  writeLog(
-    "Énergie à 0 : attendez les premiers ticks puis testez déplacement, charge et réaction.",
+  setStatus(
+    "Marai contre Drakon — choisis une action.",
     "info"
   );
 
   return Object.freeze({
     snapshot: () => session.snapshot(),
+    rosterSnapshot: () => roster.snapshot(),
     dispose() {
       if (disposed) {
         return;
