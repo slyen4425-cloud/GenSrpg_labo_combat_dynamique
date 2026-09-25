@@ -205,6 +205,22 @@ test("abilities stay directly visible while items and team remain compact menus"
   );
 });
 
+test("ground approach perspective uses measured arena geometry rather than gameplay values", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+  const planner = await readFile(
+    "src/core/animation/plan-animation.js",
+    "utf8"
+  );
+
+  assert.match(source, /arenaHeight:\s*arenaRect\.height/);
+  assert.match(planner, /perspectiveScaleStrength/);
+  assert.match(planner, /target\.y\s*\/\s*arenaHeight/);
+  assert.doesNotMatch(
+    source,
+    /energyCost[\s\S]{0,120}arenaHeight/
+  );
+});
+
 test("V9 UI delegates opponent decisions and routes skill visuals by real actor slots", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
