@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-25
 
-Phase active : Phase 2B/V8 — Interface combat plein écran, spatialité et roster compact.
+Phase active : Phase 2B/V9 — Contrôleur de décision adverse.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -2854,6 +2854,123 @@ V8 est fonctionnellement validé sur smartphone et peut devenir la base GREEN du
 Checkpoint GREEN final attendu :
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
+
+
+## Chantier actif — opponent-ai-v9
+
+Base GREEN :
+
+`1ea7cd4e1ae244ee3dc5912dc91ab47e5d4ee94e`
+
+Checkpoint GREEN source :
+
+`checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
+
+Checkpoint de départ V9 :
+
+`checkpoint/lab-start-opponent-ai-v9-2026-09-25`
+
+Branche :
+
+`work/lab-opponent-ai-v9-2026-09-25`
+
+Objectif :
+
+Permettre un vrai combat de test contre un adversaire autonome, sans créer un second moteur de règles ni une seconde horloge.
+
+Architecture cible :
+
+`Combat State / Runtime -> Opponent Decision Controller -> intention -> preview/commit Combat Session ou Combat Runtime -> Presenter -> Renderer`
+
+Propriétaire V9 :
+
+- `Opponent Decision Controller` : choix déterministe d'une intention parmi des actions déjà validables ;
+- `Combat Runtime` : horloge unique et action active ;
+- `Combat Session` : validation/commit gameplay ;
+- `Roster Session` : KO/remplacement des deux camps ;
+- Presenter : rendu de l'acteur/cible réels ;
+- Demo UI : coordination et affichage seulement.
+
+Premier comportement IA :
+
+1. pendant une compétence joueur, choisir automatiquement une réaction compatible :
+   - projectile/none : Bouclier miroir -> Immunité feu -> Esquive ;
+   - ground : Riposte -> Esquive ;
+   - aerial/teleport : Esquive -> Riposte ;
+2. après une résolution joueur, tenter une action adverse :
+   - compétence offensive selon un cycle data-driven ;
+   - si la compétence souhaitée est hors portée, tenter un déplacement légal vers une de ses distances autorisées ;
+   - si elle reste impossible, essayer une autre compétence légale ;
+   - sinon attendre l'énergie suivante ;
+3. après une action adverse, rendre la main au joueur ; aucun enchaînement IA infini.
+
+Politique V9 :
+
+- configuration JSON dédiée ;
+- aucune valeur tactique importante dans l'UI ;
+- décisions déterministes avant toute future variante aléatoire.
+
+Raccords nécessaires démontrés :
+
+- `Combat Runtime.progressSnapshot()` doit exposer l'actorId/targetId de l'action active pour router la charge au bon HUD ;
+- la résolution skill doit exposer actorId/targetId au niveau racine pour router le Presenter sans supposer joueur -> adversaire ;
+- le raccord KO doit devenir générique : joueur ou adversaire -> `Roster Session.replaceKnockedOut(teamId)`;
+- le Presenter possède déjà actorSlot/targetSlot en paramètres et ne nécessite pas de règle gameplay supplémentaire.
+
+Fichiers autorisés :
+
+- nouveau `src/core/combat/opponent-decision-controller.js` ;
+- nouveau `data/combat/ai/opponent-aggressive.policy.json` ;
+- `src/core/combat/combat-runtime.js` uniquement pour identité actor/target dans le snapshot de progression ;
+- `src/core/combat/action-resolver.js` uniquement pour identité actor/target de la résolution ;
+- `src/ui/combat-test-ui.js` pour charger la politique, coordonner les intentions et router les slots réels ;
+- tests unitaires/intégration correspondants ;
+- documentation laboratoire.
+
+Domaines protégés :
+
+- aucune nouvelle formule de dégâts ;
+- aucune nouvelle formule de portée ou coût ;
+- aucune seconde horloge ;
+- aucun `setInterval` IA ;
+- aucune simulation de clics ;
+- Animation Core inchangé ;
+- FX Core inchangé ;
+- Distance Presenter V8 inchangé ;
+- UI V8 validée inchangée hors affichage actor-aware de charge/statut ;
+- dépôt `Zombicide-40k` interdit.
+
+Tests prévus :
+
+- politique déterministe validée ;
+- réaction projectile -> miroir si légale ;
+- réaction aerial/teleport -> esquive si légale ;
+- Riposte privilégiée contre ground ;
+- compétence cyclique ;
+- déplacement proposé si compétence désirée hors portée ;
+- aucune action proposée si toutes previews refusées ;
+- progression Runtime expose actorId/targetId ;
+- résolution expose actorId/targetId ;
+- Presenter reçoit les vrais slots pour une attaque adverse ;
+- KO joueur -> Roster Session -> remplacement joueur ;
+- vrai chemin intégration : joueur attaque -> IA réagit -> résolution -> IA choisit/attaque -> HP joueur modifiés ;
+- aucun timer IA parallèle ;
+- CI complète verte.
+
+Risques :
+
+- déclencher plusieurs décisions IA pour le même événement ;
+- réaction choisie après fermeture de la fenêtre temporelle ;
+- IA qui enchaîne plusieurs attaques sans rendre la main ;
+- charge affichée sur le mauvais HUD ;
+- KO joueur non remplacé correctement.
+
+Critère de fin :
+
+- CI verte ;
+- checkpoint GREEN V9 ;
+- preview smartphone où l'adversaire réagit automatiquement, se déplace si nécessaire et lance au moins une attaque réelle avec charge/animation/dégâts ;
+- aucune régression V8.
 
 ## Dernier checkpoint GREEN
 
