@@ -374,6 +374,7 @@ export async function mountCombatTest({
   let disposed = false;
   let koTransitionPending = false;
   let lastState = session.snapshot();
+  let opponentAi = null;
 
   const fx = createDomSkillFxRenderer({
     arena,
@@ -508,10 +509,21 @@ export async function mountCombatTest({
         }
 
         closeMenus();
-        setStatus(
-          `${skill.name} se prépare…`,
-          "accent"
-        );
+
+        const reactionDecision =
+          opponentAi?.maybeReactToActiveAction();
+
+        if (reactionDecision?.status === "reacted") {
+          setStatus(
+            `${skill.name} se prépare — ${reactionDecision.skillName} adverse en réaction.`,
+            "accent"
+          );
+        } else {
+          setStatus(
+            `${skill.name} se prépare…`,
+            "accent"
+          );
+        }
         render();
       });
     }
@@ -815,8 +827,11 @@ export async function mountCombatTest({
     projectSlotToCurrentDistance("opponent");
   }
 
-  async function replaceOpponentAfterKo(presentation) {
-    if (!presentation?.ko) {
+  async function replaceAfterKo(slotId, presentation) {
+    if (
+      !presentation?.ko ||
+      presentation.koActorId !== slotId
+    ) {
       return null;
     }
 
@@ -829,7 +844,7 @@ export async function mountCombatTest({
       return null;
     }
 
-    const result = roster.replaceKnockedOut("opponent");
+    const result = roster.replaceKnockedOut(slotId);
 
     if (!result.ok) {
       koTransitionPending = false;
@@ -842,18 +857,25 @@ export async function mountCombatTest({
     }
 
     if (result.outcome === "team_defeated") {
-      visuals.setSlotVisible("opponent", false);
-      setStatus("Équipe adverse vaincue.", "ok");
+      visuals.setSlotVisible(slotId, false);
+      setStatus(
+        slotId === "opponent"
+          ? "Équipe adverse vaincue."
+          : "Votre équipe est vaincue.",
+        slotId === "opponent" ? "ok" : "warn"
+      );
     } else if (result.outcome === "ko_replaced") {
       visuals.setCreatureFor(
-        "opponent",
+        slotId,
         result.creatureId,
         { displayName: result.displayName }
       );
-      visuals.setSlotVisible("opponent", true);
-      projectOpponentToCurrentDistance();
+      visuals.setSlotVisible(slotId, true);
+      projectSlotToCurrentDistance(slotId);
       setStatus(
-        `${result.displayName} adverse entre en combat.`,
+        slotId === "opponent"
+          ? `${result.displayName} adverse entre en combat.`
+          : `${result.displayName} entre en combat.`,
         "accent"
       );
     }
@@ -862,6 +884,64 @@ export async function mountCombatTest({
     renderRoster();
     render(session.snapshot());
     return result;
+  }
+
+  function runOpponentTurn() {
+    if (!opponentAi || disposed || koTransitionPending) {
+      return Object.freeze({
+        status: "waiting",
+        reason: "transition_pending"
+      });
+    }
+
+    const decision = opponentAi.takeTurn();
+
+    if (decision.status === "moved") {
+      distancePresenter.presentMovement({
+        result: decision.result,
+        actorSlot: decision.actorId
+      });
+      setStatus(
+        `Adversaire : distance ${DISTANCE_LABELS[decision.result.state.distance]}.`,
+        "info"
+      );
+      render(decision.result.state);
+    } else if (decision.status === "skill_started") {
+      setStatus(
+        `${decision.skillName} adverse se prépare…`,
+        "accent"
+      );
+      render();
+    }
+
+    return decision;
+  }
+
+  async function finishSkillPresentation(
+    resolution,
+    presentation
+  ) {
+    if (presentation.ko && presentation.koActorId) {
+      setStatus(
+        presentation.koActorId === "opponent"
+          ? "Adversaire KO… remplacement en cours."
+          : "Votre monstre est KO… remplacement en cours.",
+        "accent"
+      );
+      await replaceAfterKo(
+        presentation.koActorId,
+        presentation
+      );
+    } else {
+      await presentation.finished;
+    }
+
+    if (
+      !disposed &&
+      resolution.actorId === "player"
+    ) {
+      runOpponentTurn();
+    }
   }
 
   function applyRosterResolution(resolution) {
@@ -921,14 +1001,16 @@ export async function mountCombatTest({
       render(state);
     },
     onProgress(progress) {
+      setCharge({ slotId: "player" });
+      setCharge({ slotId: "opponent" });
+
       if (!progress.actionId) {
-        setCharge({ slotId: "player" });
         renderAvailability();
         return;
       }
 
       setCharge({
-        slotId: "player",
+        slotId: progress.actorId,
         value:
           progress.phase === "preparation"
             ? progress.chargeProgress
@@ -937,19 +1019,34 @@ export async function mountCombatTest({
         actionName: progress.actionName,
         remainingMs: progress.remainingPreparationMs
       });
+
+      if (progress.reaction) {
+        setCharge({
+          slotId: progress.reaction.actorId,
+          value: progress.reaction.progress,
+          active:
+            progress.reaction.remainingPreparationMs > 0,
+          actionName: progress.reaction.actionName,
+          remainingMs:
+            progress.reaction.remainingPreparationMs
+        });
+      }
+
       renderAvailability();
     },
     onRelease({ action }) {
-      setCharge({ slotId: "player" });
+      setCharge({ slotId: action.actorId });
 
       if (action.actionType === "skill") {
         presenter.presentRelease({
           action,
-          actorSlot: "player",
-          targetSlot: "opponent"
+          actorSlot: action.actorId,
+          targetSlot: action.targetId
         });
         setStatus(
-          `${action.skill.name} est lancé.`,
+          action.actorId === "opponent"
+            ? `${action.skill.name} adverse est lancé.`
+            : `${action.skill.name} est lancé.`,
           "accent"
         );
       } else {
@@ -961,26 +1058,35 @@ export async function mountCombatTest({
     },
     onResolved(resolution) {
       setCharge({ slotId: "player" });
+      setCharge({ slotId: "opponent" });
 
       if (resolution.actionType === "skill") {
         const presentation = presenter.presentOutcome({
           resolution,
-          actorSlot: "player",
-          targetSlot: "opponent"
+          actorSlot: resolution.actorId,
+          targetSlot: resolution.targetId
         });
 
-        if (
-          presentation.ko &&
-          presentation.koActorId === "opponent"
-        ) {
-          setStatus("Adversaire KO… remplacement en cours.", "accent");
-          void replaceOpponentAfterKo(presentation);
-        } else {
+        if (!presentation.ko) {
+          const label =
+            resolution.actorId === "opponent" &&
+            resolution.outcome === "hit"
+              ? "Votre monstre est touché"
+              : resolution.outcome === "hit"
+                ? "Impact réussi"
+                : OUTCOME_LABELS[resolution.outcome] ??
+                  resolution.outcome;
+
           setStatus(
-            `${resolution.outcome === "hit" ? "Impact réussi" : OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
+            `${label}.`,
             resolution.outcome === "hit" ? "ok" : "info"
           );
         }
+
+        void finishSkillPresentation(
+          resolution,
+          presentation
+        );
       } else {
         const rosterResult =
           applyRosterResolution(resolution);
@@ -991,19 +1097,32 @@ export async function mountCombatTest({
             "ok"
           );
         }
+
+        runOpponentTurn();
       }
 
       renderRoster();
       render(session.snapshot());
     },
     onInterrupted(result) {
-      setCharge({ slotId: "player" });
+      setCharge({
+        slotId: result.action?.actorId ?? "player"
+      });
       setStatus(
         `Action ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
         "warn"
       );
       render();
     }
+  });
+
+  opponentAi = createOpponentDecisionController({
+    session,
+    runtime,
+    roster,
+    policy: opponentAiPolicy,
+    skillsById: offensiveSkillsById,
+    reactionsById: reactionSkillsById
   });
 
   listen(playerReserve, "click", (event) => {
@@ -1067,6 +1186,7 @@ export async function mountCombatTest({
         "info"
       );
       render(result.state);
+      runOpponentTurn();
     });
   }
 
@@ -1104,6 +1224,7 @@ export async function mountCombatTest({
   return Object.freeze({
     snapshot: () => session.snapshot(),
     rosterSnapshot: () => roster.snapshot(),
+    aiSnapshot: () => opponentAi.snapshot(),
     dispose() {
       if (disposed) {
         return;
