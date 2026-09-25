@@ -4704,3 +4704,67 @@ Critère de fin :
 - anciennes bandes erronées retirées ;
 - CI verte ;
 - SHA exact communiqué.
+
+
+## Sous-lot actif — fireball-asset-demo
+
+Base :
+
+`48cc765fc2602dc645589107abc2912d52769eb1`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-fireball-asset-demo-2026-09-25`
+
+Branche :
+
+`work/lab-fireball-asset-demo-2026-09-25`
+
+Objectif :
+
+- raccorder dans la Demo UI du laboratoire l'icône Capture de Boule de feu et le pack de sprites Boule de feu déjà généré ;
+- remplacer uniquement le projectile visuel générique de `fireball` par le sprite/atlas Capture ;
+- conserver Combat Rules, dégâts, portée, énergie et timing inchangés ;
+- fournir une URL de preview testable sur smartphone.
+
+Propriétaires concernés :
+
+- Demo UI pour l'affichage du bouton de compétence ;
+- Render Adapter / FX Renderer pour le rendu du projectile et de l'impact ;
+- catalogue visuel Capture comme source d'assets.
+
+Fichiers autorisés :
+
+- `examples/dom-demo/demo.css` ;
+- `src/ui/combat-test-ui.js` ;
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- tests sentinelles associés ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+Domaines protégés :
+
+- Combat Rules ;
+- Combat Runtime ;
+- Action Resolver ;
+- SkillDefinition gameplay ;
+- valeurs de dégâts / énergie / portée / timing ;
+- Roster Session ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+Tests prévus :
+
+- l'icône Boule de feu provient de `assets/library/capture/icons/skills/` ;
+- le projectile `fireball` utilise les frames Capture existantes ;
+- les autres projectiles gardent le fallback générique ;
+- le rendu ne modifie aucun résultat gameplay ;
+- CI existante verte ;
+- preview smartphone fournie pour validation visuelle.
+
+Critère de fin :
+
+- bouton Boule de feu identifiable par son icône ;
+- lancement/trajet/impact visibles avec les sprites Capture ;
+- aucun changement des règles de combat ;
+- CI verte ;
+- lien de test communiqué.
