@@ -143,6 +143,51 @@ Référence détaillée :
 
 Le catalogue ne doit jamais devenir propriétaire du stockage ni des règles de combat.
 
+### Contexte visuel d'arène / biome
+
+L'arène visible est une donnée de présentation distincte des règles de combat.
+
+Principe cible :
+
+```
+Zone / lieu du jeu
+      |
+      v
+Arena Context
+(biome / thème)
+      |
+      v
+Arena Definition
+      |
+      +---- background asset
+      +---- overlays / foreground futurs
+      +---- ambience future
+      |
+      v
+Render Adapter
+```
+
+Exemples de contextes futurs :
+
+- forêt ;
+- caverne ;
+- neige ;
+- désert ;
+- ville ;
+- science-fiction.
+
+Règles d'architecture :
+
+- Combat Rules ne connaît jamais le nom ni l'image de l'arène ;
+- la zone ou le monde appelant fournit un identifiant de contexte visuel / biome ;
+- un binding de présentation résout ce contexte vers une `ArenaDefinition` ;
+- les images d'arène utilisent la bibliothèque d'assets, typiquement `assetType: background` ;
+- une arène absente utilise un fallback visuel sûr et ne bloque jamais le combat ;
+- changer d'arène ne modifie ni dégâts, portée, vitesse, énergie ou résultat d'une capacité ;
+- si des effets de terrain gameplay sont ajoutés un jour, ils auront leur propre donnée Combat Rules et ne seront jamais déduits du décor affiché.
+
+Le premier lot d'arène devra commencer par un fond statique data-driven avant d'ajouter overlays, météo ou animations.
+
 ## 4. État
 
 Le Core doit distinguer :

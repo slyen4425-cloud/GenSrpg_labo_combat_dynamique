@@ -5686,3 +5686,36 @@ Statut :
 - exigences enregistrées ;
 - aucun changement fonctionnel effectué dans ce lot ;
 - perspective visuelle conservée telle quelle pour le moment et à réévaluer plus tard.
+
+
+### Lot séparé — icônes compétences et préparation des arènes
+
+Décision utilisateur du 2026-09-25 :
+
+- rattacher des icônes existantes aux autres capacités visibles du prototype ;
+- conserver la Boule de feu et son binding actuel ;
+- préparer plus tard plusieurs arènes liées au contexte de la zone de combat, par exemple caverne / forêt / neige ;
+- ne pas coupler le décor d'arène aux règles de combat.
+
+Branches du lot :
+
+- départ : `checkpoint/lab-start-skill-icons-v9-2026-09-25` ;
+- travail : `work/lab-skill-icons-v9-2026-09-25` ;
+- preview : `preview/lab-skill-icons-v9-2026-09-25` ;
+- base exacte : `c3051f6df1547fdfa5c4ad85d145ae6e12056c00`.
+
+Diagnostic assets :
+
+- `Griffe` -> `assets/library/core/icons/skills/icon_skill_claw_01.webp` ;
+- `Plongeon aérien` -> `assets/library/core/icons/skills/icon_skill_aerial_dive_01.webp` ;
+- `Frappe téléportée` -> `assets/library/core/icons/skills/icon_skill_teleport_strike_01.webp` ;
+- l'UI possède déjà le slot générique `presentation.icon` ;
+- aucune modification de `SkillDefinition` n'est nécessaire.
+
+Périmètre fonctionnel :
+
+- ajouter uniquement les bindings de présentation manquants ;
+- ne créer aucun nouvel asset ;
+- ne modifier aucun gameplay, timing, énergie, dégâts, portée ou FX ;
+- ajouter un test assurant qu'une icône est résolue pour les quatre capacités actives ;
+- documenter seulement l'architecture future des arènes par biome, sans l'implémenter dans ce lot.

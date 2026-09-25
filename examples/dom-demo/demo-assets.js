@@ -3,7 +3,33 @@ const CAPTURE_ROOT = new URL(
   import.meta.url
 );
 
+const CORE_ROOT = new URL(
+  "../../assets/library/core/",
+  import.meta.url
+);
+
 const ASSETS = Object.freeze({
+  "core:icon-skill-claw-01": Object.freeze({
+    assetId: "core:icon-skill-claw-01",
+    url: new URL(
+      "icons/skills/icon_skill_claw_01.webp",
+      CORE_ROOT
+    ).href
+  }),
+  "core:icon-skill-aerial-dive-01": Object.freeze({
+    assetId: "core:icon-skill-aerial-dive-01",
+    url: new URL(
+      "icons/skills/icon_skill_aerial_dive_01.webp",
+      CORE_ROOT
+    ).href
+  }),
+  "core:icon-skill-teleport-strike-01": Object.freeze({
+    assetId: "core:icon-skill-teleport-strike-01",
+    url: new URL(
+      "icons/skills/icon_skill_teleport_strike_01.webp",
+      CORE_ROOT
+    ).href
+  }),
   "pack:capture:icon-skill-fireball-01": Object.freeze({
     assetId: "pack:capture:icon-skill-fireball-01",
     url: new URL(
@@ -51,6 +77,15 @@ const SKILL_BINDINGS = Object.freeze({
     travelFx: "pack:capture:sprite-fireball-travel-01",
     travelSourceAnchor: "mouth",
     impactFx: "pack:capture:sprite-fireball-impact-01"
+  }),
+  claw: Object.freeze({
+    icon: "core:icon-skill-claw-01"
+  }),
+  "aerial-dive": Object.freeze({
+    icon: "core:icon-skill-aerial-dive-01"
+  }),
+  "teleport-strike": Object.freeze({
+    icon: "core:icon-skill-teleport-strike-01"
   })
 });
 
