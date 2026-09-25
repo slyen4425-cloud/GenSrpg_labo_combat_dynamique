@@ -221,6 +221,13 @@ test("ground approach perspective uses measured arena geometry rather than gamep
   );
 });
 
+test("evasion feedback explicitly shows zero damage and projectile targets use stable slots", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /evaded:\s*"Esquive · 0 dégât"/);
+  assert.match(source, /targetAnchors:\s*fighterContainers/);
+});
+
 test("V9 opponent initiative is driven by Runtime state changes without waiting for player input", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
