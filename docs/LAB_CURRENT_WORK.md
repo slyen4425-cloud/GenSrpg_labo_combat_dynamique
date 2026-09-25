@@ -4229,6 +4229,139 @@ Statut :
 - GREEN technique ;
 - validation smartphone requise avant checkpoint GREEN final V9.
 
+
+## Chantier actif — asset-library-architecture
+
+Base technique :
+
+`42bcf128b79477b01811953d96241958e095ab99`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-asset-library-architecture-2026-09-25`
+
+Branche :
+
+`work/lab-asset-library-architecture-2026-09-25`
+
+Objectif :
+
+- définir une architecture unique et extensible pour les assets créateurs ;
+- classer proprement icônes, sprites / FX et sons ;
+- préparer une bibliothèque commune GenSrpG réutilisable ;
+- permettre plus tard l'ajout d'assets personnels par les créateurs sans créer une seconde logique ;
+- préserver le cas minimal d'une image unique et le fonctionnement autonome du laboratoire.
+
+Diagnostic de l'existant :
+
+- `Asset Input` existe déjà dans `src/assets/image-source-manager.js` pour charger et valider des images temporaires ;
+- les créatures de test possèdent déjà des fichiers metadata sous `assets/test/creatures/` ;
+- il n'existe pas encore de registre générique pour icônes / FX / audio ;
+- il n'existe pas encore de contrat de pack ni de binding entre gameplay et assetId ;
+- le dossier `assets/test/` est explicitement réservé aux assets du laboratoire et ne doit pas devenir silencieusement la bibliothèque officielle GenSrpG.
+
+Périmètre de ce lot :
+
+DOCUMENTATION / ARCHITECTURE UNIQUEMENT.
+
+Livrables autorisés :
+
+- un document de conception `docs/LAB_ASSET_LIBRARY.md` ;
+- synchronisation minimale de `LAB_ROADMAP.md` ;
+- synchronisation minimale de `LAB_ARCHITECTURE.md` ;
+- précision du rôle de `src/assets/` dans son README ;
+- aucune implémentation runtime de bibliothèque ;
+- aucun import utilisateur réel ;
+- aucun fichier son / sprite ajouté dans ce lot.
+
+Propriétaires définis :
+
+- `Asset Definition` : métadonnées d'un asset ;
+- `Asset Catalog` : index des assets disponibles ;
+- `Asset Pack` : groupe installable / activable d'assets ;
+- `Asset Binding` : références assetId depuis compétences / créatures / commandes ;
+- `Asset Input` : validation et chargement du fichier réel ;
+- stockage futur créateur : adaptateur séparé, jamais Core combat ;
+- Presenter / FX / Audio adapters : consommation d'assetId déjà résolu, aucune autorité gameplay.
+
+Principes obligatoires :
+
+- aucune compétence ne dépend d'un chemin de fichier codé en dur dans l'UI ;
+- les skills / créatures référencent des `assetId` stables ;
+- un asset officiel et un asset personnel utilisent le même contrat ;
+- les scopes `core / pack / project / user` restent distingués ;
+- l'auteur, la source et la licence font partie des métadonnées ;
+- un pack ne peut jamais remplacer silencieusement un asset d'un autre scope ;
+- fallback explicite si un asset optionnel est absent ;
+- audio, sprite et icône n'influencent jamais les règles de combat ;
+- les futures durées gameplay restent dans SkillDefinition, pas dans un sprite ou un son.
+
+Classification initiale à documenter :
+
+- icon ;
+- sprite ;
+- fx ;
+- sound ;
+- portrait ;
+- background ;
+- ui.
+
+Événements / usages à documenter :
+
+- skill icon ;
+- release ;
+- travel ;
+- impact ;
+- hit ;
+- miss / evade ;
+- block ;
+- reflect ;
+- immune ;
+- heal ;
+- buff / debuff ;
+- ko ;
+- summon ;
+- recall ;
+- ui ;
+- ambience.
+
+Sources futures :
+
+- `core` : bibliothèque commune fournie ;
+- `pack` : pack thématique installé ;
+- `project` : assets propres à un jeu / monde ;
+- `user` : import personnel du créateur.
+
+Tests de ce lot :
+
+- pas de code fonctionnel nouveau, donc CI existante seulement ;
+- revue de cohérence documentaire ;
+- aucune dépendance à `Zombicide-40k` ;
+- aucun chemin de la future bibliothèque présenté comme déjà implémenté ;
+- vocabulaire aligné avec la charte et l'architecture existante.
+
+Risques :
+
+- créer un second Asset Input en parallèle ;
+- mélanger catalogue, stockage et rendu ;
+- lier les compétences à des chemins physiques au lieu d'IDs ;
+- rendre obligatoire un asset riche alors que le fallback minimal doit continuer à fonctionner ;
+- confondre pack officiel et asset personnel ;
+- ignorer provenance / licence des assets proposés aux créateurs.
+
+Critère de fin :
+
+- classification officielle documentée ;
+- format conceptuel AssetDefinition documenté ;
+- règles de naming documentées ;
+- hiérarchie des scopes documentée ;
+- modèle AssetPack documenté ;
+- modèle AssetBinding documenté ;
+- stratégie d'import personnel documentée sans implémentation prématurée ;
+- roadmap et architecture synchronisées ;
+- CI verte ;
+- validation utilisateur avant passage au contrat / code.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
