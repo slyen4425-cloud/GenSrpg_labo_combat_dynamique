@@ -318,6 +318,9 @@ export async function mountCombatDemo({
     setCreatureFor,
     setSlotVisible,
     getCreatureDescriptor,
+    getFxAnchorFor(slotKey, anchorName = "head") {
+      return slotOf(slotKey).getFxAnchor(anchorName);
+    },
     getCreatureFor(slotKey) {
       return slotOf(slotKey).meta.id;
     },
@@ -431,6 +434,25 @@ function createSlot({
     }
   }
 
+  function getFxAnchor(anchorName = "head") {
+    const anchorsForView = meta.fxAnchors?.[view] ?? {};
+    const point =
+      anchorsForView[anchorName] ??
+      anchorsForView.head ??
+      { x: 0.5, y: 0.5 };
+
+    const rect = motion.getBoundingClientRect();
+    const x = Math.min(1, Math.max(0, Number(point.x) || 0));
+    const y = Math.min(1, Math.max(0, Number(point.y) || 0));
+
+    return Object.freeze({
+      left: rect.left + rect.width * x,
+      top: rect.top + rect.height * y,
+      width: 0,
+      height: 0
+    });
+  }
+
   setCreature(initialMeta);
 
   return {
@@ -440,6 +462,7 @@ function createSlot({
     motion,
     setCreature,
     setVisible,
+    getFxAnchor,
     get meta() {
       return meta;
     },
