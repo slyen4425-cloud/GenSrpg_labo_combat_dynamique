@@ -1933,6 +1933,23 @@ CI technique avant documentation :
 - run : `36117658014`
 - conclusion : SUCCESS
 
+Checkpoint GREEN technique :
+
+`checkpoint/lab-impact-mobility-ko-ui-v6-green-2026-09-25`
+
+Branche de prévisualisation :
+
+`preview/lab-impact-mobility-ko-ui-v6-2026-09-25`
+
+SHA GREEN technique avant synchronisation finale :
+
+`24263541dfd5b73ef53c0a0e4d5b98a322fe64d9`
+
+CI :
+
+- run : `36117767684`
+- conclusion : SUCCESS
+
 Validation smartphone restante :
 
 - Griffe doit prendre environ 1,5 s pour parcourir le terrain après la charge ;
