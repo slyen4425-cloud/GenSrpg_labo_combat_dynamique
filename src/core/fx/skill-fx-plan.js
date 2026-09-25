@@ -49,3 +49,21 @@ export function planSkillFx({
     })
   ]);
 }
+
+
+export function planSkillOutcomeFx({
+  resolution,
+  targetSlot = "opponent"
+}) {
+  if (!resolution?.ok || resolution.outcome !== "evaded") {
+    return Object.freeze([]);
+  }
+
+  return Object.freeze([
+    Object.freeze({
+      type: "miss",
+      targetSlot,
+      durationMs: 650
+    })
+  ]);
+}
