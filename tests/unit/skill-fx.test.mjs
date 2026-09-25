@@ -443,10 +443,11 @@ test("resolved fireball hit can request a presentation-only impact FX", () => {
   );
 });
 
-test("DOM projectile adapter uses a bound sprite strip while retaining movement ownership", async () => {
+test("DOM projectile adapter anchors the fireball core on the path and orients the sprite", async () => {
   const done = deferred();
   const appended = [];
   let capturedKeyframes = null;
+  let capturedOptions = null;
 
   const arena = {
     ownerDocument: {
@@ -455,6 +456,10 @@ test("DOM projectile adapter uses a bound sprite strip while retaining movement 
           className: "",
           dataset: {},
           style: {},
+          children: [],
+          append(child) {
+            this.children.push(child);
+          },
           remove() {}
         };
       }
@@ -489,12 +494,15 @@ test("DOM projectile adapter uses a bound sprite strip while retaining movement 
         travel: {
           assetId: "pack:capture:sprite-fireball-travel-01",
           url: "fireball-atlas.png",
-          frameCount: 8
+          frameCount: 8,
+          coreAnchor: { x: 0.29, y: 0.5 },
+          headingRad: Math.PI
         }
       };
     },
-    animate(_node, keyframes) {
+    animate(_node, keyframes, options) {
       capturedKeyframes = keyframes;
+      capturedOptions = options;
       return {
         finished: done.promise,
         cancel() {}
@@ -513,20 +521,42 @@ test("DOM projectile adapter uses a bound sprite strip while retaining movement 
 
   assert.equal(handle.status, "running");
   assert.equal(appended.length, 1);
-  assert.match(appended[0].className, /skill-fx--sprite/);
+
+  const shell = appended[0];
+  assert.match(shell.className, /skill-fx--sprite-shell/);
   assert.equal(
-    appended[0].dataset.assetId,
+    shell.dataset.assetId,
     "pack:capture:sprite-fireball-travel-01"
   );
+  assert.equal(shell.children.length, 1);
+
+  const sprite = shell.children[0];
+  assert.match(sprite.className, /skill-fx__sprite/);
+  assert.match(sprite.className, /skill-fx--sprite/);
   assert.equal(
-    appended[0].style.backgroundImage,
+    sprite.style.backgroundImage,
     'url("fireball-atlas.png")'
   );
-  assert.equal(appended[0].style.backgroundSize, "800% 100%");
+  assert.equal(sprite.style.backgroundSize, "800% 100%");
+  assert.equal(sprite.style.left, "21%");
+  assert.equal(sprite.style.top, "0%");
+  assert.equal(sprite.style.transformOrigin, "29% 50%");
+
+  const rotationMatch = sprite.style.transform.match(
+    /rotate\(([-0-9.]+)rad\)/
+  );
+  assert.ok(rotationMatch);
+  const expectedRotation = Math.atan2(-100, 260) - Math.PI;
+  assert.ok(
+    Math.abs(Number(rotationMatch[1]) - expectedRotation) < 1e-9
+  );
+
+  assert.equal(capturedKeyframes.length, 3);
   assert.match(
-    capturedKeyframes[1].transform,
+    capturedKeyframes[2].transform,
     /translate3d\(260px, -100px, 0\)/
   );
+  assert.equal(capturedOptions.duration, 700);
 
   done.resolve();
   assert.deepEqual(await handle.finished, { status: "finished" });
