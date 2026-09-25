@@ -335,7 +335,7 @@ test("reaction that becomes ready after impact does not apply or spend energy", 
     category: "counter",
     form: "self",
     energyCost: 2,
-    preparationMs: 1500,
+    preparationMs: 2800,
     allowedDistances: ["short", "medium", "long"],
     reaction: {
       counterForms: ["contact"]
