@@ -583,3 +583,31 @@ test("fireball demo binding uses stable Capture asset IDs and stays outside game
 
   assert.doesNotMatch(source, /energyCost|damage|allowedDistances|preparationMs/);
 });
+
+
+test("demo arena background is presentation-driven and keeps a CSS fallback", async () => {
+  const source = await readFile("examples/dom-demo/demo.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+  const assets = await readFile("examples/dom-demo/demo-assets.js", "utf8");
+
+  assert.match(source, /presentationForArena/);
+  assert.match(source, /applyArenaPresentation("forest")/);
+  assert.match(source, /--arena-background-image/);
+  assert.match(assets, /core:arena-forest-01/);
+  assert.match(
+    assets,
+    /arenas\/forest\/arena_forest_01\.webp/
+  );
+  assert.match(
+    css,
+    /--arena-background-image/
+  );
+  assert.match(
+    css,
+    /\.arena\[data-arena-background="image"\] \.arena__ground/
+  );
+  assert.doesNotMatch(
+    source,
+    /damage|energyCost|allowedDistances/
+  );
+});

@@ -44,3 +44,23 @@ test("icon-only skill bindings do not invent FX assets", () => {
     assert.equal(presentation.impact, null);
   }
 });
+
+
+test("forest arena resolves through presentation assets only", () => {
+  const presentation = demoPresentationAssets.presentationForArena("forest");
+
+  assert.ok(presentation);
+  assert.equal(
+    presentation.background?.assetId,
+    "core:arena-forest-01"
+  );
+  assert.ok(
+    presentation.background?.url.endsWith(
+      "assets/library/core/arenas/forest/arena_forest_01.webp"
+    )
+  );
+  assert.equal(
+    demoPresentationAssets.presentationForArena("unknown-arena"),
+    null
+  );
+});

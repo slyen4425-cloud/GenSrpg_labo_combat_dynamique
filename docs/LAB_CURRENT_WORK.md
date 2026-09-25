@@ -5821,3 +5821,25 @@ Validation technique du lot arènes / UI :
 - aucun fichier Combat Rules / Runtime / Action Resolver / compétence gameplay modifié ;
 - aucun asset binaire d'arène substitué tant que le fichier exact fourni dans le chat n'est pas exposé aux outils avec ses octets ;
 - `main` et `Zombicide-40k` inchangés.
+
+
+### Raccord présentation — première arène forêt
+
+Le raccord de la démo est maintenant préparé sans dépendance gameplay :
+
+```
+demo arena context "forest"
+  -> demoPresentationAssets.presentationForArena("forest")
+  -> core:arena-forest-01
+  -> assets/library/core/arenas/forest/arena_forest_01.webp
+```
+
+Comportement :
+
+- si l'asset forêt est présent, la démo l'utilise comme fond d'arène ;
+- le fond est en `cover / center` ;
+- l'ancien sol procédural est masqué uniquement lorsqu'un background image est actif ;
+- si le binding est absent, le fallback CSS générique reste disponible ;
+- aucun Combat Rules / Runtime / SkillDefinition ne connaît le biome ou le chemin du fichier.
+
+Le binaire `arena_forest_01.webp` doit être ajouté par upload dans le dossier forêt. Aucun substitut n'est utilisé.

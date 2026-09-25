@@ -9,6 +9,13 @@ const CORE_ROOT = new URL(
 );
 
 const ASSETS = Object.freeze({
+  "core:arena-forest-01": Object.freeze({
+    assetId: "core:arena-forest-01",
+    url: new URL(
+      "arenas/forest/arena_forest_01.webp",
+      CORE_ROOT
+    ).href
+  }),
   "core:icon-skill-claw-01": Object.freeze({
     assetId: "core:icon-skill-claw-01",
     url: new URL(
@@ -68,6 +75,12 @@ const ASSETS = Object.freeze({
   })
 });
 
+const ARENA_BINDINGS = Object.freeze({
+  forest: Object.freeze({
+    background: "core:arena-forest-01"
+  })
+});
+
 const SKILL_BINDINGS = Object.freeze({
   fireball: Object.freeze({
     icon: "pack:capture:icon-skill-fireball-01",
@@ -94,6 +107,16 @@ function resolveAsset(assetId) {
 }
 
 export const demoPresentationAssets = Object.freeze({
+  presentationForArena(arenaId) {
+    const binding = ARENA_BINDINGS[arenaId];
+    if (!binding) {
+      return null;
+    }
+
+    return Object.freeze({
+      background: resolveAsset(binding.background)
+    });
+  },
   presentationForSkill(skillId) {
     const binding = SKILL_BINDINGS[skillId];
     if (!binding) {
