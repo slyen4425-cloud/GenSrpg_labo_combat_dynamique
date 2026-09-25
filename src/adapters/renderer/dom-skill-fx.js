@@ -423,7 +423,12 @@ export function createDomSkillFxRenderer({
 
     arena.append(node);
 
-    const record = { node, animation: null };
+    const record = {
+      node,
+      animation: null,
+      type: "projectile",
+      fromSlot
+    };
     active.add(record);
 
     const keyframes = spriteBound
@@ -485,6 +490,25 @@ export function createDomSkillFxRenderer({
     });
   }
 
+  function cancelProjectileFor(fromSlot) {
+    let cancelled = 0;
+
+    for (const record of [...active]) {
+      if (
+        record.type !== "projectile" ||
+        record.fromSlot !== fromSlot
+      ) {
+        continue;
+      }
+
+      record.animation?.cancel?.();
+      cleanup(record);
+      cancelled += 1;
+    }
+
+    return cancelled;
+  }
+
   function cancelAll() {
     for (const record of [...active]) {
       record.animation?.cancel?.();
@@ -502,6 +526,7 @@ export function createDomSkillFxRenderer({
 
   return Object.freeze({
     play,
+    cancelProjectileFor,
     cancelAll,
     dispose,
     get activeCount() {
