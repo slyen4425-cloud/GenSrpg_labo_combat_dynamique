@@ -39,6 +39,47 @@ function preparationFor(state, fighterId, skill) {
   });
 }
 
+function mobilityEvasionFor(
+  incomingSkill,
+  targetActionContext
+) {
+  const targetAction = targetActionContext?.action;
+  if (
+    !targetAction ||
+    targetAction.actionType !== "skill"
+  ) {
+    return null;
+  }
+
+  const elapsedMs = Number(targetActionContext.elapsedMs);
+  if (!Number.isFinite(elapsedMs) || elapsedMs < 0) {
+    return null;
+  }
+
+  const evasion = targetAction.skill?.evasion;
+  if (
+    evasion?.window !== "travel" ||
+    !evasion.incomingForms.includes(incomingSkill.form)
+  ) {
+    return null;
+  }
+
+  if (
+    elapsedMs < targetAction.releaseAtMs ||
+    elapsedMs > targetAction.impactAtMs
+  ) {
+    return null;
+  }
+
+  return Object.freeze({
+    outcome: "evaded",
+    sourceSkillId: targetAction.actionId,
+    sourceApproachMode:
+      targetAction.skill?.approachMode ?? "none",
+    elapsedMs
+  });
+}
+
 function reactionOutcome(skill, reactionSkill) {
   if (
     reactionSkill.reaction.evadeForms.includes(skill.form) ||
@@ -247,7 +288,8 @@ export function resolveReaction({
 export function resolveSkillCompletion({
   state,
   action,
-  reaction = null
+  reaction = null,
+  targetActionContext = null
 }) {
   const {
     actorId,
@@ -260,7 +302,14 @@ export function resolveSkillCompletion({
     impactAtMs
   } = action;
 
-  const outcome = reaction?.outcome ?? "hit";
+  const mobilityEvasion =
+    reaction == null
+      ? mobilityEvasionFor(skill, targetActionContext)
+      : null;
+  const outcome =
+    reaction?.outcome ??
+    mobilityEvasion?.outcome ??
+    "hit";
   const reactionReadyAt = reaction?.readyAtMs ?? null;
   let nextState = state;
   const events = [
@@ -362,7 +411,11 @@ export function resolveSkillCompletion({
         actorId,
         targetId,
         skillId: skill.id,
-        reactionSkillId: reaction?.skillId ?? null
+        reactionSkillId: reaction?.skillId ?? null,
+        evasionSourceSkillId:
+          mobilityEvasion?.sourceSkillId ?? null,
+        evasionSourceApproachMode:
+          mobilityEvasion?.sourceApproachMode ?? null
       }));
     }
   }
@@ -384,6 +437,8 @@ export function resolveSkillCompletion({
     outcome,
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
+    evasionApplied:
+      mobilityEvasion?.sourceSkillId ?? null,
     timelineMs: Object.freeze({
       basePreparation: skill.preparationMs,
       preparation: preparationMs,
