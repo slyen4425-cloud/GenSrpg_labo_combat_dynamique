@@ -230,6 +230,10 @@ test("KO presentation chains hit then KO and exposes real completion", async () 
           actorId: "opponent",
           hpBefore: 20,
           hpAfter: 0
+        },
+        {
+          type: "fighter-ko",
+          actorId: "opponent"
         }
       ]
     }
@@ -241,5 +245,25 @@ test("KO presentation chains hit then KO and exposes real completion", async () 
   assert.deepEqual(h.calls, [
     ["play", "opponent", "hit"],
     ["play", "opponent", "ko"]
+  ]);
+});
+
+
+test("ground live release delegates exact travel time to visual controller", () => {
+  const h = createHarness();
+
+  h.presenter.presentRelease({
+    action: {
+      travelMs: 1500,
+      skill: {
+        form: "contact",
+        approachMode: "ground",
+        element: null
+      }
+    }
+  });
+
+  assert.deepEqual(h.calls, [
+    ["approach", "player", "ground", 1500]
   ]);
 });
