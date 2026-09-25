@@ -84,6 +84,7 @@ const required = [
   "tests/unit/dom-distance-presenter.test.mjs",
   "tests/unit/combat-resolution-presenter.test.mjs",
   "tests/unit/special-attack-animation.test.mjs",
+  "tests/unit/ko-roster-flow.test.mjs",
   "tests/unit/skill-fx.test.mjs",
 ];
 
