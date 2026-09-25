@@ -25,7 +25,7 @@
   },
   "ko": {
     "fallY": 24,
-    "fadeTo": 0.6,
+    "fadeTo": 0,
     "rotate": -14,
     "durationMs": 650
   },
@@ -36,11 +36,16 @@
       "returnMs": 150
     },
     "aerial": {
-      "riseRatio": 0.35,
-      "repositionRatio": 0.15,
-      "riseY": -115,
-      "diveHeight": 135,
-      "returnMs": 220
+      "riseRatio": 0.42,
+      "repositionRatio": 0.1,
+      "riseY": -260,
+      "diveHeight": 280,
+      "returnMs": 240
+    },
+    "ground": {
+      "impactScaleX": 1.04,
+      "impactScaleY": 0.96,
+      "returnMs": 260
     }
   }
 }
