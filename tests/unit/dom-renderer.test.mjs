@@ -8,6 +8,7 @@ import { planAnimation } from "../../src/core/animation/plan-animation.js";
 import { createProfileRegistry } from "../../src/core/profiles/profile-registry.js";
 import {
   animationPlanToDomTimeline,
+  composeDomFilter,
   composeDomTransform
 } from "../../src/adapters/renderer/dom-keyframes.js";
 import { createDomActorRenderer } from "../../src/adapters/renderer/dom-actor-renderer.js";
@@ -91,6 +92,26 @@ test("idle DOM timeline loops without inventing a permanent state", () => {
   );
 });
 
+test("DOM timeline exposes a brief red hit filter from neutral core values", () => {
+  const actor = maraileronPlayer();
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({ type: "hit", actorId: actor.id }),
+    actor,
+    profile: registry.get(actor.profile)
+  });
+
+  const timeline = animationPlanToDomTimeline(plan, actor);
+
+  assert.equal(timeline.keyframes[0].filter, "none");
+  assert.equal(
+    timeline.keyframes[1].filter,
+    composeDomFilter(serpentine.hit.filter)
+  );
+  assert.equal(timeline.keyframes.at(-1).filter, "none");
+  assert.match(timeline.keyframes[1].filter, /saturate\(4\.5\)/);
+  assert.match(timeline.keyframes[1].filter, /hue-rotate\(-35deg\)/);
+});
+
 test("renderer restores base state after a completed finite animation", async () => {
   const actor = maraileronPlayer();
   const done = deferred();
@@ -125,6 +146,7 @@ test("renderer restores base state after a completed finite animation", async ()
   assert.equal(renderer.hasActiveAnimation, false);
   assert.equal(element.style.transform, composeDomTransform(actor));
   assert.equal(element.style.opacity, "1");
+  assert.equal(element.style.filter, "none");
 });
 
 test("renderer preserves the terminal KO state until the slot is replaced", async () => {
@@ -158,6 +180,7 @@ test("renderer preserves the terminal KO state until the slot is replaced", asyn
   assert.equal(result.status, "finished");
   assert.equal(renderer.hasActiveAnimation, false);
   assert.equal(element.style.opacity, String(finalSegment.opacity));
+  assert.equal(element.style.filter, composeDomFilter(finalSegment.filter));
   assert.equal(
     element.style.transform,
     composeDomTransform(actor, finalSegment.transform)
