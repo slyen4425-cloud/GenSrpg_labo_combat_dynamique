@@ -126,6 +126,72 @@ test("opponent anchors mirror the diagonal from top-right toward center", () => 
   assert.ok(medium.opponentY < short.opponentY);
 });
 
+test("camera perspective uses opposite scale curves for player and opponent", () => {
+  const { presenter } = setup();
+
+  presenter.presentMovement({
+    result: moved("medium", "long"),
+    actorSlot: "player"
+  });
+  const playerLong = presenter.snapshot().playerScale;
+
+  presenter.presentMovement({
+    result: moved("long", "medium"),
+    actorSlot: "player"
+  });
+  const playerMedium = presenter.snapshot().playerScale;
+
+  presenter.presentMovement({
+    result: moved("medium", "short"),
+    actorSlot: "player"
+  });
+  const playerShort = presenter.snapshot().playerScale;
+
+  presenter.reset();
+
+  presenter.presentMovement({
+    result: moved("medium", "long"),
+    actorSlot: "opponent"
+  });
+  const opponentLong = presenter.snapshot().opponentScale;
+
+  presenter.presentMovement({
+    result: moved("long", "medium"),
+    actorSlot: "opponent"
+  });
+  const opponentMedium = presenter.snapshot().opponentScale;
+
+  presenter.presentMovement({
+    result: moved("medium", "short"),
+    actorSlot: "opponent"
+  });
+  const opponentShort = presenter.snapshot().opponentScale;
+
+  assert.deepEqual(
+    {
+      playerLong,
+      playerMedium,
+      playerShort,
+      opponentLong,
+      opponentMedium,
+      opponentShort
+    },
+    {
+      playerLong: 1.08,
+      playerMedium: 0.98,
+      playerShort: 0.88,
+      opponentLong: 0.88,
+      opponentMedium: 0.98,
+      opponentShort: 1.08
+    }
+  );
+
+  assert.ok(playerLong > playerMedium);
+  assert.ok(playerMedium > playerShort);
+  assert.ok(opponentLong < opponentMedium);
+  assert.ok(opponentMedium < opponentShort);
+});
+
 test("only the moving fighter changes x y and scale", () => {
   const { presenter } = setup();
   const before = presenter.snapshot();
@@ -138,7 +204,7 @@ test("only the moving fighter changes x y and scale", () => {
   const after = presenter.snapshot();
   assert.equal(after.player, 0.39);
   assert.equal(after.playerY, 0.56);
-  assert.equal(after.playerScale, 1);
+  assert.equal(after.playerScale, 0.88);
   assert.equal(after.opponent, before.opponent);
   assert.equal(after.opponentY, before.opponentY);
   assert.equal(after.opponentScale, before.opponentScale);
@@ -158,13 +224,13 @@ test("reset restores medium x y anchors and scales", () => {
     playerY: 0.64,
     opponent: 0.72,
     opponentY: 0.32,
-    playerScale: 0.96,
-    opponentScale: 0.96
+    playerScale: 0.98,
+    opponentScale: 0.98
   });
   assert.equal(player.style.left, "28.00%");
   assert.equal(player.style.top, "64.00%");
   assert.equal(opponent.style.left, "72.00%");
   assert.equal(opponent.style.top, "32.00%");
-  assert.equal(player.style.getPropertyValue("--distance-scale"), "0.96");
-  assert.equal(opponent.style.getPropertyValue("--distance-scale"), "0.96");
+  assert.equal(player.style.getPropertyValue("--distance-scale"), "0.98");
+  assert.equal(opponent.style.getPropertyValue("--distance-scale"), "0.98");
 });
