@@ -276,9 +276,26 @@ export function createCombatRuntime({
       return;
     }
 
+    const targetRecord =
+      activeByActor.get(record.action.targetId) ?? null;
+    const resolutionClockMs =
+      absoluteResolutionAt(record);
+    const targetActionContext =
+      targetRecord && targetRecord !== record
+        ? Object.freeze({
+            action: targetRecord.action,
+            elapsedMs: Math.max(
+              0,
+              resolutionClockMs -
+                targetRecord.startedAtClockMs
+            )
+          })
+        : null;
+
     const resolution = session.completeAction({
       action: record.action,
-      reaction: record.reaction
+      reaction: record.reaction,
+      targetActionContext
     });
 
     activeByActor.delete(record.action.actorId);
