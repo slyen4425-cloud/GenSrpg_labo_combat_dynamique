@@ -6,6 +6,31 @@ function finite(value, field) {
   return number;
 }
 
+function visualFilter(filter = {}, field = "filter") {
+  if (!filter || typeof filter !== "object" || Array.isArray(filter)) {
+    throw new TypeError(`${field} must be an object`);
+  }
+
+  const brightness = finite(filter.brightness ?? 1, `${field}.brightness`);
+  const saturate = finite(filter.saturate ?? 1, `${field}.saturate`);
+  const sepia = finite(filter.sepia ?? 0, `${field}.sepia`);
+  const hueRotateDeg = finite(
+    filter.hueRotateDeg ?? 0,
+    `${field}.hueRotateDeg`
+  );
+
+  if (brightness < 0 || saturate < 0 || sepia < 0 || sepia > 1) {
+    throw new RangeError(`${field} contains an invalid visual filter value`);
+  }
+
+  return Object.freeze({
+    brightness,
+    saturate,
+    sepia,
+    hueRotateDeg
+  });
+}
+
 export function createAnimationPlan({
   actorId,
   eventType,
@@ -49,7 +74,11 @@ export function createAnimationPlan({
         scaleY: finite(transform.scaleY ?? 1, "scaleY"),
         rotateDeg: finite(transform.rotateDeg ?? 0, "rotateDeg")
       }),
-      opacity
+      opacity,
+      filter: visualFilter(
+        segment.filter ?? {},
+        `segments[${index}].filter`
+      )
     });
   });
 
