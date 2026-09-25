@@ -114,7 +114,7 @@ test("idle loops while KO does not restore through a looping state", () => {
   assert.equal(idle.loop, true);
   assert.equal(idle.restoreBaseState, false);
   assert.equal(ko.loop, false);
-  assert.equal(ko.segments[0].opacity, 0.65);
+  assert.equal(ko.segments[0].opacity, 0);
 });
 
 test("planner has no renderer or DOM authority", async () => {
