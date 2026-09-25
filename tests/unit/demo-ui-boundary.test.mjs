@@ -530,7 +530,7 @@ test("fireball demo binding uses stable Capture asset IDs and stays outside game
   assert.match(source, /pack:capture:icon-skill-fireball-01/);
   assert.match(source, /pack:capture:sprite-fireball-travel-01/);
   assert.match(source, /pack:capture:sprite-fireball-impact-01/);
-  assert.match(source, /resolveSkillPresentation/);
+  assert.match(source, /presentationForSkill/);
   assert.match(ui, /presentationAssets/);
   assert.match(ui, /action-option__icon/);
 
