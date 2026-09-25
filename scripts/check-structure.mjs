@@ -85,6 +85,7 @@ const required = [
   "tests/unit/combat-resolution-presenter.test.mjs",
   "tests/unit/special-attack-animation.test.mjs",
   "tests/unit/skill-fx.test.mjs",
+  "tests/integration/ko-replacement-flow.test.mjs",
 ];
 
 const missing = required.filter((path) => !existsSync(path));
