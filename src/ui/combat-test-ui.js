@@ -822,17 +822,12 @@ export async function mountCombatTest({
     });
   }
 
-  function projectPlayerToCurrentDistance() {
-    projectSlotToCurrentDistance("player");
-  }
-
-  function projectOpponentToCurrentDistance() {
-    projectSlotToCurrentDistance("opponent");
-  }
-
-  async function replaceOpponentAfterKo(presentation) {
+  async function replaceKnockedOutSlot(slotId, presentation) {
     if (!presentation?.ko) {
       return null;
+    }
+    if (!["player", "opponent"].includes(slotId)) {
+      throw new RangeError(`Unknown KO slot: ${slotId}`);
     }
 
     koTransitionPending = true;
@@ -844,7 +839,7 @@ export async function mountCombatTest({
       return null;
     }
 
-    const result = roster.replaceKnockedOut("opponent");
+    const result = roster.replaceKnockedOut(slotId);
 
     if (!result.ok) {
       koTransitionPending = false;
@@ -857,18 +852,25 @@ export async function mountCombatTest({
     }
 
     if (result.outcome === "team_defeated") {
-      visuals.setSlotVisible("opponent", false);
-      setStatus("Équipe adverse vaincue.", "ok");
+      visuals.setSlotVisible(slotId, false);
+      setStatus(
+        slotId === "opponent"
+          ? "Équipe adverse vaincue."
+          : "Équipe joueur vaincue.",
+        slotId === "opponent" ? "ok" : "warn"
+      );
     } else if (result.outcome === "ko_replaced") {
       visuals.setCreatureFor(
-        "opponent",
+        slotId,
         result.creatureId,
         { displayName: result.displayName }
       );
-      visuals.setSlotVisible("opponent", true);
-      projectOpponentToCurrentDistance();
+      visuals.setSlotVisible(slotId, true);
+      projectSlotToCurrentDistance(slotId);
       setStatus(
-        `${result.displayName} adverse entre en combat.`,
+        slotId === "opponent"
+          ? `${result.displayName} adverse entre en combat.`
+          : `${result.displayName} entre automatiquement en combat.`,
         "accent"
       );
     }
@@ -918,7 +920,7 @@ export async function mountCombatTest({
         { displayName: result.displayName }
       );
       visuals.setSlotVisible("player", true);
-      projectPlayerToCurrentDistance();
+      projectSlotToCurrentDistance("player");
       setStatus(
         `${result.displayName} entre en combat.`,
         "ok"
