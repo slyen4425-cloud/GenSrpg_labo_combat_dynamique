@@ -691,3 +691,54 @@ Aérien :
 Invariant :
 
 **les dégâts restent appliqués par Combat Rules à `impactAtMs`, même si l'animation visuelle continue ensuite pour revenir à sa position stable.**
+
+
+### Approche corps à corps et charge lisible V6
+
+Les attaques de contact au sol utilisent désormais le même principe temporel que les projectiles et mouvements spéciaux.
+
+`SkillDefinition.travelMs` est l'autorité unique sur le temps `release -> impact`.
+
+Exemples :
+
+- Griffe : `travelMs = 1500` ;
+- une compétence Sprint peut utiliser `travelMs = 900` ;
+- une variante très rapide peut utiliser `travelMs = 500`.
+
+Chaîne :
+
+`préparation -> release -> déplacement au sol pendant travelMs -> impact/dégâts -> retour visuel`
+
+Le mouvement de retour n'a aucune influence sur les dégâts.
+
+Le Visual Controller mesure la position réelle de la cible et l'Animation Core consomme cet offset avec le `travelMs` déjà décidé par Combat Rules.
+
+#### Aérien
+
+Le Visual Controller transmet également une translation verticale suffisante pour sortir complètement l'acteur du haut de l'arène.
+
+L'Animation Core choisit la montée la plus haute entre :
+
+- le preset morphologique ;
+- la sortie réelle de l'arène calculée depuis la géométrie DOM.
+
+L'impact reste aligné exactement sur `travelMs`.
+
+#### KO
+
+Une animation KO ne redémarre plus automatiquement un idle du combattant vaincu.
+
+Le KO se termine par une disparition complète, puis le Roster Session prend la main pour remplacer le slot ou déclarer l'équipe vaincue.
+
+La détection KO utilise directement l'événement sémantique `hit.hpAfter <= 0`.
+
+#### Barre de charge
+
+Le Combat Runtime expose :
+
+- `actionName` ;
+- `preparationMs` ;
+- `remainingPreparationMs` ;
+- `chargeProgress`.
+
+L'UI ne possède aucune horloge locale. Elle affiche ces valeurs uniquement.
