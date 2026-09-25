@@ -239,6 +239,20 @@ test("V9 saving strategy retries only from Combat Runtime state updates", async 
   assert.doesNotMatch(source, /setTimeout/);
 });
 
+test("KO replacement hides the old bitmap until the new creature asset is ready", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /let assetReady = false/);
+  assert.match(source, /image\.hidden = true/);
+  assert.match(source, /image\.removeAttribute\("src"\)/);
+  assert.match(source, /image\.addEventListener\("load", markReady/);
+  assert.match(source, /image\.hidden = !visible \|\| !assetReady/);
+  assert.doesNotMatch(
+    source,
+    /image\.src = runtimeUrl;\s*image\.hidden = false/
+  );
+});
+
 test("concurrent combat keeps player controls available while only opponent acts", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
