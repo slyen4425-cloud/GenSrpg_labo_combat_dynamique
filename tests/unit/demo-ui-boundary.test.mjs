@@ -96,6 +96,16 @@ test("V8 simplified HUD removes decorative clutter and collapses idle-only surfa
   assert.match(css, /\.action-bar--utility\s*\{[\s\S]*grid-template-rows:\s*repeat\(2/);
 });
 
+test("V8 reserve portraits stay above HUD cards and fighters use top-based spatial anchors", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(css, /\.combat-card\s*\{[\s\S]*z-index:\s*12/);
+  assert.match(css, /\.reserve\s*\{[\s\S]*z-index:\s*13/);
+  assert.match(css, /\.fighter\s*\{[\s\S]*top:\s*50%/);
+  assert.match(css, /transform:\s*translate\(-50%,\s*-50%\)\s*scale\(var\(--distance-scale/);
+  assert.match(css, /transition:[\s\S]*top 260ms ease/);
+});
+
 test("V8 ability dock stays compact and icon-ready on mobile", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
