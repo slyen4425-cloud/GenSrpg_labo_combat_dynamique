@@ -68,7 +68,7 @@ export function createCombatResolutionPresenter({
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
-      ["teleport", "aerial"].includes(approachMode) &&
+      ["ground", "teleport", "aerial"].includes(approachMode) &&
       typeof visuals.playApproachFor === "function"
     ) {
       visuals
@@ -113,6 +113,7 @@ export function createCombatResolutionPresenter({
     }
 
     let ko = false;
+    let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
 
     switch (resolution.outcome) {
@@ -123,7 +124,8 @@ export function createCombatResolutionPresenter({
             item.actorId ===
               (targetSlot === "opponent" ? "opponent" : "player")
         );
-        ko = hitEvent?.hpAfter === 0;
+        ko = Number(hitEvent?.hpAfter) <= 0;
+        koActorId = ko ? hitEvent?.actorId ?? null : null;
 
         finished = visuals
           .playEventFor(targetSlot, "hit")
@@ -142,7 +144,8 @@ export function createCombatResolutionPresenter({
             item.type === "hit" &&
             item.reflected === true
         );
-        ko = reflectedHit?.hpAfter === 0;
+        ko = Number(reflectedHit?.hpAfter) <= 0;
+        koActorId = ko ? reflectedHit?.actorId ?? null : null;
         visuals.cancelFor(actorSlot);
         finished = visuals
           .playEventFor(actorSlot, "hit")
@@ -176,6 +179,7 @@ export function createCombatResolutionPresenter({
       status: "resolved",
       outcome: resolution.outcome,
       ko,
+      koActorId,
       finished
     });
   }
