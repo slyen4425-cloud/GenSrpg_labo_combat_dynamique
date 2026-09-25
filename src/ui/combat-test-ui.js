@@ -338,6 +338,8 @@ export async function mountCombatTest({
   let koTransitionPending = false;
   let lastState = session.snapshot();
   let opponentAi = null;
+  let aiWaitingForEnergy = false;
+  let aiDecisionInProgress = false;
 
   const fx = createDomSkillFxRenderer({
     arena,
@@ -850,34 +852,53 @@ export async function mountCombatTest({
   }
 
   function runOpponentTurn() {
-    if (!opponentAi || disposed || koTransitionPending) {
+    if (
+      !opponentAi ||
+      disposed ||
+      koTransitionPending ||
+      aiDecisionInProgress
+    ) {
       return Object.freeze({
         status: "waiting",
         reason: "transition_pending"
       });
     }
 
-    const decision = opponentAi.takeTurn();
+    aiDecisionInProgress = true;
 
-    if (decision.status === "moved") {
-      distancePresenter.presentMovement({
-        result: decision.result,
-        actorSlot: decision.actorId
-      });
-      setStatus(
-        `Adversaire : distance ${DISTANCE_LABELS[decision.result.state.distance]}.`,
-        "info"
-      );
-      render(decision.result.state);
-    } else if (decision.status === "skill_started") {
-      setStatus(
-        `${decision.skillName} adverse se prépare…`,
-        "accent"
-      );
-      render();
+    try {
+      const decision = opponentAi.takeTurn();
+      aiWaitingForEnergy =
+        decision.status === "saving";
+
+      if (decision.status === "moved") {
+        distancePresenter.presentMovement({
+          result: decision.result,
+          actorSlot: decision.actorId
+        });
+        setStatus(
+          `Adversaire : distance ${DISTANCE_LABELS[decision.result.state.distance]}.`,
+          "info"
+        );
+        render(decision.result.state);
+      } else if (decision.status === "skill_started") {
+        setStatus(
+          `${decision.skillName} adverse se prépare…`,
+          "accent"
+        );
+        render();
+      } else if (decision.status === "saving") {
+        setStatus(
+          `Adversaire économise pour ${decision.skillName} · ${formatEnergy(decision.currentEnergy)}/${formatEnergy(decision.requiredEnergy)}⚡.`,
+          "info"
+        );
+        render();
+      }
+
+      return decision;
+    } finally {
+      aiDecisionInProgress = false;
     }
-
-    return decision;
   }
 
   async function finishSkillPresentation(
@@ -962,6 +983,15 @@ export async function mountCombatTest({
     session,
     onState(state) {
       render(state);
+
+      if (
+        aiWaitingForEnergy &&
+        !runtime.hasActiveAction &&
+        !koTransitionPending &&
+        !aiDecisionInProgress
+      ) {
+        runOpponentTurn();
+      }
     },
     onProgress(progress) {
       setCharge({ slotId: "player" });
