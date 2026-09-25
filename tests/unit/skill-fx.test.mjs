@@ -1,7 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { planSkillFx } from "../../src/core/fx/skill-fx-plan.js";
+import {
+  planSkillFx,
+  planSkillOutcomeFx
+} from "../../src/core/fx/skill-fx-plan.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
 
 function deferred() {
@@ -43,6 +46,30 @@ test("projectile FX plan is derived only from resolved semantic events", () => {
       durationMs: 550
     }
   ]);
+});
+
+test("evaded outcome plans a local miss feedback only", () => {
+  assert.deepEqual(
+    planSkillOutcomeFx({
+      resolution: { ok: true, outcome: "evaded" },
+      targetSlot: "player"
+    }),
+    [
+      {
+        type: "miss",
+        targetSlot: "player",
+        durationMs: 650
+      }
+    ]
+  );
+
+  assert.deepEqual(
+    planSkillOutcomeFx({
+      resolution: { ok: true, outcome: "hit" },
+      targetSlot: "player"
+    }),
+    []
+  );
 });
 
 test("non-projectile skills do not invent a projectile FX", () => {
@@ -225,6 +252,83 @@ test("DOM projectile source follows live motion but target uses stable slot anch
 
   done.resolve();
   await Promise.resolve();
+});
+
+test("DOM miss feedback renders RATÉ on the stable target point and cleans itself", async () => {
+  const done = deferred();
+  const appended = [];
+  let removed = false;
+  let capturedKeyframes = null;
+  let capturedOptions = null;
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          textContent: "",
+          remove() {
+            removed = true;
+          }
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 10, top: 20, width: 300, height: 200 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 30, top: 100, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 230, top: 60, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    animate(_element, keyframes, options) {
+      capturedKeyframes = keyframes;
+      capturedOptions = options;
+      return {
+        finished: done.promise,
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "miss",
+    targetSlot: "opponent",
+    durationMs: 650
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(renderer.activeCount, 1);
+  assert.equal(appended.length, 1);
+  assert.equal(appended[0].dataset.skillFx, "miss");
+  assert.equal(appended[0].textContent, "RATÉ");
+  assert.equal(appended[0].style.left, "240px");
+  assert.equal(appended[0].style.top, "60px");
+  assert.equal(capturedKeyframes.length, 3);
+  assert.equal(capturedOptions.duration, 650);
+
+  done.resolve();
+  assert.deepEqual(await handle.finished, { status: "finished" });
+  assert.equal(renderer.activeCount, 0);
+  assert.equal(removed, true);
 });
 
 test("DOM projectile adapter dispose cancels and removes active FX", () => {
