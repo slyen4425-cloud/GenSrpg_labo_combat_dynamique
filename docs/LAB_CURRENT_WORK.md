@@ -2789,6 +2789,32 @@ Correction autorisée :
 
 Aucun autre comportement V8 ne doit changer.
 
+
+## Résultat technique — roster adverse restauré
+
+Cause corrigée :
+
+- le sélecteur CSS cassé qui masquait `.reserve--opponent` a été remplacé ;
+- `.reserve--opponent` et `.reserve--player` utilisent désormais la même règle neutre d'intégration au HUD ;
+- seul `.reserve__title` reste masqué ;
+- le mini-roster joueur validé n'a pas été modifié ;
+- aucune position X/Y, courbe de scale, commande ou règle gameplay n'a changé.
+
+Sentinelle ajoutée :
+
+- la règle `.reserve--opponent` ne peut plus contenir `display: none`.
+
+CI :
+
+- SHA : `c5c28383d6208134992ffd29ca6539006b6b77cb` ;
+- run : `36125333292` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone du mini-roster adverse requise avant clôture V8.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
