@@ -269,14 +269,42 @@ export async function mountCombatTest({
   };
 
   const chargeRefs = {
-    player: requiredElement(
-      root,
-      '[data-combat-actor-charge="player"]'
-    ),
-    opponent: requiredElement(
-      root,
-      '[data-combat-actor-charge="opponent"]'
-    )
+    player: {
+      bar: requiredElement(
+        root,
+        '[data-combat-actor-charge="player"]'
+      ),
+      info: requiredElement(
+        root,
+        '[data-combat-charge-info="player"]'
+      ),
+      label: requiredElement(
+        root,
+        '[data-combat-charge-label="player"]'
+      ),
+      time: requiredElement(
+        root,
+        '[data-combat-charge-time="player"]'
+      )
+    },
+    opponent: {
+      bar: requiredElement(
+        root,
+        '[data-combat-actor-charge="opponent"]'
+      ),
+      info: requiredElement(
+        root,
+        '[data-combat-charge-info="opponent"]'
+      ),
+      label: requiredElement(
+        root,
+        '[data-combat-charge-label="opponent"]'
+      ),
+      time: requiredElement(
+        root,
+        '[data-combat-charge-time="opponent"]'
+      )
+    }
   };
 
   const playerEnergy = {
@@ -340,13 +368,28 @@ export async function mountCombatTest({
     status.dataset.tone = tone;
   }
 
-  function setCharge(value, active) {
-    chargeRefs.player.value = Math.max(
+  function setCharge(
+    value,
+    active,
+    {
+      slotId = "player",
+      label = null,
+      remainingMs = 0
+    } = {}
+  ) {
+    const refs = chargeRefs[slotId];
+    refs.bar.value = Math.max(
       0,
       Math.min(1, Number(value) || 0)
     );
-    chargeRefs.player.dataset.active =
+    refs.bar.dataset.active =
       active ? "true" : "false";
+    refs.info.dataset.active =
+      active ? "true" : "false";
+    refs.label.textContent =
+      active ? (label ?? "Charge") : "Prêt";
+    refs.time.textContent =
+      active ? formatSeconds(Math.max(0, remainingMs)) : "";
   }
 
   function createActionButton({
@@ -823,7 +866,11 @@ export async function mountCombatTest({
         progress.phase === "preparation"
           ? progress.chargeProgress
           : 0,
-        progress.phase === "preparation"
+        progress.phase === "preparation",
+        {
+          label: progress.actionName,
+          remainingMs: progress.preparationRemainingMs
+        }
       );
       renderAvailability();
     },
