@@ -338,7 +338,6 @@ export async function mountCombatTest({
   let koTransitionPending = false;
   let lastState = session.snapshot();
   let opponentAi = null;
-  let aiWaitingForEnergy = false;
   let aiDecisionInProgress = false;
 
   const fx = createDomSkillFxRenderer({
@@ -868,8 +867,6 @@ export async function mountCombatTest({
 
     try {
       const decision = opponentAi.takeTurn();
-      aiWaitingForEnergy =
-        decision.status === "saving";
 
       if (decision.status === "moved") {
         distancePresenter.presentMovement({
