@@ -350,6 +350,24 @@ button.reserve-card {
   pointer-events: none;
 }
 
+.skill-fx--miss {
+  z-index: 11;
+  width: max-content;
+  aspect-ratio: auto;
+  padding: 0.12rem 0.38rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(5, 15, 20, 0.84);
+  color: #f4f8fa;
+  font-size: clamp(0.68rem, 2.5vw, 1rem);
+  font-weight: 1000;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0.08rem 0.2rem rgba(0, 0, 0, 0.72);
+  box-shadow: 0 0.2rem 0.7rem rgba(0, 0, 0, 0.32);
+  white-space: nowrap;
+}
+
 .skill-fx--projectile {
   background:
     radial-gradient(circle at 35% 30%, #fff9d6 0 12%, #ffcf65 24%, #ff6b22 58%, #8f1b08 100%);
