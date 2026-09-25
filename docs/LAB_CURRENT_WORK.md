@@ -4435,3 +4435,87 @@ Statut :
 Ne jamais reprendre uniquement depuis un résumé de conversation.
 
 GitHub + ce fichier + les checkpoints sont la source de vérité.
+
+
+## Chantier actif — asset-library-content
+
+Date : 2026-09-25
+
+Base exacte :
+
+`01206d73bec5a768c14a24c40591e9e952b3f6b8`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-asset-library-content-2026-09-25`
+
+Branche de travail :
+
+`work/lab-asset-library-content-2026-09-25`
+
+Document de référence :
+
+`docs/LAB_ASSET_LIBRARY.md`
+
+Objectif :
+
+- construire et classer un premier pack réduit de contenu Core GenSrpG ;
+- commencer par les capacités du laboratoire : Griffe, Boule de feu, Frappe téléportée, Plongeon aérien ;
+- préparer les feedbacks génériques Hit / Miss / Esquive / KO / Invocation / Rappel ;
+- ajouter uniquement des médias créés pour GenSrpG, appartenant à Sylvain, explicitement autorisés ou générés pour le projet ;
+- maintenir un inventaire documentaire dans `assets/library/core/README.md`.
+
+Périmètre autorisé :
+
+- `assets/library/core/icons/**` ;
+- `assets/library/core/sprites/**` ;
+- `assets/library/core/fx/**` ;
+- `assets/library/core/audio/**` ;
+- `assets/library/core/README.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+Domaines protégés / interdits :
+
+- aucun fichier gameplay JS ;
+- aucun changement Combat Rules / Combat Runtime / SkillDefinition ;
+- aucun Asset Catalog runtime ;
+- aucun contrat AssetDefinition implémenté dans ce lot ;
+- aucun import utilisateur ;
+- aucune logique audio moteur ;
+- aucun raccord des médias au Presenter / FX / combat ;
+- aucun changement dans `assets/test/` ;
+- aucune modification de `slyen4425-cloud/Zombicide-40k` ;
+- aucun merge sur `main`.
+
+Convention média :
+
+- nommage `<type>_<category>_<theme-ou-element>_<variant>.<ext>` ;
+- anglais techniques, minuscules, sans espaces ni accents ;
+- transparence pour icônes / sprites / FX lorsque pertinent ;
+- inventaire documentaire avec label, futur assetId envisagé, type, catégorie, tags, provenance, licence et usage prévu ;
+- le futur assetId reste documentaire et ne constitue pas une API runtime.
+
+Provenance initiale :
+
+- créations originales / générées pour le projet GenSrpG ;
+- auteur documentaire : GenSrpG / Sylvain + génération assistée OpenAI lorsque pertinent ;
+- statut : project-created, utilisation autorisée pour GenSrpG ;
+- aucune ressource extraite d'un jeu commercial ou d'une œuvre tierce.
+
+Tests / contrôle :
+
+- vérifier le diff après chaque lot ;
+- confirmer qu'aucun fichier JS gameplay n'a changé ;
+- vérifier poids et dimensions des médias ;
+- vérifier la lisibilité mobile des visuels ;
+- lancer / contrôler la CI disponible ;
+- ne jamais déclarer CI SUCCESS en l'absence de run GitHub ;
+- documenter les formats réellement ajoutés sans les présenter comme support runtime officiel.
+
+Critère du premier lot :
+
+- structure Core créée uniquement pour les catégories réellement alimentées ;
+- inventaire documentaire présent ;
+- premier sous-ensemble cohérent de médias ajouté avec provenance/licence ;
+- aucun raccord runtime ;
+- CI non rouge / état GitHub explicitement rapporté.
