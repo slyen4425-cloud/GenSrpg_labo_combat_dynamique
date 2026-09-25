@@ -633,3 +633,61 @@ Invariants :
 - l'UI sélectionne un membre de réserve mais ne copie jamais elle-même ses stats ;
 - le contrôleur visuel ne connaît ni énergie ni règles de roster ;
 - l'adversaire peut posséder une réserve sans devenir contrôlable par le joueur.
+
+
+### KO automatique et mouvements spéciaux V5
+
+Le KO d'un combattant actif n'est pas un simple changement visuel.
+
+Chaîne :
+
+```
+Action Resolver -> HP = 0
+    |
+    v
+Combat Resolution Presenter
+    |
+    +---- Hit
+    +---- KO
+    |
+    v
+Roster Session.replaceKnockedOut()
+    |
+    +---- sauvegarde snapshot du membre KO
+    +---- choisit un membre vivant de réserve
+    +---- remplace le slot Combat Session
+    |
+    v
+Visual Controller.setCreatureFor()
+```
+
+L'UI ne décide donc pas quel monstre remplace le KO. Elle ne fait que déclencher le raccord après la fin réelle de la présentation Hit -> KO.
+
+#### Téléportation / attaque aérienne
+
+Ces mouvements sont des événements visuels spécialisés :
+
+- `teleport-attack` ;
+- `aerial-attack`.
+
+Ils ne modifient ni portée, ni dégâts, ni timestamp d'impact.
+
+Le `Visual Controller` calcule uniquement l'écart géométrique DOM entre acteur et cible, puis transmet :
+
+- `targetTranslateX` ;
+- `targetTranslateY` ;
+- `travelMs`.
+
+L'Animation Core transforme ces données en séquence.
+
+Téléportation :
+
+`disparition origine -> apparition cible à impact -> disparition cible -> retour origine`
+
+Aérien :
+
+`montée -> disparition/reposition haute -> piqué jusqu'à impact -> retour origine`
+
+Invariant :
+
+**les dégâts restent appliqués par Combat Rules à `impactAtMs`, même si l'animation visuelle continue ensuite pour revenir à sa position stable.**
