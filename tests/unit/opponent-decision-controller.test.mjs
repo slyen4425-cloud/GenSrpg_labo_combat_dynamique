@@ -54,10 +54,11 @@ const reactions = Object.fromEntries(
 
 function harness({
   opponentEnergy = 10,
-  aiPolicy = policy
+  aiPolicy = policy,
+  distance = "medium"
 } = {}) {
   const session = createCombatSession({
-    distance: "medium",
+    distance,
     fighters: [
       { ...maraileron, id: "player", initialEnergy: 10 },
       { ...braisombre, id: "opponent", initialEnergy: opponentEnergy }
@@ -85,22 +86,131 @@ function harness({
   return { session, roster, runtime, ai };
 }
 
-test("linear opponent moves one band toward the planned skill then starts it", () => {
-  const { session, runtime, ai } = harness();
+test("quick mode uses an affordable quick skill at the current distance", () => {
+  const { runtime, ai } = harness({
+    opponentEnergy: 2,
+    distance: "medium"
+  });
 
-  const moved = ai.takeTurn();
-  assert.equal(moved.status, "moved");
-  assert.equal(moved.plannedSkillId, "claw");
-  assert.equal(session.snapshot().distance, "short");
-  assert.equal(runtime.hasActiveAction, false);
-  assert.equal(ai.snapshot().planIndex, 0);
+  const decision = ai.takeTurn();
 
-  const attacked = ai.takeTurn();
-  assert.equal(attacked.status, "skill_started");
-  assert.equal(attacked.skillId, "claw");
+  assert.equal(decision.status, "skill_started");
+  assert.equal(decision.mode, "quick");
+  assert.equal(decision.skillId, "aerial-dive");
   assert.equal(runtime.activeAction.actorId, "opponent");
   assert.equal(runtime.activeAction.targetId, "player");
-  assert.equal(ai.snapshot().planIndex, 1);
+  assert.equal(ai.snapshot().currentMode, "strong");
+});
+
+test("strong mode saves energy instead of falling back to a weaker skill", () => {
+  const strongFirstPolicy = normalizeOpponentAiPolicy({
+    ...policy,
+    energyStrategy: {
+      ...policy.energyStrategy,
+      decisionModes: ["strong"]
+    }
+  });
+
+  const { session, runtime, ai } = harness({
+    opponentEnergy: 2,
+    aiPolicy: strongFirstPolicy,
+    distance: "medium"
+  });
+
+  const decision = ai.takeTurn();
+
+  assert.deepEqual(
+    {
+      status: decision.status,
+      mode: decision.mode,
+      skillId: decision.skillId,
+      currentEnergy: decision.currentEnergy,
+      requiredEnergy: decision.requiredEnergy
+    },
+    {
+      status: "saving",
+      mode: "strong",
+      skillId: "fireball",
+      currentEnergy: 2,
+      requiredEnergy: 3
+    }
+  );
+  assert.equal(runtime.hasActiveAction, false);
+  assert.equal(session.snapshot().fighters.opponent.energy, 2);
+  assert.equal(ai.snapshot().currentMode, "strong");
+});
+
+test("strong mode attacks as soon as the configured strong skill is affordable", () => {
+  const strongFirstPolicy = normalizeOpponentAiPolicy({
+    ...policy,
+    energyStrategy: {
+      ...policy.energyStrategy,
+      decisionModes: ["strong"]
+    }
+  });
+
+  const { runtime, ai } = harness({
+    opponentEnergy: 3,
+    aiPolicy: strongFirstPolicy,
+    distance: "medium"
+  });
+
+  const decision = ai.takeTurn();
+
+  assert.equal(decision.status, "skill_started");
+  assert.equal(decision.skillId, "fireball");
+  assert.equal(decision.mode, "strong");
+  assert.equal(runtime.activeAction.skill.id, "fireball");
+});
+
+test("AI never spends movement energy unless movement plus target skill are funded", () => {
+  const movementPolicy = normalizeOpponentAiPolicy({
+    id: "movement-budget",
+    actorId: "opponent",
+    targetId: "player",
+    reactionRules: [],
+    turnPlan: [],
+    energyStrategy: {
+      decisionModes: ["quick"],
+      quickSkillIds: ["claw"],
+      strongSkillIds: ["fireball"]
+    }
+  });
+
+  const poor = harness({
+    opponentEnergy: 4,
+    aiPolicy: movementPolicy,
+    distance: "medium"
+  });
+  const saving = poor.ai.takeTurn();
+
+  assert.equal(saving.status, "saving");
+  assert.equal(saving.skillId, "claw");
+  assert.equal(saving.movementCost, 3);
+  assert.equal(saving.requiredEnergy, 5);
+  assert.equal(poor.session.snapshot().distance, "medium");
+  assert.equal(poor.session.snapshot().fighters.opponent.energy, 4);
+
+  const funded = harness({
+    opponentEnergy: 5,
+    aiPolicy: movementPolicy,
+    distance: "medium"
+  });
+  const moved = funded.ai.takeTurn();
+
+  assert.equal(moved.status, "moved");
+  assert.equal(moved.plannedSkillId, "claw");
+  assert.equal(funded.session.snapshot().distance, "short");
+  assert.equal(
+    funded.session.snapshot().fighters.opponent.energy,
+    2
+  );
+  assert.equal(funded.ai.snapshot().currentMode, "quick");
+
+  const attacked = funded.ai.takeTurn();
+  assert.equal(attacked.status, "skill_started");
+  assert.equal(attacked.skillId, "claw");
+  assert.equal(funded.ai.snapshot().currentMode, "quick");
 });
 
 test("normal V9 policy never auto-reacts to a player fireball", () => {
