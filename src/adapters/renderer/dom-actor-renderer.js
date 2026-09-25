@@ -1,4 +1,8 @@
-import { animationPlanToDomTimeline, composeDomTransform } from "./dom-keyframes.js";
+import {
+  animationPlanToDomTimeline,
+  composeDomFilter,
+  composeDomTransform
+} from "./dom-keyframes.js";
 
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
@@ -52,20 +56,7 @@ export function createDomActorRenderer({
     element.style.transformOrigin =
       `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = String(finalSegment?.opacity ?? 1);
-    const filter = finalSegment?.filter ?? {};
-    const isNeutralFilter =
-      (filter.brightness ?? 1) === 1 &&
-      (filter.saturate ?? 1) === 1 &&
-      (filter.sepia ?? 0) === 0 &&
-      (filter.hueRotateDeg ?? 0) === 0;
-    element.style.filter = isNeutralFilter
-      ? "none"
-      : [
-          `brightness(${filter.brightness ?? 1})`,
-          `saturate(${filter.saturate ?? 1})`,
-          `sepia(${filter.sepia ?? 0})`,
-          `hue-rotate(${filter.hueRotateDeg ?? 0}deg)`
-        ].join(" ");
+    element.style.filter = composeDomFilter(finalSegment?.filter);
   }
 
   function cancel({ restore = true } = {}) {
