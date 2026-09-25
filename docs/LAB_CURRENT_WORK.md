@@ -4768,3 +4768,22 @@ Critère de fin :
 - aucun changement des règles de combat ;
 - CI verte ;
 - lien de test communiqué.
+
+
+### Ajustement de périmètre avant codage
+
+Le diagnostic du raccord réel montre que l'icône Boule de feu encore disponible dans `core/icons` doit être projetée dans l'espace visuel Capture avant utilisation dans la démo.
+
+Fichiers supplémentaires autorisés pour ce sous-lot :
+
+- `assets/library/capture/icons/skills/icon_skill_fireball_01.webp` ;
+- `src/core/fx/skill-fx-plan.js` uniquement pour transporter l'identité visuelle de la compétence jusqu'au FX Renderer, sans règle gameplay ;
+- `examples/dom-demo/demo.js` ;
+- `examples/dom-demo/demo-assets.js`.
+
+Règles :
+
+- le mapping physique fichier -> assetId reste limité à l'adaptateur de démo ;
+- les données gameplay `data/combat/skills/*.json` restent inchangées ;
+- l'absence de binding visuel doit conserver le projectile générique existant ;
+- aucune horloge ni dégât n'est ajouté côté UI/FX.
