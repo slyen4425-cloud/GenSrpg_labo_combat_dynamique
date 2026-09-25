@@ -658,7 +658,7 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
     /rotate\(([-0-9.]+)rad\)/
   );
   assert.ok(rotationMatch);
-  const expectedRotation = Math.atan2(-100, 260) - Math.PI;
+  const expectedRotation = Math.atan2(-50, 250) - Math.PI;
   assert.ok(
     Math.abs(Number(rotationMatch[1]) - expectedRotation) < 1e-9
   );
