@@ -1852,6 +1852,76 @@ Critère de fin :
 
 preview smartphone avec KO adverse réellement remplacé, Griffe visible en déplacement lent configurable, aérien plus haut, arène plus grande et HUD de charge lisible.
 
+
+## Résultat technique — ko-ground-approach-chargehud-v6
+
+Corrections présentes :
+
+- KO :
+  - Action Resolver émet maintenant explicitement `fighter-ko` lorsque les PV passent de >0 à 0 ;
+  - Combat Resolution Presenter consomme cet événement au lieu d'inférer le KO depuis la barre PV ;
+  - vrai chemin couvert :
+    `Skill data -> Runtime -> Resolver -> HP 0 -> fighter-ko -> Hit/KO -> Roster replacement` ;
+  - le remplacement adverse reste propriétaire Roster Session ;
+- corps-à-corps :
+  - nouvel événement visuel `ground-attack` ;
+  - `approachMode: ground` passe par le même pipeline que aerial/teleport ;
+  - le déplacement atteint la géométrie réelle de la cible exactement à `travelMs` ;
+  - Griffe de démonstration : `travelMs = 1500` ;
+  - un clone de compétence à `500 ms` est protégé par test sans aucun changement moteur ;
+  - dégâts appliqués à l'impact, jamais au release ;
+- aérien :
+  - montée portée à environ -190 / -210 px selon profil ;
+  - reposition haute et piqué conservés ;
+- interface :
+  - arène : `min(58svh, 35rem)` ;
+  - mobile : hauteurs relevées à 53svh / 50svh ;
+  - barre de charge portée à 0,56rem ;
+  - nom de l'action affiché sous le nom du combattant ;
+  - temps restant affiché depuis Combat Runtime ;
+  - pendant préparation : progression + temps avant release ;
+  - pendant approche/trajet : progression + temps avant impact ;
+- Runtime :
+  - expose `actionName` ;
+  - `preparationRemainingMs` ;
+  - `travelMs` ;
+  - `travelProgress` ;
+  - `impactRemainingMs`.
+
+Sentinelles :
+
+- Griffe ne blesse pas avant 2700 ms au total (1200 charge + 1500 déplacement) ;
+- à 1200 ms : release seulement, PV intacts ;
+- à 2699 ms : PV intacts ;
+- à 2700 ms : impact et dégâts ;
+- `travelMs = 500` produit automatiquement un impact 500 ms après release ;
+- ground animation atteint la cible à 1500 ms ;
+- aerial monte au moins jusqu'à la nouvelle hauteur configurée ;
+- runtime HUD expose nom et compte à rebours ;
+- `fighter-ko` émis une seule fois au timestamp du hit ;
+- test d'intégration réel KO -> roster présent ;
+- CI complète verte.
+
+HEAD fonctionnel avant synchronisation finale :
+
+`94981c710a1a71973384f8e697fda84f2472a5c1`
+
+CI :
+
+- run : `36104473889`
+- conclusion : SUCCESS
+
+Validation utilisateur restante :
+
+- vérifier le remplacement adverse après KO ;
+- vérifier que Griffe met visuellement environ 1,5 s entre départ et contact ;
+- confirmer que les dégâts arrivent au contact ;
+- vérifier que Plongeon monte assez haut ;
+- vérifier la nouvelle hauteur d'arène ;
+- vérifier la lisibilité du nom d'action et du timer de charge/approche.
+
+Le lot est GREEN technique, en attente de validation visuelle smartphone.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
