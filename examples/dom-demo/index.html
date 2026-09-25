@@ -11,13 +11,6 @@
     <section class="arena" data-combat-arena aria-label="Arène de combat">
       <div class="arena__ground" aria-hidden="true"></div>
 
-      <header class="combat-topbar">
-        <div class="combat-topbar__title">
-          <span>Combat Capture</span>
-          <strong>Marai & Drakon · VS · Drakon & Marai</strong>
-        </div>
-      </header>
-
       <aside class="reserve reserve--opponent" aria-label="Réserve adverse">
         <span class="reserve__title">Réserve adverse</span>
         <div class="reserve__list" data-roster-reserve="opponent"></div>
@@ -112,17 +105,17 @@
           ></progress>
         </div>
 
-        <section class="skill-bar" aria-label="Capacités">
-          <span class="skill-bar__title">Capacités</span>
-          <div class="skill-bar__grid" data-combat-skills></div>
-        </section>
+        <div class="distance-buttons" aria-label="Distance">
+          <button type="button" data-combat-move="short">Courte</button>
+          <button type="button" data-combat-move="medium">Moyenne</button>
+          <button type="button" data-combat-move="long">Longue</button>
+        </div>
 
-        <div class="combat-controls__utility">
-          <div class="distance-buttons" aria-label="Distance">
-            <button type="button" data-combat-move="short">Courte</button>
-            <button type="button" data-combat-move="medium">Moyenne</button>
-            <button type="button" data-combat-move="long">Longue</button>
-          </div>
+        <div class="combat-controls__actions">
+          <section class="skill-bar" aria-label="Capacités">
+            <span class="skill-bar__title">Capacités</span>
+            <div class="skill-bar__grid" data-combat-skills></div>
+          </section>
 
           <div class="action-bar action-bar--utility" aria-label="Actions secondaires">
             <details class="action-menu" data-action-menu>
