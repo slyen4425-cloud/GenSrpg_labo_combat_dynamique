@@ -11,16 +11,13 @@ const raw = JSON.parse(
   )
 );
 
-test("linear opponent policy normalizes deterministic reaction and turn plans", () => {
+test("normal V9 opponent policy has no automatic reactions and keeps deterministic offense", () => {
   const policy = normalizeOpponentAiPolicy(raw);
 
   assert.equal(policy.id, "linear-opponent-v1");
   assert.equal(policy.actorId, "opponent");
   assert.equal(policy.targetId, "player");
-  assert.equal(policy.reactionRules[0].skillId, "fire-immunity");
-  assert.deepEqual(policy.reactionRules[0].when, {
-    element: "fire"
-  });
+  assert.deepEqual(policy.reactionRules, []);
   assert.deepEqual(
     policy.turnPlan.map((step) => [
       step.skillId,
