@@ -4362,6 +4362,70 @@ Critère de fin :
 - CI verte ;
 - validation utilisateur avant passage au contrat / code.
 
+
+## Résultat technique — asset-library-architecture
+
+Livrables terminés :
+
+- nouveau document `docs/LAB_ASSET_LIBRARY.md` ;
+- classification officielle initiale :
+  - icon ;
+  - sprite ;
+  - fx ;
+  - sound ;
+  - portrait ;
+  - background ;
+  - ui ;
+- catégories fonctionnelles et tags documentés ;
+- scopes documentés :
+  - core ;
+  - pack ;
+  - project ;
+  - user ;
+- règle d'identité :
+  - `assetId` stable ;
+  - indépendant du nom de fichier et du chemin ;
+- format conceptuel `AssetDefinition` documenté ;
+- modèle conceptuel `AssetPack` documenté ;
+- modèle `AssetBinding` documenté ;
+- bindings de présentation séparés de `SkillDefinition` gameplay ;
+- fallbacks obligatoires documentés ;
+- provenance / auteur / licence documentés ;
+- flux d'import personnel documenté ;
+- séparation `Asset Catalog / Storage Adapter / Asset Input` documentée ;
+- expérience future de bibliothèque créateur documentée ;
+- catégories audio et niveaux sprite / FX documentés ;
+- ordre des prochains lots documenté.
+
+Synchronisation :
+
+- `LAB_ROADMAP.md` contient désormais la Phase 5B — Bibliothèque d'assets créateurs ;
+- `LAB_ARCHITECTURE.md` précise la frontière Asset Input / Catalog / Binding / Storage ;
+- la structure cible mentionne la future bibliothèque sans prétendre qu'elle existe déjà ;
+- `src/assets/README.md` indique clairement que le runtime actuel ne supporte que l'input image et qu'aucun catalogue/audio input n'est encore implémenté.
+
+Revue du diff depuis la base :
+
+- uniquement :
+  - documentation ;
+  - README du domaine Asset Input ;
+- aucun fichier JS fonctionnel modifié ;
+- aucun asset média ajouté ;
+- aucun changement Combat Rules / Runtime / Animation / FX ;
+- aucune dépendance vers `Zombicide-40k`.
+
+CI :
+
+- HEAD architecture : `e697704d1377d8015bd10d52aeb3d7aec317c801` ;
+- run : `36142661060` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- architecture GREEN technique ;
+- pas encore de checkpoint GREEN final de ce chantier ;
+- validation utilisateur requise avant de passer au lot B : contrats `AssetDefinition / AssetPack / AssetBinding`.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
