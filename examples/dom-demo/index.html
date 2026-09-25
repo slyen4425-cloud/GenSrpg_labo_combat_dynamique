@@ -40,6 +40,11 @@
             <span data-combat-hp-value="player">100 / 100 PV</span>
           </div>
 
+          <div class="fighter__charge-status">
+            <span data-combat-charge-label="player">Prêt</span>
+            <strong data-combat-charge-timer="player"></strong>
+          </div>
+
           <progress
             class="fighter__charge"
             data-combat-actor-charge="player"
@@ -69,6 +74,11 @@
               aria-label="PV du monstre adverse"
             ></progress>
             <span data-combat-hp-value="opponent">100 / 100 PV</span>
+          </div>
+
+          <div class="fighter__charge-status">
+            <span data-combat-charge-label="opponent">Prêt</span>
+            <strong data-combat-charge-timer="opponent"></strong>
           </div>
 
           <progress
