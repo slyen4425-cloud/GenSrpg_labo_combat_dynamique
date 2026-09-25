@@ -1163,34 +1163,29 @@ export async function mountCombatTest({
     },
     onProgress(progress) {
       if (!progress.actionId) {
-        setCharge({ slotId: "player" });
+        resetAllCharges();
         renderAvailability();
         return;
       }
 
-      setCharge({
-        slotId: "player",
-        value:
-          progress.phase === "preparation"
-            ? progress.chargeProgress
-            : 0,
-        active: progress.phase === "preparation",
-        actionName: progress.actionName,
-        remainingMs: progress.remainingPreparationMs
-      });
+      if (maybeStartOpponentReaction(progress)) {
+        return;
+      }
+
+      renderProgressCharges(progress);
       renderAvailability();
     },
     onRelease({ action }) {
-      setCharge({ slotId: "player" });
+      setCharge({ slotId: action.actorId });
 
       if (action.actionType === "skill") {
         presenter.presentRelease({
           action,
-          actorSlot: "player",
-          targetSlot: "opponent"
+          actorSlot: action.actorId,
+          targetSlot: action.targetId
         });
         setStatus(
-          `${action.skill.name} est lancé.`,
+          `${activeDisplayName(action.actorId)} lance ${action.skill.name}.`,
           "accent"
         );
       } else {
@@ -1201,27 +1196,10 @@ export async function mountCombatTest({
       }
     },
     onResolved(resolution) {
-      setCharge({ slotId: "player" });
+      resetAllCharges();
 
       if (resolution.actionType === "skill") {
-        const presentation = presenter.presentOutcome({
-          resolution,
-          actorSlot: "player",
-          targetSlot: "opponent"
-        });
-
-        if (
-          presentation.ko &&
-          presentation.koActorId === "opponent"
-        ) {
-          setStatus("Adversaire KO… remplacement en cours.", "accent");
-          void replaceOpponentAfterKo(presentation);
-        } else {
-          setStatus(
-            `${resolution.outcome === "hit" ? "Impact réussi" : OUTCOME_LABELS[resolution.outcome] ?? resolution.outcome}.`,
-            resolution.outcome === "hit" ? "ok" : "info"
-          );
-        }
+        void handleSkillResolution(resolution);
       } else {
         const rosterResult =
           applyRosterResolution(resolution);
@@ -1232,17 +1210,24 @@ export async function mountCombatTest({
             "ok"
           );
         }
-      }
 
-      renderRoster();
-      render(session.snapshot());
+        renderRoster();
+        render(session.snapshot());
+      }
     },
     onInterrupted(result) {
-      setCharge({ slotId: "player" });
+      if (result.action?.actorId) {
+        setCharge({ slotId: result.action.actorId });
+      } else {
+        resetAllCharges();
+      }
       setStatus(
         `Action ${OUTCOME_LABELS[result.outcome] ?? result.outcome}.`,
         "warn"
       );
+      if (result.action?.actorId === "opponent") {
+        opponentTurnPending = false;
+      }
       render();
     }
   });
