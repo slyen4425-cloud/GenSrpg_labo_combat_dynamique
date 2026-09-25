@@ -185,6 +185,46 @@ Objectif : transformer la démo technique en interface de combat tactile lisible
 
 Critère GREEN V8 : CI verte + contrôles tactiles présents dans l'arène + aucun panneau de démo technique séparé + validation smartphone de la lisibilité et de l'accès aux actions.
 
+
+### Extension V9 — contrôleur de décision adverse
+
+Objectif : donner à l'adversaire un comportement autonome observable sans créer un second moteur de combat.
+
+Architecture cible :
+
+`Combat State / Roster snapshot -> Opponent Decision Controller -> preview des actions existantes -> Combat Runtime / Combat Session -> Presenter`
+
+Principes :
+
+- aucune seconde horloge gameplay ;
+- aucune simulation de clics UI ;
+- aucune duplication des calculs de portée, énergie, dégâts ou réactions ;
+- décisions déterministes et testables avant ajout éventuel d'aléatoire ;
+- l'IA choisit uniquement parmi des actions déjà déclarées légales par les propriétaires existants.
+
+Premier périmètre envisagé :
+
+1. réactions automatiques aux actions joueur :
+   - Esquive ;
+   - Bouclier miroir ;
+   - Immunité feu ;
+   - Riposte ;
+2. choix d'une compétence offensive légale lorsque le Runtime est libre ;
+3. déplacement vers une distance utile lorsqu'aucune compétence souhaitée n'est disponible ;
+4. prise en compte simple des PV/énergie/distance ;
+5. politique configurable afin de pouvoir tester plusieurs comportements.
+
+Pré-requis de raccord identifiés :
+
+- rendre le HUD de charge actor-aware ;
+- router Presenter/FX selon l'actorId réel au lieu d'assumer `player -> opponent` ;
+- définir le comportement de KO du joueur lorsque l'adversaire peut infliger les derniers dégâts.
+
+Limite du premier prototype :
+
+- `Combat Runtime` reste propriétaire d'une seule action active globale ;
+- les réactions restent concurrentes via `runtime.react()`, mais deux attaques autonomes simultanément en charge ne sont pas introduites dans V9.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
