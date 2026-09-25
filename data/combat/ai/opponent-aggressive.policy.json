@@ -1,0 +1,35 @@
+{
+  "id": "aggressive-demo-v1",
+  "skillCycle": [
+    "claw",
+    "aerial-dive",
+    "teleport-strike",
+    "fireball"
+  ],
+  "reactionPriorityByApproach": {
+    "none": [
+      "mirror-shield",
+      "fire-immunity",
+      "dodge"
+    ],
+    "ground": [
+      "contact-counter",
+      "dodge"
+    ],
+    "aerial": [
+      "dodge",
+      "contact-counter"
+    ],
+    "teleport": [
+      "dodge",
+      "contact-counter"
+    ]
+  },
+  "fallbackReactionPriority": [
+    "dodge",
+    "mirror-shield",
+    "fire-immunity",
+    "contact-counter"
+  ],
+  "maxMovementActionsPerTurn": 1
+}
