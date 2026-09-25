@@ -691,3 +691,53 @@ Aérien :
 Invariant :
 
 **les dégâts restent appliqués par Combat Rules à `impactAtMs`, même si l'animation visuelle continue ensuite pour revenir à sa position stable.**
+
+
+### Approche au sol et HUD temporel V6
+
+Les attaques de contact au sol utilisent le même principe que les approches aériennes ou téléportées :
+
+```
+SkillDefinition.travelMs
+        |
+        v
+Combat Runtime release -> impact
+        |
+        +----> Action Resolver applique les dégâts à impactAtMs
+        |
+        v
+Combat Resolution Presenter
+        |
+        v
+Visual Controller mesure la géométrie acteur/cible
+        |
+        v
+Animation Core ground-attack
+```
+
+Invariant :
+
+- `travelMs` est l'unique durée gameplay entre release et impact ;
+- le mouvement visuel au sol atteint la cible exactement à la fin de `travelMs` ;
+- le retour visuel à la position initiale se produit après impact et ne retarde jamais les dégâts ;
+- changer une compétence de 1500 ms à 500 ms ne nécessite aucun changement de code.
+
+Le Combat Runtime expose également un snapshot de progression destiné au HUD :
+
+- `actionName` ;
+- `preparationRemainingMs` ;
+- `travelMs` ;
+- `travelProgress` ;
+- `impactRemainingMs`.
+
+L'UI affiche ces valeurs mais ne possède aucune horloge.
+
+### KO sémantique V6
+
+Lorsque des dégâts font passer un combattant de PV > 0 à PV = 0, Action Resolver émet explicitement :
+
+`fighter-ko`
+
+Cet événement est la source de vérité utilisée par le Presenter pour lancer la séquence Hit -> KO.
+
+Le remplacement du roster reste la responsabilité de Roster Session.
