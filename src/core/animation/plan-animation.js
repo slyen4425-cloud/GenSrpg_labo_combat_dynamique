@@ -20,15 +20,16 @@ function visualTarget(event) {
   const x = Number(event.metadata?.targetTranslateX ?? 0);
   const y = Number(event.metadata?.targetTranslateY ?? 0);
   const travelMs = Number(event.metadata?.travelMs ?? 0);
+  const exitY = Number(event.metadata?.arenaExitTranslateY ?? 0);
 
-  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(exitY)) {
     throw new TypeError("special attack target offsets must be finite");
   }
   if (!Number.isFinite(travelMs) || travelMs <= 0) {
     throw new RangeError("special attack travelMs must be greater than 0");
   }
 
-  return Object.freeze({ x, y, travelMs });
+  return Object.freeze({ x, y, travelMs, exitY });
 }
 
 export function planAnimation({ event, actor, profile }) {
@@ -127,6 +128,48 @@ export function planAnimation({ event, actor, profile }) {
       });
     }
 
+    case "ground-attack": {
+      const cfg = profile.specialMoves?.ground;
+      if (!cfg) {
+        throw new RangeError(`Profile ${profile.id} has no ground preset`);
+      }
+
+      const target = visualTarget(event);
+
+      return createAnimationPlan({
+        actorId: actor.id,
+        eventType: event.type,
+        segments: [
+          {
+            label: "ground-approach-impact",
+            durationMs: target.travelMs,
+            easing: "cubic-bezier(0.2, 0.75, 0.25, 1)",
+            transform: {
+              translateX: target.x,
+              translateY: target.y,
+              scaleX: cfg.impactScaleX,
+              scaleY: cfg.impactScaleY,
+              rotateDeg: directed(3 * intensity, sign)
+            },
+            opacity: 1
+          },
+          {
+            label: "ground-home",
+            durationMs: cfg.returnMs,
+            easing: "ease-out",
+            transform: {
+              translateX: 0,
+              translateY: 0,
+              scaleX: 1,
+              scaleY: 1,
+              rotateDeg: 0
+            },
+            opacity: 1
+          }
+        ]
+      });
+    }
+
     case "teleport-attack": {
       const cfg = profile.specialMoves?.teleport;
       if (!cfg) {
@@ -207,6 +250,10 @@ export function planAnimation({ event, actor, profile }) {
       }
 
       const target = visualTarget(event);
+      const riseY =
+        target.exitY < 0
+          ? Math.min(cfg.riseY, target.exitY)
+          : cfg.riseY;
       const riseMs = Math.max(
         1,
         Math.round(target.travelMs * cfg.riseRatio)
@@ -230,7 +277,7 @@ export function planAnimation({ event, actor, profile }) {
             easing: "ease-out",
             transform: {
               translateX: 0,
-              translateY: cfg.riseY,
+              translateY: riseY,
               scaleX: 0.98,
               scaleY: 1.02,
               rotateDeg: 0
@@ -243,7 +290,10 @@ export function planAnimation({ event, actor, profile }) {
             easing: "ease-in",
             transform: {
               translateX: target.x,
-              translateY: target.y - cfg.diveHeight,
+              translateY: Math.min(
+                riseY,
+                target.y - cfg.diveHeight
+              ),
               scaleX: 0.94,
               scaleY: 1.06,
               rotateDeg: directed(4, sign)
