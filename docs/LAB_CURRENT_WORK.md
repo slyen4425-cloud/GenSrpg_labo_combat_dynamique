@@ -1841,6 +1841,94 @@ Critère de fin :
 
 CI verte + checkpoint GREEN + preview smartphone permettant de vérifier KO, Griffe 1,5 s, Plongeon haut et HUD de charge lisible.
 
+
+## Résultat technique — ko-air-hud-polish-v6
+
+Corrections implémentées :
+
+- KO visuel rendu terminal :
+  - `playEventFor("ko")` ne relance plus Idle ;
+  - le remplacement roster intervient ensuite ;
+  - le nouveau membre relance son propre Idle ;
+- le Presenter détecte le KO depuis l'événement `hit.hpAfter` et depuis l'état combat résolu ;
+- ajout d'un vrai test d'intégration :
+  `Combat Session -> HP 0 -> Roster Session.replaceKnockedOut() -> nouveau membre adverse`.
+
+Approches :
+
+- nouveau mouvement visuel `ground-attack` ;
+- Griffe :
+  - préparation : 1,2 s ;
+  - approche : 1,5 s ;
+  - dégâts uniquement à l'impact à 2,7 s ;
+- `travelMs` pilote directement la durée release -> contact ;
+- sentinelle prouvant que 500 ms / 900 ms / 1500 ms fonctionnent sans changement de code ;
+- Presenter délègue maintenant `ground / aerial / teleport` au même Visual Controller géométrique.
+
+Aérien :
+
+- suppression du simple `riseY` fixe ;
+- le Visual Controller mesure l'arène réelle ;
+- calcul d'un `arenaExitTranslateY` qui fait sortir complètement l'acteur par le haut ;
+- marge de dépassement configurable dans le profil ;
+- reposition invisible ;
+- piqué jusqu'à la cible exactement au timestamp d'impact ;
+- retour après impact.
+
+HUD / scène :
+
+- arène : `min(60svh, 36rem)` ;
+- mobile : 56svh ;
+- petit écran : 53svh ;
+- header légèrement compacté ;
+- barre de charge principale portée à 0,58 rem ;
+- affichage du nom de l'action ;
+- affichage du temps restant de préparation ;
+- pendant le trajet/approche : affichage du temps restant avant impact ;
+- toutes ces valeurs viennent de Combat Runtime.
+
+Runtime :
+
+- progression enrichie avec :
+  - `actionLabel` ;
+  - `preparationMs` ;
+  - `remainingPreparationMs` ;
+  - `travelMs` ;
+  - `remainingImpactMs` ;
+  - `phaseProgress`.
+
+Tests ajoutés / adaptés :
+
+- Griffe ne fait plus de dégâts au release ;
+- dégâts à l'impact après 1,5 s d'approche ;
+- timing configurable 0,5 / 0,9 / 1,5 s ;
+- ground animation atteint la cible à `travelMs` ;
+- aerial utilise un offset de sortie complète d'arène ;
+- HUD lit le timer Runtime sans formule gameplay UI ;
+- KO terminal avant remplacement ;
+- vrai chemin KO -> roster ;
+- sentinelles V1-V5 conservées.
+
+Dernier HEAD fonctionnel avant documentation :
+
+`08d5baf599dcd83ace849f3dfea54b390ffdb582`
+
+CI de ce HEAD :
+
+- run : `36115455301`
+- conclusion : SUCCESS
+
+Validation restante :
+
+- smartphone : confirmer Griffe visuellement sur 1,5 s jusqu'à la cible ;
+- confirmer que les dégâts arrivent au contact ;
+- confirmer Plongeon aérien qui sort complètement par le haut puis pique ;
+- confirmer que la surface de combat est assez grande ;
+- confirmer le HUD nom + compte à rebours ;
+- mettre l'adversaire KO et confirmer son remplacement visible.
+
+Le lot reste GREEN technique jusqu'au retour visuel utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
