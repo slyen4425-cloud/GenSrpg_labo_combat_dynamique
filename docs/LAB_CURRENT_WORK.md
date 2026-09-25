@@ -5719,3 +5719,13 @@ Périmètre fonctionnel :
 - ne modifier aucun gameplay, timing, énergie, dégâts, portée ou FX ;
 - ajouter un test assurant qu'une icône est résolue pour les quatre capacités actives ;
 - documenter seulement l'architecture future des arènes par biome, sans l'implémenter dans ce lot.
+
+
+Validation technique du lot icônes :
+
+- SHA fonctionnel : `4220b0fa48fe0e23fd8dd6919ab4a82577363861` ;
+- CI work : run `36185677495` — SUCCESS ;
+- diff fonctionnel limité au binding de présentation des icônes ;
+- test ajouté pour vérifier les quatre capacités actives et l'absence de faux FX sur les bindings icon-only ;
+- architecture d'arène par biome documentée uniquement, non implémentée ;
+- `main` et le dépôt `Zombicide-40k` inchangés.
