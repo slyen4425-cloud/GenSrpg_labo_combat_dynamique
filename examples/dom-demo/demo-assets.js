@@ -14,11 +14,11 @@ const ASSETS = Object.freeze({
   "pack:capture:sprite-fireball-cast-01": Object.freeze({
     assetId: "pack:capture:sprite-fireball-cast-01",
     url: new URL(
-      "sprites/skills/fireball/atlases/sprite_skill_fireball_cast_atlas_01.png",
+      "fx/skills/fireball/fx_skill_fireball_cast_orb_01.svg",
       CAPTURE_ROOT
     ).href,
-    frameCount: 6,
-    displayScale: 1.35
+    frameCount: 1,
+    displayScale: 1.45
   }),
   "pack:capture:sprite-fireball-travel-01": Object.freeze({
     assetId: "pack:capture:sprite-fireball-travel-01",
@@ -29,15 +29,16 @@ const ASSETS = Object.freeze({
     frameCount: 8,
     coreAnchor: Object.freeze({ x: 0.29, y: 0.5 }),
     headingRad: Math.PI,
-    displayScale: 1.75
+    displayScale: 2.3
   }),
   "pack:capture:sprite-fireball-impact-01": Object.freeze({
     assetId: "pack:capture:sprite-fireball-impact-01",
     url: new URL(
-      "sprites/skills/fireball/atlases/sprite_skill_fireball_impact_atlas_01.png",
+      "fx/skills/fireball/fx_skill_fireball_impact_burst_01.svg",
       CAPTURE_ROOT
     ).href,
-    frameCount: 6
+    frameCount: 1,
+    displayScale: 1.7
   })
 });
 
@@ -45,7 +46,10 @@ const SKILL_BINDINGS = Object.freeze({
   fireball: Object.freeze({
     icon: "pack:capture:icon-skill-fireball-01",
     castFx: "pack:capture:sprite-fireball-cast-01",
+    castAnchor: "mouth",
+    castLayer: "behind",
     travelFx: "pack:capture:sprite-fireball-travel-01",
+    travelSourceAnchor: "mouth",
     impactFx: "pack:capture:sprite-fireball-impact-01"
   })
 });
@@ -64,7 +68,10 @@ export const demoPresentationAssets = Object.freeze({
     return Object.freeze({
       icon: resolveAsset(binding.icon),
       cast: resolveAsset(binding.castFx),
+      castAnchor: binding.castAnchor ?? null,
+      castLayer: binding.castLayer ?? "front",
       travel: resolveAsset(binding.travelFx),
+      travelSourceAnchor: binding.travelSourceAnchor ?? null,
       impact: resolveAsset(binding.impactFx)
     });
   }
