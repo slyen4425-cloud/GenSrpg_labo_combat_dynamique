@@ -3318,6 +3318,42 @@ Tests prévus :
 - retour maison reste scale 1 ;
 - CI complète verte.
 
+
+## Résultat technique — ground-perspective-approach
+
+Implémentation :
+
+- le Visual Controller transmet désormais `arenaHeight` depuis la géométrie réelle de l'arène ;
+- `ground-attack` calcule un ratio de profondeur depuis `targetTranslateY / arenaHeight` ;
+- le multiplicateur est entièrement piloté par le profil visuel :
+  - `perspectiveScaleStrength: 0.8` ;
+  - `perspectiveScaleMin: 0.82` ;
+  - `perspectiveScaleMax: 1.22` ;
+- ces valeurs sont configurables séparément dans chaque profil de créature ;
+- mouvement vers le bas / caméra joueur -> scale augmente ;
+- mouvement vers le haut / profondeur -> scale diminue ;
+- `travelMs` reste strictement inchangé ;
+- retour à la position d'origine reste scale 1.
+
+Sentinelles :
+
+- approche caméra > scale d'impact de base ;
+- approche profondeur < scale d'impact de base ;
+- limites min/max respectées ;
+- impact reste à la fin exacte de `travelMs` ;
+- géométrie d'arène reste visuelle et ne dépend pas des données gameplay.
+
+CI :
+
+- SHA : `d41cebb5fa4fa057f694b8586b53ecf9d1d6386d` ;
+- run : `36129110718` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone requise dans la prochaine preview combinée V9.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
