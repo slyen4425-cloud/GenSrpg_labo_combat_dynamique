@@ -295,15 +295,20 @@ test("demo roster is Marai and Drakon versus Drakon and Marai", async () => {
   );
 });
 
-test("opponent roster is visible but has no player action controller", async () => {
+test("opponent roster stays informational while V9 reactions remain AI-owned", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
   assert.match(html, /Réserve adverse/);
   assert.match(source, /reserveCard\(member, "opponent"\)/);
   assert.doesNotMatch(html, /Réactions/);
-  assert.doesNotMatch(source, /runtime\.react\(/);
-  assert.doesNotMatch(source, /data-combat-reactions/);
+  assert.doesNotMatch(html, /data-combat-reactions/);
+  assert.match(source, /opponentAi\.chooseReaction/);
+  assert.match(source, /runtime\.react\(decision\.skill\)/);
+  assert.match(
+    source,
+    /teamId === "player" \? "button" : "div"/
+  );
 });
 
 test("HP energy and charge remain state-driven", async () => {
@@ -369,7 +374,7 @@ test("creature metadata keeps runtime player/opponent/icon views", async () => {
 });
 
 
-test("KO opponent replacement is roster-owned and updates the visual slot after KO presentation", async () => {
+test("KO replacement is roster-owned and slot-generic for player and opponent", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
   const rosterSource = await readFile(
     "src/core/combat/roster-session.js",
@@ -377,15 +382,19 @@ test("KO opponent replacement is roster-owned and updates the visual slot after 
   );
 
   assert.match(rosterSource, /function replaceKnockedOut/);
-  assert.match(source, /roster\.replaceKnockedOut\("opponent"\)/);
+  assert.match(source, /roster\.replaceKnockedOut\(slotId\)/);
   assert.match(source, /await presentation\.finished/);
   assert.match(
     source,
-    /visuals\.setCreatureFor\(\s*"opponent"/
+    /visuals\.setCreatureFor\(\s*slotId/
   );
   assert.match(
     source,
-    /visuals\.setSlotVisible\("opponent", false\)/
+    /visuals\.setSlotVisible\(slotId, false\)/
+  );
+  assert.match(
+    source,
+    /replaceKnockedOutSlot\(\s*presentation\.koActorId/
   );
 });
 
