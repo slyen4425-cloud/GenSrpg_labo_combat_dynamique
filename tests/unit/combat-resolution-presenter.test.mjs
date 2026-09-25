@@ -118,6 +118,30 @@ test("live release starts attack and projectile without recomputing combat rules
   assert.equal(h.fxCalls[0].durationMs, 550);
 });
 
+test("evaded outcome renders miss feedback without playing hit", () => {
+  const h = createHarness();
+
+  const result = h.presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      outcome: "evaded",
+      events: []
+    },
+    actorSlot: "opponent",
+    targetSlot: "player"
+  });
+
+  assert.equal(result.outcome, "evaded");
+  assert.deepEqual(h.calls, []);
+  assert.deepEqual(h.fxCalls, [
+    {
+      type: "miss",
+      targetSlot: "player",
+      durationMs: 650
+    }
+  ]);
+});
+
 test("live outcome reflection and immunity only present resolved result", () => {
   const reflected = createHarness();
   reflected.presenter.presentOutcome({
