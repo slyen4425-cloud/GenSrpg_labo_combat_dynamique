@@ -521,3 +521,18 @@ test("ground aerial and teleport approaches all use visual target geometry", asy
   assert.match(source, /"ground-attack"/);
   assert.match(presenter, /\["ground", "teleport", "aerial"\]\.includes\(approachMode\)/);
 });
+
+
+test("fireball demo binding uses stable Capture asset IDs and stays outside gameplay data", async () => {
+  const source = await readFile("examples/dom-demo/demo-assets.js", "utf8");
+  const ui = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /pack:capture:icon-skill-fireball-01/);
+  assert.match(source, /pack:capture:sprite-fireball-travel-01/);
+  assert.match(source, /pack:capture:sprite-fireball-impact-01/);
+  assert.match(source, /resolveSkillPresentation/);
+  assert.match(ui, /presentationAssets/);
+  assert.match(ui, /action-option__icon/);
+
+  assert.doesNotMatch(source, /energyCost|damage|allowedDistances|preparationMs/);
+});
