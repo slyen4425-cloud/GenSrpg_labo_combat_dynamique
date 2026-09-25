@@ -5100,3 +5100,50 @@ Statut :
   4. trajet jusqu'à la cible ;
   5. explosion à l'impact ;
 - aucun checkpoint GREEN final avant validation visuelle explicite de Sylvain.
+
+
+### Retour utilisateur — anchors FX créature et nouveaux cast/impact
+
+Retour smartphone :
+
+- le pipeline cast / travel / impact est validé comme structure ;
+- le cast Boule de feu actuel n'est pas visuellement satisfaisant ;
+- le cast doit devenir un orbe de feu rond qui se charge ;
+- le cast joueur doit être placé derrière le modèle, vers la tête / bouche ;
+- le projectile doit être encore plus gros ;
+- l'impact actuel doit également être remplacé ;
+- les créatures doivent exposer davantage de points d'ancrage réutilisables.
+
+Décision architecture :
+
+Les métadonnées de créature deviennent propriétaires des points d'ancrage visuels par vue :
+
+- `head` ;
+- `mouth` ;
+- `handLeft` ;
+- `handRight` ;
+- `tail`.
+
+Ces anchors sont des coordonnées normalisées de présentation uniquement.
+
+Le binding d'une compétence peut choisir :
+
+- `castAnchor` ;
+- `travelSourceAnchor` ;
+- `castLayer` (`behind` / `front`).
+
+Pour Boule de feu :
+
+- cast depuis `mouth` ;
+- cast derrière le modèle ;
+- travel depuis `mouth` ;
+- impact sur l'anchor cible stable existant ;
+- aucun changement gameplay.
+
+Interdits :
+
+- aucune détection de tête dans Combat Rules ;
+- aucun anchor codé dans SkillDefinition ;
+- aucun dégât/timing dans les métadonnées créature ;
+- aucune seconde horloge ;
+- aucun changement du dépôt principal.
