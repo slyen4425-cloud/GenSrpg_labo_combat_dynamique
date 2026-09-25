@@ -227,6 +227,7 @@ export async function mountCombatDemo({
       metadata: {
         targetTranslateX: targetCenterX - actorCenterX,
         targetTranslateY: targetCenterY - actorCenterY,
+        arenaHeight: arenaRect.height,
         arenaExitTranslateY,
         travelMs
       }
