@@ -133,3 +133,54 @@ test("special attack event contract rejects missing positive travel time in plan
     /travelMs/
   );
 });
+
+
+test("ground attack reaches target exactly after configurable travelMs", () => {
+  const current = actor();
+  const travelMs = 1500;
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: 165,
+        targetTranslateY: 4,
+        travelMs
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.equal(plan.segments[0].label, "ground-approach-impact");
+  assert.equal(plan.segments[0].durationMs, 1500);
+  assert.equal(plan.segments[0].transform.translateX, 165);
+  assert.equal(plan.segments[0].transform.translateY, 4);
+  assert.equal(plan.segments.at(-1).label, "ground-return");
+  assert.equal(plan.segments.at(-1).transform.translateX, 0);
+  assert.equal(plan.segments.at(-1).transform.translateY, 0);
+
+  const faster = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: 165,
+        targetTranslateY: 4,
+        travelMs: 500
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.equal(faster.segments[0].durationMs, 500);
+});
+
+test("aerial profile rises far enough to leave the arena before diving", () => {
+  assert.ok(registry.get("serpentine").specialMoves.aerial.riseY <= -350);
+  assert.ok(registry.get("drake").specialMoves.aerial.riseY <= -400);
+  assert.ok(registry.get("drake").specialMoves.aerial.diveHeight >= 450);
+});
