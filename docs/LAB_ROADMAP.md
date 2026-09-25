@@ -237,7 +237,8 @@ Concurrence V9 :
 - une interruption explicite ou un KO peut annuler l'action concernée ;
 - au premier jalon, seules les compétences sont concurrentes dans l'UI ;
 - déplacement, Objet, Rappel et Invocation restent globalement verrouillés pendant une action afin de ne pas changer silencieusement cible/distance en vol ;
-- le moteur de réactions reste disponible via `runtime.react()`, mais il est désactivé dans la policy de combat normal V9.
+- le moteur de réactions reste disponible via `runtime.react()`, mais il est désactivé dans la policy de combat normal V9 ;
+- les projectiles concurrents peuvent utiliser une règle de clash data-driven déclarée dans `SkillDefinition`, sans détection de collision gameplay dans le renderer.
 
 ### Disponibilité future des compétences
 
