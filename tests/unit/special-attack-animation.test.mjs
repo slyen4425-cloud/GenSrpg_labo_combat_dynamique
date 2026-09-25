@@ -103,7 +103,7 @@ test("aerial attack rises, vanishes, dives to target at impact, then returns", (
     plan.segments[2].durationMs;
 
   assert.equal(impactMs, travelMs);
-  assert.ok(plan.segments[0].transform.translateY < 0);
+  assert.ok(plan.segments[0].transform.translateY <= -190);
   assert.equal(plan.segments[1].opacity, 0);
   assert.equal(plan.segments[2].transform.translateX, 150);
   assert.equal(plan.segments[2].transform.translateY, 8);
@@ -132,4 +132,67 @@ test("special attack event contract rejects missing positive travel time in plan
       }),
     /travelMs/
   );
+});
+
+
+test("ground attack reaches target exactly at configurable travel time", () => {
+  const current = actor();
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: 175,
+        targetTranslateY: -6,
+        travelMs: 1500
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.deepEqual(
+    plan.segments.map((segment) => segment.label),
+    ["ground-impact", "ground-home"]
+  );
+  assert.equal(plan.segments[0].durationMs, 1500);
+  assert.equal(plan.segments[0].transform.translateX, 175);
+  assert.equal(plan.segments[0].transform.translateY, -6);
+  assert.equal(plan.segments.at(-1).transform.translateX, 0);
+  assert.equal(plan.segments.at(-1).transform.translateY, 0);
+});
+
+test("ground attack duration follows travelMs data without code changes", () => {
+  const current = actor();
+  const fast = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      metadata: {
+        targetTranslateX: 175,
+        targetTranslateY: 0,
+        travelMs: 500
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  const slow = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      metadata: {
+        targetTranslateX: 175,
+        targetTranslateY: 0,
+        travelMs: 1500
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  assert.equal(fast.segments[0].durationMs, 500);
+  assert.equal(slow.segments[0].durationMs, 1500);
 });
