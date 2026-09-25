@@ -116,11 +116,16 @@ export function createCombatSession({
     return result;
   }
 
-  function completeSkill({ action, reaction = null }) {
+  function completeSkill({
+    action,
+    reaction = null,
+    targetActionContext = null
+  }) {
     const result = resolveSkillCompletion({
       state,
       action,
-      reaction
+      reaction,
+      targetActionContext
     });
     if (result.ok) {
       state = result.state;
@@ -139,10 +144,18 @@ export function createCombatSession({
     return result;
   }
 
-  function completeAction({ action, reaction = null }) {
+  function completeAction({
+    action,
+    reaction = null,
+    targetActionContext = null
+  }) {
     return action.actionType === "command"
       ? completeCommand({ action })
-      : completeSkill({ action, reaction });
+      : completeSkill({
+          action,
+          reaction,
+          targetActionContext
+        });
   }
 
   function advanceMs(deltaMs) {
