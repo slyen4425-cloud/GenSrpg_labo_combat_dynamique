@@ -474,6 +474,197 @@ test("ground approach time is fully configurable per skill", () => {
   }
 });
 
+test("runtime allows one concurrent action per fighter and rejects a second action from the same fighter", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+  const clock = fakeClock();
+  const runtime = createCombatRuntime({
+    session,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer
+  });
+
+  runtime.start();
+
+  const opponent = runtime.startSkill({
+    actorId: "braisombre",
+    targetId: "maraileron",
+    skill: claw
+  });
+  assert.equal(opponent.ok, true);
+  assert.equal(runtime.hasActiveActionFor("braisombre"), true);
+  assert.equal(runtime.hasActiveActionFor("maraileron"), false);
+
+  const player = runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw
+  });
+  assert.equal(player.ok, true);
+  assert.equal(runtime.activeActions.length, 2);
+
+  const duplicate = runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw
+  });
+  assert.deepEqual(duplicate, {
+    ok: false,
+    outcome: "action_in_progress"
+  });
+
+  runtime.dispose();
+});
+
+test("later-started faster attack resolves before an earlier slower attack", () => {
+  const teleport = normalizeSkillDefinition({
+    id: "teleport-fast-test",
+    name: "Teleport Fast Test",
+    category: "offensive",
+    form: "contact",
+    element: null,
+    approachMode: "teleport",
+    energyCost: 3,
+    preparationMs: 1200,
+    travelMs: 120,
+    recoveryMs: 0,
+    allowedDistances: ["short", "medium", "long"],
+    effect: { damage: 24 }
+  });
+
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+  const clock = fakeClock();
+  const resolutions = [];
+  const runtime = createCombatRuntime({
+    session,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onResolved(value) {
+      resolutions.push(value);
+    }
+  });
+
+  runtime.start();
+
+  const slow = runtime.startSkill({
+    actorId: "braisombre",
+    targetId: "maraileron",
+    skill: claw
+  });
+  assert.equal(slow.ok, true);
+
+  clock.setTime(500);
+  const fast = runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: teleport
+  });
+  assert.equal(fast.ok, true);
+
+  clock.setTime(1820);
+  clock.fireNext();
+
+  assert.equal(resolutions.length, 1);
+  assert.equal(resolutions[0].actorId, "maraileron");
+  assert.equal(resolutions[0].targetId, "braisombre");
+  assert.equal(session.snapshot().fighters.braisombre.hp, 76);
+  assert.equal(session.snapshot().fighters.maraileron.hp, 100);
+  assert.equal(runtime.hasActiveActionFor("braisombre"), true);
+
+  clock.setTime(2700);
+  clock.fireNext();
+
+  assert.equal(resolutions.length, 2);
+  assert.equal(resolutions[1].actorId, "braisombre");
+  assert.equal(resolutions[1].targetId, "maraileron");
+  assert.equal(session.snapshot().fighters.maraileron.hp, 82);
+
+  runtime.dispose();
+});
+
+test("KO cancels the defeated slot action and any still-pending action targeting that slot", () => {
+  const lethal = normalizeSkillDefinition({
+    id: "lethal-test",
+    name: "Lethal Test",
+    category: "offensive",
+    form: "contact",
+    element: null,
+    approachMode: "teleport",
+    energyCost: 1,
+    preparationMs: 100,
+    travelMs: 100,
+    recoveryMs: 0,
+    allowedDistances: ["short", "medium", "long"],
+    effect: { damage: 200 }
+  });
+
+  const slowTargetingPlayer = normalizeSkillDefinition({
+    ...claw,
+    id: "slow-targeting-player",
+    name: "Slow Targeting Player",
+    preparationMs: 3000,
+    travelMs: 1000
+  });
+
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10, initialHp: 100 },
+      { ...braisombre, initialEnergy: 10, initialHp: 100 }
+    ]
+  });
+  const clock = fakeClock();
+  const interruptions = [];
+  const runtime = createCombatRuntime({
+    session,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onInterrupted(value) {
+      interruptions.push(value);
+    }
+  });
+
+  runtime.start();
+
+  runtime.startSkill({
+    actorId: "braisombre",
+    targetId: "maraileron",
+    skill: slowTargetingPlayer
+  });
+  runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: lethal
+  });
+
+  clock.setTime(200);
+  clock.fireNext();
+
+  assert.equal(session.snapshot().fighters.braisombre.hp, 0);
+  assert.equal(runtime.hasActiveActionFor("braisombre"), false);
+  assert.equal(runtime.hasActiveActionFor("maraileron"), false);
+  assert.equal(
+    interruptions.some((item) => item.reason === "ko"),
+    true
+  );
+
+  runtime.dispose();
+});
+
 test("runtime progress exposes action name and authoritative remaining charge time", () => {
   const session = createCombatSession({
     distance: "short",
