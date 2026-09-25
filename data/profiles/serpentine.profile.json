@@ -51,7 +51,10 @@
     "ground": {
       "impactScaleX": 1.06,
       "impactScaleY": 0.94,
-      "returnMs": 300
+      "returnMs": 300,
+      "perspectiveScaleStrength": 0.8,
+      "perspectiveScaleMin": 0.82,
+      "perspectiveScaleMax": 1.22
     }
   }
 }
