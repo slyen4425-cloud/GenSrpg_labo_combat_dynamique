@@ -379,6 +379,8 @@ export function resolveSkillCompletion({
     ok: true,
     actionType: "skill",
     skillId: skill.id,
+    actorId,
+    targetId,
     outcome,
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
