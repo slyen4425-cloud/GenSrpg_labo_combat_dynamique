@@ -205,6 +205,26 @@ test("abilities stay directly visible while items and team remain compact menus"
   );
 });
 
+test("V9 routes opponent AI through real runtime identities instead of fixed player slots", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /createOpponentDecisionController/);
+  assert.match(source, /opponent-aggressive\.policy\.json/);
+  assert.match(source, /runtime\.previewReaction/);
+  assert.match(source, /runtime\.react/);
+  assert.match(source, /opponentAi\.chooseReaction/);
+  assert.match(source, /opponentAi\.chooseAction/);
+  assert.match(source, /progress\.actorId/);
+  assert.match(source, /progress\.reaction\.actorId/);
+  assert.match(source, /actorSlot:\s*action\.actorId/);
+  assert.match(source, /targetSlot:\s*action\.targetId/);
+  assert.match(source, /actorSlot:\s*resolution\.actorId/);
+  assert.match(source, /targetSlot:\s*resolution\.targetId/);
+  assert.match(source, /roster\.replaceKnockedOut\(slotId\)/);
+  assert.doesNotMatch(source, /setInterval\(/);
+  assert.doesNotMatch(source, /\.click\(\)/);
+});
+
 test("combat UI delegates gameplay to session runtime roster and presenters", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
