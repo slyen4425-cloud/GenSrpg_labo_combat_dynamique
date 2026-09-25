@@ -112,3 +112,45 @@ Dans `Réglages du test`, le bouton `Simuler impact Stun` permet de tester une i
 4. si l'action a déjà atteint son release, l'interruption doit être refusée.
 
 Ce bouton n'appartient pas à l'interface joueur.
+
+
+## Vue joueur V4
+
+La démo n'affiche plus les contrôles laboratoire dans la vue de partie.
+
+Équipe joueur :
+
+- Marai actif ;
+- Drakon en réserve.
+
+Équipe adverse :
+
+- Drakon actif ;
+- Marai en réserve.
+
+Contrôles visibles :
+
+- énergie du joueur ;
+- Courte / Moyenne / Longue ;
+- menu Capacités ;
+- menu Objets ;
+- menu Équipe ;
+- réserve des deux camps.
+
+Rappel :
+
+1. coûte l'énergie configurée ;
+2. charge via Combat Runtime ;
+3. à completion, sauvegarde PV/énergie du membre actif ;
+4. retire le monstre joueur de la scène.
+
+Invocation :
+
+1. nécessite un membre de réserve sélectionné ;
+2. coûte l'énergie configurée ;
+3. charge via Combat Runtime ;
+4. à completion, remplace le slot `player` par le membre sélectionné ;
+5. restaure son snapshot PV/énergie ;
+6. change réellement l'asset et le profil affichés.
+
+La réserve adverse est visible mais n'offre aucun contrôle joueur.
