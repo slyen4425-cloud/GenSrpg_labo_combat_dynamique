@@ -5859,3 +5859,15 @@ Upload utilisateur détecté sur la branche de travail :
 - aucun gameplay n'est modifié.
 
 Le format runtime courant de cette première arène est PNG, car il s'agit du binaire effectivement déposé. Une future optimisation WebP ne devra pas modifier l'asset ID logique ni le contrat d'arène.
+
+
+Validation technique finale du lot arène forêt :
+
+- asset réel intégré : `assets/library/core/arenas/forest/arena_forest_01.png` ;
+- binding logique : `core:arena-forest-01` ;
+- démo configurée sur le contexte `forest` ;
+- ancien nom brut d'upload supprimé ;
+- CI work finale : run `36189973204` — SUCCESS ;
+- les deux échecs CI intermédiaires provenaient uniquement de sentinelles de test mal alignées (regex puis ancienne extension `.webp`) ; aucun correctif gameplay ni moteur n'a été nécessaire ;
+- aucun Combat Rules / Runtime / Action Resolver / SkillDefinition modifié ;
+- validation visuelle smartphone de l'arène encore attendue avant checkpoint GREEN final.
