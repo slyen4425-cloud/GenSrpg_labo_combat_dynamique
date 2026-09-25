@@ -85,7 +85,7 @@ function rosterFor(session) {
   });
 }
 
-test("V9 true path reacts, moves one band, then damages player at AI impact", () => {
+test("V9 normal combat lets player damage opponent, then AI moves and damages player", () => {
   const session = createCombatSession({
     distance: "medium",
     fighters: [
@@ -124,8 +124,8 @@ test("V9 true path reacts, moves one band, then damages player at AI impact", ()
   assert.equal(playerStart.ok, true);
 
   const reaction = ai.maybeReactToActiveAction();
-  assert.equal(reaction.status, "reacted");
-  assert.equal(reaction.skillId, "fire-immunity");
+  assert.equal(reaction.status, "waiting");
+  assert.equal(reaction.reason, "no_legal_reaction");
 
   clock.setTime(playerStart.action.impactAtMs);
   clock.fireNext();
@@ -133,8 +133,12 @@ test("V9 true path reacts, moves one band, then damages player at AI impact", ()
   assert.equal(resolutions.length, 1);
   assert.equal(resolutions[0].actorId, "player");
   assert.equal(resolutions[0].targetId, "opponent");
-  assert.equal(resolutions[0].outcome, "immune");
-  assert.equal(session.snapshot().fighters.opponent.hp, 100);
+  assert.equal(resolutions[0].outcome, "hit");
+  assert.equal(
+    session.snapshot().fighters.opponent.hp,
+    100 - offensive.fireball.effect.damage
+  );
+  assert.equal(session.snapshot().fighters.opponent.hp, 70);
 
   const move = ai.takeTurn();
   assert.equal(move.status, "moved");
