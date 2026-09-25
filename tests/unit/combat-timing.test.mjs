@@ -413,8 +413,98 @@ test("contact damage is committed exactly when the creature reaches impact", () 
   clock.setTime(1200);
   clock.fireNext();
   assert.equal(releases.length, 1);
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2699);
+  clock.fireNext();
+  assert.equal(resolutions.length, 0);
+  assert.equal(session.snapshot().fighters.braisombre.hp, 100);
+
+  clock.setTime(2700);
+  clock.fireNext();
   assert.equal(resolutions.length, 1);
   assert.equal(session.snapshot().fighters.braisombre.hp, 82);
 
   runtime.dispose();
+});
+
+
+test("runtime progress exposes action name and authoritative remaining times", () => {
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10 },
+      { ...braisombre, initialEnergy: 10 }
+    ]
+  });
+  const clock = fakeClock();
+  const progress = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: clock.now,
+    setTimer: clock.setTimer,
+    clearTimer: clock.clearTimer,
+    onProgress(value) {
+      progress.push(value);
+    }
+  });
+
+  runtime.start();
+  runtime.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: claw
+  });
+
+  assert.equal(progress.at(-1).actionName, "Griffe");
+  assert.equal(progress.at(-1).phase, "preparation");
+  assert.equal(progress.at(-1).preparationRemainingMs, 1200);
+  assert.equal(progress.at(-1).travelMs, 1500);
+
+  clock.setTime(1200);
+  clock.fireNext();
+  assert.equal(progress.at(-1).phase, "travel");
+  assert.equal(progress.at(-1).impactRemainingMs, 1500);
+  assert.equal(progress.at(-1).travelProgress, 0);
+
+  clock.setTime(1950);
+  clock.fireNext();
+  assert.equal(progress.at(-1).phase, "travel");
+  assert.equal(progress.at(-1).impactRemainingMs, 750);
+  assert.equal(progress.at(-1).travelProgress, 0.5);
+
+  runtime.dispose();
+});
+
+test("contact travel timing is data-driven and can be changed to 0.5 seconds", () => {
+  const fastClaw = normalizeSkillDefinition({
+    ...claw,
+    id: "fast-claw-test",
+    name: "Sprint test",
+    travelMs: 500
+  });
+
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...maraileron, initialEnergy: 10 },
+      { ...braisombre, initialEnergy: 10 }
+    ]
+  });
+
+  const started = session.startSkill({
+    actorId: "maraileron",
+    targetId: "braisombre",
+    skill: fastClaw
+  });
+
+  assert.equal(started.ok, true);
+  assert.equal(started.action.travelMs, 500);
+  assert.equal(
+    started.action.impactAtMs - started.action.releaseAtMs,
+    500
+  );
 });
