@@ -18,5 +18,12 @@
     "tags": [
       "aerial"
     ]
+  },
+  "evasion": {
+    "window": "travel",
+    "incomingForms": [
+      "contact",
+      "projectile"
+    ]
   }
 }
