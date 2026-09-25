@@ -411,6 +411,15 @@ button.reserve-card {
   overflow: visible;
 }
 
+.skill-fx--cast {
+  z-index: 9;
+  width: clamp(4.2rem, 11vw, 7rem);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
 .skill-fx__sprite {
   position: absolute;
   width: 100%;
