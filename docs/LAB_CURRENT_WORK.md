@@ -5147,3 +5147,83 @@ Interdits :
 - aucun dégât/timing dans les métadonnées créature ;
 - aucune seconde horloge ;
 - aucun changement du dépôt principal.
+
+
+### Candidat technique — anchors FX + nouvel orbe/impact Boule de feu
+
+Implémentation du sous-lot :
+
+Métadonnées créature :
+
+- ajout de `fxAnchors` par vue `player / opponent` ;
+- anchors disponibles :
+  - `head` ;
+  - `mouth` ;
+  - `handLeft` ;
+  - `handRight` ;
+  - `tail` ;
+- coordonnées normalisées de présentation uniquement ;
+- anchors réglés séparément pour Maraileron et Braisombre à partir de leurs quatre visuels runtime réels.
+
+Visual Controller :
+
+- expose `getFxAnchorFor(slotKey, anchorName)` ;
+- transforme l'anchor normalisé de la créature active en point DOM courant ;
+- aucun calcul gameplay.
+
+FX Renderer :
+
+- accepte maintenant un resolver de source d'anchor nommé ;
+- le cast et le projectile peuvent donc partir d'un anchor de créature précis ;
+- fallback centre historique conservé si aucun anchor n'est demandé ;
+- `castLayer: behind` place le cast sous les modèles de créature ;
+- impact conserve la cible spatiale stable existante ;
+- le `displayScale` d'impact est désormais consommé uniquement comme paramètre visuel.
+
+Boule de feu :
+
+- `castAnchor: "mouth"` ;
+- `travelSourceAnchor: "mouth"` ;
+- `castLayer: "behind"` ;
+- projectile agrandi à `displayScale: 2.3` ;
+- nouveau cast Capture :
+  `assets/library/capture/fx/skills/fireball/fx_skill_fireball_cast_orb_01.svg` ;
+- nouveau cast = orbe circulaire lumineux de concentration ;
+- nouvel impact Capture :
+  `assets/library/capture/fx/skills/fireball/fx_skill_fireball_impact_burst_01.svg` ;
+- nouvel impact = déflagration circulaire/radiale ;
+- anciens sprites de cast/impact ne sont plus utilisés par le binding Boule de feu de la démo.
+
+Invariants conservés :
+
+- aucune modification de SkillDefinition ;
+- aucun changement dégâts / énergie / portée / préparation / trajet / récupération ;
+- aucun changement Combat Rules / Action Resolver / Combat Runtime dans ce sous-lot ;
+- anchors, couche, scale et fichiers FX restent strictement présentation ;
+- aucune modification de `Zombicide-40k`.
+
+Incident CI :
+
+- premier run `36170550207` rouge sur une sentinelle de rotation projectile dont l'attendu utilisait encore l'ancien centre de départ ;
+- cause : test obsolète après passage réel au mouth anchor ;
+- correction du test uniquement avec la nouvelle géométrie `mouth -> target` ;
+- aucun changement fonctionnel ajouté pour contourner le test.
+
+SHA fonctionnel avant synchronisation documentaire :
+
+`5fb1f5d1a5c83788523cc4e9dcf57215333fec46`
+
+CI fonctionnelle :
+
+- workflow : `Laboratory CI` ;
+- run : `36170626133` ;
+- conclusion : SUCCESS.
+
+Validation smartphone requise :
+
+1. le cast joueur doit apparaître derrière la créature, vers la bouche/tête ;
+2. l'orbe de charge doit être rond et plus lisible que l'ancien cast ;
+3. le projectile doit partir de la bouche et être nettement plus gros ;
+4. l'impact doit être remplacé par la nouvelle déflagration circulaire ;
+5. vérifier aussi une Boule de feu adverse : la source doit utiliser la bouche correspondante à la vue adverse ;
+6. aucun checkpoint GREEN final avant validation visuelle explicite.
