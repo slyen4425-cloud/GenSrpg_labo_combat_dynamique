@@ -66,7 +66,19 @@ export function createCombatResolutionPresenter({
       return Object.freeze({ status: "disposed" });
     }
 
-    visuals.playEventFor(actorSlot, "attack").catch(() => {});
+    const approachMode = action.skill?.approachMode ?? "none";
+    if (
+      ["teleport", "aerial"].includes(approachMode) &&
+      typeof visuals.playApproachFor === "function"
+    ) {
+      visuals
+        .playApproachFor(actorSlot, approachMode, {
+          travelMs: action.travelMs
+        })
+        .catch(() => {});
+    } else {
+      visuals.playEventFor(actorSlot, "attack").catch(() => {});
+    }
 
     for (const fxPlan of planSkillReleaseFx({
       action,
