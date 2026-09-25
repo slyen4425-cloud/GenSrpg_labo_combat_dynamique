@@ -1918,6 +1918,23 @@ CI de ce HEAD :
 - run : `36115455301`
 - conclusion : SUCCESS
 
+Checkpoint GREEN prévu :
+
+`checkpoint/lab-ko-air-hud-polish-v6-green-2026-09-25`
+
+Branche de prévisualisation :
+
+`preview/lab-ko-air-hud-polish-v6-2026-09-25`
+
+SHA technique documenté avant synchronisation finale :
+
+`b104d9891468dacdd6b12a7ea309b2e74f9b2808`
+
+CI :
+
+- run : `36115590768`
+- conclusion : SUCCESS
+
 Validation restante :
 
 - smartphone : confirmer Griffe visuellement sur 1,5 s jusqu'à la cible ;
