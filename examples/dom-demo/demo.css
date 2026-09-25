@@ -420,6 +420,10 @@ button.reserve-card {
   overflow: visible;
 }
 
+.skill-fx--layer-behind {
+  z-index: 2;
+}
+
 .skill-fx__sprite {
   position: absolute;
   width: 100%;
