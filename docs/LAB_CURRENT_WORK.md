@@ -2972,6 +2972,110 @@ Critère de fin :
 - preview smartphone où l'adversaire réagit automatiquement, se déplace si nécessaire et lance au moins une attaque réelle avec charge/animation/dégâts ;
 - aucune régression V8.
 
+
+## Résultat technique — opponent-ai-v9 pré-audit
+
+Implémentation :
+
+- nouveau `Opponent Decision Controller` pur, indépendant du DOM et sans horloge ;
+- politique adverse data-driven `aggressive-demo-v1` ;
+- cycle offensif déterministe :
+  - Griffe ;
+  - Plongeon aérien ;
+  - Frappe téléportée ;
+  - Boule de feu ;
+- réactions automatiques :
+  - projectile/none : Bouclier miroir -> Immunité feu -> Esquive ;
+  - ground : Riposte -> Esquive ;
+  - aerial/teleport : Esquive -> Riposte ;
+- déplacement adverse proposé uniquement via `Combat Session.previewMovement()/move()` lorsqu'une compétence souhaitée est hors portée ;
+- budget de déplacement issu de la politique ;
+- aucune boucle IA permanente et aucun timer gameplay supplémentaire.
+
+Raccord Runtime :
+
+- progression d'action expose désormais `actorId / targetId` ;
+- progression de réaction expose :
+  - acteur/cible ;
+  - nom de réaction ;
+  - progression ;
+  - temps restant ;
+- résolution skill expose `actorId / targetId` ;
+- HUD de charge route la progression vers le bon combattant ;
+- Presenter reçoit les vrais `actorSlot / targetSlot`.
+
+Raccord combat réel :
+
+- pendant une compétence joueur, l'IA peut sélectionner une réaction via le vrai chemin :
+  `Opponent Decision Controller -> runtime.previewReaction() -> runtime.react()` ;
+- après une résolution de compétence joueur, l'IA obtient une seule séquence de réponse ;
+- elle peut se déplacer puis lancer une compétence avec :
+  `runtime.startSkill({ actorId: "opponent", targetId: "player" })` ;
+- après la résolution adverse, la main revient au joueur ;
+- aucune chaîne infinie de tours IA.
+
+KO :
+
+- le remplacement KO est désormais générique par slot ;
+- joueur ou adversaire passent par `Roster Session.replaceKnockedOut(slotId)` ;
+- l'IA ne choisit jamais le remplaçant ;
+- le vrai test protège : attaque IA -> HP joueur 0 -> Roster Session -> Drakon joueur entre en combat.
+
+Tests V9 :
+
+- politique/réactions déterministes ;
+- mouvement vers une portée utile ;
+- fallback compétence légale ;
+- absence d'action si toutes les previews sont refusées ;
+- identité actor/target Runtime et résolution ;
+- vrai flux :
+  joueur attaque -> IA Bouclier miroir -> renvoi -> IA se déplace -> IA attaque -> dégâts joueur ;
+- KO joueur provoqué par l'IA -> remplacement roster ;
+- sentinelles V1 à V8 conservées ;
+- aucune simulation de clics ;
+- aucun `setInterval` IA.
+
+Revue du périmètre depuis V8 GREEN :
+
+- ajout `src/core/combat/opponent-decision-controller.js` ;
+- ajout `data/combat/ai/opponent-aggressive.policy.json` ;
+- `combat-runtime.js` : identité actor/target uniquement ;
+- `action-resolver.js` : identité actor/target de résolution uniquement ;
+- `combat-test-ui.js` : coordination IA et routing actor-aware ;
+- tests V9 ;
+- documentation.
+
+Aucun changement :
+
+- Animation Core ;
+- FX Core ;
+- Distance Presenter V8 ;
+- profils visuels ;
+- dégâts / portée / coûts ;
+- dépôt `Zombicide-40k`.
+
+CI du HEAD fonctionnel avant synchronisation documentaire :
+
+- SHA : `e56d17702992b647b175254d3a980699c1f11e93` ;
+- run : `36127216610` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique / pré-audit ;
+- validation smartphone obligatoire avant checkpoint GREEN V9 final.
+
+À tester :
+
+1. lancer Boule de feu et observer une réaction automatique adverse ;
+2. vérifier la barre de charge de réaction dans le HUD adverse ;
+3. après la résolution joueur, observer l'adversaire choisir une action ;
+4. vérifier qu'il peut changer de distance si nécessaire ;
+5. vérifier sa propre barre de charge ;
+6. vérifier son animation d'attaque et les dégâts sur le joueur ;
+7. mettre le joueur KO et vérifier le remplacement automatique par sa réserve ;
+8. vérifier qu'après l'action adverse les contrôles joueur redeviennent disponibles.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
