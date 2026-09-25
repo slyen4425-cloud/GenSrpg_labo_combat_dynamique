@@ -1686,6 +1686,85 @@ Critère de fin :
 
 preview smartphone propre avec boutons directs, arène plus haute, KO adverse remplacé automatiquement, et mouvements Aérien/Téléportation visibles.
 
+
+## Résultat technique — player-ui-ko-special-moves-v5
+
+Implémentation présente :
+
+- menu déroulant Capacités supprimé ;
+- quatre capacités offensives visibles directement pour jeu de réflexe ;
+- Objets et Équipe restent en menus secondaires ;
+- arène augmentée à `min(54svh, 32rem)` sur grand écran, avec valeurs mobiles relevées ;
+- distance conserve trois boutons Courte / Moyenne / Longue ;
+- aucun retour des contrôles laboratoire.
+
+KO adverse :
+
+- `Roster Session.replaceKnockedOut()` est propriétaire du remplacement ;
+- le membre KO conserve son snapshot PV/énergie ;
+- un membre vivant de réserve est choisi automatiquement ;
+- le slot `opponent` est remplacé dans Combat Session ;
+- la présentation suit réellement `Hit -> KO` ;
+- l'UI attend `presentation.finished` avant de remplacer l'asset adverse ;
+- si aucun membre vivant ne reste, le roster retourne `team_defeated` et le slot adverse est masqué ;
+- aucun contrôle joueur sur la réserve adverse.
+
+Mouvements spéciaux :
+
+- nouveaux événements visuels :
+  - `teleport-attack` ;
+  - `aerial-attack` ;
+- presets dédiés dans chaque profil morphologique ;
+- le Visual Controller mesure la géométrie réelle acteur/cible via `getBoundingClientRect()` ;
+- il transmet uniquement les offsets visuels + `travelMs` à l'Animation Core ;
+- Téléportation :
+  - disparition à l'origine ;
+  - apparition sur la cible exactement au temps d'impact ;
+  - disparition sur cible ;
+  - retour origine ;
+- Aérien :
+  - montée ;
+  - disparition/reposition haute ;
+  - piqué jusqu'à la cible exactement au temps d'impact ;
+  - retour origine ;
+- les dégâts restent appliqués exclusivement par Combat Rules à `impactAtMs`.
+
+Sentinelles ajoutées / mises à jour :
+
+- roster KO adverse -> remplacement vivant ;
+- deux KO adverses -> `team_defeated` ;
+- Hit -> KO expose une promesse réelle de présentation ;
+- release teleport/aerial délègue au Visual Controller ;
+- plan Téléportation atteint la cible à `travelMs` ;
+- plan Aérien atteint la cible à `travelMs` ;
+- retour de chaque plan à l'état stable ;
+- capacités directes sans menu ;
+- deux menus secondaires seulement ;
+- arène plus haute ;
+- distance toujours trois boutons ;
+- géométrie spéciale sans autorité gameplay ;
+- CI complète existante conservée.
+
+HEAD technique avant synchronisation finale :
+
+`967ca37e9be5074aed804b51c3cfb963b858b09b`
+
+CI :
+
+- run : `36102462561`
+- conclusion : SUCCESS
+
+Validation utilisateur restante :
+
+- smartphone : vérifier que les quatre capacités restent immédiatement accessibles ;
+- vérifier que la nouvelle hauteur d'arène améliore la lisibilité ;
+- mettre Drakon adverse KO et confirmer l'entrée automatique de Marai adverse ;
+- tester Frappe téléportée : disparition -> cible -> retour ;
+- tester Plongeon aérien : montée -> disparition -> piqué -> retour ;
+- confirmer que les dégâts arrivent au contact visuel, avant la fin du retour.
+
+Le lot est GREEN technique, en attente de validation visuelle smartphone.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
