@@ -5602,3 +5602,34 @@ Statut :
 - aucune modification gameplay ;
 - preview smartphone à produire après synchronisation documentaire ;
 - aucun checkpoint GREEN final avant validation visuelle utilisateur.
+
+### Validation technique — approach-perspective-v9
+
+SHA candidat avant preview :
+
+`3d0d4e5d4c080be13c215ab4eae45736346077a3`
+
+CI :
+
+- workflow : `Laboratory CI` ;
+- run : `36178992001` ;
+- conclusion : SUCCESS.
+
+Revue de périmètre :
+
+- fichiers fonctionnels modifiés : profils visuels, Animation Core, tests ;
+- documentation synchronisée ;
+- aucun fichier Combat Rules / Runtime / Action Resolver modifié ;
+- aucun fichier Boule de feu / projectile clash modifié ;
+- `main` et `Zombicide-40k` inchangés.
+
+Branche preview prévue :
+
+`preview/lab-approach-perspective-v9-2026-09-25`
+
+Validation utilisateur attendue :
+
+- attaque aérienne joueur : la créature doit rétrécir en allant vers l'adversaire ;
+- attaque aérienne adverse : la créature doit grossir en venant vers le joueur ;
+- vérifier aussi Téléportation dans les deux sens ;
+- Griffe / approche au sol doit conserver le comportement déjà correct.
