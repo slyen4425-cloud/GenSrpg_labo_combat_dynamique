@@ -4997,3 +4997,51 @@ Statut :
 - GREEN technique uniquement ;
 - validation visuelle smartphone toujours **REQUise** ;
 - aucun checkpoint GREEN final avant confirmation explicite de Sylvain que la Boule de feu ressemble enfin à un vrai projectile allant du lanceur à la cible.
+
+
+### Extension validée — pipeline visuel de compétence en trois phases
+
+Retour utilisateur du 2026-09-25 :
+
+- le projectile est mieux lisible mais reste beaucoup trop petit ;
+- avant son départ, la compétence doit montrer une invocation / charge visuelle ;
+- le contrat de présentation souhaité pour une compétence riche est désormais :
+  1. invocation / charge ;
+  2. projectile / trajet ;
+  3. impact.
+
+Décision architecture :
+
+`SkillDefinition` reste strictement gameplay.
+
+Le binding de présentation peut exposer séparément :
+
+- `cast` : visuel d'invocation/charge ;
+- `travel` : visuel de projectile/trajectoire ;
+- `impact` : visuel d'arrivée/explosion.
+
+Chaîne autorisée :
+
+`Combat Runtime preparation -> Presenter cast -> Runtime release -> Presenter travel -> Runtime impact/resolution -> Presenter impact`
+
+Invariants :
+
+- `cast` suit la vraie durée de préparation de l'action ; il ne décide jamais du release ;
+- `travel` suit le vrai `travelMs` ; il ne décide jamais de l'impact ;
+- `impact` est déclenché uniquement depuis le résultat sémantique existant ;
+- interruption pendant la préparation => le cast visuel est annulé/nettoyé ;
+- aucune nouvelle horloge gameplay ;
+- aucune valeur de dégâts, énergie, portée ou disponibilité dans le binding visuel ;
+- le même contrat doit pouvoir servir plus tard à d'autres compétences.
+
+Extension de fichiers autorisés pour ce micro-lot :
+
+- `src/core/combat/combat-runtime.js` uniquement pour exposer un signal de démarrage d'action déjà décidée, sans modifier son timing ou sa résolution ;
+- tests Runtime/Presenter correspondants.
+
+Réglage visuel Boule de feu demandé :
+
+- projectile nettement plus gros que le candidat précédent ;
+- cast visible sur le lanceur pendant la préparation ;
+- projectile au release ;
+- explosion à l'impact.
