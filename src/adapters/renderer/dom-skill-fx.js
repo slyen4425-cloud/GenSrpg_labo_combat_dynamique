@@ -43,7 +43,7 @@ export function createDomSkillFxRenderer({
   anchors,
   targetAnchors = anchors,
   missLabel = "RATÉ",
-  resolveSkillPresentation = () => null,
+  presentationForSkill = () => null,
   animate = defaultAnimate
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
@@ -55,8 +55,8 @@ export function createDomSkillFxRenderer({
   if (!targetAnchors || typeof targetAnchors !== "object") {
     throw new TypeError("targetAnchors are required");
   }
-  if (typeof resolveSkillPresentation !== "function") {
-    throw new TypeError("resolveSkillPresentation must be a function");
+  if (typeof presentationForSkill !== "function") {
+    throw new TypeError("presentationForSkill must be a function");
   }
 
   let disposed = false;
@@ -101,7 +101,7 @@ export function createDomSkillFxRenderer({
 
     const arenaRect = arena.getBoundingClientRect();
     const presentation = skillId
-      ? resolveSkillPresentation(skillId)
+      ? presentationForSkill(skillId)
       : null;
 
     if (type === "miss") {
