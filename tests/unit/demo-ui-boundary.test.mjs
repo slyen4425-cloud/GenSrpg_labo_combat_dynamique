@@ -528,8 +528,11 @@ test("fireball demo binding uses stable Capture asset IDs and stays outside game
   const ui = await readFile("src/ui/combat-test-ui.js", "utf8");
 
   assert.match(source, /pack:capture:icon-skill-fireball-01/);
+  assert.match(source, /pack:capture:sprite-fireball-cast-01/);
   assert.match(source, /pack:capture:sprite-fireball-travel-01/);
   assert.match(source, /pack:capture:sprite-fireball-impact-01/);
+  assert.match(source, /castFx:\s*"pack:capture:sprite-fireball-cast-01"/);
+  assert.match(source, /displayScale:\s*1\.75/);
   assert.match(source, /sprite_skill_fireball_travel_rl_atlas_01\.png/);
   assert.match(source, /coreAnchor:\s*Object\.freeze\(\{\s*x:\s*0\.29,\s*y:\s*0\.5\s*\}\)/);
   assert.match(source, /headingRad:\s*Math\.PI/);
