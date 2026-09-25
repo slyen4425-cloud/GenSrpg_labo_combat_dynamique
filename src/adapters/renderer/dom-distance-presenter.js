@@ -11,10 +11,17 @@ const ANCHOR_BY_SLOT_AND_DISTANCE = Object.freeze({
   })
 });
 
-const SCALE_BY_DISTANCE = Object.freeze({
-  short: 1.00,
-  medium: 0.96,
-  long: 0.90
+const SCALE_BY_SLOT_AND_DISTANCE = Object.freeze({
+  player: Object.freeze({
+    long: 1.08,
+    medium: 0.98,
+    short: 0.88
+  }),
+  opponent: Object.freeze({
+    long: 0.88,
+    medium: 0.98,
+    short: 1.08
+  })
 });
 
 function anchorFor(slot, distance) {
@@ -31,10 +38,12 @@ function anchorFor(slot, distance) {
   return anchor;
 }
 
-function scaleFor(distance) {
-  const scale = SCALE_BY_DISTANCE[distance];
+function scaleFor(slot, distance) {
+  const scale = SCALE_BY_SLOT_AND_DISTANCE[slot]?.[distance];
   if (!Number.isFinite(scale)) {
-    throw new RangeError(`Unsupported visual distance: ${distance}`);
+    throw new RangeError(
+      `Unsupported visual slot/distance scale: ${slot}/${distance}`
+    );
   }
   return scale;
 }
@@ -52,8 +61,8 @@ export function createDomDistancePresenter({ fighters }) {
   };
 
   const scales = {
-    player: scaleFor("medium"),
-    opponent: scaleFor("medium")
+    player: scaleFor("player", "medium"),
+    opponent: scaleFor("opponent", "medium")
   };
 
   function apply(slot) {
@@ -70,8 +79,8 @@ export function createDomDistancePresenter({ fighters }) {
   function reset() {
     anchors.player = { ...anchorFor("player", "medium") };
     anchors.opponent = { ...anchorFor("opponent", "medium") };
-    scales.player = scaleFor("medium");
-    scales.opponent = scaleFor("medium");
+    scales.player = scaleFor("player", "medium");
+    scales.opponent = scaleFor("opponent", "medium");
     apply("player");
     apply("opponent");
   }
@@ -97,7 +106,7 @@ export function createDomDistancePresenter({ fighters }) {
     anchors[actorSlot] = {
       ...anchorFor(actorSlot, distanceEvent.to)
     };
-    scales[actorSlot] = scaleFor(distanceEvent.to);
+    scales[actorSlot] = scaleFor(actorSlot, distanceEvent.to);
     apply(actorSlot);
 
     return Object.freeze({
