@@ -111,12 +111,12 @@
         <button type="button" data-combat-move="long">Longue</button>
       </div>
 
-      <div class="action-bar" aria-label="Actions">
-        <details class="action-menu" data-action-menu>
-          <summary>Capacités</summary>
-          <div class="action-menu__panel" data-combat-skills></div>
-        </details>
+      <section class="skill-bar" aria-label="Capacités">
+        <span class="skill-bar__title">Capacités</span>
+        <div class="skill-bar__grid" data-combat-skills></div>
+      </section>
 
+      <div class="action-bar action-bar--utility" aria-label="Actions secondaires">
         <details class="action-menu" data-action-menu>
           <summary>Objets</summary>
           <div class="action-menu__panel" data-combat-items></div>
