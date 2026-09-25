@@ -1782,6 +1782,72 @@ Validation utilisateur restante :
 
 Le lot est GREEN technique, en attente de validation visuelle smartphone.
 
+
+## Chantier actif — ko-ground-travel-hud-v6
+
+Base GREEN :
+
+`c8ca895f64d69d8b6a4bc615e05b26a066a3fd58`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-ko-ground-travel-hud-v6-2026-09-25`
+
+Branche :
+
+`work/lab-ko-ground-travel-hud-v6-2026-09-25`
+
+Retours utilisateur :
+
+- KO adverse toujours non convaincant / remplacement non visible ;
+- attaque aérienne doit monter beaucoup plus haut, jusqu'à sortir de l'arène avant le piqué ;
+- arène encore un peu plus grande ;
+- attaques contact au sol doivent réellement parcourir la distance jusqu'à la cible ;
+- le temps d'approche contact doit être configurable par compétence via `travelMs` :
+  - Griffe test : 1,5 s ;
+  - une future compétence Sprint pourra utiliser 0,9 s, 0,5 s ou toute autre valeur ;
+- la barre de charge doit être plus grande et afficher nom de l'action + temps restant ;
+- l'UI doit continuer à tendre vers une présentation de combat type Monster Master : scène dominante, infos essentielles aux coins, capacités accessibles immédiatement.
+
+Diagnostic KO :
+
+- `playEventFor()` relançait `idle` après toute animation non-idle, y compris `ko` ;
+- un KO est un état terminal visuel jusqu'au remplacement, pas une animation transitoire ;
+- correction propriétaire : Visual Controller ne relance plus idle après `ko`;
+- le nouveau membre invoqué redémarre lui-même en idle via `setCreatureFor()`.
+
+Architecture contact au sol :
+
+- nouveau mouvement visuel générique `ground-attack` ;
+- `approachMode=ground` + `travelMs` pilotent l'approche ;
+- le Visual Controller mesure la géométrie réelle jusqu'à la cible ;
+- Animation Core parcourt cette distance en exactement `travelMs` ;
+- le point cible correspond donc à `impactAtMs`;
+- retour à la position d'origine après impact selon preset visuel ;
+- aucune vitesse spéciale codée pour Griffe : changer `travelMs` suffit.
+
+HUD charge :
+
+- Combat Runtime expose le temps de préparation total et restant ;
+- UI affiche le nom de l'action en charge + compte à rebours ;
+- aucune horloge UI indépendante.
+
+Tests :
+
+- KO ne retourne jamais automatiquement idle ;
+- KO -> remplacement roster -> nouvel idle ;
+- ground attack atteint la cible exactement à travelMs ;
+- modifier travelMs modifie réellement la durée d'approche ;
+- Griffe = 1500 ms de trajet ;
+- aerial rise sort nettement vers le haut ;
+- barre de charge affiche action + temps restant fourni par Runtime ;
+- dégâts toujours uniquement à impact ;
+- CI complète verte.
+
+Critère de fin :
+
+preview smartphone avec KO/remplacement visible, Griffe parcourant la scène en 1,5 s, Plongeon sortant par le haut, arène agrandie et charge lisible.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
