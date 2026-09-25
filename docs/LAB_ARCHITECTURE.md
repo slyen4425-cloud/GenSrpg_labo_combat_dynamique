@@ -201,6 +201,21 @@ Pour le projectile générique du laboratoire :
 
 Une future famille de projectiles `tracking / homing / anti-air` pourra avoir une stratégie de ciblage distincte et data-driven. Elle ne doit pas être simulée en réutilisant silencieusement l'anchor animé comme comportement par défaut.
 
+### Feedback local d'impact raté
+
+Un résultat sémantique `evaded` peut produire un feedback FX local `miss`.
+
+Chaîne :
+
+`Combat Rules -> outcome evaded -> Combat Resolution Presenter -> FX intent miss -> FX Renderer`
+
+Le feedback :
+
+- est positionné sur l'anchor stable de la cible, c'est-à-dire l'endroit où l'impact aurait dû se produire ;
+- affiche un libellé purement visuel (`RATÉ` dans la démo FR) ;
+- n'influence jamais PV, dégâts, hit ou esquive ;
+- disparaît après sa propre animation et ne crée aucun état gameplay.
+
 ## 9. Frontière future GenSrpG
 
 Raccord potentiel seulement :
