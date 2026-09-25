@@ -53,6 +53,7 @@ Une seule autorité active est permise pour chaque responsabilité :
 - définition d'une commande tactique : Combat Command Contract ;
 - progression/interruption temporelle de l'action active : Combat Runtime ;
 - distance et énergie de combat : Combat Rules Lab ;
+- roster actif/réserve et persistance des membres : Roster Session ;
 - résultat `hit/blocked/reflected/immune/countered` : Combat Rules Lab.
 
 Si deux modules pensent posséder la même responsabilité, le développement s'arrête jusqu'à clarification.
@@ -410,3 +411,19 @@ Interdictions :
 - une valeur de gameplay réglable provient d'un contrat ou d'une donnée explicite, pas d'un nombre magique dans l'UI.
 
 L'état courant du combat appartient à un propriétaire unique : Combat Session / Combat State.
+
+
+## 31. Roster de combat
+
+Lorsqu'un prototype manipule plusieurs créatures par équipe :
+
+- le roster actif/réserve possède un propriétaire unique : `Roster Session` ;
+- l'UI ne remplace jamais directement les stats d'un fighter ;
+- Rappel/Invocation passent par une résolution sémantique de commande puis par le Roster Session ;
+- les snapshots PV/énergie d'un membre rappelé sont persistés par le Roster Session ;
+- le Combat Session continue de ne connaître que les slots actuellement engagés ;
+- le contrôleur visuel ne décide que quel asset/profil afficher pour le slot reçu.
+
+Chaîne autorisée :
+
+`Command Runtime -> command-complete -> Roster Session -> Combat Session slot -> Visual Controller`
