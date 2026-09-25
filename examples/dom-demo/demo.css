@@ -182,9 +182,10 @@ summary {
 
 .combat-card__title {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  min-width: 0;
 }
 
 .combat-card__title strong {
@@ -266,23 +267,14 @@ summary {
 }
 
 .reserve {
-  position: absolute;
-  z-index: 13;
-  display: grid;
-  gap: 0.2rem;
-  max-width: 44%;
+  position: static;
+  z-index: auto;
+  display: block;
+  flex: 0 0 auto;
+  max-width: 55%;
 }
 
-.reserve--opponent {
-  top: 4.05rem;
-  right: 0.58rem;
-  justify-items: end;
-}
-
-.reserve--player {
-  left: 0.58rem;
-  bottom: 5.05rem;
-}
+.reserve--opponent,
 
 .reserve__title {
   display: none;
@@ -290,16 +282,17 @@ summary {
 
 .reserve__list {
   display: flex;
-  gap: 0.25rem;
+  justify-content: flex-end;
+  gap: 0.16rem;
 }
 
 .reserve-card {
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
-  min-width: 2rem;
-  min-height: 2rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  min-width: 1.55rem;
+  min-height: 1.55rem;
   padding: 0.08rem;
   overflow: hidden;
   border: 1px solid rgba(137, 223, 240, 0.2);
@@ -720,21 +713,11 @@ button.reserve-card {
     font-size: 0.4rem;
   }
 
-  .reserve--opponent {
-    top: 2.75rem;
-    right: 0.35rem;
-  }
-
-  .reserve--player {
-    left: 0.35rem;
-    bottom: 3.15rem;
-  }
-
   .reserve-card {
-    width: 1.75rem;
-    height: 1.75rem;
-    min-width: 1.75rem;
-    min-height: 1.75rem;
+    width: 1.45rem;
+    height: 1.45rem;
+    min-width: 1.45rem;
+    min-height: 1.45rem;
   }
 
   .combat-controls {
@@ -830,10 +813,10 @@ button.reserve-card {
   }
 
   .reserve-card {
-    width: 1.6rem;
-    height: 1.6rem;
-    min-width: 1.6rem;
-    min-height: 1.6rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    min-width: 1.35rem;
+    min-height: 1.35rem;
   }
 
   .action-option--skill strong {
@@ -860,10 +843,6 @@ button.reserve-card {
 
   .combat-card--player {
     bottom: 0.35rem;
-  }
-
-  .reserve--player {
-    bottom: 3.15rem;
   }
 
   .fighter--player {
