@@ -4787,3 +4787,26 @@ Règles :
 - les données gameplay `data/combat/skills/*.json` restent inchangées ;
 - l'absence de binding visuel doit conserver le projectile générique existant ;
 - aucune horloge ni dégât n'est ajouté côté UI/FX.
+
+
+### Résultat technique — fireball-asset-demo
+
+Raccord réalisé :
+
+- l'icône Boule de feu est exposée dans `assets/library/capture/icons/skills/icon_skill_fireball_01.webp` ;
+- le binding de démo utilise des `assetId` stables `pack:capture:...` séparés des données gameplay ;
+- le bouton Boule de feu affiche l'icône Capture ;
+- le projectile Boule de feu utilise l'atlas de travel Capture pendant son trajet réel ;
+- un impact animé Capture est affiché sur un résultat `hit` ;
+- les projectiles sans binding visuel conservent le fallback générique ;
+- dégâts, énergie, portée et timings de `fireball.skill.json` sont inchangés ;
+- aucun raccord au dépôt principal n'a été effectué.
+
+Validation automatisée du candidat avant synchronisation documentaire :
+
+- work SHA code : `9cb179e5590c76774b8cd15092f95d3684a723da` ;
+- CI work : `36163690048` — SUCCESS ;
+- preview : `preview/lab-fireball-asset-demo-2026-09-25` ;
+- CI preview : `36163744348` — SUCCESS.
+
+Validation utilisateur mobile requise avant checkpoint GREEN final.
