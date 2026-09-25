@@ -591,7 +591,7 @@ test("demo arena background is presentation-driven and keeps a CSS fallback", as
   const assets = await readFile("examples/dom-demo/demo-assets.js", "utf8");
 
   assert.match(source, /presentationForArena/);
-  assert.match(source, /applyArenaPresentation("forest")/);
+  assert.match(source, /applyArenaPresentation\("forest"\)/);
   assert.match(source, /--arena-background-image/);
   assert.match(assets, /core:arena-forest-01/);
   assert.match(
