@@ -2994,6 +2994,106 @@ Critère de fin :
 - validation smartphone ;
 - checkpoint GREEN V9.
 
+
+## Résultat technique candidat — opponent-ai-linear-v9
+
+Implémentation :
+
+- policy adverse déterministe stockée dans `data/combat/ai/linear-opponent.policy.json` ;
+- contrat dédié `Opponent AI Policy` ;
+- contrôleur `Opponent Decision Controller` séparé de l'UI ;
+- aucune horloge IA, aucun clic simulé, aucun calcul parallèle de dégâts/portée/coût ;
+- réactions choisies uniquement après `runtime.previewReaction()` ;
+- attaques choisies uniquement après `session.previewSkill()` ;
+- mouvements choisis uniquement après `session.previewMovement()` puis exécutés par `session.move()` ;
+- un mouvement IA ne parcourt qu'un palier par décision ;
+- Combat Runtime reste propriétaire de l'unique action active.
+
+Réactions linéaires du prototype :
+
+1. élément Feu -> Immunité feu ;
+2. projectile -> Bouclier miroir ;
+3. contact au sol -> Riposte ;
+4. autre contact -> Esquive.
+
+Cycle offensif du prototype :
+
+1. Griffe à courte ;
+2. Boule de feu à moyenne ;
+3. Plongeon aérien à longue ;
+4. Frappe téléportée à moyenne ;
+5. boucle.
+
+Raccord navigateur :
+
+- la charge HUD suit désormais le vrai `actorId` ;
+- une réaction adverse utilise également le HUD de charge adverse ;
+- release et résolution Presenter utilisent `actorId / targetId` réels ;
+- une attaque adverse anime donc le slot adverse vers le joueur ;
+- KO/remplacement est générique pour `player` ou `opponent` ;
+- après une résolution joueur, l'IA reçoit exactement une décision ;
+- après une résolution IA, elle ne s'auto-enchaîne pas ;
+- après un déplacement joueur, l'IA reçoit exactement une décision.
+
+Vrai chemin protégé :
+
+`joueur skill -> Runtime -> AI reaction preview/react -> impact -> résolution -> AI decision -> movement -> AI skill -> Runtime -> impact joueur -> Presenter -> KO joueur -> Roster replacement`
+
+Tests V9 :
+
+- validation de policy ;
+- décision déplacement/attaque ;
+- réaction réelle via Runtime ;
+- réaction impossible non forcée ;
+- Runtime occupé bloque le tour normal IA ;
+- actor/target propagés dans progress et résolution ;
+- attaque IA retire les PV joueur uniquement à impact ;
+- KO joueur -> Hit -> KO -> remplacement réel par la réserve ;
+- UI sans `runtime.react()` direct ni `setInterval`.
+
+CI du HEAD fonctionnel :
+
+- SHA : `cf6c713ea41b2bf649fd3940f91d1828b6aba85b` ;
+- run : `36126896334` ;
+- conclusion : SUCCESS.
+
+Revue du diff depuis V8 GREEN :
+
+- données policy IA ;
+- contrat policy ;
+- contrôleur de décision ;
+- extension actor-aware minimale de Runtime / résolution ;
+- raccord Demo UI ;
+- tests unitaires et intégration ;
+- documentation.
+
+Aucun changement :
+
+- Animation Core ;
+- FX Core ;
+- profils créatures ;
+- positions / scales V8 ;
+- structure HUD V8 ;
+- formules de dégâts ;
+- coûts de déplacement ;
+- `main` ;
+- `Zombicide-40k`.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone obligatoire avant checkpoint GREEN V9 final.
+
+Test utilisateur attendu :
+
+1. lancer une compétence joueur et observer une réaction adverse si elle est légale et financée ;
+2. après l'action joueur, observer une décision IA ;
+3. le premier objectif IA est Griffe à courte : elle se rapproche d'un palier si nécessaire, puis utilisera Griffe lors d'une décision ultérieure ;
+4. vérifier la charge adverse ;
+5. vérifier que les dégâts joueur arrivent au moment de l'impact adverse ;
+6. continuer plusieurs échanges pour observer le cycle Griffe -> Boule de feu -> Plongeon -> Téléportation ;
+7. si le joueur tombe à 0 PV, vérifier Hit -> KO -> remplacement automatique par sa réserve.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
