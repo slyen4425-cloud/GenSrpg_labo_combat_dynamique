@@ -1419,6 +1419,106 @@ Validation utilisateur restante :
 - après release, la même interruption doit être refusée ;
 - confirmer le rythme avant d'engager le vrai roster de réserve.
 
+
+## Chantier actif — player-ui-roster-v4
+
+Base GREEN :
+
+`6e9227a6b3e24519cba00782d7653cb215b74b63`
+
+Checkpoint départ :
+
+`checkpoint/lab-start-player-ui-roster-v4-2026-09-25`
+
+Branche :
+
+`work/lab-player-ui-roster-v4-2026-09-25`
+
+Objectif utilisateur :
+
+- remplacer la démo laboratoire par une vue de partie propre ;
+- ne laisser à l'écran que les contrôles du joueur ;
+- regrouper les capacités et actions dans des menus déroulants compacts ;
+- retirer Réglages du test, simulateur Stun, contrôles Idle/Hit/KO/import/intensité ;
+- créer deux équipes de deux créatures :
+  - joueur : Marai + Drakon ;
+  - adversaire : Drakon + Marai ;
+- afficher la réserve des deux équipes ;
+- rendre Rappel / Invocation réellement testables :
+  - Rappel range la créature active dans la réserve ;
+  - Invocation fait entrer la créature de réserve sélectionnée ;
+  - PV / énergie de chaque membre sont conservés entre les changements ;
+  - le visuel et le profil changent réellement dans l'arène ;
+- conserver coût énergie + charge + interruption des commandes déjà validés.
+
+Architecture / propriétaires :
+
+- `Roster Session` : équipe, membre actif, réserve, snapshots persistants de chaque membre ;
+- `Combat Session` : état des deux slots actuellement engagés ;
+- `Roster Session` est le seul propriétaire du swap membre <-> slot combat ;
+- `Demo Visual Controller` expose uniquement un changement de créature d'un slot ;
+- `Combat Test UI` déclenche les commandes et affiche le roster, sans muter directement les stats ;
+- `Combat Runtime` conserve l'autorité du timing Rappel/Invocation.
+
+Modèle de scène :
+
+- slots combat fixes : `player` et `opponent` ;
+- membres roster uniques :
+  - `player-marai`, `player-drakon` ;
+  - `opponent-drakon`, `opponent-marai` ;
+- les données espèce Maraileron/Braisombre sont clonées vers le slot combat actif au moment de l'invocation ;
+- à un Rappel, le snapshot du slot est sauvegardé dans le membre avant de vider le slot ;
+- à une Invocation, le snapshot du membre sélectionné devient le nouveau fighter du slot.
+
+UI autorisée :
+
+- arène ;
+- bandeaux Nom / PV / Charge ;
+- réserve joueur et réserve adversaire ;
+- énergie joueur ;
+- déplacement Courte/Moyenne/Longue ;
+- menu Capacités ;
+- menu Objets ;
+- menu Équipe (Rappel / Invocation) ;
+- statut court de combat.
+
+UI supprimée :
+
+- Réglages du test ;
+- simulateur Stun ;
+- Outils visuels laboratoire ;
+- contrôle manuel de l'adversaire ;
+- journal technique détaillé ;
+- sélecteur de créature déplacée ;
+- boutons Idle/Attaque/Hit/KO/Stop ;
+- import fichiers/intensité.
+
+Tests :
+
+- roster 2v2 initial correct ;
+- Rappel sauvegarde HP/énergie et vide le slot joueur ;
+- Invocation restaure le membre choisi et ses stats ;
+- swap visuel utilise la vue player/opponent correcte ;
+- adversaire reste non contrôlable depuis l'UI ;
+- menus joueur présents ;
+- aucun contrôle laboratoire restant dans le HTML ;
+- capacités ne sont plus toutes affichées simultanément ;
+- commands conservent leur vrai runtime de charge ;
+- sentinelles combat/impact/stun existantes restent vertes.
+
+Hors périmètre :
+
+- IA adversaire ;
+- choix automatisé de réaction adverse ;
+- KO avec remplacement forcé ;
+- animations spécifiques de rappel/invocation ;
+- roster GenSrpG réel ;
+- modification du dépôt Zombicide-40k.
+
+Critère de fin :
+
+CI verte + checkpoint GREEN + preview smartphone permettant de jouer Marai/Drakon contre Drakon/Marai avec Rappel/Invocation réels.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-mono-image-animation-core-green-2026-09-24`
