@@ -377,6 +377,8 @@ export function resolveSkillCompletion({
 
   return Object.freeze({
     ok: true,
+    actionType: "skill",
+    skillId: skill.id,
     outcome,
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
