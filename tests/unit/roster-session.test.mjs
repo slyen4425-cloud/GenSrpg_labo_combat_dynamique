@@ -186,34 +186,25 @@ test("KO opponent is replaced automatically from reserve and defeated snapshot i
   );
 });
 
-test("KO replacement returns team_defeated when no living reserve remains", () => {
+test("KO replacement returns team_defeated after both opponent members reach zero", () => {
   const { session, roster } = createHarness();
 
-  roster.recall("opponent");
-  roster.selectReserve("opponent", "opponent-marai");
-  roster.summon("opponent");
-
-  session.replaceFighter("opponent", {
-    ...session.snapshot().fighters.opponent,
-    initialHp: 0
-  });
-  roster.replaceKnockedOut("opponent");
-
-  const restoredDrakon = roster.snapshot().opponent.members.find(
-    (member) => member.id === "opponent-drakon"
-  );
-  assert.equal(restoredDrakon.hp, 90);
-
-  roster.recall("opponent");
-  roster.selectReserve("opponent", "opponent-drakon");
-  roster.summon("opponent");
   session.replaceFighter("opponent", {
     ...session.snapshot().fighters.opponent,
     initialHp: 0
   });
 
-  const result = roster.replaceKnockedOut("opponent");
-  assert.equal(result.ok, true);
-  assert.equal(result.outcome, "team_defeated");
+  const first = roster.replaceKnockedOut("opponent");
+  assert.equal(first.outcome, "ko_replaced");
+  assert.equal(first.replacementMemberId, "opponent-marai");
+
+  session.replaceFighter("opponent", {
+    ...session.snapshot().fighters.opponent,
+    initialHp: 0
+  });
+
+  const second = roster.replaceKnockedOut("opponent");
+  assert.equal(second.ok, true);
+  assert.equal(second.outcome, "team_defeated");
   assert.equal(roster.snapshot().opponent.activeMemberId, null);
 });
