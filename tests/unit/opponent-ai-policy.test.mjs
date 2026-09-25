@@ -30,7 +30,39 @@ test("normal V9 opponent policy has no automatic reactions and keeps determinist
       ["teleport-strike", "medium"]
     ]
   );
+  assert.deepEqual(policy.energyStrategy, {
+    decisionModes: ["quick", "strong"],
+    quickSkillIds: ["claw", "aerial-dive"],
+    strongSkillIds: ["fireball", "teleport-strike"]
+  });
   assert.equal(Object.isFrozen(policy), true);
+  assert.equal(Object.isFrozen(policy.energyStrategy), true);
+});
+
+test("opponent policy rejects unsupported energy modes and empty skill groups", () => {
+  assert.throws(
+    () =>
+      normalizeOpponentAiPolicy({
+        ...raw,
+        energyStrategy: {
+          ...raw.energyStrategy,
+          decisionModes: ["berserk"]
+        }
+      }),
+    /Unsupported energy decision mode/
+  );
+
+  assert.throws(
+    () =>
+      normalizeOpponentAiPolicy({
+        ...raw,
+        energyStrategy: {
+          ...raw.energyStrategy,
+          quickSkillIds: []
+        }
+      }),
+    /quickSkillIds must be a non-empty array/
+  );
 });
 
 test("opponent policy rejects unsupported distance and empty reaction matchers", () => {
