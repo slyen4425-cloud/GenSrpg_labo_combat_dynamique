@@ -127,6 +127,43 @@ test("renderer restores base state after a completed finite animation", async ()
   assert.equal(element.style.opacity, "1");
 });
 
+test("renderer preserves the terminal KO state until the slot is replaced", async () => {
+  const actor = maraileronPlayer();
+  const done = deferred();
+  const fakeAnimation = {
+    finished: done.promise,
+    cancel() {}
+  };
+  const element = {
+    style: {},
+    animate() {
+      return fakeAnimation;
+    }
+  };
+
+  const renderer = createDomActorRenderer({ element, actor });
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({ type: "ko", actorId: actor.id }),
+    actor,
+    profile: registry.get(actor.profile)
+  });
+
+  assert.equal(plan.restoreBaseState, false);
+
+  const handle = renderer.play(plan);
+  done.resolve();
+  const result = await handle.finished;
+
+  const finalSegment = plan.segments.at(-1);
+  assert.equal(result.status, "finished");
+  assert.equal(renderer.hasActiveAnimation, false);
+  assert.equal(element.style.opacity, String(finalSegment.opacity));
+  assert.equal(
+    element.style.transform,
+    composeDomTransform(actor, finalSegment.transform)
+  );
+});
+
 test("starting a new animation cancels the previous owner", () => {
   const actor = maraileronPlayer();
   let cancellations = 0;
