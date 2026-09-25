@@ -173,3 +173,21 @@ Mouvements spéciaux :
 - Plongeon aérien : montée -> disparition -> piqué sur l'adversaire -> impact -> retour.
 
 Le contact visuel avec la cible correspond au timestamp d'impact du moteur de combat. Les dégâts ne sont pas liés à la fin du retour visuel.
+
+
+## V6 — contact mobile et HUD temporel
+
+- Griffe se déplace maintenant réellement vers l'adversaire ;
+- son trajet de démonstration est de 1,5 s ;
+- cette valeur provient de `data/combat/skills/claw.skill.json` ;
+- modifier `travelMs` modifie automatiquement le délai jusqu'au contact ;
+- les dégâts arrivent lorsque la créature atteint la cible ;
+- le mouvement de retour se produit ensuite ;
+- Plongeon aérien monte plus haut avant le piqué ;
+- l'arène est encore légèrement plus haute ;
+- la barre sous le nom est plus grande et indique :
+  - action en préparation ;
+  - temps restant ;
+  - progression du trajet après release.
+
+Le KO utilise maintenant un événement sémantique explicite `fighter-ko` avant le remplacement du membre adverse.
