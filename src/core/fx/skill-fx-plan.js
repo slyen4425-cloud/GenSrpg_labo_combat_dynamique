@@ -1,3 +1,24 @@
+export function planSkillPreparationFx({
+  action,
+  actorSlot = "player"
+}) {
+  if (!action?.skill) {
+    return Object.freeze([]);
+  }
+
+  return Object.freeze([
+    Object.freeze({
+      type: "cast",
+      skillId: action.skill.id,
+      actorSlot,
+      durationMs: Math.max(
+        0,
+        Number(action.preparationMs) || 0
+      )
+    })
+  ]);
+}
+
 export function planSkillReleaseFx({
   action,
   actorSlot = "player",
