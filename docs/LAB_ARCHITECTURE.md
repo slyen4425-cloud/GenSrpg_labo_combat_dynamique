@@ -598,3 +598,38 @@ Combat Runtime accepte cette intention d'interruption uniquement si :
 - l'impact arrive avant `releaseAtMs`.
 
 Le Stun ne décide jamais lui-même du rendu et ne peut pas annuler rétroactivement une action déjà release.
+
+
+### Roster 2v2 V4
+
+Le combat conserve deux slots engagés stables :
+
+- `player` ;
+- `opponent`.
+
+Les espèces et membres d'équipe sont gérés séparément par `Roster Session`.
+
+```
+Roster Data
+   |
+   v
+Roster Session
+   |                       Combat Runtime
+   |                             |
+Recall/Summon command complete <-+
+   |
+   +---- save active member snapshot
+   +---- replace Combat Session slot
+   +---- update active/reserve member ids
+   |
+   v
+Visual Controller.setCreatureFor(slot)
+```
+
+Invariants :
+
+- chaque membre possède son propre snapshot PV/énergie ;
+- le slot combat est remplaçable mais garde son identifiant `player/opponent` ;
+- l'UI sélectionne un membre de réserve mais ne copie jamais elle-même ses stats ;
+- le contrôleur visuel ne connaît ni énergie ni règles de roster ;
+- l'adversaire peut posséder une réserve sans devenir contrôlable par le joueur.
