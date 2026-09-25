@@ -12,6 +12,19 @@ function centerRelativeTo(rect, arenaRect) {
   });
 }
 
+function clampUnit(value, fallback = 0.5) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return fallback;
+  }
+  return Math.min(1, Math.max(0, numeric));
+}
+
+function percent(value) {
+  const rounded = Math.round(Number(value) * 10000) / 100;
+  return `${rounded}%`;
+}
+
 function applySpriteStrip(node, visual, durationMs) {
   if (!visual?.url) {
     return false;
@@ -259,20 +272,33 @@ export function createDomSkillFxRenderer({
     node.style.left = `${from.x}px`;
     node.style.top = `${from.y}px`;
 
-    const spriteBound = applySpriteStrip(
-      node,
-      presentation?.travel ?? null,
-      durationMs
-    );
-    if (spriteBound) {
-      const angle = Math.atan2(
-        to.y - from.y,
-        to.x - from.x
-      );
-      node.style.setProperty?.(
-        "--skill-fx-angle",
-        `${angle}rad`
-      );
+    const travelVisual = presentation?.travel ?? null;
+    const deltaX = to.x - from.x;
+    const deltaY = to.y - from.y;
+    let spriteBound = false;
+
+    if (travelVisual?.url) {
+      const spriteNode = arena.ownerDocument.createElement("span");
+      const coreAnchorX = clampUnit(travelVisual.coreAnchor?.x, 0.5);
+      const coreAnchorY = clampUnit(travelVisual.coreAnchor?.y, 0.5);
+      const headingRad = Number.isFinite(Number(travelVisual.headingRad))
+        ? Number(travelVisual.headingRad)
+        : 0;
+      const travelAngle = Math.atan2(deltaY, deltaX);
+      const rotationRad = travelAngle - headingRad;
+
+      node.className += " skill-fx--sprite-shell";
+      node.dataset.assetId = travelVisual.assetId ?? "";
+
+      spriteNode.className = "skill-fx__sprite";
+      applySpriteStrip(spriteNode, travelVisual, durationMs);
+      spriteNode.style.left = percent(0.5 - coreAnchorX);
+      spriteNode.style.top = percent(0.5 - coreAnchorY);
+      spriteNode.style.transformOrigin =
+        `${percent(coreAnchorX)} ${percent(coreAnchorY)}`;
+      spriteNode.style.transform = `rotate(${rotationRad}rad)`;
+      node.append(spriteNode);
+      spriteBound = true;
     }
 
     arena.append(node);
@@ -280,18 +306,36 @@ export function createDomSkillFxRenderer({
     const record = { node, animation: null };
     active.add(record);
 
+    const keyframes = spriteBound
+      ? [
+          {
+            transform: "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.94)",
+            opacity: 0.95
+          },
+          {
+            transform: `translate(-50%, -50%) translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(1.04)`,
+            opacity: 1,
+            offset: 0.5
+          },
+          {
+            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(0.98)`,
+            opacity: 1
+          }
+        ]
+      : [
+          {
+            transform: "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.75)",
+            opacity: 0.25
+          },
+          {
+            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(1)`,
+            opacity: 1
+          }
+        ];
+
     const animation = animate(
       node,
-      [
-        {
-          transform: "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.75)",
-          opacity: 0.25
-        },
-        {
-          transform: `translate(-50%, -50%) translate3d(${to.x - from.x}px, ${to.y - from.y}px, 0) scale(1)`,
-          opacity: 1
-        }
-      ],
+      keyframes,
       {
         duration: Math.max(1, Number(durationMs) || 1),
         easing: "linear",
