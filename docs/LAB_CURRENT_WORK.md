@@ -5871,3 +5871,12 @@ Validation technique finale du lot arène forêt :
 - les deux échecs CI intermédiaires provenaient uniquement de sentinelles de test mal alignées (regex puis ancienne extension `.webp`) ; aucun correctif gameplay ni moteur n'a été nécessaire ;
 - aucun Combat Rules / Runtime / Action Resolver / SkillDefinition modifié ;
 - validation visuelle smartphone de l'arène encore attendue avant checkpoint GREEN final.
+
+
+### Validation visuelle utilisateur — arène forêt / UI
+
+Validation smartphone reçue le 2026-09-25 après intégration de la première arène forêt : utilisateur : « Wow trop beau ».
+
+Cette validation confirme visuellement le cadrage général de l'arène forêt et l'intégration du fond dans la démo au SHA `dd2d371a18b27dc0b3fc2efa472b8056a1432b1d`.
+
+Le lot arène / UI est considéré visuellement validé à cette étape.
