@@ -6,7 +6,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 Date : 2026-09-25
 
-Phase active : Phase 2B/V8 — Interface combat plein écran, spatialité et roster compact.
+Phase active : Phase 2B/V9 — Contrôleur adverse linéaire et combat autonome de test.
 
 Le dépôt est autonome et ne possède aucune dépendance à GenSrpG.
 
@@ -2854,6 +2854,145 @@ V8 est fonctionnellement validé sur smartphone et peut devenir la base GREEN du
 Checkpoint GREEN final attendu :
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
+
+
+## Chantier actif — opponent-ai-linear-v9
+
+Base GREEN obligatoire :
+
+`checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
+
+SHA de base :
+
+`1ea7cd4e1ae244ee3dc5912dc91ab47e5d4ee94e`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-opponent-ai-linear-v9-2026-09-25`
+
+Branche :
+
+`work/lab-opponent-ai-linear-v9-2026-09-25`
+
+Objectif :
+
+- rendre l'adversaire autonome dans la démo réelle ;
+- commencer par une politique linéaire/déterministe afin que chaque décision soit reproductible ;
+- faire utiliser à l'IA exclusivement les APIs existantes du Combat Session / Combat Runtime ;
+- observer réactions, déplacements, charges, attaques, dégâts, KO et remplacement dans le vrai chemin navigateur.
+
+Architecture cible :
+
+`Combat State + policy -> Opponent Decision Controller -> preview existante -> Combat Runtime / Combat Session -> Presenter`
+
+Comportement V9 initial :
+
+1. pendant une compétence joueur, l'IA tente une réaction compatible selon une politique déclarative ;
+2. après une action joueur terminée, l'IA obtient une décision ;
+3. la politique possède un plan offensif linéaire :
+   - compétence cible ;
+   - distance préférée ;
+4. si la compétence planifiée est légale maintenant, l'IA la lance via `runtime.startSkill()` ;
+5. sinon, si la distance est différente et le déplacement légal, l'IA avance d'un seul palier vers la distance préférée ;
+6. sinon l'IA attend ;
+7. le plan avance seulement après une compétence adverse effectivement lancée ;
+8. aucun hasard dans ce premier lot.
+
+Politique de test envisagée :
+
+- réactions :
+  - Feu -> Immunité feu ;
+  - Projectile -> Bouclier miroir ;
+  - contact au sol -> Riposte ;
+  - autre contact -> Esquive ;
+- cycle offensif :
+  - Griffe à courte ;
+  - Boule de feu à moyenne ;
+  - Plongeon aérien à longue ;
+  - Frappe téléportée à moyenne.
+
+Pré-requis techniques inclus :
+
+- progression Runtime actor-aware : `actorId` / `targetId` ;
+- progression de réaction actor-aware pour afficher la charge adverse ;
+- résolution skill expose `actorId` / `targetId` ;
+- Presenter UI route selon les vrais slots de la résolution et non plus selon `player -> opponent` en dur ;
+- KO / remplacement générique pour joueur ou adversaire afin qu'une attaque IA puisse réellement mettre le joueur KO.
+
+Propriétaires :
+
+- policy data : configuration IA uniquement ;
+- Opponent Decision Controller : choix de l'action adverse ;
+- Combat Runtime : seule horloge réelle ;
+- Combat Session / Rules : légalité, énergie, distance, dégâts et réactions ;
+- Roster Session : remplacement KO ;
+- Presenter / Visual Controller : rendu uniquement ;
+- Demo UI : déclenchement joueur et projection des décisions déjà prises.
+
+Fichiers autorisés :
+
+- `data/combat/ai/linear-opponent.policy.json` ;
+- `src/contracts/opponent-ai-policy.js` ;
+- `src/core/combat/opponent-decision-controller.js` ;
+- `src/core/combat/combat-runtime.js` ;
+- `src/core/combat/action-resolver.js` ;
+- `src/ui/combat-test-ui.js` ;
+- tests unitaires / intégration correspondants ;
+- documentation laboratoire.
+
+Domaines protégés :
+
+- timings d'impact existants ;
+- formule de dégâts ;
+- Animation Core ;
+- FX Core ;
+- profils créatures ;
+- positions / scales V8 ;
+- structure HUD V8 ;
+- règles de distance et coûts ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+Interdits :
+
+- aucun `setInterval` IA ;
+- aucun `setTimeout` IA servant de seconde horloge gameplay ;
+- aucun clic DOM simulé ;
+- aucun calcul de dégâts/portée/énergie dans le contrôleur ;
+- aucun choix aléatoire dans le premier prototype ;
+- aucune action IA si le Runtime possède déjà une action active.
+
+Tests prévus :
+
+- policy normalisée et invalide rejetée ;
+- réaction Feu / projectile / contact choisie via `runtime.previewReaction()` ;
+- aucune réaction impossible ou trop chère n'est forcée ;
+- plan offensif choisit une compétence seulement après `session.previewSkill()` ;
+- déplacement IA passe uniquement par `session.move()` ;
+- un seul palier est parcouru par décision de mouvement ;
+- Runtime progress expose le vrai actorId ;
+- HUD charge joueur/adversaire suit l'acteur réel ;
+- Presenter reçoit les slots réels pour une attaque adverse ;
+- attaque adverse réelle retire les PV joueur uniquement à l'impact ;
+- KO joueur -> Hit -> KO -> Roster Session -> remplacement ;
+- CI complète verte.
+
+Risques :
+
+- déclencher deux décisions IA pour une seule action joueur ;
+- lancer une attaque IA avant la fin visuelle du Hit/KO précédent ;
+- laisser l'UI redevenir propriétaire des règles ;
+- masquer la charge du mauvais combattant ;
+- boucle IA auto-entretenue après sa propre résolution.
+
+Critère de fin :
+
+- CI verte ;
+- vrai test navigateur où l'adversaire réagit, se déplace et attaque ;
+- dégâts joueur à l'impact ;
+- KO/remplacement joueur fonctionnel ;
+- validation smartphone ;
+- checkpoint GREEN V9.
 
 ## Dernier checkpoint GREEN
 
