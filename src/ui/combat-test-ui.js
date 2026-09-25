@@ -42,24 +42,6 @@ const DATA_URLS = Object.freeze({
       import.meta.url
     )
   }),
-  reactions: Object.freeze({
-    dodge: new URL(
-      "../../data/combat/skills/dodge.skill.json",
-      import.meta.url
-    ),
-    mirrorShield: new URL(
-      "../../data/combat/skills/mirror-shield.skill.json",
-      import.meta.url
-    ),
-    fireImmunity: new URL(
-      "../../data/combat/skills/fire-immunity.skill.json",
-      import.meta.url
-    ),
-    contactCounter: new URL(
-      "../../data/combat/skills/contact-counter.skill.json",
-      import.meta.url
-    )
-  }),
   aiPolicy: new URL(
     "../../data/combat/ai/linear-opponent.policy.json",
     import.meta.url
@@ -209,10 +191,6 @@ export async function mountCombatTest({
     clawRaw,
     aerialDiveRaw,
     teleportStrikeRaw,
-    dodgeRaw,
-    mirrorShieldRaw,
-    fireImmunityRaw,
-    contactCounterRaw,
     aiPolicyRaw,
     itemRaw,
     recallRaw,
@@ -225,10 +203,6 @@ export async function mountCombatTest({
     fetchJson(DATA_URLS.skills.claw, fetchImpl),
     fetchJson(DATA_URLS.skills.aerialDive, fetchImpl),
     fetchJson(DATA_URLS.skills.teleportStrike, fetchImpl),
-    fetchJson(DATA_URLS.reactions.dodge, fetchImpl),
-    fetchJson(DATA_URLS.reactions.mirrorShield, fetchImpl),
-    fetchJson(DATA_URLS.reactions.fireImmunity, fetchImpl),
-    fetchJson(DATA_URLS.reactions.contactCounter, fetchImpl),
     fetchJson(DATA_URLS.aiPolicy, fetchImpl),
     fetchJson(DATA_URLS.commands.item, fetchImpl),
     fetchJson(DATA_URLS.commands.recall, fetchImpl),
@@ -248,18 +222,7 @@ export async function mountCombatTest({
     )
   );
 
-  const reactionSkills = Object.freeze([
-    normalizeSkillDefinition(dodgeRaw),
-    normalizeSkillDefinition(mirrorShieldRaw),
-    normalizeSkillDefinition(fireImmunityRaw),
-    normalizeSkillDefinition(contactCounterRaw)
-  ]);
-
-  const reactionSkillsById = Object.freeze(
-    Object.fromEntries(
-      reactionSkills.map((skill) => [skill.id, skill])
-    )
-  );
+  const reactionSkillsById = Object.freeze({});
 
   const opponentAiPolicy =
     normalizeOpponentAiPolicy(aiPolicyRaw);
