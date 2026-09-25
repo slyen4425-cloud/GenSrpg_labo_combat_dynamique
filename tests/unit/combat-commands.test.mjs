@@ -88,7 +88,7 @@ test("combat commands have their own typed configurable contract", () => {
   assert.equal(summon.kind, "summon");
   assert.equal(summon.energyCost, 3);
   assert.equal(summon.preparationMs, 2200);
-  assert.equal(summon.effect.summonCreatureId, "reserve-creature-test");
+  assert.equal(summon.effect.summonCreatureId, null);
 });
 
 test("command start spends energy but command effect waits for completion", () => {
