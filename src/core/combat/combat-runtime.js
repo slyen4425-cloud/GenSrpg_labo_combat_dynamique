@@ -86,6 +86,8 @@ export function createCombatRuntime({
     return Object.freeze({
       actionType: null,
       actionId: null,
+      actorId: null,
+      targetId: null,
       skillId: null,
       commandId: null,
       elapsedMs: 0,
@@ -126,9 +128,18 @@ export function createCombatRuntime({
         elapsedMs - record.reaction.startedAtMs
       );
       reaction = Object.freeze({
+        actorId: record.action.targetId,
+        targetId: record.action.actorId,
         skillId: record.reaction.skillId,
+        actionName:
+          record.reaction.skill?.name ?? record.reaction.skillId,
         progress:
           duration <= 0 ? 1 : Math.min(1, reactionElapsed / duration),
+        preparationMs: duration,
+        remainingPreparationMs: Math.max(
+          0,
+          record.reaction.readyAtMs - elapsedMs
+        ),
         readyAtMs: record.reaction.readyAtMs
       });
     }
@@ -136,6 +147,8 @@ export function createCombatRuntime({
     return Object.freeze({
       actionType: record.action.actionType,
       actionId: record.action.actionId,
+      actorId: record.action.actorId,
+      targetId: record.action.targetId,
       skillId:
         record.action.actionType === "skill"
           ? record.action.actionId
