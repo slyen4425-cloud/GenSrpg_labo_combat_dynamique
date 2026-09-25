@@ -4810,3 +4810,29 @@ Validation automatisée du candidat avant synchronisation documentaire :
 - CI preview : `36163744348` — SUCCESS.
 
 Validation utilisateur mobile requise avant checkpoint GREEN final.
+
+
+## Retour utilisateur — fireball-asset-demo — rendu visuel NON VALIDÉ
+
+Date : 2026-09-25
+
+Retour smartphone de Sylvain :
+
+- le sprite Boule de feu est techniquement raccordé mais le rendu visuel ne donne pas l'effet attendu ;
+- la présence de l'asset, la CI verte et les tests automatisés ne constituent pas une validation visuelle ;
+- validation smartphone : **ÉCHEC / À REPRENDRE** ;
+- aucun checkpoint GREEN final ne doit être créé pour `fireball-asset-demo` tant que Sylvain n'a pas validé le rendu.
+
+Priorité immédiate :
+
+- diagnostic visuel et technique du raccord existant avant toute correction ;
+- vérifier découpage des frames, transparence, cadrage, scaling, atlas, background-size/background-position, animation steps, conteneur `.skill-fx`, orientation, trajectoire DOM, source/impact, synchronisation avec `travelMs`, nettoyage du node et éventuelle superposition avec le fallback ;
+- corriger la cause démontrée par petit lot, sans second moteur de projectile et sans modifier les règles de combat.
+
+Invariants :
+
+- `SkillDefinition` reste gameplay uniquement ;
+- `SkillPresentationBinding / assets` reste présentation uniquement ;
+- FX / Renderer n'a aucune autorité gameplay ;
+- dégâts uniquement à l'impact décidé par Combat Rules / Runtime ;
+- les visuels Boule de feu restent sous `assets/library/capture/`.
