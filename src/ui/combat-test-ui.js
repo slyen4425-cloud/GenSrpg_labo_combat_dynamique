@@ -362,7 +362,7 @@ export async function mountCombatTest({
 
   function formatCountdown(ms) {
     const seconds = Math.max(0, Number(ms) || 0) / 1000;
-    return `${seconds.toFixed(seconds < 1 ? 1 : 1)} s`;
+    return `${seconds.toFixed(1)} s`;
   }
 
   function setCharge({
