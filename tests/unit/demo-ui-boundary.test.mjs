@@ -82,6 +82,20 @@ test("V8 keeps the complete player HUD inside a fullscreen combat arena", async 
   assert.match(css, /\.combat-card--player\s*\{[\s\S]*bottom:/);
 });
 
+test("V8 simplified HUD removes decorative clutter and collapses idle-only surfaces", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.doesNotMatch(html, /combat-topbar/);
+  assert.match(html, /class="combat-controls__actions"/);
+  assert.match(css, /\.fighter__charge-info\[data-active="false"\][\s\S]*display:\s*none/);
+  assert.match(css, /\.fighter__charge-info\[data-active="false"\]\s*\+\s*\.fighter__charge[\s\S]*display:\s*none/);
+  assert.match(css, /\.reserve__title\s*\{[\s\S]*display:\s*none/);
+  assert.match(css, /\.reserve-card__text\s*\{[\s\S]*display:\s*none/);
+  assert.match(css, /\.skill-bar__title\s*\{[\s\S]*display:\s*none/);
+  assert.match(css, /\.action-bar--utility\s*\{[\s\S]*grid-template-rows:\s*repeat\(2/);
+});
+
 test("V8 ability dock stays compact and icon-ready on mobile", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
