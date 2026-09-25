@@ -1,3 +1,8 @@
+import {
+  projectileClashCandidate,
+  resolveProjectileClash
+} from "./projectile-clash.js";
+
 function defaultNow() {
   return globalThis.performance?.now?.() ?? Date.now();
 }
@@ -314,10 +319,70 @@ export function createCombatRuntime({
     emitStateIfChanged({ force: true });
   }
 
+  function processProjectileClash({
+    leftRecord,
+    rightRecord,
+    candidate
+  }) {
+    if (
+      activeByActor.get(leftRecord.action.actorId) !== leftRecord ||
+      activeByActor.get(rightRecord.action.actorId) !== rightRecord
+    ) {
+      return;
+    }
+
+    const currentCandidate = projectileClashCandidate({
+      leftAction: leftRecord.action,
+      leftStartedAtClockMs: leftRecord.startedAtClockMs,
+      rightAction: rightRecord.action,
+      rightStartedAtClockMs: rightRecord.startedAtClockMs
+    });
+
+    if (
+      !currentCandidate ||
+      Math.abs(currentCandidate.atClockMs - candidate.atClockMs) > 1e-6
+    ) {
+      return;
+    }
+
+    activeByActor.delete(leftRecord.action.actorId);
+    activeByActor.delete(rightRecord.action.actorId);
+
+    onProgress(idleProgress(leftRecord.action.actorId));
+    onProgress(idleProgress(rightRecord.action.actorId));
+
+    const resolutions = resolveProjectileClash({
+      state: session.snapshot(),
+      leftAction: leftRecord.action,
+      leftStartedAtClockMs: leftRecord.startedAtClockMs,
+      rightAction: rightRecord.action,
+      rightStartedAtClockMs: rightRecord.startedAtClockMs,
+      candidate: currentCandidate
+    });
+
+    const ordered = [
+      {
+        sequence: leftRecord.sequence,
+        resolution: resolutions.left
+      },
+      {
+        sequence: rightRecord.sequence,
+        resolution: resolutions.right
+      }
+    ].sort((left, right) => left.sequence - right.sequence);
+
+    for (const item of ordered) {
+      onResolved(item.resolution);
+    }
+
+    emitStateIfChanged({ force: true });
+  }
+
   function settleDue(atNowMs) {
     const due = [];
+    const records = activeRecords();
 
-    for (const record of activeRecords()) {
+    for (const record of records) {
       if (!record.released) {
         due.push({
           type: "release",
@@ -334,6 +399,39 @@ export function createCombatRuntime({
       });
     }
 
+    for (let leftIndex = 0; leftIndex < records.length; leftIndex += 1) {
+      for (
+        let rightIndex = leftIndex + 1;
+        rightIndex < records.length;
+        rightIndex += 1
+      ) {
+        const leftRecord = records[leftIndex];
+        const rightRecord = records[rightIndex];
+        const candidate = projectileClashCandidate({
+          leftAction: leftRecord.action,
+          leftStartedAtClockMs: leftRecord.startedAtClockMs,
+          rightAction: rightRecord.action,
+          rightStartedAtClockMs: rightRecord.startedAtClockMs
+        });
+
+        if (!candidate) {
+          continue;
+        }
+
+        due.push({
+          type: "clash",
+          at: candidate.atClockMs,
+          sequence: Math.min(
+            leftRecord.sequence,
+            rightRecord.sequence
+          ),
+          leftRecord,
+          rightRecord,
+          candidate
+        });
+      }
+    }
+
     due
       .filter((item) => item.at <= atNowMs)
       .sort((left, right) => {
@@ -341,13 +439,20 @@ export function createCombatRuntime({
           return left.at - right.at;
         }
         if (left.type !== right.type) {
-          return left.type === "release" ? -1 : 1;
+          const priority = {
+            release: 0,
+            clash: 1,
+            resolution: 2
+          };
+          return priority[left.type] - priority[right.type];
         }
         return left.sequence - right.sequence;
       })
       .forEach((item) => {
         if (item.type === "release") {
           processRelease(item.record);
+        } else if (item.type === "clash") {
+          processProjectileClash(item);
         } else {
           processResolution(item.record, atNowMs);
         }
