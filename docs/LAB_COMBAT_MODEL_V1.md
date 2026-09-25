@@ -391,3 +391,38 @@ Invariant :
 `stun start != stun release != stun impact`
 
 Seul l'impact peut demander l'interruption.
+
+
+## Extension V6 — vitesse d'approche configurable
+
+Une capacité de contact n'est pas instantanée par définition.
+
+Elle utilise :
+
+- `preparationMs` : temps avant le départ ;
+- `travelMs` : temps réel pour atteindre la cible ;
+- `recoveryMs` : récupération après impact.
+
+Exemple actuel :
+
+`Griffe = préparation 1,2 s + approche 1,5 s + impact`
+
+Le même moteur peut représenter :
+
+- Sprint rapide : 0,9 s d'approche ;
+- Sprint très rapide : 0,5 s ;
+- charge lourde : 2,0 s ;
+- toute autre valeur configurée dans la compétence.
+
+Invariant :
+
+**les dégâts sont appliqués à la fin de `travelMs`, lorsque le mouvement atteint visuellement la cible.**
+
+Les modes d'approche restent indépendants :
+
+- `ground` ;
+- `aerial` ;
+- `teleport` ;
+- `none`.
+
+Ils partagent le même timestamp d'impact fourni par Combat Rules.
