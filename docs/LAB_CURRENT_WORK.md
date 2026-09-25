@@ -5763,5 +5763,6 @@ Correction retenue :
 
 Statut :
 
-- lot fonctionnel en validation CI ;
+- SHA fonctionnel : `0946237f0efcf477130c323b653045bfc7f069f6` ;
+- CI work : run `36187017741` — SUCCESS ;
 - validation visuelle smartphone requise avant checkpoint GREEN.
