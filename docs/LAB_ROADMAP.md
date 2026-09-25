@@ -146,6 +146,19 @@ Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de
 - point d'impact visuel aligné sur `travelMs` ;
 - retour visuel après impact sans retarder les dégâts.
 
+### Extension V6 — mobilité d'impact et charge lisible
+
+- corps à corps au sol piloté par `travelMs` configurable ;
+- Griffe de test : 1,5 s pour atteindre la cible ;
+- support de capacités plus rapides sans changer le moteur (0,9 s / 0,5 s) ;
+- mouvement au sol jusqu'à la géométrie réelle de la cible ;
+- aérien pouvant sortir complètement du haut de l'arène avant piqué ;
+- KO sans retour à idle du combattant vaincu ;
+- KO détecté depuis l'événement hit et remplacé par le Roster Session ;
+- arène encore agrandie ;
+- barre de charge principale plus grande ;
+- nom de l'action et temps restant issus du Combat Runtime.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
