@@ -391,3 +391,30 @@ Invariant :
 `stun start != stun release != stun impact`
 
 Seul l'impact peut demander l'interruption.
+
+
+## Extension V6 — vitesse d'approche configurable
+
+Pour toute compétence nécessitant un déplacement vers la cible :
+
+`impactAtMs = releaseAtMs + travelMs`
+
+`travelMs` est une donnée de compétence.
+
+Exemples :
+
+- Griffe : `travelMs = 1500` ;
+- Sprint rapide hypothétique : `travelMs = 900` ;
+- Sprint très rapide hypothétique : `travelMs = 500`.
+
+Le moteur ne contient aucun nom de compétence spécifique pour cette règle.
+
+Approches concernées :
+
+- `ground` ;
+- `aerial` ;
+- `teleport`.
+
+Le mode d'approche change uniquement la manière dont le trajet est visualisé. Le timestamp d'impact reste décidé par Combat Runtime / Action Resolver.
+
+Lorsqu'un hit fait passer les PV à zéro, le Resolver émet aussi `fighter-ko` au même timestamp que le hit.
