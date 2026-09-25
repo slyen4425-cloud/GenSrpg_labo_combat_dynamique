@@ -742,3 +742,101 @@ Le Combat Runtime expose :
 - `chargeProgress`.
 
 L'UI ne possède aucune horloge locale. Elle affiche ces valeurs uniquement.
+
+
+## 13. Contrôleur de décision adverse V9
+
+L'IA adverse est un client des règles de combat existantes. Elle ne constitue pas un moteur parallèle.
+
+Chaîne autorisée :
+
+```
+Combat State / Runtime
+        |
+        v
+Opponent Decision Controller
+        |
+        +---- previewReaction / previewSkill / previewMovement
+        |
+        v
+intention légale
+        |
+        +---- Combat Runtime.react()
+        +---- Combat Runtime.startSkill()
+        +---- Combat Session.move()
+        |
+        v
+Semantic Resolution
+        |
+        v
+Combat Resolution Presenter
+        |
+        v
+Animation / FX / Renderer
+```
+
+### Propriétaire
+
+`src/core/combat/opponent-decision-controller.js`
+
+Responsabilité unique :
+
+- ordonner des options déjà déclarées ;
+- choisir une réaction légale ;
+- choisir une compétence offensive légale ;
+- proposer un déplacement vers une portée autorisée ;
+- avancer une politique déterministe de décision.
+
+Il ne possède pas :
+
+- le temps ;
+- l'énergie ;
+- les coûts ;
+- la portée ;
+- les dégâts ;
+- le KO ;
+- le roster ;
+- l'animation ;
+- le DOM.
+
+### Politique
+
+La politique est data-driven dans `data/combat/ai/`.
+
+Le premier profil V9 est volontairement déterministe afin que chaque décision soit reproductible en test.
+
+Le hasard éventuel futur devra être injecté explicitement et ne pourra jamais remplacer les previews des règles.
+
+### Temps
+
+Il n'existe aucune boucle IA autonome.
+
+Le Combat Runtime reste l'unique horloge gameplay.
+
+L'adversaire peut :
+
+- sélectionner une réaction pendant l'action active via le vrai raccord `previewReaction() -> react()` ;
+- démarrer une compétence uniquement lorsque le Runtime est libre ;
+- effectuer un déplacement sémantique via Combat Session avant son attaque.
+
+### Identité des acteurs
+
+Le Runtime expose `actorId / targetId` dans ses snapshots de progression.
+
+Une réaction expose également l'identité de son acteur/cible.
+
+Une résolution skill expose `actorId / targetId` au niveau racine.
+
+Le raccord de présentation utilise ces identités au lieu de supposer `player -> opponent`.
+
+### KO bidirectionnel
+
+Le Presenter détecte toujours le KO depuis l'événement sémantique `hit.hpAfter <= 0`.
+
+Le raccord appelle ensuite :
+
+`Roster Session.replaceKnockedOut(slotId)`
+
+pour `player` ou `opponent`.
+
+L'IA ne choisit jamais elle-même le remplaçant KO.
