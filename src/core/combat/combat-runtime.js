@@ -92,6 +92,9 @@ export function createCombatRuntime({
       chargeProgress: 0,
       phase: "idle",
       released: false,
+      actionName: null,
+      preparationMs: 0,
+      remainingPreparationMs: 0,
       reaction: null
     });
   }
@@ -105,6 +108,15 @@ export function createCombatRuntime({
     if (elapsedMs >= record.action.releaseAtMs) {
       phase = elapsedMs < record.action.impactAtMs ? "travel" : "impact";
     }
+
+    const actionName =
+      record.action.actionType === "skill"
+        ? record.action.skill?.name ?? record.action.actionId
+        : record.action.command?.name ?? record.action.actionId;
+    const remainingPreparationMs = Math.max(
+      0,
+      record.action.releaseAtMs - elapsedMs
+    );
 
     let reaction = null;
     if (record.reaction) {
@@ -133,6 +145,9 @@ export function createCombatRuntime({
           ? record.action.actionId
           : null,
       elapsedMs,
+      actionName,
+      preparationMs,
+      remainingPreparationMs,
       chargeProgress,
       phase,
       released: record.released,
