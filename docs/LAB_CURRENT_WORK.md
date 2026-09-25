@@ -2070,7 +2070,7 @@ Validation smartphone restante :
 
 ## Dernier checkpoint GREEN
 
-`checkpoint/lab-impact-mobility-ko-ui-v6-green-2026-09-25`
+`checkpoint/lab-ko-runtime-true-path-v6-green-2026-09-25`
 
 ## Règle de reprise
 
