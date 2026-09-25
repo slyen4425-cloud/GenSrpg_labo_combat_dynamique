@@ -5633,3 +5633,36 @@ Validation utilisateur attendue :
 - attaque aérienne adverse : la créature doit grossir en venant vers le joueur ;
 - vérifier aussi Téléportation dans les deux sens ;
 - Griffe / approche au sol doit conserver le comportement déjà correct.
+
+
+### Retour smartphone — perspective présente mais trop peu perceptible
+
+Retour utilisateur du 2026-09-25 :
+
+- le sens attendu reste confirmé : joueur -> adversaire = rétrécissement ; adversaire -> joueur = grossissement ;
+- le candidat `41a0aad655d03027bb1a14ec0f0d634f225f08e6` ne montre pas une variation suffisamment visible sur smartphone ;
+- ce retour invalide la validation visuelle du candidat, sans invalider l'architecture du calcul partagé.
+
+Diagnostic :
+
+- le vrai chemin DOM transmet bien `targetTranslateY` et `arenaHeight` ;
+- Animation Core applique bien `approachPerspectiveScale` aux trois approches ;
+- le renderer compose correctement ce scale avec le scale de base de l'acteur ;
+- aucune condition `player/opponent` n'est nécessaire ;
+- avec l'ancien preset `strength=0.8 / min=0.82 / max=1.22`, le plus petit écart vertical représentatif du combat (environ 16 % de la hauteur d'arène) ne produisait qu'un facteur d'environ `0.872 / 1.128`, soit ±12,8 %, trop discret sur les sprites actuels.
+
+Correction de données retenue :
+
+- aucun changement dans `plan-animation.js` ;
+- preset partagé renforcé dans les profils uniquement :
+  - `perspectiveScaleStrength: 1.25` ;
+  - `perspectiveScaleMin: 0.70` ;
+  - `perspectiveScaleMax: 1.35` ;
+- à 16 % de profondeur, la règle commune produit maintenant environ `0.80 / 1.20` avant composition propre à chaque approche ;
+- ajout d'une sentinelle couvrant Ground / Aerial / Teleport à cette profondeur minimale représentative ;
+- aucun timing, dégât, coût, portée, clash projectile, Boule de feu, Runtime, Action Resolver ou Demo UI modifié.
+
+Statut :
+
+- micro-lot correctif en validation CI ;
+- aucun checkpoint GREEN final avant nouveau test smartphone.

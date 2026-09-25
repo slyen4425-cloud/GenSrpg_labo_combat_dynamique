@@ -445,6 +445,86 @@ test("teleport approach uses the same camera-depth perspective rule", () => {
   assert.equal(towardCamera.segments.at(-1).transform.scaleY, 1);
 });
 
+
+test("shared perspective stays clearly visible at the smallest live arena depth delta", () => {
+  const current = actor("drake");
+  const profile = registry.get("drake");
+  const arenaHeight = 800;
+  const targetTranslateY = 128;
+  const cases = [
+    {
+      type: "ground-attack",
+      impactLabel: "ground-approach-impact",
+      baseScaleX: profile.specialMoves.ground.impactScaleX,
+      travelMs: 900
+    },
+    {
+      type: "aerial-attack",
+      impactLabel: "aerial-dive-impact",
+      baseScaleX: 1.05,
+      travelMs: 850
+    },
+    {
+      type: "teleport-attack",
+      impactLabel: "teleport-impact",
+      baseScaleX: 1.04,
+      travelMs: 500
+    }
+  ];
+
+  for (const item of cases) {
+    const towardDepth = planAnimation({
+      event: normalizeCombatVisualEvent({
+        type: item.type,
+        actorId: current.id,
+        targetId: "target",
+        metadata: {
+          targetTranslateX: 140,
+          targetTranslateY: -targetTranslateY,
+          arenaHeight,
+          arenaExitTranslateY: -340,
+          travelMs: item.travelMs
+        }
+      }),
+      actor: current,
+      profile
+    });
+
+    const towardCamera = planAnimation({
+      event: normalizeCombatVisualEvent({
+        type: item.type,
+        actorId: current.id,
+        targetId: "target",
+        metadata: {
+          targetTranslateX: -140,
+          targetTranslateY,
+          arenaHeight,
+          arenaExitTranslateY: -340,
+          travelMs: item.travelMs
+        }
+      }),
+      actor: current,
+      profile
+    });
+
+    const depthImpact = towardDepth.segments.find(
+      (segment) => segment.label === item.impactLabel
+    );
+    const cameraImpact = towardCamera.segments.find(
+      (segment) => segment.label === item.impactLabel
+    );
+
+    assert.ok(
+      depthImpact.transform.scaleX <= item.baseScaleX * 0.81,
+      `${item.type} should visibly shrink toward arena depth`
+    );
+    assert.ok(
+      cameraImpact.transform.scaleX >= item.baseScaleX * 1.19,
+      `${item.type} should visibly grow toward player camera`
+    );
+  }
+});
+
 test("profiles expose one shared perspective preset instead of ground-only duplicates", () => {
   for (const profile of [registry.get("drake"), registry.get("serpentine")]) {
     assert.deepEqual(
