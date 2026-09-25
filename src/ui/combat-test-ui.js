@@ -985,7 +985,7 @@ export async function mountCombatTest({
       render(state);
 
       if (
-        aiWaitingForEnergy &&
+        opponentAi &&
         !runtime.hasActiveActionFor("opponent") &&
         !koTransitionPending &&
         !aiDecisionInProgress
