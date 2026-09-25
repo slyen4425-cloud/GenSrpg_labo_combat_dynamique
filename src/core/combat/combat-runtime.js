@@ -18,6 +18,7 @@ export function createCombatRuntime({
   clearTimer = defaultClearTimer,
   onState = () => {},
   onProgress = () => {},
+  onStarted = () => {},
   onRelease = () => {},
   onResolved = () => {},
   onInterrupted = () => {}
@@ -434,6 +435,10 @@ export function createCombatRuntime({
 
     activeByActor.set(actorId, record);
 
+    onStarted(Object.freeze({
+      action: record.action,
+      elapsedMs: 0
+    }));
     emitStateIfChanged({ force: true });
     onProgress(progressSnapshot(record, 0));
 
