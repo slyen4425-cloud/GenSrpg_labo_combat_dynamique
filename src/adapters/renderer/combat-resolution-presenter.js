@@ -118,12 +118,9 @@ export function createCombatResolutionPresenter({
     switch (resolution.outcome) {
       case "hit": {
         const hitEvent = resolution.events?.find(
-          (item) =>
-            item.type === "hit" &&
-            item.actorId ===
-              (targetSlot === "opponent" ? "opponent" : "player")
+          (item) => item.type === "hit" && item.reflected !== true
         );
-        ko = hitEvent?.hpAfter === 0;
+        ko = Number(hitEvent?.hpAfter) <= 0;
 
         finished = visuals
           .playEventFor(targetSlot, "hit")
@@ -142,7 +139,7 @@ export function createCombatResolutionPresenter({
             item.type === "hit" &&
             item.reflected === true
         );
-        ko = reflectedHit?.hpAfter === 0;
+        ko = Number(reflectedHit?.hpAfter) <= 0;
         visuals.cancelFor(actorSlot);
         finished = visuals
           .playEventFor(actorSlot, "hit")
