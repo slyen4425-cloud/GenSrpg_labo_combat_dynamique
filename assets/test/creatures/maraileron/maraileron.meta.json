@@ -39,5 +39,51 @@
     "x": 0,
     "y": 0
   },
-  "notes": "Créature aquatique serpentine de test pour le laboratoire."
+  "notes": "Créature aquatique serpentine de test pour le laboratoire.",
+  "fxAnchors": {
+    "player": {
+      "head": {
+        "x": 0.7,
+        "y": 0.35
+      },
+      "mouth": {
+        "x": 0.76,
+        "y": 0.39
+      },
+      "handLeft": {
+        "x": 0.61,
+        "y": 0.54
+      },
+      "handRight": {
+        "x": 0.74,
+        "y": 0.57
+      },
+      "tail": {
+        "x": 0.54,
+        "y": 0.82
+      }
+    },
+    "opponent": {
+      "head": {
+        "x": 0.28,
+        "y": 0.42
+      },
+      "mouth": {
+        "x": 0.22,
+        "y": 0.47
+      },
+      "handLeft": {
+        "x": 0.4,
+        "y": 0.56
+      },
+      "handRight": {
+        "x": 0.32,
+        "y": 0.6
+      },
+      "tail": {
+        "x": 0.53,
+        "y": 0.8
+      }
+    }
+  }
 }
