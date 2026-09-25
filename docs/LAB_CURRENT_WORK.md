@@ -1426,6 +1426,20 @@ CI :
 - run : `36102503071`
 - conclusion : SUCCESS
 
+Checkpoint GREEN technique :
+
+`checkpoint/lab-ko-ground-travel-hud-v6-green-2026-09-25`
+
+Branche preview :
+
+`preview/lab-ko-ground-travel-hud-v6-2026-09-25`
+
+CI de clôture intermédiaire :
+
+- SHA : `18411d00c6c97260bdb2855efe4edc6ea5d2519e`
+- run : `36107439751`
+- conclusion : SUCCESS
+
 Validation utilisateur restante :
 
 - smartphone : visibilité des trois boutons tactiques ;
