@@ -6,7 +6,13 @@ function finite(value, field) {
   return number;
 }
 
-export function createAnimationPlan({ actorId, eventType, loop = false, segments }) {
+export function createAnimationPlan({
+  actorId,
+  eventType,
+  loop = false,
+  restoreBaseState = !loop,
+  segments
+}) {
   if (typeof actorId !== "string" || actorId.trim() === "") {
     throw new TypeError("actorId must be a non-empty string");
   }
@@ -51,7 +57,7 @@ export function createAnimationPlan({ actorId, eventType, loop = false, segments
     actorId: actorId.trim(),
     eventType: eventType.trim(),
     loop: Boolean(loop),
-    restoreBaseState: !loop,
+    restoreBaseState: Boolean(restoreBaseState),
     segments: Object.freeze(normalizedSegments)
   });
 }
