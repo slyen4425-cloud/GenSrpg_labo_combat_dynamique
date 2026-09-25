@@ -221,6 +221,18 @@ test("ground approach perspective uses measured arena geometry rather than gamep
   );
 });
 
+test("miss impact feedback remains a visual FX label only", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+  const presenter = await readFile(
+    "src/adapters/renderer/combat-resolution-presenter.js",
+    "utf8"
+  );
+
+  assert.match(css, /\.skill-fx--miss\s*\{/);
+  assert.match(presenter, /planSkillOutcomeFx/);
+  assert.doesNotMatch(css, /hpAfter|damage/);
+});
+
 test("evasion feedback explicitly shows zero damage and projectile targets use stable slots", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
