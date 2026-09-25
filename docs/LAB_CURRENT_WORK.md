@@ -2616,6 +2616,43 @@ Statut :
 - GREEN technique ;
 - validation smartphone des portraits et des trois positions requise avant checkpoint GREEN final de ce sous-lot.
 
+
+## Retour smartphone V8 — perspective d'échelle inversée à corriger
+
+Validation utilisateur :
+
+- trajectoire diagonale joueur validée ;
+- comportement adversaire pas encore testable manuellement ;
+- défaut identifié : la taille actuelle suit encore l'ancienne logique `short > medium > long`, alors que la perspective écran demandée est l'inverse.
+
+Règle visuelle cible :
+
+- joueur :
+  - plus à gauche / bas-gauche = plus proche de la caméra joueur = plus gros ;
+  - plus proche du centre = plus petit ;
+- adversaire :
+  - plus à droite / haut-droite = plus proche de la caméra adverse = plus gros ;
+  - plus proche du centre = plus petit.
+
+Conséquence :
+
+- `long` doit être le plus grand aux deux extrémités ;
+- `medium` intermédiaire ;
+- `short` le plus petit près du centre.
+
+Correction autorisée :
+
+- `DomDistancePresenter` uniquement pour la projection de scale ;
+- tests du Presenter ;
+- documentation.
+
+Interdits :
+
+- aucun changement de distance sémantique ;
+- aucun changement de coût de mouvement ;
+- aucun changement des coordonnées X/Y validées ;
+- aucun changement du Combat Runtime ou de l'IA.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
