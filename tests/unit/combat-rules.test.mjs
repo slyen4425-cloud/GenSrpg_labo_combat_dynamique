@@ -68,6 +68,7 @@ test("skill classification separates category, form and element", () => {
   assert.equal(mirrorShield.category, "defensive");
   assert.equal(mirrorShield.form, "self");
   assert.equal(claw.approachMode, "ground");
+  assert.equal(claw.travelMs, 1500);
   assert.deepEqual(mirrorShield.reaction.reflectForms, ["projectile"]);
 });
 
@@ -335,7 +336,7 @@ test("reaction that becomes ready after impact does not apply or spend energy", 
     category: "counter",
     form: "self",
     energyCost: 2,
-    preparationMs: 1500,
+    preparationMs: 3000,
     allowedDistances: ["short", "medium", "long"],
     reaction: {
       counterForms: ["contact"]
