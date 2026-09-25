@@ -52,7 +52,10 @@ const reactions = Object.fromEntries(
   )
 );
 
-function harness({ opponentEnergy = 10 } = {}) {
+function harness({
+  opponentEnergy = 10,
+  aiPolicy = policy
+} = {}) {
   const session = createCombatSession({
     distance: "medium",
     fighters: [
@@ -75,7 +78,7 @@ function harness({ opponentEnergy = 10 } = {}) {
     session,
     runtime,
     roster,
-    policy,
+    policy: aiPolicy,
     skillsById: offensive,
     reactionsById: reactions
   });
@@ -100,8 +103,38 @@ test("linear opponent moves one band toward the planned skill then starts it", (
   assert.equal(ai.snapshot().planIndex, 1);
 });
 
-test("linear opponent reacts to a fire player skill through Runtime preview and react", () => {
-  const { session, runtime, ai } = harness();
+test("normal V9 policy never auto-reacts to a player fireball", () => {
+  const { runtime, ai } = harness();
+
+  const started = runtime.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: offensive.fireball
+  });
+  assert.equal(started.ok, true);
+
+  const reaction = ai.maybeReactToActiveAction();
+  assert.equal(reaction.status, "waiting");
+  assert.equal(reaction.reason, "no_legal_reaction");
+});
+
+test("reaction engine remains available for a dedicated future policy", () => {
+  const reactionPolicy = normalizeOpponentAiPolicy({
+    id: "reaction-engine-test",
+    actorId: "opponent",
+    targetId: "player",
+    reactionRules: [
+      {
+        skillId: "fire-immunity",
+        when: { element: "fire" }
+      }
+    ],
+    turnPlan: policy.turnPlan
+  });
+
+  const { session, runtime, ai } = harness({
+    aiPolicy: reactionPolicy
+  });
   const beforeEnergy = session.snapshot().fighters.opponent.energy;
 
   const started = runtime.startSkill({
@@ -122,8 +155,23 @@ test("linear opponent reacts to a fire player skill through Runtime preview and 
   );
 });
 
-test("linear opponent never forces an unaffordable reaction", () => {
-  const { runtime, ai } = harness({ opponentEnergy: 0 });
+test("reaction engine never forces an unaffordable configured reaction", () => {
+  const reactionPolicy = normalizeOpponentAiPolicy({
+    id: "reaction-energy-test",
+    actorId: "opponent",
+    targetId: "player",
+    reactionRules: [
+      {
+        skillId: "fire-immunity",
+        when: { element: "fire" }
+      }
+    ],
+    turnPlan: policy.turnPlan
+  });
+  const { runtime, ai } = harness({
+    opponentEnergy: 0,
+    aiPolicy: reactionPolicy
+  });
 
   const started = runtime.startSkill({
     actorId: "player",
