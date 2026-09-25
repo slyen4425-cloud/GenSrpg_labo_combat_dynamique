@@ -1409,6 +1409,23 @@ CI :
 - run : `36072510231`
 - conclusion : SUCCESS
 
+Checkpoint GREEN prévu :
+
+`checkpoint/lab-player-ui-ko-special-moves-v5-green-2026-09-25`
+
+Branche de prévisualisation :
+
+`preview/lab-player-ui-ko-special-moves-v5-2026-09-25`
+
+SHA technique avant synchronisation finale :
+
+`84220f111c37feb666641e6b65706606896d83e7`
+
+CI :
+
+- run : `36102503071`
+- conclusion : SUCCESS
+
 Validation utilisateur restante :
 
 - smartphone : visibilité des trois boutons tactiques ;
