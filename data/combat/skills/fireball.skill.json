@@ -18,5 +18,9 @@
       "burn-capable"
     ]
   },
-  "approachMode": "none"
+  "approachMode": "none",
+  "projectileClash": {
+    "mode": "mutual_cancel",
+    "group": "fire-orb"
+  }
 }
