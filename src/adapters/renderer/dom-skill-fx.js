@@ -55,6 +55,7 @@ export function createDomSkillFxRenderer({
   arena,
   anchors,
   targetAnchors = anchors,
+  sourceAnchorFor = null,
   missLabel = "RATÉ",
   presentationForSkill = () => null,
   animate = defaultAnimate
@@ -71,6 +72,9 @@ export function createDomSkillFxRenderer({
   if (typeof presentationForSkill !== "function") {
     throw new TypeError("presentationForSkill must be a function");
   }
+  if (sourceAnchorFor !== null && typeof sourceAnchorFor !== "function") {
+    throw new TypeError("sourceAnchorFor must be a function when supplied");
+  }
 
   let disposed = false;
   const active = new Set();
@@ -82,6 +86,24 @@ export function createDomSkillFxRenderer({
     }
     return element;
   }
+  function sourceRect(slot, anchorName = null) {
+    if (anchorName && sourceAnchorFor) {
+      const rect = sourceAnchorFor(slot, anchorName);
+      if (
+        !rect ||
+        !Number.isFinite(Number(rect.left)) ||
+        !Number.isFinite(Number(rect.top))
+      ) {
+        throw new RangeError(
+          `Unknown FX source anchor: ${slot}.${anchorName}`
+        );
+      }
+      return rect;
+    }
+
+    return anchor(anchors, slot, "source").getBoundingClientRect();
+  }
+
 
   function cleanup(record) {
     if (!record || !active.has(record)) {
@@ -128,8 +150,9 @@ export function createDomSkillFxRenderer({
       }
 
       const sourceSlot = actorSlot ?? fromSlot;
+      const castAnchor = presentation?.castAnchor ?? null;
       const from = centerRelativeTo(
-        anchor(anchors, sourceSlot, "source").getBoundingClientRect(),
+        sourceRect(sourceSlot, castAnchor),
         arenaRect
       );
       const node = arena.ownerDocument.createElement("span");
@@ -139,8 +162,14 @@ export function createDomSkillFxRenderer({
       );
 
       node.className = "skill-fx skill-fx--cast";
+      if (presentation?.castLayer === "behind") {
+        node.className += " skill-fx--layer-behind";
+      }
       node.dataset.skillFx = "cast";
       node.dataset.skillId = skillId ?? "";
+      if (castAnchor) {
+        node.dataset.fxAnchor = castAnchor;
+      }
       node.style.left = `${from.x}px`;
       node.style.top = `${from.y}px`;
       applySpriteStrip(node, visual, durationMs);
@@ -272,6 +301,10 @@ export function createDomSkillFxRenderer({
         arenaRect
       );
       const node = arena.ownerDocument.createElement("span");
+      const impactDisplayScale = Math.min(
+        4,
+        Math.max(0.25, Number(visual.displayScale) || 1)
+      );
       node.className = "skill-fx skill-fx--impact";
       node.dataset.skillFx = "impact";
       node.dataset.skillId = skillId ?? "";
@@ -287,16 +320,16 @@ export function createDomSkillFxRenderer({
         node,
         [
           {
-            transform: "translate(-50%, -50%) scale(0.6)",
+            transform: `translate(-50%, -50%) scale(${0.6 * impactDisplayScale})`,
             opacity: 0.15
           },
           {
-            transform: "translate(-50%, -50%) scale(1.08)",
+            transform: `translate(-50%, -50%) scale(${1.08 * impactDisplayScale})`,
             opacity: 1,
             offset: 0.5
           },
           {
-            transform: "translate(-50%, -50%) scale(1.28)",
+            transform: `translate(-50%, -50%) scale(${1.28 * impactDisplayScale})`,
             opacity: 0
           }
         ],
@@ -329,8 +362,10 @@ export function createDomSkillFxRenderer({
       });
     }
 
+    const travelSourceAnchor =
+      presentation?.travelSourceAnchor ?? null;
     const from = centerRelativeTo(
-      anchor(anchors, fromSlot, "source").getBoundingClientRect(),
+      sourceRect(fromSlot, travelSourceAnchor),
       arenaRect
     );
     const to = centerRelativeTo(
@@ -349,6 +384,9 @@ export function createDomSkillFxRenderer({
     }
     node.style.left = `${from.x}px`;
     node.style.top = `${from.y}px`;
+    if (travelSourceAnchor) {
+      node.dataset.fxAnchor = travelSourceAnchor;
+    }
 
     const travelVisual = presentation?.travel ?? null;
     const deltaX = to.x - from.x;
