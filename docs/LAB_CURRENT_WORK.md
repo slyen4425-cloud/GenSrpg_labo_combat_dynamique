@@ -1426,6 +1426,23 @@ CI :
 - run : `36102503071`
 - conclusion : SUCCESS
 
+Checkpoint GREEN V6 :
+
+`checkpoint/lab-ko-ground-approach-chargehud-v6-green-2026-09-25`
+
+Branche de prévisualisation :
+
+`preview/lab-ko-ground-approach-chargehud-v6-2026-09-25`
+
+SHA technique documenté avant synchronisation finale :
+
+`0706fe33e27db17d646dc8ffc324dd09af2c0267`
+
+CI :
+
+- run : `36104522320`
+- conclusion : SUCCESS
+
 Validation utilisateur restante :
 
 - smartphone : visibilité des trois boutons tactiques ;
