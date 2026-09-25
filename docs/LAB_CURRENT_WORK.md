@@ -4110,6 +4110,82 @@ Statut :
 - GREEN technique ;
 - validation smartphone requise avant checkpoint GREEN final.
 
+
+## Sous-lot actif V9 — miss-impact-feedback
+
+Base technique :
+
+`6cd66f9688405e697815152ac4abf0070ecd934d`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-v9-miss-impact-feedback-2026-09-25`
+
+Branche :
+
+`work/lab-v9-miss-impact-feedback-2026-09-25`
+
+Retour utilisateur :
+
+- le résultat d'esquive est désormais cohérent ;
+- pour une lecture immédiate en combat, afficher `RATÉ` directement à l'endroit où l'impact aurait dû avoir lieu serait plus clair.
+
+Objectif :
+
+- conserver `Esquive · 0 dégât` dans le statut global ;
+- ajouter un feedback FX local `RATÉ` au point d'impact prévu ;
+- ce feedback est purement visuel et n'a aucune autorité sur le résultat ;
+- il doit apparaître uniquement pour `resolution.outcome === "evaded"`.
+
+Architecture :
+
+`Combat Rules -> semantic outcome evaded -> Combat Resolution Presenter -> FX intent miss -> DOM Skill FX Renderer`
+
+Propriétaires :
+
+- Combat Rules : inchangé, décide toujours `evaded` ;
+- Presenter : traduit le résultat sémantique en intention FX `miss` ;
+- FX Renderer : positionne et anime le label ;
+- Demo CSS : style du label uniquement.
+
+Fichiers autorisés :
+
+- `src/core/fx/skill-fx-plan.js` ;
+- `src/adapters/renderer/combat-resolution-presenter.js` ;
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `examples/dom-demo/demo.css` ;
+- tests FX / Presenter ;
+- documentation.
+
+Domaines protégés :
+
+- Combat Runtime ;
+- Action Resolver ;
+- SkillDefinition ;
+- calcul des PV ;
+- trajectoire projectile ;
+- positions / scales ;
+- Roster Session ;
+- `main` ;
+- `Zombicide-40k`.
+
+Tests prévus :
+
+- outcome `evaded` génère une intention FX `miss` ;
+- outcome `hit` ne génère pas ce feedback ;
+- renderer place `RATÉ` sur l'anchor cible stable ;
+- le label est nettoyé après animation ;
+- aucune modification des PV / règles ;
+- CI complète verte.
+
+Critère de fin :
+
+- `RATÉ` visible localement à l'impact manqué ;
+- statut `Esquive · 0 dégât` conservé ;
+- CI verte ;
+- preview smartphone ;
+- validation utilisateur.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-fullscreen-player-ui-v8-green-2026-09-25`
