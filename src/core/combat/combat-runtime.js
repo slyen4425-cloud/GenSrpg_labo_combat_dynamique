@@ -86,14 +86,30 @@ export function createCombatRuntime({
     return Object.freeze({
       actionType: null,
       actionId: null,
+      actionLabel: null,
       skillId: null,
       commandId: null,
       elapsedMs: 0,
+      preparationMs: 0,
+      remainingPreparationMs: 0,
+      travelMs: 0,
+      remainingImpactMs: 0,
       chargeProgress: 0,
+      phaseProgress: 0,
       phase: "idle",
       released: false,
       reaction: null
     });
+  }
+
+  function actionLabel(action) {
+    if (action.actionType === "skill") {
+      return action.skill?.name ?? action.actionId;
+    }
+    if (action.actionType === "command") {
+      return action.command?.name ?? action.actionId;
+    }
+    return action.actionId;
   }
 
   function progressSnapshot(record, elapsedMs) {
@@ -105,6 +121,28 @@ export function createCombatRuntime({
     if (elapsedMs >= record.action.releaseAtMs) {
       phase = elapsedMs < record.action.impactAtMs ? "travel" : "impact";
     }
+
+    const remainingPreparationMs = Math.max(
+      0,
+      preparationMs - elapsedMs
+    );
+    const travelMs = Math.max(0, record.action.travelMs ?? 0);
+    const travelElapsedMs = Math.max(
+      0,
+      elapsedMs - record.action.releaseAtMs
+    );
+    const phaseProgress =
+      phase === "preparation"
+        ? chargeProgress
+        : phase === "travel"
+          ? travelMs <= 0
+            ? 1
+            : Math.min(1, travelElapsedMs / travelMs)
+          : 1;
+    const remainingImpactMs = Math.max(
+      0,
+      record.action.impactAtMs - elapsedMs
+    );
 
     let reaction = null;
     if (record.reaction) {
@@ -124,6 +162,7 @@ export function createCombatRuntime({
     return Object.freeze({
       actionType: record.action.actionType,
       actionId: record.action.actionId,
+      actionLabel: actionLabel(record.action),
       skillId:
         record.action.actionType === "skill"
           ? record.action.actionId
@@ -133,7 +172,12 @@ export function createCombatRuntime({
           ? record.action.actionId
           : null,
       elapsedMs,
+      preparationMs,
+      remainingPreparationMs,
+      travelMs,
+      remainingImpactMs,
       chargeProgress,
+      phaseProgress,
       phase,
       released: record.released,
       reaction
