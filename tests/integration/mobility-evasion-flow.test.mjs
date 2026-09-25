@@ -44,13 +44,16 @@ const braisombre = await json("data/combat/fighters/braisombre.combat.json");
 const claw = normalizeSkillDefinition(
   await json("data/combat/skills/claw.skill.json")
 );
+const fireball = normalizeSkillDefinition(
+  await json("data/combat/skills/fireball.skill.json")
+);
 const teleport = normalizeSkillDefinition(
   await json("data/combat/skills/teleport-strike.skill.json")
 );
 
-function harness() {
+function harness({ distance = "short" } = {}) {
   const session = createCombatSession({
-    distance: "short",
+    distance,
     fighters: [
       { ...maraileron, id: "player", initialEnergy: 10, initialHp: 100 },
       { ...braisombre, id: "opponent", initialEnergy: 10, initialHp: 100 }
@@ -107,6 +110,42 @@ test("incoming claw misses when target is inside configured teleport travel", ()
   assert.equal(resolutions[1].actorId, "player");
   assert.equal(resolutions[1].skillId, "teleport-strike");
   assert.equal(resolutions[1].outcome, "hit");
+
+  runtime.dispose();
+});
+
+test("fireball deals zero damage when it arrives during teleport travel", () => {
+  const { session, clock, runtime, resolutions } = harness({
+    distance: "medium"
+  });
+
+  const attack = runtime.startSkill({
+    actorId: "opponent",
+    targetId: "player",
+    skill: fireball
+  });
+  assert.equal(attack.ok, true);
+
+  clock.setTime(1450);
+  const escape = runtime.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: teleport
+  });
+  assert.equal(escape.ok, true);
+
+  clock.setTime(2700);
+  clock.fireNext();
+
+  assert.equal(resolutions.length, 1);
+  assert.equal(resolutions[0].skillId, "fireball");
+  assert.equal(resolutions[0].outcome, "evaded");
+  assert.equal(resolutions[0].evasionApplied, "teleport-strike");
+  assert.equal(session.snapshot().fighters.player.hp, 100);
+  assert.equal(
+    resolutions[0].events.some((event) => event.type === "hit"),
+    false
+  );
 
   runtime.dispose();
 });
