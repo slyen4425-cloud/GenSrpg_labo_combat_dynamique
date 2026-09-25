@@ -5380,3 +5380,93 @@ Critère de fin :
 - CI verte ;
 - preview smartphone ;
 - aucun checkpoint GREEN final avant validation utilisateur.
+
+
+### Résultat technique candidat — projectile-clash-v9
+
+Configurabilité :
+
+- nouveau champ `SkillDefinition.projectileClash` ;
+- modes du premier jalon :
+  - `none` ;
+  - `mutual_cancel` ;
+- `group` éditable pour définir les projectiles compatibles ;
+- aucun test sur l'id `fireball` dans le moteur ;
+- Boule de feu laboratoire :
+  - `mode: "mutual_cancel"` ;
+  - `group: "fire-orb"`.
+
+Règle pure :
+
+- nouveau helper `src/core/combat/projectile-clash.js` ;
+- vérifie forme projectile, mode, groupe et ciblage réciproque ;
+- calcule le temps exact de rencontre depuis :
+  - timestamps de release réels ;
+  - `travelMs` réels ;
+- refuse un clash hors de la fenêtre de trajet commune ;
+- produit deux résolutions `clashed` ;
+- aucun événement `hit` ;
+- aucun dégât.
+
+Runtime :
+
+- aucune seconde horloge ;
+- les candidats clash sont insérés dans la même file temporelle que release / résolution ;
+- priorité en cas de même timestamp :
+  1. release ;
+  2. clash ;
+  3. résolution d'impact ;
+- un clash retire les deux actions actives avant leurs impacts ;
+- les autres actions ne sont pas annulées.
+
+Présentation :
+
+- `DOM Skill FX Renderer` expose `cancelProjectileFor(slot)` ;
+- aucun `cancelAll()` utilisé pour cette règle ;
+- le Presenter arrête uniquement le projectile de l'acteur dont la résolution est `clashed` ;
+- les deux résolutions stoppent donc les deux projectiles indépendamment ;
+- UI : libellé `Projectiles annulés`.
+
+Vrai test d'intégration :
+
+- deux Boules de feu configurées depuis le vrai fichier data ;
+- énergie initiale suffisante des deux côtés ;
+- les deux actions démarrent simultanément ;
+- release réel à 2000 ms ;
+- rencontre à 2350 ms ;
+- les deux actions deviennent `clashed` ;
+- aucune action active restante ;
+- aucun événement `hit` ;
+- PV joueur : 100 ;
+- PV adversaire : 100 ;
+- avancer au-delà de l'ancien impact à 2700 ms ne produit aucun dégât tardif.
+
+Tests complémentaires :
+
+- défaut `none` ;
+- `mutual_cancel` sans groupe rejeté ;
+- mode inconnu rejeté ;
+- `mutual_cancel` sur une forme non projectile rejeté ;
+- groupes différents => aucun clash ;
+- mode désactivé => aucun clash ;
+- lancement décalé => point temporel calculé correctement ;
+- projectile déjà arrivé avant fenêtre commune => aucun clash ;
+- annulation visuelle actor-local ;
+- Presenter ne joue aucun Hit pour `clashed`.
+
+SHA fonctionnel avant synchronisation documentaire :
+
+`b1cce3159e0e0ff4c959ba8af1d3012881856bea`
+
+CI fonctionnelle :
+
+- workflow : `Laboratory CI` ;
+- run : `36177389470` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- aucune fusion sur `main` ;
+- validation smartphone requise pour confirmer que les deux Boules de feu disparaissent bien visuellement à leur rencontre ;
+- aucun checkpoint GREEN final avant cette validation.
