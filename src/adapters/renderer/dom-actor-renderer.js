@@ -40,6 +40,7 @@ export function createDomActorRenderer({
     element.style.transformOrigin =
       `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = "1";
+    element.style.filter = "none";
   }
 
   function applyFinalPlanState(plan) {
@@ -51,6 +52,20 @@ export function createDomActorRenderer({
     element.style.transformOrigin =
       `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = String(finalSegment?.opacity ?? 1);
+    const filter = finalSegment?.filter ?? {};
+    const isNeutralFilter =
+      (filter.brightness ?? 1) === 1 &&
+      (filter.saturate ?? 1) === 1 &&
+      (filter.sepia ?? 0) === 0 &&
+      (filter.hueRotateDeg ?? 0) === 0;
+    element.style.filter = isNeutralFilter
+      ? "none"
+      : [
+          `brightness(${filter.brightness ?? 1})`,
+          `saturate(${filter.saturate ?? 1})`,
+          `sepia(${filter.sepia ?? 0})`,
+          `hue-rotate(${filter.hueRotateDeg ?? 0}deg)`
+        ].join(" ");
   }
 
   function cancel({ restore = true } = {}) {
@@ -141,7 +156,7 @@ export function createDomActorRenderer({
     disposed = true;
   }
 
-  element.style.willChange = "transform, opacity";
+  element.style.willChange = "transform, opacity, filter";
   restoreBaseState();
 
   return Object.freeze({
