@@ -457,11 +457,18 @@ test("DOM cast adapter renders on the source anchor for the preparation duration
       return {
         cast: {
           assetId: "pack:capture:sprite-fireball-cast-01",
-          url: "fireball-cast.png",
-          frameCount: 6,
-          displayScale: 1.35
-        }
+          url: "fireball-cast.svg",
+          frameCount: 1,
+          displayScale: 1.45
+        },
+        castAnchor: "mouth",
+        castLayer: "behind"
       };
+    },
+    sourceAnchorFor(slotId, anchorName) {
+      assert.equal(slotId, "player");
+      assert.equal(anchorName, "mouth");
+      return { left: 85, top: 72, width: 0, height: 0 };
     },
     animate(_node, _keyframes, options) {
       capturedOptions = options;
@@ -483,9 +490,11 @@ test("DOM cast adapter renders on the source anchor for the preparation duration
   assert.equal(appended.length, 1);
   assert.equal(appended[0].dataset.skillFx, "cast");
   assert.equal(appended[0].dataset.assetId, "pack:capture:sprite-fireball-cast-01");
-  assert.equal(appended[0].style.left, "40px");
-  assert.equal(appended[0].style.top, "100px");
-  assert.equal(appended[0].style.backgroundSize, "600% 100%");
+  assert.equal(appended[0].style.left, "75px");
+  assert.equal(appended[0].style.top, "52px");
+  assert.equal(appended[0].dataset.fxAnchor, "mouth");
+  assert.match(appended[0].className, /skill-fx--layer-behind/);
+  assert.equal(appended[0].style.backgroundSize, "100% 100%");
   assert.equal(capturedOptions.duration, 2000);
 
   done.resolve();
@@ -593,9 +602,15 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
           frameCount: 8,
           coreAnchor: { x: 0.29, y: 0.5 },
           headingRad: Math.PI,
-          displayScale: 1.75
-        }
+          displayScale: 2.3
+        },
+        travelSourceAnchor: "mouth"
       };
+    },
+    sourceAnchorFor(slotId, anchorName) {
+      assert.equal(slotId, "player");
+      assert.equal(anchorName, "mouth");
+      return { left: 70, top: 190, width: 0, height: 0 };
     },
     animate(_node, keyframes, options) {
       capturedKeyframes = keyframes;
@@ -648,14 +663,15 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
     Math.abs(Number(rotationMatch[1]) - expectedRotation) < 1e-9
   );
 
+  assert.equal(shell.dataset.fxAnchor, "mouth");
   assert.equal(capturedKeyframes.length, 3);
   assert.match(
     capturedKeyframes[2].transform,
-    /translate3d\(260px, -100px, 0\)/
+    /translate3d\(250px, -50px, 0\)/
   );
   assert.match(
     capturedKeyframes[2].transform,
-    /scale\(1\.7149999999999999\)/
+    /scale\(2\.254\)/
   );
   assert.equal(capturedOptions.duration, 700);
 
