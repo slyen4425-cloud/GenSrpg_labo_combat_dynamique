@@ -5555,3 +5555,50 @@ Critère de fin :
 - le signe provient uniquement de la géométrie réelle `targetTranslateY` ;
 - preview smartphone fournie ;
 - aucun checkpoint GREEN final avant validation visuelle explicite.
+
+### Candidat technique — perspective partagée des approches
+
+Cause démontrée :
+
+- `ground-attack` utilisait déjà la profondeur réelle de l'arène ;
+- `aerial-attack` appliquait des scales fixes ;
+- `teleport-attack` appliquait également des scales fixes ;
+- l'incohérence provenait donc de l'Animation Core, pas du gameplay ni de la position des combattants.
+
+Correction :
+
+- le calcul historique `groundPerspectiveScale` devient une règle partagée `approachPerspectiveScale` ;
+- le preset de perspective est déplacé vers une source unique : `profile.specialMoves.perspective` ;
+- suppression des trois paramètres de perspective auparavant stockés uniquement dans `specialMoves.ground` ;
+- `ground`, `aerial` et `teleport` consomment maintenant exactement le même facteur de profondeur ;
+- aucune condition spéciale `player/opponent` : le signe est déterminé uniquement par `targetTranslateY / arenaHeight`.
+
+Résultat attendu :
+
+- joueur vers adversaire / profondeur : scale inférieur à la base ;
+- adversaire vers joueur / caméra : scale supérieur à la base ;
+- retour home : scale 1 ;
+- tous les timings restent strictement inchangés.
+
+Tests :
+
+- maintien de la perspective ground existante ;
+- nouveaux tests aerial dans les deux sens ;
+- nouveaux tests teleport dans les deux sens ;
+- bornes partagées min/max ;
+- source de vérité unique du preset de perspective ;
+- timestamp d'impact / `travelMs` inchangés.
+
+CI fonctionnelle initiale :
+
+- workflow `Laboratory CI` ;
+- run `36178844966` ;
+- job `foundation` : SUCCESS.
+
+Statut :
+
+- correction technique prête ;
+- aucune modification du projectile clash ou de Boule de feu ;
+- aucune modification gameplay ;
+- preview smartphone à produire après synchronisation documentaire ;
+- aucun checkpoint GREEN final avant validation visuelle utilisateur.
