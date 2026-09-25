@@ -2,90 +2,200 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-test("demo delegates animation authority to Core and renderer", async () => {
+test("visual controller keeps animation authority in Core and renderer", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
   assert.match(source, /normalizeCombatVisualEvent/);
   assert.match(source, /planAnimation/);
   assert.match(source, /createDomActorRenderer/);
-  assert.match(source, /createImageSourceManager/);
-
   assert.doesNotMatch(source, /\.animate\s*\(/);
   assert.doesNotMatch(source, /durationMs\s*:/);
   assert.doesNotMatch(source, /translateX\s*:/);
-  assert.doesNotMatch(source, /rotateDeg\s*:/);
 });
 
-test("demo loads bundled creatures before optional user replacement", async () => {
+test("visual controller can replace a slot creature without owning combat rules", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
-  assert.match(source, /runtimePreview/);
-  assert.match(source, /new URL\(runtimeAsset, meta\.assetBaseUrl\)/);
-  assert.match(source, /rebuildActor\(runtimeUrl\)/);
+  assert.match(source, /function setCreatureFor/);
+  assert.match(source, /slot\.setCreature\(meta, displayName\)/);
+  assert.match(source, /function setSlotVisible/);
+  assert.match(source, /function getCreatureDescriptor/);
+  assert.match(source, /runtimePreview\?\.\[view\]/);
+  assert.match(source, /startIdleFor\(slotKey\)/);
+
+  assert.doesNotMatch(source, /energyCost/);
+  assert.doesNotMatch(source, /movementEnergyPerStep/);
+  assert.doesNotMatch(source, /resolveSkill/);
 });
 
-test("both creatures enter idle by default and transient actions return to idle", async () => {
+test("both visual slots still start idle and transient actions return idle", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
-  assert.match(source, /function startIdleFor/);
   assert.match(source, /startIdleFor\("player"\)/);
   assert.match(source, /startIdleFor\("opponent"\)/);
-  assert.match(source, /type !== "idle"[\s\S]*startIdleFor\(slotKey\)/);
+  assert.match(
+    source,
+    /type !== "idle"[\s\S]*startIdleFor\(slotKey\)/
+  );
 });
 
-test("demo page is mobile-first and keeps optional laboratory file inputs", async () => {
+test("game page is mobile-first and contains only player-facing combat controls", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
 
   assert.match(html, /name="viewport"/);
+  assert.match(html, /class="game"/);
   assert.match(html, /data-combat-arena/);
-  assert.match(html, /data-demo-file="player"/);
-  assert.match(html, /data-demo-file="opponent"/);
-  assert.match(html, /data-demo-event="idle"/);
-  assert.match(html, /data-demo-event="attack"/);
-  assert.match(html, /data-demo-event="hit"/);
-  assert.match(html, /data-demo-event="ko"/);
-  assert.match(html, /src="\.\/demo\.js"/);
-  assert.doesNotMatch(html, /<script(?![^>]*src=)[^>]*>/);
+  assert.match(html, /data-combat-skills/);
+  assert.match(html, /data-combat-items/);
+  assert.match(html, /data-combat-team-actions/);
+  assert.match(html, /data-roster-reserve="player"/);
+  assert.match(html, /data-roster-reserve="opponent"/);
+  assert.match(html, /data-combat-move="short"/);
+  assert.match(html, /data-combat-move="medium"/);
+  assert.match(html, /data-combat-move="long"/);
+
+  assert.doesNotMatch(html, /Réglages du test/);
+  assert.doesNotMatch(html, /Outils visuels du laboratoire/);
+  assert.doesNotMatch(html, /data-combat-simulate-stun/);
+  assert.doesNotMatch(html, /data-demo-event/);
+  assert.doesNotMatch(html, /data-demo-file/);
+  assert.doesNotMatch(html, /data-demo-target/);
+  assert.doesNotMatch(html, /data-demo-intensity/);
+  assert.doesNotMatch(html, /data-combat-reactions/);
+  assert.doesNotMatch(html, /data-combat-mover/);
 });
 
-test("runtime preview assets exist in creature metadata", async () => {
-  const maraileron = JSON.parse(
-    await readFile(
-      "assets/test/creatures/maraileron/maraileron.meta.json",
-      "utf8"
-    )
+test("abilities items and team actions are collapsed player menus", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+
+  const menuCount = (html.match(/data-action-menu/g) ?? []).length;
+  assert.equal(menuCount, 3);
+
+  assert.match(
+    html,
+    /<details class="action-menu" data-action-menu>[\s\S]*?<summary>Capacités<\/summary>[\s\S]*?data-combat-skills/
   );
-  const braisombre = JSON.parse(
+  assert.match(
+    html,
+    /<summary>Objets<\/summary>[\s\S]*?data-combat-items/
+  );
+  assert.match(
+    html,
+    /<summary>Équipe<\/summary>[\s\S]*?data-combat-team-actions/
+  );
+});
+
+test("combat UI delegates gameplay to session runtime roster and presenters", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(source, /createCombatSession/);
+  assert.match(source, /createCombatRuntime/);
+  assert.match(source, /createRosterSession/);
+  assert.match(source, /createCombatResolutionPresenter/);
+  assert.match(source, /createDomDistancePresenter/);
+  assert.match(source, /session\.previewMovement/);
+  assert.match(source, /session\.previewSkill/);
+  assert.match(source, /runtime\.startSkill/);
+  assert.match(source, /runtime\.startCommand/);
+  assert.match(source, /roster\.applyCommandResolution/);
+  assert.match(source, /visuals\.setCreatureFor/);
+  assert.match(source, /visuals\.setSlotVisible/);
+
+  assert.doesNotMatch(source, /resolveMovement/);
+  assert.doesNotMatch(source, /resolveSkill/);
+  assert.doesNotMatch(source, /resolveCommandStart/);
+  assert.doesNotMatch(source, /resolveCommandCompletion/);
+  assert.doesNotMatch(source, /movementEnergyCost/);
+});
+
+test("recall and summon are real roster changes rather than log-only commands", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const rosterSource = await readFile(
+    "src/core/combat/roster-session.js",
+    "utf8"
+  );
+
+  assert.match(
+    source,
+    /resolution\.commandKind[\s\S]*\["recall", "summon"\]/
+  );
+  assert.match(source, /roster\.applyCommandResolution/);
+  assert.match(source, /visuals\.setSlotVisible\("player", false\)/);
+  assert.match(source, /visuals\.setCreatureFor/);
+
+  assert.match(rosterSource, /function recall/);
+  assert.match(rosterSource, /function summon/);
+  assert.match(rosterSource, /combatSession\.replaceFighter/);
+  assert.match(rosterSource, /savedFighter/);
+});
+
+test("demo roster is Marai and Drakon versus Drakon and Marai", async () => {
+  const roster = JSON.parse(
     await readFile(
-      "assets/test/creatures/braisombre/braisombre.meta.json",
+      "data/combat/rosters/demo-2v2.roster.json",
       "utf8"
     )
   );
 
-  assert.equal(
-    maraileron.runtimePreview.player,
-    "runtime/maraileron_player.webp"
+  assert.deepEqual(
+    roster.teams.player.members.map((member) => member.displayName),
+    ["Marai", "Drakon"]
+  );
+  assert.deepEqual(
+    roster.teams.opponent.members.map((member) => member.displayName),
+    ["Drakon", "Marai"]
   );
   assert.equal(
-    braisombre.runtimePreview.opponent,
-    "runtime/braisombre_opponent.webp"
+    roster.teams.player.activeMemberId,
+    "player-marai"
   );
   assert.equal(
-    maraileron.runtimePreview.opponent,
-    "runtime/maraileron_opponent.webp"
+    roster.teams.opponent.activeMemberId,
+    "opponent-drakon"
   );
-  assert.equal(
-    maraileron.runtimePreview.icon,
-    "runtime/maraileron_icon.webp"
+});
+
+test("opponent roster is visible but has no player action controller", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(html, /Réserve adverse/);
+  assert.match(source, /reserveCard\(member, "opponent"\)/);
+  assert.doesNotMatch(html, /Réactions/);
+  assert.doesNotMatch(source, /runtime\.react\(/);
+  assert.doesNotMatch(source, /data-combat-reactions/);
+});
+
+test("HP energy and charge remain state-driven", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.match(html, /data-combat-hp="player"/);
+  assert.match(html, /data-combat-hp="opponent"/);
+  assert.match(html, /data-combat-energy="player"/);
+  assert.match(html, /data-combat-actor-charge="player"/);
+
+  assert.match(source, /fighter\.hp/);
+  assert.match(source, /fighter\.maxHp/);
+  assert.match(source, /fighter\.energy/);
+  assert.match(source, /progress\.chargeProgress/);
+  assert.doesNotMatch(source, /hp\s*=\s*100/);
+});
+
+test("distance presenter keeps explicit player anchors and player z-order", async () => {
+  const presenter = await readFile(
+    "src/adapters/renderer/dom-distance-presenter.js",
+    "utf8"
   );
-  assert.equal(
-    braisombre.runtimePreview.player,
-    "runtime/braisombre_player.webp"
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(presenter, /POSITION_BY_SLOT_AND_DISTANCE/);
+  assert.match(
+    presenter,
+    /player:[\s\S]*long: 0\.18[\s\S]*medium: 0\.28[\s\S]*short: 0\.42/
   );
-  assert.equal(
-    braisombre.runtimePreview.icon,
-    "runtime/braisombre_icon.webp"
-  );
+  assert.match(css, /\.fighter--player\s*\{[\s\S]*?z-index:\s*4/);
+  assert.match(css, /\.fighter--opponent\s*\{[\s\S]*?z-index:\s*3/);
 });
 
 test("demo bootstrap disposes combat and visual controllers on pagehide", async () => {
@@ -98,215 +208,18 @@ test("demo bootstrap disposes combat and visual controllers on pagehide", async 
   assert.match(source, /visuals\.dispose\(\)/);
 });
 
-test("creature metadata keeps player larger and carries morphology anchors", async () => {
-  const maraileron = JSON.parse(
-    await readFile(
-      "assets/test/creatures/maraileron/maraileron.meta.json",
-      "utf8"
-    )
-  );
-  const braisombre = JSON.parse(
-    await readFile(
-      "assets/test/creatures/braisombre/braisombre.meta.json",
-      "utf8"
-    )
-  );
+test("creature metadata keeps runtime player/opponent/icon views", async () => {
+  for (const creatureId of ["maraileron", "braisombre"]) {
+    const meta = JSON.parse(
+      await readFile(
+        `assets/test/creatures/${creatureId}/${creatureId}.meta.json`,
+        "utf8"
+      )
+    );
 
-  assert.ok(maraileron.displayScale.player > maraileron.displayScale.opponent);
-  assert.ok(braisombre.displayScale.player > braisombre.displayScale.opponent);
-  assert.equal(maraileron.transformOrigin.y, "78%");
-  assert.equal(braisombre.transformOrigin.y, "88%");
-});
-
-test("demo derives actor scale and anchor from metadata instead of CSS", async () => {
-  const source = await readFile("src/ui/demo-app.js", "utf8");
-
-  assert.match(source, /meta\.displayScale\?\.\[view\]/);
-  assert.match(source, /transformOrigin: meta\.transformOrigin/);
-});
-
-test("combat test UI delegates rules and timing to session/runtime", async () => {
-  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
-
-  assert.match(source, /createCombatSession/);
-  assert.match(source, /createCombatRuntime/);
-  assert.match(source, /createCombatResolutionPresenter/);
-  assert.match(source, /createDomSkillFxRenderer/);
-  assert.match(source, /createDomDistancePresenter/);
-  assert.match(source, /session\.previewMovement/);
-  assert.match(source, /session\.previewSkill/);
-  assert.match(source, /session\.move/);
-  assert.match(source, /runtime\.startSkill/);
-  assert.match(source, /runtime\.react/);
-
-  assert.doesNotMatch(source, /resolveMovement/);
-  assert.doesNotMatch(source, /resolveSkill/);
-  assert.doesNotMatch(source, /movementEnergyCost/);
-  assert.doesNotMatch(source, /distanceSteps/);
-  assert.doesNotMatch(source, /energyChargeIntervalMs\s*:/);
-  assert.doesNotMatch(source, /chargeTimeModifierPct\s*:/);
-});
-
-test("live combat interface keeps arena abilities energy and reactions together while test settings stay below", async () => {
-  const html = await readFile("examples/dom-demo/index.html", "utf8");
-
-  assert.match(html, /class="combat-live"/);
-  assert.match(html, /class="arena"/);
-  assert.match(html, /class="combat-dock"/);
-  assert.match(html, /data-combat-energy="maraileron"/);
-  assert.match(html, /data-combat-energy="braisombre"/);
-  assert.match(html, /data-combat-move="short"/);
-  assert.match(html, /data-combat-move="medium"/);
-  assert.match(html, /data-combat-move="long"/);
-  assert.match(html, /data-combat-skills/);
-  assert.match(html, /data-combat-reactions/);
-  assert.match(html, /data-combat-live-status/);
-  assert.match(html, /class="test-settings"/);
-  assert.match(html, /data-combat-mover/);
-  assert.match(html, /data-combat-reset/);
-
-  const dockStart = html.indexOf('class="combat-dock"');
-  const settingsStart = html.indexOf('class="test-settings"');
-  const moverStart = html.indexOf("data-combat-mover");
-  assert.ok(dockStart >= 0);
-  assert.ok(settingsStart > dockStart);
-  assert.ok(moverStart > settingsStart);
-
-  assert.doesNotMatch(html, /data-combat-distance-value/);
-  assert.doesNotMatch(html, /data-combat-band/);
-  assert.doesNotMatch(html, /data-combat-advance/);
-  assert.doesNotMatch(html, /data-combat-reaction="/);
-});
-
-test("every generated ability card owns a visible charge progress bar", async () => {
-  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
-
-  assert.match(source, /skill-card__charge/);
-  assert.match(source, /charge\.max = 1/);
-  assert.match(source, /charge\.value = 0/);
-  assert.match(source, /progress\.chargeProgress/);
-  assert.match(source, /progress\.reaction\.progress/);
-});
-
-test("CSS no longer moves both fighters from a shared distance selector", async () => {
-  const css = await readFile("examples/dom-demo/demo.css", "utf8");
-
-  assert.doesNotMatch(css, /arena\[data-combat-distance/);
-  assert.match(css, /\.fighter\s*\{[\s\S]*transition:\s*left/);
-});
-
-
-test("prominent fighter charge bars mirror runtime progress below creature names", async () => {
-  const html = await readFile("examples/dom-demo/index.html", "utf8");
-  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
-
-  assert.match(html, /data-combat-actor-charge="maraileron"/);
-  assert.match(html, /data-combat-actor-charge="braisombre"/);
-  assert.match(html, /fighter__caption[\s\S]*data-demo-label[\s\S]*data-combat-actor-charge="maraileron"/);
-  assert.match(source, /function setActorCharge/);
-  assert.match(source, /progress\.chargeProgress/);
-  assert.match(source, /progress\.reaction\.progress/);
-  assert.match(source, /setActorCharge\(\s*"maraileron"/);
-  assert.match(source, /setActorCharge\(\s*"braisombre"/);
-  assert.match(source, /onRelease[\s\S]*setActorCharge\("maraileron", 0, false\)/);
-});
-
-test("scene scale is owned by distance presenter through one CSS variable", async () => {
-  const source = await readFile(
-    "src/adapters/renderer/dom-distance-presenter.js",
-    "utf8"
-  );
-  const css = await readFile("examples/dom-demo/demo.css", "utf8");
-
-  assert.match(source, /--distance-scale/);
-  assert.match(source, /SCALE_BY_DISTANCE/);
-  assert.match(source, /short: 1\.00/);
-  assert.match(source, /medium: 0\.96/);
-  assert.match(source, /long: 0\.90/);
-  assert.match(css, /scale\(var\(--distance-scale, 0\.96\)\)/);
-  assert.doesNotMatch(css, /arena\[data-combat-distance/);
-});
-
-
-test("fighter HP bars are state-driven and placed below names", async () => {
-  const html = await readFile("examples/dom-demo/index.html", "utf8");
-  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
-
-  assert.match(html, /data-combat-hp="maraileron"/);
-  assert.match(html, /data-combat-hp-value="maraileron"/);
-  assert.match(html, /data-combat-hp="braisombre"/);
-  assert.match(html, /data-combat-hp-value="braisombre"/);
-  assert.match(
-    html,
-    /data-demo-label>Maraileron[\s\S]*data-combat-hp="maraileron"[\s\S]*data-combat-actor-charge="maraileron"/
-  );
-  assert.match(
-    html,
-    /data-demo-label>Braisombre[\s\S]*data-combat-hp="braisombre"[\s\S]*data-combat-actor-charge="braisombre"/
-  );
-
-  assert.match(source, /const hpRefs =/);
-  assert.match(source, /fighter\.maxHp/);
-  assert.match(source, /fighter\.hp/);
-  assert.match(source, /renderHp\(state\)/);
-  assert.doesNotMatch(source, /hp\s*=\s*100/);
-});
-
-test("distance presenter uses explicit per-slot anchors for unambiguous player movement", async () => {
-  const source = await readFile(
-    "src/adapters/renderer/dom-distance-presenter.js",
-    "utf8"
-  );
-
-  assert.match(source, /POSITION_BY_SLOT_AND_DISTANCE/);
-  assert.match(source, /player:[\s\S]*long: 0\.18[\s\S]*medium: 0\.28[\s\S]*short: 0\.42/);
-  assert.match(source, /opponent:[\s\S]*short: 0\.58[\s\S]*medium: 0\.72[\s\S]*long: 0\.82/);
-  assert.match(source, /positionFor\(actorSlot, distanceEvent\.to\)/);
-  assert.doesNotMatch(source, /positions\[otherSlot\] - separation/);
-  assert.doesNotMatch(source, /positions\[otherSlot\] \+ separation/);
-});
-
-
-test("player fighter renders above opponent fighter on overlap", async () => {
-  const css = await readFile("examples/dom-demo/demo.css", "utf8");
-
-  assert.match(css, /\.fighter--player\s*\{[\s\S]*?z-index:\s*4/);
-  assert.match(css, /\.fighter--opponent\s*\{[\s\S]*?z-index:\s*3/);
-});
-
-
-test("combat command buttons stay in main UI while stun simulator stays in test settings", async () => {
-  const html = await readFile("examples/dom-demo/index.html", "utf8");
-  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
-
-  const dockStart = html.indexOf('class="combat-dock"');
-  const commandsStart = html.indexOf("data-combat-commands");
-  const settingsStart = html.indexOf('class="test-settings"');
-  const stunStart = html.indexOf("data-combat-simulate-stun");
-
-  assert.ok(dockStart >= 0);
-  assert.ok(commandsStart > dockStart);
-  assert.ok(settingsStart > commandsStart);
-  assert.ok(stunStart > settingsStart);
-
-  assert.match(source, /normalizeCombatCommandDefinition/);
-  assert.match(source, /runtime\.startCommand/);
-  assert.match(source, /session\.previewCommand/);
-  assert.match(source, /runtime\.applyResolutionInterrupt/);
-  assert.match(source, /DATA_URLS\.skills\.stunBolt/);
-
-  assert.doesNotMatch(source, /resolveCommandStart/);
-  assert.doesNotMatch(source, /resolveCommandCompletion/);
-});
-
-test("command cards expose energy charge and runtime progress without UI timing authority", async () => {
-  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
-
-  assert.match(source, /createCommandCard/);
-  assert.match(source, /commandTimingText/);
-  assert.match(source, /progress\.commandId/);
-  assert.match(source, /progress\.chargeProgress/);
-  assert.doesNotMatch(source, /preparationMs\s*:\s*700/);
-  assert.doesNotMatch(source, /preparationMs\s*:\s*1400/);
-  assert.doesNotMatch(source, /preparationMs\s*:\s*2200/);
+    assert.ok(meta.runtimePreview.player);
+    assert.ok(meta.runtimePreview.opponent);
+    assert.ok(meta.runtimePreview.icon);
+    assert.ok(meta.displayScale.player > meta.displayScale.opponent);
+  }
 });
