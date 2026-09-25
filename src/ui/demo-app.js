@@ -185,7 +185,7 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "disposed" });
     }
 
-    if (!["teleport", "aerial"].includes(approachMode)) {
+    if (!["ground", "teleport", "aerial"].includes(approachMode)) {
       return playEventFor(slotKey, "attack");
     }
 
@@ -205,9 +205,11 @@ export async function mountCombatDemo({
 
     const event = normalizeCombatVisualEvent({
       type:
-        approachMode === "teleport"
-          ? "teleport-attack"
-          : "aerial-attack",
+        approachMode === "ground"
+          ? "ground-attack"
+          : approachMode === "teleport"
+            ? "teleport-attack"
+            : "aerial-attack",
       actorId: slot.actor.id,
       targetId: target.actor.id,
       intensity: 1,
