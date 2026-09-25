@@ -146,6 +146,19 @@ Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de
 - point d'impact visuel aligné sur `travelMs` ;
 - retour visuel après impact sans retarder les dégâts.
 
+### Extension V6 — contact configurable et HUD de charge
+
+- KO visuel terminal jusqu'au remplacement roster ;
+- détection KO depuis l'état résolu `hpAfter` ;
+- vrai test d'intégration dégâts -> Hit -> KO -> remplacement adverse ;
+- `ground-attack` générique pour les attaques contact au sol ;
+- vitesse d'approche pilotée exclusivement par `travelMs` ;
+- Griffe de test : 1,5 s pour atteindre la cible ;
+- aérien capable de sortir complètement de l'arène vers le haut avant le piqué ;
+- arène agrandie ;
+- barre de charge renforcée avec nom de l'action et compte à rebours fourni par Combat Runtime ;
+- orientation visuelle générale vers une UI de duel lisible type jeu de capture, sans reproduire une interface tierce à l'identique.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
