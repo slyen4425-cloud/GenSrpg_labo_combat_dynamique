@@ -369,6 +369,7 @@ export function planAnimation({ event, actor, profile }) {
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
+        restoreBaseState: false,
         segments: [
           {
             label: "ko",
