@@ -2406,6 +2406,55 @@ Domaines protégés inchangés :
 - aucune règle gameplay ;
 - aucun calcul de disponibilité, coût, distance ou KO dans le CSS/HTML.
 
+
+## Correction ergonomique V8 — hiérarchie simplifiée après capture smartphone
+
+Résultat du lot :
+
+- suppression du bandeau décoratif supérieur ;
+- cartes joueur/adversaire aplaties ;
+- labels `JOUEUR / ADVERSAIRE` masqués pour réduire le bruit visuel ;
+- charge et barre de charge masquées quand inactives ;
+- barre de charge active conservée à la hauteur V6 validée de `0.56rem` ;
+- réserves réduites à des portraits circulaires icon-only ;
+- noms de réserve conservés en `title` / `aria-label` ;
+- titre visuel `Capacités` supprimé ;
+- quatre capacités conservées en touches carrées permanentes ;
+- Objets / Équipe placés verticalement à droite des capacités ;
+- distance réduite à une ligne segmentée compacte ;
+- statut transformé en toast minimal en haut-centre ;
+- HUD joueur bas-gauche et dock commandes bas-droite pour éviter l'empilement.
+
+Revue du diff depuis la candidate précédente :
+
+- `docs/LAB_CURRENT_WORK.md` ;
+- `examples/dom-demo/index.html` ;
+- `examples/dom-demo/demo.css` ;
+- `src/ui/combat-test-ui.js` uniquement pour l'accessibilité des portraits de réserve ;
+- `tests/unit/demo-ui-boundary.test.mjs`.
+
+Aucun Core, Runtime, contrat gameplay, FX, renderer, dégâts, KO ou roster n'a été modifié.
+
+Sentinelles :
+
+- HUD simplifié sans topbar décorative ;
+- charge inactive réellement absente ;
+- réserves icon-only ;
+- quatre capacités permanentes ;
+- Objets / Équipe sur deux lignes verticales adjacentes ;
+- ancienne sentinelle V6 de hauteur de charge active préservée.
+
+CI :
+
+- SHA : `a14f2eacb3ca1372c190caa1c49a165f31b540ab` ;
+- run : `36123016098` ;
+- conclusion : SUCCESS.
+
+Statut :
+
+- GREEN technique ;
+- validation smartphone toujours requise avant checkpoint GREEN V8 final.
+
 ## Dernier checkpoint GREEN
 
 `checkpoint/lab-hit-impact-feedback-v7-green-2026-09-25`
