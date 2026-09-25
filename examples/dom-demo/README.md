@@ -173,3 +173,17 @@ Mouvements spéciaux :
 - Plongeon aérien : montée -> disparition -> piqué sur l'adversaire -> impact -> retour.
 
 Le contact visuel avec la cible correspond au timestamp d'impact du moteur de combat. Les dégâts ne sont pas liés à la fin du retour visuel.
+
+
+## V6 — impact mobile et charge détaillée
+
+- Griffe se déplace réellement vers la cible pendant 1,5 s après son release ;
+- ce temps provient de `travelMs` et peut être réglé différemment par compétence ;
+- le contact visuel correspond à l'impact et donc au moment où les dégâts sont appliqués ;
+- Plongeon aérien monte assez haut pour sortir du cadre supérieur avant le piqué ;
+- l'arène est plus haute ;
+- la barre de charge principale est agrandie ;
+- elle affiche le nom de l'action et le temps restant ;
+- ces informations viennent directement du Combat Runtime ;
+- un KO disparaît complètement et ne repart pas en idle avant le remplacement ;
+- le flux KO complet est protégé par un test d'intégration : dégâts -> Hit -> KO -> roster -> remplacement.
