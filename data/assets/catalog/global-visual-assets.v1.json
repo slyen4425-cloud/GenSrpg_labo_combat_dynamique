@@ -14,11 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 56,
+    "assets": 62,
     "icons": 31,
-    "sprites": 22,
+    "sprites": 26,
     "fx": 2,
-    "backgrounds": 1
+    "portraits": 2,
+    "backgrounds": 1,
+    "creatures": 4
   },
   "assets": [
     {
@@ -880,6 +882,186 @@
       },
       "resource": {
         "file": "core/icons/skills/icon_skill_wind_tornado_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-braisombre-icon-01",
+      "label": "Braisombre — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "braisombre",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/braisombre/runtime/braisombre_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-braisombre-opponent-01",
+      "label": "Braisombre — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "braisombre",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/braisombre/runtime/braisombre_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-braisombre-player-01",
+      "label": "Braisombre — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "braisombre",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/braisombre/runtime/braisombre_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-icon-01",
+      "label": "Maraileron — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "maraileron",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/runtime/maraileron_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-opponent-01",
+      "label": "Maraileron — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "maraileron",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/runtime/maraileron_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-player-01",
+      "label": "Maraileron — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "maraileron",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/runtime/maraileron_player.webp",
         "mime": "image/webp"
       },
       "compatibility": {
