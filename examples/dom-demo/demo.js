@@ -7,6 +7,7 @@ const arena = root?.querySelector("[data-combat-arena]") ?? null;
 const searchParams = new URLSearchParams(window.location.search);
 const previewVariant = searchParams.get("variant");
 const isLoupLavaPreview = previewVariant === "loup-lava";
+const isFourCityPreview = previewVariant === "four-city";
 
 function applyArenaPresentation(arenaId) {
   if (!arena) {
@@ -33,6 +34,8 @@ function applyArenaPresentation(arenaId) {
 applyArenaPresentation("forest");
 if (isLoupLavaPreview) {
   applyArenaPresentation("lava");
+} else if (isFourCityPreview) {
+  applyArenaPresentation("city");
 }
 
 Promise.resolve()
@@ -47,7 +50,12 @@ Promise.resolve()
             "../../data/combat/rosters/demo-loup-lava-2v2.roster.json",
             import.meta.url
           )
-        : undefined
+        : isFourCityPreview
+          ? new URL(
+              "../../data/combat/rosters/demo-four-creatures-city.roster.json",
+              import.meta.url
+            )
+          : undefined
     });
 
     window.addEventListener(
