@@ -313,6 +313,68 @@ test("live release delegates ground aerial and teleport motion to visual control
   ]);
 });
 
+test("teleport approach phases route presentation FX from the animation plan", () => {
+  const fxCalls = [];
+  const visuals = {
+    playEventFor() {
+      return Promise.resolve({ status: "finished" });
+    },
+    playApproachFor(_slot, _approachMode, options) {
+      options.onPhase({
+        label: "teleport-vanish",
+        phaseDurationMs: 48
+      });
+      options.onPhase({
+        label: "teleport-return-vanish",
+        phaseDurationMs: 90
+      });
+      return Promise.resolve({ status: "finished" });
+    },
+    cancelFor() {}
+  };
+
+  const presenter = createCombatResolutionPresenter({
+    visuals,
+    fx: {
+      play(plan) {
+        fxCalls.push(plan);
+        return { status: "ignored" };
+      }
+    }
+  });
+
+  presenter.presentRelease({
+    action: {
+      travelMs: 120,
+      skill: {
+        id: "teleport-strike",
+        form: "contact",
+        approachMode: "teleport",
+        element: null
+      }
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.deepEqual(fxCalls, [
+    {
+      type: "phase",
+      skillId: "teleport-strike",
+      actorSlot: "player",
+      phase: "teleport-vanish",
+      durationMs: 48
+    },
+    {
+      type: "phase",
+      skillId: "teleport-strike",
+      actorSlot: "player",
+      phase: "teleport-return-vanish",
+      durationMs: 90
+    }
+  ]);
+});
+
 test("KO presentation chains hit then KO and exposes real completion", async () => {
   const h = createHarness();
   const result = h.presenter.presentOutcome({
