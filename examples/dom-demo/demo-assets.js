@@ -342,7 +342,9 @@ const ARENA_BINDINGS = Object.freeze({
     background: "test:arena-lava-local-01"
   }),
   city: Object.freeze({
-    background: "test:arena-city-local-01"
+    background: "test:arena-city-local-01",
+    backgroundPosition: "center bottom",
+    backgroundSize: "auto 112%"
   })
 });
 
@@ -433,7 +435,9 @@ export const demoPresentationAssets = Object.freeze({
     }
 
     return Object.freeze({
-      background: resolveAsset(binding.background)
+      background: resolveAsset(binding.background),
+      backgroundPosition: binding.backgroundPosition ?? "center",
+      backgroundSize: binding.backgroundSize ?? "cover"
     });
   },
   presentationForSkill(skillId, { sourceView = null } = {}) {
