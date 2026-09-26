@@ -258,6 +258,17 @@ test("V9 opponent initiative is driven by Runtime state changes without waiting 
   assert.doesNotMatch(source, /setTimeout/);
 });
 
+test("creature runtime assets are cache-busted by metadata visualRevision", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /function creatureAssetUrl/);
+  assert.match(source, /meta\.visualRevision/);
+  assert.match(source, /url\.searchParams\.set\("v", meta\.visualRevision\)/);
+  assert.match(source, /iconUrl:\s*creatureAssetUrl\(meta, iconAsset\)/);
+  assert.match(source, /const runtimeUrl = creatureAssetUrl/);
+});
+
+
 test("KO replacement hides the old bitmap until the new creature asset is ready", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
