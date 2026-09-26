@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 69,
+    "assets": 72,
     "icons": 31,
-    "sprites": 28,
+    "sprites": 30,
     "fx": 2,
-    "portraits": 3,
+    "portraits": 4,
     "backgrounds": 5,
-    "creatures": 6
+    "creatures": 8
   },
   "assets": [
     {
@@ -2034,6 +2034,105 @@
       },
       "resource": {
         "file": "capture/creatures/loup_volcanique/runtime/loup_volcanique_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-icon-01",
+      "label": "Golem moussu — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "golem_moussu",
+        "icon",
+        "rock",
+        "moss",
+        "earth"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/runtime/golem_moussu_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-opponent-01",
+      "label": "Golem moussu — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "golem_moussu",
+        "opponent",
+        "rock",
+        "moss",
+        "earth"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/runtime/golem_moussu_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-player-01",
+      "label": "Golem moussu — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "golem_moussu",
+        "player",
+        "rock",
+        "moss",
+        "earth"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/runtime/golem_moussu_player.webp",
         "mime": "image/webp"
       },
       "compatibility": {

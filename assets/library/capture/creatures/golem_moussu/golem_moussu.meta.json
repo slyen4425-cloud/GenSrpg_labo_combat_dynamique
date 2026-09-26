@@ -1,0 +1,100 @@
+{
+  "id": "golem_moussu",
+  "name": "Golem moussu",
+  "profile": "drake",
+  "views": {
+    "player": "runtime/golem_moussu_player.webp",
+    "opponent": "runtime/golem_moussu_opponent.webp",
+    "icon": "runtime/golem_moussu_icon.webp"
+  },
+  "runtimePreview": {
+    "player": "runtime/golem_moussu_player.webp",
+    "opponent": "runtime/golem_moussu_opponent.webp",
+    "icon": "runtime/golem_moussu_icon.webp"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      320,
+      320
+    ],
+    "icon": [
+      192,
+      192
+    ]
+  },
+  "displayScale": {
+    "player": 1.15,
+    "opponent": 0.9
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "88%"
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Créature massive de roche et de mousse de la bibliothèque Capture. Vue adversaire 3/4 face et vue joueur 3/4 dos.",
+  "fxAnchors": {
+    "player": {
+      "head": {
+        "x": 0.86,
+        "y": 0.48
+      },
+      "mouth": {
+        "x": 0.91,
+        "y": 0.53
+      },
+      "handLeft": {
+        "x": 0.62,
+        "y": 0.76
+      },
+      "handRight": {
+        "x": 0.84,
+        "y": 0.78
+      },
+      "tail": {
+        "x": 0.22,
+        "y": 0.63
+      }
+    },
+    "opponent": {
+      "head": {
+        "x": 0.18,
+        "y": 0.5
+      },
+      "mouth": {
+        "x": 0.13,
+        "y": 0.55
+      },
+      "handLeft": {
+        "x": 0.3,
+        "y": 0.77
+      },
+      "handRight": {
+        "x": 0.56,
+        "y": 0.79
+      },
+      "tail": {
+        "x": 0.78,
+        "y": 0.63
+      }
+    }
+  },
+  "assetIds": {
+    "player": "pack:capture:creature-golem-moussu-player-01",
+    "opponent": "pack:capture:creature-golem-moussu-opponent-01",
+    "icon": "pack:capture:creature-golem-moussu-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  },
+  "visualRevision": "validated-front-back-2026-09-27"
+}

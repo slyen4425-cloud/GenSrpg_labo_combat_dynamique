@@ -20,7 +20,7 @@ Catalogue :
 
 - icônes Core ;
 - arène forêt ;
-- créatures Capture (Maraileron, Braisombre et Loup volcanique : vues joueur, adversaire et icône) ;
+- créatures Capture (Maraileron, Braisombre, Loup volcanique et Golem moussu : vues joueur, adversaire et icône) ;
 - FX Boule de feu ;
 - sprites de compétences existants ;
 - casts génériques ;
