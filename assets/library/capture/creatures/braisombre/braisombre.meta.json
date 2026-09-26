@@ -3,13 +3,13 @@
   "name": "Braisombre",
   "profile": "drake",
   "views": {
-    "player": "runtime/braisombre_player.webp",
-    "opponent": "runtime/braisombre_opponent.webp",
+    "player": "runtime/braisombre_player.webp?v=validated-v9",
+    "opponent": "runtime/braisombre_opponent.webp?v=validated-v9",
     "icon": "runtime/braisombre_icon.webp"
   },
   "runtimePreview": {
-    "player": "runtime/braisombre_player.webp",
-    "opponent": "runtime/braisombre_opponent.webp",
+    "player": "runtime/braisombre_player.webp?v=validated-v9",
+    "opponent": "runtime/braisombre_opponent.webp?v=validated-v9",
     "icon": "runtime/braisombre_icon.webp"
   },
   "defaultFacing": {
@@ -95,5 +95,7 @@
     "scope": "pack",
     "packId": "capture",
     "library": "global-assets"
-  }
+  },
+  "visualRevision": "validated-v9-front-back",
+  "validationSource": "checkpoint/lab-dragon-back-fx-layer-v9-green-2026-09-26"
 }
