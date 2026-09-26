@@ -1,0 +1,16 @@
+{
+  "id": "status_energy_shield",
+  "type": "status_effect_sprite_sequence",
+  "frame_ms": 65,
+  "loop": false,
+  "frames": [
+    "frames/sprite_status_energy_shield_01.svg",
+    "frames/sprite_status_energy_shield_02.svg",
+    "frames/sprite_status_energy_shield_03.svg",
+    "frames/sprite_status_energy_shield_04.svg",
+    "frames/sprite_status_energy_shield_05.svg",
+    "frames/sprite_status_energy_shield_06.svg",
+    "frames/sprite_status_energy_shield_07.svg",
+    "frames/sprite_status_energy_shield_08.svg"
+  ]
+}
