@@ -5729,3 +5729,50 @@ Validation technique du lot icônes :
 - test ajouté pour vérifier les quatre capacités actives et l'absence de faux FX sur les bindings icon-only ;
 - architecture d'arène par biome documentée uniquement, non implémentée ;
 - `main` et le dépôt `Zombicide-40k` inchangés.
+
+
+## Sous-lot assets — Loup volcanique
+
+Date : 2026-09-26
+
+Objectif :
+
+- intégrer une nouvelle créature Capture quadrupède feu/lave dans la bibliothèque globale ;
+- découper les visuels validés en trois assets distincts : vue joueur 3/4 dos, vue adversaire 3/4 face, icône ;
+- conserver les conventions runtime déjà utilisées par Maraileron et Braisombre ;
+- enregistrer les trois assets dans le catalogue global par `assetId` stable.
+
+Branche :
+
+`global-assets`
+
+Checkpoint de départ :
+
+`checkpoint/global-assets-before-loup-volcanique-creature-2026-09-26`
+
+SHA de base :
+
+`16da842ef199039d86baa2f1b9207592f86ee8c4`
+
+Fichiers autorisés :
+
+- `assets/library/capture/creatures/loup_volcanique/**` ;
+- `data/assets/catalog/global-visual-assets.v1.json` ;
+- `GLOBAL_ASSET_LIBRARY.md` ;
+- le présent point de reprise.
+
+Protégé / hors périmètre :
+
+- `main` ;
+- moteur Combat Rules ;
+- Animation Core ;
+- GenSrpG / `Zombicide-40k` ;
+- règles gameplay.
+
+Critère de fin :
+
+- trois fichiers WebP transparents présents et lisibles ;
+- orientation adversaire vers la gauche et joueur vers la droite ;
+- metadata et catalogue cohérents ;
+- relecture GitHub des fichiers et du SHA final ;
+- checkpoint GREEN du lot.
