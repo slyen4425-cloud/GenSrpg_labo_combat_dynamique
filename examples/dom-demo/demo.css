@@ -451,6 +451,17 @@ button.reserve-card {
   pointer-events: none;
 }
 
+.skill-fx--phase {
+  z-index: 9;
+  width: clamp(4.2rem, 12vw, 7.5rem);
+  aspect-ratio: 1;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  pointer-events: none;
+}
+
 .action-option__icon {
   position: relative;
   z-index: 1;
