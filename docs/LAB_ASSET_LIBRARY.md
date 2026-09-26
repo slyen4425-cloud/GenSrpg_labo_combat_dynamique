@@ -738,6 +738,57 @@ Le binding conserve uniquement des IDs stables et paramètres visuels. Les chemi
 
 ---
 
+## 12.2 Réglages audio du futur éditeur de compétences
+
+Le son suit exactement le même principe que les FX visuels :
+
+- le créateur choisit un son dans la bibliothèque ;
+- le binding stocke uniquement un `assetId` stable ;
+- le chemin physique et l'URL runtime sont résolus par le catalogue / Storage Adapter ;
+- aucune donnée gameplay ne dépend du son.
+
+Slots audio initiaux recommandés :
+
+- préparation / cast ;
+- release ;
+- travel ;
+- impact ;
+- disparition ;
+- réapparition ;
+- hit / miss ;
+- éventuellement boucle d'aura.
+
+Réglages UI simples :
+
+- choix du son par nom / tags ;
+- bouton d'écoute / preview ;
+- volume ;
+- boucle si le rôle le permet ;
+- reset / aucun son.
+
+Exemples :
+
+`Cast -> Magie feu 01`
+
+`Impact -> Impact mêlée lourd 01`
+
+`Disparition -> Téléportation 01`
+
+Le binding peut stocker :
+
+```json
+{
+  "castSound": "gensrpg:sound:fire-cast-01",
+  "impactSound": "gensrpg:sound:melee-impact-01"
+}
+```
+
+La banque source peut rester dans un dépôt privé. Le pipeline de publication produit ensuite des copies runtime adaptées au web, référencées par les mêmes `assetId`.
+
+Une copie runtime réellement jouée dans le navigateur est techniquement distribuée au client ; la protection concerne donc surtout les sources maîtres, l'organisation interne et les fichiers non publiés.
+
+---
+
 ## 13. Fallbacks obligatoires
 
 La bibliothèque ne doit jamais rendre le gameplay dépendant d'un asset décoratif.
