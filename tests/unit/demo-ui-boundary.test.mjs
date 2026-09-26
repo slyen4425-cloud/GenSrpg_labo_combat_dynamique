@@ -597,6 +597,10 @@ test("demo arena background is presentation-driven and keeps a CSS fallback", as
   assert.match(source, /presentationForArena/);
   assert.match(source, /applyArenaPresentation\("forest"\)/);
   assert.match(source, /--arena-background-image/);
+  assert.match(source, /--arena-background-position/);
+  assert.match(source, /--arena-background-size/);
+  assert.match(source, /presentation\.backgroundPosition/);
+  assert.match(source, /presentation\.backgroundSize/);
   assert.match(assets, /core:arena-forest-01/);
   assert.match(
     assets,
@@ -605,6 +609,14 @@ test("demo arena background is presentation-driven and keeps a CSS fallback", as
   assert.match(
     css,
     /--arena-background-image/
+  );
+  assert.match(
+    css,
+    /background-position:\s*var\(--arena-background-position, center\)/
+  );
+  assert.match(
+    css,
+    /background-size:\s*var\(--arena-background-size, cover\)/
   );
   assert.match(
     css,
