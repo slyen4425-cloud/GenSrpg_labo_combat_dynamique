@@ -32,7 +32,7 @@
     },
     "opponent": {
       "slotId": "opponent",
-      "activeMemberId": "opponent-golem",
+      "activeMemberId": "opponent-loup",
       "members": [
         {
           "id": "opponent-golem",
