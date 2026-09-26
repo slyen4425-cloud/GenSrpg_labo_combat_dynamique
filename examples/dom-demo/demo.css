@@ -635,6 +635,34 @@ button.reserve-card {
   gap: 0.28rem;
 }
 
+.audio-test-loader {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.audio-test-loader button {
+  min-height: 1.25rem;
+  padding: 0.08rem 0.34rem;
+  border: 1px solid rgba(137, 223, 240, 0.18);
+  border-radius: 999px;
+  background: rgba(16, 36, 45, 0.9);
+  color: #c8e6ec;
+  font-size: 0.44rem;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.audio-test-loader button[data-ready="true"] {
+  border-color: rgba(119, 235, 168, 0.58);
+  color: #a8efc1;
+}
+
+.audio-test-loader button:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
 .distance-buttons {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
