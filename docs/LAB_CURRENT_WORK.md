@@ -6273,3 +6273,19 @@ CI :
 - raccord Combat : SUCCESS au SHA `6edb9fa9979852e8a0c7f91814322ff5c422b91a`
 
 `main` reste inchangée.
+
+
+### Extension bibliothèque globale — créatures et arène
+
+Vérification / migration effectuée le 2026-09-26 :
+
+- l'arène forêt était déjà résolue depuis `global-assets` ;
+- Maraileron et Braisombre ont été publiés dans `assets/library/capture/creatures/<id>/` sur `global-assets` ;
+- chaque créature conserve un dossier propre avec metadata + `runtime/player`, `runtime/opponent`, `runtime/icon` ;
+- `src/ui/demo-app.js` charge désormais les metadata de créatures via le resolver global ;
+- les anciens fichiers sous `assets/test/creatures/` ne sont plus la source runtime ; ils restent seulement des fixtures historiques du laboratoire ;
+- le catalogue global contient maintenant les six visuels de créatures avec leurs `assetId`.
+
+CI du raccord créatures : SUCCESS, run `36261750143`.
+
+Règle confirmée : bibliothèque globale stable, rangement par famille/type, jamais de branche `work/` comme source runtime.
