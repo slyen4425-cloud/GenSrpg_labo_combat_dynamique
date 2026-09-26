@@ -182,7 +182,8 @@ const SKILL_BINDINGS = Object.freeze({
     travelFx: "pack:capture:sprite-fireball-travel-01",
     travelSourceAnchor: "mouth",
     impactFx: "pack:capture:sprite-fireball-impact-01",
-    castSound: "gensrpg:sound:fire-cast-01"
+    castSound: "gensrpg:sound:fire-cast-01",
+    impactSound: "gensrpg:sound:melee-impact-01"
   }),
   claw: Object.freeze({
     icon: "core:icon-skill-claw-01",
@@ -197,7 +198,8 @@ const SKILL_BINDINGS = Object.freeze({
       playbackMode: "loop"
     }),
     impactFx: "pack:capture:sprite-claw-impact-01",
-    castSound: "gensrpg:sound:teleport-01"
+    castSound: "gensrpg:sound:teleport-01",
+    impactSound: "gensrpg:sound:melee-impact-01"
   }),
   "teleport-strike": Object.freeze({
     icon: "core:icon-skill-teleport-strike-01",
@@ -208,7 +210,8 @@ const SKILL_BINDINGS = Object.freeze({
     phaseSoundByLabel: Object.freeze({
       "teleport-vanish": "gensrpg:sound:teleport-01",
       "teleport-return-vanish": "gensrpg:sound:teleport-01"
-    })
+    }),
+    impactSound: "gensrpg:sound:melee-impact-01"
   })
 });
 
