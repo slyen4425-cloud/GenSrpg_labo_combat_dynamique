@@ -1004,3 +1004,90 @@ test("DOM phase renderer plays teleport sequence on the actor phase anchor", asy
 
   await handle.finished;
 });
+
+
+test("multi-file cast sequence can loop for the whole preparation slot", async () => {
+  const animations = [];
+  let frameCancelled = false;
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append() {},
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 40, top: 180, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 280, top: 80, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill() {
+      return {
+        cast: {
+          assetId: "pack:capture:sprite-teleportation-1",
+          frames: Array.from(
+            { length: 8 },
+            (_, index) => `teleport-${index + 1}.svg`
+          ),
+          frameMs: 42,
+          playbackMode: "loop",
+          displayScale: 2.35
+        },
+        castLayer: "front",
+        phaseFx: {}
+      };
+    },
+    animate(_element, _keyframes, options) {
+      const index = animations.length;
+      animations.push(options);
+      return {
+        finished:
+          index === 0
+            ? new Promise(() => {})
+            : Promise.resolve(),
+        cancel() {
+          if (index === 0) {
+            frameCancelled = true;
+          }
+        }
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "cast",
+    skillId: "aerial-dive",
+    actorSlot: "player",
+    durationMs: 900
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(animations[0].duration, 336);
+  assert.equal(animations[0].iterations, Infinity);
+  assert.equal(animations[1].duration, 900);
+
+  await handle.finished;
+  assert.equal(frameCancelled, true);
+});
