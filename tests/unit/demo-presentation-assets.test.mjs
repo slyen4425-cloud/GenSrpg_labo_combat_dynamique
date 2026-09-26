@@ -162,3 +162,25 @@ test("demo audio bindings resolve runtime URLs by stable asset id", () => {
     "audio"
   );
 });
+
+
+test("every active offensive demo skill exposes a provisional impact sound", () => {
+  for (const skillId of [
+    "fireball",
+    "claw",
+    "aerial-dive",
+    "teleport-strike"
+  ]) {
+    const presentation =
+      demoPresentationAssets.presentationForSkill(skillId);
+    assert.equal(
+      presentation.impactSound?.assetId,
+      "gensrpg:sound:melee-impact-01",
+      `${skillId} should expose a target impact sound`
+    );
+    assert.match(
+      presentation.impactSound?.url,
+      /melee_impact\.mp3$/
+    );
+  }
+});
