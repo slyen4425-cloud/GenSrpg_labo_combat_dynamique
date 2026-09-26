@@ -6433,3 +6433,27 @@ Note de développement ajoutée dans `docs/LAB_ASSET_LIBRARY.md` :
 Checkpoint avant ce micro-lot : `checkpoint/lab-four-city-before-arena-framing-note-2026-09-26`.
 
 Validation smartphone requise avant checkpoint GREEN.
+
+
+### Correctif preview — Loup volcanique adverse invisible — 2026-09-27
+
+Retour utilisateur : le Loup volcanique côté adversaire n'était pas visible en combat.
+
+Cause démontrée :
+
+- le fichier `global-assets/assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_opponent.webp` existait mais son blob publié n'était pas un WebP décodable ;
+- le fichier joueur et l'icône étaient valides ;
+- la source WebP adverse valide existait encore dans la branche de staging historique `temp/inspect-loup-blobs-2026-09-26` sous forme de fragments base64 ;
+- ces fragments ont été reconstitués puis validés visuellement avant publication.
+
+Réparation :
+
+- checkpoint global-assets : `checkpoint/global-assets-before-wolf-opponent-repair-2026-09-27` ;
+- branche : `work/global-assets-wolf-opponent-repair-2026-09-27` ;
+- remplacement du seul binaire adverse par un WebP valide ;
+- `visualRevision` du Loup volcanique incrémentée ;
+- ajout d'un test de signature `RIFF....WEBP` pour les trois runtime assets du Loup ;
+- la Demo UI propage désormais `visualRevision` dans l'URL des bitmaps runtime afin qu'un binaire corrigé ne reste pas masqué par un ancien cache navigateur/CDN ;
+- aucun changement Combat Rules / Runtime / Animation / FX / dégâts / énergie.
+
+Validation smartphone utilisateur requise avant checkpoint GREEN du correctif.
