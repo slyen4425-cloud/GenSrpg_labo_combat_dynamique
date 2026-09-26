@@ -92,7 +92,7 @@ const ASSETS = Object.freeze({
     extension: "svg",
     frameCount: 8,
     frameMs: 42,
-    displayScale: 2.35
+    displayScale: 3.0
   }),
   "pack:capture:sprite-teleportation-2": captureSequenceAsset({
     assetId: "pack:capture:sprite-teleportation-2",
