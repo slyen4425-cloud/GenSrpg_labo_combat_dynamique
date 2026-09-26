@@ -6217,3 +6217,27 @@ Critères de fin :
 4. l'impact gameplay reste synchronisé avec le contact prévu par `travelMs` ;
 5. chaque compétence offensive de test possède un `impactSound` provisoire ;
 6. tests verts puis validation mobile utilisateur avant checkpoint GREEN.
+
+
+### Résultat technique du lot concurrence hit / approche
+
+Correctifs appliqués :
+
+- un `hit` normal reçu pendant une approche `ground / aerial / teleport` n'écrase plus l'animation d'approche ;
+- le hit est différé visuellement jusqu'à la fin de l'approche protégée, tandis que l'impact FX et l'audio peuvent rester immédiats ;
+- une animation annulée / remplacée ne relance plus un `idle` obsolète : `startIdleFor()` n'est appelé qu'après une fin réelle `status === "finished"` ;
+- `KO` reste une interruption explicite et annule immédiatement l'approche avant `hit -> ko` ;
+- `fireball`, `claw`, `aerial-dive` et `teleport-strike` possèdent désormais tous un `impactSound` provisoire dans leur Presentation Binding ;
+- aucun changement n'a été apporté au calcul de dégâts ni à `impactAtMs`.
+
+Invariant confirmé :
+
+Pour `aerial-dive`, `rise + reposition + dive = travelMs`. Le Combat Runtime résout à `preparationMs + travelMs`, soit le même instant logique que le contact cible. Le problème observé venait donc bien d'une annulation de présentation, pas d'un décalage de règle gameplay.
+
+CI :
+
+- SHA technique : `7e47d5ae1ba62dff0fdb37a6d1941952019d33a5`
+- run : `36252505422`
+- conclusion : SUCCESS
+
+Validation mobile utilisateur encore requise avant checkpoint GREEN.
