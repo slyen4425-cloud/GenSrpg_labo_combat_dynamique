@@ -5776,3 +5776,36 @@ Critère de fin :
 - metadata et catalogue cohérents ;
 - relecture GitHub des fichiers et du SHA final ;
 - checkpoint GREEN du lot.
+
+
+### Résultat sous-lot Loup volcanique
+
+Intégration terminée sur `global-assets`.
+
+Commit assets :
+
+`e29828ab5a1574badf445a7d90294abedf95562e`
+
+Fichiers ajoutés :
+
+- `assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_opponent.webp` — 320×320 WebP transparent, vue adversaire 3/4 face, orientée à gauche ;
+- `assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_player.webp` — 320×320 WebP transparent, vue joueur 3/4 dos, orientée à droite, sans griffes frontales visibles ;
+- `assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_icon.webp` — 192×192 WebP transparent ;
+- `assets/library/capture/creatures/loup_volcanique/loup_volcanique.meta.json`.
+
+Catalogue global mis à jour avec les trois IDs stables :
+
+- `pack:capture:creature-loup-volcanique-opponent-01` ;
+- `pack:capture:creature-loup-volcanique-player-01` ;
+- `pack:capture:creature-loup-volcanique-icon-01`.
+
+Vérifications GitHub :
+
+- les trois blobs binaires relus depuis `global-assets` correspondent aux SHA retournés par `create_blob` ;
+- metadata JSON relue et valide ;
+- catalogue relu : 69 assets, dont 6 vues de créatures et 3 portraits ;
+- `GLOBAL_ASSET_LIBRARY.md` synchronisé ;
+- aucun fichier de `main` ni du moteur de combat n'a été modifié ;
+- aucun statut CI n'est exposé pour ce commit d'assets statiques.
+
+Le lot est prêt pour checkpoint GREEN.
