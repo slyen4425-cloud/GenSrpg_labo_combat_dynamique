@@ -5957,3 +5957,38 @@ Critère de fin :
 - metadata et catalogue cohérents ;
 - relecture GitHub des fichiers et SHA finaux ;
 - checkpoint GREEN du lot.
+
+
+### Résultat sous-lot Golem moussu
+
+Intégration technique terminée et validée sur la branche de travail.
+
+Commit assets :
+
+`92da0ff2c92e34e040763ca670cda159daa66af6`
+
+Fichiers ajoutés :
+
+- `assets/library/capture/creatures/golem_moussu/runtime/golem_moussu_opponent.webp` — 320×320 WebP transparent, vue adversaire 3/4 face, orientée à gauche ;
+- `assets/library/capture/creatures/golem_moussu/runtime/golem_moussu_player.webp` — 320×320 WebP transparent, vue joueur 3/4 dos, orientée à droite ;
+- `assets/library/capture/creatures/golem_moussu/runtime/golem_moussu_icon.webp` — 192×192 WebP transparent ;
+- `assets/library/capture/creatures/golem_moussu/golem_moussu.meta.json`.
+
+Catalogue global mis à jour avec les trois IDs stables :
+
+- `pack:capture:creature-golem-moussu-opponent-01` ;
+- `pack:capture:creature-golem-moussu-player-01` ;
+- `pack:capture:creature-golem-moussu-icon-01`.
+
+Vérifications :
+
+- les trois blobs binaires relus depuis GitHub correspondent aux SHA renvoyés par `create_blob` ;
+- dimensions runtime : 320×320 / 320×320 / 192×192 ;
+- transparence alpha présente sur les trois ressources ;
+- metadata JSON relue et valide ;
+- catalogue relu : 72 assets, dont 8 vues de créatures et 4 portraits ;
+- `GLOBAL_ASSET_LIBRARY.md` synchronisé ;
+- CI du commit assets : run `36277125681` — SUCCESS ;
+- aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
+
+Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
