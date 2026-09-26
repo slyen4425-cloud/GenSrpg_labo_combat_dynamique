@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 66,
+    "assets": 69,
     "icons": 31,
-    "sprites": 26,
+    "sprites": 28,
     "fx": 2,
-    "portraits": 2,
+    "portraits": 3,
     "backgrounds": 5,
-    "creatures": 4
+    "creatures": 6
   },
   "assets": [
     {
@@ -1939,6 +1939,102 @@
       "resource": {
         "manifest": "capture/sprites/skills/teleportation_2/sprite_skill_teleportation_2_sequence.json",
         "format": "image-sequence"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-loup-volcanique-icon-01",
+      "label": "Loup volcanique — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "loup-volcanique",
+        "fire",
+        "lava",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/loup_volcanique/runtime/loup_volcanique_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-loup-volcanique-opponent-01",
+      "label": "Loup volcanique — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "loup-volcanique",
+        "fire",
+        "lava",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/loup_volcanique/runtime/loup_volcanique_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-loup-volcanique-player-01",
+      "label": "Loup volcanique — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "loup-volcanique",
+        "fire",
+        "lava",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/loup_volcanique/runtime/loup_volcanique_player.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [
