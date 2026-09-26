@@ -4,13 +4,13 @@
   "frame_ms": 55,
   "loop": false,
   "frames": [
-    "sprite_skill_claw_impact_01.png",
-    "sprite_skill_claw_impact_02.png",
-    "sprite_skill_claw_impact_03.png",
-    "sprite_skill_claw_impact_04.png",
-    "sprite_skill_claw_impact_05.png",
-    "sprite_skill_claw_impact_06.png",
-    "sprite_skill_claw_impact_07.png",
-    "sprite_skill_claw_impact_08.png"
+    "frames/sprite_skill_claw_impact_01.png",
+    "frames/sprite_skill_claw_impact_02.png",
+    "frames/sprite_skill_claw_impact_03.svg",
+    "frames/sprite_skill_claw_impact_04.svg",
+    "frames/sprite_skill_claw_impact_05.svg",
+    "frames/sprite_skill_claw_impact_06.svg",
+    "frames/sprite_skill_claw_impact_07.svg",
+    "frames/sprite_skill_claw_impact_08.svg"
   ]
 }
