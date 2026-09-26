@@ -448,3 +448,29 @@ Lorsqu'un prototype manipule plusieurs créatures par équipe :
 Chaîne autorisée :
 
 `Command Runtime -> command-complete -> Roster Session -> Combat Session slot -> Visual Controller`
+
+
+## 32. Dépôt GitHub des assets binaires — procédure obligatoire
+
+Lorsqu’un asset local (PNG, audio ou autre binaire autorisé) doit être déposé sur GitHub depuis ChatGPT, ne jamais conclure trop vite que le dépôt est impossible si l’écriture GitHub est disponible.
+
+Procédure obligatoire :
+
+1. vérifier le dépôt, la branche de travail et le SHA de base ;
+2. conserver `main` intact sauf validation explicite ;
+3. préparer/découper/nommer les assets localement ;
+4. encoder chaque fichier binaire en base64 ;
+5. créer chaque objet Git avec `create_blob` en `encoding: base64` et conserver le SHA réellement retourné ;
+6. créer de la même manière les blobs texte nécessaires (README, manifeste JSON, métadonnées), en UTF-8 ;
+7. construire le nouvel arbre avec `create_tree`, en utilisant uniquement les SHA de blobs effectivement retournés par GitHub et le `base_tree_sha` du commit de départ ;
+8. créer le commit avec `create_commit`, parenté sur le HEAD attendu de la branche ;
+9. déplacer la référence de la branche avec `update_ref` sans `force` lorsque le fast-forward est possible ;
+10. vérifier le commit final et communiquer le SHA et le chemin exact des assets.
+
+Important : un SHA calculé/local, ancien ou supposé ne doit jamais être utilisé à la place du SHA renvoyé par `create_blob`. Si `create_tree` répond qu’un SHA n’est pas un blob valide, recréer immédiatement le blob depuis son contenu base64 puis reprendre `tree -> commit -> ref` ; ne pas renvoyer inutilement la manipulation à Sylvain.
+
+Pour les sprites Capture, respecter le classement défini au §14, par exemple :
+
+`assets/library/capture/sprites/skills/<asset_id>/`
+
+Les frames doivent avoir des noms stables et ordonnés, et un manifeste de séquence doit être ajouté lorsque l’asset est animé.
