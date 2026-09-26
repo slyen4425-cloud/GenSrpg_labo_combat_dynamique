@@ -184,7 +184,7 @@ export async function mountCombatDemo({
   function playApproachFor(
     slotKey,
     approachMode,
-    { travelMs } = {}
+    { travelMs, onPhase = null } = {}
   ) {
     if (disposed) {
       return Promise.resolve({ status: "disposed" });
@@ -240,13 +240,49 @@ export async function mountCombatDemo({
     });
 
     const handle = slot.renderer.play(plan);
+    const phaseTimers = [];
+    let phaseAtMs = 0;
 
-    return handle.finished.then((result) => {
-      if (!disposed && slot.visible) {
-        startIdleFor(slotKey);
+    if (typeof onPhase === "function") {
+      for (const segment of plan.segments) {
+        const payload = Object.freeze({
+          label: segment.label,
+          phaseDurationMs: segment.durationMs,
+          atMs: phaseAtMs
+        });
+
+        if (phaseAtMs === 0) {
+          try {
+            onPhase(payload);
+          } catch {}
+        } else {
+          const timerId = globalThis.setTimeout(() => {
+            if (disposed || !slot.visible) {
+              return;
+            }
+            try {
+              onPhase(payload);
+            } catch {}
+          }, phaseAtMs);
+          phaseTimers.push(timerId);
+        }
+
+        phaseAtMs += segment.durationMs;
       }
-      return result;
-    });
+    }
+
+    return handle.finished
+      .then((result) => {
+        if (!disposed && slot.visible) {
+          startIdleFor(slotKey);
+        }
+        return result;
+      })
+      .finally(() => {
+        for (const timerId of phaseTimers) {
+          globalThis.clearTimeout(timerId);
+        }
+      });
   }
 
   function cancelFor(slotKey) {
