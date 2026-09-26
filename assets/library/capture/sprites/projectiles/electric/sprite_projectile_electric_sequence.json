@@ -1,0 +1,17 @@
+{
+  "id": "projectile_electric",
+  "type": "diagonal_projectile_sprite_sequence",
+  "direction": "bottom-left_to_top-right",
+  "frame_ms": 45,
+  "loop": false,
+  "frames": [
+    "frames/sprite_projectile_electric_01.svg",
+    "frames/sprite_projectile_electric_02.svg",
+    "frames/sprite_projectile_electric_03.svg",
+    "frames/sprite_projectile_electric_04.svg",
+    "frames/sprite_projectile_electric_05.svg",
+    "frames/sprite_projectile_electric_06.svg",
+    "frames/sprite_projectile_electric_07.svg",
+    "frames/sprite_projectile_electric_08.svg"
+  ]
+}
