@@ -6145,3 +6145,75 @@ Bindings actifs :
 Aucune sélection de fichier utilisateur n'est requise. Aucun bouton `Sons 0/3` n'est présent dans cette direction.
 
 Les copies runtime sont des fichiers de test distribuables au navigateur ; elles ne remplacent pas les sources privées.
+
+
+## Chantier actif — concurrence hit / animation d'approche + audio d'impact
+
+Date : 2026-09-26
+
+Nom :
+
+`concurrent-hit-presentation-v9`
+
+Objectif :
+
+Corriger une régression de présentation où un `hit` reçu pendant la préparation ou le trajet d'une attaque d'approche peut annuler visuellement l'attaque, alors que le Combat Runtime continue jusqu'à l'impact et applique correctement le résultat gameplay.
+
+Le lot ajoute aussi un son d'impact provisoire aux compétences offensives de test qui n'en ont pas encore.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-concurrent-hit-presentation-v9-2026-09-26`
+
+SHA de base :
+
+`f291db91474f35fcd6b3df2ba616aed7d3ee215c`
+
+Branche de travail :
+
+`work/lab-concurrent-hit-presentation-v9-2026-09-26`
+
+Branche preview :
+
+`preview/lab-concurrent-hit-presentation-v9-2026-09-26`
+
+Propriétaires concernés :
+
+- Combat Runtime reste propriétaire de `releaseAtMs / impactAtMs` et du résultat gameplay ;
+- Animation Core reste propriétaire du plan `aerial / ground / teleport` ;
+- Visual Controller / Render Adapter gère uniquement la concurrence entre animations de présentation ;
+- SkillPresentationBinding reste propriétaire des sons d'impact.
+
+Cause démontrée :
+
+- `DomActorRenderer.play()` annule volontairement l'animation précédente d'un slot ;
+- `playEventFor(slot, "hit")` utilise ce même renderer que `playApproachFor()` ;
+- un hit normal peut donc remplacer un piqué déjà engagé ;
+- inversement, si un hit commencé pendant la charge est annulé par le départ du piqué, son callback de fin peut relancer `idle` et écraser le nouveau piqué ;
+- le gameplay n'est pas fautif : `impactAtMs = preparationMs + travelMs` ;
+- le plan aérien atteint la cible exactement à la somme `rise + reposition + dive = travelMs`.
+
+Fichiers autorisés pour ce lot :
+
+- `src/ui/demo-app.js`
+- `src/adapters/renderer/combat-resolution-presenter.js`
+- `examples/dom-demo/demo-assets.js`
+- tests ciblés de présentation / assets / animation
+- documentation du lot
+
+Domaines protégés :
+
+- aucun changement de dégâts, énergie, portée ou résolution ;
+- aucun changement du calcul `impactAtMs` ;
+- aucun nouveau timer gameplay ;
+- aucun accès à GenSrpG principal ;
+- aucun changement de `main`.
+
+Critères de fin :
+
+1. un hit reçu pendant la préparation ne peut plus faire relancer un idle obsolète après le départ de l'attaque ;
+2. un hit non-KO reçu pendant une approche ne peut plus annuler cette approche ;
+3. un KO / contre / reflet qui annule réellement l'action conserve le droit d'annuler la présentation ;
+4. l'impact gameplay reste synchronisé avec le contact prévu par `travelMs` ;
+5. chaque compétence offensive de test possède un `impactSound` provisoire ;
+6. tests verts puis validation mobile utilisateur avant checkpoint GREEN.
