@@ -18,5 +18,14 @@ Biomes initiaux prévus :
 - `desert/`
 - `city/`
 - `sci-fi/`
+- `lava/`
 
-Le premier asset prévu est `forest/arena_forest_01.webp`.
+Assets actuellement intégrés :
+
+- `forest/arena_forest_01.png` — forêt (format historique PNG) ;
+- `lava/arena_lava_01.webp` — lave / volcan ;
+- `city/arena_city_01.webp` — cité fantasy ;
+- `snow/arena_snow_01.webp` — neige / glace ;
+- `cave/arena_cave_01.webp` — grotte cristalline.
+
+Les quatre nouveaux fonds fournis le 2026-09-26 sont normalisés en WebP 1536×864 (16:9) pour la bibliothèque Core.

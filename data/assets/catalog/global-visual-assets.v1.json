@@ -14,12 +14,12 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 62,
+    "assets": 66,
     "icons": 31,
     "sprites": 26,
     "fx": 2,
     "portraits": 2,
-    "backgrounds": 1,
+    "backgrounds": 5,
     "creatures": 4
   },
   "assets": [
@@ -43,6 +43,130 @@
       "resource": {
         "file": "core/arenas/forest/arena_forest_01.png",
         "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:arena-lava-01",
+      "label": "Arène lave 01",
+      "assetType": "background",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "lava",
+        "volcanic",
+        "fire",
+        "arena",
+        "combat"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/arenas/lava/arena_lava_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:arena-city-01",
+      "label": "Arène cité 01",
+      "assetType": "background",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "city",
+        "castle",
+        "stone",
+        "arena",
+        "combat"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/arenas/city/arena_city_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:arena-snow-01",
+      "label": "Arène neige 01",
+      "assetType": "background",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "snow",
+        "ice",
+        "mountain",
+        "arena",
+        "combat"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/arenas/snow/arena_snow_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:arena-cave-01",
+      "label": "Arène grotte cristalline 01",
+      "assetType": "background",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "cave",
+        "crystal",
+        "underground",
+        "arena",
+        "combat"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/arenas/cave/arena_cave_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [
