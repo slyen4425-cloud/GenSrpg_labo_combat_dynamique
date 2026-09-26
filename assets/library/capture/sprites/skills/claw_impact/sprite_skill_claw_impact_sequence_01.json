@@ -5,6 +5,12 @@
   "loop": false,
   "frames": [
     "frames/sprite_skill_claw_impact_01.png",
-    "frames/sprite_skill_claw_impact_02.png"
+    "frames/sprite_skill_claw_impact_02.png",
+    "frames/sprite_skill_claw_impact_03.svg",
+    "frames/sprite_skill_claw_impact_04.svg",
+    "frames/sprite_skill_claw_impact_05.svg",
+    "frames/sprite_skill_claw_impact_06.svg",
+    "frames/sprite_skill_claw_impact_07.svg",
+    "frames/sprite_skill_claw_impact_08.svg"
   ]
 }

@@ -11,22 +11,29 @@ const CORE_ROOT = new URL(
 function captureSequenceAsset({
   assetId,
   folder,
-  stem,
-  extension,
-  frameCount,
+  stem = null,
+  extension = null,
+  frameCount = 0,
+  frameFiles = null,
   frameMs,
   displayScale
 }) {
+  const files = Array.isArray(frameFiles)
+    ? frameFiles
+    : Array.from({ length: frameCount }, (_, index) => {
+        const frame = String(index + 1).padStart(2, "0");
+        return `${stem}_${frame}.${extension}`;
+      });
+
   return Object.freeze({
     assetId,
     frames: Object.freeze(
-      Array.from({ length: frameCount }, (_, index) => {
-        const frame = String(index + 1).padStart(2, "0");
-        return new URL(
-          `sprites/skills/${folder}/frames/${stem}_${frame}.${extension}`,
+      files.map((file) =>
+        new URL(
+          `sprites/skills/${folder}/frames/${file}`,
           CAPTURE_ROOT
-        ).href;
-      })
+        ).href
+      )
     ),
     frameMs,
     displayScale
@@ -65,11 +72,18 @@ const ASSETS = Object.freeze({
   "pack:capture:sprite-claw-impact-01": captureSequenceAsset({
     assetId: "pack:capture:sprite-claw-impact-01",
     folder: "claw_impact",
-    stem: "sprite_skill_claw_impact",
-    extension: "png",
-    frameCount: 2,
+    frameFiles: Object.freeze([
+      "sprite_skill_claw_impact_01.png",
+      "sprite_skill_claw_impact_02.png",
+      "sprite_skill_claw_impact_03.svg",
+      "sprite_skill_claw_impact_04.svg",
+      "sprite_skill_claw_impact_05.svg",
+      "sprite_skill_claw_impact_06.svg",
+      "sprite_skill_claw_impact_07.svg",
+      "sprite_skill_claw_impact_08.svg"
+    ]),
     frameMs: 55,
-    displayScale: 1.7
+    displayScale: 2.2
   }),
   "pack:capture:sprite-teleportation-1": captureSequenceAsset({
     assetId: "pack:capture:sprite-teleportation-1",
@@ -78,7 +92,7 @@ const ASSETS = Object.freeze({
     extension: "svg",
     frameCount: 8,
     frameMs: 42,
-    displayScale: 1.8
+    displayScale: 2.35
   }),
   "pack:capture:sprite-teleportation-2": captureSequenceAsset({
     assetId: "pack:capture:sprite-teleportation-2",
@@ -87,7 +101,7 @@ const ASSETS = Object.freeze({
     extension: "svg",
     frameCount: 8,
     frameMs: 38,
-    displayScale: 1.65
+    displayScale: 2.1
   }),
   "pack:capture:icon-skill-fireball-01": Object.freeze({
     assetId: "pack:capture:icon-skill-fireball-01",

@@ -1,9 +1,12 @@
 # GenSrpG — Claw Impact Sprite
 
-Current integrated test sequence: 2 transparent PNG frames.
+8-frame transparent impact sequence.
 
-- order: 01 -> 02
+- order: 01 -> 08
 - suggested timing: 55 ms/frame
 - loop: no
+- files 01–02: PNG
+- files 03–08: SVG
+- logical asset id used by the demo: `pack:capture:sprite-claw-impact-01`
 
-The source branch manifest originally referenced 8 frames, but only frames 01 and 02 are physically present in GitHub at this time. This integration manifest stays truthful to the available files; additional frames can be appended later without changing the logical asset ID.
+The sequence is intentionally described as an ordered multi-file asset; physical frame formats may differ without changing the logical asset ID.
