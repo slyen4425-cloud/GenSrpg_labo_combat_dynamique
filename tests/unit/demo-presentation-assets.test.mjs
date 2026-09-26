@@ -103,6 +103,22 @@ test("forest arena resolves through presentation assets only", () => {
 });
 
 
+test("lava arena resolves through the same presentation asset boundary", () => {
+  const presentation = demoPresentationAssets.presentationForArena("lava");
+
+  assert.ok(presentation);
+  assert.equal(
+    presentation.background?.assetId,
+    "core:arena-lava-01"
+  );
+  assert.ok(
+    presentation.background?.url.endsWith(
+      "assets/library/core/arenas/lava/arena_lava_01.webp"
+    )
+  );
+});
+
+
 test("fireball cast layer is data-driven by source view", () => {
   assert.equal(
     demoPresentationAssets.presentationForSkill(
