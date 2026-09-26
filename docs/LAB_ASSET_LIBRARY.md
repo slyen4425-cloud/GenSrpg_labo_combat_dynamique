@@ -346,6 +346,49 @@ Le PNG source maître peut être conservé hors runtime si nécessaire, mais la 
 
 Une arène est un asset de présentation de type `background`. Son identité de biome n'a aucune autorité gameplay.
 
+## 7.2 Organisation physique officielle — séquences de sprites
+
+Les séquences de sprites restent des assets logiques uniques même lorsqu'elles sont composées de plusieurs fichiers physiques.
+
+Arborescence cible :
+
+```
+assets/library/<scope>/sprites/skills/<sequence_id>/
+  README.md
+  <sequence_manifest>.json
+  frames/
+    <frame_01>.<ext>
+    <frame_02>.<ext>
+    ...
+```
+
+Le manifeste de séquence décrit au minimum :
+
+- un identifiant logique stable ;
+- l'ordre exact des frames ;
+- `frame_ms` comme durée technique de lecture ;
+- `loop` ;
+- la liste des fichiers réellement présents.
+
+Le renderer de présentation peut résoudre une séquence sous la forme :
+
+```js
+{
+  assetId: "pack:capture:sprite-teleportation-2",
+  frames: ["...01.svg", "...02.svg", "..."],
+  frameMs: 38
+}
+```
+
+Règles :
+
+- une séquence multi-fichiers ne nécessite pas obligatoirement un atlas ;
+- un atlas peut rester une optimisation runtime, sans changer l'`assetId` logique ;
+- le manifeste ne doit jamais référencer des frames absentes ;
+- le choix `cast / travel / impact / phase` appartient au Presentation Binding ;
+- les frames, leur durée technique et leur ordre n'ont aucune autorité sur dégâts, portée, énergie, cooldown ou résultat de combat ;
+- le futur éditeur de compétences pourra filtrer ces assets par catégorie et tags sans exposer les chemins physiques.
+
 ## 8. AssetDefinition — modèle conceptuel
 
 Exemple image :
