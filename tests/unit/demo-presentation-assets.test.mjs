@@ -41,7 +41,10 @@ test("temporary skill sprite bindings resolve typed library sequences", () => {
     claw.impact?.assetId,
     "pack:capture:sprite-claw-impact-01"
   );
-  assert.equal(claw.impact?.frames.length, 2);
+  assert.equal(claw.impact?.frames.length, 8);
+  assert.equal(claw.impact?.displayScale, 2.2);
+  assert.match(claw.impact?.frames[0], /_01\.png$/);
+  assert.match(claw.impact?.frames[7], /_08\.svg$/);
   assert.equal(claw.cast, null);
   assert.equal(claw.travel, null);
 
@@ -52,6 +55,7 @@ test("temporary skill sprite bindings resolve typed library sequences", () => {
     "pack:capture:sprite-teleportation-1"
   );
   assert.equal(aerial.cast?.frames.length, 8);
+  assert.equal(aerial.cast?.displayScale, 2.35);
   assert.equal(
     aerial.impact?.assetId,
     "pack:capture:sprite-claw-impact-01"
@@ -70,6 +74,10 @@ test("temporary skill sprite bindings resolve typed library sequences", () => {
   assert.equal(
     teleport.phaseFx["teleport-vanish"]?.frames.length,
     8
+  );
+  assert.equal(
+    teleport.phaseFx["teleport-vanish"]?.displayScale,
+    2.1
   );
 });
 
