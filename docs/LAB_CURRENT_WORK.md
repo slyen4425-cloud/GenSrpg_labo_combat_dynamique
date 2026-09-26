@@ -5879,3 +5879,10 @@ Vérifications :
 Commit courant du lot après restauration complète du tree Git : `334f3e30a469433fa1b53f70a44e53d6b96ebf75`.
 
 CI de la branche de travail : run `36276128154` — SUCCESS. Publication propre sur `global-assets` autorisée sans modification UI / renderer / gameplay.
+
+
+Publication candidate de la réparation :
+
+- commit : `df260825ceb158507db51c9401831b23efc80fad` ;
+- CI publication : run `36276181599` — SUCCESS ;
+- `global-assets` peut être avancée en fast-forward vers le commit documentaire final de ce lot.
