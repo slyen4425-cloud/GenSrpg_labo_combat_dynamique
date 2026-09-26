@@ -8,6 +8,11 @@ const CORE_ROOT = new URL(
   import.meta.url
 );
 
+const RUNTIME_AUDIO_ROOT = new URL(
+  "../../assets/runtime/audio-test/",
+  import.meta.url
+);
+
 function captureSequenceAsset({
   assetId,
   folder,
@@ -138,6 +143,24 @@ const ASSETS = Object.freeze({
     ).href,
     frameCount: 1,
     displayScale: 1.7
+  }),
+  "gensrpg:sound:fire-cast-01": Object.freeze({
+    assetId: "gensrpg:sound:fire-cast-01",
+    mediaType: "audio",
+    url: new URL("fire_cast.mp3", RUNTIME_AUDIO_ROOT).href,
+    volume: 0.72
+  }),
+  "gensrpg:sound:melee-impact-01": Object.freeze({
+    assetId: "gensrpg:sound:melee-impact-01",
+    mediaType: "audio",
+    url: new URL("melee_impact.mp3", RUNTIME_AUDIO_ROOT).href,
+    volume: 0.82
+  }),
+  "gensrpg:sound:teleport-01": Object.freeze({
+    assetId: "gensrpg:sound:teleport-01",
+    mediaType: "audio",
+    url: new URL("teleport.mp3", RUNTIME_AUDIO_ROOT).href,
+    volume: 0.76
   })
 });
 
@@ -158,11 +181,13 @@ const SKILL_BINDINGS = Object.freeze({
     }),
     travelFx: "pack:capture:sprite-fireball-travel-01",
     travelSourceAnchor: "mouth",
-    impactFx: "pack:capture:sprite-fireball-impact-01"
+    impactFx: "pack:capture:sprite-fireball-impact-01",
+    castSound: "gensrpg:sound:fire-cast-01"
   }),
   claw: Object.freeze({
     icon: "core:icon-skill-claw-01",
-    impactFx: "pack:capture:sprite-claw-impact-01"
+    impactFx: "pack:capture:sprite-claw-impact-01",
+    impactSound: "gensrpg:sound:melee-impact-01"
   }),
   "aerial-dive": Object.freeze({
     icon: "core:icon-skill-aerial-dive-01",
@@ -171,13 +196,18 @@ const SKILL_BINDINGS = Object.freeze({
     castOptions: Object.freeze({
       playbackMode: "loop"
     }),
-    impactFx: "pack:capture:sprite-claw-impact-01"
+    impactFx: "pack:capture:sprite-claw-impact-01",
+    castSound: "gensrpg:sound:teleport-01"
   }),
   "teleport-strike": Object.freeze({
     icon: "core:icon-skill-teleport-strike-01",
     phaseFxByLabel: Object.freeze({
       "teleport-vanish": "pack:capture:sprite-teleportation-2",
       "teleport-return-vanish": "pack:capture:sprite-teleportation-2"
+    }),
+    phaseSoundByLabel: Object.freeze({
+      "teleport-vanish": "gensrpg:sound:teleport-01",
+      "teleport-return-vanish": "gensrpg:sound:teleport-01"
     })
   })
 });
@@ -246,7 +276,15 @@ export const demoPresentationAssets = Object.freeze({
       phaseFx: resolveAssetMap(
         binding.phaseFxByLabel,
         binding.phaseOptionsByLabel
-      )
+      ),
+      castSound: resolveAsset(binding.castSound),
+      releaseSound: resolveAsset(binding.releaseSound),
+      impactSound: resolveAsset(binding.impactSound),
+      phaseSound: resolveAssetMap(binding.phaseSoundByLabel)
     });
+  },
+  audioAsset(assetId) {
+    const asset = resolveAsset(assetId);
+    return asset?.mediaType === "audio" ? asset : null;
   }
 });
