@@ -5886,3 +5886,28 @@ Publication candidate de la réparation :
 - commit : `df260825ceb158507db51c9401831b23efc80fad` ;
 - CI publication : run `36276181599` — SUCCESS ;
 - `global-assets` peut être avancée en fast-forward vers le commit documentaire final de ce lot.
+
+
+### Régression mobile après publication des 4 WebP — rollback de sécurité
+
+Retour utilisateur : après publication des quatre WebP réparés sur `global-assets`, la simulation de combat se fige sur mobile.
+
+Application de la charte §11 :
+
+- la première modification commune au moment de la régression est le remplacement des quatre blobs d'arène ;
+- aucun code UI / renderer / gameplay n'a changé dans `global-assets` ;
+- par sécurité, retour immédiat aux quatre blobs présents avant la réparation, via un commit de rollback et sans réécriture d'historique ;
+- objectif du rollback : retrouver exactement le comportement précédent (combat fonctionnel, arène lave éventuellement absente) avant tout nouveau diagnostic.
+
+Base du rollback :
+
+- `global-assets` avant rollback : `f6918a1afcf80fbcefbb37140df47289c248a1b7` ;
+- checkpoint : `checkpoint/global-assets-before-arena-regression-rollback-2026-09-26` ;
+- branche : `work/global-assets-arena-regression-rollback-2026-09-26` ;
+- commit binaire rollback : `88fb729957a1d0a1ce75523047b07bffa75978d1`.
+
+Règle pour la suite :
+
+- ne pas republier les nouveaux fonds sur `global-assets` tant que la cause du gel mobile n'est pas isolée ;
+- ne pas ajouter de second renderer ni de contournement UI ;
+- diagnostic suivant sur branche isolée uniquement, avec validation mobile avant republication stable.
