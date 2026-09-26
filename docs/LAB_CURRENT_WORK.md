@@ -6321,3 +6321,30 @@ CI technique avant publication preview :
 - conclusion : SUCCESS.
 
 Validation visuelle smartphone utilisateur requise avant tout checkpoint GREEN de cette variante.
+
+
+### Correctif preview — fond d'arène non visible
+
+Retour utilisateur : le Loup volcanique est bien chargé mais l'arène lave ne s'affiche pas.
+
+Constats :
+
+- l'asset `core:arena-lava-01` est bien présent sur `global-assets` ;
+- le chemin `core/arenas/lava/arena_lava_01.webp` est correctement résolu ;
+- le problème est donc isolé au chemin de présentation du fond d'arène dans la démo, qui utilisait une custom property CSS pour injecter l'URL.
+
+Correctif :
+
+- le fond d'arène est désormais rendu par une couche `<img>` dédiée dans l'arène ;
+- la source reste pilotée par `presentationForArena()` et l'asset ID stable ;
+- `object-fit: cover` assure le cadrage ;
+- le fallback procédural CSS reste derrière si aucune image n'est disponible ;
+- aucune règle gameplay ni aucun moteur d'animation n'est modifié.
+
+Validation technique :
+
+- SHA : `91fe42ebd53c8aeb74aba9532c9bd14e32cc3421` ;
+- run : `36274789434` ;
+- conclusion : SUCCESS.
+
+Validation visuelle smartphone encore requise.
