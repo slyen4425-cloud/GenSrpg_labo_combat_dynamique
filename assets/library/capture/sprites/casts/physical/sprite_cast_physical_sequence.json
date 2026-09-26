@@ -1,0 +1,17 @@
+{
+  "id": "cast_physical",
+  "type": "cast_charge_sprite_sequence",
+  "frame_ms": 60,
+  "loop": false,
+  "progression": "build_up",
+  "frames": [
+    "frames/sprite_cast_physical_01.svg",
+    "frames/sprite_cast_physical_02.svg",
+    "frames/sprite_cast_physical_03.svg",
+    "frames/sprite_cast_physical_04.svg",
+    "frames/sprite_cast_physical_05.svg",
+    "frames/sprite_cast_physical_06.svg",
+    "frames/sprite_cast_physical_07.svg",
+    "frames/sprite_cast_physical_08.svg"
+  ]
+}
