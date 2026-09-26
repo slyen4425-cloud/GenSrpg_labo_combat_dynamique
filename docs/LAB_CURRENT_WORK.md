@@ -5956,3 +5956,50 @@ Cette validation couvre :
 - le correctif de layering du cast Boule de feu adverse devant la créature.
 
 Le lot peut être checkpointé GREEN au SHA documentaire final après CI.
+
+
+### Lot — bindings provisoires nouveaux sprites de capacités
+
+Demande utilisateur du 2026-09-26 :
+
+- lier provisoirement le sprite Griffe à l'impact de `claw` ;
+- utiliser `teleportation_1` comme cast de `aerial-dive` ;
+- utiliser un impact physique cohérent pour `aerial-dive` : le même impact Griffe est retenu provisoirement ;
+- utiliser `teleportation_2` sur la compétence `teleport-strike` à chaque disparition réelle de la créature.
+
+Base du lot :
+
+- checkpoint GREEN précédent : `checkpoint/lab-dragon-back-fx-layer-v9-green-2026-09-26` ;
+- base SHA : `9e54be625ce3c7c82236d40e8d85ec08f2b496bb` ;
+- branche : `work/lab-skill-sprite-bindings-v9-2026-09-26` ;
+- preview : `preview/lab-skill-sprite-bindings-v9-2026-09-26`.
+
+Assets repris depuis la branche divergente `work/lab-claw-impact-sprites-2026-09-26` sans merger cette branche :
+
+- `claw_impact` ;
+- `teleportation_1` ;
+- `teleportation_2`.
+
+Important :
+
+- `claw_impact` annonçait 8 frames dans son manifeste source mais seulement 2 fichiers étaient réellement présents ;
+- l'intégration corrige donc le manifeste à 2 frames actives pour rester conforme à l'état physique réel ;
+- les 6 frames manquantes pourront être ajoutées ultérieurement sans changer l'asset ID logique.
+
+Bindings provisoires :
+
+- `claw.impactFx -> pack:capture:sprite-claw-impact-01` ;
+- `aerial-dive.castFx -> pack:capture:sprite-teleportation-1` ;
+- `aerial-dive.impactFx -> pack:capture:sprite-claw-impact-01` ;
+- `teleport-strike.phaseFxByLabel.teleport-vanish -> pack:capture:sprite-teleportation-2` ;
+- `teleport-strike.phaseFxByLabel.teleport-return-vanish -> pack:capture:sprite-teleportation-2`.
+
+Architecture :
+
+- le renderer FX supporte maintenant les séquences multi-fichiers via `frames[] + frameMs`, en plus des atlas existants ;
+- les phases de téléportation proviennent des labels réels du plan Animation Core ;
+- `teleportation_2` se déclenche donc au début de chaque segment de disparition, y compris le retour ;
+- aucun délai de gameplay, dégâts, énergie, portée ou résultat de combat n'est recalculé par les sprites ;
+- Combat Rules et SkillDefinition restent indépendants des chemins et assets visuels.
+
+Validation visuelle smartphone requise avant checkpoint GREEN final.
