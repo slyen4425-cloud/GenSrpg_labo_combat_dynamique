@@ -830,3 +830,177 @@ test("opponent cast presentation stays in front without renderer side special-ca
   done.resolve();
   await handle.finished;
 });
+
+
+test("DOM impact renderer plays a multi-file sprite sequence without an atlas", async () => {
+  const appended = [];
+  const animations = [];
+  let removed = false;
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {
+            removed = true;
+          }
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 20, top: 200, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 280, top: 80, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill(skillId) {
+      assert.equal(skillId, "claw");
+      return {
+        impact: {
+          assetId: "pack:capture:sprite-claw-impact-01",
+          frames: ["claw-01.png", "claw-02.png"],
+          frameMs: 55,
+          displayScale: 1.7
+        },
+        phaseFx: {}
+      };
+    },
+    animate(element, keyframes, options) {
+      animations.push({ element, keyframes, options });
+      return {
+        finished: Promise.resolve(),
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "impact",
+    skillId: "claw",
+    targetSlot: "opponent",
+    durationMs: 420
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended.length, 1);
+  assert.equal(
+    appended[0].dataset.assetId,
+    "pack:capture:sprite-claw-impact-01"
+  );
+  assert.match(appended[0].style.backgroundImage, /claw-01\.png/);
+  assert.equal(animations.length, 2);
+  assert.equal(animations[0].options.duration, 110);
+  assert.match(
+    animations[0].keyframes[1].backgroundImage,
+    /claw-02\.png/
+  );
+  assert.equal(animations[1].options.duration, 420);
+
+  await handle.finished;
+  assert.equal(removed, true);
+});
+
+test("DOM phase renderer plays teleport sequence on the actor phase anchor", async () => {
+  const appended = [];
+  const animations = [];
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 20, top: 30, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 280, top: 80, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill(skillId) {
+      assert.equal(skillId, "teleport-strike");
+      return {
+        phaseFx: {
+          "teleport-vanish": {
+            assetId: "pack:capture:sprite-teleportation-2",
+            frames: Array.from(
+              { length: 8 },
+              (_, index) => `teleport-${index + 1}.svg`
+            ),
+            frameMs: 38,
+            displayScale: 1.65
+          }
+        }
+      };
+    },
+    animate(element, keyframes, options) {
+      animations.push({ element, keyframes, options });
+      return {
+        finished: Promise.resolve(),
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "phase",
+    skillId: "teleport-strike",
+    actorSlot: "player",
+    phase: "teleport-vanish",
+    durationMs: 48
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended.length, 1);
+  assert.equal(appended[0].dataset.skillFx, "phase");
+  assert.equal(appended[0].dataset.phase, "teleport-vanish");
+  assert.equal(appended[0].style.left, "40px");
+  assert.equal(appended[0].style.top, "50px");
+  assert.equal(animations[0].options.duration, 304);
+  assert.equal(animations[1].options.duration, 304);
+
+  await handle.finished;
+});
