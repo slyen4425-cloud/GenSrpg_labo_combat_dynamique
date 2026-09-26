@@ -615,3 +615,49 @@ test("demo arena background is presentation-driven and keeps a CSS fallback", as
     /damage|energyCost|allowedDistances/
   );
 });
+
+
+test("skill sprite sequences remain presentation-owned and phase-driven", async () => {
+  const assets = await readFile(
+    "examples/dom-demo/demo-assets.js",
+    "utf8"
+  );
+  const presenter = await readFile(
+    "src/adapters/renderer/combat-resolution-presenter.js",
+    "utf8"
+  );
+  const visualController = await readFile(
+    "src/ui/demo-app.js",
+    "utf8"
+  );
+  const fxRenderer = await readFile(
+    "src/adapters/renderer/dom-skill-fx.js",
+    "utf8"
+  );
+
+  assert.match(assets, /sprite-claw-impact-01/);
+  assert.match(assets, /sprite-teleportation-1/);
+  assert.match(assets, /sprite-teleportation-2/);
+  assert.match(assets, /phaseFxByLabel/);
+  assert.match(assets, /teleport-return-vanish/);
+
+  assert.match(
+    presenter,
+    /type:\s*"phase"[\s\S]*phase:\s*label/
+  );
+  assert.match(
+    visualController,
+    /segment\.label[\s\S]*segment\.durationMs/
+  );
+  assert.match(
+    fxRenderer,
+    /Array\.isArray\(visual\?\.frames\)/
+  );
+  assert.match(
+    fxRenderer,
+    /presentation\?\.phaseFx\?\.\[phase\]/
+  );
+
+  assert.doesNotMatch(assets, /damage\s*:/);
+  assert.doesNotMatch(fxRenderer, /hpAfter|energyCost|allowedDistances/);
+});
