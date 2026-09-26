@@ -1,0 +1,17 @@
+{
+  "id": "projectile_thorn",
+  "type": "diagonal_projectile_sprite_sequence",
+  "direction": "bottom-left_to_top-right",
+  "frame_ms": 45,
+  "loop": false,
+  "frames": [
+    "frames/sprite_projectile_thorn_01.svg",
+    "frames/sprite_projectile_thorn_02.svg",
+    "frames/sprite_projectile_thorn_03.svg",
+    "frames/sprite_projectile_thorn_04.svg",
+    "frames/sprite_projectile_thorn_05.svg",
+    "frames/sprite_projectile_thorn_06.svg",
+    "frames/sprite_projectile_thorn_07.svg",
+    "frames/sprite_projectile_thorn_08.svg"
+  ]
+}
