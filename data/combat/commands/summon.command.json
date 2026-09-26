@@ -1,0 +1,10 @@
+{
+  "id": "summon",
+  "name": "Invocation",
+  "kind": "summon",
+  "energyCost": 3,
+  "preparationMs": 2200,
+  "recoveryMs": 600,
+  "interruptibleDuringPreparation": true,
+  "effect": {}
+}

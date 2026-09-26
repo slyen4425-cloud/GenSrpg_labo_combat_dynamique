@@ -1,0 +1,17 @@
+{
+  "id": "projectile_shadow",
+  "type": "diagonal_projectile_sprite_sequence",
+  "direction": "bottom-left_to_top-right",
+  "frame_ms": 45,
+  "loop": false,
+  "frames": [
+    "frames/sprite_projectile_shadow_01.svg",
+    "frames/sprite_projectile_shadow_02.svg",
+    "frames/sprite_projectile_shadow_03.svg",
+    "frames/sprite_projectile_shadow_04.svg",
+    "frames/sprite_projectile_shadow_05.svg",
+    "frames/sprite_projectile_shadow_06.svg",
+    "frames/sprite_projectile_shadow_07.svg",
+    "frames/sprite_projectile_shadow_08.svg"
+  ]
+}

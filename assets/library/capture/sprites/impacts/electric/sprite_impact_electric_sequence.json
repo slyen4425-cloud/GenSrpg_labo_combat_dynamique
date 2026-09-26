@@ -1,0 +1,16 @@
+{
+  "id": "impact_electric",
+  "type": "impact_sprite_sequence",
+  "frame_ms": 45,
+  "loop": false,
+  "frames": [
+    "frames/sprite_impact_electric_01.svg",
+    "frames/sprite_impact_electric_02.svg",
+    "frames/sprite_impact_electric_03.svg",
+    "frames/sprite_impact_electric_04.svg",
+    "frames/sprite_impact_electric_05.svg",
+    "frames/sprite_impact_electric_06.svg",
+    "frames/sprite_impact_electric_07.svg",
+    "frames/sprite_impact_electric_08.svg"
+  ]
+}

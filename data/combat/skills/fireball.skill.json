@@ -1,0 +1,26 @@
+{
+  "id": "fireball",
+  "name": "Boule de feu",
+  "category": "offensive",
+  "form": "projectile",
+  "element": "fire",
+  "energyCost": 3,
+  "preparationMs": 2000,
+  "travelMs": 700,
+  "recoveryMs": 700,
+  "allowedDistances": [
+    "medium",
+    "long"
+  ],
+  "effect": {
+    "damage": 30,
+    "tags": [
+      "burn-capable"
+    ]
+  },
+  "approachMode": "none",
+  "projectileClash": {
+    "mode": "mutual_cancel",
+    "group": "fire-orb"
+  }
+}

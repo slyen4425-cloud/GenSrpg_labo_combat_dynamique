@@ -1,0 +1,17 @@
+{
+  "id": "cast_electric",
+  "type": "cast_charge_sprite_sequence",
+  "frame_ms": 60,
+  "loop": false,
+  "progression": "build_up",
+  "frames": [
+    "frames/sprite_cast_electric_01.svg",
+    "frames/sprite_cast_electric_02.svg",
+    "frames/sprite_cast_electric_03.svg",
+    "frames/sprite_cast_electric_04.svg",
+    "frames/sprite_cast_electric_05.svg",
+    "frames/sprite_cast_electric_06.svg",
+    "frames/sprite_cast_electric_07.svg",
+    "frames/sprite_cast_electric_08.svg"
+  ]
+}

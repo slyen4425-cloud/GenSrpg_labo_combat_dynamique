@@ -1,0 +1,12 @@
+{
+  "name": "gensrpg-dynamic-combat-lab",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Laboratoire autonome de combat visuel dynamique mono-image.",
+  "scripts": {
+    "test": "node --test",
+    "check:structure": "node scripts/check-structure.mjs",
+    "ci": "npm run check:structure && npm test"
+  }
+}
