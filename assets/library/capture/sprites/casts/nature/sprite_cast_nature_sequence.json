@@ -1,0 +1,17 @@
+{
+  "id": "cast_nature",
+  "type": "cast_charge_sprite_sequence",
+  "frame_ms": 60,
+  "loop": false,
+  "progression": "build_up",
+  "frames": [
+    "frames/sprite_cast_nature_01.svg",
+    "frames/sprite_cast_nature_02.svg",
+    "frames/sprite_cast_nature_03.svg",
+    "frames/sprite_cast_nature_04.svg",
+    "frames/sprite_cast_nature_05.svg",
+    "frames/sprite_cast_nature_06.svg",
+    "frames/sprite_cast_nature_07.svg",
+    "frames/sprite_cast_nature_08.svg"
+  ]
+}
