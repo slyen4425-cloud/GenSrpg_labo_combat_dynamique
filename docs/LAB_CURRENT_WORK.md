@@ -6365,3 +6365,46 @@ Critère de fin :
 - CI verte ;
 - test smartphone utilisateur ;
 - aucune promotion stable avant résultat du test.
+
+
+## Preview test — 4 créatures / arène cité — 2026-09-26
+
+Objectif :
+
+- proposer les quatre créatures disponibles dans une même simulation : Maraileron, Braisombre, Loup volcanique et Golem moussu ;
+- conserver les mécaniques de roster existantes (actif + réserves, rappel / invocation) ;
+- tester une autre arène, ici la cité, via le même chemin de présentation déjà validé ;
+- ne modifier aucune règle de dégâts, énergie, distance, IA, timing ou animation.
+
+Base / branches :
+
+- base mobile validée : `cbb763f816f5dcc50f273e55d3ae2c5e01094b0b` ;
+- checkpoint : `checkpoint/lab-start-four-creatures-city-preview-v9-2026-09-26` ;
+- travail : `work/lab-four-creatures-city-preview-v9-2026-09-26` ;
+- preview : `preview/lab-four-creatures-city-preview-v9-2026-09-26`.
+
+Périmètre autorisé :
+
+- métadonnées visuelles du Golem moussu chargées depuis `global-assets` ;
+- fixture combattant du Golem moussu côté données de test ;
+- roster de preview contenant les quatre créatures ;
+- fixture locale de l'arène cité sous `assets/test/arenas/city/` ;
+- binding de présentation et bootstrap de variante preview ;
+- tests ciblés ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / Runtime / Animation Core / FX Core ;
+- aucun changement du renderer ;
+- aucun changement de `main` ;
+- aucun changement de `global-assets` ;
+- aucune deuxième logique de rendu d'arène.
+
+Critères :
+
+- les quatre créatures sont accessibles dans le roster ;
+- Loup volcanique et Golem moussu peuvent être affichés comme actifs ;
+- l'arène cité s'affiche par le mécanisme `presentationForArena()` existant ;
+- CI verte ;
+- validation smartphone utilisateur avant checkpoint GREEN.
