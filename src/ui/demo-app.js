@@ -48,6 +48,14 @@ async function fetchCreatureMeta(url, fetchImpl) {
   });
 }
 
+function creatureAssetUrl(meta, relativePath) {
+  const url = new URL(relativePath, meta.assetBaseUrl);
+  if (meta.visualRevision) {
+    url.searchParams.set("v", meta.visualRevision);
+  }
+  return url.href;
+}
+
 function requiredElement(root, selector) {
   const element = root.querySelector(selector);
   if (!element) {
@@ -385,7 +393,7 @@ export async function mountCombatDemo({
       id: meta.id,
       name: meta.name,
       profile: meta.profile,
-      iconUrl: new URL(iconAsset, meta.assetBaseUrl).href
+      iconUrl: creatureAssetUrl(meta, iconAsset)
     });
   }
 
@@ -499,10 +507,10 @@ function createSlot({
 
     const runtimeAsset =
       meta.runtimePreview?.[view] ?? meta.views[view];
-    const runtimeUrl = new URL(
-      runtimeAsset,
-      meta.assetBaseUrl
-    ).href;
+    const runtimeUrl = creatureAssetUrl(
+      meta,
+      runtimeAsset
+    );
 
     loadRuntimeAsset(runtimeUrl);
     rebuildActor(runtimeUrl);
