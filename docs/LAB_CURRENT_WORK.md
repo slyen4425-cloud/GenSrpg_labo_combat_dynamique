@@ -5992,3 +5992,57 @@ Vérifications :
 - aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
 
 Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
+
+
+## Sous-lot — Guêpe cybernétique — 2026-09-27
+
+Objectif :
+
+- intégrer la nouvelle créature électrique/insectoïde validée dans la bibliothèque Capture ;
+- conserver trois ressources séparées : vue adversaire 3/4 face, vue joueur 3/4 dos et icône ;
+- reprendre les conventions runtime des créatures déjà présentes ;
+- enregistrer les trois ressources dans le catalogue global par `assetId` stable.
+
+Branche de travail :
+
+`work/guepe-cybernetique-assets-2026-09-27`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-guepe-cybernetique-assets-2026-09-27`
+
+SHA de base :
+
+`13e83876f2f11188370f7dd16079e036d20ea0b0`
+
+Fichiers autorisés :
+
+- `assets/library/capture/creatures/guepe_cybernetique/**` ;
+- `data/assets/catalog/global-visual-assets.v1.json` ;
+- `GLOBAL_ASSET_LIBRARY.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+Protégé / hors périmètre :
+
+- `main` ;
+- moteur Combat Rules ;
+- Animation Core ;
+- renderer / Demo UI ;
+- GenSrpG / `Zombicide-40k` ;
+- règles gameplay.
+
+Tests prévus :
+
+- vérifier dimensions et transparence des trois WebP ;
+- vérifier les SHA de blobs GitHub issus de `create_blob` ;
+- relire metadata et catalogue ;
+- vérifier la CI de la branche de travail ;
+- publier sur `global-assets` uniquement en fast-forward après validation technique.
+
+Critère de fin :
+
+- trois WebP transparents présents et lisibles ;
+- metadata et catalogue cohérents ;
+- relecture GitHub des fichiers et du SHA final ;
+- CI verte ;
+- checkpoint GREEN sur le SHA publié.
