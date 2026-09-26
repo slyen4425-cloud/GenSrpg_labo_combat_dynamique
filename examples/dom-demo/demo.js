@@ -4,12 +4,14 @@ import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");
 const arena = root?.querySelector("[data-combat-arena]") ?? null;
+const arenaBackgroundImage =
+  arena?.querySelector("[data-arena-background-image]") ?? null;
 const searchParams = new URLSearchParams(window.location.search);
 const previewVariant = searchParams.get("variant");
 const isLoupLavaPreview = previewVariant === "loup-lava";
 
 function applyArenaPresentation(arenaId) {
-  if (!arena) {
+  if (!arena || !arenaBackgroundImage) {
     return;
   }
 
@@ -18,16 +20,15 @@ function applyArenaPresentation(arenaId) {
 
   if (!presentation?.background?.url) {
     arena.removeAttribute("data-arena-background");
-    arena.style.removeProperty("--arena-background-image");
+    arenaBackgroundImage.hidden = true;
+    arenaBackgroundImage.removeAttribute("src");
     return;
   }
 
   arena.dataset.arenaBackground = "image";
   arena.dataset.arenaTheme = arenaId;
-  arena.style.setProperty(
-    "--arena-background-image",
-    `url("${presentation.background.url}")`
-  );
+  arenaBackgroundImage.hidden = false;
+  arenaBackgroundImage.src = presentation.background.url;
 }
 
 applyArenaPresentation("forest");
