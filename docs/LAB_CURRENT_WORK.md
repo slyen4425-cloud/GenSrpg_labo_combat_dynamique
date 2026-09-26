@@ -6408,3 +6408,28 @@ Critères :
 - l'arène cité s'affiche par le mécanisme `presentationForArena()` existant ;
 - CI verte ;
 - validation smartphone utilisateur avant checkpoint GREEN.
+
+
+### Ajustement preview — cadrage arène cité + note futur éditeur
+
+Retour smartphone utilisateur : l'arène cité est visible mais la créature adverse peut sembler flotter / se trouver dans le vide.
+
+Correctif de présentation :
+
+- aucun changement du renderer, du moteur de combat ou du gameplay ;
+- le binding d'arène expose désormais des paramètres génériques `backgroundPosition` et `backgroundSize` ;
+- les valeurs par défaut restent `center` / `cover` pour les autres arènes ;
+- la cité utilise pour ce test `backgroundPosition: center bottom` et `backgroundSize: auto 112%` afin de remonter visuellement le sol derrière la zone adverse ;
+- `demo.js` applique ces métadonnées génériquement via les variables CSS de présentation, sans branche spéciale propre à l'arène cité.
+
+Note de développement ajoutée dans `docs/LAB_ASSET_LIBRARY.md` :
+
+- futur import d'images d'arène personnalisées dans GenSrpG ;
+- cadrage X/Y et zoom réglables ;
+- preview immédiate et reset ;
+- image source conservée séparément du cadrage ;
+- `assetId` stable et aucune autorité gameplay du décor.
+
+Checkpoint avant ce micro-lot : `checkpoint/lab-four-city-before-arena-framing-note-2026-09-26`.
+
+Validation smartphone requise avant checkpoint GREEN.
