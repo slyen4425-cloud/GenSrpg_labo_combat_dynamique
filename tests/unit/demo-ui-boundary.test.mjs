@@ -718,6 +718,35 @@ test("normal hit presentation cannot replace an active approach or restart stale
 });
 
 
+test("four creature city preview exposes all current capture creatures", async () => {
+  const visualSource = await readFile("src/ui/demo-app.js", "utf8");
+  const combatSource = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const demoSource = await readFile("examples/dom-demo/demo.js", "utf8");
+  const roster = JSON.parse(
+    await readFile(
+      "data/combat/rosters/demo-four-creatures-city.roster.json",
+      "utf8"
+    )
+  );
+
+  assert.match(
+    visualSource,
+    /capture\/creatures\/golem_moussu\/golem_moussu\.meta\.json/
+  );
+  assert.match(combatSource, /golem_moussu:\s*golemMoussuConfig/);
+  assert.match(demoSource, /previewVariant === "four-city"/);
+  assert.match(demoSource, /applyArenaPresentation\("city"\)/);
+
+  const creatures = new Set(
+    roster.teams.player.members.map((member) => member.creatureId)
+  );
+  assert.deepEqual(
+    [...creatures].sort(),
+    ["braisombre", "golem_moussu", "loup_volcanique", "maraileron"].sort()
+  );
+});
+
+
 test("combat demo does not use work or preview branches as visual asset storage", async () => {
   const source = [
     await readFile("src/assets/global-visual-library.js", "utf8"),
