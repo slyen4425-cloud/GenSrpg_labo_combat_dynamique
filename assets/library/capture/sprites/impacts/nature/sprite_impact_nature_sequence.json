@@ -1,0 +1,16 @@
+{
+  "id": "impact_nature",
+  "type": "impact_sprite_sequence",
+  "frame_ms": 45,
+  "loop": false,
+  "frames": [
+    "frames/sprite_impact_nature_01.svg",
+    "frames/sprite_impact_nature_02.svg",
+    "frames/sprite_impact_nature_03.svg",
+    "frames/sprite_impact_nature_04.svg",
+    "frames/sprite_impact_nature_05.svg",
+    "frames/sprite_impact_nature_06.svg",
+    "frames/sprite_impact_nature_07.svg",
+    "frames/sprite_impact_nature_08.svg"
+  ]
+}
