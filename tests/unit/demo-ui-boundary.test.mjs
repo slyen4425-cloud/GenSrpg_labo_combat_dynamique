@@ -744,5 +744,34 @@ test("creature visuals resolve from global-assets and not assets/test", async ()
     source,
     /globalVisualAssetUrl\(\s*"capture\/creatures\/braisombre\/braisombre\.meta\.json"/
   );
+  assert.match(
+    source,
+    /globalVisualAssetUrl\(\s*"capture\/creatures\/loup_volcanique\/loup_volcanique\.meta\.json"/
+  );
   assert.doesNotMatch(source, /assets\/test\/creatures/);
+});
+
+test("loup lava preview stays a presentation/data variant", async () => {
+  const demo = await readFile("examples/dom-demo/demo.js", "utf8");
+  const combatUi = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const roster = JSON.parse(
+    await readFile(
+      "data/combat/rosters/demo-loup-lava-2v2.roster.json",
+      "utf8"
+    )
+  );
+
+  assert.match(demo, /previewVariant === "loup-lava"/);
+  assert.match(demo, /applyArenaPresentation\("lava"\)/);
+  assert.match(demo, /demo-loup-lava-2v2\.roster\.json/);
+  assert.match(combatUi, /rosterUrl = DATA_URLS\.roster/);
+  assert.match(combatUi, /loup_volcanique: loupVolcaniqueConfig/);
+  assert.equal(
+    roster.teams.player.members[0].creatureId,
+    "loup_volcanique"
+  );
+  assert.equal(
+    roster.teams.opponent.members[1].creatureId,
+    "loup_volcanique"
+  );
 });
