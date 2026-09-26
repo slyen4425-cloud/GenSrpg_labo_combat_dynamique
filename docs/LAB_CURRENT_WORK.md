@@ -6003,3 +6003,15 @@ Architecture :
 - Combat Rules et SkillDefinition restent indépendants des chemins et assets visuels.
 
 Validation visuelle smartphone requise avant checkpoint GREEN final.
+
+
+Validation technique du lot sprites :
+
+- SHA fonctionnel : `bb2f4193ebb82e3d57a2d7ecf7bd1086b7e383c6` ;
+- CI work : run `36221971880` — SUCCESS ;
+- diff revu depuis le checkpoint de départ : uniquement nouveaux assets Capture, Presentation Binding, renderer FX, visual controller, CSS, tests et documentation ;
+- aucun fichier Combat Rules, Combat Runtime, résolution dégâts/énergie/portée ou roster modifié ;
+- le déclenchement `teleportation_2` dépend des labels `teleport-vanish` et `teleport-return-vanish` émis par le plan d'animation existant ;
+- `teleportation_1` est provisoirement lié au cast de Plongeon aérien ;
+- l'impact Griffe est provisoirement partagé entre Griffe et Plongeon aérien ;
+- validation visuelle smartphone requise avant checkpoint GREEN final.
