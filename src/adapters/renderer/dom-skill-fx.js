@@ -55,7 +55,15 @@ function applySpriteVisual(node, visual, durationMs, animate) {
 
   if (Array.isArray(visual.frames) && visual.frames.length > 0) {
     const frames = visual.frames.filter(Boolean);
-    const playbackMs = visualPlaybackMs(visual, durationMs);
+    const playbackMode =
+      ["once", "loop", "stretch"].includes(visual.playbackMode)
+        ? visual.playbackMode
+        : "once";
+    const nativePlaybackMs = visualPlaybackMs(visual, durationMs);
+    const playbackMs =
+      playbackMode === "stretch"
+        ? Math.max(1, Number(durationMs) || nativePlaybackMs)
+        : nativePlaybackMs;
 
     node.style.backgroundImage = `url("${frames[0]}")`;
     node.style.backgroundSize = "100% 100%";
@@ -72,7 +80,8 @@ function applySpriteVisual(node, visual, durationMs, animate) {
         {
           duration: playbackMs,
           easing: "steps(1, end)",
-          fill: "forwards"
+          fill: "forwards",
+          iterations: playbackMode === "loop" ? Infinity : 1
         }
       );
 
