@@ -138,6 +138,33 @@ const ASSETS = Object.freeze({
     ).href,
     frameCount: 1,
     displayScale: 1.7
+  }),
+  "core:sound-test-fire-cast-01": Object.freeze({
+    assetId: "core:sound-test-fire-cast-01",
+    mediaType: "audio",
+    category: "cast",
+    label: "Test cast feu",
+    testFileName:
+      "ES_Fire Magic Spell, Continuous - Epidemic Sound.wav",
+    volume: 0.72
+  }),
+  "core:sound-test-melee-impact-01": Object.freeze({
+    assetId: "core:sound-test-melee-impact-01",
+    mediaType: "audio",
+    category: "impact",
+    label: "Test impact mêlée",
+    testFileName:
+      "ES_Heavy, Two Handed, Attack, Hit Flesh, Impact - Epidemic Sound.wav",
+    volume: 0.82
+  }),
+  "core:sound-test-teleport-01": Object.freeze({
+    assetId: "core:sound-test-teleport-01",
+    mediaType: "audio",
+    category: "phase",
+    label: "Test téléportation",
+    testFileName:
+      "ES_Type 04, Jump, Short, Video Game 01 - Epidemic Sound.wav",
+    volume: 0.76
   })
 });
 
@@ -158,11 +185,13 @@ const SKILL_BINDINGS = Object.freeze({
     }),
     travelFx: "pack:capture:sprite-fireball-travel-01",
     travelSourceAnchor: "mouth",
-    impactFx: "pack:capture:sprite-fireball-impact-01"
+    impactFx: "pack:capture:sprite-fireball-impact-01",
+    castSound: "core:sound-test-fire-cast-01"
   }),
   claw: Object.freeze({
     icon: "core:icon-skill-claw-01",
-    impactFx: "pack:capture:sprite-claw-impact-01"
+    impactFx: "pack:capture:sprite-claw-impact-01",
+    impactSound: "core:sound-test-melee-impact-01"
   }),
   "aerial-dive": Object.freeze({
     icon: "core:icon-skill-aerial-dive-01",
@@ -171,13 +200,18 @@ const SKILL_BINDINGS = Object.freeze({
     castOptions: Object.freeze({
       playbackMode: "loop"
     }),
-    impactFx: "pack:capture:sprite-claw-impact-01"
+    impactFx: "pack:capture:sprite-claw-impact-01",
+    castSound: "core:sound-test-teleport-01"
   }),
   "teleport-strike": Object.freeze({
     icon: "core:icon-skill-teleport-strike-01",
     phaseFxByLabel: Object.freeze({
       "teleport-vanish": "pack:capture:sprite-teleportation-2",
       "teleport-return-vanish": "pack:capture:sprite-teleportation-2"
+    }),
+    phaseSoundByLabel: Object.freeze({
+      "teleport-vanish": "core:sound-test-teleport-01",
+      "teleport-return-vanish": "core:sound-test-teleport-01"
     })
   })
 });
@@ -246,7 +280,24 @@ export const demoPresentationAssets = Object.freeze({
       phaseFx: resolveAssetMap(
         binding.phaseFxByLabel,
         binding.phaseOptionsByLabel
-      )
+      ),
+      castSound: resolveAsset(binding.castSound),
+      releaseSound: resolveAsset(binding.releaseSound),
+      impactSound: resolveAsset(binding.impactSound),
+      phaseSound: resolveAssetMap(binding.phaseSoundByLabel)
     });
+  },
+  requiredAudioFiles() {
+    return Object.freeze(
+      Object.values(ASSETS)
+        .filter((asset) => asset?.mediaType === "audio" && asset.testFileName)
+        .map((asset) =>
+          Object.freeze({
+            assetId: asset.assetId,
+            fileName: asset.testFileName,
+            label: asset.label ?? asset.assetId
+          })
+        )
+    );
   }
 });
