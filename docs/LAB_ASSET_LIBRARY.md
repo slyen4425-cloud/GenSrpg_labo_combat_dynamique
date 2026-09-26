@@ -598,6 +598,137 @@ Une compétence sans FX dédié doit rester fonctionnelle.
 
 ---
 
+## 12.1 Réglages visuels du futur éditeur de compétences
+
+Cette section est la référence pour le futur raccord entre la bibliothèque d'assets et l'éditeur de compétences GenSrpG.
+
+Principe fondamental :
+
+**les réglages visuels appartiennent au SkillPresentationBinding, jamais au SkillDefinition gameplay.**
+
+Une compétence peut donc modifier son apparence sans modifier :
+
+- dégâts ;
+- énergie ;
+- portée ;
+- préparation gameplay ;
+- trajet gameplay ;
+- cooldown ;
+- résultat de combat.
+
+### Réglages par slot visuel
+
+Les réglages doivent être indépendants pour chaque slot, par exemple :
+
+- cast / préparation ;
+- travel / projectile ;
+- impact ;
+- disparition ;
+- réapparition ;
+- aura ;
+- effet au sol ;
+- autres phases de présentation futures.
+
+Chaque slot pourra proposer au minimum :
+
+- `assetId` — choix dans la bibliothèque ;
+- `displayScale` — taille visuelle ;
+- `attachment` — point de référence spatial ;
+- `anchor` — bouche, tête, main, centre, cible, etc. ;
+- `offsetX / offsetY` — correction manuelle de position ;
+- `layer` — devant / derrière la créature ;
+- `trigger` — moment logique de présentation ;
+- `rotation` optionnelle ;
+- `opacity` optionnelle ;
+- preview immédiate dans l'éditeur.
+
+Le scale doit être réglable **par effet**, pas une seule fois pour toute la compétence.
+
+Plage UI initiale recommandée pour `displayScale` :
+
+- curseur environ `0.25x -> 4x` ;
+- valeur numérique visible ;
+- reset rapide à `1x`.
+
+Cette plage est un réglage de présentation et peut évoluer sans changer le contrat gameplay.
+
+### Modes d'attache simples et intuitifs
+
+L'éditeur ne doit pas demander au créateur de connaître les détails du DOM ou de l'Animation Core.
+
+Modes utilisateurs cibles :
+
+- **Attaché au lanceur** — le FX suit la créature qui utilise la compétence ;
+- **Attaché à la cible** — le FX suit la cible ;
+- **Fixé à la position** — la position est capturée au déclenchement puis le FX reste à cet endroit ;
+- **Trajet lanceur -> cible** — pour projectiles / rayons ;
+- **Sol / arène** — pour un effet spatial indépendant d'une créature.
+
+Exemple recommandé pour une disparition de téléportation :
+
+- trigger : « Quand le lanceur disparaît » ;
+- attachment : « Fixé à la position » ;
+- anchor : « Centre de la créature » ;
+- scale réglable ;
+- layer réglable.
+
+Ainsi le sprite reste visuellement à l'endroit de disparition même si la créature est ensuite déplacée ailleurs par son animation.
+
+### Déclencheurs utilisateur vs phases techniques
+
+L'éditeur doit présenter des termes compréhensibles :
+
+- Début de préparation ;
+- Lancement ;
+- Début du trajet ;
+- Impact ;
+- Disparition ;
+- Réapparition ;
+- Retour ;
+- Fin.
+
+Il ne doit pas obliger le créateur à manipuler des labels internes tels que :
+
+- `teleport-vanish` ;
+- `teleport-return-vanish` ;
+- autres labels Animation Core.
+
+Une couche de mapping Presentation Binding traduit les choix utilisateurs vers les phases techniques existantes.
+
+### Presets d'usage
+
+Pour garder l'éditeur simple, proposer des presets avant les réglages avancés :
+
+- Cast autour du lanceur ;
+- Projectile vers la cible ;
+- Impact sur la cible ;
+- Disparition du lanceur ;
+- Réapparition du lanceur ;
+- Aura attachée ;
+- Effet au sol.
+
+Le créateur peut ensuite ouvrir **Réglages avancés** pour modifier scale, offsets, anchor, layer, rotation ou opacité.
+
+### Sélection depuis la bibliothèque
+
+Les menus de l'éditeur doivent filtrer le catalogue par :
+
+- type : icon / sprite / fx / sound ;
+- rôle : cast / travel / impact / phase / aura ;
+- élément / thème ;
+- tags ;
+- pack / provenance.
+
+Exemple :
+
+`Impact -> Feu -> Impact feu 01 / 02 / 03`
+
+plutôt qu'une liste de noms de fichiers physiques.
+
+Le binding conserve uniquement des IDs stables et paramètres visuels. Les chemins de fichiers restent la responsabilité du catalogue / stockage.
+
+---
+
 ## 13. Fallbacks obligatoires
 
 La bibliothèque ne doit jamais rendre le gameplay dépendant d'un asset décoratif.
