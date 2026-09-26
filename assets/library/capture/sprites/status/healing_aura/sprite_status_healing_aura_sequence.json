@@ -1,0 +1,16 @@
+{
+  "id": "status_healing_aura",
+  "type": "status_effect_sprite_sequence",
+  "frame_ms": 65,
+  "loop": false,
+  "frames": [
+    "frames/sprite_status_healing_aura_01.svg",
+    "frames/sprite_status_healing_aura_02.svg",
+    "frames/sprite_status_healing_aura_03.svg",
+    "frames/sprite_status_healing_aura_04.svg",
+    "frames/sprite_status_healing_aura_05.svg",
+    "frames/sprite_status_healing_aura_06.svg",
+    "frames/sprite_status_healing_aura_07.svg",
+    "frames/sprite_status_healing_aura_08.svg"
+  ]
+}
