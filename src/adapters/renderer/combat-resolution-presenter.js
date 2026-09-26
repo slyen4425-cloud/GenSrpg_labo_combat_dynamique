@@ -16,6 +16,7 @@ function defaultClearTimer(timerId) {
 export function createCombatResolutionPresenter({
   visuals,
   fx = null,
+  audio = null,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer
 }) {
@@ -29,6 +30,9 @@ export function createCombatResolutionPresenter({
   if (fx && typeof fx.play !== "function") {
     throw new TypeError("fx must provide play() when supplied");
   }
+  if (audio && typeof audio.play !== "function") {
+    throw new TypeError("audio must provide play() when supplied");
+  }
   if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
     throw new TypeError("timer functions are required");
   }
@@ -36,6 +40,7 @@ export function createCombatResolutionPresenter({
   let disposed = false;
   const timers = new Set();
   const preparationFxByActor = new Map();
+  const preparationAudioByActor = new Map();
 
   function schedule(callback, delayMs) {
     const timerId = setTimer(() => {
@@ -61,14 +66,23 @@ export function createCombatResolutionPresenter({
   }
 
   function cancelPreparation(actorSlot = "player") {
-    const handle = preparationFxByActor.get(actorSlot);
-    if (!handle) {
-      return false;
+    let cancelled = false;
+
+    const fxHandle = preparationFxByActor.get(actorSlot);
+    if (fxHandle) {
+      preparationFxByActor.delete(actorSlot);
+      fxHandle.animation?.cancel?.();
+      cancelled = true;
     }
 
-    preparationFxByActor.delete(actorSlot);
-    handle.animation?.cancel?.();
-    return true;
+    const audioHandle = preparationAudioByActor.get(actorSlot);
+    if (audioHandle) {
+      preparationAudioByActor.delete(actorSlot);
+      audioHandle.stop?.();
+      cancelled = true;
+    }
+
+    return cancelled;
   }
 
   function presentPreparation({
@@ -103,8 +117,32 @@ export function createCombatResolutionPresenter({
         .catch(() => {});
     }
 
+    const skillId = action?.skill?.id ?? null;
+    const audioHandle = skillId
+      ? audio?.play({
+          type: "cast",
+          skillId,
+          actorSlot,
+          targetSlot: action?.targetId ?? null
+        }) ?? null
+      : null;
+
+    if (audioHandle?.status === "running") {
+      preparationAudioByActor.set(actorSlot, audioHandle);
+      Promise.resolve(audioHandle.finished)
+        .finally(() => {
+          if (preparationAudioByActor.get(actorSlot) === audioHandle) {
+            preparationAudioByActor.delete(actorSlot);
+          }
+        })
+        .catch(() => {});
+    }
+
     return Object.freeze({
-      status: handle ? "preparing" : "no_fx",
+      status:
+        handle || audioHandle?.status === "running"
+          ? "preparing"
+          : "no_fx",
       preparationMs: action?.preparationMs ?? 0
     });
   }
@@ -140,6 +178,13 @@ export function createCombatResolutionPresenter({
               phase: label,
               durationMs: phaseDurationMs
             });
+            audio?.play({
+              type: "phase",
+              skillId,
+              actorSlot,
+              targetSlot,
+              phase: label
+            });
           }
         })
         .catch(() => {});
@@ -153,6 +198,16 @@ export function createCombatResolutionPresenter({
       targetSlot
     })) {
       fx?.play(fxPlan);
+    }
+
+    const releaseSkillId = action.skill?.id ?? null;
+    if (releaseSkillId) {
+      audio?.play({
+        type: "release",
+        skillId: releaseSkillId,
+        actorSlot,
+        targetSlot
+      });
     }
 
     return Object.freeze({
@@ -183,6 +238,15 @@ export function createCombatResolutionPresenter({
     let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
 
+    const outcomeSkillId =
+      resolution.events?.find(
+        (item) => item.type === "skill-arrive"
+      )?.skillId ??
+      resolution.events?.find(
+        (item) => item.type === "skill-release"
+      )?.skillId ??
+      null;
+
     for (const fxPlan of planSkillOutcomeFx({
       resolution,
       targetSlot
@@ -192,6 +256,15 @@ export function createCombatResolutionPresenter({
 
     switch (resolution.outcome) {
       case "hit": {
+        if (outcomeSkillId) {
+          audio?.play({
+            type: "impact",
+            skillId: outcomeSkillId,
+            actorSlot,
+            targetSlot
+          });
+        }
+
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&
@@ -315,7 +388,11 @@ export function createCombatResolutionPresenter({
       return;
     }
     cancelPending();
-    for (const actorSlot of [...preparationFxByActor.keys()]) {
+    const preparationActors = new Set([
+      ...preparationFxByActor.keys(),
+      ...preparationAudioByActor.keys()
+    ]);
+    for (const actorSlot of preparationActors) {
       cancelPreparation(actorSlot);
     }
     disposed = true;
