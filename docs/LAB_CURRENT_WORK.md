@@ -6289,3 +6289,35 @@ Vérification / migration effectuée le 2026-09-26 :
 CI du raccord créatures : SUCCESS, run `36261750143`.
 
 Règle confirmée : bibliothèque globale stable, rangement par famille/type, jamais de branche `work/` comme source runtime.
+
+
+## Preview test — Loup volcanique / arène lave — 2026-09-26
+
+Objectif :
+
+- vérifier le nouveau monstre **Loup volcanique** dans le vrai combat laboratoire ;
+- remplacer visuellement et dans le roster de test la créature Maraileron par `loup_volcanique` ;
+- afficher une autre arène de la bibliothèque, ici `core:arena-lava-01` ;
+- ne modifier aucune règle de dégâts, énergie, distance, timing, IA ou animation.
+
+Base :
+
+- checkpoint : `checkpoint/lab-start-loup-lava-preview-v9-2026-09-26` ;
+- branche travail : `work/lab-loup-lava-preview-v9-2026-09-26` ;
+- branche preview : `preview/lab-loup-lava-preview-v9-2026-09-26`.
+
+Principe :
+
+- la démo normale reste Maraileron / forêt par défaut ;
+- la variante est activée uniquement par `?variant=loup-lava` ;
+- les visuels du loup et l'arène lave sont résolus depuis la branche stable `global-assets` ;
+- un roster et une configuration combattant spécifiques à la preview sont fournis côté données de test ;
+- le montage combat déduit désormais son combattant initial depuis le roster chargé au lieu de coder en dur Maraileron / Braisombre.
+
+CI technique avant publication preview :
+
+- SHA : `27b382628f9d8d9f9682eb10bba5cbe3b84ceb25` ;
+- run : `36274238057` ;
+- conclusion : SUCCESS.
+
+Validation visuelle smartphone utilisateur requise avant tout checkpoint GREEN de cette variante.
