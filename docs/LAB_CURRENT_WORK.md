@@ -6046,3 +6046,41 @@ Critère de fin :
 - relecture GitHub des fichiers et du SHA final ;
 - CI verte ;
 - checkpoint GREEN sur le SHA publié.
+
+
+### Résultat sous-lot Guêpe cybernétique
+
+Intégration technique terminée et validée sur la branche de travail.
+
+Commit assets :
+
+`0f467729c885b4c5646937b74748d311fd3de7af`
+
+Fichiers ajoutés :
+
+- `assets/library/capture/creatures/guepe_cybernetique/runtime/guepe_cybernetique_opponent.webp` — 320×320 WebP transparent, vue adversaire 3/4 face ;
+- `assets/library/capture/creatures/guepe_cybernetique/runtime/guepe_cybernetique_player.webp` — 320×320 WebP transparent, vue joueur 3/4 dos ;
+- `assets/library/capture/creatures/guepe_cybernetique/runtime/guepe_cybernetique_icon.webp` — 192×192 WebP transparent, icône miroir validée ;
+- `assets/library/capture/creatures/guepe_cybernetique/guepe_cybernetique.meta.json`.
+
+Blobs binaires GitHub issus de `create_blob` :
+
+- opponent : `2758fa023c862e028e1bda399461827c6a698eeb` ;
+- player : `ddfbc87b0c143fc1ba0045f3bb0219ef5a3b415d` ;
+- icon : `31b3e58b77f279bf60ade73c320ed1ca9a95166c`.
+
+Catalogue global mis à jour avec les trois IDs stables :
+
+- `pack:capture:creature-guepe-cybernetique-opponent-01` ;
+- `pack:capture:creature-guepe-cybernetique-player-01` ;
+- `pack:capture:creature-guepe-cybernetique-icon-01`.
+
+Vérifications :
+
+- metadata JSON relue et valide ;
+- catalogue relu : 75 assets, dont 10 vues de créatures et 5 portraits ;
+- `GLOBAL_ASSET_LIBRARY.md` synchronisé ;
+- CI du commit assets : run `36278732746` — SUCCESS ;
+- aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
+
+Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
