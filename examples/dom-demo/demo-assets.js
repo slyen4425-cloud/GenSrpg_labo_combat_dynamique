@@ -204,15 +204,17 @@ const ASSETS = Object.freeze({
   }),
   "core:arena-forest-01": Object.freeze({
     assetId: "core:arena-forest-01",
-    url: globalVisualAssetUrl(
-      "core/arenas/forest/arena_forest_01.png"
-    )
+    url: new URL(
+      "arenas/forest/arena_forest_01.png",
+      CORE_ROOT
+    ).href
   }),
   "core:arena-lava-01": Object.freeze({
     assetId: "core:arena-lava-01",
-    url: globalVisualAssetUrl(
-      "core/arenas/lava/arena_lava_01.webp"
-    )
+    url: new URL(
+      "arenas/lava/arena_lava_01.webp",
+      CORE_ROOT
+    ).href
   }),
   "core:icon-skill-claw-01": Object.freeze({
     assetId: "core:icon-skill-claw-01",

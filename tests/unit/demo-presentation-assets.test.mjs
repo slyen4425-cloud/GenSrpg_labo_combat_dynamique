@@ -92,13 +92,9 @@ test("forest arena resolves through presentation assets only", () => {
     "core:arena-forest-01"
   );
   assert.ok(
-    new URL(presentation.background?.url).pathname.endsWith(
+    presentation.background?.url.endsWith(
       "assets/library/core/arenas/forest/arena_forest_01.png"
     )
-  );
-  assert.match(
-    new URL(presentation.background?.url).search,
-    /v=2026-09-26-v4-arena-cache/
   );
   assert.equal(
     demoPresentationAssets.presentationForArena("unknown-arena"),
@@ -116,13 +112,9 @@ test("lava arena resolves through the same presentation asset boundary", () => {
     "core:arena-lava-01"
   );
   assert.ok(
-    new URL(presentation.background?.url).pathname.endsWith(
+    presentation.background?.url.endsWith(
       "assets/library/core/arenas/lava/arena_lava_01.webp"
     )
-  );
-  assert.match(
-    new URL(presentation.background?.url).search,
-    /v=2026-09-26-v4-arena-cache/
   );
 });
 

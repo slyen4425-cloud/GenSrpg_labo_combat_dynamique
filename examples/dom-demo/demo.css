@@ -74,30 +74,17 @@ summary {
   border-radius: 1rem;
   background-color: #173442;
   background-image:
-    radial-gradient(circle at 50% 25%, rgba(83, 177, 199, 0.24), transparent 36%),
-    linear-gradient(180deg, #173442 0%, #132a33 52%, #1b2d2b 100%);
+    var(
+      --arena-background-image,
+      radial-gradient(circle at 50% 25%, rgba(83, 177, 199, 0.24), transparent 36%),
+      linear-gradient(180deg, #173442 0%, #132a33 52%, #1b2d2b 100%)
+    );
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   box-shadow:
     inset 0 0 4rem rgba(139, 232, 248, 0.04),
     0 0.8rem 2.8rem rgba(0, 0, 0, 0.34);
-}
-
-.arena__background {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  pointer-events: none;
-  user-select: none;
-}
-
-.arena__background[hidden] {
-  display: none;
 }
 
 .arena::before {

@@ -592,14 +592,11 @@ test("fireball demo binding uses stable Capture asset IDs and stays outside game
 test("demo arena background is presentation-driven and keeps a CSS fallback", async () => {
   const source = await readFile("examples/dom-demo/demo.js", "utf8");
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
-  const html = await readFile("examples/dom-demo/index.html", "utf8");
   const assets = await readFile("examples/dom-demo/demo-assets.js", "utf8");
 
   assert.match(source, /presentationForArena/);
   assert.match(source, /applyArenaPresentation\("forest"\)/);
-  assert.match(source, /data-arena-background-image/);
-  assert.match(source, /arenaBackgroundImage\.src\s*=\s*presentation\.background\.url/);
-  assert.match(html, /data-arena-background-image/);
+  assert.match(source, /--arena-background-image/);
   assert.match(assets, /core:arena-forest-01/);
   assert.match(
     assets,
@@ -607,11 +604,7 @@ test("demo arena background is presentation-driven and keeps a CSS fallback", as
   );
   assert.match(
     css,
-    /\.arena__background\s*\{/
-  );
-  assert.match(
-    css,
-    /object-fit:\s*cover/
+    /--arena-background-image/
   );
   assert.match(
     css,
