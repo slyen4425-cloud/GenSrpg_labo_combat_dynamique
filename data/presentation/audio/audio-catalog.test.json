@@ -3,29 +3,48 @@
   "scope": "gensrpg-global-audio",
   "delivery": {
     "mode": "runtime-resolver",
-    "note": "runtime URLs are supplied by the publication/delivery layer, never by the private source repository"
+    "note": "source WAV files remain private; browser-consumable runtime copies are published separately"
   },
   "assets": [
     {
       "assetId": "gensrpg:sound:fire-cast-01",
       "label": "Magie feu — cast 01",
-      "roles": ["cast", "spell"],
-      "tags": ["fire", "magic"],
-      "runtimeUrl": null
+      "roles": [
+        "cast",
+        "spell"
+      ],
+      "tags": [
+        "fire",
+        "magic"
+      ],
+      "runtimePath": "assets/runtime/audio-test/fire_cast.mp3"
     },
     {
       "assetId": "gensrpg:sound:melee-impact-01",
       "label": "Impact mêlée lourd 01",
-      "roles": ["impact", "melee"],
-      "tags": ["physical", "heavy"],
-      "runtimeUrl": null
+      "roles": [
+        "impact",
+        "melee"
+      ],
+      "tags": [
+        "physical",
+        "heavy"
+      ],
+      "runtimePath": "assets/runtime/audio-test/melee_impact.mp3"
     },
     {
       "assetId": "gensrpg:sound:teleport-01",
       "label": "Téléportation 01",
-      "roles": ["cast", "phase", "teleport"],
-      "tags": ["teleport", "movement"],
-      "runtimeUrl": null
+      "roles": [
+        "cast",
+        "phase",
+        "teleport"
+      ],
+      "tags": [
+        "teleport",
+        "movement"
+      ],
+      "runtimePath": "assets/runtime/audio-test/teleport.mp3"
     }
   ]
 }
