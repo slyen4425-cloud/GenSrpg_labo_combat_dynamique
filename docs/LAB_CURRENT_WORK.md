@@ -5809,3 +5809,49 @@ Vérifications GitHub :
 - aucun statut CI n'est exposé pour ce commit d'assets statiques.
 
 Le lot est prêt pour checkpoint GREEN.
+
+
+## Lot — réparation des 4 arènes binaires global-assets — 2026-09-26
+
+Objectif :
+
+- remplacer uniquement les quatre blobs d'arènes corrompus par des WebP valides issus des quatre images utilisateur fournies ;
+- conserver strictement les mêmes chemins, noms et `assetId` ;
+- ne modifier ni le renderer, ni la Demo UI, ni Combat Rules, ni Runtime.
+
+Base / branches :
+
+- SHA de base : `64e6d769144e81fd659a4e8b3ff958febccf9083` ;
+- checkpoint : `checkpoint/lab-start-arena-binary-repair-2026-09-26` ;
+- travail : `work/lab-arena-binary-repair-2026-09-26` ;
+- cible après validation : `global-assets`.
+
+Fichiers autorisés :
+
+- `assets/library/core/arenas/lava/arena_lava_01.webp` ;
+- `assets/library/core/arenas/city/arena_city_01.webp` ;
+- `assets/library/core/arenas/snow/arena_snow_01.webp` ;
+- `assets/library/core/arenas/cave/arena_cave_01.webp` ;
+- `docs/LAB_CURRENT_WORK.md` pour le suivi du lot.
+
+Domaines protégés :
+
+- aucun changement de code UI / renderer ;
+- aucun changement de catalogue logique ou d'`assetId` ;
+- aucun changement gameplay ;
+- aucun changement de `main`.
+
+Tests prévus :
+
+- vérifier dimensions sources et sorties ;
+- vérifier l'en-tête binaire WebP `RIFF....WEBP` ;
+- vérifier que les quatre blobs GitHub correspondent exactement aux fichiers WebP locaux ;
+- CI du dépôt ;
+- test visuel de la preview loup/lave après publication.
+
+Critère de fin :
+
+- quatre WebP valides publiés aux chemins existants ;
+- CI verte ;
+- `global-assets` avancée en fast-forward uniquement après validation technique ;
+- validation visuelle utilisateur avant checkpoint GREEN final.
