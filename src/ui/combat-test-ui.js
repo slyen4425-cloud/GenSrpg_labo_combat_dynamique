@@ -8,6 +8,8 @@ import { createOpponentDecisionController } from "../core/combat/opponent-decisi
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
+import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
+import { createLocalAudioSourceRegistry } from "../adapters/audio/local-audio-source-registry.js";
 
 const DATA_URLS = Object.freeze({
   fighters: Object.freeze({
@@ -255,6 +257,14 @@ export async function mountCombatTest({
 
   const arena = requiredElement(root, "[data-combat-arena]");
   const status = requiredElement(root, "[data-combat-live-status]");
+  const audioLoadButton = requiredElement(
+    root,
+    "[data-audio-test-load]"
+  );
+  const audioInput = requiredElement(
+    root,
+    "[data-audio-test-input]"
+  );
   const skillContainer = requiredElement(root, "[data-combat-skills]");
   const itemContainer = requiredElement(root, "[data-combat-items]");
   const teamActionContainer = requiredElement(
@@ -343,6 +353,25 @@ export async function mountCombatTest({
   let opponentAi = null;
   let aiDecisionInProgress = false;
 
+  const requiredAudioFiles = Object.freeze(
+    presentationAssets?.requiredAudioFiles?.() ?? []
+  );
+  const audioSources = createLocalAudioSourceRegistry();
+  const combatAudio = createDomCombatAudio({
+    resolveSource(assetId) {
+      return audioSources.resolve(assetId);
+    },
+    presentationForSkill(skillId, context = {}) {
+      return (
+        presentationAssets?.presentationForSkill?.(
+          skillId,
+          context
+        ) ??
+        null
+      );
+    }
+  });
+
   const fx = createDomSkillFxRenderer({
     arena,
     anchors: {
@@ -372,7 +401,8 @@ export async function mountCombatTest({
 
   const presenter = createCombatResolutionPresenter({
     visuals,
-    fx
+    fx,
+    audio: combatAudio
   });
 
   const distancePresenter = createDomDistancePresenter({
@@ -388,6 +418,48 @@ export async function mountCombatTest({
       element.removeEventListener(type, handler)
     );
   }
+
+  function renderAudioLoader(loaded = audioSources.size) {
+    const required = requiredAudioFiles.length;
+    audioLoadButton.textContent =
+      required > 0
+        ? `Sons ${loaded}/${required}`
+        : "Sons";
+    audioLoadButton.dataset.ready =
+      required > 0 && loaded >= required ? "true" : "false";
+    audioLoadButton.disabled = required === 0;
+  }
+
+  listen(audioLoadButton, "click", () => {
+    audioInput.click();
+  });
+
+  listen(audioInput, "change", () => {
+    const result = audioSources.loadFiles(
+      audioInput.files,
+      requiredAudioFiles
+    );
+    renderAudioLoader(result.loaded);
+
+    if (result.loaded >= result.required && result.required > 0) {
+      setStatus(
+        `Pack audio test chargé : ${result.loaded}/${result.required}.`,
+        "ok"
+      );
+    } else if (result.matched > 0) {
+      setStatus(
+        `Sons test : ${result.loaded}/${result.required} chargés.`,
+        "accent"
+      );
+    } else {
+      setStatus(
+        "Aucun des sons de test attendus n'a été reconnu.",
+        "warn"
+      );
+    }
+  });
+
+  renderAudioLoader();
 
   function closeMenus(except = null) {
     for (const menu of menus) {
@@ -1271,6 +1343,8 @@ export async function mountCombatTest({
       }
       runtime.dispose();
       presenter.dispose();
+      combatAudio.dispose();
+      audioSources.dispose();
       fx.dispose();
     }
   });
