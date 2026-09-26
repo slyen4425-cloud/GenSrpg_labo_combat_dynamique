@@ -716,3 +716,18 @@ test("normal hit presentation cannot replace an active approach or restart stale
     /activeApproachBySlot\.delete\(slotKey\)[\s\S]*slot\.renderer\.cancel\(\)/
   );
 });
+
+
+test("combat demo does not use work or preview branches as visual asset storage", async () => {
+  const source = [
+    await readFile("src/assets/global-visual-library.js", "utf8"),
+    await readFile("examples/dom-demo/demo-assets.js", "utf8")
+  ].join("\n");
+
+  assert.match(source, /branch: BRANCH/);
+  assert.match(source, /const BRANCH = "global-assets"/);
+  assert.doesNotMatch(
+    source,
+    /raw\.githubusercontent\.com[^"']*\/(?:work|preview|checkpoint)\//
+  );
+});
