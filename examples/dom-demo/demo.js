@@ -20,6 +20,8 @@ function applyArenaPresentation(arenaId) {
   if (!presentation?.background?.url) {
     arena.removeAttribute("data-arena-background");
     arena.style.removeProperty("--arena-background-image");
+    arena.style.removeProperty("--arena-background-position");
+    arena.style.removeProperty("--arena-background-size");
     return;
   }
 
@@ -28,6 +30,14 @@ function applyArenaPresentation(arenaId) {
   arena.style.setProperty(
     "--arena-background-image",
     `url("${presentation.background.url}")`
+  );
+  arena.style.setProperty(
+    "--arena-background-position",
+    presentation.backgroundPosition ?? "center"
+  );
+  arena.style.setProperty(
+    "--arena-background-size",
+    presentation.backgroundSize ?? "cover"
   );
 }
 
