@@ -103,6 +103,21 @@
           ></progress>
         </div>
 
+        <div class="audio-test-loader" aria-label="Sons de test privés">
+          <button
+            type="button"
+            data-audio-test-load
+            data-ready="false"
+          >Sons 0/3</button>
+          <input
+            type="file"
+            accept="audio/*,.wav,.mp3"
+            multiple
+            hidden
+            data-audio-test-input
+          >
+        </div>
+
         <div class="distance-buttons" aria-label="Distance">
           <button type="button" data-combat-move="short">Courte</button>
           <button type="button" data-combat-move="medium">Moyenne</button>
