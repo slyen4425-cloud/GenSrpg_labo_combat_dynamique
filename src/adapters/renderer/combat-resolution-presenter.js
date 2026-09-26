@@ -273,6 +273,10 @@ export function createCombatResolutionPresenter({
         ko = Number(hitEvent?.hpAfter) <= 0;
         koActorId = ko ? hitEvent?.actorId ?? null : null;
 
+        if (ko) {
+          visuals.cancelFor(targetSlot);
+        }
+
         finished = visuals
           .playEventFor(targetSlot, "hit")
           .then(() =>
