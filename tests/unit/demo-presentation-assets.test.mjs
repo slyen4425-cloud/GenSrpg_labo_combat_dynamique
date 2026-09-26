@@ -103,17 +103,17 @@ test("forest arena resolves through presentation assets only", () => {
 });
 
 
-test("lava arena resolves through the same presentation asset boundary", () => {
+test("lava arena diagnostic resolves through the same presentation boundary", () => {
   const presentation = demoPresentationAssets.presentationForArena("lava");
 
   assert.ok(presentation);
   assert.equal(
     presentation.background?.assetId,
-    "core:arena-lava-01"
+    "test:arena-lava-local-01"
   );
   assert.ok(
     presentation.background?.url.endsWith(
-      "assets/library/core/arenas/lava/arena_lava_01.webp"
+      "assets/test/arenas/lava/arena_lava_01.webp"
     )
   );
 });
