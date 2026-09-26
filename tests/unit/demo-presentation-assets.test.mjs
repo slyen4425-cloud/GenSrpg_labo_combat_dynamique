@@ -55,7 +55,7 @@ test("temporary skill sprite bindings resolve typed library sequences", () => {
     "pack:capture:sprite-teleportation-1"
   );
   assert.equal(aerial.cast?.frames.length, 8);
-  assert.equal(aerial.cast?.displayScale, 2.35);
+  assert.equal(aerial.cast?.displayScale, 3);
   assert.equal(aerial.cast?.playbackMode, "loop");
   assert.equal(
     aerial.impact?.assetId,
