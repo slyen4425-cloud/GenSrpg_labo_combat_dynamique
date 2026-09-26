@@ -5809,3 +5809,73 @@ Vérifications GitHub :
 - aucun statut CI n'est exposé pour ce commit d'assets statiques.
 
 Le lot est prêt pour checkpoint GREEN.
+
+
+## Lot — réparation des 4 arènes binaires global-assets — 2026-09-26
+
+Objectif :
+
+- remplacer uniquement les quatre blobs d'arènes corrompus par des WebP valides issus des quatre images utilisateur fournies ;
+- conserver strictement les mêmes chemins, noms et `assetId` ;
+- ne modifier ni le renderer, ni la Demo UI, ni Combat Rules, ni Runtime.
+
+Base / branches :
+
+- SHA de base : `64e6d769144e81fd659a4e8b3ff958febccf9083` ;
+- checkpoint : `checkpoint/lab-start-arena-binary-repair-2026-09-26` ;
+- travail : `work/lab-arena-binary-repair-2026-09-26` ;
+- cible après validation : `global-assets`.
+
+Fichiers autorisés :
+
+- `assets/library/core/arenas/lava/arena_lava_01.webp` ;
+- `assets/library/core/arenas/city/arena_city_01.webp` ;
+- `assets/library/core/arenas/snow/arena_snow_01.webp` ;
+- `assets/library/core/arenas/cave/arena_cave_01.webp` ;
+- `docs/LAB_CURRENT_WORK.md` pour le suivi du lot.
+
+Domaines protégés :
+
+- aucun changement de code UI / renderer ;
+- aucun changement de catalogue logique ou d'`assetId` ;
+- aucun changement gameplay ;
+- aucun changement de `main`.
+
+Tests prévus :
+
+- vérifier dimensions sources et sorties ;
+- vérifier l'en-tête binaire WebP `RIFF....WEBP` ;
+- vérifier que les quatre blobs GitHub correspondent exactement aux fichiers WebP locaux ;
+- CI du dépôt ;
+- test visuel de la preview loup/lave après publication.
+
+Critère de fin :
+
+- quatre WebP valides publiés aux chemins existants ;
+- CI verte ;
+- `global-assets` avancée en fast-forward uniquement après validation technique ;
+- validation visuelle utilisateur avant checkpoint GREEN final.
+
+
+### Résultat technique — réparation des blobs d'arènes
+
+Les quatre images utilisateur ont été reconverties localement en WebP 1536×864 puis écrites comme vrais blobs binaires Git sur la branche de travail.
+
+Blobs validés :
+
+- lave : `d917a867b8b4a73c735e80c557c9e89297bfc3d2` — 308886 octets ;
+- cité : `49ef1b282aeb49975b6d02f4e668d56cfbb54af8` — 270470 octets ;
+- neige : `9e6bb0087d4e366396c99a1fb8c67997ee5689eb` — 252816 octets ;
+- grotte : `e1d85644fc915eea88cb29a19c266d8c68b7f4e1` — 325776 octets.
+
+Vérifications :
+
+- les quatre sorties commencent par `RIFF....WEBP` ;
+- les SHA de blobs GitHub correspondent exactement aux SHA Git calculés sur les fichiers WebP locaux ;
+- les chemins et `assetId` existants sont conservés ;
+- la comparaison depuis le commit de cadrage ne contient que les quatre fichiers binaires d'arène ;
+- aucun fichier UI / renderer / gameplay n'a été modifié.
+
+Commit courant du lot après restauration complète du tree Git : `334f3e30a469433fa1b53f70a44e53d6b96ebf75`.
+
+CI de la branche de travail : run `36276128154` — SUCCESS. Publication propre sur `global-assets` autorisée sans modification UI / renderer / gameplay.
