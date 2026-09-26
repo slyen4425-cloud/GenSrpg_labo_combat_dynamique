@@ -23,6 +23,10 @@ const DATA_URLS = Object.freeze({
     loupVolcanique: new URL(
       "../../data/combat/fighters/loup_volcanique.combat.json",
       import.meta.url
+    ),
+    golemMoussu: new URL(
+      "../../data/combat/fighters/golem_moussu.combat.json",
+      import.meta.url
     )
   }),
   roster: new URL(
@@ -196,6 +200,7 @@ export async function mountCombatTest({
     maraileronConfig,
     braisombreConfig,
     loupVolcaniqueConfig,
+    golemMoussuConfig,
     rosterData,
     fireballRaw,
     clawRaw,
@@ -209,6 +214,7 @@ export async function mountCombatTest({
     fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
     fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
     fetchJson(DATA_URLS.fighters.loupVolcanique, fetchImpl),
+    fetchJson(DATA_URLS.fighters.golemMoussu, fetchImpl),
     fetchJson(rosterUrl, fetchImpl),
     fetchJson(DATA_URLS.skills.fireball, fetchImpl),
     fetchJson(DATA_URLS.skills.claw, fetchImpl),
@@ -247,7 +253,8 @@ export async function mountCombatTest({
   const fighterConfigs = Object.freeze({
     maraileron: maraileronConfig,
     braisombre: braisombreConfig,
-    loup_volcanique: loupVolcaniqueConfig
+    loup_volcanique: loupVolcaniqueConfig,
+    golem_moussu: golemMoussuConfig
   });
 
   function initialMemberFor(slotId) {
