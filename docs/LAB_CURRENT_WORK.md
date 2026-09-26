@@ -6090,3 +6090,26 @@ Correction :
 - aucun timing gameplay n'est modifié : `preparationMs` reste 900 ms et reste propriété du Runtime / SkillDefinition.
 
 Ce réglage est ajouté au contrat du futur éditeur de compétences afin qu'un même asset puisse être joué une fois, bouclé comme aura, ou étiré à la durée d'un slot sans modifier sa source.
+
+
+### Correction de direction — audio runtime GenSrpG
+
+Retour utilisateur du 2026-09-26 : le prototype local demandant de sélectionner manuellement des WAV n'est pas conforme à l'objectif produit.
+
+Décision :
+
+- le prototype `Sons 0/3` est rejeté comme direction produit ;
+- la nouvelle branche repart du dernier SHA Combat propre `42d9fc194c468c8393c4baa2128cff05853e50ab` ;
+- aucun loader de fichiers utilisateur n'est présent dans cette nouvelle direction ;
+- le dépôt privé `slyen4425-cloud/GenSrpG_audio_prive` reste la banque source / provenance ;
+- le jeu doit consommer une bibliothèque runtime via des `assetId` stables et un resolver de livraison ;
+- l'éditeur de compétence doit enregistrer les `assetId` sonores par slot de présentation, sans chemin physique ni fichier local ;
+- le catalogue de test public contient les métadonnées et IDs mais pas les sources privées ;
+- le manifeste privé associe les IDs runtime aux chemins source du dépôt privé ;
+- une couche de publication/livraison doit fournir automatiquement les URLs jouables au client.
+
+Flux cible :
+
+`source privée -> publication runtime -> catalogue assetId -> resolver -> jeu / éditeur`
+
+Important : tout son réellement lu dans un navigateur est techniquement récupérable par le client. La confidentialité protège donc la banque source et l'organisation interne ; la copie runtime doit être considérée comme un asset distribué au jeu.
