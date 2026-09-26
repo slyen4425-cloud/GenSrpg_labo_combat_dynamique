@@ -4,6 +4,9 @@ import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");
 const arena = root?.querySelector("[data-combat-arena]") ?? null;
+const searchParams = new URLSearchParams(window.location.search);
+const previewVariant = searchParams.get("variant");
+const isLoupLavaPreview = previewVariant === "loup-lava";
 
 function applyArenaPresentation(arenaId) {
   if (!arena) {
@@ -28,6 +31,9 @@ function applyArenaPresentation(arenaId) {
 }
 
 applyArenaPresentation("forest");
+if (isLoupLavaPreview) {
+  applyArenaPresentation("lava");
+}
 
 Promise.resolve()
   .then(async () => {
@@ -35,7 +41,13 @@ Promise.resolve()
     const combat = await mountCombatTest({
       root,
       visuals,
-      presentationAssets: demoPresentationAssets
+      presentationAssets: demoPresentationAssets,
+      rosterUrl: isLoupLavaPreview
+        ? new URL(
+            "../../data/combat/rosters/demo-loup-lava-2v2.roster.json",
+            import.meta.url
+          )
+        : undefined
     });
 
     window.addEventListener(
