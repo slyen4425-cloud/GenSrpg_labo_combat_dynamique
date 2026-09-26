@@ -731,3 +731,18 @@ test("combat demo does not use work or preview branches as visual asset storage"
     /raw\.githubusercontent\.com[^"']*\/(?:work|preview|checkpoint)\//
   );
 });
+
+
+test("creature visuals resolve from global-assets and not assets/test", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(
+    source,
+    /globalVisualAssetUrl\(\s*"capture\/creatures\/maraileron\/maraileron\.meta\.json"/
+  );
+  assert.match(
+    source,
+    /globalVisualAssetUrl\(\s*"capture\/creatures\/braisombre\/braisombre\.meta\.json"/
+  );
+  assert.doesNotMatch(source, /assets\/test\/creatures/);
+});
