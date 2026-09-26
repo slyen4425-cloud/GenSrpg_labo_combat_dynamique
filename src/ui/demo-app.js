@@ -22,6 +22,9 @@ const DATA_URLS = Object.freeze({
     ),
     braisombre: globalVisualAssetUrl(
       "capture/creatures/braisombre/braisombre.meta.json"
+    ),
+    loupVolcanique: globalVisualAssetUrl(
+      "capture/creatures/loup_volcanique/loup_volcanique.meta.json"
     )
   })
 });
@@ -65,18 +68,21 @@ export async function mountCombatDemo({
     serpentine,
     drake,
     maraileron,
-    braisombre
+    braisombre,
+    loupVolcanique
   ] = await Promise.all([
     fetchJson(DATA_URLS.profiles.serpentine, fetchImpl),
     fetchJson(DATA_URLS.profiles.drake, fetchImpl),
     fetchCreatureMeta(DATA_URLS.creatures.maraileron, fetchImpl),
-    fetchCreatureMeta(DATA_URLS.creatures.braisombre, fetchImpl)
+    fetchCreatureMeta(DATA_URLS.creatures.braisombre, fetchImpl),
+    fetchCreatureMeta(DATA_URLS.creatures.loupVolcanique, fetchImpl)
   ]);
 
   const profiles = createProfileRegistry([serpentine, drake]);
   const creatureMetas = new Map([
     [maraileron.id, maraileron],
-    [braisombre.id, braisombre]
+    [braisombre.id, braisombre],
+    [loupVolcanique.id, loupVolcanique]
   ]);
 
   let disposed = false;
