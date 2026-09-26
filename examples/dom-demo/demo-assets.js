@@ -209,11 +209,11 @@ const ASSETS = Object.freeze({
       CORE_ROOT
     ).href
   }),
-  "core:arena-lava-01": Object.freeze({
-    assetId: "core:arena-lava-01",
+  "test:arena-lava-local-01": Object.freeze({
+    assetId: "test:arena-lava-local-01",
     url: new URL(
-      "arenas/lava/arena_lava_01.webp",
-      CORE_ROOT
+      "../../assets/test/arenas/lava/arena_lava_01.webp",
+      import.meta.url
     ).href
   }),
   "core:icon-skill-claw-01": Object.freeze({
@@ -332,7 +332,7 @@ const ARENA_BINDINGS = Object.freeze({
     background: "core:arena-forest-01"
   }),
   lava: Object.freeze({
-    background: "core:arena-lava-01"
+    background: "test:arena-lava-local-01"
   })
 });
 
