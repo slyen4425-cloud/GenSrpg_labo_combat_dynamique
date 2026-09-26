@@ -1,17 +1,47 @@
+import {
+  GLOBAL_VISUAL_LIBRARY,
+  globalVisualAssetUrl
+} from "../../src/assets/global-visual-library.js";
+
 const CAPTURE_ROOT = new URL(
-  "../../assets/library/capture/",
-  import.meta.url
+  "capture/",
+  GLOBAL_VISUAL_LIBRARY.baseUrl
 );
 
 const CORE_ROOT = new URL(
-  "../../assets/library/core/",
-  import.meta.url
+  "core/",
+  GLOBAL_VISUAL_LIBRARY.baseUrl
 );
 
 const RUNTIME_AUDIO_ROOT = new URL(
   "../../assets/runtime/audio-test/",
   import.meta.url
 );
+
+
+function globalCaptureSequenceAsset({
+  assetId,
+  family,
+  name,
+  prefix,
+  frameMs,
+  displayScale = 1
+}) {
+  const frames = Array.from({ length: 8 }, (_, index) => {
+    const frame = String(index + 1).padStart(2, "0");
+    return globalVisualAssetUrl(
+      `capture/sprites/${family}/${name}/frames/sprite_${prefix}_${name}_${frame}.svg`
+    );
+  });
+
+  return Object.freeze({
+    assetId,
+    frames: Object.freeze(frames),
+    frameMs,
+    displayScale,
+    playbackMode: "once"
+  });
+}
 
 function captureSequenceAsset({
   assetId,
@@ -46,6 +76,132 @@ function captureSequenceAsset({
 }
 
 const ASSETS = Object.freeze({
+  "pack:capture:sprite-cast-blade-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-cast-blade-01",
+    family: "casts",
+    name: "blade",
+    prefix: "cast",
+    frameMs: 60
+  }),
+  "pack:capture:sprite-cast-electric-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-cast-electric-01",
+    family: "casts",
+    name: "electric",
+    prefix: "cast",
+    frameMs: 60
+  }),
+  "pack:capture:sprite-cast-nature-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-cast-nature-01",
+    family: "casts",
+    name: "nature",
+    prefix: "cast",
+    frameMs: 60
+  }),
+  "pack:capture:sprite-cast-physical-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-cast-physical-01",
+    family: "casts",
+    name: "physical",
+    prefix: "cast",
+    frameMs: 60
+  }),
+  "pack:capture:sprite-cast-water-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-cast-water-01",
+    family: "casts",
+    name: "water",
+    prefix: "cast",
+    frameMs: 60
+  }),
+  "pack:capture:sprite-impact-blade-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-impact-blade-01",
+    family: "impacts",
+    name: "blade",
+    prefix: "impact",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-impact-electric-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-impact-electric-01",
+    family: "impacts",
+    name: "electric",
+    prefix: "impact",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-impact-nature-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-impact-nature-01",
+    family: "impacts",
+    name: "nature",
+    prefix: "impact",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-impact-physical-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-impact-physical-01",
+    family: "impacts",
+    name: "physical",
+    prefix: "impact",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-impact-water-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-impact-water-01",
+    family: "impacts",
+    name: "water",
+    prefix: "impact",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-earth-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-earth-01",
+    family: "projectiles",
+    name: "earth",
+    prefix: "projectile",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-electric-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-electric-01",
+    family: "projectiles",
+    name: "electric",
+    prefix: "projectile",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-fire-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-fire-01",
+    family: "projectiles",
+    name: "fire",
+    prefix: "projectile",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-ice-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-ice-01",
+    family: "projectiles",
+    name: "ice",
+    prefix: "projectile",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-light-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-light-01",
+    family: "projectiles",
+    name: "light",
+    prefix: "projectile",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-shadow-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-shadow-01",
+    family: "projectiles",
+    name: "shadow",
+    prefix: "projectile",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-thorn-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-thorn-01",
+    family: "projectiles",
+    name: "thorn",
+    prefix: "projectile",
+    frameMs: 45
+  }),
+  "pack:capture:sprite-projectile-water-01": globalCaptureSequenceAsset({
+    assetId: "pack:capture:sprite-projectile-water-01",
+    family: "projectiles",
+    name: "water",
+    prefix: "projectile",
+    frameMs: 45
+  }),
   "core:arena-forest-01": Object.freeze({
     assetId: "core:arena-forest-01",
     url: new URL(
@@ -246,6 +402,10 @@ function resolveAssetMap(bindings = {}, optionsByKey = {}) {
 }
 
 export const demoPresentationAssets = Object.freeze({
+  globalLibrary: GLOBAL_VISUAL_LIBRARY,
+  asset(assetId) {
+    return resolveAsset(assetId);
+  },
   presentationForArena(arenaId) {
     const binding = ARENA_BINDINGS[arenaId];
     if (!binding) {
