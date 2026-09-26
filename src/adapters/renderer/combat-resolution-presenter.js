@@ -125,9 +125,22 @@ export function createCombatResolutionPresenter({
       ["ground", "teleport", "aerial"].includes(approachMode) &&
       typeof visuals.playApproachFor === "function"
     ) {
+      const skillId = action.skill?.id ?? null;
       visuals
         .playApproachFor(actorSlot, approachMode, {
-          travelMs: action.travelMs
+          travelMs: action.travelMs,
+          onPhase({ label, phaseDurationMs }) {
+            if (!skillId) {
+              return;
+            }
+            fx?.play({
+              type: "phase",
+              skillId,
+              actorSlot,
+              phase: label,
+              durationMs: phaseDurationMs
+            });
+          }
         })
         .catch(() => {});
     } else {
