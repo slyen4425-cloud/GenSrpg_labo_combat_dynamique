@@ -6321,3 +6321,29 @@ CI technique avant publication preview :
 - conclusion : SUCCESS.
 
 Validation visuelle smartphone utilisateur requise avant tout checkpoint GREEN de cette variante.
+
+
+## Incident preview — arbre Git incomplet / restauration état connu bon — 2026-09-26
+
+Retour utilisateur : après les essais de correction d'arène, la simulation se fige.
+
+Cause démontrée :
+
+- une opération de restauration précédente a construit un nouveau Git tree sans `base_tree_sha` valide ;
+- le wrapper `fetch_commit` utilisé ne fournissait pas le champ `tree_sha`, mais cette valeur a été utilisée comme si elle existait ;
+- le commit résultant ne contenait alors que les quelques fichiers explicitement remis dans le tree et supprimait de fait une grande partie du dépôt sur la branche preview ;
+- la comparaison avec le dernier état utilisateur fonctionnel `6b27491dd7d0f6ec60da68485899e56fe6105c39` a confirmé ces suppressions massives ;
+- le gel de la simulation venait donc de cet arbre Git incomplet, pas du moteur de combat.
+
+Correction conforme à la charte :
+
+- checkpoint du mauvais état : `checkpoint/lab-loup-lava-broken-tree-before-restore-2026-09-26` ;
+- restauration par nouveau commit, sans réécriture d'historique ;
+- le tree complet a été repris exactement depuis le dernier état utilisateur connu fonctionnel `6b27491dd7d0f6ec60da68485899e56fe6105c39` ;
+- commit de restauration : `bca09271a2850200b07164cfbe12b16507c71b89` ;
+- la comparaison entre l'état connu bon et ce commit retourne zéro fichier différent ;
+- CI preview : run `36276979403` — SUCCESS.
+
+Règle ajoutée pour la suite : toute opération Git tree doit récupérer explicitement le SHA du tree via l'API Git Data et vérifier le diff complet avant de déplacer une branche de preview ou stable.
+
+La preview reste volontairement sur le commit de restauration exact jusqu'à validation mobile utilisateur.
