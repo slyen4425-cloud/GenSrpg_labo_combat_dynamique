@@ -6015,3 +6015,47 @@ Validation technique du lot sprites :
 - `teleportation_1` est provisoirement lié au cast de Plongeon aérien ;
 - l'impact Griffe est provisoirement partagé entre Griffe et Plongeon aérien ;
 - validation visuelle smartphone requise avant checkpoint GREEN final.
+
+
+### Ajustement visuel — scales + correction Griffe
+
+Retour utilisateur du 2026-09-26 :
+
+- les nouveaux sprites fonctionnent ;
+- certains manquent encore de présence / taille ;
+- le futur éditeur doit obligatoirement proposer un réglage manuel du scale par effet ;
+- la configuration des sprites attachés aux phases de téléportation doit rester simple et intuitive.
+
+Correction asset détectée sur `work/lab-claw-impact-sprites-2026-09-26` :
+
+- commit source : `ba1346d3455c98c78d63fcf925189609e9d6c40a` ;
+- `claw_impact` contient maintenant 8 frames réelles ;
+- frames 01–02 : PNG ;
+- frames 03–08 : SVG ;
+- le manifeste runtime du chantier combat est aligné sur ces 8 fichiers ;
+- le binding supporte explicitement les séquences à extensions mixtes.
+
+Scales provisoires de test :
+
+- Griffe impact : `1.7 -> 2.2` ;
+- Téléportation 1 / cast aérien : `1.8 -> 2.35` ;
+- Téléportation 2 / disparition : `1.65 -> 2.1`.
+
+Ces valeurs sont uniquement des réglages de présentation de laboratoire.
+
+Documentation officielle ajoutée :
+
+- `docs/LAB_ASSET_LIBRARY.md` définit les futurs réglages de l'éditeur :
+  - scale indépendant par slot ;
+  - choix d'asset par catalogue ;
+  - attachment lanceur / cible / position fixe / trajet / sol ;
+  - anchor ;
+  - offsets X/Y ;
+  - layer devant / derrière ;
+  - trigger utilisateur ;
+  - rotation / opacité optionnelles ;
+  - presets simples + réglages avancés ;
+  - mapping des termes utilisateurs vers les phases techniques Animation Core.
+- `docs/LAB_ROADMAP.md` renvoie explicitement vers ce contrat pour le futur chantier éditeur.
+
+Aucune règle de combat n'est modifiée par ces réglages.
