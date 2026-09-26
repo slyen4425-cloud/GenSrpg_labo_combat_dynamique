@@ -1,0 +1,16 @@
+{
+  "id": "status_regeneration",
+  "type": "status_effect_sprite_sequence",
+  "frame_ms": 65,
+  "loop": true,
+  "frames": [
+    "frames/sprite_status_regeneration_01.svg",
+    "frames/sprite_status_regeneration_02.svg",
+    "frames/sprite_status_regeneration_03.svg",
+    "frames/sprite_status_regeneration_04.svg",
+    "frames/sprite_status_regeneration_05.svg",
+    "frames/sprite_status_regeneration_06.svg",
+    "frames/sprite_status_regeneration_07.svg",
+    "frames/sprite_status_regeneration_08.svg"
+  ]
+}
