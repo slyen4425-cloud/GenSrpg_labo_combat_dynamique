@@ -890,6 +890,26 @@ Depuis une compétence :
 
 ---
 
+## 17.1 Source audio privée et test du laboratoire public
+
+La banque audio globale de GenSrpG peut être conservée dans un dépôt privé séparé du moteur et du laboratoire public.
+
+Règles :
+
+- le dépôt privé est une source de stockage / provenance, pas une clé métier ;
+- les SkillPresentationBindings utilisent des `assetId` stables et ne contiennent pas d'URL GitHub privée ;
+- aucun token, URL temporaire ou fichier WAV/MP3 privé ne doit être commité dans le laboratoire public ;
+- une preview web publique ne peut pas dépendre directement d'un dépôt GitHub privé sans mécanisme de livraison/authentification dédié ;
+- pour les tests du laboratoire public, un adaptateur local peut associer un fichier sélectionné par l'utilisateur à un `assetId` via `URL.createObjectURL()` ;
+- les Object URLs restent locales à la session du navigateur et sont révoquées au nettoyage ;
+- l'absence d'un fichier audio reste un fallback silencieux et ne casse jamais le combat.
+
+Le raccord production futur devra utiliser un Storage / Delivery Adapter dédié afin de rendre les sons disponibles au jeu sans contaminer Combat Rules ou SkillDefinition.
+
+Important : dès qu'un son est effectivement transmis à un navigateur pour être joué, il reste techniquement récupérable côté client. Le dépôt privé protège la source et évite la publication directe, mais ne constitue pas un DRM.
+
+---
+
 ## 18. Audio — catégories de mixage futures
 
 Les catégories audio ne sont pas des règles gameplay.
