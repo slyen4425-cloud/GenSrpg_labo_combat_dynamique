@@ -1,0 +1,28 @@
+{
+  "id": "dodge",
+  "name": "Esquive",
+  "category": "defensive",
+  "form": "self",
+  "element": null,
+  "approachMode": "none",
+  "energyCost": 1,
+  "preparationMs": 300,
+  "travelMs": 0,
+  "recoveryMs": 350,
+  "allowedDistances": [
+    "short",
+    "medium",
+    "long"
+  ],
+  "reaction": {
+    "evadeForms": [
+      "contact",
+      "projectile"
+    ],
+    "evadeApproaches": [
+      "ground",
+      "aerial",
+      "teleport"
+    ]
+  }
+}

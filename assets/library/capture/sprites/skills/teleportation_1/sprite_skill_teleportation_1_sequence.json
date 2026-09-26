@@ -1,0 +1,16 @@
+{
+  "id": "teleportation_1",
+  "type": "sprite_sequence",
+  "frame_ms": 42,
+  "loop": false,
+  "frames": [
+    "frames/sprite_skill_teleportation_1_01.svg",
+    "frames/sprite_skill_teleportation_1_02.svg",
+    "frames/sprite_skill_teleportation_1_03.svg",
+    "frames/sprite_skill_teleportation_1_04.svg",
+    "frames/sprite_skill_teleportation_1_05.svg",
+    "frames/sprite_skill_teleportation_1_06.svg",
+    "frames/sprite_skill_teleportation_1_07.svg",
+    "frames/sprite_skill_teleportation_1_08.svg"
+  ]
+}
