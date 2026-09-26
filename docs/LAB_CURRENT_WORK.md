@@ -6068,3 +6068,25 @@ Validation technique finale du sous-lot scale / Griffe :
 - l'échec intermédiaire du SHA `4a0470b0270154253ed5984dc3ce36d3c2f87114` provenait d'une sentinelle encore alignée sur l'ancienne séquence Griffe à 2 frames ;
 - après mise à jour des tests à 8 frames et couverture des nouveaux scales, CI verte ;
 - aucun changement Combat Rules / Runtime / dégâts / énergie / portée / cooldown.
+
+
+### Correction — aura de charge aérienne trop peu visible
+
+Retour utilisateur du 2026-09-26 : l'effet `teleportation_1` utilisé comme cast de Plongeon aérien est presque invisible malgré le scale augmenté.
+
+Cause démontrée :
+
+- la séquence contient 8 frames à 42 ms = 336 ms de lecture native ;
+- la préparation de `aerial-dive` dure 900 ms ;
+- le renderer jouait la séquence une seule fois puis conservait la dernière frame ;
+- la frame 08 est volontairement faible, donc l'effet restait presque invisible pendant la majorité de la préparation.
+
+Correction :
+
+- l'asset `teleportation_1` reste non-loop par défaut dans la bibliothèque ;
+- le Presentation Binding de `aerial-dive.castFx` applique `playbackMode: "loop"` ;
+- le renderer de séquences supporte désormais `once / loop / stretch` ;
+- le loop s'arrête automatiquement quand le slot Cast se termine ;
+- aucun timing gameplay n'est modifié : `preparationMs` reste 900 ms et reste propriété du Runtime / SkillDefinition.
+
+Ce réglage est ajouté au contrat du futur éditeur de compétences afin qu'un même asset puisse être joué une fois, bouclé comme aura, ou étiré à la durée d'un slot sans modifier sa source.
