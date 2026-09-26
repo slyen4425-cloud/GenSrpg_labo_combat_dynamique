@@ -8,6 +8,31 @@ const CORE_ROOT = new URL(
   import.meta.url
 );
 
+function captureSequenceAsset({
+  assetId,
+  folder,
+  stem,
+  extension,
+  frameCount,
+  frameMs,
+  displayScale
+}) {
+  return Object.freeze({
+    assetId,
+    frames: Object.freeze(
+      Array.from({ length: frameCount }, (_, index) => {
+        const frame = String(index + 1).padStart(2, "0");
+        return new URL(
+          `sprites/skills/${folder}/frames/${stem}_${frame}.${extension}`,
+          CAPTURE_ROOT
+        ).href;
+      })
+    ),
+    frameMs,
+    displayScale
+  });
+}
+
 const ASSETS = Object.freeze({
   "core:arena-forest-01": Object.freeze({
     assetId: "core:arena-forest-01",
@@ -36,6 +61,33 @@ const ASSETS = Object.freeze({
       "icons/skills/icon_skill_teleport_strike_01.webp",
       CORE_ROOT
     ).href
+  }),
+  "pack:capture:sprite-claw-impact-01": captureSequenceAsset({
+    assetId: "pack:capture:sprite-claw-impact-01",
+    folder: "claw_impact",
+    stem: "sprite_skill_claw_impact",
+    extension: "png",
+    frameCount: 2,
+    frameMs: 55,
+    displayScale: 1.7
+  }),
+  "pack:capture:sprite-teleportation-1": captureSequenceAsset({
+    assetId: "pack:capture:sprite-teleportation-1",
+    folder: "teleportation_1",
+    stem: "sprite_skill_teleportation_1",
+    extension: "svg",
+    frameCount: 8,
+    frameMs: 42,
+    displayScale: 1.8
+  }),
+  "pack:capture:sprite-teleportation-2": captureSequenceAsset({
+    assetId: "pack:capture:sprite-teleportation-2",
+    folder: "teleportation_2",
+    stem: "sprite_skill_teleportation_2",
+    extension: "svg",
+    frameCount: 8,
+    frameMs: 38,
+    displayScale: 1.65
   }),
   "pack:capture:icon-skill-fireball-01": Object.freeze({
     assetId: "pack:capture:icon-skill-fireball-01",
@@ -95,18 +147,37 @@ const SKILL_BINDINGS = Object.freeze({
     impactFx: "pack:capture:sprite-fireball-impact-01"
   }),
   claw: Object.freeze({
-    icon: "core:icon-skill-claw-01"
+    icon: "core:icon-skill-claw-01",
+    impactFx: "pack:capture:sprite-claw-impact-01"
   }),
   "aerial-dive": Object.freeze({
-    icon: "core:icon-skill-aerial-dive-01"
+    icon: "core:icon-skill-aerial-dive-01",
+    castFx: "pack:capture:sprite-teleportation-1",
+    castLayer: "front",
+    impactFx: "pack:capture:sprite-claw-impact-01"
   }),
   "teleport-strike": Object.freeze({
-    icon: "core:icon-skill-teleport-strike-01"
+    icon: "core:icon-skill-teleport-strike-01",
+    phaseFxByLabel: Object.freeze({
+      "teleport-vanish": "pack:capture:sprite-teleportation-2",
+      "teleport-return-vanish": "pack:capture:sprite-teleportation-2"
+    })
   })
 });
 
 function resolveAsset(assetId) {
   return ASSETS[assetId] ?? null;
+}
+
+function resolveAssetMap(bindings = {}) {
+  return Object.freeze(
+    Object.fromEntries(
+      Object.entries(bindings).map(([key, assetId]) => [
+        key,
+        resolveAsset(assetId)
+      ])
+    )
+  );
 }
 
 export const demoPresentationAssets = Object.freeze({
@@ -136,7 +207,8 @@ export const demoPresentationAssets = Object.freeze({
         "front",
       travel: resolveAsset(binding.travelFx),
       travelSourceAnchor: binding.travelSourceAnchor ?? null,
-      impact: resolveAsset(binding.impactFx)
+      impact: resolveAsset(binding.impactFx),
+      phaseFx: resolveAssetMap(binding.phaseFxByLabel)
     });
   }
 });
