@@ -119,6 +119,22 @@ test("lava arena diagnostic resolves through the same presentation boundary", ()
 });
 
 
+test("city arena diagnostic resolves through the same presentation boundary", () => {
+  const presentation = demoPresentationAssets.presentationForArena("city");
+
+  assert.ok(presentation);
+  assert.equal(
+    presentation.background?.assetId,
+    "test:arena-city-local-01"
+  );
+  assert.ok(
+    presentation.background?.url.endsWith(
+      "assets/test/arenas/city/arena_city_01.webp"
+    )
+  );
+});
+
+
 test("fireball cast layer is data-driven by source view", () => {
   assert.equal(
     demoPresentationAssets.presentationForSkill(
