@@ -20,6 +20,7 @@ Catalogue :
 
 - icônes Core ;
 - arène forêt ;
+- créatures Capture (Maraileron et Braisombre : vues joueur, adversaire et icône) ;
 - FX Boule de feu ;
 - sprites de compétences existants ;
 - casts génériques ;
