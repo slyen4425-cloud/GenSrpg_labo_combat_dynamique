@@ -661,3 +661,38 @@ test("skill sprite sequences remain presentation-owned and phase-driven", async 
   assert.doesNotMatch(assets, /damage\s*:/);
   assert.doesNotMatch(fxRenderer, /hpAfter|energyCost|allowedDistances/);
 });
+
+
+test("private audio test loader keeps protected files out of the public repository", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const ui = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const assets = await readFile("examples/dom-demo/demo-assets.js", "utf8");
+  const presenter = await readFile(
+    "src/adapters/renderer/combat-resolution-presenter.js",
+    "utf8"
+  );
+  const audioAdapter = await readFile(
+    "src/adapters/audio/dom-combat-audio.js",
+    "utf8"
+  );
+
+  assert.match(html, /data-audio-test-load/);
+  assert.match(html, /data-audio-test-input/);
+  assert.match(ui, /createLocalAudioSourceRegistry/);
+  assert.match(ui, /createDomCombatAudio/);
+  assert.match(ui, /requiredAudioFiles/);
+  assert.match(presenter, /audio\?\.play/);
+
+  assert.match(assets, /core:sound-test-fire-cast-01/);
+  assert.match(assets, /core:sound-test-melee-impact-01/);
+  assert.match(assets, /core:sound-test-teleport-01/);
+  assert.doesNotMatch(
+    assets,
+    /github\.com|raw\.githubusercontent\.com|GenSrpG_audio_prive/
+  );
+
+  assert.doesNotMatch(
+    audioAdapter,
+    /damage|energyCost|allowedDistances|hpAfter/
+  );
+});
