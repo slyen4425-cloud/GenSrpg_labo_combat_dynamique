@@ -638,6 +638,7 @@ Chaque slot pourra proposer au minimum :
 - `offsetX / offsetY` — correction manuelle de position ;
 - `layer` — devant / derrière la créature ;
 - `trigger` — moment logique de présentation ;
+- `playbackMode` — une fois / boucle / étirée à la durée du slot ;
 - `rotation` optionnelle ;
 - `opacity` optionnelle ;
 - preview immédiate dans l'éditeur.
@@ -707,7 +708,15 @@ Pour garder l'éditeur simple, proposer des presets avant les réglages avancés
 - Aura attachée ;
 - Effet au sol.
 
-Le créateur peut ensuite ouvrir **Réglages avancés** pour modifier scale, offsets, anchor, layer, rotation ou opacité.
+Le créateur peut ensuite ouvrir **Réglages avancés** pour modifier scale, offsets, anchor, layer, mode de lecture, rotation ou opacité.
+
+Le mode de lecture est un paramètre du binding de présentation :
+
+- `once` — la séquence se joue une fois à sa vitesse native ;
+- `loop` — la séquence boucle tant que le slot visuel reste actif ;
+- `stretch` — la séquence complète est étirée sur la durée du slot.
+
+Ainsi un même asset peut rester non-loop dans la bibliothèque mais être bouclé lorsqu'il sert d'aura ou de charge, sans modifier le fichier source ni son asset ID.
 
 ### Sélection depuis la bibliothèque
 
