@@ -1,0 +1,17 @@
+{
+  "id": "projectile_fire",
+  "type": "diagonal_projectile_sprite_sequence",
+  "direction": "bottom-left_to_top-right",
+  "frame_ms": 45,
+  "loop": false,
+  "frames": [
+    "frames/sprite_projectile_fire_01.svg",
+    "frames/sprite_projectile_fire_02.svg",
+    "frames/sprite_projectile_fire_03.svg",
+    "frames/sprite_projectile_fire_04.svg",
+    "frames/sprite_projectile_fire_05.svg",
+    "frames/sprite_projectile_fire_06.svg",
+    "frames/sprite_projectile_fire_07.svg",
+    "frames/sprite_projectile_fire_08.svg"
+  ]
+}
