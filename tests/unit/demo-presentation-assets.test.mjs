@@ -184,3 +184,44 @@ test("every active offensive demo skill exposes a provisional impact sound", () 
     );
   }
 });
+
+
+test("combat visual assets resolve from the stable global-assets branch", () => {
+  assert.equal(
+    demoPresentationAssets.globalLibrary.branch,
+    "global-assets"
+  );
+  assert.match(
+    demoPresentationAssets.globalLibrary.baseUrl,
+    /GenSrpg_labo_combat_dynamique\/global-assets\/assets\/library\/$/
+  );
+
+  for (const assetId of [
+    "pack:capture:sprite-impact-blade-01",
+    "pack:capture:sprite-impact-electric-01",
+    "pack:capture:sprite-impact-nature-01",
+    "pack:capture:sprite-impact-physical-01",
+    "pack:capture:sprite-impact-water-01",
+    "pack:capture:sprite-projectile-earth-01",
+    "pack:capture:sprite-projectile-electric-01",
+    "pack:capture:sprite-projectile-fire-01",
+    "pack:capture:sprite-projectile-ice-01",
+    "pack:capture:sprite-projectile-light-01",
+    "pack:capture:sprite-projectile-shadow-01",
+    "pack:capture:sprite-projectile-thorn-01",
+    "pack:capture:sprite-projectile-water-01",
+    "pack:capture:sprite-cast-blade-01",
+    "pack:capture:sprite-cast-electric-01",
+    "pack:capture:sprite-cast-nature-01",
+    "pack:capture:sprite-cast-physical-01",
+    "pack:capture:sprite-cast-water-01"
+  ]) {
+    const asset = demoPresentationAssets.asset(assetId);
+    assert.ok(asset, `${assetId} should resolve from global library`);
+    assert.equal(asset.frames.length, 8);
+    assert.equal(
+      asset.frames.every((url) => url.includes("/global-assets/assets/library/")),
+      true
+    );
+  }
+});
