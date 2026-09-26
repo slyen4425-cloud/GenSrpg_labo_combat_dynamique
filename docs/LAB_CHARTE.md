@@ -448,3 +448,18 @@ Lorsqu'un prototype manipule plusieurs créatures par équipe :
 Chaîne autorisée :
 
 `Command Runtime -> command-complete -> Roster Session -> Combat Session slot -> Visual Controller`
+
+
+## 32. Accès GitHub depuis ChatGPT — vérification obligatoire avant refus
+
+Dans les fils de travail GenSrpG / Laboratoire où le connecteur GitHub est disponible, l'assistant doit considérer GitHub comme accessible jusqu'à preuve contraire.
+
+Procédure obligatoire avant d'affirmer qu'un dépôt ou une branche est inaccessible :
+
+1. chercher les outils GitHub disponibles via `functions.exec` / `ALL_TOOLS` ;
+2. rechercher en priorité les outils dont le nom commence par `mcp__GitHub__` ;
+3. tenter réellement une lecture du dépôt ou de la branche demandée ;
+4. si l'opération échoue, rapporter l'outil utilisé et l'erreur exacte ;
+5. ne jamais demander un ZIP, une manipulation GitHub manuelle ou prétendre que GitHub est indisponible sans cette tentative préalable.
+
+Cette règle ne remplace pas les règles de sécurité des branches : l'accès technique au dépôt n'autorise pas à modifier `main` sans validation prévue par la présente charte.
