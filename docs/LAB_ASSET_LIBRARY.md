@@ -789,6 +789,54 @@ Une copie runtime réellement jouée dans le navigateur est techniquement distri
 
 ---
 
+## 12.3 Futur raccord GenSrpG — éditeur et import d'arènes personnalisées
+
+Lors du futur raccord du laboratoire à GenSrpG, l'éditeur doit permettre au créateur d'utiliser les arènes de la bibliothèque **et d'importer ses propres images d'arène**.
+
+Principe :
+
+**l'image source et son cadrage de présentation restent deux données séparées.**
+
+L'import ne doit donc pas modifier destructivement l'image originale pour corriger son cadrage. L'image est enregistrée comme asset avec un `assetId` stable, puis un `ArenaPresentationBinding` décrit comment elle doit être affichée.
+
+Réglages utilisateur cibles :
+
+- choix ou import de l'image d'arène ;
+- position horizontale du cadrage ;
+- position verticale du cadrage ;
+- zoom / échelle du fond ;
+- aperçu immédiat dans l'arène ;
+- reset vers le cadrage par défaut ;
+- possibilité de replacer le sol visuel sous les positions joueur / adversaire ;
+- conservation du cadrage avec l'arène enregistrée.
+
+Représentation conceptuelle :
+
+```json
+{
+  "backgroundAssetId": "user:arena-city-custom-01",
+  "backgroundPosition": {
+    "x": 50,
+    "y": 100
+  },
+  "backgroundZoom": 1.12
+}
+```
+
+Ces valeurs sont exclusivement des données de présentation :
+
+- elles ne changent jamais dégâts, portée, déplacement, initiative, énergie ou règles de terrain ;
+- Combat Rules ne lit jamais le cadrage d'une arène ;
+- le renderer reçoit uniquement le résultat du Presentation Binding ;
+- aucun chemin de fichier utilisateur ne doit être écrit dans une donnée gameplay ;
+- un asset absent ou invalide doit retomber sur le fallback visuel sûr sans bloquer le combat.
+
+L'éditeur devra permettre de cadrer visuellement une image sur smartphone sans demander au créateur de modifier lui-même le fichier source dans un logiciel externe.
+
+Le test de l'arène cité du laboratoire utilise déjà le même principe de paramètres de présentation par arène (`backgroundPosition` / `backgroundSize`) afin de valider cette direction sans donner d'autorité gameplay au décor.
+
+---
+
 ## 13. Fallbacks obligatoires
 
 La bibliothèque ne doit jamais rendre le gameplay dépendant d'un asset décoratif.
