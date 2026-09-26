@@ -168,6 +168,9 @@ const SKILL_BINDINGS = Object.freeze({
     icon: "core:icon-skill-aerial-dive-01",
     castFx: "pack:capture:sprite-teleportation-1",
     castLayer: "front",
+    castOptions: Object.freeze({
+      playbackMode: "loop"
+    }),
     impactFx: "pack:capture:sprite-claw-impact-01"
   }),
   "teleport-strike": Object.freeze({
@@ -183,12 +186,27 @@ function resolveAsset(assetId) {
   return ASSETS[assetId] ?? null;
 }
 
-function resolveAssetMap(bindings = {}) {
+function resolvePresentationAsset(assetId, options = null) {
+  const asset = resolveAsset(assetId);
+  if (!asset || !options) {
+    return asset;
+  }
+
+  return Object.freeze({
+    ...asset,
+    ...options
+  });
+}
+
+function resolveAssetMap(bindings = {}, optionsByKey = {}) {
   return Object.freeze(
     Object.fromEntries(
       Object.entries(bindings).map(([key, assetId]) => [
         key,
-        resolveAsset(assetId)
+        resolvePresentationAsset(
+          assetId,
+          optionsByKey?.[key] ?? null
+        )
       ])
     )
   );
@@ -213,7 +231,10 @@ export const demoPresentationAssets = Object.freeze({
 
     return Object.freeze({
       icon: resolveAsset(binding.icon),
-      cast: resolveAsset(binding.castFx),
+      cast: resolvePresentationAsset(
+        binding.castFx,
+        binding.castOptions ?? null
+      ),
       castAnchor: binding.castAnchor ?? null,
       castLayer:
         binding.castLayerBySourceView?.[sourceView] ??
@@ -222,7 +243,10 @@ export const demoPresentationAssets = Object.freeze({
       travel: resolveAsset(binding.travelFx),
       travelSourceAnchor: binding.travelSourceAnchor ?? null,
       impact: resolveAsset(binding.impactFx),
-      phaseFx: resolveAssetMap(binding.phaseFxByLabel)
+      phaseFx: resolveAssetMap(
+        binding.phaseFxByLabel,
+        binding.phaseOptionsByLabel
+      )
     });
   }
 });
