@@ -25,9 +25,65 @@ function percent(value) {
   return `${rounded}%`;
 }
 
-function applySpriteStrip(node, visual, durationMs) {
-  if (!visual?.url) {
-    return false;
+function hasSpriteVisual(visual) {
+  return Boolean(
+    visual?.url ||
+    (Array.isArray(visual?.frames) && visual.frames.length > 0)
+  );
+}
+
+function visualPlaybackMs(visual, fallbackMs = 1) {
+  if (Array.isArray(visual?.frames) && visual.frames.length > 0) {
+    const frameMs = Math.max(1, Number(visual.frameMs) || 1);
+    return frameMs * visual.frames.length;
+  }
+  return Math.max(1, Number(fallbackMs) || 1);
+}
+
+function applySpriteVisual(node, visual, durationMs, animate) {
+  if (!hasSpriteVisual(visual)) {
+    return Object.freeze({
+      bound: false,
+      frameAnimation: null,
+      playbackMs: 0
+    });
+  }
+
+  node.className += " skill-fx--sprite";
+  node.dataset.assetId = visual.assetId ?? "";
+  node.style.backgroundRepeat = "no-repeat";
+
+  if (Array.isArray(visual.frames) && visual.frames.length > 0) {
+    const frames = visual.frames.filter(Boolean);
+    const playbackMs = visualPlaybackMs(visual, durationMs);
+
+    node.style.backgroundImage = `url("${frames[0]}")`;
+    node.style.backgroundSize = "100% 100%";
+    node.style.backgroundPosition = "center";
+
+    let frameAnimation = null;
+    if (frames.length > 1) {
+      frameAnimation = animate(
+        node,
+        frames.map((url, index) => ({
+          backgroundImage: `url("${url}")`,
+          offset: index / (frames.length - 1)
+        })),
+        {
+          duration: playbackMs,
+          easing: "steps(1, end)",
+          fill: "forwards"
+        }
+      );
+
+      Promise.resolve(frameAnimation?.finished).catch(() => {});
+    }
+
+    return Object.freeze({
+      bound: true,
+      frameAnimation,
+      playbackMs
+    });
   }
 
   const frameCount = Math.max(
@@ -36,10 +92,7 @@ function applySpriteStrip(node, visual, durationMs) {
   );
   const duration = Math.max(1, Number(durationMs) || 1);
 
-  node.className += " skill-fx--sprite";
-  node.dataset.assetId = visual.assetId ?? "";
   node.style.backgroundImage = `url("${visual.url}")`;
-  node.style.backgroundRepeat = "no-repeat";
   node.style.backgroundSize = `${frameCount * 100}% 100%`;
   node.style.backgroundPosition = "0% 0%";
   node.style.animationName = "skill-fx-strip";
@@ -48,7 +101,12 @@ function applySpriteStrip(node, visual, durationMs) {
     `steps(${Math.max(1, frameCount - 1)}, end)`;
   node.style.animationIterationCount = "1";
   node.style.animationFillMode = "forwards";
-  return true;
+
+  return Object.freeze({
+    bound: true,
+    frameAnimation: null,
+    playbackMs: duration
+  });
 }
 
 export function createDomSkillFxRenderer({
@@ -110,6 +168,7 @@ export function createDomSkillFxRenderer({
       return;
     }
     active.delete(record);
+    record.frameAnimation?.cancel?.();
     record.node.remove?.();
   }
 
@@ -120,6 +179,7 @@ export function createDomSkillFxRenderer({
     actorSlot = null,
     fromSlot,
     targetSlot,
+    phase = null,
     durationMs
   }) {
     if (disposed) {
@@ -128,7 +188,7 @@ export function createDomSkillFxRenderer({
         finished: Promise.resolve({ status: "disposed" })
       });
     }
-    if (!["cast", "projectile", "impact", "miss"].includes(type)) {
+    if (!["cast", "projectile", "impact", "miss", "phase"].includes(type)) {
       return Object.freeze({
         status: "ignored",
         finished: Promise.resolve({ status: "ignored" })
@@ -140,13 +200,14 @@ export function createDomSkillFxRenderer({
     const presentation = skillId
       ? presentationForSkill(skillId, {
           sourceView: sourceSlot,
-          fxType: type
+          fxType: type,
+          phase
         })
       : null;
 
     if (type === "cast") {
       const visual = presentation?.cast ?? null;
-      if (!visual?.url) {
+      if (!hasSpriteVisual(visual)) {
         return Object.freeze({
           status: "ignored",
           finished: Promise.resolve({ status: "ignored" })
@@ -175,10 +236,19 @@ export function createDomSkillFxRenderer({
       }
       node.style.left = `${from.x}px`;
       node.style.top = `${from.y}px`;
-      applySpriteStrip(node, visual, durationMs);
+      const spriteVisual = applySpriteVisual(
+        node,
+        visual,
+        durationMs,
+        animate
+      );
       arena.append(node);
 
-      const record = { node, animation: null };
+      const record = {
+        node,
+        animation: null,
+        frameAnimation: spriteVisual.frameAnimation
+      };
       active.add(record);
 
       const animation = animate(
@@ -200,6 +270,99 @@ export function createDomSkillFxRenderer({
         ],
         {
           duration: Math.max(1, Number(durationMs) || 1),
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+
+      record.animation = animation;
+
+      const finished = Promise.resolve(animation.finished)
+        .then(() => {
+          cleanup(record);
+          return { status: "finished" };
+        })
+        .catch((error) => {
+          cleanup(record);
+          if (error?.name === "AbortError") {
+            return { status: "cancelled" };
+          }
+          throw error;
+        });
+
+      return Object.freeze({
+        status: "running",
+        animation,
+        finished
+      });
+    }
+
+    if (type === "phase") {
+      const visual = presentation?.phaseFx?.[phase] ?? null;
+      if (!hasSpriteVisual(visual) || !sourceSlot) {
+        return Object.freeze({
+          status: "ignored",
+          finished: Promise.resolve({ status: "ignored" })
+        });
+      }
+
+      const from = centerRelativeTo(
+        sourceRect(sourceSlot),
+        arenaRect
+      );
+      const node = arena.ownerDocument.createElement("span");
+      const displayScale = Math.min(
+        4,
+        Math.max(0.25, Number(visual.displayScale) || 1)
+      );
+
+      node.className = "skill-fx skill-fx--phase";
+      node.dataset.skillFx = "phase";
+      node.dataset.skillId = skillId ?? "";
+      node.dataset.phase = phase ?? "";
+      node.style.left = `${from.x}px`;
+      node.style.top = `${from.y}px`;
+
+      const spriteVisual = applySpriteVisual(
+        node,
+        visual,
+        durationMs,
+        animate
+      );
+      arena.append(node);
+
+      const record = {
+        node,
+        animation: null,
+        frameAnimation: spriteVisual.frameAnimation
+      };
+      active.add(record);
+
+      const animation = animate(
+        node,
+        [
+          {
+            transform:
+              `translate(-50%, -50%) scale(${0.82 * displayScale})`,
+            opacity: 0.15
+          },
+          {
+            transform:
+              `translate(-50%, -50%) scale(${1.05 * displayScale})`,
+            opacity: 1,
+            offset: 0.38
+          },
+          {
+            transform:
+              `translate(-50%, -50%) scale(${1.12 * displayScale})`,
+            opacity: 0
+          }
+        ],
+        {
+          duration: Math.max(
+            1,
+            spriteVisual.playbackMs || Number(durationMs) || 1
+          ),
           easing: "ease-out",
           fill: "forwards"
         }
@@ -313,10 +476,19 @@ export function createDomSkillFxRenderer({
       node.dataset.skillId = skillId ?? "";
       node.style.left = `${to.x}px`;
       node.style.top = `${to.y}px`;
-      applySpriteStrip(node, visual, durationMs);
+      const spriteVisual = applySpriteVisual(
+        node,
+        visual,
+        durationMs,
+        animate
+      );
       arena.append(node);
 
-      const record = { node, animation: null };
+      const record = {
+        node,
+        animation: null,
+        frameAnimation: spriteVisual.frameAnimation
+      };
       active.add(record);
 
       const animation = animate(
@@ -399,8 +571,9 @@ export function createDomSkillFxRenderer({
       Math.max(0.25, Number(travelVisual?.displayScale) || 1)
     );
     let spriteBound = false;
+    let projectileFrameAnimation = null;
 
-    if (travelVisual?.url) {
+    if (hasSpriteVisual(travelVisual)) {
       const spriteNode = arena.ownerDocument.createElement("span");
       const coreAnchorX = clampUnit(travelVisual.coreAnchor?.x, 0.5);
       const coreAnchorY = clampUnit(travelVisual.coreAnchor?.y, 0.5);
@@ -414,7 +587,13 @@ export function createDomSkillFxRenderer({
       node.dataset.assetId = travelVisual.assetId ?? "";
 
       spriteNode.className = "skill-fx__sprite";
-      applySpriteStrip(spriteNode, travelVisual, durationMs);
+      const spriteVisual = applySpriteVisual(
+        spriteNode,
+        travelVisual,
+        durationMs,
+        animate
+      );
+      projectileFrameAnimation = spriteVisual.frameAnimation;
       spriteNode.style.left = percent(0.5 - coreAnchorX);
       spriteNode.style.top = percent(0.5 - coreAnchorY);
       spriteNode.style.transformOrigin =
@@ -429,6 +608,7 @@ export function createDomSkillFxRenderer({
     const record = {
       node,
       animation: null,
+      frameAnimation: projectileFrameAnimation,
       type: "projectile",
       fromSlot
     };
