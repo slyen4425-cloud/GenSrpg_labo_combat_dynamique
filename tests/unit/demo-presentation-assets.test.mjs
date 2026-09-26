@@ -119,3 +119,46 @@ test("fireball cast layer is data-driven by source view", () => {
     "front"
   );
 });
+
+
+test("demo audio bindings resolve runtime URLs by stable asset id", () => {
+  const fireball = demoPresentationAssets.presentationForSkill("fireball");
+  const claw = demoPresentationAssets.presentationForSkill("claw");
+  const aerial = demoPresentationAssets.presentationForSkill("aerial-dive");
+  const teleport =
+    demoPresentationAssets.presentationForSkill("teleport-strike");
+
+  assert.equal(
+    fireball.castSound?.assetId,
+    "gensrpg:sound:fire-cast-01"
+  );
+  assert.match(fireball.castSound?.url, /fire_cast\.mp3$/);
+
+  assert.equal(
+    claw.impactSound?.assetId,
+    "gensrpg:sound:melee-impact-01"
+  );
+  assert.match(claw.impactSound?.url, /melee_impact\.mp3$/);
+
+  assert.equal(
+    aerial.castSound?.assetId,
+    "gensrpg:sound:teleport-01"
+  );
+  assert.match(aerial.castSound?.url, /teleport\.mp3$/);
+
+  assert.equal(
+    teleport.phaseSound["teleport-vanish"]?.assetId,
+    "gensrpg:sound:teleport-01"
+  );
+  assert.equal(
+    teleport.phaseSound["teleport-return-vanish"]?.assetId,
+    "gensrpg:sound:teleport-01"
+  );
+
+  assert.equal(
+    demoPresentationAssets.audioAsset(
+      "gensrpg:sound:fire-cast-01"
+    )?.mediaType,
+    "audio"
+  );
+});
