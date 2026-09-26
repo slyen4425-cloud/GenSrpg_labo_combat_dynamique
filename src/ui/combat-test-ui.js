@@ -8,6 +8,7 @@ import { createOpponentDecisionController } from "../core/combat/opponent-decisi
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
+import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 
 const DATA_URLS = Object.freeze({
   fighters: Object.freeze({
@@ -343,6 +344,21 @@ export async function mountCombatTest({
   let opponentAi = null;
   let aiDecisionInProgress = false;
 
+  const combatAudio = createDomCombatAudio({
+    resolveAudioAsset(assetId) {
+      return presentationAssets?.audioAsset?.(assetId) ?? null;
+    },
+    presentationForSkill(skillId, context = {}) {
+      return (
+        presentationAssets?.presentationForSkill?.(
+          skillId,
+          context
+        ) ??
+        null
+      );
+    }
+  });
+
   const fx = createDomSkillFxRenderer({
     arena,
     anchors: {
@@ -372,7 +388,8 @@ export async function mountCombatTest({
 
   const presenter = createCombatResolutionPresenter({
     visuals,
-    fx
+    fx,
+    audio: combatAudio
   });
 
   const distancePresenter = createDomDistancePresenter({
@@ -1271,6 +1288,7 @@ export async function mountCombatTest({
       }
       runtime.dispose();
       presenter.dispose();
+      combatAudio.dispose();
       fx.dispose();
     }
   });
