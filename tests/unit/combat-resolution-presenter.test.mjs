@@ -397,6 +397,7 @@ test("KO presentation chains hit then KO and exposes real completion", async () 
   await result.finished;
 
   assert.deepEqual(h.calls, [
+    ["cancel", "opponent"],
     ["play", "opponent", "hit"],
     ["play", "opponent", "ko"]
   ]);
