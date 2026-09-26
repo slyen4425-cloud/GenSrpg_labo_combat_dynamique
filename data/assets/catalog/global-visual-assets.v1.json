@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 72,
+    "assets": 75,
     "icons": 31,
-    "sprites": 30,
+    "sprites": 32,
     "fx": 2,
-    "portraits": 4,
+    "portraits": 5,
     "backgrounds": 5,
-    "creatures": 8
+    "creatures": 10
   },
   "assets": [
     {
@@ -2133,6 +2133,108 @@
       },
       "resource": {
         "file": "capture/creatures/golem_moussu/runtime/golem_moussu_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-guepe-cybernetique-icon-01",
+      "label": "Guêpe cybernétique — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "guepe-cybernetique",
+        "electric",
+        "lightning",
+        "insect",
+        "cybernetic",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/guepe_cybernetique/runtime/guepe_cybernetique_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-guepe-cybernetique-opponent-01",
+      "label": "Guêpe cybernétique — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "guepe-cybernetique",
+        "electric",
+        "lightning",
+        "insect",
+        "cybernetic",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/guepe_cybernetique/runtime/guepe_cybernetique_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-guepe-cybernetique-player-01",
+      "label": "Guêpe cybernétique — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "guepe-cybernetique",
+        "electric",
+        "lightning",
+        "insect",
+        "cybernetic",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/guepe_cybernetique/runtime/guepe_cybernetique_player.webp",
         "mime": "image/webp"
       },
       "compatibility": {

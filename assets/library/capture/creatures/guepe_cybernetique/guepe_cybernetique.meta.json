@@ -1,0 +1,100 @@
+{
+  "id": "guepe_cybernetique",
+  "name": "Guêpe cybernétique",
+  "profile": "drake",
+  "views": {
+    "player": "runtime/guepe_cybernetique_player.webp",
+    "opponent": "runtime/guepe_cybernetique_opponent.webp",
+    "icon": "runtime/guepe_cybernetique_icon.webp"
+  },
+  "runtimePreview": {
+    "player": "runtime/guepe_cybernetique_player.webp",
+    "opponent": "runtime/guepe_cybernetique_opponent.webp",
+    "icon": "runtime/guepe_cybernetique_icon.webp"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      320,
+      320
+    ],
+    "icon": [
+      192,
+      192
+    ]
+  },
+  "displayScale": {
+    "player": 1.05,
+    "opponent": 1
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "56%"
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Insecte cybernétique électrique de la bibliothèque Capture. Vue adversaire 3/4 face et vue joueur 3/4 dos.",
+  "fxAnchors": {
+    "player": {
+      "head": {
+        "x": 0.72,
+        "y": 0.43
+      },
+      "mouth": {
+        "x": 0.77,
+        "y": 0.48
+      },
+      "handLeft": {
+        "x": 0.55,
+        "y": 0.66
+      },
+      "handRight": {
+        "x": 0.81,
+        "y": 0.69
+      },
+      "tail": {
+        "x": 0.34,
+        "y": 0.76
+      }
+    },
+    "opponent": {
+      "head": {
+        "x": 0.29,
+        "y": 0.44
+      },
+      "mouth": {
+        "x": 0.24,
+        "y": 0.49
+      },
+      "handLeft": {
+        "x": 0.14,
+        "y": 0.63
+      },
+      "handRight": {
+        "x": 0.41,
+        "y": 0.68
+      },
+      "tail": {
+        "x": 0.72,
+        "y": 0.78
+      }
+    }
+  },
+  "assetIds": {
+    "player": "pack:capture:creature-guepe-cybernetique-player-01",
+    "opponent": "pack:capture:creature-guepe-cybernetique-opponent-01",
+    "icon": "pack:capture:creature-guepe-cybernetique-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  },
+  "visualRevision": "validated-front-back-2026-09-27"
+}
