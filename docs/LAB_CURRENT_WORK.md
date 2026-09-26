@@ -6131,3 +6131,14 @@ Architecture du test :
 Le dépôt audio privé possède aussi un lot `work/combat-audio-test-pack-2026-09-26` destiné à produire un artifact privé contenant uniquement les trois fichiers de test.
 
 Aucun changement Combat Rules / dégâts / énergie / portée / disponibilité n'est introduit.
+
+
+Validation technique du lot audio privé :
+
+- SHA technique validé avant note finale : `a6e2b1da08df11717bb5d758c218bb72c6c2b25a` ;
+- CI work : run `36240893215` — SUCCESS ;
+- tests couvrent registry local, adapter audio DOM, timing cast/release/impact, bindings audio et frontière dépôt privé/public ;
+- dépôt privé : workflow `Combat audio test pack` run `36240845603` — SUCCESS ;
+- artifact privé : `gensrpg-combat-audio-test-pack` ;
+- aucun WAV/MP3 privé présent dans le dépôt public du laboratoire ;
+- validation auditive utilisateur requise avant checkpoint GREEN.
