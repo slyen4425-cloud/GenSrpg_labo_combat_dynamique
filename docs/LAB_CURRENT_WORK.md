@@ -6090,3 +6090,44 @@ Correction :
 - aucun timing gameplay n'est modifié : `preparationMs` reste 900 ms et reste propriété du Runtime / SkillDefinition.
 
 Ce réglage est ajouté au contrat du futur éditeur de compétences afin qu'un même asset puisse être joué une fois, bouclé comme aura, ou étiré à la durée d'un slot sans modifier sa source.
+
+
+### Lot — test audio privé dans le Combat dynamique
+
+Demande utilisateur du 2026-09-26 : brancher provisoirement des sons du dépôt privé global GenSrpG afin de les tester dans le mode Combat du laboratoire.
+
+Source privée vérifiée :
+
+- dépôt : `slyen4425-cloud/GenSrpG_audio_prive` ;
+- branche source : `work/audio-source-bank-2026-09-26` ;
+- banque : 173 fichiers audio selon le README de l'archive ;
+- aucun fichier audio privé n'est copié dans le dépôt public du laboratoire.
+
+Branche laboratoire :
+
+- checkpoint : `checkpoint/lab-start-private-audio-test-v9-2026-09-26` ;
+- work : `work/lab-private-audio-test-v9-2026-09-26` ;
+- preview : `preview/lab-private-audio-test-v9-2026-09-26` ;
+- base : `42d9fc194c468c8393c4baa2128cff05853e50ab`.
+
+Sons provisoires retenus :
+
+- Boule de feu / cast -> `ES_Fire Magic Spell, Continuous - Epidemic Sound.wav` ;
+- Griffe / impact -> `ES_Heavy, Two Handed, Attack, Hit Flesh, Impact - Epidemic Sound.wav` ;
+- Aérien + téléportation -> `ES_Type 04, Jump, Short, Video Game 01 - Epidemic Sound.wav`.
+
+Architecture du test :
+
+- bindings audio par `assetId` stables dans la présentation ;
+- adaptateur audio DOM séparé ;
+- source locale par Object URL ;
+- bouton `Sons 0/3` dans la preview ;
+- sélection des trois fichiers locaux, reconnaissance par nom, puis passage à `Sons 3/3` ;
+- le cast audio est stoppé à la release ;
+- les impacts sont déclenchés au résultat `hit` ;
+- les sons de téléportation suivent les labels de phase Animation Core ;
+- absence de son = silence, jamais erreur gameplay.
+
+Le dépôt audio privé possède aussi un lot `work/combat-audio-test-pack-2026-09-26` destiné à produire un artifact privé contenant uniquement les trois fichiers de test.
+
+Aucun changement Combat Rules / dégâts / énergie / portée / disponibilité n'est introduit.
