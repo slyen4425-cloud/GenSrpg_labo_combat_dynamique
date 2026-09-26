@@ -328,6 +328,17 @@ Document de référence :
 
 `docs/LAB_ASSET_LIBRARY.md`
 
+Le futur éditeur de compétences devra respecter en particulier la section
+« Réglages visuels du futur éditeur de compétences » :
+
+- sélection des assets par IDs stables ;
+- scale indépendant par slot visuel ;
+- modes d'attache lanceur / cible / position fixe / trajet ;
+- anchors et offsets éditables ;
+- layer devant / derrière ;
+- déclencheurs utilisateur traduits vers les phases techniques ;
+- presets simples avant réglages avancés.
+
 Critère GREEN de la phase complète :
 
 - contrats et catalogue testés ;
