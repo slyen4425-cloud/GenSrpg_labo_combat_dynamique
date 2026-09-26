@@ -5922,3 +5922,25 @@ Retour utilisateur du 2026-09-25 :
 - le remplacement doit donc composer deux sources distinctes :
   - `braisombre_opponent.webp` <- face de `7104.png` ;
   - `braisombre_player.webp` <- dos validé de `7103.png`.
+
+
+### Remplacement runtime Braisombre effectué
+
+Validation dépôt après upload utilisateur du 2026-09-26 :
+
+- `runtime/braisombre_player.webp` remplacé par le nouveau dos validé issu de la planche précédente ;
+- `runtime/braisombre_opponent.webp` remplacé par la nouvelle face validée issue de `7104.png` ;
+- le dos défectueux de `7104.png` n'est pas utilisé ;
+- les blobs GitHub correspondent exactement aux deux WebP préparés pour le remplacement :
+  - player : `383667b9a54919c75f1027b254e7e85b983353ef` — 603624 octets ;
+  - opponent : `18d00a376db5b9486a91189444443c7712a35480` — 758530 octets ;
+- anciens blobs runtime remplacés :
+  - ancien player : `4f7bb0d4ce80543a7a4842965fdb3c62991d76a2` ;
+  - ancien opponent : `0f959ceafacb4d38ea3dd723abc5edeac89f76f1` ;
+- aucun ancien PNG de modèle ni doublon ne reste dans `assets/test/creatures/braisombre/` ;
+- le dossier runtime contient uniquement l'icône et les deux modèles actifs ;
+- CI du commit d'upload utilisateur `c195f95a882cafc139288dced740051e1618ebad` : run `36219042858` — SUCCESS ;
+- le correctif de layering FX adverse reste inchangé et vert ;
+- aucune règle de combat, énergie, dégâts, timing ou SkillDefinition modifiée.
+
+Validation visuelle smartphone des deux nouveaux modèles et du layering adverse encore requise avant checkpoint GREEN final du lot.
