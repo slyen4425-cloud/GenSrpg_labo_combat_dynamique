@@ -1,0 +1,16 @@
+{
+  "id": "impact_blade",
+  "type": "impact_sprite_sequence",
+  "frame_ms": 45,
+  "loop": false,
+  "frames": [
+    "frames/sprite_impact_blade_01.svg",
+    "frames/sprite_impact_blade_02.svg",
+    "frames/sprite_impact_blade_03.svg",
+    "frames/sprite_impact_blade_04.svg",
+    "frames/sprite_impact_blade_05.svg",
+    "frames/sprite_impact_blade_06.svg",
+    "frames/sprite_impact_blade_07.svg",
+    "frames/sprite_impact_blade_08.svg"
+  ]
+}
