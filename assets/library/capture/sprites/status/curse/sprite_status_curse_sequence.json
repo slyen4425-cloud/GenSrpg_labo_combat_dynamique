@@ -1,0 +1,16 @@
+{
+  "id": "status_curse",
+  "type": "status_effect_sprite_sequence",
+  "frame_ms": 65,
+  "loop": true,
+  "frames": [
+    "frames/sprite_status_curse_01.svg",
+    "frames/sprite_status_curse_02.svg",
+    "frames/sprite_status_curse_03.svg",
+    "frames/sprite_status_curse_04.svg",
+    "frames/sprite_status_curse_05.svg",
+    "frames/sprite_status_curse_06.svg",
+    "frames/sprite_status_curse_07.svg",
+    "frames/sprite_status_curse_08.svg"
+  ]
+}
