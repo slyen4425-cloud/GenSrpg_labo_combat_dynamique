@@ -693,3 +693,26 @@ test("automatic combat audio uses runtime asset ids without manual file selectio
     /damage|energyCost|allowedDistances|hpAfter/
   );
 });
+
+
+test("normal hit presentation cannot replace an active approach or restart stale idle", async () => {
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(source, /const activeApproachBySlot = new Map\(\)/);
+  assert.match(
+    source,
+    /type === "hit" && activeApproach[\s\S]*activeApproach\.finished/
+  );
+  assert.match(
+    source,
+    /approachResult\?\.status !== "finished"/
+  );
+  assert.match(
+    source,
+    /result\?\.status === "finished"[\s\S]*startIdleFor\(slotKey\)/
+  );
+  assert.match(
+    source,
+    /activeApproachBySlot\.delete\(slotKey\)[\s\S]*slot\.renderer\.cancel\(\)/
+  );
+});
