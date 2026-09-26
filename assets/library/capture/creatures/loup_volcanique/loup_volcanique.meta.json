@@ -39,7 +39,7 @@
     "x": 0,
     "y": 0
   },
-  "notes": "Quadrupède volcanique de la bibliothèque Capture. Vue adversaire 3/4 face et vue joueur 3/4 dos.",
+  "notes": "Quadrupède volcanique de la bibliothèque Capture. Vue adversaire 3/4 face et vue joueur 3/4 dos. Binaire adversaire réparé le 2026-09-27.",
   "fxAnchors": {
     "player": {
       "head": {
@@ -96,5 +96,5 @@
     "packId": "capture",
     "library": "global-assets"
   },
-  "visualRevision": "validated-front-back-2026-09-26"
+  "visualRevision": "validated-front-back-opponent-fix-2026-09-27"
 }
