@@ -19,6 +19,10 @@ const DATA_URLS = Object.freeze({
     braisombre: new URL(
       "../../data/combat/fighters/braisombre.combat.json",
       import.meta.url
+    ),
+    loupVolcanique: new URL(
+      "../../data/combat/fighters/loup_volcanique.combat.json",
+      import.meta.url
     )
   }),
   roster: new URL(
@@ -171,7 +175,8 @@ export async function mountCombatTest({
   root,
   visuals,
   fetchImpl = fetch,
-  presentationAssets = null
+  presentationAssets = null,
+  rosterUrl = DATA_URLS.roster
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -190,6 +195,7 @@ export async function mountCombatTest({
   const [
     maraileronConfig,
     braisombreConfig,
+    loupVolcaniqueConfig,
     rosterData,
     fireballRaw,
     clawRaw,
@@ -202,7 +208,8 @@ export async function mountCombatTest({
   ] = await Promise.all([
     fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
     fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
-    fetchJson(DATA_URLS.roster, fetchImpl),
+    fetchJson(DATA_URLS.fighters.loupVolcanique, fetchImpl),
+    fetchJson(rosterUrl, fetchImpl),
     fetchJson(DATA_URLS.skills.fireball, fetchImpl),
     fetchJson(DATA_URLS.skills.claw, fetchImpl),
     fetchJson(DATA_URLS.skills.aerialDive, fetchImpl),
@@ -237,21 +244,47 @@ export async function mountCombatTest({
     summon: normalizeCombatCommandDefinition(summonRaw)
   });
 
+  const fighterConfigs = Object.freeze({
+    maraileron: maraileronConfig,
+    braisombre: braisombreConfig,
+    loup_volcanique: loupVolcaniqueConfig
+  });
+
+  function initialMemberFor(slotId) {
+    const team = rosterData?.teams?.[slotId];
+    const member = team?.members?.find(
+      (candidate) => candidate.id === team.activeMemberId
+    );
+
+    if (!member) {
+      throw new Error(`Roster has no active member for ${slotId}`);
+    }
+
+    const fighterConfig = fighterConfigs[member.fighterConfigId];
+    if (!fighterConfig) {
+      throw new Error(
+        `Unknown fighter config ${member.fighterConfigId} for ${slotId}`
+      );
+    }
+
+    return Object.freeze({ member, fighterConfig });
+  }
+
+  const initialPlayer = initialMemberFor("player");
+  const initialOpponent = initialMemberFor("opponent");
+
   const session = createCombatSession({
     distance: "medium",
     fighters: [
-      { ...maraileronConfig, id: "player" },
-      { ...braisombreConfig, id: "opponent" }
+      { ...initialPlayer.fighterConfig, id: "player" },
+      { ...initialOpponent.fighterConfig, id: "opponent" }
     ]
   });
 
   const roster = createRosterSession({
     combatSession: session,
     roster: rosterData,
-    fighterConfigs: {
-      maraileron: maraileronConfig,
-      braisombre: braisombreConfig
-    }
+    fighterConfigs
   });
 
   const arena = requiredElement(root, "[data-combat-arena]");
@@ -1254,23 +1287,35 @@ export async function mountCombatTest({
   createSkillButtons();
   createCommandButtons();
 
-  visuals.setCreatureFor(
-    "player",
-    "maraileron",
-    { displayName: "Marai" }
-  );
-  visuals.setCreatureFor(
-    "opponent",
-    "braisombre",
-    { displayName: "Drakon" }
-  );
+  const initialRosterState = roster.snapshot();
+  const initialNames = {};
+
+  for (const slotId of ["player", "opponent"]) {
+    const team = initialRosterState[slotId];
+    const activeMember = team.members.find(
+      (member) => member.id === team.activeMemberId
+    );
+
+    if (!activeMember) {
+      visuals.setSlotVisible(slotId, false);
+      initialNames[slotId] = "—";
+      continue;
+    }
+
+    visuals.setCreatureFor(
+      slotId,
+      activeMember.creatureId,
+      { displayName: activeMember.displayName }
+    );
+    initialNames[slotId] = activeMember.displayName;
+  }
 
   renderRoster();
   runtime.start();
   render(lastState);
 
   setStatus(
-    "Marai contre Drakon — choisis une action.",
+    `${initialNames.player} contre ${initialNames.opponent} — choisis une action.`,
     "info"
   );
 
