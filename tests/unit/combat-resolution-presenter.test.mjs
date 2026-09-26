@@ -507,3 +507,52 @@ test("combat presentation routes cast phase and impact audio without owning game
 
   presenter.dispose();
 });
+
+
+test("KO explicitly cancels target motion before hit and KO presentation", async () => {
+  const calls = [];
+  const visuals = {
+    cancelFor(slot) {
+      calls.push(["cancel", slot]);
+    },
+    playEventFor(slot, event) {
+      calls.push(["play", slot, event]);
+      return Promise.resolve({ status: "finished" });
+    }
+  };
+
+  const presenter = createCombatResolutionPresenter({ visuals });
+  const result = presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      actionType: "skill",
+      skillId: "aerial-dive",
+      outcome: "hit",
+      events: [
+        {
+          type: "skill-arrive",
+          atMs: 1750,
+          skillId: "aerial-dive"
+        },
+        {
+          type: "hit",
+          actorId: "player",
+          hpBefore: 20,
+          hpAfter: 0
+        }
+      ]
+    },
+    actorSlot: "opponent",
+    targetSlot: "player"
+  });
+
+  await result.finished;
+
+  assert.deepEqual(calls, [
+    ["cancel", "player"],
+    ["play", "player", "hit"],
+    ["play", "player", "ko"]
+  ]);
+
+  presenter.dispose();
+});
