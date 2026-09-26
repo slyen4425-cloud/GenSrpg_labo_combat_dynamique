@@ -6321,3 +6321,47 @@ CI technique avant publication preview :
 - conclusion : SUCCESS.
 
 Validation visuelle smartphone utilisateur requise avant tout checkpoint GREEN de cette variante.
+
+
+## Diagnostic isolé — arène lave locale / preview loup — 2026-09-26
+
+Objectif :
+
+- conserver exactement l'état combat mobile validé au SHA `bca09271a2850200b07164cfbe12b16507c71b89` ;
+- vérifier uniquement le chemin de rendu d'une arène avec un binaire WebP valide, sans republier `global-assets` ;
+- déterminer si l'absence d'arène vient du binaire livré par `global-assets` ou du mécanisme de présentation.
+
+Base / branches :
+
+- base connue fonctionnelle : `bca09271a2850200b07164cfbe12b16507c71b89` ;
+- checkpoint : `checkpoint/lab-start-arena-local-diagnostic-v9-2026-09-26` ;
+- travail : `work/lab-arena-local-diagnostic-v9-2026-09-26` ;
+- preview : `preview/lab-arena-local-diagnostic-v9-2026-09-26`.
+
+Périmètre autorisé :
+
+- `assets/test/arenas/lava/arena_lava_01.webp` : copie de test uniquement ;
+- `examples/dom-demo/demo-assets.js` : binding diagnostic uniquement ;
+- tests ciblés présentation arène ;
+- présente section de documentation.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / Runtime / Animation / FX ;
+- aucun changement du renderer ;
+- aucun changement de `global-assets` ;
+- aucun changement de `main` ;
+- aucun second système d'affichage d'arène.
+
+Principe du test :
+
+- réutiliser le mécanisme déjà validé `presentationForArena() -> background url -> custom property CSS` ;
+- seule la provenance du binaire change temporairement vers `assets/test/` sur cette branche isolée ;
+- si l'arène locale apparaît avec combat fonctionnel, la cause est la livraison / disponibilité du binaire global, pas le renderer ;
+- si elle n'apparaît pas, le diagnostic reste sur le mécanisme de présentation existant.
+
+Critère de fin :
+
+- CI verte ;
+- test smartphone utilisateur ;
+- aucune promotion stable avant résultat du test.
