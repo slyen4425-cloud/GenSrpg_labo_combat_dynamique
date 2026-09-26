@@ -1,0 +1,10 @@
+{
+  "id": "skill_claw_impact_01",
+  "type": "sprite_sequence",
+  "frame_ms": 55,
+  "loop": false,
+  "frames": [
+    "frames/sprite_skill_claw_impact_01.png",
+    "frames/sprite_skill_claw_impact_02.png"
+  ]
+}
