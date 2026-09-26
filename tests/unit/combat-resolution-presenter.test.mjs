@@ -401,3 +401,104 @@ test("KO presentation chains hit then KO and exposes real completion", async () 
     ["play", "opponent", "ko"]
   ]);
 });
+
+
+test("live presentation starts cast audio, stops it at release, and plays hit impact", async () => {
+  const audioCalls = [];
+  const stopped = [];
+  const visuals = {
+    playEventFor() {
+      return Promise.resolve({ status: "finished" });
+    },
+    playApproachFor() {
+      return Promise.resolve({ status: "finished" });
+    },
+    cancelFor() {}
+  };
+
+  const presenter = createCombatResolutionPresenter({
+    visuals,
+    audio: {
+      play(plan) {
+        audioCalls.push(plan);
+        if (plan.type === "cast") {
+          return {
+            status: "running",
+            stop() {
+              stopped.push(plan.skillId);
+            },
+            finished: new Promise(() => {})
+          };
+        }
+        return {
+          status: "running",
+          stop() {},
+          finished: Promise.resolve({ status: "finished" })
+        };
+      }
+    }
+  });
+
+  const action = {
+    actionType: "skill",
+    actorId: "player",
+    targetId: "opponent",
+    preparationMs: 900,
+    travelMs: 850,
+    skill: {
+      id: "aerial-dive",
+      form: "contact",
+      approachMode: "aerial",
+      element: null
+    }
+  };
+
+  presenter.presentPreparation({
+    action,
+    actorSlot: "player"
+  });
+
+  assert.equal(audioCalls[0].type, "cast");
+  assert.equal(audioCalls[0].skillId, "aerial-dive");
+
+  presenter.presentRelease({
+    action,
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.deepEqual(stopped, ["aerial-dive"]);
+
+  presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      outcome: "hit",
+      events: [
+        {
+          type: "skill-arrive",
+          atMs: 850,
+          skillId: "aerial-dive"
+        },
+        {
+          type: "hit",
+          actorId: "opponent",
+          hpBefore: 100,
+          hpAfter: 78
+        }
+      ]
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.equal(
+    audioCalls.some(
+      (call) =>
+        call.type === "impact" &&
+        call.skillId === "aerial-dive"
+    ),
+    true
+  );
+
+  presenter.dispose();
+});
