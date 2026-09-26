@@ -5911,3 +5911,49 @@ Règle pour la suite :
 - ne pas republier les nouveaux fonds sur `global-assets` tant que la cause du gel mobile n'est pas isolée ;
 - ne pas ajouter de second renderer ni de contournement UI ;
 - diagnostic suivant sur branche isolée uniquement, avec validation mobile avant republication stable.
+
+
+## Sous-lot — Golem moussu — 2026-09-27
+
+Objectif :
+
+- intégrer la nouvelle créature roche/mousse validée dans la bibliothèque Capture ;
+- conserver trois ressources séparées : vue adversaire 3/4 face, vue joueur 3/4 dos et icône ;
+- reprendre exactement les conventions runtime des créatures déjà présentes ;
+- enregistrer les trois ressources dans le catalogue global par `assetId` stable.
+
+Branche :
+
+`global-assets`
+
+Checkpoint de départ :
+
+`checkpoint/global-assets-before-golem-moussu-2026-09-27`
+
+SHA de base :
+
+`f6918a1afcf80fbcefbb37140df47289c248a1b7`
+
+Fichiers autorisés :
+
+- `assets/library/capture/creatures/golem_moussu/**` ;
+- `data/assets/catalog/global-visual-assets.v1.json` ;
+- `GLOBAL_ASSET_LIBRARY.md` ;
+- le présent point de reprise.
+
+Protégé / hors périmètre :
+
+- `main` ;
+- moteur Combat Rules ;
+- Animation Core ;
+- renderer / Demo UI ;
+- GenSrpG / `Zombicide-40k` ;
+- règles gameplay.
+
+Critère de fin :
+
+- trois WebP transparents présents et lisibles ;
+- vue adversaire orientée vers la gauche et vue joueur orientée vers la droite ;
+- metadata et catalogue cohérents ;
+- relecture GitHub des fichiers et SHA finaux ;
+- checkpoint GREEN du lot.
