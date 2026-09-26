@@ -401,3 +401,109 @@ test("KO presentation chains hit then KO and exposes real completion", async () 
     ["play", "opponent", "ko"]
   ]);
 });
+
+
+test("combat presentation routes cast phase and impact audio without owning gameplay", async () => {
+  const audioCalls = [];
+  const stopped = [];
+  const visuals = {
+    playEventFor() {
+      return Promise.resolve({ status: "finished" });
+    },
+    playApproachFor(_slot, _mode, options) {
+      options.onPhase({
+        label: "teleport-vanish",
+        phaseDurationMs: 48
+      });
+      return Promise.resolve({ status: "finished" });
+    },
+    cancelFor() {}
+  };
+
+  const presenter = createCombatResolutionPresenter({
+    visuals,
+    audio: {
+      play(plan) {
+        audioCalls.push(plan);
+        if (plan.type === "cast") {
+          return {
+            status: "running",
+            stop() {
+              stopped.push(plan.skillId);
+            },
+            finished: new Promise(() => {})
+          };
+        }
+        return {
+          status: "running",
+          stop() {},
+          finished: Promise.resolve({ status: "finished" })
+        };
+      }
+    }
+  });
+
+  const action = {
+    actionType: "skill",
+    actorId: "player",
+    targetId: "opponent",
+    preparationMs: 900,
+    travelMs: 850,
+    skill: {
+      id: "teleport-strike",
+      form: "contact",
+      approachMode: "teleport",
+      element: null
+    }
+  };
+
+  presenter.presentPreparation({ action, actorSlot: "player" });
+  presenter.presentRelease({
+    action,
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.deepEqual(stopped, ["teleport-strike"]);
+  assert.equal(
+    audioCalls.some(
+      (call) =>
+        call.type === "phase" &&
+        call.phase === "teleport-vanish"
+    ),
+    true
+  );
+
+  presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      outcome: "hit",
+      events: [
+        {
+          type: "skill-arrive",
+          skillId: "teleport-strike",
+          atMs: 850
+        },
+        {
+          type: "hit",
+          actorId: "opponent",
+          hpBefore: 100,
+          hpAfter: 75
+        }
+      ]
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.equal(
+    audioCalls.some(
+      (call) =>
+        call.type === "impact" &&
+        call.skillId === "teleport-strike"
+    ),
+    true
+  );
+
+  presenter.dispose();
+});
