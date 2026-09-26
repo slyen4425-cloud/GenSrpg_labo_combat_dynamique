@@ -5944,3 +5944,15 @@ Validation dépôt après upload utilisateur du 2026-09-26 :
 - aucune règle de combat, énergie, dégâts, timing ou SkillDefinition modifiée.
 
 Validation visuelle smartphone des deux nouveaux modèles et du layering adverse encore requise avant checkpoint GREEN final du lot.
+
+
+### Validation visuelle utilisateur — Braisombre + layering FX
+
+Validation reçue le 2026-09-26 : utilisateur : « Parfait ».
+
+Cette validation couvre :
+- les nouveaux modèles Braisombre player/opponent ;
+- le cadrage général des deux vues ;
+- le correctif de layering du cast Boule de feu adverse devant la créature.
+
+Le lot peut être checkpointé GREEN au SHA documentaire final après CI.
