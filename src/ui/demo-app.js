@@ -3,6 +3,7 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
+import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
 const DATA_URLS = Object.freeze({
   profiles: Object.freeze({
@@ -16,13 +17,11 @@ const DATA_URLS = Object.freeze({
     )
   }),
   creatures: Object.freeze({
-    maraileron: new URL(
-      "../../assets/test/creatures/maraileron/maraileron.meta.json",
-      import.meta.url
+    maraileron: globalVisualAssetUrl(
+      "capture/creatures/maraileron/maraileron.meta.json"
     ),
-    braisombre: new URL(
-      "../../assets/test/creatures/braisombre/braisombre.meta.json",
-      import.meta.url
+    braisombre: globalVisualAssetUrl(
+      "capture/creatures/braisombre/braisombre.meta.json"
     )
   })
 });
