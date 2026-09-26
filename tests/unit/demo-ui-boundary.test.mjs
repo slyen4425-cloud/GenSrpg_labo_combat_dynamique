@@ -760,6 +760,11 @@ test("four creature city preview exposes all current capture creatures", async (
   assert.match(demoSource, /previewVariant === "four-city"/);
   assert.match(demoSource, /applyArenaPresentation\("city"\)/);
 
+  assert.equal(
+    roster.teams.opponent.activeMemberId,
+    "opponent-loup"
+  );
+
   const creatures = new Set(
     roster.teams.player.members.map((member) => member.creatureId)
   );
