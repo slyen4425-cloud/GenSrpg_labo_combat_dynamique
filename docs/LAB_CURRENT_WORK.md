@@ -6241,3 +6241,35 @@ CI :
 - conclusion : SUCCESS
 
 Validation mobile utilisateur encore requise avant checkpoint GREEN.
+
+
+## Bibliothèque visuelle globale — migration 2026-09-26
+
+Décision appliquée :
+
+Les assets réutilisables ne doivent plus être consommés depuis une branche `work/` ou `preview/`.
+
+Source stable créée :
+
+- branche : `global-assets`
+- catalogue : `data/assets/catalog/global-visual-assets.v1.json`
+- racine : `assets/library/`
+
+Contenu consolidé :
+
+- 31 icônes ;
+- 22 séquences sprites ;
+- 2 FX ;
+- 1 arène ;
+- nouveaux lots : 5 casts, 5 impacts, 8 projectiles élémentaires.
+
+Le combat courant résout désormais ses visuels depuis la branche stable `global-assets` via `src/assets/global-visual-library.js`.
+
+Les bindings continuent à référencer uniquement des `assetId`. Les branches de travail ne sont plus des sources runtime de bibliothèque.
+
+CI :
+
+- `global-assets` : SUCCESS au SHA `12e9ac9253269d3de8937136eabc98857678439d`
+- raccord Combat : SUCCESS au SHA `6edb9fa9979852e8a0c7f91814322ff5c422b91a`
+
+`main` reste inchangée.
