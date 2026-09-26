@@ -6059,3 +6059,12 @@ Documentation officielle ajoutée :
 - `docs/LAB_ROADMAP.md` renvoie explicitement vers ce contrat pour le futur chantier éditeur.
 
 Aucune règle de combat n'est modifiée par ces réglages.
+
+
+Validation technique finale du sous-lot scale / Griffe :
+
+- SHA validé : `eed8df55d2570bd7abbf38839bfb630703665aea` ;
+- CI work : run `36222547220` — SUCCESS ;
+- l'échec intermédiaire du SHA `4a0470b0270154253ed5984dc3ce36d3c2f87114` provenait d'une sentinelle encore alignée sur l'ancienne séquence Griffe à 2 frames ;
+- après mise à jour des tests à 8 frames et couverture des nouveaux scales, CI verte ;
+- aucun changement Combat Rules / Runtime / dégâts / énergie / portée / cooldown.
