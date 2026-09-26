@@ -119,3 +119,48 @@ test("fireball cast layer is data-driven by source view", () => {
     "front"
   );
 });
+
+
+test("demo skill audio bindings use stable IDs without public private-repo URLs", () => {
+  const fireball = demoPresentationAssets.presentationForSkill("fireball");
+  const claw = demoPresentationAssets.presentationForSkill("claw");
+  const aerial = demoPresentationAssets.presentationForSkill("aerial-dive");
+  const teleport =
+    demoPresentationAssets.presentationForSkill("teleport-strike");
+
+  assert.equal(
+    fireball.castSound?.assetId,
+    "core:sound-test-fire-cast-01"
+  );
+  assert.equal(
+    claw.impactSound?.assetId,
+    "core:sound-test-melee-impact-01"
+  );
+  assert.equal(
+    aerial.castSound?.assetId,
+    "core:sound-test-teleport-01"
+  );
+  assert.equal(
+    teleport.phaseSound["teleport-vanish"]?.assetId,
+    "core:sound-test-teleport-01"
+  );
+  assert.equal(
+    teleport.phaseSound["teleport-return-vanish"]?.assetId,
+    "core:sound-test-teleport-01"
+  );
+
+  const required = demoPresentationAssets.requiredAudioFiles();
+  assert.equal(required.length, 3);
+  assert.deepEqual(
+    new Set(required.map((item) => item.assetId)),
+    new Set([
+      "core:sound-test-fire-cast-01",
+      "core:sound-test-melee-impact-01",
+      "core:sound-test-teleport-01"
+    ])
+  );
+
+  for (const item of required) {
+    assert.ok(item.fileName.endsWith(".wav"));
+  }
+});
