@@ -1177,3 +1177,29 @@ Le système sera considéré prêt pour une future intégration quand :
 - les packs sont traçables et licenciés ;
 - aucun module combat ne dépend du stockage ou de l'UI ;
 - le même concept peut être réutilisé dans Capture et d'autres modes.
+
+
+---
+
+## 27. Implémentation réelle — bibliothèque visuelle globale
+
+Depuis le 2026-09-26, la bibliothèque visuelle commune possède une source runtime stable :
+
+- dépôt : `slyen4425-cloud/GenSrpg_labo_combat_dynamique`
+- branche dédiée : `global-assets`
+- racine physique : `assets/library/`
+- catalogue : `data/assets/catalog/global-visual-assets.v1.json`
+
+Cette branche n'est ni une branche de développement Combat ni une preview.
+
+Le Storage / Resolver de démonstration est :
+
+`src/assets/global-visual-library.js`
+
+Règle permanente :
+
+`assetId -> catalogue / resolver -> global-assets -> ressource`
+
+Une branche `work/`, `preview/` ou `checkpoint/` ne doit jamais devenir la source runtime d'un asset de bibliothèque partagé.
+
+Les branches fonctionnelles peuvent contenir des copies historiques dans leur Git ancestry, mais leur runtime ne doit pas les utiliser comme source de vérité.
