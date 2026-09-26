@@ -765,6 +765,23 @@ Ils ne sont pas automatiquement migrés ou renommés dans ce lot.
 
 Le fallback image unique imposé par la charte reste permanent.
 
+### 21.1 Futur raccord avec l'éditeur de créature GenSrpG — taille visuelle
+
+Lors du futur raccord du nouveau moteur de combat à l'éditeur de créatures GenSrpG, le créateur doit pouvoir régler explicitement la taille visuelle normale de la créature dans l'arène.
+
+Règles prévues :
+
+- le réglage appartient à la fiche visuelle de la créature, pas aux statistiques gameplay ;
+- une valeur simple de type **Taille en combat** doit être exposée dans l'éditeur, avec `100 %` correspondant à l'échelle de référence `1.0` ;
+- le mode avancé peut permettre de régler séparément la vue `player` et la vue `opponent`, en alimentant les métadonnées `displayScale.player` et `displayScale.opponent` ;
+- si aucun réglage séparé n'est fourni, une valeur commune reste suffisante ;
+- `VisualActor.scale` / les métadonnées de vue restent la source déclarative, et le Render Adapter applique le rendu ;
+- cette taille ne modifie jamais PV, dégâts, portée, vitesse, énergie, hitbox ou règles de combat ;
+- l'éditeur de compétence ne redéfinit pas la taille de base de la créature ; une compétence peut seulement demander une variation temporaire de scale dans son animation/FX ;
+- la prévisualisation de l'éditeur doit montrer immédiatement le rendu joueur/adversaire afin que le créateur puisse corriger une image trop grande ou trop petite sans retoucher le fichier source.
+
+La plage de réglage UI et ses garde-fous seront définis au moment du chantier d'intégration GenSrpG, sans coder de constante métier cachée dans le renderer.
+
 ---
 
 ## 22. Provenance et licence
