@@ -132,6 +132,14 @@ test("city arena diagnostic resolves through the same presentation boundary", ()
       "assets/test/arenas/city/arena_city_01.webp"
     )
   );
+  assert.equal(
+    presentation.backgroundPosition,
+    "center bottom"
+  );
+  assert.equal(
+    presentation.backgroundSize,
+    "auto 112%"
+  );
 });
 
 
