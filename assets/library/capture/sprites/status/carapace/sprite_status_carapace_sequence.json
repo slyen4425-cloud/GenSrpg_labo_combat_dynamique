@@ -1,0 +1,16 @@
+{
+  "id": "status_carapace",
+  "type": "status_effect_sprite_sequence",
+  "frame_ms": 65,
+  "loop": false,
+  "frames": [
+    "frames/sprite_status_carapace_01.svg",
+    "frames/sprite_status_carapace_02.svg",
+    "frames/sprite_status_carapace_03.svg",
+    "frames/sprite_status_carapace_04.svg",
+    "frames/sprite_status_carapace_05.svg",
+    "frames/sprite_status_carapace_06.svg",
+    "frames/sprite_status_carapace_07.svg",
+    "frames/sprite_status_carapace_08.svg"
+  ]
+}
