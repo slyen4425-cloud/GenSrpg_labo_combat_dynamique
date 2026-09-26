@@ -6113,3 +6113,35 @@ Flux cible :
 `source privée -> publication runtime -> catalogue assetId -> resolver -> jeu / éditeur`
 
 Important : tout son réellement lu dans un navigateur est techniquement récupérable par le client. La confidentialité protège donc la banque source et l'organisation interne ; la copie runtime doit être considérée comme un asset distribué au jeu.
+
+
+### Lot audio runtime automatique — test réel
+
+Demande utilisateur du 2026-09-26 : tester le fonctionnement final sans téléchargement manuel.
+
+Principe validé pour ce test :
+
+`source privée -> copie runtime compressée -> catalogue assetId -> resolver -> Audio Adapter -> compétence`
+
+Source privée :
+
+- dépôt `slyen4425-cloud/GenSrpG_audio_prive` ;
+- WAV maîtres conservés hors du laboratoire public ;
+- workflow privé génère des MP3 runtime compressés.
+
+Copies runtime de test publiées uniquement sur la branche laboratoire :
+
+- `assets/runtime/audio-test/fire_cast.mp3` ;
+- `assets/runtime/audio-test/melee_impact.mp3` ;
+- `assets/runtime/audio-test/teleport.mp3`.
+
+Bindings actifs :
+
+- `fireball.castSound -> gensrpg:sound:fire-cast-01` ;
+- `claw.impactSound -> gensrpg:sound:melee-impact-01` ;
+- `aerial-dive.castSound -> gensrpg:sound:teleport-01` ;
+- `teleport-strike` joue `gensrpg:sound:teleport-01` sur les phases `teleport-vanish` et `teleport-return-vanish`.
+
+Aucune sélection de fichier utilisateur n'est requise. Aucun bouton `Sons 0/3` n'est présent dans cette direction.
+
+Les copies runtime sont des fichiers de test distribuables au navigateur ; elles ne remplacent pas les sources privées.
