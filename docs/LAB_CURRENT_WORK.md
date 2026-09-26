@@ -5855,3 +5855,27 @@ Critère de fin :
 - CI verte ;
 - `global-assets` avancée en fast-forward uniquement après validation technique ;
 - validation visuelle utilisateur avant checkpoint GREEN final.
+
+
+### Résultat technique — réparation des blobs d'arènes
+
+Les quatre images utilisateur ont été reconverties localement en WebP 1536×864 puis écrites comme vrais blobs binaires Git sur la branche de travail.
+
+Blobs validés :
+
+- lave : `d917a867b8b4a73c735e80c557c9e89297bfc3d2` — 308886 octets ;
+- cité : `49ef1b282aeb49975b6d02f4e668d56cfbb54af8` — 270470 octets ;
+- neige : `9e6bb0087d4e366396c99a1fb8c67997ee5689eb` — 252816 octets ;
+- grotte : `e1d85644fc915eea88cb29a19c266d8c68b7f4e1` — 325776 octets.
+
+Vérifications :
+
+- les quatre sorties commencent par `RIFF....WEBP` ;
+- les SHA de blobs GitHub correspondent exactement aux SHA Git calculés sur les fichiers WebP locaux ;
+- les chemins et `assetId` existants sont conservés ;
+- la comparaison depuis le commit de cadrage ne contient que les quatre fichiers binaires d'arène ;
+- aucun fichier UI / renderer / gameplay n'a été modifié.
+
+Commit courant du lot après restauration complète du tree Git : `334f3e30a469433fa1b53f70a44e53d6b96ebf75`.
+
+CI finale du lot requise avant fast-forward de `global-assets`.
