@@ -99,6 +99,7 @@ export async function mountCombatDemo({
       profiles
     })
   };
+  const activeApproachBySlot = new Map();
 
   function slotOf(slotKey) {
     const slot = slots[slotKey];
@@ -145,6 +146,22 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "hidden" });
     }
 
+    const activeApproach = activeApproachBySlot.get(slotKey);
+    if (type === "hit" && activeApproach) {
+      return Promise.resolve(activeApproach.finished).then(
+        (approachResult) => {
+          if (
+            disposed ||
+            !slot.visible ||
+            approachResult?.status !== "finished"
+          ) {
+            return approachResult ?? { status: "cancelled" };
+          }
+          return playEventFor(slotKey, type);
+        }
+      );
+    }
+
     const target = otherSlot(slot);
 
     try {
@@ -168,6 +185,7 @@ export async function mountCombatDemo({
 
       return handle.finished.then((result) => {
         if (
+          result?.status === "finished" &&
           !disposed &&
           !["idle", "ko"].includes(type) &&
           slot.visible
@@ -240,6 +258,12 @@ export async function mountCombatDemo({
     });
 
     const handle = slot.renderer.play(plan);
+    const approachRecord = Object.freeze({
+      handle,
+      finished: handle.finished
+    });
+    activeApproachBySlot.set(slotKey, approachRecord);
+
     const phaseTimers = [];
     let phaseAtMs = 0;
 
@@ -273,12 +297,22 @@ export async function mountCombatDemo({
 
     return handle.finished
       .then((result) => {
-        if (!disposed && slot.visible) {
+        if (activeApproachBySlot.get(slotKey) === approachRecord) {
+          activeApproachBySlot.delete(slotKey);
+        }
+        if (
+          result?.status === "finished" &&
+          !disposed &&
+          slot.visible
+        ) {
           startIdleFor(slotKey);
         }
         return result;
       })
       .finally(() => {
+        if (activeApproachBySlot.get(slotKey) === approachRecord) {
+          activeApproachBySlot.delete(slotKey);
+        }
         for (const timerId of phaseTimers) {
           globalThis.clearTimeout(timerId);
         }
@@ -287,6 +321,7 @@ export async function mountCombatDemo({
 
   function cancelFor(slotKey) {
     const slot = slotOf(slotKey);
+    activeApproachBySlot.delete(slotKey);
     slot.renderer.cancel();
     if (slot.visible) {
       startIdleFor(slotKey);
@@ -365,6 +400,7 @@ export async function mountCombatDemo({
         return;
       }
       disposed = true;
+      activeApproachBySlot.clear();
       for (const slot of Object.values(slots)) {
         slot.dispose();
       }
