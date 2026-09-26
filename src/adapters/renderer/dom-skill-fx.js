@@ -455,7 +455,7 @@ export function createDomSkillFxRenderer({
 
     if (type === "impact") {
       const visual = presentation?.impact ?? null;
-      if (!visual?.url) {
+      if (!hasSpriteVisual(visual)) {
         return Object.freeze({
           status: "ignored",
           finished: Promise.resolve({ status: "ignored" })
