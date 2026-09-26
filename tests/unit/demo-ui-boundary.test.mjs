@@ -661,3 +661,35 @@ test("skill sprite sequences remain presentation-owned and phase-driven", async 
   assert.doesNotMatch(assets, /damage\s*:/);
   assert.doesNotMatch(fxRenderer, /hpAfter|energyCost|allowedDistances/);
 });
+
+
+test("automatic combat audio uses runtime asset ids without manual file selection", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const ui = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const assets = await readFile("examples/dom-demo/demo-assets.js", "utf8");
+  const presenter = await readFile(
+    "src/adapters/renderer/combat-resolution-presenter.js",
+    "utf8"
+  );
+  const audioAdapter = await readFile(
+    "src/adapters/audio/dom-combat-audio.js",
+    "utf8"
+  );
+
+  assert.doesNotMatch(html, /data-audio-test-input|Sons 0\/3/);
+  assert.doesNotMatch(ui, /createObjectURL|FileReader|audioInput/);
+
+  assert.match(ui, /createDomCombatAudio/);
+  assert.match(ui, /presentationAssets\?\.audioAsset/);
+  assert.match(presenter, /audio\?\.play/);
+
+  assert.match(assets, /gensrpg:sound:fire-cast-01/);
+  assert.match(assets, /gensrpg:sound:melee-impact-01/);
+  assert.match(assets, /gensrpg:sound:teleport-01/);
+  assert.match(assets, /assets\/runtime\/audio-test/);
+
+  assert.doesNotMatch(
+    audioAdapter,
+    /damage|energyCost|allowedDistances|hpAfter/
+  );
+});
