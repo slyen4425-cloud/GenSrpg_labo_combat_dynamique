@@ -942,7 +942,8 @@
       },
       "resource": {
         "file": "capture/creatures/braisombre/runtime/braisombre_opponent.webp",
-        "mime": "image/webp"
+        "mime": "image/webp",
+        "revision": "validated-v9"
       },
       "compatibility": {
         "uses": [
@@ -950,7 +951,8 @@
           "capture",
           "editor"
         ]
-      }
+      },
+      "validationSource": "checkpoint/lab-dragon-back-fx-layer-v9-green-2026-09-26"
     },
     {
       "id": "pack:capture:creature-braisombre-player-01",
@@ -972,7 +974,8 @@
       },
       "resource": {
         "file": "capture/creatures/braisombre/runtime/braisombre_player.webp",
-        "mime": "image/webp"
+        "mime": "image/webp",
+        "revision": "validated-v9"
       },
       "compatibility": {
         "uses": [
@@ -980,7 +983,8 @@
           "capture",
           "editor"
         ]
-      }
+      },
+      "validationSource": "checkpoint/lab-dragon-back-fx-layer-v9-green-2026-09-26"
     },
     {
       "id": "pack:capture:creature-maraileron-icon-01",
