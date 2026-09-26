@@ -6321,3 +6321,27 @@ CI technique avant publication preview :
 - conclusion : SUCCESS.
 
 Validation visuelle smartphone utilisateur requise avant tout checkpoint GREEN de cette variante.
+
+
+### Audit charte — arène lave invisible
+
+Retour utilisateur : le Loup volcanique s'affiche mais l'arène lave reste absente.
+
+Décision de conformité :
+
+- les deux tentatives non prouvées de contournement (cache-bust spécifique puis seconde couche `<img>`) ont été retirées ;
+- le chemin validé d'origine reste unique : `arena context -> presentationForArena() -> assetId -> fond d'arène` ;
+- aucun second renderer d'arène, aucun listener, aucun timer et aucun fallback concurrent n'est conservé.
+
+Cause démontrée sur `global-assets` :
+
+- les quatre nouveaux fichiers d'arène WebP présents dans Git ne contiennent pas les octets WebP attendus ;
+- leurs blobs sont anormalement petits (~15 Ko chacun) alors que les sources 1536x864 fournies sont bien plus volumineuses ;
+- leur contenu décodé ne commence pas par l'en-tête `RIFF....WEBP` ;
+- l'arène forêt historique reste un asset valide et son chemin de présentation n'est donc pas remis en cause.
+
+Conclusion :
+
+- la régression n'appartient pas au renderer ni à la Demo UI ;
+- la réparation correcte consiste uniquement à remplacer les quatre blobs binaires corrompus sur `global-assets` par les vrais WebP issus des sources utilisateur, en conservant les mêmes `assetId` et chemins ;
+- aucune autre modification du moteur ou de l'UI ne doit être faite pour ce problème.
