@@ -35,14 +35,42 @@ test("demo skill bindings expose an icon for every active offensive skill", () =
   }
 });
 
-test("icon-only skill bindings do not invent FX assets", () => {
-  for (const skillId of ["claw", "aerial-dive", "teleport-strike"]) {
-    const presentation = demoPresentationAssets.presentationForSkill(skillId);
+test("temporary skill sprite bindings resolve typed library sequences", () => {
+  const claw = demoPresentationAssets.presentationForSkill("claw");
+  assert.equal(
+    claw.impact?.assetId,
+    "pack:capture:sprite-claw-impact-01"
+  );
+  assert.equal(claw.impact?.frames.length, 2);
+  assert.equal(claw.cast, null);
+  assert.equal(claw.travel, null);
 
-    assert.equal(presentation.cast, null);
-    assert.equal(presentation.travel, null);
-    assert.equal(presentation.impact, null);
-  }
+  const aerial =
+    demoPresentationAssets.presentationForSkill("aerial-dive");
+  assert.equal(
+    aerial.cast?.assetId,
+    "pack:capture:sprite-teleportation-1"
+  );
+  assert.equal(aerial.cast?.frames.length, 8);
+  assert.equal(
+    aerial.impact?.assetId,
+    "pack:capture:sprite-claw-impact-01"
+  );
+
+  const teleport =
+    demoPresentationAssets.presentationForSkill("teleport-strike");
+  assert.equal(
+    teleport.phaseFx["teleport-vanish"]?.assetId,
+    "pack:capture:sprite-teleportation-2"
+  );
+  assert.equal(
+    teleport.phaseFx["teleport-return-vanish"]?.assetId,
+    "pack:capture:sprite-teleportation-2"
+  );
+  assert.equal(
+    teleport.phaseFx["teleport-vanish"]?.frames.length,
+    8
+  );
 });
 
 
