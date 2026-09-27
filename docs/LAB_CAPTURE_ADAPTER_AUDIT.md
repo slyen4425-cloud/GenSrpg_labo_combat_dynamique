@@ -1,15 +1,10 @@
-# Laboratoire Combat Dynamique — Audit Capture -> adaptateur portable
+# Laboratoire Combat Dynamique — Audit du futur adaptateur Capture
 
 Date : 2026-09-27
 
-## 1. Objet
+## 1. But
 
-Préparer un futur raccord entre le mode Capture de GenSrpG et le moteur de combat dynamique du laboratoire sans :
-
-- importer le runtime historique Capture ;
-- créer une dépendance runtime au dépôt `Zombicide-40k` ;
-- lire directement le DOM, les globals, les sauvegardes ou les chemins d'assets de GenSrpG ;
-- dupliquer Combat Rules, Combat Runtime, Roster Session ou Presentation Assets.
+Préparer un futur raccord entre le mode Capture de GenSrpG et le laboratoire sans créer de dépendance runtime entre les deux dépôts.
 
 Chaîne cible :
 
@@ -17,41 +12,50 @@ Chaîne cible :
 GenSrpG Capture / éditeur
         |
         v
-export portable versionné
+Capture Export Contract
         |
         v
-Capture Adapter du laboratoire
+Capture -> Lab Adapter
         |
-        +--> FighterConfig
-        +--> SkillDefinition
-        +--> RosterDefinition
-        +--> BattleFormatDefinition
-        +--> Presentation Asset Bindings
+        +---- FighterConfig
+        +---- SkillDefinition
+        +---- Roster
+        +---- BattleFormatDefinition
+        +---- Presentation Bindings
         |
         v
-Combat Session / Runtime / Presenter existants
+Combat Session / Runtime / Presenter / FX
 ```
 
-Le dépôt principal est consulté en lecture seule pendant cet audit.
+Le laboratoire reste autonome.
 
-## 2. Source GenSrpG auditée
+## 2. Sources vérifiées
 
-Dépôt :
-`slyen4425-cloud/Zombicide-40k`
+Dépôt GenSrpG lu uniquement :
 
-Référence de restructuration consultée :
-`work/gensrpg-phase7-dungeon-generated-room-create-restore-2026-09-27`
+- dépôt : `slyen4425-cloud/Zombicide-40k` ;
+- branche inspectée : `work/gensrpg-phase7-dungeon-generated-room-create-restore-2026-09-27` ;
+- HEAD observé : `9ec3a39af709405f5d9ee54a61aa2c041c7339e6` ;
+- runtime `index.html` déclaré par la documentation GenSrpG : blob `efcc459c9bade0e35bf123d100e499b3ce7d4eca`, 8 170 213 octets.
 
-Production `main` reste gelée sur :
-`e8681f9823573ced8aec59c8ddc47a72b02bc663`.
+Le contenu exact de `index.html` n'a pas été relu dans ce chantier. Conformément à la charte GenSrpG, toute future inspection exacte nécessaire de ce gros fichier passera par la procédure dédiée.
 
-La roadmap GenSrpG prévoit explicitement en Phase 9 de séparer Monster Capture dans
-`assets/gensrpg/capture/`.
+Dépôt laboratoire :
 
-Le contrat cible actuel :
-`assets/gensrpg/capture/module-contract-v1.json`
+- base : `5ef53a67c5beddd9b70df88d73b242a3f12d282c` ;
+- checkpoint : `checkpoint/lab-start-capture-adapter-audit-2026-09-27` ;
+- branche : `work/lab-capture-adapter-audit-2026-09-27`.
 
-déclare comme responsabilités futures :
+## 3. État réel de Capture côté GenSrpG
+
+### 3.1 Module cible
+
+La structure future existe déjà :
+
+- `assets/gensrpg/capture/entry-v1.js` ;
+- `assets/gensrpg/capture/module-contract-v1.json`.
+
+Le contrat déclare que Capture doit posséder :
 
 - Monster Capture runtime ;
 - créatures ;
@@ -60,356 +64,470 @@ déclare comme responsabilités futures :
 - équipe / réserve ;
 - combat Capture.
 
-Ce module est encore `contract-only-not-loaded`.
+Mais `entry-v1.js` reste volontairement inerte.
 
-## 3. État réel du Capture historique
+### 3.2 Runtime historique encore actif
 
-La cartographie Phase 2 prouve que Capture reste aujourd'hui stratifié dans des blocs inline historiques.
-
-Chaîne principale identifiée :
+La cartographie Phase 2 montre encore une chaîne de propriétaires inline Capture :
 
 - `captureGameplayModalMount` ;
 - `capturePlaytestFix128` ;
-- `captureFix129` ;
-- `captureFix130` ;
-- `captureFix131` ;
-- `captureFix132` ;
-- `captureFix133` ;
-- `captureFix134` ;
-- `captureFix135` ;
-- `captureFix136` ;
-- `captureFix137` ;
-- `captureFix138` ;
-- `captureFix139` ;
-- `captureFix140` ;
+- `captureFix129` à `captureFix140` ;
 - `captureItems141` ;
 - `captureBuffs142` ;
 - `captureBuffFx143` ;
 - `captureAbilityTruth144` ;
 - `builtinMonsterCapture162`.
 
-Frontières démontrées par la restructuration :
+Points importants :
 
-- `captureFix139` est le meilleur noyau actuel de l'entrée publique Capture ;
-- `captureAbilityTruth144` est le dernier propriétaire de la résolution sémantique des capacités Capture ;
-- `captureRenderBattleLive` reste un renderer historique stratifié et ne doit pas devenir une dépendance du laboratoire ;
-- le seed `builtinMonsterCapture162` possède le profil, dresseur, roster et capacités de démonstration actuels ;
-- Shell / Dungeon / Core possèdent encore plusieurs coutures de compatibilité autour de Capture.
+- `captureAbilityTruth144` est le dernier propriétaire cartographié de la résolution des capacités Capture ;
+- `captureRenderBattleLive` reste un renderer historique stratifié ;
+- `captureFix139` reste le propriétaire du chemin de lancement Capture ;
+- le provider Shell public ajouté en Phase 5 ne contient pas de gameplay : il route vers Capture139 ;
+- Capture utilise encore historiquement un substrat `gameStyle: dungeon`, mais son mode canonique est distinct : `capture`, famille de contenu `creature`.
 
-Conclusion : **ne pas copier cette chaîne dans le laboratoire**.
+Conclusion : ces couches sont des **sources à caractériser**, pas du code à importer dans le laboratoire.
 
-## 4. Données Capture dont la propriété est déjà caractérisée
+## 4. Données Capture prouvées par les sentinelles
 
-### 4.1 Profil et identité de mode
+Les tests actuels démontrent les surfaces suivantes sans que le laboratoire ait besoin d'importer le runtime historique.
 
-Le scénario navigateur officiel verrouille actuellement :
+### 4.1 Profil / famille
 
-- profil intégré : `Monster Capture` ;
-- `gameStyle = "dungeon"` pour le substrat historique ;
-- famille de contenu : `creature` ;
-- profil gameplay : `creature` ;
-- module `capture = true` ;
-- module `controllableCreatures = true` ;
-- `heroPool` utilisé pour le dresseur.
+Le profil intégré Monster Capture possède notamment :
 
-Ces champs servent au Shell et au démarrage de mode.
+- un `id` stable ;
+- un nom ;
+- `gameStyle: "dungeon"` pour le substrat historique ;
+- un profil gameplay `creature` ;
+- les modules `capture` et `controllableCreatures`.
 
-Ils **ne doivent pas entrer dans Combat Core**.
+Pour le futur adaptateur, `gameStyle: dungeon` ne doit **pas** devenir une dépendance. Seule l'identité fonctionnelle Capture / creature est pertinente.
 
-### 4.2 Progression Capture
+### 4.2 Entités créatures
 
-Famille persistée :
+Les sentinelles utilisent :
 
-`gensrpg_capture_progress_v2_<profileId>`
+- `captureTeamEntityRoster()` pour obtenir le roster joueur ;
+- `loadSharedEntities()` pour obtenir le pool d'entités ;
+- `category === "creature"` pour distinguer les créatures.
 
-Capture reste propriétaire des règles métier ; Core Storage ne possède que la sérialisation générique.
+Champs explicitement observés dans les tests :
 
-Defaults caractérisés :
+- `id` ;
+- `category` ;
+- `hp` ;
+- `maxHp` ;
+- `level` ;
+- `stats`.
 
-- `xpMultiplier: 1` ;
-- `statCap: 300` ;
-- `statPointsPerLevel: 5` ;
-- `talentEvery: 5` ;
-- `maxMoves: 4` ;
-- `moveRelearn: "free"`.
+Les tests modifient notamment dans `stats` :
 
-Ces règles sont importantes pour l'éditeur Capture, mais elles sont **hors du paquet de combat dynamique minimal**.
+- `speed` ;
+- `agility` / `agilite` ;
+- `defense`.
 
-### 4.3 Session / roster
+Cela prouve l'existence de ces données, mais ne signifie pas que le laboratoire doit leur attribuer automatiquement une sémantique.
 
-Le Capture courant possède déjà :
+### 4.3 Roster / équipes
 
-- sélection d'un dresseur ;
-- sélection d'une créature starter ;
-- participants ;
-- équipe / réserve ;
-- monde Capture ;
-- état de session.
+Le moteur Capture historique accepte des côtés de bataille de forme observable :
 
-Le laboratoire possède déjà un propriétaire propre pour le roster :
-`src/core/combat/roster-session.js`.
+```js
+{
+  name,
+  roster: [creatures...],
+  controller
+}
+```
 
-Aucun writer de sauvegarde Capture ne doit être importé.
+avec au moins les contrôleurs observés :
+
+- `human` ;
+- `mj`.
+
+Le démarrage de bataille observé reçoit aussi des réglages de session tels que :
+
+- `activeSlots` ;
+- `teamSize` ;
+- `minBattleTeam` ;
+- `maxBattleTeam` ;
+- `captureAllowed`.
+
+Ces données correspondent conceptuellement au `Roster Session` et au `BattleFormatDefinition` du laboratoire, mais nécessitent une traduction explicite.
 
 ### 4.4 Capacités
 
-La résolution historique est finalement possédée par
-`captureAbilityTruth144`.
+Les sentinelles prouvent :
 
-Le laboratoire possède déjà un contrat explicite :
-`src/contracts/skill-definition.js`.
+- une API historique `captureBattleUseAbility(skillId)` ;
+- au moins l'identifiant stable `capture_basic_attack` ;
+- `captureAbilityTruth144` comme dernier propriétaire cartographié des effets de capacités.
 
-Le futur raccord doit donc **traduire les données de capacité** au lieu de transporter
-`captureBattleApplyAbility`.
+En revanche, la forme exacte complète d'une capacité historique n'est pas considérée suffisamment caractérisée par les documents/tests lus dans ce lot.
 
-## 5. Contrats cibles déjà disponibles dans le laboratoire
+**Règle : ne jamais inférer une SkillDefinition du laboratoire à partir du nom, du texte ou de l'ID d'une capacité historique.**
 
-### 5.1 FighterConfig / Combat State
+### 4.5 Progression Capture
 
-Le fighter normalisé accepte aujourd'hui :
+Famille de stockage prouvée :
+
+`gensrpg_capture_progress_v2_<profileId>`
+
+Defaults actuellement caractérisés par les tests :
+
+```js
+{
+  xpMultiplier: 1,
+  statCap: 300,
+  statPointsPerLevel: 5,
+  talentEvery: 5,
+  maxMoves: 4,
+  moveRelearn: "free"
+}
+```
+
+Capture reste propriétaire des règles métier. Core Storage ne possède que la sérialisation JSON générique.
+
+Le laboratoire ne doit pas lire cette clé.
+
+### 4.6 Stats communes restructurées
+
+GenSrpG dispose déjà de contrats Core purs pour les stats.
+
+Normalisation canonique observée :
+
+- `agility -> agilite` ;
+- `spirit -> esprit` ;
+- `strength -> force` ;
+- `dexterity -> agilite` ;
+- `wisdom -> esprit` ;
+- `constitution -> endurance` ;
+- `defence -> defense` ;
+- `armour -> armor` ;
+- `move -> movement`.
+
+Une définition de statistique Core possède conceptuellement :
+
+- `id` ;
+- `name` ;
+- `icon` ;
+- `defaultValue` ;
+- `min` ;
+- `max` ;
+- `visible` ;
+- `description`.
+
+Un snapshot canonique expose :
+
+- `heroId` ;
+- valeurs canoniques ;
+- valeurs dérivées.
+
+Cette couche est une bonne candidate pour alimenter un futur export Capture, mais **le laboratoire ne l'importe pas directement**.
+
+## 5. Contrats déjà propres côté laboratoire
+
+### 5.1 FighterConfig réel
+
+Le Combat State consomme actuellement :
 
 - `id` ;
 - `maxHp` ;
-- `initialHp` / `hp` ;
+- `initialHp` ;
 - `maxEnergy` ;
-- `initialEnergy` / `energy` ;
+- `initialEnergy` ;
 - `energyChargeAmount` ;
 - `energyChargeIntervalMs` ;
-- `energyChargeProgressMs` ;
 - `movementEnergyPerStep` ;
 - `chargeTimeModifierPct` ;
 - `chargeTimeEffects`.
 
-### 5.2 SkillDefinition
+Le moteur ne consomme actuellement ni `level`, ni `speed`, ni `agilite`, ni `defense` comme champs autonomes.
 
-Le contrat possède déjà :
+### 5.2 SkillDefinition réel
 
-- `id`, `name` ;
-- catégories `offensive / defensive / heal / buff_debuff / counter` ;
-- formes `contact / projectile / beam / area / self / aura` ;
+Le contrat courant sépare déjà :
+
+- identité : `id`, `name` ;
+- `category` ;
+- `form` ;
 - `element` ;
 - `approachMode` ;
-- `energyCost` ;
-- `preparationMs` ;
-- `travelMs` ;
-- `recoveryMs` ;
-- distances autorisées ;
-- relations de cible `enemy / ally / self / any` ;
-- réactions block / reflect / immune / counter / evade ;
-- esquive de trajet ;
-- effets damage / heal / interruption / stun / tags ;
-- interactions projectile via `projectileClash`.
+- énergie ;
+- préparation / trajet / récupération ;
+- distances ;
+- relations de cible ;
+- esquive ;
+- réactions ;
+- interaction projectile ;
+- effet sémantique.
+
+Catégories actuelles :
+
+- offensive ;
+- defensive ;
+- heal ;
+- buff_debuff ;
+- counter.
+
+Formes actuelles :
+
+- contact ;
+- projectile ;
+- beam ;
+- area ;
+- self ;
+- aura.
 
 ### 5.3 Roster Session
 
-Un membre de roster possède :
+Un membre du roster de laboratoire possède :
 
 - `id` ;
 - `creatureId` ;
 - `displayName` ;
 - `fighterConfigId`.
 
-Le Roster Session conserve les snapshots PV / énergie entre rappel, invocation et remplacement KO.
+Le Roster Session possède les snapshots PV / énergie et les changements actif / réserve.
 
 ### 5.4 BattleFormatDefinition
 
-Le format de bataille sépare :
+Le format de combat sépare :
 
 - acteurs ;
 - équipes ;
 - contrôleurs ;
-- acteur local ;
-- `creatureId` ;
-- `fighterConfigId`.
+- créature ;
+- FighterConfig.
 
-Le 1v1 et le 2v2 peuvent donc rester des formats de combat, pas des variantes du moteur.
+Le 2v2 actuel est donc déjà compatible avec une source externe de données **si** celle-ci est traduite vers ce contrat.
 
-### 5.5 Présentation / assets
+### 5.5 Presentation Assets
 
-La démo du laboratoire possède déjà une séparation :
+Le laboratoire possède déjà la séparation correcte :
 
-`AssetDefinition -> Asset Binding -> Presenter / FX / Audio`
+```
+SkillDefinition = gameplay
+SkillPresentationBinding = visuel / audio
+Asset Catalog = résolution assetId -> ressource
+```
 
-Une compétence peut lier par `assetId` :
+Le futur éditeur ne doit jamais écrire un chemin GitHub ou un chemin de fichier dans SkillDefinition.
 
-- icône ;
-- cast FX ;
-- projectile/travel FX ;
-- impact FX ;
-- sons ;
-- anchors ;
-- layers ;
-- options de lecture.
+## 6. Matrice de traduction proposée
 
-Aucun chemin physique GenSrpG ne doit entrer dans SkillDefinition.
+| Capture / éditeur | Laboratoire | Politique |
+|---|---|---|
+| creature.id | roster.member.creatureId + identifiant de définition | direct après validation |
+| nom créature | roster.member.displayName | direct |
+| hp / maxHp | initialHp / maxHp | direct, clamp explicite |
+| stats.speed | aucun champ actuel | conserver en metadata/export, ne pas inventer de mapping |
+| stats.agilite | aucun champ actuel | idem |
+| stats.defense | aucun champ actuel | idem |
+| level | aucun champ Combat State actuel | metadata seulement |
+| roster | Roster Session | traduction explicite |
+| activeSlots / teamSize | BattleFormat / setup | traduction explicite |
+| controller | controllerId | traduction par table autorisée |
+| ability id/name | SkillDefinition id/name | identité seulement |
+| dégâts | SkillDefinition.effect.damage | seulement si source sémantique explicite |
+| soin | SkillDefinition.effect.heal | seulement si source sémantique explicite |
+| cible allié/ennemi/soi | targetRelations | traduction explicite |
+| projectile/contact/etc. | form | traduction explicite, jamais depuis le nom |
+| élément | element | traduction explicite |
+| coût | energyCost | uniquement si l'unité/coût Capture est déclaré compatible |
+| durée | preparationMs/travelMs/recoveryMs | nécessite contrat explicite ;
+| buffs/debuffs | contrat futur d'effets/statuts | ne pas écraser dans tags |
+| assets de créature | Creature Presentation Binding | assetId uniquement |
+| icon/cast/travel/impact/sounds | SkillPresentationBinding | assetId uniquement |
+| progression | hors Combat Session | ne pas importer comme état combat |
+| biomes/arène | Arena Presentation Binding | présentation, pas gameplay |
 
-## 6. Matrice GenSrpG Capture -> laboratoire
+## 7. Ce qui peut être réutilisé directement
 
-| Source Capture | Destination labo | Traitement |
-| --- | --- | --- |
-| identifiant créature | `creatureId` / fighter id logique | traduction directe |
-| nom créature | `displayName` | traduction directe |
-| PV / PV max | FighterConfig | normalisation |
-| énergie / ressource de combat | FighterConfig | normalisation vers énergie du moteur |
-| vitesse/recharge de ressource | FighterConfig | traduction explicite si donnée disponible |
-| mouvement / coût | FighterConfig | traduction explicite |
-| capacité id / nom | SkillDefinition | traduction directe |
-| dégâts | `effect.damage` | normalisation |
-| soin | `effect.heal` | normalisation |
-| élément | `element` | table de normalisation data-driven |
-| type attaque | `category + form + approachMode` | traduction, jamais inférence renderer |
-| coût | `energyCost` | traduction |
-| temps de charge | `preparationMs` | traduction |
-| trajet | `travelMs` | traduction |
-| récupération | `recoveryMs` | traduction |
-| portée | `allowedDistances` | traduction |
-| cible allié/ennemi/soi | `targetRelations` | traduction |
-| blocage / renvoi / immunité | `reaction` | traduction explicite |
-| équipe / réserve | RosterDefinition | traduction |
-| combat 1v1 / 2v2 | BattleFormatDefinition | construction du format |
-| icône/sprite/son | Presentation binding par `assetId` | jamais dans gameplay |
-| profil visuel créature | Creature Profile / binding | traduction séparée |
-| progression XP/talents | hors Combat Package | reste Capture |
-| monde / biome / jour | hors Combat Package | reste Capture |
-| boutique / loot | hors Combat Package | reste Capture |
-| sauvegarde locale | hors adaptateur | reste GenSrpG / Storage owner |
+### Vert — structure compatible
 
-## 7. Ce qui peut être réutilisé
+- identifiants stables ;
+- noms affichés ;
+- PV/max PV ;
+- composition de roster ;
+- notion d'actif/réserve ;
+- équipes et contrôleurs, après table de traduction ;
+- IDs d'assets stables lorsqu'ils existent ;
+- définition Core canonique des noms de stats comme source d'export.
 
-Réutilisable conceptuellement / par données :
+### Orange — traduction obligatoire
 
-- identité des créatures ;
-- stats nécessaires au combat ;
-- liste de capacités ;
-- effets sémantiques de capacités ;
-- équipe / réserve ;
-- sélection du format de combat ;
-- IDs d'assets une fois les catalogues alignés ;
-- règles de progression dans un futur éditeur Capture, mais hors moteur de combat.
+- stats Capture vers paramètres FighterConfig ;
+- règles de charge/énergie ;
+- capacité Capture vers SkillDefinition ;
+- cible ;
+- formes d'attaque ;
+- timings ;
+- buffs/debuffs ;
+- configuration de bataille Capture vers BattleFormatDefinition ;
+- bindings de présentation.
 
-Réutilisable **directement comme code historique : rien**.
+### Rouge — ne jamais importer comme fondation
 
-Le code historique est une source de comportement à caractériser, pas une bibliothèque à importer.
-
-## 8. Ce qui doit être traduit
-
-Nécessite une table / fonction de traduction explicite :
-
-- anciens types de capacités -> `category/form/approachMode` ;
-- anciennes portées -> `short/medium/long` ;
-- ancienne ressource de capacité -> énergie du moteur ;
-- buffs/debuffs historiques -> effets supportés par Combat Rules ;
-- résistances / immunités -> règles sémantiques explicites ;
-- assets historiques -> `assetId` stables ;
-- composition d'équipe Capture -> Roster + BattleFormat.
-
-Une traduction inconnue doit produire une erreur/diagnostic clair ; elle ne doit jamais choisir silencieusement une valeur arbitraire.
-
-## 9. Legacy à ne jamais importer dans le laboratoire
-
-- blocs `captureFix128..144` ;
-- DOM du Hub / battle sheet Capture ;
+- `captureFix128..140` ;
+- `captureItems141` ;
+- `captureBuffs142` ;
+- `captureBuffFx143` ;
+- `captureAbilityTruth144` comme code runtime ;
 - `captureRenderBattleLive` ;
-- wrappers `startConfiguredGame` ;
-- logique Shell ;
-- globals `window.*` ;
-- stockage `localStorage` Capture ;
-- timers/retries de transition historiques ;
-- writers de progression ;
-- détection de contexte Dungeon/Capture ;
-- chemins GitHub/GenSrpG codés dans les compétences ;
-- logique shop/loot/world dans Combat Core.
+- `window.gensCurrentCaptureBattle` ;
+- appels DOM `captureGameHub`, `captureBattleLiveBody`, etc. ;
+- localStorage Capture ;
+- timers/retries de routage ;
+- dépendance au `gameStyle: dungeon` ;
+- globals Shell/Dungeon ;
+- renderer historique.
 
-## 10. Contrat portable recommandé
+Ces éléments peuvent être **caractérisés** pour comprendre le comportement, jamais importés comme moteur du laboratoire.
 
-Le futur export doit être un objet JSON autonome et versionné, conceptuellement :
+## 8. Frontière recommandée : CaptureExportV1
 
-```json
+Le futur raccord doit publier un objet neutre.
+
+Forme conceptuelle minimale :
+
+```js
 {
-  "schema": "capture-combat-package",
-  "version": 1,
-  "creatures": [],
-  "skills": [],
-  "rosters": {},
-  "battleFormat": {},
-  "presentation": {
-    "creatures": {},
-    "skills": {}
-  },
-  "metadata": {}
+  version: 1,
+  creatures: [
+    {
+      id,
+      displayName,
+      combat: {
+        maxHp,
+        initialHp,
+        stats
+      },
+      progression: {
+        level
+      },
+      skillIds: [],
+      presentationId
+    }
+  ],
+  skills: [],
+  teams: [],
+  battle: {},
+  presentationBindings: []
 }
 ```
 
-Règles :
+Important :
 
-- aucun callback ;
-- aucune fonction ;
-- aucun DOM ;
-- aucun storage handle ;
-- aucune URL du dépôt principal ;
-- aucune référence à un global GenSrpG ;
-- IDs stables uniquement ;
-- le package contient uniquement les données nécessaires au combat/prévisualisation ;
-- progression, monde, biomes, boutique et sauvegarde restent hors package minimal.
+- ce contrat appartient à la frontière d'intégration, pas au Combat Core ;
+- le Core du laboratoire ne doit jamais connaître `CaptureExportV1` ;
+- seul l'adaptateur le connaît ;
+- l'adaptateur produit des contrats natifs du laboratoire ;
+- les champs non pris en charge sont rejetés ou conservés dans une zone explicitement non-runtime ; ils ne reçoivent jamais une sémantique implicite.
 
-## 11. Répartition des responsabilités du futur pont
+## 9. Propriétaire futur proposé
 
-### Côté GenSrpG — futur, pas dans ce chantier
+Nouveau domaine d'adaptation, séparé :
 
-Un exporter Capture-owned devra :
+`src/adapters/input/capture/`
 
-1. lire les données canonique de l'éditeur Capture ;
-2. construire le package portable ;
-3. garantir la version du schéma ;
-4. ne pas contenir le moteur de combat dynamique.
+Responsabilité :
 
-### Côté laboratoire
+`CaptureExportV1 -> contrats natifs du laboratoire`
 
-Un importer/adaptateur devra :
+Interdit :
 
-1. valider le package ;
-2. convertir les fighters via Combat State ;
-3. convertir les capacités via `normalizeSkillDefinition()` ;
-4. construire roster et format de combat ;
-5. résoudre les bindings de présentation par `assetId` ;
-6. retourner des diagnostics structurés pour les champs non supportés.
+- DOM ;
+- localStorage / IndexedDB ;
+- import depuis `Zombicide-40k` ;
+- globals ;
+- renderer ;
+- animation ;
+- FX ;
+- calcul de résultat de combat ;
+- fallback par nom de compétence ;
+- chemins physiques d'assets.
 
-### Combat Core
+## 10. Plan de micro-lots recommandé
 
-Aucun changement de propriété.
+### A — contrat d'export neutre
 
-## 12. Ce que l'audit permet de construire immédiatement
+Créer un contrat pur `CaptureExportV1` côté laboratoire comme fixture d'intégration.
 
-Sans toucher à GenSrpG, le laboratoire peut maintenant ajouter par micro-lots :
+Il décrit uniquement la forme de données attendue, sans dépendance GenSrpG.
 
-1. contrat `CaptureCombatPackageV1` pur ;
-2. fixture de package exporté ;
-3. adaptateur pur package -> contrats existants ;
-4. tests d'erreurs de traduction ;
-5. prévisualisation de ce package dans le combat 1v1 ;
-6. même package dans le format 2v2 ;
-7. UI d'édition/prévisualisation du package ;
-8. import/export JSON local du package.
+### B — adaptateur créature
 
-Cette UI deviendra ensuite le prototype du futur raccord éditeur.
+Transformer une créature exportée en :
 
-## 13. Point volontairement non figé
+- FighterConfig ;
+- membre de roster ;
+- référence de présentation.
 
-Les noms exacts des champs legacy internes de `builtinMonsterCapture162` et des couches 128-144
-ne sont **pas** inscrits comme dépendance du contrat.
+Premier lot limité à PV/énergie explicitement fournis.
 
-C'est volontaire :
+### C — adaptateur compétence
 
-- ils appartiennent au runtime historique ;
-- leur extraction exacte relève du futur exporter GenSrpG ;
-- le laboratoire doit rester stable si ces structures changent pendant la restructuration.
+Transformer une compétence exportée déjà sémantique en `SkillDefinition`.
 
-Si un futur chantier GenSrpG doit écrire l'exporter à partir du runtime encore inline,
-la règle d'accès au gros `index.html` de la charte GenSrpG devra être appliquée avant modification.
+Aucune déduction depuis texte/nom.
 
-## 14. Décision d'architecture
+### D — adaptateur roster / format
 
-**GO pour un adaptateur portable, NO-GO pour une copie du code Capture.**
+Créer les équipes/acteurs pour 1v1 ou 2v2 depuis une configuration exportée.
 
-Le prochain micro-lot peut créer le contrat et l'importer pur dans le laboratoire,
-sans dépendance à `Zombicide-40k`.
+### E — bindings visuels/audio
+
+Résoudre uniquement des `assetId` vers les Presentation Bindings du labo.
+
+### F — preview éditeur
+
+Une fixture ressemblant à un export d'éditeur alimente le vrai chemin :
+
+`export -> adapter -> Combat Session -> Presenter -> Animation/FX`
+
+Aucun état final injecté artificiellement.
+
+### G — raccord GenSrpG futur
+
+Seulement après validation explicite :
+
+- GenSrpG produit `CaptureExportV1` depuis ses propriétaires restructurés ;
+- le laboratoire/package le consomme ;
+- aucun des deux dépôts ne lit le stockage privé de l'autre.
+
+## 11. Risques identifiés
+
+1. **Capacités historiques insuffisamment caractérisées**  
+   Ne pas écrire un mapping brut avant preuve de leur schéma sémantique réel.
+
+2. **Confusion stats -> gameplay dynamique**  
+   Les stats communes existent, mais le Combat State du labo n'utilise pas encore la majorité d'entre elles.
+
+3. **Énergie**  
+   Le labo possède sa propre énergie/recharge. Ne pas supposer que le coût historique Capture a la même unité.
+
+4. **Buffs/debuffs**  
+   Le labo ne doit pas compresser les effets historiques en simples tags.
+
+5. **Assets**  
+   Les chemins physiques GenSrpG ne doivent jamais devenir des références gameplay.
+
+6. **Substrat Dungeon historique**  
+   C'est une dette de l'implémentation actuelle, pas un contrat à conserver.
+
+## 12. Conclusion
+
+Le raccord est techniquement viable.
+
+Le chemin propre n'est pas :
+
+`ancien Capture -> copier-coller -> labo`
+
+mais :
+
+`Capture restructuré / éditeur -> export canonique -> adaptateur pur -> contrats natifs du laboratoire`.
+
+Cette approche permet de développer dès maintenant le futur éditeur de créatures/compétences et la preview combat dans le laboratoire, tout en laissant la Phase 9 GenSrpG remplacer plus tard les producteurs legacy sans réécrire le moteur dynamique.
