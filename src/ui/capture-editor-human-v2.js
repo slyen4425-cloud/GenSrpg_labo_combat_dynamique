@@ -733,7 +733,7 @@ function populateSelect(select, assets, role) {
   }
 }
 
-async function hydrateAssetCatalog(root) {
+async function hydrateAssetCatalog(root, listen) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
     { cache: "no-store" }
@@ -815,7 +815,8 @@ async function hydrateAssetCatalog(root) {
     [backSelect, [backImage, socketBackImage]],
     [iconSelect, [iconImage]]
   ]) {
-    select.addEventListener(
+    listen(
+      select,
       "change",
       () => syncPreviews(select, images)
     );
@@ -1156,6 +1157,9 @@ export function mountCaptureEditorHumanV2({
   let lastExport = null;
 
   function listen(target, type, handler) {
+    if (disposed) {
+      return;
+    }
     target.addEventListener(type, handler);
     listeners.push(() =>
       target.removeEventListener(type, handler)
@@ -1288,7 +1292,7 @@ export function mountCaptureEditorHumanV2({
 
   listen(validateButton, "click", validate);
 
-  hydrateAssetCatalog(root)
+  hydrateAssetCatalog(root, listen)
     .then(() => {
       if (!disposed) {
         setStatus(
