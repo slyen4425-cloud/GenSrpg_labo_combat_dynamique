@@ -797,7 +797,12 @@ test("normal hit presentation cannot replace an active approach or restart stale
   );
   assert.match(
     source,
-    /activeApproachBySlot\.delete\(slotKey\)[\s\S]*slot\.renderer\.cancel\(\)/
+    /activeApproachBySlot\.delete\(slotKey\)[\s\S]*slot\.setApproachActive\(false\)[\s\S]*slot\.renderer\.cancel\(\)/
+  );
+  assert.match(source, /slot\.setApproachActive\(true\)/);
+  assert.match(
+    source,
+    /\.finally\(\(\) => \{[\s\S]*slot\.setApproachActive\(false\)/
   );
 });
 
