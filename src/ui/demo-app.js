@@ -351,6 +351,8 @@ export async function mountCombatDemo({
       profile: profiles.get(slot.actor.profile)
     });
 
+    slot.setApproachActive(true);
+
     const handle = slot.renderer.play(plan);
     const approachRecord = Object.freeze({
       handle,
@@ -407,6 +409,7 @@ export async function mountCombatDemo({
         if (activeApproachBySlot.get(slotKey) === approachRecord) {
           activeApproachBySlot.delete(slotKey);
         }
+        slot.setApproachActive(false);
         for (const timerId of phaseTimers) {
           globalThis.clearTimeout(timerId);
         }
@@ -416,6 +419,7 @@ export async function mountCombatDemo({
   function cancelFor(slotKey) {
     const slot = slotOf(slotKey);
     activeApproachBySlot.delete(slotKey);
+    slot.setApproachActive(false);
     slot.renderer.cancel();
     if (slot.visible) {
       startIdleFor(slotKey);
@@ -605,7 +609,16 @@ function createSlot({
     slotContainer.hidden = !visible;
     image.hidden = !visible || !assetReady;
     if (!visible) {
+      slotContainer.removeAttribute("data-approach-active");
       renderer?.cancel();
+    }
+  }
+
+  function setApproachActive(active) {
+    if (active) {
+      slotContainer.dataset.approachActive = "true";
+    } else {
+      slotContainer.removeAttribute("data-approach-active");
     }
   }
 
@@ -638,6 +651,7 @@ function createSlot({
     motion,
     setCreature,
     setVisible,
+    setApproachActive,
     getFxAnchor,
     get meta() {
       return meta;
@@ -652,6 +666,7 @@ function createSlot({
       return visible;
     },
     dispose() {
+      slotContainer.removeAttribute("data-approach-active");
       renderer?.dispose();
       image.removeAttribute("src");
     }
