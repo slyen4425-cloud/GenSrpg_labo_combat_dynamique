@@ -7668,3 +7668,28 @@ Critère de fin :
 - aucun fallback silencieux ;
 - CI GREEN ;
 - checkpoint GREEN avant tout raccord UI.
+
+
+Résultat Capture package adapter V1 :
+
+- double source `creatures[].presentation` supprimée avant raccord ;
+- source unique créature : `presentation.creatures` ;
+- adaptateur ajouté : `src/adapters/input/capture-combat-package-adapter.js` ;
+- test vrai chemin : `tests/integration/capture-combat-package-adapter.test.mjs` ;
+- le modèle produit `fighterConfigs`, `creatures`, `skills`, `fighters`, `skillsByActor`, roster, BattleFormat et presentation ;
+- aucun calcul de gameplay n'est dupliqué ;
+- test réel `package -> adapter -> createCombatSession() -> useSkill()` valide énergie et dégâts via Combat Rules existantes ;
+- test réel `package -> adapter -> createRosterSession()` valide le roster existant ;
+- aucune mutation du package source ;
+- aucune dépendance GenSrpG / DOM / storage / timers / réseau.
+
+CI :
+- correction source unique : run `36313066224` — SUCCESS ;
+- adaptateur + vrai raccord : run `36313103377` — SUCCESS ;
+- SHA fonctionnel : `5a14cede8e94ae0f640258cf51608ccb8dc82bc7`.
+
+Prochaine étape après checkpoint GREEN :
+- lot UI séparé de prévisualisation portable ;
+- édition JSON locale du package ;
+- validation via le même adaptateur ;
+- lancement d'une démo sans copier l'éditeur historique GenSrpG.
