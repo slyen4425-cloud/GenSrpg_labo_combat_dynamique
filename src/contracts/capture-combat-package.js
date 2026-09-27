@@ -221,16 +221,18 @@ function normalizeCreatures(input) {
         );
       }
 
+      if (raw.presentation != null) {
+        throw new RangeError(
+          `${field}.presentation is not supported; use presentation.creatures`
+        );
+      }
+
       return Object.freeze({
         id,
         displayName,
         fighterConfigId,
         fighterConfig,
-        skillIds: stringArray(raw.skillIds, `${field}.skillIds`),
-        presentation: normalizeCreaturePresentation(
-          raw.presentation,
-          `${field}.presentation`
-        )
+        skillIds: stringArray(raw.skillIds, `${field}.skillIds`)
       });
     })
   );
