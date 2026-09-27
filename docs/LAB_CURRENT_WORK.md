@@ -7765,3 +7765,55 @@ Prochaine étape après checkpoint GREEN :
 - adaptateur de compétences ;
 - uniquement SkillDefinitions déjà sémantiques ;
 - aucune inférence depuis nom/texte/ID legacy.
+
+
+## Adaptateur compétences CaptureExportV1 — 2026-09-27
+
+Objectif :
+
+- exposer depuis `CaptureExportV1` les `SkillDefinition` natives déjà validées ;
+- résoudre la liste de compétences d'une créature depuis ses `skillIds` ;
+- prouver qu'aucune sémantique n'est déduite depuis un nom, une description ou un identifiant legacy.
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-creature-adapter-green-2026-09-27` ;
+- SHA de base : `e7f28205744dcf4454bf630e74f07671d387f18f` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-skill-adapter-2026-09-27` ;
+- branche : `work/lab-capture-skill-adapter-2026-09-27`.
+
+Propriétaires :
+
+- `SkillDefinition` reste l'unique propriétaire de validation gameplay d'une compétence ;
+- futur `src/adapters/input/capture/skill-adapter-v1.js` ne fait que sélectionner/résoudre les références d'export.
+
+Fichiers autorisés :
+
+- `src/adapters/input/capture/skill-adapter-v1.js` ;
+- `tests/unit/capture-skill-adapter-v1.test.mjs` ;
+- documentation du présent lot.
+
+Interdit :
+
+- aucun moteur de règles alternatif ;
+- aucune conversion nom/texte -> catégorie/forme/élément ;
+- aucun mapping de vieux IDs Capture ;
+- aucun asset ou Presentation Binding ;
+- aucun DOM/storage/global ;
+- aucune modification du Skill Contract.
+
+Tests prévus :
+
+1. RED avant implémentation ;
+2. un skill exporté ressort comme SkillDefinition native normalisée ;
+3. résolution des skills d'une créature dans l'ordre déclaré ;
+4. unknown skill rejeté ;
+5. unknown creature rejetée ;
+6. aucune compétence non déclarée sur la créature n'est ajoutée ;
+7. une SkillDefinition invalide est rejetée par le contrat amont, pas réparée par l'adaptateur.
+
+Critère de fin :
+
+- CI GREEN ;
+- aucune duplication de SkillDefinition ;
+- checkpoint GREEN avant roster/format.
