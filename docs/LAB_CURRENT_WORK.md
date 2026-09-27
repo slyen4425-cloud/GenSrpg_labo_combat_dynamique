@@ -7998,3 +7998,30 @@ Critère GREEN :
 - contrat + adaptateur purs ;
 - tests + CI globale SUCCESS ;
 - checkpoint GREEN avant toute preview éditeur.
+
+
+Résultat micro-lot E — SkillPresentationBindingV1 + raccord export Capture :
+
+- test RED : commit `285eacba8f1824bfb9438c0a27dbc90764b9f8bd`, CI `36316752753` — FAILURE attendue car contrat/adaptateur absents ;
+- contrat : `src/contracts/skill-presentation-binding-v1.js` ;
+- adaptateur : `src/adapters/input/capture/capture-skill-presentation-adapter-v1.js` ;
+- commits : `a6d3aeb8fe44c4b211f695a554add9e03d1b8cc9` puis `6691b19105d0336e149a9cb9d324d3f078f48455` ;
+- CI finale : run `36316808236` — SUCCESS.
+
+Garanties :
+
+- gameplay totalement absent du binding ;
+- `assetId` logique stable requis, chemins/URLs refusés ;
+- slots visuels et audio versionnés ;
+- scale, attachment, anchor, offsets, layer, trigger, playback, rotation, opacity, volume et loop validés ;
+- clés inconnues refusées afin d'éviter une sémantique implicite ;
+- binding absent -> `null` ;
+- identité `presentationId / binding.id / subjectId` vérifiée ;
+- aucune résolution physique d'asset ;
+- aucun changement renderer / Demo UI / SkillDefinition.
+
+Prochaine action après checkpoint GREEN exact :
+
+- micro-lot F : assembler un `CaptureCombatPackageV1` purement local ;
+- chaîne : export -> fighter configs + skills + battle format + rosters + presentation bindings ;
+- test vrai chemin jusqu'à Combat Session, sans UI et sans GenSrpG.
