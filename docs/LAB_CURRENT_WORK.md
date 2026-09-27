@@ -7766,3 +7766,76 @@ Invariants confirmés :
 Checkpoint final prévu après CI documentaire :
 
 `checkpoint/lab-capture-creature-fighter-adapter-green-2026-09-27`.
+
+
+## Gouvernance — consolidation des lignées Capture — 2026-09-27
+
+Audit de branches effectué avant le micro-lot compétence.
+
+Deux lignées parallèles historiques ont été détectées après le même audit :
+
+- ancienne lignée : `capture-export-v1 / creature-adapter-v1 / skill-adapter-v1` ;
+- lignée courante validée : `capture-combat-export-v1 / creature-to-fighter-config`.
+
+Décision :
+
+- ne pas merger l'ancienne lignée ;
+- ne pas la prolonger ;
+- conserver ses branches/checkpoints uniquement comme historique ;
+- poursuivre exclusivement depuis `checkpoint/lab-capture-creature-fighter-adapter-green-2026-09-27` SHA `5834a426e4f6d3889adba5e6393ebe0c6c7cb70c` ;
+- éviter toute duplication de propriétaires dans la branche courante.
+
+## Micro-lot C — Capture skill -> SkillDefinition — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-creature-fighter-adapter-green-2026-09-27` ;
+- SHA de base : `5834a426e4f6d3889adba5e6393ebe0c6c7cb70c` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-combat-skill-adapter-2026-09-27` ;
+- branche : `work/lab-capture-combat-skill-adapter-2026-09-27`.
+
+Objectif :
+
+Adapter une compétence déjà exportée dans `CaptureCombatExportV1` vers le contrat natif `SkillDefinition`, sans reproduire ni contourner sa validation.
+
+Propriétaires :
+
+- `src/contracts/skill-definition.js` reste l'unique propriétaire de la sémantique gameplay des compétences ;
+- nouvel adaptateur : `src/adapters/input/capture/skill-to-skill-definition.js`.
+
+Principe :
+
+- normaliser l'export via `normalizeCaptureCombatExportV1` ;
+- sélectionner une compétence par ID ;
+- passer uniquement `skill.definition` au vrai `normalizeSkillDefinition` ;
+- ne jamais déduire category/form/element/target/timings depuis nom, metadata, presentation ou ID ;
+- résoudre les compétences d'une créature strictement dans l'ordre de `creature.skillIds`.
+
+Interdit :
+
+- aucun vieux mapping Capture ;
+- aucune table de noms de sorts ;
+- aucun fallback par description/élément/asset ;
+- aucune modification de `SkillDefinition` ;
+- aucun asset/Presentation Binding dans ce lot ;
+- aucun DOM/storage/global/réseau ;
+- aucun changement Combat Rules / Runtime / UI / Renderer ;
+- aucun changement du dépôt `Zombicide-40k`.
+
+Tests RED prévus :
+
+1. skill exporté -> vrai `SkillDefinition` normalisé ;
+2. ordre des `skillIds` conservé ;
+3. compétence non assignée jamais injectée ;
+4. skill inconnu rejeté ;
+5. créature inconnue rejetée ;
+6. définition sémantique invalide rejetée par `normalizeSkillDefinition` ;
+7. metadata/presentation ne changent pas le gameplay ;
+8. sentinelle sans GenSrpG / DOM / storage / réseau.
+
+Critère GREEN :
+
+- RED observé avant implémentation ;
+- adaptateur minimal ;
+- CI globale SUCCESS ;
+- checkpoint GREEN exact avant roster/BattleFormat.
