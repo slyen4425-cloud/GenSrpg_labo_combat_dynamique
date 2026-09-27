@@ -10061,3 +10061,35 @@ Critère GREEN :
 - aucune nouvelle source de vérité ;
 - CI globale SUCCESS ;
 - preview mobile requise avant checkpoint final UI.
+
+
+### Résultat — Ownership Cleanup V1
+
+RED :
+
+- `tests/unit/capture-editor-ownership-cleanup-v1.test.mjs`;
+- SHA `a964867815c2bb506c9fc3d4c13a4df3c624b251`;
+- CI run `36347274645` — FAILURE attendue, helper socket absent.
+
+Implémentation :
+
+- SHA `e7c56d12594f9ddfe24ef05c56a3fbbf7e810d00`;
+- CI run `36347375528` — SUCCESS.
+
+Résultat :
+
+- les PV ont un seul owner UI et sont édités dans Créature ;
+- Combat n'affiche plus de deuxième saisie PV ;
+- les coordonnées socket restent exclusivement dans la créature ;
+- la capacité ne reçoit qu'une liste dérivée des sockets réellement placés ;
+- aucune liste mouth/head/hand/tail n'est codée dans le select capacité ;
+- Buff/Debuff générique est explicitement indisponible jusqu'au Status Effect contract ;
+- Runtime / Renderer / SkillDefinition / contrats gameplay inchangés.
+
+Statut :
+
+**GREEN technique / prévalidation UI**, non GREEN final avant validation smartphone.
+
+Checkpoint de prévalidation prévu :
+
+`checkpoint/lab-capture-editor-ownership-cleanup-v1-prevalidation-green-2026-09-27`.
