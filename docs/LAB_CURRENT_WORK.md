@@ -8409,3 +8409,56 @@ Validation :
 - CI GREEN technique ;
 - preview branch seulement après GREEN ;
 - test smartphone requis avant checkpoint GREEN visuel final.
+
+
+Résultat technique micro-lot G — preview Capture package dans la démo 2v2 :
+
+RED contractuel :
+
+- test : `tests/unit/capture-package-demo-runtime.test.mjs` ;
+- commit RED : `787e2d6da456e766d9dc25785548155ee9f1210d` ;
+- run `36322234926` — FAILURE attendue ;
+- cause : export `resolveCoop2v2CombatData` encore absent ;
+- 299 tests existants passaient, 1 seul échec sur le nouveau seam.
+
+Données de preview :
+
+- fixture : `data/capture/demo-editor-export-2v2.capture.json` ;
+- actors/creatures conservés : player/Loup volcanique, ally/Golem moussu, opponent/Maraileron, opponent-b/Braisombre ;
+- SkillDefinitions copiées depuis les contrats de démo actuels : fireball, claw, aerial-dive, teleport-strike ;
+- la créature locale exporte seulement `fireball + claw` ;
+- les trois créatures pilotées par l'IA exportent les quatre skills afin de conserver l'IA actuelle.
+
+Runtime :
+
+- `resolveCoop2v2CombatData({ combatSetup })` ajouté dans `src/ui/combat-2v2-test-ui.js` ;
+- `combatSetup !== null` : aucun fetch gameplay de démo ;
+- `combatSetup === null` : chemin historique JSON conservé ;
+- `mountCoop2v2Test()` utilise ensuite la même CombatSession / Runtime / Presenter ;
+- l'UI 2v2 n'importe aucun module Capture ;
+- `examples/dom-demo/coop-2v2.js` est seul responsable du choix `?source=capture-export` ;
+- bootstrap : fixture -> `buildCaptureCombatPackageV1` -> projection native -> même `mountCoop2v2Test` ;
+- aucune seconde page HTML ;
+- aucun CSS/layout modifié ;
+- resolver `demoPresentationAssets` conservé dans ce lot.
+
+Incident CI utile :
+
+- un premier remplacement du bloc de chargement a intercepté le mauvais bloc et retiré le fallback historique du resolver ;
+- la sentinelle `DATA_URLS.fighters.maraileron` a échoué, alors que toutes les autres assertions 2v2 restaient GREEN ;
+- aucune assertion n'a été assouplie ;
+- structure réparée dans `src/ui/combat-2v2-test-ui.js` ;
+- commit correctif : `8b7a29e2d57e1924c46966db3fb8678ef5059d37`.
+
+GREEN fonctionnel :
+
+- run `36322450015` — SUCCESS ;
+- SHA fonctionnel : `8b7a29e2d57e1924c46966db3fb8678ef5059d37`.
+
+Validation restante :
+
+- CI du présent SHA documentaire ;
+- création d'un checkpoint technique prévalidation ;
+- branche preview dédiée ;
+- test smartphone de `coop-2v2.html?source=capture-export` ;
+- aucun checkpoint GREEN visuel final avant validation utilisateur.
