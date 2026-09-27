@@ -7969,3 +7969,93 @@ Garanties :
 Checkpoint final prévu après CI documentaire :
 
 `checkpoint/lab-capture-combat-roster-format-adapter-green-2026-09-27`.
+
+
+## Micro-lot E1 — PresentationBindingV1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-combat-roster-format-adapter-green-2026-09-27` ;
+- SHA de base : `71b9f7ffd1293602fccaaea98a8bc22e4142d9d6` ;
+- checkpoint de départ : `checkpoint/lab-start-presentation-binding-v1-2026-09-27` ;
+- branche : `work/lab-presentation-binding-v1-2026-09-27`.
+
+Constat :
+
+- aucun contrat formel de Presentation Binding n'existe encore dans `src/contracts` ;
+- `examples/dom-demo/demo-assets.js` est un resolver de démo, pas une frontière d'éditeur ;
+- `docs/LAB_ASSET_LIBRARY.md` définit déjà les responsabilités, slots et réglages cibles.
+
+Objectif :
+
+Créer un contrat pur `PresentationBindingV1` qui relie un sujet à des `assetId` stables sans chemin physique ni autorité gameplay.
+
+Propriétaire :
+
+- futur `src/contracts/presentation-binding-v1.js`.
+
+Forme V1 :
+
+- `schema = "presentation-binding-v1"` ;
+- `subjectType = "skill" | "creature"` ;
+- `subjectId` ;
+- `visual` : map de slots visuels ;
+- `audio` : map de slots audio.
+
+Slot visuel :
+
+- `assetId` ;
+- `displayScale` ;
+- `attachment` : source / target / fixed / path / arena ;
+- `anchor` ;
+- `offsetX / offsetY` ;
+- `layer` ;
+- `layerByView` optionnel ;
+- `trigger` ;
+- `playbackMode = once | loop | stretch` ;
+- `rotationDeg` ;
+- `opacity`.
+
+Slot audio :
+
+- `assetId` ;
+- `volume` ;
+- `loop` ;
+- `trigger`.
+
+Règles :
+
+- tous les slots sont optionnels, mais un binding doit contenir au moins un slot ;
+- les `assetId` sont logiques et ne doivent pas contenir URL ou chemin physique ;
+- `displayScale` > 0 sans figer la plage UI recommandée ;
+- opacity/volume entre 0 et 1 ;
+- offsets/rotation finis ;
+- aucun resolver média dans ce contrat ;
+- aucun gameplay.
+
+Interdit :
+
+- damage / heal / energy / cooldown / portée / résultat de combat ;
+- URL, `src`, `file`, `path` ;
+- DOM / storage / réseau ;
+- import de `demo-assets.js` ;
+- modification Renderer / FX / Audio / SkillDefinition ;
+- changement du dépôt `Zombicide-40k`.
+
+Tests RED prévus :
+
+1. binding skill visuel+audio normalisé et immutable ;
+2. même contrat utilisable pour une créature ;
+3. defaults purement présentation ;
+4. assetId URL/chemin refusé ;
+5. champs gameplay/physiques refusés ;
+6. enums et bornes invalides refusés ;
+7. layer par vue conservé ;
+8. sentinelle sans DOM/storage/network/gameplay owner.
+
+Critère GREEN :
+
+- RED avant implémentation ;
+- contrat pur unique ;
+- CI globale SUCCESS ;
+- checkpoint GREEN avant adaptateur Capture -> PresentationBindingV1.
