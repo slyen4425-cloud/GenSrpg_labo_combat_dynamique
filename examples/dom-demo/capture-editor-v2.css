@@ -336,6 +336,21 @@ select:focus {
   cursor: crosshair;
 }
 
+
+.socket-surface > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.socket-surface > img[data-empty="true"] {
+  display: none;
+}
+
 .socket-surface > span:last-child {
   position: absolute;
   bottom: 0.5rem;

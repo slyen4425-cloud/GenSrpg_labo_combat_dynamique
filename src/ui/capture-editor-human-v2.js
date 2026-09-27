@@ -795,17 +795,31 @@ async function hydrateAssetCatalog(root) {
   const frontImage = one(root, "[data-preview-front]");
   const backImage = one(root, "[data-preview-back]");
   const iconImage = one(root, "[data-preview-icon]");
+  const socketFrontImage = one(
+    root,
+    "[data-socket-front-preview]"
+  );
+  const socketBackImage = one(
+    root,
+    "[data-socket-back-preview]"
+  );
 
-  for (const [select, image] of [
-    [frontSelect, frontImage],
-    [backSelect, backImage],
-    [iconSelect, iconImage]
+  function syncPreviews(select, images) {
+    for (const image of images) {
+      preview(select, image);
+    }
+  }
+
+  for (const [select, images] of [
+    [frontSelect, [frontImage, socketFrontImage]],
+    [backSelect, [backImage, socketBackImage]],
+    [iconSelect, [iconImage]]
   ]) {
     select.addEventListener(
       "change",
-      () => preview(select, image)
+      () => syncPreviews(select, images)
     );
-    preview(select, image);
+    syncPreviews(select, images);
   }
 
   return catalog;
