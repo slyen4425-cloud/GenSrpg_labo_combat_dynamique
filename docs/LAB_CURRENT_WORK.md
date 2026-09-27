@@ -8342,3 +8342,60 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation synchronisée ;
 - checkpoint GREEN exact avant création d'une page preview Capture séparée.
+
+
+Résultat technique — Coop 2v2 native data source V1 :
+
+- déclaration : commit `46fee7d82a166c491b3b0b05800e30d1786372e6` ;
+- CI déclaration : run `36319538074` — SUCCESS ;
+- test RED : commit `d706f26f08c6dcc01f1edf8dacdcb4f6549534e2` ;
+- CI RED : run `36319607658` — FAILURE attendue ;
+- cause RED : module `src/ui/coop-2v2-data-source.js` absent ;
+- loadouts démo : `data/combat/loadouts/demo-coop-2v2.loadouts.json` ;
+- data source : `src/ui/coop-2v2-data-source.js` ;
+- raccord UI : commit `36baf89516b9af7315a7bc6a5ab71afbc36be1f8` ;
+- première CI raccord : `36319721685` — FAILURE sur le faux fetch Node du test uniquement ;
+- cause prouvée : extraction du premier segment dupliqué du nom du dépôt dans le chemin GitHub Actions ;
+- correction du harness uniquement : commit `386eee8b3edc746029e99384adaf3569443afd68` ;
+- CI fonctionnelle : run `36319754939` — SUCCESS.
+
+Comportement :
+
+- `mountCoop2v2Test` accepte désormais `combatData` natif optionnel ;
+- sans `combatData`, le chargement de démo reste le comportement par défaut ;
+- la barre locale consomme `skillIdsByActor[format.localActorId]` ;
+- allié / adversaire A / adversaire B consomment leurs loadouts acteurs ;
+- les anciens tableaux de skills codés en dur ont disparu du contrôleur ;
+- les quatre ordres de compétences historiques sont conservés dans une donnée explicite ;
+- la source native injectée court-circuite le fetch des JSON de démo.
+
+Fichiers de présentation protégés :
+
+- `examples/dom-demo/coop-2v2.html` inchangé ;
+- `examples/dom-demo/demo.css` inchangé ;
+- aucune position/taille/z-index/FX modifiée ;
+- aucun changement Combat Rules / Runtime / targeting / Animation / Renderer.
+
+Diff du lot depuis la base :
+
+- data loadouts : ajouté ;
+- data source UI : ajouté ;
+- contrôleur 2v2 : frontière de données uniquement ;
+- test dédié : ajouté ;
+- documentation uniquement en plus.
+
+Statut :
+
+**candidat technique GREEN, mais pas checkpoint GREEN final**.
+
+Raison :
+
+la charte exige une validation mobile lorsqu'un chemin UI est concerné.
+
+Étape suivante :
+
+1. CI documentaire SUCCESS ;
+2. créer un checkpoint candidat non-GREEN ;
+3. publier une preview dédiée depuis exactement ce SHA ;
+4. validation smartphone du 2v2 existant : même affichage, mêmes quatre compétences joueur, IA toujours active, ciblage/FX inchangés ;
+5. seulement après validation utilisateur : checkpoint `checkpoint/lab-coop-2v2-native-data-source-v1-green-2026-09-27`.
