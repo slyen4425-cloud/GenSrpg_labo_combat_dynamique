@@ -82,6 +82,14 @@
           <span data-combat-hp-value="player">100 / 100 PV</span>
         </div>
         <small data-combat-action="player">Prêt</small>
+        <progress
+          class="squad-card__charge squad-card__charge--local"
+          data-combat-actor-charge="player"
+          data-active="false"
+          max="1"
+          value="0"
+          aria-label="Charge de la capacité du Loup volcanique"
+        ></progress>
       </button>
 
       <button type="button" class="squad-card squad-card--opponent" data-target-actor="opponent">
@@ -91,6 +99,14 @@
           <span data-combat-hp-value="opponent">100 / 100 PV</span>
         </div>
         <small data-combat-action="opponent">Prêt</small>
+        <progress
+          class="squad-card__charge"
+          data-combat-actor-charge="opponent"
+          data-active="false"
+          max="1"
+          value="0"
+          aria-label="Charge de la capacité de Maraileron"
+        ></progress>
       </button>
 
       <button type="button" class="squad-card squad-card--opponent-b" data-target-actor="opponent-b">
@@ -100,6 +116,14 @@
           <span data-combat-hp-value="opponent-b">100 / 100 PV</span>
         </div>
         <small data-combat-action="opponent-b">Prêt</small>
+        <progress
+          class="squad-card__charge"
+          data-combat-actor-charge="opponent-b"
+          data-active="false"
+          max="1"
+          value="0"
+          aria-label="Charge de la capacité de Braisombre"
+        ></progress>
       </button>
 
       <div class="coop-command-stack">
@@ -121,6 +145,14 @@
               <span data-combat-hp-value="ally">100 / 100 PV</span>
             </span>
             <small data-combat-action="ally">Prêt</small>
+            <progress
+              class="squad-card__charge"
+              data-combat-actor-charge="ally"
+              data-active="false"
+              max="1"
+              value="0"
+              aria-label="Charge de la capacité du Golem moussu allié"
+            ></progress>
           </span>
         </button>
 
