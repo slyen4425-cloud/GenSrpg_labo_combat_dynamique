@@ -1,5 +1,7 @@
-import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
-import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
+import {
+  DEMO_COOP_2V2_FORMAT_URL,
+  resolveCoop2v2NativeData
+} from "./coop-2v2-data-source.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createBattleActorAiController } from "../core/combat/battle-actor-ai-controller.js";
@@ -10,45 +12,6 @@ import {
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
-
-const DATA_URLS = Object.freeze({
-  format: new URL(
-    "../../data/combat/battle-formats/demo-coop-2v2.format.json",
-    import.meta.url
-  ),
-  fighters: Object.freeze({
-    maraileron: new URL(
-      "../../data/combat/fighters/maraileron.combat.json",
-      import.meta.url
-    ),
-    braisombre: new URL(
-      "../../data/combat/fighters/braisombre.combat.json",
-      import.meta.url
-    ),
-    loup_volcanique: new URL(
-      "../../data/combat/fighters/loup_volcanique.combat.json",
-      import.meta.url
-    ),
-    golem_moussu: new URL(
-      "../../data/combat/fighters/golem_moussu.combat.json",
-      import.meta.url
-    )
-  }),
-  skills: Object.freeze([
-    new URL("../../data/combat/skills/fireball.skill.json", import.meta.url),
-    new URL("../../data/combat/skills/claw.skill.json", import.meta.url),
-    new URL("../../data/combat/skills/aerial-dive.skill.json", import.meta.url),
-    new URL("../../data/combat/skills/teleport-strike.skill.json", import.meta.url)
-  ])
-});
-
-async function fetchJson(url, fetchImpl) {
-  const response = await fetchImpl(url);
-  if (!response.ok) {
-    throw new Error(`Unable to load ${url}: HTTP ${response.status}`);
-  }
-  return response.json();
-}
 
 function requiredElement(root, selector) {
   const element = root.querySelector(selector);
@@ -77,8 +40,9 @@ export async function mountCoop2v2Test({
   root,
   visuals,
   presentationAssets = null,
+  combatData = null,
   fetchImpl = fetch,
-  formatUrl = DATA_URLS.format
+  formatUrl = DEMO_COOP_2V2_FORMAT_URL
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -96,48 +60,29 @@ export async function mountCoop2v2Test({
     );
   }
 
-  const [
-    rawFormat,
-    maraileron,
-    braisombre,
-    loupVolcanique,
-    golemMoussu,
-    ...rawSkills
-  ] = await Promise.all([
-    fetchJson(formatUrl, fetchImpl),
-    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
-    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
-    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
-    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
-    ...DATA_URLS.skills.map((url) => fetchJson(url, fetchImpl))
-  ]);
+  const nativeData = await resolveCoop2v2NativeData({
+    combatData,
+    fetchImpl,
+    formatUrl
+  });
+  const format = nativeData.battleFormat;
+  const fighters = nativeData.fighters;
+  const skillsById = nativeData.skills;
+  const skillIdsByActor = nativeData.skillIdsByActor;
 
-  const format = normalizeBattleFormatDefinition(rawFormat);
+  const localSkillIds =
+    skillIdsByActor[format.localActorId] ?? [];
   const skills = Object.freeze(
-    rawSkills.map((skill) => normalizeSkillDefinition(skill))
+    localSkillIds.map((skillId) => {
+      const skill = skillsById[skillId];
+      if (!skill) {
+        throw new RangeError(
+          `Unknown local skill: ${skillId}`
+        );
+      }
+      return skill;
+    })
   );
-  const skillsById = Object.freeze(
-    Object.fromEntries(skills.map((skill) => [skill.id, skill]))
-  );
-  const fighterConfigs = Object.freeze({
-    maraileron,
-    braisombre,
-    loup_volcanique: loupVolcanique,
-    golem_moussu: golemMoussu
-  });
-
-  const fighters = format.actors.map((actor) => {
-    const config = fighterConfigs[actor.fighterConfigId];
-    if (!config) {
-      throw new RangeError(
-        `Unknown fighter config: ${actor.fighterConfigId}`
-      );
-    }
-    return {
-      ...config,
-      id: actor.actorId
-    };
-  });
 
   const session = createCombatSession({
     distance: "medium",
@@ -697,7 +642,7 @@ export async function mountCoop2v2Test({
       runtime,
       actorId: "ally",
       targetIds: format.teams.enemies,
-      skillIds: ["claw", "fireball", "aerial-dive", "teleport-strike"],
+      skillIds: skillIdsByActor["ally"] ?? [],
       skillsById
     }),
     createBattleActorAiController({
@@ -705,7 +650,7 @@ export async function mountCoop2v2Test({
       runtime,
       actorId: "opponent",
       targetIds: format.teams.players,
-      skillIds: ["fireball", "claw", "aerial-dive", "teleport-strike"],
+      skillIds: skillIdsByActor["opponent"] ?? [],
       skillsById
     }),
     createBattleActorAiController({
@@ -713,7 +658,7 @@ export async function mountCoop2v2Test({
       runtime,
       actorId: "opponent-b",
       targetIds: format.teams.players,
-      skillIds: ["aerial-dive", "fireball", "claw", "teleport-strike"],
+      skillIds: skillIdsByActor["opponent-b"] ?? [],
       skillsById
     })
   );
