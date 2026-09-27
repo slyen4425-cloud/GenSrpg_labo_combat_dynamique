@@ -448,3 +448,20 @@ test("human editor wires selected creature views into socket placement surfaces"
     "back creature preview must feed the back socket surface"
   );
 });
+
+
+test("human editor routes asset-catalog listeners through the disposable listener owner", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.equal(
+    source.includes("hydrateAssetCatalog(root, listen)"),
+    true,
+    "asset catalog hydration must register listeners through the mount-owned listener registrar"
+  );
+});
