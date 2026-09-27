@@ -344,18 +344,33 @@ test("target click feedback uses a temporary arena pulse and cleans its timer on
   assert.match(css, /@keyframes coop-target-pulse/);
 });
 
-test("coop approach attacker gets a temporary front layer without changing combat logic", async () => {
+test("coop approach depth follows arena perspective and cleans its temporary layer", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
   assert.match(
-    css,
-    /\.arena--coop-2v2 \.fighter\[data-approach-active="true"\]\s*\{[\s\S]*z-index:\s*9/
+    source,
+    /const approachDepth =\s*[\s\S]*actorCenterY >= targetCenterY \? "front" : "behind"/
   );
-  assert.match(source, /slot\.setApproachActive\(true\)/);
+  assert.match(
+    css,
+    /data-approach-depth="front"[\s\S]*z-index:\s*9/
+  );
+  assert.match(
+    css,
+    /data-approach-depth="behind"[\s\S]*z-index:\s*2/
+  );
+  assert.match(
+    source,
+    /slot\.setApproachActive\(true, approachDepth\)/
+  );
   assert.match(
     source,
     /\.finally\(\(\) => \{[\s\S]*slot\.setApproachActive\(false\)/
+  );
+  assert.match(
+    source,
+    /function setApproachActive\(active, depth = null\)[\s\S]*removeAttribute\("data-approach-depth"\)/
   );
   assert.match(
     source,
