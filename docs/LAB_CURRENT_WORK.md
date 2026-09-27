@@ -8101,3 +8101,42 @@ Critère GREEN :
 - tests ciblés + CI globale SUCCESS ;
 - documentation d'architecture mise à jour ;
 - checkpoint GREEN avant toute preview éditeur.
+
+
+Résultat micro-lot F propre — CaptureCombatNativeBundleV1 :
+
+- branche propre créée après abandon de l'ancien lot package divergent ;
+- test RED : commit `87589f61d38ac15460152aeb8f105a4560edd02c`, CI `36317142940` — FAILURE attendue car assembleur absent ;
+- implémentation : `src/adapters/input/capture/capture-combat-native-bundle-v1.js` ;
+- commit : `3689a64896670eefac2b85283dcbe5d3515bb3e7` ;
+- CI : run `36317167700` — SUCCESS.
+
+Chaîne désormais réellement testée :
+
+`CaptureCombatExportV1`
+-> creature adapter
+-> skill adapter
+-> roster/format adapter
+-> presentation adapter
+-> `CaptureCombatNativeBundleV1`
+-> vrai `createCombatSession`
+-> vrai `previewSkill`
+
+et :
+
+`CaptureCombatNativeBundleV1.roster`
+-> vrai `createRosterSession`.
+
+Garanties :
+
+- 1v1 et 2v2 suivent exactement la même composition ;
+- aucune nouvelle règle métier dans l'assembleur ;
+- aucun second format éditeur monolithique ;
+- aucun renderer, DOM, storage, asset resolver ou GenSrpG ;
+- les anciens essais `capture-combat-package.js` de la branche divergente ne sont pas fusionnés.
+
+Prochaine étape après checkpoint GREEN :
+
+- preview éditeur dédiée sur nouvelle branche ;
+- elle devra consommer un `CaptureCombatExportV1` local et passer par le bundle natif ;
+- aucune lecture directe du legacy GenSrpG.
