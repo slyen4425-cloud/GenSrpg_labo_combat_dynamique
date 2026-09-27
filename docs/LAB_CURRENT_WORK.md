@@ -6497,3 +6497,38 @@ Tests :
 - CSS commun joueur/adversaire, sans duplication spéciale ;
 - contrôles existants et sélecteurs `data-*` inchangés ;
 - CI verte puis validation smartphone utilisateur avant checkpoint GREEN.
+
+
+### Micro-lot UI — indicateur créature vaincue + réflexion format 2v2 — 2026-09-27
+
+Retour utilisateur :
+
+- une créature à 0 PV doit être immédiatement identifiable dans la rangée d'icônes ;
+- réfléchir à un futur mode avec deux créatures actives simultanément par camp, sans rendre tous les combats obligatoirement 2v2.
+
+Base / sécurité :
+
+- base validée : `cb9f8c56991016260038b695252ee1d2503dcf93` ;
+- checkpoint : `checkpoint/lab-four-city-before-defeated-indicator-2v2-note-2026-09-27` ;
+- branche : `work/lab-four-creatures-city-preview-v9-2026-09-26` ;
+- `main` et `global-assets` protégées.
+
+Périmètre implémenté maintenant :
+
+- dériver l'état visuel `vaincu` uniquement depuis le snapshot roster existant (`member.hp <= 0`) ;
+- exposer cet état via un attribut de présentation `data-defeated` ;
+- afficher une croix rouge lisible sur l'icône correspondante ;
+- mettre à jour le libellé accessible avec `vaincu` ;
+- aucun nouvel état gameplay, aucune seconde source de vérité.
+
+Périmètre différé :
+
+- aucun 2v2 n'est implémenté dans ce micro-lot ;
+- documenter dans `LAB_ARCHITECTURE.md` un futur format de combat configurable où le nombre de combattants actifs par équipe est une donnée de match et non une constante globale.
+
+Tests :
+
+- l'UI marque un membre à 0 PV avec `data-defeated=true` ;
+- le style de défaite est commun joueur/adversaire ;
+- aucun test ne suppose que la défaite est décidée par l'UI ;
+- CI verte puis validation smartphone utilisateur avant checkpoint GREEN.
