@@ -6139,3 +6139,43 @@ Critère de fin :
 - relecture GitHub des fichiers et du SHA final ;
 - CI verte ;
 - checkpoint GREEN sur le SHA publié.
+
+
+### Résultat sous-lot Chat mystique
+
+Intégration technique terminée et validée sur la branche de travail.
+
+Commit assets :
+
+`dbb7ee8f23f6cb5b2c28a450ccf1846a6317b259`
+
+Fichiers ajoutés :
+
+- `assets/library/capture/creatures/chat_mystique/runtime/chat_mystique_opponent.webp` — 320×320 WebP transparent, vue adversaire 3/4 face ;
+- `assets/library/capture/creatures/chat_mystique/runtime/chat_mystique_player.webp` — 320×320 WebP transparent, vue joueur 3/4 dos ;
+- `assets/library/capture/creatures/chat_mystique/runtime/chat_mystique_icon.webp` — 192×192 WebP transparent, icône miroir validée ;
+- `assets/library/capture/creatures/chat_mystique/chat_mystique.meta.json`.
+
+Blobs binaires GitHub issus de `create_blob` :
+
+- opponent : `30dd6f72d561504db6467d4234c23e68a7c5a936` ;
+- player : `9af7165f65f5940cf5116f76e5d5b0309fe3350d` ;
+- icon : `b4ae6c11e6e3991b02291229b1018ac191d062fc`.
+
+Catalogue global mis à jour avec les trois IDs stables :
+
+- `pack:capture:creature-chat-mystique-opponent-01` ;
+- `pack:capture:creature-chat-mystique-player-01` ;
+- `pack:capture:creature-chat-mystique-icon-01`.
+
+Vérifications :
+
+- les trois blobs binaires relus depuis GitHub correspondent aux SHA renvoyés par `create_blob` ;
+- dimensions runtime : 320×320 / 320×320 / 192×192 ;
+- metadata JSON relue et valide ;
+- catalogue relu : 78 assets, dont 12 vues de créatures et 6 portraits ;
+- `GLOBAL_ASSET_LIBRARY.md` synchronisé ;
+- CI du commit assets : run `36301245682` — SUCCESS ;
+- aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
+
+Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
