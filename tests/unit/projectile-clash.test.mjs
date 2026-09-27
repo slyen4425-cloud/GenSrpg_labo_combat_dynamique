@@ -54,7 +54,8 @@ test("projectile clash defaults to none and requires explicit editable data", ()
 
   assert.deepEqual(skill.projectileClash, {
     mode: "none",
-    group: null
+    group: null,
+    interactsWith: []
   });
 });
 
@@ -200,6 +201,50 @@ test("different clash groups or disabled clash never collide", () => {
     }),
     null
   );
+});
+
+test("different projectile groups can clash when both skills declare compatibility", () => {
+  const fire = normalizeSkillDefinition(
+    rawSkill({
+      id: "fire",
+      projectileClash: {
+        mode: "mutual_cancel",
+        group: "fire-orb",
+        interactsWith: ["fire-orb", "ice-bolt"]
+      }
+    })
+  );
+  const ice = normalizeSkillDefinition(
+    rawSkill({
+      id: "ice",
+      element: "ice",
+      projectileClash: {
+        mode: "mutual_cancel",
+        group: "ice-bolt",
+        interactsWith: ["ice-bolt", "fire-orb"]
+      }
+    })
+  );
+
+  const candidate = projectileClashCandidate({
+    leftAction: action({
+      skill: fire,
+      actorId: "player",
+      targetId: "opponent"
+    }),
+    leftStartedAtClockMs: 0,
+    rightAction: action({
+      skill: ice,
+      actorId: "opponent",
+      targetId: "player"
+    }),
+    rightStartedAtClockMs: 0
+  });
+
+  assert.ok(candidate);
+  assert.equal(candidate.leftGroup, "fire-orb");
+  assert.equal(candidate.rightGroup, "ice-bolt");
+  assert.equal(candidate.interactionKey, "fire-orb::ice-bolt");
 });
 
 test("projectiles cannot clash after one travel window has already ended", () => {
