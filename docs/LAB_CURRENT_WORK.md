@@ -7593,3 +7593,78 @@ Prochaine étape après checkpoint GREEN :
 - adaptateur pur `CaptureCombatPackageV1 -> modèle de prévisualisation` ;
 - vrai test package -> Combat Session ;
 - toujours aucun raccord UI.
+
+
+## Capture package adapter V1 — 2026-09-27
+
+Objectif :
+
+- transformer `CaptureCombatPackageV1` en modèle de prévisualisation consommable par les propriétaires existants ;
+- produire les fighter configs, skills par acteur, roster, BattleFormat et bindings de présentation sans créer de nouveau moteur ;
+- tester le vrai chemin `package -> adapter -> Combat Session -> résolution d'une compétence`.
+
+Base :
+
+- checkpoint GREEN contrat : `checkpoint/lab-capture-combat-package-v1-green-2026-09-27` ;
+- SHA : `6997246f92716138288fd0dc113b343743e1aec8` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-package-adapter-v1-2026-09-27` ;
+- branche : `work/lab-capture-package-adapter-v1-2026-09-27`.
+
+Pré-audit du raccord :
+
+- une duplication de propriété a été détectée dans le contrat V1 :
+  `creatures[].presentation` et `presentation.creatures` pouvaient tous deux porter la présentation de la même créature ;
+- conformément à la charte, l'adaptateur ne compensera pas ce doublon ;
+- correction préalable autorisée : retirer `creatures[].presentation` et conserver `presentation.creatures` comme source unique.
+
+Propriétaire :
+
+- futur adaptateur pur : `src/adapters/input/capture-combat-package-adapter.js`.
+
+Fichiers autorisés :
+
+- `src/contracts/capture-combat-package.js` pour la suppression de la double source ;
+- tests du contrat concernés ;
+- nouveau dossier/fichier adaptateur input ;
+- tests unitaires/intégration adaptateur ;
+- documentation.
+
+Protégé :
+
+- Combat Rules ;
+- Combat Runtime ;
+- Combat State ;
+- Roster Session ;
+- Renderer / FX / Animation ;
+- Demo UI ;
+- dépôt `Zombicide-40k`.
+
+Sortie de l'adaptateur :
+
+- package normalisé ;
+- `fighterConfigs` par id ;
+- `skills` par id ;
+- `creatures` par id ;
+- `fighters` des acteurs du BattleFormat avec id de slot réel ;
+- `skillsByActor` ;
+- roster inchangé et normalisé ;
+- BattleFormat normalisé ;
+- presentation bindings séparés.
+
+Tests :
+
+1. suppression de la double source présentation ;
+2. transformation package -> acteurs/fighters ;
+3. skills par acteur dérivées des creature skillIds ;
+4. fighterConfig immuable et non mutée ;
+5. vrai chemin vers `createCombatSession()` ;
+6. vraie compétence résolue via le SkillDefinition issu du package ;
+7. aucune dépendance DOM/storage/réseau/GenSrpG ;
+8. CI complète.
+
+Critère de fin :
+
+- aucune logique gameplay dupliquée ;
+- aucun fallback silencieux ;
+- CI GREEN ;
+- checkpoint GREEN avant tout raccord UI.
