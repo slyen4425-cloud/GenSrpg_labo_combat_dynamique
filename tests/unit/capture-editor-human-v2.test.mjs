@@ -1,0 +1,427 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+import {
+  normalizedSocketPointV2,
+  buildHumanCreatureDraftV2,
+  buildHumanSkillDraftV1,
+  buildHumanLoadoutV1,
+  buildHumanBattleSetupV1,
+  buildHumanEditorExportV2
+} from "../../src/ui/capture-editor-human-v2.js";
+
+function creatureFields() {
+  return {
+    id: "crea-loup",
+    displayName: "Loup volcanique",
+    description: "Créature de test.",
+    level: 10,
+    sourceStats: {
+      force: 12,
+      agility: 14,
+      intelligence: 8,
+      spirit: 9,
+      endurance: 13,
+      initiative: 15
+    },
+    elements: ["fire"],
+    resistances: {
+      fire: 35,
+      water: -20
+    },
+    capture: {
+      capturable: true,
+      captureRate: 40,
+      spawnChance: 20,
+      spawnTags: ["fire"],
+      evolution: null
+    },
+    combat: {
+      maxHp: 60,
+      initialHp: 60,
+      maxEnergy: 12,
+      initialEnergy: 2,
+      energyChargeAmount: 1,
+      energyChargeIntervalMs: 1800,
+      movementEnergyPerStep: 2,
+      chargeTimeModifierPct: 0
+    },
+    linkedSkillIds: ["fireball", "claw"],
+    profileId: "quadruped",
+    visual: {
+      frontAssetId: "pack:capture:creature-loup-volcanique-opponent-01",
+      backAssetId: "pack:capture:creature-loup-volcanique-player-01",
+      iconAssetId: "pack:capture:creature-loup-volcanique-icon-01"
+    },
+    sockets: [
+      {
+        id: "mouth",
+        label: "Bouche",
+        front: { x: 0.52, y: 0.2 },
+        back: { x: 0.48, y: 0.22 }
+      }
+    ],
+    audio: {}
+  };
+}
+
+function skillFields() {
+  return {
+    id: "fireball",
+    name: "Boule de feu",
+    description: "Projectile de feu.",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    category: "offensive",
+    form: "projectile",
+    element: "fire",
+    approachMode: "none",
+    energyCost: 3,
+    preparationMs: 900,
+    travelMs: 650,
+    recoveryMs: 450,
+    cooldownMs: 2800,
+    allowedDistances: ["medium", "long"],
+    targetRelations: ["enemy"],
+    damage: 4,
+    heal: 0,
+    stunMs: 0,
+    interruptsPreparation: false,
+    reaction: {
+      blockForms: [],
+      reflectForms: [],
+      immuneElements: [],
+      counterForms: [],
+      evadeForms: [],
+      evadeApproaches: []
+    },
+    projectileClash: {
+      mode: "mutual_cancel",
+      group: "fire-orb",
+      interactsWith: ["fire-orb"]
+    },
+    presentation: {
+      iconAssetId: "core:icon-skill-fireball-01",
+      castAssetId: null,
+      travelAssetId: "pack:capture:sprite-projectile-fire-01",
+      impactAssetId: "pack:capture:sprite-impact-fire-01",
+      socketId: "mouth",
+      castAudioAssetId: null,
+      impactAudioAssetId: null
+    }
+  };
+}
+
+function opponentCreature() {
+  return {
+    schema: "capture-creature-editor-draft-v2",
+    id: "crea-enemy",
+    displayName: "Adversaire",
+    description: "Fixture.",
+    level: 1,
+    sourceStats: {
+      force: 10,
+      agility: 10,
+      intelligence: 10,
+      spirit: 10,
+      endurance: 10,
+      initiative: 10
+    },
+    elements: [],
+    resistances: [],
+    capture: {
+      capturable: true,
+      captureRate: 30,
+      spawnChance: 10,
+      spawnTags: [],
+      evolution: null
+    },
+    combat: {
+      maxHp: 50,
+      initialHp: 50,
+      maxEnergy: 10,
+      initialEnergy: 0,
+      energyChargeAmount: 1,
+      energyChargeIntervalMs: 2000,
+      movementEnergyPerStep: 2,
+      chargeTimeModifierPct: 0
+    },
+    skillIds: ["enemy-hit"],
+    presentation: null
+  };
+}
+
+function opponentSkill() {
+  return {
+    schema: "capture-skill-editor-draft-v1",
+    id: "enemy-hit",
+    description: "Fixture.",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    definition: {
+      id: "enemy-hit",
+      name: "Attaque",
+      category: "offensive",
+      form: "contact",
+      element: null,
+      approachMode: "ground",
+      energyCost: 1,
+      preparationMs: 500,
+      travelMs: 500,
+      recoveryMs: 300,
+      cooldownMs: 1000,
+      allowedDistances: ["short", "medium", "long"],
+      targetRelations: ["enemy"],
+      effect: { damage: 2 }
+    },
+    presentation: null
+  };
+}
+
+function opponentLoadout() {
+  return {
+    schema: "capture-active-skill-loadout-v1",
+    creatureId: "crea-enemy",
+    slots: [
+      { id: "slot-1", skillId: "enemy-hit" },
+      { id: "slot-2", skillId: null },
+      { id: "slot-3", skillId: null },
+      { id: "slot-4", skillId: null }
+    ]
+  };
+}
+
+test("human editor converts touch/click geometry to normalized socket coordinates", () => {
+  assert.deepEqual(
+    normalizedSocketPointV2({
+      clientX: 150,
+      clientY: 250,
+      rect: {
+        left: 100,
+        top: 200,
+        width: 200,
+        height: 100
+      }
+    }),
+    { x: 0.25, y: 0.5 }
+  );
+
+  assert.deepEqual(
+    normalizedSocketPointV2({
+      clientX: 50,
+      clientY: 500,
+      rect: {
+        left: 100,
+        top: 200,
+        width: 200,
+        height: 100
+      }
+    }),
+    { x: 0, y: 1 }
+  );
+});
+
+test("human creature form produces CaptureCreatureEditorDraftV2 without technical JSON", () => {
+  const draft = buildHumanCreatureDraftV2(creatureFields());
+
+  assert.equal(draft.schema, "capture-creature-editor-draft-v2");
+  assert.equal(draft.presentation.profileId, "quadruped");
+  assert.equal(
+    draft.presentation.visual.front.assetId,
+    "pack:capture:creature-loup-volcanique-opponent-01"
+  );
+  assert.equal(draft.presentation.sockets[0].id, "mouth");
+  assert.deepEqual(
+    draft.skillIds,
+    ["fireball", "claw"]
+  );
+});
+
+test("human skill controls produce real SkillDefinition including cooldown", () => {
+  const draft = buildHumanSkillDraftV1(skillFields());
+
+  assert.equal(draft.definition.category, "offensive");
+  assert.equal(draft.definition.form, "projectile");
+  assert.equal(draft.definition.cooldownMs, 2800);
+  assert.equal(draft.definition.effect.damage, 4);
+  assert.equal(
+    draft.presentation.visual.travel.anchor,
+    "mouth"
+  );
+});
+
+test("human loadout exposes exactly four active slots", () => {
+  const loadout = buildHumanLoadoutV1({
+    creatureId: "crea-loup",
+    skillIds: ["fireball", "claw", null, null]
+  });
+
+  assert.deepEqual(
+    loadout.equippedSkillIds,
+    ["fireball", "claw"]
+  );
+  assert.equal(loadout.slots.length, 4);
+});
+
+test("human battle controls use one data path for 1 to 4 active creatures per team", () => {
+  for (const activePerTeam of [1, 2, 3, 4]) {
+    const draft = buildHumanBattleSetupV1({
+      battleId: "human-preview",
+      localCreatureId: "crea-loup",
+      localDisplayName: "Loup",
+      opponentCreatureId: "crea-enemy",
+      opponentDisplayName: "Adversaire",
+      activePerTeam
+    });
+
+    assert.equal(draft.teams[0].slots.length, activePerTeam);
+    assert.equal(draft.teams[1].slots.length, activePerTeam);
+    assert.equal(
+      draft.teams.flatMap((team) => team.slots).length,
+      activePerTeam * 2
+    );
+  }
+});
+
+test("human editor composes the real Exporter V2 path", () => {
+  const localSkill = buildHumanSkillDraftV1(skillFields());
+  const creature = buildHumanCreatureDraftV2(creatureFields());
+  const loadout = buildHumanLoadoutV1({
+    creatureId: creature.id,
+    skillIds: ["fireball", "claw", null, null]
+  });
+  const battleSetup = buildHumanBattleSetupV1({
+    battleId: "human-preview",
+    localCreatureId: creature.id,
+    localDisplayName: creature.displayName,
+    opponentCreatureId: "crea-enemy",
+    opponentDisplayName: "Adversaire",
+    activePerTeam: 2
+  });
+
+  const claw = buildHumanSkillDraftV1({
+    ...skillFields(),
+    id: "claw",
+    name: "Griffe",
+    form: "contact",
+    element: null,
+    approachMode: "ground",
+    cooldownMs: 1200,
+    projectileClash: {
+      mode: "none",
+      group: null,
+      interactsWith: []
+    },
+    presentation: {
+      iconAssetId: "core:icon-skill-claw-01",
+      castAssetId: null,
+      travelAssetId: null,
+      impactAssetId: "pack:capture:sprite-impact-physical-01",
+      socketId: null,
+      castAudioAssetId: null,
+      impactAudioAssetId: null
+    }
+  });
+
+  const exported = buildHumanEditorExportV2({
+    creatureDraft: creature,
+    skillDrafts: [localSkill, claw],
+    loadout,
+    battleSetup,
+    opponentCreatureDraft: opponentCreature(),
+    opponentSkillDrafts: [opponentSkill()],
+    opponentLoadout: opponentLoadout()
+  });
+
+  assert.equal(exported.schema, "capture-combat-export-v1");
+  assert.equal(exported.actors.length, 4);
+  assert.deepEqual(
+    exported.creatures.find(
+      (item) => item.id === "crea-loup"
+    ).skillIds,
+    ["fireball", "claw"]
+  );
+});
+
+test("human editor page has three normal tabs and no JSON editor fields", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const marker of [
+    'data-editor-tab="creature"',
+    'data-editor-tab="combat"',
+    'data-editor-tab="skills"',
+    "data-creature-front-select",
+    "data-creature-back-select",
+    "data-creature-icon-select",
+    "data-creature-profile",
+    "data-socket-surface",
+    "data-loadout-slot",
+    "data-active-per-team",
+    "data-skill-category",
+    "data-skill-form",
+    "data-skill-cooldown",
+    "data-skill-cast-fx",
+    "data-skill-travel-fx",
+    "data-skill-impact-fx",
+    "data-editor-validate"
+  ]) {
+    assert.equal(
+      html.includes(marker),
+      true,
+      `human editor page must contain ${marker}`
+    );
+  }
+
+  for (const forbidden of [
+    "definitionJson",
+    "presentationJson",
+    "SkillDefinition JSON",
+    "Présentation JSON"
+  ]) {
+    assert.equal(
+      html.includes(forbidden),
+      false,
+      `human editor must not expose ${forbidden}`
+    );
+  }
+});
+
+test("human editor source does not own Runtime, renderer, storage or GenSrpG", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const forbidden of [
+    "createCombatRuntime",
+    "createCombatSession",
+    "renderer/",
+    "localStorage",
+    "sessionStorage",
+    "indexedDB",
+    "captureFix",
+    "Zombicide-40k",
+    "is2v2"
+  ]) {
+    assert.equal(
+      source.includes(forbidden),
+      false,
+      `human editor UI must not contain ${forbidden}`
+    );
+  }
+
+  assert.equal(
+    source.includes("exportCaptureEditorDraftsToCombatExportV2"),
+    true
+  );
+});
