@@ -6618,3 +6618,50 @@ Résultat du lot distance / conception 2v2 :
 CI work : SUCCESS, run `36293995262`, SHA `f071a03ff066d387547e05999f61b8c0e789902f`.
 
 Validation smartphone requise avant checkpoint GREEN du retrait distance.
+
+
+### Micro-lot FX — projectile contre cible en mouvement — 2026-09-27
+
+Validation utilisateur préalable : retrait des distances validé sur smartphone.
+
+- checkpoint GREEN précédent : `checkpoint/lab-distance-ui-removal-green-2026-09-27` ;
+- base du nouveau lot : `c44cc2e4d588fda77dba53713345efed11af7445` ;
+- checkpoint de départ : `checkpoint/lab-start-projectile-live-contact-2026-09-27`.
+
+Bug observé : lorsqu'une créature avance pendant une attaque de contact (ex. Griffe) et que l'adversaire lance une Boule de feu, le projectile peut visuellement traverser la créature puis terminer sur son ancien slot stable. Les dégâts sont corrects et ne doivent pas être modifiés.
+
+Cause architecturale ciblée :
+
+- le projectile classique vise actuellement le `targetAnchor` stable pendant tout son trajet ;
+- la créature visuelle peut cependant se déplacer via son `motion anchor` ;
+- l'impact `hit` utilise lui aussi le slot stable, d'où un impact visuel possible dans le vide lorsque la cible est encore en mouvement.
+
+Périmètre autorisé :
+
+- `src/adapters/renderer/dom-skill-fx.js` : détection de contact **strictement visuelle** entre le projectile actif et l'anchor visuel mobile de sa cible ;
+- impact `hit` sur l'anchor visuel courant de la cible ;
+- injection d'un scheduler de frame testable, actif uniquement pendant un projectile ;
+- tests unitaires FX ciblés ;
+- documentation architecture du comportement.
+
+Domaines protégés :
+
+- aucun changement dégâts / PV / hit / evade / timing sémantique ;
+- aucun changement Combat Rules, Runtime ou Action Resolver ;
+- aucun calcul de collision DOM ne décide d'un résultat gameplay ;
+- le projectile `evaded` conserve son principe de miss vers le point stable ;
+- pas de boucle permanente : le suivi existe uniquement tant qu'un projectile FX est actif.
+
+Résultat visuel cible :
+
+- si un projectile rencontre réellement la créature cible pendant que celle-ci se déplace, il ne doit pas visuellement la traverser ;
+- un impact sémantique `hit` doit être dessiné sur la créature à sa position visuelle courante, pas sur un emplacement vide ;
+- les dégâts restent exactement ceux du moteur actuel.
+
+Critères :
+
+- test collision visuelle projectile / cible mobile ;
+- test impact `hit` sur anchor mobile ;
+- miss reste sur anchor stable ;
+- nettoyage frame/cancel sans fuite ;
+- CI verte puis validation smartphone utilisateur.
