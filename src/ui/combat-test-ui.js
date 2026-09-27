@@ -655,13 +655,23 @@ export async function mountCombatTest({
     if (teamId === "player") {
       node.type = "button";
     }
+    const defeated = Number(member.hp) <= 0;
+
     node.className = "reserve-card";
-    node.title = member.displayName;
-    node.setAttribute("aria-label", member.displayName);
+    node.title = defeated
+      ? `${member.displayName} — vaincu`
+      : member.displayName;
+    node.setAttribute(
+      "aria-label",
+      defeated
+        ? `${member.displayName} — vaincu`
+        : member.displayName
+    );
     node.dataset.memberId = member.id;
     node.dataset.active = member.active ? "true" : "false";
     node.dataset.selected =
       member.selected ? "true" : "false";
+    node.dataset.defeated = defeated ? "true" : "false";
 
     const descriptor =
       visuals.getCreatureDescriptor(member.creatureId);
@@ -682,11 +692,13 @@ export async function mountCombatTest({
 
     const state =
       root.ownerDocument.createElement("small");
-    state.textContent = member.active
-      ? "Combat"
-      : `${Math.round(member.hp)}/${Math.round(
-          member.maxHp
-        )} PV`;
+    state.textContent = defeated
+      ? "Vaincu"
+      : member.active
+        ? "Combat"
+        : `${Math.round(member.hp)}/${Math.round(
+            member.maxHp
+          )} PV`;
 
     text.append(name, state);
     node.append(image, text);
