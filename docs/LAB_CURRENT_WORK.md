@@ -8236,3 +8236,31 @@ Critère GREEN :
 - CI SUCCESS ;
 - documentation ;
 - checkpoint exact.
+
+
+Résultat — loadouts de compétences par acteur V1 :
+
+- déclaration : commit `eb398923ab51dd69fd6bdec1eff6c28d0f9d9fc7`, CI `36319258151` — SUCCESS ;
+- test RED : commit `6c3edbff535e4ef43eab82d15e40264c291d36fd`, CI `36319275549` — FAILURE attendue ;
+- implémentation : commit `7c66b380dfb359080b2d99b376f48c65671f4d40` ;
+- CI fonctionnelle : run `36319300384` — SUCCESS.
+
+Sortie ajoutée à la pile :
+
+`skillIdsByActor`
+
+Dérivation unique :
+
+`actor.creatureId -> creature.skillIds`.
+
+Aucune logique controller/team/nom/IA n'est utilisée.
+
+Le même chemin couvre 1v1 et 2v2 ; les tableaux proviennent du contrat export normalisé et restent immuables.
+
+Checkpoint final prévu après CI documentaire :
+
+`checkpoint/lab-capture-actor-skill-loadouts-v1-green-2026-09-27`.
+
+Prochaine étape :
+
+micro-lot UI séparé : permettre à `mountCoop2v2Test` de recevoir une source de données native optionnelle (format/fighters/skills/loadouts) tout en conservant exactement le chargement JSON historique lorsque cette source est absente.
