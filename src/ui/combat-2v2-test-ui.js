@@ -73,70 +73,66 @@ function relationLabel(relation) {
   return "ennemi";
 }
 
-export async function mountCoop2v2Test({
-  root,
-  visuals,
-  presentationAssets = null,
-  fetchImpl = fetch,
-  formatUrl = DATA_URLS.format
-}) {
-  if (!root || typeof root.querySelector !== "function") {
-    throw new TypeError("root must provide querySelector()");
+function nativeCombatSetup(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError("combatSetup must be an object");
   }
   if (
-    !visuals ||
-    typeof visuals.setCreatureFor !== "function" ||
-    typeof visuals.playEventFor !== "function" ||
-    typeof visuals.playApproachFor !== "function" ||
-    typeof visuals.getFxAnchorFor !== "function" ||
-    typeof visuals.getCreatureDescriptor !== "function"
+    !value.format ||
+    typeof value.format !== "object" ||
+    !Array.isArray(value.format.actors)
   ) {
-    throw new TypeError(
-      "visuals must provide generic actor slot controls and creature descriptors"
-    );
+    throw new TypeError("combatSetup.format must be a native BattleFormat");
+  }
+  if (
+    !value.fighterConfigs ||
+    typeof value.fighterConfigs !== "object" ||
+    Array.isArray(value.fighterConfigs)
+  ) {
+    throw new TypeError("combatSetup.fighterConfigs must be an object");
+  }
+  if (!Array.isArray(value.fighters) || value.fighters.length < 2) {
+    throw new TypeError("combatSetup.fighters must contain at least two fighters");
+  }
+  if (
+    !value.skillsById ||
+    typeof value.skillsById !== "object" ||
+    Array.isArray(value.skillsById)
+  ) {
+    throw new TypeError("combatSetup.skillsById must be an object");
+  }
+  if (!Array.isArray(value.localSkills)) {
+    throw new TypeError("combatSetup.localSkills must be an array");
   }
 
-  const [
-    rawFormat,
-    maraileron,
-    braisombre,
-    loupVolcanique,
-    golemMoussu,
-    ...rawSkills
-  ] = await Promise.all([
-    fetchJson(formatUrl, fetchImpl),
-    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
-    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
-    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
-    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
-    ...DATA_URLS.skills.map((url) => fetchJson(url, fetchImpl))
-  ]);
-
-  const format = normalizeBattleFormatDefinition(rawFormat);
-  const skills = Object.freeze(
-    rawSkills.map((skill) => normalizeSkillDefinition(skill))
-  );
-  const skillsById = Object.freeze(
-    Object.fromEntries(skills.map((skill) => [skill.id, skill]))
-  );
-  const fighterConfigs = Object.freeze({
-    maraileron,
-    braisombre,
-    loup_volcanique: loupVolcanique,
-    golem_moussu: golemMoussu
+  return Object.freeze({
+    format: value.format,
+    fighterConfigs: value.fighterConfigs,
+    fighters: value.fighters,
+    skills: value.localSkills,
+    skillsById: value.skillsById
   });
+}
 
-  const fighters = format.actors.map((actor) => {
-    const config = fighterConfigs[actor.fighterConfigId];
-    if (!config) {
-      throw new RangeError(
-        `Unknown fighter config: ${actor.fighterConfigId}`
-      );
-    }
-    return {
-      ...config,
-      id: actor.actorId
-    };
+export async function resolveCoop2v2CombatData({
+  combatSetup = null,
+  fetchImpl = fetch,
+  formatUrl = DATA_URLS.format
+} = {}) {
+  if (combatSetup !== null) {
+    return nativeCombatSetup(combatSetup);
+  }
+
+  const {
+    format,
+    skills,
+    skillsById,
+    fighterConfigs,
+    fighters
+  } = await resolveCoop2v2CombatData({
+    combatSetup,
+    fetchImpl,
+    formatUrl
   });
 
   const session = createCombatSession({
