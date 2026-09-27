@@ -8218,3 +8218,70 @@ Prochaine étape après checkpoint GREEN :
 - résoudre `assetId` via une dépendance injectée, jamais un chemin physique ;
 - exposer une vue compatible avec le Presenter/FX sans déplacer les responsabilités ;
 - caractériser explicitement quels réglages V1 sont déjà supportés par le renderer et lesquels restent futurs.
+
+
+## SkillPresentationRegistryV1 — résolution assetId injectée — 2026-09-27
+
+Objectif :
+
+- stocker une collection de `SkillPresentationBindingV1` normalisés ;
+- résoudre leurs `assetId` uniquement via une fonction `resolveAsset(assetId)` injectée ;
+- préparer le futur éditeur et le futur Presenter adapter sans lier le contrat aux chemins physiques de la bibliothèque.
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-skill-presentation-binding-green-2026-09-27` ;
+- SHA de base : `d92323c3f2b5b76cb7d23f70f0e8fdd86d5cf6da` ;
+- CI finale : run `36315206480` — SUCCESS ;
+- checkpoint de départ : `checkpoint/lab-start-skill-presentation-registry-2026-09-27` ;
+- branche : `work/lab-skill-presentation-registry-2026-09-27`.
+
+Propriétaires :
+
+- `SkillPresentationBindingV1` reste propriétaire de la forme des bindings ;
+- futur `src/adapters/presentation/skill-presentation-registry-v1.js` possède uniquement l'indexation et la résolution des assets ;
+- Asset Catalog / resolver réel reste injecté et externe à ce module.
+
+Périmètre :
+
+- bindings indexés par `skillId` ;
+- doublon de `skillId` rejeté ;
+- `bindingForSkill(skillId)` ;
+- `resolvedForSkill(skillId)` ;
+- chaque slot résolu contient l'asset éventuel et les paramètres du binding ;
+- asset manquant = `asset:null`, sans casser le binding ;
+- phases visuelles/audio résolues par label ;
+- aucune dépendance aux chemins de fichiers.
+
+Fichiers autorisés :
+
+- `src/adapters/presentation/skill-presentation-registry-v1.js` ;
+- `tests/unit/skill-presentation-registry-v1.test.mjs` ;
+- documentation du présent lot.
+
+Interdit :
+
+- aucun DOM ;
+- aucun Renderer ;
+- aucun Presenter spécifique ;
+- aucune lecture du catalogue global directement ;
+- aucun fallback par chemin ;
+- aucune règle gameplay ;
+- aucune mutation des bindings/assets.
+
+Tests prévus :
+
+1. RED avant implémentation ;
+2. indexation/résolution d'un binding complet ;
+3. asset manquant retourne `null` ;
+4. doublon skillId rejeté ;
+5. binding inconnu retourne `null` ;
+6. phases résolues ;
+7. paramètres de présentation conservés ;
+8. resolver appelé uniquement avec les assetId déclarés ;
+9. pas de réécriture des assets source.
+
+Critère de fin :
+
+- CI GREEN ;
+- checkpoint GREEN avant adaptateur vers l'interface Presenter/FX actuelle.
