@@ -7163,3 +7163,19 @@ Critères :
 - CI GREEN ;
 - déplacement de la branche preview uniquement après CI GREEN ;
 - validation smartphone utilisateur avant checkpoint GREEN final.
+
+
+Résultat technique du micro-lot +30 % adversaires :
+
+- aucune position `top/left` n'a été modifiée ;
+- aucune ancre, cible, règle FX, règle projectile ou règle gameplay n'a été modifiée ;
+- seules les largeurs 2v2 existantes ont été multipliées par ×1,30 :
+  - général A : `min(34%, 19.5rem)` -> `min(44.2%, 25.35rem)` ;
+  - général B : `min(33%, 19rem)` -> `min(42.9%, 24.7rem)` ;
+  - smartphone A : `31%` -> `40.3%` ;
+  - smartphone B : `30%` -> `39%` ;
+- le breakpoint smartphone a été inclus explicitement afin que le +30 % soit réel sur mobile et non uniquement sur la composition large ;
+- les sentinelles 2v2 vérifient les quatre valeurs nouvelles ainsi que les positions existantes ;
+- CI du HEAD fonctionnel : SUCCESS, run `36308718701`, SHA `f82de81d61d2b84cbb439a5466a72a312f7ea81c`.
+
+Validation smartphone utilisateur requise avant checkpoint GREEN final.
