@@ -6970,3 +6970,48 @@ Note architecture ajoutée :
 CI work : SUCCESS, run `36304095546`, SHA `b7958f14f924ef15f38674bfadcb027dd51ca787`.
 
 Validation smartphone requise avant checkpoint GREEN de ce polish HUD.
+
+
+### Micro-lot 2v2 — couche d'approche + scale adversaires — 2026-09-27
+
+Retour smartphone utilisateur :
+
+- pendant `Griffe`, l'attaquant peut passer derrière la créature ciblée pendant une fraction de seconde ;
+- les deux adversaires sont visuellement un peu trop petits dans la composition 2v2.
+
+Base / sécurité :
+
+- base validée actuelle : `aca6139aec640a3ee16142e02d1c702bc4e625d6` ;
+- checkpoint : `checkpoint/lab-coop-2v2-before-approach-layer-enemy-scale-2026-09-27` ;
+- branche : `work/lab-coop-2v2-preview-2026-09-27` ;
+- `main` et `global-assets` protégées.
+
+Cause visuelle visée :
+
+- les combattants 2v2 utilisent plusieurs couches `z-index` fixes ;
+- lors d'une approche de contact, deux combattants peuvent se superposer ;
+- l'attaquant doit être temporairement au premier plan pendant **son animation d'approche**, puis revenir automatiquement à sa couche normale.
+
+Périmètre autorisé :
+
+- `src/ui/demo-app.js` : exposer un état de présentation transitoire `data-approach-active` sur le slot attaquant uniquement pendant `playApproachFor()` ;
+- `examples/dom-demo/demo.css` : une seule règle de couche commune pour cet état ;
+- `examples/dom-demo/demo.css` : augmentation modérée des deux tailles adverses 2v2 uniquement ;
+- tests UI / animation ciblés ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / Runtime / dégâts / hit / ciblage / IA ;
+- aucun changement des offsets ou timings de `Griffe` ;
+- aucun masquage, aucune duplication de sprite, aucun second renderer ;
+- aucun changement 1v1 ;
+- l'état de couche doit être nettoyé en fin, annulation et dispose.
+
+Critères :
+
+- l'attaquant reste visible au-dessus de sa cible pendant l'approche ;
+- la couche temporaire disparaît immédiatement après l'approche ;
+- les adversaires 2v2 gagnent légèrement en taille sans déplacer leurs ancres ;
+- CI verte ;
+- validation smartphone utilisateur.
