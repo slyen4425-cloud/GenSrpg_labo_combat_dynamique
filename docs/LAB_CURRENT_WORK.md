@@ -8406,3 +8406,47 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation synchronisée ;
 - checkpoint GREEN exact avant tout exporter.
+
+
+### Résultat technique — CaptureCreatureEditorDraftV1
+
+RED contractuel :
+
+- test : `tests/unit/capture-creature-editor-draft-v1.test.mjs` ;
+- commit RED : `2ec2fb089139f6e68c2b649af4b64bc7d91cb812` ;
+- CI : run `36334274999` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` sur `src/contracts/capture-creature-editor-draft-v1.js` ;
+- un seul test de fichier en échec, reste de la suite intact.
+
+Implémentation minimale :
+
+- contrat : `src/contracts/capture-creature-editor-draft-v1.js` ;
+- commit : `01e0bf690bb85956ff2f343fd992a3db4f40f347` ;
+- CI : run `36334393543` — SUCCESS.
+
+Garanties validées :
+
+- schéma exact `capture-creature-editor-draft-v1` ;
+- identité, description, niveau, stats source, éléments, résistances, Capture, combat, skills et presentationId normalisés ;
+- combat explicitement requis : `maxHp` et `maxEnergy` ne sont jamais dérivés ;
+- stats source même extrêmes ne compensent jamais un champ combat absent ;
+- pourcentages Capture/spawn bornés 0..100 ;
+- identifiants d'éléments et skillIds uniques ;
+- évolution structurée `level` ou `manual` ;
+- champs sémantiques inconnus refusés ;
+- structure profondément gelée ;
+- aucune autorité DOM/storage/network/GenSrpG/captureFix.
+
+Aucune UI ni runtime n'a été modifié ; validation smartphone non requise pour ce lot.
+
+Checkpoint GREEN prévu après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-creature-editor-draft-v1-green-2026-09-27`.
+
+Prochaine étape après fermeture GREEN :
+
+- micro-lot `CaptureSkillEditorDraftV1` ;
+- contrat pur uniquement ;
+- sémantique native SkillDefinition explicite ;
+- présentation séparée via SkillPresentationBindingV1 ;
+- aucune inférence depuis les noms/IDs/texte legacy.
