@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 81,
+    "assets": 84,
     "icons": 31,
-    "sprites": 36,
+    "sprites": 38,
     "fx": 2,
-    "portraits": 7,
+    "portraits": 8,
     "backgrounds": 5,
-    "creatures": 14
+    "creatures": 16
   },
   "assets": [
     {
@@ -2439,6 +2439,108 @@
       },
       "resource": {
         "file": "capture/creatures/renard_magique_dore/runtime/renard_magique_dore_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ailevent-icon-01",
+      "label": "Ailevent — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "ailevent",
+        "air",
+        "wind",
+        "flying",
+        "ice",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ailevent/runtime/ailevent_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ailevent-opponent-01",
+      "label": "Ailevent — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "ailevent",
+        "air",
+        "wind",
+        "flying",
+        "ice",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ailevent/runtime/ailevent_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ailevent-player-01",
+      "label": "Ailevent — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "ailevent",
+        "air",
+        "wind",
+        "flying",
+        "ice",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ailevent/runtime/ailevent_player.webp",
         "mime": "image/webp"
       },
       "compatibility": {
