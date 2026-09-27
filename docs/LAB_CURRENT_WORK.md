@@ -10146,3 +10146,45 @@ Protégé :
 - GenSrpG.
 
 Validation mobile obligatoire avant GREEN final UI.
+
+
+### Résultat — Capture Editor Skill Library Integration V1
+
+RED :
+
+- `tests/unit/capture-editor-skill-library-integration-v1.test.mjs` ;
+- SHA `6d5856c2674e2a18cc39e2935e97fb5064b19814` ;
+- CI run `36347810104` — FAILURE attendue : helpers UI absents.
+
+Implémentation et corrections de frontière :
+
+- intégration initiale : `1f59c8e9f5b6121dbc523d0c89a437e058e2bc9f` ;
+- correction contrat description optionnelle : `f233cdc2ea3e6e3402a3d14e620c42cb38138951` ;
+- correction sémantique du test d'erreur française : `3a8e10cc01f23a35a8df533cff38d07e935acd04` ;
+- CI finale : run `36348208954` — SUCCESS.
+
+Résultat :
+
+- l'éditeur reçoit `Combat Skill Library V1` par injection ;
+- le boot de démo est seul propriétaire du chargement des fichiers JSON ;
+- les neuf capacités réelles du labo sont proposées ;
+- les quatre slots sont alimentés depuis cette bibliothèque ;
+- aucune liste de capacités métier n'est codée dans le HTML ;
+- choisir une capacité charge sa vraie SkillDefinition ;
+- les règles avancées existantes (réaction, esquive, tags, clash) sont conservées même si elles n'ont pas encore toutes un contrôle graphique ;
+- les FX/audio ne sont jamais inférés depuis le nom/id de la capacité ;
+- une capacité inconnue dans la bibliothèque est refusée ;
+- Runtime / Renderer / Combat Rules inchangés.
+
+Statut :
+
+**GREEN technique / prévalidation UI**.
+Validation smartphone requise avant GREEN final.
+
+Checkpoint de prévalidation :
+
+`checkpoint/lab-capture-editor-skill-library-integration-v1-prevalidation-green-2026-09-27`.
+
+Preview :
+
+`preview/lab-capture-editor-skill-library-integration-v1-2026-09-27`.
