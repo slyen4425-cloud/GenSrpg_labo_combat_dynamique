@@ -8975,3 +8975,73 @@ Prochaine étape :
 - pas de duplication de SkillDefinition ;
 - le catalogue de compétences peut rester supérieur à quatre ;
 - seules les compétences équipées alimenteront le combat.
+
+
+## Micro-lot — CaptureActiveSkillLoadoutV1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-creature-editor-draft-v2-green-2026-09-27` ;
+- SHA `1b298994f3be347f3959358ab6e18e41c283a472`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-skill-loadout-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-skill-loadout-v1-2026-09-27`.
+
+Objectif :
+
+Définir les quatre emplacements actifs de capacités d'une créature sans transformer l'UI ou l'ancien tableau `skillIds` en propriétaire implicite.
+
+Propriétaire :
+
+- `src/contracts/capture-active-skill-loadout-v1.js`.
+
+Modèle :
+
+- un `creatureId` ;
+- exactement quatre slots explicites `slot-1..slot-4` ;
+- chaque slot contient un `skillId` ou `null` ;
+- `equippedSkillIds` est dérivé du contenu des slots et n'est jamais une entrée.
+
+Règles :
+
+- quatre slots exactement ;
+- ordre et IDs des slots explicites ;
+- slots vides autorisés ;
+- même capacité interdite dans deux slots ;
+- cinquième slot refusé, jamais tronqué ;
+- aucune SkillDefinition dupliquée ;
+- aucune vérification du catalogue dans ce contrat : la cohérence référentielle appartiendra au futur composeur/exporter ;
+- ce lot ne modifie pas encore `CaptureCombatExportV1` ni `skillIdsByActor`.
+
+Interdit :
+
+- aucun UI/runtime/renderer ;
+- aucune dépendance GenSrpG ;
+- aucune inférence depuis nom/catégorie ;
+- aucun trim silencieux ;
+- aucun fallback automatique vers les quatre premières capacités.
+
+Tests RED :
+
+1. quatre slots valides ;
+2. slots partiellement vides ;
+3. nombre différent de quatre refusé ;
+4. IDs de slots incorrects/refusés ;
+5. doublons de capacité refusés ;
+6. equippedSkillIds dérivé ;
+7. champ source concurrent `equippedSkillIds` refusé ;
+8. profonde immutabilité ;
+9. sentinelle indépendance.
+
+Critère GREEN :
+
+- RED isolé ;
+- contrat minimal ;
+- CI globale SUCCESS ;
+- documentation ;
+- checkpoint GREEN avant le composeur/exporter loadout.
