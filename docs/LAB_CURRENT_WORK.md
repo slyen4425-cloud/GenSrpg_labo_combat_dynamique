@@ -7289,3 +7289,31 @@ Critères :
 - interaction de groupes différents testable uniquement par données ;
 - blocage/réflexion/immunité : impact visuel au point de contact sans changer le résultat gameplay ;
 - CI GREEN avant déplacement de preview.
+
+
+Résultat technique du micro-lot profondeur d'approche :
+
+- la couche temporaire n'est plus un `z-index: 9` aveugle ;
+- `playApproachFor()` réutilise les centres Y déjà calculés et dérive `front` / `behind` uniquement pour la présentation ;
+- un acteur venant du premier plan reçoit la couche temporaire `front` (`z-index: 9`) ;
+- un acteur venant du fond reçoit la couche temporaire `behind` (`z-index: 2`) ;
+- `data-approach-depth` est nettoyé en fin, cancel, masquage et dispose ;
+- aucune position, aucun timing, aucun anchor et aucune règle gameplay n'a changé ;
+- CI GREEN : run `36309586700`, SHA `4b60167a9516d27d92354c6793d9ad658c0cd77f`.
+
+Résultat technique du micro-lot interactions / clash FX :
+
+- `SkillDefinition.projectileClash` expose désormais `interactsWith` ;
+- rétrocompatibilité : un `mutual_cancel` sans liste explicite interagit par défaut avec son propre groupe ;
+- deux groupes différents peuvent s'annuler si les deux compétences déclarent la compatibilité réciproque ;
+- `projectile-clash` transporte les groupes, une clé d'interaction et le `progress` exact du point de rencontre ;
+- `planSkillOutcomeFx()` produit un unique `clash-impact` canonique pour la paire ;
+- le DOM FX interpole ce point depuis les ancres existantes et le `progress` sémantique, en respectant notamment `travelSourceAnchor` ;
+- le rendu réutilise l'impact associé à la compétence dans Presentation Assets : aucune règle `if fireball` n'a été ajoutée au Core/Renderer ;
+- `blocked`, `reflected` et `immune` produisent maintenant un impact de présentation au point de contact sans modifier le résultat gameplay ;
+- la boule de feu déclare explicitement `interactsWith: ["fire-orb"]` comme donnée éditable ;
+- un test synthétique valide déjà une compatibilité `fire-orb` ↔ `ice-bolt` sans ajout de branche moteur ;
+- CI GREEN du chemin fonctionnel : run `36309912297`, SHA `0fce2e1ba773ebe794158f3f481cb12f47fc84e3` ;
+- CI GREEN documentation architecture incluse : run `36309926477`, SHA `64ddac85b2cd530b70aeb0759b50d381b6c15fe6`.
+
+Validation smartphone requise avant tout checkpoint GREEN final.
