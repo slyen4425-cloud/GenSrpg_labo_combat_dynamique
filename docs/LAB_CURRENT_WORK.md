@@ -7408,3 +7408,70 @@ Tests :
 - CI GREEN : run `36310387573`, SHA `240e47dc048bf26711b5c2b5a579800bcc863b16`.
 
 Validation smartphone requise avant checkpoint GREEN final.
+
+
+## Audit Capture -> adaptateur du laboratoire — 2026-09-27
+
+Objectif :
+
+- cartographier en lecture seule le Capture réel du dépôt `slyen4425-cloud/Zombicide-40k` ;
+- identifier les données/propriétaires réutilisables pour un futur adaptateur ;
+- distinguer ce qui peut être traduit proprement de ce qui est legacy et ne doit pas être repris ;
+- définir un contrat d'adaptateur portable sans créer de dépendance runtime vers GenSrpG.
+
+Base laboratoire :
+
+- SHA : `5ef53a67c5beddd9b70df88d73b242a3f12d282c` ;
+- checkpoint : `checkpoint/lab-start-capture-adapter-audit-2026-09-27` ;
+- branche : `work/lab-capture-adapter-audit-2026-09-27` ;
+- base CI GREEN ;
+- branche preview 2v2 laissée inchangée.
+
+Périmètre autorisé :
+
+- lecture du dépôt principal uniquement ;
+- documentation d'audit dans le laboratoire ;
+- éventuellement contrats/tests purs du futur adaptateur après clôture de l'audit et sans import GenSrpG.
+
+Interdit :
+
+- aucune modification de `Zombicide-40k` ;
+- aucun import depuis `Zombicide-40k` dans le laboratoire ;
+- aucun copier-coller du moteur historique ;
+- aucune lecture de sauvegardes/DOM/globals GenSrpG au runtime ;
+- aucun raccord production ;
+- aucun changement au moteur 1v1/2v2 pendant ce lot d'audit.
+
+Propriétaires concernés côté laboratoire :
+
+- contrats de données ;
+- futur adaptateur d'entrée Capture ;
+- Skill Contract ;
+- Creature Profile / FighterConfig ;
+- Presentation Assets / AssetBinding.
+
+Propriétaires protégés :
+
+- Combat Rules ;
+- Combat Runtime ;
+- Animation Core ;
+- FX Core ;
+- Renderer ;
+- Demo UI existante.
+
+Livrables audit :
+
+1. inventaire des propriétaires Capture historiques et restructurés ;
+2. matrice `GenSrpG Capture -> contrat laboratoire` ;
+3. liste des données réutilisables directement ;
+4. liste des données nécessitant traduction ;
+5. liste des couches legacy à ne pas importer ;
+6. proposition de contrat d'adaptateur pur et versionné ;
+7. plan de micro-lots pour une future prévisualisation éditeur -> combat dynamique.
+
+Critère de fin de l'audit :
+
+- aucun code du dépôt principal modifié ;
+- aucun couplage runtime créé ;
+- sources de vérité et frontières documentées ;
+- CI du laboratoire GREEN après documentation.
