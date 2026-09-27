@@ -6353,3 +6353,43 @@ Critère de fin :
 - relecture GitHub des fichiers et du SHA final ;
 - CI verte ;
 - checkpoint GREEN sur le SHA publié.
+
+
+### Résultat sous-lot Ailevent
+
+Intégration technique terminée et validée sur la branche de travail.
+
+Commit assets :
+
+`54d3cc51283cf1af49c13c889f17f86ac19f59fe`
+
+Fichiers ajoutés :
+
+- `assets/library/capture/creatures/ailevent/runtime/ailevent_opponent.webp` — 320×320 WebP transparent, vue adversaire 3/4 face ;
+- `assets/library/capture/creatures/ailevent/runtime/ailevent_player.webp` — 320×320 WebP transparent, vue joueur 3/4 dos ;
+- `assets/library/capture/creatures/ailevent/runtime/ailevent_icon.webp` — 192×192 WebP transparent, icône gardée dans le même sens que l'image validée ;
+- `assets/library/capture/creatures/ailevent/ailevent.meta.json`.
+
+Blobs binaires GitHub issus de `create_blob` :
+
+- opponent : `1d3d9f8da60c578397a00c109e663dc0c214c3e0` ;
+- player : `9369674a57a9027d5ea437bcd3e7c56498cd18aa` ;
+- icon : `6ebf4df7b02df8eb3a6150902f1e3c3dd74e4689`.
+
+Catalogue global mis à jour avec les trois IDs stables :
+
+- `pack:capture:creature-ailevent-opponent-01` ;
+- `pack:capture:creature-ailevent-player-01` ;
+- `pack:capture:creature-ailevent-icon-01`.
+
+Vérifications :
+
+- les trois blobs binaires relus depuis GitHub correspondent aux SHA renvoyés par `create_blob` ;
+- dimensions runtime : 320×320 / 320×320 / 192×192 ;
+- metadata JSON relue et valide ;
+- catalogue relu : 84 assets, dont 16 vues de créatures et 8 portraits ;
+- `GLOBAL_ASSET_LIBRARY.md` synchronisé ;
+- CI du commit assets : run `36307434241` — SUCCESS ;
+- aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
+
+Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
