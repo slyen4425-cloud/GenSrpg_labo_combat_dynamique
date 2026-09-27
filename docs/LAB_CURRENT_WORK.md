@@ -6947,3 +6947,26 @@ Critères :
 - timers du pulse nettoyés au dispose ;
 - CI verte ;
 - validation smartphone utilisateur.
+
+
+Résultat du micro-lot HUD / cible :
+
+- la carte locale garde désormais les proportions de référence du HUD 1v1 (`15.5rem / 39vw`, hauteur `5rem -> 6.5rem`) ;
+- le HUD allié a été déplacé dans une pile de commandes directement au-dessus de la barre de capacités ;
+- ce HUD allié affiche nom, PV, action en cours et l'icône de la créature active récupérée via `visuals.getCreatureDescriptor()` ;
+- aucune réserve fictive n'a été inventée : le prototype 2v2 n'affiche que la créature alliée réellement déclarée dans le format actuel ;
+- la sélection persistante conserve son contour / glow ;
+- chaque nouvelle sélection déclenche en plus un cercle temporaire sous la créature ciblée (`680ms`) ;
+- le feedback de ciblage reste purement visuel et n'intervient jamais dans `Targeting` ni `Combat Rules` ;
+- les timers de pulse sont centralisés et nettoyés lors d'une nouvelle sélection ou du `dispose()`.
+
+Note architecture ajoutée :
+
+- futur réglage éditeur du rythme de combat ;
+- vitesse visuelle d'approche / retour distincte du timing gameplay ;
+- futur `cooldownMs` appartenant à `SkillDefinition` / Core, jamais simulé par un simple bouton désactivé dans l'UI ;
+- aucune modification de vitesse aérienne ni cooldown n'a été introduite dans ce micro-lot.
+
+CI work : SUCCESS, run `36304095546`, SHA `b7958f14f924ef15f38674bfadcb027dd51ca787`.
+
+Validation smartphone requise avant checkpoint GREEN de ce polish HUD.
