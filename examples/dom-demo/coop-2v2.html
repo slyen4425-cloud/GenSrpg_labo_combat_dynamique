@@ -8,6 +8,50 @@
 </head>
 <body>
   <main class="game game--coop-2v2" data-combat-demo>
+    <button
+      type="button"
+      class="capture-package-toggle"
+      data-capture-package-toggle
+      aria-expanded="false"
+      hidden
+    >
+      Package Capture
+    </button>
+
+    <aside
+      class="capture-package-editor"
+      data-capture-package-editor
+      aria-label="Prévisualisation du package Capture"
+      hidden
+    >
+      <header class="capture-package-editor__header">
+        <strong>CaptureCombatPackageV1</strong>
+        <small>Prototype local · aucune sauvegarde GenSrpG</small>
+      </header>
+      <textarea
+        class="capture-package-editor__json"
+        data-capture-package-json
+        aria-label="JSON du package Capture"
+        spellcheck="false"
+      ></textarea>
+      <div class="capture-package-editor__actions">
+        <button type="button" data-capture-package-validate>Valider</button>
+        <button type="button" data-capture-package-apply>Appliquer</button>
+        <button type="button" data-capture-package-reset>Réinitialiser</button>
+      </div>
+      <p
+        class="capture-package-editor__status"
+        data-capture-package-status
+        data-tone="info"
+        role="status"
+      >
+        Modifiez les stats ou compétences, puis appliquez le package.
+      </p>
+      <small class="capture-package-editor__note">
+        V1 : données de combat portables. Les créatures utilisent encore la bibliothèque visuelle du labo.
+      </small>
+    </aside>
+
     <section class="arena arena--coop-2v2" data-combat-arena aria-label="Arène de combat coopératif 2 contre 2">
       <div class="arena__ground" aria-hidden="true"></div>
 
@@ -76,7 +120,7 @@
       </article>
 
       <button type="button" class="squad-card squad-card--player squad-card--local-full" data-target-actor="player">
-        <strong>Loup volcanique</strong>
+        <strong data-combat-actor-name="player">Loup volcanique</strong>
         <div class="squad-card__hp">
           <progress data-combat-hp="player" max="100" value="100"></progress>
           <span data-combat-hp-value="player">100 / 100 PV</span>
@@ -93,7 +137,7 @@
       </button>
 
       <button type="button" class="squad-card squad-card--opponent" data-target-actor="opponent">
-        <strong>Maraileron</strong>
+        <strong data-combat-actor-name="opponent">Maraileron</strong>
         <div class="squad-card__hp">
           <progress data-combat-hp="opponent" max="100" value="100"></progress>
           <span data-combat-hp-value="opponent">100 / 100 PV</span>
@@ -110,7 +154,7 @@
       </button>
 
       <button type="button" class="squad-card squad-card--opponent-b" data-target-actor="opponent-b">
-        <strong>Braisombre</strong>
+        <strong data-combat-actor-name="opponent-b">Braisombre</strong>
         <div class="squad-card__hp">
           <progress data-combat-hp="opponent-b" max="100" value="100"></progress>
           <span data-combat-hp-value="opponent-b">100 / 100 PV</span>
@@ -139,7 +183,7 @@
             aria-hidden="true"
           >
           <span class="squad-card__body">
-            <strong>Golem moussu · allié</strong>
+            <strong data-combat-actor-name="ally">Golem moussu</strong>
             <span class="squad-card__hp">
               <progress data-combat-hp="ally" max="100" value="100"></progress>
               <span data-combat-hp-value="ally">100 / 100 PV</span>
