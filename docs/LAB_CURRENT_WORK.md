@@ -7658,3 +7658,71 @@ Prochaine action après checkpoint GREEN exact :
 - micro-lot B séparé : adaptateur pur créature -> FighterConfig uniquement ;
 - aucune formule RPG inventée ;
 - uniquement les champs combat explicitement exportés.
+
+
+## Micro-lot B — Capture creature -> FighterConfig V1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN : `checkpoint/lab-capture-export-v1-green-2026-09-27` ;
+- SHA : `308ee041b330dbb58f2fc40f56c2f64328c2e57c` ;
+- checkpoint départ : `checkpoint/lab-start-capture-creature-adapter-v1-2026-09-27` ;
+- branche : `work/lab-capture-creature-adapter-v1-2026-09-27`.
+
+Objectif :
+
+Créer un adaptateur pur qui transforme une créature déjà normalisée par `CaptureCombatExportV1` en configuration de fighter consommable par le Combat State.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-creature-to-fighter-config.js`.
+
+Règles :
+
+- aucune formule Force/Agilité/Défense ;
+- aucun calcul de stats RPG ;
+- aucune lecture `metadata.sourceStats` comme gameplay ;
+- seuls les champs combat explicitement exportés peuvent être traduits ;
+- `maxHp` et `maxEnergy` requis ;
+- les defaults éventuels restent ceux du Combat State cible, pas de second système de defaults ;
+- aucun DOM/storage/global/réseau ;
+- aucune dépendance GenSrpG.
+
+Champs V1 traduisibles :
+
+- `maxHp` ;
+- `initialHp` si fourni ;
+- `maxEnergy` ;
+- `initialEnergy` si fourni ;
+- `energyChargeAmount` si fourni ;
+- `energyChargeIntervalMs` si fourni ;
+- `movementEnergyPerStep` si fourni ;
+- `chargeTimeModifierPct` si fourni.
+
+Non traduits dans ce lot :
+
+- niveau ;
+- speed/agility/defense ;
+- résistances ;
+- buffs/debuffs ;
+- progression ;
+- assets ;
+- skills.
+
+Tests RED :
+
+1. conversion directe ;
+2. fighterId surchargeable sans muter la créature ;
+3. champs optionnels absents restent absents ;
+4. `maxHp/maxEnergy` requis et numériques ;
+5. valeurs négatives refusées selon le contrat cible ;
+6. `chargeTimeModifierPct` accepte une valeur finie signée ;
+7. métadonnées/stats source n'influencent pas le FighterConfig ;
+8. résultat réellement accepté par `createCombatState` ;
+9. sentinelle d'indépendance.
+
+Critère GREEN :
+
+- tests ciblés + CI globale SUCCESS ;
+- aucun autre domaine modifié ;
+- checkpoint GREEN avant lot compétence.
