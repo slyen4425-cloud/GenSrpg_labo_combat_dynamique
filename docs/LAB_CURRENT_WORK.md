@@ -8079,3 +8079,90 @@ Prochaine étape après checkpoint GREEN :
 - lier skill/creature à des `assetId` stables ;
 - garder le gameplay strictement séparé ;
 - aucun chemin physique d'asset dans CaptureExportV1 gameplay.
+
+
+## SkillPresentationBindingV1 — contrat présentation orienté éditeur — 2026-09-27
+
+Objectif :
+
+- créer le contrat pur qui séparera définitivement gameplay et présentation dans le futur éditeur de compétences ;
+- remplacer à terme les objets ad hoc de la démo par des données normalisées, sans modifier la démo dans ce lot ;
+- permettre à CaptureExportV1 de rester gameplay-only.
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-combat-bundle-green-2026-09-27` ;
+- SHA de base : `3edc646e9fe1596516e625950f81422a9395b146` ;
+- CI base finale : run `36314900681` — SUCCESS ;
+- checkpoint de départ : `checkpoint/lab-start-skill-presentation-binding-2026-09-27` ;
+- branche : `work/lab-skill-presentation-binding-2026-09-27`.
+
+État caractérisé :
+
+- la démo possède actuellement un `SKILL_BINDINGS` local avec `icon / castFx / travelFx / impactFx / sons / anchors / layers / options` ;
+- `docs/LAB_ASSET_LIBRARY.md` impose déjà la séparation `SkillDefinition` / `SkillPresentationBinding` ;
+- le renderer accepte déjà des réglages de présentation comme `displayScale` et `playbackMode`.
+
+Propriétaire :
+
+- futur `src/contracts/skill-presentation-binding-v1.js`.
+
+Périmètre V1 :
+
+- `version` ;
+- `skillId` ;
+- slots visuels indépendants : `icon / cast / travel / impact / hit / miss / ko` ;
+- phases visuelles nommées facultatives ;
+- slots audio indépendants : `cast / release / travel / impact / hit / miss` ;
+- phases audio nommées facultatives ;
+- chaque visuel référence uniquement un `assetId` stable ;
+- réglages visuels optionnels : `displayScale / attachment / anchor / offsetX / offsetY / layer / trigger / playbackMode / rotationDeg / opacity` ;
+- réglages audio optionnels : `assetId / volume / loop / trigger`.
+
+Valeurs initiales :
+
+- attachment : `source / target / source-fixed / target-fixed / travel / arena` ;
+- layer : `front / behind` ;
+- playbackMode : `once / loop / stretch` ;
+- triggers : `preparation-start / release / travel-start / impact / vanish / reappear / return / end`.
+
+Règles :
+
+- `assetId` doit être un identifiant logique avec namespace, jamais un chemin physique ;
+- aucun champ dégâts/soin/énergie/portée/cooldown dans ce contrat ;
+- aucun resolver de fichier dans le contrat ;
+- aucun DOM.
+
+Fichiers autorisés :
+
+- `src/contracts/skill-presentation-binding-v1.js` ;
+- `tests/unit/skill-presentation-binding-v1.test.mjs` ;
+- documentation du présent lot.
+
+Domaines protégés :
+
+- SkillDefinition ;
+- Asset Catalog / Global Visual Library ;
+- Demo UI ;
+- Presenter / FX renderer ;
+- Combat Rules / Runtime ;
+- CaptureExportV1.
+
+Tests prévus :
+
+1. RED avant implémentation ;
+2. binding complet normalisé et immutable ;
+3. slots absents restent `null` / maps vides ;
+4. assetId avec chemin physique rejeté ;
+5. scale hors plage rejeté ;
+6. attachment/layer/trigger/playback invalides rejetés ;
+7. offsets/rotation finis ;
+8. opacity/volume bornés ;
+9. gameplay fields parasites rejetés ;
+10. phases nommées normalisées sans connaître les labels Animation Core.
+
+Critère de fin :
+
+- CI GREEN ;
+- aucun raccord runtime dans ce lot ;
+- checkpoint GREEN avant adaptateur de présentation Capture.
