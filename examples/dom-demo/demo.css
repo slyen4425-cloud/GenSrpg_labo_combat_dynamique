@@ -663,32 +663,6 @@ button.reserve-card {
   gap: 0.28rem;
 }
 
-.distance-buttons {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.18rem;
-}
-
-.distance-buttons button {
-  min-height: 1.55rem;
-  padding: 0.12rem 0.14rem;
-  overflow: hidden;
-  border: 1px solid rgba(137, 223, 240, 0.16);
-  border-radius: 0.5rem;
-  background: rgba(16, 36, 45, 0.9);
-  color: #f2fbff;
-  font-size: 0.48rem;
-  font-weight: 900;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.distance-buttons button:disabled {
-  cursor: default;
-  opacity: 0.38;
-}
-
 .action-bar {
   display: grid;
   gap: 0.18rem;
@@ -923,10 +897,6 @@ button.reserve-card {
 
   .fighter--opponent {
     width: 36%;
-  }
-
-  .distance-buttons button {
-    font-size: 0.44rem;
   }
 
   .action-menu > summary {
