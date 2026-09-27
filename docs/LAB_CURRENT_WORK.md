@@ -8334,3 +8334,75 @@ Checkpoint GREEN final à créer après CI du présent SHA documentaire :
 - contrat pur + tests RED/GREEN ;
 - pas d'UI, pas de DOM, pas de storage, pas de formule RPG ;
 - champs combat nécessaires au laboratoire explicitement éditables, jamais dérivés depuis les stats historiques.
+
+
+## Micro-lot — CaptureCreatureEditorDraftV1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-source-preaudit-v1-green-2026-09-27` ;
+- SHA `cab1917b203c651054c6ef8e572b030cfd64217f` ;
+- CI pré-audit : run `36334164734` — SUCCESS.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-creature-editor-draft-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-creature-editor-draft-v1-2026-09-27`.
+
+Objectif :
+
+Créer un contrat pur représentant le brouillon de créature que le futur éditeur Capture pourra produire, sans reprendre le DOM, le localStorage ou les fonctions historiques de GenSrpG.
+
+Propriétaire :
+
+- `src/contracts/capture-creature-editor-draft-v1.js`.
+
+Données éditables V1 retenues :
+
+- identité : id / displayName / description ;
+- niveau ;
+- statistiques source éditoriales normalisées : force, agility, intelligence, spirit, endurance, initiative ;
+- éléments et résistances ;
+- paramètres Capture : capturable, captureRate, spawnChance, spawnTags, évolution ;
+- `skillIds` ;
+- `presentationId` logique optionnel ;
+- bloc `combat` explicite compatible avec la future frontière export.
+
+Règle critique :
+
+les stats éditoriales ne déterminent jamais implicitement `maxHp`, `maxEnergy`, recharge, mouvement ou vitesse de charge.
+
+Les champs combat doivent être fournis explicitement.
+
+Protégé / interdit :
+
+- aucun DOM ;
+- aucun storage ;
+- aucun import GenSrpG ;
+- aucun asset binaire ou URL ;
+- aucune formule Force/Agilité/Esprit -> combat ;
+- aucune modification Combat Rules / Runtime / UI ;
+- aucune conversion vers `CaptureCombatExportV1` dans ce lot.
+
+Tests RED prévus :
+
+1. brouillon complet valide ;
+2. combat explicite obligatoire ;
+3. stats élevées ne compensent jamais un champ combat absent ;
+4. taux Capture/spawn bornés ;
+5. skillIds uniques ;
+6. évolution structurée ;
+7. champs inconnus refusés ;
+8. sortie profondément gelée ;
+9. sentinelle sans DOM/storage/network/GenSrpG.
+
+Critère GREEN :
+
+- RED observé avant implémentation ;
+- contrat minimal ;
+- CI globale SUCCESS ;
+- documentation synchronisée ;
+- checkpoint GREEN exact avant tout exporter.
