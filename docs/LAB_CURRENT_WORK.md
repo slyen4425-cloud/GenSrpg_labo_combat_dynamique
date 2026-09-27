@@ -8825,3 +8825,49 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation ;
 - checkpoint GREEN exact avant composition dans le brouillon créature.
+
+
+### Résultat technique — CreaturePresentationBindingV1
+
+RED :
+
+- test : `tests/unit/creature-presentation-binding-v1.test.mjs` ;
+- commit RED : `7fa88250e16bd2791ee9f554e17e8654cc78c1ac` ;
+- CI : run `36338306545` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` sur le nouveau contrat ;
+- un seul fichier de test en échec.
+
+Implémentation minimale :
+
+- contrat : `src/contracts/creature-presentation-binding-v1.js` ;
+- commit : `afe6f508a1b38725f44ddf5797b9d68bbb330fba` ;
+- CI : run `36338356018` — SUCCESS.
+
+Garanties validées :
+
+- `subjectType = creature` ;
+- `profileId` explicite ;
+- image front obligatoire ;
+- image back optionnelle ;
+- icône optionnelle ;
+- fallback mono-image possible sans inventer de ressource ;
+- asset IDs logiques uniquement ;
+- sockets libres, uniques et indépendants du DOM ;
+- coordonnées front/back bornées 0..1 ;
+- point back de socket optionnel ;
+- aucun auto-détecteur de socket ;
+- sons génériques limités à attack / hit / ko ;
+- volume audio borné ;
+- sortie profondément gelée ;
+- aucune dépendance Renderer / UI / Runtime / Storage / GenSrpG.
+
+Aucun raccord renderer ou éditeur n'a été réalisé.
+
+Checkpoint GREEN final :
+
+`checkpoint/lab-creature-presentation-binding-v1-green-2026-09-27`.
+
+Prochaine étape sûre :
+
+- ne pas connecter encore ce binding à l'UI ;
+- auditer la future responsabilité des 4 slots de capacité afin d'éviter une double autorité avec `CaptureCreatureEditorDraftV1.skillIds`.
