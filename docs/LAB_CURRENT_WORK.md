@@ -8309,3 +8309,28 @@ Prochaine étape après CI documentaire GREEN :
 - contrat/test uniquement ;
 - aucune UI, aucun DOM, aucun storage ;
 - conversion vers le fragment créature de `CaptureCombatExportV1` seulement après GREEN du contrat.
+
+
+### Résultat CI du pré-audit éditeur Capture
+
+SHA documentaire pré-audit :
+
+`65c669c81061f8a67c00334ca555d480d2476b66`.
+
+CI :
+
+- Laboratory CI run `36334136254` — SUCCESS.
+
+Aucun runtime du laboratoire n'a été modifié.
+Aucun fichier du dépôt `Zombicide-40k` n'a été modifié.
+
+Checkpoint GREEN final à créer après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-editor-source-preaudit-v1-green-2026-09-27`.
+
+Étape suivante autorisée :
+
+- micro-lot `CaptureCreatureEditorDraftV1` ;
+- contrat pur + tests RED/GREEN ;
+- pas d'UI, pas de DOM, pas de storage, pas de formule RPG ;
+- champs combat nécessaires au laboratoire explicitement éditables, jamais dérivés depuis les stats historiques.
