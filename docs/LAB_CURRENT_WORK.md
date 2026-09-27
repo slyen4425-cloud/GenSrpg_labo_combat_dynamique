@@ -9459,3 +9459,55 @@ Critère GREEN :
 - tests IA / runtime existants GREEN ;
 - documentation ;
 - checkpoint GREEN avant retour à l'éditeur humain.
+
+
+### Résultat — Skill Cooldown V1
+
+RED :
+
+- commit : `3ed2705d1bd5aa13ec963ec43391910689608924` ;
+- CI : run `36341730287` — FAILURE attendue ;
+- cause isolée : export cooldown absent dans Combat State ;
+- un seul fichier de test en échec.
+
+Implémentation :
+
+- commit : `01ab822f50b3cf6dc2e551a36df3327dade47572` ;
+- CI : run `36341823953` — SUCCESS.
+
+Fichiers modifiés :
+
+- `src/contracts/skill-definition.js` ;
+- `src/core/combat/combat-state.js` ;
+- `src/core/combat/action-resolver.js` ;
+- `src/core/combat/roster-session.js`.
+
+Garanties :
+
+- `cooldownMs` data-driven dans SkillDefinition, défaut 0 ;
+- cooldowns autoritaires dans Combat State via `skillCooldowns` ;
+- échéances basées uniquement sur `state.elapsedMs` ;
+- start accepté démarre le cooldown avec la dépense énergie ;
+- refus cooldown ne dépense rien ;
+- cooldown spécifique par capacité ;
+- expiration via `advanceCombatTime()` ;
+- réaction soumise au même mécanisme ;
+- interruption conserve le cooldown ;
+- reset nettoie naturellement l'état ;
+- rappel/invocation préserve les cooldowns ;
+- Combat Runtime inchangé et ne possède aucun timer/tableau cooldown ;
+- tests existants Runtime/IA restent GREEN.
+
+Aucune validation smartphone requise : lot Core/contrat sans UI.
+
+Checkpoint GREEN final :
+
+`checkpoint/lab-skill-cooldown-v1-green-2026-09-27`.
+
+Prochaine étape :
+
+- éditeur humain V2 ;
+- 3 surfaces : Créature / Combat / Capacités ;
+- aucun JSON visible en usage normal ;
+- chaque contrôle doit écrire dans un contrat déjà GREEN ;
+- preview smartphone obligatoire avant GREEN final.
