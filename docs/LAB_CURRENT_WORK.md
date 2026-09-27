@@ -7880,3 +7880,29 @@ Critère GREEN :
 - tests + CI globale SUCCESS ;
 - vrai `BattleFormatDefinition` et vrai `Roster Session` consommés ;
 - checkpoint GREEN avant présentation/assets.
+
+
+Résultat micro-lot D — Capture teams/actors/rosters -> formats natifs V1 :
+
+- test RED : commit `5afefa204bd981c3c32ff196898c91f88cf4b3fd`, CI `36316547804` — FAILURE attendue car adaptateur absent ;
+- implémentation : `src/adapters/input/capture/capture-roster-format-adapter-v1.js` ;
+- commit : `8cbf9c6d6580ebc691b0a57920a77e7dd1fe368d` ;
+- CI : run `36316578370` — SUCCESS.
+
+Garanties :
+
+- `normalizeCaptureCombatExportV1` reste propriétaire de l'export ;
+- `normalizeBattleFormatDefinition` reste propriétaire du format ;
+- 1v1 et 2v2 utilisent le même chemin ;
+- aucune variable `is2v2` ;
+- `fighterConfigId = creatureId` est une traduction V1 explicite ;
+- chaque roster exporté devient un slot Roster Session ;
+- l'actif du roster doit correspondre à la créature de l'acteur du slot ;
+- aucun remplacement/KO n'est implémenté dans l'adaptateur ;
+- sortie roster consommée par le vrai `createRosterSession`.
+
+Prochaine action après checkpoint GREEN exact :
+
+- micro-lot E : Presentation Binding exporté -> binding neutre du laboratoire ;
+- uniquement IDs d'assets et réglages de présentation ;
+- zéro gameplay.
