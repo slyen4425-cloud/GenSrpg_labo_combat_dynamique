@@ -76,6 +76,7 @@ export function planSkillFx({
 
 export function planSkillOutcomeFx({
   resolution,
+  actorSlot = "player",
   targetSlot = "opponent"
 }) {
   if (!resolution?.ok) {
@@ -92,7 +93,40 @@ export function planSkillOutcomeFx({
     ]);
   }
 
-  if (resolution.outcome === "hit" && resolution.skillId) {
+  if (resolution.outcome === "clashed" && resolution.skillId) {
+    const clashEvent = resolution.events?.find(
+      (item) => item.type === "projectile-clash"
+    );
+    const otherActorId =
+      clashEvent?.otherActorId ?? resolution.clash?.otherActorId ?? null;
+    const ownsClashFx =
+      clashEvent &&
+      otherActorId !== null &&
+      String(resolution.actorId) < String(otherActorId);
+
+    if (!ownsClashFx) {
+      return Object.freeze([]);
+    }
+
+    return Object.freeze([
+      Object.freeze({
+        type: "clash-impact",
+        skillId: resolution.skillId,
+        fromSlot: actorSlot,
+        targetSlot,
+        progress: Math.min(
+          1,
+          Math.max(0, Number(clashEvent.progress) || 0)
+        ),
+        durationMs: 420
+      })
+    ]);
+  }
+
+  if (
+    ["hit", "blocked", "reflected", "immune"].includes(resolution.outcome) &&
+    resolution.skillId
+  ) {
     return Object.freeze([
       Object.freeze({
         type: "impact",
