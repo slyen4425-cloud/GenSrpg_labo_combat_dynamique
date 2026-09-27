@@ -9045,3 +9045,43 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation ;
 - checkpoint GREEN avant le composeur/exporter loadout.
+
+
+### Résultat — CaptureActiveSkillLoadoutV1
+
+RED :
+
+- commit : `92d66f812d1c058b49cd032b8b01f1adc3596a62` ;
+- CI : run `36340901006` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` ;
+- un seul fichier de test en échec.
+
+Implémentation :
+
+- `src/contracts/capture-active-skill-loadout-v1.js` ;
+- commit : `2bdff0cf321b0403bd53bb3fd70bb9c2be4fc839` ;
+- CI : run `36340942065` — SUCCESS.
+
+Garanties :
+
+- exactement 4 slots canoniques ;
+- slot vide autorisé ;
+- duplicate skillId interdit ;
+- 5e slot refusé explicitement ;
+- `equippedSkillIds` dérivé et immutable ;
+- aucune SkillDefinition embarquée ;
+- aucune UI/runtime/storage/GenSrpG ;
+- aucune coupe automatique des capacités disponibles.
+
+Aucune validation smartphone requise : contrat pur.
+
+Checkpoint GREEN final :
+
+`checkpoint/lab-capture-active-skill-loadout-v1-green-2026-09-27`.
+
+Prochaine étape :
+
+- `CaptureBattleSetupEditorDraftV1` ;
+- format et rosters décrits par données ;
+- aucune branche `is2v2` ;
+- sortie future vers BattleFormatDefinition / RosterDefinition via composeur dédié.
