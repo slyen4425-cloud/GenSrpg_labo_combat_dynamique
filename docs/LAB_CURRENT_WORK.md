@@ -8165,3 +8165,34 @@ Critère GREEN :
 - adaptateur minimal ;
 - CI globale SUCCESS ;
 - checkpoint GREEN avant package/preview éditeur.
+
+
+Résultat micro-lot E2 — Capture -> PresentationBindingV1 :
+
+- déclaration : commit `bdb793f6cb9d97c0adbdc7f0df82a5b86a4bc21b`, CI GREEN ;
+- test RED : commit `0cd6f9b56e317d35380e4f6352e00b5487a85f1c` ;
+- CI RED : run `36321381702` — FAILURE attendue ;
+- cause RED : module `presentation-adapter.js` absent ;
+- 282 tests existants passaient, 1 seul échec sur le nouveau test ;
+- implémentation minimale : commit `e2e1826aadbe59965022ca5c5190fc294dd5e7d8` ;
+- CI fonctionnelle : run `36321425466` — SUCCESS.
+
+Propriétaire créé :
+
+- `src/adapters/input/capture/presentation-adapter.js`.
+
+Garanties :
+
+- `presentation.bindings[]` est la seule convention interprétée ;
+- chaque binding passe par `normalizePresentationBindingV1` ;
+- références skill/créature inconnues rejetées ;
+- doublons `subjectType + subjectId` rejetés ;
+- absence de bindings = liste vide ;
+- anciennes maps `presentation.skills / creatures` non inférées ;
+- assets physiques rejetés par le contrat amont ;
+- aucun resolver, gameplay, DOM, storage ou réseau ;
+- aucun changement de `Zombicide-40k`.
+
+Checkpoint final prévu après CI documentaire :
+
+`checkpoint/lab-capture-presentation-adapter-green-2026-09-27`.
