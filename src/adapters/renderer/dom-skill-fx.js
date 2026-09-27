@@ -651,7 +651,10 @@ export function createDomSkillFxRenderer({
     if (type === "clash-impact") {
       const visual = presentation?.impact ?? null;
       const from = centerRelativeTo(
-        sourceRect(fromSlot),
+        sourceRect(
+          fromSlot,
+          presentation?.travelSourceAnchor ?? null
+        ),
         arenaRect
       );
       const to = centerRelativeTo(
