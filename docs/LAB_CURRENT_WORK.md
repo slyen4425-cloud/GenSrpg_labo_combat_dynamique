@@ -7853,3 +7853,73 @@ Prochaine étape après checkpoint GREEN :
 - les acteurs actifs viennent uniquement de `member.active` ;
 - `controllerId` vient des données exportées ;
 - aucun comportement IA n'est décidé par l'adaptateur.
+
+
+## Adaptateur roster + format CaptureExportV1 — 2026-09-27
+
+Objectif :
+
+- traduire les membres actifs CaptureExportV1 vers `BattleFormatDefinition` pour 1v1/2v2 ;
+- traduire un export mono-actif par équipe vers le `Roster Session` actuel ;
+- rendre explicite la limite actuelle : Roster Session = un seul slot actif par équipe.
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-skill-adapter-green-2026-09-27` ;
+- SHA de base : `52f09ce9294540947be7c4c7fe13533292215b15` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-roster-format-adapter-2026-09-27` ;
+- branche : `work/lab-capture-roster-format-adapter-2026-09-27`.
+
+Propriétaires :
+
+- `BattleFormatDefinition` reste propriétaire de la validation teams/actors/controller ;
+- `Roster Session` garde sa structure mono-slot actif par équipe ;
+- futur adaptateur ne modifie aucun de ces contrats.
+
+Sorties prévues :
+
+1. `adaptCaptureBattleFormat(...)`
+   - membres `active:true` uniquement ;
+   - actorId = member.id ;
+   - teamId = team.id ;
+   - controllerId copié explicitement ;
+   - displayName/fighterConfigId résolus depuis la créature ;
+   - réserves exclues du format actif.
+
+2. `adaptCaptureSingleActiveRoster(...)`
+   - exactement un membre actif par équipe ;
+   - tous les membres restent présents dans le roster ;
+   - `slotId = team.id` ;
+   - multi-actif rejeté explicitement au lieu d'être aplati ou dupliqué.
+
+Fichiers autorisés :
+
+- `src/adapters/input/capture/roster-format-adapter-v1.js` ;
+- `tests/unit/capture-roster-format-adapter-v1.test.mjs` ;
+- documentation du présent lot.
+
+Interdit :
+
+- aucune modification du Roster Session ;
+- aucun second système de roster ;
+- aucun faux slot créé pour masquer le multi-actif ;
+- aucune décision IA ;
+- aucun UI/renderer ;
+- aucun import GenSrpG.
+
+Tests prévus :
+
+1. RED avant implémentation ;
+2. format 2v2 = quatre acteurs actifs, équipes correctes ;
+3. réserve exclue du BattleFormat ;
+4. controllerId copié sans interprétation ;
+5. BattleFormat natif validé par son propriétaire ;
+6. roster mono-actif conserve actif + réserves ;
+7. roster multi-actif rejeté ;
+8. aucune duplication d'identité.
+
+Critère de fin :
+
+- CI GREEN ;
+- limite multi-actif documentée/protégée ;
+- checkpoint GREEN avant vrai chemin d'intégration export -> combat.
