@@ -214,6 +214,16 @@ export async function mountCoop2v2Test({
     ])
   );
 
+  const chargeRefs = Object.fromEntries(
+    format.actors.map((actor) => [
+      actor.actorId,
+      requiredElement(
+        root,
+        `[data-combat-actor-charge="${actor.actorId}"]`
+      )
+    ])
+  );
+
   const cleanups = [];
   const skillRefs = new Map();
   const targetPulseTimers = new Map();
@@ -283,6 +293,22 @@ export async function mountCoop2v2Test({
   function setStatus(message, tone = "info") {
     status.textContent = message;
     status.dataset.tone = tone;
+  }
+
+  function setCharge(actorId, {
+    value = 0,
+    active = false
+  } = {}) {
+    const bar = chargeRefs[actorId];
+    if (!bar) {
+      return;
+    }
+
+    bar.value = Math.max(
+      0,
+      Math.min(1, Number(value) || 0)
+    );
+    bar.dataset.active = active ? "true" : "false";
   }
 
   function actorState(actorId, state = session.snapshot()) {
@@ -589,9 +615,18 @@ export async function mountCoop2v2Test({
         return;
       }
 
+      const preparing =
+        Boolean(progress.actionId) &&
+        progress.phase === "preparation";
+
+      setCharge(progress.actorId, {
+        value: preparing ? progress.chargeProgress : 0,
+        active: preparing
+      });
+
       if (!progress.actionId) {
         ref.textContent = "Prêt";
-      } else if (progress.phase === "preparation") {
+      } else if (preparing) {
         ref.textContent =
           `${progress.actionName} · ${(progress.remainingPreparationMs / 1000).toFixed(1)} s`;
       } else {
@@ -612,6 +647,7 @@ export async function mountCoop2v2Test({
         actorSlot: action.actorId,
         targetSlot: action.targetId
       });
+      setCharge(action.actorId);
       actionRefs[action.actorId].textContent =
         `${action.skill.name} · lancé`;
     },
@@ -622,6 +658,7 @@ export async function mountCoop2v2Test({
         targetSlot: resolution.targetId
       });
 
+      setCharge(resolution.actorId);
       actionRefs[resolution.actorId].textContent = "Prêt";
 
       const actor = actorMeta(resolution.actorId);
@@ -647,6 +684,7 @@ export async function mountCoop2v2Test({
       const actorId = result.action?.actorId;
       if (actorId && actionRefs[actorId]) {
         actionRefs[actorId].textContent = "Interrompu";
+        setCharge(actorId);
       }
       presenter.cancelPreparation(actorId);
       renderState();
