@@ -123,6 +123,82 @@ export async function resolveCoop2v2CombatData({
     return nativeCombatSetup(combatSetup);
   }
 
+  const [
+    rawFormat,
+    maraileron,
+    braisombre,
+    loupVolcanique,
+    golemMoussu,
+    ...rawSkills
+  ] = await Promise.all([
+    fetchJson(formatUrl, fetchImpl),
+    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
+    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
+    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
+    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
+    ...DATA_URLS.skills.map((url) => fetchJson(url, fetchImpl))
+  ]);
+
+  const format = normalizeBattleFormatDefinition(rawFormat);
+  const skills = Object.freeze(
+    rawSkills.map((skill) => normalizeSkillDefinition(skill))
+  );
+  const skillsById = Object.freeze(
+    Object.fromEntries(skills.map((skill) => [skill.id, skill]))
+  );
+  const fighterConfigs = Object.freeze({
+    maraileron,
+    braisombre,
+    loup_volcanique: loupVolcanique,
+    golem_moussu: golemMoussu
+  });
+
+  const fighters = format.actors.map((actor) => {
+    const config = fighterConfigs[actor.fighterConfigId];
+    if (!config) {
+      throw new RangeError(
+        `Unknown fighter config: ${actor.fighterConfigId}`
+      );
+    }
+    return {
+      ...config,
+      id: actor.actorId
+    };
+  });
+
+  return Object.freeze({
+    format,
+    fighterConfigs,
+    fighters,
+    skills,
+    skillsById
+  });
+}
+
+export async function mountCoop2v2Test({
+  root,
+  visuals,
+  presentationAssets = null,
+  fetchImpl = fetch,
+  formatUrl = DATA_URLS.format,
+  combatSetup = null
+}) {
+  if (!root || typeof root.querySelector !== "function") {
+    throw new TypeError("root must provide querySelector()");
+  }
+  if (
+    !visuals ||
+    typeof visuals.setCreatureFor !== "function" ||
+    typeof visuals.playEventFor !== "function" ||
+    typeof visuals.playApproachFor !== "function" ||
+    typeof visuals.getFxAnchorFor !== "function" ||
+    typeof visuals.getCreatureDescriptor !== "function"
+  ) {
+    throw new TypeError(
+      "visuals must provide generic actor slot controls and creature descriptors"
+    );
+  }
+
   const {
     format,
     skills,
