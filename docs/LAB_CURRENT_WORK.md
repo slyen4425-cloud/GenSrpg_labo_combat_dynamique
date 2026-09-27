@@ -7752,3 +7752,53 @@ Prochaine action après checkpoint GREEN exact :
 - micro-lot C : skill exportée -> `SkillDefinition` ;
 - aucune inférence depuis le nom ou l'ID ;
 - validation par le vrai `normalizeSkillDefinition`.
+
+
+## Micro-lot C — Capture skill -> SkillDefinition V1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN : `checkpoint/lab-capture-creature-adapter-v1-green-2026-09-27` ;
+- SHA : `729289646e605a58d1a98d9f354950729a6527a0` ;
+- checkpoint départ : `checkpoint/lab-start-capture-skill-adapter-v1-2026-09-27` ;
+- branche : `work/lab-capture-skill-adapter-v1-2026-09-27`.
+
+Objectif :
+
+Adapter une compétence sémantique provenant de `CaptureCombatExportV1` vers le contrat natif `SkillDefinition`.
+
+Principe :
+
+- `normalizeSkillDefinition` reste l'unique autorité des catégories, formes, timings, cibles, réactions, effets et clash projectile ;
+- l'adaptateur ne réimplémente aucune règle ;
+- aucune inférence depuis le nom, le texte, l'élément ou un ID historique ;
+- les données de présentation restent hors du gameplay.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-skill-to-skill-definition.js`.
+
+Protégé / interdit :
+
+- aucun changement `src/contracts/skill-definition.js` ;
+- aucun changement Combat Rules / Runtime / FX / Renderer ;
+- aucun assetId copié dans SkillDefinition ;
+- aucune connaissance des `captureFix*` ;
+- aucun DOM/storage/global/réseau.
+
+Tests RED :
+
+1. conversion canonique vers le vrai normalizer ;
+2. defaults natifs conservés ;
+3. mismatch `skill.id / definition.id` refusé ;
+4. aucune inférence depuis label/nom ;
+5. présentation/métadonnées ignorées ;
+6. erreurs natives SkillDefinition conservées ;
+7. vraie résolution `CombatSession.previewSkill` avec la compétence adaptée ;
+8. sentinelle d'indépendance.
+
+Critère GREEN :
+
+- tests + CI globale SUCCESS ;
+- seul adaptateur d'entrée ajouté ;
+- checkpoint GREEN avant roster/format.
