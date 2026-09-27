@@ -9750,3 +9750,212 @@ Critère GREEN final :
 
 - validation smartphone par Sylvain ;
 - checkpoint final seulement après retour utilisateur.
+
+
+## Résultat technique — Capture Editor Human V2 — 2026-09-27
+
+Base du lot :
+
+- `checkpoint/lab-start-capture-editor-human-v2-2026-09-27` ;
+- SHA initial `bc58f0b3d506df9e78779fe6a524838b6c03dcd0`.
+
+Branche :
+
+`work/lab-capture-editor-human-v2-2026-09-27`.
+
+### RED initial
+
+- test : `tests/unit/capture-editor-human-v2.test.mjs` ;
+- commit RED : `2e7d60af2ac92aa353f815b1267327fefb44c0a8` ;
+- CI : run `36342373351` — FAILURE attendue ;
+- cause isolée : module `src/ui/capture-editor-human-v2.js` absent.
+
+### Première implémentation
+
+Commit :
+
+`4c6f0be41ff9462039e88f183ade5dd88a5215ea`.
+
+Fichiers principaux :
+
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` ;
+- `examples/dom-demo/capture-editor-v2.js`.
+
+L'UI sépare :
+
+- Créature ;
+- Combat ;
+- Capacités.
+
+Elle ne présente aucun éditeur JSON comme voie normale.
+
+### Régression contractuelle découverte n°1 — Draft créature V2
+
+CI de l'implémentation : run `36345042678` — FAILURE.
+
+Cause réelle :
+
+- `CaptureCreatureEditorDraftV2` produisait `presentationId` ;
+- le même normalizer refusait ce champ lors d'une renormalisation par l'Exporter V2.
+
+Aucun contournement UI appliqué.
+
+Correctif racine dédié :
+
+- checkpoint GREEN : `checkpoint/lab-capture-creature-draft-v2-idempotence-fix-green-2026-09-27` ;
+- SHA `7d0b49e54f115e0d3dde69d9e4901f1aedb6ab85` ;
+- `presentation` reste l'unique source de vérité ;
+- l'Exporter V2 dérive le `presentationId` V1 au moment de la conversion.
+
+Report exact sur la branche UI :
+
+`9eeb2836505488240de6472a4c1c0e304afe5306`.
+
+### Régression contractuelle découverte n°2 — Loadout
+
+CI après premier correctif : run `36345322311` — FAILURE.
+
+Cause réelle :
+
+- `CaptureActiveSkillLoadoutV1` produisait `equippedSkillIds` ;
+- le normalizer refusait ensuite cette projection lors de la renormalisation par l'Exporter V2.
+
+Aucun champ supprimé artificiellement dans l'UI.
+
+Correctif racine dédié :
+
+- checkpoint GREEN : `checkpoint/lab-capture-loadout-v1-idempotence-fix-green-2026-09-27` ;
+- SHA `79cc686960b29c664c61325078211c113fbb4a79` ;
+- les quatre `slots` restent l'unique source autoritaire ;
+- helper pur `captureActiveSkillIdsV1()` pour la projection ;
+- Exporter V2 utilise le helper.
+
+Report exact sur la branche UI :
+
+`39b595d1a45ff9bd65730438ad4f66269a4e226d`.
+
+CI :
+
+- run `36345675425` — SUCCESS.
+
+### Prévalidation ergonomique — placement des sockets
+
+Un défaut de lisibilité a été détecté avant preview :
+
+- les surfaces tactiles de placement de socket existaient ;
+- elles ne montraient pas encore les images face/dos sélectionnées.
+
+RED :
+
+- commit `671627fe9ff5bc0815bef9dbd4bee6db4c8f1877` ;
+- CI run `36345747782` — FAILURE attendue ;
+- un seul test en échec.
+
+Correctif :
+
+- commit `afa636b9630038cc5579c9e09b1c4c59244511e4` ;
+- images face/dos synchronisées dans les surfaces socket ;
+- marqueur de socket superposé sur la vraie image ;
+- CI run `36345805236` — SUCCESS.
+
+### Prévalidation cycle de vie
+
+Dernière revue :
+
+- les listeners des sélecteurs d'assets devaient eux aussi appartenir au `dispose()` de l'éditeur.
+
+RED :
+
+- commit `d5b5b1e524b0fb11355fa023ddbd3cb61ac4e9cb` ;
+- CI run `36345849367` — FAILURE attendue.
+
+Correctif :
+
+- commit `06fc9b35e4a77e942244e3193747b5daff024323` ;
+- hydration du catalogue via le propriétaire `listen()` du mount ;
+- aucun listener ajouté après `dispose()` ;
+- CI run `36345881501` — SUCCESS.
+
+### État fonctionnel de la prévalidation
+
+Créature :
+
+- identité / niveau / description ;
+- face / dos / icône depuis le catalogue logique ;
+- profil morphologique ;
+- placement tactile de sockets sur face/dos ;
+- sons attack / hit / KO lorsqu'un catalogue audio compatible est disponible ;
+- éléments / résistances / Capture ;
+- stats avancées ;
+- quatre slots actifs explicites.
+
+Combat :
+
+- PV ;
+- énergie max / initiale ;
+- quantité et intervalle de récupération ;
+- coût de déplacement ;
+- modificateur de temps de charge ;
+- format actif 1v1 / 2v2 / 3v3 / 4v4 par un même chemin Battle Setup.
+
+Capacités :
+
+- type ;
+- forme ;
+- élément ;
+- dégâts / soin ;
+- coût énergie ;
+- approche none / sol / aérien / téléportation ;
+- distances ;
+- cibles ;
+- préparation ;
+- trajet ;
+- récupération ;
+- cooldown réel ;
+- stun / interruption ;
+- clash projectile ;
+- icône ;
+- socket source ;
+- FX cast / travel / impact ;
+- audio cast / impact lorsqu'il existe dans le catalogue.
+
+Invariants :
+
+- aucun Combat Runtime ou Combat Session dans l'éditeur ;
+- aucun renderer propriétaire de règles ;
+- aucun storage ;
+- aucun `captureFix*` ;
+- aucune dépendance `Zombicide-40k` ;
+- aucun `is2v2` ;
+- aucune structure JSON technique exposée comme interface normale ;
+- aucun chemin physique enregistré comme donnée métier ;
+- export final par le vrai `exportCaptureEditorDraftsToCombatExportV2()`.
+
+État :
+
+**GREEN technique / PREVALIDATION UI seulement.**
+
+La charte interdit le checkpoint GREEN final avant validation smartphone utilisateur.
+
+Checkpoint de prévalidation prévu après CI documentaire :
+
+`checkpoint/lab-capture-editor-human-v2-prevalidation-green-2026-09-27`.
+
+Preview prévue :
+
+`preview/lab-capture-editor-human-v2-2026-09-27`.
+
+Test mobile demandé :
+
+1. navigation Créature / Combat / Capacités ;
+2. lisibilité portrait smartphone ;
+3. changement image face/dos/icône ;
+4. placement d'un socket sur face et dos ;
+5. réglages énergie / format ;
+6. réglages capacité et cooldown ;
+7. bouton de validation ;
+8. vérifier absence de débordement ou contrôle inaccessible.
+
+Aucun GREEN final avant ce retour.
