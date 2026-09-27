@@ -9,7 +9,9 @@
   "travelMs": 1500,
   "recoveryMs": 500,
   "allowedDistances": [
-    "short"
+    "short",
+    "medium",
+    "long"
   ],
   "effect": {
     "damage": 18
