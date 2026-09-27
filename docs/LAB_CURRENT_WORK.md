@@ -6894,3 +6894,56 @@ IA :
 CI work : SUCCESS, run `36302550999`, SHA `257ed4d105e9cb5b0c08ab5a14eb3c08b0afb2ba`.
 
 Validation smartphone requise avant checkpoint GREEN.
+
+
+### Micro-lot 2v2 — HUD allié / taille HUD local / feedback cible — 2026-09-27
+
+Retour utilisateur :
+
+- placer l'état allié au-dessus de l'UI des capacités, plutôt qu'en carte isolée à gauche ;
+- conserver pour la créature locale une taille de HUD équivalente au 1v1 ;
+- afficher avec l'allié une indication visuelle de sa créature / réserve restante sans créer une fausse logique de roster ;
+- lors d'un clic de cible, afficher brièvement un petit cercle sous la créature sélectionnée ;
+- noter pour le futur éditeur que le rythme des animations et les cooldowns de capacités devront être configurables.
+
+Base / sécurité :
+
+- base : `8985039439a07e40902fda203ac087986cdff9c8` ;
+- checkpoint : `checkpoint/lab-start-coop-2v2-hud-target-pulse-2026-09-27` ;
+- branche : `work/lab-coop-2v2-preview-2026-09-27` ;
+- `main` et `global-assets` protégées.
+
+Périmètre autorisé :
+
+- `examples/dom-demo/coop-2v2.html` : réorganisation du HUD local / allié ;
+- `examples/dom-demo/demo.css` : styles 2v2 ciblés uniquement ;
+- `src/ui/combat-2v2-test-ui.js` : feedback temporaire de sélection et icône de créature alliée issue du descriptor visuel existant ;
+- `docs/LAB_ARCHITECTURE.md` : note futur éditeur sur vitesse d'animation / cooldown ;
+- tests ciblés 2v2 ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / dégâts / PV / énergie / IA ;
+- aucun changement du renderer de créatures ou FX ;
+- aucun changement du 1v1 ;
+- aucun cooldown ajouté dans ce micro-lot ;
+- aucune modification de timing d'attaque aérienne dans ce micro-lot ;
+- aucun faux roster : tant qu'une réserve propre à chaque contrôleur n'existe pas dans le modèle 2v2, l'UI n'invente pas de membres de réserve.
+
+Intentions UI :
+
+- HUD local : mêmes proportions de référence que le `combat-card` 1v1 ;
+- HUD allié : panneau compact directement au-dessus de la barre de capacités, avec nom / PV / action / icône de sa créature active ;
+- cercle de ciblage : feedback transitoire uniquement, distinct de la surbrillance persistante de cible sélectionnée ;
+- le cercle n'a aucune autorité gameplay.
+
+Critères :
+
+- HUD local visuellement équivalent au 1v1 ;
+- allié lisible juste au-dessus des capacités ;
+- aucune fausse réserve affichée ;
+- clic sur une cible => pulse circulaire temporaire sous sa créature ;
+- timers du pulse nettoyés au dispose ;
+- CI verte ;
+- validation smartphone utilisateur.
