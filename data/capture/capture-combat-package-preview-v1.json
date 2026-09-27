@@ -1,0 +1,186 @@
+{
+  "schema": "capture-combat-package",
+  "version": 1,
+  "metadata": {
+    "sourceId": "lab-capture-editor-preview",
+    "sourceLabel": "Preview éditeur Capture"
+  },
+  "creatures": [
+    {
+      "id": "loup_volcanique",
+      "displayName": "Loup volcanique",
+      "fighterConfigId": "loup_volcanique",
+      "fighterConfig": {
+        "id": "loup_volcanique",
+        "maxHp": 100,
+        "initialHp": 100,
+        "maxEnergy": 10,
+        "initialEnergy": 6,
+        "energyChargeAmount": 1,
+        "energyChargeIntervalMs": 2000,
+        "movementEnergyPerStep": 1,
+        "chargeTimeModifierPct": 0
+      },
+      "skillIds": ["fireball"]
+    },
+    {
+      "id": "golem_moussu",
+      "displayName": "Golem moussu",
+      "fighterConfigId": "golem_moussu",
+      "fighterConfig": {
+        "id": "golem_moussu",
+        "maxHp": 120,
+        "initialHp": 120,
+        "maxEnergy": 10,
+        "initialEnergy": 6,
+        "energyChargeAmount": 1,
+        "energyChargeIntervalMs": 2200,
+        "movementEnergyPerStep": 1,
+        "chargeTimeModifierPct": 5
+      },
+      "skillIds": ["fireball"]
+    },
+    {
+      "id": "maraileron",
+      "displayName": "Maraileron",
+      "fighterConfigId": "maraileron",
+      "fighterConfig": {
+        "id": "maraileron",
+        "maxHp": 100,
+        "initialHp": 100,
+        "maxEnergy": 10,
+        "initialEnergy": 6,
+        "energyChargeAmount": 1,
+        "energyChargeIntervalMs": 1900,
+        "movementEnergyPerStep": 1,
+        "chargeTimeModifierPct": -5
+      },
+      "skillIds": ["fireball"]
+    },
+    {
+      "id": "braisombre",
+      "displayName": "Braisombre",
+      "fighterConfigId": "braisombre",
+      "fighterConfig": {
+        "id": "braisombre",
+        "maxHp": 110,
+        "initialHp": 110,
+        "maxEnergy": 10,
+        "initialEnergy": 6,
+        "energyChargeAmount": 1,
+        "energyChargeIntervalMs": 2000,
+        "movementEnergyPerStep": 1,
+        "chargeTimeModifierPct": 0
+      },
+      "skillIds": ["fireball"]
+    }
+  ],
+  "skills": [
+    {
+      "id": "fireball",
+      "name": "Boule de feu",
+      "category": "offensive",
+      "form": "projectile",
+      "element": "fire",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 1600,
+      "travelMs": 850,
+      "recoveryMs": 850,
+      "allowedDistances": ["short", "medium", "long"],
+      "targetRelations": ["enemy"],
+      "projectileClash": {
+        "mode": "mutual_cancel",
+        "group": "fire-orb",
+        "interactsWith": ["fire-orb"]
+      },
+      "effect": {
+        "damage": 30,
+        "tags": ["burn-capable"]
+      }
+    }
+  ],
+  "battleFormat": {
+    "id": "capture-package-preview-2v2",
+    "localActorId": "player",
+    "teams": {
+      "players": ["player", "ally"],
+      "enemies": ["opponent", "opponent-b"]
+    },
+    "actors": [
+      {
+        "actorId": "player",
+        "teamId": "players",
+        "creatureId": "loup_volcanique",
+        "displayName": "Loup volcanique",
+        "fighterConfigId": "loup_volcanique",
+        "controllerId": "human-local"
+      },
+      {
+        "actorId": "ally",
+        "teamId": "players",
+        "creatureId": "golem_moussu",
+        "displayName": "Golem moussu",
+        "fighterConfigId": "golem_moussu",
+        "controllerId": "ai-ally"
+      },
+      {
+        "actorId": "opponent",
+        "teamId": "enemies",
+        "creatureId": "maraileron",
+        "displayName": "Maraileron",
+        "fighterConfigId": "maraileron",
+        "controllerId": "ai-enemy-a"
+      },
+      {
+        "actorId": "opponent-b",
+        "teamId": "enemies",
+        "creatureId": "braisombre",
+        "displayName": "Braisombre",
+        "fighterConfigId": "braisombre",
+        "controllerId": "ai-enemy-b"
+      }
+    ]
+  },
+  "presentation": {
+    "creatures": {
+      "loup_volcanique": {
+        "profileId": "serpentine",
+        "frontAssetId": "pack:capture:loup-volcanique-front-01",
+        "backAssetId": "pack:capture:loup-volcanique-back-01",
+        "iconAssetId": "pack:capture:loup-volcanique-icon-01"
+      },
+      "golem_moussu": {
+        "profileId": "serpentine",
+        "frontAssetId": "pack:capture:golem-moussu-front-01",
+        "backAssetId": "pack:capture:golem-moussu-back-01",
+        "iconAssetId": "pack:capture:golem-moussu-icon-01"
+      },
+      "maraileron": {
+        "profileId": "serpentine",
+        "frontAssetId": "pack:capture:maraileron-front-01",
+        "backAssetId": "pack:capture:maraileron-back-01",
+        "iconAssetId": "pack:capture:maraileron-icon-01"
+      },
+      "braisombre": {
+        "profileId": "drake",
+        "frontAssetId": "pack:capture:braisombre-front-01",
+        "backAssetId": "pack:capture:braisombre-back-01",
+        "iconAssetId": "pack:capture:braisombre-icon-01"
+      }
+    },
+    "skills": {
+      "fireball": {
+        "iconAssetId": "pack:capture:icon-skill-fireball-01",
+        "castFxAssetId": "pack:capture:sprite-fireball-cast-01",
+        "travelFxAssetId": "pack:capture:sprite-fireball-travel-01",
+        "impactFxAssetId": "pack:capture:sprite-fireball-impact-01",
+        "castSoundAssetId": "gensrpg:sound:fire-cast-01",
+        "impactSoundAssetId": "gensrpg:sound:melee-impact-01",
+        "castAnchor": "mouth",
+        "travelSourceAnchor": "mouth",
+        "castLayer": "front"
+      }
+    }
+  }
+}
