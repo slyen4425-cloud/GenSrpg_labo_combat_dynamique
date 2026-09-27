@@ -7105,3 +7105,61 @@ Tests :
 - CI work : SUCCESS, run `36305384418`, SHA `c799374b9c3d9c0604568bd9eef902cdf8230a8a`.
 
 Validation smartphone requise avant checkpoint GREEN.
+
+
+### Micro-lot 2v2 — adversaires +30 % visuels — 2026-09-27
+
+Demande smartphone :
+
+- augmenter visuellement les deux créatures adversaires du prototype 2v2 de **+30 % par rapport à leur taille actuelle** ;
+- ne modifier ni le 1v1 ni la géométrie logique du combat.
+
+Base / sécurité :
+
+- SHA de base vérifié : `7682ee988f8376da04aacdfcbc3ad3316d23098e` ;
+- checkpoint de départ : `checkpoint/lab-start-coop-2v2-enemy-scale-plus30-2026-09-27` ;
+- branche de travail : `work/lab-coop-2v2-preview-2026-09-27` ;
+- preview au même SHA avant modification : `preview/lab-coop-2v2-preview-2026-09-27` ;
+- CI preview de base : SUCCESS, run `36305433077` ;
+- `main` et `global-assets` protégées.
+
+Constat CSS au SHA de base :
+
+- composition 2v2 générale :
+  - adversaire A : `min(34%, 19.5rem)` ;
+  - adversaire B : `min(33%, 19rem)` ;
+- breakpoint smartphone `max-width: 680px` :
+  - adversaire A : `31%` ;
+  - adversaire B : `30%`.
+
+Périmètre autorisé :
+
+- `examples/dom-demo/demo.css` : appliquer ×1,30 uniquement aux largeurs des deux adversaires 2v2, y compris l'override smartphone existant ;
+- `tests/unit/coop-2v2.test.mjs` : adapter les sentinelles de taille et protéger explicitement le breakpoint smartphone ;
+- présente documentation.
+
+Valeurs cibles issues du ×1,30 exact :
+
+- général :
+  - A : `min(44.2%, 25.35rem)` ;
+  - B : `min(42.9%, 24.7rem)` ;
+- smartphone ≤680 px :
+  - A : `40.3%` ;
+  - B : `39%`.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / Runtime / dégâts / ciblage / IA / timings ;
+- aucun changement de positions `top/left`, anchors, renderer, FX ou sélection ;
+- aucun changement 1v1 ;
+- aucun masquage, aucune duplication de sprite, aucun second renderer.
+
+Critères :
+
+- deux adversaires environ 30 % plus grands dans le 2v2, y compris sur smartphone ;
+- positions et anchors inchangés ;
+- ciblage / FX / projectiles continuent d'utiliser les mêmes acteurs et mêmes ancres ;
+- sentinelle 1v1 inchangée ;
+- CI GREEN ;
+- déplacement de la branche preview uniquement après CI GREEN ;
+- validation smartphone utilisateur avant checkpoint GREEN final.
