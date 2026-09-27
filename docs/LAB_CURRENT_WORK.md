@@ -8871,3 +8871,67 @@ Prochaine étape sûre :
 
 - ne pas connecter encore ce binding à l'UI ;
 - auditer la future responsabilité des 4 slots de capacité afin d'éviter une double autorité avec `CaptureCreatureEditorDraftV1.skillIds`.
+
+
+## Micro-lot — CaptureCreatureEditorDraftV2 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-creature-presentation-binding-v1-green-2026-09-27` ;
+- SHA `4a77410ab3aab2f0fd930cb2d5b1d105693ff964`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-creature-editor-draft-v2-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-creature-editor-draft-v2-2026-09-27`.
+
+Objectif :
+
+Composer les données éditoriales Capture existantes avec `CreaturePresentationBindingV1` sans modifier le contrat V1 ni dupliquer les assets dans le gameplay.
+
+Propriétaire :
+
+- `src/contracts/capture-creature-editor-draft-v2.js`.
+
+Décision de modèle :
+
+- le brouillon V2 conserve les champs métier de `CaptureCreatureEditorDraftV1` ;
+- la présentation devient une propriété `presentation` optionnelle ;
+- si présente, elle est validée par `normalizeCreaturePresentationBindingV1` ;
+- `presentation.subjectId` doit correspondre à l'id de la créature ;
+- `presentationId` est dérivé du binding normalisé, jamais saisi comme deuxième source de vérité ;
+- aucune image, aucun son, aucun socket n'entre dans `combat`.
+
+Protégé / interdit :
+
+- aucune modification du V1 ;
+- aucun renderer ;
+- aucune UI ;
+- aucun storage/network ;
+- aucune résolution physique d'asset ;
+- aucune dépendance GenSrpG ;
+- aucun mapping par nom/profil ;
+- aucun loadout 4 slots dans ce lot.
+
+Tests RED :
+
+1. composition complète V2 ;
+2. délégation réelle au V1 pour le métier ;
+3. délégation réelle à CreaturePresentationBindingV1 ;
+4. mismatch subjectId refusé ;
+5. presentationId dérivé ;
+6. présentation absente autorisée ;
+7. champs inconnus refusés ;
+8. profonde immutabilité ;
+9. sentinelle d'indépendance.
+
+Critère GREEN :
+
+- RED isolé avant implémentation ;
+- contrat minimal de composition ;
+- CI globale SUCCESS ;
+- documentation ;
+- checkpoint GREEN avant le lot loadout.
