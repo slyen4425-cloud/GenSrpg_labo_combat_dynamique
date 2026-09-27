@@ -9601,3 +9601,42 @@ Prochaine étape :
 - cooldown réel éditable ;
 - limites audio affichées explicitement si aucun catalogue audio autoritaire n'est disponible ;
 - validation smartphone obligatoire avant GREEN final.
+
+
+## Correctif racine — CaptureCreatureEditorDraftV2 idempotence — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-generic-creature-profiles-v1-green-2026-09-27` ;
+- SHA `bc58f0b3d506df9e78779fe6a524838b6c03dcd0`.
+
+Déclencheur :
+
+Le RED de l'éditeur humain V2 a révélé qu'un objet déjà normalisé par `normalizeCaptureCreatureEditorDraftV2()` ne pouvait pas être renormalisé par l'Exporter V2, car la sortie ajoutait `presentationId` alors que ce champ était interdit en entrée.
+
+Cause racine :
+
+- `presentation` était censé être l'unique source de vérité ;
+- `presentationId` était malgré tout dupliqué dans la sortie V2 ;
+- l'Exporter V2 renormalise légitimement ses entrées ;
+- le contrat V2 n'était donc pas idempotent.
+
+Décision :
+
+- supprimer `presentationId` de la sortie du Draft V2 ;
+- conserver `presentation` comme unique propriétaire ;
+- l'Exporter V2 dérive `presentationId` uniquement lors de la conversion V2 -> V1 ;
+- aucun contournement dans l'UI.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-creature-draft-v2-idempotence-fix-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-creature-draft-v2-idempotence-fix-2026-09-27`.
+
+RED dédié :
+
+- normaliser un Draft V2 déjà normalisé doit fonctionner ;
+- la sortie V2 ne doit plus exposer `presentationId`.
