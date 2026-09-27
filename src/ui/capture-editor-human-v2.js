@@ -315,7 +315,7 @@ export function buildHumanCreatureDraftV2(fields) {
       fields.displayName,
       "Nom créature"
     ),
-    description: optionalText(fields.description) ?? "",
+    description: optionalText(fields.description),
     level: positiveInteger(fields.level, "Niveau"),
     sourceStats: {
       force: finiteNumber(fields.sourceStats?.force, "Force"),
@@ -393,7 +393,7 @@ export function humanSkillFieldsFromLibraryDefinitionV1(definition) {
   return Object.freeze({
     id: definition.id,
     name: definition.name,
-    description: "",
+    description: null,
     requiredLevel: 1,
     usageScopes: Object.freeze(["capture", "combat"]),
     category: definition.category,
