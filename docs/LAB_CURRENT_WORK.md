@@ -8642,3 +8642,51 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation ;
 - checkpoint GREEN avant toute UI éditeur.
+
+
+### Résultat technique — Capture Editor Exporter V1
+
+RED contractuel :
+
+- test : `tests/unit/capture-editor-exporter-v1.test.mjs` ;
+- commit RED : `d07a6d70ebfde3eb325f8c48bb17baa51525d4de` ;
+- CI : run `36334703520` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` sur `src/adapters/input/capture/capture-editor-exporter-v1.js` ;
+- un seul fichier de test en échec.
+
+Implémentation minimale :
+
+- exporter : `src/adapters/input/capture/capture-editor-exporter-v1.js` ;
+- commit : `de97c32a3c6a7dc4dd3d3c81782835e82c4f7d1d` ;
+- CI : run `36334755085` — SUCCESS.
+
+Vrai chemin validé :
+
+`CaptureCreatureEditorDraftV1 + CaptureSkillEditorDraftV1`
+-> `Capture Editor Exporter V1`
+-> `CaptureCombatExportV1`
+-> `Capture Adapter Stack V1`.
+
+Garanties :
+
+- combat copié uniquement depuis le bloc explicite du brouillon créature ;
+- sourceStats, level, description, éléments, résistances et paramètres Capture conservés sous `metadata.editor`, sans devenir gameplay ;
+- SkillDefinition copiée sans remapping ;
+- présentation skill référencée par `presentationId` et transportée sous `presentation.skills` ;
+- requiredLevel / usageScopes conservés uniquement comme metadata éditeur ;
+- références actor/creature/skill validées par le vrai `CaptureCombatExportV1` ;
+- doublons de draft et de binding refusés avant toute perte silencieuse ;
+- sortie consommée directement par la pile d'adaptateurs autoritaire ;
+- aucune UI, aucun Runtime, aucun DOM/storage/network/GenSrpG.
+
+Aucune validation smartphone requise pour ce lot purement contractuel.
+
+Checkpoint GREEN prévu après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-editor-exporter-v1-green-2026-09-27`.
+
+Prochaine étape autorisée :
+
+- pré-audit UI uniquement pour une démo d'éditeur Capture du laboratoire ;
+- l'UI devra modifier des brouillons puis appeler les contrats/exporter ;
+- aucun calcul gameplay, aucune sauvegarde GenSrpG, aucun raccord production.
