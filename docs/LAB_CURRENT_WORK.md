@@ -7179,3 +7179,53 @@ Résultat technique du micro-lot +30 % adversaires :
 - CI du HEAD fonctionnel : SUCCESS, run `36308718701`, SHA `f82de81d61d2b84cbb439a5466a72a312f7ea81c`.
 
 Validation smartphone utilisateur requise avant checkpoint GREEN final.
+
+
+### Micro-lot 2v2 — profondeur perspective pendant les approches — 2026-09-27
+
+Retour smartphone :
+
+- le correctif de couche temporaire évite le passage derrière intempestif, mais force actuellement tout attaquant en `z-index: 9` ;
+- lorsqu'un ennemi situé dans le fond attaque une créature située plus bas dans l'arène, son image passe donc artificiellement devant la cible.
+
+Base / sécurité :
+
+- SHA de base : `a2acb05b187d311c2b74d068f25d1c5e475f4e5c` ;
+- checkpoint : `checkpoint/lab-start-coop-2v2-approach-depth-2026-09-27` ;
+- branche : `work/lab-coop-2v2-preview-2026-09-27` ;
+- CI de base GREEN ;
+- `main` et `global-assets` protégées.
+
+Cause démontrée :
+
+- `playApproachFor()` expose un unique booléen `data-approach-active` ;
+- le CSS 2v2 associe ce booléen à `z-index: 9` sans tenir compte de la profondeur visuelle ;
+- les centres Y acteur/cible sont déjà calculés par le propriétaire de composition au démarrage de l'approche.
+
+Correction ciblée :
+
+- conserver un seul renderer et le même plan d'animation ;
+- dériver uniquement une profondeur de présentation `front` / `behind` depuis les centres Y déjà mesurés ;
+- acteur démarrant plus bas que la cible : couche temporaire avant ;
+- acteur démarrant plus haut que la cible : couche temporaire arrière ;
+- nettoyer cet état en fin, cancel, masquage et dispose.
+
+Fichiers autorisés :
+
+- `src/ui/demo-app.js` ;
+- `examples/dom-demo/demo.css` ;
+- `tests/unit/coop-2v2.test.mjs` ;
+- présente documentation.
+
+Domaines protégés :
+
+- Combat Rules, Runtime, IA, dégâts, ciblage, timings, offsets et anchors ;
+- aucun second renderer, aucune duplication de sprite ;
+- aucun changement 1v1.
+
+Critères :
+
+- un ennemi venant du fond ne recouvre plus artificiellement sa cible pendant l'approche ;
+- un attaquant venant du premier plan reste lisible devant sa cible ;
+- état de profondeur nettoyé après l'action ;
+- CI GREEN avant mise à jour de preview.
