@@ -320,6 +320,8 @@ export async function mountCombatDemo({
     const actorCenterY = actorRect.top + actorRect.height / 2;
     const targetCenterX = targetRect.left + targetRect.width / 2;
     const targetCenterY = targetRect.top + targetRect.height / 2;
+    const approachDepth =
+      actorCenterY >= targetCenterY ? "front" : "behind";
 
     const visualType =
       approachMode === "ground"
@@ -351,7 +353,7 @@ export async function mountCombatDemo({
       profile: profiles.get(slot.actor.profile)
     });
 
-    slot.setApproachActive(true);
+    slot.setApproachActive(true, approachDepth);
 
     const handle = slot.renderer.play(plan);
     const approachRecord = Object.freeze({
@@ -610,15 +612,19 @@ function createSlot({
     image.hidden = !visible || !assetReady;
     if (!visible) {
       slotContainer.removeAttribute("data-approach-active");
+      slotContainer.removeAttribute("data-approach-depth");
       renderer?.cancel();
     }
   }
 
-  function setApproachActive(active) {
+  function setApproachActive(active, depth = null) {
     if (active) {
       slotContainer.dataset.approachActive = "true";
+      slotContainer.dataset.approachDepth =
+        depth === "front" ? "front" : "behind";
     } else {
       slotContainer.removeAttribute("data-approach-active");
+      slotContainer.removeAttribute("data-approach-depth");
     }
   }
 
@@ -667,6 +673,7 @@ function createSlot({
     },
     dispose() {
       slotContainer.removeAttribute("data-approach-active");
+      slotContainer.removeAttribute("data-approach-depth");
       renderer?.dispose();
       image.removeAttribute("src");
     }
