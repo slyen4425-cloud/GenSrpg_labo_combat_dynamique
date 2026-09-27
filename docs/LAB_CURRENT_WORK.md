@@ -8450,3 +8450,72 @@ Prochaine étape après fermeture GREEN :
 - sémantique native SkillDefinition explicite ;
 - présentation séparée via SkillPresentationBindingV1 ;
 - aucune inférence depuis les noms/IDs/texte legacy.
+
+
+## Micro-lot — CaptureSkillEditorDraftV1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-creature-editor-draft-v1-green-2026-09-27` ;
+- SHA `bb9477565530d1a06b6441120e5c9120c89712e6` ;
+- CI documentaire : run `36334424208` — SUCCESS.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-skill-editor-draft-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-skill-editor-draft-v1-2026-09-27`.
+
+Objectif :
+
+Créer un contrat pur représentant le brouillon d'une capacité Capture éditable, en réutilisant les autorités natives du laboratoire au lieu de recréer leurs règles.
+
+Propriétaire :
+
+- `src/contracts/capture-skill-editor-draft-v1.js`.
+
+Composition retenue :
+
+- identité et description éditoriale ;
+- niveau requis et scopes d'usage conservés comme métadonnées d'éditeur ;
+- `definition` explicitement validée par le vrai `normalizeSkillDefinition` ;
+- `presentation` optionnelle explicitement validée par `normalizeSkillPresentationBindingV1`.
+
+Règles critiques :
+
+- `draft.id === definition.id` ;
+- si une présentation existe, `presentation.subjectType === "skill"` et `presentation.subjectId === draft.id` ;
+- aucune catégorie, forme, approche, timing, cible, effet ou cooldown futur n'est inféré depuis le nom, le texte, l'élément ou un ID legacy ;
+- aucune règle de gameplay n'est dupliquée hors `SkillDefinition` ;
+- aucune résolution physique d'asset.
+
+Protégé / interdit :
+
+- aucun DOM/storage/network ;
+- aucun import GenSrpG ;
+- aucune Ability Library historique au runtime ;
+- aucun `captureFix*` ;
+- aucun changement SkillDefinition / PresentationBinding ;
+- aucune UI ;
+- aucun exporter vers CaptureCombatExportV1 dans ce lot.
+
+Tests RED prévus :
+
+1. brouillon complet valide ;
+2. délégation réelle au normalizer SkillDefinition ;
+3. absence de forme/catégorie explicite refusée même si le nom semble l'indiquer ;
+4. mismatch id/definition.id refusé ;
+5. présentation optionnelle et subjectId cohérent ;
+6. niveau requis / scopes normalisés et gelés ;
+7. champs inconnus refusés ;
+8. sentinelle sans DOM/storage/network/GenSrpG/captureFix.
+
+Critère GREEN :
+
+- RED observé avant implémentation ;
+- composition minimale des contrats existants ;
+- CI globale SUCCESS ;
+- documentation synchronisée ;
+- checkpoint GREEN exact avant exporter éditeur.
