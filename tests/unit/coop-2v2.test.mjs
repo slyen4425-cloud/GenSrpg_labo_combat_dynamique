@@ -310,6 +310,26 @@ test("target click feedback uses a temporary arena pulse and cleans its timer on
   assert.match(css, /@keyframes coop-target-pulse/);
 });
 
+test("coop approach attacker gets a temporary front layer without changing combat logic", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+  const source = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.match(
+    css,
+    /\.arena--coop-2v2 \.fighter\[data-approach-active="true"\]\s*\{[\s\S]*z-index:\s*9/
+  );
+  assert.match(source, /slot\.setApproachActive\(true\)/);
+  assert.match(
+    source,
+    /\.finally\(\(\) => \{[\s\S]*slot\.setApproachActive\(false\)/
+  );
+  assert.match(
+    source,
+    /function cancelFor\(slotKey\)[\s\S]*slot\.setApproachActive\(false\)/
+  );
+});
+
+
 test("coop 2v2 CSS gives four distinct actor positions and lightweight squad cards", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
@@ -323,11 +343,11 @@ test("coop 2v2 CSS gives four distinct actor positions and lightweight squad car
   );
   assert.match(
     css,
-    /\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*?top:\s*31%[\s\S]*?left:\s*74%[\s\S]*?width:\s*min\(31%, 18rem\)/
+    /\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*?top:\s*31%[\s\S]*?left:\s*74%[\s\S]*?width:\s*min\(34%, 19\.5rem\)/
   );
   assert.match(
     css,
-    /\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*?left:\s*42%[\s\S]*?width:\s*min\(30%, 17\.5rem\)/
+    /\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*?left:\s*42%[\s\S]*?width:\s*min\(33%, 19rem\)/
   );
   assert.match(css, /\.squad-card--player/);
   assert.match(css, /\.squad-card--ally/);
