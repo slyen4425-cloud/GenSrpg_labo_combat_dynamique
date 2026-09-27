@@ -102,22 +102,63 @@ export async function mountCombatDemo({
   let disposed = false;
   const arena = requiredElement(root, "[data-combat-arena]");
 
-  const slots = {
-    player: createSlot({
-      key: "player",
-      initialMeta: maraileron,
-      view: "player",
-      root,
-      profiles
-    }),
-    opponent: createSlot({
-      key: "opponent",
-      initialMeta: braisombre,
-      view: "opponent",
-      root,
-      profiles
+  const slotElements =
+    typeof root.querySelectorAll === "function"
+      ? [...root.querySelectorAll("[data-demo-slot]")]
+      : [
+          requiredElement(root, '[data-demo-slot="player"]'),
+          requiredElement(root, '[data-demo-slot="opponent"]')
+        ];
+
+  if (slotElements.length < 2) {
+    throw new Error("Combat demo requires at least two visual slots");
+  }
+
+  const slots = Object.fromEntries(
+    slotElements.map((container) => {
+      const key = container.dataset?.demoSlot;
+      if (!key) {
+        throw new Error("data-demo-slot must define a slot key");
+      }
+
+      const view =
+        container.dataset?.demoView ??
+        (key.startsWith("opponent") ? "opponent" : "player");
+      if (!["player", "opponent"].includes(view)) {
+        throw new RangeError(`Unsupported demo view: ${view}`);
+      }
+
+      const defaultCreatureId =
+        key === "player"
+          ? maraileron.id
+          : key === "opponent"
+            ? braisombre.id
+            : view === "player"
+              ? loupVolcanique.id
+              : golemMoussu.id;
+      const initialCreatureId =
+        container.dataset?.demoCreature ?? defaultCreatureId;
+      const initialMeta = creatureMetas.get(initialCreatureId);
+      if (!initialMeta) {
+        throw new RangeError(
+          `Unknown initial demo creature: ${initialCreatureId}`
+        );
+      }
+
+      return [
+        key,
+        createSlot({
+          key,
+          initialMeta,
+          view,
+          root,
+          profiles,
+          container,
+          initialVisible: container.hidden !== true
+        })
+      ];
     })
-  };
+  );
   const activeApproachBySlot = new Map();
 
   function slotOf(slotKey) {
@@ -128,8 +169,29 @@ export async function mountCombatDemo({
     return slot;
   }
 
-  function otherSlot(slot) {
-    return slot.key === "player" ? slots.opponent : slots.player;
+  function defaultTargetFor(slot) {
+    if (slot.key === "player" && slots.opponent) {
+      return slots.opponent;
+    }
+    if (slot.key === "opponent" && slots.player) {
+      return slots.player;
+    }
+
+    return (
+      Object.values(slots).find(
+        (candidate) =>
+          candidate.key !== slot.key &&
+          candidate.visible &&
+          candidate.view !== slot.view
+      ) ?? null
+    );
+  }
+
+  function targetFor(slot, targetSlot = null) {
+    if (targetSlot !== null) {
+      return slotOf(targetSlot);
+    }
+    return defaultTargetFor(slot);
   }
 
   function startIdleFor(slotKey) {
@@ -155,7 +217,11 @@ export async function mountCombatDemo({
     return slot.renderer.play(plan);
   }
 
-  function playEventFor(slotKey, type) {
+  function playEventFor(
+    slotKey,
+    type,
+    { targetSlot = null } = {}
+  ) {
     if (disposed) {
       return Promise.resolve({ status: "disposed" });
     }
@@ -176,19 +242,22 @@ export async function mountCombatDemo({
           ) {
             return approachResult ?? { status: "cancelled" };
           }
-          return playEventFor(slotKey, type);
+          return playEventFor(slotKey, type, { targetSlot });
         }
       );
     }
 
-    const target = otherSlot(slot);
+    const target =
+      type === "attack"
+        ? targetFor(slot, targetSlot)
+        : null;
 
     try {
       const event = normalizeCombatVisualEvent({
         type,
         actorId: slot.actor.id,
         targetId:
-          type === "attack" && target.visible
+          type === "attack" && target?.visible
             ? target.actor.id
             : null,
         intensity: 1
@@ -221,19 +290,25 @@ export async function mountCombatDemo({
   function playApproachFor(
     slotKey,
     approachMode,
-    { travelMs, onPhase = null } = {}
+    {
+      travelMs,
+      targetSlot = null,
+      onPhase = null
+    } = {}
   ) {
     if (disposed) {
       return Promise.resolve({ status: "disposed" });
     }
 
     if (!["ground", "teleport", "aerial"].includes(approachMode)) {
-      return playEventFor(slotKey, "attack");
+      return playEventFor(slotKey, "attack", {
+        targetSlot
+      });
     }
 
     const slot = slotOf(slotKey);
-    const target = otherSlot(slot);
-    if (!slot.visible || !target.visible) {
+    const target = targetFor(slot, targetSlot);
+    if (!slot.visible || !target?.visible) {
       return Promise.resolve({ status: "hidden" });
     }
 
@@ -397,8 +472,9 @@ export async function mountCombatDemo({
     });
   }
 
-  startIdleFor("player");
-  startIdleFor("opponent");
+  for (const slotKey of Object.keys(slots)) {
+    startIdleFor(slotKey);
+  }
 
   return Object.freeze({
     playEventFor,
@@ -413,6 +489,9 @@ export async function mountCombatDemo({
     },
     getCreatureFor(slotKey) {
       return slotOf(slotKey).meta.id;
+    },
+    get slotKeys() {
+      return Object.freeze(Object.keys(slots));
     },
     dispose() {
       if (disposed) {
@@ -432,18 +511,23 @@ function createSlot({
   initialMeta,
   view,
   root,
-  profiles
+  profiles,
+  container = null,
+  initialVisible = true
 }) {
-  const container = requiredElement(root, `[data-demo-slot="${key}"]`);
-  const motion = requiredElement(container, "[data-demo-motion]");
-  const image = requiredElement(container, "[data-demo-image]");
-  const label = requiredElement(container, "[data-demo-label]");
-  const profileLabel = container.querySelector("[data-demo-profile]");
+  const slotContainer =
+    container ??
+    requiredElement(root, `[data-demo-slot="${key}"]`);
+
+  const motion = requiredElement(slotContainer, "[data-demo-motion]");
+  const image = requiredElement(slotContainer, "[data-demo-image]");
+  const label = requiredElement(slotContainer, "[data-demo-label]");
+  const profileLabel = slotContainer.querySelector("[data-demo-profile]");
 
   let meta = null;
   let actor = null;
   let renderer = null;
-  let visible = true;
+  let visible = Boolean(initialVisible);
   let assetReady = false;
   let imageLoadToken = 0;
 
@@ -518,7 +602,7 @@ function createSlot({
 
   function setVisible(nextVisible) {
     visible = Boolean(nextVisible);
-    container.hidden = !visible;
+    slotContainer.hidden = !visible;
     image.hidden = !visible || !assetReady;
     if (!visible) {
       renderer?.cancel();
@@ -545,6 +629,7 @@ function createSlot({
   }
 
   setCreature(initialMeta);
+  setVisible(initialVisible);
 
   return {
     key,
