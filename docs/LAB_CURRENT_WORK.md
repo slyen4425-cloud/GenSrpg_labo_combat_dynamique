@@ -8690,3 +8690,51 @@ Prochaine étape autorisée :
 - pré-audit UI uniquement pour une démo d'éditeur Capture du laboratoire ;
 - l'UI devra modifier des brouillons puis appeler les contrats/exporter ;
 - aucun calcul gameplay, aucune sauvegarde GenSrpG, aucun raccord production.
+
+
+## Pré-audit — éditeur Capture humain V1 — 2026-09-27
+
+Base GREEN volontaire :
+
+- `checkpoint/lab-capture-editor-exporter-v1-green-2026-09-27` ;
+- SHA `41c05bd0fa2e7029e3bdaae8174fe584a055f802`.
+
+La branche UI technique précédente n'est pas patchée et n'est pas utilisée comme nouvelle fondation fonctionnelle.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-human-preaudit-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-human-preaudit-v1-2026-09-27`.
+
+Retour utilisateur pris comme exigence produit :
+
+- éditeur commun et lisible ;
+- séparation Créature / Combat / Capacités ;
+- face / dos / icône ;
+- profil morphologique ;
+- sockets projectiles positionnables ;
+- 4 slots de capacités ;
+- sons créature ;
+- énergie / récupération / format de bataille ;
+- capacité : type, dégâts/soin, élément, effet, coût, forme, mouvement, préparation, cooldown futur, trajet, audio, FX.
+
+Résultat d'architecture :
+
+- nouveaux champs non représentés = nouveaux contrats avant UI ;
+- aucun champ factice ou masqué ;
+- aucun raccord Runtime depuis l'UI ;
+- aucun patch de l'UI V1 technique ;
+- premier lot recommandé : `CreaturePresentationBindingV1`.
+
+Document :
+
+`docs/LAB_CAPTURE_EDITOR_HUMAN_PREAUDIT_V1.md`.
+
+Critère de fermeture :
+
+- CI documentaire GREEN ;
+- checkpoint pré-audit GREEN ;
+- ouverture ensuite du lot contractuel `CreaturePresentationBindingV1`.
