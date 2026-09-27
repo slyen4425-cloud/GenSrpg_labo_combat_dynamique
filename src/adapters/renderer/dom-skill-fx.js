@@ -5,6 +5,53 @@ function defaultAnimate(element, keyframes, options) {
   return element.animate(keyframes, options);
 }
 
+function defaultRequestFrame(callback) {
+  return typeof globalThis.requestAnimationFrame === "function"
+    ? globalThis.requestAnimationFrame(callback)
+    : null;
+}
+
+function defaultCancelFrame(frameId) {
+  if (
+    frameId !== null &&
+    typeof globalThis.cancelAnimationFrame === "function"
+  ) {
+    globalThis.cancelAnimationFrame(frameId);
+  }
+}
+
+function rectCenter(rect) {
+  return Object.freeze({
+    x: Number(rect.left) + Number(rect.width) / 2,
+    y: Number(rect.top) + Number(rect.height) / 2
+  });
+}
+
+function pointInsideRect(point, rect) {
+  if (
+    !point ||
+    !rect ||
+    !Number.isFinite(Number(rect.left)) ||
+    !Number.isFinite(Number(rect.top)) ||
+    !Number.isFinite(Number(rect.width)) ||
+    !Number.isFinite(Number(rect.height)) ||
+    Number(rect.width) <= 0 ||
+    Number(rect.height) <= 0
+  ) {
+    return false;
+  }
+
+  const right = Number(rect.left) + Number(rect.width);
+  const bottom = Number(rect.top) + Number(rect.height);
+
+  return (
+    point.x >= Number(rect.left) &&
+    point.x <= right &&
+    point.y >= Number(rect.top) &&
+    point.y <= bottom
+  );
+}
+
 function centerRelativeTo(rect, arenaRect) {
   return Object.freeze({
     x: rect.left - arenaRect.left + rect.width / 2,
@@ -125,7 +172,9 @@ export function createDomSkillFxRenderer({
   sourceAnchorFor = null,
   missLabel = "RATÉ",
   presentationForSkill = () => null,
-  animate = defaultAnimate
+  animate = defaultAnimate,
+  requestFrame = defaultRequestFrame,
+  cancelFrame = defaultCancelFrame
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
     throw new TypeError("arena must be a DOM-like element");
@@ -141,6 +190,9 @@ export function createDomSkillFxRenderer({
   }
   if (sourceAnchorFor !== null && typeof sourceAnchorFor !== "function") {
     throw new TypeError("sourceAnchorFor must be a function when supplied");
+  }
+  if (typeof requestFrame !== "function" || typeof cancelFrame !== "function") {
+    throw new TypeError("frame scheduler functions are required");
   }
 
   let disposed = false;
@@ -177,8 +229,44 @@ export function createDomSkillFxRenderer({
       return;
     }
     active.delete(record);
+    if (record.contactFrameId !== null && record.contactFrameId !== undefined) {
+      cancelFrame(record.contactFrameId);
+      record.contactFrameId = null;
+    }
     record.frameAnimation?.cancel?.();
     record.node.remove?.();
+  }
+
+  function watchProjectileContact(record, targetSlot) {
+    if (
+      !record?.node ||
+      typeof record.node.getBoundingClientRect !== "function" ||
+      !anchors[targetSlot]
+    ) {
+      return;
+    }
+
+    const check = () => {
+      record.contactFrameId = null;
+
+      if (disposed || !active.has(record)) {
+        return;
+      }
+
+      const projectileRect = record.node.getBoundingClientRect();
+      const liveTargetRect =
+        anchor(anchors, targetSlot, "live target").getBoundingClientRect();
+
+      if (pointInsideRect(rectCenter(projectileRect), liveTargetRect)) {
+        record.animation?.cancel?.();
+        cleanup(record);
+        return;
+      }
+
+      record.contactFrameId = requestFrame(check);
+    };
+
+    record.contactFrameId = requestFrame(check);
   }
 
   function play({
@@ -472,7 +560,7 @@ export function createDomSkillFxRenderer({
       }
 
       const to = centerRelativeTo(
-        anchor(targetAnchors, targetSlot, "target").getBoundingClientRect(),
+        anchor(anchors, targetSlot, "live target").getBoundingClientRect(),
         arenaRect
       );
       const node = arena.ownerDocument.createElement("span");
@@ -619,7 +707,9 @@ export function createDomSkillFxRenderer({
       animation: null,
       frameAnimation: projectileFrameAnimation,
       type: "projectile",
-      fromSlot
+      fromSlot,
+      targetSlot,
+      contactFrameId: null
     };
     active.add(record);
 
@@ -661,6 +751,7 @@ export function createDomSkillFxRenderer({
     );
 
     record.animation = animation;
+    watchProjectileContact(record, targetSlot);
 
     const finished = Promise.resolve(animation.finished)
       .then(() => {
