@@ -8690,3 +8690,42 @@ Prochaine étape autorisée :
 - pré-audit UI uniquement pour une démo d'éditeur Capture du laboratoire ;
 - l'UI devra modifier des brouillons puis appeler les contrats/exporter ;
 - aucun calcul gameplay, aucune sauvegarde GenSrpG, aucun raccord production.
+
+
+## Pré-audit — UI éditeur Capture V1 — 2026-09-27
+
+Base :
+
+- `checkpoint/lab-capture-editor-exporter-v1-green-2026-09-27` ;
+- SHA `41c05bd0fa2e7029e3bdaae8174fe584a055f802`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-ui-preaudit-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-ui-preaudit-v1-2026-09-27`.
+
+Décision :
+
+- nouveau propriétaire `src/ui/capture-editor-test-ui.js` ;
+- page autonome `examples/dom-demo/capture-editor.html` ;
+- boot `capture-editor.js` ;
+- styles dédiés `capture-editor.css` ;
+- aucun changement des UIs combat existantes ;
+- aucune persistance ;
+- aucun runtime de combat ;
+- soumission strictement via Draft contracts + Capture Editor Exporter V1.
+
+Document :
+
+`docs/LAB_CAPTURE_EDITOR_UI_PREAUDIT_V1.md`.
+
+Prochaine étape après CI documentaire GREEN :
+
+- lot UI V1 minimal ;
+- vrai formulaire créature + capacité ;
+- preview JSON/export ;
+- test RED avant implémentation ;
+- preview mobile obligatoire avant GREEN final.
