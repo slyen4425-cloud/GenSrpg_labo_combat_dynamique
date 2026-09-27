@@ -252,6 +252,7 @@ export function createCombatResolutionPresenter({
 
     for (const fxPlan of planSkillOutcomeFx({
       resolution,
+      actorSlot,
       targetSlot
     })) {
       fx?.play(fxPlan);
