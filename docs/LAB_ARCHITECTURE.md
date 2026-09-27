@@ -305,74 +305,126 @@ Le feedback :
 - n'influence jamais PV, dégâts, hit ou esquive ;
 - disparaît après sa propre animation et ne crée aucun état gameplay.
 
-## 8.1 Format de combat configurable — futur 1v1 / 2v2
+## 8.1 Format de combat configurable — futur 1v1 / 2v2 coop
 
-Le laboratoire ne doit pas figer le nombre de créatures actives simultanément à deux combattants globaux.
+Le laboratoire ne doit pas figer tous les combats en 2v2. Le format reste une donnée du combat / scénario.
 
-Objectif futur :
+Formats visés :
 
-- conserver les combats actuels en `1v1` lorsque le scénario le demande ;
-- permettre un format `2v2` pour certains combats ;
-- laisser le format être choisi par la donnée du combat / scénario, pas par une constante UI ;
-- permettre plus tard des formats asymétriques si un besoin réel apparaît, sans dupliquer tout le moteur.
+- `1v1` classique : un combattant actif par camp ;
+- `2v2 coop` : deux combattants actifs par camp, chacun avec son propre contrôleur ;
+- le second contrôleur allié peut être un autre humain ou une IA ;
+- un joueur humain ne contrôle jamais directement les capacités de la créature alliée ;
+- aucun booléen global `is2v2` ne doit être dispersé dans l'UI.
 
 Concept cible :
 
 ```json
 {
-  "id": "double-2v2",
+  "id": "coop-2v2",
   "activeSlotsByTeam": {
     "player": 2,
     "opponent": 2
-  }
+  },
+  "controllers": [
+    { "actorId": "player-a", "controllerId": "human-local" },
+    { "actorId": "player-b", "controllerId": "human-remote-or-ai" },
+    { "actorId": "opponent-a", "controllerId": "ai-a" },
+    { "actorId": "opponent-b", "controllerId": "ai-b" }
+  ]
 }
 ```
 
-Un duel classique utiliserait exactement le même contrat avec `1` slot actif par équipe.
+Un duel classique utilise le même principe avec un seul acteur actif par équipe.
 
 Architecture recommandée :
 
 ```
 BattleFormatDefinition
         |
+        +---- active slots par équipe
+        +---- controllerId par actorId
+        |
         v
 Roster Session
-  active member(s) par équipe
+  membres actifs + état persistant
         |
         v
-Combat Session
-  fighterId / targetId dynamiques
+Combat Session / Runtime
+  actorId / targetId dynamiques
         |
         v
-Combat Runtime
-  une action active max par actorId
+Local Player View
+  barre de capacités filtrée par controllerId
         |
         v
-Presentation / UI
-  sélection acteur + sélection cible
+Target Selection
+  cible valide selon la compétence
 ```
 
-Points importants :
+### Lisibilité de l'interface 2v2
 
-- ne pas créer un booléen global `is2v2` dispersé dans l'UI ;
-- ne pas dupliquer les contrôleurs joueur/adversaire pour fabriquer artificiellement quatre combattants ;
-- les identifiants d'acteurs et de cibles doivent rester génériques ;
-- le nombre de créatures actives appartient à une définition de format de combat ou au scénario appelant ;
-- le roster doit pouvoir conserver plusieurs membres actifs sans perdre les PV / énergie propres à chaque membre ;
-- le Combat Runtime reste indexé par `actorId`, ce qui correspond déjà au modèle de concurrence V9 ;
-- le modèle actuel de distance unique et plusieurs portions de Demo UI supposent encore un seul actif par équipe : ces zones devront être généralisées explicitement avant un vrai 2v2.
+Chaque joueur voit dans son écran :
 
-Lisibilité UI recommandée pour un futur 2v2 :
+- sa propre créature avec son HUD complet et sa barre de capacités ;
+- la créature alliée avec un HUD plus léger : nom, PV, état / action en cours ;
+- les adversaires avec les informations nécessaires au combat, sans dupliquer les capacités ;
+- une seule barre de capacités : **celle de la créature contrôlée localement**.
 
-- deux positions spatiales distinctes par camp ;
-- une mini-carte statut par créature active avec nom + PV ;
-- surbrillance claire de la créature actuellement sélectionnée par le joueur ;
-- surbrillance distincte de la cible adverse ;
-- les capacités restent dans une seule zone de commandes et s'appliquent à l'acteur sélectionné ;
-- si une capacité nécessite une cible, la cible doit être choisie explicitement lorsqu'il existe plusieurs adversaires valides ;
-- les icônes d'équipe restent visibles comme état global, avec indication des créatures vaincues.
+Cette règle évite de doubler l'interface des capacités sur smartphone.
 
-Le format de combat ne doit jamais être déduit du nombre d'icônes affichées. La source de vérité reste la donnée de combat / roster.
+La créature alliée ne doit pas apparaître comme une deuxième créature contrôlable localement, même si elle est pilotée par une IA. Son `controllerId` reste distinct.
+
+### Sélection de cible par clic
+
+Toute créature visible peut devenir une cible potentielle par interaction directe sur son modèle ou sa zone de statut.
+
+La validité de la cible reste décidée par la définition de compétence, jamais par l'UI.
+
+Exemples de relations de cible futures :
+
+- `enemy` : attaque ou malus sur adversaire ;
+- `ally` : soin, protection, renforcement ;
+- `self` : compétence personnelle ;
+- `any` : cas spéciaux explicitement autorisés.
+
+Chaîne cible :
+
+```
+clic acteur visible
+      |
+      v
+Target Selection UI
+      |
+      v
+SkillDefinition / Target Rule
+      |
+      +---- valide -> targetId sélectionné
+      |
+      +---- invalide -> feedback visuel, aucune résolution
+```
+
+L'UI doit distinguer clairement :
+
+- acteur local contrôlé ;
+- allié ;
+- adversaire ;
+- cible actuellement sélectionnée ;
+- cible invalide pour la capacité choisie.
+
+Le soin / bouclier / buff d'un allié devient alors naturel : le joueur choisit une capacité compatible puis clique l'allié, ou sélectionne d'abord l'allié selon le flux UX retenu.
+
+### Invariants d'architecture
+
+- ne pas dupliquer les contrôleurs `player/opponent` pour fabriquer artificiellement quatre combattants ;
+- les identifiants d'acteurs et de cibles restent génériques ;
+- le nombre d'actifs appartient à `BattleFormatDefinition` / scénario ;
+- le roster doit conserver PV / énergie / KO de chaque membre indépendamment ;
+- Combat Runtime reste indexé par `actorId`, compatible avec plusieurs actions concurrentes ;
+- les capacités affichées dépendent du `controllerId` local, pas du nombre de créatures visibles ;
+- le format du combat n'est jamais déduit du nombre d'icônes affichées ;
+- un vrai chantier 2v2 devra généraliser explicitement les zones qui supposent encore un seul actif par équipe.
+
 
 ---
 
