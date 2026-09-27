@@ -6246,3 +6246,43 @@ Critère de fin :
 - relecture GitHub des fichiers et du SHA final ;
 - CI verte ;
 - checkpoint GREEN sur le SHA publié.
+
+
+### Résultat sous-lot Renard magique doré
+
+Intégration technique terminée et validée sur la branche de travail.
+
+Commit assets :
+
+`baf0ef4e2d2e65478b6458935d78ec789ba476e9`
+
+Fichiers ajoutés :
+
+- `assets/library/capture/creatures/renard_magique_dore/runtime/renard_magique_dore_opponent.webp` — 320×320 WebP transparent, vue adversaire 3/4 face ;
+- `assets/library/capture/creatures/renard_magique_dore/runtime/renard_magique_dore_player.webp` — 320×320 WebP transparent, vue joueur 3/4 dos ;
+- `assets/library/capture/creatures/renard_magique_dore/runtime/renard_magique_dore_icon.webp` — 192×192 WebP transparent, icône conservée dans le sens validé ;
+- `assets/library/capture/creatures/renard_magique_dore/renard_magique_dore.meta.json`.
+
+Blobs binaires GitHub issus de `create_blob` :
+
+- opponent : `7b300beead2b9f9af8896a7eebf3aa61eee9c393` ;
+- player : `5f0e7770cee127469bc25d6a0ecf4d1c4527b208` ;
+- icon : `0f5461936946f5674a0911c0c8309d65704a97f2`.
+
+Catalogue global mis à jour avec les trois IDs stables :
+
+- `pack:capture:creature-renard-magique-dore-opponent-01` ;
+- `pack:capture:creature-renard-magique-dore-player-01` ;
+- `pack:capture:creature-renard-magique-dore-icon-01`.
+
+Vérifications :
+
+- les trois blobs binaires relus depuis GitHub correspondent aux SHA renvoyés par `create_blob` ;
+- dimensions runtime : 320×320 / 320×320 / 192×192 ;
+- metadata JSON relue et valide ;
+- catalogue relu : 81 assets, dont 14 vues de créatures et 7 portraits ;
+- `GLOBAL_ASSET_LIBRARY.md` synchronisé ;
+- CI du commit assets : run `36302893743` — SUCCESS ;
+- aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
+
+Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
