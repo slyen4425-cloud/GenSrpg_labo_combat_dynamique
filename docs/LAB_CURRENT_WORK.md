@@ -8131,3 +8131,49 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation synchronisée ;
 - checkpoint GREEN exact.
+
+
+Résultat — composition Capture Adapter Stack V1 :
+
+- déclaration/réconciliation : commit `4dbbf98568fe5ba0d4d1fb18f2de89d212a7df6b` ;
+- CI déclaration : run `36318967381` — SUCCESS ;
+- test RED : commit `cd4238b4d5b28c19ebee09ca47285c13c3a93291` ;
+- CI RED : run `36319009481` — FAILURE attendue ;
+- cause RED confirmée : `ERR_MODULE_NOT_FOUND` sur le nouveau point d'entrée ;
+- implémentation minimale : commit `53b70c3c75a09e7456e907113a58db4de0741ca9` ;
+- CI fonctionnelle : run `36319046243` — SUCCESS.
+
+Propriétaire créé :
+
+- `src/adapters/input/capture/capture-export-adapter-stack-v1.js`.
+
+Sortie composée :
+
+- BattleFormat natif ;
+- RosterDefinition natif ;
+- FighterConfig par créature ;
+- fighters actifs par actorId ;
+- SkillDefinition par compétence ;
+- SkillPresentationBindingV1 par compétence ou `null`.
+
+Vrai chemin couvert :
+
+`CaptureCombatExportV1 -> adapters GREEN -> CombatSession + RosterSession`.
+
+Invariants :
+
+- aucun `is2v2` ;
+- même chemin 1v1 / 2v2 ;
+- aucune formule ou validation métier dupliquée dans la composition ;
+- aucune inférence par nom/label ;
+- aucune résolution d'asset ;
+- aucun DOM, storage, réseau, renderer ou dépendance GenSrpG ;
+- les branches parallèles recensées restent hors pile autoritaire et ne sont pas mergées.
+
+Checkpoint GREEN prévu après CI documentaire :
+
+`checkpoint/lab-capture-adapter-stack-v1-green-2026-09-27`.
+
+Étape suivante seulement après fermeture GREEN :
+
+pré-audit du raccord de cette pile avec la **branche 2v2 visuelle réellement validée**, sans réutiliser directement les anciennes branches `capture-package-preview-ui` qui divergent du 2v2 courant.
