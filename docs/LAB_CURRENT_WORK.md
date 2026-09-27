@@ -7082,3 +7082,26 @@ Critères :
 - le HUD local retrouve gap / min-height / barre de PV et charge équivalents au 1v1 ;
 - les cartes allié / adversaires restent compactes ;
 - CI verte puis validation smartphone utilisateur.
+
+
+Résultat technique du micro-lot barres de charge / HUD local :
+
+- les quatre cartes 2v2 possèdent désormais un vrai `<progress>` de charge relié au Runtime ;
+- `src/ui/combat-2v2-test-ui.js` construit `chargeRefs` par `actorId` et alimente la barre uniquement depuis `onProgress().chargeProgress` ;
+- la barre est active uniquement pendant la phase `preparation`, puis repasse à zéro hors préparation ;
+- aucune horloge ni progression secondaire n'a été ajoutée côté UI ;
+- le joueur local utilise une barre de charge de `0.56rem`, identique à la référence 1v1 ;
+- allié et adversaires utilisent une barre compacte de `0.38rem` pour conserver la lisibilité mobile ;
+- cause du HUD local trop bas sur très petit écran : dans le breakpoint `max-width: 430px`, la règle générale `.squad-card { min-height: 3.2rem; }` arrivait après la règle locale 2v2 et reprenait la main à spécificité égale ;
+- correction : `.squad-card--local-full` réaffirme `min-height: 5.2rem` et son padding au breakpoint 430px, correspondant à la référence mobile 1v1 ;
+- aucun changement gameplay, IA, cooldown, énergie ou timing.
+
+Tests :
+
+- 4 barres runtime présentes dans la page ;
+- binding générique par `actorId` ;
+- utilisation de `progress.chargeProgress` ;
+- hauteur locale 430px protégée par sentinelle ;
+- CI work : SUCCESS, run `36305384418`, SHA `c799374b9c3d9c0604568bd9eef902cdf8230a8a`.
+
+Validation smartphone requise avant checkpoint GREEN.
