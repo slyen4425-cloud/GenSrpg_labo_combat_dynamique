@@ -8805,3 +8805,71 @@ Critère GREEN final :
 - validation smartphone de l'éditeur par Sylvain ;
 - documentation finale ;
 - checkpoint GREEN exact seulement après cette validation.
+
+
+### Résultat technique — Capture Editor UI V1
+
+RED :
+
+- test : `tests/unit/capture-editor-ui-v1.test.mjs` ;
+- commit RED : `06a88094212f1c935c47e5cdf73b1928b17e3d63` ;
+- CI : run `36335298321` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` sur `src/ui/capture-editor-test-ui.js` ;
+- un seul échec de fichier de test.
+
+Implémentation V1 :
+
+- `src/ui/capture-editor-test-ui.js` ;
+- `examples/dom-demo/capture-editor.html` ;
+- `examples/dom-demo/capture-editor.js` ;
+- `examples/dom-demo/capture-editor.css` ;
+- commit fonctionnel : `0a7002e4e15ef2dacdfdfaf8588e75d9744846ef` ;
+- CI : run `36335483065` — SUCCESS.
+
+Vrai chemin testé :
+
+`champs UI`
+-> `CaptureCreatureEditorDraftV1 / CaptureSkillEditorDraftV1`
+-> `Capture Editor Exporter V1`
+-> `CaptureCombatExportV1`.
+
+Garanties :
+
+- créature : identité, stats éditoriales, éléments, résistances, Capture/apparition/évolution, combat explicite, skillIds et presentationId éditables ;
+- capacité : métadonnées éditeur + JSON SkillDefinition + JSON PresentationBinding ;
+- les conversions UI se limitent aux types HTML explicites (number / checkbox / CSV / JSON) ;
+- aucun calcul de gameplay dans l'UI ;
+- aucune inférence depuis nom/description/élément ;
+- aucun CombatSession/Runtime/Rules/Renderer ;
+- aucun storage ;
+- aucun `captureFix*` ;
+- aucune dépendance GenSrpG ;
+- stylesheet dédié à l'éditeur ;
+- page éditeur séparée du 2v2 ;
+- listener principal démontable par `dispose()`.
+
+État :
+
+**GREEN technique / PREVALIDATION UI**.
+
+Conformément à la charte, le lot ne devient pas GREEN final avant validation smartphone.
+
+Checkpoint technique de prévalidation prévu après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-editor-ui-v1-prevalidation-green-2026-09-27`.
+
+Preview prévue :
+
+`preview/lab-capture-editor-ui-v1-2026-09-27`.
+
+Test utilisateur requis :
+
+1. ouverture smartphone ;
+2. lisibilité des sections Créature / Capacité ;
+3. modification de quelques valeurs ;
+4. bouton `Valider & générer` ;
+5. message vert + export JSON ;
+6. test volontaire d'une valeur invalide pour confirmer un message d'erreur lisible ;
+7. absence de blocage, débordement ou contrôle inaccessible.
+
+Aucun checkpoint GREEN final ne doit être créé avant ce retour.
