@@ -289,7 +289,10 @@ export function createDomSkillFxRenderer({
       Math.max(0.25, Number(visual.displayScale) || 1)
     );
 
-    node.className = `skill-fx skill-fx--${type}`;
+    node.className =
+      type === "clash-impact"
+        ? "skill-fx skill-fx--impact skill-fx--clash-impact"
+        : `skill-fx skill-fx--${type}`;
     node.dataset.skillFx = type;
     node.dataset.skillId = skillId ?? "";
     node.style.left = `${point.x}px`;
