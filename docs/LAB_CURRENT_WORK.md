@@ -8025,3 +8025,79 @@ Prochaine action après checkpoint GREEN exact :
 - micro-lot F : assembler un `CaptureCombatPackageV1` purement local ;
 - chaîne : export -> fighter configs + skills + battle format + rosters + presentation bindings ;
 - test vrai chemin jusqu'à Combat Session, sans UI et sans GenSrpG.
+
+
+## Incident de reprise — collision avec un ancien lot package
+
+Pendant l'ouverture du lot suivant, le nom `work/lab-capture-combat-package-v1-2026-09-27` a été découvert comme déjà existant sur une ancienne base divergente.
+
+Preuve :
+
+- dernier GREEN propre courant : `a12c50f40a0d8a4ccba3aaeee1b3d162fc100b4a` ;
+- ancien lot package : merge-base `02891f7ec3ee6062ba75e73d01c73aeaa085aee1` ;
+- comparaison : branche divergente, en retard de 24 commits sur le GREEN courant ;
+- ancien lot contient notamment `src/contracts/capture-combat-package.js` et un schéma monolithique antérieur.
+
+Décision conforme à la charte :
+
+- ne pas patcher l'erreur d'import sur cette branche ;
+- ne rien cherry-picker depuis l'ancien lot sans audit ;
+- ne pas fusionner l'ancien contrat monolithique ;
+- l'ancien design est traité comme essai historique, car il mélange export éditeur et contrats natifs et possède une présentation moins riche que `SkillPresentationBindingV1` ;
+- repartir du dernier GREEN exact sur une branche neuve.
+
+L'ancienne branche `work/lab-capture-combat-package-v1-2026-09-27` est donc **abandonnée comme base du chantier courant**.
+
+## Micro-lot F propre — CaptureCombatNativeBundleV1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN : `checkpoint/lab-capture-presentation-binding-v1-green-2026-09-27` ;
+- SHA : `a12c50f40a0d8a4ccba3aaeee1b3d162fc100b4a` ;
+- checkpoint départ : `checkpoint/lab-start-capture-combat-native-bundle-v1-2026-09-27` ;
+- branche : `work/lab-capture-combat-native-bundle-v1-2026-09-27`.
+
+Objectif :
+
+Composer les adaptateurs déjà GREEN dans un résultat interne natif distinct du contrat d'export :
+
+`CaptureCombatExportV1 -> CaptureCombatNativeBundleV1`.
+
+Le bundle contient :
+
+- `fighterConfigs` par creatureId ;
+- `skills` par skillId ;
+- `battleFormat` natif ;
+- `roster` natif ;
+- `skillPresentations` par skillId, binding ou `null`.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-combat-native-bundle-v1.js`.
+
+Invariants :
+
+- aucune nouvelle traduction métier ;
+- réutilisation exclusive des adaptateurs B/C/D/E ;
+- aucun second schéma d'export éditeur ;
+- aucun `is2v2` ;
+- aucune création de Combat Session dans l'assembleur ;
+- aucun renderer, asset resolver, DOM, storage, global ou réseau ;
+- aucun accès GenSrpG.
+
+Tests RED :
+
+1. bundle complet depuis un export valide ;
+2. index fighterConfigs / skills ;
+3. BattleFormat et roster issus des propriétaires existants ;
+4. présentation présente ou `null` ;
+5. vrai chemin bundle -> `createCombatSession` -> `previewSkill` ;
+6. vrai chemin bundle -> `createRosterSession` ;
+7. export 2v2 -> quatre fighters avec le même chemin ;
+8. source assembleur sans mapping métier dupliqué.
+
+Critère GREEN :
+
+- tests ciblés + CI globale SUCCESS ;
+- documentation d'architecture mise à jour ;
+- checkpoint GREEN avant toute preview éditeur.
