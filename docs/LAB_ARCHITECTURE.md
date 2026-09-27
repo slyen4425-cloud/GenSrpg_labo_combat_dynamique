@@ -822,7 +822,8 @@ Configuration dans `SkillDefinition` :
 ```js
 projectileClash: {
   mode: "none" | "mutual_cancel",
-  group: "identifiant-compatible"
+  group: "identifiant-propre",
+  interactsWith: ["groupes-compatibles"]
 }
 ```
 
@@ -830,11 +831,14 @@ Règles du premier jalon :
 
 - `none` est le comportement par défaut ;
 - `mutual_cancel` nécessite `form = "projectile"` et un `group` non vide ;
-- deux projectiles ne peuvent s'annuler que si les deux déclarent `mutual_cancel`, portent le même groupe et se ciblent mutuellement ;
+- `interactsWith` est data-driven ; lorsqu'il est omis sur un `mutual_cancel`, il vaut par défaut le propre `group` afin de préserver le comportement historique ;
+- deux projectiles ne peuvent s'annuler que si les deux déclarent `mutual_cancel`, acceptent réciproquement le groupe adverse et se ciblent mutuellement ;
 - Combat Rules calcule le temps de rencontre à partir des vrais timestamps de release et des vrais `travelMs` ;
 - Combat Runtime insère ce clash dans la même horloge que releases et impacts ;
-- le clash produit deux résolutions sémantiques `clashed` sans événement `hit` ni dégâts ;
+- le clash produit deux résolutions sémantiques `clashed` sans événement `hit` ni dégâts et transporte le `progress` de rencontre ;
 - Presenter / FX arrêtent uniquement les projectiles déjà déclarés `clashed` ;
+- un seul `clash-impact` de présentation est produit pour la paire ; sa position est interpolée depuis le `progress` sémantique et les ancres visuelles existantes ;
+- les résultats défensifs `blocked`, `reflected` et `immune` peuvent produire un impact de présentation au point de contact sans changer le résultat gameplay ;
 - la géométrie DOM ne décide jamais si un clash gameplay existe.
 
 Un futur mode `pierce`, priorité de projectile ou autre comportement devra être ajouté au contrat de données avant toute implémentation moteur.
