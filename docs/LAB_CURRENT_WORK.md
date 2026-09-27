@@ -8561,3 +8561,84 @@ Prochaine étape :
 - aucune création de CombatSession ;
 - aucune formule ou inférence ;
 - la frontière export existante reste l'autorité de validation finale.
+
+
+## Micro-lot — Capture Editor Exporter V1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-skill-editor-draft-v1-green-2026-09-27` ;
+- SHA `4adca5d00c06a935c4bebb7d17d021dac659f831` ;
+- CI documentaire : run `36334590255` — SUCCESS.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-editor-exporter-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-exporter-v1-2026-09-27`.
+
+Objectif :
+
+Composer des `CaptureCreatureEditorDraftV1` et `CaptureSkillEditorDraftV1` validés vers le vrai contrat frontière `CaptureCombatExportV1`, sans modifier le moteur et sans inventer de données.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-editor-exporter-v1.js`.
+
+Entrée :
+
+- battle / teams / actors / rosters fournis explicitement par l'appelant ;
+- `creatureDrafts` ;
+- `skillDrafts` ;
+- metadata export optionnelle JSON-compatible.
+
+Sortie :
+
+- un `CaptureCombatExportV1` déjà normalisé.
+
+Mapping autorisé :
+
+- créature : id/displayName/combat/skillIds/presentationId ;
+- données éditoriales historiques (description, level, sourceStats, elements, resistances, capture) conservées sous `creature.metadata.editor` ;
+- skill : id/definition ;
+- requiredLevel/description/usageScopes conservés sous `skill.metadata.editor` ;
+- si le draft skill possède une présentation : `skill.presentationId = presentation.id` et binding copié sous `presentation.skills[presentation.id]`.
+
+Règles critiques :
+
+- aucun calcul depuis sourceStats ;
+- aucun mapping par nom/label/élément ;
+- aucun default gameplay propre à l'exporter ;
+- les deux contrats Draft restent propriétaires de leurs entrées ;
+- `normalizeCaptureCombatExportV1` reste l'autorité finale de la frontière ;
+- IDs dupliqués de drafts ou bindings refusés avant toute perte silencieuse.
+
+Protégé / interdit :
+
+- aucun CombatSession/Runtime/UI/Renderer ;
+- aucun DOM/storage/network ;
+- aucun import GenSrpG ;
+- aucune résolution d'asset ;
+- aucune modification des contrats déjà GREEN.
+
+Tests RED prévus :
+
+1. export 1v1 complet depuis brouillons ;
+2. metadata éditeur conservée ;
+3. combat explicite conservé byte-sémantiquement, sans dérivation stats ;
+4. présentation skill placée et référencée correctement ;
+5. vrai `adaptCaptureCombatExportStackV1` consomme la sortie ;
+6. références actor/skill invalides refusées par la frontière finale ;
+7. doublons créature/skill/presentation refusés ;
+8. sentinelle d'indépendance.
+
+Critère GREEN :
+
+- RED observé ;
+- exporter minimal ;
+- vrai chemin Drafts -> CaptureCombatExportV1 -> Adapter Stack testé ;
+- CI globale SUCCESS ;
+- documentation ;
+- checkpoint GREEN avant toute UI éditeur.
