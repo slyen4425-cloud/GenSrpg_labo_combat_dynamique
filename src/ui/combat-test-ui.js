@@ -71,12 +71,6 @@ const DATA_URLS = Object.freeze({
   })
 });
 
-const DISTANCE_LABELS = Object.freeze({
-  short: "Courte",
-  medium: "Moyenne",
-  long: "Longue"
-});
-
 const FORM_LABELS = Object.freeze({
   contact: "Contact",
   projectile: "Projectile",
@@ -371,10 +365,6 @@ export async function mountCombatTest({
     bar: requiredElement(root, '[data-combat-energy="player"]'),
     value: requiredElement(root, '[data-combat-energy-value="player"]')
   };
-
-  const movementButtons = [
-    ...root.querySelectorAll("[data-combat-move]")
-  ];
 
   const menus = [...root.querySelectorAll("[data-action-menu]")];
   const cleanups = [];
@@ -766,32 +756,6 @@ export async function mountCombatTest({
       )}⚡`;
   }
 
-  function renderMovement(state) {
-    const active =
-      roster.snapshot().player.activeMemberId !== null;
-
-    for (const button of movementButtons) {
-      const target = button.dataset.combatMove;
-      const preview = session.previewMovement(
-        "player",
-        target
-      );
-      const current = target === state.distance;
-
-      button.disabled =
-        koTransitionPending ||
-        runtime.hasActiveAction ||
-        !active ||
-        current ||
-        !preview.ok;
-      button.textContent = current
-        ? `${DISTANCE_LABELS[target]} · ici`
-        : `${DISTANCE_LABELS[target]} · ${formatEnergy(
-            preview.cost
-          )}⚡`;
-    }
-  }
-
   function renderAvailability() {
     const rosterState = roster.snapshot();
     const hasActive =
@@ -863,7 +827,6 @@ export async function mountCombatTest({
     lastState = state;
     renderHp(state);
     renderEnergy(state);
-    renderMovement(state);
     renderAvailability();
   }
 
@@ -976,7 +939,7 @@ export async function mountCombatTest({
           actorSlot: decision.actorId
         });
         setStatus(
-          `Adversaire : distance ${DISTANCE_LABELS[decision.result.state.distance]}.`,
+          "Adversaire se repositionne.",
           "info"
         );
         render(decision.result.state);
@@ -1258,42 +1221,6 @@ export async function mountCombatTest({
       renderAvailability();
     }
   });
-
-  for (const button of movementButtons) {
-    listen(button, "click", () => {
-      const rosterState = roster.snapshot();
-      if (!rosterState.player.activeMemberId) {
-        setStatus("Aucun monstre actif.", "warn");
-        return;
-      }
-
-      const result = session.move(
-        "player",
-        button.dataset.combatMove
-      );
-
-      if (!result.ok) {
-        setStatus(
-          OUTCOME_LABELS[result.outcome] ??
-            result.outcome,
-          "warn"
-        );
-        return;
-      }
-
-      distancePresenter.presentMovement({
-        result,
-        actorSlot: "player"
-      });
-
-      setStatus(
-        `Distance ${DISTANCE_LABELS[result.state.distance]}.`,
-        "info"
-      );
-      render(result.state);
-      runOpponentTurn();
-    });
-  }
 
   for (const menu of menus) {
     listen(menu, "toggle", () => {
