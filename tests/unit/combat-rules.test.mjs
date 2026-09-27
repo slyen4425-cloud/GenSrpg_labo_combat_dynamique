@@ -128,19 +128,21 @@ test("movement is rejected when the actor cannot pay the configured cost", () =>
   assert.equal(result.state.fighters.braisombre.energy, 5);
 });
 
-test("fireball cannot be used at short range but works at medium range", () => {
-  const rejected = resolveSkill({
-    state: state("short"),
-    actorId: "maraileron",
-    targetId: "braisombre",
-    skill: fireball
-  });
-
-  assert.equal(rejected.ok, false);
-  assert.equal(rejected.outcome, "out_of_range");
+test("preview offensive skills are not gated by manual distance bands", () => {
+  for (const skill of [
+    fireball,
+    claw,
+    aerialDive,
+    teleportStrike
+  ]) {
+    assert.deepEqual(
+      [...skill.allowedDistances].sort(),
+      ["long", "medium", "short"]
+    );
+  }
 
   const hit = resolveSkill({
-    state: state("medium"),
+    state: state("short"),
     actorId: "maraileron",
     targetId: "braisombre",
     skill: fireball
