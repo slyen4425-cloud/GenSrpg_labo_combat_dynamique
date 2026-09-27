@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GenSrpG Lab — Éditeur Capture V1</title>
+  <link rel="stylesheet" href="./capture-editor.css">
+</head>
+<body>
+  <main class="capture-editor" data-capture-editor>
+    <header class="capture-editor__header">
+      <p class="capture-editor__eyebrow">Laboratoire autonome</p>
+      <h1>Éditeur Capture V1</h1>
+      <p>
+        Les champs sont validés par les contrats du laboratoire.
+        Aucune statistique RPG ne fabrique automatiquement les valeurs de combat.
+      </p>
+    </header>
+
+    <div class="capture-editor__grid">
+      <form class="editor-card" data-capture-creature-form>
+        <div class="editor-card__title">
+          <span>01</span>
+          <div>
+            <h2>Créature</h2>
+            <p>Données éditoriales + combat explicite</p>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>Identité</legend>
+          <div class="field-grid field-grid--2">
+            <label>ID
+              <input name="id" value="crea-braiseau" autocomplete="off">
+            </label>
+            <label>Nom
+              <input name="displayName" value="Braiseau" autocomplete="off">
+            </label>
+          </div>
+          <label>Description
+            <textarea name="description" rows="2">Petite créature de feu.</textarea>
+          </label>
+          <label>Niveau
+            <input name="level" type="number" min="1" value="12">
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Stats éditoriales</legend>
+          <div class="field-grid field-grid--3">
+            <label>Force<input name="statForce" type="number" min="0" value="18"></label>
+            <label>Agilité<input name="statAgility" type="number" min="0" value="15"></label>
+            <label>Intelligence<input name="statIntelligence" type="number" min="0" value="8"></label>
+            <label>Esprit<input name="statSpirit" type="number" min="0" value="11"></label>
+            <label>Endurance<input name="statEndurance" type="number" min="0" value="16"></label>
+            <label>Initiative<input name="statInitiative" type="number" min="0" value="13"></label>
+          </div>
+          <label>Éléments <small>séparés par des virgules</small>
+            <input name="elementsCsv" value="fire">
+          </label>
+          <label>Résistances JSON
+            <textarea name="resistancesJson" rows="3">[{"kind":"element:fire","value":35}]</textarea>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Capture / apparition</legend>
+          <label class="check-line">
+            <input name="capturable" type="checkbox" checked>
+            <span>Capturable</span>
+          </label>
+          <div class="field-grid field-grid--2">
+            <label>Taux capture %
+              <input name="captureRate" type="number" min="0" max="100" value="45">
+            </label>
+            <label>Chance apparition %
+              <input name="spawnChance" type="number" min="0" max="100" value="20">
+            </label>
+          </div>
+          <label>Tags apparition
+            <input name="spawnTagsCsv" value="fire, volcanic">
+          </label>
+          <div class="field-grid field-grid--3">
+            <label>Évolution
+              <select name="evolutionCondition">
+                <option value="none">Aucune</option>
+                <option value="level" selected>Niveau</option>
+                <option value="manual">Manuelle</option>
+              </select>
+            </label>
+            <label>Niveau évolution
+              <input name="evolutionLevel" type="number" min="1" value="24">
+            </label>
+            <label>Cible
+              <input name="evolutionTargetId" value="crea-braisombre">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Combat explicite</legend>
+          <div class="field-grid field-grid--2">
+            <label>PV max<input name="maxHp" type="number" min="0" value="42"></label>
+            <label>PV initiaux<input name="initialHp" type="number" min="0" value="42"></label>
+            <label>Énergie max<input name="maxEnergy" type="number" min="0" value="10"></label>
+            <label>Énergie initiale<input name="initialEnergy" type="number" min="0" value="0"></label>
+            <label>Recharge / tick<input name="energyChargeAmount" type="number" min="0" value="1"></label>
+            <label>Intervalle recharge ms<input name="energyChargeIntervalMs" type="number" min="0" value="2000"></label>
+            <label>Coût déplacement<input name="movementEnergyPerStep" type="number" min="0" value="2"></label>
+            <label>Modif. charge %<input name="chargeTimeModifierPct" type="number" value="-10"></label>
+          </div>
+          <label>IDs capacités
+            <input name="skillIdsCsv" value="fireball">
+          </label>
+          <label>Presentation ID
+            <input name="presentationId" value="creature:braiseau">
+          </label>
+        </fieldset>
+      </form>
+
+      <form class="editor-card" data-capture-skill-form>
+        <div class="editor-card__title">
+          <span>02</span>
+          <div>
+            <h2>Capacité</h2>
+            <p>SkillDefinition + PresentationBinding</p>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>Métadonnées éditeur</legend>
+          <div class="field-grid field-grid--2">
+            <label>ID
+              <input name="id" value="fireball" autocomplete="off">
+            </label>
+            <label>Niveau requis
+              <input name="requiredLevel" type="number" min="1" value="5">
+            </label>
+          </div>
+          <label>Description
+            <textarea name="description" rows="2">Projectile de feu configurable.</textarea>
+          </label>
+          <label>Scopes
+            <input name="usageScopesCsv" value="capture, combat">
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>SkillDefinition JSON</legend>
+          <p class="field-help">
+            V1 conserve ici le contrat natif complet pour éviter de recréer ses règles dans le formulaire.
+          </p>
+          <textarea class="code-field" name="definitionJson" rows="18">{
+  "id": "fireball",
+  "name": "Boule de feu",
+  "category": "offensive",
+  "form": "projectile",
+  "element": "fire",
+  "approachMode": "none",
+  "energyCost": 3,
+  "preparationMs": 900,
+  "travelMs": 650,
+  "recoveryMs": 450,
+  "allowedDistances": ["medium", "long"],
+  "targetRelations": ["enemy"],
+  "projectileClash": {
+    "mode": "mutual_cancel",
+    "group": "fire-orb",
+    "interactsWith": ["fire-orb"]
+  },
+  "effect": {
+    "damage": 4,
+    "tags": ["fire"]
+  }
+}</textarea>
+        </fieldset>
+
+        <fieldset>
+          <legend>Présentation JSON</legend>
+          <p class="field-help">
+            Références logiques assetId uniquement. Laisser vide pour aucune présentation.
+          </p>
+          <textarea class="code-field" name="presentationJson" rows="12">{
+  "id": "skill:fireball",
+  "version": 1,
+  "subjectType": "skill",
+  "subjectId": "fireball",
+  "visual": {
+    "icon": {
+      "assetId": "capture:icon-fireball"
+    }
+  }
+}</textarea>
+        </fieldset>
+      </form>
+    </div>
+
+    <section class="capture-editor__result">
+      <div class="result-bar">
+        <div>
+          <strong>03 · Export portable</strong>
+          <p data-capture-editor-status data-tone="info">
+            Modifie les valeurs puis génère l’export.
+          </p>
+        </div>
+        <button type="button" data-capture-editor-submit>
+          Valider & générer
+        </button>
+      </div>
+      <pre data-capture-editor-output aria-live="polite"></pre>
+    </section>
+  </main>
+
+  <script type="module" src="./capture-editor.js"></script>
+</body>
+</html>
