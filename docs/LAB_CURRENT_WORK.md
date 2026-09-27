@@ -10067,3 +10067,29 @@ Tests RED :
 7. indépendance UI/runtime/storage.
 
 Le raccord à l'éditeur sera un lot d'intégration séparé après ce GREEN.
+
+
+### Résultat — Combat Skill Library V1
+
+RED :
+
+- SHA `c4490177692c38550ffc859dea9e8385d7431ef5`;
+- CI run `36347492390` — FAILURE attendue ;
+- cause : adapter absent.
+
+Implémentation :
+
+- SHA `8d70a753b9b301ce3605954e699536039e8253f0`;
+- CI run `36347554398` — SUCCESS.
+
+Résultat :
+
+- `data/combat/skills/catalog.v1.json` indexe les neuf capacités actuelles ;
+- aucune définition de capacité n'est copiée dans le catalogue ;
+- chaque définition réelle passe par `normalizeSkillDefinition` ;
+- mismatch id / doublon / source non relative refusés ;
+- aucune dépendance UI, Runtime, Renderer, Storage ou GenSrpG.
+
+Checkpoint GREEN final après CI documentaire :
+
+`checkpoint/lab-combat-skill-library-v1-green-2026-09-27`.
