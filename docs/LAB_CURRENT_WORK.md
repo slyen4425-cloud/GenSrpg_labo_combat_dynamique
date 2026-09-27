@@ -7593,3 +7593,58 @@ Prochaine étape après checkpoint GREEN :
 - adaptateur pur `CaptureCombatPackageV1 -> modèle de prévisualisation` ;
 - vrai test package -> Combat Session ;
 - toujours aucun raccord UI.
+
+
+## Micro-lot F — CaptureCombatPackageV1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN : `checkpoint/lab-capture-presentation-binding-v1-green-2026-09-27` ;
+- SHA : `a12c50f40a0d8a4ccba3aaeee1b3d162fc100b4a` ;
+- checkpoint départ : `checkpoint/lab-start-capture-combat-package-v1-2026-09-27` ;
+- branche : `work/lab-capture-combat-package-v1-2026-09-27`.
+
+Objectif :
+
+Composer les adaptateurs Capture déjà validés dans un paquet natif unique utilisable par le laboratoire :
+
+`CaptureCombatExportV1 -> CaptureCombatPackageV1`.
+
+Le paquet expose :
+
+- `fighterConfigs` par creatureId ;
+- `skills` par skillId ;
+- `battleFormat` natif ;
+- `roster` natif ;
+- `skillPresentations` par skillId, binding ou `null`.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-combat-package-v1.js`.
+
+Règles :
+
+- aucune nouvelle traduction métier dans l'assembleur ;
+- l'assembleur appelle uniquement les adaptateurs déjà propriétaires ;
+- aucune logique 1v1/2v2 spéciale ;
+- aucune création de Combat Session à l'intérieur du paquet ;
+- aucune résolution d'asset ;
+- aucun DOM/storage/global/réseau ;
+- aucun accès GenSrpG.
+
+Tests RED :
+
+1. paquet complet depuis un export valide ;
+2. fighter configs / skills indexés sans mutation ;
+3. BattleFormat et roster issus des adaptateurs propriétaires ;
+4. binding de présentation présent ou `null` ;
+5. vrai chemin paquet -> `createCombatSession` -> `previewSkill` ;
+6. vrai chemin paquet -> `createRosterSession` ;
+7. export 2v2 -> quatre fighters avec même chemin ;
+8. sentinelle : aucun recalcul métier dans l'assembleur.
+
+Critère GREEN :
+
+- tests ciblés + CI globale SUCCESS ;
+- aucune UI modifiée ;
+- checkpoint GREEN avant toute preview éditeur.
