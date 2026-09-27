@@ -1194,3 +1194,42 @@ Sont volontairement hors package minimal :
 - stockage et sauvegardes ;
 - routage Shell ;
 - runtime historique Capture.
+
+
+## Capture package input adapter V1
+
+Le raccord de données portable est possédé par :
+
+`src/adapters/input/capture-combat-package-adapter.js`
+
+Chaîne :
+
+```
+CaptureCombatPackageV1
+        |
+        v
+Capture package input adapter
+        |
+        +--> fighterConfigs
+        +--> fighters de slots
+        +--> skills par acteur
+        +--> roster normalisé
+        +--> BattleFormatDefinition
+        +--> Presentation bindings
+        |
+        v
+Combat Session / Roster Session existants
+```
+
+Règles :
+
+- l'adaptateur ne calcule ni dégâts, ni énergie, ni KO, ni ciblage ;
+- le SkillDefinition normalisé reste l'autorité des capacités ;
+- Combat Session reste l'autorité de l'état et de la résolution ;
+- Roster Session reste l'autorité actif/réserve ;
+- les ids de slots de combat sont appliqués lors de la projection des fighter configs, sans muter les configs source ;
+- la présentation reste une sortie séparée ;
+- aucune dépendance GenSrpG / DOM / storage / réseau n'est introduite.
+
+Le contrat V1 conserve une seule source de vérité pour la présentation des créatures :
+`presentation.creatures`.
