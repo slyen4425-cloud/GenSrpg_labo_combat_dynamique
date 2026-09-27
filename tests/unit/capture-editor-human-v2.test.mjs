@@ -426,3 +426,25 @@ test("human editor source does not own Runtime, renderer, storage or GenSrpG", a
     true
   );
 });
+
+
+test("human editor wires selected creature views into socket placement surfaces", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.equal(
+    source.includes("[data-socket-front-preview]"),
+    true,
+    "front creature preview must feed the front socket surface"
+  );
+  assert.equal(
+    source.includes("[data-socket-back-preview]"),
+    true,
+    "back creature preview must feed the back socket surface"
+  );
+});
