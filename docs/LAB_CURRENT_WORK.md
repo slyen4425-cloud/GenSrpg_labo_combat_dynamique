@@ -7824,3 +7824,59 @@ Prochaine action après checkpoint GREEN exact :
 
 - micro-lot D : équipes/acteurs/rosters -> `BattleFormatDefinition` + définition de roster ;
 - support 1v1/2v2 via données, sans branche globale de mode.
+
+
+## Micro-lot D — Capture teams/actors/rosters -> formats natifs V1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN : `checkpoint/lab-capture-skill-adapter-v1-green-2026-09-27` ;
+- SHA : `43deeb24f4e8a2497152e882537320b34fa19061` ;
+- checkpoint départ : `checkpoint/lab-start-capture-roster-format-adapter-v1-2026-09-27` ;
+- branche : `work/lab-capture-roster-format-adapter-v1-2026-09-27`.
+
+Objectif :
+
+Transformer les structures `battle/teams/actors/rosters` d'un `CaptureCombatExportV1` en :
+
+- `BattleFormatDefinition` natif ;
+- définition de roster compatible avec `Roster Session`.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-roster-format-adapter-v1.js`.
+
+Règles :
+
+- `normalizeCaptureCombatExportV1` reste propriétaire de la cohérence de l'export ;
+- `normalizeBattleFormatDefinition` reste propriétaire du format de bataille ;
+- aucun `is2v2` global ;
+- 1v1 et 2v2 utilisent exactement le même chemin data-driven ;
+- chaque acteur utilise par convention V1 `fighterConfigId = creatureId` ;
+- chaque roster exporté devient un slot Roster Session, sans inventer de pool partagé ;
+- l'actif du roster doit correspondre à la créature déclarée sur l'acteur du même slot ;
+- aucune logique de remplacement/KO ajoutée ici : elle reste dans `Roster Session`.
+
+Protégé / interdit :
+
+- aucun changement BattleFormatDefinition ;
+- aucun changement Roster Session ;
+- aucun changement Combat Session / Runtime / UI ;
+- aucune connaissance du legacy Capture ou de GenSrpG ;
+- aucun DOM/storage/global/réseau.
+
+Tests RED :
+
+1. export 1v1 -> BattleFormat natif ;
+2. export 2v2 -> quatre acteurs / deux équipes sans branche spéciale ;
+3. rosters -> schéma réellement accepté par `createRosterSession` ;
+4. `fighterConfigId = creatureId` explicite ;
+5. mismatch roster actif / acteur refusé ;
+6. absence de roster autorisée ;
+7. sentinelle d'indépendance.
+
+Critère GREEN :
+
+- tests + CI globale SUCCESS ;
+- vrai `BattleFormatDefinition` et vrai `Roster Session` consommés ;
+- checkpoint GREEN avant présentation/assets.
