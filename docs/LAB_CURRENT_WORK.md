@@ -7817,3 +7817,39 @@ Critère de fin :
 - CI GREEN ;
 - aucune duplication de SkillDefinition ;
 - checkpoint GREEN avant roster/format.
+
+
+### Résultat adaptateur compétences CaptureExportV1
+
+RED :
+
+- `tests/unit/capture-skill-adapter-v1.test.mjs` ajouté avant implémentation ;
+- run `36314472367` — FAILURE attendue ;
+- cause : module `skill-adapter-v1.js` absent.
+
+Implémentation :
+
+- `src/adapters/input/capture/skill-adapter-v1.js` ;
+- `adaptCaptureSkill(input, skillId)` ;
+- `adaptCaptureCreatureSkills(input, creatureId)`.
+
+Garanties :
+
+- chaque skill provient du `CaptureExportV1` normalisé ;
+- `SkillDefinition` reste l'unique propriétaire de la sémantique ;
+- ordre des `skillIds` conservé ;
+- aucune compétence non assignée n'est ajoutée ;
+- aucun fallback legacy par nom/ID/description ;
+- une définition invalide échoue en amont au lieu d'être réparée.
+
+CI GREEN :
+
+- run `36314499263` — SUCCESS ;
+- SHA `0288f8be5396bfb9725c219a8495d4dc7b1bc846`.
+
+Prochaine étape après checkpoint GREEN :
+
+- adaptateur roster + BattleFormat 1v1/2v2 ;
+- les acteurs actifs viennent uniquement de `member.active` ;
+- `controllerId` vient des données exportées ;
+- aucun comportement IA n'est décidé par l'adaptateur.
