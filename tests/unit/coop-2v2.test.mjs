@@ -294,6 +294,40 @@ test("coop HUD keeps the ally directly above one local ability bar and uses the 
   assert.match(source, /allyDescriptor\.iconUrl/);
 });
 
+test("coop HUD renders runtime charge bars for all four actors and preserves local 1v1 height on narrow screens", async () => {
+  const html = await readFile("examples/dom-demo/coop-2v2.html", "utf8");
+  const source = await readFile("src/ui/combat-2v2-test-ui.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.equal(
+    (html.match(/data-combat-actor-charge=/g) ?? []).length,
+    4
+  );
+  assert.match(html, /data-combat-actor-charge="player"/);
+  assert.match(html, /data-combat-actor-charge="ally"/);
+  assert.match(html, /data-combat-actor-charge="opponent"/);
+  assert.match(html, /data-combat-actor-charge="opponent-b"/);
+
+  assert.match(source, /const chargeRefs = Object\.fromEntries/);
+  assert.match(source, /function setCharge\(actorId/);
+  assert.match(source, /progress\.chargeProgress/);
+  assert.match(source, /progress\.phase === "preparation"/);
+
+  assert.match(
+    css,
+    /\.squad-card__charge\s*\{[\s\S]*height:\s*0\.38rem/
+  );
+  assert.match(
+    css,
+    /\.squad-card--local-full \.squad-card__charge\s*\{[\s\S]*height:\s*0\.56rem/
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 430px\)[\s\S]*\.squad-card--local-full\s*\{[\s\S]*min-height:\s*5\.2rem/
+  );
+});
+
+
 test("target click feedback uses a temporary arena pulse and cleans its timer on dispose", async () => {
   const source = await readFile("src/ui/combat-2v2-test-ui.js", "utf8");
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
