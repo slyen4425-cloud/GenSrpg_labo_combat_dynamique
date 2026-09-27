@@ -9640,3 +9640,29 @@ RED dédié :
 
 - normaliser un Draft V2 déjà normalisé doit fonctionner ;
 - la sortie V2 ne doit plus exposer `presentationId`.
+
+
+### Résultat — correctif idempotence CaptureCreatureEditorDraftV2
+
+RED dédié :
+
+- test : `tests/unit/capture-creature-editor-draft-v2-idempotence.test.mjs` ;
+- SHA RED documentaire : `23c25ee71e2414d7cd21f2658b3a5e17ac3da91f` ;
+- CI : run `36345169348` — FAILURE attendue ;
+- cause prouvée : la sortie V2 exposait `presentationId`, champ refusé lors d'une seconde normalisation.
+
+Correctif racine :
+
+- commit : `1c3564bcfe8e46bbdfebd8837406345afd810e40` ;
+- CI : run `36345236817` — SUCCESS ;
+- `CaptureCreatureEditorDraftV2` ne duplique plus `presentationId` ;
+- `presentation` reste l'unique source de vérité ;
+- l'Exporter V2 dérive `presentationId` uniquement lors de la conversion vers le Draft V1 ;
+- un Draft V2 normalisé peut être renormalisé sans erreur ;
+- aucun changement UI, Runtime, Renderer ou GenSrpG.
+
+Checkpoint GREEN final après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-creature-draft-v2-idempotence-fix-green-2026-09-27`.
+
+Le correctif devra ensuite être reporté tel quel sur la branche `work/lab-capture-editor-human-v2-2026-09-27` avant de reprendre la validation UI.
