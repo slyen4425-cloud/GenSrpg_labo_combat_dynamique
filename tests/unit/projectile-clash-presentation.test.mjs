@@ -146,7 +146,7 @@ test("Presenter stops a clashed projectile and routes one semantic meeting impac
       fromSlot: "opponent",
       targetSlot: "player",
       progress: 0.4,
-      durationMs: 420
+      durationMs: 520
     }
   ]);
   assert.deepEqual(visualCalls, []);
