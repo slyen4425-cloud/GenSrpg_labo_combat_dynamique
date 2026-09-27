@@ -6665,3 +6665,23 @@ Critères :
 - miss reste sur anchor stable ;
 - nettoyage frame/cancel sans fuite ;
 - CI verte puis validation smartphone utilisateur.
+
+
+Résultat technique du lot projectile / cible mobile :
+
+- la trajectoire nominale du projectile reste dirigée vers le slot stable : aucun comportement homing/tracking n'a été introduit ;
+- pendant la seule durée de vie d'un projectile FX, le renderer vérifie le contact entre le centre du projectile et l'anchor visuel mobile de la cible ;
+- lors d'un contact visuel réel, l'animation du projectile est annulée/nettoyée afin d'empêcher la traversée de la créature ;
+- un impact sémantique `hit` se positionne maintenant sur l'anchor visuel courant de la cible ;
+- le feedback `miss` conserve le point stable ;
+- aucune donnée de collision DOM ne modifie les dégâts, PV, résultats ou timestamps du Combat Runtime ;
+- le scheduler de frame est injecté et nettoyé avec le projectile : aucune boucle permanente.
+
+Tests ajoutés / renforcés :
+
+- projectile qui rencontre une cible mobile : arrêt + cleanup ;
+- impact `hit` sur position live différente du slot stable ;
+- miss toujours sur slot stable ;
+- CI work : SUCCESS, run `36294688977`, SHA `de3dc86a67f8e3dae5dccf6875b74612bd549698`.
+
+Validation smartphone requise sur le cas Griffe croisant Boule de feu avant checkpoint GREEN.
