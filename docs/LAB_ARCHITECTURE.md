@@ -429,6 +429,28 @@ Le soin / bouclier / buff d'un allié devient alors naturel : le joueur choisit 
 - le format du combat n'est jamais déduit du nombre d'icônes affichées ;
 - un vrai chantier 2v2 devra généraliser explicitement les zones qui supposent encore un seul actif par équipe.
 
+### Prototype laboratoire 2v2 — état 2026-09-27
+
+Le laboratoire possède désormais un premier client 2v2 dédié qui exerce le même Combat Session / Runtime / Animation Core que le 1v1.
+
+Éléments implémentés :
+
+- `BattleFormatDefinition` décrit quatre acteurs, leurs équipes et leur `controllerId` ;
+- le contrôleur visuel découvre les slots déclarés dans le DOM au lieu de figer deux acteurs ;
+- le presenter reçoit la cible explicite afin qu'une attaque d'approche se dirige vers le bon acteur ;
+- un contrôleur IA générique peut piloter un acteur sans dépendre du DOM ;
+- la vue locale n'affiche qu'une seule barre de capacités pour `localActorId` ;
+- l'allié et les adversaires n'exposent que leur état compact (nom, PV, action) ;
+- la cible se choisit par interaction directe avec la créature ou sa carte ;
+- `SkillDefinition.targetRelations` déclare les relations autorisées ; la valeur par défaut est `enemy` ;
+- le helper Combat `targeting.js` distingue `self / ally / enemy` avant le démarrage d'une action depuis cette UI.
+
+Limites assumées de cette première preview :
+
+- le second allié est piloté par IA ; le transport réseau / second client humain n'est pas encore raccordé ;
+- les quatre compétences de test actuelles sont offensives, donc une cible alliée peut être sélectionnée mais aucune de ces compétences ne peut être lancée dessus ;
+- soin / protection / buff allié seront testés ultérieurement avec des compétences déclarant `targetRelations: ["ally"]` ou `["ally", "self"]` ;
+- le système de réserve / rappel 1v1 n'est pas dupliqué dans la page 2v2 de laboratoire.
 
 ---
 
