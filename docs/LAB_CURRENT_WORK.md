@@ -7544,3 +7544,16 @@ Prochaine étape après checkpoint GREEN :
 3. tests RED avant implémentation de normalisation ;
 4. aucune dépendance GenSrpG ;
 5. aucun raccord UI/runtime avant GREEN du contrat.
+
+
+### Clôture exacte du jalon audit Capture -> adaptateur
+
+État documentaire final avant checkpoint :
+
+- HEAD : `01a26c065857a6c8fda81cef8bdf6a38470f38ca` ;
+- CI : run `36314041915` — SUCCESS ;
+- aucune modification du dépôt `Zombicide-40k` ;
+- aucun code runtime du laboratoire modifié dans ce jalon ;
+- livrable : `docs/LAB_CAPTURE_ADAPTER_AUDIT.md`.
+
+Le checkpoint `checkpoint/lab-capture-adapter-audit-green-2026-09-27` doit être fast-forwardé sur le SHA documentaire final validé après CI du présent commit.
