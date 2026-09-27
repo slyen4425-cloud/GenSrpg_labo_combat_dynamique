@@ -7498,3 +7498,49 @@ CI audit :
 Prochaine étape après checkpoint GREEN :
 - micro-lot séparé `CaptureCombatPackageV1` pur ;
 - contrat + tests uniquement avant tout raccord UI.
+
+
+### Résultat de l'audit Capture -> adaptateur
+
+Document livré :
+
+- `docs/LAB_CAPTURE_ADAPTER_AUDIT.md`.
+
+Sources GenSrpG vérifiées en lecture seule :
+
+- branche : `work/gensrpg-phase7-dungeon-generated-room-create-restore-2026-09-27` ;
+- HEAD observé : `9ec3a39af709405f5d9ee54a61aa2c041c7339e6` ;
+- module cible `assets/gensrpg/capture/` encore contract-only / inerte ;
+- runtime Capture historique toujours stratifié de `capturePlaytestFix128` à `captureAbilityTruth144`, plus `builtinMonsterCapture162` ;
+- `captureAbilityTruth144` reste le dernier propriétaire cartographié des effets de capacités ;
+- `captureFix139` reste le propriétaire du lancement Capture ;
+- les providers Shell Phase 5 restent routing-only.
+
+Frontière retenue :
+
+`Capture / éditeur -> CaptureExportV1 -> adaptateur pur -> contrats natifs du laboratoire`.
+
+Décisions :
+
+- aucun import du dépôt principal ;
+- aucun accès aux sauvegardes/globals/DOM GenSrpG ;
+- aucun copier-coller des `captureFix*` ;
+- `gameStyle: dungeon` est traité comme dette historique, pas comme contrat ;
+- PV, identité et roster peuvent être traduits explicitement ;
+- stats non consommées par le Combat State restent non-mappées ;
+- les capacités ne seront jamais inférées depuis leur nom/texte/ID ;
+- visuel/audio restent dans Presentation Bindings par `assetId` ;
+- progression reste hors Combat Session.
+
+CI audit documentaire :
+
+- run `36314005301` — SUCCESS ;
+- SHA `425f5d597418f8fdd25cd74bc14f2281bb081bb7`.
+
+Prochaine étape après checkpoint GREEN :
+
+1. créer un chantier séparé `CaptureExportV1` ;
+2. contrat pur uniquement ;
+3. tests RED avant implémentation de normalisation ;
+4. aucune dépendance GenSrpG ;
+5. aucun raccord UI/runtime avant GREEN du contrat.
