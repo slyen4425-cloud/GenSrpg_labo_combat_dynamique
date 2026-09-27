@@ -267,11 +267,30 @@ test("coop 2v2 page keeps one local ability bar and four selectable actors", asy
   assert.match(source, /format\.localActorId/);
   assert.match(source, /isSkillTargetAllowed/);
   assert.match(source, /createBattleActorAiController/);
-  assert.match(source, /actorId: "ally"/);
-  assert.match(source, /actorId: "opponent-b"/);
+  assert.match(source, /combatModel = null/);
+  assert.match(source, /loadDefaultCombatModel/);
+  assert.match(source, /skillsByActor\[format\.localActorId\]/);
+  assert.match(source, /actor\.controllerId\.startsWith\("ai-"\)/);
+  assert.match(source, /actorSkills\.map\(\(skill\) => skill\.id\)/);
   assert.match(visualSource, /querySelectorAll\("\[data-demo-slot\]"\)/);
   assert.match(visualSource, /targetFor\(slot, targetSlot\)/);
   assert.match(presenter, /targetSlot,\s*onPhase/);
+});
+
+test("coop 2v2 mount keeps default data loading but accepts one normalized injected combat model", async () => {
+  const source = await readFile("src/ui/combat-2v2-test-ui.js", "utf8");
+
+  assert.match(
+    source,
+    /combatModel \?\?[\s\S]*loadDefaultCombatModel\(\{ fetchImpl, formatUrl \}\)/
+  );
+  assert.match(source, /const format = model\.battleFormat/);
+  assert.match(source, /const fighters = model\.fighters/);
+  assert.match(source, /const skillsById = model\.skills/);
+  assert.match(source, /const skillsByActor = model\.skillsByActor/);
+  assert.match(source, /skillContainer\.replaceChildren\(\)/);
+  assert.match(source, /for \(const skill of localSkills\)/);
+  assert.doesNotMatch(source, /combatModel\?\.damage|combatModel\?\.hp/);
 });
 
 test("coop HUD keeps the ally directly above one local ability bar and uses the visual library icon", async () => {
