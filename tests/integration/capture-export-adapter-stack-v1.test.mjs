@@ -204,6 +204,10 @@ test("Capture adapter stack composes one native 1v1 package", () => {
   assert.equal(result.fighters[0].id, "player");
   assert.equal(result.fighters[1].id, "opponent");
   assert.equal(result.skills.fireball.form, "projectile");
+  assert.deepEqual(result.skillIdsByActor.player, ["fireball"]);
+  assert.deepEqual(result.skillIdsByActor.opponent, []);
+  assert.equal(Object.isFrozen(result.skillIdsByActor), true);
+  assert.equal(Object.isFrozen(result.skillIdsByActor.player), true);
   assert.equal(
     result.skillPresentations.fireball.visual.icon.assetId,
     "core:icon-skill-fireball-01"
@@ -220,6 +224,12 @@ test("Capture adapter stack uses the same path for 2v2 without a mode switch", (
     ["player", "ally", "opponent", "opponent-b"]
   );
   assert.equal(result.fighterConfigs.golem.maxHp, 150);
+  assert.deepEqual(result.skillIdsByActor, {
+    player: ["fireball"],
+    ally: [],
+    opponent: [],
+    "opponent-b": []
+  });
   assert.equal(
     result.roster.teams["opponent-b"].activeMemberId,
     "opponent-dragon"
