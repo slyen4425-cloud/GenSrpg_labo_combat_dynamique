@@ -7968,3 +7968,64 @@ Prochaine étape après checkpoint GREEN :
 - fixture neutre ;
 - pas d'UI dans ce lot ;
 - aucune injection d'état final.
+
+
+## Bundle CaptureExportV1 -> Combat Session — 2026-09-27
+
+Objectif :
+
+- composer les adaptateurs déjà GREEN en un bundle natif consommable par le Combat Session ;
+- prouver le vrai chemin `CaptureExportV1 -> adapters -> Combat Session -> résolution de dégâts` ;
+- ne pas ajouter d'UI dans ce lot.
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-roster-format-adapter-green-2026-09-27` ;
+- SHA de base : `aa08b20ae928aa39402d5d3e118d4ca79c4fde1b` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-combat-bundle-2026-09-27` ;
+- branche : `work/lab-capture-combat-bundle-2026-09-27`.
+
+Propriétaire :
+
+- futur `src/adapters/input/capture/combat-bundle-v1.js`.
+
+Sortie cible :
+
+- `battleFormat` natif ;
+- `fighters` actifs avec `id = actorId` et paramètres issus du FighterConfig de la créature ;
+- `skillsByActor` résolu depuis les skills de chaque créature ;
+- aucune copie de moteur/règle.
+
+Fichiers autorisés :
+
+- `src/adapters/input/capture/combat-bundle-v1.js` ;
+- `tests/integration/capture-combat-bundle-v1.test.mjs` ;
+- documentation du présent lot.
+
+Interdit :
+
+- aucun renderer / DOM / UI ;
+- aucun asset binding ;
+- aucune logique de dégâts dans l'adaptateur ;
+- aucune logique de ciblage/énergie dans l'adaptateur ;
+- aucun import GenSrpG.
+
+Vrai chemin prévu :
+
+`CaptureExportV1 -> BattleFormat adapter + Creature adapter + Skill adapter -> createCombatSession() -> useSkill() -> Combat Rules`.
+
+Tests :
+
+1. RED avant implémentation ;
+2. 2v2 export -> quatre fighters actifs ;
+3. fighter.id = actorId et non creatureId ;
+4. skills par acteur dérivés de la créature ;
+5. vraie attaque via Combat Session consomme l'énergie native et inflige les dégâts natifs ;
+6. réserves absentes des fighters actifs ;
+7. aucun état final injecté manuellement.
+
+Critère de fin :
+
+- CI GREEN ;
+- vrai chemin intégré prouvé ;
+- checkpoint GREEN avant toute prévisualisation éditeur/UI.
