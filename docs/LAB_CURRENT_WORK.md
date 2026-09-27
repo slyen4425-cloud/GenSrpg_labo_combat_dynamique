@@ -7557,3 +7557,69 @@ Prochaine étape après checkpoint GREEN :
 - livrable : `docs/LAB_CAPTURE_ADAPTER_AUDIT.md`.
 
 Le checkpoint `checkpoint/lab-capture-adapter-audit-green-2026-09-27` doit être fast-forwardé sur le SHA documentaire final validé après CI du présent commit.
+
+
+## Micro-lot A — CaptureCombatExportV1 pur — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-adapter-audit-green-2026-09-27` ;
+- SHA de base : `017afc72ace8f29ee2765361171282c2a4d0c2f4` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-export-v1-2026-09-27` ;
+- branche : `work/lab-capture-export-v1-2026-09-27`.
+
+Objectif :
+
+Définir et valider un snapshot JSON portable `capture-combat-export-v1` que pourra produire plus tard GenSrpG/éditeur, sans aucune dépendance au dépôt principal.
+
+Propriétaire :
+
+- nouveau contrat frontière : `src/contracts/capture-combat-export-v1.js`.
+
+Autorisé :
+
+- contrat pur ;
+- tests unitaires du contrat ;
+- documentation du schéma ;
+- fixture locale minimale si nécessaire.
+
+Protégé / interdit :
+
+- aucun import depuis `Zombicide-40k` ;
+- aucun DOM, storage, global, réseau ou chemin GitHub ;
+- aucune conversion vers FighterConfig/SkillDefinition dans ce lot ;
+- aucune modification Combat Rules / Runtime / Renderer / UI ;
+- aucune lecture du legacy Capture au runtime ;
+- aucune inférence de compétence par nom, texte ou ID.
+
+Forme minimale retenue :
+
+- `schema` exact ;
+- `battle` avec identité et acteur local ;
+- `teams` ;
+- `actors` ;
+- `creatures` ;
+- `skills` ;
+- `rosters` optionnels ;
+- `presentation` JSON-compatible optionnelle.
+
+Le contrat vérifie uniquement la cohérence structurelle et référentielle. Les sémantiques gameplay détaillées restent la responsabilité des futurs adaptateurs dédiés.
+
+Tests RED prévus avant implémentation :
+
+1. snapshot 1v1 valide ;
+2. doublons d'identifiants refusés ;
+3. références acteur -> créature vérifiées ;
+4. appartenance équipe cohérente ;
+5. `localActorId` valide ;
+6. skill IDs des créatures résolus ;
+7. roster actif/réserve cohérent ;
+8. valeurs opaques `definition/presentation` strictement JSON-compatibles ;
+9. source du contrat sans autorité DOM/storage/GenSrpG.
+
+Critère GREEN :
+
+- tests du contrat + CI globale SUCCESS ;
+- aucun autre propriétaire modifié ;
+- documentation synchronisée ;
+- checkpoint GREEN exact avant lot B.
