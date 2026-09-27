@@ -31,9 +31,16 @@ export function projectileClashCandidate({
     return null;
   }
 
+  const leftGroup = leftAction.skill.projectileClash.group;
+  const rightGroup = rightAction.skill.projectileClash.group;
+  const leftInteractsWith =
+    leftAction.skill.projectileClash.interactsWith ?? [leftGroup];
+  const rightInteractsWith =
+    rightAction.skill.projectileClash.interactsWith ?? [rightGroup];
+
   if (
-    leftAction.skill.projectileClash.group !==
-    rightAction.skill.projectileClash.group
+    !leftInteractsWith.includes(rightGroup) ||
+    !rightInteractsWith.includes(leftGroup)
   ) {
     return null;
   }
@@ -113,9 +120,16 @@ export function projectileClashCandidate({
     return null;
   }
 
+  const interactionKey = [leftGroup, rightGroup]
+    .sort()
+    .join("::");
+
   return Object.freeze({
     atClockMs,
-    group: leftAction.skill.projectileClash.group,
+    group: leftGroup === rightGroup ? leftGroup : interactionKey,
+    leftGroup,
+    rightGroup,
+    interactionKey,
     leftProgress,
     rightProgress
   });
@@ -128,7 +142,10 @@ function clashResolution({
   startedAtClockMs,
   atClockMs,
   progress,
-  group
+  group,
+  ownGroup,
+  otherGroup,
+  interactionKey
 }) {
   const atMs = Math.max(0, atClockMs - startedAtClockMs);
 
@@ -142,6 +159,9 @@ function clashResolution({
     state,
     clash: Object.freeze({
       group,
+      ownGroup,
+      otherGroup,
+      interactionKey,
       otherActorId: otherAction.actorId,
       otherSkillId: otherAction.actionId,
       progress
@@ -156,6 +176,9 @@ function clashResolution({
         otherActorId: otherAction.actorId,
         otherSkillId: otherAction.actionId,
         group,
+        ownGroup,
+        otherGroup,
+        interactionKey,
         progress
       }),
       Object.freeze({
@@ -190,7 +213,10 @@ export function resolveProjectileClash({
       startedAtClockMs: leftStartedAtClockMs,
       atClockMs: candidate.atClockMs,
       progress: candidate.leftProgress,
-      group: candidate.group
+      group: candidate.group,
+      ownGroup: candidate.leftGroup,
+      otherGroup: candidate.rightGroup,
+      interactionKey: candidate.interactionKey
     }),
     right: clashResolution({
       state,
@@ -199,7 +225,10 @@ export function resolveProjectileClash({
       startedAtClockMs: rightStartedAtClockMs,
       atClockMs: candidate.atClockMs,
       progress: candidate.rightProgress,
-      group: candidate.group
+      group: candidate.group,
+      ownGroup: candidate.rightGroup,
+      otherGroup: candidate.leftGroup,
+      interactionKey: candidate.interactionKey
     })
   });
 }
