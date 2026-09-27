@@ -789,14 +789,14 @@ button.reserve-card {
 .arena--coop-2v2 .fighter--opponent {
   top: 31%;
   left: 74%;
-  width: min(34%, 19.5rem);
+  width: min(44.2%, 25.35rem);
 }
 
 .arena--coop-2v2 .fighter--opponent-b {
   z-index: 3;
   top: 35%;
   left: 42%;
-  width: min(33%, 19rem);
+  width: min(42.9%, 24.7rem);
 }
 
 .arena--coop-2v2 .fighter[data-approach-active="true"] {
@@ -1082,13 +1082,13 @@ button.reserve-card {
   .arena--coop-2v2 .fighter--opponent {
     top: 31%;
     left: 73%;
-    width: 31%;
+    width: 40.3%;
   }
 
   .arena--coop-2v2 .fighter--opponent-b {
     top: 37%;
     left: 41%;
-    width: 30%;
+    width: 39%;
   }
 
   .squad-card {
