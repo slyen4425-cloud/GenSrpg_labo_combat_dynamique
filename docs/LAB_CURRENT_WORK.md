@@ -8285,3 +8285,62 @@ Critère de fin :
 
 - CI GREEN ;
 - checkpoint GREEN avant adaptateur vers l'interface Presenter/FX actuelle.
+
+
+### Résultat SkillPresentationRegistryV1
+
+RED :
+
+- `tests/unit/skill-presentation-registry-v1.test.mjs` ajouté avant implémentation ;
+- run `36315292640` — FAILURE attendue ;
+- cause : registre absent.
+
+Implémentation :
+
+- `src/adapters/presentation/skill-presentation-registry-v1.js` ;
+- `createSkillPresentationRegistryV1({ bindings, resolveAsset })`.
+
+Garanties :
+
+- bindings normalisés par `SkillPresentationBindingV1` ;
+- indexation par `skillId` ;
+- doublon rejeté ;
+- résolution lazy : aucun asset n'est demandé par `bindingForSkill()` ;
+- `resolvedForSkill()` résout uniquement les `assetId` réellement déclarés ;
+- asset absent = `asset:null` sans casser le binding ;
+- phases visual/audio résolues ;
+- paramètres éditeur restent séparés de l'objet asset ;
+- l'objet asset source n'est ni fusionné ni muté ;
+- aucun chemin physique ni catalogue global connu par le registre.
+
+CI GREEN :
+
+- run `36315325027` — SUCCESS ;
+- SHA `bd1c8f14c28ad436af976d744e60c06a5e2a694a`.
+
+Caractérisation du raccord Presenter/FX actuel :
+
+Déjà consommé :
+
+- visual asset `cast / travel / impact / phase` ;
+- `displayScale` ;
+- `playbackMode` ;
+- `castAnchor` ;
+- `castLayer` ;
+- `travelSourceAnchor` ;
+- audio `cast / release / impact / phase` avec `volume / loop`.
+
+Présent dans le nouveau contrat mais pas encore consommé génériquement par le renderer :
+
+- `offsetX / offsetY` ;
+- `rotationDeg` ;
+- `opacity` ;
+- attachments avancés autres que les anchors déjà raccordés ;
+- triggers arbitraires ;
+- audio `travel / hit / miss`.
+
+Décision :
+
+- le prochain adaptateur de compatibilité ne doit utiliser que les capacités réellement supportées ;
+- aucun réglage non supporté ne sera simulé par CSS, timer ou branche spéciale ;
+- le binding reste la source de vérité pour les capacités futures.
