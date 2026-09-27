@@ -28,11 +28,13 @@ test("visual controller can replace a slot creature without owning combat rules"
   assert.doesNotMatch(source, /resolveSkill/);
 });
 
-test("both visual slots start idle, transient actions return idle, KO does not restart defeated idle", async () => {
+test("all declared visual slots start idle, transient actions return idle, KO does not restart defeated idle", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
 
-  assert.match(source, /startIdleFor\("player"\)/);
-  assert.match(source, /startIdleFor\("opponent"\)/);
+  assert.match(
+    source,
+    /for \(const slotKey of Object\.keys\(slots\)\) \{[\s\S]*startIdleFor\(slotKey\)/
+  );
   assert.match(source, /!\["idle", "ko"\]\.includes\(type\)/);
   assert.match(source, /startIdleFor\(slotKey\)/);
 });
