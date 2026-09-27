@@ -75,22 +75,13 @@
         </div>
       </article>
 
-      <button type="button" class="squad-card squad-card--player" data-target-actor="player">
+      <button type="button" class="squad-card squad-card--player squad-card--local-full" data-target-actor="player">
         <strong>Loup volcanique</strong>
         <div class="squad-card__hp">
           <progress data-combat-hp="player" max="100" value="100"></progress>
           <span data-combat-hp-value="player">100 / 100 PV</span>
         </div>
         <small data-combat-action="player">Prêt</small>
-      </button>
-
-      <button type="button" class="squad-card squad-card--ally" data-target-actor="ally">
-        <strong>Golem moussu · allié</strong>
-        <div class="squad-card__hp">
-          <progress data-combat-hp="ally" max="100" value="100"></progress>
-          <span data-combat-hp-value="ally">100 / 100 PV</span>
-        </div>
-        <small data-combat-action="ally">Prêt</small>
       </button>
 
       <button type="button" class="squad-card squad-card--opponent" data-target-actor="opponent">
@@ -111,21 +102,44 @@
         <small data-combat-action="opponent-b">Prêt</small>
       </button>
 
-      <section class="coop-controls" aria-label="Capacités du Loup volcanique">
-        <div class="hud__energy">
-          <div class="hud__energy-line">
-            <strong>Votre énergie</strong>
-            <span data-combat-energy-value="player">0 / 10⚡</span>
+      <div class="coop-command-stack">
+        <button
+          type="button"
+          class="squad-card squad-card--ally squad-card--command-ally"
+          data-target-actor="ally"
+        >
+          <img
+            class="squad-card__creature-icon"
+            data-ally-creature-icon
+            alt=""
+            aria-hidden="true"
+          >
+          <span class="squad-card__body">
+            <strong>Golem moussu · allié</strong>
+            <span class="squad-card__hp">
+              <progress data-combat-hp="ally" max="100" value="100"></progress>
+              <span data-combat-hp-value="ally">100 / 100 PV</span>
+            </span>
+            <small data-combat-action="ally">Prêt</small>
+          </span>
+        </button>
+
+        <section class="coop-controls" aria-label="Capacités du Loup volcanique">
+          <div class="hud__energy">
+            <div class="hud__energy-line">
+              <strong>Votre énergie</strong>
+              <span data-combat-energy-value="player">0 / 10⚡</span>
+            </div>
+            <progress
+              data-combat-energy="player"
+              max="10"
+              value="0"
+              aria-label="Énergie du Loup volcanique"
+            ></progress>
           </div>
-          <progress
-            data-combat-energy="player"
-            max="10"
-            value="0"
-            aria-label="Énergie du Loup volcanique"
-          ></progress>
-        </div>
-        <div class="skill-bar__grid" data-combat-skills></div>
-      </section>
+          <div class="skill-bar__grid" data-combat-skills></div>
+        </section>
+      </div>
 
       <p
         class="live-status live-status--coop"
