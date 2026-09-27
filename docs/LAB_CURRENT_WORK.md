@@ -8264,3 +8264,81 @@ Checkpoint final prévu après CI documentaire :
 Prochaine étape :
 
 micro-lot UI séparé : permettre à `mountCoop2v2Test` de recevoir une source de données native optionnelle (format/fighters/skills/loadouts) tout en conservant exactement le chargement JSON historique lorsque cette source est absente.
+
+
+## Micro-lot — Coop 2v2 native data source V1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-actor-skill-loadouts-v1-green-2026-09-27` ;
+- SHA de base : `8f86595d30337aaf4ebb42b694ca892093f03f2c` ;
+- CI base : run `36319421351` — SUCCESS ;
+- checkpoint départ : `checkpoint/lab-start-coop-2v2-native-data-source-v1-2026-09-27` ;
+- branche : `work/lab-coop-2v2-native-data-source-v1-2026-09-27`.
+
+Cause démontrée :
+
+- le contrôleur 2v2 charge directement format/fighters/skills depuis les JSON de démo ;
+- la barre locale rend toutes les compétences chargées ;
+- les listes de compétences IA sont codées en dur dans l'UI ;
+- cette dette empêche un vrai raccord éditeur/export sans dupliquer ou simuler les données de démo.
+
+Objectif :
+
+Introduire une source de données native injectable pour `mountCoop2v2Test`, tout en conservant strictement le comportement actuel lorsqu'aucune source n'est fournie.
+
+Architecture :
+
+- un helper de chargement/normalisation possède les données de démo par défaut ;
+- `mountCoop2v2Test` consomme seulement un paquet natif :
+  - `battleFormat` ;
+  - `fighterConfigs` ;
+  - `fighters` ;
+  - `skills` / `skillsById` ;
+  - `skillIdsByActor` ;
+- la barre locale utilise uniquement `skillIdsByActor[localActorId]` ;
+- chaque IA utilise uniquement `skillIdsByActor[actorId]`.
+
+Comportement de démo à préserver :
+
+- joueur : `fireball, claw, aerial-dive, teleport-strike` ;
+- allié : `claw, fireball, aerial-dive, teleport-strike` ;
+- adversaire A : `fireball, claw, aerial-dive, teleport-strike` ;
+- adversaire B : `aerial-dive, fireball, claw, teleport-strike`.
+
+Fichiers autorisés :
+
+- `src/ui/combat-2v2-test-ui.js` ;
+- nouveau helper source de données 2v2 ;
+- nouveau JSON de loadouts démo si retenu ;
+- tests unitaires/intégration concernés ;
+- présente documentation.
+
+Protégé / interdit :
+
+- aucun changement `examples/dom-demo/coop-2v2.html` ;
+- aucun changement `examples/dom-demo/demo.css` ;
+- aucun changement positions/tailles/z-index/FX ;
+- aucun changement Combat Rules / Combat Runtime / targeting ;
+- aucun changement Animation Core / Renderer ;
+- aucun import GenSrpG ;
+- aucun `is2v2` global ;
+- aucun fallback par nom de compétence.
+
+Tests RED prévus :
+
+1. la source de démo expose exactement les loadouts historiques ;
+2. une source native injectée contourne les fetch JSON de démo ;
+3. barre locale pilotée par le loadout acteur local ;
+4. IA pilotées par les loadouts acteurs ;
+5. absence des listes de skills codées en dur dans le contrôleur ;
+6. le chemin par défaut garde les quatre compétences et les mêmes ordres IA ;
+7. sentinelles visuelles 2v2 existantes intactes.
+
+Critère GREEN :
+
+- RED observé avant implémentation ;
+- aucun changement visuel ;
+- CI globale SUCCESS ;
+- documentation synchronisée ;
+- checkpoint GREEN exact avant création d'une page preview Capture séparée.
