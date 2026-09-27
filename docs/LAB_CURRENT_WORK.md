@@ -7667,3 +7667,66 @@ Prochaine étape après checkpoint GREEN :
 - adaptateur créature pur `CaptureExportV1 -> FighterConfig / roster member` ;
 - test RED avant implémentation ;
 - aucun mapping de stat source implicite.
+
+
+## Adaptateur créature CaptureExportV1 — 2026-09-27
+
+Objectif :
+
+- traduire une créature validée par `CaptureExportV1` en `FighterConfig` natif du laboratoire ;
+- produire aussi un membre de roster natif depuis une instance d'équipe exportée ;
+- ne donner aucune autorité gameplay aux stats/progression non consommées par le Combat State.
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-export-contract-green-2026-09-27` ;
+- SHA de base : `80a54fe6152db51fecb99e4b1f0a3ce318edfaa2` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-creature-adapter-2026-09-27` ;
+- branche : `work/lab-capture-creature-adapter-2026-09-27`.
+
+Propriétaire :
+
+- futur `src/adapters/input/capture/creature-adapter-v1.js`.
+
+Entrée :
+
+- objet `CaptureExportV1` brut ou normalisable ;
+- identifiant de créature ou identifiant de membre.
+
+Sorties prévues :
+
+- `fighterConfig` strictement composé depuis `creature.combat` + `creature.id` ;
+- membre roster : `id / creatureId / displayName / fighterConfigId` ;
+- metadata source séparée pour inspection/éditeur, sans consommation Combat State.
+
+Fichiers autorisés :
+
+- `src/adapters/input/capture/creature-adapter-v1.js` ;
+- `tests/unit/capture-creature-adapter-v1.test.mjs` ;
+- documentation du présent lot.
+
+Interdit :
+
+- aucun mapping `stats.agilite -> charge`, `stats.speed -> énergie`, `defense -> PV` ou autre inférence ;
+- aucune modification Combat State ;
+- aucun DOM / storage / global ;
+- aucun asset ;
+- aucun Skill mapping dans ce lot ;
+- aucun import GenSrpG.
+
+Tests prévus :
+
+1. RED avant implémentation ;
+2. FighterConfig = copie exacte des paramètres combat exportés ;
+3. les stats/progression ne changent pas le FighterConfig ;
+4. creature id inconnue rejetée ;
+5. membre roster natif dérivé depuis équipe + créature ;
+6. membre inconnu rejeté ;
+7. metadata source immutable et distincte du FighterConfig.
+
+Critère de fin :
+
+- CI GREEN ;
+- aucune dépendance GenSrpG ;
+- aucun changement moteur ;
+- checkpoint GREEN avant le lot skills.
