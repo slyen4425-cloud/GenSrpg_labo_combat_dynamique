@@ -8729,3 +8729,79 @@ Prochaine étape après CI documentaire GREEN :
 - preview JSON/export ;
 - test RED avant implémentation ;
 - preview mobile obligatoire avant GREEN final.
+
+
+## Micro-lot — Capture Editor UI V1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-ui-preaudit-v1-green-2026-09-27` ;
+- SHA `9545f35e2ab2d7ba34967ca9ad3721f0756da95e` ;
+- CI pré-audit : run `36335190153` — SUCCESS.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-editor-ui-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-ui-v1-2026-09-27`.
+
+Objectif :
+
+Créer la première UI autonome du laboratoire capable de saisir une créature Capture et une capacité, valider les brouillons avec les contrats GREEN, puis générer un vrai `CaptureCombatExportV1`.
+
+Propriétaire :
+
+- `src/ui/capture-editor-test-ui.js`.
+
+Fichiers autorisés :
+
+- `src/ui/capture-editor-test-ui.js` ;
+- `examples/dom-demo/capture-editor.html` ;
+- `examples/dom-demo/capture-editor.js` ;
+- `examples/dom-demo/capture-editor.css` ;
+- test UI dédié ;
+- documentation.
+
+Frontières :
+
+- aucune modification `combat-test-ui.js` / `combat-2v2-test-ui.js` / `demo-app.js` ;
+- aucun CombatSession / Runtime / Rules / Renderer ;
+- aucune persistance ;
+- aucune dépendance GenSrpG ;
+- aucune inférence gameplay ;
+- valeurs de démonstration adverses fournies explicitement par le boot de la page ;
+- l'UI convertit seulement les types HTML et délègue aux contrats/exporter.
+
+Fonctions cibles :
+
+- conversion explicite champs créature -> `CaptureCreatureEditorDraftV1` ;
+- conversion explicite champs capacité -> `CaptureSkillEditorDraftV1` ;
+- montage DOM local ;
+- validation à la soumission ;
+- affichage d'erreur ;
+- affichage de l'export JSON ;
+- `dispose()` des listeners.
+
+Test RED prévu :
+
+1. module UI absent ;
+2. vrai helper de conversion -> Draft normalizers ;
+3. soumission -> vrai Capture Editor Exporter ;
+4. erreur invalide propagée ;
+5. sources UI sans CombatSession/Runtime/storage/captureFix/GenSrpG ;
+6. HTML contient les surfaces attendues ;
+7. aucune modification des UIs combat.
+
+Critère technique GREEN :
+
+- RED isolé ;
+- CI globale SUCCESS ;
+- preview publiée.
+
+Critère GREEN final :
+
+- validation smartphone de l'éditeur par Sylvain ;
+- documentation finale ;
+- checkpoint GREEN exact seulement après cette validation.
