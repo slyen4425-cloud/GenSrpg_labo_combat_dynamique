@@ -701,7 +701,7 @@ test("projectile clash plans one canonical impact at semantic meeting progress",
       fromSlot: "opponent",
       targetSlot: "player",
       progress: 0.35,
-      durationMs: 420
+      durationMs: 520
     }
   ]);
 
@@ -1024,6 +1024,8 @@ test("DOM clash impact uses semantic progress between source and stable target",
 
   assert.equal(handle.status, "running");
   assert.equal(appended[0].dataset.skillFx, "clash-impact");
+  assert.match(appended[0].className, /skill-fx--impact/);
+  assert.match(appended[0].className, /skill-fx--clash-impact/);
   assert.equal(appended[0].style.left, "115px");
   assert.equal(appended[0].style.top, "105px");
 
