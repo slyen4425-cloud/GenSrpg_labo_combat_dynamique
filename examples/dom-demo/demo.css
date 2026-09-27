@@ -799,8 +799,12 @@ button.reserve-card {
   width: min(42.9%, 24.7rem);
 }
 
-.arena--coop-2v2 .fighter[data-approach-active="true"] {
+.arena--coop-2v2 .fighter[data-approach-active="true"][data-approach-depth="front"] {
   z-index: 9;
+}
+
+.arena--coop-2v2 .fighter[data-approach-active="true"][data-approach-depth="behind"] {
+  z-index: 2;
 }
 
 .arena--coop-2v2 .fighter[data-target-selected="true"] .fighter__motion {
