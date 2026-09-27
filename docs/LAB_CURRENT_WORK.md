@@ -9666,3 +9666,36 @@ Checkpoint GREEN final après CI du présent SHA documentaire :
 `checkpoint/lab-capture-creature-draft-v2-idempotence-fix-green-2026-09-27`.
 
 Le correctif devra ensuite être reporté tel quel sur la branche `work/lab-capture-editor-human-v2-2026-09-27` avant de reprendre la validation UI.
+
+
+## Correctif racine — CaptureActiveSkillLoadoutV1 idempotence — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-creature-draft-v2-idempotence-fix-green-2026-09-27` ;
+- SHA `7d0b49e54f115e0d3dde69d9e4901f1aedb6ab85`.
+
+Déclencheur :
+
+Après correction du Draft créature V2, le RED de l'éditeur humain a révélé la même incohérence dans `CaptureActiveSkillLoadoutV1` : la sortie ajoutait `equippedSkillIds`, puis l'Exporter V2 renormalisait le loadout et ce champ était refusé.
+
+Cause racine :
+
+- les quatre `slots` sont la seule donnée éditable ;
+- `equippedSkillIds` est une projection dérivée ;
+- cette projection était stockée dans le contrat normalisé, créant une deuxième forme de vérité non ré-ingérable.
+
+Décision :
+
+- la sortie normalisée ne conserve que `schema / creatureId / slots` ;
+- ajouter un helper pur pour dériver les skill IDs équipés depuis les slots ;
+- l'Exporter V2 consomme ce helper ;
+- aucune adaptation ou suppression de champ dans l'UI.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-loadout-v1-idempotence-fix-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-loadout-v1-idempotence-fix-2026-09-27`.
