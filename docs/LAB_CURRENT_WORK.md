@@ -9343,3 +9343,42 @@ Prochaine étape avant l'UI humaine :
 - pré-audit cooldown réel ;
 - ajouter le cooldown seulement si un propriétaire Runtime propre peut être identifié ;
 - aucun champ UI cooldown avant le GREEN contractuel/runtime.
+
+
+## Pré-audit — cooldown réel des compétences V1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-exporter-v2-green-2026-09-27` ;
+- SHA `e8962df53e2f1cd1230877f2836d0098174ed43b`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-skill-cooldown-preaudit-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-skill-cooldown-preaudit-v1-2026-09-27`.
+
+Décision :
+
+- configuration : `SkillDefinition.cooldownMs` ;
+- état : `Combat State.fighters[*].skillCooldowns` ;
+- horloge : `state.elapsedMs` déjà avancée par Combat Runtime ;
+- règle : Action Resolver ;
+- start accepté = cooldown démarré immédiatement ;
+- interruptions / contres / clash ne rendent pas la capacité immédiatement réutilisable ;
+- réactions utilisent la même mécanique ;
+- aucune horloge/timer cooldown dans Runtime ou UI ;
+- cooldown par défaut 0 pour compatibilité.
+
+Document :
+
+`docs/LAB_SKILL_COOLDOWN_PREAUDIT_V1.md`.
+
+Prochaine étape après CI documentaire GREEN :
+
+- micro-lot cooldown réel ;
+- contrats/Core seulement ;
+- RED avant implémentation ;
+- aucun changement UI.
