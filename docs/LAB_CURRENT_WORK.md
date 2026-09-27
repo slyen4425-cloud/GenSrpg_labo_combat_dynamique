@@ -7937,3 +7937,35 @@ Critère GREEN :
 - vrais contrats natifs consommés ;
 - CI globale SUCCESS ;
 - checkpoint GREEN exact avant le lot Presentation Binding.
+
+
+Résultat micro-lot D — Capture roster + BattleFormat :
+
+- déclaration de lot : commit `d06620d704cbe073f521d15265c52967b8c2ee64`, CI GREEN ;
+- test RED : commit `6c530282a77688551088f43662e8a9ca36ec25e2` ;
+- CI RED : run `36320891107` — FAILURE attendue ;
+- cause RED : module `roster-format-adapter.js` absent ;
+- 266 tests existants passaient, 1 seul échec sur le nouveau test ;
+- implémentation minimale : commit `8944e7434f1fd5f63632f92668dc736c3d1c907d` ;
+- CI fonctionnelle : run `36320941710` — SUCCESS.
+
+Propriétaire créé :
+
+- `src/adapters/input/capture/roster-format-adapter.js`.
+
+Garanties :
+
+- `BattleFormatDefinition` reste propriétaire de la validation acteurs/équipes ;
+- `RosterSession` reste propriétaire du comportement actif/réserve ;
+- le même adaptateur traite 1v1 et 2v2 ;
+- aucune variable `is2v2` ni branche de mode ;
+- `controllerId` est copié depuis l'export, jamais décidé par l'adaptateur ;
+- `fighterConfigId = creatureId` conformément au propriétaire FighterConfig de la lignée courante ;
+- sortie roster consommée par le vrai `createRosterSession` ;
+- metadata/presentation non propagées ;
+- aucun changement Combat Core / Runtime / UI / Renderer ;
+- aucun changement de `Zombicide-40k`.
+
+Checkpoint final prévu après CI documentaire :
+
+`checkpoint/lab-capture-combat-roster-format-adapter-green-2026-09-27`.
