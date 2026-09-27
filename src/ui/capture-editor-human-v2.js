@@ -849,6 +849,63 @@ function socketList(store) {
   return sockets;
 }
 
+export function skillSocketChoicesFromCreatureSocketsV1(sockets) {
+  const choices = [
+    Object.freeze({
+      id: "",
+      label: "Centre par défaut"
+    })
+  ];
+
+  for (const socket of sockets ?? []) {
+    if (
+      !socket ||
+      typeof socket.id !== "string" ||
+      socket.id.trim() === ""
+    ) {
+      continue;
+    }
+
+    choices.push(
+      Object.freeze({
+        id: socket.id.trim(),
+        label:
+          typeof socket.label === "string" &&
+          socket.label.trim() !== ""
+            ? socket.label.trim()
+            : socket.id.trim()
+      })
+    );
+  }
+
+  return Object.freeze(choices);
+}
+
+function syncSkillSocketChoices(root, store) {
+  const select = one(root, "[data-skill-socket]");
+  const previous = select.value;
+  const choices =
+    skillSocketChoicesFromCreatureSocketsV1(
+      socketList(store)
+    );
+
+  select.textContent = "";
+
+  for (const choice of choices) {
+    createOption(select, choice.id, choice.label);
+  }
+
+  if (
+    choices.some(
+      (choice) => choice.id === previous
+    )
+  ) {
+    select.value = previous;
+  } else {
+    select.value = "";
+  }
+}
+
 function updateSocketMarker(surface, point) {
   let marker = surface.querySelector("[data-socket-marker]");
   if (!marker) {
@@ -1173,6 +1230,7 @@ export function mountCaptureEditorHumanV2({
   }
 
   setTab(root, "creature");
+  syncSkillSocketChoices(root, sockets);
 
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
@@ -1201,6 +1259,7 @@ export function mountCaptureEditorHumanV2({
       current[surface.dataset.socketView] = point;
       sockets.set(socketId, current);
       updateSocketMarker(surface, point);
+      syncSkillSocketChoices(root, sockets);
       setStatus(
         root,
         "Point " + label + " placé sur la vue " +

@@ -211,6 +211,20 @@
       </article>
 
       <article class="card">
+        <div class="card-title">
+          <span class="step">6</span>
+          <div>
+            <h2>Points de vie</h2>
+            <p>Les PV sont une caractéristique de cette créature.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
+          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
+        </div>
+      </article>
+
+      <article class="card">
         <details>
           <summary>Stats avancées de la créature</summary>
           <div class="grid three detail-grid">
@@ -226,7 +240,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">6</span>
+          <span class="step">7</span>
           <div>
             <h2>4 capacités équipées</h2>
             <p>Le premier slot suit la capacité actuellement éditée.</p>
@@ -264,20 +278,6 @@
       <article class="card">
         <div class="card-title">
           <span class="step">2</span>
-          <div>
-            <h2>PV</h2>
-            <p>Valeurs explicites utilisées par le combat.</p>
-          </div>
-        </div>
-        <div class="grid two">
-          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
-          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card-title">
-          <span class="step">3</span>
           <div>
             <h2>Format du combat</h2>
             <p>Le même chemin de données est utilisé pour 1v1, 2v2, 3v3 ou 4v4.</p>
@@ -317,9 +317,10 @@
               <option value="offensive" selected>Attaque</option>
               <option value="defensive">Protection</option>
               <option value="heal">Soin</option>
-              <option value="buff_debuff">Buff / Debuff</option>
+              <option value="buff_debuff" disabled data-requires-status-effect>Buff / Debuff — Status Effect requis</option>
               <option value="counter">Contre</option>
             </select>
+            <small>Buff / Debuff générique sera activé après le contrat Status Effect.</small>
           </label>
           <label>Style
             <select data-skill-form>
@@ -433,15 +434,11 @@
           <label>Icône
             <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
           </label>
-          <label>Socket de départ
+          <label>Point de sortie de la créature
             <select data-skill-socket>
               <option value="">Centre par défaut</option>
-              <option value="mouth" selected>Bouche</option>
-              <option value="head">Tête</option>
-              <option value="right-hand">Main / patte droite</option>
-              <option value="left-hand">Main / patte gauche</option>
-              <option value="tail">Queue</option>
             </select>
+            <small>Seuls les points réellement placés dans l’onglet Créature apparaissent ici.</small>
           </label>
           <label>Effet de cast
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
