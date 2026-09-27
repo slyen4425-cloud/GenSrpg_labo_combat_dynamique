@@ -7229,3 +7229,63 @@ Critères :
 - un attaquant venant du premier plan reste lisible devant sa cible ;
 - état de profondeur nettoyé après l'action ;
 - CI GREEN avant mise à jour de preview.
+
+
+### Micro-lot global — impact visuel des interactions projectile / défense — 2026-09-27
+
+Demande utilisateur :
+
+- afficher un impact quand deux boules de feu se rencontrent ;
+- ne pas coder ce comportement spécifiquement pour la boule de feu ;
+- préparer le même chemin pour projectile ↔ projectile de types différents et projectile ↔ défense/bouclier.
+
+Base / sécurité :
+
+- SHA de base : `4b60167a9516d27d92354c6793d9ad658c0cd77f` ;
+- checkpoint : `checkpoint/lab-start-global-projectile-clash-impact-2026-09-27` ;
+- branche : `work/lab-coop-2v2-preview-2026-09-27` ;
+- CI base GREEN ;
+- `main` et `global-assets` protégées.
+
+État réel :
+
+- Combat Core possède déjà `projectileClash` et produit l'événement sémantique `projectile-clash` ;
+- le Presenter annule correctement les deux projectiles lors d'un clash, mais ne joue aucun FX au point de rencontre ;
+- `SkillDefinition.projectileClash` ne permet actuellement que des groupes identiques ;
+- les défenses `blocked/reflected/immune` n'émettent pas encore de feedback d'impact via `planSkillOutcomeFx`.
+
+Correction prévue :
+
+1. étendre le contrat `projectileClash` avec `interactsWith` data-driven, rétrocompatible (défaut = son propre groupe) ;
+2. laisser Combat Core décider uniquement si l'interaction existe, sans dépendre du renderer ;
+3. créer un plan FX générique `clash-impact` depuis l'événement sémantique `projectile-clash` ;
+4. positionner ce FX par interpolation entre source et cible avec le `progress` déjà calculé par Combat Core ;
+5. éviter les doubles impacts : une seule des deux résolutions du même clash possède le rendu canonique ;
+6. réutiliser l'impact lié à la compétence via la couche Presentation Assets ;
+7. produire aussi un impact générique au point de contact pour `blocked/reflected/immune`.
+
+Fichiers autorisés :
+
+- `src/contracts/skill-definition.js` ;
+- `src/core/combat/projectile-clash.js` ;
+- `src/core/fx/skill-fx-plan.js` ;
+- `src/adapters/renderer/combat-resolution-presenter.js` ;
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `data/combat/skills/fireball.skill.json` si nécessaire pour expliciter la compatibilité ;
+- tests projectile / FX / présentation concernés ;
+- présente documentation.
+
+Domaines protégés :
+
+- pas de détection collision gameplay dans le DOM ;
+- aucun dégât décidé par le renderer ;
+- aucun timer gameplay UI ;
+- aucun second projectile renderer ;
+- aucune règle spéciale `if fireball` dans Core/Renderer.
+
+Critères :
+
+- boule de feu ↔ boule de feu : annulation + impact visuel au point de rencontre ;
+- interaction de groupes différents testable uniquement par données ;
+- blocage/réflexion/immunité : impact visuel au point de contact sans changer le résultat gameplay ;
+- CI GREEN avant déplacement de preview.
