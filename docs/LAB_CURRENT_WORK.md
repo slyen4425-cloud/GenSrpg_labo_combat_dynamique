@@ -8196,3 +8196,77 @@ Garanties :
 Checkpoint final prévu après CI documentaire :
 
 `checkpoint/lab-capture-presentation-adapter-green-2026-09-27`.
+
+
+## Gouvernance — package Capture consolidé — 2026-09-27
+
+Le nom historique `work/lab-capture-combat-package-v1-2026-09-27` a été détecté comme appartenant à une ancienne lignée divergente issue du checkpoint `02891f7...`.
+
+Décision :
+
+- ancienne branche laissée comme historique, non autorité ;
+- aucun merge ni cherry-pick depuis cette lignée ;
+- nouvelle lignée package repart uniquement de `checkpoint/lab-capture-presentation-adapter-green-2026-09-27` ;
+- SHA de base vérifié : `dccd5f6bd270b65f7836b7d79f04a609b2538167`.
+
+## Micro-lot F — CaptureCombatPackageV1 consolidé — 2026-09-27
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-combat-package-consolidated-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-combat-package-consolidated-v1-2026-09-27`.
+
+Objectif :
+
+Composer toutes les sorties natives déjà validées depuis un seul `CaptureCombatExportV1`, sans créer de nouveau moteur ni importer une ancienne implémentation parallèle.
+
+Propriétaire prévu :
+
+`src/adapters/input/capture/combat-package-v1.js`.
+
+Sortie :
+
+```js
+{
+  schema: "capture-combat-package-v1",
+  battleFormat,
+  fighterConfigs,
+  initialFighters,
+  skills,
+  skillsByCreature,
+  roster,
+  presentationBindings
+}
+```
+
+Règles :
+
+- chaque sous-partie doit provenir de l'adaptateur propriétaire déjà GREEN ;
+- `initialFighters` est uniquement une projection actorId d'un FighterConfig déjà validé ;
+- aucune formule ou règle métier nouvelle ;
+- aucun état GenSrpG conservé ;
+- aucune résolution d'asset ;
+- aucune logique UI/runtime.
+
+Tests RED :
+
+1. package 2v2 complet ;
+2. FighterConfig indexés par creatureId ;
+3. initialFighters indexés par actorId ;
+4. skills natifs et ordre par créature ;
+5. BattleFormat/controllers conservés ;
+6. presentation séparée ;
+7. vrai `createCombatSession` accepte le package ;
+8. vrai `createRosterSession` accepte le package ;
+9. vraie compétence issue du package résoluble ;
+10. sentinelle sans DOM/storage/network/GenSrpG.
+
+Critère GREEN :
+
+- RED observé ;
+- assembleur minimal ;
+- CI globale SUCCESS ;
+- checkpoint GREEN avant preview éditeur.
