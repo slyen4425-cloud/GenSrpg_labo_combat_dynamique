@@ -192,10 +192,22 @@ test("coop 2v2 page keeps one local ability bar and four selectable actors", asy
 test("coop 2v2 CSS gives four distinct actor positions and lightweight squad cards", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
-  assert.match(css, /\.arena--coop-2v2 \.fighter--player/);
-  assert.match(css, /\.arena--coop-2v2 \.fighter--ally/);
-  assert.match(css, /\.arena--coop-2v2 \.fighter--opponent/);
-  assert.match(css, /\.arena--coop-2v2 \.fighter--opponent-b/);
+  assert.match(
+    css,
+    /\.arena--coop-2v2 \.fighter--player\s*\{[\s\S]*?left:\s*30%/
+  );
+  assert.match(
+    css,
+    /\.arena--coop-2v2 \.fighter--ally\s*\{[\s\S]*?left:\s*53%/
+  );
+  assert.match(
+    css,
+    /\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*?top:\s*31%[\s\S]*?left:\s*68%/
+  );
+  assert.match(
+    css,
+    /\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*?left:\s*46%/
+  );
   assert.match(css, /\.squad-card--player/);
   assert.match(css, /\.squad-card--ally/);
   assert.match(css, /\.squad-card--opponent-b/);
