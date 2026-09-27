@@ -118,7 +118,7 @@ export function planSkillOutcomeFx({
           1,
           Math.max(0, Number(clashEvent.progress) || 0)
         ),
-        durationMs: 420
+        durationMs: 520
       })
     ]);
   }
