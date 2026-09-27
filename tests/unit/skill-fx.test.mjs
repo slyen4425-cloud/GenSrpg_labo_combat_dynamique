@@ -652,6 +652,81 @@ test("resolved fireball hit can request a presentation-only impact FX", () => {
   );
 });
 
+test("defensive projectile outcomes keep a presentation-only contact impact", () => {
+  for (const outcome of ["blocked", "reflected", "immune"]) {
+    assert.deepEqual(
+      planSkillOutcomeFx({
+        resolution: {
+          ok: true,
+          outcome,
+          skillId: "fireball"
+        },
+        targetSlot: "opponent"
+      }),
+      [
+        {
+          type: "impact",
+          skillId: "fireball",
+          targetSlot: "opponent",
+          durationMs: 420
+        }
+      ]
+    );
+  }
+});
+
+test("projectile clash plans one canonical impact at semantic meeting progress", () => {
+  const canonical = planSkillOutcomeFx({
+    resolution: {
+      ok: true,
+      outcome: "clashed",
+      actorId: "opponent",
+      skillId: "fireball",
+      events: [
+        {
+          type: "projectile-clash",
+          otherActorId: "player",
+          progress: 0.35
+        }
+      ]
+    },
+    actorSlot: "opponent",
+    targetSlot: "player"
+  });
+
+  assert.deepEqual(canonical, [
+    {
+      type: "clash-impact",
+      skillId: "fireball",
+      fromSlot: "opponent",
+      targetSlot: "player",
+      progress: 0.35,
+      durationMs: 420
+    }
+  ]);
+
+  assert.deepEqual(
+    planSkillOutcomeFx({
+      resolution: {
+        ok: true,
+        outcome: "clashed",
+        actorId: "player",
+        skillId: "fireball",
+        events: [
+          {
+            type: "projectile-clash",
+            otherActorId: "opponent",
+            progress: 0.65
+          }
+        ]
+      },
+      actorSlot: "player",
+      targetSlot: "opponent"
+    }),
+    []
+  );
+});
+
 test("DOM projectile adapter anchors the fireball core on the path and orients the sprite", async () => {
   const done = deferred();
   const appended = [];
@@ -871,6 +946,90 @@ test("DOM impact adapter uses the bound fireball impact strip on the target anch
   assert.deepEqual(await handle.finished, { status: "finished" });
 });
 
+
+test("DOM clash impact uses semantic progress between source and stable target", async () => {
+  const done = deferred();
+  const appended = [];
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 10, top: 20, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 30, top: 100, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 230, top: 60, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const targetAnchors = {
+    player: anchors.player,
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 330, top: 120, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    targetAnchors,
+    presentationForSkill() {
+      return {
+        impact: {
+          assetId: "pack:capture:sprite-fireball-impact-01",
+          url: "fireball-impact.png",
+          frameCount: 1
+        }
+      };
+    },
+    animate() {
+      return {
+        finished: done.promise,
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "clash-impact",
+    skillId: "fireball",
+    fromSlot: "player",
+    targetSlot: "opponent",
+    progress: 0.25,
+    durationMs: 420
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended[0].dataset.skillFx, "clash-impact");
+  assert.equal(appended[0].style.left, "115px");
+  assert.equal(appended[0].style.top, "105px");
+
+  done.resolve();
+  assert.deepEqual(await handle.finished, { status: "finished" });
+});
 
 test("opponent cast presentation stays in front without renderer side special-casing", async () => {
   const done = deferred();
