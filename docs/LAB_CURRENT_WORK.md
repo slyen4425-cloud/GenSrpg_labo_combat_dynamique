@@ -7802,3 +7802,25 @@ Critère GREEN :
 - tests + CI globale SUCCESS ;
 - seul adaptateur d'entrée ajouté ;
 - checkpoint GREEN avant roster/format.
+
+
+Résultat micro-lot C — Capture skill -> SkillDefinition V1 :
+
+- test RED : commit `2938faab641c2baee588208e3a71577949ee5521`, CI `36316346812` — FAILURE attendue car adaptateur absent ;
+- implémentation : `src/adapters/input/capture/capture-skill-to-skill-definition.js` ;
+- commit : `96ed91038eb795706bf342ce7625d9157d526b0a` ;
+- CI : run `36316372954` — SUCCESS.
+
+Garanties :
+
+- `normalizeSkillDefinition` reste l'unique autorité sémantique ;
+- mismatch `skill.id / definition.id` refusé ;
+- aucun comportement inféré depuis le nom, le label, l'élément ou l'ID ;
+- présentation et metadata ne pénètrent pas SkillDefinition ;
+- les erreurs natives catégorie/forme/clash restent celles du contrat existant ;
+- compétence adaptée testée dans le vrai chemin `CombatSession.previewSkill`.
+
+Prochaine action après checkpoint GREEN exact :
+
+- micro-lot D : équipes/acteurs/rosters -> `BattleFormatDefinition` + définition de roster ;
+- support 1v1/2v2 via données, sans branche globale de mode.
