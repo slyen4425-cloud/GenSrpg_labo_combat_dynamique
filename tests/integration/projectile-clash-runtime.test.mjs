@@ -23,7 +23,8 @@ test("two configured fireballs meet in flight and both resolve with zero damage"
 
   assert.deepEqual(fireball.projectileClash, {
     mode: "mutual_cancel",
-    group: "fire-orb"
+    group: "fire-orb",
+    interactsWith: ["fire-orb"]
   });
 
   const fighter = (id) => ({
