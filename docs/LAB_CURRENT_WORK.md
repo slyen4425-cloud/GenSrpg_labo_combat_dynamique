@@ -7658,3 +7658,74 @@ Prochaine action après checkpoint GREEN exact :
 - micro-lot B séparé : adaptateur pur créature -> FighterConfig uniquement ;
 - aucune formule RPG inventée ;
 - uniquement les champs combat explicitement exportés.
+
+
+## Micro-lot B — Capture creature -> FighterConfig — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-export-v1-green-2026-09-27` ;
+- SHA de base : `308ee041b330dbb58f2fc40f56c2f64328c2e57c` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-creature-fighter-adapter-2026-09-27` ;
+- branche : `work/lab-capture-creature-fighter-adapter-2026-09-27`.
+
+Objectif :
+
+Créer un adaptateur d'entrée pur qui transforme **une créature déjà normalisée par `CaptureCombatExportV1`** en FighterConfig natif du laboratoire.
+
+Propriétaire :
+
+- `src/adapters/input/capture/creature-to-fighter-config.js`.
+
+Principe :
+
+- lire uniquement `creature.id` et les champs explicitement présents sous `creature.combat` ;
+- ne déduire aucune valeur depuis le nom, le niveau, les stats RPG, l'élément ou les métadonnées ;
+- ne pas recopier aveuglément `combat` ;
+- ne pas introduire de formule Capture dans Combat Core.
+
+Champs FighterConfig autorisés pour ce lot :
+
+- `id` <- `creature.id` ;
+- `maxHp` ;
+- `initialHp` ;
+- `maxEnergy` ;
+- `initialEnergy` ;
+- `energyChargeAmount` ;
+- `energyChargeIntervalMs` ;
+- `movementEnergyPerStep` ;
+- `chargeTimeModifierPct`.
+
+Tous ces paramètres de configuration doivent être explicitement exportés ; l'adaptateur n'invente pas les defaults du Combat State.
+
+Hors périmètre / protégé :
+
+- stats RPG générales ;
+- progression / niveau / XP ;
+- skill mapping ;
+- roster / BattleFormat ;
+- buffs/debuffs runtime ;
+- `chargeTimeEffects` runtime ;
+- assets / Presentation Binding ;
+- Combat Rules / Combat Runtime / Renderer / UI ;
+- dépôt `Zombicide-40k`.
+
+Tests RED avant implémentation :
+
+1. conversion exacte des 8 paramètres de combat + ID ;
+2. aucune mutation de la créature source ;
+3. champ requis manquant refusé ;
+4. nombres négatifs/non-finis refusés ;
+5. `initialHp <= maxHp` et `initialEnergy <= maxEnergy` ;
+6. metadata/stats/champs étrangers non propagés ;
+7. source sans DOM/storage/network/GenSrpG ;
+8. résultat directement accepté par le vrai `createCombatState`.
+
+Critère GREEN :
+
+- test RED observé avant implémentation ;
+- adaptateur minimal ;
+- vrai raccord adapter -> `createCombatState` testé ;
+- CI globale SUCCESS ;
+- documentation synchronisée ;
+- checkpoint GREEN exact avant micro-lot C.
