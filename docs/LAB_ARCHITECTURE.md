@@ -452,7 +452,45 @@ Limites assumées de cette première preview :
 - soin / protection / buff allié seront testés ultérieurement avec des compétences déclarant `targetRelations: ["ally"]` ou `["ally", "self"]` ;
 - le système de réserve / rappel 1v1 n'est pas dupliqué dans la page 2v2 de laboratoire.
 
+### Futur raccord éditeur — rythme, timing visuel et cooldown
+
+Les retours de test mobile montrent que le rythme global peut devenir trop élevé, notamment avec certaines attaques d'approche aérien / téléportation et l'absence actuelle de cooldown entre deux utilisations d'une même capacité.
+
+Ces réglages devront être **éditables par compétence / profil** lors du raccord GenSrpG, sans être codés en dur dans l'UI.
+
+Séparation attendue :
+
+- **timing gameplay** : préparation, temps de trajet, récupération, cooldown ;
+- **timing visuel** : vitesse des segments d'animation / approche / retour ;
+- **politique IA** : temps minimal avant nouvelle décision ;
+- **UI** : affiche l'état de cooldown mais ne décide jamais de sa disponibilité.
+
+Concept cible de compétence :
+
+```json
+{
+  "preparationMs": 900,
+  "travelMs": 650,
+  "recoveryMs": 450,
+  "cooldownMs": 2800,
+  "visualTiming": {
+    "approachScale": 1.15,
+    "returnScale": 1.1
+  }
+}
+```
+
+Invariants :
+
+- un cooldown futur appartient au Core / SkillDefinition, pas au CSS ni à un bouton désactivé localement ;
+- la disponibilité d'une capacité doit être calculée depuis l'état de combat autoritaire ;
+- ralentir une animation visuelle ne doit pas modifier implicitement les dégâts ;
+- si timing visuel et timing gameplay doivent être synchronisés, ce lien doit être explicite et testable ;
+- le laboratoire ne doit pas introduire maintenant un cooldown de fortune uniquement pour ralentir la démo.
+
 ---
+
+
 
 ## 9. Frontière future GenSrpG
 
