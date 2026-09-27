@@ -427,7 +427,7 @@ function libraryDefinitionToDraftV1(definition) {
   return normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
     id: definition.id,
-    description: "",
+    description: null,
     requiredLevel: 1,
     usageScopes: ["capture", "combat"],
     definition,
@@ -593,7 +593,7 @@ export function buildHumanSkillDraftV1(fields) {
   return normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
     id,
-    description: optionalText(fields.description) ?? "",
+    description: optionalText(fields.description),
     requiredLevel: positiveInteger(
       fields.requiredLevel,
       "Niveau requis"
