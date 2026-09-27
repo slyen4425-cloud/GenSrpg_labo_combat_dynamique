@@ -8090,3 +8090,78 @@ Garanties :
 Checkpoint final prévu après CI documentaire :
 
 `checkpoint/lab-presentation-binding-v1-green-2026-09-27`.
+
+
+## Micro-lot E2 — Capture -> PresentationBindingV1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-presentation-binding-v1-green-2026-09-27` ;
+- SHA de base : `21af8ac73339419167a580ddb9c9129db5a354e5` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-presentation-adapter-2026-09-27` ;
+- branche : `work/lab-capture-presentation-adapter-2026-09-27`.
+
+Objectif :
+
+Traduire les bindings de présentation explicitement exportés par Capture vers le contrat natif `PresentationBindingV1`.
+
+Convention d'export retenue :
+
+```json
+{
+  "presentation": {
+    "bindings": [
+      {
+        "schema": "presentation-binding-v1",
+        "subjectType": "skill",
+        "subjectId": "fireball",
+        "visual": {},
+        "audio": {}
+      }
+    ]
+  }
+}
+```
+
+Propriétaire :
+
+- futur `src/adapters/input/capture/presentation-adapter.js`.
+
+Règles :
+
+- `CaptureCombatExportV1` reste la frontière JSON ;
+- `PresentationBindingV1` reste l'unique propriétaire de validation des bindings ;
+- `presentation.bindings` absent = aucun binding ;
+- chaque binding skill doit référencer un skill exporté ;
+- chaque binding creature doit référencer une créature exportée ;
+- un seul binding par couple `subjectType + subjectId` ;
+- aucune résolution d'asset dans cet adaptateur ;
+- aucune inférence depuis un ancien objet `presentation.skills`, nom de fichier ou chemin.
+
+Interdit :
+
+- aucun URL/path resolver ;
+- aucun import `demo-assets.js` ;
+- aucun fallback par ID legacy ;
+- aucun gameplay ;
+- aucune modification SkillDefinition / Renderer / FX / Audio ;
+- aucun DOM/storage/network ;
+- aucun changement `Zombicide-40k`.
+
+Tests RED prévus :
+
+1. bindings skill/creature normalisés par le vrai contrat ;
+2. référence skill/creature inconnue rejetée ;
+3. doublon de binding rejeté ;
+4. absence de bindings -> liste vide ;
+5. lookup skill/creature retourne binding ou null ;
+6. anciennes maps de présentation non inférées ;
+7. asset physique invalide rejeté par PresentationBindingV1 ;
+8. sentinelle sans resolver/DOM/storage/network/gameplay.
+
+Critère GREEN :
+
+- RED avant implémentation ;
+- adaptateur minimal ;
+- CI globale SUCCESS ;
+- checkpoint GREEN avant package/preview éditeur.
