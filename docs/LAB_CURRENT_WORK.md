@@ -9511,3 +9511,53 @@ Prochaine étape :
 - aucun JSON visible en usage normal ;
 - chaque contrôle doit écrire dans un contrat déjà GREEN ;
 - preview smartphone obligatoire avant GREEN final.
+
+
+## Micro-lot — profils morphologiques génériques V1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-skill-cooldown-v1-green-2026-09-27` ;
+- SHA `390e83f413065496802e070b9a4ae82e74146a66`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-generic-creature-profiles-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-generic-creature-profiles-v1-2026-09-27`.
+
+Objectif :
+
+Compléter les profils réellement disponibles pour que le futur éditeur puisse proposer des choix morphologiques compréhensibles sans option factice.
+
+Déjà existants :
+
+- `serpentine` ;
+- `drake` (ailé / dragon trapu).
+
+Ajouts :
+
+- `biped` ;
+- `quadruped`.
+
+Propriétaire :
+
+- `data/profiles/*.profile.json` validés par `profile-registry.js`.
+
+Interdit :
+
+- aucune sélection automatique par nom de créature ;
+- aucune UI dans ce lot ;
+- aucun patch renderer ;
+- aucun profil caché simulé par CSS ;
+- aucune dépendance GenSrpG.
+
+Critère GREEN :
+
+- tests RED sur fichiers absents ;
+- profils complets idle/attack/hit/ko + specialMoves ;
+- validation par le vrai Profile Registry ;
+- CI globale SUCCESS ;
+- checkpoint GREEN avant UI.
