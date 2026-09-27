@@ -83,54 +83,61 @@ export function createBattleActorAiController({
       });
     }
 
-    for (let offset = 0; offset < skills.length; offset += 1) {
-      const index = (skillIndex + offset) % skills.length;
-      const skill = skills[index];
-      const preview = session.previewSkill({
-        actorId: normalizedActorId,
-        targetId,
-        skill
-      });
+    const skill = skills[skillIndex];
+    const preview = session.previewSkill({
+      actorId: normalizedActorId,
+      targetId,
+      skill
+    });
 
-      if (!preview.ok) {
-        continue;
-      }
-
-      const result = runtime.startSkill({
-        actorId: normalizedActorId,
-        targetId,
-        skill
-      });
-
-      if (!result.ok) {
+    if (!preview.ok) {
+      if (preview.outcome === "insufficient_energy") {
         return Object.freeze({
-          status: "waiting",
+          status: "saving",
           actorId: normalizedActorId,
           targetId,
-          reason: result.outcome
+          skillId: skill.id,
+          skillName: skill.name,
+          currentEnergy: actor.energy,
+          requiredEnergy: skill.energyCost
         });
       }
 
-      skillIndex = (index + 1) % skills.length;
       return Object.freeze({
-        status: "skill_started",
+        status: "waiting",
         actorId: normalizedActorId,
         targetId,
         skillId: skill.id,
         skillName: skill.name,
-        result
+        reason: preview.outcome
       });
     }
 
-    const nextSkill = skills[skillIndex];
-    return Object.freeze({
-      status: "saving",
+    const result = runtime.startSkill({
       actorId: normalizedActorId,
       targetId,
-      skillId: nextSkill.id,
-      skillName: nextSkill.name,
-      currentEnergy: actor.energy,
-      requiredEnergy: nextSkill.energyCost
+      skill
+    });
+
+    if (!result.ok) {
+      return Object.freeze({
+        status: "waiting",
+        actorId: normalizedActorId,
+        targetId,
+        skillId: skill.id,
+        skillName: skill.name,
+        reason: result.outcome
+      });
+    }
+
+    skillIndex = (skillIndex + 1) % skills.length;
+    return Object.freeze({
+      status: "skill_started",
+      actorId: normalizedActorId,
+      targetId,
+      skillId: skill.id,
+      skillName: skill.name,
+      result
     });
   }
 
