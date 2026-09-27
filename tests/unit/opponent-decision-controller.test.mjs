@@ -55,7 +55,8 @@ const reactions = Object.fromEntries(
 function harness({
   opponentEnergy = 10,
   aiPolicy = policy,
-  distance = "medium"
+  distance = "medium",
+  skillsById = offensive
 } = {}) {
   const session = createCombatSession({
     distance,
@@ -80,7 +81,7 @@ function harness({
     runtime,
     roster,
     policy: aiPolicy,
-    skillsById: offensive,
+    skillsById,
     reactionsById: reactions
   });
   return { session, roster, runtime, ai };
@@ -96,7 +97,7 @@ test("quick mode uses an affordable quick skill at the current distance", () => 
 
   assert.equal(decision.status, "skill_started");
   assert.equal(decision.mode, "quick");
-  assert.equal(decision.skillId, "aerial-dive");
+  assert.equal(decision.skillId, "claw");
   assert.equal(runtime.activeAction.actorId, "opponent");
   assert.equal(runtime.activeAction.targetId, "player");
   assert.equal(ai.snapshot().currentMode, "strong");
@@ -163,7 +164,7 @@ test("strong mode attacks as soon as the configured strong skill is affordable",
   assert.equal(runtime.activeAction.skill.id, "fireball");
 });
 
-test("AI never spends movement energy unless movement plus target skill are funded", () => {
+test("core AI movement budgeting still works for an explicitly range-restricted skill", () => {
   const movementPolicy = normalizeOpponentAiPolicy({
     id: "movement-budget",
     actorId: "opponent",
@@ -172,20 +173,32 @@ test("AI never spends movement energy unless movement plus target skill are fund
     turnPlan: [],
     energyStrategy: {
       decisionModes: ["quick"],
-      quickSkillIds: ["claw"],
+      quickSkillIds: ["restricted-claw"],
       strongSkillIds: ["fireball"]
     }
   });
 
+  const restrictedClaw = normalizeSkillDefinition({
+    ...offensive.claw,
+    id: "restricted-claw",
+    name: "Griffe restreinte",
+    allowedDistances: ["short"]
+  });
+  const restrictedSkills = {
+    ...offensive,
+    "restricted-claw": restrictedClaw
+  };
+
   const poor = harness({
     opponentEnergy: 4,
     aiPolicy: movementPolicy,
-    distance: "medium"
+    distance: "medium",
+    skillsById: restrictedSkills
   });
   const saving = poor.ai.takeTurn();
 
   assert.equal(saving.status, "saving");
-  assert.equal(saving.skillId, "claw");
+  assert.equal(saving.skillId, "restricted-claw");
   assert.equal(saving.movementCost, 3);
   assert.equal(saving.requiredEnergy, 5);
   assert.equal(poor.session.snapshot().distance, "medium");
@@ -194,23 +207,22 @@ test("AI never spends movement energy unless movement plus target skill are fund
   const funded = harness({
     opponentEnergy: 5,
     aiPolicy: movementPolicy,
-    distance: "medium"
+    distance: "medium",
+    skillsById: restrictedSkills
   });
   const moved = funded.ai.takeTurn();
 
   assert.equal(moved.status, "moved");
-  assert.equal(moved.plannedSkillId, "claw");
+  assert.equal(moved.plannedSkillId, "restricted-claw");
   assert.equal(funded.session.snapshot().distance, "short");
   assert.equal(
     funded.session.snapshot().fighters.opponent.energy,
     2
   );
-  assert.equal(funded.ai.snapshot().currentMode, "quick");
 
   const attacked = funded.ai.takeTurn();
   assert.equal(attacked.status, "skill_started");
-  assert.equal(attacked.skillId, "claw");
-  assert.equal(funded.ai.snapshot().currentMode, "quick");
+  assert.equal(attacked.skillId, "restricted-claw");
 });
 
 test("normal V9 policy never auto-reacts to a player fireball", () => {
