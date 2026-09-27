@@ -7379,3 +7379,32 @@ Critères :
 - allié plus bas et plus à droite ;
 - projectiles / impacts / sélection restent alignés ;
 - CI GREEN avant déplacement preview.
+
+
+Résultat technique du micro-lot lisibilité clash FX / composition 2v2 :
+
+- cause confirmée de l'impact peu visible : `clash-impact` n'héritait pas de `.skill-fx--impact` et restait à la petite taille générique `.skill-fx` ;
+- correction : le même nœud de clash porte désormais `.skill-fx--impact` + `.skill-fx--clash-impact`, sans second renderer ;
+- le clash garde le sprite d'impact lié à la compétence par Presentation Assets ;
+- classe spécifique clash : `z-index: 12`, largeur `clamp(5.2rem, 15vw, 9rem)` ;
+- durée visuelle clash : `520ms` au lieu de `420ms` ;
+- mécanique, dégâts et point sémantique de collision inchangés.
+
+Composition 2v2 ajustée :
+
+- adversaire B général : `top: 32%`, `left: 31%` ;
+- adversaire B smartphone ≤680px : `top: 32%`, `left: 30%` ;
+- allié général : `top: 66%`, `left: 66%` ;
+- allié smartphone ≤680px : `top: 66%`, `left: 67%` ;
+- tailles inchangées ;
+- adversaire A et joueur local inchangés ;
+- anchors FX / ciblage restent attachés aux mêmes conteneurs et suivent donc automatiquement ces positions.
+
+Tests :
+
+- sentinelle du plein style clash + classe spécifique ;
+- sentinelle durée `520ms` ;
+- sentinelles positions générale + smartphone ;
+- CI GREEN : run `36310387573`, SHA `240e47dc048bf26711b5c2b5a579800bcc863b16`.
+
+Validation smartphone requise avant checkpoint GREEN final.
