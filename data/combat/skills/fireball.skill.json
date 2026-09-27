@@ -9,6 +9,7 @@
   "travelMs": 700,
   "recoveryMs": 700,
   "allowedDistances": [
+    "short",
     "medium",
     "long"
   ],
