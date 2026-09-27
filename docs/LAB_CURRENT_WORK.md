@@ -6875,3 +6875,22 @@ Critères :
 - l'IA démontre au moins deux coûts de techniques différents et ne spamme pas uniquement les capacités à 2 énergie ;
 - CI verte ;
 - validation smartphone utilisateur.
+
+
+Résultat du micro-lot séparation / scale / variété IA :
+
+- séparation horizontale renforcée dans la preview 2v2 : joueur `26%`, allié `58%`, adversaires `74%` et `42%` sur la vue standard ;
+- réglages mobiles correspondants renforcés : `27% / 59% / 73% / 41%` ;
+- les deux adversaires ont été agrandis uniquement dans la preview 2v2 (`31%` et `30%` de largeur de référence) afin de compenser la disparition des paliers visuels de distance sans toucher au `displayScale` propre des assets ;
+- aucune modification du 1v1 ni des métadonnées créatures.
+
+IA :
+
+- cause du manque de variété : le contrôleur balayait la liste et choisissait immédiatement la première technique abordable ; avec la régénération d'énergie actuelle, les techniques à 2 énergie étaient donc favorisées au détriment des capacités à 3 énergie ;
+- correction : l'IA s'engage maintenant sur sa prochaine technique planifiée ; si elle manque d'énergie, elle attend jusqu'à pouvoir la lancer au lieu de retomber sur une capacité moins chère ;
+- la séquence reste déterministe, lisible et testable ; aucune randomisation cachée n'a été ajoutée ;
+- test dédié : une IA avec 2 énergie attend une technique prévue à 3 énergie, la lance après recharge, puis passe à la technique suivante.
+
+CI work : SUCCESS, run `36302550999`, SHA `257ed4d105e9cb5b0c08ab5a14eb3c08b0afb2ba`.
+
+Validation smartphone requise avant checkpoint GREEN.
