@@ -9382,3 +9382,80 @@ Prochaine étape après CI documentaire GREEN :
 - contrats/Core seulement ;
 - RED avant implémentation ;
 - aucun changement UI.
+
+
+## Micro-lot — Skill Cooldown V1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-skill-cooldown-preaudit-v1-green-2026-09-27` ;
+- SHA `fb349255032397ebe0b13d7f01cc3f72e4233446`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-skill-cooldown-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-skill-cooldown-v1-2026-09-27`.
+
+Objectif :
+
+Implémenter un vrai cooldown de compétence sans timer UI ni seconde horloge.
+
+Propriétaires :
+
+- configuration : `SkillDefinition.cooldownMs` ;
+- état : `Combat State.fighters[*].skillCooldowns` ;
+- règle start / réaction : `Action Resolver` ;
+- temps : `state.elapsedMs`, déjà avancé par `Combat Runtime` ;
+- persistance changement de membre : `Roster Session` transporte le snapshot, sans calculer le cooldown.
+
+Règle V1 :
+
+- cooldown démarre dès qu'une utilisation/reaction est acceptée ;
+- refus cooldown n'engage ni énergie ni état ;
+- action contrée/interrompue conserve le cooldown ;
+- cooldown 0 = comportement historique ;
+- autre compétence reste indépendante ;
+- rappel/invocation ne réinitialise pas le cooldown.
+
+Fichiers autorisés :
+
+- `src/contracts/skill-definition.js` ;
+- `src/core/combat/combat-state.js` ;
+- `src/core/combat/action-resolver.js` ;
+- `src/core/combat/roster-session.js` ;
+- tests cooldown ;
+- documentation.
+
+Protégé :
+
+- `combat-runtime.js` ne reçoit aucun état/timer cooldown ;
+- aucune UI/renderer ;
+- aucune donnée Capture spécifique ;
+- aucune dépendance GenSrpG.
+
+RED :
+
+1. cooldownMs normalisé, défaut 0 ;
+2. map cooldown immutable ;
+3. start accepté enregistre readyAt ;
+4. second start refusé sans dépense ;
+5. autre skill utilisable ;
+6. expiration via advanceMs ;
+7. cooldown 0 historique ;
+8. contre/interruption conserve cooldown ;
+9. réaction soumise au même cooldown ;
+10. reset efface cooldowns ;
+11. roster rappel/invocation préserve cooldown ;
+12. Runtime source sans owner cooldown.
+
+Critère GREEN :
+
+- RED isolé ;
+- changements minimaux aux propriétaires existants ;
+- CI globale SUCCESS ;
+- tests IA / runtime existants GREEN ;
+- documentation ;
+- checkpoint GREEN avant retour à l'éditeur humain.
