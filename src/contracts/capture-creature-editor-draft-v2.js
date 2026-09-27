@@ -64,8 +64,6 @@ export function normalizeCaptureCreatureEditorDraftV2(input) {
   }
 
   const presentation = normalizePresentation(value.presentation);
-  const presentationId =
-    presentation == null ? null : presentation.id;
 
   const base = normalizeCaptureCreatureEditorDraftV1({
     schema: "capture-creature-editor-draft-v1",
@@ -79,7 +77,8 @@ export function normalizeCaptureCreatureEditorDraftV2(input) {
     capture: value.capture,
     combat: value.combat,
     skillIds: value.skillIds,
-    presentationId
+    presentationId:
+      presentation == null ? null : presentation.id
   });
 
   if (
@@ -103,7 +102,6 @@ export function normalizeCaptureCreatureEditorDraftV2(input) {
     capture: base.capture,
     combat: base.combat,
     skillIds: base.skillIds,
-    presentationId,
     presentation
   });
 }

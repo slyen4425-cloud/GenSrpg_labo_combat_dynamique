@@ -98,7 +98,7 @@ test("CaptureCreatureEditorDraftV2 composes creature gameplay/editor data with p
     value.presentation.visual.front.assetId,
     "capture:creature-braiseau-front"
   );
-  assert.equal(value.presentationId, "creature:braiseau");
+  assert.equal("presentationId" in value, false);
   assert.equal(Object.isFrozen(value), true);
   assert.equal(Object.isFrozen(value.combat), true);
   assert.equal(Object.isFrozen(value.presentation), true);
@@ -134,7 +134,7 @@ test("CaptureCreatureEditorDraftV2 requires presentation subjectId to match crea
   );
 });
 
-test("CaptureCreatureEditorDraftV2 derives presentationId and rejects a second presentationId source", () => {
+test("CaptureCreatureEditorDraftV2 keeps presentation as the only presentation identity source", () => {
   const input = validInput();
   input.presentationId = "creature:other";
 
@@ -144,7 +144,8 @@ test("CaptureCreatureEditorDraftV2 derives presentationId and rejects a second p
   );
 
   const value = normalizeCaptureCreatureEditorDraftV2(validInput());
-  assert.equal(value.presentationId, value.presentation.id);
+  assert.equal("presentationId" in value, false);
+  assert.equal(value.presentation.id, "creature:braiseau");
 });
 
 test("CaptureCreatureEditorDraftV2 allows a creature without presentation binding", () => {
@@ -154,7 +155,7 @@ test("CaptureCreatureEditorDraftV2 allows a creature without presentation bindin
   const value = normalizeCaptureCreatureEditorDraftV2(input);
 
   assert.equal(value.presentation, null);
-  assert.equal(value.presentationId, null);
+  assert.equal("presentationId" in value, false);
 });
 
 test("CaptureCreatureEditorDraftV2 rejects unknown semantic fields", () => {

@@ -72,7 +72,10 @@ function toV1CreatureDraft(draft, loadout) {
     capture: draft.capture,
     combat: draft.combat,
     skillIds: loadout.equippedSkillIds,
-    presentationId: draft.presentationId
+    presentationId:
+      draft.presentation == null
+        ? null
+        : draft.presentation.id
   };
 }
 
