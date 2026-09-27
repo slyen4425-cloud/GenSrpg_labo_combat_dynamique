@@ -6532,3 +6532,18 @@ Tests :
 - le style de défaite est commun joueur/adversaire ;
 - aucun test ne suppose que la défaite est décidée par l'UI ;
 - CI verte puis validation smartphone utilisateur avant checkpoint GREEN.
+
+
+Résultat technique du micro-lot :
+
+- `reserveCard()` ne décide pas la défaite : il lit uniquement `member.hp` provenant du snapshot Roster Session ;
+- `member.hp <= 0` expose `data-defeated="true"` ;
+- l'icône reçoit une croix rouge et un léger voile désaturé ;
+- le libellé accessible devient `<nom> — vaincu` ;
+- aucun nouvel état métier ni second mécanisme de KO n'a été ajouté ;
+- la réflexion 2v2 est documentée dans `docs/LAB_ARCHITECTURE.md` comme **format optionnel par combat**, avec 1v1 conservé comme format possible ;
+- aucun vrai 2v2 n'est implémenté dans ce lot.
+
+CI work : SUCCESS, run `36293147255`, SHA `fc4c9984a8079f1dda77f76df5089d59da800806`.
+
+Validation smartphone de la croix rouge encore requise avant checkpoint GREEN.
