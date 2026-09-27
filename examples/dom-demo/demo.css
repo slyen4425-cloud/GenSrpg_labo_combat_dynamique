@@ -148,6 +148,8 @@ summary {
 }
 
 .fighter__motion {
+  position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
   aspect-ratio: 1;
@@ -810,6 +812,50 @@ button.reserve-card {
     drop-shadow(0 0 0.8rem rgba(74, 174, 255, 0.65));
 }
 
+.arena--coop-2v2 .fighter[data-target-pulse="true"]::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: 8%;
+  width: 58%;
+  height: 16%;
+  transform: translateX(-50%) scale(0.72);
+  border: 2px solid rgba(255, 222, 105, 0.96);
+  border-radius: 50%;
+  background: rgba(255, 212, 72, 0.12);
+  box-shadow:
+    0 0 0.28rem rgba(255, 222, 105, 0.8),
+    inset 0 0 0.35rem rgba(255, 222, 105, 0.28);
+  pointer-events: none;
+  animation: coop-target-pulse 680ms ease-out both;
+}
+
+.arena--coop-2v2 .fighter[data-target-relation="ally"][data-target-pulse="true"]::after,
+.arena--coop-2v2 .fighter[data-target-relation="self"][data-target-pulse="true"]::after {
+  border-color: rgba(124, 225, 255, 0.96);
+  background: rgba(74, 174, 255, 0.12);
+  box-shadow:
+    0 0 0.28rem rgba(124, 225, 255, 0.78),
+    inset 0 0 0.35rem rgba(74, 174, 255, 0.25);
+}
+
+@keyframes coop-target-pulse {
+  0% {
+    transform: translateX(-50%) scale(0.72);
+    opacity: 0;
+  }
+
+  24% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1.14);
+    opacity: 0;
+  }
+}
+
 .arena--coop-2v2 .fighter[data-defeated="true"] {
   opacity: 0.42;
   filter: grayscale(0.8);
@@ -832,6 +878,28 @@ button.reserve-card {
   box-shadow: 0 0.28rem 0.85rem rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(7px);
   cursor: pointer;
+}
+
+.squad-card--local-full {
+  width: min(15.5rem, 39vw);
+  min-height: clamp(5rem, 11vw, 6.5rem);
+  padding: 0.5rem 0.58rem 0.52rem;
+}
+
+.squad-card--local-full strong {
+  font-size: clamp(0.86rem, 2.4vw, 1.12rem);
+}
+
+.squad-card--local-full .squad-card__hp progress {
+  height: 0.6rem;
+}
+
+.squad-card--local-full .squad-card__hp span {
+  font-size: clamp(0.52rem, 1.5vw, 0.68rem);
+}
+
+.squad-card--local-full small {
+  font-size: 0.56rem;
 }
 
 .squad-card strong {
@@ -877,8 +945,33 @@ button.reserve-card {
 }
 
 .squad-card--ally {
-  bottom: 4.8rem;
-  left: 0.45rem;
+  inset: auto;
+}
+
+.squad-card--command-ally {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-height: 3.55rem;
+  padding: 0.34rem 0.42rem;
+}
+
+.squad-card__creature-icon {
+  display: block;
+  width: 2.05rem;
+  height: 2.05rem;
+  object-fit: contain;
+  border: 1px solid rgba(139, 232, 248, 0.22);
+  border-radius: 50%;
+  background: rgba(6, 19, 25, 0.72);
+}
+
+.squad-card__body {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
 }
 
 .squad-card--opponent {
@@ -924,14 +1017,21 @@ button.reserve-card {
   text-shadow: 0 0.08rem 0.2rem rgba(0, 0, 0, 0.95);
 }
 
-.coop-controls {
+.coop-command-stack {
   position: absolute;
   z-index: 15;
   right: 0.45rem;
   bottom: 0.45rem;
   display: grid;
-  gap: 0.22rem;
+  gap: 0.3rem;
   width: min(20rem, 42vw);
+}
+
+.coop-controls {
+  position: static;
+  display: grid;
+  gap: 0.22rem;
+  width: 100%;
   padding: 0.3rem;
   border: 1px solid rgba(139, 223, 240, 0.2);
   border-radius: 0.8rem;
@@ -975,16 +1075,21 @@ button.reserve-card {
     padding: 0.3rem 0.34rem;
   }
 
-  .squad-card--ally {
-    bottom: 4.1rem;
+  .squad-card--local-full {
+    width: min(14.5rem, 44vw);
+    min-height: 5.2rem;
+    padding: 0.44rem 0.48rem 0.46rem;
   }
 
   .squad-card--opponent-b {
     top: 4.1rem;
   }
 
-  .coop-controls {
+  .coop-command-stack {
     width: 56vw;
+  }
+
+  .coop-controls {
     padding: 0.24rem;
   }
 
@@ -1011,15 +1116,15 @@ button.reserve-card {
     font-size: 0.42rem;
   }
 
-  .squad-card--ally {
-    bottom: 3.78rem;
+  .squad-card--local-full {
+    width: 39vw;
   }
 
   .squad-card--opponent-b {
     top: 3.78rem;
   }
 
-  .coop-controls {
+  .coop-command-stack {
     width: 57vw;
   }
 
