@@ -7648,3 +7648,76 @@ Critère GREEN :
 - tests ciblés + CI globale SUCCESS ;
 - aucune UI modifiée ;
 - checkpoint GREEN avant toute preview éditeur.
+
+
+## Micro-lot F — CaptureCombatPackageV1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-presentation-adapter-green-2026-09-27` ;
+- SHA de base : `dccd5f6bd270b65f7836b7d79f04a609b2538167` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-combat-package-v1-2026-09-27` ;
+- branche : `work/lab-capture-combat-package-v1-2026-09-27`.
+
+Objectif :
+
+Composer toutes les sorties natives déjà validées depuis un seul `CaptureCombatExportV1`, sans créer de nouveau moteur.
+
+Propriétaire :
+
+- futur `src/adapters/input/capture/combat-package-v1.js`.
+
+Sortie prévue :
+
+```js
+{
+  schema: "capture-combat-package-v1",
+  battleFormat,
+  fighterConfigs,
+  initialFighters,
+  skills,
+  skillsByCreature,
+  roster,
+  presentationBindings
+}
+```
+
+Règles :
+
+- `battleFormat` provient du vrai adaptateur BattleFormat ;
+- `fighterConfigs` provient de l'adaptateur créature ;
+- `initialFighters` ne fait que remplacer l'id de config par l'actorId du slot ;
+- `skills` provient du vrai SkillDefinition ;
+- `skillsByCreature` suit strictement `creature.skillIds` ;
+- `roster` provient du vrai adaptateur roster ;
+- `presentationBindings` reste séparé du gameplay ;
+- aucun état runtime GenSrpG n'est conservé dans le package.
+
+Interdit :
+
+- aucune règle de combat supplémentaire ;
+- aucune formule stats/RPG ;
+- aucune décision controller/IA ;
+- aucun renderer / DOM / storage / réseau ;
+- aucun resolver asset ;
+- aucun import `Zombicide-40k`;
+- aucune copie des anciennes branches Capture parallèles.
+
+Tests RED prévus :
+
+1. package complet 2v2 construit depuis un export ;
+2. fighterConfigs exacts et initialFighters actor-scoped ;
+3. skills natifs + ordre par créature ;
+4. BattleFormat/controllers conservés ;
+5. presentation séparée ;
+6. package accepté par vrai `createCombatSession` ;
+7. roster accepté par vrai `createRosterSession` ;
+8. vraie compétence issue du package résoluble par Combat Session ;
+9. sentinelle sans DOM/storage/network/GenSrpG.
+
+Critère GREEN :
+
+- RED avant implémentation ;
+- packageur purement compositionnel ;
+- CI globale SUCCESS ;
+- checkpoint GREEN avant toute preview éditeur -> combat.
