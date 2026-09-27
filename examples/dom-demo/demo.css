@@ -1374,3 +1374,124 @@ button.reserve-card {
     transition: none;
   }
 }
+
+
+/* Optional CaptureCombatPackageV1 editor. Hidden during the normal 2v2 demo. */
+.capture-package-toggle {
+  position: fixed;
+  z-index: 31;
+  top: max(0.45rem, env(safe-area-inset-top));
+  left: max(0.45rem, env(safe-area-inset-left));
+  padding: 0.5rem 0.7rem;
+  border: 1px solid rgba(139, 232, 248, 0.42);
+  border-radius: 0.68rem;
+  background: rgba(7, 20, 27, 0.94);
+  color: #edf8fb;
+  font-weight: 900;
+  box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.36);
+  cursor: pointer;
+}
+
+.capture-package-editor {
+  position: fixed;
+  z-index: 30;
+  top: max(3.4rem, calc(env(safe-area-inset-top) + 3rem));
+  left: max(0.45rem, env(safe-area-inset-left));
+  display: grid;
+  gap: 0.45rem;
+  width: min(31rem, calc(100vw - 0.9rem));
+  max-height: min(76svh, 46rem);
+  padding: 0.62rem;
+  overflow: auto;
+  border: 1px solid rgba(139, 232, 248, 0.3);
+  border-radius: 0.82rem;
+  background: rgba(5, 16, 22, 0.97);
+  color: #edf8fb;
+  box-shadow: 0 0.55rem 1.6rem rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+}
+
+.capture-package-editor[hidden],
+.capture-package-toggle[hidden] {
+  display: none;
+}
+
+.capture-package-editor__header {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.capture-package-editor__header small,
+.capture-package-editor__note {
+  color: #9dc5cf;
+  font-size: 0.68rem;
+}
+
+.capture-package-editor__json {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: min(48svh, 28rem);
+  padding: 0.58rem;
+  resize: vertical;
+  border: 1px solid rgba(139, 232, 248, 0.22);
+  border-radius: 0.55rem;
+  background: rgba(2, 10, 14, 0.92);
+  color: #e8f7fa;
+  font: 0.72rem/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  tab-size: 2;
+}
+
+.capture-package-editor__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.capture-package-editor__actions button {
+  min-height: 2.25rem;
+  border: 1px solid rgba(139, 232, 248, 0.28);
+  border-radius: 0.55rem;
+  background: rgba(18, 50, 61, 0.92);
+  color: #edf8fb;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.capture-package-editor__actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.capture-package-editor__status {
+  margin: 0;
+  padding: 0.4rem 0.48rem;
+  border-radius: 0.5rem;
+  background: rgba(139, 232, 248, 0.08);
+  font-size: 0.7rem;
+}
+
+.capture-package-editor__status[data-tone="ok"] {
+  color: #baf3c0;
+}
+
+.capture-package-editor__status[data-tone="warn"] {
+  color: #ffd1a3;
+}
+
+@media (max-width: 680px) {
+  .capture-package-editor {
+    top: max(3.2rem, calc(env(safe-area-inset-top) + 2.85rem));
+    width: calc(100vw - 0.9rem);
+    max-height: 72svh;
+  }
+
+  .capture-package-editor__json {
+    min-height: 42svh;
+    font-size: 0.64rem;
+  }
+
+  .capture-package-editor__actions button {
+    padding-inline: 0.25rem;
+    font-size: 0.68rem;
+  }
+}
