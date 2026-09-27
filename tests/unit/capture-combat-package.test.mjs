@@ -32,13 +32,7 @@ function packageFixture() {
           movementEnergyPerStep: 1,
           chargeTimeModifierPct: 0
         },
-        skillIds: ["fireball"],
-        presentation: {
-          profileId: "floating",
-          frontAssetId: "pack:capture:creature-maraileron-front-01",
-          backAssetId: "pack:capture:creature-maraileron-back-01",
-          iconAssetId: "pack:capture:creature-maraileron-icon-01"
-        }
+        skillIds: ["fireball"]
       },
       {
         id: "braisombre",
@@ -180,6 +174,18 @@ test("CaptureCombatPackageV1 normalizes a portable editor package", () => {
   assert.equal(
     normalized.presentation.skills.fireball.travelFxAssetId,
     "pack:capture:sprite-fireball-travel-01"
+  );
+});
+
+test("CaptureCombatPackageV1 keeps creature presentation in one top-level owner", () => {
+  const input = packageFixture();
+  input.creatures[0].presentation = {
+    iconAssetId: "pack:capture:duplicate-owner"
+  };
+
+  assert.throws(
+    () => normalizeCaptureCombatPackage(input),
+    /use presentation\.creatures/
   );
 });
 
