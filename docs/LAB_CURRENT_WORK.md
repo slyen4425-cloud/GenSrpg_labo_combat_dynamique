@@ -7036,3 +7036,49 @@ Tests :
 - CI work : SUCCESS, run `36304832800`, SHA `98304287d3d050d8dfaf83ec4ad39df0977fec70`.
 
 Validation smartphone requise avant checkpoint GREEN de ce micro-lot.
+
+
+### Micro-lot 2v2 — barres de charge lisibles + hauteur HUD local — 2026-09-27
+
+Retour smartphone utilisateur :
+
+- pendant la préparation d'une capacité, le 2v2 n'affiche actuellement qu'un texte / chiffre de compte à rebours ;
+- l'absence de barre visuelle rend la charge peu lisible ;
+- le HUD local PV / nom paraît plus tassé qu'en 1v1 et doit retrouver la même présence verticale.
+
+Base / sécurité :
+
+- base : `1e384b997c0ff07b40fca3ce183a5f8ce285b190` ;
+- checkpoint : `checkpoint/lab-coop-2v2-before-charge-bars-local-hud-height-2026-09-27` ;
+- branche : `work/lab-coop-2v2-preview-2026-09-27` ;
+- `main` et `global-assets` protégées.
+
+Cause constatée :
+
+- le Runtime fournit déjà `chargeProgress` et `remainingPreparationMs` pour chaque `actorId` ;
+- la page 2v2 n'expose cependant aucun élément `progress` de charge dans ses cartes et `onProgress()` ne met à jour qu'un libellé texte ;
+- le 1v1 possède déjà la bonne hiérarchie : nom / PV / action / barre de charge.
+
+Périmètre autorisé :
+
+- `examples/dom-demo/coop-2v2.html` : ajouter une barre de charge runtime dans les quatre cartes d'acteur ;
+- `src/ui/combat-2v2-test-ui.js` : binder ces barres génériquement par `actorId` à `progress.chargeProgress` ;
+- `examples/dom-demo/demo.css` : style commun compact + proportions locales identiques au HUD 1v1 ;
+- tests ciblés 2v2 ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucun changement du temps de préparation, des dégâts, de l'énergie, de l'IA ou du Runtime ;
+- aucun timer UI de substitution : la barre lit uniquement le `CombatRuntime.onProgress` existant ;
+- aucune modification 1v1 ;
+- aucune barre de capacités supplémentaire pour l'allié ;
+- aucun cooldown ajouté dans ce lot.
+
+Critères :
+
+- chaque acteur affiche une vraie barre pendant sa préparation ;
+- la barre disparaît / revient à zéro hors préparation ;
+- le HUD local retrouve gap / min-height / barre de PV et charge équivalents au 1v1 ;
+- les cartes allié / adversaires restent compactes ;
+- CI verte puis validation smartphone utilisateur.
