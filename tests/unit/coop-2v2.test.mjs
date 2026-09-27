@@ -424,4 +424,8 @@ test("coop 2v2 CSS gives four distinct actor positions and lightweight squad car
   );
   assert.match(css, /\.coop-controls/);
   assert.match(css, /data-target-selected="true"/);
+  assert.match(
+    css,
+    /\.skill-fx--clash-impact\s*\{[\s\S]*?z-index:\s*12[\s\S]*?width:\s*clamp\(5\.2rem, 15vw, 9rem\)/
+  );
 });
