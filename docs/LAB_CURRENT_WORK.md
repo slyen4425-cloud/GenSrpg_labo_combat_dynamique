@@ -10003,3 +10003,61 @@ F. status effect si retenu ;
 G. editor -> combat preview bridge.
 
 Aucune fonctionnalité nouvelle n'est implémentée dans ce lot d'audit.
+
+
+## Micro-lot A — Capture Editor Ownership Cleanup V1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-feedback-round1-audit-green-2026-09-27`;
+- SHA `32f6a129e55c4e7667214c8051875bf4a59c24c0`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-editor-ownership-cleanup-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-ownership-cleanup-v1-2026-09-27`.
+
+Objectif :
+
+Corriger uniquement trois incohérences d'interface prouvées par le retour utilisateur, sans ajouter de mécanique :
+
+1. PV configurés dans l'onglet Créature, jamais dupliqués dans Combat ;
+2. coordonnées de sockets exclusivement possédées par la créature ;
+3. capacité = référence à un socket créature existant, sans liste parallèle codée en dur ;
+4. Buff/Debuff générique indiqué indisponible tant qu'aucun StatusEffectDefinition n'existe.
+
+Fichiers autorisés :
+
+- `src/ui/capture-editor-human-v2.js`;
+- `examples/dom-demo/capture-editor-v2.html`;
+- tests dédiés ;
+- documentation.
+
+Protégé :
+
+- SkillDefinition ;
+- CaptureCreatureEditorDraftV2 ;
+- CreaturePresentationBindingV1 ;
+- Combat Rules ;
+- Runtime ;
+- Renderer ;
+- Asset Catalog ;
+- GenSrpG.
+
+Tests RED prévus :
+
+- helper pur de choix de socket dérivé de `creature.sockets` ;
+- aucun socket métier codé dans le select capacité HTML ;
+- PV présents une seule fois et dans le panneau Créature ;
+- aucun champ PV dans le panneau Combat ;
+- Buff/Debuff explicite mais disabled avec motif Status Effect ;
+- source toujours indépendante du Runtime/Renderer/storage.
+
+Critère GREEN :
+
+- aucune nouvelle source de vérité ;
+- CI globale SUCCESS ;
+- preview mobile requise avant checkpoint final UI.
