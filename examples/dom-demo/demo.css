@@ -167,9 +167,11 @@ summary {
   position: absolute;
   z-index: 12;
   display: grid;
-  gap: 0.12rem;
-  width: min(14.5rem, 38vw);
-  padding: 0.34rem 0.42rem 0.36rem;
+  align-content: start;
+  gap: 0.32rem;
+  width: min(15.5rem, 39vw);
+  min-height: clamp(5rem, 11vw, 6.5rem);
+  padding: 0.5rem 0.58rem 0.52rem;
   border: 1px solid rgba(139, 232, 248, 0.24);
   background: rgba(7, 20, 27, 0.9);
   box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.28);
@@ -189,16 +191,15 @@ summary {
 }
 
 .combat-card__title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.35rem;
+  display: block;
   min-width: 0;
 }
 
 .combat-card__title strong {
+  display: block;
   overflow: hidden;
-  font-size: clamp(0.72rem, 1.8vw, 0.88rem);
+  font-size: clamp(0.86rem, 2.4vw, 1.12rem);
+  line-height: 1.05;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -216,13 +217,13 @@ summary {
 
 .fighter__hp {
   width: 100%;
-  height: 0.38rem;
+  height: 0.6rem;
   accent-color: #75ec82;
 }
 
 .combat-card__hp-row > span {
   color: #c7eccb;
-  font-size: 0.46rem;
+  font-size: clamp(0.52rem, 1.5vw, 0.68rem);
   font-weight: 900;
   white-space: nowrap;
 }
@@ -278,8 +279,8 @@ summary {
   position: static;
   z-index: auto;
   display: block;
-  flex: 0 0 auto;
-  max-width: 55%;
+  width: 100%;
+  max-width: none;
 }
 
 .reserve--opponent,
@@ -293,17 +294,18 @@ summary {
 
 .reserve__list {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.16rem;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.22rem;
 }
 
 .reserve-card {
   display: grid;
   place-items: center;
-  width: 1.55rem;
-  height: 1.55rem;
-  min-width: 1.55rem;
-  min-height: 1.55rem;
+  width: clamp(1.65rem, 5vw, 2.15rem);
+  height: clamp(1.65rem, 5vw, 2.15rem);
+  min-width: clamp(1.65rem, 5vw, 2.15rem);
+  min-height: clamp(1.65rem, 5vw, 2.15rem);
   padding: 0.08rem;
   overflow: hidden;
   border: 1px solid rgba(137, 223, 240, 0.2);
@@ -812,8 +814,9 @@ button.reserve-card {
   }
 
   .combat-card {
-    width: min(13.5rem, 44vw);
-    padding: 0.3rem 0.36rem 0.32rem;
+    width: min(14.5rem, 44vw);
+    min-height: 5.2rem;
+    padding: 0.44rem 0.48rem 0.46rem;
   }
 
   .combat-card--opponent {
@@ -827,18 +830,11 @@ button.reserve-card {
   }
 
   .combat-card__title strong {
-    font-size: 0.68rem;
+    font-size: 0.86rem;
   }
 
   .combat-card__hp-row > span {
-    font-size: 0.4rem;
-  }
-
-  .reserve-card {
-    width: 1.45rem;
-    height: 1.45rem;
-    min-width: 1.45rem;
-    min-height: 1.45rem;
+    font-size: 0.54rem;
   }
 
   .combat-controls {
@@ -926,18 +922,11 @@ button.reserve-card {
   }
 
   .combat-card__hp-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .combat-card__hp-row > span {
-    display: none;
-  }
-
-  .reserve-card {
-    width: 1.35rem;
-    height: 1.35rem;
-    min-width: 1.35rem;
-    min-height: 1.35rem;
+    display: inline;
   }
 
   .action-option--skill strong {
