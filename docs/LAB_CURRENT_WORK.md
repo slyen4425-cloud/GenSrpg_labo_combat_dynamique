@@ -7568,3 +7568,28 @@ Critère de fin :
 - aucun raccord UI ;
 - aucun changement du comportement combat existant ;
 - checkpoint GREEN séparé.
+
+
+Résultat CaptureCombatPackageV1 :
+
+- contrat ajouté : `src/contracts/capture-combat-package.js` ;
+- tests : `tests/unit/capture-combat-package.test.mjs` ;
+- schéma/version verrouillés ;
+- SkillDefinition réellement déléguée au contrat existant ;
+- BattleFormatDefinition réellement délégué au contrat existant ;
+- références croisées créature / skill / fighterConfig / roster / battleFormat validées ;
+- presentation séparée du gameplay ;
+- asset bindings limités à des `assetId` stables, URLs/chemins physiques refusés ;
+- aucune dépendance GenSrpG, DOM, storage, réseau ou global ;
+- structures normalisées immuables ;
+- aucun changement Combat Rules / Runtime / Roster Session / Renderer / UI.
+
+CI :
+- run fonctionnel `36312878824` — SUCCESS ;
+- run documentation architecture `36312916363` — SUCCESS ;
+- SHA documentaire actuel : `a0f14f587de22b767c67dd642da914c08377cfbb`.
+
+Prochaine étape après checkpoint GREEN :
+- adaptateur pur `CaptureCombatPackageV1 -> modèle de prévisualisation` ;
+- vrai test package -> Combat Session ;
+- toujours aucun raccord UI.
