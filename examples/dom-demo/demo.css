@@ -481,6 +481,11 @@ button.reserve-card {
   pointer-events: none;
 }
 
+.skill-fx--clash-impact {
+  z-index: 12;
+  width: clamp(5.2rem, 15vw, 9rem);
+}
+
 .skill-fx--phase {
   z-index: 9;
   width: clamp(4.2rem, 12vw, 7.5rem);
@@ -781,8 +786,8 @@ button.reserve-card {
 
 .arena--coop-2v2 .fighter--ally {
   z-index: 3;
-  top: 62%;
-  left: 58%;
+  top: 66%;
+  left: 66%;
   width: min(29%, 17rem);
 }
 
@@ -794,8 +799,8 @@ button.reserve-card {
 
 .arena--coop-2v2 .fighter--opponent-b {
   z-index: 3;
-  top: 35%;
-  left: 42%;
+  top: 32%;
+  left: 31%;
   width: min(42.9%, 24.7rem);
 }
 
@@ -1078,8 +1083,8 @@ button.reserve-card {
   }
 
   .arena--coop-2v2 .fighter--ally {
-    top: 60%;
-    left: 59%;
+    top: 66%;
+    left: 67%;
     width: 28%;
   }
 
@@ -1090,8 +1095,8 @@ button.reserve-card {
   }
 
   .arena--coop-2v2 .fighter--opponent-b {
-    top: 37%;
-    left: 41%;
+    top: 32%;
+    left: 30%;
     width: 39%;
   }
 
