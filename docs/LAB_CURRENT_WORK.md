@@ -7623,3 +7623,38 @@ Critère GREEN :
 - aucun autre propriétaire modifié ;
 - documentation synchronisée ;
 - checkpoint GREEN exact avant lot B.
+
+
+Résultat micro-lot A — `CaptureCombatExportV1` :
+
+- test RED : commit `b9efd6c7841768bb1f3fad08b1824f49700ef3d4`, CI `36316028828` — FAILURE attendue car contrat absent ;
+- implémentation minimale : commit `d8ea0a017c83408146e28eb3188aeceaea1979ab` ;
+- CI : run `36316095637` — SUCCESS.
+
+Contrat créé :
+
+- `src/contracts/capture-combat-export-v1.js` ;
+- schéma exact `capture-combat-export-v1` ;
+- données JSON compatibles uniquement ;
+- équipes / acteurs / créatures / skills / rosters avec cohérence référentielle ;
+- aucune inférence par label/ID de compétence ;
+- aucune autorité DOM, storage, réseau ou GenSrpG ;
+- aucune conversion vers les contrats natifs dans ce lot.
+
+Tests :
+
+- `tests/unit/capture-combat-export-v1.test.mjs` ;
+- 1v1 valide ;
+- IDs dupliqués refusés ;
+- références créature/skill vérifiées ;
+- appartenance équipe vérifiée ;
+- acteur local vérifié ;
+- roster actif/réserve cohérent ;
+- blobs opaques `definition/presentation` strictement JSON-compatibles ;
+- sentinelle d'indépendance.
+
+Prochaine action après checkpoint GREEN exact :
+
+- micro-lot B séparé : adaptateur pur créature -> FighterConfig uniquement ;
+- aucune formule RPG inventée ;
+- uniquement les champs combat explicitement exportés.
