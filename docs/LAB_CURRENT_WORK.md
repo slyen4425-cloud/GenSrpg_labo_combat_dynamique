@@ -7729,3 +7729,40 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation synchronisée ;
 - checkpoint GREEN exact avant micro-lot C.
+
+
+Résultat micro-lot B — Capture creature -> FighterConfig :
+
+- test RED : commit `d5c0e90177191598df37740aee49142a5b0a0467` ;
+- CI RED : run `36318561166` — FAILURE attendue ;
+- cause RED confirmée : `ERR_MODULE_NOT_FOUND` sur le propriétaire encore absent ;
+- implémentation minimale : commit `d9dbc5c79194b69defdc052e447b179d9abd0359` ;
+- CI fonctionnelle : run `36318609967` — SUCCESS.
+
+Propriétaire créé :
+
+- `src/adapters/input/capture/creature-to-fighter-config.js`.
+
+Tests :
+
+- `tests/unit/capture-creature-fighter-adapter.test.mjs` ;
+- conversion exacte des paramètres FighterConfig explicitement exportés ;
+- aucune mutation source ;
+- champs requis absents refusés ;
+- nombres négatifs/non-finis refusés selon le contrat du Combat State ;
+- bornes HP/énergie vérifiées ;
+- stats RPG / metadata / champs legacy non propagés ;
+- sortie acceptée directement par le vrai `createCombatState` ;
+- sentinelle sans GenSrpG / DOM / storage / réseau.
+
+Invariants confirmés :
+
+- aucune formule RPG inventée ;
+- aucun default implicite ajouté par l'adaptateur ;
+- aucun pass-through de `creature.combat` ;
+- aucun changement Combat Core / Runtime / Renderer / UI ;
+- aucun changement du dépôt `Zombicide-40k`.
+
+Checkpoint final prévu après CI documentaire :
+
+`checkpoint/lab-capture-creature-fighter-adapter-green-2026-09-27`.
