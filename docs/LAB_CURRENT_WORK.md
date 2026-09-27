@@ -9165,3 +9165,45 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation ;
 - checkpoint GREEN avant composeur/exporter V2.
+
+
+### Résultat — CaptureBattleSetupEditorDraftV1
+
+RED :
+
+- commit : `a00cd1aa0f825b9da685d20be223726832a85e5e` ;
+- CI : run `36341071183` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` ;
+- un seul fichier de test en échec.
+
+Implémentation :
+
+- `src/contracts/capture-battle-setup-editor-draft-v1.js` ;
+- commit : `702a9fb7520cb51cd61930127504a25e3385362c` ;
+- CI : run `36341118625` — SUCCESS.
+
+Garanties :
+
+- même modèle pour 1v1 / 2v2 / futur NxN ;
+- aucun mode global ou enum de format requis ;
+- équipes et acteurs uniques ;
+- acteur local référentiel ;
+- roster optionnel ;
+- membre actif référentiel et cohérent avec la créature engagée ;
+- aucune énergie / SkillDefinition / Runtime / UI dupliquée ;
+- aucune dépendance GenSrpG.
+
+Aucune validation smartphone requise : contrat pur.
+
+Checkpoint GREEN final :
+
+`checkpoint/lab-capture-battle-setup-editor-draft-v1-green-2026-09-27`.
+
+Prochaine étape :
+
+- composeur/exporter éditeur V2 ;
+- entrées : créatures V2, capacités, loadouts 4 slots, battle setup ;
+- sortie : vrai CaptureCombatExportV1 ;
+- présentations créatures transportées séparément du gameplay ;
+- les skillIds exportés proviennent uniquement du loadout actif ;
+- aucun raccord direct au Combat Runtime.
