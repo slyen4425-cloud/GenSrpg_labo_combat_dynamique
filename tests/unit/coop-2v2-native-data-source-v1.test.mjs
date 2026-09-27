@@ -49,7 +49,7 @@ test("demo native data source produces normalized actor loadouts", async () => {
     fetchImpl: async (url) => {
       const pathname = new URL(url).pathname;
       const marker = "/GenSrpg_labo_combat_dynamique/";
-      const markerIndex = pathname.indexOf(marker);
+      const markerIndex = pathname.lastIndexOf(marker);
       const path =
         markerIndex >= 0
           ? pathname.slice(markerIndex + marker.length)
