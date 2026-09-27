@@ -7869,3 +7869,71 @@ Garanties :
 Checkpoint final prévu après CI documentaire :
 
 `checkpoint/lab-capture-combat-skill-adapter-green-2026-09-27`.
+
+
+## Micro-lot D — Capture roster + BattleFormat — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-combat-skill-adapter-green-2026-09-27` ;
+- SHA de base : `0dcf7f66e47d4755eb10442b1ee1e0205c5e196b` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-combat-roster-format-adapter-2026-09-27` ;
+- branche : `work/lab-capture-combat-roster-format-adapter-2026-09-27`.
+
+Objectif :
+
+Traduire les équipes/acteurs/rosters déjà présents dans `CaptureCombatExportV1` vers les contrats natifs du laboratoire, sans coder de comportement 1v1/2v2 spécifique.
+
+Propriétaires :
+
+- `BattleFormatDefinition` reste propriétaire de la validation équipes/acteurs ;
+- `RosterSession` reste propriétaire du comportement rappel/invocation/réserve ;
+- nouvel adaptateur : `src/adapters/input/capture/roster-format-adapter.js`.
+
+Règles de traduction :
+
+### BattleFormat
+
+- `id <- battle.id` ;
+- `localActorId <- battle.localActorId` ;
+- `teams <- teams` sans réinterprétation ;
+- acteurs conservés dans l'ordre exporté ;
+- `fighterConfigId <- creatureId` ;
+- `controllerId` copié tel quel depuis l'export.
+
+### Roster
+
+- un roster exporté devient une entrée `roster.teams[slotId]` ;
+- `slotId`, `activeMemberId`, ordre des membres conservés ;
+- `fighterConfigId <- member.creatureId` ;
+- aucun choix automatique de membre actif dans l'adaptateur.
+
+Interdit :
+
+- aucune variable `is2v2` ;
+- aucune branche spéciale 1v1/2v2 ;
+- aucune décision IA/humain ;
+- aucune règle de victoire/KO ;
+- aucune logique recall/summon dans l'adaptateur ;
+- aucun changement BattleFormat / RosterSession / Combat Core ;
+- aucun DOM/storage/global/réseau ;
+- aucun changement du dépôt `Zombicide-40k`.
+
+Tests RED prévus :
+
+1. export 2v2 -> BattleFormat natif avec 4 acteurs ;
+2. export 1v1 -> même adaptateur, sans chemin spécial ;
+3. controllers et équipes conservés ;
+4. `fighterConfigId = creatureId` ;
+5. roster actif/réserve traduit sans changement d'ordre ;
+6. sortie roster acceptée par le vrai `createRosterSession` ;
+7. aucune metadata/presentation propagée ;
+8. sentinelle sans `is2v2`, GenSrpG, DOM, storage ou réseau.
+
+Critère GREEN :
+
+- RED observé avant implémentation ;
+- adaptateur minimal ;
+- vrais contrats natifs consommés ;
+- CI globale SUCCESS ;
+- checkpoint GREEN exact avant le lot Presentation Binding.
