@@ -8029,3 +8029,53 @@ Critère de fin :
 - CI GREEN ;
 - vrai chemin intégré prouvé ;
 - checkpoint GREEN avant toute prévisualisation éditeur/UI.
+
+
+### Résultat bundle CaptureExportV1 -> Combat Session
+
+RED :
+
+- `tests/integration/capture-combat-bundle-v1.test.mjs` ajouté avant implémentation ;
+- run `36314821481` — FAILURE attendue ;
+- cause : module `combat-bundle-v1.js` absent.
+
+Implémentation :
+
+- `src/adapters/input/capture/combat-bundle-v1.js` ;
+- `buildCaptureCombatBundle(input, options)`.
+
+Composition :
+
+- `CaptureExportV1` normalisé ;
+- `BattleFormatDefinition` natif ;
+- FighterConfig via adaptateur créature ;
+- `fighter.id` remplacé uniquement au bord de session par `actorId`, comme l'exige Combat Session ;
+- skills par acteur via adaptateur skills.
+
+Vrai chemin validé :
+
+`CaptureExportV1 -> adapters -> createCombatSession() -> useSkill() -> Combat Rules`.
+
+Scénario test :
+
+- export 2v2 avec une réserve ;
+- quatre fighters actifs créés ;
+- réserve absente des fighters actifs ;
+- joueur à 5 énergie ;
+- Boule de feu coût 3 / dégâts 25 ;
+- après `useSkill()` : énergie joueur = 2, PV cible = 75 ;
+- événement `hit` produit par Combat Rules avec dégâts 25.
+
+Aucune règle de dégâts, énergie ou ciblage n'est présente dans l'adaptateur.
+
+CI GREEN :
+
+- run `36314853483` — SUCCESS ;
+- SHA `e90e3dd25b906915b1c564b52fc60a1b04590bc5`.
+
+Prochaine étape après checkpoint GREEN :
+
+- contrat de présentation orienté éditeur ;
+- lier skill/creature à des `assetId` stables ;
+- garder le gameplay strictement séparé ;
+- aucun chemin physique d'asset dans CaptureExportV1 gameplay.
