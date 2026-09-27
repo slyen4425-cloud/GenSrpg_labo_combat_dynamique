@@ -274,6 +274,42 @@ test("coop 2v2 page keeps one local ability bar and four selectable actors", asy
   assert.match(presenter, /targetSlot,\s*onPhase/);
 });
 
+test("coop HUD keeps the ally directly above one local ability bar and uses the visual library icon", async () => {
+  const html = await readFile("examples/dom-demo/coop-2v2.html", "utf8");
+  const source = await readFile("src/ui/combat-2v2-test-ui.js", "utf8");
+
+  assert.match(
+    html,
+    /coop-command-stack[\s\S]*squad-card--command-ally[\s\S]*data-ally-creature-icon[\s\S]*coop-controls[\s\S]*data-combat-skills/
+  );
+  assert.equal(
+    (html.match(/data-combat-skills/g) ?? []).length,
+    1
+  );
+  assert.match(
+    html,
+    /squad-card--player squad-card--local-full/
+  );
+  assert.match(source, /visuals\.getCreatureDescriptor/);
+  assert.match(source, /allyDescriptor\.iconUrl/);
+});
+
+test("target click feedback uses a temporary arena pulse and cleans its timer on dispose", async () => {
+  const source = await readFile("src/ui/combat-2v2-test-ui.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(source, /const targetPulseTimers = new Map\(\)/);
+  assert.match(source, /function pulseTarget\(actorId\)/);
+  assert.match(source, /fighter\.dataset\.targetPulse = "true"/);
+  assert.match(source, /globalThis\.setTimeout[\s\S]*680/);
+  assert.match(source, /clearTargetPulses\(\);[\s\S]*for \(const cleanup/);
+  assert.match(
+    css,
+    /\.arena--coop-2v2 \.fighter\[data-target-pulse="true"\]::after/
+  );
+  assert.match(css, /@keyframes coop-target-pulse/);
+});
+
 test("coop 2v2 CSS gives four distinct actor positions and lightweight squad cards", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
@@ -296,6 +332,15 @@ test("coop 2v2 CSS gives four distinct actor positions and lightweight squad car
   assert.match(css, /\.squad-card--player/);
   assert.match(css, /\.squad-card--ally/);
   assert.match(css, /\.squad-card--opponent-b/);
+  assert.match(
+    css,
+    /\.squad-card--local-full\s*\{[\s\S]*width:\s*min\(15\.5rem, 39vw\)[\s\S]*min-height:\s*clamp\(5rem, 11vw, 6\.5rem\)/
+  );
+  assert.match(css, /\.coop-command-stack/);
+  assert.match(
+    css,
+    /\.squad-card--command-ally\s*\{[\s\S]*grid-template-columns:\s*2\.2rem minmax\(0, 1fr\)/
+  );
   assert.match(css, /\.coop-controls/);
   assert.match(css, /data-target-selected="true"/);
 });
