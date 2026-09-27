@@ -7015,3 +7015,24 @@ Critères :
 - les adversaires 2v2 gagnent légèrement en taille sans déplacer leurs ancres ;
 - CI verte ;
 - validation smartphone utilisateur.
+
+
+Résultat technique du micro-lot couche / scale :
+
+- `playApproachFor()` marque désormais uniquement le combattant qui exécute l'approche avec `data-approach-active=true` ;
+- la page 2v2 donne temporairement à cet acteur une couche `z-index: 9`, ce qui l'empêche de passer derrière sa cible pendant Griffe / téléportation / aérien ;
+- l'attribut est supprimé dans `finally()`, dans `cancelFor()`, lors d'un masquage de slot et au `dispose()` ;
+- aucun sprite n'est dupliqué et aucune règle gameplay n'a été modifiée ;
+- tailles adverses 2v2 augmentées uniquement dans la composition 2v2 :
+  - adversaire A : `min(34%, 19.5rem)` ;
+  - adversaire B : `min(33%, 19rem)` ;
+- positions et ancres restent inchangées.
+
+Tests :
+
+- sentinelle de couche temporaire + nettoyage ;
+- sentinelle tailles adverses 2v2 ;
+- sentinelles 1v1 / approche existantes conservées ;
+- CI work : SUCCESS, run `36304832800`, SHA `98304287d3d050d8dfaf83ec4ad39df0977fec70`.
+
+Validation smartphone requise avant checkpoint GREEN de ce micro-lot.
