@@ -189,6 +189,17 @@ export function normalizeSkillDefinition(input) {
           "projectileClash.group"
         );
 
+  const projectileClashInteractsWith = stringArray(
+    projectileClash.interactsWith ??
+      (
+        projectileClashMode === "mutual_cancel" &&
+        projectileClashGroup !== null
+          ? [projectileClashGroup]
+          : []
+      ),
+    "projectileClash.interactsWith"
+  );
+
   if (
     projectileClashMode === "mutual_cancel" &&
     form !== "projectile"
@@ -232,7 +243,8 @@ export function normalizeSkillDefinition(input) {
     }),
     projectileClash: Object.freeze({
       mode: projectileClashMode,
-      group: projectileClashGroup
+      group: projectileClashGroup,
+      interactsWith: projectileClashInteractsWith
     }),
     reaction: Object.freeze({
       blockForms: stringArray(reaction.blockForms, "reaction.blockForms", FORM_SET),
