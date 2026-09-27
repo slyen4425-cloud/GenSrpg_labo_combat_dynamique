@@ -33,12 +33,20 @@ export const PROJECTILE_CLASH_MODES = Object.freeze([
   "mutual_cancel"
 ]);
 
+export const SKILL_TARGET_RELATIONS = Object.freeze([
+  "enemy",
+  "ally",
+  "self",
+  "any"
+]);
+
 const CATEGORY_SET = new Set(SKILL_CATEGORIES);
 const FORM_SET = new Set(SKILL_FORMS);
 const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
 const DISTANCE_SET = new Set(COMBAT_DISTANCES);
 const EVASION_WINDOW_SET = new Set(SKILL_EVASION_WINDOWS);
 const PROJECTILE_CLASH_MODE_SET = new Set(PROJECTILE_CLASH_MODES);
+const TARGET_RELATION_SET = new Set(SKILL_TARGET_RELATIONS);
 
 function nonEmptyString(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -107,6 +115,14 @@ export function normalizeSkillDefinition(input) {
     "allowedDistances",
     DISTANCE_SET
   );
+  const targetRelations = stringArray(
+    input.targetRelations ?? ["enemy"],
+    "targetRelations",
+    TARGET_RELATION_SET
+  );
+  if (targetRelations.length === 0) {
+    throw new TypeError("targetRelations must contain at least one relation");
+  }
 
   const reaction = input.reaction ?? {};
   if (typeof reaction !== "object" || Array.isArray(reaction)) {
@@ -209,6 +225,7 @@ export function normalizeSkillDefinition(input) {
     interruptibleDuringPreparation:
       input.interruptibleDuringPreparation !== false,
     allowedDistances,
+    targetRelations,
     evasion: Object.freeze({
       window: evasionWindow,
       incomingForms: evasionIncomingForms
