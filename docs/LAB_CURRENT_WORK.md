@@ -6748,3 +6748,36 @@ Critères de fin :
 - nom / PV / action des quatre acteurs lisibles sur smartphone ;
 - CI verte ;
 - validation smartphone utilisateur avant checkpoint GREEN.
+
+
+Résultat technique du chantier coop 2v2 :
+
+- nouvelle page dédiée `examples/dom-demo/coop-2v2.html` : aucun masquage ou duplication du flux 1v1 ;
+- format `data/combat/battle-formats/demo-coop-2v2.format.json` avec 2 acteurs par équipe ;
+- `player` = Loup volcanique contrôlé localement ;
+- `ally` = Golem moussu contrôlé par IA indépendante ;
+- `opponent` = Maraileron IA ;
+- `opponent-b` = Braisombre IA ;
+- une seule barre de capacités est rendue pour le joueur local ;
+- les trois autres acteurs exposent seulement nom, PV et action en cours ;
+- quatre acteurs utilisent le même `CombatSession` / `CombatRuntime` ;
+- le visual controller accepte désormais les slots déclarés par la page et n'est plus limité à deux clés codées en dur ;
+- le `targetSlot` est transmis explicitement aux attaques de contact / aériennes / téléportées ;
+- sélection d'une cible par clic sur la créature ou sa carte ;
+- relation de cible `self / ally / enemy` calculée par le Core `targeting.js` ;
+- `SkillDefinition.targetRelations` ajouté, défaut `enemy` pour préserver les compétences existantes ;
+- sélectionner l'allié est possible mais les quatre compétences offensives sont correctement désactivées pour cette cible ;
+- contrôleur IA générique `battle-actor-ai-controller.js`, sans DOM, utilisé séparément par l'allié et les deux ennemis ;
+- les décisions IA sont déclenchées par les changements d'état du Runtime et utilisent son horloge, sans boucle d'animation parallèle.
+
+Tests :
+
+- contrat BattleFormat 2v2 ;
+- relations de cible et cible alliée refusée pour compétence offensive ;
+- contrôleur IA allié avec deux cibles ennemies ;
+- page 4 acteurs / une seule barre de capacités ;
+- positions et cartes 2v2 ;
+- sentinelles 1v1 adaptées au contrôleur visuel N-slots ;
+- CI work : SUCCESS, run `36301369144`, SHA `f029eff36f9c82f73df582ca80738642273fb5f1`.
+
+Validation smartphone utilisateur requise avant checkpoint GREEN 2v2.
