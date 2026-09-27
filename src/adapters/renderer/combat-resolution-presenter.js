@@ -167,6 +167,7 @@ export function createCombatResolutionPresenter({
       visuals
         .playApproachFor(actorSlot, approachMode, {
           travelMs: action.travelMs,
+          targetSlot,
           onPhase({ label, phaseDurationMs }) {
             if (!skillId) {
               return;
@@ -189,7 +190,9 @@ export function createCombatResolutionPresenter({
         })
         .catch(() => {});
     } else {
-      visuals.playEventFor(actorSlot, "attack").catch(() => {});
+      visuals
+        .playEventFor(actorSlot, "attack", { targetSlot })
+        .catch(() => {});
     }
 
     for (const fxPlan of planSkillReleaseFx({
