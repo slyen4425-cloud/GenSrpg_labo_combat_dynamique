@@ -385,14 +385,210 @@ export function buildHumanCreatureDraftV2(fields) {
   });
 }
 
+export function humanSkillFieldsFromLibraryDefinitionV1(definition) {
+  if (!definition || typeof definition !== "object") {
+    throw new TypeError("Définition de capacité invalide");
+  }
+
+  return Object.freeze({
+    id: definition.id,
+    name: definition.name,
+    description: "",
+    requiredLevel: 1,
+    usageScopes: Object.freeze(["capture", "combat"]),
+    category: definition.category,
+    form: definition.form,
+    element: definition.element,
+    approachMode: definition.approachMode,
+    energyCost: definition.energyCost,
+    preparationMs: definition.preparationMs,
+    travelMs: definition.travelMs,
+    recoveryMs: definition.recoveryMs,
+    cooldownMs: definition.cooldownMs,
+    allowedDistances: definition.allowedDistances,
+    targetRelations: definition.targetRelations,
+    damage: definition.effect.damage,
+    heal: definition.effect.heal,
+    stunMs: definition.effect.stunMs,
+    interruptsPreparation:
+      definition.effect.interruptsPreparation === true,
+    reaction: definition.reaction,
+    evasion: definition.evasion,
+    projectileClash: definition.projectileClash,
+    effectTags: definition.effect.tags,
+    baseDefinition: definition
+  });
+}
+
+function libraryDefinitionToDraftV1(definition) {
+  const fields =
+    humanSkillFieldsFromLibraryDefinitionV1(definition);
+
+  return normalizeCaptureSkillEditorDraftV1({
+    schema: "capture-skill-editor-draft-v1",
+    id: definition.id,
+    description: "",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    definition,
+    presentation: null
+  });
+}
+
+export function buildHumanSkillDraftSetV1({
+  editedSkillDraft,
+  equippedSkillIds,
+  skillLibrary
+}) {
+  if (
+    !skillLibrary ||
+    typeof skillLibrary !== "object" ||
+    !skillLibrary.byId ||
+    typeof skillLibrary.byId !== "object"
+  ) {
+    throw new TypeError("Bibliothèque de capacités invalide");
+  }
+
+  const equipped = stableIds(equippedSkillIds);
+  const ids = [...equipped];
+
+  if (
+    editedSkillDraft &&
+    !ids.includes(editedSkillDraft.id)
+  ) {
+    ids.push(editedSkillDraft.id);
+  }
+
+  const drafts = [];
+
+  for (const id of ids) {
+    if (
+      editedSkillDraft &&
+      editedSkillDraft.id === id
+    ) {
+      drafts.push(editedSkillDraft);
+      continue;
+    }
+
+    const definition = skillLibrary.byId[id];
+    if (!definition) {
+      throw new RangeError(
+        "Capacité inconnue dans la bibliothèque : " + id
+      );
+    }
+
+    drafts.push(
+      libraryDefinitionToDraftV1(definition)
+    );
+  }
+
+  return Object.freeze(drafts);
+}
+
 export function buildHumanSkillDraftV1(fields) {
   if (!fields || typeof fields !== "object") {
     throw new TypeError("Données capacité invalides");
   }
 
   const id = requiredText(fields.id, "ID capacité");
-  const reaction = fields.reaction ?? {};
-  const projectileClash = fields.projectileClash ?? {};
+  const baseDefinition =
+    fields.baseDefinition &&
+    fields.baseDefinition.id === id
+      ? fields.baseDefinition
+      : null;
+
+  const reaction =
+    fields.reaction ??
+    baseDefinition?.reaction ??
+    {};
+  const evasion =
+    fields.evasion ??
+    baseDefinition?.evasion ??
+    {};
+  const projectileClash =
+    fields.projectileClash ??
+    baseDefinition?.projectileClash ??
+    {};
+
+  const definition = {
+    ...(baseDefinition ?? {}),
+    id,
+    name: requiredText(fields.name, "Nom capacité"),
+    category: requiredText(
+      fields.category,
+      "Type de capacité"
+    ),
+    form: requiredText(fields.form, "Style de capacité"),
+    element: optionalText(fields.element),
+    approachMode: requiredText(
+      fields.approachMode ?? "none",
+      "Déplacement"
+    ),
+    energyCost: finiteNumber(
+      fields.energyCost,
+      "Coût énergie"
+    ),
+    preparationMs: finiteNumber(
+      fields.preparationMs,
+      "Temps de préparation"
+    ),
+    travelMs: finiteNumber(
+      fields.travelMs,
+      "Temps pour atteindre la cible"
+    ),
+    recoveryMs: finiteNumber(
+      fields.recoveryMs,
+      "Temps de récupération"
+    ),
+    cooldownMs: finiteNumber(
+      fields.cooldownMs,
+      "Temps de recharge"
+    ),
+    allowedDistances: stableIds(
+      fields.allowedDistances
+    ),
+    targetRelations: stableIds(
+      fields.targetRelations
+    ),
+    evasion: {
+      window: evasion.window ?? null,
+      incomingForms: stableIds(
+        evasion.incomingForms
+      )
+    },
+    reaction: {
+      blockForms: stableIds(reaction.blockForms),
+      reflectForms: stableIds(reaction.reflectForms),
+      immuneElements: stableIds(
+        reaction.immuneElements
+      ),
+      counterForms: stableIds(
+        reaction.counterForms
+      ),
+      evadeForms: stableIds(reaction.evadeForms),
+      evadeApproaches: stableIds(
+        reaction.evadeApproaches
+      )
+    },
+    projectileClash: {
+      mode: projectileClash.mode ?? "none",
+      group: optionalText(projectileClash.group),
+      interactsWith: stableIds(
+        projectileClash.interactsWith
+      )
+    },
+    effect: {
+      damage: finiteNumber(fields.damage ?? 0, "Dégâts"),
+      heal: finiteNumber(fields.heal ?? 0, "Soin"),
+      stunMs: finiteNumber(fields.stunMs ?? 0, "Stun"),
+      interruptsPreparation:
+        fields.interruptsPreparation === true,
+      tags: stableIds(
+        fields.effectTags ??
+        baseDefinition?.effect?.tags
+      )
+    }
+  };
 
   return normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
@@ -403,75 +599,7 @@ export function buildHumanSkillDraftV1(fields) {
       "Niveau requis"
     ),
     usageScopes: stableIds(fields.usageScopes),
-    definition: {
-      id,
-      name: requiredText(fields.name, "Nom capacité"),
-      category: requiredText(
-        fields.category,
-        "Type de capacité"
-      ),
-      form: requiredText(fields.form, "Style de capacité"),
-      element: optionalText(fields.element),
-      approachMode: requiredText(
-        fields.approachMode ?? "none",
-        "Déplacement"
-      ),
-      energyCost: finiteNumber(
-        fields.energyCost,
-        "Coût énergie"
-      ),
-      preparationMs: finiteNumber(
-        fields.preparationMs,
-        "Temps de préparation"
-      ),
-      travelMs: finiteNumber(
-        fields.travelMs,
-        "Temps pour atteindre la cible"
-      ),
-      recoveryMs: finiteNumber(
-        fields.recoveryMs,
-        "Temps de récupération"
-      ),
-      cooldownMs: finiteNumber(
-        fields.cooldownMs,
-        "Temps de recharge"
-      ),
-      allowedDistances: stableIds(
-        fields.allowedDistances
-      ),
-      targetRelations: stableIds(
-        fields.targetRelations
-      ),
-      reaction: {
-        blockForms: stableIds(reaction.blockForms),
-        reflectForms: stableIds(reaction.reflectForms),
-        immuneElements: stableIds(
-          reaction.immuneElements
-        ),
-        counterForms: stableIds(
-          reaction.counterForms
-        ),
-        evadeForms: stableIds(reaction.evadeForms),
-        evadeApproaches: stableIds(
-          reaction.evadeApproaches
-        )
-      },
-      projectileClash: {
-        mode: projectileClash.mode ?? "none",
-        group: optionalText(projectileClash.group),
-        interactsWith: stableIds(
-          projectileClash.interactsWith
-        )
-      },
-      effect: {
-        damage: finiteNumber(fields.damage ?? 0, "Dégâts"),
-        heal: finiteNumber(fields.heal ?? 0, "Soin"),
-        stunMs: finiteNumber(fields.stunMs ?? 0, "Stun"),
-        interruptsPreparation:
-          fields.interruptsPreparation === true,
-        tags: stableIds(fields.effectTags)
-      }
-    },
+    definition,
     presentation: presentationForSkill(fields)
   });
 }
@@ -1046,7 +1174,7 @@ function readCreatureFields(root, sockets) {
   };
 }
 
-function readSkillFields(root) {
+function readSkillFields(root, baseDefinition = null) {
   const form = selectedValue(
     root,
     "[data-skill-form]"
@@ -1118,14 +1246,20 @@ function readSkillFields(root) {
       root,
       "[data-skill-interrupts]"
     ).checked,
-    reaction: {
-      blockForms: [],
-      reflectForms: [],
-      immuneElements: [],
-      counterForms: [],
-      evadeForms: [],
-      evadeApproaches: []
-    },
+    reaction:
+      baseDefinition?.reaction ?? {
+        blockForms: [],
+        reflectForms: [],
+        immuneElements: [],
+        counterForms: [],
+        evadeForms: [],
+        evadeApproaches: []
+      },
+    evasion:
+      baseDefinition?.evasion ?? {
+        window: null,
+        incomingForms: []
+      },
     projectileClash: {
       mode: clashEnabled
         ? "mutual_cancel"
@@ -1151,6 +1285,9 @@ function readSkillFields(root) {
           ]
         : []
     },
+    effectTags:
+      baseDefinition?.effect?.tags ?? [],
+    baseDefinition,
     presentation: {
       iconAssetId: selectedValue(
         root,
@@ -1184,13 +1321,10 @@ function readSkillFields(root) {
   };
 }
 
-function readLoadout(root, creatureId, skillId) {
+function readLoadout(root, creatureId) {
   const skillIds = [
-    skillId,
-    ...[...root.querySelectorAll("[data-loadout-slot]")]
-      .slice(1)
-      .map((select) => select.value || null)
-  ];
+    ...root.querySelectorAll("[data-loadout-slot]")
+  ].map((select) => select.value || null);
 
   return buildHumanLoadoutV1({
     creatureId,
@@ -1198,14 +1332,216 @@ function readLoadout(root, creatureId, skillId) {
   });
 }
 
+function setCheckedValues(root, selector, values) {
+  const selected = new Set(values ?? []);
+  for (const input of root.querySelectorAll(selector)) {
+    input.checked = selected.has(input.value);
+  }
+}
+
+function setControlValue(root, selector, value) {
+  one(root, selector).value =
+    value == null ? "" : String(value);
+}
+
+function clearSkillPresentationControls(root) {
+  for (const selector of [
+    "[data-skill-icon]",
+    "[data-skill-cast-fx]",
+    "[data-skill-travel-fx]",
+    "[data-skill-impact-fx]",
+    "[data-skill-socket]",
+    "[data-skill-cast-audio]",
+    "[data-skill-impact-audio]"
+  ]) {
+    const control = one(root, selector);
+    if ([...control.options ?? []].some(
+      (option) => option.value === ""
+    )) {
+      control.value = "";
+    }
+  }
+}
+
+function applySkillDefinitionToForm(root, definition) {
+  const fields =
+    humanSkillFieldsFromLibraryDefinitionV1(
+      definition
+    );
+
+  setControlValue(root, "[data-skill-id]", fields.id);
+  setControlValue(root, "[data-skill-name]", fields.name);
+  setControlValue(
+    root,
+    "[data-skill-description]",
+    ""
+  );
+  setControlValue(
+    root,
+    "[data-skill-category]",
+    fields.category
+  );
+  setControlValue(root, "[data-skill-form]", fields.form);
+  setControlValue(
+    root,
+    "[data-skill-element]",
+    fields.element
+  );
+  setControlValue(
+    root,
+    "[data-skill-approach]",
+    fields.approachMode
+  );
+  setControlValue(
+    root,
+    "[data-skill-energy-cost]",
+    fields.energyCost
+  );
+  setControlValue(
+    root,
+    "[data-skill-preparation]",
+    fields.preparationMs
+  );
+  setControlValue(
+    root,
+    "[data-skill-travel-time]",
+    fields.travelMs
+  );
+  setControlValue(
+    root,
+    "[data-skill-recovery]",
+    fields.recoveryMs
+  );
+  setControlValue(
+    root,
+    "[data-skill-cooldown]",
+    fields.cooldownMs
+  );
+  setControlValue(
+    root,
+    "[data-skill-damage]",
+    fields.damage
+  );
+  setControlValue(
+    root,
+    "[data-skill-heal]",
+    fields.heal
+  );
+  setControlValue(
+    root,
+    "[data-skill-stun]",
+    fields.stunMs
+  );
+
+  one(
+    root,
+    "[data-skill-interrupts]"
+  ).checked = fields.interruptsPreparation;
+
+  setCheckedValues(
+    root,
+    "[data-skill-distance]",
+    fields.allowedDistances
+  );
+  setCheckedValues(
+    root,
+    "[data-skill-target]",
+    fields.targetRelations
+  );
+
+  const clash =
+    fields.projectileClash?.mode ===
+    "mutual_cancel";
+  one(root, "[data-skill-clash]").checked = clash;
+  setControlValue(
+    root,
+    "[data-skill-clash-group]",
+    fields.projectileClash?.group ?? ""
+  );
+
+  clearSkillPresentationControls(root);
+}
+
+function populateSkillLibraryControls(
+  root,
+  skillLibrary
+) {
+  const librarySelect = one(
+    root,
+    "[data-skill-library-select]"
+  );
+  const loadoutSelects = [
+    ...root.querySelectorAll("[data-loadout-slot]")
+  ];
+  const currentId = selectedValue(
+    root,
+    "[data-skill-id]"
+  );
+
+  librarySelect.textContent = "";
+  createOption(
+    librarySelect,
+    "",
+    "Nouvelle capacité"
+  );
+
+  for (const definition of skillLibrary.skills) {
+    createOption(
+      librarySelect,
+      definition.id,
+      definition.name
+    );
+  }
+
+  for (const select of loadoutSelects) {
+    const previous = select.value;
+    select.textContent = "";
+    createOption(select, "", "Vide");
+
+    for (const definition of skillLibrary.skills) {
+      createOption(
+        select,
+        definition.id,
+        definition.name
+      );
+    }
+
+    if (
+      previous &&
+      skillLibrary.byId[previous]
+    ) {
+      select.value = previous;
+    }
+  }
+
+  if (skillLibrary.byId[currentId]) {
+    librarySelect.value = currentId;
+    if (
+      loadoutSelects[0] &&
+      !loadoutSelects[0].value
+    ) {
+      loadoutSelects[0].value = currentId;
+    }
+  }
+}
+
 export function mountCaptureEditorHumanV2({
   root,
+  skillLibrary,
   opponentCreatureDraft,
   opponentSkillDrafts,
   opponentLoadout
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
+  }
+
+  if (
+    !skillLibrary ||
+    !Array.isArray(skillLibrary.skills) ||
+    !skillLibrary.byId
+  ) {
+    throw new TypeError("skillLibrary est obligatoire");
   }
 
   const listeners = [];
@@ -1231,6 +1567,43 @@ export function mountCaptureEditorHumanV2({
 
   setTab(root, "creature");
   syncSkillSocketChoices(root, sockets);
+  populateSkillLibraryControls(
+    root,
+    skillLibrary
+  );
+
+  const skillLibrarySelect = one(
+    root,
+    "[data-skill-library-select]"
+  );
+
+  listen(
+    skillLibrarySelect,
+    "change",
+    () => {
+      const definition =
+        skillLibrary.byId[
+          skillLibrarySelect.value
+        ];
+
+      if (!definition) {
+        return;
+      }
+
+      applySkillDefinitionToForm(
+        root,
+        definition
+      );
+
+      setStatus(
+        root,
+        "Capacité « " +
+          definition.name +
+          " » chargée depuis la bibliothèque.",
+        "ok"
+      );
+    }
+  );
 
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
@@ -1277,26 +1650,60 @@ export function mountCaptureEditorHumanV2({
 
   function validate() {
     try {
-      const skillDraft = buildHumanSkillDraftV1(
-        readSkillFields(root)
+      const currentSkillId = selectedValue(
+        root,
+        "[data-skill-id]"
       );
+      const selectedLibraryId = selectedValue(
+        root,
+        "[data-skill-library-select]"
+      );
+      const baseDefinition =
+        selectedLibraryId === currentSkillId
+          ? (
+              skillLibrary.byId[
+                selectedLibraryId
+              ] ?? null
+            )
+          : null;
+
+      const skillDraft = buildHumanSkillDraftV1(
+        readSkillFields(
+          root,
+          baseDefinition
+        )
+      );
+
+      const creatureId = selectedValue(
+        root,
+        "[data-creature-id]"
+      );
+      const loadout = readLoadout(
+        root,
+        creatureId
+      );
+      const skillDrafts =
+        buildHumanSkillDraftSetV1({
+          editedSkillDraft: skillDraft,
+          equippedSkillIds:
+            loadout.equippedSkillIds,
+          skillLibrary
+        });
 
       const creatureFields = readCreatureFields(
         root,
         sockets
       );
       creatureFields.linkedSkillIds = [
-        skillDraft.id
+        ...new Set(
+          skillDrafts.map(
+            (draft) => draft.id
+          )
+        )
       ];
 
       const creatureDraft =
         buildHumanCreatureDraftV2(creatureFields);
-
-      const loadout = readLoadout(
-        root,
-        creatureDraft.id,
-        skillDraft.id
-      );
 
       const battleSetup = buildHumanBattleSetupV1({
         battleId: "capture-human-preview",
@@ -1313,7 +1720,7 @@ export function mountCaptureEditorHumanV2({
 
       lastExport = buildHumanEditorExportV2({
         creatureDraft,
-        skillDrafts: [skillDraft],
+        skillDrafts,
         loadout,
         battleSetup,
         opponentCreatureDraft,

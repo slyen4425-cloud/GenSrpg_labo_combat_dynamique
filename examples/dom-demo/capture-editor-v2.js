@@ -1,6 +1,9 @@
 import {
   mountCaptureEditorHumanV2
 } from "../../src/ui/capture-editor-human-v2.js";
+import {
+  loadCombatSkillLibraryV1
+} from "../../src/adapters/input/combat-skill-library-v1.js";
 
 const opponentCreatureDraft = {
   schema: "capture-creature-editor-draft-v2",
@@ -83,15 +86,70 @@ const root = document.querySelector(
   "[data-capture-editor-human]"
 );
 
-const editor = mountCaptureEditorHumanV2({
-  root,
-  opponentCreatureDraft,
-  opponentSkillDrafts,
-  opponentLoadout
-});
+async function loadJson(url) {
+  const response = await fetch(url, {
+    cache: "no-store"
+  });
 
-window.addEventListener(
-  "pagehide",
-  () => editor.dispose(),
-  { once: true }
-);
+  if (!response.ok) {
+    throw new Error(
+      "Chargement impossible (" +
+        response.status +
+        ") : " +
+        url
+    );
+  }
+
+  return response.json();
+}
+
+async function startEditor() {
+  const manifestUrl = new URL(
+    "../../data/combat/skills/catalog.v1.json",
+    import.meta.url
+  );
+
+  const manifest = await loadJson(
+    manifestUrl
+  );
+
+  const skillLibrary =
+    await loadCombatSkillLibraryV1({
+      manifest,
+      loadDefinition: (source) =>
+        loadJson(
+          new URL(
+            "../../data/combat/skills/" +
+              source,
+            import.meta.url
+          )
+        )
+    });
+
+  const editor = mountCaptureEditorHumanV2({
+    root,
+    skillLibrary,
+    opponentCreatureDraft,
+    opponentSkillDrafts,
+    opponentLoadout
+  });
+
+  window.addEventListener(
+    "pagehide",
+    () => editor.dispose(),
+    { once: true }
+  );
+}
+
+startEditor().catch((error) => {
+  const status = root?.querySelector(
+    "[data-editor-status]"
+  );
+
+  if (status) {
+    status.textContent =
+      "Bibliothèque de capacités indisponible : " +
+      error.message;
+    status.dataset.tone = "error";
+  }
+});

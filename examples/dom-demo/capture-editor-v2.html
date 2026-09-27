@@ -243,11 +243,11 @@
           <span class="step">7</span>
           <div>
             <h2>4 capacités équipées</h2>
-            <p>Le premier slot suit la capacité actuellement éditée.</p>
+            <p>Choisis jusqu’à 4 capacités dans la bibliothèque réelle du laboratoire.</p>
           </div>
         </div>
         <div class="loadout-grid">
-          <label>Slot 1<select data-loadout-slot><option value="fireball" selected>Boule de feu</option></select></label>
+          <label>Slot 1<select data-loadout-slot><option value="">Vide</option></select></label>
           <label>Slot 2<select data-loadout-slot><option value="">Vide</option></select></label>
           <label>Slot 3<select data-loadout-slot><option value="">Vide</option></select></label>
           <label>Slot 4<select data-loadout-slot><option value="">Vide</option></select></label>
@@ -304,6 +304,13 @@
             <p>Type, cible, dégâts, soin et élément.</p>
           </div>
         </div>
+
+        <label>Capacité de la bibliothèque
+          <select data-skill-library-select>
+            <option value="">Chargement de la bibliothèque…</option>
+          </select>
+          <small>Les règles gameplay viennent des définitions existantes. Les FX et sons restent des choix explicites séparés.</small>
+        </label>
 
         <div class="grid two">
           <label>Nom<input data-skill-name value="Boule de feu"></label>
