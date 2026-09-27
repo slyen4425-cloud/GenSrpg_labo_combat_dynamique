@@ -8313,3 +8313,23 @@ Prochaine étape autorisée :
 
 - pré-audit uniquement du seam d'entrée de la démo 2v2 ;
 - objectif : réutiliser la même UI/Runtime avec une source de données package, jamais dupliquer le moteur ou la démo.
+
+
+## Pré-audit seam CaptureCombatPackageV1 -> démo 2v2 — 2026-09-27
+
+Document :
+
+- `docs/LAB_CAPTURE_PACKAGE_DEMO_SEAM_PREAUDIT.md`.
+
+Résultat :
+
+- seam exact identifié avant `createCombatSession` dans `mountCoop2v2Test()` ;
+- raccord cible : paramètre générique optionnel `combatSetup` ;
+- chemin JSON historique conservé par défaut ;
+- package Capture projeté uniquement en contrats natifs ;
+- aucune seconde UI ;
+- première preview utilise les quatre creatureId actuels ;
+- PresentationBinding -> resolver asset reporté à un lot séparé ;
+- généralisation des controllers IA reportée à un lot séparé ;
+- query param prévu : `?source=capture-export` sur la page existante ;
+- aucun runtime modifié dans ce pré-audit.
