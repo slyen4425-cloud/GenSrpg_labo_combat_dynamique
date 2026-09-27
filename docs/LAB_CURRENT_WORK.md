@@ -7544,3 +7544,75 @@ Prochaine étape après checkpoint GREEN :
 3. tests RED avant implémentation de normalisation ;
 4. aucune dépendance GenSrpG ;
 5. aucun raccord UI/runtime avant GREEN du contrat.
+
+
+## Contrat pur CaptureExportV1 — 2026-09-27
+
+Objectif :
+
+- définir une frontière de données neutre entre un futur éditeur/module Capture et le laboratoire ;
+- valider cette frontière sans dépendre du dépôt GenSrpG ;
+- garantir qu'aucune sémantique gameplay n'est déduite depuis du texte, un DOM, un stockage ou un ancien `captureFix*`.
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-adapter-audit-green-2026-09-27` ;
+- SHA de base : `01a26c065857a6c8fda81cef8bdf6a38470f38ca` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-export-contract-2026-09-27` ;
+- branche : `work/lab-capture-export-contract-2026-09-27`.
+
+Propriétaire :
+
+- `src/contracts/capture-export-v1.js` pour la validation/normalisation du contrat d'intégration ;
+- `SkillDefinition` reste propriétaire de la sémantique d'une compétence.
+
+Périmètre V1 :
+
+- version du contrat ;
+- définitions de créatures ;
+- paramètres FighterConfig explicitement exportés ;
+- stats source numériques conservées comme données non-interprétées ;
+- progression minimale `level` ;
+- liste de SkillDefinitions déjà sémantiques ;
+- équipes et membres de roster ;
+- acteurs actifs ;
+- identifiant du membre local.
+
+Fichiers autorisés :
+
+- `src/contracts/capture-export-v1.js` ;
+- `tests/unit/capture-export-v1.test.mjs` ;
+- documentation du présent lot.
+
+Interdit :
+
+- aucun import depuis `Zombicide-40k` ;
+- aucun DOM ;
+- aucun localStorage / IndexedDB ;
+- aucun global ;
+- aucun renderer / FX / Animation Core ;
+- aucun mapping de stats vers gameplay non déclaré ;
+- aucune inférence de compétence depuis son nom/ID/description ;
+- aucun chemin physique d'asset ;
+- aucun raccord à la Demo UI dans ce lot.
+
+Tests prévus :
+
+1. accepte un export 1v1/2v2 neutre valide ;
+2. rejette version inconnue ;
+3. rejette IDs de créatures/compétences/membres dupliqués ;
+4. délègue la validation des compétences à `SkillDefinition` ;
+5. rejette une référence de skill inconnue depuis une créature ;
+6. rejette un membre pointant vers une créature inconnue ;
+7. rejette un acteur actif absent de son équipe ;
+8. rejette un même membre déclaré dans plusieurs équipes ;
+9. exige que `localMemberId` existe et soit actif ;
+10. n'interprète pas les stats source.
+
+Critère de fin :
+
+- tests RED écrits avant implémentation ;
+- contrat pur GREEN ;
+- aucune dépendance GenSrpG ;
+- aucune modification du moteur/runtime/renderer/UI ;
+- CI GREEN avant checkpoint final.
