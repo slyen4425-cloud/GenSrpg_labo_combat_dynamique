@@ -7839,3 +7839,33 @@ Critère GREEN :
 - adaptateur minimal ;
 - CI globale SUCCESS ;
 - checkpoint GREEN exact avant roster/BattleFormat.
+
+
+Résultat micro-lot C — Capture skill -> SkillDefinition :
+
+- déclaration de lot : commit `2f8a168db913270165d5b5d28c735b94b83ee539`, CI GREEN ;
+- test RED : commit `6b41887921dba2bfb5278546f58995b95141c773` ;
+- CI RED : run `36320689939` — FAILURE attendue ;
+- cause RED : module `skill-to-skill-definition.js` absent ;
+- 258 tests existants passaient, 1 seul échec sur le nouveau test ;
+- implémentation minimale : commit `cb777fd54f2d9ba00ad24062e101ababb067d61c` ;
+- CI fonctionnelle : run `36320724563` — SUCCESS.
+
+Propriétaire créé :
+
+- `src/adapters/input/capture/skill-to-skill-definition.js`.
+
+Garanties :
+
+- `CaptureCombatExportV1` reste la frontière d'entrée ;
+- `SkillDefinition` reste l'unique propriétaire de validation gameplay ;
+- aucune inférence depuis nom, metadata, presentation ou ID legacy ;
+- ordre des `creature.skillIds` conservé ;
+- aucune compétence non assignée injectée ;
+- définitions invalides rejetées par le contrat natif ;
+- aucun changement Combat Core / Runtime / UI / Renderer ;
+- aucun changement de `Zombicide-40k`.
+
+Checkpoint final prévu après CI documentaire :
+
+`checkpoint/lab-capture-combat-skill-adapter-green-2026-09-27`.
