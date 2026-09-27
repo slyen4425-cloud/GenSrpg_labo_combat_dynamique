@@ -269,6 +269,101 @@ export function createDomSkillFxRenderer({
     record.contactFrameId = requestFrame(check);
   }
 
+  function playImpactVisual({
+    visual,
+    skillId,
+    point,
+    durationMs,
+    type = "impact"
+  }) {
+    if (!hasSpriteVisual(visual)) {
+      return Object.freeze({
+        status: "ignored",
+        finished: Promise.resolve({ status: "ignored" })
+      });
+    }
+
+    const node = arena.ownerDocument.createElement("span");
+    const displayScale = Math.min(
+      4,
+      Math.max(0.25, Number(visual.displayScale) || 1)
+    );
+
+    node.className = `skill-fx skill-fx--${type}`;
+    node.dataset.skillFx = type;
+    node.dataset.skillId = skillId ?? "";
+    node.style.left = `${point.x}px`;
+    node.style.top = `${point.y}px`;
+
+    const spriteVisual = applySpriteVisual(
+      node,
+      visual,
+      durationMs,
+      animate
+    );
+    arena.append(node);
+
+    const record = {
+      node,
+      animation: null,
+      frameAnimation: spriteVisual.frameAnimation
+    };
+    active.add(record);
+
+    const isClash = type === "clash-impact";
+    const startScale = isClash ? 0.72 : 0.6;
+    const peakScale = isClash ? 1.2 : 1.08;
+    const endScale = isClash ? 1.48 : 1.28;
+
+    const animation = animate(
+      node,
+      [
+        {
+          transform:
+            `translate(-50%, -50%) scale(${startScale * displayScale})`,
+          opacity: 0.15
+        },
+        {
+          transform:
+            `translate(-50%, -50%) scale(${peakScale * displayScale})`,
+          opacity: 1,
+          offset: 0.5
+        },
+        {
+          transform:
+            `translate(-50%, -50%) scale(${endScale * displayScale})`,
+          opacity: 0
+        }
+      ],
+      {
+        duration: Math.max(1, Number(durationMs) || 420),
+        easing: "ease-out",
+        fill: "forwards"
+      }
+    );
+
+    record.animation = animation;
+
+    const finished = Promise.resolve(animation.finished)
+      .then(() => {
+        cleanup(record);
+        return { status: "finished" };
+      })
+      .catch((error) => {
+        cleanup(record);
+        if (error?.name === "AbortError") {
+          return { status: "cancelled" };
+        }
+        throw error;
+      });
+
+    return Object.freeze({
+      status: "running",
+      animation,
+      finished
+    });
+  }
+
   function play({
     type,
     skillId = null,
@@ -277,6 +372,7 @@ export function createDomSkillFxRenderer({
     fromSlot,
     targetSlot,
     phase = null,
+    progress = null,
     durationMs
   }) {
     if (disposed) {
@@ -285,7 +381,9 @@ export function createDomSkillFxRenderer({
         finished: Promise.resolve({ status: "disposed" })
       });
     }
-    if (!["cast", "projectile", "impact", "miss", "phase"].includes(type)) {
+    if (
+      !["cast", "projectile", "impact", "clash-impact", "miss", "phase"].includes(type)
+    ) {
       return Object.freeze({
         status: "ignored",
         finished: Promise.resolve({ status: "ignored" })
@@ -550,87 +648,44 @@ export function createDomSkillFxRenderer({
       });
     }
 
+    if (type === "clash-impact") {
+      const visual = presentation?.impact ?? null;
+      const from = centerRelativeTo(
+        sourceRect(fromSlot),
+        arenaRect
+      );
+      const to = centerRelativeTo(
+        anchor(targetAnchors, targetSlot, "target").getBoundingClientRect(),
+        arenaRect
+      );
+      const ratio = clampUnit(progress, 0.5);
+      const point = Object.freeze({
+        x: from.x + (to.x - from.x) * ratio,
+        y: from.y + (to.y - from.y) * ratio
+      });
+
+      return playImpactVisual({
+        visual,
+        skillId,
+        point,
+        durationMs,
+        type: "clash-impact"
+      });
+    }
+
     if (type === "impact") {
       const visual = presentation?.impact ?? null;
-      if (!hasSpriteVisual(visual)) {
-        return Object.freeze({
-          status: "ignored",
-          finished: Promise.resolve({ status: "ignored" })
-        });
-      }
-
-      const to = centerRelativeTo(
+      const point = centerRelativeTo(
         anchor(anchors, targetSlot, "live target").getBoundingClientRect(),
         arenaRect
       );
-      const node = arena.ownerDocument.createElement("span");
-      const impactDisplayScale = Math.min(
-        4,
-        Math.max(0.25, Number(visual.displayScale) || 1)
-      );
-      node.className = "skill-fx skill-fx--impact";
-      node.dataset.skillFx = "impact";
-      node.dataset.skillId = skillId ?? "";
-      node.style.left = `${to.x}px`;
-      node.style.top = `${to.y}px`;
-      const spriteVisual = applySpriteVisual(
-        node,
+
+      return playImpactVisual({
         visual,
+        skillId,
+        point,
         durationMs,
-        animate
-      );
-      arena.append(node);
-
-      const record = {
-        node,
-        animation: null,
-        frameAnimation: spriteVisual.frameAnimation
-      };
-      active.add(record);
-
-      const animation = animate(
-        node,
-        [
-          {
-            transform: `translate(-50%, -50%) scale(${0.6 * impactDisplayScale})`,
-            opacity: 0.15
-          },
-          {
-            transform: `translate(-50%, -50%) scale(${1.08 * impactDisplayScale})`,
-            opacity: 1,
-            offset: 0.5
-          },
-          {
-            transform: `translate(-50%, -50%) scale(${1.28 * impactDisplayScale})`,
-            opacity: 0
-          }
-        ],
-        {
-          duration: Math.max(1, Number(durationMs) || 420),
-          easing: "ease-out",
-          fill: "forwards"
-        }
-      );
-
-      record.animation = animation;
-
-      const finished = Promise.resolve(animation.finished)
-        .then(() => {
-          cleanup(record);
-          return { status: "finished" };
-        })
-        .catch((error) => {
-          cleanup(record);
-          if (error?.name === "AbortError") {
-            return { status: "cancelled" };
-          }
-          throw error;
-        });
-
-      return Object.freeze({
-        status: "running",
-        animation,
-        finished
+        type: "impact"
       });
     }
 
