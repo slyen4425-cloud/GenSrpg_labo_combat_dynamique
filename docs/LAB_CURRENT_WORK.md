@@ -8166,3 +8166,55 @@ Critère de fin :
 - CI GREEN ;
 - aucun raccord runtime dans ce lot ;
 - checkpoint GREEN avant adaptateur de présentation Capture.
+
+
+### Résultat SkillPresentationBindingV1
+
+RED :
+
+- `tests/unit/skill-presentation-binding-v1.test.mjs` ajouté avant implémentation ;
+- run `36315100040` — FAILURE attendue ;
+- cause : contrat `skill-presentation-binding-v1.js` absent.
+
+Implémentation :
+
+- `src/contracts/skill-presentation-binding-v1.js` ;
+- `normalizeSkillPresentationBindingV1(input)` ;
+- constantes versionnées pour attachments, layers, playback modes et triggers.
+
+Garanties :
+
+- références uniquement par `assetId` namespacé ;
+- chemins physiques / URL rejetés ;
+- visual slots : `icon/cast/travel/impact/hit/miss/ko` ;
+- phases visuelles nommées libres ;
+- audio slots : `cast/release/travel/impact/hit/miss` ;
+- phases audio nommées libres ;
+- `displayScale` borné `0.25..4` ;
+- offsets / rotation finis ;
+- opacity / volume bornés `0..1` ;
+- layer / attachment / trigger / playback validés ;
+- champs gameplay interdits dans le binding ;
+- aucun label Animation Core imposé aux noms de phases créateur ;
+- résultat immutable.
+
+Aucun changement :
+
+- SkillDefinition ;
+- CaptureExportV1 ;
+- Combat Rules / Runtime ;
+- Presenter / FX ;
+- Demo UI ;
+- catalogue d'assets.
+
+CI GREEN :
+
+- run `36315160212` — SUCCESS ;
+- SHA `8de92df9e33f0c0d48e6ea0476cffb6e1ec2b2fd`.
+
+Prochaine étape après checkpoint GREEN :
+
+- registre/résolveur de presentation bindings ;
+- résoudre `assetId` via une dépendance injectée, jamais un chemin physique ;
+- exposer une vue compatible avec le Presenter/FX sans déplacer les responsabilités ;
+- caractériser explicitement quels réglages V1 sont déjà supportés par le renderer et lesquels restent futurs.
