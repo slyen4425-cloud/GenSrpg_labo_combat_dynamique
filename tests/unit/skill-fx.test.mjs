@@ -256,6 +256,97 @@ test("DOM projectile source follows live motion but target uses stable slot anch
   await Promise.resolve();
 });
 
+test("DOM projectile stops visually when its core meets the live moving target", () => {
+  let frameCallback = null;
+  let cancelled = false;
+  let removed = false;
+
+  const projectileNode = {
+    className: "",
+    dataset: {},
+    style: {},
+    getBoundingClientRect() {
+      return { left: 145, top: 95, width: 10, height: 10 };
+    },
+    remove() {
+      removed = true;
+    }
+  };
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return projectileNode;
+      }
+    },
+    append() {},
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return { left: 40, top: 220, width: 40, height: 40 };
+      }
+    },
+    opponent: {
+      // Live creature has moved across the projectile route.
+      getBoundingClientRect() {
+        return { left: 130, top: 80, width: 50, height: 50 };
+      }
+    }
+  };
+
+  const targetAnchors = {
+    player: anchors.player,
+    opponent: {
+      // Stable slot is still farther away.
+      getBoundingClientRect() {
+        return { left: 300, top: 120, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    targetAnchors,
+    animate() {
+      return {
+        finished: new Promise(() => {}),
+        cancel() {
+          cancelled = true;
+        }
+      };
+    },
+    requestFrame(callback) {
+      frameCallback = callback;
+      return 1;
+    },
+    cancelFrame() {}
+  });
+
+  renderer.play({
+    type: "projectile",
+    element: "fire",
+    fromSlot: "player",
+    targetSlot: "opponent",
+    durationMs: 700
+  });
+
+  assert.equal(renderer.activeCount, 1);
+  assert.equal(typeof frameCallback, "function");
+
+  frameCallback();
+
+  assert.equal(cancelled, true);
+  assert.equal(removed, true);
+  assert.equal(renderer.activeCount, 0);
+});
+
+
 test("DOM miss feedback renders RATÉ on the stable target point and cleans itself", async () => {
   const done = deferred();
   const appended = [];
@@ -292,6 +383,16 @@ test("DOM miss feedback renders RATÉ on the stable target point and cleans itse
       }
     },
     opponent: {
+      // Live target has moved, but miss feedback must stay on stable slot.
+      getBoundingClientRect() {
+        return { left: 130, top: 90, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const targetAnchors = {
+    player: anchors.player,
+    opponent: {
       getBoundingClientRect() {
         return { left: 230, top: 60, width: 40, height: 40 };
       }
@@ -301,6 +402,7 @@ test("DOM miss feedback renders RATÉ on the stable target point and cleans itse
   const renderer = createDomSkillFxRenderer({
     arena,
     anchors,
+    targetAnchors,
     animate(_element, keyframes, options) {
       capturedKeyframes = keyframes;
       capturedOptions = options;
@@ -714,8 +816,19 @@ test("DOM impact adapter uses the bound fireball impact strip on the target anch
       }
     },
     opponent: {
+      // Semantic hit follows the creature's current visual position.
       getBoundingClientRect() {
         return { left: 230, top: 60, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const targetAnchors = {
+    player: anchors.player,
+    opponent: {
+      // Stable slot deliberately differs from live target.
+      getBoundingClientRect() {
+        return { left: 330, top: 120, width: 40, height: 40 };
       }
     }
   };
@@ -723,6 +836,7 @@ test("DOM impact adapter uses the bound fireball impact strip on the target anch
   const renderer = createDomSkillFxRenderer({
     arena,
     anchors,
+    targetAnchors,
     presentationForSkill() {
       return {
         impact: {
