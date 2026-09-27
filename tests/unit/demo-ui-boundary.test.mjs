@@ -427,7 +427,7 @@ test("opponent roster is visible but has no player action controller", async () 
   const html = await readFile("examples/dom-demo/index.html", "utf8");
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
-  assert.match(html, /Réserve adverse/);
+  assert.match(html, /data-roster-reserve="opponent"/);
   assert.match(source, /reserveCard\(member, "opponent"\)/);
   assert.doesNotMatch(html, /Réactions/);
   assert.doesNotMatch(source, /runtime\.react\(/);
