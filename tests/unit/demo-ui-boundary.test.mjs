@@ -48,9 +48,7 @@ test("game page is mobile-first and contains only player-facing combat controls"
   assert.match(html, /data-combat-team-actions/);
   assert.match(html, /data-roster-reserve="player"/);
   assert.match(html, /data-roster-reserve="opponent"/);
-  assert.match(html, /data-combat-move="short"/);
-  assert.match(html, /data-combat-move="medium"/);
-  assert.match(html, /data-combat-move="long"/);
+  assert.doesNotMatch(html, /data-combat-move=/);
 
   assert.doesNotMatch(html, /Réglages du test/);
   assert.doesNotMatch(html, /Outils visuels du laboratoire/);
@@ -62,6 +60,20 @@ test("game page is mobile-first and contains only player-facing combat controls"
   assert.doesNotMatch(html, /data-combat-reactions/);
   assert.doesNotMatch(html, /data-combat-mover/);
 });
+
+test("manual distance controls are removed instead of hidden", async () => {
+  const html = await readFile("examples/dom-demo/index.html", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+
+  assert.doesNotMatch(html, /data-combat-move=/);
+  assert.doesNotMatch(html, /distance-buttons/);
+  assert.doesNotMatch(css, /\.distance-buttons/);
+  assert.doesNotMatch(source, /movementButtons/);
+  assert.doesNotMatch(source, /renderMovement\(/);
+  assert.doesNotMatch(source, /session\.move\(\s*"player"/);
+});
+
 
 test("V8 keeps the complete player HUD inside a fullscreen combat arena", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
@@ -332,17 +344,15 @@ test("KO replacement hides the old bitmap until the new creature asset is ready"
   );
 });
 
-test("concurrent combat keeps skills actor-local while movement and roster commands stay globally gated", async () => {
+test("concurrent combat keeps skills actor-local while roster commands stay globally gated", async () => {
   const source = await readFile("src/ui/combat-test-ui.js", "utf8");
 
   assert.match(
     source,
     /for \(const \{ skill, button \} of skillRefs\.values\(\)\)[\s\S]*button\.disabled =[\s\S]*runtime\.hasActiveActionFor\("player"\)/
   );
-  assert.match(
-    source,
-    /function renderMovement\([\s\S]*runtime\.hasActiveAction \|\|/
-  );
+  assert.doesNotMatch(source, /function renderMovement\(/);
+  assert.doesNotMatch(source, /data-combat-move/);
   assert.match(
     source,
     /itemRef\.button\.disabled =[\s\S]*runtime\.hasActiveAction \|\|/
@@ -379,7 +389,7 @@ test("combat UI delegates gameplay to session runtime roster and presenters", as
   assert.match(source, /createRosterSession/);
   assert.match(source, /createCombatResolutionPresenter/);
   assert.match(source, /createDomDistancePresenter/);
-  assert.match(source, /session\.previewMovement/);
+  assert.doesNotMatch(source, /session\.previewMovement/);
   assert.match(source, /session\.previewSkill/);
   assert.match(source, /runtime\.startSkill/);
   assert.match(source, /runtime\.startCommand/);
@@ -583,7 +593,7 @@ test("combat arena is taller while keeping direct reflex ability controls", asyn
 
   assert.match(css, /min-height:\s*min\(59svh, 35rem\)/);
   assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
-  assert.match(css, /\.distance-buttons\s*\{[\s\S]*repeat\(3/);
+  assert.doesNotMatch(css, /\.distance-buttons/);
   assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
 });
 
