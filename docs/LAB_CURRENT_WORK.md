@@ -6393,3 +6393,15 @@ Vérifications :
 - aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
 
 Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
+
+
+### Publication stable — Ailevent
+
+Publication fast-forward effectuée sur `global-assets` depuis la branche de travail.
+
+- SHA publié : `073087880edda44126d41662929671b553855fc1` ;
+- CI publication : run `36307498688` — SUCCESS ;
+- aucun changement sur `main` ;
+- checkpoint GREEN final prévu : `checkpoint/lab-ailevent-assets-green-2026-09-27`.
+
+Le lot est fonctionnellement clos ; la présente note documentaire constitue la clôture avant création du checkpoint GREEN final.
