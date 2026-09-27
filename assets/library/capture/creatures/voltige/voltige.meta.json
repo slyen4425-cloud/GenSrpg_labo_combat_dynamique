@@ -1,0 +1,100 @@
+{
+  "id": "voltige",
+  "name": "Voltige",
+  "profile": "drake",
+  "views": {
+    "player": "runtime/voltige_player.webp",
+    "opponent": "runtime/voltige_opponent.webp",
+    "icon": "runtime/voltige_icon.webp"
+  },
+  "runtimePreview": {
+    "player": "runtime/voltige_player.webp",
+    "opponent": "runtime/voltige_opponent.webp",
+    "icon": "runtime/voltige_icon.webp"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      320,
+      320
+    ],
+    "icon": [
+      192,
+      192
+    ]
+  },
+  "displayScale": {
+    "player": 1.08,
+    "opponent": 1
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "82%"
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Voltige, créature rapide d'élément Électricité de la bibliothèque Capture. Vue adversaire 3/4 face, vue joueur 3/4 dos et icône conservée dans le même sens que le modèle validé.",
+  "fxAnchors": {
+    "player": {
+      "head": {
+        "x": 0.8,
+        "y": 0.37
+      },
+      "mouth": {
+        "x": 0.87,
+        "y": 0.45
+      },
+      "handLeft": {
+        "x": 0.71,
+        "y": 0.8
+      },
+      "handRight": {
+        "x": 0.91,
+        "y": 0.78
+      },
+      "tail": {
+        "x": 0.22,
+        "y": 0.39
+      }
+    },
+    "opponent": {
+      "head": {
+        "x": 0.2,
+        "y": 0.38
+      },
+      "mouth": {
+        "x": 0.13,
+        "y": 0.46
+      },
+      "handLeft": {
+        "x": 0.09,
+        "y": 0.82
+      },
+      "handRight": {
+        "x": 0.31,
+        "y": 0.81
+      },
+      "tail": {
+        "x": 0.81,
+        "y": 0.38
+      }
+    }
+  },
+  "assetIds": {
+    "player": "pack:capture:creature-voltige-player-01",
+    "opponent": "pack:capture:creature-voltige-opponent-01",
+    "icon": "pack:capture:creature-voltige-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  },
+  "visualRevision": "validated-front-back-icon-2026-09-27"
+}

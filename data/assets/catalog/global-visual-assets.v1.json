@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 84,
+    "assets": 87,
     "icons": 31,
-    "sprites": 38,
+    "sprites": 40,
     "fx": 2,
-    "portraits": 8,
+    "portraits": 9,
     "backgrounds": 5,
-    "creatures": 16
+    "creatures": 18
   },
   "assets": [
     {
@@ -2541,6 +2541,108 @@
       },
       "resource": {
         "file": "capture/creatures/ailevent/runtime/ailevent_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-voltige-icon-01",
+      "label": "Voltige — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "voltige",
+        "electricity",
+        "lightning",
+        "fast",
+        "wolf",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/voltige/runtime/voltige_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-voltige-opponent-01",
+      "label": "Voltige — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "voltige",
+        "electricity",
+        "lightning",
+        "fast",
+        "wolf",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/voltige/runtime/voltige_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-voltige-player-01",
+      "label": "Voltige — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "voltige",
+        "electricity",
+        "lightning",
+        "fast",
+        "wolf",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/voltige/runtime/voltige_player.webp",
         "mime": "image/webp"
       },
       "compatibility": {

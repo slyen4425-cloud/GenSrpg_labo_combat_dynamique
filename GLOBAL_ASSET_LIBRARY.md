@@ -20,7 +20,7 @@ Catalogue :
 
 - icônes Core ;
 - arène forêt ;
-- créatures Capture (Maraileron, Braisombre, Loup volcanique, Golem moussu, Guêpe cybernétique, Chat mystique, Renard magique doré et Ailevent : vues joueur, adversaire et icône) ;
+- créatures Capture (Maraileron, Braisombre, Loup volcanique, Golem moussu, Guêpe cybernétique, Chat mystique, Renard magique doré, Ailevent et Voltige : vues joueur, adversaire et icône) ;
 - FX Boule de feu ;
 - sprites de compétences existants ;
 - casts génériques ;
