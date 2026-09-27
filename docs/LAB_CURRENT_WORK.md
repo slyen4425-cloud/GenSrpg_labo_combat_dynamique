@@ -6603,3 +6603,18 @@ Critère de fin du micro-lot actuel :
 - CI verte ;
 - notes 2v2 mises à jour sans implémentation fonctionnelle du 2v2 ;
 - validation smartphone utilisateur.
+
+
+Résultat du lot distance / conception 2v2 :
+
+- les trois commandes `Courte / Moyenne / Longue` ont été supprimées du HTML ;
+- leurs styles CSS et leur branche UI (`movementButtons`, `renderMovement`, listeners manuels) ont été supprimés, pas masqués ;
+- la Demo UI n'appelle plus `session.previewMovement()` ni `session.move("player", ...)` ;
+- les quatre capacités offensives de la preview acceptent désormais les trois bandes internes, afin qu'aucune capacité ne reste bloquée par une distance que le joueur ne peut plus piloter ;
+- le Core de distance n'a pas été supprimé dans ce micro-lot : il reste testé séparément et sert encore à certains calculs / placements existants, ce qui évite une refonte hors périmètre ;
+- les tests IA dépendant historiquement des portées ont été découplés des données de preview : le comportement de déplacement du Core reste couvert avec une compétence synthétique explicitement restreinte ;
+- l'architecture 2v2 coop a été précisée dans `docs/LAB_ARCHITECTURE.md` : un contrôleur par créature active, barre de capacités uniquement pour l'acteur local, allié en HUD léger, ciblage par clic incluant les alliés si la compétence l'autorise.
+
+CI work : SUCCESS, run `36293995262`, SHA `f071a03ff066d387547e05999f61b8c0e789902f`.
+
+Validation smartphone requise avant checkpoint GREEN du retrait distance.
