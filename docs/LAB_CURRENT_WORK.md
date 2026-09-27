@@ -7923,3 +7923,48 @@ Critère de fin :
 - CI GREEN ;
 - limite multi-actif documentée/protégée ;
 - checkpoint GREEN avant vrai chemin d'intégration export -> combat.
+
+
+### Résultat adaptateur roster + format CaptureExportV1
+
+RED :
+
+- `tests/unit/capture-roster-format-adapter-v1.test.mjs` ajouté avant implémentation ;
+- run `36314641378` — FAILURE attendue ;
+- cause : module `roster-format-adapter-v1.js` absent.
+
+Implémentation :
+
+- `src/adapters/input/capture/roster-format-adapter-v1.js` ;
+- `adaptCaptureBattleFormat(input, options)` ;
+- `adaptCaptureSingleActiveRoster(input)`.
+
+Garanties :
+
+- le BattleFormat utilise uniquement les membres `active:true` ;
+- réserve exclue des acteurs actifs ;
+- actorId = member.id ;
+- teamId = team.id ;
+- controllerId copié sans interprétation ;
+- le résultat passe par `normalizeBattleFormatDefinition()` ;
+- le roster mono-actif conserve actifs + réserves ;
+- le multi-actif est rejeté explicitement par l'adaptateur roster au lieu de créer des slots artificiels ;
+- aucun changement du Roster Session ni du BattleFormat contract.
+
+CI GREEN :
+
+- run `36314679181` — SUCCESS ;
+- SHA `ff824c58413e5be87b1049c70f7f4bdcea4553a2`.
+
+Limite architecturale documentée :
+
+- `BattleFormatDefinition` sait déjà représenter plusieurs acteurs actifs par équipe ;
+- `Roster Session` actuel possède un seul slot actif par équipe ;
+- une future réserve 2v2 complète nécessitera une extension explicite du contrat Roster Session, dans un lot séparé.
+
+Prochaine étape après checkpoint GREEN :
+
+- vrai chemin d'intégration `CaptureExportV1 -> adapters -> Combat Session` ;
+- fixture neutre ;
+- pas d'UI dans ce lot ;
+- aucune injection d'état final.
