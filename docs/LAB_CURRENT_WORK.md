@@ -7475,3 +7475,26 @@ Critère de fin de l'audit :
 - aucun couplage runtime créé ;
 - sources de vérité et frontières documentées ;
 - CI du laboratoire GREEN après documentation.
+
+
+Résultat audit Capture -> adaptateur :
+
+- documentation : `docs/LAB_CAPTURE_ADAPTER_AUDIT.md` ;
+- dépôt principal consulté en lecture seule uniquement ;
+- aucun `index.html`, runtime, asset ou sauvegarde GenSrpG importé dans le laboratoire ;
+- futur propriétaire Capture GenSrpG confirmé : `assets/gensrpg/capture/`, encore `contract-only-not-loaded` ;
+- chaînes legacy 128..144 et seed 162 identifiées comme sources de comportement, jamais comme dépendances ;
+- propriétaire final capacité historique : `captureAbilityTruth144` ;
+- entrée publique historique la plus propre : `captureFix139` ;
+- progression Capture reste Capture-owned et hors Combat Package minimal ;
+- cible retenue : export JSON portable versionné -> adaptateur labo -> contrats Fighter / Skill / Roster / BattleFormat / Presentation ;
+- aucun code historique Capture n'est réutilisable directement ;
+- le mapping des champs legacy exacts restera la responsabilité d'un futur exporter GenSrpG, pas du labo.
+
+CI audit :
+- run `36312645910` — SUCCESS ;
+- SHA audité : `304c2c7f906b2878d502ee52cf909469e901309f`.
+
+Prochaine étape après checkpoint GREEN :
+- micro-lot séparé `CaptureCombatPackageV1` pur ;
+- contrat + tests uniquement avant tout raccord UI.
