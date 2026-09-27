@@ -9207,3 +9207,89 @@ Prochaine étape :
 - présentations créatures transportées séparément du gameplay ;
 - les skillIds exportés proviennent uniquement du loadout actif ;
 - aucun raccord direct au Combat Runtime.
+
+
+## Micro-lot — Capture Editor Exporter V2 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-battle-setup-editor-draft-v1-green-2026-09-27` ;
+- SHA `eaf30f603b6281cb5fb69f80c9a6affdbed7994a`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-editor-exporter-v2-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-exporter-v2-2026-09-27`.
+
+Objectif :
+
+Composer les contrats du futur éditeur humain vers la frontière existante `CaptureCombatExportV1`, sans créer de second runtime ou de second calcul métier.
+
+Entrées :
+
+- `CaptureBattleSetupEditorDraftV1` ;
+- `CaptureCreatureEditorDraftV2[]` ;
+- `CaptureSkillEditorDraftV1[]` ;
+- `CaptureActiveSkillLoadoutV1[]` ;
+- metadata optionnelle.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-editor-exporter-v2.js`.
+
+Stratégie :
+
+1. normaliser les nouveaux drafts ;
+2. convertir le battle setup en battle / teams / actors / rosters ;
+3. appliquer le loadout actif :
+   - `creatures[].skillIds` exportés = uniquement `equippedSkillIds` ;
+   - les capacités liées mais non équipées restent sous metadata éditeur ;
+4. déléguer les créatures/skills au vrai `Capture Editor Exporter V1` ;
+5. transporter les `CreaturePresentationBindingV1` sous `presentation.creatures` ;
+6. repasser la sortie enrichie dans `normalizeCaptureCombatExportV1`.
+
+Règles critiques :
+
+- exactement un loadout par créature exportée ;
+- chaque loadout doit cibler la même creatureId ;
+- une capacité équipée doit appartenir aux skillIds liés de cette créature ;
+- une capacité équipée doit exister dans les skill drafts ;
+- aucune sélection automatique des quatre premières compétences ;
+- aucune mutation du V1 ;
+- présentation créature séparée du combat ;
+- aucun champ asset dans FighterConfig / SkillDefinition.
+
+Interdit :
+
+- aucun CombatSession/Runtime ;
+- aucune UI ;
+- aucun renderer ;
+- aucun storage/network ;
+- aucune dépendance GenSrpG ;
+- aucun `is2v2` ;
+- aucun mapping par nom/élément.
+
+Tests RED :
+
+1. export 1v1 complet ;
+2. skillIds combat = loadout actif seulement ;
+3. linkedSkillIds conservés en metadata ;
+4. présentation créature transportée séparément ;
+5. battle setup -> teams/actors/rosters ;
+6. vrai Adapter Stack consomme la sortie ;
+7. loadout manquant/dupliqué/mismatch refusé ;
+8. skill équipée non liée ou absente refusée ;
+9. même chemin 2v2 ;
+10. sentinelle d'indépendance.
+
+Critère GREEN :
+
+- RED isolé ;
+- réutilisation du V1 prouvée ;
+- vrai chemin Editor V2 -> CaptureCombatExportV1 -> Adapter Stack ;
+- CI globale SUCCESS ;
+- documentation ;
+- checkpoint GREEN avant retour à l'UI humaine.
