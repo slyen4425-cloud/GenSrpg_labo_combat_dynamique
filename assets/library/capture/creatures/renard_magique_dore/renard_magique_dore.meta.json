@@ -1,0 +1,100 @@
+{
+  "id": "renard_magique_dore",
+  "name": "Renard magique doré",
+  "profile": "drake",
+  "views": {
+    "player": "runtime/renard_magique_dore_player.webp",
+    "opponent": "runtime/renard_magique_dore_opponent.webp",
+    "icon": "runtime/renard_magique_dore_icon.webp"
+  },
+  "runtimePreview": {
+    "player": "runtime/renard_magique_dore_player.webp",
+    "opponent": "runtime/renard_magique_dore_opponent.webp",
+    "icon": "runtime/renard_magique_dore_icon.webp"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      320,
+      320
+    ],
+    "icon": [
+      192,
+      192
+    ]
+  },
+  "displayScale": {
+    "player": 1.08,
+    "opponent": 1
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "74%"
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Renard magique doré de la bibliothèque Capture. Vue adversaire 3/4 face, vue joueur 3/4 dos et icône conservée dans le même sens que l'image de référence validée.",
+  "fxAnchors": {
+    "player": {
+      "head": {
+        "x": 0.77,
+        "y": 0.34
+      },
+      "mouth": {
+        "x": 0.84,
+        "y": 0.45
+      },
+      "handLeft": {
+        "x": 0.67,
+        "y": 0.76
+      },
+      "handRight": {
+        "x": 0.88,
+        "y": 0.77
+      },
+      "tail": {
+        "x": 0.22,
+        "y": 0.46
+      }
+    },
+    "opponent": {
+      "head": {
+        "x": 0.28,
+        "y": 0.36
+      },
+      "mouth": {
+        "x": 0.21,
+        "y": 0.47
+      },
+      "handLeft": {
+        "x": 0.36,
+        "y": 0.77
+      },
+      "handRight": {
+        "x": 0.55,
+        "y": 0.76
+      },
+      "tail": {
+        "x": 0.77,
+        "y": 0.49
+      }
+    }
+  },
+  "assetIds": {
+    "player": "pack:capture:creature-renard-magique-dore-player-01",
+    "opponent": "pack:capture:creature-renard-magique-dore-opponent-01",
+    "icon": "pack:capture:creature-renard-magique-dore-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  },
+  "visualRevision": "validated-front-back-icon-2026-09-27"
+}
