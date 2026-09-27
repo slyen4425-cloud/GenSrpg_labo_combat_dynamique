@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 75,
+    "assets": 78,
     "icons": 31,
-    "sprites": 32,
+    "sprites": 34,
     "fx": 2,
-    "portraits": 5,
+    "portraits": 6,
     "backgrounds": 5,
-    "creatures": 10
+    "creatures": 12
   },
   "assets": [
     {
@@ -2235,6 +2235,108 @@
       },
       "resource": {
         "file": "capture/creatures/guepe_cybernetique/runtime/guepe_cybernetique_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-chat-mystique-icon-01",
+      "label": "Chat mystique — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "chat-mystique",
+        "shadow",
+        "purple",
+        "mystic",
+        "feline",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/chat_mystique/runtime/chat_mystique_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-chat-mystique-opponent-01",
+      "label": "Chat mystique — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "chat-mystique",
+        "shadow",
+        "purple",
+        "mystic",
+        "feline",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/chat_mystique/runtime/chat_mystique_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-chat-mystique-player-01",
+      "label": "Chat mystique — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "chat-mystique",
+        "shadow",
+        "purple",
+        "mystic",
+        "feline",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/chat_mystique/runtime/chat_mystique_player.webp",
         "mime": "image/webp"
       },
       "compatibility": {
