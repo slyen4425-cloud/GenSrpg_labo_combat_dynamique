@@ -6460,3 +6460,43 @@ Critère de fin :
 - relecture GitHub des fichiers et du SHA final ;
 - CI verte ;
 - checkpoint GREEN sur le SHA publié.
+
+
+### Résultat sous-lot Voltige
+
+Intégration technique terminée et validée sur la branche de travail.
+
+Commit assets :
+
+`83ca6c20f2b03fada9458cb462a8af2e29465c0a`
+
+Fichiers ajoutés :
+
+- `assets/library/capture/creatures/voltige/runtime/voltige_opponent.webp` — 320×320 WebP transparent, vue adversaire 3/4 face ;
+- `assets/library/capture/creatures/voltige/runtime/voltige_player.webp` — 320×320 WebP transparent, vue joueur 3/4 dos ;
+- `assets/library/capture/creatures/voltige/runtime/voltige_icon.webp` — 192×192 WebP transparent, icône conservée dans le même sens que le modèle validé ;
+- `assets/library/capture/creatures/voltige/voltige.meta.json`.
+
+Blobs binaires GitHub :
+
+- opponent : `cdc2a898681e1dd09882f88f5d87e87b43e8c1dc` ;
+- player : `77a16d275409c58d8e0e457b53e46fd289f086cd` ;
+- icon : `f8152eba2bf68858ef445ded9d420cba60807047`.
+
+Catalogue global mis à jour avec les trois IDs stables :
+
+- `pack:capture:creature-voltige-opponent-01` ;
+- `pack:capture:creature-voltige-player-01` ;
+- `pack:capture:creature-voltige-icon-01`.
+
+Vérifications :
+
+- les trois blobs binaires relus depuis GitHub correspondent aux SHA créés ;
+- dimensions runtime : 320×320 / 320×320 / 192×192 ;
+- metadata JSON relue ;
+- catalogue relu : 87 assets, dont 18 vues de créatures et 9 portraits ;
+- `GLOBAL_ASSET_LIBRARY.md` synchronisé ;
+- CI du commit assets : run `36310444320` — SUCCESS ;
+- aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
+
+Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
