@@ -233,6 +233,7 @@ export function normalizeSkillDefinition(input) {
     preparationMs: nonNegativeNumber(input.preparationMs, "preparationMs"),
     travelMs: nonNegativeNumber(input.travelMs, "travelMs"),
     recoveryMs: nonNegativeNumber(input.recoveryMs, "recoveryMs"),
+    cooldownMs: nonNegativeNumber(input.cooldownMs, "cooldownMs"),
     interruptibleDuringPreparation:
       input.interruptibleDuringPreparation !== false,
     allowedDistances,

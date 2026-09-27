@@ -20,6 +20,28 @@ function finiteNumber(value, field) {
   return number;
 }
 
+function normalizeSkillCooldowns(input, fighterId) {
+  if (input == null) {
+    return Object.freeze({});
+  }
+  if (typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError(`${fighterId}.skillCooldowns must be an object`);
+  }
+
+  const cooldowns = {};
+  for (const [skillIdRaw, readyAtRaw] of Object.entries(input)) {
+    const skillId = String(skillIdRaw ?? "").trim();
+    if (!skillId) {
+      throw new TypeError(`${fighterId}.skillCooldowns key must be non-empty`);
+    }
+    cooldowns[skillId] = finiteNonNegative(
+      readyAtRaw,
+      `${fighterId}.skillCooldowns.${skillId}`
+    );
+  }
+  return Object.freeze(cooldowns);
+}
+
 function normalizeFighter(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new TypeError("fighter must be an object");
@@ -78,7 +100,11 @@ function normalizeFighter(input) {
       input.chargeTimeModifierPct ?? 0,
       `${id}.chargeTimeModifierPct`
     ),
-    chargeTimeEffects: Object.freeze(effects)
+    chargeTimeEffects: Object.freeze(effects),
+    skillCooldowns: normalizeSkillCooldowns(
+      input.skillCooldowns,
+      id
+    )
   });
 }
 
@@ -118,6 +144,60 @@ export function withFighterEnergy(state, fighterId, energy) {
       [fighterId]: Object.freeze({
         ...fighter,
         energy: nextEnergy
+      })
+    })
+  });
+}
+
+export function skillCooldownRemainingMs(
+  state,
+  fighterId,
+  skillId
+) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
+  }
+  const id = String(skillId ?? "").trim();
+  if (!id) {
+    throw new TypeError("skillId must be a non-empty string");
+  }
+  const readyAtMs = fighter.skillCooldowns[id];
+  if (readyAtMs == null) {
+    return 0;
+  }
+  return Math.max(0, readyAtMs - state.elapsedMs);
+}
+
+export function withSkillCooldown(
+  state,
+  fighterId,
+  skillId,
+  cooldownMs
+) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
+  }
+  const id = String(skillId ?? "").trim();
+  if (!id) {
+    throw new TypeError("skillId must be a non-empty string");
+  }
+  const duration = finiteNonNegative(cooldownMs, "cooldownMs");
+  if (duration === 0) {
+    return state;
+  }
+
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: Object.freeze({
+        ...fighter,
+        skillCooldowns: Object.freeze({
+          ...fighter.skillCooldowns,
+          [id]: state.elapsedMs + duration
+        })
       })
     })
   });
@@ -214,6 +294,13 @@ export function advanceCombatTime(state, deltaMs) {
       energyChargeProgressMs: charged.progressMs,
       chargeTimeEffects: Object.freeze(
         fighter.chargeTimeEffects.filter((effect) => effect.expiresAtMs > elapsedMs)
+      ),
+      skillCooldowns: Object.freeze(
+        Object.fromEntries(
+          Object.entries(fighter.skillCooldowns).filter(
+            ([, readyAtMs]) => readyAtMs > elapsedMs
+          )
+        )
       )
     });
   }

@@ -1,8 +1,10 @@
 import { movementEnergyCost, isSkillInRange } from "./distance.js";
 import {
+  skillCooldownRemainingMs,
   withDistance,
   withFighterEnergy,
-  withFighterHp
+  withFighterHp,
+  withSkillCooldown
 } from "./combat-state.js";
 import { effectivePreparationMs } from "./combat-timing.js";
 
@@ -168,6 +170,29 @@ export function resolveSkillStart({
     });
   }
 
+  const remainingCooldownMs = skillCooldownRemainingMs(
+    state,
+    actorId,
+    skill.id
+  );
+  if (remainingCooldownMs > 0) {
+    return Object.freeze({
+      ok: false,
+      outcome: "cooldown",
+      skillId: skill.id,
+      remainingCooldownMs,
+      state,
+      events: Object.freeze([
+        event("skill-rejected", 0, {
+          actorId,
+          skillId: skill.id,
+          reason: "cooldown",
+          remainingCooldownMs
+        })
+      ])
+    });
+  }
+
   if (actor.energy < skill.energyCost) {
     return Object.freeze({
       ok: false,
@@ -198,10 +223,22 @@ export function resolveSkillStart({
     interruptibleDuringPreparation: skill.interruptibleDuringPreparation
   });
 
+  const spent = spendEnergy(
+    state,
+    actorId,
+    skill.energyCost
+  );
+  const committed = withSkillCooldown(
+    spent,
+    actorId,
+    skill.id,
+    skill.cooldownMs
+  );
+
   return Object.freeze({
     ok: true,
     outcome: "started",
-    state: spendEnergy(state, actorId, skill.energyCost),
+    state: committed,
     action,
     events: Object.freeze([
       event("skill-start", 0, {
@@ -255,6 +292,22 @@ export function resolveReaction({
     });
   }
 
+  const remainingCooldownMs = skillCooldownRemainingMs(
+    state,
+    action.targetId,
+    reactionSkill.id
+  );
+  if (remainingCooldownMs > 0) {
+    return Object.freeze({
+      ok: false,
+      outcome: "cooldown",
+      skillId: reactionSkill.id,
+      remainingCooldownMs,
+      state,
+      reaction: null
+    });
+  }
+
   const preparationMs = preparationFor(state, action.targetId, reactionSkill);
   const readyAtMs = elapsed + preparationMs;
 
@@ -277,10 +330,22 @@ export function resolveReaction({
     readyAtMs
   });
 
+  const spent = spendEnergy(
+    state,
+    action.targetId,
+    reactionSkill.energyCost
+  );
+  const committed = withSkillCooldown(
+    spent,
+    action.targetId,
+    reactionSkill.id,
+    reactionSkill.cooldownMs
+  );
+
   return Object.freeze({
     ok: true,
     outcome,
-    state: spendEnergy(state, action.targetId, reactionSkill.energyCost),
+    state: committed,
     reaction
   });
 }

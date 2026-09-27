@@ -14,7 +14,8 @@ function cloneFighterForSlot(config, slotId, snapshot = null) {
     initialEnergy:
       source.energy ?? source.initialEnergy ?? config.initialEnergy ?? 0,
     energyChargeProgressMs: source.energyChargeProgressMs ?? 0,
-    chargeTimeEffects: source.chargeTimeEffects ?? []
+    chargeTimeEffects: source.chargeTimeEffects ?? [],
+    skillCooldowns: source.skillCooldowns ?? {}
   };
 }
 
@@ -29,7 +30,8 @@ function snapshotFighter(fighter) {
     energyChargeProgressMs: fighter.energyChargeProgressMs,
     movementEnergyPerStep: fighter.movementEnergyPerStep,
     chargeTimeModifierPct: fighter.chargeTimeModifierPct,
-    chargeTimeEffects: fighter.chargeTimeEffects
+    chargeTimeEffects: fighter.chargeTimeEffects,
+    skillCooldowns: fighter.skillCooldowns
   });
 }
 
