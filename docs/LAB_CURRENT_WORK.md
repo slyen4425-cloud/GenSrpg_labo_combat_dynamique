@@ -9085,3 +9085,83 @@ Prochaine étape :
 - format et rosters décrits par données ;
 - aucune branche `is2v2` ;
 - sortie future vers BattleFormatDefinition / RosterDefinition via composeur dédié.
+
+
+## Micro-lot — CaptureBattleSetupEditorDraftV1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-active-skill-loadout-v1-green-2026-09-27` ;
+- SHA `87dcf12213d7b1f6f62216ce1a4a249be289f358`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-battle-setup-editor-draft-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-battle-setup-editor-draft-v1-2026-09-27`.
+
+Objectif :
+
+Décrire le futur onglet « Combat / équipes » avec un brouillon data-driven capable de représenter 1v1, 2v2 et futur NxN sans switch global de mode.
+
+Propriétaire :
+
+- `src/contracts/capture-battle-setup-editor-draft-v1.js`.
+
+Modèle :
+
+- id de bataille ;
+- acteur local ;
+- équipes ;
+- chaque équipe contient un ou plusieurs slots engagés ;
+- chaque slot porte actorId / creatureId / displayName / controllerId ;
+- roster optionnel par slot avec membre actif et réserve.
+
+Décision importante :
+
+- aucun champ `is2v2` ;
+- aucun enum de format obligatoire ;
+- le format est la conséquence du nombre de slots déclarés par équipe ;
+- l'énergie reste propriété des créatures, pas de ce contrat.
+
+Validation structurelle :
+
+- au moins deux équipes ;
+- team IDs uniques ;
+- au moins un slot par équipe ;
+- actor IDs uniques globalement ;
+- localActorId doit référencer un slot ;
+- roster members uniques ;
+- activeMemberId doit référencer un membre ;
+- si un roster actif existe, sa créature doit correspondre à la créature engagée du slot.
+
+Interdit :
+
+- aucune règle d'énergie dupliquée ;
+- aucune SkillDefinition ;
+- aucun CombatSession/Runtime ;
+- aucune UI/renderer/storage ;
+- aucune dépendance GenSrpG ;
+- aucune déduction depuis un nom ou un nombre de slots.
+
+Tests RED :
+
+1. brouillon 1v1 valide ;
+2. même contrat pour 2v2 ;
+3. équipes/acteurs uniques ;
+4. local actor référentiel ;
+5. roster/réserve cohérents ;
+6. mismatch actif/slot refusé ;
+7. champ de mode artificiel refusé ;
+8. profonde immutabilité ;
+9. sentinelle sans is2v2/runtime/UI/GenSrpG.
+
+Critère GREEN :
+
+- RED isolé ;
+- contrat minimal ;
+- CI globale SUCCESS ;
+- documentation ;
+- checkpoint GREEN avant composeur/exporter V2.
