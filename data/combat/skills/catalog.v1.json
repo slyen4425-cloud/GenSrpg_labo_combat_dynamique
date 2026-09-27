@@ -1,0 +1,14 @@
+{
+  "schema": "combat-skill-library-v1",
+  "entries": [
+    { "id": "aerial-dive", "source": "aerial-dive.skill.json" },
+    { "id": "claw", "source": "claw.skill.json" },
+    { "id": "contact-counter", "source": "contact-counter.skill.json" },
+    { "id": "dodge", "source": "dodge.skill.json" },
+    { "id": "fire-immunity", "source": "fire-immunity.skill.json" },
+    { "id": "fireball", "source": "fireball.skill.json" },
+    { "id": "mirror-shield", "source": "mirror-shield.skill.json" },
+    { "id": "stun-bolt", "source": "stun-bolt.skill.json" },
+    { "id": "teleport-strike", "source": "teleport-strike.skill.json" }
+  ]
+}
