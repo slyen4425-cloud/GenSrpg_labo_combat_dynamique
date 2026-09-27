@@ -6286,3 +6286,15 @@ Vérifications :
 - aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
 
 Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
+
+
+### Publication stable — Renard magique doré
+
+Publication fast-forward effectuée sur `global-assets` depuis la branche de travail.
+
+- SHA publié : `57b3dc30a848319f289d7056c8ca977d990b0593` ;
+- CI publication : run `36302953172` — SUCCESS ;
+- aucun changement sur `main` ;
+- checkpoint GREEN final prévu : `checkpoint/lab-renard-magique-dore-assets-green-2026-09-27`.
+
+Le lot est fonctionnellement clos ; la présente note documentaire constitue la clôture de reprise avant création du checkpoint GREEN final.
