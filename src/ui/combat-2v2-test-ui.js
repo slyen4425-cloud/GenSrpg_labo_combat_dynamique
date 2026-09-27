@@ -88,9 +88,12 @@ export async function mountCoop2v2Test({
     typeof visuals.setCreatureFor !== "function" ||
     typeof visuals.playEventFor !== "function" ||
     typeof visuals.playApproachFor !== "function" ||
-    typeof visuals.getFxAnchorFor !== "function"
+    typeof visuals.getFxAnchorFor !== "function" ||
+    typeof visuals.getCreatureDescriptor !== "function"
   ) {
-    throw new TypeError("visuals must provide generic actor slot controls");
+    throw new TypeError(
+      "visuals must provide generic actor slot controls and creature descriptors"
+    );
   }
 
   const [
@@ -153,6 +156,18 @@ export async function mountCoop2v2Test({
     `[data-combat-energy-value="${format.localActorId}"]`
   );
 
+  const allyActorId =
+    format.teams.players.find(
+      (actorId) => actorId !== format.localActorId
+    ) ?? null;
+  if (!allyActorId) {
+    throw new Error("2v2 format requires one ally actor");
+  }
+  const allyIcon = requiredElement(
+    root,
+    "[data-ally-creature-icon]"
+  );
+
   const fighterContainers = Object.fromEntries(
     format.actors.map((actor) => [
       actor.actorId,
@@ -201,6 +216,7 @@ export async function mountCoop2v2Test({
 
   const cleanups = [];
   const skillRefs = new Map();
+  const targetPulseTimers = new Map();
   let disposed = false;
   let selectedTargetId = format.teams.enemies[0];
   let runtime = null;
@@ -213,6 +229,12 @@ export async function mountCoop2v2Test({
       { displayName: actor.displayName }
     );
   }
+
+  const allyDescriptor = visuals.getCreatureDescriptor(
+    format.actor(allyActorId).creatureId
+  );
+  allyIcon.src = allyDescriptor.iconUrl;
+  allyIcon.dataset.assetId = allyDescriptor.id;
 
   const combatAudio = createDomCombatAudio({
     resolveAudioAsset(assetId) {
@@ -281,6 +303,35 @@ export async function mountCoop2v2Test({
         `[data-target-actor="${actorId}"]`
       )
     ];
+  }
+
+  function clearTargetPulses() {
+    for (const [actorId, timerId] of targetPulseTimers) {
+      globalThis.clearTimeout(timerId);
+      fighterContainers[actorId]?.removeAttribute(
+        "data-target-pulse"
+      );
+    }
+    targetPulseTimers.clear();
+  }
+
+  function pulseTarget(actorId) {
+    const fighter = fighterContainers[actorId];
+    if (!fighter) {
+      return;
+    }
+
+    clearTargetPulses();
+    fighter.dataset.targetPulse = "true";
+
+    const timerId = globalThis.setTimeout(() => {
+      targetPulseTimers.delete(actorId);
+      if (!disposed) {
+        fighter.removeAttribute("data-target-pulse");
+      }
+    }, 680);
+
+    targetPulseTimers.set(actorId, timerId);
   }
 
   function renderTargetSelection() {
@@ -376,6 +427,7 @@ export async function mountCoop2v2Test({
       relation === "enemy" ? "accent" : "info"
     );
     renderTargetSelection();
+    pulseTarget(actorId);
     renderAvailability();
   }
 
@@ -646,6 +698,7 @@ export async function mountCoop2v2Test({
         return;
       }
       disposed = true;
+      clearTargetPulses();
       for (const cleanup of cleanups.splice(0)) {
         cleanup();
       }
