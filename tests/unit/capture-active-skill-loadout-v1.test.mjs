@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 import {
   CAPTURE_ACTIVE_SKILL_LOADOUT_SCHEMA,
+  captureActiveSkillIdsV1,
   normalizeCaptureActiveSkillLoadoutV1
 } from "../../src/contracts/capture-active-skill-loadout-v1.js";
 
@@ -32,14 +33,17 @@ test("CaptureActiveSkillLoadoutV1 normalizes exactly four explicit slots", () =>
     value.slots.map((slot) => slot.id),
     ["slot-1", "slot-2", "slot-3", "slot-4"]
   );
+  const equippedSkillIds =
+    captureActiveSkillIdsV1(value);
   assert.deepEqual(
-    value.equippedSkillIds,
+    equippedSkillIds,
     ["fireball", "claw", "aerial-dive"]
   );
+  assert.equal("equippedSkillIds" in value, false);
   assert.equal(Object.isFrozen(value), true);
   assert.equal(Object.isFrozen(value.slots), true);
   assert.equal(Object.isFrozen(value.slots[0]), true);
-  assert.equal(Object.isFrozen(value.equippedSkillIds), true);
+  assert.equal(Object.isFrozen(equippedSkillIds), true);
 });
 
 test("CaptureActiveSkillLoadoutV1 allows empty slots", () => {
@@ -53,7 +57,10 @@ test("CaptureActiveSkillLoadoutV1 allows empty slots", () => {
 
   const value = normalizeCaptureActiveSkillLoadoutV1(input);
 
-  assert.deepEqual(value.equippedSkillIds, []);
+  assert.deepEqual(
+    captureActiveSkillIdsV1(value),
+    []
+  );
 });
 
 test("CaptureActiveSkillLoadoutV1 refuses fewer or more than four slots instead of trimming", () => {
@@ -108,7 +115,7 @@ test("CaptureActiveSkillLoadoutV1 refuses duplicate equipped skills", () => {
   );
 });
 
-test("CaptureActiveSkillLoadoutV1 derives equippedSkillIds and rejects a second source", () => {
+test("CaptureActiveSkillLoadoutV1 derives equipped skill IDs only through the pure helper and rejects a second source", () => {
   const input = validInput();
   input.equippedSkillIds = ["fireball"];
 
