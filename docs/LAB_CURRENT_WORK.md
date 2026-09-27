@@ -7726,3 +7726,29 @@ Critère GREEN :
 - tests ciblés + CI globale SUCCESS ;
 - aucun autre domaine modifié ;
 - checkpoint GREEN avant lot compétence.
+
+
+Résultat micro-lot B — Capture creature -> FighterConfig V1 :
+
+- test RED : commit `d2027d19adff1d9dd4f99c1af758679f3e6ee9a7`, CI `36316208928` — FAILURE attendue car adaptateur absent ;
+- implémentation : `src/adapters/input/capture/capture-creature-to-fighter-config.js` ;
+- commit : `c32006916bde0df3f8af4be99ef6bd3bab6ae736` ;
+- CI : run `36316241433` — SUCCESS.
+
+Garanties :
+
+- seuls les champs `combat` explicitement exportés sont traduits ;
+- `maxHp` et `maxEnergy` sont requis ;
+- valeurs numériques vérifiées selon les contraintes du Combat State ;
+- `initialHp` / `initialEnergy` ne peuvent dépasser les maxima ;
+- `chargeTimeModifierPct` reste signé et fini ;
+- les champs absents restent absents afin de laisser les defaults au propriétaire cible ;
+- aucune lecture de niveau, speed, agility, defense, force ou autres métadonnées comme gameplay ;
+- aucun asset / skill / progression dans cet adaptateur ;
+- résultat testé par le vrai `createCombatState`.
+
+Prochaine action après checkpoint GREEN exact :
+
+- micro-lot C : skill exportée -> `SkillDefinition` ;
+- aucune inférence depuis le nom ou l'ID ;
+- validation par le vrai `normalizeSkillDefinition`.
