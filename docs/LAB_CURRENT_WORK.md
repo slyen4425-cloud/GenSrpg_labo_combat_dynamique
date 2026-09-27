@@ -6685,3 +6685,66 @@ Tests ajoutés / renforcés :
 - CI work : SUCCESS, run `36294688977`, SHA `de3dc86a67f8e3dae5dccf6875b74612bd549698`.
 
 Validation smartphone requise sur le cas Griffe croisant Boule de feu avant checkpoint GREEN.
+
+
+### Chantier dédié — preview coop 2v2 lisible — 2026-09-27
+
+Validation utilisateur préalable : correction projectile / cible mobile validée.
+
+- checkpoint GREEN précédent : `checkpoint/lab-projectile-live-contact-green-2026-09-27` ;
+- base du chantier : `bef336ca64996e2fbe7c520bb47610589c1f0652` ;
+- checkpoint de départ : `checkpoint/lab-start-coop-2v2-preview-2026-09-27` ;
+- branche de travail : `work/lab-coop-2v2-preview-2026-09-27` ;
+- branche preview : `preview/lab-coop-2v2-preview-2026-09-27`.
+
+Objectif : produire une première simulation 2v2 réelle et testable sans transformer tous les combats du laboratoire en 2v2.
+
+Format demandé :
+
+- 2 créatures actives par camp ;
+- le joueur local contrôle une seule créature et ne voit qu'une seule barre de capacités ;
+- l'allié a son propre contrôleur distinct, ici une IA de test ;
+- les deux adversaires ont chacun leur propre contrôleur IA ;
+- chaque joueur voit l'état de son allié et des adversaires (nom / PV / action en cours) ;
+- une créature visible peut être sélectionnée par clic comme cible ;
+- les compétences actuelles sont offensives et ne doivent autoriser que des cibles ennemies ;
+- le système de cible doit déjà distinguer `enemy / ally / self` afin de préparer soins / boucliers / buffs futurs.
+
+Périmètre autorisé :
+
+- nouveau contrat `BattleFormatDefinition` data-driven ;
+- nouveau contrôleur IA générique d'acteur, sans dépendance DOM ;
+- généralisation du contrôleur visuel pour accepter N slots déclarés dans le DOM ;
+- passage explicite de `targetSlot` au presenter pour les attaques d'approche ;
+- nouvelle UI de démonstration 2v2 dédiée, séparée de la page 1v1 ;
+- nouvelle page exemple `coop-2v2.html` ;
+- styles 2v2 ciblés et tests associés ;
+- données de format de combat de test.
+
+Domaines protégés :
+
+- aucune duplication de Combat Rules / Combat Runtime / Animation Core / FX Core ;
+- aucun booléen global `is2v2` dans le moteur ;
+- la page 1v1 existante reste fonctionnelle et son flux n'est pas remplacé ;
+- pas de seconde barre de capacités pour l'allié ;
+- pas de faux partage d'autorité : l'allié IA possède un `controllerId` différent du joueur local ;
+- les règles de cible ne sont pas décidées par le CSS ;
+- `main` et `global-assets` restent intouchées.
+
+Risques :
+
+- le visual controller actuel suppose historiquement deux slots et doit être généralisé sans régression 1v1 ;
+- le presenter d'approche doit recevoir la vraie cible quand plusieurs adversaires existent ;
+- le runtime sait déjà gérer plusieurs `actorId`, mais le nouveau test doit démontrer quatre acteurs actifs sans introduire de source de vérité parallèle.
+
+Critères de fin :
+
+- 4 créatures visibles simultanément ;
+- 1 seule barre de capacités pour le joueur local ;
+- allié IA autonome ;
+- 2 adversaires IA autonomes ;
+- clic sur une créature = cible sélectionnée avec feedback lisible ;
+- capacité offensive refusée sur allié / soi et autorisée sur ennemi vivant ;
+- nom / PV / action des quatre acteurs lisibles sur smartphone ;
+- CI verte ;
+- validation smartphone utilisateur avant checkpoint GREEN.
