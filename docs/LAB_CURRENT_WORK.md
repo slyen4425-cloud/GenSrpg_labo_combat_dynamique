@@ -9601,3 +9601,152 @@ Prochaine étape :
 - cooldown réel éditable ;
 - limites audio affichées explicitement si aucun catalogue audio autoritaire n'est disponible ;
 - validation smartphone obligatoire avant GREEN final.
+
+
+## Micro-lot — Capture Editor Humain V2 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-generic-creature-profiles-v1-green-2026-09-27` ;
+- SHA `bc58f0b3d506df9e78779fe6a524838b6c03dcd0`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-human-v2-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-human-v2-2026-09-27`.
+
+Objectif :
+
+Remplacer la preview technique JSON par un éditeur de jeu compréhensible, sans changer les propriétaires métier.
+
+Nouvelle page autonome :
+
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.css`.
+
+L'ancienne UI V1 reste historique et n'est pas modifiée.
+
+### Navigation
+
+Trois onglets :
+
+1. Créature ;
+2. Combat ;
+3. Capacités.
+
+### Créature
+
+Contrôles :
+
+- identité / description ;
+- face / dos / icône depuis Asset Catalog ;
+- morphologie : Bipède / Quadrupède / Serpentine / Drake-ailé ;
+- placement tactile des sockets face/dos ;
+- éléments / résistances ;
+- capture / évolution ;
+- quatre slots actifs de capacité ;
+- sons créature uniquement si un catalogue audio réel est fourni.
+
+### Combat
+
+Contrôles :
+
+- PV ;
+- énergie max / initiale ;
+- récupération périodique : quantité + intervalle ;
+- coût déplacement ;
+- modificateur de préparation ;
+- nombre de créatures actives par camp déduit en Battle Setup Draft, sans `is2v2`.
+
+Aucun second propriétaire global d'énergie.
+
+### Capacités
+
+Aucun JSON.
+
+Contrôles :
+
+- nom / catégorie / forme / élément ;
+- dégâts / soin / stun ;
+- énergie ;
+- approche ;
+- préparation ;
+- trajet ;
+- récupération ;
+- cooldown réel ;
+- distances ;
+- cibles ;
+- icône ;
+- FX cast / projectile-travel / impact ;
+- sons cast / impact seulement si catalogue audio réel disponible.
+
+### Assets
+
+La preview charge le vrai catalogue visuel global depuis la branche `global-assets`.
+
+Le contrat reçoit uniquement les `assetId`.
+
+Les URLs servent uniquement à la preview visuelle de l'éditeur.
+
+### Limite audio explicite
+
+Le catalogue global actuel est visuel.
+
+Si aucun catalogue audio autoritaire n'est fourni :
+
+- les menus audio sont visibles mais désactivés ;
+- message explicite « bibliothèque audio non connectée » ;
+- aucun faux assetId audio inventé.
+
+### Export
+
+Le bouton principal :
+
+`Valider la configuration`
+
+produit en mémoire :
+
+`CreatureDraftV2 + SkillDrafts + ActiveSkillLoadout + BattleSetup`
+-> `Capture Editor Exporter V2`
+-> `CaptureCombatExportV1`.
+
+Le JSON n'est pas affiché comme interface normale.
+
+Un résumé humain affiche seulement :
+
+- configuration valide / erreur ;
+- nombre de capacités liées / équipées ;
+- nombre d'acteurs ;
+- profil ;
+- énergie / cooldown de la capacité sélectionnée.
+
+### Tests RED
+
+1. module/page V2 absents ;
+2. helpers humains -> vrais contrats ;
+3. aucun champ JSON de capacité/presentation ;
+4. quatre slots explicites ;
+5. cooldown UI -> SkillDefinition réel ;
+6. socket touch/click -> coordonnées 0..1 ;
+7. même builder Battle Setup pour 1/2/3/4 acteurs par camp ;
+8. catalogue visuel transmis par assetId ;
+9. audio vide = aucun asset fictif ;
+10. exporter V2 réellement appelé ;
+11. aucune importation Combat Runtime/Renderer/GenSrpG/storage ;
+12. dispose des listeners.
+
+Critère technique GREEN :
+
+- RED isolé ;
+- CI globale SUCCESS ;
+- preview dédiée.
+
+Critère GREEN final :
+
+- validation smartphone par Sylvain ;
+- checkpoint final seulement après retour utilisateur.
