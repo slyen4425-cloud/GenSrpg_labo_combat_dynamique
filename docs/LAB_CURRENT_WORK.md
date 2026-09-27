@@ -6405,3 +6405,58 @@ Publication fast-forward effectuée sur `global-assets` depuis la branche de tra
 - checkpoint GREEN final prévu : `checkpoint/lab-ailevent-assets-green-2026-09-27`.
 
 Le lot est fonctionnellement clos ; la présente note documentaire constitue la clôture avant création du checkpoint GREEN final.
+
+
+## Sous-lot — Voltige — 2026-09-27
+
+Objectif :
+
+- intégrer la créature Voltige validée dans la bibliothèque Capture ;
+- conserver trois ressources séparées : vue adversaire 3/4 face, vue joueur 3/4 dos et icône gardée dans le même sens que le modèle validé ;
+- respecter les conventions runtime légères de la bibliothèque ;
+- enregistrer les trois ressources dans le catalogue global par `assetId` stable.
+
+Branche de travail :
+
+`work/voltige-assets-2026-09-27`
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-voltige-assets-2026-09-27`
+
+SHA de base :
+
+`910120bbed07f02446bcddf1f251403482706562`
+
+Fichiers autorisés :
+
+- `assets/library/capture/creatures/voltige/**` ;
+- `data/assets/catalog/global-visual-assets.v1.json` ;
+- `GLOBAL_ASSET_LIBRARY.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+Protégé / hors périmètre :
+
+- `main` ;
+- Combat Rules ;
+- Animation Core ;
+- renderer / Demo UI ;
+- GenSrpG / `Zombicide-40k` ;
+- règles gameplay.
+
+Tests prévus :
+
+- vérifier dimensions et transparence des trois WebP ;
+- vérifier les SHA des blobs GitHub créés ;
+- relire metadata et catalogue ;
+- vérifier la CI de la branche de travail ;
+- publier sur `global-assets` uniquement en fast-forward après validation technique.
+
+Critère de fin :
+
+- trois WebP transparents présents et lisibles ;
+- orientation cohérente joueur / adversaire / icône ;
+- metadata et catalogue cohérents ;
+- relecture GitHub des fichiers et du SHA final ;
+- CI verte ;
+- checkpoint GREEN sur le SHA publié.
