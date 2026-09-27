@@ -773,28 +773,28 @@ button.reserve-card {
 
 .arena--coop-2v2 .fighter--player {
   top: 70%;
-  left: 30%;
+  left: 26%;
   width: min(31%, 18rem);
 }
 
 .arena--coop-2v2 .fighter--ally {
   z-index: 3;
   top: 62%;
-  left: 53%;
+  left: 58%;
   width: min(29%, 17rem);
 }
 
 .arena--coop-2v2 .fighter--opponent {
   top: 31%;
-  left: 68%;
-  width: min(27%, 16rem);
+  left: 74%;
+  width: min(31%, 18rem);
 }
 
 .arena--coop-2v2 .fighter--opponent-b {
   z-index: 3;
   top: 35%;
-  left: 46%;
-  width: min(26%, 15.5rem);
+  left: 42%;
+  width: min(30%, 17.5rem);
 }
 
 .arena--coop-2v2 .fighter[data-target-selected="true"] .fighter__motion {
@@ -947,26 +947,26 @@ button.reserve-card {
 @media (max-width: 680px) {
   .arena--coop-2v2 .fighter--player {
     top: 71%;
-    left: 32%;
+    left: 27%;
     width: 31%;
   }
 
   .arena--coop-2v2 .fighter--ally {
     top: 60%;
-    left: 53%;
+    left: 59%;
     width: 28%;
   }
 
   .arena--coop-2v2 .fighter--opponent {
     top: 31%;
-    left: 67%;
-    width: 27%;
+    left: 73%;
+    width: 31%;
   }
 
   .arena--coop-2v2 .fighter--opponent-b {
     top: 37%;
-    left: 46%;
-    width: 25%;
+    left: 41%;
+    width: 30%;
   }
 
   .squad-card {
