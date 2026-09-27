@@ -50,6 +50,116 @@ async function fetchJson(url, fetchImpl) {
   return response.json();
 }
 
+async function loadDefaultCombatModel({ fetchImpl, formatUrl }) {
+  const [
+    rawFormat,
+    maraileron,
+    braisombre,
+    loupVolcanique,
+    golemMoussu,
+    ...rawSkills
+  ] = await Promise.all([
+    fetchJson(formatUrl, fetchImpl),
+    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
+    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
+    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
+    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
+    ...DATA_URLS.skills.map((url) => fetchJson(url, fetchImpl))
+  ]);
+
+  const battleFormat = normalizeBattleFormatDefinition(rawFormat);
+  const normalizedSkills = Object.freeze(
+    rawSkills.map((skill) => normalizeSkillDefinition(skill))
+  );
+  const skills = Object.freeze(
+    Object.fromEntries(
+      normalizedSkills.map((skill) => [skill.id, skill])
+    )
+  );
+  const fighterConfigs = Object.freeze({
+    maraileron,
+    braisombre,
+    loup_volcanique: loupVolcanique,
+    golem_moussu: golemMoussu
+  });
+  const fighters = Object.freeze(
+    battleFormat.actors.map((actor) => {
+      const config = fighterConfigs[actor.fighterConfigId];
+      if (!config) {
+        throw new RangeError(
+          `Unknown fighter config: ${actor.fighterConfigId}`
+        );
+      }
+      return Object.freeze({
+        ...config,
+        id: actor.actorId
+      });
+    })
+  );
+
+  const skillList = (...ids) =>
+    Object.freeze(ids.map((id) => skills[id]));
+
+  const skillsByActor = Object.freeze({
+    player: skillList(
+      "fireball",
+      "claw",
+      "aerial-dive",
+      "teleport-strike"
+    ),
+    ally: skillList(
+      "claw",
+      "fireball",
+      "aerial-dive",
+      "teleport-strike"
+    ),
+    opponent: skillList(
+      "fireball",
+      "claw",
+      "aerial-dive",
+      "teleport-strike"
+    ),
+    "opponent-b": skillList(
+      "aerial-dive",
+      "fireball",
+      "claw",
+      "teleport-strike"
+    )
+  });
+
+  return Object.freeze({
+    battleFormat,
+    fighters,
+    skills,
+    skillsByActor
+  });
+}
+
+function requireCombatModel(model) {
+  if (!model || typeof model !== "object") {
+    throw new TypeError("combatModel must be an object");
+  }
+  if (
+    !model.battleFormat ||
+    typeof model.battleFormat.actor !== "function" ||
+    typeof model.battleFormat.teamOf !== "function"
+  ) {
+    throw new TypeError(
+      "combatModel.battleFormat must be a normalized BattleFormatDefinition"
+    );
+  }
+  if (!Array.isArray(model.fighters)) {
+    throw new TypeError("combatModel.fighters must be an array");
+  }
+  if (!model.skills || typeof model.skills !== "object") {
+    throw new TypeError("combatModel.skills must be an object");
+  }
+  if (!model.skillsByActor || typeof model.skillsByActor !== "object") {
+    throw new TypeError("combatModel.skillsByActor must be an object");
+  }
+  return model;
+}
+
 function requiredElement(root, selector) {
   const element = root.querySelector(selector);
   if (!element) {
@@ -78,7 +188,8 @@ export async function mountCoop2v2Test({
   visuals,
   presentationAssets = null,
   fetchImpl = fetch,
-  formatUrl = DATA_URLS.format
+  formatUrl = DATA_URLS.format,
+  combatModel = null
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -96,48 +207,22 @@ export async function mountCoop2v2Test({
     );
   }
 
-  const [
-    rawFormat,
-    maraileron,
-    braisombre,
-    loupVolcanique,
-    golemMoussu,
-    ...rawSkills
-  ] = await Promise.all([
-    fetchJson(formatUrl, fetchImpl),
-    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
-    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
-    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
-    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
-    ...DATA_URLS.skills.map((url) => fetchJson(url, fetchImpl))
-  ]);
-
-  const format = normalizeBattleFormatDefinition(rawFormat);
-  const skills = Object.freeze(
-    rawSkills.map((skill) => normalizeSkillDefinition(skill))
+  const model = requireCombatModel(
+    combatModel ??
+      await loadDefaultCombatModel({ fetchImpl, formatUrl })
   );
-  const skillsById = Object.freeze(
-    Object.fromEntries(skills.map((skill) => [skill.id, skill]))
-  );
-  const fighterConfigs = Object.freeze({
-    maraileron,
-    braisombre,
-    loup_volcanique: loupVolcanique,
-    golem_moussu: golemMoussu
-  });
+  const format = model.battleFormat;
+  const fighters = model.fighters;
+  const skillsById = model.skills;
+  const skillsByActor = model.skillsByActor;
+  const localSkills =
+    skillsByActor[format.localActorId] ?? Object.freeze([]);
 
-  const fighters = format.actors.map((actor) => {
-    const config = fighterConfigs[actor.fighterConfigId];
-    if (!config) {
-      throw new RangeError(
-        `Unknown fighter config: ${actor.fighterConfigId}`
-      );
-    }
-    return {
-      ...config,
-      id: actor.actorId
-    };
-  });
+  if (localSkills.length === 0) {
+    throw new RangeError(
+      `No skills configured for local actor: ${format.localActorId}`
+    );
+  }
 
   const session = createCombatSession({
     distance: "medium",
@@ -535,7 +620,8 @@ export async function mountCoop2v2Test({
     return button;
   }
 
-  for (const skill of skills) {
+  skillContainer.replaceChildren();
+  for (const skill of localSkills) {
     const button = createSkillButton(skill);
     skillContainer.append(button);
     skillRefs.set(skill.id, { skill, button });
@@ -691,32 +777,41 @@ export async function mountCoop2v2Test({
     }
   });
 
-  aiControllers.push(
-    createBattleActorAiController({
-      session,
-      runtime,
-      actorId: "ally",
-      targetIds: format.teams.enemies,
-      skillIds: ["claw", "fireball", "aerial-dive", "teleport-strike"],
-      skillsById
-    }),
-    createBattleActorAiController({
-      session,
-      runtime,
-      actorId: "opponent",
-      targetIds: format.teams.players,
-      skillIds: ["fireball", "claw", "aerial-dive", "teleport-strike"],
-      skillsById
-    }),
-    createBattleActorAiController({
-      session,
-      runtime,
-      actorId: "opponent-b",
-      targetIds: format.teams.players,
-      skillIds: ["aerial-dive", "fireball", "claw", "teleport-strike"],
-      skillsById
-    })
-  );
+  for (const actor of format.actors) {
+    if (
+      actor.actorId === format.localActorId ||
+      !actor.controllerId.startsWith("ai-")
+    ) {
+      continue;
+    }
+
+    const actorSkills = skillsByActor[actor.actorId] ?? [];
+    if (actorSkills.length === 0) {
+      continue;
+    }
+
+    const targetIds = format.actors
+      .filter(
+        (candidate) =>
+          targetRelation({
+            format,
+            actorId: actor.actorId,
+            targetId: candidate.actorId
+          }) === "enemy"
+      )
+      .map((candidate) => candidate.actorId);
+
+    aiControllers.push(
+      createBattleActorAiController({
+        session,
+        runtime,
+        actorId: actor.actorId,
+        targetIds,
+        skillIds: actorSkills.map((skill) => skill.id),
+        skillsById
+      })
+    );
+  }
 
   renderTargetSelection();
   renderState();
