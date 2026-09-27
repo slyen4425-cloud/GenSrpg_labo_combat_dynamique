@@ -300,6 +300,7 @@ summary {
 }
 
 .reserve-card {
+  position: relative;
   display: grid;
   place-items: center;
   width: clamp(1.65rem, 5vw, 2.15rem);
@@ -329,6 +330,31 @@ button.reserve-card {
 .reserve-card[data-active="true"] {
   border-color: rgba(139, 232, 248, 0.48);
   opacity: 0.72;
+}
+
+.reserve-card[data-defeated="true"] {
+  border-color: rgba(255, 88, 88, 0.72);
+}
+
+.reserve-card[data-defeated="true"] .reserve-card__icon {
+  opacity: 0.42;
+  filter: grayscale(0.75);
+}
+
+.reserve-card[data-defeated="true"]::after {
+  content: "×";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 2;
+  transform: translate(-50%, -53%);
+  color: #ff4f4f;
+  font-size: clamp(1.35rem, 4.8vw, 2rem);
+  font-weight: 1000;
+  line-height: 1;
+  text-shadow:
+    0 0.08rem 0.16rem rgba(0, 0, 0, 0.95),
+    0 0 0.32rem rgba(255, 70, 70, 0.48);
+  pointer-events: none;
 }
 
 .reserve-card__icon {
