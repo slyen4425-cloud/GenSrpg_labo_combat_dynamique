@@ -7693,3 +7693,75 @@ Prochaine étape après checkpoint GREEN :
 - édition JSON locale du package ;
 - validation via le même adaptateur ;
 - lancement d'une démo sans copier l'éditeur historique GenSrpG.
+
+
+## Prévisualisation package Capture -> combat 2v2 — 2026-09-27
+
+Objectif :
+
+- permettre de modifier localement un `CaptureCombatPackageV1` JSON dans le laboratoire ;
+- valider ce JSON par `adaptCaptureCombatPackage()` ;
+- injecter le modèle obtenu dans le montage 2v2 existant ;
+- relancer le même Combat Session / Runtime / Presenter / FX sans créer une deuxième arène ni un deuxième moteur.
+
+Base :
+
+- checkpoint GREEN adaptateur : `checkpoint/lab-capture-package-adapter-v1-green-2026-09-27` ;
+- SHA de base : `22aff3c1410dacc65d5019d4dc993321fdc7a6bb` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-package-preview-ui-2026-09-27` ;
+- branche : `work/lab-capture-package-preview-ui-2026-09-27`.
+
+Pré-audit :
+
+- `mountCoop2v2Test()` possède déjà la chaîne complète Session -> Runtime -> Presenter -> FX ;
+- son défaut de portabilité actuel est uniquement le chargement en dur du format/fighters/skills de démonstration ;
+- `mountCombatDemo()` possède déjà les quatre slots visuels et sait changer la créature affichée ;
+- il est donc interdit de créer un second renderer ou une seconde UI de combat.
+
+Périmètre autorisé :
+
+- rendre `mountCoop2v2Test()` injectable par un modèle déjà normalisé, tout en gardant son chargement historique par défaut ;
+- dériver la barre locale depuis `skillsByActor[localActorId]` ;
+- dériver les compétences IA depuis le même modèle, sans dupliquer les règles ;
+- ajouter une fixture autonome `CaptureCombatPackageV1` de prévisualisation ;
+- ajouter un petit contrôleur UI de texte JSON : Valider / Appliquer / Réinitialiser ;
+- exposer ce panneau uniquement en mode de prévisualisation explicite ;
+- CSS et tests nécessaires ;
+- documentation.
+
+Protégé :
+
+- Combat Rules, Combat State, Combat Runtime ;
+- Roster Session ;
+- Animation Core, FX Core et Render Adapter ;
+- contrats Skill / BattleFormat ;
+- comportement 2v2 par défaut sans mode package ;
+- dépôt `Zombicide-40k`.
+
+Contraintes :
+
+- aucune logique dégâts/énergie/ciblage dans l'éditeur ;
+- aucune lecture GenSrpG ;
+- aucune persistence navigateur dans ce premier lot ;
+- aucun asset utilisateur/import de fichier dans ce premier lot ;
+- aucune deuxième source de données : l'éditeur transmet uniquement le package à l'adaptateur ;
+- les créatures de la fixture doivent utiliser des visuels déjà présents dans la bibliothèque du labo.
+
+Tests prévus :
+
+1. montage 2v2 par défaut conserve son comportement historique ;
+2. montage injecté consomme `battleFormat/fighters/skillsByActor` ;
+3. local HUD ne montre que les skills de l'acteur local ;
+4. IA consomme les skills déclarés pour chaque acteur ;
+5. parse/validation JSON passe exclusivement par l'adaptateur ;
+6. appliquer un package remonte les erreurs sans muter Combat Core ;
+7. test vrai chemin package -> adaptateur -> montage existant protégé par sentinelles ;
+8. CI GREEN avant publication d'une preview de ce lot.
+
+Critère de fin :
+
+- même arène / même moteur ;
+- modification JSON visible dans les stats/compétences après Appliquer ;
+- comportement historique par défaut inchangé ;
+- CI GREEN ;
+- validation smartphone avant checkpoint GREEN UI final.
