@@ -6818,3 +6818,15 @@ Critères :
 - premier adversaire moins haut ;
 - CI verte ;
 - validation smartphone utilisateur.
+
+
+Résultat du spatial polish 2v2 :
+
+- groupe joueur / allié légèrement décalé vers la droite ;
+- groupe adverse légèrement décalé vers la gauche ;
+- premier adversaire descendu pour mieux reposer visuellement dans l'arène ;
+- tailles, HUD, ciblage, IA, Runtime et règles inchangés ;
+- réglages appliqués aux tailles standard et mobile ;
+- CI work : SUCCESS, run `36302152121`, SHA `4262c85b400c55e21c8d6abb4d2b13dc48b2affc`.
+
+Validation smartphone requise avant checkpoint GREEN du polish spatial.
