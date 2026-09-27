@@ -133,6 +133,24 @@ test("fighter HUD orders name then HP then creature icons and charge starts hidd
   assert.match(css, /\.reserve__list\s*\{[\s\S]*justify-content:\s*flex-start/);
 });
 
+test("defeated roster members derive a red-cross indicator from authoritative HP state", async () => {
+  const source = await readFile("src/ui/combat-test-ui.js", "utf8");
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(source, /const defeated = Number\(member\.hp\) <= 0/);
+  assert.match(source, /node\.dataset\.defeated = defeated \? "true" : "false"/);
+  assert.match(source, /defeated\s*\?\s*"Vaincu"/);
+  assert.match(
+    css,
+    /\.reserve-card\[data-defeated="true"\]::after\s*\{[\s\S]*content:\s*"×"[\s\S]*color:\s*#ff4f4f/
+  );
+  assert.match(
+    css,
+    /\.reserve-card\[data-defeated="true"\] \.reserve-card__icon\s*\{[\s\S]*opacity:/
+  );
+});
+
+
 test("fighter HUD is enlarged consistently for player and opponent without hiding HP values on narrow screens", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
