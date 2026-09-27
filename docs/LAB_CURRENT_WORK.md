@@ -6781,3 +6781,40 @@ Tests :
 - CI work : SUCCESS, run `36301369144`, SHA `f029eff36f9c82f73df582ca80738642273fb5f1`.
 
 Validation smartphone utilisateur requise avant checkpoint GREEN 2v2.
+
+
+### Micro-lot spatial polish 2v2 — 2026-09-27
+
+Validation utilisateur du prototype 2v2 : fonctionnement global validé sur smartphone.
+
+- checkpoint GREEN fonctionnel : `checkpoint/lab-coop-2v2-functional-green-2026-09-27` ;
+- SHA validé : `9f32e4ba4a14203f1911c4a9f2ec8891c6d3e4fe` ;
+- checkpoint de départ du polish : `checkpoint/lab-start-coop-2v2-spatial-polish-2026-09-27`.
+
+Retour visuel demandé :
+
+- décaler légèrement le groupe allié / joueur vers la droite ;
+- décaler légèrement le groupe adverse vers la gauche ;
+- descendre un peu le premier adversaire, actuellement trop haut ;
+- ne modifier ni tailles, ni règles, ni contrôleurs, ni ciblage.
+
+Périmètre autorisé :
+
+- `examples/dom-demo/demo.css` : positions 2v2 uniquement ;
+- tests CSS 2v2 ciblés ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucune modification Combat Rules / Runtime / IA / Targeting / FX / Animation ;
+- aucune modification des barres de capacités ou cartes HUD ;
+- aucun changement 1v1 ;
+- aucun masquage ni compensation.
+
+Critères :
+
+- espacement central plus lisible ;
+- équipes visuellement mieux regroupées ;
+- premier adversaire moins haut ;
+- CI verte ;
+- validation smartphone utilisateur.
