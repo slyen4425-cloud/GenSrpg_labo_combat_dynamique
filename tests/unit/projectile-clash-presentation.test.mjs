@@ -90,9 +90,10 @@ test("FX renderer cancels only the projectile owned by the clashed actor", () =>
   assert.equal(removed.length, 2);
 });
 
-test("Presenter stops a clashed projectile without inventing a hit animation", async () => {
+test("Presenter stops a clashed projectile and routes one semantic meeting impact", async () => {
   const visualCalls = [];
   const cancelledProjectiles = [];
+  const playedFx = [];
 
   const presenter = createCombatResolutionPresenter({
     visuals: {
@@ -105,7 +106,8 @@ test("Presenter stops a clashed projectile without inventing a hit animation", a
       }
     },
     fx: {
-      play() {
+      play(plan) {
+        playedFx.push(plan);
         return { status: "ignored" };
       },
       cancelProjectileFor(slot) {
@@ -119,18 +121,34 @@ test("Presenter stops a clashed projectile without inventing a hit animation", a
     resolution: {
       ok: true,
       actionType: "skill",
-      actorId: "player",
-      targetId: "opponent",
+      actorId: "opponent",
+      targetId: "player",
       skillId: "fireball",
       outcome: "clashed",
-      events: []
+      events: [
+        {
+          type: "projectile-clash",
+          otherActorId: "player",
+          progress: 0.4
+        }
+      ]
     },
-    actorSlot: "player",
-    targetSlot: "opponent"
+    actorSlot: "opponent",
+    targetSlot: "player"
   });
 
   assert.equal(result.outcome, "clashed");
-  assert.deepEqual(cancelledProjectiles, ["player"]);
+  assert.deepEqual(cancelledProjectiles, ["opponent"]);
+  assert.deepEqual(playedFx, [
+    {
+      type: "clash-impact",
+      skillId: "fireball",
+      fromSlot: "opponent",
+      targetSlot: "player",
+      progress: 0.4,
+      durationMs: 420
+    }
+  ]);
   assert.deepEqual(visualCalls, []);
   assert.deepEqual(
     await result.finished,
