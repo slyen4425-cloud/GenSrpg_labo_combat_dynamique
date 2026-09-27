@@ -8935,3 +8935,43 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation ;
 - checkpoint GREEN avant le lot loadout.
+
+
+### Résultat — CaptureCreatureEditorDraftV2
+
+RED :
+
+- commit : `c80e5b5626b5986f30e7c971b0b992063f9d1aa4` ;
+- CI : run `36340737207` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` sur le contrat V2 ;
+- un seul fichier de test en échec.
+
+Implémentation :
+
+- `src/contracts/capture-creature-editor-draft-v2.js` ;
+- commit : `6d6f1b874422348e081ca5b00c09ed9d1cd71b06` ;
+- CI : run `36340783409` — SUCCESS.
+
+Garanties :
+
+- V1 inchangé et réutilisé comme propriétaire des données métier ;
+- CreaturePresentationBindingV1 réutilisé comme propriétaire face/dos/icône/profil/sockets/audio ;
+- subjectId présentation = id créature obligatoire ;
+- presentationId dérivé du binding, jamais saisi séparément ;
+- présentation absente autorisée ;
+- aucun asset dans combat ;
+- aucun renderer/UI/storage/network/GenSrpG.
+
+Aucune validation smartphone nécessaire : contrat pur.
+
+Checkpoint GREEN final :
+
+`checkpoint/lab-capture-creature-editor-draft-v2-green-2026-09-27`.
+
+Prochaine étape :
+
+- contrat de loadout Capture actif 4 slots ;
+- pas de trim silencieux ;
+- pas de duplication de SkillDefinition ;
+- le catalogue de compétences peut rester supérieur à quatre ;
+- seules les compétences équipées alimenteront le combat.
