@@ -10003,3 +10003,67 @@ F. status effect si retenu ;
 G. editor -> combat preview bridge.
 
 Aucune fonctionnalité nouvelle n'est implémentée dans ce lot d'audit.
+
+
+## Micro-lot B — Combat Skill Library V1 — 2026-09-27
+
+Base :
+
+- `checkpoint/lab-capture-editor-feedback-round1-audit-green-2026-09-27`;
+- SHA `32f6a129e55c4e7667214c8051875bf4a59c24c0`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-combat-skill-library-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-combat-skill-library-v1-2026-09-27`.
+
+Objectif :
+
+Faire de `data/combat/skills/*.skill.json` la bibliothèque autoritaire des capacités déjà programmées dans le laboratoire, sans recopier leurs définitions dans l'UI.
+
+État inventorié :
+
+- aerial-dive ;
+- claw ;
+- contact-counter ;
+- dodge ;
+- fire-immunity ;
+- fireball ;
+- mirror-shield ;
+- stun-bolt ;
+- teleport-strike.
+
+Nouveau manifeste :
+
+`data/combat/skills/catalog.v1.json`.
+
+Nouveau propriétaire d'entrée :
+
+`src/adapters/input/combat-skill-library-v1.js`.
+
+Règles :
+
+- le manifeste ne contient pas de copie de SkillDefinition ;
+- chaque entrée ne contient qu'un id stable et une source relative ;
+- chaque fichier chargé passe par `normalizeSkillDefinition` ;
+- l'id du fichier doit correspondre à l'id déclaré dans le manifeste ;
+- ids uniques ;
+- aucune URL externe ;
+- aucun DOM ;
+- aucun GenSrpG ;
+- aucune connaissance de l'éditeur Capture.
+
+Tests RED :
+
+1. manifeste absent / loader absent ;
+2. les neuf skills actuels sont indexés ;
+3. chaque vraie définition est normalisée ;
+4. mismatch id refusé ;
+5. doublon refusé ;
+6. source absolue / URL refusée ;
+7. indépendance UI/runtime/storage.
+
+Le raccord à l'éditeur sera un lot d'intégration séparé après ce GREEN.
