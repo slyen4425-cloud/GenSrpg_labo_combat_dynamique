@@ -6830,3 +6830,48 @@ Résultat du spatial polish 2v2 :
 - CI work : SUCCESS, run `36302152121`, SHA `4262c85b400c55e21c8d6abb4d2b13dc48b2affc`.
 
 Validation smartphone requise avant checkpoint GREEN du polish spatial.
+
+
+### Micro-lot 2v2 — séparation latérale / scale adverses / variété IA — 2026-09-27
+
+Retour utilisateur :
+
+- le décalage latéral entre les deux créatures d'un même camp reste trop peu prononcé ;
+- les créatures adverses paraissent trop petites depuis le retrait des distances Courte / Moyenne / Longue ;
+- les IA donnent l'impression d'utiliser toujours la même technique.
+
+Base / sécurité :
+
+- base : `9e1b165cadca0279da08278f253488cf96733b4e` ;
+- checkpoint : `checkpoint/lab-start-coop-2v2-spacing-scale-ai-variety-2026-09-27` ;
+- branche : `work/lab-coop-2v2-preview-2026-09-27` ;
+- `main` et `global-assets` protégées.
+
+Périmètre autorisé :
+
+- `examples/dom-demo/demo.css` : positions et taille des quatre acteurs **uniquement dans la preview coop 2v2** ;
+- `src/core/combat/battle-actor-ai-controller.js` : sélection séquentielle engagée afin que l'IA puisse attendre l'énergie nécessaire à sa prochaine technique au lieu de retomber systématiquement sur une technique moins chère ;
+- `tests/unit/coop-2v2.test.mjs` : sentinelles position / scale / variété IA ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / dégâts / PV / énergie gagnée / temps de charge ;
+- aucun changement 1v1 ;
+- aucune modification des assets créatures ni de leur `displayScale` propre ;
+- aucun changement du ciblage 2v2, du renderer, FX ou Animation Core ;
+- pas de randomisation opaque : l'IA reste déterministe et testable.
+
+Intentions :
+
+- augmenter la séparation horizontale des binômes pour que les quatre silhouettes se lisent mieux ;
+- agrandir légèrement les deux adversaires tout en conservant une différence de perspective par rapport au premier plan ;
+- faire parcourir à chaque IA sa séquence de techniques complète : si la prochaine technique coûte plus d'énergie, elle attend au lieu de sauter immédiatement vers la première technique bon marché disponible.
+
+Critères :
+
+- 4 positions encore distinctes sur mobile ;
+- adversaires visuellement plus présents sans masquer les cartes HUD ;
+- l'IA démontre au moins deux coûts de techniques différents et ne spamme pas uniquement les capacités à 2 énergie ;
+- CI verte ;
+- validation smartphone utilisateur.
