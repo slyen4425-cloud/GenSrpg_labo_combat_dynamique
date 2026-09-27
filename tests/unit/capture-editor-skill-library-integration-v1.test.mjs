@@ -156,7 +156,7 @@ test("skill draft set rejects equipped ids absent from the real library", () => 
           byId: { fireball }
         }
       }),
-    /unknown.*ghost/i
+    /inconnue.*ghost/i
   );
 });
 
