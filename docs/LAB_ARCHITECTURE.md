@@ -1141,3 +1141,56 @@ Le Combat Runtime expose :
 - `chargeProgress`.
 
 L'UI ne possède aucune horloge locale. Elle affiche ces valeurs uniquement.
+
+
+## CaptureCombatPackageV1 — frontière portable d'entrée Capture
+
+Le laboratoire possède désormais un contrat de transport dédié :
+
+`src/contracts/capture-combat-package.js`
+
+Objectif :
+
+`éditeur / export Capture -> paquet JSON portable -> adaptateur -> contrats combat existants`
+
+Le package V1 :
+
+- est identifié par `schema: "capture-combat-package"` et `version: 1` ;
+- transporte les créatures, les SkillDefinition, un roster optionnel, un BattleFormat optionnel et des bindings de présentation ;
+- réutilise `normalizeSkillDefinition()` et `normalizeBattleFormatDefinition()` comme autorités sémantiques ;
+- ne contient aucune logique de résolution de combat ;
+- ne lit aucun DOM, stockage, global ou réseau ;
+- ne connaît aucun chemin du dépôt principal GenSrpG ;
+- accepte uniquement des `assetId` stables dans les bindings de présentation ;
+- refuse les URLs et chemins physiques d'assets ;
+- vérifie les références croisées créature / compétence / fighterConfig / roster / battleFormat ;
+- produit des structures normalisées immuables.
+
+Frontière stricte :
+
+```
+Capture editor/export
+    |
+    v
+CaptureCombatPackageV1
+    |
+    v
+Capture input adapter (lot séparé)
+    |
+    +--> Combat State / Session
+    +--> SkillDefinition
+    +--> Roster Session
+    +--> BattleFormatDefinition
+    +--> Presentation Assets
+```
+
+Le contrat de transport ne remplace aucun des propriétaires ci-dessus.
+
+Sont volontairement hors package minimal :
+
+- progression XP / talents ;
+- monde, biomes et jours ;
+- boutique / loot ;
+- stockage et sauvegardes ;
+- routage Shell ;
+- runtime historique Capture.
