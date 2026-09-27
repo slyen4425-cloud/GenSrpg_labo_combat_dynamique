@@ -9959,3 +9959,47 @@ Test mobile demandé :
 8. vérifier absence de débordement ou contrôle inaccessible.
 
 Aucun GREEN final avant ce retour.
+
+
+## Audit — retour utilisateur Capture Editor Round 1 — 2026-09-27
+
+Base :
+
+- `checkpoint/lab-capture-editor-human-v2-prevalidation-green-2026-09-27`;
+- SHA `227901c1e3ed9f2472a642d54af8dca786b743bf`;
+- CI preview / work / checkpoint : SUCCESS.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-feedback-round1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-feedback-round1-2026-09-27`.
+
+Document autoritaire du retour :
+
+`docs/LAB_CAPTURE_EDITOR_FEEDBACK_ROUND1_AUDIT.md`.
+
+Constats :
+
+- audio : archive privée retrouvée, aucun catalogue/assetId encore raccordé ;
+- sockets : coordonnées créature déjà propriétaires, la capacité ne doit que référencer un socket existant ;
+- PV : déplacer l'édition dans Créature, pas de deuxième input Combat ;
+- skills : neuf définitions de laboratoire existent déjà, l'éditeur ne doit plus coder uniquement Fireball ;
+- scale : VisualActor sait le rendre mais aucun contrat créature persistant ne le possède encore ;
+- stats : futur CombatStatRulesV1 requis, aucune formule dans l'UI ;
+- buff/debuff : pas de StatusEffect générique, ne pas vendre une fausse fonctionnalité ;
+- test combat : futur bridge de démo séparé.
+
+Ordre :
+
+A. ownership cleanup UI ;
+B. skill catalog ;
+C. scale contract ;
+D. private audio catalog ;
+E. combat stat rules ;
+F. status effect si retenu ;
+G. editor -> combat preview bridge.
+
+Aucune fonctionnalité nouvelle n'est implémentée dans ce lot d'audit.
