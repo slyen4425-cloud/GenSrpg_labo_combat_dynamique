@@ -9561,3 +9561,43 @@ Critère GREEN :
 - validation par le vrai Profile Registry ;
 - CI globale SUCCESS ;
 - checkpoint GREEN avant UI.
+
+
+### Résultat — profils morphologiques génériques V1
+
+RED :
+
+- commit `c9ee2e2506174c3922997d816ca5a38bccb10748` ;
+- CI `36342088085` — FAILURE attendue ;
+- seuls les fichiers `biped.profile.json` et `quadruped.profile.json` étaient absents.
+
+Implémentation :
+
+- `data/profiles/biped.profile.json` ;
+- `data/profiles/quadruped.profile.json` ;
+- commit `96d0bb496c3a204e6a3379193830abc4b5499e9f` ;
+- CI `36342146735` — SUCCESS.
+
+Profils disponibles pour le futur éditeur :
+
+- Bipède ;
+- Quadrupède ;
+- Serpentine ;
+- Drake / ailé.
+
+Aucun profil n'est sélectionné automatiquement par nom de créature.
+
+Checkpoint GREEN :
+
+`checkpoint/lab-generic-creature-profiles-v1-green-2026-09-27`.
+
+Prochaine étape :
+
+- éditeur humain Capture V2 ;
+- onglets Créature / Combat / Capacités ;
+- zéro JSON à saisir ;
+- sélection de vrais assets visuels depuis le catalogue global ;
+- placement tactile des sockets face/dos ;
+- cooldown réel éditable ;
+- limites audio affichées explicitement si aucun catalogue audio autoritaire n'est disponible ;
+- validation smartphone obligatoire avant GREEN final.
