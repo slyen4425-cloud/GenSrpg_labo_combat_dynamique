@@ -7616,3 +7616,54 @@ Critère de fin :
 - aucune dépendance GenSrpG ;
 - aucune modification du moteur/runtime/renderer/UI ;
 - CI GREEN avant checkpoint final.
+
+
+### Résultat du contrat pur CaptureExportV1
+
+RED :
+
+- test ajouté avant l'implémentation : `tests/unit/capture-export-v1.test.mjs` ;
+- run `36314160845` — FAILURE attendue ;
+- cause attendue : `ERR_MODULE_NOT_FOUND` sur `src/contracts/capture-export-v1.js`.
+
+Implémentation :
+
+- `src/contracts/capture-export-v1.js` ;
+- exporte `CAPTURE_EXPORT_VERSION = 1` ;
+- exporte `normalizeCaptureExportV1(input)` ;
+- réutilise `normalizeSkillDefinition()` comme unique propriétaire de la sémantique des compétences.
+
+Contrat V1 validé :
+
+- version exacte ;
+- créatures uniques ;
+- FighterConfig explicitement exporté ;
+- stats source numériques conservées sans alias ni interprétation ;
+- niveau minimal conservé comme progression ;
+- références de skills vérifiées ;
+- équipes et membres uniques ;
+- références membres -> créatures vérifiées ;
+- `localMemberId` doit exister et être actif ;
+- résultat immutable.
+
+Aucun changement :
+
+- Combat Rules ;
+- Combat Runtime ;
+- Animation ;
+- FX ;
+- Renderer ;
+- Demo UI ;
+- assets ;
+- dépôt GenSrpG.
+
+CI GREEN :
+
+- run `36314211628` — SUCCESS ;
+- SHA `072f391d67abfb53da21821eec063f18884f692c`.
+
+Prochaine étape après checkpoint GREEN :
+
+- adaptateur créature pur `CaptureExportV1 -> FighterConfig / roster member` ;
+- test RED avant implémentation ;
+- aucun mapping de stat source implicite.
