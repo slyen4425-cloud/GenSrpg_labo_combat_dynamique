@@ -6179,3 +6179,15 @@ Vérifications :
 - aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
 
 Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
+
+
+### Publication stable — Chat mystique
+
+Publication fast-forward effectuée sur `global-assets` depuis la branche de travail.
+
+- SHA publié : `837d38064350e37dda08404af9c3a3b2d6ecad3d` ;
+- CI publication : run `36301308420` — SUCCESS ;
+- aucun changement sur `main` ;
+- checkpoint GREEN final prévu : `checkpoint/lab-chat-mystique-assets-green-2026-09-27`.
+
+Le lot est fonctionnellement clos ; la présente note documentaire constitue la clôture de reprise avant création du checkpoint GREEN final.
