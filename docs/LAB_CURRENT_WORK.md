@@ -6547,3 +6547,59 @@ Résultat technique du micro-lot :
 CI work : SUCCESS, run `36293147255`, SHA `fc4c9984a8079f1dda77f76df5089d59da800806`.
 
 Validation smartphone de la croix rouge encore requise avant checkpoint GREEN.
+
+
+### Validation KO + micro-lot retrait UI distance / conception 2v2 coop — 2026-09-27
+
+Validation utilisateur : l'indicateur rouge de créature vaincue est validé.
+
+- checkpoint GREEN : `checkpoint/lab-defeated-icon-green-2026-09-27` ;
+- SHA validé : `0315ccf9ad9fcfb0322e23b08b37f3e0a65b107b`.
+
+Nouveau lot demandé :
+
+1. retirer purement et simplement de l'interface les boutons de distance `Courte / Moyenne / Longue` ;
+2. ne pas masquer ces boutons par CSS : les éléments et leur branche UI doivent être réellement retirés ;
+3. éviter qu'une distance interne restante rende des capacités artificiellement indisponibles dans cette preview ;
+4. documenter la conception future du 2v2 coop sans l'implémenter maintenant.
+
+Base / sécurité :
+
+- base : `0315ccf9ad9fcfb0322e23b08b37f3e0a65b107b` ;
+- checkpoint : `checkpoint/lab-start-distance-ui-removal-2v2-targeting-design-2026-09-27` ;
+- branche : `work/lab-four-creatures-city-preview-v9-2026-09-26` ;
+- `main` et `global-assets` protégées.
+
+Périmètre autorisé pour le retrait distance :
+
+- `examples/dom-demo/index.html` : suppression réelle du bloc de boutons de distance ;
+- `src/ui/combat-test-ui.js` : suppression de la collecte, du rendu de disponibilité et des listeners de déplacement manuel ;
+- données de compétences de la démo : neutralisation uniforme de la contrainte de portée afin qu'aucune capacité ne reste cachée/inutilisable à cause d'une distance non pilotable ;
+- tests UI / données ciblés ;
+- CSS devenu orphelin relatif aux boutons de distance peut être supprimé.
+
+Domaines protégés :
+
+- aucun changement du calcul de dégâts, énergie, timing, KO, roster ou IA ;
+- aucun changement Animation Core / FX / renderer ;
+- pas de suppression précipitée du module de distance interne tant qu'il sert encore au placement spatial de présentation ;
+- pas de `display:none` ni de second chemin compensatoire.
+
+Conception 2v2 validée à documenter :
+
+- le 2v2 est réservé aux combats avec **deux contrôleurs alliés distincts** ;
+- le second contrôleur peut être humain ou IA ;
+- un joueur humain ne contrôle pas les capacités de son allié ;
+- chaque joueur voit sa propre créature et la créature alliée, mais sa barre d'actions ne montre que ses propres capacités ;
+- l'allié expose surtout état, PV et action en cours ;
+- les adversaires peuvent rester plus sobres visuellement ;
+- toute créature visible peut devenir cible par clic si la compétence l'autorise, y compris un allié pour soin / protection / renforcement ;
+- la sélection de cible doit être explicite et lisible, avec distinction visuelle allié / ennemi / cible choisie.
+
+Critère de fin du micro-lot actuel :
+
+- aucune commande de distance visible ;
+- aucune capacité de la preview bloquée uniquement par la distance ;
+- CI verte ;
+- notes 2v2 mises à jour sans implémentation fonctionnelle du 2v2 ;
+- validation smartphone utilisateur.
