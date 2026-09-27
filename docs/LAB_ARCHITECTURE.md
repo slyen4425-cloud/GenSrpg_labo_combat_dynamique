@@ -305,6 +305,77 @@ Le feedback :
 - n'influence jamais PV, dégâts, hit ou esquive ;
 - disparaît après sa propre animation et ne crée aucun état gameplay.
 
+## 8.1 Format de combat configurable — futur 1v1 / 2v2
+
+Le laboratoire ne doit pas figer le nombre de créatures actives simultanément à deux combattants globaux.
+
+Objectif futur :
+
+- conserver les combats actuels en `1v1` lorsque le scénario le demande ;
+- permettre un format `2v2` pour certains combats ;
+- laisser le format être choisi par la donnée du combat / scénario, pas par une constante UI ;
+- permettre plus tard des formats asymétriques si un besoin réel apparaît, sans dupliquer tout le moteur.
+
+Concept cible :
+
+```json
+{
+  "id": "double-2v2",
+  "activeSlotsByTeam": {
+    "player": 2,
+    "opponent": 2
+  }
+}
+```
+
+Un duel classique utiliserait exactement le même contrat avec `1` slot actif par équipe.
+
+Architecture recommandée :
+
+```
+BattleFormatDefinition
+        |
+        v
+Roster Session
+  active member(s) par équipe
+        |
+        v
+Combat Session
+  fighterId / targetId dynamiques
+        |
+        v
+Combat Runtime
+  une action active max par actorId
+        |
+        v
+Presentation / UI
+  sélection acteur + sélection cible
+```
+
+Points importants :
+
+- ne pas créer un booléen global `is2v2` dispersé dans l'UI ;
+- ne pas dupliquer les contrôleurs joueur/adversaire pour fabriquer artificiellement quatre combattants ;
+- les identifiants d'acteurs et de cibles doivent rester génériques ;
+- le nombre de créatures actives appartient à une définition de format de combat ou au scénario appelant ;
+- le roster doit pouvoir conserver plusieurs membres actifs sans perdre les PV / énergie propres à chaque membre ;
+- le Combat Runtime reste indexé par `actorId`, ce qui correspond déjà au modèle de concurrence V9 ;
+- le modèle actuel de distance unique et plusieurs portions de Demo UI supposent encore un seul actif par équipe : ces zones devront être généralisées explicitement avant un vrai 2v2.
+
+Lisibilité UI recommandée pour un futur 2v2 :
+
+- deux positions spatiales distinctes par camp ;
+- une mini-carte statut par créature active avec nom + PV ;
+- surbrillance claire de la créature actuellement sélectionnée par le joueur ;
+- surbrillance distincte de la cible adverse ;
+- les capacités restent dans une seule zone de commandes et s'appliquent à l'acteur sélectionné ;
+- si une capacité nécessite une cible, la cible doit être choisie explicitement lorsqu'il existe plusieurs adversaires valides ;
+- les icônes d'équipe restent visibles comme état global, avec indication des créatures vaincues.
+
+Le format de combat ne doit jamais être déduit du nombre d'icônes affichées. La source de vérité reste la donnée de combat / roster.
+
+---
+
 ## 9. Frontière future GenSrpG
 
 Raccord potentiel seulement :
