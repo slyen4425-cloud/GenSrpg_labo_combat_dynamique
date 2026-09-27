@@ -7498,3 +7498,73 @@ CI audit :
 Prochaine étape après checkpoint GREEN :
 - micro-lot séparé `CaptureCombatPackageV1` pur ;
 - contrat + tests uniquement avant tout raccord UI.
+
+
+## CaptureCombatPackageV1 — contrat portable — 2026-09-27
+
+Objectif :
+
+- définir le paquet JSON autonome qu'un futur éditeur Capture pourra exporter vers le laboratoire ;
+- composer les contrats existants au lieu de dupliquer Combat Rules ;
+- verrouiller les références créature / compétence / roster / format / présentation ;
+- interdire toute dépendance physique au dépôt GenSrpG.
+
+Base :
+
+- checkpoint GREEN audit : `checkpoint/lab-capture-adapter-audit-green-2026-09-27` ;
+- SHA de base : `02891f7ec3ee6062ba75e73d01c73aeaa085aee1` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-combat-package-v1-2026-09-27` ;
+- branche : `work/lab-capture-combat-package-v1-2026-09-27`.
+
+Propriétaire :
+
+- contrat de transport : `src/contracts/capture-combat-package.js`.
+
+Contrats consommés :
+
+- `SkillDefinition` pour les compétences ;
+- `BattleFormatDefinition` pour le format de bataille.
+
+Périmètre autorisé :
+
+- nouveau contrat pur ;
+- tests unitaires du contrat ;
+- documentation du lot.
+
+Protégé / interdit :
+
+- aucun import depuis `Zombicide-40k` ;
+- aucun accès DOM / storage / réseau / globals ;
+- aucun changement Combat Rules / Runtime / Roster Session / Renderer / Demo UI ;
+- aucune URL ou chemin physique d'asset accepté dans les bindings ;
+- aucune logique progression / monde / boutique dans le package minimal.
+
+Schéma V1 :
+
+- `schema = "capture-combat-package"` ;
+- `version = 1` ;
+- `creatures[]` : identité, `fighterConfigId`, `fighterConfig`, `skillIds` ;
+- `skills[]` : SkillDefinition normalisées ;
+- `roster` optionnel : équipes et membres par IDs ;
+- `battleFormat` optionnel : BattleFormatDefinition ;
+- `presentation` optionnelle : bindings créatures/skills par `assetId` stables uniquement ;
+- `metadata` minimale et non autoritaire.
+
+Tests prévus :
+
+1. package V1 valide ;
+2. SkillDefinition réellement normalisée ;
+3. doublons créatures/skills refusés ;
+4. skill inconnu dans une créature refusé ;
+5. roster vers créature/fighter inconnus refusé ;
+6. format de bataille incohérent refusé ;
+7. asset URL/chemin physique refusé ;
+8. package profondément immuable sur les structures normalisées ;
+9. sentinelle d'indépendance : aucune référence `Zombicide-40k`, DOM, storage ou réseau dans le contrat.
+
+Critère de fin :
+
+- contrat + tests GREEN ;
+- aucun raccord UI ;
+- aucun changement du comportement combat existant ;
+- checkpoint GREEN séparé.
