@@ -323,6 +323,12 @@ export async function mountCoop2v2Test({
       actor.creatureId,
       { displayName: actor.displayName }
     );
+
+    for (const node of root.querySelectorAll(
+      `[data-combat-actor-name="${actor.actorId}"]`
+    )) {
+      node.textContent = actor.displayName;
+    }
   }
 
   const allyDescriptor = visuals.getCreatureDescriptor(
