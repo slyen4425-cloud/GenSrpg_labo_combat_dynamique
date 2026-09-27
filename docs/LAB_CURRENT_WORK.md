@@ -8333,3 +8333,79 @@ Résultat :
 - généralisation des controllers IA reportée à un lot séparé ;
 - query param prévu : `?source=capture-export` sur la page existante ;
 - aucun runtime modifié dans ce pré-audit.
+
+
+## Micro-lot G — preview Capture package dans la démo 2v2 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN pré-audit : `checkpoint/lab-capture-package-demo-seam-preaudit-green-2026-09-27` ;
+- SHA de base : `03c0efd55061aadeb6f019b6a099f834c8188ca6` ;
+- checkpoint départ : `checkpoint/lab-start-capture-package-demo-runtime-v1-2026-09-27` ;
+- branche : `work/lab-capture-package-demo-runtime-v1-2026-09-27`.
+
+Objectif :
+
+Permettre à la page 2v2 existante de recevoir une source native issue de `CaptureCombatPackageV1`, sans dupliquer la page ni le moteur.
+
+Seam autorisé :
+
+`mountCoop2v2Test({ ..., combatSetup = null })`.
+
+`combatSetup` est générique et contient :
+
+- `format` ;
+- `fighterConfigs` ;
+- `fighters` ;
+- `skillsById` ;
+- `localSkills`.
+
+Comportement :
+
+- `combatSetup === null` -> chargement JSON historique inchangé ;
+- `combatSetup !== null` -> aucun fetch gameplay de démo, utilisation des données natives fournies.
+
+Bootstrap :
+
+- même page `coop-2v2.html` ;
+- query param `?source=capture-export` ;
+- fixture locale CaptureCombatExportV1 ;
+- fixture -> `buildCaptureCombatPackageV1` -> projection `combatSetup` ;
+- même `mountCoop2v2Test`.
+
+Périmètre volontaire :
+
+- quatre actorId / creatureId actuels conservés ;
+- layout/CSS inchangés ;
+- IA actuelle conservée ;
+- fixture contient les skills requis par cette IA ;
+- barre locale utilise uniquement `skillsByCreature[localCreatureId]` du package ;
+- resolver `demoPresentationAssets` conservé pour ce lot ;
+- PresentationBinding -> resolver sera un lot séparé.
+
+Interdit :
+
+- seconde page HTML ;
+- seconde CombatSession / Runtime ;
+- modification Combat Rules ;
+- refonte controller registry ;
+- changement layout/positions ;
+- nouveau resolver asset ;
+- accès GenSrpG.
+
+Tests RED :
+
+1. resolver de données accepte un `combatSetup` natif sans fetch ;
+2. données locales restent celles du package ;
+3. branche historique reste présente ;
+4. UI ne dépend pas de Capture ;
+5. bootstrap query `source=capture-export` construit le package ;
+6. une seule page 2v2 ;
+7. fixture package valide ;
+8. sentinelles existantes 2v2 intactes.
+
+Validation :
+
+- CI GREEN technique ;
+- preview branch seulement après GREEN ;
+- test smartphone requis avant checkpoint GREEN visuel final.
