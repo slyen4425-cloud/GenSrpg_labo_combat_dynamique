@@ -7906,3 +7906,95 @@ Prochaine action après checkpoint GREEN exact :
 - micro-lot E : Presentation Binding exporté -> binding neutre du laboratoire ;
 - uniquement IDs d'assets et réglages de présentation ;
 - zéro gameplay.
+
+
+## Micro-lot E — SkillPresentationBindingV1 + raccord export Capture — 2026-09-27
+
+Base :
+
+- checkpoint GREEN : `checkpoint/lab-capture-roster-format-adapter-v1-green-2026-09-27` ;
+- SHA : `b902a045c6afd84a1c4705debb40421811c5dc6a` ;
+- checkpoint départ : `checkpoint/lab-start-capture-presentation-binding-v1-2026-09-27` ;
+- branche : `work/lab-capture-presentation-binding-v1-2026-09-27`.
+
+Objectif :
+
+Formaliser la donnée que le futur éditeur de compétences devra produire pour les visuels/audio, puis permettre à un `CaptureCombatExportV1` de fournir ce binding sans contaminer `SkillDefinition`.
+
+Nouveaux propriétaires :
+
+- `src/contracts/skill-presentation-binding-v1.js` : validation du binding de présentation ;
+- `src/adapters/input/capture/capture-skill-presentation-adapter-v1.js` : sélection du binding exporté pour une skill.
+
+Principes :
+
+- gameplay et présentation restent séparés ;
+- références uniquement par `assetId` stable ;
+- aucun chemin physique, URL GitHub ou URL HTTP dans le binding ;
+- Asset Catalog reste responsable de résoudre un `assetId` en ressource ;
+- le binding ne vérifie pas l'existence physique de l'asset ;
+- absence de binding = `null` et fallback de présentation possible ;
+- aucun effet obligatoire pour qu'une compétence fonctionne.
+
+Slots visuels V1 :
+
+- `icon` ;
+- `cast` ;
+- `travel` ;
+- `impact` ;
+- `hit` ;
+- `miss` ;
+- `ko` ;
+- `vanish` ;
+- `reappear` ;
+- `return` ;
+- `aura` ;
+- `ground`.
+
+Réglages visuels V1 :
+
+- `assetId` ;
+- `displayScale` ;
+- `attachment` ;
+- `anchor` ;
+- `offsetX / offsetY` ;
+- `layer` ;
+- `trigger` ;
+- `playbackMode` ;
+- `rotationDeg` ;
+- `opacity`.
+
+Slots audio V1 :
+
+- `cast`, `release`, `travel`, `impact`, `vanish`, `reappear`, `hit`, `miss`.
+
+Réglages audio :
+
+- `assetId` ;
+- `volume` ;
+- `loop`.
+
+Interdit :
+
+- dégâts, soins, énergie, cooldown, cible, portée ou élément dans le binding ;
+- DOM/storage/global/réseau ;
+- résolution physique d'asset ;
+- modification du renderer ou de `demo-assets.js` dans ce lot.
+
+Tests RED :
+
+1. binding visuel/audio valide ;
+2. defaults de présentation stables ;
+3. assetId stable exigé, chemins/URLs refusés ;
+4. scale/offset/opacity/volume validés ;
+5. clés de gameplay ou inconnues refusées ;
+6. export sans binding -> `null` ;
+7. id/subject du binding cohérents avec la skill exportée ;
+8. aucune résolution d'asset ni autorité runtime ;
+9. aucune modification de SkillDefinition.
+
+Critère GREEN :
+
+- contrat + adaptateur purs ;
+- tests + CI globale SUCCESS ;
+- checkpoint GREEN avant toute preview éditeur.
