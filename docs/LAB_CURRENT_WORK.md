@@ -9699,3 +9699,29 @@ Checkpoint de départ :
 Branche :
 
 `work/lab-capture-loadout-v1-idempotence-fix-2026-09-27`.
+
+
+### Résultat — correctif idempotence CaptureActiveSkillLoadoutV1
+
+RED dédié :
+
+- SHA RED documentaire : `10e88f4f42bcc1ab6c508355ccb169dd93ccf1c9` ;
+- CI : run `36345410687` — FAILURE attendue ;
+- cause prouvée : la sortie normalisée contenait `equippedSkillIds`, puis une seconde normalisation refusait ce champ.
+
+Correctif racine :
+
+- commit : `9472af876fef3438d8b6133a2dc3577c3b784e44` ;
+- CI : run `36345586342` — SUCCESS ;
+- `slots` reste l'unique donnée autoritaire ;
+- `equippedSkillIds` n'est plus stocké dans le contrat normalisé ;
+- helper pur `captureActiveSkillIdsV1()` ajouté pour dériver la projection ;
+- l'Exporter V2 consomme ce helper ;
+- un loadout normalisé peut être renormalisé sans erreur ;
+- aucun changement UI, Runtime, Renderer ou GenSrpG.
+
+Checkpoint GREEN final après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-loadout-v1-idempotence-fix-green-2026-09-27`.
+
+Le correctif devra ensuite être reporté tel quel sur la branche de l'éditeur humain V2.
