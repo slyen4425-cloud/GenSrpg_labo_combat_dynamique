@@ -8264,3 +8264,48 @@ Checkpoint final prévu après CI documentaire :
 Prochaine étape :
 
 micro-lot UI séparé : permettre à `mountCoop2v2Test` de recevoir une source de données native optionnelle (format/fighters/skills/loadouts) tout en conservant exactement le chargement JSON historique lorsque cette source est absente.
+
+
+## Pré-audit — source éditeur Capture -> laboratoire V1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-actor-skill-loadouts-v1-green-2026-09-27` ;
+- SHA `8f86595d30337aaf4ebb42b694ca892093f03f2c`.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-editor-source-preaudit-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-source-preaudit-v1-2026-09-27`.
+
+Source GenSrpG lue uniquement :
+
+- checkpoint `checkpoint/gensrpg-phase7-dungeon-generated-branch-plan-green-2026-09-27` ;
+- SHA `49289784ee92a47fd51089815ca25954cdba4493` ;
+- `index.html` taille `8170062` ;
+- blob `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- fichier fourni `labo1.zip/indexLabo.txt` vérifié byte-identique par blob Git.
+
+Résultat :
+
+- propriétaire créature historique identifié : chaîne `SharedEntity` ;
+- propriétaire capacités Capture identifié : `Ability Library` ;
+- `openSkillEditor/saveSkillToLibrary` exclus : ancien chemin Survie/héros, pas l'éditeur Capture actuel ;
+- `captureFix132/133/137/144/139` et seed `builtinMonsterCapture162` classés runtime/legacy, non copiables comme fondation ;
+- écarts explicites cartographiés vers FighterConfig, SkillDefinition et SkillPresentationBindingV1 ;
+- aucun code GenSrpG copié ;
+- aucun runtime du laboratoire modifié.
+
+Document :
+
+`docs/LAB_CAPTURE_EDITOR_SOURCE_PREAUDIT_V1.md`.
+
+Prochaine étape après CI documentaire GREEN :
+
+- micro-lot pur `CaptureCreatureEditorDraftV1` ;
+- contrat/test uniquement ;
+- aucune UI, aucun DOM, aucun storage ;
+- conversion vers le fragment créature de `CaptureCombatExportV1` seulement après GREEN du contrat.
