@@ -6457,3 +6457,43 @@ Réparation :
 - aucun changement Combat Rules / Runtime / Animation / FX / dégâts / énergie.
 
 Validation smartphone utilisateur requise avant checkpoint GREEN du correctif.
+
+
+### Micro-lot UI combat — nom / PV / icônes de créatures — 2026-09-27
+
+Retour utilisateur : agrandir l'UI de statut joueur et adversaire, rapprocher sa hauteur visuelle de celle des capacités, placer le nom de la créature au-dessus des PV, puis les icônes de créatures sous les PV.
+
+Base / sécurité :
+
+- base validée : `80bdcd39c3f092421073f183199e0945ae020b26` ;
+- checkpoint : `checkpoint/lab-four-city-before-hud-card-enlarge-2026-09-27` ;
+- branche : `work/lab-four-creatures-city-preview-v9-2026-09-26` ;
+- `main` et `global-assets` protégées.
+
+Périmètre autorisé :
+
+- `examples/dom-demo/index.html` pour réordonner uniquement les éléments du HUD de statut ;
+- `examples/dom-demo/demo.css` pour taille / espacement / hiérarchie visuelle ;
+- tests UI ciblés ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / Runtime / Animation / FX / IA / roster ;
+- aucun changement des créatures, dégâts, PV réels, énergie ou timings ;
+- aucun changement du renderer de créatures.
+
+Résultat visuel cible :
+
+- nom au-dessus de la barre de PV ;
+- valeur PV lisible sur la même ligne que la barre ;
+- rangée d'icônes de l'équipe sous les PV ;
+- mêmes règles pour joueur et adversaire ;
+- carte de statut agrandie pour atteindre la même hauteur visuelle de référence que les touches principales de capacités.
+
+Tests :
+
+- structure HTML ordre nom -> PV -> roster ;
+- CSS commun joueur/adversaire, sans duplication spéciale ;
+- contrôles existants et sélecteurs `data-*` inchangés ;
+- CI verte puis validation smartphone utilisateur avant checkpoint GREEN.
