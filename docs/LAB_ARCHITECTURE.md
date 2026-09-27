@@ -284,9 +284,13 @@ Il ne décide pas si une attaque touche ou combien de dégâts elle inflige.
 Pour le projectile générique du laboratoire :
 
 - la source visuelle utilise l'anchor transitoire du lanceur afin qu'un projectile parte bien de sa position réellement affichée ;
-- la destination utilise le slot spatial stable de la cible, indépendamment d'une animation temporaire `aerial / teleport / hit` ;
-- une esquive gameplay n'est jamais déduite de cette géométrie : elle reste décidée par Combat Rules ;
-- un résultat `evaded` peut donc être visualisé naturellement par un projectile qui continue vers l'ancienne position stable pendant que la cible est ailleurs.
+- sa trajectoire nominale reste dirigée vers le slot spatial stable de la cible : il ne devient pas silencieusement un projectile `tracking / homing` ;
+- pendant que le projectile FX est réellement actif, le renderer peut toutefois vérifier un **contact visuel** avec l'anchor mobile de la cible ;
+- si le centre visuel du projectile rencontre effectivement la créature en déplacement, le projectile FX est arrêté/nettoyé afin qu'il ne traverse pas visuellement son corps ;
+- cette détection DOM n'altère jamais les PV, le résultat `hit / evaded`, ni le timestamp sémantique : elle appartient uniquement à la présentation ;
+- un impact sémantique `hit` est rendu à la position visuelle courante de la cible ;
+- un résultat `evaded` conserve son feedback sur le point stable où l'impact aurait dû se produire ;
+- le suivi de contact n'utilise pas de boucle permanente : il existe seulement pendant la durée de vie d'un projectile FX.
 
 Une future famille de projectiles `tracking / homing / anti-air` pourra avoir une stratégie de ciblage distincte et data-driven. Elle ne doit pas être simulée en réutilisant silencieusement l'anchor animé comme comportement par défaut.
 
