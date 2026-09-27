@@ -8738,3 +8738,90 @@ Critère de fermeture :
 - CI documentaire GREEN ;
 - checkpoint pré-audit GREEN ;
 - ouverture ensuite du lot contractuel `CreaturePresentationBindingV1`.
+
+
+## Micro-lot — CreaturePresentationBindingV1 — 2026-09-27
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-human-preaudit-v1-green-2026-09-27` ;
+- SHA `d4ee61cd325d630d940a72c58d197309f03c37ac` ;
+- CI pré-audit : run `36338214151` — SUCCESS.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-creature-presentation-binding-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-creature-presentation-binding-v1-2026-09-27`.
+
+Objectif :
+
+Créer le propriétaire pur des données de présentation d'une créature nécessaires au futur éditeur humain Capture, sans toucher au renderer ni au runtime.
+
+Propriétaire :
+
+- `src/contracts/creature-presentation-binding-v1.js`.
+
+Données V1 :
+
+- id du binding ;
+- version ;
+- subjectType = creature ;
+- subjectId ;
+- profileId ;
+- visuel : front obligatoire, back optionnel, icon optionnel ;
+- sockets de projectile/FX positionnés en coordonnées normalisées 0..1 ;
+- chaque socket possède un point front obligatoire et un point back optionnel ;
+- audio générique : attack / hit / ko.
+
+Règle fallback mono-image :
+
+- seule l'image `front` est requise ;
+- back/icon restent optionnels afin de conserver le cas minimal mono-image imposé par la charte ;
+- aucun fallback runtime n'est implémenté dans ce lot.
+
+Règle sockets :
+
+- IDs libres et uniques ;
+- l'UI pourra proposer tête/main/patte/queue/bouche, mais le contrat n'en déduit aucun ;
+- aucune position n'est calculée depuis la morphologie ;
+- une capacité pourra plus tard référencer le socket par son `anchor` de PresentationBinding.
+
+Règle assets :
+
+- uniquement `assetId` logique stable ;
+- aucune URL/chemin physique.
+
+Protégé / interdit :
+
+- aucun Renderer ;
+- aucun Combat Runtime ;
+- aucun Asset Catalog lookup ;
+- aucune UI ;
+- aucun GenSrpG ;
+- aucun DOM/storage/network ;
+- aucune modification de SkillPresentationBindingV1 ;
+- aucun mapping automatique front/back vers player/opponent dans ce lot.
+
+Tests RED :
+
+1. binding complet valide ;
+2. cas mono-image front seulement valide ;
+3. front obligatoire ;
+4. asset IDs physiques/URL refusés ;
+5. sockets uniques ;
+6. coordonnées bornées 0..1 ;
+7. back de socket optionnel ;
+8. audio slots attack/hit/ko seulement ;
+9. sortie profondément gelée ;
+10. sentinelle indépendance.
+
+Critère GREEN :
+
+- RED isolé ;
+- contrat minimal ;
+- CI globale SUCCESS ;
+- documentation ;
+- checkpoint GREEN exact avant composition dans le brouillon créature.
