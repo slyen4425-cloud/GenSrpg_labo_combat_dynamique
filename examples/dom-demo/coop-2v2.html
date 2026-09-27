@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Combat Dynamique — Coop 2v2</title>
+  <link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+  <main class="game game--coop-2v2" data-combat-demo>
+    <section class="arena arena--coop-2v2" data-combat-arena aria-label="Arène de combat coopératif 2 contre 2">
+      <div class="arena__ground" aria-hidden="true"></div>
+
+      <article
+        class="fighter fighter--player"
+        data-demo-slot="player"
+        data-demo-view="player"
+        data-demo-creature="loup_volcanique"
+        data-target-actor="player"
+        role="button"
+        tabindex="0"
+        aria-label="Sélectionner Loup volcanique"
+      >
+        <span class="visually-hidden" data-demo-label>Loup volcanique</span>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="Loup volcanique">
+        </div>
+      </article>
+
+      <article
+        class="fighter fighter--ally"
+        data-demo-slot="ally"
+        data-demo-view="player"
+        data-demo-creature="golem_moussu"
+        data-target-actor="ally"
+        role="button"
+        tabindex="0"
+        aria-label="Sélectionner Golem moussu allié"
+      >
+        <span class="visually-hidden" data-demo-label>Golem moussu</span>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="Golem moussu allié">
+        </div>
+      </article>
+
+      <article
+        class="fighter fighter--opponent"
+        data-demo-slot="opponent"
+        data-demo-view="opponent"
+        data-demo-creature="maraileron"
+        data-target-actor="opponent"
+        role="button"
+        tabindex="0"
+        aria-label="Sélectionner Maraileron adverse"
+      >
+        <span class="visually-hidden" data-demo-label>Maraileron</span>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="Maraileron adverse">
+        </div>
+      </article>
+
+      <article
+        class="fighter fighter--opponent-b"
+        data-demo-slot="opponent-b"
+        data-demo-view="opponent"
+        data-demo-creature="braisombre"
+        data-target-actor="opponent-b"
+        role="button"
+        tabindex="0"
+        aria-label="Sélectionner Braisombre adverse"
+      >
+        <span class="visually-hidden" data-demo-label>Braisombre</span>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="Braisombre adverse">
+        </div>
+      </article>
+
+      <button type="button" class="squad-card squad-card--player" data-target-actor="player">
+        <strong>Loup volcanique</strong>
+        <div class="squad-card__hp">
+          <progress data-combat-hp="player" max="100" value="100"></progress>
+          <span data-combat-hp-value="player">100 / 100 PV</span>
+        </div>
+        <small data-combat-action="player">Prêt</small>
+      </button>
+
+      <button type="button" class="squad-card squad-card--ally" data-target-actor="ally">
+        <strong>Golem moussu · allié</strong>
+        <div class="squad-card__hp">
+          <progress data-combat-hp="ally" max="100" value="100"></progress>
+          <span data-combat-hp-value="ally">100 / 100 PV</span>
+        </div>
+        <small data-combat-action="ally">Prêt</small>
+      </button>
+
+      <button type="button" class="squad-card squad-card--opponent" data-target-actor="opponent">
+        <strong>Maraileron</strong>
+        <div class="squad-card__hp">
+          <progress data-combat-hp="opponent" max="100" value="100"></progress>
+          <span data-combat-hp-value="opponent">100 / 100 PV</span>
+        </div>
+        <small data-combat-action="opponent">Prêt</small>
+      </button>
+
+      <button type="button" class="squad-card squad-card--opponent-b" data-target-actor="opponent-b">
+        <strong>Braisombre</strong>
+        <div class="squad-card__hp">
+          <progress data-combat-hp="opponent-b" max="100" value="100"></progress>
+          <span data-combat-hp-value="opponent-b">100 / 100 PV</span>
+        </div>
+        <small data-combat-action="opponent-b">Prêt</small>
+      </button>
+
+      <section class="coop-controls" aria-label="Capacités du Loup volcanique">
+        <div class="hud__energy">
+          <div class="hud__energy-line">
+            <strong>Votre énergie</strong>
+            <span data-combat-energy-value="player">0 / 10⚡</span>
+          </div>
+          <progress
+            data-combat-energy="player"
+            max="10"
+            value="0"
+            aria-label="Énergie du Loup volcanique"
+          ></progress>
+        </div>
+        <div class="skill-bar__grid" data-combat-skills></div>
+      </section>
+
+      <p
+        class="live-status live-status--coop"
+        data-combat-live-status
+        data-tone="info"
+        role="status"
+      >
+        2v2 coop — touchez une créature pour choisir votre cible.
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="./coop-2v2.js"></script>
+</body>
+</html>
