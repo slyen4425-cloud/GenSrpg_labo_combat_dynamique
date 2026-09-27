@@ -8177,3 +8177,62 @@ Checkpoint GREEN prévu après CI documentaire :
 Étape suivante seulement après fermeture GREEN :
 
 pré-audit du raccord de cette pile avec la **branche 2v2 visuelle réellement validée**, sans réutiliser directement les anciennes branches `capture-package-preview-ui` qui divergent du 2v2 courant.
+
+
+## Micro-lot — loadouts de compétences par acteur V1 — 2026-09-27
+
+Base :
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-adapter-stack-v1-green-2026-09-27` ;
+- SHA : `1d79dcc3c29e7b51f6834affec9e38bcbcf9afd8` ;
+- checkpoint départ : `checkpoint/lab-start-capture-actor-skill-loadouts-v1-2026-09-27` ;
+- branche : `work/lab-capture-actor-skill-loadouts-v1-2026-09-27`.
+
+Cause démontrée pendant le pré-audit UI :
+
+- le format 2v2 est data-driven pour acteurs/équipes ;
+- mais la barre locale rend actuellement toutes les skills chargées ;
+- les trois IA utilisent encore des listes de skill IDs codées en dur ;
+- un raccord éditeur ne doit pas dépendre de ces listes de démo.
+
+Objectif :
+
+Étendre uniquement la sortie de composition Capture avec :
+
+`skillIdsByActor: { [actorId]: string[] }`
+
+Dérivation autorisée :
+
+`actor.creatureId -> exported creature -> creature.skillIds`
+
+Aucune autre règle.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-export-adapter-stack-v1.js`.
+
+Protégé :
+
+- UI 2v2 ;
+- Combat Rules / Runtime ;
+- BattleFormatDefinition ;
+- SkillDefinition ;
+- IA ;
+- présentation / assets ;
+- dépôt GenSrpG.
+
+Tests :
+
+1. 1v1 : loadout joueur/adversaire explicite ;
+2. 2v2 : quatre acteurs utilisent la même dérivation ;
+3. arrays gelés ;
+4. aucune inférence par controller/name/team ;
+5. aucun changement des sorties existantes.
+
+Critère GREEN :
+
+- test RED ciblé ;
+- implémentation dérivée uniquement des données normalisées ;
+- CI SUCCESS ;
+- documentation ;
+- checkpoint exact.
