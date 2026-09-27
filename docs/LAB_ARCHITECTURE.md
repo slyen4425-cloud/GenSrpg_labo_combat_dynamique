@@ -1141,3 +1141,53 @@ Le Combat Runtime expose :
 - `chargeProgress`.
 
 L'UI ne possède aucune horloge locale. Elle affiche ces valeurs uniquement.
+
+
+## Frontière d'entrée Capture / éditeur — V1
+
+Le laboratoire possède désormais une frontière d'entrée explicite destinée au futur éditeur Capture.
+
+Chaîne autorisée :
+
+```
+GenSrpG / éditeur futur
+        |
+        v
+CaptureCombatExportV1
+        |
+        v
+src/adapters/input/capture/
+        |
+        +---- creature -> FighterConfig
+        +---- skill -> SkillDefinition
+        +---- teams/actors -> BattleFormatDefinition
+        +---- rosters -> Roster Session definition
+        +---- presentation -> SkillPresentationBindingV1
+        |
+        v
+CaptureCombatNativeBundleV1
+        |
+        +---- Combat Session
+        +---- Roster Session
+        +---- Presenter / FX via bindings
+```
+
+Propriétaires :
+
+- export portable : `src/contracts/capture-combat-export-v1.js` ;
+- binding de présentation : `src/contracts/skill-presentation-binding-v1.js` ;
+- adaptateurs : `src/adapters/input/capture/` ;
+- bundle natif : `capture-combat-native-bundle-v1.js`.
+
+Invariants :
+
+- le Combat Core ne connaît ni GenSrpG ni Capture ;
+- aucun adaptateur ne lit DOM, stockage, globals ou réseau ;
+- aucune compétence n'est déduite depuis son nom/texte ;
+- les stats RPG non consommées par le moteur ne sont pas converties implicitement ;
+- la présentation utilise des `assetId` stables et reste hors `SkillDefinition` ;
+- l'Asset Catalog résout les ressources physiques séparément ;
+- 1v1 / 2v2 sont des données de `BattleFormatDefinition`, pas des branches globales ;
+- le futur producteur GenSrpG devra construire l'export depuis ses propriétaires restructurés plutôt que livrer ses objets runtime historiques.
+
+Un ancien essai divergent `capture-combat-package.js` combinait export éditeur et structures natives dans un même contrat. Il n'appartient pas à la chaîne V1 courante et ne doit pas être fusionné comme seconde autorité.
