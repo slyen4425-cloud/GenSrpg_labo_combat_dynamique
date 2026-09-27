@@ -7730,3 +7730,38 @@ Critère de fin :
 - aucune dépendance GenSrpG ;
 - aucun changement moteur ;
 - checkpoint GREEN avant le lot skills.
+
+
+### Résultat adaptateur créature CaptureExportV1
+
+RED :
+
+- `tests/unit/capture-creature-adapter-v1.test.mjs` ajouté avant implémentation ;
+- run `36314322830` — FAILURE attendue ;
+- cause : module `creature-adapter-v1.js` absent.
+
+Implémentation :
+
+- `src/adapters/input/capture/creature-adapter-v1.js` ;
+- `adaptCaptureCreature(input, creatureId)` ;
+- `adaptCaptureRosterMember(input, memberId)`.
+
+Garanties :
+
+- FighterConfig est composé uniquement de `creature.id` + `creature.combat` ;
+- `stats`, `progression` et `skillIds` restent dans `sourceMetadata` séparé ;
+- modifier `speed/agilite/defense/level` ne modifie pas le FighterConfig ;
+- membre roster natif = `id / creatureId / displayName / fighterConfigId` ;
+- aucune dépendance GenSrpG ;
+- aucun changement Combat State / Runtime / UI / renderer.
+
+CI GREEN :
+
+- run `36314363779` — SUCCESS ;
+- SHA `425c7d96d8c2acfaaa9eb2e13c0cb1ab1682150f`.
+
+Prochaine étape après checkpoint GREEN :
+
+- adaptateur de compétences ;
+- uniquement SkillDefinitions déjà sémantiques ;
+- aucune inférence depuis nom/texte/ID legacy.
