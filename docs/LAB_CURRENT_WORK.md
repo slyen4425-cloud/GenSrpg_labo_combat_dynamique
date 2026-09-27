@@ -8519,3 +8519,45 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation synchronisée ;
 - checkpoint GREEN exact avant exporter éditeur.
+
+
+### Résultat technique — CaptureSkillEditorDraftV1
+
+RED contractuel :
+
+- test : `tests/unit/capture-skill-editor-draft-v1.test.mjs` ;
+- commit RED : `bca8559da99bd5703aba366adfb29e0d176db5e7` ;
+- CI : run `36334513587` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` sur `src/contracts/capture-skill-editor-draft-v1.js` ;
+- un seul fichier de test en échec.
+
+Implémentation minimale :
+
+- contrat : `src/contracts/capture-skill-editor-draft-v1.js` ;
+- commit : `79908e8f93b14d677d449edbfe6127f74f5c196d` ;
+- CI : run `36334562506` — SUCCESS.
+
+Garanties :
+
+- schéma exact `capture-skill-editor-draft-v1` ;
+- `definition` déléguée au vrai `normalizeSkillDefinition` ;
+- aucune inférence de form/category depuis nom/description/élément ;
+- id du draft et id de SkillDefinition obligatoirement cohérents ;
+- présentation optionnelle déléguée à `normalizeSkillPresentationBindingV1` ;
+- subjectId de présentation obligatoirement cohérent avec la skill ;
+- requiredLevel et usageScopes restent métadonnées d'éditeur séparées ;
+- champs inconnus refusés ;
+- aucune UI/storage/network/GenSrpG/Ability Library/captureFix.
+
+Aucune UI ni runtime modifié ; validation smartphone non requise.
+
+Checkpoint GREEN prévu après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-skill-editor-draft-v1-green-2026-09-27`.
+
+Prochaine étape :
+
+- exporter pur des brouillons éditeur vers les fragments `CaptureCombatExportV1` ;
+- aucune création de CombatSession ;
+- aucune formule ou inférence ;
+- la frontière export existante reste l'autorité de validation finale.
