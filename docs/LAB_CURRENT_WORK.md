@@ -7317,3 +7317,65 @@ Résultat technique du micro-lot interactions / clash FX :
 - CI GREEN documentation architecture incluse : run `36309926477`, SHA `64ddac85b2cd530b70aeb0759b50d381b6c15fe6`.
 
 Validation smartphone requise avant tout checkpoint GREEN final.
+
+
+### Micro-lot 2v2 — lisibilité clash FX + repositionnement acteurs — 2026-09-27
+
+Retour smartphone :
+
+- l'utilisateur ne perçoit pas l'impact visuel au point de rencontre de deux boules de feu ;
+- l'adversaire B doit être plus à gauche et plus haut, presque à la même hauteur que l'adversaire A ;
+- l'allié doit être plus à droite et plus bas.
+
+Base / sécurité :
+
+- SHA de base : `9601b6c85b4ac0764af5b1e49adf387b961a196d` ;
+- checkpoint : `checkpoint/lab-start-2v2-layout-clash-impact-polish-2026-09-27` ;
+- branche : `work/lab-coop-2v2-preview-2026-09-27` ;
+- preview au même SHA et CI GREEN ;
+- `main` et `global-assets` protégées.
+
+Cause visuelle clash démontrée :
+
+- `clash-impact` réutilise bien le sprite d'impact de la compétence ;
+- mais le DOM lui attribue uniquement `.skill-fx--clash-impact` ;
+- les dimensions / z-index renforcés sont portés par `.skill-fx--impact` ;
+- le clash est donc rendu avec la petite taille générique `.skill-fx`, ce qui le rend difficile à percevoir sur smartphone.
+
+Correction ciblée :
+
+- `clash-impact` doit hériter du style d'un impact normal et garder une classe spécifique de clash ;
+- renforcer légèrement sa taille / durée de lecture sans créer un deuxième renderer ;
+- repositionner uniquement les conteneurs 2v2 :
+  - adversaire B : plus à gauche, top presque aligné sur adversaire A ;
+  - allié : plus à droite et plus bas ;
+- conserver les mêmes mécanismes d'anchors FX, qui suivent automatiquement les conteneurs.
+
+Valeurs cibles de composition proposées pour ce test :
+
+- adversaire B général : `top: 32%`, `left: 31%` ;
+- adversaire B smartphone : `top: 32%`, `left: 30%` ;
+- allié général : `top: 66%`, `left: 66%` ;
+- allié smartphone : `top: 66%`, `left: 67%`.
+
+Fichiers autorisés :
+
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `src/core/fx/skill-fx-plan.js` si durée clash nécessaire ;
+- `examples/dom-demo/demo.css` ;
+- tests FX / 2v2 concernés ;
+- présente documentation.
+
+Domaines protégés :
+
+- aucun changement Combat Rules / Runtime / dégâts / ciblage / IA ;
+- aucun second renderer, aucune duplication de projectile ;
+- aucun changement 1v1.
+
+Critères :
+
+- collision boule de feu ↔ boule de feu visuellement évidente sur smartphone ;
+- adversaire B plus haut et plus à gauche ;
+- allié plus bas et plus à droite ;
+- projectiles / impacts / sélection restent alignés ;
+- CI GREEN avant déplacement preview.
