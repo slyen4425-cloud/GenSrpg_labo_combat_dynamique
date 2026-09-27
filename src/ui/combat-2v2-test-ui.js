@@ -212,7 +212,6 @@ export async function mountCoop2v2Test({
       actor.creatureId,
       { displayName: actor.displayName }
     );
-    visuals.setSlotVisible(actor.actorId, true);
   }
 
   const combatAudio = createDomCombatAudio({
@@ -464,53 +463,8 @@ export async function mountCoop2v2Test({
     skillRefs.set(skill.id, { skill, button });
   }
 
-  const aiControllers = Object.freeze([
-    createBattleActorAiController({
-      session,
-      runtime: {
-        startSkill(args) {
-          return runtime.startSkill(args);
-        },
-        hasActiveActionFor(actorId) {
-          return runtime.hasActiveActionFor(actorId);
-        }
-      },
-      actorId: "ally",
-      targetIds: format.teams.enemies,
-      skillIds: ["claw", "fireball", "aerial-dive", "teleport-strike"],
-      skillsById
-    }),
-    createBattleActorAiController({
-      session,
-      runtime: {
-        startSkill(args) {
-          return runtime.startSkill(args);
-        },
-        hasActiveActionFor(actorId) {
-          return runtime.hasActiveActionFor(actorId);
-        }
-      },
-      actorId: "opponent",
-      targetIds: format.teams.players,
-      skillIds: ["fireball", "claw", "aerial-dive", "teleport-strike"],
-      skillsById
-    }),
-    createBattleActorAiController({
-      session,
-      runtime: {
-        startSkill(args) {
-          return runtime.startSkill(args);
-        },
-        hasActiveActionFor(actorId) {
-          return runtime.hasActiveActionFor(actorId);
-        }
-      },
-      actorId: "opponent-b",
-      targetIds: format.teams.players,
-      skillIds: ["aerial-dive", "fireball", "claw", "teleport-strike"],
-      skillsById
-    })
-  ]);
+  const aiControllers = [];
+
 
   const aiReadyAt = new Map([
     ["ally", 700],
@@ -646,6 +600,33 @@ export async function mountCoop2v2Test({
       renderState();
     }
   });
+
+  aiControllers.push(
+    createBattleActorAiController({
+      session,
+      runtime,
+      actorId: "ally",
+      targetIds: format.teams.enemies,
+      skillIds: ["claw", "fireball", "aerial-dive", "teleport-strike"],
+      skillsById
+    }),
+    createBattleActorAiController({
+      session,
+      runtime,
+      actorId: "opponent",
+      targetIds: format.teams.players,
+      skillIds: ["fireball", "claw", "aerial-dive", "teleport-strike"],
+      skillsById
+    }),
+    createBattleActorAiController({
+      session,
+      runtime,
+      actorId: "opponent-b",
+      targetIds: format.teams.players,
+      skillIds: ["aerial-dive", "fireball", "claw", "teleport-strike"],
+      skillsById
+    })
+  );
 
   renderTargetSelection();
   renderState();
