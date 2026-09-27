@@ -8059,3 +8059,34 @@ Critère GREEN :
 - contrat pur unique ;
 - CI globale SUCCESS ;
 - checkpoint GREEN avant adaptateur Capture -> PresentationBindingV1.
+
+
+Résultat micro-lot E1 — PresentationBindingV1 :
+
+- déclaration : commit `172518b96b7ae88846e46c7e07cd257fb5649696`, CI GREEN ;
+- test RED : commit `371714a04c2dc0ef91d06a9b829b4a0ad6baa8dd` ;
+- CI RED : run `36321173652` — FAILURE attendue ;
+- cause RED : module `presentation-binding-v1.js` absent ;
+- 273 tests existants passaient, 1 seul échec sur le nouveau contrat ;
+- implémentation minimale : commit `4663103cf845c4b43aa11e70694bd591387f8da0` ;
+- CI fonctionnelle : run `36321234359` — SUCCESS.
+
+Contrat créé :
+
+- `src/contracts/presentation-binding-v1.js`.
+
+Garanties :
+
+- `schema = presentation-binding-v1` ;
+- sujets V1 : skill / creature ;
+- slots visuels et audio data-driven ;
+- assetId logiques uniquement, URLs/chemins physiques refusés ;
+- scale / attachment / anchor / offsets / layer / layerByView / trigger / playback / rotation / opacity normalisés ;
+- volume/loop audio normalisés ;
+- champs inconnus et champs gameplay refusés ;
+- aucun import demo-assets / SkillDefinition / Combat Core ;
+- aucun DOM / storage / réseau.
+
+Checkpoint final prévu après CI documentaire :
+
+`checkpoint/lab-presentation-binding-v1-green-2026-09-27`.
