@@ -8025,3 +8025,109 @@ Prochaine action après checkpoint GREEN exact :
 - micro-lot F : assembler un `CaptureCombatPackageV1` purement local ;
 - chaîne : export -> fighter configs + skills + battle format + rosters + presentation bindings ;
 - test vrai chemin jusqu'à Combat Session, sans UI et sans GenSrpG.
+
+
+## Réconciliation — pile autoritaire Capture Adapter V1 — 2026-09-27
+
+Base autoritaire :
+
+- `checkpoint/lab-capture-presentation-binding-v1-green-2026-09-27` ;
+- SHA : `a12c50f40a0d8a4ccba3aaeee1b3d162fc100b4a` ;
+- CI : run `36316845123` — SUCCESS.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-adapter-stack-v1-2026-09-27`
+
+Branche :
+
+`work/lab-capture-adapter-stack-v1-2026-09-27`
+
+### Décision d'autorité
+
+Après cartographie GitHub, plusieurs branches historiques/parallèles couvrent des responsabilités proches.
+
+La pile linéaire retenue comme seule lignée d'intégration pour ce chantier est :
+
+1. `checkpoint/lab-capture-adapter-audit-green-2026-09-27` ;
+2. `checkpoint/lab-capture-export-v1-green-2026-09-27` ;
+3. `checkpoint/lab-capture-creature-adapter-v1-green-2026-09-27` ;
+4. `checkpoint/lab-capture-skill-adapter-v1-green-2026-09-27` ;
+5. `checkpoint/lab-capture-roster-format-adapter-v1-green-2026-09-27` ;
+6. `checkpoint/lab-capture-presentation-binding-v1-green-2026-09-27`.
+
+Les branches parallèles suivantes ne doivent pas être fusionnées automatiquement dans cette pile :
+
+- variantes sans suffixe `-v1` issues d'une divergence antérieure ;
+- `capture-creature-fighter-adapter` ;
+- `capture-combat-package` / `capture-package-preview-ui` tant qu'un ré-audit de raccord avec la pile autoritaire et le 2v2 courant n'est pas fait.
+
+Elles restent des historiques Git utiles ; elles ne deviennent pas une seconde autorité active.
+
+### Pourquoi cette lignée
+
+- elle utilise `CaptureCombatExportV1` comme frontière unique ;
+- le Creature Adapter laisse les defaults au vrai `Combat State` ;
+- le Skill Adapter délègue la sémantique au vrai `SkillDefinition` ;
+- roster et format réutilisent leurs contrats natifs ;
+- présentation reste séparée du gameplay par `SkillPresentationBindingV1` ;
+- 1v1 et 2v2 utilisent la même structure de données ;
+- aucun propriétaire ne lit GenSrpG, DOM, storage ou chemins physiques d'assets.
+
+## Micro-lot — composition Capture Adapter Stack V1
+
+Objectif :
+
+Ajouter un point d'entrée pur qui compose les propriétaires GREEN existants, sans recréer leurs règles.
+
+Propriétaire :
+
+- `src/adapters/input/capture/capture-export-adapter-stack-v1.js`.
+
+Entrée :
+
+- un `CaptureCombatExportV1`.
+
+Sortie cible :
+
+- `battleFormat` natif ;
+- `roster` natif ;
+- `fighterConfigs` par `creatureId` ;
+- `fighters` actifs par `actorId` pour `CombatSession` ;
+- `skills` normalisés par ID ;
+- `skillPresentations` par ID, `null` si absent.
+
+Règles :
+
+- composition uniquement ;
+- aucune formule ;
+- aucun default propre à la pile ;
+- aucune inférence par nom/label ;
+- aucune résolution d'asset ;
+- aucun UI/renderer/runtime ;
+- aucune dépendance GenSrpG.
+
+Fichiers autorisés :
+
+- nouveau point d'entrée d'adaptation ;
+- son test d'intégration ;
+- présente documentation.
+
+Tests RED prévus :
+
+1. export 1v1 -> pile native complète ;
+2. export 2v2 -> même chemin, sans `is2v2` ;
+3. vrais `CombatSession` + `RosterSession` consomment les sorties ;
+4. skill normalisé fonctionne dans `previewSkill` ;
+5. presentation binding reste séparé ;
+6. source sans DOM/storage/network/GenSrpG ;
+7. aucun duplicata de logique de validation des sous-adaptateurs.
+
+Critère GREEN :
+
+- RED observé avant implémentation ;
+- composition minimale ;
+- vraie chaîne export -> adapters -> CombatSession/RosterSession testée ;
+- CI globale SUCCESS ;
+- documentation synchronisée ;
+- checkpoint GREEN exact.
