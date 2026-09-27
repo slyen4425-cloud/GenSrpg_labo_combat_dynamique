@@ -47,6 +47,14 @@ function optionalString(value, field) {
     : requiredString(value, field);
 }
 
+function skillIdsFromSlots(slots) {
+  return Object.freeze(
+    slots
+      .map((slot) => slot.skillId)
+      .filter((skillId) => skillId !== null)
+  );
+}
+
 function normalizeSlots(raw) {
   if (!Array.isArray(raw) || raw.length !== SLOT_IDS.length) {
     throw new RangeError(
@@ -77,9 +85,7 @@ function normalizeSlots(raw) {
     });
   });
 
-  const equippedSkillIds = slots
-    .map((slot) => slot.skillId)
-    .filter((skillId) => skillId !== null);
+  const equippedSkillIds = skillIdsFromSlots(slots);
 
   if (
     new Set(equippedSkillIds).size !==
@@ -90,10 +96,7 @@ function normalizeSlots(raw) {
     );
   }
 
-  return Object.freeze({
-    slots: Object.freeze(slots),
-    equippedSkillIds: Object.freeze(equippedSkillIds)
-  });
+  return Object.freeze(slots);
 }
 
 export function normalizeCaptureActiveSkillLoadoutV1(input) {
@@ -114,15 +117,19 @@ export function normalizeCaptureActiveSkillLoadoutV1(input) {
     );
   }
 
-  const normalizedSlots = normalizeSlots(value.slots);
-
   return Object.freeze({
     schema: CAPTURE_ACTIVE_SKILL_LOADOUT_SCHEMA,
     creatureId: requiredString(
       value.creatureId,
       "creatureId"
     ),
-    slots: normalizedSlots.slots,
-    equippedSkillIds: normalizedSlots.equippedSkillIds
+    slots: normalizeSlots(value.slots)
   });
+}
+
+export function captureActiveSkillIdsV1(input) {
+  const loadout =
+    normalizeCaptureActiveSkillLoadoutV1(input);
+
+  return skillIdsFromSlots(loadout.slots);
 }

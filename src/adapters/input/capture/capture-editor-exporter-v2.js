@@ -8,6 +8,7 @@ import {
   normalizeCaptureCreatureEditorDraftV2
 } from "../../../contracts/capture-creature-editor-draft-v2.js";
 import {
+  captureActiveSkillIdsV1,
   normalizeCaptureActiveSkillLoadoutV1
 } from "../../../contracts/capture-active-skill-loadout-v1.js";
 import {
@@ -71,7 +72,7 @@ function toV1CreatureDraft(draft, loadout) {
     resistances: draft.resistances,
     capture: draft.capture,
     combat: draft.combat,
-    skillIds: loadout.equippedSkillIds,
+    skillIds: captureActiveSkillIdsV1(loadout),
     presentationId:
       draft.presentation == null
         ? null
@@ -205,7 +206,7 @@ export function exportCaptureEditorDraftsToCombatExportV2(input) {
 
     const linked = new Set(draft.skillIds);
 
-    for (const skillId of loadout.equippedSkillIds) {
+    for (const skillId of captureActiveSkillIdsV1(loadout)) {
       if (!linked.has(skillId)) {
         throw new RangeError(
           `equipped skill ${skillId} is not linked to creature ${draft.id}`

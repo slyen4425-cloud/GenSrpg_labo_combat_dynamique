@@ -257,11 +257,12 @@ test("human loadout exposes exactly four active slots", () => {
     skillIds: ["fireball", "claw", null, null]
   });
 
-  assert.deepEqual(
-    loadout.equippedSkillIds,
-    ["fireball", "claw"]
-  );
   assert.equal(loadout.slots.length, 4);
+  assert.deepEqual(
+    loadout.slots.map((slot) => slot.skillId),
+    ["fireball", "claw", null, null]
+  );
+  assert.equal("equippedSkillIds" in loadout, false);
 });
 
 test("human battle controls use one data path for 1 to 4 active creatures per team", () => {
