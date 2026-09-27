@@ -109,17 +109,17 @@ test("V8 never hides the opponent roster container", async () => {
   );
 });
 
-test("V8 roster portraits live inside fighter card headers and charge starts hidden", async () => {
+test("fighter HUD orders name then HP then creature icons and charge starts hidden", async () => {
   const html = await readFile("examples/dom-demo/index.html", "utf8");
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
   assert.match(
     html,
-    /combat-card--opponent[\s\S]*combat-card__title[\s\S]*data-roster-reserve="opponent"/
+    /combat-card--opponent[\s\S]*data-combat-name="opponent"[\s\S]*data-combat-hp="opponent"[\s\S]*data-roster-reserve="opponent"/
   );
   assert.match(
     html,
-    /combat-card--player[\s\S]*combat-card__title[\s\S]*data-roster-reserve="player"/
+    /combat-card--player[\s\S]*data-combat-name="player"[\s\S]*data-combat-hp="player"[\s\S]*data-roster-reserve="player"/
   );
   assert.match(
     html,
@@ -130,7 +130,38 @@ test("V8 roster portraits live inside fighter card headers and charge starts hid
     /data-combat-charge-name="opponent"[\s\S]*data-active="false"/
   );
   assert.match(css, /\.reserve\s*\{[\s\S]*position:\s*static/);
+  assert.match(css, /\.reserve__list\s*\{[\s\S]*justify-content:\s*flex-start/);
 });
+
+test("fighter HUD is enlarged consistently for player and opponent without hiding HP values on narrow screens", async () => {
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+
+  assert.match(
+    css,
+    /\.combat-card\s*\{[\s\S]*min-height:\s*clamp\(5rem, 11vw, 6\.5rem\)/
+  );
+  assert.match(
+    css,
+    /\.fighter__hp\s*\{[\s\S]*height:\s*0\.6rem/
+  );
+  assert.match(
+    css,
+    /\.reserve-card\s*\{[\s\S]*width:\s*clamp\(1\.65rem, 5vw, 2\.15rem\)/
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 430px\)[\s\S]*\.combat-card__hp-row > span\s*\{[\s\S]*display:\s*inline/
+  );
+  assert.doesNotMatch(
+    css,
+    /\.combat-card--player[^{]*\{[^}]*min-height/
+  );
+  assert.doesNotMatch(
+    css,
+    /\.combat-card--opponent[^{]*\{[^}]*min-height/
+  );
+});
+
 
 test("V8 fighter HUD owns roster portraits while spatial fighters remain top-based", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
