@@ -8270,3 +8270,46 @@ Critère GREEN :
 - assembleur minimal ;
 - CI globale SUCCESS ;
 - checkpoint GREEN avant preview éditeur.
+
+
+Résultat micro-lot F — CaptureCombatPackageV1 consolidé :
+
+- déclaration : commit `0faa8a921764ea6d9617a633e6e4b6479263f549`, CI GREEN ;
+- test RED : commit `21adb7bd09a832656e2fb9d365f22fae5923b35d` ;
+- CI RED : run `36321652242` — FAILURE attendue ;
+- cause RED : module `combat-package-v1.js` absent ;
+- 290 tests existants passaient, 1 seul échec sur le nouveau test ;
+- implémentation minimale : commit `e93f6b707ea716c5b0acebd3762dbc25c77b4c2a` ;
+- CI fonctionnelle : run `36321694866` — SUCCESS.
+
+Propriétaire créé :
+
+- `src/adapters/input/capture/combat-package-v1.js`.
+
+Sortie validée :
+
+- `schema = capture-combat-package-v1` ;
+- BattleFormat natif ;
+- FighterConfig par creatureId ;
+- initialFighters actor-scoped ;
+- SkillDefinition par skillId ;
+- skillsByCreature ordonnés ;
+- roster natif ;
+- PresentationBindingV1 séparés.
+
+Vrais raccords testés :
+
+- package -> `createCombatSession` ;
+- package -> `createRosterSession` ;
+- skill du package -> `CombatSession.previewSkill`.
+
+Aucune formule gameplay, aucune UI, aucun resolver, aucun storage/network/GenSrpG.
+
+Checkpoint final prévu après CI documentaire :
+
+`checkpoint/lab-capture-combat-package-consolidated-v1-green-2026-09-27`.
+
+Prochaine étape autorisée :
+
+- pré-audit uniquement du seam d'entrée de la démo 2v2 ;
+- objectif : réutiliser la même UI/Runtime avec une source de données package, jamais dupliquer le moteur ou la démo.
