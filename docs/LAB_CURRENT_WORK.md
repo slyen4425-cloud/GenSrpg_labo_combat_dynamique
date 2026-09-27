@@ -6500,3 +6500,15 @@ Vérifications :
 - aucun fichier de `main`, du renderer, de Combat Rules ou de l'Animation Core n'a été modifié.
 
 Le lot est prêt pour publication fast-forward sur `global-assets` puis checkpoint GREEN.
+
+
+### Publication stable — Voltige
+
+Publication fast-forward effectuée sur `global-assets` depuis la branche de travail.
+
+- SHA publié : `8d6dbb0f52f973b70d8a21b06f22e10b37703f4f` ;
+- CI publication : run `36310496761` — SUCCESS ;
+- aucun changement sur `main` ;
+- checkpoint GREEN final prévu : `checkpoint/lab-voltige-assets-green-2026-09-27`.
+
+Le lot est fonctionnellement clos ; la présente note documentaire constitue la clôture de reprise avant création du checkpoint GREEN final.
