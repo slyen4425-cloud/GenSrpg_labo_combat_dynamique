@@ -9293,3 +9293,53 @@ Critère GREEN :
 - CI globale SUCCESS ;
 - documentation ;
 - checkpoint GREEN avant retour à l'UI humaine.
+
+
+### Résultat — Capture Editor Exporter V2
+
+RED :
+
+- commit : `1533707304c88d0a2a4bccd8d03aa346b0b226a1` ;
+- CI : run `36341276086` — FAILURE attendue ;
+- cause isolée : `ERR_MODULE_NOT_FOUND` ;
+- un seul fichier de test en échec.
+
+Implémentation :
+
+- `src/adapters/input/capture/capture-editor-exporter-v2.js` ;
+- commit : `ae47d4d87b14d7e44f12921b410dbd58d4908502` ;
+- CI : run `36341334997` — SUCCESS.
+
+Vrai chemin validé :
+
+`BattleSetupDraft + CreatureDraftV2 + SkillDraftV1 + ActiveSkillLoadoutV1`
+-> `Capture Editor Exporter V2`
+-> `Capture Editor Exporter V1`
+-> `CaptureCombatExportV1`
+-> `Capture Adapter Stack V1`.
+
+Garanties :
+
+- battle/teams/actors/rosters dérivés du Battle Setup Draft ;
+- aucune branche spéciale 1v1/2v2 ;
+- skillIds de combat = uniquement capacités équipées ;
+- capacités liées non équipées conservées sous `metadata.editor.linkedSkillIds` ;
+- une capacité équipée doit être liée et exister dans les skill drafts ;
+- exactement un loadout par créature exportée ;
+- présentation créature sous `presentation.creatures` ;
+- présentation jamais injectée dans `combat` ;
+- V1 réutilisé, non modifié ;
+- sortie consommée par l'Adapter Stack autoritaire ;
+- aucun Runtime/UI/renderer/storage/GenSrpG.
+
+Aucune validation smartphone requise : exporter pur.
+
+Checkpoint GREEN final :
+
+`checkpoint/lab-capture-editor-exporter-v2-green-2026-09-27`.
+
+Prochaine étape avant l'UI humaine :
+
+- pré-audit cooldown réel ;
+- ajouter le cooldown seulement si un propriétaire Runtime propre peut être identifié ;
+- aucun champ UI cooldown avant le GREEN contractuel/runtime.
