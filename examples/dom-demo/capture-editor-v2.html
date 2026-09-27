@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GenSrpG Lab — Éditeur Capture</title>
+  <link rel="stylesheet" href="./capture-editor-v2.css">
+</head>
+<body>
+  <main class="editor-shell" data-capture-editor-human>
+    <header class="editor-header">
+      <div>
+        <p class="eyebrow">GenSrpG · Capture</p>
+        <h1>Éditeur de combat</h1>
+        <p class="subtitle">Configure une créature, les règles du combat et ses capacités sans manipuler les données techniques.</p>
+      </div>
+      <div class="header-state">
+        <span class="state-dot"></span>
+        <span data-editor-summary>Configuration en cours</span>
+      </div>
+    </header>
+
+    <nav class="editor-tabs" aria-label="Sections de l'éditeur">
+      <button type="button" data-editor-tab="creature" data-active="true">
+        <span>Créature</span>
+        <small>Visuels · sockets · stats</small>
+      </button>
+      <button type="button" data-editor-tab="combat">
+        <span>Combat</span>
+        <small>Énergie · format · équipe</small>
+      </button>
+      <button type="button" data-editor-tab="skills">
+        <span>Capacités</span>
+        <small>Effets · timing · FX</small>
+      </button>
+    </nav>
+
+    <section class="editor-panel" data-editor-panel="creature">
+      <article class="card">
+        <div class="card-title">
+          <span class="step">1</span>
+          <div>
+            <h2>Identité</h2>
+            <p>Informations générales de la créature.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Nom
+            <input data-creature-name value="Loup volcanique">
+          </label>
+          <label>Niveau
+            <input data-creature-level type="number" min="1" value="10">
+          </label>
+        </div>
+        <label class="technical-field">Identifiant
+          <input data-creature-id value="crea-loup">
+        </label>
+        <label>Description
+          <textarea data-creature-description rows="2">Créature volcanique rapide.</textarea>
+        </label>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">2</span>
+          <div>
+            <h2>Apparence</h2>
+            <p>Face, dos, icône et posture de combat.</p>
+          </div>
+        </div>
+
+        <div class="asset-trio">
+          <div class="asset-card">
+            <div class="preview-box">
+              <img data-preview-front alt="">
+              <span>Face</span>
+            </div>
+            <label>Image face
+              <select data-creature-front-select data-asset-role="creature" data-required-asset="true">
+                <option value="pack:capture:creature-loup-volcanique-opponent-01">Loup volcanique — face</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="asset-card">
+            <div class="preview-box">
+              <img data-preview-back alt="">
+              <span>Dos</span>
+            </div>
+            <label>Image dos
+              <select data-creature-back-select data-asset-role="creature">
+                <option value="">Aucun</option>
+                <option value="pack:capture:creature-loup-volcanique-player-01" selected>Loup volcanique — dos</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="asset-card">
+            <div class="preview-box preview-box--icon">
+              <img data-preview-icon alt="">
+              <span>Icône</span>
+            </div>
+            <label>Icône
+              <select data-creature-icon-select data-asset-role="creature">
+                <option value="">Aucune</option>
+                <option value="pack:capture:creature-loup-volcanique-icon-01" selected>Loup volcanique — icône</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <label>Style de position
+          <select data-creature-profile>
+            <option value="biped">Bipède</option>
+            <option value="quadruped" selected>Quadrupède</option>
+            <option value="serpent">Serpent / rampant</option>
+            <option value="flying">Volant</option>
+            <option value="massive">Massif / golem</option>
+          </select>
+        </label>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">3</span>
+          <div>
+            <h2>Point de départ des projectiles</h2>
+            <p>Choisis une zone puis touche directement l'image face ou dos.</p>
+          </div>
+        </div>
+
+        <label>Point à placer
+          <select data-socket-kind>
+            <option value="mouth">Bouche</option>
+            <option value="head">Tête</option>
+            <option value="right-hand">Main / patte droite</option>
+            <option value="left-hand">Main / patte gauche</option>
+            <option value="tail">Queue</option>
+            <option value="center">Centre</option>
+          </select>
+        </label>
+
+        <div class="socket-grid">
+          <button class="socket-surface" type="button" data-socket-surface data-socket-view="front">
+            <img data-socket-front-preview alt="">
+            <span>Toucher pour placer · FACE</span>
+          </button>
+          <button class="socket-surface" type="button" data-socket-surface data-socket-view="back">
+            <img data-socket-back-preview alt="">
+            <span>Toucher pour placer · DOS</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">4</span>
+          <div>
+            <h2>Sons de la créature</h2>
+            <p>Les listes utilisent uniquement les sons présents dans le catalogue actif.</p>
+          </div>
+        </div>
+
+        <div class="grid three">
+          <label>Attaque
+            <select data-creature-audio-attack data-asset-role="audio"><option value="">Aucun</option></select>
+          </label>
+          <label>Touché
+            <select data-creature-audio-hit data-asset-role="audio"><option value="">Aucun</option></select>
+          </label>
+          <label>KO / mort
+            <select data-creature-audio-ko data-asset-role="audio"><option value="">Aucun</option></select>
+          </label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">5</span>
+          <div>
+            <h2>Éléments, résistances & Capture</h2>
+            <p>Données propres à la créature.</p>
+          </div>
+        </div>
+
+        <div class="chip-grid">
+          <label class="check-chip"><input type="checkbox" data-element value="fire" checked><span>Feu</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="water"><span>Eau</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="earth"><span>Terre</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="air"><span>Air</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="light"><span>Lumière</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="shadow"><span>Ombre</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="electric"><span>Électricité</span></label>
+        </div>
+
+        <div class="grid three resistance-grid">
+          <label>Rés. Feu %<input type="number" data-resistance="fire" value="35"></label>
+          <label>Rés. Eau %<input type="number" data-resistance="water" value="-20"></label>
+          <label>Rés. Terre %<input type="number" data-resistance="earth" value="0"></label>
+          <label>Rés. Air %<input type="number" data-resistance="air" value="0"></label>
+          <label>Rés. Lumière %<input type="number" data-resistance="light" value="0"></label>
+          <label>Rés. Ombre %<input type="number" data-resistance="shadow" value="0"></label>
+        </div>
+
+        <div class="grid three">
+          <label class="switch-line"><input type="checkbox" data-capturable checked><span>Capturable</span></label>
+          <label>Taux de capture %<input type="number" min="0" max="100" data-capture-rate value="40"></label>
+          <label>Chance d'apparition %<input type="number" min="0" max="100" data-spawn-chance value="20"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <details>
+          <summary>Stats avancées de la créature</summary>
+          <div class="grid three detail-grid">
+            <label>Force<input type="number" min="0" data-stat-force value="12"></label>
+            <label>Agilité<input type="number" min="0" data-stat-agility value="14"></label>
+            <label>Intelligence<input type="number" min="0" data-stat-intelligence value="8"></label>
+            <label>Esprit<input type="number" min="0" data-stat-spirit value="9"></label>
+            <label>Endurance<input type="number" min="0" data-stat-endurance value="13"></label>
+            <label>Initiative<input type="number" min="0" data-stat-initiative value="15"></label>
+          </div>
+        </details>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">6</span>
+          <div>
+            <h2>4 capacités équipées</h2>
+            <p>Le premier slot suit la capacité actuellement éditée.</p>
+          </div>
+        </div>
+        <div class="loadout-grid">
+          <label>Slot 1<select data-loadout-slot><option value="fireball" selected>Boule de feu</option></select></label>
+          <label>Slot 2<select data-loadout-slot><option value="">Vide</option></select></label>
+          <label>Slot 3<select data-loadout-slot><option value="">Vide</option></select></label>
+          <label>Slot 4<select data-loadout-slot><option value="">Vide</option></select></label>
+        </div>
+      </article>
+    </section>
+
+    <section class="editor-panel" data-editor-panel="combat" hidden>
+      <article class="card hero-card">
+        <div class="card-title">
+          <span class="step">1</span>
+          <div>
+            <h2>Énergie de la créature</h2>
+            <p>Ces valeurs appartiennent à la créature, pas à une règle globale cachée.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Énergie max<input type="number" min="0" data-max-energy value="12"></label>
+          <label>Énergie au départ<input type="number" min="0" data-initial-energy value="2"></label>
+          <label>Énergie récupérée<input type="number" min="0" data-energy-charge-amount value="1"></label>
+          <label>Récupération toutes les (ms)<input type="number" min="0" data-energy-charge-interval value="1800"></label>
+          <label>Coût d'un déplacement<input type="number" min="0" data-movement-energy value="2"></label>
+          <label>Vitesse de charge %<input type="number" data-charge-time-modifier value="0"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">2</span>
+          <div>
+            <h2>PV</h2>
+            <p>Valeurs explicites utilisées par le combat.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
+          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">3</span>
+          <div>
+            <h2>Format du combat</h2>
+            <p>Le même chemin de données est utilisé pour 1v1, 2v2, 3v3 ou 4v4.</p>
+          </div>
+        </div>
+        <label>Créatures actives par équipe
+          <select data-active-per-team>
+            <option value="1">1 contre 1</option>
+            <option value="2" selected>2 contre 2</option>
+            <option value="3">3 contre 3</option>
+            <option value="4">4 contre 4</option>
+          </select>
+        </label>
+        <p class="note">La réserve sera ajoutée par le même Battle Setup quand plusieurs créatures différentes seront configurées. Aucun système parallèle n'est créé ici.</p>
+      </article>
+    </section>
+
+    <section class="editor-panel" data-editor-panel="skills" hidden>
+      <article class="card">
+        <div class="card-title">
+          <span class="step">1</span>
+          <div>
+            <h2>Capacité</h2>
+            <p>Type, cible, dégâts, soin et élément.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Nom<input data-skill-name value="Boule de feu"></label>
+          <label class="technical-field">Identifiant<input data-skill-id value="fireball"></label>
+        </div>
+        <label>Description<textarea data-skill-description rows="2">Projectile de feu.</textarea></label>
+
+        <div class="grid three">
+          <label>Type
+            <select data-skill-category>
+              <option value="offensive" selected>Attaque</option>
+              <option value="defensive">Protection</option>
+              <option value="heal">Soin</option>
+              <option value="buff_debuff">Buff / Debuff</option>
+              <option value="counter">Contre</option>
+            </select>
+          </label>
+          <label>Style
+            <select data-skill-form>
+              <option value="contact">Contact</option>
+              <option value="projectile" selected>Projectile</option>
+              <option value="beam">Rayon</option>
+              <option value="area">Zone</option>
+              <option value="self">Sur soi</option>
+              <option value="aura">Aura</option>
+            </select>
+          </label>
+          <label>Élément
+            <select data-skill-element>
+              <option value="">Aucun</option>
+              <option value="fire" selected>Feu</option>
+              <option value="water">Eau</option>
+              <option value="earth">Terre</option>
+              <option value="air">Air</option>
+              <option value="electric">Électricité</option>
+              <option value="light">Lumière</option>
+              <option value="shadow">Ombre</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid four">
+          <label>Dégâts<input type="number" min="0" data-skill-damage value="4"></label>
+          <label>Soin<input type="number" min="0" data-skill-heal value="0"></label>
+          <label>Coût énergie<input type="number" min="0" data-skill-energy-cost value="3"></label>
+          <label>Niveau requis<input type="number" min="1" data-skill-required-level value="1"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">2</span>
+          <div>
+            <h2>Mouvement & cible</h2>
+            <p>Comment la capacité atteint sa cible.</p>
+          </div>
+        </div>
+
+        <label>Déplacement de la créature
+          <select data-skill-approach>
+            <option value="none" selected>Aucun déplacement</option>
+            <option value="ground">Approche au sol</option>
+            <option value="aerial">Attaque aérienne</option>
+            <option value="teleport">Téléportation</option>
+          </select>
+        </label>
+
+        <div class="option-block">
+          <strong>Portée autorisée</strong>
+          <div class="chip-grid">
+            <label class="check-chip"><input type="checkbox" data-skill-distance value="short"><span>Courte</span></label>
+            <label class="check-chip"><input type="checkbox" data-skill-distance value="medium" checked><span>Moyenne</span></label>
+            <label class="check-chip"><input type="checkbox" data-skill-distance value="long" checked><span>Longue</span></label>
+          </div>
+        </div>
+
+        <div class="option-block">
+          <strong>Cibles</strong>
+          <div class="chip-grid">
+            <label class="check-chip"><input type="checkbox" data-skill-target value="enemy" checked><span>Ennemi</span></label>
+            <label class="check-chip"><input type="checkbox" data-skill-target value="ally"><span>Allié</span></label>
+            <label class="check-chip"><input type="checkbox" data-skill-target value="self"><span>Soi-même</span></label>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">3</span>
+          <div>
+            <h2>Timing</h2>
+            <p>Temps gameplay réels, utilisés par le moteur.</p>
+          </div>
+        </div>
+
+        <div class="timing-grid">
+          <label>Préparation (ms)<input type="number" min="0" data-skill-preparation value="900"></label>
+          <label>Vers la cible (ms)<input type="number" min="0" data-skill-travel-time value="650"></label>
+          <label>Récupération (ms)<input type="number" min="0" data-skill-recovery value="450"></label>
+          <label>Recharge / cooldown (ms)<input type="number" min="0" data-skill-cooldown value="2800"></label>
+        </div>
+
+        <div class="grid two">
+          <label>Stun (ms)<input type="number" min="0" data-skill-stun value="0"></label>
+          <label class="switch-line"><input type="checkbox" data-skill-interrupts><span>Peut interrompre une préparation</span></label>
+        </div>
+
+        <label class="switch-line">
+          <input type="checkbox" data-skill-clash checked>
+          <span>Annulation mutuelle avec projectile compatible</span>
+        </label>
+        <label>Groupe de projectile
+          <input data-skill-clash-group value="fire-orb">
+        </label>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">4</span>
+          <div>
+            <h2>Effets visuels</h2>
+            <p>Choisis les effets de cast, déplacement et impact dans la bibliothèque.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Icône
+            <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
+          </label>
+          <label>Socket de départ
+            <select data-skill-socket>
+              <option value="">Centre par défaut</option>
+              <option value="mouth" selected>Bouche</option>
+              <option value="head">Tête</option>
+              <option value="right-hand">Main / patte droite</option>
+              <option value="left-hand">Main / patte gauche</option>
+              <option value="tail">Queue</option>
+            </select>
+          </label>
+          <label>Effet de cast
+            <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
+          </label>
+          <label>Projectile / trajet
+            <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-projectile-fire-01" selected>Projectile feu</option></select>
+          </label>
+          <label>Impact
+            <select data-skill-impact-fx data-asset-role="impact"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-impact-01" selected>Impact feu</option></select>
+          </label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">5</span>
+          <div>
+            <h2>Audio de la capacité</h2>
+            <p>Les choix apparaissent lorsqu'un catalogue audio est présent.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>Son de cast
+            <select data-skill-cast-audio data-asset-role="audio"><option value="">Aucun</option></select>
+          </label>
+          <label>Son d'impact
+            <select data-skill-impact-audio data-asset-role="audio"><option value="">Aucun</option></select>
+          </label>
+        </div>
+      </article>
+    </section>
+
+    <footer class="editor-footer">
+      <div>
+        <strong>Validation</strong>
+        <p data-editor-status data-tone="info">Charge de la bibliothèque visuelle…</p>
+      </div>
+      <button type="button" class="primary-action" data-editor-validate>
+        Vérifier la configuration
+      </button>
+    </footer>
+  </main>
+
+  <script type="module" src="./capture-editor-v2.js"></script>
+</body>
+</html>
