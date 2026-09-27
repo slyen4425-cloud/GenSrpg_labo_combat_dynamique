@@ -143,7 +143,7 @@ test("V9 normal combat lets player damage opponent, then quick AI damages player
   const attack = ai.takeTurn();
   assert.equal(attack.status, "skill_started");
   assert.equal(attack.mode, "quick");
-  assert.equal(attack.skillId, "aerial-dive");
+  assert.equal(attack.skillId, "claw");
   assert.equal(runtime.activeAction.actorId, "opponent");
 
   const hpBefore = session.snapshot().fighters.player.hp;
@@ -159,7 +159,7 @@ test("V9 normal combat lets player damage opponent, then quick AI damages player
   assert.equal(resolutions[1].outcome, "hit");
   assert.equal(
     session.snapshot().fighters.player.hp,
-    hpBefore - offensive["aerial-dive"].effect.damage
+    hpBefore - offensive.claw.effect.damage
   );
 
   runtime.dispose();
