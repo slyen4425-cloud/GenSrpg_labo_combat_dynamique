@@ -10093,3 +10093,56 @@ Statut :
 Checkpoint de prévalidation prévu :
 
 `checkpoint/lab-capture-editor-ownership-cleanup-v1-prevalidation-green-2026-09-27`.
+
+
+## Micro-lot — Capture Editor Skill Library Integration V1 — 2026-09-27
+
+Base UI :
+
+- `checkpoint/lab-capture-editor-ownership-cleanup-v1-prevalidation-green-2026-09-27`;
+- SHA `943ff302e3ad1da3e6ac682dc187a31b6036e842`.
+
+Dépendance data GREEN adoptée sans modification :
+
+- `checkpoint/lab-combat-skill-library-v1-green-2026-09-27`;
+- SHA `88090639372fef7bbdf713118177605042327bb5`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-skill-library-integration-v1-2026-09-27`.
+
+Branche :
+
+`work/lab-capture-editor-skill-library-integration-v1-2026-09-27`.
+
+Objectif :
+
+Remplacer la capacité Fireball codée dans l'écran par une vraie bibliothèque de capacités chargée depuis `data/combat/skills/catalog.v1.json`.
+
+Architecture :
+
+`catalog.v1.json -> Combat Skill Library V1 -> boot de démo -> mountCaptureEditorHumanV2(skillLibrary)`
+
+Règles :
+
+- l'UI ne fait aucun fetch de skill data ;
+- le boot charge la bibliothèque et l'injecte ;
+- le composant reçoit les définitions déjà normalisées ;
+- choisir une capacité remplit les contrôles gameplay depuis SkillDefinition ;
+- aucun FX/audio n'est inféré depuis le nom/id ;
+- les 4 slots sont alimentés par la bibliothèque ;
+- validation/export inclut les SkillDrafts réellement équipés ;
+- une capacité éditée peut remplacer la définition bibliothèque du même id dans l'export ;
+- aucune liste de skills métier codée dans le HTML.
+
+Protégé :
+
+- Combat Rules ;
+- SkillDefinition ;
+- library V1 GREEN ;
+- Runtime ;
+- Renderer ;
+- Asset catalog ;
+- GenSrpG.
+
+Validation mobile obligatoire avant GREEN final UI.
