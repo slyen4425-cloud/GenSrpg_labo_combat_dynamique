@@ -265,8 +265,8 @@ test("human loadout exposes exactly four active slots", () => {
   assert.equal("equippedSkillIds" in loadout, false);
 });
 
-test("human battle controls use one data path for 1 to 4 active creatures per team", () => {
-  for (const activePerTeam of [1, 2, 3, 4]) {
+test("human battle controls use one data path for 1v1 or 2v2 only", () => {
+  for (const activePerTeam of [1, 2]) {
     const draft = buildHumanBattleSetupV1({
       battleId: "human-preview",
       localCreatureId: "crea-loup",
@@ -283,8 +283,21 @@ test("human battle controls use one data path for 1 to 4 active creatures per te
       activePerTeam * 2
     );
   }
-});
 
+  for (const activePerTeam of [3, 4]) {
+    assert.throws(
+      () => buildHumanBattleSetupV1({
+        battleId: "human-preview",
+        localCreatureId: "crea-loup",
+        localDisplayName: "Loup",
+        opponentCreatureId: "crea-enemy",
+        opponentDisplayName: "Adversaire",
+        activePerTeam
+      }),
+      /1v1|2v2/i
+    );
+  }
+});
 test("human editor composes the real Exporter V2 path", () => {
   const localSkill = buildHumanSkillDraftV1(skillFields());
   const creature = buildHumanCreatureDraftV2(creatureFields());
