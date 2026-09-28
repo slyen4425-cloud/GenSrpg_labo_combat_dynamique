@@ -48,31 +48,40 @@ async function fetchCreatureMeta(url, fetchImpl) {
   });
 }
 
-function creatureAssetUrl(meta, relativePath) {
-  const url = new URL(relativePath, meta.assetBaseUrl);
-  if (meta.visualRevision) {
-    url.searchParams.set("v", meta.visualRevision);
-  }
-  return url.href;
-}
 
-function requiredElement(root, selector) {
-  const element = root.querySelector(selector);
-  if (!element) {
-    throw new Error(`Demo element not found: ${selector}`);
-  }
-  return element;
-}
-
-export async function mountCombatDemo({
-  root,
+export async function loadCombatDemoVisualSource({
+  nativeVisualSource = null,
   fetchImpl = fetch
-}) {
-  if (!root || typeof root.querySelector !== "function") {
-    throw new TypeError("root must provide querySelector()");
-  }
-  if (typeof fetchImpl !== "function") {
-    throw new TypeError("fetchImpl must be a function");
+} = {}) {
+  if (nativeVisualSource !== null) {
+    if (
+      !nativeVisualSource ||
+      typeof nativeVisualSource !== "object" ||
+      Array.isArray(nativeVisualSource)
+    ) {
+      throw new TypeError(
+        "nativeVisualSource must be an object"
+      );
+    }
+    if (!Array.isArray(nativeVisualSource.profiles)) {
+      throw new TypeError(
+        "nativeVisualSource.profiles must be an array"
+      );
+    }
+    if (!Array.isArray(nativeVisualSource.creatureMetas)) {
+      throw new TypeError(
+        "nativeVisualSource.creatureMetas must be an array"
+      );
+    }
+
+    return Object.freeze({
+      profiles: Object.freeze([
+        ...nativeVisualSource.profiles
+      ]),
+      creatureMetas: Object.freeze([
+        ...nativeVisualSource.creatureMetas
+      ])
+    });
   }
 
   const [
@@ -91,13 +100,83 @@ export async function mountCombatDemo({
     fetchCreatureMeta(DATA_URLS.creatures.golemMoussu, fetchImpl)
   ]);
 
-  const profiles = createProfileRegistry([serpentine, drake]);
-  const creatureMetas = new Map([
-    [maraileron.id, maraileron],
-    [braisombre.id, braisombre],
-    [loupVolcanique.id, loupVolcanique],
-    [golemMoussu.id, golemMoussu]
-  ]);
+  return Object.freeze({
+    profiles: Object.freeze([
+      serpentine,
+      drake
+    ]),
+    creatureMetas: Object.freeze([
+      maraileron,
+      braisombre,
+      loupVolcanique,
+      golemMoussu
+    ])
+  });
+}
+
+function creatureAssetUrl(meta, relativePath) {
+  const url = new URL(relativePath, meta.assetBaseUrl);
+  if (meta.visualRevision) {
+    url.searchParams.set("v", meta.visualRevision);
+  }
+  return url.href;
+}
+
+function requiredElement(root, selector) {
+  const element = root.querySelector(selector);
+  if (!element) {
+    throw new Error(`Demo element not found: ${selector}`);
+  }
+  return element;
+}
+
+export async function mountCombatDemo({
+  root,
+  fetchImpl = fetch,
+  nativeVisualSource = null
+}) {
+  if (!root || typeof root.querySelector !== "function") {
+    throw new TypeError("root must provide querySelector()");
+  }
+  if (typeof fetchImpl !== "function") {
+    throw new TypeError("fetchImpl must be a function");
+  }
+
+  const visualSource =
+    await loadCombatDemoVisualSource({
+      nativeVisualSource,
+      fetchImpl
+    });
+
+  const profiles = createProfileRegistry(
+    visualSource.profiles
+  );
+  const creatureMetas = new Map(
+    visualSource.creatureMetas.map((meta) => [
+      meta.id,
+      meta
+    ])
+  );
+
+  if (creatureMetas.size === 0) {
+    throw new RangeError(
+      "combat visual source must contain at least one creature"
+    );
+  }
+
+  const creatureIds = [...creatureMetas.keys()];
+  const preferredCreatureId = (
+    preferredId,
+    fallbackIndex = 0
+  ) =>
+    creatureMetas.has(preferredId)
+      ? preferredId
+      : creatureIds[
+          Math.min(
+            fallbackIndex,
+            creatureIds.length - 1
+          )
+        ];
 
   let disposed = false;
   const arena = requiredElement(root, "[data-combat-arena]");
@@ -130,12 +209,12 @@ export async function mountCombatDemo({
 
       const defaultCreatureId =
         key === "player"
-          ? maraileron.id
+          ? preferredCreatureId("maraileron", 0)
           : key === "opponent"
-            ? braisombre.id
+            ? preferredCreatureId("braisombre", 1)
             : view === "player"
-              ? loupVolcanique.id
-              : golemMoussu.id;
+              ? preferredCreatureId("loup_volcanique", 0)
+              : preferredCreatureId("golem_moussu", 1);
       const initialCreatureId =
         container.dataset?.demoCreature ?? defaultCreatureId;
       const initialMeta = creatureMetas.get(initialCreatureId);
