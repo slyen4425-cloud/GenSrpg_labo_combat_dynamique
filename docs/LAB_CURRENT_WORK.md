@@ -11592,3 +11592,69 @@ CI :
 Checkpoint final :
 
 `checkpoint/lab-capture-portable-native-skills-v1-green-2026-09-28`.
+
+
+## Micro-lot UI — classification audio par rôle dans l'éditeur Capture V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-portable-native-skills-v1-green-2026-09-28` ;
+- SHA : `165fe02781a7fd3ff58b267f904f7b6c6efabfd1`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-audio-role-taxonomy-ui-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-audio-role-taxonomy-ui-v1-2026-09-28`.
+
+Source autoritaire existante :
+
+- catalogue : `data/presentation/audio/private-audio-catalog.v1.json` ;
+- 173 métadonnées ;
+- dépôt source privé : `slyen4425-cloud/GenSrpG_audio_prive` ;
+- ref : `work/audio-catalog-classification-2026-09-26` ;
+- révision : `01ffe9c8c6ec73d974f572f7e648461a48470e8a` ;
+- rôles déjà validés : voice, impact, release, movement, cast, travel, death, ui, heal, equip, loot, item, other, preparation.
+
+Cause de la régression UX :
+
+- l'éditeur filtre bien par `roles`, mais regroupe visuellement les options par `category` (dossier source : academie, inferno, etc.) ;
+- la taxonomie métier issue de l'audit audio n'est donc pas visible dans les sélecteurs.
+
+Objectif :
+
+1. conserver le catalogue existant inchangé comme source de vérité ;
+2. construire un modèle d'options UI groupé par rôle métier ;
+3. respecter l'ordre des rôles accepté par chaque sélecteur ;
+4. afficher la catégorie/source comme information secondaire dans le libellé, pas comme groupe principal ;
+5. ne jamais recopier ni reclasser les 173 entrées.
+
+Propriétaires :
+
+- classification : catalogue audio privé ;
+- présentation des groupes : UI model dédié ;
+- DOM : Human Editor.
+
+Interdits :
+
+- aucune nouvelle classification heuristique ;
+- aucun renommage d'assetId ;
+- aucune URL privée ;
+- aucun binaire audio dans le labo ;
+- aucun global/storage ;
+- aucun changement Combat Core.
+
+RED :
+
+- modèle UI de groupes par rôle absent ;
+- un sélecteur attaque `release,voice` doit produire les groupes métier dans cet ordre ;
+- impact / death / cast / preparation doivent rester distingués ;
+- l'éditeur doit utiliser ce modèle au lieu du regroupement par dossier source.
+
+Critère final :
+
+- CI complète verte ;
+- preview publiée ;
+- **PREVALIDATION UI smartphone** jusqu'au retour utilisateur.
