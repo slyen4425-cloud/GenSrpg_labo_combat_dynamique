@@ -10054,3 +10054,54 @@ Checkpoint GREEN prévu après CI du présent SHA documentaire :
 
 - scale créature réel : contrat présentation -> VisualActor -> renderer -> UI ;
 - puis pont éditeur -> combat test sans storage ou contournement.
+
+
+## Micro-lot — scale créature réel V1 — 2026-09-28
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-feedback-ui-repair-v1-green-2026-09-28` ;
+- SHA `a047a4aeb0942778e4f09af3bb8a2b9a8c7fab43`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-creature-scale-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-creature-scale-v1-2026-09-28`.
+
+Constat :
+
+- `VisualActor.scale` existe déjà et est appliqué par `composeDomTransform()` / `DomActorRenderer` ;
+- `CreaturePresentationBindingV1` ne transporte aucune taille créature ;
+- ajouter seulement un slider UI serait donc une fausse fonctionnalité.
+
+Décision :
+
+1. ne pas modifier silencieusement `CreaturePresentationBindingV1` ;
+2. créer `CreaturePresentationBindingV2` avec `displayScale` explicite ;
+3. créer un adaptateur pur Binding V2 -> `VisualActor` afin de prouver le vrai chemin jusqu'au renderer ;
+4. conserver V1 intact pour compatibilité ;
+5. aucune formule de taille depuis profil/nom/type de créature.
+
+Valeur :
+
+- `displayScale` : nombre fini strictement > 0 ;
+- valeur par défaut : 1 ;
+- pas de limite arbitraire dans le contrat ;
+- l'UI pourra ensuite proposer une plage ergonomique sans modifier la sémantique.
+
+Hors lot :
+
+- UI éditeur ;
+- Exporter Capture V3 ;
+- pont éditeur -> combat test ;
+- stats dérivées / buff-debuff.
+
+RED :
+
+- Binding V2 absent ;
+- adaptateur Binding V2 -> VisualActor absent ;
+- preuve renderer : displayScale 1.45 doit produire un transform DOM contenant `scale(1.45, 1.45)` ;
+- V1 reste inchangé et refuse le champ V2.
