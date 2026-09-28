@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "catalog": "gensrpg-combat-skill-library",
+  "entries": [
+    {
+      "id": "aerial-dive",
+      "label": "Plongeon aérien",
+      "file": "aerial-dive.skill.json"
+    },
+    {
+      "id": "claw",
+      "label": "Griffe",
+      "file": "claw.skill.json"
+    },
+    {
+      "id": "contact-counter",
+      "label": "Contre de contact",
+      "file": "contact-counter.skill.json"
+    },
+    {
+      "id": "dodge",
+      "label": "Esquive",
+      "file": "dodge.skill.json"
+    },
+    {
+      "id": "fire-immunity",
+      "label": "Immunité feu",
+      "file": "fire-immunity.skill.json"
+    },
+    {
+      "id": "fireball",
+      "label": "Boule de feu",
+      "file": "fireball.skill.json"
+    },
+    {
+      "id": "mirror-shield",
+      "label": "Bouclier miroir",
+      "file": "mirror-shield.skill.json"
+    },
+    {
+      "id": "stun-bolt",
+      "label": "Projectile étourdissant",
+      "file": "stun-bolt.skill.json"
+    },
+    {
+      "id": "teleport-strike",
+      "label": "Frappe téléportée",
+      "file": "teleport-strike.skill.json"
+    }
+  ]
+}
