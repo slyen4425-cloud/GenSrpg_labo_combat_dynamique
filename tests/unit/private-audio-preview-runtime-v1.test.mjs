@@ -25,7 +25,7 @@ test("private audio preview delivery exposes only the three authorized runtime t
   );
 });
 
-test("Capture editor preview resolves private audio delivery before demo fallback", async () => {
+test("Capture editor preview resolves full private audio runtime before demo fallback", async () => {
   const source = await fs.readFile(
     new URL(
       "../../examples/dom-demo/capture-editor-v2.js",
@@ -36,10 +36,10 @@ test("Capture editor preview resolves private audio delivery before demo fallbac
 
   assert.match(
     source,
-    /privateAudioPreviewAssetV1/
+    /privateAudioRuntimeAssetV1/
   );
   assert.match(
     source,
-    /privateAudioPreviewAssetV1\(assetId\)\s*\?\?\s*demoPresentationAssets\.audioAsset\(assetId\)/
+    /privateAudioRuntimeAssetV1\(assetId\)\s*\?\?\s*demoPresentationAssets\.audioAsset\(assetId\)/
   );
 });
