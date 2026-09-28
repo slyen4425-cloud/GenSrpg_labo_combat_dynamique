@@ -18,6 +18,15 @@ import {
   globalVisualAssetUrl
 } from "../assets/global-visual-library.js";
 
+const AUDIO_METADATA_URL = new URL(
+  "../../data/presentation/audio/global-audio-metadata.v1.json",
+  import.meta.url
+);
+const SKILL_CATALOG_URL = new URL(
+  "../../data/combat/skills/skill-catalog.v1.json",
+  import.meta.url
+);
+
 function clamp01(value) {
   return Math.min(1, Math.max(0, value));
 }
@@ -733,6 +742,172 @@ function populateSelect(select, assets, role) {
   }
 }
 
+function audioRolesForUi(role) {
+  const byRole = {
+    attack: ["release", "cast", "voice"],
+    hit: ["impact"],
+    ko: ["death"],
+    cast: ["cast", "release"],
+    impact: ["impact"]
+  };
+  return byRole[role] ?? [role];
+}
+
+function populateAudioSelect(select, entries, role) {
+  const previous = select.value;
+  const accepted = new Set(audioRolesForUi(role));
+  select.textContent = "";
+  createOption(select, "", "Aucun");
+
+  const filtered = entries.filter((entry) =>
+    (entry.roles ?? []).some((value) => accepted.has(value))
+  );
+
+  for (const entry of filtered.sort((a, b) =>
+    (a.label ?? a.assetId).localeCompare(b.label ?? b.assetId, "fr")
+  )) {
+    createOption(
+      select,
+      entry.assetId,
+      (entry.label ?? entry.assetId) + " · " + (entry.family ?? "audio")
+    );
+  }
+
+  if (
+    previous &&
+    [...select.options].some((option) => option.value === previous)
+  ) {
+    select.value = previous;
+  }
+}
+
+async function hydrateAudioMetadata(root) {
+  const response = await fetch(AUDIO_METADATA_URL, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue audio indisponible (" + response.status + ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? catalog.entries
+    : [];
+
+  for (const select of root.querySelectorAll("[data-audio-role]")) {
+    populateAudioSelect(
+      select,
+      entries,
+      select.dataset.audioRole
+    );
+  }
+
+  return catalog;
+}
+
+function setCheckboxGroup(root, selector, values) {
+  const selected = new Set(values ?? []);
+  for (const input of root.querySelectorAll(selector)) {
+    input.checked = selected.has(input.value);
+  }
+}
+
+function applySkillDefinitionToForm(root, skill) {
+  one(root, "[data-skill-id]").value = skill.id ?? "";
+  one(root, "[data-skill-name]").value = skill.name ?? "";
+  one(root, "[data-skill-category]").value = skill.category ?? "offensive";
+  one(root, "[data-skill-form]").value = skill.form ?? "contact";
+  one(root, "[data-skill-element]").value = skill.element ?? "";
+  one(root, "[data-skill-approach]").value = skill.approachMode ?? "none";
+  one(root, "[data-skill-energy-cost]").value = skill.energyCost ?? 0;
+  one(root, "[data-skill-preparation]").value = skill.preparationMs ?? 0;
+  one(root, "[data-skill-travel-time]").value = skill.travelMs ?? 0;
+  one(root, "[data-skill-recovery]").value = skill.recoveryMs ?? 0;
+  one(root, "[data-skill-cooldown]").value = skill.cooldownMs ?? 0;
+  one(root, "[data-skill-damage]").value = skill.effect?.damage ?? 0;
+  one(root, "[data-skill-heal]").value = skill.effect?.heal ?? 0;
+  one(root, "[data-skill-stun]").value = skill.effect?.stunMs ?? 0;
+  one(root, "[data-skill-interrupts]").checked =
+    skill.effect?.interruptsPreparation === true;
+  setCheckboxGroup(
+    root,
+    "[data-skill-distance]",
+    skill.allowedDistances ?? []
+  );
+  setCheckboxGroup(
+    root,
+    "[data-skill-target]",
+    skill.targetRelations ?? []
+  );
+  one(root, "[data-skill-clash]").checked =
+    skill.projectileClash?.mode === "mutual_cancel";
+  one(root, "[data-skill-clash-group]").value =
+    skill.projectileClash?.group ?? "";
+
+  const firstSlot = root.querySelector("[data-loadout-slot]");
+  if (firstSlot) {
+    firstSlot.textContent = "";
+    createOption(firstSlot, skill.id, skill.name ?? skill.id);
+    firstSlot.value = skill.id;
+  }
+}
+
+async function hydrateSkillCatalog(root, listen) {
+  const response = await fetch(SKILL_CATALOG_URL, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(
+      "Bibliothèque de capacités indisponible (" + response.status + ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? catalog.entries
+    : [];
+  const select = one(root, "[data-skill-library-select]");
+  select.textContent = "";
+
+  for (const entry of entries) {
+    createOption(select, entry.file, entry.label ?? entry.id);
+  }
+
+  async function loadEntry(entry) {
+    if (!entry) {
+      return;
+    }
+    const url = new URL(entry.file, SKILL_CATALOG_URL);
+    const definitionResponse = await fetch(url, { cache: "no-store" });
+    if (!definitionResponse.ok) {
+      throw new Error(
+        "Capacité indisponible (" + definitionResponse.status + ")"
+      );
+    }
+    applySkillDefinitionToForm(
+      root,
+      await definitionResponse.json()
+    );
+  }
+
+  const initial =
+    entries.find((entry) => entry.id === "fireball") ??
+    entries[0] ??
+    null;
+
+  if (initial) {
+    select.value = initial.file;
+    await loadEntry(initial);
+  }
+
+  listen(select, "change", () => {
+    const entry = entries.find((item) => item.file === select.value);
+    void loadEntry(entry).catch((error) => {
+      setStatus(root, error.message, "error");
+    });
+  });
+
+  return catalog;
+}
+
 async function hydrateAssetCatalog(root, listen) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
@@ -847,6 +1022,30 @@ function socketList(store) {
   }
 
   return sockets;
+}
+
+function syncSkillSocketOptions(root, sockets) {
+  const select = one(root, "[data-skill-socket]");
+  const previous = select.value;
+  const available = socketList(sockets);
+
+  select.textContent = "";
+  createOption(select, "", "Centre de la créature");
+
+  for (const socket of available) {
+    createOption(
+      select,
+      socket.id,
+      socket.label || socket.id
+    );
+  }
+
+  if (
+    previous &&
+    available.some((socket) => socket.id === previous)
+  ) {
+    select.value = previous;
+  }
 }
 
 function updateSocketMarker(surface, point) {
@@ -1173,6 +1372,7 @@ export function mountCaptureEditorHumanV2({
   }
 
   setTab(root, "creature");
+  syncSkillSocketOptions(root, sockets);
 
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
@@ -1200,6 +1400,7 @@ export function mountCaptureEditorHumanV2({
 
       current[surface.dataset.socketView] = point;
       sockets.set(socketId, current);
+      syncSkillSocketOptions(root, sockets);
       updateSocketMarker(surface, point);
       setStatus(
         root,
@@ -1292,12 +1493,16 @@ export function mountCaptureEditorHumanV2({
 
   listen(validateButton, "click", validate);
 
-  hydrateAssetCatalog(root, listen)
+  Promise.all([
+    hydrateAssetCatalog(root, listen),
+    hydrateAudioMetadata(root),
+    hydrateSkillCatalog(root, listen)
+  ])
     .then(() => {
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèque visuelle chargée. Tu peux configurer la créature.",
+          "Bibliothèques visuelles, audio et capacités chargées.",
           "info"
         );
       }
@@ -1306,8 +1511,7 @@ export function mountCaptureEditorHumanV2({
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèque visuelle indisponible : " +
-            error.message,
+          "Bibliothèque indisponible : " + error.message,
           "error"
         );
       }
