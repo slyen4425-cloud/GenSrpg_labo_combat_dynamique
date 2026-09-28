@@ -38,7 +38,8 @@ import {
   buildPrivateAudioRoleGroupsV1
 } from "./private-audio-role-groups-v1.js";
 import {
-  resolveCaptureSkillSaveModeV1
+  resolveCaptureSkillSaveModeV1,
+  nextCaptureSkillDraftIdV1
 } from "./capture-editor-skill-save-mode-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
@@ -777,6 +778,56 @@ function writeSkillTemplateFields(root, fields) {
 
   for (const [selector, value] of mapping) {
     one(root, selector).value = String(value ?? "");
+  }
+}
+
+function prepareNewSkillDraftFields(root, id) {
+  const values = [
+    ["[data-skill-id]", id],
+    ["[data-skill-name]", "Nouvelle capacité"],
+    ["[data-skill-description]", ""],
+    ["[data-skill-category]", "offensive"],
+    ["[data-skill-form]", "contact"],
+    ["[data-skill-element]", ""],
+    ["[data-skill-damage]", 0],
+    ["[data-skill-heal]", 0],
+    ["[data-skill-energy-cost]", 0],
+    ["[data-skill-required-level]", 1],
+    ["[data-skill-approach]", "none"],
+    ["[data-skill-preparation]", 0],
+    ["[data-skill-travel-time]", 0],
+    ["[data-skill-recovery]", 0],
+    ["[data-skill-cooldown]", 0],
+    ["[data-skill-stun]", 0],
+    ["[data-skill-clash-group]", "projectile-default"],
+    ["[data-skill-icon]", ""],
+    ["[data-skill-socket]", ""],
+    ["[data-skill-cast-fx]", ""],
+    ["[data-skill-cast-scale]", 1],
+    ["[data-skill-travel-fx]", ""],
+    ["[data-skill-travel-scale]", 1],
+    ["[data-skill-cast-layer-player]", "front"],
+    ["[data-skill-cast-layer-opponent]", "front"],
+    ["[data-skill-travel-layer-player]", "front"],
+    ["[data-skill-travel-layer-opponent]", "front"],
+    ["[data-skill-impact-fx]", ""],
+    ["[data-skill-impact-scale]", 1],
+    ["[data-skill-cast-audio]", ""],
+    ["[data-skill-impact-audio]", ""]
+  ];
+
+  for (const [selector, value] of values) {
+    one(root, selector).value = String(value);
+  }
+
+  one(root, "[data-skill-interrupts]").checked = false;
+  one(root, "[data-skill-clash]").checked = false;
+
+  for (const input of root.querySelectorAll("[data-skill-distance]")) {
+    input.checked = true;
+  }
+  for (const input of root.querySelectorAll("[data-skill-target]")) {
+    input.checked = input.value === "enemy";
   }
 }
 
@@ -1594,6 +1645,10 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-skill-library-state]"
   );
+  const newSkillButton = one(
+    root,
+    "[data-skill-new]"
+  );
   const createSkillButton = one(
     root,
     "[data-skill-create]"
@@ -1764,6 +1819,26 @@ export function mountCaptureEditorHumanV2({
     );
   });
 
+  listen(newSkillButton, "click", () => {
+    const nextId = nextCaptureSkillDraftIdV1({
+      configuredSkillIds: [...configuredSkills.keys()]
+    });
+
+    librarySelect.value = "";
+    updateLibraryState(null);
+    prepareNewSkillDraftFields(root, nextId);
+    selectedLegacyState = null;
+    skillDirty = true;
+
+    setStatus(
+      root,
+      "Nouvelle capacité prête : configure-la puis utilise « Enregistrer comme nouvelle ».",
+      "info"
+    );
+
+    one(root, "[data-skill-name]").focus?.();
+  });
+
   listen(createSkillButton, "click", () => {
     try {
       persistCurrentSkill("create");
@@ -1797,6 +1872,7 @@ export function mountCaptureEditorHumanV2({
   ) {
     if (
       field === librarySelect ||
+      field === newSkillButton ||
       field === createSkillButton ||
       field === updateSkillButton
     ) {
