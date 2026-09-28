@@ -12116,3 +12116,57 @@ Checkpoint de prévalidation visé :
 Preview visée :
 
 `preview/lab-private-audio-preview-runtime-v1-2026-09-28`.
+
+
+## Micro-lot UI — scale FX Cast / Projectile / Impact V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-private-audio-preview-runtime-v1-prevalidation-green-2026-09-28` ;
+- SHA : `ba0d38c038eae92a00bcc6604a01d7ec93b166d5`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-skill-fx-scale-controls-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-skill-fx-scale-controls-v1-2026-09-28`.
+
+Retour utilisateur :
+
+- les FX de Boule de feu sont trop petits ;
+- l'utilisateur veut un réglage séparé pour Cast, Projectile et Impact.
+
+Diagnostic :
+
+- `SkillPresentationBindingV2` possède déjà `visual.<slot>.displayScale` via le contrat V1 compatible ;
+- `dom-skill-fx` applique déjà ce scale aux trois familles ;
+- le Human Editor force actuellement `displayScale: 1` pour tous les slots.
+
+Objectif :
+
+1. rendre `visualSlot()` pilotable par `displayScale` ;
+2. exposer trois contrôles séparés Cast / Projectile / Impact ;
+3. conserver la plage contractuelle 0.25..4 du renderer ;
+4. initialiser la Boule de feu avec des valeurs de preview plus lisibles, sans règle spéciale dans le renderer ;
+5. ne toucher ni au Combat Core ni aux timings.
+
+Propriétaires :
+
+- valeur : Skill Presentation ;
+- saisie : Human Editor ;
+- rendu : renderer existant inchangé.
+
+RED :
+
+- les trois scales ne sont pas exportés depuis l'éditeur ;
+- les trois contrôles UI sont absents ;
+- Fireball reste à scale 1 pour ses trois FX.
+
+Critère final :
+
+- RED prouvé ;
+- CI complète verte ;
+- preview publiée ;
+- PREVALIDATION UI smartphone.
