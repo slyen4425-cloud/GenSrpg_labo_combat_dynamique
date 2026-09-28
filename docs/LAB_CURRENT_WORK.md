@@ -12170,3 +12170,45 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - PREVALIDATION UI smartphone.
+
+
+### Résultat — scale FX Cast / Projectile / Impact V1
+
+RED :
+
+- test : `tests/unit/skill-fx-scale-controls-v1.test.mjs` ;
+- SHA RED : `40c174db732515d5b3b4654c71e4a6ffb6f0af8c` ;
+- CI `36459847451` — FAILURE attendue.
+
+Correction :
+
+- `visualSlot()` accepte désormais un `displayScale` explicite ;
+- validation 0.25..4 ;
+- l'éditeur expose :
+  - `data-skill-cast-scale` ;
+  - `data-skill-travel-scale` ;
+  - `data-skill-impact-scale` ;
+- ces trois valeurs sont exportées dans `SkillPresentationBindingV2` ;
+- le renderer existant applique déjà ces valeurs, donc aucun changement Render Adapter / Combat Core ;
+- valeurs initiales Fireball de preview :
+  - cast 1.60 ;
+  - projectile 1.90 ;
+  - impact 1.70.
+
+SHA technique :
+
+`fb4e35eb2d7c07e7fe4a56699a1899765f85696b`.
+
+CI :
+
+- run `36459975160` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint de prévalidation visé :
+
+`checkpoint/lab-skill-fx-scale-controls-v1-prevalidation-green-2026-09-28`.
+
+Preview visée :
+
+`preview/lab-skill-fx-scale-controls-v1-2026-09-28`.
