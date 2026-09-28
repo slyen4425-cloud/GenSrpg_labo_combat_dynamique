@@ -11441,3 +11441,58 @@ RED requis avant implémentation :
 - 9 capacités natives immédiatement disponibles + 103 modèles historiques conservés ;
 - contrôle scale + chemin Draft/Exporter V3 ;
 - binding d'arène appliqué à la preview.
+
+
+### Résultat — réparation régressions Preview éditeur Capture V1
+
+RED :
+
+- test : `tests/unit/capture-editor-preview-regression-repair-v1.test.mjs` ;
+- SHA RED : `72f930fa1489ffba8abe003256c8d5dd18aa0b14` ;
+- CI `36443481322` — FAILURE attendue ;
+- exactement 4 échecs :
+  1. catalogue audio privé absent ;
+  2. catalogue natif 9 capacités absent ;
+  3. scale / chemin V3 absent ;
+  4. binding d'arène absent.
+
+Réparation à la cause :
+
+1. **Audio**
+   - restauration de `data/presentation/audio/private-audio-catalog.v1.json` ;
+   - 173 métadonnées ;
+   - l'éditeur recharge ce catalogue par `hydratePrivateAudioCatalog()` ;
+   - les listes créature / cast / impact ne dépendent plus du catalogue visuel.
+
+2. **Capacités**
+   - restauration de `data/combat/skills/catalog.v1.json` ;
+   - 9 SkillDefinition natives immédiatement configurables dans les slots actifs ;
+   - les 103 modèles historiques Capture restent présents dans la bibliothèque legacy ;
+   - aucune conversion destructive des capacités complexes.
+
+3. **Scale**
+   - contrôle `data-creature-display-scale` restauré ;
+   - preview locale du scale restaurée ;
+   - le Human Editor construit désormais un `CaptureCreatureEditorDraftV3` pour le chemin de validation ;
+   - export final via `Capture Editor Exporter V3` ;
+   - `displayScale` reste présentation-only.
+
+4. **Arène**
+   - la preview réutilise `demoPresentationAssets.presentationForArena()` ;
+   - fond `city` restauré comme dans la démo 2v2 validée ;
+   - le même `presentationAssets` est remis au mount de combat pour FX/audio de démonstration ;
+   - aucun second renderer.
+
+SHA technique réparé :
+
+`1dc827c0f03ae9a1f97001ce2b11d74e6eb7b96f`.
+
+CI complète :
+
+- run `36443925354` — SUCCESS.
+
+État :
+
+**GREEN technique / PREVALIDATION UI smartphone**.
+
+Aucun GREEN final UI avant validation utilisateur.
