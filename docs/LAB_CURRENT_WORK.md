@@ -12744,3 +12744,74 @@ CI :
 Checkpoint visé :
 
 `checkpoint/lab-presentation-scale-range-ui-v1-prevalidation-green-2026-09-28`.
+
+
+## Micro-lot UI/Asset Input — audio privé runtime complet + pré-écoute V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-presentation-scale-range-ui-v1-prevalidation-green-2026-09-28` ;
+- SHA : `7788f945b055298258d3ce484de73bb951ab08b5`.
+
+Source audio privée autoritaire :
+
+- dépôt : `slyen4425-cloud/GenSrpG_audio_prive` ;
+- catalogue classé : `work/audio-catalog-classification-2026-09-26` ;
+- révision catalogue : `01ffe9c8c6ec73d974f572f7e648461a48470e8a` ;
+- pack runtime généré : `work/runtime-audio-pack-v1-2026-09-28` ;
+- SHA pack : `4f429ee41bdcf6a33d7839ca11bb087039a99df9` ;
+- 173 assetIds / 173 MP3 runtime opaques ;
+- masters WAV/MP3 source non copiés.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-private-audio-full-preview-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-private-audio-full-preview-v1-2026-09-28`.
+
+Objectif :
+
+1. livrer au laboratoire uniquement les copies runtime compressées et opaques des 173 sons classés ;
+2. conserver les mêmes `assetId` stables que le catalogue privé ;
+3. faire utiliser un unique resolver Asset Input par le combat et la pré-écoute éditeur ;
+4. ajouter une action `Écouter` à chaque sélecteur audio avant attachement ;
+5. arrêter proprement une écoute précédente et libérer les ressources au dispose.
+
+Propriétaires :
+
+- classification / IDs : catalogue audio privé existant ;
+- fichiers runtime distribués : `assets/runtime/audio/private-v1/` ;
+- manifeste runtime public sans sourcePath : `data/presentation/audio/private-audio-runtime.v1.json` ;
+- résolution assetId -> URL : Asset Input dédié ;
+- pré-écoute : contrôleur UI dédié ;
+- lecture combat : `dom-combat-audio` inchangé.
+
+Interdits :
+
+- aucun master source dans le laboratoire ;
+- aucun `sourcePath` privé, URL GitHub privée ou token ;
+- aucun nom de fichier source maître ;
+- aucun mapping par nom de capacité ;
+- aucun global / localStorage / sessionStorage ;
+- aucun changement Combat Core ;
+- aucune dépendance runtime vers le dépôt privé.
+
+RED :
+
+1. manifeste runtime complet absent du laboratoire ;
+2. resolver complet absent ;
+3. contrôleur de pré-écoute absent ;
+4. chaque sélecteur `data-private-audio` doit posséder une action d'écoute ;
+5. un assetId inconnu doit rester indisponible explicitement ;
+6. aucune chaîne privée/sourcePath ne doit apparaître dans le pack labo.
+
+Critère final :
+
+- RED prouvé ;
+- 173 fichiers runtime transférés et vérifiés ;
+- même resolver utilisé par éditeur + combat ;
+- CI complète verte ;
+- preview publiée ;
+- **PREVALIDATION audio/UI smartphone** avant GREEN final.
