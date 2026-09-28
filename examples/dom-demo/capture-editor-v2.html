@@ -123,9 +123,8 @@
         <label>Taille en combat <strong data-creature-scale-value>1.00×</strong>
           <input
             data-creature-display-scale
-            type="range"
+            type="number"
             min="0.25"
-            max="4"
             step="0.05"
             value="1"
           >
@@ -493,13 +492,13 @@
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
           </label>
           <label>Scale cast
-            <input type="number" min="0.25" max="4" step="0.05" value="1.60" data-skill-cast-scale>
+            <input type="number" min="0.25" step="0.05" value="1.60" data-skill-cast-scale>
           </label>
           <label>Projectile / trajet
             <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
           </label>
           <label>Scale projectile
-            <input type="number" min="0.25" max="4" step="0.05" value="1.90" data-skill-travel-scale>
+            <input type="number" min="0.25" step="0.05" value="1.90" data-skill-travel-scale>
           </label>
           <label>Charge — vue joueur
             <select data-skill-cast-layer-player>
@@ -529,7 +528,7 @@
             <select data-skill-impact-fx data-asset-role="impact"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-impact-01" selected>Impact feu</option></select>
           </label>
           <label>Scale impact
-            <input type="number" min="0.25" max="4" step="0.05" value="1.70" data-skill-impact-scale>
+            <input type="number" min="0.25" step="0.05" value="1.70" data-skill-impact-scale>
           </label>
         </div>
       </article>
