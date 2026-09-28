@@ -6,6 +6,8 @@ const TOP_LEVEL_FIELDS = new Set([
   "subjectType",
   "subjectId",
   "profileId",
+  "displayScale",
+  "projectileSocketId",
   "visual",
   "sockets",
   "audio"
@@ -90,6 +92,16 @@ function unitNumber(value, field) {
     throw new RangeError(`${field} must be between 0 and 1`);
   }
   return value;
+}
+
+function displayScaleNumber(value) {
+  const scale = value == null ? 1 : Number(value);
+  if (!Number.isFinite(scale) || scale < 0.25 || scale > 4) {
+    throw new RangeError(
+      "displayScale must be between 0.25 and 4"
+    );
+  }
+  return scale;
 }
 
 function normalizeVisualSlot(raw, field, { required = false } = {}) {
@@ -257,6 +269,21 @@ export function normalizeCreaturePresentationBindingV1(input) {
     );
   }
 
+  const sockets = normalizeSockets(value.sockets);
+  const projectileSocketId = optionalString(
+    value.projectileSocketId,
+    "projectileSocketId"
+  );
+
+  if (
+    projectileSocketId !== null &&
+    !sockets.some((socket) => socket.id === projectileSocketId)
+  ) {
+    throw new RangeError(
+      "projectileSocketId must reference an existing socket"
+    );
+  }
+
   return Object.freeze({
     id: requiredString(value.id, "id"),
     version: CREATURE_PRESENTATION_BINDING_VERSION,
@@ -269,8 +296,10 @@ export function normalizeCreaturePresentationBindingV1(input) {
       value.profileId,
       "profileId"
     ),
+    displayScale: displayScaleNumber(value.displayScale),
+    projectileSocketId,
     visual: normalizeVisual(value.visual),
-    sockets: normalizeSockets(value.sockets),
+    sockets,
     audio: normalizeAudio(value.audio)
   });
 }
