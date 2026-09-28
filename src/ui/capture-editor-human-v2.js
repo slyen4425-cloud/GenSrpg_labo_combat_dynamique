@@ -17,6 +17,11 @@ import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../assets/global-visual-library.js";
+import {
+  captureLegacySkillLibraryEntriesV1,
+  captureLegacyAbilityEditorStateV1,
+  mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
+} from "./capture-editor-skill-catalog-v1.js";
 
 function clamp01(value) {
   return Math.min(1, Math.max(0, value));
@@ -634,6 +639,23 @@ function numericValue(root, selector) {
   return Number(selectedValue(root, selector));
 }
 
+function writeSkillTemplateFields(root, fields) {
+  const mapping = [
+    ["[data-skill-id]", fields.id],
+    ["[data-skill-name]", fields.name],
+    ["[data-skill-description]", fields.description],
+    ["[data-skill-category]", fields.category],
+    ["[data-skill-element]", fields.element ?? ""],
+    ["[data-skill-required-level]", fields.requiredLevel],
+    ["[data-skill-damage]", fields.damage],
+    ["[data-skill-heal]", fields.heal]
+  ];
+
+  for (const [selector, value] of mapping) {
+    one(root, selector).value = String(value ?? "");
+  }
+}
+
 function setStatus(root, message, tone = "info") {
   const status = one(root, "[data-editor-status]");
   status.textContent = message;
@@ -1127,13 +1149,10 @@ function readSkillFields(root) {
   };
 }
 
-function readLoadout(root, creatureId, skillId) {
+function readLoadout(root, creatureId) {
   const skillIds = [
-    skillId,
-    ...[...root.querySelectorAll("[data-loadout-slot]")]
-      .slice(1)
-      .map((select) => select.value || null)
-  ];
+    ...root.querySelectorAll("[data-loadout-slot]")
+  ].map((select) => select.value || null);
 
   return buildHumanLoadoutV1({
     creatureId,
@@ -1153,6 +1172,9 @@ export function mountCaptureEditorHumanV2({
 
   const listeners = [];
   const sockets = initialSocketStore();
+  const configuredSkills = new Map();
+  let selectedLegacyState = null;
+  let skillDirty = false;
   let disposed = false;
   let lastExport = null;
 
@@ -1173,6 +1195,221 @@ export function mountCaptureEditorHumanV2({
   }
 
   setTab(root, "creature");
+
+  const librarySelect = one(
+    root,
+    "[data-skill-library-select]"
+  );
+  const libraryState = one(
+    root,
+    "[data-skill-library-state]"
+  );
+  const saveSkillButton = one(
+    root,
+    "[data-skill-save]"
+  );
+
+  function updateLibraryState(state) {
+    selectedLegacyState = state;
+    if (state === null) {
+      libraryState.textContent =
+        "Nouvelle capacité : tous les champs sont à définir.";
+      libraryState.dataset.tone = "info";
+      return;
+    }
+
+    libraryState.textContent = state.message;
+    libraryState.dataset.tone =
+      state.runtimeReady ? "ok" : "warning";
+  }
+
+  function refreshLoadoutOptions(preferredId = null) {
+    const configured = [...configuredSkills.values()];
+    const slots = [
+      ...root.querySelectorAll("[data-loadout-slot]")
+    ];
+
+    for (const select of slots) {
+      const previous = select.value;
+      select.textContent = "";
+      createOption(select, "", "Vide");
+
+      for (const draft of configured) {
+        createOption(
+          select,
+          draft.id,
+          draft.definition.name
+        );
+      }
+
+      if (
+        previous &&
+        configuredSkills.has(previous)
+      ) {
+        select.value = previous;
+      }
+    }
+
+    if (
+      preferredId &&
+      configuredSkills.has(preferredId) &&
+      !slots.some(
+        (select) => select.value === preferredId
+      )
+    ) {
+      const empty = slots.find(
+        (select) => select.value === ""
+      );
+      if (empty) {
+        empty.value = preferredId;
+      }
+    }
+  }
+
+  function saveCurrentSkill() {
+    if (
+      selectedLegacyState !== null &&
+      !selectedLegacyState.runtimeReady
+    ) {
+      throw new Error(
+        "Cette capacité historique nécessite StatusEffectV1 avant de pouvoir être enregistrée comme équivalent runtime complet."
+      );
+    }
+
+    const draft = buildHumanSkillDraftV1(
+      readSkillFields(root)
+    );
+    configuredSkills.set(draft.id, draft);
+    skillDirty = false;
+    refreshLoadoutOptions(draft.id);
+
+    setStatus(
+      root,
+      "Capacité « " +
+        draft.definition.name +
+        " » enregistrée dans la bibliothèque active.",
+      "ok"
+    );
+
+    return draft;
+  }
+
+  librarySelect.textContent = "";
+  createOption(
+    librarySelect,
+    "",
+    "Nouvelle capacité"
+  );
+
+  for (const entry of captureLegacySkillLibraryEntriesV1()) {
+    const elementLabel =
+      entry.element === null
+        ? "Neutre"
+        : entry.element;
+    const stateLabel =
+      entry.migrationState ===
+      "requires-status-effect-v1"
+        ? " · statut requis"
+        : "";
+
+    createOption(
+      librarySelect,
+      entry.id,
+      "[" +
+        elementLabel +
+        "] " +
+        entry.name +
+        " · niv. " +
+        entry.requiredLevel +
+        stateLabel
+    );
+  }
+
+  listen(librarySelect, "change", () => {
+    const abilityId = librarySelect.value;
+
+    if (!abilityId) {
+      updateLibraryState(null);
+      return;
+    }
+
+    const state =
+      captureLegacyAbilityEditorStateV1(
+        abilityId
+      );
+    const merged =
+      mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
+        readSkillFields(root),
+        abilityId
+      );
+
+    writeSkillTemplateFields(
+      root,
+      merged
+    );
+    updateLibraryState(state);
+    skillDirty = true;
+
+    setStatus(
+      root,
+      "Modèle « " +
+        state.template.name +
+        " » chargé. Complète les réglages modernes puis enregistre la capacité.",
+      state.runtimeReady ? "info" : "warning"
+    );
+  });
+
+  listen(saveSkillButton, "click", () => {
+    try {
+      saveCurrentSkill();
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  for (
+    const field of root.querySelectorAll(
+      '[data-editor-panel="skills"] input, ' +
+      '[data-editor-panel="skills"] select, ' +
+      '[data-editor-panel="skills"] textarea'
+    )
+  ) {
+    if (
+      field === librarySelect ||
+      field === saveSkillButton
+    ) {
+      continue;
+    }
+
+    listen(field, "input", () => {
+      skillDirty = true;
+    });
+    listen(field, "change", () => {
+      skillDirty = true;
+    });
+  }
+
+  try {
+    const initialSkill =
+      buildHumanSkillDraftV1(
+        readSkillFields(root)
+      );
+    configuredSkills.set(
+      initialSkill.id,
+      initialSkill
+    );
+    refreshLoadoutOptions(
+      initialSkill.id
+    );
+  } catch {
+    refreshLoadoutOptions();
+  }
+
+  updateLibraryState(null);
 
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
@@ -1218,16 +1455,27 @@ export function mountCaptureEditorHumanV2({
 
   function validate() {
     try {
-      const skillDraft = buildHumanSkillDraftV1(
-        readSkillFields(root)
-      );
+      if (
+        selectedLegacyState !== null &&
+        !selectedLegacyState.runtimeReady
+      ) {
+        throw new Error(
+          "La capacité historique sélectionnée contient un buff, debuff ou DoT. StatusEffectV1 est requis avant validation complète."
+        );
+      }
+
+      if (skillDirty) {
+        throw new Error(
+          "La capacité en cours a été modifiée. Enregistre-la avant de valider le combat."
+        );
+      }
 
       const creatureFields = readCreatureFields(
         root,
         sockets
       );
       creatureFields.linkedSkillIds = [
-        skillDraft.id
+        ...configuredSkills.keys()
       ];
 
       const creatureDraft =
@@ -1235,8 +1483,7 @@ export function mountCaptureEditorHumanV2({
 
       const loadout = readLoadout(
         root,
-        creatureDraft.id,
-        skillDraft.id
+        creatureDraft.id
       );
 
       const battleSetup = buildHumanBattleSetupV1({
@@ -1254,7 +1501,9 @@ export function mountCaptureEditorHumanV2({
 
       lastExport = buildHumanEditorExportV2({
         creatureDraft,
-        skillDrafts: [skillDraft],
+        skillDrafts: [
+          ...configuredSkills.values()
+        ],
         loadout,
         battleSetup,
         opponentCreatureDraft,
