@@ -10231,3 +10231,62 @@ Suite Round 1 :
 - Lot A ownership cleanup UI ;
 - Lot C scale contract ;
 - audio laissé de côté à la demande utilisateur.
+
+
+## Micro-lot — Capture Editor Ownership Cleanup V1 — 2026-09-28
+
+Base GREEN :
+
+- `checkpoint/lab-capture-skill-catalog-editor-v1-green-2026-09-28` ;
+- SHA `b91f1f3a9e78079adf418eaef8669ce5b067e05a`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-ownership-cleanup-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-ownership-cleanup-v1-2026-09-28`.
+
+Objectif :
+
+Corriger les trois ambiguïtés d'ownership relevées au Round 1 sans ajouter de nouvelle règle gameplay.
+
+Corrections :
+
+1. PV :
+   - `maxHp` / `initialHp` restent des données créature ;
+   - leurs inputs quittent l'onglet Combat ;
+   - un seul input DOM par valeur ;
+   - aucune copie cachée.
+
+2. Socket capacité :
+   - coordonnées créées uniquement dans Créature ;
+   - la capacité ne place rien ;
+   - son champ devient explicitement `Point de sortie` ;
+   - options dérivées des sockets réellement placés ;
+   - aucun socket codé en dur dans le sélecteur capacité ;
+   - aucun socket inexistant sélectionnable.
+
+3. Buff / Debuff :
+   - catégorie contractuelle conservée ;
+   - création générique désactivée dans l'UI tant que StatusEffectV1 n'existe pas ;
+   - les modèles historiques concernés restent visibles dans la bibliothèque avec l'état explicite `StatusEffectV1 requis`.
+
+Interdit :
+
+- hidden input de substitution ;
+- duplication de PV ;
+- tableau de sockets parallèle ;
+- fallback silencieux sur `mouth`/head/etc. ;
+- faux éditeur buff/debuff ;
+- modification Runtime/Rules/Renderer.
+
+RED prévu :
+
+- un seul input PV max / initial ;
+- PV situés dans le panneau Créature ;
+- sélecteur capacité vide par défaut hors centre ;
+- sync depuis sockets placés ;
+- option Buff/Debuff explicitement disabled ;
+- aucune régression export/catalogue.
