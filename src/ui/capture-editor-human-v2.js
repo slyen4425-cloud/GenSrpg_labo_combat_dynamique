@@ -148,7 +148,7 @@ function visualSlot(assetId, {
   attachment,
   trigger,
   anchor = null,
-  layer = "front"
+  layerByView = null
 }) {
   const id = optionalText(assetId);
   if (id === null) {
@@ -161,7 +161,12 @@ function visualSlot(assetId, {
     trigger,
     anchor,
     displayScale: 1,
-    layer,
+    layerByView: {
+      player:
+        layerByView?.player ?? "front",
+      opponent:
+        layerByView?.opponent ?? "front"
+    },
     playbackMode: "once",
     offsetX: 0,
     offsetY: 0,
@@ -195,7 +200,15 @@ function presentationForSkill(fields) {
     {
       attachment: "source",
       trigger: "preparation-start",
-      anchor: socketId
+      anchor: socketId,
+      layerByView: {
+        player:
+          presentation.castLayerPlayer ??
+          "front",
+        opponent:
+          presentation.castLayerOpponent ??
+          "front"
+      }
     }
   );
   const travel = visualSlot(
@@ -204,7 +217,14 @@ function presentationForSkill(fields) {
       attachment: "trajectory",
       trigger: "travel-start",
       anchor: socketId,
-      layer: presentation.travelLayer ?? "front"
+      layerByView: {
+        player:
+          presentation.travelLayerPlayer ??
+          "front",
+        opponent:
+          presentation.travelLayerOpponent ??
+          "front"
+      }
     }
   );
   const impact = visualSlot(
@@ -260,7 +280,7 @@ function presentationForSkill(fields) {
 
   return {
     id: "skill:" + requiredText(fields.id, "ID capacité"),
-    version: 1,
+    version: 2,
     subjectType: "skill",
     subjectId: requiredText(fields.id, "ID capacité"),
     visual,
@@ -1449,9 +1469,21 @@ function readSkillFields(root) {
         root,
         "[data-skill-travel-fx]"
       ),
-      travelLayer: selectedValue(
+      castLayerPlayer: selectedValue(
         root,
-        "[data-skill-travel-layer]"
+        "[data-skill-cast-layer-player]"
+      ),
+      castLayerOpponent: selectedValue(
+        root,
+        "[data-skill-cast-layer-opponent]"
+      ),
+      travelLayerPlayer: selectedValue(
+        root,
+        "[data-skill-travel-layer-player]"
+      ),
+      travelLayerOpponent: selectedValue(
+        root,
+        "[data-skill-travel-layer-opponent]"
       ),
       impactAssetId: selectedValue(
         root,
