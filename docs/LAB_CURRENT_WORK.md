@@ -12508,3 +12508,54 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - **PREVALIDATION UI smartphone** avant GREEN UI final.
+
+
+### Résultat — réglage vitesse globale du combat V1
+
+RED :
+
+- test : `tests/unit/capture-combat-speed-ui-v1.test.mjs` ;
+- SHA RED : `e1a0349124621f2905351754b17dd5f0b091b09d` ;
+- CI `36463333788` — FAILURE attendue ;
+- quatre échecs ciblés uniquement :
+  1. battle setup sans multiplicateur ;
+  2. export / Adapter Stack sans transport ;
+  3. bootstrap Combat Test sans transmission ;
+  4. contrôle éditeur absent.
+
+Implémentation :
+
+- `CaptureBattleSetupEditorDraftV1.skillSpeedMultiplier` :
+  - défaut 1 ;
+  - valeur finie strictement positive ;
+- `CaptureCombatExportV1.battle.skillSpeedMultiplier` conserve la donnée ;
+- Capture Editor Exporter V2/V3 transporte la valeur depuis le setup ;
+- Adapter Stack expose `nativeCombatSource.skillSpeedMultiplier` ;
+- le loader Combat Test conserve la valeur native et utilise 1 pour le fallback démo historique ;
+- `mountCoop2v2Test()` transmet explicitement la valeur à `createCombatSession()` ;
+- l'éditeur Capture expose `Vitesse globale des attaques` :
+  - plage de preview 0,5× à 2× ;
+  - valeur initiale 1× ;
+- aucun calcul de timing n'est déplacé dans l'UI ;
+- les timings propres des SkillDefinition restent inchangés ;
+- cooldown et recharge d'énergie ne sont pas accélérés implicitement.
+
+SHA technique final :
+
+`7012e6e004da3fb142b797022b44e90d9bfe36df`.
+
+CI :
+
+- run `36463895146` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint de prévalidation :
+
+`checkpoint/lab-capture-combat-speed-ui-v1-prevalidation-green-2026-09-28`.
+
+Preview :
+
+`preview/lab-capture-combat-speed-ui-v1-2026-09-28`.
+
+GREEN UI final interdit avant validation smartphone utilisateur.
