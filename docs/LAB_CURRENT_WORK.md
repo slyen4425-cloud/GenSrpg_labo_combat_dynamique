@@ -10003,3 +10003,77 @@ F. status effect si retenu ;
 G. editor -> combat preview bridge.
 
 Aucune fonctionnalité nouvelle n'est implémentée dans ce lot d'audit.
+
+
+## Micro-lot — Capture Legacy Skill Catalog V1 — 2026-09-28
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-feedback-round1-audit-green-2026-09-27` ;
+- SHA `32f6a129e55c4e7667214c8051875bf4a59c24c0`.
+
+Source historique vérifiée :
+
+- dépôt : `slyen4425-cloud/Zombicide-40k` ;
+- checkpoint source : `checkpoint/gensrpg-phase7-dungeon-generated-branch-plan-green-2026-09-27` ;
+- commit : `49289784ee92a47fd51089815ca25954cdba4493` ;
+- `index.html` blob : `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- fonction source : `gensCaptureExpandedAbilityRoster()` ;
+- nombre d'entrées : 84.
+
+Répartition historique vérifiée :
+
+- Feu : 9 ;
+- Eau : 9 ;
+- Terre : 9 ;
+- Air : 9 ;
+- Électricité : 9 ;
+- Lumière : 9 ;
+- Ombre : 9 ;
+- Poison : 9 ;
+- neutre : 12.
+
+Effets historiques :
+
+- damage : 73 occurrences ;
+- heal : 4 ;
+- buff : 8 ;
+- debuff : 9 ;
+- dot : 1.
+
+Décision :
+
+- ne pas copier la fonction historique monolithique ;
+- extraire les 84 définitions comme données JSON fidèles ;
+- conserver les champs legacy nécessaires à la traçabilité ;
+- fournir un normalizer/catalogue pur ;
+- fournir un template d'édition basé uniquement sur les champs explicites legacy ;
+- aucune inférence depuis le nom/description/id ;
+- aucune forme/timing/cooldown inventé ;
+- les entrées contenant `buff`, `debuff` ou `dot` sont classées `requires-status-effect-v1` ;
+- les autres sont classées `portable-basic-effects`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-legacy-skill-catalog-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-legacy-skill-catalog-v1-2026-09-28`.
+
+Fichiers prévus :
+
+- `data/capture/legacy/capture-expanded-ability-roster.v1.json` ;
+- `src/catalogs/capture-legacy-ability-catalog-v1.js` ;
+- `tests/unit/capture-legacy-ability-catalog-v1.test.mjs`.
+
+RED prévu :
+
+1. module absent ;
+2. catalogue exact 84 entrées ;
+3. IDs uniques ;
+4. comptage éléments exact ;
+5. classification 66 basic / 18 status ;
+6. Étincelle et Dernier recours conservés fidèlement ;
+7. aucune inférence depuis name/desc/id ;
+8. aucun runtime/UI/storage/network/GenSrpG import.
