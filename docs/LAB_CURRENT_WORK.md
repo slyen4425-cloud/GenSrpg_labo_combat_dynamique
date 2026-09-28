@@ -12711,3 +12711,36 @@ Critère final :
 - UI alignée sur les contrats ;
 - CI complète verte ;
 - PREVALIDATION UI smartphone.
+
+
+### Résultat — suppression du plafond artificiel de scale V1
+
+RED :
+
+- test : `tests/unit/presentation-scale-range-ui-v1.test.mjs` ;
+- SHA RED : `87c9b3ac26ef4699700171080a1dd6ffbb9ef9b0` ;
+- CI `36471516223` — FAILURE attendue.
+
+Correction :
+
+- suppression de `max="4"` pour :
+  - Cast ;
+  - Projectile ;
+  - Impact ;
+- la taille de créature n'utilise plus un slider plafonné à 4× mais une saisie numérique positive ;
+- les contrats restent inchangés et continuent d'accepter tout nombre fini > 0 ;
+- aucun renderer ni Combat Core modifié.
+
+SHA technique :
+
+`b4a4de4335f62d792d6e98d1f7fc2aed5ea6e8c4`.
+
+CI :
+
+- run `36471581633` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint visé :
+
+`checkpoint/lab-presentation-scale-range-ui-v1-prevalidation-green-2026-09-28`.
