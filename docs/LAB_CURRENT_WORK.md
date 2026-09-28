@@ -12621,3 +12621,39 @@ Critère final :
 - implémentation minimale ;
 - CI complète verte ;
 - PREVALIDATION UI smartphone.
+
+
+### Résultat — création explicite d'une nouvelle capacité V1
+
+RED :
+
+- test : `tests/unit/capture-editor-skill-new-ux-v1.test.mjs` ;
+- SHA RED : `6d9ca8d380628190edf70a078455c28ef9a8ff57` ;
+- CI `36471126214` — FAILURE attendue.
+
+Correction :
+
+- action visible `Nouvelle capacité` distincte de l'enregistrement ;
+- génération déterministe d'un ID libre :
+  - `nouvelle-capacite` ;
+  - puis `nouvelle-capacite-2`, `-3`, etc. ;
+- un nouveau brouillon repart sur des valeurs neutres ;
+- aucun FX, son ou timing de la capacité précédente n'est hérité silencieusement ;
+- `Enregistrer comme nouvelle` refuse toujours un ID existant ;
+- `Mettre à jour la capacité existante` refuse toujours un ID inconnu ;
+- charger un modèle historique ne sauvegarde rien implicitement ;
+- aucun catalogue, export, Combat Core, global ou storage modifié.
+
+SHA technique :
+
+`a7b02d1a91deb488b247548c15207f18c7b96796`.
+
+CI :
+
+- run `36471304727` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint visé :
+
+`checkpoint/lab-capture-skill-new-ux-v1-prevalidation-green-2026-09-28`.
