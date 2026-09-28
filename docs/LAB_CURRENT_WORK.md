@@ -10254,3 +10254,47 @@ Checkpoint de prévalidation :
 Preview :
 
 `preview/lab-capture-battle-format-1v1-2v2-2026-09-28`.
+
+
+## Lot indépendant — source native injectable Combat Test 2v2 — 2026-09-28
+
+Base technique :
+
+- SHA `adf504bdb9ef5c12a192e46de8ef2247967a7afc` ;
+- l'éditeur Capture reste **PREVALIDATION UI** ; ce lot n'ajoute aucun bouton ni dépendance UI éditeur.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-test-native-source-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-combat-test-native-source-v1-2026-09-28`.
+
+Objectif :
+
+permettre au bootstrap `mountCoop2v2Test()` de recevoir directement les contrats natifs déjà produits par `adaptCaptureCombatExportStackV1()`, sans obliger le chargement des fixtures de démonstration.
+
+Périmètre :
+
+- source native injectée : `battleFormat`, `fighters`, `skills` ;
+- fallback actuel par fichiers JSON de démo conservé ;
+- aucune traduction Capture dans l'UI ;
+- aucun DOM éditeur ;
+- aucun storage/global ;
+- aucun changement Combat Core ;
+- aucun changement visuel attendu.
+
+RED :
+
+1. une source native injectée ne déclenche aucun fetch des fixtures ;
+2. le format retourné vient de `battleFormat` injecté ;
+3. les fighters et SkillDefinition injectés sont ceux utilisés par le bootstrap ;
+4. sans source injectée, le chemin de démo existant reste disponible.
+
+Critère GREEN technique :
+
+- RED prouvé ;
+- implémentation minimale ;
+- sentinelles existantes vertes ;
+- CI complète verte.
