@@ -61,7 +61,7 @@ test("used Capture catalog preserves representative modern and historical abilit
   );
   assert.equal(
     byId.get("lib_fireball").name,
-    "Boule de feu"
+    "Boule de braise"
   );
   assert.equal(
     byId.get("lib_regen").effects.some(
@@ -124,7 +124,7 @@ test("used Capture template never invents modern combat timing, form, energy or 
   }
 
   assert.equal(template.id, "lib_fireball");
-  assert.equal(template.name, "Boule de feu");
+  assert.equal(template.name, "Boule de braise");
 });
 
 test("human editor library is wired to the used 103-entry catalog", async () => {
