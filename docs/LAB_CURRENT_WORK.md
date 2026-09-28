@@ -10191,3 +10191,42 @@ RED :
 3. scale conservé dans `presentation.creatures` ;
 4. maxHp/maxEnergy/skills inchangés par le scale ;
 5. export final toujours accepté par `normalizeCaptureCombatExportV1`.
+
+
+### Résultat — composition Capture du scale créature
+
+RED :
+
+- test `tests/unit/capture-creature-scale-export-v1.test.mjs` ;
+- commit RED `cb0838e6cc0b2666cb9d28cead8607e034c2820c` ;
+- CI `36375658304` — FAILURE attendue.
+
+Corrections structurelles pendant le lot :
+
+- un premier projecteur placé dans `adapters/` créait une dépendance interdite contrat -> adaptateur ;
+- le projecteur V2 -> V1 est désormais un helper du contrat `CreaturePresentationBindingV2` ;
+- aucune violation de frontière restante ;
+- deux fixtures de test ont été alignées avec les contrats existants (descriptions non vides), sans changement fonctionnel.
+
+Implémentation :
+
+- `CaptureCreatureEditorDraftV3` ;
+- `Capture Editor Exporter V3` ;
+- V3 réutilise intégralement V2 pour le gameplay ;
+- présentation V2 réinjectée uniquement dans la section `presentation.creatures` de l'export portable.
+
+GREEN :
+
+- SHA `4f8e887d5542b5d009ed94e4a49fd0bf68c3a7c5` ;
+- CI `36375870640` — SUCCESS ;
+- scale local 1.6 et adversaire 0.85 conservés ;
+- PV, énergie et skillIds inchangés.
+
+Checkpoint final après CI documentaire :
+
+`checkpoint/lab-capture-creature-scale-export-v1-green-2026-09-28`.
+
+Étape suivante :
+
+- éditeur humain : contrôle de taille -> Draft V3 -> Exporter V3 ;
+- preview UI puis validation smartphone avant GREEN final UI.
