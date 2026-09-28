@@ -41,3 +41,29 @@ export function resolveCaptureSkillSaveModeV1({
     id
   });
 }
+
+
+export function nextCaptureSkillDraftIdV1({
+  configuredSkillIds = [],
+  baseId = "nouvelle-capacite"
+} = {}) {
+  const base = nonEmptyId(baseId, "baseId");
+  const ids = new Set(
+    Array.isArray(configuredSkillIds)
+      ? configuredSkillIds.map((value) =>
+          nonEmptyId(value, "configuredSkillIds")
+        )
+      : []
+  );
+
+  if (!ids.has(base)) {
+    return base;
+  }
+
+  let suffix = 2;
+  while (ids.has(base + "-" + suffix)) {
+    suffix += 1;
+  }
+
+  return base + "-" + suffix;
+}
