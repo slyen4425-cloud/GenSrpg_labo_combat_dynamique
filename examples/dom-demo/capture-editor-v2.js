@@ -23,6 +23,10 @@ import {
 import {
   privateAudioPreviewAssetV1
 } from "../../src/assets/private-audio-preview-assets-v1.js";
+import {
+  CAPTURE_TEST_CREATURE_OPTIONS_V1,
+  buildCaptureTestOpponentDraftV1
+} from "../../src/catalogs/capture-test-creature-options-v1.js";
 
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
@@ -52,70 +56,6 @@ async function loadPreviewVisualContext() {
     profiles: Object.freeze(profiles)
   });
 }
-
-const opponentCreatureDraft = {
-  schema: "capture-creature-editor-draft-v3",
-  id: "crea-enemy",
-  displayName: "Braisombre",
-  description: "Créature adverse de prévisualisation.",
-  level: 1,
-  sourceStats: {
-    force: 10,
-    agility: 10,
-    intelligence: 10,
-    spirit: 10,
-    endurance: 10,
-    initiative: 10
-  },
-  elements: ["fire"],
-  resistances: [],
-  capture: {
-    capturable: true,
-    captureRate: 30,
-    spawnChance: 10,
-    spawnTags: ["fire"],
-    evolution: null
-  },
-  combat: {
-    maxHp: 50,
-    initialHp: 50,
-    maxEnergy: 10,
-    initialEnergy: 0,
-    energyChargeAmount: 1,
-    energyChargeIntervalMs: 2000,
-    movementEnergyPerStep: 2,
-    chargeTimeModifierPct: 0
-  },
-  skillIds: ["enemy-hit", "enemy-burst", "enemy-heavy-hit"],
-  presentation: {
-    id: "creature:crea-enemy",
-    version: 2,
-    subjectType: "creature",
-    subjectId: "crea-enemy",
-    profileId: "drake",
-    displayScale: 1,
-    visual: {
-      front: {
-        assetId: "pack:capture:creature-braisombre-opponent-01"
-      },
-      back: {
-        assetId: "pack:capture:creature-braisombre-player-01"
-      },
-      icon: {
-        assetId: "pack:capture:creature-braisombre-icon-01"
-      }
-    },
-    sockets: [
-      {
-        id: "projectile",
-        label: "Projectile",
-        front: { x: 0.2, y: 0.45 },
-        back: { x: 0.6, y: 0.38 }
-      }
-    ],
-    audio: {}
-  }
-};
 
 const opponentSkillDrafts = [
   {
@@ -230,6 +170,9 @@ const backButton = document.querySelector(
 const editorStatus = root?.querySelector(
   "[data-editor-status]"
 );
+const opponentCreatureSelect = root?.querySelector(
+  "[data-test-opponent-creature]"
+);
 
 if (
   !root ||
@@ -238,14 +181,37 @@ if (
   !previewTemplate ||
   !testButton ||
   !backButton ||
-  !editorStatus
+  !editorStatus ||
+  !opponentCreatureSelect
 ) {
   throw new Error("Structure Capture Editor preview incomplète");
 }
 
+opponentCreatureSelect.textContent = "";
+for (const option of CAPTURE_TEST_CREATURE_OPTIONS_V1) {
+  const element = document.createElement("option");
+  element.value = option.id;
+  element.textContent = option.label;
+  opponentCreatureSelect.append(element);
+}
+opponentCreatureSelect.value = "braisombre";
+
+function getOpponentCreatureDraft() {
+  if (!visualContext?.assetCatalog) {
+    throw new Error(
+      "Catalogue visuel de preview non chargé"
+    );
+  }
+
+  return buildCaptureTestOpponentDraftV1({
+    optionId: opponentCreatureSelect.value,
+    assetCatalog: visualContext.assetCatalog
+  });
+}
+
 const editor = mountCaptureEditorHumanV2({
   root,
-  opponentCreatureDraft,
+  getOpponentCreatureDraft,
   opponentSkillDrafts,
   opponentLoadout
 });
@@ -289,14 +255,31 @@ function clonePreviewRoot(nativeCombatSource) {
     )
   );
 
+  const actorById = new Map(
+    nativeCombatSource.battleFormat.actors.map(
+      (actor) => [actor.actorId, actor]
+    )
+  );
+
   for (
     const element of previewRoot.querySelectorAll(
       "[data-preview-actor-ui]"
     )
   ) {
-    element.hidden = !activeActorIds.has(
-      element.dataset.previewActorUi
-    );
+    const actorId =
+      element.dataset.previewActorUi;
+    const actor = actorById.get(actorId);
+    element.hidden = !activeActorIds.has(actorId);
+
+    if (actor) {
+      for (
+        const label of element.querySelectorAll(
+          "[data-demo-label], strong"
+        )
+      ) {
+        label.textContent = actor.displayName;
+      }
+    }
   }
 
   return previewRoot;
