@@ -610,7 +610,8 @@ export function buildHumanBattleSetupV1({
   localDisplayName,
   opponentCreatureId,
   opponentDisplayName,
-  activePerTeam
+  activePerTeam,
+  skillSpeedMultiplier = 1
 }) {
   const count = positiveInteger(
     activePerTeam,
@@ -665,6 +666,7 @@ export function buildHumanBattleSetupV1({
     schema: "capture-battle-setup-editor-draft-v1",
     id: requiredText(battleId, "ID combat"),
     localActorId: "local-1",
+    skillSpeedMultiplier,
     teams: [
       {
         id: "local-team",
@@ -1914,6 +1916,10 @@ export function mountCaptureEditorHumanV2({
         activePerTeam: numericValue(
           root,
           "[data-active-per-team]"
+        ),
+        skillSpeedMultiplier: numericValue(
+          root,
+          "[data-combat-skill-speed]"
         )
       });
 
