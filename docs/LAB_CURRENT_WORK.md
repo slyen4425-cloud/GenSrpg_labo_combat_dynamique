@@ -11192,3 +11192,48 @@ Checkpoint final visé :
 Étape suivante :
 
 composer le Visual Controller natif et le Combat Test natif dans un mount de preview unique, avant le lot UI qui ajoutera les boutons visibles.
+
+
+## Micro-lot — mount natif unique Capture Combat Preview V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-editor-preview-native-sources-v1-green-2026-09-28` ;
+- SHA : `3a9dd71fdcc3c732cb0cb42f92331e48e2e0cb4a`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-native-preview-mount-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-native-preview-mount-v1-2026-09-28`.
+
+Objectif :
+
+composer sans duplication les deux propriétaires déjà GREEN :
+
+1. `mountCombatDemo({ nativeVisualSource })` pour Animation/Renderer ;
+2. `mountCoop2v2Test({ nativeCombatSource, visuals })` pour Combat Rules/Runtime/UI.
+
+Invariants :
+
+- le Visual Controller est monté une seule fois ;
+- le Combat Test reçoit exactement ce Visual Controller ;
+- les sources natives ne sont ni copiées ni remappées ;
+- si le montage combat échoue, le Visual Controller déjà monté est disposé ;
+- dispose final nettoie d'abord le combat puis les visuels ;
+- aucun second renderer, storage, global ou dépendance production ;
+- `presentationAssets` reste une dépendance optionnelle explicitement transmise, sans devenir autorité gameplay.
+
+RED :
+
+1. même `nativeVisualSource` vers le mount visuel ;
+2. même `nativeCombatSource` vers le mount combat ;
+3. même instance `visuals` remise au combat ;
+4. rollback visuel si le combat échoue ;
+5. dispose idempotent et ordre combat -> visuals.
+
+Aucun changement visuel utilisateur dans ce lot.
+
+État initial : **RED à poser**.
