@@ -10077,3 +10077,50 @@ RED prévu :
 6. Étincelle et Dernier recours conservés fidèlement ;
 7. aucune inférence depuis name/desc/id ;
 8. aucun runtime/UI/storage/network/GenSrpG import.
+
+
+### Résultat — Capture Legacy Skill Catalog V1
+
+RED :
+
+- test : `tests/unit/capture-legacy-ability-catalog-v1.test.mjs` ;
+- commit RED : `3af91ac3d6c439b286356e099255e369e56a8235` ;
+- CI run `36360661810` — FAILURE attendue ;
+- cause isolée : module catalogue absent.
+
+Implémentation :
+
+- `src/catalogs/capture-legacy-ability-catalog-v1.js` ;
+- commit initial : `cff86bff51d22275ab2002954915c7d8daffa8ad`.
+
+La CI a ensuite détecté que la provenance contenait le nom du dépôt production dans `src/`, interdit par la sentinelle d'indépendance.
+
+Correctif :
+
+- commit `4d743fcf4987ef8b9f211c11338a7a5c435efa81` ;
+- CI run `36361088662` — SUCCESS ;
+- provenance runtime réduite à `sourceId + commit + indexBlob + functionName` ;
+- provenance complète production conservée uniquement dans la documentation du chantier.
+
+Garanties :
+
+- 84 capacités historiques reproduites ;
+- 84 IDs uniques ;
+- 9 Feu / 9 Eau / 9 Terre / 9 Air / 9 Électricité / 9 Lumière / 9 Ombre / 9 Poison / 12 neutres ;
+- 66 classées `portable-basic-effects` ;
+- 18 classées `requires-status-effect-v1` ;
+- aucune forme, approche, énergie, timing ou cooldown moderne inventé ;
+- aucune inférence depuis nom/description/id ;
+- aucune dépendance runtime vers GenSrpG ;
+- aucun `captureFix*`.
+
+Checkpoint GREEN :
+
+`checkpoint/lab-capture-legacy-skill-catalog-v1-green-2026-09-28`.
+
+Étape suivante :
+
+- raccord UI du catalogue ;
+- choix d'un template historique -> préremplissage uniquement des champs explicitement portables ;
+- 4 slots alimentés par catalogue ;
+- les 18 capacités status-dependent restent visibles avec état explicite, sans prétendre fonctionner complètement.
