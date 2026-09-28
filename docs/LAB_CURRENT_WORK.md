@@ -10193,3 +10193,41 @@ RED :
 5. aucun nom de capacité métier codé dans le HTML pour la bibliothèque ;
 6. loadout ne référence que des drafts configurés ;
 7. aucune dépendance runtime/storage/GenSrpG.
+
+
+### Résultat — Capture Skill Catalog Editor V1
+
+RED :
+
+- `tests/unit/capture-editor-skill-catalog-v1.test.mjs` ;
+- commit `8305f1298023006becb22a5c153a3834c159f350` ;
+- CI run `36361331142` — FAILURE attendue ;
+- cause isolée : adaptateur UI catalogue absent.
+
+Implémentation :
+
+- `src/ui/capture-editor-skill-catalog-v1.js` ;
+- raccord `capture-editor-human-v2.js` ;
+- surface bibliothèque dans `capture-editor-v2.html` ;
+- commit fonctionnel `1341829a584d31f556fb4b3a686b384fd567abed` ;
+- CI run `36361495142` — SUCCESS.
+
+Comportement :
+
+- 84 modèles historiques consultables ;
+- un modèle ne préremplit que les champs historiques explicites ;
+- forme / approche / énergie / timing / cooldown / FX ne sont jamais inventés ;
+- 18 modèles status-dependent affichent explicitement `StatusEffectV1 requis` ;
+- une capacité doit être enregistrée comme vraie SkillDefinition avant équipement ;
+- les quatre slots actifs ne proposent que les capacités réellement configurées dans la session éditeur ;
+- aucune capacité legacy partielle n'est exportée silencieusement.
+
+Checkpoint GREEN prévu après CI documentaire :
+
+`checkpoint/lab-capture-skill-catalog-editor-v1-green-2026-09-28`.
+
+Suite Round 1 :
+
+- Lot A ownership cleanup UI ;
+- Lot C scale contract ;
+- audio laissé de côté à la demande utilisateur.
