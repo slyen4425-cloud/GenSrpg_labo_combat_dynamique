@@ -12810,3 +12810,44 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - PREVALIDATION UI smartphone avant GREEN final.
+
+
+### Résultat — sélection de créature adverse pour le test combat V1
+
+RED :
+
+- test : `tests/unit/capture-test-creature-selection-v1.test.mjs` ;
+- SHA RED : `84fe1a6edd1d4ed9ccb7e5a814a2b273b5815ff2` ;
+- CI `36477375776` — FAILURE attendue.
+
+Implémentation :
+
+- catalogue dédié : `src/catalogs/capture-test-creature-options-v1.js` ;
+- 9 créatures réellement livrées avec triplet face/dos/icône ;
+- le sélecteur UI choisit uniquement l'identité/presentation de l'adversaire de preview ;
+- l'ID runtime reste `crea-enemy`, donc aucun nouveau propriétaire gameplay ;
+- le Human Editor résout l'adversaire au moment de `validate()` via `getOpponentCreatureDraft()` ;
+- les labels de preview viennent de `BattleFormat.actors[].displayName` ;
+- aucune stat historique inventée ;
+- aucun storage/global ;
+- aucun changement Combat Core ni format 1v1/2v2.
+
+Une sentinelle historique imposait encore les assetIds de Braisombre directement dans la page JS. Elle a été réalignée sur le nouveau catalogue propriétaire, sans retirer la vérification des trois assets Braisombre ni des propriétaires natifs de preview.
+
+SHA technique :
+
+`26ffb7769fcff6de16ff172ef9dc62b56894e058`.
+
+CI :
+
+- run `36478568064` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint de prévalidation visé :
+
+`checkpoint/lab-capture-test-creature-selection-v1-prevalidation-green-2026-09-28`.
+
+Preview visée :
+
+`preview/lab-capture-test-creature-selection-v1-2026-09-28`.
