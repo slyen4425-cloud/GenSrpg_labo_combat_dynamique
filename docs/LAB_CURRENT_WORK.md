@@ -10162,3 +10162,53 @@ Checkpoint final visé pour ce **pré-audit documentaire indépendant** :
 `checkpoint/lab-capture-editor-combat-test-bridge-preaudit-green-2026-09-28`.
 
 Ce checkpoint ne vaut en aucun cas validation GREEN de l'UI Capture Editor 1 à 5, qui reste en PREVALIDATION smartphone.
+
+
+## Correction autoritaire — formats de combat Capture 1v1 / 2v2 — 2026-09-28
+
+Clarification utilisateur enregistrée :
+
+- les seuls formats de **créatures simultanément engagées** sont `1v1` et `2v2` ;
+- le nombre de créatures du **roster / réserve** est une responsabilité distincte et ne doit pas être limité par ce format ;
+- aucun 3v3 / 4v4 n'est prévu pour le combat simultané.
+
+Base :
+
+- checkpoint indépendant précédent : `checkpoint/lab-capture-editor-combat-test-bridge-preaudit-green-2026-09-28` ;
+- SHA : `b7857ec0520212311e11ea6c43c3791c7349eaa6`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-battle-format-1v1-2v2-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-battle-format-1v1-2v2-2026-09-28`.
+
+Objectif :
+
+1. faire du contrat Battle Setup l'autorité qui refuse plus de deux slots actifs par équipe ;
+2. imposer exactement deux équipes de combat ;
+3. imposer un nombre de slots engagés symétrique : 1/1 ou 2/2 ;
+4. préserver des rosters de taille supérieure à 2 ;
+5. retirer 3v3 / 4v4 de l'éditeur et des documents de bridge.
+
+Propriétaires :
+
+- format actif : `CaptureBattleSetupEditorDraftV1` / `BattleFormatDefinition` ;
+- réserve : `Roster Session` ;
+- l'UI ne fait qu'exposer les valeurs autorisées.
+
+RED obligatoire avant implémentation.
+
+Tests prévus :
+
+- accepter 1v1 ;
+- accepter 2v2 ;
+- refuser 3 slots actifs dans une équipe ;
+- refuser un nombre asymétrique de slots ;
+- refuser plus de deux équipes ;
+- prouver qu'un roster peut contenir plus de deux membres ;
+- vérifier que l'éditeur n'expose que 1v1 / 2v2.
+
+État initial : **RED à poser**.
