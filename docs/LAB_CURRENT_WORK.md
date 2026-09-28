@@ -10126,3 +10126,39 @@ Critère de fin du pré-audit :
 - prouver les duplications à ne pas créer ;
 - découper les micro-lots RED nécessaires avant toute implémentation ;
 - documenter explicitement le chemin compatible 1v1 / 2v2 / 3v3 / 4v4.
+
+
+### Résultat du pré-audit pont Editor -> Combat Test
+
+Document autoritaire du lot :
+
+`docs/LAB_CAPTURE_EDITOR_COMBAT_TEST_BRIDGE_PREAUDIT_V1.md`.
+
+Constats vérifiés :
+
+- l'éditeur V2 produit déjà le vrai `CaptureCombatExportV1` via `exportCaptureEditorDraftsToCombatExportV2()` ;
+- `mountCaptureEditorHumanV2()` conserve explicitement le dernier export validé et l'expose par `getLastExport()` ;
+- `adaptCaptureCombatExportStackV1()` produit déjà `battleFormat`, `roster`, `fighterConfigs`, `fighters`, `skills`, `skillIdsByActor` et `skillPresentations` ;
+- aucun nouveau contrat « preview export » n'est nécessaire ;
+- le point manquant est le bootstrap des combats test, qui charge encore des fixtures statiques de démo ;
+- le prototype 2v2 contient encore des actorIds et listes de capacités de démo codés explicitement ; il ne doit pas devenir le chemin générique de l'éditeur ;
+- le futur bridge doit être format-driven à partir de `BattleFormatDefinition`, sans `is2v2` et sans duplication 1v1 / 2v2 / 3v3 / 4v4 ;
+- aucune modification du Combat Core n'est justifiée.
+
+Découpage recommandé avant le bouton UI :
+
+A. source native injectée dans le combat test, avec RED ;
+B. contrôleurs data-driven depuis `controllerId` + `skillIdsByActor`, avec RED ;
+C. slots visuels format-driven 1v1 à 4v4, avec RED + validation smartphone ;
+D. bridge pur `CaptureCombatExportV1 -> Adapter Stack -> bootstrap natif`, avec vrai test d'intégration ;
+E. seulement ensuite bouton « Tester en combat » et retour éditeur.
+
+CI du document de pré-audit :
+
+- run `36406466286` — SUCCESS sur `da82e22f637d86eb18fc06bba31a16f73048aa9d`.
+
+Checkpoint final visé pour ce **pré-audit documentaire indépendant** :
+
+`checkpoint/lab-capture-editor-combat-test-bridge-preaudit-green-2026-09-28`.
+
+Ce checkpoint ne vaut en aucun cas validation GREEN de l'UI Capture Editor 1 à 5, qui reste en PREVALIDATION smartphone.
