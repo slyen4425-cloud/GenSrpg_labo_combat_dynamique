@@ -10374,3 +10374,40 @@ Règles :
 RED avant implémentation.
 
 Critère GREEN : CI complète verte, aucun changement Combat Core.
+
+
+### Résultat — contrôleurs 2v2 data-driven
+
+RED :
+
+- test : `tests/unit/combat-2v2-data-driven-controllers-v1.test.mjs` ;
+- SHA RED : `ed819ee1931025aa02ce21d01e779113732709fe` ;
+- CI run `36418258104` — FAILURE attendue ;
+- échec unique : helper `buildCoop2v2AiControllerSpecs` absent.
+
+Implémentation :
+
+- fixture de loadouts démo déplacée dans `data/combat/ai/demo-coop-2v2-skill-loadouts.json` ;
+- `skillIdsByActor` est validé pour chaque acteur et chaque skillId ;
+- `buildCoop2v2AiControllerSpecs()` découvre les acteurs IA depuis `controllerId` ;
+- `localActorId` est exclu de l'IA ;
+- les cibles IA sont dérivées de l'équipe adverse ;
+- les capacités IA viennent uniquement de `skillIdsByActor[actorId]` ;
+- la barre locale rend uniquement `skillIdsByActor[format.localActorId]` ;
+- les actorIds `ally/opponent/opponent-b` ne sont plus propriétaires du bootstrap.
+
+Une sentinelle historique imposait encore littéralement les actorIds de démo dans le code. Elle a été réalignée sur l'invariant data-driven sans retirer les assertions de structure 2v2.
+
+SHA technique :
+
+`a793441ced82bbf52ebe4c827af2cd27f1bf993d`.
+
+CI :
+
+- run `36418703161` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final :
+
+`checkpoint/lab-combat-test-data-driven-controllers-v1-green-2026-09-28`.
