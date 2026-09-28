@@ -10385,3 +10385,41 @@ RED prévu :
 5. adaptateur transmet exactement displayScale au VisualActor ;
 6. mismatch subjectId / creatureId refusé ;
 7. asset fourni par l'appelant, jamais dérivé du binding.
+
+
+### Résultat — CreaturePresentationBindingV2 / displayScale
+
+RED :
+
+- test `tests/unit/creature-presentation-binding-v2.test.mjs` ;
+- commit `104945568572a38229c38e13ea860a3fb6e1bc99` ;
+- CI run `36361868128` — FAILURE attendue ;
+- cause isolée : contrat V2 absent.
+
+Implémentation :
+
+- `src/contracts/creature-presentation-binding-v2.js` ;
+- `src/adapters/input/capture/creature-presentation-to-visual-actor-v2.js` ;
+- commit final fonctionnel `093f281cd78f1d741f902233b8b7bd21a6209d26` ;
+- CI run `36361917425` — SUCCESS.
+
+Garanties :
+
+- V1 inchangé et continue de refuser `displayScale` ;
+- V2 exige `displayScale > 0` ;
+- upgrade V1 -> V2 explicite avec défaut 1 ;
+- adaptateur refuse une incohérence creatureId/subjectId ;
+- profile et scale viennent du binding ;
+- asset, position et facing restent fournis par leurs propriétaires ;
+- aucune résolution d'asset physique ;
+- aucun renderer modifié.
+
+Checkpoint GREEN prévu :
+
+`checkpoint/lab-creature-presentation-binding-v2-green-2026-09-28`.
+
+Étape suivante :
+
+- CaptureCreatureEditorDraftV3 composé avec CreaturePresentationBindingV2 ;
+- Exporter V3 préservant la présentation V2 dans CaptureCombatExportV1 ;
+- seulement ensuite champ `Taille en combat` dans l'éditeur.
