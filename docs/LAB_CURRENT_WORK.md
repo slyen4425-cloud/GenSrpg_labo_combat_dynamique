@@ -10008,3 +10008,49 @@ RED requis avant implémentation :
 - aucun chemin/URL du dépôt audio privé exposé ;
 - PV localisés dans le panneau Créature uniquement ;
 - point de départ de capacité alimenté dynamiquement depuis les sockets configurés.
+
+
+### Résultat — réparations retour éditeur humain V2
+
+RED :
+
+- commit test `ae445781a540c32ccb42d958934469f32e7f73e4` ;
+- CI `36374903987` — FAILURE attendue ;
+- 5 échecs ciblés : catalogue audio absent, catalogue capacités absent, loaders UI absents, PV dans le mauvais panneau, contrôle socket de capacité statique.
+
+Implémentation :
+
+- catalogue public de métadonnées audio :
+  `data/presentation/audio/global-audio-metadata.v1.json` ;
+  173 entrées classées depuis la branche privée
+  `work/audio-catalog-classification-2026-09-26` ;
+  aucun fichier audio, `sourcePath`, `runtimePath` ou URL privée n'est publié ;
+- catalogue de capacités existantes :
+  `data/combat/skills/skill-catalog.v1.json` ;
+  9 SkillDefinition existantes réutilisées ;
+- UI charge désormais les catalogues visuel + audio + capacités ;
+- PV déplacés dans l'onglet Créature ;
+- le contrôle capacité est renommé `Point de départ utilisé` et reçoit uniquement les sockets réellement placés côté créature ;
+- aucune création de socket dans l'éditeur de capacité.
+
+Correction du test :
+
+- le premier test de duplication inspectait toute la page et détectait légitimement les options `mouth/head/...` de l'éditeur créature ;
+- assertion resserrée au seul `select[data-skill-socket]` ;
+- aucune modification fonctionnelle liée à cette correction de test.
+
+GREEN technique :
+
+- SHA `7fb8fb09f8349dff2fe9dc99523c855030306b1a` ;
+- CI `36375195189` — SUCCESS.
+
+Aucun Combat Runtime / Renderer / Rules modifié dans ce lot.
+
+Checkpoint GREEN prévu après CI du présent SHA documentaire :
+
+`checkpoint/lab-capture-editor-feedback-ui-repair-v1-green-2026-09-28`.
+
+Étape suivante :
+
+- scale créature réel : contrat présentation -> VisualActor -> renderer -> UI ;
+- puis pont éditeur -> combat test sans storage ou contournement.
