@@ -10327,3 +10327,61 @@ Checkpoint GREEN prévu :
 - Creature Scale Contract V1/V2 ;
 - persistance d'une taille de présentation explicite ;
 - adaptation vers `VisualActor.scale` avant d'ajouter le contrôle UI.
+
+
+## Micro-lot — CreaturePresentationBindingV2 / displayScale — 2026-09-28
+
+Base GREEN :
+
+- `checkpoint/lab-capture-editor-ownership-cleanup-v1-green-2026-09-28` ;
+- SHA `72b1055eccf12f16d9672099196e86bdab1f55b3`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-creature-presentation-binding-v2-2026-09-28`.
+
+Branche :
+
+`work/lab-creature-presentation-binding-v2-2026-09-28`.
+
+Objectif :
+
+Donner à la taille de créature un propriétaire persistant dans la présentation, puis l'adapter explicitement vers `VisualActor.scale`.
+
+Contrat :
+
+- `CreaturePresentationBindingV2` reprend les données V1 ;
+- ajoute `displayScale` ;
+- `displayScale` est un nombre fini strictement > 0 ;
+- V1 reste inchangé ;
+- un helper d'upgrade V1 -> V2 utilise explicitement `displayScale: 1`.
+
+Adaptateur :
+
+`src/adapters/input/capture/creature-presentation-to-visual-actor-v2.js`
+
+- valide le binding V2 ;
+- exige que le creatureId du VisualActor corresponde au subjectId ;
+- impose `profile = binding.profileId` ;
+- impose `scale = binding.displayScale` ;
+- ne résout pas assetId en URL ;
+- ne choisit pas position/facing ;
+- délègue la validation finale à `normalizeVisualActor`.
+
+Interdit :
+
+- scale dans les stats ;
+- scale dans l'UI sans persistance ;
+- scale dupliqué dans FighterConfig ;
+- résolution physique d'asset dans cet adaptateur ;
+- mutation du Binding V1.
+
+RED prévu :
+
+1. V2 complet valide ;
+2. displayScale requis et > 0 ;
+3. V1 n'accepte toujours pas displayScale ;
+4. upgrade V1 -> V2 explicite à 1 ;
+5. adaptateur transmet exactement displayScale au VisualActor ;
+6. mismatch subjectId / creatureId refusé ;
+7. asset fourni par l'appelant, jamais dérivé du binding.
