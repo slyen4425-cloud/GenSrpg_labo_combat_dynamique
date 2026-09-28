@@ -10335,3 +10335,42 @@ CI :
 Checkpoint final :
 
 `checkpoint/lab-combat-test-native-source-v1-green-2026-09-28`.
+
+
+## Lot indépendant — contrôleurs 2v2 data-driven — 2026-09-28
+
+Base :
+
+- checkpoint `checkpoint/lab-combat-test-native-source-v1-green-2026-09-28` ;
+- SHA `c4f70ea00539e064440c75072d81031f0d78c670`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-test-data-driven-controllers-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-combat-test-data-driven-controllers-v1-2026-09-28`.
+
+Objectif :
+
+supprimer du bootstrap 2v2 les actorIds et listes de capacités codés en dur.
+
+Source d'autorité :
+
+- acteurs / équipes / `controllerId` : `BattleFormatDefinition` ;
+- capacités équipées : `skillIdsByActor` ;
+- SkillDefinition : `skillsById`.
+
+Règles :
+
+- le local `format.localActorId` n'est jamais piloté par IA ;
+- un acteur dont `controllerId` commence par `ai` reçoit un contrôleur générique ;
+- ses cibles sont les acteurs de l'autre équipe ;
+- ses capacités proviennent exclusivement de `skillIdsByActor[actorId]` ;
+- la barre locale expose exclusivement les capacités du local lorsque le mapping existe ;
+- le fallback démo conserve ses loadouts comme **données**, pas comme code de contrôleur.
+
+RED avant implémentation.
+
+Critère GREEN : CI complète verte, aucun changement Combat Core.
