@@ -10946,3 +10946,39 @@ CI :
 Checkpoint final visé :
 
 `checkpoint/lab-combat-preview-format-generic-v1-green-2026-09-28`.
+
+
+## Micro-lot — source visuelle native injectable Combat Demo V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-combat-preview-format-generic-v1-green-2026-09-28` ;
+- SHA : `7e16fd312a2b58a223e276e539c2660088afe9e4`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-demo-native-visual-source-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-combat-demo-native-visual-source-v1-2026-09-28`.
+
+Objectif :
+
+permettre au Visual Controller existant `mountCombatDemo()` de recevoir des profils et métadonnées créature déjà résolus, sans recopier son moteur d'animation.
+
+Règles :
+
+- source injectée = profils + creatureMetas ;
+- aucune lecture GenSrpG ;
+- aucune logique de combat ;
+- aucun nouveau renderer parallèle ;
+- fallback de démo historique conservé ;
+- une source injectée ne fetch pas les profils/créatures de démo.
+
+RED :
+
+1. source injectée évite tout fetch des fixtures visuelles ;
+2. profils injectés conservés ;
+3. creatureMetas injectées conservées ;
+4. fallback historique reste disponible sans injection.
