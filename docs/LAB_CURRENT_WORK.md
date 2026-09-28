@@ -11496,3 +11496,59 @@ CI complète :
 **GREEN technique / PREVALIDATION UI smartphone**.
 
 Aucun GREEN final UI avant validation utilisateur.
+
+
+## Micro-lot — capacités Capture portables -> catalogue natif V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-editor-preview-regression-repair-v1-prevalidation-green-2026-09-28` ;
+- SHA : `babc3ee9d89c2b28a25b3b8fece77054b0cff1b8`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-portable-native-skills-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-portable-native-skills-v1-2026-09-28`.
+
+Constat :
+
+- 103 capacités historiques réellement utilisées ;
+- 77 ne contiennent que des effets de base déjà supportés par `SkillDefinition` ;
+- 26 nécessitent encore `StatusEffectV1` ;
+- l'éditeur n'hydrate actuellement que 9 SkillDefinition natives du laboratoire dans les slots actifs.
+
+Objectif :
+
+1. produire un catalogue natif dérivé des 77 capacités portables, sans recopier leurs données ;
+2. préserver ID, nom, élément, niveau, dégâts/soins et provenance historique ;
+3. convertir uniquement les champs pouvant être dérivés sans ambiguïté ;
+4. utiliser des timings/énergie neutres explicites lorsqu'aucune donnée historique de temps dynamique n'existe ;
+5. hydrater ces 77 capacités dans les slots actifs en plus des 9 natives existantes ;
+6. conserver les 26 capacités complexes uniquement comme modèles historiques tant que `StatusEffectV1` n'existe pas.
+
+Propriétaire :
+
+- source historique : `CaptureUsedAbilityCatalogV2` ;
+- définition runtime : `SkillDefinition` ;
+- composition éditeur : `Capture Editor Human V2`.
+
+Interdits :
+
+- aucun copier-coller manuel de 77 objets ;
+- aucune perte des 26 capacités complexes ;
+- aucun changement Combat Core ;
+- aucun runtime GenSrpG ;
+- aucun global/storage ;
+- aucune logique de migration dans le HTML.
+
+RED :
+
+- module natif portable absent ;
+- 77 drafts runtime-ready attendus ;
+- 59 `cap_*` + 18 `lib_*` ;
+- aucun buff/debuff/dot/hot dans ce catalogue ;
+- IDs uniques ;
+- l'éditeur doit hydrater les 77 en plus des 9 natives.
