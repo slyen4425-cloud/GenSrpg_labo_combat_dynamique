@@ -63,7 +63,7 @@ function skill() {
   return {
     schema: "capture-skill-editor-draft-v1",
     id: "hit",
-    description: "",
+    description: "Capacité de test.",
     requiredLevel: 1,
     usageScopes: ["capture", "combat"],
     definition: {
