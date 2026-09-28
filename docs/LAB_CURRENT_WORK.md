@@ -11658,3 +11658,42 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - **PREVALIDATION UI smartphone** jusqu'au retour utilisateur.
+
+
+### Résultat — classification audio par rôle dans l'éditeur Capture V1
+
+RED :
+
+- test : `tests/unit/capture-audio-role-taxonomy-ui-v1.test.mjs` ;
+- SHA RED : `444e30760bc1ee7f6897eb0a9ed7dc7d67e3d0e0` ;
+- CI `36446726893` — FAILURE attendue ;
+- cause : modèle de regroupement métier absent.
+
+Implémentation :
+
+- module UI : `src/ui/private-audio-role-groups-v1.js` ;
+- aucune modification du catalogue audio de 173 entrées ;
+- les rôles existants restent l'unique classification autoritaire ;
+- un sélecteur utilise l'ordre de `data-audio-roles` comme ordre d'affichage ;
+- un son multi-rôle est affecté au premier rôle accepté, sans duplication dans le même sélecteur ;
+- les groupes visibles sont des rôles métier (`Attaque / déclenchement`, `Voix créature`, `Impact / coup`, `KO / mort`, etc.) ;
+- la catégorie source (academie, inferno, xel...) reste visible dans le libellé d'option comme information secondaire ;
+- aucune nouvelle heuristique de classement.
+
+SHA technique :
+
+`0e6c58c6ed0c29a949c6ced3f979e346581b8f12`.
+
+CI :
+
+- run `36446830849` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint de prévalidation :
+
+`checkpoint/lab-capture-audio-role-taxonomy-ui-v1-prevalidation-green-2026-09-28`.
+
+Preview :
+
+`preview/lab-capture-audio-role-taxonomy-ui-v1-2026-09-28`.
