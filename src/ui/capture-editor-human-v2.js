@@ -31,6 +31,9 @@ import {
   captureLegacyAbilityEditorStateV1,
   mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
 } from "./capture-editor-skill-catalog-v1.js";
+import {
+  capturePortableNativeSkillDraftsV1
+} from "../catalogs/capture-portable-native-skill-catalog-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -1876,12 +1879,23 @@ export function mountCaptureEditorHumanV2({
         }
       }
 
+      for (
+        const draft of capturePortableNativeSkillDraftsV1()
+      ) {
+        if (!configuredSkills.has(draft.id)) {
+          configuredSkills.set(
+            draft.id,
+            draft
+          );
+        }
+      }
+
       refreshLoadoutOptions();
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, 9 capacités natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
           "info"
         );
       }
