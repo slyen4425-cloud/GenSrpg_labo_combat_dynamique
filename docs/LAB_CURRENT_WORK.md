@@ -10674,3 +10674,33 @@ Invariants :
 - Combat Core inchangé.
 
 RED : réexécuter les sentinelles source native + contrôleurs data-driven sur cette branche avant de rapatrier l'implémentation.
+
+
+### Résultat — consolidation bootstrap Combat Test natif
+
+RED :
+
+- sentinelles : `combat-2v2-native-source-v1.test.mjs` + `combat-2v2-data-driven-controllers-v1.test.mjs` ;
+- SHA RED : `305efe5993c6b1d2d1c133e52a50b2b380837ebf` ;
+- CI `36426334472` — FAILURE attendue ;
+- exports manquants : `loadCoop2v2CombatSource` et `buildCoop2v2AiControllerSpecs`.
+
+Consolidation :
+
+- `src/ui/combat-2v2-test-ui.js` repris depuis le checkpoint technique GREEN parallèle ;
+- `data/combat/ai/demo-coop-2v2-skill-loadouts.json` ajouté comme donnée ;
+- sentinelle `coop-2v2.test.mjs` réalignée sur l'invariant data-driven ;
+- aucune modification Combat Core ;
+- aucune modification éditeur ;
+- source native injectable et contrôleurs par `controllerId` disponibles sur la lignée intégrée.
+
+CI :
+
+- SHA : `35890efb02402b797ab6c2c27f1d36ca9e8efa50` ;
+- run `36426485820` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final :
+
+`checkpoint/lab-combat-bootstrap-consolidation-v1-green-2026-09-28`.
