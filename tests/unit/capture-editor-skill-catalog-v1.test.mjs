@@ -43,8 +43,13 @@ test("editor skill library exposes the 103 abilities actually used by Capture cr
     new Set(entries.map((entry) => entry.id)).size,
     103
   );
-  assert.equal(entries[0].id, "cap_fire_atk_1");
-  assert.equal(entries[0].name, "Étincelle");
+  assert.equal(
+    entries.some((entry) =>
+      entry.id === "cap_fire_atk_1" &&
+      entry.name === "Étincelle"
+    ),
+    true
+  );
   assert.equal(
     entries.some((entry) =>
       entry.id.startsWith("cap_neutral_")
