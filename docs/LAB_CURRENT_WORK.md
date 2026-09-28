@@ -10411,3 +10411,44 @@ CI :
 Checkpoint final :
 
 `checkpoint/lab-combat-test-data-driven-controllers-v1-green-2026-09-28`.
+
+
+## Lot de preuve — Capture Export -> Combat Test natif — 2026-09-28
+
+Base :
+
+- checkpoint `checkpoint/lab-combat-test-data-driven-controllers-v1-green-2026-09-28` ;
+- SHA `17f4806f3b57d310c12488442b93a166ae109c5f`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-export-combat-test-bridge-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-export-combat-test-bridge-v1-2026-09-28`.
+
+Objectif :
+
+prouver le vrai raccord sans créer de wrapper métier supplémentaire :
+
+`CaptureCombatExportV1 -> adaptCaptureCombatExportStackV1() -> loadCoop2v2CombatSource() -> CombatSession / CombatRuntime`.
+
+Nature :
+
+- test d'intégration / caractérisation du chemin existant ;
+- aucune nouvelle structure de données ;
+- aucune lecture du DOM éditeur ;
+- aucun storage/global ;
+- aucun import GenSrpG ;
+- aucun changement Combat Core attendu.
+
+Critères :
+
+1. l'Adapter Stack produit directement une source acceptée par le bootstrap ;
+2. aucun fetch de fixtures de démo ;
+3. `battleFormat`, fighters et skills restent ceux issus de l'export ;
+4. une compétence locale peut réellement démarrer dans CombatRuntime ;
+5. 2v2 utilise le même export/adapter que 1v1.
+
+Si le test passe sans changement runtime, aucune implémentation supplémentaire ne sera ajoutée.
