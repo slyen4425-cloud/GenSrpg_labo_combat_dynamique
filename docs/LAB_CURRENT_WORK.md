@@ -12212,3 +12212,64 @@ Checkpoint de prévalidation visé :
 Preview visée :
 
 `preview/lab-skill-fx-scale-controls-v1-2026-09-28`.
+
+
+## Micro-lot — variété déterministe des capacités IA V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-skill-fx-scale-controls-v1-prevalidation-green-2026-09-28` ;
+- SHA : `855597c9c4a40b04aa6a05b20a0dd5313fe909d4`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-ai-skill-variety-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-combat-ai-skill-variety-v1-2026-09-28`.
+
+Retour utilisateur :
+
+- l'IA semble spammer la même capacité.
+
+Causes démontrées :
+
+1. la preview Capture ne donne à Braisombre qu'une seule capacité `enemy-hit` ;
+2. le contrôleur `BattleActorAiController` ne teste que la prochaine capacité de sa rotation ; si elle est temporairement indisponible, il ne cherche pas une autre capacité utilisable.
+
+Objectif :
+
+1. garder une politique déterministe, sans random implicite ;
+2. à chaque tour, parcourir la rotation à partir de l'index courant et choisir la première capacité réellement utilisable ;
+3. après un succès, reprendre la rotation après la capacité réellement choisie ;
+4. si aucune capacité n'est utilisable, conserver un statut `saving` lorsque l'énergie est le blocage pertinent, sinon `waiting` ;
+5. donner à l'adversaire de preview au moins trois capacités de test distinctes afin que la variété soit observable ;
+6. ne changer ni les dégâts Core, ni cooldown, ni vitesse.
+
+Propriétaires :
+
+- choix IA : `BattleActorAiController` ;
+- disponibilité : `CombatSession.previewSkill()` ;
+- cooldown : Combat State / Action Resolver déjà existants ;
+- loadout de preview : données de démonstration uniquement.
+
+Interdits :
+
+- aucun Math.random ;
+- aucun cooldown UI ;
+- aucune règle par nom de capacité ;
+- aucun second contrôleur ;
+- aucun global/storage.
+
+RED :
+
+1. avec A indisponible et B disponible, l'IA doit choisir B ;
+2. avec trois capacités disponibles, trois succès consécutifs doivent suivre la rotation ;
+3. la preview adverse doit exposer au moins trois IDs distincts.
+
+Critère final :
+
+- RED prouvé ;
+- CI complète verte ;
+- aucun changement visuel structurel attendu.
