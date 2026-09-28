@@ -115,13 +115,13 @@ test("CaptureBattleSetupEditorDraftV1 uses the same model for 2v2", () => {
   );
 });
 
-test("CaptureBattleSetupEditorDraftV1 requires at least two teams and one slot per team", () => {
+test("CaptureBattleSetupEditorDraftV1 requires exactly two teams and one or two active slots per team", () => {
   const oneTeam = valid1v1();
   oneTeam.teams.pop();
 
   assert.throws(
     () => normalizeCaptureBattleSetupEditorDraftV1(oneTeam),
-    /at least two teams/i
+    /exactly two teams/i
   );
 
   const emptyTeam = valid1v1();
