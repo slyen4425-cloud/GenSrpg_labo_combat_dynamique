@@ -9959,3 +9959,52 @@ Test mobile demandé :
 8. vérifier absence de débordement ou contrôle inaccessible.
 
 Aucun GREEN final avant ce retour.
+
+
+## Micro-lot — réparations retour éditeur humain V2 — 2026-09-28
+
+Base prévalidation GREEN :
+
+- `checkpoint/lab-capture-editor-human-v2-prevalidation-green-2026-09-27` ;
+- SHA `227901c1e3ed9f2472a642d54af8dca786b743bf` ;
+- CI `36345935790` — SUCCESS.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-editor-feedback-ui-repair-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-feedback-ui-repair-v1-2026-09-28`.
+
+Retour utilisateur traité dans ce lot :
+
+1. les sons existent dans le dépôt privé mais les listes éditeur sont vides ;
+2. le socket de capacité donne l'impression de recréer un socket déjà défini sur la créature ;
+3. les PV sont une propriété créature et ne doivent pas apparaître dans l'onglet Combat ;
+4. l'éditeur ne doit pas être limité à Boule de feu alors que plusieurs SkillDefinition existent déjà.
+
+Décisions de charte :
+
+- aucune copie de fichier audio privé dans le dépôt public ;
+- seul un catalogue public de métadonnées non sensibles est créé : `assetId`, label, rôles, tags, catégorie/famille ; aucun `sourcePath`, aucune URL privée ;
+- les capacités existantes restent propriétaires dans `data/combat/skills/*.skill.json` ; l'éditeur charge ces définitions, il ne les duplique pas ;
+- les sockets restent propriétaires de la créature ; la capacité ne place rien : elle sélectionne seulement un point déjà configuré ;
+- les PV restent dans `creature.combat` mais leur contrôle UI revient dans l'onglet Créature ;
+- aucun changement Combat Runtime / Renderer / Rules dans ce lot.
+
+Hors lot volontairement :
+
+- scale créature : doit atteindre réellement le propriétaire visuel/renderer ;
+- statistiques -> modificateurs de combat : nouveau contrat/règles nécessaires ;
+- buff/debuff : aucune UI tant que la sémantique n'est pas réellement implémentée ;
+- passage éditeur -> combat test : doit utiliser un vrai pont de données, pas storage/URL bricolée.
+
+RED requis avant implémentation :
+
+- catalogue audio public absent ;
+- catalogue capacités éditeur absent ;
+- UI doit charger les deux catalogues ;
+- aucun chemin/URL du dépôt audio privé exposé ;
+- PV localisés dans le panneau Créature uniquement ;
+- point de départ de capacité alimenté dynamiquement depuis les sockets configurés.
