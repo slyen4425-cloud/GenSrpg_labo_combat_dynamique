@@ -708,6 +708,9 @@ export function createDomSkillFxRenderer({
 
     const node = arena.ownerDocument.createElement("span");
     node.className = "skill-fx skill-fx--projectile";
+    if (presentation?.travelLayer === "behind") {
+      node.className += " skill-fx--layer-behind";
+    }
     node.dataset.skillFx = "projectile";
     if (skillId) {
       node.dataset.skillId = skillId;
