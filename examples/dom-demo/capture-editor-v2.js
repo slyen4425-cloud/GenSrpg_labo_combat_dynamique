@@ -17,6 +17,9 @@ import {
 import {
   demoPresentationAssets
 } from "./demo-assets.js";
+import {
+  createCaptureSkillPresentationAssetsV1
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v1.js";
 
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
@@ -287,6 +290,65 @@ function applyPreviewArenaPresentation(
   );
 }
 
+function resolvePreviewPresentationAsset(assetId) {
+  const demoAsset = demoPresentationAssets.asset(assetId);
+  if (demoAsset) {
+    return demoAsset;
+  }
+
+  const catalogAsset =
+    visualContext?.assetCatalog?.assets?.find(
+      (asset) => asset.id === assetId
+    ) ?? null;
+  const file = catalogAsset?.resource?.file;
+
+  if (typeof file !== "string" || file.trim() === "") {
+    return null;
+  }
+
+  return Object.freeze({
+    assetId,
+    url: globalVisualAssetUrl(file)
+  });
+}
+
+function buildPreviewPresentationAssets(
+  nativeCombatSource
+) {
+  const native =
+    createCaptureSkillPresentationAssetsV1({
+      skillPresentations:
+        nativeCombatSource.skillPresentations ?? {},
+      assetForId: resolvePreviewPresentationAsset,
+      audioAssetForId(assetId) {
+        return demoPresentationAssets.audioAsset(assetId);
+      }
+    });
+
+  return Object.freeze({
+    presentationForArena(arenaId) {
+      return demoPresentationAssets.presentationForArena(
+        arenaId
+      );
+    },
+    presentationForSkill(skillId, context = {}) {
+      return (
+        native.presentationForSkill(skillId, context) ??
+        demoPresentationAssets.presentationForSkill(
+          skillId,
+          context
+        )
+      );
+    },
+    audioAsset(assetId) {
+      return (
+        native.audioAsset(assetId) ??
+        demoPresentationAssets.audioAsset(assetId)
+      );
+    }
+  });
+}
+
 const session = createCaptureEditorPreviewSessionV2({
   editor,
   adaptVisualExport(exported) {
@@ -321,7 +383,9 @@ const session = createCaptureEditorPreviewSessionV2({
       nativeCombatSource,
       nativeVisualSource,
       presentationAssets:
-        demoPresentationAssets
+        buildPreviewPresentationAssets(
+          nativeCombatSource
+        )
     });
 
     let disposed = false;
