@@ -35,18 +35,28 @@ function currentFields() {
   };
 }
 
-test("editor skill library exposes all 84 historical Capture templates", () => {
+test("editor skill library exposes the 103 abilities actually used by Capture creatures", () => {
   const entries = captureLegacySkillLibraryEntriesV1();
 
-  assert.equal(entries.length, 84);
+  assert.equal(entries.length, 103);
   assert.equal(
     new Set(entries.map((entry) => entry.id)).size,
-    84
+    103
   );
   assert.equal(entries[0].id, "cap_fire_atk_1");
   assert.equal(entries[0].name, "Étincelle");
-  assert.equal(entries.at(-1).id, "cap_neutral_12");
-  assert.equal(entries.at(-1).name, "Dernier recours");
+  assert.equal(
+    entries.some((entry) =>
+      entry.id.startsWith("cap_neutral_")
+    ),
+    false
+  );
+  assert.equal(
+    entries.some((entry) =>
+      entry.id === "lib_regen"
+    ),
+    true
+  );
 });
 
 test("basic historical template only replaces fields explicitly known from legacy data", () => {
