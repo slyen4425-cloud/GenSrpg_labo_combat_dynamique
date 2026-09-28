@@ -1,0 +1,36 @@
+import {
+  normalizeSkillPresentationBindingV1
+} from "./skill-presentation-binding-v1.js";
+import {
+  normalizeSkillPresentationBindingV2
+} from "./skill-presentation-binding-v2.js";
+
+export function normalizeSkillPresentationBinding(
+  input
+) {
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input)
+  ) {
+    throw new TypeError(
+      "SkillPresentationBinding must be an object"
+    );
+  }
+
+  if (input.version === 1) {
+    return normalizeSkillPresentationBindingV1(
+      input
+    );
+  }
+
+  if (input.version === 2) {
+    return normalizeSkillPresentationBindingV2(
+      input
+    );
+  }
+
+  throw new RangeError(
+    `Unsupported skill presentation version: ${input.version}`
+  );
+}
