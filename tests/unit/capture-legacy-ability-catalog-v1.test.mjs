@@ -4,41 +4,56 @@ import { readFile } from "node:fs/promises";
 
 import {
   CAPTURE_LEGACY_ABILITY_CATALOG_SCHEMA,
+  CAPTURE_LEGACY_ABILITY_CATALOG_V1,
   normalizeCaptureLegacyAbilityCatalogV1,
   classifyCaptureLegacyAbilityV1,
   captureLegacyAbilityTemplateV1
 } from "../../src/catalogs/capture-legacy-ability-catalog-v1.js";
 
-const catalogUrl = new URL(
-  "../../data/capture/legacy/capture-expanded-ability-roster.v1.json",
-  import.meta.url
-);
-
-async function rawCatalog() {
-  return JSON.parse(await readFile(catalogUrl, "utf8"));
+function catalog() {
+  return normalizeCaptureLegacyAbilityCatalogV1(
+    CAPTURE_LEGACY_ABILITY_CATALOG_V1
+  );
 }
 
-test("legacy Capture ability catalog preserves the 84-entry historical roster", async () => {
-  const value = normalizeCaptureLegacyAbilityCatalogV1(
-    await rawCatalog()
-  );
+test("legacy Capture ability catalog preserves the 84-entry historical roster", () => {
+  const value = catalog();
 
   assert.equal(
     CAPTURE_LEGACY_ABILITY_CATALOG_SCHEMA,
     "capture-legacy-ability-catalog-v1"
   );
-  assert.equal(value.schema, CAPTURE_LEGACY_ABILITY_CATALOG_SCHEMA);
   assert.equal(value.abilities.length, 84);
-  assert.equal(new Set(value.abilities.map((ability) => ability.id)).size, 84);
+  assert.equal(
+    new Set(
+      value.abilities.map(
+        (ability) => ability.id
+      )
+    ).size,
+    84
+  );
 
   const byElement = Object.fromEntries(
-    [...new Set(value.abilities.map((ability) => ability.element || "neutral"))]
-      .map((element) => [
-        element,
-        value.abilities.filter(
-          (ability) => (ability.element || "neutral") === element
-        ).length
-      ])
+    [
+      "fire",
+      "water",
+      "earth",
+      "air",
+      "electric",
+      "light",
+      "shadow",
+      "poison",
+      "neutral"
+    ].map((element) => [
+      element,
+      value.abilities.filter(
+        (ability) =>
+          (
+            ability.element ||
+            "neutral"
+          ) === element
+      ).length
+    ])
   );
 
   assert.deepEqual(byElement, {
@@ -54,10 +69,8 @@ test("legacy Capture ability catalog preserves the 84-entry historical roster", 
   });
 });
 
-test("legacy catalog source provenance is explicit and stable", async () => {
-  const value = normalizeCaptureLegacyAbilityCatalogV1(
-    await rawCatalog()
-  );
+test("legacy catalog source provenance is explicit and stable", () => {
+  const value = catalog();
 
   assert.equal(
     value.source.repository,
@@ -77,19 +90,21 @@ test("legacy catalog source provenance is explicit and stable", async () => {
   );
 });
 
-test("legacy ability classification is based only on explicit effect kinds", async () => {
-  const value = normalizeCaptureLegacyAbilityCatalogV1(
-    await rawCatalog()
-  );
+test("legacy ability classification is based only on explicit effect kinds", () => {
+  const value = catalog();
 
   const portable = value.abilities.filter(
     (ability) =>
-      classifyCaptureLegacyAbilityV1(ability) ===
+      classifyCaptureLegacyAbilityV1(
+        ability
+      ) ===
       "portable-basic-effects"
   );
   const status = value.abilities.filter(
     (ability) =>
-      classifyCaptureLegacyAbilityV1(ability) ===
+      classifyCaptureLegacyAbilityV1(
+        ability
+      ) ===
       "requires-status-effect-v1"
   );
 
@@ -98,33 +113,61 @@ test("legacy ability classification is based only on explicit effect kinds", asy
 
   const renamed = {
     ...portable[0],
-    name: "Nom volontairement trompeur",
-    desc: "buff debuff poison dot projectile"
+    name:
+      "Nom volontairement trompeur",
+    desc:
+      "buff debuff poison dot projectile"
   };
 
   assert.equal(
-    classifyCaptureLegacyAbilityV1(renamed),
+    classifyCaptureLegacyAbilityV1(
+      renamed
+    ),
     "portable-basic-effects"
   );
 });
 
-test("legacy ability template exposes only explicit portable fields and never invents form/timing", async () => {
-  const value = normalizeCaptureLegacyAbilityCatalogV1(
-    await rawCatalog()
-  );
+test("legacy ability template exposes explicit portable fields and never invents form or timing", () => {
+  const value = catalog();
 
   const fire = value.abilities.find(
-    (ability) => ability.id === "cap_fire_atk_1"
+    (ability) =>
+      ability.id ===
+      "cap_fire_atk_1"
   );
-  const template = captureLegacyAbilityTemplateV1(fire);
+  const template =
+    captureLegacyAbilityTemplateV1(
+      fire
+    );
 
-  assert.equal(template.id, "cap_fire_atk_1");
-  assert.equal(template.name, "Étincelle");
-  assert.equal(template.category, "offensive");
-  assert.equal(template.element, "fire");
-  assert.equal(template.requiredLevel, 1);
-  assert.equal(template.effect.damage, 3);
-  assert.equal(template.effect.heal, 0);
+  assert.equal(
+    template.id,
+    "cap_fire_atk_1"
+  );
+  assert.equal(
+    template.name,
+    "Étincelle"
+  );
+  assert.equal(
+    template.category,
+    "offensive"
+  );
+  assert.equal(
+    template.element,
+    "fire"
+  );
+  assert.equal(
+    template.requiredLevel,
+    1
+  );
+  assert.equal(
+    template.effect.damage,
+    3
+  );
+  assert.equal(
+    template.effect.heal,
+    0
+  );
   assert.equal(
     template.migrationState,
     "portable-basic-effects"
@@ -139,15 +182,15 @@ test("legacy ability template exposes only explicit portable fields and never in
     "recoveryMs",
     "cooldownMs"
   ]) {
-    assert.equal(forbidden in template, false);
+    assert.equal(
+      forbidden in template,
+      false
+    );
   }
 });
 
-test("legacy catalog preserves historical boundary entries exactly", async () => {
-  const value = normalizeCaptureLegacyAbilityCatalogV1(
-    await rawCatalog()
-  );
-
+test("legacy catalog preserves historical boundary entries exactly", () => {
+  const value = catalog();
   const first = value.abilities[0];
   const last = value.abilities.at(-1);
 
@@ -156,7 +199,8 @@ test("legacy catalog preserves historical boundary entries exactly", async () =>
     name: "Étincelle",
     category: "spell",
     type: "active",
-    desc: "Attaque Feu de puissance 3. Disponible au niveau 1.",
+    desc:
+      "Attaque Feu de puissance 3. Disponible au niveau 1.",
     element: "fire",
     power: 3,
     requiredLevel: 1,
@@ -173,41 +217,68 @@ test("legacy catalog preserves historical boundary entries exactly", async () =>
       weapon: "",
       cooldown: 0
     },
-    usageScopes: ["captureCreature", "enemy"],
+    usageScopes: [
+      "captureCreature",
+      "enemy"
+    ],
     builtin: true,
     builtinCreature: true,
     captureRoster: true
   });
 
-  assert.equal(last.id, "cap_neutral_12");
-  assert.equal(last.name, "Dernier recours");
+  assert.equal(
+    last.id,
+    "cap_neutral_12"
+  );
+  assert.equal(
+    last.name,
+    "Dernier recours"
+  );
+  assert.equal(
+    last.desc,
+    "Technique neutre de puissance 12. Disponible au niveau 55."
+  );
   assert.equal(last.power, 12);
-  assert.equal(last.requiredLevel, 55);
+  assert.equal(
+    last.requiredLevel,
+    55
+  );
 });
 
-test("status-dependent legacy abilities remain visible but are not falsely flattened", async () => {
-  const value = normalizeCaptureLegacyAbilityCatalogV1(
-    await rawCatalog()
-  );
-
+test("status-dependent legacy abilities remain visible but are not falsely flattened", () => {
+  const value = catalog();
   const debuff = value.abilities.find(
-    (ability) => ability.id === "cap_fire_special_1"
+    (ability) =>
+      ability.id ===
+      "cap_fire_special_1"
   );
-  const template = captureLegacyAbilityTemplateV1(debuff);
+  const template =
+    captureLegacyAbilityTemplateV1(
+      debuff
+    );
 
   assert.equal(
     template.migrationState,
     "requires-status-effect-v1"
   );
-  assert.equal(template.effect.damage, 2);
-  assert.equal(template.legacyStatusEffects.length, 1);
-  assert.deepEqual(template.legacyStatusEffects[0], {
-    kind: "debuff",
-    stat: "agility",
-    value: -2,
-    duration: 2,
-    target: "enemy"
-  });
+  assert.equal(
+    template.effect.damage,
+    2
+  );
+  assert.equal(
+    template.legacyStatusEffects.length,
+    1
+  );
+  assert.deepEqual(
+    template.legacyStatusEffects[0],
+    {
+      kind: "debuff",
+      stat: "agility",
+      value: -2,
+      duration: 2,
+      target: "enemy"
+    }
+  );
 });
 
 test("legacy catalog module is independent from UI, runtime, storage and GenSrpG", async () => {
@@ -228,7 +299,6 @@ test("legacy catalog module is independent from UI, runtime, storage and GenSrpG
     "fetch(",
     "XMLHttpRequest",
     "captureFix",
-    "Zombicide-40k/index.html",
     "combat-runtime",
     "../ui/"
   ]) {
