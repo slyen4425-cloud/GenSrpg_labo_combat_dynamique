@@ -1,11 +1,53 @@
 import {
   mountCaptureEditorHumanV2
 } from "../../src/ui/capture-editor-human-v2.js";
+import {
+  createCaptureEditorPreviewSessionV2
+} from "../../src/ui/capture-editor-preview-session-v2.js";
+import {
+  adaptCaptureExportToNativeVisualSourceV1
+} from "../../src/adapters/input/capture/capture-export-to-native-visual-source-v1.js";
+import {
+  mountCaptureCombatPreviewV1
+} from "../../src/ui/capture-combat-preview-v1.js";
+import {
+  GLOBAL_VISUAL_LIBRARY,
+  globalVisualAssetUrl
+} from "../../src/assets/global-visual-library.js";
+
+const PROFILE_URLS = Object.freeze([
+  new URL("../../data/profiles/biped.profile.json", import.meta.url),
+  new URL("../../data/profiles/quadruped.profile.json", import.meta.url),
+  new URL("../../data/profiles/serpentine.profile.json", import.meta.url),
+  new URL("../../data/profiles/drake.profile.json", import.meta.url)
+]);
+
+async function fetchJson(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(
+      "Ressource preview indisponible (" + response.status + ")"
+    );
+  }
+  return response.json();
+}
+
+async function loadPreviewVisualContext() {
+  const [assetCatalog, ...profiles] = await Promise.all([
+    fetchJson(GLOBAL_VISUAL_LIBRARY.catalogUrl),
+    ...PROFILE_URLS.map((url) => fetchJson(url))
+  ]);
+
+  return Object.freeze({
+    assetCatalog,
+    profiles: Object.freeze(profiles)
+  });
+}
 
 const opponentCreatureDraft = {
   schema: "capture-creature-editor-draft-v2",
   id: "crea-enemy",
-  displayName: "Adversaire",
+  displayName: "Braisombre",
   description: "Créature adverse de prévisualisation.",
   level: 1,
   sourceStats: {
@@ -16,13 +58,13 @@ const opponentCreatureDraft = {
     endurance: 10,
     initiative: 10
   },
-  elements: [],
+  elements: ["fire"],
   resistances: [],
   capture: {
     capturable: true,
     captureRate: 30,
     spawnChance: 10,
-    spawnTags: [],
+    spawnTags: ["fire"],
     evolution: null
   },
   combat: {
@@ -36,7 +78,33 @@ const opponentCreatureDraft = {
     chargeTimeModifierPct: 0
   },
   skillIds: ["enemy-hit"],
-  presentation: null
+  presentation: {
+    id: "creature:crea-enemy",
+    version: 1,
+    subjectType: "creature",
+    subjectId: "crea-enemy",
+    profileId: "drake",
+    visual: {
+      front: {
+        assetId: "pack:capture:creature-braisombre-opponent-01"
+      },
+      back: {
+        assetId: "pack:capture:creature-braisombre-player-01"
+      },
+      icon: {
+        assetId: "pack:capture:creature-braisombre-icon-01"
+      }
+    },
+    sockets: [
+      {
+        id: "projectile",
+        label: "Projectile",
+        front: { x: 0.2, y: 0.45 },
+        back: { x: 0.6, y: 0.38 }
+      }
+    ],
+    audio: {}
+  }
 };
 
 const opponentSkillDrafts = [
@@ -82,6 +150,36 @@ const opponentLoadout = {
 const root = document.querySelector(
   "[data-capture-editor-human]"
 );
+const previewShell = document.querySelector(
+  "[data-capture-preview-shell]"
+);
+const previewHost = document.querySelector(
+  "[data-capture-preview-host]"
+);
+const previewTemplate = document.querySelector(
+  "[data-capture-preview-template]"
+);
+const testButton = document.querySelector(
+  "[data-editor-test-combat]"
+);
+const backButton = document.querySelector(
+  "[data-preview-back-editor]"
+);
+const editorStatus = root?.querySelector(
+  "[data-editor-status]"
+);
+
+if (
+  !root ||
+  !previewShell ||
+  !previewHost ||
+  !previewTemplate ||
+  !testButton ||
+  !backButton ||
+  !editorStatus
+) {
+  throw new Error("Structure Capture Editor preview incomplète");
+}
 
 const editor = mountCaptureEditorHumanV2({
   root,
@@ -90,8 +188,133 @@ const editor = mountCaptureEditorHumanV2({
   opponentLoadout
 });
 
+let visualContext = null;
+const visualContextPromise = loadPreviewVisualContext()
+  .then((context) => {
+    visualContext = context;
+    testButton.disabled = false;
+    return context;
+  })
+  .catch((error) => {
+    editorStatus.textContent =
+      "Preview combat indisponible : " + error.message;
+    editorStatus.dataset.tone = "error";
+    throw error;
+  });
+
+function setMode(mode) {
+  const preview = mode === "preview";
+  root.hidden = preview;
+  previewShell.hidden = !preview;
+  document.body.dataset.editorView = mode;
+}
+
+function clonePreviewRoot(nativeCombatSource) {
+  previewHost.replaceChildren(
+    previewTemplate.content.cloneNode(true)
+  );
+
+  const previewRoot = previewHost.querySelector(
+    "[data-combat-demo]"
+  );
+  if (!previewRoot) {
+    throw new Error("Template combat preview invalide");
+  }
+
+  const activeActorIds = new Set(
+    nativeCombatSource.battleFormat.actors.map(
+      (actor) => actor.actorId
+    )
+  );
+
+  for (
+    const element of previewRoot.querySelectorAll(
+      "[data-preview-actor-ui]"
+    )
+  ) {
+    element.hidden = !activeActorIds.has(
+      element.dataset.previewActorUi
+    );
+  }
+
+  return previewRoot;
+}
+
+const session = createCaptureEditorPreviewSessionV2({
+  editor,
+  adaptVisualExport(exported) {
+    if (!visualContext) {
+      throw new Error(
+        "Contexte visuel de preview non chargé"
+      );
+    }
+
+    return adaptCaptureExportToNativeVisualSourceV1({
+      exported,
+      assetCatalog: visualContext.assetCatalog,
+      profiles: visualContext.profiles,
+      assetUrlForFile: globalVisualAssetUrl
+    });
+  },
+  async mountPreview({
+    nativeCombatSource,
+    nativeVisualSource
+  }) {
+    const previewRoot = clonePreviewRoot(
+      nativeCombatSource
+    );
+
+    const mounted = await mountCaptureCombatPreviewV1({
+      root: previewRoot,
+      nativeCombatSource,
+      nativeVisualSource
+    });
+
+    let disposed = false;
+    return Object.freeze({
+      dispose() {
+        if (disposed) {
+          return;
+        }
+        disposed = true;
+        mounted.dispose();
+        previewHost.replaceChildren();
+      }
+    });
+  },
+  onModeChange: setMode
+});
+
+testButton.disabled = true;
+setMode("editor");
+
+testButton.addEventListener("click", async () => {
+  testButton.disabled = true;
+
+  try {
+    await visualContextPromise;
+    const result = await session.launch();
+
+    if (!result.ok) {
+      testButton.disabled = false;
+      return;
+    }
+  } catch (error) {
+    editorStatus.textContent =
+      "Impossible de lancer le combat : " + error.message;
+    editorStatus.dataset.tone = "error";
+    setMode("editor");
+    testButton.disabled = visualContext === null;
+  }
+});
+
+backButton.addEventListener("click", () => {
+  session.returnToEditor();
+  testButton.disabled = visualContext === null;
+});
+
 window.addEventListener(
   "pagehide",
-  () => editor.dispose(),
+  () => session.dispose(),
   { once: true }
 );
