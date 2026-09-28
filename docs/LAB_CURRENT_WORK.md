@@ -10150,3 +10150,44 @@ Checkpoint final après CI documentaire :
 - intégrer Binding V2 au brouillon éditeur / exporter de présentation ;
 - ajouter le contrôle scale dans l'onglet Créature ;
 - aucun slider UI ne sera ajouté tant que cette composition n'est pas validée.
+
+
+## Micro-lot — composition Capture du scale créature — 2026-09-28
+
+Base GREEN :
+
+- `checkpoint/lab-creature-scale-v1-green-2026-09-28` ;
+- SHA `ed78fc3f16d5d7e134b33d0ba399d088717ad4af`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-creature-scale-export-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-creature-scale-export-v1-2026-09-28`.
+
+Objectif :
+
+Transporter `CreaturePresentationBindingV2.displayScale` dans les brouillons Capture et dans l'export final sans dupliquer l'Exporter V2 ni modifier les règles gameplay.
+
+Nouveaux propriétaires :
+
+- `CaptureCreatureEditorDraftV3` : même métier créature que V2 + présentation V2 ;
+- `Capture Editor Exporter V3` : compose l'Exporter V2 puis remplace uniquement la présentation créature par le binding V2 validé.
+
+Règles :
+
+- V2/V1 restent intacts ;
+- aucune formule ou scale déduit ;
+- `displayScale` reste présentation-only ;
+- l'export final reste `capture-combat-export-v1` car sa section `presentation` est volontairement JSON-compatible/versionnée par binding ;
+- gameplay/fighter config inchangé.
+
+RED :
+
+1. Draft V3 absent ;
+2. Exporter V3 absent ;
+3. scale conservé dans `presentation.creatures` ;
+4. maxHp/maxEnergy/skills inchangés par le scale ;
+5. export final toujours accepté par `normalizeCaptureCombatExportV1`.
