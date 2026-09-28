@@ -10423,3 +10423,39 @@ Checkpoint GREEN prévu :
 - CaptureCreatureEditorDraftV3 composé avec CreaturePresentationBindingV2 ;
 - Exporter V3 préservant la présentation V2 dans CaptureCombatExportV1 ;
 - seulement ensuite champ `Taille en combat` dans l'éditeur.
+
+
+## Micro-lot — CaptureCreatureEditorDraftV3 + Exporter V3 — 2026-09-28
+
+Base GREEN :
+
+- `checkpoint/lab-creature-presentation-binding-v2-green-2026-09-28` ;
+- SHA `710601e457d214fb7e33a3e2ddf895a3b33d2349`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-creature-editor-draft-v3-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-creature-editor-draft-v3-2026-09-28`.
+
+Objectif :
+
+Porter `CreaturePresentationBindingV2` dans le brouillon de créature et dans l'export portable sans dupliquer l'Exporter V2.
+
+Décision :
+
+- nouveau `CaptureCreatureEditorDraftV3` ;
+- même métier créature que V2 ;
+- `presentation` validée par `CreaturePresentationBindingV2` ;
+- nouveau `Capture Editor Exporter V3` ;
+- V3 convertit temporairement la présentation V2 en V1 uniquement pour déléguer les validations structurelles à l'Exporter V2 ;
+- après cette délégation, le `CaptureCombatExportV1.presentation.creatures` final reçoit les bindings V2 complets ;
+- aucune autre règle d'export n'est recopiée.
+
+Critère :
+
+- `displayScale` présent dans l'export final ;
+- FighterConfig et gameplay restent exempts de scale ;
+- output toujours accepté par `normalizeCaptureCombatExportV1` et par la stack Capture autoritaire.
