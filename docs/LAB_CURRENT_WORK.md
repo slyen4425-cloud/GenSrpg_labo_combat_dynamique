@@ -10290,3 +10290,40 @@ RED prévu :
 - sync depuis sockets placés ;
 - option Buff/Debuff explicitement disabled ;
 - aucune régression export/catalogue.
+
+
+### Résultat — Capture Editor Ownership Cleanup V1
+
+RED :
+
+- test : `tests/unit/capture-editor-ownership-cleanup-v1.test.mjs` ;
+- commit `7ac0cc3280f8d71939079602bf84c6be25aeadae` ;
+- CI run `36361623771` — FAILURE attendue ;
+- cause isolée : helper de synchronisation socket absent.
+
+Implémentation :
+
+- commit `ba92b666214b4bec7d77b068407db676cbdb4913` ;
+- CI run `36361702522` — SUCCESS.
+
+Résultat :
+
+- PV max / initiaux édités une seule fois dans l'onglet Créature ;
+- aucun input caché ni copie dans Combat ;
+- le sélecteur `Point de sortie de cette capacité` ne contient plus de socket métier codé en dur ;
+- les options proviennent uniquement des sockets réellement placés sur la créature ;
+- une référence devenue inexistante revient explicitement à `Centre par défaut` ;
+- Buff/Debuff générique est affiché `StatusEffectV1 requis` et désactivé à la création ;
+- les modèles historiques status-dependent restent consultables via la bibliothèque.
+
+Aucun Runtime/Rules/Renderer modifié.
+
+Checkpoint GREEN prévu :
+
+`checkpoint/lab-capture-editor-ownership-cleanup-v1-green-2026-09-28`.
+
+Étape suivante :
+
+- Creature Scale Contract V1/V2 ;
+- persistance d'une taille de présentation explicite ;
+- adaptation vers `VisualActor.scale` avant d'ajouter le contrôle UI.
