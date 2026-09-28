@@ -112,7 +112,9 @@ function battleTopology(setup) {
   return {
     battle: {
       id: setup.id,
-      localActorId: setup.localActorId
+      localActorId: setup.localActorId,
+      skillSpeedMultiplier:
+        setup.skillSpeedMultiplier
     },
     teams,
     actors,
