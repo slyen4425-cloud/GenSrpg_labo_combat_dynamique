@@ -10,20 +10,20 @@ import {
   normalizeCaptureSkillEditorDraftV1
 } from "../../src/contracts/capture-skill-editor-draft-v1.js";
 
-test("portable Capture catalog exposes exactly the 77 runtime-compatible used abilities", () => {
+test("portable Capture catalog exposes exactly the 70 runtime-equivalent damage abilities", () => {
   const entries = CAPTURE_PORTABLE_NATIVE_SKILL_CATALOG_V1.entries;
-  assert.equal(entries.length, 77);
+  assert.equal(entries.length, 70);
   assert.equal(
     entries.filter((entry) => entry.id.startsWith("cap_")).length,
-    59
+    56
   );
   assert.equal(
     entries.filter((entry) => entry.id.startsWith("lib_")).length,
-    18
+    14
   );
   assert.equal(
     new Set(entries.map((entry) => entry.id)).size,
-    77
+    70
   );
 
   for (const entry of entries) {
@@ -40,7 +40,7 @@ test("portable Capture catalog exposes exactly the 77 runtime-compatible used ab
 
 test("portable Capture catalog builds valid CaptureSkillEditorDraftV1 without copying historical records", () => {
   const drafts = capturePortableNativeSkillDraftsV1();
-  assert.equal(drafts.length, 77);
+  assert.equal(drafts.length, 70);
 
   for (const draft of drafts) {
     const normalized = normalizeCaptureSkillEditorDraftV1(draft);
@@ -67,7 +67,7 @@ test("human editor hydrates portable Capture skills alongside the nine laborator
     true
   );
   assert.equal(
-    source.includes("77 capacités Capture portables"),
+    source.includes("70 capacités Capture natives"),
     true
   );
   assert.equal(
