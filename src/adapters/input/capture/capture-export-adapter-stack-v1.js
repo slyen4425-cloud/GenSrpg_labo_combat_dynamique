@@ -68,6 +68,8 @@ export function adaptCaptureCombatExportStackV1(input) {
 
   return Object.freeze({
     battleFormat: adaptCaptureExportToBattleFormat(exported),
+    skillSpeedMultiplier:
+      exported.battle.skillSpeedMultiplier,
     roster: adaptCaptureExportToRosterDefinition(exported),
     fighterConfigs,
     fighters,
