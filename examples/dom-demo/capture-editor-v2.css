@@ -576,3 +576,106 @@ details summary {
     width: 100%;
   }
 }
+
+
+/* Capture Editor -> Combat Preview composition.
+   demo.css is loaded first; editor.css owns the page shell and view switching. */
+html,
+body {
+  width: 100%;
+  height: auto;
+  overflow: auto;
+}
+
+body[data-editor-view="preview"] {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.editor-footer__actions {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.secondary-action {
+  min-height: 2.7rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(131, 230, 247, 0.22);
+  border-radius: 0.65rem;
+  background: rgba(10, 32, 41, 0.92);
+  color: #d7e8ed;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.primary-action:disabled,
+.secondary-action:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.capture-preview-shell[hidden] {
+  display: none;
+}
+
+.capture-preview-shell {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  overflow: hidden;
+  background: #071016;
+}
+
+.capture-preview-host {
+  width: 100%;
+  height: 100%;
+}
+
+.capture-preview-host > .game {
+  height: 100%;
+  padding-top:
+    max(3.4rem, calc(env(safe-area-inset-top) + 3rem));
+}
+
+.capture-preview-back {
+  position: absolute;
+  z-index: 80;
+  top: max(0.55rem, env(safe-area-inset-top));
+  left: max(0.55rem, env(safe-area-inset-left));
+  min-height: 2.45rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid rgba(139, 232, 248, 0.32);
+  border-radius: 999px;
+  background: rgba(5, 17, 23, 0.9);
+  color: #eef9fc;
+  font-weight: 900;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.capture-preview-shell .arena {
+  height: 100%;
+  min-height: 0;
+}
+
+@media (max-width: 520px) {
+  .editor-footer__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .secondary-action,
+  .primary-action {
+    width: 100%;
+  }
+
+  .capture-preview-host > .game {
+    padding:
+      max(3.25rem, calc(env(safe-area-inset-top) + 2.9rem))
+      max(0.18rem, env(safe-area-inset-right))
+      max(0.18rem, env(safe-area-inset-bottom))
+      max(0.18rem, env(safe-area-inset-left));
+  }
+}
