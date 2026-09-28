@@ -10298,3 +10298,40 @@ Critère GREEN technique :
 - implémentation minimale ;
 - sentinelles existantes vertes ;
 - CI complète verte.
+
+
+### Résultat — source native injectable Combat Test 2v2
+
+RED :
+
+- `tests/unit/combat-2v2-native-source-v1.test.mjs` ;
+- SHA RED : `b2a05b44b6bad239cf5af73aec266b363a4f1bd9` ;
+- run `36417877748` — FAILURE attendue ;
+- échec unique : `loadCoop2v2CombatSource` absent.
+
+Implémentation :
+
+- `loadCoop2v2CombatSource()` accepte `nativeCombatSource` ;
+- cette source consomme directement :
+  - `battleFormat` ;
+  - `fighters` ;
+  - `skills` ;
+  - `skillIdsByActor` lorsqu'il est fourni ;
+- aucune fixture de démonstration n'est fetchée si une source native est injectée ;
+- le chemin historique sans source injectée continue de charger les fichiers de démo ;
+- `mountCoop2v2Test()` consomme le résultat unique du loader ;
+- aucune traduction Capture, aucun storage, aucun global, aucun changement Combat Core.
+
+SHA technique :
+
+`1d2a995aa05f37a7e0a1ff887fa5b566b4bd630a`.
+
+CI :
+
+- run `36417987855` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final :
+
+`checkpoint/lab-combat-test-native-source-v1-green-2026-09-28`.
