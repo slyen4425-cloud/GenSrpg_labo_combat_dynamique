@@ -10411,3 +10411,52 @@ CI :
 Checkpoint final :
 
 `checkpoint/lab-combat-test-data-driven-controllers-v1-green-2026-09-28`.
+
+
+## Lot indépendant — import catalogue historique de capacités Capture — 2026-09-28
+
+Source autoritaire fournie par l'utilisateur et vérifiée localement :
+
+- dépôt source : `slyen4425-cloud/Zombicide-40k` ;
+- commit : `49289784ee92a47fd51089815ca25954cdba4493` ;
+- blob Git exact de `index.html` : `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- taille : `8170062` octets ;
+- propriétaire seed : `builtinMonsterCapture162` ;
+- constante source : `MC162_ABILITIES` ;
+- propriétaire canonique de résolution historique : `captureAbilityTruth144`.
+
+Base laboratoire :
+
+- checkpoint : `checkpoint/lab-combat-test-data-driven-controllers-v1-green-2026-09-28` ;
+- SHA : `17f4806f3b57d310c12488442b93a166ae109c5f`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-legacy-skill-catalog-import-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-legacy-skill-catalog-import-2026-09-28`.
+
+Objectif :
+
+1. importer à l'identique les 173 capacités historiques dans un catalogue **source de migration** du laboratoire ;
+2. préserver IDs, noms, catégories, éléments, niveaux, effets et métadonnées sans inventer de timings, coûts d'énergie ou formes natives ;
+3. ne pas exposer silencieusement comme `SkillDefinition` les capacités dont la sémantique n'est pas encore supportée ;
+4. documenter les écarts de contrat avant toute migration vers le catalogue combat natif.
+
+Propriétaires / frontières :
+
+- catalogue historique : donnée de migration uniquement ;
+- `SkillDefinition` reste l'autorité du combat natif ;
+- aucun import runtime depuis `Zombicide-40k` ;
+- aucun `captureFix*` copié ;
+- aucune lecture de storage / DOM / global ;
+- aucune modification production.
+
+RED :
+
+- fichier source de migration attendu absent ;
+- test d'intégrité attendu : 173 entrées, IDs uniques, metadata source exacte, conservation d'effets complexes représentatifs.
+
+État initial : **RED à poser**.
