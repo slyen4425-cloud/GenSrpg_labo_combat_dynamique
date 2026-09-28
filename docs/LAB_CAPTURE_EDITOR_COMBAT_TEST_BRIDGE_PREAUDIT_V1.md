@@ -118,11 +118,11 @@ Capture Editor
 
 Le Combat Core ne doit connaître ni l'éditeur, ni `CaptureCombatExportV1`.
 
-## 6. Format 1v1 / 2v2 / 3v3 / 4v4
+## 6. Format actif 1v1 / 2v2 et roster indépendant
 
-Le bridge ne doit pas appeler directement un chemin spécial « 2v2 ».
+Le bridge doit supporter uniquement les deux formats simultanés autorisés : `1v1` et `2v2`.
 
-La donnée autoritaire existe déjà dans `BattleFormatDefinition` issue du Battle Setup.
+La taille du roster / réserve est indépendante du nombre de slots actifs. La donnée autoritaire des slots engagés existe dans `BattleFormatDefinition` issue du Battle Setup.
 
 Le nombre d'acteurs doit donc être dérivé de :
 
@@ -137,7 +137,8 @@ Interdit :
 
 - `if (is2v2)` ;
 - quatre actorIds codés en dur ;
-- dupliquer la logique pour 3v3 ou 4v4 ;
+- accepter plus de deux slots actifs par équipe ;
+- confondre taille du roster et nombre de slots engagés ;
 - déduire le format du nombre de cartes visibles.
 
 ## 7. Propriétaires proposés
@@ -228,16 +229,16 @@ RED :
 
 ### Lot C — slots visuels format-driven
 
-But : permettre au même chemin de bootstrap de rendre 1 à 4 actifs par équipe.
+But : permettre au même chemin de bootstrap de rendre uniquement 1 ou 2 actifs par équipe, sans limiter le roster.
 
 RED :
 
 1. 1v1 ;
 2. 2v2 ;
-3. 3v3 ;
-4. 4v4 ;
+3. rejet de 3 actifs ou plus ;
+4. roster de réserve supérieur à 2 accepté ;
 
-avec les mêmes contrats et sans fonctions spécifiques par format.
+avec les mêmes contrats et sans autorité parallèle de format.
 
 Ce lot est UI et nécessitera sa propre validation smartphone avant GREEN final.
 
@@ -305,8 +306,8 @@ Il est interdit d'injecter directement un état final dans le renderer.
 5. **Faire adapter les stats/skills dans la UI**
    - risque : la UI deviendrait propriétaire de gameplay.
 
-6. **Généraliser 1v1/2v2/3v3/4v4 en un seul big-bang**
-   - risque : trop grand lot. Les micro-lots A/B/C doivent isoler source, contrôleurs puis slots.
+6. **Confondre slots actifs et taille du roster**
+   - risque : limiter artificiellement la réserve ou réintroduire des formats simultanés non prévus. Les micro-lots A/B/C doivent isoler source, contrôleurs puis slots.
 
 ## 12. Conclusion
 
