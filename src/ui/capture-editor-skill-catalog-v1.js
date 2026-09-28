@@ -1,10 +1,10 @@
 import {
-  CAPTURE_LEGACY_ABILITY_CATALOG_V1,
-  captureLegacyAbilityTemplateV1
-} from "../catalogs/capture-legacy-ability-catalog-v1.js";
+  CAPTURE_USED_ABILITY_CATALOG_V2,
+  captureUsedAbilityTemplateV2
+} from "../catalogs/capture-used-ability-catalog-v2.js";
 
 const ABILITY_BY_ID = new Map(
-  CAPTURE_LEGACY_ABILITY_CATALOG_V1.abilities.map(
+  CAPTURE_USED_ABILITY_CATALOG_V2.abilities.map(
     (ability) => [ability.id, ability]
   )
 );
@@ -21,10 +21,10 @@ function abilityById(id) {
 
 export function captureLegacySkillLibraryEntriesV1() {
   return Object.freeze(
-    CAPTURE_LEGACY_ABILITY_CATALOG_V1.abilities.map(
+    CAPTURE_USED_ABILITY_CATALOG_V2.abilities.map(
       (ability) => {
         const template =
-          captureLegacyAbilityTemplateV1(ability);
+          captureUsedAbilityTemplateV2(ability);
 
         return Object.freeze({
           id: ability.id,
@@ -45,7 +45,7 @@ export function captureLegacySkillLibraryEntriesV1() {
 export function captureLegacyAbilityEditorStateV1(id) {
   const ability = abilityById(id);
   const template =
-    captureLegacyAbilityTemplateV1(ability);
+    captureUsedAbilityTemplateV2(ability);
   const runtimeReady =
     template.migrationState ===
     "portable-basic-effects";
@@ -57,7 +57,7 @@ export function captureLegacyAbilityEditorStateV1(id) {
     runtimeReady,
     message: runtimeReady
       ? "Modèle historique compatible avec les effets de base. Configure explicitement style, coût et timings avant enregistrement."
-      : "Cette capacité contient un buff, debuff ou DoT historique. StatusEffectV1 est requis avant équivalence runtime complète.",
+      : "Cette capacité contient un buff, debuff, DoT ou HoT historique. StatusEffectV1 est requis avant équivalence runtime complète.",
     template,
     legacyStatusEffects:
       template.legacyStatusEffects
