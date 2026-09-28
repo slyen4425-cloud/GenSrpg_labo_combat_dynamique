@@ -2,8 +2,14 @@ import {
   normalizeCaptureCreatureEditorDraftV2
 } from "../contracts/capture-creature-editor-draft-v2.js";
 import {
+  normalizeCaptureCreatureEditorDraftV3
+} from "../contracts/capture-creature-editor-draft-v3.js";
+import {
   normalizeCaptureSkillEditorDraftV1
 } from "../contracts/capture-skill-editor-draft-v1.js";
+import {
+  normalizeSkillDefinition
+} from "../contracts/skill-definition.js";
 import {
   normalizeCaptureActiveSkillLoadoutV1
 } from "../contracts/capture-active-skill-loadout-v1.js";
@@ -14,6 +20,9 @@ import {
   exportCaptureEditorDraftsToCombatExportV2
 } from "../adapters/input/capture/capture-editor-exporter-v2.js";
 import {
+  exportCaptureEditorDraftsToCombatExportV3
+} from "../adapters/input/capture/capture-editor-exporter-v3.js";
+import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../assets/global-visual-library.js";
@@ -22,6 +31,16 @@ import {
   captureLegacyAbilityEditorStateV1,
   mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
 } from "./capture-editor-skill-catalog-v1.js";
+
+const PRIVATE_AUDIO_CATALOG_URL = new URL(
+  "../../data/presentation/audio/private-audio-catalog.v1.json",
+  import.meta.url
+);
+
+const NATIVE_SKILL_CATALOG_URL = new URL(
+  "../../data/combat/skills/catalog.v1.json",
+  import.meta.url
+);
 
 function clamp01(value) {
   return Math.min(1, Math.max(0, value));
@@ -390,6 +409,28 @@ export function buildHumanCreatureDraftV2(fields) {
   });
 }
 
+
+export function buildHumanCreatureDraftV3(fields) {
+  const base = buildHumanCreatureDraftV2(fields);
+  const displayScale = finiteNumber(
+    fields?.displayScale ?? 1,
+    "Taille en combat"
+  );
+
+  return normalizeCaptureCreatureEditorDraftV3({
+    ...base,
+    schema: "capture-creature-editor-draft-v3",
+    presentation:
+      base.presentation === null
+        ? null
+        : {
+            ...base.presentation,
+            version: 2,
+            displayScale
+          }
+  });
+}
+
 export function buildHumanSkillDraftV1(fields) {
   if (!fields || typeof fields !== "object") {
     throw new TypeError("Données capacité invalides");
@@ -615,6 +656,36 @@ export function buildHumanEditorExportV2({
   });
 }
 
+
+export function buildHumanEditorExportV3({
+  creatureDraft,
+  skillDrafts,
+  loadout,
+  battleSetup,
+  opponentCreatureDraft,
+  opponentSkillDrafts,
+  opponentLoadout
+}) {
+  return exportCaptureEditorDraftsToCombatExportV3({
+    battleSetup,
+    creatureDrafts: [
+      creatureDraft,
+      opponentCreatureDraft
+    ],
+    skillDrafts: [
+      ...skillDrafts,
+      ...opponentSkillDrafts
+    ],
+    loadouts: [
+      loadout,
+      opponentLoadout
+    ],
+    metadata: {
+      editor: "capture-human-v2"
+    }
+  });
+}
+
 function one(root, selector) {
   const element = root.querySelector(selector);
   if (!element) {
@@ -755,6 +826,130 @@ function populateSelect(select, assets, role) {
   }
 }
 
+
+function populatePrivateAudioSelect(select, entries) {
+  const previous = select.value;
+  const acceptedRoles = String(
+    select.dataset.audioRoles ?? ""
+  )
+    .split(",")
+    .map((role) => role.trim())
+    .filter(Boolean);
+
+  select.textContent = "";
+  createOption(select, "", "Aucun");
+
+  const filtered = entries.filter((entry) =>
+    acceptedRoles.length === 0 ||
+    entry.roles?.some((role) =>
+      acceptedRoles.includes(role)
+    )
+  );
+
+  const groups = new Map();
+  for (const entry of filtered) {
+    const category = entry.category || "autres";
+    if (!groups.has(category)) {
+      groups.set(category, []);
+    }
+    groups.get(category).push(entry);
+  }
+
+  for (const category of [...groups.keys()].sort()) {
+    const group = document.createElement("optgroup");
+    group.label = category;
+
+    for (const entry of groups.get(category)) {
+      const option = document.createElement("option");
+      option.value = entry.assetId;
+      option.textContent = entry.label;
+      group.append(option);
+    }
+
+    select.append(group);
+  }
+
+  if (
+    previous &&
+    [...select.options].some(
+      (option) => option.value === previous
+    )
+  ) {
+    select.value = previous;
+  }
+}
+
+async function hydratePrivateAudioCatalog(root) {
+  const response = await fetch(
+    PRIVATE_AUDIO_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue audio indisponible (" +
+      response.status +
+      ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? catalog.entries
+    : [];
+
+  for (
+    const select of root.querySelectorAll(
+      "[data-private-audio]"
+    )
+  ) {
+    populatePrivateAudioSelect(select, entries);
+  }
+
+  return catalog;
+}
+
+async function hydrateNativeSkillCatalog() {
+  const response = await fetch(
+    NATIVE_SKILL_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Bibliothèque native indisponible (" +
+      response.status +
+      ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? catalog.entries
+    : [];
+
+  return new Map(
+    entries.map((entry) => {
+      const definition =
+        normalizeSkillDefinition(entry.definition);
+
+      const draft =
+        normalizeCaptureSkillEditorDraftV1({
+          schema: "capture-skill-editor-draft-v1",
+          id: definition.id,
+          description:
+            "Capacité native du laboratoire.",
+          requiredLevel: 1,
+          usageScopes: ["capture", "combat"],
+          definition,
+          presentation: null
+        });
+
+      return [draft.id, draft];
+    })
+  );
+}
+
 async function hydrateAssetCatalog(root, listen) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
@@ -844,6 +1039,38 @@ async function hydrateAssetCatalog(root, listen) {
     );
     syncPreviews(select, images);
   }
+
+  const scaleInput = one(
+    root,
+    "[data-creature-display-scale]"
+  );
+  const scaleOutput = one(
+    root,
+    "[data-creature-scale-value]"
+  );
+
+  function syncScalePreview() {
+    const scale = Number(scaleInput.value) || 1;
+    scaleOutput.textContent =
+      scale.toFixed(2) + "×";
+
+    for (const image of [
+      frontImage,
+      backImage,
+      socketFrontImage,
+      socketBackImage
+    ]) {
+      image.style.transform =
+        `scale(${scale})`;
+    }
+  }
+
+  listen(
+    scaleInput,
+    "input",
+    syncScalePreview
+  );
+  syncScalePreview();
 
   return catalog;
 }
@@ -1063,6 +1290,10 @@ function readCreatureFields(root, sockets) {
     profileId: selectedValue(
       root,
       "[data-creature-profile]"
+    ),
+    displayScale: numericValue(
+      root,
+      "[data-creature-display-scale]"
     ),
     visual: {
       frontAssetId: selectedValue(
@@ -1566,7 +1797,7 @@ export function mountCaptureEditorHumanV2({
       ];
 
       const creatureDraft =
-        buildHumanCreatureDraftV2(creatureFields);
+        buildHumanCreatureDraftV3(creatureFields);
 
       const loadout = readLoadout(
         root,
@@ -1586,7 +1817,7 @@ export function mountCaptureEditorHumanV2({
         )
       });
 
-      lastExport = buildHumanEditorExportV2({
+      lastExport = buildHumanEditorExportV3({
         creatureDraft,
         skillDrafts: [
           ...configuredSkills.values()
@@ -1628,12 +1859,29 @@ export function mountCaptureEditorHumanV2({
 
   listen(validateButton, "click", validate);
 
-  hydrateAssetCatalog(root, listen)
-    .then(() => {
+  Promise.all([
+    hydrateAssetCatalog(root, listen),
+    hydratePrivateAudioCatalog(root),
+    hydrateNativeSkillCatalog()
+  ])
+    .then(([, , nativeSkills]) => {
+      for (
+        const [skillId, draft] of nativeSkills
+      ) {
+        if (!configuredSkills.has(skillId)) {
+          configuredSkills.set(
+            skillId,
+            draft
+          );
+        }
+      }
+
+      refreshLoadoutOptions();
+
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèque visuelle chargée. Tu peux configurer la créature.",
+          "Bibliothèques visuelle, audio, 9 capacités natives et 103 modèles historiques chargées.",
           "info"
         );
       }
@@ -1642,7 +1890,7 @@ export function mountCaptureEditorHumanV2({
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèque visuelle indisponible : " +
+          "Bibliothèques indisponibles : " +
             error.message,
           "error"
         );
