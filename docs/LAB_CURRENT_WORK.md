@@ -10911,3 +10911,38 @@ RED :
 5. l'allié est nullable en 1v1 et unique en 2v2.
 
 Aucun changement visuel attendu dans ce micro-lot.
+
+
+### Résultat — bootstrap preview format générique 1v1 / 2v2 V1
+
+RED :
+
+- test : `tests/unit/combat-preview-format-generic-v1.test.mjs` ;
+- SHA RED : `cefd811564b59b2f9172610a5ce1ea9c48f19cdf` ;
+- CI `36430883616` — FAILURE attendue ;
+- cause : helper de format générique absent.
+
+Implémentation :
+
+- `resolveCombatPreviewFormatV1(format)` dérive l'équipe locale depuis `localActorId` ;
+- l'équipe adverse est l'autre équipe déclarée ;
+- noms d'équipes arbitraires supportés ;
+- 1v1 : allié `null` ;
+- 2v2 : un allié local ;
+- formats asymétriques / >2 actifs / >2 équipes refusés ;
+- `mountCoop2v2Test()` n'utilise plus `format.teams.players` / `format.teams.enemies` ;
+- aucun `is2v2`.
+
+SHA technique :
+
+`c5f2620a2d7402215e5f841ad128414bdfb45d95`.
+
+CI :
+
+- run `36431009245` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-combat-preview-format-generic-v1-green-2026-09-28`.
