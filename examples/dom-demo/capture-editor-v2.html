@@ -119,6 +119,16 @@
             <option value="massive">Massif / golem</option>
           </select>
         </label>
+        <label>Taille en combat <strong data-creature-scale-value>1.00×</strong>
+          <input
+            data-creature-display-scale
+            type="range"
+            min="0.25"
+            max="4"
+            step="0.05"
+            value="1"
+          >
+        </label>
       </article>
 
       <article class="card">
@@ -130,16 +140,9 @@
           </div>
         </div>
 
-        <label>Point à placer
-          <select data-socket-kind>
-            <option value="mouth">Bouche</option>
-            <option value="head">Tête</option>
-            <option value="right-hand">Main / patte droite</option>
-            <option value="left-hand">Main / patte gauche</option>
-            <option value="tail">Queue</option>
-            <option value="center">Centre</option>
-          </select>
-        </label>
+        <p class="note" data-projectile-socket>
+          Socket projectile unique : touche directement la vue face et/ou dos pour placer le point de départ.
+        </p>
 
         <div class="socket-grid">
           <button class="socket-surface" type="button" data-socket-surface data-socket-view="front">
@@ -164,13 +167,13 @@
 
         <div class="grid three">
           <label>Attaque
-            <select data-creature-audio-attack data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-attack data-private-audio data-audio-roles="release,voice"><option value="">Aucun</option></select>
           </label>
           <label>Touché
-            <select data-creature-audio-hit data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-hit data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select>
           </label>
           <label>KO / mort
-            <select data-creature-audio-ko data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-ko data-private-audio data-audio-roles="death"><option value="">Aucun</option></select>
           </label>
         </div>
       </article>
@@ -207,6 +210,20 @@
           <label class="switch-line"><input type="checkbox" data-capturable checked><span>Capturable</span></label>
           <label>Taux de capture %<input type="number" min="0" max="100" data-capture-rate value="40"></label>
           <label>Chance d'apparition %<input type="number" min="0" max="100" data-spawn-chance value="20"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">2</span>
+          <div>
+            <h2>PV</h2>
+            <p>Valeurs explicites utilisées par le combat.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
+          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
         </div>
       </article>
 
@@ -261,19 +278,6 @@
         </div>
       </article>
 
-      <article class="card">
-        <div class="card-title">
-          <span class="step">2</span>
-          <div>
-            <h2>PV</h2>
-            <p>Valeurs explicites utilisées par le combat.</p>
-          </div>
-        </div>
-        <div class="grid two">
-          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
-          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
-        </div>
-      </article>
 
       <article class="card">
         <div class="card-title">
@@ -304,6 +308,12 @@
             <p>Type, cible, dégâts, soin et élément.</p>
           </div>
         </div>
+
+        <label>Capacité existante
+          <select data-skill-library>
+            <option value="fireball" selected>Boule de feu</option>
+          </select>
+        </label>
 
         <div class="grid two">
           <label>Nom<input data-skill-name value="Boule de feu"></label>
@@ -433,16 +443,6 @@
           <label>Icône
             <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
           </label>
-          <label>Socket de départ
-            <select data-skill-socket>
-              <option value="">Centre par défaut</option>
-              <option value="mouth" selected>Bouche</option>
-              <option value="head">Tête</option>
-              <option value="right-hand">Main / patte droite</option>
-              <option value="left-hand">Main / patte gauche</option>
-              <option value="tail">Queue</option>
-            </select>
-          </label>
           <label>Effet de cast
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
           </label>
@@ -465,10 +465,10 @@
         </div>
         <div class="grid two">
           <label>Son de cast
-            <select data-skill-cast-audio data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-skill-cast-audio data-private-audio data-audio-roles="cast,release,preparation"><option value="">Aucun</option></select>
           </label>
           <label>Son d'impact
-            <select data-skill-impact-audio data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-skill-impact-audio data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select>
           </label>
         </div>
       </article>
