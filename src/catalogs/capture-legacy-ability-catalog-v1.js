@@ -8,9 +8,7 @@ export const CAPTURE_LEGACY_ABILITY_MIGRATION_STATES =
   ]);
 
 const SOURCE = Object.freeze({
-  repository: "slyen4425-cloud/Zombicide-40k",
-  checkpoint:
-    "checkpoint/gensrpg-phase7-dungeon-generated-branch-plan-green-2026-09-27",
+  sourceId: "gensrpg-capture-expanded-ability-roster",
   commit: "49289784ee92a47fd51089815ca25954cdba4493",
   indexBlob: "74e223b2c9877e6a88b6ad6726290d230f1f616e",
   functionName: "gensCaptureExpandedAbilityRoster"
@@ -1018,13 +1016,9 @@ export function normalizeCaptureLegacyAbilityCatalogV1(
     schema:
       CAPTURE_LEGACY_ABILITY_CATALOG_SCHEMA,
     source: Object.freeze({
-      repository: requiredString(
-        value.source?.repository,
-        "source.repository"
-      ),
-      checkpoint: requiredString(
-        value.source?.checkpoint,
-        "source.checkpoint"
+      sourceId: requiredString(
+        value.source?.sourceId,
+        "source.sourceId"
       ),
       commit: requiredString(
         value.source?.commit,

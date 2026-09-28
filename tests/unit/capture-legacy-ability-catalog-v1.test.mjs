@@ -73,8 +73,8 @@ test("legacy catalog source provenance is explicit and stable", () => {
   const value = catalog();
 
   assert.equal(
-    value.source.repository,
-    "slyen4425-cloud/Zombicide-40k"
+    value.source.sourceId,
+    "gensrpg-capture-expanded-ability-roster"
   );
   assert.equal(
     value.source.commit,
