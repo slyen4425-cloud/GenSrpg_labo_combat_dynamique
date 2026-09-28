@@ -304,7 +304,9 @@ function normalizedInjectedCombatSource(input) {
     fighters,
     skills,
     skillsById,
-    skillIdsByActor
+    skillIdsByActor,
+    skillSpeedMultiplier:
+      input.skillSpeedMultiplier ?? 1
   });
 }
 
@@ -385,7 +387,8 @@ export async function loadCoop2v2CombatSource({
     fighters,
     skills,
     skillsById,
-    skillIdsByActor
+    skillIdsByActor,
+    skillSpeedMultiplier: 1
   });
 }
 
@@ -441,7 +444,8 @@ export async function mountCoop2v2Test({
     fighters,
     skills,
     skillsById,
-    skillIdsByActor
+    skillIdsByActor,
+    skillSpeedMultiplier
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
     fetchImpl,
@@ -450,7 +454,8 @@ export async function mountCoop2v2Test({
 
   const session = createCombatSession({
     distance: "medium",
-    fighters
+    fighters,
+    skillSpeedMultiplier
   });
 
   const arena = requiredElement(root, "[data-combat-arena]");
