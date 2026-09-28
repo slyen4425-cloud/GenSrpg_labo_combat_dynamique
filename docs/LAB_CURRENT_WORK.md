@@ -10460,3 +10460,43 @@ RED :
 - test d'intégrité attendu : 173 entrées, IDs uniques, metadata source exacte, conservation d'effets complexes représentatifs.
 
 État initial : **RED à poser**.
+
+
+### Résultat — import catalogue historique de capacités Capture
+
+RED :
+
+- test : `tests/unit/capture-legacy-skill-catalog-import-v1.test.mjs` ;
+- SHA RED : `ff5056b0012793cfbb30a25594083207834565f8` ;
+- CI run `36421279116` — FAILURE attendue ;
+- 4 échecs uniquement : fichier catalogue absent (`ENOENT`).
+
+Import :
+
+- fichier : `data/capture/skills/gensrpg-capture-legacy-skill-catalog.v1.json` ;
+- 173 capacités ;
+- 173 IDs uniques ;
+- données extraites de `MC162_ABILITIES` depuis le blob autoritaire exact ;
+- aucun runtime GenSrpG copié ;
+- aucune conversion destructive en `SkillDefinition`.
+
+SHA import :
+
+`9406900d94c511fe061ace6a674a1101783265fd`.
+
+CI après import :
+
+- run `36421460326` — SUCCESS.
+
+Audit :
+
+- document : `docs/LAB_CAPTURE_LEGACY_SKILL_CATALOG_AUDIT_V1.md` ;
+- 87 entrées simples damage/heal sont seulement des candidates sémantiques ;
+- 86 entrées nécessitent clairement une extension de contrat ;
+- aucune des 173 n'est automatiquement déclarée native tant que les champs de timing/énergie/forme et les effets étendus ne sont pas explicitement migrés.
+
+État : **GREEN technique de conservation/migration source** après CI documentaire finale.
+
+Checkpoint final visé :
+
+`checkpoint/lab-capture-legacy-skill-catalog-import-green-2026-09-28`.
