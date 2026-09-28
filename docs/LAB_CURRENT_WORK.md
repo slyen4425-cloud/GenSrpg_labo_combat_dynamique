@@ -12013,3 +12013,69 @@ Checkpoint visé :
 Preview visée :
 
 `preview/lab-skill-presentation-view-layer-v2-2026-09-28`.
+
+
+## Micro-lot — livraison audio privée vers preview runtime V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-skill-presentation-view-layer-v2-prevalidation-green-2026-09-28` ;
+- SHA : `ac4e7b79d38dd32f6c826be50dacfe44f1ceaac3`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-private-audio-preview-runtime-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-private-audio-preview-runtime-v1-2026-09-28`.
+
+Retour utilisateur reproduit :
+
+- un son choisi dans l'éditeur pour une capacité est bien exporté comme `assetId`, mais la preview ne sait résoudre que les sons de démonstration ;
+- le catalogue privé expose 173 métadonnées, alors que le laboratoire public ne possède que trois binaires de test explicitement préparés ;
+- publier les 173 binaires ou des URLs privées est interdit.
+
+Objectif :
+
+1. créer un registre Asset Input de preview pour les trois binaires de test déjà présents dans `assets/runtime/audio-test/` ;
+2. indexer ce registre avec les mêmes `assetId` stables du catalogue privé ;
+3. faire résoudre ces IDs par la preview avant le fallback audio de démonstration ;
+4. ne jamais exposer sourcePath privé, URL GitHub privée, token ou binaire supplémentaire ;
+5. rendre explicite qu'un asset non livré retourne `null`.
+
+Mappings autorisés depuis le pack privé de test déjà audité :
+
+- `gensrpg:sound:effect-135ee2ed` -> `fire_cast.mp3` ;
+- `gensrpg:sound:effect-df32b429` -> `melee_impact.mp3` ;
+- `gensrpg:sound:effect-0221d6ed` -> `teleport.mp3`.
+
+Propriétaires :
+
+- classification et IDs : catalogue privé ;
+- livraison preview : Asset Input dédié ;
+- lecture : `dom-combat-audio` inchangé ;
+- binding capacité : `SkillPresentationBindingV2` inchangé.
+
+Interdits :
+
+- aucune publication des 173 binaires ;
+- aucun accès runtime au dépôt privé ;
+- aucun token ;
+- aucun changement Combat Core ;
+- aucun global/storage ;
+- aucun mapping par nom de capacité.
+
+RED :
+
+1. module de livraison preview absent ;
+2. les trois IDs test doivent produire des URLs locales ;
+3. un autre ID privé doit produire `null` ;
+4. la page Capture doit utiliser ce resolver pour `audioAssetForId`.
+
+Critère final :
+
+- RED prouvé ;
+- CI complète verte ;
+- preview publiée ;
+- PREVALIDATION audio smartphone.
