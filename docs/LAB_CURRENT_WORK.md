@@ -11963,3 +11963,53 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - PREVALIDATION UI smartphone.
+
+
+### Résultat — SkillPresentation profondeur par vue V2
+
+RED :
+
+- test : `tests/unit/skill-presentation-view-layer-v2.test.mjs` ;
+- SHA RED : `f12810169759f6207cb66a6d0ca97d7c9d4d4cb1` ;
+- CI `36455199494` — FAILURE attendue ;
+- 471 sentinelles historiques vertes ; échec isolé sur l'absence de la vue sémantique V2.
+
+Implémentation :
+
+- nouveau contrat `SkillPresentationBindingV2` ;
+- `cast` et `travel` portent `layerByView.player` + `layerByView.opponent` ;
+- dispatcher de bindings V1/V2 ajouté, V1 reste accepté sans modification ;
+- `CaptureSkillEditorDraftV1` accepte le binding de présentation indépendamment versionné V1/V2 ;
+- l'adaptateur Capture de présentation accepte V1/V2 ;
+- nouvel adaptateur renderer `createCaptureSkillPresentationAssetsV2()` :
+  - V1 conserve son `layer` historique ;
+  - V2 résout la couche depuis la vue sémantique ;
+- `resolveCombatPresentationViewV1()` dérive `player/opponent` depuis l'équipe du `localActorId` et l'équipe de l'acteur source ;
+- aucun actorId codé en dur ne décide de la profondeur ;
+- l'éditeur exporte quatre réglages distincts :
+  - charge vue joueur ;
+  - charge vue ennemi ;
+  - projectile vue joueur ;
+  - projectile vue ennemi ;
+- aucun retournement implicite dans le renderer ;
+- le Combat Core reste inchangé.
+
+Deux sentinelles V1 d'UI exigeaient encore l'ancien champ unique. Elles ont été réalignées sur le contrat V2 tout en conservant les tests de compatibilité du renderer et de l'adaptateur V1.
+
+SHA technique final :
+
+`05460e7e6d1aa3d4dfb85005a74f1c34f404b791`.
+
+CI :
+
+- run `36455740918` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint visé :
+
+`checkpoint/lab-skill-presentation-view-layer-v2-prevalidation-green-2026-09-28`.
+
+Preview visée :
+
+`preview/lab-skill-presentation-view-layer-v2-2026-09-28`.
