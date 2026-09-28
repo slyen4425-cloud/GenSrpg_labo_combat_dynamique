@@ -5,6 +5,9 @@ import {
   normalizeCaptureSkillEditorDraftV1
 } from "../contracts/capture-skill-editor-draft-v1.js";
 import {
+  normalizeSkillDefinition
+} from "../contracts/skill-definition.js";
+import {
   normalizeCaptureActiveSkillLoadoutV1
 } from "../contracts/capture-active-skill-loadout-v1.js";
 import {
@@ -17,6 +20,15 @@ import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../assets/global-visual-library.js";
+
+const PRIVATE_AUDIO_CATALOG_URL = new URL(
+  "../../data/presentation/audio/private-audio-catalog.v1.json",
+  import.meta.url
+);
+const SKILL_CATALOG_URL = new URL(
+  "../../data/combat/skills/catalog.v1.json",
+  import.meta.url
+);
 
 function clamp01(value) {
   return Math.min(1, Math.max(0, value));
@@ -152,16 +164,12 @@ function presentationForSkill(fields) {
   const iconAssetId = optionalText(
     presentation.iconAssetId
   );
-  const socketId = optionalText(
-    presentation.socketId
-  );
-
   const cast = visualSlot(
     presentation.castAssetId,
     {
       attachment: "source",
       trigger: "preparation-start",
-      anchor: socketId
+      anchor: null
     }
   );
   const travel = visualSlot(
@@ -169,7 +177,7 @@ function presentationForSkill(fields) {
     {
       attachment: "trajectory",
       trigger: "travel-start",
-      anchor: socketId
+      anchor: null
     }
   );
   const impact = visualSlot(
@@ -303,6 +311,14 @@ export function buildHumanCreatureDraftV2(fields) {
       fields.profileId,
       "Style de position"
     ),
+    displayScale: finiteNumber(
+      fields.displayScale ?? 1,
+      "Scale créature"
+    ),
+    projectileSocketId:
+      sockets.some((socket) => socket.id === "projectile")
+        ? "projectile"
+        : null,
     visual: presentationVisual,
     sockets,
     audio: audioSlots(fields.audio)
@@ -391,8 +407,13 @@ export function buildHumanSkillDraftV1(fields) {
   }
 
   const id = requiredText(fields.id, "ID capacité");
-  const reaction = fields.reaction ?? {};
-  const projectileClash = fields.projectileClash ?? {};
+  const baseDefinition = fields.baseDefinition ?? {};
+  const reaction =
+    fields.reaction ?? baseDefinition.reaction ?? {};
+  const projectileClash =
+    fields.projectileClash ??
+    baseDefinition.projectileClash ??
+    {};
 
   return normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
@@ -404,6 +425,7 @@ export function buildHumanSkillDraftV1(fields) {
     ),
     usageScopes: stableIds(fields.usageScopes),
     definition: {
+      ...baseDefinition,
       id,
       name: requiredText(fields.name, "Nom capacité"),
       category: requiredText(
@@ -464,12 +486,15 @@ export function buildHumanSkillDraftV1(fields) {
         )
       },
       effect: {
+        ...(baseDefinition.effect ?? {}),
         damage: finiteNumber(fields.damage ?? 0, "Dégâts"),
         heal: finiteNumber(fields.heal ?? 0, "Soin"),
         stunMs: finiteNumber(fields.stunMs ?? 0, "Stun"),
         interruptsPreparation:
           fields.interruptsPreparation === true,
-        tags: stableIds(fields.effectTags)
+        tags: stableIds(
+          fields.effectTags ?? baseDefinition.effect?.tags
+        )
       }
     },
     presentation: presentationForSkill(fields)
@@ -733,23 +758,91 @@ function populateSelect(select, assets, role) {
   }
 }
 
-async function hydrateAssetCatalog(root, listen) {
-  const response = await fetch(
-    GLOBAL_VISUAL_LIBRARY.catalogUrl,
-    { cache: "no-store" }
+function populateAudioSelect(select, entries) {
+  const previous = select.value;
+  const acceptedRoles = String(
+    select.dataset.audioRoles ?? ""
+  )
+    .split(",")
+    .map((role) => role.trim())
+    .filter(Boolean);
+
+  select.textContent = "";
+  createOption(select, "", "Aucun");
+
+  const filtered = entries.filter((entry) =>
+    acceptedRoles.length === 0 ||
+    entry.roles.some((role) => acceptedRoles.includes(role))
   );
 
-  if (!response.ok) {
+  const groups = new Map();
+  for (const entry of filtered) {
+    const category = entry.category || "autres";
+    if (!groups.has(category)) {
+      groups.set(category, []);
+    }
+    groups.get(category).push(entry);
+  }
+
+  for (const category of [...groups.keys()].sort()) {
+    const group = document.createElement("optgroup");
+    group.label = category;
+
+    for (const entry of groups.get(category)) {
+      const option = document.createElement("option");
+      option.value = entry.assetId;
+      option.textContent = entry.label;
+      group.append(option);
+    }
+
+    select.append(group);
+  }
+
+  if (
+    previous &&
+    [...select.options].some(
+      (option) => option.value === previous
+    )
+  ) {
+    select.value = previous;
+  }
+}
+
+async function hydrateAssetCatalog(root, listen) {
+  const [visualResponse, audioResponse] = await Promise.all([
+    fetch(
+      GLOBAL_VISUAL_LIBRARY.catalogUrl,
+      { cache: "no-store" }
+    ),
+    fetch(
+      PRIVATE_AUDIO_CATALOG_URL,
+      { cache: "no-store" }
+    )
+  ]);
+
+  if (!visualResponse.ok) {
     throw new Error(
       "Catalogue assets indisponible (" +
-      response.status +
+      visualResponse.status +
       ")"
     );
   }
 
-  const catalog = await response.json();
+  if (!audioResponse.ok) {
+    throw new Error(
+      "Catalogue audio indisponible (" +
+      audioResponse.status +
+      ")"
+    );
+  }
+
+  const catalog = await visualResponse.json();
+  const audioCatalog = await audioResponse.json();
   const assets = Array.isArray(catalog.assets)
     ? catalog.assets
+    : [];
+  const audioEntries = Array.isArray(audioCatalog.entries)
+    ? audioCatalog.entries
     : [];
 
   const byId = new Map(
@@ -762,6 +855,10 @@ async function hydrateAssetCatalog(root, listen) {
       assets,
       select.dataset.assetRole
     );
+  }
+
+  for (const select of root.querySelectorAll("[data-private-audio]")) {
+    populateAudioSelect(select, audioEntries);
   }
 
   function preview(select, image) {
@@ -823,7 +920,174 @@ async function hydrateAssetCatalog(root, listen) {
     syncPreviews(select, images);
   }
 
-  return catalog;
+  const scaleInput = one(
+    root,
+    "[data-creature-display-scale]"
+  );
+  const scaleOutput = one(
+    root,
+    "[data-creature-scale-value]"
+  );
+
+  function syncScalePreview() {
+    const scale = Number(scaleInput.value) || 1;
+    scaleOutput.textContent = scale.toFixed(2) + "×";
+
+    for (const image of [
+      frontImage,
+      backImage,
+      socketFrontImage,
+      socketBackImage
+    ]) {
+      image.style.transform = `scale(${scale})`;
+    }
+  }
+
+  listen(scaleInput, "input", syncScalePreview);
+  syncScalePreview();
+
+  return Object.freeze({
+    visualCatalog: catalog,
+    audioCatalog
+  });
+}
+
+function setControlValue(root, selector, value) {
+  one(root, selector).value =
+    value == null ? "" : String(value);
+}
+
+function setChecks(root, selector, values) {
+  const active = new Set(values ?? []);
+  for (const control of root.querySelectorAll(selector)) {
+    control.checked = active.has(control.value);
+  }
+}
+
+function applyNativeSkillToForm(root, skill) {
+  setControlValue(root, "[data-skill-id]", skill.id);
+  setControlValue(root, "[data-skill-name]", skill.name);
+  setControlValue(root, "[data-skill-category]", skill.category);
+  setControlValue(root, "[data-skill-form]", skill.form);
+  setControlValue(root, "[data-skill-element]", skill.element ?? "");
+  setControlValue(root, "[data-skill-approach]", skill.approachMode);
+  setControlValue(root, "[data-skill-energy-cost]", skill.energyCost);
+  setControlValue(root, "[data-skill-preparation]", skill.preparationMs);
+  setControlValue(root, "[data-skill-travel-time]", skill.travelMs);
+  setControlValue(root, "[data-skill-recovery]", skill.recoveryMs);
+  setControlValue(root, "[data-skill-cooldown]", skill.cooldownMs ?? 0);
+  setControlValue(root, "[data-skill-damage]", skill.effect?.damage ?? 0);
+  setControlValue(root, "[data-skill-heal]", skill.effect?.heal ?? 0);
+  setControlValue(root, "[data-skill-stun]", skill.effect?.stunMs ?? 0);
+
+  one(root, "[data-skill-interrupts]").checked =
+    skill.effect?.interruptsPreparation === true;
+
+  setChecks(
+    root,
+    "[data-skill-distance]",
+    skill.allowedDistances
+  );
+  setChecks(
+    root,
+    "[data-skill-target]",
+    skill.targetRelations
+  );
+
+  const clashEnabled =
+    skill.projectileClash?.mode === "mutual_cancel";
+  one(root, "[data-skill-clash]").checked = clashEnabled;
+  setControlValue(
+    root,
+    "[data-skill-clash-group]",
+    skill.projectileClash?.group ?? ""
+  );
+}
+
+async function hydrateSkillCatalog(root, listen) {
+  const response = await fetch(
+    SKILL_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Bibliothèque capacités indisponible (" +
+      response.status +
+      ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const normalized = catalog.entries.map((entry) =>
+    normalizeSkillDefinition(entry.definition)
+  );
+  const byId = new Map(
+    normalized.map((skill) => [skill.id, skill])
+  );
+
+  const librarySelect = one(
+    root,
+    "[data-skill-library]"
+  );
+  const previousLibrary = librarySelect.value;
+  librarySelect.textContent = "";
+
+  for (const skill of normalized) {
+    createOption(
+      librarySelect,
+      skill.id,
+      skill.name
+    );
+  }
+
+  for (const select of root.querySelectorAll("[data-loadout-slot]")) {
+    const previous = select.value;
+    select.textContent = "";
+    createOption(select, "", "Vide");
+
+    for (const skill of normalized) {
+      createOption(select, skill.id, skill.name);
+    }
+
+    if (
+      previous &&
+      [...select.options].some(
+        (option) => option.value === previous
+      )
+    ) {
+      select.value = previous;
+    }
+  }
+
+  if (byId.has(previousLibrary)) {
+    librarySelect.value = previousLibrary;
+  } else if (byId.has("fireball")) {
+    librarySelect.value = "fireball";
+  }
+
+  function selectSkill(skillId) {
+    const skill = byId.get(skillId);
+    if (!skill) {
+      return;
+    }
+
+    applyNativeSkillToForm(root, skill);
+
+    const firstSlot = root.querySelector("[data-loadout-slot]");
+    if (firstSlot) {
+      firstSlot.value = skill.id;
+    }
+  }
+
+  listen(
+    librarySelect,
+    "change",
+    () => selectSkill(librarySelect.value)
+  );
+  selectSkill(librarySelect.value);
+
+  return byId;
 }
 
 function initialSocketStore() {
@@ -957,6 +1221,10 @@ function readCreatureFields(root, sockets) {
       root,
       "[data-creature-profile]"
     ),
+    displayScale: numericValue(
+      root,
+      "[data-creature-display-scale]"
+    ),
     visual: {
       frontAssetId: selectedValue(
         root,
@@ -1061,14 +1329,6 @@ function readSkillFields(root) {
       root,
       "[data-skill-interrupts]"
     ).checked,
-    reaction: {
-      blockForms: [],
-      reflectForms: [],
-      immuneElements: [],
-      counterForms: [],
-      evadeForms: [],
-      evadeApproaches: []
-    },
     projectileClash: {
       mode: clashEnabled
         ? "mutual_cancel"
@@ -1111,10 +1371,6 @@ function readSkillFields(root) {
         root,
         "[data-skill-impact-fx]"
       ),
-      socketId: selectedValue(
-        root,
-        "[data-skill-socket]"
-      ) || null,
       castAudioAssetId: selectedValue(
         root,
         "[data-skill-cast-audio]"
@@ -1127,13 +1383,10 @@ function readSkillFields(root) {
   };
 }
 
-function readLoadout(root, creatureId, skillId) {
+function readLoadout(root, creatureId) {
   const skillIds = [
-    skillId,
-    ...[...root.querySelectorAll("[data-loadout-slot]")]
-      .slice(1)
-      .map((select) => select.value || null)
-  ];
+    ...root.querySelectorAll("[data-loadout-slot]")
+  ].map((select) => select.value || null);
 
   return buildHumanLoadoutV1({
     creatureId,
@@ -1155,6 +1408,7 @@ export function mountCaptureEditorHumanV2({
   const sockets = initialSocketStore();
   let disposed = false;
   let lastExport = null;
+  let nativeSkillsById = new Map();
 
   function listen(target, type, handler) {
     if (disposed) {
@@ -1176,14 +1430,8 @@ export function mountCaptureEditorHumanV2({
 
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
-      const socketId = selectedValue(
-        root,
-        "[data-socket-kind]"
-      );
-      const label = one(
-        root,
-        "[data-socket-kind]"
-      ).selectedOptions[0]?.textContent || socketId;
+      const socketId = "projectile";
+      const label = "Projectile";
 
       const point = normalizedSocketPointV2({
         clientX: event.clientX,
@@ -1218,26 +1466,29 @@ export function mountCaptureEditorHumanV2({
 
   function validate() {
     try {
+      const skillFields = readSkillFields(root);
+      skillFields.baseDefinition =
+        nativeSkillsById.get(skillFields.id) ?? null;
+
       const skillDraft = buildHumanSkillDraftV1(
-        readSkillFields(root)
+        skillFields
       );
 
       const creatureFields = readCreatureFields(
         root,
         sockets
       );
+
+      const loadout = readLoadout(
+        root,
+        creatureFields.id
+      );
       creatureFields.linkedSkillIds = [
-        skillDraft.id
+        ...loadout.equippedSkillIds
       ];
 
       const creatureDraft =
         buildHumanCreatureDraftV2(creatureFields);
-
-      const loadout = readLoadout(
-        root,
-        creatureDraft.id,
-        skillDraft.id
-      );
 
       const battleSetup = buildHumanBattleSetupV1({
         battleId: "capture-human-preview",
@@ -1252,9 +1503,34 @@ export function mountCaptureEditorHumanV2({
         )
       });
 
+      const skillDrafts = loadout.equippedSkillIds.map(
+        (skillId) => {
+          if (skillId === skillDraft.id) {
+            return skillDraft;
+          }
+
+          const native = nativeSkillsById.get(skillId);
+          if (!native) {
+            throw new RangeError(
+              "Capacité équipée inconnue : " + skillId
+            );
+          }
+
+          return normalizeCaptureSkillEditorDraftV1({
+            schema: "capture-skill-editor-draft-v1",
+            id: native.id,
+            description: "Capacité native du laboratoire.",
+            requiredLevel: 1,
+            usageScopes: ["capture", "combat"],
+            definition: native,
+            presentation: null
+          });
+        }
+      );
+
       lastExport = buildHumanEditorExportV2({
         creatureDraft,
-        skillDrafts: [skillDraft],
+        skillDrafts,
         loadout,
         battleSetup,
         opponentCreatureDraft,
@@ -1292,12 +1568,16 @@ export function mountCaptureEditorHumanV2({
 
   listen(validateButton, "click", validate);
 
-  hydrateAssetCatalog(root, listen)
-    .then(() => {
+  Promise.all([
+    hydrateAssetCatalog(root, listen),
+    hydrateSkillCatalog(root, listen)
+  ])
+    .then(([, skillMap]) => {
+      nativeSkillsById = skillMap;
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèque visuelle chargée. Tu peux configurer la créature.",
+          "Bibliothèques visuelles, audio et capacités chargées.",
           "info"
         );
       }
@@ -1306,7 +1586,7 @@ export function mountCaptureEditorHumanV2({
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèque visuelle indisponible : " +
+          "Bibliothèque indisponible : " +
             error.message,
           "error"
         );
