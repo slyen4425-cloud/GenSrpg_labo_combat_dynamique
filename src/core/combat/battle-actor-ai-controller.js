@@ -98,6 +98,17 @@ export function createBattleActorAiController({
       attempts.push({ skill, preview, candidateIndex });
 
       if (!preview.ok) {
+        if (preview.outcome === "insufficient_energy") {
+          return Object.freeze({
+            status: "saving",
+            actorId: normalizedActorId,
+            targetId,
+            skillId: skill.id,
+            skillName: skill.name,
+            currentEnergy: actor.energy,
+            requiredEnergy: skill.energyCost
+          });
+        }
         continue;
       }
 
@@ -126,23 +137,6 @@ export function createBattleActorAiController({
         skillId: skill.id,
         skillName: skill.name,
         result
-      });
-    }
-
-    const energyBlocked = attempts.find(
-      ({ preview }) =>
-        preview.outcome === "insufficient_energy"
-    );
-
-    if (energyBlocked) {
-      return Object.freeze({
-        status: "saving",
-        actorId: normalizedActorId,
-        targetId,
-        skillId: energyBlocked.skill.id,
-        skillName: energyBlocked.skill.name,
-        currentEnergy: actor.energy,
-        requiredEnergy: energyBlocked.skill.energyCost
       });
     }
 
