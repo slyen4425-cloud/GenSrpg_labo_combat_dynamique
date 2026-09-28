@@ -10704,3 +10704,36 @@ CI :
 Checkpoint final :
 
 `checkpoint/lab-combat-bootstrap-consolidation-v1-green-2026-09-28`.
+
+
+## Micro-lot — preuve Capture Export -> Combat Runtime V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-combat-bootstrap-consolidation-v1-green-2026-09-28` ;
+- SHA : `b52ee22c0d12ab30bb0c386fb6fc739254143115`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-export-runtime-bridge-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-export-runtime-bridge-v1-2026-09-28`.
+
+Objectif :
+
+Prouver le vrai chemin sans wrapper métier supplémentaire :
+
+`drafts éditeur -> exportCaptureEditorDraftsToCombatExportV2 -> CaptureCombatExportV1 -> adaptCaptureCombatExportStackV1 -> loadCoop2v2CombatSource(native) -> CombatSession -> CombatRuntime -> résolution`.
+
+RED :
+
+1. le même export passe dans l'Adapter Stack ;
+2. la source native n'effectue aucun fetch ;
+3. le local démarre réellement une capacité dans CombatRuntime ;
+4. la résolution modifie les PV de la cible selon la SkillDefinition exportée ;
+5. même chaîne pour 1v1 et 2v2 ;
+6. aucun DOM/storage/global/production runtime.
+
+Si le test passe avec le code existant, aucune couche intermédiaire n'est ajoutée.
