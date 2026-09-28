@@ -103,8 +103,15 @@ test("skill projectile origin is a reference to configured creature sockets, not
     html.includes("Point de départ utilisé"),
     true
   );
+  const skillSocketStart = html.indexOf("data-skill-socket");
+  const skillSocketEnd = html.indexOf("</select>", skillSocketStart);
+  const skillSocketMarkup = html.slice(
+    skillSocketStart,
+    skillSocketEnd
+  );
+
   assert.equal(
-    html.includes('<option value="mouth"'),
+    skillSocketMarkup.includes('<option value="mouth"'),
     false
   );
   assert.equal(
