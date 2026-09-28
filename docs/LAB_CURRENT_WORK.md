@@ -10212,3 +10212,45 @@ Tests prévus :
 - vérifier que l'éditeur n'expose que 1v1 / 2v2.
 
 État initial : **RED à poser**.
+
+
+### Résultat — formats actifs Capture 1v1 / 2v2
+
+RED :
+
+- test ajouté : `tests/unit/capture-battle-active-format-1v1-2v2.test.mjs` ;
+- SHA RED : `0b33696413f6a15ece90a7adefa5df76c3c924c9` ;
+- CI run `36416971736` — FAILURE attendue ;
+- 3 échecs uniquement :
+  - 3 actifs encore acceptés ;
+  - troisième équipe encore acceptée ;
+  - 3v3 / 4v4 encore exposés dans l'éditeur.
+
+Correction à la cause :
+
+- `CaptureBattleSetupEditorDraftV1` exige désormais exactement deux équipes ;
+- chaque équipe possède exactement 1 ou 2 slots simultanément engagés ;
+- les deux équipes doivent avoir le même nombre de slots ;
+- la taille d'un `roster.members` reste indépendante et n'est pas limitée à 2 ;
+- `buildHumanBattleSetupV1()` refuse 3 et 4 ;
+- l'éditeur n'expose plus que 1 contre 1 / 2 contre 2 ;
+- la documentation du bridge a été corrigée pour supprimer les hypothèses 3v3 / 4v4.
+
+CI technique :
+
+- SHA : `8246de98cca85f567c90d3f161269504d6c2de20` ;
+- run `36417217892` — SUCCESS.
+
+État :
+
+**GREEN technique / PREVALIDATION UI**.
+
+La modification touche un contrôle visible de l'éditeur ; conformément à la charte, aucun checkpoint GREEN final UI avant validation smartphone.
+
+Checkpoint de prévalidation :
+
+`checkpoint/lab-capture-battle-format-1v1-2v2-prevalidation-green-2026-09-28`.
+
+Preview :
+
+`preview/lab-capture-battle-format-1v1-2v2-2026-09-28`.
