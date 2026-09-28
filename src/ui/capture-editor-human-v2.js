@@ -144,7 +144,8 @@ function audioSlots(raw) {
 function visualSlot(assetId, {
   attachment,
   trigger,
-  anchor = null
+  anchor = null,
+  layer = "front"
 }) {
   const id = optionalText(assetId);
   if (id === null) {
@@ -157,7 +158,7 @@ function visualSlot(assetId, {
     trigger,
     anchor,
     displayScale: 1,
-    layer: "front",
+    layer,
     playbackMode: "once",
     offsetX: 0,
     offsetY: 0,
@@ -199,7 +200,8 @@ function presentationForSkill(fields) {
     {
       attachment: "trajectory",
       trigger: "travel-start",
-      anchor: socketId
+      anchor: socketId,
+      layer: presentation.travelLayer ?? "front"
     }
   );
   const impact = visualSlot(
@@ -1443,6 +1445,10 @@ function readSkillFields(root) {
       travelAssetId: selectedValue(
         root,
         "[data-skill-travel-fx]"
+      ),
+      travelLayer: selectedValue(
+        root,
+        "[data-skill-travel-layer]"
       ),
       impactAssetId: selectedValue(
         root,
