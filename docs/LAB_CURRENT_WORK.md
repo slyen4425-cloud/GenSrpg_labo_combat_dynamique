@@ -10075,3 +10075,54 @@ Checkpoint de prévalidation à créer :
 Preview à créer :
 
 `preview/lab-capture-editor-feedback-1-5-2026-09-28`.
+
+
+## Pré-audit — pont Capture Editor -> Combat Test — 2026-09-28
+
+Base autoritaire :
+
+- checkpoint de prévalidation UI : `checkpoint/lab-capture-editor-feedback-1-5-prevalidation-green-2026-09-28` ;
+- SHA de base : `c3d6ee0128fea6728c52b9bc19500d2fca1893d2` ;
+- validation smartphone des corrections 1 à 5 : **non enregistrée** ;
+- le checkpoint GREEN final de cette UI reste donc interdit.
+
+Checkpoint de départ du pré-audit :
+
+`checkpoint/lab-start-capture-editor-combat-test-bridge-preaudit-2026-09-28`.
+
+Branche de travail :
+
+`work/lab-capture-editor-combat-test-bridge-preaudit-2026-09-28`.
+
+Nature du lot :
+
+- **pré-audit documentation / architecture uniquement** ;
+- aucun changement runtime ;
+- aucun changement UI ;
+- aucun bouton « Tester en combat » ;
+- aucune dépendance vers `Zombicide-40k` ;
+- aucun stockage / localStorage / global caché ;
+- aucune reprise de `captureFix*`.
+
+Objectif :
+
+caractériser le raccord exact permettant à l'export produit par l'éditeur Capture de devenir la source native du combat test, sans créer une deuxième structure ni un chemin spécial 2v2.
+
+Chaîne auditée :
+
+`Capture Editor -> CaptureCombatExportV1 -> Capture Adapter Stack -> contrats natifs -> Combat Session / Runtime -> Presenter / FX`.
+
+Propriétaires protégés :
+
+- l'éditeur ne calcule pas le combat ;
+- `CaptureCombatExportV1` reste la frontière de données ;
+- `adaptCaptureCombatExportStackV1()` reste l'adaptateur vers les contrats natifs ;
+- Combat Session / Runtime restent propriétaires des règles et de l'état ;
+- la Demo/Test UI ne devient pas une source de vérité.
+
+Critère de fin du pré-audit :
+
+- localiser le vrai point de raccord manquant ;
+- prouver les duplications à ne pas créer ;
+- découper les micro-lots RED nécessaires avant toute implémentation ;
+- documenter explicitement le chemin compatible 1v1 / 2v2 / 3v3 / 4v4.
