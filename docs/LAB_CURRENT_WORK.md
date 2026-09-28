@@ -12559,3 +12559,65 @@ Preview :
 `preview/lab-capture-combat-speed-ui-v1-2026-09-28`.
 
 GREEN UI final interdit avant validation smartphone utilisateur.
+
+
+## Micro-lot UI — création explicite d'une nouvelle capacité V1 — 2026-09-28
+
+Base :
+
+- SHA : `5f0a3741abc9c56e8535d2b50b4efabceff0ea9d` ;
+- checkpoint : `checkpoint/lab-start-capture-skill-new-ux-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-skill-new-ux-v1-2026-09-28`.
+
+Retour utilisateur :
+
+- la distinction créer / modifier reste ambiguë ;
+- l'utilisateur ne doit pas avoir à remplacer manuellement l'ID d'une capacité existante pour en créer une nouvelle.
+
+Objectif :
+
+1. ajouter une action explicite `Nouvelle capacité` ;
+2. cette action prépare un brouillon neuf sans modifier la bibliothèque ;
+3. attribuer un identifiant libre déterministe, sans hasard ;
+4. conserver séparément :
+   - `Enregistrer comme nouvelle` ;
+   - `Mettre à jour la capacité existante` ;
+5. charger un modèle historique reste une simple préconfiguration, jamais une sauvegarde implicite.
+
+Propriétaire :
+
+- état/formulaire : Human Editor ;
+- décision create/update : `capture-editor-skill-save-mode-v1.js`.
+
+Fichiers autorisés :
+
+- `src/ui/capture-editor-human-v2.js` ;
+- éventuel helper UI pur dédié ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests dédiés ;
+- documentation.
+
+Protégé :
+
+- SkillDefinition ;
+- Combat Core ;
+- catalogues 9 + 70 + 103 ;
+- export runtime ;
+- aucun storage/global.
+
+RED :
+
+1. contrôle `Nouvelle capacité` absent ;
+2. helper d'ID libre absent ;
+3. un ID existant ne doit jamais être écrasé par une création ;
+4. deux créations successives doivent produire deux IDs distincts.
+
+Critère final :
+
+- RED prouvé ;
+- implémentation minimale ;
+- CI complète verte ;
+- PREVALIDATION UI smartphone.
