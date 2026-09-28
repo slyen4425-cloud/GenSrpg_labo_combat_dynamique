@@ -204,13 +204,27 @@ export function normalizeCaptureBattleSetupEditorDraftV1(input) {
     );
   }
 
-  if (!Array.isArray(value.teams) || value.teams.length < 2) {
+  if (!Array.isArray(value.teams) || value.teams.length !== 2) {
     throw new TypeError(
-      "teams must contain at least two teams"
+      "teams must contain exactly two teams"
     );
   }
 
   const teams = value.teams.map(normalizeTeam);
+
+  for (const team of teams) {
+    if (team.slots.length < 1 || team.slots.length > 2) {
+      throw new RangeError(
+        "battle format supports only 1v1 or 2v2 active slots"
+      );
+    }
+  }
+
+  if (teams[0].slots.length !== teams[1].slots.length) {
+    throw new RangeError(
+      "both teams must have the same active slot count"
+    );
+  }
 
   const teamIds = teams.map((team) => team.id);
   if (new Set(teamIds).size !== teamIds.length) {
