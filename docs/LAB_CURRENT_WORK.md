@@ -12657,3 +12657,57 @@ CI :
 Checkpoint visé :
 
 `checkpoint/lab-capture-skill-new-ux-v1-prevalidation-green-2026-09-28`.
+
+
+## Micro-lot UI — suppression du plafond artificiel de scale V1 — 2026-09-28
+
+Base :
+
+- SHA : `21be0cb8e586a0405af8a8d5857080d094b2d2b0` ;
+- checkpoint : `checkpoint/lab-start-presentation-scale-range-ui-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-presentation-scale-range-ui-v1-2026-09-28`.
+
+Retour utilisateur :
+
+- les réglages de scale sont bloqués à 4× sans raison métier.
+
+Diagnostic :
+
+- `CreaturePresentationBindingV2.displayScale` accepte tout nombre fini > 0 ;
+- `SkillPresentationBindingV1/V2.visual.*.displayScale` accepte tout nombre fini > 0 ;
+- le plafond 4× existe uniquement dans la Demo UI HTML.
+
+Objectif :
+
+1. supprimer le plafond 4× des scales Cast / Projectile / Impact ;
+2. supprimer le plafond artificiel de taille de créature ;
+3. conserver une validation positive côté contrat ;
+4. ne modifier ni renderer ni Combat Core.
+
+Fichiers autorisés :
+
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests dédiés ;
+- documentation.
+
+Protégé :
+
+- CreaturePresentationBindingV2 ;
+- SkillPresentationBindingV1/V2 ;
+- renderer ;
+- Combat Core ;
+- aucun storage/global.
+
+RED :
+
+- les quatre contrôles concernés exposent encore `max="4"`.
+
+Critère final :
+
+- RED prouvé ;
+- UI alignée sur les contrats ;
+- CI complète verte ;
+- PREVALIDATION UI smartphone.
