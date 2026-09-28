@@ -10003,3 +10003,75 @@ Règles :
 - les capacités existantes sont réutilisées depuis leur bibliothèque, sans duplication de définitions.
 
 Tests RED à poser avant implémentation.
+
+
+### Résultat — corrections Capture Editor 1 à 5
+
+RED :
+
+- test `tests/unit/capture-editor-feedback-1-5.test.mjs` ;
+- commit RED : `4f7f8df52940144f93f7a51349101234d1b0d25b` ;
+- CI run `36402867120` — FAILURE attendue ;
+- échecs limités aux cinq manques déclarés.
+
+Implémentation :
+
+1. Audio privé
+   - source autoritaire inchangée : `slyen4425-cloud/GenSrpG_audio_prive` ;
+   - catalogue résolu utilisé : `work/audio-catalog-classification-2026-09-26@01ffe9c8c6ec73d974f572f7e648461a48470e8a` ;
+   - 173 sons exposés à l'éditeur via métadonnées/logical assetIds ;
+   - fichier public : `data/presentation/audio/private-audio-catalog.v1.json` ;
+   - aucun `sourcePath`, URL privée, token ou binaire privé publié ;
+   - sélecteurs filtrés par rôles : attaque/voix, impact, mort, cast/release/préparation.
+
+2. Socket projectile
+   - `CreaturePresentationBindingV1` possède désormais `projectileSocketId` ;
+   - l'éditeur créature place un seul socket `projectile` directement sur face/dos ;
+   - le sélecteur `data-skill-socket` a été supprimé de l'éditeur capacité ;
+   - le test historique qui imposait `travel.anchor = mouth` a été corrigé : la capacité ne possède plus le socket de la créature.
+
+3. PV
+   - les champs PV max/initiaux ont été déplacés dans l'onglet Créature ;
+   - aucun champ PV ne subsiste dans l'onglet Combat ;
+   - les valeurs restent dans le contrat combat de la créature, sans deuxième source.
+
+4. Capacités natives
+   - catalogue `data/combat/skills/catalog.v1.json` ;
+   - 9 capacités natives exposées :
+     `aerial-dive`, `claw`, `contact-counter`, `dodge`, `fire-immunity`, `fireball`, `mirror-shield`, `stun-bolt`, `teleport-strike` ;
+   - les quatre slots de loadout utilisent cette bibliothèque ;
+   - la sélection d'une capacité native charge ses données via le vrai `normalizeSkillDefinition` ;
+   - les champs natifs avancés non encore éditables visuellement restent préservés dans la définition de base au lieu d'être effacés.
+
+5. Scale créature
+   - `CreaturePresentationBindingV1.displayScale` ajouté, borné `0.25..4` ;
+   - réglage utilisateur dans l'onglet Créature ;
+   - aperçu face/dos reflète le scale ;
+   - aucune rustine CSS ne devient source de vérité : la valeur est portée par le contrat de présentation.
+
+Commits principaux :
+
+- `2e0de88986c9d7789c2fada6f5ebf8d6be742af9` — ownership scale/socket ;
+- `ea8d5b722486fbcc171d5fedb9554aed68caac60` — métadonnées audio privées ;
+- `3914d363c4f42ad00f36338464f8d2ff16f160d2` — catalogue capacités natives ;
+- `fe4a89ae2a8c25229e9edb2f04a58cfb2e8700ba` — raccord UI/catalogues ;
+- `dcd76eb1c1d83e69a51ebe6127811d191e66df57` — alignement HTML ;
+- `ae3ed7dd7489188fda3da4b6ba53739cac330256` — test historique socket mis à jour.
+
+CI finale technique :
+
+- run `36403917744` — SUCCESS ;
+- 389 tests, 389 pass.
+
+État :
+
+- GREEN technique / prévalidation ;
+- validation smartphone obligatoire avant checkpoint GREEN final de l'UI.
+
+Checkpoint de prévalidation à créer :
+
+`checkpoint/lab-capture-editor-feedback-1-5-prevalidation-green-2026-09-28`.
+
+Preview à créer :
+
+`preview/lab-capture-editor-feedback-1-5-2026-09-28`.
