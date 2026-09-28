@@ -13,7 +13,7 @@ function creature(id, displayScale) {
     schema: "capture-creature-editor-draft-v3",
     id,
     displayName: id,
-    description: "",
+    description: "Créature de test.",
     level: 1,
     sourceStats: {
       force: 10,
