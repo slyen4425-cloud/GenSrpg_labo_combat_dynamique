@@ -2,8 +2,8 @@ import {
   normalizeSkillDefinition
 } from "./skill-definition.js";
 import {
-  normalizeSkillPresentationBindingV1
-} from "./skill-presentation-binding-v1.js";
+  normalizeSkillPresentationBinding
+} from "./skill-presentation-binding.js";
 
 export const CAPTURE_SKILL_EDITOR_DRAFT_SCHEMA =
   "capture-skill-editor-draft-v1";
@@ -73,7 +73,7 @@ function normalizePresentation(raw, skillId) {
   }
 
   const presentation =
-    normalizeSkillPresentationBindingV1(raw);
+    normalizeSkillPresentationBinding(raw);
 
   if (presentation.subjectId !== skillId) {
     throw new RangeError(
