@@ -11392,3 +11392,52 @@ Branche de preview visée :
 `preview/lab-capture-editor-combat-preview-ui-v1-2026-09-28`.
 
 GREEN final interdit avant validation smartphone utilisateur.
+
+
+## Réparation de régression — Preview éditeur Capture V1 — 2026-09-28
+
+Base reproduisant la régression utilisateur :
+
+- preview : `preview/lab-capture-editor-combat-preview-ui-v1-2026-09-28` ;
+- SHA : `25cab5c14b8f4e008b9843879e9b8fc487e92deb`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-preview-regression-repair-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-preview-regression-repair-v1-2026-09-28`.
+
+Régressions utilisateur confirmées et causes démontrées :
+
+1. **audio vide**
+   - le catalogue privé de 173 métadonnées n'est plus présent sur la lignée preview ;
+   - l'éditeur cherche les sons dans le catalogue visuel global, qui n'en est pas propriétaire.
+
+2. **une seule capacité active visible**
+   - les 103 modèles historiques sont bien présents dans la bibliothèque ;
+   - le loadout actif n'est initialisé qu'avec la capacité courante `fireball` ;
+   - les 9 SkillDefinition natives précédemment validées ne sont plus hydratées dans la bibliothèque active.
+
+3. **scale disparu**
+   - la page n'expose plus `data-creature-display-scale` ;
+   - le Human Editor courant utilise encore Draft/Exporter V2 au lieu du chemin V3 déjà GREEN pour `displayScale`.
+
+4. **arène sans fond**
+   - le DOM/CSS d'arène existe ;
+   - la preview ne réapplique jamais le binding `presentationForArena()` utilisé par la démo 2v2.
+
+Règle de réparation :
+
+- aucune rustine parallèle ;
+- restaurer les propriétaires déjà validés ;
+- conserver le bridge Editor -> Preview actuel ;
+- ne modifier ni Combat Core ni production.
+
+RED requis avant implémentation :
+
+- catalogue audio privé 173 présent et raccord dédié ;
+- 9 capacités natives immédiatement disponibles + 103 modèles historiques conservés ;
+- contrôle scale + chemin Draft/Exporter V3 ;
+- binding d'arène appliqué à la preview.
