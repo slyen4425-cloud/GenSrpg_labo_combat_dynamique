@@ -2,8 +2,8 @@ import {
   normalizeCaptureCombatExportV1
 } from "../../../contracts/capture-combat-export-v1.js";
 import {
-  normalizeSkillPresentationBindingV1
-} from "../../../contracts/skill-presentation-binding-v1.js";
+  normalizeSkillPresentationBinding
+} from "../../../contracts/skill-presentation-binding.js";
 
 function requiredString(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -53,7 +53,7 @@ export function adaptCaptureSkillPresentationBinding(
     );
   }
 
-  const binding = normalizeSkillPresentationBindingV1(
+  const binding = normalizeSkillPresentationBinding(
     rawBinding
   );
 
