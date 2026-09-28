@@ -11099,3 +11099,55 @@ CI :
 Checkpoint final visé :
 
 `checkpoint/lab-capture-native-visual-source-adapter-v1-green-2026-09-28`.
+
+
+## Micro-lot — session Preview avec sources natives gameplay + visuel V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-native-visual-source-adapter-v1-green-2026-09-28` ;
+- SHA : `c0ebd248703955784277686ae360efb9a47e2e89`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-preview-native-sources-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-preview-native-sources-v1-2026-09-28`.
+
+Objectif :
+
+faire évoluer le propriétaire de preview pour transporter **deux sources natives issues du même export validé** :
+
+1. source gameplay via `adaptCaptureCombatExportStackV1()` ;
+2. source visuelle via `adaptCaptureExportToNativeVisualSourceV1()`.
+
+Responsabilité :
+
+- l'éditeur reste propriétaire de la validation ;
+- le même `CaptureCombatExportV1` validé est remis aux deux adaptateurs ;
+- la session ne remappe aucune donnée gameplay ou présentation ;
+- le mount de preview reçoit explicitement `nativeCombatSource` + `nativeVisualSource`;
+- une seule preview active ;
+- retour/dispose inchangés.
+
+Interdits :
+
+- second renderer ;
+- lecture métier du DOM ;
+- fallback visuel inventé ;
+- storage/global ;
+- dépendance runtime production.
+
+RED :
+
+1. le même export validé est remis aux deux adaptateurs ;
+2. les deux sources natives sont remises ensemble au mount ;
+3. si l'adaptation visuelle échoue, aucun combat n'est monté ;
+4. relance dispose la preview précédente avant le nouveau mount ;
+5. retour/dispose nettoient exactement les ressources possédées.
+
+Aucun changement visuel utilisateur dans ce lot.
+
+État initial : **RED à poser**.
