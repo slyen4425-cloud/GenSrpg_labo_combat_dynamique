@@ -11807,3 +11807,57 @@ Preview :
 `preview/lab-capture-skill-presentation-layer-v1-2026-09-28`.
 
 GREEN UI final interdit avant validation smartphone utilisateur.
+
+
+## Micro-lot — UX capacité + 1v1 + projectile Fireball V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-skill-presentation-layer-v1-prevalidation-green-2026-09-28` ;
+- SHA : `9fb52c5449e265a0b8cefcce66b32388ac39a7b3`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-skill-ux-preview-repair-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-skill-ux-preview-repair-v1-2026-09-28`.
+
+Retours utilisateur reproduits :
+
+1. la commande `Enregistrer cette capacité` masque le fait qu'un ID existant est modifié alors qu'un ID nouveau crée ;
+2. en 1v1, les cartes UI des acteurs `local-2/opponent-2` restent visibles car `.squad-card { display:grid }` neutralise visuellement l'attribut `hidden` ;
+3. Boule de feu pointe par défaut vers `pack:capture:sprite-projectile-fire-01`, asset à `resource.manifest`, alors que le résolveur preview courant ne résout que `resource.file` ;
+4. la profondeur joueur/ennemi est volontairement exclue de ce lot : elle fera l'objet d'un contrat versionné séparé.
+
+Objectif :
+
+- rendre explicites les actions `Créer une nouvelle capacité` et `Mettre à jour la capacité sélectionnée` ;
+- interdire la modification silencieuse d'un ID existant depuis l'action Créer ;
+- masquer réellement toute UI d'acteur absent en 1v1 ;
+- donner à Boule de feu son asset projectile Fireball direct déjà présent dans la bibliothèque globale ;
+- ne modifier ni Combat Core ni le contrat de profondeur V1.
+
+Fichiers autorisés :
+
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` ;
+- tests dédiés ;
+- documentation.
+
+RED :
+
+1. deux actions création / mise à jour explicitement distinctes absentes ;
+2. création avec ID déjà configuré doit être refusée ;
+3. `.squad-card[hidden]` doit rester masqué ;
+4. Fireball doit utiliser `pack:capture:sprite-fireball-travel-01` comme projectile initial.
+
+Critère final :
+
+- RED prouvé ;
+- correction à la cause ;
+- CI complète verte ;
+- preview publiée ;
+- PREVALIDATION UI smartphone.
