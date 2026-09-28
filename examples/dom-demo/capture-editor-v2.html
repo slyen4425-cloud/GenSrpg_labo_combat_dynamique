@@ -301,6 +301,17 @@
           </select>
         </label>
         <p class="note">Le format indique seulement le nombre de créatures simultanément engagées. Le roster peut contenir davantage de créatures en réserve.</p>
+        <label>Vitesse globale des attaques
+          <input
+            type="number"
+            min="0.5"
+            max="2"
+            step="0.05"
+            value="1"
+            data-combat-skill-speed
+          >
+        </label>
+        <p class="note">1× conserve les timings des capacités. Ce réglage donne un rythme global ; préparation, trajet, récupération et cooldown restent personnalisables sur chaque capacité.</p>
       </article>
     </section>
 
