@@ -1604,6 +1604,7 @@ function readLoadout(root, creatureId) {
 export function mountCaptureEditorHumanV2({
   root,
   opponentCreatureDraft,
+  getOpponentCreatureDraft = null,
   opponentSkillDrafts,
   opponentLoadout
 }) {
@@ -1982,13 +1983,28 @@ export function mountCaptureEditorHumanV2({
         creatureDraft.id
       );
 
+      const resolvedOpponentCreatureDraft =
+        typeof getOpponentCreatureDraft === "function"
+          ? getOpponentCreatureDraft()
+          : opponentCreatureDraft;
+
+      if (
+        !resolvedOpponentCreatureDraft ||
+        typeof resolvedOpponentCreatureDraft !== "object"
+      ) {
+        throw new TypeError(
+          "Créature adverse de test indisponible"
+        );
+      }
+
       const battleSetup = buildHumanBattleSetupV1({
         battleId: "capture-human-preview",
         localCreatureId: creatureDraft.id,
         localDisplayName: creatureDraft.displayName,
-        opponentCreatureId: opponentCreatureDraft.id,
+        opponentCreatureId:
+          resolvedOpponentCreatureDraft.id,
         opponentDisplayName:
-          opponentCreatureDraft.displayName,
+          resolvedOpponentCreatureDraft.displayName,
         activePerTeam: numericValue(
           root,
           "[data-active-per-team]"
@@ -2006,7 +2022,8 @@ export function mountCaptureEditorHumanV2({
         ],
         loadout,
         battleSetup,
-        opponentCreatureDraft,
+        opponentCreatureDraft:
+          resolvedOpponentCreatureDraft,
         opponentSkillDrafts,
         opponentLoadout
       });
