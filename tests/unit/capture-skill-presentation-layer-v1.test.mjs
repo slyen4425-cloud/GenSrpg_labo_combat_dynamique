@@ -50,7 +50,10 @@ function skillFields() {
       travelAssetId: "pack:capture:sprite-projectile-fire-01",
       impactAssetId: null,
       socketId: "mouth",
-      travelLayer: "behind",
+      castLayerPlayer: "behind",
+      castLayerOpponent: "front",
+      travelLayerPlayer: "behind",
+      travelLayerOpponent: "front",
       castAudioAssetId: null,
       impactAudioAssetId: null
     }
@@ -74,12 +77,19 @@ function fakeElement(rect = { left: 0, top: 0, width: 20, height: 20 }) {
   };
 }
 
-test("human skill presentation preserves the configured projectile layer", () => {
+test("human skill presentation V2 preserves configured projectile layers by view", () => {
   const draft = buildHumanSkillDraftV1(skillFields());
 
   assert.equal(
-    draft.presentation.visual.travel.layer,
-    "behind"
+    draft.presentation.version,
+    2
+  );
+  assert.deepEqual(
+    draft.presentation.visual.travel.layerByView,
+    {
+      player: "behind",
+      opponent: "front"
+    }
   );
 });
 
@@ -169,7 +179,7 @@ test("projectile renderer applies the existing behind layer class", () => {
   renderer.dispose();
 });
 
-test("Capture editor exposes the projectile front/behind control", async () => {
+test("Capture editor exposes player/opponent projectile depth controls", async () => {
   const html = await readFile(
     new URL(
       "../../examples/dom-demo/capture-editor-v2.html",
@@ -178,8 +188,23 @@ test("Capture editor exposes the projectile front/behind control", async () => {
     "utf8"
   );
 
-  assert.match(html, /data-skill-travel-layer/);
-  assert.match(html, /Derrière les créatures/);
+  assert.match(
+    html,
+    /data-skill-travel-layer-player/
+  );
+  assert.match(
+    html,
+    /data-skill-travel-layer-opponent/
+  );
+  assert.match(
+    html,
+    /data-skill-cast-layer-player/
+  );
+  assert.match(
+    html,
+    /data-skill-cast-layer-opponent/
+  );
+  assert.match(html, /Derrière la créature/);
 });
 
 test("native skill presentation adapter resolves exported bindings for the renderer", async () => {
