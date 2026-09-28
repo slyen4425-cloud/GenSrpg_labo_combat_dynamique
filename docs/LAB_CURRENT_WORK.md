@@ -10737,3 +10737,36 @@ RED :
 6. aucun DOM/storage/global/production runtime.
 
 Si le test passe avec le code existant, aucune couche intermédiaire n'est ajoutée.
+
+
+### Résultat — preuve Capture Export -> Combat Runtime V1
+
+Preuve réalisée sans nouvelle couche métier :
+
+- test : `tests/integration/capture-export-runtime-bridge-v1.test.mjs` ;
+- le même `CaptureCombatExportV1` passe directement dans `adaptCaptureCombatExportStackV1()` ;
+- `loadCoop2v2CombatSource({ nativeCombatSource })` ne déclenche aucun fetch de fixture ;
+- `CombatSession` est créé depuis les fighters adaptés ;
+- `CombatRuntime.startSkill()` démarre réellement la capacité exportée ;
+- la résolution applique les dégâts de la `SkillDefinition` exportée à la cible ;
+- le même chemin est exercé en 1v1 et 2v2 ;
+- aucun DOM éditeur, storage, global ou runtime production n'est impliqué ;
+- aucune implémentation supplémentaire n'a été ajoutée : le raccord existant était suffisant.
+
+SHA de preuve :
+
+`2edecb7ec52f741ffb3a768118b942a2b5927f67`.
+
+CI :
+
+- run `36427298066` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-capture-export-runtime-bridge-v1-green-2026-09-28`.
+
+Étape suivante :
+
+créer un propriétaire explicite de session Editor / Combat Preview avant d'ajouter le bouton visible.
