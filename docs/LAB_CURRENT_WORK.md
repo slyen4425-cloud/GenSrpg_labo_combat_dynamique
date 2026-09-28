@@ -11516,18 +11516,19 @@ Branche :
 Constat :
 
 - 103 capacités historiques réellement utilisées ;
-- 77 ne contiennent que des effets de base déjà supportés par `SkillDefinition` ;
+- 70 sont réellement équivalentes au Runtime actuel : dégâts simples vers une cible ennemie ;
+- 7 autres nécessitent d'abord le support natif soin / zone / vol de vie ;
 - 26 nécessitent encore `StatusEffectV1` ;
 - l'éditeur n'hydrate actuellement que 9 SkillDefinition natives du laboratoire dans les slots actifs.
 
 Objectif :
 
-1. produire un catalogue natif dérivé des 77 capacités portables, sans recopier leurs données ;
+1. produire un catalogue natif dérivé des 70 capacités réellement compatibles, sans recopier leurs données ;
 2. préserver ID, nom, élément, niveau, dégâts/soins et provenance historique ;
 3. convertir uniquement les champs pouvant être dérivés sans ambiguïté ;
 4. utiliser des timings/énergie neutres explicites lorsqu'aucune donnée historique de temps dynamique n'existe ;
-5. hydrater ces 77 capacités dans les slots actifs en plus des 9 natives existantes ;
-6. conserver les 26 capacités complexes uniquement comme modèles historiques tant que `StatusEffectV1` n'existe pas.
+5. hydrater ces 70 capacités dans les slots actifs en plus des 9 natives existantes ;
+6. conserver les 33 capacités non équivalentes comme modèles historiques jusqu'aux contrats requis (7 soin/zone/vol de vie + 26 statuts).
 
 Propriétaire :
 
@@ -11537,7 +11538,7 @@ Propriétaire :
 
 Interdits :
 
-- aucun copier-coller manuel de 77 objets ;
+- aucun copier-coller manuel de 70 objets ;
 - aucune perte des 26 capacités complexes ;
 - aucun changement Combat Core ;
 - aucun runtime GenSrpG ;
@@ -11547,8 +11548,8 @@ Interdits :
 RED :
 
 - module natif portable absent ;
-- 77 drafts runtime-ready attendus ;
-- 59 `cap_*` + 18 `lib_*` ;
-- aucun buff/debuff/dot/hot dans ce catalogue ;
+- 70 drafts runtime-ready attendus ;
+- 56 `cap_*` + 14 `lib_*` ;
+- uniquement des effets `damage` vers `enemy` ou cible historique implicite ;
 - IDs uniques ;
 - l'éditeur doit hydrater les 77 en plus des 9 natives.
