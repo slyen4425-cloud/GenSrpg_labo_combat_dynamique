@@ -9898,7 +9898,7 @@ Combat :
 - quantité et intervalle de récupération ;
 - coût de déplacement ;
 - modificateur de temps de charge ;
-- format actif 1v1 / 2v2 / 3v3 / 4v4 par un même chemin Battle Setup.
+- format actif 1v1 / 2v2 uniquement ; le roster/réserve reste indépendant du nombre de slots engagés.
 
 Capacités :
 
@@ -10125,7 +10125,7 @@ Critère de fin du pré-audit :
 - localiser le vrai point de raccord manquant ;
 - prouver les duplications à ne pas créer ;
 - découper les micro-lots RED nécessaires avant toute implémentation ;
-- documenter explicitement le chemin compatible 1v1 / 2v2 / 3v3 / 4v4.
+- documenter explicitement le chemin compatible 1v1 / 2v2, sans confondre slots actifs et taille du roster.
 
 
 ### Résultat du pré-audit pont Editor -> Combat Test
@@ -10142,14 +10142,14 @@ Constats vérifiés :
 - aucun nouveau contrat « preview export » n'est nécessaire ;
 - le point manquant est le bootstrap des combats test, qui charge encore des fixtures statiques de démo ;
 - le prototype 2v2 contient encore des actorIds et listes de capacités de démo codés explicitement ; il ne doit pas devenir le chemin générique de l'éditeur ;
-- le futur bridge doit être format-driven à partir de `BattleFormatDefinition`, sans `is2v2` et sans duplication 1v1 / 2v2 / 3v3 / 4v4 ;
+- le futur bridge doit être piloté par `BattleFormatDefinition`, sans `is2v2`, pour les seuls formats actifs 1v1 / 2v2 ; le roster reste une donnée séparée ;
 - aucune modification du Combat Core n'est justifiée.
 
 Découpage recommandé avant le bouton UI :
 
 A. source native injectée dans le combat test, avec RED ;
 B. contrôleurs data-driven depuis `controllerId` + `skillIdsByActor`, avec RED ;
-C. slots visuels format-driven 1v1 à 4v4, avec RED + validation smartphone ;
+C. slots visuels format-driven 1v1 / 2v2 uniquement, avec RED + validation smartphone ;
 D. bridge pur `CaptureCombatExportV1 -> Adapter Stack -> bootstrap natif`, avec vrai test d'intégration ;
 E. seulement ensuite bouton « Tester en combat » et retour éditeur.
 
