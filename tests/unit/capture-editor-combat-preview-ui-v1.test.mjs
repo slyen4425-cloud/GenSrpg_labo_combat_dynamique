@@ -10,6 +10,10 @@ const jsUrl = new URL(
   "../../examples/dom-demo/capture-editor-v2.js",
   import.meta.url
 );
+const testCreatureCatalogUrl = new URL(
+  "../../src/catalogs/capture-test-creature-options-v1.js",
+  import.meta.url
+);
 
 test("Capture editor exposes real combat preview controls and reusable preview DOM template", async () => {
   const html = await readFile(htmlUrl, "utf8");
@@ -44,31 +48,43 @@ test("Capture editor exposes real combat preview controls and reusable preview D
 });
 
 test("Capture editor page composes Session V2 with native combat and visual owners", async () => {
-  const source = await readFile(jsUrl, "utf8");
+  const [source, testCreatureCatalog] = await Promise.all([
+    readFile(jsUrl, "utf8"),
+    readFile(testCreatureCatalogUrl, "utf8")
+  ]);
 
   for (const required of [
     "createCaptureEditorPreviewSessionV2",
     "adaptCaptureExportToNativeVisualSourceV1",
     "mountCaptureCombatPreviewV1",
     "GLOBAL_VISUAL_LIBRARY",
-    "globalVisualAssetUrl"
+    "globalVisualAssetUrl",
+    "CAPTURE_TEST_CREATURE_OPTIONS_V1",
+    "buildCaptureTestOpponentDraftV1"
   ]) {
     assert.match(source, new RegExp(required));
   }
 
   assert.match(
-    source,
+    testCreatureCatalog,
     /pack:capture:creature-braisombre-opponent-01/
   );
   assert.match(
-    source,
+    testCreatureCatalog,
     /pack:capture:creature-braisombre-player-01/
   );
   assert.match(
-    source,
+    testCreatureCatalog,
     /pack:capture:creature-braisombre-icon-01/
   );
-  assert.match(source, /profileId:\s*["']drake["']/);
+  assert.match(
+    testCreatureCatalog,
+    /profileId:\s*["']drake["']/
+  );
+  assert.doesNotMatch(
+    source,
+    /const opponentCreatureDraft\s*=\s*\{/
+  );
   assert.match(source, /session\.launch\(\)/);
   assert.match(source, /session\.returnToEditor\(\)/);
 });
