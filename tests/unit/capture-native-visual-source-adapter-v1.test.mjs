@@ -140,7 +140,7 @@ test("Capture visual adapter resolves actor creature presentations without chang
   const source = adaptCaptureExportToNativeVisualSourceV1({
     exported: baseExport(),
     assetCatalog: assetCatalog(),
-    profiles,
+    profiles: profiles(),
     assetUrlForFile(file) {
       return "https://assets.example/" + file;
     }
