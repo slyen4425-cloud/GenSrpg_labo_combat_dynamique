@@ -10543,3 +10543,37 @@ RED :
 - provenance explicite et aucune dépendance runtime production.
 
 Critère GREEN : CI complète verte, documentation à jour.
+
+
+### Résultat — catalogue Capture réellement utilisé V2
+
+RED :
+
+- test : `tests/unit/capture-used-ability-catalog-v2.test.mjs` ;
+- SHA RED : `30bc122078ecd103d42a09a3467d0fbf90478365` ;
+- CI `36424897516` — FAILURE attendue ;
+- cause isolée : module V2 absent.
+
+Implémentation :
+
+- module : `src/catalogs/capture-used-ability-catalog-v2.js` ;
+- source de génération : archive fidèle des 173 entrées déjà auditée depuis le blob exact ;
+- filtre autoritaire : 72 `cap_*` élémentaires réellement assignées + 31 `lib_*` réellement assignées ;
+- aucune capacité `cap_neutral_*` non utilisée dans le seed courant ;
+- 103 IDs uniques ;
+- collisions de noms conservées par ID, aucune fusion silencieuse ;
+- `buff / debuff / dot / hot` conservés intégralement comme effets legacy ;
+- aucune forme, timing, énergie, cooldown ou présentation moderne inventée ;
+- la bibliothèque de modèles de l'éditeur consomme maintenant ce catalogue V2 ;
+- le catalogue V1 de 84 reste inchangé comme archive historique de `gensCaptureExpandedAbilityRoster()`.
+
+CI finale :
+
+- SHA : `411aa7a61c032645571ccc62bb9ebe13bf6272c8` ;
+- run `36425671520` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final :
+
+`checkpoint/lab-capture-used-skill-catalog-v2-green-2026-09-28`.
