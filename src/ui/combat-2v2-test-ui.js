@@ -101,6 +101,43 @@ function normalizeSkillIdsByActor(
   return Object.freeze(normalized);
 }
 
+export function resolveCombatPresentationViewV1({
+  format,
+  actorId
+}) {
+  if (
+    !format ||
+    !Array.isArray(format.actors)
+  ) {
+    throw new TypeError(
+      "format must expose actors"
+    );
+  }
+
+  const localActor = format.actors.find(
+    (actor) =>
+      actor.actorId === format.localActorId
+  );
+  const actor = format.actors.find(
+    (item) => item.actorId === actorId
+  );
+
+  if (!localActor) {
+    throw new RangeError(
+      "localActorId must reference a declared actor"
+    );
+  }
+  if (!actor) {
+    throw new RangeError(
+      `Unknown presentation actor: ${actorId}`
+    );
+  }
+
+  return actor.teamId === localActor.teamId
+    ? "player"
+    : "opponent";
+}
+
 export function resolveCombatPreviewFormatV1(format) {
   if (!format || typeof format !== "object" || Array.isArray(format)) {
     throw new TypeError(
@@ -519,16 +556,43 @@ export async function mountCoop2v2Test({
     allyIcon.dataset.assetId = allyDescriptor.id;
   }
 
+  function presentationForActorSkill(
+    skillId,
+    context = {}
+  ) {
+    const sourceActorId =
+      context.sourceActorId ??
+      context.sourceView ??
+      null;
+
+    const view =
+      sourceActorId === null
+        ? (context.view ?? "player")
+        : resolveCombatPresentationViewV1({
+            format,
+            actorId: sourceActorId
+          });
+
+    return (
+      presentationAssets?.presentationForSkill?.(
+        skillId,
+        {
+          ...context,
+          sourceActorId,
+          view
+        }
+      ) ?? null
+    );
+  }
+
   const combatAudio = createDomCombatAudio({
     resolveAudioAsset(assetId) {
       return presentationAssets?.audioAsset?.(assetId) ?? null;
     },
     presentationForSkill(skillId, context = {}) {
-      return (
-        presentationAssets?.presentationForSkill?.(
-          skillId,
-          context
-        ) ?? null
+      return presentationForActorSkill(
+        skillId,
+        context
       );
     }
   });
@@ -541,11 +605,9 @@ export async function mountCoop2v2Test({
       return visuals.getFxAnchorFor(actorId, anchorName);
     },
     presentationForSkill(skillId, context = {}) {
-      return (
-        presentationAssets?.presentationForSkill?.(
-          skillId,
-          context
-        ) ?? null
+      return presentationForActorSkill(
+        skillId,
+        context
       );
     }
   });
