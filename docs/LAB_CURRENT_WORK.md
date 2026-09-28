@@ -11237,3 +11237,43 @@ RED :
 Aucun changement visuel utilisateur dans ce lot.
 
 État initial : **RED à poser**.
+
+
+### Résultat — mount natif unique Capture Combat Preview V1
+
+RED :
+
+- test : `tests/unit/capture-combat-preview-v1.test.mjs` ;
+- SHA RED : `65c5ff413451dc29e0a39e9e58139e78203b8dd4` ;
+- CI `36433608464` — FAILURE attendue ;
+- cause isolée : module de composition absent.
+
+Implémentation :
+
+- fichier : `src/ui/capture-combat-preview-v1.js` ;
+- `mountCombatDemo()` reste l'unique propriétaire Animation/Renderer ;
+- `mountCoop2v2Test()` reste l'unique propriétaire Combat Runtime/UI ;
+- le même `nativeVisualSource` est remis au Visual Controller ;
+- le même `nativeCombatSource` est remis au Combat Test ;
+- le Combat Test reçoit exactement l'instance `visuals` montée ;
+- rollback des visuels si le montage combat échoue ;
+- dispose idempotent dans l'ordre combat -> visuals ;
+- aucun second renderer, mapping métier ou dépendance production.
+
+SHA technique :
+
+`ca33dcd0499d91bd962e8ba5c81fb8b46d424c63`.
+
+CI :
+
+- run `36433703578` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-capture-native-preview-mount-v1-green-2026-09-28`.
+
+Étape suivante :
+
+lot UI séparé : raccorder la page Capture Editor à la Session V2 + mount natif, avec un adversaire de preview doté d'une présentation explicite, puis ajouter `Tester en combat` / `Retour à l'éditeur`.
