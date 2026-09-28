@@ -11151,3 +11151,44 @@ RED :
 Aucun changement visuel utilisateur dans ce lot.
 
 État initial : **RED à poser**.
+
+
+### Résultat — session Preview avec sources natives gameplay + visuel V1
+
+RED :
+
+- test : `tests/unit/capture-editor-preview-session-v2.test.mjs` ;
+- SHA RED : `91f5b590f3434e165f9c8c6eed6fbc3f454218ca` ;
+- CI `36433129201` — FAILURE attendue ;
+- cause isolée : module Session V2 absent.
+
+Implémentation :
+
+- fichier : `src/ui/capture-editor-preview-session-v2.js` ;
+- la Session V1 reste inchangée et protégée ;
+- le même `CaptureCombatExportV1` validé est remis sans copie métier à :
+  - `adaptCombatExport` ;
+  - `adaptVisualExport` ;
+- le mount reçoit explicitement `nativeCombatSource` + `nativeVisualSource` ;
+- une erreur d'adaptation visuelle empêche tout mount de combat ;
+- une seule preview est possédée à la fois ;
+- relance, retour et dispose conservent les invariants de nettoyage de V1 ;
+- aucun DOM métier, storage, global, Combat Core ou renderer ajouté.
+
+SHA technique :
+
+`a3cb6d978467f2dd8051e5fd13f5f4d073e4e12a`.
+
+CI :
+
+- run `36433253628` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-capture-editor-preview-native-sources-v1-green-2026-09-28`.
+
+Étape suivante :
+
+composer le Visual Controller natif et le Combat Test natif dans un mount de preview unique, avant le lot UI qui ajoutera les boutons visibles.
