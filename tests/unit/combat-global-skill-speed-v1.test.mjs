@@ -27,8 +27,8 @@ const fireball = normalizeSkillDefinition({
   ...(await json("data/combat/skills/fireball.skill.json")),
   cooldownMs: 3000
 });
-const counter = normalizeSkillDefinition(
-  await json("data/combat/skills/contact-counter.skill.json")
+const projectileReaction = normalizeSkillDefinition(
+  await json("data/combat/skills/mirror-shield.skill.json")
 );
 
 function fighters() {
@@ -170,14 +170,14 @@ test("global skill speed also scales reaction preparation but not combat-state e
 
   const reaction = session.reactToSkill({
     action: started.action,
-    reactionSkill: counter,
+    reactionSkill: projectileReaction,
     elapsedMs: 0
   });
 
   assert.equal(reaction.ok, true);
   assert.equal(
     reaction.reaction.preparationMs,
-    Math.round(counter.preparationMs / 2)
+    Math.round(projectileReaction.preparationMs / 2)
   );
 
   const before = session.snapshot().fighters.braisombre.energy;
