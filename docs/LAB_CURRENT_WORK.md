@@ -12079,3 +12079,40 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - PREVALIDATION audio smartphone.
+
+
+### Résultat — livraison audio privée vers preview runtime V1
+
+RED :
+
+- test : `tests/unit/private-audio-preview-runtime-v1.test.mjs` ;
+- SHA RED : `590bc54c29c9d52a2aa38a6587f6f7aaa40c4654` ;
+- CI `36459316812` — FAILURE attendue ;
+- cause isolée : resolver Asset Input absent.
+
+Correction :
+
+- module : `src/assets/private-audio-preview-assets-v1.js` ;
+- trois IDs privés autorisés sont reliés aux trois binaires de test déjà présents dans le laboratoire ;
+- aucun sourcePath privé, URL privée, token ou binaire supplémentaire n'est exposé ;
+- un assetId privé non livré retourne explicitement `null` ;
+- la preview Capture résout d'abord ce registre puis conserve le fallback audio de démonstration ;
+- `dom-combat-audio`, SkillPresentation et Combat Core restent inchangés.
+
+SHA technique :
+
+`53176449a3b430c640907b20ce1605f4c4f23aa8`.
+
+CI :
+
+- run `36459445176` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION audio smartphone**.
+
+Checkpoint de prévalidation visé :
+
+`checkpoint/lab-private-audio-preview-runtime-v1-prevalidation-green-2026-09-28`.
+
+Preview visée :
+
+`preview/lab-private-audio-preview-runtime-v1-2026-09-28`.
