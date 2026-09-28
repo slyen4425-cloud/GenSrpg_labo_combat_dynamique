@@ -12,6 +12,17 @@ function optionalString(value, field) {
   return value == null ? null : requiredString(value, field);
 }
 
+function positiveFiniteNumber(value, field, fallback = 1) {
+  const number = Number(value ?? fallback);
+  if (!Number.isFinite(number)) {
+    throw new RangeError(`${field} must be finite`);
+  }
+  if (number <= 0) {
+    throw new RangeError(`${field} must be greater than 0`);
+  }
+  return number;
+}
+
 function objectValue(value, field) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${field} must be an object`);
@@ -277,6 +288,10 @@ export function normalizeCaptureCombatExportV1(input) {
     localActorId: requiredString(
       battleRaw.localActorId,
       "battle.localActorId"
+    ),
+    skillSpeedMultiplier: positiveFiniteNumber(
+      battleRaw.skillSpeedMultiplier,
+      "battle.skillSpeedMultiplier"
     )
   });
 
