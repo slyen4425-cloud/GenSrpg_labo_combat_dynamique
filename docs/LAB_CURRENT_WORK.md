@@ -12815,3 +12815,41 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - **PREVALIDATION audio/UI smartphone** avant GREEN final.
+
+
+### Résultat — audio privé runtime complet + pré-écoute V1
+
+RED et intégration :
+
+- manifeste runtime public : `data/presentation/audio/private-audio-runtime.v1.json` ;
+- 173 assetIds / 173 fichiers MP3 runtime opaques ;
+- resolver unique : `privateAudioRuntimeAssetV1()` ;
+- contrôleur dédié de pré-écoute : `createPrivateAudioPreviewControllerV1()` ;
+- chaque sélecteur audio privé possède une action `Écouter` ;
+- aucun master, `sourcePath`, URL privée GitHub, token ou nom de fichier maître exposé ;
+- le combat et l'éditeur utilisent le même resolver Asset Input.
+
+Une sentinelle historique imposait encore littéralement le resolver limité à trois sons de test `privateAudioPreviewAssetV1`.
+Elle a été réalignée sur l'invariant actuel, sans modifier le runtime :
+`privateAudioRuntimeAssetV1(assetId) ?? demoPresentationAssets.audioAsset(assetId)`.
+
+SHA final technique :
+
+`ffeac94052a8c00b4a714dfc5e5bacdf283bd3e8`.
+
+CI :
+
+- run `36482922832` — SUCCESS ;
+- 498 tests, 498 pass.
+
+État : **GREEN technique / PREVALIDATION audio/UI smartphone**.
+
+Checkpoint final :
+
+`checkpoint/lab-private-audio-full-preview-v1-green-2026-09-28`.
+
+Preview finale :
+
+`preview/lab-private-audio-full-preview-v1-2026-09-28`.
+
+GREEN audio/UI final interdit avant validation utilisateur.
