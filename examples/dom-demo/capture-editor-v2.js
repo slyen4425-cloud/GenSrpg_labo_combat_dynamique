@@ -86,7 +86,7 @@ const opponentCreatureDraft = {
     movementEnergyPerStep: 2,
     chargeTimeModifierPct: 0
   },
-  skillIds: ["enemy-hit"],
+  skillIds: ["enemy-hit", "enemy-burst", "enemy-heavy-hit"],
   presentation: {
     id: "creature:crea-enemy",
     version: 2,
@@ -135,11 +135,63 @@ const opponentSkillDrafts = [
       preparationMs: 500,
       travelMs: 500,
       recoveryMs: 300,
-      cooldownMs: 1000,
+      cooldownMs: 1600,
       allowedDistances: ["short", "medium", "long"],
       targetRelations: ["enemy"],
       effect: {
         damage: 2
+      }
+    },
+    presentation: null
+  },
+  {
+    schema: "capture-skill-editor-draft-v1",
+    id: "enemy-burst",
+    description: "Projectile adverse de prévisualisation.",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    definition: {
+      id: "enemy-burst",
+      name: "Trait ardent",
+      category: "offensive",
+      form: "projectile",
+      element: "fire",
+      approachMode: "none",
+      energyCost: 2,
+      preparationMs: 700,
+      travelMs: 550,
+      recoveryMs: 350,
+      cooldownMs: 2600,
+      allowedDistances: ["short", "medium", "long"],
+      targetRelations: ["enemy"],
+      effect: {
+        damage: 3
+      }
+    },
+    presentation: null
+  },
+  {
+    schema: "capture-skill-editor-draft-v1",
+    id: "enemy-heavy-hit",
+    description: "Attaque lourde adverse de prévisualisation.",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    definition: {
+      id: "enemy-heavy-hit",
+      name: "Charge lourde",
+      category: "offensive",
+      form: "contact",
+      element: null,
+      approachMode: "ground",
+      energyCost: 3,
+      preparationMs: 950,
+      travelMs: 650,
+      recoveryMs: 500,
+      cooldownMs: 3400,
+      allowedDistances: ["short", "medium", "long"],
+      targetRelations: ["enemy"],
+      effect: {
+        damage: 4
       }
     },
     presentation: null
@@ -151,8 +203,8 @@ const opponentLoadout = {
   creatureId: "crea-enemy",
   slots: [
     { id: "slot-1", skillId: "enemy-hit" },
-    { id: "slot-2", skillId: null },
-    { id: "slot-3", skillId: null },
+    { id: "slot-2", skillId: "enemy-burst" },
+    { id: "slot-3", skillId: "enemy-heavy-hit" },
     { id: "slot-4", skillId: null }
   ]
 };
