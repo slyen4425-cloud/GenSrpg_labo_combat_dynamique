@@ -11015,3 +11015,48 @@ CI :
 Checkpoint final visé :
 
 `checkpoint/lab-combat-demo-native-visual-source-v1-green-2026-09-28`.
+
+
+## Micro-lot — adaptateur Capture -> source visuelle native V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-combat-demo-native-visual-source-v1-green-2026-09-28` ;
+- SHA : `75062b41db01565002c3f5b0b5209caffc80c83f`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-native-visual-source-adapter-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-native-visual-source-adapter-v1-2026-09-28`.
+
+Objectif :
+
+adapter les présentations créature déjà présentes dans `CaptureCombatExportV1` vers la source injectée de `mountCombatDemo()`, sans second moteur visuel.
+
+Entrées :
+
+- `CaptureCombatExportV1` ;
+- catalogue global d'assets ;
+- profils Animation Core explicitement fournis.
+
+Sortie :
+
+- `profiles` ;
+- `creatureMetas` pour les créatures réellement utilisées par les acteurs.
+
+Invariants :
+
+- les bindings utilisent toujours `assetId` ;
+- les URLs sont résolues uniquement à la frontière Asset Input ;
+- vue player = dos si disponible, sinon face ;
+- vue opponent = face ;
+- icône = icon si disponible, sinon face ;
+- sockets front/back conservés comme anchors FX ;
+- binding V1 -> scale 1 ;
+- binding V2 -> `displayScale` conservé ;
+- présentation absente = erreur explicite, aucun visuel inventé.
+
+RED avant implémentation.
