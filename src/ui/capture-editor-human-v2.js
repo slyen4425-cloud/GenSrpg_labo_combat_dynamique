@@ -525,9 +525,9 @@ export function buildHumanBattleSetupV1({
     "Nombre de créatures actives"
   );
 
-  if (count > 4) {
+  if (count > 2) {
     throw new RangeError(
-      "Le laboratoire V1 accepte de 1 à 4 créatures actives par équipe"
+      "Le combat Capture accepte uniquement 1v1 ou 2v2"
     );
   }
 
