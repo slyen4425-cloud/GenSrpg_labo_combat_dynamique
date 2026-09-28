@@ -2,11 +2,9 @@ import {
   normalizeCaptureCreatureEditorDraftV2
 } from "./capture-creature-editor-draft-v2.js";
 import {
-  normalizeCreaturePresentationBindingV2
+  normalizeCreaturePresentationBindingV2,
+  projectCreaturePresentationBindingV2ToV1
 } from "./creature-presentation-binding-v2.js";
-import {
-  projectCreaturePresentationV2ToV1
-} from "../adapters/capture/creature-presentation-v2-to-v1.js";
 
 export const CAPTURE_CREATURE_EDITOR_DRAFT_V3_SCHEMA =
   "capture-creature-editor-draft-v3";
@@ -79,7 +77,7 @@ export function normalizeCaptureCreatureEditorDraftV3(input) {
     combat: value.combat,
     skillIds: value.skillIds,
     presentation:
-      projectCreaturePresentationV2ToV1(presentation)
+      projectCreaturePresentationBindingV2ToV1(presentation)
   });
 
   if (
