@@ -10124,3 +10124,72 @@ Checkpoint GREEN :
 - choix d'un template historique -> préremplissage uniquement des champs explicitement portables ;
 - 4 slots alimentés par catalogue ;
 - les 18 capacités status-dependent restent visibles avec état explicite, sans prétendre fonctionner complètement.
+
+
+## Micro-lot — Capture Skill Catalog Editor V1 — 2026-09-28
+
+Base GREEN :
+
+- `checkpoint/lab-capture-legacy-skill-catalog-v1-green-2026-09-28` ;
+- SHA `9d3be6444619e18ee9ab98a512c8b50bf9a5e52e`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-skill-catalog-editor-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-skill-catalog-editor-v1-2026-09-28`.
+
+Objectif :
+
+Raccorder les 84 modèles historiques Capture à l'éditeur humain sans transformer des données partielles en fausses SkillDefinition complètes.
+
+Décision UX / ownership :
+
+- le catalogue historique est une bibliothèque de **modèles** ;
+- choisir un modèle préremplit uniquement les champs explicitement connus :
+  - id ;
+  - nom ;
+  - description ;
+  - catégorie mappée depuis la catégorie legacy ;
+  - élément ;
+  - niveau requis ;
+  - dégâts ;
+  - soin ;
+- le choix ne modifie jamais :
+  - forme ;
+  - approche ;
+  - coût énergie ;
+  - préparation ;
+  - trajet ;
+  - récupération ;
+  - cooldown ;
+  - FX / audio / socket ;
+- l'utilisateur doit ensuite enregistrer la capacité configurée ;
+- les 4 slots actifs référencent uniquement les capacités réellement configurées dans la session éditeur ;
+- aucune capacité historique non complétée n'est exportée silencieusement.
+
+Status effects :
+
+- les 18 modèles contenant buff/debuff/dot restent consultables ;
+- leurs effets legacy sont affichés ;
+- ils sont marqués `StatusEffectV1 requis` ;
+- ils ne peuvent pas être validés comme équivalent complet tant que le propriétaire StatusEffect n'existe pas ;
+- aucune suppression/masquage de leur effet historique.
+
+Propriétaires prévus :
+
+- catalogue historique : `src/catalogs/capture-legacy-ability-catalog-v1.js` ;
+- adaptation UI pure : `src/ui/capture-editor-skill-catalog-v1.js` ;
+- orchestration DOM : `src/ui/capture-editor-human-v2.js`.
+
+RED :
+
+1. 84 options exposées ;
+2. template basic préremplit seulement les champs connus ;
+3. forme/timings/coût/présentation existants sont conservés ;
+4. status template reste explicitement bloqué comme équivalence complète ;
+5. aucun nom de capacité métier codé dans le HTML pour la bibliothèque ;
+6. loadout ne référence que des drafts configurés ;
+7. aucune dépendance runtime/storage/GenSrpG.
