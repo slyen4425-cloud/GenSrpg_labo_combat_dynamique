@@ -16,6 +16,10 @@ const DATA_URLS = Object.freeze({
     "../../data/combat/battle-formats/demo-coop-2v2.format.json",
     import.meta.url
   ),
+  skillLoadouts: new URL(
+    "../../data/combat/ai/demo-coop-2v2-skill-loadouts.json",
+    import.meta.url
+  ),
   fighters: Object.freeze({
     maraileron: new URL(
       "../../data/combat/fighters/maraileron.combat.json",
@@ -50,6 +54,250 @@ async function fetchJson(url, fetchImpl) {
   return response.json();
 }
 
+function normalizeSkillIdsByActor(
+  input,
+  format,
+  skillsById,
+  field = "skillIdsByActor"
+) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError(`${field} must be an object`);
+  }
+
+  const normalized = {};
+
+  for (const actor of format.actors) {
+    const rawIds = input[actor.actorId];
+    if (!Array.isArray(rawIds)) {
+      throw new RangeError(
+        `${field} is missing actor: ${actor.actorId}`
+      );
+    }
+
+    const ids = rawIds.map((skillId, index) => {
+      if (typeof skillId !== "string" || skillId.trim() === "") {
+        throw new TypeError(
+          `${field}.${actor.actorId}[${index}] must be a skill id`
+        );
+      }
+      const id = skillId.trim();
+      if (!skillsById[id]) {
+        throw new RangeError(
+          `${field}.${actor.actorId} references unknown skill: ${id}`
+        );
+      }
+      return id;
+    });
+
+    if (new Set(ids).size !== ids.length) {
+      throw new RangeError(
+        `${field}.${actor.actorId} must not contain duplicates`
+      );
+    }
+
+    normalized[actor.actorId] = Object.freeze(ids);
+  }
+
+  return Object.freeze(normalized);
+}
+
+export function buildCoop2v2AiControllerSpecs({
+  format,
+  skillIdsByActor
+}) {
+  if (!format || !Array.isArray(format.actors)) {
+    throw new TypeError("format must be a BattleFormatDefinition");
+  }
+  if (
+    !skillIdsByActor ||
+    typeof skillIdsByActor !== "object" ||
+    Array.isArray(skillIdsByActor)
+  ) {
+    throw new TypeError("skillIdsByActor must be an object");
+  }
+
+  return Object.freeze(
+    format.actors
+      .filter(
+        (actor) =>
+          actor.actorId !== format.localActorId &&
+          actor.controllerId.startsWith("ai")
+      )
+      .map((actor) => {
+        const skillIds = skillIdsByActor[actor.actorId];
+        if (!Array.isArray(skillIds)) {
+          throw new RangeError(
+            `skillIdsByActor is missing actor: ${actor.actorId}`
+          );
+        }
+
+        return Object.freeze({
+          actorId: actor.actorId,
+          targetIds: Object.freeze(
+            format.actors
+              .filter(
+                (target) => target.teamId !== actor.teamId
+              )
+              .map((target) => target.actorId)
+          ),
+          skillIds: Object.freeze([...skillIds])
+        });
+      })
+  );
+}
+
+function normalizedInjectedCombatSource(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError("nativeCombatSource must be an object");
+  }
+
+  const format = normalizeBattleFormatDefinition(
+    input.battleFormat
+  );
+
+  if (!Array.isArray(input.fighters)) {
+    throw new TypeError(
+      "nativeCombatSource.fighters must be an array"
+    );
+  }
+
+  const fighterById = new Map(
+    input.fighters.map((fighter) => [
+      String(fighter?.id ?? ""),
+      fighter
+    ])
+  );
+
+  const fighters = Object.freeze(
+    format.actors.map((actor) => {
+      const fighter = fighterById.get(actor.actorId);
+      if (!fighter) {
+        throw new RangeError(
+          `nativeCombatSource is missing fighter: ${actor.actorId}`
+        );
+      }
+      return Object.freeze({ ...fighter });
+    })
+  );
+
+  if (
+    !input.skills ||
+    typeof input.skills !== "object" ||
+    Array.isArray(input.skills)
+  ) {
+    throw new TypeError(
+      "nativeCombatSource.skills must be an object"
+    );
+  }
+
+  const skills = Object.freeze(
+    Object.values(input.skills).map((skill) =>
+      normalizeSkillDefinition(skill)
+    )
+  );
+  const skillsById = Object.freeze(
+    Object.fromEntries(
+      skills.map((skill) => [skill.id, skill])
+    )
+  );
+
+  const skillIdsByActor = normalizeSkillIdsByActor(
+    input.skillIdsByActor,
+    format,
+    skillsById,
+    "nativeCombatSource.skillIdsByActor"
+  );
+
+  return Object.freeze({
+    format,
+    fighters,
+    skills,
+    skillsById,
+    skillIdsByActor
+  });
+}
+
+export async function loadCoop2v2CombatSource({
+  nativeCombatSource = null,
+  fetchImpl = fetch,
+  formatUrl = DATA_URLS.format
+} = {}) {
+  if (nativeCombatSource !== null) {
+    return normalizedInjectedCombatSource(
+      nativeCombatSource
+    );
+  }
+
+  const [
+    rawFormat,
+    rawSkillIdsByActor,
+    maraileron,
+    braisombre,
+    loupVolcanique,
+    golemMoussu,
+    ...rawSkills
+  ] = await Promise.all([
+    fetchJson(formatUrl, fetchImpl),
+    fetchJson(DATA_URLS.skillLoadouts, fetchImpl),
+    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
+    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
+    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
+    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
+    ...DATA_URLS.skills.map((url) =>
+      fetchJson(url, fetchImpl)
+    )
+  ]);
+
+  const format = normalizeBattleFormatDefinition(rawFormat);
+  const skills = Object.freeze(
+    rawSkills.map((skill) =>
+      normalizeSkillDefinition(skill)
+    )
+  );
+  const skillsById = Object.freeze(
+    Object.fromEntries(
+      skills.map((skill) => [skill.id, skill])
+    )
+  );
+  const fighterConfigs = Object.freeze({
+    maraileron,
+    braisombre,
+    loup_volcanique: loupVolcanique,
+    golem_moussu: golemMoussu
+  });
+
+  const fighters = Object.freeze(
+    format.actors.map((actor) => {
+      const config =
+        fighterConfigs[actor.fighterConfigId];
+      if (!config) {
+        throw new RangeError(
+          `Unknown fighter config: ${actor.fighterConfigId}`
+        );
+      }
+      return Object.freeze({
+        ...config,
+        id: actor.actorId
+      });
+    })
+  );
+
+  const skillIdsByActor = normalizeSkillIdsByActor(
+    rawSkillIdsByActor,
+    format,
+    skillsById,
+    "demo skill loadouts"
+  );
+
+  return Object.freeze({
+    format,
+    fighters,
+    skills,
+    skillsById,
+    skillIdsByActor
+  });
+}
+
 function requiredElement(root, selector) {
   const element = root.querySelector(selector);
   if (!element) {
@@ -78,7 +326,8 @@ export async function mountCoop2v2Test({
   visuals,
   presentationAssets = null,
   fetchImpl = fetch,
-  formatUrl = DATA_URLS.format
+  formatUrl = DATA_URLS.format,
+  nativeCombatSource = null
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -96,47 +345,16 @@ export async function mountCoop2v2Test({
     );
   }
 
-  const [
-    rawFormat,
-    maraileron,
-    braisombre,
-    loupVolcanique,
-    golemMoussu,
-    ...rawSkills
-  ] = await Promise.all([
-    fetchJson(formatUrl, fetchImpl),
-    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
-    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
-    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
-    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
-    ...DATA_URLS.skills.map((url) => fetchJson(url, fetchImpl))
-  ]);
-
-  const format = normalizeBattleFormatDefinition(rawFormat);
-  const skills = Object.freeze(
-    rawSkills.map((skill) => normalizeSkillDefinition(skill))
-  );
-  const skillsById = Object.freeze(
-    Object.fromEntries(skills.map((skill) => [skill.id, skill]))
-  );
-  const fighterConfigs = Object.freeze({
-    maraileron,
-    braisombre,
-    loup_volcanique: loupVolcanique,
-    golem_moussu: golemMoussu
-  });
-
-  const fighters = format.actors.map((actor) => {
-    const config = fighterConfigs[actor.fighterConfigId];
-    if (!config) {
-      throw new RangeError(
-        `Unknown fighter config: ${actor.fighterConfigId}`
-      );
-    }
-    return {
-      ...config,
-      id: actor.actorId
-    };
+  const {
+    format,
+    fighters,
+    skills,
+    skillsById,
+    skillIdsByActor
+  } = await loadCoop2v2CombatSource({
+    nativeCombatSource,
+    fetchImpl,
+    formatUrl
   });
 
   const session = createCombatSession({
@@ -535,7 +753,19 @@ export async function mountCoop2v2Test({
     return button;
   }
 
-  for (const skill of skills) {
+  const localSkillIds =
+    skillIdsByActor[format.localActorId];
+  const localSkills = localSkillIds.map((skillId) => {
+    const skill = skillsById[skillId];
+    if (!skill) {
+      throw new RangeError(
+        `Unknown local skill: ${skillId}`
+      );
+    }
+    return skill;
+  });
+
+  for (const skill of localSkills) {
     const button = createSkillButton(skill);
     skillContainer.append(button);
     skillRefs.set(skill.id, { skill, button });
@@ -544,11 +774,18 @@ export async function mountCoop2v2Test({
   const aiControllers = [];
 
 
-  const aiReadyAt = new Map([
-    ["ally", 700],
-    ["opponent", 1100],
-    ["opponent-b", 1650]
-  ]);
+  const aiControllerSpecs =
+    buildCoop2v2AiControllerSpecs({
+      format,
+      skillIdsByActor
+    });
+
+  const aiReadyAt = new Map(
+    aiControllerSpecs.map((spec, index) => [
+      spec.actorId,
+      700 + index * 450
+    ])
+  );
 
   function queueAiDecisions() {
     if (disposed || aiDecisionQueued || !runtime) {
@@ -691,32 +928,18 @@ export async function mountCoop2v2Test({
     }
   });
 
-  aiControllers.push(
-    createBattleActorAiController({
-      session,
-      runtime,
-      actorId: "ally",
-      targetIds: format.teams.enemies,
-      skillIds: ["claw", "fireball", "aerial-dive", "teleport-strike"],
-      skillsById
-    }),
-    createBattleActorAiController({
-      session,
-      runtime,
-      actorId: "opponent",
-      targetIds: format.teams.players,
-      skillIds: ["fireball", "claw", "aerial-dive", "teleport-strike"],
-      skillsById
-    }),
-    createBattleActorAiController({
-      session,
-      runtime,
-      actorId: "opponent-b",
-      targetIds: format.teams.players,
-      skillIds: ["aerial-dive", "fireball", "claw", "teleport-strike"],
-      skillsById
-    })
-  );
+  for (const spec of aiControllerSpecs) {
+    aiControllers.push(
+      createBattleActorAiController({
+        session,
+        runtime,
+        actorId: spec.actorId,
+        targetIds: spec.targetIds,
+        skillIds: spec.skillIds,
+        skillsById
+      })
+    );
+  }
 
   renderTargetSelection();
   renderState();
