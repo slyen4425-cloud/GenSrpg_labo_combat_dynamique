@@ -21,8 +21,11 @@ import {
   createCaptureSkillPresentationAssetsV2
 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import {
-  privateAudioPreviewAssetV1
-} from "../../src/assets/private-audio-preview-assets-v1.js";
+  privateAudioRuntimeAssetV1
+} from "../../src/assets/private-audio-runtime-library-v1.js";
+import {
+  createPrivateAudioPreviewControllerV1
+} from "../../src/ui/private-audio-preview-controller-v1.js";
 
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
@@ -250,6 +253,13 @@ const editor = mountCaptureEditorHumanV2({
   opponentLoadout
 });
 
+const audioPreviewController =
+  createPrivateAudioPreviewControllerV1({
+    root,
+    resolveAudioAsset:
+      privateAudioRuntimeAssetV1
+  });
+
 let visualContext = null;
 const visualContextPromise = loadPreviewVisualContext()
   .then((context) => {
@@ -377,7 +387,7 @@ function buildPreviewPresentationAssets(
       assetForId: resolvePreviewPresentationAsset,
       audioAssetForId(assetId) {
         return (
-          privateAudioPreviewAssetV1(assetId) ??
+          privateAudioRuntimeAssetV1(assetId) ??
           demoPresentationAssets.audioAsset(assetId)
         );
       }
@@ -401,7 +411,7 @@ function buildPreviewPresentationAssets(
     audioAsset(assetId) {
       return (
         native.audioAsset(assetId) ??
-        privateAudioPreviewAssetV1(assetId) ??
+        privateAudioRuntimeAssetV1(assetId) ??
         demoPresentationAssets.audioAsset(assetId)
       );
     }
@@ -492,6 +502,9 @@ backButton.addEventListener("click", () => {
 
 window.addEventListener(
   "pagehide",
-  () => session.dispose(),
+  () => {
+    audioPreviewController.dispose();
+    session.dispose();
+  },
   { once: true }
 );
