@@ -12384,3 +12384,51 @@ Critère GREEN :
 - sentinelles complètes vertes ;
 - documentation synchronisée ;
 - checkpoint GREEN technique.
+
+
+### Résultat — vitesse globale des compétences V1
+
+RED :
+
+- test : `tests/unit/combat-global-skill-speed-v1.test.mjs` ;
+- SHA RED : `c857734707eb736cce35073b78145736e05fd21e` ;
+- CI `36462428767` — FAILURE attendue ;
+- 483 sentinelles historiques vertes, échec isolé : export `effectiveSkillTimingMs` absent.
+
+Implémentation :
+
+- `combat-timing.js` possède désormais :
+  - `normalizeSkillSpeedMultiplier()` ;
+  - `effectiveSkillTimingMs()` ;
+- `CombatSession` possède le multiplicateur global `skillSpeedMultiplier` ;
+- `Action Resolver` applique ce multiplicateur aux timings effectifs :
+  - préparation ;
+  - trajet ;
+  - récupération ;
+  - préparation des réactions ;
+- formule : durée effective = durée configurée / multiplicateur ;
+- ×1 conserve exactement le comportement historique ;
+- ×2 rend les timings de compétence deux fois plus rapides ;
+- ×0,5 les rend deux fois plus lents ;
+- les `SkillDefinition` ne sont jamais mutées ;
+- cooldown et recharge d'énergie restent sur l'horloge Combat State existante.
+
+La première CI d'implémentation a signalé une erreur du nouveau test : `Riposte` avait été utilisée contre un projectile alors qu'elle ne couvre que `contact`. Le test a été corrigé vers `Bouclier miroir`, réaction projectile compatible, sans modification Core.
+
+SHA technique final :
+
+`27e65a06c3b6bdd0aa0e784b75fb394366bf61c1`.
+
+CI :
+
+- run `36462831044` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final :
+
+`checkpoint/lab-combat-global-skill-speed-v1-green-2026-09-28`.
+
+Étape suivante :
+
+lot séparé pour exposer ce multiplicateur dans la configuration Combat de l'éditeur et le transmettre explicitement à la preview, sans lecture DOM par le Combat Core.
