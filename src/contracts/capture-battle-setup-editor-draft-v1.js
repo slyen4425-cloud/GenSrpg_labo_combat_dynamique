@@ -5,6 +5,7 @@ const TOP_LEVEL_FIELDS = new Set([
   "schema",
   "id",
   "localActorId",
+  "skillSpeedMultiplier",
   "teams"
 ]);
 
@@ -58,6 +59,17 @@ function optionalString(value, field) {
   return value == null
     ? null
     : requiredString(value, field);
+}
+
+function positiveFiniteNumber(value, field, fallback = 1) {
+  const number = Number(value ?? fallback);
+  if (!Number.isFinite(number)) {
+    throw new RangeError(`${field} must be finite`);
+  }
+  if (number <= 0) {
+    throw new RangeError(`${field} must be greater than 0`);
+  }
+  return number;
 }
 
 function normalizeMember(raw, field) {
@@ -257,6 +269,10 @@ export function normalizeCaptureBattleSetupEditorDraftV1(input) {
     schema: CAPTURE_BATTLE_SETUP_EDITOR_DRAFT_SCHEMA,
     id: requiredString(value.id, "id"),
     localActorId,
+    skillSpeedMultiplier: positiveFiniteNumber(
+      value.skillSpeedMultiplier,
+      "skillSpeedMultiplier"
+    ),
     teams: Object.freeze(teams)
   });
 }
