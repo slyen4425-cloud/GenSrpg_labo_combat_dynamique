@@ -9959,3 +9959,47 @@ Test mobile demandé :
 8. vérifier absence de débordement ou contrôle inaccessible.
 
 Aucun GREEN final avant ce retour.
+
+
+## Retour utilisateur Capture Editor — corrections 1 à 5 — 2026-09-28
+
+Base :
+
+- `checkpoint/lab-capture-editor-human-v2-prevalidation-green-2026-09-27`
+- SHA `227901c1e3ed9f2472a642d54af8dca786b743bf`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-feedback-1-5-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-feedback-1-5-2026-09-28`.
+
+Périmètre exact :
+
+1. raccorder les sélecteurs audio au catalogue privé déjà classé, sans publier les binaires privés ;
+2. supprimer le doublon de configuration du socket projectile : le point appartient à la créature ;
+3. conserver les PV dans l'édition créature uniquement, pas dans l'onglet Combat ;
+4. exposer la bibliothèque native complète déjà programmée dans `data/combat/skills/`, pas uniquement Fireball ;
+5. ajouter un scale créature porté par le contrat de présentation, pas par une rustine CSS.
+
+Source audio autoritaire :
+
+- dépôt privé `slyen4425-cloud/GenSrpG_audio_prive` ;
+- branche `work/audio-catalog-classification-2026-09-26` ;
+- SHA `01ffe9c8c6ec73d974f572f7e648461a48470e8a` ;
+- catalogue résolu `integration/audio-catalog/catalog.resolved.v1.json` ;
+- 173 entrées, 105 revues manuellement, `needsReview: 0`.
+
+Règles :
+
+- aucun binaire audio privé copié dans le dépôt public ;
+- le labo peut publier uniquement un catalogue de métadonnées/logical assetIds sans `sourcePath` ;
+- aucune URL privée/token dans le client ;
+- aucun second socket dans SkillDefinition/SkillPresentation ;
+- `projectileSocketId` et `displayScale` appartiennent à CreaturePresentationBinding ;
+- les PV restent des données de créature ;
+- les capacités existantes sont réutilisées depuis leur bibliothèque, sans duplication de définitions.
+
+Tests RED à poser avant implémentation.
