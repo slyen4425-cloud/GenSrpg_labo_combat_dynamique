@@ -101,6 +101,60 @@ function normalizeSkillIdsByActor(
   return Object.freeze(normalized);
 }
 
+export function resolveCombatPreviewFormatV1(format) {
+  if (!format || typeof format !== "object" || Array.isArray(format)) {
+    throw new TypeError(
+      "format must be a BattleFormatDefinition"
+    );
+  }
+
+  const teamEntries = Object.entries(format.teams ?? {});
+  if (teamEntries.length !== 2) {
+    throw new RangeError(
+      "combat preview supports exactly two teams"
+    );
+  }
+
+  const localTeamEntry = teamEntries.find(([, actorIds]) =>
+    Array.isArray(actorIds) &&
+    actorIds.includes(format.localActorId)
+  );
+
+  if (!localTeamEntry) {
+    throw new RangeError(
+      "localActorId must belong to a declared team"
+    );
+  }
+
+  const enemyTeamEntry = teamEntries.find(
+    ([teamId]) => teamId !== localTeamEntry[0]
+  );
+
+  const localActorIds = localTeamEntry[1];
+  const enemyActorIds = enemyTeamEntry?.[1] ?? [];
+
+  if (
+    ![1, 2].includes(localActorIds.length) ||
+    localActorIds.length !== enemyActorIds.length
+  ) {
+    throw new RangeError(
+      "combat preview supports only symmetric 1v1 or 2v2"
+    );
+  }
+
+  return Object.freeze({
+    localTeamId: localTeamEntry[0],
+    enemyTeamId: enemyTeamEntry[0],
+    localActorIds: Object.freeze([...localActorIds]),
+    enemyActorIds: Object.freeze([...enemyActorIds]),
+    allyActorId:
+      localActorIds.find(
+        (actorId) => actorId !== format.localActorId
+      ) ?? null,
+    initialTargetId: enemyActorIds[0]
+  });
+}
+
 export function buildCoop2v2AiControllerSpecs({
   format,
   skillIdsByActor
@@ -374,17 +428,16 @@ export async function mountCoop2v2Test({
     `[data-combat-energy-value="${format.localActorId}"]`
   );
 
-  const allyActorId =
-    format.teams.players.find(
-      (actorId) => actorId !== format.localActorId
-    ) ?? null;
-  if (!allyActorId) {
-    throw new Error("2v2 format requires one ally actor");
-  }
-  const allyIcon = requiredElement(
-    root,
-    "[data-ally-creature-icon]"
-  );
+  const previewFormat =
+    resolveCombatPreviewFormatV1(format);
+  const allyActorId = previewFormat.allyActorId;
+  const allyIcon =
+    allyActorId === null
+      ? null
+      : requiredElement(
+          root,
+          "[data-ally-creature-icon]"
+        );
 
   const fighterContainers = Object.fromEntries(
     format.actors.map((actor) => [
@@ -446,7 +499,7 @@ export async function mountCoop2v2Test({
   const skillRefs = new Map();
   const targetPulseTimers = new Map();
   let disposed = false;
-  let selectedTargetId = format.teams.enemies[0];
+  let selectedTargetId = previewFormat.initialTargetId;
   let runtime = null;
   let aiDecisionQueued = false;
 
@@ -458,11 +511,13 @@ export async function mountCoop2v2Test({
     );
   }
 
-  const allyDescriptor = visuals.getCreatureDescriptor(
-    format.actor(allyActorId).creatureId
-  );
-  allyIcon.src = allyDescriptor.iconUrl;
-  allyIcon.dataset.assetId = allyDescriptor.id;
+  if (allyActorId !== null) {
+    const allyDescriptor = visuals.getCreatureDescriptor(
+      format.actor(allyActorId).creatureId
+    );
+    allyIcon.src = allyDescriptor.iconUrl;
+    allyIcon.dataset.assetId = allyDescriptor.id;
+  }
 
   const combatAudio = createDomCombatAudio({
     resolveAudioAsset(assetId) {
