@@ -10639,3 +10639,38 @@ CI :
 Checkpoint technique :
 
 `checkpoint/lab-capture-active-format-v2-green-2026-09-28`.
+
+
+## Micro-lot — consolidation bootstrap Combat Test natif — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-active-format-v2-green-2026-09-28` ;
+- SHA : `b7d37e2efadbf712e798ec7f9a77d814b4d7b7ee`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-bootstrap-consolidation-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-combat-bootstrap-consolidation-v1-2026-09-28`.
+
+But :
+
+Rapatrier sur la lignée intégrée deux comportements déjà validés sur la branche parallèle Combat Test :
+
+1. source native injectable dans `mountCoop2v2Test()` ;
+2. contrôleurs IA data-driven par `BattleFormatDefinition.controllerId` + `skillIdsByActor`.
+
+Invariants :
+
+- aucun actorId métier codé comme autorité ;
+- aucun loadout IA métier codé dans le contrôleur ;
+- aucune dépendance éditeur ;
+- aucune dépendance production ;
+- fallback démo conservé ;
+- localActorId jamais piloté par IA ;
+- Combat Core inchangé.
+
+RED : réexécuter les sentinelles source native + contrôleurs data-driven sur cette branche avant de rapatrier l'implémentation.
