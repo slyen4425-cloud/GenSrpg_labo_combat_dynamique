@@ -1,0 +1,272 @@
+{
+  "schema": "gensrpg-combat-skill-catalog-v1",
+  "entries": [
+    {
+      "id": "aerial-dive",
+      "label": "Plongeon aérien",
+      "definition": {
+        "id": "aerial-dive",
+        "name": "Plongeon aérien",
+        "category": "offensive",
+        "form": "contact",
+        "element": null,
+        "approachMode": "aerial",
+        "energyCost": 2,
+        "preparationMs": 900,
+        "travelMs": 850,
+        "recoveryMs": 600,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "effect": {
+          "damage": 22,
+          "tags": [
+            "aerial"
+          ]
+        },
+        "evasion": {
+          "window": "travel",
+          "incomingForms": [
+            "contact",
+            "projectile"
+          ]
+        }
+      }
+    },
+    {
+      "id": "claw",
+      "label": "Griffe",
+      "definition": {
+        "id": "claw",
+        "name": "Griffe",
+        "category": "offensive",
+        "form": "contact",
+        "element": null,
+        "energyCost": 2,
+        "preparationMs": 1200,
+        "travelMs": 1500,
+        "recoveryMs": 500,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "effect": {
+          "damage": 18
+        },
+        "approachMode": "ground"
+      }
+    },
+    {
+      "id": "contact-counter",
+      "label": "Riposte",
+      "definition": {
+        "id": "contact-counter",
+        "name": "Riposte",
+        "category": "counter",
+        "form": "self",
+        "element": null,
+        "energyCost": 2,
+        "preparationMs": 400,
+        "travelMs": 0,
+        "recoveryMs": 500,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "reaction": {
+          "counterForms": [
+            "contact"
+          ]
+        },
+        "approachMode": "none"
+      }
+    },
+    {
+      "id": "dodge",
+      "label": "Esquive",
+      "definition": {
+        "id": "dodge",
+        "name": "Esquive",
+        "category": "defensive",
+        "form": "self",
+        "element": null,
+        "approachMode": "none",
+        "energyCost": 1,
+        "preparationMs": 300,
+        "travelMs": 0,
+        "recoveryMs": 350,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "reaction": {
+          "evadeForms": [
+            "contact",
+            "projectile"
+          ],
+          "evadeApproaches": [
+            "ground",
+            "aerial",
+            "teleport"
+          ]
+        }
+      }
+    },
+    {
+      "id": "fire-immunity",
+      "label": "Immunité feu",
+      "definition": {
+        "id": "fire-immunity",
+        "name": "Immunité feu",
+        "category": "buff_debuff",
+        "form": "self",
+        "element": null,
+        "energyCost": 2,
+        "preparationMs": 300,
+        "travelMs": 0,
+        "recoveryMs": 400,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "reaction": {
+          "immuneElements": [
+            "fire"
+          ]
+        },
+        "approachMode": "none"
+      }
+    },
+    {
+      "id": "fireball",
+      "label": "Boule de feu",
+      "definition": {
+        "id": "fireball",
+        "name": "Boule de feu",
+        "category": "offensive",
+        "form": "projectile",
+        "element": "fire",
+        "energyCost": 3,
+        "preparationMs": 2000,
+        "travelMs": 700,
+        "recoveryMs": 700,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "effect": {
+          "damage": 30,
+          "tags": [
+            "burn-capable"
+          ]
+        },
+        "approachMode": "none",
+        "projectileClash": {
+          "mode": "mutual_cancel",
+          "group": "fire-orb",
+          "interactsWith": [
+            "fire-orb"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mirror-shield",
+      "label": "Bouclier miroir",
+      "definition": {
+        "id": "mirror-shield",
+        "name": "Bouclier miroir",
+        "category": "defensive",
+        "form": "self",
+        "element": null,
+        "energyCost": 2,
+        "preparationMs": 500,
+        "travelMs": 0,
+        "recoveryMs": 500,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "reaction": {
+          "blockForms": [
+            "projectile"
+          ],
+          "reflectForms": [
+            "projectile"
+          ]
+        },
+        "approachMode": "none"
+      }
+    },
+    {
+      "id": "stun-bolt",
+      "label": "Impact étourdissant",
+      "definition": {
+        "id": "stun-bolt",
+        "name": "Impact étourdissant",
+        "category": "offensive",
+        "form": "projectile",
+        "element": null,
+        "approachMode": "none",
+        "energyCost": 2,
+        "preparationMs": 500,
+        "travelMs": 350,
+        "recoveryMs": 500,
+        "allowedDistances": [
+          "medium",
+          "long"
+        ],
+        "effect": {
+          "damage": 5,
+          "interruptsPreparation": true,
+          "stunMs": 1200,
+          "tags": [
+            "stun"
+          ]
+        }
+      }
+    },
+    {
+      "id": "teleport-strike",
+      "label": "Frappe téléportée",
+      "definition": {
+        "id": "teleport-strike",
+        "name": "Frappe téléportée",
+        "category": "offensive",
+        "form": "contact",
+        "element": null,
+        "approachMode": "teleport",
+        "energyCost": 3,
+        "preparationMs": 1200,
+        "travelMs": 120,
+        "recoveryMs": 650,
+        "allowedDistances": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "effect": {
+          "damage": 24,
+          "tags": [
+            "teleport"
+          ]
+        },
+        "evasion": {
+          "window": "travel",
+          "incomingForms": [
+            "contact",
+            "projectile"
+          ]
+        }
+      }
+    }
+  ]
+}
