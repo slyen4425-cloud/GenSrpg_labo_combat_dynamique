@@ -120,6 +120,16 @@
             <option value="massive">Massif / golem</option>
           </select>
         </label>
+        <label>Taille en combat <strong data-creature-scale-value>1.00×</strong>
+          <input
+            data-creature-display-scale
+            type="range"
+            min="0.25"
+            max="4"
+            step="0.05"
+            value="1"
+          >
+        </label>
       </article>
 
       <article class="card">
@@ -165,13 +175,13 @@
 
         <div class="grid three">
           <label>Attaque
-            <select data-creature-audio-attack data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-attack data-private-audio data-audio-roles="release,voice"><option value="">Aucun</option></select>
           </label>
           <label>Touché
-            <select data-creature-audio-hit data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-hit data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select>
           </label>
           <label>KO / mort
-            <select data-creature-audio-ko data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-ko data-private-audio data-audio-roles="death"><option value="">Aucun</option></select>
           </label>
         </div>
       </article>
@@ -482,10 +492,10 @@
         </div>
         <div class="grid two">
           <label>Son de cast
-            <select data-skill-cast-audio data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-skill-cast-audio data-private-audio data-audio-roles="cast,release,preparation"><option value="">Aucun</option></select>
           </label>
           <label>Son d'impact
-            <select data-skill-impact-audio data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-skill-impact-audio data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select>
           </label>
         </div>
       </article>
