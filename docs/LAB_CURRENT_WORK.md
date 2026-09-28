@@ -11906,3 +11906,60 @@ Preview visée :
 Étape suivante :
 
 faire évoluer la présentation de capacité dans un contrat versionné pour porter des couches distinctes par vue `player/opponent`, sans règle cachée dans le renderer.
+
+
+## Micro-lot — SkillPresentation profondeur par vue V2 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-editor-skill-ux-preview-repair-v1-prevalidation-green-2026-09-28` ;
+- SHA : `c24b2fc55025b8804bb7f6cb21b32d92050a7fdd`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-skill-presentation-view-layer-v2-2026-09-28`.
+
+Branche :
+
+`work/lab-skill-presentation-view-layer-v2-2026-09-28`.
+
+Constat :
+
+`SkillPresentationBindingV1` ne possède qu'un `layer` global par slot visuel. Il ne peut donc pas représenter proprement une profondeur différente selon que la capacité est jouée depuis la vue joueur ou la vue ennemie.
+
+Objectif :
+
+1. ajouter un `SkillPresentationBindingV2` versionné ;
+2. pour les slots `cast` et `travel`, porter explicitement `layerByView.player` et `layerByView.opponent` ;
+3. préserver la lecture des bindings V1 ;
+4. faire résoudre la vue sémantique depuis l'appartenance d'équipe du `BattleFormatDefinition`, jamais depuis un actorId codé en dur ;
+5. exposer dans l'éditeur quatre réglages distincts :
+   - charge vue joueur ;
+   - charge vue ennemi ;
+   - projectile vue joueur ;
+   - projectile vue ennemi ;
+6. aucune inversion implicite dans le renderer : les deux valeurs sont des données explicites.
+
+Frontières :
+
+- `SkillPresentationBindingV1` reste inchangé ;
+- Combat Core inchangé ;
+- aucune règle spéciale Fireball dans le renderer ;
+- aucun actorId `local-1/opponent-1` utilisé comme autorité de vue ;
+- aucun storage/global.
+
+RED :
+
+- contrat V2 absent ;
+- adaptateur de présentation V2 absent ;
+- V1 doit rester compatible ;
+- joueur/ennemi doivent produire deux couches différentes pour un même skill ;
+- l'éditeur doit exporter les quatre réglages ;
+- le combat preview doit dériver `player/opponent` depuis les équipes.
+
+Critère final :
+
+- RED prouvé ;
+- CI complète verte ;
+- preview publiée ;
+- PREVALIDATION UI smartphone.
