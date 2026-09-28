@@ -18,8 +18,8 @@ import {
   demoPresentationAssets
 } from "./demo-assets.js";
 import {
-  createCaptureSkillPresentationAssetsV1
-} from "../../src/adapters/renderer/capture-skill-presentation-assets-v1.js";
+  createCaptureSkillPresentationAssetsV2
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
@@ -316,7 +316,7 @@ function buildPreviewPresentationAssets(
   nativeCombatSource
 ) {
   const native =
-    createCaptureSkillPresentationAssetsV1({
+    createCaptureSkillPresentationAssetsV2({
       skillPresentations:
         nativeCombatSource.skillPresentations ?? {},
       assetForId: resolvePreviewPresentationAsset,
