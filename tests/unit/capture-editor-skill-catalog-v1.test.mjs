@@ -161,7 +161,8 @@ test("human editor page reserves a real historical ability library surface and n
   for (const marker of [
     "data-skill-library-select",
     "data-skill-library-state",
-    "data-skill-save",
+    "data-skill-create",
+    "data-skill-update",
     "data-loadout-slot"
   ]) {
     assert.equal(
