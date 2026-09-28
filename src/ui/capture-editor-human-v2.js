@@ -37,6 +37,9 @@ import {
 import {
   buildPrivateAudioRoleGroupsV1
 } from "./private-audio-role-groups-v1.js";
+import {
+  resolveCaptureSkillSaveModeV1
+} from "./capture-editor-skill-save-mode-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -1525,16 +1528,20 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-skill-library-state]"
   );
-  const saveSkillButton = one(
+  const createSkillButton = one(
     root,
-    "[data-skill-save]"
+    "[data-skill-create]"
+  );
+  const updateSkillButton = one(
+    root,
+    "[data-skill-update]"
   );
 
   function updateLibraryState(state) {
     selectedLegacyState = state;
     if (state === null) {
       libraryState.textContent =
-        "Nouvelle capacité : tous les champs sont à définir.";
+        "Aucun modèle chargé. Pour créer : choisis un nouvel identifiant puis utilise « Créer ». Pour modifier un ID déjà présent : utilise « Mettre à jour ».";
       libraryState.dataset.tone = "info";
       return;
     }
@@ -1587,7 +1594,7 @@ export function mountCaptureEditorHumanV2({
     }
   }
 
-  function saveCurrentSkill() {
+  function persistCurrentSkill(intent) {
     if (
       selectedLegacyState !== null &&
       !selectedLegacyState.runtimeReady
@@ -1600,15 +1607,26 @@ export function mountCaptureEditorHumanV2({
     const draft = buildHumanSkillDraftV1(
       readSkillFields(root)
     );
+
+    const saveMode = resolveCaptureSkillSaveModeV1({
+      intent,
+      draftId: draft.id,
+      configuredSkillIds: [...configuredSkills.keys()]
+    });
+
     configuredSkills.set(draft.id, draft);
     skillDirty = false;
     refreshLoadoutOptions(draft.id);
 
     setStatus(
       root,
-      "Capacité « " +
-        draft.definition.name +
-        " » enregistrée dans la bibliothèque active.",
+      saveMode.mode === "create"
+        ? "Nouvelle capacité « " +
+            draft.definition.name +
+            " » créée dans la bibliothèque active."
+        : "Capacité « " +
+            draft.definition.name +
+            " » mise à jour dans la bibliothèque active.",
       "ok"
     );
 
@@ -1619,7 +1637,7 @@ export function mountCaptureEditorHumanV2({
   createOption(
     librarySelect,
     "",
-    "Nouvelle capacité"
+    "Aucun modèle — partir de zéro"
   );
 
   for (const entry of captureLegacySkillLibraryEntriesV1()) {
@@ -1675,14 +1693,26 @@ export function mountCaptureEditorHumanV2({
       root,
       "Modèle « " +
         state.template.name +
-        " » chargé. Complète les réglages modernes puis enregistre la capacité.",
+        " » chargé comme modèle. Aucun changement n’est enregistré tant que tu n’utilises pas « Créer » ou « Mettre à jour ».",
       state.runtimeReady ? "info" : "warning"
     );
   });
 
-  listen(saveSkillButton, "click", () => {
+  listen(createSkillButton, "click", () => {
     try {
-      saveCurrentSkill();
+      persistCurrentSkill("create");
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(updateSkillButton, "click", () => {
+    try {
+      persistCurrentSkill("update");
     } catch (error) {
       setStatus(
         root,
@@ -1701,7 +1731,8 @@ export function mountCaptureEditorHumanV2({
   ) {
     if (
       field === librarySelect ||
-      field === saveSkillButton
+      field === createSkillButton ||
+      field === updateSkillButton
     ) {
       continue;
     }
