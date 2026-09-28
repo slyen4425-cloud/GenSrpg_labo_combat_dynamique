@@ -5,8 +5,8 @@ import {
   normalizeCaptureCreatureEditorDraftV3
 } from "../../../contracts/capture-creature-editor-draft-v3.js";
 import {
-  projectCreaturePresentationV2ToV1
-} from "../../capture/creature-presentation-v2-to-v1.js";
+  projectCreaturePresentationBindingV2ToV1
+} from "../../../contracts/creature-presentation-binding-v2.js";
 import {
   exportCaptureEditorDraftsToCombatExportV2
 } from "./capture-editor-exporter-v2.js";
@@ -39,7 +39,7 @@ function projectDraftV3ToV2(draft) {
     combat: draft.combat,
     skillIds: draft.skillIds,
     presentation:
-      projectCreaturePresentationV2ToV1(
+      projectCreaturePresentationBindingV2ToV1(
         draft.presentation
       )
   });
