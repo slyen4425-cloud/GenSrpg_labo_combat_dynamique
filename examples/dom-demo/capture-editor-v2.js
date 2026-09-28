@@ -14,6 +14,9 @@ import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../../src/assets/global-visual-library.js";
+import {
+  demoPresentationAssets
+} from "./demo-assets.js";
 
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
@@ -45,7 +48,7 @@ async function loadPreviewVisualContext() {
 }
 
 const opponentCreatureDraft = {
-  schema: "capture-creature-editor-draft-v2",
+  schema: "capture-creature-editor-draft-v3",
   id: "crea-enemy",
   displayName: "Braisombre",
   description: "Créature adverse de prévisualisation.",
@@ -80,10 +83,11 @@ const opponentCreatureDraft = {
   skillIds: ["enemy-hit"],
   presentation: {
     id: "creature:crea-enemy",
-    version: 1,
+    version: 2,
     subjectType: "creature",
     subjectId: "crea-enemy",
     profileId: "drake",
+    displayScale: 1,
     visual: {
       front: {
         assetId: "pack:capture:creature-braisombre-opponent-01"
@@ -240,6 +244,49 @@ function clonePreviewRoot(nativeCombatSource) {
   return previewRoot;
 }
 
+function applyPreviewArenaPresentation(
+  previewRoot,
+  arenaId = "city"
+) {
+  const arena = previewRoot.querySelector(
+    "[data-combat-arena]"
+  );
+  if (!arena) {
+    throw new Error(
+      "Arène de preview introuvable"
+    );
+  }
+
+  const presentation =
+    demoPresentationAssets.presentationForArena(
+      arenaId
+    );
+
+  if (!presentation?.background?.url) {
+    throw new RangeError(
+      "Présentation d’arène inconnue : " +
+        arenaId
+    );
+  }
+
+  arena.dataset.arenaBackground = "image";
+  arena.dataset.arenaTheme = arenaId;
+  arena.style.setProperty(
+    "--arena-background-image",
+    `url("${presentation.background.url}")`
+  );
+  arena.style.setProperty(
+    "--arena-background-position",
+    presentation.backgroundPosition ??
+      "center"
+  );
+  arena.style.setProperty(
+    "--arena-background-size",
+    presentation.backgroundSize ??
+      "cover"
+  );
+}
+
 const session = createCaptureEditorPreviewSessionV2({
   editor,
   adaptVisualExport(exported) {
@@ -264,10 +311,17 @@ const session = createCaptureEditorPreviewSessionV2({
       nativeCombatSource
     );
 
+    applyPreviewArenaPresentation(
+      previewRoot,
+      "city"
+    );
+
     const mounted = await mountCaptureCombatPreviewV1({
       root: previewRoot,
       nativeCombatSource,
-      nativeVisualSource
+      nativeVisualSource,
+      presentationAssets:
+        demoPresentationAssets
     });
 
     let disposed = false;
