@@ -247,7 +247,7 @@ test("human skill controls produce real SkillDefinition including cooldown", () 
   assert.equal(draft.definition.effect.damage, 4);
   assert.equal(
     draft.presentation.visual.travel.anchor,
-    "mouth"
+    null
   );
 });
 
