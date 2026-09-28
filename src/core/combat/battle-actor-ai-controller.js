@@ -83,61 +83,77 @@ export function createBattleActorAiController({
       });
     }
 
-    const skill = skills[skillIndex];
-    const preview = session.previewSkill({
-      actorId: normalizedActorId,
-      targetId,
-      skill
-    });
+    const attempts = [];
 
-    if (!preview.ok) {
-      if (preview.outcome === "insufficient_energy") {
-        return Object.freeze({
-          status: "saving",
-          actorId: normalizedActorId,
-          targetId,
-          skillId: skill.id,
-          skillName: skill.name,
-          currentEnergy: actor.energy,
-          requiredEnergy: skill.energyCost
-        });
+    for (let offset = 0; offset < skills.length; offset += 1) {
+      const candidateIndex =
+        (skillIndex + offset) % skills.length;
+      const skill = skills[candidateIndex];
+      const preview = session.previewSkill({
+        actorId: normalizedActorId,
+        targetId,
+        skill
+      });
+
+      attempts.push({ skill, preview, candidateIndex });
+
+      if (!preview.ok) {
+        continue;
       }
 
+      const result = runtime.startSkill({
+        actorId: normalizedActorId,
+        targetId,
+        skill
+      });
+
+      if (!result.ok) {
+        attempts[attempts.length - 1] = {
+          skill,
+          preview: result,
+          candidateIndex
+        };
+        continue;
+      }
+
+      skillIndex =
+        (candidateIndex + 1) % skills.length;
+
       return Object.freeze({
-        status: "waiting",
+        status: "skill_started",
         actorId: normalizedActorId,
         targetId,
         skillId: skill.id,
         skillName: skill.name,
-        reason: preview.outcome
+        result
       });
     }
 
-    const result = runtime.startSkill({
-      actorId: normalizedActorId,
-      targetId,
-      skill
-    });
+    const energyBlocked = attempts.find(
+      ({ preview }) =>
+        preview.outcome === "insufficient_energy"
+    );
 
-    if (!result.ok) {
+    if (energyBlocked) {
       return Object.freeze({
-        status: "waiting",
+        status: "saving",
         actorId: normalizedActorId,
         targetId,
-        skillId: skill.id,
-        skillName: skill.name,
-        reason: result.outcome
+        skillId: energyBlocked.skill.id,
+        skillName: energyBlocked.skill.name,
+        currentEnergy: actor.energy,
+        requiredEnergy: energyBlocked.skill.energyCost
       });
     }
 
-    skillIndex = (skillIndex + 1) % skills.length;
+    const blocked = attempts[0];
     return Object.freeze({
-      status: "skill_started",
+      status: "waiting",
       actorId: normalizedActorId,
       targetId,
-      skillId: skill.id,
-      skillName: skill.name,
-      result
+      skillId: blocked?.skill.id ?? null,
+      skillName: blocked?.skill.name ?? null,
+      reason: blocked?.preview.outcome ?? "no_usable_skill"
     });
   }
 
