@@ -11060,3 +11060,42 @@ Invariants :
 - présentation absente = erreur explicite, aucun visuel inventé.
 
 RED avant implémentation.
+
+
+### Résultat — adaptateur Capture -> source visuelle native V1
+
+RED :
+
+- test : `tests/unit/capture-native-visual-source-adapter-v1.test.mjs` ;
+- SHA RED corrigé : `a45731423c5f91cf6076719e5935f932502d6fd4` ;
+- CI `36432036653` — FAILURE attendue ;
+- cause : adaptateur absent.
+
+Implémentation :
+
+- fichier : `src/adapters/input/capture/capture-export-to-native-visual-source-v1.js` ;
+- seules les créatures réellement référencées par les acteurs sont adaptées ;
+- `presentationId` reste la liaison autoritaire ;
+- asset face/dos/icône résolu depuis le catalogue global par `assetId` ;
+- vue player utilise le dos, avec fallback face ;
+- vue opponent utilise la face ;
+- icône utilise l'icône, avec fallback face ;
+- sockets front/back deviennent les anchors FX du renderer ;
+- binding V1 garde scale 1 ;
+- binding V2 conserve `displayScale` ;
+- présentation, asset ou profil manquant = erreur explicite ;
+- aucun visuel métier inventé.
+
+SHA technique :
+
+`8b226ad367b292d671ba6bb4c6a27cf9631904c6`.
+
+CI :
+
+- run `36432265587` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-capture-native-visual-source-adapter-v1-green-2026-09-28`.
