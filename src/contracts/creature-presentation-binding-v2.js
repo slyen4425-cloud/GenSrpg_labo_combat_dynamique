@@ -85,3 +85,22 @@ export function normalizeCreaturePresentationBindingV2(input) {
     audio: base.audio
   });
 }
+
+export function projectCreaturePresentationBindingV2ToV1(input) {
+  if (input == null) {
+    return null;
+  }
+
+  const value = normalizeCreaturePresentationBindingV2(input);
+
+  return Object.freeze({
+    id: value.id,
+    version: 1,
+    subjectType: value.subjectType,
+    subjectId: value.subjectId,
+    profileId: value.profileId,
+    visual: value.visual,
+    sockets: value.sockets,
+    audio: value.audio
+  });
+}
