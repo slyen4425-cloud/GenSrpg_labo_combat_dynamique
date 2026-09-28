@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>GenSrpG Lab — Éditeur Capture</title>
+  <link rel="stylesheet" href="./demo.css">
   <link rel="stylesheet" href="./capture-editor-v2.css">
 </head>
 <body>
@@ -495,11 +496,209 @@
         <strong>Validation</strong>
         <p data-editor-status data-tone="info">Charge de la bibliothèque visuelle…</p>
       </div>
-      <button type="button" class="primary-action" data-editor-validate>
-        Vérifier la configuration
-      </button>
+      <div class="editor-footer__actions">
+        <button type="button" class="secondary-action" data-editor-validate>
+          Vérifier la configuration
+        </button>
+        <button type="button" class="primary-action" data-editor-test-combat disabled>
+          Tester en combat
+        </button>
+      </div>
     </footer>
   </main>
+
+  <section class="capture-preview-shell" data-capture-preview-shell hidden>
+    <button type="button" class="capture-preview-back" data-preview-back-editor>
+      Retour à l’éditeur
+    </button>
+    <div class="capture-preview-host" data-capture-preview-host></div>
+
+    <template data-capture-preview-template>
+      <main class="game game--coop-2v2" data-combat-demo>
+        <section class="arena arena--coop-2v2" data-combat-arena aria-label="Prévisualisation du combat Capture">
+          <div class="arena__ground" aria-hidden="true"></div>
+
+          <article
+            class="fighter fighter--player"
+            data-demo-slot="local-1"
+            data-demo-view="player"
+            data-target-actor="local-1"
+            data-preview-actor-ui="local-1"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Créature locale</span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <article
+            class="fighter fighter--ally"
+            data-demo-slot="local-2"
+            data-demo-view="player"
+            data-target-actor="local-2"
+            data-preview-actor-ui="local-2"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Créature alliée</span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <article
+            class="fighter fighter--opponent"
+            data-demo-slot="opponent-1"
+            data-demo-view="opponent"
+            data-target-actor="opponent-1"
+            data-preview-actor-ui="opponent-1"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Adversaire</span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <article
+            class="fighter fighter--opponent-b"
+            data-demo-slot="opponent-2"
+            data-demo-view="opponent"
+            data-target-actor="opponent-2"
+            data-preview-actor-ui="opponent-2"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Second adversaire</span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <button
+            type="button"
+            class="squad-card squad-card--player squad-card--local-full"
+            data-target-actor="local-1"
+            data-preview-actor-ui="local-1"
+          >
+            <strong>Créature locale</strong>
+            <div class="squad-card__hp">
+              <progress data-combat-hp="local-1" max="100" value="100"></progress>
+              <span data-combat-hp-value="local-1">100 / 100 PV</span>
+            </div>
+            <small data-combat-action="local-1">Prêt</small>
+            <progress
+              class="squad-card__charge squad-card__charge--local"
+              data-combat-actor-charge="local-1"
+              data-active="false"
+              max="1"
+              value="0"
+            ></progress>
+          </button>
+
+          <button
+            type="button"
+            class="squad-card squad-card--opponent"
+            data-target-actor="opponent-1"
+            data-preview-actor-ui="opponent-1"
+          >
+            <strong>Braisombre</strong>
+            <div class="squad-card__hp">
+              <progress data-combat-hp="opponent-1" max="100" value="100"></progress>
+              <span data-combat-hp-value="opponent-1">100 / 100 PV</span>
+            </div>
+            <small data-combat-action="opponent-1">Prêt</small>
+            <progress
+              class="squad-card__charge"
+              data-combat-actor-charge="opponent-1"
+              data-active="false"
+              max="1"
+              value="0"
+            ></progress>
+          </button>
+
+          <button
+            type="button"
+            class="squad-card squad-card--opponent-b"
+            data-target-actor="opponent-2"
+            data-preview-actor-ui="opponent-2"
+          >
+            <strong>Braisombre</strong>
+            <div class="squad-card__hp">
+              <progress data-combat-hp="opponent-2" max="100" value="100"></progress>
+              <span data-combat-hp-value="opponent-2">100 / 100 PV</span>
+            </div>
+            <small data-combat-action="opponent-2">Prêt</small>
+            <progress
+              class="squad-card__charge"
+              data-combat-actor-charge="opponent-2"
+              data-active="false"
+              max="1"
+              value="0"
+            ></progress>
+          </button>
+
+          <div class="coop-command-stack">
+            <button
+              type="button"
+              class="squad-card squad-card--ally squad-card--command-ally"
+              data-target-actor="local-2"
+              data-preview-actor-ui="local-2"
+            >
+              <img
+                class="squad-card__creature-icon"
+                data-ally-creature-icon
+                alt=""
+                aria-hidden="true"
+              >
+              <span class="squad-card__body">
+                <strong>Allié</strong>
+                <span class="squad-card__hp">
+                  <progress data-combat-hp="local-2" max="100" value="100"></progress>
+                  <span data-combat-hp-value="local-2">100 / 100 PV</span>
+                </span>
+                <small data-combat-action="local-2">Prêt</small>
+                <progress
+                  class="squad-card__charge"
+                  data-combat-actor-charge="local-2"
+                  data-active="false"
+                  max="1"
+                  value="0"
+                ></progress>
+              </span>
+            </button>
+
+            <section class="coop-controls" aria-label="Capacités de la créature locale">
+              <div class="hud__energy">
+                <div class="hud__energy-line">
+                  <strong>Votre énergie</strong>
+                  <span data-combat-energy-value="local-1">0 / 10⚡</span>
+                </div>
+                <progress
+                  data-combat-energy="local-1"
+                  max="10"
+                  value="0"
+                ></progress>
+              </div>
+              <div class="skill-bar__grid" data-combat-skills></div>
+            </section>
+          </div>
+
+          <p
+            class="live-status live-status--coop"
+            data-combat-live-status
+            data-tone="info"
+            role="status"
+          >
+            Touchez une créature pour choisir votre cible.
+          </p>
+        </section>
+      </main>
+    </template>
+  </section>
 
   <script type="module" src="./capture-editor-v2.js"></script>
 </body>
