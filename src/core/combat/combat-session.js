@@ -15,11 +15,19 @@ import {
   resolveCommandCompletion,
   resolveCommandStart
 } from "./command-resolver.js";
+import {
+  normalizeSkillSpeedMultiplier
+} from "./combat-timing.js";
 
 export function createCombatSession({
   distance = "medium",
-  fighters
+  fighters,
+  skillSpeedMultiplier = 1
 }) {
+  const normalizedSkillSpeedMultiplier =
+    normalizeSkillSpeedMultiplier(
+      skillSpeedMultiplier
+    );
   const initialDistance = distance;
   const initialFighters = fighters.map((fighter) => ({ ...fighter }));
   let state = createCombatState({
@@ -49,7 +57,9 @@ export function createCombatSession({
       actorId,
       targetId,
       skill,
-      reactionSkill
+      reactionSkill,
+      skillSpeedMultiplier:
+        normalizedSkillSpeedMultiplier
     });
   }
 
@@ -71,7 +81,9 @@ export function createCombatSession({
       state,
       actorId,
       targetId,
-      skill
+      skill,
+      skillSpeedMultiplier:
+        normalizedSkillSpeedMultiplier
     });
     if (result.ok) {
       state = result.state;
@@ -100,7 +112,9 @@ export function createCombatSession({
       state,
       action,
       reactionSkill,
-      elapsedMs
+      elapsedMs,
+      skillSpeedMultiplier:
+        normalizedSkillSpeedMultiplier
     });
   }
 
@@ -186,6 +200,9 @@ export function createCombatSession({
   }
 
   return Object.freeze({
+    get skillSpeedMultiplier() {
+      return normalizedSkillSpeedMultiplier;
+    },
     snapshot,
     previewMovement,
     previewSkill,
