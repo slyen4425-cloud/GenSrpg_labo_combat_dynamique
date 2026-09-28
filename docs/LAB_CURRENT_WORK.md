@@ -10830,3 +10830,45 @@ Critère GREEN technique :
 - implémentation minimale ;
 - CI complète verte ;
 - aucun changement visuel dans ce lot.
+
+
+### Résultat — propriétaire session Capture Editor / Combat Preview V1
+
+RED :
+
+- test : `tests/unit/capture-editor-preview-session-v1.test.mjs` ;
+- SHA RED : `a16312260eb25914423f32acc5309d4dc5575efd` ;
+- CI `36429938757` — FAILURE attendue ;
+- échec unique : module de session absent.
+
+Implémentation :
+
+- fichier : `src/ui/capture-editor-preview-session-v1.js` ;
+- `editor.validate()` reste l'unique source de l'export ;
+- l'objet validé est donné directement à `adaptCaptureCombatExportStackV1()` ;
+- le résultat natif est donné directement au mount de preview ;
+- une seule preview est possédée à la fois ;
+- relancer une preview dispose d'abord l'ancienne ;
+- retour à l'éditeur dispose la preview ;
+- dispose final nettoie preview + contrôleur éditeur ;
+- aucun DOM métier lu par la session ;
+- aucun storage/global ;
+- aucun runtime production.
+
+SHA technique :
+
+`0d06b575929bc7a99087fe32361db76b8cef112d`.
+
+CI :
+
+- run `36430068487` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-capture-editor-preview-session-v1-green-2026-09-28`.
+
+Étape suivante :
+
+raccorder cette session à la page de démonstration avec un vrai bouton `Tester en combat` et un bouton de retour, dans un lot UI séparé nécessitant validation smartphone.
