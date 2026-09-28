@@ -10105,3 +10105,48 @@ RED :
 - adaptateur Binding V2 -> VisualActor absent ;
 - preuve renderer : displayScale 1.45 doit produire un transform DOM contenant `scale(1.45, 1.45)` ;
 - V1 reste inchangé et refuse le champ V2.
+
+
+### Résultat — scale créature réel V1
+
+RED :
+
+- test `tests/unit/creature-scale-v1.test.mjs` ;
+- commit RED `de090e1b6bb4d7505dff9e5f5d9faff8b8418c5c` ;
+- CI `36375464044` — FAILURE attendue ;
+- cause : nouveaux modules absents.
+
+Implémentation :
+
+- `src/contracts/creature-presentation-binding-v2.js` ;
+- `src/adapters/renderer/creature-presentation-to-visual-actor-v1.js` ;
+- V1 reste intact ;
+- `displayScale` appartient au Binding V2 ;
+- valeur défaut 1 ;
+- nombre fini strictement > 0 ;
+- aucune déduction depuis profil/type/nom.
+
+Vrai chemin validé :
+
+`CreaturePresentationBindingV2.displayScale = 1.45`
+-> adaptateur pur
+-> `VisualActor.scale = 1.45`
+-> `DomActorRenderer`
+-> transform DOM `scale(1.45, 1.45)`.
+
+La première CI post-implémentation a échoué uniquement sur l'ordre des mots d'une regex de test ; correction du test sans changement fonctionnel.
+
+GREEN technique :
+
+- SHA `1b45f70ab9435cd142fc010d5b18fe957bc72ef5` ;
+- CI `36375542373` — SUCCESS.
+
+Checkpoint final après CI documentaire :
+
+`checkpoint/lab-creature-scale-v1-green-2026-09-28`.
+
+Étape suivante :
+
+- intégrer Binding V2 au brouillon éditeur / exporter de présentation ;
+- ajouter le contrôle scale dans l'onglet Créature ;
+- aucun slider UI ne sera ajouté tant que cette composition n'est pas validée.
