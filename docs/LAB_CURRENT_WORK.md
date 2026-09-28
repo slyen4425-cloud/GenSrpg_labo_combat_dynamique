@@ -10609,3 +10609,33 @@ Objectif :
 5. retirer 3v3/4v4 de l'éditeur.
 
 RED avant implémentation.
+
+
+### Résultat — format actif Capture 1v1 / 2v2 V2
+
+RED :
+
+- test : `tests/unit/capture-battle-active-format-v2.test.mjs` ;
+- SHA RED : `7a95e5e5a07a7cd58f123861993731f46d03e4be` ;
+- CI `36425884911` — FAILURE attendue ;
+- trois défauts ciblés : 3 actifs acceptés, troisième équipe acceptée, 3v3/4v4 visibles.
+
+Correction :
+
+- exactement deux équipes ;
+- exactement 1 ou 2 slots actifs par équipe ;
+- symétrie des slots actifs ;
+- `roster.members` non limité à 2 ;
+- builder humain limité à 1v1 / 2v2 ;
+- UI limitée à 1v1 / 2v2.
+
+CI :
+
+- SHA : `90217cc8d504a2fb51de0a93ede20ee739a25566` ;
+- run `36426064648` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI** pour le contrôle visible.
+
+Checkpoint technique :
+
+`checkpoint/lab-capture-active-format-v2-green-2026-09-28`.
