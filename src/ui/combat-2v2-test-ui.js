@@ -50,6 +50,146 @@ async function fetchJson(url, fetchImpl) {
   return response.json();
 }
 
+function normalizedInjectedCombatSource(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError("nativeCombatSource must be an object");
+  }
+
+  const format = normalizeBattleFormatDefinition(
+    input.battleFormat
+  );
+
+  if (!Array.isArray(input.fighters)) {
+    throw new TypeError(
+      "nativeCombatSource.fighters must be an array"
+    );
+  }
+
+  const fighterById = new Map(
+    input.fighters.map((fighter) => [
+      String(fighter?.id ?? ""),
+      fighter
+    ])
+  );
+
+  const fighters = Object.freeze(
+    format.actors.map((actor) => {
+      const fighter = fighterById.get(actor.actorId);
+      if (!fighter) {
+        throw new RangeError(
+          `nativeCombatSource is missing fighter: ${actor.actorId}`
+        );
+      }
+      return Object.freeze({ ...fighter });
+    })
+  );
+
+  if (
+    !input.skills ||
+    typeof input.skills !== "object" ||
+    Array.isArray(input.skills)
+  ) {
+    throw new TypeError(
+      "nativeCombatSource.skills must be an object"
+    );
+  }
+
+  const skills = Object.freeze(
+    Object.values(input.skills).map((skill) =>
+      normalizeSkillDefinition(skill)
+    )
+  );
+  const skillsById = Object.freeze(
+    Object.fromEntries(
+      skills.map((skill) => [skill.id, skill])
+    )
+  );
+
+  return Object.freeze({
+    format,
+    fighters,
+    skills,
+    skillsById,
+    skillIdsByActor:
+      input.skillIdsByActor &&
+      typeof input.skillIdsByActor === "object"
+        ? input.skillIdsByActor
+        : null
+  });
+}
+
+export async function loadCoop2v2CombatSource({
+  nativeCombatSource = null,
+  fetchImpl = fetch,
+  formatUrl = DATA_URLS.format
+} = {}) {
+  if (nativeCombatSource !== null) {
+    return normalizedInjectedCombatSource(
+      nativeCombatSource
+    );
+  }
+
+  const [
+    rawFormat,
+    maraileron,
+    braisombre,
+    loupVolcanique,
+    golemMoussu,
+    ...rawSkills
+  ] = await Promise.all([
+    fetchJson(formatUrl, fetchImpl),
+    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
+    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
+    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
+    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
+    ...DATA_URLS.skills.map((url) =>
+      fetchJson(url, fetchImpl)
+    )
+  ]);
+
+  const format = normalizeBattleFormatDefinition(rawFormat);
+  const skills = Object.freeze(
+    rawSkills.map((skill) =>
+      normalizeSkillDefinition(skill)
+    )
+  );
+  const skillsById = Object.freeze(
+    Object.fromEntries(
+      skills.map((skill) => [skill.id, skill])
+    )
+  );
+  const fighterConfigs = Object.freeze({
+    maraileron,
+    braisombre,
+    loup_volcanique: loupVolcanique,
+    golem_moussu: golemMoussu
+  });
+
+  const fighters = Object.freeze(
+    format.actors.map((actor) => {
+      const config =
+        fighterConfigs[actor.fighterConfigId];
+      if (!config) {
+        throw new RangeError(
+          `Unknown fighter config: ${actor.fighterConfigId}`
+        );
+      }
+      return Object.freeze({
+        ...config,
+        id: actor.actorId
+      });
+    })
+  );
+
+  return Object.freeze({
+    format,
+    fighters,
+    skills,
+    skillsById,
+    skillIdsByActor: null
+  });
+}
+
 function requiredElement(root, selector) {
   const element = root.querySelector(selector);
   if (!element) {
@@ -78,7 +218,8 @@ export async function mountCoop2v2Test({
   visuals,
   presentationAssets = null,
   fetchImpl = fetch,
-  formatUrl = DATA_URLS.format
+  formatUrl = DATA_URLS.format,
+  nativeCombatSource = null
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -96,47 +237,15 @@ export async function mountCoop2v2Test({
     );
   }
 
-  const [
-    rawFormat,
-    maraileron,
-    braisombre,
-    loupVolcanique,
-    golemMoussu,
-    ...rawSkills
-  ] = await Promise.all([
-    fetchJson(formatUrl, fetchImpl),
-    fetchJson(DATA_URLS.fighters.maraileron, fetchImpl),
-    fetchJson(DATA_URLS.fighters.braisombre, fetchImpl),
-    fetchJson(DATA_URLS.fighters.loup_volcanique, fetchImpl),
-    fetchJson(DATA_URLS.fighters.golem_moussu, fetchImpl),
-    ...DATA_URLS.skills.map((url) => fetchJson(url, fetchImpl))
-  ]);
-
-  const format = normalizeBattleFormatDefinition(rawFormat);
-  const skills = Object.freeze(
-    rawSkills.map((skill) => normalizeSkillDefinition(skill))
-  );
-  const skillsById = Object.freeze(
-    Object.fromEntries(skills.map((skill) => [skill.id, skill]))
-  );
-  const fighterConfigs = Object.freeze({
-    maraileron,
-    braisombre,
-    loup_volcanique: loupVolcanique,
-    golem_moussu: golemMoussu
-  });
-
-  const fighters = format.actors.map((actor) => {
-    const config = fighterConfigs[actor.fighterConfigId];
-    if (!config) {
-      throw new RangeError(
-        `Unknown fighter config: ${actor.fighterConfigId}`
-      );
-    }
-    return {
-      ...config,
-      id: actor.actorId
-    };
+  const {
+    format,
+    fighters,
+    skills,
+    skillsById
+  } = await loadCoop2v2CombatSource({
+    nativeCombatSource,
+    fetchImpl,
+    formatUrl
   });
 
   const session = createCombatSession({
