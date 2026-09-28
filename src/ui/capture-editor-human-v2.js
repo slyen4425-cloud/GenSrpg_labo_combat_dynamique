@@ -34,6 +34,9 @@ import {
 import {
   capturePortableNativeSkillDraftsV1
 } from "../catalogs/capture-portable-native-skill-catalog-v1.js";
+import {
+  buildPrivateAudioRoleGroupsV1
+} from "./private-audio-role-groups-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -842,30 +845,23 @@ function populatePrivateAudioSelect(select, entries) {
   select.textContent = "";
   createOption(select, "", "Aucun");
 
-  const filtered = entries.filter((entry) =>
-    acceptedRoles.length === 0 ||
-    entry.roles?.some((role) =>
-      acceptedRoles.includes(role)
-    )
-  );
+  const groups =
+    buildPrivateAudioRoleGroupsV1(
+      entries,
+      acceptedRoles
+    );
 
-  const groups = new Map();
-  for (const entry of filtered) {
-    const category = entry.category || "autres";
-    if (!groups.has(category)) {
-      groups.set(category, []);
-    }
-    groups.get(category).push(entry);
-  }
-
-  for (const category of [...groups.keys()].sort()) {
+  for (const audioGroup of groups) {
     const group = document.createElement("optgroup");
-    group.label = category;
+    group.label = audioGroup.label;
+    group.dataset.audioRole = audioGroup.role;
 
-    for (const entry of groups.get(category)) {
+    for (const entry of audioGroup.entries) {
       const option = document.createElement("option");
       option.value = entry.assetId;
-      option.textContent = entry.label;
+      option.textContent = entry.displayLabel;
+      option.dataset.audioRole = audioGroup.role;
+      option.dataset.audioCategory = entry.category;
       group.append(option);
     }
 
