@@ -11697,3 +11697,65 @@ Checkpoint de prévalidation :
 Preview :
 
 `preview/lab-capture-audio-role-taxonomy-ui-v1-2026-09-28`.
+
+
+## Micro-lot — présentation native de capacité + couche projectile V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-audio-role-taxonomy-ui-v1-prevalidation-green-2026-09-28` ;
+- SHA : `4e98b0e6c8a0f715b5353d1eb43358bc65c11aa2`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-skill-presentation-layer-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-skill-presentation-layer-v1-2026-09-28`.
+
+Cause démontrée :
+
+- `SkillPresentationBindingV1` possède déjà `visual.<slot>.layer = front|behind` ;
+- l'Adapter Stack exporte déjà `skillPresentations` ;
+- la preview Capture continue pourtant à utiliser `demoPresentationAssets.presentationForSkill()` comme binding de capacité ;
+- le renderer respecte `castLayer`, mais pas encore la couche du projectile `travel`.
+
+Objectif :
+
+1. faire de `skillPresentations` exporté la source de vérité des FX de capacité dans la preview Capture ;
+2. créer un adaptateur renderer qui résout les assetIds du binding sans recréer un catalogue métier ;
+3. propager `visual.travel.layer` comme couche du projectile ;
+4. faire respecter cette couche par `dom-skill-fx` avec la classe existante `skill-fx--layer-behind` ;
+5. exposer dans l'éditeur le choix `Devant / Derrière les créatures` pour le projectile ;
+6. conserver `front` comme défaut du contrat.
+
+Propriétaires :
+
+- choix de couche : `SkillPresentationBindingV1` ;
+- résolution asset -> objet renderer : adaptateur renderer dédié ;
+- application DOM de la couche : `dom-skill-fx` ;
+- contrôle utilisateur : Human Editor.
+
+Interdits :
+
+- aucun second champ de profondeur concurrent ;
+- aucun z-index spécifique à fireball ;
+- aucun test sur le nom de capacité ;
+- aucun renderer parallèle ;
+- aucun global/storage ;
+- aucun changement Combat Core ;
+- aucune dépendance runtime à GenSrpG.
+
+RED :
+
+- adaptateur de présentation native absent ;
+- projectile `behind` non appliqué par le renderer ;
+- contrôle éditeur de couche travel absent ;
+- preview encore branchée sur les bindings de capacité de démonstration.
+
+Critère final :
+
+- CI complète verte ;
+- preview publiée ;
+- **PREVALIDATION UI smartphone**.
