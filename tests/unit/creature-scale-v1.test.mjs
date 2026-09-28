@@ -74,7 +74,7 @@ test("CreaturePresentationBindingV1 remains unchanged and does not silently acce
 
   assert.throws(
     () => normalizeCreaturePresentationBindingV1(input),
-    /displayScale.*unknown field/i
+    /unknown field.*displayScale/i
   );
 });
 
