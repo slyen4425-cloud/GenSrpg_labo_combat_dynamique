@@ -12314,3 +12314,73 @@ CI :
 Checkpoint final visé :
 
 `checkpoint/lab-combat-ai-skill-variety-v1-green-2026-09-28`.
+
+
+## Micro-lot — vitesse globale des compétences V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-combat-ai-skill-variety-v1-green-2026-09-28` ;
+- SHA : `5df3ac1583207ca24ef5a30a6a2b5d85bea807ea`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-global-skill-speed-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-combat-global-skill-speed-v1-2026-09-28`.
+
+Retour utilisateur :
+
+- ajouter un réglage global de vitesse du combat / vitesse des attaques ;
+- conserver ensuite la personnalisation propre à chaque capacité.
+
+Décision d'architecture :
+
+- le réglage global agit sur les timings effectifs des compétences, jamais sur les dégâts ;
+- les valeurs `preparationMs`, `travelMs`, `recoveryMs` et `cooldownMs` restent les données propres de chaque `SkillDefinition` ;
+- le multiplicateur global ajuste les timings d'exécution de préparation / trajet / réaction, sans réécrire la SkillDefinition ;
+- recharge d'énergie et cooldown restent sur l'horloge Combat State existante et ne sont pas accélérés silencieusement ;
+- aucun timing CSS / UI ne devient autoritaire.
+
+Propriétaires :
+
+- normalisation du multiplicateur et calcul pur : `combat-timing.js` ;
+- réglage courant du combat : `CombatSession` ;
+- Action Resolver consomme le multiplicateur transmis par la session ;
+- UI viendra dans un lot séparé après GREEN Core.
+
+Fichiers autorisés :
+
+- `src/core/combat/combat-timing.js` ;
+- `src/core/combat/action-resolver.js` ;
+- `src/core/combat/combat-session.js` ;
+- tests dédiés ;
+- documentation.
+
+Protégé :
+
+- `SkillDefinition` inchangé ;
+- Combat Runtime inchangé dans ce lot ;
+- Animation / Renderer inchangés ;
+- aucune UI dans ce lot ;
+- aucun global/storage ;
+- aucune dépendance GenSrpG.
+
+RED :
+
+1. multiplicateur 1 conserve exactement les timings historiques ;
+2. multiplicateur 2 divise par deux préparation + trajet + réaction ;
+3. multiplicateur 0.5 double ces timings ;
+4. valeurs non finies / <= 0 refusées ;
+5. les SkillDefinition originales restent inchangées ;
+6. cooldown et recharge d'énergie ne sont pas accélérés implicitement.
+
+Critère GREEN :
+
+- RED prouvé ;
+- implémentation minimale dans les propriétaires déclarés ;
+- sentinelles complètes vertes ;
+- documentation synchronisée ;
+- checkpoint GREEN technique.
