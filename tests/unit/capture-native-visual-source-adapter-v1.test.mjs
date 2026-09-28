@@ -202,7 +202,7 @@ test("Capture visual adapter rejects missing presentation, asset or profile expl
       adaptCaptureExportToNativeVisualSourceV1({
         exported: missingPresentation,
         assetCatalog: assetCatalog(),
-        profiles,
+        profiles: profiles(),
         assetUrlForFile: (file) => file
       }),
     /presentation.*crea-enemy|crea-enemy.*presentation/i
@@ -218,7 +218,7 @@ test("Capture visual adapter rejects missing presentation, asset or profile expl
       adaptCaptureExportToNativeVisualSourceV1({
         exported: baseExport(),
         assetCatalog: missingAsset,
-        profiles,
+        profiles: profiles(),
         assetUrlForFile: (file) => file
       }),
     /unknown asset.*pack:local-front|pack:local-front.*unknown/i
