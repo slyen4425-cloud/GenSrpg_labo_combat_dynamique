@@ -12432,3 +12432,79 @@ Checkpoint final :
 Étape suivante :
 
 lot séparé pour exposer ce multiplicateur dans la configuration Combat de l'éditeur et le transmettre explicitement à la preview, sans lecture DOM par le Combat Core.
+
+
+## Micro-lot UI — réglage vitesse globale du combat V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-combat-global-skill-speed-v1-green-2026-09-28` ;
+- SHA : `4e6c8d0457de1fa691e85121c7ec8039910f74d4`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-combat-speed-ui-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-combat-speed-ui-v1-2026-09-28`.
+
+Objectif :
+
+exposer dans l'éditeur Capture un réglage global de vitesse des attaques, puis transmettre cette valeur explicitement jusqu'à `CombatSession`, sans lecture DOM par le Core.
+
+Décision :
+
+- donnée de combat au niveau du battle setup : `skillSpeedMultiplier` ;
+- valeur par défaut : 1 ;
+- UI de test : réglage 0,5x à 2x ;
+- le réglage global ne remplace pas les timings par capacité ;
+- `preparationMs / travelMs / recoveryMs / cooldownMs` restent éditables individuellement par SkillDefinition ;
+- cooldown et recharge énergie ne sont pas accélérés par ce réglage.
+
+Chaîne autorisée :
+
+`Human Editor -> CaptureBattleSetupEditorDraftV1 -> CaptureCombatExportV1.battle.skillSpeedMultiplier -> Adapter Stack -> nativeCombatSource.skillSpeedMultiplier -> mountCoop2v2Test -> CombatSession`.
+
+Propriétaires :
+
+- saisie : Human Editor ;
+- validation setup : CaptureBattleSetupEditorDraftV1 ;
+- transport export : CaptureCombatExportV1 ;
+- adaptation : Capture Export Adapter Stack ;
+- consommation : Combat Test bootstrap -> CombatSession ;
+- calcul : Combat Rules déjà GREEN.
+
+Fichiers autorisés :
+
+- contrats Capture battle/export ;
+- exporters/adapters Capture ;
+- Human Editor + page demo ;
+- Combat Test bootstrap ;
+- tests dédiés ;
+- documentation.
+
+Protégé :
+
+- `SkillDefinition` inchangé ;
+- calcul Core du multiplicateur inchangé ;
+- aucun timing CSS ;
+- aucun global/storage ;
+- aucune dépendance GenSrpG.
+
+RED :
+
+1. le battle setup accepte et normalise `skillSpeedMultiplier` ;
+2. l'export le conserve ;
+3. l'Adapter Stack le transmet ;
+4. la source native Combat Test le conserve ;
+5. `CombatSession` reçoit réellement cette valeur ;
+6. l'éditeur expose un contrôle visible et l'utilise dans son battle setup ;
+7. défaut 1 pour tous les chemins historiques.
+
+Critère final :
+
+- RED prouvé ;
+- CI complète verte ;
+- preview publiée ;
+- **PREVALIDATION UI smartphone** avant GREEN UI final.
