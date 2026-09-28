@@ -10982,3 +10982,36 @@ RED :
 2. profils injectés conservés ;
 3. creatureMetas injectées conservées ;
 4. fallback historique reste disponible sans injection.
+
+
+### Résultat — source visuelle native injectable Combat Demo V1
+
+RED :
+
+- test : `tests/unit/combat-demo-native-visual-source-v1.test.mjs` ;
+- SHA RED : `d555ff65405b8f1e5d8cb7ae40494d9002bd9a8b` ;
+- CI `36431403189` — FAILURE attendue ;
+- cause : loader de source visuelle native absent.
+
+Implémentation :
+
+- `loadCombatDemoVisualSource()` accepte `nativeVisualSource.profiles` + `nativeVisualSource.creatureMetas` ;
+- aucune fixture visuelle de démo n'est fetchée lorsqu'une source native est fournie ;
+- `mountCombatDemo()` réutilise exactement le même Animation Core / Render Adapter avec la source injectée ;
+- fallback historique conservé ;
+- aucun renderer parallèle ajouté ;
+- aucune logique gameplay ajoutée.
+
+SHA technique :
+
+`766f54ef00f34926e866e49769a217ce4cf7c9d2`.
+
+CI :
+
+- run `36431545937` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-combat-demo-native-visual-source-v1-green-2026-09-28`.
