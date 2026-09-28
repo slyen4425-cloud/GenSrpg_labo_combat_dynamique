@@ -12853,3 +12853,52 @@ Preview finale :
 `preview/lab-private-audio-full-preview-v1-2026-09-28`.
 
 GREEN audio/UI final interdit avant validation utilisateur.
+
+
+## Micro-lot — consolidation preview Capture post-feedback V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-private-audio-full-preview-v1-green-2026-09-28` ;
+- SHA : `070fc5086965b61ba9ddc2596ac37bbfb24ad5b7`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-preview-consolidation-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-preview-consolidation-v1-2026-09-28`.
+
+Cause :
+
+le lot audio privé complet et le lot sélection des créatures de test ont divergé depuis le même checkpoint `7788f945...`.
+Les deux sont techniquement GREEN séparément mais aucune preview unique ne possède encore les deux fonctionnalités.
+
+Objectif :
+
+1. conserver intégralement le runtime audio privé complet 173 sons + pré-écoute ;
+2. rapatrier la sélection explicite des créatures de test ;
+3. préserver tous les lots déjà hérités de la base : création de capacité, scales sans plafond, vitesse globale, variété IA, 1v1/2v2, bridge preview ;
+4. ne créer aucune nouvelle règle métier ;
+5. publier ensuite une seule lignée de preview autoritaire.
+
+Invariants :
+
+- pas de merge sur `main` ;
+- aucune dépendance runtime production ;
+- aucun storage/global ;
+- aucun master audio exposé ;
+- pas de copie parallèle du renderer ou Combat Core.
+
+RED :
+
+- sur la base audio actuelle, la sélection des créatures de test est absente ;
+- les sentinelles audio complet et sélection test doivent ensuite être vertes ensemble.
+
+Critère GREEN :
+
+- CI complète verte sur la lignée consolidée ;
+- checkpoint dédié ;
+- preview unique publiée ;
+- PREVALIDATION UI/audio smartphone.
