@@ -14,6 +14,27 @@ function finite(value, field) {
   return number;
 }
 
+export function normalizeSkillSpeedMultiplier(value = 1) {
+  const multiplier = finite(value, "skillSpeedMultiplier");
+  if (multiplier <= 0) {
+    throw new RangeError(
+      "skillSpeedMultiplier must be greater than 0"
+    );
+  }
+  return multiplier;
+}
+
+export function effectiveSkillTimingMs({
+  baseMs,
+  speedMultiplier = 1
+}) {
+  const base = nonNegative(baseMs, "baseMs");
+  const multiplier = normalizeSkillSpeedMultiplier(
+    speedMultiplier
+  );
+  return Math.round(base / multiplier);
+}
+
 export function normalizeChargeTimeEffect(input, appliedAtMs = 0) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new TypeError("charge time effect must be an object");
