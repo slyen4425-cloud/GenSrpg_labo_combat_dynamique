@@ -6,7 +6,10 @@ import {
   withFighterHp,
   withSkillCooldown
 } from "./combat-state.js";
-import { effectivePreparationMs } from "./combat-timing.js";
+import {
+  effectivePreparationMs,
+  effectiveSkillTimingMs
+} from "./combat-timing.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -31,13 +34,22 @@ function event(type, atMs, data = {}) {
   return Object.freeze({ type, atMs, ...data });
 }
 
-function preparationFor(state, fighterId, skill) {
+function preparationFor(
+  state,
+  fighterId,
+  skill,
+  skillSpeedMultiplier = 1
+) {
   const fighter = fighterOf(state, fighterId);
-  return effectivePreparationMs({
+  const modified = effectivePreparationMs({
     baseMs: skill.preparationMs,
     permanentPct: fighter.chargeTimeModifierPct,
     effects: fighter.chargeTimeEffects,
     atMs: state.elapsedMs
+  });
+  return effectiveSkillTimingMs({
+    baseMs: modified,
+    speedMultiplier: skillSpeedMultiplier
   });
 }
 
@@ -150,7 +162,8 @@ export function resolveSkillStart({
   state,
   actorId,
   targetId,
-  skill
+  skill,
+  skillSpeedMultiplier = 1
 }) {
   const actor = fighterOf(state, actorId);
   fighterOf(state, targetId);
@@ -208,7 +221,20 @@ export function resolveSkillStart({
     });
   }
 
-  const preparationMs = preparationFor(state, actorId, skill);
+  const preparationMs = preparationFor(
+    state,
+    actorId,
+    skill,
+    skillSpeedMultiplier
+  );
+  const travelMs = effectiveSkillTimingMs({
+    baseMs: skill.travelMs,
+    speedMultiplier: skillSpeedMultiplier
+  });
+  const recoveryMs = effectiveSkillTimingMs({
+    baseMs: skill.recoveryMs,
+    speedMultiplier: skillSpeedMultiplier
+  });
   const action = Object.freeze({
     actionType: "skill",
     actionId: skill.id,
@@ -216,10 +242,10 @@ export function resolveSkillStart({
     targetId,
     skill,
     preparationMs,
-    travelMs: skill.travelMs,
-    recoveryMs: skill.recoveryMs,
+    travelMs,
+    recoveryMs,
     releaseAtMs: preparationMs,
-    impactAtMs: preparationMs + skill.travelMs,
+    impactAtMs: preparationMs + travelMs,
     interruptibleDuringPreparation: skill.interruptibleDuringPreparation
   });
 
@@ -255,7 +281,8 @@ export function resolveReaction({
   state,
   action,
   reactionSkill,
-  elapsedMs
+  elapsedMs,
+  skillSpeedMultiplier = 1
 }) {
   const elapsed = Number(elapsedMs);
   if (!Number.isFinite(elapsed) || elapsed < 0) {
@@ -308,7 +335,12 @@ export function resolveReaction({
     });
   }
 
-  const preparationMs = preparationFor(state, action.targetId, reactionSkill);
+  const preparationMs = preparationFor(
+    state,
+    action.targetId,
+    reactionSkill,
+    skillSpeedMultiplier
+  );
   const readyAtMs = elapsed + preparationMs;
 
   if (elapsed > action.impactAtMs || readyAtMs > action.impactAtMs) {
@@ -520,13 +552,15 @@ export function resolveSkill({
   actorId,
   targetId,
   skill,
-  reactionSkill = null
+  reactionSkill = null,
+  skillSpeedMultiplier = 1
 }) {
   const started = resolveSkillStart({
     state,
     actorId,
     targetId,
-    skill
+    skill,
+    skillSpeedMultiplier
   });
   if (!started.ok) {
     return started;
@@ -540,7 +574,8 @@ export function resolveSkill({
       state: nextState,
       action: started.action,
       reactionSkill,
-      elapsedMs: 0
+      elapsedMs: 0,
+      skillSpeedMultiplier
     });
     if (reactionResult.ok) {
       nextState = reactionResult.state;
