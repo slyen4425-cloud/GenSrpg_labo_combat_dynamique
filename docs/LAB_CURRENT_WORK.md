@@ -12902,3 +12902,39 @@ Critère GREEN :
 - checkpoint dédié ;
 - preview unique publiée ;
 - PREVALIDATION UI/audio smartphone.
+
+
+### Résultat — consolidation preview Capture post-feedback V1
+
+RED :
+
+- sentinelle : `tests/unit/capture-test-creature-selection-v1.test.mjs` ;
+- SHA RED : `42d99d0b51941c3ae7c12fb073c4ed114176e7b5` ;
+- CI `36483271991` — FAILURE attendue ;
+- cause : sélection des créatures de test absente de la lignée audio.
+
+Consolidation :
+
+- catalogue `capture-test-creature-options-v1.js` rapatrié ;
+- Human Editor résout l'adversaire sélectionné au moment de `validate()` ;
+- page de preview conserve le resolver audio privé complet 173 sons et la pré-écoute ;
+- sélecteur de créature adverse ajouté sans écraser les contrôles audio ;
+- labels de preview dérivés de `BattleFormat.actor.displayName`, aucun `Braisombre` métier codé en dur ;
+- aucun Combat Core, renderer parallèle, storage/global ou dépendance production ajouté.
+
+Correction finale :
+
+- SHA : `158a6c0fc1b0a09b0eb1c12fdd6dc63926fc69c9` ;
+- CI `36483549292` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI+audio smartphone**.
+
+Checkpoint final :
+
+`checkpoint/lab-capture-preview-consolidation-v1-prevalidation-green-2026-09-28`.
+
+Preview finale :
+
+`preview/lab-capture-preview-consolidation-v1-2026-09-28`.
+
+Cette preview devient la lignée autoritaire de test pour les derniers retours consolidés.
