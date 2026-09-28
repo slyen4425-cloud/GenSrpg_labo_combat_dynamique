@@ -148,11 +148,25 @@ function visualSlot(assetId, {
   attachment,
   trigger,
   anchor = null,
-  layerByView = null
+  layerByView = null,
+  displayScale = 1
 }) {
   const id = optionalText(assetId);
   if (id === null) {
     return null;
+  }
+
+  const normalizedScale = finiteNumber(
+    displayScale,
+    "Scale FX"
+  );
+  if (
+    normalizedScale < 0.25 ||
+    normalizedScale > 4
+  ) {
+    throw new RangeError(
+      "Scale FX doit être compris entre 0.25 et 4"
+    );
   }
 
   return {
@@ -160,7 +174,7 @@ function visualSlot(assetId, {
     attachment,
     trigger,
     anchor,
-    displayScale: 1,
+    displayScale: normalizedScale,
     layerByView: {
       player:
         layerByView?.player ?? "front",
@@ -201,6 +215,8 @@ function presentationForSkill(fields) {
       attachment: "source",
       trigger: "preparation-start",
       anchor: socketId,
+      displayScale:
+        presentation.castDisplayScale ?? 1,
       layerByView: {
         player:
           presentation.castLayerPlayer ??
@@ -217,6 +233,8 @@ function presentationForSkill(fields) {
       attachment: "trajectory",
       trigger: "travel-start",
       anchor: socketId,
+      displayScale:
+        presentation.travelDisplayScale ?? 1,
       layerByView: {
         player:
           presentation.travelLayerPlayer ??
@@ -232,7 +250,9 @@ function presentationForSkill(fields) {
     {
       attachment: "fixed-target",
       trigger: "impact",
-      anchor: null
+      anchor: null,
+      displayScale:
+        presentation.impactDisplayScale ?? 1
     }
   );
 
@@ -1465,9 +1485,17 @@ function readSkillFields(root) {
         root,
         "[data-skill-cast-fx]"
       ),
+      castDisplayScale: numericValue(
+        root,
+        "[data-skill-cast-scale]"
+      ),
       travelAssetId: selectedValue(
         root,
         "[data-skill-travel-fx]"
+      ),
+      travelDisplayScale: numericValue(
+        root,
+        "[data-skill-travel-scale]"
       ),
       castLayerPlayer: selectedValue(
         root,
@@ -1488,6 +1516,10 @@ function readSkillFields(root) {
       impactAssetId: selectedValue(
         root,
         "[data-skill-impact-fx]"
+      ),
+      impactDisplayScale: numericValue(
+        root,
+        "[data-skill-impact-scale]"
       ),
       socketId: selectedValue(
         root,
