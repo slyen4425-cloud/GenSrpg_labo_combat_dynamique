@@ -164,13 +164,13 @@
 
         <div class="grid three">
           <label>Attaque
-            <select data-creature-audio-attack data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-attack data-audio-role="attack"><option value="">Aucun</option></select>
           </label>
           <label>Touché
-            <select data-creature-audio-hit data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-hit data-audio-role="hit"><option value="">Aucun</option></select>
           </label>
           <label>KO / mort
-            <select data-creature-audio-ko data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-creature-audio-ko data-audio-role="ko"><option value="">Aucun</option></select>
           </label>
         </div>
       </article>
@@ -211,6 +211,20 @@
       </article>
 
       <article class="card">
+        <div class="card-title">
+          <span class="step">6</span>
+          <div>
+            <h2>Points de vie</h2>
+            <p>Les PV appartiennent à la créature et sont exportés avec elle.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
+          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
+        </div>
+      </article>
+
+      <article class="card">
         <details>
           <summary>Stats avancées de la créature</summary>
           <div class="grid three detail-grid">
@@ -226,7 +240,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">6</span>
+          <span class="step">7</span>
           <div>
             <h2>4 capacités équipées</h2>
             <p>Le premier slot suit la capacité actuellement éditée.</p>
@@ -265,20 +279,6 @@
         <div class="card-title">
           <span class="step">2</span>
           <div>
-            <h2>PV</h2>
-            <p>Valeurs explicites utilisées par le combat.</p>
-          </div>
-        </div>
-        <div class="grid two">
-          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
-          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card-title">
-          <span class="step">3</span>
-          <div>
             <h2>Format du combat</h2>
             <p>Le même chemin de données est utilisé pour 1v1, 2v2, 3v3 ou 4v4.</p>
           </div>
@@ -304,6 +304,13 @@
             <p>Type, cible, dégâts, soin et élément.</p>
           </div>
         </div>
+
+        <label>Charger une capacité existante
+          <select data-skill-library-select>
+            <option value="">Chargement…</option>
+          </select>
+        </label>
+        <p class="note">Cette liste charge directement les SkillDefinition déjà présentes dans le labo.</p>
 
         <div class="grid two">
           <label>Nom<input data-skill-name value="Boule de feu"></label>
@@ -433,15 +440,11 @@
           <label>Icône
             <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
           </label>
-          <label>Socket de départ
+          <label>Point de départ utilisé
             <select data-skill-socket>
-              <option value="">Centre par défaut</option>
-              <option value="mouth" selected>Bouche</option>
-              <option value="head">Tête</option>
-              <option value="right-hand">Main / patte droite</option>
-              <option value="left-hand">Main / patte gauche</option>
-              <option value="tail">Queue</option>
+              <option value="">Centre de la créature</option>
             </select>
+            <small>Les autres choix apparaissent uniquement après leur placement dans l’onglet Créature.</small>
           </label>
           <label>Effet de cast
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
@@ -465,10 +468,10 @@
         </div>
         <div class="grid two">
           <label>Son de cast
-            <select data-skill-cast-audio data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-skill-cast-audio data-audio-role="cast"><option value="">Aucun</option></select>
           </label>
           <label>Son d'impact
-            <select data-skill-impact-audio data-asset-role="audio"><option value="">Aucun</option></select>
+            <select data-skill-impact-audio data-audio-role="impact"><option value="">Aucun</option></select>
           </label>
         </div>
       </article>
