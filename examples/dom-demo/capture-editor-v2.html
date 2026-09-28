@@ -314,17 +314,22 @@
           </div>
         </div>
 
-        <label>Modèle historique
+        <label>Modèle de départ (optionnel)
           <select data-skill-library-select>
-            <option value="">Nouvelle capacité</option>
+            <option value="">Aucun modèle — partir de zéro</option>
           </select>
         </label>
         <p class="note" data-skill-library-state data-tone="info">
-          Nouvelle capacité : tous les champs sont à définir.
+          Un modèle remplit les champs mais ne modifie aucune capacité tant que tu ne choisis pas une action ci-dessous.
         </p>
-        <button type="button" class="primary-action" data-skill-save>
-          Enregistrer cette capacité
-        </button>
+        <div class="skill-save-actions">
+          <button type="button" class="primary-action" data-skill-create>
+            Créer comme nouvelle capacité
+          </button>
+          <button type="button" class="secondary-action" data-skill-update>
+            Mettre à jour cet identifiant
+          </button>
+        </div>
       </article>
 
       <article class="card">
@@ -474,7 +479,7 @@
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
           </label>
           <label>Projectile / trajet
-            <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-projectile-fire-01" selected>Projectile feu</option></select>
+            <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
           </label>
           <label>Profondeur du projectile
             <select data-skill-travel-layer>
