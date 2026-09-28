@@ -11759,3 +11759,51 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - **PREVALIDATION UI smartphone**.
+
+
+### Résultat — présentation native de capacité + couche projectile V1
+
+RED :
+
+- test : `tests/unit/capture-skill-presentation-layer-v1.test.mjs` ;
+- SHA RED : `8dedd8ebefa53013fe179fc023fa45ca9a717698` ;
+- CI `36452221572` — FAILURE attendue ;
+- défauts couverts : couche travel non conservée par l'éditeur, projectile non rendu derrière, contrôle UI absent, adaptateur renderer natif absent.
+
+Implémentation :
+
+- nouvel adaptateur : `src/adapters/renderer/capture-skill-presentation-assets-v1.js` ;
+- il consomme directement les `skillPresentations` déjà produits par l'Adapter Stack ;
+- aucun nouveau catalogue métier : les assetIds sont résolus par une fonction injectée ;
+- `visual.travel.layer` devient `travelLayer` côté renderer ;
+- `dom-skill-fx` applique la classe existante `skill-fx--layer-behind` au projectile lorsque demandé ;
+- `buildHumanSkillDraftV1()` conserve désormais la couche du projectile ;
+- l'éditeur expose `Devant les créatures / Derrière les créatures` au niveau de la capacité ;
+- la preview Capture préfère la présentation exportée de la capacité au binding de démonstration ;
+- le binding de démonstration reste uniquement un fallback lorsqu'une capacité n'a aucune présentation exportée ;
+- aucun z-index spécifique à Fireball, aucun test sur le nom de capacité, aucun changement Combat Core.
+
+SHA technique final :
+
+`b458e54c6064f9796a6cb04845b252a5818359fa`.
+
+CI :
+
+- run `36452475880` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+La lignée inclut également les deux lots précédents validés :
+
+- 70 capacités Capture portables + 9 capacités natives du laboratoire ;
+- classification audio par rôle métier depuis le catalogue privé de 173 métadonnées.
+
+Checkpoint de prévalidation :
+
+`checkpoint/lab-capture-skill-presentation-layer-v1-prevalidation-green-2026-09-28`.
+
+Preview :
+
+`preview/lab-capture-skill-presentation-layer-v1-2026-09-28`.
+
+GREEN UI final interdit avant validation smartphone utilisateur.
