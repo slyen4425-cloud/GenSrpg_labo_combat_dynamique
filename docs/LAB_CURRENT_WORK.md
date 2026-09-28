@@ -10496,3 +10496,50 @@ Checkpoint GREEN prévu :
 - UI `Taille en combat` ;
 - Human Editor passe de Draft/Exporter V2 à V3 ;
 - validation mobile avant GREEN final UI.
+
+
+## Micro-lot — catalogue Capture réellement utilisé V2 — 2026-09-28
+
+Base intégrée :
+
+- checkpoint : `checkpoint/lab-capture-creature-editor-draft-v3-green-2026-09-28` ;
+- SHA : `589a1f72b7d6f7032ad0937094abcf624e2e0cd9`.
+
+Source historique vérifiée par blob exact :
+
+- commit source : `49289784ee92a47fd51089815ca25954cdba4493` ;
+- blob `index.html` : `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- `MC162_ABILITIES` : 173 entrées ;
+- `MC162_ENTITIES` : 110 créatures ;
+- 103 IDs de capacité sont réellement référencés par `abilityIds` des créatures ;
+- ces 103 = 72 capacités `cap_*` élémentaires + 31 capacités `lib_*` historiques encore assignées ;
+- les 12 `cap_neutral_*` du catalogue Expanded 84 ne sont assignées à aucune créature du seed courant.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-used-skill-catalog-v2-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-used-skill-catalog-v2-2026-09-28`.
+
+Objectif :
+
+1. conserver le catalogue V1 de 84 comme archive de `gensCaptureExpandedAbilityRoster()` ;
+2. ajouter un catalogue V2 distinct représentant exactement les 103 capacités réellement utilisées par les créatures du seed courant ;
+3. faire consommer ce catalogue V2 par la bibliothèque de modèles de l'éditeur ;
+4. ne supprimer ni fusionner les collisions de noms : les IDs restent l'autorité ;
+5. conserver intégralement les effets legacy, y compris buff/debuff/dot/hot ;
+6. ne pas inventer forme, timing, énergie, cooldown ou FX moderne.
+
+RED :
+
+- catalogue V2 absent ;
+- 103 entrées / 103 IDs uniques ;
+- exactement 72 `cap_*` + 31 `lib_*` ;
+- aucun `cap_neutral_*` ;
+- présence de capacités représentatives `lib_fireball`, `lib_regen`, `cap_fire_atk_1`, `cap_poison_special_1` ;
+- l'éditeur expose 103 modèles ;
+- provenance explicite et aucune dépendance runtime production.
+
+Critère GREEN : CI complète verte, documentation à jour.
