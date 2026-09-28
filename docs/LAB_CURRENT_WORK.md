@@ -10577,3 +10577,35 @@ CI finale :
 Checkpoint final :
 
 `checkpoint/lab-capture-used-skill-catalog-v2-green-2026-09-28`.
+
+
+## Micro-lot — format actif Capture 1v1 / 2v2 V2 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-used-skill-catalog-v2-green-2026-09-28` ;
+- SHA : `76e08be883f7db7d545317f665a2dd3d45867343`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-active-format-v2-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-active-format-v2-2026-09-28`.
+
+Clarification autoritaire :
+
+- combat simultané : uniquement `1v1` ou `2v2` ;
+- roster / réserve : indépendant et potentiellement supérieur à deux membres ;
+- aucun `3v3` / `4v4` simultané.
+
+Objectif :
+
+1. imposer exactement deux équipes ;
+2. imposer 1 ou 2 slots actifs par équipe ;
+3. imposer la symétrie des slots actifs ;
+4. ne jamais limiter `roster.members` à 2 ;
+5. retirer 3v3/4v4 de l'éditeur.
+
+RED avant implémentation.
