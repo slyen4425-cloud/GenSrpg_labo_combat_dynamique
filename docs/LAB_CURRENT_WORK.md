@@ -10872,3 +10872,42 @@ Checkpoint final visé :
 Étape suivante :
 
 raccorder cette session à la page de démonstration avec un vrai bouton `Tester en combat` et un bouton de retour, dans un lot UI séparé nécessitant validation smartphone.
+
+
+## Micro-lot — bootstrap preview format générique 1v1 / 2v2 V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-editor-preview-session-v1-green-2026-09-28` ;
+- SHA : `63e3c940aa15e2243c2eea9db085e956eb59af70`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-combat-preview-format-generic-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-combat-preview-format-generic-v1-2026-09-28`.
+
+Objectif :
+
+retirer du bootstrap combat preview les dernières hypothèses de noms d'équipes et l'obligation d'un allié.
+
+Règles :
+
+- exactement les formats autorisés 1v1 ou 2v2 ;
+- équipe locale dérivée de `format.teamOf(format.localActorId)` ;
+- équipe adverse dérivée de l'autre équipe déclarée ;
+- allié local nullable en 1v1 ;
+- aucune dépendance à des clés `players` / `enemies` ;
+- aucun `is2v2`.
+
+RED :
+
+1. layout 1v1 avec équipes `local-team/enemy-team` ;
+2. layout 2v2 avec les mêmes équipes ;
+3. rejet de plus de deux équipes ;
+4. rejet de plus de deux actifs par équipe ;
+5. l'allié est nullable en 1v1 et unique en 2v2.
+
+Aucun changement visuel attendu dans ce micro-lot.
