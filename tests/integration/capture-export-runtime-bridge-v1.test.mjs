@@ -197,8 +197,30 @@ test("Capture editor export reaches real CombatRuntime and resolves exported dam
     await nativeSourceFromExport(exported);
 
   assert.equal(
-    loaded.format,
-    adapted.battleFormat
+    loaded.format.id,
+    adapted.battleFormat.id
+  );
+  assert.equal(
+    loaded.format.localActorId,
+    adapted.battleFormat.localActorId
+  );
+  assert.deepEqual(
+    loaded.format.teams,
+    adapted.battleFormat.teams
+  );
+  assert.deepEqual(
+    loaded.format.actors.map((actor) => ({
+      actorId: actor.actorId,
+      teamId: actor.teamId,
+      creatureId: actor.creatureId,
+      controllerId: actor.controllerId
+    })),
+    adapted.battleFormat.actors.map((actor) => ({
+      actorId: actor.actorId,
+      teamId: actor.teamId,
+      creatureId: actor.creatureId,
+      controllerId: actor.controllerId
+    }))
   );
   assert.deepEqual(
     loaded.skillIdsByActor["local-1"],
