@@ -20,6 +20,9 @@ import {
 import {
   createCaptureSkillPresentationAssetsV2
 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+import {
+  privateAudioPreviewAssetV1
+} from "../../src/assets/private-audio-preview-assets-v1.js";
 
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
@@ -321,7 +324,10 @@ function buildPreviewPresentationAssets(
         nativeCombatSource.skillPresentations ?? {},
       assetForId: resolvePreviewPresentationAsset,
       audioAssetForId(assetId) {
-        return demoPresentationAssets.audioAsset(assetId);
+        return (
+          privateAudioPreviewAssetV1(assetId) ??
+          demoPresentationAssets.audioAsset(assetId)
+        );
       }
     });
 
@@ -343,6 +349,7 @@ function buildPreviewPresentationAssets(
     audioAsset(assetId) {
       return (
         native.audioAsset(assetId) ??
+        privateAudioPreviewAssetV1(assetId) ??
         demoPresentationAssets.audioAsset(assetId)
       );
     }
