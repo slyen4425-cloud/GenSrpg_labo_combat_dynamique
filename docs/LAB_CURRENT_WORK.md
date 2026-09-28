@@ -11553,3 +11553,42 @@ RED :
 - uniquement des effets `damage` vers `enemy` ou cible historique implicite ;
 - IDs uniques ;
 - l'éditeur doit hydrater les 77 en plus des 9 natives.
+
+
+### Résultat — capacités Capture portables -> catalogue natif V1
+
+RED :
+
+- test : `tests/unit/capture-portable-native-skill-catalog-v1.test.mjs` ;
+- premier RED : `a3c2ca5af954226e09a15ce33500f267e35225d3`, CI `36445937356` — FAILURE attendue ;
+- audit affiné avant implémentation : 70 capacités seulement sont réellement équivalentes au Runtime courant.
+
+Implémentation :
+
+- module : `src/catalogs/capture-portable-native-skill-catalog-v1.js` ;
+- 70 capacités dérivées dynamiquement de `CaptureUsedAbilityCatalogV2` ;
+- 56 IDs `cap_*` + 14 IDs `lib_*` ;
+- uniquement des effets `damage` vers ennemi / cible implicite ennemie ;
+- aucune duplication manuelle des objets historiques ;
+- ID, nom, élément, niveau requis et dégâts conservés ;
+- timings dynamiques absents de la source historique représentés par valeurs neutres explicites (0 ms) ;
+- énergie historique conservée depuis `activeMeta.manaCost` ;
+- aucune présentation FX inventée ;
+- l'éditeur hydrate maintenant ces 70 drafts en plus des 9 SkillDefinition natives existantes ;
+- les 33 autres capacités restent modèles historiques :
+  - 7 soin / zone / vol de vie ;
+  - 26 buff / debuff / DoT / HoT.
+
+SHA technique :
+
+`98dfc8e66e504e5cdf184843e752b1554f32879d`.
+
+CI :
+
+- run `36446398346` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final :
+
+`checkpoint/lab-capture-portable-native-skills-v1-green-2026-09-28`.
