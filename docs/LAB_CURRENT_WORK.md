@@ -11340,3 +11340,55 @@ Critère technique :
 - état final **PREVALIDATION UI** jusqu'à validation smartphone utilisateur.
 
 État initial : **RED à poser**.
+
+
+### Résultat — bouton Tester en combat + retour éditeur V1
+
+RED :
+
+- test : `tests/unit/capture-editor-combat-preview-ui-v1.test.mjs` ;
+- SHA RED : `a573631ccdf2638360bb4b3f2fe13e6dd4988cab` ;
+- CI `36434591586` — FAILURE attendue ;
+- deux manques ciblés : contrôles/template preview absents et composition Session V2 absente.
+
+Implémentation :
+
+- `capture-editor-v2.html` expose maintenant :
+  - `Tester en combat` ;
+  - `Retour à l'éditeur` ;
+  - host + template de preview ;
+  - slots DOM `local-1/local-2/opponent-1/opponent-2` compatibles 1v1/2v2 ;
+- chaque lancement clone un nouveau template DOM, donc aucun bouton/cible d'une ancienne preview ne survit ;
+- `capture-editor-v2.js` utilise uniquement :
+  - `createCaptureEditorPreviewSessionV2` ;
+  - `adaptCaptureExportToNativeVisualSourceV1` ;
+  - `mountCaptureCombatPreviewV1` ;
+- le même export validé reste l'autorité gameplay + présentation ;
+- catalogue global et profils Animation Core sont chargés explicitement pour la preview ;
+- adversaire de preview : Braisombre, présentation explicite `drake`, assetIds existants de la bibliothèque globale ;
+- le format actif masque simplement les UI d'acteurs absents à partir de `battleFormat.actors`, sans `is2v2` ;
+- retour = `session.returnToEditor()`, sans reconstruction de l'éditeur ni storage ;
+- aucun Combat Core modifié ;
+- aucun global métier / localStorage / sessionStorage / import production.
+
+Commits principaux :
+
+- raccord page/session : `f8ad7b44b9cd30c52583c70effec407f10f3d74b` ;
+- shell/template combat : `64c33b73eebe76ccdcf89a8dac7b983b06afde69` ;
+- styles preview : `d23d4a1962101dfef1a6ac05e6bb2280f40f14e5`.
+
+CI :
+
+- run `36435241852` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint de prévalidation visé :
+
+`checkpoint/lab-capture-editor-combat-preview-ui-v1-prevalidation-green-2026-09-28`.
+
+Branche de preview visée :
+
+`preview/lab-capture-editor-combat-preview-ui-v1-2026-09-28`.
+
+GREEN final interdit avant validation smartphone utilisateur.
