@@ -871,6 +871,91 @@ function socketList(store) {
   return sockets;
 }
 
+export function syncCaptureSkillSocketOptionsV1({
+  existingValue = "",
+  existingOptions = [],
+  sockets = []
+}) {
+  const centerLabel =
+    existingOptions.find(
+      (option) => option.value === ""
+    )?.label || "Centre par défaut";
+
+  const options = [
+    Object.freeze({
+      value: "",
+      label: centerLabel
+    })
+  ];
+
+  const seen = new Set([""]);
+
+  for (const socket of sockets) {
+    if (
+      !socket ||
+      typeof socket.id !== "string" ||
+      socket.id.trim() === "" ||
+      !socket.front
+    ) {
+      continue;
+    }
+
+    const id = socket.id.trim();
+    if (seen.has(id)) {
+      continue;
+    }
+    seen.add(id);
+
+    options.push(
+      Object.freeze({
+        value: id,
+        label:
+          typeof socket.label === "string" &&
+          socket.label.trim() !== ""
+            ? socket.label.trim()
+            : id
+      })
+    );
+  }
+
+  return Object.freeze({
+    options: Object.freeze(options),
+    value: seen.has(existingValue)
+      ? existingValue
+      : ""
+  });
+}
+
+function syncSkillSocketSelect(root, sockets) {
+  const select = one(
+    root,
+    "[data-skill-socket]"
+  );
+  const current = select.value;
+
+  const result =
+    syncCaptureSkillSocketOptionsV1({
+      existingValue: current,
+      existingOptions: [
+        ...select.options
+      ].map((option) => ({
+        value: option.value,
+        label: option.textContent
+      })),
+      sockets: socketList(sockets)
+    });
+
+  select.textContent = "";
+  for (const option of result.options) {
+    createOption(
+      select,
+      option.value,
+      option.label
+    );
+  }
+  select.value = result.value;
+}
+
 function updateSocketMarker(surface, point) {
   let marker = surface.querySelector("[data-socket-marker]");
   if (!marker) {
@@ -1410,6 +1495,7 @@ export function mountCaptureEditorHumanV2({
   }
 
   updateLibraryState(null);
+  syncSkillSocketSelect(root, sockets);
 
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
@@ -1438,6 +1524,7 @@ export function mountCaptureEditorHumanV2({
       current[surface.dataset.socketView] = point;
       sockets.set(socketId, current);
       updateSocketMarker(surface, point);
+      syncSkillSocketSelect(root, sockets);
       setStatus(
         root,
         "Point " + label + " placé sur la vue " +
