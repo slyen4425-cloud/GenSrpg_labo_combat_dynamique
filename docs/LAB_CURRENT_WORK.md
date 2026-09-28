@@ -11861,3 +11861,48 @@ Critère final :
 - CI complète verte ;
 - preview publiée ;
 - PREVALIDATION UI smartphone.
+
+
+### Résultat — UX capacité + 1v1 + projectile Fireball V1
+
+RED :
+
+- test : `tests/unit/capture-editor-skill-ux-preview-repair-v1.test.mjs` ;
+- SHA RED : `307207fac7e0d9e6a3666ced57eb9183d5fcce93` ;
+- CI `36454069810` — FAILURE attendue ;
+- quatre défauts ciblés : création/mise à jour ambiguë, UI 2v2 visible en 1v1, projectile Fireball direct absent, propriétaire d'action explicite absent.
+
+Correction :
+
+- nouveau propriétaire UI pur : `src/ui/capture-editor-skill-save-mode-v1.js` ;
+- `Créer comme nouvelle capacité` refuse désormais un ID déjà configuré ;
+- `Mettre à jour cet identifiant` refuse un ID inexistant ;
+- le modèle historique ne sauvegarde rien implicitement ;
+- `.capture-preview-shell [data-preview-actor-ui][hidden]` reste réellement masqué, y compris pour les `.squad-card` de la démo ;
+- le projectile initial de Boule de feu référence `pack:capture:sprite-fireball-travel-01`, asset direct déjà présent dans la bibliothèque globale ;
+- aucune modification Combat Core ;
+- aucune évolution de `SkillPresentationBindingV1` dans ce lot.
+
+Une sentinelle historique exigeait encore l'ancien bouton ambigu `data-skill-save`. Elle a été réalignée sur les deux invariants explicites `data-skill-create` + `data-skill-update`, sans retirer les autres assertions du catalogue.
+
+SHA technique final :
+
+`20e4f3c8e61a4705f29fc659fcb52732517a3169`.
+
+CI :
+
+- run `36454635053` — SUCCESS.
+
+État : **GREEN technique / PREVALIDATION UI smartphone**.
+
+Checkpoint de prévalidation visé :
+
+`checkpoint/lab-capture-editor-skill-ux-preview-repair-v1-prevalidation-green-2026-09-28`.
+
+Preview visée :
+
+`preview/lab-capture-editor-skill-ux-preview-repair-v1-2026-09-28`.
+
+Étape suivante :
+
+faire évoluer la présentation de capacité dans un contrat versionné pour porter des couches distinctes par vue `player/opponent`, sans règle cachée dans le renderer.
