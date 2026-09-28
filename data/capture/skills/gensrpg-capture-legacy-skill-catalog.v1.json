@@ -1,0 +1,5145 @@
+{
+  "schema": "gensrpg-capture-legacy-skill-catalog-v1",
+  "source": {
+    "repository": "slyen4425-cloud/Zombicide-40k",
+    "commit": "49289784ee92a47fd51089815ca25954cdba4493",
+    "blob": "74e223b2c9877e6a88b6ad6726290d230f1f616e",
+    "inlineOwner": "builtinMonsterCapture162",
+    "constant": "MC162_ABILITIES"
+  },
+  "entries": [
+    {
+      "id": "lib_fire_bolt",
+      "name": "Étincelle ardente",
+      "category": "spell",
+      "type": "active",
+      "desc": "Projectile de feu rapide.",
+      "element": "fire",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "fire"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_fireball",
+      "name": "Boule de braise",
+      "category": "spell",
+      "type": "active",
+      "desc": "Explosion de feu plus puissante.",
+      "element": "fire",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "fire"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 5,
+      "requiredLevel": 10
+    },
+    {
+      "id": "lib_flame_bite",
+      "name": "Morsure brûlante",
+      "category": "melee",
+      "type": "active",
+      "desc": "Morsure physique chargée de feu.",
+      "element": "fire",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "fire"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_heat_wave",
+      "name": "Vague de chaleur",
+      "category": "control",
+      "type": "active",
+      "desc": "Affaiblit temporairement la défense adverse.",
+      "element": "fire",
+      "effects": [
+        {
+          "kind": "debuff",
+          "stat": "defense",
+          "value": -2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_water_bolt",
+      "name": "Jet d’eau",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Attaque d’eau à distance.",
+      "element": "water",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "water"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_tidal_bite",
+      "name": "Morsure de marée",
+      "category": "melee",
+      "type": "active",
+      "desc": "Frappe aquatique lourde.",
+      "element": "water",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "water"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_aqua_heal",
+      "name": "Onde régénérante",
+      "category": "heal",
+      "type": "active",
+      "desc": "Rend des PV à une cible alliée.",
+      "element": "water",
+      "effects": [
+        {
+          "kind": "heal",
+          "base": 4
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_mist_guard",
+      "name": "Brume protectrice",
+      "category": "defense",
+      "type": "active",
+      "desc": "Augmente temporairement la défense.",
+      "element": "water",
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "defense",
+          "value": 2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_rock_slam",
+      "name": "Impact rocheux",
+      "category": "melee",
+      "type": "active",
+      "desc": "Coup de roche puissant.",
+      "element": "earth",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "earth"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 5,
+      "requiredLevel": 10
+    },
+    {
+      "id": "lib_earth_guard",
+      "name": "Carapace minérale",
+      "category": "defense",
+      "type": "active",
+      "desc": "Renforce l’armure temporairement.",
+      "element": "earth",
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "armor",
+          "value": 2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_root_snare",
+      "name": "Entrave racinaire",
+      "category": "control",
+      "type": "active",
+      "desc": "Réduit le déplacement / l’agilité de la cible.",
+      "element": "earth",
+      "effects": [
+        {
+          "kind": "debuff",
+          "stat": "agilite",
+          "value": -2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_quake",
+      "name": "Secousse",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque de zone terrestre.",
+      "element": "earth",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "earth",
+          "target": "zone"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_chain_lightning",
+      "name": "Arc électrique",
+      "category": "spell",
+      "type": "active",
+      "desc": "Éclair pouvant se propager.",
+      "element": "electric",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "electric"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_static_bite",
+      "name": "Crocs statiques",
+      "category": "melee",
+      "type": "active",
+      "desc": "Morsure électrique.",
+      "element": "electric",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "electric"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_thunder_dash",
+      "name": "Charge foudroyante",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque rapide utilisant l’agilité.",
+      "element": "electric",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "electric"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_paralyze",
+      "name": "Paralysie",
+      "category": "control",
+      "type": "active",
+      "desc": "Réduit fortement l’initiative adverse.",
+      "element": "electric",
+      "effects": [
+        {
+          "kind": "debuff",
+          "stat": "initiative",
+          "value": -4,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_gust",
+      "name": "Rafale",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Attaque d’air à distance.",
+      "element": "air",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "air"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_wind_blade",
+      "name": "Lame de vent",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Tranche à distance avec une lame d’air.",
+      "element": "air",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "air"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_aerial_dive",
+      "name": "Piqué",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque rapide depuis les airs.",
+      "element": "air",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "air"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_tailwind",
+      "name": "Vent arrière",
+      "category": "utility",
+      "type": "active",
+      "desc": "Augmente temporairement initiative et agilité.",
+      "element": "air",
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "initiative",
+          "value": 3,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_light_bolt",
+      "name": "Rayon lumineux",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque de lumière.",
+      "element": "light",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "light"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_heal_5",
+      "name": "Lueur réparatrice",
+      "category": "heal",
+      "type": "active",
+      "desc": "Rend 5 PV.",
+      "element": "light",
+      "effects": [
+        {
+          "kind": "heal",
+          "base": 5
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_magic_barrier",
+      "name": "Barrière lumineuse",
+      "category": "defense",
+      "type": "active",
+      "desc": "Protège la cible.",
+      "element": "light",
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "defense",
+          "value": 3,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_flash",
+      "name": "Éblouissement",
+      "category": "control",
+      "type": "active",
+      "desc": "Réduit précision et initiative.",
+      "element": "light",
+      "effects": [
+        {
+          "kind": "debuff",
+          "stat": "initiative",
+          "value": -2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_shadow_bite",
+      "name": "Morsure obscure",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque d’ombre au contact.",
+      "element": "shadow",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "shadow"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_drain",
+      "name": "Drain d’ombre",
+      "category": "spell",
+      "type": "active",
+      "desc": "Inflige des dégâts et affaiblit la cible.",
+      "element": "shadow",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "shadow"
+        },
+        {
+          "kind": "debuff",
+          "stat": "force",
+          "value": -2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_lifesteal_strike",
+      "name": "Frappe vampirique",
+      "category": "melee",
+      "type": "active",
+      "desc": "Blesse puis rend une partie des PV.",
+      "element": "shadow",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "shadow"
+        },
+        {
+          "kind": "heal",
+          "base": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_night_veil",
+      "name": "Voile nocturne",
+      "category": "defense",
+      "type": "active",
+      "desc": "Augmente temporairement l’esquive.",
+      "element": "shadow",
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "agilite",
+          "value": 3,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_melee_strike",
+      "name": "Frappe",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque physique simple.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_ranged_shot",
+      "name": "Tir précis",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Attaque simple à distance.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_multi_shot",
+      "name": "Attaque multiple",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Frappe plusieurs cibles.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 2,
+          "target": "multi"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 2,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_guard_break",
+      "name": "Brise-garde",
+      "category": "melee",
+      "type": "active",
+      "desc": "Réduit la défense.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3
+        },
+        {
+          "kind": "debuff",
+          "stat": "defense",
+          "value": -2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_stunning_blow",
+      "name": "Coup étourdissant",
+      "category": "melee",
+      "type": "active",
+      "desc": "Frappe lourde qui ralentit la cible.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4
+        },
+        {
+          "kind": "debuff",
+          "stat": "initiative",
+          "value": -3,
+          "duration": 1
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_regen",
+      "name": "Régénération",
+      "category": "heal",
+      "type": "active",
+      "desc": "Rend progressivement des PV.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "hot",
+          "base": 2,
+          "duration": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_slow",
+      "name": "Ralentissement",
+      "category": "control",
+      "type": "active",
+      "desc": "Réduit l’initiative.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "debuff",
+          "stat": "initiative",
+          "value": -3,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_magic_bolt",
+      "name": "Projectile magique",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque magique neutre.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 3,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_cleave",
+      "name": "Balayage",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque plusieurs cibles proches.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "target": "multi"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 4,
+      "requiredLevel": 5
+    },
+    {
+      "id": "lib_dodge_5",
+      "name": "Esquive instinctive",
+      "category": "defense",
+      "type": "active",
+      "desc": "Augmente temporairement l’agilité.",
+      "element": "",
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "agilite",
+          "value": 3,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "libraryId": "creature",
+      "power": 0,
+      "requiredLevel": 1
+    },
+    {
+      "id": "lib_stat_force_1",
+      "name": "+1 Force",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente la Force de 1.",
+      "effects": [
+        {
+          "kind": "attribute",
+          "attribute": "force",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_stat_force_10",
+      "name": "+10% Force",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente la Force de 10%.",
+      "effects": [
+        {
+          "kind": "attribute",
+          "attribute": "force",
+          "value": 10,
+          "valueMode": "percent"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_stat_agility_1",
+      "name": "+1 Agilité",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente l’Agilité de 1.",
+      "effects": [
+        {
+          "kind": "attribute",
+          "attribute": "agilite",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_stat_agility_10",
+      "name": "+10% Agilité",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente l’Agilité de 10%.",
+      "effects": [
+        {
+          "kind": "attribute",
+          "attribute": "agilite",
+          "value": 10,
+          "valueMode": "percent"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_stat_int_1",
+      "name": "+1 Intelligence",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente l’Intelligence de 1.",
+      "effects": [
+        {
+          "kind": "attribute",
+          "attribute": "intelligence",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_stat_spirit_1",
+      "name": "+1 Esprit",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente l’Esprit de 1.",
+      "effects": [
+        {
+          "kind": "attribute",
+          "attribute": "esprit",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_stat_endurance_1",
+      "name": "+1 Endurance",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente l’Endurance de 1.",
+      "effects": [
+        {
+          "kind": "attribute",
+          "attribute": "endurance",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_stat_initiative_1",
+      "name": "+1 Initiative",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente l’Initiative de 1.",
+      "effects": [
+        {
+          "kind": "initiative",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_hp_5",
+      "name": "+5 PV max",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente les PV maximum de 5.",
+      "effects": [
+        {
+          "kind": "maxHp",
+          "value": 5,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_hp_10pct",
+      "name": "+10% PV max",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente les PV maximum de 10%.",
+      "effects": [
+        {
+          "kind": "maxHp",
+          "value": 10,
+          "valueMode": "percent"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_mana_5",
+      "name": "+5 Mana max",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente le Mana maximum de 5.",
+      "effects": [
+        {
+          "kind": "mana",
+          "value": 5,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_defense_2",
+      "name": "+2 Défense",
+      "category": "defense",
+      "type": "passive",
+      "desc": "Augmente la Défense de 2.",
+      "effects": [
+        {
+          "kind": "defense",
+          "value": 2,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_armor_1",
+      "name": "+1 Armure",
+      "category": "defense",
+      "type": "passive",
+      "desc": "Augmente l’Armure de 1.",
+      "effects": [
+        {
+          "kind": "armor",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_crit_5",
+      "name": "+5% Critique",
+      "category": "stat",
+      "type": "passive",
+      "desc": "Augmente les chances de critique de 5%.",
+      "effects": [
+        {
+          "kind": "crit",
+          "value": 5,
+          "valueMode": "percent"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_dodge_5pct",
+      "name": "+5% Esquive",
+      "category": "defense",
+      "type": "passive",
+      "desc": "Augmente l’esquive de 5%.",
+      "effects": [
+        {
+          "kind": "dodge",
+          "value": 5,
+          "valueMode": "percent"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_regen_hp_1",
+      "name": "Régénération +1 PV",
+      "category": "heal",
+      "type": "passive",
+      "desc": "Récupère 1 PV par tour.",
+      "effects": [
+        {
+          "kind": "regenHp",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_regen_mana_1",
+      "name": "Régénération +1 Mana",
+      "category": "utility",
+      "type": "passive",
+      "desc": "Récupère 1 Mana par tour.",
+      "effects": [
+        {
+          "kind": "regenMana",
+          "value": 1,
+          "valueMode": "flat"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_power_strike",
+      "name": "Frappe puissante",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque de mêlée plus lente mais plus forte.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_aimed_shot",
+      "name": "Tir visé",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Attaque à distance puissante.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_arcane_burst",
+      "name": "Explosion arcanique",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque magique de zone.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "target": "zone"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_weakness",
+      "name": "Faiblesse",
+      "category": "control",
+      "type": "active",
+      "desc": "Réduit temporairement la Force.",
+      "effects": [
+        {
+          "kind": "debuff",
+          "stat": "force",
+          "value": -2,
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "lib_heal_10",
+      "name": "Soin majeur",
+      "category": "heal",
+      "type": "active",
+      "desc": "Rend 10 PV à une cible.",
+      "effects": [
+        {
+          "kind": "heal",
+          "base": 10
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_heal_group",
+      "name": "Soin de groupe",
+      "category": "heal",
+      "type": "active",
+      "desc": "Soigne tous les alliés.",
+      "effects": [
+        {
+          "kind": "heal_all",
+          "base": 3,
+          "scaleAttribute": "esprit",
+          "scaleCoeff": 0.2,
+          "target": "all_allies",
+          "duration": 0
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_regen_active",
+      "name": "Régénération",
+      "category": "heal",
+      "type": "active",
+      "desc": "Soigne progressivement pendant 3 tours.",
+      "effects": [
+        {
+          "kind": "hot",
+          "base": 2,
+          "scaleAttribute": "esprit",
+          "scaleCoeff": 0.15,
+          "target": "ally",
+          "duration": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_heal_big",
+      "name": "Soin majeur",
+      "category": "heal",
+      "type": "active",
+      "desc": "Soigne fortement un allié.",
+      "effects": [
+        {
+          "kind": "heal",
+          "base": 8,
+          "scaleAttribute": "esprit",
+          "scaleCoeff": 0.5,
+          "target": "ally",
+          "duration": 0
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_slash_bleed",
+      "name": "Frappe tranchante",
+      "category": "melee",
+      "type": "active",
+      "desc": "Inflige des dégâts puis un saignement pendant 3 tours.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "scaleAttribute": "force",
+          "scaleCoeff": 0.5,
+          "target": "enemy",
+          "damageType": "physical",
+          "duration": 0
+        },
+        {
+          "kind": "dot",
+          "base": 2,
+          "scaleAttribute": "force",
+          "scaleCoeff": 0.15,
+          "target": "enemy",
+          "damageType": "physical",
+          "status": "bleed",
+          "duration": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_cleave",
+      "name": "Frappe circulaire",
+      "category": "melee",
+      "type": "active",
+      "desc": "Frappe tous les ennemis proches.",
+      "effects": [
+        {
+          "kind": "area_damage",
+          "base": 3,
+          "scaleAttribute": "force",
+          "scaleCoeff": 0.45,
+          "target": "all_enemies",
+          "damageType": "physical"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_guard_break",
+      "name": "Brise-garde",
+      "category": "melee",
+      "type": "active",
+      "desc": "Inflige des dégâts et réduit la Défense pendant 2 tours.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 2,
+          "scaleAttribute": "force",
+          "scaleCoeff": 0.4,
+          "target": "enemy",
+          "damageType": "physical"
+        },
+        {
+          "kind": "stat_mod",
+          "stat": "defense",
+          "value": -3,
+          "target": "enemy",
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_stunning_blow",
+      "name": "Coup étourdissant",
+      "category": "melee",
+      "type": "active",
+      "desc": "Coup lourd qui pénalise fortement l’Initiative de la cible.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 2,
+          "scaleAttribute": "force",
+          "scaleCoeff": 0.35,
+          "target": "enemy",
+          "damageType": "physical"
+        },
+        {
+          "kind": "stat_mod",
+          "stat": "initiative",
+          "value": -5,
+          "target": "enemy",
+          "duration": 1
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_lifesteal_strike",
+      "name": "Frappe vampirique",
+      "category": "melee",
+      "type": "active",
+      "desc": "Inflige des dégâts et rend une partie des PV.",
+      "effects": [
+        {
+          "kind": "life_steal",
+          "base": 4,
+          "scaleAttribute": "force",
+          "scaleCoeff": 0.45,
+          "target": "enemy",
+          "damageType": "physical"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_piercing_shot",
+      "name": "Tir perforant",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Tir précis qui réduit temporairement la Défense.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "scaleAttribute": "agilite",
+          "scaleCoeff": 0.55,
+          "target": "enemy",
+          "damageType": "physical"
+        },
+        {
+          "kind": "stat_mod",
+          "stat": "defense",
+          "value": -2,
+          "target": "enemy",
+          "duration": 1
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_burst_shot",
+      "name": "Tir en rafale",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Effectue plusieurs impacts rapides sur une cible.",
+      "effects": [
+        {
+          "kind": "double_strike",
+          "base": 2,
+          "scaleAttribute": "agilite",
+          "scaleCoeff": 0.3,
+          "target": "enemy",
+          "damageType": "physical"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_multi_shot",
+      "name": "Tir multiple",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Touche plusieurs ennemis.",
+      "effects": [
+        {
+          "kind": "area_damage",
+          "base": 3,
+          "scaleAttribute": "agilite",
+          "scaleCoeff": 0.4,
+          "target": "all_enemies",
+          "damageType": "physical"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_poison_shot",
+      "name": "Tir empoisonné",
+      "category": "ranged",
+      "type": "active",
+      "desc": "Inflige des dégâts puis un poison pendant 3 tours.",
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 2,
+          "scaleAttribute": "agilite",
+          "scaleCoeff": 0.35,
+          "target": "enemy",
+          "damageType": "physical"
+        },
+        {
+          "kind": "dot",
+          "base": 2,
+          "scaleAttribute": "esprit",
+          "scaleCoeff": 0.1,
+          "target": "enemy",
+          "damageType": "physical",
+          "element": "poison",
+          "status": "poison",
+          "duration": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_magic_bolt",
+      "name": "Projectile magique",
+      "category": "spell",
+      "type": "active",
+      "desc": "Inflige des dégâts magiques neutres.",
+      "effects": [
+        {
+          "kind": "magic_damage",
+          "base": 5,
+          "scaleAttribute": "intelligence",
+          "scaleCoeff": 0.6,
+          "target": "enemy",
+          "damageType": "magical"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_fire_bolt",
+      "name": "Trait de feu",
+      "category": "spell",
+      "type": "active",
+      "desc": "Projectile magique de Feu.",
+      "effects": [
+        {
+          "kind": "magic_damage",
+          "base": 5,
+          "scaleAttribute": "intelligence",
+          "scaleCoeff": 0.55,
+          "target": "enemy",
+          "damageType": "magical",
+          "element": "fire"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_fireball",
+      "name": "Boule de feu",
+      "category": "spell",
+      "type": "active",
+      "desc": "Dégâts magiques de zone de Feu.",
+      "effects": [
+        {
+          "kind": "area_damage",
+          "base": 6,
+          "scaleAttribute": "intelligence",
+          "scaleCoeff": 0.7,
+          "target": "all_enemies",
+          "damageType": "magical",
+          "element": "fire"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_burning_touch",
+      "name": "Brûlure",
+      "category": "spell",
+      "type": "active",
+      "desc": "Inflige de lourds dégâts de Feu sur une courte durée.",
+      "effects": [
+        {
+          "kind": "dot",
+          "base": 3,
+          "scaleAttribute": "intelligence",
+          "scaleCoeff": 0.2,
+          "target": "enemy",
+          "damageType": "magical",
+          "element": "fire",
+          "status": "burn",
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_chain_lightning",
+      "name": "Éclair en chaîne",
+      "category": "spell",
+      "type": "active",
+      "desc": "Frappe plusieurs ennemis avec de l’électricité.",
+      "effects": [
+        {
+          "kind": "area_damage",
+          "base": 5,
+          "scaleAttribute": "intelligence",
+          "scaleCoeff": 0.55,
+          "target": "all_enemies",
+          "damageType": "magical",
+          "element": "electric"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_drain",
+      "name": "Drain vital",
+      "category": "spell",
+      "type": "active",
+      "desc": "Inflige des dégâts magiques et rend des PV.",
+      "effects": [
+        {
+          "kind": "life_steal",
+          "base": 5,
+          "scaleAttribute": "intelligence",
+          "scaleCoeff": 0.45,
+          "target": "enemy",
+          "damageType": "magical",
+          "element": "shadow"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_affliction",
+      "name": "Affliction",
+      "category": "control",
+      "type": "active",
+      "desc": "Inflige des dégâts magiques sur la durée.",
+      "effects": [
+        {
+          "kind": "dot",
+          "base": 2,
+          "scaleAttribute": "esprit",
+          "scaleCoeff": 0.2,
+          "target": "enemy",
+          "damageType": "magical",
+          "duration": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_slow",
+      "name": "Entrave",
+      "category": "control",
+      "type": "active",
+      "desc": "Réduit l’Initiative de la cible pendant 2 tours.",
+      "effects": [
+        {
+          "kind": "stat_mod",
+          "stat": "initiative",
+          "value": -4,
+          "target": "enemy",
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_def_down",
+      "name": "Brise-garde magique",
+      "category": "control",
+      "type": "active",
+      "desc": "Réduit la Défense d’un ennemi pendant 2 tours.",
+      "effects": [
+        {
+          "kind": "stat_mod",
+          "stat": "defense",
+          "value": -3,
+          "target": "enemy",
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_earth_guard",
+      "name": "Peau de pierre",
+      "category": "defense",
+      "type": "active",
+      "desc": "Augmente la résistance physique pendant 3 tours.",
+      "effects": [
+        {
+          "kind": "resistance_mod",
+          "resistanceKind": "physical",
+          "value": 30,
+          "target": "self",
+          "duration": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_magic_barrier",
+      "name": "Barrière magique",
+      "category": "defense",
+      "type": "active",
+      "desc": "Augmente la résistance magique d’un allié.",
+      "effects": [
+        {
+          "kind": "resistance_mod",
+          "resistanceKind": "magic",
+          "value": 30,
+          "target": "ally",
+          "duration": 3
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_res_protection",
+      "name": "Protection",
+      "category": "defense",
+      "type": "active",
+      "desc": "Accorde +25% de résistance physique pendant 2 tours.",
+      "effects": [
+        {
+          "kind": "resistance_mod",
+          "resistanceKind": "physical",
+          "value": 25,
+          "target": "ally",
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_team_defense",
+      "name": "Cri protecteur",
+      "category": "defense",
+      "type": "active",
+      "desc": "Augmente la Défense de toute l’équipe pendant 2 tours.",
+      "effects": [
+        {
+          "kind": "stat_mod",
+          "stat": "defense",
+          "value": 3,
+          "target": "all_allies",
+          "duration": 2
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_res_phys_10",
+      "name": "+10% Résistance physique",
+      "category": "defense",
+      "type": "passive",
+      "desc": "Réduit de 10% les dégâts physiques.",
+      "effects": [
+        {
+          "kind": "resistance",
+          "value": 10,
+          "valueMode": "percent",
+          "resistanceKind": "physical",
+          "scope": "self",
+          "condition": "always"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_res_mag_10",
+      "name": "+10% Résistance magique",
+      "category": "defense",
+      "type": "passive",
+      "desc": "Réduit de 10% les dégâts magiques.",
+      "effects": [
+        {
+          "kind": "resistance",
+          "value": 10,
+          "valueMode": "percent",
+          "resistanceKind": "magic",
+          "scope": "self",
+          "condition": "always"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_regen_hp_passive",
+      "name": "Régénération passive",
+      "category": "heal",
+      "type": "passive",
+      "desc": "Rend 1 PV au début de chaque tour.",
+      "effects": [
+        {
+          "kind": "regenHp",
+          "value": 1,
+          "valueMode": "flat",
+          "scope": "self",
+          "condition": "always"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "rpg_regen_mana_passive",
+      "name": "Régénération de Mana",
+      "category": "utility",
+      "type": "passive",
+      "desc": "Rend 1 Mana au début de chaque tour.",
+      "effects": [
+        {
+          "kind": "regenMana",
+          "value": 1,
+          "valueMode": "flat",
+          "scope": "self",
+          "condition": "always"
+        }
+      ],
+      "activeMeta": null,
+      "usageScopes": [
+        "rpgHero",
+        "enemy"
+      ],
+      "builtin": true,
+      "libraryId": "rpg"
+    },
+    {
+      "id": "cap_fire_atk_1",
+      "name": "Étincelle",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Feu de puissance 3. Disponible au niveau 1.",
+      "element": "fire",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "fire",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_atk_2",
+      "name": "Morsure ardente",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Feu de puissance 4. Disponible au niveau 5.",
+      "element": "fire",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "fire",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_atk_3",
+      "name": "Charge de braise",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Feu de puissance 5. Disponible au niveau 10.",
+      "element": "fire",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "fire",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_atk_4",
+      "name": "Impact flamboyant",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Feu de puissance 6. Disponible au niveau 16.",
+      "element": "fire",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "fire",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_atk_5",
+      "name": "Vague incendiaire",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Feu de puissance 7. Disponible au niveau 24.",
+      "element": "fire",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "fire",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_atk_6",
+      "name": "Tempête de flammes",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Feu de puissance 8. Disponible au niveau 34.",
+      "element": "fire",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "fire",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_atk_7",
+      "name": "Brasier primordial",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Feu de puissance 10. Disponible au niveau 46.",
+      "element": "fire",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "fire",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_special_1",
+      "name": "Cendre aveuglante",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Feu utilitaire. Disponible au niveau 12.",
+      "element": "fire",
+      "power": 2,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 2,
+          "element": "fire",
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "agility",
+          "value": -2,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_fire_special_2",
+      "name": "Surchauffe",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Feu utilitaire. Disponible au niveau 28.",
+      "element": "fire",
+      "power": 6,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "fire",
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "defense",
+          "value": -3,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_atk_1",
+      "name": "Goutte vive",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Eau de puissance 3. Disponible au niveau 1.",
+      "element": "water",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "water",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_atk_2",
+      "name": "Morsure de marée",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Eau de puissance 4. Disponible au niveau 5.",
+      "element": "water",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "water",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_atk_3",
+      "name": "Jet pressurisé",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Eau de puissance 5. Disponible au niveau 10.",
+      "element": "water",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "water",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_atk_4",
+      "name": "Impact torrentiel",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Eau de puissance 6. Disponible au niveau 16.",
+      "element": "water",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "water",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_atk_5",
+      "name": "Déferlante",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Eau de puissance 7. Disponible au niveau 24.",
+      "element": "water",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "water",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_atk_6",
+      "name": "Tempête marine",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Eau de puissance 8. Disponible au niveau 34.",
+      "element": "water",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "water",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_atk_7",
+      "name": "Raz-de-marée ancestral",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Eau de puissance 10. Disponible au niveau 46.",
+      "element": "water",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "water",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_special_1",
+      "name": "Brume apaisante",
+      "category": "heal",
+      "type": "active",
+      "desc": "Technique Eau utilitaire. Disponible au niveau 12.",
+      "element": "water",
+      "power": 4,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "heal",
+          "base": 4,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_water_special_2",
+      "name": "Voile aqueux",
+      "category": "defense",
+      "type": "active",
+      "desc": "Technique Eau utilitaire. Disponible au niveau 28.",
+      "element": "water",
+      "power": 0,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "defense",
+          "value": 3,
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_atk_1",
+      "name": "Jet de pierre",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Terre de puissance 3. Disponible au niveau 1.",
+      "element": "earth",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "earth",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_atk_2",
+      "name": "Coup minéral",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Terre de puissance 4. Disponible au niveau 5.",
+      "element": "earth",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "earth",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_atk_3",
+      "name": "Charge tellurique",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Terre de puissance 5. Disponible au niveau 10.",
+      "element": "earth",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "earth",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_atk_4",
+      "name": "Impact rocheux",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Terre de puissance 6. Disponible au niveau 16.",
+      "element": "earth",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "earth",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_atk_5",
+      "name": "Faille terrestre",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Terre de puissance 7. Disponible au niveau 24.",
+      "element": "earth",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "earth",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_atk_6",
+      "name": "Tempête de roc",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Terre de puissance 8. Disponible au niveau 34.",
+      "element": "earth",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "earth",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_atk_7",
+      "name": "Séisme primordial",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Terre de puissance 10. Disponible au niveau 46.",
+      "element": "earth",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "earth",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_special_1",
+      "name": "Peau de pierre",
+      "category": "defense",
+      "type": "active",
+      "desc": "Technique Terre utilitaire. Disponible au niveau 12.",
+      "element": "earth",
+      "power": 0,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "defense",
+          "value": 3,
+          "duration": 3,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_earth_special_2",
+      "name": "Entrave racinaire",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Terre utilitaire. Disponible au niveau 28.",
+      "element": "earth",
+      "power": 2,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 2,
+          "element": "earth",
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "speed",
+          "value": -4,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_atk_1",
+      "name": "Souffle",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Air de puissance 3. Disponible au niveau 1.",
+      "element": "air",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "air",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_atk_2",
+      "name": "Lame de vent",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Air de puissance 4. Disponible au niveau 5.",
+      "element": "air",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "air",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_atk_3",
+      "name": "Charge aérienne",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Air de puissance 5. Disponible au niveau 10.",
+      "element": "air",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "air",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_atk_4",
+      "name": "Piqué cyclonique",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Air de puissance 6. Disponible au niveau 16.",
+      "element": "air",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "air",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_atk_5",
+      "name": "Rafale majeure",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Air de puissance 7. Disponible au niveau 24.",
+      "element": "air",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "air",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_atk_6",
+      "name": "Tempête céleste",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Air de puissance 8. Disponible au niveau 34.",
+      "element": "air",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "air",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_atk_7",
+      "name": "Ouragan primordial",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Air de puissance 10. Disponible au niveau 46.",
+      "element": "air",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "air",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_special_1",
+      "name": "Vent arrière",
+      "category": "defense",
+      "type": "active",
+      "desc": "Technique Air utilitaire. Disponible au niveau 12.",
+      "element": "air",
+      "power": 0,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "speed",
+          "value": 4,
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_air_special_2",
+      "name": "Danse aérienne",
+      "category": "defense",
+      "type": "active",
+      "desc": "Technique Air utilitaire. Disponible au niveau 28.",
+      "element": "air",
+      "power": 0,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "agility",
+          "value": 4,
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_atk_1",
+      "name": "Étincelle statique",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Électricité de puissance 3. Disponible au niveau 1.",
+      "element": "electric",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "electric",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_atk_2",
+      "name": "Crocs voltés",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Électricité de puissance 4. Disponible au niveau 5.",
+      "element": "electric",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "electric",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_atk_3",
+      "name": "Charge éclair",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Électricité de puissance 5. Disponible au niveau 10.",
+      "element": "electric",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "electric",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_atk_4",
+      "name": "Impact foudroyant",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Électricité de puissance 6. Disponible au niveau 16.",
+      "element": "electric",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "electric",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_atk_5",
+      "name": "Arc majeur",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Électricité de puissance 7. Disponible au niveau 24.",
+      "element": "electric",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "electric",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_atk_6",
+      "name": "Orage furieux",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Électricité de puissance 8. Disponible au niveau 34.",
+      "element": "electric",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "electric",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_atk_7",
+      "name": "Foudre primordiale",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Électricité de puissance 10. Disponible au niveau 46.",
+      "element": "electric",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "electric",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_special_1",
+      "name": "Onde paralysante",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Électricité utilitaire. Disponible au niveau 12.",
+      "element": "electric",
+      "power": 1,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 1,
+          "element": "electric",
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "speed",
+          "value": -5,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_electric_special_2",
+      "name": "Surcharge",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Électricité utilitaire. Disponible au niveau 28.",
+      "element": "electric",
+      "power": 5,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "electric",
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "defense",
+          "value": -2,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_atk_1",
+      "name": "Lueur",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Lumière de puissance 3. Disponible au niveau 1.",
+      "element": "light",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "light",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_atk_2",
+      "name": "Rayon clair",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Lumière de puissance 4. Disponible au niveau 5.",
+      "element": "light",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "light",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_atk_3",
+      "name": "Charge solaire",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Lumière de puissance 5. Disponible au niveau 10.",
+      "element": "light",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "light",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_atk_4",
+      "name": "Impact radiant",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Lumière de puissance 6. Disponible au niveau 16.",
+      "element": "light",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "light",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_atk_5",
+      "name": "Onde lumineuse",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Lumière de puissance 7. Disponible au niveau 24.",
+      "element": "light",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "light",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_atk_6",
+      "name": "Tempête astrale",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Lumière de puissance 8. Disponible au niveau 34.",
+      "element": "light",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "light",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_atk_7",
+      "name": "Jugement solaire",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Lumière de puissance 10. Disponible au niveau 46.",
+      "element": "light",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "light",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_special_1",
+      "name": "Soin lumineux",
+      "category": "heal",
+      "type": "active",
+      "desc": "Technique Lumière utilitaire. Disponible au niveau 12.",
+      "element": "light",
+      "power": 5,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "heal",
+          "base": 5,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_light_special_2",
+      "name": "Éblouissement",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Lumière utilitaire. Disponible au niveau 28.",
+      "element": "light",
+      "power": 1,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 1,
+          "element": "light",
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "agility",
+          "value": -4,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_atk_1",
+      "name": "Ombre vive",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Ombre de puissance 3. Disponible au niveau 1.",
+      "element": "shadow",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "shadow",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_atk_2",
+      "name": "Crocs obscurs",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Ombre de puissance 4. Disponible au niveau 5.",
+      "element": "shadow",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "shadow",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_atk_3",
+      "name": "Charge nocturne",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Ombre de puissance 5. Disponible au niveau 10.",
+      "element": "shadow",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "shadow",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_atk_4",
+      "name": "Impact spectral",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Ombre de puissance 6. Disponible au niveau 16.",
+      "element": "shadow",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "shadow",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_atk_5",
+      "name": "Onde noire",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Ombre de puissance 7. Disponible au niveau 24.",
+      "element": "shadow",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "shadow",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_atk_6",
+      "name": "Tempête abyssale",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Ombre de puissance 8. Disponible au niveau 34.",
+      "element": "shadow",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "shadow",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_atk_7",
+      "name": "Nuit primordiale",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Ombre de puissance 10. Disponible au niveau 46.",
+      "element": "shadow",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "shadow",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_special_1",
+      "name": "Drain nocturne",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Ombre utilitaire. Disponible au niveau 12.",
+      "element": "shadow",
+      "power": 3,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "shadow",
+          "target": "enemy"
+        },
+        {
+          "kind": "heal",
+          "base": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_shadow_special_2",
+      "name": "Voile nocturne",
+      "category": "defense",
+      "type": "active",
+      "desc": "Technique Ombre utilitaire. Disponible au niveau 28.",
+      "element": "shadow",
+      "power": 0,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "agility",
+          "value": 4,
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_atk_1",
+      "name": "Dard toxique",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Poison de puissance 3. Disponible au niveau 1.",
+      "element": "poison",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_atk_2",
+      "name": "Morsure venimeuse",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Poison de puissance 4. Disponible au niveau 5.",
+      "element": "poison",
+      "power": 4,
+      "requiredLevel": 5,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_atk_3",
+      "name": "Jet acide",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Poison de puissance 5. Disponible au niveau 10.",
+      "element": "poison",
+      "power": 5,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 5,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_atk_4",
+      "name": "Impact toxique",
+      "category": "melee",
+      "type": "active",
+      "desc": "Attaque Poison de puissance 6. Disponible au niveau 16.",
+      "element": "poison",
+      "power": 6,
+      "requiredLevel": 16,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_atk_5",
+      "name": "Nuage corrosif",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Poison de puissance 7. Disponible au niveau 24.",
+      "element": "poison",
+      "power": 7,
+      "requiredLevel": 24,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 7,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_atk_6",
+      "name": "Tempête de venin",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Poison de puissance 8. Disponible au niveau 34.",
+      "element": "poison",
+      "power": 8,
+      "requiredLevel": 34,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_atk_7",
+      "name": "Fléau primordial",
+      "category": "spell",
+      "type": "active",
+      "desc": "Attaque Poison de puissance 10. Disponible au niveau 46.",
+      "element": "poison",
+      "power": 10,
+      "requiredLevel": 46,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_special_1",
+      "name": "Venin persistant",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Poison utilitaire. Disponible au niveau 12.",
+      "element": "poison",
+      "power": 2,
+      "requiredLevel": 12,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 1,
+          "element": "poison",
+          "target": "enemy"
+        },
+        {
+          "kind": "dot",
+          "base": 2,
+          "value": 2,
+          "duration": 3,
+          "element": "poison",
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_poison_special_2",
+      "name": "Brouillard toxique",
+      "category": "control",
+      "type": "active",
+      "desc": "Technique Poison utilitaire. Disponible au niveau 28.",
+      "element": "poison",
+      "power": 2,
+      "requiredLevel": 28,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 2,
+          "element": "poison",
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "power",
+          "value": -3,
+          "duration": 3,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_1",
+      "name": "Coup vif",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 3. Disponible au niveau 1.",
+      "element": "",
+      "power": 3,
+      "requiredLevel": 1,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_2",
+      "name": "Charge",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 4. Disponible au niveau 4.",
+      "element": "",
+      "power": 4,
+      "requiredLevel": 4,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 4,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_3",
+      "name": "Feinte",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 3. Disponible au niveau 8.",
+      "element": "",
+      "power": 3,
+      "requiredLevel": 8,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 3,
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "defense",
+          "value": -1,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_4",
+      "name": "Concentration",
+      "category": "utility",
+      "type": "active",
+      "desc": "Technique neutre de puissance —. Disponible au niveau 10.",
+      "element": "",
+      "power": 0,
+      "requiredLevel": 10,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "agility",
+          "value": 2,
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_5",
+      "name": "Coup lourd",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 6. Disponible au niveau 14.",
+      "element": "",
+      "power": 6,
+      "requiredLevel": 14,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_6",
+      "name": "Garde",
+      "category": "utility",
+      "type": "active",
+      "desc": "Technique neutre de puissance —. Disponible au niveau 18.",
+      "element": "",
+      "power": 0,
+      "requiredLevel": 18,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "defense",
+          "value": 4,
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_7",
+      "name": "Percée",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 6. Disponible au niveau 22.",
+      "element": "",
+      "power": 6,
+      "requiredLevel": 22,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 6,
+          "target": "enemy"
+        },
+        {
+          "kind": "debuff",
+          "stat": "defense",
+          "value": -2,
+          "duration": 2,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_8",
+      "name": "Récupération",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 6. Disponible au niveau 26.",
+      "element": "",
+      "power": 6,
+      "requiredLevel": 26,
+      "effects": [
+        {
+          "kind": "heal",
+          "base": 6,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_9",
+      "name": "Furie",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 8. Disponible au niveau 32.",
+      "element": "",
+      "power": 8,
+      "requiredLevel": 32,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 8,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_10",
+      "name": "Instinct supérieur",
+      "category": "utility",
+      "type": "active",
+      "desc": "Technique neutre de puissance —. Disponible au niveau 38.",
+      "element": "",
+      "power": 0,
+      "requiredLevel": 38,
+      "effects": [
+        {
+          "kind": "buff",
+          "stat": "agility",
+          "value": 5,
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_11",
+      "name": "Impact ultime",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 10. Disponible au niveau 45.",
+      "element": "",
+      "power": 10,
+      "requiredLevel": 45,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 10,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    },
+    {
+      "id": "cap_neutral_12",
+      "name": "Dernier recours",
+      "category": "melee",
+      "type": "active",
+      "desc": "Technique neutre de puissance 12. Disponible au niveau 55.",
+      "element": "",
+      "power": 12,
+      "requiredLevel": 55,
+      "effects": [
+        {
+          "kind": "damage",
+          "base": 12,
+          "target": "enemy"
+        }
+      ],
+      "activeMeta": {
+        "manaCost": 0,
+        "weapon": "",
+        "cooldown": 0
+      },
+      "usageScopes": [
+        "captureCreature",
+        "enemy"
+      ],
+      "builtin": true,
+      "builtinCreature": true,
+      "captureRoster": true,
+      "libraryId": "creature"
+    }
+  ]
+}
