@@ -10459,3 +10459,40 @@ Critère :
 - `displayScale` présent dans l'export final ;
 - FighterConfig et gameplay restent exempts de scale ;
 - output toujours accepté par `normalizeCaptureCombatExportV1` et par la stack Capture autoritaire.
+
+
+### Résultat — CaptureCreatureEditorDraftV3 + Exporter V3
+
+RED :
+
+- test `tests/unit/capture-creature-editor-draft-v3.test.mjs` ;
+- commit `3bbd07ad64014d0b6e06f50546fbbedac4ee1719` ;
+- CI run `36362072310` — FAILURE attendue ;
+- cause isolée : Draft V3 absent.
+
+Implémentation :
+
+- `src/contracts/capture-creature-editor-draft-v3.js` ;
+- `src/adapters/input/capture/capture-editor-exporter-v3.js` ;
+- commit `ca06cfc76e2d8e33772b24f05eedef74690157b6` ;
+- CI run `36362307199` — SUCCESS.
+
+Garanties :
+
+- le métier créature est délégué au Draft V2 ;
+- la présentation est validée en V2 ;
+- l'Exporter V3 délègue la topologie/loadout/skills à l'Exporter V2 ;
+- `displayScale` est conservé dans `presentation.creatures` ;
+- aucun `displayScale` dans `combat` ;
+- l'export reste consommable par la stack Capture autoritaire ;
+- aucun Runtime/Renderer/UI modifié.
+
+Checkpoint GREEN prévu :
+
+`checkpoint/lab-capture-creature-editor-draft-v3-green-2026-09-28`.
+
+Étape suivante :
+
+- UI `Taille en combat` ;
+- Human Editor passe de Draft/Exporter V2 à V3 ;
+- validation mobile avant GREEN final UI.
