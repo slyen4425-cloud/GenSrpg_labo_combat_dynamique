@@ -12273,3 +12273,44 @@ Critère final :
 - RED prouvé ;
 - CI complète verte ;
 - aucun changement visuel structurel attendu.
+
+
+### Résultat — variété déterministe des capacités IA V1
+
+RED :
+
+- test : `tests/unit/combat-ai-skill-variety-v1.test.mjs` ;
+- SHA RED : `61c645bd73a84d40c78b491df844472fb6d1d0b8` ;
+- CI `36460506674` — FAILURE attendue.
+
+Première correction :
+
+- le contrôleur parcourait les capacités suivantes lorsqu'une capacité n'était pas utilisable ;
+- la CI a protégé une règle métier antérieure : lorsqu'une technique planifiée est seulement trop chère en énergie, l'IA doit économiser au lieu de prendre une attaque moins chère.
+
+Correction finale :
+
+- une capacité bloquée par cooldown / indisponibilité temporaire peut être sautée au profit de la suivante ;
+- `insufficient_energy` conserve immédiatement le comportement `saving` existant ;
+- après une capacité réellement lancée, la rotation reprend après celle-ci ;
+- aucune randomisation ;
+- la preview Braisombre dispose maintenant de trois compétences de démonstration :
+  - `enemy-hit` ;
+  - `enemy-burst` ;
+  - `enemy-heavy-hit` ;
+- coûts, timings et cooldowns différents rendent la rotation observable ;
+- aucun changement du système de cooldown, des dégâts Core ou du Runtime.
+
+SHA technique final :
+
+`86211324422bd6c7a7ebbaf9b13e7e3dc29432f0`.
+
+CI :
+
+- run `36460899651` — SUCCESS.
+
+État : **GREEN technique**.
+
+Checkpoint final visé :
+
+`checkpoint/lab-combat-ai-skill-variety-v1-green-2026-09-28`.
