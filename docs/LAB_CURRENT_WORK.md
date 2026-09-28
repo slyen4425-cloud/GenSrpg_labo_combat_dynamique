@@ -10770,3 +10770,63 @@ Checkpoint final visé :
 Étape suivante :
 
 créer un propriétaire explicite de session Editor / Combat Preview avant d'ajouter le bouton visible.
+
+
+## Micro-lot — propriétaire session Capture Editor / Combat Preview V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-export-runtime-bridge-v1-green-2026-09-28` ;
+- SHA : `b40cf5d39d21ea43ddf5087738855f4db3aadc1c`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-preview-session-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-preview-session-v1-2026-09-28`.
+
+Objectif :
+
+créer un propriétaire explicite de transition entre l'éditeur humain et la preview combat, sans encore ajouter le bouton visible.
+
+Responsabilité unique :
+
+`CaptureEditorPreviewSessionV1` possède :
+
+- le contrôleur d'éditeur ;
+- le dernier `CaptureCombatExportV1` validé ;
+- l'instance de combat preview montée ;
+- la transition editor -> preview -> editor ;
+- le dispose des ressources qu'elle a créées.
+
+Chaîne autorisée :
+
+`editor.validate() -> CaptureCombatExportV1 -> adaptCaptureCombatExportStackV1() -> mountCoop2v2Test(nativeCombatSource)`.
+
+Interdits :
+
+- lecture directe des champs DOM métier par la preview ;
+- `window.currentCaptureExport` ;
+- localStorage/sessionStorage ;
+- deuxième structure métier mutable ;
+- dépendance runtime à `Zombicide-40k` ;
+- bouton fictif avant que ce propriétaire soit testé.
+
+RED :
+
+1. lancement refuse un export invalide ;
+2. export valide est donné directement à l'Adapter Stack ;
+3. la source native adaptée est donnée au combat mount ;
+4. une seule preview active à la fois ;
+5. retour preview -> editor dispose le combat ;
+6. dispose final nettoie editor + combat ;
+7. aucun global/storage/production runtime.
+
+Critère GREEN technique :
+
+- RED prouvé ;
+- implémentation minimale ;
+- CI complète verte ;
+- aucun changement visuel dans ce lot.
