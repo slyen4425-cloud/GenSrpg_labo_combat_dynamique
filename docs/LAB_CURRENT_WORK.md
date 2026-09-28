@@ -12744,3 +12744,69 @@ CI :
 Checkpoint visé :
 
 `checkpoint/lab-presentation-scale-range-ui-v1-prevalidation-green-2026-09-28`.
+
+
+## Micro-lot UI — sélection de créature adverse pour le test combat V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-presentation-scale-range-ui-v1-prevalidation-green-2026-09-28` ;
+- SHA : `7788f945b055298258d3ce484de73bb951ab08b5`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-test-creature-selection-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-test-creature-selection-v1-2026-09-28`.
+
+Objectif :
+
+1. remplacer l'adversaire Braisombre codé en dur par un choix explicite de créature de test ;
+2. proposer uniquement les créatures disposant réellement d'un triplet face/dos/icône dans la bibliothèque globale ;
+3. conserver le métier de combat générique de la fixture adverse (stats/loadout de test) : le choix porte sur l'identité/presentation de la créature, pas sur de fausses stats historiques ;
+4. faire résoudre la sélection au moment de `editor.validate()` via un provider explicite, sans lecture de DOM métier par le Combat Runtime ;
+5. refléter le vrai nom choisi dans l'UI de preview.
+
+Créatures disponibles :
+
+- Braisombre ;
+- Maraileron ;
+- Loup volcanique ;
+- Golem moussu ;
+- Guêpe cybernétique ;
+- Chat mystique ;
+- Renard magique doré ;
+- Ailevent ;
+- Voltige.
+
+Propriétaires :
+
+- options de test : catalogue UI dédié ;
+- validation du draft : Human Editor ;
+- assets : catalogue global existant ;
+- Combat Runtime / Core inchangés.
+
+Interdits :
+
+- aucun actorId supplémentaire codé comme autorité ;
+- aucune fausse stat spécifique inventée par créature ;
+- aucun storage/global ;
+- aucune dépendance GenSrpG ;
+- aucun changement du format 1v1/2v2.
+
+RED :
+
+1. catalogue des 9 créatures de test absent ;
+2. sélecteur visible absent ;
+3. Human Editor ne sait pas encore résoudre dynamiquement l'adversaire au moment de validate ;
+4. preview affiche encore le libellé Braisombre codé en dur.
+
+Critère final :
+
+- RED prouvé ;
+- sélection réellement injectée dans le même CaptureCombatExportV1 ;
+- CI complète verte ;
+- preview publiée ;
+- PREVALIDATION UI smartphone avant GREEN final.
