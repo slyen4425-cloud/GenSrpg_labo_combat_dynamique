@@ -811,7 +811,13 @@ export async function mountCoop2v2Test({
     button.dataset.combatSkill = skill.id;
 
     const presentation =
-      presentationAssets?.presentationForSkill?.(skill.id) ?? null;
+      presentationForActorSkill(
+        skill.id,
+        {
+          sourceActorId:
+            format.localActorId
+        }
+      );
     if (presentation?.icon?.url) {
       const image = root.ownerDocument.createElement("img");
       image.className = "action-option__icon";
