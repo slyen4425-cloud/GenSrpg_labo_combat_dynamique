@@ -11277,3 +11277,66 @@ Checkpoint final visé :
 Étape suivante :
 
 lot UI séparé : raccorder la page Capture Editor à la Session V2 + mount natif, avec un adversaire de preview doté d'une présentation explicite, puis ajouter `Tester en combat` / `Retour à l'éditeur`.
+
+
+## Micro-lot UI — bouton Tester en combat + retour éditeur V1 — 2026-09-28
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-native-preview-mount-v1-green-2026-09-28` ;
+- SHA : `13c4afc069a2f5ad8d449cf42db70ec98bac11af`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-editor-combat-preview-ui-v1-2026-09-28`.
+
+Branche :
+
+`work/lab-capture-editor-combat-preview-ui-v1-2026-09-28`.
+
+Objectif :
+
+raccorder la page `capture-editor-v2.html` au chemin technique GREEN :
+
+`Editor -> Session V2 -> nativeCombatSource + nativeVisualSource -> mountCaptureCombatPreviewV1()`.
+
+UI prévue :
+
+- bouton `Tester en combat` dans le footer éditeur ;
+- vue combat dédiée dans la même page ;
+- bouton `Retour à l'éditeur` ;
+- nouvelle instance DOM de preview créée depuis un template à chaque lancement ;
+- éditeur conservé en mémoire pendant la preview, sans storage.
+
+Contexte visuel :
+
+- catalogue global chargé explicitement ;
+- profils Animation Core chargés explicitement ;
+- adversaire de preview = Braisombre avec présentation `drake` et assetIds existants de la bibliothèque globale ;
+- aucun visuel inventé / aucun fallback de production.
+
+Invariants :
+
+- le bouton appelle la Session V2, pas le Combat Runtime directement ;
+- la page ne lit jamais les champs métier pour construire le combat ;
+- retour = `session.returnToEditor()` ;
+- un nouveau template DOM évite tout résidu d'une preview précédente ;
+- aucun global métier, localStorage ou sessionStorage ;
+- aucun changement Combat Core ;
+- aucun import depuis `Zombicide-40k`.
+
+RED :
+
+1. boutons test/retour absents avant implémentation ;
+2. page ne possède pas encore de host/template combat ;
+3. composition Session V2 / adaptateur visuel / mount natif absente ;
+4. adversaire de preview ne possède pas encore de présentation ;
+5. sentinelle d'absence storage/global.
+
+Critère technique :
+
+- CI complète verte ;
+- preview publiée ;
+- état final **PREVALIDATION UI** jusqu'à validation smartphone utilisateur.
+
+État initial : **RED à poser**.
