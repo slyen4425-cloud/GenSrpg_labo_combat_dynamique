@@ -197,6 +197,27 @@ test("Capture V3 export derives one runtime stat-effects snapshot from registry 
       chargeTimeReductionPct: 0
     }
   );
+
+  assert.deepEqual(
+    player.combat.statEffectRulesById,
+    {
+      fire: {
+        damageChannel: "fire",
+        resistanceChannel: "fire",
+        damagePctPerPoint: 1,
+        resistancePctPerPoint: 1,
+        chargeTimeReductionPctPerPoint: 0
+      },
+      speed: {
+        damageChannel: null,
+        resistanceChannel: null,
+        damagePctPerPoint: 0,
+        resistancePctPerPoint: 0,
+        chargeTimeReductionPctPerPoint: 1
+      }
+    },
+    "runtime stat rules must be derived from the same registry owner"
+  );
 });
 
 test("authoritative Capture adapter carries runtime stat effects into fighter state", () => {
@@ -224,6 +245,25 @@ test("authoritative Capture adapter carries runtime stat effects into fighter st
     player.chargeTimeModifierPct,
     -10,
     "speed stat must compose into the existing fighter preparation modifier owner"
+  );
+  assert.deepEqual(
+    player.statEffectRulesById,
+    {
+      fire: {
+        damageChannel: "fire",
+        resistanceChannel: "fire",
+        damagePctPerPoint: 1,
+        resistancePctPerPoint: 1,
+        chargeTimeReductionPctPerPoint: 0
+      },
+      speed: {
+        damageChannel: null,
+        resistanceChannel: null,
+        damagePctPerPoint: 0,
+        resistancePctPerPoint: 0,
+        chargeTimeReductionPctPerPoint: 1
+      }
+    }
   );
   assert.equal(
     native.skillSpeedMultiplier,
