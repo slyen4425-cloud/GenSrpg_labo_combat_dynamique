@@ -13491,3 +13491,47 @@ Lot suivant explicitement séparé :
 - règles configurables de nombre de compétences disponibles et déverrouillage par niveau.
 
 Aucune partie de cette refonte n'est intégrée dans le présent lot d'import.
+
+
+#### Régression smartphone — garde runtime restée à 100
+
+Retour utilisateur :
+
+- message rouge : « Le catalogue Monster Capture doit contenir exactement 100 créatures builtin. »
+- aucune créature historique visible dans « Créature à modifier ».
+
+Cause démontrée :
+
+- le catalogue final contient bien 110 entrées historiques ;
+- la sentinelle de données protège déjà 110 IDs ;
+- le chargeur runtime `hydrateMonsterCaptureCreatureCatalog()` conservait encore une ancienne garde locale `entries.length !== 100` ;
+- cette garde rejetait le catalogue avant hydratation de `configuredCreatures`.
+
+RED dédié :
+
+- SHA : `257c9fa924980903079f19b30629638ac94dcbc0` ;
+- CI : `36601572271` — FAILURE attendue ;
+- la sentinelle interdit désormais tout retour d'une garde littérale 100 dans le chargeur.
+
+Correction :
+
+- commit runtime : `3f105d4eb0c196ecbf180dce67b6ce7d7420afe5` ;
+- le nombre attendu vient désormais de `catalog.provenance.sourceCount` ;
+- le loader vérifie également que tous les IDs sont uniques ;
+- aucune donnée créature, adaptateur, CRUD, Combat Core ou renderer modifié.
+
+Ajustement de sentinelle :
+
+- `a7e780ea4af229ee7d9801a07efbf62e2455a470` ;
+- regex de test rendue indépendante du formatage multiligne ;
+- aucun changement métier.
+
+CI correction :
+
+- run : `36601718375` ;
+- conclusion : SUCCESS ;
+- 514 tests, 514 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION smartphone à refaire sur la liste des 110 créatures.**
