@@ -48,7 +48,15 @@ function v2Binding() {
   return {
     ...v1Binding(),
     version: 2,
-    displayScale: 1.35
+    displayScale: 1.35,
+    position: {
+      x: 12,
+      y: -8
+    },
+    transformOrigin: {
+      x: "50%",
+      y: "82%"
+    }
   };
 }
 
@@ -152,9 +160,16 @@ test("presentation V2 adapter delegates scale and profile to VisualActor", () =>
     "https://example.invalid/loup.webp"
   );
   assert.deepEqual(actor.position, {
-    x: 10,
-    y: -5
+    x: 12,
+    y: -8
   });
+  assert.deepEqual(
+    actor.transformOrigin,
+    {
+      x: "50%",
+      y: "82%"
+    }
+  );
 });
 
 test("presentation V2 adapter refuses creature identity mismatch", () => {
