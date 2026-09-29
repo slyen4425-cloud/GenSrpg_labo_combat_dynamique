@@ -7,12 +7,23 @@ import {
 import {
   exportCaptureEditorDraftsToCombatExportV2
 } from "./capture-editor-exporter-v2.js";
+import {
+  normalizeCaptureStatRegistryV1
+} from "../../../contracts/capture-stat-registry-v1.js";
+import {
+  normalizeCaptureCreatureStatValuesV1
+} from "../../../contracts/capture-creature-stat-values-v1.js";
+import {
+  projectCaptureStatEffectsV1
+} from "../../../core/combat/capture-stat-effects-v1.js";
 
 const INPUT_FIELDS = new Set([
   "battleSetup",
   "creatureDrafts",
   "skillDrafts",
   "loadouts",
+  "statRegistry",
+  "statValues",
   "metadata"
 ]);
 
@@ -113,6 +124,81 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
       metadata: value.metadata ?? {}
     });
 
+  let statEffectsByCreatureId = null;
+
+  if (
+    value.statRegistry != null ||
+    value.statValues != null
+  ) {
+    if (
+      value.statRegistry == null ||
+      value.statValues == null
+    ) {
+      throw new TypeError(
+        "statRegistry and statValues must be provided together"
+      );
+    }
+
+    const registry =
+      normalizeCaptureStatRegistryV1(
+        value.statRegistry
+      );
+    const rawStatValues = arrayValue(
+      value.statValues,
+      "statValues"
+    );
+    const normalizedStatValues =
+      rawStatValues.map((entry) =>
+        normalizeCaptureCreatureStatValuesV1(
+          entry,
+          registry
+        )
+      );
+
+    const knownCreatureIds = new Set(
+      creatureDrafts.map((draft) => draft.id)
+    );
+    const seenCreatureIds = new Set();
+
+    for (const entry of normalizedStatValues) {
+      if (!knownCreatureIds.has(entry.creatureId)) {
+        throw new RangeError(
+          "statValues references unknown creature: " +
+            entry.creatureId
+        );
+      }
+      if (seenCreatureIds.has(entry.creatureId)) {
+        throw new RangeError(
+          "duplicate statValues creatureId: " +
+            entry.creatureId
+        );
+      }
+      seenCreatureIds.add(entry.creatureId);
+    }
+
+    statEffectsByCreatureId = new Map(
+      normalizedStatValues.map((entry) => {
+        const projected =
+          projectCaptureStatEffectsV1({
+            registry,
+            statValues: entry
+          });
+
+        return [
+          entry.creatureId,
+          Object.freeze({
+            damagePctByChannel:
+              projected.damagePctByChannel,
+            resistancePctByChannel:
+              projected.resistancePctByChannel,
+            chargeTimeReductionPct:
+              projected.chargeTimeReductionPct
+          })
+        ];
+      })
+    );
+  }
+
   const creaturePresentations =
     creatureDrafts
       .map((draft) => draft.presentation)
@@ -121,8 +207,31 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
           presentation !== null
       );
 
+  const creatures =
+    statEffectsByCreatureId === null
+      ? exportedV2.creatures
+      : exportedV2.creatures.map((creature) => {
+          const statEffects =
+            statEffectsByCreatureId.get(
+              creature.id
+            );
+
+          if (statEffects === undefined) {
+            return creature;
+          }
+
+          return {
+            ...creature,
+            combat: {
+              ...creature.combat,
+              statEffects
+            }
+          };
+        });
+
   return normalizeCaptureCombatExportV1({
     ...exportedV2,
+    creatures,
     presentation: {
       ...exportedV2.presentation,
       creatures: Object.fromEntries(
