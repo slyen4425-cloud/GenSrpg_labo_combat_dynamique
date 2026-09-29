@@ -16232,3 +16232,232 @@ AUCUN fichier Runtime/UI/contrat/adaptateur n'est modifié avant que le préaudi
 - liste exacte des trous de round-trip ;
 - premier micro-lot de Database V1 réduit et déclaré ;
 - RED défini avant toute implémentation.
+
+
+### Préaudit confirmé — Capture Database Export / Import V1
+
+#### Inventaire des propriétaires existants
+
+**Créature éditable**
+
+Propriétaire canonique de la définition éditable actuelle :
+
+- `CaptureCreatureEditorDraftV3` :
+  - identité / nom / description ;
+  - niveau ;
+  - compatibilité `sourceStats` historique ;
+  - éléments ;
+  - résistances historiques ;
+  - capture / spawn / évolution ;
+  - paramètres combat éditables dont HP/énergie ;
+  - IDs de capacités liées ;
+  - `CreaturePresentationBindingV2`.
+
+`CreaturePresentationBindingV2` possède déjà, sans duplication gameplay :
+
+- `profileId` ;
+- `displayScale` ;
+- position ;
+- transform origin ;
+- assets front/back/icon ;
+- sockets ;
+- audio.
+
+**Stats modernes**
+
+Propriétaires séparés :
+
+- `CaptureStatRegistryV1` : définitions globales des stats et coefficients ;
+- `CaptureCreatureStatValuesV1` : valeurs par créature.
+
+Le snapshot `combat.statEffects` / `statEffectRulesById` construit par Exporter V3 est DÉRIVÉ pour le Runtime. Il ne doit pas être persisté comme nouvelle source éditable de stats.
+
+**Progression**
+
+Propriétaire global :
+
+- `CaptureProgressionRulesV1`.
+
+Le niveau requis d'une capacité reste séparé dans `CaptureSkillEditorDraftV1.requiredLevel`.
+
+**Loadout**
+
+Propriétaire par créature :
+
+- `CaptureActiveSkillLoadoutV1` ;
+- exactement quatre slots stables ;
+- séparé de `draft.skillIds`, qui représente les capacités liées à la créature.
+
+**Capacité éditable**
+
+Propriétaire canonique :
+
+- `CaptureSkillEditorDraftV1`.
+
+Il compose :
+
+- metadata d'édition : description, `requiredLevel`, `usageScopes` ;
+- gameplay : `SkillDefinition` ;
+- présentation : `SkillPresentationBinding` V1 ou V2.
+
+`SkillDefinition` possède déjà :
+
+- nom / catégorie / forme / élément ;
+- approche ;
+- coût énergie ;
+- préparation / trajet / récupération ;
+- cooldown ;
+- distances ;
+- relations de cible ;
+- conditions d'activation / Ultime ;
+- réaction / esquive / projectile clash ;
+- effet legacy de compatibilité ;
+- `SkillEffectV1[]`, donc les `StatusEffectV1` imbriqués.
+
+`SkillPresentationBindingV2` conserve la présentation et l'audio sans devenir gameplay : slots visuels/FX, assets, scale, attachment, anchors/offsets, layers par vue, triggers/playback et slots audio.
+
+#### État réel du Human Editor
+
+La session active maintient actuellement :
+
+- `configuredSkills: Map<skillId, CaptureSkillEditorDraftV1>` ;
+- `configuredCreatures: Map<creatureId, { draft, loadout, statValues }>` ;
+- `statRegistry` global ;
+- `progressionRules` global.
+
+Lors d'un enregistrement de créature, `currentCreatureRecord()` reconstruit et normalise exactement :
+
+- `draft: CaptureCreatureEditorDraftV3` ;
+- `loadout: CaptureActiveSkillLoadoutV1` ;
+- `statValues: CaptureCreatureStatValuesV1 | null`.
+
+Le catalogue initial historique est hydraté vers ce même modèle de session. Il n'existe pas de persistance navigateur canonique.
+
+#### CaptureCombatExportV1 n'est PAS la Database
+
+Le chemin actuel :
+
+`Human Editor -> Drafts canoniques -> Exporter V3 -> CaptureCombatExportV1 -> Adapter Stack -> Combat Runtime`
+
+est un chemin d'EXÉCUTION.
+
+Exporter V3 transforme notamment les stats canoniques en snapshots dérivés :
+
+- `combat.statEffects` ;
+- `combat.statEffectRulesById`.
+
+Il n'exporte pas le registre et les valeurs comme propriétaires éditables.
+
+Conclusion :
+
+- `CaptureCombatExportV1` reste le snapshot portable de combat ;
+- Database V1 sera un format éditable séparé qui COMPOSE les contrats canoniques ;
+- aucun `battle`, `teams`, `actors` ou `rosters` n'appartient au premier format Database ;
+- aucun snapshot dérivé de Runtime ne remplace les sources canoniques.
+
+#### Trous de round-trip prouvés
+
+Le dépôt possède :
+
+- import historique Monster Capture -> Draft V3 + loadout ;
+- export Drafts -> snapshot de combat V1/V2/V3.
+
+Il ne possède pas encore de format portable canonique capable de faire :
+
+`Editor canonical state -> JSON -> canonical state`
+
+en conservant ensemble :
+
+- registre de stats ;
+- règles de progression ;
+- records créature complets ;
+- valeurs de stats ;
+- loadouts ;
+- capacités complètes ;
+- présentation créature/capacité.
+
+C'est le trou exact du chantier Database V1.
+
+### Premier micro-lot déclaré — Database Bundle Core / JSON Round-trip V1
+
+Objectif minimal :
+
+Créer un format portable pur qui transporte les propriétaires canoniques tels quels, sans redéfinir leurs champs.
+
+Forme cible :
+
+```js
+{
+  schema: "capture-database-v1",
+  version: 1,
+  statRegistry: CaptureStatRegistryV1,
+  progressionRules: CaptureProgressionRulesV1,
+  creatures: [
+    {
+      draft: CaptureCreatureEditorDraftV3,
+      statValues: CaptureCreatureStatValuesV1,
+      loadout: CaptureActiveSkillLoadoutV1
+    }
+  ],
+  skills: [CaptureSkillEditorDraftV1],
+  metadata: { ...JSON-compatible }
+}
+```
+
+Le format ne copie pas les définitions internes : son normalizer délègue aux contrats propriétaires existants.
+
+Validation de composition prévue :
+
+- IDs créature uniques ;
+- IDs capacité uniques ;
+- `statValues.creatureId === draft.id` ;
+- `loadout.creatureId === draft.id` ;
+- chaque `draft.skillIds` référence une capacité déclarée dans le bundle ;
+- chaque capacité équipée par le loadout est déclarée et liée à la créature ;
+- une cible d'évolution non nulle référence une créature déclarée dans le bundle ;
+- aucune dérivation `statEffects` n'est ajoutée par Database V1.
+
+Round-trip prévu :
+
+- export canonique -> objet Database normalisé ;
+- sérialisation JSON pure ;
+- import JSON -> même état canonique normalisé ;
+- aucune hydratation DOM/Map/UI dans ce lot.
+
+#### Fichiers autorisés pour ce micro-lot
+
+- nouveau : `src/contracts/capture-database-v1.js` ;
+- nouveau : `src/adapters/input/capture/capture-database-transfer-v1.js` ;
+- nouveau : `tests/unit/capture-database-v1.test.mjs` ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md` à la clôture.
+
+Tout autre fichier reste protégé.
+
+#### RED attendu
+
+Avant implémentation, le test doit démontrer l'absence du format/adapter et couvrir ensuite :
+
+1. round-trip exact d'un bundle complet ;
+2. conservation des champs créature y compris évolution, HP, présentation/scale/sockets/audio ;
+3. conservation des stats modernes et du loadout ;
+4. conservation complète d'une capacité :
+   - `requiredLevel` ;
+   - conditions d'activation ;
+   - timings/cooldown/énergie/ciblage ;
+   - `SkillEffectV1/StatusEffectV1` ;
+   - présentation V2 / audio / FX ;
+5. aucun champ battle/teams/actors/rosters ajouté ;
+6. cross-références invalides refusées ;
+7. aucune dépendance UI/DOM/storage/network/Runtime ;
+8. JSON invalide refusé explicitement.
+
+#### Critère de fin du micro-lot
+
+- RED ciblé prouvé ;
+- contrat de bundle pur ;
+- export/import JSON idempotent ;
+- aucune source canonique dupliquée ;
+- CI complète GREEN ;
+- documentation architecture synchronisée ;
+- checkpoint GREEN du micro-lot avant tout raccord Human Editor / boutons fichiers.
