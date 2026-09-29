@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import {
   CAPTURE_TEST_CREATURE_OPTIONS_V1,
@@ -43,5 +44,23 @@ test("selected Capture test creature refuses to invent scale when visual metadat
         assetCatalog: assetCatalogFor("braisombre")
       }),
     /metadata|displayScale/i
+  );
+});
+
+
+test("selected Capture preview passes authoritative metadata into opponent draft builder", async () => {
+  const pageJs = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(pageJs, /option\.metaFile/);
+  assert.match(pageJs, /creatureMetaByOptionId/);
+  assert.match(
+    pageJs,
+    /creatureMeta\s*:\s*\n?\s*visualContext\.creatureMetaByOptionId/
   );
 });
