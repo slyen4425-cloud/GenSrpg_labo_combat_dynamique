@@ -2689,7 +2689,8 @@ export function preserveUnrepresentedCreatureFieldsV1({
   previousDraft = null,
   visibleElementIds = [],
   visibleResistanceKinds = [],
-  activeSkillIds = []
+  activeSkillIds = [],
+  evolutionRepresented = false
 }) {
   if (!fields || typeof fields !== "object") {
     throw new TypeError("fields must be an object");
@@ -2748,13 +2749,14 @@ export function preserveUnrepresentedCreatureFieldsV1({
         ])
       ],
       evolution:
-        Object.prototype.hasOwnProperty.call(
-          fields.capture ?? {},
-          "evolution"
-        )
-          ? fields.capture.evolution
+        evolutionRepresented
+          ? (
+              fields.capture?.evolution ??
+              null
+            )
           : (
               previousDraft?.capture?.evolution ??
+              fields.capture?.evolution ??
               null
             )
     },
@@ -3107,7 +3109,8 @@ export function mountCaptureEditorHumanV2({
               "element:" +
               input.dataset.resistance
           ),
-          activeSkillIds: []
+          activeSkillIds: [],
+          evolutionRepresented: true
         })
       );
 
@@ -3184,7 +3187,8 @@ export function mountCaptureEditorHumanV2({
             "element:" +
             input.dataset.resistance
         ),
-        activeSkillIds
+        activeSkillIds,
+        evolutionRepresented: true
       });
 
     const draft =

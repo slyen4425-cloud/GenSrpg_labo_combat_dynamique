@@ -136,6 +136,7 @@ test("explicitly disabling evolution is not overwritten by an older hidden draft
         },
         combat: {}
       },
+      evolutionRepresented: true,
       previousDraft: {
         elements: [],
         resistances: [],
