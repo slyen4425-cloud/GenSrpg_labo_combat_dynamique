@@ -64,6 +64,19 @@ test("CaptureCreatureEditorDraftV2 normalized output is valid input to the same 
   assert.deepEqual(second, first);
 });
 
+test("CaptureCreatureEditorDraftV2 remains idempotent with an empty optional description", () => {
+  const input = validInput();
+  input.description = "";
+
+  const first =
+    normalizeCaptureCreatureEditorDraftV2(input);
+  const second =
+    normalizeCaptureCreatureEditorDraftV2(first);
+
+  assert.equal(first.description, "");
+  assert.deepEqual(second, first);
+});
+
 test("CaptureCreatureEditorDraftV2 keeps presentation as the single source of presentation identity", () => {
   const value = normalizeCaptureCreatureEditorDraftV2(validInput());
 
