@@ -13096,3 +13096,65 @@ Critère de fin :
 - correction minimale de la cause ;
 - CI complète verte ;
 - PREVALIDATION UI smartphone avant GREEN UI final.
+
+
+### Résultat — réparation régression scale créature V1
+
+Diagnostic démontré :
+
+- le contrôle `data-creature-display-scale` existe toujours dans l'éditeur ;
+- `Human Editor` lit toujours `displayScale` ;
+- l'export Capture V3 et l'adaptateur visuel savent toujours transporter et consommer un scale V2 ;
+- le renderer applique toujours `actor.scale` dans son transform de base ;
+- la régression est apparue dans le nouveau sélecteur de créature adverse de test.
+
+Premier commit responsable :
+
+`a7d749460af09a4e5d8a6bf4e71d29853e816d3f` — `feat: add Capture test creature options to consolidated preview`.
+
+Cause exacte :
+
+- `buildCaptureTestOpponentDraftV1()` reconstruisait une présentation V2 pour la créature sélectionnée ;
+- cette présentation imposait `displayScale: 1` ;
+- les métadonnées visuelles autoritaires déjà présentes dans `global-assets` étaient ignorées ;
+- exemples autoritaires : Braisombre `displayScale.opponent = 0.88`, Maraileron `0.92`.
+
+RED :
+
+- test : `tests/unit/capture-test-creature-scale-regression-v1.test.mjs` ;
+- SHA RED : `d476b7699c1305ca9115f2fdfb94811c76e5ff70` ;
+- CI : `36561671942` — FAILURE attendue ;
+- 504 tests, 502 pass, 2 fail ;
+- échecs ciblés :
+  1. le builder renvoyait 1 au lieu du scale autoritaire ;
+  2. le builder acceptait l'absence de metadata et inventait silencieusement 1.
+
+Correction :
+
+- aucun tableau parallèle de scales ajouté ;
+- chaque option de test référence uniquement son fichier `.meta.json` existant dans `global-assets` ;
+- la preview charge ces metadata depuis la bibliothèque visuelle autoritaire ;
+- le builder exige la metadata correspondant à l'option ;
+- `displayScale.opponent` devient la source du scale du draft adverse ;
+- une metadata absente, incohérente ou un scale non positif provoque une erreur explicite ;
+- aucun changement Combat Core, Animation Core ou renderer.
+
+Commits de correction :
+
+- `40821cc7ffb60b39658a686c7815f60cd6371750` — source scale depuis metadata ;
+- `ef5c7a86bf874bdefee5d79526ee6b900e90eda1` — chargement metadata dans la preview ;
+- `ae67602abcc7bc69133f24db66b20bb928f1b7cc` — sentinelle sélection réalignée ;
+- `47957d30a54f094c1a55a4e56b1777698c33b894` — vrai chemin preview protégé.
+
+CI finale technique :
+
+- run : `36561906849` ;
+- conclusion : SUCCESS ;
+- 505 tests, 505 pass, 0 fail ;
+- les trois sentinelles de la régression sont PASS.
+
+État :
+
+**GREEN technique / PREVALIDATION UI smartphone**.
+
+Le GREEN UI final reste interdit avant validation smartphone utilisateur du scale dans la preview.
