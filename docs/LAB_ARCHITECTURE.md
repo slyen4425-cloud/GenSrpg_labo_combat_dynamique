@@ -1243,3 +1243,53 @@ Le calcul prend le registre validé + `CaptureCreatureStatValuesV1` et produit u
 Le Human Editor consomme le même calcul pour expliquer le résultat mais ne possède aucune formule métier.
 
 Ce jalon ne modifie pas encore la résolution d'une attaque ni l'horloge du Combat Runtime. Le branchement gameplay réel appartient à un micro-lot séparé avec RED dédié.
+
+
+## 15. Capture Stat Runtime Effects V1
+
+Le registre de stats et les valeurs de créature restent les propriétaires des données configurables. Le runtime ne relit pas l'UI.
+
+Chaîne autoritaire :
+
+```
+CaptureStatRegistryV1 + CaptureCreatureStatValuesV1
+        |
+        v
+projectCaptureStatEffectsV1()
+        |
+        v
+Capture Editor Export V3
+creature.combat.statEffects   (snapshot dérivé)
+        |
+        v
+Capture creature -> Fighter adapter
+        |
+        v
+Combat State
+        |
+        v
+Action Resolver / Combat Timing
+```
+
+Le snapshot runtime ne devient pas une seconde source de vérité éditable. Il est recalculé depuis les propriétaires lors de l'export.
+
+Canal de dégâts :
+
+- si `SkillDefinition.element` est défini, son ID est le canal ;
+- sinon le canal est `physical` ;
+- aucune déduction par nom, tag d'UI ou type de créature.
+
+Ordre de calcul :
+
+`baseDamage * (1 + damageBonusPct / 100) * max(0, 1 - resistancePct / 100)`.
+
+Le résultat est stabilisé à deux décimales. Une résistance de 100 % ou davantage annule les dégâts du canal.
+
+Vitesse :
+
+- `chargeTimeReductionPct` issu des stats est converti par l'adapter en réduction du `chargeTimeModifierPct` permanent du fighter ;
+- les effets temporaires de charge continuent de s'ajouter via Combat Timing ;
+- le `skillSpeedMultiplier` reste une règle globale distincte, appliquée après la préparation propre au combattant ;
+- la stat Vitesse ne modifie ni trajet, ni récupération, ni horloge d'énergie.
+
+Les résistances historiques conservées dans les metadata de compatibilité ne sont pas additionnées implicitement aux résistances issues des stats.
