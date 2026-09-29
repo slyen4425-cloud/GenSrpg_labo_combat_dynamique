@@ -1,7 +1,7 @@
 {
   "id": "voltige",
   "name": "Voltige",
-  "profile": "drake",
+  "profile": "biped",
   "views": {
     "player": "runtime/voltige_player.webp",
     "opponent": "runtime/voltige_opponent.webp",
