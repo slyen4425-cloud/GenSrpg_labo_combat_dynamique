@@ -172,7 +172,8 @@ test("visual metadata enriches an imported creature with face back icon scale pr
         creatureId: "crea_maraileron",
         metaId: "maraileron",
         metaFile:
-          "capture/creatures/maraileron/maraileron.meta.json"
+          "capture/creatures/maraileron/maraileron.meta.json",
+        profileId: "serpentine"
       },
       creatureMeta: {
         id: "maraileron",
