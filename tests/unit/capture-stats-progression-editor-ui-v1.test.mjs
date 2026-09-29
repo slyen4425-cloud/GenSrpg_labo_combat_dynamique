@@ -79,15 +79,15 @@ test("Human Editor can append a custom stat without hardcoding its id", async ()
         label: "Givre",
         damageChannel: "frost",
         resistanceChannel: "frost",
-        damagePerPoint: 1.25,
-        resistancePerPoint: 0.5
+        damagePctPerPoint: 1.25,
+        resistancePctPerPoint: 0.5
       }
     });
 
   assert.equal(result.stats.length, 2);
   assert.equal(result.stats[1].id, "frost");
-  assert.equal(result.stats[1].damagePerPoint, 1.25);
-  assert.equal(result.stats[1].resistancePerPoint, 0.5);
+  assert.equal(result.stats[1].damagePctPerPoint, 1.25);
+  assert.equal(result.stats[1].resistancePctPerPoint, 0.5);
 });
 
 test("Human Editor composes the existing evolution contract explicitly by target id", async () => {
