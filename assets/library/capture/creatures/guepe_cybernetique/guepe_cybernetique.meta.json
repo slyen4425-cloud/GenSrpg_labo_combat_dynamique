@@ -1,7 +1,7 @@
 {
   "id": "guepe_cybernetique",
   "name": "Guêpe cybernétique",
-  "profile": "drake",
+  "profile": "serpentine",
   "views": {
     "player": "runtime/guepe_cybernetique_player.webp",
     "opponent": "runtime/guepe_cybernetique_opponent.webp",
