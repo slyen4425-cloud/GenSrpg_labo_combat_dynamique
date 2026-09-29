@@ -1355,9 +1355,36 @@ async function hydrateMonsterCaptureCreatureCatalog() {
     ? catalog.entries
     : [];
 
-  if (entries.length !== 100) {
+  const expectedCount = Number(
+    catalog.provenance?.sourceCount
+  );
+
+  if (
+    !Number.isInteger(expectedCount) ||
+    expectedCount < 1
+  ) {
     throw new RangeError(
-      "Le catalogue Monster Capture doit contenir exactement 100 créatures builtin."
+      "Le catalogue Monster Capture doit déclarer un sourceCount valide."
+    );
+  }
+
+  if (entries.length !== expectedCount) {
+    throw new RangeError(
+      "Le catalogue Monster Capture contient " +
+        entries.length +
+        " créatures au lieu des " +
+        expectedCount +
+        " entrées historiques attendues."
+    );
+  }
+
+  const uniqueIdCount = new Set(
+    entries.map((entry) => entry.id)
+  ).size;
+
+  if (uniqueIdCount !== entries.length) {
+    throw new RangeError(
+      "Le catalogue Monster Capture contient des identifiants de créatures dupliqués."
     );
   }
 
