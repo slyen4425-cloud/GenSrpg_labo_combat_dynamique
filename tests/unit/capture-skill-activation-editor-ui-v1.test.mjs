@@ -229,3 +229,67 @@ test("Capture editor HTML exposes understandable ultimate activation controls", 
     );
   }
 });
+
+
+test("historical skill template merge preserves existing activation requirements", async () => {
+  const {
+    mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
+  } = await import(
+    "../../src/ui/capture-editor-skill-catalog-v1.js"
+  );
+
+  const activationRequirements = {
+    mode: "any",
+    conditions: [
+      {
+        type: "damage_taken",
+        threshold: 50
+      }
+    ]
+  };
+
+  const merged =
+    mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
+      {
+        id: "draft",
+        name: "Draft",
+        description: "Draft",
+        category: "offensive",
+        element: null,
+        requiredLevel: 1,
+        damage: 0,
+        heal: 0,
+        activationRequirements
+      },
+      "basic_attack"
+    );
+
+  assert.deepEqual(
+    merged.activationRequirements,
+    activationRequirements
+  );
+});
+
+test("Human Editor edits activation data but never evaluates runtime activation state", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const forbidden of [
+    "skill-activation-requirements-v1.js",
+    "evaluateSkillActivationRequirementsV1",
+    "damageDealtTotal",
+    "damageTakenTotal"
+  ]) {
+    assert.equal(
+      source.includes(forbidden),
+      false,
+      "Human Editor must not own runtime activation logic: " +
+        forbidden
+    );
+  }
+});
