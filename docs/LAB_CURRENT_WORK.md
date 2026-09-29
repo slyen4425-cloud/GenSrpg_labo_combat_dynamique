@@ -16029,3 +16029,92 @@ Cause RED prouvée :
 - `ERR_MODULE_NOT_FOUND` sur `src/adapters/input/capture/capture-complex-skill-migration-v1.js` ;
 - aucun échec Runtime/UI préexistant ;
 - la correction minimale peut donc être limitée à l'adaptateur pur de migration et à l'exposition du resolver d'alias legacy déjà propriétaire du mapping Monster Capture.
+
+
+### Implémentation GREEN technique — Capture Complex Skills Migration V1
+
+Correction minimale :
+
+- `src/adapters/input/capture/capture-complex-skill-migration-v1.js`
+  - dérive les 33 par différence entre les 103 utilisées et les 70 portables ;
+  - conserve ID, index source et ordre exact de `legacyEffects` ;
+  - produit des `SkillEffectV1` uniquement pour une capacité entièrement démontrable ;
+  - publie `tacticalEffects: null` dès qu'un blocker existe ;
+  - ne dépend ni du Runtime, ni de l'UI, ni du DOM, ni du storage, ni du network.
+- `src/adapters/input/capture/monster-capture-stat-values-v1.js`
+  - expose le resolver pur des alias déjà propriétaires de ce module ;
+  - aucun second mapping parallèle n'a été créé.
+
+Répartition exacte des 33 :
+
+**Runtime-ready — 7**
+
+- `lib_aqua_heal` ;
+- `lib_quake` ;
+- `lib_heal_5` ;
+- `lib_lifesteal_strike` ;
+- `cap_water_special_1` ;
+- `cap_light_special_1` ;
+- `cap_shadow_special_1`.
+
+**Durée + politique de valeur stat requises, ID de stat explicitement résolu — 15**
+
+- `lib_root_snare` ;
+- `lib_paralyze` ;
+- `lib_tailwind` ;
+- `lib_flash` ;
+- `lib_drain` ;
+- `lib_night_veil` ;
+- `lib_stunning_blow` ;
+- `cap_fire_special_1` ;
+- `cap_earth_special_2` ;
+- `cap_air_special_1` ;
+- `cap_air_special_2` ;
+- `cap_electric_special_1` ;
+- `cap_light_special_2` ;
+- `cap_shadow_special_2` ;
+- `cap_poison_special_2`.
+
+**Durée + politique de valeur stat + mapping de stat requis — 9**
+
+- `lib_heat_wave` — defense ;
+- `lib_mist_guard` — defense ;
+- `lib_earth_guard` — armor ;
+- `lib_magic_barrier` — defense ;
+- `lib_guard_break` — defense ;
+- `cap_fire_special_2` — defense ;
+- `cap_water_special_2` — defense ;
+- `cap_earth_special_1` — defense ;
+- `cap_electric_special_2` — defense.
+
+**Durée/tick explicite requis — 2**
+
+- `lib_regen` — HoT ;
+- `cap_poison_special_1` — DoT.
+
+Aucune de ces 26 capacités bloquées n'est partiellement présentée comme runtime-ready.
+
+Validation après implémentation :
+
+- commit implémentation : `5ad068cd8861bc09482d6f85dcc78854381db2df` ;
+- CI : run `36645936390` ;
+- résultat : SUCCESS ;
+- 624 tests ;
+- 624 PASS ;
+- 0 FAIL ;
+- 9 tests dédiés au lot passent.
+
+État du lot :
+
+- GREEN technique pour la responsabilité du migrateur : les 33 capacités ont désormais un état explicite et vérifié ;
+- 7 capacités sont directement traduites ;
+- 26 conservent leurs blockers réels au lieu d'inventer une sémantique ;
+- aucun Runtime/UI n'a été modifié.
+
+Blockers fonctionnels volontairement non masqués pour une future décision contractuelle :
+
+1. politique explicite tours/fins de tour -> `durationMs` / `tickIntervalMs` ;
+2. politique explicite de conservation des buffs/debuffs historiques en pourcentage face au `deltaPoints` moderne ;
+3. mapping moderne explicite pour `defense` et `armor`, s'il doit exister.
+
+Le lot peut être checkpointé GREEN dès que la CI finale de documentation est SUCCESS.
