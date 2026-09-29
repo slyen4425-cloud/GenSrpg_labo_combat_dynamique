@@ -1002,8 +1002,18 @@ export function buildHumanEditorExportV3({
   battleSetup,
   opponentCreatureDraft,
   opponentSkillDrafts,
-  opponentLoadout
+  opponentLoadout,
+  statRegistry = null,
+  statValues = []
 }) {
+  const statsInput =
+    statRegistry === null
+      ? {}
+      : {
+          statRegistry,
+          statValues
+        };
+
   return exportCaptureEditorDraftsToCombatExportV3({
     battleSetup,
     creatureDrafts: [
@@ -1018,6 +1028,7 @@ export function buildHumanEditorExportV3({
       loadout,
       opponentLoadout
     ],
+    ...statsInput,
     metadata: {
       editor: "capture-human-v2"
     }
@@ -4499,7 +4510,12 @@ export function mountCaptureEditorHumanV2({
         opponentCreatureDraft:
           resolvedOpponentCreatureDraft,
         opponentSkillDrafts,
-        opponentLoadout
+        opponentLoadout,
+        statRegistry,
+        statValues:
+          creatureRecord.statValues == null
+            ? []
+            : [creatureRecord.statValues]
       });
 
       one(root, "[data-editor-summary]").textContent =
