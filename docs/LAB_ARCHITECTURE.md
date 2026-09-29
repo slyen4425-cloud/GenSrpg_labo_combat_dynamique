@@ -1367,3 +1367,47 @@ Le chemin reste :
 `Human Editor -> SkillDraft -> SkillDefinition -> Combat Rules`.
 
 Le niveau requis pour apprendre/équiper reste une propriété distincte du `CaptureSkillEditorDraftV1` et n'est jamais fusionné avec les conditions d'activation runtime.
+
+
+## 17. Tactical Skill Effects / StatusEffect V1
+
+Les effets tactiques complexes sont séparés en deux niveaux.
+
+### SkillEffectV1
+
+Effet déclenché par la résolution d'une capacité :
+
+- `damage` ;
+- `heal` ;
+- `energy_restore` ;
+- `energy_drain` ;
+- `apply_status` ;
+- `cleanse` ;
+- `dispel`.
+
+Le scope de cible est explicite et ne doit jamais être déduit du nom de la compétence :
+
+- `target` ;
+- `self` ;
+- `all_enemies` ;
+- `all_allies` ;
+- `all_except_self`.
+
+### StatusEffectV1
+
+Effet persistant attaché plus tard au Combat State :
+
+- `stat_modifier` ;
+- `damage_over_time` ;
+- `heal_over_time` ;
+- `shield` ;
+- `immobilize` ;
+- `silence` ;
+- `stun` ;
+- `taunt`.
+
+Un statut porte une durée temps réel `durationMs`, une stratégie de stacking et une polarité.
+
+Les données historiques exprimées en anciens tours/durations ne sont jamais converties implicitement par le contrat. Leur migration appartient à un adaptateur dédié ultérieur.
+
+Ce jalon définit les contrats seulement. Aucun effet n'est déclaré actif en combat tant qu'un micro-lot Runtime dédié n'a pas validé le vrai chemin.
