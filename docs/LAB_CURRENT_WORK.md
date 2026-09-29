@@ -13712,3 +13712,59 @@ Validation technique :
 2. modifier uniquement les règles Combat puis lancer la preview sans devoir mettre à jour la créature ;
 3. charger Maraileron, Voltige puis Ailevent et vérifier face/dos/icône/scale/sockets ;
 4. charger une créature sans art et vérifier qu'elle reste éditable.
+
+
+## Micro-lot — loadout historique + position créatures V1 — 2026-09-29
+
+Base :
+
+- lot précédent PREVALIDATION : `checkpoint/lab-creature-ownership-visual-autolink-v1-prevalidation-green-2026-09-29` ;
+- SHA : `d02ada41b94c6b8b0bf1107f31380084e16c83d9`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-creature-loadout-position-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-creature-loadout-position-v1-2026-09-29`.
+
+Retour utilisateur :
+
+- les créatures historiques déjà raccordées visuellement doivent aussi retrouver leurs compétences disponibles comme dans l'ancien Monster Capture ;
+- les créatures illustrées doivent disposer d'un placement visuel cohérent dans l'arène ;
+- aucune reconfiguration manuelle répétée ne doit être nécessaire pour la version vitrine.
+
+Hypothèses à prouver avant code :
+
+1. les `abilityIds` historiques restent la source de vérité des capacités d'espèce ;
+2. le loadout initial historique est dérivé du niveau requis et de `maxMoves`, sans inventer l'ordre ;
+3. la position visuelle appartient à un propriétaire de présentation déjà existant, pas à Combat Rules ;
+4. aucun offset ne sera ajouté tant que son propriétaire et son format ne sont pas démontrés.
+
+Protégé :
+
+- Combat Runtime ;
+- Action Resolver ;
+- Animation Core ;
+- renderer ;
+- catalogue 110 ;
+- aucune heuristique par nom ;
+- aucun localStorage/sessionStorage/global ;
+- aucun merge sur main.
+
+RED attendu :
+
+- une créature historique avec `abilityIds` doit produire un loadout déterministe compatible avec son niveau ;
+- une capacité au niveau requis trop élevé ne doit pas être équipée ;
+- le nombre de slots équipés respecte la règle historique ;
+- le placement visuel d'une créature doit provenir d'une donnée de présentation explicite et stable, jamais d'un calcul caché dans l'UI.
+
+Critère de fin :
+
+- règle historique de loadout documentée et testée ;
+- propriétaire du placement prouvé ;
+- raccord des créatures concernées ;
+- CI complète verte ;
+- preview dédiée ;
+- PREVALIDATION smartphone.
