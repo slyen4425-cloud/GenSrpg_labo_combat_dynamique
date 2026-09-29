@@ -57,9 +57,11 @@ function statAdjustedDamageFor(
   const boosted =
     baseDamage *
     Math.max(0, 1 + damageBonusPct / 100);
-  const damage =
+  const rawDamage =
     boosted *
     Math.max(0, 1 - resistancePct / 100);
+  const damage =
+    Math.round(rawDamage * 100) / 100;
 
   return Object.freeze({
     baseDamage,
