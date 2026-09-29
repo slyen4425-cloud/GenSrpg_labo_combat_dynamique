@@ -14976,3 +14976,135 @@ Validation smartphone attendue :
 4. vérifier `Toutes` / `Au moins une` ;
 5. vérifier la lisibilité des unités secondes / dégâts / % PV ;
 6. enregistrer puis tester la configuration.
+
+
+## Micro-lot — Capture Tactical Skill Effects Architecture V1 — 2026-09-30
+
+Base :
+
+- checkpoint PREVALIDATION Activation Editor UI V1 : `checkpoint/lab-capture-skill-activation-editor-ui-v1-prevalidation-green-2026-09-29` ;
+- SHA : `5810d532e2c4931c3bca251f0a98881f962bdfae` ;
+- CI base : SUCCESS, 577/577 ;
+- retour smartphone utilisateur : bloc Ultime/conditions lisible et jugé bon ; combat réel non encore testé, donc validation UI seulement partielle.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-tactical-skill-effects-architecture-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-tactical-skill-effects-architecture-v1-2026-09-30`.
+
+### Besoin utilisateur
+
+Les capacités doivent maintenant supporter de vrais effets tactiques actifs en combat, pas seulement des champs d'éditeur :
+
+- buff / debuff ;
+- dégâts de zone ;
+- soin ;
+- immobilisation ;
+- effets périodiques ;
+- boucliers et contrôles ;
+- effets courants d'un jeu de combat tactique ;
+- puis migration des capacités Capture historiques et Export/Import pour constituer la vraie base de données du jeu vitrine Monster Capture.
+
+### Audit historique déjà démontré
+
+Catalogue réellement utilisé : 103 capacités.
+
+- 70 capacités simples déjà équivalentes au Runtime actuel ;
+- 7 capacités attendent soin / zone / vol de vie ;
+- 26 capacités attendent `StatusEffectV1` ;
+- effets historiques exacts présents : damage, heal, buff, debuff, dot, hot ;
+- ne pas inventer de migration silencieuse des anciens `duration` en durée temps réel.
+
+### Découpage obligatoire
+
+Ce chantier global est découpé en micro-lots indépendants :
+
+1. **Tactical Skill Effects Architecture V1** : contrats et ownership uniquement ;
+2. **Immediate Tactical Effects Runtime V1** : soin, auto-soin/vol de vie, gain/drain énergie ;
+3. **Area Targeting Runtime V1** : multi-cibles data-driven ;
+4. **StatusEffect Runtime V1** : buff/debuff, DoT/HoT, shield, immobilize, silence, stun, taunt + cleanse/dispel ;
+5. **Tactical Effects Editor UI V1** ;
+6. **Capture Complex Skills Migration V1** : conversion explicite des 33 historiques ;
+7. **Capture Database Export/Import V1**.
+
+Aucun lot ne doit prétendre que les effets sont jouables avant son raccord Runtime GREEN.
+
+### Objectif du micro-lot actuel
+
+Définir deux contrats purs et extensibles :
+
+- `SkillEffectV1` : effet déclenché par une capacité ;
+- `StatusEffectV1` : effet persistant porté par un combattant.
+
+Le contrat doit couvrir les familles tactiques prévues sans les exécuter encore.
+
+### Familles prévues
+
+SkillEffectV1 :
+
+- damage ;
+- heal ;
+- energy_restore ;
+- energy_drain ;
+- apply_status ;
+- cleanse ;
+- dispel.
+
+StatusEffectV1 :
+
+- stat_modifier ;
+- damage_over_time ;
+- heal_over_time ;
+- shield ;
+- immobilize ;
+- silence ;
+- stun ;
+- taunt.
+
+Ciblage explicite :
+
+- target ;
+- self ;
+- all_enemies ;
+- all_allies ;
+- all_except_self.
+
+Durées temps réel : `durationMs` uniquement pour les nouveaux contrats.
+
+### Propriétaires
+
+- définition immédiate/persistante : contrats sous `src/contracts/` ;
+- état persistant futur : Combat State ;
+- résolution future : Action Resolver / modules Core dédiés ;
+- sélection multi-cible future : Battle/Targeting ;
+- Human Editor futur : saisie seulement ;
+- migration historique : adaptateur séparé, jamais le contrat lui-même.
+
+### Protégé dans ce lot
+
+- Action Resolver ;
+- Combat State ;
+- Combat Runtime ;
+- targeting actuel ;
+- Human Editor ;
+- Animation/FX/renderer ;
+- catalogues historiques ;
+- aucun stockage/global/DOM/network.
+
+### RED attendu
+
+- contrats absents ;
+- validation type/cible/durée/payload ;
+- incompatibilités de payload refusées ;
+- données immuables ;
+- aucune dépendance runtime/UI.
+
+### Critère de fin
+
+- tests contractuels GREEN ;
+- documentation architecture synchronisée ;
+- checkpoint GREEN ;
+- aucun effet annoncé comme actif en combat avant les micro-lots Runtime suivants.
