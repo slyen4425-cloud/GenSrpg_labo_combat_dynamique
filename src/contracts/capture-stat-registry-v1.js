@@ -96,12 +96,21 @@ function normalizeStat(raw, index) {
         field + ".chargeTimeReductionPctPerPoint",
         0
       ),
-    damageReductionPctPerPoint:
-      nonNegativeNumber(
-        value.damageReductionPctPerPoint,
-        field + ".damageReductionPctPerPoint",
-        0
+    ...(
+      Object.prototype.hasOwnProperty.call(
+        value,
+        "damageReductionPctPerPoint"
       )
+        ? {
+            damageReductionPctPerPoint:
+              nonNegativeNumber(
+                value.damageReductionPctPerPoint,
+                field + ".damageReductionPctPerPoint",
+                0
+              )
+          }
+        : {}
+    )
   });
 }
 
