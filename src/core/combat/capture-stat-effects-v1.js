@@ -31,7 +31,10 @@ function projectDefinition(definition, pointsInput) {
       definition.chargeTimeReductionPctPerPoint,
     damageReductionPct:
       points *
-      definition.damageReductionPctPerPoint
+      (
+        definition.damageReductionPctPerPoint ??
+        0
+      )
   });
 }
 
