@@ -1441,3 +1441,63 @@ Le module `tactical-effect-targeting-v1.js` produit les actorIds vivants selon l
 Le calcul de dégâts est factorisé dans `combat-damage-v1.js` et partagé par les dégâts historiques et tactiques.
 
 CombatSession reçoit optionnellement le BattleFormat normalisé et le transmet à Action Resolver. La vue 2v2 utilise ce même objet déjà produit par la source native.
+
+
+## 20. StatusEffect Runtime V1
+
+Les statuts persistants sont désormais exécutés par le Combat Core.
+
+### État runtime
+
+Chaque fighter possède un tableau `statusEffects` d'instances normalisées contenant :
+
+- définition `StatusEffectV1` ;
+- source actor ;
+- appliedAtMs / expiresAtMs ;
+- stacks ;
+- nextTickAtMs pour DoT/HoT ;
+- shieldRemaining pour shield.
+
+L'horloge unique reste `CombatState.elapsedMs`.
+
+### Dégâts et boucliers
+
+`combat-damage-v1.js` calcule dégâts / bonus / résistance.
+
+`combat-damage-application-v1.js` applique ensuite les dégâts de manière unique :
+
+1. absorption des shields actifs ;
+2. perte de PV ;
+3. métriques damage dealt/taken.
+
+Dégâts directs et DoT utilisent ce même chemin.
+
+### Stat modifier
+
+Les coefficients de stats restent propriétaires de `CaptureStatRegistryV1`.
+
+L'export Capture transporte un snapshot `statEffectRulesById` vers le FighterConfig ; le Status Runtime ne contient aucune formule de stat codée en dur.
+
+### Contrôles
+
+- immobilize -> mouvement ;
+- silence -> skill start ;
+- stun -> mouvement + skill + commande ;
+- taunt -> réécriture déterministe de la cible offensive vers la source vivante.
+
+Tous les refus se produisent avant dépense de ressource.
+
+### Nettoyage / dissipation
+
+- cleanse : statuts detrimental ;
+- dispel : statuts beneficial ;
+- tags vides = tous les statuts de la polarité ;
+- tags renseignés = filtre explicite.
+
+### Stacking
+
+- replace : nouvelle instance ;
+- refresh : durée renouvelée ;
+- stack : incrément jusqu'à maxStacks + durée renouvelée.
+
+Aucun ancien champ legacy de durée/tour n'est interprété implicitement.
