@@ -14702,3 +14702,83 @@ Sémantique dégâts :
 - dégâts infligés/subis = perte de PV réellement appliquée, donc l'overkill ne gonfle pas les compteurs ;
 - un renvoi crédite le combattant qui a renvoyé comme source des dégâts ;
 - les compteurs repartent avec le fighter lors d'un remplacement/reset, cohérent avec une condition portée par la créature active.
+
+
+### Résultat — Capture Skill Activation Requirements V1
+
+RED :
+
+- SHA : `47f1b4e264c24b5e211dffc96805d0e2319310be` ;
+- run : `36636195543` ;
+- 566 tests, 560 pass, 6 fail ciblés ;
+- causes démontrées : contrat absent, métriques dégâts absentes, évaluateur absent, verrouillage runtime absent.
+
+Implémentation :
+
+- `SkillDefinition.activationRequirements` devient le propriétaire des conditions dynamiques de combat ;
+- modes : `all` / `any` ;
+- conditions V1 :
+  - `combat_elapsed_ms` ;
+  - `damage_dealt` ;
+  - `damage_taken` ;
+  - `hp_at_or_below_pct` ;
+- chaque condition possède un `threshold` explicite ;
+- `requiredLevel` n'est pas déplacé et ne fait pas partie du runtime d'activation ;
+- nouvel évaluateur pur : `src/core/combat/skill-activation-requirements-v1.js` ;
+- l'évaluation expose pour chaque condition `type / threshold / current / satisfied` ;
+- `resolveSkillStart()` refuse une compétence verrouillée avant énergie et cooldown avec `outcome: activation_requirements` ;
+- les réactions consomment le même évaluateur ;
+- le refus expose une raison déterministe réutilisable plus tard par l'UI.
+
+Métriques Combat State :
+
+- `damageDealtTotal` ;
+- `damageTakenTotal` ;
+- initialisées à 0 par combattant ;
+- dégâts comptabilisés uniquement à l'impact réel ;
+- l'overkill compte uniquement la perte de PV réellement subie ;
+- un renvoi crédite le combattant qui renvoie comme source des dégâts ;
+- reset du CombatSession réinitialise les métriques avec le fighter.
+
+Temps :
+
+- aucune nouvelle horloge ;
+- `combat_elapsed_ms` lit exclusivement `CombatState.elapsedMs`.
+
+GREEN fonctionnel :
+
+- SHA : `ce29516103fa53365666b787913edddb400f59c2` ;
+- run : `36636369652` ;
+- 566 tests, 566 pass, 0 fail.
+
+Durcissement :
+
+- raison de verrouillage déterministe ;
+- dégâts réfléchis ;
+- conditions sur capacités de réaction ;
+- reset des métriques ;
+- vérification qu'aucun coût/cooldown n'est consommé lors d'un refus.
+
+GREEN durci :
+
+- SHA : `ec2f3c6188ae1b700605cda245b9a382744627ac` ;
+- run : `36636460864` ;
+- 570 tests, 570 pass, 0 fail.
+
+Revue charte :
+
+- aucun localStorage/sessionStorage ;
+- aucun MutationObserver ;
+- aucun timer parallèle ;
+- aucun accès DOM dans contrat/Core ;
+- aucun changement Animation Core / FX / renderer ;
+- aucune heuristique par nom ;
+- CombatState reste propriétaire des métriques ;
+- Action Resolver reste propriétaire du refus de résolution ;
+- SkillDefinition reste propriétaire de la définition de la condition.
+
+État :
+
+**GREEN technique runtime/contrat.**
+
+Lot suivant séparé : **Capture Skill Activation Requirements Editor UI V1** pour rendre ces conditions configurables et compréhensibles dans le Human Editor, sans déplacer l'autorité métier dans l'UI.
