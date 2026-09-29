@@ -3,6 +3,9 @@ import {
   withFighterHp,
   withFighterStatusEffects
 } from "./combat-state.js";
+import {
+  isStatusEffectRuntimeInstanceActiveV1
+} from "./status-effect-instance-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -17,8 +20,10 @@ function fighterOf(state, fighterId) {
 function activeShield(instance, atMs) {
   return (
     instance.definition.kind === "shield" &&
-    instance.appliedAtMs <= atMs &&
-    atMs < instance.expiresAtMs &&
+    isStatusEffectRuntimeInstanceActiveV1(
+      instance,
+      atMs
+    ) &&
     Number(instance.shieldRemaining) > 0
   );
 }
