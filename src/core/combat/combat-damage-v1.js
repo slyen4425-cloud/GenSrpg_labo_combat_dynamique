@@ -1,3 +1,7 @@
+import {
+  projectStatusStatEffectsV1
+} from "./status-effect-projection-v1.js";
+
 function fighterOf(state, fighterId) {
   const fighter = state?.fighters?.[fighterId];
   if (!fighter) {
@@ -13,7 +17,8 @@ export function computeCombatDamageV1({
   attackerId,
   targetId,
   baseDamage,
-  channel = "physical"
+  channel = "physical",
+  atMs = state.elapsedMs
 }) {
   const attacker = fighterOf(state, attackerId);
   const target = fighterOf(state, targetId);
@@ -26,18 +31,47 @@ export function computeCombatDamageV1({
     channel.trim() !== ""
       ? channel.trim()
       : "physical";
+  const attackerStatus =
+    projectStatusStatEffectsV1({
+      fighter: attacker,
+      atMs
+    });
+  const targetStatus =
+    projectStatusStatEffectsV1({
+      fighter: target,
+      atMs
+    });
+
   const damageBonusPct =
-    Number(
-      attacker.damagePctByChannel?.[
-        damageChannel
-      ] ?? 0
-    ) || 0;
+    (
+      Number(
+        attacker.damagePctByChannel?.[
+          damageChannel
+        ] ?? 0
+      ) || 0
+    ) +
+    (
+      Number(
+        attackerStatus.damagePctByChannel?.[
+          damageChannel
+        ] ?? 0
+      ) || 0
+    );
   const resistancePct =
-    Number(
-      target.resistancePctByChannel?.[
-        damageChannel
-      ] ?? 0
-    ) || 0;
+    (
+      Number(
+        target.resistancePctByChannel?.[
+          damageChannel
+        ] ?? 0
+      ) || 0
+    ) +
+    (
+      Number(
+        targetStatus.resistancePctByChannel?.[
+          damageChannel
+        ] ?? 0
+      ) || 0
+    );
 
   const boosted =
     amount *
