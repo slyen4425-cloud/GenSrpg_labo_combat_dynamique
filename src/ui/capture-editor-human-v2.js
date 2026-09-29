@@ -1257,6 +1257,18 @@ function writeSkillTemplateFields(root, fields) {
   for (const [selector, value] of mapping) {
     one(root, selector).value = String(value ?? "");
   }
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      fields,
+      "activationRequirements"
+    )
+  ) {
+    renderHumanSkillActivationRequirementsV1(
+      root,
+      fields.activationRequirements
+    );
+  }
 }
 
 function prepareNewSkillDraftFields(root, id) {
@@ -1300,6 +1312,13 @@ function prepareNewSkillDraftFields(root, id) {
 
   one(root, "[data-skill-interrupts]").checked = false;
   one(root, "[data-skill-clash]").checked = false;
+  renderHumanSkillActivationRequirementsV1(
+    root,
+    {
+      mode: "all",
+      conditions: []
+    }
+  );
 
   for (const input of root.querySelectorAll("[data-skill-distance]")) {
     input.checked = true;
@@ -1677,6 +1696,196 @@ function createOption(select, value, label) {
   option.textContent = label;
   select.append(option);
   return option;
+}
+
+
+function syncHumanSkillActivationConditionRowV1(
+  row
+) {
+  const type = row.querySelector(
+    "[data-skill-activation-condition-type]"
+  ).value;
+  const input = row.querySelector(
+    "[data-skill-activation-condition-threshold]"
+  );
+  const unit = row.querySelector(
+    "[data-skill-activation-condition-unit]"
+  );
+  const meta = activationRequirementTypeMetaV1(
+    type
+  );
+
+  input.step = String(meta.step);
+  input.min = "0";
+  if (meta.max === null) {
+    input.removeAttribute("max");
+  } else {
+    input.max = String(meta.max);
+  }
+  unit.textContent = meta.unit;
+}
+
+function appendHumanSkillActivationConditionV1(
+  root,
+  condition = {
+    type: "combat_elapsed_ms",
+    threshold: 10000
+  }
+) {
+  const host = one(
+    root,
+    "[data-skill-activation-conditions-host]"
+  );
+  const row = document.createElement("div");
+  row.className = "skill-activation-condition";
+  row.dataset.skillActivationCondition = "true";
+
+  const typeLabel = document.createElement("label");
+  typeLabel.textContent = "Condition";
+  const type = document.createElement("select");
+  type.dataset.skillActivationConditionType =
+    "true";
+
+  for (
+    const conditionType of
+    SKILL_ACTIVATION_REQUIREMENT_TYPES
+  ) {
+    const meta =
+      activationRequirementTypeMetaV1(
+        conditionType
+      );
+    createOption(
+      type,
+      conditionType,
+      meta.label
+    );
+  }
+  type.value = condition.type;
+
+  const thresholdLabel =
+    document.createElement("label");
+  thresholdLabel.textContent = "Seuil";
+  const threshold =
+    document.createElement("input");
+  threshold.type = "number";
+  threshold.dataset.skillActivationConditionThreshold =
+    "true";
+  threshold.value = String(
+    humanSkillActivationThresholdFromContractV1(
+      condition.type,
+      condition.threshold
+    )
+  );
+
+  const unit = document.createElement("span");
+  unit.className =
+    "skill-activation-condition__unit";
+  unit.dataset.skillActivationConditionUnit =
+    "true";
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer";
+  remove.dataset.skillActivationRemove = "true";
+
+  typeLabel.append(type);
+  thresholdLabel.append(threshold);
+  row.append(
+    typeLabel,
+    thresholdLabel,
+    unit,
+    remove
+  );
+  host.append(row);
+  syncHumanSkillActivationConditionRowV1(
+    row
+  );
+
+  return row;
+}
+
+function renderHumanSkillActivationRequirementsV1(
+  root,
+  requirements
+) {
+  const value =
+    requirements ?? {
+      mode: "all",
+      conditions: []
+    };
+  const conditions =
+    Array.isArray(value.conditions)
+      ? value.conditions
+      : [];
+  const enabled = conditions.length > 0;
+  const toggle = one(
+    root,
+    "[data-skill-activation-enabled]"
+  );
+  const config = one(
+    root,
+    "[data-skill-activation-config]"
+  );
+  const mode = one(
+    root,
+    "[data-skill-activation-mode]"
+  );
+  const host = one(
+    root,
+    "[data-skill-activation-conditions-host]"
+  );
+
+  toggle.checked = enabled;
+  config.hidden = !enabled;
+  mode.value =
+    SKILL_ACTIVATION_REQUIREMENT_MODES.includes(
+      value.mode
+    )
+      ? value.mode
+      : "all";
+  host.textContent = "";
+
+  for (const condition of conditions) {
+    appendHumanSkillActivationConditionV1(
+      root,
+      condition
+    );
+  }
+}
+
+function readHumanSkillActivationRequirementsV1(
+  root
+) {
+  const enabled = one(
+    root,
+    "[data-skill-activation-enabled]"
+  ).checked;
+  const mode = selectedValue(
+    root,
+    "[data-skill-activation-mode]"
+  );
+
+  const conditions = [
+    ...root.querySelectorAll(
+      "[data-skill-activation-condition]"
+    )
+  ].map((row) => ({
+    type: row.querySelector(
+      "[data-skill-activation-condition-type]"
+    ).value,
+    value: Number(
+      row.querySelector(
+        "[data-skill-activation-condition-threshold]"
+      ).value
+    )
+  }));
+
+  return buildHumanSkillActivationRequirementsV1({
+    enabled,
+    mode,
+    conditions
+  });
 }
 
 function statEffectNumber(value) {
@@ -2934,6 +3143,10 @@ function readSkillFields(root) {
       root,
       "[data-skill-target]:checked"
     ),
+    activationRequirements:
+      readHumanSkillActivationRequirementsV1(
+        root
+      ),
     damage: numericValue(
       root,
       "[data-skill-damage]"
