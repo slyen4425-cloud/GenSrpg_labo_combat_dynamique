@@ -16118,3 +16118,78 @@ Blockers fonctionnels volontairement non masqués pour une future décision cont
 3. mapping moderne explicite pour `defense` et `armor`, s'il doit exister.
 
 Le lot peut être checkpointé GREEN dès que la CI finale de documentation est SUCCESS.
+
+
+## Micro-lot — Capture Legacy Status Semantics V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN migration complexe : `checkpoint/lab-capture-complex-skills-migration-v1-green-2026-09-30` ;
+- SHA : `02bf1b6002150b84077c8137230624d53770b35e` ;
+- CI : SUCCESS, 624/624.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-legacy-status-semantics-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-legacy-status-semantics-v1-2026-09-30`.
+
+### Cause démontrée depuis la source historique exacte
+
+Source : commit `49289784ee92a47fd51089815ca25954cdba4493`, blob `74e223b2c9877e6a88b6ad6726290d230f1f616e`.
+
+1. `gensCaptureBattleEndTurn()` appelle `gensCaptureTickStatuses(..., "turn_end")` uniquement sur la créature dont le tour se termine.
+2. DoT/HoT tickent à cette fin de tour, puis `duration` est décrémentée de 1.
+3. Donc une durée legacy N signifie exactement **N fins d'action du porteur**, pas N secondes et pas N rounds globaux.
+4. `cap142EffectPct` démontre que les petites valeurs legacy sont converties en pourcentages :
+   - |v| <= 2 -> 30 % ;
+   - |v| <= 5 -> 40 % ;
+   - 6..19 -> 50 % ;
+   - >= 20 -> valeur déjà en %.
+5. Les buffs/debuffs modifient la stat de base en pourcentage.
+6. `cap142NormStat` démontre explicitement `armor/armure/def/defense -> defense`.
+7. Les alias historiques déjà possédés par le raccord Capture restent utilisés pour speed/initiative/agility/agilite et physical/power/force.
+
+### Objectif
+
+Supprimer les blockers de migration sans conversion arbitraire :
+
+- étendre `StatusEffectV1` avec durée `owner_action_end` en plus de `time_ms` ;
+- DoT/HoT legacy tickent à chaque fin d'action du porteur ;
+- étendre `stat_modifier` avec mode `percent` en plus de `points` ;
+- transporter les valeurs de stats de base vers le fighter pour calculer le pourcentage ;
+- ajouter la stat moderne `defense` au registre standard ;
+- `defense` produit une réduction globale de dégâts configurable par point ;
+- ajouter `defense/armor/armure/def` au resolver d'alias propriétaire ;
+- rendre le migrateur des 26 statuts runtime-ready quand toutes les données sont désormais démontrées.
+
+### Règles de compatibilité
+
+- les statuts modernes existants sans nouveau champ restent `time_ms` + mode `points` ;
+- aucune rupture des 624 tests existants ;
+- aucune seconde horloge ;
+- les statuts `owner_action_end` ne décrémentent PAS sur réaction adverse ni simple avance du temps ;
+- une action du porteur réussie (mouvement, compétence terminée, commande terminée) déclenche son tick/decrement ;
+- `defense` réduit tous les canaux après résistances de canal ;
+- réduction totale bornée à 100 % ;
+- Human Editor hors périmètre de ce lot.
+
+### RED
+
+1. contrat accepte `durationModel:"owner_action_end"` + `durationActions` sans `durationMs` ;
+2. DoT/HoT legacy tickent exactement à la fin d'action du porteur ;
+3. stat_modifier percent applique le pourcentage aux points de base ;
+4. defense standard existe et projette une réduction globale ;
+5. combat damage consomme la réduction globale ;
+6. resolver legacy maps defense/armor vers defense ;
+7. migrateur convertit les 26 statuts sans blocker restant ;
+8. aucun timer/DOM/storage/renderer.
+
+### Critère de fin
+
+- 33/33 capacités complexes runtime-ready ;
+- CI complète GREEN ;
+- checkpoint GREEN ;
+- seulement ensuite Capture Database Export/Import V1.
