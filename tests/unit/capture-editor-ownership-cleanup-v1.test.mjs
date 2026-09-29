@@ -124,7 +124,7 @@ test("skill socket options derive only from actual creature sockets", () => {
   assert.equal(stale.value, "");
 });
 
-test("generic Buff / Debuff creation is explicitly disabled until StatusEffectV1 exists", async () => {
+test("generic Buff / Debuff creation is enabled only through the tactical effects surface", async () => {
   const html = await readFile(
     new URL(
       "../../examples/dom-demo/capture-editor-v2.html",
@@ -135,7 +135,15 @@ test("generic Buff / Debuff creation is explicitly disabled until StatusEffectV1
 
   assert.match(
     html,
-    /<option value="buff_debuff" disabled>Buff \/ Debuff — StatusEffectV1 requis<\/option>/
+    /<option value="buff_debuff">Buff \/ Debuff<\/option>/
+  );
+  assert.match(
+    html,
+    /data-skill-effects-host/
+  );
+  assert.match(
+    html,
+    /data-skill-effect-add/
   );
 });
 
