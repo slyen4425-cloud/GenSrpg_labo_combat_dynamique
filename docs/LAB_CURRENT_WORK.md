@@ -13988,3 +13988,110 @@ Invariants finaux :
 
 **GREEN technique / PREVALIDATION smartphone.**
 
+
+
+## Micro-lot — Capture Stats / Progression Architecture V1 — 2026-09-29
+
+Base :
+
+- checkpoint PREVALIDATION styles vitrine : `checkpoint/lab-showcase-creature-style-bindings-v1-prevalidation-green-2026-09-29` ;
+- SHA : `6765ae6f0cae4d2b654494ab89c34ebc55b12b96` ;
+- CI base : `36620295008` — SUCCESS ;
+- 533 tests, 533 pass, 0 fail.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-stats-progression-architecture-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-stats-progression-architecture-v1-2026-09-29`.
+
+### Préaudit propriétaire
+
+Dungeon / GenSrpG historique audité :
+
+- `DUNGEON_DEFAULT_ATTRIBUTES` reste une liste codée en dur ;
+- les labels/statuts Dungeon sont rendus depuis des tables fixes ;
+- les formules `Force / Agilité / Intelligence / Esprit / Endurance / Initiative` sont implémentées par fonctions dédiées ;
+- aucun registre générique extensible de statistiques réutilisable n'a été démontré ;
+- ce système historique ne sera donc ni copié ni utilisé comme seconde autorité.
+
+Labo audité :
+
+- `CaptureCreatureEditorDraftV3.sourceStats` hérite encore du bloc rigide V1 à six stats ;
+- `CaptureSkillEditorDraftV1.requiredLevel` est déjà le propriétaire du niveau requis d'une capacité ;
+- `CaptureActiveSkillLoadoutV1` possède quatre slots fixes historiques ;
+- `capture.evolution { condition, level, targetId }` existe déjà dans le contrat créature et reste l'unique mécanisme d'évolution ;
+- `CaptureCombatRulesEditorDraftV1` reste propriétaire des règles communes énergie/déplacement/charge ;
+- l'export V3 compose déjà les contrats créature/compétence/loadout mais ne possède pas encore de registre de stats ni de politique générale de déblocage.
+
+### Objectif V1
+
+Créer les propriétaires de données génériques nécessaires avant tout raccord UI massif :
+
+1. registre de stats Capture extensible, avec stats standard et stats personnalisées ;
+2. liens optionnels d'une stat vers un canal de dégâts et/ou de résistance ;
+3. paramètres d'influence configurables, sans formule codée dans l'UI ;
+4. valeurs de stats d'une créature séparées de la définition du registre ;
+5. politique générale de déblocage des slots actifs selon le niveau ;
+6. conserver `requiredLevel` sur la capacité ;
+7. conserver l'évolution existante `targetId + level` sans second mécanisme ;
+8. fournir une projection de compatibilité depuis les stats historiques Monster Capture.
+
+### Propriétaires prévus
+
+- définition/registre des stats : nouveau contrat Capture dédié sous `src/contracts/` ;
+- valeurs de stats d'une créature : contrat dédié, référencé par l'adaptateur Capture ;
+- politique de progression des slots : nouveau contrat Capture Progression Rules sous `src/contracts/` ;
+- calcul gameplay dégâts/résistances : hors scope de ce premier jalon tant que les coefficients finaux ne sont pas validés ;
+- UI : hors scope du premier RED contractuel, raccord séparé après validation des propriétaires.
+
+### Fichiers autorisés V1
+
+- `src/contracts/capture-stat-registry-v1.js` ;
+- `src/contracts/capture-creature-stat-values-v1.js` ;
+- `src/contracts/capture-progression-rules-v1.js` ;
+- `src/adapters/input/capture/monster-capture-stat-values-v1.js` ;
+- `data/capture/monster-capture-stat-registry.v1.json` ;
+- `data/capture/monster-capture-progression-rules.v1.json` ;
+- tests unitaires dédiés ;
+- documentation du présent lot.
+
+Protégé :
+
+- Combat Runtime ;
+- Action Resolver ;
+- Animation Core / FX / renderer ;
+- Human Editor existant dans ce premier jalon contractuel ;
+- catalogue 110 original ;
+- mécanisme d'évolution existant ;
+- `requiredLevel` des capacités ;
+- aucun localStorage/sessionStorage/global ;
+- aucun merge sur `main`.
+
+### RED prévu
+
+- absence de registre stat extensible ;
+- absence de contrat valeurs de stats indépendant des définitions ;
+- absence de politique générale de slots par niveau ;
+- aucune projection standard des données historiques vers `hp/speed/physical/elements` ;
+- validation des IDs, doublons, canaux et schedule non disponible.
+
+### Risques
+
+- ne pas faire du registre une seconde source de vérité des HP ; HP reste propriété de la créature/Combat State ;
+- ne pas dupliquer résistances historiques et stat-derived resistance sans règle explicite ultérieure ;
+- ne pas déplacer `requiredLevel` depuis le contrat capacité ;
+- ne pas imposer aujourd'hui une formule de dégâts/résistance non validée ;
+- préserver la compatibilité du catalogue historique pendant la migration future.
+
+### Critère de fin du jalon contractuel
+
+- RED ciblé ;
+- propriétaires uniques documentés ;
+- stats standard configurées par données, plus support custom ;
+- politique de slots configurable et déterministe ;
+- compatibilité historique testée ;
+- CI complète verte ;
+- aucun changement UI/runtime visuel.
