@@ -14847,3 +14847,44 @@ UI V1 :
 - libellés/units compréhensibles sur smartphone ;
 - CI complète verte ;
 - checkpoint PREVALIDATION + preview smartphone.
+
+
+### Préaudit confirmé — Capture Skill Activation Editor UI V1
+
+Chemin réel :
+
+`readSkillFields() -> buildHumanSkillDraftV1() -> normalizeCaptureSkillEditorDraftV1() -> normalizeSkillDefinition()`.
+
+Constats :
+
+- `buildHumanSkillDraftV1()` ne transporte pas encore `activationRequirements` ;
+- le formulaire Skills ne possède aucun contrôle pour les conditions runtime ;
+- `requiredLevel` est déjà un champ séparé et restera inchangé ;
+- « Nouvelle capacité » passe par `prepareNewSkillDraftFields()` ;
+- « Créer / Mettre à jour » passent tous deux par `persistCurrentSkill()`, donc un seul raccord suffit ;
+- les champs dynamiques ajoutés après montage ne sont pas couverts par la boucle initiale de listeners : le bloc conditions aura une délégation locale explicite ;
+- aucun calcul d'état runtime n'est requis dans l'éditeur.
+
+Décision UI :
+
+- checkbox ON/OFF « Conditions d'activation / Ultime » ;
+- mode `all` = toutes les conditions, `any` = au moins une ;
+- liste de lignes ajoutables/supprimables ;
+- libellés humains :
+  - Temps de combat écoulé ;
+  - Dégâts infligés ;
+  - Dégâts subis ;
+  - PV ≤ X % ;
+- le contrat conserve `combat_elapsed_ms` en millisecondes, mais l'UI affiche le temps en **secondes** avec conversion explicite présentation -> contrat ;
+- dégâts et pourcentage restent dans leur unité naturelle ;
+- aucune condition activée = `activationRequirements.conditions = []`.
+
+Fichiers autorisés :
+
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` ;
+- tests UI dédiés ;
+- documentation.
+
+Runtime/Combat State/Action Resolver restent protégés dans ce lot.
