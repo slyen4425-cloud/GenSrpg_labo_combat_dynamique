@@ -729,8 +729,18 @@ body[data-editor-view="preview"] {
 }
 
 .stat-definition-row {
-  grid-template-columns: minmax(90px, 0.8fr) minmax(130px, 1.2fr) repeat(4, minmax(105px, 1fr)) auto;
+  grid-template-columns: minmax(90px, 0.8fr) repeat(6, minmax(115px, 1fr)) auto;
   align-items: end;
+}
+
+.stat-definition-field {
+  display: grid;
+  gap: 4px;
+}
+
+.stat-definition-field small {
+  opacity: 0.72;
+  line-height: 1.15;
 }
 
 .progression-row {
