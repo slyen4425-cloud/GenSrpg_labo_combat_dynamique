@@ -15854,3 +15854,82 @@ Aucun GREEN UI final avant retour smartphone.
 Étape suivante non-UI et séparée :
 
 **Capture Complex Skills Migration V1** pour convertir explicitement les 33 capacités historiques complexes vers les contrats désormais actifs, sans inventer silencieusement la durée temps réel.
+
+
+## Micro-lot — Capture Complex Skills Migration V1 — 2026-09-30
+
+Base :
+
+- checkpoint PREVALIDATION Tactical Effects Editor UI V1 : `checkpoint/lab-tactical-effects-editor-ui-v1-prevalidation-green-2026-09-30` ;
+- SHA : `28ada349053ef2e935048d1fee6ca5039236ab85` ;
+- CI : SUCCESS, 615/615 ;
+- UI final GREEN reste soumis au retour smartphone.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-complex-skills-migration-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-complex-skills-migration-v1-2026-09-30`.
+
+### Objectif
+
+Convertir explicitement les 33 capacités historiques Capture réellement utilisées mais non portables auparavant vers les contrats tactiques désormais actifs.
+
+Base historique auditée :
+
+- 103 capacités réellement utilisées ;
+- 70 déjà natives simples ;
+- 33 complexes :
+  - soin / zone / auto-soin ;
+  - buff / debuff ;
+  - DoT / HoT.
+
+### Règles absolues
+
+- aucune inférence depuis nom/description ;
+- IDs historiques conservés ;
+- ordre/effects historiques conservés ;
+- aucune perte d'effet lors de la conversion ;
+- aucun mapping de stat legacy inventé ;
+- aucune conversion silencieuse de `duration` historique en `durationMs` ;
+- si la sémantique temps réelle historique ne peut pas être démontrée, le migrateur doit exiger une politique explicite plutôt que choisir une valeur arbitraire ;
+- aucune modification Runtime dans ce lot ;
+- catalogue historique reste source, catalogue natif dérivé reste une projection.
+
+### Préaudit obligatoire
+
+1. recompter les 33 capacités complexes à partir de `CaptureUsedAbilityCatalogV2` ;
+2. classifier exactement leurs effets ;
+3. retrouver dans la source historique le propriétaire et la sémantique de `duration` ;
+4. retrouver les anciennes stats `defense/armor/agilite/agility/initiative/force/power/speed` et vérifier si un mapping explicite vers le registre moderne existe déjà ;
+5. distinguer les migrations déterministes des migrations nécessitant une politique/configuration ;
+6. vérifier comment le catalogue natif portable actuel est hydraté dans le Human Editor.
+
+### Sortie attendue
+
+- adaptateur de migration pur ;
+- état de migration explicite par capacité ;
+- capacités déterministes deviennent runtime-ready sans saisie manuelle ;
+- capacités nécessitant une politique restent identifiées précisément, jamais aplaties ;
+- tests exacts sur les 33 entrées ;
+- aucune modification UI dans ce lot sauf consommation éventuelle d'un nouveau catalogue GREEN dans un lot séparé si nécessaire.
+
+### Protégé
+
+- Combat Runtime ;
+- Action Resolver ;
+- StatusEffect Runtime ;
+- Human Editor ;
+- Animation/FX/renderer ;
+- production GenSrpG ;
+- aucun storage/network/global/DOM.
+
+### Critère de fin
+
+- RED ciblé ;
+- migration prouvée pour chaque capacité ;
+- aucun champ inventé ;
+- CI complète GREEN ;
+- checkpoint GREEN avant Export/Import Database V1.
