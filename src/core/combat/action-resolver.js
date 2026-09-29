@@ -3,9 +3,7 @@ import {
   skillCooldownRemainingMs,
   withDistance,
   withFighterEnergy,
-  withFighterHp,
-  withSkillCooldown,
-  recordFighterDamage
+  withSkillCooldown
 } from "./combat-state.js";
 import {
   effectivePreparationMs,
@@ -21,6 +19,16 @@ import {
 import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
+import {
+  applyCombatDamageV1
+} from "./combat-damage-application-v1.js";
+import {
+  projectStatusStatEffectsV1
+} from "./status-effect-projection-v1.js";
+import {
+  activeTauntSourceActorIdV1,
+  hasActiveStatusKindV1
+} from "./status-effect-runtime-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -33,12 +41,6 @@ function fighterOf(state, fighterId) {
 function spendEnergy(state, fighterId, amount) {
   const fighter = fighterOf(state, fighterId);
   return withFighterEnergy(state, fighterId, fighter.energy - amount);
-}
-
-function applyDamage(state, fighterId, amount) {
-  const fighter = fighterOf(state, fighterId);
-  const damage = Math.max(0, Number(amount) || 0);
-  return withFighterHp(state, fighterId, fighter.hp - damage);
 }
 
 function damageChannelFor(skill) {
@@ -71,9 +73,16 @@ function preparationFor(
   skillSpeedMultiplier = 1
 ) {
   const fighter = fighterOf(state, fighterId);
+  const statusStats =
+    projectStatusStatEffectsV1({
+      fighter,
+      atMs: state.elapsedMs
+    });
   const modified = effectivePreparationMs({
     baseMs: skill.preparationMs,
-    permanentPct: fighter.chargeTimeModifierPct,
+    permanentPct:
+      fighter.chargeTimeModifierPct -
+      statusStats.chargeTimeReductionPct,
     effects: fighter.chargeTimeEffects,
     atMs: state.elapsedMs
   });
@@ -151,6 +160,33 @@ function reactionOutcome(skill, reactionSkill) {
 
 export function resolveMovement({ state, actorId, toDistance }) {
   const actor = fighterOf(state, actorId);
+
+  for (const [kind, outcome] of [
+    ["stun", "stunned"],
+    ["immobilize", "immobilized"]
+  ]) {
+    if (
+      hasActiveStatusKindV1(
+        state,
+        actorId,
+        kind
+      )
+    ) {
+      return Object.freeze({
+        ok: false,
+        outcome,
+        cost: 0,
+        state,
+        events: Object.freeze([
+          event("movement-rejected", 0, {
+            actorId,
+            reason: outcome
+          })
+        ])
+      });
+    }
+  }
+
   const cost = movementEnergyCost({
     from: state.distance,
     to: toDistance,
@@ -199,6 +235,47 @@ export function resolveSkillStart({
   const actor = fighterOf(state, actorId);
   fighterOf(state, targetId);
 
+  for (const [kind, outcome] of [
+    ["stun", "stunned"],
+    ["silence", "silenced"]
+  ]) {
+    if (
+      hasActiveStatusKindV1(
+        state,
+        actorId,
+        kind
+      )
+    ) {
+      return Object.freeze({
+        ok: false,
+        outcome,
+        state,
+        events: Object.freeze([
+          event("skill-rejected", 0, {
+            actorId,
+            skillId: skill.id,
+            reason: outcome
+          })
+        ])
+      });
+    }
+  }
+
+  const tauntSource =
+    skill.category === "offensive" &&
+    (
+      skill.targetRelations.includes("enemy") ||
+      skill.targetRelations.includes("any")
+    )
+      ? activeTauntSourceActorIdV1(
+          state,
+          actorId
+        )
+      : null;
+  const effectiveTargetId =
+    tauntSource ?? targetId;
+  fighterOf(state, effectiveTargetId);
+
   if (!isSkillInRange(skill, state.distance)) {
     return Object.freeze({
       ok: false,
@@ -242,12 +319,22 @@ export function resolveSkillStart({
   const unsupportedTacticalEffect =
     unsupportedImmediateTacticalEffectV1(
       skill,
-      { battleFormat }
+      {
+        battleFormat,
+        state,
+        actorId,
+        targetId: effectiveTargetId
+      }
     );
   if (unsupportedTacticalEffect !== null) {
+    const unsupportedOutcome =
+      unsupportedTacticalEffect.reason ===
+        "unsupported_status_stat"
+        ? "unsupported_status_stat"
+        : "unsupported_tactical_effect";
     return Object.freeze({
       ok: false,
-      outcome: "unsupported_tactical_effect",
+      outcome: unsupportedOutcome,
       skillId: skill.id,
       tacticalEffect: unsupportedTacticalEffect,
       state,
@@ -255,7 +342,7 @@ export function resolveSkillStart({
         event("skill-rejected", 0, {
           actorId,
           skillId: skill.id,
-          reason: "unsupported_tactical_effect",
+          reason: unsupportedOutcome,
           tacticalEffect:
             unsupportedTacticalEffect
         })
@@ -319,7 +406,7 @@ export function resolveSkillStart({
     actionType: "skill",
     actionId: skill.id,
     actorId,
-    targetId,
+    targetId: effectiveTargetId,
     skill,
     preparationMs,
     travelMs,
@@ -347,9 +434,22 @@ export function resolveSkillStart({
     state: committed,
     action,
     events: Object.freeze([
+      ...(
+        effectiveTargetId !== targetId
+          ? [
+              event("target-forced", 0, {
+                actorId,
+                fromTargetId: targetId,
+                targetId:
+                  effectiveTargetId,
+                reason: "taunt"
+              })
+            ]
+          : []
+      ),
       event("skill-start", 0, {
         actorId,
-        targetId,
+        targetId: effectiveTargetId,
         skillId: skill.id,
         preparationMs
       })
@@ -573,22 +673,15 @@ export function resolveSkillCompletion({
           targetId,
           skill
         );
-      const before = fighterOf(nextState, targetId).hp;
-      nextState = applyDamage(
-        nextState,
-        targetId,
-        damage.damage
-      );
-      const after = fighterOf(nextState, targetId).hp;
-      const actualDamage = before - after;
-      nextState = recordFighterDamage(
-        nextState,
-        {
+      const applied =
+        applyCombatDamageV1({
+          state: nextState,
           sourceActorId: actorId,
           targetActorId: targetId,
-          amount: actualDamage
-        }
-      );
+          damage: damage.damage,
+          atMs: impactAtMs
+        });
+      nextState = applied.state;
 
       events.push(event("hit", impactAtMs, {
         actorId: targetId,
@@ -599,8 +692,12 @@ export function resolveSkillCompletion({
         damageBonusPct: damage.damageBonusPct,
         resistancePct: damage.resistancePct,
         damage: damage.damage,
-        hpBefore: before,
-        hpAfter: after
+        absorbedByShield:
+          applied.absorbedByShield,
+        appliedDamage:
+          applied.appliedDamage,
+        hpBefore: applied.hpBefore,
+        hpAfter: applied.hpAfter
       }));
 
       if (skill.effect.interruptsPreparation) {
@@ -632,22 +729,15 @@ export function resolveSkillCompletion({
           actorId,
           skill
         );
-      const before = fighterOf(nextState, actorId).hp;
-      nextState = applyDamage(
-        nextState,
-        actorId,
-        damage.damage
-      );
-      const after = fighterOf(nextState, actorId).hp;
-      const actualDamage = before - after;
-      nextState = recordFighterDamage(
-        nextState,
-        {
+      const applied =
+        applyCombatDamageV1({
+          state: nextState,
           sourceActorId: targetId,
           targetActorId: actorId,
-          amount: actualDamage
-        }
-      );
+          damage: damage.damage,
+          atMs: impactAtMs
+        });
+      nextState = applied.state;
 
       events.push(event("hit", impactAtMs, {
         actorId,
@@ -659,8 +749,12 @@ export function resolveSkillCompletion({
         damageBonusPct: damage.damageBonusPct,
         resistancePct: damage.resistancePct,
         damage: damage.damage,
-        hpBefore: before,
-        hpAfter: after
+        absorbedByShield:
+          applied.absorbedByShield,
+        appliedDamage:
+          applied.appliedDamage,
+        hpBefore: applied.hpBefore,
+        hpAfter: applied.hpAfter
       }));
     } else {
       events.push(event(`skill-${outcome}`, impactAtMs, {
