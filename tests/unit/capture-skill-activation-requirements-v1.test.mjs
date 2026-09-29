@@ -357,3 +357,205 @@ test("any-mode activation succeeds when one condition is satisfied", () => {
 
   assert.equal(ready.ok, true);
 });
+
+
+test("activation rejection exposes deterministic reason data", () => {
+  const ultimate = skill("locked", {
+    energyCost: 4,
+    cooldownMs: 1000,
+    activationRequirements: {
+      mode: "all",
+      conditions: [
+        {
+          type: "damage_dealt",
+          threshold: 50
+        }
+      ]
+    }
+  });
+  const session = createCombatSession({
+    fighters: [fighter("a"), fighter("b")]
+  });
+
+  const result = session.startSkill({
+    actorId: "a",
+    targetId: "b",
+    skill: ultimate
+  });
+
+  assert.equal(
+    result.events[0].reason,
+    "activation_requirements"
+  );
+  assert.deepEqual(
+    result.activationRequirements.conditions[0],
+    {
+      type: "damage_dealt",
+      threshold: 50,
+      current: 0,
+      satisfied: false
+    }
+  );
+  assert.equal(
+    session.snapshot().fighters.a.energy,
+    10
+  );
+});
+
+test("reflected damage credits the reflector and the damaged attacker exactly once", () => {
+  const projectile = skill("projectile", {
+    damage: 20,
+    form: "projectile"
+  });
+  const reflect = normalizeSkillDefinition({
+    id: "reflect",
+    name: "reflect",
+    category: "counter",
+    form: "self",
+    element: null,
+    approachMode: "none",
+    energyCost: 0,
+    preparationMs: 0,
+    travelMs: 0,
+    recoveryMs: 0,
+    cooldownMs: 0,
+    allowedDistances: ["short", "medium", "long"],
+    targetRelations: ["self"],
+    reaction: {
+      reflectForms: ["projectile"]
+    },
+    effect: {
+      damage: 0,
+      tags: []
+    }
+  });
+
+  const session = createCombatSession({
+    fighters: [fighter("a"), fighter("b")]
+  });
+
+  const result = session.useSkill({
+    actorId: "a",
+    targetId: "b",
+    skill: projectile,
+    reactionSkill: reflect
+  });
+
+  assert.equal(result.outcome, "reflected");
+  assert.equal(
+    session.snapshot().fighters.a.damageTakenTotal,
+    20
+  );
+  assert.equal(
+    session.snapshot().fighters.a.damageDealtTotal,
+    0
+  );
+  assert.equal(
+    session.snapshot().fighters.b.damageDealtTotal,
+    20
+  );
+  assert.equal(
+    session.snapshot().fighters.b.damageTakenTotal,
+    0
+  );
+});
+
+test("reaction skills consume the same activation evaluator before spending energy", () => {
+  const incoming = skill("incoming", {
+    damage: 20,
+    form: "projectile"
+  });
+  const gatedReflect = normalizeSkillDefinition({
+    id: "gated-reflect",
+    name: "gated-reflect",
+    category: "counter",
+    form: "self",
+    element: null,
+    approachMode: "none",
+    energyCost: 3,
+    preparationMs: 0,
+    travelMs: 0,
+    recoveryMs: 0,
+    cooldownMs: 1000,
+    allowedDistances: ["short", "medium", "long"],
+    targetRelations: ["self"],
+    activationRequirements: {
+      mode: "all",
+      conditions: [
+        {
+          type: "damage_taken",
+          threshold: 10
+        }
+      ]
+    },
+    reaction: {
+      reflectForms: ["projectile"]
+    },
+    effect: {
+      damage: 0,
+      tags: []
+    }
+  });
+
+  const session = createCombatSession({
+    fighters: [fighter("a"), fighter("b")]
+  });
+  const started = session.startSkill({
+    actorId: "a",
+    targetId: "b",
+    skill: incoming
+  });
+
+  const reaction = session.reactToSkill({
+    action: started.action,
+    reactionSkill: gatedReflect,
+    elapsedMs: 0
+  });
+
+  assert.equal(reaction.ok, false);
+  assert.equal(
+    reaction.outcome,
+    "activation_requirements"
+  );
+  assert.equal(
+    session.snapshot().fighters.b.energy,
+    10
+  );
+  assert.equal(
+    Object.hasOwn(
+      session.snapshot().fighters.b.skillCooldowns,
+      gatedReflect.id
+    ),
+    false
+  );
+});
+
+test("combat reset clears runtime activation metrics with the fighter state", () => {
+  const session = createCombatSession({
+    fighters: [fighter("a"), fighter("b")]
+  });
+  const jab = skill("jab-reset", {
+    damage: 20
+  });
+
+  session.useSkill({
+    actorId: "a",
+    targetId: "b",
+    skill: jab
+  });
+  assert.equal(
+    session.snapshot().fighters.a.damageDealtTotal,
+    20
+  );
+
+  session.reset();
+
+  assert.equal(
+    session.snapshot().fighters.a.damageDealtTotal,
+    0
+  );
+  assert.equal(
+    session.snapshot().fighters.b.damageTakenTotal,
+    0
+  );
+});
