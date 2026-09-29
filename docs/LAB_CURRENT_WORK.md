@@ -13842,3 +13842,73 @@ CI finale :
 2. vérifier que les capacités non disponibles au runtime ne sont pas remplacées par une autre capacité arbitraire ;
 3. lancer la preview et vérifier le placement de chaque créature ;
 4. si une créature doit être décalée, définir son offset dans la metadata autoritaire plutôt que via CSS/UI locale.
+
+
+## Micro-lot — mapping vitrine créatures + styles de position V1 — 2026-09-29
+
+Base :
+
+- checkpoint PREVALIDATION précédent : `checkpoint/lab-creature-showcase-defaults-v1-prevalidation-green-2026-09-29` ;
+- SHA : `9299eb03172b97833c3c2795915c9f0e90cf2958`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-creature-showcase-mapping-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-creature-showcase-mapping-v1-2026-09-29`.
+
+Validation utilisateur explicite des raccords vitrine :
+
+- Voltige -> pack visuel Voltige -> profil `biped` ;
+- Ailevent -> pack visuel Ailevent -> profil `biped` ;
+- Maraileron -> pack visuel Maraileron -> profil `serpentine` ;
+- Moussados (appelé « Moussadon » dans le retour utilisateur) -> pack visuel Golem moussu -> profil `massive` ;
+- Lumilo -> pack visuel Renard magique doré -> profil `biped` ;
+- Luciéclair -> pack visuel Guêpe cybernétique -> profil `serpentine`.
+
+IDs historiques prouvés :
+
+- Voltige : `crea_voltik` ;
+- Ailevent : `crea_galewing`, `crea_ailevent` ;
+- Maraileron : `crea_maraileron` ;
+- Moussados : `crea_mossback` ;
+- Lumilo : `crea_lumipup`, `crea_lumilo` ;
+- Luciéclair : `crea_sparkmoth`, `crea_lucieclair`.
+
+Constat architecture :
+
+- le catalogue de raccord visuel est le bon propriétaire pour l'association explicite d'un ID créature à un pack visuel ;
+- la metadata `global-assets` reste propriétaire des assets, scale, sockets, offset et transformOrigin du pack ;
+- le style de position / profil choisi pour une créature doit être explicite dans le raccord, sans modifier le pack partagé ;
+- l'UI expose déjà `massive` (« Massif / golem ») mais aucun `data/profiles/massive.profile.json` n'existe actuellement.
+
+Objectifs :
+
+1. étendre les bindings par un `profileId` explicite ;
+2. ne plus imposer `creatureMeta.profile` quand le binding utilisateur définit un profil canonique ;
+3. ajouter le profil runtime `massive` ;
+4. charger `massive` dans la preview Capture ;
+5. raccorder tous les IDs listés ci-dessus ;
+6. conserver les compétences historiques déjà dérivées par le lot précédent ;
+7. aucun matching par nom, aucune copie d'asset, aucune modification Combat Core / renderer.
+
+Protégé :
+
+- catalogue 110 ;
+- historique des capacités ;
+- global-assets ;
+- Combat Runtime ;
+- Animation Core ;
+- renderer ;
+- aucun stockage navigateur ;
+- aucun merge sur main.
+
+Critère :
+
+- RED ciblé ;
+- mappings exacts ;
+- profil massive validé par le Profile Registry ;
+- CI complète verte ;
+- preview PREVALIDATION smartphone.
