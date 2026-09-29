@@ -14243,3 +14243,79 @@ Protégé :
 - preview dédiée ;
 - PREVALIDATION smartphone sur stats, custom stat, progression et évolution ;
 - pas de GREEN UI final sans retour utilisateur.
+
+
+### Résultat — Capture Stats / Progression Editor UI V1
+
+Préaudit UI démontré :
+
+- stats visibles encore codées en dur : Force / Agilité / Intelligence / Esprit / Endurance / Initiative ;
+- `readCreatureFields()` imposait `capture.evolution: null` ;
+- quatre slots existaient sans consommation de la politique générale de progression ;
+- `requiredLevel` existait bien sur les capacités mais n'était pas composé avec le déblocage des slots dans le Human Editor ;
+- l'état d'édition reste en mémoire de session dans les Maps du mount, sans persistance navigateur.
+
+RED :
+
+- SHA : `5dccb2638d758c271cd985799e2e236852c145bf` ;
+- run : `36624892297` ;
+- 548 tests, 542 pass, 6 fail ciblés ;
+- causes : surfaces stats/progression/évolution absentes et ancienne priorité de préservation de l'évolution.
+
+Implémentation UI :
+
+- SHA : `72489e970d4d955fb76d4259d532202d516d9235` ;
+- stats affichées depuis le registre data-driven ;
+- ajout d'une stat personnalisée par ID explicite ;
+- libellé, canaux dégâts/résistance et coefficients éditables dans le draft de registre de session ;
+- valeurs de stats de créature validées par `CaptureCreatureStatValuesV1` ;
+- HP reste dans sa carte dédiée et n'est pas dupliqué dans le registre ;
+- anciennes résistances déplacées sous une zone « compatibilité » distincte ;
+- évolution activable avec cible catalogue par ID et niveau ;
+- progression globale affichée depuis `CaptureProgressionRulesV1` ;
+- slots verrouillés selon le niveau ;
+- capacités au-dessus de `requiredLevel` signalées et refusées ;
+- aucune recherche heuristique par nom ;
+- aucun localStorage/sessionStorage/MutationObserver/timer/retry/monkey patch ajouté.
+
+Régression CI détectée puis corrigée :
+
+- la première correction faisait perdre une évolution historique dans un appel où le champ restait volontairement non représenté ;
+- cause : absence de distinction entre « évolution explicitement éditée » et « champ non représenté » ;
+- correction minimale : `evolutionRepresented` vaut false par défaut pour préserver la compatibilité, et vaut true uniquement sur le vrai chemin du nouvel éditeur ;
+- SHA correction : `d9c4fe3b38661d7fd5a17a1e4f9370c89ba089fd` ;
+- run : `36625737885` ;
+- 548 tests, 548 pass, 0 fail.
+
+Durcissement progression :
+
+- SHA : `33eadc300c2318bf3645e9cbd7ef46b5380824f3` ;
+- run : `36625982026` ;
+- 549 tests, 549 pass, 0 fail ;
+- la politique de slots est vérifiée aussi sur le vrai chemin « Tester/Valider le combat », pas seulement lors d'une sauvegarde ;
+- `requiredLevel` est vérifié séparément ;
+- un slot historique devenu verrouillé reste éditable uniquement pour pouvoir être vidé, sans remplacement automatique de capacité.
+
+Sentinelles de charte sur le Human Editor modifié :
+
+- `localStorage` : 0 ;
+- `sessionStorage` : 0 ;
+- `MutationObserver` : 0 ;
+- `setTimeout` / `setInterval` : 0 ;
+- aucun nouveau fichier Combat Runtime / Action Resolver / Animation / FX / renderer modifié.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise.**
+
+À valider sur smartphone :
+
+1. changement de créature : valeurs de stats cohérentes et pas de reset des règles globales ;
+2. ajout d'une stat personnalisée puis saisie d'une valeur ;
+3. modification d'un libellé/canal/coefficient ;
+4. évolution ON/OFF, choix cible et niveau ;
+5. niveaux 1 / 10 / 20 : 2 / 3 / 4 slots selon le preset ;
+6. capacité dont `requiredLevel` est supérieur au niveau : refus lisible ;
+7. lisibilité mobile des nouvelles cartes et formulaires.
+
+Aucun GREEN UI final avant retour smartphone de Sylvain.

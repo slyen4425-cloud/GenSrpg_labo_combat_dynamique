@@ -1200,3 +1200,19 @@ Le mécanisme existant `capture.evolution { condition, level, targetId }` reste 
 Ce jalon ne branche pas encore les coefficients de statistiques sur la résolution des dégâts/résistances. Il ne modifie ni `Action Resolver`, ni `Combat Runtime`, ni Animation/FX/Renderer.
 
 Le Human Editor n'est pas encore raccordé à ces nouveaux propriétaires. Ce raccord appartient à un micro-lot UI séparé avec RED dédié et validation smartphone.
+
+
+### Raccord Human Editor — Stats / Progression / Évolution V1
+
+Le Human Editor consomme maintenant les propriétaires validés sans devenir propriétaire des règles métier :
+
+- le registre de stats est chargé depuis `monster-capture-stat-registry.v1.json`, normalisé par `CaptureStatRegistryV1`, puis édité uniquement comme draft de session ;
+- les valeurs d'une créature passent par `CaptureCreatureStatValuesV1` et sont conservées dans le record d'édition de session, séparément de `CaptureCreatureEditorDraftV3.sourceStats` ;
+- `sourceStats` reste uniquement une compatibilité historique invisible dans l'éditeur courant ;
+- la politique de slots est chargée depuis `monster-capture-progression-rules.v1.json` et calculée par `CaptureProgressionRulesV1` ;
+- le Human Editor refuse un slot non débloqué et une capacité dont `requiredLevel` dépasse le niveau de la créature ;
+- l'évolution éditée écrit directement dans l'unique champ `capture.evolution { condition, level, targetId }`, avec cible par ID explicite ;
+- les anciennes résistances pourcentage restent visibles uniquement sous une zone de compatibilité clairement séparée des nouvelles stats à canaux ;
+- aucune persistance navigateur n'est introduite : le registre, la progression et les valeurs restent des drafts de session en attente du futur lot Export/Import.
+
+Le raccord des coefficients de stats aux dégâts/résistances du Combat Runtime reste hors scope et devra avoir son propre RED avant toute modification de l'Action Resolver.
