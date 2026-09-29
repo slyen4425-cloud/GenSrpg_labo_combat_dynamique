@@ -58,12 +58,20 @@ test("Capture test opponent catalog exposes exactly the nine delivered creature 
 
   const draft = buildCaptureTestOpponentDraftV1({
     optionId: option.id,
-    assetCatalog
+    assetCatalog,
+    creatureMeta: {
+      id: "golem_moussu",
+      displayScale: {
+        player: 1.15,
+        opponent: 0.9
+      }
+    }
   });
 
   assert.equal(draft.id, "crea-enemy");
   assert.equal(draft.displayName, "Golem moussu");
   assert.equal(draft.presentation.subjectId, "crea-enemy");
+  assert.equal(draft.presentation.displayScale, 0.9);
   assert.equal(draft.presentation.visual.front.assetId, option.assets.front);
   assert.equal(draft.presentation.visual.back.assetId, option.assets.back);
   assert.equal(draft.presentation.visual.icon.assetId, option.assets.icon);
