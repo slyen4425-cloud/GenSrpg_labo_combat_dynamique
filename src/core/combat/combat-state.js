@@ -1,5 +1,11 @@
 import { assertCombatDistance } from "./distance.js";
 import {
+  normalizeStatEffectRulesByIdV1
+} from "../../contracts/stat-effect-rules-v1.js";
+import {
+  normalizeStatusEffectRuntimeInstanceV1
+} from "./status-effect-instance-v1.js";
+import {
   advanceEnergyTicks,
   normalizeChargeTimeEffect
 } from "./combat-timing.js";
@@ -52,6 +58,38 @@ function normalizePercentByChannel(input, field) {
     );
   }
   return Object.freeze(output);
+}
+
+function normalizeStatusEffects(input, fighterId) {
+  const list = input ?? [];
+  if (!Array.isArray(list)) {
+    throw new TypeError(
+      fighterId + ".statusEffects must be an array"
+    );
+  }
+
+  const normalized = list.map(
+    (entry, index) =>
+      normalizeStatusEffectRuntimeInstanceV1(
+        entry,
+        fighterId +
+          ".statusEffects[" +
+          index +
+          "]"
+      )
+  );
+
+  const ids = normalized.map(
+    (entry) => entry.definition.id
+  );
+  if (new Set(ids).size !== ids.length) {
+    throw new RangeError(
+      fighterId +
+        ".statusEffects must not contain duplicate definition ids"
+    );
+  }
+
+  return Object.freeze(normalized);
 }
 
 function normalizeSkillCooldowns(input, fighterId) {
@@ -146,7 +184,16 @@ function normalizeFighter(input) {
     skillCooldowns: normalizeSkillCooldowns(
       input.skillCooldowns,
       id
-    )
+    ),
+    statusEffects: normalizeStatusEffects(
+      input.statusEffects,
+      id
+    ),
+    statEffectRulesById:
+      normalizeStatEffectRulesByIdV1(
+        input.statEffectRulesById,
+        id + ".statEffectRulesById"
+      )
   };
 
   if (hasOwn(input, "damagePctByChannel")) {
@@ -341,6 +388,34 @@ export function recordFighterDamage(
         ...target,
         damageTakenTotal:
           target.damageTakenTotal + damage
+      })
+    })
+  });
+}
+
+export function withFighterStatusEffects(
+  state,
+  fighterId,
+  statusEffects
+) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(
+      `Unknown fighter: ${fighterId}`
+    );
+  }
+
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: Object.freeze({
+        ...fighter,
+        statusEffects:
+          normalizeStatusEffects(
+            statusEffects,
+            fighterId
+          )
       })
     })
   });
