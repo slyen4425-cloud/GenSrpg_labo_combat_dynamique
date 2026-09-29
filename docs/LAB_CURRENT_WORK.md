@@ -16118,3 +16118,117 @@ Blockers fonctionnels volontairement non masqués pour une future décision cont
 3. mapping moderne explicite pour `defense` et `armor`, s'il doit exister.
 
 Le lot peut être checkpointé GREEN dès que la CI finale de documentation est SUCCESS.
+
+
+## Chantier — Capture Database Export / Import V1 — préaudit — 2026-09-30
+
+Base GREEN :
+
+- checkpoint : `checkpoint/lab-capture-complex-skills-migration-v1-green-2026-09-30` ;
+- SHA : `02bf1b6002150b84077c8137230624d53770b35e` ;
+- CI : `36646085200` — SUCCESS ;
+- 624 tests, 624 PASS, 0 FAIL.
+
+Checkpoint de départ :
+
+`checkpoint/lab-start-capture-database-export-import-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-database-export-import-v1-2026-09-30`.
+
+### Objectif du préaudit
+
+Préparer la vraie base de données Monster Capture exportable/importable sans recréer les propriétaires canoniques déjà existants.
+
+Le préaudit doit tracer séparément les données de :
+
+**Créature**
+
+- identité ;
+- niveau / HP ;
+- stats ;
+- éléments / résistances ;
+- évolution ;
+- visual binding / profile / scale / sockets ;
+- audio ;
+- loadout ;
+- metadata / version.
+
+**Capacité**
+
+- `SkillDefinition` ;
+- `requiredLevel` ;
+- conditions d'activation / Ultime ;
+- `SkillEffectV1` / `StatusEffectV1` ;
+- présentation ;
+- audio ;
+- sockets / projectile ;
+- timings ;
+- cooldown ;
+- énergie ;
+- ciblage ;
+- FX metadata.
+
+### Règle d'architecture
+
+L'Export/Import Database devra **composer** les propriétaires existants.
+
+Interdits :
+
+- scrape DOM ;
+- lecture des valeurs visuelles du formulaire ;
+- objet géant qui recrée toutes les sources ;
+- copie parallèle de stats, progression, évolution, présentation ou gameplay ;
+- storage navigateur comme source ;
+- dépendance au Runtime GenSrpG ;
+- deuxième bibliothèque de capacités ;
+- deuxième propriétaire des bindings visuels/audio.
+
+### Préaudit obligatoire avant RED
+
+1. inventorier tous les contrats/exporteurs/importeurs Capture déjà présents ;
+2. tracer le vrai chemin Human Editor -> drafts canoniques -> Export V2/V3 -> Combat ;
+3. identifier exactement ce qui est déjà round-trip et ce qui est seulement exporté ;
+4. vérifier la propriété des visuels, scale, sockets et audio ;
+5. vérifier la propriété des stats, progression, évolution et loadout ;
+6. vérifier la propriété complète des capacités, y compris `SkillDefinition.effects` et activation requirements ;
+7. repérer toute metadata calculée/dérivée qui ne doit pas être persistée comme nouvelle autorité ;
+8. définir le plus petit premier record Database V1 pouvant faire un round-trip pur sans DOM/storage/network.
+
+### Périmètre d'écriture pendant le préaudit
+
+Autorisé :
+
+- `docs/LAB_CURRENT_WORK.md` uniquement pour consigner les preuves et préciser ensuite le micro-lot RED.
+
+Lecture autorisée sur tous les contrats, adapters, catalogues, data et tests nécessaires.
+
+AUCUN fichier Runtime/UI/contrat/adaptateur n'est modifié avant que le préaudit soit terminé et que le périmètre d'implémentation soit déclaré ici.
+
+### Protégé
+
+- Combat Runtime ;
+- Action Resolver ;
+- StatusEffect Runtime ;
+- Human Editor ;
+- Animation / FX / renderer ;
+- catalogues historiques et portables ;
+- production GenSrpG ;
+- `main`.
+
+### Risques
+
+- recréer un méga-objet concurrent des propriétaires existants ;
+- exporter un snapshot runtime dérivé comme donnée éditable canonique ;
+- perdre des champs de présentation/asset bindings lors d'un round-trip ;
+- confondre `requiredLevel` avec la progression des slots ;
+- réintroduire des capacités historiques non runtime-ready comme `SkillDefinition` valides ;
+- créer une persistance implicite dans l'éditeur.
+
+### Critère de sortie du préaudit
+
+- matrice de propriété champ -> contrat/adaptateur source ;
+- liste exacte des trous de round-trip ;
+- premier micro-lot de Database V1 réduit et déclaré ;
+- RED défini avant toute implémentation.
