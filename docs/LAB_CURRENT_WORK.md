@@ -14601,3 +14601,74 @@ Invariants :
 **GREEN technique.**
 
 Lot suivant séparé : **Capture Skill Activation Requirements V1** pour les capacités ultimes/conditionnelles, en conservant `requiredLevel` comme propriétaire du niveau requis.
+
+
+## Micro-lot — Capture Skill Activation Requirements V1 — 2026-09-29
+
+Base :
+
+- checkpoint GREEN Stats Runtime Effects V1 : `checkpoint/lab-capture-stat-runtime-effects-v1-green-2026-09-29` ;
+- SHA : `18f0effddc3f032b3dcfa140668ffff399c64a16` ;
+- CI : `36635649684` — SUCCESS ;
+- 560 tests, 560 pass, 0 fail.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-skill-activation-requirements-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-skill-activation-requirements-v1-2026-09-29`.
+
+### Besoin utilisateur
+
+Permettre des capacités spéciales / ultimes qui ne deviennent activables qu'une fois des conditions de combat remplies, par exemple :
+
+- après un certain temps de combat ;
+- après avoir subi un certain total de dégâts ;
+- après avoir infligé un certain total de dégâts ;
+- selon un seuil de PV.
+
+Le `requiredLevel` existant reste exclusivement le niveau requis pour apprendre/équiper la capacité et ne doit pas devenir une condition dynamique de combat.
+
+### Objectif V1
+
+1. définir un contrat data-driven de conditions d'activation ;
+2. supporter une combinaison `all` ou `any` ;
+3. fournir au minimum les conditions temps écoulé, dégâts infligés, dégâts subis et seuil de PV ;
+4. conserver les compteurs nécessaires dans Combat State, pas dans l'UI ;
+5. refuser le démarrage d'une compétence dont les conditions ne sont pas encore satisfaites, avant dépense d'énergie/cooldown ;
+6. exposer une raison déterministe permettant ensuite à l'UI d'afficher pourquoi l'ultime est verrouillé ;
+7. ne pas ajouter de timer parallèle : le temps utilisé est `CombatState.elapsedMs` ;
+8. ne pas modifier Animation/FX/renderer.
+
+### Préaudit obligatoire
+
+- vérifier si un contrat de prérequis/activation existe déjà ;
+- vérifier les métriques déjà possédées par Combat State ;
+- tracer les points d'application des dégâts afin de compter dégâts infligés/subis une seule fois ;
+- vérifier le flux `SkillDefinition -> Action Resolver -> Combat Runtime` ;
+- vérifier où le Human Editor pourra ensuite saisir ces données sans devenir propriétaire ;
+- définir la frontière avec `requiredLevel`, cooldown, énergie et réactions.
+
+### Protégé
+
+- `CaptureSkillEditorDraftV1.requiredLevel` ;
+- politique de slots actifs ;
+- stats/résistances/Vitesse validées ;
+- Combat Runtime comme unique horloge ;
+- Animation Core / FX / renderer ;
+- aucun localStorage/sessionStorage ;
+- aucun MutationObserver/timer/retry/monkey patch ;
+- aucun merge sur `main`.
+
+### Critère de fin contractuel/runtime
+
+- RED ciblé ;
+- contrat propriétaire unique ;
+- métriques déterministes ;
+- refus/acceptation d'activation testés ;
+- aucune dépense sur refus ;
+- CI complète verte ;
+- documentation synchronisée ;
+- checkpoint GREEN avant raccord UI dédié.
