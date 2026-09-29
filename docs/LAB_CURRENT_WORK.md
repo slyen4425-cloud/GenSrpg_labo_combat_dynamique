@@ -14443,3 +14443,67 @@ Revue charte :
 **GREEN technique — PREVALIDATION smartphone.**
 
 Lot suivant séparé : raccord gameplay réel des effets Stats (dégâts/résistances et Vitesse -> temps de charge), avec RED dédié avant toute modification du Combat Runtime / Action Resolver.
+
+
+## Micro-lot — Capture Stat Runtime Effects V1 — 2026-09-29
+
+Base :
+
+- checkpoint PREVALIDATION Stats Effects V1 : `checkpoint/lab-capture-stat-effects-v1-prevalidation-green-2026-09-29` ;
+- SHA : `29d7d9db1cd6cc0b3506d4398ea0196fbe951184` ;
+- CI : `36634576773` — SUCCESS ;
+- 554 tests, 554 pass, 0 fail.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-stat-runtime-effects-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-stat-runtime-effects-v1-2026-09-29`.
+
+### Objectif
+
+Brancher les modificateurs Stats validés sur le gameplay réel, sans recopier les formules dans l'UI :
+
+1. bonus de dégâts % du canal de l'attaque ;
+2. bonus de résistance % du canal reçu ;
+3. réduction du temps de préparation/charge issue de la Vitesse ;
+4. conserver le calcul des modificateurs dans `capture-stat-effects-v1.js` comme source unique ;
+5. raccorder ces modificateurs par données explicites d'acteur, jamais par DOM/nom/type déduit ;
+6. ne pas modifier Animation/FX/renderer.
+
+### Préaudit obligatoire avant RED
+
+- localiser le propriétaire actuel des dégâts dans Action Resolver ;
+- localiser le propriétaire actuel du temps de préparation dans Combat Runtime / Combat Timing ;
+- tracer le vrai chemin Editor/Export -> Battle actor -> CombatSession/Runtime ;
+- vérifier l'ancien `skillSpeedMultiplier` afin d'éviter deux sources de vérité avec la Vitesse ;
+- définir où les `statEffects` calculés doivent être attachés au snapshot d'acteur ;
+- identifier la règle de combinaison avec résistances historiques si celles-ci sont encore actives.
+
+### Contraintes
+
+- aucun calcul stat dans le Human Editor ;
+- aucun scan DOM ;
+- aucune heuristique par nom de créature ;
+- aucune seconde horloge ;
+- aucune seconde formule dégâts/résistance ;
+- pas de suppression silencieuse de `skillSpeedMultiplier` sans migration démontrée ;
+- aucune modification de `main`.
+
+### RED attendu
+
+- dégâts d'une capacité physique/élémentaire inchangés malgré bonus de stat ;
+- résistance de stat non appliquée au canal reçu ;
+- temps de préparation inchangé malgré réduction de charge issue de Vitesse ;
+- sentinelle de composition avec les règles existantes.
+
+### Critère de fin
+
+- cause démontrée ;
+- correction minimale ;
+- tests unitaires + intégration du vrai chemin ;
+- CI complète verte ;
+- documentation synchronisée ;
+- checkpoint technique avant lot Prérequis/Ultimes.
