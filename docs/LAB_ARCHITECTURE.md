@@ -1555,3 +1555,87 @@ Un `stat_modifier` sélectionne un `statId` du `CaptureStatRegistryV1` courant. 
 Le champ historique `SkillDefinition.effect` demeure jusqu'à migration complète. `SkillDefinition.effects` ne le remplace pas silencieusement et la validation refuse les doubles autorités damage/heal.
 
 Les modèles historiques complexes ne deviennent pas automatiquement runtime-ready par la seule présence de cette UI : leur migration reste un lot séparé.
+
+
+## 22. Capture Complex Skills Migration V1
+
+Les 33 capacités Capture réellement utilisées mais absentes du catalogue portable simple sont projetées par un adaptateur pur :
+
+- `src/adapters/input/capture/capture-complex-skill-migration-v1.js`.
+
+### Source et complément
+
+La source reste `CaptureUsedAbilityCatalogV2` (103 capacités).
+
+Le complément complexe n'est pas maintenu manuellement : il est calculé comme les IDs de la source qui ne figurent pas dans `CapturePortableNativeSkillCatalogV1` (70 capacités). Cette relation garantit qu'une capacité ne peut pas exister simultanément dans les deux projections.
+
+### Sortie de migration
+
+Chaque entrée conserve :
+
+- l'ID historique ;
+- son index source ;
+- ses `legacyEffects` dans l'ordre historique ;
+- un état de migration ;
+- des blockers structurés ;
+- des `tacticalEffects` uniquement lorsque toute la capacité est démontrable.
+
+Une capacité bloquée expose `tacticalEffects: null`. Aucun sous-ensemble d'effets n'est publié comme s'il était runtime-ready.
+
+### Migrations déterministes
+
+Sept capacités sans statut persistant sont actuellement runtime-ready :
+
+- soins immédiats ;
+- auto-soins explicites ;
+- dégâts + auto-soin explicite ;
+- dégâts de zone portés par le token historique explicite `target:"zone"`.
+
+Le ciblage par défaut legacy utilisé ici vient du routage historique démontré, jamais du nom ou de la description de la capacité.
+
+### Durées legacy
+
+La source historique démontre que `duration` représente des tours / fins de tour :
+
+- statuts exécutés en `turn_end` ;
+- décrément de 1 à chaque fin de tour ;
+- DoT / HoT exprimés « par tour ».
+
+Le Runtime moderne utilise `CombatState.elapsedMs`, `durationMs` et, pour DoT/HoT, `tickIntervalMs`.
+
+L'adaptateur ne contient donc aucune conversion tours -> millisecondes. Les entrées concernées portent `requires-duration-policy` jusqu'à l'existence d'une politique explicite propriétaire de cette traduction.
+
+### Stats legacy
+
+Les alias Monster Capture restent propriétaires de `monster-capture-stat-values-v1.js`.
+
+Le resolver pur exporté depuis ce propriétaire reconnaît notamment :
+
+- `speed / initiative / agility / agilite -> speed` ;
+- `physical / power / force -> physical`.
+
+Il ne crée aucun mapping pour `defense` ou `armor`.
+
+Un second problème sémantique est conservé séparément : le moteur historique applique les buffs/debuffs comme modificateurs en pourcentage alors que `StatusEffectV1.stat_modifier` moderne exprime un `deltaPoints`.
+
+Ainsi :
+
+- alias de stat inconnu -> `requires-stat-mapping` ;
+- valeur legacy en pourcentage sans traduction démontrée vers `deltaPoints` -> `requires-stat-effect-policy`.
+
+Aucune valeur legacy n'est recopiée arbitrairement dans `deltaPoints`.
+
+### Frontières
+
+Ce jalon ne modifie pas :
+
+- Combat Runtime ;
+- Action Resolver ;
+- StatusEffect Runtime ;
+- Human Editor ;
+- Animation / FX / renderer ;
+- storage ;
+- network ;
+- production GenSrpG.
+
+Le Human Editor continuera d'utiliser sa Map `configuredSkills` unique. La consommation future de la projection complexe devra être un raccord dédié, pas une seconde bibliothèque concurrente.
