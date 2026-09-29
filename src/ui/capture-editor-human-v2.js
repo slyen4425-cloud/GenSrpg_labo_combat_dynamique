@@ -403,7 +403,7 @@ export function buildHumanCreatureDraftV2(fields) {
       fields.displayName,
       "Nom créature"
     ),
-    description: optionalText(fields.description) ?? "",
+    description: optionalText(fields.description),
     level: positiveInteger(fields.level, "Niveau"),
     sourceStats: {
       force: finiteNumber(fields.sourceStats?.force, "Force"),
