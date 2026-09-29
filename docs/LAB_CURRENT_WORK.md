@@ -13902,3 +13902,62 @@ RED :
 État initial :
 
 **DECLARED / RED à poser.**
+
+
+### Résultat — liaisons créatures vitrine + profils V2
+
+RED :
+
+- test : `tests/unit/capture-showcase-creature-links-v2.test.mjs` ;
+- SHA : `f52cc457bcaec5571680b18c912e018c7c3c3ea9` ;
+- CI : `36618182323` — FAILURE attendue ;
+- 533 tests, 529 pass, 4 fail ciblés :
+  - profils explicites absents ;
+  - binding utilisant encore le profil générique du pack ;
+  - profil `massive` absent ;
+  - preview ne chargeant pas `massive`.
+
+Liaisons utilisateur appliquées par ID historique explicite :
+
+- `crea_voltik` (Voltige) -> `voltige` -> `biped` ;
+- `crea_galewing` + `crea_ailevent` (Ailevent) -> `ailevent` -> `biped` ;
+- `crea_maraileron` (Maraileron) -> `maraileron` -> `serpentine` ;
+- `crea_mossback` (Moussados, correspondant au retour utilisateur « Moussadon ») -> `golem_moussu` -> `massive` ;
+- `crea_lumipup` + `crea_lumilo` (Lumilo) -> `renard_magique_dore` -> `biped` ;
+- `crea_sparkmoth` + `crea_lucieclair` (Luciéclair) -> `guepe_cybernetique` -> `serpentine`.
+
+Architecture :
+
+- aucun matching par nom ;
+- les assets, scale, sockets, offsets et transformOrigin restent lus depuis `global-assets` ;
+- `profileId` appartient au mapping vitrine historique explicite lorsqu'il est déclaré ;
+- sinon le binding conserve le profil générique de la metadata ;
+- les loadouts historiques du lot précédent sont conservés.
+
+Profil `massive` :
+
+- nouveau fichier : `data/profiles/massive.profile.json` ;
+- identifiant canonique : `massive` ;
+- label : « Massif / golem » ;
+- V1 réutilise volontairement les amplitudes sûres du profil bipède au lieu d'inventer une nouvelle animation lourde non validée ;
+- la preview Capture charge désormais ce profil.
+
+Validation technique :
+
+- commit fonctionnel : `9a3564eaacb73259be8ec5d5e961b94a5f732cd9` ;
+- CI : `36618357791` — SUCCESS ;
+- 533 tests, 533 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION smartphone.**
+
+À vérifier :
+
+1. Voltige -> art Voltige + Bipède ;
+2. Ailevent -> art Ailevent + Bipède ;
+3. Maraileron -> art Maraileron + Serpent / rampant ;
+4. Moussados -> art Golem moussu + Massif / golem ;
+5. Lumilo -> art Renard magique doré + Bipède ;
+6. Luciéclair -> art Guêpe cybernétique + Serpent / rampant ;
+7. vérifier que les capacités historiques restent préremplies comme avant.
