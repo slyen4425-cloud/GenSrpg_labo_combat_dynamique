@@ -48,6 +48,19 @@ import {
 import {
   importMonsterCaptureCreatureRecordV1
 } from "../adapters/input/capture/monster-capture-creature-import-v1.js";
+import {
+  normalizeCaptureCombatRulesEditorDraftV1
+} from "../contracts/capture-combat-rules-editor-draft-v1.js";
+import {
+  applyCaptureCombatRulesToCreatureDraftV1
+} from "../adapters/input/capture/capture-combat-rules-overlay-v1.js";
+import {
+  CAPTURE_CREATURE_VISUAL_BINDINGS_V1,
+  captureCreatureVisualBindingForIdV1
+} from "../catalogs/capture-creature-visual-bindings-v1.js";
+import {
+  applyCaptureCreatureVisualBindingV1
+} from "../adapters/input/capture/capture-creature-visual-binding-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -778,6 +791,36 @@ function numericValue(root, selector) {
   return Number(selectedValue(root, selector));
 }
 
+export function readHumanCombatRulesV1(root) {
+  return normalizeCaptureCombatRulesEditorDraftV1({
+    schema: "capture-combat-rules-editor-draft-v1",
+    maxEnergy: numericValue(
+      root,
+      "[data-max-energy]"
+    ),
+    initialEnergy: numericValue(
+      root,
+      "[data-initial-energy]"
+    ),
+    energyChargeAmount: numericValue(
+      root,
+      "[data-energy-charge-amount]"
+    ),
+    energyChargeIntervalMs: numericValue(
+      root,
+      "[data-energy-charge-interval]"
+    ),
+    movementEnergyPerStep: numericValue(
+      root,
+      "[data-movement-energy]"
+    ),
+    chargeTimeModifierPct: numericValue(
+      root,
+      "[data-charge-time-modifier]"
+    )
+  });
+}
+
 function writeSkillTemplateFields(root, fields) {
   const mapping = [
     ["[data-skill-id]", fields.id],
@@ -957,27 +1000,6 @@ function writeCreatureRecordFields(
       "[data-initial-hp]",
       draft.combat.initialHp ?? draft.combat.maxHp
     ],
-    ["[data-max-energy]", draft.combat.maxEnergy],
-    [
-      "[data-initial-energy]",
-      draft.combat.initialEnergy ?? 0
-    ],
-    [
-      "[data-energy-charge-amount]",
-      draft.combat.energyChargeAmount ?? 0
-    ],
-    [
-      "[data-energy-charge-interval]",
-      draft.combat.energyChargeIntervalMs ?? 0
-    ],
-    [
-      "[data-movement-energy]",
-      draft.combat.movementEnergyPerStep ?? 0
-    ],
-    [
-      "[data-charge-time-modifier]",
-      draft.combat.chargeTimeModifierPct ?? 0
-    ],
     [
       "[data-capture-rate]",
       draft.capture.captureRate
@@ -1098,12 +1120,6 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-audio-ko]", ""],
     ["[data-max-hp]", 50],
     ["[data-initial-hp]", 50],
-    ["[data-max-energy]", 10],
-    ["[data-initial-energy]", 0],
-    ["[data-energy-charge-amount]", 1],
-    ["[data-energy-charge-interval]", 2000],
-    ["[data-movement-energy]", 2],
-    ["[data-charge-time-modifier]", 0],
     ["[data-capture-rate]", 30],
     ["[data-spawn-chance]", 10],
     ["[data-stat-force]", 10],
@@ -1392,6 +1408,49 @@ async function hydrateMonsterCaptureCreatureCatalog() {
     entries.map(
       importMonsterCaptureCreatureRecordV1
     )
+  );
+}
+
+async function hydrateCaptureCreatureVisualMetadataV1() {
+  const uniqueBindings = [
+    ...new Map(
+      CAPTURE_CREATURE_VISUAL_BINDINGS_V1.map(
+        (binding) => [
+          binding.metaId,
+          binding
+        ]
+      )
+    ).values()
+  ];
+
+  const entries = await Promise.all(
+    uniqueBindings.map(async (binding) => {
+      const response = await fetch(
+        globalVisualAssetUrl(
+          binding.metaFile
+        ),
+        { cache: "no-store" }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Metadata visuelle créature indisponible : " +
+            binding.metaId +
+            " (" +
+            response.status +
+            ")"
+        );
+      }
+
+      return [
+        binding.metaId,
+        await response.json()
+      ];
+    })
+  );
+
+  return Object.freeze(
+    Object.fromEntries(entries)
   );
 }
 
@@ -1744,30 +1803,6 @@ function readCreatureFields(root, sockets) {
       initialHp: numericValue(
         root,
         "[data-initial-hp]"
-      ),
-      maxEnergy: numericValue(
-        root,
-        "[data-max-energy]"
-      ),
-      initialEnergy: numericValue(
-        root,
-        "[data-initial-energy]"
-      ),
-      energyChargeAmount: numericValue(
-        root,
-        "[data-energy-charge-amount]"
-      ),
-      energyChargeIntervalMs: numericValue(
-        root,
-        "[data-energy-charge-interval]"
-      ),
-      movementEnergyPerStep: numericValue(
-        root,
-        "[data-movement-energy]"
-      ),
-      chargeTimeModifierPct: numericValue(
-        root,
-        "[data-charge-time-modifier]"
       )
     },
     linkedSkillIds: [
@@ -2057,6 +2092,21 @@ export function preserveUnrepresentedCreatureFieldsV1({
         previousDraft?.capture?.evolution ??
         fields.capture?.evolution ??
         null
+    },
+    combat: {
+      ...(fields.combat ?? {}),
+      maxEnergy:
+        previousDraft?.combat?.maxEnergy ?? 0,
+      initialEnergy:
+        previousDraft?.combat?.initialEnergy ?? 0,
+      energyChargeAmount:
+        previousDraft?.combat?.energyChargeAmount ?? 0,
+      energyChargeIntervalMs:
+        previousDraft?.combat?.energyChargeIntervalMs ?? 0,
+      movementEnergyPerStep:
+        previousDraft?.combat?.movementEnergyPerStep ?? 0,
+      chargeTimeModifierPct:
+        previousDraft?.combat?.chargeTimeModifierPct ?? 0
     },
     linkedSkillIds: [
       ...new Set([
@@ -2649,13 +2699,7 @@ export function mountCaptureEditorHumanV2({
   const creatureOwnedSelectors = [
     '[data-editor-panel="creature"] input',
     '[data-editor-panel="creature"] select',
-    '[data-editor-panel="creature"] textarea',
-    '[data-max-energy]',
-    '[data-initial-energy]',
-    '[data-energy-charge-amount]',
-    '[data-energy-charge-interval]',
-    '[data-movement-energy]',
-    '[data-charge-time-modifier]'
+    '[data-editor-panel="creature"] textarea'
   ].join(", ");
 
   for (
@@ -2837,24 +2881,37 @@ export function mountCaptureEditorHumanV2({
         configuredCreatures.get(
           selectedCreatureId
         );
-      const creatureDraft =
-        creatureRecord.draft;
       const loadout =
         creatureRecord.loadout;
+      const combatRules =
+        readHumanCombatRulesV1(root);
+      const creatureDraft =
+        applyCaptureCombatRulesToCreatureDraftV1({
+          creatureDraft:
+            creatureRecord.draft,
+          combatRules
+        });
 
-      const resolvedOpponentCreatureDraft =
+      const opponentSourceDraft =
         typeof getOpponentCreatureDraft === "function"
           ? getOpponentCreatureDraft()
           : opponentCreatureDraft;
 
       if (
-        !resolvedOpponentCreatureDraft ||
-        typeof resolvedOpponentCreatureDraft !== "object"
+        !opponentSourceDraft ||
+        typeof opponentSourceDraft !== "object"
       ) {
         throw new TypeError(
           "Créature adverse de test indisponible"
         );
       }
+
+      const resolvedOpponentCreatureDraft =
+        applyCaptureCombatRulesToCreatureDraftV1({
+          creatureDraft:
+            opponentSourceDraft,
+          combatRules
+        });
 
       const battleSetup = buildHumanBattleSetupV1({
         battleId: "capture-human-preview",
@@ -2921,13 +2978,15 @@ export function mountCaptureEditorHumanV2({
     hydrateAssetCatalog(root, listen),
     hydratePrivateAudioCatalog(root),
     hydrateNativeSkillCatalog(),
-    hydrateMonsterCaptureCreatureCatalog()
+    hydrateMonsterCaptureCreatureCatalog(),
+    hydrateCaptureCreatureVisualMetadataV1()
   ])
     .then(([
-      ,
+      assetCatalog,
       ,
       nativeSkills,
-      monsterCaptureRecords
+      monsterCaptureRecords,
+      creatureVisualMetaById
     ]) => {
       for (
         const [skillId, draft] of nativeSkills
@@ -2951,17 +3010,44 @@ export function mountCaptureEditorHumanV2({
         }
       }
 
+      const availableAssetIds = new Set(
+        (assetCatalog.assets ?? [])
+          .map((asset) => asset?.id)
+          .filter(
+            (assetId) =>
+              typeof assetId === "string" &&
+              assetId !== ""
+          )
+      );
+
       for (
         const record of monsterCaptureRecords
       ) {
+        const binding =
+          captureCreatureVisualBindingForIdV1(
+            record.draft.id
+          );
+        const hydratedRecord =
+          binding === null
+            ? record
+            : applyCaptureCreatureVisualBindingV1({
+                record,
+                binding,
+                creatureMeta:
+                  creatureVisualMetaById[
+                    binding.metaId
+                  ],
+                availableAssetIds
+              });
+
         if (
           !configuredCreatures.has(
-            record.draft.id
+            hydratedRecord.draft.id
           )
         ) {
           configuredCreatures.set(
-            record.draft.id,
-            record
+            hydratedRecord.draft.id,
+            hydratedRecord
           );
         }
       }
@@ -2972,14 +3058,14 @@ export function mountCaptureEditorHumanV2({
       );
 
       updateCreatureLibraryState(
-        "100 créatures Monster Capture builtin chargées. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
+        "110 créatures Monster Capture chargées, dont les visuels existants sont raccordés automatiquement. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
         "ok"
       );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, 100 créatures Monster Capture, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, 110 créatures Monster Capture, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
           "info"
         );
       }
