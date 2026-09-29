@@ -2110,6 +2110,687 @@ function readHumanSkillActivationRequirementsV1(
   });
 }
 
+function tacticalEffectKindLabelV1(kind) {
+  return {
+    damage: "Dégâts / Dégâts de zone",
+    heal: "Soin",
+    energy_restore: "Gain d’énergie",
+    energy_drain: "Drain d’énergie",
+    apply_status: "Buff / Debuff / Statut",
+    cleanse: "Nettoyage",
+    dispel: "Dissipation"
+  }[kind] ?? kind;
+}
+
+function tacticalTargetScopeLabelV1(scope) {
+  return {
+    target: "Cible",
+    self: "Soi-même",
+    all_enemies: "Tous les ennemis",
+    all_allies: "Tous les alliés",
+    all_except_self: "Tous sauf soi"
+  }[scope] ?? scope;
+}
+
+function tacticalStatusKindLabelV1(kind) {
+  return {
+    stat_modifier: "Modification de stat",
+    damage_over_time: "Dégâts périodiques",
+    heal_over_time: "Soin périodique",
+    shield: "Bouclier",
+    immobilize: "Immobilisation",
+    silence: "Silence",
+    stun: "Stun",
+    taunt: "Provocation"
+  }[kind] ?? kind;
+}
+
+function tacticalPolarityLabelV1(polarity) {
+  return {
+    beneficial: "Bénéfique",
+    detrimental: "Négatif",
+    neutral: "Neutre"
+  }[polarity] ?? polarity;
+}
+
+function tacticalStackingLabelV1(stacking) {
+  return {
+    replace: "Remplacer",
+    refresh: "Rafraîchir la durée",
+    stack: "Empiler"
+  }[stacking] ?? stacking;
+}
+
+function tacticalFieldV1(
+  caption,
+  input,
+  className = ""
+) {
+  const label = document.createElement("label");
+  if (className) {
+    label.className = className;
+  }
+  label.textContent = caption;
+  label.append(input);
+  return label;
+}
+
+function tacticalNumberInputV1(
+  datasetKey,
+  value,
+  {
+    min = null,
+    max = null,
+    step = "1"
+  } = {}
+) {
+  const input = document.createElement("input");
+  input.type = "number";
+  input.step = String(step);
+  if (min !== null) {
+    input.min = String(min);
+  }
+  if (max !== null) {
+    input.max = String(max);
+  }
+  input.value = String(value ?? 0);
+  input.dataset[datasetKey] = "true";
+  return input;
+}
+
+function tacticalTextInputV1(
+  datasetKey,
+  value
+) {
+  const input = document.createElement("input");
+  input.value = String(value ?? "");
+  input.dataset[datasetKey] = "true";
+  return input;
+}
+
+function fillStatusStatSelectV1(
+  select,
+  statRegistry,
+  selectedId = ""
+) {
+  select.textContent = "";
+  const stats =
+    statRegistry?.stats ?? [];
+
+  if (stats.length === 0) {
+    createOption(
+      select,
+      "",
+      "Aucune statistique disponible"
+    );
+  } else {
+    for (const stat of stats) {
+      createOption(
+        select,
+        stat.id,
+        stat.label + " (" + stat.id + ")"
+      );
+    }
+  }
+
+  if (
+    selectedId &&
+    !stats.some(
+      (stat) => stat.id === selectedId
+    )
+  ) {
+    createOption(
+      select,
+      selectedId,
+      selectedId + " — hors registre actuel"
+    );
+  }
+
+  select.value = selectedId || "";
+}
+
+function syncHumanSkillEffectRowV1(
+  row
+) {
+  const kind = row.querySelector(
+    "[data-skill-effect-kind]"
+  ).value;
+
+  for (const node of row.querySelectorAll(
+    "[data-skill-effect-config-kind]"
+  )) {
+    const kinds = node.dataset
+      .skillEffectConfigKind
+      .split(",")
+      .map((value) => value.trim());
+    node.hidden = !kinds.includes(kind);
+  }
+
+  const statusKind =
+    row.querySelector(
+      "[data-skill-status-kind]"
+    )?.value ?? "";
+
+  for (const node of row.querySelectorAll(
+    "[data-skill-status-config-kind]"
+  )) {
+    const kinds = node.dataset
+      .skillStatusConfigKind
+      .split(",")
+      .map((value) => value.trim());
+    node.hidden = !kinds.includes(statusKind);
+  }
+
+  const stacking =
+    row.querySelector(
+      "[data-skill-status-stacking]"
+    )?.value ?? "refresh";
+  const maxStacks = row.querySelector(
+    "[data-skill-status-max-stacks-field]"
+  );
+  if (maxStacks) {
+    maxStacks.hidden = stacking !== "stack";
+  }
+}
+
+function appendHumanSkillEffectV1(
+  root,
+  effect = null,
+  statRegistry = null
+) {
+  const host = one(
+    root,
+    "[data-skill-effects-host]"
+  );
+  const row = document.createElement("div");
+  row.className = "skill-effect-row";
+  row.dataset.skillEffectRow = "true";
+
+  const header = document.createElement("div");
+  header.className = "skill-effect-row__header";
+
+  const kind = document.createElement("select");
+  kind.dataset.skillEffectKind = "true";
+  for (const value of SKILL_EFFECT_V1_KINDS) {
+    createOption(
+      kind,
+      value,
+      tacticalEffectKindLabelV1(value)
+    );
+  }
+
+  const scope = document.createElement("select");
+  scope.dataset.skillEffectScope = "true";
+  for (
+    const value of
+    SKILL_EFFECT_V1_TARGET_SCOPES
+  ) {
+    createOption(
+      scope,
+      value,
+      tacticalTargetScopeLabelV1(value)
+    );
+  }
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer";
+  remove.dataset.skillEffectRemove = "true";
+
+  header.append(
+    tacticalFieldV1("Effet", kind),
+    tacticalFieldV1("Portée", scope),
+    remove
+  );
+
+  const config = document.createElement("div");
+  config.className = "skill-effect-row__config";
+
+  const amount = tacticalNumberInputV1(
+    "skillEffectAmount",
+    effect?.amount ?? 0,
+    { min: 0, step: "0.1" }
+  );
+  const amountField = tacticalFieldV1(
+    "Valeur",
+    amount
+  );
+  amountField.dataset.skillEffectConfigKind =
+    "damage,heal,energy_restore,energy_drain";
+
+  const channel = tacticalTextInputV1(
+    "skillEffectChannel",
+    effect?.channel ?? ""
+  );
+  const channelField = tacticalFieldV1(
+    "Canal / élément",
+    channel
+  );
+  channelField.dataset.skillEffectConfigKind =
+    "damage";
+
+  const filterTags = tacticalTextInputV1(
+    "skillEffectStatusTags",
+    (effect?.statusTags ?? []).join(", ")
+  );
+  const filterTagsField = tacticalFieldV1(
+    "Tags à cibler (séparés par des virgules)",
+    filterTags
+  );
+  filterTagsField.dataset.skillEffectConfigKind =
+    "cleanse,dispel";
+
+  const statusBox =
+    document.createElement("div");
+  statusBox.className = "skill-status-config";
+  statusBox.dataset.skillEffectConfigKind =
+    "apply_status";
+
+  const status = effect?.status ?? {};
+
+  const statusId = tacticalTextInputV1(
+    "skillStatusId",
+    status.id ?? "status"
+  );
+  const statusKind =
+    document.createElement("select");
+  statusKind.dataset.skillStatusKind = "true";
+  for (const value of STATUS_EFFECT_V1_KINDS) {
+    createOption(
+      statusKind,
+      value,
+      tacticalStatusKindLabelV1(value)
+    );
+  }
+
+  const polarity =
+    document.createElement("select");
+  polarity.dataset.skillStatusPolarity =
+    "true";
+  for (
+    const value of
+    STATUS_EFFECT_V1_POLARITIES
+  ) {
+    createOption(
+      polarity,
+      value,
+      tacticalPolarityLabelV1(value)
+    );
+  }
+
+  const duration =
+    tacticalNumberInputV1(
+      "skillStatusDurationSeconds",
+      status.durationMs == null
+        ? 3
+        : humanTacticalMsToSecondsV1(
+            status.durationMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+
+  const stacking =
+    document.createElement("select");
+  stacking.dataset.skillStatusStacking =
+    "true";
+  for (
+    const value of
+    STATUS_EFFECT_V1_STACKING
+  ) {
+    createOption(
+      stacking,
+      value,
+      tacticalStackingLabelV1(value)
+    );
+  }
+
+  const maxStacks =
+    tacticalNumberInputV1(
+      "skillStatusMaxStacks",
+      status.maxStacks ?? 2,
+      { min: 1, step: "1" }
+    );
+  const maxStacksField = tacticalFieldV1(
+    "Stacks max",
+    maxStacks
+  );
+  maxStacksField.dataset
+    .skillStatusMaxStacksField = "true";
+
+  const statusTags = tacticalTextInputV1(
+    "skillStatusTags",
+    (status.tags ?? []).join(", ")
+  );
+
+  const common = document.createElement("div");
+  common.className = "skill-status-config__grid";
+  common.append(
+    tacticalFieldV1("ID statut", statusId),
+    tacticalFieldV1("Type de statut", statusKind),
+    tacticalFieldV1("Polarité", polarity),
+    tacticalFieldV1("Durée (secondes)", duration),
+    tacticalFieldV1("Stacking", stacking),
+    maxStacksField,
+    tacticalFieldV1(
+      "Tags (séparés par des virgules)",
+      statusTags
+    )
+  );
+
+  const statId = document.createElement("select");
+  statId.dataset.skillStatusStatId = "true";
+  fillStatusStatSelectV1(
+    statId,
+    statRegistry,
+    status.statId ?? ""
+  );
+  const deltaPoints =
+    tacticalNumberInputV1(
+      "skillStatusDeltaPoints",
+      status.deltaPoints ?? 0,
+      { step: "0.1" }
+    );
+  const statConfig = document.createElement("div");
+  statConfig.className =
+    "skill-status-config__specific";
+  statConfig.dataset.skillStatusConfigKind =
+    "stat_modifier";
+  statConfig.append(
+    tacticalFieldV1("Statistique", statId),
+    tacticalFieldV1(
+      "Variation en points",
+      deltaPoints
+    )
+  );
+
+  const statusAmount =
+    tacticalNumberInputV1(
+      "skillStatusAmount",
+      status.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+  const tickSeconds =
+    tacticalNumberInputV1(
+      "skillStatusTickSeconds",
+      status.tickIntervalMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            status.tickIntervalMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+  const statusChannel = tacticalTextInputV1(
+    "skillStatusChannel",
+    status.channel ?? ""
+  );
+
+  const dotConfig = document.createElement("div");
+  dotConfig.className =
+    "skill-status-config__specific";
+  dotConfig.dataset.skillStatusConfigKind =
+    "damage_over_time";
+  dotConfig.append(
+    tacticalFieldV1(
+      "Dégâts par tick",
+      statusAmount
+    ),
+    tacticalFieldV1(
+      "Intervalle (secondes)",
+      tickSeconds
+    ),
+    tacticalFieldV1(
+      "Canal / élément",
+      statusChannel
+    )
+  );
+
+  const hotAmount =
+    tacticalNumberInputV1(
+      "skillStatusHotAmount",
+      status.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+  const hotTick =
+    tacticalNumberInputV1(
+      "skillStatusHotTickSeconds",
+      status.tickIntervalMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            status.tickIntervalMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+  const hotConfig = document.createElement("div");
+  hotConfig.className =
+    "skill-status-config__specific";
+  hotConfig.dataset.skillStatusConfigKind =
+    "heal_over_time";
+  hotConfig.append(
+    tacticalFieldV1("Soin par tick", hotAmount),
+    tacticalFieldV1(
+      "Intervalle (secondes)",
+      hotTick
+    )
+  );
+
+  const shieldAmount =
+    tacticalNumberInputV1(
+      "skillStatusShieldAmount",
+      status.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+  const shieldConfig =
+    document.createElement("div");
+  shieldConfig.className =
+    "skill-status-config__specific";
+  shieldConfig.dataset.skillStatusConfigKind =
+    "shield";
+  shieldConfig.append(
+    tacticalFieldV1(
+      "Points de bouclier",
+      shieldAmount
+    )
+  );
+
+  statusBox.append(
+    common,
+    statConfig,
+    dotConfig,
+    hotConfig,
+    shieldConfig
+  );
+
+  config.append(
+    amountField,
+    channelField,
+    filterTagsField,
+    statusBox
+  );
+  row.append(header, config);
+  host.append(row);
+
+  kind.value = effect?.kind ?? "damage";
+  scope.value =
+    effect?.targetScope ?? "target";
+  statusKind.value =
+    status.kind ?? "stat_modifier";
+  polarity.value =
+    status.polarity ?? "beneficial";
+  stacking.value =
+    status.stacking ?? "refresh";
+
+  syncHumanSkillEffectRowV1(row);
+  return row;
+}
+
+function renderHumanSkillEffectsV1(
+  root,
+  effects,
+  statRegistry = null
+) {
+  const host = one(
+    root,
+    "[data-skill-effects-host]"
+  );
+  host.textContent = "";
+
+  for (const effect of effects ?? []) {
+    appendHumanSkillEffectV1(
+      root,
+      effect,
+      statRegistry
+    );
+  }
+}
+
+function commaValuesV1(value) {
+  return String(value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function readHumanSkillEffectsV1(root) {
+  const rows = [
+    ...root.querySelectorAll(
+      "[data-skill-effect-row]"
+    )
+  ];
+
+  const effects = rows.map((row) => {
+    const kind = row.querySelector(
+      "[data-skill-effect-kind]"
+    ).value;
+    const targetScope = row.querySelector(
+      "[data-skill-effect-scope]"
+    ).value;
+
+    if (kind === "apply_status") {
+      const statusKind = row.querySelector(
+        "[data-skill-status-kind]"
+      ).value;
+      const status = {
+        id: row.querySelector(
+          "[data-skill-status-id]"
+        ).value,
+        kind: statusKind,
+        polarity: row.querySelector(
+          "[data-skill-status-polarity]"
+        ).value,
+        durationSeconds: Number(
+          row.querySelector(
+            "[data-skill-status-duration-seconds]"
+          ).value
+        ),
+        stacking: row.querySelector(
+          "[data-skill-status-stacking]"
+        ).value,
+        maxStacks: Number(
+          row.querySelector(
+            "[data-skill-status-max-stacks]"
+          ).value
+        ),
+        tags: commaValuesV1(
+          row.querySelector(
+            "[data-skill-status-tags]"
+          ).value
+        )
+      };
+
+      if (statusKind === "stat_modifier") {
+        status.statId = row.querySelector(
+          "[data-skill-status-stat-id]"
+        ).value;
+        status.deltaPoints = Number(
+          row.querySelector(
+            "[data-skill-status-delta-points]"
+          ).value
+        );
+      } else if (
+        statusKind === "damage_over_time"
+      ) {
+        status.amount = Number(
+          row.querySelector(
+            "[data-skill-status-amount]"
+          ).value
+        );
+        status.tickSeconds = Number(
+          row.querySelector(
+            "[data-skill-status-tick-seconds]"
+          ).value
+        );
+        status.channel = row.querySelector(
+          "[data-skill-status-channel]"
+        ).value;
+      } else if (
+        statusKind === "heal_over_time"
+      ) {
+        status.amount = Number(
+          row.querySelector(
+            "[data-skill-status-hot-amount]"
+          ).value
+        );
+        status.tickSeconds = Number(
+          row.querySelector(
+            "[data-skill-status-hot-tick-seconds]"
+          ).value
+        );
+      } else if (statusKind === "shield") {
+        status.amount = Number(
+          row.querySelector(
+            "[data-skill-status-shield-amount]"
+          ).value
+        );
+      }
+
+      return {
+        kind,
+        targetScope,
+        status
+      };
+    }
+
+    if (
+      kind === "cleanse" ||
+      kind === "dispel"
+    ) {
+      return {
+        kind,
+        targetScope,
+        statusTags: commaValuesV1(
+          row.querySelector(
+            "[data-skill-effect-status-tags]"
+          ).value
+        )
+      };
+    }
+
+    const output = {
+      kind,
+      targetScope,
+      amount: Number(
+        row.querySelector(
+          "[data-skill-effect-amount]"
+        ).value
+      )
+    };
+
+    if (kind === "damage") {
+      output.channel =
+        row.querySelector(
+          "[data-skill-effect-channel]"
+        ).value || null;
+    }
+
+    return output;
+  });
+
+  return buildHumanTacticalSkillEffectsV1(
+    effects
+  );
+}
+
 function statEffectNumber(value) {
   const number = Number(value);
   return Number.isInteger(number)
