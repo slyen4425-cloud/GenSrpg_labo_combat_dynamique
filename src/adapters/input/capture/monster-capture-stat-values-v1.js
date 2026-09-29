@@ -43,6 +43,13 @@ const STANDARD_ALIASES = Object.freeze({
     "power",
     "force"
   ]),
+  defense: Object.freeze([
+    "defense",
+    "def",
+    "armor",
+    "armure",
+    "défense"
+  ]),
   fire: Object.freeze(["fire"]),
   water: Object.freeze(["water"]),
   earth: Object.freeze(["earth"]),
