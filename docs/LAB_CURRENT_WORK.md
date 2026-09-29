@@ -14888,3 +14888,91 @@ Fichiers autorisés :
 - documentation.
 
 Runtime/Combat State/Action Resolver restent protégés dans ce lot.
+
+
+### Résultat — Capture Skill Activation Editor UI V1
+
+RED :
+
+- SHA : `c19ce55d63e83d0fc0fae90b00850ee8194f5a5e` ;
+- run : `36636841216` ;
+- 575 tests, 570 pass, 5 fail ciblés ;
+- surfaces absentes : conversion secondes/ms, builder UI, round-trip SkillDraft, contrôles HTML.
+
+Raccord UI :
+
+- bloc « Conditions d’activation / Ultime » dans l’onglet Capacités ;
+- ON/OFF explicite ;
+- mode :
+  - « Toutes les conditions » = `all` ;
+  - « Au moins une condition » = `any` ;
+- ajout/suppression dynamique de conditions ;
+- types lisibles :
+  - Temps de combat écoulé ;
+  - Dégâts infligés ;
+  - Dégâts subis ;
+  - PV ≤ X % ;
+- seuil temporel affiché en secondes puis converti explicitement vers `combat_elapsed_ms` ;
+- unités dégâts / % PV affichées à côté du seuil ;
+- sur smartphone, chaque condition passe sur une colonne unique ;
+- suppression de la dernière condition désactive automatiquement le bloc ;
+- une activation ON sans condition est refusée par le builder UI.
+
+Progression séparée :
+
+- le champ est désormais libellé « Niveau requis pour apprendre / équiper » ;
+- `requiredLevel` reste distinct des conditions dynamiques ;
+- aucun niveau n'est évalué dans le runtime d'activation.
+
+Vrai chemin UI :
+
+`formulaire -> readSkillFields() -> buildHumanSkillDraftV1() -> CaptureSkillEditorDraftV1 -> SkillDefinition.activationRequirements`.
+
+Préservation :
+
+- « Nouvelle capacité » réinitialise les conditions ;
+- « Créer / Mettre à jour » utilisent le même builder ;
+- le chargement d'un modèle historique conserve les conditions déjà présentes dans les champs courants ;
+- les capacités sans condition conservent `conditions: []`.
+
+GREEN initial :
+
+- SHA : `851955008c250a777639887950f6613c9dc14636` ;
+- run : `36637200957` ;
+- 575 tests, 575 pass, 0 fail.
+
+Durcissement :
+
+- test de préservation lors du merge d'un modèle historique ;
+- sentinelle empêchant le Human Editor d'importer l'évaluateur runtime ou de lire `damageDealtTotal/damageTakenTotal` ;
+- fixture historique corrigée pour utiliser un ID réellement présent dans le catalogue.
+
+GREEN durci :
+
+- SHA fonctionnel : `ac2be1decfd71d22caa05083acd6bb182bdfa7e6` ;
+- run : `36637320755` ;
+- 577 tests, 577 pass, 0 fail.
+
+Revue charte :
+
+- fichiers métier modifiés : Human Editor uniquement ;
+- HTML/CSS démo + tests dédiés ;
+- Combat State / Action Resolver / évaluateur runtime inchangés ;
+- aucun localStorage/sessionStorage ;
+- aucun MutationObserver ;
+- aucun setTimeout/setInterval ;
+- aucun monkey patch ;
+- aucune formule runtime copiée dans l'UI.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone.**
+
+Validation smartphone attendue :
+
+1. créer une nouvelle capacité ;
+2. activer « Conditions d’activation / Ultime » ;
+3. ajouter une ou plusieurs conditions ;
+4. vérifier `Toutes` / `Au moins une` ;
+5. vérifier la lisibilité des unités secondes / dégâts / % PV ;
+6. enregistrer puis tester la configuration.
