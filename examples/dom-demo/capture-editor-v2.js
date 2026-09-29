@@ -49,14 +49,33 @@ async function fetchJson(url) {
 }
 
 async function loadPreviewVisualContext() {
-  const [assetCatalog, ...profiles] = await Promise.all([
+  const [
+    assetCatalog,
+    profiles,
+    creatureMetaEntries
+  ] = await Promise.all([
     fetchJson(GLOBAL_VISUAL_LIBRARY.catalogUrl),
-    ...PROFILE_URLS.map((url) => fetchJson(url))
+    Promise.all(
+      PROFILE_URLS.map((url) => fetchJson(url))
+    ),
+    Promise.all(
+      CAPTURE_TEST_CREATURE_OPTIONS_V1.map(
+        async (option) => [
+          option.id,
+          await fetchJson(
+            globalVisualAssetUrl(option.metaFile)
+          )
+        ]
+      )
+    )
   ]);
 
   return Object.freeze({
     assetCatalog,
-    profiles: Object.freeze(profiles)
+    profiles: Object.freeze(profiles),
+    creatureMetaByOptionId: Object.freeze(
+      Object.fromEntries(creatureMetaEntries)
+    )
   });
 }
 
@@ -206,9 +225,15 @@ function getOpponentCreatureDraft() {
     );
   }
 
+  const optionId = opponentCreatureSelect.value;
+
   return buildCaptureTestOpponentDraftV1({
-    optionId: opponentCreatureSelect.value,
-    assetCatalog: visualContext.assetCatalog
+    optionId,
+    assetCatalog: visualContext.assetCatalog,
+    creatureMeta:
+      visualContext.creatureMetaByOptionId?.[
+        optionId
+      ]
   });
 }
 
