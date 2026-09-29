@@ -13535,3 +13535,21 @@ CI correction :
 État :
 
 **GREEN technique / PREVALIDATION smartphone à refaire sur la liste des 110 créatures.**
+
+
+#### Validation smartphone utilisateur — catalogue 110
+
+Retour Sylvain :
+
+- la liste des créatures est maintenant visible ;
+- le message rouge de garde 100 a disparu ;
+- le chargement du catalogue fonctionne sur smartphone.
+
+Validation :
+
+- lot catalogue 110 validé UI par l'utilisateur ;
+- aucune régression catalogue signalée sur ce test.
+
+État :
+
+**GREEN UI utilisateur pour l'import du catalogue Monster Capture 110.**
