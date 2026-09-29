@@ -20,6 +20,16 @@
       "chargeTimeReductionPctPerPoint": 0
     },
     {
+      "id": "defense",
+      "label": "Défense",
+      "damageChannel": null,
+      "resistanceChannel": null,
+      "damagePctPerPoint": 0,
+      "resistancePctPerPoint": 0,
+      "chargeTimeReductionPctPerPoint": 0,
+      "damageReductionPctPerPoint": 1
+    },
+    {
       "id": "fire",
       "label": "Feu",
       "damageChannel": "fire",
