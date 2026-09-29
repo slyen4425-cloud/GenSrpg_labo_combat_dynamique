@@ -56,6 +56,26 @@ function normalizePercentByChannel(input, field) {
   return Object.freeze(output);
 }
 
+function normalizeStatValuesById(input, field) {
+  if (input == null) {
+    return Object.freeze({});
+  }
+  objectValue(input, field);
+
+  const output = {};
+  for (const [statIdRaw, value] of Object.entries(input)) {
+    const statId = requiredString(
+      statIdRaw,
+      field + " key"
+    );
+    output[statId] = nonNegativeNumber(
+      value,
+      field + "." + statId
+    );
+  }
+  return Object.freeze(output);
+}
+
 function normalizeStatEffects(input) {
   if (input == null) {
     return null;
@@ -68,7 +88,8 @@ function normalizeStatEffects(input) {
   const allowed = new Set([
     "damagePctByChannel",
     "resistancePctByChannel",
-    "chargeTimeReductionPct"
+    "chargeTimeReductionPct",
+    "damageReductionPct"
   ]);
   for (const key of Object.keys(value)) {
     if (!allowed.has(key)) {
@@ -94,6 +115,11 @@ function normalizeStatEffects(input) {
       nonNegativeNumber(
         value.chargeTimeReductionPct ?? 0,
         "combat.statEffects.chargeTimeReductionPct"
+      ),
+    damageReductionPct:
+      nonNegativeNumber(
+        value.damageReductionPct ?? 0,
+        "combat.statEffects.damageReductionPct"
       )
   });
 }
@@ -167,6 +193,16 @@ export function adaptCaptureCreatureToFighterConfig(
       statEffects.damagePctByChannel;
     output.resistancePctByChannel =
       statEffects.resistancePctByChannel;
+    output.damageReductionPct =
+      statEffects.damageReductionPct;
+  }
+
+  if (hasOwn(combat, "statValuesById")) {
+    output.statValuesById =
+      normalizeStatValuesById(
+        combat.statValuesById,
+        "combat.statValuesById"
+      );
   }
 
   if (
