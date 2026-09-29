@@ -16172,6 +16172,7 @@ Restaurer une surface d'édition à autorité unique pour les capacités :
 - `examples/dom-demo/capture-editor-v2.html` ;
 - `examples/dom-demo/capture-editor-v2.css` si nécessaire pour lisibilité ;
 - `src/ui/capture-editor-human-v2.js` ;
+- `src/ui/capture-editor-skill-catalog-v1.js` — uniquement pour projeter les modèles historiques portables vers `SkillEffectV1` après retrait des champs legacy éditables ;
 - tests unitaires UI/ownership dédiés ;
 - `docs/LAB_CURRENT_WORK.md` ;
 - `docs/LAB_ARCHITECTURE.md`.
