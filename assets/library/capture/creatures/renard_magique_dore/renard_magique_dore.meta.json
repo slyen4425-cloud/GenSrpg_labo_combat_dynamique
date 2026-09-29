@@ -1,7 +1,7 @@
 {
   "id": "renard_magique_dore",
   "name": "Renard magique doré",
-  "profile": "drake",
+  "profile": "biped",
   "views": {
     "player": "runtime/renard_magique_dore_player.webp",
     "opponent": "runtime/renard_magique_dore_opponent.webp",
