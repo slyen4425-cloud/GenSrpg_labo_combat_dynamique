@@ -1216,3 +1216,30 @@ Le Human Editor consomme maintenant les propriétaires validés sans devenir pro
 - aucune persistance navigateur n'est introduite : le registre, la progression et les valeurs restent des drafts de session en attente du futur lot Export/Import.
 
 Le raccord des coefficients de stats aux dégâts/résistances du Combat Runtime reste hors scope et devra avoir son propre RED avant toute modification de l'Action Resolver.
+
+
+## 14. Capture Stat Effects V1
+
+Les effets numériques d'une statistique utilisent désormais des unités explicites en pourcentage.
+
+Propriétaire de la définition : `CaptureStatRegistryV1`.
+
+Champs actifs :
+
+- `damagePctPerPoint` : bonus de dégâts en pourcentage par point, appliqué au `damageChannel` explicite ;
+- `resistancePctPerPoint` : bonus de résistance en pourcentage par point, appliqué au `resistanceChannel` explicite ;
+- `chargeTimeReductionPctPerPoint` : réduction du temps de préparation/charge en pourcentage par point.
+
+Les anciens champs `damagePerPoint` et `resistancePerPoint` ne sont pas des alias : ils sont refusés afin d'éviter deux interprétations concurrentes.
+
+Propriétaire du calcul pur : `src/core/combat/capture-stat-effects-v1.js`.
+
+Le calcul prend le registre validé + `CaptureCreatureStatValuesV1` et produit uniquement des modificateurs :
+
+- `damagePctByChannel` ;
+- `resistancePctByChannel` ;
+- `chargeTimeReductionPct`.
+
+Le Human Editor consomme le même calcul pour expliquer le résultat mais ne possède aucune formule métier.
+
+Ce jalon ne modifie pas encore la résolution d'une attaque ni l'horloge du Combat Runtime. Le branchement gameplay réel appartient à un micro-lot séparé avec RED dédié.
