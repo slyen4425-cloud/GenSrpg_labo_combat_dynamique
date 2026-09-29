@@ -1430,3 +1430,14 @@ sur les scopes `target` et `self`.
 L'exécution se produit au vrai impact du Skill dans Action Resolver. Aucun effet instantané n'est appliqué sur evade/block/immune/counter/reflected.
 
 Les scopes de zone et les statuts persistants sont refusés explicitement tant que leurs micro-lots dédiés ne sont pas GREEN.
+
+
+## 19. Area Targeting Runtime V1
+
+Les scopes multi-cibles de `SkillEffectV1` sont résolus depuis `BattleFormatDefinition`, jamais depuis le DOM ni depuis une copie d'équipes dans Combat State.
+
+Le module `tactical-effect-targeting-v1.js` produit les actorIds vivants selon le scope.
+
+Le calcul de dégâts est factorisé dans `combat-damage-v1.js` et partagé par les dégâts historiques et tactiques.
+
+CombatSession reçoit optionnellement le BattleFormat normalisé et le transmet à Action Resolver. La vue 2v2 utilise ce même objet déjà produit par la source native.
