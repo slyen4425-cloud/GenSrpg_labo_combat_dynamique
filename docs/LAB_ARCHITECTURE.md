@@ -1501,3 +1501,57 @@ Tous les refus se produisent avant dépense de ressource.
 - stack : incrément jusqu'à maxStacks + durée renouvelée.
 
 Aucun ancien champ legacy de durée/tour n'est interprété implicitement.
+
+
+## 21. Tactical Effects Editor UI V1
+
+Le Human Editor expose désormais `SkillDefinition.effects` sans posséder leur logique d'exécution.
+
+### Frontière
+
+- UI : saisie, conversion secondes/ms, construction des contrats ;
+- `SkillEffectV1` / `StatusEffectV1` : validation ;
+- Combat Core : exécution.
+
+Le Human Editor n'importe aucun module Runtime de statuts ou de dégâts.
+
+### Effets éditables
+
+`SkillEffectV1` :
+
+- damage ;
+- heal ;
+- energy_restore ;
+- energy_drain ;
+- apply_status ;
+- cleanse ;
+- dispel.
+
+Tous les scopes contractuels sont éditables.
+
+`StatusEffectV1` :
+
+- stat_modifier ;
+- damage_over_time ;
+- heal_over_time ;
+- shield ;
+- immobilize ;
+- silence ;
+- stun ;
+- taunt.
+
+### Temps
+
+L'utilisateur saisit les durées et ticks en secondes. L'UI convertit explicitement vers `durationMs` / `tickIntervalMs` au moment de construire le contrat.
+
+Aucune durée historique exprimée en tours n'est convertie ici.
+
+### Stats
+
+Un `stat_modifier` sélectionne un `statId` du `CaptureStatRegistryV1` courant. L'UI ne contient aucune formule de stat.
+
+### Compatibilité legacy
+
+Le champ historique `SkillDefinition.effect` demeure jusqu'à migration complète. `SkillDefinition.effects` ne le remplace pas silencieusement et la validation refuse les doubles autorités damage/heal.
+
+Les modèles historiques complexes ne deviennent pas automatiquement runtime-ready par la seule présence de cette UI : leur migration reste un lot séparé.
