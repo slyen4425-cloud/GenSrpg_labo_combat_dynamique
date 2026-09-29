@@ -13158,3 +13158,85 @@ CI finale technique :
 **GREEN technique / PREVALIDATION UI smartphone**.
 
 Le GREEN UI final reste interdit avant validation smartphone utilisateur du scale dans la preview.
+
+
+## Micro-lot UI — créer / choisir / modifier une créature V1 — 2026-09-29
+
+Base :
+
+- checkpoint technique précédent : `checkpoint/lab-creature-scale-regression-repair-v1-prevalidation-green-2026-09-29` ;
+- SHA : `ef0a68df628cbdbe2fdf63e44e375f15b3c0b108`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-creature-crud-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-creature-crud-v1-2026-09-29`.
+
+Retour utilisateur :
+
+- « Il faut à présent pouvoir créer / modifier les créature. »
+- l'éditeur laboratoire doit devenir plus tard l'éditeur du mode Monster Capture.
+
+Diagnostic initial :
+
+- `CaptureCreatureEditorDraftV3` est déjà le contrat de draft autoritaire ;
+- l'éditeur possède actuellement un seul formulaire créature sans bibliothèque active ;
+- les capacités possèdent déjà une bibliothèque de session et un save-mode create/update ;
+- aucune bibliothèque CRUD créature ni branche create-creature dédiée n'existe.
+
+Objectif :
+
+1. ajouter une action explicite `Nouvelle créature` ;
+2. ajouter un sélecteur des créatures configurées dans la session ;
+3. ajouter `Enregistrer comme nouvelle` et `Mettre à jour la créature existante` ;
+4. une création doit générer une nouvelle identité déterministe et refuser tout ID existant ;
+5. une mise à jour doit cibler explicitement l'identité sélectionnée, sans duplication silencieuse ;
+6. charger une créature doit restaurer son draft complet :
+   - identité ;
+   - stats ;
+   - éléments/résistances/Capture ;
+   - PV/énergie ;
+   - face/dos/icône ;
+   - profil ;
+   - scale ;
+   - sockets ;
+   - sons ;
+   - loadout actif ;
+7. le draft + son loadout doivent rester rattachés au même propriétaire ;
+8. aucune persistance navigateur bricolée : bibliothèque de session seulement dans ce lot.
+
+Propriétaires :
+
+- draft créature : `CaptureCreatureEditorDraftV3` ;
+- loadout : `CaptureActiveSkillLoadoutV1` ;
+- bibliothèque de session / UX : Human Editor ;
+- définition des capacités : bibliothèque de capacités existante.
+
+Interdits :
+
+- aucun localStorage/sessionStorage ;
+- aucun global ;
+- aucun tableau parallèle de créatures dans la page HTML ;
+- aucune copie du Combat Core ou renderer ;
+- aucun changement de format gameplay sans nécessité démontrée ;
+- aucune sauvegarde implicite lors du simple chargement d'une créature.
+
+RED prévu :
+
+- contrôles CRUD créature absents ;
+- save-mode create/update créature absent ;
+- deux créations successives doivent avoir deux IDs distincts ;
+- create refuse un ID existant ;
+- update refuse un ID inconnu ou différent de l'identité sélectionnée ;
+- changement de créature doit restaurer le draft + loadout du bon propriétaire.
+
+Critère final :
+
+- RED prouvé ;
+- correction minimale ;
+- CI complète verte ;
+- preview dédiée ;
+- PREVALIDATION UI smartphone avant GREEN UI final.
