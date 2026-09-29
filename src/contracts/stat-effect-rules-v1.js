@@ -43,7 +43,8 @@ const RULE_FIELDS = new Set([
   "resistanceChannel",
   "damagePctPerPoint",
   "resistancePctPerPoint",
-  "chargeTimeReductionPctPerPoint"
+  "chargeTimeReductionPctPerPoint",
+  "damageReductionPctPerPoint"
 ]);
 
 export function normalizeStatEffectRulesByIdV1(
@@ -118,6 +119,14 @@ export function normalizeStatEffectRulesByIdV1(
             "." +
             statId +
             ".chargeTimeReductionPctPerPoint"
+        ),
+      damageReductionPctPerPoint:
+        nonNegative(
+          rule.damageReductionPctPerPoint,
+          field +
+            "." +
+            statId +
+            ".damageReductionPctPerPoint"
         )
     });
   }
