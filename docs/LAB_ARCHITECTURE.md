@@ -1411,3 +1411,22 @@ Un statut porte une durée temps réel `durationMs`, une stratégie de stacking 
 Les données historiques exprimées en anciens tours/durations ne sont jamais converties implicitement par le contrat. Leur migration appartient à un adaptateur dédié ultérieur.
 
 Ce jalon définit les contrats seulement. Aucun effet n'est déclaré actif en combat tant qu'un micro-lot Runtime dédié n'a pas validé le vrai chemin.
+
+
+## 18. Immediate Tactical Effects Runtime V1
+
+`SkillDefinition.effects` transporte les nouveaux `SkillEffectV1`.
+
+Le champ historique `effect` reste une couche de compatibilité tant que toutes les capacités natives n'ont pas été migrées ; un même type damage/heal ne peut pas avoir simultanément deux autorités actives.
+
+Le module `immediate-tactical-effects-v1.js` exécute uniquement :
+
+- heal ;
+- energy_restore ;
+- energy_drain ;
+
+sur les scopes `target` et `self`.
+
+L'exécution se produit au vrai impact du Skill dans Action Resolver. Aucun effet instantané n'est appliqué sur evade/block/immune/counter/reflected.
+
+Les scopes de zone et les statuts persistants sont refusés explicitement tant que leurs micro-lots dédiés ne sont pas GREEN.
