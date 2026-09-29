@@ -130,6 +130,14 @@ function normalizeFighter(input) {
       input.movementEnergyPerStep ?? 0,
       `${id}.movementEnergyPerStep`
     ),
+    damageDealtTotal: finiteNonNegative(
+      input.damageDealtTotal ?? 0,
+      `${id}.damageDealtTotal`
+    ),
+    damageTakenTotal: finiteNonNegative(
+      input.damageTakenTotal ?? 0,
+      `${id}.damageTakenTotal`
+    ),
     chargeTimeModifierPct: finiteNumber(
       input.chargeTimeModifierPct ?? 0,
       `${id}.chargeTimeModifierPct`
@@ -269,6 +277,70 @@ export function withFighterHp(state, fighterId, hp) {
       [fighterId]: Object.freeze({
         ...fighter,
         hp: nextHp
+      })
+    })
+  });
+}
+
+export function recordFighterDamage(
+  state,
+  {
+    sourceActorId,
+    targetActorId,
+    amount
+  }
+) {
+  const source = state.fighters[sourceActorId];
+  const target = state.fighters[targetActorId];
+
+  if (!source) {
+    throw new RangeError(
+      `Unknown fighter: ${sourceActorId}`
+    );
+  }
+  if (!target) {
+    throw new RangeError(
+      `Unknown fighter: ${targetActorId}`
+    );
+  }
+
+  const damage = finiteNonNegative(
+    amount,
+    "damage amount"
+  );
+  if (damage === 0) {
+    return state;
+  }
+
+  if (sourceActorId === targetActorId) {
+    return Object.freeze({
+      ...state,
+      fighters: Object.freeze({
+        ...state.fighters,
+        [sourceActorId]: Object.freeze({
+          ...source,
+          damageDealtTotal:
+            source.damageDealtTotal + damage,
+          damageTakenTotal:
+            source.damageTakenTotal + damage
+        })
+      })
+    });
+  }
+
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [sourceActorId]: Object.freeze({
+        ...source,
+        damageDealtTotal:
+          source.damageDealtTotal + damage
+      }),
+      [targetActorId]: Object.freeze({
+        ...target,
+        damageTakenTotal:
+          target.damageTakenTotal + damage
       })
     })
   });
