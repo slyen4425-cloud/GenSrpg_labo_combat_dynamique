@@ -116,7 +116,10 @@ export function projectStatusStatEffectsV1({
       rule.chargeTimeReductionPctPerPoint;
     damageReductionPct +=
       points *
-      rule.damageReductionPctPerPoint;
+      (
+        rule.damageReductionPctPerPoint ??
+        0
+      );
   }
 
   return Object.freeze({
