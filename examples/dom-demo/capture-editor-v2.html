@@ -513,13 +513,54 @@
           <label>Dégâts<input type="number" min="0" data-skill-damage value="4"></label>
           <label>Soin<input type="number" min="0" data-skill-heal value="0"></label>
           <label>Coût énergie<input type="number" min="0" data-skill-energy-cost value="3"></label>
-          <label>Niveau requis<input type="number" min="1" data-skill-required-level value="1"></label>
+          <label>Niveau requis pour apprendre / équiper<input type="number" min="1" data-skill-required-level value="1"></label>
         </div>
       </article>
 
       <article class="card">
         <div class="card-title">
           <span class="step">3</span>
+          <div>
+            <h2>Conditions d’activation / Ultime</h2>
+            <p>Optionnel : verrouille cette capacité jusqu’à ce que des conditions de combat soient remplies. Le niveau requis ci-dessus reste indépendant.</p>
+          </div>
+        </div>
+
+        <label class="switch-line">
+          <input type="checkbox" data-skill-activation-enabled>
+          <span>Utiliser des conditions d’activation</span>
+        </label>
+
+        <div class="skill-activation-config" data-skill-activation-config hidden>
+          <label>Comment débloquer la capacité ?
+            <select data-skill-activation-mode>
+              <option value="all" selected>Toutes les conditions</option>
+              <option value="any">Au moins une condition</option>
+            </select>
+          </label>
+
+          <p class="note">
+            Exemple : une ultime peut demander 30 secondes de combat ET 100 dégâts subis, ou se débloquer dès qu’une seule condition est atteinte.
+          </p>
+
+          <div class="skill-activation-conditions" data-skill-activation-conditions-host></div>
+
+          <button type="button" class="secondary-action" data-skill-activation-add>
+            Ajouter une condition
+          </button>
+
+          <div class="activation-condition-help" aria-label="Types de conditions disponibles">
+            <span>Temps de combat écoulé</span>
+            <span>Dégâts infligés</span>
+            <span>Dégâts subis</span>
+            <span>PV ≤ X %</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">4</span>
           <div>
             <h2>Mouvement & cible</h2>
             <p>Comment la capacité atteint sa cible.</p>
@@ -556,7 +597,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">4</span>
+          <span class="step">5</span>
           <div>
             <h2>Timing</h2>
             <p>Temps gameplay réels, utilisés par le moteur.</p>
@@ -586,7 +627,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">5</span>
+          <span class="step">6</span>
           <div>
             <h2>Effets visuels</h2>
             <p>Choisis les effets de cast, déplacement et impact dans la bibliothèque.</p>
@@ -650,7 +691,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">6</span>
+          <span class="step">7</span>
           <div>
             <h2>Audio de la capacité</h2>
             <p>Les choix apparaissent lorsqu'un catalogue audio est présent.</p>
