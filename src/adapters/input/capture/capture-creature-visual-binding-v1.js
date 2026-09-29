@@ -202,8 +202,8 @@ export function applyCaptureCreatureVisualBindingV1({
     subjectType: "creature",
     subjectId: draft.id,
     profileId: requiredText(
-      meta.profile,
-      "creatureMeta.profile"
+      visualBinding.profileId,
+      "binding.profileId"
     ),
     displayScale: positiveNumber(
       meta.displayScale?.player,
