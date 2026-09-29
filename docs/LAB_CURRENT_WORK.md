@@ -13504,3 +13504,31 @@ Validation après nettoyage :
 État final du lot :
 
 **GREEN technique / PREVALIDATION UI smartphone**.
+
+
+#### Revalidation finale depuis le fichier historique fourni
+
+Le fichier historique fourni par Sylvain a permis une lecture locale directe du blob attendu :
+
+- taille : `8 172 204` octets ;
+- symbole `gensStarterCreatures()` retrouvé ;
+- symbole `MC162_ENTITIES` retrouvé ;
+- clés Shared Entities retrouvées ;
+- `starter_capture` retrouvé.
+
+Conclusion de provenance confirmée :
+
+- `gensStarterCreatures()` = catalogue builtin canonique : 100 créatures / 100 IDs / 100 noms ;
+- `MC162_ENTITIES` = couche de compatibilité : 110 entrées dont 12 anciennes entrées de démonstration ;
+- le laboratoire conserve uniquement les 100 canoniques ;
+- aucun import parallèle 110 ne reste dans le HEAD.
+
+Revalidation du HEAD nettoyé :
+
+- SHA : `5c644f36fe3f5812d55955724d3db045634cf64a` ;
+- CI : `36592992687` — SUCCESS ;
+- 513 tests, 513 pass, 0 fail.
+
+État maintenu :
+
+**GREEN technique / PREVALIDATION UI smartphone**.
