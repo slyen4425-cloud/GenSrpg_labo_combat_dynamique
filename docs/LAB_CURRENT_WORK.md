@@ -15722,3 +15722,30 @@ Réglages :
 - checkpoint PREVALIDATION + preview ;
 - test smartphone requis avant GREEN UI final ;
 - ensuite migration explicite des 33 capacités historiques complexes.
+
+
+### Préaudit confirmé — Tactical Effects Editor UI V1
+
+Chemin unique :
+
+`readSkillFields() -> buildHumanSkillDraftV1() -> normalizeCaptureSkillEditorDraftV1() -> normalizeSkillDefinition()`.
+
+Constats :
+
+- le builder ne transporte actuellement que le bloc legacy `definition.effect` ;
+- aucun champ DOM ne représente `definition.effects` ;
+- les conditions d'activation ont déjà un pattern de liste dynamique réutilisable proprement ;
+- le registre `statRegistry` est déjà chargé et disponible dans le mount ;
+- les champs dynamiques nécessitent une délégation d'événements locale, comme le bloc Ultime ;
+- l'option `buff_debuff` est encore désactivée avec le texte « StatusEffectV1 requis », devenu obsolète puisque le Runtime StatusEffect est GREEN ;
+- les modèles historiques complexes restent volontairement bloqués jusqu'au lot de migration dédié.
+
+Décision :
+
+- ajouter un bloc dynamique « Effets tactiques » ;
+- chaque ligne possède `kind + targetScope` ;
+- le sous-formulaire est dérivé du type choisi ;
+- les durées/ticks sont affichés en secondes et convertis vers ms ;
+- `stat_modifier.statId` choisit un ID du registre courant ;
+- le Human Editor ne calcule ni dégâts, ni ticks, ni stacking : il ne fait que construire les contrats existants ;
+- aucun effet historique complexe n'est automatiquement converti dans ce lot.
