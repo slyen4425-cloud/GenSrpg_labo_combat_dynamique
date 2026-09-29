@@ -37,6 +37,9 @@ export function adaptCreaturePresentationBindingV2ToVisualActor({
   return normalizeVisualActor({
     ...actor,
     profile: presentation.profileId,
-    scale: presentation.displayScale
+    scale: presentation.displayScale,
+    position: presentation.position,
+    transformOrigin:
+      presentation.transformOrigin
   });
 }
