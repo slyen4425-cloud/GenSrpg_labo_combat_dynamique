@@ -108,3 +108,166 @@ test("Human Editor hydrates the Monster Capture catalog into its single creature
     /localStorage|sessionStorage/
   );
 });
+
+
+test("historical creature without visual remains a valid CaptureCreatureEditorDraftV3", async () => {
+  const {
+    buildHumanCreatureDraftV3
+  } = await import(
+    "../../src/ui/capture-editor-human-v2.js"
+  );
+
+  const draft = buildHumanCreatureDraftV3({
+    id: "crea-legacy-no-art",
+    displayName: "Legacy sans art",
+    description: "",
+    level: 1,
+    sourceStats: {
+      force: 1,
+      agility: 1,
+      intelligence: 0,
+      spirit: 1,
+      endurance: 1,
+      initiative: 1
+    },
+    elements: ["steel"],
+    resistances: [
+      {
+        kind: "element:steel",
+        value: 35
+      }
+    ],
+    capture: {
+      capturable: true,
+      captureRate: 50,
+      spawnChance: 10,
+      spawnTags: ["steel"],
+      evolution: null
+    },
+    combat: {
+      maxHp: 10,
+      initialHp: 10,
+      maxEnergy: 0,
+      initialEnergy: 0,
+      energyChargeAmount: 0,
+      energyChargeIntervalMs: 0,
+      movementEnergyPerStep: 0,
+      chargeTimeModifierPct: 0
+    },
+    linkedSkillIds: [],
+    profileId: "biped",
+    displayScale: 1,
+    visual: {
+      frontAssetId: "",
+      backAssetId: "",
+      iconAssetId: ""
+    },
+    sockets: [],
+    audio: {}
+  });
+
+  assert.equal(draft.presentation, null);
+  assert.deepEqual(draft.elements, ["steel"]);
+});
+
+test("updating a historical creature preserves fields not represented by the current UI", async () => {
+  const {
+    preserveUnrepresentedCreatureFieldsV1
+  } = await import(
+    "../../src/ui/capture-editor-human-v2.js"
+  );
+
+  const result =
+    preserveUnrepresentedCreatureFieldsV1({
+      fields: {
+        elements: ["fire"],
+        resistances: {
+          fire: 10
+        },
+        capture: {
+          capturable: true,
+          captureRate: 55,
+          spawnChance: 20,
+          spawnTags: ["fire"],
+          evolution: null
+        }
+      },
+      previousDraft: {
+        elements: ["fire", "steel"],
+        resistances: [
+          {
+            kind: "element:fire",
+            value: 35
+          },
+          {
+            kind: "element:steel",
+            value: 50
+          }
+        ],
+        capture: {
+          spawnTags: ["fire", "steel"],
+          evolution: {
+            condition: "level",
+            level: 24,
+            targetId: "crea-next"
+          }
+        },
+        skillIds: [
+          "cap_fire_atk_1",
+          "legacy-steel-skill"
+        ]
+      },
+      visibleElementIds: [
+        "fire",
+        "water",
+        "earth",
+        "air",
+        "electric",
+        "light",
+        "shadow"
+      ],
+      visibleResistanceKinds: [
+        "element:fire",
+        "element:water",
+        "element:earth",
+        "element:air",
+        "element:light",
+        "element:shadow"
+      ],
+      activeSkillIds: ["cap_fire_atk_2"]
+    });
+
+  assert.deepEqual(
+    result.elements,
+    ["fire", "steel"]
+  );
+  assert.deepEqual(
+    result.resistances,
+    [
+      {
+        kind: "element:fire",
+        value: 10
+      },
+      {
+        kind: "element:steel",
+        value: 50
+      }
+    ]
+  );
+  assert.deepEqual(
+    result.capture.evolution,
+    {
+      condition: "level",
+      level: 24,
+      targetId: "crea-next"
+    }
+  );
+  assert.deepEqual(
+    result.linkedSkillIds,
+    [
+      "cap_fire_atk_1",
+      "legacy-steel-skill",
+      "cap_fire_atk_2"
+    ]
+  );
+});
