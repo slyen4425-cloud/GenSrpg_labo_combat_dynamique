@@ -125,6 +125,7 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
     });
 
   let statEffectsByCreatureId = null;
+  let statEffectRulesById = null;
 
   if (
     value.statRegistry != null ||
@@ -143,6 +144,27 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
       normalizeCaptureStatRegistryV1(
         value.statRegistry
       );
+
+    statEffectRulesById = Object.freeze(
+      Object.fromEntries(
+        registry.stats.map((definition) => [
+          definition.id,
+          Object.freeze({
+            damageChannel:
+              definition.damageChannel,
+            resistanceChannel:
+              definition.resistanceChannel,
+            damagePctPerPoint:
+              definition.damagePctPerPoint,
+            resistancePctPerPoint:
+              definition.resistancePctPerPoint,
+            chargeTimeReductionPctPerPoint:
+              definition
+                .chargeTimeReductionPctPerPoint
+          })
+        ])
+      )
+    );
     const rawStatValues = arrayValue(
       value.statValues,
       "statValues"
@@ -224,7 +246,8 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
             ...creature,
             combat: {
               ...creature.combat,
-              statEffects
+              statEffects,
+              statEffectRulesById
             }
           };
         });
