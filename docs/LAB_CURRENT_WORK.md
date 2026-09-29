@@ -15615,3 +15615,110 @@ Revue charte :
 Étape suivante :
 
 **Tactical Effects Editor UI V1**, puis migration explicite des 33 capacités complexes historiques, puis Export/Import base de données.
+
+
+## Micro-lot — Tactical Effects Editor UI V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN StatusEffect Runtime V1 : `checkpoint/lab-status-effect-runtime-v1-green-2026-09-30` ;
+- SHA : `c260af69d5cb7b247cd5e69c7e0341fbfb7bb33e` ;
+- CI : SUCCESS, 606/606.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-tactical-effects-editor-ui-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-tactical-effects-editor-ui-v1-2026-09-30`.
+
+### Objectif
+
+Rendre éditables dans le Human Editor les effets tactiques qui sont désormais réellement supportés par le Runtime, sans dupliquer leur logique métier.
+
+Effets SkillEffectV1 à exposer :
+
+- damage ;
+- heal ;
+- energy_restore ;
+- energy_drain ;
+- apply_status ;
+- cleanse ;
+- dispel.
+
+Scopes :
+
+- target ;
+- self ;
+- all_enemies ;
+- all_allies ;
+- all_except_self.
+
+StatusEffectV1 à exposer :
+
+- stat_modifier ;
+- damage_over_time ;
+- heal_over_time ;
+- shield ;
+- immobilize ;
+- silence ;
+- stun ;
+- taunt.
+
+Réglages :
+
+- durée en secondes dans l'UI, conversion explicite vers durationMs ;
+- tick en secondes pour DoT/HoT ;
+- stacking replace / refresh / stack ;
+- maxStacks si stack ;
+- polarité ;
+- tags ;
+- statId choisi depuis le registre de stats actif, jamais saisi comme formule libre si le registre est disponible ;
+- amount/channel/deltaPoints selon le type ;
+- targetScope explicite.
+
+### Compatibilité
+
+- `SkillDefinition.effect` historique reste visible uniquement pour les champs legacy existants (damage/heal/stun) jusqu'à migration ;
+- le nouveau tableau `SkillDefinition.effects` est édité séparément ;
+- aucune double autorité damage/heal ne doit être créée par l'UI ;
+- les anciennes capacités simples continuent de fonctionner inchangées.
+
+### Préaudit obligatoire
+
+- chemin readSkillFields -> buildHumanSkillDraftV1 -> SkillDefinition ;
+- hydratation d'une capacité existante dans les champs ;
+- Nouvelle / Créer / Modifier ;
+- bibliothèque historique status-dependent ;
+- préservation des champs non représentés ;
+- source du registre de stats actif ;
+- mise en page smartphone.
+
+### Protégé
+
+- Combat Core / StatusEffect Runtime ;
+- Action Resolver ;
+- Animation/FX/renderer ;
+- catalogues historiques ;
+- aucun stockage parallèle ;
+- aucun timer/retry/MutationObserver/monkey patch ;
+- aucun merge main.
+
+### RED prévu
+
+1. helpers UI de conversion secondes/ms ;
+2. build/read round-trip SkillEffectV1 ;
+3. round-trip StatusEffectV1 ;
+4. UI contient tous les types/scopes ;
+5. stat_modifier consomme les IDs du registre ;
+6. aucune double autorité damage/heal ;
+7. aucun effet supprimé lors du chargement/modification ;
+8. lisibilité mobile.
+
+### Critère de fin
+
+- CI complète GREEN ;
+- checkpoint PREVALIDATION + preview ;
+- test smartphone requis avant GREEN UI final ;
+- ensuite migration explicite des 33 capacités historiques complexes.
