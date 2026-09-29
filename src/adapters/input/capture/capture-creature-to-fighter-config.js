@@ -1,3 +1,7 @@
+import {
+  normalizeStatEffectRulesByIdV1
+} from "../../../contracts/stat-effect-rules-v1.js";
+
 function objectValue(value, field) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${field} must be an object`);
@@ -49,86 +53,6 @@ function normalizePercentByChannel(input, field) {
       field + "." + channel
     );
   }
-  return Object.freeze(output);
-}
-
-function normalizeStatEffectRulesById(
-  input
-) {
-  if (input == null) {
-    return null;
-  }
-
-  const value = objectValue(
-    input,
-    "combat.statEffectRulesById"
-  );
-  const output = {};
-
-  for (
-    const [statIdRaw, ruleRaw] of
-    Object.entries(value)
-  ) {
-    const statId = requiredString(
-      statIdRaw,
-      "combat.statEffectRulesById key"
-    );
-    const rule = objectValue(
-      ruleRaw,
-      "combat.statEffectRulesById." + statId
-    );
-    const allowed = new Set([
-      "damageChannel",
-      "resistanceChannel",
-      "damagePctPerPoint",
-      "resistancePctPerPoint",
-      "chargeTimeReductionPctPerPoint"
-    ]);
-
-    for (const key of Object.keys(rule)) {
-      if (!allowed.has(key)) {
-        throw new TypeError(
-          "combat.statEffectRulesById." +
-            statId +
-            " contains unknown field: " +
-            key
-        );
-      }
-    }
-
-    output[statId] = Object.freeze({
-      damageChannel:
-        rule.damageChannel == null
-          ? null
-          : requiredString(
-              rule.damageChannel,
-              "damageChannel"
-            ),
-      resistanceChannel:
-        rule.resistanceChannel == null
-          ? null
-          : requiredString(
-              rule.resistanceChannel,
-              "resistanceChannel"
-            ),
-      damagePctPerPoint:
-        nonNegativeNumber(
-          rule.damagePctPerPoint ?? 0,
-          "damagePctPerPoint"
-        ),
-      resistancePctPerPoint:
-        nonNegativeNumber(
-          rule.resistancePctPerPoint ?? 0,
-          "resistancePctPerPoint"
-        ),
-      chargeTimeReductionPctPerPoint:
-        nonNegativeNumber(
-          rule.chargeTimeReductionPctPerPoint ?? 0,
-          "chargeTimeReductionPctPerPoint"
-        )
-    });
-  }
-
   return Object.freeze(output);
 }
 
@@ -245,13 +169,14 @@ export function adaptCaptureCreatureToFighterConfig(
       statEffects.resistancePctByChannel;
   }
 
-  const statEffectRulesById =
-    normalizeStatEffectRulesById(
-      combat.statEffectRulesById
-    );
-  if (statEffectRulesById !== null) {
+  if (
+    hasOwn(combat, "statEffectRulesById")
+  ) {
     output.statEffectRulesById =
-      statEffectRulesById;
+      normalizeStatEffectRulesByIdV1(
+        combat.statEffectRulesById,
+        "combat.statEffectRulesById"
+      );
   }
 
   if (
