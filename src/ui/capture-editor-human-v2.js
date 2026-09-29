@@ -13,6 +13,16 @@ import {
   SKILL_ACTIVATION_REQUIREMENT_TYPES
 } from "../contracts/skill-definition.js";
 import {
+  normalizeSkillEffectV1,
+  SKILL_EFFECT_V1_KINDS,
+  SKILL_EFFECT_V1_TARGET_SCOPES
+} from "../contracts/skill-effect-v1.js";
+import {
+  STATUS_EFFECT_V1_KINDS,
+  STATUS_EFFECT_V1_POLARITIES,
+  STATUS_EFFECT_V1_STACKING
+} from "../contracts/status-effect-v1.js";
+import {
   normalizeCaptureActiveSkillLoadoutV1
 } from "../contracts/capture-active-skill-loadout-v1.js";
 import {
@@ -125,6 +135,214 @@ function optionalText(value) {
   }
   const text = String(value).trim();
   return text === "" ? null : text;
+}
+
+
+export function humanTacticalSecondsToMsV1(value) {
+  const number = finiteNumber(
+    value,
+    "Durée tactique"
+  );
+  if (number < 0) {
+    throw new RangeError(
+      "Durée tactique doit être positive ou nulle"
+    );
+  }
+  return Math.round(number * 1000);
+}
+
+export function humanTacticalMsToSecondsV1(value) {
+  const number = finiteNumber(
+    value,
+    "Durée tactique"
+  );
+  if (number < 0) {
+    throw new RangeError(
+      "Durée tactique doit être positive ou nulle"
+    );
+  }
+  return number / 1000;
+}
+
+export function humanTacticalStatusStatIdsV1(
+  registry
+) {
+  return normalizeCaptureStatRegistryV1(
+    registry
+  ).stats.map((entry) => entry.id);
+}
+
+function humanTacticalStatusToContractV1(
+  status
+) {
+  if (
+    !status ||
+    typeof status !== "object" ||
+    Array.isArray(status)
+  ) {
+    throw new TypeError(
+      "Statut tactique invalide"
+    );
+  }
+
+  const output = {
+    id: requiredText(
+      status.id,
+      "ID du statut"
+    ),
+    kind: requiredText(
+      status.kind,
+      "Type du statut"
+    ),
+    polarity: requiredText(
+      status.polarity,
+      "Polarité du statut"
+    ),
+    durationMs:
+      status.durationMs != null
+        ? finiteNumber(
+            status.durationMs,
+            "Durée du statut"
+          )
+        : humanTacticalSecondsToMsV1(
+            status.durationSeconds
+          ),
+    stacking:
+      status.stacking ?? "refresh",
+    tags: stableIds(status.tags)
+  };
+
+  if (
+    output.stacking === "stack"
+  ) {
+    output.maxStacks = positiveInteger(
+      status.maxStacks ?? 1,
+      "Stacks max"
+    );
+  }
+
+  if (output.kind === "stat_modifier") {
+    output.statId = requiredText(
+      status.statId,
+      "Statistique du statut"
+    );
+    output.deltaPoints = finiteNumber(
+      status.deltaPoints,
+      "Variation de statistique"
+    );
+  }
+
+  if (
+    output.kind === "damage_over_time" ||
+    output.kind === "heal_over_time"
+  ) {
+    output.amount = finiteNumber(
+      status.amount,
+      "Valeur périodique"
+    );
+    output.tickIntervalMs =
+      status.tickIntervalMs != null
+        ? finiteNumber(
+            status.tickIntervalMs,
+            "Intervalle du statut"
+          )
+        : humanTacticalSecondsToMsV1(
+            status.tickSeconds
+          );
+  }
+
+  if (output.kind === "damage_over_time") {
+    output.channel = requiredText(
+      status.channel,
+      "Canal des dégâts périodiques"
+    );
+  }
+
+  if (output.kind === "shield") {
+    output.amount = finiteNumber(
+      status.amount,
+      "Valeur du bouclier"
+    );
+  }
+
+  return output;
+}
+
+export function buildHumanTacticalSkillEffectsV1(
+  effects
+) {
+  if (!Array.isArray(effects)) {
+    throw new TypeError(
+      "Les effets tactiques doivent être une liste"
+    );
+  }
+
+  return effects.map((effect) => {
+    if (
+      !effect ||
+      typeof effect !== "object" ||
+      Array.isArray(effect)
+    ) {
+      throw new TypeError(
+        "Effet tactique invalide"
+      );
+    }
+
+    const kind = requiredText(
+      effect.kind,
+      "Type d’effet tactique"
+    );
+    const targetScope = requiredText(
+      effect.targetScope,
+      "Cible d’effet tactique"
+    );
+
+    if (kind === "apply_status") {
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        status:
+          humanTacticalStatusToContractV1(
+            effect.status
+          )
+      });
+    }
+
+    if (
+      kind === "cleanse" ||
+      kind === "dispel"
+    ) {
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        statusTags: stableIds(
+          effect.statusTags
+        )
+      });
+    }
+
+    if (kind === "damage") {
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        amount: finiteNumber(
+          effect.amount,
+          "Dégâts tactiques"
+        ),
+        channel:
+          optionalText(effect.channel)
+      });
+    }
+
+    return normalizeSkillEffectV1({
+      kind,
+      targetScope,
+      amount: finiteNumber(
+        effect.amount,
+        "Valeur d’effet tactique"
+      )
+    });
+  });
 }
 
 function finiteNumber(value, field) {
@@ -1005,7 +1223,11 @@ export function buildHumanSkillDraftV1(fields) {
         interruptsPreparation:
           fields.interruptsPreparation === true,
         tags: stableIds(fields.effectTags)
-      }
+      },
+      effects:
+        buildHumanTacticalSkillEffectsV1(
+          fields.effects ?? []
+        )
     },
     presentation: presentationForSkill(fields)
   });
