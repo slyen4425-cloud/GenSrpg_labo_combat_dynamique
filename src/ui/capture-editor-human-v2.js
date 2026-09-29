@@ -64,6 +64,19 @@ import {
 import {
   buildCaptureCreatureHistoricalLoadoutV1
 } from "../catalogs/capture-creature-historical-loadout-v1.js";
+import {
+  normalizeCaptureStatRegistryV1
+} from "../contracts/capture-stat-registry-v1.js";
+import {
+  normalizeCaptureCreatureStatValuesV1
+} from "../contracts/capture-creature-stat-values-v1.js";
+import {
+  normalizeCaptureProgressionRulesV1,
+  captureActiveSkillSlotsForLevelV1
+} from "../contracts/capture-progression-rules-v1.js";
+import {
+  importMonsterCaptureStatValuesV1
+} from "../adapters/input/capture/monster-capture-stat-values-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -77,6 +90,16 @@ const NATIVE_SKILL_CATALOG_URL = new URL(
 
 const MONSTER_CAPTURE_CREATURE_CATALOG_URL = new URL(
   "../../data/capture/monster-capture-creatures.v1.json",
+  import.meta.url
+);
+
+const MONSTER_CAPTURE_STAT_REGISTRY_URL = new URL(
+  "../../data/capture/monster-capture-stat-registry.v1.json",
+  import.meta.url
+);
+
+const MONSTER_CAPTURE_PROGRESSION_RULES_URL = new URL(
+  "../../data/capture/monster-capture-progression-rules.v1.json",
   import.meta.url
 );
 
@@ -122,6 +145,153 @@ function stableIds(values) {
   return values
     .map((value) => optionalText(value))
     .filter((value) => value !== null);
+}
+
+export function buildHumanCreatureStatValuesV1({
+  creatureId,
+  values,
+  registry
+}) {
+  return normalizeCaptureCreatureStatValuesV1(
+    {
+      schema: "capture-creature-stat-values-v1",
+      creatureId: requiredText(
+        creatureId,
+        "ID créature"
+      ),
+      values: values ?? {}
+    },
+    registry
+  );
+}
+
+export function buildHumanStatRegistryV1({
+  definitions
+}) {
+  return normalizeCaptureStatRegistryV1({
+    schema: "capture-stat-registry-v1",
+    stats: Array.isArray(definitions)
+      ? definitions
+      : []
+  });
+}
+
+export function addHumanCustomStatDefinitionV1({
+  registry,
+  definition
+}) {
+  const current =
+    normalizeCaptureStatRegistryV1(registry);
+
+  return buildHumanStatRegistryV1({
+    definitions: [
+      ...current.stats,
+      definition
+    ]
+  });
+}
+
+export function buildHumanEvolutionV1({
+  enabled,
+  targetId,
+  level
+}) {
+  if (enabled !== true) {
+    return null;
+  }
+
+  return Object.freeze({
+    condition: "level",
+    level: positiveInteger(
+      level,
+      "Niveau d’évolution"
+    ),
+    targetId: requiredText(
+      targetId,
+      "Créature cible de l’évolution"
+    )
+  });
+}
+
+export function buildHumanProgressionRulesV1({
+  maxActiveSkills,
+  slotUnlockSchedule
+}) {
+  const rules =
+    normalizeCaptureProgressionRulesV1({
+      schema: "capture-progression-rules-v1",
+      maxActiveSkills: positiveInteger(
+        maxActiveSkills,
+        "Maximum de capacités actives"
+      ),
+      slotUnlockSchedule:
+        Array.isArray(slotUnlockSchedule)
+          ? slotUnlockSchedule
+          : []
+    });
+
+  if (rules.maxActiveSkills > 4) {
+    throw new RangeError(
+      "Le loadout Capture V1 accepte au maximum 4 capacités actives"
+    );
+  }
+
+  return rules;
+}
+
+export function humanLoadoutAvailabilityV1({
+  progressionRules,
+  creatureLevel
+}) {
+  const rules =
+    normalizeCaptureProgressionRulesV1(
+      progressionRules
+    );
+  const unlocked =
+    captureActiveSkillSlotsForLevelV1(
+      rules,
+      positiveInteger(
+        creatureLevel,
+        "Niveau créature"
+      )
+    );
+
+  return Object.freeze(
+    [0, 1, 2, 3].map(
+      (index) =>
+        index < Math.min(4, unlocked)
+    )
+  );
+}
+
+function legacySourceStatsV1(previousDraft) {
+  const source =
+    previousDraft?.sourceStats;
+
+  if (
+    source &&
+    typeof source === "object"
+  ) {
+    return {
+      force: Number(source.force) || 0,
+      agility: Number(source.agility) || 0,
+      intelligence:
+        Number(source.intelligence) || 0,
+      spirit: Number(source.spirit) || 0,
+      endurance: Number(source.endurance) || 0,
+      initiative:
+        Number(source.initiative) || 0
+    };
+  }
+
+  return {
+    force: 0,
+    agility: 0,
+    intelligence: 0,
+    spirit: 0,
+    endurance: 0,
+    initiative: 0
+  };
 }
 
 function resistanceEntries(raw) {
@@ -974,7 +1144,8 @@ function replaceCreatureSockets(
 function writeCreatureRecordFields(
   root,
   record,
-  sockets
+  sockets,
+  statRegistry = null
 ) {
   const draft = record.draft;
   const loadout = record.loadout;
@@ -992,21 +1163,6 @@ function writeCreatureRecordFields(
     [
       "[data-creature-display-scale]",
       presentation?.displayScale ?? 1
-    ],
-    ["[data-stat-force]", draft.sourceStats.force],
-    ["[data-stat-agility]", draft.sourceStats.agility],
-    [
-      "[data-stat-intelligence]",
-      draft.sourceStats.intelligence
-    ],
-    ["[data-stat-spirit]", draft.sourceStats.spirit],
-    [
-      "[data-stat-endurance]",
-      draft.sourceStats.endurance
-    ],
-    [
-      "[data-stat-initiative]",
-      draft.sourceStats.initiative
     ],
     ["[data-max-hp]", draft.combat.maxHp],
     [
@@ -1059,6 +1215,57 @@ function writeCreatureRecordFields(
 
   one(root, "[data-capturable]").checked =
     draft.capture.capturable;
+
+  const evolution =
+    draft.capture.evolution;
+  const evolutionEnabled = one(
+    root,
+    "[data-evolution-enabled]"
+  );
+  const evolutionTarget = one(
+    root,
+    "[data-evolution-target]"
+  );
+  const evolutionLevel = one(
+    root,
+    "[data-evolution-level]"
+  );
+
+  evolutionEnabled.checked =
+    evolution !== null;
+
+  if (
+    evolution?.targetId &&
+    ![
+      ...evolutionTarget.options
+    ].some(
+      (option) =>
+        option.value ===
+        evolution.targetId
+    )
+  ) {
+    createOption(
+      evolutionTarget,
+      evolution.targetId,
+      evolution.targetId
+    );
+  }
+
+  evolutionTarget.value =
+    evolution?.targetId ?? "";
+  evolutionLevel.value = String(
+    evolution?.level ??
+      Math.max(2, draft.level + 1)
+  );
+  syncEvolutionControlsV1(root);
+
+  if (statRegistry !== null) {
+    renderHumanStatValuesV1(
+      root,
+      statRegistry,
+      record.statValues ?? null
+    );
+  }
 
   for (
     const input of root.querySelectorAll(
@@ -1116,7 +1323,8 @@ function writeCreatureRecordFields(
 function prepareNewCreatureDraftFields(
   root,
   id,
-  sockets
+  sockets,
+  statRegistry = null
 ) {
   const defaults = [
     ["[data-creature-id]", id],
@@ -1135,12 +1343,6 @@ function prepareNewCreatureDraftFields(
     ["[data-initial-hp]", 50],
     ["[data-capture-rate]", 30],
     ["[data-spawn-chance]", 10],
-    ["[data-stat-force]", 10],
-    ["[data-stat-agility]", 10],
-    ["[data-stat-intelligence]", 10],
-    ["[data-stat-spirit]", 10],
-    ["[data-stat-endurance]", 10],
-    ["[data-stat-initiative]", 10]
   ];
 
   for (const [selector, value] of defaults) {
@@ -1148,6 +1350,27 @@ function prepareNewCreatureDraftFields(
   }
 
   one(root, "[data-capturable]").checked = true;
+  one(
+    root,
+    "[data-evolution-enabled]"
+  ).checked = false;
+  one(
+    root,
+    "[data-evolution-target]"
+  ).value = "";
+  one(
+    root,
+    "[data-evolution-level]"
+  ).value = "10";
+  syncEvolutionControlsV1(root);
+
+  if (statRegistry !== null) {
+    renderHumanStatValuesV1(
+      root,
+      statRegistry,
+      null
+    );
+  }
 
   for (
     const input of root.querySelectorAll(
@@ -1215,6 +1438,374 @@ function createOption(select, value, label) {
   option.value = value;
   option.textContent = label;
   select.append(option);
+  return option;
+}
+
+function statChannelSummary(definition) {
+  const parts = [];
+  if (definition.damageChannel) {
+    parts.push(
+      "dégâts " +
+        definition.damageChannel +
+        " ×" +
+        definition.damagePerPoint
+    );
+  }
+  if (definition.resistanceChannel) {
+    parts.push(
+      "résistance " +
+        definition.resistanceChannel +
+        " ×" +
+        definition.resistancePerPoint
+    );
+  }
+  return parts.length > 0
+    ? parts.join(" · ")
+    : "stat utilitaire / personnalisée";
+}
+
+function renderHumanStatValuesV1(
+  root,
+  registry,
+  statValues = null
+) {
+  const host = one(
+    root,
+    "[data-stat-values-host]"
+  );
+  const normalized =
+    normalizeCaptureStatRegistryV1(registry);
+  const values =
+    statValues?.values ?? {};
+
+  host.textContent = "";
+
+  for (const definition of normalized.stats) {
+    const label =
+      document.createElement("label");
+    label.className = "stat-value-card";
+
+    const title =
+      document.createElement("span");
+    title.className = "stat-value-card__title";
+    title.textContent = definition.label;
+
+    const input =
+      document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "1";
+    input.value = String(
+      values[definition.id] ?? 0
+    );
+    input.dataset.statValue =
+      definition.id;
+
+    const meta =
+      document.createElement("small");
+    meta.textContent =
+      statChannelSummary(definition);
+
+    label.append(title, input, meta);
+    host.append(label);
+  }
+}
+
+function renderHumanStatRegistryV1(
+  root,
+  registry
+) {
+  const host = one(
+    root,
+    "[data-stat-registry-host]"
+  );
+  const normalized =
+    normalizeCaptureStatRegistryV1(registry);
+
+  host.textContent = "";
+
+  for (const definition of normalized.stats) {
+    const row =
+      document.createElement("div");
+    row.className = "stat-definition-row";
+    row.dataset.statDefinition =
+      definition.id;
+
+    const id =
+      document.createElement("strong");
+    id.textContent = definition.id;
+
+    const label =
+      document.createElement("input");
+    label.value = definition.label;
+    label.dataset.statDefinitionLabel =
+      "true";
+    label.setAttribute(
+      "aria-label",
+      "Libellé " + definition.id
+    );
+
+    const damageChannel =
+      document.createElement("input");
+    damageChannel.value =
+      definition.damageChannel ?? "";
+    damageChannel.placeholder =
+      "canal dégâts";
+    damageChannel.dataset.statDefinitionDamageChannel =
+      "true";
+
+    const damageRate =
+      document.createElement("input");
+    damageRate.type = "number";
+    damageRate.min = "0";
+    damageRate.step = "0.05";
+    damageRate.value = String(
+      definition.damagePerPoint
+    );
+    damageRate.dataset.statDefinitionDamageRate =
+      "true";
+
+    const resistanceChannel =
+      document.createElement("input");
+    resistanceChannel.value =
+      definition.resistanceChannel ?? "";
+    resistanceChannel.placeholder =
+      "canal résistance";
+    resistanceChannel.dataset.statDefinitionResistanceChannel =
+      "true";
+
+    const resistanceRate =
+      document.createElement("input");
+    resistanceRate.type = "number";
+    resistanceRate.min = "0";
+    resistanceRate.step = "0.05";
+    resistanceRate.value = String(
+      definition.resistancePerPoint
+    );
+    resistanceRate.dataset.statDefinitionResistanceRate =
+      "true";
+
+    const remove =
+      document.createElement("button");
+    remove.type = "button";
+    remove.className = "small-action";
+    remove.textContent = "Retirer";
+    remove.dataset.statDefinitionRemove =
+      definition.id;
+
+    row.append(
+      id,
+      label,
+      damageChannel,
+      damageRate,
+      resistanceChannel,
+      resistanceRate,
+      remove
+    );
+    host.append(row);
+  }
+}
+
+function readHumanStatRegistryV1(root) {
+  const definitions = [
+    ...root.querySelectorAll(
+      "[data-stat-definition]"
+    )
+  ].map((row) => {
+    const damageChannel = optionalText(
+      row.querySelector(
+        "[data-stat-definition-damage-channel]"
+      ).value
+    );
+    const resistanceChannel =
+      optionalText(
+        row.querySelector(
+          "[data-stat-definition-resistance-channel]"
+        ).value
+      );
+
+    return {
+      id: row.dataset.statDefinition,
+      label: row.querySelector(
+        "[data-stat-definition-label]"
+      ).value,
+      damageChannel,
+      resistanceChannel,
+      damagePerPoint:
+        damageChannel === null
+          ? 0
+          : finiteNumber(
+              row.querySelector(
+                "[data-stat-definition-damage-rate]"
+              ).value,
+              "Coefficient dégâts"
+            ),
+      resistancePerPoint:
+        resistanceChannel === null
+          ? 0
+          : finiteNumber(
+              row.querySelector(
+                "[data-stat-definition-resistance-rate]"
+              ).value,
+              "Coefficient résistance"
+            )
+    };
+  });
+
+  return buildHumanStatRegistryV1({
+    definitions
+  });
+}
+
+function readHumanCreatureStatValuesV1(
+  root,
+  creatureId,
+  registry
+) {
+  const values = {};
+  for (
+    const input of root.querySelectorAll(
+      "[data-stat-value]"
+    )
+  ) {
+    values[input.dataset.statValue] =
+      finiteNumber(
+        input.value,
+        "Stat " + input.dataset.statValue
+      );
+  }
+
+  return buildHumanCreatureStatValuesV1({
+    creatureId,
+    values,
+    registry
+  });
+}
+
+function renderHumanProgressionRulesV1(
+  root,
+  progressionRules
+) {
+  const rules =
+    normalizeCaptureProgressionRulesV1(
+      progressionRules
+    );
+  one(
+    root,
+    "[data-progression-max-active]"
+  ).value = String(rules.maxActiveSkills);
+
+  const host = one(
+    root,
+    "[data-progression-schedule-host]"
+  );
+  host.textContent = "";
+
+  rules.slotUnlockSchedule.forEach(
+    (step, index) => {
+      const row =
+        document.createElement("div");
+      row.className = "progression-row";
+      row.dataset.progressionStep =
+        String(index);
+
+      const levelLabel =
+        document.createElement("label");
+      levelLabel.textContent = "Niveau";
+      const levelInput =
+        document.createElement("input");
+      levelInput.type = "number";
+      levelInput.min = "1";
+      levelInput.value = String(step.level);
+      levelInput.dataset.progressionLevel =
+        "true";
+      levelLabel.append(levelInput);
+
+      const slotsLabel =
+        document.createElement("label");
+      slotsLabel.textContent =
+        "Slots actifs";
+      const slotsInput =
+        document.createElement("input");
+      slotsInput.type = "number";
+      slotsInput.min = "1";
+      slotsInput.max = "4";
+      slotsInput.value = String(step.slots);
+      slotsInput.dataset.progressionSlots =
+        "true";
+      slotsLabel.append(slotsInput);
+
+      const remove =
+        document.createElement("button");
+      remove.type = "button";
+      remove.className = "small-action";
+      remove.textContent = "Retirer";
+      remove.dataset.progressionRemove =
+        String(index);
+      remove.disabled =
+        rules.slotUnlockSchedule.length <= 1;
+
+      row.append(
+        levelLabel,
+        slotsLabel,
+        remove
+      );
+      host.append(row);
+    }
+  );
+}
+
+function readHumanProgressionRulesV1(root) {
+  const steps = [
+    ...root.querySelectorAll(
+      "[data-progression-step]"
+    )
+  ].map((row) => ({
+    level: positiveInteger(
+      Number(
+        row.querySelector(
+          "[data-progression-level]"
+        ).value
+      ),
+      "Niveau du palier"
+    ),
+    slots: positiveInteger(
+      Number(
+        row.querySelector(
+          "[data-progression-slots]"
+        ).value
+      ),
+      "Slots du palier"
+    )
+  }));
+
+  return buildHumanProgressionRulesV1({
+    maxActiveSkills: positiveInteger(
+      Number(
+        one(
+          root,
+          "[data-progression-max-active]"
+        ).value
+      ),
+      "Maximum de capacités actives"
+    ),
+    slotUnlockSchedule: steps
+  });
+}
+
+function syncEvolutionControlsV1(root) {
+  const enabled = one(
+    root,
+    "[data-evolution-enabled]"
+  ).checked;
+  one(
+    root,
+    "[data-evolution-target]"
+  ).disabled = !enabled;
+  one(
+    root,
+    "[data-evolution-level]"
+  ).disabled = !enabled;
 }
 
 function catalogMatches(asset, role) {
@@ -1365,7 +1956,47 @@ async function hydratePrivateAudioCatalog(root) {
   return catalog;
 }
 
-async function hydrateMonsterCaptureCreatureCatalog() {
+async function hydrateCaptureStatRegistryV1() {
+  const response = await fetch(
+    MONSTER_CAPTURE_STAT_REGISTRY_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Registre stats Monster Capture indisponible (" +
+        response.status +
+        ")"
+    );
+  }
+
+  return normalizeCaptureStatRegistryV1(
+    await response.json()
+  );
+}
+
+async function hydrateCaptureProgressionRulesV1() {
+  const response = await fetch(
+    MONSTER_CAPTURE_PROGRESSION_RULES_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Règles de progression Monster Capture indisponibles (" +
+        response.status +
+        ")"
+    );
+  }
+
+  return buildHumanProgressionRulesV1(
+    await response.json()
+  );
+}
+
+async function hydrateMonsterCaptureCreatureCatalog(
+  statRegistry
+) {
   const response = await fetch(
     MONSTER_CAPTURE_CREATURE_CATALOG_URL,
     { cache: "no-store" }
@@ -1418,9 +2049,20 @@ async function hydrateMonsterCaptureCreatureCatalog() {
   }
 
   return Object.freeze(
-    entries.map(
-      importMonsterCaptureCreatureRecordV1
-    )
+    entries.map((entry) => {
+      const record =
+        importMonsterCaptureCreatureRecordV1(
+          entry
+        );
+      return Object.freeze({
+        ...record,
+        statValues:
+          importMonsterCaptureStatValuesV1(
+            entry,
+            statRegistry
+          )
+      });
+    })
   );
 }
 
@@ -1754,7 +2396,11 @@ function updateSocketMarker(surface, point) {
   marker.style.top = (point.y * 100) + "%";
 }
 
-function readCreatureFields(root, sockets) {
+function readCreatureFields(
+  root,
+  sockets,
+  previousDraft = null
+) {
   const elements = checkedValues(
     root,
     "[data-element]:checked"
@@ -1776,23 +2422,10 @@ function readCreatureFields(root, sockets) {
       "[data-creature-description]"
     ),
     level: numericValue(root, "[data-creature-level]"),
-    sourceStats: {
-      force: numericValue(root, "[data-stat-force]"),
-      agility: numericValue(root, "[data-stat-agility]"),
-      intelligence: numericValue(
-        root,
-        "[data-stat-intelligence]"
+    sourceStats:
+      legacySourceStatsV1(
+        previousDraft
       ),
-      spirit: numericValue(root, "[data-stat-spirit]"),
-      endurance: numericValue(
-        root,
-        "[data-stat-endurance]"
-      ),
-      initiative: numericValue(
-        root,
-        "[data-stat-initiative]"
-      )
-    },
     elements,
     resistances,
     capture: {
@@ -1809,7 +2442,20 @@ function readCreatureFields(root, sockets) {
         "[data-spawn-chance]"
       ),
       spawnTags: elements,
-      evolution: null
+      evolution: buildHumanEvolutionV1({
+        enabled: one(
+          root,
+          "[data-evolution-enabled]"
+        ).checked,
+        targetId: selectedValue(
+          root,
+          "[data-evolution-target]"
+        ),
+        level: numericValue(
+          root,
+          "[data-evolution-level]"
+        )
+      })
     },
     combat: {
       maxHp: numericValue(root, "[data-max-hp]"),
@@ -2102,9 +2748,15 @@ export function preserveUnrepresentedCreatureFieldsV1({
         ])
       ],
       evolution:
-        previousDraft?.capture?.evolution ??
-        fields.capture?.evolution ??
-        null
+        Object.prototype.hasOwnProperty.call(
+          fields.capture ?? {},
+          "evolution"
+        )
+          ? fields.capture.evolution
+          : (
+              previousDraft?.capture?.evolution ??
+              null
+            )
     },
     combat: {
       ...(fields.combat ?? {}),
@@ -2161,6 +2813,8 @@ export function mountCaptureEditorHumanV2({
   let skillDirty = false;
   let disposed = false;
   let lastExport = null;
+  let statRegistry = null;
+  let progressionRules = null;
 
   function listen(target, type, handler) {
     if (disposed) {
@@ -2220,6 +2874,26 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-creature-update]"
   );
+  const statRegistryApplyButton = one(
+    root,
+    "[data-stat-registry-apply]"
+  );
+  const statCustomAddButton = one(
+    root,
+    "[data-stat-custom-add]"
+  );
+  const progressionApplyButton = one(
+    root,
+    "[data-progression-apply]"
+  );
+  const progressionAddButton = one(
+    root,
+    "[data-progression-add-step]"
+  );
+  const progressionScheduleHost = one(
+    root,
+    "[data-progression-schedule-host]"
+  );
 
   function updateCreatureLibraryState(
     message,
@@ -2227,6 +2901,135 @@ export function mountCaptureEditorHumanV2({
   ) {
     creatureLibraryState.textContent = message;
     creatureLibraryState.dataset.tone = tone;
+  }
+
+  function refreshEvolutionTargetOptions(
+    preferredId = null
+  ) {
+    const select = one(
+      root,
+      "[data-evolution-target]"
+    );
+    const previous =
+      preferredId ??
+      select.value;
+
+    select.textContent = "";
+    createOption(
+      select,
+      "",
+      "Choisir une créature cible"
+    );
+
+    const currentId = optionalText(
+      one(
+        root,
+        "[data-creature-id]"
+      ).value
+    );
+
+    for (
+      const record of configuredCreatures.values()
+    ) {
+      if (
+        currentId !== null &&
+        record.draft.id === currentId
+      ) {
+        continue;
+      }
+      createOption(
+        select,
+        record.draft.id,
+        record.draft.displayName +
+          " · " +
+          record.draft.id
+      );
+    }
+
+    if (
+      previous &&
+      ![
+        ...select.options
+      ].some(
+        (option) =>
+          option.value === previous
+      )
+    ) {
+      createOption(
+        select,
+        previous,
+        previous
+      );
+    }
+
+    select.value = previous ?? "";
+  }
+
+  function syncLoadoutAvailability() {
+    const slots = [
+      ...root.querySelectorAll(
+        "[data-loadout-slot]"
+      )
+    ];
+    const summary = one(
+      root,
+      "[data-loadout-policy-summary]"
+    );
+
+    if (progressionRules === null) {
+      slots.forEach(
+        (select) => {
+          select.disabled = false;
+          select.dataset.locked = "false";
+        }
+      );
+      summary.textContent =
+        "Chargement de la politique de progression…";
+      return;
+    }
+
+    const level = Math.max(
+      1,
+      Number(
+        one(
+          root,
+          "[data-creature-level]"
+        ).value
+      ) || 1
+    );
+    const availability =
+      humanLoadoutAvailabilityV1({
+        progressionRules,
+        creatureLevel: level
+      });
+    const unlocked =
+      availability.filter(Boolean).length;
+
+    slots.forEach(
+      (select, index) => {
+        const available =
+          availability[index] === true;
+        select.disabled = !available;
+        select.dataset.locked =
+          available ? "false" : "true";
+        const label =
+          select.closest("label");
+        if (label) {
+          label.dataset.locked =
+            available ? "false" : "true";
+        }
+      }
+    );
+
+    summary.textContent =
+      unlocked +
+      " slot" +
+      (unlocked > 1 ? "s" : "") +
+      " actif" +
+      (unlocked > 1 ? "s" : "") +
+      " au niveau " +
+      level +
+      ". Le niveau requis reste défini sur chaque capacité.";
   }
 
   function refreshCreatureLibraryOptions(
@@ -2271,6 +3074,43 @@ export function mountCaptureEditorHumanV2({
       root,
       "[data-creature-id]"
     );
+    const previousRecord =
+      selectedCreatureId === creatureId
+        ? configuredCreatures.get(
+            selectedCreatureId
+          ) ?? null
+        : null;
+
+    const rawFields = readCreatureFields(
+      root,
+      sockets,
+      previousRecord?.draft ?? null
+    );
+
+    const draftPreview =
+      buildHumanCreatureDraftV3(
+        preserveUnrepresentedCreatureFieldsV1({
+          fields: rawFields,
+          previousDraft:
+            previousRecord?.draft ?? null,
+          visibleElementIds: [
+            ...root.querySelectorAll(
+              "[data-element]"
+            )
+          ].map((input) => input.value),
+          visibleResistanceKinds: [
+            ...root.querySelectorAll(
+              "[data-resistance]"
+            )
+          ].map(
+            (input) =>
+              "element:" +
+              input.dataset.resistance
+          ),
+          activeSkillIds: []
+        })
+      );
+
     const loadout = readLoadout(
       root,
       creatureId
@@ -2282,16 +3122,48 @@ export function mountCaptureEditorHumanV2({
           .filter(Boolean)
       )
     ];
-    const rawFields = readCreatureFields(
-      root,
-      sockets
-    );
-    const previousRecord =
-      selectedCreatureId === creatureId
-        ? configuredCreatures.get(
-            selectedCreatureId
-          ) ?? null
-        : null;
+
+    if (progressionRules !== null) {
+      const availability =
+        humanLoadoutAvailabilityV1({
+          progressionRules,
+          creatureLevel:
+            draftPreview.level
+        });
+
+      loadout.slots.forEach(
+        (slot, index) => {
+          if (
+            slot.skillId !== null &&
+            availability[index] !== true
+          ) {
+            throw new RangeError(
+              "Le slot " +
+                (index + 1) +
+                " n’est pas encore débloqué au niveau " +
+                draftPreview.level
+            );
+          }
+        }
+      );
+    }
+
+    for (const skillId of activeSkillIds) {
+      const skill =
+        configuredSkills.get(skillId);
+      if (
+        skill &&
+        skill.requiredLevel >
+          draftPreview.level
+      ) {
+        throw new RangeError(
+          "La capacité « " +
+            skill.definition.name +
+            " » nécessite le niveau " +
+            skill.requiredLevel
+        );
+      }
+    }
 
     const fields =
       preserveUnrepresentedCreatureFieldsV1({
@@ -2318,9 +3190,22 @@ export function mountCaptureEditorHumanV2({
     const draft =
       buildHumanCreatureDraftV3(fields);
 
+    const statValues =
+      statRegistry === null
+        ? (
+            previousRecord?.statValues ??
+            null
+          )
+        : readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+
     return Object.freeze({
       draft,
-      loadout
+      loadout,
+      statValues
     });
   }
 
@@ -2349,6 +3234,11 @@ export function mountCaptureEditorHumanV2({
     refreshCreatureLibraryOptions(
       record.draft.id
     );
+    refreshEvolutionTargetOptions(
+      record.draft.capture.evolution
+        ?.targetId ?? null
+    );
+    syncLoadoutAvailability();
     updateCreatureLibraryState(
       saveMode.mode === "create"
         ? "Créature « " +
@@ -2385,11 +3275,17 @@ export function mountCaptureEditorHumanV2({
     }
 
     refreshLoadoutOptions();
+    refreshEvolutionTargetOptions(
+      record.draft.capture.evolution
+        ?.targetId ?? null
+    );
     writeCreatureRecordFields(
       root,
       record,
-      sockets
+      sockets,
+      statRegistry
     );
+    syncLoadoutAvailability();
     selectedCreatureId = creatureId;
     creatureDirty = false;
     one(
@@ -2439,12 +3335,27 @@ export function mountCaptureEditorHumanV2({
       select.textContent = "";
       createOption(select, "", "Vide");
 
+      const creatureLevel = Math.max(
+        1,
+        Number(
+          one(
+            root,
+            "[data-creature-level]"
+          ).value
+        ) || 1
+      );
+
       for (const draft of configured) {
-        createOption(
+        const option = createOption(
           select,
           draft.id,
-          draft.definition.name
+          draft.definition.name +
+            " · niv. " +
+            draft.requiredLevel
         );
+        option.disabled =
+          draft.requiredLevel >
+          creatureLevel;
       }
 
       if (
@@ -2463,12 +3374,16 @@ export function mountCaptureEditorHumanV2({
       )
     ) {
       const empty = slots.find(
-        (select) => select.value === ""
+        (select) =>
+          select.value === "" &&
+          select.disabled !== true
       );
       if (empty) {
         empty.value = preferredId;
       }
     }
+
+    syncLoadoutAvailability();
   }
 
   function persistCurrentSkill(intent) {
@@ -2593,8 +3508,11 @@ export function mountCaptureEditorHumanV2({
     prepareNewCreatureDraftFields(
       root,
       nextId,
-      sockets
+      sockets,
+      statRegistry
     );
+    refreshEvolutionTargetOptions();
+    syncLoadoutAvailability();
     one(
       root,
       "[data-creature-id]"
@@ -2732,7 +3650,10 @@ export function mountCaptureEditorHumanV2({
       field === creatureLibrarySelect ||
       field === newCreatureButton ||
       field === createCreatureButton ||
-      field === updateCreatureButton
+      field === updateCreatureButton ||
+      field.closest(
+        "[data-global-editor-control]"
+      )
     ) {
       continue;
     }
@@ -2744,6 +3665,385 @@ export function mountCaptureEditorHumanV2({
       creatureDirty = true;
     });
   }
+
+  listen(
+    one(
+      root,
+      "[data-evolution-enabled]"
+    ),
+    "change",
+    () => {
+      syncEvolutionControlsV1(root);
+      creatureDirty = true;
+    }
+  );
+
+  listen(
+    one(
+      root,
+      "[data-creature-level]"
+    ),
+    "change",
+    () => {
+      refreshLoadoutOptions();
+      syncLoadoutAvailability();
+    }
+  );
+
+  listen(
+    one(
+      root,
+      "[data-stat-values-host]"
+    ),
+    "input",
+    (event) => {
+      if (
+        event.target?.matches?.(
+          "[data-stat-value]"
+        )
+      ) {
+        creatureDirty = true;
+      }
+    }
+  );
+
+  listen(
+    statRegistryApplyButton,
+    "click",
+    () => {
+      try {
+        if (statRegistry === null) {
+          throw new Error(
+            "Registre de stats non chargé"
+          );
+        }
+
+        const creatureId = selectedValue(
+          root,
+          "[data-creature-id]"
+        );
+        const valuesBefore =
+          readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+        statRegistry =
+          readHumanStatRegistryV1(root);
+        renderHumanStatRegistryV1(
+          root,
+          statRegistry
+        );
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          valuesBefore
+        );
+        setStatus(
+          root,
+          "Système de stats mis à jour pour cette session.",
+          "ok"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    statCustomAddButton,
+    "click",
+    () => {
+      try {
+        if (statRegistry === null) {
+          throw new Error(
+            "Registre de stats non chargé"
+          );
+        }
+
+        const creatureId = selectedValue(
+          root,
+          "[data-creature-id]"
+        );
+        const valuesBefore =
+          readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+        const editedRegistry =
+          readHumanStatRegistryV1(root);
+
+        statRegistry =
+          addHumanCustomStatDefinitionV1({
+            registry: editedRegistry,
+            definition: {
+              id: selectedValue(
+                root,
+                "[data-stat-custom-id]"
+              ),
+              label: selectedValue(
+                root,
+                "[data-stat-custom-label]"
+              ),
+              damageChannel:
+                optionalText(
+                  selectedValue(
+                    root,
+                    "[data-stat-custom-damage-channel]"
+                  )
+                ),
+              resistanceChannel:
+                optionalText(
+                  selectedValue(
+                    root,
+                    "[data-stat-custom-resistance-channel]"
+                  )
+                ),
+              damagePerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-damage-per-point]"
+                ),
+              resistancePerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-resistance-per-point]"
+                )
+            }
+          });
+
+        renderHumanStatRegistryV1(
+          root,
+          statRegistry
+        );
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          valuesBefore
+        );
+
+        one(
+          root,
+          "[data-stat-custom-id]"
+        ).value = "";
+        one(
+          root,
+          "[data-stat-custom-label]"
+        ).value = "";
+
+        setStatus(
+          root,
+          "Stat personnalisée ajoutée au registre de la session.",
+          "ok"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    one(
+      root,
+      "[data-stat-registry-host]"
+    ),
+    "click",
+    (event) => {
+      const statId =
+        event.target?.dataset
+          ?.statDefinitionRemove;
+      if (!statId) {
+        return;
+      }
+
+      try {
+        if (statRegistry === null) {
+          throw new Error(
+            "Registre de stats non chargé"
+          );
+        }
+
+        const creatureId = selectedValue(
+          root,
+          "[data-creature-id]"
+        );
+        const valuesBefore =
+          readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+        const edited =
+          readHumanStatRegistryV1(root);
+        statRegistry =
+          buildHumanStatRegistryV1({
+            definitions:
+              edited.stats.filter(
+                (entry) =>
+                  entry.id !== statId
+              )
+          });
+        renderHumanStatRegistryV1(
+          root,
+          statRegistry
+        );
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          valuesBefore
+        );
+        setStatus(
+          root,
+          "Stat « " +
+            statId +
+            " » retirée du registre de la session.",
+          "info"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    progressionApplyButton,
+    "click",
+    () => {
+      try {
+        progressionRules =
+          readHumanProgressionRulesV1(
+            root
+          );
+        renderHumanProgressionRulesV1(
+          root,
+          progressionRules
+        );
+        refreshLoadoutOptions();
+        setStatus(
+          root,
+          "Politique de déblocage des slots mise à jour.",
+          "ok"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    progressionAddButton,
+    "click",
+    () => {
+      try {
+        const base =
+          progressionRules ??
+          readHumanProgressionRulesV1(
+            root
+          );
+        const last =
+          base.slotUnlockSchedule[
+            base.slotUnlockSchedule.length -
+              1
+          ];
+        const candidate =
+          buildHumanProgressionRulesV1({
+            maxActiveSkills:
+              base.maxActiveSkills,
+            slotUnlockSchedule: [
+              ...base.slotUnlockSchedule,
+              {
+                level:
+                  last.level + 10,
+                slots: Math.min(
+                  base.maxActiveSkills,
+                  last.slots + 1
+                )
+              }
+            ]
+          });
+        progressionRules = candidate;
+        renderHumanProgressionRulesV1(
+          root,
+          progressionRules
+        );
+        refreshLoadoutOptions();
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    progressionScheduleHost,
+    "click",
+    (event) => {
+      const rawIndex =
+        event.target?.dataset
+          ?.progressionRemove;
+      if (rawIndex == null) {
+        return;
+      }
+
+      try {
+        const edited =
+          readHumanProgressionRulesV1(
+            root
+          );
+        if (
+          edited.slotUnlockSchedule
+            .length <= 1
+        ) {
+          throw new RangeError(
+            "La progression doit conserver au moins un palier"
+          );
+        }
+        const index = Number(rawIndex);
+        progressionRules =
+          buildHumanProgressionRulesV1({
+            maxActiveSkills:
+              edited.maxActiveSkills,
+            slotUnlockSchedule:
+              edited.slotUnlockSchedule
+                .filter(
+                  (_, stepIndex) =>
+                    stepIndex !== index
+                )
+          });
+        renderHumanProgressionRulesV1(
+          root,
+          progressionRules
+        );
+        refreshLoadoutOptions();
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
 
   for (
     const field of root.querySelectorAll(
@@ -2999,16 +4299,40 @@ export function mountCaptureEditorHumanV2({
     hydrateAssetCatalog(root, listen),
     hydratePrivateAudioCatalog(root),
     hydrateNativeSkillCatalog(),
-    hydrateMonsterCaptureCreatureCatalog(),
+    hydrateCaptureStatRegistryV1()
+      .then(async (registry) => ({
+        registry,
+        records:
+          await hydrateMonsterCaptureCreatureCatalog(
+            registry
+          )
+      })),
+    hydrateCaptureProgressionRulesV1(),
     hydrateCaptureCreatureVisualMetadataV1()
   ])
     .then(([
       assetCatalog,
       ,
       nativeSkills,
-      monsterCaptureRecords,
+      captureData,
+      loadedProgressionRules,
       creatureVisualMetaById
     ]) => {
+      statRegistry = captureData.registry;
+      progressionRules =
+        loadedProgressionRules;
+
+      renderHumanStatRegistryV1(
+        root,
+        statRegistry
+      );
+      renderHumanProgressionRulesV1(
+        root,
+        progressionRules
+      );
+
+      const monsterCaptureRecords =
+        captureData.records;
       for (
         const [skillId, draft] of nativeSkills
       ) {
@@ -3060,14 +4384,16 @@ export function mountCaptureEditorHumanV2({
           Object.freeze({
             draft: record.draft,
             loadout:
-              historicalLoadout.loadout
+              historicalLoadout.loadout,
+            statValues:
+              record.statValues
           });
 
         const binding =
           captureCreatureVisualBindingForIdV1(
             record.draft.id
           );
-        const hydratedRecord =
+        const visualRecord =
           binding === null
             ? recordWithLoadout
             : applyCaptureCreatureVisualBindingV1({
@@ -3079,6 +4405,12 @@ export function mountCaptureEditorHumanV2({
                   ],
                 availableAssetIds
               });
+        const hydratedRecord =
+          Object.freeze({
+            ...visualRecord,
+            statValues:
+              recordWithLoadout.statValues
+          });
 
         if (
           !configuredCreatures.has(
@@ -3092,10 +4424,79 @@ export function mountCaptureEditorHumanV2({
         }
       }
 
+      for (
+        const [
+          creatureId,
+          record
+        ] of configuredCreatures
+      ) {
+        if (record.statValues !== null &&
+            record.statValues !== undefined) {
+          continue;
+        }
+
+        const legacy =
+          record.draft.sourceStats ?? {};
+        const statValues =
+          importMonsterCaptureStatValuesV1(
+            {
+              id: creatureId,
+              stats: {
+                force:
+                  Number(legacy.force) || 0,
+                power:
+                  Number(legacy.force) || 0,
+                speed:
+                  Number(
+                    legacy.initiative
+                  ) || 0,
+                agility:
+                  Number(
+                    legacy.agility
+                  ) || 0
+              }
+            },
+            statRegistry
+          );
+
+        configuredCreatures.set(
+          creatureId,
+          Object.freeze({
+            ...record,
+            statValues
+          })
+        );
+      }
+
       refreshLoadoutOptions();
       refreshCreatureLibraryOptions(
         selectedCreatureId
       );
+
+      const selectedRecord =
+        selectedCreatureId
+          ? configuredCreatures.get(
+              selectedCreatureId
+            )
+          : null;
+
+      refreshEvolutionTargetOptions(
+        selectedRecord?.draft?.capture
+          ?.evolution?.targetId ?? null
+      );
+
+      if (
+        selectedRecord &&
+        creatureDirty === false
+      ) {
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          selectedRecord.statValues
+        );
+      }
+
+      syncLoadoutAvailability();
 
       updateCreatureLibraryState(
         "110 créatures Monster Capture chargées, dont les visuels existants sont raccordés automatiquement. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
@@ -3105,7 +4506,7 @@ export function mountCaptureEditorHumanV2({
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, 110 créatures Monster Capture, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, stats/progression, 110 créatures Monster Capture, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
           "info"
         );
       }

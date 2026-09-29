@@ -232,8 +232,8 @@
         <div class="card-title">
           <span class="step">6</span>
           <div>
-            <h2>Éléments, résistances & Capture</h2>
-            <p>Données propres à la créature.</p>
+            <h2>Éléments & Capture</h2>
+            <p>Types, capture et anciennes résistances conservées pour compatibilité.</p>
           </div>
         </div>
 
@@ -247,14 +247,18 @@
           <label class="check-chip"><input type="checkbox" data-element value="electric"><span>Électricité</span></label>
         </div>
 
-        <div class="grid three resistance-grid">
-          <label>Rés. Feu %<input type="number" data-resistance="fire" value="35"></label>
-          <label>Rés. Eau %<input type="number" data-resistance="water" value="-20"></label>
-          <label>Rés. Terre %<input type="number" data-resistance="earth" value="0"></label>
-          <label>Rés. Air %<input type="number" data-resistance="air" value="0"></label>
-          <label>Rés. Lumière %<input type="number" data-resistance="light" value="0"></label>
-          <label>Rés. Ombre %<input type="number" data-resistance="shadow" value="0"></label>
-        </div>
+        <details>
+          <summary>Résistances héritées — compatibilité</summary>
+          <p class="note">Ces pourcentages historiques ne sont pas la nouvelle stat élémentaire. Ils restent conservés tant que le raccord runtime des canaux de stats n’est pas validé.</p>
+          <div class="grid three resistance-grid">
+            <label>Rés. Feu %<input type="number" data-resistance="fire" value="35"></label>
+            <label>Rés. Eau %<input type="number" data-resistance="water" value="-20"></label>
+            <label>Rés. Terre %<input type="number" data-resistance="earth" value="0"></label>
+            <label>Rés. Air %<input type="number" data-resistance="air" value="0"></label>
+            <label>Rés. Lumière %<input type="number" data-resistance="light" value="0"></label>
+            <label>Rés. Ombre %<input type="number" data-resistance="shadow" value="0"></label>
+          </div>
+        </details>
 
         <div class="grid three">
           <label class="switch-line"><input type="checkbox" data-capturable checked><span>Capturable</span></label>
@@ -264,25 +268,73 @@
       </article>
 
       <article class="card">
-        <details>
-          <summary>Stats avancées de la créature</summary>
-          <div class="grid three detail-grid">
-            <label>Force<input type="number" min="0" data-stat-force value="12"></label>
-            <label>Agilité<input type="number" min="0" data-stat-agility value="14"></label>
-            <label>Intelligence<input type="number" min="0" data-stat-intelligence value="8"></label>
-            <label>Esprit<input type="number" min="0" data-stat-spirit value="9"></label>
-            <label>Endurance<input type="number" min="0" data-stat-endurance value="13"></label>
-            <label>Initiative<input type="number" min="0" data-stat-initiative value="15"></label>
+        <div class="card-title">
+          <span class="step">7</span>
+          <div>
+            <h2>Stats Monster Capture</h2>
+            <p>Valeurs de la créature issues du registre extensible. Les PV restent séparés.</p>
+          </div>
+        </div>
+
+        <div class="stat-values-grid" data-stat-values-host>
+          <p class="note">Chargement du registre de stats…</p>
+        </div>
+
+        <details data-global-editor-control>
+          <summary>Configurer le système de stats</summary>
+          <p class="note">Le libellé, les canaux dégâts/résistance et leurs coefficients sont configurables. Les identifiants existants restent stables.</p>
+          <div class="stat-registry-list" data-stat-registry-host></div>
+          <button type="button" class="secondary-action" data-stat-registry-apply>
+            Appliquer les modifications du registre
+          </button>
+
+          <div class="stat-custom-builder">
+            <h3>Ajouter une stat personnalisée</h3>
+            <div class="grid two">
+              <label>ID stable<input data-stat-custom-id placeholder="ex. frost"></label>
+              <label>Nom affiché<input data-stat-custom-label placeholder="ex. Givre"></label>
+              <label>Canal dégâts<input data-stat-custom-damage-channel placeholder="optionnel"></label>
+              <label>Canal résistance<input data-stat-custom-resistance-channel placeholder="optionnel"></label>
+              <label>Dégâts / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-damage-per-point></label>
+              <label>Résistance / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-resistance-per-point></label>
+            </div>
+            <button type="button" class="primary-action" data-stat-custom-add>
+              Ajouter la stat
+            </button>
           </div>
         </details>
       </article>
 
       <article class="card">
         <div class="card-title">
-          <span class="step">7</span>
+          <span class="step">8</span>
           <div>
-            <h2>4 capacités équipées</h2>
-            <p>Le premier slot suit la capacité actuellement éditée.</p>
+            <h2>Évolution</h2>
+            <p>Lien explicite par identifiant vers une autre créature du catalogue.</p>
+          </div>
+        </div>
+        <label class="switch-line">
+          <input type="checkbox" data-evolution-enabled>
+          <span>Cette créature évolue</span>
+        </label>
+        <div class="grid two">
+          <label>Créature cible
+            <select data-evolution-target disabled>
+              <option value="">Choisir une créature cible</option>
+            </select>
+          </label>
+          <label>Niveau d’évolution
+            <input type="number" min="1" value="10" data-evolution-level disabled>
+          </label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">9</span>
+          <div>
+            <h2>Capacités équipées</h2>
+            <p data-loadout-policy-summary>Chargement de la politique de progression…</p>
           </div>
         </div>
         <div class="loadout-grid">
@@ -317,6 +369,33 @@
       <article class="card">
         <div class="card-title">
           <span class="step">2</span>
+          <div>
+            <h2>Progression des capacités</h2>
+            <p>Règle générale : combien de slots actifs sont disponibles selon le niveau. Le niveau requis reste propre à chaque capacité.</p>
+          </div>
+        </div>
+
+        <div data-global-editor-control>
+          <label>Maximum de capacités actives
+            <input type="number" min="1" max="4" value="4" data-progression-max-active>
+          </label>
+          <div class="progression-schedule" data-progression-schedule-host>
+            <p class="note">Chargement de la progression…</p>
+          </div>
+          <div class="skill-save-actions">
+            <button type="button" class="secondary-action" data-progression-add-step>
+              Ajouter un palier
+            </button>
+            <button type="button" class="primary-action" data-progression-apply>
+              Appliquer la progression
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">3</span>
           <div>
             <h2>Format du combat</h2>
             <p>Le même chemin de données est utilisé pour 1v1 ou 2v2. Le roster et la réserve restent indépendants.</p>
