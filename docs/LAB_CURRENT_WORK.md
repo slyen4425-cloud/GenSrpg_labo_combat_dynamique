@@ -13476,3 +13476,31 @@ CI technique finale avant documentation :
 **GREEN technique / PREVALIDATION UI smartphone**.
 
 Le GREEN UI final reste interdit avant validation utilisateur de la liste des créatures et du chargement/modification d'au moins plusieurs entrées historiques.
+
+
+#### Nettoyage final — source canonique unique
+
+Un audit tardif du seed V162 a confirmé :
+
+- `MC162_ENTITIES` contient 110 lignes de compatibilité ;
+- ce tableau n'est pas le propriétaire canonique ;
+- `gensStarterCreatures()` est le catalogue builtin autoritaire avec 100 créatures uniques ;
+- deux fichiers temporaires basés sur les 110 entrées ont donc été retirés afin d'éviter toute seconde source de vérité.
+
+Nettoyage :
+
+- `685569376bbed3c12348676b9c63ea35b17caa31` — retrait du catalogue temporaire 110 entrées ;
+- `b18c509a6a9ca974b67de212c23d97b82112f1e4` — retrait de la sentinelle temporaire associée.
+
+Validation après nettoyage :
+
+- run : `36581330923` ;
+- conclusion : SUCCESS ;
+- 513 tests, 513 pass, 0 fail ;
+- catalogue canonique : `data/capture/monster-capture-creatures.v1.json` ;
+- 100 IDs uniques / 100 noms uniques ;
+- raccord Human Editor et préservation des champs legacy toujours GREEN.
+
+État final du lot :
+
+**GREEN technique / PREVALIDATION UI smartphone**.
