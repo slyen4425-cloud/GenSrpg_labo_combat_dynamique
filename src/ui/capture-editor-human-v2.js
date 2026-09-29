@@ -508,7 +508,17 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version: 2,
-            displayScale
+            displayScale,
+            position:
+              fields?.position ?? {
+                x: 0,
+                y: 0
+              },
+            transformOrigin:
+              fields?.transformOrigin ?? {
+                x: "50%",
+                y: "50%"
+              }
           }
   });
 }
@@ -2111,6 +2121,14 @@ export function preserveUnrepresentedCreatureFieldsV1({
       chargeTimeModifierPct:
         previousDraft?.combat?.chargeTimeModifierPct ?? 0
     },
+    position:
+      previousDraft?.presentation?.position ??
+      fields.position ??
+      { x: 0, y: 0 },
+    transformOrigin:
+      previousDraft?.presentation?.transformOrigin ??
+      fields.transformOrigin ??
+      { x: "50%", y: "50%" },
     linkedSkillIds: [
       ...new Set([
         ...(previousDraft?.skillIds ?? []),
