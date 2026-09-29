@@ -13912,3 +13912,55 @@ Critère :
 - profil massive validé par le Profile Registry ;
 - CI complète verte ;
 - preview PREVALIDATION smartphone.
+
+
+### Résultat — mapping vitrine créatures + styles de position V1
+
+Raccords utilisateur implémentés :
+
+- Voltige `crea_voltik` -> pack `voltige` -> profil `biped` ;
+- Ailevent `crea_galewing` + `crea_ailevent` -> pack `ailevent` -> profil `biped` ;
+- Maraileron `crea_maraileron` -> pack `maraileron` -> profil `serpentine` ;
+- Moussados `crea_mossback` -> pack `golem_moussu` -> profil `massive` ;
+- Lumilo `crea_lumipup` + `crea_lumilo` -> pack `renard_magique_dore` -> profil `biped` ;
+- Luciéclair `crea_sparkmoth` + `crea_lucieclair` -> pack `guepe_cybernetique` -> profil `serpentine`.
+
+Décision d'ownership :
+
+- `CAPTURE_CREATURE_VISUAL_BINDINGS_V1` possède désormais explicitement `profileId` pour chaque raccord vitrine ;
+- les metadata `global-assets` restent propriétaires du pack visuel, scale, sockets, offset et transformOrigin ;
+- aucune metadata globale n'a été modifiée pour forcer un profil particulier ;
+- aucun matching par nom.
+
+Profil massif :
+
+- nouveau `data/profiles/massive.profile.json` ;
+- id : `massive` ;
+- label : `Massif / golem` ;
+- profil complet compatible avec le Profile Registry et Animation Core ;
+- ajouté aux profils chargés par la preview Capture ;
+- aucune modification du renderer ou du Combat Core.
+
+RED :
+
+- SHA : `f6c9f64a5658ad3bba45a877d7965b3feacd872f` ;
+- CI : `36616969558` — FAILURE attendue ;
+- 533 tests, 529 pass, 4 fail ciblés.
+
+Correction fonctionnelle :
+
+- mappings : `5bace7de073fe07e12ca2c92eb93365aec6b40ed` ;
+- ownership du profileId : `b2192e77d47d078a58e5a4865dbf11b297a368f7` ;
+- profil massive : `b3aba246e45571f112aea33badcbec4d2fcb4be1` ;
+- preview massive : `518258a5ab0279433305495cb6c97995f5137e74` ;
+- fixture historique mise à jour : `24bb278b5c94c69bcbbde2bf14541e2637a30d53`.
+
+CI finale :
+
+- run : `36617204147` ;
+- SHA : `24bb278b5c94c69bcbbde2bf14541e2637a30d53` ;
+- 533 tests, 533 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION smartphone.**
