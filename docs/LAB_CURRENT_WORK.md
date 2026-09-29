@@ -14672,3 +14672,33 @@ Le `requiredLevel` existant reste exclusivement le niveau requis pour apprendre/
 - CI complète verte ;
 - documentation synchronisée ;
 - checkpoint GREEN avant raccord UI dédié.
+
+
+### Préaudit confirmé — Capture Skill Activation Requirements V1
+
+État réel :
+
+- aucun contrat d'activation dynamique n'existe dans `SkillDefinition` ;
+- `requiredLevel` appartient à `CaptureSkillEditorDraftV1` et reste un verrou d'apprentissage/équipement, pas un état de combat ;
+- `CombatState.elapsedMs` est déjà l'horloge unique du combat ;
+- aucun compteur `damageDealtTotal` / `damageTakenTotal` n'existe encore ;
+- les dégâts effectifs sont appliqués une seule fois dans `Action Resolver`, au moment de l'impact ;
+- `resolveSkillStart()` est la frontière correcte pour refuser une activation avant dépense énergie/cooldown ;
+- les réactions utilisent leur propre chemin `resolveReaction()` et devront consommer le même évaluateur si elles portent des conditions.
+
+Décision de propriété :
+
+- définition des conditions : `SkillDefinition.activationRequirements` ;
+- types V1 : `combat_elapsed_ms`, `damage_dealt`, `damage_taken`, `hp_at_or_below_pct` ;
+- combinaison : `all` ou `any` ;
+- seuil : champ unique `threshold`, interprété selon le type ;
+- métriques : `Combat State`, par combattant ;
+- évaluation : module pur dédié sous `src/core/combat/` ;
+- refus : `Action Resolver`, avant énergie/cooldown ;
+- aucune donnée d'activation n'est dérivée du DOM, du nom d'une créature ou de `requiredLevel`.
+
+Sémantique dégâts :
+
+- dégâts infligés/subis = perte de PV réellement appliquée, donc l'overkill ne gonfle pas les compteurs ;
+- un renvoi crédite le combattant qui a renvoyé comme source des dégâts ;
+- les compteurs repartent avec le fighter lors d'un remplacement/reset, cohérent avec une condition portée par la créature active.
