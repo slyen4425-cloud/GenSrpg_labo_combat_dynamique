@@ -13383,152 +13383,111 @@ Critère de fin :
 
 Source historique démontrée :
 
-- dépôt : `slyen4425-cloud/Zombicide-40k` ;
-- checkpoint audité : `checkpoint/gensrpg-phase5-module-launch-s3-capture-provider-green-2026-09-24` ;
+- fichier utilisateur vérifié : `lab5.zip -> lab5.txt` ;
+- taille du fichier historique : `8 172 204` octets ;
+- dépôt de provenance : `slyen4425-cloud/Zombicide-40k` ;
+- checkpoint : `checkpoint/gensrpg-phase5-module-launch-s3-capture-provider-green-2026-09-24` ;
 - SHA : `e8fd85ab68df818a138ed7949c411005ad622457` ;
-- blob `index.html` : `6c95e3f6ca4bf8e34003776e7e43e44192aafb16` ;
-- fonction canonique : `gensStarterCreatures()` ;
-- loader historique : `loadSharedEntities()`.
+- blob exact `index.html` : `6c95e3f6ca4bf8e34003776e7e43e44192aafb16`.
 
-Preuve de propriété :
+Propriétaires historiques retrouvés :
 
-- pour la famille `creature`, `loadSharedEntities()` appelle explicitement `gensStarterCreatures()` ;
-- les starters absents sont ajoutés au stockage Shared Entities ;
-- la même fonction sert ensuite à normaliser capacités, résistances et évolution ;
-- le seed V162 `MC162_ENTITIES` est un seed de compatibilité embarqué et non le catalogue canonique.
+- `gensStarterCreatures()` définit le pool builtin de 100 starters ;
+- `MC162_ENTITIES` contient le roster runtime V16.162 réellement seedé ;
+- `ensureBuiltinMonsterCapture162()` fusionne `MC162_ENTITIES` par ID dans :
+  - `gensrpg_shared_entities_v1__family__creature` ;
+  - `gensrpg_shared_entities_v1__gp_mt7ker7t_m2iw9` ;
+- la fusion n'écrase jamais une entrée utilisateur existante.
 
-Audit V162 :
+Roster runtime retenu pour le laboratoire :
 
-- `MC162_ENTITIES` : 110 enregistrements ;
-- 98 enregistrements `starter_capture` ;
-- 12 anciennes entrées de démonstration ;
-- `gensStarterCreatures()` : 100 créatures canoniques uniques ;
-- Aquafin et Voltige sont les deux créatures canoniques absentes du sous-ensemble `starter_capture` V162 car déjà présentes dans les 12 entrées de démo ;
-- 8 autres entrées de démo sont des doublons de nom avec ancien ID ;
-- 2 entrées de démo réellement supplémentaires : Moussados et Marémâchoire ;
-- décision V1 : importer uniquement les 100 créatures canoniques de `gensStarterCreatures()`, sans polluer la bibliothèque avec les alias legacy.
+- `MC162_ENTITIES` : **110 entrées** ;
+- **110 IDs uniques** ;
+- **102 noms uniques** ;
+- le roster contient le pool starter canonique plus des entrées historiques de démonstration encore réellement seedées dans le runtime ;
+- 8 paires partagent le même nom mais possèdent des IDs distincts ;
+- aucun alias n'est fusionné ou supprimé arbitrairement ;
+- décision : l'éditeur du laboratoire doit afficher la liste réellement existante dans Monster Capture, donc les **110 IDs runtime**.
 
-RED :
+RED corrigé après audit du fichier utilisateur :
 
 - test : `tests/unit/monster-capture-creature-catalog-import-v1.test.mjs` ;
-- SHA RED : `8b194c91abb12d5ece45bb56d0cdc6a83e72bb2d` ;
-- CI : `36578703956` — FAILURE attendue ;
-- 511 tests, 508 pass, 3 fail ;
-- échecs ciblés :
-  1. fichier catalogue absent ;
-  2. adaptateur d'import absent ;
-  3. raccord Human Editor absent.
+- SHA : `3d0902acf541e3fc11d116c12a11b2d4a15de00c` ;
+- CI : `36596897409` — FAILURE attendue ;
+- 513 tests, 511 pass, 2 fail ;
+- causes :
+  1. ancien export limité à 100 starters ;
+  2. Aquafin ne provenait pas de l'entrée runtime réellement seedée.
 
-Export de données :
+Export final :
 
-- fichier : `data/capture/monster-capture-creatures.v1.json` ;
-- 100 entrées ;
-- 100 IDs uniques ;
-- 100 noms uniques ;
-- Aquafin et Voltige présents ;
-- anciens alias de démo exclus ;
-- provenance GitHub et blob source inscrits dans le catalogue ;
-- données source legacy conservées : stats, éléments, résistances, abilityIds, capture, évolution, spawn, icône texte, etc.
+- fichier unique : `data/capture/monster-capture-creatures.v1.json` ;
+- commit : `09198be428bf7f70bcccdd3d270f2f7c0bef8a59` ;
+- 110 objets copiés depuis `MC162_ENTITIES` du blob historique vérifié ;
+- IDs, noms, descriptions, niveaux, HP, stats legacy, éléments, résistances, `abilityIds`, capture, évolutions, spawn, univers et icônes texte conservés ;
+- aucune dépendance runtime vers le dépôt principal.
 
 Adaptateur :
 
 - `src/adapters/input/capture/monster-capture-creature-import-v1.js` ;
 - projection explicite vers `CaptureCreatureEditorDraftV3` ;
-- projection stats legacy :
-  - force <- force/power ;
-  - agility <- agility/agilite ;
-  - intelligence <- intelligence sinon 0 ;
-  - spirit <- spirit/esprit ;
-  - endurance <- endurance/defense ;
-  - initiative <- initiative/speed ;
+- la projection des anciennes stats est uniquement une couche de compatibilité temporaire :
+  - `force <- force/power` ;
+  - `agility <- agility/agilite` ;
+  - `intelligence <- intelligence`, sinon 0 ;
+  - `spirit <- spirit/esprit` ;
+  - `endurance <- endurance/defense` ;
+  - `initiative <- initiative/speed` ;
+- cette projection n'est **pas** le futur modèle de stats Monster Capture ;
 - HP historique conservé ;
-- énergie non présente dans la source : valeurs neutres 0, sans gameplay inventé ;
-- abilityIds historiques conservés dans `draft.skillIds` ;
-- loadout actif importé vide : aucun choix arbitraire de 4 capacités ;
-- présentation visuelle laissée `null` quand la source n'a aucun asset exploitable.
+- énergie absente de la source : valeurs neutres 0 ;
+- les `abilityIds` historiques restent attachés à la créature ;
+- aucun choix arbitraire de quatre capacités : loadout actif importé vide ;
+- présentation `null` si aucun asset visuel exploitable n'existe.
 
 Raccord Human Editor :
 
-- les 100 créatures builtin sont ajoutées au même `configuredCreatures` que le CRUD existant ;
-- aucune seconde bibliothèque parallèle ;
-- la créature de test locale existante reste disponible ;
-- les créatures historiques sans visuel sont modifiables sans image obligatoire ;
-- les éléments/résistances/capacités historiques non représentés par l'UI courante sont préservés lors d'une mise à jour ;
-- évolution historique préservée ;
-- aucun localStorage/sessionStorage/global ajouté ;
-- aucune dépendance runtime vers `Zombicide-40k`.
+- les 110 créatures sont ajoutées au même `configuredCreatures` que le CRUD existant ;
+- aucune seconde bibliothèque UI ;
+- aucune persistance navigateur ajoutée ;
+- une créature historique sans art reste éditable ;
+- les éléments, résistances, capacités et évolutions non encore représentés par l'UI actuelle sont préservés lors d'une mise à jour ;
+- la validation combat peut rester plus stricte que l'enregistrement d'une créature : aucune image inventée pour rendre artificiellement une entrée jouable.
 
-Sentinelles supplémentaires :
+Nettoyage source de vérité :
 
-- créature historique sans visuel valide ;
-- champs legacy invisibles à l'UI préservés ;
-- une fixture invalide à description vide a été corrigée sans modifier le code métier.
+- une copie temporaire 110 entrées existait encore sous `data/capture/creatures/monster-capture-legacy.v1.json` ;
+- aucune référence runtime ne l'utilisait ;
+- suppression : `8c5a1c70d28ca8455d830a3c2b08190296e0a070` ;
+- il ne reste qu'un seul catalogue importé autoritaire :
+  `data/capture/monster-capture-creatures.v1.json`.
 
-CI technique finale avant documentation :
+Validation :
 
-- SHA : `db7a2812baf5643f5bc15e445170f51b688597d5` ;
-- run : `36579625653` ;
-- conclusion : SUCCESS ;
-- 513 tests, 513 pass, 0 fail.
+- après import 110 : CI `36596995960` — SUCCESS ;
+- 513 tests, 513 pass, 0 fail ;
+- après suppression du doublon : CI `36597061489` — SUCCESS.
 
 État :
 
 **GREEN technique / PREVALIDATION UI smartphone**.
 
-Le GREEN UI final reste interdit avant validation utilisateur de la liste des créatures et du chargement/modification d'au moins plusieurs entrées historiques.
+Validation utilisateur attendue avant GREEN UI final :
 
+1. la liste « Créature à modifier » expose bien les créatures historiques ;
+2. plusieurs entrées peuvent être chargées sans mélange de données ;
+3. une créature historique peut être modifiée puis mise à jour ;
+4. les doublons de nom restent distinguables grâce à leur ID ;
+5. l'absence d'art sur certaines entrées ne bloque pas leur édition.
 
-#### Nettoyage final — source canonique unique
+Lot suivant explicitement séparé :
 
-Un audit tardif du seed V162 a confirmé :
+**Refonte stats / progression Monster Capture** :
+- HP ;
+- Vitesse ;
+- Puissance physique ;
+- stats élémentaires configurables (Feu, Eau, etc.) servant aux dégâts et résistances ;
+- stats personnalisées créables par les joueurs ;
+- règles configurables de nombre de compétences disponibles et déverrouillage par niveau.
 
-- `MC162_ENTITIES` contient 110 lignes de compatibilité ;
-- ce tableau n'est pas le propriétaire canonique ;
-- `gensStarterCreatures()` est le catalogue builtin autoritaire avec 100 créatures uniques ;
-- deux fichiers temporaires basés sur les 110 entrées ont donc été retirés afin d'éviter toute seconde source de vérité.
-
-Nettoyage :
-
-- `685569376bbed3c12348676b9c63ea35b17caa31` — retrait du catalogue temporaire 110 entrées ;
-- `b18c509a6a9ca974b67de212c23d97b82112f1e4` — retrait de la sentinelle temporaire associée.
-
-Validation après nettoyage :
-
-- run : `36581330923` ;
-- conclusion : SUCCESS ;
-- 513 tests, 513 pass, 0 fail ;
-- catalogue canonique : `data/capture/monster-capture-creatures.v1.json` ;
-- 100 IDs uniques / 100 noms uniques ;
-- raccord Human Editor et préservation des champs legacy toujours GREEN.
-
-État final du lot :
-
-**GREEN technique / PREVALIDATION UI smartphone**.
-
-
-#### Revalidation finale depuis le fichier historique fourni
-
-Le fichier historique fourni par Sylvain a permis une lecture locale directe du blob attendu :
-
-- taille : `8 172 204` octets ;
-- symbole `gensStarterCreatures()` retrouvé ;
-- symbole `MC162_ENTITIES` retrouvé ;
-- clés Shared Entities retrouvées ;
-- `starter_capture` retrouvé.
-
-Conclusion de provenance confirmée :
-
-- `gensStarterCreatures()` = catalogue builtin canonique : 100 créatures / 100 IDs / 100 noms ;
-- `MC162_ENTITIES` = couche de compatibilité : 110 entrées dont 12 anciennes entrées de démonstration ;
-- le laboratoire conserve uniquement les 100 canoniques ;
-- aucun import parallèle 110 ne reste dans le HEAD.
-
-Revalidation du HEAD nettoyé :
-
-- SHA : `5c644f36fe3f5812d55955724d3db045634cf64a` ;
-- CI : `36592992687` — SUCCESS ;
-- 513 tests, 513 pass, 0 fail.
-
-État maintenu :
-
-**GREEN technique / PREVALIDATION UI smartphone**.
+Aucune partie de cette refonte n'est intégrée dans le présent lot d'import.
