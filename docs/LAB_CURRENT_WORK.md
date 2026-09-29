@@ -14095,3 +14095,73 @@ Protégé :
 - compatibilité historique testée ;
 - CI complète verte ;
 - aucun changement UI/runtime visuel.
+
+
+### Résultat — Capture Stats / Progression Architecture V1
+
+Préaudit confirmé :
+
+- aucun registre extensible de statistiques réutilisable n'a été démontré dans Dungeon ;
+- `CaptureCreatureEditorDraftV3.sourceStats` reste l'ancien bloc rigide de compatibilité ;
+- `CaptureSkillEditorDraftV1.requiredLevel` reste propriétaire du niveau requis d'une capacité ;
+- `capture.evolution` reste le mécanisme unique d'évolution ;
+- `CaptureCombatRulesEditorDraftV1` reste propriétaire des règles communes énergie/déplacement/charge.
+
+RED :
+
+- SHA : `1106f5c420ee48d34557ada27ff4b43f28ea9a72` ;
+- run : `36623531698` ;
+- 538 tests, 533 pass, 5 fail ciblés ;
+- causes : registres/contrats/adaptateur de stats et politique de progression volontairement absents.
+
+Implémentation minimale :
+
+- `src/contracts/capture-stat-registry-v1.js` ;
+- `src/contracts/capture-creature-stat-values-v1.js` ;
+- `src/contracts/capture-progression-rules-v1.js` ;
+- `src/adapters/input/capture/monster-capture-stat-values-v1.js` ;
+- `data/capture/monster-capture-stat-registry.v1.json` ;
+- `data/capture/monster-capture-progression-rules.v1.json`.
+
+Propriétés démontrées :
+
+- registre de stats extensible, sans liste de stats custom codée dans le moteur ;
+- mapping optionnel vers canal de dégâts et canal de résistance ;
+- coefficients `damagePerPoint` / `resistancePerPoint` configurables par données ;
+- valeurs de stats de créature séparées du registre ;
+- HP volontairement exclu du registre pour conserver l'autorité créature/Combat State ;
+- politique générale de slots actifs séparée de `requiredLevel` ;
+- compatibilité historique déterministe vers `speed`, `physical` et statistiques élémentaires ;
+- aucune déduction de résistance depuis un type/DOM/UI.
+
+Premier GREEN :
+
+- SHA : `396480f3c228ea7d02172a566e3bac05ff83a438` ;
+- run : `36623949475` ;
+- 538 tests, 538 pass, 0 fail.
+
+Sentinelles renforcées :
+
+- SHA : `de7fb90b1a0bf3ec2a4ce6d4be61bf4fb619261a` ;
+- run : `36624084734` ;
+- 542 tests, 542 pass, 0 fail ;
+- doublons de stats refusés ;
+- HP absent du registre ;
+- coefficients custom testés ;
+- schedules invalides refusés ;
+- preset 2/3/4 slots aux niveaux 1/10/20 validé.
+
+Aucun changement dans :
+
+- Human Editor ;
+- Combat Runtime ;
+- Action Resolver ;
+- Animation Core / FX / renderer ;
+- catalogue historique 110 ;
+- mécanisme d'évolution existant.
+
+État :
+
+**GREEN contractuel / architecture.**
+
+Lot suivant séparé : **Capture Stats / Progression Editor UI V1** pour raccorder le Human Editor aux propriétaires validés, exposer les stats standard/custom, la politique de slots et l'évolution existante, puis produire une preview PREVALIDATION smartphone.

@@ -1141,3 +1141,62 @@ Le Combat Runtime expose :
 - `chargeProgress`.
 
 L'UI ne possède aucune horloge locale. Elle affiche ces valeurs uniquement.
+
+
+## 13. Capture Stats / Progression Architecture V1
+
+Ce jalon introduit les propriétaires de données génériques nécessaires à la refonte Monster Capture sans modifier le Combat Runtime ni le Human Editor.
+
+### Registre de statistiques
+
+Propriétaire : `src/contracts/capture-stat-registry-v1.js`.
+
+Le registre définit des statistiques extensibles par données. Une définition peut porter :
+
+- `id` ;
+- `label` ;
+- `damageChannel` optionnel ;
+- `resistanceChannel` optionnel ;
+- `damagePerPoint` ;
+- `resistancePerPoint`.
+
+Aucun identifiant de statistique personnalisée n'est codé en dur dans le contrat. Les joueurs pourront donc ajouter ultérieurement leurs propres statistiques par un raccord d'édition dédié.
+
+Le registre standard Monster Capture est : `data/capture/monster-capture-stat-registry.v1.json`.
+
+Invariant : **HP n'appartient pas au registre extensible**. Les PV restent propriété de la créature et du Combat State. Le registre ne doit jamais devenir une seconde source de vérité des PV.
+
+### Valeurs de statistiques d'une créature
+
+Propriétaire : `src/contracts/capture-creature-stat-values-v1.js`.
+
+Ce contrat associe un `creatureId` à des valeurs numériques dont les IDs doivent exister dans le registre sélectionné. La définition d'une statistique et sa valeur chez une créature restent donc séparées.
+
+L'adaptateur de compatibilité historique est : `src/adapters/input/capture/monster-capture-stat-values-v1.js`.
+
+Il projette explicitement les anciennes données vers les IDs standard sans modifier le catalogue historique et sans déduire une résistance depuis un type ou une autre donnée implicite.
+
+### Progression des slots actifs
+
+Propriétaire : `src/contracts/capture-progression-rules-v1.js`.
+
+La politique générale possède :
+
+- `maxActiveSkills` ;
+- `slotUnlockSchedule[{ level, slots }]`.
+
+Le preset Monster Capture est : `data/capture/monster-capture-progression-rules.v1.json`.
+
+Cette politique répond uniquement à « combien de slots actifs sont disponibles à ce niveau ? ».
+
+Le niveau requis d'une capacité reste propriété de `CaptureSkillEditorDraftV1.requiredLevel`. Ces deux notions ne doivent jamais être fusionnées.
+
+### Évolution
+
+Le mécanisme existant `capture.evolution { condition, level, targetId }` reste l'unique propriétaire du lien d'évolution d'une créature. Aucun second contrat d'évolution n'est créé dans ce jalon.
+
+### Frontières du jalon
+
+Ce jalon ne branche pas encore les coefficients de statistiques sur la résolution des dégâts/résistances. Il ne modifie ni `Action Resolver`, ni `Combat Runtime`, ni Animation/FX/Renderer.
+
+Le Human Editor n'est pas encore raccordé à ces nouveaux propriétaires. Ce raccord appartient à un micro-lot UI séparé avec RED dédié et validation smartphone.
