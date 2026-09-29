@@ -1935,6 +1935,9 @@ export function mountCaptureEditorHumanV2({
   const listeners = [];
   const sockets = initialSocketStore();
   const configuredSkills = new Map();
+  const configuredCreatures = new Map();
+  let selectedCreatureId = null;
+  let creatureDirty = false;
   let selectedLegacyState = null;
   let skillDirty = false;
   let disposed = false;
@@ -1978,6 +1981,192 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-skill-update]"
   );
+  const creatureLibrarySelect = one(
+    root,
+    "[data-creature-library-select]"
+  );
+  const creatureLibraryState = one(
+    root,
+    "[data-creature-library-state]"
+  );
+  const newCreatureButton = one(
+    root,
+    "[data-creature-new]"
+  );
+  const createCreatureButton = one(
+    root,
+    "[data-creature-create]"
+  );
+  const updateCreatureButton = one(
+    root,
+    "[data-creature-update]"
+  );
+
+  function updateCreatureLibraryState(
+    message,
+    tone = "info"
+  ) {
+    creatureLibraryState.textContent = message;
+    creatureLibraryState.dataset.tone = tone;
+  }
+
+  function refreshCreatureLibraryOptions(
+    preferredId = null
+  ) {
+    const previous =
+      preferredId ??
+      selectedCreatureId ??
+      creatureLibrarySelect.value;
+
+    creatureLibrarySelect.textContent = "";
+    createOption(
+      creatureLibrarySelect,
+      "",
+      configuredCreatures.size === 0
+        ? "Aucune créature enregistrée"
+        : "Choisir une créature"
+    );
+
+    for (
+      const record of configuredCreatures.values()
+    ) {
+      createOption(
+        creatureLibrarySelect,
+        record.draft.id,
+        record.draft.displayName +
+          " · " +
+          record.draft.id
+      );
+    }
+
+    if (
+      previous &&
+      configuredCreatures.has(previous)
+    ) {
+      creatureLibrarySelect.value = previous;
+    }
+  }
+
+  function currentCreatureRecord() {
+    const creatureId = selectedValue(
+      root,
+      "[data-creature-id]"
+    );
+    const loadout = readLoadout(
+      root,
+      creatureId
+    );
+    const linkedSkillIds = [
+      ...new Set(
+        loadout.slots
+          .map((slot) => slot.skillId)
+          .filter(Boolean)
+      )
+    ];
+    const fields = readCreatureFields(
+      root,
+      sockets
+    );
+    fields.linkedSkillIds = linkedSkillIds;
+
+    const draft =
+      buildHumanCreatureDraftV3(fields);
+
+    return Object.freeze({
+      draft,
+      loadout
+    });
+  }
+
+  function persistCurrentCreature(intent) {
+    const record = currentCreatureRecord();
+    const saveMode =
+      resolveCaptureCreatureSaveModeV1({
+        intent,
+        draftId: record.draft.id,
+        selectedCreatureId,
+        configuredCreatureIds: [
+          ...configuredCreatures.keys()
+        ]
+      });
+
+    configuredCreatures.set(
+      record.draft.id,
+      record
+    );
+    selectedCreatureId = record.draft.id;
+    creatureDirty = false;
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = true;
+    refreshCreatureLibraryOptions(
+      record.draft.id
+    );
+    updateCreatureLibraryState(
+      saveMode.mode === "create"
+        ? "Créature « " +
+            record.draft.displayName +
+            " » créée dans la bibliothèque active."
+        : "Créature « " +
+            record.draft.displayName +
+            " » mise à jour.",
+      "ok"
+    );
+
+    setStatus(
+      root,
+      saveMode.mode === "create"
+        ? "Nouvelle créature « " +
+            record.draft.displayName +
+            " » enregistrée."
+        : "Créature « " +
+            record.draft.displayName +
+            " » mise à jour.",
+      "ok"
+    );
+
+    return record;
+  }
+
+  function loadCreatureRecord(creatureId) {
+    const record =
+      configuredCreatures.get(creatureId);
+    if (!record) {
+      throw new RangeError(
+        "Créature inconnue : " + creatureId
+      );
+    }
+
+    refreshLoadoutOptions();
+    writeCreatureRecordFields(
+      root,
+      record,
+      sockets
+    );
+    selectedCreatureId = creatureId;
+    creatureDirty = false;
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = true;
+    creatureLibrarySelect.value = creatureId;
+    updateCreatureLibraryState(
+      "Modification de « " +
+        record.draft.displayName +
+        " ». Les changements ne sont appliqués qu’après « Mettre à jour ».",
+      "info"
+    );
+    setStatus(
+      root,
+      "Créature « " +
+        record.draft.displayName +
+        " » chargée pour modification.",
+      "info"
+    );
+
+    return record;
+  }
 
   function updateLibraryState(state) {
     selectedLegacyState = state;
@@ -2059,6 +2248,7 @@ export function mountCaptureEditorHumanV2({
     configuredSkills.set(draft.id, draft);
     skillDirty = false;
     refreshLoadoutOptions(draft.id);
+    creatureDirty = true;
 
     setStatus(
       root,
@@ -2105,6 +2295,83 @@ export function mountCaptureEditorHumanV2({
         stateLabel
     );
   }
+
+  listen(creatureLibrarySelect, "change", () => {
+    const creatureId =
+      creatureLibrarySelect.value;
+    if (!creatureId) {
+      return;
+    }
+
+    try {
+      loadCreatureRecord(creatureId);
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(newCreatureButton, "click", () => {
+    const nextId =
+      nextCaptureCreatureDraftIdV1({
+        configuredCreatureIds: [
+          ...configuredCreatures.keys()
+        ]
+      });
+
+    selectedCreatureId = null;
+    creatureLibrarySelect.value = "";
+    prepareNewCreatureDraftFields(
+      root,
+      nextId,
+      sockets
+    );
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = false;
+    creatureDirty = true;
+    updateCreatureLibraryState(
+      "Nouvelle créature prête. Configure-la puis utilise « Enregistrer comme nouvelle ».",
+      "info"
+    );
+    setStatus(
+      root,
+      "Nouveau brouillon créature prêt.",
+      "info"
+    );
+    one(
+      root,
+      "[data-creature-name]"
+    ).focus?.();
+  });
+
+  listen(createCreatureButton, "click", () => {
+    try {
+      persistCurrentCreature("create");
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(updateCreatureButton, "click", () => {
+    try {
+      persistCurrentCreature("update");
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
 
   listen(librarySelect, "change", () => {
     const abilityId = librarySelect.value;
@@ -2184,6 +2451,40 @@ export function mountCaptureEditorHumanV2({
     }
   });
 
+  const creatureOwnedSelectors = [
+    '[data-editor-panel="creature"] input',
+    '[data-editor-panel="creature"] select',
+    '[data-editor-panel="creature"] textarea',
+    '[data-max-energy]',
+    '[data-initial-energy]',
+    '[data-energy-charge-amount]',
+    '[data-energy-charge-interval]',
+    '[data-movement-energy]',
+    '[data-charge-time-modifier]'
+  ].join(", ");
+
+  for (
+    const field of root.querySelectorAll(
+      creatureOwnedSelectors
+    )
+  ) {
+    if (
+      field === creatureLibrarySelect ||
+      field === newCreatureButton ||
+      field === createCreatureButton ||
+      field === updateCreatureButton
+    ) {
+      continue;
+    }
+
+    listen(field, "input", () => {
+      creatureDirty = true;
+    });
+    listen(field, "change", () => {
+      creatureDirty = true;
+    });
+  }
+
   for (
     const field of root.querySelectorAll(
       '[data-editor-panel="skills"] input, ' +
@@ -2224,6 +2525,38 @@ export function mountCaptureEditorHumanV2({
     refreshLoadoutOptions();
   }
 
+  try {
+    const initialRecord =
+      currentCreatureRecord();
+    configuredCreatures.set(
+      initialRecord.draft.id,
+      initialRecord
+    );
+    selectedCreatureId =
+      initialRecord.draft.id;
+    creatureDirty = false;
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = true;
+    refreshCreatureLibraryOptions(
+      selectedCreatureId
+    );
+    updateCreatureLibraryState(
+      "Créature initiale « " +
+        initialRecord.draft.displayName +
+        " » chargée dans la bibliothèque active.",
+      "info"
+    );
+  } catch (error) {
+    refreshCreatureLibraryOptions();
+    updateCreatureLibraryState(
+      "Créature initiale non enregistrée : " +
+        error.message,
+      "warning"
+    );
+  }
+
   updateLibraryState(null);
   syncSkillSocketSelect(root, sockets);
 
@@ -2255,6 +2588,7 @@ export function mountCaptureEditorHumanV2({
       sockets.set(socketId, current);
       updateSocketMarker(surface, point);
       syncSkillSocketSelect(root, sockets);
+      creatureDirty = true;
       setStatus(
         root,
         "Point " + label + " placé sur la vue " +
@@ -2287,21 +2621,31 @@ export function mountCaptureEditorHumanV2({
         );
       }
 
-      const creatureFields = readCreatureFields(
-        root,
-        sockets
-      );
-      creatureFields.linkedSkillIds = [
-        ...configuredSkills.keys()
-      ];
+      if (creatureDirty) {
+        throw new Error(
+          "La créature en cours a été modifiée. Enregistre-la avant de valider le combat."
+        );
+      }
 
+      if (
+        !selectedCreatureId ||
+        !configuredCreatures.has(
+          selectedCreatureId
+        )
+      ) {
+        throw new Error(
+          "Enregistre ou sélectionne une créature avant de valider le combat."
+        );
+      }
+
+      const creatureRecord =
+        configuredCreatures.get(
+          selectedCreatureId
+        );
       const creatureDraft =
-        buildHumanCreatureDraftV3(creatureFields);
-
-      const loadout = readLoadout(
-        root,
-        creatureDraft.id
-      );
+        creatureRecord.draft;
+      const loadout =
+        creatureRecord.loadout;
 
       const resolvedOpponentCreatureDraft =
         typeof getOpponentCreatureDraft === "function"
