@@ -112,7 +112,8 @@ test("StatusEffectV1 rejects invalid payload combinations and real-time duration
         polarity: "detrimental",
         durationMs: 3000,
         stacking: "refresh",
-        amount: 2
+        amount: 2,
+        channel: "poison"
       }),
     /tickIntervalMs/i
   );
@@ -221,8 +222,7 @@ test("SkillEffectV1 rejects unsupported targets and incompatible payloads", asyn
     () =>
       normalizeSkillEffectV1({
         kind: "apply_status",
-        targetScope: "target",
-        amount: 5
+        targetScope: "target"
       }),
     /status/i
   );
