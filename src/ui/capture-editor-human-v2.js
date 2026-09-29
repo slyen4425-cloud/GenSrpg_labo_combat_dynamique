@@ -8,7 +8,9 @@ import {
   normalizeCaptureSkillEditorDraftV1
 } from "../contracts/capture-skill-editor-draft-v1.js";
 import {
-  normalizeSkillDefinition
+  normalizeSkillDefinition,
+  SKILL_ACTIVATION_REQUIREMENT_MODES,
+  SKILL_ACTIVATION_REQUIREMENT_TYPES
 } from "../contracts/skill-definition.js";
 import {
   normalizeCaptureActiveSkillLoadoutV1
@@ -148,6 +150,152 @@ function stableIds(values) {
   return values
     .map((value) => optionalText(value))
     .filter((value) => value !== null);
+}
+
+
+function activationRequirementTypeMetaV1(type) {
+  switch (type) {
+    case "combat_elapsed_ms":
+      return Object.freeze({
+        label: "Temps de combat écoulé",
+        unit: "secondes",
+        step: 0.1,
+        max: null
+      });
+    case "damage_dealt":
+      return Object.freeze({
+        label: "Dégâts infligés",
+        unit: "dégâts",
+        step: 1,
+        max: null
+      });
+    case "damage_taken":
+      return Object.freeze({
+        label: "Dégâts subis",
+        unit: "dégâts",
+        step: 1,
+        max: null
+      });
+    case "hp_at_or_below_pct":
+      return Object.freeze({
+        label: "PV ≤",
+        unit: "% PV max",
+        step: 1,
+        max: 100
+      });
+    default:
+      throw new RangeError(
+        "Type de condition d’activation inconnu : " +
+          type
+      );
+  }
+}
+
+export function humanSkillActivationThresholdToContractV1(
+  type,
+  value
+) {
+  if (
+    !SKILL_ACTIVATION_REQUIREMENT_TYPES.includes(type)
+  ) {
+    throw new RangeError(
+      "Type de condition d’activation inconnu : " +
+        type
+    );
+  }
+
+  const number = finiteNumber(
+    value,
+    "Seuil d’activation"
+  );
+  if (number < 0) {
+    throw new RangeError(
+      "Seuil d’activation doit être positif ou nul"
+    );
+  }
+
+  if (
+    type === "hp_at_or_below_pct" &&
+    number > 100
+  ) {
+    throw new RangeError(
+      "Le seuil de PV doit être compris entre 0 et 100 %"
+    );
+  }
+
+  return type === "combat_elapsed_ms"
+    ? number * 1000
+    : number;
+}
+
+export function humanSkillActivationThresholdFromContractV1(
+  type,
+  threshold
+) {
+  if (
+    !SKILL_ACTIVATION_REQUIREMENT_TYPES.includes(type)
+  ) {
+    throw new RangeError(
+      "Type de condition d’activation inconnu : " +
+        type
+    );
+  }
+
+  const number = finiteNumber(
+    threshold,
+    "Seuil d’activation"
+  );
+
+  return type === "combat_elapsed_ms"
+    ? number / 1000
+    : number;
+}
+
+export function buildHumanSkillActivationRequirementsV1({
+  enabled,
+  mode = "all",
+  conditions = []
+}) {
+  if (enabled !== true) {
+    return {
+      mode: "all",
+      conditions: []
+    };
+  }
+
+  if (
+    !SKILL_ACTIVATION_REQUIREMENT_MODES.includes(mode)
+  ) {
+    throw new RangeError(
+      "Mode de conditions d’activation inconnu"
+    );
+  }
+
+  if (
+    !Array.isArray(conditions) ||
+    conditions.length === 0
+  ) {
+    throw new RangeError(
+      "Ajoute au moins une condition d’activation"
+    );
+  }
+
+  return {
+    mode,
+    conditions: conditions.map(
+      (condition) => ({
+        type: requiredText(
+          condition.type,
+          "Type de condition"
+        ),
+        threshold:
+          humanSkillActivationThresholdToContractV1(
+            condition.type,
+            condition.value
+          )
+      })
+    )
+  };
 }
 
 export function buildHumanCreatureStatValuesV1({
@@ -824,6 +972,11 @@ export function buildHumanSkillDraftV1(fields) {
       targetRelations: stableIds(
         fields.targetRelations
       ),
+      activationRequirements:
+        fields.activationRequirements ?? {
+          mode: "all",
+          conditions: []
+        },
       reaction: {
         blockForms: stableIds(reaction.blockForms),
         reflectForms: stableIds(reaction.reflectForms),
