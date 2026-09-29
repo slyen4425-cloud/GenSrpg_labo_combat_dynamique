@@ -264,6 +264,77 @@ export function humanLoadoutAvailabilityV1({
   );
 }
 
+export function validateHumanLoadoutProgressionV1({
+  loadout,
+  progressionRules,
+  creatureLevel,
+  skillDrafts = []
+}) {
+  if (
+    !loadout ||
+    !Array.isArray(loadout.slots)
+  ) {
+    throw new TypeError(
+      "Loadout Capture invalide"
+    );
+  }
+
+  const level = positiveInteger(
+    creatureLevel,
+    "Niveau créature"
+  );
+  const availability =
+    humanLoadoutAvailabilityV1({
+      progressionRules,
+      creatureLevel: level
+    });
+  const skillById = new Map(
+    [
+      ...(skillDrafts instanceof Map
+        ? skillDrafts.values()
+        : skillDrafts)
+    ].map((draft) => [
+      draft.id,
+      draft
+    ])
+  );
+
+  loadout.slots.forEach(
+    (slot, index) => {
+      if (slot.skillId === null) {
+        return;
+      }
+
+      if (
+        availability[index] !== true
+      ) {
+        throw new RangeError(
+          "Le slot " +
+            (index + 1) +
+            " n’est pas encore débloqué au niveau " +
+            level
+        );
+      }
+
+      const skill =
+        skillById.get(slot.skillId);
+      if (
+        skill &&
+        skill.requiredLevel > level
+      ) {
+        throw new RangeError(
+          "La capacité « " +
+            skill.definition.name +
+            " » nécessite le niveau " +
+            skill.requiredLevel
+        );
+      }
+    }
+  );
+
+  return loadout;
+}
+
 function legacySourceStatsV1(previousDraft) {
   const source =
     previousDraft?.sourceStats;
@@ -3011,9 +3082,19 @@ export function mountCaptureEditorHumanV2({
       (select, index) => {
         const available =
           availability[index] === true;
-        select.disabled = !available;
+        select.disabled =
+          !available &&
+          select.value === "";
         select.dataset.locked =
           available ? "false" : "true";
+        select.title =
+          available
+            ? ""
+            : (
+                select.value === ""
+                  ? "Slot verrouillé à ce niveau"
+                  : "Slot verrouillé : vide ce slot pour respecter la progression"
+              );
         const label =
           select.closest("label");
         if (label) {
@@ -3127,45 +3208,13 @@ export function mountCaptureEditorHumanV2({
     ];
 
     if (progressionRules !== null) {
-      const availability =
-        humanLoadoutAvailabilityV1({
-          progressionRules,
-          creatureLevel:
-            draftPreview.level
-        });
-
-      loadout.slots.forEach(
-        (slot, index) => {
-          if (
-            slot.skillId !== null &&
-            availability[index] !== true
-          ) {
-            throw new RangeError(
-              "Le slot " +
-                (index + 1) +
-                " n’est pas encore débloqué au niveau " +
-                draftPreview.level
-            );
-          }
-        }
-      );
-    }
-
-    for (const skillId of activeSkillIds) {
-      const skill =
-        configuredSkills.get(skillId);
-      if (
-        skill &&
-        skill.requiredLevel >
-          draftPreview.level
-      ) {
-        throw new RangeError(
-          "La capacité « " +
-            skill.definition.name +
-            " » nécessite le niveau " +
-            skill.requiredLevel
-        );
-      }
+      validateHumanLoadoutProgressionV1({
+        loadout,
+        progressionRules,
+        creatureLevel:
+          draftPreview.level,
+        skillDrafts: configuredSkills
+      });
     }
 
     const fields =
@@ -3697,6 +3746,23 @@ export function mountCaptureEditorHumanV2({
   listen(
     one(
       root,
+      ".loadout-grid"
+    ),
+    "change",
+    (event) => {
+      if (
+        event.target?.matches?.(
+          "[data-loadout-slot]"
+        )
+      ) {
+        syncLoadoutAvailability();
+      }
+    }
+  );
+
+  listen(
+    one(
+      root,
       "[data-stat-values-host]"
     ),
     "input",
@@ -4208,6 +4274,18 @@ export function mountCaptureEditorHumanV2({
         );
       const loadout =
         creatureRecord.loadout;
+
+      if (progressionRules !== null) {
+        validateHumanLoadoutProgressionV1({
+          loadout,
+          progressionRules,
+          creatureLevel:
+            creatureRecord.draft.level,
+          skillDrafts:
+            configuredSkills
+        });
+      }
+
       const combatRules =
         readHumanCombatRulesV1(root);
       const creatureDraft =

@@ -190,6 +190,81 @@ test("Human Editor consumes progression rules to expose unlocked slots without r
   );
 });
 
+test("Human Editor validates both slot unlock policy and per-skill requiredLevel", async () => {
+  const ui = await import(uiModuleUrl);
+  assert.equal(
+    typeof ui.validateHumanLoadoutProgressionV1,
+    "function"
+  );
+
+  const rules = {
+    schema: "capture-progression-rules-v1",
+    maxActiveSkills: 4,
+    slotUnlockSchedule: [
+      { level: 1, slots: 2 },
+      { level: 10, slots: 3 },
+      { level: 20, slots: 4 }
+    ]
+  };
+
+  const baseLoadout = {
+    schema: "capture-active-skill-loadout-v1",
+    creatureId: "crea_test",
+    slots: [
+      { id: "slot-1", skillId: "skill-high" },
+      { id: "slot-2", skillId: null },
+      { id: "slot-3", skillId: null },
+      { id: "slot-4", skillId: null }
+    ]
+  };
+
+  assert.throws(
+    () =>
+      ui.validateHumanLoadoutProgressionV1({
+        loadout: baseLoadout,
+        progressionRules: rules,
+        creatureLevel: 5,
+        skillDrafts: [
+          {
+            id: "skill-high",
+            requiredLevel: 10,
+            definition: {
+              name: "Technique avancée"
+            }
+          }
+        ]
+      }),
+    /nécessite le niveau 10/i
+  );
+
+  assert.throws(
+    () =>
+      ui.validateHumanLoadoutProgressionV1({
+        loadout: {
+          ...baseLoadout,
+          slots: [
+            { id: "slot-1", skillId: null },
+            { id: "slot-2", skillId: null },
+            { id: "slot-3", skillId: "skill-low" },
+            { id: "slot-4", skillId: null }
+          ]
+        },
+        progressionRules: rules,
+        creatureLevel: 5,
+        skillDrafts: [
+          {
+            id: "skill-low",
+            requiredLevel: 1,
+            definition: {
+              name: "Technique simple"
+            }
+          }
+        ]
+      }),
+    /slot 3.*pas encore débloqué/i
+  );
+});
+
 test("Capture editor HTML exposes data-driven stat, progression and evolution surfaces", async () => {
   const html = await readFile(
     new URL(
