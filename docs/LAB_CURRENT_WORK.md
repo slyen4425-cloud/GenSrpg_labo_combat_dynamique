@@ -12938,3 +12938,58 @@ Preview finale :
 `preview/lab-capture-preview-consolidation-v1-2026-09-28`.
 
 Cette preview devient la lignée autoritaire de test pour les derniers retours consolidés.
+
+
+## Réparation bloquante — livraison physique audio runtime privé V1 — 2026-09-29
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-preview-consolidation-v1-prevalidation-green-2026-09-28` ;
+- SHA : `9fd83dba00c04fa149d679f90aed5757dfe8c042`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-private-audio-runtime-delivery-repair-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-private-audio-runtime-delivery-repair-v1-2026-09-29`.
+
+Régression utilisateur :
+
+- les sélecteurs audio sont présents mais aucun son ne se lit.
+
+Cause démontrée :
+
+- le manifeste `private-audio-runtime.v1.json` expose 173 entrées ;
+- le resolver construit bien des URLs sous `assets/runtime/audio/private-v1/` ;
+- les 173 fichiers MP3 runtime correspondants sont physiquement absents du dépôt laboratoire ;
+- la sentinelle historique ne vérifiait que manifeste + URL générée, donc pouvait passer GREEN sans binaire livré.
+
+Source autoritaire :
+
+- dépôt privé : `slyen4425-cloud/GenSrpG_audio_prive` ;
+- branche : `work/runtime-audio-pack-v1-2026-09-28` ;
+- SHA : `4f429ee41bdcf6a33d7839ca11bb087039a99df9` ;
+- dossier source : `runtime-audio-v1/` ;
+- 173 MP3 runtime opaques, masters non exposés.
+
+Objectif :
+
+1. ajouter une sentinelle vérifiant l'existence physique des 173 fichiers ;
+2. livrer exactement les 173 copies runtime opaques dans `assets/runtime/audio/private-v1/` ;
+3. conserver les assetIds, le manifeste et le resolver existants ;
+4. ne copier aucun master, sourcePath, token ou URL privée ;
+5. ne modifier ni Combat Core ni la taxonomie audio.
+
+RED attendu :
+
+- manifeste 173 OK ;
+- 173 fichiers runtime manquants.
+
+Critère GREEN :
+
+- les 173 fichiers existent physiquement ;
+- chaque `runtimeFile` du manifeste correspond à un fichier livré ;
+- CI complète verte ;
+- checkpoint GREEN technique avant toute nouvelle UI.
