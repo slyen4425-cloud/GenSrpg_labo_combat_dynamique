@@ -273,3 +273,113 @@ test("real CombatSession applies channel damage/resistance and creature speed be
   assert.equal(hit.resistancePct, 25);
   assert.equal(hit.damage, 90);
 });
+
+
+test("damage without an element uses the explicit physical channel", () => {
+  const data = input();
+  data.statRegistry.stats.push({
+    id: "physical",
+    label: "Physique",
+    damageChannel: "physical",
+    resistanceChannel: "physical",
+    damagePctPerPoint: 1,
+    resistancePctPerPoint: 1,
+    chargeTimeReductionPctPerPoint: 0
+  });
+  data.statValues[0].values.physical = 10;
+  data.statValues[1].values.physical = 20;
+  data.skillDrafts[0].definition.element = null;
+  data.skillDrafts[0].definition.effect.tags = [];
+
+  const native =
+    adaptCaptureCombatExportStackV1(
+      exportCaptureEditorDraftsToCombatExportV3(
+        data
+      )
+    );
+  const session = createCombatSession({
+    fighters: native.fighters,
+    skillSpeedMultiplier: 1
+  });
+
+  const result = session.useSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: native.skills["fire-hit"]
+  });
+
+  const hit = result.events.find(
+    (event) => event.type === "hit"
+  );
+  assert.equal(hit.damageChannel, "physical");
+  assert.equal(hit.damage, 88);
+});
+
+test("channel resistance at or above 100 percent cannot create negative damage", () => {
+  const data = input();
+  data.statValues[1].values.fire = 150;
+
+  const native =
+    adaptCaptureCombatExportStackV1(
+      exportCaptureEditorDraftsToCombatExportV3(
+        data
+      )
+    );
+  const session = createCombatSession({
+    fighters: native.fighters
+  });
+
+  const result = session.useSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: native.skills["fire-hit"]
+  });
+
+  assert.equal(
+    result.state.fighters.opponent.hp,
+    200
+  );
+  assert.equal(
+    result.events.find(
+      (event) => event.type === "hit"
+    ).damage,
+    0
+  );
+});
+
+test("Human Editor V3 builder sends its owner-backed stat values through the same export path", async () => {
+  const {
+    buildHumanEditorExportV3
+  } = await import(
+    "../../src/ui/capture-editor-human-v2.js"
+  );
+  const data = input();
+
+  const exported = buildHumanEditorExportV3({
+    creatureDraft: data.creatureDrafts[0],
+    skillDrafts: data.skillDrafts,
+    loadout: data.loadouts[0],
+    battleSetup: data.battleSetup,
+    opponentCreatureDraft:
+      data.creatureDrafts[1],
+    opponentSkillDrafts: [],
+    opponentLoadout: data.loadouts[1],
+    statRegistry: data.statRegistry,
+    statValues: [data.statValues[0]]
+  });
+
+  const native =
+    adaptCaptureCombatExportStackV1(exported);
+  const player = native.fighters.find(
+    (fighter) => fighter.id === "player"
+  );
+
+  assert.deepEqual(
+    player.damagePctByChannel,
+    { fire: 20 }
+  );
+  assert.equal(
+    player.chargeTimeModifierPct,
+    -10
+  );
+});
