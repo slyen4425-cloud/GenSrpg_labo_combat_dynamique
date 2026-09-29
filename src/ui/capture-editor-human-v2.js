@@ -3434,6 +3434,22 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-skill-update]"
   );
+  const skillActivationEnabled = one(
+    root,
+    "[data-skill-activation-enabled]"
+  );
+  const skillActivationConfig = one(
+    root,
+    "[data-skill-activation-config]"
+  );
+  const skillActivationConditionsHost = one(
+    root,
+    "[data-skill-activation-conditions-host]"
+  );
+  const skillActivationAddButton = one(
+    root,
+    "[data-skill-activation-add]"
+  );
   const creatureLibrarySelect = one(
     root,
     "[data-creature-library-select]"
@@ -4194,6 +4210,101 @@ export function mountCaptureEditorHumanV2({
       );
     }
   });
+
+  listen(
+    skillActivationEnabled,
+    "change",
+    () => {
+      skillActivationConfig.hidden =
+        !skillActivationEnabled.checked;
+
+      if (
+        skillActivationEnabled.checked &&
+        skillActivationConditionsHost.children
+          .length === 0
+      ) {
+        appendHumanSkillActivationConditionV1(
+          root
+        );
+      }
+    }
+  );
+
+  listen(
+    skillActivationAddButton,
+    "click",
+    () => {
+      if (!skillActivationEnabled.checked) {
+        skillActivationEnabled.checked = true;
+        skillActivationConfig.hidden = false;
+      }
+      appendHumanSkillActivationConditionV1(
+        root
+      );
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    skillActivationConditionsHost,
+    "change",
+    (event) => {
+      const row =
+        event.target?.closest?.(
+          "[data-skill-activation-condition]"
+        );
+      if (!row) {
+        return;
+      }
+
+      if (
+        event.target.matches(
+          "[data-skill-activation-condition-type]"
+        )
+      ) {
+        syncHumanSkillActivationConditionRowV1(
+          row
+        );
+      }
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    skillActivationConditionsHost,
+    "input",
+    () => {
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    skillActivationConditionsHost,
+    "click",
+    (event) => {
+      const remove =
+        event.target?.closest?.(
+          "[data-skill-activation-remove]"
+        );
+      if (!remove) {
+        return;
+      }
+
+      const row = remove.closest(
+        "[data-skill-activation-condition]"
+      );
+      row?.remove();
+      skillDirty = true;
+
+      if (
+        skillActivationConditionsHost.children
+          .length === 0
+      ) {
+        skillActivationEnabled.checked = false;
+        skillActivationConfig.hidden = true;
+      }
+    }
+  );
 
   const creatureOwnedSelectors = [
     '[data-editor-panel="creature"] input',
