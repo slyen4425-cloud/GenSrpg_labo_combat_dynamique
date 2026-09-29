@@ -1340,3 +1340,30 @@ Une condition temporelle n'introduit aucune seconde horloge : elle lit uniquemen
 Un refus pour conditions non remplies intervient avant dépense d'énergie et avant cooldown et expose un résultat déterministe `activation_requirements`.
 
 Le Human Editor futur ne calculera pas ces conditions : il éditera uniquement les données du contrat et projettera l'état renvoyé par le runtime.
+
+
+## 16. Skill Activation Requirements — Human Editor
+
+Le Human Editor expose `SkillDefinition.activationRequirements` sans devenir propriétaire de son évaluation.
+
+Responsabilités UI autorisées :
+
+- activer/désactiver l'édition des conditions ;
+- choisir `all` / `any` ;
+- ajouter/supprimer des conditions ;
+- convertir l'unité d'affichage du temps : secondes UI <-> millisecondes contrat ;
+- afficher des libellés et unités compréhensibles.
+
+Responsabilités interdites à l'UI :
+
+- lire les métriques runtime de dégâts ;
+- décider si une capacité est débloquée ;
+- posséder une horloge ;
+- appliquer énergie/cooldown ;
+- réimplémenter `evaluateSkillActivationRequirementsV1()`.
+
+Le chemin reste :
+
+`Human Editor -> SkillDraft -> SkillDefinition -> Combat Rules`.
+
+Le niveau requis pour apprendre/équiper reste une propriété distincte du `CaptureSkillEditorDraftV1` et n'est jamais fusionné avec les conditions d'activation runtime.
