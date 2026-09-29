@@ -41,6 +41,10 @@ import {
   resolveCaptureSkillSaveModeV1,
   nextCaptureSkillDraftIdV1
 } from "./capture-editor-skill-save-mode-v1.js";
+import {
+  resolveCaptureCreatureSaveModeV1,
+  nextCaptureCreatureDraftIdV1
+} from "./capture-editor-creature-save-mode-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -829,6 +833,322 @@ function prepareNewSkillDraftFields(root, id) {
   for (const input of root.querySelectorAll("[data-skill-target]")) {
     input.checked = input.value === "enemy";
   }
+}
+
+function creatureAudioAssetId(entry) {
+  return entry?.assetId ?? "";
+}
+
+function creatureResistanceValue(draft, element) {
+  const kind = "element:" + element;
+  return (
+    draft.resistances.find(
+      (entry) => entry.kind === kind
+    )?.value ?? 0
+  );
+}
+
+function setFieldValue(root, selector, value) {
+  one(root, selector).value = String(value ?? "");
+}
+
+function dispatchFieldEvent(element, type) {
+  element.dispatchEvent(new Event(type, {
+    bubbles: true
+  }));
+}
+
+function replaceCreatureSockets(
+  root,
+  sockets,
+  presentation
+) {
+  sockets.clear();
+
+  for (
+    const marker of root.querySelectorAll(
+      ".socket-marker"
+    )
+  ) {
+    marker.remove();
+  }
+
+  for (const socket of presentation?.sockets ?? []) {
+    sockets.set(socket.id, {
+      id: socket.id,
+      label: socket.label,
+      front: socket.front
+        ? { ...socket.front }
+        : null,
+      back: socket.back
+        ? { ...socket.back }
+        : null
+    });
+
+    for (const view of ["front", "back"]) {
+      const point = socket[view];
+      if (!point) {
+        continue;
+      }
+
+      const surface = root.querySelector(
+        '[data-socket-surface][data-socket-view="' +
+          view +
+          '"]'
+      );
+      if (surface) {
+        updateSocketMarker(surface, point);
+      }
+    }
+  }
+
+  syncSkillSocketSelect(root, sockets);
+}
+
+function writeCreatureRecordFields(
+  root,
+  record,
+  sockets
+) {
+  const draft = record.draft;
+  const loadout = record.loadout;
+  const presentation = draft.presentation;
+
+  const fields = [
+    ["[data-creature-id]", draft.id],
+    ["[data-creature-name]", draft.displayName],
+    ["[data-creature-description]", draft.description],
+    ["[data-creature-level]", draft.level],
+    [
+      "[data-creature-profile]",
+      presentation?.profileId ?? "biped"
+    ],
+    [
+      "[data-creature-display-scale]",
+      presentation?.displayScale ?? 1
+    ],
+    ["[data-stat-force]", draft.sourceStats.force],
+    ["[data-stat-agility]", draft.sourceStats.agility],
+    [
+      "[data-stat-intelligence]",
+      draft.sourceStats.intelligence
+    ],
+    ["[data-stat-spirit]", draft.sourceStats.spirit],
+    [
+      "[data-stat-endurance]",
+      draft.sourceStats.endurance
+    ],
+    [
+      "[data-stat-initiative]",
+      draft.sourceStats.initiative
+    ],
+    ["[data-max-hp]", draft.combat.maxHp],
+    [
+      "[data-initial-hp]",
+      draft.combat.initialHp ?? draft.combat.maxHp
+    ],
+    ["[data-max-energy]", draft.combat.maxEnergy],
+    [
+      "[data-initial-energy]",
+      draft.combat.initialEnergy ?? 0
+    ],
+    [
+      "[data-energy-charge-amount]",
+      draft.combat.energyChargeAmount ?? 0
+    ],
+    [
+      "[data-energy-charge-interval]",
+      draft.combat.energyChargeIntervalMs ?? 0
+    ],
+    [
+      "[data-movement-energy]",
+      draft.combat.movementEnergyPerStep ?? 0
+    ],
+    [
+      "[data-charge-time-modifier]",
+      draft.combat.chargeTimeModifierPct ?? 0
+    ],
+    [
+      "[data-capture-rate]",
+      draft.capture.captureRate
+    ],
+    [
+      "[data-spawn-chance]",
+      draft.capture.spawnChance
+    ],
+    [
+      "[data-creature-front-select]",
+      presentation?.visual?.front?.assetId ?? ""
+    ],
+    [
+      "[data-creature-back-select]",
+      presentation?.visual?.back?.assetId ?? ""
+    ],
+    [
+      "[data-creature-icon-select]",
+      presentation?.visual?.icon?.assetId ?? ""
+    ],
+    [
+      "[data-creature-audio-attack]",
+      creatureAudioAssetId(
+        presentation?.audio?.attack
+      )
+    ],
+    [
+      "[data-creature-audio-hit]",
+      creatureAudioAssetId(
+        presentation?.audio?.hit
+      )
+    ],
+    [
+      "[data-creature-audio-ko]",
+      creatureAudioAssetId(
+        presentation?.audio?.ko
+      )
+    ]
+  ];
+
+  for (const [selector, value] of fields) {
+    setFieldValue(root, selector, value);
+  }
+
+  one(root, "[data-capturable]").checked =
+    draft.capture.capturable;
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-element]"
+    )
+  ) {
+    input.checked =
+      draft.elements.includes(input.value);
+  }
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-resistance]"
+    )
+  ) {
+    input.value = String(
+      creatureResistanceValue(
+        draft,
+        input.dataset.resistance
+      )
+    );
+  }
+
+  const slots = [
+    ...root.querySelectorAll("[data-loadout-slot]")
+  ];
+  for (let index = 0; index < slots.length; index += 1) {
+    slots[index].value =
+      loadout.slots[index]?.skillId ?? "";
+  }
+
+  replaceCreatureSockets(
+    root,
+    sockets,
+    presentation
+  );
+
+  for (const selector of [
+    "[data-creature-front-select]",
+    "[data-creature-back-select]",
+    "[data-creature-icon-select]"
+  ]) {
+    dispatchFieldEvent(
+      one(root, selector),
+      "change"
+    );
+  }
+
+  dispatchFieldEvent(
+    one(root, "[data-creature-display-scale]"),
+    "input"
+  );
+}
+
+function prepareNewCreatureDraftFields(
+  root,
+  id,
+  sockets
+) {
+  const defaults = [
+    ["[data-creature-id]", id],
+    ["[data-creature-name]", "Nouvelle créature"],
+    ["[data-creature-description]", ""],
+    ["[data-creature-level]", 1],
+    ["[data-creature-profile]", "biped"],
+    ["[data-creature-display-scale]", 1],
+    ["[data-creature-front-select]", ""],
+    ["[data-creature-back-select]", ""],
+    ["[data-creature-icon-select]", ""],
+    ["[data-creature-audio-attack]", ""],
+    ["[data-creature-audio-hit]", ""],
+    ["[data-creature-audio-ko]", ""],
+    ["[data-max-hp]", 50],
+    ["[data-initial-hp]", 50],
+    ["[data-max-energy]", 10],
+    ["[data-initial-energy]", 0],
+    ["[data-energy-charge-amount]", 1],
+    ["[data-energy-charge-interval]", 2000],
+    ["[data-movement-energy]", 2],
+    ["[data-charge-time-modifier]", 0],
+    ["[data-capture-rate]", 30],
+    ["[data-spawn-chance]", 10],
+    ["[data-stat-force]", 10],
+    ["[data-stat-agility]", 10],
+    ["[data-stat-intelligence]", 10],
+    ["[data-stat-spirit]", 10],
+    ["[data-stat-endurance]", 10],
+    ["[data-stat-initiative]", 10]
+  ];
+
+  for (const [selector, value] of defaults) {
+    setFieldValue(root, selector, value);
+  }
+
+  one(root, "[data-capturable]").checked = true;
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-element]"
+    )
+  ) {
+    input.checked = false;
+  }
+  for (
+    const input of root.querySelectorAll(
+      "[data-resistance]"
+    )
+  ) {
+    input.value = "0";
+  }
+  for (
+    const select of root.querySelectorAll(
+      "[data-loadout-slot]"
+    )
+  ) {
+    select.value = "";
+  }
+
+  replaceCreatureSockets(root, sockets, null);
+
+  for (const selector of [
+    "[data-creature-front-select]",
+    "[data-creature-back-select]",
+    "[data-creature-icon-select]"
+  ]) {
+    dispatchFieldEvent(
+      one(root, selector),
+      "change"
+    );
+  }
+
+  dispatchFieldEvent(
+    one(root, "[data-creature-display-scale]"),
+    "input"
+  );
 }
 
 function setStatus(root, message, tone = "info") {
