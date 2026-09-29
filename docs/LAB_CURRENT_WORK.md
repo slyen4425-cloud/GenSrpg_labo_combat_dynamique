@@ -13712,3 +13712,68 @@ Validation technique :
 2. modifier uniquement les règles Combat puis lancer la preview sans devoir mettre à jour la créature ;
 3. charger Maraileron, Voltige puis Ailevent et vérifier face/dos/icône/scale/sockets ;
 4. charger une créature sans art et vérifier qu'elle reste éditable.
+
+
+## Micro-lot — defaults vitrine créatures : positions + compétences V1 — 2026-09-29
+
+Base :
+
+- checkpoint PREVALIDATION précédent : `checkpoint/lab-creature-ownership-visual-autolink-v1-prevalidation-green-2026-09-29` ;
+- SHA : `d02ada41b94c6b8b0bf1107f31380084e16c83d9`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-creature-showcase-defaults-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-creature-showcase-defaults-v1-2026-09-29`.
+
+Retour utilisateur :
+
+- les créatures déjà liées à des visuels doivent aussi disposer d'une position de présentation ;
+- leurs compétences historiques GenSrpG doivent être pré-associées ;
+- ces valeurs constituent les defaults de la version vitrine ; les joueurs pourront ensuite personnaliser leurs propres créatures.
+
+Source historique compétences démontrée dans le fichier GenSrpG fourni :
+
+- chaque espèce possède `abilityIds` ;
+- `captureCreatureAvailableMoves()` filtre les capacités par niveau requis ;
+- `captureOpenCreatureDetail()` initialise `activeAbilityIds` avec les capacités dont le niveau requis est inférieur ou égal au niveau courant, puis applique `slice(0, maxMoves)` ;
+- `captureCreatureProgressRules()` définit `maxMoves: 4` par défaut ;
+- aucune sélection arbitraire nouvelle ne doit remplacer cette règle.
+
+Position / présentation :
+
+- `VisualActor` possède déjà `position {x,y}` ;
+- le Demo Visual Source historique sait déjà lire `meta.offset` ;
+- les metadata global-assets possèdent déjà `offset` et `transformOrigin` ;
+- le chemin Capture Editor -> native visual source ne transporte actuellement pas ces données ;
+- la correction doit donc transporter les données de présentation existantes au lieu d'ajouter une correction CSS locale.
+
+Objectifs :
+
+1. initialiser le loadout actif d'une créature historique avec les capacités historiques autorisées à son niveau, maximum 4 ;
+2. ne jamais inventer une capacité absente de son `abilityIds` / catalogue Capture autorisé ;
+3. si une capacité historique ne possède pas d'équivalent runtime sûr, la conserver comme connaissance mais ne pas rendre le combat invalide silencieusement ;
+4. transporter position / transformOrigin depuis la metadata visuelle jusqu'au VisualActor ;
+5. le propriétaire de la position reste la metadata de présentation, pas la page HTML ni le renderer ;
+6. une créature sans position explicite garde `{x:0,y:0}`.
+
+Protégé :
+
+- Combat Runtime ;
+- Animation Core ;
+- renderer ;
+- catalogue 110 ;
+- aucun localStorage/sessionStorage ;
+- aucune heuristique par nom ;
+- aucun merge sur main.
+
+Critère final :
+
+- RED ciblé ;
+- règle historique de loadout testée ;
+- position transportée de façon data-driven ;
+- CI complète verte ;
+- preview PREVALIDATION smartphone.
