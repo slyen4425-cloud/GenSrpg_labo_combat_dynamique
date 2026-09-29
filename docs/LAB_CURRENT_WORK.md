@@ -15549,3 +15549,69 @@ Rendre réellement actifs en combat les statuts persistants définis par `Status
 - CI complète GREEN ;
 - aucun ancien StatusEffect fake dans l'UI ;
 - checkpoint GREEN avant Tactical Effects Editor UI / migration historique.
+
+
+### Résultat — StatusEffect Runtime V1
+
+RED :
+
+- SHA : `2a03dd365e0cb4d99dcb84fe4608c9a100c7ff3c` ;
+- run : `36641200436` ;
+- 606 tests au total ; 595 pass / 11 fail ciblés ;
+- causes : lifecycle status absent du vrai chemin, ticks/expiry non raccordés, shield/stat/control/taunt/cleanse/stacking non exécutés.
+
+Implémentation :
+
+- runtime instance dédiée : `StatusEffectRuntimeInstanceV1` ;
+- état de fighter : `statusEffects` + `statEffectRulesById` ;
+- lifecycle : apply / replace / refresh / stack / expiry ;
+- horloge unique : `CombatState.elapsedMs`, aucun timer secondaire ;
+- DoT / HoT : ticks déterministes sur la même horloge ;
+- dégâts périodiques passent par le même calcul dégâts/résistances puis la même application de dégâts ;
+- shield : absorption avant HP pour dégâts directs et DoT, capacité restante persistée ;
+- `stat_modifier` : projection via les coefficients data-driven réellement transportés depuis le registre de stats ;
+- aucun mapping automatique des anciens IDs legacy inconnus ;
+- stat inconnue -> `unsupported_status_stat` avant coût/cooldown ;
+- `immobilize` bloque le mouvement ;
+- `silence` bloque le démarrage d'une compétence ;
+- `stun` bloque mouvement / compétence / commande ;
+- `taunt` force les compétences offensives vers la source vivante du taunt ;
+- `cleanse` supprime les statuts detrimental ciblés par tags (ou tous si tags vides) ;
+- `dispel` supprime les beneficial selon la même règle ;
+- application d'un stun émet l'événement sémantique `charge-interrupt` existant.
+
+Transport stats :
+
+- `CaptureStatRegistryV1` -> snapshot `statEffectRulesById` dans l'export V3 ;
+- adapter Capture -> FighterConfig ;
+- Combat State conserve cette autorité data-driven ;
+- aucun coefficient stat n'est recodé dans le Status Runtime.
+
+Évolution de sentinelle :
+
+- l'ancien test qui exigeait le refus de `apply_status` a été retiré comme obsolète ;
+- le refus multi-cible sans BattleFormat reste testé et inchangé.
+
+GREEN :
+
+- SHA fonctionnel : `1f33f318ec227545fe5655c9344f0f6b3e964e21` ;
+- run : `36642004408` ;
+- **606 tests, 606 pass, 0 fail**.
+
+Revue charte :
+
+- aucun localStorage/sessionStorage/indexedDB ;
+- aucun MutationObserver ;
+- aucun setTimeout/setInterval ajouté ;
+- aucun DOM/window/fetch dans les fichiers Core/contrats/adapters du lot ;
+- aucun changement Animation/FX/renderer ;
+- aucune conversion implicite des anciennes durées legacy ;
+- une seule horloge et une seule chaîne d'application des dégâts.
+
+État :
+
+**GREEN runtime — StatusEffectV1 entièrement actif.**
+
+Étape suivante :
+
+**Tactical Effects Editor UI V1**, puis migration explicite des 33 capacités complexes historiques, puis Export/Import base de données.
