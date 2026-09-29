@@ -52,6 +52,86 @@ function normalizePercentByChannel(input, field) {
   return Object.freeze(output);
 }
 
+function normalizeStatEffectRulesById(
+  input
+) {
+  if (input == null) {
+    return null;
+  }
+
+  const value = objectValue(
+    input,
+    "combat.statEffectRulesById"
+  );
+  const output = {};
+
+  for (
+    const [statIdRaw, ruleRaw] of
+    Object.entries(value)
+  ) {
+    const statId = requiredString(
+      statIdRaw,
+      "combat.statEffectRulesById key"
+    );
+    const rule = objectValue(
+      ruleRaw,
+      "combat.statEffectRulesById." + statId
+    );
+    const allowed = new Set([
+      "damageChannel",
+      "resistanceChannel",
+      "damagePctPerPoint",
+      "resistancePctPerPoint",
+      "chargeTimeReductionPctPerPoint"
+    ]);
+
+    for (const key of Object.keys(rule)) {
+      if (!allowed.has(key)) {
+        throw new TypeError(
+          "combat.statEffectRulesById." +
+            statId +
+            " contains unknown field: " +
+            key
+        );
+      }
+    }
+
+    output[statId] = Object.freeze({
+      damageChannel:
+        rule.damageChannel == null
+          ? null
+          : requiredString(
+              rule.damageChannel,
+              "damageChannel"
+            ),
+      resistanceChannel:
+        rule.resistanceChannel == null
+          ? null
+          : requiredString(
+              rule.resistanceChannel,
+              "resistanceChannel"
+            ),
+      damagePctPerPoint:
+        nonNegativeNumber(
+          rule.damagePctPerPoint ?? 0,
+          "damagePctPerPoint"
+        ),
+      resistancePctPerPoint:
+        nonNegativeNumber(
+          rule.resistancePctPerPoint ?? 0,
+          "resistancePctPerPoint"
+        ),
+      chargeTimeReductionPctPerPoint:
+        nonNegativeNumber(
+          rule.chargeTimeReductionPctPerPoint ?? 0,
+          "chargeTimeReductionPctPerPoint"
+        )
+    });
+  }
+
+  return Object.freeze(output);
+}
+
 function normalizeStatEffects(input) {
   if (input == null) {
     return null;
@@ -163,6 +243,15 @@ export function adaptCaptureCreatureToFighterConfig(
       statEffects.damagePctByChannel;
     output.resistancePctByChannel =
       statEffects.resistancePctByChannel;
+  }
+
+  const statEffectRulesById =
+    normalizeStatEffectRulesById(
+      combat.statEffectRulesById
+    );
+  if (statEffectRulesById !== null) {
+    output.statEffectRulesById =
+      statEffectRulesById;
   }
 
   if (
