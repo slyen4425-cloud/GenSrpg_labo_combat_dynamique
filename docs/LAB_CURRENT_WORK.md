@@ -12993,3 +12993,37 @@ Critère GREEN :
 - chaque `runtimeFile` du manifeste correspond à un fichier livré ;
 - CI complète verte ;
 - checkpoint GREEN technique avant toute nouvelle UI.
+
+
+## Résultat — réparation livraison physique audio runtime privé V1 — 2026-09-29
+
+Autorisation de publication :
+
+- publication des copies audio runtime opaques vers le dépôt public du laboratoire explicitement autorisée par Sylvain le 2026-09-29 ;
+- seuls les fichiers runtime déjà destinés à la distribution sont concernés ;
+- aucun master, `sourcePath`, token, URL privée ou nom de fichier maître n'est publié.
+
+Livraison finale :
+
+- commit binaire : `f791422db645f954cc1af28f095c3cea6d38e488` ;
+- commit : `assets: complete private runtime audio delivery 149-173` ;
+- les 25 MP3 Xel manquants ont été ajoutés sous `assets/runtime/audio/private-v1/` ;
+- total manifeste : 173 ;
+- total fichiers runtime physiquement livrés : 173 ;
+- assetIds, manifeste, resolver et taxonomie existants inchangés ;
+- aucun changement Combat Core, renderer métier, storage/global ou dépendance runtime vers le dépôt privé.
+
+Validation CI du commit binaire :
+
+- workflow : `Laboratory CI` ;
+- run : `36560857785` ;
+- conclusion : SUCCESS ;
+- sentinelle `private-audio-runtime-delivery-v1.test.mjs` : PASS ;
+- 502 tests, 502 pass, 0 fail.
+
+État :
+
+**GREEN technique de livraison audio runtime**.
+
+Ce GREEN prouve la livraison physique complète et le vrai raccord manifeste -> fichiers.
+Aucune nouvelle UI n'a été ajoutée dans ce lot.
