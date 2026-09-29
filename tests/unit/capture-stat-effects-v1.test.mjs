@@ -157,3 +157,33 @@ test("Human Editor summary explains one-point rule and current effective result"
     "1 point = -1 % temps de charge · 8 points = -8 % temps de charge"
   );
 });
+
+
+test("Human Editor exposes explicit percentage labels including charge reduction", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const marker of [
+    "Dégâts % / point",
+    "Résistance % / point",
+    "Réduction temps de charge % / point",
+    "data-stat-custom-charge-pct-per-point"
+  ]) {
+    assert.equal(
+      html.includes(marker),
+      true,
+      marker + " must remain visible in the Human Editor"
+    );
+  }
+
+  assert.equal(
+    html.includes("Dégâts / point"),
+    false,
+    "ambiguous stat unit label must not return"
+  );
+});
