@@ -13,7 +13,8 @@ const STAT_FIELDS = new Set([
   "resistanceChannel",
   "damagePctPerPoint",
   "resistancePctPerPoint",
-  "chargeTimeReductionPctPerPoint"
+  "chargeTimeReductionPctPerPoint",
+  "damageReductionPctPerPoint"
 ]);
 
 function objectValue(value, field) {
@@ -93,6 +94,12 @@ function normalizeStat(raw, index) {
       nonNegativeNumber(
         value.chargeTimeReductionPctPerPoint,
         field + ".chargeTimeReductionPctPerPoint",
+        0
+      ),
+    damageReductionPctPerPoint:
+      nonNegativeNumber(
+        value.damageReductionPctPerPoint,
+        field + ".damageReductionPctPerPoint",
         0
       )
   });
