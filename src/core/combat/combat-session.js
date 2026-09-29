@@ -18,6 +18,9 @@ import {
 import {
   normalizeSkillSpeedMultiplier
 } from "./combat-timing.js";
+import {
+  advanceStatusEffectsV1
+} from "./status-effect-runtime-v1.js";
 
 export function createCombatSession({
   distance = "medium",
@@ -177,7 +180,14 @@ export function createCombatSession({
   }
 
   function advanceMs(deltaMs) {
-    state = advanceCombatTime(state, deltaMs);
+    state = advanceStatusEffectsV1({
+      state,
+      deltaMs
+    });
+    state = advanceCombatTime(
+      state,
+      deltaMs
+    );
     return state;
   }
 
