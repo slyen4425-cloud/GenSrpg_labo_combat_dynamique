@@ -13311,3 +13311,69 @@ Le GREEN UI final reste interdit avant validation utilisateur des actions :
 - enregistrer comme nouvelle ;
 - mettre à jour l'existante ;
 - basculer entre deux créatures sans mélange de données.
+
+
+## Micro-lot — import catalogue créatures Monster Capture V1 — 2026-09-29
+
+Base :
+
+- checkpoint CRUD créature PREVALIDATION : `checkpoint/lab-capture-creature-crud-v1-prevalidation-green-2026-09-29` ;
+- SHA : `afd7148ffe539b7c08dfb2f4c45dbb8befefdf0f`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-creature-catalog-import-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-creature-catalog-import-v1-2026-09-29`.
+
+Retour utilisateur :
+
+- la liste historique des créatures Monster Capture doit être visible dans « Créature à modifier » ;
+- si elle n'existe pas dans le labo, récupérer les données du mode Monster Capture historique ;
+- l'éditeur laboratoire deviendra ensuite l'éditeur Monster Capture.
+
+Constat avant lot :
+
+- le labo ne contient pas de catalogue complet de créatures ;
+- il contient seulement 9 options de créatures de test visuel/combat ;
+- l'historique GenSrpG documente les familles :
+  - `gensrpg_shared_entities_v1__<profileId>` ;
+  - `gensrpg_shared_entities_v1__family__creature` ;
+  - `starter_capture` ;
+- la note `notes/capture-recovery-2026-09-08.md` interdit de réinventer le système avant recherche de l'implémentation historique.
+
+Mission :
+
+1. retrouver le propriétaire historique réel des données de créatures Monster Capture ;
+2. caractériser son format et les créatures builtin/starter réellement présentes ;
+3. produire un import explicite vers `CaptureCreatureEditorDraftV3` ;
+4. ne pas remplacer les données historiques par les 9 créatures de preview ;
+5. raccorder le catalogue importé à la bibliothèque CRUD du Human Editor ;
+6. aucune persistance navigateur nouvelle dans le laboratoire ;
+7. aucune dépendance runtime vers `Zombicide-40k` : les données nécessaires doivent être exportées dans le labo ;
+8. conserver les identités historiques quand elles sont sûres et explicites.
+
+Interdits :
+
+- aucune liste inventée ;
+- aucun parsing runtime du dépôt principal ;
+- aucun second contrat créature ;
+- aucun localStorage/sessionStorage ;
+- aucune modification Combat Core/renderer ;
+- aucun merge sur `main`.
+
+RED attendu :
+
+- catalogue Monster Capture absent du laboratoire ;
+- la bibliothèque CRUD ne sait charger que sa créature initiale et les créations de session.
+
+Critère de fin :
+
+- provenance documentée ;
+- format historique caractérisé ;
+- import déterministe testé ;
+- CI complète verte ;
+- preview dédiée ;
+- PREVALIDATION smartphone avant GREEN UI final.
