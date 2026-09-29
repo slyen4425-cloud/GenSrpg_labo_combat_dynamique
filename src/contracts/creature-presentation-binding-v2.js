@@ -11,6 +11,8 @@ const TOP_LEVEL_FIELDS = new Set([
   "subjectId",
   "profileId",
   "displayScale",
+  "position",
+  "transformOrigin",
   "visual",
   "sockets",
   "audio"
@@ -31,6 +33,88 @@ function assertKnownFields(value, allowed, field) {
       );
     }
   }
+}
+
+function finiteNumber(value, field) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    throw new RangeError(
+      `${field} must be a finite number`
+    );
+  }
+  return number;
+}
+
+function normalizePosition(value) {
+  if (value == null) {
+    return Object.freeze({
+      x: 0,
+      y: 0
+    });
+  }
+
+  const position = objectValue(
+    value,
+    "position"
+  );
+  assertKnownFields(
+    position,
+    new Set(["x", "y"]),
+    "position"
+  );
+
+  return Object.freeze({
+    x: finiteNumber(
+      position.x ?? 0,
+      "position.x"
+    ),
+    y: finiteNumber(
+      position.y ?? 0,
+      "position.y"
+    )
+  });
+}
+
+function normalizeTransformOrigin(value) {
+  if (value == null) {
+    return Object.freeze({
+      x: "50%",
+      y: "50%"
+    });
+  }
+
+  const origin = objectValue(
+    value,
+    "transformOrigin"
+  );
+  assertKnownFields(
+    origin,
+    new Set(["x", "y"]),
+    "transformOrigin"
+  );
+
+  const text = (entry, field) => {
+    if (
+      typeof entry !== "string" ||
+      entry.trim() === ""
+    ) {
+      throw new TypeError(
+        field + " must be a non-empty string"
+      );
+    }
+    return entry.trim();
+  };
+
+  return Object.freeze({
+    x: text(
+      origin.x ?? "50%",
+      "transformOrigin.x"
+    ),
+    y: text(
+      origin.y ?? "50%",
+      "transformOrigin.y"
+    )
+  });
 }
 
 function positiveFiniteNumber(value, field) {
@@ -96,6 +180,13 @@ export function normalizeCreaturePresentationBindingV2(input) {
       value.displayScale,
       "displayScale"
     ),
+    position: normalizePosition(
+      value.position
+    ),
+    transformOrigin:
+      normalizeTransformOrigin(
+        value.transformOrigin
+      ),
     visual: base.visual,
     sockets: base.sockets,
     audio: base.audio
@@ -104,7 +195,14 @@ export function normalizeCreaturePresentationBindingV2(input) {
 
 export function upgradeCreaturePresentationBindingV1ToV2(
   input,
-  { displayScale = 1 } = {}
+  {
+    displayScale = 1,
+    position = { x: 0, y: 0 },
+    transformOrigin = {
+      x: "50%",
+      y: "50%"
+    }
+  } = {}
 ) {
   const base =
     normalizeCreaturePresentationBindingV1(
@@ -119,6 +217,8 @@ export function upgradeCreaturePresentationBindingV1ToV2(
     subjectId: base.subjectId,
     profileId: base.profileId,
     displayScale,
+    position,
+    transformOrigin,
     visual: base.visual,
     sockets: base.sockets,
     audio: base.audio
