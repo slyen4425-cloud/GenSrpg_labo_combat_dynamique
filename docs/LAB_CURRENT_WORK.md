@@ -15322,3 +15322,90 @@ GREEN :
 **GREEN runtime — effets instantanés ciblés.**
 
 Étape suivante : **Area Targeting Runtime V1**.
+
+
+## Micro-lot — Area Targeting Runtime V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN Immediate Tactical Effects Runtime V1 : `checkpoint/lab-immediate-tactical-effects-runtime-v1-green-2026-09-30` ;
+- SHA : `34608df20ac21d394faf62e07257a40acbb09195` ;
+- CI : SUCCESS, 589/589.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-area-targeting-runtime-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-area-targeting-runtime-v1-2026-09-30`.
+
+### Objectif
+
+Activer réellement les scopes multi-cibles `SkillEffectV1` en utilisant `BattleFormatDefinition` comme source unique des relations d'équipe.
+
+Scopes V1 :
+
+- target ;
+- self ;
+- all_enemies ;
+- all_allies ;
+- all_except_self.
+
+Effets actifs dans ce lot :
+
+- damage ;
+- heal ;
+- energy_restore ;
+- energy_drain.
+
+### Ownership
+
+- équipes / relation ally-enemy : BattleFormatDefinition ;
+- choix du scope d'un effet : SkillEffectV1 ;
+- sélection concrète des actorIds : module Core pur dédié ;
+- calcul dégâts : formule Combat Rules unique, factorisée pour legacy + tactical ;
+- PV/énergie : Combat State ;
+- orchestration impact : Action Resolver.
+
+### Préaudit confirmé
+
+- Combat State contient tous les fighters mais ne possède pas les équipes ;
+- `targeting.js` dépend déjà du BattleFormat normalisé ;
+- l'adapter Capture produit déjà `battleFormat` ;
+- `combat-2v2-test-ui.js` crée actuellement CombatSession sans lui transmettre le format ;
+- aucun nouveau team map ne doit être ajouté dans Combat State.
+
+### Règles
+
+- les cibles KO ne reçoivent pas d'effet de zone ordinaire ;
+- `all_allies` inclut le lanceur ;
+- `all_enemies` cible tous les combattants vivants de l'équipe adverse ;
+- `all_except_self` cible tous les autres combattants vivants ;
+- sans BattleFormat, un scope multi-cible reste refusé explicitement ;
+- aucun statut persistant dans ce lot.
+
+### RED
+
+1. dégâts de zone sur tous les ennemis en vrai 2v2 ;
+2. résistances individuelles conservées par cible ;
+3. soin de groupe allié ;
+4. énergie multi-cible ;
+5. exclusion des KO ;
+6. absence de BattleFormat -> refus avant coût/cooldown ;
+7. vrai chemin Capture/2v2 transmet le format à CombatSession.
+
+### Protégé
+
+- StatusEffect runtime ;
+- Human Editor ;
+- FX/Animation/renderer ;
+- catalogues historiques ;
+- aucun calcul d'équipe dans l'UI.
+
+### Critère de fin
+
+- CI complète GREEN ;
+- un seul propriétaire de l'équipe ;
+- Area damage réellement actif ;
+- checkpoint GREEN avant StatusEffect Runtime.
