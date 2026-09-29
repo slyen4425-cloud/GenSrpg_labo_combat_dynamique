@@ -129,7 +129,7 @@ test("legacy creature adapter preserves raw identity and uses documented histori
   );
 });
 
-test("legacy creature adapter filters active skills without mutating the historical source", async () => {
+test("legacy creature adapter preserves all historical skill links while filtering only the active runtime loadout", async () => {
   const catalog = JSON.parse(
     await readFile(catalogUrl, "utf8")
   );
@@ -155,6 +155,12 @@ test("legacy creature adapter filters active skills without mutating the histori
 
   assert.deepEqual(
     record.draft.skillIds,
+    raw.abilityIds
+  );
+  assert.deepEqual(
+    record.loadout.slots
+      .map((slot) => slot.skillId)
+      .filter(Boolean),
     raw.abilityIds.slice(0, 2)
   );
   assert.equal(
@@ -292,4 +298,58 @@ test("Human creature V3 builder accepts an imported creature without invented pr
     draft.presentation,
     null
   );
+});
+
+
+test("legacy creature adapter adapts all 110 records without losing identity, evolution or historical ability links", async () => {
+  const catalog = JSON.parse(
+    await readFile(catalogUrl, "utf8")
+  );
+  const {
+    adaptLegacyCaptureCreatureToEditorRecordV1
+  } = await import(
+    "../../src/catalogs/capture-legacy-creature-catalog-v1.js"
+  );
+
+  const allAbilityIds = new Set(
+    catalog.creatures.flatMap(
+      (entry) => entry.abilityIds ?? []
+    )
+  );
+
+  const records = catalog.creatures.map(
+    (raw) =>
+      adaptLegacyCaptureCreatureToEditorRecordV1(
+        raw,
+        { enabledSkillIds: allAbilityIds }
+      )
+  );
+
+  assert.equal(records.length, 110);
+  assert.equal(
+    new Set(
+      records.map((record) => record.draft.id)
+    ).size,
+    110
+  );
+
+  for (let index = 0; index < records.length; index += 1) {
+    const raw = catalog.creatures[index];
+    const record = records[index];
+
+    assert.equal(record.draft.id, raw.id);
+    assert.deepEqual(
+      record.draft.skillIds,
+      raw.abilityIds ?? []
+    );
+
+    const expectedEvolution =
+      raw.evolution?.targetId ??
+      raw.evolutionTo ??
+      null;
+    assert.equal(
+      record.draft.capture.evolution?.targetId ?? null,
+      expectedEvolution || null
+    );
+  }
 });
