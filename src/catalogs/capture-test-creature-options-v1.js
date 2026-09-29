@@ -11,6 +11,7 @@ const ENEMY_SKILL_IDS = Object.freeze([
 export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   Object.freeze({
     id: "braisombre",
+    metaFile: "capture/creatures/braisombre/braisombre.meta.json",
     label: "Braisombre",
     profileId: "drake",
     elements: Object.freeze(["fire"]),
@@ -22,6 +23,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "maraileron",
+    metaFile: "capture/creatures/maraileron/maraileron.meta.json",
     label: "Maraileron",
     profileId: "serpentine",
     elements: Object.freeze(["water"]),
@@ -33,6 +35,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "loup-volcanique",
+    metaFile: "capture/creatures/loup_volcanique/loup_volcanique.meta.json",
     label: "Loup volcanique",
     profileId: "quadruped",
     elements: Object.freeze(["fire"]),
@@ -44,6 +47,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "golem-moussu",
+    metaFile: "capture/creatures/golem_moussu/golem_moussu.meta.json",
     label: "Golem moussu",
     profileId: "biped",
     elements: Object.freeze(["earth"]),
@@ -55,6 +59,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "guepe-cybernetique",
+    metaFile: "capture/creatures/guepe_cybernetique/guepe_cybernetique.meta.json",
     label: "Guêpe cybernétique",
     profileId: "drake",
     elements: Object.freeze(["electricity"]),
@@ -66,6 +71,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "chat-mystique",
+    metaFile: "capture/creatures/chat_mystique/chat_mystique.meta.json",
     label: "Chat mystique",
     profileId: "quadruped",
     elements: Object.freeze(["shadow"]),
@@ -77,6 +83,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "renard-magique-dore",
+    metaFile: "capture/creatures/renard_magique_dore/renard_magique_dore.meta.json",
     label: "Renard magique doré",
     profileId: "quadruped",
     elements: Object.freeze(["light"]),
@@ -88,6 +95,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "ailevent",
+    metaFile: "capture/creatures/ailevent/ailevent.meta.json",
     label: "Ailevent",
     profileId: "drake",
     elements: Object.freeze(["air"]),
@@ -99,6 +107,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "voltige",
+    metaFile: "capture/creatures/voltige/voltige.meta.json",
     label: "Voltige",
     profileId: "quadruped",
     elements: Object.freeze(["electricity"]),
@@ -134,9 +143,47 @@ function requireAssetIds(option, assetCatalog) {
   }
 }
 
+
+function normalizedMetaId(value) {
+  return typeof value === "string"
+    ? value.trim().toLowerCase().replaceAll("_", "-")
+    : "";
+}
+
+function opponentDisplayScale(option, creatureMeta) {
+  if (
+    !creatureMeta ||
+    typeof creatureMeta !== "object" ||
+    Array.isArray(creatureMeta)
+  ) {
+    throw new TypeError(
+      "Capture test creature visual metadata is required"
+    );
+  }
+
+  if (normalizedMetaId(creatureMeta.id) !== option.id) {
+    throw new RangeError(
+      "Capture test creature metadata does not match option: " +
+        option.id
+    );
+  }
+
+  const scale = Number(
+    creatureMeta.displayScale?.opponent
+  );
+  if (!Number.isFinite(scale) || scale <= 0) {
+    throw new RangeError(
+      "Capture test creature metadata displayScale.opponent must be greater than 0"
+    );
+  }
+
+  return scale;
+}
+
 export function buildCaptureTestOpponentDraftV1({
   optionId,
-  assetCatalog
+  assetCatalog,
+  creatureMeta
 }) {
   const option = CAPTURE_TEST_CREATURE_OPTIONS_V1.find(
     (entry) => entry.id === optionId
@@ -149,6 +196,8 @@ export function buildCaptureTestOpponentDraftV1({
   }
 
   requireAssetIds(option, assetCatalog);
+  const displayScale =
+    opponentDisplayScale(option, creatureMeta);
 
   return normalizeCaptureCreatureEditorDraftV3({
     schema: "capture-creature-editor-draft-v3",
@@ -193,7 +242,7 @@ export function buildCaptureTestOpponentDraftV1({
       subjectType: "creature",
       subjectId: "crea-enemy",
       profileId: option.profileId,
-      displayScale: 1,
+      displayScale,
       visual: {
         front: { assetId: option.assets.front },
         back: { assetId: option.assets.back },
