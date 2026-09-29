@@ -5,11 +5,54 @@ import {
   normalizeCaptureCreatureStatValuesV1
 } from "../../contracts/capture-creature-stat-values-v1.js";
 
+function nonNegativeFiniteNumber(value, field) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0) {
+    throw new RangeError(
+      field + " must be a non-negative finite number"
+    );
+  }
+  return number;
+}
+
+function projectDefinition(definition, pointsInput) {
+  const points = nonNegativeFiniteNumber(
+    pointsInput,
+    "points"
+  );
+
+  return Object.freeze({
+    damagePct:
+      points * definition.damagePctPerPoint,
+    resistancePct:
+      points * definition.resistancePctPerPoint,
+    chargeTimeReductionPct:
+      points *
+      definition.chargeTimeReductionPctPerPoint
+  });
+}
+
 function addChannelValue(target, channel, amount) {
   if (channel === null || amount === 0) {
     return;
   }
   target[channel] = (target[channel] ?? 0) + amount;
+}
+
+export function projectCaptureStatDefinitionEffectsV1({
+  definition: definitionInput,
+  points
+}) {
+  const registry =
+    normalizeCaptureStatRegistryV1({
+      schema: "capture-stat-registry-v1",
+      stats: [definitionInput]
+    });
+
+  return projectDefinition(
+    registry.stats[0],
+    points
+  );
 }
 
 export function projectCaptureStatEffectsV1({
@@ -31,21 +74,22 @@ export function projectCaptureStatEffectsV1({
   for (const definition of registry.stats) {
     const points =
       statValues.values[definition.id] ?? 0;
+    const projected =
+      projectDefinition(definition, points);
 
     addChannelValue(
       damagePctByChannel,
       definition.damageChannel,
-      points * definition.damagePctPerPoint
+      projected.damagePct
     );
     addChannelValue(
       resistancePctByChannel,
       definition.resistanceChannel,
-      points * definition.resistancePctPerPoint
+      projected.resistancePct
     );
 
     chargeTimeReductionPct +=
-      points *
-      definition.chargeTimeReductionPctPerPoint;
+      projected.chargeTimeReductionPct;
   }
 
   return Object.freeze({
