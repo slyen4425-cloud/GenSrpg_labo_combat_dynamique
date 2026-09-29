@@ -60,6 +60,35 @@ function normalizePercentByChannel(input, field) {
   return Object.freeze(output);
 }
 
+function normalizeStatValuesById(input, field) {
+  if (input == null) {
+    return Object.freeze({});
+  }
+  if (
+    typeof input !== "object" ||
+    Array.isArray(input)
+  ) {
+    throw new TypeError(
+      field + " must be an object"
+    );
+  }
+
+  const output = {};
+  for (const [statIdRaw, value] of Object.entries(input)) {
+    const statId = String(statIdRaw ?? "").trim();
+    if (!statId) {
+      throw new TypeError(
+        field + " key must be non-empty"
+      );
+    }
+    output[statId] = finiteNonNegative(
+      value,
+      field + "." + statId
+    );
+  }
+  return Object.freeze(output);
+}
+
 function normalizeStatusEffects(input, fighterId) {
   const list = input ?? [];
   if (!Array.isArray(list)) {
@@ -193,7 +222,16 @@ function normalizeFighter(input) {
       normalizeStatEffectRulesByIdV1(
         input.statEffectRulesById,
         id + ".statEffectRulesById"
-      )
+      ),
+    statValuesById:
+      normalizeStatValuesById(
+        input.statValuesById,
+        id + ".statValuesById"
+      ),
+    damageReductionPct: finiteNonNegative(
+      input.damageReductionPct ?? 0,
+      id + ".damageReductionPct"
+    )
   };
 
   if (hasOwn(input, "damagePctByChannel")) {
