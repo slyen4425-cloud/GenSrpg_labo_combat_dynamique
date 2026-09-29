@@ -629,6 +629,60 @@ body[data-editor-view="preview"] {
   gap: 0.55rem;
 }
 
+
+.skill-activation-config {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+
+.skill-activation-config[hidden] {
+  display: none;
+}
+
+.skill-activation-conditions {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.skill-activation-condition {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 1.4fr)
+    minmax(105px, 0.8fr)
+    minmax(78px, auto)
+    auto;
+  gap: 0.5rem;
+  align-items: end;
+  padding: 0.65rem;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.skill-activation-condition__unit {
+  min-height: 2.45rem;
+  display: flex;
+  align-items: center;
+  color: #9fb8bf;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.activation-condition-help {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.activation-condition-help span {
+  padding: 0.25rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(131, 230, 247, 0.08);
+  color: #9fb8bf;
+  font-size: 0.66rem;
+}
+
 .capture-preview-shell {
   position: fixed;
   z-index: 100;
@@ -678,6 +732,15 @@ body[data-editor-view="preview"] {
 
   .skill-save-actions {
     grid-template-columns: 1fr;
+  }
+
+
+  .skill-activation-condition {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-activation-condition__unit {
+    min-height: auto;
   }
 
   .secondary-action,
