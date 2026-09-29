@@ -28,7 +28,10 @@ function projectDefinition(definition, pointsInput) {
       points * definition.resistancePctPerPoint,
     chargeTimeReductionPct:
       points *
-      definition.chargeTimeReductionPctPerPoint
+      definition.chargeTimeReductionPctPerPoint,
+    damageReductionPct:
+      points *
+      definition.damageReductionPctPerPoint
   });
 }
 
@@ -70,6 +73,7 @@ export function projectCaptureStatEffectsV1({
   const damagePctByChannel = {};
   const resistancePctByChannel = {};
   let chargeTimeReductionPct = 0;
+  let damageReductionPct = 0;
 
   for (const definition of registry.stats) {
     const points =
@@ -90,6 +94,8 @@ export function projectCaptureStatEffectsV1({
 
     chargeTimeReductionPct +=
       projected.chargeTimeReductionPct;
+    damageReductionPct +=
+      projected.damageReductionPct;
   }
 
   return Object.freeze({
@@ -98,6 +104,7 @@ export function projectCaptureStatEffectsV1({
       Object.freeze(damagePctByChannel),
     resistancePctByChannel:
       Object.freeze(resistancePctByChannel),
-    chargeTimeReductionPct
+    chargeTimeReductionPct,
+    damageReductionPct
   });
 }
