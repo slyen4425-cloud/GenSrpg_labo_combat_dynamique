@@ -55,6 +55,12 @@ function optionalNonNegative(value, field) {
     : nonNegative(value, field);
 }
 
+function optionalPositiveInteger(value, field) {
+  return value == null
+    ? null
+    : positiveInteger(value, field);
+}
+
 export function normalizeStatusEffectRuntimeInstanceV1(
   input,
   field = "StatusEffectRuntimeInstanceV1"
@@ -67,22 +73,51 @@ export function normalizeStatusEffectRuntimeInstanceV1(
     value.appliedAtMs,
     field + ".appliedAtMs"
   );
-  const expiresAtMs = nonNegative(
-    value.expiresAtMs,
-    field + ".expiresAtMs"
-  );
 
-  if (expiresAtMs < appliedAtMs) {
+  const expiresAtMs =
+    definition.durationModel === "time_ms"
+      ? nonNegative(
+          value.expiresAtMs,
+          field + ".expiresAtMs"
+        )
+      : null;
+
+  if (
+    expiresAtMs !== null &&
+    expiresAtMs < appliedAtMs
+  ) {
     throw new RangeError(
       field +
         ".expiresAtMs cannot be before appliedAtMs"
     );
   }
 
-  const nextTickAtMs = optionalNonNegative(
-    value.nextTickAtMs,
-    field + ".nextTickAtMs"
-  );
+  const remainingActionEnds =
+    definition.durationModel === "owner_action_end"
+      ? optionalPositiveInteger(
+          value.remainingActionEnds,
+          field + ".remainingActionEnds"
+        )
+      : null;
+
+  if (
+    definition.durationModel === "owner_action_end" &&
+    remainingActionEnds === null
+  ) {
+    throw new TypeError(
+      field +
+        ".remainingActionEnds is required for owner_action_end"
+    );
+  }
+
+  const nextTickAtMs =
+    definition.durationModel === "time_ms"
+      ? optionalNonNegative(
+          value.nextTickAtMs,
+          field + ".nextTickAtMs"
+        )
+      : null;
+
   const shieldRemaining =
     optionalNonNegative(
       value.shieldRemaining,
@@ -97,6 +132,7 @@ export function normalizeStatusEffectRuntimeInstanceV1(
     ),
     appliedAtMs,
     expiresAtMs,
+    remainingActionEnds,
     nextTickAtMs,
     stacks: positiveInteger(
       value.stacks ?? 1,
@@ -120,9 +156,14 @@ export function createStatusEffectRuntimeInstanceV1({
     appliedAtMs,
     "appliedAtMs"
   );
+  const timed =
+    definition.durationModel === "time_ms";
   const tickIntervalMs =
-    definition.kind === "damage_over_time" ||
-    definition.kind === "heal_over_time"
+    timed &&
+    (
+      definition.kind === "damage_over_time" ||
+      definition.kind === "heal_over_time"
+    )
       ? definition.tickIntervalMs
       : null;
 
@@ -131,7 +172,13 @@ export function createStatusEffectRuntimeInstanceV1({
     sourceActorId,
     appliedAtMs: applied,
     expiresAtMs:
-      applied + definition.durationMs,
+      timed
+        ? applied + definition.durationMs
+        : null,
+    remainingActionEnds:
+      timed
+        ? null
+        : definition.durationActions,
     nextTickAtMs:
       tickIntervalMs === null
         ? null
