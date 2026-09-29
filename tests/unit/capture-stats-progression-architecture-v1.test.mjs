@@ -250,11 +250,11 @@ test("stat registry rejects duplicate ids and keeps HP outside the extensible st
     "HP must remain creature/Combat State ownership, not a duplicate registry stat"
   );
   assert.equal(
-    registry.stats.find((entry) => entry.id === "physical").damagePerPoint,
+    registry.stats.find((entry) => entry.id === "physical").damagePctPerPoint,
     1
   );
   assert.equal(
-    registry.stats.find((entry) => entry.id === "physical").resistancePerPoint,
+    registry.stats.find((entry) => entry.id === "physical").resistancePctPerPoint,
     1
   );
 });
@@ -274,14 +274,14 @@ test("stat influence coefficients remain data-configurable", async () => {
         label: "Givre",
         damageChannel: "frost",
         resistanceChannel: "frost",
-        damagePerPoint: 1.5,
-        resistancePerPoint: 0.75
+        damagePctPerPoint: 1.5,
+        resistancePctPerPoint: 0.75
       }
     ]
   });
 
-  assert.equal(registry.stats[0].damagePerPoint, 1.5);
-  assert.equal(registry.stats[0].resistancePerPoint, 0.75);
+  assert.equal(registry.stats[0].damagePctPerPoint, 1.5);
+  assert.equal(registry.stats[0].resistancePctPerPoint, 0.75);
 });
 
 test("progression rules reject ambiguous or decreasing slot schedules", async () => {
