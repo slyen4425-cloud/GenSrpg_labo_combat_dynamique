@@ -4,12 +4,16 @@ import {
   withDistance,
   withFighterEnergy,
   withFighterHp,
-  withSkillCooldown
+  withSkillCooldown,
+  recordFighterDamage
 } from "./combat-state.js";
 import {
   effectivePreparationMs,
   effectiveSkillTimingMs
 } from "./combat-timing.js";
+import {
+  evaluateSkillActivationRequirementsV1
+} from "./skill-activation-requirements-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -225,6 +229,31 @@ export function resolveSkillStart({
     });
   }
 
+  const activationRequirements =
+    evaluateSkillActivationRequirementsV1({
+      state,
+      actorId,
+      skill
+    });
+
+  if (!activationRequirements.satisfied) {
+    return Object.freeze({
+      ok: false,
+      outcome: "activation_requirements",
+      skillId: skill.id,
+      activationRequirements,
+      state,
+      events: Object.freeze([
+        event("skill-rejected", 0, {
+          actorId,
+          skillId: skill.id,
+          reason: "activation_requirements",
+          activationRequirements
+        })
+      ])
+    });
+  }
+
   const remainingCooldownMs = skillCooldownRemainingMs(
     state,
     actorId,
@@ -338,6 +367,24 @@ export function resolveReaction({
     return Object.freeze({
       ok: false,
       outcome: "no_effect",
+      state,
+      reaction: null
+    });
+  }
+
+  const activationRequirements =
+    evaluateSkillActivationRequirementsV1({
+      state,
+      actorId: action.targetId,
+      skill: reactionSkill
+    });
+
+  if (!activationRequirements.satisfied) {
+    return Object.freeze({
+      ok: false,
+      outcome: "activation_requirements",
+      skillId: reactionSkill.id,
+      activationRequirements,
       state,
       reaction: null
     });
@@ -523,6 +570,15 @@ export function resolveSkillCompletion({
         damage.damage
       );
       const after = fighterOf(nextState, targetId).hp;
+      const actualDamage = before - after;
+      nextState = recordFighterDamage(
+        nextState,
+        {
+          sourceActorId: actorId,
+          targetActorId: targetId,
+          amount: actualDamage
+        }
+      );
 
       events.push(event("hit", impactAtMs, {
         actorId: targetId,
@@ -561,6 +617,15 @@ export function resolveSkillCompletion({
         damage.damage
       );
       const after = fighterOf(nextState, actorId).hp;
+      const actualDamage = before - after;
+      nextState = recordFighterDamage(
+        nextState,
+        {
+          sourceActorId: targetId,
+          targetActorId: actorId,
+          amount: actualDamage
+        }
+      );
 
       events.push(event("hit", impactAtMs, {
         actorId,
