@@ -19,7 +19,8 @@ import {
   normalizeSkillSpeedMultiplier
 } from "./combat-timing.js";
 import {
-  advanceStatusEffectsV1
+  advanceStatusEffectsV1,
+  advanceStatusEffectsOnOwnerActionEndV1
 } from "./status-effect-runtime-v1.js";
 
 export function createCombatSession({
@@ -43,16 +44,39 @@ export function createCombatSession({
     return state;
   }
 
+  function commitCompletedOwnerAction(
+    result,
+    actorId
+  ) {
+    if (!result.ok) {
+      return result;
+    }
+
+    state = advanceStatusEffectsOnOwnerActionEndV1({
+      state: result.state,
+      fighterId: actorId
+    });
+
+    return Object.freeze({
+      ...result,
+      state
+    });
+  }
+
   function previewMovement(actorId, toDistance) {
     return resolveMovement({ state, actorId, toDistance });
   }
 
   function move(actorId, toDistance) {
-    const result = resolveMovement({ state, actorId, toDistance });
-    if (result.ok) {
-      state = result.state;
-    }
-    return result;
+    const result = resolveMovement({
+      state,
+      actorId,
+      toDistance
+    });
+    return commitCompletedOwnerAction(
+      result,
+      actorId
+    );
   }
 
   function previewSkill({ actorId, targetId, skill, reactionSkill = null }) {
@@ -75,10 +99,10 @@ export function createCombatSession({
       skill,
       reactionSkill
     });
-    if (result.ok) {
-      state = result.state;
-    }
-    return result;
+    return commitCompletedOwnerAction(
+      result,
+      actorId
+    );
   }
 
   function startSkill({ actorId, targetId, skill }) {
@@ -148,10 +172,10 @@ export function createCombatSession({
       targetActionContext,
       battleFormat
     });
-    if (result.ok) {
-      state = result.state;
-    }
-    return result;
+    return commitCompletedOwnerAction(
+      result,
+      action.actorId
+    );
   }
 
   function completeCommand({ action }) {
@@ -159,10 +183,10 @@ export function createCombatSession({
       state,
       action
     });
-    if (result.ok) {
-      state = result.state;
-    }
-    return result;
+    return commitCompletedOwnerAction(
+      result,
+      action.actorId
+    );
   }
 
   function completeAction({
