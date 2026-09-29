@@ -20,6 +20,40 @@ function finiteNumber(value, field) {
   return number;
 }
 
+function hasOwn(object, key) {
+  return Object.prototype.hasOwnProperty.call(
+    object,
+    key
+  );
+}
+
+function normalizePercentByChannel(input, field) {
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input)
+  ) {
+    throw new TypeError(
+      field + " must be an object"
+    );
+  }
+
+  const output = {};
+  for (const [channelRaw, value] of Object.entries(input)) {
+    const channel = String(channelRaw ?? "").trim();
+    if (!channel) {
+      throw new TypeError(
+        field + " key must be non-empty"
+      );
+    }
+    output[channel] = finiteNonNegative(
+      value,
+      field + "." + channel
+    );
+  }
+  return Object.freeze(output);
+}
+
 function normalizeSkillCooldowns(input, fighterId) {
   if (input == null) {
     return Object.freeze({});
@@ -74,7 +108,7 @@ function normalizeFighter(input) {
     normalizeChargeTimeEffect(effect, effect.appliedAtMs ?? 0)
   );
 
-  return Object.freeze({
+  const output = {
     id,
     maxHp,
     hp,
@@ -105,7 +139,25 @@ function normalizeFighter(input) {
       input.skillCooldowns,
       id
     )
-  });
+  };
+
+  if (hasOwn(input, "damagePctByChannel")) {
+    output.damagePctByChannel =
+      normalizePercentByChannel(
+        input.damagePctByChannel,
+        `${id}.damagePctByChannel`
+      );
+  }
+
+  if (hasOwn(input, "resistancePctByChannel")) {
+    output.resistancePctByChannel =
+      normalizePercentByChannel(
+        input.resistancePctByChannel,
+        `${id}.resistancePctByChannel`
+      );
+  }
+
+  return Object.freeze(output);
 }
 
 export function createCombatState({
