@@ -13917,58 +13917,74 @@ Critère final :
 
 Associations utilisateur appliquées explicitement :
 
-- Voltige `crea_voltik` -> pack `voltige` -> `biped` ;
-- Ailevent `crea_ailevent` + alias `crea_galewing` -> pack `ailevent` -> `biped` ;
-- Maraileron `crea_maraileron` -> pack `maraileron` -> `serpentine` ;
-- Moussados `crea_mossback` -> pack `golem_moussu` -> `massive` ;
-- Lumilo `crea_lumipup` + `crea_lumilo` -> pack `renard_magique_dore` -> `biped` ;
-- Luciéclair `crea_sparkmoth` + `crea_lucieclair` -> pack `guepe_cybernetique` -> `serpentine`.
+- Voltige `crea_voltik` -> pack `voltige` ;
+- Ailevent `crea_ailevent` + alias `crea_galewing` -> pack `ailevent` ;
+- Maraileron `crea_maraileron` -> pack `maraileron` ;
+- Moussados `crea_mossback` -> pack `golem_moussu` ;
+- Lumilo `crea_lumipup` + `crea_lumilo` -> pack `renard_magique_dore` ;
+- Luciéclair `crea_sparkmoth` + `crea_lucieclair` -> pack `guepe_cybernetique`.
 
-Architecture :
+Correction d'architecture après audit charte :
 
-- `CAPTURE_CREATURE_VISUAL_BINDINGS_V1` porte désormais explicitement le `profileId` de la créature ;
-- `applyCaptureCreatureVisualBindingV1()` privilégie ce `profileId` explicite ;
-- compatibilité conservée : un ancien binding sans `profileId` retombe sur `creatureMeta.profile` ;
-- aucune metadata de `global-assets` n'a été modifiée ;
-- assets, scale, sockets, offset et transformOrigin continuent à provenir du pack visuel autoritaire ;
-- aucune heuristique par nom.
+- une première implémentation faisait porter un `profileId` au binding créature tout en conservant `creatureMeta.profile` dans `global-assets` ;
+- cette structure créait deux sources possibles pour la même responsabilité ;
+- elle a été retirée avant checkpoint ;
+- `CAPTURE_CREATURE_VISUAL_BINDINGS_V1` ne porte désormais que la liaison explicite `creatureId -> metaId/metaFile` ;
+- `applyCaptureCreatureVisualBindingV1()` lit uniquement `creatureMeta.profile` ;
+- la metadata du pack visuel est donc l'unique autorité active du style de position ;
+- une sentinelle interdit le retour de `profileId` dans les bindings créature.
+
+Sous-lot `global-assets` séparé :
+
+- base stable : `1d53c854f9dc78904ddf67b75cfd7290d3702193` ;
+- checkpoint départ : `checkpoint/global-assets-before-showcase-profile-fix-2026-09-29` ;
+- branche : `work/global-assets-showcase-profile-fix-2026-09-29` ;
+- checkpoint GREEN : `checkpoint/global-assets-showcase-profile-fix-green-2026-09-29` ;
+- SHA publié sur `global-assets` : `570b37edb26156a3e84256ef1be18eb07d697eca`.
+
+Metadata autoritaires publiées :
+
+- `voltige.profile = biped` ;
+- `ailevent.profile = biped` ;
+- `maraileron.profile = serpentine` (déjà correct) ;
+- `golem_moussu.profile = massive` ;
+- `renard_magique_dore.profile = biped` ;
+- `guepe_cybernetique.profile = serpentine`.
 
 Profil Massif / golem :
 
-- ajout de `data/profiles/massive.profile.json` ;
+- ajout de `data/profiles/massive.profile.json` dans le lot fonctionnel ;
 - l'éditeur exposait déjà la valeur `massive` mais le runtime ne possédait aucun profil correspondant ;
-- le comportement d'animation initial est volontairement aligné sur `biped` afin de ne pas inventer un comportement « lourd » non validé ;
-- la preview charge désormais ce profil ;
-- un futur lot visuel pourra différencier ses animations après validation utilisateur.
+- `massive` est désormais un vrai `Creature Profile` enregistré et chargé par la preview ;
+- son comportement d'animation initial reste volontairement conservateur ; aucun réglage gameplay n'y est placé.
 
-RED :
+RED fonctionnel :
 
 - SHA : `51270401df70bbc1882cd82b973ac064375681bd` ;
 - run : `36619179079` ;
 - 533 tests, 529 pass, 4 fail attendus.
 
-Correction :
+Validation finale après suppression de la double autorité :
 
-- bindings : `d21e14e2ba82c30036495257e19cf1a2cbf9013e` ;
-- propriété profileId : `0ca5842eda7b86c62755c84367e90573e24909c9` ;
-- profil massive : `4cacd5e5303de7a43371145d06f6d5050c575d36` ;
-- chargement preview : `919ffb54943ab0913ba1e58170b85812d4550ead` ;
-- fallback compatibilité : `44b7dd0f13030e5fcba6d7ba20fcee9f30762911`.
+- fonctionnel SHA : `5bc9911a4da40ebaa92ba5f3aabd1f050afa8a5c` ;
+- CI fonctionnelle : `36620130434` ;
+- 533 tests, 533 pass, 0 fail ;
+- CI `global-assets` : `36620006556` ;
+- 197 tests, 197 pass, 0 fail ;
+- vérification directe de la branche stable `global-assets` : 6/6 metadata correspondent aux profils validés.
 
-CI fonctionnelle finale :
+Invariants finaux :
 
-- run : `36619410486` ;
-- 533 tests, 533 pass, 0 fail.
+- un seul propriétaire du style de position : metadata `global-assets` ;
+- un seul propriétaire du preset morphologique : `Creature Profile` ;
+- binding créature = liaison explicite vers un pack, sans profil concurrent ;
+- aucun CSS spécial par créature ;
+- aucun masquage ;
+- aucun fallback qui écrase silencieusement un profil ;
+- Combat Runtime, Action Resolver et renderer inchangés ;
+- catalogue 110 et loadouts historiques inchangés.
 
 État :
 
 **GREEN technique / PREVALIDATION smartphone.**
 
-À vérifier :
-
-1. Voltige affiche le style Bipède ;
-2. Ailevent affiche le style Bipède ;
-3. Maraileron affiche Serpent / rampant ;
-4. Moussados charge le Golem moussu et Massif / golem ;
-5. Lumilo charge le Renard magique doré et Bipède ;
-6. Luciéclair charge la Guêpe cybernétique et Serpent / rampant.
