@@ -1031,7 +1031,7 @@ export function buildHumanCreatureDraftV2(fields) {
       fields.displayName,
       "Nom créature"
     ),
-    description: optionalText(fields.description) ?? "",
+    description: optionalText(fields.description),
     level: positiveInteger(fields.level, "Niveau"),
     sourceStats: {
       force: finiteNumber(fields.sourceStats?.force, "Force"),
@@ -1464,7 +1464,11 @@ export function readHumanCombatRulesV1(root) {
   });
 }
 
-function writeSkillTemplateFields(root, fields) {
+function writeSkillTemplateFields(
+  root,
+  fields,
+  statRegistry = null
+) {
   const mapping = [
     ["[data-skill-id]", fields.id],
     ["[data-skill-name]", fields.name],
@@ -1491,9 +1495,19 @@ function writeSkillTemplateFields(root, fields) {
       fields.activationRequirements
     );
   }
+
+  renderHumanSkillEffectsV1(
+    root,
+    fields.effects ?? [],
+    statRegistry
+  );
 }
 
-function prepareNewSkillDraftFields(root, id) {
+function prepareNewSkillDraftFields(
+  root,
+  id,
+  statRegistry = null
+) {
   const values = [
     ["[data-skill-id]", id],
     ["[data-skill-name]", "Nouvelle capacité"],
@@ -1540,6 +1554,11 @@ function prepareNewSkillDraftFields(root, id) {
       mode: "all",
       conditions: []
     }
+  );
+  renderHumanSkillEffectsV1(
+    root,
+    [],
+    statRegistry
   );
 
   for (const input of root.querySelectorAll("[data-skill-distance]")) {
@@ -4050,6 +4069,7 @@ function readSkillFields(root) {
       readHumanSkillActivationRequirementsV1(
         root
       ),
+    effects: readHumanSkillEffectsV1(root),
     damage: numericValue(
       root,
       "[data-skill-damage]"
@@ -5056,7 +5076,8 @@ export function mountCaptureEditorHumanV2({
 
     writeSkillTemplateFields(
       root,
-      merged
+      merged,
+      statRegistry
     );
     updateLibraryState(state);
     skillDirty = true;
@@ -5077,7 +5098,11 @@ export function mountCaptureEditorHumanV2({
 
     librarySelect.value = "";
     updateLibraryState(null);
-    prepareNewSkillDraftFields(root, nextId);
+    prepareNewSkillDraftFields(
+      root,
+      nextId,
+      statRegistry
+    );
     selectedLegacyState = null;
     skillDirty = true;
 
