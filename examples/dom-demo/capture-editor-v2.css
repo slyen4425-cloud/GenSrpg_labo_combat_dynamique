@@ -683,6 +683,71 @@ body[data-editor-view="preview"] {
   font-size: 0.66rem;
 }
 
+
+.skill-effects-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.skill-effect-row {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.skill-effect-row__header {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 1.2fr)
+    minmax(150px, 1fr)
+    auto;
+  gap: 0.55rem;
+  align-items: end;
+}
+
+.skill-effect-row__config,
+.skill-status-config {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.skill-status-config {
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(131, 230, 247, 0.12);
+}
+
+.skill-status-config__grid,
+.skill-status-config__specific {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(130px, 1fr));
+  gap: 0.55rem;
+}
+
+.skill-effect-row [hidden],
+.skill-status-config [hidden] {
+  display: none !important;
+}
+
+.tactical-effect-help {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.tactical-effect-help span {
+  padding: 0.25rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(131, 230, 247, 0.08);
+  color: #9fb8bf;
+  font-size: 0.66rem;
+}
+
 .capture-preview-shell {
   position: fixed;
   z-index: 100;
@@ -736,6 +801,12 @@ body[data-editor-view="preview"] {
 
 
   .skill-activation-condition {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-effect-row__header,
+  .skill-status-config__grid,
+  .skill-status-config__specific {
     grid-template-columns: 1fr;
   }
 
