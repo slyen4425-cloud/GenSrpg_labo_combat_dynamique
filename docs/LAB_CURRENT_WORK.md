@@ -13377,3 +13377,102 @@ Critère de fin :
 - CI complète verte ;
 - preview dédiée ;
 - PREVALIDATION smartphone avant GREEN UI final.
+
+
+### Résultat — import catalogue créatures Monster Capture V1
+
+Source historique démontrée :
+
+- dépôt : `slyen4425-cloud/Zombicide-40k` ;
+- checkpoint audité : `checkpoint/gensrpg-phase5-module-launch-s3-capture-provider-green-2026-09-24` ;
+- SHA : `e8fd85ab68df818a138ed7949c411005ad622457` ;
+- blob `index.html` : `6c95e3f6ca4bf8e34003776e7e43e44192aafb16` ;
+- fonction canonique : `gensStarterCreatures()` ;
+- loader historique : `loadSharedEntities()`.
+
+Preuve de propriété :
+
+- pour la famille `creature`, `loadSharedEntities()` appelle explicitement `gensStarterCreatures()` ;
+- les starters absents sont ajoutés au stockage Shared Entities ;
+- la même fonction sert ensuite à normaliser capacités, résistances et évolution ;
+- le seed V162 `MC162_ENTITIES` est un seed de compatibilité embarqué et non le catalogue canonique.
+
+Audit V162 :
+
+- `MC162_ENTITIES` : 110 enregistrements ;
+- 98 enregistrements `starter_capture` ;
+- 12 anciennes entrées de démonstration ;
+- `gensStarterCreatures()` : 100 créatures canoniques uniques ;
+- Aquafin et Voltige sont les deux créatures canoniques absentes du sous-ensemble `starter_capture` V162 car déjà présentes dans les 12 entrées de démo ;
+- 8 autres entrées de démo sont des doublons de nom avec ancien ID ;
+- 2 entrées de démo réellement supplémentaires : Moussados et Marémâchoire ;
+- décision V1 : importer uniquement les 100 créatures canoniques de `gensStarterCreatures()`, sans polluer la bibliothèque avec les alias legacy.
+
+RED :
+
+- test : `tests/unit/monster-capture-creature-catalog-import-v1.test.mjs` ;
+- SHA RED : `8b194c91abb12d5ece45bb56d0cdc6a83e72bb2d` ;
+- CI : `36578703956` — FAILURE attendue ;
+- 511 tests, 508 pass, 3 fail ;
+- échecs ciblés :
+  1. fichier catalogue absent ;
+  2. adaptateur d'import absent ;
+  3. raccord Human Editor absent.
+
+Export de données :
+
+- fichier : `data/capture/monster-capture-creatures.v1.json` ;
+- 100 entrées ;
+- 100 IDs uniques ;
+- 100 noms uniques ;
+- Aquafin et Voltige présents ;
+- anciens alias de démo exclus ;
+- provenance GitHub et blob source inscrits dans le catalogue ;
+- données source legacy conservées : stats, éléments, résistances, abilityIds, capture, évolution, spawn, icône texte, etc.
+
+Adaptateur :
+
+- `src/adapters/input/capture/monster-capture-creature-import-v1.js` ;
+- projection explicite vers `CaptureCreatureEditorDraftV3` ;
+- projection stats legacy :
+  - force <- force/power ;
+  - agility <- agility/agilite ;
+  - intelligence <- intelligence sinon 0 ;
+  - spirit <- spirit/esprit ;
+  - endurance <- endurance/defense ;
+  - initiative <- initiative/speed ;
+- HP historique conservé ;
+- énergie non présente dans la source : valeurs neutres 0, sans gameplay inventé ;
+- abilityIds historiques conservés dans `draft.skillIds` ;
+- loadout actif importé vide : aucun choix arbitraire de 4 capacités ;
+- présentation visuelle laissée `null` quand la source n'a aucun asset exploitable.
+
+Raccord Human Editor :
+
+- les 100 créatures builtin sont ajoutées au même `configuredCreatures` que le CRUD existant ;
+- aucune seconde bibliothèque parallèle ;
+- la créature de test locale existante reste disponible ;
+- les créatures historiques sans visuel sont modifiables sans image obligatoire ;
+- les éléments/résistances/capacités historiques non représentés par l'UI courante sont préservés lors d'une mise à jour ;
+- évolution historique préservée ;
+- aucun localStorage/sessionStorage/global ajouté ;
+- aucune dépendance runtime vers `Zombicide-40k`.
+
+Sentinelles supplémentaires :
+
+- créature historique sans visuel valide ;
+- champs legacy invisibles à l'UI préservés ;
+- une fixture invalide à description vide a été corrigée sans modifier le code métier.
+
+CI technique finale avant documentation :
+
+- SHA : `db7a2812baf5643f5bc15e445170f51b688597d5` ;
+- run : `36579625653` ;
+- conclusion : SUCCESS ;
+- 513 tests, 513 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION UI smartphone**.
+
+Le GREEN UI final reste interdit avant validation utilisateur de la liste des créatures et du chargement/modification d'au moins plusieurs entrées historiques.
