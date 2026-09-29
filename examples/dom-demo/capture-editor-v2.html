@@ -272,7 +272,7 @@
           <span class="step">7</span>
           <div>
             <h2>Stats Monster Capture</h2>
-            <p>Valeurs de la créature issues du registre extensible. Les PV restent séparés.</p>
+            <p>Chaque stat indique clairement ce que donne 1 point et le bonus total actuel. Les PV restent séparés.</p>
           </div>
         </div>
 
@@ -282,7 +282,7 @@
 
         <details data-global-editor-control>
           <summary>Configurer le système de stats</summary>
-          <p class="note">Le libellé, les canaux dégâts/résistance et leurs coefficients sont configurables. Les identifiants existants restent stables.</p>
+          <p class="note">Réglage explicite en pourcentage : 1 point = X % dégâts, Y % résistance et/ou Z % de réduction du temps de charge. Les identifiants existants restent stables.</p>
           <div class="stat-registry-list" data-stat-registry-host></div>
           <button type="button" class="secondary-action" data-stat-registry-apply>
             Appliquer les modifications du registre
@@ -295,8 +295,9 @@
               <label>Nom affiché<input data-stat-custom-label placeholder="ex. Givre"></label>
               <label>Canal dégâts<input data-stat-custom-damage-channel placeholder="optionnel"></label>
               <label>Canal résistance<input data-stat-custom-resistance-channel placeholder="optionnel"></label>
-              <label>Dégâts / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-damage-per-point></label>
-              <label>Résistance / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-resistance-per-point></label>
+              <label>Dégâts % / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-damage-pct-per-point></label>
+              <label>Résistance % / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-resistance-pct-per-point></label>
+              <label>Réduction temps de charge % / point<input type="number" min="0" step="0.05" value="0" data-stat-custom-charge-pct-per-point></label>
             </div>
             <button type="button" class="primary-action" data-stat-custom-add>
               Ajouter la stat
