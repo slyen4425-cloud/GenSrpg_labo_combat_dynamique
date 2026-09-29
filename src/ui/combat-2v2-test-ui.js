@@ -454,6 +454,7 @@ export async function mountCoop2v2Test({
 
   const session = createCombatSession({
     distance: "medium",
+    battleFormat: format,
     fighters,
     skillSpeedMultiplier
   });
