@@ -15749,3 +15749,108 @@ Décision :
 - `stat_modifier.statId` choisit un ID du registre courant ;
 - le Human Editor ne calcule ni dégâts, ni ticks, ni stacking : il ne fait que construire les contrats existants ;
 - aucun effet historique complexe n'est automatiquement converti dans ce lot.
+
+
+### Résultat — Tactical Effects Editor UI V1
+
+RED :
+
+- SHA : `5dd87dd12f1283036dc33d00ad1442f4a457f4a4` ;
+- run : `36642420896` ;
+- 613 tests, 607 pass, 6 fail ciblés ;
+- causes : helpers tactiques, round-trip `definition.effects`, surface HTML et activation Buff/Debuff absents.
+
+Implémentation :
+
+- `buildHumanSkillDraftV1()` transporte désormais `definition.effects` via les contrats existants ;
+- conversion explicite présentation :
+  - durée statut en secondes -> `durationMs` ;
+  - intervalle DoT/HoT en secondes -> `tickIntervalMs` ;
+- éditeur dynamique de liste d'effets :
+  - damage ;
+  - heal ;
+  - energy_restore ;
+  - energy_drain ;
+  - apply_status ;
+  - cleanse ;
+  - dispel ;
+- scopes :
+  - target ;
+  - self ;
+  - all_enemies ;
+  - all_allies ;
+  - all_except_self ;
+- sous-éditeur StatusEffectV1 :
+  - stat_modifier ;
+  - damage_over_time ;
+  - heal_over_time ;
+  - shield ;
+  - immobilize ;
+  - silence ;
+  - stun ;
+  - taunt ;
+- réglages :
+  - polarité ;
+  - durée ;
+  - stacking ;
+  - maxStacks ;
+  - tags ;
+  - amount / channel / tick ;
+  - statId / deltaPoints selon le type ;
+- `stat_modifier.statId` est alimenté depuis le registre de stats actif ;
+- les sélecteurs de stats tactiques se resynchronisent si le registre de session est modifié ;
+- Buff / Debuff générique est désormais activé dans l'éditeur puisque StatusEffectV1 Runtime est GREEN ;
+- l'ancienne sentinelle imposant Buff/Debuff disabled a été retirée causalement.
+
+Compatibilité :
+
+- le bloc legacy `definition.effect` reste présent pour les capacités existantes ;
+- le tableau moderne `definition.effects` est édité séparément ;
+- le contrat refuse toujours une double autorité damage/heal ;
+- appliquer un modèle historique préserve les effets tactiques déjà configurés ;
+- description vide corrigée comme champ contractuellement optionnel (`null` au lieu de chaîne vide invalide) ;
+- les modèles historiques complexes restent encore explicitement bloqués comme équivalence runtime complète jusqu'au lot de migration dédié.
+
+UX mobile :
+
+- carte dédiée « Effets tactiques » ;
+- lignes dynamiques ;
+- sous-formulaires contextuels ;
+- layout mono-colonne <= 520 px ;
+- aide visible pour zone, soin, énergie, buff/debuff, DoT/HoT, bouclier, immobilisation, silence, stun, provocation, nettoyage et dissipation.
+
+Premier GREEN :
+
+- SHA : `9e57cc30a5d9cf057199177e1a8b63606f48258c` ;
+- run : `36643181000` ;
+- 613/613.
+
+Durcissement :
+
+- préservation des effets lors du merge d'un modèle historique ;
+- sentinelle layout mobile.
+
+GREEN durci :
+
+- SHA fonctionnel : `22342996d1c4e6a327b36165db792b5c19b6b182` ;
+- run : `36643244569` ;
+- **615 tests, 615 pass, 0 fail**.
+
+Revue charte :
+
+- aucun localStorage/sessionStorage/indexedDB ;
+- aucun MutationObserver ;
+- aucun setTimeout/setInterval ;
+- aucune importation/exécution de StatusEffect Runtime ou Damage Runtime dans le Human Editor ;
+- Combat Core / Action Resolver / FX / renderer inchangés dans ce lot ;
+- Human Editor = saisie / présentation / construction des contrats uniquement.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise.**
+
+Aucun GREEN UI final avant retour smartphone.
+
+Étape suivante non-UI et séparée :
+
+**Capture Complex Skills Migration V1** pour convertir explicitement les 33 capacités historiques complexes vers les contrats désormais actifs, sans inventer silencieusement la durée temps réel.
