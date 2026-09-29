@@ -3903,6 +3903,25 @@ export function mountCaptureEditorHumanV2({
         )
       ) {
         creatureDirty = true;
+
+        const definition =
+          statRegistry?.stats.find(
+            (entry) =>
+              entry.id ===
+              event.target.dataset.statValue
+          ) ?? null;
+        const meta =
+          event.target
+            .closest(".stat-value-card")
+            ?.querySelector("small");
+
+        if (definition !== null && meta) {
+          meta.textContent =
+            humanStatEffectSummaryV1({
+              definition,
+              value: event.target.value
+            });
+        }
       }
     }
   );
