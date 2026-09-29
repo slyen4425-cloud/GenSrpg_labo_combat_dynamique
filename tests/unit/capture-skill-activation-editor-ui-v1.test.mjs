@@ -123,7 +123,7 @@ test("buildHumanSkillDraftV1 round-trips activation requirements while requiredL
   const draft = ui.buildHumanSkillDraftV1({
     id: "ultimate-test",
     name: "Ultime test",
-    description: "",
+    description: "Capacité ultime conditionnelle.",
     requiredLevel: 20,
     usageScopes: ["capture", "combat"],
     category: "offensive",
