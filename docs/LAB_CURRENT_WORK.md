@@ -13553,3 +13553,69 @@ Validation :
 État :
 
 **GREEN UI utilisateur pour l'import du catalogue Monster Capture 110.**
+
+
+## Micro-lot — propriété Combat + auto-raccord visuel créatures V1 — 2026-09-29
+
+Base :
+
+- checkpoint catalogue Monster Capture GREEN utilisateur : `checkpoint/lab-capture-creature-catalog-import-v1-green-2026-09-29` ;
+- SHA : `5d7a36d5d65958504524cbb63ac59ed76da1d2a2`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-creature-ownership-visual-autolink-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-creature-ownership-visual-autolink-v1-2026-09-29`.
+
+Retour utilisateur :
+
+- changer de créature semble remettre les réglages de combat à zéro ;
+- modifier les réglages de combat oblige ensuite à réenregistrer la créature ;
+- les créatures déjà illustrées doivent arriver avec leurs images / icônes pré-raccordées dans la version vitrine ;
+- plus tard les joueurs pourront importer leurs propres images et créer leurs propres créatures.
+
+Diagnostic architecture :
+
+- la charte attribue distance et énergie de combat au domaine Combat Rules Lab ;
+- le Human Editor range actuellement plusieurs réglages d'énergie dans `CaptureCreatureEditorDraftV3.combat` et les marque comme données créature ;
+- cette représentation UI mélange donc fiche créature et règles de combat ;
+- la bibliothèque visuelle autoritaire existe sur la branche `global-assets` avec métadonnées par créature.
+
+Objectifs V1 :
+
+1. séparer dans l'éditeur les réglages réellement propres à la créature des règles de combat/scénario ;
+2. changer de créature ne doit jamais réinitialiser ni salir les réglages de combat globaux ;
+3. les règles de combat ne doivent pas nécessiter « Mettre à jour la créature » ;
+4. préserver la compatibilité des contrats/export existants jusqu'à un lot de migration de données si nécessaire, sans créer de second moteur ;
+5. auto-raccorder les visuels existants par identité explicite / metadata autoritaire ;
+6. aucune correspondance par nom ambiguë ou heuristique silencieuse ;
+7. une créature sans art reste éditable ;
+8. aucun asset dupliqué dans la branche de travail : les IDs stables de la bibliothèque visuelle restent la référence.
+
+Protégé :
+
+- Combat Runtime ;
+- Animation Core ;
+- renderer ;
+- catalogue 110 Monster Capture ;
+- aucun localStorage/sessionStorage/global ;
+- aucun merge sur main.
+
+RED prévu :
+
+- modification d'un réglage global Combat ne doit pas rendre la créature dirty ;
+- chargement d'une autre créature conserve ces réglages Combat ;
+- une créature connue disposant de metadata visuelle reçoit automatiquement face/dos/icône/profile/scale ;
+- absence ou ambiguïté de metadata ne doit jamais inventer un raccord.
+
+Critère final :
+
+- cause prouvée ;
+- propriétaire UI clarifié ;
+- auto-raccord visuel déterministe ;
+- CI complète verte ;
+- preview dédiée ;
+- PREVALIDATION smartphone.
