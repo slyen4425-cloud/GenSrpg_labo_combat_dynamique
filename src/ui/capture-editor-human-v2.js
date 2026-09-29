@@ -343,50 +343,53 @@ export function buildHumanCreatureDraftV2(fields) {
 
   const id = requiredText(fields.id, "ID créature");
   const visual = fields.visual ?? {};
-  const frontAssetId = requiredText(
-    visual.frontAssetId,
-    "Image face"
+  const frontAssetId = optionalText(
+    visual.frontAssetId
   );
-
-  const presentationVisual = {
-    front: { assetId: frontAssetId }
-  };
-
-  const backAssetId = optionalText(
-    visual.backAssetId
-  );
-  if (backAssetId !== null) {
-    presentationVisual.back = {
-      assetId: backAssetId
-    };
-  }
-
-  const iconAssetId = optionalText(
-    visual.iconAssetId
-  );
-  if (iconAssetId !== null) {
-    presentationVisual.icon = {
-      assetId: iconAssetId
-    };
-  }
 
   const sockets = Array.isArray(fields.sockets)
     ? fields.sockets
     : [];
 
-  const presentation = {
-    id: "creature:" + id,
-    version: 1,
-    subjectType: "creature",
-    subjectId: id,
-    profileId: requiredText(
-      fields.profileId,
-      "Style de position"
-    ),
-    visual: presentationVisual,
-    sockets,
-    audio: audioSlots(fields.audio)
-  };
+  let presentation = null;
+
+  if (frontAssetId !== null) {
+    const presentationVisual = {
+      front: { assetId: frontAssetId }
+    };
+
+    const backAssetId = optionalText(
+      visual.backAssetId
+    );
+    if (backAssetId !== null) {
+      presentationVisual.back = {
+        assetId: backAssetId
+      };
+    }
+
+    const iconAssetId = optionalText(
+      visual.iconAssetId
+    );
+    if (iconAssetId !== null) {
+      presentationVisual.icon = {
+        assetId: iconAssetId
+      };
+    }
+
+    presentation = {
+      id: "creature:" + id,
+      version: 1,
+      subjectType: "creature",
+      subjectId: id,
+      profileId: requiredText(
+        fields.profileId,
+        "Style de position"
+      ),
+      visual: presentationVisual,
+      sockets,
+      audio: audioSlots(fields.audio)
+    };
+  }
 
   return normalizeCaptureCreatureEditorDraftV2({
     schema: "capture-creature-editor-draft-v2",
