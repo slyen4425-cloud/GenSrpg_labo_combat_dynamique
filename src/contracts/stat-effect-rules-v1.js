@@ -120,14 +120,23 @@ export function normalizeStatEffectRulesByIdV1(
             statId +
             ".chargeTimeReductionPctPerPoint"
         ),
-      damageReductionPctPerPoint:
-        nonNegative(
-          rule.damageReductionPctPerPoint,
-          field +
-            "." +
-            statId +
-            ".damageReductionPctPerPoint"
+      ...(
+        Object.prototype.hasOwnProperty.call(
+          rule,
+          "damageReductionPctPerPoint"
         )
+          ? {
+              damageReductionPctPerPoint:
+                nonNegative(
+                  rule.damageReductionPctPerPoint,
+                  field +
+                    "." +
+                    statId +
+                    ".damageReductionPctPerPoint"
+                )
+            }
+          : {}
+      )
     });
   }
 
