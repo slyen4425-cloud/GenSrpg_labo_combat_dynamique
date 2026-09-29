@@ -203,3 +203,153 @@ test("Legacy Monster Capture stats project deterministically into the new stat v
   assert.equal(result.values.fire, 6);
   assert.equal(result.values.water, 0);
 });
+
+
+test("stat registry rejects duplicate ids and keeps HP outside the extensible stat registry", async () => {
+  const {
+    normalizeCaptureStatRegistryV1
+  } = await import(
+    "../../src/contracts/capture-stat-registry-v1.js"
+  );
+
+  assert.throws(
+    () =>
+      normalizeCaptureStatRegistryV1({
+        schema: "capture-stat-registry-v1",
+        stats: [
+          {
+            id: "fire",
+            label: "Feu",
+            damageChannel: "fire",
+            resistanceChannel: "fire"
+          },
+          {
+            id: "fire",
+            label: "Feu bis",
+            damageChannel: "fire",
+            resistanceChannel: "fire"
+          }
+        ]
+      }),
+    /duplicate ids/i
+  );
+
+  const raw = JSON.parse(
+    await readFile(
+      new URL(
+        "../../data/capture/monster-capture-stat-registry.v1.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  );
+  const registry = normalizeCaptureStatRegistryV1(raw);
+  assert.equal(
+    registry.stats.some((entry) => entry.id === "hp"),
+    false,
+    "HP must remain creature/Combat State ownership, not a duplicate registry stat"
+  );
+  assert.equal(
+    registry.stats.find((entry) => entry.id === "physical").damagePerPoint,
+    1
+  );
+  assert.equal(
+    registry.stats.find((entry) => entry.id === "physical").resistancePerPoint,
+    1
+  );
+});
+
+test("stat influence coefficients remain data-configurable", async () => {
+  const {
+    normalizeCaptureStatRegistryV1
+  } = await import(
+    "../../src/contracts/capture-stat-registry-v1.js"
+  );
+
+  const registry = normalizeCaptureStatRegistryV1({
+    schema: "capture-stat-registry-v1",
+    stats: [
+      {
+        id: "frost",
+        label: "Givre",
+        damageChannel: "frost",
+        resistanceChannel: "frost",
+        damagePerPoint: 1.5,
+        resistancePerPoint: 0.75
+      }
+    ]
+  });
+
+  assert.equal(registry.stats[0].damagePerPoint, 1.5);
+  assert.equal(registry.stats[0].resistancePerPoint, 0.75);
+});
+
+test("progression rules reject ambiguous or decreasing slot schedules", async () => {
+  const {
+    normalizeCaptureProgressionRulesV1
+  } = await import(
+    "../../src/contracts/capture-progression-rules-v1.js"
+  );
+
+  assert.throws(
+    () =>
+      normalizeCaptureProgressionRulesV1({
+        schema: "capture-progression-rules-v1",
+        maxActiveSkills: 4,
+        slotUnlockSchedule: [
+          { level: 2, slots: 2 }
+        ]
+      }),
+    /start at level 1/i
+  );
+
+  assert.throws(
+    () =>
+      normalizeCaptureProgressionRulesV1({
+        schema: "capture-progression-rules-v1",
+        maxActiveSkills: 4,
+        slotUnlockSchedule: [
+          { level: 1, slots: 3 },
+          { level: 10, slots: 2 }
+        ]
+      }),
+    /must not decrease/i
+  );
+
+  assert.throws(
+    () =>
+      normalizeCaptureProgressionRulesV1({
+        schema: "capture-progression-rules-v1",
+        maxActiveSkills: 4,
+        slotUnlockSchedule: [
+          { level: 1, slots: 5 }
+        ]
+      }),
+    /cannot exceed maxActiveSkills/i
+  );
+});
+
+test("default Monster Capture progression policy is data-owned and configurable", async () => {
+  const {
+    normalizeCaptureProgressionRulesV1,
+    captureActiveSkillSlotsForLevelV1
+  } = await import(
+    "../../src/contracts/capture-progression-rules-v1.js"
+  );
+
+  const raw = JSON.parse(
+    await readFile(
+      new URL(
+        "../../data/capture/monster-capture-progression-rules.v1.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  );
+  const rules = normalizeCaptureProgressionRulesV1(raw);
+
+  assert.equal(rules.maxActiveSkills, 4);
+  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 1), 2);
+  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 10), 3);
+  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 20), 4);
+});
