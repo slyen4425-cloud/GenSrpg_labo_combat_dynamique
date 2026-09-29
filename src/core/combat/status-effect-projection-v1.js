@@ -1,9 +1,6 @@
-function activeAt(instance, atMs) {
-  return (
-    instance.appliedAtMs <= atMs &&
-    atMs < instance.expiresAtMs
-  );
-}
+import {
+  isStatusEffectRuntimeInstanceActiveV1
+} from "./status-effect-instance-v1.js";
 
 function addChannel(target, channel, value) {
   if (channel == null || value === 0) {
@@ -11,6 +8,37 @@ function addChannel(target, channel, value) {
   }
   target[channel] =
     (target[channel] ?? 0) + value;
+}
+
+function modifierPointsForInstance(
+  fighter,
+  instance
+) {
+  const definition = instance.definition;
+
+  if (definition.modifierMode === "percent") {
+    const basePoints = Number(
+      fighter.statValuesById?.[
+        definition.statId
+      ]
+    );
+    if (!Number.isFinite(basePoints)) {
+      throw new RangeError(
+        "Missing base stat value for percent status: " +
+          definition.statId
+      );
+    }
+    return (
+      basePoints *
+      (definition.percent / 100) *
+      instance.stacks
+    );
+  }
+
+  return (
+    definition.deltaPoints *
+    instance.stacks
+  );
 }
 
 export function projectStatusStatEffectsV1({
@@ -35,6 +63,7 @@ export function projectStatusStatEffectsV1({
   const damagePctByChannel = {};
   const resistancePctByChannel = {};
   let chargeTimeReductionPct = 0;
+  let damageReductionPct = 0;
 
   for (
     const instance of
@@ -43,7 +72,10 @@ export function projectStatusStatEffectsV1({
     if (
       instance.definition.kind !==
         "stat_modifier" ||
-      !activeAt(instance, time)
+      !isStatusEffectRuntimeInstanceActiveV1(
+        instance,
+        time
+      )
     ) {
       continue;
     }
@@ -63,8 +95,10 @@ export function projectStatusStatEffectsV1({
     }
 
     const points =
-      instance.definition.deltaPoints *
-      instance.stacks;
+      modifierPointsForInstance(
+        fighter,
+        instance
+      );
 
     addChannel(
       damagePctByChannel,
@@ -80,6 +114,9 @@ export function projectStatusStatEffectsV1({
     chargeTimeReductionPct +=
       points *
       rule.chargeTimeReductionPctPerPoint;
+    damageReductionPct +=
+      points *
+      rule.damageReductionPctPerPoint;
   }
 
   return Object.freeze({
@@ -87,6 +124,7 @@ export function projectStatusStatEffectsV1({
       Object.freeze(damagePctByChannel),
     resistancePctByChannel:
       Object.freeze(resistancePctByChannel),
-    chargeTimeReductionPct
+    chargeTimeReductionPct,
+    damageReductionPct
   });
 }
