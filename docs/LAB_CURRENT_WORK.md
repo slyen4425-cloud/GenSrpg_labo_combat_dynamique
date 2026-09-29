@@ -15409,3 +15409,38 @@ Effets actifs dans ce lot :
 - un seul propriétaire de l'équipe ;
 - Area damage réellement actif ;
 - checkpoint GREEN avant StatusEffect Runtime.
+
+
+### Résultat — Area Targeting Runtime V1
+
+RED :
+
+- SHA : `8db86732bda6e670149410be129ed767e726af48` ;
+- run : `36640087101` ;
+- 595 tests, 590 pass, 5 fail ciblés.
+
+Implémentation :
+
+- BattleFormat reste l'unique propriétaire des équipes ;
+- CombatSession accepte optionnellement `battleFormat` et le transmet aux résolveurs ;
+- la démo 2v2 transmet le format normalisé à la session ;
+- module `tactical-effect-targeting-v1.js` résout les cibles ;
+- module `combat-damage-v1.js` devient la formule canonique de dégâts pour legacy + tactical ;
+- `all_enemies` : tous les ennemis vivants ;
+- `all_allies` : tous les alliés vivants, lanceur inclus ;
+- `all_except_self` : tous les autres combattants vivants ;
+- les KO sont exclus des effets ordinaires ;
+- damage/heal/energy_restore/energy_drain fonctionnent sur scopes multi-cibles ;
+- chaque cible conserve ses propres bonus/résistances.
+
+GREEN :
+
+- SHA : `581058fe323eb8fbf84925afa6862a6bf79f8676` ;
+- run : `36640321553` ;
+- 595 tests, 595 pass, 0 fail.
+
+État :
+
+**GREEN runtime multi-cible / AoE.**
+
+Étape suivante : **StatusEffect Runtime V1**.
