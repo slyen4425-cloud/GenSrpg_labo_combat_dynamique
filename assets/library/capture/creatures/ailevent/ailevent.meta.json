@@ -1,7 +1,7 @@
 {
   "id": "ailevent",
   "name": "Ailevent",
-  "profile": "drake",
+  "profile": "biped",
   "views": {
     "player": "runtime/ailevent_player.webp",
     "opponent": "runtime/ailevent_opponent.webp",
