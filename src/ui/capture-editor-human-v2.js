@@ -45,6 +45,9 @@ import {
   resolveCaptureCreatureSaveModeV1,
   nextCaptureCreatureDraftIdV1
 } from "./capture-editor-creature-save-mode-v1.js";
+import {
+  importMonsterCaptureCreatureRecordV1
+} from "../adapters/input/capture/monster-capture-creature-import-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -53,6 +56,11 @@ const PRIVATE_AUDIO_CATALOG_URL = new URL(
 
 const NATIVE_SKILL_CATALOG_URL = new URL(
   "../../data/combat/skills/catalog.v1.json",
+  import.meta.url
+);
+
+const MONSTER_CAPTURE_CREATURE_CATALOG_URL = new URL(
+  "../../data/capture/monster-capture-creatures.v1.json",
   import.meta.url
 );
 
@@ -343,50 +351,52 @@ export function buildHumanCreatureDraftV2(fields) {
 
   const id = requiredText(fields.id, "ID créature");
   const visual = fields.visual ?? {};
-  const frontAssetId = requiredText(
-    visual.frontAssetId,
-    "Image face"
+  const frontAssetId = optionalText(
+    visual.frontAssetId
   );
-
-  const presentationVisual = {
-    front: { assetId: frontAssetId }
-  };
-
   const backAssetId = optionalText(
     visual.backAssetId
   );
-  if (backAssetId !== null) {
-    presentationVisual.back = {
-      assetId: backAssetId
-    };
-  }
-
   const iconAssetId = optionalText(
     visual.iconAssetId
   );
-  if (iconAssetId !== null) {
-    presentationVisual.icon = {
-      assetId: iconAssetId
-    };
-  }
-
   const sockets = Array.isArray(fields.sockets)
     ? fields.sockets
     : [];
 
-  const presentation = {
-    id: "creature:" + id,
-    version: 1,
-    subjectType: "creature",
-    subjectId: id,
-    profileId: requiredText(
-      fields.profileId,
-      "Style de position"
-    ),
-    visual: presentationVisual,
-    sockets,
-    audio: audioSlots(fields.audio)
-  };
+  let presentation = null;
+
+  if (frontAssetId !== null) {
+    const presentationVisual = {
+      front: { assetId: frontAssetId }
+    };
+
+    if (backAssetId !== null) {
+      presentationVisual.back = {
+        assetId: backAssetId
+      };
+    }
+
+    if (iconAssetId !== null) {
+      presentationVisual.icon = {
+        assetId: iconAssetId
+      };
+    }
+
+    presentation = {
+      id: "creature:" + id,
+      version: 1,
+      subjectType: "creature",
+      subjectId: id,
+      profileId: requiredText(
+        fields.profileId,
+        "Style de position"
+      ),
+      visual: presentationVisual,
+      sockets,
+      audio: audioSlots(fields.audio)
+    };
+  }
 
   return normalizeCaptureCreatureEditorDraftV2({
     schema: "capture-creature-editor-draft-v2",
@@ -1324,6 +1334,38 @@ async function hydratePrivateAudioCatalog(root) {
   }
 
   return catalog;
+}
+
+async function hydrateMonsterCaptureCreatureCatalog() {
+  const response = await fetch(
+    MONSTER_CAPTURE_CREATURE_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue créatures Monster Capture indisponible (" +
+        response.status +
+        ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? catalog.entries
+    : [];
+
+  if (entries.length !== 100) {
+    throw new RangeError(
+      "Le catalogue Monster Capture doit contenir exactement 100 créatures builtin."
+    );
+  }
+
+  return Object.freeze(
+    entries.map(
+      importMonsterCaptureCreatureRecordV1
+    )
+  );
 }
 
 async function hydrateNativeSkillCatalog() {
