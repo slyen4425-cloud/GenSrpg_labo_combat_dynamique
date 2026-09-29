@@ -16118,3 +16118,88 @@ Blockers fonctionnels volontairement non masqués pour une future décision cont
 3. mapping moderne explicite pour `defense` et `armor`, s'il doit exister.
 
 Le lot peut être checkpointé GREEN dès que la CI finale de documentation est SUCCESS.
+
+## Réparation PREVALIDATION — Tactical Effects UI Feedback V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN migration : `checkpoint/lab-capture-complex-skills-migration-v1-green-2026-09-30` ;
+- SHA : `02bf1b6002150b84077c8137230624d53770b35e` ;
+- rappel gouvernance : Tactical Effects Editor UI V1 était encore PREVALIDATION smartphone. Le passage au lot migration avant ce retour utilisateur est désormais traité comme une rupture de séquence à corriger ; aucun nouveau chantier fonctionnel ne sera ouvert avant résolution de ce feedback.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-tactical-effects-ui-feedback-repair-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-tactical-effects-ui-feedback-repair-v1-2026-09-30`.
+
+### RED utilisateur
+
+Retour smartphone réel :
+
+1. l'utilisateur ne retrouve plus une action claire pour déclarer/configurer une capacité comme Ultime / conditionnelle ;
+2. doubles autorités visibles dans l'éditeur :
+   - ciblage global `targetRelations` + ciblage par `SkillEffectV1.targetScope` ;
+   - `effect.stunMs` + `StatusEffectV1(kind=stun)` ;
+   - dégâts/soin legacy + `SkillEffectV1 damage/heal` ;
+3. `allowedDistances` courte/moyenne/longue reste éditable alors que cette surface n'est plus utilisée dans le flux Capture actuel ;
+4. dégâts de zone gameplay validés par l'utilisateur, mais le feedback d'impact n'est présenté que sur une cible ; ce point relève du Renderer/Presenter et sera traité dans un micro-lot séparé après validation du présent correctif UI afin de ne pas mélanger les propriétaires.
+
+### Objectif du micro-lot actuel
+
+Restaurer une surface d'édition à autorité unique pour les capacités :
+
+- conserver `SkillDefinition.effects / SkillEffectV1 / StatusEffectV1` comme propriétaire éditable des dégâts, soins, scopes et stun ;
+- retirer de l'UI les anciennes saisies concurrentes dégâts/soin/stun/cibles ;
+- retirer de l'UI les portées courte/moyenne/longue devenues obsolètes pour Capture ;
+- garder les champs contractuels legacy uniquement comme projection neutre/compatibilité lorsqu'ils sont encore requis par `SkillDefinition`, jamais comme source éditable ;
+- rendre explicite et testable l'action « capacité Ultime / conditionnelle » en conservant `activationRequirements` comme unique propriétaire ;
+- ne modifier ni Combat Runtime, ni Action Resolver, ni StatusEffect Runtime.
+
+### Préaudit
+
+- le HTML contient encore simultanément `data-skill-damage`, `data-skill-heal`, `data-skill-stun`, `data-skill-target`, `data-skill-distance` et le nouveau bloc `data-skill-effects-host` ;
+- `readSkillFields()` relit donc encore les deux familles d'autorité ;
+- `buildHumanSkillDraftV1()` écrit à la fois `definition.effect` et `definition.effects` ;
+- le contrat `SkillDefinition` refuse déjà les doubles autorités damage/heal, preuve que la surface UI est devenue incohérente avec le contrat ;
+- le bloc `activationRequirements` existe toujours et reste le propriétaire correct ; le problème utilisateur doit être couvert par une sentinelle de surface et de round-trip plus stricte ;
+- le Presenter reçoit déjà un événement `hit` par cible pour les dégâts tactiques de zone, mais `presentOutcome()` utilise actuellement seulement le premier `hit` non réfléchi. Cette cause est enregistrée pour le micro-lot Renderer suivant, hors scope du présent correctif UI.
+
+### Fichiers autorisés
+
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` si nécessaire pour lisibilité ;
+- `src/ui/capture-editor-human-v2.js` ;
+- tests unitaires UI/ownership dédiés ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md`.
+
+### Protégé
+
+- `src/core/combat/**` ;
+- `src/contracts/skill-effect-v1.js` ;
+- `src/contracts/status-effect-v1.js` ;
+- `src/core/fx/**` ;
+- `src/adapters/renderer/**` ;
+- production GenSrpG ;
+- aucun storage/network/global/MutationObserver/timer de réparation.
+
+### RED prévu
+
+1. l'éditeur expose une action explicite « Ultime / conditionnelle » et son round-trip conserve `activationRequirements` ;
+2. aucun contrôle DOM legacy `data-skill-damage/heal/stun/target/distance` ne reste éditable ;
+3. `readSkillFields()` ne dépend plus de ces contrôles ;
+4. `SkillDefinition.effects` est la seule source éditable damage/heal/stun/scope ;
+5. les champs legacy de compatibilité sont neutralisés dans la projection Human Editor ;
+6. aucune modification Runtime/Renderer.
+
+### Critère de fin
+
+- RED ciblé démontré ;
+- correction minimale ;
+- CI complète GREEN technique ;
+- checkpoint PREVALIDATION + lien smartphone ;
+- validation utilisateur requise avant tout micro-lot Renderer « area impact » ou Export/Import.
+
