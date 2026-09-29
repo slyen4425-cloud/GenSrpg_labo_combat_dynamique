@@ -14507,3 +14507,97 @@ Brancher les modificateurs Stats validés sur le gameplay réel, sans recopier l
 - CI complète verte ;
 - documentation synchronisée ;
 - checkpoint technique avant lot Prérequis/Ultimes.
+
+
+### Résultat — Capture Stat Runtime Effects V1
+
+Préaudit confirmé :
+
+- dégâts autoritaires appliqués dans `Action Resolver` ;
+- temps de préparation autoritaire calculé par `effectivePreparationMs()`, puis vitesse globale appliquée séparément par `effectiveSkillTimingMs()` ;
+- `skillSpeedMultiplier` reste une règle globale du combat de test et n'est pas remplacé par la stat Vitesse ;
+- l'export V3 ne transportait pas encore les nouvelles valeurs de stats : aucun raccord runtime propre n'existait ;
+- les résistances historiques restent metadata de compatibilité et ne sont pas appliquées au runtime actuel.
+
+RED :
+
+- SHA : `8d4590067af2e0472756604e0d7934a5cc9ee8a5` ;
+- run : `36635155420` ;
+- 557 tests, 554 pass, 3 fail ciblés ;
+- les trois échecs étaient causés par l'absence de `statRegistry/statValues` dans la frontière Export V3.
+
+Raccord réalisé :
+
+- `Capture Editor Exporter V3` accepte ensemble `statRegistry + statValues` ;
+- les valeurs sont validées par leurs propriétaires existants ;
+- le calcul pur `projectCaptureStatEffectsV1()` reste l'unique formule stat -> modificateurs ;
+- l'export écrit un snapshot dérivé dans `creature.combat.statEffects` ;
+- ce snapshot contient uniquement : bonus dégâts % par canal, résistance % par canal et réduction de charge % ;
+- `capture-creature-to-fighter-config` valide et transporte ce snapshot ;
+- la réduction issue de Vitesse est composée une seule fois dans le propriétaire existant `chargeTimeModifierPct` ;
+- le `skillSpeedMultiplier` global reste séparé et s'applique ensuite ;
+- `CombatState` conserve les maps de canaux ;
+- `Action Resolver` applique le canal `skill.element`, ou `physical` lorsque l'élément est nul ;
+- formule : dégâts de base -> bonus dégâts % attaquant -> résistance % cible ;
+- résistance >= 100 % donne 0 dégât, jamais une valeur négative ;
+- dégâts calculés stabilisés à 2 décimales pour éviter les résidus flottants ;
+- événement `hit` expose `baseDamage`, `damageChannel`, `damageBonusPct`, `resistancePct`, `damage`.
+
+Vrai chemin démontré :
+
+`Human Editor -> Export V3 -> Capture adapter stack -> Fighter -> CombatSession -> Action Resolver`.
+
+Exemple sentinelle :
+
+- capacité Feu : 100 dégâts de base ;
+- attaquant : +20 % Feu ;
+- cible : +25 % résistance Feu ;
+- résultat : 90 dégâts ;
+- Vitesse : -10 % préparation ;
+- vitesse globale de test x2 ;
+- préparation 1000 ms -> 900 ms -> 450 ms.
+
+Premier GREEN :
+
+- SHA : `478951eb2afafd2ccb3a10f45c616dfc4ddedd44` ;
+- run : `36635362031` ;
+- 557 tests, 557 pass, 0 fail.
+
+Durcissement :
+
+- canal physique sans élément ;
+- résistance >= 100 % ;
+- vrai builder `buildHumanEditorExportV3()` ;
+- une sentinelle a détecté `88.00000000000001` au lieu de `88` ;
+- correction à la source par stabilisation des dégâts à 2 décimales.
+
+GREEN final :
+
+- SHA fonctionnel : `8479249a5019e9ad3c2df373df6b6dbf291b60f8` ;
+- run : `36635506934` ;
+- 560 tests, 560 pass, 0 fail.
+
+Fichiers métier modifiés limités à :
+
+- frontière Export V3 ;
+- adapter créature -> fighter ;
+- Combat State ;
+- Action Resolver ;
+- raccord Human Editor vers l'export ;
+- tests dédiés.
+
+Invariants :
+
+- aucune formule de stats dans l'UI ;
+- aucune heuristique par nom de créature ;
+- aucun scan DOM métier ;
+- aucune seconde horloge ;
+- aucun second propriétaire du multiplicateur global ;
+- Animation Core / FX / renderer inchangés ;
+- anciennes résistances historiques non fusionnées implicitement avec le nouveau système.
+
+État :
+
+**GREEN technique.**
+
+Lot suivant séparé : **Capture Skill Activation Requirements V1** pour les capacités ultimes/conditionnelles, en conservant `requiredLevel` comme propriétaire du niveau requis.
