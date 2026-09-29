@@ -15933,3 +15933,77 @@ Base historique auditée :
 - aucun champ inventé ;
 - CI complète GREEN ;
 - checkpoint GREEN avant Export/Import Database V1.
+
+
+### Préaudit confirmé — Capture Complex Skills Migration V1
+
+État réel audité avant RED :
+
+- `CaptureUsedAbilityCatalogV2` contient toujours 103 capacités / 103 IDs uniques ;
+- le catalogue portable dérivé contient 70 capacités simples ;
+- le complément exact contient donc 33 capacités complexes, sans doublon avec les 70 ;
+- occurrences historiques sur les 103 : damage 84, heal 6, buff 10, debuff 14, DoT 1, HoT 1.
+
+Classification du complément exact :
+
+- 7 migrations immédiates sans statut persistant :
+  - `lib_aqua_heal` ;
+  - `lib_quake` ;
+  - `lib_heal_5` ;
+  - `lib_lifesteal_strike` ;
+  - `cap_water_special_1` ;
+  - `cap_light_special_1` ;
+  - `cap_shadow_special_1` ;
+- 26 capacités contiennent au moins un buff/debuff/DoT/HoT avec `duration`.
+
+Sémantique historique de `duration` démontrée depuis la source exacte :
+
+- dépôt source audité précédemment, commit `49289784ee92a47fd51089815ca25954cdba4493` ;
+- blob `index.html` `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- les statuts Capture sont enregistrés avec `phase:"turn_end"` ;
+- DoT / HoT sont appliqués lors de `gensCaptureTickStatuses(..., "turn_end")` ;
+- `duration` est ensuite décrémentée de 1 et le statut est supprimé à 0 ;
+- les textes canoniques historiques parlent explicitement de « par tour » et « pendant N tours ».
+
+Conclusion : `duration` est une durée en tours / fins de tour. Elle ne peut PAS être convertie silencieusement vers `durationMs`. Le nouveau Runtime étant basé sur `CombatState.elapsedMs`, une politique explicite de migration du temps est obligatoire. Pour DoT/HoT, cette politique doit également fournir une cadence compatible avec `tickIntervalMs`.
+
+Audit des identifiants de stats legacy :
+
+- le raccord Monster Capture existant possède déjà des alias explicites :
+  - `speed / initiative / agility / agilite -> speed` ;
+  - `physical / power / force -> physical` ;
+- aucun mapping moderne explicite n'existe pour `defense` ni `armor` ;
+- aucune équivalence `defense = physical` ou `armor = physical` ne sera inventée.
+
+Audit supplémentaire obligatoire des valeurs buff/debuff :
+
+- le moteur historique réel normalise les petites valeurs legacy vers des modificateurs en pourcentage via `cap142EffectPct` ;
+- il applique ensuite ces modificateurs en pourcentage aux stats historiques ;
+- `StatusEffectV1.stat_modifier` moderne exprime au contraire un `deltaPoints` ;
+- une valeur legacy ne peut donc PAS être recopiée telle quelle dans `deltaPoints` sans politique sémantique explicite ;
+- les alias d'identifiant de stat ne suffisent pas à eux seuls pour rendre un buff/debuff runtime-ready.
+
+Ciblage historique démontré :
+
+- cible explicite `self` reste soi-même ;
+- cible explicite `enemy` reste la cible ennemie ;
+- absence de cible sur heal/HoT est historiquement routée vers `self` ;
+- absence de cible offensive est historiquement routée vers l'ennemi ;
+- `target:"zone"` est une donnée historique explicite de zone ; aucune inférence depuis le nom ou la description n'est requise.
+
+Hydratation Human Editor :
+
+- les 9 SkillDefinition natives sont chargées dans `configuredSkills` ;
+- les 70 capacités Capture portables sont ajoutées ensuite dans la MÊME Map via `capturePortableNativeSkillDraftsV1()` ;
+- le lot courant ne créera donc pas une seconde bibliothèque concurrente et ne modifiera pas le Human Editor.
+
+Décision pour le RED :
+
+- la projection complexe sera un adaptateur pur dérivé de `CaptureUsedAbilityCatalogV2` moins les IDs du catalogue portable ;
+- une entrée ne sera `runtime-ready` que si 100 % de ses effets sont traduisibles ;
+- sinon aucun effet tactique partiel ne sera publié comme vrai ;
+- blockers explicites prévus :
+  - `requires-duration-policy` ;
+  - `requires-stat-mapping` ;
+  - `requires-stat-effect-policy` pour préserver correctement l'unité historique en pourcentage face à `deltaPoints`.
+- Runtime, Action Resolver, Status Runtime, Human Editor, DOM, storage et network restent hors périmètre.
