@@ -30,6 +30,46 @@ function applyDamage(state, fighterId, amount) {
   return withFighterHp(state, fighterId, fighter.hp - damage);
 }
 
+function damageChannelFor(skill) {
+  return skill.element ?? "physical";
+}
+
+function statAdjustedDamageFor(
+  state,
+  attackerId,
+  targetId,
+  skill
+) {
+  const attacker = fighterOf(state, attackerId);
+  const target = fighterOf(state, targetId);
+  const channel = damageChannelFor(skill);
+  const baseDamage =
+    Math.max(0, Number(skill.effect.damage) || 0);
+  const damageBonusPct =
+    Number(
+      attacker.damagePctByChannel?.[channel] ?? 0
+    ) || 0;
+  const resistancePct =
+    Number(
+      target.resistancePctByChannel?.[channel] ?? 0
+    ) || 0;
+
+  const boosted =
+    baseDamage *
+    Math.max(0, 1 + damageBonusPct / 100);
+  const damage =
+    boosted *
+    Math.max(0, 1 - resistancePct / 100);
+
+  return Object.freeze({
+    baseDamage,
+    damageChannel: channel,
+    damageBonusPct,
+    resistancePct,
+    damage
+  });
+}
+
 function event(type, atMs, data = {}) {
   return Object.freeze({ type, atMs, ...data });
 }
@@ -467,15 +507,30 @@ export function resolveSkillCompletion({
     }));
 
     if (outcome === "hit") {
+      const damage =
+        statAdjustedDamageFor(
+          nextState,
+          actorId,
+          targetId,
+          skill
+        );
       const before = fighterOf(nextState, targetId).hp;
-      nextState = applyDamage(nextState, targetId, skill.effect.damage);
+      nextState = applyDamage(
+        nextState,
+        targetId,
+        damage.damage
+      );
       const after = fighterOf(nextState, targetId).hp;
 
       events.push(event("hit", impactAtMs, {
         actorId: targetId,
         sourceActorId: actorId,
         skillId: skill.id,
-        damage: skill.effect.damage,
+        baseDamage: damage.baseDamage,
+        damageChannel: damage.damageChannel,
+        damageBonusPct: damage.damageBonusPct,
+        resistancePct: damage.resistancePct,
+        damage: damage.damage,
         hpBefore: before,
         hpAfter: after
       }));
@@ -490,8 +545,19 @@ export function resolveSkillCompletion({
         }));
       }
     } else if (outcome === "reflected") {
+      const damage =
+        statAdjustedDamageFor(
+          nextState,
+          actorId,
+          actorId,
+          skill
+        );
       const before = fighterOf(nextState, actorId).hp;
-      nextState = applyDamage(nextState, actorId, skill.effect.damage);
+      nextState = applyDamage(
+        nextState,
+        actorId,
+        damage.damage
+      );
       const after = fighterOf(nextState, actorId).hp;
 
       events.push(event("hit", impactAtMs, {
@@ -499,7 +565,11 @@ export function resolveSkillCompletion({
         sourceActorId: targetId,
         skillId: skill.id,
         reflected: true,
-        damage: skill.effect.damage,
+        baseDamage: damage.baseDamage,
+        damageChannel: damage.damageChannel,
+        damageBonusPct: damage.damageBonusPct,
+        resistancePct: damage.resistancePct,
+        damage: damage.damage,
         hpBefore: before,
         hpAfter: after
       }));
