@@ -322,3 +322,58 @@ test("Human Editor remains presentation/input only for tactical effects", async 
     );
   }
 });
+
+
+test("historical template merge preserves already configured tactical effects", async () => {
+  const {
+    captureLegacySkillLibraryEntriesV1,
+    mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
+  } = await import(
+    "../../src/ui/capture-editor-skill-catalog-v1.js"
+  );
+
+  const effects = [
+    {
+      kind: "apply_status",
+      targetScope: "target",
+      status: {
+        id: "root",
+        kind: "immobilize",
+        polarity: "detrimental",
+        durationMs: 3000,
+        stacking: "refresh",
+        maxStacks: 1,
+        tags: ["control"]
+      }
+    }
+  ];
+
+  const merged =
+    mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
+      {
+        ...baseSkillFields(),
+        effects
+      },
+      captureLegacySkillLibraryEntriesV1()[0].id
+    );
+
+  assert.deepEqual(
+    merged.effects,
+    effects
+  );
+});
+
+test("tactical effects UI keeps a single-column mobile layout", async () => {
+  const css = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.css",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(
+    css,
+    /@media \(max-width: 520px\)[\s\S]*?\.skill-effect-row__header,[\s\S]*?\.skill-status-config__grid,[\s\S]*?\.skill-status-config__specific[\s\S]*?grid-template-columns:\s*1fr/
+  );
+});
