@@ -162,8 +162,11 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
               definition
                 .chargeTimeReductionPctPerPoint,
             ...(
-              definition
-                .damageReductionPctPerPoint !== 0
+              (
+                definition
+                  .damageReductionPctPerPoint ??
+                0
+              ) !== 0
                 ? {
                     damageReductionPctPerPoint:
                       definition
