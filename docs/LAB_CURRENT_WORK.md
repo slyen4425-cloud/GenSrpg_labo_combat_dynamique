@@ -13407,3 +13407,134 @@ Critère final :
 - CI complète verte ;
 - preview dédiée ;
 - PREVALIDATION smartphone avant GREEN UI final.
+
+
+### Résultat — import catalogue Monster Capture legacy V1
+
+Source réellement retrouvée :
+
+- dépôt historique : `slyen4425-cloud/Zombicide-40k` ;
+- commit : `49289784ee92a47fd51089815ca25954cdba4493` ;
+- blob `index.html` : `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- table propriétaire : `MC162_ENTITIES` ;
+- cette même provenance est déjà celle du catalogue de capacités Capture du labo.
+
+Parité source :
+
+- 110 enregistrements ;
+- 110 IDs uniques ;
+- 12 anciennes entrées de démonstration ;
+- 98 entrées `starter_capture` ;
+- 64 relations d'évolution ;
+- 103 IDs de capacités distincts ;
+- 103 / 103 de ces IDs existent dans le catalogue historique de capacités déjà importé dans le labo ;
+- comparaison avec le snapshot Capture du 2026-09-24 / blob `6c95e3f6ca4bf8e34003776e7e43e44192aafb16` :
+  - 0 ajout ;
+  - 0 retrait ;
+  - 0 enregistrement modifié.
+
+RED :
+
+- sentinelle : `tests/unit/capture-legacy-creature-catalog-v1.test.mjs` ;
+- SHA RED : `d6b5d879075f9451c692e7c8c6a4d2251df83081` ;
+- CI : `36569145053` — FAILURE attendue ;
+- 514 tests, 508 pass, 6 fail ;
+- preuves manquantes à ce SHA :
+  1. catalogue 110 absent ;
+  2. adaptateur legacy absent ;
+  3. raccord bibliothèque CRUD absent ;
+  4. six familles élémentaires historiques non exposées par l'UI ;
+  5. créature importée sans visuel non acceptée par le builder.
+
+Catalogue statique local :
+
+- fichier : `data/capture/legacy-monster-capture-creatures.v1.json` ;
+- commit : `77330119b8bd5e17732b3432364410c8eb048cf0` ;
+- copie brute des 110 enregistrements `MC162_ENTITIES` ;
+- provenance embarquée dans le catalogue ;
+- aucun fetch/runtime vers `Zombicide-40k`.
+
+Adaptateur :
+
+- fichier : `src/catalogs/capture-legacy-creature-catalog-v1.js` ;
+- commit initial : `e0ca11661f285a3d68a2618df4d1571905dc9ff6` ;
+- produit un record de session :
+  - `draft` : `CaptureCreatureEditorDraftV3` ;
+  - `loadout` : `CaptureActiveSkillLoadoutV1` ;
+- reproduit explicitement les fallbacks de l'ancien éditeur pour les champs absents du vieux modèle :
+  - intelligence = 10 ;
+  - endurance = 10 ;
+  - initiative = 0 ;
+  - énergie max = 10 ;
+  - énergie initiale = 0 ;
+  - recharge = 1 / 2000 ms ;
+  - coût déplacement = 2 ;
+- aucune de ces valeurs de fallback n'est réécrite dans le catalogue source brut.
+
+Préservation des capacités :
+
+- commit : `d648a79f364b9a657bb5070e3f892362438792d2` ;
+- `draft.skillIds` conserve toutes les associations historiques de la créature ;
+- le loadout actif n'emploie que les capacités actuellement exécutables dans le runtime dynamique ;
+- les capacités buff/debuff/DoT/HoT non encore équivalentes ne sont ni inventées ni supprimées ;
+- elles restent attachées à l'historique de la créature en attendant `StatusEffectV1`.
+
+UI / éléments :
+
+- commit : `3655ece53fb68476255ef1b063949a401d267120` ;
+- les 13 éléments de la source historique sont maintenant représentables :
+  `air`, `earth`, `electric`, `fire`, `ice`, `light`, `nature`, `poison`, `psy`, `shadow`, `spirit`, `steel`, `water` ;
+- les résistances des 13 éléments sont également éditables ;
+- aucun élément historique n'est supprimé lors d'un chargement / enregistrement.
+
+Créatures sans visuel :
+
+- le catalogue historique ne contient aucun `artData` ou `iconData` non vide ;
+- aucun visuel n'a donc été inventé ;
+- commit `b723a15ae663e7f49f42f81e98b3c6ce8a3ff0b3` :
+  - un draft sans image face est valide avec `presentation: null` ;
+- le test combat refuse explicitement de démarrer une telle créature tant qu'une image face n'a pas été configurée ;
+- les visuels déjà présents dans la bibliothèque globale restent disponibles pour être choisis manuellement.
+
+Raccord Human Editor :
+
+- commit : `c7d60a257c0f6520ef0d0b232e12da6818ea5e3e` ;
+- le Human Editor charge le catalogue statique local ;
+- les 110 créatures sont injectées dans le propriétaire CRUD existant `configuredCreatures` ;
+- le sélecteur « Créature à modifier » affiche donc les créatures historiques en plus de la créature de session initiale ;
+- la créature sélectionnée restaure son draft + son loadout ;
+- les relations d'évolution importées sont conservées même si l'UI d'évolution n'est pas encore exposée dans ce labo ;
+- les `spawnTags` historiques ont été comparés aux éléments sur les 110 enregistrements : 0 divergence.
+
+Défaut de contrat découvert et corrigé :
+
+- le contrat V1 déclarait implicitement la description optionnelle mais refusait `""` lors d'une seconde normalisation ;
+- cela cassait l'idempotence V1/V2 et pouvait casser « Nouvelle créature » avec description vide ;
+- sentinelles ajoutées :
+  - description vide V1 ;
+  - idempotence V2 avec description vide ;
+- correction :
+  - commit `976abeda8c3342aa84e009b0c1fa3d996e26179d` ;
+  - seule `description` accepte et canonise une chaîne vide ;
+  - IDs et autres champs obligatoires restent stricts.
+
+Validation exhaustive de migration :
+
+- test ajouté : adaptation des 110 enregistrements ;
+- 110 / 110 IDs conservés ;
+- 64 relations d'évolution conservées ;
+- associations historiques de capacités conservées ;
+- source brute non mutée.
+
+CI technique finale avant documentation :
+
+- SHA : `19822c1c30b82509e0ee76131038dbd6ce6ee119` ;
+- run : `36570355512` ;
+- conclusion : SUCCESS ;
+- 517 tests, 517 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION UI smartphone**.
+
+Le GREEN UI final reste interdit avant validation utilisateur du sélecteur des créatures historiques, du chargement de leurs données et du basculement entre plusieurs créatures.
