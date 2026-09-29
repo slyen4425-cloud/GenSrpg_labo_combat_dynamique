@@ -75,6 +75,21 @@ test("CaptureCreatureEditorDraftV1 normalizes a complete portable editor draft",
   assert.equal(Object.isFrozen(value.resistances), true);
 });
 
+test("CaptureCreatureEditorDraftV1 accepts and normalizes an empty optional description", () => {
+  const input = validDraft();
+  input.description = "   ";
+
+  const value =
+    normalizeCaptureCreatureEditorDraftV1(input);
+
+  assert.equal(value.description, "");
+
+  const second =
+    normalizeCaptureCreatureEditorDraftV1(value);
+
+  assert.deepEqual(second, value);
+});
+
 test("CaptureCreatureEditorDraftV1 requires explicit combat values", () => {
   const input = validDraft();
   delete input.combat.maxEnergy;
