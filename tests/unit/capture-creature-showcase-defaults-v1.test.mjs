@@ -240,6 +240,106 @@ test("visual autolink takes offset and transformOrigin from authoritative metada
   assert.match(source, /meta\.transformOrigin/);
 });
 
+test("Human Editor preserves hidden creature position when a linked creature is saved", async () => {
+  const {
+    preserveUnrepresentedCreatureFieldsV1,
+    buildHumanCreatureDraftV3
+  } = await import(
+    "../../src/ui/capture-editor-human-v2.js"
+  );
+
+  const fields =
+    preserveUnrepresentedCreatureFieldsV1({
+      fields: {
+        id: "crea-marai",
+        displayName: "Marai",
+        description: "",
+        level: 5,
+        sourceStats: {
+          force: 1,
+          agility: 1,
+          intelligence: 1,
+          spirit: 1,
+          endurance: 1,
+          initiative: 1
+        },
+        elements: ["water"],
+        resistances: [],
+        capture: {
+          capturable: true,
+          captureRate: 50,
+          spawnChance: 10,
+          spawnTags: ["water"],
+          evolution: null
+        },
+        combat: {
+          maxHp: 20,
+          initialHp: 20
+        },
+        linkedSkillIds: [],
+        profileId: "serpentine",
+        displayScale: 1.1,
+        visual: {
+          frontAssetId:
+            "pack:capture:creature-maraileron-opponent-01",
+          backAssetId:
+            "pack:capture:creature-maraileron-player-01",
+          iconAssetId:
+            "pack:capture:creature-maraileron-icon-01"
+        },
+        sockets: [],
+        audio: {}
+      },
+      previousDraft: {
+        skillIds: [],
+        elements: ["water"],
+        resistances: [],
+        capture: {
+          spawnTags: ["water"],
+          evolution: null
+        },
+        combat: {
+          maxEnergy: 0,
+          initialEnergy: 0,
+          energyChargeAmount: 0,
+          energyChargeIntervalMs: 0,
+          movementEnergyPerStep: 0,
+          chargeTimeModifierPct: 0
+        },
+        presentation: {
+          position: {
+            x: 7,
+            y: -4
+          },
+          transformOrigin: {
+            x: "50%",
+            y: "78%"
+          }
+        }
+      },
+      visibleElementIds: ["water"],
+      visibleResistanceKinds: [
+        "element:water"
+      ],
+      activeSkillIds: []
+    });
+
+  const draft =
+    buildHumanCreatureDraftV3(fields);
+
+  assert.deepEqual(
+    draft.presentation.position,
+    { x: 7, y: -4 }
+  );
+  assert.deepEqual(
+    draft.presentation.transformOrigin,
+    {
+      x: "50%",
+      y: "78%"
+    }
+  );
+});
+
 test("Human Editor derives imported creature active loadouts after runtime skill catalogs are known", async () => {
   const source = await readFile(
     new URL(
