@@ -13240,3 +13240,74 @@ Critère final :
 - CI complète verte ;
 - preview dédiée ;
 - PREVALIDATION UI smartphone avant GREEN UI final.
+
+
+### Résultat — créer / choisir / modifier une créature V1
+
+RED :
+
+- test : `tests/unit/capture-editor-creature-crud-v1.test.mjs` ;
+- SHA RED : `e3b3849491d2d43e98a617875177be69ddc80b30` ;
+- CI : `36566879659` — FAILURE attendue ;
+- 508 tests, 505 pass, 3 fail ;
+- causes ciblées :
+  1. save-mode créature absent ;
+  2. contrôles choisir / nouvelle / créer / mettre à jour absents ;
+  3. aucun propriétaire de bibliothèque créature dans le Human Editor.
+
+Implémentation :
+
+- helper dédié : `capture-editor-creature-save-mode-v1.js` ;
+- génération déterministe d'identités :
+  - `nouvelle-creature` ;
+  - puis `nouvelle-creature-2`, `-3`, etc. ;
+- create refuse tout ID déjà existant ;
+- update refuse :
+  - un ID inconnu ;
+  - un ID différent de la créature explicitement sélectionnée ;
+- bibliothèque de session propriétaire unique : `configuredCreatures` ;
+- chaque entrée possède ensemble :
+  - `record.draft` = `CaptureCreatureEditorDraftV3` ;
+  - `record.loadout` = `CaptureActiveSkillLoadoutV1` ;
+- le formulaire sait restaurer :
+  - identité ;
+  - stats ;
+  - éléments/résistances/Capture ;
+  - PV/énergie ;
+  - visuels face/dos/icône ;
+  - profil ;
+  - displayScale ;
+  - sockets ;
+  - sons ;
+  - quatre slots du loadout ;
+- une nouvelle créature repart d'un brouillon neutre et n'hérite pas silencieusement de la précédente ;
+- l'identité d'une créature chargée est verrouillée pendant la mise à jour ;
+- la validation combat exige désormais une créature explicitement enregistrée ; un formulaire modifié mais non sauvegardé est refusé ;
+- la création d'une nouvelle capacité ne marque la créature comme modifiée que si le loadout a réellement changé ;
+- aucun localStorage, sessionStorage ou global ajouté ;
+- aucune copie Combat Core / renderer ;
+- aucune sauvegarde implicite au simple chargement.
+
+Limite volontaire de ce V1 :
+
+- la bibliothèque est une bibliothèque de session du laboratoire ;
+- elle contient la créature initiale du formulaire puis toutes les créatures créées pendant la session ;
+- la persistance durable / injection du futur catalogue Monster Capture reste un lot séparé afin de ne pas introduire une seconde source de vérité avant l'intégration du vrai propriétaire du mode.
+
+CI finale technique :
+
+- SHA : `1522cba4ab248878f9e6fdadf75b41d53f949b9b` ;
+- run : `36567460358` ;
+- conclusion : SUCCESS ;
+- 508 tests, 508 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION UI smartphone**.
+
+Le GREEN UI final reste interdit avant validation utilisateur des actions :
+- choisir une créature ;
+- nouvelle créature ;
+- enregistrer comme nouvelle ;
+- mettre à jour l'existante ;
+- basculer entre deux créatures sans mélange de données.
