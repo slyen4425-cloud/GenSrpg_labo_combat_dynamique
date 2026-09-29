@@ -233,6 +233,7 @@ test("Capture editor HTML exposes understandable ultimate activation controls", 
 
 test("historical skill template merge preserves existing activation requirements", async () => {
   const {
+    captureLegacySkillLibraryEntriesV1,
     mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
   } = await import(
     "../../src/ui/capture-editor-skill-catalog-v1.js"
@@ -261,7 +262,7 @@ test("historical skill template merge preserves existing activation requirements
         heal: 0,
         activationRequirements
       },
-      "basic_attack"
+      captureLegacySkillLibraryEntriesV1()[0].id
     );
 
   assert.deepEqual(
