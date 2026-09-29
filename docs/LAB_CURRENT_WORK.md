@@ -13777,3 +13777,68 @@ Critère final :
 - position transportée de façon data-driven ;
 - CI complète verte ;
 - preview PREVALIDATION smartphone.
+
+
+### Résultat — defaults vitrine créatures : positions + compétences V1
+
+Règle historique des compétences confirmée depuis le fichier GenSrpG fourni :
+
+- les espèces conservent leur ordre `abilityIds` ;
+- seules les capacités dont `requiredLevel <= creature.level` sont candidates ;
+- maximum historique : `maxMoves = 4` ;
+- l'ordre historique est conservé ;
+- aucune capacité plus tardive ne remplace silencieusement une capacité historique active indisponible au runtime.
+
+Implémentation :
+
+- nouveau propriétaire : `src/catalogs/capture-creature-historical-loadout-v1.js` ;
+- le Human Editor dérive le loadout après chargement des catalogues de capacités runtime ;
+- les slots actifs sont préremplis automatiquement quand l'équivalent runtime existe ;
+- une capacité historique sans équivalent runtime sûr reste connue dans `historicalActiveIds` mais son slot runtime reste vide ;
+- aucune capacité étrangère au `abilityIds` de la créature n'est inventée.
+
+Position / présentation :
+
+- `CreaturePresentationBindingV2` transporte désormais explicitement :
+  - `displayScale` ;
+  - `position {x,y}` ;
+  - `transformOrigin` ;
+- `applyCaptureCreatureVisualBindingV1()` prend ces valeurs depuis la metadata autoritaire `global-assets` ;
+- `capture-export-to-native-visual-source-v1` les transmet jusqu'au Visual Source ;
+- `creature-presentation-to-visual-actor-v2` les transmet au `VisualActor` ;
+- le renderer et le Combat Core restent inchangés ;
+- une créature sans offset explicite utilise `{x:0,y:0}`.
+
+Audit des offsets existants :
+
+- les metadata global-assets actuelles de Maraileron, Voltige et Ailevent déclarent encore `offset {x:0,y:0}` ;
+- les anciennes metadata de test auditées pour Maraileron/Braisombre déclarent elles aussi `{x:0,y:0}` ;
+- aucun ancien offset non nul validé n'a été retrouvé ;
+- aucune valeur arbitraire n'a donc été inventée dans ce lot.
+
+RED / tests :
+
+- `tests/unit/capture-creature-showcase-defaults-v1.test.mjs` ;
+- loadout historique déterministe ;
+- niveau requis ;
+- plafond 4 capacités ;
+- absence d'invention de capacité ;
+- transport position / transformOrigin ;
+- préservation de la position lors de la mise à jour d'une créature liée.
+
+CI finale :
+
+- SHA : `0f348615b9ba8e5546aee703dc9ffb48131c3efb` ;
+- run : `36610888560` ;
+- 529 tests, 529 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION smartphone.**
+
+À vérifier :
+
+1. charger Maraileron, Voltige et Ailevent et vérifier que leurs slots de capacités se préremplissent ;
+2. vérifier que les capacités non disponibles au runtime ne sont pas remplacées par une autre capacité arbitraire ;
+3. lancer la preview et vérifier le placement de chaque créature ;
+4. si une créature doit être décalée, définir son offset dans la metadata autoritaire plutôt que via CSS/UI locale.
