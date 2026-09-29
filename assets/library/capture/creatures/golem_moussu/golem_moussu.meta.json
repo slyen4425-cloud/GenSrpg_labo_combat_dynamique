@@ -1,7 +1,7 @@
 {
   "id": "golem_moussu",
   "name": "Golem moussu",
-  "profile": "drake",
+  "profile": "massive",
   "views": {
     "player": "runtime/golem_moussu_player.webp",
     "opponent": "runtime/golem_moussu_opponent.webp",
