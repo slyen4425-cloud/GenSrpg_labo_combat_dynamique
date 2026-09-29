@@ -246,67 +246,47 @@ test("energy restore and drain use Combat State bounds", () => {
   );
 });
 
-test("unsupported area/status effects are rejected before energy and cooldown are spent", () => {
-  const unsupported = [
-    skill("area-heal", {
-      energyCost: 2,
-      effects: [
-        {
-          kind: "heal",
-          targetScope: "all_allies",
-          amount: 10
-        }
-      ]
-    }),
-    skill("status", {
-      energyCost: 2,
-      effects: [
-        {
-          kind: "apply_status",
-          targetScope: "target",
-          status: {
-            id: "root",
-            kind: "immobilize",
-            polarity: "detrimental",
-            durationMs: 3000,
-            stacking: "refresh"
-          }
-        }
-      ]
-    })
-  ];
+test("multi-target tactical effects without BattleFormat are rejected before energy and cooldown are spent", () => {
+  const candidate = skill("area-heal", {
+    energyCost: 2,
+    effects: [
+      {
+        kind: "heal",
+        targetScope: "all_allies",
+        amount: 10
+      }
+    ]
+  });
 
-  for (const candidate of unsupported) {
-    const session = createCombatSession({
-      fighters: [
-        fighter("a", { energy: 5 }),
-        fighter("b", { energy: 5 })
-      ]
-    });
+  const session = createCombatSession({
+    fighters: [
+      fighter("a", { energy: 5 }),
+      fighter("b", { energy: 5 })
+    ]
+  });
 
-    const result = session.startSkill({
-      actorId: "a",
-      targetId: "b",
-      skill: candidate
-    });
+  const result = session.startSkill({
+    actorId: "a",
+    targetId: "b",
+    skill: candidate
+  });
 
-    assert.equal(result.ok, false);
-    assert.equal(
-      result.outcome,
-      "unsupported_tactical_effect"
-    );
-    assert.equal(
-      session.snapshot().fighters.a.energy,
-      5
-    );
-    assert.equal(
-      Object.hasOwn(
-        session.snapshot().fighters.a.skillCooldowns,
-        candidate.id
-      ),
-      false
-    );
-  }
+  assert.equal(result.ok, false);
+  assert.equal(
+    result.outcome,
+    "unsupported_tactical_effect"
+  );
+  assert.equal(
+    session.snapshot().fighters.a.energy,
+    5
+  );
+  assert.equal(
+    Object.hasOwn(
+      session.snapshot().fighters.a.skillCooldowns,
+      candidate.id
+    ),
+    false
+  );
 });
 
 test("evaded attack does not apply self tactical heal", () => {
