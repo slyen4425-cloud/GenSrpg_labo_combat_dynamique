@@ -2245,10 +2245,30 @@ export function mountCaptureEditorHumanV2({
       configuredSkillIds: [...configuredSkills.keys()]
     });
 
+    const loadoutBefore = [
+      ...root.querySelectorAll(
+        "[data-loadout-slot]"
+      )
+    ].map((select) => select.value);
+
     configuredSkills.set(draft.id, draft);
     skillDirty = false;
     refreshLoadoutOptions(draft.id);
-    creatureDirty = true;
+
+    const loadoutAfter = [
+      ...root.querySelectorAll(
+        "[data-loadout-slot]"
+      )
+    ].map((select) => select.value);
+
+    if (
+      loadoutAfter.some(
+        (value, index) =>
+          value !== loadoutBefore[index]
+      )
+    ) {
+      creatureDirty = true;
+    }
 
     setStatus(
       root,
