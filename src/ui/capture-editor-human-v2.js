@@ -61,6 +61,9 @@ import {
 import {
   applyCaptureCreatureVisualBindingV1
 } from "../adapters/input/capture/capture-creature-visual-binding-v1.js";
+import {
+  buildCaptureCreatureHistoricalLoadoutV1
+} from "../catalogs/capture-creature-historical-loadout-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -3019,19 +3022,38 @@ export function mountCaptureEditorHumanV2({
               assetId !== ""
           )
       );
+      const runtimeSkillIds = new Set(
+        configuredSkills.keys()
+      );
 
       for (
         const record of monsterCaptureRecords
       ) {
+        const historicalLoadout =
+          buildCaptureCreatureHistoricalLoadoutV1({
+            creatureId: record.draft.id,
+            level: record.draft.level,
+            abilityIds:
+              record.draft.skillIds,
+            runtimeSkillIds
+          });
+
+        const recordWithLoadout =
+          Object.freeze({
+            draft: record.draft,
+            loadout:
+              historicalLoadout.loadout
+          });
+
         const binding =
           captureCreatureVisualBindingForIdV1(
             record.draft.id
           );
         const hydratedRecord =
           binding === null
-            ? record
+            ? recordWithLoadout
             : applyCaptureCreatureVisualBindingV1({
-                record,
+                record: recordWithLoadout,
                 binding,
                 creatureMeta:
                   creatureVisualMetaById[
