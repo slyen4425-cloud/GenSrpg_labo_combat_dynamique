@@ -71,6 +71,9 @@ import {
   normalizeCaptureCreatureStatValuesV1
 } from "../contracts/capture-creature-stat-values-v1.js";
 import {
+  projectCaptureStatDefinitionEffectsV1
+} from "../core/combat/capture-stat-effects-v1.js";
+import {
   normalizeCaptureProgressionRulesV1,
   captureActiveSkillSlotsForLevelV1
 } from "../contracts/capture-progression-rules-v1.js";
@@ -1512,27 +1515,116 @@ function createOption(select, value, label) {
   return option;
 }
 
-function statChannelSummary(definition) {
-  const parts = [];
-  if (definition.damageChannel) {
-    parts.push(
-      "dégâts " +
-        definition.damageChannel +
-        " ×" +
-        definition.damagePerPoint
+function statEffectNumber(value) {
+  const number = Number(value);
+  return Number.isInteger(number)
+    ? String(number)
+    : String(
+        Math.round(number * 100) / 100
+      );
+}
+
+export function humanStatEffectSummaryV1({
+  definition,
+  value
+}) {
+  const normalized =
+    normalizeCaptureStatRegistryV1({
+      schema: "capture-stat-registry-v1",
+      stats: [definition]
+    }).stats[0];
+
+  const points = Number(value ?? 0);
+  const projected =
+    projectCaptureStatDefinitionEffectsV1({
+      definition: normalized,
+      points
+    });
+
+  const perPoint = [];
+  const current = [];
+
+  if (normalized.damageChannel) {
+    perPoint.push(
+      "+" +
+        statEffectNumber(
+          normalized.damagePctPerPoint
+        ) +
+        " % dégâts " +
+        normalized.label
+    );
+    current.push(
+      "+" +
+        statEffectNumber(projected.damagePct) +
+        " % dégâts"
     );
   }
-  if (definition.resistanceChannel) {
-    parts.push(
-      "résistance " +
-        definition.resistanceChannel +
-        " ×" +
-        definition.resistancePerPoint
+
+  if (normalized.resistanceChannel) {
+    perPoint.push(
+      "+" +
+        statEffectNumber(
+          normalized.resistancePctPerPoint
+        ) +
+        " % résistance " +
+        normalized.label
+    );
+    current.push(
+      "+" +
+        statEffectNumber(
+          projected.resistancePct
+        ) +
+        " % résistance"
     );
   }
-  return parts.length > 0
-    ? parts.join(" · ")
-    : "stat utilitaire / personnalisée";
+
+  if (
+    normalized.chargeTimeReductionPctPerPoint > 0
+  ) {
+    perPoint.push(
+      "-" +
+        statEffectNumber(
+          normalized
+            .chargeTimeReductionPctPerPoint
+        ) +
+        " % temps de charge"
+    );
+    current.push(
+      "-" +
+        statEffectNumber(
+          projected.chargeTimeReductionPct
+        ) +
+        " % temps de charge"
+    );
+  }
+
+  if (perPoint.length === 0) {
+    return "Aucun effet de combat configuré";
+  }
+
+  const pointLabel =
+    points === 1 ? " point" : " points";
+
+  return (
+    "1 point = " +
+    perPoint.join(" / ") +
+    " · " +
+    statEffectNumber(points) +
+    pointLabel +
+    " = " +
+    current.join(" / ")
+  );
+}
+
+function statDefinitionField(caption, input) {
+  const field = document.createElement("label");
+  field.className = "stat-definition-field";
+
+  const title = document.createElement("small");
+  title.textContent = caption;
+
+  field.append(title, input);
+  return field;
 }
 
 function renderHumanStatValuesV1(
@@ -1575,7 +1667,10 @@ function renderHumanStatValuesV1(
     const meta =
       document.createElement("small");
     meta.textContent =
-      statChannelSummary(definition);
+      humanStatEffectSummaryV1({
+        definition,
+        value: values[definition.id] ?? 0
+      });
 
     label.append(title, input, meta);
     host.append(label);
@@ -1631,7 +1726,7 @@ function renderHumanStatRegistryV1(
     damageRate.min = "0";
     damageRate.step = "0.05";
     damageRate.value = String(
-      definition.damagePerPoint
+      definition.damagePctPerPoint
     );
     damageRate.dataset.statDefinitionDamageRate =
       "true";
@@ -1651,9 +1746,21 @@ function renderHumanStatRegistryV1(
     resistanceRate.min = "0";
     resistanceRate.step = "0.05";
     resistanceRate.value = String(
-      definition.resistancePerPoint
+      definition.resistancePctPerPoint
     );
     resistanceRate.dataset.statDefinitionResistanceRate =
+      "true";
+
+    const chargeRate =
+      document.createElement("input");
+    chargeRate.type = "number";
+    chargeRate.min = "0";
+    chargeRate.step = "0.05";
+    chargeRate.value = String(
+      definition
+        .chargeTimeReductionPctPerPoint
+    );
+    chargeRate.dataset.statDefinitionChargeRate =
       "true";
 
     const remove =
@@ -1666,11 +1773,27 @@ function renderHumanStatRegistryV1(
 
     row.append(
       id,
-      label,
-      damageChannel,
-      damageRate,
-      resistanceChannel,
-      resistanceRate,
+      statDefinitionField("Nom", label),
+      statDefinitionField(
+        "Canal dégâts",
+        damageChannel
+      ),
+      statDefinitionField(
+        "Dégâts % / point",
+        damageRate
+      ),
+      statDefinitionField(
+        "Canal résistance",
+        resistanceChannel
+      ),
+      statDefinitionField(
+        "Résistance % / point",
+        resistanceRate
+      ),
+      statDefinitionField(
+        "Réduction charge % / point",
+        chargeRate
+      ),
       remove
     );
     host.append(row);
@@ -1702,24 +1825,31 @@ function readHumanStatRegistryV1(root) {
       ).value,
       damageChannel,
       resistanceChannel,
-      damagePerPoint:
+      damagePctPerPoint:
         damageChannel === null
           ? 0
           : finiteNumber(
               row.querySelector(
                 "[data-stat-definition-damage-rate]"
               ).value,
-              "Coefficient dégâts"
+              "Dégâts % par point"
             ),
-      resistancePerPoint:
+      resistancePctPerPoint:
         resistanceChannel === null
           ? 0
           : finiteNumber(
               row.querySelector(
                 "[data-stat-definition-resistance-rate]"
               ).value,
-              "Coefficient résistance"
-            )
+              "Résistance % par point"
+            ),
+      chargeTimeReductionPctPerPoint:
+        finiteNumber(
+          row.querySelector(
+            "[data-stat-definition-charge-rate]"
+          ).value,
+          "Réduction charge % par point"
+        )
     };
   });
 
@@ -3874,15 +4004,21 @@ export function mountCaptureEditorHumanV2({
                     "[data-stat-custom-resistance-channel]"
                   )
                 ),
-              damagePerPoint:
+              damagePctPerPoint:
                 numericValue(
                   root,
-                  "[data-stat-custom-damage-per-point]"
+                  "[data-stat-custom-damage-pct-per-point]"
                 ),
-              resistancePerPoint:
+              resistancePctPerPoint:
                 numericValue(
                   root,
-                  "[data-stat-custom-resistance-per-point]"
+                  "[data-stat-custom-resistance-pct-per-point]"
+                )
+,
+              chargeTimeReductionPctPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-charge-pct-per-point]"
                 )
             }
           });
