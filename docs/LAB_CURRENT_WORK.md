@@ -15275,3 +15275,50 @@ Effets persistants `apply_status/cleanse/dispel` restent non supportés jusqu'au
 - événements sémantiques d'effets ;
 - aucune régression dégâts/stats/activation/cooldown ;
 - checkpoint GREEN avant Area Targeting.
+
+
+### Résultat — Immediate Tactical Effects Runtime V1
+
+RED :
+
+- SHA : `7b5c0e7900cecc73fc1bdd3cb29148e67adbe51b` ;
+- run : `36639597303` ;
+- 589 tests, 583 pass, 6 fail ciblés ;
+- absence du transport SkillEffectV1 et de l'exécution heal/énergie.
+
+Implémentation :
+
+- `SkillDefinition.effects` transporte un tableau normalisé de `SkillEffectV1` ;
+- `effect` historique reste la compatibilité existante ;
+- double autorité refusée pour damage/heal lorsque les deux couches tentent de porter le même effet ;
+- module Core : `immediate-tactical-effects-v1.js` ;
+- effets actifs :
+  - heal ;
+  - energy_restore ;
+  - energy_drain ;
+- scopes actifs :
+  - target ;
+  - self ;
+- application uniquement à l'impact réel d'un outcome `hit` ;
+- une attaque esquivée/bloquée/etc. ne déclenche pas les effets instantanés ;
+- soin borné par maxHp ;
+- énergie bornée par 0/maxEnergy ;
+- événements sémantiques : `heal`, `energy-restored`, `energy-drained`.
+
+Protection contre fausse fonctionnalité :
+
+- scope multi-cible -> `unsupported_tactical_effect` avant coût/cooldown ;
+- apply_status/cleanse/dispel -> même refus jusqu'au lot StatusEffect Runtime ;
+- aucun effet non supporté n'est ignoré silencieusement.
+
+GREEN :
+
+- SHA : `9da6e0c7a37ed50e7592b15b6ba4f9040ecce314` ;
+- run : `36639766985` ;
+- 589 tests, 589 pass, 0 fail.
+
+État :
+
+**GREEN runtime — effets instantanés ciblés.**
+
+Étape suivante : **Area Targeting Runtime V1**.
