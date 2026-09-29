@@ -13027,3 +13027,72 @@ Validation CI du commit binaire :
 
 Ce GREEN prouve la livraison physique complète et le vrai raccord manifeste -> fichiers.
 Aucune nouvelle UI n'a été ajoutée dans ce lot.
+
+
+## Micro-lot — réparation régression scale créature V1 — 2026-09-29
+
+Base :
+
+- checkpoint : `checkpoint/lab-private-audio-runtime-delivery-repair-v1-green-2026-09-29` ;
+- SHA : `105c44720b3f7b5f20c02b93f061a92e6ef9bc3e`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-creature-scale-regression-repair-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-creature-scale-regression-repair-v1-2026-09-29`.
+
+Retour utilisateur :
+
+- « Régression : plus de scale créature ».
+
+Références GREEN à comparer :
+
+- `checkpoint/lab-creature-scale-v1-green-2026-09-28` ;
+- `checkpoint/lab-capture-creature-scale-export-v1-green-2026-09-28` ;
+- `checkpoint/lab-presentation-scale-range-ui-v1-prevalidation-green-2026-09-28`.
+
+Objectif :
+
+1. reproduire la disparition du contrôle / raccord de scale sur la lignée actuelle ;
+2. identifier le premier changement responsable ;
+3. reconnecter le propriétaire de scale existant ;
+4. conserver le contrat : nombre fini strictement positif, sans plafond métier artificiel à 4× ;
+5. ne créer aucun second système de scale.
+
+Propriétaires à préserver :
+
+- donnée de présentation créature : `CreaturePresentationBindingV2.displayScale` ;
+- export Capture : raccord existant vers la présentation ;
+- renderer : consommateur uniquement ;
+- Human Editor : saisie / projection UI uniquement.
+
+Fichiers autorisés après diagnostic :
+
+- uniquement le ou les fichiers du raccord fautif démontré ;
+- tests dédiés ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+Protégé :
+
+- Combat Core ;
+- Animation Core ;
+- SkillDefinition ;
+- renderer si aucune faute n'y est démontrée ;
+- aucune nouvelle source de vérité ;
+- aucun storage/global ;
+- aucun système parallèle de scale.
+
+RED prévu :
+
+- sentinelle reproduisant la disparition sur la lignée actuelle ;
+- preuve que la donnée `displayScale` existe mais n'atteint plus correctement le chemin éditeur -> export -> source visuelle -> rendu, ou preuve équivalente du raccord réellement cassé.
+
+Critère de fin :
+
+- cause démontrée ;
+- correction minimale de la cause ;
+- CI complète verte ;
+- PREVALIDATION UI smartphone avant GREEN UI final.
