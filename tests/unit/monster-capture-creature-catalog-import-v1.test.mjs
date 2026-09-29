@@ -7,32 +7,38 @@ const catalogUrl = new URL(
   import.meta.url
 );
 
-test("Monster Capture builtin catalog exports the 100 canonical starter creatures", async () => {
+test("Monster Capture runtime catalog exports the 110 historically seeded creatures", async () => {
   const catalog = JSON.parse(
     await readFile(catalogUrl, "utf8")
   );
 
   assert.equal(catalog.version, 1);
   assert.equal(
-    catalog.provenance?.sourceFunction,
+    catalog.provenance?.sourceOwner,
+    "MC162_ENTITIES"
+  );
+  assert.equal(
+    catalog.provenance?.starterSourceFunction,
     "gensStarterCreatures"
   );
-  assert.equal(catalog.entries.length, 100);
+  assert.equal(catalog.entries.length, 110);
 
   const ids = catalog.entries.map((entry) => entry.id);
   const names = catalog.entries.map((entry) => entry.name);
 
-  assert.equal(new Set(ids).size, 100);
-  assert.equal(new Set(names).size, 100);
+  assert.equal(new Set(ids).size, 110);
+  assert.equal(new Set(names).size, 102);
 
   assert.ok(ids.includes("crea_aquafin"));
   assert.ok(ids.includes("crea_voltik"));
   assert.ok(names.includes("Aquafin"));
   assert.ok(names.includes("Voltige"));
 
-  assert.ok(!ids.includes("crea_embercub"));
-  assert.ok(!ids.includes("crea_galewing"));
-  assert.ok(!ids.includes("crea_lumipup"));
+  assert.ok(ids.includes("crea_embercub"));
+  assert.ok(ids.includes("crea_galewing"));
+  assert.ok(ids.includes("crea_lumipup"));
+  assert.ok(ids.includes("crea_braiseau"));
+  assert.ok(ids.includes("crea_ailevent"));
 });
 
 test("Monster Capture source entry imports deterministically to CaptureCreatureEditorDraftV3", async () => {
@@ -61,11 +67,11 @@ test("Monster Capture source entry imports deterministically to CaptureCreatureE
   assert.equal(record.draft.combat.maxHp, 20);
   assert.equal(record.draft.sourceStats.force, 10);
   assert.equal(record.draft.sourceStats.agility, 12);
-  assert.equal(record.draft.sourceStats.endurance, 10);
+  assert.equal(record.draft.sourceStats.endurance, 12);
   assert.equal(record.draft.sourceStats.initiative, 11);
-  assert.equal(record.draft.sourceStats.spirit, 13);
-  assert.equal(record.draft.sourceStats.intelligence, 0);
-  assert.equal(record.draft.capture.captureRate, 65);
+  assert.equal(record.draft.sourceStats.spirit, 12);
+  assert.equal(record.draft.sourceStats.intelligence, 10);
+  assert.equal(record.draft.capture.captureRate, 60);
   assert.equal(
     record.draft.capture.evolution?.targetId,
     "crea_maraileron"
@@ -93,7 +99,7 @@ test("Human Editor hydrates the Monster Capture catalog into its single creature
 
   assert.match(
     source,
-    /monster-capture-creatures\.v1\.json/
+    /monster-capture-creatures.v1.json/
   );
   assert.match(
     source,
