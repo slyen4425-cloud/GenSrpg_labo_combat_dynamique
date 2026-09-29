@@ -1963,6 +1963,85 @@ function readLoadout(root, creatureId) {
   });
 }
 
+export function preserveUnrepresentedCreatureFieldsV1({
+  fields,
+  previousDraft = null,
+  visibleElementIds = [],
+  visibleResistanceKinds = [],
+  activeSkillIds = []
+}) {
+  if (!fields || typeof fields !== "object") {
+    throw new TypeError("fields must be an object");
+  }
+
+  const visibleElements = new Set(
+    Array.isArray(visibleElementIds)
+      ? visibleElementIds.map(String)
+      : []
+  );
+  const visibleResistances = new Set(
+    Array.isArray(visibleResistanceKinds)
+      ? visibleResistanceKinds.map(String)
+      : []
+  );
+
+  const hiddenElements =
+    previousDraft?.elements?.filter(
+      (id) => !visibleElements.has(String(id))
+    ) ?? [];
+
+  const editedResistances =
+    resistanceEntries(fields.resistances);
+  const hiddenResistances =
+    previousDraft?.resistances?.filter(
+      (entry) =>
+        !visibleResistances.has(
+          String(entry.kind)
+        )
+    ) ?? [];
+
+  const hiddenSpawnTags =
+    previousDraft?.capture?.spawnTags?.filter(
+      (id) => !visibleElements.has(String(id))
+    ) ?? [];
+
+  return {
+    ...fields,
+    elements: [
+      ...new Set([
+        ...(fields.elements ?? []),
+        ...hiddenElements
+      ])
+    ],
+    resistances: [
+      ...editedResistances,
+      ...hiddenResistances
+    ],
+    capture: {
+      ...fields.capture,
+      spawnTags: [
+        ...new Set([
+          ...(fields.elements ?? []),
+          ...hiddenElements,
+          ...hiddenSpawnTags
+        ])
+      ],
+      evolution:
+        previousDraft?.capture?.evolution ??
+        fields.capture?.evolution ??
+        null
+    },
+    linkedSkillIds: [
+      ...new Set([
+        ...(previousDraft?.skillIds ?? []),
+        ...(Array.isArray(activeSkillIds)
+          ? activeSkillIds
+          : [])
+      ])
+    ]
+  };
+}
+
 export function mountCaptureEditorHumanV2({
   root,
   opponentCreatureDraft,
@@ -2098,18 +2177,45 @@ export function mountCaptureEditorHumanV2({
       root,
       creatureId
     );
-    const linkedSkillIds = [
+    const activeSkillIds = [
       ...new Set(
         loadout.slots
           .map((slot) => slot.skillId)
           .filter(Boolean)
       )
     ];
-    const fields = readCreatureFields(
+    const rawFields = readCreatureFields(
       root,
       sockets
     );
-    fields.linkedSkillIds = linkedSkillIds;
+    const previousRecord =
+      selectedCreatureId === creatureId
+        ? configuredCreatures.get(
+            selectedCreatureId
+          ) ?? null
+        : null;
+
+    const fields =
+      preserveUnrepresentedCreatureFieldsV1({
+        fields: rawFields,
+        previousDraft:
+          previousRecord?.draft ?? null,
+        visibleElementIds: [
+          ...root.querySelectorAll(
+            "[data-element]"
+          )
+        ].map((input) => input.value),
+        visibleResistanceKinds: [
+          ...root.querySelectorAll(
+            "[data-resistance]"
+          )
+        ].map(
+          (input) =>
+            "element:" +
+            input.dataset.resistance
+        ),
+        activeSkillIds
+      });
 
     const draft =
       buildHumanCreatureDraftV3(fields);
@@ -2787,9 +2893,15 @@ export function mountCaptureEditorHumanV2({
   Promise.all([
     hydrateAssetCatalog(root, listen),
     hydratePrivateAudioCatalog(root),
-    hydrateNativeSkillCatalog()
+    hydrateNativeSkillCatalog(),
+    hydrateMonsterCaptureCreatureCatalog()
   ])
-    .then(([, , nativeSkills]) => {
+    .then(([
+      ,
+      ,
+      nativeSkills,
+      monsterCaptureRecords
+    ]) => {
       for (
         const [skillId, draft] of nativeSkills
       ) {
@@ -2812,12 +2924,35 @@ export function mountCaptureEditorHumanV2({
         }
       }
 
+      for (
+        const record of monsterCaptureRecords
+      ) {
+        if (
+          !configuredCreatures.has(
+            record.draft.id
+          )
+        ) {
+          configuredCreatures.set(
+            record.draft.id,
+            record
+          );
+        }
+      }
+
       refreshLoadoutOptions();
+      refreshCreatureLibraryOptions(
+        selectedCreatureId
+      );
+
+      updateCreatureLibraryState(
+        "100 créatures Monster Capture builtin chargées. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
+        "ok"
+      );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, 100 créatures Monster Capture, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
           "info"
         );
       }
