@@ -56,6 +56,47 @@ const STANDARD_ALIASES = Object.freeze({
   poison: Object.freeze(["poison"])
 });
 
+export function monsterCaptureStandardStatIdForLegacyAliasV1(
+  legacyStatId
+) {
+  const legacy = requiredString(
+    legacyStatId,
+    "legacyStatId"
+  ).toLowerCase();
+
+  for (const [statId, aliases] of Object.entries(
+    STANDARD_ALIASES
+  )) {
+    if (aliases.includes(legacy)) {
+      return statId;
+    }
+  }
+
+  return null;
+}
+
+export function resolveMonsterCaptureLegacyStatIdV1(
+  legacyStatId,
+  registryInput
+) {
+  const registry =
+    normalizeCaptureStatRegistryV1(registryInput);
+  const statId =
+    monsterCaptureStandardStatIdForLegacyAliasV1(
+      legacyStatId
+    );
+
+  if (statId === null) {
+    return null;
+  }
+
+  return registry.stats.some(
+    (entry) => entry.id === statId
+  )
+    ? statId
+    : null;
+}
+
 export function importMonsterCaptureStatValuesV1(
   sourceInput,
   registryInput
