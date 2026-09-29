@@ -11,8 +11,9 @@ const STAT_FIELDS = new Set([
   "label",
   "damageChannel",
   "resistanceChannel",
-  "damagePerPoint",
-  "resistancePerPoint"
+  "damagePctPerPoint",
+  "resistancePctPerPoint",
+  "chargeTimeReductionPctPerPoint"
 ]);
 
 function objectValue(value, field) {
@@ -72,22 +73,28 @@ function normalizeStat(raw, index) {
     label: requiredString(value.label, field + ".label"),
     damageChannel,
     resistanceChannel,
-    damagePerPoint:
+    damagePctPerPoint:
       damageChannel === null
         ? 0
         : nonNegativeNumber(
-            value.damagePerPoint,
-            field + ".damagePerPoint",
+            value.damagePctPerPoint,
+            field + ".damagePctPerPoint",
             1
           ),
-    resistancePerPoint:
+    resistancePctPerPoint:
       resistanceChannel === null
         ? 0
         : nonNegativeNumber(
-            value.resistancePerPoint,
-            field + ".resistancePerPoint",
+            value.resistancePctPerPoint,
+            field + ".resistancePctPerPoint",
             1
-          )
+          ),
+    chargeTimeReductionPctPerPoint:
+      nonNegativeNumber(
+        value.chargeTimeReductionPctPerPoint,
+        field + ".chargeTimeReductionPctPerPoint",
+        0
+      )
   });
 }
 
