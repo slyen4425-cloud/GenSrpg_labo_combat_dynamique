@@ -142,6 +142,34 @@ export function normalizeStatusEffectRuntimeInstanceV1(
   });
 }
 
+export function isStatusEffectRuntimeInstanceActiveV1(
+  instance,
+  atMs
+) {
+  if (
+    !instance ||
+    typeof instance !== "object"
+  ) {
+    return false;
+  }
+
+  if (
+    instance.definition?.durationModel ===
+    "owner_action_end"
+  ) {
+    return Number(
+      instance.remainingActionEnds
+    ) > 0;
+  }
+
+  const time = Number(atMs);
+  return (
+    Number.isFinite(time) &&
+    instance.appliedAtMs <= time &&
+    time < instance.expiresAtMs
+  );
+}
+
 export function createStatusEffectRuntimeInstanceV1({
   definition: definitionInput,
   sourceActorId,
