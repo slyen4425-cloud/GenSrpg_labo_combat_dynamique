@@ -73,12 +73,34 @@ export function computeCombatDamageV1({
       ) || 0
     );
 
+  const damageReductionPct =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        (
+          Number(
+            target.damageReductionPct ?? 0
+          ) || 0
+        ) +
+        (
+          Number(
+            targetStatus.damageReductionPct ?? 0
+          ) || 0
+        )
+      )
+    );
+
   const boosted =
     amount *
     Math.max(0, 1 + damageBonusPct / 100);
   const rawDamage =
     boosted *
-    Math.max(0, 1 - resistancePct / 100);
+    Math.max(0, 1 - resistancePct / 100) *
+    Math.max(
+      0,
+      1 - damageReductionPct / 100
+    );
   const damage =
     Math.round(rawDamage * 100) / 100;
 
@@ -87,6 +109,7 @@ export function computeCombatDamageV1({
     damageChannel,
     damageBonusPct,
     resistancePct,
+    damageReductionPct,
     damage
   });
 }
