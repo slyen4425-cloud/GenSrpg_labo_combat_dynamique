@@ -1,18 +1,566 @@
 {
   "version": 1,
-  "catalogId": "monster-capture-builtin-creatures-v1",
   "provenance": {
     "repository": "slyen4425-cloud/Zombicide-40k",
     "checkpoint": "checkpoint/gensrpg-phase5-module-launch-s3-capture-provider-green-2026-09-24",
     "commit": "e8fd85ab68df818a138ed7949c411005ad622457",
     "indexBlob": "6c95e3f6ca4bf8e34003776e7e43e44192aafb16",
-    "sourceFunction": "gensStarterCreatures",
-    "loaderFunction": "loadSharedEntities",
+    "sourceOwner": "MC162_ENTITIES",
+    "starterSourceFunction": "gensStarterCreatures",
+    "loaderFunction": "ensureBuiltinMonsterCapture162",
     "exportedAt": "2026-09-29",
-    "sourceCount": 100,
-    "note": "Canonical builtin Capture starter pool. Legacy V162 demo aliases are intentionally excluded."
+    "sourceCount": 110,
+    "note": "Runtime Monster Capture roster physically seeded by V16.162. Contains the canonical starter pool plus additional historical demo entries; IDs are preserved exactly."
   },
   "entries": [
+    {
+      "id": "crea_embercub",
+      "name": "Braiseau",
+      "category": "creature",
+      "level": 5,
+      "hp": 18,
+      "stats": {
+        "force": 13,
+        "agilite": 10,
+        "intelligence": 8,
+        "esprit": 8,
+        "endurance": 12,
+        "initiative": 10
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_fire_bolt",
+        "lib_flame_bite",
+        "lib_fireball",
+        "lib_heat_wave"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Petit prédateur de feu agressif mais facile à dresser.",
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "fire"
+      ]
+    },
+    {
+      "id": "crea_aquafin",
+      "name": "Aquafin",
+      "category": "creature",
+      "level": 5,
+      "hp": 20,
+      "stats": {
+        "force": 10,
+        "agilite": 12,
+        "intelligence": 10,
+        "esprit": 12,
+        "endurance": 12,
+        "initiative": 11
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "lib_water_bolt",
+        "lib_tidal_bite",
+        "lib_aqua_heal",
+        "lib_mist_guard",
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 60,
+      "canEvolve": true,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature aquatique équilibrée, capable d’aider ses alliés.",
+      "icon": "💧",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "water"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "evolutionTo": "crea_maraileron",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_maraileron"
+      }
+    },
+    {
+      "id": "crea_mossback",
+      "name": "Moussados",
+      "category": "creature",
+      "level": 5,
+      "hp": 24,
+      "stats": {
+        "force": 14,
+        "agilite": 7,
+        "intelligence": 7,
+        "esprit": 10,
+        "endurance": 16,
+        "initiative": 6
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_rock_slam",
+        "lib_earth_guard",
+        "lib_root_snare",
+        "lib_quake"
+      ],
+      "capturable": true,
+      "captureRate": 65,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature robuste couverte de mousse et de plaques minérales.",
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "earth"
+      ]
+    },
+    {
+      "id": "crea_voltik",
+      "name": "Voltige",
+      "category": "creature",
+      "level": 6,
+      "hp": 17,
+      "stats": {
+        "force": 9,
+        "agilite": 16,
+        "intelligence": 11,
+        "esprit": 9,
+        "endurance": 9,
+        "initiative": 18
+      },
+      "elementTypes": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "lib_chain_lightning",
+        "lib_static_bite",
+        "lib_thunder_dash",
+        "lib_paralyze",
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 45,
+      "canEvolve": true,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Très rapide et chargée d’électricité.",
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "electric"
+      ],
+      "elementResistances": [
+        "electric"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "evolutionTo": "crea_fulguro",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_fulguro"
+      }
+    },
+    {
+      "id": "crea_galewing",
+      "name": "Ailevent",
+      "category": "creature",
+      "level": 5,
+      "hp": 16,
+      "stats": {
+        "force": 9,
+        "agilite": 17,
+        "intelligence": 9,
+        "esprit": 10,
+        "endurance": 8,
+        "initiative": 19
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_gust",
+        "lib_wind_blade",
+        "lib_aerial_dive",
+        "lib_tailwind"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature aérienne vive et difficile à toucher.",
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "air"
+      ]
+    },
+    {
+      "id": "crea_lumipup",
+      "name": "Lumilo",
+      "category": "creature",
+      "level": 4,
+      "hp": 18,
+      "stats": {
+        "force": 8,
+        "agilite": 12,
+        "intelligence": 10,
+        "esprit": 15,
+        "endurance": 10,
+        "initiative": 13
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_light_bolt",
+        "lib_heal_5",
+        "lib_magic_barrier",
+        "lib_flash"
+      ],
+      "capturable": true,
+      "captureRate": 70,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Petite créature lumineuse au tempérament protecteur.",
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "light"
+      ]
+    },
+    {
+      "id": "crea_nightfang",
+      "name": "Noctecroc",
+      "category": "creature",
+      "level": 7,
+      "hp": 21,
+      "stats": {
+        "force": 15,
+        "agilite": 14,
+        "intelligence": 9,
+        "esprit": 8,
+        "endurance": 11,
+        "initiative": 15
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_shadow_bite",
+        "lib_drain",
+        "lib_lifesteal_strike",
+        "lib_night_veil"
+      ],
+      "capturable": true,
+      "captureRate": 40,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Chasseur nocturne qui affaiblit sa proie.",
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "shadow"
+      ]
+    },
+    {
+      "id": "crea_rockhorn",
+      "name": "Rocorne",
+      "category": "creature",
+      "level": 8,
+      "hp": 28,
+      "stats": {
+        "force": 18,
+        "agilite": 6,
+        "intelligence": 6,
+        "esprit": 7,
+        "endurance": 18,
+        "initiative": 5
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_rock_slam",
+        "lib_guard_break",
+        "lib_earth_guard",
+        "lib_stunning_blow"
+      ],
+      "capturable": true,
+      "captureRate": 35,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Bête massive à corne minérale.",
+      "icon": "🪨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "earth"
+      ]
+    },
+    {
+      "id": "crea_sparkmoth",
+      "name": "Luciéclair",
+      "category": "creature",
+      "level": 6,
+      "hp": 15,
+      "stats": {
+        "force": 7,
+        "agilite": 18,
+        "intelligence": 12,
+        "esprit": 11,
+        "endurance": 7,
+        "initiative": 20
+      },
+      "elementTypes": [
+        "electric",
+        "air"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_chain_lightning",
+        "lib_gust",
+        "lib_paralyze",
+        "lib_tailwind"
+      ],
+      "capturable": true,
+      "captureRate": 40,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Insectoïde volant qui accumule l’électricité.",
+      "icon": "🦋",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "electric",
+        "air"
+      ]
+    },
+    {
+      "id": "crea_miragecat",
+      "name": "Mirachat",
+      "category": "creature",
+      "level": 7,
+      "hp": 17,
+      "stats": {
+        "force": 10,
+        "agilite": 18,
+        "intelligence": 14,
+        "esprit": 11,
+        "endurance": 8,
+        "initiative": 21
+      },
+      "elementTypes": [
+        "light",
+        "shadow"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_light_bolt",
+        "lib_drain",
+        "lib_flash",
+        "lib_night_veil"
+      ],
+      "capturable": true,
+      "captureRate": 30,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Félin étrange capable de troubler ses adversaires.",
+      "icon": "🐈",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "light",
+        "shadow"
+      ]
+    },
+    {
+      "id": "crea_tidejaw",
+      "name": "Marémâchoire",
+      "category": "creature",
+      "level": 8,
+      "hp": 26,
+      "stats": {
+        "force": 17,
+        "agilite": 10,
+        "intelligence": 8,
+        "esprit": 9,
+        "endurance": 17,
+        "initiative": 8
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_tidal_bite",
+        "lib_water_bolt",
+        "lib_regen",
+        "lib_mist_guard"
+      ],
+      "capturable": true,
+      "captureRate": 35,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Prédateur aquatique puissant et endurant.",
+      "icon": "🦈",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "water"
+      ]
+    },
+    {
+      "id": "crea_ashdrake",
+      "name": "Dracendre",
+      "category": "creature",
+      "level": 10,
+      "hp": 30,
+      "stats": {
+        "force": 19,
+        "agilite": 13,
+        "intelligence": 15,
+        "esprit": 10,
+        "endurance": 17,
+        "initiative": 12
+      },
+      "elementTypes": [
+        "fire",
+        "air"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_fireball",
+        "lib_wind_blade",
+        "lib_flame_bite",
+        "lib_aerial_dive"
+      ],
+      "capturable": true,
+      "captureRate": 22,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Jeune dragon très rare, difficile à capturer.",
+      "icon": "🐉",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "fire",
+        "air"
+      ]
+    },
     {
       "id": "crea_braiseau",
       "name": "Braiseau",
@@ -64,12 +612,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_pyrolynx",
       "evolutionLevel": 16,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 16,
-        "targetId": "crea_pyrolynx"
-      },
       "starterCreature": true,
       "desc": "Petit félin de braise, vif et téméraire.",
       "spawnTags": [
@@ -80,7 +622,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_pyrolynx"
+      }
     },
     {
       "id": "crea_pyrolynx",
@@ -133,12 +681,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_infernox",
       "evolutionLevel": 36,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 36,
-        "targetId": "crea_infernox"
-      },
       "starterCreature": true,
       "desc": "Prédateur ardent dont les griffes chauffent l'air.",
       "spawnTags": [
@@ -149,7 +691,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_infernox"
+      }
     },
     {
       "id": "crea_infernox",
@@ -202,7 +750,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Grand fauve volcanique capable de provoquer des vagues de chaleur.",
       "spawnTags": [
@@ -213,76 +760,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
-    },
-    {
-      "id": "crea_aquafin",
-      "name": "Aquafin",
-      "category": "creature",
-      "level": 5,
-      "hp": 20,
-      "stats": {
-        "power": 10,
-        "force": 10,
-        "defense": 10,
-        "agility": 12,
-        "agilite": 12,
-        "speed": 11,
-        "spirit": 13,
-        "esprit": 13
-      },
-      "elementTypes": [
-        "water"
-      ],
-      "elementResistances": [
-        "fire"
-      ],
-      "elementWeaknesses": [
-        "electric"
-      ],
-      "resistances": [
-        {
-          "kind": "element:fire",
-          "value": 35
-        },
-        {
-          "kind": "element:electric",
-          "value": -50
-        }
-      ],
-      "abilityIds": [
-        "cap_water_atk_1",
-        "cap_water_atk_2",
-        "cap_water_atk_3",
-        "cap_water_atk_4",
-        "cap_water_atk_5",
-        "cap_water_atk_6",
-        "cap_water_atk_7",
-        "cap_water_special_1",
-        "cap_water_special_2"
-      ],
-      "capturable": true,
-      "captureRate": 65,
-      "canEvolve": true,
-      "evolutionTo": "crea_maraileron",
-      "evolutionLevel": 16,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 16,
-        "targetId": "crea_maraileron"
-      },
-      "starterCreature": true,
-      "desc": "Petite créature aquatique équilibrée.",
-      "spawnTags": [
-        "water"
-      ],
-      "spawnChance": 18,
-      "icon": "💧",
-      "iconData": "",
-      "artData": "",
-      "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_maraileron",
@@ -340,12 +819,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_leviambre",
       "evolutionLevel": 36,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 36,
-        "targetId": "crea_leviambre"
-      },
       "starterCreature": true,
       "desc": "Chasseur marin protégé par des nageoires cuirassées.",
       "spawnTags": [
@@ -356,7 +829,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_leviambre"
+      }
     },
     {
       "id": "crea_leviambre",
@@ -414,7 +893,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Colosse marin dont le chant soulève les courants.",
       "spawnTags": [
@@ -425,7 +903,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_poussroc",
@@ -483,12 +962,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_moussegarde",
       "evolutionLevel": 16,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 16,
-        "targetId": "crea_moussegarde"
-      },
       "starterCreature": true,
       "desc": "Créature végétale couverte d'écorce et de pierre.",
       "spawnTags": [
@@ -499,7 +972,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_moussegarde"
+      }
     },
     {
       "id": "crea_moussegarde",
@@ -557,12 +1036,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_sylvaroc",
       "evolutionLevel": 36,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 36,
-        "targetId": "crea_sylvaroc"
-      },
       "starterCreature": true,
       "desc": "Gardien forestier à l'armure de racines minérales.",
       "spawnTags": [
@@ -573,7 +1046,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_sylvaroc"
+      }
     },
     {
       "id": "crea_sylvaroc",
@@ -631,7 +1110,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Ancien titan sylvestre presque insensible aux décharges.",
       "spawnTags": [
@@ -642,76 +1120,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
-    },
-    {
-      "id": "crea_voltik",
-      "name": "Voltige",
-      "category": "creature",
-      "level": 5,
-      "hp": 16,
-      "stats": {
-        "power": 10,
-        "force": 10,
-        "defense": 7,
-        "agility": 16,
-        "agilite": 16,
-        "speed": 19,
-        "spirit": 8,
-        "esprit": 8
-      },
-      "elementTypes": [
-        "electric"
-      ],
-      "elementResistances": [
-        "electric"
-      ],
-      "elementWeaknesses": [
-        "earth"
-      ],
-      "resistances": [
-        {
-          "kind": "element:electric",
-          "value": 35
-        },
-        {
-          "kind": "element:earth",
-          "value": -50
-        }
-      ],
-      "abilityIds": [
-        "cap_electric_atk_1",
-        "cap_electric_atk_2",
-        "cap_electric_atk_3",
-        "cap_electric_atk_4",
-        "cap_electric_atk_5",
-        "cap_electric_atk_6",
-        "cap_electric_atk_7",
-        "cap_electric_special_1",
-        "cap_electric_special_2"
-      ],
-      "capturable": true,
-      "captureRate": 58,
-      "canEvolve": true,
-      "evolutionTo": "crea_fulguro",
-      "evolutionLevel": 16,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 16,
-        "targetId": "crea_fulguro"
-      },
-      "starterCreature": true,
-      "desc": "Petit quadrupède chargé d'électricité.",
-      "spawnTags": [
-        "electric"
-      ],
-      "spawnChance": 18,
-      "icon": "⚡",
-      "iconData": "",
-      "artData": "",
-      "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_fulguro",
@@ -769,12 +1179,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_raijag",
       "evolutionLevel": 36,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 36,
-        "targetId": "crea_raijag"
-      },
       "starterCreature": true,
       "desc": "Prédateur électrique qui frappe avant qu'on le voie.",
       "spawnTags": [
@@ -785,7 +1189,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_raijag"
+      }
     },
     {
       "id": "crea_raijag",
@@ -853,7 +1263,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Fauve de foudre entouré d'un champ orageux.",
       "spawnTags": [
@@ -865,7 +1274,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_ailevent",
@@ -918,12 +1328,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_rafalcor",
       "evolutionLevel": 16,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 16,
-        "targetId": "crea_rafalcor"
-      },
       "starterCreature": true,
       "desc": "Oisillon des courants, extrêmement mobile.",
       "spawnTags": [
@@ -934,7 +1338,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_rafalcor"
+      }
     },
     {
       "id": "crea_rafalcor",
@@ -992,12 +1402,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_ouraganis",
       "evolutionLevel": 36,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 36,
-        "targetId": "crea_ouraganis"
-      },
       "starterCreature": true,
       "desc": "Rapace qui découpe l'air de ses ailes.",
       "spawnTags": [
@@ -1008,7 +1412,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_ouraganis"
+      }
     },
     {
       "id": "crea_ouraganis",
@@ -1066,7 +1476,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Seigneur aérien qui combat au cœur des tempêtes.",
       "spawnTags": [
@@ -1077,7 +1486,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_lumilo",
@@ -1130,12 +1540,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_solarys",
       "evolutionLevel": 18,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 18,
-        "targetId": "crea_solarys"
-      },
       "starterCreature": true,
       "desc": "Petit compagnon lumineux au tempérament protecteur.",
       "spawnTags": [
@@ -1146,7 +1550,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 18,
+        "targetId": "crea_solarys"
+      }
     },
     {
       "id": "crea_solarys",
@@ -1204,12 +1614,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_heliarque",
       "evolutionLevel": 38,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 38,
-        "targetId": "crea_heliarque"
-      },
       "starterCreature": true,
       "desc": "Gardien rayonnant capable de restaurer ses alliés.",
       "spawnTags": [
@@ -1220,7 +1624,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 38,
+        "targetId": "crea_heliarque"
+      }
     },
     {
       "id": "crea_heliarque",
@@ -1278,7 +1688,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Entité solaire dont l'aura repousse les ténèbres.",
       "spawnTags": [
@@ -1289,7 +1698,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_noctecroc",
@@ -1342,12 +1752,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_ombrage",
       "evolutionLevel": 18,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 18,
-        "targetId": "crea_ombrage"
-      },
       "starterCreature": true,
       "desc": "Jeune chasseur nocturne rusé.",
       "spawnTags": [
@@ -1358,7 +1762,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 18,
+        "targetId": "crea_ombrage"
+      }
     },
     {
       "id": "crea_ombrage",
@@ -1411,12 +1821,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_noxferal",
       "evolutionLevel": 38,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 38,
-        "targetId": "crea_noxferal"
-      },
       "starterCreature": true,
       "desc": "Prédateur spectral qui absorbe la vigueur.",
       "spawnTags": [
@@ -1427,7 +1831,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 38,
+        "targetId": "crea_noxferal"
+      }
     },
     {
       "id": "crea_noxferal",
@@ -1480,7 +1890,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Bête abyssale qui se fond dans les ombres.",
       "spawnTags": [
@@ -1491,7 +1900,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_venipic",
@@ -1544,12 +1954,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_toxironce",
       "evolutionLevel": 17,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 17,
-        "targetId": "crea_toxironce"
-      },
       "starterCreature": true,
       "desc": "Petite créature hérissée de pointes toxiques.",
       "spawnTags": [
@@ -1560,7 +1964,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_toxironce"
+      }
     },
     {
       "id": "crea_toxironce",
@@ -1613,12 +2023,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_veneflore",
       "evolutionLevel": 37,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 37,
-        "targetId": "crea_veneflore"
-      },
       "starterCreature": true,
       "desc": "Prédateur couvert de lianes empoisonnées.",
       "spawnTags": [
@@ -1629,7 +2033,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_veneflore"
+      }
     },
     {
       "id": "crea_veneflore",
@@ -1682,7 +2092,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Créature toxique qui sature le terrain de spores.",
       "spawnTags": [
@@ -1693,7 +2102,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_rocabri",
@@ -1746,12 +2156,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_rocorne",
       "evolutionLevel": 24,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 24,
-        "targetId": "crea_rocorne"
-      },
       "starterCreature": true,
       "desc": "Bélier minéral particulièrement robuste.",
       "spawnTags": [
@@ -1762,7 +2166,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_rocorne"
+      }
     },
     {
       "id": "crea_rocorne",
@@ -1820,7 +2230,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Bête massive dont la corne peut fendre la roche.",
       "spawnTags": [
@@ -1831,7 +2240,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_lucieclair",
@@ -1899,12 +2309,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_foudrillon",
       "evolutionLevel": 24,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 24,
-        "targetId": "crea_foudrillon"
-      },
       "starterCreature": true,
       "desc": "Insecte volant qui stocke les charges atmosphériques.",
       "spawnTags": [
@@ -1916,7 +2320,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_foudrillon"
+      }
     },
     {
       "id": "crea_foudrillon",
@@ -1984,7 +2394,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Grand papillon d'orage dont les ailes crépitent.",
       "spawnTags": [
@@ -1996,7 +2405,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_mirachat",
@@ -2064,12 +2474,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_chimerage",
       "evolutionLevel": 26,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 26,
-        "targetId": "crea_chimerage"
-      },
       "starterCreature": true,
       "desc": "Félin illusionniste aux deux affinités opposées.",
       "spawnTags": [
@@ -2081,7 +2485,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 26,
+        "targetId": "crea_chimerage"
+      }
     },
     {
       "id": "crea_chimerage",
@@ -2149,7 +2559,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Chimère insaisissable alternant éclat et obscurité.",
       "spawnTags": [
@@ -2161,7 +2570,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_dracendre",
@@ -2229,12 +2639,6 @@
       "canEvolve": true,
       "evolutionTo": "crea_volcadrake",
       "evolutionLevel": 28,
-      "evolution": {
-        "enabled": true,
-        "condition": "level",
-        "level": 28,
-        "targetId": "crea_volcadrake"
-      },
       "starterCreature": true,
       "desc": "Jeune dragon rare qui niche près des volcans.",
       "spawnTags": [
@@ -2246,7 +2650,13 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 28,
+        "targetId": "crea_volcadrake"
+      }
     },
     {
       "id": "crea_volcadrake",
@@ -2314,7 +2724,6 @@
       "canEvolve": false,
       "evolutionTo": "",
       "evolutionLevel": 16,
-      "evolution": null,
       "starterCreature": true,
       "desc": "Dragon volcanique adulte, extrêmement rare et puissant.",
       "spawnTags": [
@@ -2326,7 +2735,8 @@
       "iconData": "",
       "artData": "",
       "contentFamily": "creature",
-      "universeId": "starter_capture"
+      "universeId": "starter_capture",
+      "evolution": null
     },
     {
       "id": "crea_tox_1",
