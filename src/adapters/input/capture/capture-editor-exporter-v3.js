@@ -160,7 +160,10 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
               definition.resistancePctPerPoint,
             chargeTimeReductionPctPerPoint:
               definition
-                .chargeTimeReductionPctPerPoint
+                .chargeTimeReductionPctPerPoint,
+            damageReductionPctPerPoint:
+              definition
+                .damageReductionPctPerPoint
           })
         ])
       )
@@ -214,7 +217,13 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
             resistancePctByChannel:
               projected.resistancePctByChannel,
             chargeTimeReductionPct:
-              projected.chargeTimeReductionPct
+              projected.chargeTimeReductionPct,
+            damageReductionPct:
+              projected.damageReductionPct,
+            statValuesById:
+              Object.freeze({
+                ...entry.values
+              })
           })
         ];
       })
@@ -246,8 +255,19 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
             ...creature,
             combat: {
               ...creature.combat,
-              statEffects,
-              statEffectRulesById
+              statEffects: Object.freeze({
+                damagePctByChannel:
+                  statEffects.damagePctByChannel,
+                resistancePctByChannel:
+                  statEffects.resistancePctByChannel,
+                chargeTimeReductionPct:
+                  statEffects.chargeTimeReductionPct,
+                damageReductionPct:
+                  statEffects.damageReductionPct
+              }),
+              statEffectRulesById,
+              statValuesById:
+                statEffects.statValuesById
             }
           };
         });
