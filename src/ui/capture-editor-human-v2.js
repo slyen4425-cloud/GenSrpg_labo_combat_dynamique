@@ -4373,6 +4373,14 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-skill-activation-add]"
   );
+  const skillEffectsHost = one(
+    root,
+    "[data-skill-effects-host]"
+  );
+  const skillEffectAddButton = one(
+    root,
+    "[data-skill-effect-add]"
+  );
   const creatureLibrarySelect = one(
     root,
     "[data-creature-library-select]"
@@ -5231,6 +5239,70 @@ export function mountCaptureEditorHumanV2({
         skillActivationEnabled.checked = false;
         skillActivationConfig.hidden = true;
       }
+    }
+  );
+
+  listen(
+    skillEffectAddButton,
+    "click",
+    () => {
+      appendHumanSkillEffectV1(
+        root,
+        null,
+        statRegistry
+      );
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    skillEffectsHost,
+    "change",
+    (event) => {
+      const row =
+        event.target?.closest?.(
+          "[data-skill-effect-row]"
+        );
+      if (!row) {
+        return;
+      }
+
+      if (
+        event.target.matches(
+          "[data-skill-effect-kind], " +
+          "[data-skill-status-kind], " +
+          "[data-skill-status-stacking]"
+        )
+      ) {
+        syncHumanSkillEffectRowV1(row);
+      }
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    skillEffectsHost,
+    "input",
+    () => {
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    skillEffectsHost,
+    "click",
+    (event) => {
+      const remove =
+        event.target?.closest?.(
+          "[data-skill-effect-remove]"
+        );
+      if (!remove) {
+        return;
+      }
+      remove.closest(
+        "[data-skill-effect-row]"
+      )?.remove();
+      skillDirty = true;
     }
   );
 
