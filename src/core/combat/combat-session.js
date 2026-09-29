@@ -22,7 +22,8 @@ import {
 export function createCombatSession({
   distance = "medium",
   fighters,
-  skillSpeedMultiplier = 1
+  skillSpeedMultiplier = 1,
+  battleFormat = null
 }) {
   const normalizedSkillSpeedMultiplier =
     normalizeSkillSpeedMultiplier(
@@ -59,7 +60,8 @@ export function createCombatSession({
       skill,
       reactionSkill,
       skillSpeedMultiplier:
-        normalizedSkillSpeedMultiplier
+        normalizedSkillSpeedMultiplier,
+      battleFormat
     });
   }
 
@@ -83,7 +85,8 @@ export function createCombatSession({
       targetId,
       skill,
       skillSpeedMultiplier:
-        normalizedSkillSpeedMultiplier
+        normalizedSkillSpeedMultiplier,
+      battleFormat
     });
     if (result.ok) {
       state = result.state;
@@ -139,7 +142,8 @@ export function createCombatSession({
       state,
       action,
       reaction,
-      targetActionContext
+      targetActionContext,
+      battleFormat
     });
     if (result.ok) {
       state = result.state;
