@@ -253,7 +253,8 @@ test("Human Editor preserves hidden creature position when a linked creature is 
       fields: {
         id: "crea-marai",
         displayName: "Marai",
-        description: "",
+        description:
+          "Fixture de créature liée avec position persistante.",
         level: 5,
         sourceStats: {
           force: 1,
