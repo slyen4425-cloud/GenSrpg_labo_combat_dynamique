@@ -32,6 +32,68 @@ function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
+function normalizePercentByChannel(input, field) {
+  if (input == null) {
+    return Object.freeze({});
+  }
+  objectValue(input, field);
+
+  const output = {};
+  for (const [channelRaw, value] of Object.entries(input)) {
+    const channel = requiredString(
+      channelRaw,
+      field + " key"
+    );
+    output[channel] = nonNegativeNumber(
+      value,
+      field + "." + channel
+    );
+  }
+  return Object.freeze(output);
+}
+
+function normalizeStatEffects(input) {
+  if (input == null) {
+    return null;
+  }
+  const value = objectValue(
+    input,
+    "combat.statEffects"
+  );
+
+  const allowed = new Set([
+    "damagePctByChannel",
+    "resistancePctByChannel",
+    "chargeTimeReductionPct"
+  ]);
+  for (const key of Object.keys(value)) {
+    if (!allowed.has(key)) {
+      throw new TypeError(
+        "combat.statEffects contains unknown field: " +
+          key
+      );
+    }
+  }
+
+  return Object.freeze({
+    damagePctByChannel:
+      normalizePercentByChannel(
+        value.damagePctByChannel,
+        "combat.statEffects.damagePctByChannel"
+      ),
+    resistancePctByChannel:
+      normalizePercentByChannel(
+        value.resistancePctByChannel,
+        "combat.statEffects.resistancePctByChannel"
+      ),
+    chargeTimeReductionPct:
+      nonNegativeNumber(
+        value.chargeTimeReductionPct ?? 0,
+        "combat.statEffects.chargeTimeReductionPct"
+      )
+  });
+}
+
 function copyOptionalNonNegative(source, target, field) {
   if (!hasOwn(source, field)) {
     return;
@@ -76,11 +138,31 @@ export function adaptCaptureCreatureToFighterConfig(
     "movementEnergyPerStep"
   );
 
-  if (hasOwn(combat, "chargeTimeModifierPct")) {
-    output.chargeTimeModifierPct = finiteNumber(
-      combat.chargeTimeModifierPct,
-      "combat.chargeTimeModifierPct"
-    );
+  const statEffects =
+    normalizeStatEffects(combat.statEffects);
+
+  const baseChargeModifierPct =
+    hasOwn(combat, "chargeTimeModifierPct")
+      ? finiteNumber(
+          combat.chargeTimeModifierPct,
+          "combat.chargeTimeModifierPct"
+        )
+      : 0;
+
+  if (
+    hasOwn(combat, "chargeTimeModifierPct") ||
+    statEffects !== null
+  ) {
+    output.chargeTimeModifierPct =
+      baseChargeModifierPct -
+      (statEffects?.chargeTimeReductionPct ?? 0);
+  }
+
+  if (statEffects !== null) {
+    output.damagePctByChannel =
+      statEffects.damagePctByChannel;
+    output.resistancePctByChannel =
+      statEffects.resistancePctByChannel;
   }
 
   if (
