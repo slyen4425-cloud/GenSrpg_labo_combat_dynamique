@@ -1,3 +1,7 @@
+import {
+  normalizeSkillEffectV1
+} from "./skill-effect-v1.js";
+
 export const SKILL_CATEGORIES = Object.freeze([
   "offensive",
   "defensive",
@@ -340,6 +344,42 @@ export function normalizeSkillDefinition(input) {
     throw new TypeError("effect must be an object");
   }
 
+  const normalizedLegacyEffect = Object.freeze({
+    damage: nonNegativeNumber(effect.damage, "effect.damage"),
+    heal: nonNegativeNumber(effect.heal, "effect.heal"),
+    interruptsPreparation: effect.interruptsPreparation === true,
+    stunMs: nonNegativeNumber(effect.stunMs, "effect.stunMs"),
+    tags: stringArray(effect.tags, "effect.tags")
+  });
+
+  const rawEffects = input.effects ?? [];
+  if (!Array.isArray(rawEffects)) {
+    throw new TypeError("effects must be an array");
+  }
+  const effects = Object.freeze(
+    rawEffects.map((entry) =>
+      normalizeSkillEffectV1(entry)
+    )
+  );
+
+  if (
+    normalizedLegacyEffect.damage > 0 &&
+    effects.some((entry) => entry.kind === "damage")
+  ) {
+    throw new RangeError(
+      "duplicate damage authority between effect and effects"
+    );
+  }
+
+  if (
+    normalizedLegacyEffect.heal > 0 &&
+    effects.some((entry) => entry.kind === "heal")
+  ) {
+    throw new RangeError(
+      "duplicate heal authority between effect and effects"
+    );
+  }
+
   return Object.freeze({
     id,
     name,
@@ -381,12 +421,7 @@ export function normalizeSkillDefinition(input) {
         APPROACH_SET
       )
     }),
-    effect: Object.freeze({
-      damage: nonNegativeNumber(effect.damage, "effect.damage"),
-      heal: nonNegativeNumber(effect.heal, "effect.heal"),
-      interruptsPreparation: effect.interruptsPreparation === true,
-      stunMs: nonNegativeNumber(effect.stunMs, "effect.stunMs"),
-      tags: stringArray(effect.tags, "effect.tags")
-    })
+    effect: normalizedLegacyEffect,
+    effects
   });
 }
