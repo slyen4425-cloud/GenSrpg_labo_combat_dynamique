@@ -88,6 +88,29 @@ test("Monster Capture source entry imports deterministically to CaptureCreatureE
   );
 });
 
+test("Human Editor validates runtime catalog count from provenance instead of a stale literal", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.doesNotMatch(
+    source,
+    /entries\.length\s*!==\s*100|exactement 100 créatures builtin/
+  );
+  assert.match(
+    source,
+    /catalog\.provenance\?\.sourceCount/
+  );
+  assert.match(
+    source,
+    /new Set\(entries\.map\(\(entry\) => entry\.id\)\)\.size/
+  );
+});
+
 test("Human Editor hydrates the Monster Capture catalog into its single creature library", async () => {
   const source = await readFile(
     new URL(
