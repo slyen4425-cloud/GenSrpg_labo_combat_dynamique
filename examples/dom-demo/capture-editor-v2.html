@@ -481,7 +481,7 @@
               <option value="offensive" selected>Attaque</option>
               <option value="defensive">Protection</option>
               <option value="heal">Soin</option>
-              <option value="buff_debuff" disabled>Buff / Debuff — StatusEffectV1 requis</option>
+              <option value="buff_debuff">Buff / Debuff</option>
               <option value="counter">Contre</option>
             </select>
           </label>
@@ -562,6 +562,43 @@
         <div class="card-title">
           <span class="step">4</span>
           <div>
+            <h2>Effets tactiques</h2>
+            <p>Ajoute les effets réellement exécutés par le moteur : zone, soin, énergie, buff/debuff et contrôles.</p>
+          </div>
+        </div>
+
+        <div class="skill-effects-list" data-skill-effects-host></div>
+
+        <button type="button" class="secondary-action" data-skill-effect-add>
+          Ajouter un effet
+        </button>
+
+        <p class="note">
+          Chaque effet possède sa propre portée. Les durées de statut sont réglées en secondes ici puis converties vers le contrat gameplay.
+        </p>
+
+        <div class="tactical-effect-help" aria-label="Effets tactiques disponibles">
+          <span>Dégâts de zone</span>
+          <span>Soin</span>
+          <span>Gain d’énergie</span>
+          <span>Drain d’énergie</span>
+          <span>Buff / Debuff</span>
+          <span>Dégâts périodiques</span>
+          <span>Soin périodique</span>
+          <span>Bouclier</span>
+          <span>Immobilisation</span>
+          <span>Silence</span>
+          <span>Stun</span>
+          <span>Provocation</span>
+          <span>Nettoyage</span>
+          <span>Dissipation</span>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">5</span>
+          <div>
             <h2>Mouvement & cible</h2>
             <p>Comment la capacité atteint sa cible.</p>
           </div>
@@ -597,7 +634,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">5</span>
+          <span class="step">6</span>
           <div>
             <h2>Timing</h2>
             <p>Temps gameplay réels, utilisés par le moteur.</p>
@@ -627,7 +664,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">6</span>
+          <span class="step">7</span>
           <div>
             <h2>Effets visuels</h2>
             <p>Choisis les effets de cast, déplacement et impact dans la bibliothèque.</p>
@@ -691,7 +728,7 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">7</span>
+          <span class="step">8</span>
           <div>
             <h2>Audio de la capacité</h2>
             <p>Les choix apparaissent lorsqu'un catalogue audio est présent.</p>
