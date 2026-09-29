@@ -221,10 +221,14 @@ export function adaptLegacyCaptureCreatureToEditorRecordV1(
     raw.id,
     "legacy.id"
   );
-  const skillIds = enabledSkillIds(
-    raw.abilityIds,
-    enabled
+  const skillIds = stableStrings(
+    raw.abilityIds
   );
+  const activeSkillIds =
+    enabledSkillIds(
+      skillIds,
+      enabled
+    ).slice(0, 4);
   const maxHp = Math.max(
     1,
     finiteNumber(raw.hp, 10)
@@ -307,9 +311,6 @@ export function adaptLegacyCaptureCreatureToEditorRecordV1(
       skillIds,
       presentation: null
     });
-
-  const activeSkillIds =
-    skillIds.slice(0, 4);
 
   const loadout =
     normalizeCaptureActiveSkillLoadoutV1({
