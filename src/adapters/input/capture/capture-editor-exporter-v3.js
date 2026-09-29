@@ -161,9 +161,16 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
             chargeTimeReductionPctPerPoint:
               definition
                 .chargeTimeReductionPctPerPoint,
-            damageReductionPctPerPoint:
+            ...(
               definition
-                .damageReductionPctPerPoint
+                .damageReductionPctPerPoint !== 0
+                ? {
+                    damageReductionPctPerPoint:
+                      definition
+                        .damageReductionPctPerPoint
+                  }
+                : {}
+            )
           })
         ])
       )
@@ -262,8 +269,14 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
                   statEffects.resistancePctByChannel,
                 chargeTimeReductionPct:
                   statEffects.chargeTimeReductionPct,
-                damageReductionPct:
-                  statEffects.damageReductionPct
+                ...(
+                  statEffects.damageReductionPct !== 0
+                    ? {
+                        damageReductionPct:
+                          statEffects.damageReductionPct
+                      }
+                    : {}
+                )
               }),
               statEffectRulesById,
               statValuesById:
