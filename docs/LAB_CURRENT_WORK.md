@@ -15444,3 +15444,108 @@ GREEN :
 **GREEN runtime multi-cible / AoE.**
 
 Étape suivante : **StatusEffect Runtime V1**.
+
+
+## Micro-lot — StatusEffect Runtime V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN Area Targeting Runtime V1 : `checkpoint/lab-area-targeting-runtime-v1-green-2026-09-30` ;
+- SHA : `6ecb96615cf0375fe75a6e355e567c8bedbb4176` ;
+- CI : SUCCESS, 595/595.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-status-effect-runtime-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-status-effect-runtime-v1-2026-09-30`.
+
+### Objectif
+
+Rendre réellement actifs en combat les statuts persistants définis par `StatusEffectV1` :
+
+- stat_modifier ;
+- damage_over_time ;
+- heal_over_time ;
+- shield ;
+- immobilize ;
+- silence ;
+- stun ;
+- taunt ;
+- cleanse ;
+- dispel.
+
+### Ownership
+
+- définition : StatusEffectV1 ;
+- instance runtime / stacks / échéance / shield restant : Status Effect Runtime ;
+- snapshot des statuts : Combat State ;
+- horloge : CombatState.elapsedMs uniquement ;
+- application d'un statut : SkillEffectV1.apply_status ;
+- sélection des cibles : Tactical Effect Targeting V1 ;
+- dégâts : formule canonique Combat Damage V1 ;
+- coefficients de stat : CaptureStatRegistryV1, transportés comme snapshot dérivé de règles, jamais recodés dans Status Runtime.
+
+### Préaudit / décisions
+
+1. Combat State ne possède encore aucun `statusEffects`.
+2. Les stats runtime portent seulement leurs bonus dérivés ; pour `stat_modifier`, le fighter doit aussi recevoir les coefficients data-driven du registre de stats.
+3. Les anciens IDs legacy `defense/armor/agility/initiative/force/power` ne seront PAS mappés automatiquement.
+4. Un status `stat_modifier` est actif seulement si `statId` existe dans le snapshot de règles de stats du fighter.
+5. DoT/HoT utilisent la même horloge que cooldown/énergie, sans timer parallèle.
+6. Shield doit être absorbé dans une fonction unique d'application des dégâts afin d'affecter dégâts directs et DoT.
+7. `immobilize` bloque uniquement le déplacement.
+8. `silence` bloque le démarrage d'une compétence ; les commandes restent possibles.
+9. `stun` bloque déplacement, compétence et commande pendant sa durée.
+10. `taunt` force les compétences offensives ciblant un ennemi vers la source du taunt tant que cette source est vivante.
+11. cleanse enlève les statuts detrimental ; dispel enlève les beneficial ; tags vides = tous de la polarité demandée.
+12. stacking :
+    - replace : nouvelle instance remplace l'ancienne ;
+    - refresh : même magnitude/stacks, durée renouvelée ;
+    - stack : stacks +1 jusqu'à maxStacks et durée renouvelée.
+
+### Fichiers potentiellement autorisés
+
+- src/core/combat/status-effect-runtime-v1.js ;
+- src/core/combat/status-effect-projection-v1.js ;
+- src/core/combat/combat-state.js ;
+- src/core/combat/combat-session.js ;
+- src/core/combat/action-resolver.js ;
+- src/core/combat/command-resolver.js ;
+- src/core/combat/immediate-tactical-effects-v1.js ;
+- src/core/combat/combat-damage-v1.js ;
+- src/adapters/input/capture/capture-editor-exporter-v3.js ;
+- src/adapters/input/capture/capture-creature-to-fighter-config.js ;
+- tests ;
+- documentation.
+
+### Protégé
+
+- Animation/FX/renderer ;
+- Human Editor ;
+- catalogues historiques ;
+- aucune conversion implicite des durations legacy ;
+- aucun timer parallèle ;
+- aucune formule stat hardcodée dans Status Runtime.
+
+### RED
+
+1. apply_status réel + expiry ;
+2. DoT/HoT ticks déterministes ;
+3. shield absorbe dégâts directs et périodiques ;
+4. stat_modifier change damage/resistance/vitesse via règles du registre ;
+5. immobilize/silence/stun bloquent les actions prévues ;
+6. taunt contraint la cible ;
+7. cleanse/dispel ;
+8. stacking replace/refresh/stack ;
+9. aucun coût/cooldown dépensé quand stun/silence bloque ;
+10. vraie chaîne export stats -> fighter -> status runtime.
+
+### Critère de fin
+
+- tous les statuts V1 actifs réellement ;
+- CI complète GREEN ;
+- aucun ancien StatusEffect fake dans l'UI ;
+- checkpoint GREEN avant Tactical Effects Editor UI / migration historique.
