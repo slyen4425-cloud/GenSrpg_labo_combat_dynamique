@@ -1293,3 +1293,50 @@ Vitesse :
 - la stat Vitesse ne modifie ni trajet, ni récupération, ni horloge d'énergie.
 
 Les résistances historiques conservées dans les metadata de compatibilité ne sont pas additionnées implicitement aux résistances issues des stats.
+
+
+## 15. Skill Activation Requirements V1
+
+Les prérequis dynamiques d'une capacité appartiennent à `SkillDefinition.activationRequirements`.
+
+Ils sont distincts de `CaptureSkillEditorDraftV1.requiredLevel`, qui reste un verrou de progression/apprentissage.
+
+Structure :
+
+```js
+{
+  mode: "all" | "any",
+  conditions: [
+    {
+      type:
+        "combat_elapsed_ms" |
+        "damage_dealt" |
+        "damage_taken" |
+        "hp_at_or_below_pct",
+      threshold: Number
+    }
+  ]
+}
+```
+
+Propriétaires :
+
+- définition/validation : `SkillDefinition` ;
+- métriques runtime par combattant : `Combat State` ;
+- évaluation : `skill-activation-requirements-v1.js` ;
+- refus de démarrage : `Action Resolver`.
+
+Les métriques autoritaires V1 sont :
+
+- `damageDealtTotal` ;
+- `damageTakenTotal` ;
+- `elapsedMs` déjà existant ;
+- `hp/maxHp` déjà existants.
+
+Les dégâts comptés correspondent à la perte de PV réellement appliquée. L'overkill ne gonfle donc pas artificiellement les conditions.
+
+Une condition temporelle n'introduit aucune seconde horloge : elle lit uniquement `CombatState.elapsedMs`.
+
+Un refus pour conditions non remplies intervient avant dépense d'énergie et avant cooldown et expose un résultat déterministe `activation_requirements`.
+
+Le Human Editor futur ne calculera pas ces conditions : il éditera uniquement les données du contrat et projettera l'état renvoyé par le runtime.
