@@ -13842,3 +13842,63 @@ CI finale :
 2. vérifier que les capacités non disponibles au runtime ne sont pas remplacées par une autre capacité arbitraire ;
 3. lancer la preview et vérifier le placement de chaque créature ;
 4. si une créature doit être décalée, définir son offset dans la metadata autoritaire plutôt que via CSS/UI locale.
+
+
+## Micro-lot — liaisons créatures vitrine + profils V2 — 2026-09-29
+
+Base :
+
+- checkpoint PREVALIDATION précédent : `checkpoint/lab-creature-showcase-defaults-v1-prevalidation-green-2026-09-29` ;
+- SHA : `9299eb03172b97833c3c2795915c9f0e90cf2958`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-showcase-creature-links-v2-2026-09-29`.
+
+Branche :
+
+`work/lab-showcase-creature-links-v2-2026-09-29`.
+
+Validation utilisateur explicite — liaisons vitrine :
+
+- Voltige -> visuel Voltige -> profil `biped` ;
+- Ailevent -> visuel Ailevent -> profil `biped` ;
+- Maraileron -> visuel Maraileron -> profil `serpentine` ;
+- Moussados (nom historique correspondant au retour « Moussadon ») -> visuel Golem moussu -> profil `massive` ;
+- Lumilo -> visuel Renard magique doré -> profil `biped` ;
+- Luciéclair -> visuel Guêpe cybernétique -> profil `serpentine`.
+
+Cas historiques dupliqués :
+
+- Ailevent : `crea_galewing` + `crea_ailevent` -> même visuel / même profil ;
+- Lumilo : `crea_lumipup` + `crea_lumilo` -> même visuel / même profil ;
+- Luciéclair : `crea_sparkmoth` + `crea_lucieclair` -> même visuel / même profil.
+
+Constats :
+
+- les packs `global-assets` concernés déclarent actuellement plusieurs profils `drake` qui ne correspondent pas au classement utilisateur ;
+- ces packs restent la source des assets / scale / sockets / transformOrigin ;
+- le mapping vitrine explicite devient propriétaire du profil de posture pour une créature historique donnée ;
+- aucun matching par nom ;
+- le profil `massive` est proposé par l'UI mais aucun `data/profiles/massive.profile.json` n'existe encore.
+
+Objectifs :
+
+1. étendre le mapping explicite par ID historique ;
+2. permettre un `profileId` explicite dans ce mapping ;
+3. conserver assets, scale, sockets et transformOrigin depuis les metadata global-assets ;
+4. créer le profil canonique `massive` nécessaire à Moussados / Golem moussu ;
+5. charger `massive` dans la preview Capture ;
+6. préserver les loadouts historiques déjà raccordés ;
+7. aucune modification Combat Runtime / renderer / catalogue 110.
+
+RED :
+
+- tous les IDs validés ci-dessus doivent résoudre vers le bon `metaId` et le bon `profileId` ;
+- le profil `massive` doit exister et être validable par le registry ;
+- le binding doit préférer le `profileId` explicite du mapping au profil générique du pack ;
+- aucune heuristique par nom ne doit être ajoutée.
+
+État initial :
+
+**DECLARED / RED à poser.**
