@@ -40,6 +40,20 @@ export const SKILL_TARGET_RELATIONS = Object.freeze([
   "any"
 ]);
 
+export const SKILL_ACTIVATION_REQUIREMENT_MODES =
+  Object.freeze([
+    "all",
+    "any"
+  ]);
+
+export const SKILL_ACTIVATION_REQUIREMENT_TYPES =
+  Object.freeze([
+    "combat_elapsed_ms",
+    "damage_dealt",
+    "damage_taken",
+    "hp_at_or_below_pct"
+  ]);
+
 const CATEGORY_SET = new Set(SKILL_CATEGORIES);
 const FORM_SET = new Set(SKILL_FORMS);
 const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
@@ -47,6 +61,10 @@ const DISTANCE_SET = new Set(COMBAT_DISTANCES);
 const EVASION_WINDOW_SET = new Set(SKILL_EVASION_WINDOWS);
 const PROJECTILE_CLASH_MODE_SET = new Set(PROJECTILE_CLASH_MODES);
 const TARGET_RELATION_SET = new Set(SKILL_TARGET_RELATIONS);
+const ACTIVATION_REQUIREMENT_MODE_SET =
+  new Set(SKILL_ACTIVATION_REQUIREMENT_MODES);
+const ACTIVATION_REQUIREMENT_TYPE_SET =
+  new Set(SKILL_ACTIVATION_REQUIREMENT_TYPES);
 
 function nonEmptyString(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -79,6 +97,106 @@ function stringArray(value, field, allowed = null) {
     }
   }
   return Object.freeze([...new Set(normalized)]);
+}
+
+function normalizeActivationRequirements(raw) {
+  const input = raw ?? {};
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input)
+  ) {
+    throw new TypeError(
+      "activationRequirements must be an object"
+    );
+  }
+
+  for (const key of Object.keys(input)) {
+    if (!["mode", "conditions"].includes(key)) {
+      throw new TypeError(
+        "activationRequirements contains unknown field: " +
+          key
+      );
+    }
+  }
+
+  const mode = nonEmptyString(
+    input.mode ?? "all",
+    "activationRequirements.mode"
+  );
+  if (!ACTIVATION_REQUIREMENT_MODE_SET.has(mode)) {
+    throw new RangeError(
+      "Unsupported activation requirement mode: " +
+        mode
+    );
+  }
+
+  const rawConditions = input.conditions ?? [];
+  if (!Array.isArray(rawConditions)) {
+    throw new TypeError(
+      "activationRequirements.conditions must be an array"
+    );
+  }
+
+  const conditions = rawConditions.map(
+    (rawCondition, index) => {
+      const field =
+        `activationRequirements.conditions[${index}]`;
+      if (
+        !rawCondition ||
+        typeof rawCondition !== "object" ||
+        Array.isArray(rawCondition)
+      ) {
+        throw new TypeError(
+          field + " must be an object"
+        );
+      }
+
+      for (const key of Object.keys(rawCondition)) {
+        if (!["type", "threshold"].includes(key)) {
+          throw new TypeError(
+            field + " contains unknown field: " + key
+          );
+        }
+      }
+
+      const type = nonEmptyString(
+        rawCondition.type,
+        field + ".type"
+      );
+      if (!ACTIVATION_REQUIREMENT_TYPE_SET.has(type)) {
+        throw new RangeError(
+          "Unsupported activation requirement condition type: " +
+            type
+        );
+      }
+
+      const threshold = nonNegativeNumber(
+        rawCondition.threshold,
+        field + ".threshold"
+      );
+
+      if (
+        type === "hp_at_or_below_pct" &&
+        threshold > 100
+      ) {
+        throw new RangeError(
+          field +
+            ".threshold HP percentage must be between 0 and 100"
+        );
+      }
+
+      return Object.freeze({
+        type,
+        threshold
+      });
+    }
+  );
+
+  return Object.freeze({
+    mode,
+    conditions: Object.freeze(conditions)
+  });
 }
 
 export function normalizeSkillDefinition(input) {
@@ -238,6 +356,10 @@ export function normalizeSkillDefinition(input) {
       input.interruptibleDuringPreparation !== false,
     allowedDistances,
     targetRelations,
+    activationRequirements:
+      normalizeActivationRequirements(
+        input.activationRequirements
+      ),
     evasion: Object.freeze({
       window: evasionWindow,
       incomingForms: evasionIncomingForms
