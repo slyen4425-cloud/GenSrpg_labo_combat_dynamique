@@ -16007,3 +16007,25 @@ Décision pour le RED :
   - `requires-stat-mapping` ;
   - `requires-stat-effect-policy` pour préserver correctement l'unité historique en pourcentage face à `deltaPoints`.
 - Runtime, Action Resolver, Status Runtime, Human Editor, DOM, storage et network restent hors périmètre.
+
+
+### RED démontré — Capture Complex Skills Migration V1
+
+Commit RED :
+
+- `efa0ce59da6bb3e37905dbd7828276999013ea81`
+- test ajouté : `tests/unit/capture-complex-skill-migration-v1.test.mjs`
+
+CI RED :
+
+- run `36645752138`
+- job `foundation` : FAILURE
+- 616 tests ;
+- 615 PASS ;
+- 1 FAIL.
+
+Cause RED prouvée :
+
+- `ERR_MODULE_NOT_FOUND` sur `src/adapters/input/capture/capture-complex-skill-migration-v1.js` ;
+- aucun échec Runtime/UI préexistant ;
+- la correction minimale peut donc être limitée à l'adaptateur pur de migration et à l'exposition du resolver d'alias legacy déjà propriétaire du mapping Monster Capture.
