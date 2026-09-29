@@ -35,6 +35,11 @@ import {
   capturePortableNativeSkillDraftsV1
 } from "../catalogs/capture-portable-native-skill-catalog-v1.js";
 import {
+  CAPTURE_LEGACY_CREATURE_CATALOG_URL,
+  normalizeLegacyCaptureCreatureCatalogV1,
+  adaptLegacyCaptureCreatureToEditorRecordV1
+} from "../catalogs/capture-legacy-creature-catalog-v1.js";
+import {
   buildPrivateAudioRoleGroupsV1
 } from "./private-audio-role-groups-v1.js";
 import {
@@ -1329,6 +1334,25 @@ async function hydratePrivateAudioCatalog(root) {
   return catalog;
 }
 
+async function hydrateLegacyCreatureCatalog() {
+  const response = await fetch(
+    CAPTURE_LEGACY_CREATURE_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue créatures Capture indisponible (" +
+        response.status +
+        ")"
+    );
+  }
+
+  return normalizeLegacyCaptureCreatureCatalogV1(
+    await response.json()
+  );
+}
+
 async function hydrateNativeSkillCatalog() {
   const response = await fetch(
     NATIVE_SKILL_CATALOG_URL,
@@ -2059,21 +2083,55 @@ export function mountCaptureEditorHumanV2({
       root,
       creatureId
     );
+    const previous =
+      selectedCreatureId &&
+      configuredCreatures.has(
+        selectedCreatureId
+      )
+        ? configuredCreatures.get(
+            selectedCreatureId
+          )
+        : null;
+
     const linkedSkillIds = [
-      ...new Set(
-        loadout.slots
+      ...new Set([
+        ...(
+          previous?.draft?.skillIds ??
+          []
+        ),
+        ...loadout.slots
           .map((slot) => slot.skillId)
           .filter(Boolean)
-      )
+      ])
     ];
+
     const fields = readCreatureFields(
       root,
       sockets
     );
     fields.linkedSkillIds = linkedSkillIds;
 
-    const draft =
+    let draft =
       buildHumanCreatureDraftV3(fields);
+
+    if (
+      previous &&
+      previous.draft.id === draft.id &&
+      previous.draft.capture.evolution !==
+        null &&
+      draft.capture.evolution === null
+    ) {
+      draft =
+        normalizeCaptureCreatureEditorDraftV3({
+          ...draft,
+          capture: {
+            ...draft.capture,
+            evolution:
+              previous.draft.capture
+                .evolution
+          }
+        });
+    }
 
     return Object.freeze({
       draft,
@@ -2670,6 +2728,12 @@ export function mountCaptureEditorHumanV2({
       const loadout =
         creatureRecord.loadout;
 
+      if (creatureDraft.presentation === null) {
+        throw new Error(
+          "Ajoute une image face à cette créature avant de lancer le test combat."
+        );
+      }
+
       const resolvedOpponentCreatureDraft =
         typeof getOpponentCreatureDraft === "function"
           ? getOpponentCreatureDraft()
@@ -2748,9 +2812,15 @@ export function mountCaptureEditorHumanV2({
   Promise.all([
     hydrateAssetCatalog(root, listen),
     hydratePrivateAudioCatalog(root),
-    hydrateNativeSkillCatalog()
+    hydrateNativeSkillCatalog(),
+    hydrateLegacyCreatureCatalog()
   ])
-    .then(([, , nativeSkills]) => {
+    .then(([
+      ,
+      ,
+      nativeSkills,
+      legacyCreatureCatalog
+    ]) => {
       for (
         const [skillId, draft] of nativeSkills
       ) {
@@ -2773,12 +2843,39 @@ export function mountCaptureEditorHumanV2({
         }
       }
 
+      const enabledSkillIds =
+        new Set(
+          configuredSkills.keys()
+        );
+
+      for (
+        const raw of
+          legacyCreatureCatalog.creatures
+      ) {
+        if (
+          configuredCreatures.has(raw.id)
+        ) {
+          continue;
+        }
+
+        configuredCreatures.set(
+          raw.id,
+          adaptLegacyCaptureCreatureToEditorRecordV1(
+            raw,
+            { enabledSkillIds }
+          )
+        );
+      }
+
       refreshLoadoutOptions();
+      refreshCreatureLibraryOptions(
+        selectedCreatureId
+      );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, 110 créatures Monster Capture, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
           "info"
         );
       }
