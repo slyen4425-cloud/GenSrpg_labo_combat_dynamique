@@ -120,7 +120,7 @@ test("historical creature without visual remains a valid CaptureCreatureEditorDr
   const draft = buildHumanCreatureDraftV3({
     id: "crea-legacy-no-art",
     displayName: "Legacy sans art",
-    description: "",
+    description: "Créature historique sans visuel.",
     level: 1,
     sourceStats: {
       force: 1,
