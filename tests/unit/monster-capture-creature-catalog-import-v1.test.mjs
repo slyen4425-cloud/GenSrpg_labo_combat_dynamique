@@ -107,7 +107,7 @@ test("Human Editor validates runtime catalog count from provenance instead of a 
   );
   assert.match(
     source,
-    /new Set\(entries\.map\(\(entry\) => entry\.id\)\)\.size/
+    /new Set\(\s*entries\.map\(\(entry\) => entry\.id\)\s*\)\.size/
   );
 });
 
