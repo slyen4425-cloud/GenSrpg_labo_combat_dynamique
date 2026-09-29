@@ -9,7 +9,8 @@ import {
   applyCombatDamageV1
 } from "./combat-damage-application-v1.js";
 import {
-  createStatusEffectRuntimeInstanceV1
+  createStatusEffectRuntimeInstanceV1,
+  isStatusEffectRuntimeInstanceActiveV1
 } from "./status-effect-instance-v1.js";
 
 function fighterOf(state, fighterId) {
@@ -20,13 +21,6 @@ function fighterOf(state, fighterId) {
     );
   }
   return fighter;
-}
-
-function activeAt(instance, atMs) {
-  return (
-    instance.appliedAtMs <= atMs &&
-    atMs < instance.expiresAtMs
-  );
 }
 
 function replaceInstance(
@@ -81,7 +75,11 @@ export function activeStatusEffectsV1(
   const fighter = fighterOf(state, fighterId);
   return Object.freeze(
     fighter.statusEffects.filter(
-      (instance) => activeAt(instance, atMs)
+      (instance) =>
+        isStatusEffectRuntimeInstanceActiveV1(
+          instance,
+          atMs
+        )
     )
   );
 }
@@ -158,9 +156,43 @@ export function validateStatusEffectForTargetV1({
     });
   }
 
+  if (
+    status.kind === "stat_modifier" &&
+    status.modifierMode === "percent" &&
+    !Object.prototype.hasOwnProperty.call(
+      target.statValuesById ?? {},
+      status.statId
+    )
+  ) {
+    return Object.freeze({
+      ok: false,
+      outcome: "unsupported_status_stat_value",
+      statId: status.statId
+    });
+  }
+
   return Object.freeze({
     ok: true
   });
+}
+
+function refreshedLifetime(existing, now) {
+  if (
+    existing.definition.durationModel ===
+    "owner_action_end"
+  ) {
+    return {
+      expiresAtMs: null,
+      remainingActionEnds:
+        existing.definition.durationActions
+    };
+  }
+
+  return {
+    expiresAtMs:
+      now + existing.definition.durationMs,
+    remainingActionEnds: null
+  };
 }
 
 export function applyStatusEffectV1({
@@ -212,8 +244,7 @@ export function applyStatusEffectV1({
   if (status.stacking === "refresh") {
     const refreshed = Object.freeze({
       ...existing,
-      expiresAtMs:
-        now + existing.definition.durationMs
+      ...refreshedLifetime(existing, now)
     });
     return replaceInstance(
       state,
@@ -230,9 +261,8 @@ export function applyStatusEffectV1({
     nextStacks - existing.stacks;
   const stacked = Object.freeze({
     ...existing,
+    ...refreshedLifetime(existing, now),
     stacks: nextStacks,
-    expiresAtMs:
-      now + existing.definition.durationMs,
     shieldRemaining:
       existing.definition.kind === "shield"
         ? (
@@ -315,6 +345,38 @@ function updateTickSchedule(
   );
 }
 
+function updateRemainingActionEnds(
+  state,
+  fighterId,
+  statusId,
+  remainingActionEnds
+) {
+  if (remainingActionEnds <= 0) {
+    return removeInstanceById(
+      state,
+      fighterId,
+      statusId
+    );
+  }
+
+  const fighter = fighterOf(state, fighterId);
+  const statuses = fighter.statusEffects.map(
+    (instance) =>
+      instance.definition.id === statusId
+        ? Object.freeze({
+            ...instance,
+            remainingActionEnds
+          })
+        : instance
+  );
+
+  return withFighterStatusEffects(
+    state,
+    fighterId,
+    statuses
+  );
+}
+
 function applyHotTick({
   state,
   targetActorId,
@@ -334,6 +396,139 @@ function applyHotTick({
     state: nextState,
     applied: after - before
   });
+}
+
+function applyDotTick({
+  state,
+  fighterId,
+  instance,
+  amount,
+  atMs
+}) {
+  if (
+    instance.definition.damageMode ===
+    "fixed"
+  ) {
+    return applyCombatDamageV1({
+      state,
+      sourceActorId:
+        instance.sourceActorId,
+      targetActorId: fighterId,
+      damage: amount,
+      atMs
+    }).state;
+  }
+
+  const damage =
+    computeCombatDamageV1({
+      state,
+      attackerId:
+        instance.sourceActorId,
+      targetId: fighterId,
+      baseDamage: amount,
+      channel:
+        instance.definition.channel,
+      atMs
+    });
+
+  return applyCombatDamageV1({
+    state,
+    sourceActorId:
+      instance.sourceActorId,
+    targetActorId: fighterId,
+    damage: damage.damage,
+    atMs
+  }).state;
+}
+
+export function advanceStatusEffectsOnOwnerActionEndV1({
+  state,
+  fighterId
+}) {
+  fighterOf(state, fighterId);
+
+  let nextState = state;
+  const statusIds =
+    state.fighters[
+      fighterId
+    ].statusEffects
+      .filter(
+        (instance) =>
+          instance.definition.durationModel ===
+          "owner_action_end"
+      )
+      .map(
+        (instance) =>
+          instance.definition.id
+      );
+
+  for (const statusId of statusIds) {
+    let instance =
+      fighterOf(
+        nextState,
+        fighterId
+      ).statusEffects.find(
+        (entry) =>
+          entry.definition.id === statusId
+      );
+
+    if (
+      !instance ||
+      Number(instance.remainingActionEnds) <= 0
+    ) {
+      continue;
+    }
+
+    const amount =
+      (
+        instance.definition.amount ??
+        0
+      ) * instance.stacks;
+
+    if (
+      instance.definition.kind ===
+      "damage_over_time"
+    ) {
+      nextState = applyDotTick({
+        state: nextState,
+        fighterId,
+        instance,
+        amount,
+        atMs: nextState.elapsedMs
+      });
+    } else if (
+      instance.definition.kind ===
+      "heal_over_time"
+    ) {
+      nextState = applyHotTick({
+        state: nextState,
+        targetActorId: fighterId,
+        amount
+      }).state;
+    }
+
+    instance =
+      fighterOf(
+        nextState,
+        fighterId
+      ).statusEffects.find(
+        (entry) =>
+          entry.definition.id === statusId
+      );
+
+    if (!instance) {
+      continue;
+    }
+
+    nextState = updateRemainingActionEnds(
+      nextState,
+      fighterId,
+      statusId,
+      instance.remainingActionEnds - 1
+    );
+  }
+
+  return nextState;
 }
 
 export function advanceStatusEffectsV1({
@@ -360,10 +555,16 @@ export function advanceStatusEffectsV1({
     const statusIds =
       state.fighters[
         fighterId
-      ].statusEffects.map(
-        (instance) =>
-          instance.definition.id
-      );
+      ].statusEffects
+        .filter(
+          (instance) =>
+            instance.definition.durationModel ===
+            "time_ms"
+        )
+        .map(
+          (instance) =>
+            instance.definition.id
+        );
 
     for (const statusId of statusIds) {
       let instance =
@@ -395,26 +596,13 @@ export function advanceStatusEffectsV1({
           instance.definition.kind ===
           "damage_over_time"
         ) {
-          const damage =
-            computeCombatDamageV1({
-              state: nextState,
-              attackerId:
-                instance.sourceActorId,
-              targetId: fighterId,
-              baseDamage: amount,
-              channel:
-                instance.definition.channel,
-              atMs: tickAt
-            });
-          nextState =
-            applyCombatDamageV1({
-              state: nextState,
-              sourceActorId:
-                instance.sourceActorId,
-              targetActorId: fighterId,
-              damage: damage.damage,
-              atMs: tickAt
-            }).state;
+          nextState = applyDotTick({
+            state: nextState,
+            fighterId,
+            instance,
+            amount,
+            atMs: tickAt
+          });
         } else if (
           instance.definition.kind ===
           "heal_over_time"
@@ -472,6 +660,8 @@ export function advanceStatusEffectsV1({
     );
     const kept = fighter.statusEffects.filter(
       (instance) =>
+        instance.definition.durationModel !==
+          "time_ms" ||
         instance.expiresAtMs > endMs
     );
     if (
