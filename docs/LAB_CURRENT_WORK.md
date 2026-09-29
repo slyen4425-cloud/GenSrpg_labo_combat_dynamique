@@ -13768,3 +13768,66 @@ Critère de fin :
 - CI complète verte ;
 - preview dédiée ;
 - PREVALIDATION smartphone.
+
+
+### Résultat — loadout historique + position créatures V1
+
+RED :
+
+- test : `tests/unit/capture-creature-showcase-defaults-v1.test.mjs` ;
+- SHA : `0b71894001cbde046140df1c9a2fbd1a1b00f45d` ;
+- CI : `36612231770` — FAILURE attendue ;
+- 529 tests, 521 pass, 8 fail ;
+- échecs ciblés : resolver de loadout absent, position/transformOrigin non transportés, Human Editor ne reconstruisant pas encore les slots historiques.
+
+Règle historique GenSrpG démontrée depuis le fichier fourni :
+
+- `captureCreatureProgressRules().maxMoves = 4` par défaut ;
+- `captureAbilityRequiredLevel()` fournit le niveau requis ;
+- `captureOpenCreatureDetail()` initialise les actifs avec les `abilityIds` dont le niveau requis est <= niveau de la créature, puis `slice(0, maxMoves)` ;
+- aucune compétence extérieure à `abilityIds` n'est inventée.
+
+Implémentation loadout :
+
+- nouveau propriétaire : `src/catalogs/capture-creature-historical-loadout-v1.js` ;
+- ordre historique des `abilityIds` conservé ;
+- filtre niveau requis ;
+- quatre slots actifs maximum pour le contrat runtime actuel ;
+- si une capacité historique sélectionnée n'a pas encore d'équivalent runtime sûr, son emplacement reste vide plutôt que d'être remplacé par une capacité ultérieure ;
+- les `skillIds` historiques complets restent conservés sur la créature.
+
+Implémentation position :
+
+- propriétaire confirmé : metadata visuelle `global-assets` ;
+- `CreaturePresentationBindingV2` transporte désormais :
+  - `position {x,y}` ;
+  - `transformOrigin` ;
+- `capture-creature-visual-binding-v1.js` lit `meta.offset` et `meta.transformOrigin` ;
+- l'adaptateur natif conserve ces données ;
+- `VisualActor` reçoit la position via son adaptateur existant ;
+- aucun CSS local, aucun offset caché dans l'UI, aucun changement renderer / Combat Core.
+
+Audit des offsets existants :
+
+- les metadata historiques/test de Maraileron, Ailevent, Voltige et des anciennes créatures de preview n'ont pas de décalage non nul validé ;
+- leurs `offset` actuels sont `{x:0,y:0}` ;
+- aucune valeur arbitraire n'a donc été inventée ;
+- `{0,0}` reste le fallback centré dans le slot ;
+- tout futur offset explicite dans la metadata sera maintenant conservé de bout en bout.
+
+Validation technique finale :
+
+- HEAD fonctionnel : `9f451de2c6486b74befac5b1c40dd9f7bc694542` ;
+- CI : `36612389518` — SUCCESS ;
+- 529 tests, 529 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION smartphone**.
+
+À vérifier :
+
+1. Maraileron / Voltige / Ailevent chargent automatiquement leurs compétences historiques disponibles au niveau courant ;
+2. aucun slot n'invente une compétence absente de la liste historique ;
+3. le placement centré est correct pour ces créatures ;
+4. si une créature doit être décalée, relever simplement haut/bas/gauche/droite pour inscrire ensuite l'offset dans sa metadata autoritaire.
