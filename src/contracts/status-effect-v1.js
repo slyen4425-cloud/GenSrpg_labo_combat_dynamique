@@ -21,6 +21,24 @@ export const STATUS_EFFECT_V1_STACKING = Object.freeze([
   "stack"
 ]);
 
+export const STATUS_EFFECT_V1_DURATION_MODELS =
+  Object.freeze([
+    "time_ms",
+    "owner_action_end"
+  ]);
+
+export const STATUS_EFFECT_V1_STAT_MODIFIER_MODES =
+  Object.freeze([
+    "points",
+    "percent"
+  ]);
+
+export const STATUS_EFFECT_V1_DAMAGE_MODES =
+  Object.freeze([
+    "combat",
+    "fixed"
+  ]);
+
 const KIND_SET = new Set(STATUS_EFFECT_V1_KINDS);
 const POLARITY_SET = new Set(
   STATUS_EFFECT_V1_POLARITIES
@@ -28,12 +46,23 @@ const POLARITY_SET = new Set(
 const STACKING_SET = new Set(
   STATUS_EFFECT_V1_STACKING
 );
+const DURATION_MODEL_SET = new Set(
+  STATUS_EFFECT_V1_DURATION_MODELS
+);
+const STAT_MODIFIER_MODE_SET = new Set(
+  STATUS_EFFECT_V1_STAT_MODIFIER_MODES
+);
+const DAMAGE_MODE_SET = new Set(
+  STATUS_EFFECT_V1_DAMAGE_MODES
+);
 
 const COMMON_FIELDS = new Set([
   "id",
   "kind",
   "polarity",
+  "durationModel",
   "durationMs",
+  "durationActions",
   "stacking",
   "maxStacks",
   "tags"
@@ -43,13 +72,16 @@ const FIELDS_BY_KIND = Object.freeze({
   stat_modifier: new Set([
     ...COMMON_FIELDS,
     "statId",
-    "deltaPoints"
+    "modifierMode",
+    "deltaPoints",
+    "percent"
   ]),
   damage_over_time: new Set([
     ...COMMON_FIELDS,
     "amount",
     "channel",
-    "tickIntervalMs"
+    "tickIntervalMs",
+    "damageMode"
   ]),
   heal_over_time: new Set([
     ...COMMON_FIELDS,
@@ -150,6 +182,49 @@ function assertKnownFields(
   }
 }
 
+function normalizeDuration(value) {
+  const durationModel = requiredString(
+    value.durationModel ?? "time_ms",
+    "StatusEffectV1.durationModel"
+  );
+
+  if (!DURATION_MODEL_SET.has(durationModel)) {
+    throw new RangeError(
+      "Unsupported StatusEffectV1.durationModel: " +
+        durationModel
+    );
+  }
+
+  if (durationModel === "time_ms") {
+    if (value.durationActions != null) {
+      throw new TypeError(
+        "StatusEffectV1.durationActions is only valid for owner_action_end"
+      );
+    }
+    return Object.freeze({
+      durationModel,
+      durationMs: positiveNumber(
+        value.durationMs,
+        "StatusEffectV1.durationMs"
+      )
+    });
+  }
+
+  if (value.durationMs != null) {
+    throw new TypeError(
+      "StatusEffectV1.durationMs is only valid for time_ms"
+    );
+  }
+
+  return Object.freeze({
+    durationModel,
+    durationActions: positiveInteger(
+      value.durationActions,
+      "StatusEffectV1.durationActions"
+    )
+  });
+}
+
 export function normalizeStatusEffectV1(input) {
   const value = objectValue(
     input,
@@ -194,6 +269,8 @@ export function normalizeStatusEffectV1(input) {
     );
   }
 
+  const duration = normalizeDuration(value);
+
   const output = {
     id: requiredString(
       value.id,
@@ -201,10 +278,7 @@ export function normalizeStatusEffectV1(input) {
     ),
     kind,
     polarity,
-    durationMs: positiveNumber(
-      value.durationMs,
-      "StatusEffectV1.durationMs"
-    ),
+    ...duration,
     stacking,
     maxStacks:
       stacking === "stack"
@@ -224,10 +298,40 @@ export function normalizeStatusEffectV1(input) {
       value.statId,
       "StatusEffectV1.statId"
     );
-    output.deltaPoints = finiteNumber(
-      value.deltaPoints,
-      "StatusEffectV1.deltaPoints"
+
+    const modifierMode = requiredString(
+      value.modifierMode ?? "points",
+      "StatusEffectV1.modifierMode"
     );
+    if (!STAT_MODIFIER_MODE_SET.has(modifierMode)) {
+      throw new RangeError(
+        "Unsupported StatusEffectV1.modifierMode: " +
+          modifierMode
+      );
+    }
+    output.modifierMode = modifierMode;
+
+    if (modifierMode === "points") {
+      if (value.percent != null) {
+        throw new TypeError(
+          "StatusEffectV1.percent is only valid for percent modifierMode"
+        );
+      }
+      output.deltaPoints = finiteNumber(
+        value.deltaPoints,
+        "StatusEffectV1.deltaPoints"
+      );
+    } else {
+      if (value.deltaPoints != null) {
+        throw new TypeError(
+          "StatusEffectV1.deltaPoints is only valid for points modifierMode"
+        );
+      }
+      output.percent = finiteNumber(
+        value.percent,
+        "StatusEffectV1.percent"
+      );
+    }
   }
 
   if (kind === "damage_over_time") {
@@ -239,10 +343,29 @@ export function normalizeStatusEffectV1(input) {
       value.channel,
       "StatusEffectV1.channel"
     );
-    output.tickIntervalMs = positiveNumber(
-      value.tickIntervalMs,
-      "StatusEffectV1.tickIntervalMs"
+
+    const damageMode = requiredString(
+      value.damageMode ?? "combat",
+      "StatusEffectV1.damageMode"
     );
+    if (!DAMAGE_MODE_SET.has(damageMode)) {
+      throw new RangeError(
+        "Unsupported StatusEffectV1.damageMode: " +
+          damageMode
+      );
+    }
+    output.damageMode = damageMode;
+
+    if (duration.durationModel === "time_ms") {
+      output.tickIntervalMs = positiveNumber(
+        value.tickIntervalMs,
+        "StatusEffectV1.tickIntervalMs"
+      );
+    } else if (value.tickIntervalMs != null) {
+      throw new TypeError(
+        "StatusEffectV1.tickIntervalMs is not used by owner_action_end DoT"
+      );
+    }
   }
 
   if (kind === "heal_over_time") {
@@ -250,10 +373,16 @@ export function normalizeStatusEffectV1(input) {
       value.amount,
       "StatusEffectV1.amount"
     );
-    output.tickIntervalMs = positiveNumber(
-      value.tickIntervalMs,
-      "StatusEffectV1.tickIntervalMs"
-    );
+    if (duration.durationModel === "time_ms") {
+      output.tickIntervalMs = positiveNumber(
+        value.tickIntervalMs,
+        "StatusEffectV1.tickIntervalMs"
+      );
+    } else if (value.tickIntervalMs != null) {
+      throw new TypeError(
+        "StatusEffectV1.tickIntervalMs is not used by owner_action_end HoT"
+      );
+    }
   }
 
   if (kind === "shield") {
