@@ -1,0 +1,491 @@
+import {
+  withFighterHp,
+  withFighterStatusEffects
+} from "./combat-state.js";
+import {
+  computeCombatDamageV1
+} from "./combat-damage-v1.js";
+import {
+  applyCombatDamageV1
+} from "./combat-damage-application-v1.js";
+import {
+  createStatusEffectRuntimeInstanceV1
+} from "./status-effect-instance-v1.js";
+
+function fighterOf(state, fighterId) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(
+      "Unknown fighter: " + fighterId
+    );
+  }
+  return fighter;
+}
+
+function activeAt(instance, atMs) {
+  return (
+    instance.appliedAtMs <= atMs &&
+    atMs < instance.expiresAtMs
+  );
+}
+
+function replaceInstance(
+  state,
+  fighterId,
+  instance
+) {
+  const fighter = fighterOf(state, fighterId);
+  const statuses = [
+    ...(fighter.statusEffects ?? [])
+  ];
+  const index = statuses.findIndex(
+    (entry) =>
+      entry.definition.id ===
+      instance.definition.id
+  );
+
+  if (index < 0) {
+    statuses.push(instance);
+  } else {
+    statuses[index] = instance;
+  }
+
+  return withFighterStatusEffects(
+    state,
+    fighterId,
+    statuses
+  );
+}
+
+function removeInstanceById(
+  state,
+  fighterId,
+  statusId
+) {
+  const fighter = fighterOf(state, fighterId);
+  return withFighterStatusEffects(
+    state,
+    fighterId,
+    fighter.statusEffects.filter(
+      (entry) =>
+        entry.definition.id !== statusId
+    )
+  );
+}
+
+export function activeStatusEffectsV1(
+  state,
+  fighterId,
+  atMs = state.elapsedMs
+) {
+  const fighter = fighterOf(state, fighterId);
+  return Object.freeze(
+    fighter.statusEffects.filter(
+      (instance) => activeAt(instance, atMs)
+    )
+  );
+}
+
+export function hasActiveStatusKindV1(
+  state,
+  fighterId,
+  kind,
+  atMs = state.elapsedMs
+) {
+  return activeStatusEffectsV1(
+    state,
+    fighterId,
+    atMs
+  ).some(
+    (instance) =>
+      instance.definition.kind === kind
+  );
+}
+
+export function activeTauntSourceActorIdV1(
+  state,
+  fighterId,
+  atMs = state.elapsedMs
+) {
+  const taunts = activeStatusEffectsV1(
+    state,
+    fighterId,
+    atMs
+  ).filter(
+    (instance) =>
+      instance.definition.kind === "taunt"
+  );
+
+  for (
+    let index = taunts.length - 1;
+    index >= 0;
+    index -= 1
+  ) {
+    const sourceActorId =
+      taunts[index].sourceActorId;
+    if (
+      Number(
+        state.fighters[sourceActorId]?.hp
+      ) > 0
+    ) {
+      return sourceActorId;
+    }
+  }
+
+  return null;
+}
+
+export function validateStatusEffectForTargetV1({
+  state,
+  targetActorId,
+  status
+}) {
+  const target = fighterOf(
+    state,
+    targetActorId
+  );
+
+  if (
+    status.kind === "stat_modifier" &&
+    !target.statEffectRulesById?.[
+      status.statId
+    ]
+  ) {
+    return Object.freeze({
+      ok: false,
+      outcome: "unsupported_status_stat",
+      statId: status.statId
+    });
+  }
+
+  return Object.freeze({
+    ok: true
+  });
+}
+
+export function applyStatusEffectV1({
+  state,
+  targetActorId,
+  sourceActorId,
+  status
+}) {
+  const validation =
+    validateStatusEffectForTargetV1({
+      state,
+      targetActorId,
+      status
+    });
+
+  if (!validation.ok) {
+    throw new RangeError(
+      "Unsupported status statId: " +
+        validation.statId
+    );
+  }
+
+  const target = fighterOf(
+    state,
+    targetActorId
+  );
+  const existing =
+    target.statusEffects.find(
+      (entry) =>
+        entry.definition.id === status.id
+    ) ?? null;
+  const now = state.elapsedMs;
+
+  if (
+    existing === null ||
+    status.stacking === "replace"
+  ) {
+    return replaceInstance(
+      state,
+      targetActorId,
+      createStatusEffectRuntimeInstanceV1({
+        definition: status,
+        sourceActorId,
+        appliedAtMs: now
+      })
+    );
+  }
+
+  if (status.stacking === "refresh") {
+    const refreshed = Object.freeze({
+      ...existing,
+      expiresAtMs:
+        now + existing.definition.durationMs
+    });
+    return replaceInstance(
+      state,
+      targetActorId,
+      refreshed
+    );
+  }
+
+  const nextStacks = Math.min(
+    existing.definition.maxStacks,
+    existing.stacks + 1
+  );
+  const addedStack =
+    nextStacks - existing.stacks;
+  const stacked = Object.freeze({
+    ...existing,
+    stacks: nextStacks,
+    expiresAtMs:
+      now + existing.definition.durationMs,
+    shieldRemaining:
+      existing.definition.kind === "shield"
+        ? (
+            Number(
+              existing.shieldRemaining
+            ) || 0
+          ) +
+          existing.definition.amount *
+            addedStack
+        : existing.shieldRemaining
+  });
+
+  return replaceInstance(
+    state,
+    targetActorId,
+    stacked
+  );
+}
+
+function tagsMatch(definition, tags) {
+  if (tags.length === 0) {
+    return true;
+  }
+  return definition.tags.some(
+    (tag) => tags.includes(tag)
+  );
+}
+
+export function removeStatusEffectsV1({
+  state,
+  targetActorId,
+  polarity,
+  statusTags = []
+}) {
+  const target = fighterOf(
+    state,
+    targetActorId
+  );
+  const tags = Array.isArray(statusTags)
+    ? statusTags
+    : [];
+
+  return withFighterStatusEffects(
+    state,
+    targetActorId,
+    target.statusEffects.filter(
+      (instance) =>
+        !(
+          instance.definition.polarity ===
+            polarity &&
+          tagsMatch(
+            instance.definition,
+            tags
+          )
+        )
+    )
+  );
+}
+
+function updateTickSchedule(
+  state,
+  fighterId,
+  statusId,
+  nextTickAtMs
+) {
+  const fighter = fighterOf(state, fighterId);
+  const statuses = fighter.statusEffects.map(
+    (instance) =>
+      instance.definition.id === statusId
+        ? Object.freeze({
+            ...instance,
+            nextTickAtMs
+          })
+        : instance
+  );
+  return withFighterStatusEffects(
+    state,
+    fighterId,
+    statuses
+  );
+}
+
+function applyHotTick({
+  state,
+  targetActorId,
+  amount
+}) {
+  const before =
+    fighterOf(state, targetActorId).hp;
+  const nextState = withFighterHp(
+    state,
+    targetActorId,
+    before + amount
+  );
+  const after =
+    fighterOf(nextState, targetActorId).hp;
+
+  return Object.freeze({
+    state: nextState,
+    applied: after - before
+  });
+}
+
+export function advanceStatusEffectsV1({
+  state,
+  deltaMs
+}) {
+  const delta = Number(deltaMs);
+  if (!Number.isFinite(delta) || delta < 0) {
+    throw new RangeError(
+      "deltaMs must be a non-negative finite number"
+    );
+  }
+  if (delta === 0) {
+    return state;
+  }
+
+  const endMs = state.elapsedMs + delta;
+  let nextState = state;
+
+  for (
+    const fighterId of
+    Object.keys(state.fighters)
+  ) {
+    const statusIds =
+      state.fighters[
+        fighterId
+      ].statusEffects.map(
+        (instance) =>
+          instance.definition.id
+      );
+
+    for (const statusId of statusIds) {
+      let instance =
+        fighterOf(
+          nextState,
+          fighterId
+        ).statusEffects.find(
+          (entry) =>
+            entry.definition.id ===
+            statusId
+        );
+
+      while (
+        instance &&
+        instance.nextTickAtMs !== null &&
+        instance.nextTickAtMs <= endMs &&
+        instance.nextTickAtMs <=
+          instance.expiresAtMs
+      ) {
+        const tickAt =
+          instance.nextTickAtMs;
+        const amount =
+          (
+            instance.definition.amount ??
+            0
+          ) * instance.stacks;
+
+        if (
+          instance.definition.kind ===
+          "damage_over_time"
+        ) {
+          const damage =
+            computeCombatDamageV1({
+              state: nextState,
+              attackerId:
+                instance.sourceActorId,
+              targetId: fighterId,
+              baseDamage: amount,
+              channel:
+                instance.definition.channel,
+              atMs: tickAt
+            });
+          nextState =
+            applyCombatDamageV1({
+              state: nextState,
+              sourceActorId:
+                instance.sourceActorId,
+              targetActorId: fighterId,
+              damage: damage.damage,
+              atMs: tickAt
+            }).state;
+        } else if (
+          instance.definition.kind ===
+          "heal_over_time"
+        ) {
+          nextState = applyHotTick({
+            state: nextState,
+            targetActorId: fighterId,
+            amount
+          }).state;
+        }
+
+        instance =
+          fighterOf(
+            nextState,
+            fighterId
+          ).statusEffects.find(
+            (entry) =>
+              entry.definition.id ===
+              statusId
+          );
+
+        if (!instance) {
+          break;
+        }
+
+        const nextTickAtMs =
+          tickAt +
+          instance.definition.tickIntervalMs;
+        nextState = updateTickSchedule(
+          nextState,
+          fighterId,
+          statusId,
+          nextTickAtMs
+        );
+        instance =
+          fighterOf(
+            nextState,
+            fighterId
+          ).statusEffects.find(
+            (entry) =>
+              entry.definition.id ===
+              statusId
+          );
+      }
+    }
+  }
+
+  for (
+    const fighterId of
+    Object.keys(nextState.fighters)
+  ) {
+    const fighter = fighterOf(
+      nextState,
+      fighterId
+    );
+    const kept = fighter.statusEffects.filter(
+      (instance) =>
+        instance.expiresAtMs > endMs
+    );
+    if (
+      kept.length !==
+      fighter.statusEffects.length
+    ) {
+      nextState =
+        withFighterStatusEffects(
+          nextState,
+          fighterId,
+          kept
+        );
+    }
+  }
+
+  return nextState;
+}
