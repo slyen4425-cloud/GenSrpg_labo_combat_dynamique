@@ -15186,3 +15186,92 @@ Revue charte :
 **GREEN architecture/contrat.**
 
 Étape suivante : **Immediate Tactical Effects Runtime V1**.
+
+
+## Micro-lot — Immediate Tactical Effects Runtime V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN Tactical Skill Effects Architecture V1 : `checkpoint/lab-capture-tactical-skill-effects-architecture-v1-green-2026-09-30` ;
+- SHA : `54cfea209b32c4181c1f8ff275f36d8651bd8d77` ;
+- CI : SUCCESS, 582/582.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-immediate-tactical-effects-runtime-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-immediate-tactical-effects-runtime-v1-2026-09-30`.
+
+### Objectif
+
+Rendre réellement actifs en combat les effets instantanés qui ne nécessitent ni multi-cible ni statut persistant :
+
+- soin de la cible ;
+- auto-soin / composant de vol de vie explicite ;
+- restauration d'énergie ;
+- drain d'énergie.
+
+### Compatibilité SkillDefinition
+
+Le `SkillDefinition.effect` historique reste une vue de compatibilité nécessaire aux capacités existantes.
+
+Nouveau champ autorisé : `effects`, tableau de `SkillEffectV1`.
+
+Règle anti-double-autorité :
+
+- un type déjà porté avec une valeur non nulle dans `effect` ne peut pas être redéfini comme effet tactique du même type ;
+- les nouveaux effets supplémentaires restent dans `effects` ;
+- le Runtime ne doit jamais additionner silencieusement deux propriétaires du même effet.
+
+### Scope V1 actif
+
+Scopes exécutables ici :
+
+- `target` ;
+- `self`.
+
+Scopes multi-cibles :
+
+- `all_enemies` ;
+- `all_allies` ;
+- `all_except_self` ;
+
+restent explicitement non supportés jusqu'au lot Area Targeting Runtime V1.
+
+Effets persistants `apply_status/cleanse/dispel` restent non supportés jusqu'au lot StatusEffect Runtime V1.
+
+### Propriétaires
+
+- définition : SkillDefinition + SkillEffectV1 ;
+- exécution instantanée : module Core dédié ;
+- PV / énergie : Combat State ;
+- Action Resolver orchestre à l'impact réel ;
+- aucune logique d'effet dans UI/renderer.
+
+### RED
+
+1. SkillDefinition transporte les effets tactiques ;
+2. heal cible réellement les PV et respecte maxHp ;
+3. auto-soin après impact réel ;
+4. energy_restore et energy_drain respectent bornes ;
+5. effets non supportés refusés explicitement, jamais ignorés ;
+6. refus/réaction évitée n'applique aucun effet ;
+7. vrai chemin CombatSession.
+
+### Protégé
+
+- multi-cible / Battle Targeting ;
+- StatusEffect runtime ;
+- Animation/FX/renderer ;
+- Human Editor ;
+- catalogues historiques ;
+- aucun timer/global/storage/DOM.
+
+### Critère de fin
+
+- vrai chemin Runtime GREEN ;
+- événements sémantiques d'effets ;
+- aucune régression dégâts/stats/activation/cooldown ;
+- checkpoint GREEN avant Area Targeting.
