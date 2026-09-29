@@ -6,80 +6,90 @@
       "label": "Vitesse",
       "damageChannel": null,
       "resistanceChannel": null,
-      "damagePerPoint": 0,
-      "resistancePerPoint": 0
+      "damagePctPerPoint": 0,
+      "resistancePctPerPoint": 0,
+      "chargeTimeReductionPctPerPoint": 1
     },
     {
       "id": "physical",
       "label": "Puissance physique",
       "damageChannel": "physical",
       "resistanceChannel": "physical",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "fire",
       "label": "Feu",
       "damageChannel": "fire",
       "resistanceChannel": "fire",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "water",
       "label": "Eau",
       "damageChannel": "water",
       "resistanceChannel": "water",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "earth",
       "label": "Terre",
       "damageChannel": "earth",
       "resistanceChannel": "earth",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "air",
       "label": "Air",
       "damageChannel": "air",
       "resistanceChannel": "air",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "electric",
       "label": "Électricité",
       "damageChannel": "electric",
       "resistanceChannel": "electric",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "light",
       "label": "Lumière",
       "damageChannel": "light",
       "resistanceChannel": "light",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "shadow",
       "label": "Ombre",
       "damageChannel": "shadow",
       "resistanceChannel": "shadow",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     },
     {
       "id": "poison",
       "label": "Poison",
       "damageChannel": "poison",
       "resistanceChannel": "poison",
-      "damagePerPoint": 1,
-      "resistancePerPoint": 1
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
     }
   ]
 }
