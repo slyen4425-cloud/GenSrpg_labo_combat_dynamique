@@ -13311,3 +13311,99 @@ Le GREEN UI final reste interdit avant validation utilisateur des actions :
 - enregistrer comme nouvelle ;
 - mettre à jour l'existante ;
 - basculer entre deux créatures sans mélange de données.
+
+
+## Micro-lot — import catalogue Monster Capture legacy V1 — 2026-09-29
+
+Base :
+
+- checkpoint : `checkpoint/lab-capture-creature-crud-v1-prevalidation-green-2026-09-29` ;
+- SHA : `afd7148ffe539b7c08dfb2f4c45dbb8befefdf0f`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-legacy-creature-catalog-import-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-legacy-creature-catalog-import-v1-2026-09-29`.
+
+Retour utilisateur :
+
+- les boutons CRUD créature sont présents ;
+- la liste des créatures Monster Capture existantes n'apparaît pas ;
+- si elle n'est pas déjà dans le labo, récupérer les données historiques Monster Capture et les exporter temporairement dans le labo.
+
+Source historique démontrée :
+
+- dépôt : `slyen4425-cloud/Zombicide-40k` ;
+- commit déjà utilisé par le catalogue de capacités du labo : `49289784ee92a47fd51089815ca25954cdba4493` ;
+- blob index : `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- table : `MC162_ENTITIES` ;
+- 110 créatures, 110 IDs uniques ;
+- 12 anciennes entrées de démonstration + 98 entrées `starter_capture` ;
+- 64 relations d'évolution ;
+- 103 IDs de capacités distincts ;
+- les 103 IDs existent déjà dans `capture-used-ability-catalog-v2`.
+
+Vérification de stabilité :
+
+- le snapshot Capture récent du 2026-09-24 (blob `6c95e3f6ca4bf8e34003776e7e43e44192aafb16`) contient exactement les mêmes 110 enregistrements ;
+- aucun ajout, retrait ou changement d'enregistrement entre les deux snapshots.
+
+Éléments historiques à préserver :
+
+- air ;
+- earth ;
+- electric ;
+- fire ;
+- ice ;
+- light ;
+- nature ;
+- poison ;
+- psy ;
+- shadow ;
+- spirit ;
+- steel ;
+- water.
+
+Objectif :
+
+1. exporter les 110 enregistrements historiques vers un catalogue statique du labo ;
+2. ne créer aucune dépendance runtime vers `Zombicide-40k` ;
+3. conserver les IDs historiques, noms, stats brutes, éléments, résistances, capacités, capture, spawn et évolutions ;
+4. ajouter un adaptateur explicite legacy -> `CaptureCreatureEditorDraftV3` ;
+5. reproduire les fallbacks de l'ancien éditeur pour les champs RPG manquants, sans les présenter comme données source ;
+6. charger les créatures importées dans le propriétaire CRUD de session `configuredCreatures` ;
+7. afficher les 110 créatures dans le sélecteur de modification ;
+8. préserver les 13 éléments historiques dans l'UI pour éviter toute perte à la modification ;
+9. autoriser un draft importé sans présentation visuelle : `presentation: null` est déjà accepté par le contrat V3 ;
+10. le combat reste refusé tant qu'une présentation visuelle requise n'est pas réellement configurée.
+
+Interdits :
+
+- aucun localStorage/sessionStorage ;
+- aucun fetch runtime vers le dépôt principal ;
+- aucun copier-coller de logique Combat Core ;
+- aucune fusion automatique des doublons de noms ;
+- aucune invention d'asset pour une créature qui n'en possède pas ;
+- aucune suppression silencieuse d'élément ou de capacité historique.
+
+RED prévu :
+
+- catalogue créatures absent du labo ;
+- adaptateur legacy absent ;
+- sélecteur CRUD ne contient pas les 110 créatures historiques ;
+- éléments ice/nature/poison/psy/spirit/steel absents de l'UI ;
+- builder humain refuse actuellement un draft sans image face.
+
+Critère final :
+
+- catalogue statique 110/110 ;
+- provenance verrouillée ;
+- adaptation testée ;
+- UI 13 éléments ;
+- bibliothèque CRUD préchargée ;
+- CI complète verte ;
+- preview dédiée ;
+- PREVALIDATION smartphone avant GREEN UI final.
