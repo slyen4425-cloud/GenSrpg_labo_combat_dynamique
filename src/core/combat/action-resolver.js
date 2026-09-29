@@ -14,6 +14,10 @@ import {
 import {
   evaluateSkillActivationRequirementsV1
 } from "./skill-activation-requirements-v1.js";
+import {
+  applyImmediateTacticalEffectsV1,
+  unsupportedImmediateTacticalEffectV1
+} from "./immediate-tactical-effects-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -249,6 +253,27 @@ export function resolveSkillStart({
           skillId: skill.id,
           reason: "activation_requirements",
           activationRequirements
+        })
+      ])
+    });
+  }
+
+  const unsupportedTacticalEffect =
+    unsupportedImmediateTacticalEffectV1(skill);
+  if (unsupportedTacticalEffect !== null) {
+    return Object.freeze({
+      ok: false,
+      outcome: "unsupported_tactical_effect",
+      skillId: skill.id,
+      tacticalEffect: unsupportedTacticalEffect,
+      state,
+      events: Object.freeze([
+        event("skill-rejected", 0, {
+          actorId,
+          skillId: skill.id,
+          reason: "unsupported_tactical_effect",
+          tacticalEffect:
+            unsupportedTacticalEffect
         })
       ])
     });
@@ -602,6 +627,17 @@ export function resolveSkillCompletion({
           stunMs: skill.effect.stunMs
         }));
       }
+
+      const tactical =
+        applyImmediateTacticalEffectsV1({
+          state: nextState,
+          actorId,
+          targetId,
+          skill,
+          atMs: impactAtMs
+        });
+      nextState = tactical.state;
+      events.push(...tactical.events);
     } else if (outcome === "reflected") {
       const damage =
         statAdjustedDamageFor(
