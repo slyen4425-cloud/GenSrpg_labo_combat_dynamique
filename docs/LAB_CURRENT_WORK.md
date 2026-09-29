@@ -14165,3 +14165,81 @@ Aucun changement dans :
 **GREEN contractuel / architecture.**
 
 Lot suivant séparé : **Capture Stats / Progression Editor UI V1** pour raccorder le Human Editor aux propriétaires validés, exposer les stats standard/custom, la politique de slots et l'évolution existante, puis produire une preview PREVALIDATION smartphone.
+
+
+## Micro-lot — Capture Stats / Progression Editor UI V1 — 2026-09-29
+
+Base :
+
+- checkpoint GREEN architecture : `checkpoint/lab-capture-stats-progression-architecture-v1-green-2026-09-29` ;
+- SHA : `cd6d8ceab41785fb915c4f790022fb439c9063d8` ;
+- CI : `36624384434` — SUCCESS ;
+- 542 tests, 542 pass, 0 fail.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-stats-progression-editor-ui-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-stats-progression-editor-ui-v1-2026-09-29`.
+
+### Objectif
+
+Raccorder le Human Editor aux propriétaires Stats / Progression validés, sans déplacer les règles métier dans le DOM :
+
+1. afficher les stats standard Monster Capture depuis le registre data-driven ;
+2. permettre l'ajout/suppression de stats personnalisées dans le draft de registre de la session ;
+3. éditer les valeurs de stats de la créature via `CaptureCreatureStatValuesV1` ;
+4. exposer la politique générale `maxActiveSkills + slotUnlockSchedule` depuis `CaptureProgressionRulesV1` ;
+5. rendre les slots actifs lisibles selon le niveau de la créature, sans déplacer `requiredLevel` hors du contrat capacité ;
+6. exposer le mécanisme d'évolution déjà existant : activée/non, cible par ID explicite, niveau ;
+7. ne créer aucun second mécanisme de stats, progression ou évolution ;
+8. préserver les anciennes données `sourceStats` uniquement comme compatibilité tant que la migration du contrat créature n'est pas un lot séparé.
+
+### Propriétaires
+
+- définitions stats : `CaptureStatRegistryV1` ;
+- valeurs stats : `CaptureCreatureStatValuesV1` ;
+- politique slots : `CaptureProgressionRulesV1` ;
+- niveau requis capacité : `CaptureSkillEditorDraftV1.requiredLevel` ;
+- évolution : `CaptureCreatureEditorDraftV3.capture.evolution` ;
+- Human Editor : saisie/présentation et draft de session seulement.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` si nécessaire uniquement pour la lisibilité ;
+- tests unitaires/intégration dédiés ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md` uniquement si une frontière nouvelle est démontrée.
+
+Protégé :
+
+- contrats Stats / Progression validés au lot précédent, sauf bug démontré par RED ;
+- Combat Runtime ;
+- Action Resolver ;
+- Animation Core / FX / renderer ;
+- catalogue historique 110 ;
+- global-assets ;
+- aucun localStorage/sessionStorage ;
+- aucun MutationObserver/timer/retry/monkey patch ;
+- aucun merge sur `main`.
+
+### Préaudit attendu avant RED
+
+- localiser les champs stats rigides actuels ;
+- localiser la collecte `capture.evolution` actuellement absente/neutralisée dans l'UI ;
+- localiser les quatre slots fixes du Human Editor ;
+- vérifier comment le mount conserve les données de session sans persistance navigateur ;
+- définir le vrai chemin : data JSON -> contrats -> Human Editor -> draft validé.
+
+### Critère de fin
+
+- RED ciblé ;
+- correction minimale ;
+- CI complète verte ;
+- preview dédiée ;
+- PREVALIDATION smartphone sur stats, custom stat, progression et évolution ;
+- pas de GREEN UI final sans retour utilisateur.
