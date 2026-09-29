@@ -14782,3 +14782,68 @@ Revue charte :
 **GREEN technique runtime/contrat.**
 
 Lot suivant séparé : **Capture Skill Activation Requirements Editor UI V1** pour rendre ces conditions configurables et compréhensibles dans le Human Editor, sans déplacer l'autorité métier dans l'UI.
+
+
+## Micro-lot — Capture Skill Activation Editor UI V1 — 2026-09-29
+
+Base :
+
+- checkpoint GREEN runtime/contrat : `checkpoint/lab-capture-skill-activation-requirements-v1-green-2026-09-29` ;
+- SHA : `c442568f7d38a8f8bd77e0b2412743fd2085083c` ;
+- CI : `36636560118` — SUCCESS ;
+- 570 tests, 570 pass, 0 fail.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-skill-activation-editor-ui-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-skill-activation-editor-ui-v1-2026-09-29`.
+
+### Objectif
+
+Rendre `SkillDefinition.activationRequirements` éditable et compréhensible dans le Human Editor sans créer une seconde logique métier.
+
+UI V1 :
+
+- activation des conditions ON/OFF ;
+- mode « toutes les conditions » / « au moins une condition » ;
+- ajout/suppression de lignes de condition ;
+- types proposés :
+  - temps de combat écoulé ;
+  - dégâts infligés ;
+  - dégâts subis ;
+  - PV inférieurs ou égaux à X % ;
+- seuil avec unité lisible ;
+- les conditions sont enregistrées dans le contrat `SkillDefinition` existant ;
+- les capacités sans condition restent inchangées ;
+- `requiredLevel` reste affiché séparément et ne change pas de rôle.
+
+### Préaudit obligatoire
+
+- tracer `readSkillFields -> buildHumanSkillDraftV1 -> normalizeSkillDefinition` ;
+- tracer le chargement d'une capacité existante vers les champs du formulaire ;
+- vérifier les chemins « Nouvelle capacité », « Créer », « Modifier » ;
+- vérifier le catalogue historique/natif et la préservation des champs non représentés ;
+- vérifier la mise en page smartphone ;
+- aucune évaluation des conditions dans l'UI.
+
+### Protégé
+
+- évaluateur runtime des conditions ;
+- Combat State / Action Resolver ;
+- stats / progression / évolution ;
+- Animation Core / FX / renderer ;
+- aucun stockage parallèle ;
+- aucun timer/retry/MutationObserver/monkey patch ;
+- aucun merge sur `main`.
+
+### Critère de fin
+
+- RED UI ciblé ;
+- édition round-trip des conditions ;
+- aucun effacement lors du chargement/modification d'une capacité ;
+- libellés/units compréhensibles sur smartphone ;
+- CI complète verte ;
+- checkpoint PREVALIDATION + preview smartphone.
