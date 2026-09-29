@@ -37,6 +37,35 @@
     </nav>
 
     <section class="editor-panel" data-editor-panel="creature">
+      <article class="card hero-card">
+        <div class="card-title">
+          <span class="step">0</span>
+          <div>
+            <h2>Bibliothèque de créatures</h2>
+            <p>Choisis une créature existante ou prépare une nouvelle identité.</p>
+          </div>
+        </div>
+
+        <label>Créature à modifier
+          <select data-creature-library-select>
+            <option value="">Aucune créature enregistrée</option>
+          </select>
+        </label>
+        <p class="note" data-creature-library-state data-tone="info">
+          La bibliothèque est conservée uniquement pendant cette session du laboratoire.
+        </p>
+        <div class="skill-save-actions">
+          <button type="button" class="secondary-action" data-creature-new>
+            Nouvelle créature
+          </button>
+          <button type="button" class="primary-action" data-creature-create>
+            Enregistrer comme nouvelle
+          </button>
+          <button type="button" class="secondary-action" data-creature-update>
+            Mettre à jour la créature existante
+          </button>
+        </div>
+      </article>
       <article class="card">
         <div class="card-title">
           <span class="step">1</span>
