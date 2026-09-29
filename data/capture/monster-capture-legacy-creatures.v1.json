@@ -1,0 +1,7741 @@
+{
+  "version": 1,
+  "catalogId": "monster-capture-legacy-creatures-v1",
+  "provenance": {
+    "repository": "slyen4425-cloud/Zombicide-40k",
+    "commit": "e8fd85ab68df818a138ed7949c411005ad622457",
+    "indexBlob": "6c95e3f6ca4bf8e34003776e7e43e44192aafb16",
+    "sourceSymbol": "MC162_ENTITIES",
+    "seedOwner": "ensureBuiltinMonsterCapture162",
+    "extractedAt": "2026-09-29"
+  },
+  "counts": {
+    "total": 110,
+    "starterCapture": 98,
+    "legacyDemo": 12
+  },
+  "entries": [
+    {
+      "id": "crea_embercub",
+      "name": "Braiseau",
+      "category": "creature",
+      "level": 5,
+      "hp": 18,
+      "stats": {
+        "force": 13,
+        "agilite": 10,
+        "intelligence": 8,
+        "esprit": 8,
+        "endurance": 12,
+        "initiative": 10
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_fire_bolt",
+        "lib_flame_bite",
+        "lib_fireball",
+        "lib_heat_wave"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Petit prédateur de feu agressif mais facile à dresser.",
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "fire"
+      ]
+    },
+    {
+      "id": "crea_aquafin",
+      "name": "Aquafin",
+      "category": "creature",
+      "level": 5,
+      "hp": 20,
+      "stats": {
+        "force": 10,
+        "agilite": 12,
+        "intelligence": 10,
+        "esprit": 12,
+        "endurance": 12,
+        "initiative": 11
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "lib_water_bolt",
+        "lib_tidal_bite",
+        "lib_aqua_heal",
+        "lib_mist_guard",
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 60,
+      "canEvolve": true,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature aquatique équilibrée, capable d’aider ses alliés.",
+      "icon": "💧",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "water"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "evolutionTo": "crea_maraileron",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_maraileron"
+      }
+    },
+    {
+      "id": "crea_mossback",
+      "name": "Moussados",
+      "category": "creature",
+      "level": 5,
+      "hp": 24,
+      "stats": {
+        "force": 14,
+        "agilite": 7,
+        "intelligence": 7,
+        "esprit": 10,
+        "endurance": 16,
+        "initiative": 6
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_rock_slam",
+        "lib_earth_guard",
+        "lib_root_snare",
+        "lib_quake"
+      ],
+      "capturable": true,
+      "captureRate": 65,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature robuste couverte de mousse et de plaques minérales.",
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "earth"
+      ]
+    },
+    {
+      "id": "crea_voltik",
+      "name": "Voltige",
+      "category": "creature",
+      "level": 6,
+      "hp": 17,
+      "stats": {
+        "force": 9,
+        "agilite": 16,
+        "intelligence": 11,
+        "esprit": 9,
+        "endurance": 9,
+        "initiative": 18
+      },
+      "elementTypes": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "lib_chain_lightning",
+        "lib_static_bite",
+        "lib_thunder_dash",
+        "lib_paralyze",
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 45,
+      "canEvolve": true,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Très rapide et chargée d’électricité.",
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "electric"
+      ],
+      "elementResistances": [
+        "electric"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "evolutionTo": "crea_fulguro",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_fulguro"
+      }
+    },
+    {
+      "id": "crea_galewing",
+      "name": "Ailevent",
+      "category": "creature",
+      "level": 5,
+      "hp": 16,
+      "stats": {
+        "force": 9,
+        "agilite": 17,
+        "intelligence": 9,
+        "esprit": 10,
+        "endurance": 8,
+        "initiative": 19
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_gust",
+        "lib_wind_blade",
+        "lib_aerial_dive",
+        "lib_tailwind"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature aérienne vive et difficile à toucher.",
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "air"
+      ]
+    },
+    {
+      "id": "crea_lumipup",
+      "name": "Lumilo",
+      "category": "creature",
+      "level": 4,
+      "hp": 18,
+      "stats": {
+        "force": 8,
+        "agilite": 12,
+        "intelligence": 10,
+        "esprit": 15,
+        "endurance": 10,
+        "initiative": 13
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_light_bolt",
+        "lib_heal_5",
+        "lib_magic_barrier",
+        "lib_flash"
+      ],
+      "capturable": true,
+      "captureRate": 70,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Petite créature lumineuse au tempérament protecteur.",
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "light"
+      ]
+    },
+    {
+      "id": "crea_nightfang",
+      "name": "Noctecroc",
+      "category": "creature",
+      "level": 7,
+      "hp": 21,
+      "stats": {
+        "force": 15,
+        "agilite": 14,
+        "intelligence": 9,
+        "esprit": 8,
+        "endurance": 11,
+        "initiative": 15
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_shadow_bite",
+        "lib_drain",
+        "lib_lifesteal_strike",
+        "lib_night_veil"
+      ],
+      "capturable": true,
+      "captureRate": 40,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Chasseur nocturne qui affaiblit sa proie.",
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "shadow"
+      ]
+    },
+    {
+      "id": "crea_rockhorn",
+      "name": "Rocorne",
+      "category": "creature",
+      "level": 8,
+      "hp": 28,
+      "stats": {
+        "force": 18,
+        "agilite": 6,
+        "intelligence": 6,
+        "esprit": 7,
+        "endurance": 18,
+        "initiative": 5
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_rock_slam",
+        "lib_guard_break",
+        "lib_earth_guard",
+        "lib_stunning_blow"
+      ],
+      "capturable": true,
+      "captureRate": 35,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Bête massive à corne minérale.",
+      "icon": "🪨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "earth"
+      ]
+    },
+    {
+      "id": "crea_sparkmoth",
+      "name": "Luciéclair",
+      "category": "creature",
+      "level": 6,
+      "hp": 15,
+      "stats": {
+        "force": 7,
+        "agilite": 18,
+        "intelligence": 12,
+        "esprit": 11,
+        "endurance": 7,
+        "initiative": 20
+      },
+      "elementTypes": [
+        "electric",
+        "air"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_chain_lightning",
+        "lib_gust",
+        "lib_paralyze",
+        "lib_tailwind"
+      ],
+      "capturable": true,
+      "captureRate": 40,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Insectoïde volant qui accumule l’électricité.",
+      "icon": "🦋",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "electric",
+        "air"
+      ]
+    },
+    {
+      "id": "crea_miragecat",
+      "name": "Mirachat",
+      "category": "creature",
+      "level": 7,
+      "hp": 17,
+      "stats": {
+        "force": 10,
+        "agilite": 18,
+        "intelligence": 14,
+        "esprit": 11,
+        "endurance": 8,
+        "initiative": 21
+      },
+      "elementTypes": [
+        "light",
+        "shadow"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_light_bolt",
+        "lib_drain",
+        "lib_flash",
+        "lib_night_veil"
+      ],
+      "capturable": true,
+      "captureRate": 30,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Félin étrange capable de troubler ses adversaires.",
+      "icon": "🐈",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "light",
+        "shadow"
+      ]
+    },
+    {
+      "id": "crea_tidejaw",
+      "name": "Marémâchoire",
+      "category": "creature",
+      "level": 8,
+      "hp": 26,
+      "stats": {
+        "force": 17,
+        "agilite": 10,
+        "intelligence": 8,
+        "esprit": 9,
+        "endurance": 17,
+        "initiative": 8
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_tidal_bite",
+        "lib_water_bolt",
+        "lib_regen",
+        "lib_mist_guard"
+      ],
+      "capturable": true,
+      "captureRate": 35,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Prédateur aquatique puissant et endurant.",
+      "icon": "🦈",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "water"
+      ]
+    },
+    {
+      "id": "crea_ashdrake",
+      "name": "Dracendre",
+      "category": "creature",
+      "level": 10,
+      "hp": 30,
+      "stats": {
+        "force": 19,
+        "agilite": 13,
+        "intelligence": 15,
+        "esprit": 10,
+        "endurance": 17,
+        "initiative": 12
+      },
+      "elementTypes": [
+        "fire",
+        "air"
+      ],
+      "resistances": [],
+      "abilityIds": [
+        "lib_fireball",
+        "lib_wind_blade",
+        "lib_flame_bite",
+        "lib_aerial_dive"
+      ],
+      "capturable": true,
+      "captureRate": 22,
+      "canEvolve": false,
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Jeune dragon très rare, difficile à capturer.",
+      "icon": "🐉",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "game_profile_dungeon_demo",
+      "spawnChance": 25,
+      "spawnTags": [
+        "fire",
+        "air"
+      ]
+    },
+    {
+      "id": "crea_braiseau",
+      "name": "Braiseau",
+      "category": "creature",
+      "level": 5,
+      "hp": 18,
+      "stats": {
+        "power": 13,
+        "force": 13,
+        "defense": 8,
+        "agility": 11,
+        "agilite": 11,
+        "speed": 12,
+        "spirit": 7,
+        "esprit": 7
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 60,
+      "canEvolve": true,
+      "evolutionTo": "crea_pyrolynx",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Petit félin de braise, vif et téméraire.",
+      "spawnTags": [
+        "fire"
+      ],
+      "spawnChance": 18,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_pyrolynx"
+      }
+    },
+    {
+      "id": "crea_pyrolynx",
+      "name": "Pyrolynx",
+      "category": "creature",
+      "level": 16,
+      "hp": 34,
+      "stats": {
+        "power": 25,
+        "force": 25,
+        "defense": 17,
+        "agility": 22,
+        "agilite": 22,
+        "speed": 24,
+        "spirit": 14,
+        "esprit": 14
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 35,
+      "canEvolve": true,
+      "evolutionTo": "crea_infernox",
+      "evolutionLevel": 36,
+      "starterCreature": true,
+      "desc": "Prédateur ardent dont les griffes chauffent l'air.",
+      "spawnTags": [
+        "fire"
+      ],
+      "spawnChance": 5,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_infernox"
+      }
+    },
+    {
+      "id": "crea_infernox",
+      "name": "Infernox",
+      "category": "creature",
+      "level": 36,
+      "hp": 62,
+      "stats": {
+        "power": 44,
+        "force": 44,
+        "defense": 31,
+        "agility": 37,
+        "agilite": 37,
+        "speed": 40,
+        "spirit": 25,
+        "esprit": 25
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 12,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Grand fauve volcanique capable de provoquer des vagues de chaleur.",
+      "spawnTags": [
+        "fire"
+      ],
+      "spawnChance": 2,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_maraileron",
+      "name": "Maraileron",
+      "category": "creature",
+      "level": 16,
+      "hp": 38,
+      "stats": {
+        "power": 21,
+        "force": 21,
+        "defense": 22,
+        "agility": 20,
+        "agilite": 20,
+        "speed": 20,
+        "spirit": 25,
+        "esprit": 25
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "elementResistances": [
+        "fire",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 38,
+      "canEvolve": true,
+      "evolutionTo": "crea_leviambre",
+      "evolutionLevel": 36,
+      "starterCreature": true,
+      "desc": "Chasseur marin protégé par des nageoires cuirassées.",
+      "spawnTags": [
+        "water"
+      ],
+      "spawnChance": 10,
+      "icon": "💧",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_leviambre"
+      }
+    },
+    {
+      "id": "crea_leviambre",
+      "name": "Léviambre",
+      "category": "creature",
+      "level": 36,
+      "hp": 70,
+      "stats": {
+        "power": 38,
+        "force": 38,
+        "defense": 40,
+        "agility": 32,
+        "agilite": 32,
+        "speed": 34,
+        "spirit": 44,
+        "esprit": 44
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "elementResistances": [
+        "fire",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 10,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Colosse marin dont le chant soulève les courants.",
+      "spawnTags": [
+        "water"
+      ],
+      "spawnChance": 0.5,
+      "icon": "💧",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_poussroc",
+      "name": "Pouss'Roc",
+      "category": "creature",
+      "level": 5,
+      "hp": 24,
+      "stats": {
+        "power": 12,
+        "force": 12,
+        "defense": 15,
+        "agility": 7,
+        "agilite": 7,
+        "speed": 7,
+        "spirit": 9,
+        "esprit": 9
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_moussegarde",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature végétale couverte d'écorce et de pierre.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 18,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_moussegarde"
+      }
+    },
+    {
+      "id": "crea_moussegarde",
+      "name": "Moussegarde",
+      "category": "creature",
+      "level": 16,
+      "hp": 45,
+      "stats": {
+        "power": 22,
+        "force": 22,
+        "defense": 31,
+        "agility": 12,
+        "agilite": 12,
+        "speed": 11,
+        "spirit": 19,
+        "esprit": 19
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 42,
+      "canEvolve": true,
+      "evolutionTo": "crea_sylvaroc",
+      "evolutionLevel": 36,
+      "starterCreature": true,
+      "desc": "Gardien forestier à l'armure de racines minérales.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 10,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_sylvaroc"
+      }
+    },
+    {
+      "id": "crea_sylvaroc",
+      "name": "Sylvaroc",
+      "category": "creature",
+      "level": 36,
+      "hp": 82,
+      "stats": {
+        "power": 38,
+        "force": 38,
+        "defense": 55,
+        "agility": 20,
+        "agilite": 20,
+        "speed": 18,
+        "spirit": 32,
+        "esprit": 32
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 12,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Ancien titan sylvestre presque insensible aux décharges.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 2,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_fulguro",
+      "name": "Fulguro",
+      "category": "creature",
+      "level": 16,
+      "hp": 30,
+      "stats": {
+        "power": 22,
+        "force": 22,
+        "defense": 14,
+        "agility": 31,
+        "agilite": 31,
+        "speed": 37,
+        "spirit": 15,
+        "esprit": 15
+      },
+      "elementTypes": [
+        "electric"
+      ],
+      "elementResistances": [
+        "electric",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 32,
+      "canEvolve": true,
+      "evolutionTo": "crea_raijag",
+      "evolutionLevel": 36,
+      "starterCreature": true,
+      "desc": "Prédateur électrique qui frappe avant qu'on le voie.",
+      "spawnTags": [
+        "electric"
+      ],
+      "spawnChance": 5,
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_raijag"
+      }
+    },
+    {
+      "id": "crea_raijag",
+      "name": "Raijag",
+      "category": "creature",
+      "level": 36,
+      "hp": 53,
+      "stats": {
+        "power": 39,
+        "force": 39,
+        "defense": 25,
+        "agility": 52,
+        "agilite": 52,
+        "speed": 61,
+        "spirit": 25,
+        "esprit": 25
+      },
+      "elementTypes": [
+        "electric",
+        "air"
+      ],
+      "elementResistances": [
+        "electric",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Fauve de foudre entouré d'un champ orageux.",
+      "spawnTags": [
+        "electric",
+        "air"
+      ],
+      "spawnChance": 0.5,
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_ailevent",
+      "name": "Ailevent",
+      "category": "creature",
+      "level": 5,
+      "hp": 16,
+      "stats": {
+        "power": 9,
+        "force": 9,
+        "defense": 7,
+        "agility": 17,
+        "agilite": 17,
+        "speed": 20,
+        "spirit": 9,
+        "esprit": 9
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "elementResistances": [
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 62,
+      "canEvolve": true,
+      "evolutionTo": "crea_rafalcor",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Oisillon des courants, extrêmement mobile.",
+      "spawnTags": [
+        "air"
+      ],
+      "spawnChance": 18,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_rafalcor"
+      }
+    },
+    {
+      "id": "crea_rafalcor",
+      "name": "Rafalcor",
+      "category": "creature",
+      "level": 16,
+      "hp": 29,
+      "stats": {
+        "power": 20,
+        "force": 20,
+        "defense": 14,
+        "agility": 33,
+        "agilite": 33,
+        "speed": 39,
+        "spirit": 17,
+        "esprit": 17
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "elementResistances": [
+        "earth",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 35,
+      "canEvolve": true,
+      "evolutionTo": "crea_ouraganis",
+      "evolutionLevel": 36,
+      "starterCreature": true,
+      "desc": "Rapace qui découpe l'air de ses ailes.",
+      "spawnTags": [
+        "air"
+      ],
+      "spawnChance": 5,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 36,
+        "targetId": "crea_ouraganis"
+      }
+    },
+    {
+      "id": "crea_ouraganis",
+      "name": "Ouraganis",
+      "category": "creature",
+      "level": 36,
+      "hp": 51,
+      "stats": {
+        "power": 35,
+        "force": 35,
+        "defense": 24,
+        "agility": 55,
+        "agilite": 55,
+        "speed": 64,
+        "spirit": 29,
+        "esprit": 29
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "elementResistances": [
+        "earth",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 10,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Seigneur aérien qui combat au cœur des tempêtes.",
+      "spawnTags": [
+        "air"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_lumilo",
+      "name": "Lumilo",
+      "category": "creature",
+      "level": 5,
+      "hp": 18,
+      "stats": {
+        "power": 8,
+        "force": 8,
+        "defense": 9,
+        "agility": 12,
+        "agilite": 12,
+        "speed": 13,
+        "spirit": 16,
+        "esprit": 16
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "elementResistances": [
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "poison"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:poison",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 70,
+      "canEvolve": true,
+      "evolutionTo": "crea_solarys",
+      "evolutionLevel": 18,
+      "starterCreature": true,
+      "desc": "Petit compagnon lumineux au tempérament protecteur.",
+      "spawnTags": [
+        "light"
+      ],
+      "spawnChance": 18,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 18,
+        "targetId": "crea_solarys"
+      }
+    },
+    {
+      "id": "crea_solarys",
+      "name": "Solarys",
+      "category": "creature",
+      "level": 18,
+      "hp": 35,
+      "stats": {
+        "power": 17,
+        "force": 17,
+        "defense": 20,
+        "agility": 23,
+        "agilite": 23,
+        "speed": 25,
+        "spirit": 32,
+        "esprit": 32
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "elementResistances": [
+        "shadow",
+        "light"
+      ],
+      "elementWeaknesses": [
+        "poison"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:poison",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 40,
+      "canEvolve": true,
+      "evolutionTo": "crea_heliarque",
+      "evolutionLevel": 38,
+      "starterCreature": true,
+      "desc": "Gardien rayonnant capable de restaurer ses alliés.",
+      "spawnTags": [
+        "light"
+      ],
+      "spawnChance": 10,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 38,
+        "targetId": "crea_heliarque"
+      }
+    },
+    {
+      "id": "crea_heliarque",
+      "name": "Héliarque",
+      "category": "creature",
+      "level": 38,
+      "hp": 64,
+      "stats": {
+        "power": 30,
+        "force": 30,
+        "defense": 36,
+        "agility": 39,
+        "agilite": 39,
+        "speed": 42,
+        "spirit": 55,
+        "esprit": 55
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "elementResistances": [
+        "shadow",
+        "light"
+      ],
+      "elementWeaknesses": [
+        "poison"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:poison",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 11,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Entité solaire dont l'aura repousse les ténèbres.",
+      "spawnTags": [
+        "light"
+      ],
+      "spawnChance": 2,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_noctecroc",
+      "name": "Noctecroc",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 14,
+        "force": 14,
+        "defense": 8,
+        "agility": 14,
+        "agilite": 14,
+        "speed": 15,
+        "spirit": 8,
+        "esprit": 8
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "elementResistances": [
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": true,
+      "evolutionTo": "crea_ombrage",
+      "evolutionLevel": 18,
+      "starterCreature": true,
+      "desc": "Jeune chasseur nocturne rusé.",
+      "spawnTags": [
+        "shadow"
+      ],
+      "spawnChance": 18,
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 18,
+        "targetId": "crea_ombrage"
+      }
+    },
+    {
+      "id": "crea_ombrage",
+      "name": "Ombrage",
+      "category": "creature",
+      "level": 18,
+      "hp": 37,
+      "stats": {
+        "power": 28,
+        "force": 28,
+        "defense": 17,
+        "agility": 29,
+        "agilite": 29,
+        "speed": 31,
+        "spirit": 16,
+        "esprit": 16
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "elementResistances": [
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 30,
+      "canEvolve": true,
+      "evolutionTo": "crea_noxferal",
+      "evolutionLevel": 38,
+      "starterCreature": true,
+      "desc": "Prédateur spectral qui absorbe la vigueur.",
+      "spawnTags": [
+        "shadow"
+      ],
+      "spawnChance": 5,
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 38,
+        "targetId": "crea_noxferal"
+      }
+    },
+    {
+      "id": "crea_noxferal",
+      "name": "Noxferal",
+      "category": "creature",
+      "level": 38,
+      "hp": 67,
+      "stats": {
+        "power": 49,
+        "force": 49,
+        "defense": 30,
+        "agility": 49,
+        "agilite": 49,
+        "speed": 53,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "elementResistances": [
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 8,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Bête abyssale qui se fond dans les ombres.",
+      "spawnTags": [
+        "shadow"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_venipic",
+      "name": "Vénipic",
+      "category": "creature",
+      "level": 5,
+      "hp": 17,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 8,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 12,
+        "spirit": 10,
+        "esprit": 10
+      },
+      "elementTypes": [
+        "poison"
+      ],
+      "elementResistances": [
+        "poison"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 63,
+      "canEvolve": true,
+      "evolutionTo": "crea_toxironce",
+      "evolutionLevel": 17,
+      "starterCreature": true,
+      "desc": "Petite créature hérissée de pointes toxiques.",
+      "spawnTags": [
+        "poison"
+      ],
+      "spawnChance": 18,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_toxironce"
+      }
+    },
+    {
+      "id": "crea_toxironce",
+      "name": "Toxironce",
+      "category": "creature",
+      "level": 17,
+      "hp": 34,
+      "stats": {
+        "power": 21,
+        "force": 21,
+        "defense": 18,
+        "agility": 25,
+        "agilite": 25,
+        "speed": 23,
+        "spirit": 21,
+        "esprit": 21
+      },
+      "elementTypes": [
+        "poison"
+      ],
+      "elementResistances": [
+        "poison"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_veneflore",
+      "evolutionLevel": 37,
+      "starterCreature": true,
+      "desc": "Prédateur couvert de lianes empoisonnées.",
+      "spawnTags": [
+        "poison"
+      ],
+      "spawnChance": 10,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_veneflore"
+      }
+    },
+    {
+      "id": "crea_veneflore",
+      "name": "Vénéflore",
+      "category": "creature",
+      "level": 37,
+      "hp": 63,
+      "stats": {
+        "power": 37,
+        "force": 37,
+        "defense": 33,
+        "agility": 42,
+        "agilite": 42,
+        "speed": 39,
+        "spirit": 38,
+        "esprit": 38
+      },
+      "elementTypes": [
+        "poison"
+      ],
+      "elementResistances": [
+        "poison"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 10,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Créature toxique qui sature le terrain de spores.",
+      "spawnTags": [
+        "poison"
+      ],
+      "spawnChance": 0.5,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_rocabri",
+      "name": "Rocabri",
+      "category": "creature",
+      "level": 7,
+      "hp": 27,
+      "stats": {
+        "power": 16,
+        "force": 16,
+        "defense": 18,
+        "agility": 7,
+        "agilite": 7,
+        "speed": 6,
+        "spirit": 7,
+        "esprit": 7
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 48,
+      "canEvolve": true,
+      "evolutionTo": "crea_rocorne",
+      "evolutionLevel": 24,
+      "starterCreature": true,
+      "desc": "Bélier minéral particulièrement robuste.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 10,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_rocorne"
+      }
+    },
+    {
+      "id": "crea_rocorne",
+      "name": "Rocorne",
+      "category": "creature",
+      "level": 24,
+      "hp": 58,
+      "stats": {
+        "power": 34,
+        "force": 34,
+        "defense": 43,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 11,
+        "spirit": 15,
+        "esprit": 15
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 18,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Bête massive dont la corne peut fendre la roche.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 2,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_lucieclair",
+      "name": "Luciéclair",
+      "category": "creature",
+      "level": 6,
+      "hp": 15,
+      "stats": {
+        "power": 8,
+        "force": 8,
+        "defense": 6,
+        "agility": 18,
+        "agilite": 18,
+        "speed": 22,
+        "spirit": 12,
+        "esprit": 12
+      },
+      "elementTypes": [
+        "electric",
+        "air"
+      ],
+      "elementResistances": [
+        "electric",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 45,
+      "canEvolve": true,
+      "evolutionTo": "crea_foudrillon",
+      "evolutionLevel": 24,
+      "starterCreature": true,
+      "desc": "Insecte volant qui stocke les charges atmosphériques.",
+      "spawnTags": [
+        "electric",
+        "air"
+      ],
+      "spawnChance": 10,
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_foudrillon"
+      }
+    },
+    {
+      "id": "crea_foudrillon",
+      "name": "Foudrillon",
+      "category": "creature",
+      "level": 24,
+      "hp": 36,
+      "stats": {
+        "power": 25,
+        "force": 25,
+        "defense": 16,
+        "agility": 44,
+        "agilite": 44,
+        "speed": 53,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "electric",
+        "air"
+      ],
+      "elementResistances": [
+        "electric",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 17,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Grand papillon d'orage dont les ailes crépitent.",
+      "spawnTags": [
+        "electric",
+        "air"
+      ],
+      "spawnChance": 2,
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_mirachat",
+      "name": "Mirachat",
+      "category": "creature",
+      "level": 7,
+      "hp": 17,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 8,
+        "agility": 18,
+        "agilite": 18,
+        "speed": 20,
+        "spirit": 15,
+        "esprit": 15
+      },
+      "elementTypes": [
+        "light",
+        "shadow"
+      ],
+      "elementResistances": [
+        "light",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "poison"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:poison",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2",
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 40,
+      "canEvolve": true,
+      "evolutionTo": "crea_chimerage",
+      "evolutionLevel": 26,
+      "starterCreature": true,
+      "desc": "Félin illusionniste aux deux affinités opposées.",
+      "spawnTags": [
+        "light",
+        "shadow"
+      ],
+      "spawnChance": 10,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 26,
+        "targetId": "crea_chimerage"
+      }
+    },
+    {
+      "id": "crea_chimerage",
+      "name": "Chimérage",
+      "category": "creature",
+      "level": 26,
+      "hp": 42,
+      "stats": {
+        "power": 30,
+        "force": 30,
+        "defense": 22,
+        "agility": 46,
+        "agilite": 46,
+        "speed": 49,
+        "spirit": 39,
+        "esprit": 39
+      },
+      "elementTypes": [
+        "light",
+        "shadow"
+      ],
+      "elementResistances": [
+        "light",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "poison"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:poison",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2",
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 14,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Chimère insaisissable alternant éclat et obscurité.",
+      "spawnTags": [
+        "light",
+        "shadow"
+      ],
+      "spawnChance": 2,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_dracendre",
+      "name": "Dracendre",
+      "category": "creature",
+      "level": 10,
+      "hp": 30,
+      "stats": {
+        "power": 19,
+        "force": 19,
+        "defense": 15,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 14,
+        "spirit": 12,
+        "esprit": 12
+      },
+      "elementTypes": [
+        "fire",
+        "air"
+      ],
+      "elementResistances": [
+        "fire",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 24,
+      "canEvolve": true,
+      "evolutionTo": "crea_volcadrake",
+      "evolutionLevel": 28,
+      "starterCreature": true,
+      "desc": "Jeune dragon rare qui niche près des volcans.",
+      "spawnTags": [
+        "fire",
+        "air"
+      ],
+      "spawnChance": 5,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 28,
+        "targetId": "crea_volcadrake"
+      }
+    },
+    {
+      "id": "crea_volcadrake",
+      "name": "Volcadrake",
+      "category": "creature",
+      "level": 28,
+      "hp": 65,
+      "stats": {
+        "power": 43,
+        "force": 43,
+        "defense": 34,
+        "agility": 31,
+        "agilite": 31,
+        "speed": 34,
+        "spirit": 28,
+        "esprit": 28
+      },
+      "elementTypes": [
+        "fire",
+        "air"
+      ],
+      "elementResistances": [
+        "fire",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 7,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "starterCreature": true,
+      "desc": "Dragon volcanique adulte, extrêmement rare et puissant.",
+      "spawnTags": [
+        "fire",
+        "air"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture",
+      "evolution": null
+    },
+    {
+      "id": "crea_tox_1",
+      "name": "Toxipuce",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "poison"
+      ],
+      "elementResistances": [
+        "poison"
+      ],
+      "elementWeaknesses": [
+        "earth",
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_tox_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_tox_2"
+      },
+      "starterCreature": true,
+      "desc": "Toxipuce, créature de type poison.",
+      "spawnTags": [
+        "poison"
+      ],
+      "spawnChance": 18,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_tox_2",
+      "name": "Venombre",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "poison"
+      ],
+      "elementResistances": [
+        "poison"
+      ],
+      "elementWeaknesses": [
+        "earth",
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_tox_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_tox_3"
+      },
+      "starterCreature": true,
+      "desc": "Venombre, créature de type poison.",
+      "spawnTags": [
+        "poison"
+      ],
+      "spawnChance": 10,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_tox_3",
+      "name": "Nécrovenin",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "poison"
+      ],
+      "elementResistances": [
+        "poison"
+      ],
+      "elementWeaknesses": [
+        "earth",
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Nécrovenin, créature de type poison.",
+      "spawnTags": [
+        "poison"
+      ],
+      "spawnChance": 0.5,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_fer_1",
+      "name": "Ferlin",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "steel"
+      ],
+      "elementResistances": [
+        "earth",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_fer_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_fer_2"
+      },
+      "starterCreature": true,
+      "desc": "Ferlin, créature de type steel.",
+      "spawnTags": [
+        "steel"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_fer_2",
+      "name": "Aciergarde",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "steel"
+      ],
+      "elementResistances": [
+        "earth",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_fer_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_fer_3"
+      },
+      "starterCreature": true,
+      "desc": "Aciergarde, créature de type steel.",
+      "spawnTags": [
+        "steel"
+      ],
+      "spawnChance": 10,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_fer_3",
+      "name": "Métallion",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "steel"
+      ],
+      "elementResistances": [
+        "earth",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Métallion, créature de type steel.",
+      "spawnTags": [
+        "steel"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_psy_1",
+      "name": "Psylume",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "psy"
+      ],
+      "elementResistances": [
+        "psy"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_psy_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_psy_2"
+      },
+      "starterCreature": true,
+      "desc": "Psylume, créature de type psy.",
+      "spawnTags": [
+        "psy"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_psy_2",
+      "name": "Mentara",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "psy"
+      ],
+      "elementResistances": [
+        "psy"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_psy_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_psy_3"
+      },
+      "starterCreature": true,
+      "desc": "Mentara, créature de type psy.",
+      "spawnTags": [
+        "psy"
+      ],
+      "spawnChance": 10,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_psy_3",
+      "name": "Noétis",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "psy"
+      ],
+      "elementResistances": [
+        "psy"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Noétis, créature de type psy.",
+      "spawnTags": [
+        "psy"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_givre_1",
+      "name": "Flocotin",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "ice"
+      ],
+      "elementResistances": [
+        "ice",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:ice",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_givre_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_givre_2"
+      },
+      "starterCreature": true,
+      "desc": "Flocotin, créature de type ice.",
+      "spawnTags": [
+        "ice"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_givre_2",
+      "name": "Cryoloup",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "ice"
+      ],
+      "elementResistances": [
+        "ice",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:ice",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_givre_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_givre_3"
+      },
+      "starterCreature": true,
+      "desc": "Cryoloup, créature de type ice.",
+      "spawnTags": [
+        "ice"
+      ],
+      "spawnChance": 10,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_givre_3",
+      "name": "Glacérion",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "ice"
+      ],
+      "elementResistances": [
+        "ice",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:ice",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Glacérion, créature de type ice.",
+      "spawnTags": [
+        "ice"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_ombre_1",
+      "name": "Ombrelot",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "elementResistances": [
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_ombre_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_ombre_2"
+      },
+      "starterCreature": true,
+      "desc": "Ombrelot, créature de type shadow.",
+      "spawnTags": [
+        "shadow"
+      ],
+      "spawnChance": 18,
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_ombre_2",
+      "name": "Noctigriffe",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "elementResistances": [
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_ombre_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_ombre_3"
+      },
+      "starterCreature": true,
+      "desc": "Noctigriffe, créature de type shadow.",
+      "spawnTags": [
+        "shadow"
+      ],
+      "spawnChance": 10,
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_ombre_3",
+      "name": "Éclipsar",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "shadow"
+      ],
+      "elementResistances": [
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Éclipsar, créature de type shadow.",
+      "spawnTags": [
+        "shadow"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌑",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_lumi_1",
+      "name": "Luciolys",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "elementResistances": [
+        "light"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_lumi_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_lumi_2"
+      },
+      "starterCreature": true,
+      "desc": "Luciolys, créature de type light.",
+      "spawnTags": [
+        "light"
+      ],
+      "spawnChance": 18,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_lumi_2",
+      "name": "Auracorne",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "elementResistances": [
+        "light"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_lumi_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_lumi_3"
+      },
+      "starterCreature": true,
+      "desc": "Auracorne, créature de type light.",
+      "spawnTags": [
+        "light"
+      ],
+      "spawnChance": 10,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_lumi_3",
+      "name": "Célestyr",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "light"
+      ],
+      "elementResistances": [
+        "light"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Célestyr, créature de type light.",
+      "spawnTags": [
+        "light"
+      ],
+      "spawnChance": 0.5,
+      "icon": "✨",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_roc_1",
+      "name": "Terrapik",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_roc_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_roc_2"
+      },
+      "starterCreature": true,
+      "desc": "Terrapik, créature de type earth.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 18,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_roc_2",
+      "name": "Rocadonte",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_roc_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_roc_3"
+      },
+      "starterCreature": true,
+      "desc": "Rocadonte, créature de type earth.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 10,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_roc_3",
+      "name": "Montarok",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "earth"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Montarok, créature de type earth.",
+      "spawnTags": [
+        "earth"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_mer_1",
+      "name": "Bulline",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "elementResistances": [
+        "fire",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_mer_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_mer_2"
+      },
+      "starterCreature": true,
+      "desc": "Bulline, créature de type water.",
+      "spawnTags": [
+        "water"
+      ],
+      "spawnChance": 18,
+      "icon": "💧",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_mer_2",
+      "name": "Mariloutre",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "elementResistances": [
+        "fire",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_mer_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_mer_3"
+      },
+      "starterCreature": true,
+      "desc": "Mariloutre, créature de type water.",
+      "spawnTags": [
+        "water"
+      ],
+      "spawnChance": 10,
+      "icon": "💧",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_mer_3",
+      "name": "Krakenor",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "water"
+      ],
+      "elementResistances": [
+        "fire",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Krakenor, créature de type water.",
+      "spawnTags": [
+        "water"
+      ],
+      "spawnChance": 0.5,
+      "icon": "💧",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_feu_1",
+      "name": "Cendrin",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_feu_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_feu_2"
+      },
+      "starterCreature": true,
+      "desc": "Cendrin, créature de type fire.",
+      "spawnTags": [
+        "fire"
+      ],
+      "spawnChance": 18,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_feu_2",
+      "name": "Flamdrake",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_feu_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_feu_3"
+      },
+      "starterCreature": true,
+      "desc": "Flamdrake, créature de type fire.",
+      "spawnTags": [
+        "fire"
+      ],
+      "spawnChance": 10,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_feu_3",
+      "name": "Volcanor",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "fire"
+      ],
+      "elementResistances": [
+        "fire"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Volcanor, créature de type fire.",
+      "spawnTags": [
+        "fire"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_volt_1",
+      "name": "Étincel",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "electric"
+      ],
+      "elementResistances": [
+        "electric",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_volt_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_volt_2"
+      },
+      "starterCreature": true,
+      "desc": "Étincel, créature de type electric.",
+      "spawnTags": [
+        "electric"
+      ],
+      "spawnChance": 18,
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_volt_2",
+      "name": "Voltlynx",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "electric"
+      ],
+      "elementResistances": [
+        "electric",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_volt_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_volt_3"
+      },
+      "starterCreature": true,
+      "desc": "Voltlynx, créature de type electric.",
+      "spawnTags": [
+        "electric"
+      ],
+      "spawnChance": 10,
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_volt_3",
+      "name": "Tempestrik",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "electric"
+      ],
+      "elementResistances": [
+        "electric",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "earth"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_electric_atk_1",
+        "cap_electric_atk_2",
+        "cap_electric_atk_3",
+        "cap_electric_atk_4",
+        "cap_electric_atk_5",
+        "cap_electric_atk_6",
+        "cap_electric_atk_7",
+        "cap_electric_special_1",
+        "cap_electric_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Tempestrik, créature de type electric.",
+      "spawnTags": [
+        "electric"
+      ],
+      "spawnChance": 0.5,
+      "icon": "⚡",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_air_1",
+      "name": "Plumet",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "elementResistances": [
+        "air",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_air_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_air_2"
+      },
+      "starterCreature": true,
+      "desc": "Plumet, créature de type air.",
+      "spawnTags": [
+        "air"
+      ],
+      "spawnChance": 18,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_air_2",
+      "name": "Cisailair",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "elementResistances": [
+        "air",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_air_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_air_3"
+      },
+      "starterCreature": true,
+      "desc": "Cisailair, créature de type air.",
+      "spawnTags": [
+        "air"
+      ],
+      "spawnChance": 10,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_air_3",
+      "name": "Stratocor",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "air"
+      ],
+      "elementResistances": [
+        "air",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Stratocor, créature de type air.",
+      "spawnTags": [
+        "air"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_nat_1",
+      "name": "Grainou",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "nature",
+        "earth"
+      ],
+      "elementResistances": [
+        "water",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_nat_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_nat_2"
+      },
+      "starterCreature": true,
+      "desc": "Grainou, créature de type nature/earth.",
+      "spawnTags": [
+        "nature",
+        "earth"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_nat_2",
+      "name": "Lianor",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "nature",
+        "earth"
+      ],
+      "elementResistances": [
+        "water",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_nat_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_nat_3"
+      },
+      "starterCreature": true,
+      "desc": "Lianor, créature de type nature/earth.",
+      "spawnTags": [
+        "nature",
+        "earth"
+      ],
+      "spawnChance": 10,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_nat_3",
+      "name": "Ancêtronc",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "nature",
+        "earth"
+      ],
+      "elementResistances": [
+        "water",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Ancêtronc, créature de type nature/earth.",
+      "spawnTags": [
+        "nature",
+        "earth"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_spect_1",
+      "name": "Âmelin",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "spirit",
+        "shadow"
+      ],
+      "elementResistances": [
+        "spirit",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:spirit",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_spect_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_spect_2"
+      },
+      "starterCreature": true,
+      "desc": "Âmelin, créature de type spirit/shadow.",
+      "spawnTags": [
+        "spirit",
+        "shadow"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_spect_2",
+      "name": "Fantombre",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "spirit",
+        "shadow"
+      ],
+      "elementResistances": [
+        "spirit",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:spirit",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_spect_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_spect_3"
+      },
+      "starterCreature": true,
+      "desc": "Fantombre, créature de type spirit/shadow.",
+      "spawnTags": [
+        "spirit",
+        "shadow"
+      ],
+      "spawnChance": 10,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_spect_3",
+      "name": "Nécroâme",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "spirit",
+        "shadow"
+      ],
+      "elementResistances": [
+        "spirit",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:spirit",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Nécroâme, créature de type spirit/shadow.",
+      "spawnTags": [
+        "spirit",
+        "shadow"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_crys_1",
+      "name": "Éclatin",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "earth",
+        "light"
+      ],
+      "elementResistances": [
+        "light",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "steel"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2",
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_crys_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_crys_2"
+      },
+      "starterCreature": true,
+      "desc": "Éclatin, créature de type earth/light.",
+      "spawnTags": [
+        "earth",
+        "light"
+      ],
+      "spawnChance": 18,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_crys_2",
+      "name": "Gemmor",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "earth",
+        "light"
+      ],
+      "elementResistances": [
+        "light",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "steel"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2",
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_crys_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_crys_3"
+      },
+      "starterCreature": true,
+      "desc": "Gemmor, créature de type earth/light.",
+      "spawnTags": [
+        "earth",
+        "light"
+      ],
+      "spawnChance": 10,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_crys_3",
+      "name": "Prismagon",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "earth",
+        "light"
+      ],
+      "elementResistances": [
+        "light",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "steel"
+      ],
+      "resistances": [
+        {
+          "kind": "element:light",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2",
+        "cap_light_atk_1",
+        "cap_light_atk_2",
+        "cap_light_atk_3",
+        "cap_light_atk_4",
+        "cap_light_atk_5",
+        "cap_light_atk_6",
+        "cap_light_atk_7",
+        "cap_light_special_1",
+        "cap_light_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Prismagon, créature de type earth/light.",
+      "spawnTags": [
+        "earth",
+        "light"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_boue_1",
+      "name": "Bourboul",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "earth",
+        "water",
+        "poison"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "nature"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:nature",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2",
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2",
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_boue_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_boue_2"
+      },
+      "starterCreature": true,
+      "desc": "Bourboul, créature de type earth/water/poison.",
+      "spawnTags": [
+        "earth",
+        "water",
+        "poison"
+      ],
+      "spawnChance": 18,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_boue_2",
+      "name": "Marécor",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "earth",
+        "water",
+        "poison"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "nature"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:nature",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2",
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2",
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_boue_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_boue_3"
+      },
+      "starterCreature": true,
+      "desc": "Marécor, créature de type earth/water/poison.",
+      "spawnTags": [
+        "earth",
+        "water",
+        "poison"
+      ],
+      "spawnChance": 10,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_boue_3",
+      "name": "Paludrax",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "earth",
+        "water",
+        "poison"
+      ],
+      "elementResistances": [
+        "electric",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "nature"
+      ],
+      "resistances": [
+        {
+          "kind": "element:electric",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:nature",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2",
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2",
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Paludrax, créature de type earth/water/poison.",
+      "spawnTags": [
+        "earth",
+        "water",
+        "poison"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌿",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_son_1",
+      "name": "Sonilin",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "air",
+        "psy"
+      ],
+      "elementResistances": [
+        "psy",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "steel",
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": -50
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_son_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_son_2"
+      },
+      "starterCreature": true,
+      "desc": "Sonilin, créature de type air/psy.",
+      "spawnTags": [
+        "air",
+        "psy"
+      ],
+      "spawnChance": 18,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_son_2",
+      "name": "Échoryx",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "air",
+        "psy"
+      ],
+      "elementResistances": [
+        "psy",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "steel",
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": -50
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_son_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_son_3"
+      },
+      "starterCreature": true,
+      "desc": "Échoryx, créature de type air/psy.",
+      "spawnTags": [
+        "air",
+        "psy"
+      ],
+      "spawnChance": 10,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_son_3",
+      "name": "Harmonis",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "air",
+        "psy"
+      ],
+      "elementResistances": [
+        "psy",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "steel",
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": -50
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Harmonis, créature de type air/psy.",
+      "spawnTags": [
+        "air",
+        "psy"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🌪️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_magma_1",
+      "name": "Charbonix",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "fire",
+        "earth"
+      ],
+      "elementResistances": [
+        "fire",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2",
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_magma_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_magma_2"
+      },
+      "starterCreature": true,
+      "desc": "Charbonix, créature de type fire/earth.",
+      "spawnTags": [
+        "fire",
+        "earth"
+      ],
+      "spawnChance": 18,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_magma_2",
+      "name": "Lavabête",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "fire",
+        "earth"
+      ],
+      "elementResistances": [
+        "fire",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2",
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_magma_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_magma_3"
+      },
+      "starterCreature": true,
+      "desc": "Lavabête, créature de type fire/earth.",
+      "spawnTags": [
+        "fire",
+        "earth"
+      ],
+      "spawnChance": 10,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_magma_3",
+      "name": "Magmagor",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "fire",
+        "earth"
+      ],
+      "elementResistances": [
+        "fire",
+        "earth"
+      ],
+      "elementWeaknesses": [
+        "water"
+      ],
+      "resistances": [
+        {
+          "kind": "element:fire",
+          "value": 35
+        },
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_fire_atk_1",
+        "cap_fire_atk_2",
+        "cap_fire_atk_3",
+        "cap_fire_atk_4",
+        "cap_fire_atk_5",
+        "cap_fire_atk_6",
+        "cap_fire_atk_7",
+        "cap_fire_special_1",
+        "cap_fire_special_2",
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Magmagor, créature de type fire/earth.",
+      "spawnTags": [
+        "fire",
+        "earth"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🔥",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_mecha_1",
+      "name": "Cogicube",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "steel",
+        "psy"
+      ],
+      "elementResistances": [
+        "earth",
+        "psy",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric",
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_mecha_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_mecha_2"
+      },
+      "starterCreature": true,
+      "desc": "Cogicube, créature de type steel/psy.",
+      "spawnTags": [
+        "steel",
+        "psy"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_mecha_2",
+      "name": "Mécanâme",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "steel",
+        "psy"
+      ],
+      "elementResistances": [
+        "earth",
+        "psy",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric",
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_mecha_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_mecha_3"
+      },
+      "starterCreature": true,
+      "desc": "Mécanâme, créature de type steel/psy.",
+      "spawnTags": [
+        "steel",
+        "psy"
+      ],
+      "spawnChance": 10,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_mecha_3",
+      "name": "Omnicore",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "steel",
+        "psy"
+      ],
+      "elementResistances": [
+        "earth",
+        "psy",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric",
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Omnicore, créature de type steel/psy.",
+      "spawnTags": [
+        "steel",
+        "psy"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_guepe_1",
+      "name": "Toximoust",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "poison",
+        "air"
+      ],
+      "elementResistances": [
+        "poison",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "electric",
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_guepe_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_guepe_2"
+      },
+      "starterCreature": true,
+      "desc": "Toximoust, créature de type poison/air.",
+      "spawnTags": [
+        "poison",
+        "air"
+      ],
+      "spawnChance": 18,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_guepe_2",
+      "name": "Veniguêpe",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "poison",
+        "air"
+      ],
+      "elementResistances": [
+        "poison",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "electric",
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_guepe_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_guepe_3"
+      },
+      "starterCreature": true,
+      "desc": "Veniguêpe, créature de type poison/air.",
+      "spawnTags": [
+        "poison",
+        "air"
+      ],
+      "spawnChance": 10,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_guepe_3",
+      "name": "Vespérine",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "poison",
+        "air"
+      ],
+      "elementResistances": [
+        "poison",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "electric",
+        "fire"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        },
+        {
+          "kind": "element:fire",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2",
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Vespérine, créature de type poison/air.",
+      "spawnTags": [
+        "poison",
+        "air"
+      ],
+      "spawnChance": 0.5,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_reve_1",
+      "name": "Songelin",
+      "category": "creature",
+      "level": 5,
+      "hp": 19,
+      "stats": {
+        "power": 10,
+        "force": 10,
+        "defense": 10,
+        "agility": 13,
+        "agilite": 13,
+        "speed": 13,
+        "spirit": 13,
+        "esprit": 13
+      },
+      "elementTypes": [
+        "psy",
+        "shadow"
+      ],
+      "elementResistances": [
+        "psy",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 68,
+      "canEvolve": true,
+      "evolutionTo": "crea_reve_2",
+      "evolutionLevel": 17,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_reve_2"
+      },
+      "starterCreature": true,
+      "desc": "Songelin, créature de type psy/shadow.",
+      "spawnTags": [
+        "psy",
+        "shadow"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_reve_2",
+      "name": "Cauchemaris",
+      "category": "creature",
+      "level": 17,
+      "hp": 38,
+      "stats": {
+        "power": 23,
+        "force": 23,
+        "defense": 23,
+        "agility": 26,
+        "agilite": 26,
+        "speed": 28,
+        "spirit": 27,
+        "esprit": 27
+      },
+      "elementTypes": [
+        "psy",
+        "shadow"
+      ],
+      "elementResistances": [
+        "psy",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 36,
+      "canEvolve": true,
+      "evolutionTo": "crea_reve_3",
+      "evolutionLevel": 37,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_reve_3"
+      },
+      "starterCreature": true,
+      "desc": "Cauchemaris, créature de type psy/shadow.",
+      "spawnTags": [
+        "psy",
+        "shadow"
+      ],
+      "spawnChance": 10,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_reve_3",
+      "name": "Abyssprit",
+      "category": "creature",
+      "level": 37,
+      "hp": 70,
+      "stats": {
+        "power": 42,
+        "force": 42,
+        "defense": 41,
+        "agility": 43,
+        "agilite": 43,
+        "speed": 46,
+        "spirit": 45,
+        "esprit": 45
+      },
+      "elementTypes": [
+        "psy",
+        "shadow"
+      ],
+      "elementResistances": [
+        "psy",
+        "shadow"
+      ],
+      "elementWeaknesses": [
+        "light"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": 35
+        },
+        {
+          "kind": "element:light",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_shadow_atk_1",
+        "cap_shadow_atk_2",
+        "cap_shadow_atk_3",
+        "cap_shadow_atk_4",
+        "cap_shadow_atk_5",
+        "cap_shadow_atk_6",
+        "cap_shadow_atk_7",
+        "cap_shadow_special_1",
+        "cap_shadow_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 9,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Abyssprit, créature de type psy/shadow.",
+      "spawnTags": [
+        "psy",
+        "shadow"
+      ],
+      "spawnChance": 0.5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_scar_1",
+      "name": "Scarabébé",
+      "category": "creature",
+      "level": 8,
+      "hp": 27,
+      "stats": {
+        "power": 15,
+        "force": 15,
+        "defense": 18,
+        "agility": 17,
+        "agilite": 17,
+        "speed": 17,
+        "spirit": 17,
+        "esprit": 17
+      },
+      "elementTypes": [
+        "steel"
+      ],
+      "elementResistances": [
+        "earth",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": true,
+      "evolutionTo": "crea_scar_2",
+      "evolutionLevel": 24,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_scar_2"
+      },
+      "starterCreature": true,
+      "desc": "Scarabébé, créature de type steel.",
+      "spawnTags": [
+        "steel"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_scar_2",
+      "name": "Scarabacier",
+      "category": "creature",
+      "level": 24,
+      "hp": 52,
+      "stats": {
+        "power": 31,
+        "force": 31,
+        "defense": 38,
+        "agility": 32,
+        "agilite": 32,
+        "speed": 34,
+        "spirit": 35,
+        "esprit": 35
+      },
+      "elementTypes": [
+        "steel"
+      ],
+      "elementResistances": [
+        "earth",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [],
+      "capturable": true,
+      "captureRate": 22,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Scarabacier, créature de type steel.",
+      "spawnTags": [
+        "steel"
+      ],
+      "spawnChance": 5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_med_1",
+      "name": "Méduline",
+      "category": "creature",
+      "level": 8,
+      "hp": 27,
+      "stats": {
+        "power": 15,
+        "force": 15,
+        "defense": 18,
+        "agility": 17,
+        "agilite": 17,
+        "speed": 17,
+        "spirit": 17,
+        "esprit": 17
+      },
+      "elementTypes": [
+        "poison",
+        "water"
+      ],
+      "elementResistances": [
+        "poison",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2",
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": true,
+      "evolutionTo": "crea_med_2",
+      "evolutionLevel": 24,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_med_2"
+      },
+      "starterCreature": true,
+      "desc": "Méduline, créature de type poison/water.",
+      "spawnTags": [
+        "poison",
+        "water"
+      ],
+      "spawnChance": 18,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_med_2",
+      "name": "Médusine",
+      "category": "creature",
+      "level": 24,
+      "hp": 52,
+      "stats": {
+        "power": 31,
+        "force": 31,
+        "defense": 38,
+        "agility": 32,
+        "agilite": 32,
+        "speed": 34,
+        "spirit": 35,
+        "esprit": 35
+      },
+      "elementTypes": [
+        "poison",
+        "water"
+      ],
+      "elementResistances": [
+        "poison",
+        "water"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:poison",
+          "value": 35
+        },
+        {
+          "kind": "element:water",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_poison_atk_1",
+        "cap_poison_atk_2",
+        "cap_poison_atk_3",
+        "cap_poison_atk_4",
+        "cap_poison_atk_5",
+        "cap_poison_atk_6",
+        "cap_poison_atk_7",
+        "cap_poison_special_1",
+        "cap_poison_special_2",
+        "cap_water_atk_1",
+        "cap_water_atk_2",
+        "cap_water_atk_3",
+        "cap_water_atk_4",
+        "cap_water_atk_5",
+        "cap_water_atk_6",
+        "cap_water_atk_7",
+        "cap_water_special_1",
+        "cap_water_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 22,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Médusine, créature de type poison/water.",
+      "spawnTags": [
+        "poison",
+        "water"
+      ],
+      "spawnChance": 5,
+      "icon": "☠️",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_corb_1",
+      "name": "Corbillume",
+      "category": "creature",
+      "level": 8,
+      "hp": 27,
+      "stats": {
+        "power": 15,
+        "force": 15,
+        "defense": 18,
+        "agility": 17,
+        "agilite": 17,
+        "speed": 17,
+        "spirit": 17,
+        "esprit": 17
+      },
+      "elementTypes": [
+        "psy",
+        "air"
+      ],
+      "elementResistances": [
+        "psy",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": true,
+      "evolutionTo": "crea_corb_2",
+      "evolutionLevel": 24,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_corb_2"
+      },
+      "starterCreature": true,
+      "desc": "Corbillume, créature de type psy/air.",
+      "spawnTags": [
+        "psy",
+        "air"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_corb_2",
+      "name": "Psycorbeau",
+      "category": "creature",
+      "level": 24,
+      "hp": 52,
+      "stats": {
+        "power": 31,
+        "force": 31,
+        "defense": 38,
+        "agility": 32,
+        "agilite": 32,
+        "speed": 34,
+        "spirit": 35,
+        "esprit": 35
+      },
+      "elementTypes": [
+        "psy",
+        "air"
+      ],
+      "elementResistances": [
+        "psy",
+        "air"
+      ],
+      "elementWeaknesses": [
+        "shadow"
+      ],
+      "resistances": [
+        {
+          "kind": "element:psy",
+          "value": 35
+        },
+        {
+          "kind": "element:air",
+          "value": 35
+        },
+        {
+          "kind": "element:shadow",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_air_atk_1",
+        "cap_air_atk_2",
+        "cap_air_atk_3",
+        "cap_air_atk_4",
+        "cap_air_atk_5",
+        "cap_air_atk_6",
+        "cap_air_atk_7",
+        "cap_air_special_1",
+        "cap_air_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 22,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Psycorbeau, créature de type psy/air.",
+      "spawnTags": [
+        "psy",
+        "air"
+      ],
+      "spawnChance": 5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_taup_1",
+      "name": "Taupinox",
+      "category": "creature",
+      "level": 8,
+      "hp": 27,
+      "stats": {
+        "power": 15,
+        "force": 15,
+        "defense": 18,
+        "agility": 17,
+        "agilite": 17,
+        "speed": 17,
+        "spirit": 17,
+        "esprit": 17
+      },
+      "elementTypes": [
+        "steel",
+        "earth"
+      ],
+      "elementResistances": [
+        "earth",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 55,
+      "canEvolve": true,
+      "evolutionTo": "crea_taup_2",
+      "evolutionLevel": 24,
+      "evolution": {
+        "enabled": true,
+        "condition": "level",
+        "level": 24,
+        "targetId": "crea_taup_2"
+      },
+      "starterCreature": true,
+      "desc": "Taupinox, créature de type steel/earth.",
+      "spawnTags": [
+        "steel",
+        "earth"
+      ],
+      "spawnChance": 18,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    },
+    {
+      "id": "crea_taup_2",
+      "name": "Blindotaupe",
+      "category": "creature",
+      "level": 24,
+      "hp": 52,
+      "stats": {
+        "power": 31,
+        "force": 31,
+        "defense": 38,
+        "agility": 32,
+        "agilite": 32,
+        "speed": 34,
+        "spirit": 35,
+        "esprit": 35
+      },
+      "elementTypes": [
+        "steel",
+        "earth"
+      ],
+      "elementResistances": [
+        "earth",
+        "steel"
+      ],
+      "elementWeaknesses": [
+        "electric"
+      ],
+      "resistances": [
+        {
+          "kind": "element:earth",
+          "value": 35
+        },
+        {
+          "kind": "element:steel",
+          "value": 35
+        },
+        {
+          "kind": "element:electric",
+          "value": -50
+        }
+      ],
+      "abilityIds": [
+        "cap_earth_atk_1",
+        "cap_earth_atk_2",
+        "cap_earth_atk_3",
+        "cap_earth_atk_4",
+        "cap_earth_atk_5",
+        "cap_earth_atk_6",
+        "cap_earth_atk_7",
+        "cap_earth_special_1",
+        "cap_earth_special_2"
+      ],
+      "capturable": true,
+      "captureRate": 22,
+      "canEvolve": false,
+      "evolutionTo": "",
+      "evolutionLevel": 16,
+      "evolution": null,
+      "starterCreature": true,
+      "desc": "Blindotaupe, créature de type steel/earth.",
+      "spawnTags": [
+        "steel",
+        "earth"
+      ],
+      "spawnChance": 5,
+      "icon": "🐲",
+      "iconData": "",
+      "artData": "",
+      "contentFamily": "creature",
+      "universeId": "starter_capture"
+    }
+  ]
+}
