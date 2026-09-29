@@ -209,6 +209,20 @@ export function applyCaptureCreatureVisualBindingV1({
       meta.displayScale?.player,
       "creatureMeta.displayScale.player"
     ),
+    position: {
+      x: Number(meta.offset?.x ?? 0),
+      y: Number(meta.offset?.y ?? 0)
+    },
+    transformOrigin: {
+      x:
+        typeof meta.transformOrigin?.x === "string"
+          ? meta.transformOrigin.x
+          : "50%",
+      y:
+        typeof meta.transformOrigin?.y === "string"
+          ? meta.transformOrigin.y
+          : "50%"
+    },
     visual: {
       front: {
         assetId: frontAssetId
