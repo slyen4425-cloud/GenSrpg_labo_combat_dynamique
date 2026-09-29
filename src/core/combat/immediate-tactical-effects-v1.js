@@ -1,5 +1,4 @@
 import {
-  recordFighterDamage,
   withFighterEnergy,
   withFighterHp
 } from "./combat-state.js";
@@ -7,14 +6,25 @@ import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
 import {
+  applyCombatDamageV1
+} from "./combat-damage-application-v1.js";
+import {
   resolveTacticalEffectTargetIdsV1
 } from "./tactical-effect-targeting-v1.js";
+import {
+  applyStatusEffectV1,
+  removeStatusEffectsV1,
+  validateStatusEffectForTargetV1
+} from "./status-effect-runtime-v1.js";
 
 const SUPPORTED_KINDS = new Set([
   "damage",
   "heal",
   "energy_restore",
-  "energy_drain"
+  "energy_drain",
+  "apply_status",
+  "cleanse",
+  "dispel"
 ]);
 
 const MULTI_TARGET_SCOPES = new Set([
@@ -33,10 +43,29 @@ function fighterOf(state, fighterId) {
   return fighter;
 }
 
+function targetIdsForEffect({
+  state,
+  actorId,
+  targetId,
+  effect,
+  battleFormat
+}) {
+  return resolveTacticalEffectTargetIdsV1({
+    format: battleFormat,
+    state,
+    actorId,
+    targetId,
+    targetScope: effect.targetScope
+  });
+}
+
 export function unsupportedImmediateTacticalEffectV1(
   skill,
   {
-    battleFormat = null
+    battleFormat = null,
+    state = null,
+    actorId = null,
+    targetId = null
   } = {}
 ) {
   const effects = Array.isArray(skill?.effects)
@@ -67,6 +96,41 @@ export function unsupportedImmediateTacticalEffectV1(
         reason: "missing_battle_format"
       });
     }
+
+    if (
+      effect.kind === "apply_status" &&
+      effect.status.kind === "stat_modifier" &&
+      state !== null
+    ) {
+      const affectedIds =
+        targetIdsForEffect({
+          state,
+          actorId,
+          targetId,
+          effect,
+          battleFormat
+        });
+
+      for (const affectedId of affectedIds) {
+        const validation =
+          validateStatusEffectForTargetV1({
+            state,
+            targetActorId: affectedId,
+            status: effect.status
+          });
+
+        if (!validation.ok) {
+          return Object.freeze({
+            kind: effect.kind,
+            targetScope:
+              effect.targetScope,
+            reason:
+              "unsupported_status_stat",
+            statId: validation.statId
+          });
+        }
+      }
+    }
   }
 
   return null;
@@ -88,30 +152,20 @@ function applyDamageEffect({
     channel:
       effect.channel ??
       skill.element ??
-      "physical"
+      "physical",
+    atMs
   });
-  const before =
-    fighterOf(state, affectedId).hp;
-  let nextState = withFighterHp(
-    state,
-    affectedId,
-    before - damage.damage
-  );
-  const after =
-    fighterOf(nextState, affectedId).hp;
-  const actualDamage = before - after;
 
-  nextState = recordFighterDamage(
-    nextState,
-    {
-      sourceActorId: actorId,
-      targetActorId: affectedId,
-      amount: actualDamage
-    }
-  );
+  const applied = applyCombatDamageV1({
+    state,
+    sourceActorId: actorId,
+    targetActorId: affectedId,
+    damage: damage.damage,
+    atMs
+  });
 
   return Object.freeze({
-    state: nextState,
+    state: applied.state,
     event: Object.freeze({
       type: "hit",
       atMs,
@@ -127,8 +181,12 @@ function applyDamageEffect({
       resistancePct:
         damage.resistancePct,
       damage: damage.damage,
-      hpBefore: before,
-      hpAfter: after
+      absorbedByShield:
+        applied.absorbedByShield,
+      appliedDamage:
+        applied.appliedDamage,
+      hpBefore: applied.hpBefore,
+      hpAfter: applied.hpAfter
     })
   });
 }
@@ -144,7 +202,12 @@ export function applyImmediateTacticalEffectsV1({
   const unsupported =
     unsupportedImmediateTacticalEffectV1(
       skill,
-      { battleFormat }
+      {
+        battleFormat,
+        state,
+        actorId,
+        targetId
+      }
     );
   if (unsupported !== null) {
     throw new RangeError(
@@ -162,12 +225,12 @@ export function applyImmediateTacticalEffectsV1({
 
   for (const effect of skill.effects ?? []) {
     const affectedIds =
-      resolveTacticalEffectTargetIdsV1({
-        format: battleFormat,
+      targetIdsForEffect({
         state: nextState,
         actorId,
         targetId,
-        targetScope: effect.targetScope
+        effect,
+        battleFormat
       });
 
     for (const affectedId of affectedIds) {
@@ -213,55 +276,121 @@ export function applyImmediateTacticalEffectsV1({
         continue;
       }
 
-      const before = fighterOf(
-        nextState,
-        affectedId
-      ).energy;
-
-      if (effect.kind === "energy_restore") {
+      if (
+        effect.kind === "energy_restore" ||
+        effect.kind === "energy_drain"
+      ) {
+        const before = fighterOf(
+          nextState,
+          affectedId
+        ).energy;
         nextState = withFighterEnergy(
           nextState,
           affectedId,
-          before + effect.amount
+          effect.kind === "energy_restore"
+            ? before + effect.amount
+            : before - effect.amount
         );
         const after = fighterOf(
           nextState,
           affectedId
         ).energy;
+
         events.push(Object.freeze({
-          type: "energy-restored",
+          type:
+            effect.kind === "energy_restore"
+              ? "energy-restored"
+              : "energy-drained",
           atMs,
           actorId: affectedId,
           sourceActorId: actorId,
           skillId: skill.id,
           requested: effect.amount,
-          applied: after - before,
+          applied:
+            effect.kind === "energy_restore"
+              ? after - before
+              : before - after,
           energyBefore: before,
           energyAfter: after
         }));
         continue;
       }
 
-      if (effect.kind === "energy_drain") {
-        nextState = withFighterEnergy(
-          nextState,
-          affectedId,
-          before - effect.amount
-        );
-        const after = fighterOf(
-          nextState,
-          affectedId
-        ).energy;
+      if (effect.kind === "apply_status") {
+        nextState = applyStatusEffectV1({
+          state: nextState,
+          targetActorId: affectedId,
+          sourceActorId: actorId,
+          status: effect.status
+        });
         events.push(Object.freeze({
-          type: "energy-drained",
+          type: "status-applied",
           atMs,
           actorId: affectedId,
           sourceActorId: actorId,
           skillId: skill.id,
-          requested: effect.amount,
-          applied: before - after,
-          energyBefore: before,
-          energyAfter: after
+          statusId: effect.status.id,
+          statusKind: effect.status.kind
+        }));
+
+        if (effect.status.kind === "stun") {
+          events.push(Object.freeze({
+            type: "charge-interrupt",
+            atMs,
+            actorId: affectedId,
+            sourceActorId: actorId,
+            skillId: skill.id,
+            reason: "stun",
+            stunMs:
+              effect.status.durationMs
+          }));
+        }
+        continue;
+      }
+
+      if (
+        effect.kind === "cleanse" ||
+        effect.kind === "dispel"
+      ) {
+        const beforeIds =
+          fighterOf(
+            nextState,
+            affectedId
+          ).statusEffects.map(
+            (entry) => entry.definition.id
+          );
+        nextState = removeStatusEffectsV1({
+          state: nextState,
+          targetActorId: affectedId,
+          polarity:
+            effect.kind === "cleanse"
+              ? "detrimental"
+              : "beneficial",
+          statusTags: effect.statusTags
+        });
+        const afterIds = new Set(
+          fighterOf(
+            nextState,
+            affectedId
+          ).statusEffects.map(
+            (entry) => entry.definition.id
+          )
+        );
+        events.push(Object.freeze({
+          type:
+            effect.kind === "cleanse"
+              ? "status-cleansed"
+              : "status-dispelled",
+          atMs,
+          actorId: affectedId,
+          sourceActorId: actorId,
+          skillId: skill.id,
+          removedStatusIds:
+            Object.freeze(
+              beforeIds.filter(
+                (id) => !afterIds.has(id)
+              )
+            )
         }));
       }
     }
