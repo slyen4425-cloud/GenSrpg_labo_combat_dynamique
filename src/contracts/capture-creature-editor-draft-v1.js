@@ -86,6 +86,18 @@ function optionalString(value, field) {
   return value == null ? null : requiredString(value, field);
 }
 
+function optionalDescription(value) {
+  if (value == null) {
+    return "";
+  }
+  if (typeof value !== "string") {
+    throw new TypeError(
+      "description must be a string"
+    );
+  }
+  return value.trim();
+}
+
 function finiteNumber(value, field) {
   if (typeof value !== "number" || !Number.isFinite(value)) {
     throw new RangeError(`${field} must be a finite number`);
@@ -337,7 +349,7 @@ export function normalizeCaptureCreatureEditorDraftV1(input) {
       "displayName"
     ),
     description:
-      optionalString(value.description, "description") ?? "",
+      optionalDescription(value.description),
     level: positiveInteger(value.level, "level"),
     sourceStats: normalizeSourceStats(value.sourceStats),
     elements: uniqueStrings(value.elements ?? [], "elements"),
