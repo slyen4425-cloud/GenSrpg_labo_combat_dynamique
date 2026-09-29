@@ -14388,3 +14388,58 @@ Le registre expose actuellement `damagePerPoint` et `resistancePerPoint` sans un
 - CI complète verte ;
 - checkpoint PREVALIDATION + preview ;
 - pas de GREEN UI final avant retour smartphone.
+
+
+### Résultat — Capture Stat Effects V1
+
+Retour smartphone traité :
+
+- les stats étaient présentes mais les coefficients n'avaient aucune unité compréhensible ;
+- le reste du lot Stats / Progression Editor UI V1 reste en PREVALIDATION.
+
+RED :
+
+- SHA : `828de8fe6180d82d194b1da28ed5e470ad439b90` ;
+- run : `36633998421` ;
+- 553 tests, 549 pass, 4 fail ciblés ;
+- causes : unités % absentes, stat Vitesse sans effet contractuel, projection pure absente, résumé Human Editor absent.
+
+Correction :
+
+- `damagePerPoint` et `resistancePerPoint` sont supprimés du contrat actif ;
+- propriétaires explicites : `damagePctPerPoint`, `resistancePctPerPoint`, `chargeTimeReductionPctPerPoint` ;
+- les anciens noms ambigus sont refusés par le contrat au lieu de devenir une seconde autorité ;
+- preset Monster Capture : 1 point = +1 % dégâts / +1 % résistance pour les canaux standards ;
+- Vitesse : 1 point = -1 % temps de charge dans le preset, valeur data-driven donc configurable ;
+- nouveau calcul pur : `src/core/combat/capture-stat-effects-v1.js` ;
+- résultat du calcul : bonus dégâts % par canal, résistance % par canal, réduction % du temps de charge ;
+- aucun effet n'est encore appliqué au Combat Runtime / Action Resolver dans ce lot.
+
+Human Editor :
+
+- affiche « 1 point = X % … » ;
+- affiche également le résultat total pour la valeur courante ;
+- le résumé se met à jour pendant la saisie ;
+- les réglages système ont des libellés visibles : Dégâts % / point, Résistance % / point, Réduction charge % / point ;
+- les stats personnalisées peuvent aussi définir ces trois coefficients.
+
+GREEN technique :
+
+- SHA fonctionnel avant documentation : `364c22d8bdc42da9ba16026cfd3f2af6e0f72c4a` ;
+- run : `36634464820` ;
+- 554 tests, 554 pass, 0 fail.
+
+Revue charte :
+
+- fichiers modifiés limités au contrat/données stats, calcul pur, Human Editor, démo, tests et documentation ;
+- `localStorage` : 0 ;
+- `sessionStorage` : 0 ;
+- `MutationObserver` : 0 ;
+- `setTimeout` / `setInterval` : 0 dans le Human Editor modifié ;
+- Action Resolver, Combat Runtime, Animation Core, FX et renderer inchangés.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone.**
+
+Lot suivant séparé : raccord gameplay réel des effets Stats (dégâts/résistances et Vitesse -> temps de charge), avec RED dédié avant toute modification du Combat Runtime / Action Resolver.
