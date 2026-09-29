@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-test("showcase creature bindings match the user-validated visual pack and position style", async () => {
+test("showcase creature bindings map only creature IDs to validated visual packs", async () => {
   const {
     captureCreatureVisualBindingForIdV1
   } = await import(
@@ -10,18 +10,18 @@ test("showcase creature bindings match the user-validated visual pack and positi
   );
 
   const expected = new Map([
-    ["crea_voltik", ["voltige", "biped"]],
-    ["crea_ailevent", ["ailevent", "biped"]],
-    ["crea_galewing", ["ailevent", "biped"]],
-    ["crea_maraileron", ["maraileron", "serpentine"]],
-    ["crea_mossback", ["golem_moussu", "massive"]],
-    ["crea_lumipup", ["renard_magique_dore", "biped"]],
-    ["crea_lumilo", ["renard_magique_dore", "biped"]],
-    ["crea_sparkmoth", ["guepe_cybernetique", "serpentine"]],
-    ["crea_lucieclair", ["guepe_cybernetique", "serpentine"]]
+    ["crea_voltik", "voltige"],
+    ["crea_ailevent", "ailevent"],
+    ["crea_galewing", "ailevent"],
+    ["crea_maraileron", "maraileron"],
+    ["crea_mossback", "golem_moussu"],
+    ["crea_lumipup", "renard_magique_dore"],
+    ["crea_lumilo", "renard_magique_dore"],
+    ["crea_sparkmoth", "guepe_cybernetique"],
+    ["crea_lucieclair", "guepe_cybernetique"]
   ]);
 
-  for (const [creatureId, [metaId, profileId]] of expected) {
+  for (const [creatureId, metaId] of expected) {
     const binding =
       captureCreatureVisualBindingForIdV1(
         creatureId
@@ -37,14 +37,14 @@ test("showcase creature bindings match the user-validated visual pack and positi
       creatureId + " must use the validated visual pack"
     );
     assert.equal(
-      binding.profileId,
-      profileId,
-      creatureId + " must use the validated position style"
+      Object.hasOwn(binding, "profileId"),
+      false,
+      creatureId + " binding must not become a second profile authority"
     );
   }
 });
 
-test("visual binding applies explicit creature profile instead of the pack default profile", async () => {
+test("visual metadata remains the sole position-profile authority", async () => {
   const {
     applyCaptureCreatureVisualBindingV1
   } = await import(
@@ -107,12 +107,11 @@ test("visual binding applies explicit creature profile instead of the pack defau
         creatureId: "crea-voltik",
         metaId: "voltige",
         metaFile:
-          "capture/creatures/voltige/voltige.meta.json",
-        profileId: "biped"
+          "capture/creatures/voltige/voltige.meta.json"
       },
       creatureMeta: {
         id: "voltige",
-        profile: "drake",
+        profile: "biped",
         assetIds: {
           player:
             "pack:capture:creature-voltige-player-01",
@@ -146,9 +145,22 @@ test("visual binding applies explicit creature profile instead of the pack defau
     result.draft.presentation.profileId,
     "biped"
   );
-  assert.notEqual(
-    result.draft.presentation.profileId,
-    "drake"
+
+  const adapterSource = await readFile(
+    new URL(
+      "../../src/adapters/input/capture/capture-creature-visual-binding-v1.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.doesNotMatch(
+    adapterSource,
+    /visualBinding\.profileId/
+  );
+  assert.match(
+    adapterSource,
+    /meta\.profile/
   );
 });
 
