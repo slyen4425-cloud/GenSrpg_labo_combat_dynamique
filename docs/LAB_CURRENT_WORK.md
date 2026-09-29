@@ -15108,3 +15108,81 @@ Durées temps réel : `durationMs` uniquement pour les nouveaux contrats.
 - documentation architecture synchronisée ;
 - checkpoint GREEN ;
 - aucun effet annoncé comme actif en combat avant les micro-lots Runtime suivants.
+
+
+### Résultat — Tactical Skill Effects Architecture V1
+
+RED :
+
+- SHA : `f66d0ce8736bf0e7a274a79a7bef9330c6fc3317` ;
+- run : `36639109829` ;
+- 582 tests, 577 pass, 5 fail ciblés ;
+- causes : contrats `SkillEffectV1` et `StatusEffectV1` absents.
+
+Contrats créés :
+
+- `src/contracts/skill-effect-v1.js` ;
+- `src/contracts/status-effect-v1.js`.
+
+`SkillEffectV1` couvre :
+
+- damage ;
+- heal ;
+- energy_restore ;
+- energy_drain ;
+- apply_status ;
+- cleanse ;
+- dispel.
+
+Scopes explicites :
+
+- target ;
+- self ;
+- all_enemies ;
+- all_allies ;
+- all_except_self.
+
+`StatusEffectV1` couvre :
+
+- stat_modifier ;
+- damage_over_time ;
+- heal_over_time ;
+- shield ;
+- immobilize ;
+- silence ;
+- stun ;
+- taunt.
+
+Règles :
+
+- durée temps réel explicite via `durationMs` ;
+- tick explicite via `tickIntervalMs` pour DoT/HoT ;
+- stacking : replace / refresh / stack ;
+- polarité : beneficial / detrimental / neutral ;
+- tags disponibles pour cleanse/dispel ;
+- aucun mapping historique de durée inventé dans ces contrats.
+
+Première implémentation :
+
+- deux fixtures de validation étaient mal ciblées et ont été corrigées sans assouplir les contrats.
+
+GREEN :
+
+- SHA : `64915108e935835a6180ffe251c483b5f92c9022` ;
+- run : `36639270009` ;
+- 582 tests, 582 pass, 0 fail.
+
+Revue charte :
+
+- aucun Runtime modifié ;
+- aucune UI modifiée ;
+- aucun DOM/storage/network/global ;
+- aucun timer ;
+- aucune dépendance GenSrpG ;
+- contrats purs uniquement.
+
+État :
+
+**GREEN architecture/contrat.**
+
+Étape suivante : **Immediate Tactical Effects Runtime V1**.
