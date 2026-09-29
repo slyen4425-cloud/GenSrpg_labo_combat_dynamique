@@ -345,6 +345,123 @@ export function buildHumanTacticalSkillEffectsV1(
   });
 }
 
+const CAPTURE_EDITOR_COMPAT_DISTANCES_V1 =
+  Object.freeze([
+    "short",
+    "medium",
+    "long"
+  ]);
+
+const TARGET_RELATION_ORDER_V1 =
+  Object.freeze([
+    "enemy",
+    "ally",
+    "self"
+  ]);
+
+function addTargetRelationsV1(target, relations) {
+  for (const relation of relations) {
+    target.add(relation);
+  }
+}
+
+function targetRelationsForTargetScopedEffectV1(effect) {
+  switch (effect.kind) {
+    case "damage":
+    case "energy_drain":
+    case "dispel":
+      return ["enemy"];
+
+    case "heal":
+    case "energy_restore":
+    case "cleanse":
+      return ["ally", "self"];
+
+    case "apply_status": {
+      const polarity =
+        effect.status?.polarity ?? "neutral";
+      if (polarity === "detrimental") {
+        return ["enemy"];
+      }
+      if (polarity === "beneficial") {
+        return ["ally", "self"];
+      }
+      return ["enemy", "ally", "self"];
+    }
+
+    default:
+      return ["enemy"];
+  }
+}
+
+export function humanSkillTargetRelationsFromTacticalEffectsV1(
+  effects,
+  {
+    form = null
+  } = {}
+) {
+  if (!Array.isArray(effects)) {
+    throw new TypeError(
+      "Les effets tactiques doivent être une liste"
+    );
+  }
+
+  const relations = new Set();
+
+  for (const effect of effects) {
+    switch (effect.targetScope) {
+      case "self":
+        relations.add("self");
+        break;
+
+      case "all_enemies":
+        relations.add("enemy");
+        break;
+
+      case "all_allies":
+        addTargetRelationsV1(
+          relations,
+          ["ally", "self"]
+        );
+        break;
+
+      case "all_except_self":
+        addTargetRelationsV1(
+          relations,
+          ["enemy", "ally"]
+        );
+        break;
+
+      case "target":
+        addTargetRelationsV1(
+          relations,
+          targetRelationsForTargetScopedEffectV1(
+            effect
+          )
+        );
+        break;
+
+      default:
+        throw new RangeError(
+          "Cible d’effet tactique inconnue : " +
+            effect.targetScope
+        );
+    }
+  }
+
+  if (relations.size === 0) {
+    relations.add(
+      form === "self"
+        ? "self"
+        : "enemy"
+    );
+  }
+
+  return TARGET_RELATION_ORDER_V1.filter(
+    (relation) => relations.has(relation)
+  );
+}
+
 function finiteNumber(value, field) {
   const number = Number(value);
   if (!Number.isFinite(number)) {
@@ -1141,6 +1258,17 @@ export function buildHumanSkillDraftV1(fields) {
   const id = requiredText(fields.id, "ID capacité");
   const reaction = fields.reaction ?? {};
   const projectileClash = fields.projectileClash ?? {};
+  const usesTacticalEffects =
+    Object.prototype.hasOwnProperty.call(
+      fields,
+      "effects"
+    );
+  const tacticalEffects =
+    usesTacticalEffects
+      ? buildHumanTacticalSkillEffectsV1(
+          fields.effects ?? []
+        )
+      : [];
 
   return normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
@@ -1184,12 +1312,21 @@ export function buildHumanSkillDraftV1(fields) {
         fields.cooldownMs,
         "Temps de recharge"
       ),
-      allowedDistances: stableIds(
-        fields.allowedDistances
-      ),
-      targetRelations: stableIds(
-        fields.targetRelations
-      ),
+      allowedDistances:
+        usesTacticalEffects
+          ? [...CAPTURE_EDITOR_COMPAT_DISTANCES_V1]
+          : stableIds(
+              fields.allowedDistances
+            ),
+      targetRelations:
+        usesTacticalEffects
+          ? humanSkillTargetRelationsFromTacticalEffectsV1(
+              tacticalEffects,
+              { form: fields.form }
+            )
+          : stableIds(
+              fields.targetRelations
+            ),
       activationRequirements:
         fields.activationRequirements ?? {
           mode: "all",
@@ -1217,17 +1354,32 @@ export function buildHumanSkillDraftV1(fields) {
         )
       },
       effect: {
-        damage: finiteNumber(fields.damage ?? 0, "Dégâts"),
-        heal: finiteNumber(fields.heal ?? 0, "Soin"),
-        stunMs: finiteNumber(fields.stunMs ?? 0, "Stun"),
+        damage:
+          usesTacticalEffects
+            ? 0
+            : finiteNumber(
+                fields.damage ?? 0,
+                "Dégâts"
+              ),
+        heal:
+          usesTacticalEffects
+            ? 0
+            : finiteNumber(
+                fields.heal ?? 0,
+                "Soin"
+              ),
+        stunMs:
+          usesTacticalEffects
+            ? 0
+            : finiteNumber(
+                fields.stunMs ?? 0,
+                "Stun"
+              ),
         interruptsPreparation:
           fields.interruptsPreparation === true,
         tags: stableIds(fields.effectTags)
       },
-      effects:
-        buildHumanTacticalSkillEffectsV1(
-          fields.effects ?? []
-        )
+      effects: tacticalEffects
     },
     presentation: presentationForSkill(fields)
   });
@@ -1475,9 +1627,7 @@ function writeSkillTemplateFields(
     ["[data-skill-description]", fields.description],
     ["[data-skill-category]", fields.category],
     ["[data-skill-element]", fields.element ?? ""],
-    ["[data-skill-required-level]", fields.requiredLevel],
-    ["[data-skill-damage]", fields.damage],
-    ["[data-skill-heal]", fields.heal]
+    ["[data-skill-required-level]", fields.requiredLevel]
   ];
 
   for (const [selector, value] of mapping) {
@@ -1515,8 +1665,6 @@ function prepareNewSkillDraftFields(
     ["[data-skill-category]", "offensive"],
     ["[data-skill-form]", "contact"],
     ["[data-skill-element]", ""],
-    ["[data-skill-damage]", 0],
-    ["[data-skill-heal]", 0],
     ["[data-skill-energy-cost]", 0],
     ["[data-skill-required-level]", 1],
     ["[data-skill-approach]", "none"],
@@ -1524,7 +1672,6 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-time]", 0],
     ["[data-skill-recovery]", 0],
     ["[data-skill-cooldown]", 0],
-    ["[data-skill-stun]", 0],
     ["[data-skill-clash-group]", "projectile-default"],
     ["[data-skill-icon]", ""],
     ["[data-skill-socket]", ""],
@@ -1561,12 +1708,6 @@ function prepareNewSkillDraftFields(
     statRegistry
   );
 
-  for (const input of root.querySelectorAll("[data-skill-distance]")) {
-    input.checked = true;
-  }
-  for (const input of root.querySelectorAll("[data-skill-target]")) {
-    input.checked = input.value === "enemy";
-  }
 }
 
 function creatureAudioAssetId(entry) {
@@ -4074,25 +4215,11 @@ function readSkillFields(root) {
       root,
       "[data-skill-cooldown]"
     ),
-    allowedDistances: checkedValues(
-      root,
-      "[data-skill-distance]:checked"
-    ),
-    targetRelations: checkedValues(
-      root,
-      "[data-skill-target]:checked"
-    ),
     activationRequirements:
       readHumanSkillActivationRequirementsV1(
         root
       ),
     effects: readHumanSkillEffectsV1(root),
-    damage: numericValue(
-      root,
-      "[data-skill-damage]"
-    ),
-    heal: numericValue(root, "[data-skill-heal]"),
-    stunMs: numericValue(root, "[data-skill-stun]"),
     interruptsPreparation: one(
       root,
       "[data-skill-interrupts]"
@@ -5812,17 +5939,23 @@ export function mountCaptureEditorHumanV2({
   }
 
   try {
-    const initialSkill =
-      buildHumanSkillDraftV1(
-        readSkillFields(root)
+    const initialFields =
+      readSkillFields(root);
+    if (initialFields.effects.length > 0) {
+      const initialSkill =
+        buildHumanSkillDraftV1(
+          initialFields
+        );
+      configuredSkills.set(
+        initialSkill.id,
+        initialSkill
       );
-    configuredSkills.set(
-      initialSkill.id,
-      initialSkill
-    );
-    refreshLoadoutOptions(
-      initialSkill.id
-    );
+      refreshLoadoutOptions(
+        initialSkill.id
+      );
+    } else {
+      refreshLoadoutOptions();
+    }
   } catch {
     refreshLoadoutOptions();
   }
