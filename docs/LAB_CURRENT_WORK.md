@@ -13911,3 +13911,64 @@ Critère final :
 - correction minimale ;
 - CI complète verte ;
 - checkpoint + preview PREVALIDATION smartphone.
+
+
+### Résultat — liaisons vitrine créatures + styles de position V1
+
+Associations utilisateur appliquées explicitement :
+
+- Voltige `crea_voltik` -> pack `voltige` -> `biped` ;
+- Ailevent `crea_ailevent` + alias `crea_galewing` -> pack `ailevent` -> `biped` ;
+- Maraileron `crea_maraileron` -> pack `maraileron` -> `serpentine` ;
+- Moussados `crea_mossback` -> pack `golem_moussu` -> `massive` ;
+- Lumilo `crea_lumipup` + `crea_lumilo` -> pack `renard_magique_dore` -> `biped` ;
+- Luciéclair `crea_sparkmoth` + `crea_lucieclair` -> pack `guepe_cybernetique` -> `serpentine`.
+
+Architecture :
+
+- `CAPTURE_CREATURE_VISUAL_BINDINGS_V1` porte désormais explicitement le `profileId` de la créature ;
+- `applyCaptureCreatureVisualBindingV1()` privilégie ce `profileId` explicite ;
+- compatibilité conservée : un ancien binding sans `profileId` retombe sur `creatureMeta.profile` ;
+- aucune metadata de `global-assets` n'a été modifiée ;
+- assets, scale, sockets, offset et transformOrigin continuent à provenir du pack visuel autoritaire ;
+- aucune heuristique par nom.
+
+Profil Massif / golem :
+
+- ajout de `data/profiles/massive.profile.json` ;
+- l'éditeur exposait déjà la valeur `massive` mais le runtime ne possédait aucun profil correspondant ;
+- le comportement d'animation initial est volontairement aligné sur `biped` afin de ne pas inventer un comportement « lourd » non validé ;
+- la preview charge désormais ce profil ;
+- un futur lot visuel pourra différencier ses animations après validation utilisateur.
+
+RED :
+
+- SHA : `51270401df70bbc1882cd82b973ac064375681bd` ;
+- run : `36619179079` ;
+- 533 tests, 529 pass, 4 fail attendus.
+
+Correction :
+
+- bindings : `d21e14e2ba82c30036495257e19cf1a2cbf9013e` ;
+- propriété profileId : `0ca5842eda7b86c62755c84367e90573e24909c9` ;
+- profil massive : `4cacd5e5303de7a43371145d06f6d5050c575d36` ;
+- chargement preview : `919ffb54943ab0913ba1e58170b85812d4550ead` ;
+- fallback compatibilité : `44b7dd0f13030e5fcba6d7ba20fcee9f30762911`.
+
+CI fonctionnelle finale :
+
+- run : `36619410486` ;
+- 533 tests, 533 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION smartphone.**
+
+À vérifier :
+
+1. Voltige affiche le style Bipède ;
+2. Ailevent affiche le style Bipède ;
+3. Maraileron affiche Serpent / rampant ;
+4. Moussados charge le Golem moussu et Massif / golem ;
+5. Lumilo charge le Renard magique doré et Bipède ;
+6. Luciéclair charge la Guêpe cybernétique et Serpent / rampant.
