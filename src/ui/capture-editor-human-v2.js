@@ -2663,6 +2663,23 @@ function renderHumanSkillEffectsV1(
   }
 }
 
+function refreshHumanSkillEffectStatOptionsV1(
+  root,
+  statRegistry
+) {
+  for (
+    const select of root.querySelectorAll(
+      "[data-skill-status-stat-id]"
+    )
+  ) {
+    fillStatusStatSelectV1(
+      select,
+      statRegistry,
+      select.value
+    );
+  }
+}
+
 function commaValuesV1(value) {
   return String(value ?? "")
     .split(",")
@@ -5446,6 +5463,10 @@ export function mountCaptureEditorHumanV2({
           statRegistry,
           valuesBefore
         );
+        refreshHumanSkillEffectStatOptionsV1(
+          root,
+          statRegistry
+        );
         setStatus(
           root,
           "Système de stats mis à jour pour cette session.",
@@ -5539,6 +5560,10 @@ export function mountCaptureEditorHumanV2({
           statRegistry,
           valuesBefore
         );
+        refreshHumanSkillEffectStatOptionsV1(
+          root,
+          statRegistry
+        );
 
         one(
           root,
@@ -5613,6 +5638,10 @@ export function mountCaptureEditorHumanV2({
           root,
           statRegistry,
           valuesBefore
+        );
+        refreshHumanSkillEffectStatOptionsV1(
+          root,
+          statRegistry
         );
         setStatus(
           root,
