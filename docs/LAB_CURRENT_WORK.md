@@ -14319,3 +14319,72 @@ Sentinelles de charte sur le Human Editor modifié :
 7. lisibilité mobile des nouvelles cartes et formulaires.
 
 Aucun GREEN UI final avant retour smartphone de Sylvain.
+
+
+## Micro-lot — Capture Stat Effects V1 — 2026-09-29
+
+Base :
+
+- PREVALIDATION Editor UI V1 : `a10ff7ea776f6e05e39e4aaa35bd3dc69dce5ba2` ;
+- CI base : SUCCESS ;
+- retour smartphone : stats présentes mais réglage des effets incompréhensible ; le reste du lot UI est jugé globalement correct.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-stat-effects-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-capture-stat-effects-v1-2026-09-29`.
+
+### Problème démontré
+
+Le registre expose actuellement `damagePerPoint` et `resistancePerPoint` sans unité explicite dans le contrat ni dans l'éditeur. Le joueur ne peut donc pas savoir si « 1 » signifie +1 dégât, +1 %, un multiplicateur ou autre chose. La stat `speed` n'a par ailleurs aucun effet contractuel défini sur le temps de préparation des capacités.
+
+### Objectif
+
+1. rendre l'unité des effets explicite : **1 point = X % dégâts / Y % résistance** ;
+2. introduire un effet Vitesse explicite : **1 point = -Z % temps de préparation/charge** ;
+3. garder les effets pilotés par données et non codés dans le Human Editor ;
+4. fournir un calcul pur/testable des modificateurs issus d'une valeur de stat ;
+5. afficher dans le Human Editor une phrase compréhensible et le résultat effectif pour la valeur courante ;
+6. ne pas encore modifier Combat Runtime / Action Resolver dans ce micro-lot ; le raccord gameplay réel fera l'objet d'un RED séparé après validation des unités.
+
+### Propriétaires
+
+- définition d'effet par point : `CaptureStatRegistryV1` ;
+- valeur d'une stat de créature : `CaptureCreatureStatValuesV1` ;
+- calcul de projection stat -> pourcentages : module pur dédié sous `src/core/capture/` ou `src/contracts/` selon préaudit ;
+- Human Editor : présentation/saisie seulement ;
+- Combat Runtime / Action Resolver : protégés dans ce lot.
+
+### Préaudit / décision attendue avant RED
+
+- vérifier toutes les consommations de `damagePerPoint` / `resistancePerPoint` ;
+- vérifier si un renommage vers des champs explicitement en pourcentage peut être fait sans double autorité ;
+- vérifier la stat `speed` et les anciens champs vitesse/initiative ;
+- vérifier le meilleur propriétaire du calcul pur ;
+- conserver HP hors registre.
+
+### Protégé
+
+- Combat Runtime ;
+- Action Resolver ;
+- Animation Core / FX / renderer ;
+- catalogue historique 110 ;
+- mécanisme d'évolution ;
+- progression des slots ;
+- `requiredLevel` ;
+- aucun localStorage/sessionStorage ;
+- aucun MutationObserver/timer/retry/monkey patch ;
+- aucun merge sur `main`.
+
+### Critère de fin
+
+- RED ciblé ;
+- unité % explicite dans le contrat et les données ;
+- effet Vitesse explicite et calcul pur ;
+- Human Editor lisible sur smartphone ;
+- CI complète verte ;
+- checkpoint PREVALIDATION + preview ;
+- pas de GREEN UI final avant retour smartphone.
