@@ -13619,3 +13619,96 @@ Critère final :
 - CI complète verte ;
 - preview dédiée ;
 - PREVALIDATION smartphone.
+
+
+### Résultat — propriété Combat + auto-raccord visuel créatures V1
+
+Retour utilisateur :
+
+- changement de créature réinitialisait visuellement les réglages de l'onglet Combat ;
+- modifier ces réglages imposait ensuite de « Mettre à jour la créature » ;
+- les créatures déjà illustrées doivent charger automatiquement leurs arts dans la version vitrine.
+
+Cause de propriété :
+
+- les six réglages énergie étaient affichés dans l'onglet Combat mais lus / écrits dans `CaptureCreatureEditorDraftV3.combat` ;
+- `writeCreatureRecordFields()` les remplaçait à chaque changement de créature ;
+- `prepareNewCreatureDraftFields()` les réinitialisait ;
+- le dirty-owner créature écoutait aussi directement ces six contrôles ;
+- cette UI contredisait la frontière de la charte : énergie / distance appartiennent au domaine Combat Rules.
+
+RED :
+
+- test : `tests/unit/capture-editor-combat-ownership-visual-autolink-v1.test.mjs` ;
+- SHA RED : `b421d37e9e6c8c524504470afd05aff936948b5b` ;
+- CI : `36606050499` — FAILURE attendue ;
+- 521 tests, 514 pass, 7 fail ;
+- échecs ciblés : contrat Combat Rules absent, overlay absent, mapping visuel absent, adaptateur visuel absent, ownership UI encore incorrect.
+
+Correction Combat Rules :
+
+- nouveau contrat : `CaptureCombatRulesEditorDraftV1` ;
+- propriétaire unique des réglages communs de la preview :
+  - énergie max ;
+  - énergie initiale ;
+  - récupération ;
+  - intervalle de récupération ;
+  - coût de déplacement ;
+  - modificateur de charge ;
+- ces six valeurs ne sont plus écrites lors du chargement d'une créature ;
+- une nouvelle créature ne les réinitialise plus ;
+- elles ne déclenchent plus `creatureDirty` ;
+- le transport legacy présent dans `CaptureCreatureEditorDraftV3.combat` est conservé uniquement pour compatibilité ;
+- au lancement du combat, `applyCaptureCombatRulesToCreatureDraftV1()` applique explicitement la règle commune au draft local et au draft adverse ;
+- HP / HP initiaux restent propriété de la fiche créature.
+
+Correction UI :
+
+- « Énergie de la créature » devient « Règles d'énergie du combat » ;
+- le texte précise que ces valeurs s'appliquent à la session et ne changent pas avec la créature ;
+- l'identifiant de profil HTML `serpent` a été réaligné sur le profil canonique `serpentine`.
+
+Auto-raccord visuel :
+
+- bibliothèque autoritaire : branche `global-assets`, metadata créature ;
+- aucun asset copié dans la branche de travail ;
+- aucun matching par nom ;
+- mapping explicite par ID historique :
+  - `crea_maraileron -> maraileron` ;
+  - `crea_voltik -> voltige` ;
+  - `crea_ailevent -> ailevent` ;
+  - `crea_galewing -> ailevent` (alias historique explicite) ;
+- raccord automatique :
+  - face = asset opponent ;
+  - dos = asset player ;
+  - icône ;
+  - profil ;
+  - `displayScale.player` ;
+  - sockets bouche / tête / mains-pattes / queue depuis `fxAnchors` ;
+- le catalogue global est vérifié avant binding : un asset absent provoque une erreur explicite ;
+- une metadata ne correspondant pas au `metaId` attendu est refusée ;
+- une créature sans mapping visuel reste éditable sans art inventé.
+
+Audit assets :
+
+- Maraileron, Voltige et Ailevent disposent de metadata correspondant réellement au roster historique ;
+- Ailevent possède deux IDs runtime historiques et les deux mappings sont explicitement déclarés ;
+- les autres packs visuels de vitrine (Loup volcanique, Golem moussu, Chat mystique, Guêpe cybernétique, Renard magique doré, Braisombre) ne sont pas collés arbitrairement sur une autre fiche des 110 ;
+- Aquafin et Braiseau n'ont actuellement aucun pack présent sur la branche `global-assets` auditée.
+
+Validation technique :
+
+- commit UI fonctionnel : `8ceb245f1f8d184545ea31e097e9b37b0bff86f7` ;
+- CI : `36606451762` — SUCCESS ;
+- 521 tests, 521 pass, 0 fail.
+
+État :
+
+**GREEN technique / PREVALIDATION smartphone**.
+
+À vérifier sur téléphone :
+
+1. modifier les règles d'énergie, changer de créature, vérifier qu'elles restent inchangées ;
+2. modifier uniquement les règles Combat puis lancer la preview sans devoir mettre à jour la créature ;
+3. charger Maraileron, Voltige puis Ailevent et vérifier face/dos/icône/scale/sockets ;
+4. charger une créature sans art et vérifier qu'elle reste éditable.
