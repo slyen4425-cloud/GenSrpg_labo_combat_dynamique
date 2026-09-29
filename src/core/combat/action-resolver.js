@@ -18,6 +18,9 @@ import {
   applyImmediateTacticalEffectsV1,
   unsupportedImmediateTacticalEffectV1
 } from "./immediate-tactical-effects-v1.js";
+import {
+  computeCombatDamageV1
+} from "./combat-damage-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -48,35 +51,12 @@ function statAdjustedDamageFor(
   targetId,
   skill
 ) {
-  const attacker = fighterOf(state, attackerId);
-  const target = fighterOf(state, targetId);
-  const channel = damageChannelFor(skill);
-  const baseDamage =
-    Math.max(0, Number(skill.effect.damage) || 0);
-  const damageBonusPct =
-    Number(
-      attacker.damagePctByChannel?.[channel] ?? 0
-    ) || 0;
-  const resistancePct =
-    Number(
-      target.resistancePctByChannel?.[channel] ?? 0
-    ) || 0;
-
-  const boosted =
-    baseDamage *
-    Math.max(0, 1 + damageBonusPct / 100);
-  const rawDamage =
-    boosted *
-    Math.max(0, 1 - resistancePct / 100);
-  const damage =
-    Math.round(rawDamage * 100) / 100;
-
-  return Object.freeze({
-    baseDamage,
-    damageChannel: channel,
-    damageBonusPct,
-    resistancePct,
-    damage
+  return computeCombatDamageV1({
+    state,
+    attackerId,
+    targetId,
+    baseDamage: skill.effect.damage,
+    channel: damageChannelFor(skill)
   });
 }
 
@@ -213,7 +193,8 @@ export function resolveSkillStart({
   actorId,
   targetId,
   skill,
-  skillSpeedMultiplier = 1
+  skillSpeedMultiplier = 1,
+  battleFormat = null
 }) {
   const actor = fighterOf(state, actorId);
   fighterOf(state, targetId);
@@ -259,7 +240,10 @@ export function resolveSkillStart({
   }
 
   const unsupportedTacticalEffect =
-    unsupportedImmediateTacticalEffectV1(skill);
+    unsupportedImmediateTacticalEffectV1(
+      skill,
+      { battleFormat }
+    );
   if (unsupportedTacticalEffect !== null) {
     return Object.freeze({
       ok: false,
@@ -500,7 +484,8 @@ export function resolveSkillCompletion({
   state,
   action,
   reaction = null,
-  targetActionContext = null
+  targetActionContext = null,
+  battleFormat = null
 }) {
   const {
     actorId,
@@ -634,7 +619,8 @@ export function resolveSkillCompletion({
           actorId,
           targetId,
           skill,
-          atMs: impactAtMs
+          atMs: impactAtMs,
+          battleFormat
         });
       nextState = tactical.state;
       events.push(...tactical.events);
@@ -726,14 +712,16 @@ export function resolveSkill({
   targetId,
   skill,
   reactionSkill = null,
-  skillSpeedMultiplier = 1
+  skillSpeedMultiplier = 1,
+  battleFormat = null
 }) {
   const started = resolveSkillStart({
     state,
     actorId,
     targetId,
     skill,
-    skillSpeedMultiplier
+    skillSpeedMultiplier,
+    battleFormat
   });
   if (!started.ok) {
     return started;
@@ -759,6 +747,7 @@ export function resolveSkill({
   return resolveSkillCompletion({
     state: nextState,
     action: started.action,
-    reaction
+    reaction,
+    battleFormat
   });
 }
