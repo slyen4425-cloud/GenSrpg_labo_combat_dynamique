@@ -208,6 +208,25 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         player: displayScale,
         opponent: displayScale
       }),
+      offset: Object.freeze(
+        binding.version === 2
+          ? {
+              x: binding.position.x,
+              y: binding.position.y
+            }
+          : { x: 0, y: 0 }
+      ),
+      transformOrigin: Object.freeze(
+        binding.version === 2
+          ? {
+              x: binding.transformOrigin.x,
+              y: binding.transformOrigin.y
+            }
+          : {
+              x: "50%",
+              y: "50%"
+            }
+      ),
       fxAnchors: Object.freeze({
         player: anchorMap(
           binding.sockets,
