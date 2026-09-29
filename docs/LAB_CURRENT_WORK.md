@@ -13842,3 +13842,72 @@ CI finale :
 2. vérifier que les capacités non disponibles au runtime ne sont pas remplacées par une autre capacité arbitraire ;
 3. lancer la preview et vérifier le placement de chaque créature ;
 4. si une créature doit être décalée, définir son offset dans la metadata autoritaire plutôt que via CSS/UI locale.
+
+
+## Micro-lot — liaisons vitrine créatures + styles de position V1 — 2026-09-29
+
+Base :
+
+- checkpoint PREVALIDATION précédent : `checkpoint/lab-creature-showcase-defaults-v1-prevalidation-green-2026-09-29` ;
+- SHA : `9299eb03172b97833c3c2795915c9f0e90cf2958`.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-showcase-creature-style-bindings-v1-2026-09-29`.
+
+Branche :
+
+`work/lab-showcase-creature-style-bindings-v1-2026-09-29`.
+
+Validation utilisateur explicite des associations vitrine :
+
+- `crea_voltik` / Voltige -> pack `voltige` -> profil `biped` ;
+- `crea_ailevent` et alias historique `crea_galewing` / Ailevent -> pack `ailevent` -> profil `biped` ;
+- `crea_maraileron` / Maraileron -> pack `maraileron` -> profil `serpentine` ;
+- `crea_mossback` / Moussados (nom historique correspondant au retour « Moussadon ») -> pack `golem_moussu` -> profil `massive` ;
+- `crea_lumipup` et `crea_lumilo` / Lumilo -> pack `renard_magique_dore` -> profil `biped` ;
+- `crea_sparkmoth` et `crea_lucieclair` / Luciéclair -> pack `guepe_cybernetique` -> profil `serpentine`.
+
+Diagnostic :
+
+- les packs `global-assets` existent déjà et sont valides ;
+- leur metadata `profile` actuelle est un default du pack et ne correspond pas toujours au style de position validé par l'utilisateur ;
+- le binding explicite créature -> pack est donc le bon endroit pour porter le `profileId` de la créature ;
+- l'éditeur expose déjà `massive` sous le libellé « Massif / golem », mais `data/profiles/massive.profile.json` n'existe pas encore dans le runtime ;
+- la preview ne charge actuellement que `biped`, `quadruped`, `serpentine`, `drake`.
+
+Objectifs :
+
+1. rendre le profil de position explicite dans chaque binding vitrine ;
+2. ne plus dériver le profil créature depuis `creatureMeta.profile` quand un binding explicite existe ;
+3. ajouter le profil runtime canonique `massive` pour le style « Massif / golem » déjà exposé par l'éditeur ;
+4. charger `massive` dans la preview ;
+5. étendre les bindings uniquement aux IDs validés ci-dessus ;
+6. conserver assets, scale, sockets, offset et transformOrigin depuis les metadata autoritaires des packs ;
+7. aucune heuristique par nom.
+
+Protégé :
+
+- Combat Runtime ;
+- Action Resolver ;
+- renderer ;
+- catalogue 110 ;
+- compétences/loadouts historiques ;
+- branche `global-assets` inchangée ;
+- aucun localStorage/sessionStorage/global ;
+- aucun merge sur main.
+
+RED attendu :
+
+- chaque ID validé retourne exactement le pack + profil attendu ;
+- les deux aliases Ailevent/Lumilo/Luciéclair sont couverts explicitement ;
+- Moussados retourne `golem_moussu + massive` ;
+- l'adaptateur applique le `profileId` du binding plutôt que le default du pack ;
+- `massive.profile.json` doit être un profil runtime valide et chargé par la preview.
+
+Critère final :
+
+- RED ciblé ;
+- correction minimale ;
+- CI complète verte ;
+- checkpoint + preview PREVALIDATION smartphone.
