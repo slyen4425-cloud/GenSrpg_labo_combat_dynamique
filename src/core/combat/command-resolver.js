@@ -3,6 +3,9 @@ import {
   withFighterHp
 } from "./combat-state.js";
 import { effectivePreparationMs } from "./combat-timing.js";
+import {
+  hasActiveStatusKindV1
+} from "./status-effect-runtime-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -37,6 +40,29 @@ export function resolveCommandStart({
   command
 }) {
   const actor = fighterOf(state, actorId);
+
+  if (
+    hasActiveStatusKindV1(
+      state,
+      actorId,
+      "stun"
+    )
+  ) {
+    return Object.freeze({
+      ok: false,
+      outcome: "stunned",
+      state,
+      events: Object.freeze([
+        Object.freeze({
+          type: "command-rejected",
+          atMs: 0,
+          actorId,
+          commandId: command.id,
+          reason: "stunned"
+        })
+      ])
+    });
+  }
 
   if (actor.energy < command.energyCost) {
     return Object.freeze({
