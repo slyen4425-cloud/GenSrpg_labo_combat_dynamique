@@ -17843,3 +17843,58 @@ Permettre d'enregistrer les quatre slots comme plan de progression, y compris de
 ### Critère de fin
 
 RED démontré -> cause confirmée -> correction minimale -> CI complète verte -> documentation -> checkpoint PREVALIDATION smartphone.
+
+
+### Résultat — Capture Planned Loadout / Mobile Footer V1
+
+RED démontré :
+
+- commit : `2cf431184fe0dbee006fd55bd0bda6cef5b26d53` ;
+- CI : run `36686191711` ;
+- 689 tests, 685 PASS, 4 FAIL ciblés ;
+- défauts reproduits :
+  - capacité de niveau futur refusée par la validation UI ;
+  - export Combat sans propriétaire de projection progression ;
+  - options/slots désactivés selon le niveau courant ;
+  - footer mobile fixe recouvrant le contenu bas.
+
+Cause :
+
+- le Human Editor mélangeait configuration persistée et disponibilité de combat ;
+- `CaptureEditorExportV3` recevait le loadout complet sans projection des règles de progression ;
+- le footer `position: fixed` devenait vertical sur smartphone tout en conservant une réserve basse fixe insuffisante.
+
+Correction minimale :
+
+- nouveau pur adapter `src/adapters/input/capture/capture-planned-loadout-to-combat-v1.js` ;
+- `CaptureActiveSkillLoadoutV1` conserve les quatre affectations configurées ;
+- l'export Combat applique `CaptureProgressionRulesV1` + `requiredLevel` uniquement à une copie de projection runtime ;
+- le Human Editor n'interdit plus de préparer un slot ou une capacité future ;
+- les libellés indiquent le niveau de déverrouillage sans rendre l'option inaccessible ;
+- sur smartphone <= 520 px, le footer Validation revient dans le flux normal et ne peut plus masquer le Slot 4 ;
+- Database / Entity Transfer / import-export JSON inchangés ;
+- aucun Runtime, FX, Renderer, storage ou `Zombicide-40k` modifié.
+
+Sentinelle historique réconciliée :
+
+- l'ancienne sentinelle qui exigeait le rejet des capacités futures a été remplacée par la règle validée : la configuration future est autorisée, la disponibilité de combat reste projetée par ses propriétaires.
+
+GREEN technique code/tests :
+
+- commit : `f20d875bf5cf1ec8aed6bd1bf628c7a1b881e9ba` ;
+- CI : run `36686829937` ;
+- structure / frontières / indépendance : OK ;
+- **689 / 689 PASS / 0 FAIL**.
+
+État :
+
+**GREEN technique — documentation synchronisée puis PREVALIDATION smartphone requise.**
+
+Validation utilisateur attendue :
+
+1. sur smartphone, vérifier que Slot 4 reste visible et touchable jusqu'en bas de la page ;
+2. avec une créature niveau 1/5, affecter une capacité niveau 10 ou 20 à un slot et enregistrer la créature ;
+3. réouvrir/sélectionner la créature : l'affectation future doit être conservée ;
+4. vérifier le combat au niveau bas : les slots/capacités encore verrouillés ne doivent pas apparaître comme actifs ;
+5. monter le niveau de la créature aux seuils configurés puis retester : les affectations préparées doivent devenir actives sans les reconfigurer ;
+6. revalider le workflow Export/Import du chantier parent (créature/capacité/base/noop/conflit/replace).
