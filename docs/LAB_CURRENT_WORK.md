@@ -16999,3 +16999,70 @@ Le Human Editor expose uniquement :
 - documentation mise à jour ;
 - checkpoint PREVALIDATION + preview smartphone.
 
+### Résultat — Projectile Power V1
+
+Décision utilisateur :
+
+- les tags de projectile n'apportent pas assez de valeur si tous les projectiles se comparent uniquement par puissance ;
+- ils sont donc supprimés pour réduire la complexité de l'éditeur.
+
+RED :
+
+- commit : `0d185121f645dc682ee7c44d5fdd216c6cbb6fcb` ;
+- run : `36675963243` ;
+- **661 tests, 656 PASS, 5 FAIL ciblés** ;
+- les cinq échecs correspondaient exactement au passage attendu vers une puissance unique.
+
+Autorité finale :
+
+```js
+projectileClash: {
+  power: 0
+}
+```
+
+Sémantique :
+
+- `power = 0` : ne participe pas aux collisions ;
+- `power > 0` : collision possible avec tout autre projectile dont la puissance est > 0 ;
+- puissance supérieure : le gagnant continue son action existante ;
+- puissance égale : annulation mutuelle ;
+- aucun tag ;
+- aucune famille ;
+- aucune règle par adversaire ;
+- aucune inférence depuis élément / nom / description.
+
+Nettoyage effectué :
+
+- nouveau propriétaire : `src/contracts/projectile-power-v1.js` ;
+- suppression de `src/contracts/projectile-clash-v2.js` ;
+- suppression des sentinelles tag/rules V2 obsolètes ;
+- `SkillDefinition` délègue à `ProjectilePowerV1` ;
+- Core de clash compare uniquement `leftPower/rightPower` ;
+- Human Editor expose uniquement **Puissance du projectile** ;
+- suppression du DOM/CSS des listes de règles ;
+- Fireball et fixtures Capture migrées vers `{ power: 1 }`.
+
+Vrai chemin Runtime :
+
+- le projectile plus puissant reste dans `activeByActor` ;
+- le projectile faible seul est annulé ;
+- le gagnant atteint ensuite normalement sa cible et applique son impact.
+
+Validation technique :
+
+- run `36676426223` ;
+- structure / frontières / indépendance : OK ;
+- **655 / 655 PASS / 0 FAIL**.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise**.
+
+Validation UI attendue :
+
+1. un seul champ « Puissance du projectile » ;
+2. aucun tag / règle / « contre le tag » visible ;
+3. aide claire : `0 = aucune collision` ;
+4. égalité = les deux annulés ;
+5. plus puissant = continue.
