@@ -19195,3 +19195,12 @@ Audit de protection :
 - diff limité à UI/CSS, test ciblé et documentation.
 
 État : **GREEN technique — PREVALIDATION smartphone requise** pour vérifier lisibilité de l'aiguille, progression radiale et recoloration sur petit écran.
+
+
+### Publication PREVALIDATION — Cooldown Visual Overlay V1
+
+- HEAD GREEN documenté : `57122dfa5d42632b4b6b859f7cb388c32d4dac05` ;
+- CI work : `36748193764` — SUCCESS ;
+- checkpoint PREVALIDATION : `checkpoint/lab-cooldown-visual-overlay-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-cooldown-visual-overlay-v1-2026-09-30` ;
+- validation smartphone requise : lancer une compétence et vérifier que l'icône se désature, que la couleur revient progressivement, que l'aiguille tourne avec la recharge et que l'icône revient immédiatement à l'état normal à disponibilité.
