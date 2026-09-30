@@ -302,6 +302,56 @@ export async function mountCombatDemo({
     return slot.renderer.play(plan);
   }
 
+  function schedulePlanCues({
+    slot,
+    profile,
+    plan,
+    finalBoundaryMs
+  }) {
+    const emitCue = (cue) => {
+      if (disposed || !slot.visible) {
+        return;
+      }
+      for (const fxPlan of planLocomotionCueFx({
+        profile,
+        cue
+      })) {
+        cameraFx.play(fxPlan);
+      }
+    };
+
+    const finalCues = [];
+    const localTimers = [];
+
+    for (const cue of plan.cues ?? []) {
+      if (cue.atMs >= finalBoundaryMs) {
+        finalCues.push(cue);
+        continue;
+      }
+
+      const timerId = globalThis.setTimeout(() => {
+        movementCueTimers.delete(timerId);
+        emitCue(cue);
+      }, cue.atMs);
+      movementCueTimers.add(timerId);
+      localTimers.push(timerId);
+    }
+
+    return Object.freeze({
+      flushFinal() {
+        for (const cue of finalCues) {
+          emitCue(cue);
+        }
+      },
+      clear() {
+        for (const timerId of localTimers) {
+          globalThis.clearTimeout(timerId);
+          movementCueTimers.delete(timerId);
+        }
+      }
+    });
+  }
+
   function playMovementFor(slotKey) {
     if (disposed) {
       const durationMs = 0;
@@ -338,29 +388,12 @@ export async function mountCombatDemo({
       0
     );
 
-    const emitCue = (cue) => {
-      for (const fxPlan of planLocomotionCueFx({
-        profile,
-        cue
-      })) {
-        cameraFx.play(fxPlan);
-      }
-    };
-
-    const finalCues = [];
-    const localTimers = [];
-    for (const cue of plan.cues ?? []) {
-      if (cue.atMs >= durationMs) {
-        finalCues.push(cue);
-        continue;
-      }
-      const timerId = globalThis.setTimeout(() => {
-        movementCueTimers.delete(timerId);
-        emitCue(cue);
-      }, cue.atMs);
-      movementCueTimers.add(timerId);
-      localTimers.push(timerId);
-    }
+    const cueSchedule = schedulePlanCues({
+      slot,
+      profile,
+      plan,
+      finalBoundaryMs: durationMs
+    });
 
     const handle = slot.renderer.play(plan);
     const finished = handle.finished
@@ -370,18 +403,13 @@ export async function mountCombatDemo({
           !disposed &&
           slot.visible
         ) {
-          for (const cue of finalCues) {
-            emitCue(cue);
-          }
+          cueSchedule.flushFinal();
           startIdleFor(slotKey);
         }
         return result;
       })
       .finally(() => {
-        for (const timerId of localTimers) {
-          globalThis.clearTimeout(timerId);
-          movementCueTimers.delete(timerId);
-        }
+        cueSchedule.clear();
       });
 
     return Object.freeze({
@@ -521,10 +549,21 @@ export async function mountCombatDemo({
       }
     });
 
+    const profile = profiles.get(slot.actor.profile);
     const plan = planAnimation({
       event,
       actor: slot.actor,
-      profile: profiles.get(slot.actor.profile)
+      profile
+    });
+    const planDurationMs = plan.segments.reduce(
+      (sum, segment) => sum + segment.durationMs,
+      0
+    );
+    const cueSchedule = schedulePlanCues({
+      slot,
+      profile,
+      plan,
+      finalBoundaryMs: planDurationMs
     });
 
     slot.setApproachActive(true, approachDepth);
@@ -577,11 +616,13 @@ export async function mountCombatDemo({
           !disposed &&
           slot.visible
         ) {
+          cueSchedule.flushFinal();
           startIdleFor(slotKey);
         }
         return result;
       })
       .finally(() => {
+        cueSchedule.clear();
         if (activeApproachBySlot.get(slotKey) === approachRecord) {
           activeApproachBySlot.delete(slotKey);
         }
