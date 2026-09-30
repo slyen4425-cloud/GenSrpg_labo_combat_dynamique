@@ -19441,3 +19441,41 @@ Périmètre autorisé : Battle Setup Editor Draft / export de preview / UI ongle
 Interdits : masquage CSS de régression, table d'URLs d'arènes dans l'UI, second catalogue, condition spéciale par biome, modification gameplay.
 
 RED : prouver que le Battle Setup ne transporte pas encore `arenaId` et que l'onglet Combat ne possède aucun sélecteur d'arène.
+
+
+### Résultat — Capture Test Arena Selector V1
+
+RED :
+- commit `71302a6bbaf58c72b7021fdf51e43bdb8459ffd5` ;
+- CI `36760928773` — FAILURE attendue ;
+- absence du sélecteur et du chemin `arenaId` confirmée.
+
+Réconciliation architecture :
+- un premier essai plaçait `arenaId` dans le contrat combat portable et a volontairement été abandonné après RED large ;
+- cause : couplage de présentation à des tests/contrats combat sans rapport ;
+- correction : `arenaId` reste hors BattleFormat et hors Combat Adapter Stack ;
+- il voyage uniquement dans `presentation.arenaId` puis `nativeVisualSource.arenaId`.
+
+Correction :
+- sélecteur d'arène ajouté dans l'onglet Combat ;
+- options générées depuis `ARENA_BINDINGS` via `demoPresentationAssets.arenaOptions()` ;
+- arènes disponibles : forest, cave, snow, city, lava ;
+- `buildHumanBattleSetupV1()` transporte la sélection explicite ;
+- l'export place cette donnée dans la section présentation ;
+- la preview appelle `presentationForArena(nativeVisualSource.arenaId)` ;
+- suppression du fallback implicite `arenaId = "city"` dans l'application visuelle.
+
+GREEN :
+- HEAD fonctionnel : `d66b7ffe05dd0568a7015dd61aa9b27d179384fd` ;
+- CI `36761598340` — SUCCESS ;
+- suite complète : **727/727 PASS, 0 FAIL**.
+
+Protections :
+- aucun changement Combat Rules ;
+- aucun changement BattleFormatDefinition ;
+- aucune URL d'arène dupliquée dans l'UI ;
+- aucun fallback local ;
+- aucune logique spéciale par biome ;
+- aucune modification dégâts, ciblage, mouvement, cooldown, FX ou audio.
+
+État : **GREEN technique — PREVALIDATION smartphone requise** pour vérifier que le choix de l'arène dans l'onglet Combat change bien uniquement le décor de la preview.
