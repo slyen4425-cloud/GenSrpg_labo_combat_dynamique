@@ -2275,3 +2275,24 @@ Règles :
 - aucun second catalogue d'arènes n'est introduit ;
 - aucune valeur de secours implicite n'est injectée par les contrats ;
 - l'éditeur fournit explicitement l'arène choisie lors de la validation de la preview.
+
+
+## 40. Santé / PV comme stat canonique Capture
+
+La Santé est une statistique Capture data-driven au même titre que les autres stats. L'éditeur ne possède plus de champs parallèles `PV max` / `PV au départ`.
+
+Chaîne autoritaire :
+`CaptureStatRegistry.maxHpPerPoint -> CaptureCreatureStatValues -> projectCaptureStatEffectsV1.maxHp -> Capture export combat.maxHp dérivé -> FighterConfig -> Combat State`.
+
+Règles :
+- la stat canonique est `health`, libellée `Santé / PV` dans le registre standard ;
+- le registre standard configure `maxHpPerPoint: 1`, soit 1 point de Santé = 1 PV max ;
+- `maxHpPerPoint` est une propriété générique de définition de stat : le moteur de projection ne contient aucun cas spécial `health` ;
+- `combat.maxHp` reste un champ technique requis par le runtime, mais l'éditeur Human ne l'édite plus directement ;
+- l'export V3 dérive `combat.maxHp` depuis la projection Santé lorsque le registre actif possède une règle PV ;
+- `initialHp` n'est plus une autorité de l'éditeur Human et est retiré de l'export V3 ; Combat State démarre naturellement à `maxHp` lorsqu'aucun PV initial explicite n'est fourni ;
+- l'import Monster Capture mappe le champ historique `hp` vers la valeur de stat `health` ;
+- les anciens registres personnalisés qui ne définissent aucune règle `maxHpPerPoint > 0` conservent leur `combat.maxHp` historique : l'absence de règle Santé ne vaut jamais `0 PV` implicitement ;
+- aucune dérivation depuis Endurance, niveau ou nom de créature n'est autorisée.
+
+Cette séparation permet à une future progression par points/niveaux d'augmenter la Santé via le même propriétaire de stats, sans introduire une seconde formule de PV.
