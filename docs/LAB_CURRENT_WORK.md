@@ -17534,3 +17534,41 @@ Base complète :
 - checkpoint GREEN ;
 - seulement ensuite Human Editor Files UI.
 
+### Résultat — Capture Entity Transfer Packages V1
+
+RED :
+
+- commit : `764fadde04dbd3165d294eeeed63b04d29eb7905` ;
+- run : `36679017939` ;
+- 671 tests, 670 PASS, 1 FAIL attendu : contrats unitaires absents.
+
+Implémentation :
+
+- `CaptureCreatureTransferV1` ;
+- `CaptureSkillTransferV1` ;
+- `capture-entity-transfer-v1.js`.
+
+Exports unitaires :
+
+- créature = draft + statValues + loadout, aucune copie de SkillDefinition ;
+- capacité = CaptureSkillEditorDraftV1 complet ;
+- base complète = CaptureDatabaseV1 existant.
+
+Import :
+
+- auto-détection par schema ;
+- ancien ID créature explicitement connu canonicalisé avant validation/conflit ;
+- évolution targetId canonicalisée avec le même resolver ;
+- `reject` par défaut ;
+- contenu identique = no-op ;
+- contenu différent + reject = conflit ;
+- contenu différent + replace = remplacement entier ;
+- aucun patch/merge champ par champ.
+
+GREEN :
+
+- run `36679162092` ;
+- structure / frontières / indépendance : OK ;
+- **679 / 679 PASS / 0 FAIL**.
+
+Étape suivante : Human Editor Files UI.
