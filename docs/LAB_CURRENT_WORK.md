@@ -19076,3 +19076,18 @@ Invariants protégés :
 - aucune règle de dégâts, élément, résistance, mouvement ou capacité modifiée.
 
 État : **GREEN technique — PREVALIDATION smartphone requise** pour confirmer l'ergonomie 1v1 et la lisibilité du badge cooldown.
+
+
+### Publication PREVALIDATION — Combat Test Ergonomics V1
+
+- HEAD GREEN documenté : `eae1ad0de1ee06dc30a2473ef563f3d190916185` ;
+- CI branche work : `36737958891` — SUCCESS ;
+- checkpoint PREVALIDATION : `checkpoint/lab-combat-test-ergonomics-v1-prevalidation-green-2026-09-30` ;
+- preview smartphone : `preview/lab-combat-test-ergonomics-v1-2026-09-30`.
+
+Validation smartphone attendue :
+1. ouvrir l'éditeur Capture et vérifier que `1 contre 1` est sélectionné au chargement ;
+2. lancer le combat test et utiliser une capacité avec cooldown ;
+3. vérifier que le bouton devient indisponible et affiche `Recharge X s` ;
+4. vérifier qu'il redevient disponible à l'expiration ;
+5. vérifier que le choix manuel `2 contre 2` reste fonctionnel.
