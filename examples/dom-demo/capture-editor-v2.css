@@ -899,7 +899,7 @@ body[data-editor-view="preview"] {
 
 @media (max-width: 760px) {
   .stat-definition-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .stat-definition-row > strong,
