@@ -19275,3 +19275,23 @@ GREEN :
 Validation smartphone reçue le 2026-09-30 : **OK utilisateur** sur le retour de l'icône Boule de feu et le visuel cooldown.
 
 Le lot est considéré GREEN utilisateur. Un défaut séparé a ensuite été signalé : la Boule de feu visible s'exécute mais n'inflige aucun dégât. Ce défaut est traité dans un micro-lot distinct afin de ne pas mélanger présentation cooldown et règles d'effet.
+
+
+## Micro-lot — Fireball Damage Regression V1 — 2026-09-30
+
+Base utilisateur GREEN : `beea3769759fba03df48dca50cfe221288d1fda4`.
+
+- checkpoint de départ : `checkpoint/lab-start-fireball-damage-regression-v1-2026-09-30` ;
+- branche : `work/lab-fireball-damage-regression-v1-2026-09-30`.
+
+Retour smartphone : la Boule de feu est visible et se lance, mais l'adversaire ne perd aucun PV.
+
+Diagnostic initial : le formulaire HTML démarre sur l'ID `fireball` avec une zone `Effets tactiques` vide. `readSkillFields()` produit alors `effects: []`, et `buildHumanSkillDraftV1()` traite cette zone comme l'autorité, ce qui force le legacy `effect.damage` à 0. Ce brouillon initial est immédiatement placé dans `configuredSkills` avant le chargement asynchrone des compétences runtime ; l'ID `fireball` déjà présent empêche ensuite la définition native correcte de le remplacer.
+
+Objectif : empêcher qu'un brouillon initial sans effet tactique masque une définition runtime canonique portant le même ID. Aucun cas spécial basé sur le nom `fireball` dans Combat Rules.
+
+Périmètre autorisé : initialisation de l'éditeur Capture, tests ciblés, documentation.
+
+Protégé : Combat State, Action Resolver, calcul de dégâts, cooldowns, projectile/FX, audio, profils, assets.
+
+RED : reproduire le démarrage éditeur et prouver que la compétence `fireball` obtenue pour la preview contient actuellement zéro effet de dégâts alors qu'une définition native runtime du même ID existe.
