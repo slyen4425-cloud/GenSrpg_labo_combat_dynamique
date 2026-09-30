@@ -190,3 +190,39 @@ test("CaptureCreatureEditorDraftV1 is independent from UI, storage, network and 
     );
   }
 });
+
+test("Capture editor exposes every historical elemental type and resistance channel", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const elementId of [
+    "fire",
+    "water",
+    "earth",
+    "air",
+    "electric",
+    "light",
+    "shadow",
+    "nature",
+    "ice",
+    "poison",
+    "steel",
+    "psy",
+    "spirit"
+  ]) {
+    assert.match(
+      html,
+      new RegExp('data-element value="' + elementId + '"')
+    );
+    assert.match(
+      html,
+      new RegExp('data-resistance="' + elementId + '"')
+    );
+  }
+});
+
