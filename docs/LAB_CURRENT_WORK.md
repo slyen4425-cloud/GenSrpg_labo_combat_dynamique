@@ -19268,3 +19268,10 @@ GREEN :
 - checkpoint PREVALIDATION : `checkpoint/lab-cooldown-icon-visibility-regression-v1-prevalidation-green-2026-09-30` ;
 - preview : `preview/lab-cooldown-icon-visibility-regression-v1-2026-09-30` ;
 - validation smartphone requise : vérifier que l'icône Boule de feu est visible au repos et reste visible pendant le cooldown avec son overlay radial/aiguille.
+
+
+### Validation utilisateur — Cooldown Icon Visibility Regression V1
+
+Validation smartphone reçue le 2026-09-30 : **OK utilisateur** sur le retour de l'icône Boule de feu et le visuel cooldown.
+
+Le lot est considéré GREEN utilisateur. Un défaut séparé a ensuite été signalé : la Boule de feu visible s'exécute mais n'inflige aucun dégât. Ce défaut est traité dans un micro-lot distinct afin de ne pas mélanger présentation cooldown et règles d'effet.
