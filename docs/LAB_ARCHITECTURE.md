@@ -2096,3 +2096,56 @@ Le signal interne du Runtime ne doit pas se limiter à PV/énergie : un changeme
 Le Runtime compare donc la projection sémantique du fighter, en excluant seulement `energyChargeProgressMs`, progression interne qui change à chaque tick sans constituer à elle seule un changement de disponibilité visible.
 
 Aucune formule ou durée de cooldown n'est dupliquée dans le Runtime.
+
+
+## 35. Serpentine / Flight Motion Presentation V1
+
+Les différences rampant / volant restent pilotées par les profils.
+
+### Rampant / serpentine
+
+Le déplacement linéaire au sol reste inchangé.
+
+En idle :
+- aucune translation X/Y ;
+- pivot bas près du contact au sol ;
+- le mouvement lisible vient d'une faible rotation autour de ce pivot, afin de suggérer un déplacement du haut du corps sans faire glisser la base.
+
+### Volant
+
+Le profil volant conserve une oscillation verticale en idle.
+
+Sa locomotion générique peut décrire un arc unique avec plusieurs points intermédiaires :
+- montée ;
+- apex ;
+- descente ;
+- retour exact à la position stable.
+
+Ces points restent des données `locomotion.phases` ; Animation Core n'ajoute aucune règle spéciale par profil.
+
+### Ombre de suspension
+
+Un profil peut déclarer :
+
+```js
+presentation: {
+  shadow: {
+    bottomPct,
+    opacity
+  }
+}
+```
+
+Le Visual Controller projette uniquement ces données vers les variables CSS :
+- `--creature-shadow-bottom` ;
+- `--creature-shadow-opacity`.
+
+Le CSS conserve ses valeurs par défaut pour les profils qui ne déclarent rien.
+
+L'ombre est purement visuelle :
+- aucune collision ;
+- aucune portée ;
+- aucun ciblage ;
+- aucune influence sur la position Combat State.
+
+Aucune branche par ID ou nom de créature n'est autorisée pour décider ce comportement.
