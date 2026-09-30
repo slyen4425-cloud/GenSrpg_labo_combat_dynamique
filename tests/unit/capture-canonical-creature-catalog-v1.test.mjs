@@ -7,6 +7,10 @@ import {
   canonicalCaptureCreatureIdV1,
   canonicalCaptureCreatureRecordsV1
 } from "../../src/catalogs/capture-canonical-creature-catalog-v1.js";
+import {
+  CAPTURE_CREATURE_VISUAL_BINDINGS_V1,
+  captureCreatureVisualBindingForIdV1
+} from "../../src/catalogs/capture-creature-visual-bindings-v1.js";
 
 const EXPECTED_ALIASES = Object.freeze({
   crea_embercub: "crea_braiseau",
@@ -151,5 +155,45 @@ test("Human Editor hydrates the canonical projection before importing creature r
   assert.match(
     source,
     /canonicalCaptureCreatureRecordsV1/
+  );
+});
+
+
+test("visual bindings keep one canonical owner while legacy ids resolve through the alias map", () => {
+  const visualIds = new Set(
+    CAPTURE_CREATURE_VISUAL_BINDINGS_V1.map(
+      (entry) => entry.creatureId
+    )
+  );
+
+  for (
+    const [legacyId] of
+    Object.entries(EXPECTED_ALIASES)
+  ) {
+    assert.equal(
+      visualIds.has(legacyId),
+      false,
+      legacyId +
+        " must not own a duplicate visual binding"
+    );
+  }
+
+  assert.equal(
+    captureCreatureVisualBindingForIdV1(
+      "crea_galewing"
+    )?.creatureId,
+    "crea_ailevent"
+  );
+  assert.equal(
+    captureCreatureVisualBindingForIdV1(
+      "crea_lumipup"
+    )?.creatureId,
+    "crea_lumilo"
+  );
+  assert.equal(
+    captureCreatureVisualBindingForIdV1(
+      "crea_sparkmoth"
+    )?.creatureId,
+    "crea_lucieclair"
   );
 });
