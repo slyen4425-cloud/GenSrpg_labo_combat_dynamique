@@ -1,58 +1,50 @@
 const EPSILON_MS = 1e-7;
 
-function finiteNumber(value, field) {
+function finiteNumber(
+  value,
+  field
+) {
   const number = Number(value);
   if (!Number.isFinite(number)) {
     throw new RangeError(
-      field + " must be a finite number"
+      field +
+        " must be a finite number"
     );
   }
   return number;
 }
 
-function projectileClashConfig(action) {
+function projectilePower(action) {
   if (
     action?.actionType !== "skill" ||
     action.skill?.form !== "projectile"
   ) {
-    return null;
+    return 0;
   }
 
-  const clash =
-    action.skill?.projectileClash;
+  const power = Number(
+    action.skill?.projectileClash?.power ??
+      0
+  );
 
   if (
-    !clash ||
-    typeof clash.tag !== "string" ||
-    clash.tag.length === 0 ||
-    !Array.isArray(clash.rules)
+    !Number.isFinite(power) ||
+    power <= 0
   ) {
-    return null;
+    return 0;
   }
 
-  return clash;
-}
-
-function strengthAgainst(
-  clash,
-  otherTag
-) {
-  return (
-    clash.rules.find(
-      (rule) =>
-        rule.againstTag === otherTag
-    )?.strength ?? 0
-  );
+  return power;
 }
 
 function clashOutcome(
-  leftStrength,
-  rightStrength
+  leftPower,
+  rightPower
 ) {
-  if (leftStrength > rightStrength) {
+  if (leftPower > rightPower) {
     return "left_survives";
   }
-  if (rightStrength > leftStrength) {
+  if (rightPower > leftPower) {
     return "right_survives";
   }
   return "mutual_cancel";
@@ -64,38 +56,14 @@ export function projectileClashCandidate({
   rightAction,
   rightStartedAtClockMs
 }) {
-  const leftClash =
-    projectileClashConfig(
-      leftAction
-    );
-  const rightClash =
-    projectileClashConfig(
-      rightAction
-    );
+  const leftPower =
+    projectilePower(leftAction);
+  const rightPower =
+    projectilePower(rightAction);
 
   if (
-    leftClash === null ||
-    rightClash === null
-  ) {
-    return null;
-  }
-
-  const leftTag = leftClash.tag;
-  const rightTag = rightClash.tag;
-  const leftStrength =
-    strengthAgainst(
-      leftClash,
-      rightTag
-    );
-  const rightStrength =
-    strengthAgainst(
-      rightClash,
-      leftTag
-    );
-
-  if (
-    leftStrength <= 0 &&
-    rightStrength <= 0
+    leftPower <= 0 ||
+    rightPower <= 0
   ) {
     return null;
   }
@@ -161,9 +129,12 @@ export function projectileClashCandidate({
 
   const atClockMs =
     (
-      rightTravelMs * leftRelease +
-      leftTravelMs * rightRelease +
-      leftTravelMs * rightTravelMs
+      rightTravelMs *
+        leftRelease +
+      leftTravelMs *
+        rightRelease +
+      leftTravelMs *
+        rightTravelMs
     ) /
     (
       leftTravelMs +
@@ -228,23 +199,15 @@ export function projectileClashCandidate({
     return null;
   }
 
-  const interactionKey =
-    [leftTag, rightTag]
-      .sort()
-      .join("::");
-
   return Object.freeze({
     atClockMs,
-    leftTag,
-    rightTag,
-    leftStrength,
-    rightStrength,
+    leftPower,
+    rightPower,
     outcome:
       clashOutcome(
-        leftStrength,
-        rightStrength
+        leftPower,
+        rightPower
       ),
-    interactionKey,
     leftProgress,
     rightProgress
   });
@@ -260,22 +223,14 @@ function cancelledResolution({
 }) {
   const isLeft =
     side === "left";
-  const ownTag =
+  const ownPower =
     isLeft
-      ? candidate.leftTag
-      : candidate.rightTag;
-  const otherTag =
+      ? candidate.leftPower
+      : candidate.rightPower;
+  const otherPower =
     isLeft
-      ? candidate.rightTag
-      : candidate.leftTag;
-  const ownStrength =
-    isLeft
-      ? candidate.leftStrength
-      : candidate.rightStrength;
-  const otherStrength =
-    isLeft
-      ? candidate.rightStrength
-      : candidate.leftStrength;
+      ? candidate.rightPower
+      : candidate.leftPower;
   const progress =
     isLeft
       ? candidate.leftProgress
@@ -313,12 +268,8 @@ function cancelledResolution({
     outcome: "clashed",
     state,
     clash: Object.freeze({
-      ownTag,
-      otherTag,
-      ownStrength,
-      otherStrength,
-      interactionKey:
-        candidate.interactionKey,
+      ownPower,
+      otherPower,
       clashOutcome:
         candidate.outcome,
       survivorActorId,
@@ -343,12 +294,8 @@ function cancelledResolution({
           otherAction.actorId,
         otherSkillId:
           otherAction.actionId,
-        ownTag,
-        otherTag,
-        ownStrength,
-        otherStrength,
-        interactionKey:
-          candidate.interactionKey,
+        ownPower,
+        otherPower,
         clashOutcome:
           candidate.outcome,
         survivorActorId,
