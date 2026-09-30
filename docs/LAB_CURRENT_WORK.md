@@ -19401,3 +19401,19 @@ Protections :
 - aucune table de matchup codée dans Combat Rules.
 
 État : **GREEN technique — PREVALIDATION smartphone**. À vérifier : Boule de feu retire des PV, 1v1 par défaut, cooldown visuel, et affichage/édition des types et résistances/faiblesses naturelles.
+
+
+### Publication PREVALIDATION — Creature Natural Elements Reconciliation V1
+
+- HEAD GREEN documenté avant publication : `c66d57761ffad2e38157831045dd2df657b5c92a` ;
+- CI work : `36755450704` — SUCCESS ;
+- checkpoint PREVALIDATION : `checkpoint/lab-creature-natural-elements-reconcile-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-creature-natural-elements-reconcile-v1-2026-09-30` ;
+- cette preview inclut également le correctif Boule de feu, le 1v1 par défaut et le visuel cooldown validés techniquement sur la lignée actuelle.
+
+Validation smartphone demandée :
+1. lancer Boule de feu et vérifier que les PV adverses baissent ;
+2. vérifier le cooldown visuel et le retour à disponibilité ;
+3. vérifier que le test démarre en 1v1 ;
+4. dans l'éditeur créature, vérifier les 13 types et les champs de résistance/faiblesse ;
+5. tester au moins une résistance positive et une faiblesse négative si souhaité.
