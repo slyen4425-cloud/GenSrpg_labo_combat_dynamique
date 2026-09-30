@@ -16274,3 +16274,26 @@ Résultat technique :
 
 Aucun GREEN UI final avant retour utilisateur.
 
+### Prévalidation prévue après CI exacte du commit de clôture
+
+Run de validation avant clôture documentaire :
+
+- run `36648706841` — SUCCESS ;
+- structure / frontières / indépendance : OK ;
+- 628 / 628 PASS.
+
+Après confirmation de la CI sur le commit documentaire final, créer sur ce SHA exact :
+
+- checkpoint PREVALIDATION : `checkpoint/lab-tactical-effects-ui-feedback-repair-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-tactical-effects-ui-feedback-repair-v1-2026-09-30`.
+
+Le test smartphone doit vérifier au minimum :
+
+1. la case « Déclarer comme capacité Ultime / conditionnelle » et l'ajout de conditions ;
+2. l'absence des anciens champs Dégâts/Soin/Stun séparés ;
+3. l'absence des anciens ciblages et portées courte/moyenne/longue ;
+4. la configuration unique via « Effets tactiques » ;
+5. la création / modification d'une capacité et son test combat.
+
+Le feedback d'impact visuel multi-cible reste explicitement hors de cette PREVALIDATION et sera réparé immédiatement après validation UI, dans un lot Renderer séparé.
+
