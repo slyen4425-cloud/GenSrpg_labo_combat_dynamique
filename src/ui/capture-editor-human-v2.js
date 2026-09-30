@@ -4715,6 +4715,14 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-skill-effect-add]"
   );
+  const projectileClashRulesHost = one(
+    root,
+    "[data-skill-projectile-clash-rules]"
+  );
+  const projectileClashAddButton = one(
+    root,
+    "[data-skill-projectile-clash-add]"
+  );
   const creatureLibrarySelect = one(
     root,
     "[data-creature-library-select]"
@@ -5635,6 +5643,51 @@ export function mountCaptureEditorHumanV2({
       }
       remove.closest(
         "[data-skill-effect-row]"
+      )?.remove();
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    projectileClashAddButton,
+    "click",
+    () => {
+      appendHumanProjectileClashRuleV2(
+        root
+      );
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    projectileClashRulesHost,
+    "input",
+    () => {
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    projectileClashRulesHost,
+    "change",
+    () => {
+      skillDirty = true;
+    }
+  );
+
+  listen(
+    projectileClashRulesHost,
+    "click",
+    (event) => {
+      const remove =
+        event.target?.closest?.(
+          "[data-skill-projectile-clash-remove]"
+        );
+      if (!remove) {
+        return;
+      }
+      remove.closest(
+        "[data-projectile-clash-rule]"
       )?.remove();
       skillDirty = true;
     }
