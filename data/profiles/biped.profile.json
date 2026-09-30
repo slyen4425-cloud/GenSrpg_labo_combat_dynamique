@@ -65,31 +65,75 @@
   },
   "locomotion": {
     "style": "hop",
-    "durationMs": 280,
+    "durationMs": 540,
     "phases": [
       {
-        "label": "hop-lift",
-        "at": 0.5,
-        "translateY": -9,
-        "rotateDeg": 0.4,
+        "label": "hop-lift-1",
+        "at": 0.16666666666666666,
+        "translateY": -12,
+        "rotateDeg": 0.3,
         "scaleX": 1.006,
         "scaleY": 0.994,
-        "easing": "ease-out"
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
-        "label": "hop-land",
+        "label": "hop-land-1",
+        "at": 0.3333333333333333,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.004,
+        "scaleY": 0.996,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "hop-lift-2",
+        "at": 0.5,
+        "translateY": -12,
+        "rotateDeg": -0.25,
+        "scaleX": 1.006,
+        "scaleY": 0.994,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "hop-land-2",
+        "at": 0.6666666666666666,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.004,
+        "scaleY": 0.996,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "hop-lift-3",
+        "at": 0.8333333333333334,
+        "translateY": -12,
+        "rotateDeg": 0.2,
+        "scaleX": 1.005,
+        "scaleY": 0.995,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "hop-land-3",
         "at": 1,
         "translateY": 0,
         "rotateDeg": 0,
         "scaleX": 1,
         "scaleY": 1,
-        "easing": "ease-in"
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       }
     ],
     "contacts": [
       {
+        "at": 0.3333333333333333,
+        "intensity": 0.16
+      },
+      {
+        "at": 0.6666666666666666,
+        "intensity": 0.16
+      },
+      {
         "at": 1,
-        "intensity": 0.2
+        "intensity": 0.18
       }
     ]
   }
