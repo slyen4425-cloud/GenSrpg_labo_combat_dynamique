@@ -53,13 +53,21 @@ function approachPerspectiveScale(target, cfg) {
   );
 }
 
-function locomotionPlan({ cfg, actorId, intensity, sign, transformOrigin }) {
+function locomotionShape({
+  cfg,
+  durationMs,
+  intensity,
+  sign,
+  pathTarget = null,
+  impactScale = null
+}) {
   if (!cfg || typeof cfg !== "object" || Array.isArray(cfg)) {
     throw new RangeError("Creature profile has no locomotion preset");
   }
-  const durationMs = Number(cfg.durationMs);
-  if (!Number.isFinite(durationMs) || durationMs <= 0) {
-    throw new RangeError("locomotion.durationMs must be greater than 0");
+
+  const totalDurationMs = Number(durationMs ?? cfg.durationMs);
+  if (!Number.isFinite(totalDurationMs) || totalDurationMs <= 0) {
+    throw new RangeError("locomotion duration must be greater than 0");
   }
   if (!Array.isArray(cfg.phases) || cfg.phases.length === 0) {
     throw new RangeError("locomotion.phases must be a non-empty array");
@@ -71,28 +79,40 @@ function locomotionPlan({ cfg, actorId, intensity, sign, transformOrigin }) {
     if (!Number.isFinite(at) || at <= previousAt || at > 1) {
       throw new RangeError("locomotion phase offsets must increase from 0 to 1");
     }
+
     const phaseDurationMs = Math.max(
       1,
-      Math.round(durationMs * (at - previousAt))
+      Math.round(totalDurationMs * (at - previousAt))
     );
     previousAt = at;
 
     const rawScaleX = Number(phase.scaleX ?? 1);
     const rawScaleY = Number(phase.scaleY ?? 1);
-    const translateX = Number(phase.translateX ?? 0);
-    const translateY = Number(phase.translateY ?? 0);
-    const rotateDeg = Number(phase.rotateDeg ?? 0);
+    const localTranslateX = Number(phase.translateX ?? 0);
+    const localTranslateY = Number(phase.translateY ?? 0);
+    const localRotateDeg = Number(phase.rotateDeg ?? 0);
+
     for (const [field, value] of Object.entries({
       rawScaleX,
       rawScaleY,
-      translateX,
-      translateY,
-      rotateDeg
+      localTranslateX,
+      localTranslateY,
+      localRotateDeg
     })) {
       if (!Number.isFinite(value)) {
         throw new TypeError(`locomotion phase ${index} ${field} must be finite`);
       }
     }
+
+    const pathX = pathTarget ? pathTarget.x * at : 0;
+    const pathY = pathTarget ? pathTarget.y * at : 0;
+
+    const baseScaleX = impactScale
+      ? 1 + (impactScale.x - 1) * at
+      : 1;
+    const baseScaleY = impactScale
+      ? 1 + (impactScale.y - 1) * at
+      : 1;
 
     return {
       label:
@@ -102,11 +122,21 @@ function locomotionPlan({ cfg, actorId, intensity, sign, transformOrigin }) {
       durationMs: phaseDurationMs,
       easing: phase.easing ?? "ease-in-out",
       transform: {
-        translateX: directed(scaled(translateX, intensity), sign),
-        translateY: scaled(translateY, intensity),
-        rotateDeg: directed(scaled(rotateDeg, intensity), sign),
-        scaleX: 1 + (rawScaleX - 1) * intensity,
-        scaleY: 1 + (rawScaleY - 1) * intensity
+        translateX:
+          pathX +
+          directed(scaled(localTranslateX, intensity), sign),
+        translateY:
+          pathY +
+          scaled(localTranslateY, intensity),
+        rotateDeg:
+          directed(scaled(localRotateDeg, intensity), sign) +
+          (pathTarget ? directed(3 * intensity * at, sign) : 0),
+        scaleX:
+          baseScaleX *
+          (1 + (rawScaleX - 1) * intensity),
+        scaleY:
+          baseScaleY *
+          (1 + (rawScaleY - 1) * intensity)
       }
     };
   });
@@ -129,17 +159,37 @@ function locomotionPlan({ cfg, actorId, intensity, sign, transformOrigin }) {
     }
     return {
       type: "footfall",
-      atMs: Math.round(durationMs * at),
+      atMs: Math.round(totalDurationMs * at),
       intensity: cueIntensity * intensity
     };
+  });
+
+  return Object.freeze({
+    segments: Object.freeze(segments),
+    cues: Object.freeze(cues)
+  });
+}
+
+function locomotionPlan({
+  cfg,
+  actorId,
+  intensity,
+  sign,
+  transformOrigin
+}) {
+  const shape = locomotionShape({
+    cfg,
+    durationMs: cfg?.durationMs,
+    intensity,
+    sign
   });
 
   return createAnimationPlan({
     actorId,
     eventType: "move",
     transformOrigin,
-    cues,
-    segments
+    cues: shape.cues,
+    segments: shape.segments
   });
 }
 
@@ -284,6 +334,13 @@ export function planAnimation({ event, actor, profile }) {
         throw new RangeError(`Profile ${profile.id} has no ground preset`);
       }
 
+      const locomotion = profile.locomotion;
+      if (!locomotion) {
+        throw new RangeError(
+          `Profile ${profile.id} has no locomotion preset for ground approach`
+        );
+      }
+
       const target = visualTarget(event);
       const perspectiveScale =
         approachPerspectiveScale(
@@ -291,25 +348,28 @@ export function planAnimation({ event, actor, profile }) {
           profile.specialMoves?.perspective ?? {}
         );
 
+      const approach = locomotionShape({
+        cfg: locomotion,
+        durationMs: target.travelMs,
+        intensity,
+        sign,
+        pathTarget: target,
+        impactScale: {
+          x: cfg.impactScaleX * perspectiveScale,
+          y: cfg.impactScaleY * perspectiveScale
+        }
+      });
+
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
+        transformOrigin:
+          locomotion.transformOrigin ??
+          profile.idle?.transformOrigin ??
+          null,
+        cues: approach.cues,
         segments: [
-          {
-            label: "ground-approach-impact",
-            durationMs: target.travelMs,
-            easing: "cubic-bezier(0.2, 0.75, 0.25, 1)",
-            transform: {
-              translateX: target.x,
-              translateY: target.y,
-              scaleX:
-                cfg.impactScaleX * perspectiveScale,
-              scaleY:
-                cfg.impactScaleY * perspectiveScale,
-              rotateDeg: directed(3 * intensity, sign)
-            },
-            opacity: 1
-          },
+          ...approach.segments,
           {
             label: "ground-home",
             durationMs: cfg.returnMs,
