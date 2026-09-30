@@ -4539,6 +4539,7 @@ export function mountCaptureEditorHumanV2({
   const configuredSkills = new Map();
   const configuredCreatures = new Map();
   let selectedCreatureId = null;
+  let bootstrapCreatureId = null;
   let creatureDirty = false;
   let selectedLegacyState = null;
   let skillDirty = false;
@@ -5203,6 +5204,12 @@ export function mountCaptureEditorHumanV2({
       record.draft.id,
       record
     );
+    if (
+      bootstrapCreatureId ===
+      record.draft.id
+    ) {
+      bootstrapCreatureId = null;
+    }
     selectedCreatureId = record.draft.id;
     creatureDirty = false;
     one(
@@ -6502,6 +6509,8 @@ export function mountCaptureEditorHumanV2({
       initialRecord.draft.id,
       initialRecord
     );
+    bootstrapCreatureId =
+      initialRecord.draft.id;
     selectedCreatureId =
       initialRecord.draft.id;
     creatureDirty = false;
@@ -6760,6 +6769,33 @@ export function mountCaptureEditorHumanV2({
 
       const monsterCaptureRecords =
         captureData.records;
+      const canonicalCreatureIds =
+        new Set(
+          monsterCaptureRecords.map(
+            (record) =>
+              record.draft.id
+          )
+        );
+
+      if (
+        bootstrapCreatureId !== null &&
+        creatureDirty === false &&
+        !canonicalCreatureIds.has(
+          bootstrapCreatureId
+        )
+      ) {
+        configuredCreatures.delete(
+          bootstrapCreatureId
+        );
+        if (
+          selectedCreatureId ===
+          bootstrapCreatureId
+        ) {
+          selectedCreatureId = null;
+        }
+        bootstrapCreatureId = null;
+      }
+
       for (
         const [skillId, draft] of nativeSkills
       ) {
@@ -6906,6 +6942,15 @@ export function mountCaptureEditorHumanV2({
         );
       }
 
+      if (
+        selectedCreatureId === null &&
+        configuredCreatures.size > 0
+      ) {
+        selectedCreatureId =
+          configuredCreatures.keys()
+            .next().value;
+      }
+
       refreshLoadoutOptions();
       refreshCreatureLibraryOptions(
         selectedCreatureId
@@ -6927,10 +6972,8 @@ export function mountCaptureEditorHumanV2({
         selectedRecord &&
         creatureDirty === false
       ) {
-        renderHumanStatValuesV1(
-          root,
-          statRegistry,
-          selectedRecord.statValues
+        loadCreatureRecord(
+          selectedRecord.draft.id
         );
       }
 
