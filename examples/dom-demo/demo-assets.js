@@ -204,24 +204,33 @@ const ASSETS = Object.freeze({
   }),
   "core:arena-forest-01": Object.freeze({
     assetId: "core:arena-forest-01",
-    url: new URL(
-      "arenas/forest/arena_forest_01.png",
-      CORE_ROOT
-    ).href
+    url: globalVisualAssetUrl(
+      "core/arenas/forest/arena_forest_01.png"
+    )
   }),
-  "test:arena-lava-local-01": Object.freeze({
-    assetId: "test:arena-lava-local-01",
-    url: new URL(
-      "../../assets/test/arenas/lava/arena_lava_01.webp",
-      import.meta.url
-    ).href
+  "core:arena-cave-01": Object.freeze({
+    assetId: "core:arena-cave-01",
+    url: globalVisualAssetUrl(
+      "core/arenas/cave/arena_cave_01.webp"
+    )
   }),
-  "test:arena-city-local-01": Object.freeze({
-    assetId: "test:arena-city-local-01",
-    url: new URL(
-      "../../assets/test/arenas/city/arena_city_01.webp",
-      import.meta.url
-    ).href
+  "core:arena-snow-01": Object.freeze({
+    assetId: "core:arena-snow-01",
+    url: globalVisualAssetUrl(
+      "core/arenas/snow/arena_snow_01.webp"
+    )
+  }),
+  "core:arena-city-01": Object.freeze({
+    assetId: "core:arena-city-01",
+    url: globalVisualAssetUrl(
+      "core/arenas/city/arena_city_01.webp"
+    )
+  }),
+  "core:arena-lava-01": Object.freeze({
+    assetId: "core:arena-lava-01",
+    url: globalVisualAssetUrl(
+      "core/arenas/lava/arena_lava_01.webp"
+    )
   }),
   "core:icon-skill-claw-01": Object.freeze({
     assetId: "core:icon-skill-claw-01",
@@ -338,13 +347,19 @@ const ARENA_BINDINGS = Object.freeze({
   forest: Object.freeze({
     background: "core:arena-forest-01"
   }),
-  lava: Object.freeze({
-    background: "test:arena-lava-local-01"
+  cave: Object.freeze({
+    background: "core:arena-cave-01"
+  }),
+  snow: Object.freeze({
+    background: "core:arena-snow-01"
   }),
   city: Object.freeze({
-    background: "test:arena-city-local-01",
+    background: "core:arena-city-01",
     backgroundPosition: "center bottom",
     backgroundSize: "auto 100%"
+  }),
+  lava: Object.freeze({
+    background: "core:arena-lava-01"
   })
 });
 
