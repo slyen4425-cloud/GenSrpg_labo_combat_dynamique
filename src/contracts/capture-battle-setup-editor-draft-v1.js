@@ -5,6 +5,7 @@ const TOP_LEVEL_FIELDS = new Set([
   "schema",
   "id",
   "localActorId",
+  "arenaId",
   "skillSpeedMultiplier",
   "teams"
 ]);
@@ -269,6 +270,10 @@ export function normalizeCaptureBattleSetupEditorDraftV1(input) {
     schema: CAPTURE_BATTLE_SETUP_EDITOR_DRAFT_SCHEMA,
     id: requiredString(value.id, "id"),
     localActorId,
+    arenaId: requiredString(
+      value.arenaId,
+      "arenaId"
+    ),
     skillSpeedMultiplier: positiveFiniteNumber(
       value.skillSpeedMultiplier,
       "skillSpeedMultiplier"
