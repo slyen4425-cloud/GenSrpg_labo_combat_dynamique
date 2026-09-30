@@ -18289,3 +18289,26 @@ Base :
 ### Critère de fin
 
 RED ciblé -> réglage data-driven minimal -> CI complète -> preview smartphone.
+
+
+### Résultat — Creature Motion Tuning V2
+
+RED :
+- commit `c433ea244c0e8b25dfcb853550d7c9c18f063752` ;
+- CI `36697903903` ;
+- **705 tests, 704 PASS, 1 FAIL ciblé**.
+
+Correction data-driven uniquement :
+- bipède : amplitude du bond portée de 6 px à 9 px ;
+- quadrupède : deux bonds distincts avant impact (deux montées + deux retombées) ;
+- aucun changement Animation Core ;
+- `travelMs`, arrivée exacte, dégâts et règles combat inchangés.
+
+GREEN :
+- commit profils : `61b8baab37da3d4cde368f15b3b72f7f6d4d0bf0` ;
+- CI `36698133611` ;
+- structure / frontières / indépendance : OK ;
+- **705/705 PASS / 0 FAIL**.
+
+État :
+**GREEN technique — PREVALIDATION smartphone.**
