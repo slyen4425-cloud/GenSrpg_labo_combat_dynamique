@@ -70,10 +70,10 @@
       {
         "label": "hop-lift",
         "at": 0.5,
-        "translateY": -6,
-        "rotateDeg": 0.35,
-        "scaleX": 1.004,
-        "scaleY": 0.996,
+        "translateY": -9,
+        "rotateDeg": 0.4,
+        "scaleX": 1.006,
+        "scaleY": 0.994,
         "easing": "ease-out"
       },
       {
