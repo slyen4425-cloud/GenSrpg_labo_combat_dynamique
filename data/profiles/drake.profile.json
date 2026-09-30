@@ -65,16 +65,34 @@
   },
   "locomotion": {
     "style": "flight",
-    "durationMs": 340,
+    "durationMs": 520,
     "phases": [
       {
         "label": "flight-rise",
+        "at": 0.25,
+        "translateY": -13,
+        "rotateDeg": 0.3,
+        "scaleX": 0.999,
+        "scaleY": 1.002,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "flight-apex",
         "at": 0.5,
-        "translateY": -9,
-        "rotateDeg": 0.4,
+        "translateY": -24,
+        "rotateDeg": 0,
         "scaleX": 0.998,
         "scaleY": 1.004,
-        "easing": "ease-in-out"
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "flight-descent",
+        "at": 0.75,
+        "translateY": -13,
+        "rotateDeg": -0.25,
+        "scaleX": 0.999,
+        "scaleY": 1.002,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
         "label": "flight-settle",
@@ -83,9 +101,15 @@
         "rotateDeg": 0,
         "scaleX": 1,
         "scaleY": 1,
-        "easing": "ease-in-out"
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       }
     ],
     "contacts": []
+  },
+  "presentation": {
+    "shadow": {
+      "bottomPct": -4,
+      "opacity": 0.28
+    }
   }
 }
