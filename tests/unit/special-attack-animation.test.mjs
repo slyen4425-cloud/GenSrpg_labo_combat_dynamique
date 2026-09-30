@@ -155,7 +155,7 @@ test("ground attack reaches target exactly at configured travel time then return
 
   assert.deepEqual(
     plan.segments.map((segment) => segment.label),
-    ["ground-approach-impact", "ground-home"]
+    ["ground-linear-impact", "ground-home"]
   );
   assert.equal(plan.segments[0].durationMs, travelMs);
   assert.equal(plan.segments[0].transform.translateX, 170);
