@@ -19204,3 +19204,28 @@ Audit de protection :
 - checkpoint PREVALIDATION : `checkpoint/lab-cooldown-visual-overlay-v1-prevalidation-green-2026-09-30` ;
 - preview : `preview/lab-cooldown-visual-overlay-v1-2026-09-30` ;
 - validation smartphone requise : lancer une compétence et vérifier que l'icône se désature, que la couleur revient progressivement, que l'aiguille tourne avec la recharge et que l'icône revient immédiatement à l'état normal à disponibilité.
+
+
+## Micro-lot — Cooldown Icon Visibility Regression V1 — 2026-09-30
+
+Base PREVALIDATION : `b575e45c0553c5e81310ef6e92723a65f1fd64ec` (`Cooldown Visual Overlay V1`).
+
+- checkpoint de départ : `checkpoint/lab-start-cooldown-icon-visibility-regression-v1-2026-09-30` ;
+- branche : `work/lab-cooldown-icon-visibility-regression-v1-2026-09-30`.
+
+Retour utilisateur smartphone : l'icône de Boule de feu a disparu dans le combat après l'ajout du visuel radial de cooldown.
+
+Diagnostic : le nouveau conteneur `<span class="action-option__icon-shell">` est masqué par l'ancienne règle CSS générique `.action-option--skill span { display: none; }`. Le binding et l'asset `pack:capture:icon-skill-fireball-01` sont toujours présents.
+
+Propriétaire : UI présentation/CSS uniquement.
+
+Périmètre autorisé :
+- règle CSS des boutons de compétence ;
+- test de régression ciblé ;
+- documentation.
+
+Protégé : asset feu, bindings d'assets, SkillDefinition, cooldown métier, Combat State, Runtime, dégâts, énergie, ciblage, mouvement, FX, audio.
+
+RED : prouver que la règle de masquage générique cache actuellement `.action-option__icon-shell`.
+
+Correction cible : restreindre le masquage aux métadonnées textuelles sans masquer le conteneur d'icône ni le visuel cooldown.
