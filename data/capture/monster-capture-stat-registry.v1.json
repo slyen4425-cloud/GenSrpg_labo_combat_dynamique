@@ -2,6 +2,16 @@
   "schema": "capture-stat-registry-v1",
   "stats": [
     {
+      "id": "health",
+      "label": "Santé / PV",
+      "damageChannel": null,
+      "resistanceChannel": null,
+      "damagePctPerPoint": 0,
+      "resistancePctPerPoint": 0,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 1
+    },
+    {
       "id": "speed",
       "label": "Vitesse",
       "damageChannel": null,
