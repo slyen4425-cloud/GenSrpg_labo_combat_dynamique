@@ -1,6 +1,9 @@
 import {
   normalizeSkillEffectV1
 } from "./skill-effect-v1.js";
+import {
+  normalizeProjectileClashV2
+} from "./projectile-clash-v2.js";
 
 export const SKILL_CATEGORIES = Object.freeze([
   "offensive",
@@ -32,11 +35,6 @@ export const SKILL_EVASION_WINDOWS = Object.freeze([
   "travel"
 ]);
 
-export const PROJECTILE_CLASH_MODES = Object.freeze([
-  "none",
-  "mutual_cancel"
-]);
-
 export const SKILL_TARGET_RELATIONS = Object.freeze([
   "enemy",
   "ally",
@@ -63,7 +61,6 @@ const FORM_SET = new Set(SKILL_FORMS);
 const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
 const DISTANCE_SET = new Set(COMBAT_DISTANCES);
 const EVASION_WINDOW_SET = new Set(SKILL_EVASION_WINDOWS);
-const PROJECTILE_CLASH_MODE_SET = new Set(PROJECTILE_CLASH_MODES);
 const TARGET_RELATION_SET = new Set(SKILL_TARGET_RELATIONS);
 const ACTIVATION_REQUIREMENT_MODE_SET =
   new Set(SKILL_ACTIVATION_REQUIREMENT_MODES);
@@ -285,59 +282,11 @@ export function normalizeSkillDefinition(input) {
     );
   }
 
-  const projectileClash = input.projectileClash ?? {};
-  if (
-    typeof projectileClash !== "object" ||
-    Array.isArray(projectileClash)
-  ) {
-    throw new TypeError("projectileClash must be an object");
-  }
-
-  const projectileClashMode = nonEmptyString(
-    projectileClash.mode ?? "none",
-    "projectileClash.mode"
-  );
-  if (!PROJECTILE_CLASH_MODE_SET.has(projectileClashMode)) {
-    throw new RangeError(
-      `Unsupported projectileClash.mode: ${projectileClashMode}`
+  const projectileClash =
+    normalizeProjectileClashV2(
+      input.projectileClash,
+      { form }
     );
-  }
-
-  const projectileClashGroup =
-    projectileClash.group == null
-      ? null
-      : nonEmptyString(
-          projectileClash.group,
-          "projectileClash.group"
-        );
-
-  const projectileClashInteractsWith = stringArray(
-    projectileClash.interactsWith ??
-      (
-        projectileClashMode === "mutual_cancel" &&
-        projectileClashGroup !== null
-          ? [projectileClashGroup]
-          : []
-      ),
-    "projectileClash.interactsWith"
-  );
-
-  if (
-    projectileClashMode === "mutual_cancel" &&
-    form !== "projectile"
-  ) {
-    throw new RangeError(
-      "projectileClash.mutual_cancel requires form=projectile"
-    );
-  }
-  if (
-    projectileClashMode === "mutual_cancel" &&
-    projectileClashGroup === null
-  ) {
-    throw new TypeError(
-      "projectileClash.group is required for mutual_cancel"
-    );
-  }
 
   const effect = input.effect ?? {};
   if (typeof effect !== "object" || Array.isArray(effect)) {
@@ -404,11 +353,7 @@ export function normalizeSkillDefinition(input) {
       window: evasionWindow,
       incomingForms: evasionIncomingForms
     }),
-    projectileClash: Object.freeze({
-      mode: projectileClashMode,
-      group: projectileClashGroup,
-      interactsWith: projectileClashInteractsWith
-    }),
+    projectileClash,
     reaction: Object.freeze({
       blockForms: stringArray(reaction.blockForms, "reaction.blockForms", FORM_SET),
       reflectForms: stringArray(reaction.reflectForms, "reaction.reflectForms", FORM_SET),
