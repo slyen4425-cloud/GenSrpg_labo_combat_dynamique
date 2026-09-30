@@ -479,3 +479,66 @@ test("real CombatRuntime keeps the stronger projectile active until its later ta
 
   runtime.dispose();
 });
+
+
+test("Projectile Clash V2 contract and Core stay independent from UI renderer storage and network", async () => {
+  const sources = await Promise.all(
+    [
+      "../../src/contracts/projectile-clash-v2.js",
+      "../../src/core/combat/projectile-clash.js"
+    ].map((relative) =>
+      readFile(
+        new URL(
+          relative,
+          import.meta.url
+        ),
+        "utf8"
+      )
+    )
+  );
+
+  for (const source of sources) {
+    for (const forbidden of [
+      "document.",
+      "window.",
+      "localStorage",
+      "sessionStorage",
+      "MutationObserver",
+      "fetch(",
+      "adapters/renderer",
+      "src/ui/"
+    ]) {
+      assert.equal(
+        source.includes(forbidden),
+        false,
+        "Projectile clash owner must not depend on " +
+          forbidden
+      );
+    }
+  }
+});
+
+test("SkillDefinition no longer owns the V1 mode group interactsWith authority", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/contracts/skill-definition.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const legacy of [
+    "PROJECTILE_CLASH_MODES",
+    "mutual_cancel",
+    "projectileClashMode",
+    "projectileClashGroup",
+    "projectileClashInteractsWith"
+  ]) {
+    assert.equal(
+      source.includes(legacy),
+      false,
+      legacy +
+        " must not remain in canonical SkillDefinition"
+    );
+  }
+});
