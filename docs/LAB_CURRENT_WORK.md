@@ -18476,3 +18476,15 @@ Protégé / inchangé :
 
 État :
 **GREEN technique — PREVALIDATION smartphone requise.**
+
+
+### Validation utilisateur — Creature Hop Fluidity V3
+
+Validation smartphone reçue le 2026-09-30 :
+- bipède : **validé** ;
+- quadrupède : **validé**.
+
+Le profil massif/golem n'est pas inclus dans cette validation et fera l'objet d'un micro-lot séparé.
+
+État du lot bipède/quadrupède :
+**GREEN utilisateur.**
