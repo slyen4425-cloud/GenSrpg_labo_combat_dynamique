@@ -2025,6 +2025,23 @@ La chaîne est :
 
 `dom-camera-fx.js` est l'adaptateur qui applique ce plan à l'arène. Combat Rules et Demo UI ne contiennent ni amplitude ni trajectoire de shake.
 
+### Approches d'attaque au sol
+
+Une approche `ground-attack` est un déplacement visuel et doit consommer le même `profile.locomotion` que l'événement générique `move`.
+
+Animation Core projette les phases morphologiques sur la trajectoire vers la cible :
+
+- rampant : interpolation au sol sans arc vertical ajouté ;
+- bipède : petit arc ;
+- quadrupède : arc plus ample ;
+- massif : pas lourds successifs.
+
+La somme des segments d'approche reste exactement égale à `travelMs`, et le dernier segment conserve le label contractuel `ground-approach-impact` ainsi que la position exacte de la cible.
+
+Les cues `footfall` produits pendant cette approche passent par la même chaîne `Animation Core -> FX Core -> Camera Render Adapter`. Aucun shake n'est décidé dans Combat Rules ou dans l'UI.
+
+Les modes `teleport-attack` et `aerial-attack` conservent leurs séquences dédiées et ne sont pas remplacés par la locomotion terrestre.
+
 ### Déplacement spatial
 
 `dom-distance-presenter` reste propriétaire de l'application des ancres DOM issues du résultat métier de distance.
