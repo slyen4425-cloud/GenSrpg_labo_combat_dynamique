@@ -36,6 +36,42 @@
       </button>
     </nav>
 
+    <section class="card transfer-card" aria-label="Import et export Capture">
+      <div class="card-title">
+        <span class="step">↕</span>
+        <div>
+          <h2>Import / Export</h2>
+          <p>Exporte une créature, une capacité ou toute la base Capture. Les fichiers JSON contiennent les données configurées et les références d’assets, pas les images ou sons binaires.</p>
+        </div>
+      </div>
+
+      <div class="skill-save-actions">
+        <button type="button" class="secondary-action" data-export-current-creature>
+          Exporter cette créature
+        </button>
+        <button type="button" class="secondary-action" data-export-current-skill>
+          Exporter cette capacité
+        </button>
+        <button type="button" class="primary-action" data-export-database>
+          Exporter toute la base
+        </button>
+      </div>
+
+      <div class="grid two">
+        <label>Importer un fichier JSON
+          <input type="file" accept=".json,application/json" data-import-capture-json>
+        </label>
+        <label class="switch-line">
+          <input type="checkbox" data-import-replace-existing>
+          <span>Remplacer explicitement les IDs existants</span>
+        </label>
+      </div>
+
+      <p class="note" data-transfer-state data-tone="info">
+        Par défaut, un import refuse d’écraser un ID existant différent.
+      </p>
+    </section>
+
     <section class="editor-panel" data-editor-panel="creature">
       <article class="card hero-card">
         <div class="card-title">
