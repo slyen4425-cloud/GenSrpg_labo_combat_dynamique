@@ -18885,3 +18885,10 @@ GREEN fonctionnel :
 - preview : `preview/lab-flying-contact-arc-fluidity-v1-2026-09-30`.
 
 La validation utilisateur reste requise sur smartphone pour confirmer qu'un profil `flying` utilisant `Griffe` rejoint la cible en un seul mouvement continu, sans ralentissement/arrêt intermédiaire.
+
+
+### Validation utilisateur — Flying Contact Arc Fluidity V1
+
+Validation smartphone reçue le 2026-09-30 : **OK utilisateur** sur le test `flying -> Loup -> Griffe`.
+
+Le mouvement volant de contact est désormais considéré validé : un seul déplacement continu vers la cible, sans ralentissements/arrêts intermédiaires perceptibles.
