@@ -1445,6 +1445,7 @@ export function buildHumanBattleSetupV1({
   localDisplayName,
   opponentCreatureId,
   opponentDisplayName,
+  arenaId,
   activePerTeam,
   skillSpeedMultiplier = 1
 }) {
@@ -1501,6 +1502,10 @@ export function buildHumanBattleSetupV1({
     schema: "capture-battle-setup-editor-draft-v1",
     id: requiredText(battleId, "ID combat"),
     localActorId: "local-1",
+    arenaId: requiredText(
+      arenaId,
+      "Arène du combat"
+    ),
     skillSpeedMultiplier,
     teams: [
       {
@@ -6389,6 +6394,10 @@ export function mountCaptureEditorHumanV2({
           resolvedOpponentCreatureDraft.id,
         opponentDisplayName:
           resolvedOpponentCreatureDraft.displayName,
+        arenaId: selectedValue(
+          root,
+          "[data-test-arena]"
+        ),
         activePerTeam: numericValue(
           root,
           "[data-active-per-team]"
