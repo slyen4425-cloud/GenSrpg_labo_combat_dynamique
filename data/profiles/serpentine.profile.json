@@ -3,15 +3,15 @@
   "label": "Serpentine",
   "description": "Profil pour créatures longues, souples, ondulantes ou aquatiques.",
   "idle": {
-    "bobY": 0.3,
-    "swayRotate": 0.28,
-    "swayX": 0.28,
-    "scaleXDelta": 0.003,
-    "scaleYDelta": -0.002,
-    "durationMs": 1900,
+    "bobY": 0,
+    "swayRotate": 0.7,
+    "swayX": 0,
+    "scaleXDelta": 0.002,
+    "scaleYDelta": -0.001,
+    "durationMs": 2300,
     "transformOrigin": {
       "x": "50%",
-      "y": "82%"
+      "y": "94%"
     }
   },
   "attack": {
