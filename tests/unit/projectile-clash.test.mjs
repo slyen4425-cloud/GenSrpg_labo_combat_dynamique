@@ -49,66 +49,48 @@ function action({
   });
 }
 
-test("projectile clash defaults to none and requires explicit editable data", () => {
-  const skill = normalizeSkillDefinition(rawSkill());
+function clash(tag, againstTag, strength = 1) {
+  return {
+    tag,
+    rules:
+      againstTag == null
+        ? []
+        : [
+            {
+              againstTag,
+              strength
+            }
+          ]
+  };
+}
 
-  assert.deepEqual(skill.projectileClash, {
-    mode: "none",
-    group: null,
-    interactsWith: []
-  });
-});
+test("projectile clash defaults to no tag and no inferred rule", () => {
+  const skill =
+    normalizeSkillDefinition(
+      rawSkill()
+    );
 
-test("mutual projectile clash requires a group and projectile form", () => {
-  assert.throws(
-    () =>
-      normalizeSkillDefinition(
-        rawSkill({
-          projectileClash: {
-            mode: "mutual_cancel"
-          }
-        })
-      ),
-    /projectileClash\.group is required/
-  );
-
-  assert.throws(
-    () =>
-      normalizeSkillDefinition(
-        rawSkill({
-          form: "contact",
-          projectileClash: {
-            mode: "mutual_cancel",
-            group: "test"
-          }
-        })
-      ),
-    /requires form=projectile/
-  );
-
-  assert.throws(
-    () =>
-      normalizeSkillDefinition(
-        rawSkill({
-          projectileClash: {
-            mode: "destroy_everything",
-            group: "test"
-          }
-        })
-      ),
-    /Unsupported projectileClash\.mode/
+  assert.deepEqual(
+    skill.projectileClash,
+    {
+      tag: null,
+      rules: []
+    }
   );
 });
 
-test("same-group reciprocal projectiles compute their real meeting time", () => {
-  const skill = normalizeSkillDefinition(
-    rawSkill({
-      projectileClash: {
-        mode: "mutual_cancel",
-        group: "fire-orb"
-      }
-    })
-  );
+test("same-tag reciprocal projectiles compute their real meeting time", () => {
+  const skill =
+    normalizeSkillDefinition(
+      rawSkill({
+        projectileClash:
+          clash(
+            "fire",
+            "fire",
+            1
+          )
+      })
+    );
 
   const left = action({
     skill,
@@ -121,62 +103,71 @@ test("same-group reciprocal projectiles compute their real meeting time", () => 
     targetId: "player"
   });
 
-  const candidate = projectileClashCandidate({
-    leftAction: left,
-    leftStartedAtClockMs: 0,
-    rightAction: right,
-    rightStartedAtClockMs: 200
-  });
+  const candidate =
+    projectileClashCandidate({
+      leftAction: left,
+      leftStartedAtClockMs: 0,
+      rightAction: right,
+      rightStartedAtClockMs: 200
+    });
 
   assert.ok(candidate);
-  assert.equal(candidate.atClockMs, 1450);
-  assert.ok(
-    Math.abs(candidate.leftProgress - 450 / 700) < 1e-9
+  assert.equal(
+    candidate.atClockMs,
+    1450
   );
-  assert.ok(
-    Math.abs(candidate.rightProgress - 250 / 700) < 1e-9
+  assert.equal(
+    candidate.outcome,
+    "mutual_cancel"
   );
   assert.ok(
     Math.abs(
-      candidate.leftProgress +
-        candidate.rightProgress -
-        1
-    ) < 1e-9
+      candidate.leftProgress -
+        450 / 700
+    ) <
+      1e-9
+  );
+  assert.ok(
+    Math.abs(
+      candidate.rightProgress -
+        250 / 700
+    ) <
+      1e-9
   );
 });
 
-test("different clash groups or disabled clash never collide", () => {
-  const fire = normalizeSkillDefinition(
-    rawSkill({
-      id: "fire",
-      projectileClash: {
-        mode: "mutual_cancel",
-        group: "fire-orb"
-      }
-    })
-  );
-  const ice = normalizeSkillDefinition(
-    rawSkill({
-      id: "ice",
-      projectileClash: {
-        mode: "mutual_cancel",
-        group: "ice-orb"
-      }
-    })
-  );
-  const disabled = normalizeSkillDefinition(
-    rawSkill({ id: "plain" })
-  );
-
-  const playerFire = action({
-    skill: fire,
-    actorId: "player",
-    targetId: "opponent"
-  });
+test("different tags without an explicit directed rule never clash", () => {
+  const fire =
+    normalizeSkillDefinition(
+      rawSkill({
+        id: "fire",
+        projectileClash:
+          clash(
+            "fire",
+            null
+          )
+      })
+    );
+  const ice =
+    normalizeSkillDefinition(
+      rawSkill({
+        id: "ice",
+        element: "ice",
+        projectileClash:
+          clash(
+            "ice",
+            null
+          )
+      })
+    );
 
   assert.equal(
     projectileClashCandidate({
-      leftAction: playerFire,
+      leftAction: action({
+        skill: fire,
+        actorId: "player",
+        targetId: "opponent"
+      }),
       leftStartedAtClockMs: 0,
       rightAction: action({
         skill: ice,
@@ -187,75 +178,77 @@ test("different clash groups or disabled clash never collide", () => {
     }),
     null
   );
+});
 
-  assert.equal(
+test("one directed rule can make its projectile survive the clash", () => {
+  const ice =
+    normalizeSkillDefinition(
+      rawSkill({
+        id: "ice",
+        element: "ice",
+        projectileClash:
+          clash(
+            "ice",
+            "fire",
+            2
+          )
+      })
+    );
+  const fire =
+    normalizeSkillDefinition(
+      rawSkill({
+        id: "fire",
+        projectileClash:
+          clash(
+            "fire",
+            null
+          )
+      })
+    );
+
+  const candidate =
     projectileClashCandidate({
-      leftAction: playerFire,
+      leftAction: action({
+        skill: ice,
+        actorId: "player",
+        targetId: "opponent"
+      }),
       leftStartedAtClockMs: 0,
       rightAction: action({
-        skill: disabled,
+        skill: fire,
         actorId: "opponent",
         targetId: "player"
       }),
       rightStartedAtClockMs: 0
-    }),
-    null
-  );
-});
-
-test("different projectile groups can clash when both skills declare compatibility", () => {
-  const fire = normalizeSkillDefinition(
-    rawSkill({
-      id: "fire",
-      projectileClash: {
-        mode: "mutual_cancel",
-        group: "fire-orb",
-        interactsWith: ["fire-orb", "ice-bolt"]
-      }
-    })
-  );
-  const ice = normalizeSkillDefinition(
-    rawSkill({
-      id: "ice",
-      element: "ice",
-      projectileClash: {
-        mode: "mutual_cancel",
-        group: "ice-bolt",
-        interactsWith: ["ice-bolt", "fire-orb"]
-      }
-    })
-  );
-
-  const candidate = projectileClashCandidate({
-    leftAction: action({
-      skill: fire,
-      actorId: "player",
-      targetId: "opponent"
-    }),
-    leftStartedAtClockMs: 0,
-    rightAction: action({
-      skill: ice,
-      actorId: "opponent",
-      targetId: "player"
-    }),
-    rightStartedAtClockMs: 0
-  });
+    });
 
   assert.ok(candidate);
-  assert.equal(candidate.leftGroup, "fire-orb");
-  assert.equal(candidate.rightGroup, "ice-bolt");
-  assert.equal(candidate.interactionKey, "fire-orb::ice-bolt");
+  assert.equal(
+    candidate.leftStrength,
+    2
+  );
+  assert.equal(
+    candidate.rightStrength,
+    0
+  );
+  assert.equal(
+    candidate.outcome,
+    "left_survives"
+  );
 });
 
 test("projectiles cannot clash after one travel window has already ended", () => {
-  const skill = normalizeSkillDefinition(
-    rawSkill({
-      projectileClash: {
-        mode: "mutual_cancel",
-        group: "fire-orb"
-      }
-    })
-  );
+  const skill =
+    normalizeSkillDefinition(
+      rawSkill({
+        projectileClash:
+          clash(
+            "fire",
+            "fire",
+            1
+          )
+      })
+    );
 
   assert.equal(
     projectileClashCandidate({
@@ -276,15 +269,18 @@ test("projectiles cannot clash after one travel window has already ended", () =>
   );
 });
 
-test("clash resolution is semantic and applies no hit or damage event", () => {
-  const skill = normalizeSkillDefinition(
-    rawSkill({
-      projectileClash: {
-        mode: "mutual_cancel",
-        group: "fire-orb"
-      }
-    })
-  );
+test("mutual clash resolution applies no hit and cancels both", () => {
+  const skill =
+    normalizeSkillDefinition(
+      rawSkill({
+        projectileClash:
+          clash(
+            "fire",
+            "fire",
+            1
+          )
+      })
+    );
   const left = action({
     skill,
     actorId: "player",
@@ -295,40 +291,61 @@ test("clash resolution is semantic and applies no hit or damage event", () => {
     actorId: "opponent",
     targetId: "player"
   });
-  const candidate = projectileClashCandidate({
-    leftAction: left,
-    leftStartedAtClockMs: 0,
-    rightAction: right,
-    rightStartedAtClockMs: 0
-  });
-  const state = Object.freeze({ marker: "unchanged" });
+  const candidate =
+    projectileClashCandidate({
+      leftAction: left,
+      leftStartedAtClockMs: 0,
+      rightAction: right,
+      rightStartedAtClockMs: 0
+    });
+  const state =
+    Object.freeze({
+      marker: "unchanged"
+    });
 
-  const resolutions = resolveProjectileClash({
-    state,
-    leftAction: left,
-    leftStartedAtClockMs: 0,
-    rightAction: right,
-    rightStartedAtClockMs: 0,
-    candidate
-  });
+  const resolutions =
+    resolveProjectileClash({
+      state,
+      leftAction: left,
+      leftStartedAtClockMs: 0,
+      rightAction: right,
+      rightStartedAtClockMs: 0,
+      candidate
+    });
 
-  for (const resolution of [
-    resolutions.left,
-    resolutions.right
-  ]) {
-    assert.equal(resolution.outcome, "clashed");
-    assert.equal(resolution.state, state);
+  assert.equal(
+    resolutions.outcome,
+    "mutual_cancel"
+  );
+
+  for (
+    const resolution of [
+      resolutions.left,
+      resolutions.right
+    ]
+  ) {
+    assert.equal(
+      resolution.outcome,
+      "clashed"
+    );
+    assert.equal(
+      resolution.state,
+      state
+    );
     assert.equal(
       resolution.events.some(
-        (event) => event.type === "hit"
+        (event) =>
+          event.type === "hit"
       ),
       false
     );
     assert.equal(
       resolution.events.some(
         (event) =>
-          event.type === "skill-cancelled" &&
-          event.reason === "projectile_clash"
+          event.type ===
+            "skill-cancelled" &&
+          event.reason ===
+            "projectile_clash"
       ),
       true
     );
