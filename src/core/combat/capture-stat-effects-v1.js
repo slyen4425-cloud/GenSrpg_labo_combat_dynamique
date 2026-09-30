@@ -84,6 +84,11 @@ export function projectCaptureStatEffectsV1({
   let chargeTimeReductionPct = 0;
   let damageReductionPct = 0;
   let maxHp = 0;
+  const hasMaxHpProjection =
+    registry.stats.some(
+      (definition) =>
+        definition.maxHpPerPoint > 0
+    );
 
   for (const definition of registry.stats) {
     const points =
@@ -117,6 +122,7 @@ export function projectCaptureStatEffectsV1({
       Object.freeze(resistancePctByChannel),
     chargeTimeReductionPct,
     damageReductionPct,
-    maxHp
+    maxHp,
+    hasMaxHpProjection
   });
 }
