@@ -17080,3 +17080,103 @@ Checkpoint PREVALIDATION à figer sur le SHA final :
 - `checkpoint/lab-projectile-power-v1-prevalidation-green-2026-09-30` ;
 - preview : `preview/lab-projectile-power-v1-2026-09-30`.
 
+## Micro-lot — Capture Creature Catalog Canonicalization V1 — 2026-09-30
+
+Base :
+
+- checkpoint PREVALIDATION Projectile Power V1 : `checkpoint/lab-projectile-power-v1-prevalidation-green-2026-09-30` ;
+- SHA : `4831eb2b7576a89dd4d7485a96b785be776a47af` ;
+- CI : 655/655 PASS.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-creature-catalog-canonicalization-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-creature-catalog-canonicalization-v1-2026-09-30`.
+
+### Régression observée
+
+La bibliothèque de créatures affiche plusieurs noms deux fois, dont Ailevent.
+
+Audit exact du catalogue historique `data/capture/monster-capture-creatures.v1.json` :
+
+- 110 entrées historiques ;
+- IDs uniques ;
+- 8 noms présents deux fois avec deux IDs différents.
+
+Paires démontrées :
+
+- `crea_embercub -> crea_braiseau` ;
+- `crea_galewing -> crea_ailevent` ;
+- `crea_lumipup -> crea_lumilo` ;
+- `crea_nightfang -> crea_noctecroc` ;
+- `crea_rockhorn -> crea_rocorne` ;
+- `crea_sparkmoth -> crea_lucieclair` ;
+- `crea_miragecat -> crea_mirachat` ;
+- `crea_ashdrake -> crea_dracendre`.
+
+Les IDs à gauche sont les anciennes entrées `game_profile_dungeon_demo` à 4 capacités `lib_*`.
+Les IDs à droite sont les entrées Capture modernes avec capacités `cap_*`, stats/résistances Capture et, lorsque défini, évolution.
+
+### Autorité
+
+Le JSON historique reste une **source de provenance** et n'est pas réécrit silencieusement.
+
+Une projection canonique dédiée devient l'unique source consommable par le Human Editor.
+
+Aucune détection par nom n'est utilisée pour choisir un gagnant.
+
+Les huit alias sont déclarés explicitement par ID.
+
+### Objectif
+
+- exposer une liste canonique sans doublons de créatures ;
+- conserver les 110 entrées historiques comme source ;
+- produire 102 créatures canoniques ;
+- permettre la résolution explicite d'un ancien ID vers le nouvel ID ;
+- faire consommer cette projection par le Human Editor ;
+- empêcher tout futur doublon de nom non déclaré.
+
+### Fichiers autorisés
+
+- nouveau `src/catalogs/capture-canonical-creature-catalog-v1.js` ;
+- `src/ui/capture-editor-human-v2.js` ;
+- `src/catalogs/capture-creature-visual-bindings-v1.js` uniquement si nécessaire pour supprimer une autorité alias dupliquée ;
+- tests unitaires dédiés ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md`.
+
+### Protégé
+
+- source historique `data/capture/monster-capture-creatures.v1.json` ;
+- Skill catalogs ;
+- Combat Runtime ;
+- FX / Renderer ;
+- Stat registry ;
+- Export / Import database (lot suivant) ;
+- production GenSrpG.
+
+### RED attendu
+
+1. source historique = 110 entrées ;
+2. exactement 8 aliases explicites ;
+3. projection canonique = 102 entrées ;
+4. IDs canoniques uniques ;
+5. noms canoniques uniques ;
+6. les 8 anciens IDs sont absents de la projection ;
+7. les 8 IDs modernes sont présents ;
+8. résolution d'alias déterministe ;
+9. aucun choix basé sur le nom ;
+10. Human Editor hydrate la projection canonique, pas les 110 sources brutes.
+
+### Critère de fin
+
+- RED ciblé ;
+- projection pure ;
+- Human Editor sans doublon ;
+- CI complète GREEN ;
+- documentation ;
+- checkpoint GREEN/PREVALIDATION selon impact UI.
+
