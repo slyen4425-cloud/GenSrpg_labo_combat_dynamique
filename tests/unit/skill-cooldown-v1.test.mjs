@@ -20,6 +20,9 @@ import {
 import {
   createRosterSession
 } from "../../src/core/combat/roster-session.js";
+import {
+  skillCooldownLabelV1
+} from "../../src/ui/combat-2v2-test-ui.js";
 
 function fighter(id) {
   return {
@@ -77,6 +80,33 @@ function counter(cooldownMs = 4000) {
     effect: {}
   });
 }
+
+
+test("combat preview cooldown label is derived only from authoritative previewSkill result", () => {
+  assert.equal(
+    skillCooldownLabelV1({
+      ok: false,
+      outcome: "cooldown",
+      remainingCooldownMs: 2300
+    }),
+    "Recharge 2.3 s"
+  );
+
+  assert.equal(
+    skillCooldownLabelV1({
+      ok: false,
+      outcome: "insufficient_energy"
+    }),
+    ""
+  );
+
+  assert.equal(
+    skillCooldownLabelV1({
+      ok: true
+    }),
+    ""
+  );
+});
 
 test("SkillDefinition normalizes explicit cooldownMs and defaults to zero", () => {
   const withCooldown = attack("fireball", 3500);
