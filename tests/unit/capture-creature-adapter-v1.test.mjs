@@ -8,6 +8,9 @@ import {
 import {
   createCombatState
 } from "../../src/core/combat/combat-state.js";
+import {
+  computeCombatDamageV1
+} from "../../src/core/combat/combat-damage-v1.js";
 
 function creature() {
   return {
@@ -35,6 +38,68 @@ function creature() {
     }
   };
 }
+
+
+test("natural elemental resistances reach FighterConfig and real damage calculation", () => {
+  const targetCreature = creature();
+  targetCreature.resistances = [
+    { kind: "element:fire", value: 35 },
+    { kind: "element:water", value: -50 }
+  ];
+  targetCreature.combat.statEffects = {
+    resistancePctByChannel: {
+      fire: 10,
+      earth: 20
+    }
+  };
+
+  const target = adaptCaptureCreatureToFighterConfig(
+    targetCreature,
+    { fighterId: "target" }
+  );
+
+  assert.deepEqual(
+    target.resistancePctByChannel,
+    {
+      fire: 45,
+      water: -50,
+      earth: 20
+    }
+  );
+
+  const state = createCombatState({
+    fighters: [
+      {
+        id: "attacker",
+        maxHp: 100,
+        maxEnergy: 10
+      },
+      target
+    ]
+  });
+
+  assert.equal(
+    computeCombatDamageV1({
+      state,
+      attackerId: "attacker",
+      targetId: "target",
+      baseDamage: 100,
+      channel: "fire"
+    }).damage,
+    55
+  );
+
+  assert.equal(
+    computeCombatDamageV1({
+      state,
+      attackerId: "attacker",
+      targetId: "target",
+      baseDamage: 100,
+      channel: "water"
+    }).damage,
+    150
+  );
+});
 
 test("Capture creature adapter translates only explicit combat fields", () => {
   assert.deepEqual(
