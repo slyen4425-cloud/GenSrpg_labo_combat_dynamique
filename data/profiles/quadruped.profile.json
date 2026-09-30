@@ -65,34 +65,34 @@
   },
   "locomotion": {
     "style": "bound",
-    "durationMs": 330,
+    "durationMs": 480,
     "phases": [
       {
         "label": "bound-lift-1",
         "at": 0.25,
-        "translateY": -16,
-        "rotateDeg": 0.65,
-        "scaleX": 1.014,
+        "translateY": -18,
+        "rotateDeg": 0.45,
+        "scaleX": 1.012,
         "scaleY": 0.99,
-        "easing": "ease-out"
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
         "label": "bound-land-1",
         "at": 0.5,
         "translateY": 0,
         "rotateDeg": 0,
-        "scaleX": 1.004,
-        "scaleY": 0.996,
-        "easing": "ease-in"
+        "scaleX": 1.006,
+        "scaleY": 0.994,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
         "label": "bound-lift-2",
         "at": 0.75,
-        "translateY": -14,
-        "rotateDeg": 0.5,
+        "translateY": -18,
+        "rotateDeg": -0.35,
         "scaleX": 1.012,
-        "scaleY": 0.992,
-        "easing": "ease-out"
+        "scaleY": 0.99,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
         "label": "bound-land-2",
@@ -101,7 +101,7 @@
         "rotateDeg": 0,
         "scaleX": 1,
         "scaleY": 1,
-        "easing": "ease-in"
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       }
     ],
     "contacts": [
@@ -111,7 +111,7 @@
       },
       {
         "at": 1,
-        "intensity": 0.3
+        "intensity": 0.28
       }
     ]
   }
