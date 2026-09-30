@@ -631,6 +631,11 @@ function createSlot({
         meta.transformOrigin ?? { x: "50%", y: "50%" }
     });
 
+    slotContainer.style?.setProperty?.(
+      "--creature-display-scale",
+      String(actor.scale)
+    );
+
     renderer = createDomActorRenderer({
       element: motion,
       actor
