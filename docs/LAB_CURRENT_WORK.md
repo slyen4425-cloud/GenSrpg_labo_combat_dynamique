@@ -17898,3 +17898,71 @@ Validation utilisateur attendue :
 4. vérifier le combat au niveau bas : les slots/capacités encore verrouillés ne doivent pas apparaître comme actifs ;
 5. monter le niveau de la créature aux seuils configurés puis retester : les affectations préparées doivent devenir actives sans les reconfigurer ;
 6. revalider le workflow Export/Import du chantier parent (créature/capacité/base/noop/conflit/replace).
+
+
+## Micro-lot — Capture Arena Scale Perception V1 — 2026-09-30
+
+Base :
+- SHA PREVALIDATION précédent : `19c679adac6f33208392d2dc2c4e9d41df68eaf2` ;
+- CI vérifiée sur ce SHA : SUCCESS, 689/689 PASS ;
+- aucun merge `main`.
+
+Checkpoint de départ :
+`checkpoint/lab-start-capture-arena-scale-perception-v1-2026-09-30`.
+
+Branche :
+`work/lab-capture-arena-scale-perception-v1-2026-09-30`.
+
+### Retour utilisateur
+
+Les créatures peuvent être réglées grandes mais ne donnent pas une impression de masse/grandeur en combat. L'arène paraît trop dominante et trop vue en plongée ; les éléments de décor semblent grands par rapport aux combattants.
+
+### Diagnostic initial prouvé
+
+- la preview Capture force actuellement l'arène `city` ;
+- son binding utilise `backgroundSize: "auto 112%"`, donc le décor est volontairement zoomé ;
+- la composition 2v2 place les adversaires vers 31–32 % de hauteur et les alliés vers 66–70 %, ce qui accentue fortement la profondeur diagonale ;
+- le `displayScale` de la créature est déjà une donnée propriétaire : il ne doit pas être détourné pour compenser la caméra.
+
+### Objectif
+
+Améliorer la perception de taille sans modifier la taille enregistrée des créatures :
+1. décor Ville moins zoomé ;
+2. composition plus frontale / moins plongeante ;
+3. repère de contact au sol renforçant la masse visuelle ;
+4. conserver les mouvements, FX, ciblage et gameplay inchangés.
+
+### Propriétaires / frontières
+
+- Arena Presentation : cadrage du fond ;
+- Demo/Renderer CSS : composition de scène et contact visuel au sol ;
+- Creature Presentation Binding : `displayScale` protégé et inchangé ;
+- Animation Core perspective dynamique protégée ;
+- Combat Runtime / règles protégés.
+
+### Fichiers autorisés
+
+- `examples/dom-demo/demo-assets.js` ;
+- `examples/dom-demo/demo.css` ;
+- tests UI/presentation ciblés ;
+- `docs/LAB_ARCHITECTURE.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Interdit dans ce lot
+
+- modifier les valeurs `displayScale` des créatures ;
+- modifier positions de gameplay, dégâts, portée ou ciblage ;
+- modifier Animation Core / FX Core ;
+- remplacer les assets binaires d'arène ;
+- toucher `Zombicide-40k`.
+
+### RED attendu
+
+- la Ville ne doit plus être agrandie au-delà de 100 % de hauteur dans la preview ;
+- les positions statiques doivent utiliser une composition frontale centralisée, avec profondeur verticale réduite ;
+- les combattants doivent disposer d'une ombre/contact au sol purement visuelle ;
+- aucun changement du contrat `displayScale`.
+
+### Critère de fin
+
+RED ciblé -> correction présentation minimale -> CI complète -> documentation -> checkpoint PREVALIDATION smartphone.
