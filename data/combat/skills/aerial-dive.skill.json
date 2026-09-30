@@ -26,5 +26,6 @@
       "contact",
       "projectile"
     ]
-  }
+  },
+  "cooldownMs": 2800
 }
