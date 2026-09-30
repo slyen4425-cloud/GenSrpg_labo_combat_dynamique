@@ -19078,3 +19078,33 @@ Interdits :
 - modification des dégâts, énergie, ciblage, timing d'impact, mouvement, FX ou audio pour simuler une recharge.
 
 RED obligatoire : prouver sur le vrai chemin de preview qu'une capacité configurée avec cooldown est exportée jusqu'au moteur et que l'UI reflète le cooldown restant depuis Combat State.
+
+
+### Résultat — Cooldown Completion V1
+
+Diagnostic confirmé :
+- le cooldown saisi dans l'éditeur traverse déjà intact jusqu'à `SkillDefinition` ;
+- aucune réparation d'export n'était nécessaire ;
+- les quatre skills de démo utilisaient le fallback historique `cooldownMs: 0` faute de valeur explicite ;
+- la preview savait déjà désactiver une compétence via `session.previewSkill()`, mais n'affichait pas le temps restant.
+
+RED :
+- commit initial `bc7cd17cbde1dd1dbe3bfa14ca13e1bf6c8f162a` ;
+- fixture de contrat corrigée par `34ebff970744289155e61e6896d85da089eac9ee` ;
+- RED propre confirmé : capacités de démo sans cooldown explicite + absence d'affichage du temps restant.
+
+Correction :
+- les quatre capacités de démonstration `fireball`, `claw`, `aerial-dive`, `teleport-strike` déclarent désormais `cooldownMs: 2800` ;
+- cette valeur est uniquement une valeur de démo explicite et reste entièrement éditable/data-driven ;
+- `Combat Runtime` expose un callback générique `onClock(state)` depuis son tick existant, sans logique cooldown ;
+- la preview lit `remainingCooldownMs` via `session.previewSkill()` et affiche `Recharge X.X s` sur le bouton ;
+- aucun timer UI, aucun `Date.now()` UI, aucune table parallèle de cooldown.
+
+GREEN fonctionnel :
+- HEAD fonctionnel/test : `1ee2592a3b7f5603b71d4ebb999ba34b9b189f4a` ;
+- CI `36743954786` — SUCCESS ;
+- suite complète : **714/714 PASS, 0 FAIL**.
+
+Protection : dégâts, énergie, ciblage, mouvement, FX, audio et règles d'impact inchangés.
+
+État : **GREEN technique — PREVALIDATION smartphone requise** pour vérifier l'affichage du cooldown et le retour à disponibilité.
