@@ -344,7 +344,7 @@ const ARENA_BINDINGS = Object.freeze({
   city: Object.freeze({
     background: "test:arena-city-local-01",
     backgroundPosition: "center bottom",
-    backgroundSize: "auto 112%"
+    backgroundSize: "auto 100%"
   })
 });
 
