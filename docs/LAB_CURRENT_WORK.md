@@ -19044,3 +19044,33 @@ GREEN fonctionnel :
 - CI `36740838430` — SUCCESS.
 
 État : **GREEN technique — PREVALIDATION smartphone**. Le test combat doit s'ouvrir sur 1 contre 1, avec 2 contre 2 toujours sélectionnable.
+
+
+## Micro-lot — Skill Cooldown Completion V1 — 2026-09-30
+
+Base : `f614f56646b065dc62966ffe48441b50f9a8da2f` (Combat Test Default 1v1 V1 GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-skill-cooldown-completion-v1-2026-09-30` ;
+- branche : `work/lab-skill-cooldown-completion-v1-2026-09-30`.
+
+Constat réel :
+- `SkillDefinition.cooldownMs` existe ;
+- Combat State possède `skillCooldowns` et l'horloge autoritaire ;
+- Action Resolver refuse une capacité en cooldown et expose `remainingCooldownMs` ;
+- l'éditeur humain expose déjà `Recharge / cooldown (ms)` et construit `cooldownMs` ;
+- le catalogue historique Capture transporte essentiellement `activeMeta.cooldown: 0`, donc aucune valeur non nulle ne doit être inventée ;
+- l'UI du combat test désactive déjà le bouton via `session.previewSkill()`, mais n'affiche pas la recharge restante.
+
+Objectif : rendre le cooldown configuré observable et vérifiable dans le combat test sans créer de seconde horloge UI.
+
+Propriétaires : SkillDefinition / Combat State / Action Resolver restent inchangés et autoritaires ; Demo UI lit uniquement `session.previewSkill()`.
+
+Fichiers autorisés :
+- `src/ui/combat-2v2-test-ui.js` ;
+- tests du preview/editor/export cooldown ;
+- documentation ;
+- CSS seulement si indispensable à la lisibilité.
+
+Protégé : Combat State, Action Resolver, Combat Runtime, valeurs historiques du catalogue, dégâts, énergie, ciblage, éléments, profils, sons.
+
+RED : une capacité avec `cooldownMs > 0` doit afficher la recharge restante depuis le résultat `previewSkill()`, puis redevenir disponible lorsque l'autorité Combat State l'expire. Aucun `Date.now()`, `setTimeout()` ou compteur cooldown propre à l'UI.
