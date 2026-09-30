@@ -926,4 +926,31 @@ body[data-editor-view="preview"] {
   margin: 0;
 }
 
+.database-transfer-card {
+  margin-top: 18px;
+}
+
+.database-transfer-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.database-import-box {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+@media (max-width: 700px) {
+  .database-transfer-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .database-transfer-actions button,
+  .database-import-box button {
+    width: 100%;
+    min-height: 44px;
+  }
+}
 
