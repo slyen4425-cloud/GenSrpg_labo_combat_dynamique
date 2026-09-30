@@ -19074,3 +19074,27 @@ Fichiers autorisés :
 Protégé : Combat State, Action Resolver, Combat Runtime, valeurs historiques du catalogue, dégâts, énergie, ciblage, éléments, profils, sons.
 
 RED : une capacité avec `cooldownMs > 0` doit afficher la recharge restante depuis le résultat `previewSkill()`, puis redevenir disponible lorsque l'autorité Combat State l'expire. Aucun `Date.now()`, `setTimeout()` ou compteur cooldown propre à l'UI.
+
+
+### Résultat — Skill Cooldown Completion V1
+
+RED :
+- commit `e347074b51ea3ad75b8841bb879603b39acb5c50` ;
+- CI `36741334620` — FAILURE attendue ;
+- le preview devait exposer un libellé de recharge dérivé de `remainingCooldownMs`.
+
+Correction :
+- commit fonctionnel `04aa5d48b510c249a3dd20377bcd80f16d898c58` ;
+- `combat-2v2-test-ui.js` lit uniquement le résultat de `session.previewSkill()` ;
+- un bouton en cooldown affiche `Recharge X s` et reste désactivé par la règle existante ;
+- aucune horloge/timer cooldown n'est ajouté à l'UI ;
+- les timers existants de pulse visuel restent sans rapport avec le cooldown.
+
+Protections supplémentaires :
+- `0d485af3dadb` : un cooldown éditeur non nul est conservé dans le SkillDefinition natif ;
+- `172cc8e917b9` : un cooldown natif injecté est conservé dans la source de preview ;
+- CI finales associées : `36741519644` et `36741527000` — SUCCESS.
+
+Décision de données : les capacités historiques dont `activeMeta.cooldown` vaut 0 restent à 0. Aucun temps arbitraire n'est inventé. L'utilisateur peut régler chaque recharge dans l'éditeur.
+
+État : **GREEN technique — PREVALIDATION smartphone**.
