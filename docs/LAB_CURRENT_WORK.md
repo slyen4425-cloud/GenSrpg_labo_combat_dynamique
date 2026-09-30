@@ -16874,3 +16874,26 @@ Des sentinelles supplémentaires protègent désormais :
 **GREEN technique — PREVALIDATION smartphone requise**, car le Human Editor a changé.
 
 Le défaut visuel d'impact des dégâts multi-cibles reste un micro-lot Renderer séparé et n'a pas été masqué dans ce chantier.
+
+### Clôture PREVALIDATION — Projectile Clash Rules V2
+
+CI documentaire complète :
+
+- run `36666051167` ;
+- structure / frontières / indépendance : OK ;
+- **656 / 656 PASS / 0 FAIL**.
+
+Checkpoint à créer sur le SHA exact de cette clôture après validation CI :
+
+- `checkpoint/lab-projectile-clash-rules-v2-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-projectile-clash-rules-v2-2026-09-30`.
+
+Validation smartphone attendue :
+
+1. le champ « Tag du projectile » est compréhensible ;
+2. plusieurs règles « Contre le tag / Puissance de collision » peuvent être ajoutées/supprimées ;
+3. aucune ancienne case Stun / interruption n'est revenue ;
+4. aucune ancienne configuration groupe/interactsWith n'est visible ;
+5. en combat, une égalité annule les deux projectiles ;
+6. un projectile plus puissant annule le plus faible et poursuit visuellement sa trajectoire jusqu'à la cible.
+
