@@ -162,13 +162,19 @@ test("ground attack reaches target exactly at configured travel time then return
     profile: registry.get(current.profile)
   });
 
-  assert.deepEqual(
-    plan.segments.map((segment) => segment.label),
-    ["ground-approach-impact", "ground-home"]
+  const approach = plan.segments.filter(
+    (segment) => segment.label !== "ground-home"
   );
-  assert.equal(plan.segments[0].durationMs, travelMs);
-  assert.equal(plan.segments[0].transform.translateX, 170);
-  assert.equal(plan.segments[0].transform.translateY, -6);
+  const impact = approach.at(-1);
+
+  assert.ok(approach.length >= 2);
+  assert.equal(impact.label, "ground-approach-impact");
+  assert.equal(
+    approach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs
+  );
+  assert.equal(impact.transform.translateX, 170);
+  assert.equal(impact.transform.translateY, -6);
   assert.equal(plan.segments.at(-1).transform.translateX, 0);
   assert.equal(plan.segments.at(-1).transform.translateY, 0);
 });
@@ -209,29 +215,40 @@ test("ground approach grows toward player camera and shrinks toward arena depth"
     profile
   });
 
+  const cameraImpact = towardCamera.segments.find(
+    (segment) => segment.label === "ground-approach-impact"
+  );
+  const depthImpact = towardDepth.segments.find(
+    (segment) => segment.label === "ground-approach-impact"
+  );
+
   assert.ok(
-    towardCamera.segments[0].transform.scaleX >
+    cameraImpact.transform.scaleX >
       profile.specialMoves.ground.impactScaleX
   );
   assert.ok(
-    towardCamera.segments[0].transform.scaleY >
+    cameraImpact.transform.scaleY >
       profile.specialMoves.ground.impactScaleY
   );
   assert.ok(
-    towardDepth.segments[0].transform.scaleX <
+    depthImpact.transform.scaleX <
       profile.specialMoves.ground.impactScaleX
   );
   assert.ok(
-    towardDepth.segments[0].transform.scaleY <
+    depthImpact.transform.scaleY <
       profile.specialMoves.ground.impactScaleY
   );
 
   assert.equal(
-    towardCamera.segments[0].durationMs,
+    towardCamera.segments
+      .filter((segment) => segment.label !== "ground-home")
+      .reduce((sum, segment) => sum + segment.durationMs, 0),
     900
   );
   assert.equal(
-    towardDepth.segments[0].durationMs,
+    towardDepth.segments
+      .filter((segment) => segment.label !== "ground-home")
+      .reduce((sum, segment) => sum + segment.durationMs, 0),
     900
   );
   assert.equal(
@@ -282,12 +299,19 @@ test("shared perspective scale respects configured visual bounds", () => {
     profile
   });
 
+  const nearImpact = near.segments.find(
+    (segment) => segment.label === "ground-approach-impact"
+  );
+  const farImpact = far.segments.find(
+    (segment) => segment.label === "ground-approach-impact"
+  );
+
   assert.equal(
-    near.segments[0].transform.scaleX,
+    nearImpact.transform.scaleX,
     ground.impactScaleX * perspective.perspectiveScaleMax
   );
   assert.equal(
-    far.segments[0].transform.scaleX,
+    farImpact.transform.scaleX,
     ground.impactScaleX * perspective.perspectiveScaleMin
   );
 });
