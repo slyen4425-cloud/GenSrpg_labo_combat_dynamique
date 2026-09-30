@@ -2096,3 +2096,31 @@ Le signal interne du Runtime ne doit pas se limiter à PV/énergie : un changeme
 Le Runtime compare donc la projection sémantique du fighter, en excluant seulement `energyChargeProgressMs`, progression interne qui change à chaque tick sans constituer à elle seule un changement de disponibilité visible.
 
 Aucune formule ou durée de cooldown n'est dupliquée dans le Runtime.
+
+
+## 35. Idle alterné et présentation du vol V1
+
+### Idle alterné
+
+`Creature Profile.idle.swayMode` peut valoir :
+
+- absent / `single` : comportement historique `écart -> centre` ;
+- `alternate` : `droite -> centre -> gauche -> centre`.
+
+Animation Core reste propriétaire de la séquence. Le profil ne fournit que l'intention et les amplitudes. Aucun ID ou nom de créature n'est utilisé par le planner.
+
+Le profil serpentin utilise ce mode avec un pivot bas, sans translation X/Y, afin que la base reste ancrée et que l'oscillation se lise principalement sur le haut du corps.
+
+### Volant
+
+Le profil volant conserve une locomotion morphologique data-driven en un seul arc `apex -> settle`.
+
+Il n'émet aucun `footfall`.
+
+La distance visuelle de l'ombre est une donnée de présentation optionnelle du profil :
+
+`presentation.shadowBottomPct`.
+
+Demo UI projette cette valeur vers `--creature-shadow-bottom`; le CSS la consomme sans connaître le profil `drake`.
+
+Cette donnée n'influence ni collision, portée, ciblage, dégâts ou position gameplay.
