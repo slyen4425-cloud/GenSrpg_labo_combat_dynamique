@@ -19695,3 +19695,27 @@ Validation technique finale :
 - suite complète : **735/735 PASS, 0 FAIL**.
 
 État : **GREEN technique — PREVALIDATION smartphone**. La validation utilisateur doit vérifier dans l'éditeur que les deux modèles apparaissent avec leurs réglages, qu'ils peuvent être modifiés sans perte de configuration et qu'un combat test peut être lancé avec le modèle sélectionné.
+
+
+### Régression utilisateur — bibliothèque créatures absente — 2026-09-30
+
+Retour smartphone après PREVALIDATION :
+- plus aucune créature réellement chargée dans la bibliothèque ;
+- seul le Loup volcanique statique du HTML restait visible dans les champs de formulaire ;
+- le lot Showcase Presets n'est donc **pas GREEN utilisateur**.
+
+Diagnostic :
+- les 102 créatures canoniques historiques et leurs références de capacités/évolutions sont cohérentes ;
+- un test d'intégration reconstruit bien 102 créatures avant presets puis 103 après remplacement de `crea_mossback` et insertion de `crea-loup` ;
+- la régression est spécifique à l'orchestration navigateur ;
+- cause de conception identifiée : `hydrateCaptureShowcaseCreaturePresetsV1()` a été ajouté comme dépendance bloquante du même `Promise.all` que le roster historique ;
+- toute exception de lecture/import d'un preset rejette donc l'initialisation complète avant `refreshCreatureLibraryOptions()`, ce qui supprime de fait la bibliothèque stable de l'UI.
+
+Décision corrective conforme charte :
+1. le chargement du roster historique stable doit terminer et publier la bibliothèque indépendamment des presets ;
+2. les presets sont ensuite appliqués transactionnellement via le même pipeline Transfer existant ;
+3. une erreur preset doit être explicitement signalée, jamais masquée, mais ne doit pas retirer le roster historique déjà chargé ;
+4. aucune seconde autorité, aucun fallback de données, aucun importeur parallèle ;
+5. ajouter une sentinelle qui interdit qu'une erreur de preset fasse disparaître la bibliothèque historique.
+
+État : **REGRESSION CONFIRMÉE — GREEN RETIRÉ POUR CE LOT**.
