@@ -364,7 +364,7 @@ test("shared perspective scale respects configured visual bounds", () => {
   );
 });
 
-test("aerial attack can rise completely above arena before diving", () => {
+test("aerial attack can place its single apex completely above the arena", () => {
   const current = actor("flying");
   const plan = planAnimation({
     event: normalizeCombatVisualEvent({
@@ -382,15 +382,16 @@ test("aerial attack can rise completely above arena before diving", () => {
     profile: registry.get(current.profile)
   });
 
-  assert.equal(plan.segments[0].label, "aerial-rise");
+  assert.equal(plan.segments[0].label, "aerial-arc-apex");
   assert.equal(plan.segments[0].transform.translateY, -340);
-  assert.equal(plan.segments[1].opacity, 0);
-  assert.ok(plan.segments[1].transform.translateY <= -340);
+  assert.ok(plan.segments[0].transform.translateX > 0);
+  assert.equal(plan.segments[0].opacity, 1);
+  assert.equal(plan.segments[1].label, "aerial-arc-impact");
+  assert.equal(plan.segments[1].opacity, 1);
 
   const impactMs =
     plan.segments[0].durationMs +
-    plan.segments[1].durationMs +
-    plan.segments[2].durationMs;
+    plan.segments[1].durationMs;
   assert.equal(impactMs, 850);
 });
 
@@ -434,10 +435,10 @@ test("aerial approach shrinks toward arena depth and grows toward player camera"
   });
 
   const depthImpact = towardDepth.segments.find(
-    (segment) => segment.label === "aerial-dive-impact"
+    (segment) => segment.label === "aerial-arc-impact"
   );
   const cameraImpact = towardCamera.segments.find(
-    (segment) => segment.label === "aerial-dive-impact"
+    (segment) => segment.label === "aerial-arc-impact"
   );
 
   assert.ok(depthImpact.transform.scaleX < 1.05);
@@ -447,12 +448,10 @@ test("aerial approach shrinks toward arena depth and grows toward player camera"
 
   const depthImpactMs =
     towardDepth.segments[0].durationMs +
-    towardDepth.segments[1].durationMs +
-    towardDepth.segments[2].durationMs;
+    towardDepth.segments[1].durationMs;
   const cameraImpactMs =
     towardCamera.segments[0].durationMs +
-    towardCamera.segments[1].durationMs +
-    towardCamera.segments[2].durationMs;
+    towardCamera.segments[1].durationMs;
 
   assert.equal(depthImpactMs, 850);
   assert.equal(cameraImpactMs, 850);
@@ -541,7 +540,7 @@ test("shared perspective stays clearly visible at the smallest live arena depth 
     },
     {
       type: "aerial-attack",
-      impactLabel: "aerial-dive-impact",
+      impactLabel: "aerial-arc-impact",
       baseScaleX: 1.05,
       travelMs: 850
     },
