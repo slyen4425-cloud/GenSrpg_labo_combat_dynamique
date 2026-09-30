@@ -1726,3 +1726,21 @@ Présentation :
 - aucune formule de dégâts n'est dupliquée dans l'UI.
 
 Sur smartphone, chaque définition de stat s'empile sur une seule colonne.
+
+## 27. Capture Human Editor — autorité tactique réconciliée
+
+Le Human Editor ne possède plus de second chemin éditable pour les effets de compétence.
+
+Autorités :
+
+- dégâts / soins / ciblage : `SkillDefinition.effects / SkillEffectV1` ;
+- stun : `StatusEffectV1.stun` ;
+- conditions Ultime : `SkillDefinition.activationRequirements`.
+
+Compatibilité legacy :
+
+- `SkillDefinition.effect.damage/heal/stunMs/interruptsPreparation` peut rester dans le contrat pour des données historiques, mais le Human Editor moderne le neutralise lorsqu'il édite `effects` ;
+- `allowedDistances` est une projection de compatibilité complète non éditable dans Capture ;
+- `targetRelations` est dérivé des scopes tactiques et n'est plus saisi séparément.
+
+Les modèles historiques utilisent la même autorité `SkillEffectV1`. Un modèle n'écrase pas une liste d'effets tactiques déjà configurée.
