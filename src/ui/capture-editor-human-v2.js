@@ -773,8 +773,7 @@ export function humanLoadoutAvailabilityV1({
 export function validateHumanLoadoutProgressionV1({
   loadout,
   progressionRules,
-  creatureLevel,
-  skillDrafts = []
+  creatureLevel
 }) {
   if (
     !loadout ||
@@ -785,58 +784,13 @@ export function validateHumanLoadoutProgressionV1({
     );
   }
 
-  const level = positiveInteger(
-    creatureLevel,
-    "Niveau créature"
-  );
-  const availability =
-    humanLoadoutAvailabilityV1({
-      progressionRules,
-      creatureLevel: level
-    });
-  const skillById = new Map(
-    [
-      ...(skillDrafts instanceof Map
-        ? skillDrafts.values()
-        : skillDrafts)
-    ].map((draft) => [
-      draft.id,
-      draft
-    ])
-  );
-
-  loadout.slots.forEach(
-    (slot, index) => {
-      if (slot.skillId === null) {
-        return;
-      }
-
-      if (
-        availability[index] !== true
-      ) {
-        throw new RangeError(
-          "Le slot " +
-            (index + 1) +
-            " n’est pas encore débloqué au niveau " +
-            level
-        );
-      }
-
-      const skill =
-        skillById.get(slot.skillId);
-      if (
-        skill &&
-        skill.requiredLevel > level
-      ) {
-        throw new RangeError(
-          "La capacité « " +
-            skill.definition.name +
-            " » nécessite le niveau " +
-            skill.requiredLevel
-        );
-      }
-    }
-  );
+  humanLoadoutAvailabilityV1({
+    progressionRules,
+    creatureLevel: positiveInteger(
+      creatureLevel,
+      "Niveau créature"
+    )
+  });
 
   return loadout;
 }
@@ -1552,7 +1506,8 @@ export function buildHumanEditorExportV3({
   opponentSkillDrafts,
   opponentLoadout,
   statRegistry = null,
-  statValues = []
+  statValues = [],
+  progressionRules = null
 }) {
   const statsInput =
     statRegistry === null
@@ -1560,6 +1515,12 @@ export function buildHumanEditorExportV3({
       : {
           statRegistry,
           statValues
+        };
+  const progressionInput =
+    progressionRules === null
+      ? {}
+      : {
+          progressionRules
         };
 
   return exportCaptureEditorDraftsToCombatExportV3({
@@ -1577,6 +1538,7 @@ export function buildHumanEditorExportV3({
       opponentLoadout
     ],
     ...statsInput,
+    ...progressionInput,
     metadata: {
       editor: "capture-human-v2"
     }
@@ -4948,24 +4910,20 @@ export function mountCaptureEditorHumanV2({
       (select, index) => {
         const available =
           availability[index] === true;
-        select.disabled =
-          !available &&
-          select.value === "";
-        select.dataset.locked =
-          available ? "false" : "true";
+        select.disabled = false;
+        select.dataset.locked = "false";
+        select.dataset.activeNow =
+          available ? "true" : "false";
         select.title =
           available
-            ? ""
-            : (
-                select.value === ""
-                  ? "Slot verrouillé à ce niveau"
-                  : "Slot verrouillé : vide ce slot pour respecter la progression"
-              );
+            ? "Slot actif au niveau actuel"
+            : "Slot configurable maintenant, activé automatiquement quand la progression le débloque";
         const label =
           select.closest("label");
         if (label) {
-          label.dataset.locked =
-            available ? "false" : "true";
+          label.dataset.locked = "false";
+          label.dataset.activeNow =
+            available ? "true" : "false";
         }
       }
     );
@@ -4978,7 +4936,7 @@ export function mountCaptureEditorHumanV2({
       (unlocked > 1 ? "s" : "") +
       " au niveau " +
       level +
-      ". Le niveau requis reste défini sur chaque capacité.";
+      ". Les 4 slots restent configurables ; les capacités futures deviennent actives quand leur slot et leur niveau requis sont débloqués.";
   }
 
   function refreshCreatureLibraryOptions(
@@ -5254,27 +5212,14 @@ export function mountCaptureEditorHumanV2({
       select.textContent = "";
       createOption(select, "", "Vide");
 
-      const creatureLevel = Math.max(
-        1,
-        Number(
-          one(
-            root,
-            "[data-creature-level]"
-          ).value
-        ) || 1
-      );
-
       for (const draft of configured) {
-        const option = createOption(
+        createOption(
           select,
           draft.id,
           draft.definition.name +
-            " · niv. " +
+            " · déblocage niv. " +
             draft.requiredLevel
         );
-        option.disabled =
-          draft.requiredLevel >
-          creatureLevel;
       }
 
       if (
@@ -6421,7 +6366,8 @@ export function mountCaptureEditorHumanV2({
         statValues:
           creatureRecord.statValues == null
             ? []
-            : [creatureRecord.statValues]
+            : [creatureRecord.statValues],
+        progressionRules
       });
 
       one(root, "[data-editor-summary]").textContent =
