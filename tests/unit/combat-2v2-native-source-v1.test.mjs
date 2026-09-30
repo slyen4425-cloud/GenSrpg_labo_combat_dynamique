@@ -121,6 +121,7 @@ test("2v2 combat bootstrap accepts an injected native source without fetching de
   );
   assert.deepEqual(Object.keys(source.skillsById), ["injected-hit"]);
   assert.equal(source.skillsById["injected-hit"].effect.damage, 7);
+  assert.equal(source.skillsById["injected-hit"].cooldownMs, 900);
 });
 
 test("2v2 mount consumes the shared source loader instead of rebuilding a second mapping", async () => {
