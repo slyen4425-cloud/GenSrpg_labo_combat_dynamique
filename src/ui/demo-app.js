@@ -3,6 +3,8 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
+import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
+import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
 const DATA_URLS = Object.freeze({
@@ -180,6 +182,10 @@ export async function mountCombatDemo({
 
   let disposed = false;
   const arena = requiredElement(root, "[data-combat-arena]");
+  const cameraFx = createDomCameraFxRenderer({
+    element: arena
+  });
+  const movementCueTimers = new Set();
 
   const slotElements =
     typeof root.querySelectorAll === "function"
@@ -294,6 +300,93 @@ export async function mountCombatDemo({
       profile: profiles.get(slot.actor.profile)
     });
     return slot.renderer.play(plan);
+  }
+
+  function playMovementFor(slotKey) {
+    if (disposed) {
+      return Object.freeze({
+        status: "disposed",
+        durationMs: 0,
+        finished: Promise.resolve({ status: "disposed" })
+      });
+    }
+
+    const slot = slotOf(slotKey);
+    if (!slot.visible) {
+      return Object.freeze({
+        status: "hidden",
+        durationMs: 0,
+        finished: Promise.resolve({ status: "hidden" })
+      });
+    }
+
+    const profile = profiles.get(slot.actor.profile);
+    const event = normalizeCombatVisualEvent({
+      type: "move",
+      actorId: slot.actor.id,
+      intensity: 1
+    });
+    const plan = planAnimation({
+      event,
+      actor: slot.actor,
+      profile
+    });
+    const durationMs = plan.segments.reduce(
+      (sum, segment) => sum + segment.durationMs,
+      0
+    );
+
+    const emitCue = (cue) => {
+      for (const fxPlan of planLocomotionCueFx({
+        profile,
+        cue
+      })) {
+        cameraFx.play(fxPlan);
+      }
+    };
+
+    const finalCues = [];
+    const localTimers = [];
+    for (const cue of plan.cues ?? []) {
+      if (cue.atMs >= durationMs) {
+        finalCues.push(cue);
+        continue;
+      }
+      const timerId = globalThis.setTimeout(() => {
+        movementCueTimers.delete(timerId);
+        emitCue(cue);
+      }, cue.atMs);
+      movementCueTimers.add(timerId);
+      localTimers.push(timerId);
+    }
+
+    const handle = slot.renderer.play(plan);
+    const finished = handle.finished
+      .then((result) => {
+        if (
+          result?.status === "finished" &&
+          !disposed &&
+          slot.visible
+        ) {
+          for (const cue of finalCues) {
+            emitCue(cue);
+          }
+          startIdleFor(slotKey);
+        }
+        return result;
+      })
+      .finally(() => {
+        for (const timerId of localTimers) {
+          globalThis.clearTimeout(timerId);
+          movementCueTimers.delete(timerId);
+        }
+      });
+
+    return Object.freeze({
+      status: "moving",
+      durationMs,
+      finished
+    });
   }
 
   function playEventFor(
@@ -563,6 +656,7 @@ export async function mountCombatDemo({
 
   return Object.freeze({
     playEventFor,
+    playMovementFor,
     playApproachFor,
     cancelFor,
     startIdleFor,
@@ -584,6 +678,11 @@ export async function mountCombatDemo({
       }
       disposed = true;
       activeApproachBySlot.clear();
+      for (const timerId of movementCueTimers) {
+        globalThis.clearTimeout(timerId);
+      }
+      movementCueTimers.clear();
+      cameraFx.dispose();
       for (const slot of Object.values(slots)) {
         slot.dispose();
       }
