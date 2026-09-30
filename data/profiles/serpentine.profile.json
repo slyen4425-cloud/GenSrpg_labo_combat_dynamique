@@ -3,12 +3,16 @@
   "label": "Serpentine",
   "description": "Profil pour créatures longues, souples, ondulantes ou aquatiques.",
   "idle": {
-    "bobY": 10,
-    "swayRotate": 0.6,
-    "swayX": 0.75,
-    "scaleXDelta": 0.004,
-    "scaleYDelta": -0.004,
-    "durationMs": 1900
+    "bobY": 0.3,
+    "swayRotate": 0.28,
+    "swayX": 0.28,
+    "scaleXDelta": 0.003,
+    "scaleYDelta": -0.002,
+    "durationMs": 1900,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "82%"
+    }
   },
   "attack": {
     "lungeX": 40,
@@ -55,8 +59,33 @@
     },
     "perspective": {
       "perspectiveScaleStrength": 1.25,
-      "perspectiveScaleMin": 0.70,
+      "perspectiveScaleMin": 0.7,
       "perspectiveScaleMax": 1.35
     }
+  },
+  "locomotion": {
+    "style": "linear-ground",
+    "durationMs": 320,
+    "phases": [
+      {
+        "label": "ground-glide",
+        "at": 0.5,
+        "translateY": 0,
+        "rotateDeg": 0.2,
+        "scaleX": 1.004,
+        "scaleY": 0.998,
+        "easing": "linear"
+      },
+      {
+        "label": "ground-home",
+        "at": 1,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "easing": "linear"
+      }
+    ],
+    "contacts": []
   }
 }
