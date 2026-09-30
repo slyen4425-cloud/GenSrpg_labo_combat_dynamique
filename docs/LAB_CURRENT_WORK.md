@@ -17066,3 +17066,17 @@ Validation UI attendue :
 3. aide claire : `0 = aucune collision` ;
 4. égalité = les deux annulés ;
 5. plus puissant = continue.
+
+### Clôture finale — Projectile Power V1
+
+CI après synchronisation documentaire :
+
+- run `36676553178` ;
+- structure / frontières / indépendance : OK ;
+- **655 / 655 PASS / 0 FAIL**.
+
+Checkpoint PREVALIDATION à figer sur le SHA final :
+
+- `checkpoint/lab-projectile-power-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-projectile-power-v1-2026-09-30`.
+
