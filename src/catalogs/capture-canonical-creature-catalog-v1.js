@@ -98,13 +98,10 @@ export function canonicalCaptureCreatureRecordsV1(
       CAPTURE_CREATURE_CANONICAL_ALIASES_V1
     )
   ) {
-    if (!sourceById.has(legacyId)) {
-      throw new RangeError(
-        "missing legacy creature alias source: " +
-          legacyId
-      );
-    }
-    if (!sourceById.has(canonicalId)) {
+    if (
+      sourceById.has(legacyId) &&
+      !sourceById.has(canonicalId)
+    ) {
       throw new RangeError(
         "missing canonical creature alias target: " +
           canonicalId
