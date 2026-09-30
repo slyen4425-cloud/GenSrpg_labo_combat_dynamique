@@ -18442,3 +18442,37 @@ Base :
 ### Critère de fin
 
 RED ciblé -> réglage data-driven uniquement -> CI complète -> preview smartphone.
+
+
+### Résultat — Creature Hop Fluidity V3
+
+RED :
+- commit `a5c4e719fac1c34f7764ea341c4e4fc7c551da5f` ;
+- CI `36700164711` ;
+- **707 tests, 706 PASS, 1 FAIL ciblé**.
+
+Correction data-driven uniquement :
+- bipède : 3 arcs complets et réguliers avant impact ;
+- quadrupède : 2 arcs complets, plus longs et plus hauts ;
+- points d'atterrissage répartis uniformément sur la trajectoire ;
+- montée/descente rendue plus lisible ;
+- easing harmonisé en `cubic-bezier(0.45,0,0.55,1)` pour éviter les cassures visuelles ;
+- durée locomotion générique : bipède 540 ms, quadrupède 480 ms ;
+- aucune modification de l'Animation Core.
+
+GREEN :
+- commit profils : `b6422b25a52cd7c6f71bcc63bcbaae2f52471211` ;
+- CI `36700267658` ;
+- structure / frontières / indépendance : OK ;
+- **707/707 PASS / 0 FAIL**.
+
+Protégé / inchangé :
+- Combat Runtime / Combat State ;
+- correctif disponibilité des compétences conservé ;
+- dégâts / énergie / cooldown / portée / ciblage ;
+- FX / caméra ;
+- assets / arènes ;
+- `Zombicide-40k`.
+
+État :
+**GREEN technique — PREVALIDATION smartphone requise.**
