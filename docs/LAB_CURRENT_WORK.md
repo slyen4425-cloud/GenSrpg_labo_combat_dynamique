@@ -18574,3 +18574,63 @@ Protégé / inchangé :
 
 État :
 **GREEN technique — PREVALIDATION smartphone requise.**
+
+
+## Micro-lot — Serpentine + Flight Motion V1 — 2026-09-30
+
+Base :
+- SHA : `3fe49790c1f6686425c7a24c59cb5fe4f6a9724f` ;
+- checkpoint : `checkpoint/lab-start-serpentine-flight-motion-v1-2026-09-30` ;
+- branche : `work/lab-serpentine-flight-motion-v1-2026-09-30`.
+
+### Retour smartphone utilisateur
+
+Rampant / serpent :
+- déplacement actuel validé, à conserver ;
+- idle au sol ;
+- presque aucun déplacement global ;
+- seulement le haut du corps doit osciller légèrement droite/gauche.
+
+Volant :
+- idle réellement en suspension ;
+- ombre visuellement plus éloignée sous la créature ;
+- déplacement fluide en un seul arc montée/descente ("un pont").
+
+### Propriétaires
+
+- Creature Profile : idle, phases de locomotion et paramètres de présentation liés à la morphologie ;
+- Animation Core : consomme les phases existantes, inchangé ;
+- Demo/Renderer presentation : projette uniquement les paramètres d'ombre du profil vers CSS ;
+- l'ombre ne participe à aucune règle combat.
+
+### Fichiers autorisés
+
+- `data/profiles/serpentine.profile.json` ;
+- `data/profiles/drake.profile.json` ;
+- `src/ui/demo-app.js` uniquement pour projection présentation d'ombre ;
+- `examples/dom-demo/demo.css` uniquement pour variables d'ombre ;
+- tests ciblés animation / présentation ;
+- documentation.
+
+### Protégé
+
+- déplacement serpentine actuel ;
+- bipède / quadrupède validés ;
+- massif PREVALIDATION ;
+- Combat Runtime / Combat State ;
+- compétences / énergie / cooldown / dégâts / portée / ciblage ;
+- FX Core / caméra ;
+- assets / arènes ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+- serpentine idle : aucune translation X/Y, pivot bas, oscillation latérale par rotation légère ;
+- drake idle : oscillation verticale conservée/lisible ;
+- drake locomotion : un seul arc, montée progressive -> apex -> descente progressive -> cible ;
+- aucun footfall volant ;
+- ombre drake plus basse/éloignée via paramètre de profil, sans branche par nom dans CSS/UI.
+
+### Critère de fin
+
+RED ciblé -> correction data-driven + projection présentation minimale -> CI complète -> preview smartphone.
