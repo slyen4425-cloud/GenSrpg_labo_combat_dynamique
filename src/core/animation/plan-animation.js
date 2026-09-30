@@ -74,16 +74,22 @@ function locomotionShape({
   }
 
   let previousAt = 0;
+  let elapsedMs = 0;
   const segments = cfg.phases.map((phase, index) => {
     const at = Number(phase.at);
     if (!Number.isFinite(at) || at <= previousAt || at > 1) {
       throw new RangeError("locomotion phase offsets must increase from 0 to 1");
     }
 
-    const phaseDurationMs = Math.max(
-      1,
-      Math.round(totalDurationMs * (at - previousAt))
-    );
+    const endMs =
+      at === 1
+        ? totalDurationMs
+        : Math.round(totalDurationMs * at);
+    if (endMs <= elapsedMs) {
+      throw new RangeError("locomotion duration is too short for configured phases");
+    }
+    const phaseDurationMs = endMs - elapsedMs;
+    elapsedMs = endMs;
     previousAt = at;
 
     const rawScaleX = Number(phase.scaleX ?? 1);
@@ -359,6 +365,15 @@ export function planAnimation({ event, actor, profile }) {
           y: cfg.impactScaleY * perspectiveScale
         }
       });
+      const approachSegments = approach.segments.map(
+        (segment, index, segments) => ({
+          ...segment,
+          label:
+            index === segments.length - 1
+              ? "ground-approach-impact"
+              : `ground-${segment.label}`
+        })
+      );
 
       return createAnimationPlan({
         actorId: actor.id,
@@ -369,7 +384,7 @@ export function planAnimation({ event, actor, profile }) {
           null,
         cues: approach.cues,
         segments: [
-          ...approach.segments,
+          ...approachSegments,
           {
             label: "ground-home",
             durationMs: cfg.returnMs,
