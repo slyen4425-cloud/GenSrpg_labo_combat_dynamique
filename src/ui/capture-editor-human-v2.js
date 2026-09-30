@@ -2913,6 +2913,25 @@ export function humanStatEffectSummaryV1({
     );
   }
 
+  if (
+    normalized.damageReductionPctPerPoint > 0
+  ) {
+    perPoint.push(
+      "-" +
+        statEffectNumber(
+          normalized.damageReductionPctPerPoint
+        ) +
+        " % dégâts reçus"
+    );
+    current.push(
+      "-" +
+        statEffectNumber(
+          projected.damageReductionPct
+        ) +
+        " % dégâts reçus"
+    );
+  }
+
   if (perPoint.length === 0) {
     return "Aucun effet de combat configuré";
   }
@@ -3078,6 +3097,18 @@ function renderHumanStatRegistryV1(
     chargeRate.dataset.statDefinitionChargeRate =
       "true";
 
+    const damageReductionRate =
+      document.createElement("input");
+    damageReductionRate.type = "number";
+    damageReductionRate.min = "0";
+    damageReductionRate.step = "0.05";
+    damageReductionRate.value = String(
+      definition.damageReductionPctPerPoint
+    );
+    damageReductionRate.dataset
+      .statDefinitionDamageReductionRate =
+        "true";
+
     const remove =
       document.createElement("button");
     remove.type = "button";
@@ -3108,6 +3139,10 @@ function renderHumanStatRegistryV1(
       statDefinitionField(
         "Réduction charge % / point",
         chargeRate
+      ),
+      statDefinitionField(
+        "Réduction dégâts reçus % / point",
+        damageReductionRate
       ),
       remove
     );
@@ -3164,6 +3199,13 @@ function readHumanStatRegistryV1(root) {
             "[data-stat-definition-charge-rate]"
           ).value,
           "Réduction charge % par point"
+        ),
+      damageReductionPctPerPoint:
+        finiteNumber(
+          row.querySelector(
+            "[data-stat-definition-damage-reduction-rate]"
+          ).value,
+          "Réduction dégâts reçus % par point"
         )
     };
   });
@@ -5550,6 +5592,11 @@ export function mountCaptureEditorHumanV2({
                 numericValue(
                   root,
                   "[data-stat-custom-charge-pct-per-point]"
+                ),
+              damageReductionPctPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-damage-reduction-pct-per-point]"
                 )
             }
           });
