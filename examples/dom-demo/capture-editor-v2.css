@@ -915,3 +915,32 @@ body[data-editor-view="preview"] {
     grid-column: 1 / -1;
   }
 }
+
+.projectile-clash-config {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.projectile-clash-config h3 {
+  margin: 0;
+}
+
+.projectile-clash-rules {
+  display: grid;
+  gap: 10px;
+}
+
+.projectile-clash-rule-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+@media (max-width: 520px) {
+  .projectile-clash-rule-row {
+    grid-template-columns: 1fr;
+  }
+}
+
