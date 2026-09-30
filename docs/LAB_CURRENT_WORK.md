@@ -18312,3 +18312,54 @@ GREEN :
 
 État :
 **GREEN technique — PREVALIDATION smartphone.**
+
+
+## Micro-lot — Skill Availability Refresh V1 — 2026-09-30
+
+Base :
+- SHA : `e236dd454690a75095754e830e6e0c9ff9b81dc8` ;
+- checkpoint : `checkpoint/lab-start-skill-availability-refresh-v1-2026-09-30` ;
+- branche : `work/lab-skill-availability-refresh-v1-2026-09-30`.
+
+### Retour smartphone utilisateur
+
+Dans le preview Capture, après environ deux utilisations de capacités, les capacités peuvent rester indisponibles alors que la jauge d'énergie est suffisante.
+
+### Diagnostic initial
+
+Le vrai preview Capture 1v1/2v2 utilise `combat-2v2-test-ui.js`.
+La disponibilité d'un bouton dépend de `session.previewSkill()`.
+Le Core peut refuser notamment pour cooldown, énergie, portée, statut ou cible.
+Le `CombatRuntime.stateSignal()` ne transporte actuellement pas `fighter.skillCooldowns`. Une expiration de cooldown peut donc modifier l'autorité Combat State sans déclencher `onState` si aucun autre champ signalé ne change, laissant l'UI avec un état de disponibilité obsolète.
+
+### Propriétaires
+
+- Combat State / Action Resolver : restent propriétaires des cooldowns et de l'autorisation réelle ;
+- Combat Runtime : propriétaire de la notification d'un changement d'état runtime ;
+- Demo UI : affiche seulement `previewSkill()`, aucune règle dupliquée.
+
+### Fichiers autorisés
+
+- `src/core/combat/combat-runtime.js` ;
+- tests Combat Runtime / vrai preview ciblés ;
+- documentation.
+
+### Protégé
+
+- coût énergie ;
+- durée de cooldown configurée ;
+- calcul portée/ciblage ;
+- SkillDefinition ;
+- effets tactiques ;
+- Animation / FX / renderer ;
+- profils de créature ;
+- assets/arènes ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+Démontrer qu'une expiration de cooldown, à énergie/HP constants et sans action active, doit provoquer un `onState` permettant à l'UI de recalculer `previewSkill()`.
+
+### Critère de fin
+
+RED ciblé -> correction de la cause dans le signal Runtime -> CI complète -> preview smartphone.
