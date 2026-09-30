@@ -1918,3 +1918,35 @@ Le Human Editor ne fusionne jamais les champs.
 Les exports conservent uniquement les références `assetId` déjà propriétaires des Presentation Bindings.
 
 Les binaires image/sprite/audio restent dans la bibliothèque d'assets et feront l'objet des lots assets dédiés.
+
+
+## 32. Capture Arena Scale Perception V1
+
+La perception de grandeur d'une créature ne doit pas être corrigée en falsifiant son `displayScale`.
+
+### Responsabilités
+
+- `CreaturePresentationBindingV2.displayScale` reste l'unique taille configurée de la créature ;
+- Arena Presentation possède le cadrage/zoom du décor ;
+- Demo/Renderer CSS possède la composition spatiale statique de la scène ;
+- Animation Core conserve seul la perspective dynamique pendant les approches.
+
+### Composition frontale
+
+La scène utilise des ancres verticales centralisées plutôt que des valeurs dispersées :
+
+- 1v1 proche : `--arena-near-y` ;
+- 1v1 éloigné : `--arena-far-y` ;
+- 2v2 : quatre ancres `--arena-coop-*`.
+
+Le premier preset réduit l'écart vertical afin de donner une lecture plus frontale sans modifier positions, distances ou règles de gameplay.
+
+### Rapport décor / combattants
+
+Le binding de l'arène Ville n'agrandit plus le fond à 112 % de hauteur. Il utilise `auto 100%` afin que les éléments architecturaux apparaissent moins massifs par rapport aux créatures.
+
+### Contact au sol
+
+Chaque fighter reçoit une ombre elliptique de présentation via CSS. Elle suit naturellement le container et son scale, mais n'entre dans aucun calcul de collision, ciblage ou position gameplay.
+
+Aucun asset binaire, Runtime, FX Core ou règle de combat n'est modifié par ce jalon.
