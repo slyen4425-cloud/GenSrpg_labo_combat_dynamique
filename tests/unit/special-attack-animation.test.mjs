@@ -655,3 +655,73 @@ test("ground attack consumes morphology locomotion while still arriving exactly 
     assert.equal(impact.transform.translateY, target.targetTranslateY);
   }
 });
+
+
+test("motion tuning v2 gives quadruped two bounds and a stronger but smaller biped hop", () => {
+  const travelMs = 1000;
+  const metadata = {
+    targetTranslateX: 200,
+    targetTranslateY: 0,
+    arenaHeight: 800,
+    travelMs
+  };
+
+  function groundPlan(profileId) {
+    const current = actor(profileId);
+    return planAnimation({
+      event: normalizeCombatVisualEvent({
+        type: "ground-attack",
+        actorId: current.id,
+        targetId: "opponent-actor",
+        metadata
+      }),
+      actor: current,
+      profile: registry.get(profileId)
+    });
+  }
+
+  const bipedPlan = groundPlan("biped");
+  const quadrupedPlan = groundPlan("quadruped");
+
+  const bipedApproach = bipedPlan.segments.filter(
+    (segment) => segment.label !== "ground-home"
+  );
+  const quadrupedApproach = quadrupedPlan.segments.filter(
+    (segment) => segment.label !== "ground-home"
+  );
+
+  const bipedLift = Math.max(
+    ...bipedApproach.map((segment) => -segment.transform.translateY)
+  );
+  const quadrupedLifts = quadrupedApproach.filter(
+    (segment) => segment.transform.translateY < -5
+  );
+
+  assert.ok(
+    bipedLift >= 8,
+    "biped hop should be slightly stronger than V1"
+  );
+  assert.equal(
+    quadrupedLifts.length,
+    2,
+    "quadruped approach should expose two distinct airborne bounds"
+  );
+  assert.ok(
+    Math.max(...quadrupedLifts.map((segment) => -segment.transform.translateY)) >
+      bipedLift,
+    "quadruped bounds must remain more pronounced than biped hop"
+  );
+
+  assert.equal(
+    bipedApproach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs
+  );
+  assert.equal(
+    quadrupedApproach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs
+  );
+  assert.equal(
+    quadrupedApproach.at(-1).label,
+    "ground-approach-impact"
+  );
+});
