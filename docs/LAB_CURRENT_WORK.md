@@ -18391,3 +18391,54 @@ GREEN :
 
 État :
 **GREEN technique — PREVALIDATION smartphone requise.**
+
+
+## Micro-lot — Creature Hop Fluidity V3 — 2026-09-30
+
+Base :
+- SHA : `75c39a9ea89ff60888476e545623923bc03da76c` ;
+- checkpoint : `checkpoint/lab-start-creature-hop-fluidity-v3-2026-09-30` ;
+- branche : `work/lab-creature-hop-fluidity-v3-2026-09-30`.
+
+### Retour smartphone utilisateur
+
+- bipède : encore trop peu de bonds ;
+- bonds : rendu trop sec / pas assez fluide ;
+- chaque pas doit couvrir une distance horizontale approximativement identique ;
+- lecture recherchée : petits arcs réguliers avec montée puis descente visible.
+
+### Propriétaires
+
+- Creature Profile : nombre de bonds, amplitude verticale, rythme relatif des phases ;
+- Animation Core : consomme uniquement les phases et interpole vers la cible ;
+- aucun calcul de locomotion n'est ajouté dans l'UI.
+
+### Fichiers autorisés
+
+- `data/profiles/biped.profile.json` ;
+- `data/profiles/quadruped.profile.json` ;
+- tests ciblés de locomotion ;
+- documentation.
+
+### Protégé
+
+- Combat Runtime / Combat State / disponibilité des compétences ;
+- coûts énergie et cooldowns ;
+- dégâts / portée / ciblage ;
+- Animation Core ;
+- FX / caméra ;
+- autres morphologies ;
+- assets / arènes ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+- bipède : 3 arcs complets avant impact, avec intervalles horizontaux réguliers ;
+- quadrupède : 2 arcs complets avant impact, avec intervalles horizontaux réguliers ;
+- chaque arc alterne montée puis retour au sol ;
+- amplitude verticale bipède supérieure à V2 mais inférieure au quadrupède ;
+- somme des segments = `travelMs` et impact final exactement sur la cible.
+
+### Critère de fin
+
+RED ciblé -> réglage data-driven uniquement -> CI complète -> preview smartphone.
