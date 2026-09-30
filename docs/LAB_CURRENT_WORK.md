@@ -18010,3 +18010,89 @@ Test utilisateur :
 3. vérifier que le combat paraît moins vu de haut / plus frontal ;
 4. vérifier 1v1 et 2v2 ;
 5. vérifier que projectiles, attaques au sol/aériennes/téléportation restent visuellement cohérents.
+
+
+## Micro-lot — Creature Motion Profiles V1 — 2026-09-30
+
+Base :
+- checkpoint PREVALIDATION Arena Scale Perception :
+  `checkpoint/lab-capture-arena-scale-perception-v1-prevalidation-green-2026-09-30` ;
+- SHA de base : `ed52f1b8516414c712b3f6c2c302dfcf1a6a0600` ;
+- CI de base vérifiée : SUCCESS, 693/693 PASS ;
+- aucun merge `main`.
+
+Checkpoint de départ :
+`checkpoint/lab-start-creature-motion-profiles-v1-2026-09-30`.
+
+Branche :
+`work/lab-creature-motion-profiles-v1-2026-09-30`.
+
+### Retour utilisateur / objectif
+
+Améliorer la sensation de morphologie et de masse sans modifier les règles de combat :
+
+1. ombre de contact plus prononcée, dont la taille suit le `displayScale` de la créature ;
+2. rampant/serpentin : idle très discret au ras du sol et déplacement très linéaire ;
+3. bipède : idle avec pieds visuellement ancrés, mouvement concentré vers le haut du corps ; déplacement par petits bonds ;
+4. quadrupède : idle avec appuis visuellement ancrés ; déplacement par bonds plus longs que le bipède ;
+5. volant : idle avec oscillation verticale lisible ;
+6. massif/golem : locomotion lourde ; chaque retombée/contact au sol peut produire un micro-shake caméra via FX Core.
+
+### Propriétaires / frontières
+
+- Creature Profile : paramètres morphologiques `idle`, locomotion et impulsions de contact ;
+- Animation Core : séquencement/timing des transformations et contacts de locomotion ;
+- FX Core : planification du shake caméra uniquement ;
+- Render Adapter : application des plans Animation/FX ;
+- `CreaturePresentationBindingV2.displayScale` reste l'unique taille configurée de la créature ;
+- Combat Rules / Runtime / distance restent propriétaires du résultat métier `moved`.
+
+### Diagnostic initial
+
+- l'idle actuel translate l'image complète via `bobY/swayX`, ce qui déplace mécaniquement les pieds/appuis ;
+- les profils bipède/quadrupède/massif n'ont pas de contrat de locomotion explicite ;
+- `dom-distance-presenter` applique actuellement directement les nouvelles ancres de distance, sans animation morphologique ;
+- FX Core ne possède encore aucun plan caméra générique ;
+- l'ombre de contact actuelle est portée par le fighter et ne reçoit pas explicitement le `displayScale`.
+
+### Fichiers autorisés
+
+- `data/profiles/*.profile.json` ;
+- `src/core/profiles/profile-registry.js` si validation du nouveau contrat nécessaire ;
+- `src/core/animation/*` ;
+- nouveau module ciblé sous `src/core/fx/` pour les FX de locomotion/caméra ;
+- `src/adapters/renderer/dom-actor-renderer.js` / `dom-keyframes.js` si le pivot d'animation doit être appliqué proprement ;
+- `src/adapters/renderer/dom-distance-presenter.js` ;
+- nouveau renderer caméra ciblé si nécessaire ;
+- `src/ui/demo-app.js` uniquement pour le raccord des propriétaires ;
+- `examples/dom-demo/demo.css` pour l'ombre de contact et variables de présentation ;
+- tests ciblés ;
+- `docs/LAB_ARCHITECTURE.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé / hors périmètre
+
+- Combat Runtime / Action Resolver / coût de déplacement ;
+- dégâts, portée, ciblage, énergie ;
+- SkillDefinition / FX de compétences ;
+- valeurs `displayScale` enregistrées ;
+- assets binaires de créatures et d'arènes ;
+- cadrage/background des arènes ;
+- `Zombicide-40k`.
+
+Les nouvelles arènes plus profondes / moins vues du dessus seront produites dans un autre chantier puis raccordées par un lot séparé.
+
+### RED attendu
+
+- bipède/quadrupède/massif : idle sans translation X/Y du socle, avec pivot bas explicite ;
+- serpentin/rampant : translation verticale idle fortement réduite et locomotion linéaire ;
+- volant/drake : vraie oscillation verticale conservée/dédiée ;
+- locomotion bipède : arc court ;
+- locomotion quadrupède : arc plus ample/long que bipède ;
+- locomotion massif : contacts de pas explicites produisant des demandes `camera-shake` au FX Core ;
+- aucun shake caméra décidé par l'UI ou Combat Rules ;
+- ombre : scale dérivé du scale visuel de l'acteur, sans deuxième source de taille.
+
+### Critère de fin
+
+RED ciblé -> cause démontrée -> contrats data-driven -> implémentation minimale -> vrai chemin déplacement -> CI complète -> documentation -> checkpoint PREVALIDATION smartphone.
