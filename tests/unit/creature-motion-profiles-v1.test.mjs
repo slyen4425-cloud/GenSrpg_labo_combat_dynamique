@@ -94,6 +94,54 @@ test("serpentine idle remains essentially grounded while flying keeps visible ve
   );
 });
 
+test("serpentine alternate idle anchors the base and sways the upper body both ways", async () => {
+  const profile = await json(profilePaths.serpentine);
+  const plan = planAnimation({
+    event: event("idle", "serpentine-actor"),
+    actor: actor("serpentine"),
+    profile
+  });
+
+  assert.equal(profile.idle.swayMode, "alternate");
+  assert.equal(plan.transformOrigin?.y, "94%");
+  assert.deepEqual(
+    plan.segments.map((segment) => segment.label),
+    ["idle-right", "idle-center-1", "idle-left", "idle-home"]
+  );
+  assert.ok(plan.segments[0].transform.rotateDeg > 0);
+  assert.ok(plan.segments[2].transform.rotateDeg < 0);
+  for (const segment of plan.segments) {
+    assert.equal(segment.transform.translateX, 0);
+    assert.equal(segment.transform.translateY, 0);
+  }
+});
+
+test("flying generic locomotion is one smooth arch with one apex and no footfalls", async () => {
+  const profile = await json(profilePaths.flying);
+  const plan = planAnimation({
+    event: event("move", "flying-actor"),
+    actor: actor("flying"),
+    profile
+  });
+
+  assert.deepEqual(
+    plan.segments.map((segment) => segment.label),
+    ["flight-rise", "flight-apex", "flight-descent", "flight-settle"]
+  );
+  const lifts = plan.segments.map(
+    (segment) => -segment.transform.translateY
+  );
+  assert.ok(lifts[0] > 0);
+  assert.ok(lifts[1] > lifts[0]);
+  assert.ok(lifts[2] > 0 && lifts[2] < lifts[1]);
+  assert.equal(plan.segments[3].transform.translateY, 0);
+  assert.ok(lifts[1] >= 18);
+  assert.equal(
+    (plan.cues ?? []).filter((cue) => cue.type === "footfall").length,
+    0
+  );
+});
+
 test("move animation is morph-driven: crawler linear, biped short hop, quadruped longer bound", async () => {
   const plans = {};
   for (const id of ["serpentine", "biped", "quadruped"]) {
@@ -154,20 +202,33 @@ test("FX Core translates a heavy footfall cue into a camera shake plan", async (
   assert.ok(plans[0].amplitudePx > 0);
 });
 
-test("contact shadow derives its scale from the actor display scale and is more pronounced", async () => {
+test("contact shadow derives scale from actor and optional offset/opacity from profile presentation", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
   const demoApp = await readFile("src/ui/demo-app.js", "utf8");
+  const flying = await json(profilePaths.flying);
 
   assert.match(css, /--creature-display-scale/);
   assert.match(css, /fighter::before[\s\S]*var\(--creature-display-scale/);
-  assert.match(css, /fighter::before[\s\S]*rgba\(0,\s*0,\s*0,\s*0\.(?:3[5-9]|[4-9]\d?)/);
+  assert.match(
+    css,
+    /bottom:\s*var\(--creature-shadow-bottom,\s*8%\)/
+  );
+  assert.match(
+    css,
+    /rgba\(0,\s*0,\s*0,\s*var\(--creature-shadow-opacity,\s*0\.42\)\)/
+  );
   assert.match(
     demoApp,
-    /--creature-display-scale[\s\S]*actor\.scale/,
-    "the CSS shadow scale must be projected from VisualActor.scale"
+    /profilePresentation[\s\S]*\.shadow[\s\S]*--creature-shadow-bottom[\s\S]*--creature-shadow-opacity/
+  );
+  assert.equal(typeof flying.presentation?.shadow?.bottomPct, "number");
+  assert.equal(typeof flying.presentation?.shadow?.opacity, "number");
+  assert.equal(
+    "shadowBottomPct" in (flying.presentation ?? {}),
+    false,
+    "flat shadowBottomPct must not survive as a second presentation authority"
   );
 });
-
 
 test("massive true path reaches camera renderer through Animation Core and FX Core", async () => {
   const { animationPlanToDomTimeline } = await import(
