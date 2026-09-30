@@ -17966,3 +17966,47 @@ Améliorer la perception de taille sans modifier la taille enregistrée des cré
 ### Critère de fin
 
 RED ciblé -> correction présentation minimale -> CI complète -> documentation -> checkpoint PREVALIDATION smartphone.
+
+
+### Résultat — Capture Arena Scale Perception V1
+
+RED :
+- commit `db6603a5f1472f8eac41e922e2f57fabf30d12e3` ;
+- CI run `36688294973` ;
+- 693 tests, 690 PASS, 3 FAIL ciblés.
+
+Cause prouvée :
+- arène Ville zoomée à `auto 112%` ;
+- profondeur statique très marquée : adversaires ~31–32 %, proches ~66–70 % ;
+- aucune ombre de contact dédiée pour ancrer visuellement les combattants ;
+- `displayScale` lui-même n'était pas la cause et reste protégé.
+
+Correction :
+- Ville : `backgroundSize: "auto 100%"` ;
+- ancres de scène centralisées :
+  - 1v1 : proche 62 %, éloigné 38 % ;
+  - 2v2 : proches 67/64 %, éloignés 36/37 % ;
+- anciens overrides smartphone utilisent les mêmes ancres au lieu de réintroduire la plongée ;
+- paysage compact utilise également les ancres 1v1 ;
+- ombre elliptique de contact purement visuelle sous chaque fighter ;
+- tailles/left/FX/mouvements/Runtime inchangés ;
+- aucun asset binaire remplacé.
+
+Sentinelles historiques :
+- les deux tests qui figeaient l'ancien `112%` et les anciennes positions absolues ont été réconciliés avec le nouveau propriétaire visuel.
+
+GREEN technique :
+- commit `2a46b17b1fe8cced954b599426d53edd66a6b43f` ;
+- CI run `36688554335` ;
+- structure / frontières / indépendance : OK ;
+- **693 / 693 PASS / 0 FAIL**.
+
+État :
+**GREEN technique — PREVALIDATION visuelle smartphone requise.**
+
+Test utilisateur :
+1. comparer la sensation de taille avec une créature scale 1 puis une grande créature ;
+2. vérifier que le décor semble moins dominant ;
+3. vérifier que le combat paraît moins vu de haut / plus frontal ;
+4. vérifier 1v1 et 2v2 ;
+5. vérifier que projectiles, attaques au sol/aériennes/téléportation restent visuellement cohérents.
