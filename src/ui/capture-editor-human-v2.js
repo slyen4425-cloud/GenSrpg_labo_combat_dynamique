@@ -1159,9 +1159,15 @@ export function buildHumanCreatureDraftV2(fields) {
     },
     combat: {
       maxHp: finiteNumber(fields.combat?.maxHp, "PV max"),
-      initialHp: finiteNumber(
-        fields.combat?.initialHp,
-        "PV initiaux"
+      ...(
+        fields.combat?.initialHp == null
+          ? {}
+          : {
+              initialHp: finiteNumber(
+                fields.combat.initialHp,
+                "PV initiaux"
+              )
+            }
       ),
       maxEnergy: finiteNumber(
         fields.combat?.maxEnergy,
@@ -1883,11 +1889,6 @@ function writeCreatureRecordFields(
       "[data-creature-display-scale]",
       presentation?.displayScale ?? 1
     ],
-    ["[data-max-hp]", draft.combat.maxHp],
-    [
-      "[data-initial-hp]",
-      draft.combat.initialHp ?? draft.combat.maxHp
-    ],
     [
       "[data-capture-rate]",
       draft.capture.captureRate
@@ -2058,8 +2059,6 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-audio-attack]", ""],
     ["[data-creature-audio-hit]", ""],
     ["[data-creature-audio-ko]", ""],
-    ["[data-max-hp]", 50],
-    ["[data-initial-hp]", 50],
     ["[data-capture-rate]", 30],
     ["[data-spawn-chance]", 10],
   ];
@@ -4274,13 +4273,7 @@ function readCreatureFields(
         )
       })
     },
-    combat: {
-      maxHp: numericValue(root, "[data-max-hp]"),
-      initialHp: numericValue(
-        root,
-        "[data-initial-hp]"
-      )
-    },
+    combat: {},
     linkedSkillIds: [
       selectedValue(root, "[data-skill-id]")
     ],
@@ -5084,10 +5077,42 @@ export function mountCaptureEditorHumanV2({
       previousRecord?.draft ?? null
     );
 
+    const statValues =
+      statRegistry === null
+        ? (
+            previousRecord?.statValues ??
+            null
+          )
+        : readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+
+    const projectedMaxHp =
+      statRegistry !== null &&
+      statValues !== null
+        ? projectCaptureStatEffectsV1({
+            registry: statRegistry,
+            statValues
+          }).maxHp
+        : (
+            previousRecord?.draft?.combat
+              ?.maxHp ?? 0
+          );
+
+    const rawFieldsWithHealth = {
+      ...rawFields,
+      combat: {
+        ...(rawFields.combat ?? {}),
+        maxHp: projectedMaxHp
+      }
+    };
+
     const draftPreview =
       buildHumanCreatureDraftV3(
         preserveUnrepresentedCreatureFieldsV1({
-          fields: rawFields,
+          fields: rawFieldsWithHealth,
           previousDraft:
             previousRecord?.draft ?? null,
           visibleElementIds: [
@@ -5133,7 +5158,7 @@ export function mountCaptureEditorHumanV2({
 
     const fields =
       preserveUnrepresentedCreatureFieldsV1({
-        fields: rawFields,
+        fields: rawFieldsWithHealth,
         previousDraft:
           previousRecord?.draft ?? null,
         visibleElementIds: [
@@ -5156,18 +5181,6 @@ export function mountCaptureEditorHumanV2({
 
     const draft =
       buildHumanCreatureDraftV3(fields);
-
-    const statValues =
-      statRegistry === null
-        ? (
-            previousRecord?.statValues ??
-            null
-          )
-        : readHumanCreatureStatValuesV1(
-            root,
-            creatureId,
-            statRegistry
-          );
 
     return Object.freeze({
       draft,
