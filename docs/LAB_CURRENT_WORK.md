@@ -18240,3 +18240,52 @@ Test utilisateur attendu :
 3. vérifier que le rampant glisse, le bipède fait un petit bond, le quadrupède un bond plus ample ;
 4. vérifier que le Massif avance lourdement et déclenche ses micro-shakes aux contacts ;
 5. vérifier que l'impact arrive toujours au bon moment et à la bonne cible.
+
+
+## Micro-lot — Creature Motion Tuning V2 — 2026-09-30
+
+Base :
+- SHA : `d5b1a7d1c2278a68ad95f31421be6a8f2c927570` ;
+- checkpoint : `checkpoint/lab-start-creature-motion-tuning-v2-2026-09-30` ;
+- branche : `work/lab-creature-motion-tuning-v2-2026-09-30` ;
+- CI de base : GREEN, 704/704 PASS.
+
+### Retour smartphone utilisateur
+
+- idle : amélioration visible et validée directionnellement ;
+- locomotion : mouvement désormais visible ;
+- quadrupède : demande de **deux bonds distincts** avant l'arrivée à la cible ;
+- bipède : petit bond à rendre **un peu plus marqué**.
+
+### Propriétaires
+
+- Creature Profile : amplitudes et nombre de phases ;
+- Animation Core : consomme ces phases sans règle spécifique par nom de créature.
+
+### Fichiers autorisés
+
+- `data/profiles/biped.profile.json` ;
+- `data/profiles/quadruped.profile.json` ;
+- tests ciblés locomotion ;
+- documentation du lot.
+
+### Protégé
+
+- Runtime combat ;
+- énergie/cooldowns ;
+- timing d'impact `travelMs` ;
+- règles de dégâts/portée/ciblage ;
+- FX et caméra ;
+- autres profils ;
+- assets/arènes ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+- quadrupède : le plan `ground-attack` doit exposer deux phases de montée et deux retombées avant impact ;
+- bipède : amplitude verticale supérieure à la V1 tout en restant inférieure au quadrupède ;
+- arrivée exacte à la cible et somme d'approche = `travelMs`.
+
+### Critère de fin
+
+RED ciblé -> réglage data-driven minimal -> CI complète -> preview smartphone.
