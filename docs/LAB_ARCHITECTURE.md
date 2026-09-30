@@ -1689,3 +1689,21 @@ avec réduction globale bornée à 100 %.
 Les règles exactes démontrées depuis V16.142 sont propriétaires de l'adaptateur `capture-legacy-status-semantics-v1.js`.
 
 Les 33 capacités complexes de `CaptureComplexSkillMigrationV1` sont désormais entièrement traduisibles et exposent toutes `migrationState:"runtime-ready"`.
+
+
+## 25. Capture Complex Native Skill Catalog V1
+
+Les 103 capacités réellement utilisées par Monster Capture possèdent désormais toutes une représentation native.
+
+Composition :
+
+- 70 drafts issus de `CapturePortableNativeSkillCatalogV1` ;
+- 33 drafts issus de `CaptureComplexNativeSkillCatalogV1`.
+
+Les 33 complexes consomment uniquement les `tacticalEffects` déjà validés par `CaptureComplexSkillMigrationV1`.
+
+Le champ historique `effect.damage/heal` n'est jamais utilisé en parallèle pour ces 33, afin d'éviter deux autorités d'effet.
+
+Les formes manquantes du legacy sont transportées par une politique structurelle explicite (scope/catégorie), jamais par nom ou description.
+
+Le Human Editor hydrate les 103 drafts natifs dans `configuredSkills`; le catalogue historique de 103 modèles reste une bibliothèque de provenance/édition, pas une deuxième source de gameplay.
