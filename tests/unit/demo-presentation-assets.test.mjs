@@ -83,63 +83,55 @@ test("temporary skill sprite bindings resolve typed library sequences", () => {
 });
 
 
-test("forest arena resolves through presentation assets only", () => {
-  const presentation = demoPresentationAssets.presentationForArena("forest");
+test("all five combat arenas resolve only through canonical Core assets", () => {
+  const expected = Object.freeze({
+    forest: Object.freeze({
+      assetId: "core:arena-forest-01",
+      path: "/assets/library/core/arenas/forest/arena_forest_01.png"
+    }),
+    cave: Object.freeze({
+      assetId: "core:arena-cave-01",
+      path: "/assets/library/core/arenas/cave/arena_cave_01.webp"
+    }),
+    snow: Object.freeze({
+      assetId: "core:arena-snow-01",
+      path: "/assets/library/core/arenas/snow/arena_snow_01.webp"
+    }),
+    city: Object.freeze({
+      assetId: "core:arena-city-01",
+      path: "/assets/library/core/arenas/city/arena_city_01.webp"
+    }),
+    lava: Object.freeze({
+      assetId: "core:arena-lava-01",
+      path: "/assets/library/core/arenas/lava/arena_lava_01.webp"
+    })
+  });
 
-  assert.ok(presentation);
-  assert.equal(
-    presentation.background?.assetId,
-    "core:arena-forest-01"
-  );
-  assert.ok(
-    presentation.background?.url.endsWith(
-      "assets/library/core/arenas/forest/arena_forest_01.png"
-    )
-  );
+  for (const [arenaId, expectedArena] of Object.entries(expected)) {
+    const presentation = demoPresentationAssets.presentationForArena(arenaId);
+    assert.ok(presentation, arenaId + " should have a presentation binding");
+    assert.equal(presentation.background?.assetId, expectedArena.assetId);
+
+    const url = new URL(presentation.background?.url);
+    assert.ok(
+      url.pathname.endsWith(expectedArena.path),
+      arenaId + " should resolve its canonical Core arena file"
+    );
+    assert.equal(
+      url.searchParams.get("v"),
+      "2026-09-30-v5-arena-refresh",
+      arenaId + " should use the arena refresh cache revision"
+    );
+  }
+
   assert.equal(
     demoPresentationAssets.presentationForArena("unknown-arena"),
     null
   );
-});
 
-
-test("lava arena diagnostic resolves through the same presentation boundary", () => {
-  const presentation = demoPresentationAssets.presentationForArena("lava");
-
-  assert.ok(presentation);
-  assert.equal(
-    presentation.background?.assetId,
-    "test:arena-lava-local-01"
-  );
-  assert.ok(
-    presentation.background?.url.endsWith(
-      "assets/test/arenas/lava/arena_lava_01.webp"
-    )
-  );
-});
-
-
-test("city arena diagnostic resolves through the same presentation boundary", () => {
-  const presentation = demoPresentationAssets.presentationForArena("city");
-
-  assert.ok(presentation);
-  assert.equal(
-    presentation.background?.assetId,
-    "test:arena-city-local-01"
-  );
-  assert.ok(
-    presentation.background?.url.endsWith(
-      "assets/test/arenas/city/arena_city_01.webp"
-    )
-  );
-  assert.equal(
-    presentation.backgroundPosition,
-    "center bottom"
-  );
-  assert.equal(
-    presentation.backgroundSize,
-    "auto 100%"
-  );
+  const city = demoPresentationAssets.presentationForArena("city");
+  assert.equal(city.backgroundPosition, "center bottom");
+  assert.equal(city.backgroundSize, "auto 100%");
 });
 
 
