@@ -92,7 +92,7 @@ test("Capture combat preview renders authoritative cooldown remaining from the e
   ]);
 
   assert.match(uiSource, /remainingCooldownMs/);
-  assert.match(uiSource, /data\.combatCooldown/);
+  assert.match(uiSource, /dataset\.combatCooldown/);
   assert.match(uiSource, /onClock\s*\(/);
   assert.match(runtimeSource, /onClock\s*=\s*\(\)\s*=>\s*\{\}/);
   assert.match(runtimeSource, /onClock\(/);
