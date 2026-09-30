@@ -53,6 +53,169 @@ function approachPerspectiveScale(target, cfg) {
   );
 }
 
+function normalizedPositiveInteger(value, fallback, field) {
+  const number = Number(value ?? fallback);
+  if (!Number.isInteger(number) || number <= 0) {
+    throw new RangeError(`${field} must be a positive integer`);
+  }
+  return number;
+}
+
+function pathScaleAt(ratio, perspectiveScale) {
+  return 1 + (perspectiveScale - 1) * ratio;
+}
+
+function groundTravelSegments({
+  target,
+  cfg,
+  perspectiveScale,
+  intensity,
+  sign
+}) {
+  const style = cfg.travelStyle ?? "legacy";
+
+  if (style === "linear" || style === "legacy") {
+    return [{
+      label:
+        style === "linear"
+          ? "ground-linear-impact"
+          : "ground-approach-impact",
+      durationMs: target.travelMs,
+      easing: "cubic-bezier(0.2, 0.75, 0.25, 1)",
+      transform: {
+        translateX: target.x,
+        translateY: target.y,
+        scaleX:
+          cfg.impactScaleX * perspectiveScale,
+        scaleY:
+          cfg.impactScaleY * perspectiveScale,
+        rotateDeg:
+          style === "linear"
+            ? directed(
+                scaled(cfg.travelRotateDeg ?? 0, intensity),
+                sign
+              )
+            : directed(3 * intensity, sign)
+      },
+      opacity: 1
+    }];
+  }
+
+  if (!["hop", "heavy-step"].includes(style)) {
+    throw new RangeError(
+      `Unsupported ground travel style: ${style}`
+    );
+  }
+
+  const count = normalizedPositiveInteger(
+    style === "heavy-step"
+      ? cfg.stepCount
+      : cfg.hopCount,
+    2,
+    `ground.${style === "heavy-step" ? "stepCount" : "hopCount"}`
+  );
+  const hopHeight = Number(cfg.hopHeight ?? 0);
+  const landingSquash = Number(cfg.landingSquash ?? 0);
+
+  if (
+    !Number.isFinite(hopHeight) ||
+    hopHeight < 0 ||
+    !Number.isFinite(landingSquash) ||
+    landingSquash < 0 ||
+    landingSquash >= 0.5
+  ) {
+    throw new RangeError(
+      "ground hopHeight / landingSquash config is invalid"
+    );
+  }
+
+  const segments = [];
+  const labelPrefix =
+    style === "heavy-step"
+      ? "ground-heavy-step"
+      : "ground-hop";
+
+  for (let index = 0; index < count; index += 1) {
+    const startMs = Math.round(
+      target.travelMs * (index / count)
+    );
+    const midMs = Math.round(
+      target.travelMs * ((index + 0.5) / count)
+    );
+    const endMs = Math.round(
+      target.travelMs * ((index + 1) / count)
+    );
+    const riseRatio = (index + 0.5) / count;
+    const landRatio = (index + 1) / count;
+    const riseScale = pathScaleAt(
+      riseRatio,
+      perspectiveScale
+    );
+    const landScale = pathScaleAt(
+      landRatio,
+      perspectiveScale
+    );
+    const isFinal = index === count - 1;
+
+    segments.push({
+      label: `${labelPrefix}-${index + 1}-rise`,
+      durationMs: Math.max(1, midMs - startMs),
+      easing:
+        style === "heavy-step"
+          ? "ease-out"
+          : "cubic-bezier(0.25, 0.75, 0.35, 1)",
+      transform: {
+        translateX: target.x * riseRatio,
+        translateY:
+          target.y * riseRatio - hopHeight,
+        scaleX: riseScale * (1 + landingSquash * 0.25),
+        scaleY: riseScale * (1 - landingSquash * 0.15),
+        rotateDeg: directed(
+          scaled(
+            style === "heavy-step"
+              ? cfg.travelRotateDeg ?? 0.6
+              : cfg.travelRotateDeg ?? 1.8,
+            intensity
+          ),
+          sign
+        )
+      },
+      opacity: 1
+    });
+
+    segments.push({
+      label: `${labelPrefix}-${index + 1}-land`,
+      durationMs: Math.max(1, endMs - midMs),
+      easing:
+        style === "heavy-step"
+          ? "cubic-bezier(0.2, 0.85, 0.25, 1)"
+          : "ease-in",
+      cues:
+        style === "heavy-step"
+          ? ["footfall"]
+          : [],
+      transform: {
+        translateX: target.x * landRatio,
+        translateY: target.y * landRatio,
+        scaleX:
+          (isFinal
+            ? cfg.impactScaleX * perspectiveScale
+            : landScale) *
+          (1 + landingSquash),
+        scaleY:
+          (isFinal
+            ? cfg.impactScaleY * perspectiveScale
+            : landScale) *
+          (1 - landingSquash),
+        rotateDeg: 0
+      },
+      opacity: 1
+    });
+  }
+
+  return segments;
+}
+
 function visualTarget(event) {
   const x = Number(event.metadata?.targetTranslateX ?? 0);
   const y = Number(event.metadata?.targetTranslateY ?? 0);
@@ -89,6 +252,130 @@ export function planAnimation({ event, actor, profile }) {
   switch (event.type) {
     case "idle": {
       const cfg = profile.idle;
+      const motionStyle = cfg.motionStyle ?? "legacy";
+
+      if (motionStyle === "grounded") {
+        const half = cfg.durationMs / 2;
+        return createAnimationPlan({
+          actorId: actor.id,
+          eventType: event.type,
+          loop: true,
+          transformOrigin:
+            cfg.transformOrigin ?? {
+              x: "50%",
+              y: "100%"
+            },
+          segments: [
+            {
+              label: "idle-grounded-breathe",
+              durationMs: half,
+              easing: "ease-in-out",
+              transform: {
+                translateX: 0,
+                translateY: 0,
+                rotateDeg: directed(
+                  scaled(cfg.swayRotate ?? 0, intensity),
+                  sign
+                ),
+                scaleX:
+                  1 + scaled(cfg.scaleXDelta ?? 0, intensity),
+                scaleY:
+                  1 + scaled(cfg.scaleYDelta ?? 0, intensity)
+              }
+            },
+            {
+              label: "idle-grounded-home",
+              durationMs: half,
+              easing: "ease-in-out",
+              transform: {
+                translateX: 0,
+                translateY: 0,
+                rotateDeg: 0,
+                scaleX: 1,
+                scaleY: 1
+              }
+            }
+          ]
+        });
+      }
+
+      if (motionStyle === "floating") {
+        const quarter = cfg.durationMs / 4;
+        const bobY = scaled(cfg.bobY ?? 0, intensity);
+        const swayX = directed(
+          scaled(cfg.swayX ?? 0, intensity),
+          sign
+        );
+        const swayRotate = directed(
+          scaled(cfg.swayRotate ?? 0, intensity),
+          sign
+        );
+        return createAnimationPlan({
+          actorId: actor.id,
+          eventType: event.type,
+          loop: true,
+          transformOrigin:
+            cfg.transformOrigin ?? {
+              x: "50%",
+              y: "50%"
+            },
+          segments: [
+            {
+              label: "idle-float-up",
+              durationMs: quarter,
+              easing: "ease-in-out",
+              transform: {
+                translateX: swayX,
+                translateY: -bobY,
+                rotateDeg: swayRotate,
+                scaleX:
+                  1 + scaled(cfg.scaleXDelta ?? 0, intensity),
+                scaleY:
+                  1 + scaled(cfg.scaleYDelta ?? 0, intensity)
+              }
+            },
+            {
+              label: "idle-float-center-a",
+              durationMs: quarter,
+              easing: "ease-in-out",
+              transform: {
+                translateX: 0,
+                translateY: 0,
+                rotateDeg: 0,
+                scaleX: 1,
+                scaleY: 1
+              }
+            },
+            {
+              label: "idle-float-down",
+              durationMs: quarter,
+              easing: "ease-in-out",
+              transform: {
+                translateX: -swayX,
+                translateY: bobY * 0.7,
+                rotateDeg: -swayRotate,
+                scaleX:
+                  1 - scaled(cfg.scaleXDelta ?? 0, intensity) * 0.5,
+                scaleY:
+                  1 - scaled(cfg.scaleYDelta ?? 0, intensity) * 0.5
+              }
+            },
+            {
+              label: "idle-float-center-b",
+              durationMs: quarter,
+              easing: "ease-in-out",
+              transform: {
+                translateX: 0,
+                translateY: 0,
+                rotateDeg: 0,
+                scaleX: 1,
+                scaleY: 1
+              }
+            }
+          ]
+        });
+      }
+
       const half = cfg.durationMs / 2;
       return createAnimationPlan({
         actorId: actor.id,
@@ -187,22 +474,16 @@ export function planAnimation({ event, actor, profile }) {
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
+        transformOrigin:
+          cfg.transformOrigin ?? null,
         segments: [
-          {
-            label: "ground-approach-impact",
-            durationMs: target.travelMs,
-            easing: "cubic-bezier(0.2, 0.75, 0.25, 1)",
-            transform: {
-              translateX: target.x,
-              translateY: target.y,
-              scaleX:
-                cfg.impactScaleX * perspectiveScale,
-              scaleY:
-                cfg.impactScaleY * perspectiveScale,
-              rotateDeg: directed(3 * intensity, sign)
-            },
-            opacity: 1
-          },
+          ...groundTravelSegments({
+            target,
+            cfg,
+            perspectiveScale,
+            intensity,
+            sign
+          }),
           {
             label: "ground-home",
             durationMs: cfg.returnMs,
