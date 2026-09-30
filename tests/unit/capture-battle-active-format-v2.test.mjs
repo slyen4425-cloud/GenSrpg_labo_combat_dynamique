@@ -128,8 +128,8 @@ test("Capture editor exposes only 1v1 and 2v2 active formats", async () => {
     /<select data-active-per-team>[\s\S]*?<\/select>/
   )?.[0] ?? "";
 
-  assert.match(select, /value="1"/);
-  assert.match(select, /value="2"/);
+  assert.match(select, /<option value="1" selected>1 contre 1<\/option>/);
+  assert.match(select, /<option value="2">2 contre 2<\/option>/);
   assert.doesNotMatch(select, /value="3"/);
   assert.doesNotMatch(select, /value="4"/);
   assert.doesNotMatch(
