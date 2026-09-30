@@ -18540,3 +18540,37 @@ Bipède et quadrupède validés. Pour le profil massif/golem :
 ### Critère de fin
 
 RED ciblé -> réglage du profil massif uniquement -> CI complète -> preview smartphone.
+
+
+### Résultat — Massive Four-Step Gait V1
+
+RED :
+- commit `8d0dde73f72642da2e9924ffb662af5e061bdf9e` ;
+- CI `36700941986` ;
+- **708 tests, 707 PASS, 1 FAIL ciblé**.
+
+Correction data-driven uniquement :
+- massif/golem : 4 arcs complets avant impact ;
+- 4 atterrissages à 25 %, 50 %, 75 %, 100 % du trajet ;
+- amplitude verticale : 26 px, supérieure au quadrupède validé ;
+- 4 cues `footfall`, exactement un par atterrissage ;
+- chaque cue emprunte la chaîne existante Animation Core -> FX Core -> caméra ;
+- aucune secousse continue ;
+- compression légère aux contacts pour renforcer le poids ;
+- aucune modification de l'Animation Core, du FX Core ou du renderer.
+
+GREEN :
+- commit profil : `a4fccf1fbc1ce16e451068e551f877899279dac4` ;
+- CI `36701039455` ;
+- structure / frontières / indépendance : OK ;
+- **708/708 PASS / 0 FAIL**.
+
+Protégé / inchangé :
+- bipède et quadrupède validés ;
+- Combat Runtime / disponibilité compétences ;
+- énergie / cooldown / dégâts / portée / ciblage ;
+- assets / arènes ;
+- `Zombicide-40k`.
+
+État :
+**GREEN technique — PREVALIDATION smartphone requise.**
