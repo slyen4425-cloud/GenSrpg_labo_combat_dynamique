@@ -44,7 +44,7 @@ test("Capture editor cooldown crosses the authoritative export definition bounda
   const draft = normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
     id: "cooldown-probe",
-    description: "",
+    description: "Cooldown contract probe",
     requiredLevel: 1,
     usageScopes: ["capture", "combat"],
     definition: {
