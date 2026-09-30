@@ -345,20 +345,25 @@ const ASSETS = Object.freeze({
 
 const ARENA_BINDINGS = Object.freeze({
   forest: Object.freeze({
+    label: "Forêt",
     background: "core:arena-forest-01"
   }),
   cave: Object.freeze({
+    label: "Grotte",
     background: "core:arena-cave-01"
   }),
   snow: Object.freeze({
+    label: "Neige",
     background: "core:arena-snow-01"
   }),
   city: Object.freeze({
+    label: "Ville",
     background: "core:arena-city-01",
     backgroundPosition: "center bottom",
     backgroundSize: "auto 100%"
   }),
   lava: Object.freeze({
+    label: "Lave",
     background: "core:arena-lava-01"
   })
 });
@@ -442,6 +447,17 @@ export const demoPresentationAssets = Object.freeze({
   globalLibrary: GLOBAL_VISUAL_LIBRARY,
   asset(assetId) {
     return resolveAsset(assetId);
+  },
+  arenaOptions() {
+    return Object.freeze(
+      Object.entries(ARENA_BINDINGS).map(
+        ([id, binding]) =>
+          Object.freeze({
+            id,
+            label: binding.label
+          })
+      )
+    );
   },
   presentationForArena(arenaId) {
     const binding = ARENA_BINDINGS[arenaId];
