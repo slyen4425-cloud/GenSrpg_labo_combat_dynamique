@@ -1,14 +1,18 @@
 {
   "id": "massive",
   "label": "Massif / golem",
-  "description": "Profil générique pour golems, colosses et créatures massives. Comportement initial volontairement aligné sur le profil bipède en attendant une validation visuelle dédiée.",
+  "description": "Profil générique pour golems, colosses et créatures massives. Idle ancré et locomotion lourde avec contacts de pas explicites.",
   "idle": {
-    "bobY": 2,
-    "swayRotate": 0.35,
-    "swayX": 0.25,
+    "bobY": 0,
+    "swayRotate": 0.18,
+    "swayX": 0,
     "scaleXDelta": -0.002,
-    "scaleYDelta": 0.006,
-    "durationMs": 1800
+    "scaleYDelta": 0.004,
+    "durationMs": 2100,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "93%"
+    }
   },
   "attack": {
     "lungeX": 46,
@@ -57,6 +61,64 @@
       "perspectiveScaleStrength": 1.25,
       "perspectiveScaleMin": 0.7,
       "perspectiveScaleMax": 1.35
+    }
+  },
+  "locomotion": {
+    "style": "heavy-step",
+    "durationMs": 460,
+    "phases": [
+      {
+        "label": "heavy-lift-1",
+        "at": 0.25,
+        "translateY": -4,
+        "rotateDeg": 0.22,
+        "scaleX": 0.998,
+        "scaleY": 1.002,
+        "easing": "ease-out"
+      },
+      {
+        "label": "heavy-contact-1",
+        "at": 0.5,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.008,
+        "scaleY": 0.992,
+        "easing": "ease-in"
+      },
+      {
+        "label": "heavy-lift-2",
+        "at": 0.75,
+        "translateY": -3,
+        "rotateDeg": -0.18,
+        "scaleX": 0.999,
+        "scaleY": 1.001,
+        "easing": "ease-out"
+      },
+      {
+        "label": "heavy-contact-2",
+        "at": 1,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.01,
+        "scaleY": 0.99,
+        "easing": "ease-in"
+      }
+    ],
+    "contacts": [
+      {
+        "at": 0.5,
+        "intensity": 0.65
+      },
+      {
+        "at": 1,
+        "intensity": 1
+      }
+    ],
+    "footfallFx": {
+      "cameraShake": {
+        "durationMs": 115,
+        "amplitudePx": 3.2
+      }
     }
   }
 }
