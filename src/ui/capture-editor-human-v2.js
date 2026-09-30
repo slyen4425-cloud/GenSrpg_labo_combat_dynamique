@@ -6246,6 +6246,215 @@ export function mountCaptureEditorHumanV2({
     }
   );
 
+  listen(
+    exportCurrentCreatureButton,
+    "click",
+    () => {
+      try {
+        const record =
+          savedCurrentCreatureForTransferV1();
+        const json =
+          exportCaptureCreatureTransferJsonV1(
+            record,
+            {
+              statRegistry
+            }
+          );
+        const filename =
+          fileSafeId(
+            record.draft.id
+          ) +
+          ".capture-creature.json";
+
+        downloadCaptureJsonV1(
+          filename,
+          json
+        );
+        setTransferStatus(
+          "Créature « " +
+            record.draft.displayName +
+            " » exportée.",
+          "ok"
+        );
+      } catch (error) {
+        setTransferStatus(
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    exportCurrentSkillButton,
+    "click",
+    () => {
+      try {
+        const draft =
+          savedCurrentSkillForTransferV1();
+        const json =
+          exportCaptureSkillTransferJsonV1(
+            draft
+          );
+        const filename =
+          fileSafeId(draft.id) +
+          ".capture-skill.json";
+
+        downloadCaptureJsonV1(
+          filename,
+          json
+        );
+        setTransferStatus(
+          "Capacité « " +
+            draft.definition.name +
+            " » exportée.",
+          "ok"
+        );
+      } catch (error) {
+        setTransferStatus(
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    exportDatabaseButton,
+    "click",
+    () => {
+      try {
+        assertNoUnsavedTransferChangesV1();
+        const database =
+          currentDatabaseForTransferV1();
+        const json =
+          exportCaptureDatabaseJsonV1(
+            database
+          );
+
+        downloadCaptureJsonV1(
+          "capture-database-v1.json",
+          json
+        );
+        setTransferStatus(
+          "Base Capture complète exportée : " +
+            database.creatures.length +
+            " créatures et " +
+            database.skills.length +
+            " capacités.",
+          "ok"
+        );
+      } catch (error) {
+        setTransferStatus(
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    importJsonButton,
+    "click",
+    () => {
+      importJsonFile.click();
+    }
+  );
+
+  listen(
+    importJsonFile,
+    "change",
+    async () => {
+      const file =
+        importJsonFile.files?.[0] ??
+        null;
+
+      if (file === null) {
+        return;
+      }
+
+      try {
+        assertNoUnsavedTransferChangesV1();
+        assertTransferReadyV1();
+
+        const jsonText =
+          await file.text();
+        const transfer =
+          importCaptureTransferJsonV1(
+            jsonText,
+            {
+              statRegistry
+            }
+          );
+        const currentDatabase =
+          currentDatabaseForTransferV1();
+        const mode =
+          importReplace.checked
+            ? "replace"
+            : "reject";
+        const plan =
+          planCaptureTransferImportV1({
+            currentDatabase,
+            transfer,
+            mode
+          });
+
+        if (plan.action === "noop") {
+          setTransferStatus(
+            "Import vérifié : le contenu est déjà identique dans la bibliothèque active.",
+            "info"
+          );
+          return;
+        }
+
+        const nextState =
+          applyCaptureImportPlanToEditorStateV1({
+            state: {
+              configuredCreatures,
+              configuredSkills,
+              statRegistry,
+              progressionRules
+            },
+            plan
+          });
+
+        const preferredCreatureId =
+          plan.kind === "creature"
+            ? plan.id
+            : selectedCreatureId;
+
+        syncEditorDatabaseStateV1(
+          nextState,
+          preferredCreatureId
+        );
+        skillDirty = false;
+        creatureDirty = false;
+
+        const label =
+          plan.kind === "creature"
+            ? "Créature"
+            : plan.kind === "skill"
+              ? "Capacité"
+              : "Base complète";
+
+        setTransferStatus(
+          label +
+            " importée avec l’action « " +
+            plan.action +
+            " ».",
+          "ok"
+        );
+      } catch (error) {
+        setTransferStatus(
+          error.message,
+          "error"
+        );
+      } finally {
+        importJsonFile.value = "";
+      }
+    }
+  );
+
   for (
     const field of root.querySelectorAll(
       '[data-editor-panel="skills"] input, ' +
