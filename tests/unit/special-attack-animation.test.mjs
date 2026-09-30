@@ -725,3 +725,90 @@ test("motion tuning v2 gives quadruped two bounds and a stronger but smaller bip
     "ground-approach-impact"
   );
 });
+
+
+test("hop fluidity v3 uses regular small arcs with equal step distances", () => {
+  const travelMs = 1200;
+  const targetX = 300;
+  const metadata = {
+    targetTranslateX: targetX,
+    targetTranslateY: 0,
+    arenaHeight: 800,
+    travelMs
+  };
+
+  function planFor(profileId) {
+    const current = actor(profileId);
+    return planAnimation({
+      event: normalizeCombatVisualEvent({
+        type: "ground-attack",
+        actorId: current.id,
+        targetId: "opponent-actor",
+        metadata
+      }),
+      actor: current,
+      profile: registry.get(profileId)
+    });
+  }
+
+  const bipedApproach = planFor("biped").segments.filter(
+    (segment) => segment.label !== "ground-home"
+  );
+  const quadrupedApproach = planFor("quadruped").segments.filter(
+    (segment) => segment.label !== "ground-home"
+  );
+
+  const bipedAirborne = bipedApproach.filter(
+    (segment) => segment.transform.translateY < 0
+  );
+  const quadrupedAirborne = quadrupedApproach.filter(
+    (segment) => segment.transform.translateY < 0
+  );
+  const bipedLandings = bipedApproach.filter(
+    (segment) => Math.abs(segment.transform.translateY) < 1e-9
+  );
+  const quadrupedLandings = quadrupedApproach.filter(
+    (segment) => Math.abs(segment.transform.translateY) < 1e-9
+  );
+
+  assert.equal(bipedAirborne.length, 3);
+  assert.equal(bipedLandings.length, 3);
+  assert.equal(quadrupedAirborne.length, 2);
+  assert.equal(quadrupedLandings.length, 2);
+
+  const equalLandingSteps = (segments, expectedStep) => {
+    let previousX = 0;
+    for (const segment of segments) {
+      const step = segment.transform.translateX - previousX;
+      assert.ok(
+        Math.abs(step - expectedStep) < 1e-9,
+        `expected regular step of ${expectedStep}px, got ${step}px`
+      );
+      previousX = segment.transform.translateX;
+    }
+  };
+
+  equalLandingSteps(bipedLandings, targetX / 3);
+  equalLandingSteps(quadrupedLandings, targetX / 2);
+
+  const bipedLift = Math.max(
+    ...bipedAirborne.map((segment) => -segment.transform.translateY)
+  );
+  const quadrupedLift = Math.max(
+    ...quadrupedAirborne.map((segment) => -segment.transform.translateY)
+  );
+
+  assert.ok(bipedLift >= 11);
+  assert.ok(quadrupedLift > bipedLift);
+
+  assert.equal(
+    bipedApproach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs
+  );
+  assert.equal(
+    quadrupedApproach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs
+  );
+  assert.equal(bipedApproach.at(-1).transform.translateX, targetX);
+  assert.equal(quadrupedApproach.at(-1).transform.translateX, targetX);
+});
