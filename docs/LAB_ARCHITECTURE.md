@@ -1835,3 +1835,34 @@ Le bundle contient uniquement les sources canoniques éditables et leurs relatio
 Les assets restent des références logiques `assetId` transportées par les Presentation Bindings. Aucun binaire visuel ou audio n'est embarqué.
 
 Le transfert JSON est pur et indépendant du DOM, du stockage navigateur, du réseau et du Runtime.
+
+## 31. Capture Entity Transfer Packages V1
+
+Les fichiers unitaires sont des enveloppes de transport, pas de nouveaux propriétaires métier.
+
+### Créature
+
+`capture-creature-transfer-v1` compose exactement :
+
+- CaptureCreatureEditorDraftV3 ;
+- CaptureCreatureStatValuesV1 ;
+- CaptureActiveSkillLoadoutV1.
+
+Les capacités restent référencées par ID.
+
+### Capacité
+
+`capture-skill-transfer-v1` contient exactement un CaptureSkillEditorDraftV1.
+
+### Import
+
+L'adaptateur de transfert détecte `creature / skill / database` par schema.
+
+Un ancien ID créature déclaré dans le catalogue canonique est converti vers l'ID moderne avant validation et détection de conflit.
+
+La politique d'application est explicite :
+
+- reject ;
+- replace.
+
+Aucun merge champ par champ n'existe.
