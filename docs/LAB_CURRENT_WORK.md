@@ -19503,3 +19503,49 @@ Périmètre autorisé : registre de stats, projection des stats, import des vale
 Interdits : masquer simplement les champs sans supprimer leur lecture/écriture, conserver une valeur PV parallèle dans l'UI, déduire les PV d'Endurance par rustine, modifier le moteur de dégâts ou les règles de KO.
 
 RED obligatoire : prouver que le registre n'a pas encore de Santé/PV, que le moteur de projection ne produit pas de maxHp et que l'éditeur expose encore `PV max / PV au départ`.
+
+
+### Résultat — Capture Health Stat V1
+
+RED :
+- commit `2e4efd622d7f1522e6166c55810e4d262acb5688` ;
+- CI `36762257911` — FAILURE attendue ;
+- quatre manques confirmés : absence de stat Santé, absence de projection PV, import historique `hp` non raccordé à une stat et anciens contrôles `PV max / PV au départ` encore visibles.
+
+Correction du modèle :
+- `3f7a827c867aeffd9d34d4a63d7debf5b6f08622` : ajout générique de `maxHpPerPoint` au registre ;
+- `d9b1e8c31dac852afbfa600383951fb1d8f3c83d` : ajout de la stat canonique `health / Santé / PV` avec `1 point = 1 PV max` ;
+- `da608638dd0171540f1e04a85a843c58b2c241cb` : projection générique des PV depuis les stats ;
+- `2e7e85a95aba7b7b0665cb7ae5760e95911fec38` : import du `hp` historique vers `health` ;
+- `1eeeee4a91aa8640df3ed70614cd24f266bf4488` : retrait réel des deux contrôles PV historiques de l'HTML ;
+- `17db5b1936b9f7563d844540fd9192f438bf9fc8` : Santé/PV intégrée au même éditeur de stats et règle `PV max / point` configurable ;
+- `05008ca52fd62a9abde064101373b309e22e404c` : l'éditeur dérive le maxHp technique depuis les valeurs de stat ;
+- `9e84e581dc4dd45dbfa67747dc7600cf06255f5e` : retrait de l'autorité `initialHp` de l'import ;
+- `49cd12a9f4fe0273946066e41e3d431a44011350` : export V3 dérive maxHp et retire initialHp ;
+- `5ed39144b164ff7c7b3f85ba9c7c2d7ad9a9c3f9`, `cc1a5c934a9be35f565902b1a17b6a3cc3247f22`, `2e8cc33cbcf9dad35206ce8177bb9c47c866bf06` : compatibilité explicite des anciens registres sans règle Santé ;
+- `0df9a0be23325643764695263a9b401179e3f328` : retrait final de `initialHp` de l'owner Human Editor.
+
+Sentinelles historiques réconciliées :
+- `b5fc530a090aeb52ad19a205bba044ff44922b76` protège l'absence de contrôles PV dupliqués et la présence de la surface de stats ;
+- `46979c1426b2e4226318671a461764841890d760` protège une seule stat canonique `health` et interdit un alias concurrent `hp`.
+
+Comportement vérifié :
+- 73 points de Santé -> 73 PV max ;
+- un Monster Capture historique avec `hp: 42` importe `health: 42` ;
+- aucun champ `data-max-hp` / `data-initial-hp` ne subsiste dans l'éditeur ;
+- aucun registre ancien sans règle Santé ne voit ses PV forcés à zéro ;
+- Combat State, dégâts, soins et KO continuent d'utiliser le `maxHp` technique dérivé sans changer leurs règles.
+
+GREEN fonctionnel :
+- HEAD : `0df9a0be23325643764695263a9b401179e3f328` ;
+- CI `36763632710` — SUCCESS ;
+- suite complète : **731/731 PASS, 0 FAIL**.
+
+Protections :
+- aucune formule Santé basée sur Endurance, niveau ou nom de créature ;
+- aucun champ PV caché ;
+- aucune seconde valeur PV éditable ;
+- aucun changement au moteur de dégâts, soins ou KO ;
+- aucun changement cooldown, mouvement, FX, audio ou assets.
+
+État : **GREEN technique — PREVALIDATION smartphone requise**. À vérifier dans l'éditeur : la stat `Santé / PV` apparaît avec sa valeur, les anciens champs PV ont disparu et le combat utilise bien cette valeur comme PV max.
