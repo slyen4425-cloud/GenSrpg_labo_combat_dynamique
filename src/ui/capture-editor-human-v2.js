@@ -1351,11 +1351,25 @@ export function buildHumanSkillDraftV1(fields) {
         )
       },
       projectileClash: {
-        mode: projectileClash.mode ?? "none",
-        group: optionalText(projectileClash.group),
-        interactsWith: stableIds(
-          projectileClash.interactsWith
+        tag: optionalText(
+          projectileClash.tag
+        ),
+        rules: Array.isArray(
+          projectileClash.rules
         )
+          ? projectileClash.rules.map(
+              (rule) => ({
+                againstTag: requiredText(
+                  rule.againstTag,
+                  "Tag adverse projectile"
+                ),
+                strength: finiteNumber(
+                  rule.strength,
+                  "Puissance de collision"
+                )
+              })
+            )
+          : []
       },
       effect: {
         damage:
@@ -1622,6 +1636,144 @@ export function readHumanCombatRulesV1(root) {
   });
 }
 
+function appendHumanProjectileClashRuleV2(
+  root,
+  rule = null
+) {
+  const host = one(
+    root,
+    "[data-skill-projectile-clash-rules]"
+  );
+  const row = document.createElement("div");
+  row.className =
+    "projectile-clash-rule-row";
+  row.dataset.projectileClashRule =
+    "true";
+
+  const againstLabel =
+    document.createElement("label");
+  againstLabel.textContent =
+    "Contre le tag";
+  const againstInput =
+    document.createElement("input");
+  againstInput.dataset
+    .skillProjectileClashAgainstTag =
+      "true";
+  againstInput.placeholder =
+    "ex. fire";
+  againstInput.value =
+    rule?.againstTag ?? "";
+  againstLabel.append(
+    againstInput
+  );
+
+  const strengthLabel =
+    document.createElement("label");
+  strengthLabel.textContent =
+    "Puissance de collision";
+  const strengthInput =
+    document.createElement("input");
+  strengthInput.type = "number";
+  strengthInput.min = "0.01";
+  strengthInput.step = "0.1";
+  strengthInput.dataset
+    .skillProjectileClashStrength =
+      "true";
+  strengthInput.value = String(
+    rule?.strength ?? 1
+  );
+  strengthLabel.append(
+    strengthInput
+  );
+
+  const remove =
+    document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.dataset
+    .skillProjectileClashRemove =
+      "true";
+  remove.textContent = "Retirer";
+
+  row.append(
+    againstLabel,
+    strengthLabel,
+    remove
+  );
+  host.append(row);
+  return row;
+}
+
+function renderHumanProjectileClashV2(
+  root,
+  projectileClash
+) {
+  const value =
+    projectileClash ?? {
+      tag: null,
+      rules: []
+    };
+  one(
+    root,
+    "[data-skill-projectile-clash-tag]"
+  ).value =
+    value.tag ?? "";
+
+  const host = one(
+    root,
+    "[data-skill-projectile-clash-rules]"
+  );
+  host.textContent = "";
+
+  for (
+    const rule of
+    value.rules ?? []
+  ) {
+    appendHumanProjectileClashRuleV2(
+      root,
+      rule
+    );
+  }
+}
+
+function readHumanProjectileClashV2(
+  root,
+  form
+) {
+  if (form !== "projectile") {
+    return {
+      tag: null,
+      rules: []
+    };
+  }
+
+  const tag = optionalText(
+    selectedValue(
+      root,
+      "[data-skill-projectile-clash-tag]"
+    )
+  );
+  const rules = [
+    ...root.querySelectorAll(
+      "[data-projectile-clash-rule]"
+    )
+  ].map((row) => ({
+    againstTag: row.querySelector(
+      "[data-skill-projectile-clash-against-tag]"
+    ).value,
+    strength: Number(
+      row.querySelector(
+        "[data-skill-projectile-clash-strength]"
+      ).value
+    )
+  }));
+
+  return {
+    tag,
+    rules
+  };
+}
+
 function writeSkillTemplateFields(
   root,
   fields,
@@ -1657,6 +1809,18 @@ function writeSkillTemplateFields(
     fields.effects ?? [],
     statRegistry
   );
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      fields,
+      "projectileClash"
+    )
+  ) {
+    renderHumanProjectileClashV2(
+      root,
+      fields.projectileClash
+    );
+  }
 }
 
 function prepareNewSkillDraftFields(
@@ -1678,7 +1842,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-time]", 0],
     ["[data-skill-recovery]", 0],
     ["[data-skill-cooldown]", 0],
-    ["[data-skill-clash-group]", "projectile-default"],
+    ["[data-skill-projectile-clash-tag]", ""],
     ["[data-skill-icon]", ""],
     ["[data-skill-socket]", ""],
     ["[data-skill-cast-fx]", ""],
@@ -1699,7 +1863,13 @@ function prepareNewSkillDraftFields(
     one(root, selector).value = String(value);
   }
 
-  one(root, "[data-skill-clash]").checked = false;
+  renderHumanProjectileClashV2(
+    root,
+    {
+      tag: null,
+      rules: []
+    }
+  );
   renderHumanSkillActivationRequirementsV1(
     root,
     {
@@ -4213,9 +4383,6 @@ function readSkillFields(root) {
     root,
     "[data-skill-form]"
   );
-  const clashEnabled =
-    one(root, "[data-skill-clash]").checked &&
-    form === "projectile";
 
   return {
     id: selectedValue(root, "[data-skill-id]"),
@@ -4275,31 +4442,11 @@ function readSkillFields(root) {
       evadeForms: [],
       evadeApproaches: []
     },
-    projectileClash: {
-      mode: clashEnabled
-        ? "mutual_cancel"
-        : "none",
-      group: clashEnabled
-        ? (
-            optionalText(
-              selectedValue(
-                root,
-                "[data-skill-clash-group]"
-              )
-            ) || "projectile-default"
-          )
-        : null,
-      interactsWith: clashEnabled
-        ? [
-            optionalText(
-              selectedValue(
-                root,
-                "[data-skill-clash-group]"
-              )
-            ) || "projectile-default"
-          ]
-        : []
-    },
+    projectileClash:
+      readHumanProjectileClashV2(
+        root,
+        form
+      ),
     presentation: {
       iconAssetId: selectedValue(
         root,
