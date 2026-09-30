@@ -19108,3 +19108,12 @@ GREEN fonctionnel :
 Protection : dégâts, énergie, ciblage, mouvement, FX, audio et règles d'impact inchangés.
 
 État : **GREEN technique — PREVALIDATION smartphone requise** pour vérifier l'affichage du cooldown et le retour à disponibilité.
+
+
+### Publication PREVALIDATION — Cooldown Completion V1
+
+- HEAD GREEN documenté avant publication : `a1ebcc31d14ac001de0a66c28ccf98ed426cc325` ;
+- CI : `36744092552` — SUCCESS ;
+- checkpoint PREVALIDATION : `checkpoint/lab-cooldown-completion-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-cooldown-completion-v1-2026-09-30` ;
+- validation smartphone requise : lancer une compétence, vérifier le texte `Recharge X.X s`, le bouton indisponible pendant la recharge, puis son retour automatique à disponibilité.
