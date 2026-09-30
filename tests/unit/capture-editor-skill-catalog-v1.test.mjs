@@ -25,6 +25,10 @@ function currentFields() {
     cooldownMs: 4321,
     damage: 9,
     heal: 0,
+    stunMs: 500,
+    allowedDistances: ["short"],
+    targetRelations: ["ally"],
+    effects: [],
     presentation: {
       iconAssetId: "core:icon-custom",
       castAssetId: "core:fx-custom-cast",
@@ -78,8 +82,19 @@ test("basic historical template only replaces fields explicitly known from legac
   assert.equal(after.category, "offensive");
   assert.equal(after.element, "fire");
   assert.equal(after.requiredLevel, 1);
-  assert.equal(after.damage, 3);
-  assert.equal(after.heal, 0);
+  assert.deepEqual(after.effects, [
+    {
+      kind: "damage",
+      targetScope: "target",
+      amount: 3,
+      channel: "fire"
+    }
+  ]);
+  assert.equal("damage" in after, false);
+  assert.equal("heal" in after, false);
+  assert.equal("stunMs" in after, false);
+  assert.equal("allowedDistances" in after, false);
+  assert.equal("targetRelations" in after, false);
 
   assert.equal(after.form, before.form);
   assert.equal(after.approachMode, before.approachMode);
