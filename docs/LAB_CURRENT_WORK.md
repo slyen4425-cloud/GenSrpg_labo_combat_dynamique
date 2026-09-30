@@ -19229,3 +19229,33 @@ Protégé : asset feu, bindings d'assets, SkillDefinition, cooldown métier, Com
 RED : prouver que la règle de masquage générique cache actuellement `.action-option__icon-shell`.
 
 Correction cible : restreindre le masquage aux métadonnées textuelles sans masquer le conteneur d'icône ni le visuel cooldown.
+
+
+### Résultat — Cooldown Icon Visibility Regression V1
+
+Retour smartphone : disparition de l'icône Boule de feu après le lot `Cooldown Visual Overlay V1`.
+
+Cause racine :
+- le nouveau conteneur d'icône est `<span class="action-option__icon-shell">` ;
+- l'ancienne règle compacte `.action-option--skill span { display:none; }` masquait donc le conteneur entier ;
+- le binding `pack:capture:icon-skill-fireball-01` et son asset sont restés intacts.
+
+RED :
+- commit `77f26f6423b64ed79fb0934f90b2e6ce919e9d26` ;
+- CI `36751304503` — FAILURE attendue ;
+- la sentinelle prouve que le masquage générique de tous les `span` cache l'icon-shell.
+
+Correction :
+- commit CSS `c7346a08d1ce68395717bb0b0456b7e2a63aae9b` ;
+- le masquage est restreint aux enfants textuels directs : `> span:not(.action-option__icon-shell)` et `> small` ;
+- le conteneur d'icône et ses calques cooldown restent visibles ;
+- aucun asset, binding, cooldown métier ou moteur combat modifié.
+
+Ancienne sentinelle V8 réconciliée :
+- commit `3af78511fd14020f21363e12fbca94c80996a7ac` ;
+- elle protège maintenant l'intention réelle « dock compact et icon-ready » sans exiger l'ancien sélecteur fautif.
+
+GREEN :
+- CI `36751533082` — SUCCESS.
+
+État : **GREEN technique — PREVALIDATION smartphone requise** sur l'icône Boule de feu et le visuel radial de cooldown.
