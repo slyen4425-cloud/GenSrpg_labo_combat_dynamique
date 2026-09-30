@@ -98,6 +98,19 @@ import {
 import {
   importMonsterCaptureStatValuesV1
 } from "../adapters/input/capture/monster-capture-stat-values-v1.js";
+import {
+  exportCaptureCreatureTransferJsonV1,
+  exportCaptureSkillTransferJsonV1,
+  importCaptureTransferJsonV1,
+  planCaptureTransferImportV1
+} from "../adapters/input/capture/capture-entity-transfer-v1.js";
+import {
+  exportCaptureDatabaseJsonV1
+} from "../adapters/input/capture/capture-database-transfer-v1.js";
+import {
+  buildCaptureEditorDatabaseV1,
+  applyCaptureTransferPlanToEditorStateV1
+} from "./capture-editor-file-transfer-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
