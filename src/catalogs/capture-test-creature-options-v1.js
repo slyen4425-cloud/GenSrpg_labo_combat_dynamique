@@ -13,7 +13,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
     id: "braisombre",
     metaFile: "capture/creatures/braisombre/braisombre.meta.json",
     label: "Braisombre",
-    profileId: "drake",
+    profileId: "flying",
     elements: Object.freeze(["fire"]),
     assets: Object.freeze({
       front: "pack:capture:creature-braisombre-opponent-01",
@@ -61,7 +61,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
     id: "guepe-cybernetique",
     metaFile: "capture/creatures/guepe_cybernetique/guepe_cybernetique.meta.json",
     label: "Guêpe cybernétique",
-    profileId: "drake",
+    profileId: "flying",
     elements: Object.freeze(["electricity"]),
     assets: Object.freeze({
       front: "pack:capture:creature-guepe-cybernetique-opponent-01",
@@ -97,7 +97,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
     id: "ailevent",
     metaFile: "capture/creatures/ailevent/ailevent.meta.json",
     label: "Ailevent",
-    profileId: "drake",
+    profileId: "flying",
     elements: Object.freeze(["air"]),
     assets: Object.freeze({
       front: "pack:capture:creature-ailevent-opponent-01",
