@@ -1210,7 +1210,10 @@ Le Human Editor consomme maintenant les propriétaires validés sans devenir pro
 - les valeurs d'une créature passent par `CaptureCreatureStatValuesV1` et sont conservées dans le record d'édition de session, séparément de `CaptureCreatureEditorDraftV3.sourceStats` ;
 - `sourceStats` reste uniquement une compatibilité historique invisible dans l'éditeur courant ;
 - la politique de slots est chargée depuis `monster-capture-progression-rules.v1.json` et calculée par `CaptureProgressionRulesV1` ;
-- le Human Editor refuse un slot non débloqué et une capacité dont `requiredLevel` dépasse le niveau de la créature ;
+- le Human Editor conserve les quatre affectations de `CaptureActiveSkillLoadoutV1` comme **plan de progression configurable à l'avance**, sans supprimer ni refuser un slot ou une capacité future ;
+- `CaptureSkillEditorDraftV1.requiredLevel` reste le propriétaire du niveau de déverrouillage d'une capacité et `CaptureProgressionRulesV1` reste le propriétaire du nombre de slots actifs ;
+- le snapshot Combat ne consomme pas directement le plan complet : `capture-planned-loadout-to-combat-v1.js` projette une copie temporaire en neutralisant uniquement les slots non débloqués et les capacités dont `requiredLevel` dépasse le niveau courant ;
+- la Database et les transferts créature continuent de transporter le loadout complet : aucune capacité future n'est perdue lors d'un export/import de données ;
 - l'évolution éditée écrit directement dans l'unique champ `capture.evolution { condition, level, targetId }`, avec cible par ID explicite ;
 - les anciennes résistances pourcentage restent visibles uniquement sous une zone de compatibilité clairement séparée des nouvelles stats à canaux ;
 - aucune persistance navigateur n'est introduite : le registre, la progression et les valeurs restent des drafts de session en attente du futur lot Export/Import.
