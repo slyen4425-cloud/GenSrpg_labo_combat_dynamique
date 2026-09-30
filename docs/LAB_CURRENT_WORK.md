@@ -16370,3 +16370,61 @@ Après GREEN du catalogue :
 - 103/103 capacités Capture disponibles comme drafts natifs ;
 - checkpoint PREVALIDATION si UI modifiée ;
 - puis correction lisibilité Défense dans Human Editor avant le lot Database Export/Import.
+
+
+### Résultat — Capture Complex Native Skills V1
+
+RED :
+
+- commit : `2ef6eb64ec34e5d3c713cc390932cb383bf643f6` ;
+- run : `36648666446` ;
+- 640 tests, 633 PASS, 7 FAIL ciblés ;
+- cause : catalogue natif complexe absent + Human Editor non raccordé.
+
+Implémentation :
+
+- nouveau `src/catalogs/capture-complex-native-skill-catalog-v1.js` ;
+- exactement 33 `CaptureSkillEditorDraftV1` validés ;
+- zéro chevauchement avec les 70 portables ;
+- union native Capture : **103 IDs uniques / 103 capacités réellement utilisées** ;
+- effets des 33 = `tacticalEffects` du migrateur autoritaire ;
+- couche historique `effect.damage/heal` remise à 0 pour éviter toute double autorité ;
+- identité / description / élément / requiredLevel / manaCost historiques conservés ;
+- tous les manaCost et cooldown historiques des 33 sont explicitement 0 ;
+- timings dynamiques absents restent à 0 ms, même politique neutre que le catalogue portable ;
+- présentation reste `null`.
+
+Politique de forme :
+
+- scope multi-cible -> `area` ;
+- tous effets sur soi -> `self` ;
+- catégorie historique melee -> `contact/ground` ;
+- cible externe sans forme historique -> `projectile/none`, politique neutre explicite déjà utilisée pour les capacités portables.
+
+Human Editor :
+
+- hydrate les 33 complexes après les 70 portables ;
+- `configuredSkills` contient désormais 103 capacités Capture natives ;
+- message de chargement : 9 capacités laboratoire + 103 Capture natives ;
+- les anciens modèles complexes ne disent plus « StatusEffectV1 requis » ;
+- ils sont indiqués `runtime-ready-complex`, la version native complète restant propriétaire dans `configuredSkills`.
+
+Preuve runtime :
+
+- une capacité historique complexe native `lib_heat_wave` a été exécutée via le vrai `CombatSession` ;
+- son debuff Défense -30 % est bien attaché comme StatusEffect.
+
+GREEN :
+
+- SHA : `24b448994a7f2b6c67ec657d20e1c55fce04744a` ;
+- run : `36648921041` ;
+- **640 tests, 640 PASS, 0 FAIL**.
+
+État :
+
+**GREEN technique — 103/103 capacités Capture natives jouables.**
+
+Étape suivante avant Database Export/Import :
+
+- micro-lot Human Editor Défense : rendre explicite « 1 point = X % réduction globale des dégâts » et permettre de régler ce coefficient ;
+- ne pas modifier le Runtime dans ce lot.
