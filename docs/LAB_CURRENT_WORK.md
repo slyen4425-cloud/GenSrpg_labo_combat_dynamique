@@ -19719,3 +19719,44 @@ Décision corrective conforme charte :
 5. ajouter une sentinelle qui interdit qu'une erreur de preset fasse disparaître la bibliothèque historique.
 
 État : **REGRESSION CONFIRMÉE — GREEN RETIRÉ POUR CE LOT**.
+
+
+### Correction de régression — démarrage bibliothèque + presets vitrine
+
+RED de protection :
+- commit `ee0d7f3772971103da419f9891a8aff9e54a8da0` ;
+- CI `36771882684` — FAILURE attendue ;
+- sentinelle : un batch de presets doit être atomique et ne jamais muter le roster stable si un des transferts échoue.
+
+Cause d'architecture corrigée :
+- les presets vitrine ne sont plus une dépendance bloquante du `Promise.all` qui hydrate le roster historique ;
+- la bibliothèque Monster Capture stable est maintenant publiée dans l'UI avant l'attente des presets ;
+- l'erreur d'un preset reste affichée explicitement, mais elle ne peut plus faire disparaître le roster historique ;
+- aucune donnée de secours n'est inventée et aucun échec n'est masqué.
+
+Transaction :
+- nouveau propriétaire générique dans `capture-editor-file-transfer-v1.js` : `applyCaptureTransferBatchToEditorStateV1` ;
+- les maps créatures/capacités sont clonées pour staging ;
+- chaque Transfer passe toujours par `buildCaptureEditorDatabaseV1 -> planCaptureTransferImportV1 -> applyCaptureTransferPlanToEditorStateV1` ;
+- les maps actives ne sont remplacées qu'après validation complète de tout le batch ;
+- en cas d'erreur, le roster stable reste strictement inchangé.
+
+Sentinelles ajoutées :
+- reconstruction réelle du roster : 102 créatures canoniques avant presets, 103 après remplacement de `crea_mossback` + insertion de `crea-loup` ;
+- batch invalide : aucune mutation du roster stable ;
+- ordre navigateur protégé : publication du roster stable avant `await hydrateCaptureShowcaseCreaturePresetsV1` ;
+- erreur preset explicitement visible sans rejet du roster stable.
+
+Corrections :
+- `f265f6d71e0fa3467fc096734792e1e21dd6934a` : batch Transfer atomique ;
+- `7e2aa4592343a3653006c52f76a878ef6028cd47` : isolation du chargement presets / roster stable ;
+- `354bcbe71b8c189f963fd7a0803f9ab0d25246c4` : réconciliation des sentinelles de statut 103 capacités ;
+- `ed576eff77c7c96221d7e77a69e65a854e2ed692` : sentinelle finale d'ordre de démarrage.
+
+Validation technique :
+- CI `36772287519` — SUCCESS ;
+- suite complète : **738/738 PASS, 0 FAIL**.
+
+Le checkpoint/preview précédent `c9f89c54e05f6a1696cd797830914fe1a6dd5192` est **supersédé** pour ce lot et ne doit plus servir de preview utilisateur.
+
+État : **GREEN technique après correction de régression — PREVALIDATION smartphone requise**.
