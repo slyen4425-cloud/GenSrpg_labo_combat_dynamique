@@ -522,7 +522,7 @@ details summary {
     padding:
       max(0.55rem, env(safe-area-inset-top))
       max(0.55rem, env(safe-area-inset-right))
-      max(7rem, env(safe-area-inset-bottom))
+      max(0.55rem, env(safe-area-inset-bottom))
       max(0.55rem, env(safe-area-inset-left));
   }
 
@@ -568,6 +568,7 @@ details summary {
   }
 
   .editor-footer {
+    position: static;
     align-items: stretch;
     flex-direction: column;
   }
