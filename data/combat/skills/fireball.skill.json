@@ -22,5 +22,6 @@
   "approachMode": "none",
   "projectileClash": {
     "power": 1
-  }
+  },
+  "cooldownMs": 2800
 }
