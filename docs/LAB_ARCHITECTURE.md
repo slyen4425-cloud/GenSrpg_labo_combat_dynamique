@@ -2109,3 +2109,72 @@ L'identifiant morphologique canonique pour une créature volante est `flying`.
 - aucun second profil `drake` n'est maintenu en parallèle.
 
 Le comportement de locomotion et d'idle reste piloté uniquement par `data/profiles/flying.profile.json`.
+
+
+## 36. Réconciliation volant / serpentin et arc aérien unique
+
+### Autorité des profils
+
+L'identifiant morphologique volant reste exclusivement `flying`.
+
+Il n'existe pas de seconde source `drake.profile.json`. La compatibilité des anciennes métadonnées `drake` reste confinée à la frontière Capture déjà documentée.
+
+Le déplacement `serpentine.locomotion` reste la locomotion linéaire au sol validée. Le réglage d'idle peut déclarer `swayMode:"alternate"` afin que l'Animation Core séquence :
+
+`droite -> centre -> gauche -> centre`.
+
+Le profil serpentin utilise un pivot bas, sans translation X/Y, de sorte que la base reste ancrée et que seule l'oscillation du haut du corps soit lisible.
+
+### Locomotion générique volante
+
+`flying.locomotion` reste data-driven et décrit un seul arc générique :
+
+`montée -> apex unique -> descente -> position stable`.
+
+Ces phases ne possèdent aucun `footfall`.
+
+### Présentation de l'ombre
+
+La représentation canonique est :
+
+```js
+presentation: {
+  shadow: {
+    bottomPct,
+    opacity
+  }
+}
+```
+
+Le Visual Controller projette ces valeurs vers :
+- `--creature-shadow-bottom` ;
+- `--creature-shadow-opacity`.
+
+Le CSS ne connaît aucun ID de profil et conserve ses valeurs par défaut si ces données sont absentes.
+
+La forme plate historique `presentation.shadowBottomPct` n'est pas une autorité parallèle.
+
+### Vrai chemin d'une approche aérienne de combat
+
+Pour une compétence `approachMode:"aerial"`, le chemin réel est :
+
+`Combat Resolution Presenter -> Visual Controller.playApproachFor() -> CombatVisualEvent("aerial-attack") -> Animation Core.planAnimation() -> Render Adapter`.
+
+Le plan d'approche aérienne n'utilise pas `profile.locomotion` comme trajectoire de combat.
+
+Animation Core produit désormais avant impact exactement :
+1. `aerial-arc-apex` ;
+2. `aerial-arc-impact`.
+
+Le premier segment progresse déjà horizontalement vers la cible tout en atteignant l'unique apex. Le second descend et poursuit la progression jusqu'aux coordonnées exactes de la cible.
+
+Il n'existe plus de phase `aerial-reposition` invisible entre montée et plongée.
+
+Invariants :
+- un seul apex ;
+- continuité spatiale départ -> apex -> cible ;
+- approche visible jusqu'à l'impact ;
+- somme des deux segments d'approche = `travelMs` ;
+- position au moment de l'impact = cible exacte ;
+- `aerial-home` reste une récupération post-impact et ne modifie pas le timestamp d'impact ;
+- aucune règle de dégâts, énergie, cooldown, portée ou ciblage n'est déplacée dans Animation Core.
