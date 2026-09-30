@@ -6,7 +6,7 @@ import {
   syncCaptureSkillSocketOptionsV1
 } from "../../src/ui/capture-editor-human-v2.js";
 
-test("human editor owns PV inputs only once and inside Creature panel", async () => {
+test("human editor owns health through the stat surface without duplicate HP controls", async () => {
   const html = await readFile(
     new URL(
       "../../examples/dom-demo/capture-editor-v2.html",
@@ -17,28 +17,14 @@ test("human editor owns PV inputs only once and inside Creature panel", async ()
 
   assert.equal(
     (html.match(/data-max-hp/g) ?? []).length,
-    1
+    0
   );
   assert.equal(
     (html.match(/data-initial-hp/g) ?? []).length,
-    1
+    0
   );
-
-  const creatureStart = html.indexOf(
-    'data-editor-panel="creature"'
-  );
-  const combatStart = html.indexOf(
-    'data-editor-panel="combat"'
-  );
-  const maxHp = html.indexOf("data-max-hp");
-  const initialHp = html.indexOf(
-    "data-initial-hp"
-  );
-
-  assert.ok(maxHp > creatureStart);
-  assert.ok(maxHp < combatStart);
-  assert.ok(initialHp > creatureStart);
-  assert.ok(initialHp < combatStart);
+  assert.match(html, /data-stat-values-host/);
+  assert.match(html, /Santé \/ PV/);
 });
 
 test("skill socket selector contains no hardcoded creature socket ids", async () => {
