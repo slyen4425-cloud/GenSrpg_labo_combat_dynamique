@@ -18096,3 +18096,94 @@ Les nouvelles arènes plus profondes / moins vues du dessus seront produites dan
 ### Critère de fin
 
 RED ciblé -> cause démontrée -> contrats data-driven -> implémentation minimale -> vrai chemin déplacement -> CI complète -> documentation -> checkpoint PREVALIDATION smartphone.
+
+
+### Résultat — Creature Motion Profiles V1
+
+RED démontré :
+
+- commit : `84014c22c58457f0659112400970dccba816cef0` ;
+- CI : run `36692032218` ;
+- **700 tests, 693 PASS, 7 FAIL ciblés** ;
+- aucune sentinelle historique étrangère au périmètre n'était rouge à ce stade.
+
+Les 7 défauts reproduits étaient exactement :
+
+1. absence de preset `locomotion` sur les profils ;
+2. idle bipède/quadrupède/massif sans pivot bas et avec glissement des appuis ;
+3. rampant trop mobile verticalement / volant trop statique ;
+4. absence d'événement/plan `move` morphologique ;
+5. absence de cues `footfall` pour le massif ;
+6. absence de propriétaire FX caméra pour ces contacts ;
+7. ombre sans projection explicite du `displayScale`.
+
+Implémentation :
+
+- ajout de `locomotion` data-driven aux cinq profils live ;
+- bipède : petit bond ;
+- quadrupède : bond plus ample ;
+- serpentin/rampant : glissement linéaire au sol ;
+- drake/volant : oscillation verticale lisible ;
+- massif : deux contacts de pas par déplacement lourd ;
+- `CombatVisualEvent.move` ;
+- `AnimationPlan` supporte un pivot d'animation optionnel et des cues temporels ;
+- les idle ancrés utilisent un pivot bas sans translation X/Y ;
+- `locomotion-fx-plan.js` traduit seulement les contacts configurés en `camera-shake` ;
+- `dom-camera-fx.js` applique le shake et en reste l'unique renderer ;
+- le vrai déplacement adverse `moved` déclenche la locomotion visuelle ;
+- `dom-distance-presenter` reçoit la durée du plan pour synchroniser la transition ;
+- ombre de contact renforcée et dimensionnée depuis `VisualActor.scale`.
+
+Réconciliation de sentinelles historiques :
+
+- l'ancienne comparaison « serpentin très flottant / drake presque immobile » a été remplacée par la règle utilisateur actuelle : rampant au sol, volant vertical ;
+- la valeur de déformation idle du drake a été conservée à l'identique hors `bobY` afin d'éviter une modification non demandée ;
+- la transition spatiale historique figée à 260 ms accepte désormais la durée du profil ;
+- un `-0` détecté sur les idle totalement ancrés a été normalisé en vrai `0` ;
+- la garde d'architecture interdisant à Demo UI de posséder des durées reste verte.
+
+GREEN intermédiaire :
+
+- CI run `36692956717` ;
+- **700/700 PASS / 0 FAIL**.
+
+Vrai chemin ajouté :
+
+- profil Massif -> `move` -> AnimationPlan -> DOM timeline ;
+- cue `footfall` -> FX Core -> plan `camera-shake` -> DOM Camera FX Renderer ;
+- durée locomotion -> DOM Distance Presenter ;
+- Combat UI ne contient ni amplitude ni règle caméra.
+
+GREEN technique final avant documentation :
+
+- commit : `c4f3eef51d8c17311ead970dd8dd3c53644a2c37` ;
+- CI : run `36693062137` ;
+- structure / frontières / indépendance : OK ;
+- **703 / 703 PASS / 0 FAIL**.
+
+Protégé / inchangé :
+
+- coûts et résultat gameplay du déplacement ;
+- Combat Runtime / Action Resolver ;
+- dégâts, portée, ciblage et énergie ;
+- Skill FX existants ;
+- valeurs enregistrées `displayScale` ;
+- assets binaires de créatures ;
+- assets/cadrage d'arènes ;
+- `Zombicide-40k`.
+
+État :
+
+**GREEN technique — documentation synchronisée ; PREVALIDATION smartphone requise avant GREEN utilisateur.**
+
+Validation smartphone attendue :
+
+1. bipède : vérifier qu'en idle les pieds restent visuellement fixes et que seul le haut du corps respire/balance ;
+2. quadrupède : mêmes appuis stables, puis bond plus ample que le bipède lors d'un déplacement ;
+3. rampant/serpentin : très peu de mouvement idle et déplacement au ras du sol ;
+4. volant/drake : oscillation verticale naturelle ;
+5. massif/golem : déplacement lourd avec micro-shake à chaque contact de pas, sans secousse continue ;
+6. comparer une petite et une grande créature : l'ombre doit être plus présente et suivre le `displayScale` ;
+7. vérifier qu'attaques, projectiles, téléportation et FX existants restent cohérents.
+
+Les nouvelles arènes plus profondes / moins vues du dessus restent réservées au chantier séparé prévu par Sylvain.
