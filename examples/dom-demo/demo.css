@@ -669,6 +669,26 @@ button.reserve-card {
   display: none;
 }
 
+.action-option--skill .action-option__cooldown {
+  position: absolute;
+  top: 0.16rem;
+  right: 0.16rem;
+  left: 0.16rem;
+  z-index: 3;
+  display: block;
+  padding: 0.08rem 0.12rem;
+  border-radius: 0.3rem;
+  background: rgba(4, 15, 20, 0.84);
+  font-size: clamp(0.42rem, 1vw, 0.56rem);
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+}
+
+.action-option--skill .action-option__cooldown[hidden] {
+  display: none;
+}
+
 .action-option:disabled {
   cursor: default;
   opacity: 0.34;
