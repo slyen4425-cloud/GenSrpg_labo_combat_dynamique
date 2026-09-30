@@ -339,7 +339,7 @@ function clonePreviewRoot(nativeCombatSource) {
 
 function applyPreviewArenaPresentation(
   previewRoot,
-  arenaId = "city"
+  arenaId
 ) {
   const arena = previewRoot.querySelector(
     "[data-combat-arena]"
@@ -469,7 +469,7 @@ const session = createCaptureEditorPreviewSessionV2({
 
     applyPreviewArenaPresentation(
       previewRoot,
-      nativeCombatSource.arenaId
+      nativeVisualSource.arenaId
     );
 
     const mounted = await mountCaptureCombatPreviewV1({
