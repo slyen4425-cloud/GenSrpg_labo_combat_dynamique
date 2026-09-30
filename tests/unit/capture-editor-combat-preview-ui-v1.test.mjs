@@ -79,7 +79,15 @@ test("Capture editor page composes Session V2 with native combat and visual owne
   );
   assert.match(
     testCreatureCatalog,
-    /profileId:\s*["']drake["']/
+    /profileId:\s*["']flying["']/
+  );
+  assert.match(
+    source,
+    /data\/profiles\/flying\.profile\.json/
+  );
+  assert.doesNotMatch(
+    source,
+    /data\/profiles\/drake\.profile\.json/
   );
   assert.doesNotMatch(
     source,
