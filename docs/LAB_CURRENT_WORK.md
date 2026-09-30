@@ -16204,3 +16204,50 @@ Restaurer une surface d'édition à autorité unique pour les capacités :
 - checkpoint PREVALIDATION + lien smartphone ;
 - validation utilisateur requise avant tout micro-lot Renderer « area impact » ou Export/Import.
 
+### RED et cause — Tactical Effects UI Feedback Repair V1
+
+RED dédié :
+
+- test ajouté : `tests/unit/tactical-effects-ui-feedback-repair-v1.test.mjs` ;
+- commit RED : `fe6fac129f66710dcdbef24aaacde5842162ca1f`.
+
+Cause prouvée :
+
+- le lot Tactical Effects Editor UI V1 avait conservé temporairement les anciens contrôles `damage/heal/stun/targetRelations/allowedDistances` tout en ajoutant `SkillDefinition.effects` ;
+- après activation du Runtime tactique, cette compatibilité visible est devenue une double autorité réelle dans le Human Editor ;
+- le contrat `SkillDefinition` refuse déjà une double autorité damage/heal, confirmant que l'UI ne devait plus permettre les deux chemins ;
+- `activationRequirements` n'a pas disparu du contrat ni du code : le retour utilisateur « Ultime » est un problème de surface/explicitation et doit rester protégé par une sentinelle de round-trip ;
+- le défaut d'impact zone est séparé : le Runtime produit déjà plusieurs événements `hit`, alors que `combat-resolution-presenter.js` ne présente actuellement que le premier hit non réfléchi.
+
+### Correction minimale implémentée — en attente CI complète
+
+Human Editor :
+
+- suppression des contrôles éditables historiques dégâts / soin / stun ;
+- suppression du ciblage global ennemi / allié / soi, remplacé par `SkillEffectV1.targetScope` ;
+- suppression des portées courte / moyenne / longue de la surface Capture ;
+- `effect.damage/heal/stunMs` neutralisés lorsque `effects` est la source moderne ;
+- `allowedDistances` devient une projection de compatibilité complète et non éditable ;
+- `targetRelations` est dérivé de manière pure depuis les scopes/polarités des effets ;
+- libellé explicite : « Déclarer comme capacité Ultime / conditionnelle » ;
+- `activationRequirements` reste l'unique propriétaire des conditions d'Ultime.
+
+Catalogue de modèles :
+
+- un modèle portable projette désormais ses effets explicites vers `SkillEffectV1` ;
+- l'ordre historique des effets est conservé ;
+- un modèle bloqué n'invente pas une migration partielle et préserve les effets modernes existants ;
+- les anciennes propriétés concurrentes sont retirées du résultat de merge.
+
+Tests renforcés :
+
+- autorité unique damage/heal/stun/scope ;
+- absence des cinq anciens contrôles DOM ;
+- absence de lecture de ces sélecteurs dans le Human Editor ;
+- round-trip Ultime conservé ;
+- projection de `lib_quake` vers dégâts `all_enemies` ;
+- projection de `lib_lifesteal_strike` dans l'ordre damage -> self heal ;
+- les sentinelles historiques ont été réalignées causalement sur l'autorité moderne.
+
+Le Renderer/Presenter reste inchangé dans ce lot. L'impact visuel multi-cible sera le micro-lot suivant uniquement après PREVALIDATION smartphone de ce correctif UI.
+
