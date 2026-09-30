@@ -1639,3 +1639,53 @@ Ce jalon ne modifie pas :
 - production GenSrpG.
 
 Le Human Editor continuera d'utiliser sa Map `configuredSkills` unique. La consommation future de la projection complexe devra être un raccord dédié, pas une seconde bibliothèque concurrente.
+
+
+## 24. Capture Legacy Status Semantics V1
+
+La compatibilité des statuts historiques Capture ne convertit plus les anciens tours en millisecondes.
+
+### Durée owner-action-end
+
+La source historique démontre que les statuts étaient exécutés à la fin de l'action propre de leur porteur.
+
+`StatusEffectV1.durationModel` possède donc deux autorités explicites :
+
+- `time_ms` : runtime dynamique moderne, `durationMs` et éventuellement `tickIntervalMs` ;
+- `owner_action_end` : compatibilité historique, `durationActions`.
+
+Un statut `owner_action_end` :
+
+- ne dépend pas de `elapsedMs` pour expirer ;
+- ne ticke pas sur réaction ;
+- ne ticke pas sur simple avance du temps ;
+- ticke/décrémente à chaque fin d'action réussie de son porteur.
+
+### Modificateur de stat en pourcentage
+
+`StatusEffectV1.stat_modifier` possède :
+
+- `modifierMode:"points"` + `deltaPoints` ;
+- `modifierMode:"percent"` + `percent`.
+
+Le mode pourcentage calcule son delta à partir de la valeur de base `fighter.statValuesById[statId]`. Il ne transforme jamais un ancien pourcentage en faux nombre de points.
+
+### Défense
+
+La stat standard `defense` est ajoutée au registre Capture.
+
+Son effet est piloté par `damageReductionPctPerPoint`, distinct des résistances de canal.
+
+La formule canonique de dégâts applique :
+
+1. bonus dégâts du canal ;
+2. résistance du canal ;
+3. réduction globale de dégâts issue de Défense ;
+
+avec réduction globale bornée à 100 %.
+
+### Compatibilité legacy
+
+Les règles exactes démontrées depuis V16.142 sont propriétaires de l'adaptateur `capture-legacy-status-semantics-v1.js`.
+
+Les 33 capacités complexes de `CaptureComplexSkillMigrationV1` sont désormais entièrement traduisibles et exposent toutes `migrationState:"runtime-ready"`.
