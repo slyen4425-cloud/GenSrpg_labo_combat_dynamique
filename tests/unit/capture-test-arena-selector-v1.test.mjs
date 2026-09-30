@@ -68,7 +68,7 @@ test("demo presentation owner exposes the canonical arena choices", () => {
   }
 });
 
-test("Capture editor selects an arena and preview consumes nativeCombatSource.arenaId", async () => {
+test("Capture editor selects an arena and preview consumes nativeVisualSource.arenaId", async () => {
   const [html, source] = await Promise.all([
     readFile(
       new URL(
@@ -88,7 +88,8 @@ test("Capture editor selects an arena and preview consumes nativeCombatSource.ar
 
   assert.match(html, /data-test-arena/);
   assert.match(source, /demoPresentationAssets\.arenaOptions\(\)/);
-  assert.match(source, /nativeCombatSource\.arenaId/);
+  assert.match(source, /nativeVisualSource\.arenaId/);
+  assert.doesNotMatch(source, /nativeCombatSource\.arenaId/);
   assert.doesNotMatch(
     source,
     /applyPreviewArenaPresentation\(\s*previewRoot,\s*["']city["']\s*\)/
