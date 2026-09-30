@@ -16781,3 +16781,96 @@ Le réglage legacy `interruptsPreparation` / stun reste absent : le stun apparti
 - lien smartphone ;
 - le micro-lot Renderer d'impact visuel multi-cible reste séparé.
 
+### Résultat — Projectile Clash Rules V2
+
+Pr éaudit :
+
+- V1 possédait uniquement `mode:"mutual_cancel"` + `group/interactsWith` ;
+- le Core supprimait systématiquement les deux actions lors d'un clash ;
+- le Human Editor n'exposait qu'un groupe unique ;
+- aucune dominance / continuation d'un projectile n'était représentable.
+
+RED :
+
+- commit : `c866513b355d34e4b14ea9750bed039de4d50c29` ;
+- run : `36665402126` ;
+- **654 tests, 648 PASS, 6 FAIL ciblés** ;
+- les six échecs correspondaient exactement au contrat V2 absent, à la dominance non supportée et à l'UI V1.
+
+Autorité V2 :
+
+```js
+projectileClash: {
+  tag: "ice",
+  rules: [
+    {
+      againstTag: "fire",
+      strength: 2
+    }
+  ]
+}
+```
+
+Sémantique :
+
+- aucune configuration -> `tag:null, rules:[]` ;
+- aucune règle des deux côtés -> aucun clash ;
+- une règle orientée suffit à déclarer une interaction ;
+- le côté sans règle correspondante a une puissance 0 ;
+- puissance égale -> annulation des deux ;
+- puissance supérieure -> seul le projectile perdant est annulé ;
+- le projectile gagnant conserve la même action active et poursuit sa trajectoire jusqu'à l'impact initial ;
+- aucune inférence depuis élément, nom, description ou créature.
+
+Implémentation :
+
+- nouveau propriétaire contractuel : `src/contracts/projectile-clash-v2.js` ;
+- `SkillDefinition` délègue entièrement la normalisation au contrat V2 ;
+- suppression de l'autorité V1 `PROJECTILE_CLASH_MODES / mode / group / interactsWith` dans `SkillDefinition` ;
+- `projectile-clash.js` calcule les puissances et le résultat sémantique ;
+- `CombatRuntime` ne retire de `activeByActor` que les actions réellement annulées ;
+- aucune modification FX/Renderer/Presenter ;
+- fixtures Fireball du laboratoire migrées explicitement vers V2.
+
+Human Editor :
+
+- un champ **Tag du projectile** ;
+- plusieurs lignes **Contre le tag + Puissance de collision** ;
+- ajout/suppression de règles ;
+- explication : puissance supérieure continue, égalité annule les deux ;
+- aucun retour de la case legacy `interruptsPreparation` ;
+- aucun champ `mode/group/interactsWith` éditable.
+
+Preuve vrai Runtime :
+
+- test `real CombatRuntime keeps the stronger projectile active until its later target impact` ;
+- glace puissance 2 contre feu puissance 1 ;
+- feu annulé au point de collision ;
+- glace reste active ;
+- PV de la cible inchangés au moment du clash ;
+- à l'impact final, la glace applique réellement ses dégâts.
+
+Migration des sentinelles V1 :
+
+- `data/combat/skills/fireball.skill.json` ;
+- `data/combat/skills/catalog.v1.json` ;
+- tests Capture skill adapter / editor draft ;
+- intégration projectile clash ;
+- sentinelles projectile clash Core.
+
+Validation technique avant documentation finale :
+
+- run `36665942566` ;
+- structure / frontières / indépendance : OK ;
+- **654 / 654 PASS / 0 FAIL**.
+
+Des sentinelles supplémentaires protègent désormais :
+
+- absence de dépendance UI/renderer/storage/network dans le contrat/Core ;
+- absence de l'ancienne autorité V1 dans `SkillDefinition`.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise**, car le Human Editor a changé.
+
+Le défaut visuel d'impact des dégâts multi-cibles reste un micro-lot Renderer séparé et n'a pas été masqué dans ce chantier.
