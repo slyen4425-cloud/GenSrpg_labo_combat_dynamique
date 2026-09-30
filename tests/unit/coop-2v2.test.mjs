@@ -396,27 +396,27 @@ test("coop 2v2 CSS gives four distinct actor positions and lightweight squad car
   );
   assert.match(
     css,
-    /\.arena--coop-2v2 \.fighter--ally\s*\{[\s\S]*?top:\s*66%[\s\S]*?left:\s*66%/
+    /\.arena--coop-2v2 \.fighter--ally\s*\{[\s\S]*?top:\s*var\(--arena-coop-near-secondary-y\)[\s\S]*?left:\s*66%/
   );
   assert.match(
     css,
-    /\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*?top:\s*31%[\s\S]*?left:\s*74%[\s\S]*?width:\s*min\(44\.2%, 25\.35rem\)/
+    /\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*?top:\s*var\(--arena-coop-far-primary-y\)[\s\S]*?left:\s*74%[\s\S]*?width:\s*min\(44\.2%, 25\.35rem\)/
   );
   assert.match(
     css,
-    /\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*?top:\s*32%[\s\S]*?left:\s*31%[\s\S]*?width:\s*min\(42\.9%, 24\.7rem\)/
+    /\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*?top:\s*var\(--arena-coop-far-secondary-y\)[\s\S]*?left:\s*31%[\s\S]*?width:\s*min\(42\.9%, 24\.7rem\)/
   );
   assert.match(
     css,
-    /@media \(max-width:\s*680px\)\s*\{[\s\S]*?\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*?top:\s*31%[\s\S]*?left:\s*73%[\s\S]*?width:\s*40\.3%/
+    /@media \(max-width:\s*680px\)\s*\{[\s\S]*?\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*?top:\s*var\(--arena-coop-far-primary-y\)[\s\S]*?left:\s*73%[\s\S]*?width:\s*40\.3%/
   );
   assert.match(
     css,
-    /@media \(max-width:\s*680px\)\s*\{[\s\S]*?\.arena--coop-2v2 \.fighter--ally\s*\{[\s\S]*?top:\s*66%[\s\S]*?left:\s*67%[\s\S]*?width:\s*28%/
+    /@media \(max-width:\s*680px\)\s*\{[\s\S]*?\.arena--coop-2v2 \.fighter--ally\s*\{[\s\S]*?top:\s*var\(--arena-coop-near-secondary-y\)[\s\S]*?left:\s*67%[\s\S]*?width:\s*28%/
   );
   assert.match(
     css,
-    /@media \(max-width:\s*680px\)\s*\{[\s\S]*?\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*?top:\s*32%[\s\S]*?left:\s*30%[\s\S]*?width:\s*39%/
+    /@media \(max-width:\s*680px\)\s*\{[\s\S]*?\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*?top:\s*var\(--arena-coop-far-secondary-y\)[\s\S]*?left:\s*30%[\s\S]*?width:\s*39%/
   );
   assert.match(css, /\.squad-card--player/);
   assert.match(css, /\.squad-card--ally/);
