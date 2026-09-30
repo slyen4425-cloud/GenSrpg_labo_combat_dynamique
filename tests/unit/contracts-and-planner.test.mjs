@@ -177,10 +177,13 @@ test("VisualActor carries a stable transform origin", () => {
 });
 
 test("idle profiles encode the requested morphology differences", () => {
-  assert.ok(serpentine.idle.bobY > serpentine.idle.swayX);
-  assert.ok(drake.idle.bobY < serpentine.idle.bobY);
-  assert.ok(drake.idle.swayX <= 0.5);
-  assert.ok(drake.idle.swayRotate < serpentine.idle.swayRotate);
+  assert.equal(serpentine.idle.motionStyle, "grounded");
+  assert.equal(serpentine.idle.bobY, 0);
+  assert.ok(Math.abs(serpentine.idle.swayRotate) <= 0.35);
+
+  assert.equal(drake.idle.motionStyle, "floating");
+  assert.ok(drake.idle.bobY >= 6);
+  assert.ok(Math.abs(drake.idle.swayX) < drake.idle.bobY);
   assert.ok(drake.idle.scaleYDelta > 0);
 });
 
@@ -201,6 +204,12 @@ test("planner consumes idle scale deltas from profile data", () => {
 
   assert.equal(plan.segments[0].transform.scaleX, 0.997);
   assert.equal(plan.segments[0].transform.scaleY, 1.012);
-  assert.equal(plan.segments[0].transform.translateX, 0);
-  assert.equal(plan.segments[0].transform.translateY, -0.5);
+  assert.equal(
+    plan.segments[0].transform.translateY,
+    -drake.idle.bobY
+  );
+  assert.ok(
+    Math.abs(plan.segments[0].transform.translateX) <
+      Math.abs(plan.segments[0].transform.translateY)
+  );
 });
