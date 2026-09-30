@@ -106,6 +106,43 @@ function assertUnique(items, field, idOf) {
   }
 }
 
+function finiteNumber(value, field) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    throw new RangeError(`${field} must be a finite number`);
+  }
+  return number;
+}
+
+function normalizeCreatureResistances(value, field) {
+  if (!Array.isArray(value)) {
+    throw new TypeError(`${field} must be an array`);
+  }
+
+  const normalized = value.map((entry, index) => {
+    objectValue(entry, `${field}[${index}]`);
+    return Object.freeze({
+      kind: requiredString(
+        entry.kind,
+        `${field}[${index}].kind`
+      ),
+      value: finiteNumber(
+        entry.value,
+        `${field}[${index}].value`
+      )
+    });
+  });
+
+  const kinds = normalized.map((entry) => entry.kind);
+  if (new Set(kinds).size !== kinds.length) {
+    throw new RangeError(
+      `${field} must not contain duplicate kinds`
+    );
+  }
+
+  return Object.freeze(normalized);
+}
+
 function normalizeCreature(raw, index) {
   objectValue(raw, `creatures[${index}]`);
   const id = requiredString(raw.id, `creatures[${index}].id`);
@@ -119,6 +156,14 @@ function normalizeCreature(raw, index) {
     combat: jsonCompatible(
       objectValue(raw.combat, `creatures[${index}].combat`),
       `creatures[${index}].combat`
+    ),
+    elements: uniqueStrings(
+      raw.elements ?? [],
+      `creatures[${index}].elements`
+    ),
+    resistances: normalizeCreatureResistances(
+      raw.resistances ?? [],
+      `creatures[${index}].resistances`
     ),
     skillIds: uniqueStrings(
       raw.skillIds ?? [],
