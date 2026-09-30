@@ -44,27 +44,13 @@ function action({
     travelMs,
     recoveryMs: skill.recoveryMs,
     releaseAtMs,
-    impactAtMs: releaseAtMs + travelMs,
+    impactAtMs:
+      releaseAtMs + travelMs,
     interruptibleDuringPreparation: true
   });
 }
 
-function clash(tag, againstTag, strength = 1) {
-  return {
-    tag,
-    rules:
-      againstTag == null
-        ? []
-        : [
-            {
-              againstTag,
-              strength
-            }
-          ]
-  };
-}
-
-test("projectile clash defaults to no tag and no inferred rule", () => {
+test("projectile clash defaults to power zero", () => {
   const skill =
     normalizeSkillDefinition(
       rawSkill()
@@ -73,22 +59,18 @@ test("projectile clash defaults to no tag and no inferred rule", () => {
   assert.deepEqual(
     skill.projectileClash,
     {
-      tag: null,
-      rules: []
+      power: 0
     }
   );
 });
 
-test("same-tag reciprocal projectiles compute their real meeting time", () => {
+test("equal positive powers compute their real meeting time", () => {
   const skill =
     normalizeSkillDefinition(
       rawSkill({
-        projectileClash:
-          clash(
-            "fire",
-            "fire",
-            1
-          )
+        projectileClash: {
+          power: 1
+        }
       })
     );
 
@@ -120,6 +102,14 @@ test("same-tag reciprocal projectiles compute their real meeting time", () => {
     candidate.outcome,
     "mutual_cancel"
   );
+  assert.equal(
+    candidate.leftPower,
+    1
+  );
+  assert.equal(
+    candidate.rightPower,
+    1
+  );
   assert.ok(
     Math.abs(
       candidate.leftProgress -
@@ -136,41 +126,36 @@ test("same-tag reciprocal projectiles compute their real meeting time", () => {
   );
 });
 
-test("different tags without an explicit directed rule never clash", () => {
-  const fire =
+test("power zero means no projectile collision", () => {
+  const active =
     normalizeSkillDefinition(
       rawSkill({
-        id: "fire",
-        projectileClash:
-          clash(
-            "fire",
-            null
-          )
+        id: "active",
+        projectileClash: {
+          power: 1
+        }
       })
     );
-  const ice =
+  const disabled =
     normalizeSkillDefinition(
       rawSkill({
-        id: "ice",
-        element: "ice",
-        projectileClash:
-          clash(
-            "ice",
-            null
-          )
+        id: "disabled",
+        projectileClash: {
+          power: 0
+        }
       })
     );
 
   assert.equal(
     projectileClashCandidate({
       leftAction: action({
-        skill: fire,
+        skill: active,
         actorId: "player",
         targetId: "opponent"
       }),
       leftStartedAtClockMs: 0,
       rightAction: action({
-        skill: ice,
+        skill: disabled,
         actorId: "opponent",
         targetId: "player"
       }),
@@ -180,42 +165,36 @@ test("different tags without an explicit directed rule never clash", () => {
   );
 });
 
-test("one directed rule can make its projectile survive the clash", () => {
-  const ice =
+test("stronger projectile survives", () => {
+  const strong =
     normalizeSkillDefinition(
       rawSkill({
-        id: "ice",
-        element: "ice",
-        projectileClash:
-          clash(
-            "ice",
-            "fire",
-            2
-          )
+        id: "strong",
+        projectileClash: {
+          power: 2
+        }
       })
     );
-  const fire =
+  const weak =
     normalizeSkillDefinition(
       rawSkill({
-        id: "fire",
-        projectileClash:
-          clash(
-            "fire",
-            null
-          )
+        id: "weak",
+        projectileClash: {
+          power: 1
+        }
       })
     );
 
   const candidate =
     projectileClashCandidate({
       leftAction: action({
-        skill: ice,
+        skill: strong,
         actorId: "player",
         targetId: "opponent"
       }),
       leftStartedAtClockMs: 0,
       rightAction: action({
-        skill: fire,
+        skill: weak,
         actorId: "opponent",
         targetId: "player"
       }),
@@ -224,29 +203,47 @@ test("one directed rule can make its projectile survive the clash", () => {
 
   assert.ok(candidate);
   assert.equal(
-    candidate.leftStrength,
-    2
-  );
-  assert.equal(
-    candidate.rightStrength,
-    0
-  );
-  assert.equal(
     candidate.outcome,
     "left_survives"
   );
+
+  const resolutions =
+    resolveProjectileClash({
+      state: Object.freeze({
+        marker: "unchanged"
+      }),
+      leftAction: action({
+        skill: strong,
+        actorId: "player",
+        targetId: "opponent"
+      }),
+      leftStartedAtClockMs: 0,
+      rightAction: action({
+        skill: weak,
+        actorId: "opponent",
+        targetId: "player"
+      }),
+      rightStartedAtClockMs: 0,
+      candidate
+    });
+
+  assert.equal(
+    resolutions.left,
+    null
+  );
+  assert.equal(
+    resolutions.right.outcome,
+    "clashed"
+  );
 });
 
-test("projectiles cannot clash after one travel window has already ended", () => {
+test("projectiles cannot clash after one travel window has ended", () => {
   const skill =
     normalizeSkillDefinition(
       rawSkill({
-        projectileClash:
-          clash(
-            "fire",
-            "fire",
-            1
-          )
+        projectileClash: {
+          power: 1
+        }
       })
     );
 
@@ -269,16 +266,13 @@ test("projectiles cannot clash after one travel window has already ended", () =>
   );
 });
 
-test("mutual clash resolution applies no hit and cancels both", () => {
+test("mutual clash applies no hit and cancels both", () => {
   const skill =
     normalizeSkillDefinition(
       rawSkill({
-        projectileClash:
-          clash(
-            "fire",
-            "fire",
-            1
-          )
+        projectileClash: {
+          power: 1
+        }
       })
     );
   const left = action({
