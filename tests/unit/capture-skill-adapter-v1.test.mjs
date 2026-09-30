@@ -28,13 +28,7 @@ function exportedSkill() {
         tags: ["burn-capable"]
       },
       projectileClash: {
-        tag: "fire",
-        rules: [
-          {
-            againstTag: "fire",
-            strength: 1
-          }
-        ]
+        power: 1
       }
     },
     presentationId: "skill:fireball",
@@ -56,13 +50,9 @@ test("Capture skill adapter delegates semantic validation to native SkillDefinit
   assert.deepEqual(skill.targetRelations, ["enemy"]);
   assert.equal(skill.approachMode, "none");
   assert.equal(skill.effect.damage, 30);
-  assert.equal(skill.projectileClash.tag, "fire");
-  assert.deepEqual(skill.projectileClash.rules, [
-    {
-      againstTag: "fire",
-      strength: 1
-    }
-  ]);
+  assert.deepEqual(skill.projectileClash, {
+    power: 1
+  });
 });
 
 test("Capture skill adapter preserves native defaults instead of owning another default layer", () => {
@@ -76,8 +66,7 @@ test("Capture skill adapter preserves native defaults instead of owning another 
   assert.equal(skill.approachMode, "none");
   assert.deepEqual(skill.targetRelations, ["enemy"]);
   assert.deepEqual(skill.projectileClash, {
-    tag: null,
-    rules: []
+    power: 0
   });
 });
 
@@ -99,8 +88,7 @@ test("Capture skill adapter never infers behavior from labels or ids", () => {
   input.definition.form = "contact";
   input.definition.element = "water";
   input.definition.projectileClash = {
-    tag: null,
-    rules: []
+    power: 0
   };
 
   const skill = adaptCaptureSkillToSkillDefinition(input);
@@ -108,8 +96,7 @@ test("Capture skill adapter never infers behavior from labels or ids", () => {
   assert.equal(skill.form, "contact");
   assert.equal(skill.element, "water");
   assert.deepEqual(skill.projectileClash, {
-    tag: null,
-    rules: []
+    power: 0
   });
 });
 
