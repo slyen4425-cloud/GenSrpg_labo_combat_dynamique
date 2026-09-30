@@ -235,41 +235,91 @@ export function planAnimation({ event, actor, profile }) {
   switch (event.type) {
     case "idle": {
       const cfg = profile.idle;
-      const half = cfg.durationMs / 2;
+      const swayMode = cfg.swayMode ?? "single";
+      if (!["single", "alternate"].includes(swayMode)) {
+        throw new RangeError(
+          `Unsupported idle.swayMode: ${swayMode}`
+        );
+      }
+
+      const awayTransform = (direction = 1) => ({
+        translateX:
+          directed(
+            scaled(cfg.swayX, intensity) * direction,
+            sign
+          ),
+        translateY:
+          Number(cfg.bobY) === 0
+            ? 0
+            : -scaled(cfg.bobY, intensity),
+        rotateDeg:
+          directed(
+            scaled(cfg.swayRotate, intensity) * direction,
+            sign
+          ),
+        scaleX:
+          1 + scaled(cfg.scaleXDelta ?? 0, intensity),
+        scaleY:
+          1 + scaled(cfg.scaleYDelta ?? 0, intensity)
+      });
+
+      const homeTransform = {
+        translateX: 0,
+        translateY: 0,
+        rotateDeg: 0,
+        scaleX: 1,
+        scaleY: 1
+      };
+
+      const segments =
+        swayMode === "alternate"
+          ? [
+              {
+                label: "idle-right",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: awayTransform(1)
+              },
+              {
+                label: "idle-center-1",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: homeTransform
+              },
+              {
+                label: "idle-left",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: awayTransform(-1)
+              },
+              {
+                label: "idle-home",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: homeTransform
+              }
+            ]
+          : [
+              {
+                label: "idle-out",
+                durationMs: cfg.durationMs / 2,
+                easing: "ease-in-out",
+                transform: awayTransform(1)
+              },
+              {
+                label: "idle-home",
+                durationMs: cfg.durationMs / 2,
+                easing: "ease-in-out",
+                transform: homeTransform
+              }
+            ];
+
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
         loop: true,
         transformOrigin: cfg.transformOrigin ?? null,
-        segments: [
-          {
-            label: "idle-out",
-            durationMs: half,
-            easing: "ease-in-out",
-            transform: {
-              translateX: directed(scaled(cfg.swayX, intensity), sign),
-              translateY:
-                Number(cfg.bobY) === 0
-                  ? 0
-                  : -scaled(cfg.bobY, intensity),
-              rotateDeg: directed(scaled(cfg.swayRotate, intensity), sign),
-              scaleX: 1 + scaled(cfg.scaleXDelta ?? 0, intensity),
-              scaleY: 1 + scaled(cfg.scaleYDelta ?? 0, intensity)
-            }
-          },
-          {
-            label: "idle-home",
-            durationMs: half,
-            easing: "ease-in-out",
-            transform: {
-              translateX: 0,
-              translateY: 0,
-              rotateDeg: 0,
-              scaleX: 1,
-              scaleY: 1
-            }
-          }
-        ]
+        segments
       });
     }
 
@@ -496,56 +546,42 @@ export function planAnimation({ event, actor, profile }) {
         target.exitY < 0
           ? Math.min(cfg.riseY, target.exitY)
           : cfg.riseY;
+      const apexY = Math.min(
+        riseY,
+        target.y - cfg.diveHeight
+      );
       const riseMs = Math.max(
         1,
         Math.round(target.travelMs * cfg.riseRatio)
       );
-      const repositionMs = Math.max(
-        1,
-        Math.round(target.travelMs * cfg.repositionRatio)
-      );
       const diveMs = Math.max(
         1,
-        target.travelMs - riseMs - repositionMs
+        target.travelMs - riseMs
       );
+      const apexProgress =
+        riseMs / target.travelMs;
 
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
         segments: [
           {
-            label: "aerial-rise",
+            label: "aerial-arc-apex",
             durationMs: riseMs,
-            easing: "ease-out",
+            easing: "cubic-bezier(0.42, 0, 0.58, 1)",
             transform: {
-              translateX: 0,
-              translateY: riseY,
+              translateX: target.x * apexProgress,
+              translateY: apexY,
               scaleX: 0.98 * perspectiveScale,
               scaleY: 1.02 * perspectiveScale,
-              rotateDeg: 0
+              rotateDeg: directed(2, sign)
             },
             opacity: 1
           },
           {
-            label: "aerial-reposition",
-            durationMs: repositionMs,
-            easing: "ease-in",
-            transform: {
-              translateX: target.x,
-              translateY: Math.min(
-                riseY,
-                target.y - cfg.diveHeight
-              ),
-              scaleX: 0.94 * perspectiveScale,
-              scaleY: 1.06 * perspectiveScale,
-              rotateDeg: directed(4, sign)
-            },
-            opacity: 0
-          },
-          {
-            label: "aerial-dive-impact",
+            label: "aerial-arc-impact",
             durationMs: diveMs,
-            easing: "cubic-bezier(0.15, 0.8, 0.2, 1)",
+            easing: "cubic-bezier(0.42, 0, 0.58, 1)",
             transform: {
               translateX: target.x,
               translateY: target.y,
