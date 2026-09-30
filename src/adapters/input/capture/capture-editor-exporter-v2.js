@@ -270,7 +270,11 @@ export function exportCaptureEditorDraftsToCombatExportV2(input) {
     creatures: enrichedCreatures,
     presentation: {
       ...exportedV1.presentation,
-      arenaId: battleSetup.arenaId,
+      ...(
+        battleSetup.arenaId === null
+          ? {}
+          : { arenaId: battleSetup.arenaId }
+      ),
       creatures: Object.fromEntries(
         creaturePresentations.map((binding) => [
           binding.id,
