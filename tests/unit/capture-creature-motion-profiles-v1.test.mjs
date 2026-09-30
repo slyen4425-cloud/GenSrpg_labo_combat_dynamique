@@ -50,6 +50,8 @@ test("grounded idle profiles keep the feet/base fixed", async () => {
     const profile = await json(path);
     assert.equal(profile.idle.motionStyle, "grounded");
     assert.equal(profile.idle.bobY, 0);
+    assert.equal(profile.idle.swayRotate, 0);
+    assert.equal(profile.idle.scaleXDelta, 0);
     assert.deepEqual(profile.idle.transformOrigin, {
       x: "50%",
       y: "100%"
