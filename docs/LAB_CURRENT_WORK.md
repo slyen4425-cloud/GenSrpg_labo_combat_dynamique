@@ -16513,3 +16513,98 @@ Important pour la suite :
 - le correctif `Tactical Effects UI Feedback Repair V1` existe sur une branche PREVALIDATION divergente ;
 - aucun nouveau travail UI/Projectile ne doit repartir d'une seule de ces lignes en ignorant l'autre ;
 - le prochain lot doit d'abord établir une base de réconciliation explicite, testée, sans écraser les 103 capacités natives ni réintroduire les contrôles legacy supprimés.
+
+## Micro-lot — Capture UI Authority Reconciliation V1 — 2026-09-30
+
+Base :
+
+- checkpoint PREVALIDATION Défense UI : `checkpoint/lab-capture-defense-stat-editor-ui-v1-prevalidation-green-2026-09-30` ;
+- SHA : `b6649fc7ed0085a1c8eff04783b75742e60ae5b3` ;
+- CI : SUCCESS, 643/643.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-ui-authority-reconciliation-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-ui-authority-reconciliation-v1-2026-09-30`.
+
+### Cause
+
+Deux lignes UI ont divergé :
+
+- la ligne canonique récente contient Défense + 103 capacités Capture natives ;
+- la PREVALIDATION `Tactical Effects UI Feedback Repair V1` contient le nettoyage des anciennes autorités éditables.
+
+La ligne canonique récente possède donc encore des contrôles legacy concurrents dans le Human Editor.
+
+Le retour utilisateur confirme en plus que le contrôle `interruptsPreparation` visible près du projectile est perçu comme un second réglage de stun. Le propriétaire moderne du stun est `StatusEffectV1.stun`.
+
+### Objectif
+
+Réconcilier le nettoyage UI sur la ligne canonique récente sans perdre :
+
+- les 103 capacités Capture natives ;
+- la stat Défense et son coefficient ;
+- les conditions Ultime ;
+- Tactical Effects / StatusEffect V1.
+
+Supprimer de la surface éditable les autorités legacy concurrentes :
+
+- damage ;
+- heal ;
+- stunMs ;
+- targetRelations ;
+- allowedDistances ;
+- interruptsPreparation.
+
+Les champs de compatibilité du contrat peuvent rester transportés à zéro/faux si requis par les anciennes données, mais ne sont plus éditables.
+
+### Propriétaires
+
+- dégâts/soins/scope : `SkillDefinition.effects / SkillEffectV1` ;
+- stun : `StatusEffectV1.stun` ;
+- Ultime : `SkillDefinition.activationRequirements` ;
+- compatibilité legacy : projection interne non éditable du Human Editor.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js` ;
+- `src/ui/capture-editor-skill-catalog-v1.js` si nécessaire pour la projection des modèles ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests unitaires dédiés ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md` à la clôture.
+
+### Protégé
+
+- Combat Runtime ;
+- Action Resolver ;
+- StatusEffect Runtime ;
+- SkillEffectV1 / StatusEffectV1 contracts ;
+- Projectile Clash Runtime ;
+- FX / Renderer ;
+- Database Export/Import ;
+- production GenSrpG ;
+- aucun storage/network/global/MutationObserver/timer de réparation.
+
+### RED attendu
+
+1. aucun contrôle DOM legacy damage/heal/stun/target/distance/interrupt n'est éditable ;
+2. le Human Editor ne lit plus ces sélecteurs ;
+3. `effect.damage/heal/stunMs` et `effect.interruptsPreparation` sont neutralisés lorsque l'autorité moderne est utilisée ;
+4. targetRelations devient une projection dérivée des scopes tactiques ;
+5. allowedDistances devient une compatibilité complète non éditable ;
+6. Ultime round-trip intact ;
+7. hydratation 103 capacités natives intacte ;
+8. Défense UI intacte.
+
+### Critère de fin
+
+- RED ciblé ;
+- correction soustractive ;
+- CI complète GREEN ;
+- checkpoint PREVALIDATION + preview ;
+- seulement ensuite ouverture de Projectile Clash Rules V2.
+
