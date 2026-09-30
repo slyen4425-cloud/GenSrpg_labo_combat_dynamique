@@ -1639,3 +1639,41 @@ Ce jalon ne modifie pas :
 - production GenSrpG.
 
 Le Human Editor continuera d'utiliser sa Map `configuredSkills` unique. La consommation future de la projection complexe devra être un raccord dédié, pas une seconde bibliothèque concurrente.
+
+## 23. Human Editor — autorité tactique unique après feedback smartphone
+
+Le Human Editor Capture n'expose plus deux chemins concurrents pour les mêmes propriétés gameplay.
+
+### Autorité d'édition
+
+Pour les capacités éditées par la surface actuelle :
+
+- dégâts et soins : `SkillDefinition.effects -> SkillEffectV1` ;
+- ciblage de chaque effet : `SkillEffectV1.targetScope` ;
+- stun : `SkillEffectV1.apply_status -> StatusEffectV1(kind=stun)` ;
+- conditions « Ultime / conditionnelle » : `SkillDefinition.activationRequirements`.
+
+Les anciennes saisies UI `damage / heal / stunMs / targetRelations / allowedDistances` ne sont plus exposées.
+
+### Projections de compatibilité
+
+`SkillDefinition` conserve encore certains champs historiques pour compatibilité avec le Runtime existant, mais le Human Editor ne les traite plus comme données éditables concurrentes :
+
+- `effect.damage / effect.heal / effect.stunMs` sont neutralisés à zéro dès que la surface tactique moderne est utilisée ;
+- `allowedDistances` reçoit la compatibilité complète `short / medium / long` sans contrôle utilisateur dans l'éditeur Capture ;
+- `targetRelations` est dérivé des scopes et de la polarité des `SkillEffectV1`, jamais saisi une seconde fois.
+
+Cette projection est unidirectionnelle : **effets tactiques -> compatibilité SkillDefinition**. Elle ne devient pas une nouvelle source métier.
+
+### Modèles historiques
+
+Lorsqu'un modèle historique est entièrement portable, ses effets explicites sont projetés vers la même liste `SkillEffectV1`.
+
+Lorsqu'un modèle historique reste bloqué par une politique manquante, il ne publie aucune migration partielle et conserve les effets modernes déjà configurés.
+
+### Impact de zone
+
+Le Runtime de zone émet déjà un événement sémantique `hit` par cible réellement touchée.
+
+La présentation de ces impacts appartient au Renderer/Presenter. Elle ne doit pas être réparée dans le Human Editor. Un micro-lot séparé doit consommer les événements `hit` existants et présenter chaque cible affectée, ou un FX de zone explicitement défini, sans recalculer les cibles depuis le DOM.
+
