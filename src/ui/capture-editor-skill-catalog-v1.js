@@ -147,8 +147,17 @@ export function mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
     );
   const template = state.template;
 
+  const {
+    damage: _legacyDamage,
+    heal: _legacyHeal,
+    stunMs: _legacyStunMs,
+    targetRelations: _legacyTargetRelations,
+    allowedDistances: _legacyAllowedDistances,
+    ...retainedFields
+  } = currentFields;
+
   return {
-    ...currentFields,
+    ...retainedFields,
     id: template.id,
     name: template.name,
     description: template.description,
