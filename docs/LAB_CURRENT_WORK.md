@@ -17378,3 +17378,52 @@ Objectif smartphone :
 - checkpoint PREVALIDATION ;
 - lien smartphone permettant le workflow réel config -> export -> import.
 
+### Micro-lot A — Database Bundle Core — GREEN technique
+
+RED :
+
+- commit : `8ba4ad3cf39e177d0b93ca7b249ddb3fa86b31dc` ;
+- run : `36678289321` ;
+- 663 tests, 662 PASS, 1 FAIL attendu : contrat Database absent.
+
+Implémentation :
+
+- `src/contracts/capture-database-v1.js` ;
+- `src/adapters/input/capture/capture-database-transfer-v1.js`.
+
+Le bundle compose directement :
+
+- `CaptureStatRegistryV1` ;
+- `CaptureProgressionRulesV1` ;
+- `CaptureCreatureEditorDraftV3` ;
+- `CaptureCreatureStatValuesV1` ;
+- `CaptureActiveSkillLoadoutV1` ;
+- `CaptureSkillEditorDraftV1`.
+
+Validation cross-références :
+
+- IDs de créatures uniques ;
+- IDs de capacités uniques ;
+- statValues/loadout rattachés au même creatureId ;
+- toutes les capacités liées existent ;
+- toutes les capacités équipées existent et sont liées ;
+- cible d'évolution déclarée dans le bundle ;
+- metadata strictement JSON-compatible.
+
+Le format ne contient aucun battle/teams/actors/rosters ni snapshot `statEffects` dérivé.
+
+Le transfert JSON :
+
+- normalise avant sérialisation ;
+- JSON formaté ;
+- parse puis normalise à l'import ;
+- JSON invalide refusé explicitement ;
+- aucun DOM/FileReader/Blob/storage/network/Runtime.
+
+GREEN :
+
+- run `36678658071` ;
+- structure / frontières / indépendance : OK ;
+- **670 / 670 PASS / 0 FAIL**.
+
+Étape suivante : micro-lot B Entity Transfer Packages.
