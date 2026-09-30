@@ -202,8 +202,8 @@ function creature(id, evolutionTarget = null) {
       profileId: "quadruped",
       displayScale: 1.35,
       position: {
-        player: { x: 0.15, y: 0.1 },
-        opponent: { x: -0.1, y: 0.05 }
+        x: 0.15,
+        y: 0.1
       },
       transformOrigin: {
         x: "50%",
@@ -229,9 +229,18 @@ function creature(id, evolutionTarget = null) {
         }
       ],
       audio: {
-        attack: "core:audio-attack",
-        hit: "core:audio-hit",
-        ko: "core:audio-ko"
+        attack: {
+          assetId: "core:audio-attack",
+          volume: 1
+        },
+        hit: {
+          assetId: "core:audio-hit",
+          volume: 1
+        },
+        ko: {
+          assetId: "core:audio-ko",
+          volume: 1
+        }
       }
     }
   };
@@ -358,7 +367,7 @@ test("Database preserves creature evolution presentation scale sockets audio sta
     "mouth"
   );
   assert.equal(
-    alpha.draft.presentation.audio.attack,
+    alpha.draft.presentation.audio.attack.assetId,
     "core:audio-attack"
   );
   assert.equal(
