@@ -304,18 +304,20 @@ export async function mountCombatDemo({
 
   function playMovementFor(slotKey) {
     if (disposed) {
+      const durationMs = 0;
       return Object.freeze({
         status: "disposed",
-        durationMs: 0,
+        durationMs,
         finished: Promise.resolve({ status: "disposed" })
       });
     }
 
     const slot = slotOf(slotKey);
     if (!slot.visible) {
+      const durationMs = 0;
       return Object.freeze({
         status: "hidden",
-        durationMs: 0,
+        durationMs,
         finished: Promise.resolve({ status: "hidden" })
       });
     }
