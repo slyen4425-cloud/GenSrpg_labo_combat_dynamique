@@ -68,28 +68,50 @@
     "durationMs": 330,
     "phases": [
       {
-        "label": "bound-lift",
-        "at": 0.45,
+        "label": "bound-lift-1",
+        "at": 0.25,
+        "translateY": -16,
+        "rotateDeg": 0.65,
+        "scaleX": 1.014,
+        "scaleY": 0.99,
+        "easing": "ease-out"
+      },
+      {
+        "label": "bound-land-1",
+        "at": 0.5,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.004,
+        "scaleY": 0.996,
+        "easing": "ease-in"
+      },
+      {
+        "label": "bound-lift-2",
+        "at": 0.75,
         "translateY": -14,
-        "rotateDeg": 0.55,
+        "rotateDeg": 0.5,
         "scaleX": 1.012,
         "scaleY": 0.992,
         "easing": "ease-out"
       },
       {
-        "label": "bound-land",
+        "label": "bound-land-2",
         "at": 1,
         "translateY": 0,
         "rotateDeg": 0,
         "scaleX": 1,
         "scaleY": 1,
-        "easing": "cubic-bezier(0.35,0.9,0.35,1)"
+        "easing": "ease-in"
       }
     ],
     "contacts": [
       {
+        "at": 0.5,
+        "intensity": 0.22
+      },
+      {
         "at": 1,
-        "intensity": 0.28
+        "intensity": 0.3
       }
     ]
   }
