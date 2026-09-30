@@ -18752,3 +18752,56 @@ Réconciliation ciblée -> RED prouvé -> correction minimale dans Animation Cor
 
 Aucun rendu visuel ne sera déclaré GREEN utilisateur avant validation smartphone de Sylvain.
 
+
+### Résultat — Flying Single-Arc Reconciliation V1
+
+Réconciliation effectuée sans merge aveugle :
+- base canonique `flying` conservée ;
+- aucun `drake.profile.json` recréé ;
+- déplacement `serpentine.locomotion` inchangé ;
+- idle serpentin alterné repris du lot refinement ;
+- locomotion générique volante à montée/apex/descente reprise du lot motion sous l'ID canonique `flying` ;
+- une seule représentation d'ombre conservée : `presentation.shadow.bottomPct / opacity`.
+
+Cause du double arc confirmée sur le vrai chemin :
+- Presenter reçoit `approachMode:"aerial"` ;
+- Visual Controller crée `aerial-attack` ;
+- Animation Core produisait `aerial-rise -> aerial-reposition -> aerial-dive-impact` ;
+- la phase de repositionnement intermédiaire rompait la continuité départ -> cible.
+
+RED :
+- commit : `b585198f5e6be12dbc1fea1a81aa329941457224` ;
+- CI : `36717578082` ;
+- conclusion : FAILURE attendue sur la nouvelle sentinelle d'arc aérien continu.
+
+Correction :
+- suppression de la phase de repositionnement du plan aérien ;
+- approche : `aerial-arc-apex -> aerial-arc-impact` ;
+- progression horizontale présente dès la montée ;
+- un seul apex ;
+- aucune invisibilité avant impact ;
+- somme des phases d'approche = `travelMs` ;
+- coordonnées d'impact inchangées et exactes ;
+- récupération `aerial-home` conservée après impact.
+
+GREEN fonctionnel avant documentation finale :
+- HEAD : `532c15c0d3d06749af3f90a88dd69e531ba96299` ;
+- CI : `36718057109` ;
+- conclusion : SUCCESS sur la suite complète.
+
+Audit de protection :
+- blobs `biped.profile.json`, `quadruped.profile.json`, `massive.profile.json` identiques à la base ;
+- `src/core/combat/combat-runtime.js` identique à la base, blob `f31d3eea632262fd3155eabcdd93b84230359301` ;
+- aucun fichier hors périmètre dans le diff contre `a93258401c7480e17ea4391a2a1137724b64adcd` ;
+- dépôt `Zombicide-40k` non touché.
+
+État :
+**GREEN technique — PREVALIDATION smartphone requise.**
+
+Validation smartphone demandée :
+1. dans l'éditeur, vérifier que le profil `flying` est reconnu ;
+2. vérifier l'idle serpent : base au sol, haut du corps légèrement droite/gauche ;
+3. vérifier l'idle volant : suspension verticale et ombre éloignée ;
+4. lancer une attaque aérienne et vérifier qu'elle rejoint l'ennemi en un seul pont continu, avec un seul sommet ;
+5. vérifier l'impact sur la cible et le retour post-impact ;
+6. vérifier qu'aucune régression n'est visible sur bipède, quadrupède et massif.
