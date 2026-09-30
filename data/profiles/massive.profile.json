@@ -65,49 +65,93 @@
   },
   "locomotion": {
     "style": "heavy-step",
-    "durationMs": 460,
+    "durationMs": 760,
     "phases": [
       {
         "label": "heavy-lift-1",
-        "at": 0.25,
-        "translateY": -4,
-        "rotateDeg": 0.22,
-        "scaleX": 0.998,
-        "scaleY": 1.002,
-        "easing": "ease-out"
+        "at": 0.125,
+        "translateY": -26,
+        "rotateDeg": 0.32,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
         "label": "heavy-contact-1",
-        "at": 0.5,
+        "at": 0.25,
         "translateY": 0,
         "rotateDeg": 0,
-        "scaleX": 1.008,
-        "scaleY": 0.992,
-        "easing": "ease-in"
+        "scaleX": 1.014,
+        "scaleY": 0.986,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
         "label": "heavy-lift-2",
-        "at": 0.75,
-        "translateY": -3,
-        "rotateDeg": -0.18,
-        "scaleX": 0.999,
-        "scaleY": 1.001,
-        "easing": "ease-out"
+        "at": 0.375,
+        "translateY": -26,
+        "rotateDeg": -0.28,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       },
       {
         "label": "heavy-contact-2",
+        "at": 0.5,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.014,
+        "scaleY": 0.986,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-lift-3",
+        "at": 0.625,
+        "translateY": -26,
+        "rotateDeg": 0.26,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-contact-3",
+        "at": 0.75,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.014,
+        "scaleY": 0.986,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-lift-4",
+        "at": 0.875,
+        "translateY": -26,
+        "rotateDeg": -0.22,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-contact-4",
         "at": 1,
         "translateY": 0,
         "rotateDeg": 0,
-        "scaleX": 1.01,
-        "scaleY": 0.99,
-        "easing": "ease-in"
+        "scaleX": 1.016,
+        "scaleY": 0.984,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
       }
     ],
     "contacts": [
       {
+        "at": 0.25,
+        "intensity": 0.72
+      },
+      {
         "at": 0.5,
-        "intensity": 0.65
+        "intensity": 0.78
+      },
+      {
+        "at": 0.75,
+        "intensity": 0.86
       },
       {
         "at": 1,
