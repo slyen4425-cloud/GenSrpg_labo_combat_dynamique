@@ -1159,16 +1159,6 @@ export function buildHumanCreatureDraftV2(fields) {
     },
     combat: {
       maxHp: finiteNumber(fields.combat?.maxHp, "PV max"),
-      ...(
-        fields.combat?.initialHp == null
-          ? {}
-          : {
-              initialHp: finiteNumber(
-                fields.combat.initialHp,
-                "PV initiaux"
-              )
-            }
-      ),
       maxEnergy: finiteNumber(
         fields.combat?.maxEnergy,
         "Énergie max"
