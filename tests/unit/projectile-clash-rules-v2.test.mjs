@@ -9,6 +9,12 @@ import {
   projectileClashCandidate,
   resolveProjectileClash
 } from "../../src/core/combat/projectile-clash.js";
+import {
+  createCombatSession
+} from "../../src/core/combat/combat-session.js";
+import {
+  createCombatRuntime
+} from "../../src/core/combat/combat-runtime.js";
 
 function rawSkill({
   id = "projectile",
@@ -330,4 +336,146 @@ test("Human Editor exposes tag plus multiple clash rules and no V1 authority", a
       legacy + " must not remain an active editor authority"
     );
   }
+});
+
+
+test("real CombatRuntime keeps the stronger projectile active until its later target impact", () => {
+  let clock = 0;
+  let scheduled = null;
+  const resolutions = [];
+
+  const session = createCombatSession({
+    fighters: [
+      {
+        id: "ice-actor",
+        maxHp: 100,
+        maxEnergy: 10,
+        initialEnergy: 10
+      },
+      {
+        id: "fire-actor",
+        maxHp: 100,
+        maxEnergy: 10,
+        initialEnergy: 10
+      }
+    ]
+  });
+
+  const ice = normalizeSkillDefinition(
+    rawSkill({
+      id: "ice-runtime",
+      element: "ice",
+      damage: 20,
+      projectileClash: {
+        tag: "ice",
+        rules: [
+          {
+            againstTag: "fire",
+            strength: 2
+          }
+        ]
+      }
+    })
+  );
+  const fire = normalizeSkillDefinition(
+    rawSkill({
+      id: "fire-runtime",
+      damage: 15,
+      projectileClash: {
+        tag: "fire",
+        rules: [
+          {
+            againstTag: "ice",
+            strength: 1
+          }
+        ]
+      }
+    })
+  );
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 10,
+    now: () => clock,
+    setTimer(callback) {
+      scheduled = callback;
+      return 1;
+    },
+    clearTimer() {},
+    onResolved(resolution) {
+      resolutions.push(resolution);
+    }
+  });
+
+  runtime.start();
+
+  assert.equal(
+    runtime.startSkill({
+      actorId: "ice-actor",
+      targetId: "fire-actor",
+      skill: ice
+    }).ok,
+    true
+  );
+  assert.equal(
+    runtime.startSkill({
+      actorId: "fire-actor",
+      targetId: "ice-actor",
+      skill: fire
+    }).ok,
+    true
+  );
+
+  clock = 600;
+  scheduled();
+
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "ice-actor"
+    ),
+    true,
+    "stronger projectile must continue"
+  );
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "fire-actor"
+    ),
+    false,
+    "weaker projectile must be cancelled"
+  );
+  assert.equal(
+    session.snapshot().fighters[
+      "fire-actor"
+    ].hp,
+    100,
+    "winner has not reached its target at clash time"
+  );
+
+  clock = 1100;
+  scheduled();
+
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "ice-actor"
+    ),
+    false
+  );
+  assert.equal(
+    session.snapshot().fighters[
+      "fire-actor"
+    ].hp,
+    80,
+    "surviving projectile must resolve its original hit"
+  );
+  assert.equal(
+    resolutions.some(
+      (resolution) =>
+        resolution.actorId ===
+          "ice-actor" &&
+        resolution.outcome === "hit"
+    ),
+    true
+  );
+
+  runtime.dispose();
 });
