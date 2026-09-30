@@ -58,6 +58,8 @@ function exportCreatureDraft(draft) {
     id: draft.id,
     displayName: draft.displayName,
     combat: draft.combat,
+    elements: draft.elements,
+    resistances: draft.resistances,
     skillIds: draft.skillIds,
     presentationId: draft.presentationId,
     metadata: {
