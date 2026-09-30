@@ -1866,3 +1866,49 @@ La politique d'application est explicite :
 - replace.
 
 Aucun merge champ par champ n'existe.
+
+## 32. Capture Database Files UI V1
+
+Le Human Editor ne devient pas propriétaire des formats de données.
+
+Chaîne export :
+
+`Editor Maps -> capture-editor-database-state-v1 -> Database/Entity Transfer -> JSON -> UI download`.
+
+Chaîne import :
+
+`File.text -> Entity Transfer parser -> conflict planner -> editor database state adapter -> mêmes Maps de session`.
+
+### Fichiers
+
+Trois niveaux sont supportés :
+
+- créature seule ;
+- capacité seule ;
+- base complète.
+
+Le fichier créature ne duplique jamais les définitions de capacités. Les IDs suffisent.
+
+Le fichier capacité transporte son CaptureSkillEditorDraftV1 complet.
+
+La base complète compose les propriétaires globaux et toutes les entités enregistrées.
+
+### Conflits
+
+Le mode par défaut est reject.
+
+Replace doit être activé explicitement par l'utilisateur.
+
+Il n'existe aucun merge champ par champ.
+
+### Assets
+
+Les JSON transportent les `assetId` présents dans les Presentation Bindings.
+
+Les binaires image/sprite/audio restent dans les bibliothèques d'assets et peuvent être créés ou complétés ultérieurement sans modifier l'autorité gameplay.
+
+### Session
+
+Aucun stockage navigateur n'est ajouté. Les Maps du Human Editor restent l'unique état actif de la session.
+
+Le record HTML de démonstration utilisé avant hydratation n'est pas conservé dans la bibliothèque canonique sauf enregistrement explicite par l'utilisateur.
