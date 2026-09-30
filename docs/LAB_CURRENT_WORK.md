@@ -19038,3 +19038,41 @@ Fichiers autorisés :
 Protégé : SkillDefinition, Combat State, Action Resolver, Combat Runtime, dégâts, éléments, résistances, profils de mouvement, assets, sons, dépôt `Zombicide-40k`.
 
 Workflow : RED ciblé -> correction minimale -> CI complète -> checkpoint GREEN/PREVALIDATION si rendu mobile concerné.
+
+
+### Résultat — Combat Test Ergonomics V1
+
+Objectif atteint sans modifier l'autorité gameplay du cooldown.
+
+RED :
+- défaut 1v1 : commit `790f3c59ddac0f3ead2e5c32be8d4a97ed6a2fc3`, CI `36737415022` — FAILURE attendue ;
+- retour cooldown visible : commit `adbcfd82c56b9179c98bab8205bb0cd85f219321`, CI `36737423372` — FAILURE attendue.
+
+Correction minimale :
+- `capture-editor-v2.html` sélectionne désormais `1 contre 1` par défaut ; le 2v2 reste disponible ;
+- `combat-2v2-test-ui.js` continue d'utiliser `session.previewSkill()` comme seule source de disponibilité ;
+- lorsque `preview.outcome === "cooldown"`, l'UI affiche `Recharge X s` à partir de `preview.remainingCooldownMs` ;
+- aucun `setInterval`, aucun `Date.now()`, aucun timer cooldown UI ajouté ;
+- badge de présentation ajouté dans `demo.css`.
+
+Commits fonctionnels :
+- défaut 1v1 : `97741ed940b92356f011ef8f80c252c5ee72c127` ;
+- feedback cooldown : `cf7fa42c41b56f2c9f9e988d53aa362770ce6842` ;
+- présentation badge : `fb19883c4236bc578303613be4e311ccbb4d8688`.
+
+Correction des sentinelles de test (échappement regex uniquement) :
+- `2daef94ca9ad95d02bdc5c4e143ebf5c908ae918` ;
+- `1d9fbcfb6fa660c7c92439879bfa68ddb9b27654`.
+
+GREEN technique :
+- CI : `36737805707` — SUCCESS ;
+- suite complète : **713/713 PASS, 0 FAIL**.
+
+Invariants protégés :
+- `SkillDefinition.cooldownMs` inchangé ;
+- Combat State reste propriétaire de `skillCooldowns` ;
+- Action Resolver reste propriétaire du refus `outcome:"cooldown"` ;
+- Combat Runtime conserve l'unique horloge existante ;
+- aucune règle de dégâts, élément, résistance, mouvement ou capacité modifiée.
+
+État : **GREEN technique — PREVALIDATION smartphone requise** pour confirmer l'ergonomie 1v1 et la lisibilité du badge cooldown.
