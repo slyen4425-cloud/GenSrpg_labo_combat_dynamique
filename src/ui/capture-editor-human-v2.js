@@ -50,6 +50,9 @@ import {
   captureComplexNativeSkillDraftsV1
 } from "../catalogs/capture-complex-native-skill-catalog-v1.js";
 import {
+  canonicalCaptureCreatureRecordsV1
+} from "../catalogs/capture-canonical-creature-catalog-v1.js";
+import {
   buildPrivateAudioRoleGroupsV1
 } from "./private-audio-role-groups-v1.js";
 import {
@@ -3792,8 +3795,13 @@ async function hydrateMonsterCaptureCreatureCatalog(
     );
   }
 
+  const canonicalEntries =
+    canonicalCaptureCreatureRecordsV1(
+      entries
+    );
+
   return Object.freeze(
-    entries.map((entry) => {
+    canonicalEntries.map((entry) => {
       const record =
         importMonsterCaptureCreatureRecordV1(
           entry
