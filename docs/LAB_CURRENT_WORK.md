@@ -16428,3 +16428,53 @@ GREEN :
 
 - micro-lot Human Editor Défense : rendre explicite « 1 point = X % réduction globale des dégâts » et permettre de régler ce coefficient ;
 - ne pas modifier le Runtime dans ce lot.
+
+
+## Micro-lot — Capture Defense Stat Editor UI V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN 103 capacités natives : `checkpoint/lab-capture-complex-native-skills-v1-green-2026-09-30` ;
+- SHA : `6a2392f00fa5129f2e25647464d4613da86582e1` ;
+- CI : SUCCESS, 640/640.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-defense-stat-editor-ui-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-defense-stat-editor-ui-v1-2026-09-30`.
+
+### Cause démontrée
+
+Le Runtime possède maintenant `damageReductionPctPerPoint` et la stat standard `defense`, mais le Human Editor ne connaît encore que :
+
+- dégâts % / point ;
+- résistance % / point ;
+- réduction temps de charge % / point.
+
+Conséquence : Défense apparaîtrait comme une stat sans effet compréhensible et son coefficient ne serait pas éditable.
+
+### Objectif
+
+- afficher : **1 point = -X % dégâts reçus** ;
+- afficher le total courant ;
+- ajouter le champ **Réduction globale dégâts reçus % / point** dans le registre système ;
+- ajouter le même coefficient aux stats personnalisées ;
+- round-trip via `CaptureStatRegistryV1` ;
+- aucune modification Runtime/Combat.
+
+### RED
+
+1. résumé Défense lisible ;
+2. champ système présent ;
+3. champ custom présent ;
+4. lecture/écriture du coefficient ;
+5. mobile layout reste empilé.
+
+### Critère de fin
+
+- CI complète GREEN ;
+- checkpoint PREVALIDATION + preview ;
+- test smartphone groupé ensuite avec Tactical Effects UI.
