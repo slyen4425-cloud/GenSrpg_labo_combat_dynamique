@@ -47,15 +47,17 @@ export function createCombatRuntime({
     return JSON.stringify({
       distance: state.distance,
       fighters: Object.fromEntries(
-        Object.values(state.fighters).map((fighter) => [
-          fighter.id,
-          {
-            hp: fighter.hp,
-            maxHp: fighter.maxHp,
-            energy: fighter.energy,
-            effects: fighter.chargeTimeEffects.map((effect) => effect.id)
-          }
-        ])
+        Object.values(state.fighters).map((fighter) => {
+          const {
+            energyChargeProgressMs,
+            ...observable
+          } = fighter;
+
+          return [
+            fighter.id,
+            observable
+          ];
+        })
       )
     });
   }
