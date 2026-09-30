@@ -299,7 +299,15 @@ test("combat UI routes only real AI movement through the visual locomotion owner
   );
   assert.match(
     visualController,
-    /function playMovementFor[\s\S]*type: "move"[\s\S]*planLocomotionCueFx/
+    /function schedulePlanCues[\s\S]*planLocomotionCueFx/
+  );
+  assert.match(
+    visualController,
+    /function playMovementFor[\s\S]*type: "move"[\s\S]*schedulePlanCues/
+  );
+  assert.match(
+    visualController,
+    /function playApproachFor[\s\S]*schedulePlanCues/
   );
   assert.doesNotMatch(
     combatUi,
