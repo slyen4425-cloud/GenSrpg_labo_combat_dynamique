@@ -18927,3 +18927,25 @@ Fichiers autorisés :
 Protégé : combat, règles, profils morphologiques, mouvements, compétences, sons, créatures, arènes hors de ces cinq fichiers, dépôt `Zombicide-40k`.
 
 Tests prévus : chemins/IDs catalogue inchangés, cinq bindings Core résolvables, absence des fallbacks locaux city/lava dans la preview, CI complète, preview smartphone.
+
+
+### Pré-audit raccord runtime — Arena Refresh V1
+
+Vérification réelle du runtime de preview :
+- `examples/dom-demo/demo-assets.js` expose déjà les cinq assets Core canoniques :
+  - `core:arena-forest-01` ;
+  - `core:arena-cave-01` ;
+  - `core:arena-snow-01` ;
+  - `core:arena-city-01` ;
+  - `core:arena-lava-01` ;
+- `ARENA_BINDINGS` contient déjà `forest/cave/snow/city/lava` vers ces IDs Core ;
+- les anciens fallbacks locaux `test:arena-city-local-01` / `test:arena-lava-local-01` ne sont plus présents sur cette lignée ;
+- aucun changement de code runtime n'est donc requis pour le remplacement visuel.
+
+Branche asset dédiée créée depuis `global-assets` HEAD `570b37edb26156a3e84256ef1be18eb07d697eca` :
+- `checkpoint/lab-start-arena-refresh-assets-v1-2026-09-30` ;
+- `work/lab-arena-refresh-assets-v1-2026-09-30`.
+
+Les cinq sources utilisateur sont toutes en 1536x864 (16:9), sans recadrage requis.
+
+État : remplacement binaire non encore commité. Aucun asset canonique n'a été écrasé partiellement. La prochaine opération autorisée est exclusivement le remplacement 1 pour 1 des cinq binaires, suivi de la vérification catalogue/cache, CI et preview smartphone.
