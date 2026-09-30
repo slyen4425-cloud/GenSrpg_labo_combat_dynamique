@@ -19144,3 +19144,24 @@ Extension de périmètre autorisée avant correction :
 - aucun autre état de combat ne change.
 
 Une sentinelle doit protéger explicitement : résistance +35 acceptée, faiblesse -50 acceptée, NaN/Infinity refusés, bonus de dégâts négatif toujours refusé.
+
+
+### Extension de diagnostic — vrai chemin export des éléments naturels
+
+Le contrôle du chemin complet a détecté un défaut après le premier GREEN local : `capture-editor-exporter-v1.js` conserve actuellement `elements` et `resistances` seulement dans `metadata.editor`, tandis que `CaptureCombatExportV1.normalizeCreature()` n'expose pas ces champs au niveau sémantique de la créature. `adaptCaptureCreatureToFighterConfig()` lit désormais `creature.resistances`, donc le test direct adaptateur est GREEN mais le vrai chemin éditeur -> export -> adapter peut perdre les résistances naturelles.
+
+Décision d'architecture avant correction :
+- promouvoir `elements` et `resistances` en champs sémantiques portables de `CaptureCombatExportV1.creatures[]` ;
+- l'exporteur éditeur V1 les écrit au niveau canonique de la créature ;
+- l'adaptateur FighterConfig lit uniquement ce niveau canonique ;
+- `metadata.editor` ne doit plus être l'autorité gameplay de ces champs ;
+- compatibilité : les champs sont optionnels dans le contrat et valent des tableaux vides lorsqu'ils sont absents ;
+- aucune formule de dégâts n'est modifiée.
+
+Extension de périmètre autorisée :
+- `src/contracts/capture-combat-export-v1.js` ;
+- `src/adapters/input/capture/capture-editor-exporter-v1.js` ;
+- tests export/adapter correspondants ;
+- documentation architecture.
+
+Nouveau RED obligatoire : un draft éditeur avec `fire +35 / water -50` doit ressortir de `exportCaptureEditorDraftsToCombatExportV1()`, survivre à `normalizeCaptureCombatExportV1()`, puis produire via `adaptCaptureCombatExportStackV1()` un FighterConfig avec les mêmes résistances signées.
