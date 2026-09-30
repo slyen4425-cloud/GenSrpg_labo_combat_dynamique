@@ -19004,3 +19004,24 @@ Audit de protection :
 Validation smartphone reçue le 2026-09-30 : **OK utilisateur** sur les cinq nouvelles arènes (city, cave, snow, forest, lava).
 
 Le lot Arena Refresh V1 est désormais **GREEN utilisateur**. Aucun ajustement visuel supplémentaire n'est demandé sur ce lot.
+
+
+## Micro-lot — Combat Test Default 1v1 V1 — 2026-09-30
+
+Base : `ca5e55490852e797fdbaa1ebede074a5d53e7adf` (Arena Refresh V1 validé utilisateur).
+
+- checkpoint de départ : `checkpoint/lab-start-combat-test-default-1v1-v1-2026-09-30` ;
+- branche : `work/lab-combat-test-default-1v1-v1-2026-09-30`.
+
+Objectif : conserver le test combat dans l'éditeur Capture, avec **1v1 comme valeur par défaut**, tout en laissant 2v2 sélectionnable et en conservant le même chemin de données générique.
+
+Propriétaire : Demo UI / Battle Setup Editor Draft. Aucun changement Combat Rules.
+
+Fichiers autorisés :
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests de format/preview Capture ;
+- documentation du lot.
+
+Protégé : moteur combat, BattleFormatDefinition, capacités, cooldowns, dégâts, éléments, profils, assets, sons.
+
+RED : prouver que le contrôle HTML sélectionne encore 2v2 par défaut alors que le contrat demandé est 1v1.
