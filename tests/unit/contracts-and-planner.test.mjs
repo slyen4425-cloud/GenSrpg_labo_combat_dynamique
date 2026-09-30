@@ -202,5 +202,5 @@ test("planner consumes idle scale deltas from profile data", () => {
   assert.equal(plan.segments[0].transform.scaleX, 0.997);
   assert.equal(plan.segments[0].transform.scaleY, 1.012);
   assert.equal(plan.segments[0].transform.translateX, 0);
-  assert.equal(plan.segments[0].transform.translateY, -8);
+  assert.equal(plan.segments[0].transform.translateY, -drake.idle.bobY);
 });
