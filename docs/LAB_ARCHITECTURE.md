@@ -2193,3 +2193,21 @@ Invariants :
 - un seul apex ;
 - impact exactement aux coordonnées de la cible et à `travelMs` ;
 - aucune modification des dégâts, coûts, cooldowns, portée ou ciblage.
+
+
+## 38. Autorité canonique des arènes de combat
+
+Les fonds d'arène livrés au runtime appartiennent à la bibliothèque visuelle Core de la branche `global-assets`.
+
+Les cinq IDs canoniques actuels sont :
+- `core:arena-forest-01` ;
+- `core:arena-cave-01` ;
+- `core:arena-snow-01` ;
+- `core:arena-city-01` ;
+- `core:arena-lava-01`.
+
+Le binding de présentation `demoPresentationAssets.presentationForArena()` résout uniquement ces IDs Core. Les copies locales historiques de `city` et `lava` sous `assets/test/arenas/` ne constituent plus une autorité et sont retirées.
+
+Le remplacement d'un visuel d'arène conserve son assetId et son chemin canonique ; seule la révision de la bibliothèque visuelle est avancée pour invalider le cache client. Aucun changement d'image d'arène ne modifie Combat Rules, les profils morphologiques, les compétences, les positions ou les résultats métier.
+
+Pour le lot Arena Refresh V1, la révision runtime est `2026-09-30-v5-arena-refresh`.
