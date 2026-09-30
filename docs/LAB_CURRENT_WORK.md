@@ -19159,3 +19159,39 @@ Interdits :
 - canvas/second renderer ou observer masquant un défaut.
 
 RED obligatoire : la preview actuelle ne possède ni shell d'icône cooldown, ni couche de recoloration progressive, ni aiguille radiale pilotée par le ratio autoritaire.
+
+
+### Résultat — Cooldown Visual Overlay V1
+
+RED :
+- commit `b2519dc7abfcb831b30dfe554c0e13213180c600` ;
+- CI `36747698174` — FAILURE attendue ;
+- la preview ne possédait ni shell d'icône dédié, ni recoloration progressive, ni cadran radial, ni aiguille liée à la progression.
+
+Correction :
+- `src/ui/combat-2v2-test-ui.js` projette `cooldownProgress = 1 - remainingCooldownMs / totalCooldownMs` ;
+- le bouton expose `data-cooldown-active` et `--cooldown-progress` ;
+- l'icône possède une base désaturée et une couche couleur révélée progressivement par masque conique ;
+- un cadran radial assombrit la portion restante ;
+- une aiguille tourne avec le même ratio ;
+- le texte `Recharge X.X s` reste issu de `remainingCooldownMs` ;
+- aucun timer UI ni nouvelle horloge n'a été ajouté.
+
+Régression détectée puis corrigée :
+- premier CSS fonctionnel cassait le contrat historique d'icône mobile `82% x 82%` ;
+- correction commit `879758af9686a617e9403c4241e4efc5ad32bfd5` ;
+- le shell radial porte la composition tandis que l'image conserve exactement sa taille protégée.
+
+GREEN fonctionnel :
+- HEAD : `879758af9686a617e9403c4241e4efc5ad32bfd5` ;
+- CI `36748054094` — SUCCESS ;
+- suite complète : **717/717 PASS, 0 FAIL**.
+
+Audit de protection :
+- aucun changement Combat State ;
+- aucun changement Action Resolver ;
+- aucun changement de `cooldownMs` ;
+- aucun changement dégâts, énergie, ciblage, mouvements, FX, audio ou IA ;
+- diff limité à UI/CSS, test ciblé et documentation.
+
+État : **GREEN technique — PREVALIDATION smartphone requise** pour vérifier lisibilité de l'aiguille, progression radiale et recoloration sur petit écran.
