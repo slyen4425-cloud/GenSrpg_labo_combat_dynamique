@@ -934,10 +934,17 @@ export async function mountCombatTest({
       const decision = opponentAi.takeTurn();
 
       if (decision.status === "moved") {
+        const visualMovement =
+          typeof visuals.playMovementFor === "function"
+            ? visuals.playMovementFor(decision.actorId)
+            : null;
+
         distancePresenter.presentMovement({
           result: decision.result,
-          actorSlot: decision.actorId
+          actorSlot: decision.actorId,
+          durationMs: visualMovement?.durationMs ?? 260
         });
+        visualMovement?.finished?.catch?.(() => {});
         setStatus(
           "Adversaire se repositionne.",
           "info"
