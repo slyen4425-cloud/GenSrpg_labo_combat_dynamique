@@ -17216,3 +17216,165 @@ Validation :
 **GREEN technique**.
 
 Le JSON historique reste intact comme provenance. L'éditeur et les futurs exports doivent consommer uniquement la projection canonique.
+
+## Chantier — Capture Database Export / Import V1 R2 — 2026-09-30
+
+Base actuelle obligatoire :
+
+- `checkpoint/lab-capture-creature-catalog-canonicalization-v1-green-2026-09-30` ;
+- SHA : `ebf1134e070458e225cc05d7d17fb07b74779d7c` ;
+- CI : 662/662 PASS ;
+- catalogue créatures jouable : 102 IDs canoniques ;
+- catalogue capacités Capture : 103 drafts natifs ;
+- projectile collision : `projectileClash.power` uniquement.
+
+Une ancienne branche `work/lab-capture-database-export-import-v1-2026-09-30` existe mais est 104 commits derrière et diverge de l'autorité actuelle. Elle est abandonnée comme ligne de code. Son préaudit de propriété a été relu et reste valable sur les principes de composition.
+
+Checkpoint départ R2 :
+
+`checkpoint/lab-start-capture-database-export-import-v1-r2-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-database-export-import-v1-r2-2026-09-30`.
+
+### Besoin utilisateur
+
+Pouvoir :
+
+1. configurer une créature puis exporter **cette créature** ;
+2. configurer une capacité puis exporter **cette capacité** ;
+3. exporter **toute la base** ;
+4. réimporter ces fichiers dans le Human Editor ;
+5. envoyer ensuite ces JSON pour intégration dans le dépôt ;
+6. créer plus tard les assets visuels/sprites/sons manquants sans dupliquer les données métier.
+
+### Principe d'ownership
+
+Le format Database ne redéfinit aucun propriétaire.
+
+Il compose :
+
+- `CaptureCreatureEditorDraftV3` ;
+- `CaptureCreatureStatValuesV1` ;
+- `CaptureActiveSkillLoadoutV1` ;
+- `CaptureSkillEditorDraftV1` ;
+- `CaptureStatRegistryV1` ;
+- `CaptureProgressionRulesV1`.
+
+Ne jamais persister comme source éditable :
+
+- `CaptureCombatExportV1` ;
+- battle/teams/actors/rosters ;
+- `combat.statEffects` dérivé ;
+- `statEffectRulesById` dérivé ;
+- une copie aplatie des champs des contrats.
+
+Les références visuelles/audio restent dans les Presentation Bindings par `assetId`. Les binaires d'assets ne sont pas embarqués dans le JSON.
+
+### Types d'export V1
+
+**Créature**
+
+- 1 draft créature ;
+- ses valeurs de stats ;
+- son loadout ;
+- références de capacités par ID seulement ;
+- pas de copie des définitions de capacités ;
+- pas de copie du registre global.
+
+**Capacité**
+
+- 1 `CaptureSkillEditorDraftV1` complet.
+
+**Base complète**
+
+- registre de stats ;
+- règles de progression ;
+- toutes les créatures canoniques configurées ;
+- tous les statValues/loadouts ;
+- toutes les capacités configurées.
+
+### Import
+
+Un import est explicite :
+
+- mode `reject` par défaut : refuse un ID déjà présent avec contenu différent ;
+- mode `replace` optionnel : remplace explicitement le même ID ;
+- un ancien ID de créature connu passe par le resolver canonique avant conflit ;
+- aucune fusion champ-par-champ heuristique ;
+- aucune persistance navigateur implicite.
+
+### Découpage
+
+#### Micro-lot A — Database Bundle Core
+
+Fichiers autorisés :
+
+- nouveau `src/contracts/capture-database-v1.js` ;
+- nouveau `src/adapters/input/capture/capture-database-transfer-v1.js` ;
+- nouveau `tests/unit/capture-database-v1.test.mjs` ;
+- docs.
+
+Objectif :
+
+- bundle canonique complet ;
+- JSON stringify/parse pur ;
+- validation cross-références ;
+- aucun DOM/UI/storage/network/Runtime.
+
+RED :
+
+1. format absent ;
+2. round-trip exact ;
+3. créature V3 + présentation/sockets/audio conservés ;
+4. statValues/loadout conservés ;
+5. SkillDefinition complet conservé, y compris `effects`, StatusEffect, Ultime, timings, projectile power et présentation ;
+6. pas de battle/teams/actors/rosters ;
+7. IDs/cross-références invalides refusés ;
+8. JSON invalide refusé ;
+9. aucune dépendance interdite.
+
+#### Micro-lot B — Entity Transfer Packages
+
+Objectif :
+
+- package `creature` ;
+- package `skill` ;
+- package `database` ;
+- import plan `reject|replace` pur.
+
+Les exports unitaires référencent les autres propriétaires par ID au lieu de les recopier.
+
+#### Micro-lot C — Human Editor Files UI
+
+Objectif smartphone :
+
+- bouton **Exporter cette créature** ;
+- bouton **Exporter cette capacité** ;
+- bouton **Exporter toute la base** ;
+- sélecteur fichier **Importer JSON** ;
+- case explicite **Remplacer les IDs existants** ;
+- messages lisibles de résultat/conflit ;
+- aucun stockage navigateur ;
+- les Maps actuelles restent la seule session active.
+
+### Risques
+
+- export d'un snapshot Runtime au lieu des drafts ;
+- perte de Presentation Binding ;
+- export créature qui duplique les skills ;
+- import silencieux qui écrase un ID ;
+- ancienne créature alias réintroduite comme deuxième ID ;
+- DOM comme source de vérité ;
+- Blob/FileReader dans le contrat pur.
+
+### Critère de fin
+
+- micro-lot A GREEN ;
+- micro-lot B GREEN ;
+- micro-lot C GREEN technique ;
+- CI complète ;
+- checkpoint PREVALIDATION ;
+- lien smartphone permettant le workflow réel config -> export -> import.
+
