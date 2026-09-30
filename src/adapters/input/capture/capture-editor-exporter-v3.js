@@ -16,6 +16,9 @@ import {
 import {
   projectCaptureStatEffectsV1
 } from "../../../core/combat/capture-stat-effects-v1.js";
+import {
+  projectCapturePlannedLoadoutsToCombatV1
+} from "./capture-planned-loadout-to-combat-v1.js";
 
 const INPUT_FIELDS = new Set([
   "battleSetup",
@@ -24,6 +27,7 @@ const INPUT_FIELDS = new Set([
   "loadouts",
   "statRegistry",
   "statValues",
+  "progressionRules",
   "metadata"
 ]);
 
@@ -112,6 +116,17 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
     )
   );
 
+  const combatLoadouts =
+    value.progressionRules == null
+      ? value.loadouts
+      : projectCapturePlannedLoadoutsToCombatV1({
+          progressionRules:
+            value.progressionRules,
+          creatureDrafts,
+          skillDrafts: value.skillDrafts,
+          loadouts: value.loadouts
+        });
+
   const exportedV2 =
     exportCaptureEditorDraftsToCombatExportV2({
       battleSetup: value.battleSetup,
@@ -120,7 +135,7 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
           creatureV3ToV2Input
         ),
       skillDrafts: value.skillDrafts,
-      loadouts: value.loadouts,
+      loadouts: combatLoadouts,
       metadata: value.metadata ?? {}
     });
 
