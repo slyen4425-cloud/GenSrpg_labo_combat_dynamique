@@ -16647,3 +16647,137 @@ Validation GREEN technique :
 **GREEN technique — PREVALIDATION smartphone requise**.
 
 Le prochain lot peut partir de cette ligne réconciliée et traiter séparément Projectile Clash Rules V2.
+
+## Micro-lot — Projectile Clash Rules V2 — 2026-09-30
+
+Base :
+
+- checkpoint PREVALIDATION UI réconciliée : `checkpoint/lab-capture-ui-authority-reconciliation-v1-prevalidation-green-2026-09-30` ;
+- SHA : `ca68771349f6c4bd2b716834c32aa2f69bee3f32` ;
+- CI finale : run `36664817191` — SUCCESS ;
+- autorité Capture : 103/103 capacités natives + Défense + effets tactiques réconciliés.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-projectile-clash-rules-v2-2026-09-30`.
+
+Branche :
+
+`work/lab-projectile-clash-rules-v2-2026-09-30`.
+
+### Retour utilisateur / cause fonctionnelle
+
+Le système V1 `projectileClash { mode, group, interactsWith }` ne sait produire qu'une annulation mutuelle. Le Human Editor n'expose en plus qu'un seul groupe, ce qui rend les interactions difficiles à comprendre et empêche d'exprimer qu'un projectile domine un autre puis continue sa trajectoire.
+
+Exemple cible explicite :
+
+- projectile glace : tag `ice`, puissance 2 contre `fire` ;
+- projectile feu : tag `fire`, puissance 1 contre `ice` ;
+- collision : le feu est annulé, la glace continue jusqu'à sa cible.
+
+Aucune règle ne doit être déduite de l'élément, du nom, de la description ou de la créature.
+
+### Autorité cible unique
+
+Créer un contrat dédié Projectile Clash V2, consommé par `SkillDefinition` et le Combat Runtime.
+
+Forme canonique cible :
+
+```js
+projectileClash: {
+  tag: "ice",
+  rules: [
+    {
+      againstTag: "fire",
+      strength: 2
+    }
+  ]
+}
+```
+
+Sémantique :
+
+- `tag:null + rules:[]` = aucune collision configurée ;
+- si aucune règle ne vise le tag adverse des deux côtés : aucune interaction ;
+- une règle trouvée fournit la puissance de collision de son projectile contre le tag adverse ;
+- absence de règle du côté opposé = puissance 0 si l'autre côté déclare explicitement une interaction ;
+- puissance égale = annulation des deux ;
+- puissance supérieure = le projectile supérieur survit et poursuit l'action déjà active ;
+- le projectile perdant est annulé ;
+- les règles sont orientées et permettent plusieurs tags adverses ;
+- doublon `againstTag` interdit.
+
+### Migration V1
+
+Le lot remplace l'autorité V1 active ; il n'ajoute pas un second système.
+
+- supprimer `mode/group/interactsWith` de la forme canonique éditée ;
+- migrer les fixtures/tests du dépôt qui utilisent encore V1 ;
+- aucune conversion heuristique de données utilisateur externe ;
+- aucune coexistence de deux moteurs de clash actifs.
+
+### UI
+
+Le Human Editor doit exposer seulement :
+
+- « Tag du projectile » ;
+- liste de règles :
+  - « Contre le tag » ;
+  - « Puissance de collision » ;
+  - retirer ;
+- « Ajouter une règle » ;
+- aide lisible : puissance la plus forte continue, égalité annule les deux.
+
+Le réglage legacy `interruptsPreparation` / stun reste absent : le stun appartient uniquement à `StatusEffectV1.stun`.
+
+### Fichiers autorisés
+
+- nouveau contrat `src/contracts/projectile-clash-v2.js` ;
+- `src/contracts/skill-definition.js` ;
+- `src/core/combat/projectile-clash.js` ;
+- `src/core/combat/combat-runtime.js` ;
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` seulement si nécessaire pour mobile ;
+- `data/combat/skills/catalog.v1.json` pour migrer les fixtures natives ;
+- tests unitaires dédiés / sentinelles existantes directement concernées ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md` à la clôture.
+
+### Protégé
+
+- SkillEffectV1 / StatusEffectV1 ;
+- Status Effect Runtime ;
+- dégâts / soins / area targeting ;
+- Capture 103-skill catalogs et migrations ;
+- stat registry / Défense ;
+- FX / Renderer / Presenter ;
+- Database Export/Import ;
+- production GenSrpG ;
+- aucun storage/network/global/MutationObserver/timer de réparation.
+
+### RED obligatoire
+
+1. contrat V2 absent ;
+2. plusieurs règles par projectile ;
+3. doublons de tag adverse refusés ;
+4. règle de clash interdite sur une forme non projectile ;
+5. aucune inférence depuis `element` / nom / description ;
+6. égalité -> deux projectiles annulés ;
+7. puissance supérieure -> perdant annulé, gagnant reste actif ;
+8. vrai `CombatRuntime` : le gagnant continue et impacte réellement sa cible ensuite ;
+9. aucune règle des deux côtés -> aucune collision ;
+10. Human Editor n'expose plus `mode/group/interactsWith`, mais tag + règles multiples ;
+11. aucun retour de `data-skill-interrupts` ;
+12. Core/contrat sans DOM/storage/network/renderer.
+
+### Critère de fin
+
+- RED ciblé démontré ;
+- correction minimale avec autorité V2 unique ;
+- CI complète GREEN ;
+- documentation architecture ;
+- checkpoint PREVALIDATION si UI modifiée ;
+- lien smartphone ;
+- le micro-lot Renderer d'impact visuel multi-cible reste séparé.
+
