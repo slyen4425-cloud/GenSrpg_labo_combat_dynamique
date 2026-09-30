@@ -17180,3 +17180,39 @@ Les huit alias sont déclarés explicitement par ID.
 - documentation ;
 - checkpoint GREEN/PREVALIDATION selon impact UI.
 
+### Résultat — Capture Creature Catalog Canonicalization V1
+
+RED :
+
+- commit : `4559f457324fe3dddfe85b71b18b8236785b5eee` ;
+- run : `36677547482` ;
+- 656 tests, 655 PASS, 1 FAIL attendu : projection canonique absente.
+
+Audit confirmé :
+
+- source historique : 110 entrées / 110 IDs uniques ;
+- 8 doublons de nom démontrés ;
+- 8 anciennes entrées `game_profile_dungeon_demo` ;
+- 8 cibles Capture modernes explicites.
+
+Implémentation :
+
+- `capture-canonical-creature-catalog-v1.js` possède les 8 alias ID -> ID ;
+- aucune inférence par nom ;
+- projection canonique : **102 créatures** ;
+- noms et IDs canoniques uniques ;
+- le Human Editor hydrate la projection canonique avant import ;
+- les bindings visuels ne dupliquent plus les anciens IDs ;
+- un ancien ID visuel passe par le même resolver canonique.
+
+Validation :
+
+- run `36677757264` ;
+- structure / frontières / indépendance : OK ;
+- **662 / 662 PASS / 0 FAIL**.
+
+État :
+
+**GREEN technique**.
+
+Le JSON historique reste intact comme provenance. L'éditeur et les futurs exports doivent consommer uniquement la projection canonique.
