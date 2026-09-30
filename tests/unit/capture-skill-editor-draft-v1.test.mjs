@@ -28,13 +28,7 @@ function validDraft() {
       allowedDistances: ["medium", "long"],
       targetRelations: ["enemy"],
       projectileClash: {
-        tag: "fire",
-        rules: [
-          {
-            againstTag: "fire",
-            strength: 1
-          }
-        ]
+        power: 1
       },
       effect: {
         damage: 4,
