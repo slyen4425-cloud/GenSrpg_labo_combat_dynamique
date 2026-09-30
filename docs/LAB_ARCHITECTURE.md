@@ -2096,3 +2096,16 @@ Le signal interne du Runtime ne doit pas se limiter à PV/énergie : un changeme
 Le Runtime compare donc la projection sémantique du fighter, en excluant seulement `energyChargeProgressMs`, progression interne qui change à chaque tick sans constituer à elle seule un changement de disponibilité visible.
 
 Aucune formule ou durée de cooldown n'est dupliquée dans le Runtime.
+
+
+## 35. Profil volant canonique
+
+L'identifiant morphologique canonique pour une créature volante est `flying`.
+
+- l'éditeur, les profils de preview et les catalogues de test utilisent `flying` ;
+- l'ancien identifiant `drake` n'est plus une source de profil ;
+- les anciennes métadonnées visuelles Capture encore publiées avec `profile:"drake"` sont converties explicitement en `flying` à la frontière `capture-creature-visual-binding-v1` ;
+- cette compatibilité ne dépend jamais du nom ou de l'espèce de la créature ;
+- aucun second profil `drake` n'est maintenu en parallèle.
+
+Le comportement de locomotion et d'idle reste piloté uniquement par `data/profiles/flying.profile.json`.
