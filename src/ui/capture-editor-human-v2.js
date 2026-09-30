@@ -5089,13 +5089,18 @@ export function mountCaptureEditorHumanV2({
             statRegistry
           );
 
-    const projectedMaxHp =
+    const projectedStats =
       statRegistry !== null &&
       statValues !== null
         ? projectCaptureStatEffectsV1({
             registry: statRegistry,
             statValues
-          }).maxHp
+          })
+        : null;
+
+    const projectedMaxHp =
+      projectedStats?.hasMaxHpProjection === true
+        ? projectedStats.maxHp
         : (
             previousRecord?.draft?.combat
               ?.maxHp ?? 0
