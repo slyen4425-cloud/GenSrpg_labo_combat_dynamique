@@ -137,3 +137,21 @@ test("Capture editor exposes only 1v1 and 2v2 active formats", async () => {
     /1v1, 2v2, 3v3 ou 4v4/i
   );
 });
+
+
+test("Capture editor defaults the integrated combat test to 1v1", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  const select = html.match(
+    /<select data-active-per-team>[\\s\\S]*?<\\/select>/
+  )?.[0] ?? "";
+
+  assert.match(select, /<option value="1" selected>/);
+  assert.doesNotMatch(select, /<option value="2" selected>/);
+});
