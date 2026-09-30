@@ -78,7 +78,7 @@ test("teleport attack disappears, reaches target exactly at impact time, then re
   assert.equal(plan.segments.at(-1).opacity, 1);
 });
 
-test("aerial attack rises, vanishes, dives to target at impact, then returns", () => {
+test("aerial attack reaches one apex, stays visible, impacts on time, then returns", () => {
   const current = actor("flying");
   const travelMs = 850;
   const plan = planAnimation({
@@ -99,24 +99,24 @@ test("aerial attack rises, vanishes, dives to target at impact, then returns", (
   assert.deepEqual(
     plan.segments.map((segment) => segment.label),
     [
-      "aerial-rise",
-      "aerial-reposition",
-      "aerial-dive-impact",
+      "aerial-arc-apex",
+      "aerial-arc-impact",
       "aerial-home"
     ]
   );
 
   const impactMs =
     plan.segments[0].durationMs +
-    plan.segments[1].durationMs +
-    plan.segments[2].durationMs;
+    plan.segments[1].durationMs;
 
   assert.equal(impactMs, travelMs);
+  assert.ok(plan.segments[0].transform.translateX > 0);
+  assert.ok(plan.segments[0].transform.translateX < 150);
   assert.ok(plan.segments[0].transform.translateY < 0);
-  assert.equal(plan.segments[1].opacity, 0);
-  assert.equal(plan.segments[2].transform.translateX, 150);
-  assert.equal(plan.segments[2].transform.translateY, 8);
-  assert.equal(plan.segments[2].opacity, 1);
+  assert.equal(plan.segments[0].opacity, 1);
+  assert.equal(plan.segments[1].transform.translateX, 150);
+  assert.equal(plan.segments[1].transform.translateY, 8);
+  assert.equal(plan.segments[1].opacity, 1);
   assert.equal(plan.segments.at(-1).transform.translateX, 0);
   assert.equal(plan.segments.at(-1).transform.translateY, 0);
 });
