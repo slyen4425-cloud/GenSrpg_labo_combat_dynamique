@@ -1744,3 +1744,61 @@ Compatibilité legacy :
 - `targetRelations` est dérivé des scopes tactiques et n'est plus saisi séparément.
 
 Les modèles historiques utilisent la même autorité `SkillEffectV1`. Un modèle n'écrase pas une liste d'effets tactiques déjà configurée.
+
+## 28. Projectile Clash Rules V2
+
+### Propriétaire
+
+La politique de collision de projectile appartient à `ProjectileClashV2`.
+
+`SkillDefinition` compose ce contrat mais ne possède plus une seconde logique `mode/group/interactsWith`.
+
+Forme canonique :
+
+```js
+{
+  tag: String | null,
+  rules: [
+    {
+      againstTag: String,
+      strength: Number > 0
+    }
+  ]
+}
+```
+
+Les `againstTag` sont uniques par projectile.
+
+### Résolution
+
+Le Core compare uniquement les règles explicites :
+
+1. récupérer le tag de chaque projectile ;
+2. lire la puissance de gauche contre le tag droit ;
+3. lire la puissance de droite contre le tag gauche ;
+4. si les deux valent 0 : pas de collision ;
+5. égalité positive : annulation mutuelle ;
+6. puissance gauche supérieure : droite annulée, gauche continue ;
+7. puissance droite supérieure : gauche annulée, droite continue.
+
+Aucune règle n'est dérivée de l'élément, de l'identifiant ou du nom d'une capacité.
+
+### Runtime
+
+Le calcul du point de rencontre conserve la géométrie temporelle existante.
+
+Lors d'une dominance, le `CombatRuntime` ne recrée pas une action gagnante et ne modifie pas son impact futur. Il laisse simplement le record gagnant dans `activeByActor`. Le perdant seul reçoit la résolution sémantique de clash/cancel.
+
+Cela garantit que le projectile gagnant poursuit le vrai chemin normal de l'action et atteint ensuite sa cible via `session.completeAction()`.
+
+### UI
+
+Le Human Editor transporte uniquement les données du contrat :
+
+- tag du projectile ;
+- tag adverse ;
+- puissance de collision.
+
+L'UI ne compare aucune puissance elle-même.
+
+Le stun demeure indépendant : `StatusEffectV1.stun` est son propriétaire unique.
