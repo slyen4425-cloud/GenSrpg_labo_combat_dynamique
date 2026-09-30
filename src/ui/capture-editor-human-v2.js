@@ -83,6 +83,9 @@ import {
   buildCaptureCreatureHistoricalLoadoutV1
 } from "../catalogs/capture-creature-historical-loadout-v1.js";
 import {
+  CAPTURE_SHOWCASE_CREATURE_PRESETS_V1
+} from "../catalogs/capture-showcase-creature-presets-v1.js";
+import {
   normalizeCaptureStatRegistryV1
 } from "../contracts/capture-stat-registry-v1.js";
 import {
@@ -3872,6 +3875,55 @@ async function hydrateMonsterCaptureCreatureCatalog(
   );
 }
 
+async function hydrateCaptureShowcaseCreaturePresetsV1(
+  statRegistry
+) {
+  const transfers = await Promise.all(
+    CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.map(
+      async (preset) => {
+        const response = await fetch(
+          new URL(
+            "../../" + preset.file,
+            import.meta.url
+          ),
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Preset vitrine Capture indisponible : " +
+              preset.id +
+              " (" +
+              response.status +
+              ")"
+          );
+        }
+
+        const transfer =
+          importCaptureTransferJsonV1(
+            await response.text(),
+            { statRegistry }
+          );
+
+        if (
+          transfer.kind !== "creature" ||
+          transfer.value.draft.id !==
+            preset.id
+        ) {
+          throw new RangeError(
+            "Preset vitrine Capture invalide : " +
+              preset.id
+          );
+        }
+
+        return transfer;
+      }
+    )
+  );
+
+  return Object.freeze(transfers);
+}
+
 async function hydrateCaptureCreatureVisualMetadataV1() {
   const uniqueBindings = [
     ...new Map(
@@ -6769,13 +6821,25 @@ export function mountCaptureEditorHumanV2({
     hydratePrivateAudioCatalog(root),
     hydrateNativeSkillCatalog(),
     hydrateCaptureStatRegistryV1()
-      .then(async (registry) => ({
-        registry,
-        records:
-          await hydrateMonsterCaptureCreatureCatalog(
+      .then(async (registry) => {
+        const [
+          records,
+          showcasePresets
+        ] = await Promise.all([
+          hydrateMonsterCaptureCreatureCatalog(
+            registry
+          ),
+          hydrateCaptureShowcaseCreaturePresetsV1(
             registry
           )
-      })),
+        ]);
+
+        return {
+          registry,
+          records,
+          showcasePresets
+        };
+      }),
     hydrateCaptureProgressionRulesV1(),
     hydrateCaptureCreatureVisualMetadataV1()
   ])
@@ -6938,6 +7002,39 @@ export function mountCaptureEditorHumanV2({
       }
 
       for (
+        const transfer of
+        captureData.showcasePresets
+      ) {
+        const plan =
+          planCaptureTransferImportV1({
+            currentDatabase:
+              currentEditorDatabaseV1(),
+            transfer,
+            mode: "replace"
+          });
+
+        if (plan.kind !== "creature") {
+          throw new RangeError(
+            "Un preset vitrine doit être une créature."
+          );
+        }
+
+        const applyResult =
+          applyCaptureTransferPlanToEditorStateV1({
+            plan,
+            configuredCreatures,
+            configuredSkills,
+            statRegistry,
+            progressionRules
+          });
+
+        statRegistry =
+          applyResult.statRegistry;
+        progressionRules =
+          applyResult.progressionRules;
+      }
+
+      for (
         const [
           creatureId,
           record
@@ -7012,14 +7109,14 @@ export function mountCaptureEditorHumanV2({
       syncLoadoutAvailability();
 
       updateCreatureLibraryState(
-        "110 créatures Monster Capture chargées, dont les visuels existants sont raccordés automatiquement. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
+        "Catalogue Monster Capture historique + 2 modèles vitrine chargés. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
         "ok"
       );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, stats/progression, 110 créatures Monster Capture, 9 capacités laboratoire + 103 capacités Capture natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, stats/progression, catalogue Monster Capture historique + 2 modèles vitrine, 9 capacités laboratoire + 103 capacités Capture natives et 103 modèles historiques chargés.",
           "info"
         );
       }
