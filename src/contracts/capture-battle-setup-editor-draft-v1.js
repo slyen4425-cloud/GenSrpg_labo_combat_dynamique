@@ -270,7 +270,7 @@ export function normalizeCaptureBattleSetupEditorDraftV1(input) {
     schema: CAPTURE_BATTLE_SETUP_EDITOR_DRAFT_SCHEMA,
     id: requiredString(value.id, "id"),
     localActorId,
-    arenaId: requiredString(
+    arenaId: optionalString(
       value.arenaId,
       "arenaId"
     ),
