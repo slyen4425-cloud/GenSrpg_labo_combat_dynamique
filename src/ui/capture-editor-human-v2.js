@@ -47,6 +47,9 @@ import {
   capturePortableNativeSkillDraftsV1
 } from "../catalogs/capture-portable-native-skill-catalog-v1.js";
 import {
+  captureComplexNativeSkillDraftsV1
+} from "../catalogs/capture-complex-native-skill-catalog-v1.js";
+import {
   buildPrivateAudioRoleGroupsV1
 } from "./private-audio-role-groups-v1.js";
 import {
@@ -6114,6 +6117,17 @@ export function mountCaptureEditorHumanV2({
         }
       }
 
+      for (
+        const draft of captureComplexNativeSkillDraftsV1()
+      ) {
+        if (!configuredSkills.has(draft.id)) {
+          configuredSkills.set(
+            draft.id,
+            draft
+          );
+        }
+      }
+
       const availableAssetIds = new Set(
         (assetCatalog.assets ?? [])
           .map((asset) => asset?.id)
@@ -6265,7 +6279,7 @@ export function mountCaptureEditorHumanV2({
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, stats/progression, 110 créatures Monster Capture, 9 capacités natives + 70 capacités Capture natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, stats/progression, 110 créatures Monster Capture, 9 capacités laboratoire + 103 capacités Capture natives et 103 modèles historiques chargées.",
           "info"
         );
       }
