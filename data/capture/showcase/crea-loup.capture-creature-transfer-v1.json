@@ -1,0 +1,109 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea-loup",
+    "displayName": "Loup volcanique",
+    "description": "Créature volcanique rapide.",
+    "level": 10,
+    "sourceStats": {
+      "force": 0,
+      "agility": 0,
+      "intelligence": 0,
+      "spirit": 0,
+      "endurance": 0,
+      "initiative": 0
+    },
+    "elements": ["fire"],
+    "resistances": [
+      {"kind": "element:fire", "value": 35},
+      {"kind": "element:water", "value": -50},
+      {"kind": "element:earth", "value": 0},
+      {"kind": "element:air", "value": 0},
+      {"kind": "element:electric", "value": 0},
+      {"kind": "element:light", "value": 0},
+      {"kind": "element:shadow", "value": 0},
+      {"kind": "element:nature", "value": 0},
+      {"kind": "element:ice", "value": 0},
+      {"kind": "element:poison", "value": 0},
+      {"kind": "element:steel", "value": 0},
+      {"kind": "element:psy", "value": 0},
+      {"kind": "element:spirit", "value": 0}
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 40,
+      "spawnChance": 20,
+      "spawnTags": ["fire"],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 150,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0
+    },
+    "skillIds": [
+      "fireball",
+      "claw",
+      "lib_flame_bite",
+      "lib_fireball"
+    ],
+    "presentation": {
+      "id": "creature:crea-loup",
+      "version": 2,
+      "subjectType": "creature",
+      "subjectId": "crea-loup",
+      "profileId": "quadruped",
+      "displayScale": 1.2,
+      "position": {"x": 0, "y": 0},
+      "transformOrigin": {"x": "50%", "y": "50%"},
+      "visual": {
+        "front": {"assetId": "pack:capture:creature-loup-volcanique-opponent-01"},
+        "back": {"assetId": "pack:capture:creature-loup-volcanique-player-01"},
+        "icon": {"assetId": "pack:capture:creature-loup-volcanique-icon-01"}
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {"x": 0.23563424375843045, "y": 0.6555555661519369},
+          "back": {"x": 0.7751232227546497, "y": 0.6695311864217123}
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea-loup",
+    "values": {
+      "health": 150,
+      "speed": 5,
+      "physical": 0,
+      "defense": 0,
+      "fire": 10,
+      "water": 0,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea-loup",
+    "slots": [
+      {"id": "slot-1", "skillId": "fireball"},
+      {"id": "slot-2", "skillId": "claw"},
+      {"id": "slot-3", "skillId": "lib_flame_bite"},
+      {"id": "slot-4", "skillId": "lib_fireball"}
+    ]
+  }
+}
