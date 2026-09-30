@@ -19025,3 +19025,22 @@ Fichiers autorisés :
 Protégé : moteur combat, BattleFormatDefinition, capacités, cooldowns, dégâts, éléments, profils, assets, sons.
 
 RED : prouver que le contrôle HTML sélectionne encore 2v2 par défaut alors que le contrat demandé est 1v1.
+
+
+### Résultat — Combat Test Default 1v1 V1
+
+RED :
+- commit `157e3b4e994aa690d2409221108d9beb1f112ed9` ;
+- CI `36740774997` — FAILURE attendue ;
+- le test exigeait que le sélecteur `data-active-per-team` démarre sur 1v1.
+
+Correction :
+- commit `65ef59107ccd4ee8667581417eca14ef3968c70c` ;
+- seule la valeur `selected` du sélecteur de format a été déplacée de 2v2 vers 1v1 ;
+- 2v2 reste disponible ;
+- aucun contrat ni moteur de combat modifié.
+
+GREEN fonctionnel :
+- CI `36740838430` — SUCCESS.
+
+État : **GREEN technique — PREVALIDATION smartphone**. Le test combat doit s'ouvrir sur 1 contre 1, avec 2 contre 2 toujours sélectionnable.
