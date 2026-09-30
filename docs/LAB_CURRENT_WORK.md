@@ -19549,3 +19549,13 @@ Protections :
 - aucun changement cooldown, mouvement, FX, audio ou assets.
 
 État : **GREEN technique — PREVALIDATION smartphone requise**. À vérifier dans l'éditeur : la stat `Santé / PV` apparaît avec sa valeur, les anciens champs PV ont disparu et le combat utilise bien cette valeur comme PV max.
+
+
+### Validation utilisateur — Capture Health Stat V1 + Arena Selector — 2026-09-30
+
+Validation smartphone explicite reçue :
+- la nouvelle stat `Santé / PV` est fonctionnelle ;
+- les anciens réglages utilisateur `PV max / PV au départ` ne sont plus requis ;
+- la sélection d'arène dans l'onglet Combat est fonctionnelle.
+
+Statut : **GREEN utilisateur** pour ces deux comportements. Les protections d'architecture restent inchangées : `health` demeure l'unique autorité utilisateur des PV et l'arène demeure une donnée de présentation sans effet sur les règles de combat.
