@@ -107,6 +107,7 @@ test("human battle setup owns a global skill speed multiplier with default 1", (
     localDisplayName: "Local",
     opponentCreatureId: "enemy-creature",
     opponentDisplayName: "Enemy",
+    arenaId: "city",
     activePerTeam: 1,
     skillSpeedMultiplier: 1.5
   });
@@ -119,6 +120,7 @@ test("human battle setup owns a global skill speed multiplier with default 1", (
     localDisplayName: "Local",
     opponentCreatureId: "enemy-creature",
     opponentDisplayName: "Enemy",
+    arenaId: "city",
     activePerTeam: 1
   });
 
