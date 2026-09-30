@@ -16193,3 +16193,88 @@ Supprimer les blockers de migration sans conversion arbitraire :
 - CI complète GREEN ;
 - checkpoint GREEN ;
 - seulement ensuite Capture Database Export/Import V1.
+
+
+### Résultat — Capture Legacy Status Semantics V1
+
+Source historique exacte ré-auditée :
+
+- commit : `49289784ee92a47fd51089815ca25954cdba4493` ;
+- blob : `74e223b2c9877e6a88b6ad6726290d230f1f616e` ;
+- `gensCaptureBattleEndTurn()` ticke uniquement les statuts de la créature dont l'action se termine ;
+- `gensCaptureTickStatuses(..., "turn_end")` applique DoT/HoT puis décrémente `duration` ;
+- `cap142EffectPct` convertit les anciennes petites valeurs en 30/40/50 % ;
+- `cap142NormStat` démontre explicitement `def/armor/armure/défense -> defense`.
+
+RED :
+
+- commit : `e046e9876def0fcdc9a326088eee60df75bf0bd9` ;
+- run : `36647273257` ;
+- 633 tests, 624 PASS, 9 FAIL ciblés.
+
+Implémentation :
+
+1. `StatusEffectV1`
+   - durée `time_ms` conservée par défaut ;
+   - nouvelle durée `owner_action_end` + `durationActions` ;
+   - `stat_modifier` : modes `points` et `percent` ;
+   - DoT : modes `combat` et `fixed`.
+
+2. Runtime statut
+   - les statuts `owner_action_end` n'utilisent aucune seconde horloge ;
+   - ils tickent/décrémentent uniquement à la fin d'une action réussie du porteur ;
+   - déplacement, compétence terminée et commande terminée comptent comme action ;
+   - réaction et simple avance du temps ne décrémentent pas ces statuts ;
+   - un HoT posé sur soi pendant sa propre compétence ticke à la fin de cette même action, comme dans le Capture historique ;
+   - DoT legacy `fixed` conserve son ancienne perte de PV brute au lieu d'inventer une résistance élémentaire.
+
+3. Stats
+   - ajout standard `defense / Défense` ;
+   - `1 point = 1 %` de réduction globale des dégâts dans le preset ;
+   - coefficient propriétaire : `damageReductionPctPerPoint` ;
+   - réduction appliquée après résistance de canal, bornée à 0..100 % ;
+   - `statValuesById` transporté au Fighter pour les modificateurs en pourcentage ;
+   - alias explicites ajoutés : `defense / def / armor / armure / défense -> defense`.
+
+4. Buff/Debuff legacy
+   - règle exacte V16.142 centralisée dans `capture-legacy-status-semantics-v1.js` ;
+   - |v| <= 2 -> 30 % ;
+   - |v| <= 5 -> 40 % ;
+   - 6..19 -> 50 % ;
+   - >=20 -> valeur déjà en % ;
+   - buff positif / debuff négatif ;
+   - aucune recopie de pourcentage dans `deltaPoints`.
+
+5. Migration complexe
+   - 33/33 capacités complexes : `runtime-ready` ;
+   - 0 blocker ;
+   - soin, zone, auto-soin, buff, debuff, DoT et HoT traduits ;
+   - IDs historiques et ordre des effets conservés ;
+   - statuts persistants utilisent `owner_action_end` ;
+   - `lib_regen` conserve 3 fins d'action ;
+   - `cap_poison_special_1` conserve son DoT fixe sur 3 fins d'action ;
+   - `lib_heat_wave` devient un debuff Défense -30 % pendant 2 fins d'action.
+
+GREEN fonctionnel :
+
+- SHA : `f3666f2b8de8403ae9d3d9d55a45d02d3386b6ba` ;
+- run : `36648255521` ;
+- **633 tests, 633 PASS, 0 FAIL**.
+
+Revue charte :
+
+- aucun mapping par nom/description de capacité ;
+- aucun timer parallèle ;
+- aucun DOM/storage/network dans les contrats/adaptateurs Core ;
+- aucune logique métier ajoutée au renderer/FX ;
+- les anciennes formes JSON sans Défense restent compatibles : les nouveaux champs à zéro sont omis des projections exportées ;
+- aucune modification de production GenSrpG.
+
+État :
+
+**GREEN technique — sémantique legacy réellement préservée.**
+
+Avant Export/Import Database V1, vérification obligatoire restante :
+
+- démontrer que les 33 capacités complexes sont hydratées comme vraies `SkillDefinition` jouables dans la bibliothèque native Capture, et pas seulement disponibles comme projections de migration ;
+- corriger ensuite la présentation Human Editor de la nouvelle stat Défense si nécessaire.
