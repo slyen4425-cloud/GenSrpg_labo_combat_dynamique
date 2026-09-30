@@ -794,8 +794,8 @@ button.reserve-card {
   overflow-wrap: anywhere;
 }
 
-.action-option--skill span,
-.action-option--skill small {
+.action-option--skill > span:not(.action-option__icon-shell),
+.action-option--skill > small {
   display: none;
 }
 
