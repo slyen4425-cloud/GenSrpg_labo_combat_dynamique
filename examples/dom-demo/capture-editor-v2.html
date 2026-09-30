@@ -252,20 +252,6 @@
 
       <article class="card">
         <div class="card-title">
-          <span class="step">5</span>
-          <div>
-            <h2>Points de vie</h2>
-            <p>Les PV appartiennent à la créature et ne sont définis qu’ici.</p>
-          </div>
-        </div>
-        <div class="grid two">
-          <label>PV max<input type="number" min="0" data-max-hp value="60"></label>
-          <label>PV au départ<input type="number" min="0" data-initial-hp value="60"></label>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card-title">
           <span class="step">6</span>
           <div>
             <h2>Éléments & Capture</h2>
@@ -321,7 +307,7 @@
           <span class="step">7</span>
           <div>
             <h2>Stats Monster Capture</h2>
-            <p>Chaque stat indique clairement ce que donne 1 point et le bonus total actuel. Les PV restent séparés.</p>
+            <p>Chaque stat indique clairement ce que donne 1 point et le bonus total actuel. Santé / PV utilise le même système de points que les autres stats.</p>
           </div>
         </div>
 
@@ -331,7 +317,7 @@
 
         <details data-global-editor-control>
           <summary>Configurer le système de stats</summary>
-          <p class="note">Réglage explicite en pourcentage : 1 point = X % dégâts, Y % résistance, Z % de réduction du temps de charge et/ou W % de réduction globale des dégâts reçus. Les identifiants existants restent stables.</p>
+          <p class="note">Réglage explicite : 1 point peut donner des PV max, X % dégâts, Y % résistance, Z % de réduction du temps de charge et/ou W % de réduction globale des dégâts reçus. Les identifiants existants restent stables.</p>
           <div class="stat-registry-list" data-stat-registry-host></div>
           <button type="button" class="secondary-action" data-stat-registry-apply>
             Appliquer les modifications du registre
@@ -348,6 +334,7 @@
               <label>Résistance % / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-resistance-pct-per-point></label>
               <label>Réduction temps de charge % / point<input type="number" min="0" step="0.05" value="0" data-stat-custom-charge-pct-per-point></label>
               <label>Réduction globale dégâts reçus % / point<input type="number" min="0" step="0.05" value="0" data-stat-custom-damage-reduction-pct-per-point></label>
+              <label>PV max / point<input type="number" min="0" step="0.1" value="0" data-stat-custom-max-hp-per-point></label>
             </div>
             <button type="button" class="primary-action" data-stat-custom-add>
               Ajouter la stat
