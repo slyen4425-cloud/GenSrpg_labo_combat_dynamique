@@ -1224,6 +1224,54 @@ export function buildHumanCreatureDraftV3(fields) {
   });
 }
 
+export function hydrateInitialSkillEffectsFromNativeV1(
+  fields,
+  nativeDraft
+) {
+  if (!fields || typeof fields !== "object") {
+    throw new TypeError("Données capacité initiale invalides");
+  }
+
+  const existingEffects = Array.isArray(fields.effects)
+    ? fields.effects
+    : [];
+
+  if (existingEffects.length > 0) {
+    return fields;
+  }
+
+  const nativeDefinition = nativeDraft?.definition;
+  if (
+    !nativeDefinition ||
+    nativeDefinition.id !== fields.id
+  ) {
+    return fields;
+  }
+
+  const hydratedEffects = [];
+  const legacyDamage =
+    Number(nativeDefinition.effect?.damage ?? 0);
+
+  if (legacyDamage > 0) {
+    hydratedEffects.push({
+      kind: "damage",
+      targetScope: "target",
+      amount: legacyDamage,
+      channel: nativeDefinition.element ?? null
+    });
+  }
+
+  if (hydratedEffects.length === 0) {
+    return fields;
+  }
+
+  return {
+    ...fields,
+    effects: hydratedEffects
+  };
+}
+
+
 export function buildHumanSkillDraftV1(fields) {
   if (!fields || typeof fields !== "object") {
     throw new TypeError("Données capacité invalides");
@@ -6695,6 +6743,39 @@ export function mountCaptureEditorHumanV2({
 
       const monsterCaptureRecords =
         captureData.records;
+
+      if (!skillDirty) {
+        const initialFields =
+          readSkillFields(root);
+        const nativeInitialDraft =
+          nativeSkills.get(initialFields.id) ?? null;
+        const hydratedInitialFields =
+          hydrateInitialSkillEffectsFromNativeV1(
+            initialFields,
+            nativeInitialDraft
+          );
+
+        if (
+          hydratedInitialFields !== initialFields
+        ) {
+          renderHumanSkillEffectsV1(
+            root,
+            hydratedInitialFields.effects,
+            statRegistry
+          );
+
+          const hydratedInitialDraft =
+            buildHumanSkillDraftV1(
+              readSkillFields(root)
+            );
+
+          configuredSkills.set(
+            hydratedInitialDraft.id,
+            hydratedInitialDraft
+          );
+        }
+      }
+
       for (
         const [skillId, draft] of nativeSkills
       ) {
