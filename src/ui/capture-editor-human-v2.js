@@ -113,7 +113,8 @@ import {
 } from "../adapters/input/capture/capture-database-transfer-v1.js";
 import {
   buildCaptureEditorDatabaseV1,
-  applyCaptureTransferPlanToEditorStateV1
+  applyCaptureTransferPlanToEditorStateV1,
+  applyCaptureTransferBatchToEditorStateV1
 } from "./capture-editor-file-transfer-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
@@ -6827,29 +6828,17 @@ export function mountCaptureEditorHumanV2({
     hydratePrivateAudioCatalog(root),
     hydrateNativeSkillCatalog(),
     hydrateCaptureStatRegistryV1()
-      .then(async (registry) => {
-        const [
-          records,
-          showcasePresets
-        ] = await Promise.all([
-          hydrateMonsterCaptureCreatureCatalog(
-            registry
-          ),
-          hydrateCaptureShowcaseCreaturePresetsV1(
+      .then(async (registry) => ({
+        registry,
+        records:
+          await hydrateMonsterCaptureCreatureCatalog(
             registry
           )
-        ]);
-
-        return {
-          registry,
-          records,
-          showcasePresets
-        };
-      }),
+      })),
     hydrateCaptureProgressionRulesV1(),
     hydrateCaptureCreatureVisualMetadataV1()
   ])
-    .then(([
+    .then(async ([
       assetCatalog,
       ,
       nativeSkills,
@@ -7008,39 +6997,6 @@ export function mountCaptureEditorHumanV2({
       }
 
       for (
-        const transfer of
-        captureData.showcasePresets
-      ) {
-        const plan =
-          planCaptureTransferImportV1({
-            currentDatabase:
-              currentEditorDatabaseV1(),
-            transfer,
-            mode: "replace"
-          });
-
-        if (plan.kind !== "creature") {
-          throw new RangeError(
-            "Un preset vitrine doit être une créature."
-          );
-        }
-
-        const applyResult =
-          applyCaptureTransferPlanToEditorStateV1({
-            plan,
-            configuredCreatures,
-            configuredSkills,
-            statRegistry,
-            progressionRules
-          });
-
-        statRegistry =
-          applyResult.statRegistry;
-        progressionRules =
-          applyResult.progressionRules;
-      }
-
-      for (
         const [
           creatureId,
           record
@@ -7089,7 +7045,7 @@ export function mountCaptureEditorHumanV2({
         selectedCreatureId
       );
 
-      const selectedRecord =
+      let selectedRecord =
         selectedCreatureId
           ? configuredCreatures.get(
               selectedCreatureId
@@ -7115,16 +7071,100 @@ export function mountCaptureEditorHumanV2({
       syncLoadoutAvailability();
 
       updateCreatureLibraryState(
-        "Catalogue Monster Capture historique + 2 modèles vitrine chargés. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
+        "Catalogue Monster Capture historique chargé. Chargement des modèles vitrine…",
         "ok"
       );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, stats/progression, catalogue Monster Capture historique + 2 modèles vitrine, 9 capacités laboratoire + 103 capacités Capture natives et 103 modèles historiques chargés.",
+          "Bibliothèques principales chargées. Application des modèles vitrine en cours.",
           "info"
         );
+      }
+
+      try {
+        const showcasePresets =
+          await hydrateCaptureShowcaseCreaturePresetsV1(
+            statRegistry
+          );
+
+        const showcaseResult =
+          applyCaptureTransferBatchToEditorStateV1({
+            transfers: showcasePresets,
+            configuredCreatures,
+            configuredSkills,
+            statRegistry,
+            progressionRules,
+            mode: "replace",
+            metadata: {
+              producer:
+                "capture-human-editor-v2-showcase-startup"
+            }
+          });
+
+        statRegistry =
+          showcaseResult.statRegistry;
+        progressionRules =
+          showcaseResult.progressionRules;
+
+        refreshLoadoutOptions();
+        refreshCreatureLibraryOptions(
+          selectedCreatureId
+        );
+
+        selectedRecord =
+          selectedCreatureId
+            ? configuredCreatures.get(
+                selectedCreatureId
+              )
+            : null;
+
+        refreshEvolutionTargetOptions(
+          selectedRecord?.draft?.capture
+            ?.evolution?.targetId ?? null
+        );
+
+        if (
+          selectedRecord &&
+          creatureDirty === false
+        ) {
+          renderHumanStatValuesV1(
+            root,
+            statRegistry,
+            selectedRecord.statValues
+          );
+        }
+
+        syncLoadoutAvailability();
+
+        updateCreatureLibraryState(
+          "Catalogue Monster Capture historique + 2 modèles vitrine chargés. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
+          "ok"
+        );
+
+        if (!disposed) {
+          setStatus(
+            root,
+            "Bibliothèques principales et 2 modèles vitrine chargés.",
+            "info"
+          );
+        }
+      } catch (presetError) {
+        updateCreatureLibraryState(
+          "Catalogue historique chargé. Modèles vitrine indisponibles : " +
+            presetError.message,
+          "error"
+        );
+
+        if (!disposed) {
+          setStatus(
+            root,
+            "Bibliothèque historique conservée ; erreur modèles vitrine : " +
+              presetError.message,
+            "error"
+          );
+        }
       }
     })
     .catch((error) => {
