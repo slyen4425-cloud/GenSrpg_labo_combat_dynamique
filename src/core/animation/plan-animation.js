@@ -53,6 +53,96 @@ function approachPerspectiveScale(target, cfg) {
   );
 }
 
+function locomotionPlan({ cfg, actorId, intensity, sign, transformOrigin }) {
+  if (!cfg || typeof cfg !== "object" || Array.isArray(cfg)) {
+    throw new RangeError("Creature profile has no locomotion preset");
+  }
+  const durationMs = Number(cfg.durationMs);
+  if (!Number.isFinite(durationMs) || durationMs <= 0) {
+    throw new RangeError("locomotion.durationMs must be greater than 0");
+  }
+  if (!Array.isArray(cfg.phases) || cfg.phases.length === 0) {
+    throw new RangeError("locomotion.phases must be a non-empty array");
+  }
+
+  let previousAt = 0;
+  const segments = cfg.phases.map((phase, index) => {
+    const at = Number(phase.at);
+    if (!Number.isFinite(at) || at <= previousAt || at > 1) {
+      throw new RangeError("locomotion phase offsets must increase from 0 to 1");
+    }
+    const phaseDurationMs = Math.max(
+      1,
+      Math.round(durationMs * (at - previousAt))
+    );
+    previousAt = at;
+
+    const rawScaleX = Number(phase.scaleX ?? 1);
+    const rawScaleY = Number(phase.scaleY ?? 1);
+    const translateX = Number(phase.translateX ?? 0);
+    const translateY = Number(phase.translateY ?? 0);
+    const rotateDeg = Number(phase.rotateDeg ?? 0);
+    for (const [field, value] of Object.entries({
+      rawScaleX,
+      rawScaleY,
+      translateX,
+      translateY,
+      rotateDeg
+    })) {
+      if (!Number.isFinite(value)) {
+        throw new TypeError(`locomotion phase ${index} ${field} must be finite`);
+      }
+    }
+
+    return {
+      label:
+        typeof phase.label === "string" && phase.label.trim()
+          ? phase.label
+          : `move-phase-${index + 1}`,
+      durationMs: phaseDurationMs,
+      easing: phase.easing ?? "ease-in-out",
+      transform: {
+        translateX: directed(scaled(translateX, intensity), sign),
+        translateY: scaled(translateY, intensity),
+        rotateDeg: directed(scaled(rotateDeg, intensity), sign),
+        scaleX: 1 + (rawScaleX - 1) * intensity,
+        scaleY: 1 + (rawScaleY - 1) * intensity
+      }
+    };
+  });
+
+  if (previousAt !== 1) {
+    throw new RangeError("last locomotion phase must end at 1");
+  }
+
+  const cues = (cfg.contacts ?? []).map((contact, index) => {
+    const at = Number(contact.at);
+    const cueIntensity = Number(contact.intensity ?? 1);
+    if (
+      !Number.isFinite(at) ||
+      at < 0 ||
+      at > 1 ||
+      !Number.isFinite(cueIntensity) ||
+      cueIntensity <= 0
+    ) {
+      throw new RangeError(`locomotion contact ${index} is invalid`);
+    }
+    return {
+      type: "footfall",
+      atMs: Math.round(durationMs * at),
+      intensity: cueIntensity * intensity
+    };
+  });
+
+  return createAnimationPlan({
+    actorId,
+    eventType: "move",
+    transformOrigin,
+    cues,
+    segments
+  });
+}
+
 function visualTarget(event) {
   const x = Number(event.metadata?.targetTranslateX ?? 0);
   const y = Number(event.metadata?.targetTranslateY ?? 0);
@@ -94,6 +184,7 @@ export function planAnimation({ event, actor, profile }) {
         actorId: actor.id,
         eventType: event.type,
         loop: true,
+        transformOrigin: cfg.transformOrigin ?? null,
         segments: [
           {
             label: "idle-out",
@@ -120,6 +211,19 @@ export function planAnimation({ event, actor, profile }) {
             }
           }
         ]
+      });
+    }
+
+    case "move": {
+      return locomotionPlan({
+        cfg: profile.locomotion,
+        actorId: actor.id,
+        intensity,
+        sign,
+        transformOrigin:
+          profile.locomotion?.transformOrigin ??
+          profile.idle?.transformOrigin ??
+          null
       });
     }
 
