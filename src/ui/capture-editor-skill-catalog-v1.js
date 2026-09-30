@@ -190,6 +190,19 @@ export function mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
 
   const tacticalEffects =
     historicalTacticalEffectsV1(abilityId);
+  const currentEffects =
+    Array.isArray(currentFields.effects)
+      ? currentFields.effects
+      : null;
+  const mergedEffects =
+    currentEffects !== null &&
+    currentEffects.length > 0
+      ? currentEffects
+      : (
+          tacticalEffects ??
+          currentEffects ??
+          []
+        );
 
   const {
     damage: _legacyDamage,
@@ -211,8 +224,6 @@ export function mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
     element: template.element,
     requiredLevel:
       template.requiredLevel,
-    effects:
-      tacticalEffects ??
-      currentFields.effects
+    effects: mergedEffects
   };
 }
