@@ -240,7 +240,21 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   });
 
+  const arenaId =
+    captureExport.presentation?.arenaId == null
+      ? null
+      : String(
+          captureExport.presentation.arenaId
+        ).trim();
+
+  if (arenaId === "") {
+    throw new TypeError(
+      "presentation.arenaId must be a non-empty string"
+    );
+  }
+
   return Object.freeze({
+    arenaId,
     profiles: Object.freeze([
       ...normalizedProfiles
     ]),
