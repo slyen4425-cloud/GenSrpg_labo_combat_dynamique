@@ -848,6 +848,8 @@ export async function mountCoop2v2Test({
     button.type = "button";
     button.className = "action-option action-option--skill";
     button.dataset.combatSkill = skill.id;
+    button.dataset.cooldownActive = "false";
+    button.style.setProperty("--cooldown-progress", "1");
 
     const presentation =
       presentationForActorSkill(
