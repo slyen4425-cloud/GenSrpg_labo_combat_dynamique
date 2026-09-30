@@ -2258,3 +2258,20 @@ Les valeurs importées de Monster Capture restent autoritaires et éditables. Au
 Canaux exposés actuellement par l'éditeur Capture : `fire`, `water`, `earth`, `air`, `electric`, `light`, `shadow`, `nature`, `ice`, `poison`, `steel`, `psy`, `spirit`.
 
 Combat State accepte des valeurs signées uniquement pour `resistancePctByChannel`. Les bonus `damagePctByChannel` restent non négatifs.
+
+
+## 39. Sélection d’arène de preview Capture
+
+La sélection d'arène du test combat est une donnée de présentation de l'éditeur, jamais une règle de combat.
+
+Chaîne autoritaire :
+`UI onglet Combat -> CaptureBattleSetupEditorDraft.arenaId -> Capture export presentation.arenaId -> Native Visual Source.arenaId -> demoPresentationAssets.presentationForArena(arenaId)`.
+
+Règles :
+- `BattleFormatDefinition` ne contient pas l'arène ;
+- Combat Rules, Action Resolver et Combat State ignorent l'arène ;
+- aucune URL d'image n'est stockée dans le Battle Setup ;
+- la liste des choix UI est dérivée de `ARENA_BINDINGS` via `demoPresentationAssets.arenaOptions()` ;
+- aucun second catalogue d'arènes n'est introduit ;
+- aucune valeur de secours implicite n'est injectée par les contrats ;
+- l'éditeur fournit explicitement l'arène choisie lors de la validation de la preview.
