@@ -2238,3 +2238,23 @@ La preview Capture lit `session.previewSkill().remainingCooldownMs` et le `coold
 Le rafraîchissement provient du callback générique `Combat Runtime.onClock` déjà alimenté par le tick runtime existant. Aucun `setTimeout`, `setInterval`, `Date.now()` ou second ticker n'est autorisé pour le cooldown visuel.
 
 Le rendu peut combiner : désaturation de l'icône, recoloration progressive, overlay radial, aiguille et texte restant. Ces éléments sont purement visuels et n'altèrent jamais la disponibilité sémantique de la compétence.
+
+
+## 39. Résistances naturelles des créatures Capture
+
+Les affinités élémentaires naturelles appartiennent à la donnée créature, pas aux règles de combat globales.
+
+Contrat portable :
+- `creature.elements: string[]` décrit les types/éléments de la créature ;
+- `creature.resistances: [{ kind, value }]` porte les modificateurs naturels ;
+- un `kind` de forme `element:<channel>` est projeté par l'adaptateur Capture vers `FighterConfig.resistancePctByChannel[channel]` ;
+- une valeur positive représente une résistance ;
+- une valeur négative représente une faiblesse.
+
+Les résistances naturelles et celles dérivées des statistiques sont additionnées une seule fois dans l'adaptateur d'entrée. `computeCombatDamageV1()` reste générique et ne connaît ni type de créature ni table de matchup.
+
+Les valeurs importées de Monster Capture restent autoritaires et éditables. Aucune table automatique type -> faiblesse/résistance n'est inventée dans Combat Rules.
+
+Canaux exposés actuellement par l'éditeur Capture : `fire`, `water`, `earth`, `air`, `electric`, `light`, `shadow`, `nature`, `ice`, `poison`, `steel`, `psy`, `spirit`.
+
+Combat State accepte des valeurs signées uniquement pour `resistancePctByChannel`. Les bonus `damagePctByChannel` restent non négatifs.
