@@ -334,6 +334,10 @@ export function normalizeCaptureCombatExportV1(input) {
       battleRaw.localActorId,
       "battle.localActorId"
     ),
+    arenaId: requiredString(
+      battleRaw.arenaId,
+      "battle.arenaId"
+    ),
     skillSpeedMultiplier: positiveFiniteNumber(
       battleRaw.skillSpeedMultiplier,
       "battle.skillSpeedMultiplier"
