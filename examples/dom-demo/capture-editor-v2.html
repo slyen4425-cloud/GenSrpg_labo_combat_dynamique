@@ -633,28 +633,11 @@
 
         <div class="projectile-clash-config">
           <h3>Collision entre projectiles</h3>
-          <label>Tag du projectile
-            <input data-skill-projectile-clash-tag value="fire" placeholder="ex. fire, ice, magic">
+          <label>Puissance du projectile
+            <input type="number" min="0" step="0.1" data-skill-projectile-power value="1">
           </label>
-
-          <div class="projectile-clash-rules" data-skill-projectile-clash-rules>
-            <div class="projectile-clash-rule-row" data-projectile-clash-rule>
-              <label>Contre le tag
-                <input data-skill-projectile-clash-against-tag value="fire">
-              </label>
-              <label>Puissance de collision
-                <input type="number" min="0.01" step="0.1" data-skill-projectile-clash-strength value="1">
-              </label>
-              <button type="button" class="small-action" data-skill-projectile-clash-remove>Retirer</button>
-            </div>
-          </div>
-
-          <button type="button" class="secondary-action" data-skill-projectile-clash-add>
-            Ajouter une règle
-          </button>
-
           <p class="note">
-            Les règles sont explicites : la puissance la plus forte détruit l’autre projectile et continue sa trajectoire. À puissance égale, les deux projectiles sont annulés. Aucun comportement n’est déduit automatiquement de l’élément ou du nom de la capacité.
+            0 = aucune collision avec les autres projectiles. Si deux projectiles se rencontrent, le plus puissant détruit l’autre et continue sa trajectoire. À puissance égale, les deux sont annulés.
           </p>
         </div>
       </article>
