@@ -1,27 +1,32 @@
 {
   "id": "massive",
   "label": "Massif / golem",
-  "description": "Profil générique pour golems, colosses et créatures massives. Comportement initial volontairement aligné sur le profil bipède en attendant une validation visuelle dédiée.",
+  "description": "Profil pour golems, colosses et créatures massives : respiration minimale, pas lourds et retombées marquées.",
   "idle": {
-    "bobY": 2,
-    "swayRotate": 0.35,
-    "swayX": 0.25,
+    "motionStyle": "grounded",
+    "bobY": 0,
+    "swayRotate": 0.12,
+    "swayX": 0,
     "scaleXDelta": -0.002,
-    "scaleYDelta": 0.006,
-    "durationMs": 1800
+    "scaleYDelta": 0.004,
+    "durationMs": 2200,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "100%"
+    }
   },
   "attack": {
-    "lungeX": 46,
-    "lungeY": -4,
-    "stretchX": 0.035,
-    "squashY": 0.045,
-    "durationMs": 340,
-    "recoveryMs": 230
+    "lungeX": 42,
+    "lungeY": -2,
+    "stretchX": 0.025,
+    "squashY": 0.055,
+    "durationMs": 430,
+    "recoveryMs": 300
   },
   "hit": {
-    "recoilX": -22,
-    "recoilRotate": -4,
-    "durationMs": 190,
+    "recoilX": -16,
+    "recoilRotate": -2,
+    "durationMs": 220,
     "filter": {
       "brightness": 1.3,
       "saturate": 4.5,
@@ -30,10 +35,10 @@
     }
   },
   "ko": {
-    "fallY": 28,
+    "fallY": 22,
     "fadeTo": 0,
-    "rotate": -18,
-    "durationMs": 650
+    "rotate": -12,
+    "durationMs": 780
   },
   "specialMoves": {
     "teleport": {
@@ -44,19 +49,37 @@
     "aerial": {
       "riseRatio": 0.42,
       "repositionRatio": 0.1,
-      "riseY": -250,
-      "diveHeight": 270,
-      "returnMs": 240
+      "riseY": -235,
+      "diveHeight": 250,
+      "returnMs": 300
     },
     "ground": {
-      "impactScaleX": 1.04,
-      "impactScaleY": 0.96,
-      "returnMs": 240
+      "travelStyle": "heavy-step",
+      "stepCount": 2,
+      "hopHeight": 4,
+      "landingSquash": 0.045,
+      "travelRotateDeg": 0.45,
+      "impactScaleX": 1.055,
+      "impactScaleY": 0.945,
+      "returnMs": 310,
+      "transformOrigin": {
+        "x": "50%",
+        "y": "100%"
+      }
     },
     "perspective": {
-      "perspectiveScaleStrength": 1.25,
-      "perspectiveScaleMin": 0.7,
-      "perspectiveScaleMax": 1.35
+      "perspectiveScaleStrength": 1.15,
+      "perspectiveScaleMin": 0.74,
+      "perspectiveScaleMax": 1.3
+    }
+  },
+  "motionFx": {
+    "footfall": {
+      "cameraShake": {
+        "amplitudePx": 2.6,
+        "durationMs": 120,
+        "scaleInfluence": 0.35
+      }
     }
   }
 }
