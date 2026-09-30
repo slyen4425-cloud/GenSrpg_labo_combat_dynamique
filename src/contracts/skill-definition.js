@@ -2,8 +2,8 @@ import {
   normalizeSkillEffectV1
 } from "./skill-effect-v1.js";
 import {
-  normalizeProjectileClashV2
-} from "./projectile-clash-v2.js";
+  normalizeProjectilePowerV1
+} from "./projectile-power-v1.js";
 
 export const SKILL_CATEGORIES = Object.freeze([
   "offensive",
@@ -283,7 +283,7 @@ export function normalizeSkillDefinition(input) {
   }
 
   const projectileClash =
-    normalizeProjectileClashV2(
+    normalizeProjectilePowerV1(
       input.projectileClash,
       { form }
     );
