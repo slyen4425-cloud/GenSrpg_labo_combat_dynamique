@@ -314,3 +314,66 @@ test("combat UI routes only real AI movement through the visual locomotion owner
     /camera-shake|amplitudePx/
   );
 });
+
+
+test("serpentine idle anchors the body while only the upper silhouette sways", async () => {
+  const profile = await json(profilePaths.serpentine);
+  const plan = planAnimation({
+    event: event("idle", "serpentine-actor"),
+    actor: actor("serpentine"),
+    profile
+  });
+
+  assert.ok(parseFloat(plan.transformOrigin.y) >= 88);
+  for (const segment of plan.segments) {
+    assert.equal(segment.transform.translateX, 0);
+    assert.equal(segment.transform.translateY, 0);
+  }
+  assert.ok(
+    Math.max(...plan.segments.map((segment) => Math.abs(segment.transform.rotateDeg))) >= 0.55,
+    "upper body sway must remain visible without sliding the body"
+  );
+});
+
+test("flying locomotion is one smooth arch and stays free of footfall cues", async () => {
+  const profile = await json(profilePaths.drake);
+  const plan = planAnimation({
+    event: event("move", "drake-actor"),
+    actor: actor("drake"),
+    profile
+  });
+
+  assert.equal(plan.segments.length, 4);
+  const lifts = plan.segments.map(
+    (segment) => -segment.transform.translateY
+  );
+  assert.ok(lifts[0] > 0);
+  assert.ok(lifts[1] > lifts[0]);
+  assert.ok(lifts[2] > 0 && lifts[2] < lifts[1]);
+  assert.equal(lifts[3], 0);
+  assert.ok(lifts[1] >= 18, "flight arch apex must be clearly visible");
+  assert.equal(
+    (plan.cues ?? []).filter((cue) => cue.type === "footfall").length,
+    0
+  );
+});
+
+test("flying profile owns a lower softer contact shadow projected without profile-name branching", async () => {
+  const profile = await json(profilePaths.drake);
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+  const demoApp = await readFile("src/ui/demo-app.js", "utf8");
+
+  assert.ok(profile.presentation?.shadow);
+  assert.ok(profile.presentation.shadow.bottomPct < 8);
+  assert.ok(profile.presentation.shadow.opacity < 0.42);
+  assert.match(css, /--creature-shadow-bottom/);
+  assert.match(css, /--creature-shadow-opacity/);
+  assert.match(
+    demoApp,
+    /profilePresentation[\s\S]*--creature-shadow-bottom[\s\S]*shadow\.bottomPct/
+  );
+  assert.doesNotMatch(
+    demoApp,
+    /meta\.profile\s*===\s*["']drake["']|case\s+["']drake["']/
+  );
+});
