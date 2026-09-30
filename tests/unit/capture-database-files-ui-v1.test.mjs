@@ -364,3 +364,27 @@ test("session adapter stays independent from DOM files storage network and Runti
     );
   }
 });
+
+
+test("unsaved HTML bootstrap creature is removed before canonical catalog becomes the export source", async () => {
+  const source=await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(
+    source,
+    /bootstrapCreatureId/
+  );
+  assert.match(
+    source,
+    /configuredCreatures\.delete\(\s*bootstrapCreatureId\s*\)/
+  );
+  assert.match(
+    source,
+    /canonicalCreatureIds/
+  );
+});
