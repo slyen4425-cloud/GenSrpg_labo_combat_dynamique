@@ -98,6 +98,19 @@ import {
 import {
   importMonsterCaptureStatValuesV1
 } from "../adapters/input/capture/monster-capture-stat-values-v1.js";
+import {
+  exportCaptureDatabaseJsonV1
+} from "../adapters/input/capture/capture-database-transfer-v1.js";
+import {
+  exportCaptureCreatureTransferJsonV1,
+  exportCaptureSkillTransferJsonV1,
+  importCaptureTransferJsonV1,
+  planCaptureTransferImportV1
+} from "../adapters/input/capture/capture-entity-transfer-v1.js";
+import {
+  captureDatabaseFromEditorStateV1,
+  applyCaptureImportPlanToEditorStateV1
+} from "../adapters/input/capture/capture-editor-database-state-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -4636,6 +4649,249 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-progression-schedule-host]"
   );
+  const exportCurrentCreatureButton = one(
+    root,
+    "[data-export-current-creature]"
+  );
+  const exportCurrentSkillButton = one(
+    root,
+    "[data-export-current-skill]"
+  );
+  const exportDatabaseButton = one(
+    root,
+    "[data-export-database]"
+  );
+  const importJsonButton = one(
+    root,
+    "[data-import-json-button]"
+  );
+  const importJsonFile = one(
+    root,
+    "[data-import-json-file]"
+  );
+  const importReplace = one(
+    root,
+    "[data-import-replace]"
+  );
+  const transferStatus = one(
+    root,
+    "[data-transfer-status]"
+  );
+
+  function setTransferStatus(
+    message,
+    tone = "info"
+  ) {
+    transferStatus.textContent =
+      message;
+    transferStatus.dataset.tone =
+      tone;
+  }
+
+  function fileSafeId(value) {
+    return String(value ?? "capture")
+      .trim()
+      .replace(
+        /[^A-Za-z0-9._-]+/g,
+        "_"
+      ) || "capture";
+  }
+
+  function downloadCaptureJsonV1(
+    filename,
+    jsonText
+  ) {
+    const blob = new Blob(
+      [jsonText],
+      {
+        type:
+          "application/json;charset=utf-8"
+      }
+    );
+    const url =
+      URL.createObjectURL(blob);
+    const link =
+      document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.hidden = true;
+    document.body.append(link);
+
+    try {
+      link.click();
+    } finally {
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  function assertTransferReadyV1() {
+    if (
+      statRegistry === null ||
+      progressionRules === null
+    ) {
+      throw new Error(
+        "Les règles Capture ne sont pas encore chargées."
+      );
+    }
+  }
+
+  function assertNoUnsavedTransferChangesV1() {
+    if (creatureDirty || skillDirty) {
+      throw new Error(
+        "Enregistre d’abord les modifications en cours avant l’import/export."
+      );
+    }
+  }
+
+  function currentDatabaseForTransferV1() {
+    assertTransferReadyV1();
+
+    return captureDatabaseFromEditorStateV1({
+      configuredCreatures,
+      configuredSkills,
+      statRegistry,
+      progressionRules,
+      metadata: {
+        producer:
+          "capture-human-v2"
+      }
+    });
+  }
+
+  function savedCurrentCreatureForTransferV1() {
+    assertTransferReadyV1();
+
+    if (creatureDirty) {
+      throw new Error(
+        "Enregistre d’abord les modifications de la créature."
+      );
+    }
+
+    const creatureId =
+      selectedCreatureId ??
+      selectedValue(
+        root,
+        "[data-creature-id]"
+      );
+    const record =
+      configuredCreatures.get(
+        creatureId
+      );
+
+    if (!record) {
+      throw new RangeError(
+        "Créature enregistrée introuvable : " +
+          creatureId
+      );
+    }
+
+    return record;
+  }
+
+  function savedCurrentSkillForTransferV1() {
+    assertTransferReadyV1();
+
+    if (skillDirty) {
+      throw new Error(
+        "Enregistre d’abord les modifications de la capacité."
+      );
+    }
+
+    const skillId =
+      selectedValue(
+        root,
+        "[data-skill-id]"
+      );
+    const draft =
+      configuredSkills.get(
+        skillId
+      );
+
+    if (!draft) {
+      throw new RangeError(
+        "Capacité enregistrée introuvable : " +
+          skillId
+      );
+    }
+
+    return draft;
+  }
+
+  function syncEditorDatabaseStateV1(
+    nextState,
+    preferredCreatureId = null
+  ) {
+    configuredCreatures.clear();
+    for (
+      const [
+        creatureId,
+        record
+      ] of nextState.configuredCreatures
+    ) {
+      configuredCreatures.set(
+        creatureId,
+        record
+      );
+    }
+
+    configuredSkills.clear();
+    for (
+      const [
+        skillId,
+        draft
+      ] of nextState.configuredSkills
+    ) {
+      configuredSkills.set(
+        skillId,
+        draft
+      );
+    }
+
+    statRegistry =
+      nextState.statRegistry;
+    progressionRules =
+      nextState.progressionRules;
+
+    renderHumanStatRegistryV1(
+      root,
+      statRegistry
+    );
+    renderHumanProgressionRulesV1(
+      root,
+      progressionRules
+    );
+
+    refreshLoadoutOptions();
+
+    const nextCreatureId =
+      preferredCreatureId &&
+      configuredCreatures.has(
+        preferredCreatureId
+      )
+        ? preferredCreatureId
+        : (
+            configuredCreatures.keys()
+              .next().value ??
+            null
+          );
+
+    selectedCreatureId =
+      nextCreatureId;
+    refreshCreatureLibraryOptions(
+      nextCreatureId
+    );
+
+    if (nextCreatureId !== null) {
+      loadCreatureRecord(
+        nextCreatureId
+      );
+    } else {
+      refreshEvolutionTargetOptions(
+        null
+      );
+    }
+  }
 
   function updateCreatureLibraryState(
     message,
@@ -6472,14 +6728,14 @@ export function mountCaptureEditorHumanV2({
       syncLoadoutAvailability();
 
       updateCreatureLibraryState(
-        "110 créatures Monster Capture chargées, dont les visuels existants sont raccordés automatiquement. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
+        "102 créatures Monster Capture canoniques chargées, dont les visuels existants sont raccordés automatiquement. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
         "ok"
       );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques visuelle, audio, stats/progression, 110 créatures Monster Capture, 9 capacités laboratoire + 103 capacités Capture natives et 103 modèles historiques chargées.",
+          "Bibliothèques visuelle, audio, stats/progression, 102 créatures Monster Capture canoniques, 9 capacités laboratoire + 103 capacités Capture natives et 103 modèles historiques chargées.",
           "info"
         );
       }
