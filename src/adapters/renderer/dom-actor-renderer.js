@@ -47,6 +47,17 @@ export function createDomActorRenderer({
     element.style.filter = "none";
   }
 
+  function applyPlanTransformOrigin(plan) {
+    const origin = plan?.transformOrigin;
+    if (!origin) {
+      element.style.transformOrigin =
+        `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
+      return;
+    }
+    element.style.transformOrigin =
+      `${origin.x} ${origin.y}`;
+  }
+
   function applyFinalPlanState(plan) {
     const finalSegment = plan.segments.at(-1);
     element.style.transform = composeDomTransform(
@@ -108,6 +119,8 @@ export function createDomActorRenderer({
     }
 
     cancel({ restore: true });
+
+    applyPlanTransformOrigin(plan);
 
     const timeline = animationPlanToDomTimeline(plan, actor);
     const token = ++sequence;
