@@ -465,7 +465,7 @@
           <span class="step">2</span>
           <div>
             <h2>Capacité</h2>
-            <p>Type, cible, dégâts, soin et élément.</p>
+            <p>Type, énergie, niveau requis et élément. Les effets et leur ciblage se configurent dans une seule zone dédiée.</p>
           </div>
         </div>
 
@@ -509,9 +509,7 @@
           </label>
         </div>
 
-        <div class="grid four">
-          <label>Dégâts<input type="number" min="0" data-skill-damage value="4"></label>
-          <label>Soin<input type="number" min="0" data-skill-heal value="0"></label>
+        <div class="grid two">
           <label>Coût énergie<input type="number" min="0" data-skill-energy-cost value="3"></label>
           <label>Niveau requis pour apprendre / équiper<input type="number" min="1" data-skill-required-level value="1"></label>
         </div>
@@ -528,7 +526,7 @@
 
         <label class="switch-line">
           <input type="checkbox" data-skill-activation-enabled>
-          <span>Utiliser des conditions d’activation</span>
+          <span>Déclarer comme capacité Ultime / conditionnelle</span>
         </label>
 
         <div class="skill-activation-config" data-skill-activation-config hidden>
@@ -599,8 +597,8 @@
         <div class="card-title">
           <span class="step">5</span>
           <div>
-            <h2>Mouvement & cible</h2>
-            <p>Comment la capacité atteint sa cible.</p>
+            <h2>Mouvement</h2>
+            <p>Comment la créature se déplace pendant la capacité. Le ciblage appartient uniquement aux effets tactiques.</p>
           </div>
         </div>
 
@@ -613,23 +611,6 @@
           </select>
         </label>
 
-        <div class="option-block">
-          <strong>Portée autorisée</strong>
-          <div class="chip-grid">
-            <label class="check-chip"><input type="checkbox" data-skill-distance value="short"><span>Courte</span></label>
-            <label class="check-chip"><input type="checkbox" data-skill-distance value="medium" checked><span>Moyenne</span></label>
-            <label class="check-chip"><input type="checkbox" data-skill-distance value="long" checked><span>Longue</span></label>
-          </div>
-        </div>
-
-        <div class="option-block">
-          <strong>Cibles</strong>
-          <div class="chip-grid">
-            <label class="check-chip"><input type="checkbox" data-skill-target value="enemy" checked><span>Ennemi</span></label>
-            <label class="check-chip"><input type="checkbox" data-skill-target value="ally"><span>Allié</span></label>
-            <label class="check-chip"><input type="checkbox" data-skill-target value="self"><span>Soi-même</span></label>
-          </div>
-        </div>
       </article>
 
       <article class="card">
@@ -648,10 +629,10 @@
           <label>Recharge / cooldown (ms)<input type="number" min="0" data-skill-cooldown value="2800"></label>
         </div>
 
-        <div class="grid two">
-          <label>Stun (ms)<input type="number" min="0" data-skill-stun value="0"></label>
-          <label class="switch-line"><input type="checkbox" data-skill-interrupts><span>Peut interrompre une préparation</span></label>
-        </div>
+        <label class="switch-line">
+          <input type="checkbox" data-skill-interrupts>
+          <span>Peut interrompre une préparation à l’impact</span>
+        </label>
 
         <label class="switch-line">
           <input type="checkbox" data-skill-clash checked>
