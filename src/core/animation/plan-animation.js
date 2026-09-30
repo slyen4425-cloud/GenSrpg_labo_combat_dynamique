@@ -198,15 +198,13 @@ function groundTravelSegments({
         translateX: target.x * landRatio,
         translateY: target.y * landRatio,
         scaleX:
-          (isFinal
+          isFinal
             ? cfg.impactScaleX * perspectiveScale
-            : landScale) *
-          (1 + landingSquash),
+            : landScale * (1 + landingSquash),
         scaleY:
-          (isFinal
+          isFinal
             ? cfg.impactScaleY * perspectiveScale
-            : landScale) *
-          (1 - landingSquash),
+            : landScale * (1 - landingSquash),
         rotateDeg: 0
       },
       opacity: 1
