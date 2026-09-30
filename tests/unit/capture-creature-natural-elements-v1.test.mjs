@@ -262,6 +262,11 @@ test("signed resistance is accepted while damage bonuses stay non-negative", () 
           damagePctByChannel: {
             fire: -10
           }
+        },
+        {
+          id: "other",
+          maxHp: 100,
+          maxEnergy: 10
         }
       ]
     }),
