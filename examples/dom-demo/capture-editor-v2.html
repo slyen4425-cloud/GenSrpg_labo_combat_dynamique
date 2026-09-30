@@ -725,6 +725,52 @@
       </article>
     </section>
 
+    <section class="database-transfer-card card" aria-label="Import et export Capture">
+      <div class="card-title">
+        <span class="step">↕</span>
+        <div>
+          <h2>Import / Export</h2>
+          <p>Enregistre d’abord tes modifications, puis exporte une créature, une capacité ou toute la base.</p>
+        </div>
+      </div>
+
+      <div class="database-transfer-actions">
+        <button type="button" class="secondary-action" data-export-current-creature>
+          Exporter cette créature
+        </button>
+        <button type="button" class="secondary-action" data-export-current-skill>
+          Exporter cette capacité
+        </button>
+        <button type="button" class="primary-action" data-export-database>
+          Exporter toute la base
+        </button>
+      </div>
+
+      <div class="database-import-box">
+        <label class="switch-line">
+          <input type="checkbox" data-import-replace>
+          <span>Remplacer explicitement les IDs existants en cas de conflit</span>
+        </label>
+
+        <input
+          type="file"
+          accept=".json,application/json"
+          data-import-json-file
+          hidden
+        >
+        <button type="button" class="secondary-action" data-import-json-button>
+          Importer un JSON
+        </button>
+
+        <p class="note">
+          Sans remplacement, un fichier différent portant un ID déjà présent est refusé. Les assets restent liés par leurs identifiants : les images, sprites et sons ne sont pas copiés dans le JSON.
+        </p>
+        <p class="note" data-transfer-status data-tone="info">
+          Aucun fichier importé ou exporté.
+        </p>
+      </div>
+    </section>
+
     <footer class="editor-footer">
       <div>
         <strong>Validation</strong>
