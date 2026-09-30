@@ -138,7 +138,7 @@ test("city arena diagnostic resolves through the same presentation boundary", ()
   );
   assert.equal(
     presentation.backgroundSize,
-    "auto 112%"
+    "auto 100%"
   );
 });
 
