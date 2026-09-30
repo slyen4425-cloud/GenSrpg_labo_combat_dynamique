@@ -18103,3 +18103,20 @@ Créer des profils de mouvement mono-image pilotés par les données, sans squel
 ### Critère de fin
 
 RED ciblé -> cause confirmée -> implémentation minimale data-driven -> vrai chemin profile -> AnimationPlan -> renderer/FX -> CI complète -> documentation -> checkpoint PREVALIDATION smartphone.
+
+
+### Recadrage explicite — propriétaire des profils de créatures test
+
+Pré-audit du vrai raccord :
+- `CAPTURE_TEST_CREATURE_OPTIONS_V1` porte déjà explicitement `profileId` pour chaque créature de test ;
+- Loup volcanique est correctement `quadruped` ;
+- Golem moussu est encore `biped` alors que son méta d’asset global le déclare `massive` ;
+- Guêpe cybernétique et Ailevent sont encore `drake` alors que le nouveau profil générique `flying` est désormais le propriétaire prévu pour les créatures volantes génériques.
+
+Extension de périmètre autorisée dans ce même micro-lot :
+- `src/catalogs/capture-test-creature-options-v1.js` ;
+- test ciblé du mapping explicite des profils.
+
+Règle :
+- correction uniquement par `profileId` explicite du catalogue ;
+- aucune détection par nom, asset, élément ou description.
