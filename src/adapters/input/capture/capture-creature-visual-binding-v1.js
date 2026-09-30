@@ -53,6 +53,16 @@ function requiredText(value, field) {
   return value.trim();
 }
 
+function canonicalCaptureProfileIdV1(value) {
+  const profileId = requiredText(
+    value,
+    "creatureMeta.profile"
+  );
+  return profileId === "drake"
+    ? "flying"
+    : profileId;
+}
+
 function positiveNumber(value, field) {
   const number = Number(value);
   if (!Number.isFinite(number) || number <= 0) {
@@ -201,9 +211,8 @@ export function applyCaptureCreatureVisualBindingV1({
     version: 2,
     subjectType: "creature",
     subjectId: draft.id,
-    profileId: requiredText(
-      meta.profile,
-      "creatureMeta.profile"
+    profileId: canonicalCaptureProfileIdV1(
+      meta.profile
     ),
     displayScale: positiveNumber(
       meta.displayScale?.player,
