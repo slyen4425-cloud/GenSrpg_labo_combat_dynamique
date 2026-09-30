@@ -12,8 +12,8 @@ async function loadJson(path) {
 }
 
 const serpentine = await loadJson("data/profiles/serpentine.profile.json");
-const drake = await loadJson("data/profiles/drake.profile.json");
-const registry = createProfileRegistry([serpentine, drake]);
+const flying = await loadJson("data/profiles/flying.profile.json");
+const registry = createProfileRegistry([serpentine, flying]);
 
 test("CombatVisualEvent normalizes stable defaults", () => {
   const event = normalizeCombatVisualEvent({
@@ -45,10 +45,10 @@ test("VisualActor defaults facing from combat view", () => {
   assert.equal(player.facing, "right");
 });
 
-test("profile registry contains serpentine and drake", () => {
+test("profile registry contains serpentine and flying", () => {
   assert.equal(registry.has("serpentine"), true);
-  assert.equal(registry.has("drake"), true);
-  assert.deepEqual(registry.ids(), ["serpentine", "drake"]);
+  assert.equal(registry.has("flying"), true);
+  assert.deepEqual(registry.ids(), ["serpentine", "flying"]);
 });
 
 test("serpentine attack planner is deterministic and facing-aware", () => {
@@ -103,7 +103,7 @@ test("opponent facing mirrors horizontal attack direction", () => {
   const actor = normalizeVisualActor({
     id: "braisombre-a",
     creatureId: "braisombre",
-    profile: "drake",
+    profile: "flying",
     asset: "braisombre_opponent.png",
     view: "opponent"
   });
@@ -151,14 +151,14 @@ test("unsupported V1 event fails instead of silently inventing behavior", () => 
   const actor = normalizeVisualActor({
     id: "b",
     creatureId: "braisombre",
-    profile: "drake",
+    profile: "flying",
     asset: "braisombre_player.png",
     view: "player"
   });
 
   assert.throws(() => planAnimation({
     actor,
-    profile: registry.get("drake"),
+    profile: registry.get("flying"),
     event: normalizeCombatVisualEvent({ type: "dodge", actorId: actor.id })
   }), /No V1 animation planner/);
 });
@@ -167,7 +167,7 @@ test("VisualActor carries a stable transform origin", () => {
   const actor = normalizeVisualActor({
     id: "b-anchor",
     creatureId: "braisombre",
-    profile: "drake",
+    profile: "flying",
     asset: "braisombre_player.png",
     view: "player",
     transformOrigin: { x: "50%", y: "88%" }
@@ -178,24 +178,24 @@ test("VisualActor carries a stable transform origin", () => {
 
 test("idle profiles encode the requested morphology differences", () => {
   assert.ok(serpentine.idle.bobY <= 0.5);
-  assert.ok(drake.idle.bobY > serpentine.idle.bobY);
-  assert.ok(drake.idle.swayX <= 0.5);
-  assert.ok(drake.idle.swayRotate < serpentine.idle.swayRotate);
-  assert.ok(drake.idle.scaleYDelta > 0);
+  assert.ok(flying.idle.bobY > serpentine.idle.bobY);
+  assert.ok(flying.idle.swayX <= 0.5);
+  assert.ok(flying.idle.swayRotate < serpentine.idle.swayRotate);
+  assert.ok(flying.idle.scaleYDelta > 0);
 });
 
 test("planner consumes idle scale deltas from profile data", () => {
   const actor = normalizeVisualActor({
-    id: "drake-idle",
+    id: "flying-idle",
     creatureId: "braisombre",
-    profile: "drake",
+    profile: "flying",
     asset: "braisombre_opponent.png",
     view: "opponent"
   });
 
   const plan = planAnimation({
     actor,
-    profile: registry.get("drake"),
+    profile: registry.get("flying"),
     event: normalizeCombatVisualEvent({ type: "idle", actorId: actor.id })
   });
 
