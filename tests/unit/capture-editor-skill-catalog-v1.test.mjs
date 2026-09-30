@@ -91,17 +91,24 @@ test("basic historical template only replaces fields explicitly known from legac
   assert.deepEqual(after.presentation, before.presentation);
 });
 
-test("status-dependent template remains explicitly unavailable as a complete runtime skill", () => {
+test("historical complex template reports its native tactical migration instead of obsolete StatusEffect blocker", () => {
   const state = captureLegacyAbilityEditorStateV1(
     "cap_fire_special_1"
   );
 
   assert.equal(
     state.migrationState,
-    "requires-status-effect-v1"
+    "runtime-ready-complex"
   );
-  assert.equal(state.runtimeReady, false);
-  assert.match(state.message, /StatusEffectV1/i);
+  assert.equal(state.runtimeReady, true);
+  assert.match(
+    state.message,
+    /effets tactiques natifs/i
+  );
+  assert.doesNotMatch(
+    state.message,
+    /StatusEffectV1 est requis/i
+  );
   assert.deepEqual(state.legacyStatusEffects, [
     {
       kind: "debuff",
