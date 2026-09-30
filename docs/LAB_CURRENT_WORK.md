@@ -18625,3 +18625,31 @@ Un export créature avec `profileId:"flying"` doit être accepté par le vrai ad
 ### Critère de fin
 
 RED ciblé -> migration canonique `drake -> flying` -> CI complète -> preview smartphone.
+
+
+### Résultat — Flying Profile Canonical V1
+
+RED :
+- commit `527776df2bced07804f200b7e8a2edf1b4f14a79` ;
+- CI `36706283024` ;
+- **709 tests, 707 PASS, 2 FAIL ciblés** ;
+- échecs : profil `flying` absent du contexte de preview et métadonnées historiques `drake` non normalisées.
+
+Correction :
+- `data/profiles/flying.profile.json` devient la source canonique du profil volant ;
+- `drake.profile.json` supprimé pour éviter une deuxième autorité ;
+- preview éditeur et démo générique chargent désormais `flying` ;
+- catalogue des créatures de test utilise `profileId:"flying"` ;
+- fixture Braisombre migrée vers `flying` ;
+- les métadonnées historiques venant de `global-assets` qui exposent encore `drake` sont normalisées explicitement en `flying` dans l'adaptateur d'entrée Capture ;
+- aucune détection par nom de créature ;
+- sentinelles planner / renderer / structure migrées vers l'ID canonique.
+
+GREEN :
+- commit fonctionnel/sentinelles : `6c6ec50d6961da6a7d5165514408012b77da339b` ;
+- CI `36706702602` ;
+- structure / frontières / indépendance : OK ;
+- **709/709 PASS / 0 FAIL**.
+
+État :
+**GREEN technique — PREVALIDATION smartphone requise.**
