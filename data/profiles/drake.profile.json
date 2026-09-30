@@ -3,12 +3,16 @@
   "label": "Drake",
   "description": "Profil pour drakes, petits dragons et créatures ailées trapues.",
   "idle": {
-    "bobY": 0.5,
-    "swayRotate": 0.2,
-    "swayX": 0,
+    "bobY": 8,
+    "swayRotate": 0.45,
+    "swayX": 0.35,
     "scaleXDelta": -0.003,
-    "scaleYDelta": 0.012,
-    "durationMs": 1850
+    "scaleYDelta": 0.01,
+    "durationMs": 1850,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "58%"
+    }
   },
   "attack": {
     "lungeX": 48,
@@ -55,8 +59,33 @@
     },
     "perspective": {
       "perspectiveScaleStrength": 1.25,
-      "perspectiveScaleMin": 0.70,
+      "perspectiveScaleMin": 0.7,
       "perspectiveScaleMax": 1.35
     }
+  },
+  "locomotion": {
+    "style": "flight",
+    "durationMs": 340,
+    "phases": [
+      {
+        "label": "flight-rise",
+        "at": 0.5,
+        "translateY": -9,
+        "rotateDeg": 0.4,
+        "scaleX": 0.998,
+        "scaleY": 1.004,
+        "easing": "ease-in-out"
+      },
+      {
+        "label": "flight-settle",
+        "at": 1,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "easing": "ease-in-out"
+      }
+    ],
+    "contacts": []
   }
 }
