@@ -18010,3 +18010,96 @@ Test utilisateur :
 3. vérifier que le combat paraît moins vu de haut / plus frontal ;
 4. vérifier 1v1 et 2v2 ;
 5. vérifier que projectiles, attaques au sol/aériennes/téléportation restent visuellement cohérents.
+
+
+## Micro-lot — Capture Creature Motion Profiles V1 — 2026-09-30
+
+Base :
+- SHA PREVALIDATION arène : `ed52f1b8516414c712b3f6c2c302dfcf1a6a0600` ;
+- CI vérifiée sur ce SHA : SUCCESS, 693/693 PASS ;
+- aucun merge `main`.
+
+Checkpoint de départ :
+`checkpoint/lab-start-capture-creature-motion-profiles-v1-2026-09-30`.
+
+Branche :
+`work/lab-capture-creature-motion-profiles-v1-2026-09-30`.
+
+### Retours utilisateur
+
+1. L’ombre de contact doit être plus prononcée et sa taille doit suivre le `displayScale` réel de la créature.
+2. Les idle doivent être différenciés par morphologie :
+   - rampant : reste près du sol, très peu de mouvement ;
+   - bipède / quadrupède : pieds visuellement fixes ; seul le haut du corps doit respirer/bouger légèrement ;
+   - volant : oscillation verticale claire.
+3. Les déplacements au sol doivent être différenciés :
+   - rampant : déplacement linéaire, au ras du sol ;
+   - bipède : petits bonds ;
+   - quadrupède : bonds plus longs.
+4. Massif / golem :
+   - déplacement lourd ;
+   - chaque retombée/footfall peut déclencher un micro-tremblement caméra.
+
+### Diagnostic
+
+- l’idle actuel déplace tout le `motion` avec `translateX/translateY`, ce qui provoque du glissement des pieds ;
+- `serpentine` possède actuellement un `bobY: 10`, incompatible avec l’intention « rampant au sol » ;
+- `ground-attack` utilise un unique trajet générique pour toutes les morphologies ;
+- l’éditeur expose `profileId:"flying"`, mais aucun `flying.profile.json` n’est chargé dans la preview ;
+- l’ombre CSS appartient au container `.fighter` alors que le `displayScale` est appliqué au `.fighter__motion` : elle ne suit donc pas la taille réelle ;
+- aucun propriétaire Camera FX n’existe encore pour les footfalls lourds.
+
+### Objectif
+
+Créer des profils de mouvement mono-image pilotés par les données, sans squelette 2D ni logique par nom de créature.
+
+### Propriétaires
+
+- Creature Profile : style idle / locomotion / footfall data-driven ;
+- Animation Core : séquence, timing, pivot d’idle et moment des retombées ;
+- FX Core : traduction d’un cue `footfall` en camera shake lorsque le profil le demande ;
+- Render Adapter : application DOM de l’origine de transformation et du camera shake ;
+- Demo Visual Controller : raccord des propriétaires, sans règle de mouvement codée dans l’UI.
+
+### Fichiers autorisés
+
+- `data/profiles/*.profile.json` ;
+- `src/contracts/combat-visual-event.js` si un événement visuel générique est nécessaire ;
+- `src/core/animation/animation-plan.js` ;
+- `src/core/animation/plan-animation.js` ;
+- nouveau module pur sous `src/core/fx/` pour les cues de mouvement ;
+- nouveau renderer sous `src/adapters/renderer/` pour camera shake ;
+- `src/adapters/renderer/dom-actor-renderer.js` ;
+- `src/ui/demo-app.js` uniquement pour le raccord ;
+- `examples/dom-demo/capture-editor-v2.js` pour charger un profil générique `flying` ;
+- `examples/dom-demo/demo.css` pour l’ombre de contact ;
+- tests ciblés ;
+- docs.
+
+### Protégé
+
+- Combat Runtime / dégâts / énergie / ciblage / distance logique ;
+- Presentation Binding `displayScale` reste l’unique taille créature ;
+- SkillDefinition / effets / projectile power ;
+- Database / exports ;
+- assets binaires ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+- idle bipède/quadrupède : aucune translation X/Y du socle, pivot bas ;
+- idle rampant : très faible amplitude et aucune élévation du corps ;
+- idle volant : oscillation Y réelle ;
+- ground locomotion :
+  - rampant = trajet linéaire ;
+  - bipède = plusieurs petits bonds ;
+  - quadrupède = moins de bonds mais plus amples ;
+  - massif = retombées marquées avec cues footfall ;
+- FX Core produit un camera shake uniquement pour un footfall de profil massif ;
+- renderer camera shake ne laisse aucun transform résiduel ;
+- l’ombre lit une variable `--creature-display-scale` alimentée depuis l’acteur ;
+- profil `flying` réellement chargeable en preview.
+
+### Critère de fin
+
+RED ciblé -> cause confirmée -> implémentation minimale data-driven -> vrai chemin profile -> AnimationPlan -> renderer/FX -> CI complète -> documentation -> checkpoint PREVALIDATION smartphone.
