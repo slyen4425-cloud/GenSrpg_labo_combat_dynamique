@@ -18574,3 +18574,54 @@ Protégé / inchangé :
 
 État :
 **GREEN technique — PREVALIDATION smartphone requise.**
+
+
+## Micro-lot — Flying Profile Canonical V1 — 2026-09-30
+
+Base :
+- SHA : `3fe49790c1f6686425c7a24c59cb5fe4f6a9724f` ;
+- checkpoint : `checkpoint/lab-start-flying-profile-canonical-v1-2026-09-30` ;
+- branche : `work/lab-flying-profile-canonical-v1-2026-09-30`.
+
+### Régression utilisateur
+
+Dans l'éditeur Capture, le style `flying` est sélectionnable mais le preview le refuse comme profil inconnu.
+
+### Cause démontrée avant codage
+
+- l'éditeur expose `flying` dans `capture-editor-v2.html` ;
+- le contexte visuel de preview charge encore `drake.profile.json` dont l'ID est `drake` ;
+- plusieurs métadonnées de créatures volantes utilisent encore `drake` ;
+- l'adaptateur visuel valide strictement que `presentation.profileId` existe dans le registre, donc `flying` est rejeté.
+
+### Décision d'autorité
+
+`flying` devient l'identifiant canonique du profil morphologique volant.
+
+Aucun alias par nom de créature et aucune rustine UI.
+Les anciennes références `drake` de la preview sont migrées vers `flying`.
+
+### Fichiers autorisés
+
+- profil volant canonique sous `data/profiles/` ;
+- chargeurs de profils de preview ;
+- métadonnées / catalogues de créatures de test qui déclarent encore `drake` ;
+- tests ciblés profil / export visuel / preview ;
+- documentation.
+
+### Protégé
+
+- profils bipède, quadrupède, serpentine et massif ;
+- Combat Runtime / Combat State ;
+- énergie / cooldown / dégâts / ciblage ;
+- Animation Core et FX Core, sauf aucun changement nécessaire ;
+- assets binaires ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+Un export créature avec `profileId:"flying"` doit être accepté par le vrai adaptateur visuel et le registre de preview doit exposer `flying`, pas seulement `drake`.
+
+### Critère de fin
+
+RED ciblé -> migration canonique `drake -> flying` -> CI complète -> preview smartphone.
