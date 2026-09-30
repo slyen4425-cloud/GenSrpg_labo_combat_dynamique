@@ -1866,3 +1866,52 @@ La politique d'application est explicite :
 - replace.
 
 Aucun merge champ par champ n'existe.
+
+## 31. Capture Human Editor — File Transfer UI V1
+
+Le Human Editor est le seul endroit où les APIs navigateur de fichier sont utilisées.
+
+### État
+
+La source de vérité de session reste :
+
+- `configuredCreatures` ;
+- `configuredSkills` ;
+- `statRegistry` ;
+- `progressionRules`.
+
+Les fichiers importés/exportés ne créent aucun stockage parallèle.
+
+### Composition base complète
+
+`capture-editor-file-transfer-v1.js` compose les Maps et propriétaires globaux vers `CaptureDatabaseV1`.
+
+Il ne connaît ni DOM, ni Blob, ni File, ni storage.
+
+### Export navigateur
+
+Le Human Editor :
+
+1. obtient un objet canonique ;
+2. délègue la sérialisation aux adapters Database/Entity Transfer ;
+3. crée un Blob JSON ;
+4. déclenche le téléchargement ;
+5. libère immédiatement l'ObjectURL.
+
+### Import navigateur
+
+Chaîne :
+
+`File.text -> Entity Transfer parser -> Import Planner -> Session helper -> Maps existantes`.
+
+Le Human Editor ne fusionne jamais les champs.
+
+- reject = conflit ;
+- replace = remplacement complet de l'entité ou de la database ;
+- noop = aucun changement.
+
+### Assets
+
+Les exports conservent uniquement les références `assetId` déjà propriétaires des Presentation Bindings.
+
+Les binaires image/sprite/audio restent dans la bibliothèque d'assets et feront l'objet des lots assets dédiés.
