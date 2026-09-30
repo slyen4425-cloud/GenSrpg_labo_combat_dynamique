@@ -115,3 +115,20 @@ test("Capture editor combat preview page keeps storage and business globals out"
     );
   }
 });
+
+
+test("combat preview exposes authoritative cooldown feedback", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/combat-2v2-test-ui.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(source, /preview\\.outcome\\s*===\\s*["']cooldown["']/);
+  assert.match(source, /preview\\.remainingCooldownMs/);
+  assert.match(source, /action-option__cooldown/);
+  assert.doesNotMatch(source, /setInterval\\s*\\(/);
+  assert.doesNotMatch(source, /Date\\.now\\s*\\(/);
+});
