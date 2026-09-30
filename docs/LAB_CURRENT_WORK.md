@@ -18653,3 +18653,102 @@ GREEN :
 
 État :
 **GREEN technique — PREVALIDATION smartphone requise.**
+## Micro-lot — Flying Single-Arc Reconciliation V1 — 2026-09-30
+
+Base autoritaire retenue après comparaison réelle des branches :
+- SHA : `a93258401c7480e17ea4391a2a1137724b64adcd` ;
+- branche source : `work/lab-flying-profile-canonical-v1-2026-09-30` ;
+- checkpoint de départ : `checkpoint/lab-start-flying-single-arc-reconciliation-v1-2026-09-30` ;
+- branche de travail : `work/lab-flying-single-arc-reconciliation-v1-2026-09-30`.
+
+### Pré-audit de réconciliation
+
+Les branches :
+- `work/lab-serpentine-flight-profile-refinement-v1-2026-09-30` ;
+- `work/lab-serpentine-flight-motion-v1-2026-09-30`
+
+divergent réellement de la branche canonique depuis le merge-base
+`3fe49790c1f6686425c7a24c59cb5fe4f6a9724f`.
+
+Aucun merge aveugle n'est autorisé.
+
+Décisions de conservation :
+- `flying` reste l'unique identifiant canonique du profil volant ;
+- `drake.profile.json` ne doit pas être recréé ;
+- le déplacement `serpentine.locomotion` validé reste strictement inchangé ;
+- l'idle serpentin alterné du lot refinement est conservé : base ancrée, aucune translation X/Y, pivot bas, légère oscillation du haut du corps ;
+- la locomotion générique volante à apex unique du lot motion est conservée comme donnée du profil canonique `flying` ;
+- la présentation d'ombre canonique retenue est la forme imbriquée `presentation.shadow.bottomPct / opacity` ;
+- la forme historique plate `presentation.shadowBottomPct` ne doit pas être maintenue en parallèle.
+
+### Cause prouvée du double arc en combat
+
+Le vrai chemin observé est :
+
+`Combat Resolution Presenter -> Visual Controller.playApproachFor() -> CombatVisualEvent("aerial-attack") -> planAnimation() -> Render Adapter`.
+
+Une compétence avec `approachMode:"aerial"` ne consomme donc pas la locomotion générique `profile.locomotion` pour son trajet d'attaque.
+
+Le plan `aerial-attack` actuel génère :
+1. `aerial-rise` sans progression horizontale ;
+2. `aerial-reposition` qui déplace horizontalement vers la cible pendant une phase invisible ;
+3. `aerial-dive-impact` ;
+4. retour après impact.
+
+Cette séquence brise la continuité visuelle départ -> apex -> cible et explique le rendu perçu comme deux ponts/arcs.
+
+### Objectif
+
+Réconcilier les données serpent/vol utiles sans perdre la migration canonique `flying`, puis faire de l'approche aérienne un trajet continu à **un seul apex** :
+
+`départ -> montée/progression -> apex unique -> descente/progression -> cible`.
+
+L'impact doit rester exactement à `travelMs` et exactement aux coordonnées de la cible.
+
+### Propriétaires
+
+- Creature Profile : idle, locomotion générique, présentation d'ombre ;
+- Animation Core : séquence et timing du plan `aerial-attack` ;
+- Visual Controller : projection de géométrie et présentation du profil vers le renderer ;
+- Render Adapter : application du plan uniquement.
+
+### Fichiers autorisés
+
+- `data/profiles/flying.profile.json` ;
+- `data/profiles/serpentine.profile.json` ;
+- `src/core/animation/plan-animation.js` ;
+- `src/ui/demo-app.js` ;
+- `examples/dom-demo/demo.css` ;
+- tests ciblés profils / planner / attaque spéciale ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md`.
+
+### Protégé
+
+- profils bipède et quadrupède validés utilisateur ;
+- déplacement rampant / serpentin validé ;
+- profil massif / ses quatre footfalls ;
+- `CombatRuntime.stateSignal()` et le correctif de disponibilité des compétences ;
+- dégâts, énergie, cooldowns, portée, ciblage et impact gameplay ;
+- migration canonique `drake -> flying` à la frontière Capture ;
+- assets binaires et arènes ;
+- dépôt `Zombicide-40k`.
+
+### RED obligatoire
+
+Ajouter un test du plan réellement joué par l'approche aérienne qui démontre que :
+- il n'existe qu'un apex avant impact ;
+- il n'existe aucune phase de repositionnement intermédiaire créant une seconde montée/descente ;
+- la progression horizontale est continue vers la cible ;
+- toutes les phases d'approche restent visibles ;
+- somme des phases jusqu'à impact = `travelMs` ;
+- coordonnées d'impact = coordonnées exactes de la cible.
+
+Le test doit être RED sur la base de départ avant correction.
+
+### Critère de fin
+
+Réconciliation ciblée -> RED prouvé -> correction minimale dans Animation Core -> tests ciblés -> CI complète -> documentation -> checkpoint PREVALIDATION -> branche preview smartphone.
+
+Aucun rendu visuel ne sera déclaré GREEN utilisateur avant validation smartphone de Sylvain.
+
