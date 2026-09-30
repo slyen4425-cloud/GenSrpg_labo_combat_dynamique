@@ -13,7 +13,16 @@ async function loadJson(path) {
 
 const serpentine = await loadJson("data/profiles/serpentine.profile.json");
 const drake = await loadJson("data/profiles/drake.profile.json");
-const registry = createProfileRegistry([serpentine, drake]);
+const biped = await loadJson("data/profiles/biped.profile.json");
+const quadruped = await loadJson("data/profiles/quadruped.profile.json");
+const massive = await loadJson("data/profiles/massive.profile.json");
+const registry = createProfileRegistry([
+  serpentine,
+  drake,
+  biped,
+  quadruped,
+  massive
+]);
 
 function actor(profile = "serpentine") {
   return normalizeVisualActor({
@@ -547,5 +556,78 @@ test("profiles expose one shared perspective preset instead of ground-only dupli
       "perspectiveScaleMax" in profile.specialMoves.ground,
       false
     );
+  }
+});
+
+
+test("ground attack consumes morphology locomotion while still arriving exactly at impact time", () => {
+  const travelMs = 1000;
+  const target = {
+    targetTranslateX: 200,
+    targetTranslateY: -20,
+    arenaHeight: 800,
+    travelMs
+  };
+
+  const plans = Object.fromEntries(
+    ["serpentine", "biped", "quadruped", "massive"].map((profileId) => {
+      const current = actor(profileId);
+      return [
+        profileId,
+        planAnimation({
+          event: normalizeCombatVisualEvent({
+            type: "ground-attack",
+            actorId: current.id,
+            targetId: "opponent-actor",
+            metadata: target
+          }),
+          actor: current,
+          profile: registry.get(profileId)
+        })
+      ];
+    })
+  );
+
+  const approachSegments = (plan) =>
+    plan.segments.filter((segment) => segment.label !== "ground-home");
+  const impactTime = (plan) =>
+    approachSegments(plan).reduce((sum, segment) => sum + segment.durationMs, 0);
+  const maxRelativeLift = (plan) =>
+    Math.max(
+      0,
+      ...approachSegments(plan).map((segment, index, items) => {
+        const progress =
+          items.slice(0, index + 1).reduce((sum, item) => sum + item.durationMs, 0) /
+          travelMs;
+        const linearY = target.targetTranslateY * progress;
+        return linearY - segment.transform.translateY;
+      })
+    );
+
+  assert.equal(impactTime(plans.serpentine), travelMs);
+  assert.equal(impactTime(plans.biped), travelMs);
+  assert.equal(impactTime(plans.quadruped), travelMs);
+  assert.equal(impactTime(plans.massive), travelMs);
+
+  assert.equal(maxRelativeLift(plans.serpentine), 0);
+  assert.ok(maxRelativeLift(plans.biped) > 0);
+  assert.ok(
+    maxRelativeLift(plans.quadruped) > maxRelativeLift(plans.biped),
+    "quadruped must visibly bound higher/longer than biped"
+  );
+
+  assert.ok(
+    approachSegments(plans.massive).length >= 4,
+    "massive ground approach must expose its heavy steps"
+  );
+  assert.ok(
+    (plans.massive.cues ?? []).filter((cue) => cue.type === "footfall").length >= 2,
+    "massive ground approach must emit footfalls for camera FX"
+  );
+
+  for (const plan of Object.values(plans)) {
+    const impact = approachSegments(plan).at(-1);
+    assert.equal(impact.transform.translateX, target.targetTranslateX);
+    assert.equal(impact.transform.translateY, target.targetTranslateY);
   }
 });
