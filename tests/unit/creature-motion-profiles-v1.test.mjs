@@ -314,3 +314,102 @@ test("combat UI routes only real AI movement through the visual locomotion owner
     /camera-shake|amplitudePx/
   );
 });
+
+
+test("serpentine idle alternates the upper body while flight uses one elevated arc and distant shadow", async () => {
+  const serpentine = await json(profilePaths.serpentine);
+  const drake = await json(profilePaths.drake);
+
+  const serpentIdle = planAnimation({
+    event: event("idle", "serpentine-actor"),
+    actor: actor("serpentine"),
+    profile: serpentine
+  });
+
+  assert.equal(
+    serpentine.idle.swayMode,
+    "alternate",
+    "serpentine must explicitly opt into alternating idle sway"
+  );
+  assert.equal(
+    serpentIdle.segments.length,
+    4,
+    "alternate idle must expose right, center, left, center phases"
+  );
+  assert.ok(
+    serpentIdle.segments.every(
+      (segment) => Math.abs(segment.transform.translateY) < 1e-9
+    ),
+    "serpentine idle must stay on the ground"
+  );
+  assert.ok(
+    serpentIdle.segments.every(
+      (segment) => Math.abs(segment.transform.translateX) <= 0.1
+    ),
+    "serpentine base must not slide side to side"
+  );
+
+  const serpentRotations =
+    serpentIdle.segments.map(
+      (segment) => segment.transform.rotateDeg
+    );
+  assert.ok(
+    Math.max(...serpentRotations) >= 0.8 &&
+      Math.min(...serpentRotations) <= -0.8,
+    "upper body must sway gently to both sides"
+  );
+  assert.ok(
+    parseFloat(serpentIdle.transformOrigin.y) >= 90,
+    "serpentine sway pivot must remain near the grounded base"
+  );
+
+  const flightMove = planAnimation({
+    event: event("move", "drake-actor"),
+    actor: actor("drake"),
+    profile: drake
+  });
+  const airborne = flightMove.segments.filter(
+    (segment) => segment.transform.translateY < 0
+  );
+  assert.equal(
+    flightMove.segments.length,
+    2,
+    "flight movement must stay a single rise/fall arc"
+  );
+  assert.equal(
+    airborne.length,
+    1,
+    "flight movement must have exactly one airborne apex"
+  );
+  assert.ok(
+    -airborne[0].transform.translateY >= 20,
+    "flight arc must be visibly more pronounced"
+  );
+  assert.equal(
+    flightMove.segments.at(-1).transform.translateY,
+    0
+  );
+  assert.equal(
+    (flightMove.cues ?? []).filter(
+      (cue) => cue.type === "footfall"
+    ).length,
+    0,
+    "flying movement must not emit ground contacts"
+  );
+
+  assert.ok(
+    Number(drake.presentation?.shadowBottomPct) <= 2,
+    "flying profile must place the contact shadow farther below the body"
+  );
+
+  const css = await readFile("examples/dom-demo/demo.css", "utf8");
+  const demoApp = await readFile("src/ui/demo-app.js", "utf8");
+  assert.match(
+    css,
+    /bottom:\s*var\(--creature-shadow-bottom/
+  );
+  assert.match(
+    demoApp,
+    /presentation\?\.shadowBottomPct[\s\S]*--creature-shadow-bottom/
+  );
+});
