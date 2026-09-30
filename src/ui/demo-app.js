@@ -13,8 +13,8 @@ const DATA_URLS = Object.freeze({
       "../../data/profiles/serpentine.profile.json",
       import.meta.url
     ),
-    drake: new URL(
-      "../../data/profiles/drake.profile.json",
+    flying: new URL(
+      "../../data/profiles/flying.profile.json",
       import.meta.url
     )
   }),
@@ -88,14 +88,14 @@ export async function loadCombatDemoVisualSource({
 
   const [
     serpentine,
-    drake,
+    flying,
     maraileron,
     braisombre,
     loupVolcanique,
     golemMoussu
   ] = await Promise.all([
     fetchJson(DATA_URLS.profiles.serpentine, fetchImpl),
-    fetchJson(DATA_URLS.profiles.drake, fetchImpl),
+    fetchJson(DATA_URLS.profiles.flying, fetchImpl),
     fetchCreatureMeta(DATA_URLS.creatures.maraileron, fetchImpl),
     fetchCreatureMeta(DATA_URLS.creatures.braisombre, fetchImpl),
     fetchCreatureMeta(DATA_URLS.creatures.loupVolcanique, fetchImpl),
@@ -105,7 +105,7 @@ export async function loadCombatDemoVisualSource({
   return Object.freeze({
     profiles: Object.freeze([
       serpentine,
-      drake
+      flying
     ]),
     creatureMetas: Object.freeze([
       maraileron,
