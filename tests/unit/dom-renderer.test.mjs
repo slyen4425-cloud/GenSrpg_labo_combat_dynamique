@@ -28,8 +28,8 @@ function deferred() {
 }
 
 const serpentine = await loadJson("data/profiles/serpentine.profile.json");
-const drake = await loadJson("data/profiles/drake.profile.json");
-const registry = createProfileRegistry([serpentine, drake]);
+const flying = await loadJson("data/profiles/flying.profile.json");
+const registry = createProfileRegistry([serpentine, flying]);
 
 function maraileronPlayer() {
   return normalizeVisualActor({
@@ -276,7 +276,7 @@ test("renderer applies actor-owned transform origin", () => {
   const actor = normalizeVisualActor({
     id: "braisombre-anchor",
     creatureId: "braisombre",
-    profile: "drake",
+    profile: "flying",
     asset: "braisombre_opponent.png",
     view: "opponent",
     transformOrigin: { x: "50%", y: "88%" }
