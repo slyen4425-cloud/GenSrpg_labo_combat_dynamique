@@ -155,12 +155,16 @@ summary {
   z-index: 0;
   left: 50%;
   bottom: 8%;
-  width: 58%;
-  height: 10%;
-  transform: translateX(-50%);
+  width: 62%;
+  height: 12%;
+  transform:
+    translateX(-50%)
+    scale(var(--creature-display-scale, 1));
+  transform-origin: center center;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.28);
-  filter: blur(3px);
+  background: rgba(0, 0, 0, 0.44);
+  filter: blur(4px);
+  opacity: 0.96;
   pointer-events: none;
 }
 
