@@ -248,6 +248,63 @@ test("visual metadata enriches an imported creature with face back icon scale pr
   });
 });
 
+
+test("legacy drake visual metadata is normalized to canonical flying profile at the Capture input boundary", async () => {
+  const catalog = JSON.parse(
+    await readFile(catalogUrl, "utf8")
+  );
+  const {
+    importMonsterCaptureCreatureRecordV1
+  } = await import(
+    "../../src/adapters/input/capture/monster-capture-creature-import-v1.js"
+  );
+  const {
+    applyCaptureCreatureVisualBindingV1
+  } = await import(
+    "../../src/adapters/input/capture/capture-creature-visual-binding-v1.js"
+  );
+
+  const source = catalog.entries.find(
+    (entry) => entry.id === "crea_maraileron"
+  );
+  const record =
+    importMonsterCaptureCreatureRecordV1(source);
+
+  const enriched =
+    applyCaptureCreatureVisualBindingV1({
+      record,
+      binding: {
+        creatureId: "crea_maraileron",
+        metaId: "legacy-flyer",
+        metaFile: "unused"
+      },
+      creatureMeta: {
+        id: "legacy-flyer",
+        profile: "drake",
+        assetIds: {
+          player: "pack:test:player",
+          opponent: "pack:test:opponent",
+          icon: "pack:test:icon"
+        },
+        displayScale: {
+          player: 1,
+          opponent: 1
+        },
+        fxAnchors: {}
+      },
+      availableAssetIds: [
+        "pack:test:player",
+        "pack:test:opponent",
+        "pack:test:icon"
+      ]
+    });
+
+  assert.equal(
+    enriched.draft.presentation.profileId,
+    "flying"
+  );
+});
+
 test("visual binding refuses mismatched metadata instead of guessing", async () => {
   const catalog = JSON.parse(
     await readFile(catalogUrl, "utf8")
