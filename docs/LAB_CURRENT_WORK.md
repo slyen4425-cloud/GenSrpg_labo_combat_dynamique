@@ -16608,3 +16608,42 @@ Les champs de compatibilité du contrat peuvent rester transportés à zéro/fau
 - checkpoint PREVALIDATION + preview ;
 - seulement ensuite ouverture de Projectile Clash Rules V2.
 
+### Résultat — Capture UI Authority Reconciliation V1
+
+RED :
+
+- commit : `c26f2a36a838bf98207efabf959ac17e60e5d041` ;
+- run : `36664348233` ;
+- 648 tests, 645 PASS, 3 FAIL ciblés ;
+- causes : anciennes autorités `damage/heal/stun/target/distance/interruptsPreparation` encore exposées sur la ligne canonique.
+
+Correction :
+
+- `SkillDefinition.effects / SkillEffectV1` est désormais l'unique autorité éditable de dégâts, soins et scopes ;
+- `StatusEffectV1.stun` est l'unique autorité éditable du stun ;
+- le contrôle legacy `interruptsPreparation` est supprimé de l'éditeur et neutralisé à `false` quand les effets tactiques modernes sont présents ;
+- les tests Runtime déjà existants démontrent que l'application réelle de `StatusEffectV1.stun` émet l'interruption sémantique de charge sans dépendre de ce contrôle UI ;
+- les anciennes portées courte/moyenne/longue deviennent une projection de compatibilité complète non éditable ;
+- `targetRelations` est dérivé des `targetScope` et polarités des effets tactiques ;
+- la déclaration « Ultime / conditionnelle » reste propriétaire de `activationRequirements` ;
+- les modèles historiques projettent leurs effets vers la même autorité tactique sans écraser des effets modernes déjà configurés.
+
+Réconciliation de lignes :
+
+- les 70 capacités Capture portables restent hydratées ;
+- les 33 capacités Capture complexes restent hydratées ;
+- total Capture natif : 103/103 ;
+- la stat Défense et `damageReductionPctPerPoint` restent exposées ;
+- aucune régression Runtime/Renderer.
+
+Validation GREEN technique :
+
+- run : `36664744563` ;
+- structure / frontières / indépendance : OK ;
+- **648 / 648 PASS / 0 FAIL**.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise**.
+
+Le prochain lot peut partir de cette ligne réconciliée et traiter séparément Projectile Clash Rules V2.
