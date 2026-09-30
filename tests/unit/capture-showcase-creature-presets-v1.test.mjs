@@ -1,0 +1,157 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+import {
+  CAPTURE_SHOWCASE_CREATURE_PRESETS_V1
+} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
+import {
+  importCaptureTransferJsonV1
+} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import {
+  normalizeCaptureStatRegistryV1
+} from "../../src/contracts/capture-stat-registry-v1.js";
+
+const registry = normalizeCaptureStatRegistryV1(
+  JSON.parse(
+    await readFile(
+      new URL(
+        "../../data/capture/monster-capture-stat-registry.v1.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  )
+);
+
+async function importedPreset(entry) {
+  const jsonText = await readFile(
+    new URL("../../" + entry.file, import.meta.url),
+    "utf8"
+  );
+  return importCaptureTransferJsonV1(
+    jsonText,
+    { statRegistry: registry }
+  );
+}
+
+test("showcase preset catalog owns exactly Moussados and Loup volcanique transfer files", () => {
+  assert.deepEqual(
+    CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.map(
+      (entry) => entry.id
+    ),
+    ["crea_mossback", "crea-loup"]
+  );
+
+  assert.equal(
+    new Set(
+      CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.map(
+        (entry) => entry.id
+      )
+    ).size,
+    2
+  );
+});
+
+test("Moussados showcase preset preserves the editor-authored model", async () => {
+  const entry = CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.find(
+    (item) => item.id === "crea_mossback"
+  );
+  const imported = await importedPreset(entry);
+  const record = imported.value;
+
+  assert.equal(imported.kind, "creature");
+  assert.equal(record.draft.id, "crea_mossback");
+  assert.equal(record.draft.level, 1);
+  assert.equal(record.statValues.values.health, 200);
+  assert.equal(record.draft.presentation.profileId, "massive");
+  assert.equal(record.draft.presentation.displayScale, 1.7);
+  assert.equal(
+    record.draft.resistances.find(
+      (item) => item.kind === "element:fire"
+    )?.value,
+    50
+  );
+  assert.equal(
+    record.draft.resistances.find(
+      (item) => item.kind === "element:air"
+    )?.value,
+    -50
+  );
+  assert.deepEqual(
+    record.loadout.slots.map((slot) => slot.skillId),
+    [
+      "lib_earth_guard",
+      "claw",
+      "lib_quake",
+      "lib_rock_slam"
+    ]
+  );
+});
+
+test("Loup volcanique showcase preset preserves health natural matchup visuals and planned loadout", async () => {
+  const entry = CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.find(
+    (item) => item.id === "crea-loup"
+  );
+  const imported = await importedPreset(entry);
+  const record = imported.value;
+
+  assert.equal(imported.kind, "creature");
+  assert.equal(record.draft.id, "crea-loup");
+  assert.equal(record.draft.level, 10);
+  assert.equal(record.statValues.values.health, 150);
+  assert.equal(record.draft.presentation.profileId, "quadruped");
+  assert.equal(record.draft.presentation.displayScale, 1.2);
+  assert.equal(
+    record.draft.resistances.find(
+      (item) => item.kind === "element:fire"
+    )?.value,
+    35
+  );
+  assert.equal(
+    record.draft.resistances.find(
+      (item) => item.kind === "element:water"
+    )?.value,
+    -50
+  );
+  assert.deepEqual(
+    record.loadout.slots.map((slot) => slot.skillId),
+    [
+      "fireball",
+      "claw",
+      "lib_flame_bite",
+      "lib_fireball"
+    ]
+  );
+});
+
+test("Human Editor hydrates showcase presets through the existing Transfer planner and state owner", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(
+    source,
+    /CAPTURE_SHOWCASE_CREATURE_PRESETS_V1/
+  );
+  assert.match(
+    source,
+    /hydrateCaptureShowcaseCreaturePresetsV1/
+  );
+  assert.match(
+    source,
+    /importCaptureTransferJsonV1/
+  );
+  assert.match(
+    source,
+    /planCaptureTransferImportV1/
+  );
+  assert.match(
+    source,
+    /applyCaptureTransferPlanToEditorStateV1/
+  );
+});
