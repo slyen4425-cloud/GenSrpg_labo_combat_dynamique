@@ -16897,3 +16897,105 @@ Validation smartphone attendue :
 5. en combat, une égalité annule les deux projectiles ;
 6. un projectile plus puissant annule le plus faible et poursuit visuellement sa trajectoire jusqu'à la cible.
 
+## Micro-lot — Projectile Power V1 — 2026-09-30
+
+Base :
+
+- checkpoint PREVALIDATION Projectile Clash V2 : `checkpoint/lab-projectile-clash-rules-v2-prevalidation-green-2026-09-30` ;
+- SHA : `9ea744d43f5ce3df6a30476b42cda30444c6d7dc` ;
+- CI : 656/656 PASS.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-projectile-power-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-projectile-power-v1-2026-09-30`.
+
+### Retour utilisateur / simplification
+
+Le système V2 `tag + rules[againstTag,strength]` est jugé trop complexe pour l'éditeur si tous les projectiles doivent simplement être comparés par puissance.
+
+Décision :
+
+- supprimer les tags de projectile ;
+- supprimer les règles par tag adverse ;
+- supprimer la liste de règles de l'éditeur ;
+- conserver une seule autorité : **puissance du projectile**.
+
+### Autorité cible
+
+Forme canonique :
+
+```js
+projectileClash: {
+  power: 0
+}
+```
+
+Sémantique :
+
+- `power = 0` : le projectile ne participe pas aux collisions ;
+- `power > 0` : le projectile peut entrer en collision avec tout autre projectile participant ;
+- puissance gauche > droite : gauche continue, droite annulée ;
+- puissance droite > gauche : droite continue, gauche annulée ;
+- égalité positive : les deux sont annulés ;
+- aucun tag, aucune famille, aucune règle directionnelle ;
+- aucune inférence depuis l'élément, le nom ou la description.
+
+### UI
+
+Le Human Editor expose uniquement :
+
+- **Puissance du projectile** ;
+- aide courte : `0 = aucune collision ; plus puissant = continue ; égalité = annulation mutuelle`.
+
+### Propriétaires
+
+- contrat : `ProjectileClashV2` simplifié ;
+- comparaison : `projectile-clash.js` ;
+- continuité de l'action gagnante : `CombatRuntime` ;
+- UI : saisie seulement.
+
+### Fichiers autorisés
+
+- `src/contracts/projectile-clash-v2.js` ;
+- `src/core/combat/projectile-clash.js` ;
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` ;
+- fixtures/tests directement concernés ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- `docs/LAB_ARCHITECTURE.md`.
+
+### Protégé
+
+- SkillEffectV1 / StatusEffectV1 ;
+- Combat damage / area targeting ;
+- Capture 103-skill catalogs hors migration de la propriété projectile ;
+- Défense/stat registry ;
+- FX / Renderer / Presenter ;
+- Database Export/Import ;
+- production GenSrpG.
+
+### RED obligatoire
+
+1. forme canonique attendue `{ power }` ;
+2. aucun `tag`, `rules`, `againstTag`, `strength` dans le contrat canonique ;
+3. `power=0` -> aucune collision ;
+4. puissance supérieure -> gagnant continue ;
+5. égalité positive -> annulation mutuelle ;
+6. Human Editor n'expose qu'un champ puissance ;
+7. aucun tag/règle visible ou lu par l'UI ;
+8. vrai Runtime : gagnant toujours actif après clash et impacte ensuite sa cible ;
+9. frontières/indépendance intactes.
+
+### Critère de fin
+
+- RED ciblé ;
+- suppression soustractive des tags/règles ;
+- CI complète GREEN ;
+- documentation mise à jour ;
+- checkpoint PREVALIDATION + preview smartphone.
+
