@@ -223,6 +223,14 @@ test("Capture editor exposes every historical elemental type and resistance chan
       html,
       new RegExp('data-resistance="' + elementId + '"')
     );
+
+    const skillSelect = html.match(
+      /<select data-skill-element>[\s\S]*?<\/select>/
+    )?.[0] ?? "";
+    assert.match(
+      skillSelect,
+      new RegExp('value="' + elementId + '"')
+    );
   }
 });
 
