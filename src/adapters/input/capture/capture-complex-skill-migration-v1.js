@@ -10,6 +10,11 @@ import {
 import {
   monsterCaptureStandardStatIdForLegacyAliasV1
 } from "./monster-capture-stat-values-v1.js";
+import {
+  captureLegacyEffectPercentV1,
+  captureLegacyPeriodicAmountV1,
+  captureLegacyStatusDurationActionsV1
+} from "./capture-legacy-status-semantics-v1.js";
 
 export const CAPTURE_COMPLEX_SKILL_MIGRATION_V1_SCHEMA =
   "capture-complex-skill-migration-v1";
@@ -73,12 +78,9 @@ function historicalDefaultTargetScope(effect) {
 
   if (
     effect.kind === "heal" ||
-    effect.kind === "hot"
+    effect.kind === "hot" ||
+    effect.kind === "buff"
   ) {
-    return "self";
-  }
-
-  if (effect.kind === "buff") {
     return "self";
   }
 
@@ -99,8 +101,10 @@ function effectBlockers(effect, effectIndex) {
     );
   }
 
-  if (!IMMEDIATE_KINDS.has(effect.kind) &&
-      !STATUS_KINDS.has(effect.kind)) {
+  if (
+    !IMMEDIATE_KINDS.has(effect.kind) &&
+    !STATUS_KINDS.has(effect.kind)
+  ) {
     blockers.push(
       blocker("requires-effect-mapping", {
         effectIndex,
@@ -108,25 +112,6 @@ function effectBlockers(effect, effectIndex) {
       })
     );
     return blockers;
-  }
-
-  if (STATUS_KINDS.has(effect.kind)) {
-    blockers.push(
-      blocker("requires-duration-policy", {
-        effectIndex,
-        legacyDuration:
-          Object.prototype.hasOwnProperty.call(
-            effect,
-            "duration"
-          )
-            ? effect.duration
-            : null,
-        legacyUnit: "turn_end_turns",
-        requiresTickIntervalMs:
-          effect.kind === "dot" ||
-          effect.kind === "hot"
-      })
-    );
   }
 
   if (
@@ -152,23 +137,6 @@ function effectBlockers(effect, effectIndex) {
         })
       );
     }
-
-    blockers.push(
-      blocker("requires-stat-effect-policy", {
-        effectIndex,
-        legacyStatId,
-        modernStatId,
-        legacyValue:
-          Object.prototype.hasOwnProperty.call(
-            effect,
-            "value"
-          )
-            ? effect.value
-            : null,
-        legacyValueUnit:
-          "historical-percent-rule"
-      })
-    );
   }
 
   return blockers;
@@ -202,6 +170,131 @@ function immediateTacticalEffect(effect) {
   throw new RangeError(
     "effect is not immediately migratable: " +
       effect.kind
+  );
+}
+
+function persistentTacticalEffect(
+  ability,
+  effect,
+  effectIndex
+) {
+  const targetScope =
+    historicalDefaultTargetScope(effect);
+  const statusId =
+    ability.id + ":" + effectIndex;
+  const durationActions =
+    captureLegacyStatusDurationActionsV1(
+      effect
+    );
+
+  if (
+    effect.kind === "buff" ||
+    effect.kind === "debuff"
+  ) {
+    const statId =
+      monsterCaptureStandardStatIdForLegacyAliasV1(
+        effect.stat
+      );
+
+    return normalizeSkillEffectV1({
+      kind: "apply_status",
+      targetScope,
+      status: {
+        id: statusId,
+        kind: "stat_modifier",
+        polarity:
+          effect.kind === "buff"
+            ? "beneficial"
+            : "detrimental",
+        durationModel:
+          "owner_action_end",
+        durationActions,
+        stacking: "refresh",
+        tags: ["legacy", effect.kind],
+        statId,
+        modifierMode: "percent",
+        percent:
+          captureLegacyEffectPercentV1(
+            effect.value,
+            effect.kind
+          )
+      }
+    });
+  }
+
+  if (effect.kind === "dot") {
+    return normalizeSkillEffectV1({
+      kind: "apply_status",
+      targetScope,
+      status: {
+        id: statusId,
+        kind: "damage_over_time",
+        polarity: "detrimental",
+        durationModel:
+          "owner_action_end",
+        durationActions,
+        stacking: "refresh",
+        tags: ["legacy", "dot"],
+        amount:
+          captureLegacyPeriodicAmountV1(
+            effect
+          ),
+        channel:
+          (
+            typeof effect.element === "string" &&
+            effect.element !== ""
+          )
+            ? effect.element
+            : (
+                typeof ability.element === "string" &&
+                ability.element !== ""
+              )
+              ? ability.element
+              : "physical",
+        damageMode: "fixed"
+      }
+    });
+  }
+
+  if (effect.kind === "hot") {
+    return normalizeSkillEffectV1({
+      kind: "apply_status",
+      targetScope,
+      status: {
+        id: statusId,
+        kind: "heal_over_time",
+        polarity: "beneficial",
+        durationModel:
+          "owner_action_end",
+        durationActions,
+        stacking: "refresh",
+        tags: ["legacy", "hot"],
+        amount:
+          captureLegacyPeriodicAmountV1(
+            effect
+          )
+      }
+    });
+  }
+
+  throw new RangeError(
+    "effect is not a supported persistent legacy effect: " +
+      effect.kind
+  );
+}
+
+function tacticalEffect(
+  ability,
+  effect,
+  effectIndex
+) {
+  if (IMMEDIATE_KINDS.has(effect.kind)) {
+    return immediateTacticalEffect(effect);
+  }
+  return persistentTacticalEffect(
+    ability,
+    effect,
+    effectIndex
   );
 }
 
@@ -254,7 +347,12 @@ function migrateAbility(ability, sourceIndex) {
       migrationState === "runtime-ready"
         ? Object.freeze(
             ability.effects.map(
-              immediateTacticalEffect
+              (effect, effectIndex) =>
+                tacticalEffect(
+                  ability,
+                  effect,
+                  effectIndex
+                )
             )
           )
         : null
@@ -283,7 +381,9 @@ export const CAPTURE_COMPLEX_SKILL_MIGRATION_V1 =
           .indexBlob,
       portableCatalogSchema:
         CAPTURE_PORTABLE_NATIVE_SKILL_CATALOG_V1
-          .schema
+          .schema,
+      statusSemantics:
+        "owner-action-end-percent-v1"
     },
     entries: ENTRIES
   });
