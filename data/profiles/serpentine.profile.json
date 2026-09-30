@@ -1,20 +1,25 @@
 {
   "id": "serpentine",
   "label": "Serpentine",
-  "description": "Profil pour créatures longues, souples, ondulantes ou aquatiques.",
+  "description": "Profil rampant pour créatures longues, souples ou aquatiques qui restent visuellement proches du sol.",
   "idle": {
-    "bobY": 10,
-    "swayRotate": 0.6,
-    "swayX": 0.75,
-    "scaleXDelta": 0.004,
-    "scaleYDelta": -0.004,
-    "durationMs": 1900
+    "motionStyle": "grounded",
+    "bobY": 0,
+    "swayRotate": 0.24,
+    "swayX": 0.15,
+    "scaleXDelta": 0.003,
+    "scaleYDelta": -0.002,
+    "durationMs": 2100,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "100%"
+    }
   },
   "attack": {
     "lungeX": 40,
-    "lungeY": -8,
-    "stretchX": 0.06,
-    "squashY": 0.05,
+    "lungeY": -3,
+    "stretchX": 0.045,
+    "squashY": 0.025,
     "durationMs": 420,
     "recoveryMs": 260
   },
@@ -30,9 +35,9 @@
     }
   },
   "ko": {
-    "fallY": 30,
+    "fallY": 20,
     "fadeTo": 0,
-    "rotate": -10,
+    "rotate": -7,
     "durationMs": 700
   },
   "specialMoves": {
@@ -49,13 +54,19 @@
       "returnMs": 260
     },
     "ground": {
-      "impactScaleX": 1.06,
-      "impactScaleY": 0.94,
-      "returnMs": 300
+      "travelStyle": "linear",
+      "travelRotateDeg": 0.35,
+      "impactScaleX": 1.025,
+      "impactScaleY": 0.985,
+      "returnMs": 300,
+      "transformOrigin": {
+        "x": "50%",
+        "y": "100%"
+      }
     },
     "perspective": {
       "perspectiveScaleStrength": 1.25,
-      "perspectiveScaleMin": 0.70,
+      "perspectiveScaleMin": 0.7,
       "perspectiveScaleMax": 1.35
     }
   }
