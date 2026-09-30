@@ -196,6 +196,9 @@ const editorStatus = root?.querySelector(
 const opponentCreatureSelect = root?.querySelector(
   "[data-test-opponent-creature]"
 );
+const arenaSelect = root?.querySelector(
+  "[data-test-arena]"
+);
 
 if (
   !root ||
@@ -205,7 +208,8 @@ if (
   !testButton ||
   !backButton ||
   !editorStatus ||
-  !opponentCreatureSelect
+  !opponentCreatureSelect ||
+  !arenaSelect
 ) {
   throw new Error("Structure Capture Editor preview incomplète");
 }
@@ -218,6 +222,18 @@ for (const option of CAPTURE_TEST_CREATURE_OPTIONS_V1) {
   opponentCreatureSelect.append(element);
 }
 opponentCreatureSelect.value = "braisombre";
+
+arenaSelect.textContent = "";
+for (
+  const option of
+  demoPresentationAssets.arenaOptions()
+) {
+  const element = document.createElement("option");
+  element.value = option.id;
+  element.textContent = option.label;
+  arenaSelect.append(element);
+}
+arenaSelect.value = "city";
 
 function getOpponentCreatureDraft() {
   if (!visualContext?.assetCatalog) {
@@ -453,7 +469,7 @@ const session = createCaptureEditorPreviewSessionV2({
 
     applyPreviewArenaPresentation(
       previewRoot,
-      "city"
+      nativeCombatSource.arenaId
     );
 
     const mounted = await mountCaptureCombatPreviewV1({
