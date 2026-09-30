@@ -2211,3 +2211,19 @@ Le binding de présentation `demoPresentationAssets.presentationForArena()` rés
 Le remplacement d'un visuel d'arène conserve son assetId et son chemin canonique ; seule la révision de la bibliothèque visuelle est avancée pour invalider le cache client. Aucun changement d'image d'arène ne modifie Combat Rules, les profils morphologiques, les compétences, les positions ou les résultats métier.
 
 Pour le lot Arena Refresh V1, la révision runtime est `2026-09-30-v5-arena-refresh`.
+
+
+## 39. Présentation du cooldown sans seconde horloge
+
+Le cooldown d'une capacité reste possédé par `SkillDefinition.cooldownMs`, `Action Resolver` et `Combat State.skillCooldowns`.
+
+Le Runtime ne possède aucune règle de cooldown. Il expose seulement un callback générique `onClock(state)` déclenché par son tick existant afin que les clients de présentation puissent relire l'état courant sans créer leur propre timer.
+
+La preview Capture :
+- appelle `session.previewSkill()` ;
+- lit `remainingCooldownMs` lorsque l'outcome vaut `cooldown` ;
+- désactive le bouton via cette décision autoritaire ;
+- affiche `Recharge X.X s` ;
+- ne calcule jamais elle-même une échéance et ne possède aucun `setTimeout` de recharge.
+
+Le chemin reste donc : `SkillDefinition -> Action Resolver -> Combat State -> Session.previewSkill() -> UI`.
