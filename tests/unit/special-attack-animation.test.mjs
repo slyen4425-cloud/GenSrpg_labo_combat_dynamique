@@ -121,6 +121,54 @@ test("aerial attack rises, vanishes, dives to target at impact, then returns", (
   assert.equal(plan.segments.at(-1).transform.translateY, 0);
 });
 
+test("aerial attack follows one visible continuous arc from departure to impact", () => {
+  const current = actor("flying");
+  const travelMs = 850;
+  const targetX = 150;
+  const targetY = 8;
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "aerial-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: targetX,
+        targetTranslateY: targetY,
+        travelMs
+      }
+    }),
+    actor: current,
+    profile: registry.get(current.profile)
+  });
+
+  const approach = plan.segments.slice(0, -1);
+  assert.equal(
+    approach.length,
+    2,
+    "aerial approach must contain one apex segment then one impact segment"
+  );
+  assert.ok(
+    approach.every((segment) => segment.opacity !== 0),
+    "the continuous aerial arc must stay visible before impact"
+  );
+  assert.ok(
+    approach[0].transform.translateX > 0 &&
+      approach[0].transform.translateX < targetX,
+    "the unique apex must already progress horizontally toward the target"
+  );
+  assert.ok(
+    approach[0].transform.translateY < Math.min(0, targetY),
+    "the first approach endpoint must be the unique elevated apex"
+  );
+  assert.equal(approach[1].transform.translateX, targetX);
+  assert.equal(approach[1].transform.translateY, targetY);
+  assert.equal(
+    approach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs,
+    "impact timestamp must remain exactly travelMs"
+  );
+});
+
 test("special attack event contract rejects missing positive travel time in planner", () => {
   const current = actor();
 
