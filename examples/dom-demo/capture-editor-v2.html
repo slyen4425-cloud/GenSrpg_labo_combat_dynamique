@@ -282,7 +282,7 @@
 
         <details data-global-editor-control>
           <summary>Configurer le système de stats</summary>
-          <p class="note">Réglage explicite en pourcentage : 1 point = X % dégâts, Y % résistance et/ou Z % de réduction du temps de charge. Les identifiants existants restent stables.</p>
+          <p class="note">Réglage explicite en pourcentage : 1 point = X % dégâts, Y % résistance, Z % de réduction du temps de charge et/ou W % de réduction globale des dégâts reçus. Les identifiants existants restent stables.</p>
           <div class="stat-registry-list" data-stat-registry-host></div>
           <button type="button" class="secondary-action" data-stat-registry-apply>
             Appliquer les modifications du registre
@@ -298,6 +298,7 @@
               <label>Dégâts % / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-damage-pct-per-point></label>
               <label>Résistance % / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-resistance-pct-per-point></label>
               <label>Réduction temps de charge % / point<input type="number" min="0" step="0.05" value="0" data-stat-custom-charge-pct-per-point></label>
+              <label>Réduction globale dégâts reçus % / point<input type="number" min="0" step="0.05" value="0" data-stat-custom-damage-reduction-pct-per-point></label>
             </div>
             <button type="button" class="primary-action" data-stat-custom-add>
               Ajouter la stat
