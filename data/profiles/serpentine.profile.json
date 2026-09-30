@@ -17,9 +17,9 @@
   },
   "attack": {
     "lungeX": 40,
-    "lungeY": -3,
-    "stretchX": 0.045,
-    "squashY": 0.025,
+    "lungeY": -8,
+    "stretchX": 0.06,
+    "squashY": 0.05,
     "durationMs": 420,
     "recoveryMs": 260
   },
@@ -35,9 +35,9 @@
     }
   },
   "ko": {
-    "fallY": 20,
+    "fallY": 30,
     "fadeTo": 0,
-    "rotate": -7,
+    "rotate": -10,
     "durationMs": 700
   },
   "specialMoves": {
