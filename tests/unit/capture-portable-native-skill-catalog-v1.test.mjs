@@ -56,7 +56,7 @@ test("portable Capture catalog builds valid CaptureSkillEditorDraftV1 without co
   assert.equal(fire.requiredLevel, 1);
 });
 
-test("human editor hydrates portable Capture skills alongside the nine laboratory-native skills", async () => {
+test("human editor keeps the portable 70 as part of the complete 103 Capture native skills", async () => {
   const source = await readFile(
     new URL("../../src/ui/capture-editor-human-v2.js", import.meta.url),
     "utf8"
@@ -67,11 +67,15 @@ test("human editor hydrates portable Capture skills alongside the nine laborator
     true
   );
   assert.equal(
-    source.includes("70 capacités Capture natives"),
+    source.includes("captureComplexNativeSkillDraftsV1"),
     true
   );
   assert.equal(
-    source.includes("9 capacités natives"),
+    source.includes("103 capacités Capture natives"),
+    true
+  );
+  assert.equal(
+    source.includes("9 capacités laboratoire"),
     true
   );
 });
