@@ -67,29 +67,23 @@ test("complex migration preserves every historical effect in original order", ()
   }
 });
 
-test("seven deterministic heal area and self-heal abilities are runtime-ready", () => {
+test("all 33 complex abilities are runtime-ready once proven legacy semantics are owned", () => {
   const entries =
     captureComplexSkillMigrationEntriesV1();
-  const ready = entries
-    .filter(
-      (entry) =>
-        entry.migrationState === "runtime-ready"
-    )
-    .map((entry) => entry.id)
-    .sort();
-
-  assert.deepEqual(
-    ready,
-    [
-      "cap_light_special_1",
-      "cap_shadow_special_1",
-      "cap_water_special_1",
-      "lib_aqua_heal",
-      "lib_heal_5",
-      "lib_lifesteal_strike",
-      "lib_quake"
-    ].sort()
+  const ready = entries.filter(
+    (entry) =>
+      entry.migrationState === "runtime-ready"
   );
+
+  assert.equal(ready.length, 33);
+  for (const entry of ready) {
+    assert.deepEqual(entry.blockers, []);
+    assert.ok(
+      Array.isArray(entry.tacticalEffects) &&
+      entry.tacticalEffects.length > 0,
+      entry.id
+    );
+  }
 });
 
 test("deterministic tactical effects keep explicit target semantics and effect order", () => {
@@ -157,62 +151,80 @@ test("deterministic tactical effects keep explicit target semantics and effect o
   );
 });
 
-test("all 26 persistent legacy abilities remain explicit instead of inventing milliseconds", () => {
+test("persistent legacy abilities preserve owner-action-end duration without inventing milliseconds", () => {
   const entries =
     captureComplexSkillMigrationEntriesV1();
-  const blocked = entries.filter(
+  const persistent = entries.filter(
     (entry) =>
-      entry.blockers.some(
-        (blocker) =>
-          blocker.kind ===
-          "requires-duration-policy"
+      entry.legacyEffects.some(
+        (effect) =>
+          ["buff", "debuff", "dot", "hot"].includes(
+            effect.kind
+          )
       )
   );
 
-  assert.equal(blocked.length, 26);
+  assert.equal(persistent.length, 26);
 
-  for (const entry of blocked) {
-    assert.notEqual(
+  for (const entry of persistent) {
+    assert.equal(
       entry.migrationState,
       "runtime-ready",
       entry.id
     );
-    assert.equal(
-      entry.tacticalEffects,
-      null,
-      entry.id +
-        " must not publish partially migrated tactical effects"
-    );
+    for (
+      const effect of entry.tacticalEffects.filter(
+        (candidate) =>
+          candidate.kind === "apply_status"
+      )
+    ) {
+      assert.equal(
+        effect.status.durationModel,
+        "owner_action_end",
+        entry.id
+      );
+      assert.equal(
+        "durationMs" in effect.status,
+        false,
+        entry.id
+      );
+    }
   }
 });
 
-test("DoT and HoT explicitly require turn-to-runtime duration and tick policy", () => {
+test("DoT and HoT preserve fixed per-owner-action tick semantics", () => {
   const entries = byId(
     captureComplexSkillMigrationEntriesV1()
   );
 
-  for (const id of [
-    "lib_regen",
-    "cap_poison_special_1"
-  ]) {
-    const entry = entries.get(id);
-    const blocker = entry.blockers.find(
-      (item) =>
-        item.kind ===
-        "requires-duration-policy"
-    );
+  const regen =
+    entries.get("lib_regen").tacticalEffects[0]
+      .status;
+  assert.equal(regen.kind, "heal_over_time");
+  assert.equal(
+    regen.durationModel,
+    "owner_action_end"
+  );
+  assert.equal(regen.durationActions, 3);
+  assert.equal("tickIntervalMs" in regen, false);
 
-    assert.ok(blocker, id);
-    assert.equal(
-      blocker.legacyUnit,
-      "turn_end_turns"
-    );
-    assert.equal(
-      blocker.requiresTickIntervalMs,
-      true
-    );
-    assert.equal(entry.tacticalEffects, null);
-  }
+  const poison = entries.get(
+    "cap_poison_special_1"
+  ).tacticalEffects.find(
+    (effect) =>
+      effect.kind === "apply_status"
+  ).status;
+  assert.equal(
+    poison.kind,
+    "damage_over_time"
+  );
+  assert.equal(
+    poison.durationModel,
+    "owner_action_end"
+  );
+  assert.equal(poison.durationActions, 3);
+  assert.equal(poison.damageMode, "fixed");
+  assert.equal("tickIntervalMs" in poison, false);
 });
 
 test("legacy stat identifiers resolve only through the existing explicit Monster Capture aliases", () => {
@@ -290,44 +302,36 @@ test("legacy stat identifiers resolve only through the existing explicit Monster
   }
 });
 
-test("buff and debuff migration never copies legacy percent semantics into modern deltaPoints", () => {
+test("buff and debuff migration keeps legacy percent semantics and explicit stat owners", () => {
   const entries = byId(
     captureComplexSkillMigrationEntriesV1()
   );
 
-  const mappedStat = entries.get(
+  const agility = entries.get(
     "cap_air_special_2"
-  );
+  ).tacticalEffects[0].status;
+  assert.equal(agility.statId, "speed");
   assert.equal(
-    mappedStat.blockers.some(
-      (blocker) =>
-        blocker.kind ===
-        "requires-stat-effect-policy" &&
-        blocker.legacyStatId === "agility" &&
-        blocker.modernStatId === "speed" &&
-        blocker.legacyValue === 4 &&
-        blocker.legacyValueUnit === "historical-percent-rule"
-    ),
-    true
+    agility.modifierMode,
+    "percent"
   );
-  assert.equal(mappedStat.tacticalEffects, null);
+  assert.equal(agility.percent, 40);
+  assert.equal(
+    "deltaPoints" in agility,
+    false
+  );
 
-  for (const id of [
-    "lib_heat_wave",
+  const heat = entries.get(
+    "lib_heat_wave"
+  ).tacticalEffects[0].status;
+  assert.equal(heat.statId, "defense");
+  assert.equal(heat.percent, -30);
+
+  const armor = entries.get(
     "lib_earth_guard"
-  ]) {
-    const entry = entries.get(id);
-    assert.equal(
-      entry.blockers.some(
-        (blocker) =>
-          blocker.kind ===
-          "requires-stat-mapping"
-      ),
-      true,
-      id
-    );
-    assert.equal(entry.tacticalEffects, null);
-  }
+  ).tacticalEffects[0].status;
+  assert.equal(armor.statId, "defense");
+  assert.equal(armor.percent, 30);
 });
 
 test("migration catalog exposes explicit source provenance and never changes Runtime or UI ownership", async () => {
