@@ -149,7 +149,7 @@ test("Capture editor defaults the integrated combat test to 1v1", async () => {
   );
 
   const select = html.match(
-    /<select data-active-per-team>[\\s\\S]*?<\\/select>/
+    /<select data-active-per-team>[\s\S]*?<\/select>/
   )?.[0] ?? "";
 
   assert.match(select, /<option value="1" selected>/);
