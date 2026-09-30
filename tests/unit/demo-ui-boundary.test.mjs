@@ -204,7 +204,7 @@ test("V8 fighter HUD owns roster portraits while spatial fighters remain top-bas
   assert.match(css, /transform:\s*translate\(-50%,\s*-50%\)\s*scale\(var\(--distance-scale/);
   assert.match(
     css,
-    /transition:[\\s\\S]*top var\\(--distance-move-duration, 260ms\\) ease/
+    /transition:[\s\S]*top var\(--distance-move-duration, 260ms\) ease/
   );
 });
 
