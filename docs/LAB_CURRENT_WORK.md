@@ -19124,3 +19124,38 @@ Protection : dégâts, énergie, ciblage, mouvement, FX, audio et règles d'impa
 Validation smartphone reçue le 2026-09-30 : le fonctionnement du cooldown est jugé **OK** par l'utilisateur (blocage pendant la recharge et retour à disponibilité). Une amélioration purement visuelle est demandée séparément : indicateur circulaire dans l'icône, aiguille de progression et recoloration progressive.
 
 Le comportement métier Cooldown Completion V1 est considéré **GREEN utilisateur**. Le raffinement visuel sera traité dans un micro-lot UI distinct, sans modifier l'autorité du cooldown.
+
+
+## Micro-lot — Cooldown Visual Overlay V1 — 2026-09-30
+
+Base utilisateur GREEN : `cbd065b54ff68047807c34a13ad3fd5d914c155a`.
+
+- checkpoint comportement cooldown GREEN : `checkpoint/lab-cooldown-completion-v1-green-2026-09-30` ;
+- checkpoint de départ : `checkpoint/lab-start-cooldown-visual-overlay-v1-2026-09-30` ;
+- branche : `work/lab-cooldown-visual-overlay-v1-2026-09-30`.
+
+Objectif UI : rendre la recharge lisible directement **dans l'icône de compétence** sans modifier la règle de cooldown :
+- icône désaturée pendant la recharge ;
+- recoloration progressive selon la portion de cooldown déjà écoulée ;
+- indicateur circulaire/radial ;
+- aiguille tournante liée à la même progression ;
+- retour visuel immédiat à l'état normal lorsque la compétence est disponible.
+
+Autorité :
+- `Combat State.skillCooldowns` et `session.previewSkill().remainingCooldownMs` restent l'unique source métier ;
+- le tick existant `Combat Runtime.onClock` reste l'unique source de rafraîchissement temporel ;
+- l'UI calcule uniquement un ratio de présentation `1 - remainingCooldownMs / skill.cooldownMs`.
+
+Fichiers autorisés :
+- `src/ui/combat-2v2-test-ui.js` pour le DOM de présentation de l'icône et la projection du ratio ;
+- `examples/dom-demo/demo.css` pour l'overlay visuel ;
+- tests UI ciblés ;
+- documentation.
+
+Interdits :
+- nouveau timer, `setTimeout`, `setInterval` ou `Date.now()` dans l'UI ;
+- modification Combat State / Action Resolver / cooldownMs ;
+- modification des dégâts, énergie, ciblage, mouvements, FX, audio ou IA ;
+- canvas/second renderer ou observer masquant un défaut.
+
+RED obligatoire : la preview actuelle ne possède ni shell d'icône cooldown, ni couche de recoloration progressive, ni aiguille radiale pilotée par le ratio autoritaire.
