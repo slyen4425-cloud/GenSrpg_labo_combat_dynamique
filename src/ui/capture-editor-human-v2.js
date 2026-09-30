@@ -83,7 +83,7 @@ import {
   buildCaptureCreatureHistoricalLoadoutV1
 } from "../catalogs/capture-creature-historical-loadout-v1.js";
 import {
-  CAPTURE_SHOWCASE_CREATURE_PRESETS_V1
+  CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
 } from "../catalogs/capture-showcase-creature-presets-v1.js";
 import {
   normalizeCaptureStatRegistryV1
@@ -3879,11 +3879,11 @@ async function hydrateCaptureShowcaseCreaturePresetsV1(
   statRegistry
 ) {
   const transfers = await Promise.all(
-    CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.map(
-      async (preset) => {
+    CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.map(
+      async (presetFile) => {
         const response = await fetch(
           new URL(
-            "../../" + preset.file,
+            "../../" + presetFile,
             import.meta.url
           ),
           { cache: "no-store" }
@@ -3892,7 +3892,7 @@ async function hydrateCaptureShowcaseCreaturePresetsV1(
         if (!response.ok) {
           throw new Error(
             "Preset vitrine Capture indisponible : " +
-              preset.id +
+              presetFile +
               " (" +
               response.status +
               ")"
@@ -3905,14 +3905,10 @@ async function hydrateCaptureShowcaseCreaturePresetsV1(
             { statRegistry }
           );
 
-        if (
-          transfer.kind !== "creature" ||
-          transfer.value.draft.id !==
-            preset.id
-        ) {
+        if (transfer.kind !== "creature") {
           throw new RangeError(
-            "Preset vitrine Capture invalide : " +
-              preset.id
+            "Un preset vitrine Capture doit être une créature : " +
+              presetFile
           );
         }
 
@@ -3920,6 +3916,16 @@ async function hydrateCaptureShowcaseCreaturePresetsV1(
       }
     )
   );
+
+  const ids = transfers.map(
+    (transfer) => transfer.value.draft.id
+  );
+
+  if (new Set(ids).size !== ids.length) {
+    throw new RangeError(
+      "Les presets vitrine Capture contiennent un identifiant de créature dupliqué."
+    );
+  }
 
   return Object.freeze(transfers);
 }
