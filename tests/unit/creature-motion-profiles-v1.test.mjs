@@ -167,3 +167,142 @@ test("contact shadow derives its scale from the actor display scale and is more 
     "the CSS shadow scale must be projected from VisualActor.scale"
   );
 });
+
+
+test("massive true path reaches camera renderer through Animation Core and FX Core", async () => {
+  const { animationPlanToDomTimeline } = await import(
+    "../../src/adapters/renderer/dom-keyframes.js"
+  );
+  const { planLocomotionCueFx } = await import(
+    "../../src/core/fx/locomotion-fx-plan.js"
+  );
+  const { createDomCameraFxRenderer } = await import(
+    "../../src/adapters/renderer/dom-camera-fx.js"
+  );
+
+  const profile = await json(profilePaths.massive);
+  const currentActor = actor("massive");
+  const movePlan = planAnimation({
+    event: event("move", currentActor.id),
+    actor: currentActor,
+    profile
+  });
+
+  const timeline = animationPlanToDomTimeline(
+    movePlan,
+    currentActor
+  );
+  assert.equal(timeline.totalDurationMs, profile.locomotion.durationMs);
+  assert.equal(timeline.keyframes.at(-1).offset, 1);
+
+  const footfall = movePlan.cues.find(
+    (cue) => cue.type === "footfall"
+  );
+  assert.ok(footfall);
+
+  const [cameraPlan] = planLocomotionCueFx({
+    profile,
+    cue: footfall
+  });
+  assert.equal(cameraPlan.type, "camera-shake");
+
+  let captured = null;
+  const cameraElement = {};
+  const renderer = createDomCameraFxRenderer({
+    element: cameraElement,
+    animate(element, keyframes, options) {
+      captured = { element, keyframes, options };
+      return {
+        finished: Promise.resolve(),
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play(cameraPlan);
+  assert.equal(handle.status, "running");
+  assert.equal(captured.element, cameraElement);
+  assert.equal(captured.options.duration, cameraPlan.durationMs);
+  assert.match(
+    captured.keyframes[1].transform,
+    /translate3d/
+  );
+  await handle.finished;
+  renderer.dispose();
+});
+
+test("distance renderer accepts the locomotion duration without owning morphology", async () => {
+  const { createDomDistancePresenter } = await import(
+    "../../src/adapters/renderer/dom-distance-presenter.js"
+  );
+
+  function style() {
+    const values = {};
+    return {
+      left: "",
+      top: "",
+      setProperty(name, value) {
+        values[name] = value;
+      },
+      getPropertyValue(name) {
+        return values[name] ?? "";
+      }
+    };
+  }
+
+  const player = { style: style() };
+  const opponent = { style: style() };
+  const presenter = createDomDistancePresenter({
+    fighters: { player, opponent }
+  });
+
+  const result = presenter.presentMovement({
+    result: {
+      ok: true,
+      outcome: "moved",
+      events: [
+        {
+          type: "distance-changed",
+          from: "medium",
+          to: "short"
+        }
+      ]
+    },
+    actorSlot: "player",
+    durationMs: 330
+  });
+
+  assert.equal(result.durationMs, 330);
+  assert.equal(
+    player.style.getPropertyValue("--distance-move-duration"),
+    "330ms"
+  );
+  assert.equal(
+    opponent.style.getPropertyValue("--distance-move-duration"),
+    "260ms"
+  );
+});
+
+test("combat UI routes only real AI movement through the visual locomotion owner", async () => {
+  const combatUi = await readFile(
+    "src/ui/combat-test-ui.js",
+    "utf8"
+  );
+  const visualController = await readFile(
+    "src/ui/demo-app.js",
+    "utf8"
+  );
+
+  assert.match(
+    combatUi,
+    /decision\.status === "moved"[\s\S]*visuals\.playMovementFor\(decision\.actorId\)/
+  );
+  assert.match(
+    visualController,
+    /function playMovementFor[\s\S]*type: "move"[\s\S]*planLocomotionCueFx/
+  );
+  assert.doesNotMatch(
+    combatUi,
+    /camera-shake|amplitudePx/
+  );
+});
