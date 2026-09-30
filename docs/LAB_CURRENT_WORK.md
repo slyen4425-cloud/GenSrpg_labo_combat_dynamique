@@ -18875,3 +18875,13 @@ GREEN fonctionnel :
 - CI `36722781019` — SUCCESS.
 
 État : **GREEN technique — PREVALIDATION smartphone requise.**
+
+
+### Publication PREVALIDATION — Flying Contact Arc Fluidity V1
+
+- HEAD GREEN avant clôture documentaire : `258a9905af3c9cc4aec8f5c5f21241495b81af2e` ;
+- CI : `36722925234` — SUCCESS ;
+- checkpoint : `checkpoint/lab-flying-contact-arc-fluidity-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-flying-contact-arc-fluidity-v1-2026-09-30`.
+
+La validation utilisateur reste requise sur smartphone pour confirmer qu'un profil `flying` utilisant `Griffe` rejoint la cible en un seul mouvement continu, sans ralentissement/arrêt intermédiaire.
