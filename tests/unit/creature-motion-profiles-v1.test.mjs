@@ -350,7 +350,11 @@ test("flying locomotion is one smooth arch and stays free of footfall cues", asy
   assert.ok(lifts[0] > 0);
   assert.ok(lifts[1] > lifts[0]);
   assert.ok(lifts[2] > 0 && lifts[2] < lifts[1]);
-  assert.equal(lifts[3], 0);
+  assert.equal(
+    plan.segments[3].transform.translateY,
+    0,
+    "flight arch must settle exactly on its stable vertical position"
+  );
   assert.ok(lifts[1] >= 18, "flight arch apex must be clearly visible");
   assert.equal(
     (plan.cues ?? []).filter((cue) => cue.type === "footfall").length,
