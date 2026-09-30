@@ -19131,3 +19131,16 @@ Fichiers autorisés :
 Protégé : formule `computeCombatDamageV1`, stats registry, capacités, cooldowns, énergie, ciblage, profils, sons, assets.
 
 RED : une créature avec `resistances: [{kind:"element:fire",value:35},{kind:"element:water",value:-50}]` doit produire un FighterConfig avec `resistancePctByChannel.fire === 35` et `water === -50`, puis le moteur existant doit réduire/augmenter les dégâts via ces canaux. Les résistances de stats et naturelles doivent se sommer une seule fois.
+
+
+### Extension de diagnostic — résistances signées
+
+Le RED du vrai chemin a révélé que `Combat State.normalizePercentByChannel()` impose actuellement des valeurs non négatives à `resistancePctByChannel`. Cette contrainte rend impossible une faiblesse historique négative telle que `-50 %`, alors que `computeCombatDamageV1()` sait déjà interpréter correctement une résistance négative comme un multiplicateur de dégâts supérieur à 1.
+
+Extension de périmètre autorisée avant correction :
+- `src/core/combat/combat-state.js` peut être modifié uniquement pour permettre des valeurs finies signées sur `resistancePctByChannel` ;
+- `damagePctByChannel` reste non négatif ;
+- aucune formule de dégâts ne change ;
+- aucun autre état de combat ne change.
+
+Une sentinelle doit protéger explicitement : résistance +35 acceptée, faiblesse -50 acceptée, NaN/Infinity refusés, bonus de dégâts négatif toujours refusé.
