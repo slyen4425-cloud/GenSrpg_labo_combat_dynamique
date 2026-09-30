@@ -778,6 +778,38 @@ function createSlot({
       String(actor.scale)
     );
 
+    const profilePresentation =
+      profiles.get(actor.profile).presentation ?? {};
+    const shadow = profilePresentation.shadow ?? {};
+    const shadowBottomPct = Number(shadow.bottomPct);
+    const shadowOpacity = Number(shadow.opacity);
+
+    if (Number.isFinite(shadowBottomPct)) {
+      slotContainer.style?.setProperty?.(
+        "--creature-shadow-bottom",
+        String(shadow.bottomPct) + "%"
+      );
+    } else {
+      slotContainer.style?.removeProperty?.(
+        "--creature-shadow-bottom"
+      );
+    }
+
+    if (
+      Number.isFinite(shadowOpacity) &&
+      shadowOpacity >= 0 &&
+      shadowOpacity <= 1
+    ) {
+      slotContainer.style?.setProperty?.(
+        "--creature-shadow-opacity",
+        String(shadow.opacity)
+      );
+    } else {
+      slotContainer.style?.removeProperty?.(
+        "--creature-shadow-opacity"
+      );
+    }
+
     renderer = createDomActorRenderer({
       element: motion,
       actor
