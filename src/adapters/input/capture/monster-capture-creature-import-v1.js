@@ -250,10 +250,6 @@ export function importMonsterCaptureCreatureRecordV1(
           0,
           numberValue(source.hp, "hp", 0)
         ),
-        initialHp: Math.max(
-          0,
-          numberValue(source.hp, "hp", 0)
-        ),
         ...MONSTER_CAPTURE_IMPORT_DEFAULTS_V1
       },
       skillIds: stringArray(source.abilityIds),
