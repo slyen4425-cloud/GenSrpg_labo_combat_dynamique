@@ -25,6 +25,7 @@ function validDraft() {
       preparationMs: 900,
       travelMs: 650,
       recoveryMs: 450,
+      cooldownMs: 2800,
       allowedDistances: ["medium", "long"],
       targetRelations: ["enemy"],
       projectileClash: {
@@ -77,6 +78,7 @@ test("CaptureSkillEditorDraftV1 composes the native skill and presentation contr
   assert.equal(value.id, "fireball");
   assert.equal(value.definition.form, "projectile");
   assert.equal(value.definition.energyCost, 3);
+  assert.equal(value.definition.cooldownMs, 2800);
   assert.equal(value.presentation.subjectId, "fireball");
   assert.equal(
     value.presentation.visual.travel.assetId,
