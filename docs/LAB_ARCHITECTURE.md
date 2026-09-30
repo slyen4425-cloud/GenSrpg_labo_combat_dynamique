@@ -2015,7 +2015,7 @@ Animation Core ne produit aucun shake caméra.
 
 ### Golem / Massif
 
-Le profil massif utilise deux contacts de pas pendant un mouvement lourd.
+Le profil massif utilise quatre contacts de pas régulièrement répartis pendant un mouvement lourd.
 
 La chaîne est :
 
@@ -2069,7 +2069,7 @@ L'ombre :
 - `quadruped` : idle ancré, bond plus ample ;
 - `serpentine` : idle au sol, glissement linéaire ;
 - `drake` : oscillation verticale / déplacement volant ;
-- `massive` : idle ancré, pas lourds avec contacts et micro-shake FX.
+- `massive` : idle ancré, quatre arcs lourds réguliers avec un contact et un micro-shake FX à chaque retombée.
 
 ### Hors périmètre
 
