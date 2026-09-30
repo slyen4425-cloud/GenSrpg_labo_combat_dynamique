@@ -190,7 +190,7 @@ test("Human Editor consumes progression rules to expose unlocked slots without r
   );
 });
 
-test("Human Editor validates both slot unlock policy and per-skill requiredLevel", async () => {
+test("Human Editor validates progression inputs without rejecting a planned future loadout", async () => {
   const ui = await import(uiModuleUrl);
   assert.equal(
     typeof ui.validateHumanLoadoutProgressionV1,
@@ -207,61 +207,53 @@ test("Human Editor validates both slot unlock policy and per-skill requiredLevel
     ]
   };
 
-  const baseLoadout = {
+  const plannedLoadout = {
     schema: "capture-active-skill-loadout-v1",
     creatureId: "crea_test",
     slots: [
       { id: "slot-1", skillId: "skill-high" },
       { id: "slot-2", skillId: null },
-      { id: "slot-3", skillId: null },
+      { id: "slot-3", skillId: "skill-low" },
       { id: "slot-4", skillId: null }
     ]
   };
 
-  assert.throws(
-    () =>
-      ui.validateHumanLoadoutProgressionV1({
-        loadout: baseLoadout,
-        progressionRules: rules,
-        creatureLevel: 5,
-        skillDrafts: [
-          {
-            id: "skill-high",
-            requiredLevel: 10,
-            definition: {
-              name: "Technique avancée"
-            }
+  assert.doesNotThrow(() =>
+    ui.validateHumanLoadoutProgressionV1({
+      loadout: plannedLoadout,
+      progressionRules: rules,
+      creatureLevel: 5,
+      skillDrafts: [
+        {
+          id: "skill-high",
+          requiredLevel: 10,
+          definition: {
+            name: "Technique avancée"
           }
-        ]
-      }),
-    /nécessite le niveau 10/i
+        },
+        {
+          id: "skill-low",
+          requiredLevel: 1,
+          definition: {
+            name: "Technique simple"
+          }
+        }
+      ]
+    })
   );
 
   assert.throws(
     () =>
       ui.validateHumanLoadoutProgressionV1({
-        loadout: {
-          ...baseLoadout,
-          slots: [
-            { id: "slot-1", skillId: null },
-            { id: "slot-2", skillId: null },
-            { id: "slot-3", skillId: "skill-low" },
-            { id: "slot-4", skillId: null }
-          ]
+        loadout: plannedLoadout,
+        progressionRules: {
+          schema: "capture-progression-rules-v1",
+          maxActiveSkills: 4,
+          slotUnlockSchedule: []
         },
-        progressionRules: rules,
-        creatureLevel: 5,
-        skillDrafts: [
-          {
-            id: "skill-low",
-            requiredLevel: 1,
-            definition: {
-              name: "Technique simple"
-            }
-          }
-        ]
+        creatureLevel: 5
       }),
-    /slot 3.*pas encore débloqué/i
+    /slotUnlockSchedule/i
   );
 });
 
