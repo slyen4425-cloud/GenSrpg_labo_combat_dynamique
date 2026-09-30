@@ -18845,3 +18845,33 @@ Décision d'architecture :
 RED obligatoire : protéger le vrai plan `ground-attack` du profil `flying` et démontrer que toutes les portions d'approche sont temporellement continues, sans easing de décélération aux frontières, avec progression X monotone, un seul apex et impact exact à `travelMs`.
 
 Critère de fin : RED -> correction data-driven minimale -> CI complète -> checkpoint PREVALIDATION -> preview smartphone -> validation utilisateur.
+
+
+### Résultat — Flying Contact Arc Fluidity V1
+
+Retour smartphone ayant rouvert le lot : profil `flying` + capacité `Griffe` présentait plusieurs ralentissements/arrêts, alors que le même skill avec `serpentine` restait fluide.
+
+Diagnostic du vrai chemin :
+- `Griffe` conserve `approachMode:"ground"` ;
+- `ground-attack` consomme `profile.locomotion` ;
+- `serpentine.locomotion` utilise des segments `linear` ;
+- `flying.locomotion` utilisait quatre segments `ease-in-out`, imposant une décélération/réaccélération à chaque frontière de phase.
+
+RED :
+- commit `29e6c5af0459a446b05df762aca6db90a5d3db2d` ;
+- CI `36722711846` — FAILURE attendue ;
+- sentinelle : vrai plan `ground-attack` du profil `flying`, progression X monotone, apex unique, impact exact à `travelMs`, et absence de freinage aux frontières.
+
+Correction :
+- commit fonctionnel `403901bbff83d57e476d808267aee91ffc81de3e` ;
+- seul `data/profiles/flying.profile.json` est modifié côté fonctionnel ;
+- les quatre points de l'arche restent data-driven pour dessiner la courbe ;
+- leurs easings deviennent `linear`, supprimant le freinage/réaccélération intermédiaire ;
+- aucune capacité individuelle n'est modifiée ;
+- `Griffe` reste inchangée ;
+- aucune règle de combat n'est déplacée.
+
+GREEN fonctionnel :
+- CI `36722781019` — SUCCESS.
+
+État : **GREEN technique — PREVALIDATION smartphone requise.**
