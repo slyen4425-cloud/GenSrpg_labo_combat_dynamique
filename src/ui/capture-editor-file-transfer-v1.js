@@ -1,4 +1,7 @@
 import {
+  planCaptureTransferImportV1
+} from "../adapters/input/capture/capture-entity-transfer-v1.js";
+import {
   CAPTURE_DATABASE_V1_SCHEMA,
   CAPTURE_DATABASE_V1_VERSION,
   normalizeCaptureDatabaseV1
@@ -173,4 +176,111 @@ export function applyCaptureTransferPlanToEditorStateV1({
           normalizedPlan.action
       );
   }
+}
+
+
+function replaceMapContentsV1(target, source) {
+  target.clear();
+  for (const [key, value] of source) {
+    target.set(key, value);
+  }
+}
+
+export function applyCaptureTransferBatchToEditorStateV1({
+  transfers,
+  configuredCreatures,
+  configuredSkills,
+  statRegistry,
+  progressionRules,
+  mode = "replace",
+  metadata = {}
+}) {
+  if (!Array.isArray(transfers)) {
+    throw new TypeError(
+      "transfers must be an array"
+    );
+  }
+
+  const creatures = requireMap(
+    configuredCreatures,
+    "configuredCreatures"
+  );
+  const skills = requireMap(
+    configuredSkills,
+    "configuredSkills"
+  );
+
+  const stagedCreatures = new Map(creatures);
+  const stagedSkills = new Map(skills);
+
+  let stagedStatRegistry = statRegistry;
+  let stagedProgressionRules =
+    progressionRules;
+
+  const actions = [];
+
+  for (const transfer of transfers) {
+    const currentDatabase =
+      buildCaptureEditorDatabaseV1({
+        statRegistry:
+          stagedStatRegistry,
+        progressionRules:
+          stagedProgressionRules,
+        configuredCreatures:
+          stagedCreatures,
+        configuredSkills:
+          stagedSkills,
+        metadata
+      });
+
+    const plan =
+      planCaptureTransferImportV1({
+        currentDatabase,
+        transfer,
+        mode
+      });
+
+    const applied =
+      applyCaptureTransferPlanToEditorStateV1({
+        plan,
+        configuredCreatures:
+          stagedCreatures,
+        configuredSkills:
+          stagedSkills,
+        statRegistry:
+          stagedStatRegistry,
+        progressionRules:
+          stagedProgressionRules
+      });
+
+    stagedStatRegistry =
+      applied.statRegistry;
+    stagedProgressionRules =
+      applied.progressionRules;
+
+    actions.push(
+      Object.freeze({
+        action: plan.action,
+        kind: plan.kind,
+        id: plan.id
+      })
+    );
+  }
+
+  replaceMapContentsV1(
+    creatures,
+    stagedCreatures
+  );
+  replaceMapContentsV1(
+    skills,
+    stagedSkills
+  );
+
+  return Object.freeze({
+    actions: Object.freeze(actions),
+    statRegistry:
+      stagedStatRegistry,
+    progressionRules:
+      stagedProgressionRules
+  });
 }
