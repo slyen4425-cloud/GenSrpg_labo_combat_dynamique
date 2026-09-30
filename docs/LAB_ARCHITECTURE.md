@@ -2178,3 +2178,18 @@ Invariants :
 - position au moment de l'impact = cible exacte ;
 - `aerial-home` reste une récupération post-impact et ne modifie pas le timestamp d'impact ;
 - aucune règle de dégâts, énergie, cooldown, portée ou ciblage n'est déplacée dans Animation Core.
+
+
+## 37. Fluidité de l'approche de contact volante
+
+Les capacités de contact ne portent pas la morphologie du déplacement. Une capacité telle que `Griffe` peut déclarer `approachMode:"ground"`, puis l'Animation Core consomme la locomotion du Creature Profile actif.
+
+Pour `flying`, l'arche d'approche peut conserver plusieurs points de forme afin de représenter visuellement montée, apex et descente. Ces points ne doivent cependant pas introduire de freinage intermédiaire : leurs intervalles utilisent un easing `linear` afin que la vitesse ne retombe pas à zéro à chaque frontière de phase.
+
+Invariants :
+- une seule autorité morphologique : `flying.locomotion` ;
+- aucune règle spécifique par capacité ;
+- progression horizontale monotone jusqu'à la cible ;
+- un seul apex ;
+- impact exactement aux coordonnées de la cible et à `travelMs` ;
+- aucune modification des dégâts, coûts, cooldowns, portée ou ciblage.
