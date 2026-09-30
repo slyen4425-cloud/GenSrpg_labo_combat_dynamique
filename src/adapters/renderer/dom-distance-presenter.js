@@ -65,7 +65,16 @@ export function createDomDistancePresenter({ fighters }) {
     opponent: scaleFor("opponent", "medium")
   };
 
-  function apply(slot) {
+  function apply(slot, durationMs = 260) {
+    const duration = Number(durationMs);
+    if (!Number.isFinite(duration) || duration <= 0) {
+      throw new RangeError("movement duration must be greater than 0");
+    }
+
+    fighters[slot].style.setProperty?.(
+      "--distance-move-duration",
+      `${Math.round(duration)}ms`
+    );
     fighters[slot].style.left =
       `${(anchors[slot].x * 100).toFixed(2)}%`;
     fighters[slot].style.top =
@@ -85,7 +94,11 @@ export function createDomDistancePresenter({ fighters }) {
     apply("opponent");
   }
 
-  function presentMovement({ result, actorSlot }) {
+  function presentMovement({
+    result,
+    actorSlot,
+    durationMs = 260
+  }) {
     if (!result?.ok || result.outcome !== "moved") {
       return Object.freeze({ status: "ignored" });
     }
@@ -107,7 +120,7 @@ export function createDomDistancePresenter({ fighters }) {
       ...anchorFor(actorSlot, distanceEvent.to)
     };
     scales[actorSlot] = scaleFor(actorSlot, distanceEvent.to);
-    apply(actorSlot);
+    apply(actorSlot, durationMs);
 
     return Object.freeze({
       status: "moved",
@@ -120,7 +133,8 @@ export function createDomDistancePresenter({ fighters }) {
       stationarySlot: otherSlot,
       stationaryX: anchors[otherSlot].x,
       stationaryY: anchors[otherSlot].y,
-      stationaryScale: scales[otherSlot]
+      stationaryScale: scales[otherSlot],
+      durationMs: Math.round(Number(durationMs))
     });
   }
 
