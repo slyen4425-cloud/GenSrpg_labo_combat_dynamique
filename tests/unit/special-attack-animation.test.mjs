@@ -812,3 +812,92 @@ test("hop fluidity v3 uses regular small arcs with equal step distances", () => 
   assert.equal(bipedApproach.at(-1).transform.translateX, targetX);
   assert.equal(quadrupedApproach.at(-1).transform.translateX, targetX);
 });
+
+
+test("massive gait v1 uses four equal heavy arcs with one footfall per landing", () => {
+  const travelMs = 1600;
+  const targetX = 320;
+  const metadata = {
+    targetTranslateX: targetX,
+    targetTranslateY: 0,
+    arenaHeight: 800,
+    travelMs
+  };
+
+  const current = actor("massive");
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata
+    }),
+    actor: current,
+    profile: registry.get("massive")
+  });
+
+  const approach = plan.segments.filter(
+    (segment) => segment.label !== "ground-home"
+  );
+  const airborne = approach.filter(
+    (segment) => segment.transform.translateY < 0
+  );
+  const landings = approach.filter(
+    (segment) => Math.abs(segment.transform.translateY) < 1e-9
+  );
+
+  assert.equal(airborne.length, 4);
+  assert.equal(landings.length, 4);
+
+  let previousX = 0;
+  for (const landing of landings) {
+    const stepDistance = landing.transform.translateX - previousX;
+    assert.ok(
+      Math.abs(stepDistance - targetX / 4) < 1e-9,
+      `expected regular massive step of ${targetX / 4}px, got ${stepDistance}px`
+    );
+    previousX = landing.transform.translateX;
+  }
+
+  const massiveLift = Math.max(
+    ...airborne.map((segment) => -segment.transform.translateY)
+  );
+
+  const quadrupedActor = actor("quadruped");
+  const quadrupedPlan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: quadrupedActor.id,
+      targetId: "opponent-actor",
+      metadata
+    }),
+    actor: quadrupedActor,
+    profile: registry.get("quadruped")
+  });
+  const quadrupedLift = Math.max(
+    ...quadrupedPlan.segments
+      .filter((segment) => segment.label !== "ground-home")
+      .map((segment) => -segment.transform.translateY)
+  );
+
+  assert.ok(
+    massiveLift > quadrupedLift,
+    "massive arcs must be more pronounced than quadruped bounds"
+  );
+
+  const footfalls = (plan.cues ?? []).filter(
+    (cue) => cue.type === "footfall"
+  );
+  assert.equal(footfalls.length, 4);
+  assert.deepEqual(
+    footfalls.map((cue) => cue.atMs),
+    [400, 800, 1200, 1600]
+  );
+
+  assert.equal(
+    approach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs
+  );
+  assert.equal(approach.at(-1).transform.translateX, targetX);
+  assert.equal(approach.at(-1).transform.translateY, 0);
+});
