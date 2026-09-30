@@ -17697,3 +17697,67 @@ Base :
 - checkpoint PREVALIDATION ;
 - lien smartphone pour workflow réel export/import.
 
+### Résultat — Capture Database Files UI V1
+
+RED :
+
+- commit : `a9080052d5f4230fa67dcd50a5d27b5ac90914f2` ;
+- run : `36679508576` ;
+- 680 tests, 679 PASS, 1 FAIL attendu : adaptateur de session absent.
+
+Adaptateur de session :
+
+- `capture-editor-database-state-v1.js` construit CaptureDatabaseV1 depuis les Maps canoniques ;
+- applique les plans `insert/replace/noop/replace-database` sans muter l'état reçu ;
+- aucune dépendance DOM/fichier/storage/network/Runtime.
+
+Human Editor :
+
+- **Exporter cette créature** ;
+- **Exporter cette capacité** ;
+- **Exporter toute la base** ;
+- **Importer un JSON** ;
+- case explicite **Remplacer les IDs existants en cas de conflit**.
+
+Règles :
+
+- export créature/capacité uniquement depuis une entrée enregistrée ;
+- modifications non enregistrées -> export/import bloqué avec message ;
+- base complète = configuredCreatures + configuredSkills + statRegistry + progressionRules ;
+- fichiers JSON téléchargés via couche UI seulement ;
+- import lit `File.text()`, délègue parsing/validation/conflit aux adaptateurs purs ;
+- aucune localStorage/sessionStorage/IndexedDB ;
+- assets transportés uniquement par leurs `assetId`.
+
+Nettoyage supplémentaire démontré :
+
+- le record HTML de bootstrap `crea-loup` était inséré avant le chargement du catalogue ;
+- s'il n'a pas été explicitement enregistré par l'utilisateur, il est retiré lors de l'arrivée des 102 créatures canoniques ;
+- il ne pollue donc pas « Exporter toute la base » ;
+- si l'utilisateur l'enregistre réellement avant le chargement, il est conservé comme création explicite.
+
+Catalogue affiché :
+
+- 102 créatures Monster Capture canoniques ;
+- 8 anciens IDs restent seulement des alias ;
+- plus de double Ailevent/Braiseau/Lumilo/Noctecroc/Rocorne/Luciéclair/Mirachat/Dracendre.
+
+GREEN technique :
+
+- run `36679976698` ;
+- structure / frontières / indépendance : OK ;
+- **687 / 687 PASS / 0 FAIL**.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise**.
+
+Workflow à valider :
+
+1. enregistrer une créature puis exporter son JSON ;
+2. enregistrer une capacité puis exporter son JSON ;
+3. exporter toute la base ;
+4. réimporter un JSON identique -> no-op ;
+5. modifier un fichier / ID existant -> rejet par défaut ;
+6. activer Remplacer -> remplacement explicite ;
+7. vérifier qu'Ailevent n'apparaît qu'une fois.
