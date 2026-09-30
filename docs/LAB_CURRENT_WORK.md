@@ -19098,3 +19098,36 @@ Protections supplémentaires :
 Décision de données : les capacités historiques dont `activeMeta.cooldown` vaut 0 restent à 0. Aucun temps arbitraire n'est inventé. L'utilisateur peut régler chaque recharge dans l'éditeur.
 
 État : **GREEN technique — PREVALIDATION smartphone**.
+
+
+## Micro-lot — Creature Natural Elements V1 — 2026-09-30
+
+Base : `785c3f733eb5861f6240196c707b2e5586af1ee4` (Skill Cooldown Completion V1 GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-creature-natural-elements-v1-2026-09-30` ;
+- branche : `work/lab-creature-natural-elements-v1-2026-09-30`.
+
+Constat réel :
+- les drafts créature possèdent déjà `elements` et `resistances[{kind,value}]` ;
+- l'import de l'ancien Capture préserve ses résistances signées, typiquement +35 % résistance / -50 % faiblesse ;
+- `computeCombatDamageV1()` applique déjà `fighter.resistancePctByChannel[channel]` ;
+- mais `adaptCaptureCreatureToFighterConfig()` ne projette actuellement que `combat.statEffects.resistancePctByChannel` et ignore les résistances naturelles de la fiche créature ;
+- l'éditeur visible ne couvre pas tous les types historiques Capture.
+
+Objectifs :
+1. projeter les résistances/faiblesses naturelles de `creature.resistances` vers le FighterConfig utilisé par le combat ;
+2. additionner proprement ces valeurs aux résistances issues des stats, avec une seule projection d'adaptateur et aucune règle dans Combat Rules ;
+3. exposer dans l'éditeur les types historiques utilisés par la base Capture : fire, water, earth, air, electric, light, shadow, nature, ice, poison, steel, psy, spirit ;
+4. ne pas inventer une nouvelle table de faiblesses : les valeurs propres à chaque créature/import restent autoritaires et éditables.
+
+Propriétaire : Capture input adapter pour la projection vers FighterConfig ; Creature Editor Draft pour les données. Combat Damage reste consommateur générique de canaux.
+
+Fichiers autorisés :
+- `src/adapters/input/capture/capture-creature-to-fighter-config.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests ciblés adaptateur/éditeur/dégâts ;
+- documentation.
+
+Protégé : formule `computeCombatDamageV1`, stats registry, capacités, cooldowns, énergie, ciblage, profils, sons, assets.
+
+RED : une créature avec `resistances: [{kind:"element:fire",value:35},{kind:"element:water",value:-50}]` doit produire un FighterConfig avec `resistancePctByChannel.fire === 35` et `water === -50`, puis le moteur existant doit réduire/augmenter les dégâts via ces canaux. Les résistances de stats et naturelles doivent se sommer une seule fois.
