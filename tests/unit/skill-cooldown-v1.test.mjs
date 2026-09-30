@@ -510,3 +510,83 @@ test("Combat Runtime does not become a second cooldown owner", async () => {
 
   assert.equal(/cooldown/i.test(source), false);
 });
+
+
+test("Combat Runtime notifies availability when a cooldown expires with stable energy and HP", () => {
+  const skill = normalizeSkillDefinition({
+    id: "availability-refresh",
+    name: "Availability Refresh",
+    category: "offensive",
+    form: "contact",
+    element: null,
+    approachMode: "ground",
+    energyCost: 0,
+    preparationMs: 0,
+    travelMs: 0,
+    recoveryMs: 0,
+    cooldownMs: 5000,
+    allowedDistances: ["short", "medium", "long"],
+    targetRelations: ["enemy"],
+    effect: { damage: 0 }
+  });
+
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [fighter("player"), fighter("opponent")]
+  });
+
+  let clockMs = 0;
+  let scheduledTick = null;
+  const states = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now: () => clockMs,
+    setTimer(callback) {
+      scheduledTick = callback;
+      return 1;
+    },
+    clearTimer() {},
+    onState(state) {
+      states.push(state);
+    }
+  });
+
+  runtime.start();
+
+  const started = runtime.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill
+  });
+  assert.equal(started.ok, true);
+  assert.equal(
+    session.previewSkill({
+      actorId: "player",
+      targetId: "opponent",
+      skill
+    }).outcome,
+    "cooldown"
+  );
+
+  const notificationsBeforeExpiry = states.length;
+  clockMs = 5000;
+  scheduledTick();
+
+  assert.equal(
+    session.previewSkill({
+      actorId: "player",
+      targetId: "opponent",
+      skill
+    }).ok,
+    true,
+    "authoritative Combat State has made the skill available again"
+  );
+  assert.ok(
+    states.length > notificationsBeforeExpiry,
+    "Runtime must notify consumers when availability changes even if HP/energy stay constant"
+  );
+
+  runtime.dispose();
+});
