@@ -87,6 +87,87 @@ export function captureLegacyAbilityEditorStateV1(id) {
   });
 }
 
+
+function portableTargetScopeV1(effect) {
+  if (effect.target === "zone") {
+    return "all_enemies";
+  }
+  if (effect.target === "self") {
+    return "self";
+  }
+  if (
+    effect.target == null ||
+    effect.target === "enemy"
+  ) {
+    return effect.kind === "heal"
+      ? "self"
+      : "target";
+  }
+  return "target";
+}
+
+export function capturePortableLegacyTacticalEffectsV1(
+  abilityId
+) {
+  const ability = abilityById(abilityId);
+  const template =
+    captureUsedAbilityTemplateV2(ability);
+
+  if (
+    template.migrationState !==
+    "portable-basic-effects"
+  ) {
+    return null;
+  }
+
+  return Object.freeze(
+    ability.effects.map((effect) => {
+      if (effect.kind === "damage") {
+        return Object.freeze({
+          kind: "damage",
+          targetScope:
+            portableTargetScopeV1(effect),
+          amount: Number(effect.base ?? 0),
+          channel:
+            effect.element ||
+            ability.element ||
+            null
+        });
+      }
+
+      if (effect.kind === "heal") {
+        return Object.freeze({
+          kind: "heal",
+          targetScope:
+            portableTargetScopeV1(effect),
+          amount: Number(effect.base ?? 0)
+        });
+      }
+
+      throw new RangeError(
+        "portable historical ability contains unsupported effect: " +
+          effect.kind
+      );
+    })
+  );
+}
+
+function historicalTacticalEffectsV1(abilityId) {
+  const complexMigration =
+    COMPLEX_MIGRATION_BY_ID.get(abilityId) ?? null;
+
+  if (
+    complexMigration?.migrationState ===
+    "runtime-ready"
+  ) {
+    return complexMigration.tacticalEffects;
+  }
+
+  return capturePortableLegacyTacticalEffectsV1(
+    abilityId
+  );
+}
+
 export function mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
   currentFields,
   abilityId
@@ -107,8 +188,22 @@ export function mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
     );
   const template = state.template;
 
+  const tacticalEffects =
+    historicalTacticalEffectsV1(abilityId);
+
+  const {
+    damage: _legacyDamage,
+    heal: _legacyHeal,
+    stunMs: _legacyStunMs,
+    interruptsPreparation:
+      _legacyInterruptsPreparation,
+    targetRelations: _legacyTargetRelations,
+    allowedDistances: _legacyAllowedDistances,
+    ...retainedFields
+  } = currentFields;
+
   return {
-    ...currentFields,
+    ...retainedFields,
     id: template.id,
     name: template.name,
     description: template.description,
@@ -116,7 +211,8 @@ export function mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
     element: template.element,
     requiredLevel:
       template.requiredLevel,
-    damage: template.effect.damage,
-    heal: template.effect.heal
+    effects:
+      tacticalEffects ??
+      currentFields.effects
   };
 }
