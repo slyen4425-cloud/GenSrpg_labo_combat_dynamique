@@ -16251,3 +16251,26 @@ Tests renforcés :
 
 Le Renderer/Presenter reste inchangé dans ce lot. L'impact visuel multi-cible sera le micro-lot suivant uniquement après PREVALIDATION smartphone de ce correctif UI.
 
+### Validation technique — Tactical Effects UI Feedback Repair V1
+
+Validation du diff isolé via PR technique temporaire vers le checkpoint de départ :
+
+- PR technique : #3 — aucun merge prévu ;
+- CI : run `36648639245` ;
+- job `foundation` : SUCCESS ;
+- structure / frontières / indépendance : OK ;
+- **628 tests / 628 PASS / 0 FAIL**.
+
+Résultat technique :
+
+- les contrôles legacy concurrents dégâts / soin / stun / ciblage / portée ne sont plus présents dans la surface Human Editor ;
+- `SkillEffectV1 / StatusEffectV1` est l'unique autorité éditable pour dégâts, soins, scopes et stun ;
+- `activationRequirements` reste séparé et le contrôle est maintenant présenté explicitement comme « Déclarer comme capacité Ultime / conditionnelle » ;
+- les modèles historiques portables utilisent la même autorité tactique moderne ;
+- aucune modification Combat Runtime / Action Resolver / StatusEffect Runtime / FX / Renderer ;
+- le défaut d'impact visuel de zone reste volontairement ouvert pour le micro-lot Renderer suivant.
+
+État : **GREEN technique — PREVALIDATION smartphone requise**.
+
+Aucun GREEN UI final avant retour utilisateur.
+
