@@ -405,6 +405,25 @@ function formatEnergy(value) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
 }
 
+export function skillCooldownLabelV1(preview) {
+  if (preview?.outcome !== "cooldown") {
+    return "";
+  }
+
+  const remainingMs = Math.max(
+    0,
+    Number(preview.remainingCooldownMs) || 0
+  );
+  if (remainingMs <= 0) {
+    return "";
+  }
+
+  const seconds = remainingMs / 1000;
+  return "Recharge " +
+    seconds.toFixed(Number.isInteger(seconds) ? 0 : 1) +
+    " s";
+}
+
 function relationLabel(relation) {
   if (relation === "ally") {
     return "allié";
@@ -753,7 +772,7 @@ export async function mountCoop2v2Test({
     const localAlive = isAlive(format.localActorId, state);
     const targetAlive = isAlive(selectedTargetId, state);
 
-    for (const { button, skill } of skillRefs.values()) {
+    for (const { button, skill, cooldown } of skillRefs.values()) {
       const allowed = isSkillTargetAllowed({
         format,
         actorId: format.localActorId,
@@ -769,6 +788,9 @@ export async function mountCoop2v2Test({
               skill
             })
           : { ok: false };
+
+      cooldown.textContent =
+        skillCooldownLabelV1(preview);
 
       button.disabled =
         runtime.hasActiveActionFor(format.localActorId) ||
@@ -836,7 +858,13 @@ export async function mountCoop2v2Test({
 
     const label = root.ownerDocument.createElement("strong");
     label.textContent = skill.name;
-    button.append(label);
+
+    const cooldown =
+      root.ownerDocument.createElement("small");
+    cooldown.dataset.combatSkillCooldown = skill.id;
+    cooldown.textContent = "";
+
+    button.append(label, cooldown);
 
     listen(button, "click", () => {
       const allowed = isSkillTargetAllowed({
@@ -879,7 +907,10 @@ export async function mountCoop2v2Test({
       renderAvailability();
     });
 
-    return button;
+    return Object.freeze({
+      button,
+      cooldown
+    });
   }
 
   const localSkillIds =
@@ -895,9 +926,16 @@ export async function mountCoop2v2Test({
   });
 
   for (const skill of localSkills) {
-    const button = createSkillButton(skill);
+    const {
+      button,
+      cooldown
+    } = createSkillButton(skill);
     skillContainer.append(button);
-    skillRefs.set(skill.id, { skill, button });
+    skillRefs.set(skill.id, {
+      skill,
+      button,
+      cooldown
+    });
   }
 
   const aiControllers = [];
