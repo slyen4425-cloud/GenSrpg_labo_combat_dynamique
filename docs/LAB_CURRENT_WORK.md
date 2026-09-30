@@ -19642,3 +19642,56 @@ Prouver avant correction que :
 - les capacités référencées sont résolues depuis les catalogues existants ;
 - tests ciblés + CI complète verts ;
 - preview smartphone publiée pour validation utilisateur.
+
+
+### Résultat — Capture Showcase Creature Presets V1
+
+RED :
+- commit : `9c07f44bd8bff903bb5b9cc4bfcc228c8eca8e11` ;
+- CI : `36770251851` — FAILURE attendue ;
+- cause reproduite : absence du catalogue de presets vitrine (`ERR_MODULE_NOT_FOUND`) ;
+- les sentinelles historiques continuaient de passer, un seul nouveau test était rouge.
+
+Correction :
+- `data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json` : preset Moussados issu de l'export utilisateur ;
+- `data/capture/showcase/crea-loup.capture-creature-transfer-v1.json` : preset Loup volcanique issu de l'export utilisateur ;
+- `src/catalogs/capture-showcase-creature-presets-v1.js` : manifest de découverte limité aux chemins de fichiers, sans répéter les IDs des créatures ;
+- `src/ui/capture-editor-human-v2.js` : hydratation des presets via le pipeline existant `importCaptureTransferJsonV1 -> planCaptureTransferImportV1 -> applyCaptureTransferPlanToEditorStateV1` ;
+- aucun importeur parallèle ; aucun merge champ-par-champ ; aucun traitement par nom.
+
+Réconciliation :
+- `crea_mossback` existe déjà dans le roster historique : le plan produit un remplacement explicite de l'entrée active, jamais un doublon ;
+- `crea-loup` est ajouté comme nouvelle fiche active ;
+- `configuredCreatures` reste l'unique état actif de l'éditeur ;
+- les IDs sont lus uniquement depuis les Transfer eux-mêmes ; le manifest ne possède que les chemins et vérifie l'absence de doublons après import.
+
+Réglages préservés :
+- Moussados : niveau 1, Santé 200, Terre, résistance Feu +50 %, faiblesse Air -50 %, profil `massive`, scale 1.7, sockets exportés, loadout planifié `lib_earth_guard / claw / lib_quake / lib_rock_slam` ;
+- Loup volcanique : niveau 10, Santé 150, Feu, résistance Feu +35 %, faiblesse Eau -50 %, profil `quadruped`, scale 1.2, socket bouche exporté, loadout planifié `fireball / claw / lib_flame_bite / lib_fireball` ;
+- les visuels référencent les asset IDs existants de `global-assets` ; aucune copie locale n'est créée ;
+- les capacités `lib_*` restent propriétaires dans les catalogues Capture natifs migrés ; `fireball` et `claw` restent propriétaires dans le catalogue natif existant.
+
+Progression :
+- le loadout du modèle reste enregistré tel que configuré ;
+- `CapturePlannedLoadoutToCombatV1` continue seul à projeter au runtime les slots et capacités réellement débloqués selon le niveau ;
+- aucune compétence configurée n'est effacée du preset pour satisfaire le niveau courant.
+
+Santé :
+- `statValues.values.health` reste l'autorité utilisateur ;
+- les presets ont un `combat.maxHp` technique cohérent avec Santé, mais l'éditeur ne réintroduit aucun champ PV parallèle ;
+- lors des sauvegardes/exports V3, le maxHp runtime reste dérivé de la projection de stats.
+
+Revue de fichiers :
+- données Capture presets ;
+- manifest de presets ;
+- Human Editor ;
+- test ciblé ;
+- documentation ;
+- aucun fichier Combat Runtime, Action Resolver, FX, renderer, audio, mouvement ou arène modifié.
+
+Validation technique finale :
+- HEAD fonctionnel : `1c2a52f34b6d3a0ba6e030a3e01cebb86748561a` ;
+- CI : `36770634118` — SUCCESS ;
+- suite complète : **735/735 PASS, 0 FAIL**.
+
+État : **GREEN technique — PREVALIDATION smartphone**. La validation utilisateur doit vérifier dans l'éditeur que les deux modèles apparaissent avec leurs réglages, qu'ils peuvent être modifiés sans perte de configuration et qu'un combat test peut être lancé avec le modèle sélectionné.
