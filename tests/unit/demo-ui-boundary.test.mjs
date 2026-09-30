@@ -202,7 +202,10 @@ test("V8 fighter HUD owns roster portraits while spatial fighters remain top-bas
   assert.match(css, /\.reserve\s*\{[\s\S]*position:\s*static/);
   assert.match(css, /\.fighter\s*\{[\s\S]*top:\s*50%/);
   assert.match(css, /transform:\s*translate\(-50%,\s*-50%\)\s*scale\(var\(--distance-scale/);
-  assert.match(css, /transition:[\s\S]*top 260ms ease/);
+  assert.match(
+    css,
+    /transition:[\\s\\S]*top var\\(--distance-move-duration, 260ms\\) ease/
+  );
 });
 
 test("V8 ability dock stays compact and icon-ready on mobile", async () => {
