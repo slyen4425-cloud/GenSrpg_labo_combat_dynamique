@@ -7078,7 +7078,7 @@ export function mountCaptureEditorHumanV2({
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques principales chargées. Application des modèles vitrine en cours.",
+          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des modèles vitrine en cours.",
           "info"
         );
       }
@@ -7146,7 +7146,7 @@ export function mountCaptureEditorHumanV2({
         if (!disposed) {
           setStatus(
             root,
-            "Bibliothèques principales et 2 modèles vitrine chargés.",
+            "Bibliothèques principales, 9 capacités laboratoire + 103 capacités Capture natives et 2 modèles vitrine chargés.",
             "info"
           );
         }
