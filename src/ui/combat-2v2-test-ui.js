@@ -753,7 +753,7 @@ export async function mountCoop2v2Test({
     const localAlive = isAlive(format.localActorId, state);
     const targetAlive = isAlive(selectedTargetId, state);
 
-    for (const { button, skill } of skillRefs.values()) {
+    for (const { button, cooldown, skill } of skillRefs.values()) {
       const allowed = isSkillTargetAllowed({
         format,
         actorId: format.localActorId,
@@ -769,6 +769,21 @@ export async function mountCoop2v2Test({
               skill
             })
           : { ok: false };
+
+      const remainingCooldownMs =
+        preview?.outcome === "cooldown"
+          ? Number(preview.remainingCooldownMs) || 0
+          : 0;
+
+      cooldown.textContent =
+        remainingCooldownMs > 0
+          ? `Recharge ${(remainingCooldownMs / 1000).toFixed(1)} s`
+          : "";
+      cooldown.hidden = remainingCooldownMs <= 0;
+      button.dataset.combatCooldown =
+        remainingCooldownMs > 0
+          ? String(Math.ceil(remainingCooldownMs))
+          : "";
 
       button.disabled =
         runtime.hasActiveActionFor(format.localActorId) ||
@@ -836,7 +851,14 @@ export async function mountCoop2v2Test({
 
     const label = root.ownerDocument.createElement("strong");
     label.textContent = skill.name;
-    button.append(label);
+
+    const cooldown =
+      root.ownerDocument.createElement("small");
+    cooldown.className = "action-option__cooldown";
+    cooldown.dataset.combatCooldown = "";
+    cooldown.hidden = true;
+
+    button.append(label, cooldown);
 
     listen(button, "click", () => {
       const allowed = isSkillTargetAllowed({
@@ -879,7 +901,7 @@ export async function mountCoop2v2Test({
       renderAvailability();
     });
 
-    return button;
+    return Object.freeze({ button, cooldown });
   }
 
   const localSkillIds =
@@ -895,9 +917,13 @@ export async function mountCoop2v2Test({
   });
 
   for (const skill of localSkills) {
-    const button = createSkillButton(skill);
-    skillContainer.append(button);
-    skillRefs.set(skill.id, { skill, button });
+    const refs = createSkillButton(skill);
+    skillContainer.append(refs.button);
+    skillRefs.set(skill.id, {
+      skill,
+      button: refs.button,
+      cooldown: refs.cooldown
+    });
   }
 
   const aiControllers = [];
@@ -959,6 +985,9 @@ export async function mountCoop2v2Test({
     onState(state) {
       renderState(state);
       queueAiDecisions();
+    },
+    onClock() {
+      renderAvailability();
     },
     onStarted({ action }) {
       if (action.actionType !== "skill") {
