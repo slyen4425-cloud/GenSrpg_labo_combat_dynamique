@@ -17572,3 +17572,122 @@ GREEN :
 - **679 / 679 PASS / 0 FAIL**.
 
 Étape suivante : Human Editor Files UI.
+
+## Micro-lot — Capture Human Editor Files UI V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN Entity Transfer Packages :
+  `checkpoint/lab-capture-entity-transfer-packages-v1-green-2026-09-30` ;
+- SHA : `5bc2da5fa6595ece89ed527ba6e55f0446f12c34` ;
+- CI : run `36679237801`, 679/679 PASS.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-human-editor-files-ui-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-human-editor-files-ui-v1-2026-09-30`.
+
+### Objectif
+
+Raccorder les contrats/transferts GREEN au Human Editor sans créer de deuxième état.
+
+Workflow utilisateur :
+
+1. **Exporter cette créature** ;
+2. **Exporter cette capacité** ;
+3. **Exporter toute la base** ;
+4. **Importer JSON** ;
+5. option explicite **Remplacer les IDs existants**.
+
+### Source de vérité
+
+La session active existante reste propriétaire :
+
+- `configuredCreatures` ;
+- `configuredSkills` ;
+- `statRegistry` ;
+- `progressionRules`.
+
+Aucune nouvelle Map de données métier.
+
+Les fichiers sont seulement un transport.
+
+### Export
+
+- créature : le record courant normalisé `{draft,statValues,loadout}` ;
+- capacité : le draft courant normalisé ;
+- base complète : composition des Maps + registre + progression via `CaptureDatabaseV1`.
+
+Avant export de l'entité courante, l'UI construit l'état courant depuis les contrôles via les builders existants. Elle ne lit pas un snapshot Combat.
+
+### Import
+
+Chaîne obligatoire :
+
+`File.text() -> importCaptureTransferJsonV1 -> planCaptureTransferImportV1 -> application du plan aux Maps`.
+
+Mode :
+
+- case décochée -> `reject` ;
+- case cochée -> `replace`.
+
+Application :
+
+- insert/replace skill -> `configuredSkills` ;
+- insert/replace creature -> `configuredCreatures` ;
+- replace-database -> remplace explicitement le contenu des deux Maps + registre + progression ;
+- noop -> aucun changement.
+
+Après application :
+
+- listes UI rafraîchies ;
+- registre/progression rerendus si base complète ;
+- aucune fusion champ-par-champ ;
+- aucun stockage navigateur.
+
+### Fichiers autorisés
+
+- nouveau `src/ui/capture-editor-file-transfer-v1.js` pour composer/appliquer l'état de session sans DOM ;
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` si nécessaire ;
+- tests dédiés ;
+- docs.
+
+### Protégé
+
+- contrats Database / Creature Transfer / Skill Transfer ;
+- Entity Transfer adapter ;
+- Combat Runtime ;
+- FX / Renderer ;
+- catalogues Capture ;
+- aucun localStorage/sessionStorage/IndexedDB ;
+- aucune logique de validation recopiée dans l'UI.
+
+### RED attendu
+
+1. contrôles export créature/capacité/base présents ;
+2. input fichier JSON présent ;
+3. case replace explicite présente ;
+4. export session compose Database V1, sans battle/runtime snapshot ;
+5. application insert/noop/replace sur les Maps ;
+6. replace-database remplace les Maps et les propriétaires globaux ;
+7. ancien ID reste canonicalisé par l'adaptateur, pas par l'UI ;
+8. Human Editor appelle les adapters propriétaires ;
+9. aucun storage/network ;
+10. Blob/ObjectURL/File.text limités au raccord navigateur ;
+11. erreurs/conflits affichés sans mutation partielle.
+
+### Critère de fin
+
+- RED ciblé ;
+- raccord browser minimal ;
+- tests purs d'application des plans ;
+- CI complète GREEN ;
+- checkpoint PREVALIDATION ;
+- lien smartphone ;
+- validation utilisateur export -> import réel.
+
