@@ -16278,3 +16278,95 @@ Avant Export/Import Database V1, vérification obligatoire restante :
 
 - démontrer que les 33 capacités complexes sont hydratées comme vraies `SkillDefinition` jouables dans la bibliothèque native Capture, et pas seulement disponibles comme projections de migration ;
 - corriger ensuite la présentation Human Editor de la nouvelle stat Défense si nécessaire.
+
+
+## Micro-lot — Capture Complex Native Skills V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN legacy status semantics : `checkpoint/lab-capture-legacy-status-semantics-v1-green-2026-09-30` ;
+- SHA : `77875449190d2dce16f5ef96d7a3f72b019f5523` ;
+- CI : SUCCESS, 633/633.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-complex-native-skills-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-complex-native-skills-v1-2026-09-30`.
+
+### Cause démontrée
+
+- 103 capacités historiques sont réellement utilisées par les créatures Capture ;
+- 70 sont déjà hydratées comme `CaptureSkillEditorDraftV1` natives via `CapturePortableNativeSkillCatalogV1` ;
+- les 33 complexes sont désormais `runtime-ready` dans `CaptureComplexSkillMigrationV1`, mais ne sont pas encore transformées en drafts natifs complets ;
+- `capture-editor-human-v2.js` hydrate actuellement 9 capacités laboratoire + 70 capacités Capture natives ;
+- les 33 complexes restent donc absentes de `configuredSkills` et ne peuvent pas encore constituer la base native complète du jeu vitrine.
+
+### Objectif
+
+Créer `CaptureComplexNativeSkillCatalogV1` :
+
+1. exactement 33 `CaptureSkillEditorDraftV1` ;
+2. effets = `tacticalEffects` autoritaires issus du migrateur GREEN ;
+3. aucun double propriétaire legacy `effect.damage/heal` ;
+4. ID / nom / description / élément / requiredLevel / manaCost historiques conservés ;
+5. timings dynamiques absents de la source représentés par 0 ms comme dans le catalogue portable déjà validé ;
+6. cooldown historique actuellement 0 pour les 33, donc 0 ms sans conversion de tours ;
+7. présentation laissée `null` ;
+8. aucune déduction par nom/description.
+
+### Politique de forme explicite
+
+La forme n'est dérivée que de tokens structurels historiques :
+
+- effet explicite zone / scope multi-cible -> `area` ;
+- tous les effets sur soi -> `self` ;
+- catégorie historique `melee` -> `contact` + `ground` ;
+- cible externe non-zone sans forme historique -> `projectile` + `none`, même politique neutre déjà utilisée pour les sorts/ranged du catalogue portable.
+
+Cette politique est une adaptation de transport vers le Runtime, pas une reconstruction d'animation. Aucun FX/audio/socket n'est inventé.
+
+### Catégorie moderne
+
+- heal -> `heal` ;
+- defense -> `defensive` ;
+- control / utility -> `buff_debuff` ;
+- melee / spell / ranged -> `offensive`.
+
+### Raccord Human Editor
+
+Après GREEN du catalogue :
+
+- hydrater les 33 drafts en plus des 70 ;
+- obtenir **103/103 capacités Capture natives** ;
+- conserver les 9 capacités laboratoire séparées ;
+- mettre à jour le message de chargement ;
+- ne plus afficher les 33 modèles historiques comme « StatusEffectV1 requis ».
+
+### RED
+
+1. module natif complexe absent ;
+2. 33 drafts / 33 IDs uniques ;
+3. zéro chevauchement avec les 70 ;
+4. union Capture native = 103 IDs exacts ;
+5. effets tactiques identiques au migrateur ;
+6. formes structurelles testées sur mêlée / zone / self / contrôle cible ;
+7. vrai Runtime accepte au moins une capacité status complexe native ;
+8. Human Editor hydrate 103 natives Capture.
+
+### Protégé
+
+- aucune nouvelle règle Combat Runtime ;
+- aucun changement StatusEffect Runtime ;
+- aucun stockage/global/network ;
+- aucune présentation/FX inventée ;
+- aucun Export/Import encore.
+
+### Critère de fin
+
+- CI complète GREEN ;
+- 103/103 capacités Capture disponibles comme drafts natifs ;
+- checkpoint PREVALIDATION si UI modifiée ;
+- puis correction lisibilité Défense dans Human Editor avant le lot Database Export/Import.
