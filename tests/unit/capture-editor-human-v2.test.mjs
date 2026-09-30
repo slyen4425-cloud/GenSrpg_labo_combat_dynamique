@@ -273,6 +273,7 @@ test("human battle controls use one data path for 1v1 or 2v2 only", () => {
       localDisplayName: "Loup",
       opponentCreatureId: "crea-enemy",
       opponentDisplayName: "Adversaire",
+      arenaId: "city",
       activePerTeam
     });
 
@@ -311,6 +312,7 @@ test("human editor composes the real Exporter V2 path", () => {
     localDisplayName: creature.displayName,
     opponentCreatureId: "crea-enemy",
     opponentDisplayName: "Adversaire",
+    arenaId: "city",
     activePerTeam: 2
   });
 
