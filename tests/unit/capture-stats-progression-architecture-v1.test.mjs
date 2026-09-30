@@ -55,6 +55,7 @@ test("Monster Capture standard registry owns configurable channel mappings", asy
   );
 
   for (const id of [
+    "health",
     "speed",
     "physical",
     "fire",
@@ -205,7 +206,7 @@ test("Legacy Monster Capture stats project deterministically into the new stat v
 });
 
 
-test("stat registry rejects duplicate ids and keeps HP outside the extensible stat registry", async () => {
+test("stat registry rejects duplicate ids and owns health through one canonical stat", async () => {
   const {
     normalizeCaptureStatRegistryV1
   } = await import(
@@ -244,10 +245,15 @@ test("stat registry rejects duplicate ids and keeps HP outside the extensible st
     )
   );
   const registry = normalizeCaptureStatRegistryV1(raw);
+  const health = registry.stats.find(
+    (entry) => entry.id === "health"
+  );
+  assert.ok(health);
+  assert.equal(health.maxHpPerPoint, 1);
   assert.equal(
     registry.stats.some((entry) => entry.id === "hp"),
     false,
-    "HP must remain creature/Combat State ownership, not a duplicate registry stat"
+    "health must use one canonical stat id instead of a duplicate hp alias"
   );
   assert.equal(
     registry.stats.find((entry) => entry.id === "physical").damagePctPerPoint,
