@@ -18987,3 +18987,13 @@ Audit de protection :
 - diff runtime limité aux bindings arène, révision cache, tests, documentation et suppression des deux copies locales devenues inutiles.
 
 État : **GREEN technique — PREVALIDATION smartphone requise pour le rendu des nouvelles arènes.**
+
+
+### Publication PREVALIDATION — Arena Refresh V1
+
+- HEAD GREEN documenté : `f7b003675fba50b129c8bdc4e35ea5f92fe5c231` ;
+- CI work : `36735088869` — SUCCESS ;
+- checkpoint PREVALIDATION : `checkpoint/lab-arena-refresh-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-arena-refresh-v1-2026-09-30` ;
+- les cinq images canoniques sont publiées sur `global-assets` ;
+- validation visuelle smartphone encore requise avant GREEN utilisateur.
