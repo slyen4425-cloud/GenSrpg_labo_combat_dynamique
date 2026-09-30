@@ -18574,3 +18574,69 @@ Protégé / inchangé :
 
 État :
 **GREEN technique — PREVALIDATION smartphone requise.**
+
+
+## Micro-lot — Serpentine + Flight Profile Refinement V1 — 2026-09-30
+
+Base :
+- SHA : `3fe49790c1f6686425c7a24c59cb5fe4f6a9724f` ;
+- checkpoint : `checkpoint/lab-start-serpentine-flight-profile-refinement-v1-2026-09-30` ;
+- branche : `work/lab-serpentine-flight-profile-refinement-v1-2026-09-30` ;
+- base massive/golem : GREEN technique, 708/708 PASS, PREVALIDATION smartphone encore ouverte.
+
+### Retour smartphone utilisateur
+
+Rampant / serpent :
+- déplacement actuel validé ;
+- idle doit rester quasiment collé au sol ;
+- seul le haut du corps doit osciller légèrement de droite à gauche.
+
+Volant :
+- doit sembler réellement suspendu dans les airs ;
+- ombre visuellement plus éloignée des pieds / du corps ;
+- déplacement fluide en un seul arc complet (un seul « pont »).
+
+### Propriétaires
+
+- Creature Profile : idle serpentin, arc de locomotion volant, paramètre de distance d'ombre ;
+- Animation Core : consomme les phases existantes, inchangé ;
+- Demo/Render presentation : projette uniquement le paramètre visuel d'ombre du profil ;
+- FX Core / Combat Rules : inchangés.
+
+### Fichiers autorisés
+
+- `data/profiles/serpentine.profile.json` ;
+- `data/profiles/drake.profile.json` ;
+- `src/ui/demo-app.js` uniquement pour projeter la donnée d'ombre du profil ;
+- `examples/dom-demo/demo.css` uniquement pour consommer cette variable CSS ;
+- tests ciblés profile/animation/presentation ;
+- documentation.
+
+### Protégé
+
+- déplacement serpentin existant ;
+- bipède/quadrupède validés ;
+- massif/golem du lot précédent ;
+- Combat Runtime / Combat State / énergie / cooldown ;
+- dégâts / portée / ciblage ;
+- Animation Core ;
+- FX Core ;
+- assets / arènes ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+Rampant :
+- idle sans translation verticale ;
+- translation X quasi nulle ;
+- oscillation supérieure via rotation autour d'un pivot bas.
+
+Volant :
+- locomotion = exactement un arc montée + descente ;
+- amplitude verticale supérieure à l'actuelle ;
+- aucune cue de contact au sol ;
+- paramètre data-driven d'ombre plus bas que le défaut.
+
+### Critère de fin
+
+RED ciblé -> correction data-driven + projection CSS minimale -> CI complète -> preview smartphone.
