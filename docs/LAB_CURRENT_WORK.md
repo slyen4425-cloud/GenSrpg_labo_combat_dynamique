@@ -19295,3 +19295,36 @@ Périmètre autorisé : initialisation de l'éditeur Capture, tests ciblés, doc
 Protégé : Combat State, Action Resolver, calcul de dégâts, cooldowns, projectile/FX, audio, profils, assets.
 
 RED : reproduire le démarrage éditeur et prouver que la compétence `fireball` obtenue pour la preview contient actuellement zéro effet de dégâts alors qu'une définition native runtime du même ID existe.
+
+
+### Résultat — Fireball Damage Regression V1
+
+Cause racine confirmée :
+- le formulaire initial utilisait l'ID `fireball` ;
+- sa zone `Effets tactiques` était vide ;
+- `readSkillFields()` produisait donc `effects: []` ;
+- ce brouillon initial était enregistré avant le chargement du catalogue natif ;
+- la définition native portant le même ID, avec `effect.damage: 30`, ne pouvait ensuite plus remplacer l'entrée existante ;
+- résultat : projectile/impact visuel correct, mais compétence métier sans effet de dégâts.
+
+RED :
+- commit `0263606a8cfbc47ac3f1859af98a0aafa545bc7c` ;
+- CI `36754306436` — FAILURE attendue ;
+- le test reproduit un skill initial sans effets tactiques qui masque une définition native avec dégâts.
+
+Correction :
+- commit `b253600ee8d13b21e5c8f74a562bec2bf5874610` ;
+- ajout de `hydrateInitialSkillEffectsFromNativeV1()` ;
+- si le brouillon initial n'a aucun effet, n'a pas été modifié par l'utilisateur et possède le même ID qu'une définition native, les effets représentables sont hydratés depuis la source native ;
+- pour Boule de feu, `effect.damage: 30` + élément `fire` devient un unique effet tactique `damage / target / 30 / fire` ;
+- aucun cas spécial sur le nom ou l'ID de Boule de feu dans Combat Rules ;
+- le cooldown, les timings et la présentation du formulaire restent ceux éditables dans l'éditeur.
+
+GREEN :
+- CI `36754412374` — SUCCESS ;
+- suite complète : **720/720 PASS, 0 FAIL** ;
+- test combat réel : cible 100 PV -> 70 PV.
+
+Protection : Combat State, Action Resolver, moteur de dégâts, cooldown, FX, audio, profils et assets inchangés.
+
+État : **GREEN technique — PREVALIDATION smartphone requise** pour confirmer que la Boule de feu retire bien des PV dans la preview réelle.
