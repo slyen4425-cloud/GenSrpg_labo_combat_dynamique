@@ -18949,3 +18949,41 @@ Branche asset dédiée créée depuis `global-assets` HEAD `570b37edb26156a3e842
 Les cinq sources utilisateur sont toutes en 1536x864 (16:9), sans recadrage requis.
 
 État : remplacement binaire non encore commité. Aucun asset canonique n'a été écrasé partiellement. La prochaine opération autorisée est exclusivement le remplacement 1 pour 1 des cinq binaires, suivi de la vérification catalogue/cache, CI et preview smartphone.
+
+
+### Résultat — Arena Refresh V1
+
+Assets :
+- source `global-assets` initiale : `570b37edb26156a3e84256ef1be18eb07d697eca` ;
+- branche asset : `work/lab-arena-refresh-assets-v1-2026-09-30` ;
+- commit de remplacement canonique : `ec938dfd8aab08ca43dd87e75e002f5852813cef` ;
+- checkpoint asset GREEN : `checkpoint/lab-arena-refresh-assets-v1-green-2026-09-30` ;
+- `global-assets` avancée en fast-forward sur ce commit ;
+- diff global-assets contre la base : exactement cinq binaires modifiés, aucun autre fichier ;
+- staging temporaire supprimé.
+
+Blobs canoniques publiés :
+- city : `046d816ca856a026d4b7fae10b9abc40378aeb97` ;
+- cave : `703718f34f616ab6664f258eb7dd3ff84a6cb044` ;
+- snow : `39cffccfb055428a85d64dd2a2def00194fe3aaf` ;
+- forest : `22448fb83a17fdd16e2e9b74827913496589a43e` ;
+- lava : `3e677ac440699b431405f7c33345f319c55bd863`.
+
+Runtime :
+- migration vers les cinq bindings Core : `b0dbd723d993` ;
+- RED historique confirmé : anciens tests city/lava attendaient encore les fallbacks locaux ;
+- sentinelle canonique cinq arènes : `4655a28b819cd139337e82daf9ef17e8465c805f`, CI `36734143772` FAILURE attendue avant cache-bust ;
+- cache-bust bibliothèque : `e45bc039e00f`, révision `2026-09-30-v5-arena-refresh` ;
+- retrait des copies locales city/lava : `461d9baf7bc9` ;
+- CI complète : `36734489613` SUCCESS ;
+- suite : **711/711 PASS, 0 FAIL**.
+
+Audit de protection :
+- aucune modification Combat Rules ;
+- aucun profil de créature modifié ;
+- aucune compétence modifiée ;
+- aucun son modifié ;
+- aucun dépôt `Zombicide-40k` touché ;
+- diff runtime limité aux bindings arène, révision cache, tests, documentation et suppression des deux copies locales devenues inutiles.
+
+État : **GREEN technique — PREVALIDATION smartphone requise pour le rendu des nouvelles arènes.**
