@@ -21,12 +21,6 @@
   },
   "approachMode": "none",
   "projectileClash": {
-    "tag": "fire",
-    "rules": [
-      {
-        "againstTag": "fire",
-        "strength": 1
-      }
-    ]
+    "power": 1
   }
 }
