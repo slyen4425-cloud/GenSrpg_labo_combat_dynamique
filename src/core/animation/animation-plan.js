@@ -31,11 +31,19 @@ function visualFilter(filter = {}, field = "filter") {
   });
 }
 
+function transformOriginValue(value, field) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new TypeError(`${field} must be a non-empty string`);
+  }
+  return value.trim();
+}
+
 export function createAnimationPlan({
   actorId,
   eventType,
   loop = false,
   restoreBaseState = !loop,
+  transformOrigin = null,
   segments
 }) {
   if (typeof actorId !== "string" || actorId.trim() === "") {
@@ -63,10 +71,25 @@ export function createAnimationPlan({
       ? 1
       : finite(segment.opacity, `segments[${index}].opacity`);
 
+    const cues = segment.cues == null
+      ? []
+      : segment.cues;
+    if (!Array.isArray(cues)) {
+      throw new TypeError(`segments[${index}].cues must be an array`);
+    }
+
     return Object.freeze({
       label: typeof segment.label === "string" ? segment.label : `segment-${index + 1}`,
       durationMs,
       easing: segment.easing ?? "ease-in-out",
+      cues: Object.freeze(
+        cues.map((cue, cueIndex) =>
+          transformOriginValue(
+            cue,
+            `segments[${index}].cues[${cueIndex}]`
+          )
+        )
+      ),
       transform: Object.freeze({
         translateX: finite(transform.translateX ?? 0, "translateX"),
         translateY: finite(transform.translateY ?? 0, "translateY"),
@@ -82,11 +105,33 @@ export function createAnimationPlan({
     });
   });
 
+  let normalizedTransformOrigin = null;
+  if (transformOrigin !== null) {
+    if (
+      !transformOrigin ||
+      typeof transformOrigin !== "object" ||
+      Array.isArray(transformOrigin)
+    ) {
+      throw new TypeError("transformOrigin must be an object when supplied");
+    }
+    normalizedTransformOrigin = Object.freeze({
+      x: transformOriginValue(
+        transformOrigin.x ?? "50%",
+        "transformOrigin.x"
+      ),
+      y: transformOriginValue(
+        transformOrigin.y ?? "50%",
+        "transformOrigin.y"
+      )
+    });
+  }
+
   return Object.freeze({
     actorId: actorId.trim(),
     eventType: eventType.trim(),
     loop: Boolean(loop),
     restoreBaseState: Boolean(restoreBaseState),
+    transformOrigin: normalizedTransformOrigin,
     segments: Object.freeze(normalizedSegments)
   });
 }
