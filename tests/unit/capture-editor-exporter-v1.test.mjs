@@ -8,6 +8,12 @@ import {
 import {
   adaptCaptureCombatExportStackV1
 } from "../../src/adapters/input/capture/capture-export-adapter-stack-v1.js";
+import {
+  createCombatState
+} from "../../src/core/combat/combat-state.js";
+import {
+  computeCombatDamageV1
+} from "../../src/core/combat/combat-damage-v1.js";
 
 function creatureDraft(id, name, skillIds, maxHp) {
   return {
@@ -276,4 +282,60 @@ test("Capture editor exporter is independent from UI, storage, network and GenSr
       `exporter source must not contain ${forbidden}`
     );
   }
+});
+
+
+test("Capture editor export keeps natural elements authoritative through native combat", () => {
+  const input = validInput();
+  const braiseauDraft = input.creatureDrafts.find(
+    (item) => item.id === "braiseau"
+  );
+  braiseauDraft.resistances = [
+    { kind: "element:fire", value: 35 },
+    { kind: "element:water", value: -50 }
+  ];
+
+  const exported =
+    exportCaptureEditorDraftsToCombatExportV1(input);
+  const braiseau = exported.creatures.find(
+    (item) => item.id === "braiseau"
+  );
+
+  assert.deepEqual(braiseau.elements, ["fire"]);
+  assert.deepEqual(
+    braiseau.resistances,
+    [
+      { kind: "element:fire", value: 35 },
+      { kind: "element:water", value: -50 }
+    ]
+  );
+
+  const native =
+    adaptCaptureCombatExportStackV1(exported);
+  const player = native.fighters.find(
+    (fighter) => fighter.id === "player"
+  );
+
+  assert.deepEqual(
+    player.resistancePctByChannel,
+    {
+      fire: 35,
+      water: -50
+    }
+  );
+
+  const state = createCombatState({
+    fighters: native.fighters
+  });
+
+  assert.equal(
+    computeCombatDamageV1({
+      state,
+      attackerId: "opponent",
+      targetId: "player",
+      baseDamage: 100,
+      channel: "water"
+    }).damage,
+    150
+  );
 });
