@@ -31,11 +31,49 @@ function visualFilter(filter = {}, field = "filter") {
   });
 }
 
+function optionalTransformOrigin(value) {
+  if (value == null) {
+    return null;
+  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError("transformOrigin must be an object");
+  }
+  const x = String(value.x ?? "").trim();
+  const y = String(value.y ?? "").trim();
+  if (!x || !y) {
+    throw new TypeError("transformOrigin.x/y must be non-empty strings");
+  }
+  return Object.freeze({ x, y });
+}
+
+function normalizeCues(cues = []) {
+  if (!Array.isArray(cues)) {
+    throw new TypeError("cues must be an array");
+  }
+  return Object.freeze(cues.map((cue, index) => {
+    if (!cue || typeof cue !== "object" || Array.isArray(cue)) {
+      throw new TypeError(`cues[${index}] must be an object`);
+    }
+    const type = String(cue.type ?? "").trim();
+    if (!type) {
+      throw new TypeError(`cues[${index}].type must be a non-empty string`);
+    }
+    const atMs = finite(cue.atMs, `cues[${index}].atMs`);
+    const intensity = finite(cue.intensity ?? 1, `cues[${index}].intensity`);
+    if (atMs < 0 || intensity <= 0) {
+      throw new RangeError("cue timing must be non-negative and intensity positive");
+    }
+    return Object.freeze({ type, atMs, intensity });
+  }));
+}
+
 export function createAnimationPlan({
   actorId,
   eventType,
   loop = false,
   restoreBaseState = !loop,
+  transformOrigin = null,
+  cues = [],
   segments
 }) {
   if (typeof actorId !== "string" || actorId.trim() === "") {
@@ -82,11 +120,16 @@ export function createAnimationPlan({
     });
   });
 
+  const normalizedOrigin = optionalTransformOrigin(transformOrigin);
+  const normalizedCues = normalizeCues(cues);
+
   return Object.freeze({
     actorId: actorId.trim(),
     eventType: eventType.trim(),
     loop: Boolean(loop),
     restoreBaseState: Boolean(restoreBaseState),
+    ...(normalizedOrigin ? { transformOrigin: normalizedOrigin } : {}),
+    ...(normalizedCues.length ? { cues: normalizedCues } : {}),
     segments: Object.freeze(normalizedSegments)
   });
 }
