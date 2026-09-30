@@ -1816,3 +1816,22 @@ La projection :
 Le Human Editor consomme cette projection avant la construction des drafts.
 
 Les bindings visuels ne maintiennent qu'un propriétaire canonique ; les anciens IDs passent par le même resolver d'alias.
+
+## 30. Capture Database V1 — Bundle Core
+
+`CaptureDatabaseV1` est le format portable de données éditables. Il est distinct de `CaptureCombatExportV1`, qui reste un snapshot d'exécution.
+
+Le bundle ne recopie pas les règles des contrats propriétaires. Son normalizer délègue à :
+
+- CaptureStatRegistryV1 ;
+- CaptureProgressionRulesV1 ;
+- CaptureCreatureEditorDraftV3 ;
+- CaptureCreatureStatValuesV1 ;
+- CaptureActiveSkillLoadoutV1 ;
+- CaptureSkillEditorDraftV1.
+
+Le bundle contient uniquement les sources canoniques éditables et leurs relations.
+
+Les assets restent des références logiques `assetId` transportées par les Presentation Bindings. Aucun binaire visuel ou audio n'est embarqué.
+
+Le transfert JSON est pur et indépendant du DOM, du stockage navigateur, du réseau et du Runtime.
