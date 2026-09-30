@@ -68,3 +68,18 @@ test("cooldown visual overlay remains presentation-only", async () => {
     "UI must not mutate or mirror Combat State cooldown maps"
   );
 });
+
+
+test("compact skill metadata hiding never hides the cooldown icon shell", async () => {
+  const css = await readFile(cssUrl, "utf8");
+
+  assert.doesNotMatch(
+    css,
+    /\.action-option--skill\s+span\s*,\s*\.action-option--skill\s+small\s*\{[\s\S]*?display:\s*none/,
+    "generic span hiding would also hide action-option__icon-shell"
+  );
+  assert.match(
+    css,
+    /\.action-option--skill\s*>\s*span:not\(\.action-option__icon-shell\)\s*,\s*\.action-option--skill\s*>\s*small/
+  );
+});
