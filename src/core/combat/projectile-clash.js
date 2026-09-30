@@ -3,19 +3,59 @@ const EPSILON_MS = 1e-7;
 function finiteNumber(value, field) {
   const number = Number(value);
   if (!Number.isFinite(number)) {
-    throw new RangeError(`${field} must be a finite number`);
+    throw new RangeError(
+      field + " must be a finite number"
+    );
   }
   return number;
 }
 
-function isMutualCancelProjectile(action) {
+function projectileClashConfig(action) {
+  if (
+    action?.actionType !== "skill" ||
+    action.skill?.form !== "projectile"
+  ) {
+    return null;
+  }
+
+  const clash =
+    action.skill?.projectileClash;
+
+  if (
+    !clash ||
+    typeof clash.tag !== "string" ||
+    clash.tag.length === 0 ||
+    !Array.isArray(clash.rules)
+  ) {
+    return null;
+  }
+
+  return clash;
+}
+
+function strengthAgainst(
+  clash,
+  otherTag
+) {
   return (
-    action?.actionType === "skill" &&
-    action.skill?.form === "projectile" &&
-    action.skill?.projectileClash?.mode === "mutual_cancel" &&
-    typeof action.skill.projectileClash.group === "string" &&
-    action.skill.projectileClash.group.length > 0
+    clash.rules.find(
+      (rule) =>
+        rule.againstTag === otherTag
+    )?.strength ?? 0
   );
+}
+
+function clashOutcome(
+  leftStrength,
+  rightStrength
+) {
+  if (leftStrength > rightStrength) {
+    return "left_survives";
+  }
+  if (rightStrength > leftStrength) {
+    return "right_survives";
+  }
+  return "mutual_cancel";
 }
 
 export function projectileClashCandidate({
@@ -24,30 +64,47 @@ export function projectileClashCandidate({
   rightAction,
   rightStartedAtClockMs
 }) {
+  const leftClash =
+    projectileClashConfig(
+      leftAction
+    );
+  const rightClash =
+    projectileClashConfig(
+      rightAction
+    );
+
   if (
-    !isMutualCancelProjectile(leftAction) ||
-    !isMutualCancelProjectile(rightAction)
+    leftClash === null ||
+    rightClash === null
   ) {
     return null;
   }
 
-  const leftGroup = leftAction.skill.projectileClash.group;
-  const rightGroup = rightAction.skill.projectileClash.group;
-  const leftInteractsWith =
-    leftAction.skill.projectileClash.interactsWith ?? [leftGroup];
-  const rightInteractsWith =
-    rightAction.skill.projectileClash.interactsWith ?? [rightGroup];
+  const leftTag = leftClash.tag;
+  const rightTag = rightClash.tag;
+  const leftStrength =
+    strengthAgainst(
+      leftClash,
+      rightTag
+    );
+  const rightStrength =
+    strengthAgainst(
+      rightClash,
+      leftTag
+    );
 
   if (
-    !leftInteractsWith.includes(rightGroup) ||
-    !rightInteractsWith.includes(leftGroup)
+    leftStrength <= 0 &&
+    rightStrength <= 0
   ) {
     return null;
   }
 
   if (
-    leftAction.actorId !== rightAction.targetId ||
-    rightAction.actorId !== leftAction.targetId
+    leftAction.actorId !==
+      rightAction.targetId ||
+    rightAction.actorId !==
+      leftAction.targetId
   ) {
     return null;
   }
@@ -61,7 +118,10 @@ export function projectileClashCandidate({
     "rightAction.travelMs"
   );
 
-  if (leftTravelMs <= 0 || rightTravelMs <= 0) {
+  if (
+    leftTravelMs <= 0 ||
+    rightTravelMs <= 0
+  ) {
     return null;
   }
 
@@ -75,16 +135,26 @@ export function projectileClashCandidate({
   );
 
   const leftRelease =
-    leftStart + finiteNumber(leftAction.releaseAtMs, "leftAction.releaseAtMs");
+    leftStart +
+    finiteNumber(
+      leftAction.releaseAtMs,
+      "leftAction.releaseAtMs"
+    );
   const rightRelease =
-    rightStart + finiteNumber(
+    rightStart +
+    finiteNumber(
       rightAction.releaseAtMs,
       "rightAction.releaseAtMs"
     );
   const leftImpact =
-    leftStart + finiteNumber(leftAction.impactAtMs, "leftAction.impactAtMs");
+    leftStart +
+    finiteNumber(
+      leftAction.impactAtMs,
+      "leftAction.impactAtMs"
+    );
   const rightImpact =
-    rightStart + finiteNumber(
+    rightStart +
+    finiteNumber(
       rightAction.impactAtMs,
       "rightAction.impactAtMs"
     );
@@ -95,59 +165,144 @@ export function projectileClashCandidate({
       leftTravelMs * rightRelease +
       leftTravelMs * rightTravelMs
     ) /
-    (leftTravelMs + rightTravelMs);
+    (
+      leftTravelMs +
+      rightTravelMs
+    );
 
-  const sharedTravelStart = Math.max(leftRelease, rightRelease);
-  const sharedTravelEnd = Math.min(leftImpact, rightImpact);
+  const sharedTravelStart =
+    Math.max(
+      leftRelease,
+      rightRelease
+    );
+  const sharedTravelEnd =
+    Math.min(
+      leftImpact,
+      rightImpact
+    );
 
   if (
-    atClockMs < sharedTravelStart - EPSILON_MS ||
-    atClockMs > sharedTravelEnd + EPSILON_MS
+    atClockMs <
+      sharedTravelStart -
+        EPSILON_MS ||
+    atClockMs >
+      sharedTravelEnd +
+        EPSILON_MS
   ) {
     return null;
   }
 
-  const leftProgress = Math.min(
-    1,
-    Math.max(0, (atClockMs - leftRelease) / leftTravelMs)
-  );
-  const rightProgress = Math.min(
-    1,
-    Math.max(0, (atClockMs - rightRelease) / rightTravelMs)
-  );
+  const leftProgress =
+    Math.min(
+      1,
+      Math.max(
+        0,
+        (
+          atClockMs -
+          leftRelease
+        ) /
+          leftTravelMs
+      )
+    );
+  const rightProgress =
+    Math.min(
+      1,
+      Math.max(
+        0,
+        (
+          atClockMs -
+          rightRelease
+        ) /
+          rightTravelMs
+      )
+    );
 
-  if (Math.abs(leftProgress + rightProgress - 1) > 1e-6) {
+  if (
+    Math.abs(
+      leftProgress +
+        rightProgress -
+        1
+    ) >
+    1e-6
+  ) {
     return null;
   }
 
-  const interactionKey = [leftGroup, rightGroup]
-    .sort()
-    .join("::");
+  const interactionKey =
+    [leftTag, rightTag]
+      .sort()
+      .join("::");
 
   return Object.freeze({
     atClockMs,
-    group: leftGroup === rightGroup ? leftGroup : interactionKey,
-    leftGroup,
-    rightGroup,
+    leftTag,
+    rightTag,
+    leftStrength,
+    rightStrength,
+    outcome:
+      clashOutcome(
+        leftStrength,
+        rightStrength
+      ),
     interactionKey,
     leftProgress,
     rightProgress
   });
 }
 
-function clashResolution({
+function cancelledResolution({
   state,
   action,
   otherAction,
   startedAtClockMs,
-  atClockMs,
-  progress,
-  group,
-  ownGroup,
-  otherGroup,
-  interactionKey
+  candidate,
+  side
 }) {
-  const atMs = Math.max(0, atClockMs - startedAtClockMs);
+  const isLeft =
+    side === "left";
+  const ownTag =
+    isLeft
+      ? candidate.leftTag
+      : candidate.rightTag;
+  const otherTag =
+    isLeft
+      ? candidate.rightTag
+      : candidate.leftTag;
+  const ownStrength =
+    isLeft
+      ? candidate.leftStrength
+      : candidate.rightStrength;
+  const otherStrength =
+    isLeft
+      ? candidate.rightStrength
+      : candidate.leftStrength;
+  const progress =
+    isLeft
+      ? candidate.leftProgress
+      : candidate.rightProgress;
+  const atMs =
+    Math.max(
+      0,
+      candidate.atClockMs -
+        startedAtClockMs
+    );
+
+  const survivorActorId =
+    candidate.outcome ===
+    "left_survives"
+      ? (
+          isLeft
+            ? action.actorId
+            : otherAction.actorId
+        )
+      : candidate.outcome ===
+        "right_survives"
+        ? (
+            isLeft
+              ? otherAction.actorId
+              : action.actorId
+          )
+        : null;
 
   return Object.freeze({
     ok: true,
@@ -158,36 +313,59 @@ function clashResolution({
     outcome: "clashed",
     state,
     clash: Object.freeze({
-      group,
-      ownGroup,
-      otherGroup,
-      interactionKey,
-      otherActorId: otherAction.actorId,
-      otherSkillId: otherAction.actionId,
+      ownTag,
+      otherTag,
+      ownStrength,
+      otherStrength,
+      interactionKey:
+        candidate.interactionKey,
+      clashOutcome:
+        candidate.outcome,
+      survivorActorId,
+      otherActorId:
+        otherAction.actorId,
+      otherSkillId:
+        otherAction.actionId,
       progress
     }),
     events: Object.freeze([
       Object.freeze({
-        type: "projectile-clash",
+        type:
+          "projectile-clash",
         atMs,
-        actorId: action.actorId,
-        targetId: action.targetId,
-        skillId: action.actionId,
-        otherActorId: otherAction.actorId,
-        otherSkillId: otherAction.actionId,
-        group,
-        ownGroup,
-        otherGroup,
-        interactionKey,
+        actorId:
+          action.actorId,
+        targetId:
+          action.targetId,
+        skillId:
+          action.actionId,
+        otherActorId:
+          otherAction.actorId,
+        otherSkillId:
+          otherAction.actionId,
+        ownTag,
+        otherTag,
+        ownStrength,
+        otherStrength,
+        interactionKey:
+          candidate.interactionKey,
+        clashOutcome:
+          candidate.outcome,
+        survivorActorId,
         progress
       }),
       Object.freeze({
-        type: "skill-cancelled",
+        type:
+          "skill-cancelled",
         atMs,
-        actorId: action.actorId,
-        targetId: action.targetId,
-        skillId: action.actionId,
-        reason: "projectile_clash"
+        actorId:
+          action.actorId,
+        targetId:
+          action.targetId,
+        skillId:
+          action.actionId,
+        reason:
+          "projectile_clash"
       })
     ])
   });
@@ -205,30 +383,42 @@ export function resolveProjectileClash({
     return null;
   }
 
+  const cancelLeft =
+    candidate.outcome !==
+    "left_survives";
+  const cancelRight =
+    candidate.outcome !==
+    "right_survives";
+
   return Object.freeze({
-    left: clashResolution({
-      state,
-      action: leftAction,
-      otherAction: rightAction,
-      startedAtClockMs: leftStartedAtClockMs,
-      atClockMs: candidate.atClockMs,
-      progress: candidate.leftProgress,
-      group: candidate.group,
-      ownGroup: candidate.leftGroup,
-      otherGroup: candidate.rightGroup,
-      interactionKey: candidate.interactionKey
-    }),
-    right: clashResolution({
-      state,
-      action: rightAction,
-      otherAction: leftAction,
-      startedAtClockMs: rightStartedAtClockMs,
-      atClockMs: candidate.atClockMs,
-      progress: candidate.rightProgress,
-      group: candidate.group,
-      ownGroup: candidate.rightGroup,
-      otherGroup: candidate.leftGroup,
-      interactionKey: candidate.interactionKey
-    })
+    outcome: candidate.outcome,
+    left:
+      cancelLeft
+        ? cancelledResolution({
+            state,
+            action:
+              leftAction,
+            otherAction:
+              rightAction,
+            startedAtClockMs:
+              leftStartedAtClockMs,
+            candidate,
+            side: "left"
+          })
+        : null,
+    right:
+      cancelRight
+        ? cancelledResolution({
+            state,
+            action:
+              rightAction,
+            otherAction:
+              leftAction,
+            startedAtClockMs:
+              rightStartedAtClockMs,
+            candidate,
+            side: "right"
+          })
+        : null
   });
 }
