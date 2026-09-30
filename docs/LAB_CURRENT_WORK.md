@@ -16478,3 +16478,38 @@ Conséquence : Défense apparaîtrait comme une stat sans effet compréhensible 
 - CI complète GREEN ;
 - checkpoint PREVALIDATION + preview ;
 - test smartphone groupé ensuite avec Tactical Effects UI.
+
+### Résultat — Capture Defense Stat Editor UI V1
+
+RED :
+
+- commit RED : `e3d2411f1ba2cc2ee2133e131dee046a52fda539` ;
+- 3 sentinelles dédiées ajoutées ;
+- cause : `damageReductionPctPerPoint` existait déjà dans le contrat/Runtime mais n'était pas exposé par le Human Editor.
+
+Correction minimale :
+
+- `humanStatEffectSummaryV1()` explique désormais la réduction globale des dégâts reçus ;
+- le registre système expose `damageReductionPctPerPoint` ;
+- le builder de stat personnalisée expose le même coefficient ;
+- lecture/écriture restent déléguées à `CaptureStatRegistryV1` ;
+- aucune formule métier n'a été ajoutée à l'UI ;
+- le bloc de définition des stats passe en une colonne sous 760 px.
+
+Validation technique :
+
+- PR technique #4, aucun merge prévu ;
+- run `36663950342` ;
+- structure / frontières / indépendance : OK ;
+- **643 tests / 643 PASS / 0 FAIL**.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise**.
+
+Important pour la suite :
+
+- ce lot est issu de la ligne `Capture Complex Native Skills V1` ;
+- le correctif `Tactical Effects UI Feedback Repair V1` existe sur une branche PREVALIDATION divergente ;
+- aucun nouveau travail UI/Projectile ne doit repartir d'une seule de ces lignes en ignorant l'autre ;
+- le prochain lot doit d'abord établir une base de réconciliation explicite, testée, sans écraser les 103 capacités natives ni réintroduire les contrôles legacy supprimés.
