@@ -18658,3 +18658,43 @@ Invariants :
 - aucun changement gameplay ;
 - bipède, quadrupède, massif et volant conservent leur idle actuel sauf données explicitement modifiées dans ce lot ;
 - le mode alterné reste propriété Animation Core, son activation reste propriété Creature Profile.
+
+
+### Résultat — Serpentine + Flight Profile Refinement V1
+
+RED :
+- commit `a9b2d64af6ddc8349afebe78442f2890e067557e` ;
+- CI `36702183697` ;
+- **709 tests, 708 PASS, 1 FAIL ciblé**.
+
+Diagnostic / recadrage :
+- le planner idle V1 ne savait produire que `écart -> centre` ;
+- ajout d'un mode générique `idle.swayMode:"alternate"`, sans branche sur un ID de créature ;
+- comportement historique conservé lorsque `swayMode` est absent.
+
+Rampant / serpent :
+- déplacement linéaire au sol inchangé ;
+- idle sans bob vertical et sans translation X ;
+- pivot abaissé à 94 % ;
+- oscillation légère du haut du corps via rotation alternée droite/gauche.
+
+Volant / drake :
+- idle vertical renforcé ;
+- locomotion en **un seul arc complet** : montée unique puis descente ;
+- apex à 24 px ;
+- durée locomotion 620 ms ;
+- aucune cue de contact au sol ;
+- ombre décalée vers le bas par donnée de profil `presentation.shadowBottomPct`, projetée en CSS sans règle sur l'ID du profil.
+
+Sentinel historique :
+- l'ancien test qui figeait `bobY=8` a été réconcilié avec la donnée propriétaire du profil ;
+- aucune autre attente stable n'a été modifiée.
+
+GREEN :
+- commit code/tests : `69240ba884726b7bd6a9ba92f4f3632f56910e17` ;
+- CI `36702455009` ;
+- structure / frontières / indépendance : OK ;
+- **709/709 PASS / 0 FAIL**.
+
+État :
+**GREEN technique — PREVALIDATION smartphone requise.**
