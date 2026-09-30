@@ -19030,6 +19030,7 @@ Propriétaires :
 
 Fichiers autorisés :
 - `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/demo.css` (présentation du badge cooldown uniquement) ;
 - `src/ui/combat-2v2-test-ui.js` ;
 - tests UI ciblés ;
 - documentation.
