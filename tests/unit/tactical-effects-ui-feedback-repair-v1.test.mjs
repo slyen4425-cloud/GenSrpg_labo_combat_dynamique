@@ -162,3 +162,45 @@ test("Human Editor source no longer reads removed legacy gameplay controls", asy
     );
   }
 });
+
+test("portable historical templates project into the same tactical effect authority", async () => {
+  const {
+    capturePortableLegacyTacticalEffectsV1
+  } = await import(
+    "../../src/ui/capture-editor-skill-catalog-v1.js"
+  );
+
+  assert.deepEqual(
+    capturePortableLegacyTacticalEffectsV1(
+      "lib_quake"
+    ),
+    [
+      {
+        kind: "damage",
+        targetScope: "all_enemies",
+        amount: 4,
+        channel: "earth"
+      }
+    ]
+  );
+
+  assert.deepEqual(
+    capturePortableLegacyTacticalEffectsV1(
+      "lib_lifesteal_strike"
+    ),
+    [
+      {
+        kind: "damage",
+        targetScope: "target",
+        amount: 4,
+        channel: "shadow"
+      },
+      {
+        kind: "heal",
+        targetScope: "self",
+        amount: 2
+      }
+    ]
+  );
+});
+
