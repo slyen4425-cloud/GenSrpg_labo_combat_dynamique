@@ -192,7 +192,10 @@ export function planAnimation({ event, actor, profile }) {
             easing: "ease-in-out",
             transform: {
               translateX: directed(scaled(cfg.swayX, intensity), sign),
-              translateY: -scaled(cfg.bobY, intensity),
+              translateY:
+                Number(cfg.bobY) === 0
+                  ? 0
+                  : -scaled(cfg.bobY, intensity),
               rotateDeg: directed(scaled(cfg.swayRotate, intensity), sign),
               scaleX: 1 + scaled(cfg.scaleXDelta ?? 0, intensity),
               scaleY: 1 + scaled(cfg.scaleYDelta ?? 0, intensity)
