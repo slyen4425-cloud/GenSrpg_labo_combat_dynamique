@@ -33,7 +33,11 @@ function hasOwn(object, key) {
   );
 }
 
-function normalizePercentByChannel(input, field) {
+function normalizePercentByChannel(
+  input,
+  field,
+  { allowSigned = false } = {}
+) {
   if (
     !input ||
     typeof input !== "object" ||
@@ -52,7 +56,11 @@ function normalizePercentByChannel(input, field) {
         field + " key must be non-empty"
       );
     }
-    output[channel] = finiteNonNegative(
+    output[channel] = (
+      allowSigned
+        ? finiteNumber
+        : finiteNonNegative
+    )(
       value,
       field + "." + channel
     );
@@ -246,7 +254,8 @@ function normalizeFighter(input) {
     output.resistancePctByChannel =
       normalizePercentByChannel(
         input.resistancePctByChannel,
-        `${id}.resistancePctByChannel`
+        `${id}.resistancePctByChannel`,
+        { allowSigned: true }
       );
   }
 
