@@ -19479,3 +19479,27 @@ Protections :
 - aucune modification dégâts, ciblage, mouvement, cooldown, FX ou audio.
 
 État : **GREEN technique — PREVALIDATION smartphone requise** pour vérifier que le choix de l'arène dans l'onglet Combat change bien uniquement le décor de la preview.
+
+
+## Micro-lot — Capture Health Stat V1 — 2026-09-30
+
+Base : `fd99f76a9bddc91a58c6830eec35a53305f1fb1d` (Capture Test Arena Selector V1 — GREEN technique/PREVALIDATION).
+
+- checkpoint de départ : `checkpoint/lab-start-capture-health-stat-v1-2026-09-30` ;
+- branche : `work/lab-capture-health-stat-v1-2026-09-30`.
+
+Retour utilisateur : les champs historiques `PV max` / `PV au départ` dans l'éditeur sont des réglages de test et doivent disparaître. Les PV doivent devenir une vraie stat `Santé / PV`, au même niveau que les autres stats, afin de pouvoir plus tard être augmentés via les points gagnés par niveau.
+
+Décision d'architecture :
+- le registre de stats devient propriétaire de la règle `PV par point` via `maxHpPerPoint` ;
+- les valeurs de stat de la créature deviennent l'unique autorité utilisateur pour la Santé ;
+- `combat.maxHp` reste uniquement une projection technique dérivée nécessaire au runtime/export ;
+- `initialHp` n'est plus éditable et ne doit pas constituer une seconde autorité ;
+- l'import Monster Capture doit mapper le `hp` historique vers la stat Santé ;
+- aucune formule cachée basée sur Endurance, nom de créature ou niveau.
+
+Périmètre autorisé : registre de stats, projection des stats, import des valeurs historiques, export dérivé, UI de stats, tests, documentation.
+
+Interdits : masquer simplement les champs sans supprimer leur lecture/écriture, conserver une valeur PV parallèle dans l'UI, déduire les PV d'Endurance par rustine, modifier le moteur de dégâts ou les règles de KO.
+
+RED obligatoire : prouver que le registre n'a pas encore de Santé/PV, que le moteur de projection ne produit pas de maxHp et que l'éditeur expose encore `PV max / PV au départ`.
