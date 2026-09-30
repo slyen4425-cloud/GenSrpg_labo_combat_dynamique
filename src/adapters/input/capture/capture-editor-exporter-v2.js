@@ -113,6 +113,7 @@ function battleTopology(setup) {
     battle: {
       id: setup.id,
       localActorId: setup.localActorId,
+      arenaId: setup.arenaId,
       skillSpeedMultiplier:
         setup.skillSpeedMultiplier
     },
