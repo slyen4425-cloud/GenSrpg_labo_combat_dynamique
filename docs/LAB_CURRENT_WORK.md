@@ -18997,3 +18997,10 @@ Audit de protection :
 - preview : `preview/lab-arena-refresh-v1-2026-09-30` ;
 - les cinq images canoniques sont publiées sur `global-assets` ;
 - validation visuelle smartphone encore requise avant GREEN utilisateur.
+
+
+### Validation utilisateur — Arena Refresh V1
+
+Validation smartphone reçue le 2026-09-30 : **OK utilisateur** sur les cinq nouvelles arènes (city, cave, snow, forest, lava).
+
+Le lot Arena Refresh V1 est désormais **GREEN utilisateur**. Aucun ajustement visuel supplémentaire n'est demandé sur ce lot.
