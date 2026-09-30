@@ -18488,3 +18488,55 @@ Le profil massif/golem n'est pas inclus dans cette validation et fera l'objet d'
 
 État du lot bipède/quadrupède :
 **GREEN utilisateur.**
+
+
+## Micro-lot — Massive Four-Step Gait V1 — 2026-09-30
+
+Base :
+- SHA : `86b84b7021e5a775816b24131708cec8dbb80e4b` ;
+- checkpoint : `checkpoint/lab-start-massive-four-step-gait-v1-2026-09-30` ;
+- branche : `work/lab-massive-four-step-gait-v1-2026-09-30`.
+
+### Retour smartphone utilisateur
+
+Bipède et quadrupède validés. Pour le profil massif/golem :
+- 4 pas complets avant l'arrivée à la cible ;
+- chaque pas doit couvrir une distance horizontale comparable ;
+- chaque pas doit former un arc montée/descente plus prononcé que le quadrupède ;
+- chaque retombée doit produire une secousse caméra distincte ;
+- aucune secousse continue.
+
+### Propriétaires
+
+- Creature Profile : nombre de pas, amplitude verticale, rythme et contacts ;
+- Animation Core : projection des phases sur le trajet existant, inchangé ;
+- FX Core : transforme chaque cue `footfall` en secousse caméra, inchangé.
+
+### Fichiers autorisés
+
+- `data/profiles/massive.profile.json` ;
+- tests ciblés locomotion/FX existants ;
+- documentation.
+
+### Protégé
+
+- profils bipède/quadrupède validés ;
+- Combat Runtime / Combat State ;
+- disponibilité compétences / cooldowns / énergie ;
+- dégâts / portée / ciblage ;
+- Animation Core ;
+- FX Core / renderer ;
+- assets / arènes ;
+- `Zombicide-40k`.
+
+### RED attendu
+
+- massif : 4 arcs complets ;
+- 4 atterrissages à 25 %, 50 %, 75 %, 100 % de la distance ;
+- 4 cues `footfall`, un par atterrissage ;
+- amplitude verticale strictement supérieure au quadrupède ;
+- somme approche = `travelMs` et impact final exactement sur la cible.
+
+### Critère de fin
+
+RED ciblé -> réglage du profil massif uniquement -> CI complète -> preview smartphone.
