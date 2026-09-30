@@ -113,7 +113,6 @@ function battleTopology(setup) {
     battle: {
       id: setup.id,
       localActorId: setup.localActorId,
-      arenaId: setup.arenaId,
       skillSpeedMultiplier:
         setup.skillSpeedMultiplier
     },
@@ -271,6 +270,7 @@ export function exportCaptureEditorDraftsToCombatExportV2(input) {
     creatures: enrichedCreatures,
     presentation: {
       ...exportedV1.presentation,
+      arenaId: battleSetup.arenaId,
       creatures: Object.fromEntries(
         creaturePresentations.map((binding) => [
           binding.id,
