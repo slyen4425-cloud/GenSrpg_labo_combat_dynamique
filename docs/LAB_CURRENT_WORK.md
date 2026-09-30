@@ -18817,3 +18817,31 @@ Validation smartphone demandée :
 - work / checkpoint / preview étaient identiques sur le HEAD fonctionnel avant cette clôture documentaire.
 
 La clôture documentaire ne modifie aucun fichier fonctionnel. Après ce commit, le checkpoint PREVALIDATION et la preview doivent être avancés en fast-forward sur le nouveau HEAD documentaire, puis leur identité et la CI preview doivent être revérifiées.
+
+
+## Micro-lot — Flying Contact Arc Fluidity V1 — 2026-09-30
+
+Origine : validation smartphone refusée du lot `Flying Single-Arc Reconciliation V1`.
+
+Base exacte :
+- checkpoint : `checkpoint/lab-flying-single-arc-reconciliation-v1-prevalidation-green-2026-09-30` ;
+- SHA : `6ec3141c9bc3a2eb021eed8f767c601223ba8f3b` ;
+- checkpoint de départ : `checkpoint/lab-start-flying-contact-arc-fluidity-v1-2026-09-30` ;
+- branche : `work/lab-flying-contact-arc-fluidity-v1-2026-09-30`.
+
+Retour utilisateur reproduit conceptuellement : avec un acteur profil `flying` utilisant la capacité `Griffe` (`approachMode:"ground"`), le déplacement comporte plusieurs ralentissements/arrêts visuels. Le même skill avec `serpentine` reste fluide.
+
+Cause ciblée : `ground-attack` consomme la locomotion du profil. `serpentine.locomotion` utilise des segments `linear`, tandis que `flying.locomotion` utilise plusieurs segments `ease-in-out`, ce qui impose une décélération/réaccélération à chaque frontière de phase.
+
+Décision d'architecture :
+- aucune capacité individuelle ne sera modifiée ;
+- `Griffe` conserve `approachMode:"ground"` ;
+- Creature Profile reste propriétaire de la morphologie de déplacement ;
+- Animation Core reste générique ;
+- corriger le comportement une seule fois dans `flying.locomotion` ;
+- conserver une seule arche monotone départ -> apex -> cible, sans freinage intermédiaire ;
+- ne pas modifier serpentine, biped, quadruped, massive, gameplay, dégâts, énergie, cooldowns ou ciblage.
+
+RED obligatoire : protéger le vrai plan `ground-attack` du profil `flying` et démontrer que toutes les portions d'approche sont temporellement continues, sans easing de décélération aux frontières, avec progression X monotone, un seul apex et impact exact à `travelMs`.
+
+Critère de fin : RED -> correction data-driven minimale -> CI complète -> checkpoint PREVALIDATION -> preview smartphone -> validation utilisateur.
