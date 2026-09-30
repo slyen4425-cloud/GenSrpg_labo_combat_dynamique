@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 import {
-  CAPTURE_SHOWCASE_CREATURE_PRESETS_V1
+  CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {
   importCaptureTransferJsonV1
@@ -24,9 +24,9 @@ const registry = normalizeCaptureStatRegistryV1(
   )
 );
 
-async function importedPreset(entry) {
+async function importedPreset(file) {
   const jsonText = await readFile(
-    new URL("../../" + entry.file, import.meta.url),
+    new URL("../../" + file, import.meta.url),
     "utf8"
   );
   return importCaptureTransferJsonV1(
@@ -35,29 +35,20 @@ async function importedPreset(entry) {
   );
 }
 
-test("showcase preset catalog owns exactly Moussados and Loup volcanique transfer files", () => {
+test("showcase preset catalog discovers exactly two transfer files without duplicating creature ids", () => {
   assert.deepEqual(
-    CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.map(
-      (entry) => entry.id
-    ),
-    ["crea_mossback", "crea-loup"]
-  );
-
-  assert.equal(
-    new Set(
-      CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.map(
-        (entry) => entry.id
-      )
-    ).size,
-    2
+    CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1,
+    [
+      "data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json",
+      "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json"
+    ]
   );
 });
 
 test("Moussados showcase preset preserves the editor-authored model", async () => {
-  const entry = CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.find(
-    (item) => item.id === "crea_mossback"
+  const imported = await importedPreset(
+    CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1[0]
   );
-  const imported = await importedPreset(entry);
   const record = imported.value;
 
   assert.equal(imported.kind, "creature");
@@ -90,10 +81,9 @@ test("Moussados showcase preset preserves the editor-authored model", async () =
 });
 
 test("Loup volcanique showcase preset preserves health natural matchup visuals and planned loadout", async () => {
-  const entry = CAPTURE_SHOWCASE_CREATURE_PRESETS_V1.find(
-    (item) => item.id === "crea-loup"
+  const imported = await importedPreset(
+    CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1[1]
   );
-  const imported = await importedPreset(entry);
   const record = imported.value;
 
   assert.equal(imported.kind, "creature");
@@ -136,7 +126,7 @@ test("Human Editor hydrates showcase presets through the existing Transfer plann
 
   assert.match(
     source,
-    /CAPTURE_SHOWCASE_CREATURE_PRESETS_V1/
+    /CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1/
   );
   assert.match(
     source,
