@@ -18892,3 +18892,38 @@ La validation utilisateur reste requise sur smartphone pour confirmer qu'un prof
 Validation smartphone reçue le 2026-09-30 : **OK utilisateur** sur le test `flying -> Loup -> Griffe`.
 
 Le mouvement volant de contact est désormais considéré validé : un seul déplacement continu vers la cible, sans ralentissements/arrêts intermédiaires perceptibles.
+
+
+## Micro-lot — Arena Refresh V1 — 2026-09-30
+
+Base fonctionnelle validée :
+- SHA : `5e2f56b99b76acf10fd47e4c884bb7e9966bfbb4` ;
+- checkpoint utilisateur GREEN : `checkpoint/lab-flying-contact-arc-fluidity-v1-user-green-2026-09-30` ;
+- checkpoint de départ : `checkpoint/lab-start-arena-refresh-v1-2026-09-30` ;
+- branche de travail : `work/lab-arena-refresh-v1-2026-09-30`.
+
+Objectif : remplacer proprement les cinq fonds d'arène canoniques par les nouvelles images fournies par l'utilisateur, mapping validé :
+- `city` -> cité fantasy ;
+- `cave` -> grotte cristalline ;
+- `snow` -> plaine enneigée / lac gelé ;
+- `forest` -> forêt / cascade ;
+- `lava` -> volcan / lave.
+
+Autorité asset réelle : branche `global-assets`, chemins canoniques sous `assets/library/core/arenas/<biome>/`. Les IDs stables du catalogue sont conservés : `core:arena-forest-01`, `core:arena-cave-01`, `core:arena-snow-01`, `core:arena-city-01`, `core:arena-lava-01`.
+
+Décision : remplacement 1 pour 1 des binaires aux chemins existants ; aucun nouvel ID d'arène ; aucun gameplay dérivé des images. Les anciens fallbacks locaux de test `city/lava` doivent être retirés des bindings de preview afin que la bibliothèque Core redevienne l'unique autorité runtime pour ces arènes.
+
+Branches assets prévues depuis `global-assets` HEAD `570b37edb26156a3e84256ef1be18eb07d697eca` :
+- checkpoint : `checkpoint/lab-start-arena-refresh-assets-v1-2026-09-30` ;
+- work : `work/lab-arena-refresh-assets-v1-2026-09-30`.
+
+Fichiers autorisés :
+- cinq binaires d'arène canoniques dans `assets/library/core/arenas/` sur la branche asset ;
+- `src/assets/global-visual-library.js` pour révision cache ;
+- `examples/dom-demo/demo-assets.js` pour bindings Core ;
+- tests ciblés assets/arènes ;
+- documentation du lot.
+
+Protégé : combat, règles, profils morphologiques, mouvements, compétences, sons, créatures, arènes hors de ces cinq fichiers, dépôt `Zombicide-40k`.
+
+Tests prévus : chemins/IDs catalogue inchangés, cinq bindings Core résolvables, absence des fallbacks locaux city/lava dans la preview, CI complète, preview smartphone.
