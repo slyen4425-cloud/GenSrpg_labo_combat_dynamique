@@ -6454,6 +6454,263 @@ export function mountCaptureEditorHumanV2({
 
   listen(validateButton, "click", validate);
 
+  listen(
+    exportCurrentCreatureButton,
+    "click",
+    () => {
+      try {
+        ensureTransferOwnersReadyV1();
+        const record =
+          currentCreatureRecord();
+        const json =
+          exportCaptureCreatureTransferJsonV1(
+            record,
+            {
+              statRegistry
+            }
+          );
+        const filename =
+          "gensrpg-capture-creature-" +
+          safeTransferFilenamePartV1(
+            record.draft.id
+          ) +
+          ".json";
+
+        downloadCaptureJsonFileV1(
+          filename,
+          json
+        );
+        updateTransferState(
+          "Créature « " +
+            record.draft.displayName +
+            " » exportée.",
+          "ok"
+        );
+        setStatus(
+          root,
+          "Export créature prêt : " +
+            filename,
+          "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    exportCurrentSkillButton,
+    "click",
+    () => {
+      try {
+        const draft =
+          buildHumanSkillDraftV1(
+            readSkillFields(root)
+          );
+        const json =
+          exportCaptureSkillTransferJsonV1(
+            draft
+          );
+        const filename =
+          "gensrpg-capture-skill-" +
+          safeTransferFilenamePartV1(
+            draft.id
+          ) +
+          ".json";
+
+        downloadCaptureJsonFileV1(
+          filename,
+          json
+        );
+        updateTransferState(
+          "Capacité « " +
+            draft.definition.name +
+            " » exportée.",
+          "ok"
+        );
+        setStatus(
+          root,
+          "Export capacité prêt : " +
+            filename,
+          "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    exportDatabaseButton,
+    "click",
+    () => {
+      try {
+        if (
+          creatureDirty ||
+          skillDirty
+        ) {
+          throw new Error(
+            "Enregistre les modifications de la créature et de la capacité avant d’exporter toute la base."
+          );
+        }
+
+        const database =
+          currentEditorDatabaseV1();
+        const json =
+          exportCaptureDatabaseJsonV1(
+            database
+          );
+        const filename =
+          "gensrpg-capture-database-v1.json";
+
+        downloadCaptureJsonFileV1(
+          filename,
+          json
+        );
+        updateTransferState(
+          database.creatures.length +
+            " créatures et " +
+            database.skills.length +
+            " capacités exportées dans la base complète.",
+          "ok"
+        );
+        setStatus(
+          root,
+          "Base Capture complète exportée.",
+          "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    importCaptureJsonInput,
+    "change",
+    async () => {
+      const file =
+        importCaptureJsonInput.files?.[0] ??
+        null;
+
+      if (file === null) {
+        return;
+      }
+
+      try {
+        if (
+          creatureDirty ||
+          skillDirty
+        ) {
+          throw new Error(
+            "Enregistre ou annule les modifications en cours avant d’importer un fichier."
+          );
+        }
+
+        ensureTransferOwnersReadyV1();
+
+        const jsonText =
+          await file.text();
+        const transfer =
+          importCaptureTransferJsonV1(
+            jsonText,
+            {
+              statRegistry
+            }
+          );
+        const currentDatabase =
+          currentEditorDatabaseV1();
+        const mode =
+          importReplaceExisting.checked
+            ? "replace"
+            : "reject";
+        const plan =
+          planCaptureTransferImportV1({
+            currentDatabase,
+            transfer,
+            mode
+          });
+        const applyResult =
+          applyCaptureTransferPlanToEditorStateV1({
+            plan,
+            configuredCreatures,
+            configuredSkills,
+            statRegistry,
+            progressionRules
+          });
+
+        statRegistry =
+          applyResult.statRegistry;
+        progressionRules =
+          applyResult.progressionRules;
+
+        refreshEditorAfterTransferV1({
+          plan,
+          applyResult
+        });
+
+        const label =
+          plan.action === "noop"
+            ? "Le fichier est déjà identique à la bibliothèque active."
+            : plan.kind === "database"
+              ? "Base Capture importée et appliquée."
+              : plan.kind === "creature"
+                ? "Créature « " +
+                  plan.id +
+                  " » importée."
+                : "Capacité « " +
+                  plan.id +
+                  " » importée.";
+
+        updateTransferState(
+          label,
+          "ok"
+        );
+        setStatus(
+          root,
+          label,
+          "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      } finally {
+        importCaptureJsonInput.value = "";
+      }
+    }
+  );
+
   Promise.all([
     hydrateAssetCatalog(root, listen),
     hydratePrivateAudioCatalog(root),
