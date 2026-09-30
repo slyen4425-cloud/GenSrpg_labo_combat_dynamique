@@ -948,3 +948,66 @@ test("massive gait v1 uses four equal heavy arcs with one footfall per landing",
   assert.equal(approach.at(-1).transform.translateX, targetX);
   assert.equal(approach.at(-1).transform.translateY, 0);
 });
+
+
+test("flying ground approach stays continuous through the whole contact arc", () => {
+  const travelMs = 1500;
+  const targetX = 260;
+  const targetY = -12;
+  const current = actor("flying");
+  const plan = planAnimation({
+    event: normalizeCombatVisualEvent({
+      type: "ground-attack",
+      actorId: current.id,
+      targetId: "opponent-actor",
+      metadata: {
+        targetTranslateX: targetX,
+        targetTranslateY: targetY,
+        arenaHeight: 800,
+        travelMs
+      }
+    }),
+    actor: current,
+    profile: registry.get("flying")
+  });
+
+  const approach = plan.segments.filter(
+    (segment) => segment.label !== "ground-home"
+  );
+
+  assert.ok(approach.length >= 2);
+  assert.ok(
+    approach.every((segment) => segment.easing === "linear"),
+    "flying contact approach must not decelerate/reaccelerate at intermediate phase boundaries"
+  );
+
+  const xs = approach.map((segment) => segment.transform.translateX);
+  for (let index = 1; index < xs.length; index += 1) {
+    assert.ok(
+      xs[index] > xs[index - 1],
+      "flying contact approach must progress continuously toward the target"
+    );
+  }
+
+  const relativeLift = approach.map((segment, index) => {
+    const elapsedMs = approach
+      .slice(0, index + 1)
+      .reduce((sum, item) => sum + item.durationMs, 0);
+    const progress = elapsedMs / travelMs;
+    const linearY = targetY * progress;
+    return linearY - segment.transform.translateY;
+  });
+  const maxLift = Math.max(...relativeLift);
+  assert.equal(
+    relativeLift.filter((lift) => Math.abs(lift - maxLift) < 1e-9).length,
+    1,
+    "flying contact approach must expose one unique apex"
+  );
+
+  assert.equal(
+    approach.reduce((sum, segment) => sum + segment.durationMs, 0),
+    travelMs
+  );
+  assert.equal(approach.at(-1).transform.translateX, targetX);
+  assert.equal(approach.at(-1).transform.translateY, targetY);
+});
