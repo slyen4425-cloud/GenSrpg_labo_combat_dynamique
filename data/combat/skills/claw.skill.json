@@ -16,5 +16,6 @@
   "effect": {
     "damage": 18
   },
-  "approachMode": "ground"
+  "approachMode": "ground",
+  "cooldownMs": 2800
 }
