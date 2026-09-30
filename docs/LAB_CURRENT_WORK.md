@@ -19044,3 +19044,37 @@ GREEN fonctionnel :
 - CI `36740838430` — SUCCESS.
 
 État : **GREEN technique — PREVALIDATION smartphone**. Le test combat doit s'ouvrir sur 1 contre 1, avec 2 contre 2 toujours sélectionnable.
+
+
+## Micro-lot — Cooldown Completion V1 — 2026-09-30
+
+Base technique : `f614f56646b065dc62966ffe48441b50f9a8da2f` (Combat Test Default 1v1 V1 — GREEN technique/PREVALIDATION).
+
+- checkpoint de départ : `checkpoint/lab-start-cooldown-completion-v1-2026-09-30` ;
+- branche : `work/lab-cooldown-completion-v1-2026-09-30`.
+
+Objectif : terminer le raccord cooldown déjà présent dans le moteur, sans créer de seconde horloge ni de règle UI parallèle.
+
+État pré-audité :
+- `SkillDefinition.cooldownMs` existe et vaut 0 par défaut ;
+- `Combat State.skillCooldowns` possède l'état autoritaire ;
+- Action Resolver refuse une compétence en cooldown sans dépenser d'énergie ;
+- Combat Runtime ne possède pas de timer cooldown ;
+- l'éditeur expose déjà `Recharge / cooldown (ms)` ;
+- les compétences de démonstration `fireball/claw/aerial-dive/teleport-strike` n'ont actuellement pas de `cooldownMs`, donc 0 ms ;
+- l'UI de combat ne présente pas encore clairement le temps restant.
+
+Périmètre autorisé :
+- données des capacités de démonstration pour valeurs cooldown explicites ;
+- raccord export/adapter seulement si le champ est perdu sur le chemin réel ;
+- UI combat en lecture de l'état autoritaire pour disponibilité/temps restant ;
+- tests ciblés ;
+- documentation.
+
+Interdits :
+- `setTimeout`/timer cooldown dans l'UI ;
+- `Date.now()` comme seconde horloge ;
+- table cooldown parallèle ;
+- modification des dégâts, énergie, ciblage, timing d'impact, mouvement, FX ou audio pour simuler une recharge.
+
+RED obligatoire : prouver sur le vrai chemin de preview qu'une capacité configurée avec cooldown est exportée jusqu'au moteur et que l'UI reflète le cooldown restant depuis Combat State.
