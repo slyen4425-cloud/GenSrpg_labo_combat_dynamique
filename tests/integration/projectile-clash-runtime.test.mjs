@@ -22,13 +22,7 @@ test("two configured fireballs meet in flight and both resolve with zero damage"
   const fireball = normalizeSkillDefinition(rawFireball);
 
   assert.deepEqual(fireball.projectileClash, {
-    tag: "fire",
-    rules: [
-      {
-        againstTag: "fire",
-        strength: 1
-      }
-    ]
+    power: 1
   });
 
   const fighter = (id) => ({
