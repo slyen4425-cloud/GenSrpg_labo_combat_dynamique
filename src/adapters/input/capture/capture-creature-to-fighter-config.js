@@ -56,6 +56,58 @@ function normalizePercentByChannel(input, field) {
   return Object.freeze(output);
 }
 
+function normalizeNaturalResistanceByChannel(
+  input,
+  field = "creature.resistances"
+) {
+  if (input == null) {
+    return Object.freeze({});
+  }
+  if (!Array.isArray(input)) {
+    throw new TypeError(field + " must be an array");
+  }
+
+  const output = {};
+  for (let index = 0; index < input.length; index += 1) {
+    const entry = objectValue(
+      input[index],
+      `${field}[${index}]`
+    );
+    const kind = requiredString(
+      entry.kind,
+      `${field}[${index}].kind`
+    );
+
+    if (!kind.startsWith("element:")) {
+      continue;
+    }
+
+    const channel = requiredString(
+      kind.slice("element:".length),
+      `${field}[${index}].kind channel`
+    );
+    output[channel] =
+      (output[channel] ?? 0) +
+      finiteNumber(
+        entry.value,
+        `${field}[${index}].value`
+      );
+  }
+
+  return Object.freeze(output);
+}
+
+function mergePercentByChannel(...sources) {
+  const output = {};
+  for (const source of sources) {
+    for (const [channel, value] of Object.entries(source ?? {})) {
+      output[channel] =
+        (output[channel] ?? 0) + Number(value);
+    }
+  }
+  return Object.freeze(output);
+}
+
 function normalizeStatValuesById(input, field) {
   if (input == null) {
     return Object.freeze({});
@@ -170,6 +222,10 @@ export function adaptCaptureCreatureToFighterConfig(
 
   const statEffects =
     normalizeStatEffects(combat.statEffects);
+  const naturalResistancePctByChannel =
+    normalizeNaturalResistanceByChannel(
+      creature.resistances
+    );
 
   const baseChargeModifierPct =
     hasOwn(combat, "chargeTimeModifierPct")
@@ -191,10 +247,19 @@ export function adaptCaptureCreatureToFighterConfig(
   if (statEffects !== null) {
     output.damagePctByChannel =
       statEffects.damagePctByChannel;
-    output.resistancePctByChannel =
-      statEffects.resistancePctByChannel;
     output.damageReductionPct =
       statEffects.damageReductionPct;
+  }
+
+  if (
+    Object.keys(naturalResistancePctByChannel).length > 0 ||
+    statEffects !== null
+  ) {
+    output.resistancePctByChannel =
+      mergePercentByChannel(
+        naturalResistancePctByChannel,
+        statEffects?.resistancePctByChannel
+      );
   }
 
   if (hasOwn(combat, "statValuesById")) {
