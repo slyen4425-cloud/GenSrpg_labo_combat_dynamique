@@ -247,6 +247,8 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
               projected.damageReductionPct,
             maxHp:
               projected.maxHp,
+            hasMaxHpProjection:
+              projected.hasMaxHpProjection,
             statValuesById:
               Object.freeze({
                 ...entry.values
@@ -287,7 +289,14 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
             ...creature,
             combat: {
               ...baseCombat,
-              maxHp: statEffects.maxHp,
+              ...(
+                statEffects.hasMaxHpProjection
+                  ? {
+                      maxHp:
+                        statEffects.maxHp
+                    }
+                  : {}
+              ),
               statEffects: Object.freeze({
                 damagePctByChannel:
                   statEffects.damagePctByChannel,
