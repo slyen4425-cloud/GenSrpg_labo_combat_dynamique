@@ -19117,3 +19117,10 @@ Protection : dégâts, énergie, ciblage, mouvement, FX, audio et règles d'impa
 - checkpoint PREVALIDATION : `checkpoint/lab-cooldown-completion-v1-prevalidation-green-2026-09-30` ;
 - preview : `preview/lab-cooldown-completion-v1-2026-09-30` ;
 - validation smartphone requise : lancer une compétence, vérifier le texte `Recharge X.X s`, le bouton indisponible pendant la recharge, puis son retour automatique à disponibilité.
+
+
+### Validation utilisateur — Cooldown Completion V1
+
+Validation smartphone reçue le 2026-09-30 : le fonctionnement du cooldown est jugé **OK** par l'utilisateur (blocage pendant la recharge et retour à disponibilité). Une amélioration purement visuelle est demandée séparément : indicateur circulaire dans l'icône, aiguille de progression et recoloration progressive.
+
+Le comportement métier Cooldown Completion V1 est considéré **GREEN utilisateur**. Le raffinement visuel sera traité dans un micro-lot UI distinct, sans modifier l'autorité du cooldown.
