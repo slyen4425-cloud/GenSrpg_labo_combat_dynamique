@@ -18634,3 +18634,55 @@ Volant :
 ### Critère de fin
 
 RED ciblé -> correction data-driven + projection présentation minimale -> CI complète -> preview smartphone.
+
+
+### Résultat — Serpentine + Flight Motion V1
+
+RED :
+- commit `f5f86225f69fb458a1108c79ad0bb572493b5e8a` ;
+- CI `36703048051` ;
+- **711 tests, 708 PASS, 3 FAIL ciblés** :
+  - idle serpentine encore glissant / pivot trop haut ;
+  - arc volant insuffisamment décrit ;
+  - ombre volante non configurable.
+
+Correction :
+- serpentine :
+  - déplacement existant inchangé ;
+  - idle sans translation X/Y ;
+  - pivot descendu à 94 % ;
+  - légère oscillation du haut du corps par rotation autour de ce pivot ;
+- volant / drake :
+  - idle vertical conservé ;
+  - locomotion décrite par un seul arc en 4 points : montée -> apex -> descente -> position stable ;
+  - apex 24 px ;
+  - aucun `footfall` ;
+  - durée locomotion 520 ms ;
+- ombre volante :
+  - `profile.presentation.shadow.bottomPct` règle l'écart vertical ;
+  - `profile.presentation.shadow.opacity` règle la douceur ;
+  - projection générique vers CSS, sans branche `drake` ou détection de nom ;
+  - défaut CSS historique conservé pour les profils sans configuration.
+
+Réconciliation de sentinelle :
+- un unique échec intermédiaire provenait de `-0` obtenu après négation de `translateY:0` dans le test ;
+- la sentinelle vérifie désormais directement le retour exact `translateY === 0`.
+
+GREEN :
+- commit correction/test : `9945137a9e614ddb6c55cbace949e2990eae9fdd` ;
+- CI `36703813752` ;
+- structure / frontières / indépendance : OK ;
+- **711/711 PASS / 0 FAIL**.
+
+Protégé / inchangé :
+- déplacement rampant validé ;
+- bipède / quadrupède validés ;
+- massif à 4 pas conservé ;
+- Combat Runtime / compétences / énergie / cooldowns ;
+- dégâts / portée / ciblage ;
+- FX Core / caméra ;
+- assets / arènes ;
+- `Zombicide-40k`.
+
+État :
+**GREEN technique — PREVALIDATION smartphone requise.**
