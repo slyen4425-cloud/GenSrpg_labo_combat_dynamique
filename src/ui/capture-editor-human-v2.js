@@ -89,7 +89,8 @@ import {
   normalizeCaptureCreatureStatValuesV1
 } from "../contracts/capture-creature-stat-values-v1.js";
 import {
-  projectCaptureStatDefinitionEffectsV1
+  projectCaptureStatDefinitionEffectsV1,
+  projectCaptureStatEffectsV1
 } from "../core/combat/capture-stat-effects-v1.js";
 import {
   normalizeCaptureProgressionRulesV1,
@@ -3130,6 +3131,20 @@ export function humanStatEffectSummaryV1({
     );
   }
 
+  if (normalized.maxHpPerPoint > 0) {
+    perPoint.push(
+      "+" +
+        statEffectNumber(
+          normalized.maxHpPerPoint
+        ) +
+        " PV max"
+    );
+    current.push(
+      statEffectNumber(projected.maxHp) +
+        " PV max"
+    );
+  }
+
   if (
     normalized.damageReductionPctPerPoint > 0
   ) {
@@ -3314,6 +3329,17 @@ function renderHumanStatRegistryV1(
     chargeRate.dataset.statDefinitionChargeRate =
       "true";
 
+    const maxHpRate =
+      document.createElement("input");
+    maxHpRate.type = "number";
+    maxHpRate.min = "0";
+    maxHpRate.step = "0.1";
+    maxHpRate.value = String(
+      definition.maxHpPerPoint
+    );
+    maxHpRate.dataset.statDefinitionMaxHpRate =
+      "true";
+
     const damageReductionRate =
       document.createElement("input");
     damageReductionRate.type = "number";
@@ -3360,6 +3386,10 @@ function renderHumanStatRegistryV1(
       statDefinitionField(
         "Réduction dégâts reçus % / point",
         damageReductionRate
+      ),
+      statDefinitionField(
+        "PV max / point",
+        maxHpRate
       ),
       remove
     );
@@ -3423,6 +3453,13 @@ function readHumanStatRegistryV1(root) {
             "[data-stat-definition-damage-reduction-rate]"
           ).value,
           "Réduction dégâts reçus % par point"
+        ),
+      maxHpPerPoint:
+        finiteNumber(
+          row.querySelector(
+            "[data-stat-definition-max-hp-rate]"
+          ).value,
+          "PV max par point"
         )
     };
   });
@@ -5945,6 +5982,11 @@ export function mountCaptureEditorHumanV2({
                 numericValue(
                   root,
                   "[data-stat-custom-damage-reduction-pct-per-point]"
+                ),
+              maxHpPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-max-hp-per-point]"
                 )
             }
           });
