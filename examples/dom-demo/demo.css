@@ -154,7 +154,7 @@ summary {
   position: absolute;
   z-index: 0;
   left: 50%;
-  bottom: 8%;
+  bottom: var(--creature-shadow-bottom, 8%);
   width: 58%;
   height: 10%;
   transform:
@@ -162,7 +162,7 @@ summary {
     scale(var(--creature-display-scale, 1));
   transform-origin: center center;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.42);
+  background: rgba(0, 0, 0, var(--creature-shadow-opacity, 0.42));
   filter: blur(3.4px);
   pointer-events: none;
 }
