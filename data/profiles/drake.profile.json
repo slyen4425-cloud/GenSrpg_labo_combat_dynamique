@@ -5,10 +5,10 @@
   "idle": {
     "motionStyle": "floating",
     "bobY": 7,
-    "swayRotate": 0.65,
-    "swayX": 0.8,
+    "swayRotate": 0.45,
+    "swayX": 0.35,
     "scaleXDelta": -0.003,
-    "scaleYDelta": 0.01,
+    "scaleYDelta": 0.012,
     "durationMs": 1750,
     "transformOrigin": {
       "x": "50%",
@@ -54,18 +54,9 @@
       "returnMs": 240
     },
     "ground": {
-      "travelStyle": "hop",
-      "hopCount": 2,
-      "hopHeight": 11,
-      "landingSquash": 0.02,
-      "travelRotateDeg": 1.4,
       "impactScaleX": 1.04,
       "impactScaleY": 0.96,
-      "returnMs": 260,
-      "transformOrigin": {
-        "x": "50%",
-        "y": "90%"
-      }
+      "returnMs": 260
     },
     "perspective": {
       "perspectiveScaleStrength": 1.25,
