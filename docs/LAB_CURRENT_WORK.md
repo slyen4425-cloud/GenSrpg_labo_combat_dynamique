@@ -18187,3 +18187,56 @@ Validation smartphone attendue :
 7. vérifier qu'attaques, projectiles, téléportation et FX existants restent cohérents.
 
 Les nouvelles arènes plus profondes / moins vues du dessus restent réservées au chantier séparé prévu par Sylvain.
+
+
+### Retour PREVALIDATION smartphone — locomotion non visible en combat
+
+Retour Sylvain :
+- idle visiblement amélioré ;
+- aucun changement perceptible sur les déplacements pendant le combat.
+
+Diagnostic :
+- le premier raccord appliquait `profile.locomotion` au résultat métier rare `moved` / repositionnement de distance ;
+- le chemin réellement observé pendant une attaque de contact, `approachMode:"ground" -> ground-attack`, conservait un segment unique rectiligne et ignorait donc totalement la morphologie ;
+- la compétence de test `Griffe` utilise bien `approachMode:"ground"`, ce qui reproduisait directement le défaut utilisateur.
+
+RED correctif :
+- commit : `8feb653e3ee2948cee52a9306c698e3a052c48e3` ;
+- CI run : `36695801043` ;
+- **704 tests, 703 PASS, 1 FAIL ciblé** ;
+- seul le nouveau vrai chemin `ground-attack -> locomotion morphologique` était rouge.
+
+Correction :
+- `ground-attack` consomme désormais `profile.locomotion` ;
+- rampant : trajet linéaire sans hop ;
+- bipède : petit bond pendant l'approche ;
+- quadrupède : bond plus ample ;
+- massif : phases lourdes + deux `footfall` sur l'approche ;
+- la durée totale avant impact reste exactement `travelMs` ;
+- le dernier segment reste `ground-approach-impact` et atteint exactement la cible ;
+- le scale de perspective existant est conservé et interpolé ;
+- les cues de l'approche sont routés vers le même `planLocomotionCueFx -> dom-camera-fx` ;
+- téléportation et aérien restent inchangés.
+
+Réconciliation :
+- les anciennes sentinelles qui imposaient un seul segment `ground-approach-impact` ont été remplacées par des invariants plus forts :
+  - somme des phases = `travelMs` ;
+  - dernier segment = impact exact ;
+  - perspective conservée ;
+  - retour maison conservé ;
+  - morphologie réellement différente selon le profil.
+
+GREEN correctif :
+- CI run : `36696218946` ;
+- structure / frontières / indépendance : OK ;
+- **704 / 704 PASS / 0 FAIL**.
+
+État :
+**GREEN technique correctif — nouvelle PREVALIDATION smartphone requise.**
+
+Test utilisateur attendu :
+1. utiliser une capacité de contact au sol telle que `Griffe` ;
+2. comparer rampant / bipède / quadrupède / massif ;
+3. vérifier que le rampant glisse, le bipède fait un petit bond, le quadrupède un bond plus ample ;
+4. vérifier que le Massif avance lourdement et déclenche ses micro-shakes aux contacts ;
+5. vérifier que l'impact arrive toujours au bon moment et à la bonne cible.
