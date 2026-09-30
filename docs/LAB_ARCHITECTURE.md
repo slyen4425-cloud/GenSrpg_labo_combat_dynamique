@@ -2076,3 +2076,23 @@ L'ombre :
 Ce jalon ne remplace aucun asset d'arène.
 
 Les futures arènes avec caméra plus basse, plus profonde et moins plongeante seront raccordées dans un lot de présentation séparé.
+
+
+## 34. Skill Availability Refresh V1
+
+Le Combat Runtime ne possède aucune règle de cooldown ou de disponibilité.
+
+### Autorités
+
+- Combat State conserve les échéances et l'état des combattants ;
+- Action Resolver décide si `previewSkill()` est autorisé ou refusé ;
+- Combat Runtime ne fait que notifier les consommateurs lorsqu'un état sémantique observable change ;
+- Demo UI recalcule alors ses boutons via `previewSkill()`.
+
+### Signal runtime
+
+Le signal interne du Runtime ne doit pas se limiter à PV/énergie : un changement de statut ou d'état de disponibilité peut être pertinent sans modifier ces valeurs.
+
+Le Runtime compare donc la projection sémantique du fighter, en excluant seulement `energyChargeProgressMs`, progression interne qui change à chaque tick sans constituer à elle seule un changement de disponibilité visible.
+
+Aucune formule ou durée de cooldown n'est dupliquée dans le Runtime.
