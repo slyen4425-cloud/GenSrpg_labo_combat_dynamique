@@ -214,7 +214,14 @@ test("V8 ability dock stays compact and icon-ready on mobile", async () => {
   assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
   assert.match(css, /\.action-option--skill\s*\{[\s\S]*aspect-ratio:\s*0\.72/);
   assert.match(css, /\.action-option__icon\s*\{[\s\S]*width:\s*82%[\s\S]*height:\s*82%/);
-  assert.match(css, /\.action-option--skill span,[\s\S]*display:\s*none/);
+  assert.match(
+    css,
+    /\.action-option--skill\s*>\s*span:not\(\.action-option__icon-shell\),[\s\S]*\.action-option--skill\s*>\s*small\s*\{[\s\S]*display:\s*none/
+  );
+  assert.match(
+    css,
+    /\.action-option__icon-shell\s*\{[\s\S]*display:\s*grid/
+  );
   assert.match(css, /@media \(max-width: 680px\)[\s\S]*\.combat-controls\s*\{[\s\S]*width:\s*min\(/);
   assert.doesNotMatch(
     css,
