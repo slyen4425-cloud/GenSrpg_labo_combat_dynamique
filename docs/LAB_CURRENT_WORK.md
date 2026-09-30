@@ -19559,3 +19559,86 @@ Validation smartphone explicite reçue :
 - la sélection d'arène dans l'onglet Combat est fonctionnelle.
 
 Statut : **GREEN utilisateur** pour ces deux comportements. Les protections d'architecture restent inchangées : `health` demeure l'unique autorité utilisateur des PV et l'arène demeure une donnée de présentation sans effet sur les règles de combat.
+
+
+## Micro-lot — Capture Showcase Creature Presets V1 — 2026-09-30
+
+Base validée : `783c824625f1785e86cabffe9eec8f09ba2b2aa0` (Capture Health Stat V1 + Arena Selector validés utilisateur ; CI `36769990012` SUCCESS).
+
+- checkpoint GREEN précédent : `checkpoint/lab-capture-health-stat-v1-green-2026-09-30` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-showcase-presets-v1-2026-09-30` ;
+- branche : `work/lab-capture-showcase-presets-v1-2026-09-30`.
+
+### Entrées utilisateur
+
+Deux exports éditeur complets `capture-creature-transfer-v1` :
+- `crea_mossback` / Moussados ;
+- `crea-loup` / Loup volcanique.
+
+### Objectif
+
+Intégrer ces deux exports comme modèles de vitrine réellement éditables, sans mock ni copie de gameplay :
+- les réglages saisis dans l'éditeur (stats, Santé, éléments, résistances/faiblesses, présentation, profil, scale, sockets, compétences et loadout planifié) restent configurés ;
+- un joueur peut conserver le modèle tel quel ou le modifier puis le réexporter ;
+- le combat continue de projeter les contraintes de progression sans effacer le loadout planifié du modèle ;
+- les assets existants de `global-assets` sont réutilisés par ID, sans copie locale concurrente.
+
+### Autorité / réconciliation
+
+- les fichiers preset sont des entrées `CaptureCreatureTransferV1` et passent par l'importeur/planificateur existant ;
+- `configuredCreatures` reste l'unique état actif dans l'éditeur ;
+- `crea_mossback` existe déjà dans le catalogue historique : le preset doit produire un `replace-creature`, jamais une seconde entrée ;
+- `crea-loup` n'existe pas dans le roster historique canonique : le preset doit produire un `insert-creature` ;
+- aucune seconde validation, aucun second importeur, aucune détection par nom ;
+- `health` reste l'unique autorité utilisateur des PV ; `combat.maxHp` n'est qu'une projection technique ;
+- les règles de progression ne modifient pas le preset enregistré : elles projettent seulement les slots/capacités actives au combat.
+
+### Pré-audit confirmé
+
+- les deux fichiers sont bien `capture-creature-transfer-v1` / draft V3 ;
+- Moussados : élément Terre, Santé 200, profil `massive`, scale 1.7, assets Golem moussu existants ;
+- Loup volcanique : élément Feu, Santé 150, résistance Feu +35 %, faiblesse Eau -50 %, profil `quadruped`, scale 1.2, assets Loup volcanique existants ;
+- les capacités `lib_*` référencées existent dans les catalogues Capture migrés portable/complex ;
+- `fireball` et `claw` existent dans le catalogue natif ;
+- les packs `golem_moussu` et `loup_volcanique` existent déjà dans `global-assets` avec player/opponent/icon ;
+- aucun nouvel asset ni nouveau moteur de compétences n'est requis.
+
+### Périmètre autorisé
+
+- données presets Capture ;
+- catalogue/manifest de presets si nécessaire ;
+- raccord d'hydratation de l'éditeur utilisant les adaptateurs Transfer existants ;
+- tests ciblés ;
+- documentation ;
+- preview de la branche après GREEN technique.
+
+### Protégé
+
+- `main` ;
+- dépôt `Zombicide-40k` ;
+- Combat Runtime / Action Resolver ;
+- FX / renderer / audio ;
+- cooldown ;
+- dégâts / résistances ;
+- profils de mouvement ;
+- arènes ;
+- contrats Transfer/Database existants sauf preuve de défaut ;
+- aucune copie des assets `global-assets`.
+
+### RED obligatoire
+
+Prouver avant correction que :
+1. aucun catalogue de presets vitrine ne référence encore ces deux exports ;
+2. Moussados hydraté depuis le roster historique ne conserve pas les valeurs du preset (niveau 1, Santé 200, résistances et loadout planifié) ;
+3. `crea-loup` n'est pas encore présent comme vraie fiche éditable dans `configuredCreatures` ;
+4. le chemin futur doit passer par `importCaptureTransferJsonV1 -> planCaptureTransferImportV1 -> applyCaptureTransferPlanToEditorStateV1`, sans importeur parallèle.
+
+### Critère de fin
+
+- les deux presets sont chargés par le pipeline Transfer existant ;
+- aucun doublon d'ID ;
+- les réglages exportés sont conservés ;
+- Santé reste propriétaire des PV ;
+- les capacités référencées sont résolues depuis les catalogues existants ;
+- tests ciblés + CI complète verts ;
+- preview smartphone publiée pour validation utilisateur.
