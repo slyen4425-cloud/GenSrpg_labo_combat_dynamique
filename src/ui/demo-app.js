@@ -778,6 +778,15 @@ function createSlot({
       String(actor.scale)
     );
 
+    const activeProfile = profiles.get(meta.profile);
+    const shadowBottomPct = Number(
+      activeProfile.presentation?.shadowBottomPct ?? 8
+    );
+    slotContainer.style?.setProperty?.(
+      "--creature-shadow-bottom",
+      `${Number.isFinite(shadowBottomPct) ? shadowBottomPct : 8}%`
+    );
+
     renderer = createDomActorRenderer({
       element: motion,
       actor
