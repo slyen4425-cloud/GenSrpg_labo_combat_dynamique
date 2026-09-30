@@ -19259,3 +19259,12 @@ GREEN :
 - CI `36751533082` — SUCCESS.
 
 État : **GREEN technique — PREVALIDATION smartphone requise** sur l'icône Boule de feu et le visuel radial de cooldown.
+
+
+### Publication PREVALIDATION — Cooldown Icon Visibility Regression V1
+
+- HEAD GREEN documenté avant publication : `06a9833da2a289c115f74ab92f0c0cdf756b2101` ;
+- CI : `36751617836` — SUCCESS ;
+- checkpoint PREVALIDATION : `checkpoint/lab-cooldown-icon-visibility-regression-v1-prevalidation-green-2026-09-30` ;
+- preview : `preview/lab-cooldown-icon-visibility-regression-v1-2026-09-30` ;
+- validation smartphone requise : vérifier que l'icône Boule de feu est visible au repos et reste visible pendant le cooldown avec son overlay radial/aiguille.
