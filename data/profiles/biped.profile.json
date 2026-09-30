@@ -1,14 +1,19 @@
 {
   "id": "biped",
   "label": "Bipède",
-  "description": "Profil générique pour humanoïdes, guerriers, golems debout et créatures à deux jambes.",
+  "description": "Profil générique pour humanoïdes, guerriers, golems debout légers et créatures à deux jambes.",
   "idle": {
-    "bobY": 2,
-    "swayRotate": 0.35,
-    "swayX": 0.25,
-    "scaleXDelta": -0.002,
-    "scaleYDelta": 0.006,
-    "durationMs": 1800
+    "motionStyle": "grounded",
+    "bobY": 0,
+    "swayRotate": 0.28,
+    "swayX": 0,
+    "scaleXDelta": -0.003,
+    "scaleYDelta": 0.008,
+    "durationMs": 1850,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "100%"
+    }
   },
   "attack": {
     "lungeX": 46,
@@ -49,9 +54,18 @@
       "returnMs": 240
     },
     "ground": {
+      "travelStyle": "hop",
+      "hopCount": 3,
+      "hopHeight": 8,
+      "landingSquash": 0.018,
+      "travelRotateDeg": 1.2,
       "impactScaleX": 1.04,
       "impactScaleY": 0.96,
-      "returnMs": 240
+      "returnMs": 240,
+      "transformOrigin": {
+        "x": "50%",
+        "y": "100%"
+      }
     },
     "perspective": {
       "perspectiveScaleStrength": 1.25,
