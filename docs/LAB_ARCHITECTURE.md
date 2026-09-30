@@ -2227,3 +2227,14 @@ La preview Capture :
 - ne calcule jamais elle-même une échéance et ne possède aucun `setTimeout` de recharge.
 
 Le chemin reste donc : `SkillDefinition -> Action Resolver -> Combat State -> Session.previewSkill() -> UI`.
+
+
+## 39. Présentation visuelle du cooldown dans les icônes
+
+Le cooldown reste exclusivement autoritaire dans `SkillDefinition`, `Action Resolver` et `Combat State.skillCooldowns`. La couche UI ne possède ni échéance, ni timer, ni copie de l'état métier.
+
+La preview Capture lit `session.previewSkill().remainingCooldownMs` et le `cooldownMs` déjà présent sur la définition de compétence pour dériver uniquement un ratio de présentation : portion écoulée de la recharge.
+
+Le rafraîchissement provient du callback générique `Combat Runtime.onClock` déjà alimenté par le tick runtime existant. Aucun `setTimeout`, `setInterval`, `Date.now()` ou second ticker n'est autorisé pour le cooldown visuel.
+
+Le rendu peut combiner : désaturation de l'icône, recoloration progressive, overlay radial, aiguille et texte restant. Ces éléments sont purement visuels et n'altèrent jamais la disponibilité sémantique de la compétence.
