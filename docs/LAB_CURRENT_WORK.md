@@ -19328,3 +19328,39 @@ GREEN :
 Protection : Combat State, Action Resolver, moteur de dégâts, cooldown, FX, audio, profils et assets inchangés.
 
 État : **GREEN technique — PREVALIDATION smartphone requise** pour confirmer que la Boule de feu retire bien des PV dans la preview réelle.
+
+
+## Micro-lot — Creature Natural Elements Reconciliation V1 — 2026-09-30
+
+Base actuelle : `ac8148ca8718928900c00c1da3be37373205b073` (Fireball Damage Regression V1 — GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-creature-natural-elements-reconcile-v1-2026-09-30` ;
+- branche : `work/lab-creature-natural-elements-reconcile-v1-2026-09-30`.
+
+Cette branche réconcilie uniquement le périmètre éléments/résistances de l'ancien lot `work/lab-creature-natural-elements-v1-2026-09-30`, qui diverge d'une lignée antérieure de cooldown. Aucun commit de cette ancienne branche n'est fusionné en bloc.
+
+Objectifs :
+1. conserver `elements` et `resistances[{kind,value}]` comme données sémantiques portables d'une créature dans `CaptureCombatExportV1` ;
+2. projeter les résistances/faiblesses naturelles `element:<channel>` vers `FighterConfig.resistancePctByChannel` ;
+3. additionner une seule fois résistance naturelle + résistance issue des stats ;
+4. autoriser les résistances signées dans Combat State pour représenter les faiblesses (ex. `-50`), sans autoriser de bonus de dégâts négatif ;
+5. exposer dans l'éditeur les canaux historiques Capture : fire, water, earth, air, electric, light, shadow, nature, ice, poison, steel, psy, spirit ;
+6. conserver les valeurs propres aux créatures/imports comme autorité : aucune nouvelle table automatique de matchup n'est inventée.
+
+Propriétaires :
+- Creature Editor Draft / CaptureCombatExport : données ;
+- Capture input adapter : projection vers FighterConfig ;
+- Combat Damage : consommateur générique inchangé.
+
+Périmètre autorisé :
+- `src/contracts/capture-combat-export-v1.js` ;
+- `src/adapters/input/capture/capture-editor-exporter-v1.js` ;
+- `src/adapters/input/capture/capture-creature-to-fighter-config.js` ;
+- `src/core/combat/combat-state.js` uniquement pour signed resistance ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests ciblés ;
+- documentation.
+
+Protégé : formule `computeCombatDamageV1`, capacités, cooldowns, énergie, ciblage, mouvements, FX, audio, profils, assets, correctif Boule de feu.
+
+RED : prouver sur le vrai chemin éditeur -> export -> adapter -> Combat State -> damage que `fire +35` et `water -50` sont actuellement perdus/refusés, et que les 13 canaux ne sont pas tous visibles.
