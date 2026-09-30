@@ -82,9 +82,14 @@ export function animationPlanToDomTimeline(plan, actor) {
     throw new RangeError("AnimationPlan total duration must be greater than 0");
   }
 
+  const planOrigin = plan.transformOrigin
+    ? `${plan.transformOrigin.x} ${plan.transformOrigin.y}`
+    : null;
+
   const keyframes = [{
     offset: 0,
     transform: composeDomTransform(actor),
+    ...(planOrigin ? { transformOrigin: planOrigin } : {}),
     opacity: 1,
     filter: "none",
     easing: plan.segments[0].easing ?? "linear"
@@ -98,6 +103,7 @@ export function animationPlanToDomTimeline(plan, actor) {
     keyframes.push({
       offset: elapsed / totalDurationMs,
       transform: composeDomTransform(actor, segment.transform),
+      ...(planOrigin ? { transformOrigin: planOrigin } : {}),
       opacity: segment.opacity ?? 1,
       filter: composeDomFilter(segment.filter),
       easing: plan.segments[index + 1]?.easing ?? "linear"
