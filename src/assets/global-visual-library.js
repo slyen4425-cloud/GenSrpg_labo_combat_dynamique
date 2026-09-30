@@ -4,7 +4,7 @@ const BRANCH = "global-assets";
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
   branch: BRANCH,
-  revision: "2026-09-27-v4-wolf-opponent-fix",
+  revision: "2026-09-30-v5-arena-refresh",
   baseUrl:
     `https://raw.githubusercontent.com/${REPOSITORY}/${BRANCH}/assets/library/`,
   catalogUrl:
