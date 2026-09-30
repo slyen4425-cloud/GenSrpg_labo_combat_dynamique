@@ -235,41 +235,91 @@ export function planAnimation({ event, actor, profile }) {
   switch (event.type) {
     case "idle": {
       const cfg = profile.idle;
-      const half = cfg.durationMs / 2;
+      const swayMode = cfg.swayMode ?? "single";
+      if (!["single", "alternate"].includes(swayMode)) {
+        throw new RangeError(
+          `Unsupported idle.swayMode: ${swayMode}`
+        );
+      }
+
+      const awayTransform = (direction = 1) => ({
+        translateX:
+          directed(
+            scaled(cfg.swayX, intensity) * direction,
+            sign
+          ),
+        translateY:
+          Number(cfg.bobY) === 0
+            ? 0
+            : -scaled(cfg.bobY, intensity),
+        rotateDeg:
+          directed(
+            scaled(cfg.swayRotate, intensity) * direction,
+            sign
+          ),
+        scaleX:
+          1 + scaled(cfg.scaleXDelta ?? 0, intensity),
+        scaleY:
+          1 + scaled(cfg.scaleYDelta ?? 0, intensity)
+      });
+
+      const homeTransform = {
+        translateX: 0,
+        translateY: 0,
+        rotateDeg: 0,
+        scaleX: 1,
+        scaleY: 1
+      };
+
+      const segments =
+        swayMode === "alternate"
+          ? [
+              {
+                label: "idle-right",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: awayTransform(1)
+              },
+              {
+                label: "idle-center-1",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: homeTransform
+              },
+              {
+                label: "idle-left",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: awayTransform(-1)
+              },
+              {
+                label: "idle-home",
+                durationMs: cfg.durationMs / 4,
+                easing: "ease-in-out",
+                transform: homeTransform
+              }
+            ]
+          : [
+              {
+                label: "idle-out",
+                durationMs: cfg.durationMs / 2,
+                easing: "ease-in-out",
+                transform: awayTransform(1)
+              },
+              {
+                label: "idle-home",
+                durationMs: cfg.durationMs / 2,
+                easing: "ease-in-out",
+                transform: homeTransform
+              }
+            ];
+
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
         loop: true,
         transformOrigin: cfg.transformOrigin ?? null,
-        segments: [
-          {
-            label: "idle-out",
-            durationMs: half,
-            easing: "ease-in-out",
-            transform: {
-              translateX: directed(scaled(cfg.swayX, intensity), sign),
-              translateY:
-                Number(cfg.bobY) === 0
-                  ? 0
-                  : -scaled(cfg.bobY, intensity),
-              rotateDeg: directed(scaled(cfg.swayRotate, intensity), sign),
-              scaleX: 1 + scaled(cfg.scaleXDelta ?? 0, intensity),
-              scaleY: 1 + scaled(cfg.scaleYDelta ?? 0, intensity)
-            }
-          },
-          {
-            label: "idle-home",
-            durationMs: half,
-            easing: "ease-in-out",
-            transform: {
-              translateX: 0,
-              translateY: 0,
-              rotateDeg: 0,
-              scaleX: 1,
-              scaleY: 1
-            }
-          }
-        ]
+        segments
       });
     }
 
