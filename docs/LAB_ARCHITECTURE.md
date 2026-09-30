@@ -1707,3 +1707,22 @@ Le champ historique `effect.damage/heal` n'est jamais utilisé en parallèle pou
 Les formes manquantes du legacy sont transportées par une politique structurelle explicite (scope/catégorie), jamais par nom ou description.
 
 Le Human Editor hydrate les 103 drafts natifs dans `configuredSkills`; le catalogue historique de 103 modèles reste une bibliothèque de provenance/édition, pas une deuxième source de gameplay.
+
+## 26. Capture Defense Stat Editor UI V1
+
+Le Human Editor expose le coefficient canonique `CaptureStatRegistryV1.damageReductionPctPerPoint`.
+
+Responsabilités :
+
+- le contrat `CaptureStatRegistryV1` reste l'unique propriétaire du coefficient ;
+- `capture-stat-effects-v1.js` reste l'unique propriétaire du calcul du total ;
+- le Human Editor affiche uniquement les unités et transporte la valeur.
+
+Présentation :
+
+- résumé : `1 point = -X % dégâts reçus` ;
+- total courant : `N points = -Y % dégâts reçus` ;
+- le coefficient est éditable dans les définitions système et personnalisées ;
+- aucune formule de dégâts n'est dupliquée dans l'UI.
+
+Sur smartphone, chaque définition de stat s'empile sur une seule colonne.
