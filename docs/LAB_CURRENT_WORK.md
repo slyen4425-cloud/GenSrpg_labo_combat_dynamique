@@ -19004,3 +19004,36 @@ Audit de protection :
 Validation smartphone reçue le 2026-09-30 : **OK utilisateur** sur les cinq nouvelles arènes (city, cave, snow, forest, lava).
 
 Le lot Arena Refresh V1 est désormais **GREEN utilisateur**. Aucun ajustement visuel supplémentaire n'est demandé sur ce lot.
+
+
+## Micro-lot — Combat Test Ergonomics V1 — 2026-09-30
+
+Base GREEN utilisateur :
+- SHA : `ed8142ecd7dfb6de91c32854f6b6f401a6e2921a` ;
+- checkpoint : `checkpoint/lab-arena-refresh-v1-green-2026-09-30` ;
+- checkpoint de départ : `checkpoint/lab-start-combat-test-ergonomics-v1-2026-09-30` ;
+- branche : `work/lab-combat-test-ergonomics-v1-2026-09-30`.
+
+Objectifs :
+1. le test combat intégré à l'éditeur reste compatible 1v1/2v2 mais démarre par défaut en 1v1 ;
+2. exposer visuellement le cooldown réel des capacités pendant le combat test sans créer de timer UI ni de seconde autorité.
+
+Constat pré-audit :
+- `cooldownMs` existe déjà dans SkillDefinition, Action Resolver, Combat State et l'éditeur humain ;
+- la disponibilité des boutons passe déjà par `session.previewSkill()`, donc le cooldown est fonctionnel mais non explicite visuellement ;
+- le sélecteur `data-active-per-team` choisit actuellement 2v2 par défaut.
+
+Propriétaires :
+- configuration par défaut du format : Demo UI ;
+- disponibilité/cooldown : Combat State + Action Resolver restent autoritaires ;
+- Demo UI affiche seulement `remainingCooldownMs` issu de `previewSkill()`.
+
+Fichiers autorisés :
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `src/ui/combat-2v2-test-ui.js` ;
+- tests UI ciblés ;
+- documentation.
+
+Protégé : SkillDefinition, Combat State, Action Resolver, Combat Runtime, dégâts, éléments, résistances, profils de mouvement, assets, sons, dépôt `Zombicide-40k`.
+
+Workflow : RED ciblé -> correction minimale -> CI complète -> checkpoint GREEN/PREVALIDATION si rendu mobile concerné.
