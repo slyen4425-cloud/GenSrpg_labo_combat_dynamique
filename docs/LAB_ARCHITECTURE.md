@@ -1950,3 +1950,112 @@ Le binding de l'arène Ville n'agrandit plus le fond à 112 % de hauteur. Il uti
 Chaque fighter reçoit une ombre elliptique de présentation via CSS. Elle suit naturellement le container et son scale, mais n'entre dans aucun calcul de collision, ciblage ou position gameplay.
 
 Aucun asset binaire, Runtime, FX Core ou règle de combat n'est modifié par ce jalon.
+
+
+## 33. Creature Motion Profiles V1
+
+Les mouvements morphologiques restent pilotés par les données et n'introduisent aucun second moteur de déplacement gameplay.
+
+### Contrat de locomotion
+
+Chaque profil live peut déclarer :
+
+```js
+locomotion: {
+  style,
+  durationMs,
+  phases: [
+    {
+      label,
+      at,
+      translateY,
+      rotateDeg,
+      scaleX,
+      scaleY,
+      easing
+    }
+  ],
+  contacts: [
+    { at, intensity }
+  ],
+  footfallFx?: {
+    cameraShake?: {
+      durationMs,
+      amplitudePx
+    }
+  }
+}
+```
+
+`style` reste descriptif. Le moteur ne branche pas ses règles sur l'ID du profil ou sur le nom de la créature : il consomme les phases et contacts explicites.
+
+### Idle et appuis
+
+`idle.transformOrigin` permet à Animation Core de déclarer un pivot spécifique à l'animation sans remplacer le `VisualActor.transformOrigin` permanent.
+
+- bipède, quadrupède et massif utilisent un pivot bas et aucune translation X/Y en idle ;
+- l'effet respiratoire / balancement est donc produit par rotation et déformation autour des appuis ;
+- serpentin/rampant conserve une translation verticale quasi nulle ;
+- drake/volant conserve une oscillation verticale lisible.
+
+Le Render Adapter applique le pivot de l'AnimationPlan uniquement pendant le plan. L'état acteur de base est restauré ensuite.
+
+### Événement `move`
+
+`CombatVisualEvent` expose désormais `move`.
+
+Animation Core :
+
+1. lit `profile.locomotion` ;
+2. transforme les phases normalisées en segments ;
+3. produit les durées ;
+4. produit éventuellement des cues temporels `footfall`.
+
+Animation Core ne produit aucun shake caméra.
+
+### Golem / Massif
+
+Le profil massif utilise deux contacts de pas pendant un mouvement lourd.
+
+La chaîne est :
+
+`Combat result moved -> Visual Controller -> Animation Core move -> footfall cue -> FX Core -> Camera Render Adapter`.
+
+`locomotion-fx-plan.js` est l'unique traducteur du cue `footfall` vers un plan `camera-shake`.
+
+`dom-camera-fx.js` est l'adaptateur qui applique ce plan à l'arène. Combat Rules et Demo UI ne contiennent ni amplitude ni trajectoire de shake.
+
+### Déplacement spatial
+
+`dom-distance-presenter` reste propriétaire de l'application des ancres DOM issues du résultat métier de distance.
+
+Il reçoit seulement la durée calculée par le plan de locomotion afin que la transition spatiale et l'animation morphologique restent synchronisées.
+
+Les positions, coûts, distances et résultats `moved` restent entièrement propriétaires de Combat Rules / Combat Session.
+
+### Ombre de contact
+
+`CreaturePresentationBindingV2.displayScale -> VisualActor.scale` reste l'unique taille de créature.
+
+Le Visual Controller projette cette valeur en variable CSS `--creature-display-scale` uniquement pour la présentation de l'ombre.
+
+L'ombre :
+
+- est plus prononcée ;
+- suit le scale de la créature ;
+- continue de suivre naturellement `--distance-scale` via le container spatial ;
+- ne participe à aucune collision ni règle gameplay.
+
+### Profils V1
+
+- `biped` : idle ancré, petit bond ;
+- `quadruped` : idle ancré, bond plus ample ;
+- `serpentine` : idle au sol, glissement linéaire ;
+- `drake` : oscillation verticale / déplacement volant ;
+- `massive` : idle ancré, pas lourds avec contacts et micro-shake FX.
+
+### Hors périmètre
+
+Ce jalon ne remplace aucun asset d'arène.
+
+Les futures arènes avec caméra plus basse, plus profonde et moins plongeante seront raccordées dans un lot de présentation séparé.
