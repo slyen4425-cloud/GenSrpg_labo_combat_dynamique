@@ -1794,3 +1794,25 @@ Aide utilisateur :
 
 Le stun reste indépendant : `StatusEffectV1.stun` est son propriétaire unique.
 
+## 29. Capture Canonical Creature Catalog V1
+
+Le fichier `monster-capture-creatures.v1.json` reste une source historique de 110 enregistrements.
+
+Il n'est pas directement une bibliothèque de gameplay éditable, car huit anciennes entrées possèdent le même nom que des entrées Capture modernes.
+
+Le propriétaire de la projection jouable est :
+
+`capture-canonical-creature-catalog-v1.js`.
+
+Il déclare explicitement huit alias historiques vers les IDs modernes. Aucun nom de créature n'est utilisé comme règle de résolution.
+
+La projection :
+
+- conserve l'ordre de la source pour les entrées retenues ;
+- exclut les 8 IDs historiques alias ;
+- contient 102 IDs uniques ;
+- refuse tout nouveau doublon de nom non déclaré.
+
+Le Human Editor consomme cette projection avant la construction des drafts.
+
+Les bindings visuels ne maintiennent qu'un propriétaire canonique ; les anciens IDs passent par le même resolver d'alias.
