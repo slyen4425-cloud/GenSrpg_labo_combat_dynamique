@@ -22,6 +22,7 @@ export function createCombatRuntime({
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   onState = () => {},
+  onClock = () => {},
   onProgress = () => {},
   onStarted = () => {},
   onRelease = () => {},
@@ -505,6 +506,7 @@ export function createCombatRuntime({
       emitStateIfChanged();
     }
 
+    onClock(session.snapshot());
     settleDue(current);
 
     if (!disposed && running) {
@@ -522,6 +524,7 @@ export function createCombatRuntime({
     running = true;
     lastNowMs = now();
     emitStateIfChanged({ force: true });
+    onClock(session.snapshot());
     timerId = setTimer(tick, tickMs);
   }
 
