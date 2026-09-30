@@ -177,7 +177,6 @@ function creature(id, evolutionTarget = null) {
         evolutionTarget === null
           ? null
           : {
-              enabled: true,
               condition: "level",
               level: 20,
               targetId: evolutionTarget
