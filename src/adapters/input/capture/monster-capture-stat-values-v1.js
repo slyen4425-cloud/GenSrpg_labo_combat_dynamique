@@ -32,6 +32,11 @@ function firstNumber(object, keys, fallback = 0) {
 }
 
 const STANDARD_ALIASES = Object.freeze({
+  health: Object.freeze([
+    "health",
+    "hp",
+    "pv"
+  ]),
   speed: Object.freeze([
     "speed",
     "initiative",
@@ -125,11 +130,22 @@ export function importMonsterCaptureStatValuesV1(
       STANDARD_ALIASES[entry.id] ??
       [entry.id];
 
-    values[entry.id] = firstNumber(
-      stats,
-      aliases,
-      0
-    );
+    values[entry.id] =
+      entry.id === "health"
+        ? firstNumber(
+            source,
+            aliases,
+            firstNumber(
+              stats,
+              aliases,
+              0
+            )
+          )
+        : firstNumber(
+            stats,
+            aliases,
+            0
+          );
   }
 
   return normalizeCaptureCreatureStatValuesV1(
