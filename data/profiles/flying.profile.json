@@ -74,7 +74,7 @@
         "rotateDeg": 0.3,
         "scaleX": 0.999,
         "scaleY": 1.002,
-        "easing": "cubic-bezier(0.45,0,0.55,1)"
+        "easing": "linear"
       },
       {
         "label": "flight-apex",
@@ -83,7 +83,7 @@
         "rotateDeg": 0,
         "scaleX": 0.998,
         "scaleY": 1.004,
-        "easing": "cubic-bezier(0.45,0,0.55,1)"
+        "easing": "linear"
       },
       {
         "label": "flight-descent",
@@ -92,7 +92,7 @@
         "rotateDeg": -0.25,
         "scaleX": 0.999,
         "scaleY": 1.002,
-        "easing": "cubic-bezier(0.45,0,0.55,1)"
+        "easing": "linear"
       },
       {
         "label": "flight-settle",
@@ -101,7 +101,7 @@
         "rotateDeg": 0,
         "scaleX": 1,
         "scaleY": 1,
-        "easing": "cubic-bezier(0.45,0,0.55,1)"
+        "easing": "linear"
       }
     ],
     "contacts": []
