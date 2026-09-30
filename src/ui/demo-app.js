@@ -3,6 +3,8 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
+import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
+import { planCreatureMotionCueFx } from "../core/fx/creature-motion-fx-plan.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
 const DATA_URLS = Object.freeze({
@@ -180,6 +182,9 @@ export async function mountCombatDemo({
 
   let disposed = false;
   const arena = requiredElement(root, "[data-combat-arena]");
+  const cameraFx = createDomCameraFxRenderer({
+    element: arena
+  });
 
   const slotElements =
     typeof root.querySelectorAll === "function"
@@ -443,15 +448,17 @@ export async function mountCombatDemo({
 
     const phaseTimers = [];
     let phaseAtMs = 0;
+    const motionProfile =
+      profiles.get(slot.actor.profile);
 
-    if (typeof onPhase === "function") {
-      for (const segment of plan.segments) {
-        const payload = Object.freeze({
-          label: segment.label,
-          phaseDurationMs: segment.durationMs,
-          atMs: phaseAtMs
-        });
+    for (const segment of plan.segments) {
+      const payload = Object.freeze({
+        label: segment.label,
+        phaseDurationMs: segment.durationMs,
+        atMs: phaseAtMs
+      });
 
+      if (typeof onPhase === "function") {
         if (phaseAtMs === 0) {
           try {
             onPhase(payload);
@@ -467,9 +474,39 @@ export async function mountCombatDemo({
           }, phaseAtMs);
           phaseTimers.push(timerId);
         }
-
-        phaseAtMs += segment.durationMs;
       }
+
+      const cueAtMs =
+        phaseAtMs + segment.durationMs;
+      for (const cue of segment.cues ?? []) {
+        const playCue = () => {
+          if (disposed || !slot.visible) {
+            return;
+          }
+          for (
+            const fxPlan of
+            planCreatureMotionCueFx({
+              cue,
+              profile: motionProfile,
+              actorScale: slot.actor.scale
+            })
+          ) {
+            cameraFx.play(fxPlan);
+          }
+        };
+
+        if (cueAtMs <= 0) {
+          playCue();
+        } else {
+          const timerId = globalThis.setTimeout(
+            playCue,
+            cueAtMs
+          );
+          phaseTimers.push(timerId);
+        }
+      }
+
+      phaseAtMs += segment.durationMs;
     }
 
     return handle.finished
@@ -584,6 +621,7 @@ export async function mountCombatDemo({
       }
       disposed = true;
       activeApproachBySlot.clear();
+      cameraFx.dispose();
       for (const slot of Object.values(slots)) {
         slot.dispose();
       }
@@ -630,6 +668,11 @@ function createSlot({
       transformOrigin:
         meta.transformOrigin ?? { x: "50%", y: "50%" }
     });
+
+    slotContainer.style?.setProperty?.(
+      "--creature-display-scale",
+      String(actor.scale)
+    );
 
     renderer = createDomActorRenderer({
       element: motion,
