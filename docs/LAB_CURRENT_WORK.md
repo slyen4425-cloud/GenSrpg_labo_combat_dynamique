@@ -17691,3 +17691,83 @@ Après application :
 - lien smartphone ;
 - validation utilisateur export -> import réel.
 
+### Résultat — Capture Human Editor Files UI V1
+
+RED :
+
+- commit : `1f790231ec3cc74c80f26479864b966fc03c1896` ;
+- run : `36682512412` ;
+- 680 tests, 679 PASS, 1 FAIL attendu ;
+- cause : helper de session fichiers absent.
+
+Implémentation :
+
+- nouveau `src/ui/capture-editor-file-transfer-v1.js` ;
+- le helper compose une `CaptureDatabaseV1` directement depuis :
+  - `configuredCreatures` ;
+  - `configuredSkills` ;
+  - `statRegistry` ;
+  - `progressionRules` ;
+- le helper applique les plans `insert/replace/noop/replace-database` aux mêmes Maps existantes ;
+- aucune seconde bibliothèque ou Map métier.
+
+Human Editor :
+
+- bouton **Exporter cette créature** ;
+- bouton **Exporter cette capacité** ;
+- bouton **Exporter toute la base** ;
+- input **Importer un fichier JSON** ;
+- case **Remplacer explicitement les IDs existants**.
+
+Exports :
+
+- créature courante : construit le record normalisé actuel puis appelle `exportCaptureCreatureTransferJsonV1()` ;
+- capacité courante : construit le draft normalisé actuel puis appelle `exportCaptureSkillTransferJsonV1()` ;
+- base complète : compose la session via `buildCaptureEditorDatabaseV1()` puis sérialise avec `exportCaptureDatabaseJsonV1()` ;
+- la base complète refuse un export si une créature/capacité possède des changements non enregistrés, afin de ne pas exporter une Map obsolète.
+
+Import :
+
+`File.text() -> importCaptureTransferJsonV1() -> planCaptureTransferImportV1() -> applyCaptureTransferPlanToEditorStateV1()`.
+
+- mode par défaut : `reject` ;
+- case cochée : `replace` ;
+- conflits calculés avant mutation ;
+- `replace-database` remplace explicitement Maps + registre + progression ;
+- listes, évolution, loadout, registre et progression sont rerendus après application ;
+- les alias historiques restent canonicalisés uniquement par l'adaptateur propriétaire.
+
+Browser I/O :
+
+- `Blob` / `URL.createObjectURL` uniquement dans le Human Editor pour déclencher le téléchargement ;
+- `File.text()` uniquement dans le Human Editor ;
+- aucun FileReader dans les contrats/adaptateurs purs ;
+- aucun localStorage/sessionStorage/IndexedDB ;
+- aucun réseau.
+
+Assets :
+
+- les JSON transportent les `assetId` des Presentation Bindings ;
+- les PNG/sprites/sons eux-mêmes ne sont pas embarqués ;
+- cela permet de créer ensuite les assets manquants et de les raccorder sans modifier les données métier.
+
+GREEN technique :
+
+- run `36682988707` ;
+- structure / frontières / indépendance : OK ;
+- **685 / 685 PASS / 0 FAIL**.
+
+État :
+
+**GREEN technique — PREVALIDATION smartphone requise**.
+
+Validation utilisateur attendue :
+
+1. exporter une créature ;
+2. exporter une capacité ;
+3. exporter toute la base ;
+4. réimporter un export identique -> no-op ;
+5. importer une version différente sans replace -> conflit visible ;
+6. cocher replace -> remplacement explicite ;
+7. vérifier que les listes restent sans doublon Ailevent ;
+8. vérifier qu'aucune configuration Ultime / effets tactiques / projectile power / assets n'est perdue.
