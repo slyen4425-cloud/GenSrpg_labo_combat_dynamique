@@ -19417,3 +19417,27 @@ Validation smartphone demandée :
 3. vérifier que le test démarre en 1v1 ;
 4. dans l'éditeur créature, vérifier les 13 types et les champs de résistance/faiblesse ;
 5. tester au moins une résistance positive et une faiblesse négative si souhaité.
+
+
+## Micro-lot — Capture Test Arena Selector V1 — 2026-09-30
+
+Base : `54f38051f4aab7593f233a30f26d9f608e00ad08` (Creature Natural Elements Reconciliation V1 — GREEN technique/PREVALIDATION).
+
+- checkpoint de départ : `checkpoint/lab-start-capture-test-arena-selector-v1-2026-09-30` ;
+- branche : `work/lab-capture-test-arena-selector-v1-2026-09-30`.
+
+Objectif : permettre, dans l'onglet Combat de l'éditeur Capture, de choisir l'arène de la preview parmi les cinq arènes Core canoniques déjà publiées.
+
+Architecture imposée :
+- une seule valeur de contexte de présentation `arenaId` dans le Battle Setup/export de preview ;
+- aucune URL d'image stockée dans l'éditeur ;
+- aucune copie locale d'arène ;
+- résolution exclusivement par `demoPresentationAssets.presentationForArena(arenaId)` ;
+- aucun fallback parallèle ajouté ;
+- aucun changement Combat Rules, dégâts, ciblage ou mouvement.
+
+Périmètre autorisé : Battle Setup Editor Draft / export de preview / UI onglet Combat / tests / documentation.
+
+Interdits : masquage CSS de régression, table d'URLs d'arènes dans l'UI, second catalogue, condition spéciale par biome, modification gameplay.
+
+RED : prouver que le Battle Setup ne transporte pas encore `arenaId` et que l'onglet Combat ne possède aucun sélecteur d'arène.
