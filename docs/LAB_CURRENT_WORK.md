@@ -18640,3 +18640,21 @@ Volant :
 ### Critère de fin
 
 RED ciblé -> correction data-driven + projection CSS minimale -> CI complète -> preview smartphone.
+
+
+### Recadrage de périmètre avant codage
+
+Diagnostic :
+- le planner idle V1 génère uniquement `écart -> centre` ;
+- un vrai léger `droite <-> gauche` ne peut donc pas être obtenu proprement par les seules valeurs du profil.
+
+Extension autorisée dans ce lot :
+- `src/core/animation/plan-animation.js` ;
+- ajout d'un mode idle générique data-driven `swayMode:"alternate"` ;
+- comportement par défaut inchangé pour tous les profils qui ne déclarent pas ce mode.
+
+Invariants :
+- aucune condition sur l'ID ou le nom d'une créature ;
+- aucun changement gameplay ;
+- bipède, quadrupède, massif et volant conservent leur idle actuel sauf données explicitement modifiées dans ce lot ;
+- le mode alterné reste propriété Animation Core, son activation reste propriété Creature Profile.
