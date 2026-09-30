@@ -324,9 +324,8 @@ test("Human Editor remains presentation/input only for tactical effects", async 
 });
 
 
-test("historical template merge preserves already configured tactical effects", async () => {
+test("blocked historical template preserves configured tactical effects instead of inventing a partial migration", async () => {
   const {
-    captureLegacySkillLibraryEntriesV1,
     mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
   } = await import(
     "../../src/ui/capture-editor-skill-catalog-v1.js"
@@ -354,7 +353,7 @@ test("historical template merge preserves already configured tactical effects", 
         ...baseSkillFields(),
         effects
       },
-      captureLegacySkillLibraryEntriesV1()[0].id
+      "cap_fire_special_1"
     );
 
   assert.deepEqual(
