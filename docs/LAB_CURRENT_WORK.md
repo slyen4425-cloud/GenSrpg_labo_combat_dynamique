@@ -17771,3 +17771,75 @@ Validation utilisateur attendue :
 6. cocher replace -> remplacement explicite ;
 7. vérifier que les listes restent sans doublon Ailevent ;
 8. vérifier qu'aucune configuration Ultime / effets tactiques / projectile power / assets n'est perdue.
+
+
+## Micro-lot correctif — Capture Planned Loadout / Mobile Footer V1 — 2026-09-30
+
+Base :
+- checkpoint PREVALIDATION Human Editor Files UI :
+  `checkpoint/lab-capture-human-editor-files-ui-v1-prevalidation-green-2026-09-30` ;
+- SHA de base : `f73943094e7c79131e80a5ea725b5c838e56242e` ;
+- CI de base vérifiée : run `36683108237`, job `foundation` SUCCESS, 685/685 PASS selon le dernier état documenté.
+
+Checkpoint de départ :
+`checkpoint/lab-start-capture-planned-loadout-mobile-fix-v1-2026-09-30`.
+
+Branche :
+`work/lab-capture-planned-loadout-mobile-fix-v1-2026-09-30`.
+
+### Retour utilisateur reproduit / périmètre
+
+1. Sur smartphone, le footer fixe « Validation » peut recouvrir le bas de la carte « Capacités équipées », notamment le Slot 4.
+2. L'éditeur empêche actuellement de préparer un loadout futur :
+   - les options dont `requiredLevel` dépasse le niveau courant sont désactivées ;
+   - les slots non encore débloqués sont désactivés/refusés ;
+   - la validation rejette un loadout contenant une capacité future.
+
+### Cause prouvée avant correction
+
+- présentation : `.editor-footer` est `position: fixed` et devient vertical sur mobile alors que le shell ne réserve qu'un espace fixe insuffisant ;
+- progression : le Human Editor confond la configuration persistée du loadout avec sa projection active au niveau courant.
+
+### Objectif
+
+Permettre d'enregistrer les quatre slots comme plan de progression, y compris des capacités de niveau futur, tout en n'exposant au combat que les slots et capacités réellement débloqués au niveau courant.
+
+### Propriétaires / frontières
+
+- `CaptureActiveSkillLoadoutV1` reste le propriétaire des quatre affectations enregistrées ;
+- `CaptureProgressionRulesV1` reste propriétaire du nombre de slots actifs par niveau ;
+- `CaptureSkillEditorDraftV1.requiredLevel` reste propriétaire du niveau requis d'une capacité ;
+- la projection vers le snapshot Combat appartient à l'adaptateur d'export, pas au DOM ;
+- le CSS ne modifie aucune règle métier.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js` ;
+- `src/adapters/input/capture/capture-editor-exporter-v3.js` ;
+- nouveau helper pur d'adaptation si nécessaire sous `src/adapters/input/capture/` ;
+- `examples/dom-demo/capture-editor-v2.html` pour libellés uniquement si nécessaire ;
+- `examples/dom-demo/capture-editor-v2.css` ;
+- tests progression/export/UI ciblés ;
+- `docs/LAB_ARCHITECTURE.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé
+
+- contrats de transfert Database/Entity ;
+- import/export JSON et politique reject/replace ;
+- Runtime / Action Resolver / FX / Renderer ;
+- catalogues Capture ;
+- aucune persistance navigateur ;
+- aucune modification de `Zombicide-40k`.
+
+### RED attendu
+
+- un loadout peut conserver une capacité future dans un slot futur sans erreur de configuration ;
+- les quatre selects restent configurables quel que soit le niveau courant ;
+- l'export Combat filtre les slots non débloqués et les capacités dont `requiredLevel` n'est pas atteint ;
+- la même configuration devient disponible automatiquement quand le niveau atteint les seuils ;
+- le footer mobile ne reste pas fixe au-dessus du contenu.
+
+### Critère de fin
+
+RED démontré -> cause confirmée -> correction minimale -> CI complète verte -> documentation -> checkpoint PREVALIDATION smartphone.
