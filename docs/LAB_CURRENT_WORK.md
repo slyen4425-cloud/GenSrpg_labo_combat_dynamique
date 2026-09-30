@@ -19364,3 +19364,40 @@ Périmètre autorisé :
 Protégé : formule `computeCombatDamageV1`, capacités, cooldowns, énergie, ciblage, mouvements, FX, audio, profils, assets, correctif Boule de feu.
 
 RED : prouver sur le vrai chemin éditeur -> export -> adapter -> Combat State -> damage que `fire +35` et `water -50` sont actuellement perdus/refusés, et que les 13 canaux ne sont pas tous visibles.
+
+
+### Résultat — Creature Natural Elements Reconciliation V1
+
+Reprise : l'ancien lot `work/lab-creature-natural-elements-v1-2026-09-30` était techniquement avancé mais divergeait de la lignée actuelle à partir de `f614f566...`. Ses changements éléments/résistances ont été rejoués manuellement sur le HEAD actuel sans importer son ancien chemin cooldown.
+
+RED :
+- commit `32eb0c81ffda1abc4a8dde69878e41d5fe75cd2c` ;
+- le vrai chemin devait conserver `fire +35 / water -50`, accepter une résistance négative et exposer les 13 canaux historiques.
+
+Corrections réconciliées :
+- `4a41fe9db178259953dd837269a0d93adb1c3238` : projection des résistances naturelles vers FighterConfig et somme avec les résistances de stats ;
+- `3f30675ee55563faaf0fbba5d0c302edc822c7ba` : export canonique des `elements` et `resistances` ;
+- `4b30f6aed347127a6359c775e9b703b1c861cd4e` : contrat portable CaptureCombatExport enrichi ;
+- `f9ee1b47d8dcc89cee6cba3ad14e8e14dd7ef102` : Combat State accepte les résistances signées, sans autoriser les bonus de dégâts négatifs ;
+- `6874bf401037ed9e38e4df6a9b45077fd43e0fa3` : éditeur étendu aux 13 canaux historiques ;
+- `b00243218553d0a4fe6faacf69804eda0f9dee1e` : correction de fixture de garde, sans modification produit.
+
+Comportement vérifié :
+- résistance Feu +35 => 100 dégâts Feu deviennent 65 ;
+- faiblesse Eau -50 => 100 dégâts Eau deviennent 150 ;
+- résistance naturelle + résistance de stat sont additionnées une seule fois ;
+- le chemin éditeur -> export -> adaptateur -> Combat State -> damage conserve les valeurs signées ;
+- les 13 canaux sont disponibles pour type créature, résistance/faiblesse et élément de capacité.
+
+GREEN :
+- CI `36755279285` — SUCCESS ;
+- suite complète : **724/724 PASS, 0 FAIL**.
+
+Protections :
+- formule `computeCombatDamageV1` inchangée ;
+- cooldown visuel et autorité cooldown inchangés ;
+- correctif Boule de feu conservé ;
+- mouvements, FX, audio, profils et assets inchangés ;
+- aucune table de matchup codée dans Combat Rules.
+
+État : **GREEN technique — PREVALIDATION smartphone**. À vérifier : Boule de feu retire des PV, 1v1 par défaut, cooldown visuel, et affichage/édition des types et résistances/faiblesses naturelles.
