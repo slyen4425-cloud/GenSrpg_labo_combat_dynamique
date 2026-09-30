@@ -12,13 +12,13 @@ async function loadJson(path) {
 }
 
 const serpentine = await loadJson("data/profiles/serpentine.profile.json");
-const drake = await loadJson("data/profiles/drake.profile.json");
+const flying = await loadJson("data/profiles/flying.profile.json");
 const biped = await loadJson("data/profiles/biped.profile.json");
 const quadruped = await loadJson("data/profiles/quadruped.profile.json");
 const massive = await loadJson("data/profiles/massive.profile.json");
 const registry = createProfileRegistry([
   serpentine,
-  drake,
+  flying,
   biped,
   quadruped,
   massive
@@ -79,7 +79,7 @@ test("teleport attack disappears, reaches target exactly at impact time, then re
 });
 
 test("aerial attack rises, vanishes, dives to target at impact, then returns", () => {
-  const current = actor("drake");
+  const current = actor("flying");
   const travelMs = 850;
   const plan = planAnimation({
     event: normalizeCombatVisualEvent({
@@ -180,8 +180,8 @@ test("ground attack reaches target exactly at configured travel time then return
 });
 
 test("ground approach grows toward player camera and shrinks toward arena depth", () => {
-  const current = actor("drake");
-  const profile = registry.get("drake");
+  const current = actor("flying");
+  const profile = registry.get("flying");
 
   const towardCamera = planAnimation({
     event: normalizeCombatVisualEvent({
@@ -262,8 +262,8 @@ test("ground approach grows toward player camera and shrinks toward arena depth"
 });
 
 test("shared perspective scale respects configured visual bounds", () => {
-  const current = actor("drake");
-  const profile = registry.get("drake");
+  const current = actor("flying");
+  const profile = registry.get("flying");
   const ground = profile.specialMoves.ground;
   const perspective = profile.specialMoves.perspective;
 
@@ -317,7 +317,7 @@ test("shared perspective scale respects configured visual bounds", () => {
 });
 
 test("aerial attack can rise completely above arena before diving", () => {
-  const current = actor("drake");
+  const current = actor("flying");
   const plan = planAnimation({
     event: normalizeCombatVisualEvent({
       type: "aerial-attack",
@@ -348,8 +348,8 @@ test("aerial attack can rise completely above arena before diving", () => {
 
 
 test("aerial approach shrinks toward arena depth and grows toward player camera", () => {
-  const current = actor("drake");
-  const profile = registry.get("drake");
+  const current = actor("flying");
+  const profile = registry.get("flying");
 
   const towardDepth = planAnimation({
     event: normalizeCombatVisualEvent({
@@ -415,8 +415,8 @@ test("aerial approach shrinks toward arena depth and grows toward player camera"
 });
 
 test("teleport approach uses the same camera-depth perspective rule", () => {
-  const current = actor("drake");
-  const profile = registry.get("drake");
+  const current = actor("flying");
+  const profile = registry.get("flying");
 
   const towardDepth = planAnimation({
     event: normalizeCombatVisualEvent({
@@ -480,8 +480,8 @@ test("teleport approach uses the same camera-depth perspective rule", () => {
 
 
 test("shared perspective stays clearly visible at the smallest live arena depth delta", () => {
-  const current = actor("drake");
-  const profile = registry.get("drake");
+  const current = actor("flying");
+  const profile = registry.get("flying");
   const arenaHeight = 800;
   const targetTranslateY = 128;
   const cases = [
@@ -559,7 +559,7 @@ test("shared perspective stays clearly visible at the smallest live arena depth 
 });
 
 test("profiles expose one shared perspective preset instead of ground-only duplicates", () => {
-  for (const profile of [registry.get("drake"), registry.get("serpentine")]) {
+  for (const profile of [registry.get("flying"), registry.get("serpentine")]) {
     assert.deepEqual(
       Object.keys(profile.specialMoves.perspective).sort(),
       [
