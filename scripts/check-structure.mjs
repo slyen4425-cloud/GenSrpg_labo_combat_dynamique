@@ -42,7 +42,7 @@ const required = [
   "src/assets/README.md",
   "src/assets/image-source-manager.js",
   "data/profiles/serpentine.profile.json",
-  "data/profiles/drake.profile.json",
+  "data/profiles/flying.profile.json",
   "data/combat/fighters/maraileron.combat.json",
   "data/combat/fighters/braisombre.combat.json",
   "data/combat/skills/fireball.skill.json",
