@@ -4649,6 +4649,30 @@ export function mountCaptureEditorHumanV2({
     root,
     "[data-progression-schedule-host]"
   );
+  const exportCurrentCreatureButton = one(
+    root,
+    "[data-export-current-creature]"
+  );
+  const exportCurrentSkillButton = one(
+    root,
+    "[data-export-current-skill]"
+  );
+  const exportDatabaseButton = one(
+    root,
+    "[data-export-database]"
+  );
+  const importCaptureJsonInput = one(
+    root,
+    "[data-import-capture-json]"
+  );
+  const importReplaceExisting = one(
+    root,
+    "[data-import-replace-existing]"
+  );
+  const transferState = one(
+    root,
+    "[data-transfer-state]"
+  );
 
   function updateCreatureLibraryState(
     message,
@@ -4656,6 +4680,166 @@ export function mountCaptureEditorHumanV2({
   ) {
     creatureLibraryState.textContent = message;
     creatureLibraryState.dataset.tone = tone;
+  }
+
+  function updateTransferState(
+    message,
+    tone = "info"
+  ) {
+    transferState.textContent = message;
+    transferState.dataset.tone = tone;
+  }
+
+  function downloadCaptureJsonFileV1(
+    filename,
+    jsonText
+  ) {
+    const blob = new Blob(
+      [jsonText],
+      {
+        type:
+          "application/json;charset=utf-8"
+      }
+    );
+    const url =
+      URL.createObjectURL(blob);
+    const link =
+      document.createElement("a");
+
+    link.href = url;
+    link.download = filename;
+    link.hidden = true;
+    document.body.append(link);
+
+    try {
+      link.click();
+    } finally {
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  function safeTransferFilenamePartV1(
+    value
+  ) {
+    return String(value ?? "capture")
+      .trim()
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "") ||
+      "capture";
+  }
+
+  function ensureTransferOwnersReadyV1() {
+    if (statRegistry === null) {
+      throw new Error(
+        "Le registre de stats Capture n’est pas encore chargé."
+      );
+    }
+    if (progressionRules === null) {
+      throw new Error(
+        "Les règles de progression Capture ne sont pas encore chargées."
+      );
+    }
+  }
+
+  function currentEditorDatabaseV1() {
+    ensureTransferOwnersReadyV1();
+
+    return buildCaptureEditorDatabaseV1({
+      statRegistry,
+      progressionRules,
+      configuredCreatures,
+      configuredSkills,
+      metadata: {
+        producer:
+          "capture-human-editor-v2"
+      }
+    });
+  }
+
+  function refreshEditorAfterTransferV1({
+    plan,
+    applyResult
+  }) {
+    if (
+      plan.action ===
+      "replace-database"
+    ) {
+      statRegistry =
+        applyResult.statRegistry;
+      progressionRules =
+        applyResult.progressionRules;
+
+      renderHumanStatRegistryV1(
+        root,
+        statRegistry
+      );
+      renderHumanProgressionRulesV1(
+        root,
+        progressionRules
+      );
+    }
+
+    refreshLoadoutOptions();
+    refreshCreatureLibraryOptions(
+      selectedCreatureId
+    );
+
+    if (
+      plan.kind === "creature" &&
+      plan.action !== "noop"
+    ) {
+      selectedCreatureId =
+        plan.id;
+    }
+
+    if (
+      plan.action ===
+      "replace-database" &&
+      (
+        selectedCreatureId === null ||
+        !configuredCreatures.has(
+          selectedCreatureId
+        )
+      )
+    ) {
+      selectedCreatureId =
+        configuredCreatures.keys()
+          .next().value ?? null;
+    }
+
+    const selectedRecord =
+      selectedCreatureId === null
+        ? null
+        : configuredCreatures.get(
+            selectedCreatureId
+          ) ?? null;
+
+    refreshEvolutionTargetOptions(
+      selectedRecord?.draft?.capture
+        ?.evolution?.targetId ??
+        null
+    );
+
+    if (selectedRecord !== null) {
+      loadCreatureRecord(
+        selectedRecord.draft.id
+      );
+    } else {
+      creatureLibrarySelect.value = "";
+    }
+
+    if (
+      plan.kind === "skill" &&
+      plan.action !== "noop"
+    ) {
+      refreshLoadoutOptions(
+        plan.id
+      );
+    }
+
+    creatureDirty = false;
+    skillDirty = false;
   }
 
   function refreshEvolutionTargetOptions(
