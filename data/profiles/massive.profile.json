@@ -5,10 +5,10 @@
   "idle": {
     "motionStyle": "grounded",
     "bobY": 0,
-    "swayRotate": 0.12,
+    "swayRotate": 0,
     "swayX": 0,
-    "scaleXDelta": -0.002,
-    "scaleYDelta": 0.004,
+    "scaleXDelta": 0,
+    "scaleYDelta": 0.003,
     "durationMs": 2200,
     "transformOrigin": {
       "x": "50%",
