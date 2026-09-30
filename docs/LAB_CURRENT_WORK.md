@@ -17427,3 +17427,110 @@ GREEN :
 - **670 / 670 PASS / 0 FAIL**.
 
 Étape suivante : micro-lot B Entity Transfer Packages.
+
+## Micro-lot — Capture Entity Transfer Packages V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN Database Bundle Core :
+  `checkpoint/lab-capture-database-bundle-core-v1-green-2026-09-30` ;
+- SHA : `e7d462ca3e75b0aa53e46fc89d86f7ff933d7fe1` ;
+- CI : run `36678738311`, 670/670 PASS.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-entity-transfer-packages-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-entity-transfer-packages-v1-2026-09-30`.
+
+### Objectif
+
+Ajouter les formats de fichier unitaires sans dupliquer les propriétaires :
+
+1. export/import **créature seule** ;
+2. export/import **capacité seule** ;
+3. détection d'un fichier **base complète** existant ;
+4. plan d'application pur avec politique `reject|replace`.
+
+### Formats
+
+Créature :
+
+```js
+{
+  schema: "capture-creature-transfer-v1",
+  version: 1,
+  draft: CaptureCreatureEditorDraftV3,
+  statValues: CaptureCreatureStatValuesV1,
+  loadout: CaptureActiveSkillLoadoutV1
+}
+```
+
+Le registre de stats n'est pas recopié dans le fichier créature. Il est fourni comme contexte au normalizer/import depuis l'éditeur cible.
+
+Capacité :
+
+```js
+{
+  schema: "capture-skill-transfer-v1",
+  version: 1,
+  draft: CaptureSkillEditorDraftV1
+}
+```
+
+Base complète :
+
+- reste `CaptureDatabaseV1` ;
+- aucun wrapper concurrent.
+
+### Import / conflits
+
+- `reject` par défaut ;
+- même ID + contenu identique = no-op ;
+- même ID + contenu différent = conflit en mode reject ;
+- `replace` autorise explicitement le remplacement ;
+- aucun merge champ par champ ;
+- les anciens IDs créature déclarés par `CaptureCanonicalCreatureCatalogV1` sont canonicalisés AVANT le conflit ;
+- évolution legacy targetId connue est canonicalisée avec le même resolver ;
+- un fichier inconnu est refusé.
+
+### Fichiers autorisés
+
+- nouveau `src/contracts/capture-creature-transfer-v1.js` ;
+- nouveau `src/contracts/capture-skill-transfer-v1.js` ;
+- nouveau `src/adapters/input/capture/capture-entity-transfer-v1.js` ;
+- tests dédiés ;
+- docs.
+
+### Protégé
+
+- Human Editor ;
+- Runtime / FX / Renderer ;
+- Database bundle contract ;
+- catalogues historiques ;
+- aucune persistance navigateur ;
+- aucune Blob/FileReader/DOM/network.
+
+### RED attendu
+
+1. package créature pur ;
+2. package capacité pur ;
+3. JSON round-trip exact pour chacun ;
+4. auto-détection des trois schemas ;
+5. ancien ID créature canonicalisé explicitement ;
+6. reject sur conflit différent ;
+7. no-op sur contenu identique ;
+8. replace explicite ;
+9. aucune copie de skills dans package créature ;
+10. aucune dépendance interdite.
+
+### Critère de fin
+
+- RED ;
+- contrats/adaptateur pur ;
+- CI complète GREEN ;
+- checkpoint GREEN ;
+- seulement ensuite Human Editor Files UI.
+
