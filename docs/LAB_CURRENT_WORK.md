@@ -18805,3 +18805,15 @@ Validation smartphone demandée :
 4. lancer une attaque aérienne et vérifier qu'elle rejoint l'ennemi en un seul pont continu, avec un seul sommet ;
 5. vérifier l'impact sur la cible et le retour post-impact ;
 6. vérifier qu'aucune régression n'est visible sur bipède, quadrupède et massif.
+
+
+### Publication PREVALIDATION — Flying Single-Arc Reconciliation V1
+
+- HEAD fonctionnel documenté : `77b8d7a767740974888c71deb0d57e5cba80c327` ;
+- CI branche work : `36718431750` — SUCCESS ;
+- checkpoint PREVALIDATION : `checkpoint/lab-flying-single-arc-reconciliation-v1-prevalidation-green-2026-09-30` ;
+- preview smartphone : `preview/lab-flying-single-arc-reconciliation-v1-2026-09-30` ;
+- CI preview avant clôture documentaire : `36718493115` — SUCCESS ;
+- work / checkpoint / preview étaient identiques sur le HEAD fonctionnel avant cette clôture documentaire.
+
+La clôture documentaire ne modifie aucun fichier fonctionnel. Après ce commit, le checkpoint PREVALIDATION et la preview doivent être avancés en fast-forward sur le nouveau HEAD documentaire, puis leur identité et la CI preview doivent être revérifiées.
