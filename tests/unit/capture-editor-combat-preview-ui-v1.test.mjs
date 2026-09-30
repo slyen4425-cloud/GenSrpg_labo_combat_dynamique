@@ -126,9 +126,9 @@ test("combat preview exposes authoritative cooldown feedback", async () => {
     "utf8"
   );
 
-  assert.match(source, /preview\\.outcome\\s*===\\s*["']cooldown["']/);
-  assert.match(source, /preview\\.remainingCooldownMs/);
+  assert.match(source, /preview\.outcome\s*===\s*["']cooldown["']/);
+  assert.match(source, /preview\.remainingCooldownMs/);
   assert.match(source, /action-option__cooldown/);
-  assert.doesNotMatch(source, /setInterval\\s*\\(/);
-  assert.doesNotMatch(source, /Date\\.now\\s*\\(/);
+  assert.doesNotMatch(source, /setInterval\s*\(/);
+  assert.doesNotMatch(source, /Date\.now\s*\(/);
 });
