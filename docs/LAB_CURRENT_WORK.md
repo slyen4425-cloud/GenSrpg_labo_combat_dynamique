@@ -17572,3 +17572,128 @@ GREEN :
 - **679 / 679 PASS / 0 FAIL**.
 
 Étape suivante : Human Editor Files UI.
+
+## Micro-lot — Capture Database Files UI V1 — 2026-09-30
+
+Base :
+
+- checkpoint GREEN Entity Transfer Packages :
+  `checkpoint/lab-capture-entity-transfer-packages-v1-green-2026-09-30` ;
+- SHA : `5bc2da5fa6595ece89ed527ba6e55f0446f12c34` ;
+- CI : 679/679 PASS.
+
+Checkpoint départ :
+
+`checkpoint/lab-start-capture-database-files-ui-v1-2026-09-30`.
+
+Branche :
+
+`work/lab-capture-database-files-ui-v1-2026-09-30`.
+
+### Objectif utilisateur
+
+Dans le Human Editor smartphone :
+
+- **Exporter cette créature** ;
+- **Exporter cette capacité** ;
+- **Exporter toute la base** ;
+- **Importer un JSON** ;
+- choix explicite **Remplacer les IDs existants**.
+
+Les exports utilisent uniquement les données enregistrées dans les Maps canoniques. Une édition non enregistrée bloque l'export de l'entité courante.
+
+### Adaptateur de session
+
+Ajouter un adaptateur pur :
+
+`src/adapters/input/capture/capture-editor-database-state-v1.js`.
+
+Responsabilités :
+
+- construire CaptureDatabaseV1 depuis :
+  - configuredCreatures ;
+  - configuredSkills ;
+  - statRegistry ;
+  - progressionRules ;
+- appliquer une opération du planner à un état de session et retourner un nouvel état ;
+- aucune dépendance DOM/Blob/File/Storage/Runtime.
+
+L'UI reste propriétaire uniquement de :
+
+- clics ;
+- lecture du fichier via `File.text()` ;
+- téléchargement via Blob/URL navigateur ;
+- message utilisateur ;
+- rafraîchissement des contrôles.
+
+### Règles d'export
+
+Créature :
+
+- la créature doit être enregistrée ;
+- aucun changement créature non enregistré ;
+- le fichier transporte seulement la record canonique.
+
+Capacité :
+
+- l'ID affiché doit exister dans `configuredSkills` ;
+- aucun changement capacité non enregistré ;
+- le fichier transporte le draft canonique enregistré.
+
+Base :
+
+- toutes les Maps canoniques de la session ;
+- stat registry ;
+- progression rules ;
+- metadata stable `producer:"capture-human-v2"`.
+
+### Règles d'import
+
+- parsing / normalisation / conflit : adaptateurs purs déjà propriétaires ;
+- case remplacer OFF -> mode reject ;
+- case remplacer ON -> mode replace ;
+- après opération :
+  - mêmes Maps de session mises à jour ;
+  - stat registry / progression remplacés uniquement pour replace-database ;
+  - listes/loadout/évolution rafraîchis ;
+  - si une créature importée est insérée/remplacée, elle devient la créature sélectionnée ;
+- aucune sauvegarde navigateur.
+
+### Fichiers autorisés
+
+- nouveau `src/adapters/input/capture/capture-editor-database-state-v1.js` ;
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/capture-editor-v2.css` ;
+- tests dédiés ;
+- docs.
+
+### Protégé
+
+- Runtime / Action Resolver ;
+- FX / Renderer ;
+- contrats Database/Entity Transfer déjà GREEN ;
+- catalogues sources ;
+- aucune localStorage/sessionStorage/IndexedDB.
+
+### RED attendu
+
+1. adaptateur de session absent ;
+2. HTML expose les 3 exports + import + replace ;
+3. fichiers unitaires utilisent les formats propriétaires ;
+4. export base n'utilise jamais CaptureCombatExportV1/V3 ;
+5. import applique le plan pur aux mêmes Maps ;
+6. reject/replace visible et explicite ;
+7. 102 créatures canoniques annoncées, plus 110 ;
+8. aucun stockage navigateur ;
+9. mobile layout lisible.
+
+### Critère de fin
+
+- RED ;
+- adaptateur pur ;
+- UI minimale ;
+- CI complète GREEN ;
+- checkpoint PREVALIDATION ;
+- lien smartphone pour workflow réel export/import.
+
