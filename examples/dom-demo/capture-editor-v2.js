@@ -35,7 +35,7 @@ const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
   new URL("../../data/profiles/quadruped.profile.json", import.meta.url),
   new URL("../../data/profiles/serpentine.profile.json", import.meta.url),
-  new URL("../../data/profiles/drake.profile.json", import.meta.url),
+  new URL("../../data/profiles/flying.profile.json", import.meta.url),
   new URL("../../data/profiles/massive.profile.json", import.meta.url)
 ]);
 
