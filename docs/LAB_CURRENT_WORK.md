@@ -18363,3 +18363,31 @@ Démontrer qu'une expiration de cooldown, à énergie/HP constants et sans actio
 ### Critère de fin
 
 RED ciblé -> correction de la cause dans le signal Runtime -> CI complète -> preview smartphone.
+
+
+### Résultat — Skill Availability Refresh V1
+
+RED :
+- commit `172fbae71503725f587648876f244f245feb45b6` ;
+- CI `36698518135` ;
+- **706 tests, 705 PASS, 1 FAIL ciblé** ;
+- le Combat State avait bien expiré le cooldown et `previewSkill()` retournait `ok:true`, mais aucun nouvel `onState` n'était émis lorsque PV/énergie restaient constants.
+
+Cause :
+- `CombatRuntime.stateSignal()` ne signalait qu'une projection trop étroite du fighter ;
+- les changements sémantiques non inclus dans cette projection pouvaient donc ne pas réveiller les consommateurs.
+
+Correction :
+- le Runtime compare désormais l'état sémantique observable du fighter ;
+- seul `energyChargeProgressMs`, progression interne de recharge sans changement visible, est exclu du signal ;
+- Combat State / Action Resolver restent propriétaires des cooldowns ;
+- aucune durée, coût ou règle de disponibilité n'est recodée dans Runtime ou UI.
+
+GREEN :
+- commit `36d1e212c889b355792c712dd781260da02b7350` ;
+- CI `36698619772` ;
+- structure / frontières / indépendance : OK ;
+- **706/706 PASS / 0 FAIL**.
+
+État :
+**GREEN technique — PREVALIDATION smartphone requise.**
