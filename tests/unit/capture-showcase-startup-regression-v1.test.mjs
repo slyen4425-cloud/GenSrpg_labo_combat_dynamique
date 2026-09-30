@@ -317,3 +317,40 @@ test("showcase preset batch is atomic and preserves the stable roster when one p
     false
   );
 });
+
+
+test("Human Editor publishes the stable creature library before awaiting showcase presets", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  const stableLibraryMessage =
+    source.indexOf(
+      "Catalogue Monster Capture historique chargé. Chargement des modèles vitrine"
+    );
+  const presetAwait =
+    source.indexOf(
+      "await hydrateCaptureShowcaseCreaturePresetsV1"
+    );
+  const visiblePresetError =
+    source.indexOf(
+      "Bibliothèque historique conservée ; erreur modèles vitrine"
+    );
+
+  assert.ok(
+    stableLibraryMessage >= 0,
+    "stable roster publication marker must exist"
+  );
+  assert.ok(
+    presetAwait > stableLibraryMessage,
+    "stable roster must be published before showcase preset hydration is awaited"
+  );
+  assert.ok(
+    visiblePresetError > presetAwait,
+    "preset startup errors must stay visible instead of aborting the stable roster"
+  );
+});
