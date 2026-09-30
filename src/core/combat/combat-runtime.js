@@ -345,12 +345,6 @@ export function createCombatRuntime({
       return;
     }
 
-    activeByActor.delete(leftRecord.action.actorId);
-    activeByActor.delete(rightRecord.action.actorId);
-
-    onProgress(idleProgress(leftRecord.action.actorId));
-    onProgress(idleProgress(rightRecord.action.actorId));
-
     const resolutions = resolveProjectileClash({
       state: session.snapshot(),
       leftAction: leftRecord.action,
@@ -360,16 +354,43 @@ export function createCombatRuntime({
       candidate: currentCandidate
     });
 
-    const ordered = [
-      {
+    const ordered = [];
+
+    if (resolutions.left !== null) {
+      activeByActor.delete(
+        leftRecord.action.actorId
+      );
+      onProgress(
+        idleProgress(
+          leftRecord.action.actorId
+        )
+      );
+      ordered.push({
         sequence: leftRecord.sequence,
         resolution: resolutions.left
-      },
-      {
+      });
+    }
+
+    if (resolutions.right !== null) {
+      activeByActor.delete(
+        rightRecord.action.actorId
+      );
+      onProgress(
+        idleProgress(
+          rightRecord.action.actorId
+        )
+      );
+      ordered.push({
         sequence: rightRecord.sequence,
         resolution: resolutions.right
-      }
-    ].sort((left, right) => left.sequence - right.sequence);
+      });
+    }
+
+    ordered.sort(
+      (left, right) =>
+        left.sequence -
+        right.sequence
+    );
 
     for (const item of ordered) {
       onResolved(item.resolution);
