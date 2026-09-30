@@ -3,12 +3,16 @@
   "label": "Quadrupède",
   "description": "Profil générique pour loups, félins, bêtes et créatures à quatre appuis.",
   "idle": {
-    "bobY": 1.4,
-    "swayRotate": 0.28,
-    "swayX": 0.4,
-    "scaleXDelta": 0.006,
-    "scaleYDelta": -0.003,
-    "durationMs": 1700
+    "bobY": 0,
+    "swayRotate": 0.34,
+    "swayX": 0,
+    "scaleXDelta": 0.008,
+    "scaleYDelta": -0.004,
+    "durationMs": 1700,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "90%"
+    }
   },
   "attack": {
     "lungeX": 54,
@@ -58,5 +62,35 @@
       "perspectiveScaleMin": 0.7,
       "perspectiveScaleMax": 1.35
     }
+  },
+  "locomotion": {
+    "style": "bound",
+    "durationMs": 330,
+    "phases": [
+      {
+        "label": "bound-lift",
+        "at": 0.45,
+        "translateY": -14,
+        "rotateDeg": 0.55,
+        "scaleX": 1.012,
+        "scaleY": 0.992,
+        "easing": "ease-out"
+      },
+      {
+        "label": "bound-land",
+        "at": 1,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "easing": "cubic-bezier(0.35,0.9,0.35,1)"
+      }
+    ],
+    "contacts": [
+      {
+        "at": 1,
+        "intensity": 0.28
+      }
+    ]
   }
 }
