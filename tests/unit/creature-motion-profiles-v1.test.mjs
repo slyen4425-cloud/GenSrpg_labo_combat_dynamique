@@ -36,7 +36,7 @@ const profilePaths = Object.freeze({
   biped: "data/profiles/biped.profile.json",
   quadruped: "data/profiles/quadruped.profile.json",
   serpentine: "data/profiles/serpentine.profile.json",
-  drake: "data/profiles/drake.profile.json",
+  flying: "data/profiles/flying.profile.json",
   massive: "data/profiles/massive.profile.json"
 });
 
@@ -69,9 +69,9 @@ test("biped quadruped and massive idle keep the base point fixed with a low pivo
   }
 });
 
-test("serpentine idle remains essentially grounded while drake keeps visible vertical flight", async () => {
+test("serpentine idle remains essentially grounded while flying keeps visible vertical flight", async () => {
   const serpentine = await json(profilePaths.serpentine);
-  const drake = await json(profilePaths.drake);
+  const flying = await json(profilePaths.flying);
 
   const groundPlan = planAnimation({
     event: event("idle", "serpentine-actor"),
@@ -79,9 +79,9 @@ test("serpentine idle remains essentially grounded while drake keeps visible ver
     profile: serpentine
   });
   const flightPlan = planAnimation({
-    event: event("idle", "drake-actor"),
-    actor: actor("drake"),
-    profile: drake
+    event: event("idle", "flying-actor"),
+    actor: actor("flying"),
+    profile: flying
   });
 
   assert.ok(
