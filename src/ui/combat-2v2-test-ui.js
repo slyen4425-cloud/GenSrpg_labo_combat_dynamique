@@ -774,6 +774,18 @@ export async function mountCoop2v2Test({
         preview?.outcome === "cooldown"
           ? Number(preview.remainingCooldownMs) || 0
           : 0;
+      const totalCooldownMs =
+        Math.max(0, Number(skill.cooldownMs) || 0);
+      const cooldownProgress =
+        remainingCooldownMs > 0 && totalCooldownMs > 0
+          ? Math.max(
+              0,
+              Math.min(
+                1,
+                1 - remainingCooldownMs / totalCooldownMs
+              )
+            )
+          : 1;
 
       cooldown.textContent =
         remainingCooldownMs > 0
@@ -784,6 +796,12 @@ export async function mountCoop2v2Test({
         remainingCooldownMs > 0
           ? String(Math.ceil(remainingCooldownMs))
           : "";
+      button.dataset.cooldownActive =
+        remainingCooldownMs > 0 ? "true" : "false";
+      button.style.setProperty(
+        "--cooldown-progress",
+        String(cooldownProgress)
+      );
 
       button.disabled =
         runtime.hasActiveActionFor(format.localActorId) ||
@@ -840,13 +858,42 @@ export async function mountCoop2v2Test({
         }
       );
     if (presentation?.icon?.url) {
-      const image = root.ownerDocument.createElement("img");
-      image.className = "action-option__icon";
-      image.src = presentation.icon.url;
-      image.alt = "";
-      image.setAttribute("aria-hidden", "true");
+      const iconShell =
+        root.ownerDocument.createElement("span");
+      iconShell.className = "action-option__icon-shell";
+      iconShell.setAttribute("aria-hidden", "true");
+
+      const baseImage =
+        root.ownerDocument.createElement("img");
+      baseImage.className =
+        "action-option__icon action-option__icon--base";
+      baseImage.src = presentation.icon.url;
+      baseImage.alt = "";
+
+      const colorImage =
+        root.ownerDocument.createElement("img");
+      colorImage.className =
+        "action-option__icon action-option__icon--color";
+      colorImage.src = presentation.icon.url;
+      colorImage.alt = "";
+
+      const dial =
+        root.ownerDocument.createElement("span");
+      dial.className = "action-option__cooldown-dial";
+
+      const needle =
+        root.ownerDocument.createElement("span");
+      needle.className =
+        "action-option__cooldown-needle";
+
+      iconShell.append(
+        baseImage,
+        colorImage,
+        dial,
+        needle
+      );
       button.classList.add("action-option--with-icon");
-      button.append(image);
+      button.append(iconShell);
     }
 
     const label = root.ownerDocument.createElement("strong");
