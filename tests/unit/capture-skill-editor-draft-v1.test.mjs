@@ -28,9 +28,13 @@ function validDraft() {
       allowedDistances: ["medium", "long"],
       targetRelations: ["enemy"],
       projectileClash: {
-        mode: "mutual_cancel",
-        group: "fire-orb",
-        interactsWith: ["fire-orb"]
+        tag: "fire",
+        rules: [
+          {
+            againstTag: "fire",
+            strength: 1
+          }
+        ]
       },
       effect: {
         damage: 4,
