@@ -9,6 +9,12 @@ import {
   projectileClashCandidate,
   resolveProjectileClash
 } from "../../src/core/combat/projectile-clash.js";
+import {
+  createCombatSession
+} from "../../src/core/combat/combat-session.js";
+import {
+  createCombatRuntime
+} from "../../src/core/combat/combat-runtime.js";
 
 function skill({
   id,
@@ -249,7 +255,7 @@ test("Human Editor exposes only projectile power for clash configuration", async
 test("Projectile Clash contract contains no tag or directed-rule authority", async () => {
   const source = await readFile(
     new URL(
-      "../../src/contracts/projectile-clash-v2.js",
+      "../../src/contracts/projectile-power-v1.js",
       import.meta.url
     ),
     "utf8"
@@ -271,5 +277,185 @@ test("Projectile Clash contract contains no tag or directed-rule authority", asy
   assert.match(
     source,
     /power/
+  );
+});
+
+
+test("real CombatRuntime keeps the stronger projectile active until target impact", () => {
+  let clock = 0;
+  let scheduled = null;
+  const resolutions = [];
+
+  const session = createCombatSession({
+    fighters: [
+      {
+        id: "strong-actor",
+        maxHp: 100,
+        maxEnergy: 10,
+        initialEnergy: 10
+      },
+      {
+        id: "weak-actor",
+        maxHp: 100,
+        maxEnergy: 10,
+        initialEnergy: 10
+      }
+    ]
+  });
+
+  const strong = skill({
+    id: "strong-runtime",
+    power: 2,
+    damage: 20
+  });
+  const weak = skill({
+    id: "weak-runtime",
+    power: 1,
+    damage: 15
+  });
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 10,
+    now: () => clock,
+    setTimer(callback) {
+      scheduled = callback;
+      return 1;
+    },
+    clearTimer() {},
+    onResolved(resolution) {
+      resolutions.push(resolution);
+    }
+  });
+
+  runtime.start();
+
+  assert.equal(
+    runtime.startSkill({
+      actorId: "strong-actor",
+      targetId: "weak-actor",
+      skill: strong
+    }).ok,
+    true
+  );
+  assert.equal(
+    runtime.startSkill({
+      actorId: "weak-actor",
+      targetId: "strong-actor",
+      skill: weak
+    }).ok,
+    true
+  );
+
+  clock = 600;
+  scheduled();
+
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "strong-actor"
+    ),
+    true
+  );
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "weak-actor"
+    ),
+    false
+  );
+  assert.equal(
+    session.snapshot().fighters[
+      "weak-actor"
+    ].hp,
+    100
+  );
+
+  clock = 1100;
+  scheduled();
+
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "strong-actor"
+    ),
+    false
+  );
+  assert.equal(
+    session.snapshot().fighters[
+      "weak-actor"
+    ].hp,
+    80
+  );
+  assert.equal(
+    resolutions.some(
+      (resolution) =>
+        resolution.actorId ===
+          "strong-actor" &&
+        resolution.outcome === "hit"
+    ),
+    true
+  );
+
+  runtime.dispose();
+});
+
+test("Projectile Power owner stays independent from UI renderer storage and network", async () => {
+  const sources = await Promise.all(
+    [
+      "../../src/contracts/projectile-power-v1.js",
+      "../../src/core/combat/projectile-clash.js"
+    ].map((relative) =>
+      readFile(
+        new URL(
+          relative,
+          import.meta.url
+        ),
+        "utf8"
+      )
+    )
+  );
+
+  for (const source of sources) {
+    for (const forbidden of [
+      "document.",
+      "window.",
+      "localStorage",
+      "sessionStorage",
+      "MutationObserver",
+      "fetch(",
+      "adapters/renderer",
+      "src/ui/"
+    ]) {
+      assert.equal(
+        source.includes(forbidden),
+        false,
+        "Projectile Power owner must not depend on " +
+          forbidden
+      );
+    }
+  }
+});
+
+test("non-projectile skill cannot own positive projectile power", () => {
+  assert.throws(
+    () =>
+      normalizeSkillDefinition({
+        id: "contact-power",
+        name: "Contact",
+        category: "offensive",
+        form: "contact",
+        element: null,
+        approachMode: "none",
+        energyCost: 1,
+        preparationMs: 100,
+        travelMs: 100,
+        recoveryMs: 100,
+        allowedDistances: ["short"],
+        effect: {
+          damage: 1
+        },
+        projectileClash: {
+          power: 1
+        }
+      }),
+    /requires form=projectile/i
   );
 });
