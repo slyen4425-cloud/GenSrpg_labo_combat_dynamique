@@ -991,7 +991,8 @@ function visualSlot(assetId, {
   trigger,
   anchor = null,
   layerByView = null,
-  displayScale = 1
+  displayScale = 1,
+  playbackMode = "once"
 }) {
   const id = optionalText(assetId);
   if (id === null) {
@@ -1023,7 +1024,7 @@ function visualSlot(assetId, {
       opponent:
         layerByView?.opponent ?? "front"
     },
-    playbackMode: "once",
+    playbackMode,
     offsetX: 0,
     offsetY: 0,
     rotationDeg: 0,
@@ -1097,6 +1098,21 @@ function presentationForSkill(fields) {
         presentation.impactDisplayScale ?? 1
     }
   );
+  const persistentZone = visualSlot(
+    presentation.zoneAssetId,
+    {
+      attachment: "source",
+      trigger: "impact",
+      anchor: null,
+      displayScale:
+        presentation.zoneDisplayScale ?? 1,
+      layerByView: {
+        player: "behind",
+        opponent: "behind"
+      },
+      playbackMode: "loop"
+    }
+  );
 
   const castAudio = audioSkillSlot(
     presentation.castAudioAssetId
@@ -1109,7 +1125,8 @@ function presentationForSkill(fields) {
     iconAssetId !== null ||
     cast !== null ||
     travel !== null ||
-    impact !== null;
+    impact !== null ||
+    persistentZone !== null;
   const hasAudio =
     castAudio !== null ||
     impactAudio !== null;
@@ -1130,6 +1147,9 @@ function presentationForSkill(fields) {
   }
   if (impact !== null) {
     visual.impact = impact;
+  }
+  if (persistentZone !== null) {
+    visual.aura = persistentZone;
   }
 
   const audio = {};
@@ -1886,6 +1906,8 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-layer-opponent]", "front"],
     ["[data-skill-impact-fx]", ""],
     ["[data-skill-impact-scale]", 1],
+    ["[data-skill-zone-fx]", ""],
+    ["[data-skill-zone-scale]", 1],
     ["[data-skill-cast-audio]", ""],
     ["[data-skill-impact-audio]", ""]
   ];
@@ -2573,6 +2595,40 @@ function tacticalTextInputV1(
   return input;
 }
 
+const TACTICAL_DAMAGE_ELEMENTS_V1 = Object.freeze([
+  ["fire", "Feu"],
+  ["water", "Eau"],
+  ["earth", "Terre"],
+  ["air", "Air"],
+  ["electric", "Électricité"],
+  ["light", "Lumière"],
+  ["shadow", "Ombre"],
+  ["nature", "Nature"],
+  ["ice", "Glace"],
+  ["poison", "Poison"],
+  ["steel", "Acier"],
+  ["psy", "Psy"],
+  ["spirit", "Esprit"]
+]);
+
+function tacticalDamageElementSelectV1(
+  datasetKey,
+  value
+) {
+  const select = document.createElement("select");
+  select.dataset[datasetKey] = "true";
+  createOption(
+    select,
+    "",
+    "Même élément que la capacité"
+  );
+  for (const [element, label] of TACTICAL_DAMAGE_ELEMENTS_V1) {
+    createOption(select, element, label);
+  }
+  select.value = String(value ?? "");
+  return select;
+}
+
 function fillStatusStatSelectV1(
   select,
   statRegistry,
@@ -2897,7 +2953,7 @@ function appendHumanSkillEffectV1(
     "damage_over_time";
   dotConfig.append(
     tacticalFieldV1(
-      "Dégâts par tick",
+      "Dégâts à chaque intervalle",
       statusAmount
     ),
     tacticalFieldV1(
@@ -2905,7 +2961,7 @@ function appendHumanSkillEffectV1(
       tickSeconds
     ),
     tacticalFieldV1(
-      "Canal / élément",
+      "Élément des dégâts",
       statusChannel
     )
   );
@@ -3053,7 +3109,7 @@ function appendHumanSkillEffectV1(
     );
 
   const zoneChannel =
-    tacticalTextInputV1(
+    tacticalDamageElementSelectV1(
       "skillZoneChannel",
       effect?.tickEffect?.channel ?? ""
     );
@@ -3076,7 +3132,7 @@ function appendHumanSkillEffectV1(
       zoneDuration
     ),
     tacticalFieldV1(
-      "Dégâts toutes les (secondes)",
+      "Intervalle entre les dégâts (secondes)",
       zoneTick
     ),
     tacticalFieldV1(
@@ -3105,7 +3161,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "Rayon gameplay : Proche → Moyen → Loin. En mode Renforcer, chaque nouvelle activation augmente le rayon selon la croissance choisie, jusqu’au maximum d’activations.";
+    "Intervalle = temps entre deux applications de dégâts. La première utilisation compte comme activation 1. En mode Renforcer, le rayon évolue Proche → Moyen → Loin selon la croissance choisie ; une fois le maximum atteint, les réactivations gardent ce rayon maximal et renouvellent la durée. « Même élément que la capacité » applique automatiquement son élément aux dégâts.";
 
   zoneBox.append(
     zoneGrid,
@@ -3972,6 +4028,16 @@ function catalogMatches(asset, role) {
 
   if (role === "impact") {
     return asset.category === "impact";
+  }
+
+  if (role === "zone") {
+    return (
+      asset.mediaType === "image" &&
+      (
+        asset.assetType === "sprite" ||
+        asset.assetType === "fx"
+      )
+    );
   }
 
   if (role === "audio") {
@@ -4885,6 +4951,14 @@ function readSkillFields(root) {
       impactDisplayScale: numericValue(
         root,
         "[data-skill-impact-scale]"
+      ),
+      zoneAssetId: selectedValue(
+        root,
+        "[data-skill-zone-fx]"
+      ),
+      zoneDisplayScale: numericValue(
+        root,
+        "[data-skill-zone-scale]"
       ),
       socketId: selectedValue(
         root,
