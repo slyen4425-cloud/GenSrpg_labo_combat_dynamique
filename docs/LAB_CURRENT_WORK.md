@@ -20932,3 +20932,81 @@ Validation smartphone attendue :
 5. Proche/Moyen/Loin reste gouverné par le gameplay existant.
 
 Aucun merge vers `main`.
+
+
+## Micro-lot — Fire Zone Sprite V2 Replacement — 2026-10-01
+
+Base code exacte : `50de483fd5dedd72e0d7ecabb498ee7496794040` (Persistent Zone Visual UX V2 — GREEN technique / PREVALIDATION smartphone).
+
+Base assets exacte : `global-assets@e59169f21877294f79ca579d4e3b9a241043d780`.
+
+- checkpoint code : `checkpoint/lab-start-fire-zone-sprite-v2-replacement-2026-10-01` ;
+- work code : `work/lab-fire-zone-sprite-v2-replacement-2026-10-01` ;
+- checkpoint assets : `checkpoint/global-assets-before-fire-zone-v2-replacement-2026-10-01` ;
+- work assets : `work/global-assets-fire-zone-v2-replacement-2026-10-01`.
+
+### Retour utilisateur
+
+Le sprite actuel fonctionne techniquement mais reste trop peu fluide et trop vu du dessus. L'utilisateur valide le principe mais demande :
+- davantage de frames ;
+- une vue plus inclinée / plus oblique ;
+- remplacement de l'ancien sprite par le nouveau sans changer l'asset sélectionné dans les capacités existantes.
+
+### Source visuelle validée
+
+Sprite sheet généré dans ce chat :
+- grille 4 × 4 ;
+- 16 frames ;
+- zone de feu au sol avec perspective plus oblique ;
+- fond transparent ;
+- source locale : `sprite_sheet_d_arène_de_feu_magique.png`.
+
+### Règle de compatibilité
+
+L'identifiant stable **reste inchangé** :
+`pack:capture:sprite-fire-zone-loop-01`.
+
+Ainsi les capacités déjà sauvegardées continuent de référencer le même asset sans migration ni duplication.
+
+### Objectif
+
+1. Découper les 16 frames dans l'ordre gauche -> droite, haut -> bas.
+2. Remplacer les anciennes 8 frames de la bibliothèque par 16 nouvelles frames.
+3. Mettre à jour le manifest existant :
+   - 16 frames ;
+   - boucle ;
+   - même assetId logique ;
+   - même cadence de base, sauf nécessité démontrée.
+4. Mettre à jour le resolver de présentation existant de 8 à 16 frames.
+5. Conserver le chemin mobile-safe à calques CSS déjà GREEN.
+6. Ne créer ni nouvel assetId, ni seconde entrée parallèle, ni fallback cachant une erreur.
+
+### Propriétaires
+
+- `global-assets` : frames et manifest ;
+- catalogue global : identité stable inchangée, métadonnées seulement si nécessaire ;
+- `demoPresentationAssets` : nombre de frames du resolver ;
+- renderer : protégé sauf RED démontrant un besoin.
+
+### Protégé
+
+- gameplay `persistent_zone` ;
+- `CombatState.persistentZones` ;
+- scale X/Y ;
+- réactivation Proche/Moyen/Loin ;
+- aucun timer/observer/listener compensatoire ;
+- aucun comportement fondé sur un nom ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED : l'asset canonique doit résoudre 16 frames au lieu de 8.
+2. Vérifier première et dernière frame attendues.
+3. Remplacer les binaires et manifest sur la branche assets dédiée.
+4. Corriger uniquement le resolver existant.
+5. CI complète.
+6. Publier `global-assets` puis checkpoint/preview code.
+7. Validation smartphone obligatoire avant GREEN utilisateur.
+
+État : **LOT OUVERT — RED obligatoire avant remplacement**.
