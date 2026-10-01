@@ -19829,3 +19829,43 @@ Base : `04381fee5713f72ad3c6be80f5143f501f680bef` (lot vitrine toujours non GREE
 - `main`.
 
 État : **LOT OUVERT — diagnostic confirmé, RED à écrire**.
+
+
+### Résultat — Showcase Creature Configuration Corrections V1
+
+RED :
+- test ciblé : `tests/unit/capture-showcase-config-corrections-v1.test.mjs` ;
+- commit : `27707bd1d3be7f47c1062207e85ab2f5d8977af5` ;
+- CI : `36830209857` — FAILURE attendue.
+
+Cause confirmée :
+- l'option de test `loup-volcanique` utilisait encore `buildCaptureTestOpponentDraftV1`, qui construit le mock générique `crea-enemy` et ignore la vraie fiche `crea-loup` ;
+- même risque pour `golem-moussu` / `crea_mossback` ;
+- le socket bouche de Moussados était enregistré dans le preset avec les coordonnées front/back inversées.
+
+Corrections :
+- `17e31e4303851602e1c9cec242a7aa5bec9fbb70` : les options de test Loup volcanique et Golem moussu déclarent explicitement leur `configuredCreatureId` (`crea-loup` / `crea_mossback`) ;
+- `30b2276d8b6ef41fd6c04128f34b463f6c3e18c4` : correction persistante du socket `mouth` de Moussados directement dans le preset propriétaire ;
+- `f4bd05db0795ea9ec280e286d326d16090025c7f` : le Human Editor accepte un `getOpponentCreatureId` ; lorsqu'un modèle configuré est choisi, il récupère directement la fiche depuis `configuredCreatures` et réutilise son draft, son loadout, ses stats et les compétences déjà présentes dans `configuredSkills` ; le mock `crea-enemy` n'est plus autorité pour ces modèles ;
+- `e3c62036be55a6ed66f6a0be9cd264c011bfe494` : le DOM demo transmet l'ID configuré et marque visuellement les options comme `modèle configuré`.
+
+Autorités préservées :
+- `configuredCreatures` reste l'unique état actif des vraies fiches ;
+- aucun duplicata de Loup n'est créé ; l'option de test Loup pointe vers `crea-loup` ;
+- aucune donnée de secours n'est inventée ; si un `configuredCreatureId` annoncé est absent, le test échoue explicitement ;
+- les créatures qui n'ont pas encore de vraie fiche configurée continuent d'utiliser le mock de preview historique, sans prendre autorité sur les modèles vitrine ;
+- le socket Moussados est corrigé dans la donnée source, aucune inversion UI/renderer n'a été ajoutée.
+
+Coordonnées bouche Moussados enregistrées :
+- front : `x=0.9318691325306842`, `y=0.5627603530883789` ;
+- back : `x=0.10053788768847613`, `y=0.6934029261271158`.
+
+Validation technique :
+- HEAD fonctionnel : `e3c62036be55a6ed66f6a0be9cd264c011bfe494` ;
+- CI : `36830383242` — SUCCESS ;
+- suite complète verte.
+
+État : **GREEN technique — PREVALIDATION smartphone requise**. Vérifier :
+1. Loup volcanique dans le test Combat est indiqué comme modèle configuré et utilise Santé 150 / Feu +10 / résistance Feu +35 % / faiblesse Eau -50 % / profil quadruped / scale 1.2 / loadout configuré ;
+2. Moussados utilise la bouche corrigée dans les deux vues ;
+3. la bibliothèque historique reste complète.
