@@ -42,7 +42,8 @@ test("historical showcase loadout follows GenSrpG level order and max 4 rule", a
       "cap_water_atk_1",
       "cap_water_atk_2",
       "cap_water_atk_3",
-      "cap_water_atk_4"
+      "cap_water_atk_4",
+      null
     ]
   );
   assert.deepEqual(
@@ -100,6 +101,7 @@ test("historical showcase loadout preserves an unavailable legacy active slot in
       "lib_chain_lightning",
       "lib_static_bite",
       "lib_thunder_dash",
+      null,
       null
     ]
   );
