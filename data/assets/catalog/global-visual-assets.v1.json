@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 87,
+    "assets": 88,
     "icons": 31,
-    "sprites": 40,
+    "sprites": 41,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -2644,6 +2644,38 @@
       "resource": {
         "file": "capture/creatures/voltige/runtime/voltige_player.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fire-zone-loop-01",
+      "label": "Zone de feu animée",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "zone",
+        "persistent",
+        "fire",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "manifest": "capture/sprites/skills/fire_zone_loop/sprite_skill_fire_zone_loop_01_sequence.json",
+        "format": "image-sequence"
       },
       "compatibility": {
         "uses": [
