@@ -2367,3 +2367,72 @@ Le chemin reste :
 Ni Combat Runtime ni Action Resolver ne possèdent la notion de « cinquième slot ». Ils reçoivent seulement la liste de capacités effectivement projetées pour le combattant.
 
 Les dégâts, résistances, énergie, cooldowns, ciblage, Animation Core, FX Core, profils de mouvement et arènes restent inchangés.
+
+
+## 42. Conditions d’activation expressives et zones persistantes V1
+
+### Conditions d’activation
+
+`SkillDefinition.activationRequirements` reste l’unique contrat de disponibilité conditionnelle d’une capacité.
+
+Types V1 pris en charge :
+- `combat_elapsed_ms` ;
+- `damage_dealt` ;
+- `damage_taken` ;
+- `hp_at_or_below_pct` ;
+- `allies_defeated` ;
+- `enemies_defeated` ;
+- `kills_by_self`.
+
+Les conditions sont combinées par `mode: all|any`.
+
+Autorités :
+- `Combat State.elapsedMs` possède le temps de combat ;
+- les compteurs dégâts restent dans le fighter Combat State ;
+- `fighter.knockoutsTotal` possède les KO crédités au combattant ;
+- les nombres d’alliés/ennemis KO sont dérivés du `BattleFormatDefinition` actif et des PV réels du Combat State ;
+- `skill-activation-requirements-v1.js` évalue les seuils ;
+- Human Editor ne fait que saisir et afficher les conditions.
+
+Un KO est crédité uniquement lors d’une transition réelle `hpBefore > 0 -> hpAfter === 0`, donc un overkill sur une cible déjà KO ne peut pas incrémenter le compteur une seconde fois.
+
+### Zone persistante
+
+`SkillEffectV1.kind = "persistent_zone"` décrit une zone de gameplay persistante.
+
+Contrat V1 :
+- `zoneId` ;
+- `targetScope` ;
+- `radius: short|medium|long` ;
+- `durationMs` ;
+- `tickIntervalMs` ;
+- `reactivation: refresh|reinforce` ;
+- `maxActivations` ;
+- `radiusGrowthSteps` ;
+- `tickEffect`.
+
+Le propriétaire runtime est `persistent-zone-runtime-v1.js`. Les instances actives vivent dans `CombatState.persistentZones`.
+
+La zone utilise exclusivement l’horloge `Combat State.elapsedMs`. Aucun timer UI, `setInterval`, `Date.now()` ou seconde horloge n’est autorisé.
+
+### Rayon gameplay V1
+
+Le combat ne possède pas encore de coordonnées gameplay individuelles par combattant. Le rayon V1 réutilise donc l’autorité spatiale réellement disponible : les bandes de distance `short -> medium -> long`.
+
+Une zone ennemie centrée sur le camp du lanceur touche une cible adverse uniquement si la distance de combat courante est comprise dans son rayon.
+
+Un renforcement peut faire évoluer le rayon par pas, par exemple :
+`short -> medium -> long`.
+
+Cette règle est volontairement distincte du rayon visuel CSS/FX. Aucun pixel de l’UI ne décide si une cible subit les dégâts.
+
+### Tick V1
+
+Le premier raccord runtime autorise un `tickEffect` de type `damage` uniquement.
+
+Les dégâts de tick passent par les propriétaires existants :
+`persistent-zone-runtime -> computeCombatDamageV1 -> applyCombatDamageV1 -> Combat State`.
+
+Ils bénéficient donc des résistances, bonus de dégâts, boucliers et comptage de KO existants sans seconde formule.
+
+Les zones de soin, énergie, statut, contrôle, déclenchement à l’entrée/sortie ou explosion à expiration constituent des extensions futures du même contrat ; elles ne doivent pas être simulées par l’UI ou des règles fondées sur le nom de la capacité.
