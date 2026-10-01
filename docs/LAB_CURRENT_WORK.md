@@ -19866,3 +19866,15 @@ Architecture :
 - aucun changement Combat Runtime / Action Resolver / FX / audio / mouvement / dégâts / progression.
 
 État : **GREEN technique — PREVALIDATION smartphone requise**.
+
+
+### Finalisation technique — diff minimal
+
+Après revue du diff, le preset Moussados a été réécrit au format d’origine afin que la correction du socket bouche ne touche réellement que les quatre valeurs de coordonnées concernées.
+
+- commit de réduction de diff : `881766dc421048be2c949489609bd4dd41ee4cb8` ;
+- diff Moussados final : **2 additions / 2 deletions** ;
+- CI : `36812310340` — SUCCESS ;
+- suite complète : **742/742 PASS, 0 FAIL**.
+
+Ce commit supersède techniquement le HEAD fonctionnel précédent sans changer le comportement validé par les sentinelles.
