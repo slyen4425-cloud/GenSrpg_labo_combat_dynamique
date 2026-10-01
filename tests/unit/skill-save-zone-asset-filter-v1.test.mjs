@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import {
   buildHumanSkillDraftV1,
@@ -160,4 +161,49 @@ test("persistent-zone asset role keeps skill FX and sprites", () => {
       true
     );
   }
+});
+
+
+test("Human Editor has no mutable skillDirty authority beside configuredSkills", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.doesNotMatch(source, /\blet\s+skillDirty\b/);
+  assert.doesNotMatch(source, /\bskillDirty\s*=/);
+  assert.match(
+    source,
+    /captureSkillDraftHasUnsavedChangesV1/
+  );
+});
+
+test("persistent-zone UI owns the clear labels in its own block", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  const start = source.indexOf(
+    'zoneBox.dataset.skillEffectConfigKind =\n    "persistent_zone"'
+  );
+  const end = source.indexOf(
+    "zoneBox.append(",
+    start
+  );
+
+  assert.ok(start >= 0);
+  assert.ok(end > start);
+
+  const block = source.slice(start, end);
+  assert.match(block, /Dégâts à chaque intervalle/);
+  assert.match(block, /Élément des dégâts/);
+  assert.doesNotMatch(block, /Dégâts par tick/);
+  assert.doesNotMatch(block, /Canal \/ élément/);
 });
