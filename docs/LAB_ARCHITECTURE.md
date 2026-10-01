@@ -1210,7 +1210,7 @@ Le Human Editor consomme maintenant les propriétaires validés sans devenir pro
 - les valeurs d'une créature passent par `CaptureCreatureStatValuesV1` et sont conservées dans le record d'édition de session, séparément de `CaptureCreatureEditorDraftV3.sourceStats` ;
 - `sourceStats` reste uniquement une compatibilité historique invisible dans l'éditeur courant ;
 - la politique de slots est chargée depuis `monster-capture-progression-rules.v1.json` et calculée par `CaptureProgressionRulesV1` ;
-- le Human Editor conserve les quatre affectations de `CaptureActiveSkillLoadoutV1` comme **plan de progression configurable à l'avance**, sans supprimer ni refuser un slot ou une capacité future ;
+- le Human Editor conserve les quatre slots standards de `CaptureActiveSkillLoadoutV1` comme **plan de progression configurable à l'avance** et un cinquième `slot-ultimate` séparé ; aucune affectation future n'est supprimée ou refusée du simple fait du niveau courant ;
 - `CaptureSkillEditorDraftV1.requiredLevel` reste le propriétaire du niveau de déverrouillage d'une capacité et `CaptureProgressionRulesV1` reste le propriétaire du nombre de slots actifs ;
 - le snapshot Combat ne consomme pas directement le plan complet : `capture-planned-loadout-to-combat-v1.js` projette une copie temporaire en neutralisant uniquement les slots non débloqués et les capacités dont `requiredLevel` dépasse le niveau courant ;
 - la Database et les transferts créature continuent de transporter le loadout complet : aucune capacité future n'est perdue lors d'un export/import de données ;
@@ -2296,3 +2296,74 @@ Règles :
 - aucune dérivation depuis Endurance, niveau ou nom de créature n'est autorisée.
 
 Cette séparation permet à une future progression par points/niveaux d'augmenter la Santé via le même propriétaire de stats, sans introduire une seconde formule de PV.
+
+
+## 41. Capture Ultimate Slot V1
+
+Le loadout Capture distingue désormais deux responsabilités d'équipement sans modifier les règles métier de combat.
+
+### Autorité de la capacité
+
+`SkillDefinition.loadoutSlot` déclare le type d'emplacement autorisé :
+
+- `standard` — valeur par défaut, y compris pour toutes les anciennes capacités ;
+- `ultimate` — capacité réservée au slot Ultime.
+
+Cette propriété est indépendante de `activationRequirements`. Une capacité peut être conditionnelle sans être Ultime, et une Ultime peut ou non posséder des conditions d'activation.
+
+Aucune capacité historique n'est convertie implicitement en Ultime.
+
+### Autorité du loadout
+
+`CaptureActiveSkillLoadoutV1` possède cinq emplacements canoniques :
+
+- `slot-1` ;
+- `slot-2` ;
+- `slot-3` ;
+- `slot-4` ;
+- `slot-ultimate`.
+
+Pour compatibilité, un ancien loadout contenant exactement quatre slots est accepté à la frontière puis normalisé vers le format canonique avec `slot-ultimate: null`.
+
+Le helper `capture-loadout-skill-slot-v1.js` est l'unique validateur de la compatibilité entre le type de capacité et le type de slot :
+
+- une capacité `standard` ne peut pas être équipée dans `slot-ultimate` ;
+- une capacité `ultimate` ne peut pas être équipée dans les quatre slots standards.
+
+### Progression
+
+`CaptureProgressionRulesV1.maxActiveSkills` et `slotUnlockSchedule` continuent de gouverner exclusivement les quatre slots standards.
+
+Le slot Ultime :
+
+- ne consomme jamais un des quatre slots standards ;
+- n'est pas compté dans `maxActiveSkills` ;
+- reste configurable à l'avance ;
+- reste soumis à `CaptureSkillEditorDraftV1.requiredLevel` lors de la projection vers le combat.
+
+La projection autoritaire reste `capture-planned-loadout-to-combat-v1.js`.
+
+Exemple au niveau où seulement deux slots standards sont débloqués :
+
+`slot-1 + slot-2 + slot-ultimate` peuvent être projetés simultanément si les trois capacités satisfont leur niveau requis.
+
+### Human Editor
+
+L'éditeur présente :
+
+- quatre sélecteurs standards qui n'affichent que les capacités `standard` ;
+- un cinquième sélecteur `Ultime` qui n'affiche que les capacités `ultimate` ;
+- une case explicite « Capacité ultime — uniquement dans le slot Ultime » dans l'édition d'une capacité ;
+- une zone distincte « Conditions d'activation ».
+
+L'UI ne déduit jamais le statut Ultime du nom, des effets ou des conditions.
+
+### Chemin d'export
+
+Le chemin reste :
+
+`SkillDefinition.loadoutSlot -> CaptureActiveSkillLoadoutV1 -> validation de slot -> projection progression/niveau -> Capture Editor Export V3 -> creature.skillIds runtime`.
+
+Ni Combat Runtime ni Action Resolver ne possèdent la notion de « cinquième slot ». Ils reçoivent seulement la liste de capacités effectivement projetées pour le combattant.
+
+Les dégâts, résistances, énergie, cooldowns, ciblage, Animation Core, FX Core, profils de mouvement et arènes restent inchangés.
