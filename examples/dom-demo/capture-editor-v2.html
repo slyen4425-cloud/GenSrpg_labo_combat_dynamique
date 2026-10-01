@@ -591,7 +591,7 @@
           </label>
 
           <p class="note">
-            Exemple : une ultime peut demander 30 secondes de combat ET 100 dégâts subis, ou se débloquer dès qu’une seule condition est atteinte.
+            Exemple : une ultime peut demander 30 secondes de combat ET 2 ennemis KO, ou se débloquer dès qu’un allié tombe. Les conditions peuvent combiner temps, dégâts, PV, alliés KO, ennemis KO et KO réalisés par le lanceur.
           </p>
 
           <div class="skill-activation-conditions" data-skill-activation-conditions-host></div>
@@ -646,7 +646,12 @@
           <span>Provocation</span>
           <span>Nettoyage</span>
           <span>Dissipation</span>
+          <span>Zone persistante évolutive</span>
         </div>
+
+        <p class="note">
+          Une zone persistante peut durer plusieurs secondes, infliger des dégâts à intervalles réguliers et être renforcée par plusieurs réactivations. Son rayon gameplay utilise les distances Proche → Moyen → Loin ; chaque renforcement peut augmenter ce rayon jusqu’au maximum configuré.
+        </p>
       </article>
 
       <article class="card">
