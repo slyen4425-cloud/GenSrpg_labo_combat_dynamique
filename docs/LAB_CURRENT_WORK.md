@@ -20832,17 +20832,17 @@ Base bibliothèque visuelle exacte : `global-assets@e59169f21877294f79ca579d4e3b
 Le visuel de zone est actuellement résolu comme une liste de 8 URL et animé par changement de `backgroundImage` via Web Animations API.
 Sur Chrome mobile, l'interpolation/changement de ressources `background-image` n'est pas un mécanisme d'animation fiable et peut rester sur la première frame.
 
-Le renderer possède déjà un chemin atlas `url + frameCount` utilisant une animation CSS `background-position` avec `steps(...)`, adaptée aux sprites sheets et compatible boucle.
+L'audit confirme que le défaut vient du changement animé de `backgroundImage` entre plusieurs URL via Web Animations API, non fiable sur Chrome mobile. Le correctif retenu reste dans le renderer existant : pour une séquence `frames[]` en boucle, empiler les frames dans le même nœud FX et les faire alterner par animation CSS d'opacité, sans timer JavaScript et sans nouvelle autorité.
 
 ### Objectif
 
-1. Assembler les 8 frames existantes en **atlas horizontal 8 frames**, sans régénération artistique.
-2. Faire résoudre `pack:capture:sprite-fire-zone-loop-01` par le chemin atlas existant :
-   - URL atlas ;
-   - `frameCount:8` ;
-   - `frameMs` ;
-   - `playbackMode:"loop"`.
-3. Conserver les 8 frames individuelles et leur manifest comme source/portabilité.
+1. Conserver les 8 frames existantes comme séquence canonique, sans régénération artistique.
+2. Pour `playbackMode:"loop"`, remplacer l'animation de `backgroundImage` par une alternance CSS de 8 calques image dans le même nœud FX :
+   - aucune horloge JS ;
+   - aucun changement de source par timer ;
+   - boucle pilotée par CSS ;
+   - suppression avec le nœud de zone autoritaire.
+3. Conserver le manifest et l'assetId existants.
 4. Ajouter pour la zone persistante :
    - scale horizontal ;
    - scale vertical ;
@@ -20875,7 +20875,7 @@ Le renderer possède déjà un chemin atlas `url + frameCount` utilisant une ani
 
 ### TDD
 
-1. RED atlas : l'asset de zone doit être résolu par `url + frameCount`, pas par permutation de `backgroundImage`.
+1. RED animation mobile : une séquence `frames[]` en boucle doit créer des calques frame dédiés et ne doit pas dépendre d'une animation WAAPI de `backgroundImage`.
 2. RED contrat : scale X/Y de zone doivent survivre normalisation/export/rechargement.
 3. RED renderer : rayon × scale global × scaleX/scaleY doit produire un transform bi-axe.
 4. RED Human Editor : labels `Garder la même taille` / `Agrandir la zone`, durée expliquée sans option trompeuse.
