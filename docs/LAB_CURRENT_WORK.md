@@ -21104,3 +21104,62 @@ Work / checkpoint / preview étaient identiques sur `fbb6e68553614ad60655473d853
 Le présent commit ne modifie que la traçabilité. Après sa CI, checkpoint et preview sont avancés en fast-forward vers le même HEAD puis revérifiés.
 
 Statut : **GREEN technique publié — PREVALIDATION smartphone utilisateur en attente ; aucun merge vers main**.
+
+
+## Micro-lot — Persistent Zone Visual Positioning V1 — 2026-10-01
+
+Base exacte : `f4906c63740afa4483353e447a2b0f64d9c13fb0` (Fire Zone Sprite V2 Replacement — GREEN technique / PREVALIDATION smartphone).
+
+- checkpoint de départ : `checkpoint/lab-start-zone-visual-positioning-v1-2026-10-01` ;
+- branche : `work/lab-zone-visual-positioning-v1-2026-10-01`.
+
+### Retour smartphone utilisateur
+
+Le nouveau sprite 16 frames est mieux adapté, mais son centre visuel ne coïncide pas toujours avec le centre souhaité de la zone. Les choix d'asset/socket ne suffisent pas pour le repositionner finement.
+
+### Objectif
+
+Ajouter un réglage simple de **décalage horizontal / vertical** pour le visuel persistant de zone, sans toucher au gameplay ni aux ancres de combat :
+
+1. Human Editor :
+   - `Décalage horizontal (px)` ;
+   - `Décalage vertical (px)` ;
+   - valeur 0 = centre actuel ;
+   - valeurs négatives/positives pour déplacer librement le visuel.
+2. Réutiliser les champs existants `SkillPresentationBinding.visual.aura.offsetX / offsetY`.
+3. Le renderer applique ces offsets uniquement à la position de présentation du nœud de zone :
+   `source anchor + offsetX/offsetY`.
+4. Le rayon gameplay, les dégâts, la cible et la position de la créature restent inchangés.
+5. Sauvegarde / export / rechargement doivent conserver les deux valeurs.
+
+### Propriétaires
+
+- `SkillPresentationBinding` : autorité des offsets visuels existants ;
+- Human Editor : saisie/affichage uniquement ;
+- `dom-skill-fx.js` : projection DOM de la position visuelle ;
+- `CombatState.persistentZones` : inchangé.
+
+### Protégé
+
+- `persistent-zone-runtime-v1.js` ;
+- calcul Proche/Moyen/Loin ;
+- scale global + largeur/hauteur ;
+- atlas 16 frames ;
+- aucune seconde position gameplay ;
+- aucun timer / observer / listener compensatoire ;
+- aucun comportement fondé sur un nom ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED Human Editor : les offsets zone doivent être exportés vers `visual.aura.offsetX/offsetY`.
+2. RED renderer : un offset doit déplacer `left/top` du nœud persistant sans modifier le rayon ni le scale.
+3. RED HTML : les deux contrôles doivent être présents.
+4. correction minimale aux propriétaires existants ;
+5. tests ciblés + CI complète ;
+6. documentation ;
+7. checkpoint + preview ;
+8. PREVALIDATION smartphone obligatoire.
+
+État : **LOT OUVERT — RED obligatoire avant correction**.
