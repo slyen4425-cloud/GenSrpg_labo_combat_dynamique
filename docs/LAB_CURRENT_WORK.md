@@ -21057,3 +21057,30 @@ Contraintes respectées :
 - aucun changement dans `Zombicide-40k`.
 
 État : **GREEN technique fonctionnel — scellement documentaire, checkpoint et preview à publier puis PREVALIDATION smartphone**.
+
+
+### Publication de PREVALIDATION — Fire Zone Sprite V2 Replacement
+
+Validation complète avant publication :
+- work code : `f4a15992946a24771ab0be48e6eec175030388ac` ;
+- CI code : `36912326585` — SUCCESS ;
+- suite complète : **787/787 PASS, 0 FAIL** ;
+- `global-assets` : `d73ad04dbc6c3f8de492b9a503653c4c6f2e753c` ;
+- CI `global-assets` : `36912197861` — SUCCESS ;
+- manifest et atlas relus réellement depuis `global-assets`.
+
+Noms de publication :
+- checkpoint GREEN technique : `checkpoint/lab-fire-zone-sprite-v2-replacement-green-2026-10-01` ;
+- preview smartphone : `preview/lab-fire-zone-sprite-v2-replacement-2026-10-01`.
+
+La PREVALIDATION smartphone doit vérifier :
+1. le sprite est bien le nouveau visuel plus incliné ;
+2. le mouvement utilise réellement 16 frames ;
+3. la boucle reste fluide pendant toute la durée de la zone ;
+4. largeur / hauteur / scale global restent fonctionnels ;
+5. le visuel continue de grandir avec Proche -> Moyen -> Loin ;
+6. aucune ancienne frame de zone ne réapparaît depuis le cache.
+
+Aucun merge vers `main`.
+
+Statut : **GREEN technique — publication checkpoint/preview après CI de ce scellement documentaire ; GREEN utilisateur en attente**.
