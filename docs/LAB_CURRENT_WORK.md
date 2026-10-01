@@ -21165,3 +21165,54 @@ Le contrat `SkillPresentationBinding` possède déjà `offsetX` et `offsetY`, ma
 8. PREVALIDATION smartphone utilisateur obligatoire.
 
 État : **LOT OUVERT — RED obligatoire avant correction**.
+
+
+### Résultat technique — Persistent Zone Offset Controls V1
+
+RED :
+- test : `tests/unit/persistent-zone-offset-controls-v1.test.mjs` ;
+- commit RED : `850dd3c9f268b962764927ebe714c7eabbcdf5db` ;
+- CI RED : `36914781419` — FAILURE attendue ;
+- 3 échecs démontrés : offsets non exportés, renderer ignorant les offsets, contrôles UI absents.
+
+Cause confirmée :
+- `SkillPresentationBinding` et l'adaptateur possédaient déjà `offsetX/Y` ;
+- le Human Editor forçait ces champs à 0 pour les visuels ;
+- le renderer de zone persistante plaçait toujours le nœud exactement au centre de l'ancre source.
+
+Correction propriétaire :
+- `82478d8f516d27ae4c52fedfbba604e751da1046` : Human Editor transporte `zoneOffsetX/Y` dans le slot visuel existant et initialise les champs à 0 ;
+- `d1747c06792ef9cec1aa721f17e601ce88611d5b` : deux contrôles UI -300/+300 px et aide explicite ;
+- `57d0026ca2a2a9b2937da1f8eda9579a030776a9` : le renderer applique l'offset à l'ancre autoritaire de la créature, sans toucher au scale ni au gameplay.
+
+Validation :
+- CI fonctionnelle : `36914957388` — SUCCESS ;
+- suite complète : **790/790 PASS, 0 FAIL** ;
+- test export offset X/Y : PASS ;
+- test position renderer : PASS ;
+- test contrôles UI : PASS.
+
+Contraintes respectées :
+- aucune modification de `persistent-zone-runtime-v1.js` ;
+- aucun nouvel état métier ;
+- aucun timer/observer/listener compensatoire ;
+- aucun comportement par nom ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique fonctionnel — documentation/checkpoint/preview à publier puis PREVALIDATION smartphone**.
+
+### Publication de PREVALIDATION — Persistent Zone Offset Controls V1
+
+Noms réservés :
+- checkpoint : `checkpoint/lab-persistent-zone-offset-controls-v1-green-2026-10-01` ;
+- preview : `preview/lab-persistent-zone-offset-controls-v1-2026-10-01`.
+
+Validation smartphone attendue :
+1. horizontal négatif déplace le sprite vers la gauche, positif vers la droite ;
+2. vertical négatif monte le sprite, positif le descend ;
+3. largeur / hauteur / scale global continuent de fonctionner ;
+4. l'animation 16 frames reste fluide ;
+5. Proche/Moyen/Loin, durée et dégâts restent inchangés.
+
+Aucun merge vers `main`.
