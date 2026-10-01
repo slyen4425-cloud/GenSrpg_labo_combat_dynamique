@@ -13,6 +13,11 @@ export const SKILL_CATEGORIES = Object.freeze([
   "counter"
 ]);
 
+export const SKILL_LOADOUT_SLOTS = Object.freeze([
+  "standard",
+  "ultimate"
+]);
+
 export const SKILL_FORMS = Object.freeze([
   "contact",
   "projectile",
@@ -57,6 +62,8 @@ export const SKILL_ACTIVATION_REQUIREMENT_TYPES =
   ]);
 
 const CATEGORY_SET = new Set(SKILL_CATEGORIES);
+const LOADOUT_SLOT_SET =
+  new Set(SKILL_LOADOUT_SLOTS);
 const FORM_SET = new Set(SKILL_FORMS);
 const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
 const DISTANCE_SET = new Set(COMBAT_DISTANCES);
@@ -209,12 +216,21 @@ export function normalizeSkillDefinition(input) {
   const name = nonEmptyString(input.name, "name");
   const category = nonEmptyString(input.category, "category");
   const form = nonEmptyString(input.form, "form");
+  const loadoutSlot = nonEmptyString(
+    input.loadoutSlot ?? "standard",
+    "loadoutSlot"
+  );
 
   if (!CATEGORY_SET.has(category)) {
     throw new RangeError(`Unsupported skill category: ${category}`);
   }
   if (!FORM_SET.has(form)) {
     throw new RangeError(`Unsupported skill form: ${form}`);
+  }
+  if (!LOADOUT_SLOT_SET.has(loadoutSlot)) {
+    throw new RangeError(
+      `Unsupported loadoutSlot: ${loadoutSlot}`
+    );
   }
 
   const element = input.element == null
@@ -334,6 +350,7 @@ export function normalizeSkillDefinition(input) {
     name,
     category,
     form,
+    loadoutSlot,
     element,
     approachMode,
     energyCost: nonNegativeNumber(input.energyCost, "energyCost"),
