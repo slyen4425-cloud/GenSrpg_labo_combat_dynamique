@@ -251,16 +251,16 @@ test("human skill controls produce real SkillDefinition including cooldown", () 
   );
 });
 
-test("human loadout exposes exactly four active slots", () => {
+test("human loadout exposes four standard slots plus one ultimate slot", () => {
   const loadout = buildHumanLoadoutV1({
     creatureId: "crea-loup",
     skillIds: ["fireball", "claw", null, null]
   });
 
-  assert.equal(loadout.slots.length, 4);
+  assert.equal(loadout.slots.length, 5);
   assert.deepEqual(
     loadout.slots.map((slot) => slot.skillId),
-    ["fireball", "claw", null, null]
+    ["fireball", "claw", null, null, null]
   );
   assert.equal("equippedSkillIds" in loadout, false);
 });
