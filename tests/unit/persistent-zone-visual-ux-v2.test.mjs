@@ -89,23 +89,107 @@ function fakeElement(rect = {
   };
 }
 
-test("fire-zone asset resolves through a single atlas with CSS-step metadata", () => {
+test("fire-zone asset keeps its eight canonical frames and loop metadata", () => {
   const asset = demoPresentationAssets.asset(
     "pack:capture:sprite-fire-zone-loop-01"
   );
 
   assert.ok(asset);
-  assert.match(
-    asset.url,
-    /fire_zone_loop\/atlases\/sprite_skill_fire_zone_loop_01_atlas\.webp/
-  );
-  assert.equal(asset.frameCount, 8);
+  assert.equal(asset.frames.length, 8);
   assert.equal(asset.frameMs, 80);
   assert.equal(asset.playbackMode, "loop");
+});
+
+test("looping multi-file sprite uses dedicated frame layers instead of WAAPI background-image swapping", () => {
+  const arena = fakeElement({
+    left: 0,
+    top: 0,
+    width: 400,
+    height: 300
+  });
+  const source = fakeElement({
+    left: 80,
+    top: 180,
+    width: 40,
+    height: 40
+  });
+  arena.ownerDocument = {
+    createElement() {
+      const node = fakeElement();
+      node.ownerDocument = arena.ownerDocument;
+      return node;
+    }
+  };
+
+  let animateCalls = 0;
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors: { local: source },
+    targetAnchors: { local: source },
+    presentationForSkill() {
+      return {
+        persistentZone: {
+          assetId: "fire-zone-loop",
+          frames: ["f1.webp", "f2.webp", "f3.webp"],
+          frameMs: 80,
+          playbackMode: "loop",
+          displayScale: 1
+        },
+        persistentZoneLayer: "behind"
+      };
+    },
+    animate() {
+      animateCalls += 1;
+      return {
+        finished: new Promise(() => {}),
+        cancel() {}
+      };
+    },
+    requestFrame() {
+      return null;
+    },
+    cancelFrame() {}
+  });
+
+  renderer.syncPersistentZones([
+    {
+      id: "local:fire-zone-v2:zone",
+      skillId: "fire-zone-v2",
+      sourceActorId: "local",
+      radius: "short"
+    }
+  ]);
+
+  const node = arena.children[0];
+  assert.equal(node.children.length, 3);
   assert.equal(
-    Object.prototype.hasOwnProperty.call(asset, "frames"),
-    false,
-    "mobile-safe atlas path must not depend on swapping background-image URLs"
+    node.children[0].className,
+    "skill-fx__loop-frame"
+  );
+  assert.equal(
+    node.children[0].style.animationName,
+    "skill-fx-frame-loop"
+  );
+  assert.equal(
+    node.children[1].style.animationDelay,
+    "80ms"
+  );
+  assert.equal(
+    node.children[2].style.animationDelay,
+    "160ms"
+  );
+  assert.equal(
+    node.children[0].style.animationDuration,
+    "240ms"
+  );
+  assert.equal(
+    node.children[0].style.animationIterationCount,
+    "infinite"
+  );
+  assert.equal(
+    animateCalls,
+    0,
+    "looping sequence must not depend on WAAPI backgroundImage interpolation"
   );
 });
 
@@ -150,8 +234,7 @@ test("persistent-zone renderer applies radius with independent X/Y scale", () =>
         persistentZone: {
           assetId:
             "pack:capture:sprite-fire-zone-loop-01",
-          url: "atlas.webp",
-          frameCount: 8,
+          frames: ["f1.webp", "f2.webp"],
           frameMs: 80,
           playbackMode: "loop",
           displayScale: 2,
