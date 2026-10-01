@@ -162,7 +162,30 @@ function applySpriteVisual(node, visual, durationMs, animate) {
     1,
     Math.floor(Number(visual.frameCount) || 1)
   );
-  const duration = Math.max(1, Number(durationMs) || 1);
+  const playbackMode =
+    ["once", "loop", "stretch"].includes(
+      visual.playbackMode
+    )
+      ? visual.playbackMode
+      : "once";
+  const nativePlaybackMs =
+    Number.isFinite(Number(visual.frameMs)) &&
+    Number(visual.frameMs) > 0
+      ? Math.max(
+          1,
+          Number(visual.frameMs) * frameCount
+        )
+      : Math.max(
+          1,
+          Number(durationMs) || 1
+        );
+  const duration =
+    playbackMode === "stretch"
+      ? Math.max(
+          1,
+          Number(durationMs) || nativePlaybackMs
+        )
+      : nativePlaybackMs;
 
   node.style.backgroundImage = `url("${visual.url}")`;
   node.style.backgroundSize = `${frameCount * 100}% 100%`;
@@ -171,7 +194,8 @@ function applySpriteVisual(node, visual, durationMs, animate) {
   node.style.animationDuration = `${duration}ms`;
   node.style.animationTimingFunction =
     `steps(${Math.max(1, frameCount - 1)}, end)`;
-  node.style.animationIterationCount = "1";
+  node.style.animationIterationCount =
+    playbackMode === "loop" ? "infinite" : "1";
   node.style.animationFillMode = "forwards";
 
   return Object.freeze({
