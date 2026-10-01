@@ -134,11 +134,11 @@ test("2v2 combat projects persistent zones only from renderState/onState, not on
 
   assert.match(
     renderBlock,
-    /fx\.syncPersistentZones\(state\.persistentZones \?\? \[\]\)/
+    /fx\.syncPersistentZones\(\s*state\.persistentZones \?\? \[\]\s*\)/
   );
 
   const clockStart = source.indexOf(
-    "onClock(state)"
+    "onClock()"
   );
   const clockEnd = source.indexOf(
     "onStarted(",
