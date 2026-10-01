@@ -2436,3 +2436,47 @@ Les dégâts de tick passent par les propriétaires existants :
 Ils bénéficient donc des résistances, bonus de dégâts, boucliers et comptage de KO existants sans seconde formule.
 
 Les zones de soin, énergie, statut, contrôle, déclenchement à l’entrée/sortie ou explosion à expiration constituent des extensions futures du même contrat ; elles ne doivent pas être simulées par l’UI ou des règles fondées sur le nom de la capacité.
+
+
+## 43. Présentation persistante des zones et clarté Human Editor V1
+
+### Frontière gameplay / présentation
+
+Le gameplay des zones persistantes reste exclusivement possédé par `CombatState.persistentZones` et `persistent-zone-runtime-v1.js`.
+
+La présentation ne crée aucune durée, aucun tick, aucun compteur d'activation et aucune horloge parallèle.
+
+Chaîne autorisée :
+
+`SkillEffectV1.persistent_zone -> CombatState.persistentZones -> Combat Runtime.onClock(state) -> DOM Skill FX.syncPersistentZones() -> Renderer`.
+
+Le callback `onClock` réutilise l'horloge runtime existante. Il n'ajoute ni `setInterval`, ni `setTimeout`, ni `Date.now()` spécifique aux zones.
+
+### Visuel persistant
+
+Le contrat `SkillPresentationBinding` possédait déjà le slot visuel générique `aura`. Ce slot reste l'autorité de présentation pour le visuel d'une zone persistante ; aucun second contrat visuel parallèle n'est créé.
+
+Le Human Editor projette les champs :
+- `zoneAssetId` ;
+- `zoneDisplayScale` ;
+
+vers `presentation.visual.aura` avec :
+- `attachment:"source"` ;
+- `playbackMode:"loop"` ;
+- couche `behind` pour les deux vues.
+
+L'adaptateur de présentation expose ce slot au renderer sous le nom de lecture `persistentZone`.
+
+Le renderer crée au maximum un nœud visuel par `persistentZone.id`, l'ancre sur le slot de combat stable du lanceur, met à jour son rayon visuel lors des renforcements et le retire dès que l'instance n'est plus présente dans `CombatState.persistentZones`.
+
+Le scale visuel Proche / Moyen / Loin est uniquement une projection de présentation. Il ne décide jamais de la portée gameplay.
+
+### Éditeur humain
+
+Pour une zone persistante :
+- `Intervalle entre les dégâts (secondes)` = temps entre deux applications ;
+- `Dégâts à chaque intervalle` = valeur appliquée à chaque tick ;
+- `Élément des dégâts` est un sélecteur ;
+- la valeur vide est présentée comme `Même élément que la capacité` et conserve le comportement runtime existant : élément de la capacité, puis `physical` uniquement si aucun élément n'existe.
+
+La première utilisation compte comme activation 1. En mode `reinforce`, les activations suivantes augmentent le rayon selon `radiusGrowthSteps` jusqu'à `maxActivations` et la bande `long`. Une réactivation au-delà du maximum conserve le rayon maximal et renouvelle la durée selon le propriétaire gameplay existant.
