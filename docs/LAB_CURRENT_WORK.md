@@ -19948,3 +19948,74 @@ Validation confirmée sur le chemin smartphone :
 Le lot est **GREEN utilisateur**.
 
 Cette validation clôt le micro-lot de correction showcase. Aucun merge vers `main` n'est effectué automatiquement.
+
+
+## Micro-lot — Capture Ultimate Slot V1 — 2026-10-01
+
+Base exacte : `dcbee6056883dce593cb4420837f58bd3eb89449` (Showcase Configuration Corrections V1 validé utilisateur).
+
+- checkpoint GREEN précédent : `checkpoint/lab-showcase-config-corrections-v1-user-green-2026-10-01` ;
+- checkpoint de départ : `checkpoint/lab-start-capture-ultimate-slot-v1-2026-10-01` ;
+- branche : `work/lab-capture-ultimate-slot-v1-2026-10-01`.
+
+### Objectif
+
+Ajouter un cinquième emplacement de capacité réservé aux capacités ultimes, sans modifier l'autorité ni la progression des quatre slots actifs standards.
+
+### Contrat cible
+
+- slots standards : `slot-1` à `slot-4` ;
+- slot ultime : `slot-ultimate` ;
+- `CaptureProgressionRulesV1.maxActiveSkills` continue de concerner exclusivement les quatre slots standards ;
+- une compétence déclare explicitement sa classe d'équipement : standard ou ultime ;
+- une capacité ultime ne peut pas être placée dans un slot standard ;
+- une capacité standard ne peut pas être placée dans `slot-ultimate` ;
+- le niveau requis d'une capacité reste applicable au runtime ;
+- les anciens loadouts quatre slots restent importables et sont normalisés avec un slot ultime vide ;
+- aucune capacité existante ne devient ultime implicitement.
+
+### Propriétaires concernés
+
+- Skill Definition : classe d'équipement de la compétence ;
+- Capture Active Skill Loadout : structure des 4 slots standards + slot ultime ;
+- adaptateur Planned Loadout -> Combat : projection progression/niveau ;
+- Human Editor : choix et affichage des slots uniquement ;
+- Combat Runtime / Action Resolver : inchangés sauf si le vrai chemin démontre un raccord nécessaire.
+
+### Périmètre autorisé
+
+- `src/contracts/skill-definition.js` ;
+- `src/contracts/capture-active-skill-loadout-v1.js` ;
+- adaptateurs Capture loadout/export/import concernés ;
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests ciblés ;
+- documentation ;
+- presets uniquement si une migration vide du cinquième slot est nécessaire.
+
+### Protégé
+
+- règles dégâts/résistances ;
+- cooldown ;
+- énergie ;
+- Animation Core ;
+- FX Core ;
+- profils de mouvement ;
+- arènes ;
+- sockets ;
+- assets ;
+- dépôt `Zombicide-40k` ;
+- `main`.
+
+### TDD
+
+1. RED contrat : ancien loadout 4 slots -> canonique 5 slots avec `slot-ultimate:null` ;
+2. RED : validation standard/ultime ;
+3. RED runtime : progression filtre seulement les 4 standards, niveau requis filtre aussi l'ultime ;
+4. RED UI : cinquième sélecteur Ultime distinct et filtrage des options ;
+5. correction minimale aux propriétaires ;
+6. CI complète ;
+7. preview smartphone ;
+8. GREEN utilisateur requis.
+
+État : **LOT OUVERT — RED à écrire**.
