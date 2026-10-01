@@ -20932,3 +20932,68 @@ Validation smartphone attendue :
 5. Proche/Moyen/Loin reste gouverné par le gameplay existant.
 
 Aucun merge vers `main`.
+
+
+## Micro-lot — Combat Damage Numbers V1 — 2026-10-01
+
+Base exacte : `50de483fd5dedd72e0d7ecabb498ee7496794040` (Persistent Zone Visual UX V2 — GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-combat-damage-numbers-v1-2026-10-01` ;
+- branche : `work/lab-combat-damage-numbers-v1-2026-10-01`.
+
+### Retour utilisateur
+
+Lorsqu'une créature perd des PV, le combat doit afficher visuellement le nombre de dégâts infligés, pour :
+- attaques directes ;
+- zones persistantes ;
+- DoT / poison ;
+- tout autre effet qui réduit réellement les PV.
+
+### Principe d'autorité
+
+Le renderer/UI **ne recalcule jamais** les dégâts.
+
+Le nombre affiché est une projection sémantique de la variation réelle des PV dans `CombatState` :
+`CombatState précédent -> CombatState suivant -> Health Feedback Projection -> CombatRuntime callback -> DOM Skill FX`.
+
+Cette projection ne modifie ni les PV, ni résistances, ni boucliers, ni KO et n'est pas une seconde source de vérité.
+
+### Objectif V1
+
+1. Ajouter une projection pure `combatHealthDeltaEventsV1(previousState, nextState)`.
+2. `CombatRuntime` émet les deltas de PV une seule fois lorsque son état observable change.
+3. L'UI combat transforme uniquement les événements `damage` en nombre flottant sur la créature concernée.
+4. Le renderer affiche `-N` au-dessus de l'ancre cible avec une animation courte montée/fade.
+5. Le même mécanisme doit fonctionner quelle que soit la source de perte de PV : hit, zone, DoT/poison, réflexion, etc.
+6. Aucun timer gameplay, aucune inspection des noms de compétences/statuts, aucun listener parallèle.
+
+### Propriétaires
+
+- Combat State : PV autoritaires inchangés ;
+- Health Feedback Projection : différence sémantique entre deux snapshots ;
+- Combat Runtime : émission du feedback ;
+- DOM Skill FX : rendu du nombre ;
+- UI : raccord uniquement.
+
+### Protégé
+
+- `applyCombatDamageV1` ;
+- calcul de dégâts/résistances/boucliers ;
+- `persistent-zone-runtime-v1.js` ;
+- `status-effect-runtime-v1.js` ;
+- progression/cooldown/énergie ;
+- `main` ;
+- `Zombicide-40k`.
+
+### TDD
+
+1. RED projection : une baisse de PV produit un seul événement damage avec le montant réellement appliqué.
+2. RED Runtime : un changement de PV issu de n'importe quelle mutation de session déclenche `onHealthDelta`, sans doublon.
+3. RED renderer : type `damage` affiche `-N` sur la cible et anime le texte.
+4. RED UI : `onHealthDelta` raccordé au renderer sans recalcul.
+5. tests ciblés + CI complète ;
+6. documentation ;
+7. checkpoint + preview ;
+8. PREVALIDATION smartphone avant GREEN utilisateur.
+
+État : **LOT OUVERT — RED obligatoire avant correction**.
