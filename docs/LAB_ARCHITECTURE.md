@@ -2581,3 +2581,32 @@ Ainsi, une modification qui ne touche que la zone déclenche quand même `onStat
 Le renderer conserve un seul nœud par `persistentZone.id` et met à jour son `transform/scale` depuis `zone.radius`. Il n'existe aucun état parallèle de rayon côté UI.
 
 Aucun timer, observer ou listener compensatoire n'a été ajouté.
+
+
+## 47. Sprite animé de zone de feu — asset canonique V1
+
+Le visuel de zone de feu persistant utilise désormais un asset stable de la bibliothèque Capture :
+
+- assetId : `pack:capture:sprite-fire-zone-loop-01` ;
+- emplacement : `assets/library/capture/sprites/skills/fire_zone_loop/` ;
+- 8 frames WebP transparentes, 224 × 224 ;
+- manifest : `sprite_skill_fire_zone_loop_01_sequence.json` ;
+- cadence : 80 ms / frame ;
+- boucle : active.
+
+### Autorités
+
+- le catalogue `global-visual-assets.v1.json` possède l'identité stable et les métadonnées de l'asset ;
+- `demoPresentationAssets` reste le resolver de présentation du laboratoire et transforme cet assetId en séquence de frames ;
+- `SkillPresentationBinding.visual.aura` reste propriétaire du choix de visuel pour une compétence ;
+- `CombatState.persistentZones` reste propriétaire de la durée et du rayon gameplay ;
+- le renderer ne fait qu'animer et scaler la séquence.
+
+Aucune règle gameplay ne dépend de l'assetId.
+
+### Publication et cache
+
+La bibliothèque stable `global-assets` contient maintenant les frames, le manifest et l'entrée catalogue.
+La révision de `GLOBAL_VISUAL_LIBRARY` est `2026-10-01-v6-fire-zone-loop` et le catalogue utilise également ce token de révision afin d'éviter un cache ancien lors du chargement de l'éditeur.
+
+Le sélecteur de visuel persistant reçoit l'asset via le catalogue existant ; aucune liste UI parallèle n'est créée.
