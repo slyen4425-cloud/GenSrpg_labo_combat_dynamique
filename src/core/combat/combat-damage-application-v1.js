@@ -1,5 +1,6 @@
 import {
   recordFighterDamage,
+  recordFighterKnockout,
   withFighterHp,
   withFighterStatusEffects
 } from "./combat-state.js";
@@ -112,6 +113,18 @@ export function applyCombatDamageV1({
       amount: appliedDamage
     }
   );
+
+  if (
+    hpBefore > 0 &&
+    hpAfter === 0 &&
+    sourceActorId !== targetActorId
+  ) {
+    nextState = recordFighterKnockout(
+      nextState,
+      sourceActorId,
+      targetActorId
+    );
+  }
 
   return Object.freeze({
     state: nextState,
