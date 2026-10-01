@@ -2675,7 +2675,7 @@
       },
       "resource": {
         "manifest": "capture/sprites/skills/fire_zone_loop/sprite_skill_fire_zone_loop_01_sequence.json",
-        "format": "image-sequence"
+        "format": "sprite-atlas"
       },
       "compatibility": {
         "uses": [

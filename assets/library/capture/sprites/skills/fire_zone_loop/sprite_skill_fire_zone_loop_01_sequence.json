@@ -1,28 +1,12 @@
 {
   "id": "skill_fire_zone_loop_01",
-  "type": "sprite_sequence",
+  "type": "sprite_atlas",
   "frame_size": [
-    192,
-    192
+    96,
+    96
   ],
+  "frame_count": 16,
   "frame_ms": 80,
   "loop": true,
-  "frames": [
-    "frames/sprite_skill_fire_zone_loop_01_01.webp",
-    "frames/sprite_skill_fire_zone_loop_01_02.webp",
-    "frames/sprite_skill_fire_zone_loop_01_03.webp",
-    "frames/sprite_skill_fire_zone_loop_01_04.webp",
-    "frames/sprite_skill_fire_zone_loop_01_05.webp",
-    "frames/sprite_skill_fire_zone_loop_01_06.webp",
-    "frames/sprite_skill_fire_zone_loop_01_07.webp",
-    "frames/sprite_skill_fire_zone_loop_01_08.webp",
-    "frames/sprite_skill_fire_zone_loop_01_09.webp",
-    "frames/sprite_skill_fire_zone_loop_01_10.webp",
-    "frames/sprite_skill_fire_zone_loop_01_11.webp",
-    "frames/sprite_skill_fire_zone_loop_01_12.webp",
-    "frames/sprite_skill_fire_zone_loop_01_13.webp",
-    "frames/sprite_skill_fire_zone_loop_01_14.webp",
-    "frames/sprite_skill_fire_zone_loop_01_15.webp",
-    "frames/sprite_skill_fire_zone_loop_01_16.webp"
-  ]
+  "atlas": "atlases/sprite_skill_fire_zone_loop_01_atlas.webp"
 }
