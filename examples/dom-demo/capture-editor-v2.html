@@ -775,9 +775,15 @@
           <label>Hauteur du visuel de zone
             <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-zone-scale-y>
           </label>
+          <label>Décalage horizontal de la zone (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-offset-x>
+          </label>
+          <label>Décalage vertical de la zone (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-offset-y>
+          </label>
         </div>
         <p class="note">
-          Pour une aura ou une zone persistante, ce visuel reste affiché tant que la zone existe réellement dans le combat. Il suit ses renforcements et disparaît à son expiration ; aucun timer visuel séparé n’est utilisé. Un sprite multi-images ou un atlas animé est joué en boucle pendant toute la durée de la zone ; une image statique reste naturellement statique.
+          Pour une aura ou une zone persistante, ce visuel reste affiché tant que la zone existe réellement dans le combat. Il suit ses renforcements et disparaît à son expiration ; aucun timer visuel séparé n’est utilisé. Un sprite multi-images ou un atlas animé est joué en boucle pendant toute la durée de la zone. Les décalages horizontal et vertical déplacent uniquement le visuel autour de l’ancre de la créature, sans modifier le rayon ni les dégâts.
         </p>
       </article>
 
