@@ -2480,3 +2480,46 @@ Pour une zone persistante :
 - la valeur vide est présentée comme `Même élément que la capacité` et conserve le comportement runtime existant : élément de la capacité, puis `physical` uniquement si aucun élément n'existe.
 
 La première utilisation compte comme activation 1. En mode `reinforce`, les activations suivantes augmentent le rayon selon `radiusGrowthSteps` jusqu'à `maxActivations` et la bande `long`. Une réactivation au-delà du maximum conserve le rayon maximal et renouvelle la durée selon le propriétaire gameplay existant.
+
+
+## 44. État d’enregistrement des capacités et filtrage d’assets V1
+
+### Autorité unique du statut « modifié »
+
+`configuredSkills` est l’unique autorité des capacités enregistrées dans la session Human Editor.
+
+Le statut « capacité modifiée » n’est plus stocké dans un booléen `skillDirty` indépendant. Il est dérivé à la demande par `captureSkillDraftHasUnsavedChangesV1()` :
+
+`brouillon normalisé courant -> comparaison avec configuredSkills[id] -> modifié / propre`.
+
+Conséquences :
+- une nouvelle capacité absente de `configuredSkills` est modifiée ;
+- après un enregistrement réussi, le brouillon exact placé dans `configuredSkills` est immédiatement propre ;
+- toute modification réelle du formulaire reconstruit un brouillon différent et redevient modifiée ;
+- aucune suite de listeners `input/change` ne maintient un second état parallèle ;
+- la preview ne possède aucune compensation et continue d’appeler le chemin normal `editor.validate()`.
+
+Cette règle s’applique également aux gardes export/import et à l’hydratation initiale.
+
+### Filtrage du visuel persistant de zone
+
+Le rôle d’asset `zone` est filtré par `captureEditorAssetMatchesRoleV1()`.
+
+Un asset de zone doit :
+- être compatible `editor` ;
+- être une image ;
+- être de type `sprite` ou `fx` ;
+- ne pas appartenir à la catégorie `creature` ;
+- ne pas être un `portrait` ;
+- ne pas porter le tag `creature`.
+
+Le filtrage est sémantique et ne dépend d’aucun nom de créature ou d’asset.
+
+### Libellés de zone
+
+Le bloc `persistent_zone` possède explicitement :
+- `Intervalle entre les dégâts (secondes)` ;
+- `Dégâts à chaque intervalle` ;
+- `Élément des dégâts`.
+
+Les tests ciblent le bloc de zone lui-même afin d’éviter qu’un libellé identique situé dans un autre effet donne un faux GREEN.
