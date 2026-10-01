@@ -20358,3 +20358,53 @@ Les deux références doivent pointer sur le même HEAD documenté que la branch
 La validation smartphone reste obligatoire avant GREEN utilisateur.
 
 Aucun merge vers `main`.
+
+
+## Micro-lot — Skill Save/Test Dirty State & Persistent Zone Asset Filter V1 — 2026-10-01
+
+Base exacte : `6a9632588b634aa6bdf9d6c5768ac58c0d69bb14` (Persistent Zone Editor Clarity & Visual V1 — GREEN technique / PREVALIDATION smartphone).
+
+- checkpoint de départ : `checkpoint/lab-start-skill-save-zone-asset-filter-v1-2026-10-01` ;
+- branche : `work/lab-skill-save-zone-asset-filter-v1-2026-10-01`.
+
+### Retour smartphone utilisateur
+
+Deux régressions bloquent la validation de la capacité Ultime créée dans l'éditeur :
+1. après « Enregistrer comme nouvelle » ou « Mettre à jour », le test Combat refuse encore le lancement avec le message indiquant que la capacité est modifiée et doit être enregistrée ;
+2. le sélecteur « Visuel persistant de zone » propose des assets de créatures en plus des FX/sprites de compétence.
+
+### Objectif
+
+1. Reproduire le vrai chemin `édition capacité -> enregistrement -> validation/test combat` et supprimer le faux état dirty après un enregistrement réussi.
+2. Conserver un seul propriétaire de l'état d'enregistrement de la capacité dans Human Editor ; aucune rustine dans la preview.
+3. Filtrer le sélecteur de visuel persistant pour qu'il n'accepte jamais les assets de catégorie `creature` / portraits de créatures.
+4. Conserver les sprites/FX de compétence compatibles avec l'éditeur, sans logique fondée sur un nom d'asset.
+
+### Propriétaires concernés
+
+- Human Editor : état dirty et cycle d'enregistrement ;
+- Asset Catalog / Human Editor : filtrage sémantique des rôles d'assets ;
+- Preview Session : protégée sauf preuve TDD que la faute lui appartient.
+
+### Protégé
+
+- Combat State / persistent-zone-runtime ;
+- dégâts, résistances, boucliers, KO ;
+- progression et contrat 4+1 Ultime ;
+- Skill Presentation et renderer persistent-zone déjà GREEN technique, sauf preuve directe ;
+- Projectile Clash, trajectoires, profils de mouvement ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED du vrai cycle save -> validate/test : un enregistrement réussi doit rendre la capacité non dirty immédiatement ;
+2. RED catalogue : le rôle `zone` exclut les créatures même si leur assetType est `sprite` ou `fx` ;
+3. démontrer la cause au propriétaire ;
+4. correction minimale ;
+5. tests ciblés + CI complète ;
+6. documentation ;
+7. checkpoint + preview ;
+8. PREVALIDATION smartphone obligatoire avant GREEN utilisateur.
+
+État : **LOT OUVERT — RED obligatoire avant correction fonctionnelle**.
