@@ -2610,3 +2610,47 @@ La bibliothèque stable `global-assets` contient maintenant les frames, le manif
 La révision de `GLOBAL_VISUAL_LIBRARY` est `2026-10-01-v6-fire-zone-loop` et le catalogue utilise également ce token de révision afin d'éviter un cache ancien lors du chargement de l'éditeur.
 
 Le sélecteur de visuel persistant reçoit l'asset via le catalogue existant ; aucune liste UI parallèle n'est créée.
+
+
+## 48. Persistent Zone Visual UX V2
+
+### Animation multi-frame mobile
+
+Les séquences persistantes `frames[]` en `playbackMode:"loop"` ne dépendent plus d'une animation de `backgroundImage` entre plusieurs URL.
+
+Le renderer crée des calques image enfants dans **le même nœud FX autoritaire** et anime uniquement leur opacité avec Web Animations API. Les changements d'opacité sont fiables sur Chrome mobile et ne nécessitent :
+- aucun `setInterval` ;
+- aucun `setTimeout` de frame ;
+- aucune seconde horloge ;
+- aucun état de frame métier.
+
+La durée de boucle provient toujours de `frameMs × frameCount`. Le nœud reste possédé par `CombatState.persistentZones` et disparaît quand la zone n'existe plus.
+
+### Scale bi-axe
+
+`SkillPresentationBinding` accepte maintenant, en plus de `displayScale` :
+- `displayScaleX` ;
+- `displayScaleY`.
+
+Ces deux multiplicateurs sont purement visuels et ne modifient jamais le rayon gameplay.
+
+Pour une zone persistante, le renderer applique :
+`rayon visuel = radiusScale × displayScale × displayScaleX/Y`.
+
+Le Human Editor expose :
+- Scale global ;
+- Largeur du visuel ;
+- Hauteur du visuel ;
+avec une plage de 0.25 à 8.
+
+### Réactivation Human Editor
+
+Le contrat gameplay reste inchangé :
+- `refresh` ;
+- `reinforce`.
+
+Seul le wording utilisateur est simplifié :
+- `refresh` = **Garder la même taille** ;
+- `reinforce` = **Agrandir la zone**.
+
+Toute réactivation renouvelle déjà la durée selon le propriétaire gameplay existant. L'UI ne présente donc plus « Rafraîchir la durée » comme un choix distinct.
