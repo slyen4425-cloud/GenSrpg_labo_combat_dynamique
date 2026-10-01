@@ -75,7 +75,8 @@ test("Moussados showcase preset preserves the editor-authored model", async () =
       "lib_earth_guard",
       "claw",
       "lib_quake",
-      "lib_rock_slam"
+      "lib_rock_slam",
+      null
     ]
   );
 });
@@ -110,7 +111,8 @@ test("Loup volcanique showcase preset preserves health natural matchup visuals a
       "fireball",
       "claw",
       "lib_flame_bite",
-      "lib_fireball"
+      "lib_fireball",
+      null
     ]
   );
 });
