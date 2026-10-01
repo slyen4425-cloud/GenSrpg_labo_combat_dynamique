@@ -2583,34 +2583,38 @@ Le renderer conserve un seul nœud par `persistentZone.id` et met à jour son `t
 Aucun timer, observer ou listener compensatoire n'a été ajouté.
 
 
-## 47. Sprite animé de zone de feu — asset canonique V1
+## 47. Sprite animé de zone de feu — asset canonique V2
 
-Le visuel de zone de feu persistant utilise désormais un asset stable de la bibliothèque Capture :
+Le visuel de zone de feu persistant conserve l'identité stable :
 
 - assetId : `pack:capture:sprite-fire-zone-loop-01` ;
 - emplacement : `assets/library/capture/sprites/skills/fire_zone_loop/` ;
-- 8 frames WebP transparentes, 224 × 224 ;
+- source artistique : sprite sheet 4 × 4, 16 poses, vue plus oblique ;
+- runtime : atlas horizontal WebP transparent de 16 frames ;
+- frame runtime : 96 × 96 ;
+- atlas : `atlases/sprite_skill_fire_zone_loop_01_atlas.webp` ;
 - manifest : `sprite_skill_fire_zone_loop_01_sequence.json` ;
 - cadence : 80 ms / frame ;
 - boucle : active.
 
+Les huit anciennes frames individuelles ont été retirées de la bibliothèque canonique afin d'éviter deux sources visuelles concurrentes pour le même assetId.
+
 ### Autorités
 
-- le catalogue `global-visual-assets.v1.json` possède l'identité stable et les métadonnées de l'asset ;
-- `demoPresentationAssets` reste le resolver de présentation du laboratoire et transforme cet assetId en séquence de frames ;
-- `SkillPresentationBinding.visual.aura` reste propriétaire du choix de visuel pour une compétence ;
+- le catalogue `global-visual-assets.v1.json` conserve l'identité stable et référence le manifest au format `sprite-atlas` ;
+- `demoPresentationAssets` résout cet assetId en `url + frameCount + frameMs + playbackMode` ;
+- `SkillPresentationBinding.visual.aura` reste propriétaire du choix de visuel ;
 - `CombatState.persistentZones` reste propriétaire de la durée et du rayon gameplay ;
-- le renderer ne fait qu'animer et scaler la séquence.
+- le renderer utilise son chemin atlas existant par déplacement de `background-position`, sans permutation d'URL et sans horloge supplémentaire.
 
 Aucune règle gameplay ne dépend de l'assetId.
 
 ### Publication et cache
 
-La bibliothèque stable `global-assets` contient maintenant les frames, le manifest et l'entrée catalogue.
-La révision de `GLOBAL_VISUAL_LIBRARY` est `2026-10-01-v6-fire-zone-loop` et le catalogue utilise également ce token de révision afin d'éviter un cache ancien lors du chargement de l'éditeur.
+La bibliothèque stable `global-assets` est publiée au SHA `d73ad04dbc6c3f8de492b9a503653c4c6f2e753c`.
+La révision de `GLOBAL_VISUAL_LIBRARY` est `2026-10-01-v7-fire-zone-v2` afin que Chrome mobile ne réutilise pas l'ancien visuel.
 
-Le sélecteur de visuel persistant reçoit l'asset via le catalogue existant ; aucune liste UI parallèle n'est créée.
-
+Le sélecteur de visuel persistant conserve exactement la même entrée « Zone de feu animée » ; les capacités déjà sauvegardées n'ont aucune migration à effectuer.
 
 ## 48. Persistent Zone Visual UX V2
 
