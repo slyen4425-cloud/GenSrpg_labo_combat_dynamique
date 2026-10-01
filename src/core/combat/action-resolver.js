@@ -26,6 +26,9 @@ import {
   projectStatusStatEffectsV1
 } from "./status-effect-projection-v1.js";
 import {
+  applyPersistentZoneEffectsV1
+} from "./persistent-zone-runtime-v1.js";
+import {
   activeTauntSourceActorIdV1,
   hasActiveStatusKindV1
 } from "./status-effect-runtime-v1.js";
@@ -724,6 +727,15 @@ export function resolveSkillCompletion({
         });
       nextState = tactical.state;
       events.push(...tactical.events);
+
+      nextState =
+        applyPersistentZoneEffectsV1({
+          state: nextState,
+          actorId,
+          targetId,
+          skill,
+          atMs: impactAtMs
+        });
     } else if (outcome === "reflected") {
       const damage =
         statAdjustedDamageFor(
