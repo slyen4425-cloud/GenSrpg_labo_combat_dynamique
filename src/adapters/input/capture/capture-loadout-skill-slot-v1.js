@@ -2,10 +2,6 @@ import {
   CAPTURE_ULTIMATE_SKILL_SLOT_ID,
   normalizeCaptureActiveSkillLoadoutV1
 } from "../../../contracts/capture-active-skill-loadout-v1.js";
-import {
-  normalizeCaptureSkillEditorDraftV1
-} from "../../../contracts/capture-skill-editor-draft-v1.js";
-
 export function captureLoadoutSlotTypeV1(
   slotId
 ) {
@@ -37,12 +33,58 @@ export function validateCaptureLoadoutSkillSlotsV1({
     );
   const skillById = new Map(
     skillDraftList(skillDrafts).map(
-      (draft) => {
-        const normalized =
-          normalizeCaptureSkillEditorDraftV1(
-            draft
+      (draft, index) => {
+        if (
+          !draft ||
+          typeof draft !== "object" ||
+          Array.isArray(draft)
+        ) {
+          throw new TypeError(
+            "skillDrafts[" +
+              index +
+              "] must be an object"
           );
-        return [normalized.id, normalized];
+        }
+
+        const id = String(
+          draft.id ?? ""
+        ).trim();
+        if (id === "") {
+          throw new TypeError(
+            "skillDrafts[" +
+              index +
+              "].id must be a non-empty string"
+          );
+        }
+
+        const definition =
+          draft.definition ?? {};
+        const loadoutSlot =
+          definition.loadoutSlot == null
+            ? "standard"
+            : String(
+                definition.loadoutSlot
+              ).trim();
+
+        if (
+          loadoutSlot !== "standard" &&
+          loadoutSlot !== "ultimate"
+        ) {
+          throw new RangeError(
+            "Unsupported loadoutSlot: " +
+              loadoutSlot
+          );
+        }
+
+        return [
+          id,
+          {
+            id,
+            definition: {
+              loadoutSlot
+            }
+          }
+        ];
       }
     )
   );
