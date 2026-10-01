@@ -619,8 +619,14 @@ export function createDomSkillFxRenderer({
         active.add(record);
       }
 
-      record.node.style.left = `${source.x}px`;
-      record.node.style.top = `${source.y}px`;
+      const offsetX =
+        Number(visual.offsetX) || 0;
+      const offsetY =
+        Number(visual.offsetY) || 0;
+      record.node.style.left =
+        `${source.x + offsetX}px`;
+      record.node.style.top =
+        `${source.y + offsetY}px`;
       record.node.style.transform =
         `translate(-50%, -50%) scale(${effectiveScaleX}, ${effectiveScaleY})`;
       record.node.style.opacity =
