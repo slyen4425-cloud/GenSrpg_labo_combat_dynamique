@@ -129,9 +129,17 @@ test("Capture editor exposes no legacy duplicate gameplay controls", async () =>
     );
   }
 
-  assert.match(
+  assert.doesNotMatch(
     html,
     /Déclarer comme capacité Ultime \/ conditionnelle/i
+  );
+  assert.match(
+    html,
+    /data-skill-ultimate/
+  );
+  assert.match(
+    html,
+    /Activer des conditions d’activation/i
   );
   assert.equal(
     html.includes("data-skill-effects-host"),
