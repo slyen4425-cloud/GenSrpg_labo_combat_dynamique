@@ -1035,8 +1035,11 @@ export async function mountCoop2v2Test({
       renderState(state);
       queueAiDecisions();
     },
-    onClock() {
+    onClock(state) {
       renderAvailability();
+      fx.syncPersistentZones(
+        state.persistentZones ?? []
+      );
     },
     onStarted({ action }) {
       if (action.actionType !== "skill") {
