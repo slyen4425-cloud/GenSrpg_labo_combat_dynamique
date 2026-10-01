@@ -21010,3 +21010,50 @@ Ainsi les capacités déjà sauvegardées continuent de référencer le même as
 7. Validation smartphone obligatoire avant GREEN utilisateur.
 
 État : **LOT OUVERT — RED obligatoire avant remplacement**.
+
+
+### Résultat technique — Fire Zone Sprite V2 Replacement
+
+RED / évolution :
+- le lot est parti du GREEN `50de483fd5dedd72e0d7ecabb498ee7496794040` ;
+- les tests ont d'abord exigé 16 frames au lieu de 8 ;
+- le resolver a ensuite été resserré vers **un seul atlas canonique** plutôt que 16 URL séparées : même image source, mais moins de requêtes et aucune duplication d'asset runtime.
+
+Asset canonique final :
+- assetId inchangé : `pack:capture:sprite-fire-zone-loop-01` ;
+- 16 poses issues de la grille 4 × 4 validée ;
+- vue plus inclinée ;
+- atlas horizontal WebP : `assets/library/capture/sprites/skills/fire_zone_loop/atlases/sprite_skill_fire_zone_loop_01_atlas.webp` ;
+- frame runtime : 96 × 96 ;
+- `frame_count: 16` ;
+- `frame_ms: 80` ;
+- `loop: true` ;
+- anciennes 8 frames individuelles supprimées ;
+- catalogue : `resource.format = "sprite-atlas"`.
+
+Publication assets :
+- work assets : `d73ad04dbc6c3f8de492b9a503653c4c6f2e753c` ;
+- CI work assets : `36912132079` — SUCCESS ;
+- `global-assets` avancé en fast-forward sur le même SHA ;
+- atlas réellement relu sur `global-assets`, blob `db00395681a75c89a7416dd9da25127d3803c5c1`.
+
+Code :
+- resolver `demoPresentationAssets` : `url + frameCount:16 + frameMs:80 + playbackMode:"loop"` ;
+- cache revision : `2026-10-01-v7-fire-zone-v2` ;
+- sentinelle des arènes alignée sur cette révision ;
+- aucun changement du gameplay de zone ni du renderer de rayon.
+
+Validation code avant scellement documentaire :
+- SHA : `fd4ca0aeed158e84ac76b45b6c85755ac9300e9b` ;
+- CI : `36911651701` — SUCCESS.
+
+Contraintes respectées :
+- une seule identité d'asset ;
+- une seule ressource runtime canonique ;
+- aucune migration des capacités sauvegardées ;
+- aucun timer/observer/listener compensatoire ;
+- aucune modification de `persistent-zone-runtime-v1.js` ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique fonctionnel — scellement documentaire, checkpoint et preview à publier puis PREVALIDATION smartphone**.
