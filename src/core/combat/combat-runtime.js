@@ -1,4 +1,7 @@
 import {
+  combatHealthDeltaEventsV1
+} from "./combat-health-feedback-v1.js";
+import {
   projectileClashCandidate,
   resolveProjectileClash
 } from "./projectile-clash.js";
@@ -22,6 +25,7 @@ export function createCombatRuntime({
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   onState = () => {},
+  onHealthDelta = () => {},
   onClock = () => {},
   onProgress = () => {},
   onStarted = () => {},
@@ -42,6 +46,7 @@ export function createCombatRuntime({
   let lastNowMs = null;
   let sequence = 0;
   let lastStateSignal = null;
+  let lastFeedbackState = null;
   const activeByActor = new Map();
 
   function stateSignal(state) {
@@ -69,6 +74,19 @@ export function createCombatRuntime({
     const state = session.snapshot();
     const signal = stateSignal(state);
     if (force || signal !== lastStateSignal) {
+      if (lastFeedbackState !== null) {
+        for (
+          const feedback of
+          combatHealthDeltaEventsV1(
+            lastFeedbackState,
+            state
+          )
+        ) {
+          onHealthDelta(feedback);
+        }
+      }
+
+      lastFeedbackState = state;
       lastStateSignal = signal;
       onState(state);
     }
