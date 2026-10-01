@@ -84,7 +84,7 @@ test("Monster Capture source entry imports deterministically to CaptureCreatureE
   assert.equal(record.loadout.creatureId, "crea_aquafin");
   assert.deepEqual(
     record.loadout.slots.map((slot) => slot.skillId),
-    [null, null, null, null]
+    [null, null, null, null, null]
   );
 });
 
