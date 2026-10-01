@@ -20884,3 +20884,51 @@ L'audit confirme que le défaut vient du changement animé de `backgroundImage` 
 7. publication assets puis preview smartphone.
 
 État : **LOT OUVERT — RED obligatoire avant correction**.
+
+
+### Résultat technique — Persistent Zone Visual UX V2
+
+RED :
+- `tests/unit/persistent-zone-visual-ux-v2.test.mjs` ;
+- RED initial : `41dc8c73c3f921c27bb8350b00d7afce5aea9b18` ;
+- RED affiné mobile : `8a057c4e6d0d2c876e3d3f584139f618db1e7749` ;
+- CI RED : `36901189449` — FAILURE attendue.
+
+Cause confirmée :
+- les 8 frames existent réellement et sont différentes ;
+- le défaut venait du changement animé de `backgroundImage` entre URL par WAAPI, non fiable en pratique sur Chrome mobile ;
+- aucune régénération d'asset ni modification gameplay n'était nécessaire.
+
+Corrections :
+- `05ed8ae58f3edaf1404cc111547aaf0074dffff9` / `d84801345faf75f5bae6a2cd006f23d09435475a` : contrat de présentation étendu avec scales X/Y sans casser la forme historique ;
+- `e228b24d1b0a0035f9b4e70931293a6cb017f2af` : Human Editor scale jusqu'à 8, scale X/Y, wording `Garder la même taille` / `Agrandir la zone` ;
+- `cbb6a4222de84f9fbb5b1d99b229adc8b7ff89d5` : contrôles largeur/hauteur dans l'éditeur ;
+- `1467e10f0f492c32bb41cb76297fff3e54a38be6` / `1f0d7c563675982a642542a189b059395f080abe` : boucle multi-frame mobile-safe par calques d'opacité et scale bi-axe ;
+- `39e449dfba598b4450b0f4f6738b78996bfc630e` : style des calques de frame ;
+- `b1459ebfda6b11752fd0352e8e53e3f2f3f72817` : adaptateur de présentation transporte scale X/Y ;
+- `06057beb5a8e6250d62a3c3b5a32cd1caa8cc79a` : tests alignés sur le vrai chemin propriétaire.
+
+Validation :
+- CI : `36901845266` — SUCCESS ;
+- suite complète : **786 tests / 786 PASS / 0 FAIL** ;
+- aucun changement de `persistent-zone-runtime-v1.js` ;
+- aucun timer/observer/listener compensatoire ;
+- aucune nouvelle autorité ;
+- aucune mutation supplémentaire de `global-assets` nécessaire : les 8 frames canoniques déjà publiées restent utilisées.
+
+État : **GREEN technique — checkpoint/preview à publier, PREVALIDATION smartphone requise**.
+
+### Publication de PREVALIDATION — Persistent Zone Visual UX V2
+
+Noms :
+- checkpoint : `checkpoint/lab-zone-visual-ux-v2-green-2026-10-01` ;
+- preview : `preview/lab-zone-visual-ux-v2-2026-10-01`.
+
+Validation smartphone attendue :
+1. les flammes changent réellement de frame en boucle ;
+2. largeur et hauteur sont réglables séparément ;
+3. scale global peut dépasser 4 jusqu'à 8 ;
+4. wording `Garder la même taille` / `Agrandir la zone` ;
+5. Proche/Moyen/Loin reste gouverné par le gameplay existant.
+
+Aucun merge vers `main`.
