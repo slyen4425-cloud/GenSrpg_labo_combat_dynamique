@@ -9,7 +9,8 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "energy_drain",
   "apply_status",
   "cleanse",
-  "dispel"
+  "dispel",
+  "persistent_zone"
 ]);
 
 export const SKILL_EFFECT_V1_TARGET_SCOPES =
@@ -60,6 +61,17 @@ const FIELDS_BY_KIND = Object.freeze({
   dispel: new Set([
     ...COMMON_FIELDS,
     "statusTags"
+  ]),
+  persistent_zone: new Set([
+    ...COMMON_FIELDS,
+    "zoneId",
+    "radius",
+    "durationMs",
+    "tickIntervalMs",
+    "reactivation",
+    "maxActivations",
+    "radiusGrowthSteps",
+    "tickEffect"
   ])
 });
 
@@ -92,6 +104,39 @@ function nonNegativeNumber(value, field) {
     throw new RangeError(
       field +
         " must be a non-negative finite number"
+    );
+  }
+  return number;
+}
+
+function positiveNumber(value, field) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) {
+    throw new RangeError(
+      field +
+        " must be a positive finite number"
+    );
+  }
+  return number;
+}
+
+function positiveInteger(value, field) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 1) {
+    throw new RangeError(
+      field +
+        " must be an integer greater than or equal to 1"
+    );
+  }
+  return number;
+}
+
+function nonNegativeInteger(value, field) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 0) {
+    throw new RangeError(
+      field +
+        " must be a non-negative integer"
     );
   }
   return number;
@@ -202,6 +247,85 @@ export function normalizeSkillEffectV1(input) {
       value.statusTags,
       "SkillEffectV1.statusTags"
     );
+  }
+
+  if (kind === "persistent_zone") {
+    output.zoneId = requiredString(
+      value.zoneId,
+      "SkillEffectV1.zoneId"
+    );
+
+    output.radius = requiredString(
+      value.radius,
+      "SkillEffectV1.radius"
+    );
+    if (
+      !["short", "medium", "long"].includes(
+        output.radius
+      )
+    ) {
+      throw new RangeError(
+        "Unsupported SkillEffectV1.radius: " +
+          output.radius
+      );
+    }
+
+    output.durationMs = positiveNumber(
+      value.durationMs,
+      "SkillEffectV1.durationMs"
+    );
+    output.tickIntervalMs = positiveNumber(
+      value.tickIntervalMs,
+      "SkillEffectV1.tickIntervalMs"
+    );
+
+    output.reactivation = requiredString(
+      value.reactivation ?? "refresh",
+      "SkillEffectV1.reactivation"
+    );
+    if (
+      !["refresh", "reinforce"].includes(
+        output.reactivation
+      )
+    ) {
+      throw new RangeError(
+        "Unsupported SkillEffectV1.reactivation: " +
+          output.reactivation
+      );
+    }
+
+    output.maxActivations = positiveInteger(
+      value.maxActivations ?? 1,
+      "SkillEffectV1.maxActivations"
+    );
+    output.radiusGrowthSteps =
+      nonNegativeInteger(
+        value.radiusGrowthSteps ?? 0,
+        "SkillEffectV1.radiusGrowthSteps"
+      );
+
+    output.tickEffect =
+      normalizeSkillEffectV1(
+        objectValue(
+          value.tickEffect,
+          "SkillEffectV1.tickEffect"
+        )
+      );
+
+    if (
+      output.tickEffect.kind ===
+      "persistent_zone"
+    ) {
+      throw new RangeError(
+        "persistent_zone cannot contain another persistent_zone"
+      );
+    }
+
+    if (output.tickEffect.kind !== "damage") {
+      throw new RangeError(
+        "persistent_zone tickEffect must be damage in V1"
+      );
+    }
   }
 
   return Object.freeze(output);
