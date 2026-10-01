@@ -132,6 +132,96 @@ function applySpriteVisual(node, visual, durationMs, animate) {
     node.style.backgroundSize = "100% 100%";
     node.style.backgroundPosition = "center";
 
+    if (
+      frames.length > 1 &&
+      playbackMode === "loop" &&
+      node.ownerDocument?.createElement
+    ) {
+      node.style.backgroundImage = "none";
+      const frameAnimations = [];
+      const frameCount = frames.length;
+
+      frames.forEach((url, index) => {
+        const frame =
+          node.ownerDocument.createElement("img");
+        frame.className =
+          "skill-fx__loop-frame";
+        frame.src = url;
+        frame.alt = "";
+        frame.style.opacity = "0";
+        node.append(frame);
+
+        const start = index / frameCount;
+        const end = (index + 1) / frameCount;
+        const epsilon = Math.min(
+          0.001,
+          1 / (frameCount * 100)
+        );
+        const keyframes =
+          index === 0
+            ? [
+                { opacity: 1, offset: 0 },
+                {
+                  opacity: 1,
+                  offset: Math.max(0, end - epsilon)
+                },
+                { opacity: 0, offset: end },
+                { opacity: 0, offset: 1 }
+              ]
+            : index === frameCount - 1
+              ? [
+                  { opacity: 0, offset: 0 },
+                  {
+                    opacity: 0,
+                    offset: Math.max(0, start - epsilon)
+                  },
+                  { opacity: 1, offset: start },
+                  { opacity: 1, offset: 1 }
+                ]
+              : [
+                  { opacity: 0, offset: 0 },
+                  {
+                    opacity: 0,
+                    offset: Math.max(0, start - epsilon)
+                  },
+                  { opacity: 1, offset: start },
+                  {
+                    opacity: 1,
+                    offset: Math.max(start, end - epsilon)
+                  },
+                  { opacity: 0, offset: end },
+                  { opacity: 0, offset: 1 }
+                ];
+
+        const animation = animate(
+          frame,
+          keyframes,
+          {
+            duration: playbackMs,
+            easing: "linear",
+            fill: "both",
+            iterations: Infinity
+          }
+        );
+        frameAnimations.push(animation);
+        Promise.resolve(
+          animation?.finished
+        ).catch(() => {});
+      });
+
+      return Object.freeze({
+        bound: true,
+        frameAnimation: Object.freeze({
+          cancel() {
+            for (const animation of frameAnimations) {
+              animation?.cancel?.();
+            }
+          }
+        }),
+        playbackMs
+      });
+    }
+
     let frameAnimation = null;
     if (frames.length > 1) {
       frameAnimation = animate(
@@ -144,7 +234,7 @@ function applySpriteVisual(node, visual, durationMs, animate) {
           duration: playbackMs,
           easing: "steps(1, end)",
           fill: "forwards",
-          iterations: playbackMode === "loop" ? Infinity : 1
+          iterations: 1
         }
       );
 
@@ -470,10 +560,24 @@ export function createDomSkillFxRenderer({
         0.25,
         Number(visual.displayScale) || 1
       );
+      const displayScaleX = Math.max(
+        0.25,
+        Number(visual.displayScaleX) || 1
+      );
+      const displayScaleY = Math.max(
+        0.25,
+        Number(visual.displayScaleY) || 1
+      );
       const radiusScale =
         persistentZoneRadiusScale(zone.radius);
-      const effectiveScale =
-        displayScale * radiusScale;
+      const effectiveScaleX =
+        displayScale *
+        displayScaleX *
+        radiusScale;
+      const effectiveScaleY =
+        displayScale *
+        displayScaleY *
+        radiusScale;
 
       if (!record) {
         const node =
@@ -515,7 +619,7 @@ export function createDomSkillFxRenderer({
       record.node.style.left = `${source.x}px`;
       record.node.style.top = `${source.y}px`;
       record.node.style.transform =
-        `translate(-50%, -50%) scale(${effectiveScale})`;
+        `translate(-50%, -50%) scale(${effectiveScaleX}, ${effectiveScaleY})`;
       record.node.style.opacity =
         String(visual.opacity ?? 1);
       record.node.dataset.zoneRadius =
