@@ -157,20 +157,22 @@ function normalizeVisualSlot(raw, field) {
             value.displayScale,
             `${field}.displayScale`
           ),
-    displayScaleX:
-      value.displayScaleX == null
-        ? 1
-        : positiveNumber(
+    ...(value.displayScaleX == null
+      ? {}
+      : {
+          displayScaleX: positiveNumber(
             value.displayScaleX,
             `${field}.displayScaleX`
-          ),
-    displayScaleY:
-      value.displayScaleY == null
-        ? 1
-        : positiveNumber(
+          )
+        }),
+    ...(value.displayScaleY == null
+      ? {}
+      : {
+          displayScaleY: positiveNumber(
             value.displayScaleY,
             `${field}.displayScaleY`
-          ),
+          )
+        }),
     attachment: enumValue(
       value.attachment,
       `${field}.attachment`,
