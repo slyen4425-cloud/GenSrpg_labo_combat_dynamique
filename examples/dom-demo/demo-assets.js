@@ -51,7 +51,8 @@ function captureSequenceAsset({
   frameCount = 0,
   frameFiles = null,
   frameMs,
-  displayScale
+  displayScale,
+  playbackMode = "once"
 }) {
   const files = Array.isArray(frameFiles)
     ? frameFiles
@@ -71,7 +72,8 @@ function captureSequenceAsset({
       )
     ),
     frameMs,
-    displayScale
+    displayScale,
+    playbackMode
   });
 }
 
@@ -252,6 +254,16 @@ const ASSETS = Object.freeze({
       "icons/skills/icon_skill_teleport_strike_01.webp",
       CORE_ROOT
     ).href
+  }),
+  "pack:capture:sprite-fire-zone-loop-01": captureSequenceAsset({
+    assetId: "pack:capture:sprite-fire-zone-loop-01",
+    folder: "fire_zone_loop",
+    stem: "sprite_skill_fire_zone_loop_01",
+    extension: "webp",
+    frameCount: 8,
+    frameMs: 80,
+    displayScale: 1,
+    playbackMode: "loop"
   }),
   "pack:capture:sprite-claw-impact-01": captureSequenceAsset({
     assetId: "pack:capture:sprite-claw-impact-01",
