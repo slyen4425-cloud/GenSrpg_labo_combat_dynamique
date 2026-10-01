@@ -17,6 +17,9 @@ import {
 import {
   exportCaptureEditorDraftsToCombatExportV1
 } from "./capture-editor-exporter-v1.js";
+import {
+  validateCaptureLoadoutSkillSlotsV1
+} from "./capture-loadout-skill-slot-v1.js";
 
 const INPUT_FIELDS = new Set([
   "battleSetup",
@@ -190,6 +193,11 @@ export function exportCaptureEditorDraftsToCombatExportV2(input) {
   );
 
   for (const loadout of loadouts) {
+    validateCaptureLoadoutSkillSlotsV1({
+      loadout,
+      skillDrafts
+    });
+
     if (!creatureById.has(loadout.creatureId)) {
       throw new RangeError(
         `loadout references unknown creature: ${loadout.creatureId}`
