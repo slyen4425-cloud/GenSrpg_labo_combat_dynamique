@@ -21,7 +21,7 @@ function validInput() {
   };
 }
 
-test("CaptureActiveSkillLoadoutV1 normalizes exactly four explicit slots", () => {
+test("CaptureActiveSkillLoadoutV1 migrates four legacy slots to five canonical slots", () => {
   const value = normalizeCaptureActiveSkillLoadoutV1(validInput());
 
   assert.equal(
@@ -31,7 +31,7 @@ test("CaptureActiveSkillLoadoutV1 normalizes exactly four explicit slots", () =>
   assert.equal(value.creatureId, "crea-braiseau");
   assert.deepEqual(
     value.slots.map((slot) => slot.id),
-    ["slot-1", "slot-2", "slot-3", "slot-4"]
+    ["slot-1", "slot-2", "slot-3", "slot-4", "slot-ultimate"]
   );
   const equippedSkillIds =
     captureActiveSkillIdsV1(value);
@@ -63,24 +63,28 @@ test("CaptureActiveSkillLoadoutV1 allows empty slots", () => {
   );
 });
 
-test("CaptureActiveSkillLoadoutV1 refuses fewer or more than four slots instead of trimming", () => {
+test("CaptureActiveSkillLoadoutV1 refuses fewer than four or more than five slots instead of trimming", () => {
   const tooFew = validInput();
   tooFew.slots.pop();
 
   assert.throws(
     () => normalizeCaptureActiveSkillLoadoutV1(tooFew),
-    /exactly four/i
+    /four legacy|five canonical/i
   );
 
   const tooMany = validInput();
   tooMany.slots.push({
-    id: "slot-5",
+    id: "slot-ultimate",
+    skillId: null
+  });
+  tooMany.slots.push({
+    id: "slot-6",
     skillId: "teleport-strike"
   });
 
   assert.throws(
     () => normalizeCaptureActiveSkillLoadoutV1(tooMany),
-    /exactly four/i
+    /four legacy|five canonical/i
   );
 });
 
