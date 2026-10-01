@@ -20997,3 +20997,50 @@ Cette projection ne modifie ni les PV, ni résistances, ni boucliers, ni KO et n
 8. PREVALIDATION smartphone avant GREEN utilisateur.
 
 État : **LOT OUVERT — RED obligatoire avant correction**.
+
+
+### Résultat technique — Combat Damage Numbers V1
+
+RED :
+- test : `tests/unit/combat-damage-numbers-v1.test.mjs` ;
+- commit : `02c3d74e94f86680b5ce94d2c0e15e148f590359` ;
+- CI : `36902251530` — FAILURE attendue (`combat-health-feedback-v1.js` absent).
+
+Implémentation :
+- `34304325a401771ed51dc148ce030e77cf791082` : projection pure `combatHealthDeltaEventsV1(previousState, nextState)` ;
+- `9ca5f9fc54ddc7e33ec10e6d3a11569dc00a7161` : callback Runtime `onHealthDelta`, émission unique depuis les transitions d'état autoritaires ;
+- `e1ba8a2fbefe7013e714ada02cbed0d88d3531ca` : FX DOM `damage` avec nombre flottant `-N` ;
+- `af43cd2d7cdffa35cf5b957ec96f5e96bba3b187` : style du nombre de dégâts ;
+- `9e9bab67c0950e680e0ab2a52a2b9fdc7b49a694` : raccord UI `onHealthDelta -> fx.play({type:"damage"})`, sans recalcul ;
+- `8ffd11e9b0493274932eb7108a9221061b2103b9` : sentinelle historique `miss` recentrée sur son propre bloc après ajout légitime du feedback damage.
+
+Couverture fonctionnelle :
+- attaque directe : baisse de PV -> nombre ;
+- réflexion : baisse de PV -> nombre ;
+- zone persistante : tick -> baisse de PV -> nombre ;
+- DoT / poison : tick -> baisse de PV -> nombre ;
+- toute future source de dégâts passant par les PV autoritaires bénéficie du même feedback sans branche spéciale.
+
+Validation :
+- CI fonctionnelle : `36902570435` — SUCCESS ;
+- suite complète : **791/791 PASS, 0 FAIL** ;
+- aucun changement à `applyCombatDamageV1`, `persistent-zone-runtime-v1.js` ou `status-effect-runtime-v1.js` ;
+- aucun timer/observer/listener compensatoire ;
+- aucune nouvelle autorité gameplay.
+
+État : **GREEN technique — documentation finale/checkpoint/preview à publier, PREVALIDATION smartphone obligatoire**.
+
+### Publication de PREVALIDATION — Combat Damage Numbers V1
+
+Noms réservés :
+- checkpoint : `checkpoint/lab-combat-damage-numbers-v1-green-2026-10-01` ;
+- preview : `preview/lab-combat-damage-numbers-v1-2026-10-01`.
+
+Validation smartphone attendue :
+1. attaque normale : nombre `-N` visible sur la cible ;
+2. zone persistante : chaque tick qui retire réellement des PV affiche son nombre ;
+3. DoT/poison : même comportement ;
+4. résistance/bouclier restent représentés par la perte réelle de PV, sans double calcul UI ;
+5. aucun nombre ne s'affiche quand les PV ne diminuent pas.
+
+Aucun merge vers `main`.
