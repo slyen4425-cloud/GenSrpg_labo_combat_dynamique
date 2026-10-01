@@ -734,7 +734,9 @@ export function resolveSkillCompletion({
           actorId,
           targetId,
           skill,
-          atMs: impactAtMs
+          atMs:
+            nextState.elapsedMs +
+            impactAtMs
         });
     } else if (outcome === "reflected") {
       const damage =
