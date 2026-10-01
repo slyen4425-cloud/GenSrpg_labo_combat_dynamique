@@ -435,7 +435,11 @@ export function createDomSkillFxRenderer({
       }
 
       const source = centerRelativeTo(
-        sourceRect(sourceActorId),
+        anchor(
+          targetAnchors,
+          sourceActorId,
+          "persistent zone source"
+        ).getBoundingClientRect(),
         arenaRect
       );
       const displayScale = Math.max(
