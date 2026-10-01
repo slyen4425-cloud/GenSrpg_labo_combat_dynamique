@@ -255,11 +255,11 @@ const ASSETS = Object.freeze({
       CORE_ROOT
     ).href
   }),
-  "pack:capture:sprite-fire-zone-loop-01": captureSequenceAsset({
+  "pack:capture:sprite-fire-zone-loop-01": Object.freeze({
     assetId: "pack:capture:sprite-fire-zone-loop-01",
-    folder: "fire_zone_loop",
-    stem: "sprite_skill_fire_zone_loop_01",
-    extension: "webp",
+    url: globalVisualAssetUrl(
+      "capture/sprites/skills/fire_zone_loop/atlases/sprite_skill_fire_zone_loop_01_atlas.webp"
+    ),
     frameCount: 16,
     frameMs: 80,
     displayScale: 1,
