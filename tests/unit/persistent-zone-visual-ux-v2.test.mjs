@@ -89,13 +89,13 @@ function fakeElement(rect = {
   };
 }
 
-test("fire-zone asset keeps its eight canonical frames and loop metadata", () => {
+test("fire-zone asset keeps its sixteen canonical frames and loop metadata", () => {
   const asset = demoPresentationAssets.asset(
     "pack:capture:sprite-fire-zone-loop-01"
   );
 
   assert.ok(asset);
-  assert.equal(asset.frames.length, 8);
+  assert.equal(asset.frames.length, 16);
   assert.equal(asset.frameMs, 80);
   assert.equal(asset.playbackMode, "loop");
 });
