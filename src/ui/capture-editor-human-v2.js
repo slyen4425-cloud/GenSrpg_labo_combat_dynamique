@@ -23,6 +23,7 @@ import {
   STATUS_EFFECT_V1_STACKING
 } from "../contracts/status-effect-v1.js";
 import {
+  CAPTURE_ULTIMATE_SKILL_SLOT_ID,
   normalizeCaptureActiveSkillLoadoutV1
 } from "../contracts/capture-active-skill-loadout-v1.js";
 import {
@@ -116,6 +117,9 @@ import {
   applyCaptureTransferPlanToEditorStateV1,
   applyCaptureTransferBatchToEditorStateV1
 } from "./capture-editor-file-transfer-v1.js";
+import {
+  validateCaptureLoadoutSkillSlotsV1
+} from "../adapters/input/capture/capture-loadout-skill-slot-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -778,7 +782,8 @@ export function humanLoadoutAvailabilityV1({
 export function validateHumanLoadoutProgressionV1({
   loadout,
   progressionRules,
-  creatureLevel
+  creatureLevel,
+  skillDrafts = []
 }) {
   if (
     !loadout ||
@@ -795,6 +800,11 @@ export function validateHumanLoadoutProgressionV1({
       creatureLevel,
       "Niveau créature"
     )
+  });
+
+  validateCaptureLoadoutSkillSlotsV1({
+    loadout,
+    skillDrafts
   });
 
   return loadout;
@@ -1310,6 +1320,10 @@ export function buildHumanSkillDraftV1(fields) {
         "Type de capacité"
       ),
       form: requiredText(fields.form, "Style de capacité"),
+      loadoutSlot:
+        fields.loadoutSlot === "ultimate"
+          ? "ultimate"
+          : "standard",
       element: optionalText(fields.element),
       approachMode: requiredText(
         fields.approachMode ?? "none",
@@ -1411,7 +1425,8 @@ export function buildHumanSkillDraftV1(fields) {
 
 export function buildHumanLoadoutV1({
   creatureId,
-  skillIds
+  skillIds,
+  ultimateSkillId = null
 }) {
   const ids = Array.isArray(skillIds)
     ? [...skillIds]
@@ -1419,7 +1434,7 @@ export function buildHumanLoadoutV1({
 
   if (ids.length > 4) {
     throw new RangeError(
-      "Le loadout actif ne peut pas dépasser 4 capacités"
+      "Le loadout standard ne peut pas dépasser 4 capacités"
     );
   }
 
@@ -1433,10 +1448,17 @@ export function buildHumanLoadoutV1({
       creatureId,
       "Créature du loadout"
     ),
-    slots: ids.map((skillId, index) => ({
-      id: "slot-" + (index + 1),
-      skillId: optionalText(skillId)
-    }))
+    slots: [
+      ...ids.map((skillId, index) => ({
+        id: "slot-" + (index + 1),
+        skillId: optionalText(skillId)
+      })),
+      {
+        id: CAPTURE_ULTIMATE_SKILL_SLOT_ID,
+        skillId:
+          optionalText(ultimateSkillId)
+      }
+    ]
   });
 }
 
@@ -1694,6 +1716,12 @@ function writeSkillTemplateFields(
     ["[data-skill-required-level]", fields.requiredLevel]
   ];
 
+  one(
+    root,
+    "[data-skill-ultimate]"
+  ).checked =
+    fields.loadoutSlot === "ultimate";
+
   for (const [selector, value] of mapping) {
     one(root, selector).value = String(value ?? "");
   }
@@ -1768,6 +1796,11 @@ function prepareNewSkillDraftFields(
   for (const [selector, value] of values) {
     one(root, selector).value = String(value);
   }
+
+  one(
+    root,
+    "[data-skill-ultimate]"
+  ).checked = false;
 
   renderHumanProjectilePowerV1(
     root,
@@ -4440,6 +4473,13 @@ function readSkillFields(root) {
       root,
       "[data-skill-required-level]"
     ),
+    loadoutSlot:
+      one(
+        root,
+        "[data-skill-ultimate]"
+      ).checked
+        ? "ultimate"
+        : "standard",
     usageScopes: ["capture", "combat"],
     category: selectedValue(
       root,
@@ -4555,12 +4595,20 @@ function readSkillFields(root) {
 
 function readLoadout(root, creatureId) {
   const skillIds = [
-    ...root.querySelectorAll("[data-loadout-slot]")
+    ...root.querySelectorAll(
+      '[data-loadout-slot-type="standard"]'
+    )
   ].map((select) => select.value || null);
+  const ultimateSkillId =
+    one(
+      root,
+      '[data-loadout-slot-type="ultimate"]'
+    ).value || null;
 
   return buildHumanLoadoutV1({
     creatureId,
-    skillIds
+    skillIds,
+    ultimateSkillId
   });
 }
 
