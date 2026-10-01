@@ -377,3 +377,104 @@ test("tactical effects UI keeps a single-column mobile layout", async () => {
     /@media \(max-width: 520px\)[\s\S]*?\.skill-effect-row__header,[\s\S]*?\.skill-status-config__grid,[\s\S]*?\.skill-status-config__specific[\s\S]*?grid-template-columns:\s*1fr/
   );
 });
+
+
+test("Human Editor builds a persistent damaging zone from readable fields", async () => {
+  const ui = await import(uiModuleUrl);
+
+  const effects =
+    ui.buildHumanTacticalSkillEffectsV1([
+      {
+        kind: "persistent_zone",
+        targetScope: "all_enemies",
+        zoneId: "flames",
+        radius: "short",
+        durationSeconds: 10,
+        tickSeconds: 1.5,
+        reactivation: "reinforce",
+        maxActivations: 3,
+        radiusGrowthSteps: 1,
+        tickDamage: 7,
+        channel: "fire"
+      }
+    ]);
+
+  assert.deepEqual(effects, [
+    {
+      kind: "persistent_zone",
+      targetScope: "all_enemies",
+      zoneId: "flames",
+      radius: "short",
+      durationMs: 10000,
+      tickIntervalMs: 1500,
+      reactivation: "reinforce",
+      maxActivations: 3,
+      radiusGrowthSteps: 1,
+      tickEffect: {
+        kind: "damage",
+        targetScope: "all_enemies",
+        amount: 7,
+        channel: "fire"
+      }
+    }
+  ]);
+});
+
+test("Human Editor source exposes all persistent-zone controls without owning its runtime", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const marker of [
+    "data-skill-zone-id",
+    "data-skill-zone-radius",
+    "data-skill-zone-duration-seconds",
+    "data-skill-zone-tick-seconds",
+    "data-skill-zone-reactivation",
+    "data-skill-zone-max-activations",
+    "data-skill-zone-radius-growth-steps",
+    "data-skill-zone-tick-damage",
+    "data-skill-zone-channel"
+  ]) {
+    assert.equal(
+      source.includes(marker),
+      true,
+      marker + " must be owned by the Human Editor input surface"
+    );
+  }
+
+  assert.equal(
+    source.includes("persistent-zone-runtime-v1.js"),
+    false,
+    "Human Editor must not own persistent-zone runtime logic"
+  );
+});
+
+test("Capture editor explains persistent evolving zones to the user", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const label of [
+    "Zone persistante",
+    "rayon",
+    "réactivation",
+    "dégâts"
+  ]) {
+    assert.equal(
+      html.toLowerCase().includes(
+        label.toLowerCase()
+      ),
+      true,
+      label + " must be explained in the Skills editor"
+    );
+  }
+});
