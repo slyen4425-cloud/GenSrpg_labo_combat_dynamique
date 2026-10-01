@@ -21163,3 +21163,50 @@ Ajouter un réglage simple de **décalage horizontal / vertical** pour le visuel
 8. PREVALIDATION smartphone obligatoire.
 
 État : **LOT OUVERT — RED obligatoire avant correction**.
+
+
+### Résultat technique — Persistent Zone Visual Positioning V1
+
+RED :
+- test : `tests/unit/persistent-zone-visual-positioning-v1.test.mjs` ;
+- commit RED : `41486706e68b38c7dbaa39e417d7c649394241e1` ;
+- CI RED : `36916496771` — FAILURE attendue ;
+- le Human Editor exportait encore `offsetX/offsetY = 0` et le renderer ignorait ces offsets pour les zones persistantes.
+
+Correction propriétaire :
+- `348605f5ea7ed891a228b1166b5fcdbf64b3f9e7` : le Human Editor transporte `zoneOffsetX/zoneOffsetY` vers les champs existants `visual.aura.offsetX/offsetY` ;
+- `7372a5904294a024e998e6363b0c77547c301826` : deux contrôles explicites `Décalage horizontal (px)` / `Décalage vertical (px)` ;
+- `5182215f6543f5a082edb4fbe4e78077e526d6d9` : le renderer ajoute ces offsets à `left/top` du même nœud de zone.
+
+Validation :
+- CI fonctionnelle : `36916776790` — SUCCESS ;
+- suite complète : **790/790 PASS, 0 FAIL** ;
+- offset testé : anchor `100/200` + `+35/-28` -> visuel `135/172` ;
+- scale et rayon restent inchangés.
+
+Contraintes respectées :
+- réutilisation des champs `offsetX/offsetY` du contrat existant ;
+- aucune nouvelle autorité de position gameplay ;
+- aucune modification de `persistent-zone-runtime-v1.js` ;
+- aucun timer/observer/listener compensatoire ;
+- aucun changement `global-assets` ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique fonctionnel — documentation/checkpoint/preview puis PREVALIDATION smartphone**.
+
+### Publication de PREVALIDATION — Persistent Zone Visual Positioning V1
+
+Noms :
+- checkpoint : `checkpoint/lab-zone-visual-positioning-v1-green-2026-10-01` ;
+- preview : `preview/lab-zone-visual-positioning-v1-2026-10-01`.
+
+Validation smartphone attendue :
+1. `0 / 0` conserve le centrage historique ;
+2. horizontal positif déplace la zone vers la droite, négatif vers la gauche ;
+3. vertical positif déplace vers le bas, négatif vers le haut ;
+4. largeur / hauteur / scale global restent fonctionnels ;
+5. Proche/Moyen/Loin continue de faire grandir le même visuel ;
+6. aucun déplacement de créature ou de gameplay.
+
+Aucun merge vers `main`.
