@@ -113,17 +113,17 @@
 
         <div class="grid two">
           <label>Nom
-            <input data-creature-name value="Loup volcanique">
+            <input data-creature-name value="Nouvelle créature">
           </label>
           <label>Niveau
-            <input data-creature-level type="number" min="1" value="10">
+            <input data-creature-level type="number" min="1" value="1">
           </label>
         </div>
         <label class="technical-field">Identifiant
-          <input data-creature-id value="crea-loup">
+          <input data-creature-id value="crea-new-001">
         </label>
         <label>Description
-          <textarea data-creature-description rows="2">Créature volcanique rapide.</textarea>
+          <textarea data-creature-description rows="2"></textarea>
         </label>
       </article>
 
@@ -144,6 +144,7 @@
             </div>
             <label>Image face
               <select data-creature-front-select data-asset-role="creature" data-required-asset="true">
+                <option value="">Aucune</option>
                 <option value="pack:capture:creature-loup-volcanique-opponent-01">Loup volcanique — face</option>
               </select>
             </label>
@@ -157,7 +158,7 @@
             <label>Image dos
               <select data-creature-back-select data-asset-role="creature">
                 <option value="">Aucun</option>
-                <option value="pack:capture:creature-loup-volcanique-player-01" selected>Loup volcanique — dos</option>
+                <option value="pack:capture:creature-loup-volcanique-player-01">Loup volcanique — dos</option>
               </select>
             </label>
           </div>
@@ -170,7 +171,7 @@
             <label>Icône
               <select data-creature-icon-select data-asset-role="creature">
                 <option value="">Aucune</option>
-                <option value="pack:capture:creature-loup-volcanique-icon-01" selected>Loup volcanique — icône</option>
+                <option value="pack:capture:creature-loup-volcanique-icon-01">Loup volcanique — icône</option>
               </select>
             </label>
           </div>
@@ -178,8 +179,8 @@
 
         <label>Style de position
           <select data-creature-profile>
-            <option value="biped">Bipède</option>
-            <option value="quadruped" selected>Quadrupède</option>
+            <option value="biped" selected>Bipède</option>
+            <option value="quadruped">Quadrupède</option>
             <option value="serpentine">Serpent / rampant</option>
             <option value="flying">Volant</option>
             <option value="massive">Massif / golem</option>
@@ -260,7 +261,7 @@
         </div>
 
         <div class="chip-grid">
-          <label class="check-chip"><input type="checkbox" data-element value="fire" checked><span>Feu</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="fire"><span>Feu</span></label>
           <label class="check-chip"><input type="checkbox" data-element value="water"><span>Eau</span></label>
           <label class="check-chip"><input type="checkbox" data-element value="earth"><span>Terre</span></label>
           <label class="check-chip"><input type="checkbox" data-element value="air"><span>Air</span></label>
@@ -279,8 +280,8 @@
           <summary>Résistances & faiblesses naturelles</summary>
           <p class="note">Valeur positive = résistance ; valeur négative = faiblesse. Ces modificateurs sont appliqués au canal élémentaire en combat et s’ajoutent aux bonus provenant des statistiques.</p>
           <div class="grid three resistance-grid">
-            <label>Rés. Feu %<input type="number" data-resistance="fire" value="35"></label>
-            <label>Rés. Eau %<input type="number" data-resistance="water" value="-50"></label>
+            <label>Rés. Feu %<input type="number" data-resistance="fire" value="0"></label>
+            <label>Rés. Eau %<input type="number" data-resistance="water" value="0"></label>
             <label>Rés. Terre %<input type="number" data-resistance="earth" value="0"></label>
             <label>Rés. Air %<input type="number" data-resistance="air" value="0"></label>
             <label>Rés. Électricité %<input type="number" data-resistance="electric" value="0"></label>
@@ -297,8 +298,8 @@
 
         <div class="grid three">
           <label class="switch-line"><input type="checkbox" data-capturable checked><span>Capturable</span></label>
-          <label>Taux de capture %<input type="number" min="0" max="100" data-capture-rate value="40"></label>
-          <label>Chance d'apparition %<input type="number" min="0" max="100" data-spawn-chance value="20"></label>
+          <label>Taux de capture %<input type="number" min="0" max="100" data-capture-rate value="30"></label>
+          <label>Chance d'apparition %<input type="number" min="0" max="100" data-spawn-chance value="10"></label>
         </div>
       </article>
 
