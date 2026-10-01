@@ -133,6 +133,8 @@ function normalizeVisualSlot(raw, field) {
     new Set([
       "assetId",
       "displayScale",
+      "displayScaleX",
+      "displayScaleY",
       "attachment",
       "anchor",
       "offsetX",
@@ -154,6 +156,20 @@ function normalizeVisualSlot(raw, field) {
         : positiveNumber(
             value.displayScale,
             `${field}.displayScale`
+          ),
+    displayScaleX:
+      value.displayScaleX == null
+        ? 1
+        : positiveNumber(
+            value.displayScaleX,
+            `${field}.displayScaleX`
+          ),
+    displayScaleY:
+      value.displayScaleY == null
+        ? 1
+        : positiveNumber(
+            value.displayScaleY,
+            `${field}.displayScaleY`
           ),
     attachment: enumValue(
       value.attachment,
