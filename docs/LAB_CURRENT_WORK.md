@@ -19869,3 +19869,27 @@ Validation technique :
 1. Loup volcanique dans le test Combat est indiqué comme modèle configuré et utilise Santé 150 / Feu +10 / résistance Feu +35 % / faiblesse Eau -50 % / profil quadruped / scale 1.2 / loadout configuré ;
 2. Moussados utilise la bouche corrigée dans les deux vues ;
 3. la bibliothèque historique reste complète.
+
+
+### PREVALIDATION smartphone — ÉCHEC 2 — 2026-10-01
+
+Retour utilisateur :
+- les créatures sont bien revenues dans la bibliothèque ;
+- Moussados : socket bouche toujours mal placé ;
+- Loup volcanique : aucun socket visible et compétences équipées non placées.
+
+Le GREEN utilisateur reste refusé. Aucun merge vers `main`.
+
+Diagnostic racine corrigé :
+1. `capture-editor-v2.html` démarre avec un formulaire statique `crea-loup` sans sockets ni loadout. Le vrai preset `crea-loup` remplace ensuite correctement l'enregistrement dans `configuredCreatures`, mais après le batch showcase le code ne rappelle pas `loadCreatureRecord()` pour la créature déjà sélectionnée : seuls les stats sont rerendus. Le formulaire visible conserve donc les sockets/slots vides de l'état statique malgré une fiche mémoire correcte.
+2. `replaceCreatureSockets()` parcourt tous les sockets et appelle `updateSocketMarker()`, mais `updateSocketMarker()` ne gère qu'un marqueur unique par vue. Chaque socket écrase donc visuellement le précédent ; sur Moussados, le dernier socket (`tail`) remplace le marqueur de bouche. Le sélecteur `data-socket-kind` ne resynchronise pas le marqueur avec le socket sélectionné.
+3. L'inversion front/back appliquée précédemment au socket bouche Moussados reposait sur cette lecture visuelle faussée. Les coordonnées du fichier export utilisateur d'origine doivent être restaurées : front `0.10053788768847613 / 0.6934029261271158`, back `0.9318691325306842 / 0.5627603530883789`.
+
+Plan de correction propriétaire :
+- RED : exiger le rechargement complet de la fiche sélectionnée après application des presets showcase ;
+- RED : exiger que le marqueur de socket affiché soit celui du socket actuellement sélectionné, par vue ;
+- restaurer les coordonnées bouche Moussados issues de l'export original ;
+- ne toucher ni Combat Runtime, ni mouvement, ni FX, ni règles de dégâts ;
+- CI complète + nouvelle preview + nouvelle validation smartphone.
+
+État : **LOT OUVERT — GREEN technique précédent invalidé par PREVALIDATION utilisateur**.
