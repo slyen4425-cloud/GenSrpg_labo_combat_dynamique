@@ -15,19 +15,11 @@ test("fire-zone persistent sprite resolves as an sixteen-frame looping sequence"
     asset.assetId,
     "pack:capture:sprite-fire-zone-loop-01"
   );
-  assert.ok(Array.isArray(asset.frames));
-  assert.equal(asset.frames.length, 16);
+  assert.equal(asset.frameCount, 16);
   assert.equal(asset.frameMs, 80);
   assert.equal(asset.playbackMode, "loop");
-
-  assert.ok(
-    asset.frames[0].includes(
-      "fire_zone_loop/frames/sprite_skill_fire_zone_loop_01_01.webp"
-    )
-  );
-  assert.ok(
-    asset.frames[15].includes(
-      "fire_zone_loop/frames/sprite_skill_fire_zone_loop_01_16.webp"
-    )
+  assert.match(
+    asset.url,
+    /fire_zone_loop\/atlases\/sprite_skill_fire_zone_loop_01_atlas\.webp/
   );
 });
