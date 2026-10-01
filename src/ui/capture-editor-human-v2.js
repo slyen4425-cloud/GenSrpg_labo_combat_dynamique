@@ -7113,6 +7113,27 @@ export function mountCaptureEditorHumanV2({
           selectedCreatureId
         );
 
+        const insertedShowcase =
+          showcaseResult.actions.find(
+            (action) =>
+              action.action ===
+                "insert-creature" &&
+              action.kind === "creature" &&
+              configuredCreatures.has(
+                action.id
+              )
+          ) ?? null;
+
+        if (
+          selectedCreatureId === null &&
+          creatureDirty === false &&
+          insertedShowcase !== null
+        ) {
+          loadCreatureRecord(
+            insertedShowcase.id
+          );
+        }
+
         selectedRecord =
           selectedCreatureId
             ? configuredCreatures.get(
