@@ -20411,3 +20411,34 @@ Deux régressions bloquent la validation de la capacité Ultime créée dans l'�
 10. PREVALIDATION smartphone obligatoire avant GREEN utilisateur.
 
 État : **LOT OUVERT — RED obligatoire avant correction fonctionnelle**.
+
+
+### Résultat technique — Skill Save/Test Dirty State & Persistent Zone Asset Filter V1
+
+RED :
+- test : `tests/unit/skill-save-zone-asset-filter-v1.test.mjs` ;
+- commit RED initial : `0aba7d92dc6f609a9f781a0c9bc9de328858167d` ;
+- RED renforcé : `cc0787378ee4946becaec00de3aef65f98dd0a7a` ;
+- CI RED : `36870282399`, `36871641321`, `36872304323` — FAILURE attendue ;
+- cause visible : les propriétaires attendus `captureSkillDraftHasUnsavedChangesV1` / `captureEditorAssetMatchesRoleV1` n’existaient pas encore et l’ancien Human Editor conservait `skillDirty`.
+
+Cause démontrée :
+1. `configuredSkills` contenait déjà la capacité enregistrée mais un booléen mutable `skillDirty`, mis à jour par de multiples listeners UI, constituait une seconde autorité susceptible de rester/stagner à `true` après le vrai enregistrement ;
+2. le rôle `zone` acceptait tout asset image `sprite/fx`, donc aussi les sprites de catégorie/tag `creature` ;
+3. le test de libellé précédent n’était pas borné au bloc `persistent_zone`, ce qui permettait un faux GREEN grâce aux mêmes mots présents dans d’autres effets.
+
+Correction propriétaire :
+- commit fonctionnel : `b5853c4abc4477d59c1eab2f3e5fdf7c2225be04` ;
+- suppression complète de `skillDirty` et des listeners qui ne servaient qu’à le maintenir ;
+- `configuredSkills` reste l’unique autorité ; `captureSkillDraftHasUnsavedChangesV1()` dérive l’état courant par comparaison du brouillon normalisé ;
+- les gardes validation/test, export, import et hydratation utilisent cette dérivation ;
+- aucune logique ajoutée dans la preview, aucun second listener, aucun observer, aucun timer, aucun fallback ;
+- `captureEditorAssetMatchesRoleV1()` exclut catégorie `creature`, portraits et tag `creature` du rôle `zone` sans filtrage par nom ;
+- libellés du bloc zone réellement corrigés vers `Dégâts à chaque intervalle` et `Élément des dégâts`.
+
+Validation fonctionnelle :
+- CI : `36873004711` — SUCCESS ;
+- suite complète : **773/773 PASS, 0 FAIL** ;
+- tests spécifiques GREEN : capacité Ultime enregistrée immédiatement propre, modification réelle détectée, absence de `skillDirty`, exclusion des créatures du sélecteur zone, conservation des sprites/FX de compétence, vérification ciblée des libellés du bloc `persistent_zone`.
+
+État : **GREEN technique fonctionnel — documentation/checkpoint/preview à finaliser puis PREVALIDATION smartphone obligatoire**.
