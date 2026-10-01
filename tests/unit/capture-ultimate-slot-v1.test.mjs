@@ -291,6 +291,6 @@ test("Human editor exposes one distinct ultimate slot and one explicit ultimate 
   );
   assert.match(
     source,
-    /slot-ultimate/
+    /CAPTURE_ULTIMATE_SKILL_SLOT_ID/
   );
 });
