@@ -15,27 +15,70 @@
       "endurance": 16,
       "initiative": 6
     },
-    "elements": ["earth"],
+    "elements": [
+      "earth"
+    ],
     "resistances": [
-      {"kind": "element:fire", "value": 50},
-      {"kind": "element:water", "value": 0},
-      {"kind": "element:earth", "value": 0},
-      {"kind": "element:air", "value": -50},
-      {"kind": "element:electric", "value": 0},
-      {"kind": "element:light", "value": 0},
-      {"kind": "element:shadow", "value": 0},
-      {"kind": "element:nature", "value": 0},
-      {"kind": "element:ice", "value": 0},
-      {"kind": "element:poison", "value": 0},
-      {"kind": "element:steel", "value": 0},
-      {"kind": "element:psy", "value": 0},
-      {"kind": "element:spirit", "value": 0}
+      {
+        "kind": "element:fire",
+        "value": 50
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": 0
+      },
+      {
+        "kind": "element:air",
+        "value": -50
+      },
+      {
+        "kind": "element:electric",
+        "value": 0
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
     ],
     "capture": {
       "capturable": true,
       "captureRate": 65,
       "spawnChance": 25,
-      "spawnTags": ["earth"],
+      "spawnTags": [
+        "earth"
+      ],
       "evolution": null
     },
     "combat": {
@@ -61,43 +104,85 @@
       "subjectId": "crea_mossback",
       "profileId": "massive",
       "displayScale": 1.7,
-      "position": {"x": 0, "y": 0},
-      "transformOrigin": {"x": "50%", "y": "88%"},
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "88%"
+      },
       "visual": {
-        "front": {"assetId": "pack:capture:creature-golem-moussu-opponent-01"},
-        "back": {"assetId": "pack:capture:creature-golem-moussu-player-01"},
-        "icon": {"assetId": "pack:capture:creature-golem-moussu-icon-01"}
+        "front": {
+          "assetId": "pack:capture:creature-golem-moussu-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-golem-moussu-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-golem-moussu-icon-01"
+        }
       },
       "sockets": [
         {
           "id": "mouth",
           "label": "Bouche",
-          "front": {"x": 0.10053788768847613, "y": 0.6934029261271158},
-          "back": {"x": 0.9318691325306842, "y": 0.5627603530883789}
+          "front": {
+            "x": 0.9318691325306842,
+            "y": 0.5627603530883789
+          },
+          "back": {
+            "x": 0.10053788768847613,
+            "y": 0.6934029261271158
+          }
         },
         {
           "id": "head",
           "label": "Tête",
-          "front": {"x": 0.18, "y": 0.5},
-          "back": {"x": 0.86, "y": 0.48}
+          "front": {
+            "x": 0.18,
+            "y": 0.5
+          },
+          "back": {
+            "x": 0.86,
+            "y": 0.48
+          }
         },
         {
           "id": "left-hand",
           "label": "Main / patte gauche",
-          "front": {"x": 0.3, "y": 0.77},
-          "back": {"x": 0.62, "y": 0.76}
+          "front": {
+            "x": 0.3,
+            "y": 0.77
+          },
+          "back": {
+            "x": 0.62,
+            "y": 0.76
+          }
         },
         {
           "id": "right-hand",
           "label": "Main / patte droite",
-          "front": {"x": 0.56, "y": 0.79},
-          "back": {"x": 0.84, "y": 0.78}
+          "front": {
+            "x": 0.56,
+            "y": 0.79
+          },
+          "back": {
+            "x": 0.84,
+            "y": 0.78
+          }
         },
         {
           "id": "tail",
           "label": "Queue",
-          "front": {"x": 0.78, "y": 0.63},
-          "back": {"x": 0.22, "y": 0.63}
+          "front": {
+            "x": 0.78,
+            "y": 0.63
+          },
+          "back": {
+            "x": 0.22,
+            "y": 0.63
+          }
         }
       ],
       "audio": {}
@@ -125,10 +210,22 @@
     "schema": "capture-active-skill-loadout-v1",
     "creatureId": "crea_mossback",
     "slots": [
-      {"id": "slot-1", "skillId": "lib_earth_guard"},
-      {"id": "slot-2", "skillId": "claw"},
-      {"id": "slot-3", "skillId": "lib_quake"},
-      {"id": "slot-4", "skillId": "lib_rock_slam"}
+      {
+        "id": "slot-1",
+        "skillId": "lib_earth_guard"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "claw"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "lib_quake"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "lib_rock_slam"
+      }
     ]
   }
 }
