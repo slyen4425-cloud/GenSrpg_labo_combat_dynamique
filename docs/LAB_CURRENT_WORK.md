@@ -20516,3 +20516,54 @@ Base exacte : `7d0148855ea5597d2d4712ac1674e480fba829d0` (Skill Save/Test Dirty 
 8. PREVALIDATION smartphone utilisateur avant GREEN utilisateur.
 
 État : **LOT OUVERT — audit terminé, RED obligatoire avant correction fonctionnelle**.
+
+
+### Résultat technique — Combat 5-Slot Row & Persistent Zone Animated Loop V1
+
+RED :
+- test : `tests/unit/combat-5slot-zone-loop-v1.test.mjs` ;
+- commit : `da9f9a1b5063d09e1470ba11d61e974f408968ae` ;
+- CI : `36879826275` — FAILURE attendue ;
+- échecs attendus : HUD encore à 4 colonnes et atlas persistant joué une seule fois.
+
+Constat gameplay :
+- le test réel `CombatSession` est GREEN dès le RED initial ;
+- activation 1 = `short`, activation 2 = `medium`, activation 3 = `long` ;
+- à distance `long`, le tick de dégâts configuré reste appliqué après le troisième renforcement ;
+- le même nœud visuel de zone reçoit bien un nouveau scale lorsque `zone.radius` change ;
+- donc aucune modification de `persistent-zone-runtime-v1.js` n'était justifiée.
+
+Correction propriétaire :
+- `7b32e46136fe42354b06ff0dcb0819ca498f112b` : grille HUD à 5 colonnes + cases de capacité légèrement moins hautes ;
+- `8f5d01315cb1c2bb50cc7ca0b6fd73b42647b976` : `dom-skill-fx.js` respecte `playbackMode:"loop"` pour les atlas `url + frameCount` ;
+- `0154a95aa38a10c9d9deea72b2c50a7296116b76` : aide Human Editor précisant sprite multi-image/atlas en boucle et image statique statique ;
+- `cb87d359707336f028d03944259f966eb342538b` : sentinelles UI historiques alignées avec le nouveau contrat à cinq colonnes.
+
+Contraintes respectées :
+- aucune seconde autorité pour la zone ;
+- aucune modification du runtime gameplay de zone ;
+- aucun timer/observer/listener compensatoire ajouté ;
+- aucun comportement fondé sur le nom d'une capacité ou d'une créature ;
+- aucun merge vers `main`.
+
+Validation :
+- CI fonctionnelle : `36880164462` — SUCCESS ;
+- suite complète : **777/777 PASS, 0 FAIL** ;
+- tests ciblés GREEN : 5 capacités sur une ligne, renforcement gameplay + dégâts, boucle atlas persistante, scale visuel mis à jour sur le même nœud.
+
+État : **GREEN technique fonctionnel — publication checkpoint/preview à finaliser puis PREVALIDATION smartphone utilisateur**.
+
+### Publication de PREVALIDATION — Combat 5-Slot & Zone Loop V1
+
+Noms réservés :
+- checkpoint GREEN technique : `checkpoint/lab-combat-5slot-zone-loop-v1-green-2026-10-01` ;
+- preview smartphone : `preview/lab-combat-5slot-zone-loop-v1-2026-10-01`.
+
+La validation smartphone doit vérifier :
+1. 5 capacités visibles sur une seule ligne ;
+2. la zone persistante reste visible pendant sa durée ;
+3. un asset atlas/multi-frame sélectionné comme visuel de zone reste animé en boucle ;
+4. les réactivations renforcent visuellement la zone sans recréer un deuxième système ;
+5. la zone disparaît à expiration.
+
+Aucun merge vers `main`.
