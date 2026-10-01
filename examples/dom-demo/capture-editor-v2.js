@@ -218,7 +218,11 @@ opponentCreatureSelect.textContent = "";
 for (const option of CAPTURE_TEST_CREATURE_OPTIONS_V1) {
   const element = document.createElement("option");
   element.value = option.id;
-  element.textContent = option.label;
+  element.textContent =
+    option.label +
+    (option.configuredCreatureId
+      ? " · modèle configuré"
+      : "");
   opponentCreatureSelect.append(element);
 }
 opponentCreatureSelect.value = "braisombre";
@@ -254,9 +258,19 @@ function getOpponentCreatureDraft() {
   });
 }
 
+function getOpponentCreatureId() {
+  const optionId = opponentCreatureSelect.value;
+  const option = CAPTURE_TEST_CREATURE_OPTIONS_V1.find(
+    (entry) => entry.id === optionId
+  );
+
+  return option?.configuredCreatureId ?? null;
+}
+
 const editor = mountCaptureEditorHumanV2({
   root,
   getOpponentCreatureDraft,
+  getOpponentCreatureId,
   opponentSkillDrafts,
   opponentLoadout
 });
