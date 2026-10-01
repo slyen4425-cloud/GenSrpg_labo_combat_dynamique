@@ -213,6 +213,10 @@ function normalizeFighter(input) {
       input.damageTakenTotal ?? 0,
       `${id}.damageTakenTotal`
     ),
+    knockoutsTotal: finiteNonNegative(
+      input.knockoutsTotal ?? 0,
+      `${id}.knockoutsTotal`
+    ),
     chargeTimeModifierPct: finiteNumber(
       input.chargeTimeModifierPct ?? 0,
       `${id}.chargeTimeModifierPct`
@@ -435,6 +439,41 @@ export function recordFighterDamage(
         ...target,
         damageTakenTotal:
           target.damageTakenTotal + damage
+      })
+    })
+  });
+}
+
+export function recordFighterKnockout(
+  state,
+  sourceActorId,
+  targetActorId
+) {
+  const source = state.fighters[sourceActorId];
+  const target = state.fighters[targetActorId];
+
+  if (!source) {
+    throw new RangeError(
+      `Unknown fighter: ${sourceActorId}`
+    );
+  }
+  if (!target) {
+    throw new RangeError(
+      `Unknown fighter: ${targetActorId}`
+    );
+  }
+  if (sourceActorId === targetActorId) {
+    return state;
+  }
+
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [sourceActorId]: Object.freeze({
+        ...source,
+        knockoutsTotal:
+          source.knockoutsTotal + 1
       })
     })
   });
