@@ -58,7 +58,10 @@ export const SKILL_ACTIVATION_REQUIREMENT_TYPES =
     "combat_elapsed_ms",
     "damage_dealt",
     "damage_taken",
-    "hp_at_or_below_pct"
+    "hp_at_or_below_pct",
+    "allies_defeated",
+    "enemies_defeated",
+    "kills_by_self"
   ]);
 
 const CATEGORY_SET = new Set(SKILL_CATEGORIES);
