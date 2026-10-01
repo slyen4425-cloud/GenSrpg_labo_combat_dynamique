@@ -1813,13 +1813,11 @@ function dispatchFieldEvent(element, type) {
   }));
 }
 
-function replaceCreatureSockets(
+function renderSelectedCreatureSocketMarkersV1(
   root,
   sockets,
-  presentation
+  socketId
 ) {
-  sockets.clear();
-
   for (
     const marker of root.querySelectorAll(
       ".socket-marker"
@@ -1827,6 +1825,35 @@ function replaceCreatureSockets(
   ) {
     marker.remove();
   }
+
+  const socket = sockets.get(socketId) ?? null;
+  if (socket === null) {
+    return;
+  }
+
+  for (const view of ["front", "back"]) {
+    const point = socket[view];
+    if (!point) {
+      continue;
+    }
+
+    const surface = root.querySelector(
+      '[data-socket-surface][data-socket-view="' +
+        view +
+        '"]'
+    );
+    if (surface) {
+      updateSocketMarker(surface, point);
+    }
+  }
+}
+
+function replaceCreatureSockets(
+  root,
+  sockets,
+  presentation
+) {
+  sockets.clear();
 
   for (const socket of presentation?.sockets ?? []) {
     sockets.set(socket.id, {
@@ -1839,24 +1866,16 @@ function replaceCreatureSockets(
         ? { ...socket.back }
         : null
     });
-
-    for (const view of ["front", "back"]) {
-      const point = socket[view];
-      if (!point) {
-        continue;
-      }
-
-      const surface = root.querySelector(
-        '[data-socket-surface][data-socket-view="' +
-          view +
-          '"]'
-      );
-      if (surface) {
-        updateSocketMarker(surface, point);
-      }
-    }
   }
 
+  renderSelectedCreatureSocketMarkersV1(
+    root,
+    sockets,
+    selectedValue(
+      root,
+      "[data-socket-kind]"
+    )
+  );
   syncSkillSocketSelect(root, sockets);
 }
 
@@ -6370,6 +6389,22 @@ export function mountCaptureEditorHumanV2({
   updateLibraryState(null);
   syncSkillSocketSelect(root, sockets);
 
+  const socketKindSelect = one(
+    root,
+    "[data-socket-kind]"
+  );
+  listen(
+    socketKindSelect,
+    "change",
+    () => {
+      renderSelectedCreatureSocketMarkersV1(
+        root,
+        sockets,
+        socketKindSelect.value
+      );
+    }
+  );
+
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
       const socketId = selectedValue(
@@ -6396,7 +6431,11 @@ export function mountCaptureEditorHumanV2({
 
       current[surface.dataset.socketView] = point;
       sockets.set(socketId, current);
-      updateSocketMarker(surface, point);
+      renderSelectedCreatureSocketMarkersV1(
+        root,
+        sockets,
+        socketId
+      );
       syncSkillSocketSelect(root, sockets);
       creatureDirty = true;
       setStatus(
@@ -7186,10 +7225,8 @@ export function mountCaptureEditorHumanV2({
           selectedRecord &&
           creatureDirty === false
         ) {
-          renderHumanStatValuesV1(
-            root,
-            statRegistry,
-            selectedRecord.statValues
+          loadCreatureRecord(
+            selectedRecord.draft.id
           );
         }
 
