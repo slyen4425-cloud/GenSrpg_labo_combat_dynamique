@@ -2966,11 +2966,158 @@ function appendHumanSkillEffectV1(
     shieldConfig
   );
 
+  const zoneBox =
+    document.createElement("div");
+  zoneBox.className =
+    "skill-status-config";
+  zoneBox.dataset.skillEffectConfigKind =
+    "persistent_zone";
+
+  const zoneId = tacticalTextInputV1(
+    "skillZoneId",
+    effect?.zoneId ?? "zone"
+  );
+
+  const zoneRadius =
+    document.createElement("select");
+  zoneRadius.dataset.skillZoneRadius =
+    "true";
+  for (const [value, label] of [
+    ["short", "Proche"],
+    ["medium", "Moyen"],
+    ["long", "Loin"]
+  ]) {
+    createOption(
+      zoneRadius,
+      value,
+      label
+    );
+  }
+
+  const zoneDuration =
+    tacticalNumberInputV1(
+      "skillZoneDurationSeconds",
+      effect?.durationMs == null
+        ? 10
+        : humanTacticalMsToSecondsV1(
+            effect.durationMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+
+  const zoneTick =
+    tacticalNumberInputV1(
+      "skillZoneTickSeconds",
+      effect?.tickIntervalMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            effect.tickIntervalMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+
+  const zoneReactivation =
+    document.createElement("select");
+  zoneReactivation.dataset
+    .skillZoneReactivation = "true";
+  createOption(
+    zoneReactivation,
+    "refresh",
+    "Rafraîchir la durée"
+  );
+  createOption(
+    zoneReactivation,
+    "reinforce",
+    "Renforcer la zone"
+  );
+
+  const zoneMaxActivations =
+    tacticalNumberInputV1(
+      "skillZoneMaxActivations",
+      effect?.maxActivations ?? 1,
+      { min: 1, step: "1" }
+    );
+
+  const zoneRadiusGrowth =
+    tacticalNumberInputV1(
+      "skillZoneRadiusGrowthSteps",
+      effect?.radiusGrowthSteps ?? 0,
+      { min: 0, max: 2, step: "1" }
+    );
+
+  const zoneTickDamage =
+    tacticalNumberInputV1(
+      "skillZoneTickDamage",
+      effect?.tickEffect?.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+
+  const zoneChannel =
+    tacticalTextInputV1(
+      "skillZoneChannel",
+      effect?.tickEffect?.channel ?? ""
+    );
+
+  const zoneGrid =
+    document.createElement("div");
+  zoneGrid.className =
+    "skill-status-config__grid";
+  zoneGrid.append(
+    tacticalFieldV1(
+      "ID de zone",
+      zoneId
+    ),
+    tacticalFieldV1(
+      "Rayon initial",
+      zoneRadius
+    ),
+    tacticalFieldV1(
+      "Durée (secondes)",
+      zoneDuration
+    ),
+    tacticalFieldV1(
+      "Dégâts toutes les (secondes)",
+      zoneTick
+    ),
+    tacticalFieldV1(
+      "Réactivation",
+      zoneReactivation
+    ),
+    tacticalFieldV1(
+      "Activations max",
+      zoneMaxActivations
+    ),
+    tacticalFieldV1(
+      "Croissance du rayon par activation",
+      zoneRadiusGrowth
+    ),
+    tacticalFieldV1(
+      "Dégâts par tick",
+      zoneTickDamage
+    ),
+    tacticalFieldV1(
+      "Canal / élément",
+      zoneChannel
+    )
+  );
+
+  const zoneNote =
+    document.createElement("small");
+  zoneNote.className = "note";
+  zoneNote.textContent =
+    "Rayon gameplay : Proche → Moyen → Loin. En mode Renforcer, chaque nouvelle activation augmente le rayon selon la croissance choisie, jusqu’au maximum d’activations.";
+
+  zoneBox.append(
+    zoneGrid,
+    zoneNote
+  );
+
   config.append(
     amountField,
     channelField,
     filterTagsField,
-    statusBox
+    statusBox,
+    zoneBox
   );
   row.append(header, config);
   host.append(row);
@@ -2984,6 +3131,10 @@ function appendHumanSkillEffectV1(
     status.polarity ?? "beneficial";
   stacking.value =
     status.stacking ?? "refresh";
+  zoneRadius.value =
+    effect?.radius ?? "short";
+  zoneReactivation.value =
+    effect?.reactivation ?? "refresh";
 
   syncHumanSkillEffectRowV1(row);
   return row;
@@ -3047,6 +3198,50 @@ function readHumanSkillEffectsV1(root) {
     const targetScope = row.querySelector(
       "[data-skill-effect-scope]"
     ).value;
+
+    if (kind === "persistent_zone") {
+      return {
+        kind,
+        targetScope,
+        zoneId: row.querySelector(
+          "[data-skill-zone-id]"
+        ).value,
+        radius: row.querySelector(
+          "[data-skill-zone-radius]"
+        ).value,
+        durationSeconds: Number(
+          row.querySelector(
+            "[data-skill-zone-duration-seconds]"
+          ).value
+        ),
+        tickSeconds: Number(
+          row.querySelector(
+            "[data-skill-zone-tick-seconds]"
+          ).value
+        ),
+        reactivation: row.querySelector(
+          "[data-skill-zone-reactivation]"
+        ).value,
+        maxActivations: Number(
+          row.querySelector(
+            "[data-skill-zone-max-activations]"
+          ).value
+        ),
+        radiusGrowthSteps: Number(
+          row.querySelector(
+            "[data-skill-zone-radius-growth-steps]"
+          ).value
+        ),
+        tickDamage: Number(
+          row.querySelector(
+            "[data-skill-zone-tick-damage]"
+          ).value
+        ),
+        channel: row.querySelector(
+          "[data-skill-zone-channel]"
+        ).value || null
+      };
+    }
 
     if (kind === "apply_status") {
       const statusKind = row.querySelector(
