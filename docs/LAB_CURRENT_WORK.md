@@ -19869,3 +19869,55 @@ Validation technique :
 1. Loup volcanique dans le test Combat est indiqué comme modèle configuré et utilise Santé 150 / Feu +10 / résistance Feu +35 % / faiblesse Eau -50 % / profil quadruped / scale 1.2 / loadout configuré ;
 2. Moussados utilise la bouche corrigée dans les deux vues ;
 3. la bibliothèque historique reste complète.
+
+
+## Micro-lot — Showcase Form Rehydration + Socket Selection V1 — 2026-10-01
+
+Base : `a04d421bebf672e1337cfe0ad24f81540fb82d76` (Showcase Creature Configuration Corrections V1, GREEN technique uniquement).
+
+- checkpoint de départ : `checkpoint/lab-start-showcase-form-rehydration-v1-2026-10-01` ;
+- branche : `work/lab-showcase-form-rehydration-v1-2026-10-01`.
+
+### Retours utilisateur
+
+- bibliothèque revenue ;
+- Moussados : socket Bouche encore affiché au mauvais endroit ;
+- Loup volcanique : socket absent à l'écran ;
+- Loup volcanique : compétences configurées dans le preset mais non placées dans les slots du formulaire.
+
+### Diagnostic
+
+- les presets contiennent bien les données : `crea-loup` possède un socket `mouth` et le loadout `fireball / claw / lib_flame_bite / lib_fireball` ;
+- après application du batch vitrine, `configuredCreatures` est correct mais le formulaire déjà ouvert sur `crea-loup` ne recharge que les stats et conserve l'ancien état HTML ;
+- le rendu socket utilise un marqueur unique par surface puis boucle sur tous les sockets : le dernier socket écrase visuellement les précédents. Sur Moussados, cela empêche de vérifier correctement le socket Bouche.
+
+### Règles de correction
+
+- aucune modification des données de preset sans nouvelle preuve ;
+- aucune inversion supplémentaire de coordonnées ;
+- le formulaire doit être réhydraté depuis `configuredCreatures`, propriétaire unique ;
+- le rendu socket doit afficher le socket actuellement sélectionné dans `data-socket-kind`, sur face et dos ;
+- changer de type de socket doit rerendre les marqueurs depuis le store existant ;
+- aucune seconde map, aucun fallback, aucun traitement par nom ;
+- RED ciblé obligatoire avant correction.
+
+### Périmètre autorisé
+
+- Human Editor ;
+- HTML/CSS socket si nécessaire ;
+- tests ciblés ;
+- documentation ;
+- preview.
+
+### Protégé
+
+- presets créatures ;
+- Combat Runtime / Action Resolver ;
+- dégâts / résistances / progression ;
+- profils de mouvement ;
+- FX / renderer combat / audio ;
+- arènes ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+État : **LOT OUVERT — RED à écrire**.
