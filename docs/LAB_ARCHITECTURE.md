@@ -2658,3 +2658,30 @@ Seul le wording utilisateur est simplifié :
 - `reinforce` = **Agrandir la zone**.
 
 Toute réactivation renouvelle déjà la durée selon le propriétaire gameplay existant. L'UI ne présente donc plus « Rafraîchir la durée » comme un choix distinct.
+
+
+## 50. Positionnement visuel des zones persistantes V1
+
+Le centre gameplay d'une zone persistante reste possédé par `CombatState.persistentZones` et par l'anchor de combat existant.
+
+Le Presentation Binding utilise désormais ses champs déjà canoniques :
+- `visual.aura.offsetX` ;
+- `visual.aura.offsetY`.
+
+Ils sont des **décalages de présentation en pixels CSS** appliqués uniquement au nœud DOM de la zone après calcul de l'anchor source.
+
+Chaîne :
+
+`SkillPresentationBinding.visual.aura.offsetX/Y -> resolvedVisual -> DOM Skill FX -> left/top du nœud persistent-zone`.
+
+Ces offsets :
+- ne modifient ni la position de la créature ;
+- ne modifient ni le rayon `short/medium/long` ;
+- ne modifient ni ciblage, dégâts, ticks ou collision ;
+- se composent avec `displayScale`, `displayScaleX` et `displayScaleY`.
+
+Le Human Editor expose deux champs simples :
+- Décalage horizontal (px) ;
+- Décalage vertical (px).
+
+La valeur `0 / 0` conserve exactement le centrage historique.
