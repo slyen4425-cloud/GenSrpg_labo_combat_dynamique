@@ -20315,3 +20315,34 @@ L'UI de zone persistante est fonctionnelle mais plusieurs champs sont trop techn
 9. PREVALIDATION smartphone utilisateur avant GREEN utilisateur.
 
 État : **LOT OUVERT — audit des propriétaires puis RED obligatoire avant correction fonctionnelle**.
+
+
+### Résultat technique — Persistent Zone Editor Clarity & Visual V1
+
+RED :
+- test : `tests/unit/persistent-zone-editor-clarity-visual-v1.test.mjs` ;
+- commit : `9cc32ad9cab05762a9ad38279221c5c9d7034d6a` ;
+- CI : `36866428100` — FAILURE attendue ;
+- les 5 nouvelles exigences étaient RED : libellés/élément, donnée de présentation persistante, résolution d'asset, renderer persistant et raccord runtime.
+
+Cause démontrée :
+- le champ `Dégâts toutes les (secondes)` nommait un intervalle avec un libellé ambigu ;
+- `Canal / élément` était un champ texte libre ;
+- le Human Editor ne produisait aucun slot visuel persistant ;
+- l'adaptateur de présentation ne résolvait que Cast / Trajet / Impact ;
+- le renderer ne possédait aucun raccord à `CombatState.persistentZones`.
+
+Corrections :
+- `defa67a2a29ef9e19abc543bf7e6e88a29bc9914` : libellés clairs, sélecteur `Même élément que la capacité` + éléments Capture, donnée `zoneAssetId/zoneDisplayScale` projetée vers `visual.aura` en boucle ;
+- `d3936ce32c1397130d71ee401ca1e4ee234462ac` : contrôles Human Editor `Visuel persistant de zone` + scale ;
+- `62b628f9211de41038d091a41ba1543ad624c200` : adaptateur présentation expose `persistentZone` ;
+- `7a8ab199a76b046b8fc393c9419c87617cf5915c` puis `65cca3ad064ee21d31030b887a0963cc41b1f5bc` : renderer persistant, croissance visuelle Proche/Moyen/Loin et ancrage au slot stable ;
+- `bfcc70d804f6ff09145a48d9e670fc8753084b9d` / `628c519003cb6897ba5f1e10fd6dab7e22bb4072` : raccord au `Combat Runtime.onClock(state)` existant, sans second timer ;
+- `afbec9074a6a1bc2a3e7ca4dce321e923926f11b` : couche CSS de zone persistante.
+
+Validation :
+- CI fonctionnelle : `36866991180` — SUCCESS ;
+- suite complète : **767/767 PASS, 0 FAIL** ;
+- le runtime gameplay des zones, les dégâts, résistances, boucliers, KO, projectile clash et profils de mouvement n'ont pas été modifiés.
+
+État : **GREEN technique fonctionnel — documentation finale/checkpoint/preview à publier, puis PREVALIDATION smartphone utilisateur**.
