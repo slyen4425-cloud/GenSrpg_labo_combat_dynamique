@@ -992,6 +992,8 @@ function visualSlot(assetId, {
   anchor = null,
   layerByView = null,
   displayScale = 1,
+  displayScaleX = 1,
+  displayScaleY = 1,
   playbackMode = "once"
 }) {
   const id = optionalText(assetId);
@@ -1005,11 +1007,30 @@ function visualSlot(assetId, {
   );
   if (
     normalizedScale < 0.25 ||
-    normalizedScale > 4
+    normalizedScale > 8
   ) {
     throw new RangeError(
-      "Scale FX doit être compris entre 0.25 et 4"
+      "Scale FX doit être compris entre 0.25 et 8"
     );
+  }
+
+  const normalizedScaleX = finiteNumber(
+    displayScaleX,
+    "Scale horizontal FX"
+  );
+  const normalizedScaleY = finiteNumber(
+    displayScaleY,
+    "Scale vertical FX"
+  );
+  for (const [label, value] of [
+    ["horizontal", normalizedScaleX],
+    ["vertical", normalizedScaleY]
+  ]) {
+    if (value < 0.25 || value > 8) {
+      throw new RangeError(
+        `Scale ${label} FX doit être compris entre 0.25 et 8`
+      );
+    }
   }
 
   return {
@@ -1018,6 +1039,8 @@ function visualSlot(assetId, {
     trigger,
     anchor,
     displayScale: normalizedScale,
+    displayScaleX: normalizedScaleX,
+    displayScaleY: normalizedScaleY,
     layerByView: {
       player:
         layerByView?.player ?? "front",
@@ -1106,6 +1129,10 @@ function presentationForSkill(fields) {
       anchor: null,
       displayScale:
         presentation.zoneDisplayScale ?? 1,
+      displayScaleX:
+        presentation.zoneDisplayScaleX ?? 1,
+      displayScaleY:
+        presentation.zoneDisplayScaleY ?? 1,
       layerByView: {
         player: "behind",
         opponent: "behind"
@@ -1944,6 +1971,8 @@ function prepareNewSkillDraftFields(
     ["[data-skill-impact-scale]", 1],
     ["[data-skill-zone-fx]", ""],
     ["[data-skill-zone-scale]", 1],
+    ["[data-skill-zone-scale-x]", 1],
+    ["[data-skill-zone-scale-y]", 1],
     ["[data-skill-cast-audio]", ""],
     ["[data-skill-impact-audio]", ""]
   ];
@@ -3115,12 +3144,12 @@ function appendHumanSkillEffectV1(
   createOption(
     zoneReactivation,
     "refresh",
-    "Rafraîchir la durée"
+    "Garder la même taille"
   );
   createOption(
     zoneReactivation,
     "reinforce",
-    "Renforcer la zone"
+    "Agrandir la zone"
   );
 
   const zoneMaxActivations =
@@ -3197,7 +3226,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "Intervalle = temps entre deux applications de dégâts. La première utilisation compte comme activation 1. En mode Renforcer, le rayon évolue Proche → Moyen → Loin selon la croissance choisie ; une fois le maximum atteint, les réactivations gardent ce rayon maximal et renouvellent la durée. « Même élément que la capacité » applique automatiquement son élément aux dégâts.";
+    "Toute réactivation renouvelle la durée automatiquement. « Garder la même taille » conserve le rayon actuel. « Agrandir la zone » fait évoluer le rayon Proche → Moyen → Loin selon la croissance choisie et le maximum d’activations. Intervalle = temps entre deux applications de dégâts. « Même élément que la capacité » applique automatiquement son élément aux dégâts.";
 
   zoneBox.append(
     zoneGrid,
@@ -5004,6 +5033,14 @@ function readSkillFields(root) {
       zoneDisplayScale: numericValue(
         root,
         "[data-skill-zone-scale]"
+      ),
+      zoneDisplayScaleX: numericValue(
+        root,
+        "[data-skill-zone-scale-x]"
+      ),
+      zoneDisplayScaleY: numericValue(
+        root,
+        "[data-skill-zone-scale-y]"
       ),
       socketId: selectedValue(
         root,
