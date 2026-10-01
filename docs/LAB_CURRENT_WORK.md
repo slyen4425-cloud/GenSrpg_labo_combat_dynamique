@@ -20626,3 +20626,53 @@ Cette séparation peut retarder ou manquer la projection d'un changement de zone
 8. PREVALIDATION smartphone obligatoire avant GREEN utilisateur.
 
 État : **LOT OUVERT — RED obligatoire avant correction fonctionnelle**.
+
+
+### Résultat technique — Persistent Zone Reinforcement Visual Sync V1
+
+RED :
+- test : `tests/unit/persistent-zone-visual-sync-v1.test.mjs` ;
+- commit : `ba9c72173ab9460dd84ca0d0ed2d24abd78551bc` ;
+- CI : `36882030135` — FAILURE attendue ;
+- le Runtime n'émettait pas `onState` lorsqu'une modification ne concernait que `persistentZones` ;
+- la UI synchronisait les zones depuis `onClock`, séparément du propriétaire général de rendu d'état.
+
+Cause démontrée :
+- `CombatRuntime.stateSignal()` ne contenait que `distance` et `fighters` ;
+- le renderer savait déjà changer le scale du même nœud pour `short / medium / long` ;
+- le défaut était donc le raccord de propagation de l'état, pas le calcul du rayon ni le renderer de scale.
+
+Correction propriétaire :
+- `34122f7524febebf639cfde2441f652d911b5016` : ajout de `persistentZones` au signal observable du Runtime ;
+- `7c3de04b47d63fc631cbc2481a940ff654f9af1f` : `renderState(state)` devient l'unique projection UI des zones persistantes ; suppression du raccord zone dans `onClock` ;
+- `15a3e15fbf173b0f3659c94839bea3c51ffab2a7` et `5c735f26955b0a6c9fcc50101b8781126876aff9` : sentinelles adaptées au chemin propriétaire et à son format source.
+
+Validation :
+- CI fonctionnelle : `36882296638` — SUCCESS ;
+- suite complète : **779/779 PASS, 0 FAIL** ;
+- test Runtime : renforcement de rayon et disparition de zone déclenchent bien `onState` même sans changement fighter/distance ;
+- test UI : la synchronisation zone appartient uniquement à `renderState/onState`, pas à `onClock`.
+
+Contraintes respectées :
+- aucune modification des règles `persistent-zone-runtime-v1.js` ;
+- aucun état parallèle de rayon ;
+- aucun timer supplémentaire ;
+- aucun observer/listener compensatoire ;
+- aucun merge vers `main`.
+
+État : **GREEN technique fonctionnel — publication checkpoint/preview puis PREVALIDATION smartphone obligatoire**.
+
+### Publication de PREVALIDATION — Persistent Zone Reinforcement Visual Sync V1
+
+Noms réservés :
+- checkpoint GREEN technique : `checkpoint/lab-zone-reinforcement-visual-sync-v1-green-2026-10-01` ;
+- preview smartphone : `preview/lab-zone-reinforcement-visual-sync-v1-2026-10-01`.
+
+La validation smartphone doit vérifier :
+1. activation 1 : visuel au rayon Proche ;
+2. activation 2 : le même visuel grandit vers Moyen ;
+3. activation 3 : le même visuel grandit vers Loin ;
+4. aucune duplication de zone ;
+5. disparition correcte à expiration.
+
+Aucun merge vers `main`.
