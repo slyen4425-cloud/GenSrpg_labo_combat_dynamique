@@ -20461,3 +20461,58 @@ La validation smartphone doit vérifier au minimum :
 6. vérifier les libellés `Dégâts à chaque intervalle` et `Élément des dégâts`.
 
 Aucun merge vers `main`.
+
+
+## Micro-lot — Combat 5-Slot Row & Persistent Zone Animated Loop V1 — 2026-10-01
+
+Base exacte : `7d0148855ea5597d2d4712ac1674e480fba829d0` (Skill Save/Test Dirty State & Persistent Zone Asset Filter V1 — GREEN technique / PREVALIDATION smartphone).
+
+- checkpoint de départ : `checkpoint/lab-start-combat-5slot-zone-loop-v1-2026-10-01` ;
+- branche : `work/lab-combat-5slot-zone-loop-v1-2026-10-01`.
+
+### Retour smartphone utilisateur
+
+1. La cinquième capacité (Ultime) passe à la ligne suivante dans le HUD combat et crée un bloc inutilement haut.
+2. Après activation/réactivation d'une zone persistante, le visuel de flamme paraît figé sur une seule image/étape ; l'utilisateur veut un sprite animé qui reste actif pendant toute la durée de la zone.
+3. Vérification demandée : confirmer que les dégâts et le rayon renforcé restent pilotés par le gameplay réel lors des réactivations.
+4. L'export de la capacité Ultime a été conservé par l'utilisateur pour un futur raccord, mais aucun fichier d'export n'est joint à ce tour ; ce lot ne doit donc pas inventer sa donnée.
+
+### Objectif
+
+1. Afficher les 5 capacités du loadout Capture (4 standards + 1 Ultime) sur **une seule ligne** dans le HUD combat mobile, avec des cases légèrement plus compactes.
+2. Conserver le contrat de loadout existant ; aucune logique de compétence ne doit dépendre du CSS.
+3. Vérifier par TDD le vrai chemin de renforcement `persistent_zone` : activation 1 -> rayon initial, activation 2/3 -> rayon renforcé jusqu'au maximum configuré ; dégâts toujours appliqués par le runtime propriétaire.
+4. Corriger la présentation persistante afin que les assets multi-frame/atlas puissent boucler pendant toute la vie de la zone.
+5. Réutiliser `SkillPresentationBinding.visual.aura`, `CombatState.persistentZones` et le renderer existants : aucun second système de zone, aucune seconde horloge.
+
+### Propriétaires concernés
+
+- HUD combat / CSS : disposition des 5 boutons uniquement ;
+- `persistent-zone-runtime-v1.js` : autorité gameplay à tester, modification interdite sauf RED prouvant une faute ;
+- `dom-skill-fx.js` : lecture/animation du visuel persistant ;
+- Asset/Presentation adapters existants uniquement si le RED démontre un défaut de résolution.
+
+### Protégé
+
+- `configuredSkills` et le cycle save/test GREEN précédent ;
+- progression 4 + 1 Ultime ;
+- Combat State comme seule autorité de zone ;
+- dégâts/résistances/boucliers/KO ;
+- Projectile Clash et trajectoires ;
+- profils de mouvement ;
+- aucun `setInterval` / `Date.now` / observer ajouté pour la zone ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED HUD : la grille combat doit posséder 5 colonnes et conserver une seule rangée pour 5 compétences.
+2. Test gameplay : réactivations de zone renforcent réellement `radius` et conservent le tick damage via le runtime existant.
+3. RED FX : un visuel de zone sur atlas/multi-frame avec `playbackMode:"loop"` doit réellement boucler, pas jouer une fois puis se figer.
+4. correction minimale au propriétaire ;
+5. tests ciblés + CI complète ;
+6. documentation ;
+7. checkpoint + preview ;
+8. PREVALIDATION smartphone utilisateur avant GREEN utilisateur.
+
+État : **LOT OUVERT — audit terminé, RED obligatoire avant correction fonctionnelle**.
