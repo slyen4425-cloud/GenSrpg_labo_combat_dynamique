@@ -20676,3 +20676,62 @@ La validation smartphone doit vérifier :
 5. disparition correcte à expiration.
 
 Aucun merge vers `main`.
+
+
+## Micro-lot — Fire Zone Animated Sprite V1 — 2026-10-01
+
+Base code exacte : `037288b0a29060e498cae948a30ee7a8e8dfc19e` (Persistent Zone Reinforcement Visual Sync V1 — GREEN technique / PREVALIDATION smartphone).
+
+Base bibliothèque visuelle exacte : `global-assets@ec938dfd8aab08ca43dd87e75e002f5852813cef`.
+
+- checkpoint code de départ : `checkpoint/lab-start-fire-zone-sprite-v1-2026-10-01` ;
+- branche code : `work/lab-fire-zone-sprite-v1-2026-10-01` ;
+- checkpoint assets : `checkpoint/global-assets-before-fire-zone-loop-01-2026-10-01` ;
+- branche assets : `work/global-assets-fire-zone-loop-01-2026-10-01`.
+
+### Demande utilisateur
+
+Découper le sprite sheet de zone de feu généré précédemment, nommer les frames proprement, le ranger dans la bibliothèque Capture / sprites et le rendre réellement sélectionnable et utilisable comme visuel persistant de zone dans le jeu de test.
+
+### Source visuelle
+
+Source retenue : le **premier sprite sheet 8 frames** généré à la demande « il faudrait ce style de sprite… animé », avant la régénération accidentelle ultérieure.
+
+Découpe :
+- grille 4 × 2 ;
+- 8 frames RGBA transparentes ;
+- taille normalisée : 444 × 444 px ;
+- ordre de lecture : gauche -> droite, ligne haute puis ligne basse.
+
+### Identité canonique
+
+- assetId : `pack:capture:sprite-fire-zone-loop-01` ;
+- label : `Zone de feu animée` ;
+- dossier : `assets/library/capture/sprites/skills/fire_zone_loop/` ;
+- frames :
+  - `frames/sprite_skill_fire_zone_loop_01_01.png`
+  - …
+  - `frames/sprite_skill_fire_zone_loop_01_08.png`
+- manifest : `sprite_skill_fire_zone_loop_01_sequence.json` ;
+- playback : boucle ;
+- frameMs cible : 80 ms.
+
+### Objectif
+
+1. Déposer les 8 frames + manifest dans la bibliothèque Capture dédiée aux sprites.
+2. Ajouter une entrée catalogue stable pour que le sprite apparaisse dans le sélecteur de visuel persistant.
+3. Réutiliser le propriétaire de présentation existant `demoPresentationAssets` / `SkillPresentationBinding.visual.aura` pour résoudre la séquence multi-frame.
+4. Aucun comportement gameplay ne dépend de cet assetId.
+5. Aucune nouvelle autorité, aucun timer, aucun observer, aucun chemin vers `Zombicide-40k`.
+
+### TDD
+
+1. RED : l'asset `pack:capture:sprite-fire-zone-loop-01` n'existe pas encore dans le resolver de présentation du labo.
+2. Intégration minimale par le propriétaire de présentation existant.
+3. Vérifier 8 frames, ordre, `frameMs`, `playbackMode:"loop"`.
+4. Vérifier catalogue / filtrage rôle `zone`.
+5. CI complète.
+6. Publication de la branche `global-assets` uniquement après validation structurelle et CI du raccord code.
+7. Preview smartphone pour sélection et test réel.
+
+État : **LOT OUVERT — découpe locale effectuée, RED/raccord GitHub à réaliser**.
