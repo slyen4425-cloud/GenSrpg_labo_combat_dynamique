@@ -20376,9 +20376,10 @@ Deux régressions bloquent la validation de la capacité Ultime créée dans l'�
 ### Objectif
 
 1. Reproduire le vrai chemin `édition capacité -> enregistrement -> validation/test combat` et supprimer le faux état dirty après un enregistrement réussi.
-2. Conserver un seul propriétaire de l'état d'enregistrement de la capacité dans Human Editor ; aucune rustine dans la preview.
+2. Conserver **une seule autorité** : `configuredSkills` contient les capacités enregistrées ; l'état « modifié » est dérivé par comparaison du brouillon courant avec cette autorité, sans booléen parallèle à maintenir.
 3. Filtrer le sélecteur de visuel persistant pour qu'il n'accepte jamais les assets de catégorie `creature` / portraits de créatures.
 4. Conserver les sprites/FX de compétence compatibles avec l'éditeur, sans logique fondée sur un nom d'asset.
+5. Audit adjacent découvert avant codage : les libellés spécifiques de la zone affichent encore `Dégâts par tick` et `Canal / élément` malgré la PREVALIDATION précédente. Le test antérieur était insuffisamment ciblé car il trouvait les mêmes mots ailleurs dans le fichier. Le RED de ce lot doit vérifier **le bloc persistent_zone exact** avant correction.
 
 ### Propriétaires concernés
 
@@ -20398,13 +20399,15 @@ Deux régressions bloquent la validation de la capacité Ultime créée dans l'�
 
 ### TDD
 
-1. RED du vrai cycle save -> validate/test : un enregistrement réussi doit rendre la capacité non dirty immédiatement ;
-2. RED catalogue : le rôle `zone` exclut les créatures même si leur assetType est `sprite` ou `fx` ;
-3. démontrer la cause au propriétaire ;
-4. correction minimale ;
-5. tests ciblés + CI complète ;
-6. documentation ;
-7. checkpoint + preview ;
-8. PREVALIDATION smartphone obligatoire avant GREEN utilisateur.
+1. RED du vrai cycle save -> validate/test : un brouillon identique à l'entrée enregistrée dans `configuredSkills` doit être considéré propre immédiatement ;
+2. RED d'architecture : aucun `skillDirty` mutable ne doit rester comme seconde autorité parallèle ;
+3. RED catalogue : le rôle `zone` exclut les créatures même si leur `assetType` est `sprite` ou `fx` ;
+4. RED UI ciblé : le bloc `persistent_zone` doit afficher `Dégâts à chaque intervalle` et `Élément des dégâts` ;
+5. démontrer la cause au propriétaire ;
+6. correction minimale/soustractive ;
+7. tests ciblés + CI complète ;
+8. documentation ;
+9. checkpoint + preview ;
+10. PREVALIDATION smartphone obligatoire avant GREEN utilisateur.
 
 État : **LOT OUVERT — RED obligatoire avant correction fonctionnelle**.
