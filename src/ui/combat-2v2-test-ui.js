@@ -1037,9 +1037,7 @@ export async function mountCoop2v2Test({
     },
     onClock(state) {
       renderAvailability();
-      fx.syncPersistentZones(
-        state.persistentZones ?? []
-      );
+      fx.syncPersistentZones(state.persistentZones ?? []);
     },
     onStarted({ action }) {
       if (action.actionType !== "skill") {
