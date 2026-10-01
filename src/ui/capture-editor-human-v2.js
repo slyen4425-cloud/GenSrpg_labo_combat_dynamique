@@ -2021,13 +2021,29 @@ function writeCreatureRecordFields(
     );
   }
 
-  const slots = [
-    ...root.querySelectorAll("[data-loadout-slot]")
+  const standardSlots = [
+    ...root.querySelectorAll(
+      '[data-loadout-slot-type="standard"]'
+    )
   ];
-  for (let index = 0; index < slots.length; index += 1) {
-    slots[index].value =
+  for (
+    let index = 0;
+    index < standardSlots.length;
+    index += 1
+  ) {
+    standardSlots[index].value =
       loadout.slots[index]?.skillId ?? "";
   }
+
+  one(
+    root,
+    '[data-loadout-slot-type="ultimate"]'
+  ).value =
+    loadout.slots.find(
+      (slot) =>
+        slot.id ===
+        CAPTURE_ULTIMATE_SKILL_SLOT_ID
+    )?.skillId ?? "";
 
   replaceCreatureSockets(
     root,
@@ -5105,18 +5121,25 @@ export function mountCaptureEditorHumanV2({
   }
 
   function syncLoadoutAvailability() {
-    const slots = [
+    const standardSlots = [
       ...root.querySelectorAll(
-        "[data-loadout-slot]"
+        '[data-loadout-slot-type="standard"]'
       )
     ];
+    const ultimateSlot = one(
+      root,
+      '[data-loadout-slot-type="ultimate"]'
+    );
     const summary = one(
       root,
       "[data-loadout-policy-summary]"
     );
 
     if (progressionRules === null) {
-      slots.forEach(
+      [
+        ...standardSlots,
+        ultimateSlot
+      ].forEach(
         (select) => {
           select.disabled = false;
           select.dataset.locked = "false";
@@ -5144,7 +5167,7 @@ export function mountCaptureEditorHumanV2({
     const unlocked =
       availability.filter(Boolean).length;
 
-    slots.forEach(
+    standardSlots.forEach(
       (select, index) => {
         const available =
           availability[index] === true;
@@ -5154,8 +5177,8 @@ export function mountCaptureEditorHumanV2({
           available ? "true" : "false";
         select.title =
           available
-            ? "Slot actif au niveau actuel"
-            : "Slot configurable maintenant, activé automatiquement quand la progression le débloque";
+            ? "Slot standard actif au niveau actuel"
+            : "Slot standard configurable maintenant, activé automatiquement quand la progression le débloque";
         const label =
           select.closest("label");
         if (label) {
@@ -5166,15 +5189,42 @@ export function mountCaptureEditorHumanV2({
       }
     );
 
+    ultimateSlot.disabled = false;
+    ultimateSlot.dataset.locked = "false";
+    const ultimateDraft =
+      configuredSkills.get(
+        ultimateSlot.value
+      ) ?? null;
+    const ultimateActive =
+      ultimateDraft !== null &&
+      ultimateDraft.requiredLevel <= level;
+    ultimateSlot.dataset.activeNow =
+      ultimateActive ? "true" : "false";
+    ultimateSlot.title =
+      ultimateSlot.value === ""
+        ? "Slot réservé aux capacités ultimes"
+        : ultimateActive
+          ? "Capacité ultime disponible au niveau actuel"
+          : "Capacité ultime configurée, disponible quand son niveau requis sera atteint";
+    const ultimateLabel =
+      ultimateSlot.closest("label");
+    if (ultimateLabel) {
+      ultimateLabel.dataset.locked = "false";
+      ultimateLabel.dataset.activeNow =
+        ultimateActive ? "true" : "false";
+    }
+
     summary.textContent =
       unlocked +
       " slot" +
+      (unlocked > 1 ? "s" : "") +
+      " standard" +
       (unlocked > 1 ? "s" : "") +
       " actif" +
       (unlocked > 1 ? "s" : "") +
       " au niveau " +
       level +
-      ". Les 4 slots restent configurables ; les capacités futures deviennent actives quand leur slot et leur niveau requis sont débloqués.";
+      ". Les 4 slots standards suivent la progression ; le slot Ultime est séparé et respecte le niveau requis de sa capacité.";
   }
 
   function refreshCreatureLibraryOptions(
@@ -5465,17 +5515,45 @@ export function mountCaptureEditorHumanV2({
   }
 
   function refreshLoadoutOptions(preferredId = null) {
-    const configured = [...configuredSkills.values()];
-    const slots = [
-      ...root.querySelectorAll("[data-loadout-slot]")
+    const configured = [
+      ...configuredSkills.values()
     ];
+    const standardSkills =
+      configured.filter(
+        (draft) =>
+          draft.definition.loadoutSlot !==
+          "ultimate"
+      );
+    const ultimateSkills =
+      configured.filter(
+        (draft) =>
+          draft.definition.loadoutSlot ===
+          "ultimate"
+      );
+    const standardSlots = [
+      ...root.querySelectorAll(
+        '[data-loadout-slot-type="standard"]'
+      )
+    ];
+    const ultimateSlot = one(
+      root,
+      '[data-loadout-slot-type="ultimate"]'
+    );
 
-    for (const select of slots) {
+    const populate = (
+      select,
+      drafts,
+      emptyLabel
+    ) => {
       const previous = select.value;
       select.textContent = "";
-      createOption(select, "", "Vide");
+      createOption(
+        select,
+        "",
+        emptyLabel
+      );
 
-      for (const draft of configured) {
+      for (const draft of drafts) {
         createOption(
           select,
           draft.id,
@@ -5487,26 +5565,63 @@ export function mountCaptureEditorHumanV2({
 
       if (
         previous &&
-        configuredSkills.has(previous)
+        drafts.some(
+          (draft) =>
+            draft.id === previous
+        )
       ) {
         select.value = previous;
       }
+    };
+
+    for (const select of standardSlots) {
+      populate(
+        select,
+        standardSkills,
+        "Vide"
+      );
     }
+    populate(
+      ultimateSlot,
+      ultimateSkills,
+      "Aucune ultime"
+    );
 
     if (
       preferredId &&
       configuredSkills.has(preferredId) &&
-      !slots.some(
-        (select) => select.value === preferredId
+      ![
+        ...standardSlots,
+        ultimateSlot
+      ].some(
+        (select) =>
+          select.value === preferredId
       )
     ) {
-      const empty = slots.find(
-        (select) =>
-          select.value === "" &&
-          select.disabled !== true
-      );
-      if (empty) {
-        empty.value = preferredId;
+      const draft =
+        configuredSkills.get(preferredId);
+
+      if (
+        draft.definition.loadoutSlot ===
+        "ultimate"
+      ) {
+        if (
+          ultimateSlot.value === "" &&
+          ultimateSlot.disabled !== true
+        ) {
+          ultimateSlot.value =
+            preferredId;
+        }
+      } else {
+        const empty =
+          standardSlots.find(
+            (select) =>
+              select.value === "" &&
+              select.disabled !== true
+          );
+        if (empty) {
+          empty.value = preferredId;
+        }
       }
     }
 
