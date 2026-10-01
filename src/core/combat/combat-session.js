@@ -144,7 +144,8 @@ export function createCombatSession({
       reactionSkill,
       elapsedMs,
       skillSpeedMultiplier:
-        normalizedSkillSpeedMultiplier
+        normalizedSkillSpeedMultiplier,
+      battleFormat
     });
   }
 
