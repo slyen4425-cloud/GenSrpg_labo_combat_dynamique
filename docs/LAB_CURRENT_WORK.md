@@ -19921,3 +19921,33 @@ Base : `a04d421bebf672e1337cfe0ad24f81540fb82d76` (Showcase Creature Configurati
 - dépôt `Zombicide-40k`.
 
 État : **LOT OUVERT — RED à écrire**.
+
+
+### Résultat — Showcase Form Rehydration + Socket Selection V1
+
+RED :
+- commit : `e436a1534f5b0a8c4616484dbf384367d4206a47` ;
+- CI : `36831878469` — FAILURE attendue ;
+- défauts protégés : le formulaire ne rechargeait pas la fiche complète après remplacement du preset ; le rendu socket n'était pas piloté par `data-socket-kind`.
+
+Correction :
+- `65af381073bbdf789ee8621dc5204c67dc02b0a9` : après application du batch vitrine, si la créature courante n'est pas modifiée, le Human Editor recharge la fiche entière avec `loadCreatureRecord(selectedRecord.draft.id)`. Les sockets, assets, profil, scale, résistances, stats et loadout proviennent donc tous du même record `configuredCreatures` ;
+- même commit : ajout de `renderSelectedCreatureSocketMarkersV1`. Le store conserve tous les sockets, mais l'éditeur affiche uniquement le type actuellement choisi dans `data-socket-kind`, sur face et dos. Le placement par pointer réutilise le même rendu ; changer Bouche/Tête/Main/Queue rerend depuis le store sans modifier les données ;
+- `34809eb78cdb2460180fad3274b51ca57d2fc8af` + `4bcef1c7739f38b2473c76ab6e281d36c09f7e19` : le texte d'aide des surfaces socket possède sa propre classe `socket-surface__hint` et ne peut plus hériter du style réservé au marqueur parce qu'il serait le dernier `span` ;
+- `3173d75080517d74a189ef5f0af35d633699a88c` : sentinelles affinées et vérification que les quatre IDs du loadout Loup (`fireball`, `claw`, `lib_flame_bite`, `lib_fireball`) existent réellement dans les catalogues actifs.
+
+Données :
+- aucun preset modifié dans ce lot ;
+- aucune nouvelle inversion de coordonnées ;
+- `crea-loup` conserve son socket bouche et ses quatre slots enregistrés ;
+- Moussados conserve les coordonnées présentes dans le preset au démarrage du lot : le correctif porte uniquement sur quel socket est rendu à l'écran.
+
+Validation technique finale :
+- HEAD : `3173d75080517d74a189ef5f0af35d633699a88c` ;
+- CI : `36832105535` — SUCCESS ;
+- suite complète : **746/746 PASS, 0 FAIL**.
+
+État : **GREEN technique — PREVALIDATION smartphone requise**. Vérifier :
+1. sélectionner Loup volcanique dans la bibliothèque : le socket Bouche doit apparaître sur face/dos et les slots doivent afficher `fireball / claw / lib_flame_bite / lib_fireball` ;
+2. sélectionner Moussados puis choisir `Bouche` dans « Point à placer » : seul le marqueur Bouche doit être affiché ; changer de type doit afficher le point correspondant sans déplacer les autres ;
+3. aucune perte de bibliothèque.
