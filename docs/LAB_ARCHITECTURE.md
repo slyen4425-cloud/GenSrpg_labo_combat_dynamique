@@ -2523,3 +2523,37 @@ Le bloc `persistent_zone` possède explicitement :
 - `Élément des dégâts`.
 
 Les tests ciblent le bloc de zone lui-même afin d’éviter qu’un libellé identique situé dans un autre effet donne un faux GREEN.
+
+
+## 45. HUD cinq capacités et boucle visuelle de zone V1
+
+### HUD combat
+
+Le loadout Capture reste défini par son contrat existant : quatre slots standards et un slot Ultime.
+
+Le HUD ne crée aucune règle de disponibilité. Il projette simplement les cinq capacités sur une grille de cinq colonnes afin de conserver une seule ligne sur mobile.
+
+La taille des cases est réduite uniquement par présentation CSS. Aucun calcul de progression, cooldown, énergie ou activation n'est déplacé dans l'UI.
+
+### Renforcement gameplay de zone
+
+Le propriétaire gameplay reste `persistent-zone-runtime-v1.js`.
+
+Le chemin vérifié par test réel est :
+- activation 1 : rayon initial `short` ;
+- activation 2 avec `reinforce` + croissance 1 : `medium` ;
+- activation 3 : `long` ;
+- les activations supplémentaires restent bornées à `maxActivations` ;
+- les ticks continuent d'utiliser `tickEffect.amount` et le canal élémentaire configuré.
+
+Aucune correction gameplay n'a été nécessaire dans ce lot : le runtime existant était déjà correct.
+
+### Animation persistante
+
+`SkillPresentationBinding.visual.aura` reste l'unique définition visuelle de la zone.
+
+Le renderer `dom-skill-fx.js` respecte maintenant `playbackMode:"loop"` aussi pour les assets atlas basés sur `url + frameCount`, et pas seulement pour les séquences multi-fichiers `frames[]`.
+
+Un asset multi-frame peut donc boucler aussi longtemps que le nœud de zone existe. Le nœud reste le même pendant un renforcement ; seule sa projection de rayon/scale est mise à jour depuis `CombatState.persistentZones`.
+
+Une image réellement statique reste statique. Aucune animation artificielle, aucun timer secondaire et aucune seconde autorité de durée ne sont ajoutés.
