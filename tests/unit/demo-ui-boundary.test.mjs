@@ -211,8 +211,8 @@ test("V8 fighter HUD owns roster portraits while spatial fighters remain top-bas
 test("V8 ability dock stays compact and icon-ready on mobile", async () => {
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
-  assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
-  assert.match(css, /\.action-option--skill\s*\{[\s\S]*aspect-ratio:\s*0\.72/);
+  assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(5/);
+  assert.match(css, /\.action-option--skill\s*\{[\s\S]*aspect-ratio:\s*0\.86/);
   assert.match(css, /\.action-option__icon\s*\{[\s\S]*width:\s*82%[\s\S]*height:\s*82%/);
   assert.match(
     css,
@@ -604,7 +604,7 @@ test("combat arena is taller while keeping direct reflex ability controls", asyn
   const css = await readFile("examples/dom-demo/demo.css", "utf8");
 
   assert.match(css, /min-height:\s*min\(59svh, 35rem\)/);
-  assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(4/);
+  assert.match(css, /\.skill-bar__grid\s*\{[\s\S]*repeat\(5/);
   assert.doesNotMatch(css, /\.distance-buttons/);
   assert.match(css, /\.action-bar\s*\{[\s\S]*repeat\(2/);
 });
