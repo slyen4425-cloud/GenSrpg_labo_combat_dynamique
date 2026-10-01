@@ -234,7 +234,10 @@ function applySpriteVisual(node, visual, durationMs, animate) {
           duration: playbackMs,
           easing: "steps(1, end)",
           fill: "forwards",
-          iterations: 1
+          iterations:
+            playbackMode === "loop"
+              ? Infinity
+              : 1
         }
       );
 
