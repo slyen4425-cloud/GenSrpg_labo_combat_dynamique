@@ -14,15 +14,13 @@ test("canonical fire-zone sprite resolves the new sixteen-frame replacement", ()
   assert.equal(asset.assetId, "pack:capture:sprite-fire-zone-loop-01");
   assert.equal(asset.playbackMode, "loop");
   assert.equal(asset.frameMs, 80);
-  assert.ok(Array.isArray(asset.frames));
-  assert.equal(asset.frames.length, 16);
-
-  assert.match(
-    asset.frames[0],
-    /fire_zone_loop\/frames\/sprite_skill_fire_zone_loop_01_01\.webp/
+  assert.equal(asset.frameCount, 16);
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(asset, "frames"),
+    false
   );
   assert.match(
-    asset.frames[15],
-    /fire_zone_loop\/frames\/sprite_skill_fire_zone_loop_01_16\.webp/
+    asset.url,
+    /fire_zone_loop\/atlases\/sprite_skill_fire_zone_loop_01_atlas\.webp/
   );
 });
