@@ -2557,3 +2557,27 @@ Le renderer `dom-skill-fx.js` respecte maintenant `playbackMode:"loop"` aussi po
 Un asset multi-frame peut donc boucler aussi longtemps que le nœud de zone existe. Le nœud reste le même pendant un renforcement ; seule sa projection de rayon/scale est mise à jour depuis `CombatState.persistentZones`.
 
 Une image réellement statique reste statique. Aucune animation artificielle, aucun timer secondaire et aucune seconde autorité de durée ne sont ajoutés.
+
+
+## 46. Synchronisation autoritaire du visuel de zone renforcée V1
+
+Le rendu d'une zone persistante est désormais projeté depuis un seul chemin d'état :
+
+`CombatState.persistentZones -> CombatRuntime.onState(state) -> renderState(state) -> fx.syncPersistentZones()`.
+
+`onClock` ne possède plus la synchronisation des zones persistantes.
+
+### Signal Runtime
+
+Le signal observable du `CombatRuntime` inclut maintenant `persistentZones` en plus de la distance et des fighters.
+
+Ainsi, une modification qui ne touche que la zone déclenche quand même `onState`, notamment :
+- création de zone ;
+- renforcement du rayon `short -> medium -> long` ;
+- changement d'activation ;
+- mise à jour de l'état temporel de zone ;
+- expiration/suppression.
+
+Le renderer conserve un seul nœud par `persistentZone.id` et met à jour son `transform/scale` depuis `zone.radius`. Il n'existe aucun état parallèle de rayon côté UI.
+
+Aucun timer, observer ou listener compensatoire n'a été ajouté.
