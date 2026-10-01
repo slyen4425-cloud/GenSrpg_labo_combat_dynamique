@@ -260,7 +260,7 @@ const ASSETS = Object.freeze({
     folder: "fire_zone_loop",
     stem: "sprite_skill_fire_zone_loop_01",
     extension: "webp",
-    frameCount: 8,
+    frameCount: 16,
     frameMs: 80,
     displayScale: 1,
     playbackMode: "loop"
