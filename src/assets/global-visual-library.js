@@ -1,14 +1,15 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
+const REVISION = "2026-10-01-v6-fire-zone-loop";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
   branch: BRANCH,
-  revision: "2026-09-30-v5-arena-refresh",
+  revision: REVISION,
   baseUrl:
     `https://raw.githubusercontent.com/${REPOSITORY}/${BRANCH}/assets/library/`,
   catalogUrl:
-    `https://raw.githubusercontent.com/${REPOSITORY}/${BRANCH}/data/assets/catalog/global-visual-assets.v1.json`
+    `https://raw.githubusercontent.com/${REPOSITORY}/${BRANCH}/data/assets/catalog/global-visual-assets.v1.json?v=${REVISION}`
 });
 
 export function globalVisualAssetUrl(relativePath) {
