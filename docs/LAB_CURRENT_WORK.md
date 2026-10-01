@@ -19785,3 +19785,47 @@ Procédure de reprise :
 4. vérifier que le roster historique complet reste présent, que Moussados est remplacé sans doublon et que Loup volcanique est ajouté ;
 5. CI complète + nouvelle preview ;
 6. nouvelle validation smartphone utilisateur obligatoire.
+
+
+## Micro-lot — Showcase Creature Configuration Corrections V1 — 2026-10-01
+
+Base : `04381fee5713f72ad3c6be80f5143f501f680bef` (lot vitrine toujours non GREEN utilisateur).
+
+- checkpoint de départ : `checkpoint/lab-start-showcase-config-corrections-v1-2026-10-01` ;
+- branche : `work/lab-showcase-config-corrections-v1-2026-10-01`.
+
+### Retours utilisateur à corriger
+
+1. Le Loup visible dans le test Combat n'utilise pas la vraie configuration du modèle vitrine ; l'ancien chemin `CAPTURE_TEST_CREATURE_OPTIONS_V1 -> buildCaptureTestOpponentDraftV1` construit encore un mock `crea-enemy` générique. Le vrai preset vitrine est `crea-loup` et contient Santé 150, Feu +10, résistance Feu +35 %, faiblesse Eau -50 %, profil quadruped, scale 1.2 et loadout planifié `fireball / claw / lib_flame_bite / lib_fireball`.
+2. Le socket `mouth` de Moussados (`crea_mossback`) a été enregistré avec les coordonnées front/back inversées dans le preset vitrine. La correction doit être faite dans le preset propriétaire et protégée par test.
+
+### Règles de correction
+
+- aucune seconde autorité créature ;
+- aucun fallback qui masque l'erreur ;
+- aucun traitement par nom ;
+- le test Combat doit consommer la vraie fiche configurée lorsqu'un modèle vitrine est sélectionné ;
+- le mock historique peut rester uniquement pour les créatures de preview qui ne sont pas encore de vraies fiches configurées, mais il ne doit jamais prendre autorité sur `crea-loup` ou `crea_mossback` ;
+- les coordonnées socket sont corrigées dans `data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json`, pas compensées dans le renderer/UI ;
+- RED ciblé obligatoire avant correction fonctionnelle ;
+- CI complète et nouvelle preview avant validation smartphone.
+
+### Périmètre autorisé
+
+- données presets vitrine ;
+- raccord sélecteur de test Combat vers les fiches configurées ;
+- tests ciblés ;
+- documentation ;
+- preview.
+
+### Protégé
+
+- Combat Runtime / Action Resolver ;
+- règles dégâts, résistances, cooldown ;
+- mouvement ;
+- FX / renderer / audio ;
+- arènes ;
+- dépôt `Zombicide-40k` ;
+- `main`.
+
+État : **LOT OUVERT — diagnostic confirmé, RED à écrire**.
