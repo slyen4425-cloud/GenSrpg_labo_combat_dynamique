@@ -203,6 +203,15 @@ export function createCaptureSkillPresentationAssetsV2({
         resolveAsset,
         visual.impact
       ),
+      persistentZone: resolvedVisual(
+        resolveAsset,
+        visual.aura
+      ),
+      persistentZoneLayer: layerFor(
+        visual.aura,
+        binding.version,
+        view
+      ),
       castSound: resolvedAudio(
         resolveAudio,
         audio.cast
