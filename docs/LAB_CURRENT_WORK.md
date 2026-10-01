@@ -19921,3 +19921,14 @@ Validation technique :
 - Combat Runtime / Action Resolver / mouvement / FX / dégâts / arènes inchangés.
 
 État : **GREEN technique après correction ÉCHEC 2 — nouvelle PREVALIDATION smartphone requise**.
+
+
+### Décision de gouvernance — méthode d’intégration des presets — 2026-10-01
+
+À la demande de Sylvain, la méthode validée lors de l’intégration de Moussados et du Loup volcanique devient une règle permanente du laboratoire.
+
+- ajout dans `docs/LAB_CHARTE.md` du §33 « Intégration durable des presets créatures et capacités exportés par l’éditeur » ;
+- commit : `21b086d41ff0c5b016e60c0a876acd8b76459f57` ;
+- la procédure impose notamment : export éditeur comme donnée de référence, autorité unique `configuredCreatures/configuredSkills`, remplacement par ID sans doublon, conservation intégrale sockets/loadout/stats/visuels/audio, aucun correctif UI compensatoire des données, rechargement complet après remplacement, vraie fiche configurée dans le test Combat, RED + CI + preview + validation smartphone.
+
+Cette règle doit être appliquée aux prochains exports de créatures et capacités transmis pour la vitrine Capture.
