@@ -11,6 +11,12 @@ import {
 import {
   normalizeCaptureSkillEditorDraftV1
 } from "../../../contracts/capture-skill-editor-draft-v1.js";
+import {
+  CAPTURE_ULTIMATE_SKILL_SLOT_ID
+} from "../../../contracts/capture-active-skill-loadout-v1.js";
+import {
+  validateCaptureLoadoutSkillSlotsV1
+} from "./capture-loadout-skill-slot-v1.js";
 
 function arrayValue(value, field) {
   if (!Array.isArray(value)) {
@@ -72,6 +78,11 @@ export function projectCapturePlannedLoadoutsToCombatV1({
 
   return Object.freeze(
     normalizedLoadouts.map((loadout) => {
+      validateCaptureLoadoutSkillSlotsV1({
+        loadout,
+        skillDrafts: skills
+      });
+
       const creature =
         creatureById.get(loadout.creatureId);
 
@@ -91,9 +102,20 @@ export function projectCapturePlannedLoadoutsToCombatV1({
         creatureId: loadout.creatureId,
         slots: loadout.slots.map(
           (slot, index) => {
+            if (slot.skillId === null) {
+              return {
+                id: slot.id,
+                skillId: null
+              };
+            }
+
+            const isUltimate =
+              slot.id ===
+              CAPTURE_ULTIMATE_SKILL_SLOT_ID;
+
             if (
-              index >= unlockedSlotCount ||
-              slot.skillId === null
+              !isUltimate &&
+              index >= unlockedSlotCount
             ) {
               return {
                 id: slot.id,
