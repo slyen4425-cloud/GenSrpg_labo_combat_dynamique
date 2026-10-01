@@ -11,6 +11,9 @@ import {
 import {
   projectCapturePlannedLoadoutsToCombatV1
 } from "../../src/adapters/input/capture/capture-planned-loadout-to-combat-v1.js";
+import {
+  exportCaptureEditorDraftsToCombatExportV3
+} from "../../src/adapters/input/capture/capture-editor-exporter-v3.js";
 
 function skill(id, {
   loadoutSlot = "standard",
@@ -292,5 +295,114 @@ test("Human editor exposes one distinct ultimate slot and one explicit ultimate 
   assert.match(
     source,
     /CAPTURE_ULTIMATE_SKILL_SLOT_ID/
+  );
+});
+
+
+test("Combat Export V3 carries the ultimate through the real planned-loadout projection without consuming a standard slot", () => {
+  const local = {
+    ...creature(1),
+    id: "crea-local",
+    displayName: "Locale",
+    skillIds: ["s1", "s2", "s3", "s4", "ult"]
+  };
+  const enemy = {
+    ...creature(20),
+    id: "crea-enemy",
+    displayName: "Ennemie",
+    skillIds: ["enemy-hit"]
+  };
+
+  const exported =
+    exportCaptureEditorDraftsToCombatExportV3({
+      battleSetup: {
+        schema:
+          "capture-battle-setup-editor-draft-v1",
+        id: "ultimate-slot-real-path",
+        localActorId: "local-1",
+        arenaId: null,
+        skillSpeedMultiplier: 1,
+        teams: [
+          {
+            id: "local-team",
+            slots: [
+              {
+                actorId: "local-1",
+                creatureId: "crea-local",
+                displayName: "Locale",
+                controllerId: "human-local",
+                roster: null
+              }
+            ]
+          },
+          {
+            id: "enemy-team",
+            slots: [
+              {
+                actorId: "enemy-1",
+                creatureId: "crea-enemy",
+                displayName: "Ennemie",
+                controllerId: "ai-enemy",
+                roster: null
+              }
+            ]
+          }
+        ]
+      },
+      creatureDrafts: [local, enemy],
+      skillDrafts: [
+        skill("s1"),
+        skill("s2"),
+        skill("s3"),
+        skill("s4"),
+        skill("ult", {
+          loadoutSlot: "ultimate"
+        }),
+        skill("enemy-hit")
+      ],
+      loadouts: [
+        {
+          schema:
+            "capture-active-skill-loadout-v1",
+          creatureId: "crea-local",
+          slots: [
+            { id: "slot-1", skillId: "s1" },
+            { id: "slot-2", skillId: "s2" },
+            { id: "slot-3", skillId: "s3" },
+            { id: "slot-4", skillId: "s4" },
+            {
+              id: "slot-ultimate",
+              skillId: "ult"
+            }
+          ]
+        },
+        {
+          schema:
+            "capture-active-skill-loadout-v1",
+          creatureId: "crea-enemy",
+          slots: [
+            {
+              id: "slot-1",
+              skillId: "enemy-hit"
+            },
+            { id: "slot-2", skillId: null },
+            { id: "slot-3", skillId: null },
+            { id: "slot-4", skillId: null }
+          ]
+        }
+      ],
+      progressionRules,
+      metadata: {
+        producer:
+          "capture-ultimate-slot-v1-real-path-test"
+      }
+    });
+
+  assert.deepEqual(
+    exported.creatures.find(
+      (entry) =>
+        entry.id === "crea-local"
+    ).skillIds,
+    ["s1", "s2", "ult"]
   );
 });
