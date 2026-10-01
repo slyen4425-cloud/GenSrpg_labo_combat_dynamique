@@ -20567,3 +20567,62 @@ La validation smartphone doit vérifier :
 5. la zone disparaît à expiration.
 
 Aucun merge vers `main`.
+
+
+## Micro-lot — Persistent Zone Reinforcement Visual Sync V1 — 2026-10-01
+
+Base exacte : `fdbec5304e670cd996244fdb0a1fe44d151373de` (Combat 5-Slot Row & Persistent Zone Animated Loop V1 — GREEN technique / PREVALIDATION smartphone).
+
+- checkpoint de départ : `checkpoint/lab-start-zone-reinforcement-visual-sync-v1-2026-10-01` ;
+- branche : `work/lab-zone-reinforcement-visual-sync-v1-2026-10-01`.
+
+### Retour smartphone utilisateur
+
+Le gameplay de zone a déjà été vérifié Proche -> Moyen -> Loin, mais en combat réel le sprite persistant reste visuellement à son premier rayon malgré plusieurs réactivations.
+
+### Cause d'architecture visée
+
+Le renderer sait déjà mettre à jour le scale d'un nœud existant à partir de `zone.radius`.
+
+En revanche, dans le chemin UI réel :
+- `onState(state)` possède le rendu de l'état Combat ;
+- `fx.syncPersistentZones(...)` est actuellement branché sur `onClock(state)` ;
+- `CombatRuntime.stateSignal()` n'inclut pas `persistentZones`.
+
+Cette séparation peut retarder ou manquer la projection d'un changement de zone lorsque la modification d'état pertinente n'est pas accompagnée d'un changement de fighter/distance. Elle crée surtout deux chemins de projection temporelle différents pour un même état.
+
+### Objectif
+
+1. Faire de `onState(state) -> renderState(state)` l'unique chemin de projection de `CombatState.persistentZones` vers le renderer.
+2. Étendre le signal d'état du Runtime pour que toute modification de `persistentZones` soit émise par `onState` :
+   - création ;
+   - renforcement Proche/Moyen/Loin ;
+   - expiration ;
+   - progression de tick si l'état de zone change.
+3. Retirer le raccord zone de `onClock` afin d'éviter une double autorité de synchronisation.
+4. Conserver le même nœud DOM de zone et seulement mettre à jour son scale depuis le rayon autoritaire.
+
+### Protégé
+
+- `persistent-zone-runtime-v1.js` et ses règles de rayon/dégâts ;
+- `SkillPresentationBinding.visual.aura` ;
+- aucun timer supplémentaire ;
+- aucun observer ;
+- aucun listener compensatoire ;
+- aucun marqueur parallèle de rayon ;
+- aucun comportement par nom ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED Runtime : un changement uniquement dans `persistentZones` doit déclencher `onState`.
+2. RED UI : `renderState(state)` doit synchroniser la zone et `onClock` ne doit plus être propriétaire de ce raccord.
+3. vérifier le vrai chemin renforcement -> `onState` -> même nœud -> nouveau scale ;
+4. correction minimale aux propriétaires Runtime/UI ;
+5. tests ciblés + CI complète ;
+6. documentation ;
+7. checkpoint + preview ;
+8. PREVALIDATION smartphone obligatoire avant GREEN utilisateur.
+
+État : **LOT OUVERT — RED obligatoire avant correction fonctionnelle**.
