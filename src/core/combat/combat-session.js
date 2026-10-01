@@ -22,6 +22,9 @@ import {
   advanceStatusEffectsV1,
   advanceStatusEffectsOnOwnerActionEndV1
 } from "./status-effect-runtime-v1.js";
+import {
+  advancePersistentZonesV1
+} from "./persistent-zone-runtime-v1.js";
 
 export function createCombatSession({
   distance = "medium",
@@ -208,6 +211,11 @@ export function createCombatSession({
     state = advanceStatusEffectsV1({
       state,
       deltaMs
+    });
+    state = advancePersistentZonesV1({
+      state,
+      deltaMs,
+      battleFormat
     });
     state = advanceCombatTime(
       state,
