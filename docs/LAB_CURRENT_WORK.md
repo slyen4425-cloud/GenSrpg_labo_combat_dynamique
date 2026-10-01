@@ -20735,3 +20735,61 @@ Découpe :
 7. Preview smartphone pour sélection et test réel.
 
 État : **LOT OUVERT — découpe locale effectuée, RED/raccord GitHub à réaliser**.
+
+
+### Résultat technique — Fire Zone Animated Sprite V1
+
+RED :
+- test : `tests/unit/fire-zone-animated-sprite-v1.test.mjs` ;
+- commit RED initial : `745c2ef82aea19a5be57ab220e7f6f709961a1ad` ;
+- CI RED : `36891541678` — FAILURE attendue : asset absent du resolver.
+
+Découpe / optimisation :
+- source : sprite sheet 4 × 2 généré et validé visuellement dans ce fil ;
+- 8 frames extraites dans l'ordre de lecture ;
+- version runtime optimisée : WebP transparent 224 × 224 ;
+- noms : `sprite_skill_fire_zone_loop_01_01.webp` -> `..._08.webp`.
+
+Bibliothèque assets :
+- branche de travail : `work/global-assets-fire-zone-loop-01-2026-10-01` ;
+- commit frames + manifest : `b50c5404fcee5e6bc581d54af407107003d478ad` ;
+- commit catalogue : `e59169f21877294f79ca579d4e3b9a241043d780` ;
+- assetId : `pack:capture:sprite-fire-zone-loop-01` ;
+- label éditeur : `Zone de feu animée` ;
+- manifest vérifié : 8 frames, `frame_ms:80`, `loop:true` ;
+- catalogue : 88 assets / 41 sprites ;
+- checkpoint assets : `checkpoint/global-assets-fire-zone-loop-01-green-2026-10-01` ;
+- `global-assets` publié en fast-forward vers `e59169f21877294f79ca579d4e3b9a241043d780`, sans force.
+
+Raccord code :
+- `c0ed31db5b163abcadec8ebe0c2583da896b70c2` : resolver existant `captureSequenceAsset` étendu avec `playbackMode` et ajout du nouvel asset ;
+- `027e34d6cdea36fcd8c67b4e2a1d49e1cfb85b91` : révision globale visuelle `2026-10-01-v6-fire-zone-loop` + cache-bust du catalogue ;
+- `c150043eac65fc0715f291084c35f4671edf256e` / `0d6de46e919f920429b76d01e6a25a2c0ea5495c` : correction des sentinelles de test, sans modification fonctionnelle.
+
+Validation :
+- les 8 blobs sont présents et lisibles sur la branche assets publiée ;
+- l'entrée catalogue est compatible `combat / capture / editor` et classée `category:"skill"`, donc sélectionnable par le rôle `zone` sans réintroduire les créatures ;
+- le resolver retourne bien 8 URLs de frames, `frameMs:80`, `playbackMode:"loop"` ;
+- CI fonctionnelle : `36895289008` — SUCCESS ;
+- suite complète : **780/780 PASS, 0 FAIL** ;
+- aucun changement du gameplay de zone ;
+- aucune seconde autorité, aucun timer, observer, listener compensatoire ou logique par nom ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique — publication checkpoint/preview code à finaliser puis validation smartphone utilisateur**.
+
+### Publication de PREVALIDATION — Fire Zone Animated Sprite V1
+
+Noms réservés :
+- checkpoint code : `checkpoint/lab-fire-zone-sprite-v1-green-2026-10-01` ;
+- preview : `preview/lab-fire-zone-sprite-v1-2026-10-01`.
+
+La validation smartphone doit vérifier :
+1. `Zone de feu animée` apparaît dans le sélecteur de visuel persistant de zone ;
+2. la sélection est conservée après sauvegarde de la capacité ;
+3. le combat affiche la boucle animée ;
+4. le même visuel grandit avec Proche -> Moyen -> Loin ;
+5. aucune créature n'apparaît dans ce sélecteur.
+
+Aucun merge vers `main`.
