@@ -21104,3 +21104,64 @@ Work / checkpoint / preview étaient identiques sur `fbb6e68553614ad60655473d853
 Le présent commit ne modifie que la traçabilité. Après sa CI, checkpoint et preview sont avancés en fast-forward vers le même HEAD puis revérifiés.
 
 Statut : **GREEN technique publié — PREVALIDATION smartphone utilisateur en attente ; aucun merge vers main**.
+
+
+## Micro-lot — Persistent Zone Offset Controls V1 — 2026-10-01
+
+Base exacte : `f4906c63740afa4483353e447a2b0f64d9c13fb0` (Fire Zone Sprite V2 Replacement — GREEN technique / PREVALIDATION smartphone).
+
+- checkpoint départ : `checkpoint/lab-start-persistent-zone-offset-controls-v1-2026-10-01` ;
+- branche work : `work/lab-persistent-zone-offset-controls-v1-2026-10-01`.
+
+### Retour smartphone utilisateur
+
+Le nouveau sprite de zone est meilleur, mais son ancrage visuel ne peut pas être centré précisément avec le seul scale global + largeur + hauteur.
+
+### Cause d'UX
+
+Le contrat `SkillPresentationBinding` possède déjà `offsetX` et `offsetY`, mais le Human Editor force actuellement ces valeurs à 0 pour la zone persistante et le renderer de zone ne les applique pas.
+
+### Objectif
+
+1. Réutiliser les champs propriétaires existants `offsetX` / `offsetY`.
+2. Ajouter dans l'éditeur de capacité :
+   - `Décalage horizontal de la zone (px)` ;
+   - `Décalage vertical de la zone (px)`.
+3. Plage simple : -300 à +300 px, pas 5 px, défaut 0.
+4. Sauvegarder/recharger les valeurs dans la présentation de la capacité.
+5. Appliquer ces offsets uniquement à la projection visuelle de la zone persistante :
+   - position finale = ancre autoritaire de la créature + offset visuel ;
+   - aucun impact sur le rayon gameplay ;
+   - aucun impact sur collisions/dégâts.
+6. Conserver scale global + scale X/Y + animation 16 frames existants.
+
+### Propriétaires
+
+- `SkillPresentationBinding` : champs offset existants, inchangés ;
+- Human Editor : saisie / rechargement ;
+- adaptateur présentation : transport existant des offsets ;
+- `dom-skill-fx.js` : projection visuelle de la position.
+
+### Protégé
+
+- `persistent-zone-runtime-v1.js` ;
+- `CombatState.persistentZones` ;
+- dégâts / durée / rayon ;
+- aucun nouvel état parallèle ;
+- aucun timer / observer / listener compensatoire ;
+- aucun comportement par nom de capacité ou asset ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED : l'export Human Editor doit conserver `zoneOffsetX` / `zoneOffsetY` dans `visual.aura.offsetX/Y`.
+2. RED : rechargement éditeur doit remettre ces valeurs dans les champs.
+3. RED : renderer persistant doit appliquer l'offset aux coordonnées de l'ancre sans modifier le scale.
+4. correction minimale aux propriétaires existants ;
+5. tests ciblés + CI complète ;
+6. documentation ;
+7. checkpoint + preview ;
+8. PREVALIDATION smartphone utilisateur obligatoire.
+
+État : **LOT OUVERT — RED obligatoire avant correction**.
