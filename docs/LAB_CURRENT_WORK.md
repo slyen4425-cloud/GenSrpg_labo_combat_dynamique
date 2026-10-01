@@ -20442,3 +20442,22 @@ Validation fonctionnelle :
 - tests spécifiques GREEN : capacité Ultime enregistrée immédiatement propre, modification réelle détectée, absence de `skillDirty`, exclusion des créatures du sélecteur zone, conservation des sprites/FX de compétence, vérification ciblée des libellés du bloc `persistent_zone`.
 
 État : **GREEN technique fonctionnel — documentation/checkpoint/preview à finaliser puis PREVALIDATION smartphone obligatoire**.
+
+
+### Publication de PREVALIDATION — Skill Save/Test & Zone Asset Filter V1
+
+Noms réservés :
+- checkpoint GREEN technique : `checkpoint/lab-skill-save-zone-asset-filter-v1-green-2026-10-01` ;
+- preview smartphone : `preview/lab-skill-save-zone-asset-filter-v1-2026-10-01`.
+
+Les deux références doivent pointer sur le même HEAD documenté que la branche work.
+
+La validation smartphone doit vérifier au minimum :
+1. créer une capacité Ultime ;
+2. l’enregistrer ;
+3. lancer immédiatement « Tester en combat » sans faux message « capacité modifiée » ;
+4. modifier ensuite réellement un champ et vérifier que le blocage revient tant que cette modification n’est pas enregistrée ;
+5. ouvrir « Visuel persistant de zone » et vérifier qu’aucune créature / vue player / opponent / portrait n’est proposée ;
+6. vérifier les libellés `Dégâts à chaque intervalle` et `Élément des dégâts`.
+
+Aucun merge vers `main`.
