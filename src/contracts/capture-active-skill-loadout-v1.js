@@ -12,11 +12,19 @@ const SLOT_FIELDS = new Set([
   "skillId"
 ]);
 
-const SLOT_IDS = Object.freeze([
+export const CAPTURE_STANDARD_SKILL_SLOT_IDS = Object.freeze([
   "slot-1",
   "slot-2",
   "slot-3",
   "slot-4"
+]);
+
+export const CAPTURE_ULTIMATE_SKILL_SLOT_ID =
+  "slot-ultimate";
+
+const SLOT_IDS = Object.freeze([
+  ...CAPTURE_STANDARD_SKILL_SLOT_IDS,
+  CAPTURE_ULTIMATE_SKILL_SLOT_ID
 ]);
 
 function objectValue(value, field) {
@@ -56,13 +64,33 @@ function skillIdsFromSlots(slots) {
 }
 
 function normalizeSlots(raw) {
-  if (!Array.isArray(raw) || raw.length !== SLOT_IDS.length) {
+  if (
+    !Array.isArray(raw) ||
+    (
+      raw.length !==
+        CAPTURE_STANDARD_SKILL_SLOT_IDS.length &&
+      raw.length !== SLOT_IDS.length
+    )
+  ) {
     throw new RangeError(
-      "slots must contain exactly four entries"
+      "slots must contain four legacy entries or five canonical entries"
     );
   }
 
-  const slots = raw.map((rawSlot, index) => {
+  const canonicalRaw =
+    raw.length ===
+    CAPTURE_STANDARD_SKILL_SLOT_IDS.length
+      ? [
+          ...raw,
+          {
+            id:
+              CAPTURE_ULTIMATE_SKILL_SLOT_ID,
+            skillId: null
+          }
+        ]
+      : raw;
+
+  const slots = canonicalRaw.map((rawSlot, index) => {
     const field = `slots[${index}]`;
     const value = objectValue(rawSlot, field);
     assertKnownFields(value, SLOT_FIELDS, field);
