@@ -65,6 +65,14 @@ function resolvedVisual(assetForId, slot) {
       slot.displayScale ??
       asset.displayScale ??
       1,
+    displayScaleX:
+      slot.displayScaleX ??
+      asset.displayScaleX ??
+      1,
+    displayScaleY:
+      slot.displayScaleY ??
+      asset.displayScaleY ??
+      1,
     playbackMode:
       slot.playbackMode ??
       asset.playbackMode ??
