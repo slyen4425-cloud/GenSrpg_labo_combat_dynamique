@@ -20808,3 +20808,79 @@ Avant scellement documentaire final :
 Le présent commit ne modifie que la traçabilité du lot. Après ce commit, les refs checkpoint/preview sont avancées en fast-forward vers le même HEAD documentaire puis revérifiées.
 
 Statut : **GREEN technique publié — PREVALIDATION smartphone utilisateur en attente**.
+
+
+## Micro-lot — Persistent Zone Visual UX V2 — 2026-10-01
+
+Base code exacte : `6ffaf1fa01d9336922651ca7808ac7c8f7d3d12a`.
+Base bibliothèque visuelle exacte : `global-assets@e59169f21877294f79ca579d4e3b9a241043d780`.
+
+- checkpoint code : `checkpoint/lab-start-zone-visual-ux-v2-2026-10-01` ;
+- work code : `work/lab-zone-visual-ux-v2-2026-10-01` ;
+- checkpoint assets : `checkpoint/global-assets-before-fire-zone-atlas-v2-2026-10-01` ;
+- work assets : `work/global-assets-fire-zone-atlas-v2-2026-10-01`.
+
+### Retour smartphone utilisateur
+
+1. Le visuel `Zone de feu animée` apparaît comme une image fixe malgré 8 frames.
+2. Le scale de zone est trop petit et ne permet pas de régler largeur/hauteur séparément.
+3. Le choix `Rafraîchir la durée` est ambigu/inutile côté Human Editor car toute réactivation renouvelle déjà la durée.
+4. `Renforcer la zone` doit être renommé `Agrandir la zone`.
+
+### Cause visuelle visée
+
+Le visuel de zone est actuellement résolu comme une liste de 8 URL et animé par changement de `backgroundImage` via Web Animations API.
+Sur Chrome mobile, l'interpolation/changement de ressources `background-image` n'est pas un mécanisme d'animation fiable et peut rester sur la première frame.
+
+Le renderer possède déjà un chemin atlas `url + frameCount` utilisant une animation CSS `background-position` avec `steps(...)`, adaptée aux sprites sheets et compatible boucle.
+
+### Objectif
+
+1. Assembler les 8 frames existantes en **atlas horizontal 8 frames**, sans régénération artistique.
+2. Faire résoudre `pack:capture:sprite-fire-zone-loop-01` par le chemin atlas existant :
+   - URL atlas ;
+   - `frameCount:8` ;
+   - `frameMs` ;
+   - `playbackMode:"loop"`.
+3. Conserver les 8 frames individuelles et leur manifest comme source/portabilité.
+4. Ajouter pour la zone persistante :
+   - scale horizontal ;
+   - scale vertical ;
+   - plage plus large ;
+   - conservation d'un scale global existant pour rétrocompatibilité.
+5. Simplifier le wording Human Editor :
+   - `refresh` affiché comme `Garder la même taille` ;
+   - `reinforce` affiché comme `Agrandir la zone` ;
+   - aide explicite : toute réactivation renouvelle déjà la durée.
+6. Aucun changement aux règles gameplay de rayon/durée.
+
+### Propriétaires
+
+- bibliothèque `global-assets` : atlas + métadonnées ;
+- `demoPresentationAssets` : résolution asset ;
+- `SkillPresentationBinding` : paramètres visuels normalisés ;
+- Human Editor : champs et wording uniquement ;
+- DOM Skill FX : projection scale X/Y uniquement.
+
+### Protégé
+
+- `persistent-zone-runtime-v1.js` ;
+- calculs de dégâts/ticks/réactivations ;
+- `CombatState.persistentZones` ;
+- aucune seconde horloge ;
+- aucun timer/observer/listener compensatoire ;
+- aucun comportement fondé sur un nom ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED atlas : l'asset de zone doit être résolu par `url + frameCount`, pas par permutation de `backgroundImage`.
+2. RED contrat : scale X/Y de zone doivent survivre normalisation/export/rechargement.
+3. RED renderer : rayon × scale global × scaleX/scaleY doit produire un transform bi-axe.
+4. RED Human Editor : labels `Garder la même taille` / `Agrandir la zone`, durée expliquée sans option trompeuse.
+5. correction minimale ;
+6. CI complète ;
+7. publication assets puis preview smartphone.
+
+État : **LOT OUVERT — RED obligatoire avant correction**.
