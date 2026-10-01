@@ -20019,3 +20019,38 @@ Ajouter un cinquième emplacement de capacité réservé aux capacités ultimes,
 8. GREEN utilisateur requis.
 
 État : **LOT OUVERT — RED à écrire**.
+
+
+### Résultat technique — Capture Ultimate Slot V1 — 2026-10-01
+
+RED initial :
+- test : `tests/unit/capture-ultimate-slot-v1.test.mjs` ;
+- commit : `1805b040d7d34a92ae2b335275296184ed366880` ;
+- CI : `36845251618` — FAILURE attendue ;
+- les échecs concernaient exclusivement les nouvelles exigences 4+1 / standard / ultimate / UI.
+
+Implémentation :
+- `3024db21d98dc08189006a3d87fe1411743c234e` : `SkillDefinition.loadoutSlot = standard|ultimate`, défaut `standard` ;
+- `b97f530523740b9b4fd12ba274f856ad3103d3da` : loadout canonique `slot-1..4 + slot-ultimate`, migration automatique des anciens quatre slots ;
+- `22d48eeda10d03bf755034f39e5cc09f861a6c48` puis `b3e0917596cea2c0dbcb253567bed038cf707dea` : validation centralisée du type de slot ;
+- `51fc7c5a6b17b7160b320c196bad1c58fc4320ac` : la progression ne filtre que les quatre slots standards ; l'Ultime reste soumis à son `requiredLevel` ;
+- `b7a416aed34cad6ac235bed1ade2f9c81b622868` : validation du type de slot dans l'export direct ;
+- `d30de3db321f6523e9d1975d04c14dfadddc74c9` et `780c42d7153d950231f6f559c7ba4d7e66d1837a` : raccord Human Editor ;
+- `548e243201ab4bbfbb5ab1b1c9996d05bcf3a8c6` : UI 4 slots standards + 1 slot Ultime et séparation Ultime / conditions d'activation ;
+- sentinelles historiques migrées vers le contrat 4+1 sans modifier les quatre capacités historiques standards ;
+- `2a4dbc06c16fb026d96b36789fd7e6ed904cbfc7` : sentinelle du vrai chemin Capture Editor Export V3.
+
+Invariants :
+- `maxActiveSkills` reste à 4 et ne compte jamais l'Ultime ;
+- aucune ancienne capacité ne devient Ultime automatiquement ;
+- ancien loadout 4 slots -> 5e slot Ultime vide ;
+- capacité standard interdite dans Ultime ;
+- capacité Ultime interdite dans slot standard ;
+- conditions d'activation indépendantes du statut Ultime ;
+- Combat Runtime / Action Resolver / dégâts / résistances / énergie / cooldown / Animation / FX / mouvement / arènes / sockets inchangés.
+
+Validation technique :
+- CI fonctionnelle finale : `36846307663` — SUCCESS ;
+- suite complète : **752/752 PASS, 0 FAIL**.
+
+État : **GREEN technique — PREVALIDATION smartphone requise avant GREEN utilisateur**.
