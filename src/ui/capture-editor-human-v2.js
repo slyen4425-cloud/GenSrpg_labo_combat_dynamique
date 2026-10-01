@@ -325,6 +325,82 @@ export function buildHumanTacticalSkillEffectsV1(
       "Cible d’effet tactique"
     );
 
+    if (kind === "persistent_zone") {
+      const tickEffect =
+        effect.tickEffect ?? {};
+
+      const radiusGrowthSteps =
+        finiteNumber(
+          effect.radiusGrowthSteps ?? 0,
+          "Croissance du rayon"
+        );
+      if (
+        !Number.isInteger(radiusGrowthSteps) ||
+        radiusGrowthSteps < 0
+      ) {
+        throw new RangeError(
+          "Croissance du rayon doit être un entier positif ou nul"
+        );
+      }
+
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        zoneId: requiredText(
+          effect.zoneId,
+          "ID de zone"
+        ),
+        radius: requiredText(
+          effect.radius ?? "short",
+          "Rayon initial"
+        ),
+        durationMs:
+          effect.durationMs != null
+            ? finiteNumber(
+                effect.durationMs,
+                "Durée de zone"
+              )
+            : humanTacticalSecondsToMsV1(
+                effect.durationSeconds
+              ),
+        tickIntervalMs:
+          effect.tickIntervalMs != null
+            ? finiteNumber(
+                effect.tickIntervalMs,
+                "Intervalle de zone"
+              )
+            : humanTacticalSecondsToMsV1(
+                effect.tickSeconds
+              ),
+        reactivation: requiredText(
+          effect.reactivation ?? "refresh",
+          "Réactivation de zone"
+        ),
+        maxActivations: positiveInteger(
+          effect.maxActivations ?? 1,
+          "Activations max de zone"
+        ),
+        radiusGrowthSteps,
+        tickEffect: {
+          kind: "damage",
+          targetScope:
+            tickEffect.targetScope ??
+            targetScope,
+          amount: finiteNumber(
+            tickEffect.amount ??
+              effect.tickDamage ??
+              0,
+            "Dégâts par tick de zone"
+          ),
+          channel:
+            optionalText(
+              tickEffect.channel ??
+              effect.channel
+            )
+        }
+      });
+    }
+
     if (kind === "apply_status") {
       return normalizeSkillEffectV1({
         kind,
@@ -2406,7 +2482,8 @@ function tacticalEffectKindLabelV1(kind) {
     energy_drain: "Drain d’énergie",
     apply_status: "Buff / Debuff / Statut",
     cleanse: "Nettoyage",
-    dispel: "Dissipation"
+    dispel: "Dissipation",
+    persistent_zone: "Zone persistante"
   }[kind] ?? kind;
 }
 
