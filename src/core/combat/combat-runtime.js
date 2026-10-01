@@ -59,7 +59,9 @@ export function createCombatRuntime({
             observable
           ];
         })
-      )
+      ),
+      persistentZones:
+        state.persistentZones ?? []
     });
   }
 
