@@ -19829,3 +19829,40 @@ Base : `04381fee5713f72ad3c6be80f5143f501f680bef` (régression smartphone docume
 - protéger que l’éditeur charge une vraie entrée `configuredCreatures` lorsqu’un modèle vitrine est affiché, jamais les valeurs statiques du HTML.
 
 État : **EN COURS — RED requis avant correction**.
+
+
+### Résultat — Showcase configuration correction
+
+RED :
+- test : `tests/unit/capture-showcase-config-regression-v1.test.mjs` ;
+- commit : `3aa9b5d2d087214745c9f628cb0e6569fe60f009` ;
+- CI : `36812039490` — FAILURE attendue ;
+- 3 échecs ciblés / 739 tests historiques verts :
+  1. faux Loup prérempli présent dans l’HTML ;
+  2. socket bouche Moussados face/dos inversé dans le preset ;
+  3. absence de chargement explicite d’une vraie entrée vitrine après application du batch.
+- la sentinelle de configuration du vrai Loup était déjà verte, confirmant que le preset lui-même contenait bien la configuration utilisateur.
+
+Corrections :
+- `d0c58891994f9d5451fd98fa440e833de755f393` : retrait de la pseudo-fiche Loup du bootstrap HTML ; le formulaire initial redevient un brouillon neutre et ne porte plus Santé/élément/résistances/profil propres au Loup ;
+- `b83dbb17d70b0a9beb053b2edeabe4a778fed35a` : correction persistée du socket `mouth` de Moussados directement dans le preset propriétaire, en échangeant les coordonnées face/dos ; aucune inversion runtime/renderer ;
+- `e6163761c3e7db9642a47e390d46730f463e993b` : après application atomique des presets, l’éditeur utilise l’action réelle `insert-creature` du planner pour charger la vraie fiche vitrine depuis `configuredCreatures` lorsque l’utilisateur n’a encore rien sélectionné/modifié. Aucun ID de créature ni aucune configuration n’est recopié dans cette logique.
+
+Sentinelles permanentes :
+- l’HTML ne peut plus réintroduire `Loup volcanique / crea-loup` comme fiche métier statique ;
+- Moussados verrouille les coordonnées bouche corrigées : face `(0.9318691325306842, 0.5627603530883789)`, dos `(0.10053788768847613, 0.6934029261271158)` ;
+- le vrai Loup verrouille Santé 150, vitesse 5, Feu 10, résistance Feu +35 %, faiblesse Eau -50 %, profil quadrupède, scale 1.2 et le loadout `fireball / claw / lib_flame_bite / lib_fireball` ;
+- le bootstrap doit charger une entrée réellement insérée par le pipeline Transfer, jamais les valeurs du formulaire HTML.
+
+Validation technique :
+- HEAD fonctionnel : `e6163761c3e7db9642a47e390d46730f463e993b` ;
+- CI : `36812194989` — SUCCESS ;
+- suite complète : **742/742 PASS, 0 FAIL**.
+
+Architecture :
+- `configuredCreatures` reste l’unique état actif ;
+- presets restent les propriétaires des configurations vitrines ;
+- aucun fallback, aucune seconde map, aucun merge champ-par-champ, aucune rustine renderer ;
+- aucun changement Combat Runtime / Action Resolver / FX / audio / mouvement / dégâts / progression.
+
+État : **GREEN technique — PREVALIDATION smartphone requise**.
