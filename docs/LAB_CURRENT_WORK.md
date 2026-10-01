@@ -21084,3 +21084,23 @@ La PREVALIDATION smartphone doit vérifier :
 Aucun merge vers `main`.
 
 Statut : **GREEN technique — publication checkpoint/preview après CI de ce scellement documentaire ; GREEN utilisateur en attente**.
+
+
+### Publication effective — Fire Zone Sprite V2 Replacement
+
+Avant ce scellement documentaire final :
+- work code : `fbb6e68553614ad60655473d8538ee59026111bf` ;
+- CI work : `36912430059` — SUCCESS ;
+- checkpoint : `checkpoint/lab-fire-zone-sprite-v2-replacement-green-2026-10-01` ;
+- CI checkpoint : `36912483181` — SUCCESS ;
+- preview : `preview/lab-fire-zone-sprite-v2-replacement-2026-10-01` ;
+- CI preview : `36912486863` — SUCCESS ;
+- suite complète : **787/787 PASS, 0 FAIL** ;
+- `global-assets` : `d73ad04dbc6c3f8de492b9a503653c4c6f2e753c` ;
+- CI `global-assets` : `36912197861` — SUCCESS.
+
+Work / checkpoint / preview étaient identiques sur `fbb6e68553614ad60655473d8538ee59026111bf` avant ce commit documentaire.
+
+Le présent commit ne modifie que la traçabilité. Après sa CI, checkpoint et preview sont avancés en fast-forward vers le même HEAD puis revérifiés.
+
+Statut : **GREEN technique publié — PREVALIDATION smartphone utilisateur en attente ; aucun merge vers main**.
