@@ -19893,3 +19893,31 @@ Plan de correction propriétaire :
 - CI complète + nouvelle preview + nouvelle validation smartphone.
 
 État : **LOT OUVERT — GREEN technique précédent invalidé par PREVALIDATION utilisateur**.
+
+
+### Correction après PREVALIDATION smartphone ÉCHEC 2
+
+RED ciblé :
+- commit test : `c9c9f45243a45917dd3d026b6a2c729b1f994c45` ;
+- CI : `36841141531` — FAILURE attendue ;
+- les sentinelles exigent :
+  - rechargement complet de la fiche sélectionnée après remplacement par le preset vitrine ;
+  - résolution du marqueur par `socketId + view` ;
+  - conservation des coordonnées originales exportées par l'utilisateur pour la bouche de Moussados ;
+  - présence du socket bouche et des 4 compétences planifiées du Loup vitrine.
+
+Corrections :
+- `eb8cbcd897401cfec1329b34034a452be0b59987` : restauration des coordonnées bouche Moussados issues du fichier export original ;
+- `1405b91102d81005ebda9a53312b610da01cb695` :
+  - après application du batch showcase, la créature déjà sélectionnée est rechargée via `loadCreatureRecord()` ; sockets, loadout, stats, visuels et profil visibles proviennent donc tous du même enregistrement `configuredCreatures` ;
+  - ajout de l'autorité pure `captureSelectedSocketPointV1()` pour résoudre un point par socket sélectionné et par vue ;
+  - `replaceCreatureSockets()` ne superpose plus tous les sockets sur un marqueur unique ;
+  - changement de `data-socket-kind` resynchronise le marqueur avec le socket demandé ;
+  - un placement manuel resynchronise également le marqueur sélectionné.
+
+Validation technique :
+- CI `36841253515` — SUCCESS ;
+- suite complète : **745/745 PASS, 0 FAIL** ;
+- Combat Runtime / Action Resolver / mouvement / FX / dégâts / arènes inchangés.
+
+État : **GREEN technique après correction ÉCHEC 2 — nouvelle PREVALIDATION smartphone requise**.
