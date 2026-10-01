@@ -20793,3 +20793,18 @@ La validation smartphone doit vérifier :
 5. aucune créature n'apparaît dans ce sélecteur.
 
 Aucun merge vers `main`.
+
+
+### Publication effective — Fire Zone Animated Sprite V1
+
+Avant scellement documentaire final :
+- code work/checkpoint/preview : `4b6ee257a48047a63a18f336069078847c62d668` ;
+- CI checkpoint : `36895614034` — SUCCESS ;
+- CI preview : `36895617059` — SUCCESS ;
+- `global-assets` : `e59169f21877294f79ca579d4e3b9a241043d780` ;
+- CI `global-assets` : `36895390406` — SUCCESS ;
+- work ↔ checkpoint ↔ preview : identiques avant ce scellement documentaire.
+
+Le présent commit ne modifie que la traçabilité du lot. Après ce commit, les refs checkpoint/preview sont avancées en fast-forward vers le même HEAD documentaire puis revérifiées.
+
+Statut : **GREEN technique publié — PREVALIDATION smartphone utilisateur en attente**.
