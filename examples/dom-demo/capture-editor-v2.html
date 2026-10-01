@@ -373,14 +373,15 @@
           <div>
             <h2>Capacités équipées</h2>
             <p data-loadout-policy-summary>Chargement de la politique de progression…</p>
-            <p class="note">Tu peux préparer les 4 slots dès maintenant. En combat, chaque slot et chaque capacité deviennent disponibles uniquement quand leur niveau de déverrouillage est atteint.</p>
+            <p class="note">Tu peux préparer les 4 slots standards dès maintenant. Le 5e slot est réservé aux capacités ultimes. En combat, les slots standards suivent la progression et toute capacité respecte son niveau de déverrouillage.</p>
           </div>
         </div>
         <div class="loadout-grid">
-          <label>Slot 1<select data-loadout-slot><option value="">Vide</option></select></label>
-          <label>Slot 2<select data-loadout-slot><option value="">Vide</option></select></label>
-          <label>Slot 3<select data-loadout-slot><option value="">Vide</option></select></label>
-          <label>Slot 4<select data-loadout-slot><option value="">Vide</option></select></label>
+          <label>Slot 1<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label>Slot 2<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label>Slot 3<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label>Slot 4<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label class="loadout-ultimate">Ultime<select data-loadout-slot data-loadout-slot-type="ultimate"><option value="">Aucune ultime</option></select></label>
         </div>
       </article>
     </section>
@@ -561,20 +562,24 @@
           <label>Coût énergie<input type="number" min="0" data-skill-energy-cost value="3"></label>
           <label>Niveau de déverrouillage<input type="number" min="1" data-skill-required-level value="1"></label>
         </div>
+        <label class="switch-line">
+          <input type="checkbox" data-skill-ultimate>
+          <span>Capacité ultime — uniquement dans le slot Ultime</span>
+        </label>
       </article>
 
       <article class="card">
         <div class="card-title">
           <span class="step">3</span>
           <div>
-            <h2>Conditions d’activation / Ultime</h2>
-            <p>Optionnel : verrouille cette capacité jusqu’à ce que des conditions de combat soient remplies. Le niveau requis ci-dessus reste indépendant.</p>
+            <h2>Conditions d’activation</h2>
+            <p>Optionnel : verrouille cette capacité jusqu’à ce que des conditions de combat soient remplies. Ce réglage est indépendant du statut Ultime et du niveau requis.</p>
           </div>
         </div>
 
         <label class="switch-line">
           <input type="checkbox" data-skill-activation-enabled>
-          <span>Déclarer comme capacité Ultime / conditionnelle</span>
+          <span>Activer des conditions d’activation</span>
         </label>
 
         <div class="skill-activation-config" data-skill-activation-config hidden>
