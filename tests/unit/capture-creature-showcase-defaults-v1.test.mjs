@@ -42,8 +42,7 @@ test("historical showcase loadout follows GenSrpG level order and max 4 rule", a
       "cap_water_atk_1",
       "cap_water_atk_2",
       "cap_water_atk_3",
-      "cap_water_atk_4",
-      null
+      "cap_water_atk_4"
     ]
   );
   assert.deepEqual(
@@ -54,7 +53,8 @@ test("historical showcase loadout follows GenSrpG level order and max 4 rule", a
       "cap_water_atk_1",
       "cap_water_atk_2",
       "cap_water_atk_3",
-      "cap_water_atk_4"
+      "cap_water_atk_4",
+      null
     ]
   );
 });
