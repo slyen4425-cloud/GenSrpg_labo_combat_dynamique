@@ -20230,3 +20230,14 @@ Limites assumées V1 :
 - soin de zone, énergie, statuts, entrée/sortie, zone mobile, explosion à expiration et interactions entre zones restent des extensions futures du même propriétaire.
 
 État : **GREEN technique fonctionnel — documentation/checkpoint/preview à finaliser, puis PREVALIDATION smartphone**.
+
+
+### Publication de PREVALIDATION — Expressive Skills V1
+
+Noms réservés :
+- checkpoint GREEN technique : `checkpoint/lab-skill-editor-expressive-effects-v1-green-2026-10-01` ;
+- preview smartphone : `preview/lab-skill-editor-expressive-effects-v1-2026-10-01`.
+
+Les deux références doivent pointer sur le même HEAD documenté et ne pourront devenir GREEN utilisateur qu’après validation smartphone explicite.
+
+Aucun merge vers `main`.
