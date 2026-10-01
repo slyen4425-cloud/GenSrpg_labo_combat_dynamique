@@ -2658,3 +2658,32 @@ Seul le wording utilisateur est simplifié :
 - `reinforce` = **Agrandir la zone**.
 
 Toute réactivation renouvelle déjà la durée selon le propriétaire gameplay existant. L'UI ne présente donc plus « Rafraîchir la durée » comme un choix distinct.
+
+
+## 48. Décalage visuel des zones persistantes
+
+Le positionnement fin d'une zone persistante réutilise les champs génériques existants du `SkillPresentationBinding` :
+
+- `offsetX` : décalage horizontal visuel en pixels CSS ;
+- `offsetY` : décalage vertical visuel en pixels CSS.
+
+Ces valeurs sont purement présentationnelles.
+
+Chaîne autoritaire :
+
+`SkillPresentationBinding.visual.aura.offsetX/Y -> Capture Presentation Assets -> DOM Skill FX -> ancre créature + offset visuel`.
+
+Le Human Editor expose deux champs dédiés pour la zone :
+- Décalage horizontal de la zone ;
+- Décalage vertical de la zone.
+
+La plage UI est -300 à +300 px avec un pas de 5 px et une valeur par défaut de 0.
+
+Ces offsets :
+- ne modifient jamais `CombatState.persistentZones` ;
+- ne modifient pas le rayon gameplay ;
+- ne modifient pas les dégâts, collisions ou cibles ;
+- n'ajoutent aucun état parallèle ;
+- n'ajoutent aucun timer, observer ou listener.
+
+Le scale global et les scales X/Y restent indépendants du positionnement.
