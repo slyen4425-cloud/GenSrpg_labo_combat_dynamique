@@ -20054,3 +20054,113 @@ Validation technique :
 - suite complète : **752/752 PASS, 0 FAIL**.
 
 État : **GREEN technique — PREVALIDATION smartphone requise avant GREEN utilisateur**.
+
+
+## Micro-lot — Skill Editor Expressive Conditions & Persistent Zones V1 — 2026-10-01
+
+Base exacte : `18188cf56298d9675d513e94646e06ff5980f531` (Capture Ultimate Slot V1 — GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-skill-editor-expressive-effects-v1-2026-10-01` ;
+- branche : `work/lab-skill-editor-expressive-effects-v1-2026-10-01`.
+
+### Décision utilisateur
+
+Avant de créer/configurer les premières capacités Ultimes, enrichir l'éditeur de capacités.
+
+Besoins explicites :
+1. Conditions d'activation moins restrictives :
+   - nombre d'alliés tués / KO ;
+   - nombre d'ennemis tués / KO ;
+   - temps de combat écoulé ;
+   - conserver les conditions existantes.
+2. Effets de zone persistants :
+   - exemple cible : aura / zone de feu ;
+   - persiste dans l'arène ;
+   - applique des dégâts à intervalle régulier tant qu'une cible est dans la zone ;
+   - une réactivation peut augmenter le rayon ;
+   - nombre maximal d'activations/renforcements configurable, exemple 3.
+3. Le modèle doit être générique et réutilisable pour d'autres éléments/effets, pas codé sur le nom « Aura de feu ».
+
+### Contrat cible — activation
+
+Étendre `SkillDefinition.activationRequirements` sans seconde autorité.
+
+Types minimaux à supporter dans ce lot :
+- `combat_elapsed_ms` (existant) ;
+- `damage_dealt` (existant) ;
+- `damage_taken` (existant) ;
+- `hp_at_or_below_pct` (existant) ;
+- `allies_defeated` ;
+- `enemies_defeated` ;
+- `kills_by_self`.
+
+Les conditions restent combinables avec `mode: all|any`.
+
+Le propriétaire des compteurs de combat doit être Combat State / Combat Session, jamais l'UI.
+
+### Contrat cible — zone persistante
+
+Ajouter un effet tactique générique de type zone persistante, data-driven, contenant au minimum :
+- portée de cible / relation ;
+- rayon initial ;
+- durée ;
+- intervalle de tick ;
+- effet appliqué à chaque tick ;
+- nombre maximal de renforcements ;
+- croissance de rayon par renforcement ;
+- règle de réactivation explicite (ex. refresh / reinforce) ;
+- élément / canal transmis aux dégâts lorsque pertinent.
+
+La zone doit être un état gameplay appartenant à Combat State / Combat Session.
+L'UI ne doit posséder ni timer de tick, ni durée, ni compteur de renforcements actif.
+
+### Extensions prévues sans les imposer dans le premier raccord
+
+Le contrat doit rester extensible pour des conditions futures comme :
+- énergie au-dessus / en dessous d'un seuil ;
+- nombre d'alliés ou ennemis encore vivants ;
+- nombre d'utilisations d'une capacité ;
+- nombre de buffs/debuffs actifs ;
+- distance / proximité ;
+- état particulier de la cible.
+
+Ces extensions ne doivent pas être simulées par des champs libres ou des noms spéciaux.
+
+### Propriétaires concernés
+
+- Skill Definition : types de conditions d'activation ;
+- Skill Effect V1 : définition de la zone persistante ;
+- Combat State / Combat Session : compteurs de KO et instances de zones actives ;
+- Action Resolver / résolution d'effets : lecture des conditions et création/renforcement de zone ;
+- Human Editor : saisie/affichage seulement ;
+- Runtime clock existante : progression temporelle des zones, sans second timer UI.
+
+### Protégé
+
+- 4 slots standards + `slot-ultimate` déjà GREEN technique ;
+- cooldown et son horloge autoritaire ;
+- énergie ;
+- résistances ;
+- Animation Core ;
+- FX Core ;
+- profils de mouvement ;
+- arènes ;
+- sockets ;
+- presets vitrine existants ;
+- dépôt `Zombicide-40k` ;
+- `main`.
+
+### TDD
+
+1. RED contrat des nouveaux types de conditions ;
+2. RED compteurs KO dans le vrai état de combat ;
+3. RED résolution `allies_defeated / enemies_defeated / kills_by_self` ;
+4. RED contrat zone persistante ;
+5. RED création / tick / expiration / renforcement de zone ;
+6. RED UI Human Editor ;
+7. correction minimale aux propriétaires ;
+8. CI complète ;
+9. preview smartphone ;
+10. GREEN utilisateur requis.
+
+État : **LOT OUVERT — audit des propriétaires et RED à écrire**.
