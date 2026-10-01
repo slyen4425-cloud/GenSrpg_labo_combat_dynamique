@@ -20164,3 +20164,69 @@ Ces extensions ne doivent pas être simulées par des champs libres ou des noms 
 10. GREEN utilisateur requis.
 
 État : **LOT OUVERT — audit des propriétaires et RED à écrire**.
+
+
+### Résultat technique — Skill Editor Expressive Conditions & Persistent Zones V1
+
+#### Conditions d’activation
+
+RED :
+- test `tests/unit/skill-editor-expressive-effects-v1.test.mjs` ;
+- commit `6436c14cd2cc1bbb182aadba24e22b95c1de31b5` ;
+- CI `36859393163` — FAILURE attendue.
+
+Implémentation :
+- `5d318514051455428216ce7df0151662de3a4869` : nouveaux types `allies_defeated / enemies_defeated / kills_by_self` ;
+- `ca636c071bdb9711b4d5b59b43d0464606453e6f` : `knockoutsTotal` dans Combat State ;
+- `bde055c2352a14c74ce94c6ca7914b4d78a4f7c7` : crédit KO uniquement sur transition vivante -> 0 PV ;
+- `6ddb0240cc2f280aefe9513f0d492dcaeceda879` : évaluation des compteurs d’équipe via BattleFormat + Combat State ;
+- `4c93ef324f2c242f175a931ab338e006f4d0394f` / `1b6c38dec53066275f658bab93c1d456bf35f242` : raccord du BattleFormat jusqu’à l’évaluateur ;
+- `b2206e5a8b3e12f63386faf78e073d493df017fa` / `ce53fa98eaa9f3875eb3a57d0b509ebff0da7e11` : saisie et libellés Human Editor.
+
+Le temps écoulé `combat_elapsed_ms` existait déjà et reste conservé.
+
+#### Zones persistantes
+
+RED runtime :
+- test `tests/unit/persistent-zone-runtime-v1.test.mjs` ;
+- commit `e903099fcdd24a59d09dbd61cac6c186c081af9a`.
+
+Contrat/runtime :
+- `4a646ae4a751be727dcc967972a07e099e4d4811` : `SkillEffectV1.persistent_zone` ;
+- `b3909e29834db37acc44a8a3b93f42a6e12c2ee7` : `CombatState.persistentZones` ;
+- `d0edd9b1e712136039837fd14041d4d5c4b6dcfb` : propriétaire runtime des zones ;
+- `848a725431945ca18f9d28169f55a6c408532dc6` : séparation du propriétaire immédiat et persistant ;
+- `60340b8aaf6bec948400e96e9a209a9a23238c61` / `b95117f023a125c203130c5e54612dbc0830ce72` : création à l’impact et progression sur le clock de combat.
+
+Régression TDD détectée :
+- lors d’une réactivation après avancement du combat, `impactAtMs` relatif était utilisé comme temps absolu, pouvant produire un tick supplémentaire ;
+- `a4347c7863a31b9df2acc50dfe12229177366e5f` ancre désormais la création/réactivation sur `CombatState.elapsedMs + impactAtMs` ;
+- CI `36860112833` — SUCCESS.
+
+RED UI :
+- commit `00ad28011a76092c913a3388cc446e5fc7aea993` ;
+- CI `36860434629` — FAILURE attendue.
+
+Human Editor :
+- `48282cde98bca043d507e5e81263a4d4c45798b9` : construction de contrat zone depuis les champs lisibles ;
+- `d30b22a6c367730c61523532e645ba190f8fa2d9` : contrôles ID, rayon, durée, tick, réactivation, activations max, croissance, dégâts et canal ;
+- `f3aed3bc11729501d37e8ecbb8226626817c7b1a` : aide utilisateur dans l’éditeur.
+
+Sémantique V1 :
+- rayon réel = bandes de distance gameplay `short / medium / long`, jamais pixels UI ;
+- `reinforce` augmente le rayon selon `radiusGrowthSteps`, plafonné par `maxActivations` et `long` ;
+- `refresh` rafraîchit la durée sans augmenter l’autorité de rayon ;
+- le tick V1 est un effet de dégâts et passe par les calculs de dégâts/résistances/boucliers existants ;
+- aucun second timer n’est créé.
+
+Validation technique :
+- HEAD fonctionnel avant documentation : `f3aed3bc11729501d37e8ecbb8226626817c7b1a` ;
+- CI `36860527361` — SUCCESS ;
+- suite complète : **762/762 PASS, 0 FAIL**.
+
+Limites assumées V1 :
+- pas encore de coordonnées spatiales individuelles : rayon = distances Proche/Moyen/Loin ;
+- le tick de zone est dégâts uniquement ;
+- soin de zone, énergie, statuts, entrée/sortie, zone mobile, explosion à expiration et interactions entre zones restent des extensions futures du même propriétaire.
+
+État : **GREEN technique fonctionnel — documentation/checkpoint/preview à finaliser, puis PREVALIDATION smartphone**.
