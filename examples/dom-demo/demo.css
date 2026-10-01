@@ -501,6 +501,22 @@ button.reserve-card {
   pointer-events: none;
 }
 
+.skill-fx--persistent-zone {
+  z-index: 6;
+  width: clamp(6rem, 20vw, 12rem);
+  aspect-ratio: 1;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  pointer-events: none;
+  transform-origin: center;
+}
+
+.skill-fx--persistent-zone.skill-fx--layer-behind {
+  z-index: 2;
+}
+
 .skill-fx--clash-impact {
   z-index: 12;
   width: clamp(5.2rem, 15vw, 9rem);
