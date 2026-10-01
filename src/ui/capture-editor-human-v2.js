@@ -994,6 +994,8 @@ function visualSlot(assetId, {
   displayScale = 1,
   displayScaleX = 1,
   displayScaleY = 1,
+  offsetX = 0,
+  offsetY = 0,
   playbackMode = "once"
 }) {
   const id = optionalText(assetId);
@@ -1048,8 +1050,14 @@ function visualSlot(assetId, {
         layerByView?.opponent ?? "front"
     },
     playbackMode,
-    offsetX: 0,
-    offsetY: 0,
+    offsetX: finiteNumber(
+      offsetX,
+      "Décalage horizontal FX"
+    ),
+    offsetY: finiteNumber(
+      offsetY,
+      "Décalage vertical FX"
+    ),
     rotationDeg: 0,
     opacity: 1
   };
@@ -1133,6 +1141,10 @@ function presentationForSkill(fields) {
         presentation.zoneDisplayScaleX ?? 1,
       displayScaleY:
         presentation.zoneDisplayScaleY ?? 1,
+      offsetX:
+        presentation.zoneOffsetX ?? 0,
+      offsetY:
+        presentation.zoneOffsetY ?? 0,
       layerByView: {
         player: "behind",
         opponent: "behind"
@@ -1973,6 +1985,8 @@ function prepareNewSkillDraftFields(
     ["[data-skill-zone-scale]", 1],
     ["[data-skill-zone-scale-x]", 1],
     ["[data-skill-zone-scale-y]", 1],
+    ["[data-skill-zone-offset-x]", 0],
+    ["[data-skill-zone-offset-y]", 0],
     ["[data-skill-cast-audio]", ""],
     ["[data-skill-impact-audio]", ""]
   ];
@@ -5041,6 +5055,14 @@ function readSkillFields(root) {
       zoneDisplayScaleY: numericValue(
         root,
         "[data-skill-zone-scale-y]"
+      ),
+      zoneOffsetX: numericValue(
+        root,
+        "[data-skill-zone-offset-x]"
+      ),
+      zoneOffsetY: numericValue(
+        root,
+        "[data-skill-zone-offset-y]"
       ),
       socketId: selectedValue(
         root,
