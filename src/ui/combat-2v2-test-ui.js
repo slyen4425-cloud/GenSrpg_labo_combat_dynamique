@@ -740,6 +740,9 @@ export async function mountCoop2v2Test({
     energyValue.textContent =
       `${formatEnergy(local.energy)} / ${formatEnergy(local.maxEnergy)}⚡`;
 
+    fx.syncPersistentZones(
+      state.persistentZones ?? []
+    );
     renderAvailability();
     renderTargetSelection();
   }
@@ -1035,9 +1038,8 @@ export async function mountCoop2v2Test({
       renderState(state);
       queueAiDecisions();
     },
-    onClock(state) {
+    onClock() {
       renderAvailability();
-      fx.syncPersistentZones(state.persistentZones ?? []);
     },
     onStarted({ action }) {
       if (action.actionType !== "skill") {
