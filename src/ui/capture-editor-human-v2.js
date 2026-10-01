@@ -1839,25 +1839,10 @@ function replaceCreatureSockets(
         ? { ...socket.back }
         : null
     });
-
-    for (const view of ["front", "back"]) {
-      const point = socket[view];
-      if (!point) {
-        continue;
-      }
-
-      const surface = root.querySelector(
-        '[data-socket-surface][data-socket-view="' +
-          view +
-          '"]'
-      );
-      if (surface) {
-        updateSocketMarker(surface, point);
-      }
-    }
   }
 
   syncSkillSocketSelect(root, sockets);
+  syncCreatureSocketMarkers(root, sockets);
 }
 
 function writeCreatureRecordFields(
@@ -4248,7 +4233,78 @@ function syncSkillSocketSelect(root, sockets) {
   select.value = result.value;
 }
 
-function updateSocketMarker(surface, point) {
+export function captureSelectedSocketPointV1({
+  sockets,
+  socketId,
+  view
+}) {
+  if (!(sockets instanceof Map)) {
+    throw new TypeError("sockets must be a Map");
+  }
+  if (view !== "front" && view !== "back") {
+    throw new RangeError(
+      "socket view must be front or back"
+    );
+  }
+
+  const socket = sockets.get(socketId);
+  const point = socket?.[view] ?? null;
+
+  if (point === null) {
+    return null;
+  }
+
+  return {
+    x: Number(point.x),
+    y: Number(point.y)
+  };
+}
+
+function clearSocketMarker(surface) {
+  surface.querySelector(
+    "[data-socket-marker]"
+  )?.remove();
+}
+
+function syncCreatureSocketMarkers(
+  root,
+  sockets
+) {
+  const socketId = selectedValue(
+    root,
+    "[data-socket-kind]"
+  );
+
+  for (
+    const surface of root.querySelectorAll(
+      "[data-socket-surface]"
+    )
+  ) {
+    const point =
+      captureSelectedSocketPointV1({
+        sockets,
+        socketId,
+        view: surface.dataset.socketView
+      });
+
+    if (point === null) {
+      clearSocketMarker(surface);
+      continue;
+    }
+
+    updateSocketMarker(
+      surface,
+      point,
+      socketId
+    );
+  }
+}
+
+function updateSocketMarker(
+  surface,
+  point,
+  socketId = ""
+) {
   let marker = surface.querySelector("[data-socket-marker]");
   if (!marker) {
     marker = document.createElement("span");
@@ -4257,6 +4313,7 @@ function updateSocketMarker(surface, point) {
     surface.append(marker);
   }
 
+  marker.dataset.socketId = socketId;
   marker.style.left = (point.x * 100) + "%";
   marker.style.top = (point.y * 100) + "%";
 }
@@ -6369,6 +6426,18 @@ export function mountCaptureEditorHumanV2({
 
   updateLibraryState(null);
   syncSkillSocketSelect(root, sockets);
+  syncCreatureSocketMarkers(root, sockets);
+
+  listen(
+    one(root, "[data-socket-kind]"),
+    "change",
+    () => {
+      syncCreatureSocketMarkers(
+        root,
+        sockets
+      );
+    }
+  );
 
   for (const surface of root.querySelectorAll("[data-socket-surface]")) {
     listen(surface, "pointerdown", (event) => {
@@ -6396,7 +6465,10 @@ export function mountCaptureEditorHumanV2({
 
       current[surface.dataset.socketView] = point;
       sockets.set(socketId, current);
-      updateSocketMarker(surface, point);
+      syncCreatureSocketMarkers(
+        root,
+        sockets
+      );
       syncSkillSocketSelect(root, sockets);
       creatureDirty = true;
       setStatus(
@@ -7186,10 +7258,8 @@ export function mountCaptureEditorHumanV2({
           selectedRecord &&
           creatureDirty === false
         ) {
-          renderHumanStatValuesV1(
-            root,
-            statRegistry,
-            selectedRecord.statValues
+          loadCreatureRecord(
+            selectedRecord.draft.id
           );
         }
 
