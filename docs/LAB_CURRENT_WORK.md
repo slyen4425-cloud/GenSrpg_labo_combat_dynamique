@@ -20346,3 +20346,15 @@ Validation :
 - le runtime gameplay des zones, les dégâts, résistances, boucliers, KO, projectile clash et profils de mouvement n'ont pas été modifiés.
 
 État : **GREEN technique fonctionnel — documentation finale/checkpoint/preview à publier, puis PREVALIDATION smartphone utilisateur**.
+
+
+### Publication de PREVALIDATION — Persistent Zone Clarity & Visual V1
+
+Noms réservés :
+- checkpoint GREEN technique : `checkpoint/lab-persistent-zone-editor-clarity-visual-v1-green-2026-10-01` ;
+- preview smartphone : `preview/lab-persistent-zone-editor-clarity-visual-v1-2026-10-01`.
+
+Les deux références doivent pointer sur le même HEAD documenté que la branche work.
+La validation smartphone reste obligatoire avant GREEN utilisateur.
+
+Aucun merge vers `main`.
