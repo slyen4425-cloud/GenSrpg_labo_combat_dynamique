@@ -20241,3 +20241,77 @@ Noms réservés :
 Les deux références doivent pointer sur le même HEAD documenté et ne pourront devenir GREEN utilisateur qu’après validation smartphone explicite.
 
 Aucun merge vers `main`.
+
+
+## Micro-lot — Persistent Zone Editor Clarity & Visual V1 — 2026-10-01
+
+Base exacte : `89eedf2fb696a28cd554a8c2f1e0696891e3b950` (Skill Editor Expressive Conditions & Persistent Zones V1 — GREEN technique / PREVALIDATION smartphone).
+
+- checkpoint de départ : `checkpoint/lab-start-persistent-zone-editor-clarity-visual-v1-2026-10-01` ;
+- branche : `work/lab-persistent-zone-editor-clarity-visual-v1-2026-10-01`.
+
+### Retour smartphone utilisateur
+
+L'UI de zone persistante est fonctionnelle mais plusieurs champs sont trop techniques ou ambigus :
+- `Dégâts toutes les (secondes)` décrit en réalité l'intervalle entre deux ticks ;
+- `Dégâts par tick` doit être expliqué comme la valeur appliquée à chaque intervalle ;
+- `Canal / élément` est un champ texte alors que l'intention est d'utiliser l'élément de la capacité par défaut ou de choisir explicitement un élément ;
+- aucun réglage de présentation ne permet encore d'associer un sprite/FX persistant à la zone pendant toute sa durée.
+
+### Objectif
+
+1. Renommer et documenter les champs de zone persistante avec des libellés non techniques.
+2. Remplacer le champ texte de canal par un sélecteur data-driven :
+   - `Même élément que la capacité` par défaut ;
+   - éléments Capture explicites disponibles en surcharge.
+3. Ajouter une présentation persistante de zone, distincte de Cast / Trajet / Impact :
+   - asset visuel de zone ;
+   - scale de base ;
+   - rendu présent tant que l'instance `CombatState.persistentZones` existe ;
+   - mise à jour de scale quand le rayon gameplay évolue ;
+   - suppression à l'expiration ;
+   - aucune seconde horloge UI.
+4. Conserver intégralement les règles gameplay V1 existantes.
+
+### Propriétaires concernés
+
+- Human Editor : saisie et libellés uniquement ;
+- Skill Presentation : référence d'asset et paramètres visuels de zone ;
+- adaptateur de présentation / FX : projection de l'état `persistentZones` vers un visuel ;
+- Combat State / persistent-zone-runtime : autorité gameplay inchangée.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js` ;
+- contrat / adaptateur de présentation de compétence concerné après audit exact ;
+- adaptateur FX/renderer de preview concerné après audit exact ;
+- `examples/dom-demo/capture-editor-v2.html` si une aide textuelle statique est nécessaire ;
+- tests unitaires ciblés du nouveau lot ;
+- documentation d'architecture/current work strictement nécessaire.
+
+### Protégé
+
+- `persistent-zone-runtime-v1.js` et ses règles de tick/rayon/réactivation, sauf démonstration TDD d'une incohérence ;
+- calculs de dégâts, résistances, boucliers et KO ;
+- Action Resolver / Combat Runtime ;
+- 4 slots standards + slot Ultime ;
+- cooldown/énergie ;
+- Animation Core et profils de mouvement ;
+- Projectile Clash et trajectoires de projectiles ;
+- presets créatures ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED UI : libellés clairs et sélecteur d'élément avec héritage explicite ;
+2. RED présentation : définition d'un visuel persistant de zone sans modifier le contrat gameplay ;
+3. RED vrai chemin : création / renforcement / expiration d'une zone pilote l'apparition / scale / suppression du visuel sans timer secondaire ;
+4. correction minimale aux propriétaires ;
+5. tests ciblés ;
+6. CI complète ;
+7. documentation ;
+8. checkpoint/preview ;
+9. PREVALIDATION smartphone utilisateur avant GREEN utilisateur.
+
+État : **LOT OUVERT — audit des propriétaires puis RED obligatoire avant correction fonctionnelle**.
