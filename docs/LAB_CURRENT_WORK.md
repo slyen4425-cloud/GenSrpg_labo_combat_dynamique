@@ -19785,3 +19785,47 @@ Procédure de reprise :
 4. vérifier que le roster historique complet reste présent, que Moussados est remplacé sans doublon et que Loup volcanique est ajouté ;
 5. CI complète + nouvelle preview ;
 6. nouvelle validation smartphone utilisateur obligatoire.
+
+
+## Micro-lot — Showcase configuration correction — 2026-10-01
+
+Base : `04381fee5713f72ad3c6be80f5143f501f680bef` (régression smartphone documentée ; aucun GREEN utilisateur pour Showcase Presets).
+
+- checkpoint de départ : `checkpoint/lab-start-showcase-config-correction-2026-10-01` ;
+- branche : `work/lab-showcase-config-correction-2026-10-01`.
+
+### Retours utilisateur à corriger
+
+1. le Loup visible dans l’éditeur apparaît non configuré / ambigu : le formulaire HTML contient encore une fiche `Loup volcanique` préremplie alors que `selectedCreatureId === null`, donc cette fiche n’est pas une entrée active de `configuredCreatures` ;
+2. le socket `mouth / Bouche` du preset Moussados (`crea_mossback`) est inversé entre les vues face/dos.
+
+### Cause / autorité
+
+- la fiche Loup préremplie dans l’HTML est une pseudo-autorité de bootstrap concurrente de `configuredCreatures` ; elle doit disparaître comme contenu métier ;
+- la configuration réelle du Loup reste uniquement `data/capture/showcase/crea-loup.capture-creature-transfer-v1.json`, appliquée par le pipeline Transfer existant ;
+- la configuration réelle de Moussados reste uniquement `data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json` ; le socket doit être corrigé dans ce preset source, pas par inversion runtime/UI.
+
+### Périmètre autorisé
+
+- HTML de bootstrap de l’éditeur Capture afin de retirer la pseudo-fiche Loup statique ;
+- orchestration de sélection/chargement de la vraie fiche vitrine après application réussie des presets, sans recopier sa configuration ;
+- preset Moussados pour corriger les coordonnées face/dos du socket bouche ;
+- tests/sentinelles ;
+- documentation et preview.
+
+### Protégé
+
+- Combat Runtime / Action Resolver / FX / renderer / audio ;
+- profils de mouvement ;
+- règles de dégâts/résistances/progression ;
+- contrats Transfer/Database ;
+- aucun fallback, aucun second roster, aucune correction de socket dans le renderer.
+
+### RED obligatoire
+
+- prouver que l’HTML contient encore l’identité/configuration Loup statique hors `configuredCreatures` ;
+- prouver que le preset Moussados contient les coordonnées bouche face/dos inversées ;
+- protéger la configuration complète du vrai Loup (Santé 150, Feu 10, vitesse 5, +35 % Feu, -50 % Eau, quadrupède, scale 1.2, quatre capacités planifiées) ;
+- protéger que l’éditeur charge une vraie entrée `configuredCreatures` lorsqu’un modèle vitrine est affiché, jamais les valeurs statiques du HTML.
+
+État : **EN COURS — RED requis avant correction**.
