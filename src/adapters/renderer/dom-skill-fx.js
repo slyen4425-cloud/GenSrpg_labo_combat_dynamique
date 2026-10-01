@@ -72,6 +72,22 @@ function percent(value) {
   return `${rounded}%`;
 }
 
+const PERSISTENT_ZONE_RADIUS_SCALE = Object.freeze({
+  short: 1,
+  medium: 1.45,
+  long: 1.9
+});
+
+function persistentZoneRadiusScale(radius) {
+  const scale = PERSISTENT_ZONE_RADIUS_SCALE[radius];
+  if (scale == null) {
+    throw new RangeError(
+      "Unsupported persistent zone radius: " + radius
+    );
+  }
+  return scale;
+}
+
 function hasSpriteVisual(visual) {
   return Boolean(
     visual?.url ||
@@ -197,6 +213,7 @@ export function createDomSkillFxRenderer({
 
   let disposed = false;
   const active = new Set();
+  const persistentZones = new Map();
 
   function anchor(collection, slot, label) {
     const element = collection[slot];
@@ -229,6 +246,9 @@ export function createDomSkillFxRenderer({
       return;
     }
     active.delete(record);
+    if (record.zoneId) {
+      persistentZones.delete(record.zoneId);
+    }
     if (record.contactFrameId !== null && record.contactFrameId !== undefined) {
       cancelFrame(record.contactFrameId);
       record.contactFrameId = null;
@@ -364,6 +384,128 @@ export function createDomSkillFxRenderer({
       status: "running",
       animation,
       finished
+    });
+  }
+
+  function syncPersistentZones(zones = []) {
+    if (disposed) {
+      return Object.freeze({
+        status: "disposed",
+        activeCount: 0
+      });
+    }
+    if (!Array.isArray(zones)) {
+      throw new TypeError(
+        "persistent zones must be an array"
+      );
+    }
+
+    const expected = new Set();
+    const arenaRect = arena.getBoundingClientRect();
+
+    for (const zone of zones) {
+      const zoneId = String(zone?.id ?? "").trim();
+      const skillId = String(zone?.skillId ?? "").trim();
+      const sourceActorId =
+        String(zone?.sourceActorId ?? "").trim();
+
+      if (!zoneId || !skillId || !sourceActorId) {
+        throw new TypeError(
+          "persistent zone requires id, skillId and sourceActorId"
+        );
+      }
+
+      expected.add(zoneId);
+
+      const presentation =
+        presentationForSkill(skillId, {
+          sourceView: sourceActorId,
+          fxType: "persistent-zone"
+        });
+      const visual =
+        presentation?.persistentZone ?? null;
+      let record =
+        persistentZones.get(zoneId) ?? null;
+
+      if (!hasSpriteVisual(visual)) {
+        if (record) {
+          cleanup(record);
+        }
+        continue;
+      }
+
+      const source = centerRelativeTo(
+        sourceRect(sourceActorId),
+        arenaRect
+      );
+      const displayScale = Math.max(
+        0.25,
+        Number(visual.displayScale) || 1
+      );
+      const radiusScale =
+        persistentZoneRadiusScale(zone.radius);
+      const effectiveScale =
+        displayScale * radiusScale;
+
+      if (!record) {
+        const node =
+          arena.ownerDocument.createElement("span");
+        node.className =
+          "skill-fx skill-fx--persistent-zone";
+        if (
+          presentation?.persistentZoneLayer ===
+          "behind"
+        ) {
+          node.className +=
+            " skill-fx--layer-behind";
+        }
+        node.dataset.skillFx =
+          "persistent-zone";
+        node.dataset.skillId = skillId;
+        node.dataset.zoneId = zoneId;
+
+        const spriteVisual = applySpriteVisual(
+          node,
+          visual,
+          1000,
+          animate
+        );
+        arena.append(node);
+
+        record = {
+          node,
+          animation: null,
+          frameAnimation:
+            spriteVisual.frameAnimation,
+          type: "persistent-zone",
+          zoneId
+        };
+        persistentZones.set(zoneId, record);
+        active.add(record);
+      }
+
+      record.node.style.left = `${source.x}px`;
+      record.node.style.top = `${source.y}px`;
+      record.node.style.transform =
+        `translate(-50%, -50%) scale(${effectiveScale})`;
+      record.node.style.opacity =
+        String(visual.opacity ?? 1);
+      record.node.dataset.zoneRadius =
+        String(zone.radius);
+    }
+
+    for (
+      const [zoneId, record] of
+      [...persistentZones.entries()]
+    ) {
+      if (!expected.has(zoneId)) {
+        cleanup(record);
+      }
+    }
+
+    return Object.freeze({
+      status: "synced",
+      activeCount: persistentZones.size
     });
   }
 
@@ -873,6 +1015,7 @@ export function createDomSkillFxRenderer({
 
   return Object.freeze({
     play,
+    syncPersistentZones,
     cancelProjectileFor,
     cancelAll,
     dispose,
