@@ -121,7 +121,7 @@ test("looping multi-file sprite uses dedicated frame layers instead of WAAPI bac
     }
   };
 
-  let animateCalls = 0;
+  const animations = [];
   const renderer = createDomSkillFxRenderer({
     arena,
     anchors: { local: source },
@@ -138,8 +138,8 @@ test("looping multi-file sprite uses dedicated frame layers instead of WAAPI bac
         persistentZoneLayer: "behind"
       };
     },
-    animate() {
-      animateCalls += 1;
+    animate(_element, keyframes, options) {
+      animations.push({ keyframes, options });
       return {
         finished: new Promise(() => {}),
         cancel() {}
@@ -166,31 +166,32 @@ test("looping multi-file sprite uses dedicated frame layers instead of WAAPI bac
     node.children[0].className,
     "skill-fx__loop-frame"
   );
-  assert.equal(
-    node.children[0].style.animationName,
-    "skill-fx-frame-loop"
-  );
-  assert.equal(
-    node.children[1].style.animationDelay,
-    "80ms"
-  );
-  assert.equal(
-    node.children[2].style.animationDelay,
-    "160ms"
-  );
-  assert.equal(
-    node.children[0].style.animationDuration,
-    "240ms"
-  );
-  assert.equal(
-    node.children[0].style.animationIterationCount,
-    "infinite"
-  );
-  assert.equal(
-    animateCalls,
-    0,
-    "looping sequence must not depend on WAAPI backgroundImage interpolation"
-  );
+  assert.equal(animations.length, 3);
+  for (const animation of animations) {
+    assert.equal(animation.options.duration, 240);
+    assert.equal(animation.options.iterations, Infinity);
+    assert.equal(
+      animation.keyframes.some(
+        (frame) =>
+          Object.prototype.hasOwnProperty.call(
+            frame,
+            "backgroundImage"
+          )
+      ),
+      false,
+      "mobile loop must animate opacity layers, not backgroundImage resources"
+    );
+    assert.equal(
+      animation.keyframes.some(
+        (frame) =>
+          Object.prototype.hasOwnProperty.call(
+            frame,
+            "opacity"
+          )
+      ),
+      true
+    );
+  }
 });
 
 test("persistent-zone presentation preserves independent width and height scales", () => {
@@ -310,7 +311,7 @@ test("Human Editor exposes wider global and independent width/height zone scales
 
   assert.match(
     html,
-    /data-skill-zone-scale[^>]*max="8"/
+    /<input[^>]*max="8"[^>]*data-skill-zone-scale>/
   );
   assert.match(
     html,
