@@ -284,7 +284,26 @@ export function createCombatState({
   return Object.freeze({
     distance,
     elapsedMs: finiteNonNegative(elapsedMs, "elapsedMs"),
-    fighters: Object.freeze(Object.fromEntries(entries))
+    fighters: Object.freeze(Object.fromEntries(entries)),
+    persistentZones: Object.freeze([])
+  });
+}
+
+export function withPersistentZones(
+  state,
+  persistentZones
+) {
+  if (!Array.isArray(persistentZones)) {
+    throw new TypeError(
+      "persistentZones must be an array"
+    );
+  }
+
+  return Object.freeze({
+    ...state,
+    persistentZones: Object.freeze([
+      ...persistentZones
+    ])
   });
 }
 
