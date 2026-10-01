@@ -35,6 +35,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "loup-volcanique",
+    configuredCreatureId: "crea-loup",
     metaFile: "capture/creatures/loup_volcanique/loup_volcanique.meta.json",
     label: "Loup volcanique",
     profileId: "quadruped",
@@ -47,6 +48,7 @@ export const CAPTURE_TEST_CREATURE_OPTIONS_V1 = Object.freeze([
   }),
   Object.freeze({
     id: "golem-moussu",
+    configuredCreatureId: "crea_mossback",
     metaFile: "capture/creatures/golem_moussu/golem_moussu.meta.json",
     label: "Golem moussu",
     profileId: "biped",
