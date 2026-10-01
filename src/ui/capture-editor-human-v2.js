@@ -547,6 +547,27 @@ function activationRequirementTypeMetaV1(type) {
         step: 1,
         max: 100
       });
+    case "allies_defeated":
+      return Object.freeze({
+        label: "Alliés KO",
+        unit: "allié(s)",
+        step: 1,
+        max: null
+      });
+    case "enemies_defeated":
+      return Object.freeze({
+        label: "Ennemis KO",
+        unit: "ennemi(s)",
+        step: 1,
+        max: null
+      });
+    case "kills_by_self":
+      return Object.freeze({
+        label: "KO réalisés par le lanceur",
+        unit: "KO",
+        step: 1,
+        max: null
+      });
     default:
       throw new RangeError(
         "Type de condition d’activation inconnu : " +
