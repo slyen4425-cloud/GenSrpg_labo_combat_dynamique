@@ -19932,3 +19932,19 @@ Validation technique :
 - la procédure impose notamment : export éditeur comme donnée de référence, autorité unique `configuredCreatures/configuredSkills`, remplacement par ID sans doublon, conservation intégrale sockets/loadout/stats/visuels/audio, aucun correctif UI compensatoire des données, rechargement complet après remplacement, vraie fiche configurée dans le test Combat, RED + CI + preview + validation smartphone.
 
 Cette règle doit être appliquée aux prochains exports de créatures et capacités transmis pour la vitrine Capture.
+
+
+### VALIDATION UTILISATEUR — Showcase Configuration Corrections V1 — 2026-10-01
+
+Retour utilisateur après la preview corrigée : « Ha parfait ».
+
+Validation confirmée sur le chemin smartphone :
+- créatures présentes ;
+- Loup volcanique correctement hydraté avec sa configuration ;
+- sockets visibles ;
+- compétences/loadout restaurés ;
+- sélection des sockets Moussados corrigée.
+
+Le lot est **GREEN utilisateur**.
+
+Cette validation clôt le micro-lot de correction showcase. Aucun merge vers `main` n'est effectué automatiquement.
