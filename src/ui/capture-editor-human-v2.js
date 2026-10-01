@@ -4621,6 +4621,7 @@ export function mountCaptureEditorHumanV2({
   root,
   opponentCreatureDraft,
   getOpponentCreatureDraft = null,
+  getOpponentCreatureId = null,
   opponentSkillDrafts,
   opponentLoadout
 }) {
@@ -6474,10 +6475,62 @@ export function mountCaptureEditorHumanV2({
           combatRules
         });
 
-      const opponentSourceDraft =
-        typeof getOpponentCreatureDraft === "function"
-          ? getOpponentCreatureDraft()
-          : opponentCreatureDraft;
+      const configuredOpponentCreatureId =
+        typeof getOpponentCreatureId === "function"
+          ? getOpponentCreatureId()
+          : null;
+
+      let opponentSourceDraft = null;
+      let resolvedOpponentSkillDrafts =
+        opponentSkillDrafts;
+      let resolvedOpponentLoadout =
+        opponentLoadout;
+      let resolvedOpponentStatValues = [];
+
+      if (
+        configuredOpponentCreatureId !== null &&
+        configuredOpponentCreatureId !== undefined &&
+        configuredOpponentCreatureId !== ""
+      ) {
+        const configuredOpponentRecord =
+          configuredCreatures.get(
+            configuredOpponentCreatureId
+          );
+
+        if (!configuredOpponentRecord) {
+          throw new RangeError(
+            "Créature adverse configurée introuvable : " +
+              configuredOpponentCreatureId
+          );
+        }
+
+        opponentSourceDraft =
+          configuredOpponentRecord.draft;
+        resolvedOpponentLoadout =
+          configuredOpponentRecord.loadout;
+        resolvedOpponentSkillDrafts = [];
+        resolvedOpponentStatValues =
+          configuredOpponentRecord.statValues == null
+            ? []
+            : [configuredOpponentRecord.statValues];
+
+        if (progressionRules !== null) {
+          validateHumanLoadoutProgressionV1({
+            loadout:
+              configuredOpponentRecord.loadout,
+            progressionRules,
+            creatureLevel:
+              configuredOpponentRecord.draft.level,
+            skillDrafts:
+              configuredSkills
+          });
+        }
+      } else {
+        opponentSourceDraft =
+          typeof getOpponentCreatureDraft === "function"
+            ? getOpponentCreatureDraft()
+            : opponentCreatureDraft;
+      }
 
       if (
         !opponentSourceDraft ||
@@ -6526,13 +6579,17 @@ export function mountCaptureEditorHumanV2({
         battleSetup,
         opponentCreatureDraft:
           resolvedOpponentCreatureDraft,
-        opponentSkillDrafts,
-        opponentLoadout,
+        opponentSkillDrafts:
+          resolvedOpponentSkillDrafts,
+        opponentLoadout:
+          resolvedOpponentLoadout,
         statRegistry,
-        statValues:
-          creatureRecord.statValues == null
+        statValues: [
+          ...(creatureRecord.statValues == null
             ? []
-            : [creatureRecord.statValues],
+            : [creatureRecord.statValues]),
+          ...resolvedOpponentStatValues
+        ],
         progressionRules
       });
 
