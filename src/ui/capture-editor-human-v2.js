@@ -1540,6 +1540,42 @@ export function buildHumanSkillDraftV1(fields) {
   });
 }
 
+export function captureSkillDraftHasUnsavedChangesV1({
+  currentDraft,
+  configuredSkills
+}) {
+  if (
+    !currentDraft ||
+    typeof currentDraft !== "object" ||
+    Array.isArray(currentDraft)
+  ) {
+    throw new TypeError(
+      "currentDraft must be a skill draft"
+    );
+  }
+  if (!(configuredSkills instanceof Map)) {
+    throw new TypeError(
+      "configuredSkills must be a Map"
+    );
+  }
+
+  const id = requiredText(
+    currentDraft.id,
+    "ID capacité"
+  );
+  const savedDraft =
+    configuredSkills.get(id) ?? null;
+
+  if (savedDraft === null) {
+    return true;
+  }
+
+  return (
+    JSON.stringify(currentDraft) !==
+    JSON.stringify(savedDraft)
+  );
+}
+
 export function buildHumanLoadoutV1({
   creatureId,
   skillIds,
@@ -3148,11 +3184,11 @@ function appendHumanSkillEffectV1(
       zoneRadiusGrowth
     ),
     tacticalFieldV1(
-      "Dégâts par tick",
+      "Dégâts à chaque intervalle",
       zoneTickDamage
     ),
     tacticalFieldV1(
-      "Canal / élément",
+      "Élément des dégâts",
       zoneChannel
     )
   );
@@ -3996,7 +4032,7 @@ function syncEvolutionControlsV1(root) {
   ).disabled = !enabled;
 }
 
-function catalogMatches(asset, role) {
+export function captureEditorAssetMatchesRoleV1(asset, role) {
   if (!asset?.compatibility?.uses?.includes("editor")) {
     return false;
   }
@@ -4031,7 +4067,16 @@ function catalogMatches(asset, role) {
   }
 
   if (role === "zone") {
+    const tags = Array.isArray(asset.tags)
+      ? asset.tags
+      : [];
+    const creatureOwned =
+      asset.category === "creature" ||
+      asset.assetType === "portrait" ||
+      tags.includes("creature");
+
     return (
+      !creatureOwned &&
       asset.mediaType === "image" &&
       (
         asset.assetType === "sprite" ||
@@ -4059,7 +4104,7 @@ function populateSelect(select, assets, role) {
   }
 
   for (const asset of assets) {
-    if (catalogMatches(asset, role)) {
+    if (captureEditorAssetMatchesRoleV1(asset, role)) {
       createOption(
         select,
         asset.id,
@@ -5124,7 +5169,6 @@ export function mountCaptureEditorHumanV2({
   let selectedCreatureId = null;
   let creatureDirty = false;
   let selectedLegacyState = null;
-  let skillDirty = false;
   let disposed = false;
   let lastExport = null;
   let statRegistry = null;
@@ -5422,7 +5466,6 @@ export function mountCaptureEditorHumanV2({
     }
 
     creatureDirty = false;
-    skillDirty = false;
   }
 
   function refreshEvolutionTargetOptions(
@@ -6022,7 +6065,6 @@ export function mountCaptureEditorHumanV2({
     ].map((select) => select.value);
 
     configuredSkills.set(draft.id, draft);
-    skillDirty = false;
     refreshLoadoutOptions(draft.id);
 
     const loadoutAfter = [
@@ -6190,7 +6232,6 @@ export function mountCaptureEditorHumanV2({
       statRegistry
     );
     updateLibraryState(state);
-    skillDirty = true;
 
     setStatus(
       root,
@@ -6214,7 +6255,6 @@ export function mountCaptureEditorHumanV2({
       statRegistry
     );
     selectedLegacyState = null;
-    skillDirty = true;
 
     setStatus(
       root,
@@ -6279,7 +6319,6 @@ export function mountCaptureEditorHumanV2({
       appendHumanSkillActivationConditionV1(
         root
       );
-      skillDirty = true;
     }
   );
 
@@ -6304,15 +6343,6 @@ export function mountCaptureEditorHumanV2({
           row
         );
       }
-      skillDirty = true;
-    }
-  );
-
-  listen(
-    skillActivationConditionsHost,
-    "input",
-    () => {
-      skillDirty = true;
     }
   );
 
@@ -6332,7 +6362,6 @@ export function mountCaptureEditorHumanV2({
         "[data-skill-activation-condition]"
       );
       row?.remove();
-      skillDirty = true;
 
       if (
         skillActivationConditionsHost.children
@@ -6353,7 +6382,6 @@ export function mountCaptureEditorHumanV2({
         null,
         statRegistry
       );
-      skillDirty = true;
     }
   );
 
@@ -6378,15 +6406,6 @@ export function mountCaptureEditorHumanV2({
       ) {
         syncHumanSkillEffectRowV1(row);
       }
-      skillDirty = true;
-    }
-  );
-
-  listen(
-    skillEffectsHost,
-    "input",
-    () => {
-      skillDirty = true;
     }
   );
 
@@ -6404,7 +6423,6 @@ export function mountCaptureEditorHumanV2({
       remove.closest(
         "[data-skill-effect-row]"
       )?.remove();
-      skillDirty = true;
     }
   );
 
@@ -6882,30 +6900,6 @@ export function mountCaptureEditorHumanV2({
     }
   );
 
-  for (
-    const field of root.querySelectorAll(
-      '[data-editor-panel="skills"] input, ' +
-      '[data-editor-panel="skills"] select, ' +
-      '[data-editor-panel="skills"] textarea'
-    )
-  ) {
-    if (
-      field === librarySelect ||
-      field === newSkillButton ||
-      field === createSkillButton ||
-      field === updateSkillButton
-    ) {
-      continue;
-    }
-
-    listen(field, "input", () => {
-      skillDirty = true;
-    });
-    listen(field, "change", () => {
-      skillDirty = true;
-    });
-  }
-
   try {
     const initialSkill =
       buildHumanSkillDraftV1(
@@ -7016,6 +7010,19 @@ export function mountCaptureEditorHumanV2({
     "[data-editor-validate]"
   );
 
+  function currentSkillHasUnsavedChanges() {
+    try {
+      return captureSkillDraftHasUnsavedChangesV1({
+        currentDraft: buildHumanSkillDraftV1(
+          readSkillFields(root)
+        ),
+        configuredSkills
+      });
+    } catch {
+      return true;
+    }
+  }
+
   function validate() {
     try {
       if (
@@ -7027,7 +7034,7 @@ export function mountCaptureEditorHumanV2({
         );
       }
 
-      if (skillDirty) {
+      if (currentSkillHasUnsavedChanges()) {
         throw new Error(
           "La capacité en cours a été modifiée. Enregistre-la avant de valider le combat."
         );
@@ -7334,7 +7341,7 @@ export function mountCaptureEditorHumanV2({
       try {
         if (
           creatureDirty ||
-          skillDirty
+          currentSkillHasUnsavedChanges()
         ) {
           throw new Error(
             "Enregistre les modifications de la créature et de la capacité avant d’exporter toute la base."
@@ -7395,7 +7402,7 @@ export function mountCaptureEditorHumanV2({
       try {
         if (
           creatureDirty ||
-          skillDirty
+          currentSkillHasUnsavedChanges()
         ) {
           throw new Error(
             "Enregistre ou annule les modifications en cours avant d’importer un fichier."
@@ -7521,7 +7528,7 @@ export function mountCaptureEditorHumanV2({
       const monsterCaptureRecords =
         captureData.records;
 
-      if (!skillDirty) {
+      if (!currentSkillHasUnsavedChanges()) {
         const initialFields =
           readSkillFields(root);
         const nativeInitialDraft =
