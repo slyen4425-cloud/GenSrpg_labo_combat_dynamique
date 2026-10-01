@@ -295,7 +295,8 @@ export function resolveSkillStart({
     evaluateSkillActivationRequirementsV1({
       state,
       actorId,
-      skill
+      skill,
+      battleFormat
     });
 
   if (!activationRequirements.satisfied) {
@@ -462,7 +463,8 @@ export function resolveReaction({
   action,
   reactionSkill,
   elapsedMs,
-  skillSpeedMultiplier = 1
+  skillSpeedMultiplier = 1,
+  battleFormat = null
 }) {
   const elapsed = Number(elapsedMs);
   if (!Number.isFinite(elapsed) || elapsed < 0) {
@@ -485,7 +487,8 @@ export function resolveReaction({
     evaluateSkillActivationRequirementsV1({
       state,
       actorId: action.targetId,
-      skill: reactionSkill
+      skill: reactionSkill,
+      battleFormat
     });
 
   if (!activationRequirements.satisfied) {
@@ -830,7 +833,8 @@ export function resolveSkill({
       action: started.action,
       reactionSkill,
       elapsedMs: 0,
-      skillSpeedMultiplier
+      skillSpeedMultiplier,
+      battleFormat
     });
     if (reactionResult.ok) {
       nextState = reactionResult.state;
