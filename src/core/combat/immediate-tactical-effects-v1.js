@@ -24,7 +24,8 @@ const SUPPORTED_KINDS = new Set([
   "energy_drain",
   "apply_status",
   "cleanse",
-  "dispel"
+  "dispel",
+  "persistent_zone"
 ]);
 
 const MULTI_TARGET_SCOPES = new Set([
@@ -224,6 +225,10 @@ export function applyImmediateTacticalEffectsV1({
   const events = [];
 
   for (const effect of skill.effects ?? []) {
+    if (effect.kind === "persistent_zone") {
+      continue;
+    }
+
     const affectedIds =
       targetIdsForEffect({
         state: nextState,
