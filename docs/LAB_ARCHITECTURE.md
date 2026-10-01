@@ -2654,3 +2654,52 @@ Seul le wording utilisateur est simplifié :
 - `reinforce` = **Agrandir la zone**.
 
 Toute réactivation renouvelle déjà la durée selon le propriétaire gameplay existant. L'UI ne présente donc plus « Rafraîchir la durée » comme un choix distinct.
+
+
+## 49. Feedback visuel des variations de PV — Damage Numbers V1
+
+### Autorité
+
+Les nombres de dégâts sont une **projection de présentation** de la variation réelle des PV.
+
+Chaîne unique :
+
+`CombatState précédent -> CombatState suivant -> combatHealthDeltaEventsV1() -> CombatRuntime.onHealthDelta -> DOM Skill FX`.
+
+Aucun module de présentation ne recalcule :
+- dégâts de base ;
+- bonus ;
+- résistances ;
+- boucliers ;
+- DoT ;
+- zone persistante ;
+- KO.
+
+`applyCombatDamageV1`, les runtimes de statuts/zones et `CombatState` restent les seuls propriétaires gameplay.
+
+### Projection sémantique
+
+`combat-health-feedback-v1.js` compare les PV par actorId entre deux snapshots successifs et produit :
+- `kind:"damage"` pour une baisse de PV ;
+- `kind:"heal"` pour une hausse de PV ;
+- `amount` = valeur absolue réellement appliquée ;
+- `hpBefore/hpAfter` ;
+- `atMs`.
+
+Ce mécanisme est volontairement agnostique à la source. Une attaque directe, une réflexion, un tick de zone ou un DoT/poison utilisent donc le même chemin dès lors que les PV autoritaires changent.
+
+### Runtime
+
+`CombatRuntime` conserve le dernier snapshot déjà projeté pour le feedback. Lorsqu'un état observable change, il émet les deltas de PV une seule fois via `onHealthDelta`, puis publie l'état via `onState`.
+
+Le snapshot de feedback n'est pas une autorité gameplay : il sert uniquement à déterminer la différence d'affichage entre deux états autoritaires successifs.
+
+### Renderer
+
+Le type FX `damage` affiche `-N` sur l'ancre de la créature affectée avec montée et fondu courts.
+
+L'UI ne fait qu'acheminer :
+- `feedback.actorId` vers `targetSlot` ;
+- `feedback.amount` vers le renderer.
+
+Aucune formule de dégâts n'existe dans l'UI.
