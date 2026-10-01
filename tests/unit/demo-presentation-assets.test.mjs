@@ -119,7 +119,7 @@ test("all five combat arenas resolve only through canonical Core assets", () => 
     );
     assert.equal(
       url.searchParams.get("v"),
-      "2026-10-01-v6-fire-zone-loop",
+      "2026-10-01-v7-fire-zone-v2",
       arenaId + " should use the arena refresh cache revision"
     );
   }
