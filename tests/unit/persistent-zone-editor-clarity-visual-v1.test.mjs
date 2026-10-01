@@ -235,7 +235,7 @@ test("combat preview syncs persistent-zone visuals from the existing runtime sta
 
   assert.match(
     source,
-    /syncPersistentZones\(state\.persistentZones \?\? \[\]\)/
+    /syncPersistentZones\(\s*state\.persistentZones \?\? \[\]\s*\)/
   );
   assert.doesNotMatch(source, /setInterval\([^\n]*persistent/i);
 });
