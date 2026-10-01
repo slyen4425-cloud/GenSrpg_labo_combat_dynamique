@@ -408,6 +408,22 @@ button.reserve-card {
   pointer-events: none;
 }
 
+.skill-fx--damage-number {
+  z-index: 13;
+  width: max-content;
+  aspect-ratio: auto;
+  color: #ffdf72;
+  font-size: clamp(1rem, 4.4vw, 1.7rem);
+  font-weight: 1000;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 0.08rem 0.12rem rgba(0, 0, 0, 0.98),
+    0 0 0.28rem rgba(160, 20, 10, 0.78);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .skill-fx--miss {
   z-index: 11;
   width: max-content;
