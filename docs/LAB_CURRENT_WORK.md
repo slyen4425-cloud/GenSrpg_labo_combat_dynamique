@@ -19760,3 +19760,28 @@ Validation technique :
 Le checkpoint/preview précédent `c9f89c54e05f6a1696cd797830914fe1a6dd5192` est **supersédé** pour ce lot et ne doit plus servir de preview utilisateur.
 
 État : **GREEN technique après correction de régression — PREVALIDATION smartphone requise**.
+
+
+### PREVALIDATION smartphone — ÉCHEC / régression — 2026-10-01
+
+Retour utilisateur : après intégration des deux presets vitrine, la bibliothèque de créatures n'est plus disponible dans l'éditeur ; seul le Loup présent comme contenu initial/de test reste visible.
+
+Conséquence immédiate :
+- le lot `Capture Showcase Creature Presets V1` n'est **pas GREEN utilisateur** ;
+- la preview `preview/lab-capture-showcase-presets-v1-2026-09-30` est invalide pour validation ;
+- aucun merge vers `main` ;
+- aucune rustine/fallback/masquage autorisé.
+
+Diagnostic déjà établi :
+- le symptôme correspond à un arrêt de l'hydratation globale avant `refreshCreatureLibraryOptions()` ;
+- le Loup encore visible vient du formulaire HTML initial et ne prouve pas que `configuredCreatures` est chargé ;
+- la CI unitaire précédente (735/735) n'exerçait pas suffisamment le chemin réel de bootstrap navigateur après ajout des presets ; cette couverture est donc insuffisante et doit être complétée par un RED de bootstrap/hydratation réelle ;
+- la cause exacte de l'exception qui interrompt le chargement reste à démontrer avant modification.
+
+Procédure de reprise :
+1. reproduire l'échec de bootstrap avec un test RED qui exerce réellement l'hydratation catalogue + presets ;
+2. capturer l'exception exacte ;
+3. corriger uniquement au propriétaire fautif ;
+4. vérifier que le roster historique complet reste présent, que Moussados est remplacé sans doublon et que Loup volcanique est ajouté ;
+5. CI complète + nouvelle preview ;
+6. nouvelle validation smartphone utilisateur obligatoire.
