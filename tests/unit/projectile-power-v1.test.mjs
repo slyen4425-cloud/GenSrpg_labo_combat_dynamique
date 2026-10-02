@@ -360,7 +360,15 @@ test("real CombatRuntime keeps the stronger projectile active until target impac
     runtime.hasActiveActionFor(
       "weak-actor"
     ),
-    false
+    true,
+    "clashed projectile owner stays locked only for its configured recovery"
+  );
+  assert.equal(
+    runtime.activeActionFor(
+      "weak-actor"
+    ),
+    null,
+    "clashed projectile itself is no longer active"
   );
   assert.equal(
     session.snapshot().fighters[
