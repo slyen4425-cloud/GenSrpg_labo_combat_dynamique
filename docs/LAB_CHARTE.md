@@ -585,3 +585,45 @@ Avant de déclarer l’intégration technique GREEN :
 10. obtenir une validation smartphone utilisateur avant de déclarer GREEN utilisateur.
 
 Cette procédure est la référence pour les futures créatures et capacités de vitrine Capture, notamment celles créées par Sylvain dans l’éditeur puis transmises pour intégration.
+
+
+### 33.9. Les sélecteurs de l’éditeur doivent lire le propriétaire actif
+
+Cette règle complète les sections 33.2, 33.5 et 33.7 après la régression constatée lors de l’intégration d’une capacité exportée.
+
+Lorsqu’une bibliothèque active existe dans l’éditeur :
+
+- le sélecteur des créatures modifiables doit être dérivé de `configuredCreatures` ;
+- le sélecteur des capacités modifiables doit être dérivé de `configuredSkills` ;
+- sélectionner une entrée doit recharger la fiche complète depuis ce même propriétaire actif.
+
+Un catalogue legacy, un catalogue natif de démarrage, un template de migration ou une liste statique peut servir à **initialiser** ou **migrer** une fiche, mais il ne doit jamais rester la source du sélecteur de modification une fois la fiche présente dans le propriétaire actif.
+
+En particulier, après un import ou un remplacement par ID stable :
+
+- le sélecteur doit être rafraîchi depuis le propriétaire actif ;
+- la sélection doit restituer la version remplacée, pas le template historique portant le même ID ;
+- une capacité native/laboratoire présente dans `configuredSkills` doit rester visible même si elle n’existe pas dans un catalogue legacy ;
+- aucun merge avec un ancien template ne doit intervenir lors d’un simple changement de sélection.
+
+Interdits :
+
+- remplir le sélecteur actif directement depuis un catalogue legacy alors que `configuredSkills` ou `configuredCreatures` existe ;
+- recharger une fiche depuis une autre source que celle qui possède réellement son état actif ;
+- masquer une capacité active parce qu’elle n’existe pas dans une liste historique ;
+- réintroduire silencieusement une ancienne version d’une fiche après remplacement ;
+- maintenir deux chemins de lecture concurrents pour la même fiche selon qu’elle vient d’un preset, d’un catalogue natif ou d’un import utilisateur.
+
+### 33.10. Sentinelles obligatoires après remplacement d’une fiche
+
+Pour toute future intégration d’une créature ou capacité exportée qui remplace un ID existant, les tests doivent vérifier au minimum :
+
+1. l’ID existe une seule fois dans le propriétaire actif ;
+2. le sélecteur de l’éditeur expose cet ID depuis le propriétaire actif ;
+3. sélectionner cet ID recharge exactement la fiche active complète ;
+4. les valeurs spécifiques apportées par l’export remplacent bien les anciennes valeurs portant le même ID ;
+5. une autre fiche native connue du même sélecteur reste accessible afin de détecter une liste devenue partielle ;
+6. un aller-retour `fiche active -> champs éditeur -> draft normalisé` ne réintroduit pas l’ancien template ni ne perd les champs représentés ;
+7. après import/remplacement, le sélecteur est rafraîchi avant toute validation UI.
+
+Si un test montre que les données sont correctes dans le propriétaire actif mais fausses dans l’éditeur, la correction doit viser le chemin de **lecture/rechargement UI**, et non modifier les données pour compenser l’affichage.
