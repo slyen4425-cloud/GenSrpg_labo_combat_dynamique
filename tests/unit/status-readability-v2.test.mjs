@@ -268,3 +268,43 @@ test("1v1 and 2v2 pass the HP status host to the single DOM status renderer", as
     );
   }
 });
+
+
+test("beneficial status produces a buff icon from the same status snapshot", () => {
+  const document = fakeDocument();
+  const motion = fakeNode();
+  const image = fakeNode();
+  const statusHost = fakeNode();
+  motion.ownerDocument = document;
+  image.ownerDocument = document;
+  statusHost.ownerDocument = document;
+  image.src = "https://example.test/creature.webp";
+
+  const renderer = createDomStatusFxRenderer({
+    targetFor() {
+      return { motion, image, statusHost };
+    },
+    statusPresentationFor() {
+      return null;
+    }
+  });
+
+  renderer.sync({
+    fighters: {
+      ally: {
+        statusEffects: [{
+          stacks: 1,
+          definition: {
+            id: "speed-up",
+            polarity: "beneficial"
+          }
+        }]
+      }
+    }
+  });
+
+  const icon = statusHost.children[0];
+  assert.equal(icon.dataset.polarity, "beneficial");
+  assert.equal(icon.children[0].textContent, "+");
+  renderer.dispose();
+});
