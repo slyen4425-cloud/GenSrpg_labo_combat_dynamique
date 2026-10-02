@@ -1177,7 +1177,7 @@ export async function mountCombatTest({
       render(session.snapshot());
     },
     onInterrupted(result) {
-      presenter.cancelPreparation(
+      presenter.cancelActionPresentation(
         result.action?.actorId ?? "player"
       );
       setCharge({
