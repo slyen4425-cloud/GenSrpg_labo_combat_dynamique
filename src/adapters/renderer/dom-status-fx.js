@@ -227,8 +227,16 @@ export function createDomStatusFxRenderer({
       node.dataset.statusId = statusId;
       target.statusHost.append(node);
 
+      const glyphNode =
+        target.statusHost.ownerDocument
+          .createElement("span");
+      glyphNode.className =
+        "status-icon__glyph";
+      node.append(glyphNode);
+
       record = {
         node,
+        glyphNode,
         stackNode: null
       };
       records.set(key, record);
@@ -261,11 +269,11 @@ export function createDomStatusFxRenderer({
           "\\\""
         ) +
         '")';
-      record.node.textContent = "";
+      record.glyphNode.textContent = "";
     } else {
       record.node.style.backgroundImage =
         "none";
-      record.node.textContent =
+      record.glyphNode.textContent =
         polarityGlyph(polarity);
     }
 
