@@ -21421,3 +21421,49 @@ Conformément à `LAB_CHARTE.md §33` :
 7. checkpoint GREEN + preview si le test UI est nécessaire.
 
 État : **LOT OUVERT — RED obligatoire avant insertion**.
+
+
+### Résultat technique — Showcase Skill Tempête de flammes V1
+
+RED :
+- test : `tests/unit/capture-showcase-skill-presets-v1.test.mjs` ;
+- commit RED : `1a24728543e0c2c6f08aca41d733c0a8fe873339` ;
+- CI RED : `36947539322` — FAILURE attendue ;
+- **800 tests / 796 PASS / 4 FAIL** : fichier preset absent, catalogue absent, remplacement absent et hydratation Human Editor absente.
+
+Insertion conforme §33 :
+- `14b21a3b8ec4f82e36f5829a2948652c55761efd` : ajout du transfert `cap_fire_atk_6.capture-skill-transfer-v1.json` avec la seule modification utilisateur autorisée `maxUsesPerCombat: 1` ;
+- `f5d6d330aa1e16d3a0d1e2dd03f6e37c0172e7f9` : catalogue déclaratif `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` ;
+- `0d19628958acff2a673437dd80113b7f876528cd` : raccord Human Editor par le pipeline Transfer existant, capacités vitrine avant créatures vitrine ;
+- `a7a7d26025f6ad2c419f8fb83914357bbc3a357d` : restauration des marqueurs de statut historiques protégés, sans élargir le périmètre ;
+- `218f5c88381289f0498f38e94562f6d370a7c1d1` : test du vrai chemin Combat avec `BattleFormat` 1v1.
+
+Collision traitée :
+- la capacité historique `cap_fire_atk_6` existait déjà ;
+- le planner produit `replace-skill` ;
+- aucun doublon n’est créé ;
+- le même identifiant continue d’être utilisé par les créatures historiques.
+
+Assets vérifiés :
+- `core:icon-skill-fire-breath-01` : présent ;
+- `pack:capture:sprite-fire-zone-loop-01` : présent ;
+- `gensrpg:sound:effect-135ee2ed` : présent.
+
+Validation :
+- CI finale fonctionnelle : `36947818741` — SUCCESS ;
+- suite complète : **801/801 PASS, 0 FAIL** ;
+- import Transfer : PASS ;
+- valeurs du preset et `maxUsesPerCombat: 1` : PASS ;
+- remplacement historique par ID stable : PASS ;
+- ordre hydratation capacités vitrine -> créatures vitrine : PASS ;
+- vrai Combat : première activation acceptée après les conditions configurées, puis deuxième activation refusée `usage_limit` une fois le cooldown expiré : PASS.
+
+Contraintes respectées :
+- aucune valeur de l’export utilisateur modifiée hors `maxUsesPerCombat: 1` explicitement demandé ;
+- aucune seconde fiche ou mock ;
+- aucun comportement par nom ;
+- aucun changement du moteur de zone persistante ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique — checkpoint et preview à publier ; validation smartphone utilisateur requise pour GREEN utilisateur**.
