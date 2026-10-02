@@ -223,7 +223,16 @@ test("dynamic true path lets player teleport during opponent claw and resolves t
   assert.equal(session.snapshot().fighters.opponent.hp, 76);
   assert.equal(session.snapshot().fighters.player.hp, 100);
   assert.equal(runtime.hasActiveActionFor("opponent"), true);
-  assert.equal(runtime.hasActiveActionFor("player"), false);
+  assert.equal(
+    runtime.hasActiveActionFor("player"),
+    true,
+    "resolved player action must keep the actor locked during recovery"
+  );
+  assert.equal(
+    runtime.activeActionFor("player"),
+    null,
+    "recovery is not an executing attack"
+  );
 
   clock.setTime(2700);
   clock.fireNext();
