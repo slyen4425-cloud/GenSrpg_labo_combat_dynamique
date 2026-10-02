@@ -23369,3 +23369,81 @@ Faire de la récupération une phase réelle du **même cycle de vie d'action** 
 - suite complète GREEN.
 
 État : **LOT OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Functional Recovery V1
+
+Décision : le champ `recoveryMs` est **conservé et rendu fonctionnel**.
+
+#### Comportement final
+
+Une capacité suit maintenant réellement :
+
+`Préparation -> trajet/impact -> récupération -> disponible`.
+
+- l'impact applique immédiatement les dégâts/effets ;
+- pendant `recoveryMs`, la créature ne peut pas lancer une nouvelle action ;
+- une tentative renvoie `recovering` ;
+- à la fin exacte de la récupération, l'acteur redevient disponible ;
+- `recoveryMs = 0` garde le comportement immédiat historique.
+
+Le cooldown reste différent :
+- recovery = verrou global de l'acteur après impact ;
+- cooldown = délai avant réutilisation de cette capacité précise.
+
+#### Autorité / architecture
+
+- `activeByActor` reste l'unique lifecycle d'action ;
+- aucun `recoveryByActor` ;
+- aucun timer spécifique ;
+- aucune seconde horloge ;
+- le tick Runtime existant traite préparation, impact et recovery ;
+- `activeAction/activeActions` continuent de représenter seulement les actions encore en exécution ;
+- `hasActiveActionFor` reste vrai pendant la recovery afin de bloquer correctement l'acteur.
+
+#### Cas durcis
+
+- contact visible anticipé : recovery démarre au vrai timestamp de contact accepté ;
+- clash projectile : recovery appliquée aux actions résolues ;
+- projectile survivant : recovery après son impact réel ;
+- KO de la cible : ne supprime pas la recovery de l'attaquant ;
+- tick tardif : impact + recovery déjà écoulés sont traités sans tick supplémentaire ;
+- réaction counter : recovery après la résolution du counter.
+
+#### UX éditeur
+
+Le champ est renommé :
+`Récupération après impact (ms)`.
+
+Une aide explicite distingue désormais :
+- récupération ;
+- cooldown.
+
+#### TDD / validation
+
+- RED : `3ebb5f3a58681d6157a48c6957251abea435548e` ;
+- implémentation lifecycle : `fec001ec602f30b35da2d13295627911b885bd87` ;
+- vues d'action corrigées : `2fe43e262041c74e87c9b45eb6d5a99b7535cf99` ;
+- sentinelles historiques réalignées sur la nouvelle règle ;
+- durcissement KO/tick tardif : `6b05368fc4f45feb15b66274e1954fc8ec3a5d32` ;
+- UX : `2f572ee8ceccd868b355882556f39cdbe008b8a8` ;
+- CI : `37056854165` — SUCCESS ;
+- suite complète : **878/878 PASS, 0 FAIL**.
+
+#### Invariants
+
+Aucun changement dans :
+- formules de dégâts ;
+- ownership des cooldowns ;
+- StatusEffect Runtime ;
+- présentation projectile/contact ;
+- `Zombicide-40k`.
+
+Aucun :
+- second moteur de lifecycle ;
+- timer recovery dédié ;
+- observer global ;
+- duplication d'autorité ;
+- merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview**.
