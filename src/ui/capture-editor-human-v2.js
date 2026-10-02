@@ -202,7 +202,10 @@ export function humanTacticalStatusStatIdsV1(
 }
 
 function humanTacticalStatusToContractV1(
-  status
+  status,
+  {
+    defaultDamageChannel = null
+  } = {}
 ) {
   if (
     !status ||
@@ -281,9 +284,13 @@ function humanTacticalStatusToContractV1(
   }
 
   if (output.kind === "damage_over_time") {
+    const damageChannel =
+      optionalText(status.channel) ??
+      optionalText(defaultDamageChannel);
+
     output.channel = requiredText(
-      status.channel,
-      "Canal des dégâts périodiques"
+      damageChannel,
+      "Élément des dégâts périodiques"
     );
   }
 
@@ -298,7 +305,10 @@ function humanTacticalStatusToContractV1(
 }
 
 export function buildHumanTacticalSkillEffectsV1(
-  effects
+  effects,
+  {
+    defaultDamageChannel = null
+  } = {}
 ) {
   if (!Array.isArray(effects)) {
     throw new TypeError(
@@ -408,7 +418,10 @@ export function buildHumanTacticalSkillEffectsV1(
         targetScope,
         status:
           humanTacticalStatusToContractV1(
-            effect.status
+            effect.status,
+            {
+              defaultDamageChannel
+            }
           )
       });
     }
@@ -1792,7 +1805,11 @@ export function buildHumanSkillDraftV1(fields) {
   const tacticalEffects =
     usesTacticalEffects
       ? buildHumanTacticalSkillEffectsV1(
-          fields.effects ?? []
+          fields.effects ?? [],
+          {
+            defaultDamageChannel:
+              fields.element ?? null
+          }
         )
       : [];
 
@@ -3607,10 +3624,12 @@ function appendHumanSkillEffectV1(
   maxStacksField.dataset
     .skillStatusMaxStacksField = "true";
 
-  const statusTags = tacticalTextInputV1(
-    "skillStatusTags",
-    (status.tags ?? []).join(", ")
-  );
+  row.dataset.skillStatusStoredTags =
+    JSON.stringify(
+      Array.isArray(status.tags)
+        ? status.tags
+        : []
+    );
 
   const common = document.createElement("div");
   common.className = "skill-status-config__grid";
@@ -3620,11 +3639,7 @@ function appendHumanSkillEffectV1(
     tacticalFieldV1("Polarité", polarity),
     tacticalFieldV1("Durée (secondes)", duration),
     tacticalFieldV1("Stacking", stacking),
-    maxStacksField,
-    tacticalFieldV1(
-      "Tags (séparés par des virgules)",
-      statusTags
-    )
+    maxStacksField
   );
 
   const statId = document.createElement("select");
@@ -3669,10 +3684,11 @@ function appendHumanSkillEffectV1(
           ),
       { min: 0.1, step: "0.1" }
     );
-  const statusChannel = tacticalTextInputV1(
-    "skillStatusChannel",
-    status.channel ?? ""
-  );
+  const statusChannel =
+    tacticalDamageElementSelectV1(
+      "skillStatusChannel",
+      status.channel ?? ""
+    );
 
   const dotConfig = document.createElement("div");
   dotConfig.className =
@@ -4198,11 +4214,20 @@ function readHumanSkillEffectsV1(root) {
             "[data-skill-status-max-stacks]"
           ).value
         ),
-        tags: commaValuesV1(
-          row.querySelector(
-            "[data-skill-status-tags]"
-          ).value
-        )
+        tags: (() => {
+          try {
+            const stored = JSON.parse(
+              row.dataset
+                .skillStatusStoredTags ??
+                "[]"
+            );
+            return Array.isArray(stored)
+              ? stored
+              : [];
+          } catch {
+            return [];
+          }
+        })()
       };
 
       if (statusKind === "stat_modifier") {
