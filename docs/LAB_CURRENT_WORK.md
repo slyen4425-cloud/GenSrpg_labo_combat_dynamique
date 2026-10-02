@@ -21931,3 +21931,49 @@ Périmètre ajouté **avant correction** :
 - `src/ui/combat-test-ui.js`.
 
 Le rôle de ces deux fichiers reste limité au raccord du signal `onInterrupted` vers le presenter ; aucune règle de combat n'y est ajoutée.
+
+
+### Résultat technique — Projectile Impact Sync V1
+
+Cause confirmée :
+- `watchProjectileContact()` supprimait le projectile à partir de la géométrie DOM avant le résultat sémantique ;
+- la promesse `animation.finished` supprimait également le nœud immédiatement à la fin de `travelMs`, alors que `onResolved` peut être traité au tick suivant ;
+- ces deux chemins pouvaient produire le trou visuel observé entre la disparition de Boule de feu et son impact.
+
+Correction propriétaire :
+- `ac5189f13e6c28ff8458272cc03f743d133e23fd` : retrait de l'autorité géométrique et conservation de la dernière frame du projectile après son trajet ;
+- `18b907dda261cd6ee446666f5f60334a9d22c952` : le presenter retire désormais un projectile normal au signal sémantique d'arrivée, immédiatement avant la présentation de l'impact ; ajout de `cancelActionPresentation()` pour le cycle de vie d'une action interrompue ;
+- `cc321385a2c7895b72a326e6f4a4b9928473aab8` et `5a2e19a986fa7bd0c1a61c557c2ad2519e2962a3` : les deux UI de combat routent `onInterrupted` vers ce nettoyage propriétaire ;
+- `6b2c77b111258b70abc12d6f1909a43b4f78e533` : anciennes sentinelles FX alignées sur le nouvel invariant de présence jusqu'à l'impact ;
+- `32079ac69cbdf7a706c8cd6a7647903b7081473a` : correction d'une faute de syntaxe située uniquement dans le nouveau fichier de test.
+
+Validation :
+- RED initial : `10efef9c941486e950506d2ed407f1551a044f1f`, CI `36990376128` — FAILURE attendue ;
+- une CI intermédiaire `36990705491` a échoué uniquement à cause du `\\n` littéral dans l'import de la nouvelle sentinelle ; les 808 tests historiques passaient ;
+- CI finale : `36990795260` — **SUCCESS** ;
+- suite complète : **813/813 PASS, 0 FAIL**.
+
+Invariants vérifiés :
+- aucune collision DOM ne décide de l'arrivée du projectile ;
+- la dernière frame reste affichée après la fin du trajet jusqu'au signal sémantique ;
+- projectile -> impact est effectué dans le même appel `presentOutcome()` ;
+- un clash conserve son annulation immédiate ;
+- une interruption nettoie le projectile via le presenter ;
+- aucun changement de `travelMs`, dégâts, énergie, cooldown ou Combat Runtime ;
+- aucune logique spéciale par ID `fireball` ;
+- aucun timer compensatoire ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+Noms de publication :
+- checkpoint GREEN : `checkpoint/lab-projectile-impact-sync-v1-green-2026-10-02` ;
+- preview smartphone : `preview/lab-projectile-impact-sync-v1-2026-10-02`.
+
+PREVALIDATION smartphone attendue :
+1. lancer **Boule de feu** ;
+2. vérifier que son sprite reste visible jusqu'au contact/impact, sans trou de quelques millisecondes ;
+3. vérifier que l'impact apparaît immédiatement lors de la disparition du projectile ;
+4. vérifier que le trajet conserve la même vitesse ;
+5. vérifier qu'un projectile clashé disparaît toujours au point de clash.
+
+État : **GREEN technique — publication checkpoint/preview puis validation smartphone**.
