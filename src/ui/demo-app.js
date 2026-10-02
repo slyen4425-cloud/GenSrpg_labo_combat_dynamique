@@ -740,6 +740,13 @@ export async function mountCombatDemo({
     getCollisionModelFor(slotKey) {
       return slotOf(slotKey).collisionModel;
     },
+    getStatusPresentationTargetFor(slotKey) {
+      const slot = slotOf(slotKey);
+      return Object.freeze({
+        motion: slot.motion,
+        image: slot.image
+      });
+    },
     getCreatureFor(slotKey) {
       return slotOf(slotKey).meta.id;
     },
