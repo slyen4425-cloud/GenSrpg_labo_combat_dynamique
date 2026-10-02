@@ -41,7 +41,7 @@ async function text(relative) {
   );
 }
 
-test("Tempete de flammes showcase transfer preserves the editor export with one combat use", async () => {
+test("Tempete de flammes showcase transfer preserves the editor export with six combat uses", async () => {
   const transfer = importCaptureTransferJsonV1(
     await text(PRESET_FILE)
   );
@@ -57,7 +57,7 @@ test("Tempete de flammes showcase transfer preserves the editor export with one 
   assert.equal(draft.definition.energyCost, 5);
   assert.equal(draft.definition.preparationMs, 2000);
   assert.equal(draft.definition.cooldownMs, 3500);
-  assert.equal(draft.definition.maxUsesPerCombat, 1);
+  assert.equal(draft.definition.maxUsesPerCombat, 6);
 
   const zone = draft.definition.effects[0];
   assert.equal(zone.kind, "persistent_zone");
@@ -175,7 +175,7 @@ test("showcase transfer replaces historical cap_fire_atk_6 through the canonical
     configuredSkills
       .get("cap_fire_atk_6")
       .definition.maxUsesPerCombat,
-    1
+    6
   );
 });
 
@@ -209,7 +209,7 @@ test("Human Editor hydrates showcase skill transfers before showcase creature tr
 });
 
 
-test("Tempete de flammes real Combat path enforces one use for the imported definition", async () => {
+test("Tempete de flammes real Combat path accepts six uses then rejects the seventh", async () => {
   const transfer = importCaptureTransferJsonV1(
     await text(PRESET_FILE)
   );
@@ -219,8 +219,8 @@ test("Tempete de flammes real Combat path enforces one use for the imported defi
     id,
     maxHp: 100,
     initialHp: 100,
-    maxEnergy: 20,
-    initialEnergy: 20,
+    maxEnergy: 100,
+    initialEnergy: 100,
     energyChargeAmount: 1,
     energyChargeIntervalMs: 2000,
     movementEnergyPerStep: 1,
@@ -266,29 +266,31 @@ test("Tempete de flammes real Combat path enforces one use for the imported defi
 
   session.advanceMs(25000);
 
-  const first = session.startSkill({
+  for (let use = 1; use <= 6; use += 1) {
+    const result = session.startSkill({
+      actorId: "player",
+      targetId: "opponent",
+      skill
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(
+      session.snapshot().fighters.player.skillUseCounts[
+        "cap_fire_atk_6"
+      ],
+      use
+    );
+
+    session.advanceMs(3500);
+  }
+
+  const seventh = session.startSkill({
     actorId: "player",
     targetId: "opponent",
     skill
   });
 
-  assert.equal(first.ok, true);
-  assert.equal(
-    session.snapshot().fighters.player.skillUseCounts[
-      "cap_fire_atk_6"
-    ],
-    1
-  );
-
-  session.advanceMs(3500);
-
-  const second = session.startSkill({
-    actorId: "player",
-    targetId: "opponent",
-    skill
-  });
-
-  assert.equal(second.ok, false);
-  assert.equal(second.outcome, "usage_limit");
-  assert.equal(second.maxUsesPerCombat, 1);
+  assert.equal(seventh.ok, false);
+  assert.equal(seventh.outcome, "usage_limit");
+  assert.equal(seventh.maxUsesPerCombat, 6);
 });
