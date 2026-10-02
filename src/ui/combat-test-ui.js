@@ -374,6 +374,8 @@ export async function mountCombatTest({
   let opponentAi = null;
   let aiDecisionInProgress = false;
 
+  let runtime = null;
+
   const combatAudio = createDomCombatAudio({
     resolveAudioAsset(assetId) {
       return presentationAssets?.audioAsset?.(assetId) ?? null;
@@ -386,6 +388,9 @@ export async function mountCombatTest({
         ) ??
         null
       );
+    },
+    onProjectileContact(contact) {
+      runtime?.reportProjectileContact(contact);
     }
   });
 
@@ -1048,7 +1053,7 @@ export async function mountCombatTest({
     return result;
   }
 
-  const runtime = createCombatRuntime({
+  runtime = createCombatRuntime({
     session,
     onState(state) {
       render(state);
