@@ -22540,3 +22540,143 @@ Le contact modèle-à-modèle doit :
 8. suite complète GREEN puis checkpoint/preview smartphone.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Résultat technique — Universal Visible Contact V1
+
+Base :
+- `f7bd044c10445923c7b7f215f538f4959a3004e2` ;
+- Visible Model Contact V3 déjà GREEN et prévalidé utilisateur.
+
+#### RED moteur
+
+Commit :
+- `2330a8e1a1d9a1e9fb9efeb1a168cfe31510eb82`.
+
+CI :
+- `37030356273` — FAILURE attendue ;
+- **827 tests historiques PASS** ;
+- 6 nouveaux échecs démontrant que l'ancienne autorité était encore `reportProjectileContact()` et qu'aucune API générique n'existait.
+
+#### Refactor autorité Runtime
+
+Commit principal :
+- `3e56e96bb45feac6568e4786812a4c499c6e74b6`.
+
+Résultat :
+- `Combat Runtime` expose désormais **une seule** API de contact visuel : `reportActionContact()` ;
+- l'ancienne `reportProjectileContact()` n'est plus exposée ;
+- sont autorisés par contrat :
+  - `form:"projectile"` ;
+  - `form:"contact" + approachMode:"ground|aerial|teleport"` ;
+- `contact + none` et autres formes non autoritaires sont refusées ;
+- un `skillId` optionnel protège contre les signaux retardés d'une ancienne animation ;
+- la résolution continue de passer exclusivement par `processResolution() -> Combat Session -> Action Resolver`.
+
+Migration du raccord projectile vers l'autorité générique :
+- `483c53382b0b6b2059197183376c09df6e061b0f` — 1v1 ;
+- `817648a119a6cc25aff2fc8a630485d129306fa8` — 2v2 ;
+- `d8715440964ad9590083744047f56af048784eec` — sentinelles Runtime existantes ;
+- `cf1c8c7924faa98fdd87275902fd57cb5bf6e08c` — sentinelle wiring.
+
+CI après migration :
+- `37030692092` — SUCCESS.
+
+#### RED géométrie modèle↔modèle
+
+Commit :
+- `3b390ed540eae5cb6eed03a49e25ec90ce57c525`.
+
+CI :
+- `37030879685` — FAILURE attendue ;
+- **833 tests PASS**, seul le nouveau fichier géométrique échoue faute d'API modèle↔modèle.
+
+Correction :
+- `6cba342e055e9669200db07dadd950cb130ad006`.
+
+Le module canonique `dom-visible-model-contact.js` sait désormais :
+- tester deux silhouettes opaques transformées ;
+- ignorer les marges transparentes ;
+- utiliser les transforms écran réelles ;
+- balayer les contours opaques entre deux frames ;
+- prendre en compte le mouvement relatif des deux créatures ;
+- éviter le tunneling.
+
+CI :
+- `37031056574` — SUCCESS.
+
+#### RED watcher / vrai raccord approche
+
+Commit :
+- `4d64d967ba94b222ac799679926ff781a563f88c`.
+
+CI :
+- `37031376724` — FAILURE attendue ;
+- **838 tests PASS**, seul le watcher d'approche manque.
+
+Correction :
+- `305c492e4e29f7447b00071b2e5f0034ec061ed6` — watcher modèle↔modèle borné à l'approche ;
+- `44072d38cec82e84f920aa966fa79be2ee7e0e2f` — `playApproachFor()` consomme les deux `collisionModel` ;
+- `512ef84e55d0cf95237253136f7b1af700bb50af` — Presenter transmet le contact mobile ;
+- `ef96df5d2dd680c4cf9a388543f442804a70fe73` — 1v1 vers `runtime.reportActionContact()` ;
+- `f46b9dc3d8ff614f424a12ce2d1610ac07dbc5ba` — 2v2 vers la même API ;
+- `3593c8bbd030fbf8d7109d0ed016f2de0ff11315` — ancienne sentinelle 2v2 alignée sans perte de couverture.
+
+Politique par approche :
+- `ground` : balayage continu modèle↔modèle ;
+- `aerial` : balayage continu modèle↔modèle ;
+- `teleport` : même géométrie mais **sans balayage du saut invisible** ; seul le chevauchement réellement affiché compte.
+
+CI :
+- `37031850425` — SUCCESS ;
+- **841/841 PASS**.
+
+#### Durcissement vrai moteur / vraies compétences
+
+Commit :
+- `511eb9be88433f729658d17e6a1b34766b1be149`.
+
+Validation avec les vraies données :
+- `claw.skill.json` / Griffe / ground ;
+- `aerial-dive.skill.json` / Plongeon aérien ;
+- `teleport-strike.skill.json` / Frappe téléportée.
+
+Pour les trois :
+- aucun dégât avant contact ;
+- contact visible accepté -> impact effectif avancé ;
+- vrais dégâts appliqués immédiatement par `Combat Session / Action Resolver` ;
+- `skill-arrive` et `hit` portent le même timestamp effectif ;
+- un contact retardé portant le `skillId` d'une ancienne capacité est refusé (`skill_mismatch`).
+
+CI :
+- `37032119977` — SUCCESS ;
+- **845/845 PASS, 0 FAIL**.
+
+### Autorité finale
+
+`sprite/projectile visible -> capteur géométrique -> Combat Runtime.reportActionContact() -> Combat Session / Action Resolver -> onResolved -> Presenter`.
+
+Il n'existe plus deux propriétaires de l'impact entre projectile et contact mobile.
+
+### Invariants conservés
+
+Aucun changement dans :
+- `Combat Session` ;
+- `Action Resolver` ;
+- valeurs de dégâts ;
+- énergie ;
+- cooldown ;
+- règles d'esquive/blocage/réflexion ;
+- Projectile Power / clash ;
+- données de Griffe, Plongeon ou Frappe téléportée ;
+- `Zombicide-40k`.
+
+Aucun :
+- timer global ajouté ;
+- observer global ajouté ;
+- hitbox manuelle par compétence/créature ;
+- branchement par ID de compétence ;
+- second moteur de collision ;
+- merge vers `main`.
+
+État : **GREEN technique — scellement documentaire, checkpoint/preview puis PREVALIDATION smartphone**.
