@@ -21926,3 +21926,15 @@ Informations à présenter depuis les données réelles :
 8. PREVALIDATION smartphone utilisateur.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Recadrage de périmètre avant RED — template de preview éditeur
+
+Audit du vrai chemin UI :
+- la démo autonome utilise `examples/dom-demo/coop-2v2.html` ;
+- la preview lancée depuis l'éditeur utilise un template propre dans `examples/dom-demo/capture-editor-v2.html`, tout en chargeant `demo.css`.
+
+Le fichier suivant est donc ajouté au périmètre autorisé **avant toute modification fonctionnelle** :
+- `examples/dom-demo/capture-editor-v2.html`.
+
+Aucun élargissement de propriétaire : il s'agit uniquement du second hôte DOM du même `mountCoop2v2Test`.
