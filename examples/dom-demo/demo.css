@@ -261,6 +261,10 @@ summary {
   gap: 0.35rem;
 }
 
+.status-icons:empty {
+  display: none;
+}
+
 .status-icons {
   display: flex;
   align-items: center;
