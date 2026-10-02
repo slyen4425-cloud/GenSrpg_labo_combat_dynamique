@@ -6566,7 +6566,31 @@ export function mountCaptureEditorHumanV2({
 
     configuredSkills.set(draft.id, draft);
     refreshSkillLibraryOptions(draft.id);
-    refreshLoadoutOptions(draft.id);
+
+    if (saveMode.mode === "create") {
+      refreshLoadoutOptions(draft.id);
+    } else {
+      refreshLoadoutOptions();
+    }
+
+    writeSkillDraftFields(
+      root,
+      draft,
+      statRegistry
+    );
+    librarySelect.value = draft.id;
+    one(
+      root,
+      "[data-skill-id]"
+    ).readOnly = true;
+    selectedLegacyState = null;
+    updateLibraryState({
+      runtimeReady: true,
+      message:
+        "Capacité active « " +
+        draft.definition.name +
+        " » sauvegardée dans la bibliothèque active."
+    });
 
     const loadoutAfter = [
       ...root.querySelectorAll(
