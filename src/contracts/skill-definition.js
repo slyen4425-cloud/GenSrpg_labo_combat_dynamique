@@ -92,6 +92,19 @@ function nonNegativeNumber(value, field) {
   return number;
 }
 
+function positiveIntegerOrNull(value, field) {
+  if (value == null) {
+    return null;
+  }
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 1) {
+    throw new RangeError(
+      `${field} must be a positive integer or null`
+    );
+  }
+  return number;
+}
+
 function stringArray(value, field, allowed = null) {
   const list = value ?? [];
   if (!Array.isArray(list)) {
@@ -361,6 +374,10 @@ export function normalizeSkillDefinition(input) {
     travelMs: nonNegativeNumber(input.travelMs, "travelMs"),
     recoveryMs: nonNegativeNumber(input.recoveryMs, "recoveryMs"),
     cooldownMs: nonNegativeNumber(input.cooldownMs, "cooldownMs"),
+    maxUsesPerCombat: positiveIntegerOrNull(
+      input.maxUsesPerCombat,
+      "maxUsesPerCombat"
+    ),
     interruptibleDuringPreparation:
       input.interruptibleDuringPreparation !== false,
     allowedDistances,
