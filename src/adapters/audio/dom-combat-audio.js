@@ -19,6 +19,8 @@ function soundFor(presentation, type, phase) {
       return presentation?.castSound ?? null;
     case "release":
       return presentation?.releaseSound ?? null;
+    case "travel":
+      return presentation?.travelSound ?? null;
     case "impact":
       return presentation?.impactSound ?? null;
     case "phase":
