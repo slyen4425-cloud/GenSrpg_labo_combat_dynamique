@@ -21350,3 +21350,74 @@ Validation smartphone attendue :
 Aucun merge vers `main`.
 
 État : **PREVALIDATION smartphone après publication du checkpoint/preview**.
+
+
+## Micro-lot — Showcase Skill Tempête de flammes V1 — 2026-10-02
+
+Base exacte : `51036a24f4a7773fd0a1fd6ff1af1656db55ef47` (Skill Combat Usage Limit V1 — GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-showcase-skill-tempete-flammes-v1-2026-10-02` ;
+- branche : `work/lab-showcase-skill-tempete-flammes-v1-2026-10-02`.
+
+### Source utilisateur
+
+Export éditeur fourni :
+`gensrpg-capture-skill-cap_fire_atk_6.json`.
+
+ID stable : `cap_fire_atk_6`.
+Nom : `Tempête de flammes`.
+Slot : `ultimate`.
+
+Modification de donnée explicitement autorisée par l'utilisateur :
+- ajouter `definition.maxUsesPerCombat = 1` ;
+- aucune autre valeur du fichier source ne doit être modifiée ou « améliorée ».
+
+### Audit obligatoire §33
+
+Collision d'ID :
+- `cap_fire_atk_6` existe déjà dans le catalogue Capture historique ;
+- l'intégration doit donc **remplacer** cette capacité par le même identifiant stable dans `configuredSkills` ;
+- aucun doublon ou nouvel ID de contournement n'est autorisé.
+
+Assets référencés vérifiés :
+- `core:icon-skill-fire-breath-01` : présent dans la bibliothèque visuelle globale ;
+- `pack:capture:sprite-fire-zone-loop-01` : présent dans la bibliothèque visuelle globale ;
+- `gensrpg:sound:effect-135ee2ed` : présent dans le catalogue audio privé, rôle cast.
+
+### Propriétaire et méthode d'insertion
+
+Conformément à `LAB_CHARTE.md §33` :
+- le fichier de transfert de capacité reste la source de vérité ;
+- `configuredSkills` reste l'unique propriétaire actif ;
+- l'insertion passe par `importCaptureTransferJsonV1` puis le planner/batch Transfer existant en mode `replace` ;
+- la capacité vitrine doit être chargée après les catalogues historiques/native et avant les presets créatures, afin qu'une créature puisse la référencer par ID sans seconde définition.
+
+### Fichiers autorisés
+
+- `data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json` ;
+- nouveau catalogue déclaratif de presets de capacités vitrine sous `src/catalogs/` ;
+- raccord de chargement dans `src/ui/capture-editor-human-v2.js` via les adaptateurs Transfer existants ;
+- tests dédiés sous `tests/unit/` ;
+- documentation du lot.
+
+### Protégé
+
+- aucune modification du catalogue historique source pour masquer le remplacement ;
+- aucune duplication de `cap_fire_atk_6` ;
+- aucun mock de capacité parallèle ;
+- aucun comportement spécial par nom de capacité ;
+- aucun changement des règles persistent zone, dégâts, cooldown, activation requirements ou présentation ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED : le preset de capacité vitrine doit exister, s'importer comme `skill` et conserver exactement les valeurs exportées + `maxUsesPerCombat: 1`.
+2. RED : le catalogue de presets de capacités doit exposer ce fichier sans duplication.
+3. RED : l'application du preset sur une base contenant déjà `cap_fire_atk_6` doit produire `replace-skill`, conserver la taille de la Map et remplacer la définition historique.
+4. RED : le Human Editor doit hydrater les presets capacités par le pipeline Transfer existant avant les presets créatures.
+5. GREEN minimal : aucune nouvelle autorité, uniquement le raccord déclaratif + Transfer existant.
+6. CI complète.
+7. checkpoint GREEN + preview si le test UI est nécessaire.
+
+État : **LOT OUVERT — RED obligatoire avant insertion**.
