@@ -27,6 +27,28 @@ function presentationUsesSprite(presentation) {
   );
 }
 
+function polarityColor(polarity) {
+  switch (polarity) {
+    case "beneficial":
+      return "#43c97a";
+    case "detrimental":
+      return "#ef5b5b";
+    default:
+      return "#9aa5b1";
+  }
+}
+
+function polarityGlyph(polarity) {
+  switch (polarity) {
+    case "beneficial":
+      return "+";
+    case "detrimental":
+      return "−";
+    default:
+      return "•";
+  }
+}
+
 function maskUrl(image) {
   const url =
     image?.currentSrc ||
@@ -115,6 +137,7 @@ export function createDomStatusFxRenderer({
       presentation.tintColor;
     record.node.style.opacity =
       String(presentation.tintOpacity);
+    record.node.style.mixBlendMode = "normal";
     record.node.style.maskImage = mask;
     record.node.style.webkitMaskImage = mask;
     record.node.style.maskSize = "contain";
@@ -174,6 +197,96 @@ export function createDomStatusFxRenderer({
       ")";
   }
 
+  function ensureHudIcon({
+    actorId,
+    statusId,
+    instance,
+    target,
+    presentation,
+    expected
+  }) {
+    if (!target?.statusHost) {
+      return;
+    }
+
+    const key = recordKey(
+      actorId,
+      statusId,
+      "hud"
+    );
+    expected.add(key);
+
+    let record =
+      records.get(key) ?? null;
+    if (!record) {
+      const node =
+        target.statusHost.ownerDocument
+          .createElement("span");
+      node.className = "status-icon";
+      node.dataset.statusFx = "hud-icon";
+      node.dataset.statusId = statusId;
+      target.statusHost.append(node);
+
+      record = {
+        node,
+        stackNode: null
+      };
+      records.set(key, record);
+    }
+
+    const polarity =
+      instance?.definition?.polarity ??
+      "neutral";
+    const stacks = Math.max(
+      1,
+      Number(instance?.stacks) || 1
+    );
+    const sprite =
+      presentation?.sprite ?? null;
+
+    record.node.dataset.polarity =
+      polarity;
+    record.node.dataset.stacks =
+      String(stacks);
+    record.node.title = statusId;
+    record.node.style.backgroundColor =
+      presentation?.tintColor ??
+      polarityColor(polarity);
+
+    if (sprite?.url) {
+      record.node.style.backgroundImage =
+        'url("' +
+        String(sprite.url).replace(
+          /"/g,
+          "\\\""
+        ) +
+        '")';
+      record.node.textContent = "";
+    } else {
+      record.node.style.backgroundImage =
+        "none";
+      record.node.textContent =
+        polarityGlyph(polarity);
+    }
+
+    if (stacks > 1) {
+      if (!record.stackNode) {
+        const stackNode =
+          target.statusHost.ownerDocument
+            .createElement("strong");
+        stackNode.className =
+          "status-icon__stack";
+        record.node.append(stackNode);
+        record.stackNode = stackNode;
+      }
+      record.stackNode.textContent =
+        String(stacks);
+    } else if (record.stackNode) {
+      record.stackNode.remove?.();
+      record.stackNode = null;
+    }
+  }
+
   function sync(state) {
     if (disposed) {
       return Object.freeze({
@@ -217,6 +330,18 @@ export function createDomStatusFxRenderer({
 
         const presentation =
           resolvePresentation(statusId);
+        const target =
+          resolveTarget(actorId);
+
+        ensureHudIcon({
+          actorId,
+          statusId,
+          instance,
+          target,
+          presentation,
+          expected
+        });
+
         if (
           !presentation ||
           presentation.mode === "none"
@@ -224,8 +349,6 @@ export function createDomStatusFxRenderer({
           continue;
         }
 
-        const target =
-          resolveTarget(actorId);
         if (
           !target?.motion ||
           !target?.image ||
