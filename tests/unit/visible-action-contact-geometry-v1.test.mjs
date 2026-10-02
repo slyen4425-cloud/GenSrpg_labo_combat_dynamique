@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 
 import {
   opaqueMaskFromRgba,
-  sweptVisibleModelsContact
+  sweptVisibleModelsContact,
+  watchVisibleModelsContact
 } from "../../src/adapters/renderer/dom-visible-model-contact.js";
 
 function mask(width, height, opaqueCells) {
@@ -109,4 +110,65 @@ test("model collision remains continuous when both visible models move between f
     }),
     true
   );
+});
+
+
+test("invisible teleport gap resets continuous sweep instead of inventing a path through the target", () => {
+  const solid = mask(2, 2, [
+    [0,0],[1,0],[0,1],[1,1]
+  ]);
+
+  const sourceSnapshots = [
+    snapshot(solid, frame(0, 0, 20, 20)),
+    null,
+    snapshot(solid, frame(140, 0, 20, 20)),
+    snapshot(solid, frame(140, 0, 20, 20))
+  ];
+  const targetSnapshots = [
+    snapshot(solid, frame(100, 0, 20, 20)),
+    snapshot(solid, frame(100, 0, 20, 20)),
+    snapshot(solid, frame(100, 0, 20, 20)),
+    snapshot(solid, frame(100, 0, 20, 20))
+  ];
+
+  const sourceModel = {
+    snapshot() {
+      return sourceSnapshots.shift() ?? null;
+    }
+  };
+  const targetModel = {
+    snapshot() {
+      return targetSnapshots.shift() ?? null;
+    }
+  };
+
+  let frameCallback = null;
+  let contacts = 0;
+
+  const watcher = watchVisibleModelsContact({
+    sourceModel,
+    targetModel,
+    onContact() {
+      contacts += 1;
+    },
+    requestFrame(callback) {
+      frameCallback = callback;
+      return 1;
+    },
+    cancelFrame() {}
+  });
+
+  assert.equal(typeof frameCallback, "function");
+  frameCallback();
+  assert.equal(contacts, 0);
+
+  assert.equal(typeof frameCallback, "function");
+  frameCallback();
+  assert.equal(
+    contacts,
+    0,
+    "an invisible teleport must not sweep collision across the hidden path"
+  );
+
+  watcher.cancel();
 });
