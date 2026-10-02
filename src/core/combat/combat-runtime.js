@@ -135,6 +135,9 @@ export function createCombatRuntime({
       actionName: null,
       preparationMs: 0,
       remainingPreparationMs: 0,
+      recoveryMs: 0,
+      remainingRecoveryMs: 0,
+      recoveryProgress: 0,
       reaction: null
     });
   }
@@ -145,7 +148,9 @@ export function createCombatRuntime({
       preparationMs <= 0 ? 1 : Math.min(1, elapsedMs / preparationMs);
 
     let phase = "preparation";
-    if (elapsedMs >= record.action.releaseAtMs) {
+    if (record.resolved) {
+      phase = "recovery";
+    } else if (elapsedMs >= record.action.releaseAtMs) {
       phase = elapsedMs < record.action.impactAtMs ? "travel" : "impact";
     }
 
@@ -157,6 +162,37 @@ export function createCombatRuntime({
       0,
       record.action.releaseAtMs - elapsedMs
     );
+    const recoveryMs = Math.max(
+      0,
+      Number(record.action.recoveryMs) || 0
+    );
+    const recoveryStartedAtMs =
+      record.resolvedAtMs ?? null;
+    const recoveryElapsedMs =
+      recoveryStartedAtMs === null
+        ? 0
+        : Math.max(
+            0,
+            elapsedMs - recoveryStartedAtMs
+          );
+    const remainingRecoveryMs =
+      record.resolved
+        ? Math.max(
+            0,
+            recoveryMs - recoveryElapsedMs
+          )
+        : 0;
+    const recoveryProgress =
+      record.resolved
+        ? (
+            recoveryMs <= 0
+              ? 1
+              : Math.min(
+                  1,
+                  recoveryElapsedMs / recoveryMs
+                )
+          )
+        : 0;
 
     let reaction = null;
     if (record.reaction) {
@@ -199,6 +235,9 @@ export function createCombatRuntime({
       actionName,
       preparationMs,
       remainingPreparationMs,
+      recoveryMs,
+      remainingRecoveryMs,
+      recoveryProgress,
       chargeProgress,
       phase,
       released: record.released,
@@ -208,6 +247,93 @@ export function createCombatRuntime({
 
   function activeRecords() {
     return [...activeByActor.values()];
+  }
+
+  function unresolvedRecords() {
+    return activeRecords().filter(
+      (record) => !record.resolved
+    );
+  }
+
+  function recoveryCompleteAtClockMs(record) {
+    if (!record?.resolved) {
+      return null;
+    }
+    return (
+      record.startedAtClockMs +
+      record.resolvedAtMs +
+      Math.max(
+        0,
+        Number(record.action.recoveryMs) || 0
+      )
+    );
+  }
+
+  function processRecoveryComplete(
+    record,
+    atNowMs
+  ) {
+    if (
+      activeByActor.get(record.action.actorId) !==
+        record ||
+      !record.resolved
+    ) {
+      return false;
+    }
+
+    const completeAt =
+      recoveryCompleteAtClockMs(record);
+    if (
+      completeAt === null ||
+      atNowMs < completeAt
+    ) {
+      return false;
+    }
+
+    activeByActor.delete(
+      record.action.actorId
+    );
+    onProgress(
+      idleProgress(record.action.actorId)
+    );
+    return true;
+  }
+
+  function enterRecovery(
+    record,
+    {
+      resolvedAtMs,
+      atNowMs
+    }
+  ) {
+    const recoveryMs = Math.max(
+      0,
+      Number(record.action.recoveryMs) || 0
+    );
+
+    record.resolved = true;
+    record.resolvedAtMs = Math.max(
+      0,
+      Number(resolvedAtMs) || 0
+    );
+
+    if (recoveryMs <= 0) {
+      activeByActor.delete(
+        record.action.actorId
+      );
+      onProgress(
+        idleProgress(record.action.actorId)
+      );
+      return false;
+    }
+
+    onProgress(
+      progressSnapshot(
+        record,
+        elapsedFor(record, atNowMs)
+      )
+    );
+    return true;
   }
 
   function koActorIdFromResolution(resolution) {
@@ -259,9 +385,28 @@ export function createCombatRuntime({
       }
 
       activeByActor.delete(record.action.actorId);
-      cancelled.push(
-        emitInterrupted(record, reason, current)
-      );
+      if (record.resolved) {
+        onProgress(
+          idleProgress(record.action.actorId)
+        );
+        cancelled.push(
+          Object.freeze({
+            ok: true,
+            outcome: "recovery_cancelled",
+            reason,
+            actorId: record.action.actorId,
+            action: record.action
+          })
+        );
+      } else {
+        cancelled.push(
+          emitInterrupted(
+            record,
+            reason,
+            current
+          )
+        );
+      }
     }
 
     return Object.freeze({
@@ -304,7 +449,8 @@ export function createCombatRuntime({
     { impactAtMs = null } = {}
   ) {
     if (
-      activeByActor.get(record.action.actorId) !== record
+      activeByActor.get(record.action.actorId) !== record ||
+      record.resolved
     ) {
       return null;
     }
@@ -353,7 +499,9 @@ export function createCombatRuntime({
           : effectiveAction.impactAtMs
       );
     const targetActionContext =
-      targetRecord && targetRecord !== record
+      targetRecord &&
+      targetRecord !== record &&
+      !targetRecord.resolved
         ? Object.freeze({
             action: targetRecord.action,
             elapsedMs: Math.max(
@@ -370,8 +518,15 @@ export function createCombatRuntime({
       targetActionContext
     });
 
-    activeByActor.delete(record.action.actorId);
-    onProgress(idleProgress(record.action.actorId));
+    const resolvedAtMs =
+      effectiveReaction?.outcome === "countered"
+        ? effectiveReaction.readyAtMs
+        : effectiveAction.impactAtMs;
+
+    enterRecovery(record, {
+      resolvedAtMs,
+      atNowMs
+    });
 
     const koActorId = koActorIdFromResolution(resolution);
     if (koActorId) {
@@ -393,7 +548,9 @@ export function createCombatRuntime({
   }) {
     if (
       activeByActor.get(leftRecord.action.actorId) !== leftRecord ||
-      activeByActor.get(rightRecord.action.actorId) !== rightRecord
+      activeByActor.get(rightRecord.action.actorId) !== rightRecord ||
+      leftRecord.resolved ||
+      rightRecord.resolved
     ) {
       return;
     }
@@ -424,14 +581,14 @@ export function createCombatRuntime({
     const ordered = [];
 
     if (resolutions.left !== null) {
-      activeByActor.delete(
-        leftRecord.action.actorId
-      );
-      onProgress(
-        idleProgress(
-          leftRecord.action.actorId
-        )
-      );
+      enterRecovery(leftRecord, {
+        resolvedAtMs: Math.max(
+          0,
+          currentCandidate.atClockMs -
+            leftRecord.startedAtClockMs
+        ),
+        atNowMs: currentCandidate.atClockMs
+      });
       ordered.push({
         sequence: leftRecord.sequence,
         resolution: resolutions.left
@@ -439,14 +596,14 @@ export function createCombatRuntime({
     }
 
     if (resolutions.right !== null) {
-      activeByActor.delete(
-        rightRecord.action.actorId
-      );
-      onProgress(
-        idleProgress(
-          rightRecord.action.actorId
-        )
-      );
+      enterRecovery(rightRecord, {
+        resolvedAtMs: Math.max(
+          0,
+          currentCandidate.atClockMs -
+            rightRecord.startedAtClockMs
+        ),
+        atNowMs: currentCandidate.atClockMs
+      });
       ordered.push({
         sequence: rightRecord.sequence,
         resolution: resolutions.right
@@ -471,6 +628,18 @@ export function createCombatRuntime({
     const records = activeRecords();
 
     for (const record of records) {
+      if (record.resolved) {
+        due.push({
+          type: "recovery",
+          at:
+            recoveryCompleteAtClockMs(record) ??
+            Number.POSITIVE_INFINITY,
+          sequence: record.sequence,
+          record
+        });
+        continue;
+      }
+
       if (!record.released) {
         due.push({
           type: "release",
@@ -487,14 +656,23 @@ export function createCombatRuntime({
       });
     }
 
-    for (let leftIndex = 0; leftIndex < records.length; leftIndex += 1) {
+    const clashRecords =
+      unresolvedRecords();
+
+    for (
+      let leftIndex = 0;
+      leftIndex < clashRecords.length;
+      leftIndex += 1
+    ) {
       for (
         let rightIndex = leftIndex + 1;
-        rightIndex < records.length;
+        rightIndex < clashRecords.length;
         rightIndex += 1
       ) {
-        const leftRecord = records[leftIndex];
-        const rightRecord = records[rightIndex];
+        const leftRecord =
+          clashRecords[leftIndex];
+        const rightRecord =
+          clashRecords[rightIndex];
         const candidate = projectileClashCandidate({
           leftAction: leftRecord.action,
           leftStartedAtClockMs: leftRecord.startedAtClockMs,
@@ -530,7 +708,8 @@ export function createCombatRuntime({
           const priority = {
             release: 0,
             clash: 1,
-            resolution: 2
+            resolution: 2,
+            recovery: 3
           };
           return priority[left.type] - priority[right.type];
         }
@@ -541,8 +720,13 @@ export function createCombatRuntime({
           processRelease(item.record);
         } else if (item.type === "clash") {
           processProjectileClash(item);
-        } else {
+        } else if (item.type === "resolution") {
           processResolution(item.record, atNowMs);
+        } else {
+          processRecoveryComplete(
+            item.record,
+            atNowMs
+          );
         }
       });
 
@@ -600,6 +784,24 @@ export function createCombatRuntime({
       });
     }
     if (activeByActor.has(actorId)) {
+      const record =
+        activeByActor.get(actorId);
+      if (record?.resolved) {
+        const completeAt =
+          recoveryCompleteAtClockMs(record);
+        return Object.freeze({
+          ok: false,
+          outcome: "recovering",
+          remainingRecoveryMs:
+            completeAt === null
+              ? 0
+              : Math.max(
+                  0,
+                  completeAt - now()
+                )
+        });
+      }
+
       return Object.freeze({
         ok: false,
         outcome: "action_in_progress"
@@ -625,6 +827,8 @@ export function createCombatRuntime({
       reaction: null,
       startedAtClockMs: current,
       released: false,
+      resolved: false,
+      resolvedAtMs: null,
       sequence: sequence++
     };
 
@@ -675,7 +879,10 @@ export function createCombatRuntime({
   function reactionRecord(againstActorId = null) {
     if (againstActorId !== null) {
       const record = activeByActor.get(againstActorId);
-      return record?.action.actionType === "skill"
+      return (
+        record?.action.actionType === "skill" &&
+        !record.resolved
+      )
         ? record
         : null;
     }
@@ -683,6 +890,7 @@ export function createCombatRuntime({
     const candidates = activeRecords().filter(
       (record) =>
         record.action.actionType === "skill" &&
+        !record.resolved &&
         !record.reaction
     );
 
@@ -865,6 +1073,13 @@ export function createCombatRuntime({
       return Object.freeze({
         ok: false,
         outcome: "no_action"
+      });
+    }
+
+    if (record.resolved) {
+      return Object.freeze({
+        ok: false,
+        outcome: "already_resolved"
       });
     }
 
