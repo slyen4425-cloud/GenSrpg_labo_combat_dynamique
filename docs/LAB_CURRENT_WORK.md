@@ -23090,3 +23090,78 @@ Les tags « à cibler » restent visibles uniquement pour `cleanse/dispel`, où 
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour preview utilisateur**.
+
+
+## Chantier — Status Readability V2 — 2026-10-02
+
+Base exacte : `3414ad1e23a2204daf79f26cdd4e381982b713c6` (DoT Editor Clarity V1 GREEN).
+
+- checkpoint de départ : `checkpoint/lab-start-status-readability-v2-2026-10-02` ;
+- branche : `work/lab-status-readability-v2-2026-10-02`.
+
+### Retour utilisateur
+
+1. la coloration du modèle est trop faible ou semble inactive, y compris avec une intensité réglée à `1` ;
+2. les buffs/debuffs doivent aussi être visibles par des icônes sous la barre de vie.
+
+### Diagnostic
+
+La teinte actuelle est une couche masquée qui utilise `mix-blend-mode: color`.
+Ce mode conserve fortement la luminosité du sprite d'origine : `tintOpacity = 1` ne signifie donc pas visuellement « couleur maximale ».
+
+Les statuts actifs existent déjà dans l'unique snapshot autoritaire `fighter.statusEffects`. Aucune nouvelle mémoire de statut ni minuterie ne doit être créée pour les icônes.
+
+### Objectif
+
+#### A — Coloration
+
+- conserver le masque basé sur l'alpha du sprite ;
+- supprimer la dépendance à `mix-blend-mode: color` ;
+- utiliser une superposition normale dont l'opacité est directement `tintOpacity` ;
+- garantir le sens utilisateur :
+  - `0` = aucune teinte ;
+  - `0.5` = coloration moyenne ;
+  - `1` = silhouette fortement/reellement colorée avec la couleur choisie.
+
+#### B — Icônes buff/debuff sous PV
+
+Le même `dom-status-fx.js` devient l'unique renderer de présentation des statuts :
+- modèle : teinte/sprite ;
+- HUD : icônes des statuts actifs.
+
+Source unique :
+`Combat Session -> snapshot fighter.statusEffects -> dom-status-fx.sync(state)`.
+
+Chaque icône :
+- correspond à un statut réellement actif ;
+- porte sa polarité `beneficial / detrimental / neutral` ;
+- affiche son stack si > 1 ;
+- disparaît automatiquement quand le statut disparaît du snapshot ;
+- utilise une icône configurée si disponible, sinon le sprite de statut, sinon un badge générique de polarité.
+
+### Présentation
+
+`SkillPresentationBindingV3.statusVisuals[statusId]` peut recevoir un asset `icon` optionnel.
+Ce champ est purement visuel et ne modifie jamais `StatusEffectV1`.
+
+### Protégé
+
+- `StatusEffectV1` inchangé ;
+- runtime des statuts inchangé ;
+- aucune horloge/timer supplémentaire ;
+- aucune copie de durée de statut ;
+- aucun cache métier de statuts ;
+- aucun branchement en dur par `statusId` ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD prévu
+
+1. RED : intensité `1` produit une couche normale à opacité `1`, sans blend `color` ;
+2. RED : un statut actif produit exactement une icône sous les PV, retirée à expiration ;
+3. RED : buff/debuff utilisent la polarité du statut réel ;
+4. RED : stack > 1 visible sans seconde autorité ;
+5. RED : 1v1 et 2v2 exposent les hosts HUD au renderer unique ;
+6. suite complète GREEN puis checkpoint/preview.
+
+État : **CHANTIER OUVERT — TDD avant implémentation**.
