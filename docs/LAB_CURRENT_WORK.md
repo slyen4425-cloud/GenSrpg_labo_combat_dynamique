@@ -22870,3 +22870,107 @@ C. statut : RED binding présentation indépendant -> rendu tint/sprite -> retra
 D. suite complète GREEN puis checkpoint/preview utilisateur.
 
 État : **CHANTIER OUVERT — TDD avant implémentation**.
+
+
+### Résultat technique — Combat Feedback Readability V1
+
+Base :
+- `39920ab16462510cb04bf2e1d2dd5b75380a8734` ;
+- Skill Selector Grouping V1 GREEN.
+
+#### RED dédiés
+
+- dégâts génériques : `0dddb9346d7b5b3825a0725036d6d6530a7b3edc` — CI `37042292961` FAILURE attendue ;
+- son trajet projectile : `49d0f2bed5808389396fda501f9cec29c5dd14c9` — CI `37042297797` FAILURE attendue ;
+- visuel statuts : `7cd99c2e62cf8b5eb2c5a40c01a4eaefb7ab23de` — CI `37042303719` FAILURE attendue.
+
+#### A — Dégâts visuels génériques
+
+Nouveau propriétaire de projection :
+- `src/core/combat/combat-health-feedback-v1.js`.
+
+Le Runtime publie `onHealthDelta` uniquement à partir du changement HP entre snapshots autoritaires.
+
+Le renderer affiche un nombre flottant `-X` sur la vraie cible.
+
+Aucune formule de dégâts n'est copiée dans l'UI.
+
+Le système couvre automatiquement :
+- dégâts directs ;
+- dégâts de zone ;
+- DoT/statuts ;
+- toute future mutation négative des PV passant par la session.
+
+#### B — Son de trajet projectile
+
+Le slot existant `audio.travel` est maintenant raccordé complètement :
+- choix dans l'éditeur ;
+- catégorie audio `travel` ;
+- sauvegarde/import/export dans la présentation ;
+- lecture au trajet projectile ;
+- boucle pendant le trajet pour les capacités éditées ;
+- arrêt à l'impact, clash, interruption ou annulation.
+
+Le Presenter reste propriétaire du cycle de présentation ; l'Audio Adapter reste lecteur.
+
+#### C — Visuel persistant des statuts
+
+Ajout de `SkillPresentationBindingV3` avec `statusVisuals`.
+
+`StatusEffectV1` est resté strictement inchangé.
+
+L'éditeur permet pour chaque effet `apply_status` :
+- Aucun ;
+- Coloration du modèle ;
+- Sprite autour du modèle ;
+- Sprite + coloration.
+
+Paramètres :
+- couleur et intensité ;
+- sprite ;
+- scale ;
+- opacité.
+
+Aides de couleur initiale :
+- poison/toxique : vert ;
+- brûlure/feu : rouge ;
+- glace/gel : bleu ;
+- électrique/choc : jaune ;
+- autre : violet.
+
+Le renderer `dom-status-fx.js` suit uniquement le snapshot de statuts réel ; aucun timer de durée supplémentaire n'est créé.
+
+Les clients 1v1 et 2v2 utilisent le même renderer et le même registre de présentation.
+
+#### Revue des anciennes sentinelles
+
+Deux invariants historiques ont été recadrés car ils étaient devenus faux :
+- la sentinelle « miss » interdisait le mot `damage` dans toute la CSS ; elle vérifie désormais uniquement le bloc CSS de `miss` ;
+- la sentinelle audio imposait exactement 5 sélecteurs ; elle attend désormais les 6 sélecteurs voulus, dont le nouveau trajet projectile.
+
+Aucune couverture métier n'a été retirée.
+
+#### Validation
+
+- CI technique : `37043728390` — SUCCESS ;
+- suite complète : **859/859 PASS, 0 FAIL** ;
+- sentinelle vrai chemin statut ajoutée : `44643333851c8d5c99a80eb957bcb254502b84dd`, CI finale à sceller après documentation.
+
+#### Invariants
+
+Aucun changement dans :
+- Action Resolver ;
+- règles de dégâts/résistances ;
+- valeurs de capacités ;
+- énergie/cooldown/clash ;
+- contrat gameplay `StatusEffectV1` ;
+- `Zombicide-40k`.
+
+Aucun :
+- second moteur de dégâts ;
+- timer global ;
+- observer global ;
+- branchement par `skillId` ou `statusId` en dur ;
+- merge vers `main`.
+
+État : **GREEN technique — documentation finale puis checkpoint/preview utilisateur**.
