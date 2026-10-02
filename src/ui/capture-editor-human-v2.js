@@ -7874,14 +7874,14 @@ export function mountCaptureEditorHumanV2({
       syncLoadoutAvailability();
 
       updateCreatureLibraryState(
-        "Catalogue Monster Capture historique chargé. Chargement des capacités et modèles vitrine…",
+        "Catalogue Monster Capture historique chargé. Chargement des modèles vitrine…",
         "ok"
       );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des capacités et modèles vitrine en cours.",
+          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des modèles vitrine en cours.",
           "info"
         );
       }
