@@ -22953,8 +22953,9 @@ Aucune couverture métier n'a été retirée.
 #### Validation
 
 - CI technique : `37043728390` — SUCCESS ;
-- suite complète : **859/859 PASS, 0 FAIL** ;
-- sentinelle vrai chemin statut ajoutée : `44643333851c8d5c99a80eb957bcb254502b84dd`, CI finale à sceller après documentation.
+- sentinelle vrai chemin statut : `44643333851c8d5c99a80eb957bcb254502b84dd` ;
+- CI vrai chemin : `37043873261` — SUCCESS ;
+- suite complète : **860/860 PASS, 0 FAIL**.
 
 #### Invariants
 
