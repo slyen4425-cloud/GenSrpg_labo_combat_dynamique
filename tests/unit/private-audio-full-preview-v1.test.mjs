@@ -69,7 +69,11 @@ test("every private audio selector has a prelisten action and dedicated controll
   const previewCount =
     (html.match(/data-private-audio-preview/g) ?? []).length;
 
-  assert.equal(selectorCount, 5);
+  assert.equal(
+    selectorCount,
+    6,
+    "cast, projectile travel, impact and creature audio selectors must all expose preview"
+  );
   assert.equal(previewCount, selectorCount);
 
   const module = await import(
