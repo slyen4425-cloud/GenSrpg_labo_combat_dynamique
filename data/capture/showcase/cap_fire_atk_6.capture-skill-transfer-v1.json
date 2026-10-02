@@ -23,6 +23,7 @@
       "travelMs": 0,
       "recoveryMs": 0,
       "cooldownMs": 3500,
+      "maxUsesPerCombat": 6,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
         "short",
@@ -85,8 +86,7 @@
             "channel": null
           }
         }
-      ],
-      "maxUsesPerCombat": 1
+      ]
     },
     "presentation": {
       "id": "skill:cap_fire_atk_6",
