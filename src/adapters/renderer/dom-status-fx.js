@@ -211,11 +211,7 @@ export function createDomStatusFxRenderer({
             definition?.id ?? ""
           ).trim();
 
-        if (
-          !statusId ||
-          definition?.polarity !==
-            "detrimental"
-        ) {
+        if (!statusId) {
           continue;
         }
 
