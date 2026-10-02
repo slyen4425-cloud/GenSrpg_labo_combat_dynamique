@@ -34,7 +34,7 @@ test("combat composition roots wire projectile contact on FX renderer, never aud
 
     assert.match(
       fxConfig,
-      /onProjectileContact\(contact\)[\s\S]*runtime\?\.reportProjectileContact\(contact\)/,
+      /onProjectileContact\(contact\)[\s\S]*runtime\?\.reportActionContact\(contact\)/,
       `${path}: FX renderer must own the contact callback routing`
     );
     assert.doesNotMatch(
