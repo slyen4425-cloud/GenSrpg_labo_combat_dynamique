@@ -432,6 +432,7 @@ export async function mountCoop2v2Test({
     typeof visuals.playEventFor !== "function" ||
     typeof visuals.playApproachFor !== "function" ||
     typeof visuals.getFxAnchorFor !== "function" ||
+    typeof visuals.getCollisionModelFor !== "function" ||
     typeof visuals.getCreatureDescriptor !== "function"
   ) {
     throw new TypeError(
@@ -607,6 +608,9 @@ export async function mountCoop2v2Test({
     arena,
     onProjectileContact(contact) {
       runtime?.reportProjectileContact(contact);
+    },
+    targetCollisionModelFor(slotId) {
+      return visuals.getCollisionModelFor(slotId);
     },
     anchors: motionAnchors,
     targetAnchors: fighterContainers,
