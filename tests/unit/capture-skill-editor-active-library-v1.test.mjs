@@ -102,7 +102,7 @@ test("showcase Tempete draft expands to complete editable fields from the active
   assert.equal(fields.energyCost, 5);
   assert.equal(fields.preparationMs, 2000);
   assert.equal(fields.cooldownMs, 3500);
-  assert.equal(fields.maxUsesPerCombat, 1);
+  assert.equal(fields.maxUsesPerCombat, 6);
   assert.equal(
     fields.activationRequirements.conditions[0].threshold,
     25000
