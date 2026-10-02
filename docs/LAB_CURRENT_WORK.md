@@ -22768,3 +22768,105 @@ Invariants :
 - aucun merge vers `main`.
 
 État : **GREEN technique — scellement documentaire puis checkpoint/preview utilisateur**.
+
+
+## Chantier — Combat Feedback Readability V1 — 2026-10-02
+
+Base exacte : `39920ab16462510cb04bf2e1d2dd5b75380a8734` (Skill Selector Grouping V1 — checkpoint/preview GREEN).
+
+- checkpoint de départ : `checkpoint/lab-start-combat-feedback-readability-v1-2026-10-02` ;
+- branche : `work/lab-combat-feedback-readability-v1-2026-10-02`.
+
+### Retour utilisateur
+
+Trois besoins de lisibilité combat :
+1. afficher visuellement les dégâts réellement infligés par toute source de dégâts ;
+2. pouvoir configurer un son de trajet pour les projectiles ;
+3. rendre les debuffs/statuts visibles sur le modèle via coloration, sprite ou combinaison des deux.
+
+### Sous-lot A — Dégâts visuels génériques
+
+Principe : le visuel ne recalcule jamais les dégâts. Le Runtime compare les snapshots avant/après mutation et publie uniquement le delta PV réellement appliqué. L'UI/renderer affiche ce delta.
+
+Chaîne cible :
+`Combat Session / effets / DoT -> état HP -> Combat Runtime health-delta -> FX renderer -> nombre flottant`.
+
+Doit couvrir : dégâts directs, zones, DoT/statuts et toute future source modifiant les PV.
+
+### Sous-lot B — Son trajet projectile
+
+Le contrat de présentation supporte déjà le slot audio `travel`, mais l'éditeur et le lecteur runtime ne le raccordent pas complètement.
+
+Objectif :
+- choix audio trajet dans l'éditeur ;
+- persistance dans SkillPresentationBinding ;
+- lecture au release/travel ;
+- arrêt avec l'action/projectile si nécessaire ;
+- aucune logique de combat dans l'audio.
+
+### Sous-lot C — Visuel de statut/debuff
+
+Le statut gameplay reste strictement `StatusEffectV1`.
+Son apparence est portée par une nouvelle version de SkillPresentationBinding, sans champ visuel dans le contrat métier.
+
+Modes prévus par statut :
+- Aucun ;
+- Coloration ;
+- Sprite ;
+- Sprite + coloration.
+
+Paramètres présentation :
+- couleur ;
+- opacité coloration ;
+- asset sprite ;
+- échelle sprite ;
+- opacité sprite.
+
+Le renderer doit synchroniser l'apparence avec les statuts actifs du snapshot : apparition à l'application, maintien pendant la durée, retrait automatique à expiration/cleanse/dispel.
+
+### Autorités
+
+- dégâts / PV / statuts : Combat Session + moteurs métier existants ;
+- détection du delta PV : Combat Runtime, projection uniquement ;
+- audio : Audio Adapter ;
+- apparence statut : Render Adapter ;
+- éditeur : configuration seulement.
+
+### Fichiers autorisés
+
+- `src/core/combat/combat-runtime.js` ;
+- nouveau helper de projection santé dans `src/core/combat/` ;
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- nouveau renderer de statut si nécessaire ;
+- `src/adapters/audio/dom-combat-audio.js` ;
+- `src/adapters/renderer/capture-skill-presentation-assets-v2.js` ;
+- `src/contracts/skill-presentation-binding*.js` ;
+- `src/ui/demo-app.js` ;
+- `src/ui/combat-test-ui.js` ;
+- `src/ui/combat-2v2-test-ui.js` ;
+- `src/ui/capture-editor-human-v2.js` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- `examples/dom-demo/demo.css` ;
+- tests dédiés ;
+- documentation architecture/current work.
+
+### Protégé
+
+- Action Resolver et règles de dégâts sauf preuve RED explicite ;
+- définition métier de StatusEffectV1 ;
+- valeurs dégâts/résistances ;
+- logique énergie/cooldown/clash ;
+- aucune seconde boucle/timer global ;
+- aucun observer global ;
+- aucun branchement par skillId/statusId en dur ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD
+
+A. dégâts : RED delta HP réel -> callback Runtime -> nombre flottant 1v1/2v2 ;
+B. audio : RED champ éditeur -> binding travel -> lecture runtime ;
+C. statut : RED binding présentation indépendant -> rendu tint/sprite -> retrait à expiration ;
+D. suite complète GREEN puis checkpoint/preview utilisateur.
+
+État : **CHANTIER OUVERT — TDD avant implémentation**.
