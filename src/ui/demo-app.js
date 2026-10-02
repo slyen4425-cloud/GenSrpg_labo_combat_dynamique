@@ -3,7 +3,10 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
-import { createDomVisibleModelCollisionModel } from "../adapters/renderer/dom-visible-model-contact.js";
+import {
+  createDomVisibleModelCollisionModel,
+  watchVisibleModelsContact
+} from "../adapters/renderer/dom-visible-model-contact.js";
 import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
 import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
@@ -496,7 +499,8 @@ export async function mountCombatDemo({
     {
       travelMs,
       targetSlot = null,
-      onPhase = null
+      onPhase = null,
+      onContact = null
     } = {}
   ) {
     if (disposed) {
@@ -570,9 +574,38 @@ export async function mountCombatDemo({
     slot.setApproachActive(true, approachDepth);
 
     const handle = slot.renderer.play(plan);
+    const returnMs = Math.max(
+      1,
+      planDurationMs - Math.max(0, Number(travelMs) || 0)
+    );
+
+    let contactWatcher = null;
+    if (
+      typeof onContact === "function" &&
+      slot.collisionModel?.ready &&
+      target.collisionModel?.ready
+    ) {
+      contactWatcher = watchVisibleModelsContact({
+        sourceModel: slot.collisionModel,
+        targetModel: target.collisionModel,
+        onContact() {
+          try {
+            onContact(
+              Object.freeze({
+                actorId: slotKey,
+                targetId: target.key
+              })
+            );
+          } catch {}
+        }
+      });
+    }
+
     const approachRecord = Object.freeze({
       handle,
-      finished: handle.finished
+      finished: handle.finished,
+      contactWatcher,
+      returnMs
     });
     activeApproachBySlot.set(slotKey, approachRecord);
 
@@ -624,6 +657,7 @@ export async function mountCombatDemo({
       })
       .finally(() => {
         cueSchedule.clear();
+        approachRecord.contactWatcher?.cancel?.();
         if (activeApproachBySlot.get(slotKey) === approachRecord) {
           activeApproachBySlot.delete(slotKey);
         }
@@ -634,8 +668,42 @@ export async function mountCombatDemo({
       });
   }
 
+  function finishApproachAtContactFor(slotKey) {
+    const slot = slotOf(slotKey);
+    const record = activeApproachBySlot.get(slotKey);
+
+    if (!record) {
+      return Promise.resolve({
+        status: "no_active_approach"
+      });
+    }
+
+    activeApproachBySlot.delete(slotKey);
+    record.contactWatcher?.cancel?.();
+    slot.setApproachActive(false);
+
+    const returnHandle =
+      slot.renderer.returnToBaseFromCurrent({
+        durationMs: record.returnMs
+      });
+
+    return Promise.resolve(returnHandle.finished)
+      .then((result) => {
+        if (
+          !disposed &&
+          slot.visible &&
+          result?.status === "finished"
+        ) {
+          startIdleFor(slotKey);
+        }
+        return result;
+      });
+  }
+
   function cancelFor(slotKey) {
     const slot = slotOf(slotKey);
+    const record = activeApproachBySlot.get(slotKey);
+    record?.contactWatcher?.cancel?.();
     activeApproachBySlot.delete(slotKey);
     slot.setApproachActive(false);
     slot.renderer.cancel();
@@ -702,6 +770,7 @@ export async function mountCombatDemo({
     playEventFor,
     playMovementFor,
     playApproachFor,
+    finishApproachAtContactFor,
     cancelFor,
     startIdleFor,
     setCreatureFor,
@@ -724,6 +793,9 @@ export async function mountCombatDemo({
         return;
       }
       disposed = true;
+      for (const record of activeApproachBySlot.values()) {
+        record.contactWatcher?.cancel?.();
+      }
       activeApproachBySlot.clear();
       for (const timerId of movementCueTimers) {
         globalThis.clearTimeout(timerId);
