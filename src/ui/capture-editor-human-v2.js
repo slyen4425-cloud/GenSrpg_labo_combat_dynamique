@@ -1154,6 +1154,9 @@ function presentationForSkill(fields) {
   const castAudio = audioSkillSlot(
     presentation.castAudioAssetId
   );
+  const travelAudio = audioSkillSlot(
+    presentation.travelAudioAssetId
+  );
   const impactAudio = audioSkillSlot(
     presentation.impactAudioAssetId
   );
@@ -1166,6 +1169,7 @@ function presentationForSkill(fields) {
     persistentZone !== null;
   const hasAudio =
     castAudio !== null ||
+    travelAudio !== null ||
     impactAudio !== null;
 
   if (!hasVisual && !hasAudio) {
@@ -1192,6 +1196,9 @@ function presentationForSkill(fields) {
   const audio = {};
   if (castAudio !== null) {
     audio.cast = castAudio;
+  }
+  if (travelAudio !== null) {
+    audio.travel = travelAudio;
   }
   if (impactAudio !== null) {
     audio.impact = impactAudio;
@@ -1724,6 +1731,8 @@ export function humanSkillEditorFieldsFromDraftV1(
         null,
       castAudioAssetId:
         audio.cast?.assetId ?? "",
+      travelAudioAssetId:
+        audio.travel?.assetId ?? "",
       impactAudioAssetId:
         audio.impact?.assetId ?? ""
     }
@@ -2397,6 +2406,10 @@ function writeSkillDraftFields(
       fields.presentation.castAudioAssetId
     ],
     [
+      "[data-skill-travel-audio]",
+      fields.presentation.travelAudioAssetId
+    ],
+    [
       "[data-skill-impact-audio]",
       fields.presentation.impactAudioAssetId
     ]
@@ -2470,6 +2483,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-zone-offset-x]", 0],
     ["[data-skill-zone-offset-y]", 0],
     ["[data-skill-cast-audio]", ""],
+    ["[data-skill-travel-audio]", ""],
     ["[data-skill-impact-audio]", ""]
   ];
 
@@ -5615,6 +5629,10 @@ function readSkillFields(root) {
       castAudioAssetId: selectedValue(
         root,
         "[data-skill-cast-audio]"
+      ),
+      travelAudioAssetId: selectedValue(
+        root,
+        "[data-skill-travel-audio]"
       ),
       impactAudioAssetId: selectedValue(
         root,
