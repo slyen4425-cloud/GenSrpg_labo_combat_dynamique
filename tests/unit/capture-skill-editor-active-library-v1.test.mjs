@@ -182,3 +182,20 @@ test("active skill selector is refreshed after base hydration and showcase repla
   assert.ok(showcaseHydrate >= 0);
   assert.ok(refreshAfterShowcase > showcaseHydrate);
 });
+
+
+test("Tempete active editor fields round-trip back to the same configured draft", async () => {
+  const source = await tempeteDraft();
+  const fields =
+    humanEditor.humanSkillEditorFieldsFromDraftV1(
+      source
+    );
+  const rebuilt =
+    humanEditor.buildHumanSkillDraftV1(fields);
+
+  assert.deepEqual(
+    rebuilt,
+    source,
+    "selecting and rebuilding the active showcase skill must not restore or lose legacy values"
+  );
+});
