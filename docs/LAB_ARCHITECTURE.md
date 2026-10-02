@@ -308,6 +308,48 @@ Chaîne autoritaire :
 
 Une future famille de projectiles `tracking / homing / anti-air` pourra avoir une stratégie de ciblage distincte et data-driven. Elle ne doit pas être simulée en réutilisant silencieusement l'anchor animé comme comportement par défaut.
 
+### Contact visible universel — projectile et attaques mobiles
+
+Le contact visuel n'est plus une spécialité du projectile. Le Combat Runtime expose une seule frontière sémantique : `reportActionContact()`.
+
+Cette frontière accepte uniquement :
+- une compétence `form:"projectile"` ;
+- une compétence `form:"contact"` dont `approachMode` est `ground`, `aerial` ou `teleport`.
+
+Elle refuse les formes qui ne possèdent pas de contact visuel autoritaire (`contact + none`, zone, beam, etc.). Elle vérifie également l'identité de compétence lorsqu'un `skillId` est fourni, afin qu'un signal retardé provenant d'une ancienne animation ne puisse jamais résoudre une nouvelle action.
+
+Chaîne autoritaire commune :
+
+`capteur visuel -> Combat Runtime.reportActionContact() -> Combat Session / Action Resolver -> onResolved -> Presenter`.
+
+Il n'existe donc pas une autorité projectile et une autorité contact séparées.
+
+#### Attaques où la créature se déplace
+
+Pour `ground` et `aerial` :
+- le Visual Controller utilise les deux `collisionModel` opaques déjà dérivés des sprites réellement affichés ;
+- un watcher `requestAnimationFrame` existe uniquement pendant l'approche active ;
+- le contact modèle↔modèle est testé sur les pixels opaques, avec les transformations écran réelles des deux combattants ;
+- un balayage continu entre deux frames utilise le mouvement relatif des deux modèles afin d'éviter le tunneling ;
+- le watcher s'arrête au premier contact ou à la fin/annulation de l'approche.
+
+Pour `teleport` :
+- le même watcher et les mêmes modèles sont utilisés ;
+- le balayage spatial entre deux frames est volontairement désactivé ;
+- seul un chevauchement réellement affiché après repositionnement peut signaler le contact ;
+- une téléportation ne crée donc jamais une fausse collision le long d'un trajet invisible.
+
+Le Visual Controller ne décide ni dégâts, ni esquive, ni blocage, ni résultat. Il signale seulement le premier contact visible. Le Runtime traite d'abord les événements sémantiques déjà dus puis, si le signal est encore valide, avance l'`impactAtMs` effectif de cette occurrence et appelle l'unique `processResolution()`.
+
+Les projectiles et les attaques mobiles partagent ainsi :
+- la même géométrie visuelle de cible ;
+- la même horloge Runtime ;
+- la même API d'acceptation de contact ;
+- la même chaîne Session / Resolver / Presenter.
+
+Aucune compétence n'est reconnue par son ID ou son nom dans ce mécanisme.
+
+
 ### Feedback local d'impact raté
 
 Un résultat sémantique `evaded` peut produire un feedback FX local `miss`.
