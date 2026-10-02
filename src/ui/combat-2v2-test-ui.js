@@ -433,7 +433,6 @@ export async function mountCoop2v2Test({
     typeof visuals.playApproachFor !== "function" ||
     typeof visuals.getFxAnchorFor !== "function" ||
     typeof visuals.getCollisionModelFor !== "function" ||
-    typeof visuals.finishApproachAtContactFor !== "function" ||
     typeof visuals.getCreatureDescriptor !== "function"
   ) {
     throw new TypeError(
