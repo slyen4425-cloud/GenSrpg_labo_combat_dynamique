@@ -258,7 +258,7 @@ Pour toute approche qui déplace réellement un combattant vers la position de l
 - le calcul est partagé entre les approches, sans condition codée sur `player` ou `opponent` ;
 - les bornes et l'intensité proviennent d'un preset unique `specialMoves.perspective` du profil ;
 - le retour à la position stable restaure toujours l'échelle de base ;
-- cette perspective n'influence jamais portée, dégâts, esquive ou timestamp d'impact.
+- cette perspective n'influence jamais portée, dégâts ou esquive ; elle modifie uniquement la silhouette affichée. Si une action utilise le contact visible, l'instant effectif peut donc arriver plus tôt lorsque les silhouettes réellement rendues se rencontrent, toujours après validation du Combat Runtime.
 
 Invariant de lecture :
 
@@ -293,20 +293,47 @@ Pour le projectile générique du laboratoire :
 - pendant que le projectile FX est actif, le capteur projette le noyau projectile dans l'espace local du sprite cible et teste le masque opaque ; un balayage continu frame précédente -> frame courante empêche le tunneling même si cible et projectile bougent simultanément ;
 - cette géométrie est un **capteur**, jamais une autorité de résolution : elle émet uniquement `{ actorId, targetId, skillId }` et ne supprime pas elle-même le projectile, n'applique aucun dégât et ne choisit aucun résultat ;
 - le balayage continu ne crée pas une seconde horloge : il utilise uniquement les observations successives du `requestAnimationFrame` déjà borné à la durée de vie du projectile, et s'arrête immédiatement après le premier signal ;
-- le signal est transmis au `Combat Runtime`, qui traite d'abord tout événement sémantique déjà dû (release, clash ou impact nominal), puis vérifie que l'action est encore active, relâchée, de forme `projectile` et destinée à la cible signalée ;
+- le signal est transmis au `Combat Runtime`, qui traite d'abord tout événement sémantique déjà dû (release, clash ou impact nominal), puis vérifie que l'action est encore active, relâchée, portée par une forme contactable (`projectile` ou `contact`) et destinée à la cible signalée ;
 - si le contact est accepté, le Runtime devient l'unique propriétaire de l'impact effectif : il réduit `impactAtMs` et `travelMs` de cette occurrence à l'instant de contact observé, sans modifier la définition source de la compétence ;
 - `Combat Session / Action Resolver` appliquent alors normalement le résultat et les dégâts sur cette action effective ; le renderer ne reçoit qu'ensuite `onResolved` ;
 - le Presenter retire le projectile actif puis déclenche l'impact dans le même flux synchrone de présentation, ce qui garantit **disparition projectile -> impact immédiat** ;
-- un projectile déjà résolu, clashé, interrompu, destiné à une autre cible, non relâché ou non projectile ne peut pas être résolu par ce signal ;
+- une action déjà résolue, clashée, interrompue, destinée à une autre cible, non relâchée ou non contactable ne peut pas être résolue par ce signal ;
 - un impact sémantique `hit` est rendu à la position visuelle courante de la cible ;
 - un résultat `evaded` conserve son feedback sur le point stable où l'impact aurait dû se produire ;
 - le suivi de contact n'utilise pas de boucle permanente : un seul `requestAnimationFrame` chaîné existe uniquement pendant la vie du projectile FX, s'arrête après le premier contact signalé et est annulé au nettoyage/dispose.
 
 Chaîne autoritaire :
 
-`Projectile FX -> capteur géométrique DOM -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> onResolved -> Presenter -> suppression projectile -> impact`.
+`Projectile FX -> capteur géométrique DOM -> Combat Runtime.reportActionContact() -> Combat Session / Action Resolver -> onResolved -> Presenter -> suppression projectile -> impact`.
 
 Une future famille de projectiles `tracking / homing / anti-air` pourra avoir une stratégie de ciblage distincte et data-driven. Elle ne doit pas être simulée en réutilisant silencieusement l'anchor animé comme comportement par défaut.
+
+### Contact visible générique des actions mobiles
+
+Le même mécanisme est utilisé pour toute capacité où un élément visible doit physiquement rejoindre une cible.
+
+Formes actuellement contactables :
+- `projectile` ;
+- `contact`.
+
+Pour une attaque `contact` avec `approachMode = ground | aerial | teleport` :
+
+- l'attaquant et la cible utilisent chacun le **même masque opaque automatiquement dérivé du sprite réellement chargé** ;
+- les deux masques sont projetés via les repères du Visual Controller, donc avec exactement les mêmes position, `displayScale`, rotation, transform-origin, perspective et animation que ce que le joueur voit ;
+- le capteur compare les frontières opaques et effectue un balayage continu entre deux frames afin d'éviter le tunneling quand l'un ou les deux modèles bougent ;
+- le capteur n'applique aucun dégât et ne stoppe pas lui-même l'action ;
+- il émet seulement un signal vers `Combat Runtime.reportActionContact()` ;
+- le Runtime reste l'unique autorité qui accepte ou refuse le contact et peut réduire l'`impactAtMs` effectif ;
+- après `onResolved`, le Presenter demande au Visual Controller de terminer l'approche au point de contact accepté ; le même DOM Actor Renderer capture l'état visuel courant puis effectue le retour vers l'origine ;
+- l'attaquant ne continue donc pas jusqu'au centre théorique de la cible après un impact déjà accepté.
+
+Il n'existe aucun moteur spécifique à Griffe, Boule de feu, Plongeon ou Frappe téléportée.
+
+Chaîne autoritaire commune :
+
+`géométrie visible -> signal de contact -> Combat Runtime.reportActionContact() -> Combat Session / Action Resolver -> onResolved -> Presenter`.
+
+`travelMs` reste la **durée nominale maximale release -> impact**. Si aucun contact visible n'est observé plus tôt, le Runtime conserve l'impact nominal à `impactAtMs`. Si un contact visible valide est observé avant, le Runtime avance uniquement cette occurrence jusqu'à l'instant accepté.
 
 ### Feedback local d'impact raté
 
@@ -889,7 +916,7 @@ Le moteur distingue désormais cinq moments :
 
 Autorité :
 
-- `Combat Runtime` détermine quand l'action atteint `impactAtMs` ;
+- `Combat Runtime` est l'unique autorité de `impactAtMs` : il conserve le timestamp nominal ou l'avance à un contact visible accepté ;
 - `Action Resolver` applique les dégâts uniquement lors de la résolution à l'impact ;
 - Presenter / Animation / FX illustrent le résultat mais ne peuvent ni avancer ni retarder les dégâts.
 
@@ -1083,7 +1110,7 @@ Ces mouvements sont des événements visuels spécialisés :
 - `teleport-attack` ;
 - `aerial-attack`.
 
-Ils ne modifient ni portée, ni dégâts, ni timestamp d'impact.
+Ils ne modifient ni portée ni dégâts. Leur animation fournit une géométrie visible ; si les silhouettes se rencontrent avant l'impact nominal, seul le Combat Runtime peut avancer l'impact effectif.
 
 Le `Visual Controller` calcule uniquement l'écart géométrique DOM entre acteur et cible, puis transmet :
 
@@ -1103,14 +1130,14 @@ Aérien :
 
 Invariant :
 
-**les dégâts restent appliqués par Combat Rules à `impactAtMs`, même si l'animation visuelle continue ensuite pour revenir à sa position stable.**
+**les dégâts restent appliqués exclusivement par Combat Rules au `impactAtMs` détenu par le Runtime. Pour une action mobile, ce timestamp peut être l'impact nominal ou un contact visible accepté plus tôt. Après résolution, le retour visuel est purement présentation.**
 
 
 ### Approche corps à corps et charge lisible V6
 
 Les attaques de contact au sol utilisent désormais le même principe temporel que les projectiles et mouvements spéciaux.
 
-`SkillDefinition.travelMs` est l'autorité unique sur le temps `release -> impact`.
+`SkillDefinition.travelMs` définit la durée nominale maximale `release -> impact`. Le Combat Runtime reste l'autorité unique sur l'instant effectif et peut avancer cette occurrence lorsqu'un contact visible valide est signalé.
 
 Exemples :
 
@@ -1120,11 +1147,11 @@ Exemples :
 
 Chaîne :
 
-`préparation -> release -> déplacement au sol pendant travelMs -> impact/dégâts -> retour visuel`
+`préparation -> release -> déplacement vers la cible -> premier contact visible accepté (ou fin nominale travelMs) -> impact/dégâts -> retour visuel`
 
 Le mouvement de retour n'a aucune influence sur les dégâts.
 
-Le Visual Controller mesure la position réelle de la cible et l'Animation Core consomme cet offset avec le `travelMs` déjà décidé par Combat Rules.
+Le Visual Controller mesure la position réelle de la cible et l'Animation Core consomme cet offset avec le `travelMs` nominal. Pendant l'approche, le capteur visible compare les deux silhouettes opaques réelles ; il ne décide jamais du résultat.
 
 #### Aérien
 
@@ -1135,7 +1162,7 @@ L'Animation Core choisit la montée la plus haute entre :
 - le preset morphologique ;
 - la sortie réelle de l'arène calculée depuis la géométrie DOM.
 
-L'impact reste aligné exactement sur `travelMs`.
+Sans contact visible anticipé, l'impact reste aligné sur `travelMs`. Si les silhouettes se rencontrent avant, le Runtime accepte éventuellement ce contact et avance l'impact effectif.
 
 #### KO
 
