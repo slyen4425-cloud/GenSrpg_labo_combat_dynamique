@@ -23447,3 +23447,76 @@ Aucun :
 - merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview**.
+
+
+## Chantier — Flame Bite + Audio Sync V1 — 2026-10-02
+
+Base exacte : `fd9751f16a93e15327c7a25bba613e3d494bfbbf` (Functional Recovery V1 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-flame-bite-audio-sync-v1-2026-10-02` ;
+- branche : `work/lab-flame-bite-audio-sync-v1-2026-10-02`.
+
+### Entrée utilisateur
+
+Export : `gensrpg-capture-skill-lib_flame_bite.json`.
+
+Capacité :
+- id : `lib_flame_bite` ;
+- nom : `Morsure brûlante` ;
+- niveau requis : 15 ;
+- type : contact / approche ground ;
+- élément : fire ;
+- énergie : 5 ;
+- préparation : 700 ms ;
+- trajet : 700 ms ;
+- récupération : 0 ms ;
+- cooldown : 25 000 ms ;
+- dégâts directs : 10 feu ;
+- statut DoT : 5 feu toutes les 2 s pendant 10 s, stack jusqu'à 10 ;
+- impact visuel : `pack:capture:sprite-impact-physical-01` ;
+- impact audio : `gensrpg:sound:effect-ee93278c` ;
+- statut : teinte rouge `#d73920`, opacité 0.8.
+
+### Sous-lot A — intégration Showcase
+
+Intégrer l'export comme preset Capture autonome :
+- fichier transfer conservé comme source du preset ;
+- déclaration unique dans `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` ;
+- chargement par le pipeline existant `hydrateCaptureShowcaseSkillPresetsV1 -> importCaptureTransferJsonV1 -> applyCaptureTransferBatchToEditorStateV1` ;
+- aucune seconde définition de capacité.
+
+### Sous-lot B — synchronisation cast / impact audio
+
+Diagnostic sur le chemin réel :
+1. le cast one-shot est actuellement enregistré comme audio de préparation puis toujours stoppé au release ; avec une préparation courte, le son peut être tronqué ;
+2. l'impact audio est actuellement joué uniquement dans le case `outcome === "hit"`, alors que le FX impact est planifié pour `hit / blocked / reflected / immune` ;
+3. les médias sont créés seulement au moment exact du play, ce qui peut ajouter un retard de chargement/décodage avant un impact.
+
+### Correction cible
+
+- le même Presenter reste propriétaire du timing de présentation ;
+- le même Audio Adapter reste propriétaire de lecture ;
+- un cast one-shot lancé au début n'est plus coupé au release ; seuls les sons de préparation en boucle sont stoppés au release ;
+- interruption/annulation continue de stopper la préparation ;
+- l'impact audio est déclenché depuis le même plan sémantique que le FX `impact`, une seule fois ;
+- préchargement opportuniste des sons de la capacité au début de la préparation via le même Audio Adapter, sans horloge ni scheduler parallèle ;
+- aucun changement des timestamps du Combat Runtime.
+
+### TDD
+
+A. preset export présent et chargé une fois ;
+B. cast one-shot survit au release, cast loop est stoppé ;
+C. impact audio suit le plan `impact` y compris blocked/immune/reflected, sans doublon sur hit ;
+D. prime/preload réutilise le média préparé pour diminuer la latence ;
+E. suite complète GREEN.
+
+### Protégé
+
+- aucune modification de formule dégâts/DoT ;
+- aucune modification de Combat Session/Resolver pour l'audio ;
+- aucun timer audio sémantique supplémentaire ;
+- aucune seconde autorité d'impact ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+État : **CHANTIER OUVERT — TDD avant implémentation**.
