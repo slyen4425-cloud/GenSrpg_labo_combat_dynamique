@@ -17,6 +17,7 @@ export function createCombatResolutionPresenter({
   visuals,
   fx = null,
   audio = null,
+  onActionContact = null,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer
 }) {
@@ -32,6 +33,14 @@ export function createCombatResolutionPresenter({
   }
   if (audio && typeof audio.play !== "function") {
     throw new TypeError("audio must provide play() when supplied");
+  }
+  if (
+    onActionContact !== null &&
+    typeof onActionContact !== "function"
+  ) {
+    throw new TypeError(
+      "onActionContact must be a function when supplied"
+    );
   }
   if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
     throw new TypeError("timer functions are required");
@@ -184,6 +193,18 @@ export function createCombatResolutionPresenter({
         .playApproachFor(actorSlot, approachMode, {
           travelMs: action.travelMs,
           targetSlot,
+          onContact:
+            action.skill?.form === "contact" &&
+            typeof onActionContact === "function"
+              ? () =>
+                  onActionContact(
+                    Object.freeze({
+                      actorId: actorSlot,
+                      targetId: targetSlot,
+                      skillId
+                    })
+                  )
+              : null,
           onPhase({ label, phaseDurationMs }) {
             if (!skillId) {
               return;
