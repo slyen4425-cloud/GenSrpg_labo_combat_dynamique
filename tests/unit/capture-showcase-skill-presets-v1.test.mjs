@@ -25,6 +25,9 @@ import {
 import {
   createCombatSession
 } from "../../src/core/combat/combat-session.js";
+import {
+  normalizeBattleFormatDefinition
+} from "../../src/contracts/battle-format-definition.js";
 
 const PRESET_FILE =
   "data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json";
@@ -224,12 +227,41 @@ test("Tempete de flammes real Combat path enforces one use for the imported defi
     chargeTimeModifierPct: 0
   });
 
+  const battleFormat =
+    normalizeBattleFormatDefinition({
+      id: "showcase-1v1",
+      localActorId: "player",
+      teams: {
+        player: ["player"],
+        opponent: ["opponent"]
+      },
+      actors: [
+        {
+          actorId: "player",
+          teamId: "player",
+          creatureId: "crea-player",
+          displayName: "Player",
+          fighterConfigId: "crea-player",
+          controllerId: "human-local"
+        },
+        {
+          actorId: "opponent",
+          teamId: "opponent",
+          creatureId: "crea-opponent",
+          displayName: "Opponent",
+          fighterConfigId: "crea-opponent",
+          controllerId: "ai-enemy"
+        }
+      ]
+    });
+
   const session = createCombatSession({
     distance: "short",
     fighters: [
       fighter("player"),
       fighter("opponent")
-    ]
+    ],
+    battleFormat
   });
 
   session.advanceMs(25000);
