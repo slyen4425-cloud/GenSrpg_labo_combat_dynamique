@@ -3010,3 +3010,27 @@ Cas particuliers :
 - le KO/cancel/dispose de l'acteur lui-même peut retirer son record.
 
 Le cooldown reste une responsabilité distincte de la Session/état combat et n'est pas recalculé par le Runtime.
+
+
+## Audio Presentation Sync V1
+
+Le timing audio reste une projection de la timeline combat existante.
+
+Chaîne :
+`Combat Runtime -> Presenter semantic phase -> DomCombatAudio`.
+
+Règles :
+- cast démarre à la préparation ;
+- un cast one-shot n'est pas tronqué au release ;
+- un cast loop appartient à la préparation et est stoppé au release ;
+- travel appartient au trajet et est stoppé à la résolution/interruption ;
+- impact est joué depuis le même plan `impact` que le FX visuel ;
+- `primeSkill()` prépare les médias mais ne décide jamais quand ils jouent.
+
+Le préchargement n'est pas une autorité temporelle :
+- aucun timestamp ;
+- aucun timer ;
+- aucun outcome ;
+- aucune règle de combat.
+
+Le Presenter reste l'unique propriétaire du moment de présentation, dérivé des événements sémantiques du Runtime/Resolver.
