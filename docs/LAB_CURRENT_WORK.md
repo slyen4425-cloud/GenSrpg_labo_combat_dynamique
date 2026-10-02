@@ -21977,3 +21977,19 @@ PREVALIDATION smartphone attendue :
 5. vérifier qu'un projectile clashé disparaît toujours au point de clash.
 
 État : **GREEN technique — publication checkpoint/preview puis validation smartphone**.
+
+
+### Publication effective — Projectile Impact Sync V1
+
+État de publication avant ce scellement :
+- work/documentation : `cf5ff2c9e2dd16dee4721094a95ce62a6e5eaea4` ;
+- CI work : `36990955530` — SUCCESS ;
+- checkpoint : `checkpoint/lab-projectile-impact-sync-v1-green-2026-10-02` ;
+- CI checkpoint : `36990994749` — SUCCESS ;
+- preview : `preview/lab-projectile-impact-sync-v1-2026-10-02` ;
+- CI preview : `36990999409` — SUCCESS ;
+- suite complète : **813/813 PASS, 0 FAIL**.
+
+Après la CI du présent scellement documentaire, checkpoint et preview doivent être avancés en fast-forward vers le même HEAD, puis revérifiés.
+
+Statut : **GREEN technique publié — PREVALIDATION smartphone utilisateur en attente ; aucun merge vers main**.
