@@ -319,11 +319,19 @@ export async function mountCombatTest({
   const hpRefs = {
     player: {
       bar: requiredElement(root, '[data-combat-hp="player"]'),
-      value: requiredElement(root, '[data-combat-hp-value="player"]')
+      value: requiredElement(root, '[data-combat-hp-value="player"]'),
+      statusHost: requiredElement(
+        root,
+        '[data-combat-status-icons="player"]'
+      )
     },
     opponent: {
       bar: requiredElement(root, '[data-combat-hp="opponent"]'),
-      value: requiredElement(root, '[data-combat-hp-value="opponent"]')
+      value: requiredElement(root, '[data-combat-hp-value="opponent"]'),
+      statusHost: requiredElement(
+        root,
+        '[data-combat-status-icons="opponent"]'
+      )
     }
   };
 
@@ -433,9 +441,14 @@ export async function mountCombatTest({
       "function"
       ? createDomStatusFxRenderer({
           targetFor(actorId) {
-            return visuals.getStatusPresentationTargetFor(
-              actorId
-            );
+            return {
+              ...visuals.getStatusPresentationTargetFor(
+                actorId
+              ),
+              statusHost:
+                hpRefs[actorId]?.statusHost ??
+                null
+            };
           },
           statusPresentationFor(statusId) {
             return (
