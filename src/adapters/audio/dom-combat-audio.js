@@ -43,7 +43,99 @@ export function createDomCombatAudio({
   }
 
   const active = new Set();
+  const primedByAssetId = new Map();
   let disposed = false;
+
+  function prepareMedia(sound) {
+    if (!sound?.assetId) {
+      return null;
+    }
+
+    const asset =
+      resolveAudioAsset(sound.assetId);
+    if (!asset?.url) {
+      return null;
+    }
+
+    const audio = createAudio(asset.url);
+    try {
+      audio.preload = "auto";
+    } catch {}
+    audio.volume = clampVolume(
+      sound.volume ?? asset.volume,
+      1
+    );
+    audio.loop = Boolean(
+      sound.loop ?? asset.loop
+    );
+    try {
+      audio.load?.();
+    } catch {}
+
+    return {
+      audio,
+      asset
+    };
+  }
+
+  function primeSkill(
+    skillId,
+    {
+      actorSlot = null,
+      targetSlot = null
+    } = {}
+  ) {
+    if (disposed || !skillId) {
+      return Object.freeze({
+        status: disposed
+          ? "disposed"
+          : "ignored",
+        primedCount: 0
+      });
+    }
+
+    const presentation =
+      presentationForSkill(skillId, {
+        audioType: "prime",
+        sourceView: actorSlot,
+        targetView: targetSlot
+      });
+
+    let primedCount = 0;
+    for (const sound of [
+      presentation?.castSound,
+      presentation?.releaseSound,
+      presentation?.travelSound,
+      presentation?.impactSound
+    ]) {
+      if (
+        !sound?.assetId ||
+        primedByAssetId.has(sound.assetId)
+      ) {
+        continue;
+      }
+
+      const prepared =
+        prepareMedia(sound);
+      if (!prepared) {
+        continue;
+      }
+
+      primedByAssetId.set(
+        sound.assetId,
+        prepared
+      );
+      primedCount += 1;
+    }
+
+    return Object.freeze({
+      status:
+        primedCount > 0
+          ? "primed"
+          : "idle",
+      primedCount
+    });
+  }
 
   function play({
     type,
@@ -88,7 +180,23 @@ export function createDomCombatAudio({
       });
     }
 
-    const audio = createAudio(asset.url);
+    const primed =
+      primedByAssetId.get(
+        sound.assetId
+      ) ?? null;
+    if (primed) {
+      primedByAssetId.delete(
+        sound.assetId
+      );
+    }
+
+    const audio =
+      primed?.audio ??
+      createAudio(asset.url);
+
+    try {
+      audio.preload = "auto";
+    } catch {}
     audio.volume = clampVolume(
       sound.volume ?? asset.volume,
       1
@@ -141,6 +249,7 @@ export function createDomCombatAudio({
     return Object.freeze({
       status: "running",
       assetId: sound.assetId,
+      loop: Boolean(audio.loop),
       stop,
       finished
     });
@@ -157,11 +266,19 @@ export function createDomCombatAudio({
       return;
     }
     stopAll();
+    for (const prepared of primedByAssetId.values()) {
+      try {
+        prepared.audio.pause?.();
+        prepared.audio.currentTime = 0;
+      } catch {}
+    }
+    primedByAssetId.clear();
     disposed = true;
   }
 
   return Object.freeze({
     play,
+    primeSkill,
     stopAll,
     dispose,
     get activeCount() {
