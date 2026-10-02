@@ -22442,3 +22442,80 @@ Aucune modification de :
 Aucun timer supplémentaire, aucun observer global, aucune hitbox par ID, aucune seconde autorité.
 
 État : **GREEN technique — scellement documentaire puis checkpoint/preview et PREVALIDATION smartphone**.
+
+
+## Micro-lot — Visible Action Contact V1 — 2026-10-02
+
+Base exacte : `f7bd044c10445923c7b7f215f538f4959a3004e2` (Visible Model Contact V3 — GREEN utilisateur).
+
+- checkpoint de départ : `checkpoint/lab-start-visible-action-contact-v1-2026-10-02` ;
+- branche : `work/lab-visible-action-contact-v1-2026-10-02`.
+
+### Retour utilisateur
+
+Le même décalage qui existait sur les projectiles est maintenant observé sur Griffe et les capacités où la créature se déplace vers sa cible. Une capacité ne doit jamais résoudre son impact sur une position théorique différente de ce que le joueur voit.
+
+### Objectif
+
+Généraliser le mécanisme de contact visible déjà validé pour les projectiles aux **actions à contact visuel** :
+- projectile ;
+- contact au sol ;
+- contact aérien ;
+- contact téléporté.
+
+Aucune logique spéciale par compétence (`claw`, `fireball`, etc.).
+
+### Architecture cible
+
+Une seule chaîne d'autorité :
+
+`géométrie visible -> signal de contact générique -> Combat Runtime -> Combat Session / Action Resolver -> onResolved -> Presenter`.
+
+- le Visual Controller / Render Adapter est propriétaire de la géométrie visible et de ses masques opaques ;
+- le capteur ne fait qu'observer un contact ;
+- le Combat Runtime reste la seule autorité temporelle pouvant accepter le signal et avancer `impactAtMs` ;
+- les dégâts et effets restent exclusivement dans Combat Session / Action Resolver ;
+- le Presenter reste responsable de la disparition / impact / animation post-résolution.
+
+### Direction de refactor
+
+- remplacer l'API spécifique `reportProjectileContact()` par une API de contact d'action générique ;
+- faire converger projectile et créature mobile vers cette même API ;
+- pour une attaque de contact, comparer la silhouette opaque mobile de l'attaquant avec la silhouette opaque mobile de la cible ;
+- conserver un balayage continu entre frames afin d'éviter le tunneling ;
+- `travelMs` reste la durée nominale maximale, mais un contact visible accepté peut résoudre plus tôt ;
+- aucune nouvelle horloge ni boucle globale.
+
+### Fichiers autorisés
+
+- `src/core/combat/combat-runtime.js` ;
+- `src/adapters/renderer/dom-visible-model-contact.js` ;
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `src/ui/demo-app.js` ;
+- `src/ui/combat-test-ui.js` ;
+- `src/ui/combat-2v2-test-ui.js` ;
+- tests dédiés ;
+- `docs/LAB_ARCHITECTURE.md` et `docs/LAB_CURRENT_WORK.md`.
+
+### Interdictions
+
+- aucun système Griffe parallèle ;
+- aucune hitbox manuelle par créature ;
+- aucun test par ID de compétence ;
+- aucun offset compensatoire ;
+- aucun timer/observer global supplémentaire ;
+- aucune application de dégâts dans le renderer/UI ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+### TDD prévu
+
+1. RED Runtime : une action `contact` relâchée peut être résolue plus tôt par un contact visible valide ;
+2. RED Runtime : projectile et contact passent par **la même API** ;
+3. RED Runtime : mauvais acteur/cible, avant release, action déjà résolue ou forme non-contactable sont refusés ;
+4. RED géométrie : deux silhouettes opaques qui se croisent entre frames déclenchent exactement un contact ;
+5. RED géométrie : des rectangles qui se chevauchent uniquement dans leurs zones transparentes ne déclenchent rien ;
+6. RED vrai chemin : `playApproachFor()` observe les deux collision models déjà fournis par le Visual Controller et route le signal au Runtime ;
+7. anciens tests projectile / clash / impact / esquive restent GREEN.
+
+État : **LOT OUVERT — RED avant correction**.
