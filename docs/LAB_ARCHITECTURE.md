@@ -286,8 +286,9 @@ Pour le projectile générique du laboratoire :
 - la source visuelle utilise l'anchor transitoire du lanceur afin qu'un projectile parte bien de sa position réellement affichée ;
 - sa trajectoire nominale reste dirigée vers le slot spatial stable de la cible : il ne devient pas silencieusement un projectile `tracking / homing` ;
 - `travelMs` définit le trajet nominal jusqu'à ce slot, mais un contact réel avec le modèle mobile de la cible peut terminer ce trajet plus tôt ;
-- pendant que le projectile FX est réellement actif, le DOM Skill FX Renderer peut vérifier le contact du centre visuel du projectile avec l'anchor mobile de la cible ;
+- pendant que le projectile FX est réellement actif, le DOM Skill FX Renderer observe les rectangles réellement rendus du projectile et du modèle mobile de la cible ; le contact est testé sur leur surface complète et par balayage continu entre deux frames successives, en mouvement relatif, afin d'éviter le tunneling inter-frame lorsque l'un ou les deux se déplacent ;
 - cette géométrie est un **capteur**, jamais une autorité de résolution : elle émet uniquement `{ actorId, targetId, skillId }` et ne supprime pas elle-même le projectile, n'applique aucun dégât et ne choisit aucun résultat ;
+- le balayage continu ne crée pas une seconde horloge : il utilise uniquement les deux observations géométriques successives du `requestAnimationFrame` déjà borné à la durée de vie du projectile, et s'arrête immédiatement après le premier signal ;
 - le signal est transmis au `Combat Runtime`, qui traite d'abord tout événement sémantique déjà dû (release, clash ou impact nominal), puis vérifie que l'action est encore active, relâchée, de forme `projectile` et destinée à la cible signalée ;
 - si le contact est accepté, le Runtime devient l'unique propriétaire de l'impact effectif : il réduit `impactAtMs` et `travelMs` de cette occurrence à l'instant de contact observé, sans modifier la définition source de la compétence ;
 - `Combat Session / Action Resolver` appliquent alors normalement le résultat et les dégâts sur cette action effective ; le renderer ne reçoit qu'ensuite `onResolved` ;
