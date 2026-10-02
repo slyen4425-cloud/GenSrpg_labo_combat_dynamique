@@ -21738,3 +21738,62 @@ Validation smartphone attendue :
 Aucun merge vers `main`.
 
 État : **GREEN technique — PREVALIDATION smartphone**.
+
+
+## Micro-lot — Skill Required Level Update Retention V1 — 2026-10-02
+
+Base exacte : `69e7c24fb1d735d3b23b842e91f10d3d6a00e4dc` (Tempête de flammes Refresh V2 — GREEN technique / PREVALIDATION).
+
+- checkpoint de départ : `checkpoint/lab-start-skill-required-level-update-retention-v1-2026-10-02` ;
+- branche : `work/lab-skill-required-level-update-retention-v1-2026-10-02`.
+
+### Retour utilisateur
+
+Dans le Human Editor :
+1. Boule de feu est sélectionnée et déjà équipée sur une créature ;
+2. seul son niveau de déverrouillage est modifié ;
+3. l'utilisateur clique « Mettre à jour la capacité existante » ;
+4. Boule de feu disparaît ensuite de la liste et du slot de la créature.
+
+### Invariant attendu
+
+Modifier `requiredLevel` d'une capacité existante :
+- conserve exactement son ID stable ;
+- conserve sa présence dans `configuredSkills` ;
+- conserve son `loadoutSlot` si l'utilisateur ne l'a pas changé ;
+- ne modifie aucun `configuredCreatures[*].loadout` ;
+- ne doit jamais auto-équiper, déplacer ou retirer la capacité d'un slot ;
+- recharge immédiatement la fiche active sauvegardée depuis `configuredSkills` ;
+- laisse la progression décider uniquement de l'activité en combat, sans supprimer la configuration planifiée.
+
+### Audit
+
+Le moteur de progression n'est pas propriétaire de la configuration du loadout :
+- `validateHumanLoadoutProgressionV1` accepte les capacités de niveau futur ;
+- `syncLoadoutAvailability` marque seulement les slots/capacités actifs ou futurs ;
+- `projectCapturePlannedLoadoutsToCombatV1` filtre uniquement la projection vers le combat.
+
+Point fragile identifié dans le chemin de sauvegarde UI :
+- `persistCurrentSkill()` appelle actuellement `refreshLoadoutOptions(draft.id)` aussi bien en création qu'en mise à jour ;
+- le paramètre `preferredId` possède une logique d'auto-placement dans un slot vide ;
+- une mise à jour de fiche ne doit jamais passer par une logique d'auto-placement de loadout ;
+- après sauvegarde, la fiche active n'est pas explicitement rechargée depuis `configuredSkills`.
+
+### RED
+
+1. une mise à jour doit rafraîchir le loadout sans `preferredId` / auto-placement ;
+2. la sélection active doit être rechargée depuis le draft sauvegardé après update ;
+3. Boule de feu modifiée uniquement sur `requiredLevel` doit rester dans la bibliothèque active ;
+4. le loadout planifié de la créature doit rester byte-sémantiquement identique ;
+5. aucune modification de la projection Combat / progression.
+
+### Protégé
+
+- aucun changement de règle de progression ;
+- aucun changement de `projectCapturePlannedLoadoutsToCombatV1` ;
+- aucun changement Combat Runtime ;
+- aucun changement de données Boule de feu ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **LOT OUVERT — RED avant correction**.
