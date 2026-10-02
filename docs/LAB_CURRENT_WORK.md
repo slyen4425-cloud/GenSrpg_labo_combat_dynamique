@@ -23165,3 +23165,65 @@ Ce champ est purement visuel et ne modifie jamais `StatusEffectV1`.
 6. suite complète GREEN puis checkpoint/preview.
 
 État : **CHANTIER OUVERT — TDD avant implémentation**.
+
+
+### Résultat technique — Status Readability V2
+
+Base :
+- `3414ad1e23a2204daf79f26cdd4e381982b713c6` ;
+- DoT Editor Clarity V1 GREEN.
+
+#### Coloration corrigée
+
+Le problème venait du rendu `mix-blend-mode: color`, qui conservait trop la luminance du sprite et rendait l'intensité `1` peu perceptible.
+
+Correction :
+- masque alpha du modèle conservé ;
+- blend `color` supprimé ;
+- blend normal explicite ;
+- `tintOpacity` est maintenant directement l'intensité de la couche ;
+- l'éditeur accepte clairement la plage `0 à 1`.
+
+À `1`, la silhouette reçoit donc réellement la couleur choisie à intensité maximale.
+
+#### Icônes buffs/debuffs sous les PV
+
+Le renderer existant `dom-status-fx.js` a été étendu ; aucun second renderer métier n'a été créé.
+
+Les icônes HUD :
+- sont alimentées par les mêmes `fighter.statusEffects` que la teinte/sprite ;
+- apparaissent sous les PV en 1v1 et 2v2 ;
+- utilisent la polarité réelle du statut ;
+- affichent `+` pour un buff, `−` pour un debuff et `•` pour neutral lorsqu'aucun sprite de statut n'est disponible ;
+- réutilisent le sprite de statut lorsqu'il existe ;
+- affichent le nombre de stacks quand `stacks > 1` ;
+- disparaissent automatiquement dès que le statut n'est plus présent dans le snapshot ;
+- ne réservent aucun espace HUD lorsqu'il n'y a aucun statut actif.
+
+#### TDD / validation
+
+- RED : `b9921ad87cbfa224fde3c113fce37116834a460c` ;
+- corrections renderer/HUD : `1aa0ccad3a33c09d8ae68cc7fc87a1cad3e2bc51` -> `a7871c4163fcd81ea4062b7025af6278d423bbae` ;
+- durcissement tests/UX : `7b9506a3cfbe7c164f7efe009365a297cd7a4e69`, `84b6043a26e056c33955a05d30cbf894ac7a249f`, `191885a1b30c4bd59a97bf77a966628018545f65`, `8fdfd8640f3d5530195d2adfb9cc902a635ec442` ;
+- CI : `37052531285` — SUCCESS ;
+- suite complète : **870/870 PASS, 0 FAIL**.
+
+#### Invariants
+
+Aucun changement dans :
+- `StatusEffectV1` ;
+- Status Effect Runtime ;
+- Action Resolver ;
+- formules de dégâts ;
+- énergie/cooldown/clash ;
+- `Zombicide-40k`.
+
+Aucun :
+- timer global ;
+- observer global ;
+- copie locale de durée/statut ;
+- seconde autorité pour les stacks ;
+- branchement en dur par identifiant de statut ;
+- merge vers `main`.
+
+État : **GREEN technique — scellement documentaire puis checkpoint/preview utilisateur**.
