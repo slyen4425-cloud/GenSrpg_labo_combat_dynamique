@@ -805,9 +805,28 @@ export function createCombatRuntime({
     });
   }
 
-  function reportProjectileContact({
+  function actionUsesVisibleContact(action) {
+    if (action?.actionType !== "skill") {
+      return false;
+    }
+
+    const form = action.skill?.form ?? null;
+    if (form === "projectile") {
+      return true;
+    }
+
+    return (
+      form === "contact" &&
+      ["ground", "aerial", "teleport"].includes(
+        action.skill?.approachMode ?? "none"
+      )
+    );
+  }
+
+  function reportActionContact({
     actorId,
-    targetId
+    targetId,
+    skillId = null
   }) {
     if (disposed) {
       return Object.freeze({
@@ -831,13 +850,10 @@ export function createCombatRuntime({
       });
     }
 
-    if (
-      record.action.actionType !== "skill" ||
-      record.action.skill?.form !== "projectile"
-    ) {
+    if (!actionUsesVisibleContact(record.action)) {
       return Object.freeze({
         ok: false,
-        outcome: "not_projectile"
+        outcome: "contact_not_authoritative"
       });
     }
 
@@ -845,6 +861,17 @@ export function createCombatRuntime({
       return Object.freeze({
         ok: false,
         outcome: "target_mismatch"
+      });
+    }
+
+    if (
+      skillId !== null &&
+      skillId !== undefined &&
+      String(skillId) !== String(record.action.skill?.id ?? "")
+    ) {
+      return Object.freeze({
+        ok: false,
+        outcome: "skill_mismatch"
       });
     }
 
@@ -881,6 +908,7 @@ export function createCombatRuntime({
       outcome: "contact_resolved",
       actorId,
       targetId,
+      skillId: record.action.skill?.id ?? null,
       impactAtMs: contactImpactAtMs,
       resolution
     });
@@ -925,7 +953,7 @@ export function createCombatRuntime({
     react,
     interruptActive,
     applyResolutionInterrupt,
-    reportProjectileContact,
+    reportActionContact,
     cancelActionsForActor,
     cancelActive,
     dispose,
