@@ -21227,3 +21227,62 @@ Cette validation confirme le comportement attendu du lot Persistent Zone Offset 
 Statut : **GREEN utilisateur**.
 
 Cette validation clôt le micro-lot. Aucun merge vers `main` n’est effectué automatiquement.
+
+
+## Micro-lot — Skill Combat Usage Limit V1 — 2026-10-02
+
+Base exacte : `55e3790496055929b37ad0294ab06f50db4cf658` (Persistent Zone Offset Controls V1 — GREEN utilisateur).
+
+- checkpoint GREEN précédent : `checkpoint/lab-persistent-zone-offset-controls-v1-user-green-2026-10-02` ;
+- checkpoint de départ : `checkpoint/lab-start-skill-combat-usage-limit-v1-2026-10-02` ;
+- branche : `work/lab-skill-combat-usage-limit-v1-2026-10-02`.
+
+### Retour utilisateur
+
+Une capacité doit pouvoir être limitée à un nombre maximal d'utilisations sur un combat complet, notamment pour les capacités Ultime : 1, 2, 3, etc., tout en permettant le mode illimité.
+
+### Audit propriétaire
+
+- `SkillDefinition` possède déjà les paramètres de coût, timing et cooldown mais aucune limite d'utilisations par combat ;
+- `CombatState.fighters[*]` possède déjà l'état runtime autoritaire des cooldowns mais aucun compteur d'utilisation de capacité ;
+- `resolveSkillStart()` est le point où une activation valide consomme déjà l'énergie et engage le cooldown ;
+- `resolveReaction()` engage séparément énergie/cooldown pour une capacité de réaction ;
+- le Human Editor lit/écrit déjà le cooldown dans le draft puis l'export Transfer ; ajouter le champ à la définition canonique permet donc sa conservation JSON sans second format ;
+- aucun propriétaire parallèle n'est nécessaire.
+
+### Contrat cible
+
+1. Ajouter `SkillDefinition.maxUsesPerCombat` :
+   - `null` = illimité ;
+   - entier strictement positif = limite par combat ;
+   - champ absent = `null` pour rétrocompatibilité.
+2. Ajouter au fighter runtime un compteur propriétaire `skillUseCounts` indexé par `skillId`.
+3. Une activation acceptée par `resolveSkillStart()` consomme immédiatement une utilisation, au même moment que l'énergie/cooldown ; une activation rejetée n'en consomme aucune.
+4. `resolveReaction()` respecte et consomme la même limite.
+5. Lorsque la limite est atteinte, le moteur refuse avec `outcome: "usage_limit"` sans consommer énergie ni cooldown.
+6. Human Editor : champ simple `Utilisations max par combat`, valeur 0 affichée/saisie = `Illimité`, toute valeur >=1 = limite explicite.
+7. Export/import JSON conserve la valeur dans `definition.maxUsesPerCombat`.
+
+### Protégé
+
+- aucune logique spéciale fondée sur le slot Ultime : la règle reste utilisable sur toute capacité ;
+- aucun timer/observer/listener compensatoire ;
+- aucun compteur UI parallèle ;
+- dégâts, zones persistantes, statuts, mouvement et présentation protégés sauf RED démontrant un besoin ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED contrat : `maxUsesPerCombat` doit survivre à la normalisation et au draft Human Editor.
+2. RED runtime : une capacité limitée à 1 doit être acceptée une fois puis rejetée avec `usage_limit` au second démarrage valide.
+3. RED : un rejet préalable (énergie/cooldown/condition) ne doit pas consommer d'utilisation.
+4. RED réaction : la même limite doit s'appliquer à `resolveReaction()`.
+5. RED Human Editor : contrôle présent et exportable ; 0 = illimité.
+6. correction minimale sur les propriétaires existants ;
+7. tests ciblés + CI complète ;
+8. documentation ;
+9. checkpoint GREEN + preview ;
+10. PREVALIDATION smartphone utilisateur obligatoire.
+
+État : **LOT OUVERT — RED obligatoire avant correction**.
