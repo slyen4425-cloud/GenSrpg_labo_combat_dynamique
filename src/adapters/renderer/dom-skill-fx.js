@@ -27,9 +27,8 @@ function rectCenter(rect) {
   });
 }
 
-function pointInsideRect(point, rect) {
+function rectSnapshot(rect) {
   if (
-    !point ||
     !rect ||
     !Number.isFinite(Number(rect.left)) ||
     !Number.isFinite(Number(rect.top)) ||
@@ -38,17 +37,130 @@ function pointInsideRect(point, rect) {
     Number(rect.width) <= 0 ||
     Number(rect.height) <= 0
   ) {
+    return null;
+  }
+
+  const left = Number(rect.left);
+  const top = Number(rect.top);
+  const width = Number(rect.width);
+  const height = Number(rect.height);
+
+  return Object.freeze({
+    left,
+    top,
+    width,
+    height,
+    right: left + width,
+    bottom: top + height,
+    centerX: left + width / 2,
+    centerY: top + height / 2
+  });
+}
+
+function rectsOverlap(left, right) {
+  return Boolean(
+    left &&
+      right &&
+      left.left <= right.right &&
+      left.right >= right.left &&
+      left.top <= right.bottom &&
+      left.bottom >= right.top
+  );
+}
+
+function constrainContactInterval(
+  interval,
+  valueAtStart,
+  valueDelta
+) {
+  const epsilon = 1e-9;
+
+  if (Math.abs(valueDelta) <= epsilon) {
+    return valueAtStart <= epsilon;
+  }
+
+  const boundary = -valueAtStart / valueDelta;
+
+  if (valueDelta > 0) {
+    interval.max = Math.min(interval.max, boundary);
+  } else {
+    interval.min = Math.max(interval.min, boundary);
+  }
+
+  return interval.min <= interval.max + epsilon;
+}
+
+function movingRectsContact({
+  previousProjectile,
+  projectile,
+  previousTarget,
+  target
+}) {
+  if (
+    !previousProjectile ||
+    !projectile ||
+    !previousTarget ||
+    !target
+  ) {
     return false;
   }
 
-  const right = Number(rect.left) + Number(rect.width);
-  const bottom = Number(rect.top) + Number(rect.height);
+  if (
+    rectsOverlap(previousProjectile, previousTarget) ||
+    rectsOverlap(projectile, target)
+  ) {
+    return true;
+  }
+
+  const relativeStartX =
+    previousProjectile.centerX - previousTarget.centerX;
+  const relativeStartY =
+    previousProjectile.centerY - previousTarget.centerY;
+  const relativeDeltaX =
+    (projectile.centerX - previousProjectile.centerX) -
+    (target.centerX - previousTarget.centerX);
+  const relativeDeltaY =
+    (projectile.centerY - previousProjectile.centerY) -
+    (target.centerY - previousTarget.centerY);
+
+  const halfWidthStart =
+    previousProjectile.width / 2 + previousTarget.width / 2;
+  const halfHeightStart =
+    previousProjectile.height / 2 + previousTarget.height / 2;
+  const halfWidthDelta =
+    projectile.width / 2 +
+    target.width / 2 -
+    halfWidthStart;
+  const halfHeightDelta =
+    projectile.height / 2 +
+    target.height / 2 -
+    halfHeightStart;
+
+  const interval = { min: 0, max: 1 };
 
   return (
-    point.x >= Number(rect.left) &&
-    point.x <= right &&
-    point.y >= Number(rect.top) &&
-    point.y <= bottom
+    constrainContactInterval(
+      interval,
+      relativeStartX - halfWidthStart,
+      relativeDeltaX - halfWidthDelta
+    ) &&
+    constrainContactInterval(
+      interval,
+      -relativeStartX - halfWidthStart,
+      -relativeDeltaX - halfWidthDelta
+    ) &&
+    constrainContactInterval(
+      interval,
+      relativeStartY - halfHeightStart,
+      relativeDeltaY - halfHeightDelta
+    ) &&
+    constrainContactInterval(
+      interval,
+      -relativeStartY - halfHeightStart,
+      -relativeDeltaY - halfHeightDelta
+    ) &&
+    interval.max >= 0 &&
+    interval.min <= 1
   );
 }
 
@@ -396,6 +508,20 @@ export function createDomSkillFxRenderer({
       return;
     }
 
+    const liveTarget = () =>
+      anchor(
+        anchors,
+        record.targetSlot,
+        "live target"
+      );
+
+    record.previousProjectileRect = rectSnapshot(
+      record.node.getBoundingClientRect()
+    );
+    record.previousTargetRect = rectSnapshot(
+      liveTarget().getBoundingClientRect()
+    );
+
     const check = () => {
       record.contactFrameId = null;
 
@@ -407,21 +533,26 @@ export function createDomSkillFxRenderer({
         return;
       }
 
-      const projectileRect =
-        record.node.getBoundingClientRect();
-      const liveTargetRect =
-        anchor(
-          anchors,
-          record.targetSlot,
-          "live target"
-        ).getBoundingClientRect();
+      const projectileRect = rectSnapshot(
+        record.node.getBoundingClientRect()
+      );
+      const liveTargetRect = rectSnapshot(
+        liveTarget().getBoundingClientRect()
+      );
 
-      if (
-        pointInsideRect(
-          rectCenter(projectileRect),
-          liveTargetRect
-        )
-      ) {
+      const contacted =
+        rectsOverlap(projectileRect, liveTargetRect) ||
+        movingRectsContact({
+          previousProjectile: record.previousProjectileRect,
+          projectile: projectileRect,
+          previousTarget: record.previousTargetRect,
+          target: liveTargetRect
+        });
+
+      record.previousProjectileRect = projectileRect;
+      record.previousTargetRect = liveTargetRect;
+
+      if (contacted) {
         record.contactReported = true;
         onProjectileContact(
           Object.freeze({
