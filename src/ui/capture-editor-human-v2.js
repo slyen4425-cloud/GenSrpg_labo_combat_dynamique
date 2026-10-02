@@ -1505,6 +1505,14 @@ export function buildHumanSkillDraftV1(fields) {
         fields.cooldownMs,
         "Temps de recharge"
       ),
+      maxUsesPerCombat:
+        fields.maxUsesPerCombat == null ||
+        Number(fields.maxUsesPerCombat) === 0
+          ? null
+          : positiveInteger(
+              fields.maxUsesPerCombat,
+              "Utilisations max par combat"
+            ),
       allowedDistances:
         usesTacticalEffects
           ? [...CAPTURE_EDITOR_COMPAT_DISTANCES_V1]
@@ -1905,7 +1913,11 @@ function writeSkillTemplateFields(
     ["[data-skill-description]", fields.description],
     ["[data-skill-category]", fields.category],
     ["[data-skill-element]", fields.element ?? ""],
-    ["[data-skill-required-level]", fields.requiredLevel]
+    ["[data-skill-required-level]", fields.requiredLevel],
+    [
+      "[data-skill-max-uses-per-combat]",
+      fields.maxUsesPerCombat ?? 0
+    ]
   ];
 
   one(
@@ -1968,6 +1980,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-time]", 0],
     ["[data-skill-recovery]", 0],
     ["[data-skill-cooldown]", 0],
+    ["[data-skill-max-uses-per-combat]", 0],
     ["[data-skill-projectile-power]", 0],
     ["[data-skill-icon]", ""],
     ["[data-skill-socket]", ""],
@@ -4977,6 +4990,16 @@ function readSkillFields(root) {
       root,
       "[data-skill-cooldown]"
     ),
+    maxUsesPerCombat:
+      numericValue(
+        root,
+        "[data-skill-max-uses-per-combat]"
+      ) === 0
+        ? null
+        : numericValue(
+            root,
+            "[data-skill-max-uses-per-combat]"
+          ),
     activationRequirements:
       readHumanSkillActivationRequirementsV1(
         root
