@@ -7,6 +7,7 @@ import { createRosterSession } from "../core/combat/roster-session.js";
 import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
+import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 
@@ -425,6 +426,27 @@ export async function mountCombatTest({
     }
   });
 
+  const statusFx =
+    typeof visuals.getStatusPresentationTargetFor ===
+      "function" &&
+    typeof presentationAssets?.statusPresentationFor ===
+      "function"
+      ? createDomStatusFxRenderer({
+          targetFor(actorId) {
+            return visuals.getStatusPresentationTargetFor(
+              actorId
+            );
+          },
+          statusPresentationFor(statusId) {
+            return (
+              presentationAssets.statusPresentationFor(
+                statusId
+              )
+            );
+          }
+        })
+      : null;
+
   const presenter = createCombatResolutionPresenter({
     visuals,
     fx,
@@ -833,6 +855,7 @@ export async function mountCombatTest({
   }
 
   function render(state = session.snapshot()) {
+    statusFx?.sync(state);
     if (disposed) {
       return;
     }
@@ -1309,6 +1332,7 @@ export async function mountCombatTest({
       }
       runtime.dispose();
       presenter.dispose();
+      statusFx?.dispose();
       combatAudio.dispose();
       fx.dispose();
     }
