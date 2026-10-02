@@ -683,9 +683,9 @@ export async function mountCombatDemo({
     slot.setApproachActive(false);
 
     const returnHandle =
-      slot.renderer.returnToBaseFromCurrent({
-        durationMs: record.returnMs
-      });
+      slot.renderer.returnToBaseFromCurrent(
+        record.returnMs
+      );
 
     return Promise.resolve(returnHandle.finished)
       .then((result) => {
