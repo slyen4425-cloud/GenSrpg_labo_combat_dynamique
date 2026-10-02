@@ -389,13 +389,13 @@ export async function mountCombatTest({
         null
       );
     },
-    onProjectileContact(contact) {
-      runtime?.reportProjectileContact(contact);
-    }
   });
 
   const fx = createDomSkillFxRenderer({
     arena,
+    onProjectileContact(contact) {
+      runtime?.reportProjectileContact(contact);
+    },
     anchors: {
       player: requiredElement(
         root,
