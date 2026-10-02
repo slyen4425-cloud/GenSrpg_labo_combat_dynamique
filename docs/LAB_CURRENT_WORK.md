@@ -21680,3 +21680,61 @@ Après ce lot, concevoir un affichage de détails de capacité en combat au surv
 Principe architectural retenu pour la future conception : le texte détaillé doit être **généré depuis les données SkillDefinition / effets réels**, et non maintenu comme une seconde description manuelle susceptible de diverger.
 
 État : **LOT OUVERT — RED avant remplacement du preset**.
+
+
+### Résultat technique — Tempête de flammes Refresh V2
+
+Source utilisateur :
+- fichier : `gensrpg-capture-skill-cap_fire_atk_6(1).json` ;
+- ID stable : `cap_fire_atk_6` ;
+- modification confirmée : `maxUsesPerCombat = 6`.
+
+RED :
+- commit : `7f0da9ee6fcfa422988e939ea96603a16c924ac1` ;
+- CI : `36977538487` — FAILURE attendue ;
+- **806 tests / 803 PASS / 3 FAIL** ;
+- les trois échecs correspondaient exactement au preset encore configuré à 1 utilisation : transfert, remplacement canonique et vrai chemin Combat.
+
+Insertion :
+- `939064e87426907d3deabfeb25f0947b59b0c7ed` : remplacement du preset vitrine par le nouveau JSON utilisateur, sans autre modification de donnée ;
+- la CI a alors exposé une seule sentinelle historique encore figée à 1 dans `capture-skill-editor-active-library-v1.test.mjs` ;
+- `e5a831a77c59ae40dab87f0322977853d353854e` : mise à jour de cette sentinelle vers 6, afin qu'elle protège la nouvelle fiche active.
+
+Validation :
+- CI : `36977678916` — SUCCESS ;
+- suite complète : **806/806 PASS, 0 FAIL** ;
+- Transfer : `maxUsesPerCombat = 6` ;
+- remplacement par ID stable : PASS ;
+- Human Editor actif : valeur 6 restituée ;
+- round-trip fiche active -> champs -> draft : PASS ;
+- vrai Combat : six démarrages valides lorsque les autres contraintes sont satisfaites, septième refusé avec `usage_limit`.
+
+Aucune autre valeur du JSON utilisateur n'a été volontairement modifiée :
+- niveau 20 ;
+- slot Ultime ;
+- énergie 5 ;
+- préparation 2000 ms ;
+- cooldown 3500 ms ;
+- activation après 25000 ms ;
+- zone persistante 7000 ms ;
+- tick 1000 ms ;
+- 5 dégâts/tick ;
+- renforcement jusqu'à 3 activations ;
+- visuel / offsets / audio inchangés.
+
+### Publication de PREVALIDATION — Tempête de flammes Refresh V2
+
+Noms réservés :
+- checkpoint : `checkpoint/lab-tempete-flammes-refresh-v2-green-2026-10-02` ;
+- preview : `preview/lab-tempete-flammes-refresh-v2-2026-10-02`.
+
+Validation smartphone attendue :
+1. sélectionner **Tempête de flammes** dans l'éditeur ;
+2. vérifier `Utilisations max par combat = 6` ;
+3. vérifier que le reste de la fiche est inchangé ;
+4. vérifier que Boule de feu reste accessible ;
+5. si test Combat effectué, la capacité doit pouvoir être engagée jusqu'à six fois au maximum sur le même combat.
+
+Aucun merge vers `main`.
+
+État : **GREEN technique — PREVALIDATION smartphone**.
