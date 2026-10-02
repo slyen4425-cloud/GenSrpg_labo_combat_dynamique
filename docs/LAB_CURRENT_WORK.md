@@ -22313,3 +22313,73 @@ Chaîne réelle désormais raccordée :
 `DOM Skill FX continuous sensor -> onProjectileContact -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> onResolved -> Presenter -> suppression projectile -> impact immédiat`.
 
 État : **GREEN technique corrigé sur vrai chemin — checkpoint/preview à avancer sur le HEAD final, PREVALIDATION smartphone requise**.
+
+
+## Micro-lot — Visible Model Contact V3 — 2026-10-02
+
+Base exacte : `731c32c01dd834493055efad42fa49bec198736a` (Projectile Contact Precision V2 — vrai chemin raccordé, GREEN technique publié).
+
+- checkpoint de départ : `checkpoint/lab-start-visible-model-contact-v3-2026-10-02` ;
+- branche : `work/lab-visible-model-contact-v3-2026-10-02`.
+
+### Retour utilisateur
+
+Après raccord du vrai chemin, Boule de feu peut maintenant disparaître avant le contact visuellement perçu.
+
+Hypothèse utilisateur confirmée par audit :
+- le capteur mesure actuellement `.fighter__motion`, un conteneur carré `aspect-ratio:1` ;
+- ce conteneur reçoit bien les vrais `displayScale`, position, transform-origin et animations ;
+- mais les sprites réels contiennent des marges transparentes importantes ;
+- le rectangle DOM du conteneur n'est donc pas la silhouette réellement visible ;
+- le projectile lui-même est rendu dans un shell carré alors que son noyau visuel suit déjà `coreAnchor`.
+
+### Objectif
+
+Aligner le contact sur **ce que le joueur voit**, sans hitbox manuelle et sans nouvelle autorité gameplay.
+
+Chaîne cible inchangée :
+
+`visual sprite -> visual collision sensor -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> Presenter`.
+
+### Géométrie canonique prévue
+
+1. **Cible**
+   - dériver automatiquement un masque opaque depuis l'image de créature réellement chargée ;
+   - aucune valeur métier/manuelle par créature ;
+   - le masque appartient à la présentation ;
+   - trois repères DOM enfants du même `data-demo-motion` permettent de relire la transformation écran réelle (translation, scale, rotation, transform-origin, distance) ;
+   - le capteur projette le trajet du projectile dans l'espace local du sprite et teste les pixels opaques.
+
+2. **Projectile**
+   - le point de collision canonique est le noyau de trajectoire déjà défini par `coreAnchor` ;
+   - le shell carré et la traînée transparente ne deviennent pas une hitbox ;
+   - balayage continu frame précédente -> frame courante conservé pour éviter le tunneling.
+
+### Autorités
+
+- pixels/transform visuels : Visual Controller / Render Adapter ;
+- détection géométrique : unique capteur visuel ;
+- acceptation temporelle du contact : Combat Runtime ;
+- résultat/dégâts : Combat Session / Action Resolver ;
+- disparition/impact : Presenter.
+
+### Interdictions
+
+- aucune hitbox codée en dur par ID de créature ou compétence ;
+- aucun offset compensatoire ;
+- aucune seconde horloge ;
+- aucun timer/observer global ;
+- aucun calcul de dégâts dans le renderer/UI ;
+- aucun changement de `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD
+
+1. RED : un point projectile situé dans la marge transparente du sprite ne doit pas déclencher de contact ;
+2. RED : le même point sur un pixel opaque doit déclencher ;
+3. RED : translation/scale/rotation de la cible doivent être pris via la même géométrie transformée ;
+4. RED : un balayage rapide du noyau projectile à travers une zone opaque doit être détecté même entre deux frames ;
+5. RED composition : les deux clients combat doivent fournir au FX renderer le même fournisseur de géométrie visible du Visual Controller ;
+6. anciennes sentinelles Runtime/wiring/clash/impact restent GREEN.
+
+État : **LOT OUVERT — RED avant correction**.
