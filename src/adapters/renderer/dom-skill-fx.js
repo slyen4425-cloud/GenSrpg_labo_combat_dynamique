@@ -20,6 +20,38 @@ function defaultCancelFrame(frameId) {
   }
 }
 
+function rectCenter(rect) {
+  return Object.freeze({
+    x: Number(rect.left) + Number(rect.width) / 2,
+    y: Number(rect.top) + Number(rect.height) / 2
+  });
+}
+
+function pointInsideRect(point, rect) {
+  if (
+    !point ||
+    !rect ||
+    !Number.isFinite(Number(rect.left)) ||
+    !Number.isFinite(Number(rect.top)) ||
+    !Number.isFinite(Number(rect.width)) ||
+    !Number.isFinite(Number(rect.height)) ||
+    Number(rect.width) <= 0 ||
+    Number(rect.height) <= 0
+  ) {
+    return false;
+  }
+
+  const right = Number(rect.left) + Number(rect.width);
+  const bottom = Number(rect.top) + Number(rect.height);
+
+  return (
+    point.x >= Number(rect.left) &&
+    point.x <= right &&
+    point.y >= Number(rect.top) &&
+    point.y <= bottom
+  );
+}
+
 function centerRelativeTo(rect, arenaRect) {
   return Object.freeze({
     x: rect.left - arenaRect.left + rect.width / 2,
@@ -275,7 +307,8 @@ export function createDomSkillFxRenderer({
   presentationForSkill = () => null,
   animate = defaultAnimate,
   requestFrame = defaultRequestFrame,
-  cancelFrame = defaultCancelFrame
+  cancelFrame = defaultCancelFrame,
+  onProjectileContact = null
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
     throw new TypeError("arena must be a DOM-like element");
@@ -294,6 +327,14 @@ export function createDomSkillFxRenderer({
   }
   if (typeof requestFrame !== "function" || typeof cancelFrame !== "function") {
     throw new TypeError("frame scheduler functions are required");
+  }
+  if (
+    onProjectileContact !== null &&
+    typeof onProjectileContact !== "function"
+  ) {
+    throw new TypeError(
+      "onProjectileContact must be a function when supplied"
+    );
   }
 
   let disposed = false;
@@ -334,8 +375,70 @@ export function createDomSkillFxRenderer({
     if (record.zoneId) {
       persistentZones.delete(record.zoneId);
     }
+    if (
+      record.contactFrameId !== null &&
+      record.contactFrameId !== undefined
+    ) {
+      cancelFrame(record.contactFrameId);
+      record.contactFrameId = null;
+    }
     record.frameAnimation?.cancel?.();
     record.node.remove?.();
+  }
+
+  function watchProjectileContact(record) {
+    if (
+      onProjectileContact === null ||
+      !record?.node ||
+      typeof record.node.getBoundingClientRect !== "function" ||
+      !anchors[record.targetSlot]
+    ) {
+      return;
+    }
+
+    const check = () => {
+      record.contactFrameId = null;
+
+      if (
+        disposed ||
+        !active.has(record) ||
+        record.contactReported
+      ) {
+        return;
+      }
+
+      const projectileRect =
+        record.node.getBoundingClientRect();
+      const liveTargetRect =
+        anchor(
+          anchors,
+          record.targetSlot,
+          "live target"
+        ).getBoundingClientRect();
+
+      if (
+        pointInsideRect(
+          rectCenter(projectileRect),
+          liveTargetRect
+        )
+      ) {
+        record.contactReported = true;
+        onProjectileContact(
+          Object.freeze({
+            actorId: record.fromSlot,
+            targetId: record.targetSlot,
+            skillId: record.skillId ?? null
+          })
+        );
+        return;
+      }
+
+      record.contactFrameId =
+        requestFrame(check);
+    };
+
+    record.contactFrameId =
+      requestFrame(check);
   }
 
   function playImpactVisual({
@@ -987,8 +1090,11 @@ export function createDomSkillFxRenderer({
       animation: null,
       frameAnimation: projectileFrameAnimation,
       type: "projectile",
+      skillId,
       fromSlot,
-      targetSlot
+      targetSlot,
+      contactFrameId: null,
+      contactReported: false
     };
     active.add(record);
 
@@ -1030,6 +1136,7 @@ export function createDomSkillFxRenderer({
     );
 
     record.animation = animation;
+    watchProjectileContact(record);
 
     const finished = Promise.resolve(animation.finished)
       .then(() => {
