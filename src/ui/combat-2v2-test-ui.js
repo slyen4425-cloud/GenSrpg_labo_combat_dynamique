@@ -601,13 +601,13 @@ export async function mountCoop2v2Test({
         context
       );
     },
-    onProjectileContact(contact) {
-      runtime?.reportProjectileContact(contact);
-    }
   });
 
   const fx = createDomSkillFxRenderer({
     arena,
+    onProjectileContact(contact) {
+      runtime?.reportProjectileContact(contact);
+    },
     anchors: motionAnchors,
     targetAnchors: fighterContainers,
     sourceAnchorFor(actorId, anchorName) {
