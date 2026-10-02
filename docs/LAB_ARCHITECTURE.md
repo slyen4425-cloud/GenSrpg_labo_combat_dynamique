@@ -2933,3 +2933,42 @@ Chaîne :
 `StatusEffect Runtime -> snapshot fighter.statusEffects -> statusPresentationFor(statusId) -> DOM Status FX`.
 
 Aucun timer global, observer global ou branchement par identifiant de capacité n'est ajouté.
+
+
+## Status Readability V2 — une seule projection depuis les statuts autoritaires
+
+Le rendu des buffs/debuffs repose exclusivement sur `fighter.statusEffects` dans le snapshot de combat.
+
+Chaîne :
+
+`StatusEffect Runtime -> fighter.statusEffects -> dom-status-fx.sync(state) -> modèle + HUD`.
+
+Le renderer `dom-status-fx.js` possède les trois projections visuelles d'un statut :
+- coloration du modèle ;
+- sprite persistant autour du modèle ;
+- icône HUD sous la barre de vie.
+
+Aucun état de statut, stack ou durée n'est recopié dans l'UI. Les icônes sont créées, mises à jour et retirées uniquement à partir du snapshot reçu à chaque render.
+
+### Coloration
+
+La couche de teinte conserve le masque alpha du sprite visible mais n'utilise plus `mix-blend-mode: color`.
+
+`tintOpacity` est désormais une intensité directe :
+- 0 = aucune teinte ;
+- 1 = superposition pleine de la couleur choisie sur la silhouette du modèle.
+
+Le renderer applique explicitement `mixBlendMode = "normal"`.
+
+### Icône HUD
+
+Pour chaque statut actif :
+- la polarité provient de `StatusEffectV1.polarity` ;
+- le nombre de stacks provient de l'instance runtime ;
+- si un sprite de présentation existe, il est réutilisé comme visuel d'icône ;
+- sinon un badge générique est utilisé : `+` pour beneficial, `−` pour detrimental, `•` pour neutral ;
+- la disparition du statut dans le snapshot retire immédiatement l'icône.
+
+Les hosts HUD sont fournis au même renderer dans les vrais chemins 1v1 et 2v2.
+
+Aucune horloge, aucun observer et aucun moteur de statut secondaire n'est introduit.
