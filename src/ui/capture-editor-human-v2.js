@@ -87,6 +87,9 @@ import {
   CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
 } from "../catalogs/capture-showcase-creature-presets-v1.js";
 import {
+  CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
+} from "../catalogs/capture-showcase-skill-presets-v1.js";
+import {
   normalizeCaptureStatRegistryV1
 } from "../contracts/capture-stat-registry-v1.js";
 import {
@@ -4370,6 +4373,58 @@ async function hydrateMonsterCaptureCreatureCatalog(
   );
 }
 
+async function hydrateCaptureShowcaseSkillPresetsV1() {
+  const transfers = await Promise.all(
+    CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.map(
+      async (presetFile) => {
+        const response = await fetch(
+          new URL(
+            "../../" + presetFile,
+            import.meta.url
+          ),
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Preset capacité vitrine Capture indisponible : " +
+              presetFile +
+              " (" +
+              response.status +
+              ")"
+          );
+        }
+
+        const transfer =
+          importCaptureTransferJsonV1(
+            await response.text()
+          );
+
+        if (transfer.kind !== "skill") {
+          throw new RangeError(
+            "Un preset de capacité vitrine Capture doit être une capacité : " +
+              presetFile
+          );
+        }
+
+        return transfer;
+      }
+    )
+  );
+
+  const ids = transfers.map(
+    (transfer) => transfer.value.draft.id
+  );
+
+  if (new Set(ids).size !== ids.length) {
+    throw new RangeError(
+      "Les presets de capacités vitrine Capture contiennent un identifiant dupliqué."
+    );
+  }
+
+  return Object.freeze(transfers);
+}
+
 async function hydrateCaptureShowcaseCreaturePresetsV1(
   statRegistry
 ) {
@@ -7819,23 +7874,29 @@ export function mountCaptureEditorHumanV2({
       syncLoadoutAvailability();
 
       updateCreatureLibraryState(
-        "Catalogue Monster Capture historique chargé. Chargement des modèles vitrine…",
+        "Catalogue Monster Capture historique chargé. Chargement des capacités et modèles vitrine…",
         "ok"
       );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des modèles vitrine en cours.",
+          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des capacités et modèles vitrine en cours.",
           "info"
         );
       }
 
       try {
-        const showcasePresets =
+        const showcaseSkillPresets =
+          await hydrateCaptureShowcaseSkillPresetsV1();
+        const showcaseCreaturePresets =
           await hydrateCaptureShowcaseCreaturePresetsV1(
             statRegistry
           );
+        const showcasePresets = [
+          ...showcaseSkillPresets,
+          ...showcaseCreaturePresets
+        ];
 
         const showcaseResult =
           applyCaptureTransferBatchToEditorStateV1({
