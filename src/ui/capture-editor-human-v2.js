@@ -6345,7 +6345,7 @@ export function mountCaptureEditorHumanV2({
     selectedLegacyState = state;
     if (state === null) {
       libraryState.textContent =
-        "Aucun modèle chargé. Pour créer : choisis un nouvel identifiant puis utilise « Créer ». Pour modifier un ID déjà présent : utilise « Mettre à jour ».";
+        "Aucune capacité active chargée. Sélectionne une capacité existante ou crée-en une nouvelle.";
       libraryState.dataset.tone = "info";
       return;
     }
@@ -6355,209 +6355,13 @@ export function mountCaptureEditorHumanV2({
       state.runtimeReady ? "ok" : "warning";
   }
 
-  function refreshLoadoutOptions(preferredId = null) {
-    const configured = [
-      ...configuredSkills.values()
-    ];
-    const standardSkills =
-      configured.filter(
-        (draft) =>
-          draft.definition.loadoutSlot !==
-          "ultimate"
-      );
-    const ultimateSkills =
-      configured.filter(
-        (draft) =>
-          draft.definition.loadoutSlot ===
-          "ultimate"
-      );
-    const standardSlots = [
-      ...root.querySelectorAll(
-        '[data-loadout-slot-type="standard"]'
-      )
-    ];
-    const ultimateSlot = one(
-      root,
-      '[data-loadout-slot-type="ultimate"]'
-    );
+  function refreshSkillLibraryOptions(
+    preferredId = null
+  ) {
+    const previous =
+      preferredId ?? librarySelect.value;
 
-    const populate = (
-      select,
-      drafts,
-      emptyLabel
-    ) => {
-      const previous = select.value;
-      select.textContent = "";
-      createOption(
-        select,
-        "",
-        emptyLabel
-      );
-
-      for (const draft of drafts) {
-        createOption(
-          select,
-          draft.id,
-          draft.definition.name +
-            " · déblocage niv. " +
-            draft.requiredLevel
-        );
-      }
-
-      if (
-        previous &&
-        drafts.some(
-          (draft) =>
-            draft.id === previous
-        )
-      ) {
-        select.value = previous;
-      }
-    };
-
-    for (const select of standardSlots) {
-      populate(
-        select,
-        standardSkills,
-        "Vide"
-      );
-    }
-    populate(
-      ultimateSlot,
-      ultimateSkills,
-      "Aucune ultime"
-    );
-
-    if (
-      preferredId &&
-      configuredSkills.has(preferredId) &&
-      ![
-        ...standardSlots,
-        ultimateSlot
-      ].some(
-        (select) =>
-          select.value === preferredId
-      )
-    ) {
-      const draft =
-        configuredSkills.get(preferredId);
-
-      if (
-        draft.definition.loadoutSlot ===
-        "ultimate"
-      ) {
-        if (
-          ultimateSlot.value === "" &&
-          ultimateSlot.disabled !== true
-        ) {
-          ultimateSlot.value =
-            preferredId;
-        }
-      } else {
-        const empty =
-          standardSlots.find(
-            (select) =>
-              select.value === "" &&
-              select.disabled !== true
-          );
-        if (empty) {
-          empty.value = preferredId;
-        }
-      }
-    }
-
-    syncLoadoutAvailability();
-  }
-
-  function persistCurrentSkill(intent) {
-    if (
-      selectedLegacyState !== null &&
-      !selectedLegacyState.runtimeReady
-    ) {
-      throw new Error(
-        "Cette capacité historique nécessite StatusEffectV1 avant de pouvoir être enregistrée comme équivalent runtime complet."
-      );
-    }
-
-    const draft = buildHumanSkillDraftV1(
-      readSkillFields(root)
-    );
-
-    const saveMode = resolveCaptureSkillSaveModeV1({
-      intent,
-      draftId: draft.id,
-      configuredSkillIds: [...configuredSkills.keys()]
-    });
-
-    const loadoutBefore = [
-      ...root.querySelectorAll(
-        "[data-loadout-slot]"
-      )
-    ].map((select) => select.value);
-
-    configuredSkills.set(draft.id, draft);
-    refreshLoadoutOptions(draft.id);
-
-    const loadoutAfter = [
-      ...root.querySelectorAll(
-        "[data-loadout-slot]"
-      )
-    ].map((select) => select.value);
-
-    if (
-      loadoutAfter.some(
-        (value, index) =>
-          value !== loadoutBefore[index]
-      )
-    ) {
-      creatureDirty = true;
-    }
-
-    setStatus(
-      root,
-      saveMode.mode === "create"
-        ? "Nouvelle capacité « " +
-            draft.definition.name +
-            " » créée dans la bibliothèque active."
-        : "Capacité « " +
-            draft.definition.name +
-            " » mise à jour dans la bibliothèque active.",
-      "ok"
-    );
-
-    return draft;
-  }
-
-  librarySelect.textContent = "";
-  createOption(
-    librarySelect,
-    "",
-    "Aucun modèle — partir de zéro"
-  );
-
-  for (const entry of captureLegacySkillLibraryEntriesV1()) {
-    const elementLabel =
-      entry.element === null
-        ? "Neutre"
-        : entry.element;
-    const stateLabel =
-      entry.migrationState ===
-      "requires-status-effect-v1"
-        ? " · statut requis"
-        : "";
-
-    createOption(
-      librarySelect,
-      entry.id,
-      "[" +
-        elementLabel +
-        "] " +
-        entry.name +
-        " · niv. " +
-        entry.requiredLevel +
-        stateLabel
-    );
-  }
+    refreshSkillLibraryOptions();
 
   listen(creatureLibrarySelect, "change", () => {
     const creatureId =
@@ -6647,29 +6451,43 @@ export function mountCaptureEditorHumanV2({
       return;
     }
 
-    const state =
-      captureLegacyAbilityEditorStateV1(
-        abilityId
+    const draft =
+      configuredSkills.get(abilityId);
+    if (!draft) {
+      setStatus(
+        root,
+        "Capacité active inconnue : " +
+          abilityId,
+        "error"
       );
-    const merged =
-      mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1(
-        readSkillFields(root),
-        abilityId
-      );
+      return;
+    }
 
-    writeSkillTemplateFields(
+    writeSkillDraftFields(
       root,
-      merged,
+      draft,
       statRegistry
     );
-    updateLibraryState(state);
+    selectedLegacyState = null;
+    one(
+      root,
+      "[data-skill-id]"
+    ).readOnly = true;
+
+    updateLibraryState({
+      runtimeReady: true,
+      message:
+        "Capacité active « " +
+        draft.definition.name +
+        " » chargée depuis la bibliothèque active."
+    });
 
     setStatus(
       root,
-      "Modèle « " +
-        state.template.name +
-        " » chargé comme modèle. Aucun changement n’est enregistré tant que tu n’utilises pas « Créer » ou « Mettre à jour ».",
-      state.runtimeReady ? "info" : "warning"
+      "Capacité « " +
+        draft.definition.name +
+        " » chargée pour modification.",
+      "info"
     );
   });
 
@@ -6685,6 +6503,10 @@ export function mountCaptureEditorHumanV2({
       nextId,
       statRegistry
     );
+    one(
+      root,
+      "[data-skill-id]"
+    ).readOnly = false;
     selectedLegacyState = null;
 
     setStatus(
@@ -7340,10 +7162,14 @@ export function mountCaptureEditorHumanV2({
       initialSkill.id,
       initialSkill
     );
+    refreshSkillLibraryOptions(
+      initialSkill.id
+    );
     refreshLoadoutOptions(
       initialSkill.id
     );
   } catch {
+    refreshSkillLibraryOptions();
     refreshLoadoutOptions();
   }
 
