@@ -205,6 +205,266 @@ function opaqueAt(mask, unitPoint) {
   return mask.opaque[y * mask.width + x] === 1;
 }
 
+const boundarySampleCache = new WeakMap();
+
+function modelUnitToScreen(frame, unitPoint) {
+  if (
+    !frame ||
+    !validPoint(frame.origin) ||
+    !validPoint(frame.axisX) ||
+    !validPoint(frame.axisY) ||
+    !unitPoint ||
+    !Number.isFinite(Number(unitPoint.u)) ||
+    !Number.isFinite(Number(unitPoint.v))
+  ) {
+    return null;
+  }
+
+  const u = Number(unitPoint.u);
+  const v = Number(unitPoint.v);
+  const originX = Number(frame.origin.x);
+  const originY = Number(frame.origin.y);
+
+  return Object.freeze({
+    x:
+      originX +
+      (Number(frame.axisX.x) - originX) * u +
+      (Number(frame.axisY.x) - originX) * v,
+    y:
+      originY +
+      (Number(frame.axisX.y) - originY) * u +
+      (Number(frame.axisY.y) - originY) * v
+  });
+}
+
+function boundarySamples(mask) {
+  if (!validMask(mask)) {
+    return Object.freeze([]);
+  }
+
+  const cached = boundarySampleCache.get(mask);
+  if (cached) {
+    return cached;
+  }
+
+  const samples = [];
+  const isOpaque = (x, y) =>
+    x >= 0 &&
+    y >= 0 &&
+    x < mask.width &&
+    y < mask.height &&
+    mask.opaque[y * mask.width + x] === 1;
+
+  for (let y = 0; y < mask.height; y += 1) {
+    for (let x = 0; x < mask.width; x += 1) {
+      if (!isOpaque(x, y)) {
+        continue;
+      }
+
+      const boundary =
+        !isOpaque(x - 1, y) ||
+        !isOpaque(x + 1, y) ||
+        !isOpaque(x, y - 1) ||
+        !isOpaque(x, y + 1);
+
+      if (!boundary) {
+        continue;
+      }
+
+      samples.push(
+        Object.freeze({
+          u: (x + 0.5) / mask.width,
+          v: (y + 0.5) / mask.height
+        })
+      );
+    }
+  }
+
+  const frozen = Object.freeze(samples);
+  boundarySampleCache.set(mask, frozen);
+  return frozen;
+}
+
+function frameBounds(frame) {
+  if (
+    !frame ||
+    !validPoint(frame.origin) ||
+    !validPoint(frame.axisX) ||
+    !validPoint(frame.axisY)
+  ) {
+    return null;
+  }
+
+  const opposite = {
+    x:
+      Number(frame.axisX.x) +
+      Number(frame.axisY.x) -
+      Number(frame.origin.x),
+    y:
+      Number(frame.axisX.y) +
+      Number(frame.axisY.y) -
+      Number(frame.origin.y)
+  };
+  const points = [
+    frame.origin,
+    frame.axisX,
+    frame.axisY,
+    opposite
+  ];
+  const xs = points.map((point) => Number(point.x));
+  const ys = points.map((point) => Number(point.y));
+
+  return Object.freeze({
+    left: Math.min(...xs),
+    right: Math.max(...xs),
+    top: Math.min(...ys),
+    bottom: Math.max(...ys)
+  });
+}
+
+function boundsOverlap(left, right) {
+  return Boolean(
+    left &&
+      right &&
+      left.left <= right.right &&
+      left.right >= right.left &&
+      left.top <= right.bottom &&
+      left.bottom >= right.top
+  );
+}
+
+function modelBoundaryHitsTarget(source, target) {
+  if (
+    !source ||
+    !target ||
+    !validMask(source.mask) ||
+    !validMask(target.mask)
+  ) {
+    return false;
+  }
+
+  for (const sample of boundarySamples(source.mask)) {
+    const screen = modelUnitToScreen(source, sample);
+    if (!screen) {
+      continue;
+    }
+    const targetUnit =
+      screenPointToModelUnit(target, screen);
+    if (opaqueAt(target.mask, targetUnit)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function visibleModelsOverlap(left, right) {
+  if (
+    !left ||
+    !right ||
+    !validMask(left.mask) ||
+    !validMask(right.mask)
+  ) {
+    return false;
+  }
+
+  if (
+    !boundsOverlap(
+      frameBounds(left),
+      frameBounds(right)
+    )
+  ) {
+    return false;
+  }
+
+  return (
+    modelBoundaryHitsTarget(left, right) ||
+    modelBoundaryHitsTarget(right, left)
+  );
+}
+
+function sweptBoundaryHitsTarget({
+  sourcePrevious,
+  source,
+  targetPrevious,
+  target
+}) {
+  if (
+    !sourcePrevious ||
+    !source ||
+    !targetPrevious ||
+    !target ||
+    !validMask(source.mask) ||
+    !validMask(target.mask)
+  ) {
+    return false;
+  }
+
+  for (const sample of boundarySamples(source.mask)) {
+    const previousPoint =
+      modelUnitToScreen(sourcePrevious, sample);
+    const point =
+      modelUnitToScreen(source, sample);
+
+    if (
+      sweptPointHitsOpaqueMask({
+        mask: target.mask,
+        previousPoint,
+        point,
+        previousFrame: targetPrevious,
+        frame: target
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function sweptVisibleModelsOverlap({
+  previousLeft,
+  left,
+  previousRight,
+  right,
+  continuous = true
+}) {
+  if (!left || !right) {
+    return false;
+  }
+
+  if (visibleModelsOverlap(left, right)) {
+    return true;
+  }
+
+  if (
+    continuous !== true ||
+    !previousLeft ||
+    !previousRight
+  ) {
+    return false;
+  }
+
+  if (visibleModelsOverlap(previousLeft, previousRight)) {
+    return true;
+  }
+
+  return (
+    sweptBoundaryHitsTarget({
+      sourcePrevious: previousLeft,
+      source: left,
+      targetPrevious: previousRight,
+      target: right
+    }) ||
+    sweptBoundaryHitsTarget({
+      sourcePrevious: previousRight,
+      source: right,
+      targetPrevious: previousLeft,
+      target: left
+    })
+  );
+}
+
 export function sweptPointHitsOpaqueMask({
   mask,
   previousPoint,
