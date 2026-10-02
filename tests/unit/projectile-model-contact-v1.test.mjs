@@ -8,6 +8,12 @@ import {
 import {
   createCombatRuntime
 } from "../../src/core/combat/combat-runtime.js";
+import {
+  createCombatSession
+} from "../../src/core/combat/combat-session.js";
+import {
+  normalizeSkillDefinition
+} from "../../src/contracts/skill-definition.js";
 
 function projectileContactHarness() {
   let frameCallback = null;
@@ -393,4 +399,135 @@ test("both combat composition roots route projectile model contact only to Comba
       /onProjectileContact\(contact\)[\s\S]{0,220}(damage|hp\s*=|presentOutcome\()/
     );
   }
+});
+
+
+test("accepted model contact applies real Combat Session damage at the same effective impact timestamp", async () => {
+  const rawFireball = JSON.parse(
+    await readFile(
+      new URL(
+        "../../data/combat/skills/fireball.skill.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  );
+  const fireball = normalizeSkillDefinition(rawFireball);
+
+  const fighter = (id) => ({
+    id,
+    maxHp: 100,
+    initialHp: 100,
+    maxEnergy: 10,
+    initialEnergy: 10,
+    energyChargeAmount: 0,
+    energyChargeIntervalMs: 2000,
+    movementEnergyPerStep: 1,
+    chargeTimeModifierPct: 0
+  });
+
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [
+      fighter("player"),
+      fighter("opponent")
+    ]
+  });
+
+  let clock = 0;
+  let scheduled = null;
+  let timerSequence = 0;
+  const releases = [];
+  const resolutions = [];
+
+  const runtime = createCombatRuntime({
+    session,
+    tickMs: 50,
+    now() {
+      return clock;
+    },
+    setTimer(callback) {
+      scheduled = callback;
+      timerSequence += 1;
+      return timerSequence;
+    },
+    clearTimer() {
+      scheduled = null;
+    },
+    onRelease(payload) {
+      releases.push(payload);
+    },
+    onResolved(resolution) {
+      resolutions.push(resolution);
+    }
+  });
+
+  function advanceTo(nextClock) {
+    clock = nextClock;
+    const callback = scheduled;
+    scheduled = null;
+    assert.equal(typeof callback, "function");
+    callback();
+  }
+
+  runtime.start();
+  assert.equal(
+    runtime.startSkill({
+      actorId: "player",
+      targetId: "opponent",
+      skill: fireball
+    }).ok,
+    true
+  );
+
+  advanceTo(fireball.preparationMs);
+
+  assert.equal(releases.length, 1);
+  assert.equal(
+    session.snapshot().fighters.opponent.hp,
+    100,
+    "release must not apply damage"
+  );
+
+  const earlyContactAt =
+    fireball.preparationMs +
+    Math.max(1, Math.floor(fireball.travelMs / 3));
+  advanceTo(earlyContactAt);
+
+  assert.equal(
+    session.snapshot().fighters.opponent.hp,
+    100,
+    "travel before contact must not apply damage"
+  );
+
+  const result = runtime.reportProjectileContact({
+    actorId: "player",
+    targetId: "opponent"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.impactAtMs, earlyContactAt);
+  assert.equal(resolutions.length, 1);
+  assert.ok(
+    session.snapshot().fighters.opponent.hp < 100,
+    "accepted contact must apply real damage immediately"
+  );
+
+  const arrive = resolutions[0].events.find(
+    (event) => event.type === "skill-arrive"
+  );
+  const hit = resolutions[0].events.find(
+    (event) => event.type === "hit"
+  );
+
+  assert.equal(arrive?.atMs, earlyContactAt);
+  assert.equal(hit?.atMs, earlyContactAt);
+  assert.equal(
+    result.resolution.events.find(
+      (event) => event.type === "skill-arrive"
+    )?.atMs,
+    earlyContactAt
+  );
+
+  runtime.dispose();
 });
