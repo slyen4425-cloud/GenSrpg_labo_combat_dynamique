@@ -21286,3 +21286,42 @@ Une capacité doit pouvoir être limitée à un nombre maximal d'utilisations su
 10. PREVALIDATION smartphone utilisateur obligatoire.
 
 État : **LOT OUVERT — RED obligatoire avant correction**.
+
+
+### Résultat technique — Skill Combat Usage Limit V1
+
+RED :
+- test initial : `tests/unit/skill-combat-usage-limit-v1.test.mjs` ;
+- commit RED initial : `4e89aaed84604f3930c97fdcc8c73326f53a8c14` ;
+- RED renforcé pour le rappel/réinvocation roster : `95f69fcda5f33d582b33e6468e0fb67aa37aab87` ;
+- CI RED renforcée : `36946445787` — FAILURE attendue ;
+- suite : **796 tests / 790 PASS / 6 FAIL** ;
+- les six échecs correspondent uniquement aux contrats manquants du lot : définition, état runtime, consommation/refus, réaction, Human Editor et conservation roster.
+
+Correction propriétaire :
+- `40a02c579d6d892b1eb60838fcad4d3197a38f81` : ajout canonique de `SkillDefinition.maxUsesPerCombat` avec `null` = illimité et entier positif = limite ;
+- `c68e3105bf1e0ee88ea88e86d05991e944a754f3` : `CombatState` devient propriétaire de `skillUseCounts` et de son incrément immuable ;
+- `c43b1f0640e66d375e718569fc2af630754ab1ba` : `resolveSkillStart()` et `resolveReaction()` refusent l’activation épuisée avec `usage_limit` et consomment une utilisation uniquement après acceptation ;
+- `cd05886b257c932a08f49eb9c084bc1d7868d4a0` : snapshot roster conserve les compteurs pendant rappel/réinvocation ;
+- `389522393dce8cce176784b28a62e99f0e8d33fd` : Human Editor transporte la valeur canonique et prépare `0` comme valeur UI illimitée ;
+- `35b31b759b4b51a36b5dca61baaf7fcd02400f43` : contrôle visible `Utilisations max par combat` avec aide `0 = Illimité`.
+
+Validation fonctionnelle :
+- CI : `36946586799` — SUCCESS ;
+- suite complète : **796/796 PASS, 0 FAIL** ;
+- capacité limitée à 1 : première activation acceptée, seconde refusée `usage_limit` ;
+- tentative rejetée avant activation : aucun compteur consommé ;
+- capacité de réaction : même règle ;
+- rappel/réinvocation : compteur conservé ;
+- Human Editor / JSON : valeur exportée dans `definition.maxUsesPerCombat`.
+
+Contraintes respectées :
+- aucun comportement spécial par nom de capacité ;
+- aucune règle spéciale obligatoire au slot Ultime : le mécanisme reste générique ;
+- aucun timer, observer ou listener compensatoire ;
+- aucun compteur parallèle dans l’UI ;
+- aucune modification des dégâts, zones persistantes, statuts ou mouvement ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique — documentation synchronisée ; checkpoint/preview et PREVALIDATION smartphone à publier**.
