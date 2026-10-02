@@ -5896,6 +5896,21 @@ export function mountCaptureEditorHumanV2({
       plan.kind === "skill" &&
       plan.action !== "noop"
     ) {
+      const draft =
+        configuredSkills.get(plan.id);
+      if (draft) {
+        writeSkillDraftFields(
+          root,
+          draft,
+          statRegistry
+        );
+        librarySelect.value = plan.id;
+        one(
+          root,
+          "[data-skill-id]"
+        ).readOnly = true;
+        selectedLegacyState = null;
+      }
       refreshLoadoutOptions(
         plan.id
       );
@@ -6366,7 +6381,224 @@ export function mountCaptureEditorHumanV2({
     const previous =
       preferredId ?? librarySelect.value;
 
-    refreshSkillLibraryOptions();
+    librarySelect.textContent = "";
+    createOption(
+      librarySelect,
+      "",
+      "Sélectionner une capacité active"
+    );
+
+    for (
+      const entry of
+      humanConfiguredSkillLibraryEntriesV1(
+        configuredSkills
+      )
+    ) {
+      const elementLabel =
+        entry.element === null
+          ? "Neutre"
+          : entry.element;
+      const slotLabel =
+        entry.loadoutSlot === "ultimate"
+          ? " · Ultime"
+          : "";
+
+      createOption(
+        librarySelect,
+        entry.id,
+        "[" +
+          elementLabel +
+          "] " +
+          entry.name +
+          " · niv. " +
+          entry.requiredLevel +
+          slotLabel
+      );
+    }
+
+    if (
+      previous &&
+      configuredSkills.has(previous)
+    ) {
+      librarySelect.value = previous;
+    }
+  }
+
+  function refreshLoadoutOptions(preferredId = null) {
+    const configured = [
+      ...configuredSkills.values()
+    ];
+    const standardSkills =
+      configured.filter(
+        (draft) =>
+          draft.definition.loadoutSlot !==
+          "ultimate"
+      );
+    const ultimateSkills =
+      configured.filter(
+        (draft) =>
+          draft.definition.loadoutSlot ===
+          "ultimate"
+      );
+    const standardSlots = [
+      ...root.querySelectorAll(
+        '[data-loadout-slot-type="standard"]'
+      )
+    ];
+    const ultimateSlot = one(
+      root,
+      '[data-loadout-slot-type="ultimate"]'
+    );
+
+    const populate = (
+      select,
+      drafts,
+      emptyLabel
+    ) => {
+      const previous = select.value;
+      select.textContent = "";
+      createOption(
+        select,
+        "",
+        emptyLabel
+      );
+
+      for (const draft of drafts) {
+        createOption(
+          select,
+          draft.id,
+          draft.definition.name +
+            " · déblocage niv. " +
+            draft.requiredLevel
+        );
+      }
+
+      if (
+        previous &&
+        drafts.some(
+          (draft) =>
+            draft.id === previous
+        )
+      ) {
+        select.value = previous;
+      }
+    };
+
+    for (const select of standardSlots) {
+      populate(
+        select,
+        standardSkills,
+        "Vide"
+      );
+    }
+    populate(
+      ultimateSlot,
+      ultimateSkills,
+      "Aucune ultime"
+    );
+
+    if (
+      preferredId &&
+      configuredSkills.has(preferredId) &&
+      ![
+        ...standardSlots,
+        ultimateSlot
+      ].some(
+        (select) =>
+          select.value === preferredId
+      )
+    ) {
+      const draft =
+        configuredSkills.get(preferredId);
+
+      if (
+        draft.definition.loadoutSlot ===
+        "ultimate"
+      ) {
+        if (
+          ultimateSlot.value === "" &&
+          ultimateSlot.disabled !== true
+        ) {
+          ultimateSlot.value =
+            preferredId;
+        }
+      } else {
+        const empty =
+          standardSlots.find(
+            (select) =>
+              select.value === "" &&
+              select.disabled !== true
+          );
+        if (empty) {
+          empty.value = preferredId;
+        }
+      }
+    }
+
+    syncLoadoutAvailability();
+  }
+
+  function persistCurrentSkill(intent) {
+    if (
+      selectedLegacyState !== null &&
+      !selectedLegacyState.runtimeReady
+    ) {
+      throw new Error(
+        "Cette capacité historique nécessite StatusEffectV1 avant de pouvoir être enregistrée comme équivalent runtime complet."
+      );
+    }
+
+    const draft = buildHumanSkillDraftV1(
+      readSkillFields(root)
+    );
+
+    const saveMode = resolveCaptureSkillSaveModeV1({
+      intent,
+      draftId: draft.id,
+      configuredSkillIds: [...configuredSkills.keys()]
+    });
+
+    const loadoutBefore = [
+      ...root.querySelectorAll(
+        "[data-loadout-slot]"
+      )
+    ].map((select) => select.value);
+
+    configuredSkills.set(draft.id, draft);
+    refreshSkillLibraryOptions(draft.id);
+    refreshLoadoutOptions(draft.id);
+
+    const loadoutAfter = [
+      ...root.querySelectorAll(
+        "[data-loadout-slot]"
+      )
+    ].map((select) => select.value);
+
+    if (
+      loadoutAfter.some(
+        (value, index) =>
+          value !== loadoutBefore[index]
+      )
+    ) {
+      creatureDirty = true;
+    }
+
+    setStatus(
+      root,
+      saveMode.mode === "create"
+        ? "Nouvelle capacité « " +
+            draft.definition.name +
+            " » créée dans la bibliothèque active."
+        : "Capacité « " +
+            draft.definition.name +
+            " » mise à jour dans la bibliothèque active.",
+      "ok"
+    );
+
+    return draft;
+  }
+
+  refreshSkillLibraryOptions();
 
   listen(creatureLibrarySelect, "change", () => {
     const creatureId =
