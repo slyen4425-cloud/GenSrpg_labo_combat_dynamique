@@ -13,6 +13,12 @@ import {
   resolveReaction
 } from "../../src/core/combat/action-resolver.js";
 import {
+  createCombatSession
+} from "../../src/core/combat/combat-session.js";
+import {
+  createRosterSession
+} from "../../src/core/combat/roster-session.js";
+import {
   buildHumanSkillDraftV1
 } from "../../src/ui/capture-editor-human-v2.js";
 
@@ -297,4 +303,84 @@ test("Human Editor exports maxUsesPerCombat and exposes an unlimited-capable con
   assert.match(html, /data-skill-max-uses-per-combat/);
   assert.match(html, /Utilisations max par combat/);
   assert.match(html, /0\s*=\s*Illimit/i);
+});
+
+
+test("recall and summon preserve the per-combat usage count", () => {
+  const limited = skill({
+    id: "recall-ultimate",
+    maxUsesPerCombat: 1
+  });
+  const playerConfig = {
+    ...fighter("crea-player"),
+    id: "crea-player"
+  };
+  const reserveConfig = {
+    ...fighter("crea-reserve"),
+    id: "crea-reserve"
+  };
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      { ...playerConfig, id: "player" },
+      fighter("opponent")
+    ]
+  });
+  const roster = createRosterSession({
+    combatSession: session,
+    roster: {
+      teams: {
+        player: {
+          slotId: "player",
+          activeMemberId: "member-player",
+          members: [
+            {
+              id: "member-player",
+              creatureId: "crea-player",
+              displayName: "Player",
+              fighterConfigId: "crea-player"
+            },
+            {
+              id: "member-reserve",
+              creatureId: "crea-reserve",
+              displayName: "Reserve",
+              fighterConfigId: "crea-reserve"
+            }
+          ]
+        }
+      }
+    },
+    fighterConfigs: {
+      "crea-player": playerConfig,
+      "crea-reserve": reserveConfig
+    }
+  });
+
+  const first = session.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: limited
+  });
+  assert.equal(first.ok, true);
+
+  assert.equal(roster.recall("player").ok, true);
+  assert.equal(
+    roster.summon("player", "member-player").ok,
+    true
+  );
+
+  assert.equal(
+    session.snapshot().fighters.player.skillUseCounts[
+      limited.id
+    ],
+    1
+  );
+
+  const second = session.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: limited
+  });
+  assert.equal(second.ok, false);
+  assert.equal(second.outcome, "usage_limit");
 });
