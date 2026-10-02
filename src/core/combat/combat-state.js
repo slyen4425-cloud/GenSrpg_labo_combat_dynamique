@@ -151,6 +151,35 @@ function normalizeSkillCooldowns(input, fighterId) {
   return Object.freeze(cooldowns);
 }
 
+function normalizeSkillUseCounts(input, fighterId) {
+  if (input == null) {
+    return Object.freeze({});
+  }
+  if (typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError(
+      `${fighterId}.skillUseCounts must be an object`
+    );
+  }
+
+  const counts = {};
+  for (const [skillIdRaw, countRaw] of Object.entries(input)) {
+    const skillId = String(skillIdRaw ?? "").trim();
+    if (!skillId) {
+      throw new TypeError(
+        `${fighterId}.skillUseCounts key must be non-empty`
+      );
+    }
+    const count = Number(countRaw);
+    if (!Number.isInteger(count) || count < 0) {
+      throw new RangeError(
+        `${fighterId}.skillUseCounts.${skillId} must be a non-negative integer`
+      );
+    }
+    counts[skillId] = count;
+  }
+  return Object.freeze(counts);
+}
+
 function normalizeFighter(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new TypeError("fighter must be an object");
@@ -224,6 +253,10 @@ function normalizeFighter(input) {
     chargeTimeEffects: Object.freeze(effects),
     skillCooldowns: normalizeSkillCooldowns(
       input.skillCooldowns,
+      id
+    ),
+    skillUseCounts: normalizeSkillUseCounts(
+      input.skillUseCounts,
       id
     ),
     statusEffects: normalizeStatusEffects(
@@ -374,6 +407,57 @@ export function withSkillCooldown(
         skillCooldowns: Object.freeze({
           ...fighter.skillCooldowns,
           [id]: state.elapsedMs + duration
+        })
+      })
+    })
+  });
+}
+
+
+export function skillUseCount(
+  state,
+  fighterId,
+  skillId
+) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
+  }
+  const id = String(skillId ?? "").trim();
+  if (!id) {
+    throw new TypeError(
+      "skillId must be a non-empty string"
+    );
+  }
+  return fighter.skillUseCounts[id] ?? 0;
+}
+
+export function withSkillUseRecorded(
+  state,
+  fighterId,
+  skillId
+) {
+  const fighter = state.fighters[fighterId];
+  if (!fighter) {
+    throw new RangeError(`Unknown fighter: ${fighterId}`);
+  }
+  const id = String(skillId ?? "").trim();
+  if (!id) {
+    throw new TypeError(
+      "skillId must be a non-empty string"
+    );
+  }
+
+  const current = fighter.skillUseCounts[id] ?? 0;
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: Object.freeze({
+        ...fighter,
+        skillUseCounts: Object.freeze({
+          ...fighter.skillUseCounts,
+          [id]: current + 1
         })
       })
     })
