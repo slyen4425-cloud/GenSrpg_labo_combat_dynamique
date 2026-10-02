@@ -22,6 +22,9 @@ import {
 import {
   captureComplexNativeSkillDraftsV1
 } from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
+import {
+  createCombatSession
+} from "../../src/core/combat/combat-session.js";
 
 const PRESET_FILE =
   "data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json";
@@ -200,4 +203,60 @@ test("Human Editor hydrates showcase skill transfers before showcase creature tr
     source,
     /applyCaptureTransferBatchToEditorStateV1/
   );
+});
+
+
+test("Tempete de flammes real Combat path enforces one use for the imported definition", async () => {
+  const transfer = importCaptureTransferJsonV1(
+    await text(PRESET_FILE)
+  );
+  const skill = transfer.value.draft.definition;
+
+  const fighter = (id) => ({
+    id,
+    maxHp: 100,
+    initialHp: 100,
+    maxEnergy: 20,
+    initialEnergy: 20,
+    energyChargeAmount: 1,
+    energyChargeIntervalMs: 2000,
+    movementEnergyPerStep: 1,
+    chargeTimeModifierPct: 0
+  });
+
+  const session = createCombatSession({
+    distance: "short",
+    fighters: [
+      fighter("player"),
+      fighter("opponent")
+    ]
+  });
+
+  session.advanceMs(25000);
+
+  const first = session.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill
+  });
+
+  assert.equal(first.ok, true);
+  assert.equal(
+    session.snapshot().fighters.player.skillUseCounts[
+      "cap_fire_atk_6"
+    ],
+    1
+  );
+
+  session.advanceMs(3500);
+
+  const second = session.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill
+  });
+
+  assert.equal(second.ok, false);
+  assert.equal(second.outcome, "usage_limit");
+  assert.equal(second.maxUsesPerCombat, 1);
 });
