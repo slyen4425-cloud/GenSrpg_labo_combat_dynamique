@@ -1048,6 +1048,17 @@ export async function mountCoop2v2Test({
       renderState(state);
       queueAiDecisions();
     },
+    onHealthDelta(feedback) {
+      if (feedback.kind !== "damage") {
+        return;
+      }
+      fx.play({
+        type: "damage",
+        targetSlot: feedback.actorId,
+        amount: feedback.amount,
+        durationMs: 700
+      });
+    },
     onClock() {
       renderAvailability();
     },
