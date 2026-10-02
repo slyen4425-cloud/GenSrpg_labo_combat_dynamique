@@ -22072,3 +22072,54 @@ Invariants :
 9. validation utilisateur.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Résultat technique — Projectile Model Contact V1
+
+RED confirmé :
+- commit : `e2d28d5436361ae0a5f5bb89fb77d8d422235ddc` ;
+- CI : `37001680941` — FAILURE attendue ;
+- 3 échecs nouveaux exactement sur le contrat manquant :
+  1. le renderer n'émettait aucun contact modèle ;
+  2. `CombatRuntime.reportProjectileContact()` n'existait pas ;
+  3. les contacts invalides ne pouvaient donc pas être refusés par le Runtime.
+
+Correction propriétaire :
+- `d03e25efce3e8a28ed563f1b288664a2703b074d` : le DOM Skill FX redevient capteur géométrique uniquement ; il émet au plus un signal de contact par projectile actif, sans supprimer le projectile ni résoudre l'action ;
+- `2b2cde6201483a3d3a1c794b78177f5cc5bdb342` : `Combat Runtime` ajoute l'unique API `reportProjectileContact()` ; elle traite d'abord les événements déjà dus, valide action/forme/release/cible, calcule l'impact effectif puis passe par `Combat Session.completeAction()` ;
+- `867d84fdc1bbfba8930a33e147d34e558fa66a84` : composition 2v2 raccordée au Runtime ;
+- `8687aaa0df2a2b89110168fd5c16c550b3c3a8d4` : composition 1v1 raccordée au Runtime ;
+- `8dfe5dedc0c5bdee08d8a00d76c42e172cd68b62` : architecture mise à jour avec la chaîne d'autorité unique ;
+- `388bee0aad020d129d59973d0831f5a26116fd5a` : sentinelle permanente des deux composition roots.
+
+Invariants obtenus :
+1. le modèle mobile de la cible est observé comme zone de contact du projectile ;
+2. le renderer ne fait que constater la géométrie et émettre un signal immuable ;
+3. aucun dégât, aucun résultat, aucun changement de cible n'est décidé dans le renderer ou l'UI ;
+4. le Runtime reste l'unique horloge et l'unique autorité qui accepte le contact ;
+5. un clash/release/impact nominal déjà dû est traité avant un contact visuel plus tardif ;
+6. l'action effective reçoit `impactAtMs` et `travelMs` correspondant au contact accepté, sans modifier la définition source de la compétence ;
+7. `onResolved` reste l'unique chemin de résolution vers le Presenter ;
+8. le Presenter conserve l'ordre : **suppression projectile -> impact immédiat** ;
+9. aucune seconde boucle permanente : uniquement le `requestAnimationFrame` déjà borné à la vie du projectile, annulé au nettoyage ;
+10. aucune logique spéciale `fireball`, aucun timer compensatoire, aucun observer global.
+
+Validation :
+- CI fonctionnelle avant scellement : `37002036474` — SUCCESS ;
+- suite complète : **817/817 PASS, 0 FAIL** ;
+- anciennes sentinelles Projectile Impact Sync / Clash / interruption restent GREEN ;
+- les deux interfaces 1v1 et 2v2 sont explicitement verrouillées vers `CombatRuntime.reportProjectileContact()`.
+
+Publication prévue :
+- checkpoint GREEN : `checkpoint/lab-projectile-model-contact-v1-green-2026-10-02` ;
+- preview smartphone : `preview/lab-projectile-model-contact-v1-2026-10-02`.
+
+PREVALIDATION smartphone :
+1. lancer Boule de feu pendant que la cible avance vers le lanceur ;
+2. vérifier que la boule ne traverse plus le modèle ;
+3. vérifier qu'au premier contact accepté elle disparaît ;
+4. vérifier que l'impact démarre immédiatement après cette disparition ;
+5. vérifier que les dégâts/Hit correspondent au même contact ;
+6. vérifier un clash projectile pour confirmer qu'il reste prioritaire lorsqu'il arrive avant le contact cible.
+
+État : **GREEN technique — publication checkpoint/preview puis validation utilisateur**.
