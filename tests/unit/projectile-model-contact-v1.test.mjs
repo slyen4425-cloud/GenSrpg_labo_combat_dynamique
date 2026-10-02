@@ -15,6 +15,30 @@ import {
   normalizeSkillDefinition
 } from "../../src/contracts/skill-definition.js";
 
+const SOLID_MASK = Object.freeze({
+  width: 4,
+  height: 4,
+  opaque: new Uint8Array(16).fill(1)
+});
+
+function collisionFrame(rectangle) {
+  return Object.freeze({
+    mask: SOLID_MASK,
+    origin: Object.freeze({
+      x: rectangle.left,
+      y: rectangle.top
+    }),
+    axisX: Object.freeze({
+      x: rectangle.left + rectangle.width,
+      y: rectangle.top
+    }),
+    axisY: Object.freeze({
+      x: rectangle.left,
+      y: rectangle.top + rectangle.height
+    })
+  });
+}
+
 function projectileContactHarness() {
   let frameCallback = null;
   const contacts = [];
@@ -111,6 +135,15 @@ function projectileContactHarness() {
     cancelFrame() {},
     onProjectileContact(contact) {
       contacts.push(contact);
+    },
+    targetCollisionModelFor() {
+      return {
+        snapshot() {
+          return collisionFrame(
+            anchors.opponent.getBoundingClientRect()
+          );
+        }
+      };
     }
   });
 
