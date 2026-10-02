@@ -447,6 +447,9 @@ function buildPreviewPresentationAssets(
         )
       );
     },
+    statusPresentationFor(statusId) {
+      return native.statusPresentationFor(statusId);
+    },
     audioAsset(assetId) {
       return (
         native.audioAsset(assetId) ??
