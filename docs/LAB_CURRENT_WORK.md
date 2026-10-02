@@ -23314,3 +23314,58 @@ Un second trou du même chemin a été corrigé :
 - aucun merge vers `main`.
 
 État : **GREEN technique — checkpoint/preview utilisateur**.
+
+
+## Micro-lot — Functional Recovery V1 — 2026-10-02
+
+Base exacte : `f4b3a3f18507c9406953fb35ee82ef4a78e9e757` (Editor Preview Status Wiring V1 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-functional-recovery-v1-2026-10-02` ;
+- branche : `work/lab-functional-recovery-v1-2026-10-02`.
+
+### Décision
+
+Le champ `recoveryMs` est conservé car il a une fonction claire :
+**verrouiller brièvement l'acteur après l'impact avant de pouvoir commencer une nouvelle action**.
+
+Jusqu'ici :
+- `recoveryMs` existait dans la définition/timeline ;
+- `skill-recovery-complete` était produit par le resolver ;
+- mais le Runtime supprimait l'action de `activeByActor` dès l'impact.
+
+Le champ était donc visible mais non fonctionnel comme verrou d'action.
+
+### Objectif
+
+Faire de la récupération une phase réelle du **même cycle de vie d'action** :
+
+`preparation -> travel/impact -> recovery -> idle`.
+
+### Autorité unique
+
+- `activeByActor` reste l'unique propriétaire du cycle de vie d'action ;
+- aucune map `recoveryByActor` ;
+- aucun timer spécifique de récupération ;
+- le tick existant du Runtime traite aussi l'échéance de récupération ;
+- les dégâts/effets sont toujours résolus à l'impact ;
+- seule la possibilité de commencer une nouvelle action reste verrouillée.
+
+### Règles
+
+- `recoveryMs = 0` : libération immédiate après résolution ;
+- `recoveryMs > 0` : `startSkill/startCommand` refusent l'acteur jusqu'à la fin ;
+- la phase exposée par `onProgress` devient `recovery` après impact ;
+- une action déjà résolue n'est plus éligible aux clashes, réactions ou contacts visibles ;
+- un acteur KO/cancel/dispose quitte immédiatement la récupération ;
+- aucun changement des cooldowns existants.
+
+### TDD
+
+- RED : dégâts appliqués à l'impact, mais acteur encore occupé pendant `recoveryMs` ;
+- RED : nouvelle action refusée avec outcome `recovering` ;
+- RED : fin de récupération libère l'acteur sans second timer ;
+- RED : contact visible résout à l'heure observée puis conserve le verrou de récupération ;
+- RED : `recoveryMs=0` conserve le comportement immédiat ;
+- suite complète GREEN.
+
+État : **LOT OUVERT — TDD avant implémentation**.
