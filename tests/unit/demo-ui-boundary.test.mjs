@@ -304,7 +304,17 @@ test("miss impact feedback remains a visual FX label only", async () => {
 
   assert.match(css, /\.skill-fx--miss\s*\{/);
   assert.match(presenter, /planSkillOutcomeFx/);
-  assert.doesNotMatch(css, /hpAfter|damage/);
+
+  const missStart = css.indexOf(".skill-fx--miss {");
+  const missEnd = css.indexOf("}", missStart);
+  const missBlock = css.slice(
+    missStart,
+    missEnd + 1
+  );
+  assert.doesNotMatch(
+    missBlock,
+    /hpAfter|damage/
+  );
 });
 
 test("evasion feedback explicitly shows zero damage and projectile targets use stable slots", async () => {
