@@ -279,7 +279,10 @@ test("coop 2v2 page keeps one local ability bar and four selectable actors", asy
   );
   assert.match(visualSource, /querySelectorAll\("\[data-demo-slot\]"\)/);
   assert.match(visualSource, /targetFor\(slot, targetSlot\)/);
-  assert.match(presenter, /targetSlot,\s*onPhase/);
+  assert.match(
+    presenter,
+    /targetSlot,[\s\S]{0,700}onContact:[\s\S]{0,700}onPhase/
+  );
 });
 
 test("coop HUD keeps the ally directly above one local ability bar and uses the visual library icon", async () => {
