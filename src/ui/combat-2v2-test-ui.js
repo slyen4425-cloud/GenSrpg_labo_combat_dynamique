@@ -9,6 +9,7 @@ import {
 } from "../core/combat/targeting.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
+import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 
 const DATA_URLS = Object.freeze({
@@ -625,6 +626,27 @@ export async function mountCoop2v2Test({
     }
   });
 
+  const statusFx =
+    typeof visuals.getStatusPresentationTargetFor ===
+      "function" &&
+    typeof presentationAssets?.statusPresentationFor ===
+      "function"
+      ? createDomStatusFxRenderer({
+          targetFor(actorId) {
+            return visuals.getStatusPresentationTargetFor(
+              actorId
+            );
+          },
+          statusPresentationFor(statusId) {
+            return (
+              presentationAssets.statusPresentationFor(
+                statusId
+              )
+            );
+          }
+        })
+      : null;
+
   const presenter = createCombatResolutionPresenter({
     visuals,
     fx,
@@ -730,6 +752,7 @@ export async function mountCoop2v2Test({
   }
 
   function renderState(state = session.snapshot()) {
+    statusFx?.sync(state);
     for (const actor of format.actors) {
       const fighter = state.fighters[actor.actorId];
       const refs = hpRefs[actor.actorId];
@@ -1196,6 +1219,7 @@ export async function mountCoop2v2Test({
       }
       runtime.dispose();
       presenter.dispose();
+      statusFx?.dispose();
       fx.dispose();
       combatAudio.dispose?.();
     }
