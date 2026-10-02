@@ -2461,7 +2461,8 @@ function writeSkillDraftFields(
   renderHumanSkillEffectsV1(
     root,
     fields.effects,
-    statRegistry
+    statRegistry,
+    fields.presentation.statusVisuals
   );
   renderHumanProjectilePowerV1(
     root,
@@ -4293,6 +4294,102 @@ function readHumanSkillEffectsV1(root) {
   );
 }
 
+function readHumanStatusVisualsV1(root) {
+  const output = {};
+
+  for (
+    const row of root.querySelectorAll(
+      "[data-skill-effect-row]"
+    )
+  ) {
+    if (
+      row.querySelector(
+        "[data-skill-effect-kind]"
+      )?.value !== "apply_status"
+    ) {
+      continue;
+    }
+
+    const statusId = String(
+      row.querySelector(
+        "[data-skill-status-id]"
+      )?.value ?? ""
+    ).trim();
+    const mode =
+      row.querySelector(
+        "[data-skill-status-visual-mode]"
+      )?.value ?? "none";
+
+    if (!statusId || mode === "none") {
+      continue;
+    }
+
+    const presentation = {
+      mode,
+      tintColor:
+        row.querySelector(
+          "[data-skill-status-tint-color]"
+        )?.value ?? "#9b59d0",
+      tintOpacity: Number(
+        row.querySelector(
+          "[data-skill-status-tint-opacity]"
+        )?.value ?? 0.35
+      )
+    };
+
+    if (
+      mode === "sprite" ||
+      mode === "both"
+    ) {
+      const assetId = String(
+        row.querySelector(
+          "[data-skill-status-visual-asset]"
+        )?.value ?? ""
+      ).trim();
+
+      if (!assetId) {
+        throw new Error(
+          "Choisis un sprite pour le visuel du statut « " +
+            statusId +
+            " »."
+        );
+      }
+
+      presentation.sprite = {
+        assetId,
+        displayScale: Number(
+          row.querySelector(
+            "[data-skill-status-visual-scale]"
+          )?.value ?? 1
+        ),
+        opacity: Number(
+          row.querySelector(
+            "[data-skill-status-visual-opacity]"
+          )?.value ?? 0.85
+        )
+      };
+    }
+
+    const existing =
+      output[statusId] ?? null;
+    if (
+      existing !== null &&
+      JSON.stringify(existing) !==
+        JSON.stringify(presentation)
+    ) {
+      throw new Error(
+        "Le statut « " +
+          statusId +
+          " » possède deux présentations différentes dans la même capacité."
+      );
+    }
+
+    output[statusId] = presentation;
+  }
+
+  return output;
+}
+
 function statEffectNumber(value) {
   const number = Number(value);
   return Number.isInteger(number)
@@ -5934,6 +6031,8 @@ function readSkillFields(root) {
         root,
         "[data-skill-socket]"
       ) || null,
+      statusVisuals:
+        readHumanStatusVisualsV1(root),
       castAudioAssetId: selectedValue(
         root,
         "[data-skill-cast-audio]"
@@ -7436,7 +7535,8 @@ export function mountCaptureEditorHumanV2({
         event.target.matches(
           "[data-skill-effect-kind], " +
           "[data-skill-status-kind], " +
-          "[data-skill-status-stacking]"
+          "[data-skill-status-stacking], " +
+          "[data-skill-status-visual-mode]"
         )
       ) {
         syncHumanSkillEffectRowV1(row);
