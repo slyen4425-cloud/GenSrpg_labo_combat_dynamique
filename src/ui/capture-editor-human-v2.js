@@ -3273,6 +3273,121 @@ function fillStatusStatSelectV1(
   select.value = selectedId || "";
 }
 
+function defaultHumanStatusTintColorV1(
+  status
+) {
+  const fingerprint = [
+    status?.id,
+    status?.channel,
+    ...(status?.tags ?? [])
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase("fr");
+
+  if (
+    fingerprint.includes("poison") ||
+    fingerprint.includes("toxic")
+  ) {
+    return "#39b54a";
+  }
+  if (
+    fingerprint.includes("burn") ||
+    fingerprint.includes("brul") ||
+    fingerprint.includes("fire")
+  ) {
+    return "#e84b32";
+  }
+  if (
+    fingerprint.includes("ice") ||
+    fingerprint.includes("freeze") ||
+    fingerprint.includes("frost")
+  ) {
+    return "#5bc8ff";
+  }
+  if (
+    fingerprint.includes("electric") ||
+    fingerprint.includes("shock")
+  ) {
+    return "#f5d742";
+  }
+
+  return "#9b59d0";
+}
+
+function populateHumanStatusVisualAssetV1(
+  root,
+  select,
+  selectedId = ""
+) {
+  const assets =
+    EDITOR_VISUAL_ASSETS_BY_ROOT.get(
+      root
+    ) ?? [];
+
+  select.dataset.assetRole = "status";
+  select.textContent = "";
+  createOption(select, "", "Aucun");
+
+  for (const asset of assets) {
+    if (
+      captureEditorAssetMatchesRoleV1(
+        asset,
+        "status"
+      )
+    ) {
+      createOption(
+        select,
+        asset.id,
+        asset.label || asset.id
+      );
+    }
+  }
+
+  if (
+    selectedId &&
+    ![...select.options].some(
+      (option) =>
+        option.value === selectedId
+    )
+  ) {
+    createOption(
+      select,
+      selectedId,
+      selectedId + " — hors catalogue"
+    );
+  }
+
+  select.value = selectedId || "";
+}
+
+function syncHumanStatusVisualFieldsV1(
+  row
+) {
+  const mode =
+    row.querySelector(
+      "[data-skill-status-visual-mode]"
+    )?.value ?? "none";
+
+  const tintFields =
+    row.querySelector(
+      "[data-skill-status-visual-tint-fields]"
+    );
+  if (tintFields) {
+    tintFields.hidden =
+      !["tint", "both"].includes(mode);
+  }
+
+  const spriteFields =
+    row.querySelector(
+      "[data-skill-status-visual-sprite-fields]"
+    );
+  if (spriteFields) {
+    spriteFields.hidden =
+      !["sprite", "both"].includes(mode);
+  }
+}
+
 function syncHumanSkillEffectRowV1(
   row
 ) {
@@ -3315,12 +3430,17 @@ function syncHumanSkillEffectRowV1(
   if (maxStacks) {
     maxStacks.hidden = stacking !== "stack";
   }
+
+  syncHumanStatusVisualFieldsV1(
+    row
+  );
 }
 
 function appendHumanSkillEffectV1(
   root,
   effect = null,
-  statRegistry = null
+  statRegistry = null,
+  statusPresentation = null
 ) {
   const host = one(
     root,
@@ -3617,12 +3737,147 @@ function appendHumanSkillEffectV1(
     )
   );
 
+  const statusVisualBox =
+    document.createElement("div");
+  statusVisualBox.className =
+    "skill-status-visual-config";
+
+  const statusVisualMode =
+    document.createElement("select");
+  statusVisualMode.dataset.skillStatusVisualMode =
+    "true";
+  for (const [value, label] of [
+    ["none", "Aucun"],
+    ["tint", "Coloration du modèle"],
+    ["sprite", "Sprite autour du modèle"],
+    ["both", "Sprite + coloration"]
+  ]) {
+    createOption(
+      statusVisualMode,
+      value,
+      label
+    );
+  }
+
+  const statusTintColor =
+    document.createElement("input");
+  statusTintColor.type = "color";
+  statusTintColor.dataset.skillStatusTintColor =
+    "true";
+  statusTintColor.value =
+    statusPresentation?.tintColor ??
+    defaultHumanStatusTintColorV1(
+      status
+    );
+
+  const statusTintOpacity =
+    tacticalNumberInputV1(
+      "skillStatusTintOpacity",
+      statusPresentation?.tintOpacity ??
+        0.35,
+      {
+        min: 0.05,
+        max: 1,
+        step: "0.05"
+      }
+    );
+
+  const statusVisualAsset =
+    document.createElement("select");
+  statusVisualAsset.dataset.skillStatusVisualAsset =
+    "true";
+  populateHumanStatusVisualAssetV1(
+    root,
+    statusVisualAsset,
+    statusPresentation?.sprite?.assetId ??
+      ""
+  );
+
+  const statusVisualScale =
+    tacticalNumberInputV1(
+      "skillStatusVisualScale",
+      statusPresentation?.sprite
+        ?.displayScale ?? 1,
+      {
+        min: 0.25,
+        max: 4,
+        step: "0.05"
+      }
+    );
+
+  const statusVisualOpacity =
+    tacticalNumberInputV1(
+      "skillStatusVisualOpacity",
+      statusPresentation?.sprite
+        ?.opacity ?? 0.85,
+      {
+        min: 0.05,
+        max: 1,
+        step: "0.05"
+      }
+    );
+
+  const tintFields =
+    document.createElement("div");
+  tintFields.className =
+    "skill-status-config__specific";
+  tintFields.dataset.skillStatusVisualTintFields =
+    "true";
+  tintFields.append(
+    tacticalFieldV1(
+      "Couleur du statut",
+      statusTintColor
+    ),
+    tacticalFieldV1(
+      "Intensité coloration",
+      statusTintOpacity
+    )
+  );
+
+  const spriteFields =
+    document.createElement("div");
+  spriteFields.className =
+    "skill-status-config__specific";
+  spriteFields.dataset.skillStatusVisualSpriteFields =
+    "true";
+  spriteFields.append(
+    tacticalFieldV1(
+      "Sprite du statut",
+      statusVisualAsset
+    ),
+    tacticalFieldV1(
+      "Échelle du sprite",
+      statusVisualScale
+    ),
+    tacticalFieldV1(
+      "Opacité du sprite",
+      statusVisualOpacity
+    )
+  );
+
+  const statusVisualNote =
+    document.createElement("small");
+  statusVisualNote.className = "note";
+  statusVisualNote.textContent =
+    "Ce visuel appartient uniquement à la présentation. Il suit automatiquement la durée réelle du statut et disparaît à son expiration ou lorsqu'il est retiré.";
+
+  statusVisualBox.append(
+    tacticalFieldV1(
+      "Visuel persistant du statut",
+      statusVisualMode
+    ),
+    tintFields,
+    spriteFields,
+    statusVisualNote
+  );
+
   statusBox.append(
     common,
     statConfig,
     dotConfig,
     hotConfig,
-    shieldConfig
+    shieldConfig,
+    statusVisualBox
   );
 
   const zoneBox =
@@ -3790,6 +4045,8 @@ function appendHumanSkillEffectV1(
     status.polarity ?? "beneficial";
   stacking.value =
     status.stacking ?? "refresh";
+  statusVisualMode.value =
+    statusPresentation?.mode ?? "none";
   zoneRadius.value =
     effect?.radius ?? "short";
   zoneReactivation.value =
@@ -3802,7 +4059,8 @@ function appendHumanSkillEffectV1(
 function renderHumanSkillEffectsV1(
   root,
   effects,
-  statRegistry = null
+  statRegistry = null,
+  statusVisuals = {}
 ) {
   const host = one(
     root,
@@ -3811,10 +4069,18 @@ function renderHumanSkillEffectsV1(
   host.textContent = "";
 
   for (const effect of effects ?? []) {
+    const statusId =
+      effect?.kind === "apply_status"
+        ? effect?.status?.id ?? null
+        : null;
+
     appendHumanSkillEffectV1(
       root,
       effect,
-      statRegistry
+      statRegistry,
+      statusId
+        ? statusVisuals?.[statusId] ?? null
+        : null
     );
   }
 }
