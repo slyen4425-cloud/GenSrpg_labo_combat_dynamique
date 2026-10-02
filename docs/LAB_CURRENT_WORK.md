@@ -21216,3 +21216,14 @@ Validation smartphone attendue :
 5. Proche/Moyen/Loin, durée et dégâts restent inchangés.
 
 Aucun merge vers `main`.
+
+
+### VALIDATION UTILISATEUR — Persistent Zone Offset Controls V1 — 2026-10-01
+
+Retour utilisateur après test smartphone : « Ok c’est bon ».
+
+Cette validation confirme le comportement attendu du lot Persistent Zone Offset Controls V1 sur la preview publiée, sans inventer de validation supplémentaire au-delà du retour explicite reçu.
+
+Statut : **GREEN utilisateur**.
+
+Cette validation clôt le micro-lot. Aucun merge vers `main` n’est effectué automatiquement.
