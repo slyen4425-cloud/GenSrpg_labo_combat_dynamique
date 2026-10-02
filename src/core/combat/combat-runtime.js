@@ -280,17 +280,60 @@ export function createCombatRuntime({
     }
   }
 
-  function processResolution(record, atNowMs) {
+  function processResolution(
+    record,
+    atNowMs,
+    { impactAtMs = null } = {}
+  ) {
     if (
       activeByActor.get(record.action.actorId) !== record
     ) {
-      return;
+      return null;
     }
 
+    const requestedImpactAtMs =
+      impactAtMs === null
+        ? record.action.impactAtMs
+        : Number(impactAtMs);
+    const effectiveImpactAtMs =
+      record.action.actionType === "skill"
+        ? Math.min(
+            record.action.impactAtMs,
+            Math.max(
+              record.action.releaseAtMs,
+              Number.isFinite(requestedImpactAtMs)
+                ? requestedImpactAtMs
+                : record.action.impactAtMs
+            )
+          )
+        : record.action.impactAtMs;
+    const effectiveAction =
+      record.action.actionType === "skill" &&
+      effectiveImpactAtMs !== record.action.impactAtMs
+        ? Object.freeze({
+            ...record.action,
+            travelMs:
+              effectiveImpactAtMs -
+              record.action.releaseAtMs,
+            impactAtMs: effectiveImpactAtMs
+          })
+        : record.action;
+    const effectiveReaction =
+      record.reaction === null ||
+      record.reaction?.readyAtMs <=
+        effectiveAction.impactAtMs
+        ? record.reaction
+        : null;
+
     const targetRecord =
-      activeByActor.get(record.action.targetId) ?? null;
+      activeByActor.get(effectiveAction.targetId) ?? null;
     const resolutionClockMs =
-      absoluteResolutionAt(record);
+      record.startedAtClockMs +
+      (
+        effectiveReaction?.outcome === "countered"
+          ? effectiveReaction.readyAtMs
+          : effectiveAction.impactAtMs
+      );
     const targetActionContext =
       targetRecord && targetRecord !== record
         ? Object.freeze({
@@ -304,8 +347,8 @@ export function createCombatRuntime({
         : null;
 
     const resolution = session.completeAction({
-      action: record.action,
-      reaction: record.reaction,
+      action: effectiveAction,
+      reaction: effectiveReaction,
       targetActionContext
     });
 
@@ -322,6 +365,7 @@ export function createCombatRuntime({
 
     onResolved(resolution);
     emitStateIfChanged({ force: true });
+    return resolution;
   }
 
   function processProjectileClash({
@@ -761,6 +805,87 @@ export function createCombatRuntime({
     });
   }
 
+  function reportProjectileContact({
+    actorId,
+    targetId
+  }) {
+    if (disposed) {
+      return Object.freeze({
+        ok: false,
+        outcome: "disposed"
+      });
+    }
+
+    const current = now();
+
+    // Process any semantic release/clash/nominal impact that was already
+    // due before this observed contact. The contact signal never skips
+    // an earlier Runtime-owned event.
+    settleDue(current);
+
+    const record = activeByActor.get(actorId);
+    if (!record) {
+      return Object.freeze({
+        ok: false,
+        outcome: "no_action"
+      });
+    }
+
+    if (
+      record.action.actionType !== "skill" ||
+      record.action.skill?.form !== "projectile"
+    ) {
+      return Object.freeze({
+        ok: false,
+        outcome: "not_projectile"
+      });
+    }
+
+    if (record.action.targetId !== targetId) {
+      return Object.freeze({
+        ok: false,
+        outcome: "target_mismatch"
+      });
+    }
+
+    if (!record.released) {
+      return Object.freeze({
+        ok: false,
+        outcome: "not_released"
+      });
+    }
+
+    const contactImpactAtMs = Math.min(
+      record.action.impactAtMs,
+      Math.max(
+        record.action.releaseAtMs,
+        elapsedFor(record, current)
+      )
+    );
+
+    const resolution = processResolution(
+      record,
+      current,
+      { impactAtMs: contactImpactAtMs }
+    );
+
+    if (!resolution) {
+      return Object.freeze({
+        ok: false,
+        outcome: "no_action"
+      });
+    }
+
+    return Object.freeze({
+      ok: true,
+      outcome: "contact_resolved",
+      actorId,
+      targetId,
+      impactAtMs: contactImpactAtMs,
+      resolution
+    });
+  }
+
   function cancelActive(actorId = null) {
     if (actorId !== null) {
       const record = activeByActor.get(actorId);
@@ -800,6 +925,7 @@ export function createCombatRuntime({
     react,
     interruptActive,
     applyResolutionInterrupt,
+    reportProjectileContact,
     cancelActionsForActor,
     cancelActive,
     dispose,
