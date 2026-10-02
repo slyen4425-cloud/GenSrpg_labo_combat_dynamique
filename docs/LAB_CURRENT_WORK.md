@@ -22243,3 +22243,34 @@ PREVALIDATION smartphone requise :
 5. vérifier qu'un passage réellement à côté ne provoque pas d'impact fantôme.
 
 État : **GREEN technique — scellement puis checkpoint/preview**.
+
+
+### Recadrage vrai chemin — raccord contact FX -> Runtime
+
+Retour smartphone après la première correction géométrique : le projectile traverse encore la cible.
+
+Diagnostic sur le HEAD réel :
+- `createDomSkillFxRenderer()` calcule bien le contact et expose `onProjectileContact` ;
+- dans **les deux composition roots réelles** (`combat-test-ui.js` et `combat-2v2-test-ui.js`), le callback `onProjectileContact(contact) { runtime?.reportProjectileContact(contact); }` est actuellement passé par erreur à `createDomCombatAudio()` ;
+- le renderer FX n'obtient donc **aucun callback de contact en jeu réel** ;
+- les tests précédents validaient seulement la présence textuelle du callback près de l'appel Runtime et n'ont pas verrouillé qu'il appartenait au constructeur FX.
+
+Conséquence : le capteur géométrique fonctionne isolément, mais son signal n'atteint jamais l'autorité `Combat Runtime` dans la preview réelle.
+
+Périmètre étendu avant correction :
+- `src/ui/combat-test-ui.js` ;
+- `src/ui/combat-2v2-test-ui.js` ;
+- test de composition dédié ;
+- documentation uniquement si nécessaire.
+
+Autorité inchangée :
+`DOM Skill FX -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> Presenter`.
+
+Interdictions maintenues :
+- aucune résolution/dégât dans l'UI ;
+- aucune nouvelle API Runtime ;
+- aucune seconde autorité ;
+- aucun timer/observer/listener compensatoire ;
+- aucune logique spéciale Boule de feu.
+
+TDD : ajouter d'abord une sentinelle RED qui démontre que le callback est absent de `createDomSkillFxRenderer()` et présent à tort dans `createDomCombatAudio()`.
