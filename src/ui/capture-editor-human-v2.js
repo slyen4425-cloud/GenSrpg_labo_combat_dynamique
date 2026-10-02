@@ -3797,7 +3797,7 @@ function appendHumanSkillEffectV1(
       statusPresentation?.tintOpacity ??
         0.35,
       {
-        min: 0.05,
+        min: 0,
         max: 1,
         step: "0.05"
       }
@@ -3850,7 +3850,7 @@ function appendHumanSkillEffectV1(
       statusTintColor
     ),
     tacticalFieldV1(
-      "Intensité coloration",
+      "Intensité coloration (0 à 1)",
       statusTintOpacity
     )
   );
