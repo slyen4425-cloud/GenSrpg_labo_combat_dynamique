@@ -3,7 +3,10 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
-import { createDomVisibleModelCollisionModel } from "../adapters/renderer/dom-visible-model-contact.js";
+import {
+  createDomVisibleModelCollisionModel,
+  watchVisibleModelContact
+} from "../adapters/renderer/dom-visible-model-contact.js";
 import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
 import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
@@ -496,7 +499,8 @@ export async function mountCombatDemo({
     {
       travelMs,
       targetSlot = null,
-      onPhase = null
+      onPhase = null,
+      onContact = null
     } = {}
   ) {
     if (disposed) {
@@ -507,6 +511,15 @@ export async function mountCombatDemo({
       return playEventFor(slotKey, "attack", {
         targetSlot
       });
+    }
+
+    if (
+      onContact !== null &&
+      typeof onContact !== "function"
+    ) {
+      throw new TypeError(
+        "onContact must be a function when supplied"
+      );
     }
 
     const slot = slotOf(slotKey);
@@ -570,9 +583,19 @@ export async function mountCombatDemo({
     slot.setApproachActive(true, approachDepth);
 
     const handle = slot.renderer.play(plan);
+    const contactWatcher =
+      typeof onContact === "function"
+        ? watchVisibleModelContact({
+            sourceModel: slot.collisionModel,
+            targetModel: target.collisionModel,
+            continuous: approachMode !== "teleport",
+            onContact
+          })
+        : null;
     const approachRecord = Object.freeze({
       handle,
-      finished: handle.finished
+      finished: handle.finished,
+      contactWatcher
     });
     activeApproachBySlot.set(slotKey, approachRecord);
 
@@ -623,6 +646,7 @@ export async function mountCombatDemo({
         return result;
       })
       .finally(() => {
+        contactWatcher?.cancel();
         cueSchedule.clear();
         if (activeApproachBySlot.get(slotKey) === approachRecord) {
           activeApproachBySlot.delete(slotKey);
@@ -636,6 +660,9 @@ export async function mountCombatDemo({
 
   function cancelFor(slotKey) {
     const slot = slotOf(slotKey);
+    const activeApproach =
+      activeApproachBySlot.get(slotKey) ?? null;
+    activeApproach?.contactWatcher?.cancel();
     activeApproachBySlot.delete(slotKey);
     slot.setApproachActive(false);
     slot.renderer.cancel();
