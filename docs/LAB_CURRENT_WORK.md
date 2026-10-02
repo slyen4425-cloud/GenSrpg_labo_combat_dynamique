@@ -22123,3 +22123,18 @@ PREVALIDATION smartphone :
 6. vérifier un clash projectile pour confirmer qu'il reste prioritaire lorsqu'il arrive avant le contact cible.
 
 État : **GREEN technique — publication checkpoint/preview puis validation utilisateur**.
+
+
+### Durcissement final — vrai chemin dégâts
+
+Sentinelle ajoutée :
+- commit : `971f629199436a49b7d8c07ca9fdf8134bc959c3` ;
+- le test utilise la vraie Boule de feu normalisée, le vrai `Combat Session`, le vrai `Combat Runtime` et le vrai `Action Resolver` ;
+- aucun dégât n'est appliqué au release ni pendant le trajet avant contact ;
+- au contact modèle accepté avant l'impact nominal, les dégâts sont appliqués immédiatement ;
+- les événements `skill-arrive` et `hit` portent exactement le timestamp d'impact effectif accepté par le Runtime.
+
+CI : `37002196425` — SUCCESS.
+Suite complète : **818/818 PASS, 0 FAIL**.
+
+Statut final du lot : **GREEN technique — prêt pour checkpoint/preview et PREVALIDATION smartphone ; aucun merge vers main**.
