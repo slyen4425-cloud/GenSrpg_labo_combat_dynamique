@@ -83,6 +83,18 @@ export function planSkillOutcomeFx({
     return Object.freeze([]);
   }
 
+  const semanticSkillId =
+    resolution.skillId ??
+    resolution.events?.find(
+      (item) =>
+        item.type === "skill-arrive"
+    )?.skillId ??
+    resolution.events?.find(
+      (item) =>
+        item.type === "skill-release"
+    )?.skillId ??
+    null;
+
   if (resolution.outcome === "evaded") {
     return Object.freeze([
       Object.freeze({
@@ -93,7 +105,7 @@ export function planSkillOutcomeFx({
     ]);
   }
 
-  if (resolution.outcome === "clashed" && resolution.skillId) {
+  if (resolution.outcome === "clashed" && semanticSkillId) {
     const clashEvent = resolution.events?.find(
       (item) => item.type === "projectile-clash"
     );
@@ -111,7 +123,7 @@ export function planSkillOutcomeFx({
     return Object.freeze([
       Object.freeze({
         type: "clash-impact",
-        skillId: resolution.skillId,
+        skillId: semanticSkillId,
         fromSlot: actorSlot,
         targetSlot,
         progress: Math.min(
@@ -125,12 +137,12 @@ export function planSkillOutcomeFx({
 
   if (
     ["hit", "blocked", "reflected", "immune"].includes(resolution.outcome) &&
-    resolution.skillId
+    semanticSkillId
   ) {
     return Object.freeze([
       Object.freeze({
         type: "impact",
-        skillId: resolution.skillId,
+        skillId: semanticSkillId,
         targetSlot,
         durationMs: 420
       })
