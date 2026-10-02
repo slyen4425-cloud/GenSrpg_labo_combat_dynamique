@@ -350,3 +350,63 @@ test("recovery records are not reaction or visible-contact candidates after impa
 
   h.runtime.dispose();
 });
+
+
+test("KO cleanup of the resolved target does not cancel the attacker's recovery", () => {
+  const action = makeAction({
+    recoveryMs: 300
+  });
+  const h = harness(action);
+
+  h.runtime.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: action.skill
+  });
+  h.tickAt(200);
+
+  assert.equal(
+    h.runtime.hasActiveActionFor("player"),
+    true
+  );
+
+  h.runtime.cancelActionsForActor(
+    "opponent",
+    {
+      includeTargeted: true,
+      reason: "ko"
+    }
+  );
+
+  assert.equal(
+    h.runtime.hasActiveActionFor("player"),
+    true,
+    "resolved attacker recovery must survive target KO cleanup"
+  );
+
+  h.runtime.dispose();
+});
+
+test("one late runtime tick can resolve impact and finish already elapsed recovery without an extra tick", () => {
+  const action = makeAction({
+    recoveryMs: 300
+  });
+  const h = harness(action);
+
+  h.runtime.startSkill({
+    actorId: "player",
+    targetId: "opponent",
+    skill: action.skill
+  });
+
+  h.tickAt(700);
+
+  assert.equal(h.completions.length, 1);
+  assert.equal(
+    h.runtime.hasActiveActionFor("player"),
+    false,
+    "recovery already elapsed at the current runtime clock"
+  );
+
+  h.runtime.dispose();
+});
