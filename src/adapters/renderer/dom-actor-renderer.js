@@ -171,14 +171,12 @@ export function createDomActorRenderer({
     });
   }
 
-  function returnToBaseFromCurrent({
-    durationMs = 180
-  } = {}) {
+  function returnToBaseFromCurrent(returnMs = 180) {
     assertActiveRenderer();
 
     const duration = Math.max(
       1,
-      Number(durationMs) || 1
+      Number(returnMs) || 1
     );
     const from = currentPresentationState();
 
