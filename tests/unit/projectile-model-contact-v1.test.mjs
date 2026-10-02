@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import {
   createDomSkillFxRenderer
@@ -360,5 +361,36 @@ test("Combat Runtime rejects contact before release, wrong target and non-projec
     assert.equal(result.outcome, "not_projectile");
     assert.equal(h.completions.length, 0);
     h.runtime.dispose();
+  }
+});
+
+
+test("both combat composition roots route projectile model contact only to Combat Runtime", async () => {
+  const [duelSource, coopSource] = await Promise.all([
+    readFile(
+      new URL(
+        "../../src/ui/combat-test-ui.js",
+        import.meta.url
+      ),
+      "utf8"
+    ),
+    readFile(
+      new URL(
+        "../../src/ui/combat-2v2-test-ui.js",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  ]);
+
+  for (const source of [duelSource, coopSource]) {
+    assert.match(
+      source,
+      /onProjectileContact\(contact\)[\s\S]{0,120}runtime\?\.reportProjectileContact\(contact\)/
+    );
+    assert.doesNotMatch(
+      source,
+      /onProjectileContact\(contact\)[\s\S]{0,220}(damage|hp\s*=|presentOutcome\()/
+    );
   }
 });
