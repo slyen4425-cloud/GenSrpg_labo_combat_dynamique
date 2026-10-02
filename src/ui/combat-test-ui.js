@@ -1074,6 +1074,17 @@ export async function mountCombatTest({
         runOpponentTurn();
       }
     },
+    onHealthDelta(feedback) {
+      if (feedback.kind !== "damage") {
+        return;
+      }
+      fx.play({
+        type: "damage",
+        targetSlot: feedback.actorId,
+        amount: feedback.amount,
+        durationMs: 700
+      });
+    },
     onStarted({ action }) {
       if (action.actionType === "skill") {
         presenter.presentPreparation({
