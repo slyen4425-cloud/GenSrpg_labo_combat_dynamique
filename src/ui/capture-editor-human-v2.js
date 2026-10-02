@@ -144,6 +144,9 @@ const MONSTER_CAPTURE_PROGRESSION_RULES_URL = new URL(
   import.meta.url
 );
 
+const EDITOR_VISUAL_ASSETS_BY_ROOT =
+  new WeakMap();
+
 function clamp01(value) {
   return Math.min(1, Math.max(0, value));
 }
@@ -1080,6 +1083,13 @@ function presentationForSkill(fields) {
   const socketId = optionalText(
     presentation.socketId
   );
+  const statusVisuals =
+    presentation.statusVisuals &&
+    typeof presentation.statusVisuals === "object"
+      ? presentation.statusVisuals
+      : {};
+  const hasStatusVisuals =
+    Object.keys(statusVisuals).length > 0;
 
   const cast = visualSlot(
     presentation.castAssetId,
@@ -1172,7 +1182,11 @@ function presentationForSkill(fields) {
     travelAudio !== null ||
     impactAudio !== null;
 
-  if (!hasVisual && !hasAudio) {
+  if (
+    !hasVisual &&
+    !hasAudio &&
+    !hasStatusVisuals
+  ) {
     return null;
   }
 
@@ -1205,12 +1219,24 @@ function presentationForSkill(fields) {
   }
 
   return {
-    id: "skill:" + requiredText(fields.id, "ID capacité"),
-    version: 2,
+    id:
+      "skill:" +
+      requiredText(
+        fields.id,
+        "ID capacité"
+      ),
+    version:
+      hasStatusVisuals ? 3 : 2,
     subjectType: "skill",
-    subjectId: requiredText(fields.id, "ID capacité"),
+    subjectId: requiredText(
+      fields.id,
+      "ID capacité"
+    ),
     visual,
-    audio
+    audio,
+    ...(hasStatusVisuals
+      ? { statusVisuals }
+      : {})
   };
 }
 
@@ -1687,6 +1713,8 @@ export function humanSkillEditorFieldsFromDraftV1(
     effectTags:
       [...(definition.effect?.tags ?? [])],
     presentation: {
+      statusVisuals:
+        presentation.statusVisuals ?? {},
       iconAssetId:
         visual.icon?.assetId ?? "",
       castAssetId:
@@ -4605,7 +4633,10 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
     return asset.category === "impact";
   }
 
-  if (role === "zone") {
+  if (
+    role === "zone" ||
+    role === "status"
+  ) {
     const tags = Array.isArray(asset.tags)
       ? asset.tags
       : [];
@@ -4652,12 +4683,19 @@ function populateSelect(select, assets, role) {
     }
   }
 
-  if (
-    previous &&
-    [...select.options].some(
-      (option) => option.value === previous
-    )
-  ) {
+  if (previous) {
+    if (
+      ![...select.options].some(
+        (option) =>
+          option.value === previous
+      )
+    ) {
+      createOption(
+        select,
+        previous,
+        previous + " — hors catalogue"
+      );
+    }
     select.value = previous;
   }
 }
@@ -5065,6 +5103,10 @@ async function hydrateAssetCatalog(root, listen) {
 
   const byId = new Map(
     assets.map((asset) => [asset.id, asset])
+  );
+  EDITOR_VISUAL_ASSETS_BY_ROOT.set(
+    root,
+    Object.freeze([...assets])
   );
 
   for (const select of root.querySelectorAll("[data-asset-role]")) {
