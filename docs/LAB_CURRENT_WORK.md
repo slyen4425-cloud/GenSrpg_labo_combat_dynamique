@@ -22442,3 +22442,65 @@ Aucune modification de :
 Aucun timer supplémentaire, aucun observer global, aucune hitbox par ID, aucune seconde autorité.
 
 État : **GREEN technique — scellement documentaire puis checkpoint/preview et PREVALIDATION smartphone**.
+
+
+## Micro-lot — Action Contact Authority V1 — 2026-10-02
+
+Base exacte : `f7bd044c10445923c7b7f215f538f4959a3004e2` (Visible Model Contact V3 — GREEN + preview validée utilisateur).
+
+- checkpoint de départ : `checkpoint/lab-start-action-contact-authority-v1-2026-10-02` ;
+- branche : `work/lab-action-contact-authority-v1-2026-10-02`.
+
+### Demande utilisateur
+
+Généraliser le comportement validé pour les projectiles à **toutes les capacités où l'attaquant se déplace vers la cible** :
+- contact au sol / Griffe ;
+- aérien / plongeon ;
+- téléportation ;
+- toute future capacité data-driven utilisant une approche visuelle vers la cible.
+
+Le contact ne doit jamais être décidé sur une position théorique différente de celle vue par le joueur.
+
+### Audit initial
+
+Le problème est structurel :
+- projectile possède aujourd'hui `CombatRuntime.reportProjectileContact()`, capable d'avancer l'impact au contact visuel accepté ;
+- les formes `contact` avec `approachMode=ground|aerial|teleport` n'ont **aucune API équivalente** ;
+- elles restent résolues uniquement à leur `impactAtMs` nominal, même si le sprite mobile touche visuellement la cible avant/après selon scale, position, profil locomotion et animation ;
+- conserver une voie spéciale projectile + ajouter une autre voie contact créerait deux autorités parallèles.
+
+### Direction architecturale
+
+Refactorer l'autorité existante en **un seul contrat générique de contact d'action**, possédé par Combat Runtime.
+
+Chaîne cible :
+
+`Visual Controller / visible collision model -> contact sensor -> CombatRuntime.reportActionContact() -> Combat Session / Action Resolver -> Presenter`.
+
+Le même chemin doit servir :
+- `form=projectile` ;
+- `form=contact` avec une approche réelle `ground|aerial|teleport`.
+
+`reportProjectileContact()` ne doit pas rester comme seconde autorité métier une fois la migration effectuée ; compatibilité éventuelle uniquement comme délégation transitoire si nécessaire, sans logique propre.
+
+### Invariants
+
+- une seule horloge : Combat Runtime ;
+- une seule géométrie visible : Visible Model Contact V3 / Visual Controller ;
+- aucun calcul de dégâts dans renderer/UI ;
+- aucun ID spécial (`claw`, `fireball`, etc.) ;
+- aucun offset par créature ;
+- aucun timer/observer global ajouté ;
+- aucun changement `Zombicide-40k` ;
+- aucun merge `main` avant GREEN + PREVALIDATION.
+
+### TDD prévu
+
+1. RED Runtime : une action `contact/ground` ne peut aujourd'hui pas être résolue par un contact visuel avant son impact nominal ;
+2. RED Runtime : même garantie pour `contact/aerial` et `contact/teleport` ;
+3. RED : projectile et contact doivent passer par la même autorité générique ;
+4. RED Visual Controller : collision mobile acteur -> cible utilise les deux modèles visibles réels et un balayage continu ;
+5. RED composition 1v1/2v2 : aucun client ne décide lui-même de l'impact ;
+6. anciennes sentinelles projectile, clash, esquive et impact restent GREEN.
+
+État : **LOT OUVERT — audit terminé, RED à écrire avant correction**.
