@@ -21993,3 +21993,82 @@ PREVALIDATION smartphone attendue :
 Après la CI du présent scellement documentaire, checkpoint et preview doivent être avancés en fast-forward vers le même HEAD, puis revérifiés.
 
 Statut : **GREEN technique publié — PREVALIDATION smartphone utilisateur en attente ; aucun merge vers main**.
+
+
+## Micro-lot — Projectile Model Contact V1 — 2026-10-02
+
+Base exacte : `71454cee18eec875b83eb8ddd362f67b6eeed699` (Projectile Impact Sync V1 — GREEN technique publié).
+
+- checkpoint de départ : `checkpoint/lab-start-projectile-model-contact-v1-2026-10-02` ;
+- branche : `work/lab-projectile-model-contact-v1-2026-10-02`.
+
+### Retour utilisateur
+
+En combat réel concurrent :
+- si la cible se déplace vers le lanceur pendant le trajet d'un projectile, le sprite peut traverser visuellement son modèle ;
+- attendu : **le modèle courant de la cible constitue la zone de contact du projectile** ;
+- dès que le projectile touche cette zone, il doit disparaître et l'impact doit être présenté immédiatement, sans trou visuel.
+
+### Recadrage architecture / autorité unique
+
+L'ancien mécanisme `watchProjectileContact()` supprimait directement le projectile dans le renderer, sans faire avancer la résolution sémantique. Il a donc été retiré dans le lot précédent car il créait une autorité concurrente et un décalage projectile/impact.
+
+Le présent lot ne réintroduit pas cette autorité.
+
+Chaîne cible :
+
+`DOM Skill FX (capteur géométrique) -> signal de contact -> Combat Runtime (validation + résolution unique) -> onResolved -> Presenter -> suppression projectile -> impact`.
+
+Invariants :
+1. le renderer ne décide jamais du résultat, des dégâts, de l'esquive, du clash ou de la cible ;
+2. le renderer émet au plus un signal de contact pour un projectile actif ;
+3. `Combat Runtime` vérifie que l'action existe encore, est relâchée, est bien un projectile et vise la cible signalée ;
+4. seul le Runtime peut déclencher la complétion anticipée au contact ;
+5. le timestamp d'impact utilisé par Action Resolver doit être celui du contact accepté par le Runtime, sans conserver un faux `impactAtMs` futur ;
+6. `onResolved` reste l'unique chemin vers le Presenter ;
+7. le Presenter conserve la transition atomique : suppression projectile puis impact immédiat ;
+8. aucun timer, observer, listener global ou boucle permanente supplémentaire ;
+9. le suivi géométrique n'existe que pendant la vie du projectile FX et est nettoyé à l'annulation/dispose.
+
+### Propriétaires
+
+- observation de géométrie DOM : Render Adapter uniquement ;
+- acceptation du contact et horloge d'impact : Combat Runtime ;
+- application dégâts/résultat : Action Resolver / Combat Session ;
+- transition visuelle projectile -> impact : Combat Resolution Presenter.
+
+### Fichiers autorisés
+
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `src/core/combat/combat-runtime.js` ;
+- `src/core/combat/combat-session.js` seulement pour transporter un impact effectif validé ;
+- `src/core/combat/action-resolver.js` seulement pour consommer ce timestamp effectif sans dupliquer une règle ;
+- `src/ui/combat-test-ui.js` et `src/ui/combat-2v2-test-ui.js` uniquement comme composition root pour relier le signal renderer au Runtime ;
+- tests unitaires / intégration dédiés ;
+- `docs/LAB_ARCHITECTURE.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé
+
+- aucune logique spéciale par ID de compétence ;
+- aucune collision décidée par l'UI ;
+- aucune application de dégâts dans le renderer/presenter ;
+- aucune seconde horloge ;
+- aucun `setTimeout` compensatoire ;
+- aucun `MutationObserver` / listener global ;
+- aucune modification de `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD prévu
+
+1. RED renderer : une entrée du centre du projectile dans le rectangle live de la cible émet un contact une seule fois et ne nettoie pas elle-même le projectile ;
+2. RED Runtime : un contact accepté sur projectile relâché résout l'action immédiatement à l'elapsed courant ;
+3. RED Runtime : contact faux acteur / fausse cible / avant release / non-projectile est refusé sans résolution ;
+4. RED Resolver : les événements `skill-arrive`, `hit`, effets tactiques et recovery utilisent l'impact effectif accepté, pas l'ancien timestamp nominal ;
+5. RED vrai chemin : contact renderer -> Runtime -> `onResolved` -> Presenter entraîne disparition projectile puis impact dans le même flux ;
+6. sentinelles clash / interruption / mobilité conservées ;
+7. suite complète GREEN ;
+8. checkpoint + preview smartphone ;
+9. validation utilisateur.
+
+État : **LOT OUVERT — RED avant correction**.
