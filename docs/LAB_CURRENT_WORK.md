@@ -21797,3 +21797,43 @@ Point fragile identifié dans le chemin de sauvegarde UI :
 - aucun changement dans `Zombicide-40k`.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Résultat technique — Skill Required Level Update Retention V1
+
+Cause / point fragile confirmé :
+- une mise à jour de capacité utilisait encore `refreshLoadoutOptions(draft.id)` ;
+- ce paramètre `preferredId` appartient à une logique d'auto-placement utile pour la création, pas pour la modification d'une fiche existante ;
+- le niveau requis n'est pas censé filtrer ni supprimer la configuration du loadout ;
+- après sauvegarde, la fiche active n'était pas explicitement rechargée depuis `configuredSkills`.
+
+RED :
+- commit : `180ee46dbf49499c7c452756a22cc4902d8575f0` ;
+- CI : `36979511510` — FAILURE attendue ;
+- **808 tests / 807 PASS / 1 FAIL** ;
+- unique échec : le chemin update utilisait encore l'auto-placement et ne rechargeait pas explicitement la fiche active.
+
+Correction :
+- commit : `e0143495ef03ef177a1c6d9b753dc2b3ab7f2111` ;
+- `create` conserve `refreshLoadoutOptions(draft.id)` ;
+- `update` utilise désormais `refreshLoadoutOptions()` sans auto-placement ;
+- après sauvegarde, `writeSkillDraftFields(root, draft, statRegistry)` recharge la fiche active ;
+- `librarySelect.value = draft.id` maintient l'ID sélectionné ;
+- l'ID technique redevient readonly ;
+- `selectedLegacyState` est remis à `null`.
+
+Validation :
+- CI : `36979580666` — SUCCESS ;
+- **808/808 PASS, 0 FAIL** ;
+- modifier uniquement `requiredLevel` conserve `fireball` dans `configuredSkills` ;
+- le type de slot reste `standard` ;
+- le loadout planifié de la créature reste inchangé ;
+- aucune règle de progression ou de projection Combat n'a été modifiée.
+
+Durcissement de charte :
+- §33.11 ajouté ;
+- une mise à jour de capacité ne peut plus modifier le loadout par effet de bord ;
+- l'auto-placement est réservé à la création ;
+- la progression décide seulement de l'activité en combat et ne supprime pas la configuration planifiée.
+
+État : **GREEN technique — checkpoint/preview à publier ; validation smartphone requise**.
