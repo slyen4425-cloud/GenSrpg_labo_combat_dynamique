@@ -21837,3 +21837,78 @@ Durcissement de charte :
 - la progression décide seulement de l'activité en combat et ne supprime pas la configuration planifiée.
 
 État : **GREEN technique — checkpoint/preview à publier ; validation smartphone requise**.
+
+
+## Micro-lot — Projectile Impact Sync V1 — 2026-10-02
+
+Base exacte : `9d4c5cef80fd0d92d76e2d374c700b9397c8ac94` (Skill Required Level Update Retention V1 — GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-projectile-impact-sync-v1-2026-10-02` ;
+- branche : `work/lab-projectile-impact-sync-v1-2026-10-02`.
+
+### Priorité utilisateur
+
+Retour smartphone sur **Boule de feu** :
+- le sprite du projectile disparaît quelques millisecondes avant l'impact réel ;
+- ce trou visuel est jugé inacceptable pour le combat dynamique.
+
+Le micro-lot `Combat Skill Details V1`, ouvert sur une autre branche, est **mis en pause** et n'est pas inclus dans cette base. Aucun de ses changements RED ne doit contaminer ce correctif.
+
+### Cause démontrée par audit
+
+Dans `dom-skill-fx.js` :
+- le projectile possède déjà une animation dont la durée est exactement `action.travelMs` ;
+- en parallèle, `watchProjectileContact()` surveille sa géométrie à chaque frame ;
+- dès que le centre du projectile entre dans le rectangle visuel de la cible, le renderer annule l'animation et supprime le sprite ;
+- l'impact réel, lui, n'est présenté qu'au signal autoritaire `onResolved` du Combat Runtime.
+
+Conséquence : le renderer retire visuellement le projectile **avant** l'instant d'impact autoritaire, créant un trou de quelques millisecondes.
+
+### Invariant cible
+
+Pour un projectile normal non clashé :
+1. le renderer ne décide jamais d'une arrivée anticipée à partir de la géométrie DOM ;
+2. le projectile reste visible pendant toute sa durée de trajet autoritaire ;
+3. à l'instant de résolution, le projectile est retiré puis l'impact est affiché dans le même chemin de présentation ;
+4. aucun délai artificiel n'est ajouté au gameplay ;
+5. aucun changement de dégâts, `travelMs`, cooldown, énergie ou Combat Runtime ;
+6. les clashes conservent leur annulation explicite via `cancelProjectileFor()`.
+
+### Propriétaire
+
+- timing gameplay : Combat Runtime — inchangé ;
+- plan du projectile : Skill FX Plan — inchangé si le test ne démontre pas de défaut ;
+- durée / présence visuelle du projectile : DOM Skill FX Renderer ;
+- transition projectile -> impact : Combat Resolution Presenter.
+
+### Fichiers autorisés
+
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- `src/adapters/renderer/combat-resolution-presenter.js` seulement si nécessaire pour assurer la transition atomique ;
+- tests unitaires renderer/presenter dédiés ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé
+
+- `src/core/combat/combat-runtime.js` ;
+- `src/core/combat/action-resolver.js` ;
+- `src/core/fx/skill-fx-plan.js` sauf RED démontrant un défaut réel ;
+- données de Boule de feu ;
+- aucune valeur de timing ajoutée en rustine ;
+- aucun `setTimeout` compensatoire ;
+- aucun traitement spécial par ID `fireball` ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+### TDD
+
+1. RED : un projectile ne doit plus être supprimé sur simple entrée géométrique dans la cible.
+2. RED : à la fin du trajet, le dernier état visuel doit rester présent jusqu'au signal de résolution ou à une annulation explicite.
+3. RED : `presentOutcome()` doit retirer le projectile actif du lanceur avant/au même moment que l'impact.
+4. RED : un clash doit continuer à supprimer immédiatement le projectile.
+5. correction minimale ;
+6. tests ciblés + suite complète ;
+7. checkpoint GREEN + preview smartphone ;
+8. validation utilisateur.
+
+État : **LOT OUVERT — RED avant correction**.
