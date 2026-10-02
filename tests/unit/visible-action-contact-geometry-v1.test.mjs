@@ -43,7 +43,7 @@ test("two opaque visible models collide even when their source rectangles contai
   );
   const source = snapshot(
     attackerMask,
-    frame(22, 0)
+    frame(40, 0)
   );
   const previousTarget = snapshot(
     targetMask,
