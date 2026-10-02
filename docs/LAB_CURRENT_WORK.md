@@ -22383,3 +22383,62 @@ Chaîne cible inchangée :
 6. anciennes sentinelles Runtime/wiring/clash/impact restent GREEN.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Résultat technique — Visible Model Contact V3
+
+Cause réelle confirmée :
+- le vrai raccord FX -> Runtime était corrigé, mais le capteur utilisait encore une géométrie différente de celle perçue par le joueur ;
+- `.fighter__motion` est un carré de présentation ; les sprites Capture contiennent des marges transparentes parfois importantes ;
+- le shell projectile est également carré alors que le noyau visuel de trajectoire est déjà défini par `coreAnchor` ;
+- une collision de rectangles pouvait donc résoudre l'action dans une zone transparente et faire disparaître Boule de feu avant le contact visible.
+
+RED :
+- commit : `13ef4a466931cc5a8260e51c14c5d6cdadfe9fae` ;
+- CI : `37007930279` — FAILURE attendue ;
+- **823 anciens tests PASS**, 1 nouveau fichier RED absent au départ.
+
+Correction :
+- `a257aafd6ffd030c6ed4cd5be35c710b40ba4220` : nouveau module `dom-visible-model-contact.js` ;
+- `e0dbe0fc0fbd486b1936d76ee3f868bb49fb5241` : Visual Controller raccordé au masque opaque réel du sprite chargé ;
+- `f824cf5a33962bdec0cf8e377a2d2440e6b382dd` : FX projectile basculé du rectangle DOM vers noyau projectile + masque sprite ;
+- `f55b93d01eaec796e24b1b1f9cd7159ba115550a` et `9ce4aa5b926bfeb474b15725302595fcf8dfa9f2` : clients 1v1/2v2 raccordés au modèle unique `visuals.getCollisionModelFor()` ;
+- `2801229e7d6f71fc4e208a52d05357eca25a56ba` et `615389186214532dfcbe7fc8ae9d0434788861c3` : anciennes sentinelles alignées sur le nouveau contrat, notamment retrait de l'ancien invariant faux « overlap shell = contact ».
+
+Géométrie obtenue :
+1. le masque opaque est calculé automatiquement depuis l'image réellement chargée ;
+2. les marges transparentes ne participent plus au contact ;
+3. aucun réglage de hitbox manuel n'est ajouté à la créature ;
+4. trois repères enfants du même `data-demo-motion` suivent les vraies translation / scale / rotation / transform-origin / distance ;
+5. le noyau projectile déjà aligné sur `coreAnchor` est le point projectile canonique ;
+6. le balayage continu dans l'espace local du sprite empêche le tunneling entre deux frames ;
+7. le shell, la traînée et les pixels transparents du projectile ne provoquent plus une disparition anticipée.
+
+Autorité inchangée :
+`sprite visible / Visual Controller -> capteur FX -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> Presenter`.
+
+Le Render Adapter ne décide toujours ni dégâts, ni résultat, ni cible, ni ordre temporel.
+
+Validation fonctionnelle :
+- CI : `37008481970` — **SUCCESS** ;
+- suite complète : **827/827 PASS, 0 FAIL** ;
+- tests dédiés GREEN :
+  - marge transparente = pas de collision ;
+  - pixel opaque = collision ;
+  - mapping écran/sprite sous translation + scale + rotation ;
+  - balayage du noyau sans tunneling ;
+  - deux clients utilisent le modèle du Visual Controller comme seule géométrie cible ;
+  - overlap du shell sans noyau dans le modèle = pas de contact.
+
+Aucune modification de :
+- Combat Runtime ;
+- Combat Session ;
+- Action Resolver ;
+- dégâts / énergie / cooldown ;
+- projectile clash ;
+- définition Boule de feu ;
+- `Zombicide-40k`.
+
+Aucun timer supplémentaire, aucun observer global, aucune hitbox par ID, aucune seconde autorité.
+
+État : **GREEN technique — scellement documentaire puis checkpoint/preview et PREVALIDATION smartphone**.
