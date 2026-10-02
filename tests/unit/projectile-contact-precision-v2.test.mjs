@@ -105,6 +105,9 @@ function precisionHarness({
       const callback = frameCallback;
       frameCallback = null;
       callback();
+    },
+    get hasScheduledFrame() {
+      return typeof frameCallback === "function";
     }
   };
 }
@@ -153,8 +156,23 @@ test("continuous projectile sensor uses relative motion when projectile and targ
   h.runFrame();
 
   assert.equal(h.contacts.length, 1);
+  assert.equal(
+    h.hasScheduledFrame,
+    false,
+    "contact detection must stop scheduling frames after the first report"
+  );
+});
 
-  // A second observation must never duplicate the same contact signal.
+test("continuous projectile sensor does not invent contact when moving paths stay separated", () => {
+  const h = precisionHarness({
+    projectileStart: rect({ left: 80, top: 40, width: 10, height: 10 }),
+    targetStart: rect({ left: 120, top: 100, width: 20, height: 30 }),
+    projectileNext: rect({ left: 150, top: 40, width: 10, height: 10 }),
+    targetNext: rect({ left: 80, top: 100, width: 20, height: 30 })
+  });
+
   h.runFrame();
-  assert.equal(h.contacts.length, 1);
+
+  assert.equal(h.contacts.length, 0);
+  assert.equal(h.hasScheduledFrame, true);
 });
