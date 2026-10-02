@@ -285,12 +285,21 @@ Pour le projectile générique du laboratoire :
 
 - la source visuelle utilise l'anchor transitoire du lanceur afin qu'un projectile parte bien de sa position réellement affichée ;
 - sa trajectoire nominale reste dirigée vers le slot spatial stable de la cible : il ne devient pas silencieusement un projectile `tracking / homing` ;
-- pendant que le projectile FX est réellement actif, le renderer peut toutefois vérifier un **contact visuel** avec l'anchor mobile de la cible ;
-- si le centre visuel du projectile rencontre effectivement la créature en déplacement, le projectile FX est arrêté/nettoyé afin qu'il ne traverse pas visuellement son corps ;
-- cette détection DOM n'altère jamais les PV, le résultat `hit / evaded`, ni le timestamp sémantique : elle appartient uniquement à la présentation ;
+- `travelMs` définit le trajet nominal jusqu'à ce slot, mais un contact réel avec le modèle mobile de la cible peut terminer ce trajet plus tôt ;
+- pendant que le projectile FX est réellement actif, le DOM Skill FX Renderer peut vérifier le contact du centre visuel du projectile avec l'anchor mobile de la cible ;
+- cette géométrie est un **capteur**, jamais une autorité de résolution : elle émet uniquement `{ actorId, targetId, skillId }` et ne supprime pas elle-même le projectile, n'applique aucun dégât et ne choisit aucun résultat ;
+- le signal est transmis au `Combat Runtime`, qui traite d'abord tout événement sémantique déjà dû (release, clash ou impact nominal), puis vérifie que l'action est encore active, relâchée, de forme `projectile` et destinée à la cible signalée ;
+- si le contact est accepté, le Runtime devient l'unique propriétaire de l'impact effectif : il réduit `impactAtMs` et `travelMs` de cette occurrence à l'instant de contact observé, sans modifier la définition source de la compétence ;
+- `Combat Session / Action Resolver` appliquent alors normalement le résultat et les dégâts sur cette action effective ; le renderer ne reçoit qu'ensuite `onResolved` ;
+- le Presenter retire le projectile actif puis déclenche l'impact dans le même flux synchrone de présentation, ce qui garantit **disparition projectile -> impact immédiat** ;
+- un projectile déjà résolu, clashé, interrompu, destiné à une autre cible, non relâché ou non projectile ne peut pas être résolu par ce signal ;
 - un impact sémantique `hit` est rendu à la position visuelle courante de la cible ;
 - un résultat `evaded` conserve son feedback sur le point stable où l'impact aurait dû se produire ;
-- le suivi de contact n'utilise pas de boucle permanente : il existe seulement pendant la durée de vie d'un projectile FX.
+- le suivi de contact n'utilise pas de boucle permanente : un seul `requestAnimationFrame` chaîné existe uniquement pendant la vie du projectile FX, s'arrête après le premier contact signalé et est annulé au nettoyage/dispose.
+
+Chaîne autoritaire :
+
+`Projectile FX -> capteur géométrique DOM -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> onResolved -> Presenter -> suppression projectile -> impact`.
 
 Une future famille de projectiles `tracking / homing / anti-air` pourra avoir une stratégie de ciblage distincte et data-driven. Elle ne doit pas être simulée en réutilisant silencieusement l'anchor animé comme comportement par défaut.
 
