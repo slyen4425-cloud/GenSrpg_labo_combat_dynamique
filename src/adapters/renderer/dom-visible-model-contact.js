@@ -578,6 +578,117 @@ function sourceContentBox({
   });
 }
 
+function defaultRequestFrame(callback) {
+  return typeof globalThis.requestAnimationFrame === "function"
+    ? globalThis.requestAnimationFrame(callback)
+    : null;
+}
+
+function defaultCancelFrame(frameId) {
+  if (
+    frameId !== null &&
+    frameId !== undefined &&
+    typeof globalThis.cancelAnimationFrame === "function"
+  ) {
+    globalThis.cancelAnimationFrame(frameId);
+  }
+}
+
+export function watchVisibleModelContact({
+  sourceModel,
+  targetModel,
+  continuous = true,
+  onContact,
+  requestFrame = defaultRequestFrame,
+  cancelFrame = defaultCancelFrame
+}) {
+  if (
+    !sourceModel ||
+    typeof sourceModel.snapshot !== "function" ||
+    !targetModel ||
+    typeof targetModel.snapshot !== "function"
+  ) {
+    throw new TypeError(
+      "sourceModel and targetModel must provide snapshot()"
+    );
+  }
+  if (typeof onContact !== "function") {
+    throw new TypeError("onContact must be a function");
+  }
+  if (
+    typeof requestFrame !== "function" ||
+    typeof cancelFrame !== "function"
+  ) {
+    throw new TypeError(
+      "requestFrame and cancelFrame must be functions"
+    );
+  }
+
+  let active = true;
+  let frameId = null;
+  let previousSource = sourceModel.snapshot();
+  let previousTarget = targetModel.snapshot();
+
+  const schedule = () => {
+    if (!active) {
+      return;
+    }
+    frameId = requestFrame(check);
+  };
+
+  const check = () => {
+    if (!active) {
+      return;
+    }
+
+    frameId = null;
+
+    const source = sourceModel.snapshot();
+    const target = targetModel.snapshot();
+
+    const contacted =
+      source !== null &&
+      target !== null &&
+      sweptVisibleModelsOverlap({
+        previousLeft: previousSource,
+        left: source,
+        previousRight: previousTarget,
+        right: target,
+        continuous
+      });
+
+    previousSource = source;
+    previousTarget = target;
+
+    if (contacted) {
+      active = false;
+      onContact();
+      return;
+    }
+
+    schedule();
+  };
+
+  schedule();
+
+  return Object.freeze({
+    cancel() {
+      if (!active) {
+        return false;
+      }
+      active = false;
+      if (frameId !== null && frameId !== undefined) {
+        cancelFrame(frameId);
+      }
+      frameId = null;
+      return true;
+    },
+    get active() {
+      return active;
+    }
+  });
+}
+
 export function createDomVisibleModelCollisionModel({
   motion,
   image
