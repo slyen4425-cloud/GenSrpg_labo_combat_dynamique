@@ -21636,4 +21636,9 @@ Sentinelles obligatoires ajoutées :
 
 Commit charte : `265d9689bbc96c0e3707b8f31caf574004bfb83d`.
 
-État : **documentation gouvernance mise à jour — CI docs à vérifier, sans merge main**.
+Validation :
+- CI `36961743670` — SUCCESS ;
+- aucune régression détectée ;
+- aucun code runtime/UI modifié dans ce micro-lot.
+
+État : **GREEN documentation — charte mise à jour, sans merge main**.
