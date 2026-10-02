@@ -21605,3 +21605,35 @@ Validation smartphone attendue :
 Aucun merge vers `main`.
 
 État : **PREVALIDATION smartphone après publication du checkpoint/preview**.
+
+
+## Micro-lot docs — Charte Active Skill Library Rule V1 — 2026-10-02
+
+Base : `e2a1d3bba71df32ac7bf9bf02852645b3ac5de6c` — Skill Editor Active Library V1 GREEN technique.
+
+- checkpoint de départ : `checkpoint/lab-start-charte-active-skill-library-rule-v1-2026-10-02` ;
+- branche : `work/lab-charte-active-skill-library-rule-v1-2026-10-02`.
+
+### Retour d’expérience transformé en règle de charte
+
+La régression démontrée a montré qu’une donnée pouvait être correctement possédée par `configuredSkills` tout en restant absente ou obsolète dans l’éditeur lorsque le sélecteur UI lisait encore le catalogue legacy.
+
+La charte est étendue par `LAB_CHARTE.md §33.9` :
+
+- `configuredSkills` est l’unique source de la liste des capacités actives/modifiables ;
+- `configuredCreatures` suit le même principe pour les créatures ;
+- après hydratation/import/remplacement, les sélecteurs doivent être rafraîchis depuis les propriétaires actifs ;
+- sélectionner une fiche active doit recharger la fiche complète depuis son propriétaire ;
+- les catalogues legacy restent autorisés pour migration/historique, jamais comme autorité interactive lorsqu’une fiche active existe ;
+- un remplacement par ID stable ne doit jamais permettre à l’ancienne fiche du même ID de reprendre autorité dans l’UI.
+
+Sentinelles obligatoires ajoutées :
+1. ID visible dans la bibliothèque active ;
+2. remplacement historique restituant la nouvelle fiche ;
+3. round-trip exact `draft -> UI -> draft` ;
+4. changement A -> B -> A sans contamination ;
+5. aucun merge legacy dans le handler de sélection d’une fiche active.
+
+Commit charte : `265d9689bbc96c0e3707b8f31caf574004bfb83d`.
+
+État : **documentation gouvernance mise à jour — CI docs à vérifier, sans merge main**.
