@@ -21467,3 +21467,21 @@ Contraintes respectées :
 - aucun changement dans `Zombicide-40k`.
 
 État : **GREEN technique — checkpoint et preview à publier ; validation smartphone utilisateur requise pour GREEN utilisateur**.
+
+
+### Publication de PREVALIDATION — Showcase Skill Tempête de flammes V1
+
+Noms réservés :
+- checkpoint : `checkpoint/lab-showcase-skill-tempete-flammes-v1-green-2026-10-02` ;
+- preview : `preview/lab-showcase-skill-tempete-flammes-v1-2026-10-02`.
+
+Validation smartphone attendue :
+1. ouvrir l’éditeur Capture et vérifier que `cap_fire_atk_6` correspond à **Tempête de flammes** et non à l’ancienne définition historique ;
+2. vérifier le niveau requis 20 et le slot Ultime ;
+3. vérifier `Utilisations max par combat = 1` ;
+4. vérifier que la zone de feu, le visuel, l’offset vertical -50 et le son de cast sont conservés ;
+5. lancer un combat répondant aux conditions d’activation : la capacité ne doit pouvoir être engagée qu’une seule fois sur le combat.
+
+Aucun merge vers `main`.
+
+État : **PREVALIDATION smartphone après publication du checkpoint/preview**.
