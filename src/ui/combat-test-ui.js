@@ -185,7 +185,8 @@ export async function mountCombatTest({
     typeof visuals.setCreatureFor !== "function" ||
     typeof visuals.setSlotVisible !== "function" ||
     typeof visuals.getCreatureDescriptor !== "function" ||
-    typeof visuals.getFxAnchorFor !== "function"
+    typeof visuals.getFxAnchorFor !== "function" ||
+    typeof visuals.getCollisionModelFor !== "function"
   ) {
     throw new TypeError("visuals must provide roster-aware visual controls");
   }
@@ -395,6 +396,9 @@ export async function mountCombatTest({
     arena,
     onProjectileContact(contact) {
       runtime?.reportProjectileContact(contact);
+    },
+    targetCollisionModelFor(slotId) {
+      return visuals.getCollisionModelFor(slotId);
     },
     anchors: {
       player: requiredElement(
