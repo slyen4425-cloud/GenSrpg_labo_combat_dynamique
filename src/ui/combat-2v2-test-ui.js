@@ -600,6 +600,9 @@ export async function mountCoop2v2Test({
         skillId,
         context
       );
+    },
+    onProjectileContact(contact) {
+      runtime?.reportProjectileContact(contact);
     }
   });
 
