@@ -607,7 +607,7 @@ export async function mountCoop2v2Test({
   const fx = createDomSkillFxRenderer({
     arena,
     onProjectileContact(contact) {
-      runtime?.reportProjectileContact(contact);
+      runtime?.reportActionContact(contact);
     },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
