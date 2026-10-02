@@ -433,6 +433,7 @@ export async function mountCoop2v2Test({
     typeof visuals.playApproachFor !== "function" ||
     typeof visuals.getFxAnchorFor !== "function" ||
     typeof visuals.getCollisionModelFor !== "function" ||
+    typeof visuals.finishApproachAtContactFor !== "function" ||
     typeof visuals.getCreatureDescriptor !== "function"
   ) {
     throw new TypeError(
@@ -607,7 +608,7 @@ export async function mountCoop2v2Test({
   const fx = createDomSkillFxRenderer({
     arena,
     onProjectileContact(contact) {
-      runtime?.reportProjectileContact(contact);
+      runtime?.reportActionContact(contact);
     },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
@@ -628,7 +629,10 @@ export async function mountCoop2v2Test({
   const presenter = createCombatResolutionPresenter({
     visuals,
     fx,
-    audio: combatAudio
+    audio: combatAudio,
+    onActionContact(contact) {
+      return runtime?.reportActionContact(contact) ?? null;
+    }
   });
 
   function listen(element, type, handler) {
