@@ -3,6 +3,7 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
+import { createDomVisibleModelCollisionModel } from "../adapters/renderer/dom-visible-model-contact.js";
 import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
 import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
@@ -709,6 +710,9 @@ export async function mountCombatDemo({
     getFxAnchorFor(slotKey, anchorName = "head") {
       return slotOf(slotKey).getFxAnchor(anchorName);
     },
+    getCollisionModelFor(slotKey) {
+      return slotOf(slotKey).collisionModel;
+    },
     getCreatureFor(slotKey) {
       return slotOf(slotKey).meta.id;
     },
@@ -750,6 +754,11 @@ function createSlot({
   const image = requiredElement(slotContainer, "[data-demo-image]");
   const label = requiredElement(slotContainer, "[data-demo-label]");
   const profileLabel = slotContainer.querySelector("[data-demo-profile]");
+  const collisionModel =
+    createDomVisibleModelCollisionModel({
+      motion,
+      image
+    });
 
   let meta = null;
   let actor = null;
@@ -819,14 +828,28 @@ function createSlot({
   function loadRuntimeAsset(runtimeUrl) {
     const token = ++imageLoadToken;
     assetReady = false;
+    collisionModel.clear();
     image.hidden = true;
+    slotContainer.dataset.visibleCollisionReady = "false";
     image.removeAttribute("src");
+    image.crossOrigin = "anonymous";
 
     const markReady = () => {
       if (token !== imageLoadToken) {
         return;
       }
+
+      const collisionReady =
+        collisionModel.refreshFromImage();
+      if (!collisionReady) {
+        assetReady = false;
+        image.hidden = true;
+        slotContainer.dataset.visibleCollisionReady = "false";
+        return;
+      }
+
       assetReady = true;
+      slotContainer.dataset.visibleCollisionReady = "true";
       image.hidden = !visible;
     };
 
@@ -917,6 +940,7 @@ function createSlot({
     setVisible,
     setApproachActive,
     getFxAnchor,
+    collisionModel,
     get meta() {
       return meta;
     },
@@ -933,6 +957,7 @@ function createSlot({
       slotContainer.removeAttribute("data-approach-active");
       slotContainer.removeAttribute("data-approach-depth");
       renderer?.dispose();
+      collisionModel.dispose();
       image.removeAttribute("src");
     }
   };
