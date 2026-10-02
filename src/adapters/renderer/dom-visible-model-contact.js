@@ -553,9 +553,14 @@ export function watchVisibleModelsContact({
     const source = sourceModel.snapshot();
     const target = targetModel.snapshot();
 
+    if (!source || !target) {
+      previousSource = source;
+      previousTarget = target;
+      frameId = requestFrame(check);
+      return;
+    }
+
     if (
-      source &&
-      target &&
       sweptVisibleModelsContact({
         previousSource,
         source,
@@ -568,12 +573,8 @@ export function watchVisibleModelsContact({
       return;
     }
 
-    if (source) {
-      previousSource = source;
-    }
-    if (target) {
-      previousTarget = target;
-    }
+    previousSource = source;
+    previousTarget = target;
 
     frameId = requestFrame(check);
   };
