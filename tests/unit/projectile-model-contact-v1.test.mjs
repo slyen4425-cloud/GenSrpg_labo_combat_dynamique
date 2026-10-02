@@ -320,7 +320,7 @@ test("Combat Runtime is the only authority that accepts model contact and resolv
   assert.equal(h.releases.length, 1);
 
   h.setClock(260);
-  const contact = h.runtime.reportProjectileContact({
+  const contact = h.runtime.reportActionContact({
     actorId: "player",
     targetId: "opponent"
   });
@@ -338,7 +338,7 @@ test("Combat Runtime is the only authority that accepts model contact and resolv
   h.runtime.dispose();
 });
 
-test("Combat Runtime rejects contact before release, wrong target and non-projectile actions", () => {
+test("Combat Runtime rejects contact before release, wrong target and non-authoritative actions", () => {
   {
     const h = runtimeHarness(
       projectileAction({
@@ -352,7 +352,7 @@ test("Combat Runtime rejects contact before release, wrong target and non-projec
       skill: { id: "fireball" }
     });
     h.setClock(100);
-    const result = h.runtime.reportProjectileContact({
+    const result = h.runtime.reportActionContact({
       actorId: "player",
       targetId: "opponent"
     });
@@ -370,7 +370,7 @@ test("Combat Runtime rejects contact before release, wrong target and non-projec
       skill: { id: "fireball" }
     });
     h.setClock(100);
-    const result = h.runtime.reportProjectileContact({
+    const result = h.runtime.reportActionContact({
       actorId: "player",
       targetId: "player"
     });
@@ -392,19 +392,19 @@ test("Combat Runtime rejects contact before release, wrong target and non-projec
       skill: { id: "claw" }
     });
     h.setClock(100);
-    const result = h.runtime.reportProjectileContact({
+    const result = h.runtime.reportActionContact({
       actorId: "player",
       targetId: "opponent"
     });
     assert.equal(result.ok, false);
-    assert.equal(result.outcome, "not_projectile");
+    assert.equal(result.outcome, "contact_not_authoritative");
     assert.equal(h.completions.length, 0);
     h.runtime.dispose();
   }
 });
 
 
-test("both combat composition roots route projectile model contact only to Combat Runtime", async () => {
+test("both combat composition roots route projectile model contact to the generic Runtime contact authority", async () => {
   const [duelSource, coopSource] = await Promise.all([
     readFile(
       new URL(
@@ -425,7 +425,7 @@ test("both combat composition roots route projectile model contact only to Comba
   for (const source of [duelSource, coopSource]) {
     assert.match(
       source,
-      /onProjectileContact\(contact\)[\s\S]{0,120}runtime\?\.reportProjectileContact\(contact\)/
+      /onProjectileContact\(contact\)[\s\S]{0,120}runtime\?\.reportActionContact\(contact\)/
     );
     assert.doesNotMatch(
       source,
@@ -533,7 +533,7 @@ test("accepted model contact applies real Combat Session damage at the same effe
     "travel before contact must not apply damage"
   );
 
-  const result = runtime.reportProjectileContact({
+  const result = runtime.reportActionContact({
     actorId: "player",
     targetId: "opponent"
   });
