@@ -515,6 +515,10 @@ export async function mountCoop2v2Test({
         value: requiredElement(
           root,
           `[data-combat-hp-value="${actor.actorId}"]`
+        ),
+        statusHost: requiredElement(
+          root,
+          `[data-combat-status-icons="${actor.actorId}"]`
         )
       }
     ])
@@ -633,9 +637,14 @@ export async function mountCoop2v2Test({
       "function"
       ? createDomStatusFxRenderer({
           targetFor(actorId) {
-            return visuals.getStatusPresentationTargetFor(
-              actorId
-            );
+            return {
+              ...visuals.getStatusPresentationTargetFor(
+                actorId
+              ),
+              statusHost:
+                hpRefs[actorId]?.statusHost ??
+                null
+            };
           },
           statusPresentationFor(statusId) {
             return (
