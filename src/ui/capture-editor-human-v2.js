@@ -1064,14 +1064,17 @@ function visualSlot(assetId, {
   };
 }
 
-function audioSkillSlot(assetId) {
+function audioSkillSlot(
+  assetId,
+  { loop = false } = {}
+) {
   const id = optionalText(assetId);
   return id === null
     ? null
     : {
         assetId: id,
         volume: 1,
-        loop: false
+        loop: loop === true
       };
 }
 
@@ -1165,7 +1168,8 @@ function presentationForSkill(fields) {
     presentation.castAudioAssetId
   );
   const travelAudio = audioSkillSlot(
-    presentation.travelAudioAssetId
+    presentation.travelAudioAssetId,
+    { loop: true }
   );
   const impactAudio = audioSkillSlot(
     presentation.impactAudioAssetId
