@@ -22138,3 +22138,58 @@ CI : `37002196425` — SUCCESS.
 Suite complète : **818/818 PASS, 0 FAIL**.
 
 Statut final du lot : **GREEN technique — prêt pour checkpoint/preview et PREVALIDATION smartphone ; aucun merge vers main**.
+
+
+## Micro-lot — Projectile Contact Precision V2 — 2026-10-02
+
+Base exacte : `4b6f33a88ecaf40db105262c67ee6cbd45ac1e11` (Projectile Model Contact V1 — GREEN technique publié).
+
+- checkpoint de départ : `checkpoint/lab-start-projectile-contact-precision-v2-2026-10-02` ;
+- branche : `work/lab-projectile-contact-precision-v2-2026-10-02`.
+
+### Retour utilisateur
+
+La prévalidation smartphone montre encore des traversées occasionnelles de Boule de feu lorsque la cible se déplace. Le mode doit être strictement lisible et déterministe : aucun contact visuellement évident ne doit être raté.
+
+### Cause suspectée à verrouiller par RED
+
+Le capteur actuel teste uniquement le centre instantané du rectangle projectile à chaque `requestAnimationFrame`. Deux contacts peuvent donc être manqués :
+1. **tunneling inter-frame** : le projectile passe d'un côté à l'autre du modèle entre deux observations sans que son centre ne soit jamais échantillonné à l'intérieur ;
+2. **chevauchement de surface** : le bord du projectile touche le modèle alors que son centre est encore hors du rectangle cible.
+
+### Autorité unique conservée
+
+Chaîne inchangée :
+
+`DOM Skill FX (mesure géométrique uniquement) -> signal de contact -> Combat Runtime (validation/horloge unique) -> Combat Session / Action Resolver -> onResolved -> Presenter -> disparition projectile -> impact`.
+
+Le renderer reste un **capteur**, jamais une autorité gameplay.
+
+### Fichiers autorisés
+
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- tests unitaires dédiés au contact projectile ;
+- `docs/LAB_ARCHITECTURE.md` si le contrat de détection continue doit être précisé ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé
+
+- `Combat Runtime`, `Combat Session`, `Action Resolver` : aucune modification prévue sauf preuve RED d'un défaut d'autorité ;
+- dégâts, énergie, cooldown, clash, esquive et `impactAtMs` sémantique ;
+- aucune logique par ID de compétence ;
+- aucun timer supplémentaire ;
+- aucun observer/listener global ;
+- aucun second moteur de collision ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD prévu
+
+1. RED : un projectile traversant entièrement la cible entre deux frames doit produire exactement un signal de contact ;
+2. RED : un chevauchement projectile/cible doit compter comme contact même si le centre du projectile est encore hors du modèle ;
+3. RED : déplacement simultané de la cible et du projectile ne doit pas créer de faux négatif ;
+4. le capteur doit rester borné à la vie du projectile et émettre au plus une fois ;
+5. les tests Runtime/Presenter existants doivent rester GREEN sans changement ;
+6. suite complète GREEN puis checkpoint/preview smartphone.
+
+État : **LOT OUVERT — RED avant correction**.
