@@ -173,3 +173,41 @@ test("human editor contains status visual controls and does not add visual field
 
   assert.doesNotMatch(statusContract, /tintColor|spriteAsset|statusVisual/i);
 });
+
+
+test("1v1 and 2v2 true paths sync status renderer from Runtime state", async () => {
+  for (const relative of [
+    "src/ui/combat-test-ui.js",
+    "src/ui/combat-2v2-test-ui.js"
+  ]) {
+    const source = await readFile(
+      new URL("../../" + relative, import.meta.url),
+      "utf8"
+    );
+
+    assert.match(
+      source,
+      /createDomStatusFxRenderer/
+    );
+    assert.match(
+      source,
+      /statusPresentationFor/
+    );
+    assert.match(
+      source,
+      /statusFx\?\.sync\(state\)/
+    );
+  }
+
+  const demo = await readFile(
+    new URL(
+      "../../src/ui/demo-app.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+  assert.match(
+    demo,
+    /getStatusPresentationTargetFor/
+  );
+});
