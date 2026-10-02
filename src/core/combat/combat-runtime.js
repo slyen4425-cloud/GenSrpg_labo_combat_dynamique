@@ -333,6 +333,20 @@ export function createCombatRuntime({
         elapsedFor(record, atNowMs)
       )
     );
+
+    const completeAt =
+      recoveryCompleteAtClockMs(record);
+    if (
+      completeAt !== null &&
+      atNowMs >= completeAt
+    ) {
+      processRecoveryComplete(
+        record,
+        atNowMs
+      );
+      return false;
+    }
+
     return true;
   }
 
@@ -372,6 +386,7 @@ export function createCombatRuntime({
       const matchesActor = record.action.actorId === actorId;
       const matchesTarget =
         includeTargeted &&
+        !record.resolved &&
         record.action.targetId === actorId;
 
       if (!matchesActor && !matchesTarget) {
@@ -909,7 +924,7 @@ export function createCombatRuntime({
       return Object.freeze({
         ok: false,
         outcome:
-          activeByActor.size > 1 &&
+          unresolvedRecords().length > 1 &&
           againstActorId === null
             ? "reaction_ambiguous"
             : "no_action"
