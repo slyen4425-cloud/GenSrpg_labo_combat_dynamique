@@ -20,38 +20,6 @@ function defaultCancelFrame(frameId) {
   }
 }
 
-function rectCenter(rect) {
-  return Object.freeze({
-    x: Number(rect.left) + Number(rect.width) / 2,
-    y: Number(rect.top) + Number(rect.height) / 2
-  });
-}
-
-function pointInsideRect(point, rect) {
-  if (
-    !point ||
-    !rect ||
-    !Number.isFinite(Number(rect.left)) ||
-    !Number.isFinite(Number(rect.top)) ||
-    !Number.isFinite(Number(rect.width)) ||
-    !Number.isFinite(Number(rect.height)) ||
-    Number(rect.width) <= 0 ||
-    Number(rect.height) <= 0
-  ) {
-    return false;
-  }
-
-  const right = Number(rect.left) + Number(rect.width);
-  const bottom = Number(rect.top) + Number(rect.height);
-
-  return (
-    point.x >= Number(rect.left) &&
-    point.x <= right &&
-    point.y >= Number(rect.top) &&
-    point.y <= bottom
-  );
-}
-
 function centerRelativeTo(rect, arenaRect) {
   return Object.freeze({
     x: rect.left - arenaRect.left + rect.width / 2,
@@ -366,44 +334,8 @@ export function createDomSkillFxRenderer({
     if (record.zoneId) {
       persistentZones.delete(record.zoneId);
     }
-    if (record.contactFrameId !== null && record.contactFrameId !== undefined) {
-      cancelFrame(record.contactFrameId);
-      record.contactFrameId = null;
-    }
     record.frameAnimation?.cancel?.();
     record.node.remove?.();
-  }
-
-  function watchProjectileContact(record, targetSlot) {
-    if (
-      !record?.node ||
-      typeof record.node.getBoundingClientRect !== "function" ||
-      !anchors[targetSlot]
-    ) {
-      return;
-    }
-
-    const check = () => {
-      record.contactFrameId = null;
-
-      if (disposed || !active.has(record)) {
-        return;
-      }
-
-      const projectileRect = record.node.getBoundingClientRect();
-      const liveTargetRect =
-        anchor(anchors, targetSlot, "live target").getBoundingClientRect();
-
-      if (pointInsideRect(rectCenter(projectileRect), liveTargetRect)) {
-        record.animation?.cancel?.();
-        cleanup(record);
-        return;
-      }
-
-      record.contactFrameId = requestFrame(check);
-    };
-
-    record.contactFrameId = requestFrame(check);
   }
 
   function playImpactVisual({
@@ -1056,8 +988,7 @@ export function createDomSkillFxRenderer({
       frameAnimation: projectileFrameAnimation,
       type: "projectile",
       fromSlot,
-      targetSlot,
-      contactFrameId: null
+      targetSlot
     };
     active.add(record);
 
@@ -1099,12 +1030,10 @@ export function createDomSkillFxRenderer({
     );
 
     record.animation = animation;
-    watchProjectileContact(record, targetSlot);
 
     const finished = Promise.resolve(animation.finished)
       .then(() => {
-        cleanup(record);
-        return { status: "finished" };
+        return { status: "arrived" };
       })
       .catch((error) => {
         cleanup(record);
