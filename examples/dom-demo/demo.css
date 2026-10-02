@@ -194,7 +194,7 @@ summary {
   inset: 0;
   z-index: 2;
   background: currentColor;
-  mix-blend-mode: color;
+  mix-blend-mode: normal;
 }
 
 .status-fx--sprite {
@@ -259,6 +259,75 @@ summary {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.35rem;
+}
+
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.24rem;
+  min-height: 1.5rem;
+  margin-top: 0.22rem;
+  flex-wrap: wrap;
+}
+
+.status-icon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 1.42rem;
+  height: 1.42rem;
+  flex: 0 0 1.42rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  box-shadow:
+    0 0.08rem 0.2rem rgba(0, 0, 0, 0.82),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 1000;
+  line-height: 1;
+  overflow: visible;
+}
+
+.status-icon[data-polarity="beneficial"] {
+  border-color: rgba(94, 232, 145, 0.95);
+}
+
+.status-icon[data-polarity="detrimental"] {
+  border-color: rgba(255, 105, 105, 0.98);
+}
+
+.status-icon[data-polarity="neutral"] {
+  border-color: rgba(200, 210, 220, 0.9);
+}
+
+.status-icon__glyph {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  text-shadow: 0 0.06rem 0.12rem rgba(0, 0, 0, 0.95);
+}
+
+.status-icon__stack {
+  position: absolute;
+  right: -0.22rem;
+  bottom: -0.22rem;
+  min-width: 0.78rem;
+  height: 0.78rem;
+  padding: 0 0.12rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(10, 12, 18, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .fighter__hp {
