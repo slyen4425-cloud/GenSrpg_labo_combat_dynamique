@@ -2728,3 +2728,48 @@ Dans le JSON exporté :
 - limite = entier positif.
 
 Aucun compteur parallèle côté UI, aucun timer, observer ou listener compensatoire n’est ajouté.
+
+
+## 50. Presets de capacités vitrine Capture V1
+
+Les capacités configurées dans le Human Editor et destinées à la vitrine Capture utilisent désormais le même principe durable que les presets créatures.
+
+### Source de vérité
+
+Le fichier `capture-skill-transfer-v1` exporté par l’éditeur reste la donnée canonique du preset.
+
+Chaîne :
+
+`data/capture/showcase/*.capture-skill-transfer-v1.json -> CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 -> importCaptureTransferJsonV1 -> applyCaptureTransferBatchToEditorStateV1 -> configuredSkills`.
+
+`configuredSkills` reste l’unique propriétaire actif. Aucun catalogue vitrine parallèle n’est consulté par le gameplay.
+
+### Remplacement d’une capacité historique
+
+Si l’identifiant stable existe déjà dans les catalogues historiques/native :
+
+- le preset vitrine conserve le même ID ;
+- le planner Transfer en mode `replace` produit `replace-skill` ;
+- la taille de la Map reste inchangée ;
+- toutes les créatures qui référencent cet ID continuent de pointer vers la capacité remplacée ;
+- aucun doublon ou alias n’est créé.
+
+### Ordre de démarrage
+
+Le Human Editor charge :
+
+1. catalogues de capacités laboratoire/native/historiques ;
+2. presets de capacités vitrine ;
+3. presets créatures vitrine.
+
+Cet ordre garantit qu’un preset créature peut référencer une capacité vitrine déjà présente dans `configuredSkills`.
+
+Les presets vitrine passent tous par les adaptateurs Transfer existants. Aucun merge champ par champ, fallback spécial ou branche par nom de capacité n’est autorisé.
+
+### Premier preset
+
+`cap_fire_atk_6` — **Tempête de flammes** — remplace sa définition historique par l’export utilisateur fourni.
+
+Seule modification explicitement demandée à l’export source : `maxUsesPerCombat: 1`.
+
+Les autres paramètres restent strictement ceux du fichier utilisateur, notamment le niveau requis, les conditions d’activation, la zone persistante, le visuel, l’audio, les offsets et les scales.
