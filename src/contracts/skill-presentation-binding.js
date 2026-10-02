@@ -4,6 +4,9 @@ import {
 import {
   normalizeSkillPresentationBindingV2
 } from "./skill-presentation-binding-v2.js";
+import {
+  normalizeSkillPresentationBindingV3
+} from "./skill-presentation-binding-v3.js";
 
 export function normalizeSkillPresentationBinding(
   input
@@ -26,6 +29,12 @@ export function normalizeSkillPresentationBinding(
 
   if (input.version === 2) {
     return normalizeSkillPresentationBindingV2(
+      input
+    );
+  }
+
+  if (input.version === 3) {
+    return normalizeSkillPresentationBindingV3(
       input
     );
   }
