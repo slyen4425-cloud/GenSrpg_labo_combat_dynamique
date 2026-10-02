@@ -1,0 +1,128 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_fire_atk_6",
+    "description": "Attaque Feu  ultime disponible au niveau 20.\nA chaque activation, augmente la zone de feu , jusqu'à 3 fois.\nLes créature ennemie qui entre , ou se trouve dans la zone subissent des dommages sur la durée.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_fire_atk_6",
+      "name": "Tempête de flammes",
+      "category": "offensive",
+      "form": "beam",
+      "loadoutSlot": "ultimate",
+      "element": "fire",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 2000,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 3500,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "combat_elapsed_ms",
+            "threshold": 25000
+          },
+          {
+            "type": "kills_by_self",
+            "threshold": 0
+          }
+        ]
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "persistent_zone",
+          "targetScope": "all_enemies",
+          "zoneId": "zone",
+          "radius": "short",
+          "durationMs": 7000,
+          "tickIntervalMs": 1000,
+          "reactivation": "reinforce",
+          "maxActivations": 3,
+          "radiusGrowthSteps": 1,
+          "tickEffect": {
+            "kind": "damage",
+            "targetScope": "all_enemies",
+            "amount": 5,
+            "channel": null
+          }
+        }
+      ],
+      "maxUsesPerCombat": 1
+    },
+    "presentation": {
+      "id": "skill:cap_fire_atk_6",
+      "version": 2,
+      "subjectType": "skill",
+      "subjectId": "cap_fire_atk_6",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-fire-breath-01"
+        },
+        "aura": {
+          "assetId": "pack:capture:sprite-fire-zone-loop-01",
+          "displayScale": 3.5,
+          "displayScaleX": 2.3,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": -50,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          }
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:effect-135ee2ed",
+          "volume": 1,
+          "loop": false
+        }
+      }
+    }
+  }
+}
