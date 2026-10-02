@@ -23267,3 +23267,50 @@ Deuxième trou de câblage du même chemin :
 - checkpoint/preview.
 
 État : **LOT OUVERT — TDD avant correction**.
+
+
+### Résultat — Editor Preview Status Wiring V1
+
+Régression reproduite depuis le screen utilisateur :
+`Impossible de lancer le combat : 2v2 element not found: [data-combat-status-icons="local-1"]`.
+
+#### Cause
+
+Le template 2v2 intégré à l'éditeur utilisait déjà les bons actor IDs natifs :
+- `local-1` ;
+- `local-2` ;
+- `opponent-1` ;
+- `opponent-2`.
+
+Le problème était uniquement que les quatre nouveaux hosts HUD de statut n'avaient pas été ajoutés à ce template.
+
+Un second trou du même chemin a été corrigé :
+`buildPreviewPresentationAssets()` ne relayait pas `statusPresentationFor(statusId)`.
+
+#### Correctifs
+
+- ajout d'un `data-combat-status-icons` sous les PV pour chacun des 4 actor IDs natifs du template éditeur ;
+- relais direct de `native.statusPresentationFor(statusId)` vers le combat preview ;
+- aucun alias d'actor ID ;
+- aucun changement de format de combat ;
+- aucun changement au runtime de statuts.
+
+#### TDD
+
+- RED : `154af04a0af95e1956b1005a703aa20281dc2b6d` — CI `37054845994` FAILURE attendue ;
+- hosts template : `ce9a5c1bb06f7c08a5c1f512612a38e8a4d5d600` ;
+- relais présentation : `a25f08cdca737600eab0c48db93040556029bb85` ;
+- CI GREEN : `37054923508` — SUCCESS ;
+- suite complète : **872/872 PASS, 0 FAIL**.
+
+#### Invariants
+
+- `battleFormat` reste propriétaire des actor IDs ;
+- `fighter.statusEffects` reste l'unique état de statuts ;
+- `SkillPresentationBinding.statusVisuals` reste l'unique présentation configurée ;
+- aucune seconde autorité ;
+- aucun timer/observer ajouté ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — checkpoint/preview utilisateur**.
