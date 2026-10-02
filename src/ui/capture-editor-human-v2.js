@@ -6679,6 +6679,19 @@ export function mountCaptureEditorHumanV2({
       }
     };
 
+    for (const select of standardSlots) {
+      populate(
+        select,
+        standardSkills,
+        "Vide"
+      );
+    }
+    populate(
+      ultimateSlot,
+      ultimateSkills,
+      "Aucune ultime"
+    );
+
     if (
       preferredId &&
       configuredSkills.has(preferredId) &&
