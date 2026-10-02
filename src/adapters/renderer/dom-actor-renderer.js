@@ -47,6 +47,39 @@ export function createDomActorRenderer({
     element.style.filter = "none";
   }
 
+  function currentPresentationState() {
+    const computed =
+      element.ownerDocument?.defaultView
+        ?.getComputedStyle?.(element) ?? null;
+
+    return Object.freeze({
+      transform:
+        computed?.transform && computed.transform !== "none"
+          ? computed.transform
+          : element.style.transform,
+      transformOrigin:
+        computed?.transformOrigin ||
+        element.style.transformOrigin ||
+        `${actor.transformOrigin.x} ${actor.transformOrigin.y}`,
+      opacity:
+        computed?.opacity ??
+        element.style.opacity ??
+        "1",
+      filter:
+        computed?.filter && computed.filter !== "none"
+          ? computed.filter
+          : (element.style.filter || "none")
+    });
+  }
+
+  function applyPresentationState(state) {
+    element.style.transform = state.transform;
+    element.style.transformOrigin =
+      state.transformOrigin;
+    element.style.opacity = String(state.opacity);
+    element.style.filter = state.filter;
+  }
+
   function applyFinalPlanState(plan) {
     const finalSegment = plan.segments.at(-1);
     element.style.transform = composeDomTransform(
@@ -138,6 +171,86 @@ export function createDomActorRenderer({
     });
   }
 
+  function returnToBaseFromCurrent({
+    durationMs = 180
+  } = {}) {
+    assertActiveRenderer();
+
+    const duration = Math.max(
+      1,
+      Number(durationMs) || 1
+    );
+    const from = currentPresentationState();
+
+    sequence += 1;
+    const previous = active;
+    active = null;
+    previous?.animation?.cancel?.();
+    applyPresentationState(from);
+
+    const to = Object.freeze({
+      transform: composeDomTransform(actor),
+      transformOrigin:
+        `${actor.transformOrigin.x} ${actor.transformOrigin.y}`,
+      opacity: "1",
+      filter: "none"
+    });
+
+    const token = ++sequence;
+    const animation = animate(
+      element,
+      [from, to],
+      {
+        duration,
+        easing: "ease-out",
+        fill: "forwards"
+      }
+    );
+
+    if (!animation || typeof animation !== "object") {
+      throw new TypeError(
+        "animate must return an animation-like object"
+      );
+    }
+
+    active = {
+      token,
+      animation,
+      plan: null,
+      timeline: null
+    };
+
+    const sourceFinished =
+      animation.finished &&
+      typeof animation.finished.then === "function"
+        ? animation.finished
+        : Promise.resolve();
+
+    const finished = Promise.resolve(sourceFinished)
+      .then(() => {
+        if (!disposed && active?.token === token) {
+          active = null;
+          restoreBaseState();
+        }
+        return { status: "finished" };
+      })
+      .catch((error) => {
+        if (!disposed && active?.token === token) {
+          active = null;
+          restoreBaseState();
+        }
+        if (error?.name === "AbortError") {
+          return { status: "cancelled" };
+        }
+        throw error;
+      });
+
+    return Object.freeze({
+      animation,
+      finished
+    });
+  }
+
   function dispose() {
     if (disposed) {
       return;
@@ -153,6 +266,7 @@ export function createDomActorRenderer({
   return Object.freeze({
     play,
     cancel,
+    returnToBaseFromCurrent,
     dispose,
     restoreBaseState,
     get isDisposed() {
