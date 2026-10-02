@@ -22519,3 +22519,78 @@ Une seule chaîne d'autorité :
 7. anciens tests projectile / clash / impact / esquive restent GREEN.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Résultat technique — Visible Action Contact V1
+
+RED initial :
+- tests Runtime : `ba1beb598262852fba6a5f8aab9a3414069d67c6` ;
+- tests géométrie : `5d5e580a2de0dfa4a32a1b7459acdcf8ba801d69` ;
+- CI `37027343776` — FAILURE attendue ;
+- défauts démontrés :
+  1. aucune API Runtime générique de contact d'action ;
+  2. aucune collision continue silhouette opaque ↔ silhouette opaque ;
+  3. l'ancienne API restait spécifique aux projectiles.
+
+Refactor autoritaire :
+- `693feabb4cd566c88f9c2f65797dc63d898ad87b` : géométrie visible générique silhouette↔silhouette + watcher borné à l'action ;
+- `5483900f801f1ae96a605185b6fa61d5af9cc995` : remplacement de `reportProjectileContact()` par l'unique `CombatRuntime.reportActionContact()` pour `projectile` et `contact` ;
+- `fcdc1b9e002c434a80c85faddd77a7153eed8ff2` : le DOM Actor Renderer sait reprendre l'état visuel courant puis revenir vers sa base sans créer de renderer concurrent ;
+- `da3b6aabdc4f662eddc52a6e6e1c900054c2f8c0` : `playApproachFor()` observe les collision models existants de l'attaquant et de la cible ;
+- `71bb4e83f535dd88c9c9f50d21fec47021003b08` : Presenter route le contact vers l'autorité Runtime et termine l'approche après résolution acceptée ;
+- clients 1v1 et 2v2 raccordés à la même API générique `reportActionContact()` ;
+- anciennes sentinelles projectile migrées vers cette autorité unique.
+
+Comportement :
+- projectile : noyau visuel ↔ masque opaque cible ;
+- contact ground : silhouette opaque attaquant ↔ silhouette opaque cible ;
+- contact aerial : même géométrie ;
+- contact teleport : même géométrie à la réapparition visible ;
+- aucune logique par `skill.id`.
+
+Timing :
+- `travelMs` reste la durée nominale maximale ;
+- un contact visible valide peut avancer uniquement l'`impactAtMs` de l'occurrence active ;
+- `Combat Runtime` traite d'abord tout événement sémantique déjà dû et reste l'unique horloge ;
+- dégâts / effets restent exclusivement dans Combat Session / Action Resolver.
+
+Présentation après contact :
+- le capteur ne stoppe jamais lui-même l'attaque ;
+- après `onResolved`, Presenter appelle le Visual Controller ;
+- le même DOM Actor Renderer capture l'état visuel courant, arrête l'approche et effectue le retour vers la position de base ;
+- l'attaquant ne traverse donc plus la cible après un impact déjà accepté.
+
+Validation intermédiaire :
+- CI `37028475760` — **836/836 PASS** ;
+- sentinelles vrai chemin ajoutées : `cd761a5c46c95aabd6cc9e9a3b65bfcbb58e34e1` ;
+- CI `37028625739` — **838/838 PASS**.
+
+Durcissement téléportation :
+- RED `3e108013871b32109baf63045ec9944a05f4fc7e` ;
+- CI `37028928752` — FAILURE attendue sur le seul cas « trajectoire invisible interprétée comme déplacement » ;
+- correction `bc3c78c094316ddb768fcd8879d546907e93bff9` : une frame où source ou cible est invisible réinitialise l'historique du balayage continu ;
+- aucune collision ne peut donc être inventée sur le chemin caché d'une téléportation ;
+- CI finale fonctionnelle `37029017195` — **839/839 PASS, 0 FAIL**.
+
+Architecture :
+`géométrie visible -> capteur unique -> Combat Runtime.reportActionContact() -> Combat Session / Action Resolver -> onResolved -> Presenter`.
+
+Absences garanties :
+- aucune deuxième autorité de collision ;
+- aucune hitbox manuelle ;
+- aucun offset compensatoire ;
+- aucun timer/observer global ajouté ;
+- aucun moteur spécial Griffe / Boule de feu / Plongeon / Téléportation ;
+- aucun changement des dégâts, énergie, cooldowns ou règles de ciblage ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+PREVALIDATION smartphone requise :
+1. Griffe : attaquant doit déclencher l'impact au premier vrai contact des silhouettes et ne plus traverser la cible ;
+2. refaire dans les deux sens (joueur -> ennemi et ennemi -> joueur) pour couvrir les scales de perspective ;
+3. Plongeon aérien : même cohérence ;
+4. Frappe téléportée : aucun impact pendant disparition, contact uniquement à la réapparition visible ;
+5. Boule de feu : comportement V3 conservé ;
+6. passage proche sans contact opaque : aucun impact fantôme.
+
+État : **GREEN technique — publication checkpoint/preview puis PREVALIDATION utilisateur**.
