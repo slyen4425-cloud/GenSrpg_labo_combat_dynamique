@@ -22975,3 +22975,53 @@ Aucun :
 - merge vers `main`.
 
 État : **GREEN technique — documentation finale puis checkpoint/preview utilisateur**.
+
+
+## Chantier — DoT Editor Clarity V1 — 2026-10-02
+
+Base exacte : `39ce78a21368394b1ea9933996a3ae4feeb33859` (Combat Feedback Readability V1 GREEN).
+
+- checkpoint de départ : `checkpoint/lab-start-dot-editor-clarity-v1-2026-10-02` ;
+- branche : `work/lab-dot-editor-clarity-v1-2026-10-02`.
+
+### Retour utilisateur
+
+Création d'une capacité de type debuff uniquement (« Morsure bourdon ») bloquée/complexifiée par :
+1. le canal des dégâts périodiques saisi en texte libre au lieu du sélecteur d'élément déjà utilisé ailleurs ;
+2. un champ de tags de statut exposé alors qu'il est optionnel et inutile dans ce cas simple.
+
+### Objectif
+
+- aligner le DoT sur la même UX que les dégâts de zone :
+  - option « Même élément que la capacité » ;
+  - liste des éléments connus ;
+  - surcharge explicite possible ;
+- si « Même élément » est choisi, le builder résout le canal depuis `SkillDefinition.element` sans seconde autorité ;
+- retirer le champ tags du parcours normal `apply_status` ;
+- préserver silencieusement les tags déjà présents lors de l'édition d'anciennes capacités ;
+- conserver les tags ciblés pour `cleanse/dispel`, où ils ont une vraie fonction métier.
+
+### Autorités
+
+- élément principal : `SkillDefinition.element` ;
+- surcharge DoT éventuelle : `StatusEffectV1.channel` ;
+- résolution du fallback : Human Editor au moment de construire le draft ;
+- runtime/status contracts inchangés.
+
+### Protégé
+
+- aucun changement aux formules de dégâts ;
+- aucun changement au runtime des statuts ;
+- aucun nouveau champ métier ;
+- aucun second registre d'éléments ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD
+
+- RED : DoT avec canal vide + élément de capacité => canal final hérité ;
+- RED : UI DoT utilise le sélecteur d'élément commun ;
+- RED : tags de statut non exposés dans `apply_status`, mais anciens tags préservés ;
+- suite complète GREEN.
+
+État : **CHANTIER OUVERT — TDD avant implémentation**.
