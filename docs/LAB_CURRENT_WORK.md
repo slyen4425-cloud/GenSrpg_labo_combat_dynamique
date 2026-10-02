@@ -23520,3 +23520,112 @@ E. suite complète GREEN.
 - aucun merge vers `main`.
 
 État : **CHANTIER OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Flame Bite + Audio Sync V1
+
+#### Morsure brûlante intégrée
+
+Preset ajouté :
+`data/capture/showcase/lib_flame_bite.capture-skill-transfer-v1.json`.
+
+Déclaré une seule fois dans :
+`src/catalogs/capture-showcase-skill-presets-v1.js`.
+
+Le preset reste l'export Capture comme source de vérité et passe par le pipeline existant :
+`hydrateCaptureShowcaseSkillPresetsV1 -> importCaptureTransferJsonV1 -> applyCaptureTransferBatchToEditorStateV1`.
+
+Aucune copie de la définition dans `data/combat/skills`.
+
+Données conservées :
+- niveau 15 ;
+- contact ground / feu ;
+- coût 5 ;
+- préparation 700 ms ;
+- trajet 700 ms ;
+- récupération 0 ;
+- cooldown 25 000 ms ;
+- 10 dégâts feu immédiats ;
+- DoT feu 5 toutes les 2 s pendant 10 s ;
+- stack max 10 ;
+- impact physique scale 3 ;
+- son impact `gensrpg:sound:effect-ee93278c` ;
+- teinte statut rouge 0.8.
+
+#### Audio cast
+
+Ancien comportement :
+- tout son de cast était considéré comme préparation annulable ;
+- `presentRelease()` stoppait donc aussi les one-shots.
+
+Nouveau comportement :
+- cast one-shot : continue naturellement après release ;
+- cast loop : stoppé au release ;
+- interruption/cancel/dispose : stoppent toujours la préparation active.
+
+Aucune durée sonore n'est recalculée dans le Presenter.
+
+#### Audio impact
+
+Le son impact n'est plus branché seulement sur `outcome === "hit"`.
+
+Il suit désormais le même plan sémantique que le FX `impact` :
+- hit ;
+- blocked ;
+- reflected ;
+- immune.
+
+Un seul appel audio par impact.
+
+L'identité de capacité utilisée par `planSkillOutcomeFx` accepte :
+1. `resolution.skillId` ;
+2. sinon `skill-arrive.skillId` ;
+3. sinon `skill-release.skillId`.
+
+Ce sont uniquement des identités déjà présentes dans les événements sémantiques du Resolver.
+
+#### Préchargement
+
+`DomCombatAudio` expose `primeSkill()`.
+
+Au début de la préparation :
+- cast/release/travel/impact connus sont préparés avec `preload = "auto"` ;
+- le média préparé est réutilisé lors du vrai `play()` ;
+- aucune horloge, aucun scheduler, aucun timer sémantique n'est ajouté ;
+- si le préchargement échoue ou n'existe pas, le fallback historique `createAudio(url)` reste utilisé.
+
+Objectif : réduire le retard réseau/décodage entre impact visuel et son audible.
+
+#### TDD / validation
+
+- RED preset : `d78f46b083bcfa3779605af40b30cd37b17ffdbb` ;
+- RED audio : `0573640f4c5deee9de48ae420544416792f7e757` ;
+- preset : `6ae0899956c5f5ba537ee5e43b3d23842fb1ef6c` ;
+- catalogue : `52d8bd5bf37dd4e4d4b969b18d3911c7993b7ec6` ;
+- prime audio : `c38d312312d220013bb77258642610a99d6d0c05` ;
+- sync Presenter : `8bc395f75a0d0268759b2eb9333ba5d90d2a9c2c` ;
+- identité impact sémantique : `e5293f872c3648f76e9cea25a1d1163a5cf986ca` ;
+- sentinelle cast réalignée : `7e0ce1caedd674e925f4cf9a770b44fe9cca3a2f` ;
+- CI : `37062253596` — SUCCESS ;
+- suite complète : **883/883 PASS, 0 FAIL**.
+
+#### Invariants
+
+Aucun changement dans :
+- Combat Session ;
+- Action Resolver ;
+- formules dégâts/DoT ;
+- cooldown/recovery ;
+- StatusEffect Runtime ;
+- actor IDs ;
+- `Zombicide-40k`.
+
+Aucun :
+- second scheduler audio ;
+- second propriétaire de l'impact ;
+- timer global ;
+- observer global ;
+- duplication de capacité ;
+- merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
