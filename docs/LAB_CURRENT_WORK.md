@@ -22274,3 +22274,42 @@ Interdictions maintenues :
 - aucune logique spéciale Boule de feu.
 
 TDD : ajouter d'abord une sentinelle RED qui démontre que le callback est absent de `createDomSkillFxRenderer()` et présent à tort dans `createDomCombatAudio()`.
+
+
+### Résultat vrai chemin — raccord FX contact vers Runtime
+
+RED dédié :
+- commit : `ad517b6825bda848ccd376ee65d1c673abde3638` ;
+- CI : `37005789169` — FAILURE attendue ;
+- **822 tests historiques PASS**, 1 nouvel échec :
+  - le callback `onProjectileContact` n'était pas fourni à `createDomSkillFxRenderer()` dans le vrai chemin UI.
+
+Cause confirmée :
+- dans `combat-test-ui.js` et `combat-2v2-test-ui.js`, le callback
+  `onProjectileContact(contact) { runtime?.reportProjectileContact(contact); }`
+  était passé par erreur à `createDomCombatAudio()` ;
+- `createDomSkillFxRenderer()` ne recevait donc aucun callback ;
+- le capteur géométrique pouvait détecter un contact en interne sans que ce signal atteigne jamais le propriétaire sémantique `Combat Runtime` ;
+- cela explique la traversée observée en preview malgré les tests unitaires géométriques GREEN.
+
+Correction minimale :
+- `3c782456d30d836e9814fc80d42d761e314ef28b` : raccord 1v1 déplacé de l'adaptateur audio vers le renderer FX ;
+- `1bf16dce617997ac1eb1fd58e5c7ecfc7957bbae` : même correction pour le 2v2 ;
+- aucune API Runtime ajoutée ;
+- aucune nouvelle autorité ;
+- aucune résolution, aucun dégât et aucune collision métier dans l'UI ;
+- l'audio ne reçoit plus de callback de contact projectile.
+
+Sentinelle permanente :
+- `tests/unit/projectile-contact-wiring-v2.test.mjs` inspecte séparément la configuration de `createDomSkillFxRenderer()` et celle de `createDomCombatAudio()` ;
+- elle exige le routage `FX -> runtime.reportProjectileContact()` ;
+- elle interdit explicitement ce routage dans l'audio.
+
+Validation :
+- CI : `37005862900` — SUCCESS ;
+- suite complète : **823/823 PASS, 0 FAIL**.
+
+Chaîne réelle désormais raccordée :
+`DOM Skill FX continuous sensor -> onProjectileContact -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> onResolved -> Presenter -> suppression projectile -> impact immédiat`.
+
+État : **GREEN technique corrigé sur vrai chemin — checkpoint/preview à avancer sur le HEAD final, PREVALIDATION smartphone requise**.
