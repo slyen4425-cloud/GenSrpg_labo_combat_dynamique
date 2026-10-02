@@ -705,6 +705,7 @@ export function createDomSkillFxRenderer({
     targetSlot,
     phase = null,
     progress = null,
+    amount = null,
     durationMs
   }) {
     if (disposed) {
@@ -714,7 +715,7 @@ export function createDomSkillFxRenderer({
       });
     }
     if (
-      !["cast", "projectile", "impact", "clash-impact", "miss", "phase"].includes(type)
+      !["cast", "projectile", "impact", "clash-impact", "miss", "damage", "phase"].includes(type)
     ) {
       return Object.freeze({
         status: "ignored",
@@ -909,6 +910,114 @@ export function createDomSkillFxRenderer({
           }
           throw error;
         });
+
+      return Object.freeze({
+        status: "running",
+        animation,
+        finished
+      });
+    }
+
+    if (type === "damage") {
+      const numericAmount = Math.max(
+        0,
+        Number(amount) || 0
+      );
+      if (numericAmount <= 0) {
+        return Object.freeze({
+          status: "ignored",
+          finished: Promise.resolve({
+            status: "ignored"
+          })
+        });
+      }
+
+      const to = centerRelativeTo(
+        anchor(
+          targetAnchors,
+          targetSlot,
+          "damage target"
+        ).getBoundingClientRect(),
+        arenaRect
+      );
+
+      const node =
+        arena.ownerDocument.createElement("span");
+      node.className =
+        "skill-fx skill-fx--damage-number";
+      node.dataset.skillFx = "damage";
+      node.dataset.damageAmount =
+        String(numericAmount);
+
+      const label =
+        Number.isInteger(numericAmount)
+          ? String(numericAmount)
+          : numericAmount
+              .toFixed(1)
+              .replace(/\.0$/, "");
+
+      node.textContent = "-" + label;
+      node.style.left = `${to.x}px`;
+      node.style.top = `${to.y}px`;
+      arena.append(node);
+
+      const record = {
+        node,
+        animation: null
+      };
+      active.add(record);
+
+      const animation = animate(
+        node,
+        [
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(0, 0.25rem, 0) scale(0.78)",
+            opacity: 0
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(0, -0.25rem, 0) scale(1.12)",
+            opacity: 1,
+            offset: 0.2
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(0, -2rem, 0) scale(1)",
+            opacity: 0
+          }
+        ],
+        {
+          duration: Math.max(
+            1,
+            Number(durationMs) || 700
+          ),
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+      record.animation = animation;
+
+      const finished =
+        Promise.resolve(animation.finished)
+          .then(() => {
+            cleanup(record);
+            return {
+              status: "finished"
+            };
+          })
+          .catch((error) => {
+            cleanup(record);
+            if (
+              error?.name ===
+              "AbortError"
+            ) {
+              return {
+                status: "cancelled"
+              };
+            }
+            throw error;
+          });
 
       return Object.freeze({
         status: "running",
