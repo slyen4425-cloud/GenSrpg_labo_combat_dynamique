@@ -1,9 +1,11 @@
 import { movementEnergyCost, isSkillInRange } from "./distance.js";
 import {
   skillCooldownRemainingMs,
+  skillUseCount,
   withDistance,
   withFighterEnergy,
-  withSkillCooldown
+  withSkillCooldown,
+  withSkillUseRecorded
 } from "./combat-state.js";
 import {
   effectivePreparationMs,
@@ -377,6 +379,35 @@ export function resolveSkillStart({
     });
   }
 
+  const usedCount = skillUseCount(
+    state,
+    actorId,
+    skill.id
+  );
+  if (
+    skill.maxUsesPerCombat !== null &&
+    usedCount >= skill.maxUsesPerCombat
+  ) {
+    return Object.freeze({
+      ok: false,
+      outcome: "usage_limit",
+      skillId: skill.id,
+      maxUsesPerCombat: skill.maxUsesPerCombat,
+      usedCount,
+      state,
+      events: Object.freeze([
+        event("skill-rejected", 0, {
+          actorId,
+          skillId: skill.id,
+          reason: "usage_limit",
+          maxUsesPerCombat:
+            skill.maxUsesPerCombat,
+          usedCount
+        })
+      ])
+    });
+  }
+
   if (actor.energy < skill.energyCost) {
     return Object.freeze({
       ok: false,
@@ -425,11 +456,16 @@ export function resolveSkillStart({
     actorId,
     skill.energyCost
   );
-  const committed = withSkillCooldown(
+  const cooldownCommitted = withSkillCooldown(
     spent,
     actorId,
     skill.id,
     skill.cooldownMs
+  );
+  const committed = withSkillUseRecorded(
+    cooldownCommitted,
+    actorId,
+    skill.id
   );
 
   return Object.freeze({
@@ -539,6 +575,27 @@ export function resolveReaction({
     });
   }
 
+  const usedCount = skillUseCount(
+    state,
+    action.targetId,
+    reactionSkill.id
+  );
+  if (
+    reactionSkill.maxUsesPerCombat !== null &&
+    usedCount >= reactionSkill.maxUsesPerCombat
+  ) {
+    return Object.freeze({
+      ok: false,
+      outcome: "usage_limit",
+      skillId: reactionSkill.id,
+      maxUsesPerCombat:
+        reactionSkill.maxUsesPerCombat,
+      usedCount,
+      state,
+      reaction: null
+    });
+  }
+
   const preparationMs = preparationFor(
     state,
     action.targetId,
@@ -571,11 +628,16 @@ export function resolveReaction({
     action.targetId,
     reactionSkill.energyCost
   );
-  const committed = withSkillCooldown(
+  const cooldownCommitted = withSkillCooldown(
     spent,
     action.targetId,
     reactionSkill.id,
     reactionSkill.cooldownMs
+  );
+  const committed = withSkillUseRecorded(
+    cooldownCommitted,
+    action.targetId,
+    reactionSkill.id
   );
 
   return Object.freeze({
