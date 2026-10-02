@@ -688,7 +688,13 @@
           <label>Vers la cible (ms)<input type="number" min="0" data-skill-travel-time value="650"></label>
           <label>Récupération (ms)<input type="number" min="0" data-skill-recovery value="450"></label>
           <label>Recharge / cooldown (ms)<input type="number" min="0" data-skill-cooldown value="2800"></label>
+          <label>Utilisations max par combat
+            <input type="number" min="0" step="1" data-skill-max-uses-per-combat value="0">
+          </label>
         </div>
+        <p class="note">
+          0 = Illimité. Mets 1 pour une Ultime utilisable une seule fois, ou 2, 3, etc. La limite s’applique au combat complet.
+        </p>
 
 
         <div class="projectile-clash-config">
