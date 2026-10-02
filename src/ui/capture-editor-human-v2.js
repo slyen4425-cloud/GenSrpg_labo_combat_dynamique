@@ -1437,6 +1437,178 @@ export function hydrateInitialSkillEffectsFromNativeV1(
 }
 
 
+const HUMAN_SKILL_ELEMENT_GROUP_META_V1 = Object.freeze([
+  Object.freeze({ element: "fire", label: "Feu" }),
+  Object.freeze({ element: "water", label: "Eau" }),
+  Object.freeze({ element: "earth", label: "Terre" }),
+  Object.freeze({ element: "air", label: "Air" }),
+  Object.freeze({ element: "electric", label: "Électricité" }),
+  Object.freeze({ element: "light", label: "Lumière" }),
+  Object.freeze({ element: "shadow", label: "Ombre" }),
+  Object.freeze({ element: "nature", label: "Nature" }),
+  Object.freeze({ element: "ice", label: "Glace" }),
+  Object.freeze({ element: "poison", label: "Poison" }),
+  Object.freeze({ element: "steel", label: "Acier" }),
+  Object.freeze({ element: "psy", label: "Psy" }),
+  Object.freeze({ element: "spirit", label: "Esprit" })
+]);
+
+const HUMAN_SKILL_ELEMENT_META_BY_ID_V1 = new Map(
+  HUMAN_SKILL_ELEMENT_GROUP_META_V1.map(
+    (entry, index) => [
+      entry.element,
+      Object.freeze({
+        ...entry,
+        order: index
+      })
+    ]
+  )
+);
+
+function humanSkillSelectorElementMetaV1(element) {
+  const normalized =
+    typeof element === "string" &&
+    element.trim() !== ""
+      ? element.trim()
+      : null;
+
+  if (normalized === null) {
+    return Object.freeze({
+      element: null,
+      label: "Neutre",
+      order:
+        HUMAN_SKILL_ELEMENT_GROUP_META_V1.length +
+        1000
+    });
+  }
+
+  const known =
+    HUMAN_SKILL_ELEMENT_META_BY_ID_V1.get(
+      normalized
+    );
+  if (known) {
+    return known;
+  }
+
+  return Object.freeze({
+    element: normalized,
+    label:
+      normalized.slice(0, 1).toLocaleUpperCase("fr") +
+      normalized.slice(1),
+    order:
+      HUMAN_SKILL_ELEMENT_GROUP_META_V1.length +
+      100
+  });
+}
+
+export function humanSkillSelectorGroupsV1(entries) {
+  if (!Array.isArray(entries)) {
+    throw new TypeError(
+      "skill selector entries must be an array"
+    );
+  }
+
+  const groupsByElement = new Map();
+
+  for (const entry of entries) {
+    if (
+      !entry ||
+      typeof entry !== "object" ||
+      Array.isArray(entry)
+    ) {
+      throw new TypeError(
+        "skill selector entry must be an object"
+      );
+    }
+
+    const meta =
+      humanSkillSelectorElementMetaV1(
+        entry.element
+      );
+    const key = meta.element ?? "__neutral__";
+
+    if (!groupsByElement.has(key)) {
+      groupsByElement.set(key, {
+        element: meta.element,
+        label: meta.label,
+        order: meta.order,
+        entries: []
+      });
+    }
+
+    groupsByElement.get(key).entries.push(entry);
+  }
+
+  const groups = [...groupsByElement.values()];
+
+  groups.sort((left, right) => {
+    const order =
+      left.order - right.order;
+    if (order !== 0) {
+      return order;
+    }
+    return left.label.localeCompare(
+      right.label,
+      "fr",
+      { sensitivity: "base" }
+    );
+  });
+
+  for (const group of groups) {
+    group.entries.sort((left, right) => {
+      const leftLevel = Number(
+        left.requiredLevel
+      );
+      const rightLevel = Number(
+        right.requiredLevel
+      );
+      const level =
+        (Number.isFinite(leftLevel)
+          ? leftLevel
+          : Number.POSITIVE_INFINITY) -
+        (Number.isFinite(rightLevel)
+          ? rightLevel
+          : Number.POSITIVE_INFINITY);
+
+      if (level !== 0) {
+        return level;
+      }
+
+      const name = String(
+        left.name ?? ""
+      ).localeCompare(
+        String(right.name ?? ""),
+        "fr",
+        { sensitivity: "base" }
+      );
+      if (name !== 0) {
+        return name;
+      }
+
+      return String(
+        left.id ?? ""
+      ).localeCompare(
+        String(right.id ?? ""),
+        "fr",
+        { sensitivity: "base" }
+      );
+    });
+  }
+
+  return Object.freeze(
+    groups.map((group) =>
+      Object.freeze({
+        element: group.element,
+        label: group.label,
+        entries: Object.freeze(
+          [...group.entries]
+        )
+      })
+    )
+  );
+}
+
+
 export function humanConfiguredSkillLibraryEntriesV1(
   configuredSkills
 ) {
@@ -6388,32 +6560,35 @@ export function mountCaptureEditorHumanV2({
       "Sélectionner une capacité active"
     );
 
-    for (
-      const entry of
-      humanConfiguredSkillLibraryEntriesV1(
-        configuredSkills
-      )
-    ) {
-      const elementLabel =
-        entry.element === null
-          ? "Neutre"
-          : entry.element;
-      const slotLabel =
-        entry.loadoutSlot === "ultimate"
-          ? " · Ultime"
-          : "";
-
-      createOption(
-        librarySelect,
-        entry.id,
-        "[" +
-          elementLabel +
-          "] " +
-          entry.name +
-          " · niv. " +
-          entry.requiredLevel +
-          slotLabel
+    const groups =
+      humanSkillSelectorGroupsV1(
+        humanConfiguredSkillLibraryEntriesV1(
+          configuredSkills
+        )
       );
+
+    for (const group of groups) {
+      const optgroup =
+        document.createElement("optgroup");
+      optgroup.label = group.label;
+
+      for (const entry of group.entries) {
+        const slotLabel =
+          entry.loadoutSlot === "ultimate"
+            ? " · Ultime"
+            : "";
+
+        createOption(
+          optgroup,
+          entry.id,
+          entry.name +
+            " · niv. " +
+            entry.requiredLevel +
+            slotLabel
+        );
+      }
+
+      librarySelect.append(optgroup);
     }
 
     if (
@@ -6463,14 +6638,34 @@ export function mountCaptureEditorHumanV2({
         emptyLabel
       );
 
-      for (const draft of drafts) {
-        createOption(
-          select,
-          draft.id,
-          draft.definition.name +
-            " · déblocage niv. " +
-            draft.requiredLevel
+      const groups =
+        humanSkillSelectorGroupsV1(
+          drafts.map((draft) => ({
+            id: draft.id,
+            name: draft.definition.name,
+            element:
+              draft.definition.element ?? null,
+            requiredLevel:
+              draft.requiredLevel
+          }))
         );
+
+      for (const group of groups) {
+        const optgroup =
+          document.createElement("optgroup");
+        optgroup.label = group.label;
+
+        for (const entry of group.entries) {
+          createOption(
+            optgroup,
+            entry.id,
+            entry.name +
+              " · déblocage niv. " +
+              entry.requiredLevel
+          );
+        }
+
+        select.append(optgroup);
       }
 
       if (
@@ -6483,19 +6678,6 @@ export function mountCaptureEditorHumanV2({
         select.value = previous;
       }
     };
-
-    for (const select of standardSlots) {
-      populate(
-        select,
-        standardSkills,
-        "Vide"
-      );
-    }
-    populate(
-      ultimateSlot,
-      ultimateSkills,
-      "Aucune ultime"
-    );
 
     if (
       preferredId &&
