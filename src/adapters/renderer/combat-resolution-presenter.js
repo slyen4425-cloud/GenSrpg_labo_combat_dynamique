@@ -17,6 +17,7 @@ export function createCombatResolutionPresenter({
   visuals,
   fx = null,
   audio = null,
+  onActionContact = null,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer
 }) {
@@ -32,6 +33,14 @@ export function createCombatResolutionPresenter({
   }
   if (audio && typeof audio.play !== "function") {
     throw new TypeError("audio must provide play() when supplied");
+  }
+  if (
+    onActionContact !== null &&
+    typeof onActionContact !== "function"
+  ) {
+    throw new TypeError(
+      "onActionContact must be a function when supplied"
+    );
   }
   if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
     throw new TypeError("timer functions are required");
@@ -202,6 +211,14 @@ export function createCombatResolutionPresenter({
               targetSlot,
               phase: label
             });
+          },
+          onContact(contact) {
+            return onActionContact?.(
+              Object.freeze({
+                ...contact,
+                skillId
+              })
+            ) ?? null;
           }
         })
         .catch(() => {});
@@ -306,7 +323,17 @@ export function createCombatResolutionPresenter({
           visuals.cancelFor(targetSlot);
         }
 
-        finished = visuals
+        const contactReturn =
+          releaseEvent?.form === "contact" &&
+          typeof visuals.finishApproachAtContactFor === "function"
+            ? Promise.resolve(
+                visuals.finishApproachAtContactFor(actorSlot)
+              )
+            : Promise.resolve({
+                status: "no_contact_return"
+              });
+
+        const targetReaction = visuals
           .playEventFor(targetSlot, "hit")
           .then(() =>
             ko
@@ -314,6 +341,11 @@ export function createCombatResolutionPresenter({
               : { status: "finished" }
           )
           .catch(() => ({ status: "cancelled" }));
+
+        finished = Promise.all([
+          contactReturn,
+          targetReaction
+        ]).then(() => ({ status: "finished" }));
         break;
       }
 
