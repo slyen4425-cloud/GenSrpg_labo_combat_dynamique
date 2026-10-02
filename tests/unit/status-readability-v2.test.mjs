@@ -133,7 +133,8 @@ test("active detrimental status creates one HUD icon from the same snapshot and 
   assert.equal(icon.dataset.statusFx, "hud-icon");
   assert.equal(icon.dataset.statusId, "poison");
   assert.equal(icon.dataset.polarity, "detrimental");
-  assert.equal(icon.textContent, "−");
+  assert.equal(icon.children[0].className, "status-icon__glyph");
+  assert.equal(icon.children[0].textContent, "−");
 
   renderer.sync({
     fighters: {
@@ -196,8 +197,11 @@ test("status HUD icon reuses configured status sprite and displays real stack co
     /poison\.webp/
   );
   assert.equal(icon.dataset.stacks, "3");
-  assert.equal(icon.children.length, 1);
-  assert.equal(icon.children[0].textContent, "3");
+  assert.equal(icon.children.length, 2);
+  assert.equal(icon.children[0].className, "status-icon__glyph");
+  assert.equal(icon.children[0].textContent, "");
+  assert.equal(icon.children[1].className, "status-icon__stack");
+  assert.equal(icon.children[1].textContent, "3");
 });
 
 test("buff/debuff HUD hosts exist below HP in both real 1v1 and 2v2 previews", async () => {
