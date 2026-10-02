@@ -1,5 +1,5 @@
 import test from "node:test";
-import assert from "node:assert/strict";
+import assert from "node:assert/strict";\nimport { readFile } from "node:fs/promises";
 
 import {
   createDomSkillFxRenderer
@@ -289,4 +289,61 @@ test("projectile clash still removes the projectile immediately", () => {
   });
 
   assert.deepEqual(cancelled, ["player"]);
+});
+
+
+test("interrupted action presentation explicitly clears any released projectile", async () => {
+  const cancelled = [];
+  const presenter = createCombatResolutionPresenter({
+    visuals: {
+      playEventFor() {
+        return Promise.resolve({
+          status: "finished"
+        });
+      },
+      cancelFor() {}
+    },
+    fx: {
+      cancelProjectileFor(slot) {
+        cancelled.push(slot);
+        return 1;
+      },
+      play() {
+        return { status: "ignored" };
+      }
+    }
+  });
+
+  assert.equal(
+    presenter.cancelActionPresentation("player"),
+    true
+  );
+  assert.deepEqual(cancelled, ["player"]);
+
+  const [coopSource, duelSource] =
+    await Promise.all([
+      readFile(
+        new URL(
+          "../../src/ui/combat-2v2-test-ui.js",
+          import.meta.url
+        ),
+        "utf8"
+      ),
+      readFile(
+        new URL(
+          "../../src/ui/combat-test-ui.js",
+          import.meta.url
+        ),
+        "utf8"
+      )
+    ]);
+
+  assert.match(
+    coopSource,
+    /onInterrupted[\s\S]*cancelActionPresentation/
+  );
+  assert.match(
+    duelSource,
+    /onInterrupted[\s\S]*cancelActionPresentation/
+  );
 });
