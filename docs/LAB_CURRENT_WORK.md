@@ -21620,3 +21620,63 @@ Aucun merge vers `main`.
 Commit charte : `859f48586f0c88d3dd4759d2addb11c42b1c04fe`.
 
 Aucun changement Runtime/UI/data dans ce durcissement documentaire.
+
+
+## Micro-lot — Tempête de flammes Refresh V2 — 2026-10-02
+
+Base exacte : `2c0556267ecda9091d40fb9f8a25c1118295ced7` (Active Owner Selector Guard — GREEN documentation + Skill Editor Active Library V1 GREEN technique).
+
+- checkpoint charte : `checkpoint/lab-active-owner-selector-charter-guard-green-2026-10-02` ;
+- checkpoint de départ : `checkpoint/lab-start-tempete-flammes-refresh-v2-2026-10-02` ;
+- branche : `work/lab-tempete-flammes-refresh-v2-2026-10-02`.
+
+### Source utilisateur
+
+Nouveau fichier fourni : `gensrpg-capture-skill-cap_fire_atk_6(1).json`.
+
+Identité stable :
+- ID : `cap_fire_atk_6` ;
+- nom : `Tempête de flammes` ;
+- slot : `ultimate`.
+
+Différence utilisateur à appliquer :
+- `definition.maxUsesPerCombat` passe de `1` à `6`.
+
+Les autres valeurs du preset doivent rester celles du fichier utilisateur fourni.
+
+### Méthode d'insertion
+
+Conformément à `LAB_CHARTE.md §33` :
+- l'export utilisateur est la source de vérité ;
+- remplacement par le même ID stable dans le preset vitrine existant ;
+- aucune duplication ;
+- aucun merge avec un template legacy ;
+- `configuredSkills` reste propriétaire actif ;
+- test round-trip du preset actif conservé.
+
+### RED
+
+1. adapter la sentinelle du preset pour exiger `maxUsesPerCombat: 6` ;
+2. adapter le test Combat réel : six activations acceptées lorsque les autres contraintes sont satisfaites, septième refusée `usage_limit` ;
+3. constater le RED sur le preset encore à 1 ;
+4. remplacer uniquement le fichier preset par le JSON utilisateur ;
+5. CI complète GREEN.
+
+### Backlog séparé demandé par l'utilisateur
+
+Après ce lot, concevoir un affichage de détails de capacité en combat au survol/clic/tap :
+- description ;
+- niveau de déblocage ;
+- conditions d'activation traduites en texte lisible ;
+- cible ;
+- dégâts / soin ;
+- cadence de tick ;
+- durée ;
+- cooldown ;
+- énergie ;
+- utilisations max par combat ;
+- effets tactiques.
+
+Principe architectural retenu pour la future conception : le texte détaillé doit être **généré depuis les données SkillDefinition / effets réels**, et non maintenu comme une seconde description manuelle susceptible de diverger.
+
+État : **LOT OUVERT — RED avant remplacement du preset**.
