@@ -9,6 +9,30 @@ function rect({ left, top = 100, width = 10, height = 10 }) {
   return { left, top, width, height };
 }
 
+const SOLID_MASK = Object.freeze({
+  width: 4,
+  height: 4,
+  opaque: new Uint8Array(16).fill(1)
+});
+
+function collisionFrameFor(rectangle) {
+  return Object.freeze({
+    mask: SOLID_MASK,
+    origin: Object.freeze({
+      x: rectangle.left,
+      y: rectangle.top
+    }),
+    axisX: Object.freeze({
+      x: rectangle.left + rectangle.width,
+      y: rectangle.top
+    }),
+    axisY: Object.freeze({
+      x: rectangle.left,
+      y: rectangle.top + rectangle.height
+    })
+  });
+}
+
 function precisionHarness({
   projectileStart,
   targetStart,
@@ -82,6 +106,13 @@ function precisionHarness({
     cancelFrame() {},
     onProjectileContact(contact) {
       contacts.push(contact);
+    },
+    targetCollisionModelFor() {
+      return {
+        snapshot() {
+          return collisionFrameFor(targetRect);
+        }
+      };
     }
   });
 
@@ -132,7 +163,7 @@ test("continuous projectile sensor catches tunneling across a stationary model b
   assert.equal(h.renderer.activeCount, 1);
 });
 
-test("projectile surface overlap counts as contact even when projectile center is still outside the model", () => {
+test("projectile shell overlap does not count before the visual core reaches the model", () => {
   const h = precisionHarness({
     projectileStart: rect({ left: 105, width: 10 }),
     targetStart: rect({ left: 120, width: 30, height: 30 }),
@@ -142,7 +173,8 @@ test("projectile surface overlap counts as contact even when projectile center i
 
   h.runFrame();
 
-  assert.equal(h.contacts.length, 1);
+  assert.equal(h.contacts.length, 0);
+  assert.equal(h.hasScheduledFrame, true);
 });
 
 test("continuous projectile sensor uses relative motion when projectile and target cross between frames", () => {
