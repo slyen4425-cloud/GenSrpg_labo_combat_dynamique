@@ -1194,20 +1194,29 @@ export function createCombatRuntime({
       return activeByActor.has(actorId);
     },
     activeActionFor(actorId) {
-      return activeByActor.get(actorId)?.action ?? null;
+      const record =
+        activeByActor.get(actorId) ?? null;
+      return record && !record.resolved
+        ? record.action
+        : null;
     },
     get isRunning() {
       return running && !disposed;
     },
     get hasActiveAction() {
-      return activeByActor.size > 0;
+      return unresolvedRecords().length > 0;
     },
     get activeAction() {
-      return activeRecords()[0]?.action ?? null;
+      return (
+        unresolvedRecords()[0]?.action ??
+        null
+      );
     },
     get activeActions() {
       return Object.freeze(
-        activeRecords().map((record) => record.action)
+        unresolvedRecords().map(
+          (record) => record.action
+        )
       );
     }
   });
