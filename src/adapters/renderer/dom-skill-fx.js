@@ -1,3 +1,5 @@
+import { sweptPointHitsOpaqueMask } from "./dom-visible-model-contact.js";
+
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
     throw new TypeError("skill FX element does not support Web Animations API");
@@ -25,143 +27,6 @@ function rectCenter(rect) {
     x: Number(rect.left) + Number(rect.width) / 2,
     y: Number(rect.top) + Number(rect.height) / 2
   });
-}
-
-function rectSnapshot(rect) {
-  if (
-    !rect ||
-    !Number.isFinite(Number(rect.left)) ||
-    !Number.isFinite(Number(rect.top)) ||
-    !Number.isFinite(Number(rect.width)) ||
-    !Number.isFinite(Number(rect.height)) ||
-    Number(rect.width) <= 0 ||
-    Number(rect.height) <= 0
-  ) {
-    return null;
-  }
-
-  const left = Number(rect.left);
-  const top = Number(rect.top);
-  const width = Number(rect.width);
-  const height = Number(rect.height);
-
-  return Object.freeze({
-    left,
-    top,
-    width,
-    height,
-    right: left + width,
-    bottom: top + height,
-    centerX: left + width / 2,
-    centerY: top + height / 2
-  });
-}
-
-function rectsOverlap(left, right) {
-  return Boolean(
-    left &&
-      right &&
-      left.left <= right.right &&
-      left.right >= right.left &&
-      left.top <= right.bottom &&
-      left.bottom >= right.top
-  );
-}
-
-function constrainContactInterval(
-  interval,
-  valueAtStart,
-  valueDelta
-) {
-  const epsilon = 1e-9;
-
-  if (Math.abs(valueDelta) <= epsilon) {
-    return valueAtStart <= epsilon;
-  }
-
-  const boundary = -valueAtStart / valueDelta;
-
-  if (valueDelta > 0) {
-    interval.max = Math.min(interval.max, boundary);
-  } else {
-    interval.min = Math.max(interval.min, boundary);
-  }
-
-  return interval.min <= interval.max + epsilon;
-}
-
-function movingRectsContact({
-  previousProjectile,
-  projectile,
-  previousTarget,
-  target
-}) {
-  if (
-    !previousProjectile ||
-    !projectile ||
-    !previousTarget ||
-    !target
-  ) {
-    return false;
-  }
-
-  if (
-    rectsOverlap(previousProjectile, previousTarget) ||
-    rectsOverlap(projectile, target)
-  ) {
-    return true;
-  }
-
-  const relativeStartX =
-    previousProjectile.centerX - previousTarget.centerX;
-  const relativeStartY =
-    previousProjectile.centerY - previousTarget.centerY;
-  const relativeDeltaX =
-    (projectile.centerX - previousProjectile.centerX) -
-    (target.centerX - previousTarget.centerX);
-  const relativeDeltaY =
-    (projectile.centerY - previousProjectile.centerY) -
-    (target.centerY - previousTarget.centerY);
-
-  const halfWidthStart =
-    previousProjectile.width / 2 + previousTarget.width / 2;
-  const halfHeightStart =
-    previousProjectile.height / 2 + previousTarget.height / 2;
-  const halfWidthDelta =
-    projectile.width / 2 +
-    target.width / 2 -
-    halfWidthStart;
-  const halfHeightDelta =
-    projectile.height / 2 +
-    target.height / 2 -
-    halfHeightStart;
-
-  const interval = { min: 0, max: 1 };
-
-  return (
-    constrainContactInterval(
-      interval,
-      relativeStartX - halfWidthStart,
-      relativeDeltaX - halfWidthDelta
-    ) &&
-    constrainContactInterval(
-      interval,
-      -relativeStartX - halfWidthStart,
-      -relativeDeltaX - halfWidthDelta
-    ) &&
-    constrainContactInterval(
-      interval,
-      relativeStartY - halfHeightStart,
-      relativeDeltaY - halfHeightDelta
-    ) &&
-    constrainContactInterval(
-      interval,
-      -relativeStartY - halfHeightStart,
-      -relativeDeltaY - halfHeightDelta
-    ) &&
-    interval.max >= 0 &&
-    interval.min <= 1
-  );
 }
 
 function centerRelativeTo(rect, arenaRect) {
@@ -420,7 +285,8 @@ export function createDomSkillFxRenderer({
   animate = defaultAnimate,
   requestFrame = defaultRequestFrame,
   cancelFrame = defaultCancelFrame,
-  onProjectileContact = null
+  onProjectileContact = null,
+  targetCollisionModelFor = null
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
     throw new TypeError("arena must be a DOM-like element");
@@ -446,6 +312,14 @@ export function createDomSkillFxRenderer({
   ) {
     throw new TypeError(
       "onProjectileContact must be a function when supplied"
+    );
+  }
+  if (
+    onProjectileContact !== null &&
+    typeof targetCollisionModelFor !== "function"
+  ) {
+    throw new TypeError(
+      "targetCollisionModelFor must be a function when projectile contact is enabled"
     );
   }
 
@@ -502,25 +376,25 @@ export function createDomSkillFxRenderer({
     if (
       onProjectileContact === null ||
       !record?.node ||
-      typeof record.node.getBoundingClientRect !== "function" ||
-      !anchors[record.targetSlot]
+      typeof record.node.getBoundingClientRect !== "function"
     ) {
       return;
     }
 
-    const liveTarget = () =>
-      anchor(
-        anchors,
-        record.targetSlot,
-        "live target"
-      );
+    const collisionModel =
+      targetCollisionModelFor(record.targetSlot);
+    if (
+      !collisionModel ||
+      typeof collisionModel.snapshot !== "function"
+    ) {
+      return;
+    }
 
-    record.previousProjectileRect = rectSnapshot(
+    record.previousProjectilePoint = rectCenter(
       record.node.getBoundingClientRect()
     );
-    record.previousTargetRect = rectSnapshot(
-      liveTarget().getBoundingClientRect()
-    );
+    record.previousTargetFrame =
+      collisionModel.snapshot();
 
     const check = () => {
       record.contactFrameId = null;
@@ -533,24 +407,29 @@ export function createDomSkillFxRenderer({
         return;
       }
 
-      const projectileRect = rectSnapshot(
+      const projectilePoint = rectCenter(
         record.node.getBoundingClientRect()
       );
-      const liveTargetRect = rectSnapshot(
-        liveTarget().getBoundingClientRect()
-      );
+      const targetFrame =
+        collisionModel.snapshot();
 
       const contacted =
-        rectsOverlap(projectileRect, liveTargetRect) ||
-        movingRectsContact({
-          previousProjectile: record.previousProjectileRect,
-          projectile: projectileRect,
-          previousTarget: record.previousTargetRect,
-          target: liveTargetRect
+        targetFrame !== null &&
+        sweptPointHitsOpaqueMask({
+          mask: targetFrame.mask,
+          previousPoint:
+            record.previousProjectilePoint,
+          point: projectilePoint,
+          previousFrame:
+            record.previousTargetFrame ??
+            targetFrame,
+          frame: targetFrame
         });
 
-      record.previousProjectileRect = projectileRect;
-      record.previousTargetRect = liveTargetRect;
+      record.previousProjectilePoint =
+        projectilePoint;
+      record.previousTargetFrame =
+        targetFrame;
 
       if (contacted) {
         record.contactReported = true;
