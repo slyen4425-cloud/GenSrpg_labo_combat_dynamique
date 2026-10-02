@@ -21548,3 +21548,60 @@ Conséquences :
 - aucun changement dans `Zombicide-40k`.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Résultat technique — Skill Editor Active Library V1
+
+Diagnostic confirmé :
+- `configuredSkills` contenait bien les données correctes ;
+- la Boule de feu initiale `fireball` était enregistrée dans cette Map puis enrichie par le catalogue natif ;
+- le preset `cap_fire_atk_6` remplaçait bien l'entrée historique par la version utilisateur ;
+- la régression venait exclusivement du sélecteur Human Editor encore relié au catalogue legacy.
+
+RED :
+- test : `tests/unit/capture-skill-editor-active-library-v1.test.mjs` ;
+- commit RED : `4bdae8371d403a6b4dc923ca807e5a64eaf2d72c` ;
+- CI RED : `36948963067` — FAILURE attendue ;
+- **805 tests / 801 PASS / 4 FAIL** ;
+- les 4 échecs correspondaient exactement à : source `configuredSkills`, présence Fireball/Tempête, rechargement complet de Tempête, retrait du merge legacy et rafraîchissement après hydratation.
+
+Correction :
+- `e42789c6cbe45fc5a8374996cb065d3fe6a2a519` : ajout du mapping complet `humanSkillEditorFieldsFromDraftV1()`, du writer `writeSkillDraftFields()` et du helper de liste active ;
+- les commits intermédiaires `22ed2524c987bdfa573eedae2ba43449590fca05` et `942201df7bc16302786b652615e969e8a23b39c3` ont été rejetés : un remplacement automatique avait supprimé une fermeture de fonction et provoquait `Unexpected end of input` ; ils n'ont jamais été considérés GREEN ;
+- `d1b9dca7982eb6c109abb2142918f4793ae14876` : reconstruction propre depuis le dernier commit sain, sélecteur alimenté par `configuredSkills`, sélection/rechargement complet, rafraîchissement après import et hydratation ;
+- `a7e7bb60be8c62bf29df91f38f2a385df4aabdf6` : sentinelle supplémentaire de round-trip exact du preset Tempête de flammes.
+
+Validation :
+- CI après correction structurelle : `36949506411` — SUCCESS, **805/805 PASS** ;
+- CI avec sentinelle round-trip : `36949587482` — SUCCESS, **806/806 PASS, 0 FAIL** ;
+- `fireball` est exposé par la bibliothèque active ;
+- `cap_fire_atk_6` est exposé sous **Tempête de flammes**, niveau 20, slot Ultime, `maxUsesPerCombat: 1`, zone persistante et présentation utilisateur ;
+- la sélection ne contient plus `mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1` ;
+- le round-trip Tempête actif est strictement identique à son draft configuré.
+
+Contraintes respectées :
+- aucune donnée de capacité modifiée dans ce lot ;
+- aucun changement Combat Runtime ;
+- aucun changement du moteur de zone persistante ;
+- aucun changement du pipeline Transfer ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique — documentation synchronisée ; checkpoint/preview et PREVALIDATION smartphone à publier**.
+
+### Publication de PREVALIDATION — Skill Editor Active Library V1
+
+Noms réservés :
+- checkpoint : `checkpoint/lab-skill-editor-active-library-v1-green-2026-10-02` ;
+- preview : `preview/lab-skill-editor-active-library-v1-2026-10-02`.
+
+Validation smartphone attendue :
+1. ouvrir l'onglet Capacités ;
+2. vérifier que **Boule de feu** est de nouveau disponible dans la liste ;
+3. sélectionner **Tempête de flammes** et vérifier que la fiche affichée est bien la version utilisateur : niveau 20, Ultime, limite 1 utilisation/combat, zone persistante et offset vertical -50 ;
+4. passer de Boule de feu à Tempête puis revenir afin de vérifier que les fiches ne se contaminent pas ;
+5. aucune ancienne version de Tempête ne doit reprendre autorité.
+
+Aucun merge vers `main`.
+
+État : **PREVALIDATION smartphone après publication du checkpoint/preview**.
