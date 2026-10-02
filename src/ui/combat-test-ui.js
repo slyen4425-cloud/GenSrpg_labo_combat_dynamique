@@ -186,7 +186,9 @@ export async function mountCombatTest({
     typeof visuals.setSlotVisible !== "function" ||
     typeof visuals.getCreatureDescriptor !== "function" ||
     typeof visuals.getFxAnchorFor !== "function" ||
-    typeof visuals.getCollisionModelFor !== "function"
+    typeof visuals.getCollisionModelFor !== "function" ||
+    typeof visuals.playApproachFor !== "function" ||
+    typeof visuals.finishApproachAtContactFor !== "function"
   ) {
     throw new TypeError("visuals must provide roster-aware visual controls");
   }
@@ -395,7 +397,7 @@ export async function mountCombatTest({
   const fx = createDomSkillFxRenderer({
     arena,
     onProjectileContact(contact) {
-      runtime?.reportProjectileContact(contact);
+      runtime?.reportActionContact(contact);
     },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
@@ -428,7 +430,10 @@ export async function mountCombatTest({
   const presenter = createCombatResolutionPresenter({
     visuals,
     fx,
-    audio: combatAudio
+    audio: combatAudio,
+    onActionContact(contact) {
+      return runtime?.reportActionContact(contact) ?? null;
+    }
   });
 
   const distancePresenter = createDomDistancePresenter({
