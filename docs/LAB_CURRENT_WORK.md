@@ -21325,3 +21325,28 @@ Contraintes respectées :
 - aucun changement dans `Zombicide-40k`.
 
 État : **GREEN technique — documentation synchronisée ; checkpoint/preview et PREVALIDATION smartphone à publier**.
+
+
+### Publication de PREVALIDATION — Skill Combat Usage Limit V1
+
+Audit d’usage réel :
+- l’IA appelle `session.previewSkill()` avant `runtime.startSkill()` ;
+- `previewSkill()` passe par le même Action Resolver autoritaire ;
+- une capacité épuisée retourne donc `usage_limit` avant sélection/démarrage et l’IA peut poursuivre vers une autre capacité ;
+- aucun filtre IA parallèle n’est ajouté.
+
+Noms réservés :
+- checkpoint : `checkpoint/lab-skill-combat-usage-limit-v1-green-2026-10-02` ;
+- preview : `preview/lab-skill-combat-usage-limit-v1-2026-10-02`.
+
+Validation smartphone attendue :
+1. le champ `Utilisations max par combat` apparaît dans l’onglet Capacités ;
+2. `0 = Illimité` ;
+3. saisir `1`, `2`, `3`, etc. est accepté ;
+4. exporter la capacité conserve cette règle dans le JSON ;
+5. en combat, une capacité à `1` ne peut être démarrée qu’une seule fois sur le combat ;
+6. cooldown, énergie et conditions d’activation continuent de fonctionner normalement.
+
+Aucun merge vers `main`.
+
+État : **PREVALIDATION smartphone après publication du checkpoint/preview**.
