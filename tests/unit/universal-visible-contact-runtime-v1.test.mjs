@@ -147,7 +147,15 @@ for (const [label, form, approachMode] of [
     assert.equal(h.completions.length, 1);
     assert.equal(h.completions[0].action.impactAtMs, 320);
     assert.equal(h.completions[0].action.travelMs, 320);
-    assert.equal(h.runtime.hasActiveActionFor("player"), false);
+    assert.equal(
+      h.runtime.hasActiveActionFor("player"),
+      true,
+      "all visible-contact forms share the same post-impact recovery lock"
+    );
+    assert.equal(
+      h.runtime.activeActionFor("player"),
+      null
+    );
     h.runtime.dispose();
   });
 }
