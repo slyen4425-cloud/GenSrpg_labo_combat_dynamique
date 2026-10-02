@@ -23025,3 +23025,68 @@ Création d'une capacité de type debuff uniquement (« Morsure bourdon ») bloq
 - suite complète GREEN.
 
 État : **CHANTIER OUVERT — TDD avant implémentation**.
+
+
+### Résultat technique — DoT Editor Clarity V1
+
+Correctif : `65449a862b1ea37843e95ec11eee8eef744060ef`.
+
+#### Élément des dégâts périodiques
+
+Le champ texte libre a été supprimé.
+
+Le DoT utilise maintenant le sélecteur canonique déjà utilisé par les zones :
+- « Même élément que la capacité » ;
+- Feu ;
+- Eau ;
+- Terre ;
+- Air ;
+- Électricité ;
+- Lumière ;
+- Ombre ;
+- Nature ;
+- Glace ;
+- Poison ;
+- Acier ;
+- Psy ;
+- Esprit.
+
+Quand « Même élément que la capacité » est choisi :
+- aucune seconde valeur d'élément n'est créée ;
+- le builder utilise directement `SkillDefinition.element` comme canal du DoT ;
+- une surcharge reste possible en sélectionnant explicitement un autre élément.
+
+Le cas de test `Morsure bourdon` (élément Poison, DoT sans override) produit donc un `StatusEffectV1.channel = "poison"`.
+
+#### Tags de statut
+
+Le champ « Tags » a été retiré du parcours normal `apply_status`.
+
+Pour une nouvelle capacité :
+- aucun tag n'est demandé ;
+- le statut reçoit simplement `tags: []`.
+
+Pour une ancienne capacité :
+- les tags existants sont conservés silencieusement dans l'état de la ligne d'édition ;
+- enregistrer la capacité ne les détruit pas.
+
+Les tags « à cibler » restent visibles uniquement pour `cleanse/dispel`, où ils servent réellement à sélectionner les statuts à retirer.
+
+#### Validation
+
+- RED : `333a5bfedc4a7c749ab91fa6f5ce0fc54aec81a8` — échec attendu ;
+- GREEN : `65449a862b1ea37843e95ec11eee8eef744060ef` ;
+- CI : `37049757197` — SUCCESS ;
+- suite complète : **864/864 PASS, 0 FAIL**.
+
+#### Invariants
+
+- aucun changement au runtime des statuts ;
+- aucun changement aux formules de dégâts ;
+- aucun nouveau registre d'éléments ;
+- aucune nouvelle autorité ;
+- `StatusEffectV1` inchangé ;
+- `Zombicide-40k` inchangé ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour preview utilisateur**.
