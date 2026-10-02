@@ -22442,3 +22442,101 @@ Aucune modification de :
 Aucun timer supplémentaire, aucun observer global, aucune hitbox par ID, aucune seconde autorité.
 
 État : **GREEN technique — scellement documentaire puis checkpoint/preview et PREVALIDATION smartphone**.
+
+
+## Micro-lot — Universal Visible Contact V1 — 2026-10-02
+
+Base exacte : `f7bd044c10445923c7b7f215f538f4959a3004e2` (Visible Model Contact V3 — GREEN technique publié et prévalidé utilisateur).
+
+- checkpoint de départ : `checkpoint/lab-start-universal-visible-contact-v1-2026-10-02` ;
+- branche : `work/lab-universal-visible-contact-v1-2026-10-02`.
+
+### Demande utilisateur
+
+Le même défaut de synchronisation doit être corrigé pour **toutes les capacités où la créature se déplace vers sa cible** :
+- Griffe ;
+- attaques de contact au sol ;
+- approches aériennes ;
+- téléportations ;
+- futures capacités `form:"contact"` utilisant une approche mobile.
+
+Aucune règle spéciale par compétence n'est autorisée.
+
+### Diagnostic architecture
+
+Le système projectile possède maintenant :
+`modèle visible cible -> capteur de contact -> Runtime -> résolution -> Presenter`.
+
+Les attaques de contact utilisent encore :
+`release -> playApproachFor(travelMs) -> impactAtMs nominal`.
+
+Le mouvement visuel atteint une destination calculée, mais **aucun contact modèle-à-modèle n'est remonté au Runtime**. Le résultat peut donc diverger de ce que le joueur voit si scale, position, rotation, profil de locomotion ou mouvement adverse modifient le premier contact réel.
+
+### Objectif
+
+Créer **une seule autorité de contact d'action côté Combat Runtime**, consommable par les sources visuelles de contact :
+- projectile : noyau projectile -> masque opaque cible ;
+- contact mobile : masque opaque attaquant -> masque opaque cible.
+
+Le renderer / Visual Controller restent des capteurs géométriques et n'appliquent jamais dégâts ni résultat.
+
+### Refactor moteur prévu
+
+Remplacer la spécialisation `reportProjectileContact()` par une API générique du Runtime, par exemple `reportActionContact()`, qui :
+1. traite d'abord tous les événements Runtime déjà dus ;
+2. vérifie l'action active, sa cible et son état released ;
+3. n'accepte que les formes dont le contact visuel est autoritaire :
+   - `form:"projectile"` ;
+   - `form:"contact"` avec `approachMode` mobile `ground|aerial|teleport` ;
+4. dérive l'impact effectif de l'horloge Runtime exactement comme aujourd'hui ;
+5. appelle l'unique `processResolution()`.
+
+Aucune seconde API concurrente ne doit rester propriétaire du même résultat.
+
+### Géométrie contact mobile
+
+Réutiliser `dom-visible-model-contact.js` et les `collisionModel` déjà produits par le Visual Controller.
+
+Le contact modèle-à-modèle doit :
+- ignorer les marges transparentes ;
+- utiliser les mêmes transformations réellement affichées ;
+- fonctionner si la cible bouge en même temps ;
+- ne pas tunneler entre deux frames ;
+- être indépendant des IDs/noms de compétences et créatures.
+
+### Fichiers autorisés
+
+- `src/core/combat/combat-runtime.js` ;
+- `src/adapters/renderer/dom-visible-model-contact.js` ;
+- `src/ui/demo-app.js` ;
+- `src/adapters/renderer/combat-resolution-presenter.js` si nécessaire pour le raccord présentation ;
+- `src/ui/combat-test-ui.js` ;
+- `src/ui/combat-2v2-test-ui.js` ;
+- tests unitaires dédiés ;
+- `docs/LAB_ARCHITECTURE.md` ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé
+
+- `Combat Session` / `Action Resolver` sauf preuve RED explicite ;
+- dégâts / énergie / cooldown / réactions / clash ;
+- SkillDefinition source ;
+- aucun timer global ;
+- aucun observer global ;
+- aucune hitbox manuelle par créature ;
+- aucune logique `if skillId === "claw"` ou équivalente ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD prévu
+
+1. RED Runtime : contact `form:"contact" + ground` doit pouvoir avancer l'impact effectif avant `impactAtMs` nominal ;
+2. RED Runtime : `contact + aerial` et `contact + teleport` utilisent la même API ;
+3. RED Runtime : `contact + none` ou forme non éligible est refusée ;
+4. RED géométrie : deux masques opaques mobiles se touchant entre deux frames sont détectés ;
+5. RED géométrie : marges transparentes qui se chevauchent ne déclenchent rien ;
+6. RED composition : `playApproachFor()` utilise les deux `collisionModel` du Visual Controller et émet un seul signal ;
+7. RED composition : projectile et contact mobile convergent vers la même API Runtime ;
+8. suite complète GREEN puis checkpoint/preview smartphone.
+
+État : **LOT OUVERT — RED avant correction**.
