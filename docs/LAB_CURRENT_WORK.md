@@ -22680,3 +22680,54 @@ Aucun :
 - merge vers `main`.
 
 État : **GREEN technique — scellement documentaire, checkpoint/preview puis PREVALIDATION smartphone**.
+
+
+## Micro-lot — Skill Selector Grouping V1 — 2026-10-02
+
+Base exacte : `5aed8b3c9a7963edb06b5cca17fa676c924451c6` (Universal Visible Contact V1 — checkpoint/preview GREEN).
+
+- checkpoint de départ : `checkpoint/lab-start-skill-selector-grouping-v1-2026-10-02` ;
+- branche : `work/lab-skill-selector-grouping-v1-2026-10-02`.
+
+### Retour utilisateur
+
+Dans l'éditeur Capture, les capacités sont difficiles à parcourir lorsqu'il faut soit modifier une capacité existante, soit lier une capacité à une créature.
+
+### Objectif
+
+Rendre ces sélecteurs lisibles sans modifier les données ni la logique métier :
+1. regrouper visuellement les capacités par élément ;
+2. dans chaque élément, trier par niveau requis croissant ;
+3. à niveau égal, trier par nom ;
+4. appliquer la même règle à la bibliothèque de modification et aux sélecteurs de loadout créature.
+
+### Autorité
+
+- les capacités configurées restent l'unique source de vérité ;
+- le classement est une projection UI pure ;
+- aucun duplicat de catalogue ni cache métier n'est créé.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js` ;
+- tests unitaires dédiés ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé
+
+- définitions de capacités ;
+- Combat Runtime / Session / Action Resolver ;
+- règles de progression et de déverrouillage ;
+- données créatures ;
+- autres dépôts, notamment `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD prévu
+
+1. RED : ordre élément -> niveau -> nom pour les entrées de bibliothèque ;
+2. RED : génération de groupes visuels par élément ;
+3. RED : même classement pour les capacités équipables standard et ultime ;
+4. suite complète GREEN ;
+5. checkpoint GREEN + preview pour validation utilisateur.
+
+État : **LOT OUVERT — TDD avant correction**.
