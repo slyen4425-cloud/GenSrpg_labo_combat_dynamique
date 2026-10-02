@@ -40,11 +40,6 @@ import {
   globalVisualAssetUrl
 } from "../assets/global-visual-library.js";
 import {
-  captureLegacySkillLibraryEntriesV1,
-  captureLegacyAbilityEditorStateV1,
-  mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1
-} from "./capture-editor-skill-catalog-v1.js";
-import {
   capturePortableNativeSkillDraftsV1
 } from "../catalogs/capture-portable-native-skill-catalog-v1.js";
 import {
@@ -1442,6 +1437,132 @@ export function hydrateInitialSkillEffectsFromNativeV1(
 }
 
 
+export function humanConfiguredSkillLibraryEntriesV1(
+  configuredSkills
+) {
+  if (!(configuredSkills instanceof Map)) {
+    throw new TypeError(
+      "configuredSkills must be a Map"
+    );
+  }
+
+  return Object.freeze(
+    [...configuredSkills.values()].map(
+      (draft) =>
+        Object.freeze({
+          id: draft.id,
+          name: draft.definition.name,
+          element:
+            draft.definition.element ?? null,
+          requiredLevel: draft.requiredLevel,
+          loadoutSlot:
+            draft.definition.loadoutSlot ??
+            "standard"
+        })
+    )
+  );
+}
+
+export function humanSkillEditorFieldsFromDraftV1(
+  input
+) {
+  const draft =
+    normalizeCaptureSkillEditorDraftV1(input);
+  const definition = draft.definition;
+  const presentation =
+    draft.presentation ?? {};
+  const visual = presentation.visual ?? {};
+  const audio = presentation.audio ?? {};
+  const cast = visual.cast ?? null;
+  const travel = visual.travel ?? null;
+  const impact = visual.impact ?? null;
+  const zone = visual.aura ?? null;
+
+  const fields = {
+    id: draft.id,
+    name: definition.name,
+    description: draft.description ?? "",
+    requiredLevel: draft.requiredLevel,
+    usageScopes: [...draft.usageScopes],
+    loadoutSlot:
+      definition.loadoutSlot ?? "standard",
+    category: definition.category,
+    form: definition.form,
+    element: definition.element,
+    approachMode:
+      definition.approachMode ?? "none",
+    energyCost: definition.energyCost,
+    preparationMs: definition.preparationMs,
+    travelMs: definition.travelMs,
+    recoveryMs: definition.recoveryMs,
+    cooldownMs: definition.cooldownMs ?? 0,
+    maxUsesPerCombat:
+      definition.maxUsesPerCombat ?? null,
+    activationRequirements:
+      definition.activationRequirements,
+    effects: [...(definition.effects ?? [])],
+    reaction: definition.reaction,
+    evasion: definition.evasion,
+    projectileClash:
+      definition.projectileClash,
+    effectTags:
+      [...(definition.effect?.tags ?? [])],
+    presentation: {
+      iconAssetId:
+        visual.icon?.assetId ?? "",
+      castAssetId:
+        cast?.assetId ?? "",
+      castDisplayScale:
+        cast?.displayScale ?? 1,
+      travelAssetId:
+        travel?.assetId ?? "",
+      travelDisplayScale:
+        travel?.displayScale ?? 1,
+      castLayerPlayer:
+        cast?.layerByView?.player ??
+        "front",
+      castLayerOpponent:
+        cast?.layerByView?.opponent ??
+        "front",
+      travelLayerPlayer:
+        travel?.layerByView?.player ??
+        "front",
+      travelLayerOpponent:
+        travel?.layerByView?.opponent ??
+        "front",
+      impactAssetId:
+        impact?.assetId ?? "",
+      impactDisplayScale:
+        impact?.displayScale ?? 1,
+      zoneAssetId:
+        zone?.assetId ?? "",
+      zoneDisplayScale:
+        zone?.displayScale ?? 1,
+      zoneDisplayScaleX:
+        zone?.displayScaleX ?? 1,
+      zoneDisplayScaleY:
+        zone?.displayScaleY ?? 1,
+      zoneOffsetX:
+        zone?.offsetX ?? 0,
+      zoneOffsetY:
+        zone?.offsetY ?? 0,
+      socketId:
+        cast?.anchor ??
+        travel?.anchor ??
+        null,
+      castAudioAssetId:
+        audio.cast?.assetId ?? "",
+      impactAudioAssetId:
+        audio.impact?.assetId ?? ""
+    }
+  };
+
+  return hydrateInitialSkillEffectsFromNativeV1(
+    fields,
+    draft
+  );
+}
+
 export function buildHumanSkillDraftV1(fields) {
   if (!fields || typeof fields !== "object") {
     throw new TypeError("Données capacité invalides");
@@ -1550,6 +1671,11 @@ export function buildHumanSkillDraftV1(fields) {
           reaction.evadeApproaches
         )
       },
+      evasion:
+        fields.evasion ?? {
+          window: null,
+          incomingForms: []
+        },
       projectileClash: {
         power: finiteNumber(
           projectileClash.power ?? 0,
@@ -1962,6 +2088,174 @@ function writeSkillTemplateFields(
       fields.projectileClash
     );
   }
+}
+
+function writeSkillDraftFields(
+  root,
+  draft,
+  statRegistry = null
+) {
+  const fields =
+    humanSkillEditorFieldsFromDraftV1(
+      draft
+    );
+
+  const values = [
+    ["[data-skill-id]", fields.id],
+    ["[data-skill-name]", fields.name],
+    [
+      "[data-skill-description]",
+      fields.description
+    ],
+    [
+      "[data-skill-category]",
+      fields.category
+    ],
+    ["[data-skill-form]", fields.form],
+    [
+      "[data-skill-element]",
+      fields.element ?? ""
+    ],
+    [
+      "[data-skill-energy-cost]",
+      fields.energyCost
+    ],
+    [
+      "[data-skill-required-level]",
+      fields.requiredLevel
+    ],
+    [
+      "[data-skill-approach]",
+      fields.approachMode
+    ],
+    [
+      "[data-skill-preparation]",
+      fields.preparationMs
+    ],
+    [
+      "[data-skill-travel-time]",
+      fields.travelMs
+    ],
+    [
+      "[data-skill-recovery]",
+      fields.recoveryMs
+    ],
+    [
+      "[data-skill-cooldown]",
+      fields.cooldownMs
+    ],
+    [
+      "[data-skill-max-uses-per-combat]",
+      fields.maxUsesPerCombat ?? 0
+    ],
+    [
+      "[data-skill-icon]",
+      fields.presentation.iconAssetId
+    ],
+    [
+      "[data-skill-socket]",
+      fields.presentation.socketId ?? ""
+    ],
+    [
+      "[data-skill-cast-fx]",
+      fields.presentation.castAssetId
+    ],
+    [
+      "[data-skill-cast-scale]",
+      fields.presentation.castDisplayScale
+    ],
+    [
+      "[data-skill-travel-fx]",
+      fields.presentation.travelAssetId
+    ],
+    [
+      "[data-skill-travel-scale]",
+      fields.presentation.travelDisplayScale
+    ],
+    [
+      "[data-skill-cast-layer-player]",
+      fields.presentation.castLayerPlayer
+    ],
+    [
+      "[data-skill-cast-layer-opponent]",
+      fields.presentation.castLayerOpponent
+    ],
+    [
+      "[data-skill-travel-layer-player]",
+      fields.presentation.travelLayerPlayer
+    ],
+    [
+      "[data-skill-travel-layer-opponent]",
+      fields.presentation.travelLayerOpponent
+    ],
+    [
+      "[data-skill-impact-fx]",
+      fields.presentation.impactAssetId
+    ],
+    [
+      "[data-skill-impact-scale]",
+      fields.presentation.impactDisplayScale
+    ],
+    [
+      "[data-skill-zone-fx]",
+      fields.presentation.zoneAssetId
+    ],
+    [
+      "[data-skill-zone-scale]",
+      fields.presentation.zoneDisplayScale
+    ],
+    [
+      "[data-skill-zone-scale-x]",
+      fields.presentation.zoneDisplayScaleX
+    ],
+    [
+      "[data-skill-zone-scale-y]",
+      fields.presentation.zoneDisplayScaleY
+    ],
+    [
+      "[data-skill-zone-offset-x]",
+      fields.presentation.zoneOffsetX
+    ],
+    [
+      "[data-skill-zone-offset-y]",
+      fields.presentation.zoneOffsetY
+    ],
+    [
+      "[data-skill-cast-audio]",
+      fields.presentation.castAudioAssetId
+    ],
+    [
+      "[data-skill-impact-audio]",
+      fields.presentation.impactAudioAssetId
+    ]
+  ];
+
+  for (const [selector, value] of values) {
+    one(root, selector).value =
+      String(value ?? "");
+  }
+
+  one(
+    root,
+    "[data-skill-ultimate]"
+  ).checked =
+    fields.loadoutSlot === "ultimate";
+
+  renderHumanSkillActivationRequirementsV1(
+    root,
+    fields.activationRequirements
+  );
+  renderHumanSkillEffectsV1(
+    root,
+    fields.effects,
+    statRegistry
+  );
+  renderHumanProjectilePowerV1(
+    root,
+    fields.projectileClash
+  );
+
+  return fields;
 }
 
 function prepareNewSkillDraftFields(
