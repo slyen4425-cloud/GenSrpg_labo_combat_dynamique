@@ -2773,3 +2773,51 @@ Les presets vitrine passent tous par les adaptateurs Transfer existants. Aucun m
 Seule modification explicitement demandée à l’export source : `maxUsesPerCombat: 1`.
 
 Les autres paramètres restent strictement ceux du fichier utilisateur, notamment le niveau requis, les conditions d’activation, la zone persistante, le visuel, l’audio, les offsets et les scales.
+
+
+## 51. Bibliothèque active des capacités dans le Human Editor V1
+
+Le sélecteur de capacités du Human Editor ne consulte plus le catalogue historique comme autorité de modification.
+
+### Autorité
+
+Chaîne active :
+
+`catalogues natifs / migrations / presets vitrine / imports -> configuredSkills -> sélecteur Capacités -> writeSkillDraftFields -> formulaire Human Editor`.
+
+`configuredSkills` est donc l'unique source des capacités réellement modifiables dans la session d'éditeur.
+
+Le catalogue historique et ses helpers peuvent rester disponibles comme données/adaptateurs de migration, mais ils ne doivent jamais réécrire une capacité déjà présente dans `configuredSkills`.
+
+### Sélection et rechargement
+
+Le sélecteur `[data-skill-library-select]` est reconstruit depuis les valeurs de `configuredSkills`.
+
+Une sélection recharge la fiche complète depuis le draft actif :
+- identité, description, niveau requis et slot standard/Ultime ;
+- catégorie, forme, élément et approche ;
+- coût énergie, préparation, trajet, récupération et cooldown ;
+- `maxUsesPerCombat` ;
+- conditions d'activation ;
+- effets tactiques ;
+- projectile clash ;
+- présentation : icône, cast, trajet, impact, zone persistante, scales, offsets, layers, socket et audio.
+
+Le mapping actif est assuré par `humanSkillEditorFieldsFromDraftV1()` puis `writeSkillDraftFields()`.
+
+Le round-trip `draft actif -> champs éditeur -> buildHumanSkillDraftV1()` est testé pour le preset vitrine `cap_fire_atk_6` afin d'empêcher le retour silencieux d'une ancienne définition.
+
+### Rafraîchissement
+
+Le sélecteur est rafraîchi lorsque `configuredSkills` change :
+- enregistrement d'une capacité ;
+- chargement initial de la Boule de feu configurée dans la page ;
+- hydratation des catalogues natifs / Capture ;
+- application des presets de capacités vitrine ;
+- import ou remplacement par le pipeline Transfer.
+
+Ainsi :
+- `fireball` reste accessible comme vraie capacité active ;
+- `cap_fire_atk_6` affiche la version vitrine remplacée et non son ancien template historique.
+
+Aucune copie de skill, aucun alias par nom et aucun état métier parallèle n'est ajouté.
