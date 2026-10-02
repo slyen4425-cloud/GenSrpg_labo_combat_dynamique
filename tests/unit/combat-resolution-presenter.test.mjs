@@ -465,7 +465,11 @@ test("combat presentation routes cast phase and impact audio without owning game
     targetSlot: "opponent"
   });
 
-  assert.deepEqual(stopped, ["teleport-strike"]);
+  assert.deepEqual(
+    stopped,
+    [],
+    "one-shot cast audio must not be truncated at release"
+  );
   assert.equal(
     audioCalls.some(
       (call) =>
