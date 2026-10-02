@@ -1133,7 +1133,7 @@ export async function mountCoop2v2Test({
         actionRefs[actorId].textContent = "Interrompu";
         setCharge(actorId);
       }
-      presenter.cancelPreparation(actorId);
+      presenter.cancelActionPresentation(actorId);
       renderState();
     }
   });
