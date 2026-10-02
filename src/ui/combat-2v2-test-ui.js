@@ -628,7 +628,10 @@ export async function mountCoop2v2Test({
   const presenter = createCombatResolutionPresenter({
     visuals,
     fx,
-    audio: combatAudio
+    audio: combatAudio,
+    onActionContact(contact) {
+      return runtime?.reportActionContact(contact) ?? null;
+    }
   });
 
   function listen(element, type, handler) {
