@@ -199,3 +199,91 @@ test("Tempete active editor fields round-trip back to the same configured draft"
     "selecting and rebuilding the active showcase skill must not restore or lose legacy values"
   );
 });
+
+
+test("updating requiredLevel keeps active skill and planned loadout stable", async () => {
+  const sourceDraft = await fireballDraft();
+  const fields =
+    humanEditor.humanSkillEditorFieldsFromDraftV1(
+      sourceDraft
+    );
+  const updated =
+    humanEditor.buildHumanSkillDraftV1({
+      ...fields,
+      requiredLevel: 7
+    });
+
+  const configuredSkills = new Map([
+    [sourceDraft.id, sourceDraft]
+  ]);
+  const plannedLoadout = {
+    schema: "capture-active-skill-loadout-v1",
+    creatureId: "crea-loup",
+    slots: [
+      { id: "slot-1", skillId: "fireball" },
+      { id: "slot-2", skillId: "claw" },
+      { id: "slot-3", skillId: null },
+      { id: "slot-4", skillId: null },
+      { id: "slot-ultimate", skillId: null }
+    ]
+  };
+  const before =
+    JSON.stringify(plannedLoadout);
+
+  configuredSkills.set(
+    updated.id,
+    updated
+  );
+
+  assert.equal(
+    configuredSkills.has("fireball"),
+    true
+  );
+  assert.equal(
+    configuredSkills.get("fireball").requiredLevel,
+    7
+  );
+  assert.equal(
+    configuredSkills.get("fireball")
+      .definition.loadoutSlot,
+    "standard"
+  );
+  assert.equal(
+    JSON.stringify(plannedLoadout),
+    before,
+    "editing requiredLevel must not mutate planned creature loadout"
+  );
+});
+
+test("skill update refreshes loadout without auto-placement and reloads the saved active draft", async () => {
+  const source = await text(
+    "src/ui/capture-editor-human-v2.js"
+  );
+  const start = source.indexOf(
+    "function persistCurrentSkill(intent)"
+  );
+  const end = source.indexOf(
+    "refreshSkillLibraryOptions();",
+    start
+  );
+  assert.ok(start >= 0);
+  assert.ok(end > start);
+
+  const block = source.slice(start, end);
+
+  assert.match(
+    block,
+    /saveMode\.mode\s*===\s*"create"[\s\S]*refreshLoadoutOptions\(draft\.id\)[\s\S]*refreshLoadoutOptions\(\)/,
+    "create may auto-place, update must only preserve existing loadout selections"
+  );
+  assert.match(
+    block,
+    /writeSkillDraftFields\([\s\S]*draft[\s\S]*statRegistry[\s\S]*\)/,
+    "successful update must reload the saved active draft"
+  );
+  assert.match(
+    block,
+    /librarySelect\.value\s*=\s*draft\.id/,
+    "successful update must keep the skill selected in the active library"
+  );
+});
