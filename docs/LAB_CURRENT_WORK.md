@@ -22731,3 +22731,40 @@ Rendre ces sélecteurs lisibles sans modifier les données ni la logique métier
 5. checkpoint GREEN + preview pour validation utilisateur.
 
 État : **LOT OUVERT — TDD avant correction**.
+
+
+### Résultat technique — Skill Selector Grouping V1
+
+TDD RED :
+- commit : `8696c14108dde74e8f3dce1335915e0313e46953` ;
+- CI : `37040238067` — FAILURE attendue ;
+- la nouvelle sentinelle exigeait le regroupement élémentaire et l'ordre niveau -> nom avant que l'API de projection n'existe.
+
+Implémentation :
+- `humanSkillSelectorGroupsV1()` est une projection UI pure des capacités configurées ;
+- ordre des groupes : Feu, Eau, Terre, Air, Électricité, Lumière, Ombre, Nature, Glace, Poison, Acier, Psy, Esprit, puis Neutre ;
+- dans chaque groupe : niveau requis croissant, puis nom ;
+- la bibliothèque « capacité à modifier » utilise des `optgroup` par élément ;
+- les sélecteurs de capacités équipées de la créature utilisent exactement la même projection ;
+- les capacités Ultimes restent dans leur slot Ultime et sont seulement classées à l'intérieur de ce sélecteur.
+
+Revue de non-régression :
+- une suppression accidentelle des appels de peuplement des slots a été détectée avant preview ;
+- sentinelle ajoutée au commit `692618b850c0b43e10d9255e5fc877bba0c7d531` ;
+- correction : `cfffc5349de12999bf4e3b6f112b3c0ee29f60a1` ;
+- les quatre slots standards et le slot Ultime sont explicitement repeuplés après regroupement.
+
+Validation :
+- CI : `37040450384` — SUCCESS ;
+- suite complète : **848/848 PASS, 0 FAIL**.
+
+Invariants :
+- aucune définition de capacité modifiée ;
+- aucun niveau requis modifié ;
+- aucun loadout métier modifié par le tri ;
+- aucune nouvelle source de vérité ;
+- aucun changement Combat Runtime / Session / Action Resolver ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — scellement documentaire puis checkpoint/preview utilisateur**.
