@@ -21912,3 +21912,22 @@ Pour un projectile normal non clashé :
 8. validation utilisateur.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### RED confirmé et recadrage interruption
+
+RED :
+- commit : `10efef9c941486e950506d2ed407f1551a044f1f` ;
+- CI : `36990376128` — **FAILURE attendue** ;
+- les nouvelles sentinelles exigent que la géométrie DOM ne supprime plus le projectile, que la dernière frame reste jusqu'au résultat sémantique et que le presenter effectue la transition projectile -> impact.
+
+Audit d'annulation :
+- le Runtime peut annuler une action déjà relâchée si son acteur ou sa cible est mis KO par une autre action ;
+- dans ce cas `onInterrupted` doit demander au propriétaire de présentation de nettoyer le projectile ;
+- conserver le projectile jusqu'à l'impact sans traiter cette annulation créerait une fuite visuelle.
+
+Périmètre ajouté **avant correction** :
+- `src/ui/combat-2v2-test-ui.js` ;
+- `src/ui/combat-test-ui.js`.
+
+Le rôle de ces deux fichiers reste limité au raccord du signal `onInterrupted` vers le presenter ; aucune règle de combat n'y est ajoutée.
