@@ -21485,3 +21485,66 @@ Validation smartphone attendue :
 Aucun merge vers `main`.
 
 État : **PREVALIDATION smartphone après publication du checkpoint/preview**.
+
+
+## Micro-lot — Skill Editor Active Library V1 — 2026-10-02
+
+Base exacte : `06c22014a93e6ed9e008d395b081d0663883bac8` (Showcase Skill Tempête de flammes V1 — GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-skill-editor-active-library-v1-2026-10-02` ;
+- branche : `work/lab-skill-editor-active-library-v1-2026-10-02`.
+
+### Régression utilisateur
+
+Retour smartphone :
+- `Boule de feu` n'est plus accessible dans le sélecteur de capacités ;
+- `Tempête de flammes` apparaît sous son ancienne configuration, antérieure au JSON utilisateur intégré.
+
+### Cause démontrée
+
+Le problème n'est pas dans `configuredSkills` :
+- `fireball` est présent dans le catalogue natif et est hydraté dans `configuredSkills` ;
+- le preset vitrine `cap_fire_atk_6` remplace correctement l'entrée historique dans `configuredSkills` ;
+- le JSON vitrine actif contient bien la version utilisateur de `Tempête de flammes` avec `maxUsesPerCombat: 1`.
+
+Le problème est dans le Human Editor :
+- le sélecteur `[data-skill-library-select]` est encore peuplé depuis `captureLegacySkillLibraryEntriesV1()` ;
+- son listener recharge `captureLegacyAbilityEditorStateV1()` puis `mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1()` ;
+- il contourne donc l'autorité active `configuredSkills`.
+Conséquences :
+- les capacités laboratoire comme `fireball` ne sont pas listées ;
+- une capacité historique remplacée comme `cap_fire_atk_6` recharge encore son ancien modèle.
+
+### Contrat correctif
+
+1. `configuredSkills` devient la seule source de la liste de capacités modifiables.
+2. Le sélecteur doit être rafraîchi après chaque hydratation/import/remplacement de `configuredSkills`.
+3. Sélectionner une capacité doit recharger la fiche complète depuis `configuredSkills` :
+   - identité / description / niveau / slot Ultime ;
+   - catégorie, forme, élément, déplacement ;
+   - énergie / préparation / trajet / récupération / cooldown / limite d'utilisations ;
+   - conditions d'activation ;
+   - effets tactiques ;
+   - projectile clash ;
+   - présentation : icône, cast, travel, impact, zone, scales, offsets, layers, socket, audio.
+4. Aucun merge avec l'ancien template historique.
+5. Les helpers/catalogues legacy peuvent rester pour migration documentaire si nécessaires ailleurs, mais ils ne doivent plus prendre autorité sur la sélection de fiches actives dans l'éditeur.
+
+### RED prévu
+
+- `configuredSkills` doit alimenter le sélecteur actif ;
+- `fireball` doit être visible ;
+- `cap_fire_atk_6` doit recharger la fiche utilisateur vitrine avec niveau 20, Ultime, zone persistante, offset -50 et `maxUsesPerCombat: 1` ;
+- l'éditeur ne doit plus utiliser `mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1` lors du changement de sélection ;
+- la recharge doit être round-trip compatible avec `buildHumanSkillDraftV1`.
+
+### Protégé
+
+- aucune modification des données de capacité ;
+- aucun changement Combat Runtime ;
+- aucun changement persistent zone ;
+- aucun changement du pipeline Transfer ;
+- aucun merge vers `main` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **LOT OUVERT — RED avant correction**.
