@@ -1,0 +1,134 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "lib_flame_bite",
+    "description": "Morsure physique chargée de feu.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "lib_flame_bite",
+      "name": "Morsure brûlante",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "standard",
+      "element": "fire",
+      "approachMode": "ground",
+      "energyCost": 5,
+      "preparationMs": 700,
+      "travelMs": 700,
+      "recoveryMs": 0,
+      "cooldownMs": 25000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 10,
+          "channel": "fire"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status",
+            "kind": "damage_over_time",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "stack",
+            "maxStacks": 10,
+            "tags": [],
+            "amount": 5,
+            "channel": "fire",
+            "damageMode": "combat",
+            "tickIntervalMs": 2000
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:lib_flame_bite",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "lib_flame_bite",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-fire-rain-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-physical-01",
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:effect-ee93278c",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {
+        "status": {
+          "mode": "tint",
+          "tintColor": "#d73920",
+          "tintOpacity": 0.8,
+          "sprite": null
+        }
+      }
+    }
+  }
+}
