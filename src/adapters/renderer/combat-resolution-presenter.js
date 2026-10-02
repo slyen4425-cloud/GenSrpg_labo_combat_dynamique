@@ -85,6 +85,22 @@ export function createCombatResolutionPresenter({
     return cancelled;
   }
 
+  function cancelActionPresentation(
+    actorSlot = "player"
+  ) {
+    const preparationCancelled =
+      cancelPreparation(actorSlot);
+    const projectileCount =
+      Number(
+        fx?.cancelProjectileFor?.(actorSlot) ?? 0
+      ) || 0;
+
+    return (
+      preparationCancelled ||
+      projectileCount > 0
+    );
+  }
+
   function presentPreparation({
     action,
     actorSlot = "player"
@@ -241,14 +257,23 @@ export function createCombatResolutionPresenter({
     let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
 
+    const releaseEvent =
+      resolution.events?.find(
+        (item) => item.type === "skill-release"
+      ) ?? null;
     const outcomeSkillId =
       resolution.events?.find(
         (item) => item.type === "skill-arrive"
       )?.skillId ??
-      resolution.events?.find(
-        (item) => item.type === "skill-release"
-      )?.skillId ??
+      releaseEvent?.skillId ??
       null;
+
+    if (
+      releaseEvent?.form === "projectile" &&
+      resolution.outcome !== "clashed"
+    ) {
+      fx?.cancelProjectileFor?.(actorSlot);
+    }
 
     for (const fxPlan of planSkillOutcomeFx({
       resolution,
@@ -412,6 +437,7 @@ export function createCombatResolutionPresenter({
     presentRelease,
     presentOutcome,
     cancelPreparation,
+    cancelActionPresentation,
     cancelPending,
     dispose,
     get pendingCount() {
