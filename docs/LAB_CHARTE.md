@@ -627,3 +627,38 @@ Pour toute future intégration d’une créature ou capacité exportée qui remp
 7. après import/remplacement, le sélecteur est rafraîchi avant toute validation UI.
 
 Si un test montre que les données sont correctes dans le propriétaire actif mais fausses dans l’éditeur, la correction doit viser le chemin de **lecture/rechargement UI**, et non modifier les données pour compenser l’affichage.
+
+
+### 33.11. Une mise à jour de capacité ne modifie jamais le loadout par effet de bord
+
+Une capacité déjà existante peut être modifiée dans l’éditeur sans que ses références d’équipement soient recréées ou déplacées.
+
+En particulier, modifier seulement des métadonnées ou paramètres de capacité comme :
+
+- `requiredLevel` ;
+- coût d’énergie ;
+- cooldown ;
+- timings ;
+- dégâts / effets ;
+- présentation ;
+- audio ;
+- limite d’utilisations ;
+
+ne doit jamais :
+
+- retirer la capacité de `configuredSkills` ;
+- changer son identifiant stable ;
+- supprimer son ID d’un loadout de créature ;
+- l’auto-équiper dans un autre slot ;
+- déplacer silencieusement la capacité vers un autre slot.
+
+La logique d’auto-placement d’une capacité nouvellement créée peut exister pour l’UX de création, mais elle est interdite dans le chemin `update`.
+
+Après une mise à jour réussie :
+
+1. la fiche sauvegardée doit rester sélectionnée dans la bibliothèque active ;
+2. l’éditeur doit recharger la fiche active depuis `configuredSkills` ;
+3. les sélections de loadout déjà présentes doivent être conservées par ID stable ;
+4. la progression ne fait que décider si une capacité configurée est actuellement active en combat ; elle ne supprime jamais la configuration planifiée.
+
+Si le type de slot `standard / ultimate` est modifié explicitement par l’utilisateur, le loadout peut devenir incohérent et demander une correction explicite ; aucune migration automatique silencieuse n’est autorisée.
