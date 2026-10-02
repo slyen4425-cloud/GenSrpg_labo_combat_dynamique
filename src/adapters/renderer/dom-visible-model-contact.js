@@ -266,6 +266,328 @@ export function sweptPointHitsOpaqueMask({
   return false;
 }
 
+
+const boundaryCache = new WeakMap();
+
+function modelUnitToScreen(frame, point) {
+  if (
+    !frame ||
+    !validPoint(frame.origin) ||
+    !validPoint(frame.axisX) ||
+    !validPoint(frame.axisY) ||
+    !point ||
+    !Number.isFinite(Number(point.u)) ||
+    !Number.isFinite(Number(point.v))
+  ) {
+    return null;
+  }
+
+  const u = Number(point.u);
+  const v = Number(point.v);
+  const originX = Number(frame.origin.x);
+  const originY = Number(frame.origin.y);
+
+  return Object.freeze({
+    x:
+      originX +
+      (Number(frame.axisX.x) - originX) * u +
+      (Number(frame.axisY.x) - originX) * v,
+    y:
+      originY +
+      (Number(frame.axisX.y) - originY) * u +
+      (Number(frame.axisY.y) - originY) * v
+  });
+}
+
+function opaqueBoundaryPoints(mask) {
+  if (!validMask(mask)) {
+    return Object.freeze([]);
+  }
+
+  const cached = boundaryCache.get(mask);
+  if (cached) {
+    return cached;
+  }
+
+  const points = [];
+  const opaque = (x, y) =>
+    x >= 0 &&
+    x < mask.width &&
+    y >= 0 &&
+    y < mask.height &&
+    mask.opaque[y * mask.width + x] === 1;
+
+  for (let y = 0; y < mask.height; y += 1) {
+    for (let x = 0; x < mask.width; x += 1) {
+      if (!opaque(x, y)) {
+        continue;
+      }
+
+      if (
+        !opaque(x - 1, y) ||
+        !opaque(x + 1, y) ||
+        !opaque(x, y - 1) ||
+        !opaque(x, y + 1)
+      ) {
+        points.push(
+          Object.freeze({
+            u: (x + 0.5) / mask.width,
+            v: (y + 0.5) / mask.height
+          })
+        );
+      }
+    }
+  }
+
+  const frozen = Object.freeze(points);
+  boundaryCache.set(mask, frozen);
+  return frozen;
+}
+
+function frameBounds(frame) {
+  const corners = [
+    modelUnitToScreen(frame, { u: 0, v: 0 }),
+    modelUnitToScreen(frame, { u: 1, v: 0 }),
+    modelUnitToScreen(frame, { u: 0, v: 1 }),
+    modelUnitToScreen(frame, { u: 1, v: 1 })
+  ];
+
+  if (corners.some((point) => !point)) {
+    return null;
+  }
+
+  const xs = corners.map((point) => point.x);
+  const ys = corners.map((point) => point.y);
+
+  return Object.freeze({
+    left: Math.min(...xs),
+    right: Math.max(...xs),
+    top: Math.min(...ys),
+    bottom: Math.max(...ys)
+  });
+}
+
+function sweptFrameBounds(previousFrame, frame) {
+  const previous = frameBounds(previousFrame ?? frame);
+  const current = frameBounds(frame);
+  if (!previous || !current) {
+    return null;
+  }
+
+  return Object.freeze({
+    left: Math.min(previous.left, current.left),
+    right: Math.max(previous.right, current.right),
+    top: Math.min(previous.top, current.top),
+    bottom: Math.max(previous.bottom, current.bottom)
+  });
+}
+
+function boundsOverlap(left, right) {
+  return Boolean(
+    left &&
+      right &&
+      left.left <= right.right &&
+      left.right >= right.left &&
+      left.top <= right.bottom &&
+      left.bottom >= right.top
+  );
+}
+
+function boundarySweepsIntoTarget({
+  previousSource,
+  source,
+  previousTarget,
+  target
+}) {
+  const points = opaqueBoundaryPoints(source.mask);
+  if (points.length === 0) {
+    return false;
+  }
+
+  const priorSource = previousSource ?? source;
+  const priorTarget = previousTarget ?? target;
+
+  for (const unitPoint of points) {
+    const previousPoint = modelUnitToScreen(
+      priorSource,
+      unitPoint
+    );
+    const point = modelUnitToScreen(
+      source,
+      unitPoint
+    );
+
+    if (
+      previousPoint &&
+      point &&
+      sweptPointHitsOpaqueMask({
+        mask: target.mask,
+        previousPoint,
+        point,
+        previousFrame: priorTarget,
+        frame: target
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function sweptVisibleModelsContact({
+  previousSource,
+  source,
+  previousTarget,
+  target
+}) {
+  if (
+    !source ||
+    !target ||
+    !validMask(source.mask) ||
+    !validMask(target.mask)
+  ) {
+    return false;
+  }
+
+  const sourceBounds = sweptFrameBounds(
+    previousSource,
+    source
+  );
+  const targetBounds = sweptFrameBounds(
+    previousTarget,
+    target
+  );
+
+  if (!boundsOverlap(sourceBounds, targetBounds)) {
+    return false;
+  }
+
+  if (
+    boundarySweepsIntoTarget({
+      previousSource,
+      source,
+      previousTarget,
+      target
+    })
+  ) {
+    return true;
+  }
+
+  return boundarySweepsIntoTarget({
+    previousSource: previousTarget,
+    source: target,
+    previousTarget: previousSource,
+    target: source
+  });
+}
+
+function defaultRequestFrame(callback) {
+  return typeof globalThis.requestAnimationFrame === "function"
+    ? globalThis.requestAnimationFrame(callback)
+    : null;
+}
+
+function defaultCancelFrame(frameId) {
+  if (
+    frameId !== null &&
+    frameId !== undefined &&
+    typeof globalThis.cancelAnimationFrame === "function"
+  ) {
+    globalThis.cancelAnimationFrame(frameId);
+  }
+}
+
+export function watchVisibleModelsContact({
+  sourceModel,
+  targetModel,
+  onContact,
+  requestFrame = defaultRequestFrame,
+  cancelFrame = defaultCancelFrame
+}) {
+  if (
+    !sourceModel ||
+    typeof sourceModel.snapshot !== "function" ||
+    !targetModel ||
+    typeof targetModel.snapshot !== "function"
+  ) {
+    throw new TypeError(
+      "sourceModel and targetModel must provide snapshot()"
+    );
+  }
+  if (typeof onContact !== "function") {
+    throw new TypeError("onContact must be a function");
+  }
+  if (
+    typeof requestFrame !== "function" ||
+    typeof cancelFrame !== "function"
+  ) {
+    throw new TypeError(
+      "requestFrame and cancelFrame must be functions"
+    );
+  }
+
+  let disposed = false;
+  let frameId = null;
+  let previousSource = sourceModel.snapshot();
+  let previousTarget = targetModel.snapshot();
+
+  const stop = () => {
+    if (disposed) {
+      return false;
+    }
+    disposed = true;
+    if (frameId !== null && frameId !== undefined) {
+      cancelFrame(frameId);
+      frameId = null;
+    }
+    return true;
+  };
+
+  const check = () => {
+    frameId = null;
+    if (disposed) {
+      return;
+    }
+
+    const source = sourceModel.snapshot();
+    const target = targetModel.snapshot();
+
+    if (
+      source &&
+      target &&
+      sweptVisibleModelsContact({
+        previousSource,
+        source,
+        previousTarget,
+        target
+      })
+    ) {
+      stop();
+      onContact();
+      return;
+    }
+
+    if (source) {
+      previousSource = source;
+    }
+    if (target) {
+      previousTarget = target;
+    }
+
+    frameId = requestFrame(check);
+  };
+
+  frameId = requestFrame(check);
+
+  return Object.freeze({
+    cancel: stop,
+    get active() {
+      return !disposed;
+    }
+  });
+}
+
 function marker(documentRef, role) {
   const node = documentRef.createElement("span");
   node.dataset.visibleModelAxis = role;
@@ -467,10 +789,22 @@ export function createDomVisibleModelCollisionModel({
   }
 
   function snapshot() {
+    const computedOpacity =
+      image.hidden === true
+        ? 0
+        : Number(
+            image.ownerDocument?.defaultView
+              ?.getComputedStyle?.(motion)?.opacity ??
+            motion.style?.opacity ??
+            1
+          );
+
     if (
       disposed ||
       !mask ||
-      !updateMarkers()
+      !updateMarkers() ||
+      (Number.isFinite(computedOpacity) &&
+        computedOpacity <= 0.01)
     ) {
       return null;
     }
