@@ -801,14 +801,18 @@
             <p>Les choix apparaissent lorsqu'un catalogue audio est présent.</p>
           </div>
         </div>
-        <div class="grid two">
+        <div class="grid three">
           <label>Son de cast
             <select data-skill-cast-audio data-private-audio data-audio-roles="cast,release,preparation"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Son du trajet projectile
+            <select data-skill-travel-audio data-private-audio data-audio-roles="travel"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
           <label>Son d'impact
             <select data-skill-impact-audio data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
         </div>
+        <p class="note">Le son de trajet est joué uniquement pendant le déplacement d'un projectile et s'arrête à l'impact, au clash ou à l'interruption de l'action.</p>
       </article>
     </section>
 
