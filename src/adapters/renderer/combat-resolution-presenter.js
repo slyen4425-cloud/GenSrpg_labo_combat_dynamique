@@ -75,7 +75,12 @@ export function createCombatResolutionPresenter({
     );
   }
 
-  function cancelPreparation(actorSlot = "player") {
+  function cancelPreparation(
+    actorSlot = "player",
+    {
+      preserveOneShotAudio = false
+    } = {}
+  ) {
     let cancelled = false;
 
     const fxHandle = preparationFxByActor.get(actorSlot);
@@ -88,8 +93,15 @@ export function createCombatResolutionPresenter({
     const audioHandle = preparationAudioByActor.get(actorSlot);
     if (audioHandle) {
       preparationAudioByActor.delete(actorSlot);
-      audioHandle.stop?.();
-      cancelled = true;
+
+      const preserve =
+        preserveOneShotAudio &&
+        audioHandle.loop !== true;
+
+      if (!preserve) {
+        audioHandle.stop?.();
+        cancelled = true;
+      }
     }
 
     return cancelled;
@@ -161,6 +173,18 @@ export function createCombatResolutionPresenter({
     }
 
     const skillId = action?.skill?.id ?? null;
+
+    if (skillId) {
+      audio?.primeSkill?.(
+        skillId,
+        {
+          actorSlot,
+          targetSlot:
+            action?.targetId ?? null
+        }
+      );
+    }
+
     const audioHandle = skillId
       ? audio?.play({
           type: "cast",
@@ -199,7 +223,12 @@ export function createCombatResolutionPresenter({
       return Object.freeze({ status: "disposed" });
     }
 
-    cancelPreparation(actorSlot);
+    cancelPreparation(
+      actorSlot,
+      {
+        preserveOneShotAudio: true
+      }
+    );
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
@@ -348,25 +377,33 @@ export function createCombatResolutionPresenter({
       fx?.cancelProjectileFor?.(actorSlot);
     }
 
-    for (const fxPlan of planSkillOutcomeFx({
-      resolution,
-      actorSlot,
-      targetSlot
-    })) {
+    const outcomeFxPlans =
+      planSkillOutcomeFx({
+        resolution,
+        actorSlot,
+        targetSlot
+      });
+
+    for (const fxPlan of outcomeFxPlans) {
       fx?.play(fxPlan);
+    }
+
+    if (
+      outcomeSkillId &&
+      outcomeFxPlans.some(
+        (plan) => plan.type === "impact"
+      )
+    ) {
+      audio?.play({
+        type: "impact",
+        skillId: outcomeSkillId,
+        actorSlot,
+        targetSlot
+      });
     }
 
     switch (resolution.outcome) {
       case "hit": {
-        if (outcomeSkillId) {
-          audio?.play({
-            type: "impact",
-            skillId: outcomeSkillId,
-            actorSlot,
-            targetSlot
-          });
-        }
-
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&
