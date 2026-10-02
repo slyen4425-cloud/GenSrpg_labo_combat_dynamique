@@ -138,7 +138,7 @@ function layerFor(slot, bindingVersion, view) {
     return "front";
   }
 
-  if (bindingVersion === 2) {
+  if (bindingVersion >= 2) {
     return (
       slot.layerByView?.[view] ??
       "front"
@@ -146,6 +146,69 @@ function layerFor(slot, bindingVersion, view) {
   }
 
   return slot.layer ?? "front";
+}
+
+function statusVisualRegistry(bindings) {
+  const registry = new Map();
+
+  for (const binding of Object.values(bindings)) {
+    for (
+      const [statusId, presentation] of
+      Object.entries(
+        binding?.statusVisuals ?? {}
+      )
+    ) {
+      const existing =
+        registry.get(statusId) ?? null;
+
+      if (
+        existing !== null &&
+        JSON.stringify(existing) !==
+          JSON.stringify(presentation)
+      ) {
+        throw new RangeError(
+          "conflicting status presentation: " +
+            statusId
+        );
+      }
+
+      registry.set(
+        statusId,
+        presentation
+      );
+    }
+  }
+
+  return registry;
+}
+
+function resolvedStatusPresentation(
+  assetForId,
+  presentation
+) {
+  if (!presentation) {
+    return null;
+  }
+
+  const sprite = presentation.sprite
+    ? resolvedVisual(
+        assetForId,
+        {
+          ...presentation.sprite,
+          playbackMode: "loop",
+          rotationDeg: 0,
+          offsetX: 0,
+          offsetY: 0
+        }
+      )
+    : null;
+
+  return Object.freeze({
+    mode: presentation.mode,
+    tintColor: presentation.tintColor,
+    tintOpacity: presentation.tintOpacity,
+    sprite
+  });
 }
 
 export function createCaptureSkillPresentationAssetsV2({
@@ -165,6 +228,8 @@ export function createCaptureSkillPresentationAssetsV2({
     audioAssetForId,
     "audioAssetForId"
   );
+  const statusVisuals =
+    statusVisualRegistry(bindings);
 
   function presentationForSkill(
     skillId,
@@ -239,8 +304,21 @@ export function createCaptureSkillPresentationAssetsV2({
     });
   }
 
+  function statusPresentationFor(statusId) {
+    const id = String(statusId ?? "").trim();
+    if (!id) {
+      return null;
+    }
+
+    return resolvedStatusPresentation(
+      resolveAsset,
+      statusVisuals.get(id) ?? null
+    );
+  }
+
   return Object.freeze({
     presentationForSkill,
+    statusPresentationFor,
     audioAsset(assetId) {
       return resolveAudio(assetId);
     }
