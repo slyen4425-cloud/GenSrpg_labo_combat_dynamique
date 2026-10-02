@@ -333,7 +333,16 @@ test("Combat Runtime is the only authority that accepts model contact and resolv
   assert.equal(h.completions[0].action.travelMs, 260);
   assert.equal(h.resolutions.length, 1);
   assert.equal(h.resolutions[0].events.at(-1).atMs, 260);
-  assert.equal(h.runtime.hasActiveActionFor("player"), false);
+  assert.equal(
+    h.runtime.hasActiveActionFor("player"),
+    true,
+    "impact resolves immediately but recovery keeps the actor occupied"
+  );
+  assert.equal(
+    h.runtime.activeActionFor("player"),
+    null,
+    "resolved projectile is no longer an executing action"
+  );
 
   h.runtime.dispose();
 });
