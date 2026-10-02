@@ -2972,3 +2972,41 @@ Pour chaque statut actif :
 Les hosts HUD sont fournis au même renderer dans les vrais chemins 1v1 et 2v2.
 
 Aucune horloge, aucun observer et aucun moteur de statut secondaire n'est introduit.
+
+
+## Functional Recovery V1 — action lifecycle
+
+`recoveryMs` est désormais une phase réelle du cycle de vie d'une action.
+
+Chaîne :
+
+`preparation -> travel/impact -> recovery -> idle`.
+
+Autorité :
+- `activeByActor` reste l'unique propriétaire du lifecycle ;
+- aucune map secondaire de récupération ;
+- aucun timer de récupération dédié ;
+- le tick existant du Combat Runtime traite aussi l'échéance de recovery.
+
+À l'impact :
+- la résolution gameplay est appliquée immédiatement par la Session/Resolver ;
+- dégâts, effets et événements sont donc visibles sans attendre la recovery ;
+- l'enregistrement de l'action passe ensuite en état `resolved/recovery` dans le même `activeByActor`.
+
+Pendant la recovery :
+- `startSkill/startCommand` refusent l'acteur avec `outcome: "recovering"` ;
+- `hasActiveActionFor(actorId)` reste vrai car l'acteur est occupé ;
+- `activeActionFor/activeAction/activeActions` n'exposent plus l'action résolue comme attaque encore en exécution ;
+- réactions, clashes et contacts visibles ignorent les records déjà résolus.
+
+À l'expiration :
+- le record est retiré de `activeByActor` ;
+- l'acteur redevient disponible.
+
+Cas particuliers :
+- `recoveryMs = 0` conserve une libération immédiate ;
+- un tick tardif dépassant déjà impact + recovery libère l'acteur dans le même passage ;
+- le KO de la cible ne supprime pas la recovery de l'attaquant déjà résolu ;
+- le KO/cancel/dispose de l'acteur lui-même peut retirer son record.
+
+Le cooldown reste une responsabilité distincte de la Session/état combat et n'est pas recalculé par le Runtime.
