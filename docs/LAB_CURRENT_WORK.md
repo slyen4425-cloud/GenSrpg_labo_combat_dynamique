@@ -21605,3 +21605,18 @@ Validation smartphone attendue :
 Aucun merge vers `main`.
 
 État : **PREVALIDATION smartphone après publication du checkpoint/preview**.
+
+
+### Durcissement de charte — Active Owner Selector Guard
+
+À la suite de la régression confirmée sur Boule de feu / Tempête de flammes, `LAB_CHARTE.md` est complétée pour rendre ce défaut non reproductible par méthode :
+
+- §33.9 : les sélecteurs de modification de l’éditeur doivent être dérivés de `configuredSkills` / `configuredCreatures`, jamais d’un catalogue legacy concurrent une fois le propriétaire actif hydraté ;
+- §33.9 : une sélection recharge la fiche depuis le même propriétaire actif ;
+- §33.9 : les catalogues legacy/native peuvent initialiser ou migrer, mais ne reprennent jamais autorité après remplacement ;
+- §33.10 : sentinelles obligatoires sur unicité de l’ID, visibilité dans le sélecteur, rechargement complet, conservation de la nouvelle version, présence d’une autre fiche native connue, round-trip éditeur et rafraîchissement post-import ;
+- si les données sont correctes dans le propriétaire actif mais fausses à l’écran, la correction doit viser la lecture/recharge UI et ne doit pas déformer les données.
+
+Commit charte : `859f48586f0c88d3dd4759d2addb11c42b1c04fe`.
+
+Aucun changement Runtime/UI/data dans ce durcissement documentaire.
