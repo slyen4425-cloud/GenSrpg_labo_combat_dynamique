@@ -384,13 +384,31 @@ test("real CombatRuntime keeps the stronger projectile active until target impac
     runtime.hasActiveActionFor(
       "strong-actor"
     ),
-    false
+    true,
+    "surviving projectile owner must recover after its real target impact"
+  );
+  assert.equal(
+    runtime.activeActionFor(
+      "strong-actor"
+    ),
+    null
   );
   assert.equal(
     session.snapshot().fighters[
       "weak-actor"
     ].hp,
     80
+  );
+
+  clock = 1200;
+  scheduled();
+
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "strong-actor"
+    ),
+    false,
+    "actor becomes available when configured recovery completes"
   );
   assert.equal(
     resolutions.some(
