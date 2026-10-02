@@ -2687,3 +2687,44 @@ Ces offsets :
 - n'ajoutent aucun timer, observer ou listener.
 
 Le scale global et les scales X/Y restent indépendants du positionnement.
+
+
+## 49. Limite d’utilisations d’une capacité par combat V1
+
+Une capacité peut désormais porter une limite canonique optionnelle :
+
+- `SkillDefinition.maxUsesPerCombat = null` : utilisation illimitée ;
+- entier strictement positif : nombre maximal d’activations acceptées sur le combat.
+
+Le champ absent est normalisé vers `null` afin de conserver la compatibilité des capacités historiques.
+
+### Autorité runtime
+
+Le compteur appartient à `CombatState.fighters[*].skillUseCounts`, indexé par `skillId`.
+
+Chaîne autoritaire :
+
+`SkillDefinition.maxUsesPerCombat -> CombatState.skillUseCounts -> Action Resolver -> activation acceptée ou rejet usage_limit`.
+
+Une utilisation est consommée au démarrage accepté de la capacité, au même point d’engagement que l’énergie et le cooldown. Une tentative rejetée ne consomme aucune utilisation.
+
+Cette règle s’applique aussi aux capacités de réaction via `resolveReaction()`. Elle n’est pas spéciale au slot Ultime : toute capacité peut utiliser la même propriété.
+
+Le rappel/réinvocation d’une créature conserve `skillUseCounts` dans le snapshot roster afin que la limite reste valable sur tout le combat. Un nouveau combat repart de la configuration initiale et donc de compteurs vides.
+
+### Human Editor et export
+
+Le Human Editor expose `Utilisations max par combat` :
+
+- `0` dans l’interface = **Illimité** ;
+- `1`, `2`, `3`, etc. = limite explicite.
+
+Le draft/export utilise uniquement la définition canonique :
+
+`UI -> buildHumanSkillDraftV1 -> SkillDefinition.maxUsesPerCombat -> export Capture JSON`.
+
+Dans le JSON exporté :
+- illimité = `"maxUsesPerCombat": null` ;
+- limite = entier positif.
+
+Aucun compteur parallèle côté UI, aucun timer, observer ou listener compensatoire n’est ajouté.
