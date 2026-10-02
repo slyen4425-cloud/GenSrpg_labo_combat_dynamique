@@ -93,4 +93,12 @@ test("editor renders element optgroups for both skill editing and creature loado
     loadoutBlock,
     /document\.createElement\("optgroup"\)/
   );
+  assert.match(
+    loadoutBlock,
+    /for \(const select of standardSlots\)[\s\S]*populate\([\s\S]*standardSkills[\s\S]*"Vide"[\s\S]*\)/
+  );
+  assert.match(
+    loadoutBlock,
+    /populate\([\s\S]*ultimateSlot[\s\S]*ultimateSkills[\s\S]*"Aucune ultime"[\s\S]*\)/
+  );
 });
