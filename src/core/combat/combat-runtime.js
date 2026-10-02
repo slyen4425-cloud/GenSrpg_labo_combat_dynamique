@@ -805,7 +805,7 @@ export function createCombatRuntime({
     });
   }
 
-  function reportProjectileContact({
+  function reportActionContact({
     actorId,
     targetId
   }) {
@@ -833,11 +833,13 @@ export function createCombatRuntime({
 
     if (
       record.action.actionType !== "skill" ||
-      record.action.skill?.form !== "projectile"
+      !["projectile", "contact"].includes(
+        record.action.skill?.form
+      )
     ) {
       return Object.freeze({
         ok: false,
-        outcome: "not_projectile"
+        outcome: "not_contactable"
       });
     }
 
@@ -925,7 +927,7 @@ export function createCombatRuntime({
     react,
     interruptActive,
     applyResolutionInterrupt,
-    reportProjectileContact,
+    reportActionContact,
     cancelActionsForActor,
     cancelActive,
     dispose,
