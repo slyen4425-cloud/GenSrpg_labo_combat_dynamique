@@ -21837,3 +21837,92 @@ Durcissement de charte :
 - la progression décide seulement de l'activité en combat et ne supprime pas la configuration planifiée.
 
 État : **GREEN technique — checkpoint/preview à publier ; validation smartphone requise**.
+
+
+## Clarification utilisateur — Boule de feu / niveau requis — 2026-10-02
+
+Après reprise et test utilisateur, le symptôme précédemment signalé lors de la modification du niveau requis de **Boule de feu** n'est plus reproduit. L'utilisateur indique qu'il avait probablement activé par inadvertance le slot **Ultime**.
+
+Conséquences :
+- aucun nouveau correctif n'est ajouté sur ce symptôme ;
+- le durcissement `Skill Required Level Update Retention V1` reste conservé, car il protège un invariant valide : une mise à jour de fiche ne doit jamais modifier le loadout planifié par effet de bord ;
+- le checkpoint GREEN précédent reste la base du chantier suivant.
+
+## Micro-lot — Combat Skill Details V1 — 2026-10-02
+
+Base exacte : `9d4c5cef80fd0d92d76e2d374c700b9397c8ac94` (Skill Required Level Update Retention V1 — GREEN technique).
+
+- checkpoint de départ : `checkpoint/lab-start-combat-skill-details-v1-2026-10-02` ;
+- branche : `work/lab-combat-skill-details-v1-2026-10-02`.
+
+### Objectif utilisateur
+
+En combat, rendre les capacités compréhensibles sans retourner dans l'éditeur. Le joueur doit pouvoir consulter les détails d'une capacité au survol/focus sur ordinateur et par une interaction tactile dédiée sur smartphone, sans casser le clic principal qui lance la capacité.
+
+Informations à présenter depuis les données réelles :
+- description ;
+- niveau de déblocage ;
+- slot standard / Ultime ;
+- énergie ;
+- préparation ;
+- cooldown ;
+- utilisations max par combat ;
+- cibles autorisées ;
+- conditions d'activation traduites en texte lisible ;
+- dégâts / soin / énergie ;
+- effets tactiques et statuts ;
+- zone persistante : rayon, durée, cadence de tick, dégâts par tick et renforcement.
+
+### Audit propriétaire
+
+- `SkillDefinition` reste l'autorité des règles de combat et des effets ;
+- `CaptureSkillEditorDraftV1` possède déjà `description` et `requiredLevel` ;
+- l'export Capture conserve déjà ces deux valeurs sous `skills[*].metadata.editor` ;
+- `adaptCaptureCombatExportStackV1` transporte actuellement la définition native mais pas encore ces métadonnées de présentation ;
+- `combat-2v2-test-ui.js` construit les boutons de capacité et possède déjà l'accès à la source native injectée.
+
+### Contrat cible
+
+1. Ne pas ajouter description/niveau requis à `SkillDefinition`, car ce ne sont pas des règles de résolution.
+2. Ajouter à la source native Capture un dictionnaire de métadonnées de compétence, dérivé de l'export déjà autoritaire, sans seconde source de vérité.
+3. Introduire un formatter/presenter pur qui transforme `SkillDefinition + metadata` en modèle de détail lisible.
+4. La traduction des conditions et effets est calculée depuis les enums/valeurs réels ; aucune seconde description métier codée par capacité.
+5. Le bouton principal de capacité garde son comportement de lancement.
+6. Sur ordinateur : survol/focus affiche le détail.
+7. Sur smartphone/tactile : un contrôle d'information adjacent affiche/masque le détail sans lancer la capacité.
+8. Le panneau de détail est rendu par la Demo UI uniquement ; il ne possède aucune règle Combat.
+9. Aucune logique par nom ou ID de capacité.
+
+### Fichiers autorisés
+
+- `src/adapters/input/capture/capture-export-adapter-stack-v1.js` ;
+- nouveau presenter/formatter dédié sous `src/adapters/renderer/` ;
+- `src/ui/combat-2v2-test-ui.js` ;
+- `examples/dom-demo/coop-2v2.html` ;
+- `examples/dom-demo/demo.css` ;
+- tests unitaires dédiés ;
+- `docs/LAB_CURRENT_WORK.md`.
+
+### Protégé
+
+- `SkillDefinition` et ses règles de résolution ;
+- `CombatState`, `CombatSession`, `CombatRuntime` ;
+- dégâts, cooldown, progression, loadouts et zones persistantes ;
+- données des capacités existantes ;
+- aucun timer/observer/listener global compensatoire ;
+- aucun comportement spécial Boule de feu / Tempête de flammes ;
+- `main` ;
+- dépôt `Zombicide-40k`.
+
+### TDD
+
+1. RED transport : description et niveau requis doivent être disponibles dans la source native Capture sans modifier `SkillDefinition`.
+2. RED formatter : produire des lignes déterministes à partir des conditions et effets réels, y compris une zone persistante.
+3. RED UI : le bouton principal continue de lancer la capacité ; le contrôle info et le panneau sont séparés.
+4. RED accessibilité : hover/focus et tap info doivent partager le même modèle, sans autorité métier UI.
+5. correction minimale ;
+6. tests ciblés puis suite complète CI ;
+7. checkpoint GREEN + preview ;
+8. PREVALIDATION smartphone utilisateur.
+
+État : **LOT OUVERT — RED avant correction**.
