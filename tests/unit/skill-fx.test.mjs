@@ -96,7 +96,7 @@ test("non-projectile skills do not invent a projectile FX", () => {
   assert.deepEqual(plans, []);
 });
 
-test("DOM projectile adapter owns and cleans its temporary node", async () => {
+test("DOM projectile adapter keeps its arrived node until semantic cleanup", async () => {
   const done = deferred();
   const appended = [];
   let removed = false;
@@ -168,7 +168,10 @@ test("DOM projectile adapter owns and cleans its temporary node", async () => {
   assert.equal(capturedOptions.duration, 550);
 
   done.resolve();
-  assert.deepEqual(await handle.finished, { status: "finished" });
+  assert.deepEqual(await handle.finished, { status: "arrived" });
+  assert.equal(renderer.activeCount, 1);
+  assert.equal(removed, false);
+  assert.equal(renderer.cancelProjectileFor("player"), 1);
   assert.equal(renderer.activeCount, 0);
   assert.equal(removed, true);
 });
@@ -256,7 +259,7 @@ test("DOM projectile source follows live motion but target uses stable slot anch
   await Promise.resolve();
 });
 
-test("DOM projectile stops visually when its core meets the live moving target", () => {
+test("DOM projectile ignores live-target geometry and waits for semantic impact", () => {
   let frameCallback = null;
   let cancelled = false;
   let removed = false;
@@ -292,7 +295,6 @@ test("DOM projectile stops visually when its core meets the live moving target",
       }
     },
     opponent: {
-      // Live creature has moved across the projectile route.
       getBoundingClientRect() {
         return { left: 130, top: 80, width: 50, height: 50 };
       }
@@ -302,7 +304,6 @@ test("DOM projectile stops visually when its core meets the live moving target",
   const targetAnchors = {
     player: anchors.player,
     opponent: {
-      // Stable slot is still farther away.
       getBoundingClientRect() {
         return { left: 300, top: 120, width: 40, height: 40 };
       }
@@ -337,13 +338,9 @@ test("DOM projectile stops visually when its core meets the live moving target",
   });
 
   assert.equal(renderer.activeCount, 1);
-  assert.equal(typeof frameCallback, "function");
-
-  frameCallback();
-
-  assert.equal(cancelled, true);
-  assert.equal(removed, true);
-  assert.equal(renderer.activeCount, 0);
+  assert.equal(frameCallback, null);
+  assert.equal(cancelled, false);
+  assert.equal(removed, false);
 });
 
 
@@ -858,7 +855,9 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
   assert.equal(capturedOptions.duration, 700);
 
   done.resolve();
-  assert.deepEqual(await handle.finished, { status: "finished" });
+  assert.deepEqual(await handle.finished, { status: "arrived" });
+  assert.equal(renderer.activeCount, 1);
+  assert.equal(renderer.cancelProjectileFor("player"), 1);
 });
 
 test("DOM impact adapter uses the bound fireball impact strip on the target anchor", async () => {
