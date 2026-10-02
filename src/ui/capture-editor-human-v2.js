@@ -5838,6 +5838,11 @@ export function mountCaptureEditorHumanV2({
       );
     }
 
+    refreshSkillLibraryOptions(
+      plan.kind === "skill"
+        ? plan.id
+        : librarySelect.value
+    );
     refreshLoadoutOptions();
     refreshCreatureLibraryOptions(
       selectedCreatureId
@@ -7963,6 +7968,9 @@ export function mountCaptureEditorHumanV2({
         );
       }
 
+      refreshSkillLibraryOptions(
+        librarySelect.value
+      );
       refreshLoadoutOptions();
       refreshCreatureLibraryOptions(
         selectedCreatureId
@@ -8037,6 +8045,9 @@ export function mountCaptureEditorHumanV2({
         progressionRules =
           showcaseResult.progressionRules;
 
+        refreshSkillLibraryOptions(
+          librarySelect.value
+        );
         refreshLoadoutOptions();
         refreshCreatureLibraryOptions(
           selectedCreatureId
