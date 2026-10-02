@@ -23227,3 +23227,43 @@ Aucun :
 - merge vers `main`.
 
 État : **GREEN technique — scellement documentaire puis checkpoint/preview utilisateur**.
+
+
+## Micro-lot — Editor Preview Status Wiring V1 — 2026-10-02
+
+Base exacte : `fd1b7d638acd5c4bd55d7dca3047a5f05e9bfa75` (Status Readability V2 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-editor-preview-status-wiring-v1-2026-10-02` ;
+- branche : `work/lab-editor-preview-status-wiring-v1-2026-10-02`.
+
+### Régression utilisateur reproduite
+
+Depuis l'éditeur Capture, « Tester en combat » échoue avec :
+`2v2 element not found: [data-combat-status-icons="local-1"]`.
+
+Cause :
+- le template 2v2 intégré à `capture-editor-v2.html` utilise correctement les actor IDs natifs `local-1/local-2/opponent-1/opponent-2` ;
+- les nouveaux hosts HUD `data-combat-status-icons` ont été ajoutés à la démo 2v2 autonome, mais pas au template intégré de l'éditeur.
+
+Deuxième trou de câblage du même chemin :
+- `buildPreviewPresentationAssets()` ne relayait pas `statusPresentationFor(statusId)` vers le combat preview ;
+- le combat aurait donc pu démarrer après ajout des hosts, mais sans teinte/sprite/icône de statut configurés depuis l'éditeur.
+
+### Correctif visé
+
+1. ajouter exactement un host d'icônes sous les PV pour chacun des 4 actor IDs du template éditeur ;
+2. relayer `native.statusPresentationFor(statusId)` dans l'adapter de présentation preview ;
+3. ne modifier ni IDs, ni format de combat, ni runtime de statut.
+
+### Autorité
+
+`battleFormat actor IDs + fighter.statusEffects + SkillPresentationBinding.statusVisuals` restent les seules autorités.
+
+### TDD
+
+- RED : template éditeur doit fournir les 4 hosts natifs ;
+- RED : presentation adapter de preview doit relayer `statusPresentationFor` ;
+- suite complète GREEN ;
+- checkpoint/preview.
+
+État : **LOT OUVERT — TDD avant correction**.
