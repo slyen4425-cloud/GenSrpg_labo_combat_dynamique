@@ -186,9 +186,7 @@ export async function mountCombatTest({
     typeof visuals.setSlotVisible !== "function" ||
     typeof visuals.getCreatureDescriptor !== "function" ||
     typeof visuals.getFxAnchorFor !== "function" ||
-    typeof visuals.getCollisionModelFor !== "function" ||
-    typeof visuals.playApproachFor !== "function" ||
-    typeof visuals.finishApproachAtContactFor !== "function"
+    typeof visuals.getCollisionModelFor !== "function"
   ) {
     throw new TypeError("visuals must provide roster-aware visual controls");
   }
