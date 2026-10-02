@@ -2877,3 +2877,59 @@ Ainsi :
 - `cap_fire_atk_6` affiche la version vitrine remplacée et non son ancien template historique.
 
 Aucune copie de skill, aucun alias par nom et aucun état métier parallèle n'est ajouté.
+
+
+## Combat Feedback Readability V1 — projection visuelle sans autorité gameplay
+
+Le feedback de lisibilité de combat suit les mêmes frontières d'autorité que le reste du laboratoire.
+
+### Delta PV
+
+Le propriétaire des PV reste exclusivement le moteur de combat.
+
+Chaîne :
+
+`Combat Session / effets -> snapshot HP -> Combat Runtime -> combatHealthDeltaEventsV1() -> onHealthDelta -> DOM Skill FX`.
+
+`combatHealthDeltaEventsV1()` ne calcule jamais les dégâts : il compare deux snapshots autoritaires et publie seulement la variation de PV réellement appliquée.
+
+Conséquences :
+- dégâts directs, DoT, zones persistantes et futures sources de perte de PV passent par la même projection ;
+- aucune valeur de résistance, puissance ou formule de dégâts n'est dupliquée dans le renderer ;
+- le nombre flottant est une conséquence visuelle du delta réel.
+
+### Audio de trajet projectile
+
+`SkillPresentationBinding` possède déjà le slot audio `travel`.
+
+Le Presenter possède désormais le cycle de vie du son de trajet :
+- démarrage au release d'un projectile ;
+- lecture en boucle lorsque la capacité éditée utilise ce slot ;
+- arrêt à la résolution, au clash, à l'interruption ou à la destruction du Presenter.
+
+L'Audio Adapter ne décide jamais de la durée métier ni de l'impact.
+
+### Présentation persistante des statuts
+
+`StatusEffectV1` reste inchangé et ne contient aucun champ visuel.
+
+`SkillPresentationBindingV3` étend la présentation avec `statusVisuals`, indexé par identifiant de statut.
+
+Modes supportés :
+- `none` ;
+- `tint` ;
+- `sprite` ;
+- `both`.
+
+Le Render Adapter `dom-status-fx.js` synchronise les couches depuis `fighter.statusEffects` du snapshot autoritaire :
+- apparition lorsque le statut existe ;
+- maintien sans horloge visuelle parallèle ;
+- retrait lorsque le statut disparaît (expiration, cleanse, dispel ou autre cause métier).
+
+Un même `statusId` ne peut pas silencieusement recevoir deux présentations différentes dans la même source de présentation : un conflit est rejeté explicitement.
+
+Chaîne :
+
+`StatusEffect Runtime -> snapshot fighter.statusEffects -> statusPresentationFor(statusId) -> DOM Status FX`.
+
+Aucun timer global, observer global ou branchement par identifiant de capacité n'est ajouté.
