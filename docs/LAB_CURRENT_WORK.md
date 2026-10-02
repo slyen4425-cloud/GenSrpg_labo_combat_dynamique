@@ -22193,3 +22193,53 @@ Le renderer reste un **capteur**, jamais une autorité gameplay.
 6. suite complète GREEN puis checkpoint/preview smartphone.
 
 État : **LOT OUVERT — RED avant correction**.
+
+
+### Résultat technique — Projectile Contact Precision V2
+
+RED confirmé :
+- commit : `6aeb1a6d03e4c0a9e0eef2b2566f0a0c91f934ff` ;
+- CI : `37004600908` — FAILURE attendue ;
+- **818 anciens tests PASS**, 3 nouveaux échecs exactement sur les défauts recherchés :
+  1. tunneling d'un projectile à travers une cible stationnaire entre deux frames ;
+  2. chevauchement du bord du projectile avec le modèle alors que son centre reste hors cible ;
+  3. croisement entre deux objets mobiles entre deux observations.
+
+Correction :
+- `d9528f992a6cefd8220ab04aa2f59b610709c60b` : remplacement du test ponctuel `centre projectile ∈ rectangle cible` par une détection continue fondée sur les rectangles réellement rendus ;
+- le capteur conserve les rectangles projectile/cible de l'observation précédente ;
+- à chaque frame, il vérifie :
+  - chevauchement de surface courant ;
+  - balayage continu en mouvement relatif entre les deux observations ;
+  - variation de taille entre les observations ;
+- aucune suppression projectile, aucun dégât, aucune résolution n'est effectué dans le renderer ;
+- après le premier signal, le capteur cesse immédiatement de programmer des frames.
+
+Durcissement :
+- `d86eb71c8a4432243cb441d29d780cae771020ca` : test de non-faux-positif ajouté pour deux trajectoires mobiles qui restent séparées ;
+- CI complète : `37004829844` — SUCCESS ;
+- suite : **822/822 PASS, 0 FAIL**.
+
+Autorité inchangée :
+`DOM Skill FX capteur -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> onResolved -> Presenter`.
+
+Aucun changement dans :
+- Combat Runtime ;
+- Combat Session ;
+- Action Resolver ;
+- dégâts / énergie / cooldown ;
+- projectile clash ;
+- esquive ;
+- définition de Boule de feu ;
+- `Zombicide-40k`.
+
+Aucun timer supplémentaire, aucun observer global, aucune logique spéciale par ID de compétence, aucun second moteur de collision.
+
+PREVALIDATION smartphone requise :
+1. faire avancer l'ennemi vers Boule de feu à plusieurs vitesses ;
+2. tester également un croisement rapide projectile/cible ;
+3. vérifier qu'aucune boule ne traverse le modèle ;
+4. vérifier que l'impact apparaît immédiatement après disparition ;
+5. vérifier qu'un passage réellement à côté ne provoque pas d'impact fantôme.
+
+État : **GREEN technique — scellement puis checkpoint/preview**.
