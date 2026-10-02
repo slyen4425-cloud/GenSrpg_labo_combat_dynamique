@@ -50,6 +50,7 @@ export function createCombatResolutionPresenter({
   const timers = new Set();
   const preparationFxByActor = new Map();
   const preparationAudioByActor = new Map();
+  const travelAudioByActor = new Map();
 
   function schedule(callback, delayMs) {
     const timerId = setTimer(() => {
@@ -94,11 +95,27 @@ export function createCombatResolutionPresenter({
     return cancelled;
   }
 
+  function cancelTravelAudio(
+    actorSlot = "player"
+  ) {
+    const handle =
+      travelAudioByActor.get(actorSlot) ?? null;
+    if (!handle) {
+      return false;
+    }
+
+    travelAudioByActor.delete(actorSlot);
+    handle.stop?.();
+    return true;
+  }
+
   function cancelActionPresentation(
     actorSlot = "player"
   ) {
     const preparationCancelled =
       cancelPreparation(actorSlot);
+    const travelCancelled =
+      cancelTravelAudio(actorSlot);
     const projectileCount =
       Number(
         fx?.cancelProjectileFor?.(actorSlot) ?? 0
@@ -106,6 +123,7 @@ export function createCombatResolutionPresenter({
 
     return (
       preparationCancelled ||
+      travelCancelled ||
       projectileCount > 0
     );
   }
@@ -250,6 +268,38 @@ export function createCombatResolutionPresenter({
       });
     }
 
+    cancelTravelAudio(actorSlot);
+    if (
+      releaseSkillId &&
+      action.skill?.form === "projectile" &&
+      Number(action.travelMs) > 0
+    ) {
+      const travelHandle =
+        audio?.play({
+          type: "travel",
+          skillId: releaseSkillId,
+          actorSlot,
+          targetSlot
+        }) ?? null;
+
+      if (travelHandle?.status === "running") {
+        travelAudioByActor.set(
+          actorSlot,
+          travelHandle
+        );
+        Promise.resolve(travelHandle.finished)
+          .finally(() => {
+            if (
+              travelAudioByActor.get(actorSlot) ===
+              travelHandle
+            ) {
+              travelAudioByActor.delete(actorSlot);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
     return Object.freeze({
       status: "released",
       travelMs: action.travelMs
@@ -277,6 +327,8 @@ export function createCombatResolutionPresenter({
     let ko = false;
     let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
+
+    cancelTravelAudio(actorSlot);
 
     const releaseEvent =
       resolution.events?.find(
@@ -442,12 +494,14 @@ export function createCombatResolutionPresenter({
       return;
     }
     cancelPending();
-    const preparationActors = new Set([
+    const presentationActors = new Set([
       ...preparationFxByActor.keys(),
-      ...preparationAudioByActor.keys()
+      ...preparationAudioByActor.keys(),
+      ...travelAudioByActor.keys()
     ]);
-    for (const actorSlot of preparationActors) {
+    for (const actorSlot of presentationActors) {
       cancelPreparation(actorSlot);
+      cancelTravelAudio(actorSlot);
     }
     disposed = true;
   }
