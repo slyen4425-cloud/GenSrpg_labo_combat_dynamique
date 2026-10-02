@@ -585,3 +585,52 @@ Avant de déclarer l’intégration technique GREEN :
 10. obtenir une validation smartphone utilisateur avant de déclarer GREEN utilisateur.
 
 Cette procédure est la référence pour les futures créatures et capacités de vitrine Capture, notamment celles créées par Sylvain dans l’éditeur puis transmises pour intégration.
+
+
+### 33.9. Bibliothèque active de l’éditeur : jamais de retour d’autorité legacy
+
+Règle ajoutée après la régression `Skill Editor Active Library V1`.
+
+Une donnée peut être correctement intégrée dans son propriétaire actif tout en restant fausse ou inaccessible dans l’éditeur si le sélecteur UI continue de lire une ancienne source.
+
+Pour éviter ce cas :
+
+- la liste des capacités modifiables doit être construite depuis `configuredSkills` ;
+- la liste des créatures modifiables doit être construite depuis `configuredCreatures` ;
+- après hydratation, import, remplacement ou chargement d’un preset, les sélecteurs correspondants doivent être rafraîchis depuis ces propriétaires actifs ;
+- sélectionner une capacité existante doit recharger sa fiche complète depuis `configuredSkills`, jamais depuis un catalogue legacy, un template historique ou un mock ;
+- sélectionner une créature existante doit suivre le même principe depuis `configuredCreatures`.
+
+Les catalogues legacy et helpers de migration peuvent rester présents pour importer, comparer ou documenter l’historique, mais ils ne doivent jamais reprendre autorité sur une fiche active déjà normalisée.
+
+Pour une capacité, le rechargement complet doit couvrir au minimum :
+
+- ID, nom, description et niveau requis ;
+- slot standard / Ultime ;
+- catégorie, forme, élément et mode d’approche ;
+- coût énergie, préparation, trajet, récupération et cooldown ;
+- limite d’utilisations par combat ;
+- conditions d’activation ;
+- effets tactiques et zone persistante ;
+- puissance de projectile / clash ;
+- icône, cast, projectile, impact et zone ;
+- scales, offsets, layers et socket ;
+- audio.
+
+Interdits :
+
+- peupler le sélecteur depuis un catalogue legacy alors que `configuredSkills` est disponible ;
+- recharger une ancienne fiche par le même ID après qu’un preset l’a remplacée ;
+- fusionner silencieusement un template historique dans une fiche active ;
+- maintenir deux listes de capacités « éditables » avec des autorités différentes ;
+- corriger une régression d’affichage en recopiant ou renommant la capacité sous un autre ID.
+
+Avant GREEN d’un lot qui ajoute ou remplace une capacité, ajouter une sentinelle vérifiant au minimum :
+
+1. l’ID est visible dans la bibliothèque active ;
+2. si l’ID remplace une capacité historique, la sélection restitue la nouvelle fiche et non l’ancienne ;
+3. un round-trip `draft actif -> champs éditeur -> buildHumanSkillDraftV1()` conserve exactement les données représentées ;
+4. passer d’une capacité A à une capacité B puis revenir à A ne contamine pas les champs ;
+5. le handler de sélection ne dépend pas d’un merge legacy pour une fiche active.
+
+Le même principe doit être appliqué aux créatures lorsque leur éditeur possède plusieurs sources historiques ou presets.
