@@ -23949,3 +23949,82 @@ D. suite complète GREEN ;
 E. checkpoint/preview utilisateur.
 
 État : **CHANTIER OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Loup / Cendre Showcase V1
+
+#### Cendre aveuglante : cause réelle du bouton grisé
+
+`cap_fire_special_1` applique deux statuts `stat_modifier` :
+- `speed` ;
+- `physical`.
+
+Le bouton était grisé lorsque la cible de preview n'avait pas de `statValues` explicites, car l'export V3 n'attachait alors ni :
+- `statEffectRulesById` ;
+- ni valeurs neutres pour les stats du registre.
+
+`previewSkill()` retournait donc `unsupported_status_stat`.
+
+#### Correction
+
+`CaptureStatRegistryV1` reste l'unique autorité des stats.
+
+Quand un registre est fourni à `exportCaptureEditorDraftsToCombatExportV3()` :
+- toutes les créatures exportées reçoivent le même `statEffectRulesById` ;
+- chaque stat du registre reçoit une valeur runtime neutre `0` si la créature n'a pas de valeur personnalisée ;
+- les valeurs explicitement configurées remplacent uniquement ces zéros neutres ;
+- aucune exception n'est codée pour Cendre, Loup ou une cible précise.
+
+Le chemin réel est validé :
+`Capture export V3 -> native adapter -> CombatSession.previewSkill()`.
+
+Pour Cendre, avec une cible sans `statValues` personnalisés :
+`previewSkill().ok === true`.
+
+#### Presets vitrine intégrés
+
+Ajouts :
+- `data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json` ;
+- `data/capture/showcase/fireball.capture-skill-transfer-v1.json`.
+
+Mise à jour :
+- `data/capture/showcase/crea-loup.capture-creature-transfer-v1.json`.
+
+Catalogue :
+- `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` contient désormais Cendre et la Boule de feu éditée, en plus des presets existants.
+
+Loup volcanique :
+- niveau 20 ;
+- slot 1 = `claw` ;
+- slot 2 = `fireball` ;
+- slot 3 = `cap_fire_special_1` ;
+- slot 4 = `lib_flame_bite` ;
+- ultime = `cap_fire_atk_6`.
+
+#### TDD / validation
+
+- RED : `800b75d93930b617d0906b00e451daf8ecba945b` — FAILURE attendue ;
+- correction export stats : `8084ae93f68319795590aec453dc15e23b8fb82b` ;
+- preset Cendre : `8dbd78628724ee1f7cecf8523e81b08e315c4238` ;
+- preset Fireball : `3deed51e31153953792d9241928229a5071b225f` ;
+- preset Loup : `e5e7f0195cfb8dbb9dd87a9ebf7813a642588345` ;
+- catalogue : `9fd39dc4226dfa4cf98eefc8c1315f10e989cd5d` ;
+- sentinelles Loup alignées sur l'export utilisateur :
+  `cb2706d932c219636aff856477fee3cb7f4a3092`,
+  `4b42820cdbeae41d7e4e0c200fb6557d41ca4a4e` ;
+- CI : `37114624829` — SUCCESS ;
+- suite complète : **900/900 PASS, 0 FAIL**.
+
+#### Invariants
+
+- aucune seconde source de vérité des stats ;
+- aucun bypass de `previewSkill()` ;
+- aucun traitement spécial par `skillId` ;
+- aucun traitement spécial par `creatureId` ;
+- contrats `StatusEffectV1` et `stat_modifier` inchangés ;
+- aucune formule de dégâts/cooldown/énergie modifiée ;
+- aucun timer/observer ajouté ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
