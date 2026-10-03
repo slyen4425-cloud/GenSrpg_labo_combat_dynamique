@@ -24417,3 +24417,22 @@ CI laboratoire précédente 37143318982 : échec isolé de la révision de cache
 Preview : `examples/dom-demo/impact-review.html`, cinq animations dans le renderer existant, huit PNG par famille et fonds clair/sombre. Aucun fallback.
 Validation utilisateur et checkpoint GREEN final restent en attente conformément à §34. La CI seule n'est pas la validation artistique.
 Les autres familles attendent leurs planches réelles et ne sont pas déclarées terminées.
+
+
+## Contrôle runtime réel — IMPACTS — 2026-10-03
+
+Preview vérifiée : https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/a2069a419b3421e91a6c9d475904a9af0d75a818/examples/dom-demo/impact-review.html
+Code de preview contrôlé : laboratoire `a2069a419b3421e91a6c9d475904a9af0d75a818`.
+Médias publiés contrôlés : global-assets `b235f2b0deee0f79e4e6e1de81f05ba1b9921eec`.
+
+- Les cinq atlas canoniques chargent depuis global-assets avec leurs dimensions réelles 3200 × 400.
+- Les 40 images de phase chargent avec leurs dimensions réelles 400 × 400 ; alpha inspecté sur fonds sombre et clair.
+- Le bouton « Jouer les cinq » exécute le Render Adapter existant. Chaque impact atteint l'état `finished`.
+- Les cinq nœuds FX utilisent leurs assetIds existants, l'URL WebP global-assets, background-size 800% 100%, durée 360 ms et steps(7).
+- Aucun SVG de remplacement, second resolver ou moteur de preview ; le module renderer est inchangé dans ce micro-lot.
+- CI assets : 37148371077, 198 tests réussis. CI laboratoire : 37148737483, 912 tests réussis.
+- Revue des fichiers modifiés : uniquement source/extraction/impacts, catalogue pour les cinq ressources, documentation, fixture preview et révision de cache avec sa sentinelle.
+
+Statut : intégration et preview techniques vérifiées. La limite des titres superposés de la source reste visible et documentée.
+Validation artistique de Sylvain et checkpoint GREEN final restent en attente. Les autres familles ne sont pas validées par ce lot.
+Checkpoint intermédiaire de CI prévu : `checkpoint/lab-impact-source-alpha-v1-ci-2026-10-03`.
