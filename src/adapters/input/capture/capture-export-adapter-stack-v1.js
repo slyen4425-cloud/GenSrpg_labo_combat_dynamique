@@ -57,6 +57,15 @@ export function adaptCaptureCombatExportStackV1(input) {
     )
   );
 
+  const skillIdsByCreature = Object.freeze(
+    Object.fromEntries(
+      exported.creatures.map((creature) => [
+        creature.id,
+        creature.skillIds
+      ])
+    )
+  );
+
   const skillPresentations = Object.freeze(
     Object.fromEntries(
       exported.skills.map((skill) => [
@@ -75,6 +84,7 @@ export function adaptCaptureCombatExportStackV1(input) {
     fighters,
     skills,
     skillIdsByActor,
+    skillIdsByCreature,
     skillPresentations
   });
 }
