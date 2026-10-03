@@ -386,7 +386,42 @@ function battleSetup({
             roster: Object.freeze({
               activeMemberId:
                 party.activeMemberId,
-              meexport function buildExplorationEncounterCombatSourceV1({
+              members: Object.freeze(
+                localMembers.map(
+                  (entry) =>
+                    Object.freeze({
+                      id:
+                        entry.member.id,
+                      creatureId:
+                        entry.combatDraft.id,
+                      displayName:
+                        entry.combatDraft
+                          .displayName
+                    })
+                )
+              )
+            })
+          })
+        ])
+      }),
+      Object.freeze({
+        id: "enemy-team",
+        slots: Object.freeze([
+          Object.freeze({
+            actorId: "enemy-1",
+            creatureId: enemyDraft.id,
+            displayName:
+              enemyDraft.displayName,
+            controllerId: "ai-enemy",
+            roster: null
+          })
+        ])
+      })
+    ])
+  });
+}
+
+export function buildExplorationEncounterCombatSourceV1({
   snapshot: rawSnapshot,
   creatureRecords,
   partyDefinitions = [],
