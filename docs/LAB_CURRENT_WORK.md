@@ -6547,3 +6547,10 @@ TDD : source originale exacte -> 40 PNG RGBA avec glows et contenu illustré -> 
 Les 20 atlas casts/projectiles/statuts présents sur la branche de travail restent NON VALIDÉS visuellement. Ils ne font pas partie de ce micro-lot et ne doivent pas être promus silencieusement.
 
 État : RED de contenu requis avant dépôt final. Aucun GREEN utilisateur avant validation de la preview.
+
+### Dépôt réel des impacts
+
+Les 46 fichiers image de ce micro-lot sont extraits et inspectés. Inventaire et limites : `docs/LAB_IMPACT_SOURCE_ALPHA_V1.md`.
+Le RED de contenu est confirmé par CI 37147491596. Test local passe après extraction ; CI distante à vérifier sur le commit de dépôt.
+Publication limitée aux impacts via `work/global-assets-impact-source-release-v1-2026-10-03` basée sur la bibliothèque d73ad04.
+Aucun GREEN utilisateur déclaré ; preview et validation finale restent requises.
