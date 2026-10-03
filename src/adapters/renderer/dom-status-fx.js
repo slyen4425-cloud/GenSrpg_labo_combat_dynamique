@@ -1,3 +1,8 @@
+import {
+  projectStatusEffectInfoV1,
+  statusEffectInfoTextV1
+} from "./status-effect-info-v1.js";
+
 function requiredFunction(value, field) {
   if (typeof value !== "function") {
     throw new TypeError(
@@ -65,7 +70,8 @@ function maskUrl(image) {
 export function createDomStatusFxRenderer({
   targetFor,
   statusPresentationFor,
-  skillPresentationFor = null
+  skillPresentationFor = null,
+  skillDefinitionFor = null
 }) {
   const resolveTarget = requiredFunction(
     targetFor,
@@ -79,6 +85,10 @@ export function createDomStatusFxRenderer({
   const resolveSkillPresentation =
     typeof skillPresentationFor === "function"
       ? skillPresentationFor
+      : () => null;
+  const resolveSkillDefinition =
+    typeof skillDefinitionFor === "function"
+      ? skillDefinitionFor
       : () => null;
 
   const records = new Map();
@@ -208,6 +218,7 @@ export function createDomStatusFxRenderer({
     instance,
     target,
     presentation,
+    elapsedMs,
     expected
   }) {
     if (!target?.statusHost) {
@@ -242,8 +253,54 @@ export function createDomStatusFxRenderer({
       record = {
         node,
         glyphNode,
-        stackNode: null
+        stackNode: null,
+        detailsNode: null,
+        currentInfo: null
       };
+
+      node.tabIndex = 0;
+      node.setAttribute?.("role", "button");
+
+      node.onclick = (event) => {
+        event?.stopPropagation?.();
+
+        if (!record.detailsNode) {
+          const detailsNode =
+            target.statusHost.ownerDocument
+              .createElement("span");
+          detailsNode.className =
+            "status-icon__details";
+          detailsNode.dataset.statusFx =
+            "hud-details";
+          detailsNode.hidden = true;
+          node.append(detailsNode);
+          record.detailsNode = detailsNode;
+        }
+
+        record.detailsNode.hidden =
+          !record.detailsNode.hidden;
+
+        if (
+          !record.detailsNode.hidden &&
+          record.currentInfo
+        ) {
+          record.detailsNode.textContent =
+            statusEffectInfoTextV1(
+              record.currentInfo
+            );
+        }
+      };
+
+      node.onkeydown = (event) => {
+        if (
+          event?.key === "Enter" ||
+          event?.key === " "
+        ) {
+          event.preventDefault?.();
+          node.onclick(event);
+        }
+      };
+
       records.set(key, record);
     }
 
@@ -269,6 +326,19 @@ export function createDomStatusFxRenderer({
                 instance?.sourceActorId ?? null
             }
           );
+    const sourceSkillDefinition =
+      sourceSkillId === null
+        ? null
+        : resolveSkillDefinition(
+            sourceSkillId
+          );
+    const info = projectStatusEffectInfoV1({
+      instance,
+      elapsedMs,
+      sourceSkill:
+        sourceSkillDefinition
+    });
+    record.currentInfo = info;
     const sourceSkillIcon =
       sourceSkillPresentation?.icon ?? null;
     const sprite =
@@ -286,7 +356,22 @@ export function createDomStatusFxRenderer({
       String(stacks);
     record.node.dataset.sourceSkillId =
       sourceSkillId ?? "";
-    record.node.title = statusId;
+    record.node.title =
+      info.typeLabel +
+      " · " +
+      info.statusName;
+    record.node.setAttribute?.(
+      "aria-label",
+      statusEffectInfoTextV1(info)
+    );
+
+    if (
+      record.detailsNode &&
+      !record.detailsNode.hidden
+    ) {
+      record.detailsNode.textContent =
+        statusEffectInfoTextV1(info);
+    }
     record.node.style.backgroundColor =
       presentation?.tintColor ??
       polarityColor(polarity);
@@ -380,6 +465,8 @@ export function createDomStatusFxRenderer({
           instance,
           target,
           presentation,
+          elapsedMs:
+            Number(state.elapsedMs) || 0,
           expected
         });
 
