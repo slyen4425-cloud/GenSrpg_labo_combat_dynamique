@@ -1,0 +1,154 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "fireball",
+    "description": "Projectile de feu.",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "fireball",
+      "name": "Boule de feu",
+      "category": "offensive",
+      "form": "projectile",
+      "loadoutSlot": "standard",
+      "element": "fire",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 2500,
+      "travelMs": 1300,
+      "recoveryMs": 400,
+      "cooldownMs": 20000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 25,
+          "channel": "fire"
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:fireball",
+      "version": 2,
+      "subjectType": "skill",
+      "subjectId": "fireball",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-fireball-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-fireball-cast-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "front"
+          }
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-fireball-travel-01",
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "front"
+          }
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-fireball-impact-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:effect-135ee2ed",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:conflux-74460178",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:tower-d4a4ecd5",
+          "volume": 1,
+          "loop": false
+        }
+      }
+    }
+  }
+}
