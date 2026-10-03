@@ -24169,3 +24169,47 @@ Les données nécessaires existent déjà :
 - suite complète GREEN avant checkpoint/preview.
 
 État : **LOT OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Status Info Card V1
+
+#### Cause réelle
+
+Le HUD possédait bien l’instance active et sa provenance, mais aucune projection tactile des champs mécaniques n’existait.
+Le nom de la capacité source pouvait déjà être retrouvé depuis le registre de capacités du client.
+
+#### Correction
+
+- nouveau projecteur pur `status-effect-info-v1.js` : instance active + `elapsedMs` + vraie `SkillDefinition` source ;
+- affichage DoT/HoT, élément, tick, modifier de stat, contrôle, bouclier, durée et stacks depuis les champs réels ;
+- tap/clavier sur l’icône HUD -> petite fiche locale ;
+- mise à jour de la fiche uniquement au `sync(state)` existant ;
+- 1v1 : résolution depuis `offensiveSkillsById/reactionSkillsById` existants ;
+- 2v2/Capture : résolution depuis `skillsById` existant ;
+- aucun timer de durée UI, aucune description par identifiant.
+
+#### TDD / validation
+
+- déclaration lot : `7b466e976abb893e9c150eb2fbdd1072c58a6fae` ;
+- RED : `9212f90f0f0632ba4d9232505b00c49cce77f5e0` — CI `37120854667` FAILURE attendue ;
+- projection mécanique : `3094db95fdd6f706f01c88b77eaf3b0e6d0ca4ac` ;
+- fiche tactile renderer : `a34cb2c4596a28d5135c1945de07e17135efb77a` ;
+- raccord 1v1 : `ed1d16720161b62d31c079337d63b0eafbed113c` ;
+- raccord 2v2/Capture : `098f3b73957965e9b8ea6e149313ca2cdabccf37` ;
+- style mobile : `fc2ca9e9a533ea2b5ad264a815f510c79e7fe15a` ;
+- CI GREEN : `37120986573` — **909/909 PASS, 0 FAIL** ;
+- architecture : `2dbf18eb7043025e6154b232f66410674fb73e56`.
+
+#### Invariants
+
+- `fighter.statusEffects` reste l’unique état actif ;
+- la durée affichée suit `CombatState.elapsedMs`, sans `Date.now()`, `setInterval()` ou `setTimeout()` ;
+- `StatusEffectV1` inchangé ;
+- aucune seconde base de descriptions ;
+- aucune branche par `skillId/statusId` ;
+- dégâts/HP/cooldown/loadout/ultimate inchangés ;
+- audio inchangé ;
+- `Zombicide-40k` inchangé ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview final**.
