@@ -1471,6 +1471,18 @@ export async function mountCoop2v2Test({
       Number(member.hp) <= 0;
     button.disabled =
       member.active || defeated;
+    button.dataset.active =
+      member.active
+        ? "true"
+        : "false";
+    button.dataset.defeated =
+      defeated
+        ? "true"
+        : "false";
+    button.dataset.selected =
+      member.selected
+        ? "true"
+        : "false";
 
     const descriptor =
       visuals.getCreatureDescriptor(
@@ -1504,11 +1516,6 @@ export async function mountCoop2v2Test({
           : `${member.displayName} · ${Math.round(member.hp)}/${Math.round(member.maxHp)} PV`;
 
     button.append(text);
-
-    if (member.selected) {
-      button.dataset.selected =
-        "true";
-    }
 
     return button;
   }
