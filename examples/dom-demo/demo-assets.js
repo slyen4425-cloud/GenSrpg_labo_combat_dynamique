@@ -241,6 +241,34 @@ const ASSETS = Object.freeze({
       CORE_ROOT
     ).href
   }),
+  "core:icon-skill-fireball-01": Object.freeze({
+    assetId: "core:icon-skill-fireball-01",
+    url: new URL(
+      "icons/skills/icon_skill_fireball_01.webp",
+      CORE_ROOT
+    ).href
+  }),
+  "core:icon-skill-poison-cloud-01": Object.freeze({
+    assetId: "core:icon-skill-poison-cloud-01",
+    url: new URL(
+      "icons/skills/icon_skill_poison_cloud_01.webp",
+      CORE_ROOT
+    ).href
+  }),
+  "core:icon-skill-fire-rain-01": Object.freeze({
+    assetId: "core:icon-skill-fire-rain-01",
+    url: new URL(
+      "icons/skills/icon_skill_fire_rain_01.webp",
+      CORE_ROOT
+    ).href
+  }),
+  "core:icon-skill-fire-breath-01": Object.freeze({
+    assetId: "core:icon-skill-fire-breath-01",
+    url: new URL(
+      "icons/skills/icon_skill_fire_breath_01.webp",
+      CORE_ROOT
+    ).href
+  }),
   "core:icon-skill-aerial-dive-01": Object.freeze({
     assetId: "core:icon-skill-aerial-dive-01",
     url: new URL(
