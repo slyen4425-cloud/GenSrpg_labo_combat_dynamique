@@ -75,7 +75,10 @@ export function createCombatResolutionPresenter({
     );
   }
 
-  function cancelPreparation(actorSlot = "player") {
+  function cancelPreparation(
+    actorSlot = "player",
+    { audioMode = "all" } = {}
+  ) {
     let cancelled = false;
 
     const fxHandle = preparationFxByActor.get(actorSlot);
@@ -87,9 +90,18 @@ export function createCombatResolutionPresenter({
 
     const audioHandle = preparationAudioByActor.get(actorSlot);
     if (audioHandle) {
-      preparationAudioByActor.delete(actorSlot);
-      audioHandle.stop?.();
-      cancelled = true;
+      const shouldStopAudio =
+        audioMode === "all" ||
+        (
+          audioMode === "loop-only" &&
+          audioHandle.loop === true
+        );
+
+      if (shouldStopAudio) {
+        preparationAudioByActor.delete(actorSlot);
+        audioHandle.stop?.();
+        cancelled = true;
+      }
     }
 
     return cancelled;
@@ -199,7 +211,10 @@ export function createCombatResolutionPresenter({
       return Object.freeze({ status: "disposed" });
     }
 
-    cancelPreparation(actorSlot);
+    cancelPreparation(
+      actorSlot,
+      { audioMode: "loop-only" }
+    );
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
@@ -339,6 +354,7 @@ export function createCombatResolutionPresenter({
         (item) => item.type === "skill-arrive"
       )?.skillId ??
       releaseEvent?.skillId ??
+      resolution.skillId ??
       null;
 
     if (
@@ -348,25 +364,31 @@ export function createCombatResolutionPresenter({
       fx?.cancelProjectileFor?.(actorSlot);
     }
 
+    let impactAudioPlayed = false;
     for (const fxPlan of planSkillOutcomeFx({
       resolution,
       actorSlot,
       targetSlot
     })) {
       fx?.play(fxPlan);
+
+      if (
+        !impactAudioPlayed &&
+        fxPlan.type === "impact" &&
+        outcomeSkillId
+      ) {
+        audio?.play({
+          type: "impact",
+          skillId: outcomeSkillId,
+          actorSlot,
+          targetSlot
+        });
+        impactAudioPlayed = true;
+      }
     }
 
     switch (resolution.outcome) {
       case "hit": {
-        if (outcomeSkillId) {
-          audio?.play({
-            type: "impact",
-            skillId: outcomeSkillId,
-            actorSlot,
-            targetSlot
-          });
-        }
-
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&
