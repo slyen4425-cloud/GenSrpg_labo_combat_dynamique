@@ -24833,3 +24833,35 @@ CI :
 
 État : **TECHNIQUE GREEN — publication preview et validation utilisateur restantes**.
 
+## Publication preview — Recall Runtime Fix v1
+
+Preview Combat :
+`preview/lab-player-party-recall-runtime-fix-v1-2026-10-03`
+
+Checkpoint technique :
+`checkpoint/lab-player-party-recall-runtime-fix-v1-prevalidation-green-2026-10-03`
+
+Publication portée par Exploration Pages :
+- PR infra : #62 ;
+- main infra : `561c7592082a401a0d637b138eaf57cef7260b4c` ;
+- Pages run : `37153890466` — **SUCCESS**.
+
+Le job confirme :
+- Checkout Exploration Player Party preview — SUCCESS ;
+- Checkout Combat Recall Runtime Fix preview — SUCCESS ;
+- Checkout Capture global visual assets — SUCCESS ;
+- Upload preview — SUCCESS ;
+- Deploy preview — SUCCESS.
+
+Gate restante :
+validation utilisateur du vrai chemin :
+1. sélectionner Moussados ;
+2. lancer Rappel ;
+3. attendre la fin de préparation/recovery ;
+4. Invocation doit être immédiatement disponible malgré l'énergie à 0 ;
+5. lancer Invocation ;
+6. Moussados doit remplacer le Loup après 2,2 s ;
+7. visuel / PV / skills doivent basculer sur Moussados.
+
+État : **PUBLISHED PREVALIDATION GREEN — validation utilisateur restante**.
+
