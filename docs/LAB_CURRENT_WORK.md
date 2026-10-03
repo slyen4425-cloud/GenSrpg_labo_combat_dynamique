@@ -24766,3 +24766,70 @@ Interdits :
 6. republier la preview ;
 7. validation utilisateur.
 
+## Diagnostic et correction — Recall Runtime Fix v1
+
+### Reproduction RED
+Test ajouté :
+`real Encounter Runtime releases Recall recovery and allows Summon without another combat action`.
+
+Premier run :
+- commit RED : `95cf16070c617cf938158f64eccabf784923315d` ;
+- CI : `37153509555` — **FAIL attendu**.
+
+Le test reproduit le vrai chemin :
+`Encounter source -> Combat Session -> Combat Runtime -> Rappel -> Roster Session -> recovery -> Invocation`.
+
+### Cause racine
+Le ruleset Encounter démarre le joueur à **2⚡**.
+
+Données de commandes avant correction :
+- Rappel : 2⚡, préparation 1400 ms, recovery 500 ms ;
+- Invocation : 3⚡, préparation 2200 ms, recovery 600 ms.
+
+Conséquence :
+1. Rappel consomme les 2⚡ ;
+2. Roster Session met correctement `activeMemberId = null` ;
+3. Moussados reste correctement sélectionné ;
+4. le Runtime termine correctement la recovery ;
+5. Invocation est refusée avec `insufficient_energy` ;
+6. l'IA Encounter attend volontairement tant qu'aucune créature joueur n'est active ;
+7. l'utilisateur observe un combat apparemment figé.
+
+Le moteur Runtime et le Roster Session n'étaient donc pas fautifs.
+
+### Correction
+- Rappel conserve son coût : **2⚡** ;
+- Invocation devient **0⚡** ;
+- préparation Invocation reste **2200 ms** ;
+- recovery Invocation reste **600 ms** ;
+- aucune invocation instantanée ;
+- aucune mutation directe du fighter par l'UI ;
+- aucun changement de Combat Runtime ;
+- aucun changement de Roster Session.
+
+La chaîne reste :
+`Combat Runtime command -> completed -> Roster Session -> Combat Session slot -> Visual Controller`.
+
+### TDD
+- le test Runtime+Roster RED passe après correction ;
+- les sentinelles historiques ont été adaptées :
+  - contrat Invocation = 0⚡ ;
+  - le test de dépense d'énergie utilise Rappel, qui reste à 2⚡.
+
+### Cache
+Révision publique :
+`player-party-recall-runtime-fix-v1`.
+
+Versionnés explicitement :
+- entrée `exploration-encounter.js` ;
+- import `combat-2v2-test-ui.js` ;
+- URLs JSON Rappel / Invocation.
+
+### HEAD technique
+`9d4aff6cb62d7aeebfdfdd5bc91324f3df9dbe39`
+
+CI :
+`37153748937` — **SUCCESS**.
+
+État : **TECHNIQUE GREEN — publication preview et validation utilisateur restantes**.
+
