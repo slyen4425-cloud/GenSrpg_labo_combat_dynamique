@@ -23675,3 +23675,72 @@ Hors Combat Runtime / sans contexte spatial explicite, le moteur conserve le fal
 - suite complète GREEN.
 
 État : **LOT OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Persistent Zone Approach Radius V1
+
+#### Cause corrigée
+
+Le moteur de zone utilisait `state.distance` pour décider si un ennemi était dans `short/medium/long`.
+
+Dans le combat dynamique, cette distance globale ne change pas pendant une attaque de contact. Elle ne pouvait donc pas représenter l'approche réelle.
+
+#### Nouveau vrai chemin
+
+`Combat Runtime activeByActor -> zoneSpatialContext -> Combat Session -> advancePersistentZonesV1()`.
+
+Le Runtime fournit uniquement :
+- actorId ;
+- targetId ;
+- actionId ;
+- approche `ground` ;
+- temps de release ;
+- temps d'impact.
+
+Il ne calcule aucun dégât.
+
+Le Persistent Zone Runtime reste l'unique propriétaire :
+- de la croissance du rayon ;
+- de l'entrée dans la zone ;
+- des ticks périodiques ;
+- des dégâts.
+
+#### Tempête de flammes
+
+Le preset vitrine réel `cap_fire_atk_6` est couvert par le test.
+
+Activation 1 :
+- rayon `short` ;
+- ennemi au camp : 0 dégât ;
+- entrée aux 2/3 de l'approche Griffe : dégâts.
+
+Activation 2 :
+- rayon `medium` ;
+- ennemi au camp : 0 dégât ;
+- entrée au 1/3 de l'approche : dégâts plus tôt que le niveau 1.
+
+Activation 3 :
+- rayon `long` ;
+- ennemi au camp : dégâts au tick normal, même sans attaque.
+
+#### Validation
+
+- RED : `e8fa4eb367e709fa002c4d5f13f349a01a0dad02` — FAILURE attendue ;
+- projection Runtime : `b2c9d982436e7159ce896dae7d56f7726ad162e0` ;
+- passage Session : `735499e9910aa3dcf6c4094cea1422468b1c4993` ;
+- moteur zone : `7974069e89be06f172186438c2f0f480822c75cb` ;
+- CI : `37094067391` — SUCCESS ;
+- suite complète : **893/893 PASS, 0 FAIL**.
+
+#### Invariants
+
+- aucune seconde autorité spatiale ;
+- aucune formule de dégâts déplacée ;
+- aucun DOM/renderer dans le gameplay ;
+- aucun timer ou observer ajouté ;
+- aucune condition par `skillId` ;
+- `cap_fire_atk_6` reste une donnée, pas une branche moteur ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
