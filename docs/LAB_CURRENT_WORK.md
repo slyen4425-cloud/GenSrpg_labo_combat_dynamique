@@ -24213,3 +24213,33 @@ Le nom de la capacité source pouvait déjà être retrouvé depuis le registre 
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview final**.
+
+
+## Micro-lot — Status Info Wording V1 — 2026-10-03
+
+Base GREEN : `82dc54f50d976630f33e49f3a9ee4a08d6a4e662`.
+
+Retour utilisateur :
+- la fiche de statut affichait un modificateur brut du type `Physique -50`, trop technique et ambigu.
+
+Correction :
+- aucune règle de calcul ajoutée dans l’UI ;
+- le projecteur de fiche réutilise `projectStatusStatEffectsV1`, donc la même projection que le moteur ;
+- le renderer fournit le fighter autoritaire à la projection de présentation ;
+- un modificateur `physical -50 points` est désormais expliqué par ses conséquences réelles : `Dégâts physiques réduits de 50 %` et `Résistance physique réduite de 50 %` ;
+- les autres canaux/statuts conservent une projection générique, sans branchement par `skillId` ou `statusId`.
+
+TDD :
+- RED : `fb4fb1e7cd496004cc1340f619e8578bd31b38ca`, CI `37123062696` FAILURE attendue ;
+- implémentation : `fb195423f35dedaed2505b1c5cf671474b751a1b` + `64ac3b627c5a35a1d63145832f3876ce1fb39385` ;
+- CI GREEN : `37123163528` — **910/910 PASS, 0 FAIL**.
+
+Invariants :
+- aucune modification des dégâts/statuts/cooldowns ;
+- aucune seconde autorité ;
+- aucun cache/timer/observer ;
+- `StatusEffectV1` inchangé ;
+- `Zombicide-40k` inchangé ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview**.
