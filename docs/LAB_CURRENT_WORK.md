@@ -24724,3 +24724,144 @@ Le job confirme :
 
 Gate restant : validation utilisateur réelle du roster Loup -> Moussados dans le Combat lancé depuis Exploration.
 
+---
+
+# Micro-lot correctif — Player Party Recall Runtime Fix v1 — 2026-10-03
+
+## Base
+- état publié : `0acc4d83725d0873786c96bc880528165c94344c`
+- checkpoint départ : `checkpoint/lab-start-player-party-recall-runtime-fix-v1-2026-10-03`
+- branche : `work/lab-player-party-recall-runtime-fix-v1-2026-10-03`
+
+## Régression utilisateur
+Dans le vrai chemin Exploration -> Encounter -> Combat :
+- deux créatures sont bien présentes dans les icônes de roster ;
+- Rappel démarre correctement ;
+- la barre de charge va au bout ;
+- après résolution, le combat paraît figé ;
+- aucun changement de créature n'est obtenu.
+
+## Invariant d'architecture
+La correction doit rester sur :
+`Combat Runtime command -> command completed -> Roster Session -> Combat Session slot -> Visual Controller`.
+
+Interdits :
+- invocation directe depuis l'UI ;
+- remplacement direct du fighter par l'UI ;
+- second timer ;
+- second roster ;
+- contournement de recovery ;
+- modification de Zombicide-40k.
+
+## Plan TDD
+1. reproduire la séquence réelle avec Combat Runtime + Roster Session + recovery ;
+2. vérifier qu'après Rappel :
+   - activeMemberId = null ;
+   - Moussados reste sélectionné ;
+   - la recovery se termine ;
+   - Invocation devient effectivement lançable ;
+3. reproduire le comportement UI si le Core est GREEN ;
+4. corriger uniquement le premier propriétaire fautif ;
+5. CI complète ;
+6. republier la preview ;
+7. validation utilisateur.
+
+## Diagnostic et correction — Recall Runtime Fix v1
+
+### Reproduction RED
+Test ajouté :
+`real Encounter Runtime releases Recall recovery and allows Summon without another combat action`.
+
+Premier run :
+- commit RED : `95cf16070c617cf938158f64eccabf784923315d` ;
+- CI : `37153509555` — **FAIL attendu**.
+
+Le test reproduit le vrai chemin :
+`Encounter source -> Combat Session -> Combat Runtime -> Rappel -> Roster Session -> recovery -> Invocation`.
+
+### Cause racine
+Le ruleset Encounter démarre le joueur à **2⚡**.
+
+Données de commandes avant correction :
+- Rappel : 2⚡, préparation 1400 ms, recovery 500 ms ;
+- Invocation : 3⚡, préparation 2200 ms, recovery 600 ms.
+
+Conséquence :
+1. Rappel consomme les 2⚡ ;
+2. Roster Session met correctement `activeMemberId = null` ;
+3. Moussados reste correctement sélectionné ;
+4. le Runtime termine correctement la recovery ;
+5. Invocation est refusée avec `insufficient_energy` ;
+6. l'IA Encounter attend volontairement tant qu'aucune créature joueur n'est active ;
+7. l'utilisateur observe un combat apparemment figé.
+
+Le moteur Runtime et le Roster Session n'étaient donc pas fautifs.
+
+### Correction
+- Rappel conserve son coût : **2⚡** ;
+- Invocation devient **0⚡** ;
+- préparation Invocation reste **2200 ms** ;
+- recovery Invocation reste **600 ms** ;
+- aucune invocation instantanée ;
+- aucune mutation directe du fighter par l'UI ;
+- aucun changement de Combat Runtime ;
+- aucun changement de Roster Session.
+
+La chaîne reste :
+`Combat Runtime command -> completed -> Roster Session -> Combat Session slot -> Visual Controller`.
+
+### TDD
+- le test Runtime+Roster RED passe après correction ;
+- les sentinelles historiques ont été adaptées :
+  - contrat Invocation = 0⚡ ;
+  - le test de dépense d'énergie utilise Rappel, qui reste à 2⚡.
+
+### Cache
+Révision publique :
+`player-party-recall-runtime-fix-v1`.
+
+Versionnés explicitement :
+- entrée `exploration-encounter.js` ;
+- import `combat-2v2-test-ui.js` ;
+- URLs JSON Rappel / Invocation.
+
+### HEAD technique
+`9d4aff6cb62d7aeebfdfdd5bc91324f3df9dbe39`
+
+CI :
+`37153748937` — **SUCCESS**.
+
+État : **TECHNIQUE GREEN — publication preview et validation utilisateur restantes**.
+
+## Publication preview — Recall Runtime Fix v1
+
+Preview Combat :
+`preview/lab-player-party-recall-runtime-fix-v1-2026-10-03`
+
+Checkpoint technique :
+`checkpoint/lab-player-party-recall-runtime-fix-v1-prevalidation-green-2026-10-03`
+
+Publication portée par Exploration Pages :
+- PR infra : #62 ;
+- main infra : `561c7592082a401a0d637b138eaf57cef7260b4c` ;
+- Pages run : `37153890466` — **SUCCESS**.
+
+Le job confirme :
+- Checkout Exploration Player Party preview — SUCCESS ;
+- Checkout Combat Recall Runtime Fix preview — SUCCESS ;
+- Checkout Capture global visual assets — SUCCESS ;
+- Upload preview — SUCCESS ;
+- Deploy preview — SUCCESS.
+
+Gate restante :
+validation utilisateur du vrai chemin :
+1. sélectionner Moussados ;
+2. lancer Rappel ;
+3. attendre la fin de préparation/recovery ;
+4. Invocation doit être immédiatement disponible malgré l'énergie à 0 ;
+5. lancer Invocation ;
+6. Moussados doit remplacer le Loup après 2,2 s ;
+7. visuel / PV / skills doivent basculer sur Moussados.
+
+État : **PUBLISHED PREVALIDATION GREEN — validation utilisateur restante**.
+

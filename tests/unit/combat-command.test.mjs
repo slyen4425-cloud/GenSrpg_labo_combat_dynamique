@@ -77,7 +77,7 @@ test("combat command contract keeps item recall and summon separate from skills"
 
   assert.equal(item.energyCost, 1);
   assert.equal(recall.energyCost, 2);
-  assert.equal(summon.energyCost, 3);
+  assert.equal(summon.energyCost, 0);
 
   assert.equal(item.interruptibleDuringPreparation, true);
   assert.equal(recall.interruptibleDuringPreparation, true);
@@ -149,7 +149,7 @@ test("command start is rejected when energy cannot pay its configured cost", () 
   const result = resolveCommandStart({
     state,
     actorId: "maraileron",
-    command: summon
+    command: recall
   });
 
   assert.equal(result.ok, false);

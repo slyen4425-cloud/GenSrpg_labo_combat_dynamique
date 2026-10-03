@@ -86,7 +86,7 @@ test("combat commands have their own typed configurable contract", () => {
   assert.equal(recall.preparationMs, 1400);
 
   assert.equal(summon.kind, "summon");
-  assert.equal(summon.energyCost, 3);
+  assert.equal(summon.energyCost, 0);
   assert.equal(summon.preparationMs, 2200);
   assert.equal(summon.effect.summonCreatureId, null);
 });
@@ -173,15 +173,15 @@ test("runtime charges a command on the same clock as skills", () => {
   runtime.start();
   const started = runtime.startCommand({
     actorId: "maraileron",
-    command: summon
+    command: recall
   });
 
   assert.equal(started.ok, true);
   assert.equal(started.action.actionType, "command");
-  assert.equal(session.snapshot().fighters.maraileron.energy, 7);
+  assert.equal(session.snapshot().fighters.maraileron.energy, 8);
   assert.equal(runtime.hasActiveAction, true);
 
-  clock.setTime(2199);
+  clock.setTime(1399);
   clock.fireNext();
 
   assert.equal(resolutions.length, 0);
@@ -189,16 +189,16 @@ test("runtime charges a command on the same clock as skills", () => {
   assert.ok(
     progress.some(
       (value) =>
-        value.commandId === "summon" &&
+        value.commandId === "recall" &&
         value.phase === "preparation"
     )
   );
 
-  clock.setTime(2200);
+  clock.setTime(1400);
   clock.fireNext();
 
   assert.equal(resolutions.length, 1);
-  assert.equal(resolutions[0].commandKind, "summon");
+  assert.equal(resolutions[0].commandKind, "recall");
   assert.equal(runtime.hasActiveAction, false);
 
   runtime.dispose();
