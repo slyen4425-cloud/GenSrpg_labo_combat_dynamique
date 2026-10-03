@@ -106,23 +106,26 @@ test("preview party ref resolves explicitly to Maraileron without changing oppon
 test("bridge rejects unknown party refs instead of inventing a player roster", async () => {
   const raw = snapshot();
   raw.player.partyRef = "unknown-party";
+  const sourceRecords = await records();
 
   assert.throws(
     () =>
       buildExplorationEncounterCombatSourceV1({
         snapshot: raw,
-        creatureRecords: await records()
+        creatureRecords: sourceRecords
       }),
     /partyRef/
   );
 });
 
 test("bridge rejects an unknown encountered creature instead of substituting a demo fighter", async () => {
+  const sourceRecords = await records();
+
   assert.throws(
     () =>
       buildExplorationEncounterCombatSourceV1({
         snapshot: snapshot("crea_missing"),
-        creatureRecords: await records()
+        creatureRecords: sourceRecords
       }),
     /opponent/
   );
