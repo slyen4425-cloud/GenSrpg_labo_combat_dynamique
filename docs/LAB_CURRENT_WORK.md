@@ -24594,3 +24594,21 @@ Gate restante :
 validation utilisateur visuelle des icônes / cast / projectile / impact / zone / statuts depuis le vrai chemin Exploration -> Encounter -> Combat.
 
 État : **TECHNIQUE GREEN — PREVALIDATION UTILISATEUR**.
+
+### Validation utilisateur finale — présentation Loup dans Encounter
+
+Retour utilisateur du 2026-10-03 :
+- test du vrai chemin Exploration -> Encounter -> Combat effectué ;
+- icônes / sprites / effets visuels configurés désormais présents ;
+- verdict utilisateur : **parfait**.
+
+Le lot est donc validé fonctionnellement et visuellement.
+
+Aucune nouvelle autorité n'a été introduite :
+- gameplay : moteur Combat existant ;
+- données créature : transfer Capture configuré ;
+- présentation skill : bindings configurés exportés ;
+- assets : bibliothèque globale ;
+- fallback démo uniquement pour les skills sans binding configuré.
+
+État : **GREEN utilisateur**.
