@@ -407,6 +407,65 @@ function formatEnergy(value) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
 }
 
+export function resolveBattleOutcomeV1({
+  format,
+  state
+}) {
+  if (
+    !format ||
+    !Array.isArray(format.actors) ||
+    !state?.fighters
+  ) {
+    return null;
+  }
+
+  const localActor =
+    format.actors.find(
+      (actor) =>
+        actor.actorId === format.localActorId
+    ) ?? null;
+
+  if (!localActor) {
+    return null;
+  }
+
+  const localTeamId = localActor.teamId;
+  const teamIds = Object.keys(format.teams ?? {});
+  const enemyTeamId =
+    teamIds.find(
+      (teamId) => teamId !== localTeamId
+    ) ?? null;
+
+  if (!enemyTeamId) {
+    return null;
+  }
+
+  const teamDefeated = (teamId) => {
+    const actorIds =
+      format.teams?.[teamId] ?? [];
+
+    return (
+      actorIds.length > 0 &&
+      actorIds.every(
+        (actorId) =>
+          Number(
+            state.fighters?.[actorId]?.hp
+          ) <= 0
+      )
+    );
+  };
+
+  if (teamDefeated(enemyTeamId)) {
+    return "victory";
+  }
+
+  if (teamDefeated(localTeamId)) {
+    return "defeat";
+  }
+
+  return null;
+}
+
 function relationLabel(relation) {
   if (relation === "ally") {
     return "allié";
@@ -423,11 +482,21 @@ export async function mountCoop2v2Test({
   presentationAssets = null,
   fetchImpl = fetch,
   formatUrl = DATA_URLS.format,
-  nativeCombatSource = null
+  nativeCombatSource = null,
+  onBattleEnd = null
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
   }
+  if (
+    onBattleEnd !== null &&
+    typeof onBattleEnd !== "function"
+  ) {
+    throw new TypeError(
+      "onBattleEnd must be a function when supplied"
+    );
+  }
+
   if (
     !visuals ||
     typeof visuals.setCreatureFor !== "function" ||
@@ -552,6 +621,7 @@ export async function mountCoop2v2Test({
   let selectedTargetId = previewFormat.initialTargetId;
   let runtime = null;
   let aiDecisionQueued = false;
+  let battleEnded = false;
 
   for (const actor of format.actors) {
     visuals.setCreatureFor(
@@ -1059,7 +1129,12 @@ export async function mountCoop2v2Test({
   );
 
   function queueAiDecisions() {
-    if (disposed || aiDecisionQueued || !runtime) {
+    if (
+      disposed ||
+      battleEnded ||
+      aiDecisionQueued ||
+      !runtime
+    ) {
       return;
     }
 
@@ -1196,14 +1271,46 @@ export async function mountCoop2v2Test({
       }
 
       void Promise.resolve(presentation.finished).then(() => {
-        renderState();
-      });
+        const state = session.snapshot();
+        renderState(state);
 
-      aiReadyAt.set(
-        resolution.actorId,
-        Number(session.snapshot().elapsedMs) + 900
-      );
-      queueAiDecisions();
+        if (!battleEnded) {
+          const outcome =
+            resolveBattleOutcomeV1({
+              format,
+              state
+            });
+
+          if (outcome !== null) {
+            battleEnded = true;
+            for (const { button } of skillRefs.values()) {
+              button.disabled = true;
+            }
+            setStatus(
+              outcome === "victory"
+                ? "Combat remporté."
+                : "Équipe vaincue.",
+              outcome === "victory"
+                ? "ok"
+                : "warn"
+            );
+            onBattleEnd?.(
+              Object.freeze({
+                outcome,
+                state,
+                format
+              })
+            );
+            return;
+          }
+        }
+
+        aiReadyAt.set(
+          resolution.actorId,
+          Number(state.elapsedMs) + 900
+        );
+        queueAiDecisions();
+      });
     },
     onInterrupted(result) {
       const actorId = result.action?.actorId;
