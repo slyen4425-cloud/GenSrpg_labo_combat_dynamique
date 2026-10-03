@@ -238,6 +238,7 @@ test("visual metadata enriches an imported creature with face back icon scale pr
     enriched.draft.presentation.sockets.find(
       (socket) => socket.id === "mouth"
     );
+  assert.equal(enriched.draft.presentation.viewOverrides.opponent.displayScale, 0.92);
   assert.deepEqual(mouth.front, {
     x: 0.22,
     y: 0.47

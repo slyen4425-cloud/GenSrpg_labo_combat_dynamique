@@ -1,6 +1,7 @@
 import {
   normalizeCaptureCreatureEditorDraftV3
 } from "../contracts/capture-creature-editor-draft-v3.js";
+import { captureCreatureViewOverridesFromMetaV1 } from "../adapters/input/capture/capture-creature-visual-binding-v1.js";
 
 const ENEMY_SKILL_IDS = Object.freeze([
   "enemy-hit",
@@ -245,6 +246,10 @@ export function buildCaptureTestOpponentDraftV1({
       subjectId: "crea-enemy",
       profileId: option.profileId,
       displayScale,
+      position: creatureMeta.offset ?? { x: 0, y: 0 },
+      viewOverrides: captureCreatureViewOverridesFromMetaV1(creatureMeta, {
+        displayScale, position: creatureMeta.offset ?? { x: 0, y: 0 }
+      }),
       visual: {
         front: { assetId: option.assets.front },
         back: { assetId: option.assets.back },

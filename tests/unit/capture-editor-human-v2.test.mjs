@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import {
   normalizedSocketPointV2,
   buildHumanCreatureDraftV2,
+  buildHumanCreatureDraftV3,
   buildHumanSkillDraftV1,
   buildHumanLoadoutV1,
   buildHumanBattleSetupV1,
@@ -221,6 +222,33 @@ test("human editor converts touch/click geometry to normalized socket coordinate
     { x: 0, y: 1 }
   );
 });
+
+test("creature views: human draft and Transfer preserve both views and common defaults without changing combat", async () => {
+  const { exportCaptureCreatureTransferJsonV1, importCaptureTransferJsonV1 } = await import("../../src/adapters/input/capture/capture-entity-transfer-v1.js");
+  const statRegistry = JSON.parse(await readFile(new URL("../../data/capture/monster-capture-stat-registry.v1.json", import.meta.url), "utf8"));
+  const baseline = buildHumanCreatureDraftV3({ ...creatureFields(), displayScale: 1.2 });
+  const draft = buildHumanCreatureDraftV3({
+    ...creatureFields(), displayScale: 1.2,
+    viewOverrides: {
+      player: { displayScale: 1.5, position: { x: 20, y: -10 } },
+      opponent: { displayScale: 0.8, position: { x: -15, y: 8 } }
+    }
+  });
+  assert.deepEqual(draft.combat, baseline.combat);
+  assert.deepEqual(draft.presentation.sockets, baseline.presentation.sockets);
+  const record = {
+    draft,
+    statValues: { schema: "capture-creature-stat-values-v1", creatureId: draft.id, values: {} },
+    loadout: { schema: "capture-active-skill-loadout-v1", creatureId: draft.id,
+      slots: [ { id: "slot-1", skillId: "fireball" }, { id: "slot-2", skillId: "claw" },
+        { id: "slot-3", skillId: null }, { id: "slot-4", skillId: null } ] }
+  };
+  const transfer = exportCaptureCreatureTransferJsonV1(record, { statRegistry });
+  const restored = importCaptureTransferJsonV1(transfer, { statRegistry });
+  assert.deepEqual(restored.value.draft.presentation, draft.presentation);
+  assert.equal("viewOverrides" in baseline.presentation, false);
+});
+
 
 test("human creature form produces CaptureCreatureEditorDraftV2 without technical JSON", () => {
   const draft = buildHumanCreatureDraftV2(creatureFields());

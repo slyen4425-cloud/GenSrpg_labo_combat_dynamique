@@ -5,7 +5,8 @@ import {
   normalizeCreaturePresentationBindingV1
 } from "../../../contracts/creature-presentation-binding-v1.js";
 import {
-  normalizeCreaturePresentationBindingV2
+  normalizeCreaturePresentationBindingV2,
+  creaturePresentationForViewV2
 } from "../../../contracts/creature-presentation-binding-v2.js";
 import {
   validateCreatureProfile
@@ -184,10 +185,10 @@ export function adaptCaptureExportToNativeVisualSourceV1({
             binding.visual.icon.assetId
           );
 
-    const displayScale =
-      binding.version === 2
-        ? binding.displayScale
-        : 1;
+    const viewSettings = Object.fromEntries(["player", "opponent"].map(view => [view,
+      binding.version === 2 ? creaturePresentationForViewV2(binding, view)
+        : { displayScale: 1, position: { x: 0, y: 0 } }
+    ]));
 
     return Object.freeze({
       id: creature.id,
@@ -205,8 +206,12 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       }),
       assetBaseUrl: safeBaseUrl(frontUrl),
       displayScale: Object.freeze({
-        player: displayScale,
-        opponent: displayScale
+        player: viewSettings.player.displayScale,
+        opponent: viewSettings.opponent.displayScale
+      }),
+      offsetByView: Object.freeze({
+        player: viewSettings.player.position,
+        opponent: viewSettings.opponent.position
       }),
       offset: Object.freeze(
         binding.version === 2

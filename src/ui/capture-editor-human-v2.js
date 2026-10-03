@@ -1434,6 +1434,7 @@ export function buildHumanCreatureDraftV3(fields) {
             ...base.presentation,
             version: 2,
             displayScale,
+            ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
               fields?.position ?? {
                 x: 0,
@@ -2656,6 +2657,9 @@ function writeCreatureRecordFields(
   const draft = record.draft;
   const loadout = record.loadout;
   const presentation = draft.presentation;
+  one(root, "[data-creature-custom-views]").checked = Boolean(
+    presentation?.viewOverrides && Object.keys(presentation.viewOverrides).length
+  );
 
   const fields = [
     ["[data-creature-id]", draft.id],
@@ -2670,6 +2674,12 @@ function writeCreatureRecordFields(
       "[data-creature-display-scale]",
       presentation?.displayScale ?? 1
     ],
+    ["[data-creature-player-scale]", presentation?.viewOverrides?.player?.displayScale ?? presentation?.displayScale ?? 1],
+    ["[data-creature-opponent-scale]", presentation?.viewOverrides?.opponent?.displayScale ?? presentation?.displayScale ?? 1],
+    ["[data-creature-player-x]", presentation?.viewOverrides?.player?.position?.x ?? presentation?.position?.x ?? 0],
+    ["[data-creature-player-y]", presentation?.viewOverrides?.player?.position?.y ?? presentation?.position?.y ?? 0],
+    ["[data-creature-opponent-x]", presentation?.viewOverrides?.opponent?.position?.x ?? presentation?.position?.x ?? 0],
+    ["[data-creature-opponent-y]", presentation?.viewOverrides?.opponent?.position?.y ?? presentation?.position?.y ?? 0],
     [
       "[data-capture-rate]",
       draft.capture.captureRate
@@ -2843,6 +2853,7 @@ function prepareNewCreatureDraftFields(
   sockets,
   statRegistry = null
 ) {
+  one(root, "[data-creature-custom-views]").checked = false;
   const defaults = [
     ["[data-creature-id]", id],
     ["[data-creature-name]", "Nouvelle créature"],
@@ -2850,6 +2861,12 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-level]", 1],
     ["[data-creature-profile]", "biped"],
     ["[data-creature-display-scale]", 1],
+    ["[data-creature-player-scale]", 1],
+    ["[data-creature-opponent-scale]", 1],
+    ["[data-creature-player-x]", 0],
+    ["[data-creature-player-y]", 0],
+    ["[data-creature-opponent-x]", 0],
+    ["[data-creature-opponent-y]", 0],
     ["[data-creature-front-select]", ""],
     ["[data-creature-back-select]", ""],
     ["[data-creature-icon-select]", ""],
@@ -5607,14 +5624,30 @@ async function hydrateAssetCatalog(root, listen) {
     scaleOutput.textContent =
       scale.toFixed(2) + "×";
 
-    for (const image of [
-      frontImage,
-      backImage,
-      socketFrontImage,
-      socketBackImage
+    const custom = one(root, "[data-creature-custom-views]").checked;
+    one(root, "[data-creature-view-settings]").hidden = !custom;
+    for (const [view, images] of [
+      ["opponent", [frontImage, socketFrontImage]],
+      ["player", [backImage, socketBackImage]]
     ]) {
-      image.style.transform =
-        `scale(${scale})`;
+      const viewScale = one(root, "[data-creature-" + view + "-scale]");
+      if (!custom) viewScale.value = String(scale);
+      for (const axis of ["scale", "x", "y"]) {
+        one(root, "[data-creature-" + view + "-" + axis + "]").disabled = !custom;
+      }
+      const resolvedScale = custom ? Number(viewScale.value) || scale : scale;
+      const x = custom ? numericValue(root, "[data-creature-" + view + "-x]") : 0;
+      const y = custom ? numericValue(root, "[data-creature-" + view + "-y]") : 0;
+      for (const image of images) {
+        image.style.transform = `translate(${x}px, ${y}px) scale(${resolvedScale})`;
+      }
+    }
+  }
+
+  listen(one(root, "[data-creature-custom-views]"), "change", syncScalePreview);
+  for (const view of ["player", "opponent"]) {
+    for (const axis of ["scale", "x", "y"]) {
+      listen(one(root, "[data-creature-" + view + "-" + axis + "]"), "input", syncScalePreview);
     }
   }
 
@@ -5894,6 +5927,15 @@ function readCreatureFields(
       root,
       "[data-creature-display-scale]"
     ),
+    ...(one(root, "[data-creature-custom-views]").checked ? {
+      viewOverrides: Object.fromEntries(["player", "opponent"].map(view => [view, {
+        displayScale: numericValue(root, "[data-creature-" + view + "-scale]"),
+        position: {
+          x: numericValue(root, "[data-creature-" + view + "-x]"),
+          y: numericValue(root, "[data-creature-" + view + "-y]")
+        }
+      }]))
+    } : {}),
     visual: {
       frontAssetId: selectedValue(
         root,

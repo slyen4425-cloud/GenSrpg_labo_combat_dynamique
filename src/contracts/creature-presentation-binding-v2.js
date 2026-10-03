@@ -12,6 +12,7 @@ const TOP_LEVEL_FIELDS = new Set([
   "profileId",
   "displayScale",
   "position",
+  "viewOverrides",
   "transformOrigin",
   "visual",
   "sockets",
@@ -143,6 +144,32 @@ function toV1Input(value) {
   };
 }
 
+function normalizeViewOverrides(value) {
+  const views = objectValue(value, "viewOverrides");
+  assertKnownFields(views, new Set(["player", "opponent"]), "viewOverrides");
+  return Object.freeze(Object.fromEntries(Object.entries(views).map(([view, raw]) => {
+    const settings = objectValue(raw, "viewOverrides." + view);
+    assertKnownFields(settings, new Set(["displayScale", "position"]), "viewOverrides." + view);
+    return [view, Object.freeze({
+      ...(settings.displayScale == null ? {} : {
+        displayScale: positiveFiniteNumber(settings.displayScale, "viewOverrides." + view + ".displayScale")
+      }),
+      ...(settings.position == null ? {} : { position: normalizePosition(settings.position) })
+    })];
+  })));
+}
+
+export function creaturePresentationForViewV2(binding, view) {
+  if (!["player", "opponent"].includes(view)) {
+    throw new RangeError("Unsupported creature view: " + view);
+  }
+  const override = binding.viewOverrides?.[view];
+  return Object.freeze({
+    displayScale: override?.displayScale ?? binding.displayScale,
+    position: override?.position ?? binding.position
+  });
+}
+
 export function normalizeCreaturePresentationBindingV2(input) {
   const value = objectValue(
     input,
@@ -183,6 +210,9 @@ export function normalizeCreaturePresentationBindingV2(input) {
     position: normalizePosition(
       value.position
     ),
+    ...(value.viewOverrides == null ? {} : {
+      viewOverrides: normalizeViewOverrides(value.viewOverrides)
+    }),
     transformOrigin:
       normalizeTransformOrigin(
         value.transformOrigin

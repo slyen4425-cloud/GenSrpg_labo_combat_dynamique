@@ -811,7 +811,7 @@ function createSlot({
       asset,
       view,
       scale: meta.displayScale?.[view] ?? meta.scale ?? 1,
-      position: meta.offset ?? { x: 0, y: 0 },
+      position: meta.offsetByView?.[view] ?? meta.offset ?? { x: 0, y: 0 },
       transformOrigin:
         meta.transformOrigin ?? { x: "50%", y: "50%" }
     });

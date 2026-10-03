@@ -124,6 +124,30 @@ function socketsFromMeta(meta) {
   return sockets;
 }
 
+export function captureCreatureViewOverridesFromMetaV1(meta, common) {
+  const overrides = {};
+  for (const view of ["player", "opponent"]) {
+    const settings = {};
+    const rawScale = meta.displayScale?.[view];
+    if (rawScale != null) {
+      const scale = positiveNumber(rawScale, "creatureMeta.displayScale." + view);
+      if (scale !== common.displayScale) settings.displayScale = scale;
+    }
+    const rawPosition = meta.offsetByView?.[view];
+    if (rawPosition != null) {
+      const position = {
+        x: Number(rawPosition.x ?? common.position?.x ?? 0),
+        y: Number(rawPosition.y ?? common.position?.y ?? 0)
+      };
+      if (position.x !== (common.position?.x ?? 0) || position.y !== (common.position?.y ?? 0)) {
+        settings.position = position;
+      }
+    }
+    if (Object.keys(settings).length) overrides[view] = settings;
+  }
+  return overrides;
+}
+
 export function applyCaptureCreatureVisualBindingV1({
   record,
   binding,
@@ -247,6 +271,9 @@ export function applyCaptureCreatureVisualBindingV1({
     audio:
       draft.presentation?.audio ?? {}
   };
+
+  const viewOverrides = captureCreatureViewOverridesFromMetaV1(meta, presentation);
+  if (Object.keys(viewOverrides).length) presentation.viewOverrides = viewOverrides;
 
   return Object.freeze({
     draft:

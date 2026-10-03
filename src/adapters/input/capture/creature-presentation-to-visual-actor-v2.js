@@ -1,5 +1,6 @@
 import {
-  normalizeCreaturePresentationBindingV2
+  normalizeCreaturePresentationBindingV2,
+  creaturePresentationForViewV2
 } from "../../../contracts/creature-presentation-binding-v2.js";
 import {
   normalizeVisualActor
@@ -34,11 +35,12 @@ export function adaptCreaturePresentationBindingV2ToVisualActor({
     );
   }
 
+  const view = creaturePresentationForViewV2(presentation, actor.view ?? "opponent");
   return normalizeVisualActor({
     ...actor,
     profile: presentation.profileId,
-    scale: presentation.displayScale,
-    position: presentation.position,
+    scale: view.displayScale,
+    position: view.position,
     transformOrigin:
       presentation.transformOrigin
   });

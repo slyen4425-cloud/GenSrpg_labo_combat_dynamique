@@ -194,6 +194,16 @@
             value="1"
           >
         </label>
+        <label class="check"><input type="checkbox" data-creature-custom-views>Personnaliser la taille et le placement par vue</label>
+        <div class="grid two" data-creature-view-settings hidden>
+          <label>Taille — joueur (dos)<input type="number" min="0.25" step="0.05" value="1" data-creature-player-scale></label>
+          <label>Taille — adversaire (face)<input type="number" min="0.25" step="0.05" value="1" data-creature-opponent-scale></label>
+          <label>Décalage X — joueur (px)<input type="number" step="5" value="0" data-creature-player-x></label>
+          <label>Décalage X — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-x></label>
+          <label>Décalage Y — joueur (px)<input type="number" step="5" value="0" data-creature-player-y></label>
+          <label>Décalage Y — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-y></label>
+        </div>
+        <p class="note">Sans personnalisation, les deux vues utilisent la taille commune. Les réglages par vue ajustent les images face/dos ; la perspective des déplacements reste automatique.</p>
       </article>
 
       <article class="card">
