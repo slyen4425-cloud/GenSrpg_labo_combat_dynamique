@@ -659,6 +659,9 @@ export async function mountCoop2v2Test({
               skillId,
               context
             );
+          },
+          skillDefinitionFor(skillId) {
+            return skillsById[skillId] ?? null;
           }
         })
       : null;
