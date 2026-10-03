@@ -216,6 +216,7 @@ export function createDomStatusFxRenderer({
     actorId,
     statusId,
     instance,
+    fighter,
     target,
     presentation,
     elapsedMs,
@@ -336,7 +337,8 @@ export function createDomStatusFxRenderer({
       instance,
       elapsedMs,
       sourceSkill:
-        sourceSkillDefinition
+        sourceSkillDefinition,
+      fighter
     });
     record.currentInfo = info;
     const sourceSkillIcon =
@@ -463,6 +465,7 @@ export function createDomStatusFxRenderer({
           actorId,
           statusId,
           instance,
+          fighter,
           target,
           presentation,
           elapsedMs:
