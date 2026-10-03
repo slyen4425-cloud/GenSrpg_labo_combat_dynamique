@@ -24610,3 +24610,9 @@ Protégés : Rules, Session, Runtime, SkillDefinition, dégâts, vitesses gamepl
 Aucun nouveau catalogue, moteur, timer, observer, branche par skillId/créature.
 TDD avant chaque implémentation ; sentinelles perspective/retour/contact, CI complète et preview réelle. GREEN artistique seulement après validation utilisateur.
 État : diagnostic source projectile confirmé (8 × 45 ms = 360 ms, mode once forcé par l'éditeur), périmètre déclaré avant codage.
+
+
+### Complément de périmètre après contrôle navigateur
+
+La grille CSS rendait visibles les nouveaux réglages désactivés malgré hidden : correction strictement ciblée dans le HTML autorisé, vérifiée display:none après publication fe63caef15c9af6a9ae183e6b6237866152df5d6.
+La sélection du même modèle configuré dans les deux camps révèle « duplicate creature draft id: crea-loup ». Pour vérifier sa calibration player/opponent en vrai combat, le périmètre UI inclut l’assemblage du seul export de preview : partager les définitions strictement identiques déjà présentes dans les deux camps, conserver deux instances de combattants, garder le rejet canonique de définitions différentes portant le même ID. Aucun changement d’Exporter, Runtime, règles ou stockage. Test de régression RED avant correction : créature/configuration/statValues identiques deux fois, puis conflit explicite conservé.

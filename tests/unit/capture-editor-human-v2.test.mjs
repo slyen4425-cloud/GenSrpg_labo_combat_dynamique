@@ -9,7 +9,8 @@ import {
   buildHumanSkillDraftV1,
   buildHumanLoadoutV1,
   buildHumanBattleSetupV1,
-  buildHumanEditorExportV2
+  buildHumanEditorExportV2,
+  buildHumanEditorExportV3
 } from "../../src/ui/capture-editor-human-v2.js";
 
 function creatureFields() {
@@ -249,6 +250,32 @@ test("creature views: human draft and Transfer preserve both views and common de
   assert.equal("viewOverrides" in baseline.presentation, false);
 });
 
+
+test("human preview shares one configured creature across both camps and keeps conflicting duplicates invalid", async () => {
+  const draft = buildHumanCreatureDraftV3({
+    ...creatureFields(), linkedSkillIds: ["fireball"],
+    viewOverrides: {
+      player: { displayScale: 1.2, position: { x: 20, y: -10 } },
+      opponent: { displayScale: 0.8, position: { x: -15, y: 8 } }
+    }
+  });
+  const loadout = buildHumanLoadoutV1({ creatureId: draft.id, skillIds: ["fireball", null, null, null] });
+  const statRegistry = JSON.parse(await readFile(new URL("../../data/capture/monster-capture-stat-registry.v1.json", import.meta.url), "utf8"));
+  const values = { schema: "capture-creature-stat-values-v1", creatureId: draft.id, values: {} };
+  const input = {
+    creatureDraft: draft, opponentCreatureDraft: structuredClone(draft),
+    skillDrafts: [buildHumanSkillDraftV1(skillFields())], opponentSkillDrafts: [],
+    loadout, opponentLoadout: structuredClone(loadout), statRegistry, statValues: [values, structuredClone(values)],
+    battleSetup: buildHumanBattleSetupV1({ battleId: "shared-model-preview", localCreatureId: draft.id,
+      opponentCreatureId: draft.id, localDisplayName: draft.displayName, opponentDisplayName: draft.displayName, activePerTeam: 1 })
+  };
+  const exported = buildHumanEditorExportV3(input);
+  assert.equal(exported.creatures.length, 1);
+  assert.equal(exported.actors.length, 2);
+  assert.notEqual(exported.actors[0].id, exported.actors[1].id);
+  assert.deepEqual(exported.creaturePresentations[0].viewOverrides, draft.presentation.viewOverrides);
+  assert.throws(() => buildHumanEditorExportV3({ ...input, opponentCreatureDraft: { ...draft, displayName: "Conflicting definition" } }), /duplicate creature draft id/i);
+});
 
 test("human creature form produces CaptureCreatureEditorDraftV2 without technical JSON", () => {
   const draft = buildHumanCreatureDraftV2(creatureFields());
