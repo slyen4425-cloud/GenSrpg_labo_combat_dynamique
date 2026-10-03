@@ -23804,3 +23804,58 @@ Aucun type de dégâts n'est recalculé ou détecté dans l'UI.
 - suite complète GREEN.
 
 État : **LOT OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Persistent Zone Damage Feedback V1
+
+#### Cause corrigée
+
+Le nombre de dégâts flottant utilisait le `targetAnchor` stable du slot.
+Pendant une attaque/approche, le modèle animé se déplace via `[data-demo-motion]`, donc le `-X` pouvait rester affiché au camp de départ.
+
+#### Nouveau chemin
+
+`Combat Runtime onHealthDelta ->`
+- `dom-skill-fx` : nombre `-X` ancré sur le **live motion anchor** ;
+- `dom-damage-feedback` : scintillement court de l'image du modèle.
+
+Le scintillement anime uniquement `fighter__image`.
+Il ne touche jamais au `fighter__motion`, donc il ne peut pas annuler ou remplacer :
+- déplacement ;
+- approche ;
+- attaque ;
+- recul/animation de profil.
+
+La même chaîne est utilisée pour :
+- attaque directe ;
+- DoT ;
+- dégâts de zone persistante ;
+- toute autre perte réelle de PV.
+
+Aucune détection de type de dégâts n'est ajoutée à l'UI.
+
+#### Validation
+
+- RED : `df437750683c777d4d87fc9732d365686b6efcd4` — FAILURE attendue ;
+- renderer flash : `6a2bf78b33133fc96305e1185c628201e6ff5d9a` ;
+- ancrage live : `992cc9e840250a8d1bbdec1e5a2b8fcd7691361b` ;
+- raccord 1v1 : `c685f691d3a2a67b46aebd72ea720de3ea297609` ;
+- raccord 2v2 : `69b7f4fb542f7c77f957901f61d4ac713d3c9850` ;
+- sentinelle corrigée : `14a17e4948cee9d8bf04718fb8d2022bf6214736` ;
+- CI : `37100163541` — SUCCESS ;
+- suite complète : **896/896 PASS, 0 FAIL**.
+
+#### Invariants
+
+- dégâts/HP toujours propriétaires du gameplay existant ;
+- `onHealthDelta` reste l'unique source du feedback ;
+- aucun second moteur de dégâts ;
+- aucun timer global ;
+- aucun observer ;
+- aucune branche par skillId/zoneId ;
+- Persistent Zone Runtime inchangé ;
+- Action Resolver inchangé ;
+- `Zombicide-40k` inchangé ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
