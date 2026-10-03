@@ -1,3 +1,7 @@
+import {
+  projectStatusStatEffectsV1
+} from "../../core/combat/status-effect-projection-v1.js";
+
 const POLARITY_LABELS = Object.freeze({
   beneficial: "Buff",
   detrimental: "Debuff",
@@ -72,7 +76,162 @@ function signedNumber(value, suffix = "") {
   );
 }
 
-function effectLinesFor(definition, instance) {
+function channelDamageLabel(channel) {
+  switch (String(channel ?? "").trim()) {
+    case "physical":
+      return "Dégâts physiques";
+    case "fire":
+      return "Dégâts de Feu";
+    case "water":
+      return "Dégâts d’Eau";
+    case "earth":
+      return "Dégâts de Terre";
+    case "air":
+      return "Dégâts d’Air";
+    case "electric":
+    case "electricity":
+      return "Dégâts électriques";
+    case "light":
+      return "Dégâts de Lumière";
+    case "shadow":
+      return "Dégâts d’Ombre";
+    case "poison":
+      return "Dégâts de Poison";
+    default:
+      return "Dégâts " + channelLabel(channel);
+  }
+}
+
+function channelResistanceLabel(channel) {
+  switch (String(channel ?? "").trim()) {
+    case "physical":
+      return "Résistance physique";
+    case "fire":
+      return "Résistance au Feu";
+    case "water":
+      return "Résistance à l’Eau";
+    case "earth":
+      return "Résistance à la Terre";
+    case "air":
+      return "Résistance à l’Air";
+    case "electric":
+    case "electricity":
+      return "Résistance à l’Électricité";
+    case "light":
+      return "Résistance à la Lumière";
+    case "shadow":
+      return "Résistance à l’Ombre";
+    case "poison":
+      return "Résistance au Poison";
+    default:
+      return "Résistance " + channelLabel(channel);
+  }
+}
+
+function variationLine(label, value, {
+  positiveWord = "augmentés",
+  negativeWord = "réduits"
+} = {}) {
+  const number = finiteNumber(value);
+  if (number === 0) {
+    return null;
+  }
+  return (
+    label +
+    " " +
+    (number > 0 ? positiveWord : negativeWord) +
+    " de " +
+    compactNumber(Math.abs(number)) +
+    " %"
+  );
+}
+
+function semanticStatModifierLines({
+  definition,
+  instance,
+  fighter,
+  elapsedMs
+}) {
+  const statId = String(definition.statId ?? "").trim();
+  if (
+    !fighter ||
+    typeof fighter !== "object" ||
+    !statId ||
+    !fighter.statEffectRulesById?.[statId]
+  ) {
+    return null;
+  }
+
+  const effects = projectStatusStatEffectsV1({
+    fighter: {
+      ...fighter,
+      statusEffects: [instance]
+    },
+    atMs: elapsedMs
+  });
+  const lines = [];
+
+  for (
+    const [channel, value] of
+    Object.entries(effects.damagePctByChannel)
+  ) {
+    const line = variationLine(
+      channelDamageLabel(channel),
+      value
+    );
+    if (line) {
+      lines.push(line);
+    }
+  }
+
+  for (
+    const [channel, value] of
+    Object.entries(effects.resistancePctByChannel)
+  ) {
+    const line = variationLine(
+      channelResistanceLabel(channel),
+      value,
+      {
+        positiveWord: "augmentée",
+        negativeWord: "réduite"
+      }
+    );
+    if (line) {
+      lines.push(line);
+    }
+  }
+
+  if (effects.chargeTimeReductionPct !== 0) {
+    lines.push(
+      variationLine(
+        "Temps de préparation",
+        effects.chargeTimeReductionPct,
+        {
+          positiveWord: "réduit",
+          negativeWord: "augmenté"
+        }
+      )
+    );
+  }
+
+  if (effects.damageReductionPct !== 0) {
+    lines.push(
+      variationLine(
+        "Dégâts reçus",
+        effects.damageReductionPct
+      )
+    );
+  }
+
+  return Object.freeze(lines);
+}
+
+function effectLinesFor(
+  definition,
+  instance,
+  fighter,
+  elapsedMs
+) {
   switch (definition.kind) {
     case "damage_over_time":
       return Object.freeze([
@@ -91,6 +250,20 @@ function effectLinesFor(definition, instance) {
       ]);
 
     case "stat_modifier": {
+      const semanticLines =
+        semanticStatModifierLines({
+          definition,
+          instance,
+          fighter,
+          elapsedMs
+        });
+      if (
+        semanticLines &&
+        semanticLines.length > 0
+      ) {
+        return semanticLines;
+      }
+
       const stat =
         humanIdentifier(definition.statId);
       if (definition.modifierMode === "percent") {
@@ -181,7 +354,8 @@ function remainingLabelFor(
 export function projectStatusEffectInfoV1({
   instance,
   elapsedMs = 0,
-  sourceSkill = null
+  sourceSkill = null,
+  fighter = null
 }) {
   if (
     !instance ||
@@ -248,7 +422,9 @@ export function projectStatusEffectInfoV1({
         : null,
     effectLines: effectLinesFor(
       definition,
-      instance
+      instance,
+      fighter,
+      elapsedMs
     )
   });
 }
