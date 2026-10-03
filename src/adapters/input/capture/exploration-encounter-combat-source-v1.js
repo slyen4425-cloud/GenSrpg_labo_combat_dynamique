@@ -332,6 +332,17 @@ export function buildExplorationEncounterCombatSourceV1({
       snapshot.rules.rulesetId
     );
 
+  if (
+    !PREVIEW_PARTIES[
+      snapshot.player.partyRef
+    ]
+  ) {
+    throw new RangeError(
+      "unsupported preview partyRef: " +
+        snapshot.player.partyRef
+    );
+  }
+
   const registry =
     normalizeCaptureStatRegistryV1(
       statRegistry
