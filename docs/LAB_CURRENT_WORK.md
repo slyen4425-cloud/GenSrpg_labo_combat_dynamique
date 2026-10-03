@@ -23551,3 +23551,56 @@ Le Presenter reste l'unique propriétaire du timing de présentation :
 `Runtime events -> Presenter -> FX + Audio`.
 
 État : **LOT OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Combat Audio Sync V1
+
+#### Cast
+
+Avant :
+`presentRelease() -> cancelPreparation() -> stop cast audio`.
+
+Un son non bouclé pouvait donc être coupé au release, surtout sur une préparation courte ou nulle.
+
+Après :
+- cast `loop: false` : démarre à la préparation et finit naturellement ;
+- cast `loop: true` : s'arrête au release ;
+- interruption/cancel/dispose : arrêtent toujours le cast actif.
+
+Le handle audio expose désormais uniquement son état `loop` au Presenter ; aucune nouvelle autorité ni horloge n'est créée.
+
+#### Impact
+
+Avant :
+- audio impact uniquement pour `outcome === "hit"`.
+
+Après :
+- le son impact est déclenché dans la même boucle que `planSkillOutcomeFx()`, juste après le plan FX `type: "impact"` ;
+- couvre : `hit`, `blocked`, `reflected`, `immune` ;
+- ne s'invente pas pour `evaded` ni `clashed`.
+
+Chaîne :
+`Runtime resolution -> Presenter -> impact FX -> impact audio`.
+
+Aucun délai arbitraire n'est ajouté.
+
+#### TDD / validation
+
+- RED : `40100bac8d93460b1dd728f8cbf78ca1f53b11b3` ;
+- audio handle loop : `ac0583b7643307b88fd89da8a33dcbafa05c7347` ;
+- Presenter sync : `45c0baa3bb8eda2fa0d027ce8fa8da1f03c05bdc` ;
+- fixtures réalignés sur la forme canonique ;
+- CI : `37092491525` — SUCCESS ;
+- suite complète : **889/889 PASS, 0 FAIL**.
+
+#### Invariants
+
+- aucune formule gameplay modifiée ;
+- Runtime inchangé ;
+- aucune seconde autorité audio ;
+- aucun timer de synchronisation ajouté ;
+- aucune temporisation empirique ;
+- `Zombicide-40k` inchangé ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
