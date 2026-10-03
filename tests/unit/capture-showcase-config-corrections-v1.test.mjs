@@ -151,7 +151,7 @@ test("showcase hydration reloads the selected creature record after replacing th
   );
 });
 
-test("Loup showcase preset keeps one mouth socket and the four planned skills", async () => {
+test("Loup showcase preset keeps one mouth socket and the requested five-slot loadout", async () => {
   const preset = await json(
     "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json"
   );
@@ -165,10 +165,11 @@ test("Loup showcase preset keeps one mouth socket and the four planned skills", 
   assert.deepEqual(
     preset.loadout.slots.map((slot) => slot.skillId),
     [
-      "fireball",
       "claw",
+      "fireball",
+      "cap_fire_special_1",
       "lib_flame_bite",
-      "lib_fireball"
+      "cap_fire_atk_6"
     ]
   );
 });
