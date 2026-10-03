@@ -125,6 +125,10 @@ function harness({
   return {
     runtime,
     tickAt,
+    setClock(nextClock) {
+      assert.ok(nextClock >= clock);
+      clock = nextClock;
+    },
     get clock() {
       return clock;
     }
@@ -353,4 +357,58 @@ test("zone gameplay remains owned by Persistent Zone Runtime, never DOM geometry
     zoneSource,
     /getBoundingClientRect|querySelector|document\./
   );
+});
+
+
+test("Tempête de flammes does not miss short-zone entry when visible contact lands between Runtime ticks", async () => {
+  const session = createSession();
+  const zoneSkill =
+    await showcaseFireStorm();
+  const attack = await claw();
+
+  activateZone(
+    session,
+    zoneSkill,
+    1
+  );
+
+  const h = harness({ session });
+
+  const started =
+    h.runtime.startSkill({
+      actorId: "enemy",
+      targetId: "local",
+      skill: attack
+    });
+  assert.equal(started.ok, true);
+
+  const shortEntryAt =
+    attack.preparationMs +
+    Math.ceil(
+      attack.travelMs * 2 / 3
+    );
+
+  h.tickAt(shortEntryAt - 1);
+  assert.equal(
+    session.snapshot().fighters.enemy.hp,
+    100
+  );
+
+  h.setClock(shortEntryAt + 1);
+
+  const contact =
+    h.runtime.reportActionContact({
+      actorId: "enemy",
+      targetId: "local",
+      skillId: attack.id
+    });
+
+  assert.equal(contact.ok, true);
+  assert.equal(
+    session.snapshot().fighters.enemy.hp,
+    95,
+    "crossing the zone before an accepted visible contact must apply the entry damage even between scheduled ticks"
+  );
+
+  h.runtime.dispose();
 });
