@@ -23604,3 +23604,74 @@ Aucun délai arbitraire n'est ajouté.
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
+
+
+## Micro-lot — Persistent Zone Approach Radius V1 — 2026-10-03
+
+Base exacte : `c3b20bb037a1d8334aa70aad91808a484ffdac0c` (Combat Audio Sync V1 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-persistent-zone-approach-radius-v1-2026-10-03` ;
+- branche : `work/lab-persistent-zone-approach-radius-v1-2026-10-03`.
+
+### Régression utilisateur
+
+Capacité vitrine concernée : `cap_fire_atk_6` — **Tempête de flammes**.
+
+Logique attendue :
+- activation 1 / rayon `short` : l'ennemi dans son camp n'est pas touché ; il prend les dégâts lorsqu'il s'approche au corps-à-corps ;
+- activation 2 / rayon `medium` : il entre dans la zone plus tôt pendant son approche ;
+- activation 3 / rayon `long` : il est dans la zone dès son camp, même sans attaquer.
+
+Comportement observé :
+- niveau 1 : aucune perte de PV pendant une attaque au corps-à-corps ;
+- niveau 2 : dégâts déjà appliqués dans le camp ennemi.
+
+### Diagnostic
+
+`persistent-zone-runtime-v1.js` décide actuellement l'appartenance à la zone avec `state.distance`.
+
+Or le combat dynamique fait avancer visuellement/semantiquement une action via le Combat Runtime sans modifier cette distance globale pendant le trajet.
+
+Conséquence :
+- `short` ne voit jamais l'approche réelle ;
+- `medium` considère immédiatement la cible dans la zone si le combat global est déjà `medium`.
+
+### Autorité cible
+
+- Combat Runtime : seul propriétaire du timing/progrès de l'action active ;
+- Persistent Zone Runtime : seul propriétaire de la portée et des dégâts de zone ;
+- Combat Session : raccord explicite entre les deux.
+
+Aucune géométrie DOM, aucun renderer, aucun timer supplémentaire.
+
+### Sémantique V1
+
+Pour une approche `ground` vers le propriétaire de la zone :
+- `long` : camp entier, actif même sans approche ;
+- `medium` : entrée après le premier tiers du trajet ;
+- `short` : entrée après les deux tiers du trajet.
+
+Le passage d'un seuil produit une vraie entrée dans la zone et applique le tick de dégâts correspondant, sans attendre qu'un tick périodique tombe par hasard pendant le déplacement.
+
+Hors Combat Runtime / sans contexte spatial explicite, le moteur conserve le fallback historique sur `state.distance` pour les usages unitaires/génériques existants.
+
+### Protégé
+
+- croissance `short -> medium -> long` inchangée ;
+- dégâts/résistances inchangés ;
+- Action Resolver inchangé ;
+- renderer/visuels inchangés ;
+- aucun branchement par skillId ;
+- aucune seconde map d'action ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD
+
+- RED vrai chemin : niveau 1 n'endommage pas au camp puis endommage à l'entrée short pendant Griffe ;
+- RED vrai chemin : niveau 2 n'endommage pas au camp puis endommage au seuil medium plus tôt ;
+- RED vrai chemin : niveau 3 endommage au camp sans action ;
+- sentinelle : progression fournie par Runtime, dégâts appliqués uniquement par Persistent Zone Runtime ;
+- suite complète GREEN.
+
+État : **LOT OUVERT — TDD avant implémentation**.
