@@ -215,3 +215,45 @@ test("presentation V2 contract and adapter do not resolve physical assets", asyn
     }
   }
 });
+
+test("creature views: overrides select scale and position for each VisualActor, preserving sockets", () => {
+  const binding = normalizeCreaturePresentationBindingV2({
+    ...v2Binding(),
+    viewOverrides: {
+      player: { displayScale: 1.8, position: { x: 20, y: -15 } },
+      opponent: { displayScale: 0.75, position: { x: -30, y: 10 } }
+    }
+  });
+  assert.deepEqual(binding.sockets, normalizeCreaturePresentationBindingV2(v2Binding()).sockets);
+  for (const view of ["player", "opponent"]) {
+    const actor = adaptCreaturePresentationBindingV2ToVisualActor({
+      binding: JSON.parse(JSON.stringify(binding)),
+      visualActor: { id: "actor-" + view, creatureId: "crea-loup", view,
+        profile: "wrong", asset: "https://example.invalid/sprite.webp" }
+    });
+    assert.equal(actor.scale, binding.viewOverrides[view].displayScale);
+    assert.deepEqual(actor.position, binding.viewOverrides[view].position);
+  }
+});
+
+test("creature views: omitted values inherit common defaults and reject invalid overrides", () => {
+  const base = normalizeCreaturePresentationBindingV2(v2Binding());
+  assert.equal("viewOverrides" in base, false);
+  const binding = normalizeCreaturePresentationBindingV2({
+    ...v2Binding(), viewOverrides: { opponent: { displayScale: 0.8 } }
+  });
+  const actor = adaptCreaturePresentationBindingV2ToVisualActor({
+    binding, visualActor: { id: "opponent", creatureId: "crea-loup", view: "opponent",
+      profile: "quadruped", asset: "https://example.invalid/a.webp" }
+  });
+  assert.equal(actor.scale, 0.8);
+  assert.deepEqual(actor.position, base.position);
+  for (const viewOverrides of [
+    { enemy: { displayScale: 1 } },
+    { player: { displayScale: 0 } },
+    { opponent: { position: { x: Infinity, y: 0 } } },
+    { player: { mystery: 1 } }
+  ]) {
+    assert.throws(() => normalizeCreaturePresentationBindingV2({ ...v2Binding(), viewOverrides }));
+  }
+});

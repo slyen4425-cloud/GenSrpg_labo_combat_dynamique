@@ -235,3 +235,21 @@ test("Capture visual adapter rejects missing presentation, asset or profile expl
     /unknown profile.*biped|biped.*unknown/i
   );
 });
+
+test("creature views: Capture export retains independent scales and positions into the native visual source", () => {
+  const exported = baseExport();
+  const binding = exported.presentation.creatures["creature:crea-local"];
+  binding.viewOverrides = {
+    player: { displayScale: 1.6, position: { x: 12, y: -10 } },
+    opponent: { displayScale: 0.7, position: { x: -18, y: 8 } }
+  };
+  const source = adaptCaptureExportToNativeVisualSourceV1({
+    exported: JSON.parse(JSON.stringify(exported)), assetCatalog: assetCatalog(),
+    profiles: profiles(), assetUrlForFile: file => "https://assets.example/" + file
+  });
+  const meta = source.creatureMetas.find(item => item.id === "crea-local");
+  assert.deepEqual(meta.displayScale, { player: 1.6, opponent: 0.7 });
+  assert.deepEqual(meta.offsetByView, { player: { x: 12, y: -10 }, opponent: { x: -18, y: 8 } });
+  assert.equal(meta.fxAnchors.player.projectile.x, 0.3);
+  assert.equal(meta.fxAnchors.opponent.projectile.x, 0.7);
+});
