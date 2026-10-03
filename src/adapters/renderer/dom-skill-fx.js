@@ -934,9 +934,9 @@ export function createDomSkillFxRenderer({
 
       const to = centerRelativeTo(
         anchor(
-          targetAnchors,
+          anchors,
           targetSlot,
-          "damage target"
+          "live damage target"
         ).getBoundingClientRect(),
         arenaRect
       );
