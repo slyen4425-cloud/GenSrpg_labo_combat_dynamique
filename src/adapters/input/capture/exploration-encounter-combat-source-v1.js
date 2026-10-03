@@ -173,6 +173,11 @@ export function buildExplorationEncounterCombatSourceV1({
       rawSnapshot
     );
 
+  const combatRules =
+    requireCaptureCombatRulesetV1(
+      snapshot.rules.rulesetId
+    );
+
   const party =
     PREVIEW_PARTIES[
       snapshot.player.partyRef
@@ -203,11 +208,6 @@ export function buildExplorationEncounterCombatSourceV1({
   const enemyImported =
     importMonsterCaptureCreatureRecordV1(
       enemySource
-    );
-
-  const combatRules =
-    requireCaptureCombatRulesetV1(
-      snapshot.rules.rulesetId
     );
 
   const localCombatDraft =
