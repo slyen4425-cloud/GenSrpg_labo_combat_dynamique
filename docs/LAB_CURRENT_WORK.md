@@ -24436,3 +24436,63 @@ Médias publiés contrôlés : global-assets `b235f2b0deee0f79e4e6e1de81f05ba1b9
 Statut : intégration et preview techniques vérifiées. La limite des titres superposés de la source reste visible et documentée.
 Validation artistique de Sylvain et checkpoint GREEN final restent en attente. Les autres familles ne sont pas validées par ce lot.
 Checkpoint intermédiaire de CI prévu : `checkpoint/lab-impact-source-alpha-v1-ci-2026-10-03`.
+
+
+## Retours production à traiter — lisibilité combat et placement par camp — 2026-10-03
+
+Statut : **OUVERT — retours utilisateur à traiter dans des micro-lots dédiés**.
+
+Ces points sont consignés comme besoins de production. Ils ne sont pas considérés comme corrigés ni GREEN par cette note.
+
+### 1. Réglage indépendant joueur / adversaire pour les créatures
+
+Constat utilisateur :
+
+- le rendu d'une même créature peut avoir un scale perçu très différent entre la vue joueur et la vue adversaire ;
+- un scale unique n'offre pas assez de liberté pour compenser le cadrage propre aux deux images et la perspective de l'arène ;
+- le besoin porte aussi sur le placement vertical et horizontal.
+
+Besoin cible :
+
+- pouvoir régler indépendamment la présentation de la vue joueur et de la vue adversaire ;
+- au minimum : scale par camp/vue, offset X et offset Y par camp/vue ;
+- conserver la possibilité de réglages simples par défaut, puis d'affiner lorsque l'asset le nécessite ;
+- ces réglages restent de la **présentation visuelle** et ne doivent jamais modifier hitbox métier, dégâts, portée, distance logique ou règles de combat.
+
+Contraintes d'architecture :
+
+- données portées par le profil / la présentation de créature, pas par des branches codées en dur par créature ;
+- Render Adapter consomme ces données, il n'en devient pas la source de vérité ;
+- aucune seconde autorité de position/scale parallèle au système actuel ;
+- toute évolution devra être TDD et préserver les sentinelles de perspective, collision visuelle et retour à l'état stable.
+
+### 2. Impacts insuffisamment lisibles en combat
+
+Constat utilisateur :
+
+- les sprites d'impact, en particulier les derniers ajoutés, ne ressortent pas assez pendant un vrai combat ;
+- causes possibles à vérifier avant correction : impact trop souvent derrière le modèle, durée trop courte, animation trop rapide, scale insuffisant, anchor/offset ou profondeur visuelle inadaptés.
+
+Diagnostic obligatoire avant modification :
+
+- vérifier le layer réellement utilisé devant/derrière la cible ;
+- vérifier la durée réelle de l'animation et son nombre de frames ;
+- vérifier le scale final après application du renderer ;
+- vérifier l'anchor, l'offset et la position de contact ;
+- vérifier le rendu sur plusieurs tailles de créatures et sur smartphone.
+
+Besoin cible :
+
+- rendre l'impact nettement perceptible sans créer un second moteur FX ;
+- préférer des paramètres data-driven déjà propriétaires de la présentation : scale, durée/vitesse de lecture, offset, profondeur/layer et éventuellement intensité ;
+- ne pas modifier la résolution gameplay ni le timestamp d'impact pour compenser un défaut purement visuel ;
+- validation artistique réelle obligatoire conformément à la section 34 de la charte : CI verte seule insuffisante.
+
+Ordre recommandé :
+
+1. pré-audit du rendu réel ;
+2. identifier la cause dominante ;
+3. micro-lot presentation/renderer minimal ;
+4. tests sentinelles ;
+5. preview smartphone ;
+6. validation utilisateur avant GREEN.
