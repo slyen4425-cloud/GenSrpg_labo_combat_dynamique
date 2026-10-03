@@ -24243,3 +24243,41 @@ Invariants :
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview**.
+
+## Micro-lot — Fire Zone Contact Sync V1 — 2026-10-03
+
+Base GREEN : e83d3d0a94afafeb879b036e37d5da0c9e4dfea6.
+
+Retour utilisateur :
+- Tempête de flammes semblait encore aléatoire : lors d'une attaque ennemie traversant la zone, les dégâts d'entrée étaient parfois appliqués et parfois non.
+
+Diagnostic :
+- Persistent Zone Runtime calculait correctement les seuils short/medium/long ;
+- le défaut se produisait quand un contact visuel autoritaire arrivait entre deux ticks Runtime ;
+- reportActionContact() résolvait alors l'action avant que la CombatSession n'ait avancé jusqu'au timestamp du contact ;
+- au tick suivant l'approche était déjà marquée résolue et n'entrait plus dans zoneSpatialContext ;
+- le franchissement de rayon pouvait donc être perdu selon l'alignement temporel du tick, donnant une impression d'aléatoire.
+
+TDD :
+- RED : 9db7c07a14fe9eabb62c3c311fa8cb3f87ac6375 ;
+- CI RED : 37126811313 — 910/911 PASS, 1 FAIL attendu ;
+- correction Runtime : 4659e17b89bb4a4f0ebeb91f401fa0c98030edee ;
+- CI GREEN : 37126900007 — 911/911 PASS, 0 FAIL ;
+- architecture : 5f822bc4bf0bafd50106b3465d0d01f898e7dd1f.
+
+Correction :
+- le Combat Runtime possède maintenant une frontière interne commune advanceSessionToClock(current) ;
+- le tick périodique et le contact visuel utilisent la même avancée de session ;
+- reportActionContact() avance la CombatSession avec le contexte spatial de l'approche encore active avant de résoudre le contact ;
+- Persistent Zone Runtime reste l'unique autorité d'entrée de rayon et de dégâts de zone.
+
+Invariants :
+- aucun calcul de zone dans le DOM ;
+- aucun second moteur spatial ;
+- aucun timer/observer/cache supplémentaire ;
+- dégâts configurés de Tempête de flammes inchangés : 5 dégâts Feu par tick/entrée selon le Runtime de zone ;
+- niveau 1 short, niveau 2 medium, niveau 3 long inchangés ;
+- Zombicide-40k inchangé ;
+- aucun merge vers main.
+
+État : GREEN technique — prêt pour checkpoint/preview.
