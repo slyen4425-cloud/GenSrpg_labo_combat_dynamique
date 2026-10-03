@@ -23521,3 +23521,33 @@ Déclaration canonique ajoutée une seule fois dans :
 - aucun changement dans `Zombicide-40k`.
 
 État : **GREEN technique — prêt pour checkpoint/preview**.
+
+
+## Micro-lot — Combat Audio Sync V1 — 2026-10-03
+
+Base exacte : `2841307be808ff79fbbffff340656f073c44def1` (Showcase Flame Bite V1 GREEN).
+
+### Retour utilisateur
+
+Les sons de cast et d'impact sont parfois absents ou mal synchronisés.
+
+### Diagnostic
+
+1. `presentRelease()` appelle `cancelPreparation()`, qui stoppe toujours le son de cast — même un one-shot non bouclé. Avec une charge courte ou nulle, le cast peut donc être coupé avant d'être audible.
+2. Le son d'impact n'est joué que pour `outcome === "hit"`, alors que le plan FX crée aussi un impact sémantique pour `blocked`, `reflected` et `immune`.
+
+### Objectif
+
+- cast one-shot : démarre à la préparation et finit naturellement, même après le release ;
+- cast loop : s'arrête au release ;
+- interruption/dispose : arrêtent toujours le cast encore actif ;
+- impact audio : déclenché exactement quand `planSkillOutcomeFx()` émet un plan `impact` ;
+- pas de délai arbitraire, pas de timer audio parallèle ;
+- clash/miss ne déclenchent pas l'impact audio standard.
+
+### Autorité
+
+Le Presenter reste l'unique propriétaire du timing de présentation :
+`Runtime events -> Presenter -> FX + Audio`.
+
+État : **LOT OUVERT — TDD avant implémentation**.
