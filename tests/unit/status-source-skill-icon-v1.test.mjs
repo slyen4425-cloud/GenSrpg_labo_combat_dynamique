@@ -213,30 +213,55 @@ test("HUD status icon prefers the canonical icon of the source skill over the st
 });
 
 test("1v1 and 2v2 pass the same canonical skill presentation resolver to the single status renderer", async () => {
-  for (const relative of [
-    "src/ui/combat-test-ui.js",
-    "src/ui/combat-2v2-test-ui.js"
-  ]) {
-    const source = await readFile(
-      new URL("../../" + relative, import.meta.url),
-      "utf8"
-    );
-    const rendererStart = source.indexOf(
-      "createDomStatusFxRenderer({"
-    );
-    assert.notEqual(rendererStart, -1);
-    const rendererBlock = source.slice(
-      rendererStart,
-      rendererStart + 1800
-    );
+  const oneVsOne = await readFile(
+    new URL(
+      "../../src/ui/combat-test-ui.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+  const oneStart = oneVsOne.indexOf(
+    "createDomStatusFxRenderer({"
+  );
+  const oneBlock = oneVsOne.slice(
+    oneStart,
+    oneStart + 1800
+  );
+  assert.match(oneBlock, /skillPresentationFor/);
+  assert.match(
+    oneBlock,
+    /presentationAssets\?\.presentationForSkill/
+  );
 
-    assert.match(
-      rendererBlock,
-      /skillPresentationFor/
-    );
-    assert.match(
-      rendererBlock,
-      /presentationForSkill/
-    );
-  }
+  const twoVsTwo = await readFile(
+    new URL(
+      "../../src/ui/combat-2v2-test-ui.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+  const twoStart = twoVsTwo.indexOf(
+    "createDomStatusFxRenderer({"
+  );
+  const twoBlock = twoVsTwo.slice(
+    twoStart,
+    twoStart + 1800
+  );
+  assert.match(twoBlock, /skillPresentationFor/);
+  assert.match(
+    twoBlock,
+    /presentationForActorSkill/
+  );
+
+  const helperStart = twoVsTwo.indexOf(
+    "function presentationForActorSkill"
+  );
+  const helperBlock = twoVsTwo.slice(
+    helperStart,
+    helperStart + 1400
+  );
+  assert.match(
+    helperBlock,
+    /presentationAssets\?\.presentationForSkill/
+  );
 });
