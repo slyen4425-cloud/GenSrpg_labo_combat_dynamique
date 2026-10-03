@@ -268,7 +268,10 @@ test("coop 2v2 page keeps one local ability bar and four selectable actors", asy
   assert.match(source, /isSkillTargetAllowed/);
   assert.match(source, /createBattleActorAiController/);
   assert.match(source, /buildCoop2v2AiControllerSpecs/);
-  assert.match(source, /skillIdsByActor\[format\.localActorId\]/);
+  assert.match(
+    source,
+    /skillIdsByCreature\[creatureId\]/
+  );
   assert.doesNotMatch(
     source,
     /createBattleActorAiController\(\{[\s\S]{0,300}actorId:\s*"ally"/
