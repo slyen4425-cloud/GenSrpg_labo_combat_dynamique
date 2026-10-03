@@ -24612,3 +24612,115 @@ Aucune nouvelle autorité n'a été introduite :
 - fallback démo uniquement pour les skills sans binding configuré.
 
 État : **GREEN utilisateur**.
+
+---
+
+# Lot actif — Exploration Player Party v1 — 2026-10-03
+
+## Branche
+`work/lab-exploration-player-party-v1-2026-10-03`
+
+## Base GREEN
+`a022b0ecaa3aed93ddf2c9de45cf52268f395cba`
+
+## Checkpoint de départ
+`checkpoint/lab-start-exploration-player-party-v1-2026-10-03`
+
+## Objectif
+Retirer le roster joueur codé en dur du chemin Exploration -> Combat.
+
+```text
+CaptureEncounterSnapshot.player.partyRef
+  -> Capture Party Definition
+  -> creatureId refs uniquement
+  -> transferts Capture configurés existants
+  -> Combat Export
+  -> Roster Definition existante
+  -> Roster Session existante
+```
+
+## Sentinelle
+- actif : `crea-loup` — Loup volcanique ;
+- réserve : `crea_mossback` — Moussados.
+
+La party ne copie ni stats, ni assets, ni skills.
+
+## Autorités
+- composition party : CaptureParty v1 ;
+- créatures/stats/loadouts/présentations : transferts Capture existants ;
+- conversion : export/adapters existants ;
+- état roster en combat : Roster Session existante ;
+- UI : projection uniquement.
+
+## Micro-lot A
+- contrat CaptureParty v1 ;
+- party data par refs ;
+- retrait de PREVIEW_PARTIES/configuredPreviewParty ;
+- résolution partyRef ;
+- export actif + réserve dans le roster.
+
+## Micro-lot B
+- raccord Encounter UI à Roster Session existante ;
+- réserve visible ;
+- sélection / rappel / invocation ;
+- visuel + capacités du membre actif.
+
+## Interdictions
+- aucun nouveau moteur roster ;
+- aucune copie de créature dans la party ;
+- aucune modification de Zombicide-40k ;
+- aucun merge main sans gate.
+
+## Prévalidation technique — Exploration Player Party v1
+
+Implémenté :
+- `CaptureParty v1` référence uniquement des `creatureId` ;
+- party sentinelle `capture-party-player-v1` :
+  - actif `crea-loup` ;
+  - réserve `crea_mossback` ;
+- suppression de `PREVIEW_PARTIES`, `configuredPreviewParty` et `capture-party-preview` du bridge Combat ;
+- résolution de la party par `partyRef` ;
+- résolution des membres depuis les transferts Capture configurés existants ;
+- export Combat de tous les membres avec leurs stats/loadouts/présentations ;
+- `skillIdsByCreature` dérivé du même Combat Export canonique ;
+- Encounter UI raccordée à la `Roster Session` existante ;
+- sélection de réserve = `roster.selectReserve` uniquement ;
+- Rappel/Invocation passent par `runtime.startCommand` puis `roster.applyCommandResolution` ;
+- changement de membre met à jour visuel + fighter + barre de compétences ;
+- KO local passe par `roster.replaceKnockedOut` avant toute défaite ;
+- métas visuelles de tous les membres configurés chargées par le même catalogue ;
+- cache-bust `player-party-v1` sur le graphe Encounter modifié.
+
+Sentinelles :
+- vraie transition Loup -> Moussados via Rappel/Invocation ;
+- Moussados : PV 200, Terre 10, Vitesse 2 ;
+- skills Moussados dérivés de son loadout ;
+- aucune copie stats/assets/skills dans la party ;
+- aucun nouveau moteur roster.
+
+HEAD : `54de708d34119c2696605c0d70537ba504211c16`
+CI : `37152573835` — **SUCCESS**.
+
+État : **TECHNIQUE GREEN — publication preview + validation utilisateur restantes**.
+
+## Publication preview coordonnée — 2026-10-03
+
+Preview fonctionnelle figée :
+- branche Combat : `preview/lab-exploration-player-party-v1-2026-10-03` ;
+- SHA Combat : `5eabc26cd298997379406185b1cf4e2fad84a79f` ;
+- checkpoint : `checkpoint/lab-exploration-player-party-v1-prevalidation-green-2026-10-03`.
+
+Publication Pages portée par le dépôt Exploration :
+- PR infra : #61 ;
+- main infra : `81c6a2aee3e1d89bc1dc179ea58e29358332255d` ;
+- Pages run : `37152774027` — **SUCCESS**.
+
+Le job confirme :
+- Checkout Exploration Player Party preview — SUCCESS ;
+- Checkout Combat Player Party preview — SUCCESS ;
+- Checkout Capture global visual assets — SUCCESS ;
+- Upload preview — SUCCESS ;
+- Deploy preview — SUCCESS.
+
+Gate restant : validation utilisateur réelle du roster Loup -> Moussados dans le Combat lancé depuis Exploration.
+

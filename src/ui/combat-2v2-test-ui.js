@@ -1,6 +1,8 @@
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
+import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
+import { createRosterSession } from "../core/combat/roster-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createBattleActorAiController } from "../core/combat/battle-actor-ai-controller.js";
 import {
@@ -22,6 +24,16 @@ const DATA_URLS = Object.freeze({
     "../../data/combat/ai/demo-coop-2v2-skill-loadouts.json",
     import.meta.url
   ),
+  commands: Object.freeze({
+    recall: new URL(
+      "../../data/combat/commands/recall.command.json",
+      import.meta.url
+    ),
+    summon: new URL(
+      "../../data/combat/commands/summon.command.json",
+      import.meta.url
+    )
+  }),
   fighters: Object.freeze({
     maraileron: new URL(
       "../../data/combat/fighters/maraileron.combat.json",
@@ -239,6 +251,114 @@ export function buildCoop2v2AiControllerSpecs({
   );
 }
 
+function normalizeSkillIdsByCreature(
+  input,
+  format,
+  skillIdsByActor,
+  skillsById
+) {
+  const source =
+    input &&
+    typeof input === "object" &&
+    !Array.isArray(input)
+      ? input
+      : Object.fromEntries(
+          format.actors.map((actor) => [
+            actor.creatureId,
+            skillIdsByActor[actor.actorId] ?? []
+          ])
+        );
+
+  const normalized = {};
+
+  for (const [creatureIdRaw, rawIds] of Object.entries(source)) {
+    const creatureId = String(creatureIdRaw).trim();
+    if (!creatureId || !Array.isArray(rawIds)) {
+      throw new TypeError(
+        "nativeCombatSource.skillIdsByCreature must map creature ids to arrays"
+      );
+    }
+
+    const ids = rawIds.map((skillId, index) => {
+      if (
+        typeof skillId !== "string" ||
+        skillId.trim() === ""
+      ) {
+        throw new TypeError(
+          `skillIdsByCreature.${creatureId}[${index}] must be a skill id`
+        );
+      }
+      const id = skillId.trim();
+      if (!skillsById[id]) {
+        throw new RangeError(
+          `skillIdsByCreature.${creatureId} references unknown skill: ${id}`
+        );
+      }
+      return id;
+    });
+
+    if (new Set(ids).size !== ids.length) {
+      throw new RangeError(
+        `skillIdsByCreature.${creatureId} must not contain duplicates`
+      );
+    }
+
+    normalized[creatureId] = Object.freeze(ids);
+  }
+
+  return Object.freeze(normalized);
+}
+
+function normalizeInjectedFighterConfigs(
+  input,
+  format,
+  fighters
+) {
+  const source =
+    input &&
+    typeof input === "object" &&
+    !Array.isArray(input)
+      ? input
+      : Object.fromEntries(
+          format.actors.map((actor, index) => [
+            actor.creatureId,
+            fighters[index]
+          ])
+        );
+
+  return Object.freeze(
+    Object.fromEntries(
+      Object.entries(source).map(([id, config]) => [
+        id,
+        Object.freeze({ ...config })
+      ])
+    )
+  );
+}
+
+function normalizeInjectedRoster(input) {
+  if (input == null) {
+    return Object.freeze({
+      teams: Object.freeze({})
+    });
+  }
+
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input) ||
+    !input.teams ||
+    typeof input.teams !== "object" ||
+    Array.isArray(input.teams)
+  ) {
+    throw new TypeError(
+      "nativeCombatSource.roster.teams must be an object"
+    );
+  }
+
+  return input;
+}
+
 function normalizedInjectedCombatSource(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new TypeError("nativeCombatSource must be an object");
@@ -300,6 +420,23 @@ function normalizedInjectedCombatSource(input) {
     skillsById,
     "nativeCombatSource.skillIdsByActor"
   );
+  const skillIdsByCreature =
+    normalizeSkillIdsByCreature(
+      input.skillIdsByCreature,
+      format,
+      skillIdsByActor,
+      skillsById
+    );
+  const fighterConfigs =
+    normalizeInjectedFighterConfigs(
+      input.fighterConfigs,
+      format,
+      fighters
+    );
+  const roster =
+    normalizeInjectedRoster(
+      input.roster
+    );
 
   return Object.freeze({
     format,
@@ -307,6 +444,9 @@ function normalizedInjectedCombatSource(input) {
     skills,
     skillsById,
     skillIdsByActor,
+    skillIdsByCreature,
+    fighterConfigs,
+    roster,
     skillSpeedMultiplier:
       input.skillSpeedMultiplier ?? 1
   });
@@ -384,12 +524,25 @@ export async function loadCoop2v2CombatSource({
     "demo skill loadouts"
   );
 
+  const skillIdsByCreature =
+    normalizeSkillIdsByCreature(
+      null,
+      format,
+      skillIdsByActor,
+      skillsById
+    );
+
   return Object.freeze({
     format,
     fighters,
     skills,
     skillsById,
     skillIdsByActor,
+    skillIdsByCreature,
+    fighterConfigs,
+    roster: Object.freeze({
+      teams: Object.freeze({})
+    }),
     skillSpeedMultiplier: 1
   });
 }
@@ -517,6 +670,9 @@ export async function mountCoop2v2Test({
     skills,
     skillsById,
     skillIdsByActor,
+    skillIdsByCreature,
+    fighterConfigs,
+    roster,
     skillSpeedMultiplier
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -531,6 +687,55 @@ export async function mountCoop2v2Test({
     skillSpeedMultiplier
   });
 
+  const localRosterDefinition =
+    roster?.teams?.[format.localActorId] ??
+    null;
+  const hasLocalRoster =
+    localRosterDefinition !== null;
+
+  if (
+    hasLocalRoster &&
+    typeof visuals.setSlotVisible !== "function"
+  ) {
+    throw new TypeError(
+      "roster-aware visuals must provide setSlotVisible()"
+    );
+  }
+
+  const rosterSession =
+    hasLocalRoster
+      ? createRosterSession({
+          combatSession: session,
+          roster: {
+            teams: {
+              [format.localActorId]:
+                localRosterDefinition
+            }
+          },
+          fighterConfigs
+        })
+      : null;
+
+  const rosterCommands =
+    hasLocalRoster
+      ? Object.freeze({
+          recall:
+            normalizeCombatCommandDefinition(
+              await fetchJson(
+                DATA_URLS.commands.recall,
+                fetchImpl
+              )
+            ),
+          summon:
+            normalizeCombatCommandDefinition(
+              await fetchJson(
+                DATA_URLS.commands.summon,
+                fetchImpl
+              )
+            )
+        })
+      : null;
+
   const arena = requiredElement(root, "[data-combat-arena]");
   const status = requiredElement(root, "[data-combat-live-status]");
   const skillContainer = requiredElement(root, "[data-combat-skills]");
@@ -542,6 +747,28 @@ export async function mountCoop2v2Test({
     root,
     `[data-combat-energy-value="${format.localActorId}"]`
   );
+
+  const teamActionContainer =
+    hasLocalRoster
+      ? requiredElement(
+          root,
+          "[data-combat-team-actions]"
+        )
+      : null;
+  const playerReserve =
+    hasLocalRoster
+      ? requiredElement(
+          root,
+          `[data-roster-reserve="${format.localActorId}"]`
+        )
+      : null;
+  const teamSelectionLabel =
+    hasLocalRoster
+      ? requiredElement(
+          root,
+          "[data-team-selection]"
+        )
+      : null;
 
   const previewFormat =
     resolveCombatPreviewFormatV1(format);
@@ -615,7 +842,9 @@ export async function mountCoop2v2Test({
   );
 
   const cleanups = [];
+  let skillButtonCleanups = [];
   const skillRefs = new Map();
+  const commandRefs = new Map();
   const targetPulseTimers = new Map();
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
@@ -761,6 +990,48 @@ export async function mountCoop2v2Test({
     element.addEventListener(type, handler);
     cleanups.push(() =>
       element.removeEventListener(type, handler)
+    );
+  }
+
+  function listenSkill(element, type, handler) {
+    element.addEventListener(type, handler);
+    skillButtonCleanups.push(() =>
+      element.removeEventListener(type, handler)
+    );
+  }
+
+  function localRosterState() {
+    return rosterSession
+      ? rosterSession.snapshot()[
+          format.localActorId
+        ] ?? null
+      : null;
+  }
+
+  function activeLocalRosterMember() {
+    const team = localRosterState();
+    return team?.members.find(
+      (member) =>
+        member.id === team.activeMemberId
+    ) ?? null;
+  }
+
+  function actorDisplayName(actorId) {
+    if (
+      actorId === format.localActorId &&
+      rosterSession
+    ) {
+      return (
+        activeLocalRosterMember()
+          ?.displayName ??
+        format.actor(actorId)?.displayName ??
+        actorId
+      );
+    }
+
+    return (
+      format.actor(actorId)?.displayName ??
+      actorId
     );
   }
 
@@ -940,9 +1211,64 @@ export async function mountCoop2v2Test({
         String(cooldownProgress)
       );
 
+      const hasActiveRosterMember =
+        !rosterSession ||
+        localRosterState()?.activeMemberId !== null;
+
       button.disabled =
+        !hasActiveRosterMember ||
         runtime.hasActiveActionFor(format.localActorId) ||
         !preview.ok;
+    }
+
+    if (rosterSession && rosterCommands) {
+      const team = localRosterState();
+      const hasActive =
+        team?.activeMemberId !== null;
+      const hasSelection =
+        Boolean(
+          team?.selectedReserveMemberId
+        );
+
+      const recallRef =
+        commandRefs.get("recall");
+      if (recallRef) {
+        const preview =
+          hasActive
+            ? session.previewCommand({
+                actorId:
+                  format.localActorId,
+                command:
+                  recallRef.command
+              })
+            : { ok: false };
+
+        recallRef.button.disabled =
+          runtime.hasActiveActionFor(
+            format.localActorId
+          ) ||
+          !preview.ok;
+      }
+
+      const summonRef =
+        commandRefs.get("summon");
+      if (summonRef) {
+        const preview =
+          !hasActive && hasSelection
+            ? session.previewCommand({
+                actorId:
+                  format.localActorId,
+                command:
+                  summonRef.command
+              })
+            : { ok: false };
+
+        summonRef.button.disabled =
+          runtime.hasActiveActionFor(
+            format.localActorId
+          ) ||
+          !preview.ok;
+      }
     }
   }
 
@@ -1046,7 +1372,7 @@ export async function mountCoop2v2Test({
 
     button.append(label, cooldown);
 
-    listen(button, "click", () => {
+    listenSkill(button, "click", () => {
       const allowed = isSkillTargetAllowed({
         format,
         actorId: format.localActorId,
@@ -1090,27 +1416,406 @@ export async function mountCoop2v2Test({
     return Object.freeze({ button, cooldown });
   }
 
-  const localSkillIds =
-    skillIdsByActor[format.localActorId];
-  const localSkills = localSkillIds.map((skillId) => {
-    const skill = skillsById[skillId];
-    if (!skill) {
-      throw new RangeError(
-        `Unknown local skill: ${skillId}`
+  function renderLocalSkillsForCreature(
+    creatureId
+  ) {
+    for (
+      const cleanup of
+        skillButtonCleanups.splice(0)
+    ) {
+      cleanup();
+    }
+
+    skillRefs.clear();
+    skillContainer.replaceChildren();
+
+    const ids =
+      skillIdsByCreature[creatureId] ??
+      [];
+
+    for (const skillId of ids) {
+      const skill =
+        skillsById[skillId];
+
+      if (!skill) {
+        throw new RangeError(
+          `Unknown local skill: ${skillId}`
+        );
+      }
+
+      const refs =
+        createSkillButton(skill);
+      skillContainer.append(
+        refs.button
+      );
+      skillRefs.set(skill.id, {
+        skill,
+        button: refs.button,
+        cooldown: refs.cooldown
+      });
+    }
+  }
+
+  function reserveCard(member) {
+    const button =
+      root.ownerDocument.createElement(
+        "button"
+      );
+    button.type = "button";
+    button.className =
+      "reserve-card encounter-reserve-card";
+    button.dataset.memberId =
+      member.id;
+
+    const defeated =
+      Number(member.hp) <= 0;
+    button.disabled =
+      member.active || defeated;
+    button.dataset.active =
+      member.active
+        ? "true"
+        : "false";
+    button.dataset.defeated =
+      defeated
+        ? "true"
+        : "false";
+    button.dataset.selected =
+      member.selected
+        ? "true"
+        : "false";
+
+    const descriptor =
+      visuals.getCreatureDescriptor(
+        member.creatureId
+      );
+
+    if (descriptor?.iconUrl) {
+      const image =
+        root.ownerDocument.createElement(
+          "img"
+        );
+      image.className =
+        "reserve-card__icon";
+      image.src =
+        descriptor.iconUrl;
+      image.alt = "";
+      button.append(image);
+    }
+
+    const text =
+      root.ownerDocument.createElement(
+        "span"
+      );
+    text.className =
+      "reserve-card__text";
+    text.textContent =
+      defeated
+        ? `${member.displayName} · KO`
+        : member.active
+          ? `${member.displayName} · actif`
+          : `${member.displayName} · ${Math.round(member.hp)}/${Math.round(member.maxHp)} PV`;
+
+    button.append(text);
+
+    return button;
+  }
+
+  function renderRoster() {
+    if (
+      !rosterSession ||
+      !playerReserve ||
+      !teamSelectionLabel
+    ) {
+      return;
+    }
+
+    const team =
+      localRosterState();
+
+    if (!team) {
+      return;
+    }
+
+    playerReserve.replaceChildren(
+      ...team.members.map(
+        reserveCard
+      )
+    );
+
+    const selected =
+      team.members.find(
+        (member) =>
+          member.id ===
+          team.selectedReserveMemberId
+      ) ?? null;
+
+    teamSelectionLabel.textContent =
+      selected
+        ? `Réserve : ${selected.displayName}`
+        : "Aucune réserve sélectionnée";
+  }
+
+  function startRosterCommand(
+    command
+  ) {
+    const result =
+      runtime.startCommand({
+        actorId:
+          format.localActorId,
+        command
+      });
+
+    if (!result.ok) {
+      setStatus(
+        result.outcome ===
+          "insufficient_energy"
+          ? "Énergie insuffisante."
+          : `Action d'équipe impossible : ${result.outcome}.`,
+        "warn"
+      );
+      renderAvailability();
+      return;
+    }
+
+    setStatus(
+      `${command.name} se prépare…`,
+      "accent"
+    );
+    renderAvailability();
+  }
+
+  function createRosterControls() {
+    if (
+      !rosterSession ||
+      !rosterCommands ||
+      !teamActionContainer ||
+      !playerReserve
+    ) {
+      return;
+    }
+
+    for (
+      const command of [
+        rosterCommands.recall,
+        rosterCommands.summon
+      ]
+    ) {
+      const button =
+        root.ownerDocument.createElement(
+          "button"
+        );
+      button.type = "button";
+      button.className =
+        "action-option action-option--team";
+      button.dataset.combatCommand =
+        command.kind;
+      button.textContent =
+        command.name;
+
+      commandRefs.set(
+        command.kind,
+        {
+          button,
+          command
+        }
+      );
+      teamActionContainer.append(
+        button
+      );
+      listen(
+        button,
+        "click",
+        () =>
+          startRosterCommand(
+            command
+          )
       );
     }
-    return skill;
-  });
 
-  for (const skill of localSkills) {
-    const refs = createSkillButton(skill);
-    skillContainer.append(refs.button);
-    skillRefs.set(skill.id, {
-      skill,
-      button: refs.button,
-      cooldown: refs.cooldown
-    });
+    listen(
+      playerReserve,
+      "click",
+      (event) => {
+        const button =
+          event.target.closest?.(
+            "[data-member-id]"
+          );
+
+        if (
+          !button ||
+          button.disabled
+        ) {
+          return;
+        }
+
+        const team =
+          localRosterState();
+        const member =
+          team?.members.find(
+            (item) =>
+              item.id ===
+              button.dataset.memberId
+          ) ?? null;
+
+        if (!member) {
+          return;
+        }
+
+        const result =
+          rosterSession.selectReserve(
+            format.localActorId,
+            member.id
+          );
+
+        if (result.ok) {
+          setStatus(
+            `${member.displayName} sélectionné en réserve.`,
+            "info"
+          );
+          renderRoster();
+          renderAvailability();
+        }
+      }
+    );
   }
+
+  function applyRosterResolution(
+    resolution
+  ) {
+    if (
+      !rosterSession ||
+      resolution.actionType !==
+        "command" ||
+      !["recall", "summon"].includes(
+        resolution.commandKind
+      )
+    ) {
+      return null;
+    }
+
+    const result =
+      rosterSession.applyCommandResolution(
+        format.localActorId,
+        resolution
+      );
+
+    if (!result.ok) {
+      setStatus(
+        `Action d'équipe impossible : ${result.outcome}.`,
+        "warn"
+      );
+      return result;
+    }
+
+    if (
+      result.outcome ===
+        "recalled"
+    ) {
+      visuals.setSlotVisible(
+        format.localActorId,
+        false
+      );
+      setStatus(
+        "Créature rappelée. Sélectionnez une réserve puis Invocation.",
+        "accent"
+      );
+    }
+
+    if (
+      result.outcome ===
+        "summoned"
+    ) {
+      visuals.setCreatureFor(
+        format.localActorId,
+        result.creatureId,
+        {
+          displayName:
+            result.displayName
+        }
+      );
+      visuals.setSlotVisible(
+        format.localActorId,
+        true
+      );
+      renderLocalSkillsForCreature(
+        result.creatureId
+      );
+      setStatus(
+        `${result.displayName} entre en combat.`,
+        "ok"
+      );
+    }
+
+    renderRoster();
+    renderState();
+    return result;
+  }
+
+  function replaceLocalAfterKo() {
+    if (!rosterSession) {
+      return null;
+    }
+
+    const fighter =
+      session.snapshot()
+        .fighters[
+          format.localActorId
+        ];
+
+    if (
+      !fighter ||
+      Number(fighter.hp) > 0
+    ) {
+      return null;
+    }
+
+    const result =
+      rosterSession
+        .replaceKnockedOut(
+          format.localActorId
+        );
+
+    if (
+      result.outcome ===
+        "ko_replaced"
+    ) {
+      visuals.setCreatureFor(
+        format.localActorId,
+        result.creatureId,
+        {
+          displayName:
+            result.displayName
+        }
+      );
+      visuals.setSlotVisible(
+        format.localActorId,
+        true
+      );
+      renderLocalSkillsForCreature(
+        result.creatureId
+      );
+      setStatus(
+        `${result.displayName} remplace automatiquement la créature KO.`,
+        "warn"
+      );
+    }
+
+    renderRoster();
+    return result;
+  }
+
+  const initialLocalCreatureId =
+    activeLocalRosterMember()
+      ?.creatureId ??
+    format.actor(
+      format.localActorId
+    ).creatureId;
+
+  renderLocalSkillsForCreature(
+    initialLocalCreatureId
+  );
+  createRosterControls();
+  renderRoster();
 
   const aiControllers = [];
 
@@ -1142,6 +1847,14 @@ export async function mountCoop2v2Test({
     queueMicrotask(() => {
       aiDecisionQueued = false;
       if (disposed) {
+        return;
+      }
+
+      if (
+        rosterSession &&
+        localRosterState()
+          ?.activeMemberId === null
+      ) {
         return;
       }
 
@@ -1195,15 +1908,18 @@ export async function mountCoop2v2Test({
       renderAvailability();
     },
     onStarted({ action }) {
-      if (action.actionType !== "skill") {
+      if (action.actionType === "skill") {
+        presenter.presentPreparation({
+          action,
+          actorSlot: action.actorId
+        });
+        actionRefs[action.actorId].textContent =
+          `${action.skill.name} · préparation`;
         return;
       }
-      presenter.presentPreparation({
-        action,
-        actorSlot: action.actorId
-      });
+
       actionRefs[action.actorId].textContent =
-        `${action.skill.name} · préparation`;
+        `${action.command.name} · préparation`;
     },
     onProgress(progress) {
       if (!progress.actorId) {
@@ -1239,39 +1955,85 @@ export async function mountCoop2v2Test({
       }
     },
     onRelease({ action }) {
-      if (action.actionType !== "skill") {
+      setCharge(action.actorId);
+
+      if (action.actionType === "skill") {
+        presenter.presentRelease({
+          action,
+          actorSlot: action.actorId,
+          targetSlot: action.targetId
+        });
+        actionRefs[action.actorId].textContent =
+          `${action.skill.name} · lancé`;
         return;
       }
-      presenter.presentRelease({
-        action,
-        actorSlot: action.actorId,
-        targetSlot: action.targetId
-      });
-      setCharge(action.actorId);
+
       actionRefs[action.actorId].textContent =
-        `${action.skill.name} · lancé`;
+        `${action.command.name} · exécution`;
     },
     onResolved(resolution) {
-      const presentation = presenter.presentOutcome({
-        resolution,
-        actorSlot: resolution.actorId,
-        targetSlot: resolution.targetId
-      });
-
       setCharge(resolution.actorId);
-      actionRefs[resolution.actorId].textContent = "Prêt";
+      actionRefs[resolution.actorId].textContent =
+        "Prêt";
 
-      const actor = actorMeta(resolution.actorId);
-      const target = actorMeta(resolution.targetId);
-      if (resolution.outcome === "hit") {
+      if (
+        resolution.actionType ===
+          "command"
+      ) {
+        const rosterResult =
+          applyRosterResolution(
+            resolution
+          );
+
+        if (!rosterResult) {
+          setStatus(
+            "Commande terminée.",
+            "ok"
+          );
+        }
+
+        renderRoster();
+        renderState();
+        queueAiDecisions();
+        return;
+      }
+
+      const presentation =
+        presenter.presentOutcome({
+          resolution,
+          actorSlot:
+            resolution.actorId,
+          targetSlot:
+            resolution.targetId
+        });
+
+      const actorName =
+        actorDisplayName(
+          resolution.actorId
+        );
+      const targetName =
+        actorDisplayName(
+          resolution.targetId
+        );
+
+      if (
+        resolution.outcome ===
+          "hit"
+      ) {
         setStatus(
-          `${actor?.displayName ?? resolution.actorId} touche ${target?.displayName ?? resolution.targetId}.`,
+          `${actorName} touche ${targetName}.`,
           "ok"
         );
       }
 
-      void Promise.resolve(presentation.finished).then(() => {
-        const state = session.snapshot();
+      void Promise.resolve(
+        presentation.finished
+      ).then(() => {
+        replaceLocalAfterKo();
+
+        const state =
+          session.snapshot();
+        renderRoster();
         renderState(state);
 
         if (!battleEnded) {
@@ -1283,9 +2045,21 @@ export async function mountCoop2v2Test({
 
           if (outcome !== null) {
             battleEnded = true;
-            for (const { button } of skillRefs.values()) {
-              button.disabled = true;
+            for (
+              const { button } of
+                skillRefs.values()
+            ) {
+              button.disabled =
+                true;
             }
+            for (
+              const { button } of
+                commandRefs.values()
+            ) {
+              button.disabled =
+                true;
+            }
+
             setStatus(
               outcome === "victory"
                 ? "Combat remporté."
@@ -1307,7 +2081,9 @@ export async function mountCoop2v2Test({
 
         aiReadyAt.set(
           resolution.actorId,
-          Number(state.elapsedMs) + 900
+          Number(
+            state.elapsedMs
+          ) + 900
         );
         queueAiDecisions();
       });
@@ -1349,12 +2125,23 @@ export async function mountCoop2v2Test({
       return selectedTargetId;
     },
     selectTarget,
+    rosterSnapshot:
+      rosterSession
+        ? () =>
+            rosterSession.snapshot()
+        : () => null,
     dispose() {
       if (disposed) {
         return;
       }
       disposed = true;
       clearTargetPulses();
+      for (
+        const cleanup of
+          skillButtonCleanups.splice(0)
+      ) {
+        cleanup();
+      }
       for (const cleanup of cleanups.splice(0)) {
         cleanup();
       }

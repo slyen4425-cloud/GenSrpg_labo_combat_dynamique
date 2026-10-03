@@ -23,6 +23,9 @@ import {
   normalizeCaptureCreatureTransferV1
 } from "../../../contracts/capture-creature-transfer-v1.js";
 import {
+  normalizeCapturePartyV1
+} from "../../../contracts/capture-party-v1.js";
+import {
   normalizeCaptureSkillTransferV1
 } from "../../../contracts/capture-skill-transfer-v1.js";
 import {
@@ -37,13 +40,6 @@ import {
 import {
   adaptCaptureCombatExportStackV1
 } from "./capture-export-adapter-stack-v1.js";
-
-const PREVIEW_PARTIES = Object.freeze({
-  "capture-party-preview":
-    Object.freeze({
-      creatureId: "crea-loup"
-    })
-});
 
 const ARENA_BY_TERRAIN = Object.freeze({
   forest: "forest",
@@ -207,70 +203,162 @@ function activeLoadoutFor(
   return result.loadout;
 }
 
-function configuredPreviewParty({
-  partyRef,
-  previewPartyTransfer,
-  statRegistry
-}) {
-  const definition =
-    PREVIEW_PARTIES[partyRef] ?? null;
-
-  if (!definition) {
-    throw new RangeError(
-      "unsupported preview partyRef: " +
-        partyRef
+function capturePartyByRef(
+  partyDefinitions,
+  partyRef
+) {
+  if (!Array.isArray(partyDefinitions)) {
+    throw new TypeError(
+      "partyDefinitions must be an array"
     );
   }
 
+  const parties = partyDefinitions.map(
+    (party) =>
+      normalizeCapturePartyV1(
+        party
+      )
+  );
+
+  const ids =
+    parties.map((party) => party.id);
+
   if (
-    !previewPartyTransfer ||
-    typeof previewPartyTransfer !== "object" ||
-    Array.isArray(previewPartyTransfer)
+    new Set(ids).size !==
+    ids.length
   ) {
-    throw new TypeError(
-      "previewPartyTransfer is required for " +
-        partyRef
+    throw new RangeError(
+      "partyDefinitions contains duplicate ids"
     );
   }
 
   const party =
-    normalizeCaptureCreatureTransferV1(
-      previewPartyTransfer,
-      statRegistry
-    );
+    parties.find(
+      (entry) =>
+        entry.id === partyRef
+    ) ?? null;
 
-  if (
-    party.draft.id !==
-    definition.creatureId
-  ) {
+  if (!party) {
     throw new RangeError(
-      "preview party transfer mismatch: expected " +
-        definition.creatureId +
-        ", received " +
-        party.draft.id
-    );
-  }
-
-  if (!party.loadout) {
-    throw new TypeError(
-      "configured preview party requires a loadout"
-    );
-  }
-
-  if (!party.statValues) {
-    throw new TypeError(
-      "configured preview party requires statValues"
+      "unknown Capture partyRef: " +
+        partyRef
     );
   }
 
   return party;
 }
 
+function configuredTransfersById({
+  configuredCreatureTransfers,
+  statRegistry
+}) {
+  if (
+    !Array.isArray(
+      configuredCreatureTransfers
+    )
+  ) {
+    throw new TypeError(
+      "configuredCreatureTransfers must be an array"
+    );
+  }
+
+  const byId = new Map();
+
+  for (
+    const rawTransfer of
+      configuredCreatureTransfers
+  ) {
+    const transfer =
+      normalizeCaptureCreatureTransferV1(
+        rawTransfer,
+        statRegistry
+      );
+
+    const creatureId =
+      transfer.draft.id;
+
+    if (byId.has(creatureId)) {
+      throw new RangeError(
+        "duplicate configured creature transfer: " +
+          creatureId
+      );
+    }
+
+    if (!transfer.loadout) {
+      throw new TypeError(
+        "configured party creature requires a loadout: " +
+          creatureId
+      );
+    }
+
+    if (!transfer.statValues) {
+      throw new TypeError(
+        "configured party creature requires statValues: " +
+          creatureId
+      );
+    }
+
+    byId.set(
+      creatureId,
+      transfer
+    );
+  }
+
+  return byId;
+}
+
+function configuredPartyMembers({
+  party,
+  transfersById,
+  combatRules
+}) {
+  return party.members.map(
+    (member) => {
+      const transfer =
+        transfersById.get(
+          member.creatureId
+        ) ?? null;
+
+      if (!transfer) {
+        throw new RangeError(
+          "Capture party references unknown configured creature: " +
+            member.creatureId
+        );
+      }
+
+      return Object.freeze({
+        member,
+        transfer,
+        combatDraft:
+          applyCaptureCombatRulesToCreatureDraftV1({
+            creatureDraft:
+              transfer.draft,
+            combatRules
+          })
+      });
+    }
+  );
+}
+
 function battleSetup({
   snapshot,
-  localDraft,
+  party,
+  localMembers,
   enemyDraft
 }) {
+  const active =
+    localMembers.find(
+      (entry) =>
+        entry.member.id ===
+        party.activeMemberId
+    ) ?? null;
+
+  if (!active) {
+    throw new RangeError(
+      "Capture party active member is unresolved"
+    );
+  }
+
   return Object.freeze({
     schema:
       "capture-battle-setup-editor-draft-v1",
@@ -289,11 +377,30 @@ function battleSetup({
         slots: Object.freeze([
           Object.freeze({
             actorId: "local-1",
-            creatureId: localDraft.id,
+            creatureId:
+              active.combatDraft.id,
             displayName:
-              localDraft.displayName,
-            controllerId: "human-local",
-            roster: null
+              active.combatDraft.displayName,
+            controllerId:
+              "human-local",
+            roster: Object.freeze({
+              activeMemberId:
+                party.activeMemberId,
+              members: Object.freeze(
+                localMembers.map(
+                  (entry) =>
+                    Object.freeze({
+                      id:
+                        entry.member.id,
+                      creatureId:
+                        entry.combatDraft.id,
+                      displayName:
+                        entry.combatDraft
+                          .displayName
+                    })
+                )
+              )
+            })
           })
         ])
       }),
@@ -317,7 +424,8 @@ function battleSetup({
 export function buildExplorationEncounterCombatSourceV1({
   snapshot: rawSnapshot,
   creatureRecords,
-  previewPartyTransfer,
+  partyDefinitions = [],
+  configuredCreatureTransfers = [],
   showcaseSkillTransfers = [],
   nativeSkillCatalog,
   statRegistry
@@ -332,29 +440,42 @@ export function buildExplorationEncounterCombatSourceV1({
       snapshot.rules.rulesetId
     );
 
-  if (
-    !PREVIEW_PARTIES[
+  const party =
+    capturePartyByRef(
+      partyDefinitions,
       snapshot.player.partyRef
-    ]
-  ) {
-    throw new RangeError(
-      "unsupported preview partyRef: " +
-        snapshot.player.partyRef
     );
-  }
 
   const registry =
     normalizeCaptureStatRegistryV1(
       statRegistry
     );
 
-  const localParty =
-    configuredPreviewParty({
-      partyRef:
-        snapshot.player.partyRef,
-      previewPartyTransfer,
+  const transfersById =
+    configuredTransfersById({
+      configuredCreatureTransfers,
       statRegistry: registry
     });
+
+  const localMembers =
+    configuredPartyMembers({
+      party,
+      transfersById,
+      combatRules
+    });
+
+  const activeLocal =
+    localMembers.find(
+      (entry) =>
+        entry.member.id ===
+        party.activeMemberId
+    ) ?? null;
+
+  if (!activeLocal) {
+    throw new RangeError(
+      "Capture party active member is unresolved"
+    );
+  }
 
   const enemySource =
     sourceRecordById(
@@ -367,13 +488,6 @@ export function buildExplorationEncounterCombatSourceV1({
     importMonsterCaptureCreatureRecordV1(
       enemySource
     );
-
-  const localCombatDraft =
-    applyCaptureCombatRulesToCreatureDraftV1({
-      creatureDraft:
-        localParty.draft,
-      combatRules
-    });
 
   const enemyCombatDraft =
     applyCaptureCombatRulesToCreatureDraftV1({
@@ -392,8 +506,12 @@ export function buildExplorationEncounterCombatSourceV1({
       skillsById.keys()
     );
 
-  const localLoadout =
-    localParty.loadout;
+  const localLoadouts =
+    localMembers.map(
+      (entry) =>
+        entry.transfer.loadout
+    );
+
   const enemyLoadout =
     activeLoadoutFor(
       enemySource,
@@ -407,7 +525,7 @@ export function buildExplorationEncounterCombatSourceV1({
   const skillDrafts =
     requireSkills(
       [
-        localLoadout,
+        ...localLoadouts,
         enemyLoadout
       ],
       skillsById
@@ -417,24 +535,29 @@ export function buildExplorationEncounterCombatSourceV1({
     exportCaptureEditorDraftsToCombatExportV3({
       battleSetup: battleSetup({
         snapshot,
-        localDraft:
-          localCombatDraft,
+        party,
+        localMembers,
         enemyDraft:
           enemyCombatDraft
       }),
       creatureDrafts: [
-        localCombatDraft,
+        ...localMembers.map(
+          (entry) =>
+            entry.combatDraft
+        ),
         enemyCombatDraft
       ],
       skillDrafts,
       loadouts: [
-        localLoadout,
+        ...localLoadouts,
         enemyLoadout
       ],
       statRegistry: registry,
-      statValues: [
-        localParty.statValues
-      ],
+      statValues:
+        localMembers.map(
+          (entry) =>
+            entry.transfer.statValues
+        ),
       metadata: {
         producer:
           "exploration-encounter-bridge-v1",
@@ -442,8 +565,10 @@ export function buildExplorationEncounterCombatSourceV1({
           snapshot.encounterId,
         returnToken:
           snapshot.returnToken,
-        previewPartySource:
-          "capture-creature-transfer-v1"
+        playerPartyRef:
+          party.id,
+        playerPartySource:
+          "capture-party-v1"
       }
     });
 
