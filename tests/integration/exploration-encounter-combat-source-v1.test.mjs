@@ -226,6 +226,15 @@ test("player party ref resolves configured active and reserve creatures without 
     reserveConfig.statValuesById.speed,
     2
   );
+  assert.deepEqual(
+    source.skillIdsByCreature.crea_mossback,
+    [
+      "lib_earth_guard",
+      "claw",
+      "lib_quake",
+      "lib_rock_slam"
+    ]
+  );
 });
 
 test("bridge rejects unknown party refs instead of inventing a player roster", async () => {
