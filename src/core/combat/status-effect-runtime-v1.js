@@ -199,6 +199,7 @@ export function applyStatusEffectV1({
   state,
   targetActorId,
   sourceActorId,
+  sourceSkillId = null,
   status
 }) {
   const validation =
@@ -236,6 +237,7 @@ export function applyStatusEffectV1({
       createStatusEffectRuntimeInstanceV1({
         definition: status,
         sourceActorId,
+        sourceSkillId,
         appliedAtMs: now
       })
     );
@@ -244,7 +246,9 @@ export function applyStatusEffectV1({
   if (status.stacking === "refresh") {
     const refreshed = Object.freeze({
       ...existing,
-      ...refreshedLifetime(existing, now)
+      ...refreshedLifetime(existing, now),
+      sourceActorId,
+      sourceSkillId
     });
     return replaceInstance(
       state,
@@ -262,6 +266,8 @@ export function applyStatusEffectV1({
   const stacked = Object.freeze({
     ...existing,
     ...refreshedLifetime(existing, now),
+    sourceActorId,
+    sourceSkillId,
     stacks: nextStacks,
     shieldRemaining:
       existing.definition.kind === "shield"
