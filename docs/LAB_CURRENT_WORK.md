@@ -24436,3 +24436,43 @@ Médias publiés contrôlés : global-assets `b235f2b0deee0f79e4e6e1de81f05ba1b9
 Statut : intégration et preview techniques vérifiées. La limite des titres superposés de la source reste visible et documentée.
 Validation artistique de Sylvain et checkpoint GREEN final restent en attente. Les autres familles ne sont pas validées par ce lot.
 Checkpoint intermédiaire de CI prévu : `checkpoint/lab-impact-source-alpha-v1-ci-2026-10-03`.
+
+
+## Micro-lot PROJECTILES — source à damier aplati — 2026-10-03
+
+Autorisation de Sylvain : « je te donne une autre planche, enchaîne avec, rendre transparent / découpe / placer ».
+Source : `Image ChatGPT 3 oct. 2026, 20_36_51.png`, 1536 × 1024, RGB, SHA-256 `ad41429d03909e3b7799eedb2d1745ec6a41b7110efc919dc4c95624268b8914`.
+Diagnostic : 8 familles × 8 phases. Le damier est dans les pixels ; pas de canal alpha réel.
+Mapping : feu→fire, eau→water, terre→earth, plante→thorn, électrique→electric, glace→ice, lumière→light, ombre→shadow.
+
+Bases GitHub relues : laboratoire `bbfd1baa81d83fb77d13623a7f4be962b082f1bd`, bibliothèque publiée `b235f2b0deee0f79e4e6e1de81f05ba1b9921eec` ; CI verte sur les deux bases.
+Dernier checkpoint GREEN antérieur : `checkpoint/lab-fire-zone-contact-sync-v1-green-2026-10-03`, `f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d`.
+Main vérifié : `3197388f2b3ee7491be6e6125a015315158cffa2` — protégé.
+
+Checkpoints de départ sur les bases exactes :
+- `checkpoint/lab-start-projectile-source-alpha-v1-2026-10-03` ;
+- `checkpoint/global-assets-start-projectile-source-alpha-v1-2026-10-03`.
+Branches de travail isolées, sans promouvoir les autres médias provisoires de l'ancien work :
+- `work/lab-projectile-source-alpha-v1-2026-10-03` ;
+- `work/global-assets-projectile-source-alpha-v1-2026-10-03`.
+
+Objectif / propriétaire : huit IDs existants, vrais projectiles transparents ; global-assets possède médias et catalogue unique, Asset Presentation résout les IDs, Render Adapter existant lit les atlas.
+Retrait du fond par imagegen en mode background-extraction, avec conservation demandée des 64 phases, positions, silhouettes, couleurs, glows et noyaux noirs. Comparaison visuelle obligatoire avec l'original ; cette étape n'est pas déclarée copie exacte des pixels RGB aplatis.
+Après validation du résultat alpha, extraction sans resampling, 64 PNG RGBA, 8 atlas WebP lossless, original et dérivé RGBA archivés.
+
+Fichiers autorisés :
+- `assets/library/capture/sprites/source/projectile_elemental_*` ;
+- `assets/library/capture/sprites/projectiles/{fire,water,earth,thorn,electric,ice,light,shadow}/frames/*.png` et `atlases/*.webp` ;
+- les huit ressources projectile de `data/assets/catalog/global-visual-assets.v1.json` ;
+- `scripts/extract-projectile-sprites-v1.py` ;
+- `tests/unit/projectile-source-alpha-v1.test.mjs` ;
+- `src/assets/global-visual-library.js`, `examples/dom-demo/demo-assets.js` seulement pour les métadonnées de présentation des huit projectiles ;
+- `tests/unit/demo-presentation-assets.test.mjs` et sentinelle de raccord projectile si requise ;
+- `examples/dom-demo/projectile-review.html`, fixture utilisant le renderer existant ;
+- `docs/LAB_CURRENT_WORK.md`, `docs/LAB_PROJECTILE_SOURCE_ALPHA_V1.md`, synchronisation de `docs/LAB_CHARTE.md` sur la bibliothèque si nécessaire.
+
+Domaines protégés : Rules, Session, Runtime, dégâts, énergie, cooldowns, collision/contact, créatures, audio, impacts validés, médias dédiés de la vraie Boule de feu, main et Zombicide-40k.
+Aucun nouveau catalogue, resolver, moteur, fallback masqué, timer global ou branche par skillId.
+TDD : contrat des 8 IDs et des 64 images source → RED → médias réels → inspection claire/sombre et PNG/atlas décodés → CI → preview/éditeur → validation artistique utilisateur → GREEN final.
+Critère de fin : vrais binaires publiés dans global-assets, catalogue et éditeur raccordés aux mêmes IDs, renderer et export actifs, CI réussie et preview fournie.
+État initial : alpha à produire, sentinelle de contenu à rendre RED. Aucun GREEN artistique avant inspection et validation utilisateur.
