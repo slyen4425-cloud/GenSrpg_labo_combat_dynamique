@@ -404,7 +404,8 @@ function resolvePreviewPresentationAsset(assetId) {
     visualContext?.assetCatalog?.assets?.find(
       (asset) => asset.id === assetId
     ) ?? null;
-  const file = catalogAsset?.resource?.file;
+  const resource = catalogAsset?.resource ?? null;
+  const file = resource?.file;
 
   if (typeof file !== "string" || file.trim() === "") {
     return null;
@@ -412,7 +413,20 @@ function resolvePreviewPresentationAsset(assetId) {
 
   return Object.freeze({
     assetId,
-    url: globalVisualAssetUrl(file)
+    url: globalVisualAssetUrl(file),
+    frameCount: Math.max(
+      1,
+      Math.floor(Number(resource?.frameCount) || 1)
+    ),
+    frameMs:
+      Number.isFinite(Number(resource?.frameMs)) &&
+      Number(resource.frameMs) > 0
+        ? Number(resource.frameMs)
+        : undefined,
+    playbackMode:
+      resource?.playbackMode === "loop"
+        ? "loop"
+        : "once"
   });
 }
 
