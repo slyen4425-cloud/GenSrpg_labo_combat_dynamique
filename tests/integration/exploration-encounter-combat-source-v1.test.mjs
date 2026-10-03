@@ -26,13 +26,17 @@ async function records() {
 async function configuredSource(rawSnapshot = snapshot()) {
   const [
     creatureRecords,
-    previewPartyTransfer,
+    playerParty,
+    loupTransfer,
+    mossbackTransfer,
     nativeSkillCatalog,
     statRegistry,
     ...showcaseSkillTransfers
   ] = await Promise.all([
     records(),
+    json("data/capture/parties/player-party.v1.json"),
     json("data/capture/showcase/crea-loup.capture-creature-transfer-v1.json"),
+    json("data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json"),
     json("data/combat/skills/catalog.v1.json"),
     json("data/capture/monster-capture-stat-registry.v1.json"),
     json("data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json"),
@@ -44,7 +48,11 @@ async function configuredSource(rawSnapshot = snapshot()) {
   return buildExplorationEncounterCombatSourceV1({
     snapshot: rawSnapshot,
     creatureRecords,
-    previewPartyTransfer,
+    partyDefinitions: [playerParty],
+    configuredCreatureTransfers: [
+      loupTransfer,
+      mossbackTransfer
+    ],
     showcaseSkillTransfers,
     nativeSkillCatalog,
     statRegistry
@@ -67,7 +75,7 @@ function snapshot(opponentCreatureId = "crea_nat_3") {
     encounterId: "encounter-42",
     source: "terrain-random",
     player: {
-      partyRef: "capture-party-preview"
+      partyRef: "capture-party-player-v1"
     },
     opponents: [
       { creatureId: opponentCreatureId }
@@ -125,7 +133,7 @@ test("Exploration snapshot builds real 1v1 Combat source with the encountered cr
   );
 });
 
-test("preview party ref resolves to the configured Loup volcanique transfer without changing opponent identity", async () => {
+test("player party ref resolves configured active and reserve creatures without copying their definitions", async () => {
   const source =
     await configuredSource(
       snapshot("crea_nat_3")
@@ -179,6 +187,44 @@ test("preview party ref resolves to the configured Loup volcanique transfer with
     source.skillPresentations.cap_fire_atk_6
       .visual.aura.assetId,
     "pack:capture:sprite-fire-zone-loop-01"
+  );
+
+  const roster =
+    source.roster.teams["local-1"];
+
+  assert.equal(
+    roster.activeMemberId,
+    "member-loup"
+  );
+  assert.deepEqual(
+    roster.members.map((member) => ({
+      id: member.id,
+      creatureId: member.creatureId
+    })),
+    [
+      {
+        id: "member-loup",
+        creatureId: "crea-loup"
+      },
+      {
+        id: "member-moussados",
+        creatureId: "crea_mossback"
+      }
+    ]
+  );
+
+  const reserveConfig =
+    source.fighterConfigs.crea_mossback;
+
+  assert.ok(reserveConfig);
+  assert.equal(reserveConfig.maxHp, 200);
+  assert.equal(
+    reserveConfig.statValuesById.earth,
+    10
+  );
+  assert.equal(
+    reserveConfig.statValuesById.speed,
+    2
   );
 });
 
@@ -257,4 +303,19 @@ test("Exploration encounter bridge rejects an unknown Combat ruleset", async () 
       }),
     /ruleset/
   );
+});
+
+
+test("Encounter Combat source contains no hardcoded preview party mapping", async () => {
+  const source = await readFile(
+    new URL(
+      "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.doesNotMatch(source, /PREVIEW_PARTIES/);
+  assert.doesNotMatch(source, /configuredPreviewParty/);
+  assert.doesNotMatch(source, /capture-party-preview/);
 });
