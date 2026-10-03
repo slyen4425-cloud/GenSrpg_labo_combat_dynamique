@@ -23859,3 +23859,93 @@ Aucune détection de type de dégâts n'est ajoutée à l'UI.
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
+
+
+## Chantier — Loup / Cendre Showcase V1 — 2026-10-03
+
+Base exacte : `993c1e2c6bbc36e0c588461812ab06e1a8de383b`
+(Persistent Zone Damage Feedback V1 GREEN).
+
+- checkpoint de départ :
+  `checkpoint/lab-start-loup-cendre-showcase-v1-2026-10-03` ;
+- branche :
+  `work/lab-loup-cendre-showcase-v1-2026-10-03`.
+
+### Entrées utilisateur
+
+Trois exports Capture à intégrer :
+- créature `crea-loup` — Loup volcanique ;
+- capacité `fireball` — Boule de feu modifiée ;
+- capacité `cap_fire_special_1` — Cendre aveuglante.
+
+### Sous-lot A — Cendre aveuglante grisée
+
+Symptôme :
+- capacité validée/enregistrée ;
+- présente dans le loadout ;
+- bouton grisé en combat.
+
+Diagnostic :
+- `Cendre aveuglante` applique deux `stat_modifier` :
+  `speed` et `physical` ;
+- `resolveSkillStart()` valide correctement les stats ciblées avant toute dépense ;
+- les créatures de preview simples peuvent être exportées sans
+  `statValues` explicites ;
+- dans l'export V3 actuel, `statEffectRulesById` est attaché uniquement aux
+  créatures possédant des `statValues` ;
+- une cible sans valeurs personnalisées ne reçoit donc pas les règles du
+  registre et `previewSkill()` retourne `unsupported_status_stat`.
+
+Correction cible :
+- le `CaptureStatRegistryV1` reste l'unique propriétaire des règles ;
+- si un registre est fourni à l'export, ses `statEffectRulesById` doivent
+  être disponibles sur **toutes** les créatures exportées ;
+- une créature sans `statValues` explicites reçoit des valeurs runtime
+  neutres (0) pour les stats du registre ;
+- aucune exception par `skillId`, `creatureId` ou adversaire de preview.
+
+### Sous-lot B — presets vitrine Loup
+
+Intégration data-driven :
+- remplacer le preset `crea-loup` par l'export utilisateur ;
+- ajouter le preset `cap_fire_special_1` ;
+- ajouter un preset `fireball` qui remplace explicitement la capacité
+  native dans l'état configuré de l'éditeur vitrine ;
+- ajouter ces deux capacités à
+  `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`.
+
+Le catalogue natif/historique reste intact :
+les presets sont appliqués par le mécanisme de transfert existant en mode
+`replace`.
+
+### Données Loup attendues
+
+- niveau 20 ;
+- slots :
+  - 1 = `claw` ;
+  - 2 = `fireball` ;
+  - 3 = `cap_fire_special_1` ;
+  - 4 = `lib_flame_bite` ;
+  - ultime = `cap_fire_atk_6`.
+
+### Protégé
+
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main` ;
+- aucune seconde source de vérité des stats ;
+- aucun contournement de `previewSkill()` ;
+- aucun bypass du statut `stat_modifier` ;
+- aucun branchement par capacité/créature ;
+- aucun changement aux formules de dégâts, cooldowns ou énergie ;
+- aucune duplication du catalogue natif comme nouvelle autorité.
+
+### TDD
+
+A. RED : export avec registre + cible sans statValues doit tout de même rendre
+`speed/physical` modifiables ;
+B. RED : Cendre doit être `previewSkill().ok === true` à énergie suffisante ;
+C. RED : presets Loup/Cendre/Fireball présents et cohérents avec le loadout ;
+D. suite complète GREEN ;
+E. checkpoint/preview utilisateur.
+
+État : **CHANTIER OUVERT — TDD avant implémentation**.
