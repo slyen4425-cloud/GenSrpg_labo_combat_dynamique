@@ -24028,3 +24028,49 @@ Loup volcanique :
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
+
+
+## Micro-lot — Status Source Skill Icon V1 — 2026-10-03
+
+Base exacte : `f3dee94e22b5b28a0ebeaf1907dcea2ed7db1493` (Loup / Cendre Showcase V1 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-status-source-skill-icon-v1-2026-10-03` ;
+- branche : `work/lab-status-source-skill-icon-v1-2026-10-03`.
+
+### Diagnostic
+
+Le HUD de statuts projette déjà exclusivement `fighter.statusEffects`, mais l’instance runtime ne conserve aujourd’hui que `sourceActorId`.
+Le `skill.id` existe au moment de `applyImmediateTacticalEffectsV1()`, puis est perdu avant la création de l’instance active.
+Le renderer ne peut donc pas retrouver l’icône canonique de la capacité source et utilise actuellement le sprite de statut ou le badge générique.
+
+### Contrat cible
+
+- `StatusEffectV1` reste inchangé : aucune icône et aucune provenance ajoutée à la définition métier ;
+- `StatusEffectRuntimeInstanceV1` porte une provenance minimale optionnelle `sourceSkillId` ;
+- le chemin `Skill -> apply_status -> fighter.statusEffects` transmet le `skill.id` réel ;
+- refresh/stack conservent une seule instance et une seule provenance déterministe : la dernière application autoritaire ;
+- `dom-status-fx` résout d’abord l’icône via la présentation canonique de `sourceSkillId` ;
+- si la capacité source n’est pas résoluble, fallback visuel existant : sprite de statut puis badge générique de polarité ;
+- 1v1 et 2v2 utilisent le même renderer et le même resolver de présentation de capacité.
+
+### Protégé
+
+- aucune modification de `StatusEffectV1` ;
+- aucune seconde liste de statuts ;
+- aucun cache métier ;
+- aucun timer/observer ;
+- aucune branche par `skillId` ou `statusId` ;
+- aucun changement de dégâts, durée, stacks ou cleanse ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD
+
+- RED : le statut réellement appliqué doit conserver `sourceSkillId` ;
+- RED : une réapplication stack/refresh garde une provenance unique et déterministe ;
+- RED : l’icône HUD préfère l’icône de la capacité source au sprite de statut ;
+- RED : expiration/cleanse retire toujours l’icône depuis le snapshot ;
+- RED : 1v1 et 2v2 raccordent le même resolver canonique de capacité ;
+- suite complète GREEN avant checkpoint/preview.
+
+État : **LOT OUVERT — TDD avant implémentation**.
