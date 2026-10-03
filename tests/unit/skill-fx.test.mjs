@@ -1447,7 +1447,7 @@ test("DOM impact renderer plays a canonical atlas sequence without placeholder f
   );
   assert.match(
     appended[0].style.backgroundSize,
-    /% %$/
+    /^\d+(?:\.\d+)?% \d+(?:\.\d+)?%$/
   );
   assert.equal(animations[0].options.duration, 90);
   assert.equal(animations[0].keyframes.length, 2);
