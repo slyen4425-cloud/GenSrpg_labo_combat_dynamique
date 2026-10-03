@@ -662,3 +662,110 @@ Après une mise à jour réussie :
 4. la progression ne fait que décider si une capacité configurée est actuellement active en combat ; elle ne supprime jamais la configuration planifiée.
 
 Si le type de slot `standard / ultimate` est modifié explicitement par l’utilisateur, le loadout peut devenir incohérent et demander une correction explicite ; aucune migration automatique silencieuse n’est autorisée.
+
+## 34. Validation réelle obligatoire des assets — aucun placeholder ne peut être déclaré GREEN
+
+Cette règle est permanente et s'applique à tout asset visuel, audio ou média produit, importé, découpé, renommé, catalogué ou raccordé dans le laboratoire.
+
+Un asset n'est jamais considéré comme « créé », « intégré », « stocké », « prêt », « terminé » ou GREEN uniquement parce que :
+
+- un chemin existe dans GitHub ;
+- un fichier portant le bon nom existe ;
+- un `assetId` existe dans un catalogue ;
+- un test vérifie seulement l'existence du fichier ou de la référence ;
+- le renderer affiche quelque chose ;
+- une séquence technique possède le bon nombre de frames ;
+- la CI passe sans vérifier le contenu réel du média.
+
+### 34.1. Définition obligatoire d'un asset réellement livré
+
+Pour être déclaré réellement livré, un asset doit satisfaire cumulativement les contrôles suivants :
+
+1. **Fichier réel** — le média binaire ou textuel final existe physiquement dans le dépôt cible attendu ;
+2. **Contenu réel** — le contenu du fichier a été inspecté et correspond au visuel / son / média attendu, pas à un placeholder, une forme de test, un symbole, un fichier vide ou un substitut provisoire ;
+3. **Nom et chemin** — le nom, l'extension et le chemin correspondent au contrat d'asset prévu ;
+4. **Catalogue unique** — l'`assetId` canonique pointe vers ce fichier réel depuis le catalogue autoritaire, sans second catalogue concurrent ;
+5. **Raccord runtime** — le vrai chemin de présentation consomme cet `assetId` et résout bien vers ce fichier ;
+6. **Preview réelle** — lorsque l'asset est visible dans l'UI, une preview dédiée permet de vérifier le rendu réel sans fallback masqué ;
+7. **Traçabilité Git** — le rapport final fournit le SHA du commit contenant réellement les médias livrés et le nombre exact de fichiers concernés.
+
+Si l'un de ces contrôles manque, l'état doit être annoncé explicitement comme **PARTIEL**, **PROVISOIRE**, **PLACEHOLDER** ou **NON VÉRIFIÉ**. Il est interdit d'utiliser le mot GREEN pour faire croire que le livrable artistique ou média final est présent.
+
+### 34.2. Placeholders et assets provisoires
+
+Un placeholder est autorisé uniquement s'il est nécessaire à un jalon technique et s'il est déclaré comme tel dans :
+
+- son nom ou son metadata quand c'est pertinent ;
+- `LAB_CURRENT_WORK.md` ;
+- le rapport utilisateur.
+
+Un placeholder ne doit jamais :
+
+- porter silencieusement le statut d'asset final ;
+- remplacer un asset final sans mention explicite ;
+- être renommé pour donner l'impression qu'il est définitif ;
+- rester dans le catalogue final sans statut provisoire documenté ;
+- servir de preuve qu'une planche ou un sprite final a réellement été intégré.
+
+### 34.3. Vérification du contenu, pas seulement de la structure
+
+Les tests structurels restent nécessaires mais ne suffisent pas.
+
+Exemples de validations insuffisantes prises seules :
+
+- `8 fichiers existent` ;
+- `la séquence contient 8 frames` ;
+- `l'URL répond 200` ;
+- `l'assetId est résolu` ;
+- `le DOM affiche une image`.
+
+Pour les médias visuels, au moins une vérification du contenu réel doit être faite avant GREEN : inspection directe, comparaison avec la source validée, vérification de l'atlas / spritesheet, ou autre contrôle démontrant que le média attendu est réellement celui stocké.
+
+Pour les médias audio, l'équivalent s'applique : le fichier doit être réellement présent, lisible et correspondre au son attendu, pas seulement exister sous un nom correct.
+
+### 34.4. Rapport obligatoire après intégration d'assets
+
+Tout rapport annonçant une intégration d'assets doit préciser au minimum :
+
+- la source utilisée ;
+- le nombre exact d'assets logiques ;
+- le nombre exact de fichiers physiques ajoutés / remplacés ;
+- les formats ;
+- le chemin canonique ;
+- le ou les `assetId` concernés ;
+- le SHA Git exact ;
+- le statut de vérification du contenu réel ;
+- le lien de preview lorsque l'asset est visible en jeu.
+
+Il est interdit de résumer ce rapport par « assets intégrés » si seule la structure technique a été raccordée.
+
+### 34.5. Source générée dans ChatGPT vs dépôt GitHub
+
+Le fait qu'une image, spritesheet, icône, son ou autre média ait été généré ou affiché dans une conversation ChatGPT ne signifie pas qu'il est stocké dans GitHub.
+
+Ces états doivent rester distingués :
+
+- **créé dans la conversation** ;
+- **exporté / récupéré comme fichier** ;
+- **découpé / transformé** ;
+- **commité dans GitHub** ;
+- **catalogué** ;
+- **raccordé au runtime** ;
+- **vérifié en preview**.
+
+Aucune étape ne doit être déduite automatiquement de la précédente.
+
+### 34.6. Interdiction de faux achèvement
+
+Si un outil empêche la récupération du média source, si les octets ne sont pas accessibles, si la source originale n'est pas retrouvée ou si le contenu ne peut pas être inspecté, il faut le dire explicitement.
+
+Dans ce cas, l'assistant doit :
+
+1. arrêter la déclaration d'achèvement ;
+2. conserver les tests et le diagnostic déjà réalisés ;
+3. ne pas remplacer le média par une approximation non demandée ;
+4. ne pas masquer le problème par un fallback ;
+5. demander ou rechercher la source originale nécessaire ;
+6. reprendre l'intégration seulement quand le livrable réel est disponible.
+
+Cette section prime sur toute ancienne procédure qui considérerait l'existence d'un chemin, d'un catalogue ou d'un test structurel comme preuve suffisante qu'un asset final a été réellement livré.
