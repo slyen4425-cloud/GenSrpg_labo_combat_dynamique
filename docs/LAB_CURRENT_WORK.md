@@ -24356,3 +24356,16 @@ Invariants :
 - l'atlas ne porte que des données de présentation.
 
 État : périmètre déclaré, codage non commencé.
+
+### Gouvernance ajoutée pendant ce lot
+
+La charte permanente a été renforcée avec la section 34 — Validation réelle obligatoire des assets.
+
+Nouveau principe contraignant :
+- un asset n'est pas GREEN parce qu'un chemin, un assetId ou 8 frames existent ;
+- le contenu réel du média doit être inspecté et correspondre au livrable attendu ;
+- une génération visible dans ChatGPT n'est jamais assimilée à un fichier réellement commité dans GitHub ;
+- tout rapport asset final doit fournir SHA, nombre de fichiers physiques, assetIds, chemin canonique et statut de vérification du contenu ;
+- placeholder / provisoire / non vérifié doivent être annoncés explicitement et ne peuvent pas être présentés comme livrables finaux.
+
+Commit charte : 9cac3ad854124be7c75d7f155c8a6287dcfd8af4.
