@@ -24074,3 +24074,45 @@ Le renderer ne peut donc pas retrouver l’icône canonique de la capacité sour
 - suite complète GREEN avant checkpoint/preview.
 
 État : **LOT OUVERT — TDD avant implémentation**.
+
+
+### Résultat — Status Source Skill Icon V1
+
+#### Cause réelle
+
+Le runtime de statut conservait `sourceActorId` mais perdait le `skill.id` déjà disponible dans `applyImmediateTacticalEffectsV1()`.
+Le HUD ne pouvait donc pas identifier la capacité ayant réellement appliqué l’effet et retombait sur le sprite de statut ou le badge générique.
+
+#### Correction
+
+- `StatusEffectRuntimeInstanceV1` porte maintenant un `sourceSkillId` optionnel ;
+- `apply_status` transmet le `skill.id` réel vers l’instance active ;
+- `replace/refresh/stack` gardent une seule instance et mettent à jour une provenance unique avec la dernière application autoritaire ;
+- `dom-status-fx` préfère `presentationForSkill(sourceSkillId).icon` pour l’icône HUD ;
+- si aucune capacité source n’est résoluble, le fallback visuel existant reste : sprite de statut puis badge de polarité ;
+- 1v1 et 2v2 raccordent le même resolver canonique de capacité.
+
+`StatusEffectV1` reste inchangé.
+
+#### TDD / validation
+
+- déclaration lot : `1312ce5b680a9901aa59857bf36b2a0d477e58df` ;
+- RED : `88867a1808697144b3851f2398b158bb2580ed38` — CI `37120450847` FAILURE attendue ;
+- provenance runtime : `d443166994bdf1315bfa746fdbfee2f6191d99e3`, `df7eb24c8ffa63c1d2dc01517f5b1c12f2c9f1a4`, `dfee5569bad9d89bbcc2cf8fe8f4a18b845d7abb` ;
+- renderer source-skill : `eeb7d5458594d829d730f85c6048028a38928f6a` ;
+- raccord 1v1/2v2 : `a3e42de381ee056b8c2c9a6eb703c0283eae4e29`, `75cd1f260a9c4dfd0ccc41466f541c0191bb4e0f` ;
+- sentinelle 2v2 corrigée sans modification moteur : `a7c00d3f3e734ea524b792399f7ac91afaa4ebfe` ;
+- CI GREEN : `37120605791` — **904/904 PASS, 0 FAIL** ;
+- architecture : `e9db79d43b0d91b00c6cbe29637d50244aadc421`.
+
+#### Invariants
+
+- une seule autorité des statuts : `fighter.statusEffects` ;
+- aucune icône dans `StatusEffectV1` ;
+- aucun cache/timer/observer ;
+- aucun branchement par `skillId/statusId` ;
+- aucun changement aux dégâts, durée, cleanse ou cooldown ;
+- `Zombicide-40k` inchangé ;
+- aucun merge vers `main`.
+
+État : **GREEN technique — prêt pour checkpoint/preview**.
