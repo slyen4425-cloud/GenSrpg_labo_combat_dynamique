@@ -5639,8 +5639,8 @@ async function hydrateAssetCatalog(root, listen) {
     const custom = one(root, "[data-creature-custom-views]").checked;
     one(root, "[data-creature-view-settings]").hidden = !custom;
     for (const [view, images] of [
-      ["opponent", [frontImage, socketFrontImage]],
-      ["player", [backImage, socketBackImage]]
+      ["opponent", [frontImage]],
+      ["player", [backImage]]
     ]) {
       const viewScale = one(root, "[data-creature-" + view + "-scale]");
       if (!custom) viewScale.value = String(scale);
@@ -5653,6 +5653,10 @@ async function hydrateAssetCatalog(root, listen) {
       for (const image of images) {
         image.style.transform = `translate(${x}px, ${y}px) scale(${resolvedScale})`;
       }
+    }
+    // Keep the existing socket-editing reference frame separate from combat placement.
+    for (const image of [socketFrontImage, socketBackImage]) {
+      image.style.transform = `scale(${scale})`;
     }
   }
 

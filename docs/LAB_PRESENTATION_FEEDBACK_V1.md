@@ -80,3 +80,5 @@ Preuve de l’éditeur : GenSrpG_Presentation_Controls_1791065271425.jpg, conser
 ## Validation restant ouverte
 
 Sylvain doit apprécier en combat sur son smartphone la lisibilité des impacts, la qualité du cycle projectile et la calibration des vues pour ses créatures. Aucun calibrage arbitraire des presets ni promotion de médias CAST/STATUS. Reprendre depuis les refs et la CI, puis obtenir cette validation avant tout checkpoint GREEN ou intégration main.
+
+Revue finale des surfaces d’édition : les réglages nouveaux par vue s’appliquent à la galerie et au combat. Les images de placement des sockets conservent leur transformation commune antérieure ; aucun offset nouveau de combat n’est injecté dans ce référentiel d’édition. Les coordonnées et le traitement des points ne changent pas.
