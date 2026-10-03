@@ -279,3 +279,58 @@ test("status info presentation has no independent clock and both clients provide
     assert.match(block, /skillDefinitionFor/);
   }
 });
+
+
+test("status info explains physical stat reduction with gameplay meaning instead of raw stat math", () => {
+  const instance = {
+    ...dotInstance(),
+    stacks: 1,
+    definition: {
+      id: "physical-down",
+      kind: "stat_modifier",
+      polarity: "detrimental",
+      durationModel: "time_ms",
+      durationMs: 8000,
+      stacking: "refresh",
+      maxStacks: 1,
+      tags: [],
+      statId: "physical",
+      modifierMode: "points",
+      deltaPoints: -50
+    },
+    expiresAtMs: 8000
+  };
+
+  const info = projectStatusEffectInfoV1({
+    instance,
+    elapsedMs: 1000,
+    sourceSkill: {
+      id: "cap_fire_special_1",
+      name: "Cendre aveuglante"
+    },
+    fighter: {
+      statValuesById: {
+        physical: 0
+      },
+      statEffectRulesById: {
+        physical: {
+          damageChannel: "physical",
+          resistanceChannel: "physical",
+          damagePctPerPoint: 1,
+          resistancePctPerPoint: 1,
+          chargeTimeReductionPctPerPoint: 0,
+          damageReductionPctPerPoint: 0
+        }
+      },
+      statusEffects: [instance]
+    }
+  });
+
+  assert.deepEqual(
+    info.effectLines,
+    [
+      "Dégâts physiques réduits de 50 %",
+      "Résistance physique réduite de 50 %"
+    ]
+  );
+});
