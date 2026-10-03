@@ -24437,3 +24437,16 @@ Gate utilisateur restante :
 3. lancer au moins une capacité ;
 4. terminer le combat ;
 5. vérifier retour Exploration avec position conservée.
+
+## Validation utilisateur finale — Encounter Energy Ruleset — 2026-10-03
+
+Retour utilisateur explicite :
+- le test depuis Exploration a déjà été effectué ;
+- le combat réel fonctionne ;
+- l'énergie et le déroulement attendu sont validés ;
+- le retour Exploration est validé.
+
+La gate utilisateur restante est donc levée.
+
+État :
+**GREEN utilisateur — le ruleset Encounter énergie peut servir de base au prochain micro-lot.**
