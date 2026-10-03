@@ -326,6 +326,7 @@ export function applyImmediateTacticalEffectsV1({
           state: nextState,
           targetActorId: affectedId,
           sourceActorId: actorId,
+          sourceSkillId: skill.id,
           status: effect.status
         });
         events.push(Object.freeze({
