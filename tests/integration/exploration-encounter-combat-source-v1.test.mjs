@@ -11,6 +11,12 @@ import {
 import {
   createRosterSession
 } from "../../src/core/combat/roster-session.js";
+import {
+  createCombatRuntime
+} from "../../src/core/combat/combat-runtime.js";
+import {
+  normalizeCombatCommandDefinition
+} from "../../src/contracts/combat-command-definition.js";
 
 async function records() {
   const raw = JSON.parse(
@@ -425,4 +431,209 @@ test("real Encounter roster switches from Loup to Moussados through Roster Sessi
       "lib_rock_slam"
     ]
   );
+});
+
+
+function fakeRuntimeClock() {
+  let time = 0;
+  let nextId = 1;
+  const queue = [];
+
+  return {
+    now: () => time,
+    setTime(value) {
+      time = value;
+    },
+    setTimer(callback, delayMs) {
+      const item = {
+        id: nextId++,
+        callback,
+        delayMs
+      };
+      queue.push(item);
+      return item.id;
+    },
+    clearTimer(id) {
+      const index = queue.findIndex(
+        (item) => item.id === id
+      );
+      if (index >= 0) {
+        queue.splice(index, 1);
+      }
+    },
+    fireNext() {
+      const item = queue.shift();
+      item?.callback();
+      return item;
+    }
+  };
+}
+
+test("real Encounter Runtime releases Recall recovery and allows Summon without another combat action", async () => {
+  const source =
+    await configuredSource(
+      snapshot("crea_nat_3")
+    );
+
+  const session =
+    createCombatSession({
+      distance: "medium",
+      battleFormat:
+        source.battleFormat,
+      fighters:
+        source.fighters,
+      skillSpeedMultiplier:
+        source.skillSpeedMultiplier
+    });
+
+  const roster =
+    createRosterSession({
+      combatSession: session,
+      roster: source.roster,
+      fighterConfigs:
+        source.fighterConfigs
+    });
+
+  const recall =
+    normalizeCombatCommandDefinition(
+      await json(
+        "data/combat/commands/recall.command.json"
+      )
+    );
+  const summon =
+    normalizeCombatCommandDefinition(
+      await json(
+        "data/combat/commands/summon.command.json"
+      )
+    );
+
+  const clock = fakeRuntimeClock();
+  const completed = [];
+  const idleProgress = [];
+
+  const runtime =
+    createCombatRuntime({
+      session,
+      tickMs: 50,
+      now: clock.now,
+      setTimer: clock.setTimer,
+      clearTimer:
+        clock.clearTimer,
+      onProgress(progress) {
+        if (
+          progress.actorId ===
+            "local-1" &&
+          progress.actionId == null
+        ) {
+          idleProgress.push(
+            progress
+          );
+        }
+      },
+      onResolved(resolution) {
+        completed.push(
+          resolution
+        );
+        roster.applyCommandResolution(
+          "local-1",
+          resolution
+        );
+      }
+    });
+
+  roster.selectReserve(
+    "local-1",
+    "member-moussados"
+  );
+
+  runtime.start();
+
+  const startedRecall =
+    runtime.startCommand({
+      actorId: "local-1",
+      command: recall
+    });
+
+  assert.equal(
+    startedRecall.ok,
+    true
+  );
+
+  clock.setTime(
+    recall.preparationMs
+  );
+  clock.fireNext();
+
+  assert.equal(
+    completed.at(-1)?.commandKind,
+    "recall"
+  );
+  assert.equal(
+    roster.snapshot()["local-1"]
+      .activeMemberId,
+    null
+  );
+  assert.equal(
+    roster.snapshot()["local-1"]
+      .selectedReserveMemberId,
+    "member-moussados"
+  );
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "local-1"
+    ),
+    true
+  );
+
+  clock.setTime(
+    recall.preparationMs +
+      recall.recoveryMs
+  );
+  clock.fireNext();
+
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "local-1"
+    ),
+    false
+  );
+  assert.ok(
+    idleProgress.length > 0
+  );
+
+  const startedSummon =
+    runtime.startCommand({
+      actorId: "local-1",
+      command: summon
+    });
+
+  assert.equal(
+    startedSummon.ok,
+    true
+  );
+
+  clock.setTime(
+    recall.preparationMs +
+      recall.recoveryMs +
+      summon.preparationMs
+  );
+  clock.fireNext();
+
+  assert.equal(
+    completed.at(-1)?.commandKind,
+    "summon"
+  );
+  assert.equal(
+    roster.snapshot()["local-1"]
+      .activeMemberId,
+    "member-moussados"
+  );
+  assert.equal(
+    session.snapshot()
+      .fighters["local-1"]
+      .maxHp,
+    200
+  );
+
+  runtime.dispose();
 });
