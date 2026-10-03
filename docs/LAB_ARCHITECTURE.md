@@ -3090,3 +3090,24 @@ Pour l’icône HUD uniquement :
 La teinte et le sprite persistant du modèle restent résolus par `statusPresentationFor(statusId)`. L’icône de la capacité source ne devient donc jamais une seconde définition du statut.
 
 Les clients 1v1 et 2v2 raccordent le même `dom-status-fx`. Aucun timer, observer, cache métier ou branchement par identifiant de capacité/statut n’est introduit.
+
+
+## Status Info Card V1 — projection tactile sans autorité parallèle
+
+La fiche tactile de statut est une projection pure des données déjà autoritaires.
+
+Chaîne :
+
+`CombatState.elapsedMs + fighter.statusEffects[] + sourceSkillId -> SkillDefinition -> status-effect-info-v1 -> dom-status-fx`.
+
+Règles :
+- aucune durée locale n’est stockée ;
+- aucune horloge UI n’existe ;
+- `remainingLabel` est recalculé uniquement pendant `dom-status-fx.sync(state)` depuis `expiresAtMs - state.elapsedMs` ou `remainingActionEnds` ;
+- stacks et max viennent de l’instance et de sa définition actives ;
+- DoT/HoT/stat modifier/shield/immobilize/silence/stun/taunt sont décrits depuis les champs du contrat `StatusEffectV1` ;
+- le nom de la capacité d’origine est résolu depuis le registre `SkillDefinition` déjà utilisé par le client ;
+- aucune description n’est stockée par `statusId` ou `skillId`.
+
+Le renderer garde une seule interaction locale de présentation : toucher l’icône crée/affiche sa fiche ; expiration ou cleanse supprime l’icône et la fiche avec le même record HUD.
+Il n’existe aucun observer global, timer global ou second état métier.
