@@ -26,11 +26,11 @@ const DATA_URLS = Object.freeze({
   ),
   commands: Object.freeze({
     recall: new URL(
-      "../../data/combat/commands/recall.command.json",
+      "../../data/combat/commands/recall.command.json?rev=player-party-recall-runtime-fix-v1",
       import.meta.url
     ),
     summon: new URL(
-      "../../data/combat/commands/summon.command.json",
+      "../../data/combat/commands/summon.command.json?rev=player-party-recall-runtime-fix-v1",
       import.meta.url
     )
   }),
