@@ -1,0 +1,16 @@
+{
+  "schema": "capture-party-v1",
+  "version": 1,
+  "id": "capture-party-player-v1",
+  "activeMemberId": "member-loup",
+  "members": [
+    {
+      "id": "member-loup",
+      "creatureId": "crea-loup"
+    },
+    {
+      "id": "member-moussados",
+      "creatureId": "crea_mossback"
+    }
+  ]
+}
