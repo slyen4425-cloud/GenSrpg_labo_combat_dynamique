@@ -24281,3 +24281,78 @@ Invariants :
 - aucun merge vers main.
 
 État : GREEN technique — prêt pour checkpoint/preview.
+
+## Micro-lot — Visual Placeholder Repair V1 — 2026-10-03
+
+Base laboratoire GREEN : f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d.
+Base global-assets : d73ad04dbc6c3f8de492b9a503653c4c6f2e753c.
+
+Checkpoints de départ :
+- checkpoint/lab-start-visual-placeholder-repair-v1-2026-10-03 ;
+- checkpoint/global-assets-before-visual-placeholder-repair-2026-10-03.
+
+Branches de travail :
+- work/lab-visual-placeholder-repair-v1-2026-10-03 ;
+- work/global-assets-visual-placeholder-repair-2026-10-03.
+
+Retour utilisateur :
+- les casts/projectiles sélectionnés dans l'éditeur affichent des symboles/formes simplifiées et non les sprites illustrés conçus ;
+- le comportement est visible notamment avec cast électrique/eau et projectiles élémentaires.
+
+Diagnostic source :
+- les fichiers actifs dans global-assets sont réellement des SVG procéduraux simplifiés ;
+- les planches originales illustrées ont été retrouvées dans les fichiers projet : casts, impacts et projectiles élémentaires ;
+- le renderer affiche donc fidèlement un mauvais contenu asset : le défaut n'est pas gameplay.
+
+Objectif :
+- remplacer la dépendance aux placeholders par les planches originales comme sources visuelles canoniques ;
+- utiliser un contrat atlas de présentation dans le renderer existant, sans moteur visuel parallèle ;
+- conserver les mêmes assetIds métier de présentation ;
+- ne modifier aucune règle de combat, dégâts, timing, énergie, cooldown ou collision.
+
+Propriétaires :
+- global-assets : médias + catalogue ;
+- Render Adapter : lecture atlas visuelle ;
+- Asset Presentation : résolution des assetIds.
+
+Fichiers autorisés laboratoire :
+- src/adapters/renderer/dom-skill-fx.js ;
+- examples/dom-demo/demo-assets.js ;
+- src/assets/global-visual-library.js ;
+- tests unitaires asset/FX ;
+- docs/LAB_CURRENT_WORK.md ;
+- docs/LAB_ARCHITECTURE.md si contrat atlas stabilisé.
+
+Fichiers autorisés global-assets :
+- assets/library/capture/sprites/source/** ;
+- data/assets/catalog/global-visual-assets.v1.json ;
+- tests sentinelles assets si nécessaire ;
+- documentation d'inventaire asset.
+
+Domaines protégés :
+- Combat Rules / Combat Session / Combat Runtime ;
+- SkillDefinition et effets ;
+- collision/contact ;
+- audio ;
+- créatures ;
+- main ;
+- dépôt Zombicide-40k.
+
+TDD prévu :
+1. RED : le renderer sait reconnaître un asset atlas + séquence de rectangles ;
+2. RED : les assetIds élémentaires ne doivent plus résoudre vers les SVG placeholders ;
+3. implémentation minimale du support atlas dans le Render Adapter existant ;
+4. publication des trois planches originales dans global-assets ;
+5. raccord des assetIds existants à ces atlas ;
+6. CI complète ;
+7. checkpoint GREEN + preview smartphone.
+
+Invariants :
+- un seul assetId par rôle ;
+- aucun fallback masquant l'ancien placeholder ;
+- aucun second catalogue ;
+- aucun timer/observer/cache gameplay ;
+- aucune branche par skillId dans le renderer ;
+- l'atlas ne porte que des données de présentation.
+
+État : périmètre déclaré, codage non commencé.
