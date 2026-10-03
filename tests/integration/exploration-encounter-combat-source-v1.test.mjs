@@ -8,6 +8,9 @@ import {
 import {
   createCombatSession
 } from "../../src/core/combat/combat-session.js";
+import {
+  createRosterSession
+} from "../../src/core/combat/roster-session.js";
 
 async function records() {
   const raw = JSON.parse(
@@ -327,4 +330,99 @@ test("Encounter Combat source contains no hardcoded preview party mapping", asyn
   assert.doesNotMatch(source, /PREVIEW_PARTIES/);
   assert.doesNotMatch(source, /configuredPreviewParty/);
   assert.doesNotMatch(source, /capture-party-preview/);
+});
+
+
+test("real Encounter roster switches from Loup to Moussados through Roster Session ownership", async () => {
+  const source =
+    await configuredSource(
+      snapshot("crea_nat_3")
+    );
+
+  const session =
+    createCombatSession({
+      distance: "medium",
+      battleFormat:
+        source.battleFormat,
+      fighters:
+        source.fighters,
+      skillSpeedMultiplier:
+        source.skillSpeedMultiplier
+    });
+
+  const roster =
+    createRosterSession({
+      combatSession: session,
+      roster: source.roster,
+      fighterConfigs:
+        source.fighterConfigs
+    });
+
+  const recalled =
+    roster.applyCommandResolution(
+      "local-1",
+      {
+        ok: true,
+        outcome: "completed",
+        commandKind: "recall"
+      }
+    );
+
+  assert.equal(
+    recalled.outcome,
+    "recalled"
+  );
+  assert.equal(
+    roster.snapshot()["local-1"]
+      .activeMemberId,
+    null
+  );
+
+  const selected =
+    roster.selectReserve(
+      "local-1",
+      "member-moussados"
+    );
+  assert.equal(selected.ok, true);
+
+  const summoned =
+    roster.applyCommandResolution(
+      "local-1",
+      {
+        ok: true,
+        outcome: "completed",
+        commandKind: "summon"
+      }
+    );
+
+  assert.equal(
+    summoned.outcome,
+    "summoned"
+  );
+  assert.equal(
+    summoned.creatureId,
+    "crea_mossback"
+  );
+  assert.equal(
+    roster.snapshot()["local-1"]
+      .activeMemberId,
+    "member-moussados"
+  );
+  assert.equal(
+    session.snapshot()
+      .fighters["local-1"]
+      .maxHp,
+    200
+  );
+  assert.deepEqual(
+    source.skillIdsByCreature[
+      summoned.creatureId
+    ],
+    [
+      "lib_earth_guard",
+      "claw",
+      "lib_quake",
+      "lib_rock_slam"
+    ]
+  );
 });
