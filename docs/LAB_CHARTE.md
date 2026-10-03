@@ -450,27 +450,322 @@ Chaîne autorisée :
 `Command Runtime -> command-complete -> Roster Session -> Combat Session slot -> Visual Controller`
 
 
-## 32. Dépôt GitHub des assets binaires — procédure obligatoire
+## 32. Accès GitHub depuis ChatGPT — vérification obligatoire avant refus
 
-Lorsqu’un asset local (PNG, audio ou autre binaire autorisé) doit être déposé sur GitHub depuis ChatGPT, ne jamais conclure trop vite que le dépôt est impossible si l’écriture GitHub est disponible.
+Dans les fils de travail GenSrpG / Laboratoire où le connecteur GitHub est disponible, l'assistant doit considérer GitHub comme accessible jusqu'à preuve contraire.
 
-Procédure obligatoire :
+Procédure obligatoire avant d'affirmer qu'un dépôt ou une branche est inaccessible :
 
-1. vérifier le dépôt, la branche de travail et le SHA de base ;
-2. conserver `main` intact sauf validation explicite ;
-3. préparer/découper/nommer les assets localement ;
-4. encoder chaque fichier binaire en base64 ;
-5. créer chaque objet Git avec `create_blob` en `encoding: base64` et conserver le SHA réellement retourné ;
-6. créer de la même manière les blobs texte nécessaires (README, manifeste JSON, métadonnées), en UTF-8 ;
-7. construire le nouvel arbre avec `create_tree`, en utilisant uniquement les SHA de blobs effectivement retournés par GitHub et le `base_tree_sha` du commit de départ ;
-8. créer le commit avec `create_commit`, parenté sur le HEAD attendu de la branche ;
-9. déplacer la référence de la branche avec `update_ref` sans `force` lorsque le fast-forward est possible ;
-10. vérifier le commit final et communiquer le SHA et le chemin exact des assets.
+1. chercher les outils GitHub disponibles via `functions.exec` / `ALL_TOOLS` ;
+2. rechercher en priorité les outils dont le nom commence par `mcp__GitHub__` ;
+3. tenter réellement une lecture du dépôt ou de la branche demandée ;
+4. si l'opération échoue, rapporter l'outil utilisé et l'erreur exacte ;
+5. ne jamais demander un ZIP, une manipulation GitHub manuelle ou prétendre que GitHub est indisponible sans cette tentative préalable.
 
-Important : un SHA calculé/local, ancien ou supposé ne doit jamais être utilisé à la place du SHA renvoyé par `create_blob`. Si `create_tree` répond qu’un SHA n’est pas un blob valide, recréer immédiatement le blob depuis son contenu base64 puis reprendre `tree -> commit -> ref` ; ne pas renvoyer inutilement la manipulation à Sylvain.
+Cette règle ne remplace pas les règles de sécurité des branches : l'accès technique au dépôt n'autorise pas à modifier `main` sans validation prévue par la présente charte.
 
-Pour les sprites Capture, respecter le classement défini au §14, par exemple :
 
-`assets/library/capture/sprites/skills/<asset_id>/`
+## 33. Intégration durable des presets créatures et capacités exportés par l’éditeur
 
-Les frames doivent avoir des noms stables et ordonnés, et un manifeste de séquence doit être ajouté lorsque l’asset est animé.
+Cette procédure est obligatoire pour toute future créature ou capacité préparée dans l’éditeur puis fournie pour intégration à la vitrine Capture.
+
+### 33.1. L’export de l’éditeur est la donnée de référence
+
+Pour une créature, le fichier de transfert exporté par l’éditeur est la source de vérité de sa configuration :
+
+- `draft` ;
+- `statValues` ;
+- `loadout` ;
+- identité ;
+- niveau ;
+- éléments et résistances ;
+- profil de mouvement ;
+- scale et positionnement ;
+- assets face / dos / icône ;
+- sockets et coordonnées face / dos ;
+- audio ;
+- capacités liées.
+
+Pour une capacité, l’export de l’éditeur est également la source de vérité de sa définition, de ses effets, de sa présentation et de ses paramètres configurés.
+
+L’intégration ne doit pas « améliorer », deviner, inverser, recalculer ou remplacer silencieusement une valeur fournie par l’export. Toute correction volontaire des données elles-mêmes doit être justifiée par un retour utilisateur explicite ou par un contrat démontrant que l’export est invalide.
+
+### 33.2. Une seule autorité active
+
+Les fiches configurées actives restent possédées par les propriétaires existants :
+
+- `configuredCreatures` pour les créatures ;
+- `configuredSkills` pour les capacités.
+
+Il est interdit de créer une seconde fiche parallèle, un mock concurrent, un fallback ou une copie spéciale destinée uniquement à la vitrine.
+
+Une créature ou capacité existante est remplacée par son identifiant stable. Elle ne doit jamais être dupliquée sous un autre enregistrement pour contourner un conflit.
+
+### 33.3. Préserver toute la configuration, y compris ce qui n’est pas encore actif en combat
+
+Le preset doit conserver intégralement la configuration enregistrée.
+
+En particulier :
+
+- les quatre slots de loadout peuvent rester configurés même si la progression n’en active qu’une partie au niveau courant ;
+- une capacité dont le niveau requis est supérieur au niveau actuel reste enregistrée dans le loadout ;
+- le filtrage de progression appartient au chemin runtime et ne doit jamais effacer ou réécrire le preset sauvegardé ;
+- les sockets non utilisés par une capacité précise restent conservés ;
+- les paramètres visuels et audio non utilisés dans un test donné restent conservés.
+
+### 33.4. Sockets : coordonnées exactes, aucune compensation UI
+
+Les coordonnées `front` et `back` d’un socket doivent être conservées exactement telles qu’exportées.
+
+Le renderer / éditeur doit afficher le point correspondant au socket actuellement sélectionné et à la vue demandée.
+
+Interdits :
+
+- inverser `front` / `back` pour compenser un affichage incorrect ;
+- déplacer un socket dans les données pour masquer une erreur de renderer ;
+- afficher arbitrairement le dernier socket d’une fiche ;
+- introduire une règle spéciale fondée sur le nom de la créature.
+
+Si un socket paraît faux alors que la donnée source est correcte, le chemin d’affichage doit être diagnostiqué avant toute modification de la donnée.
+
+### 33.5. Rechargement complet après import ou remplacement
+
+Lorsqu’un preset remplace une fiche déjà présente, notamment une fiche statique de démarrage, l’éditeur doit recharger la fiche complète depuis son propriétaire actif.
+
+Le rechargement doit couvrir au minimum :
+
+- identité ;
+- stats ;
+- résistances ;
+- visuels ;
+- profil ;
+- scale ;
+- sockets ;
+- audio ;
+- loadout.
+
+Un rafraîchissement partiel des seules stats ou du seul sélecteur est insuffisant.
+
+### 33.6. Le test Combat doit utiliser la vraie fiche configurée
+
+Lorsqu’une option de test correspond à une créature configurée, le raccord doit être explicite par identifiant stable et le test Combat doit consommer la fiche réelle depuis `configuredCreatures`.
+
+Le mock de preview historique n’est autorisé que pour une créature qui ne possède pas encore de vraie fiche configurée.
+
+Il ne doit jamais reprendre autorité sur une créature vitrine existante.
+
+Aucune détection par nom de créature n’est autorisée.
+
+### 33.7. Capacités liées et loadout
+
+Les identifiants de capacités d’un preset doivent être résolus depuis `configuredSkills`.
+
+L’intégration ne doit pas recréer localement une seconde version d’une capacité déjà présente.
+
+Lorsqu’une capacité exportée est ajoutée ou remplacée :
+
+- elle conserve son identifiant stable ;
+- elle est ajoutée / remplacée dans `configuredSkills` ;
+- les créatures qui la référencent continuent de la référencer par cet identifiant ;
+- aucune duplication de capacité n’est créée pour satisfaire un preset particulier.
+
+### 33.8. Procédure de vérification obligatoire
+
+Avant de déclarer l’intégration technique GREEN :
+
+1. auditer les identifiants créature / capacité et les collisions éventuelles ;
+2. vérifier la disponibilité des assets et capacités référencés ;
+3. écrire un test RED reproduisant le raccord à créer ou la régression constatée ;
+4. intégrer par les propriétaires existants, sans nouvelle autorité ;
+5. tester les valeurs importantes du preset : ID, sockets, profil, scale, stats, résistances, loadout et capacités liées ;
+6. tester le rechargement réel dans l’éditeur après import / remplacement ;
+7. tester le chemin Combat utilisant la vraie fiche configurée lorsqu’elle existe ;
+8. exécuter la CI complète ;
+9. publier une preview dédiée lorsque l’UI est concernée ;
+10. obtenir une validation smartphone utilisateur avant de déclarer GREEN utilisateur.
+
+Cette procédure est la référence pour les futures créatures et capacités de vitrine Capture, notamment celles créées par Sylvain dans l’éditeur puis transmises pour intégration.
+
+
+### 33.9. Les sélecteurs de l’éditeur doivent lire le propriétaire actif
+
+Cette règle complète les sections 33.2, 33.5 et 33.7 après la régression constatée lors de l’intégration d’une capacité exportée.
+
+Lorsqu’une bibliothèque active existe dans l’éditeur :
+
+- le sélecteur des créatures modifiables doit être dérivé de `configuredCreatures` ;
+- le sélecteur des capacités modifiables doit être dérivé de `configuredSkills` ;
+- sélectionner une entrée doit recharger la fiche complète depuis ce même propriétaire actif.
+
+Un catalogue legacy, un catalogue natif de démarrage, un template de migration ou une liste statique peut servir à **initialiser** ou **migrer** une fiche, mais il ne doit jamais rester la source du sélecteur de modification une fois la fiche présente dans le propriétaire actif.
+
+En particulier, après un import ou un remplacement par ID stable :
+
+- le sélecteur doit être rafraîchi depuis le propriétaire actif ;
+- la sélection doit restituer la version remplacée, pas le template historique portant le même ID ;
+- une capacité native/laboratoire présente dans `configuredSkills` doit rester visible même si elle n’existe pas dans un catalogue legacy ;
+- aucun merge avec un ancien template ne doit intervenir lors d’un simple changement de sélection.
+
+Interdits :
+
+- remplir le sélecteur actif directement depuis un catalogue legacy alors que `configuredSkills` ou `configuredCreatures` existe ;
+- recharger une fiche depuis une autre source que celle qui possède réellement son état actif ;
+- masquer une capacité active parce qu’elle n’existe pas dans une liste historique ;
+- réintroduire silencieusement une ancienne version d’une fiche après remplacement ;
+- maintenir deux chemins de lecture concurrents pour la même fiche selon qu’elle vient d’un preset, d’un catalogue natif ou d’un import utilisateur.
+
+### 33.10. Sentinelles obligatoires après remplacement d’une fiche
+
+Pour toute future intégration d’une créature ou capacité exportée qui remplace un ID existant, les tests doivent vérifier au minimum :
+
+1. l’ID existe une seule fois dans le propriétaire actif ;
+2. le sélecteur de l’éditeur expose cet ID depuis le propriétaire actif ;
+3. sélectionner cet ID recharge exactement la fiche active complète ;
+4. les valeurs spécifiques apportées par l’export remplacent bien les anciennes valeurs portant le même ID ;
+5. une autre fiche native connue du même sélecteur reste accessible afin de détecter une liste devenue partielle ;
+6. un aller-retour `fiche active -> champs éditeur -> draft normalisé` ne réintroduit pas l’ancien template ni ne perd les champs représentés ;
+7. après import/remplacement, le sélecteur est rafraîchi avant toute validation UI.
+
+Si un test montre que les données sont correctes dans le propriétaire actif mais fausses dans l’éditeur, la correction doit viser le chemin de **lecture/rechargement UI**, et non modifier les données pour compenser l’affichage.
+
+
+### 33.11. Une mise à jour de capacité ne modifie jamais le loadout par effet de bord
+
+Une capacité déjà existante peut être modifiée dans l’éditeur sans que ses références d’équipement soient recréées ou déplacées.
+
+En particulier, modifier seulement des métadonnées ou paramètres de capacité comme :
+
+- `requiredLevel` ;
+- coût d’énergie ;
+- cooldown ;
+- timings ;
+- dégâts / effets ;
+- présentation ;
+- audio ;
+- limite d’utilisations ;
+
+ne doit jamais :
+
+- retirer la capacité de `configuredSkills` ;
+- changer son identifiant stable ;
+- supprimer son ID d’un loadout de créature ;
+- l’auto-équiper dans un autre slot ;
+- déplacer silencieusement la capacité vers un autre slot.
+
+La logique d’auto-placement d’une capacité nouvellement créée peut exister pour l’UX de création, mais elle est interdite dans le chemin `update`.
+
+Après une mise à jour réussie :
+
+1. la fiche sauvegardée doit rester sélectionnée dans la bibliothèque active ;
+2. l’éditeur doit recharger la fiche active depuis `configuredSkills` ;
+3. les sélections de loadout déjà présentes doivent être conservées par ID stable ;
+4. la progression ne fait que décider si une capacité configurée est actuellement active en combat ; elle ne supprime jamais la configuration planifiée.
+
+Si le type de slot `standard / ultimate` est modifié explicitement par l’utilisateur, le loadout peut devenir incohérent et demander une correction explicite ; aucune migration automatique silencieuse n’est autorisée.
+
+## 34. Validation réelle obligatoire des assets — aucun placeholder ne peut être déclaré GREEN
+
+Cette règle est permanente et s'applique à tout asset visuel, audio ou média produit, importé, découpé, renommé, catalogué ou raccordé dans le laboratoire.
+
+Un asset n'est jamais considéré comme « créé », « intégré », « stocké », « prêt », « terminé » ou GREEN uniquement parce que :
+
+- un chemin existe dans GitHub ;
+- un fichier portant le bon nom existe ;
+- un `assetId` existe dans un catalogue ;
+- un test vérifie seulement l'existence du fichier ou de la référence ;
+- le renderer affiche quelque chose ;
+- une séquence technique possède le bon nombre de frames ;
+- la CI passe sans vérifier le contenu réel du média.
+
+### 34.1. Définition obligatoire d'un asset réellement livré
+
+Pour être déclaré réellement livré, un asset doit satisfaire cumulativement les contrôles suivants :
+
+1. **Fichier réel** — le média binaire ou textuel final existe physiquement dans le dépôt cible attendu ;
+2. **Contenu réel** — le contenu du fichier a été inspecté et correspond au visuel / son / média attendu, pas à un placeholder, une forme de test, un symbole, un fichier vide ou un substitut provisoire ;
+3. **Nom et chemin** — le nom, l'extension et le chemin correspondent au contrat d'asset prévu ;
+4. **Catalogue unique** — l'`assetId` canonique pointe vers ce fichier réel depuis le catalogue autoritaire, sans second catalogue concurrent ;
+5. **Raccord runtime** — le vrai chemin de présentation consomme cet `assetId` et résout bien vers ce fichier ;
+6. **Preview réelle** — lorsque l'asset est visible dans l'UI, une preview dédiée permet de vérifier le rendu réel sans fallback masqué ;
+7. **Traçabilité Git** — le rapport final fournit le SHA du commit contenant réellement les médias livrés et le nombre exact de fichiers concernés.
+
+Si l'un de ces contrôles manque, l'état doit être annoncé explicitement comme **PARTIEL**, **PROVISOIRE**, **PLACEHOLDER** ou **NON VÉRIFIÉ**. Il est interdit d'utiliser le mot GREEN pour faire croire que le livrable artistique ou média final est présent.
+
+### 34.2. Placeholders et assets provisoires
+
+Un placeholder est autorisé uniquement s'il est nécessaire à un jalon technique et s'il est déclaré comme tel dans :
+
+- son nom ou son metadata quand c'est pertinent ;
+- `LAB_CURRENT_WORK.md` ;
+- le rapport utilisateur.
+
+Un placeholder ne doit jamais :
+
+- porter silencieusement le statut d'asset final ;
+- remplacer un asset final sans mention explicite ;
+- être renommé pour donner l'impression qu'il est définitif ;
+- rester dans le catalogue final sans statut provisoire documenté ;
+- servir de preuve qu'une planche ou un sprite final a réellement été intégré.
+
+### 34.3. Vérification du contenu, pas seulement de la structure
+
+Les tests structurels restent nécessaires mais ne suffisent pas.
+
+Exemples de validations insuffisantes prises seules :
+
+- `8 fichiers existent` ;
+- `la séquence contient 8 frames` ;
+- `l'URL répond 200` ;
+- `l'assetId est résolu` ;
+- `le DOM affiche une image`.
+
+Pour les médias visuels, au moins une vérification du contenu réel doit être faite avant GREEN : inspection directe, comparaison avec la source validée, vérification de l'atlas / spritesheet, ou autre contrôle démontrant que le média attendu est réellement celui stocké.
+
+Pour les médias audio, l'équivalent s'applique : le fichier doit être réellement présent, lisible et correspondre au son attendu, pas seulement exister sous un nom correct.
+
+### 34.4. Rapport obligatoire après intégration d'assets
+
+Tout rapport annonçant une intégration d'assets doit préciser au minimum :
+
+- la source utilisée ;
+- le nombre exact d'assets logiques ;
+- le nombre exact de fichiers physiques ajoutés / remplacés ;
+- les formats ;
+- le chemin canonique ;
+- le ou les `assetId` concernés ;
+- le SHA Git exact ;
+- le statut de vérification du contenu réel ;
+- le lien de preview lorsque l'asset est visible en jeu.
+
+Il est interdit de résumer ce rapport par « assets intégrés » si seule la structure technique a été raccordée.
+
+### 34.5. Source générée dans ChatGPT vs dépôt GitHub
+
+Le fait qu'une image, spritesheet, icône, son ou autre média ait été généré ou affiché dans une conversation ChatGPT ne signifie pas qu'il est stocké dans GitHub.
+
+Ces états doivent rester distingués :
+
+- **créé dans la conversation** ;
+- **exporté / récupéré comme fichier** ;
+- **découpé / transformé** ;
+- **commité dans GitHub** ;
+- **catalogué** ;
+- **raccordé au runtime** ;
+- **vérifié en preview**.
+
+Aucune étape ne doit être déduite automatiquement de la précédente.
+
+### 34.6. Interdiction de faux achèvement
+
+Si un outil empêche la récupération du média source, si les octets ne sont pas accessibles, si la source originale n'est pas retrouvée ou si le contenu ne peut pas être inspecté, il faut le dire explicitement.
+
+Dans ce cas, l'assistant doit :
+
+1. arrêter la déclaration d'achèvement ;
+2. conserver les tests et le diagnostic déjà réalisés ;
+3. ne pas remplacer le média par une approximation non demandée ;
+4. ne pas masquer le problème par un fallback ;
+5. demander ou rechercher la source originale nécessaire ;
+6. reprendre l'intégration seulement quand le livrable réel est disponible.
+
+Cette section prime sur toute ancienne procédure qui considérerait l'existence d'un chemin, d'un catalogue ou d'un test structurel comme preuve suffisante qu'un asset final a été réellement livré.
