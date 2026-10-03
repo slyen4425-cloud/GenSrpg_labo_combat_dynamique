@@ -30,6 +30,9 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
+import {
+  CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
+} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 
 const root =
   document.querySelector("[data-combat-demo]");
@@ -58,10 +61,19 @@ const CREATURES_URL =
     import.meta.url
   );
 
-const PREVIEW_PARTY_TRANSFER_URL =
+const PLAYER_PARTY_URL =
   new URL(
-    "../../data/capture/showcase/crea-loup.capture-creature-transfer-v1.json",
+    "../../data/capture/parties/player-party.v1.json",
     import.meta.url
+  );
+
+const CONFIGURED_CREATURE_URLS =
+  CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.map(
+    (relativePath) =>
+      new URL(
+        "../../" + relativePath,
+        import.meta.url
+      )
   );
 
 const NATIVE_SKILL_CATALOG_URL =
@@ -195,35 +207,47 @@ Promise.resolve()
 
     const [
       creatureData,
-      previewPartyTransfer,
+      playerParty,
       nativeSkillCatalog,
       statRegistry,
       ...tail
     ] = await Promise.all([
       fetchJson(CREATURES_URL),
-      fetchJson(PREVIEW_PARTY_TRANSFER_URL),
+      fetchJson(PLAYER_PARTY_URL),
       fetchJson(NATIVE_SKILL_CATALOG_URL),
       fetchJson(STAT_REGISTRY_URL),
+      ...CONFIGURED_CREATURE_URLS.map(fetchJson),
       ...SHOWCASE_SKILL_URLS.map(fetchJson),
       ...PROFILE_URLS.map(fetchJson)
     ]);
 
-    const showcaseSkillTransfers =
+    const configuredCreatureTransfers =
       tail.slice(
         0,
-        SHOWCASE_SKILL_URLS.length
+        CONFIGURED_CREATURE_URLS.length
+      );
+    const skillStart =
+      CONFIGURED_CREATURE_URLS.length;
+    const skillEnd =
+      skillStart +
+      SHOWCASE_SKILL_URLS.length;
+    const showcaseSkillTransfers =
+      tail.slice(
+        skillStart,
+        skillEnd
       );
     const profiles =
-      tail.slice(
-        SHOWCASE_SKILL_URLS.length
-      );
+      tail.slice(skillEnd);
 
     const nativeCombatSource =
       buildExplorationEncounterCombatSourceV1({
         snapshot: handoff.snapshot,
         creatureRecords:
           creatureData.entries,
-        previewPartyTransfer,
+        partyDefinitions: [
+          playerParty
+        ],
+        configuredCreatureTransfers,
         showcaseSkillTransfers,
         nativeSkillCatalog,
         statRegistry
@@ -250,11 +274,14 @@ Promise.resolve()
         visualMetaFor(
           local.creatureId,
           local.displayName,
-          local.creatureId ===
-            previewPartyTransfer.draft.id
-            ? previewPartyTransfer.draft
-                .presentation
-            : null
+          configuredCreatureTransfers
+            .find(
+              (transfer) =>
+                transfer.draft?.id ===
+                local.creatureId
+            )
+            ?.draft?.presentation ??
+            null
         ),
         visualMetaFor(
           enemy.creatureId,
