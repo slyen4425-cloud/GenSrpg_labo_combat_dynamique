@@ -24476,3 +24476,14 @@ Aucun nouveau catalogue, resolver, moteur, fallback masqué, timer global ou bra
 TDD : contrat des 8 IDs et des 64 images source → RED → médias réels → inspection claire/sombre et PNG/atlas décodés → CI → preview/éditeur → validation artistique utilisateur → GREEN final.
 Critère de fin : vrais binaires publiés dans global-assets, catalogue et éditeur raccordés aux mêmes IDs, renderer et export actifs, CI réussie et preview fournie.
 État initial : alpha à produire, sentinelle de contenu à rendre RED. Aucun GREEN artistique avant inspection et validation utilisateur.
+
+
+### PROJECTILES — médias réels extraits et raccord préparé
+
+Détourage imagegen réellement RGBA contrôlé sur fond clair/sombre ; original JPEG RGB malgré le nom PNG, conservé inchangé (ad41429d03909e3b7799eedb2d1745ec6a41b7110efc919dc4c95624268b8914).
+Dérivé RGBA : 46432a8cadff53dbfc19286d567e298f190f72ea679a631f98d8fee5e10ba50a. Inventaire : 64 PNG 256×256, 8 WebP lossless 2048×256 et 2 sources = 74 images.
+Découpe pixel-identique au dérivé, hash de chaque fichier, atlas décodés égaux aux PNG, marges transparentes ; 8 IDs travel existants, seules leurs ressources changées.
+TDD GitHub RED run 37151331040 : 198 pass / 1 fail attendu (source absente). Sentinelle de format corrigée sur signature JPEG réelle ; contrôle local GREEN après extraction.
+Raccord présentation via les champs headingRad/coreAnchor déjà gérés par le renderer ; cache v10-projectile-source-alpha-v1 ; aucune mutation mécanique.
+Rapport et preuves : docs/LAB_PROJECTILE_SOURCE_ALPHA_V1.md et JSON d'extraction ; fixture native projectile-review.html.
+CI complète / publication / preview navigateur à consigner après contrôle. Aucun GREEN artistique final sans validation utilisateur.

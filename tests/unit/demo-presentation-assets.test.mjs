@@ -119,7 +119,7 @@ test("all five combat arenas resolve only through canonical Core assets", () => 
     );
     assert.equal(
       url.searchParams.get("v"),
-      "2026-10-03-v9-impact-source-alpha-v1",
+      "2026-10-03-v10-projectile-source-alpha-v1",
       arenaId + " should use the arena refresh cache revision"
     );
   }
@@ -262,4 +262,17 @@ test("combat visual assets resolve from the stable global-assets branch", () => 
       /\.svg(?:\?|$)/
     );
   }
+});
+
+test("diagonal projectile artwork exposes head alignment while the dedicated fireball remains unchanged", () => {
+  for (const name of ["fire","water","earth","thorn","electric","ice","light","shadow"]) {
+    const asset = demoPresentationAssets.asset("pack:capture:sprite-projectile-" + name + "-01");
+    assert.ok(asset.headingRad < -0.35 && asset.headingRad > -0.6, "NE source direction must rotate onto the native travel path");
+    assert.ok(asset.coreAnchor.x > 0.6 && asset.coreAnchor.x < 0.8, "principal head is in the right part of the padded phase");
+    assert.ok(asset.coreAnchor.y > 0.3 && asset.coreAnchor.y < 0.5, "principal head is above the frame center");
+  }
+  const fireball = demoPresentationAssets.asset("pack:capture:sprite-fireball-travel-01");
+  assert.equal(fireball.headingRad, Math.PI);
+  assert.deepEqual(fireball.coreAnchor, { x: 0.29, y: 0.5 });
+  assert.equal(fireball.displayScale, 2.8);
 });

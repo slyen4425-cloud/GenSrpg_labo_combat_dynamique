@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenSrpG — aperçu des projectiles</title>
+<link rel="stylesheet" href="./demo.css">
+<style>
+body.projectile-review{margin:0;padding:24px;background:#0b121e;color:#eaf1fb;font:15px/1.5 system-ui,sans-serif}
+.projectile-review main{max-width:1080px;margin:auto}.projectile-review h1{margin:0;font-size:28px}.projectile-review h2{margin:0;font-size:20px}
+.projectile-review p{margin:8px 0 16px}.review-intro{color:#b4c5da}.review-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.projectile-review button,.projectile-review select{font:inherit;border:1px solid #4a607b;border-radius:8px;padding:8px 14px;background:#203349;color:#f4f8fd;cursor:pointer}
+.projectile-review button:disabled{opacity:.5;cursor:wait}.projectile-review button:focus-visible,.projectile-review select:focus-visible{outline:3px solid #62bcff;outline-offset:3px}
+.review-card{margin:16px 0;padding:16px;border:1px solid #2c415a;border-radius:14px;background:#111d2d}
+.review-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.review-status{font-size:13px;color:#b4c5da}
+.review-stage{position:relative;height:190px;border:1px solid #3c4e63;border-radius:10px;margin:12px 0;overflow:hidden;background:#152133}
+.review-anchor{position:absolute;top:50%;width:1px;height:1px}.review-source{left:23%}.review-target{left:85%}
+.review-guide{position:absolute;left:23%;right:15%;top:50%;border-top:1px dashed #40536c}
+.review-poster{position:absolute;left:50%;top:50%;width:256px;height:256px;object-fit:contain}
+.review-frames{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px}.review-frame{margin:0;background:#152133;border-radius:6px;overflow:hidden}
+.review-frame img{display:block;width:100%;aspect-ratio:1;object-fit:contain}.review-frame figcaption{font-size:12px;text-align:center;color:#91a8c1;padding-bottom:4px}
+.review-light .review-stage,.review-light .review-frame{background:#edf1f5}.review-light .review-frame figcaption{color:#465972}
+.review-error{color:#ffb2ae}.review-meta{font-size:12px;color:#92a9c1;overflow-wrap:anywhere}
+@media(max-width:600px){body.projectile-review{padding:12px}.review-card{padding:10px}.review-frames{grid-template-columns:repeat(4,minmax(0,1fr))}.review-head{align-items:flex-start}}
+</style>
+</head>
+<body class="projectile-review">
+<main>
+<h1>Les huit projectiles</h1>
+<p class="review-intro">Feu, eau, terre, plante, électrique, glace, lumière et ombre. Huit phases transparentes par animation.</p>
+<div class="review-controls">
+<button id="play-all" type="button" disabled>Jouer les huit</button>
+<label for="background">Fond</label>
+<select id="background"><option value="dark">Sombre</option><option value="light">Clair</option></select>
+<label for="direction">Sens</label>
+<select id="direction"><option value="forward">Gauche → droite</option><option value="reverse">Droite → gauche</option></select>
+<span id="ready" class="review-status" role="status">Chargement des atlas…</span>
+</div>
+<div id="cards"></div>
+<p class="review-meta">64 PNG RGBA et 8 atlas WebP sans perte. Les images ci-dessus permettent de contrôler les halos et les fragments sur les deux fonds.</p>
+</main>
+<script type="module">
+import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
+import { demoPresentationAssets } from "./demo-assets.js";
+import { globalVisualAssetUrl } from "../../src/assets/global-visual-library.js";
+
+const families = [
+  ["fire","Feu"], ["water","Eau"], ["earth","Terre"], ["thorn","Plante"],
+  ["electric","Électrique"], ["ice","Glace"], ["light","Lumière"], ["shadow","Ombre"]
+];
+const cards = document.getElementById("cards");
+const players = [];
+const direction = document.getElementById("direction");
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Image indisponible : " + url));
+    image.src = url;
+  });
+}
+for (const [family, label] of families) {
+  const assetId = "pack:capture:sprite-projectile-" + family + "-01";
+  const visual = demoPresentationAssets.asset(assetId);
+  if (!visual?.url || visual.frameCount !== 8 || !Number.isFinite(visual.headingRad) || !visual.coreAnchor) {
+    throw new Error("Projectile canonique indisponible : " + assetId);
+  }
+  const card = document.createElement("section");
+  card.className = "review-card";
+  card.dataset.family = family;
+  card.innerHTML = '<div class="review-head"><h2>' + label + '</h2><button type="button" disabled>Jouer</button></div>' +
+    '<div class="review-stage"><span class="review-guide"></span><span class="review-anchor review-source"></span><span class="review-anchor review-target"></span><img class="review-poster" alt="Quatrième phase du projectile ' + label + '"></div>' +
+    '<div class="review-frames"></div><p class="review-meta"></p>';
+  cards.append(card);
+  const stage = card.querySelector(".review-stage");
+  const source = card.querySelector(".review-source");
+  const target = card.querySelector(".review-target");
+  const poster = card.querySelector(".review-poster");
+  const button = card.querySelector("button");
+  const pngUrl = index => globalVisualAssetUrl(
+    "capture/sprites/projectiles/" + family + "/frames/sprite_projectile_" + family + "_" + String(index).padStart(2, "0") + ".png"
+  );
+  poster.src = pngUrl(4);
+  poster.style.transform = "translate(-50%, -50%) rotate(" + (-visual.headingRad) + "rad)";
+  for (let index = 1; index <= 8; index += 1) {
+    const frame = document.createElement("figure");
+    frame.className = "review-frame";
+    const image = document.createElement("img");
+    image.src = pngUrl(index);
+    image.alt = label + " — phase " + index;
+    const caption = document.createElement("figcaption");
+    caption.textContent = String(index).padStart(2, "0");
+    frame.append(image, caption);
+    card.querySelector(".review-frames").append(frame);
+  }
+  card.querySelector(".review-meta").textContent = assetId;
+  const renderer = createDomSkillFxRenderer({
+    arena: stage, anchors: { source, target },
+    presentationForSkill: () => ({ travel: { ...visual, displayScale: 2.8 } })
+  });
+  const player = { card, renderer, visual, ready: false, play() {
+    if (!this.ready) return;
+    renderer.cancelAll();
+    poster.style.visibility = "hidden";
+    button.disabled = true;
+    const reversed = direction.value === "reverse";
+    const playback = renderer.play({
+      type: "projectile", skillId: assetId,
+      fromSlot: reversed ? "target" : "source",
+      targetSlot: reversed ? "source" : "target",
+      durationMs: visual.frameCount * visual.frameMs
+    });
+    card.dataset.playback = playback.status;
+    card.dataset.direction = direction.value;
+    playback.finished.then(result => {
+      if (result.status === "arrived") {
+        renderer.cancelProjectileFor(reversed ? "target" : "source");
+        poster.style.visibility = "visible";
+        button.disabled = false;
+        card.dataset.playback = result.status;
+        card.dataset.activeCount = String(renderer.activeCount);
+      }
+    }).catch(error => {
+      renderer.cancelAll();
+      poster.style.visibility = "visible";
+      button.disabled = false;
+      card.dataset.playback = "error";
+      document.getElementById("ready").textContent = error.message;
+    });
+    return playback;
+  }};
+  players.push(player);
+  button.addEventListener("click", () => player.play());
+}
+const ready = document.getElementById("ready");
+Promise.all(players.map(async player => {
+  const image = await loadImage(player.visual.url);
+  if (image.naturalWidth !== 2048 || image.naturalHeight !== 256) {
+    throw new Error("Dimensions d’atlas inattendues");
+  }
+  player.card.dataset.atlasWidth = String(image.naturalWidth);
+  player.card.dataset.atlasHeight = String(image.naturalHeight);
+  player.ready = true;
+  player.card.querySelector("button").disabled = false;
+})).then(() => {
+  ready.textContent = "8 atlas prêts";
+  document.getElementById("play-all").disabled = false;
+  document.body.dataset.previewReady = "true";
+}).catch(error => {
+  ready.textContent = error.message;
+  ready.classList.add("review-error");
+  document.body.dataset.previewReady = "error";
+});
+document.getElementById("play-all").addEventListener("click", () => {
+  for (const player of players) player.play();
+});
+document.getElementById("background").addEventListener("change", event => {
+  document.body.classList.toggle("review-light", event.target.value === "light");
+});
+window.addEventListener("pagehide", () => {
+  for (const player of players) player.renderer.dispose();
+});
+</script>
+</body>
+</html>

@@ -25,7 +25,9 @@ function globalCaptureStripAsset({
   name,
   prefix,
   frameMs,
-  displayScale = 1
+  displayScale = 1,
+  headingRad = null,
+  coreAnchor = null
 }) {
   return Object.freeze({
     assetId,
@@ -35,7 +37,9 @@ function globalCaptureStripAsset({
     frameCount: 8,
     frameMs,
     displayScale,
-    playbackMode: "once"
+    playbackMode: "once",
+    ...(headingRad == null ? {} : { headingRad }),
+    ...(coreAnchor == null ? {} : { coreAnchor: Object.freeze({ ...coreAnchor }) })
   });
 }
 
@@ -149,56 +153,72 @@ const ASSETS = Object.freeze({
     family: "projectiles",
     name: "earth",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.47808703860357205,
+    coreAnchor: {"x":0.6484375,"y":0.42578125}
   }),
   "pack:capture:sprite-projectile-electric-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-projectile-electric-01",
     family: "projectiles",
     name: "electric",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.4417075564088436,
+    coreAnchor: {"x":0.72265625,"y":0.39453125}
   }),
   "pack:capture:sprite-projectile-fire-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-projectile-fire-01",
     family: "projectiles",
     name: "fire",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.4969686048790533,
+    coreAnchor: {"x":0.6796875,"y":0.40234375}
   }),
   "pack:capture:sprite-projectile-ice-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-projectile-ice-01",
     family: "projectiles",
     name: "ice",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.5102610491934162,
+    coreAnchor: {"x":0.7421875,"y":0.34375}
   }),
   "pack:capture:sprite-projectile-light-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-projectile-light-01",
     family: "projectiles",
     name: "light",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.4860319293400963,
+    coreAnchor: {"x":0.6328125,"y":0.40234375}
   }),
   "pack:capture:sprite-projectile-shadow-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-projectile-shadow-01",
     family: "projectiles",
     name: "shadow",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.4492601126118805,
+    coreAnchor: {"x":0.65625,"y":0.41796875}
   }),
   "pack:capture:sprite-projectile-thorn-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-projectile-thorn-01",
     family: "projectiles",
     name: "thorn",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.5317240672588056,
+    coreAnchor: {"x":0.75,"y":0.3359375}
   }),
   "pack:capture:sprite-projectile-water-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-projectile-water-01",
     family: "projectiles",
     name: "water",
     prefix: "projectile",
-    frameMs: 45
+    frameMs: 45,
+    headingRad: -0.5024973098693629,
+    coreAnchor: {"x":0.65234375,"y":0.41015625}
   }),
   "core:arena-forest-01": Object.freeze({
     assetId: "core:arena-forest-01",
