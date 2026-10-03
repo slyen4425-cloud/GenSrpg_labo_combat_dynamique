@@ -251,13 +251,14 @@ test("combat visual assets resolve from the stable global-assets branch", () => 
     const asset = demoPresentationAssets.asset(assetId);
     assert.ok(asset, `${assetId} should resolve from global library`);
     assert.equal(asset.frames, undefined);
-    assert.equal(asset.atlas?.frames.length, 8);
+    assert.equal(asset.atlas, undefined);
+    assert.equal(asset.frameCount, 8);
     assert.match(
-      asset.atlas?.url ?? "",
-      /\/global-assets\/assets\/library\/capture\/sprites\/source\//
+      asset.url ?? "",
+      /\/global-assets\/assets\/library\/capture\/sprites\/(?:casts|impacts|projectiles)\/[^/]+\/atlases\/sprite_[^/]+_atlas_01\.webp/
     );
     assert.doesNotMatch(
-      asset.atlas?.url ?? "",
+      asset.url ?? "",
       /\.svg(?:\?|$)/
     );
   }
