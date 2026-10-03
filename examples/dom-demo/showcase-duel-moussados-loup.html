@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GenSrpG — Moussados vs Loup volcanique</title>
+  <link rel="stylesheet" href="./demo.css">
+  <style>
+    .duel-banner {
+      position: fixed;
+      z-index: 50;
+      top: max(8px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(92vw, 680px);
+      padding: .55rem .8rem;
+      border-radius: 14px;
+      background: rgba(14, 18, 20, .86);
+      color: #fff;
+      font: 600 14px/1.25 system-ui, sans-serif;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+    .duel-banner[data-state="error"] {
+      background: rgba(92, 22, 22, .92);
+    }
+  </style>
+</head>
+<body>
+  <p class="duel-banner" data-duel-status>
+    Chargement Moussados vs Loup volcanique…
+  </p>
+
+  <main class="game game--coop-2v2" data-combat-demo>
+    <section class="arena arena--coop-2v2" data-combat-arena aria-label="Duel test Moussados contre Loup volcanique">
+      <div class="arena__ground" aria-hidden="true"></div>
+
+      <article
+        class="fighter fighter--player"
+        data-demo-slot="local-1"
+        data-demo-view="player"
+        data-target-actor="local-1"
+        role="button"
+        tabindex="0"
+      >
+        <span class="visually-hidden" data-demo-label>Moussados</span>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="">
+        </div>
+      </article>
+
+      <article
+        class="fighter fighter--opponent"
+        data-demo-slot="enemy-1"
+        data-demo-view="opponent"
+        data-target-actor="enemy-1"
+        role="button"
+        tabindex="0"
+      >
+        <span class="visually-hidden" data-demo-label>Loup volcanique</span>
+        <div class="fighter__motion" data-demo-motion>
+          <img class="fighter__image" data-demo-image alt="">
+        </div>
+      </article>
+
+      <button
+        type="button"
+        class="squad-card squad-card--player squad-card--local-full"
+        data-target-actor="local-1"
+      >
+        <strong>Moussados</strong>
+        <div class="squad-card__hp">
+          <progress data-combat-hp="local-1" max="100" value="100"></progress>
+          <span data-combat-hp-value="local-1">200 / 200 PV</span>
+        </div>
+        <div class="status-icons" data-combat-status-icons="local-1"></div>
+        <small data-combat-action="local-1">Prêt</small>
+        <progress
+          class="squad-card__charge squad-card__charge--local"
+          data-combat-actor-charge="local-1"
+          data-active="false"
+          max="1"
+          value="0"
+        ></progress>
+      </button>
+
+      <button
+        type="button"
+        class="squad-card squad-card--opponent"
+        data-target-actor="enemy-1"
+      >
+        <strong>Loup volcanique</strong>
+        <div class="squad-card__hp">
+          <progress data-combat-hp="enemy-1" max="100" value="100"></progress>
+          <span data-combat-hp-value="enemy-1">150 / 150 PV</span>
+        </div>
+        <div class="status-icons" data-combat-status-icons="enemy-1"></div>
+        <small data-combat-action="enemy-1">Prêt</small>
+        <progress
+          class="squad-card__charge"
+          data-combat-actor-charge="enemy-1"
+          data-active="false"
+          max="1"
+          value="0"
+        ></progress>
+      </button>
+
+      <div class="coop-command-stack">
+        <section class="coop-controls" aria-label="Capacités de Moussados">
+          <div class="hud__energy">
+            <div class="hud__energy-line">
+              <strong>Votre énergie</strong>
+              <span data-combat-energy-value="local-1">0 / 0⚡</span>
+            </div>
+            <progress
+              data-combat-energy="local-1"
+              max="1"
+              value="0"
+            ></progress>
+          </div>
+          <div class="skill-bar__grid" data-combat-skills></div>
+        </section>
+      </div>
+
+      <p
+        class="live-status live-status--coop"
+        data-combat-live-status
+        data-tone="info"
+        role="status"
+      >
+        Préparation du duel…
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="./showcase-duel-moussados-loup.js?rev=showcase-duel-v1"></script>
+</body>
+</html>
