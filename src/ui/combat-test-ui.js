@@ -465,6 +465,13 @@ export async function mountCombatTest({
                 context
               ) ?? null
             );
+          },
+          skillDefinitionFor(skillId) {
+            return (
+              offensiveSkillsById[skillId] ??
+              reactionSkillsById[skillId] ??
+              null
+            );
           }
         })
       : null;
