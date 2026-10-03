@@ -105,10 +105,103 @@ export function fallbackEncounterCreatureMetaV1({
   });
 }
 
+function configuredPresentationMetaV1(
+  sourceMeta,
+  presentation
+) {
+  if (presentation == null) {
+    return sourceMeta;
+  }
+  if (
+    typeof presentation !== "object" ||
+    Array.isArray(presentation)
+  ) {
+    throw new TypeError(
+      "presentation must be an object"
+    );
+  }
+
+  const scale =
+    typeof presentation.displayScale === "number" &&
+    Number.isFinite(presentation.displayScale) &&
+    presentation.displayScale > 0
+      ? presentation.displayScale
+      : null;
+
+  const sourceAnchors =
+    sourceMeta.fxAnchors ?? {};
+  const playerAnchors = {
+    ...(sourceAnchors.player ?? {})
+  };
+  const opponentAnchors = {
+    ...(sourceAnchors.opponent ?? {})
+  };
+
+  for (
+    const socket of
+      Array.isArray(presentation.sockets)
+        ? presentation.sockets
+        : []
+  ) {
+    if (
+      !socket ||
+      typeof socket.id !== "string" ||
+      socket.id.trim() === ""
+    ) {
+      continue;
+    }
+
+    const socketId = socket.id.trim();
+
+    if (socket.back) {
+      playerAnchors[socketId] =
+        Object.freeze({
+          x: socket.back.x,
+          y: socket.back.y
+        });
+    }
+
+    if (socket.front) {
+      opponentAnchors[socketId] =
+        Object.freeze({
+          x: socket.front.x,
+          y: socket.front.y
+        });
+    }
+  }
+
+  return {
+    ...sourceMeta,
+    profile:
+      presentation.profileId ??
+      sourceMeta.profile,
+    displayScale:
+      scale === null
+        ? sourceMeta.displayScale
+        : Object.freeze({
+            player: scale,
+            opponent: scale
+          }),
+    transformOrigin:
+      presentation.transformOrigin ??
+      sourceMeta.transformOrigin,
+    offset:
+      presentation.position ??
+      sourceMeta.offset,
+    fxAnchors: Object.freeze({
+      player:
+        Object.freeze(playerAnchors),
+      opponent:
+        Object.freeze(opponentAnchors)
+    })
+  };
+}
+
 export function bindEncounterCreatureMetaV1({
   creatureId,
   displayName,
   sourceMeta,
+  presentation = null,
   assetBaseUrl
 }) {
   const id = requiredText(
@@ -130,8 +223,14 @@ export function bindEncounterCreatureMetaV1({
     );
   }
 
+  const configuredMeta =
+    configuredPresentationMetaV1(
+      sourceMeta,
+      presentation
+    );
+
   return Object.freeze({
-    ...sourceMeta,
+    ...configuredMeta,
     id,
     name,
     assetBaseUrl: requiredText(
