@@ -5,6 +5,12 @@ import {
   importMonsterCaptureCreatureRecordV1
 } from "./monster-capture-creature-import-v1.js";
 import {
+  applyCaptureCombatRulesToCreatureDraftV1
+} from "./capture-combat-rules-overlay-v1.js";
+import {
+  requireCaptureCombatRulesetV1
+} from "../../../catalogs/capture-combat-ruleset-catalog-v1.js";
+import {
   buildCaptureCreatureHistoricalLoadoutV1
 } from "../../../catalogs/capture-creature-historical-loadout-v1.js";
 import {
@@ -199,6 +205,24 @@ export function buildExplorationEncounterCombatSourceV1({
       enemySource
     );
 
+  const combatRules =
+    requireCaptureCombatRulesetV1(
+      snapshot.rules.rulesetId
+    );
+
+  const localCombatDraft =
+    applyCaptureCombatRulesToCreatureDraftV1({
+      creatureDraft:
+        localImported.draft,
+      combatRules
+    });
+  const enemyCombatDraft =
+    applyCaptureCombatRulesToCreatureDraftV1({
+      creatureDraft:
+        enemyImported.draft,
+      combatRules
+    });
+
   const runtimeSkillDrafts =
     capturePortableNativeSkillDraftsV1();
   const runtimeSkillIds =
@@ -210,12 +234,12 @@ export function buildExplorationEncounterCombatSourceV1({
 
   const localLoadout = activeLoadoutFor(
     localSource,
-    localImported,
+    { ...localImported, draft: localCombatDraft },
     runtimeSkillIds
   );
   const enemyLoadout = activeLoadoutFor(
     enemySource,
-    enemyImported,
+    { ...enemyImported, draft: enemyCombatDraft },
     runtimeSkillIds
   );
 
@@ -236,12 +260,18 @@ export function buildExplorationEncounterCombatSourceV1({
     exportCaptureEditorDraftsToCombatExportV2({
       battleSetup: battleSetup({
         snapshot,
-        localDraft: localImported.draft,
-        enemyDraft: enemyImported.draft
+        localDraft: localCombatDraft,
+        enemyDraft: enemyCombatDraft
       }),
       creatureDrafts: [
-        draftV2FromImported(localImported),
-        draftV2FromImported(enemyImported)
+        draftV2FromImported({
+          ...localImported,
+          draft: localCombatDraft
+        }),
+        draftV2FromImported({
+          ...enemyImported,
+          draft: enemyCombatDraft
+        })
       ],
       skillDrafts,
       loadouts: [
