@@ -3010,3 +3010,48 @@ Cas particuliers :
 - le KO/cancel/dispose de l'acteur lui-même peut retirer son record.
 
 Le cooldown reste une responsabilité distincte de la Session/état combat et n'est pas recalculé par le Runtime.
+
+
+## Persistent Zone Approach Radius V1 — portée spatiale sans dépendance renderer
+
+Les zones persistantes n'utilisent plus `state.distance` comme seule approximation spatiale dans le vrai chemin Combat Runtime.
+
+### Autorités
+
+- **Combat Runtime** : propriétaire du cycle de vie et du progrès de l'action active ;
+- **Combat Session** : raccord explicite, sans règle métier spatiale propre ;
+- **Persistent Zone Runtime** : propriétaire exclusif de la portée de zone et de l'application des dégâts.
+
+Chaîne :
+
+`Combat Runtime activeByActor -> zoneSpatialContext -> Combat Session.advanceMs() -> Persistent Zone Runtime -> Combat Damage`.
+
+Le contexte transmis est transitoire et dérivé du même record d'action déjà autoritaire. Aucun état parallèle d'approche n'est stocké.
+
+### Bandes d'approche V1
+
+Pour une action `approachMode: "ground"` visant le propriétaire de la zone :
+
+- rayon `long` : camp adverse inclus, même sans action ;
+- rayon `medium` : entrée au premier tiers du trajet ;
+- rayon `short` : entrée aux deux tiers du trajet.
+
+Le franchissement du seuil est traité comme une entrée réelle dans la zone et applique le tick de dégâts de la zone au moment du franchissement.
+
+Les ticks périodiques continuent ensuite à être gérés par le Persistent Zone Runtime.
+
+### Compatibilité
+
+Sans `zoneSpatialContext` explicite, le Persistent Zone Runtime conserve le fallback historique basé sur `state.distance`.
+
+Cela permet aux usages génériques/unitaires hors Combat Runtime de conserver leur contrat antérieur.
+
+### Invariants
+
+- aucune géométrie DOM ;
+- aucun `getBoundingClientRect()` ;
+- aucun calcul de dégâts dans le Runtime ;
+- aucun timer spatial dédié ;
+- aucun traitement par identifiant de capacité ;
+- croissance `short -> medium -> long` inchangée ;
+- renderer uniquement consommateur du snapshot.
