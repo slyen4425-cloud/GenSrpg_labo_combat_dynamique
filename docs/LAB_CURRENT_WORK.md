@@ -24450,3 +24450,50 @@ La gate utilisateur restante est donc levée.
 
 État :
 **GREEN utilisateur — le ruleset Encounter énergie peut servir de base au prochain micro-lot.**
+
+## LOT ACTIF — Exploration Preview Party Loup configuré v1 — 2026-10-03
+
+### Base
+- checkpoint départ : `checkpoint/lab-start-exploration-preview-loup-configured-v1-2026-10-03`
+- SHA base : `10f77d15976b02365a3f3579c3cb80ae5746f01f`
+- branche : `work/lab-exploration-preview-loup-configured-v1-2026-10-03`
+
+### Objectif
+Remplacer uniquement la party preview temporaire de l'Encounter Bridge :
+`Maraileron historique -> Loup volcanique configuré`.
+
+Le test doit utiliser la vraie donnée auteur :
+`data/capture/showcase/crea-loup.capture-creature-transfer-v1.json`,
+et non fabriquer une copie locale de ses réglages.
+
+### Réglages devant traverser le raccord
+- id : `crea-loup` ;
+- niveau 20 ;
+- PV/statValues configurés ;
+- résistances Feu/Eau ;
+- profil quadruped ;
+- displayScale 1.2 ;
+- socket bouche front/back ;
+- loadout : claw / fireball / cap_fire_special_1 / lib_flame_bite / ultime cap_fire_atk_6 ;
+- présentations de capacités Showcase correspondantes.
+
+### Autorités
+- fiche configurée : Capture creature transfer Showcase ;
+- compétences configurées : Showcase skill transfers + catalogues natifs existants ;
+- règles énergie Encounter : Capture Combat Ruleset Catalog ;
+- runtime énergie/IA : Combat Runtime existant ;
+- Exploration : ne transporte toujours que `partyRef` + snapshot.
+
+### Interdits
+- aucune copie manuelle des valeurs Loup dans l'Encounter Bridge ;
+- aucun traitement gameplay spécial par creatureId ;
+- aucun second catalogue de créature ;
+- aucun changement dans Zombicide-40k ;
+- aucun changement du moteur Combat pour masquer un problème de transfert.
+
+### TDD
+1. test d'intégration : `capture-party-preview` doit produire `crea-loup` avec le loadout configuré et les statValues projetés ;
+2. test présentation : scale/socket du transfer doivent surcharger les valeurs génériques de meta ;
+3. implémentation minimale ;
+4. suite CI ;
+5. preview Exploration réelle.
