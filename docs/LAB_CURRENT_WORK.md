@@ -6512,3 +6512,38 @@ Publication fast-forward effectuée sur `global-assets` depuis la branche de tra
 - checkpoint GREEN final prévu : `checkpoint/lab-voltige-assets-green-2026-09-27`.
 
 Le lot est fonctionnellement clos ; la présente note documentaire constitue la clôture de reprise avant création du checkpoint GREEN final.
+
+
+## Micro-lot IMPACTS — source alpha réelle — 2026-10-03
+
+Autorisation utilisateur : découper et déposer la planche IMPACTS fournie dans le nouveau fil.
+Source exacte : PNG RGBA 1536 × 1024, SHA-256 `8a1b0ded3ed0604bd54ee01c9ea50ca5974da28b1ce1692159de481bfbed11e0`.
+
+Bases vérifiées :
+- laboratoire : `69c90ec51b4e0364ddf3107a2c062c18799104a0` ;
+- travail assets : `6512fb350bd94b7d937806bfc3ed5f4e0d860d50` ;
+- bibliothèque publiée : `d73ad04dbc6c3f8de492b9a503653c4c6f2e753c` ;
+- checkpoint GREEN précédent : `checkpoint/lab-fire-zone-contact-sync-v1-green-2026-10-03`, `f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d` ;
+- main reste `3197388f2b3ee7491be6e6125a015315158cffa2`.
+
+Branches existantes conservées : `work/lab-visual-placeholder-repair-v1-2026-10-03` et `work/global-assets-visual-placeholder-repair-2026-10-03`.
+
+Périmètre complémentaire autorisé :
+- source et provenance sous `assets/library/capture/sprites/source/` ;
+- 40 PNG sous `assets/library/capture/sprites/impacts/{blade,physical,electric,water,nature}/frames/` ;
+- les 5 atlas existants de ces mêmes familles ;
+- `scripts/extract-impact-sprites-v1.py` ;
+- `tests/unit/impact-source-alpha-v1.test.mjs` ;
+- les cinq entrées impact du catalogue unique ;
+- documentation d'inventaire ;
+- révision de cache visuel, sentinelle de cache et preview des impacts par le renderer existant.
+
+Les rects de texte sont exclus. Les pixels graphiques restants conservent exactement leurs RGB et alpha ; pas de suppression couleur, pas de resampling, pas de source générative de substitution. Des séparations suivant les creux d'alpha conservent les traînées obliques qui franchissent les colonnes nominales. Les titres recouvrent une partie de quelques cellules dans la source originale : ces pixels masqués ne sont pas inventés.
+
+Propriétaires inchangés : bibliothèque globale pour les médias/catalogue, Asset Presentation pour les IDs, Render Adapter existant pour la lecture.
+Combat Rules, Session, Runtime, collision, audio, progression, créatures et main sont protégés.
+
+TDD : source originale exacte -> 40 PNG RGBA avec glows et contenu illustré -> copie des pixels source -> 5 WebP lossless -> IDs canoniques uniques -> CI -> preview.
+Les 20 atlas casts/projectiles/statuts présents sur la branche de travail restent NON VALIDÉS visuellement. Ils ne font pas partie de ce micro-lot et ne doivent pas être promus silencieusement.
+
+État : RED de contenu requis avant dépôt final. Aucun GREEN utilisateur avant validation de la preview.
