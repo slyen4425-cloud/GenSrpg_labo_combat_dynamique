@@ -24116,3 +24116,56 @@ Le HUD ne pouvait donc pas identifier la capacité ayant réellement appliqué l
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview**.
+
+
+## Micro-lot — Status Info Card V1 — 2026-10-03
+
+Base exacte : `43077fb071a7bd74e084e7e919b4e53175a40bbe` (Status Source Skill Icon V1 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-status-info-card-v1-2026-10-03` ;
+- branche : `work/lab-status-info-card-v1-2026-10-03`.
+
+### Diagnostic
+
+Le HUD possède les instances actives réelles et leur provenance `sourceSkillId`, mais le joueur ne dispose encore d’aucune projection tactile expliquant leur effet.
+Les données nécessaires existent déjà :
+- mécanique : `StatusEffectRuntimeInstanceV1.definition` ;
+- stacks : instance active ;
+- temps : `CombatState.elapsedMs` + `expiresAtMs` / `remainingActionEnds` ;
+- origine : `sourceSkillId` + vraie `SkillDefinition`.
+
+### Contrat cible
+
+- une projection de présentation pure transforme l’instance active + `elapsedMs` + la `SkillDefinition` source en texte lisible ;
+- aucun texte spécifique à un `statusId` ou `skillId` ;
+- tap/clic sur l’icône HUD ouvre une petite fiche locale ;
+- la fiche est mise à jour uniquement pendant `dom-status-fx.sync(state)` ;
+- aucune horloge UI, aucun `Date.now()`, aucun timer de durée ;
+- expiration/cleanse retire l’icône et donc sa fiche ;
+- DoT, HoT, modifier de stat, immobilisation, silence, stun, taunt et bouclier sont décrits depuis les champs réels du contrat ;
+- 1v1 et 2v2 fournissent la vraie définition de capacité depuis leur registre déjà autoritaire.
+
+### Protégé
+
+- `StatusEffectV1` inchangé ;
+- `fighter.statusEffects` reste l’unique état actif ;
+- aucune description métier enregistrée dans l’UI ;
+- aucun timer/observer global ;
+- aucun cache métier ;
+- aucune branche par identifiant ;
+- aucun changement audio ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD
+
+- RED : DoT => montant + élément + intervalle réels ;
+- RED : stacks/max réels ;
+- RED : durée restante suit `CombatState.elapsedMs` ;
+- RED : capacité source affiche son vrai nom ;
+- RED : tap ouvre la fiche sans timer indépendant ;
+- RED : 1v1 et 2v2 raccordent leur registre de capacités au même renderer ;
+- expiration/cleanse continue de retirer l’icône/fiche ;
+- suite complète GREEN avant checkpoint/preview.
+
+État : **LOT OUVERT — TDD avant implémentation**.
