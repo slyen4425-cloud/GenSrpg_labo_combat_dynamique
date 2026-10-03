@@ -429,6 +429,7 @@ test("combat presentation routes cast phase and impact audio without owning game
         if (plan.type === "cast") {
           return {
             status: "running",
+            loop: true,
             stop() {
               stopped.push(plan.skillId);
             },
