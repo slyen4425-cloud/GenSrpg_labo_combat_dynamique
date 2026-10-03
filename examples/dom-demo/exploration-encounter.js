@@ -24,6 +24,12 @@ import {
 import {
   demoPresentationAssets
 } from "./demo-assets.js";
+import {
+  createCaptureRuntimePresentationAssetsV1
+} from "../../src/adapters/presentation/capture-runtime-presentation-assets-v1.js";
+import {
+  CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
+} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
 const root =
   document.querySelector("[data-combat-demo]");
@@ -50,6 +56,33 @@ const CREATURES_URL =
   new URL(
     "../../data/capture/monster-capture-creatures.v1.json",
     import.meta.url
+  );
+
+const PREVIEW_PARTY_TRANSFER_URL =
+  new URL(
+    "../../data/capture/showcase/crea-loup.capture-creature-transfer-v1.json",
+    import.meta.url
+  );
+
+const NATIVE_SKILL_CATALOG_URL =
+  new URL(
+    "../../data/combat/skills/catalog.v1.json",
+    import.meta.url
+  );
+
+const STAT_REGISTRY_URL =
+  new URL(
+    "../../data/capture/monster-capture-stat-registry.v1.json",
+    import.meta.url
+  );
+
+const SHOWCASE_SKILL_URLS =
+  CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.map(
+    (relativePath) =>
+      new URL(
+        "../../" + relativePath,
+        import.meta.url
+      )
   );
 
 const ARENA_BY_FAMILY = Object.freeze({
@@ -84,7 +117,8 @@ function setBridgeStatus(
 
 async function visualMetaFor(
   creatureId,
-  displayName
+  displayName,
+  presentation = null
 ) {
   const binding =
     captureCreatureVisualBindingForIdV1(
@@ -109,6 +143,7 @@ async function visualMetaFor(
     creatureId,
     displayName,
     sourceMeta: meta,
+    presentation,
     assetBaseUrl:
       new URL(".", metaUrl).href
   });
@@ -160,17 +195,38 @@ Promise.resolve()
 
     const [
       creatureData,
-      ...profiles
+      previewPartyTransfer,
+      nativeSkillCatalog,
+      statRegistry,
+      ...tail
     ] = await Promise.all([
       fetchJson(CREATURES_URL),
+      fetchJson(PREVIEW_PARTY_TRANSFER_URL),
+      fetchJson(NATIVE_SKILL_CATALOG_URL),
+      fetchJson(STAT_REGISTRY_URL),
+      ...SHOWCASE_SKILL_URLS.map(fetchJson),
       ...PROFILE_URLS.map(fetchJson)
     ]);
+
+    const showcaseSkillTransfers =
+      tail.slice(
+        0,
+        SHOWCASE_SKILL_URLS.length
+      );
+    const profiles =
+      tail.slice(
+        SHOWCASE_SKILL_URLS.length
+      );
 
     const nativeCombatSource =
       buildExplorationEncounterCombatSourceV1({
         snapshot: handoff.snapshot,
         creatureRecords:
-          creatureData.entries
+          creatureData.entries,
+        previewPartyTransfer,
+        showcaseSkillTransfers,
+        nativeSkillCatalog,
+        statRegistry
       });
 
     const actorById =
@@ -193,7 +249,12 @@ Promise.resolve()
       await Promise.all([
         visualMetaFor(
           local.creatureId,
-          local.displayName
+          local.displayName,
+          local.creatureId ===
+            previewPartyTransfer.draft.id
+            ? previewPartyTransfer.draft
+                .presentation
+            : null
         ),
         visualMetaFor(
           enemy.creatureId,
@@ -215,13 +276,22 @@ Promise.resolve()
         }
       });
 
+    const runtimePresentationAssets =
+      createCaptureRuntimePresentationAssetsV1({
+        baseAssets:
+          demoPresentationAssets,
+        skillPresentations:
+          nativeCombatSource
+            .skillPresentations
+      });
+
     mountedCombat =
       await mountCoop2v2Test({
         root,
         visuals: mountedVisuals,
         nativeCombatSource,
         presentationAssets:
-          demoPresentationAssets,
+          runtimePresentationAssets,
         onBattleEnd({ outcome }) {
           const completed =
             completeExplorationCombatHandoffV1({

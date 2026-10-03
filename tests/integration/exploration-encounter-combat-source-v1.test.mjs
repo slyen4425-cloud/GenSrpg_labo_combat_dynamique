@@ -22,6 +22,44 @@ async function records() {
   return raw.entries;
 }
 
+
+async function configuredSource(rawSnapshot = snapshot()) {
+  const [
+    creatureRecords,
+    previewPartyTransfer,
+    nativeSkillCatalog,
+    statRegistry,
+    ...showcaseSkillTransfers
+  ] = await Promise.all([
+    records(),
+    json("data/capture/showcase/crea-loup.capture-creature-transfer-v1.json"),
+    json("data/combat/skills/catalog.v1.json"),
+    json("data/capture/monster-capture-stat-registry.v1.json"),
+    json("data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json"),
+    json("data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json"),
+    json("data/capture/showcase/fireball.capture-skill-transfer-v1.json"),
+    json("data/capture/showcase/lib_flame_bite.capture-skill-transfer-v1.json")
+  ]);
+
+  return buildExplorationEncounterCombatSourceV1({
+    snapshot: rawSnapshot,
+    creatureRecords,
+    previewPartyTransfer,
+    showcaseSkillTransfers,
+    nativeSkillCatalog,
+    statRegistry
+  });
+}
+
+async function json(relativePath) {
+  return JSON.parse(
+    await readFile(
+      new URL("../../" + relativePath, import.meta.url),
+      "utf8"
+    )
+  );
+}
+
 function snapshot(opponentCreatureId = "crea_nat_3") {
   return {
     schema: "capture-encounter-snapshot-v1",
@@ -48,10 +86,7 @@ function snapshot(opponentCreatureId = "crea_nat_3") {
 
 test("Exploration snapshot builds real 1v1 Combat source with the encountered creature", async () => {
   const source =
-    buildExplorationEncounterCombatSourceV1({
-      snapshot: snapshot(),
-      creatureRecords: await records()
-    });
+    await configuredSource(snapshot());
 
   assert.equal(
     source.battleFormat.localActorId,
@@ -90,20 +125,61 @@ test("Exploration snapshot builds real 1v1 Combat source with the encountered cr
   );
 });
 
-test("preview party ref resolves explicitly to Maraileron without changing opponent identity", async () => {
+test("preview party ref resolves to the configured Loup volcanique transfer without changing opponent identity", async () => {
   const source =
-    buildExplorationEncounterCombatSourceV1({
-      snapshot: snapshot("crea_nat_3"),
-      creatureRecords: await records()
-    });
+    await configuredSource(
+      snapshot("crea_nat_3")
+    );
 
   const local =
     source.battleFormat.actors.find(
       (actor) => actor.actorId === "local-1"
     );
+  const localFighter =
+    source.fighters.find(
+      (fighter) => fighter.id === "local-1"
+    );
 
-  assert.equal(local.creatureId, "crea_maraileron");
-  assert.equal(local.displayName, "Maraileron");
+  assert.equal(local.creatureId, "crea-loup");
+  assert.equal(local.displayName, "Loup volcanique");
+  assert.equal(localFighter.maxHp, 150);
+  assert.equal(localFighter.statValuesById.speed, 5);
+  assert.equal(localFighter.statValuesById.fire, 10);
+  assert.equal(
+    localFighter.resistancePctByChannel.water,
+    -50
+  );
+  assert.deepEqual(
+    source.skillIdsByActor["local-1"],
+    [
+      "claw",
+      "fireball",
+      "cap_fire_special_1",
+      "lib_flame_bite",
+      "cap_fire_atk_6"
+    ]
+  );
+
+  assert.equal(
+    source.skillPresentations.fireball
+      .visual.icon.assetId,
+    "core:icon-skill-fireball-01"
+  );
+  assert.equal(
+    source.skillPresentations.cap_fire_special_1
+      .visual.travel.assetId,
+    "pack:capture:sprite-projectile-earth-01"
+  );
+  assert.equal(
+    source.skillPresentations.lib_flame_bite
+      .visual.impact.assetId,
+    "pack:capture:sprite-impact-physical-01"
+  );
+  assert.equal(
+    source.skillPresentations.cap_fire_atk_6
+      .visual.aura.assetId,
+    "pack:capture:sprite-fire-zone-loop-01"
+  );
 });
 
 test("bridge rejects unknown party refs instead of inventing a player roster", async () => {
@@ -122,14 +198,11 @@ test("bridge rejects unknown party refs instead of inventing a player roster", a
 });
 
 test("bridge rejects an unknown encountered creature instead of substituting a demo fighter", async () => {
-  const sourceRecords = await records();
-
-  assert.throws(
+  await assert.rejects(
     () =>
-      buildExplorationEncounterCombatSourceV1({
-        snapshot: snapshot("crea_missing"),
-        creatureRecords: sourceRecords
-      }),
+      configuredSource(
+        snapshot("crea_missing")
+      ),
     /opponent/
   );
 });
@@ -137,10 +210,7 @@ test("bridge rejects an unknown encountered creature instead of substituting a d
 
 test("Exploration ruleset gives the bridged Combat Session usable energy", async () => {
   const source =
-    buildExplorationEncounterCombatSourceV1({
-      snapshot: snapshot(),
-      creatureRecords: await records()
-    });
+    await configuredSource(snapshot());
 
   const local = source.fighters.find(
     (fighter) => fighter.id === "local-1"

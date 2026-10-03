@@ -24450,3 +24450,165 @@ La gate utilisateur restante est donc levée.
 
 État :
 **GREEN utilisateur — le ruleset Encounter énergie peut servir de base au prochain micro-lot.**
+
+## LOT ACTIF — Exploration Preview Party Loup configuré v1 — 2026-10-03
+
+### Base
+- checkpoint départ : `checkpoint/lab-start-exploration-preview-loup-configured-v1-2026-10-03`
+- SHA base : `10f77d15976b02365a3f3579c3cb80ae5746f01f`
+- branche : `work/lab-exploration-preview-loup-configured-v1-2026-10-03`
+
+### Objectif
+Remplacer uniquement la party preview temporaire de l'Encounter Bridge :
+`Maraileron historique -> Loup volcanique configuré`.
+
+Le test doit utiliser la vraie donnée auteur :
+`data/capture/showcase/crea-loup.capture-creature-transfer-v1.json`,
+et non fabriquer une copie locale de ses réglages.
+
+### Réglages devant traverser le raccord
+- id : `crea-loup` ;
+- niveau 20 ;
+- PV/statValues configurés ;
+- résistances Feu/Eau ;
+- profil quadruped ;
+- displayScale 1.2 ;
+- socket bouche front/back ;
+- loadout : claw / fireball / cap_fire_special_1 / lib_flame_bite / ultime cap_fire_atk_6 ;
+- présentations de capacités Showcase correspondantes.
+
+### Autorités
+- fiche configurée : Capture creature transfer Showcase ;
+- compétences configurées : Showcase skill transfers + catalogues natifs existants ;
+- règles énergie Encounter : Capture Combat Ruleset Catalog ;
+- runtime énergie/IA : Combat Runtime existant ;
+- Exploration : ne transporte toujours que `partyRef` + snapshot.
+
+### Interdits
+- aucune copie manuelle des valeurs Loup dans l'Encounter Bridge ;
+- aucun traitement gameplay spécial par creatureId ;
+- aucun second catalogue de créature ;
+- aucun changement dans Zombicide-40k ;
+- aucun changement du moteur Combat pour masquer un problème de transfert.
+
+### TDD
+1. test d'intégration : `capture-party-preview` doit produire `crea-loup` avec le loadout configuré et les statValues projetés ;
+2. test présentation : scale/socket du transfer doivent surcharger les valeurs génériques de meta ;
+3. implémentation minimale ;
+4. suite CI ;
+5. preview Exploration réelle.
+
+### Résultat technique — Preview Loup configuré
+
+TDD :
+- commit test party configurée : `42f0d3b8bba8a1dcd31be10478ebf1ff12e61e64` ;
+- commit test présentation configurée : `1c47c44d9fc9ed96b7e017a67b7ad7aec9e60b10`.
+
+Implémentation :
+- Encounter source consomme directement `crea-loup.capture-creature-transfer-v1.json` ;
+- le loadout vient du transfer, pas du catalogue historique ;
+- les skills Showcase remplacent les définitions de même id via le même principe de catalogue configuré ;
+- le ruleset énergie reste appliqué par l'overlay existant ;
+- la présentation configurée surcharge scale / transform / position / sockets du meta visuel ;
+- le binding global du Loup pointe vers ses vrais assets `loup_volcanique`.
+
+HEAD technique validé :
+`46fbeceb3903deb87e1db6fd1b7a6aac9497ff7c`.
+
+CI :
+- Laboratory CI run `37146109379` — **SUCCESS**.
+
+Checkpoint prévalidation :
+`checkpoint/lab-exploration-preview-loup-configured-v1-prevalidation-green-2026-10-03`.
+
+Preview Combat :
+`preview/lab-exploration-preview-loup-configured-v1-2026-10-03`.
+
+Publication Exploration :
+- PR infra #54 ;
+- merge main Exploration : `c5ddaa84c3ae5133488796975b5064b04433ffba`.
+
+Gate restante :
+validation utilisateur visuelle depuis le vrai chemin Exploration -> Encounter -> Combat :
+- Loup volcanique côté joueur à la place de Maraileron ;
+- taille / profil / socket cohérents ;
+- 150 PV ;
+- loadout configuré visible et utilisable ;
+- aucune régression du retour Exploration.
+
+État : **PREVALIDATION utilisateur — technique GREEN**.
+
+### Correction prévalidation — présentations de capacités Loup
+
+Retour utilisateur :
+- Loup configuré bien présent en combat ;
+- certains visuels manquaient alors que d'autres étaient visibles ;
+- exemples constatés : icônes et sprites de certaines capacités.
+
+Cause démontrée :
+- le bridge exportait correctement `nativeCombatSource.skillPresentations` ;
+- `combat-2v2-test-ui` recevait encore seulement `demoPresentationAssets` ;
+- les bindings démo ne couvrent que quelques skills historiques, notamment `claw` et `fireball` ;
+- les présentations configurées de Cendre / Morsure / Tempête n'étaient donc jamais projetées vers le renderer ;
+- plusieurs icônes configurées existent dans le catalogue global mais n'étaient pas exposées par le résolveur de preview.
+
+Correction :
+- ajout de `capture-runtime-presentation-assets-v1` ;
+- autorité primaire : `nativeCombatSource.skillPresentations` ;
+- fallback démo uniquement lorsqu'aucun binding configuré n'existe ;
+- projection des slots configurés :
+  - icon ;
+  - cast ;
+  - travel ;
+  - impact ;
+  - aura -> persistentZone ;
+  - statusVisuals ;
+  - layers par vue ;
+  - anchors / offsets / scales ;
+- ajout des quatre icônes Showcase du Loup au résolveur global de preview ;
+- aucun changement de règles, dégâts, énergie, IA ou timings métier.
+
+TDD :
+- `capture-runtime-presentation-assets-v1.test.mjs` vérifie :
+  - Fireball configurée ;
+  - statusVisual de Cendre ;
+  - aura persistante de Tempête ;
+  - fallback explicite de Griffe ;
+  - résolution des icônes Showcase ;
+- test d'intégration Encounter vérifie que les bindings configurés traversent bien le bridge.
+
+HEAD fonctionnel avant cette note :
+`d9486e2e6134ecc820dcb8806b164646b7875f23`.
+
+CI :
+- Laboratory CI `37146810191` — **SUCCESS**.
+
+Checkpoint prévalidation :
+`checkpoint/lab-exploration-preview-loup-presentation-fix-prevalidation-green-2026-10-03`.
+
+Publication Exploration :
+- PR infra #55 ;
+- merge main Exploration : `d63587869bf1ba752fef2edb8fc0e8c914669c5b`.
+
+Gate restante :
+validation utilisateur visuelle des icônes / cast / projectile / impact / zone / statuts depuis le vrai chemin Exploration -> Encounter -> Combat.
+
+État : **TECHNIQUE GREEN — PREVALIDATION UTILISATEUR**.
+
+### Validation utilisateur finale — présentation Loup dans Encounter
+
+Retour utilisateur du 2026-10-03 :
+- test du vrai chemin Exploration -> Encounter -> Combat effectué ;
+- icônes / sprites / effets visuels configurés désormais présents ;
+- verdict utilisateur : **parfait**.
+
+Le lot est donc validé fonctionnellement et visuellement.
+
+Aucune nouvelle autorité n'a été introduite :
+- gameplay : moteur Combat existant ;
+- données créature : transfer Capture configuré ;
+- présentation skill : bindings configurés exportés ;
+- assets : bibliothèque globale ;
+- fallback démo uniquement pour les skills sans binding configuré.
+
+État : **GREEN utilisateur**.
