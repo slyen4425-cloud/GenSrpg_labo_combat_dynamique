@@ -24537,3 +24537,60 @@ validation utilisateur visuelle depuis le vrai chemin Exploration -> Encounter -
 - aucune régression du retour Exploration.
 
 État : **PREVALIDATION utilisateur — technique GREEN**.
+
+### Correction prévalidation — présentations de capacités Loup
+
+Retour utilisateur :
+- Loup configuré bien présent en combat ;
+- certains visuels manquaient alors que d'autres étaient visibles ;
+- exemples constatés : icônes et sprites de certaines capacités.
+
+Cause démontrée :
+- le bridge exportait correctement `nativeCombatSource.skillPresentations` ;
+- `combat-2v2-test-ui` recevait encore seulement `demoPresentationAssets` ;
+- les bindings démo ne couvrent que quelques skills historiques, notamment `claw` et `fireball` ;
+- les présentations configurées de Cendre / Morsure / Tempête n'étaient donc jamais projetées vers le renderer ;
+- plusieurs icônes configurées existent dans le catalogue global mais n'étaient pas exposées par le résolveur de preview.
+
+Correction :
+- ajout de `capture-runtime-presentation-assets-v1` ;
+- autorité primaire : `nativeCombatSource.skillPresentations` ;
+- fallback démo uniquement lorsqu'aucun binding configuré n'existe ;
+- projection des slots configurés :
+  - icon ;
+  - cast ;
+  - travel ;
+  - impact ;
+  - aura -> persistentZone ;
+  - statusVisuals ;
+  - layers par vue ;
+  - anchors / offsets / scales ;
+- ajout des quatre icônes Showcase du Loup au résolveur global de preview ;
+- aucun changement de règles, dégâts, énergie, IA ou timings métier.
+
+TDD :
+- `capture-runtime-presentation-assets-v1.test.mjs` vérifie :
+  - Fireball configurée ;
+  - statusVisual de Cendre ;
+  - aura persistante de Tempête ;
+  - fallback explicite de Griffe ;
+  - résolution des icônes Showcase ;
+- test d'intégration Encounter vérifie que les bindings configurés traversent bien le bridge.
+
+HEAD fonctionnel avant cette note :
+`d9486e2e6134ecc820dcb8806b164646b7875f23`.
+
+CI :
+- Laboratory CI `37146810191` — **SUCCESS**.
+
+Checkpoint prévalidation :
+`checkpoint/lab-exploration-preview-loup-presentation-fix-prevalidation-green-2026-10-03`.
+
+Publication Exploration :
+- PR infra #55 ;
+- merge main Exploration : `d63587869bf1ba752fef2edb8fc0e8c914669c5b`.
+
+Gate restante :
+validation utilisateur visuelle des icônes / cast / projectile / impact / zone / statuts depuis le vrai chemin Exploration -> Encounter -> Combat.
+
+État : **TECHNIQUE GREEN — PREVALIDATION UTILISATEUR**.
