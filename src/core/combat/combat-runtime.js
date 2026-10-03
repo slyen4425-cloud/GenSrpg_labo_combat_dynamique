@@ -300,6 +300,41 @@ export function createCombatRuntime({
     });
   }
 
+  function advanceSessionToClock(current) {
+    const intervalStartClockMs =
+      lastNowMs;
+
+    if (intervalStartClockMs === null) {
+      return false;
+    }
+
+    const delta = Math.max(
+      0,
+      current - intervalStartClockMs
+    );
+    lastNowMs = current;
+
+    if (delta <= 0) {
+      return false;
+    }
+
+    const stateBeforeAdvance =
+      session.snapshot();
+    session.advanceMs(
+      delta,
+      {
+        zoneSpatialContext:
+          zoneSpatialContext({
+            state:
+              stateBeforeAdvance,
+            intervalStartClockMs
+          })
+      }
+    );
+    emitStateIfChanged();
+    return true;
+  }
+
   function unresolvedRecords() {
     return activeRecords().filter(
       (record) => !record.resolved
@@ -812,30 +847,7 @@ export function createCombatRuntime({
     }
 
     const current = now();
-    const intervalStartClockMs =
-      lastNowMs;
-    const delta = Math.max(
-      0,
-      current - intervalStartClockMs
-    );
-    lastNowMs = current;
-
-    if (delta > 0) {
-      const stateBeforeAdvance =
-        session.snapshot();
-      session.advanceMs(
-        delta,
-        {
-          zoneSpatialContext:
-            zoneSpatialContext({
-              state:
-                stateBeforeAdvance,
-              intervalStartClockMs
-            })
-        }
-      );
-      emitStateIfChanged();
-    }
+    advanceSessionToClock(current);
 
     onClock(session.snapshot());
     settleDue(current);
@@ -1145,6 +1157,12 @@ export function createCombatRuntime({
     }
 
     const current = now();
+
+    // Visible contact can arrive between scheduled Runtime ticks.
+    // Advance the authoritative Combat Session first, while this
+    // unresolved ground approach still exists, so Persistent Zone
+    // Runtime cannot miss a radius-entry crossing.
+    advanceSessionToClock(current);
 
     // Process any semantic release/clash/nominal impact that was already
     // due before this observed contact. The contact signal never skips
