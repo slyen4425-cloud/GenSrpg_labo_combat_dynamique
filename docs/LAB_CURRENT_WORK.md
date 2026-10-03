@@ -24703,3 +24703,24 @@ CI : `37152573835` — **SUCCESS**.
 
 État : **TECHNIQUE GREEN — publication preview + validation utilisateur restantes**.
 
+## Publication preview coordonnée — 2026-10-03
+
+Preview fonctionnelle figée :
+- branche Combat : `preview/lab-exploration-player-party-v1-2026-10-03` ;
+- SHA Combat : `5eabc26cd298997379406185b1cf4e2fad84a79f` ;
+- checkpoint : `checkpoint/lab-exploration-player-party-v1-prevalidation-green-2026-10-03`.
+
+Publication Pages portée par le dépôt Exploration :
+- PR infra : #61 ;
+- main infra : `81c6a2aee3e1d89bc1dc179ea58e29358332255d` ;
+- Pages run : `37152774027` — **SUCCESS**.
+
+Le job confirme :
+- Checkout Exploration Player Party preview — SUCCESS ;
+- Checkout Combat Player Party preview — SUCCESS ;
+- Checkout Capture global visual assets — SUCCESS ;
+- Upload preview — SUCCESS ;
+- Deploy preview — SUCCESS.
+
+Gate restant : validation utilisateur réelle du roster Loup -> Moussados dans le Combat lancé depuis Exploration.
+
