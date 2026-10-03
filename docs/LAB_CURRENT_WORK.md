@@ -24724,3 +24724,45 @@ Le job confirme :
 
 Gate restant : validation utilisateur réelle du roster Loup -> Moussados dans le Combat lancé depuis Exploration.
 
+---
+
+# Micro-lot correctif — Player Party Recall Runtime Fix v1 — 2026-10-03
+
+## Base
+- état publié : `0acc4d83725d0873786c96bc880528165c94344c`
+- checkpoint départ : `checkpoint/lab-start-player-party-recall-runtime-fix-v1-2026-10-03`
+- branche : `work/lab-player-party-recall-runtime-fix-v1-2026-10-03`
+
+## Régression utilisateur
+Dans le vrai chemin Exploration -> Encounter -> Combat :
+- deux créatures sont bien présentes dans les icônes de roster ;
+- Rappel démarre correctement ;
+- la barre de charge va au bout ;
+- après résolution, le combat paraît figé ;
+- aucun changement de créature n'est obtenu.
+
+## Invariant d'architecture
+La correction doit rester sur :
+`Combat Runtime command -> command completed -> Roster Session -> Combat Session slot -> Visual Controller`.
+
+Interdits :
+- invocation directe depuis l'UI ;
+- remplacement direct du fighter par l'UI ;
+- second timer ;
+- second roster ;
+- contournement de recovery ;
+- modification de Zombicide-40k.
+
+## Plan TDD
+1. reproduire la séquence réelle avec Combat Runtime + Roster Session + recovery ;
+2. vérifier qu'après Rappel :
+   - activeMemberId = null ;
+   - Moussados reste sélectionné ;
+   - la recovery se termine ;
+   - Invocation devient effectivement lançable ;
+3. reproduire le comportement UI si le Core est GREEN ;
+4. corriger uniquement le premier propriétaire fautif ;
+5. CI complète ;
+6. republier la preview ;
+7. validation utilisateur.
+
