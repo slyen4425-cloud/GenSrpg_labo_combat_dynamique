@@ -993,6 +993,48 @@ export async function mountCoop2v2Test({
     );
   }
 
+  function listenSkill(element, type, handler) {
+    element.addEventListener(type, handler);
+    skillButtonCleanups.push(() =>
+      element.removeEventListener(type, handler)
+    );
+  }
+
+  function localRosterState() {
+    return rosterSession
+      ? rosterSession.snapshot()[
+          format.localActorId
+        ] ?? null
+      : null;
+  }
+
+  function activeLocalRosterMember() {
+    const team = localRosterState();
+    return team?.members.find(
+      (member) =>
+        member.id === team.activeMemberId
+    ) ?? null;
+  }
+
+  function actorDisplayName(actorId) {
+    if (
+      actorId === format.localActorId &&
+      rosterSession
+    ) {
+      return (
+        activeLocalRosterMember()
+          ?.displayName ??
+        format.actor(actorId)?.displayName ??
+        actorId
+      );
+    }
+
+    return (
+      format.actor(actorId)?.displayName ??
+      actorId
+    );
+  }
+
   function setStatus(message, tone = "info") {
     status.textContent = message;
     status.dataset.tone = tone;
@@ -1169,9 +1211,64 @@ export async function mountCoop2v2Test({
         String(cooldownProgress)
       );
 
+      const hasActiveRosterMember =
+        !rosterSession ||
+        localRosterState()?.activeMemberId !== null;
+
       button.disabled =
+        !hasActiveRosterMember ||
         runtime.hasActiveActionFor(format.localActorId) ||
         !preview.ok;
+    }
+
+    if (rosterSession && rosterCommands) {
+      const team = localRosterState();
+      const hasActive =
+        team?.activeMemberId !== null;
+      const hasSelection =
+        Boolean(
+          team?.selectedReserveMemberId
+        );
+
+      const recallRef =
+        commandRefs.get("recall");
+      if (recallRef) {
+        const preview =
+          hasActive
+            ? session.previewCommand({
+                actorId:
+                  format.localActorId,
+                command:
+                  recallRef.command
+              })
+            : { ok: false };
+
+        recallRef.button.disabled =
+          runtime.hasActiveActionFor(
+            format.localActorId
+          ) ||
+          !preview.ok;
+      }
+
+      const summonRef =
+        commandRefs.get("summon");
+      if (summonRef) {
+        const preview =
+          !hasActive && hasSelection
+            ? session.previewCommand({
+                actorId:
+                  format.localActorId,
+                command:
+                  summonRef.command
+              })
+            : { ok: false };
+
+        summonRef.button.disabled =
+          runtime.hasActiveActionFor(
+            format.localActorId
+          ) ||
+          !preview.ok;
+      }
     }
   }
 
@@ -1275,7 +1372,7 @@ export async function mountCoop2v2Test({
 
     button.append(label, cooldown);
 
-    listen(button, "click", () => {
+    listenSkill(button, "click", () => {
       const allowed = isSkillTargetAllowed({
         format,
         actorId: format.localActorId,
@@ -1319,27 +1416,399 @@ export async function mountCoop2v2Test({
     return Object.freeze({ button, cooldown });
   }
 
-  const localSkillIds =
-    skillIdsByActor[format.localActorId];
-  const localSkills = localSkillIds.map((skillId) => {
-    const skill = skillsById[skillId];
-    if (!skill) {
-      throw new RangeError(
-        `Unknown local skill: ${skillId}`
+  function renderLocalSkillsForCreature(
+    creatureId
+  ) {
+    for (
+      const cleanup of
+        skillButtonCleanups.splice(0)
+    ) {
+      cleanup();
+    }
+
+    skillRefs.clear();
+    skillContainer.replaceChildren();
+
+    const ids =
+      skillIdsByCreature[creatureId] ??
+      [];
+
+    for (const skillId of ids) {
+      const skill =
+        skillsById[skillId];
+
+      if (!skill) {
+        throw new RangeError(
+          `Unknown local skill: ${skillId}`
+        );
+      }
+
+      const refs =
+        createSkillButton(skill);
+      skillContainer.append(
+        refs.button
+      );
+      skillRefs.set(skill.id, {
+        skill,
+        button: refs.button,
+        cooldown: refs.cooldown
+      });
+    }
+  }
+
+  function reserveCard(member) {
+    const button =
+      root.ownerDocument.createElement(
+        "button"
+      );
+    button.type = "button";
+    button.className =
+      "reserve-card encounter-reserve-card";
+    button.dataset.memberId =
+      member.id;
+
+    const defeated =
+      Number(member.hp) <= 0;
+    button.disabled =
+      member.active || defeated;
+
+    const descriptor =
+      visuals.getCreatureDescriptor(
+        member.creatureId
+      );
+
+    if (descriptor?.iconUrl) {
+      const image =
+        root.ownerDocument.createElement(
+          "img"
+        );
+      image.className =
+        "reserve-card__icon";
+      image.src =
+        descriptor.iconUrl;
+      image.alt = "";
+      button.append(image);
+    }
+
+    const text =
+      root.ownerDocument.createElement(
+        "span"
+      );
+    text.className =
+      "reserve-card__text";
+    text.textContent =
+      defeated
+        ? `${member.displayName} · KO`
+        : member.active
+          ? `${member.displayName} · actif`
+          : `${member.displayName} · ${Math.round(member.hp)}/${Math.round(member.maxHp)} PV`;
+
+    button.append(text);
+
+    if (member.selected) {
+      button.dataset.selected =
+        "true";
+    }
+
+    return button;
+  }
+
+  function renderRoster() {
+    if (
+      !rosterSession ||
+      !playerReserve ||
+      !teamSelectionLabel
+    ) {
+      return;
+    }
+
+    const team =
+      localRosterState();
+
+    if (!team) {
+      return;
+    }
+
+    playerReserve.replaceChildren(
+      ...team.members.map(
+        reserveCard
+      )
+    );
+
+    const selected =
+      team.members.find(
+        (member) =>
+          member.id ===
+          team.selectedReserveMemberId
+      ) ?? null;
+
+    teamSelectionLabel.textContent =
+      selected
+        ? `Réserve : ${selected.displayName}`
+        : "Aucune réserve sélectionnée";
+  }
+
+  function startRosterCommand(
+    command
+  ) {
+    const result =
+      runtime.startCommand({
+        actorId:
+          format.localActorId,
+        command
+      });
+
+    if (!result.ok) {
+      setStatus(
+        result.outcome ===
+          "insufficient_energy"
+          ? "Énergie insuffisante."
+          : `Action d'équipe impossible : ${result.outcome}.`,
+        "warn"
+      );
+      renderAvailability();
+      return;
+    }
+
+    setStatus(
+      `${command.name} se prépare…`,
+      "accent"
+    );
+    renderAvailability();
+  }
+
+  function createRosterControls() {
+    if (
+      !rosterSession ||
+      !rosterCommands ||
+      !teamActionContainer ||
+      !playerReserve
+    ) {
+      return;
+    }
+
+    for (
+      const command of [
+        rosterCommands.recall,
+        rosterCommands.summon
+      ]
+    ) {
+      const button =
+        root.ownerDocument.createElement(
+          "button"
+        );
+      button.type = "button";
+      button.className =
+        "action-option action-option--team";
+      button.dataset.combatCommand =
+        command.kind;
+      button.textContent =
+        command.name;
+
+      commandRefs.set(
+        command.kind,
+        {
+          button,
+          command
+        }
+      );
+      teamActionContainer.append(
+        button
+      );
+      listen(
+        button,
+        "click",
+        () =>
+          startRosterCommand(
+            command
+          )
       );
     }
-    return skill;
-  });
 
-  for (const skill of localSkills) {
-    const refs = createSkillButton(skill);
-    skillContainer.append(refs.button);
-    skillRefs.set(skill.id, {
-      skill,
-      button: refs.button,
-      cooldown: refs.cooldown
-    });
+    listen(
+      playerReserve,
+      "click",
+      (event) => {
+        const button =
+          event.target.closest?.(
+            "[data-member-id]"
+          );
+
+        if (
+          !button ||
+          button.disabled
+        ) {
+          return;
+        }
+
+        const team =
+          localRosterState();
+        const member =
+          team?.members.find(
+            (item) =>
+              item.id ===
+              button.dataset.memberId
+          ) ?? null;
+
+        if (!member) {
+          return;
+        }
+
+        const result =
+          rosterSession.selectReserve(
+            format.localActorId,
+            member.id
+          );
+
+        if (result.ok) {
+          setStatus(
+            `${member.displayName} sélectionné en réserve.`,
+            "info"
+          );
+          renderRoster();
+          renderAvailability();
+        }
+      }
+    );
   }
+
+  function applyRosterResolution(
+    resolution
+  ) {
+    if (
+      !rosterSession ||
+      resolution.actionType !==
+        "command" ||
+      !["recall", "summon"].includes(
+        resolution.commandKind
+      )
+    ) {
+      return null;
+    }
+
+    const result =
+      rosterSession.applyCommandResolution(
+        format.localActorId,
+        resolution
+      );
+
+    if (!result.ok) {
+      setStatus(
+        `Action d'équipe impossible : ${result.outcome}.`,
+        "warn"
+      );
+      return result;
+    }
+
+    if (
+      result.outcome ===
+        "recalled"
+    ) {
+      visuals.setSlotVisible(
+        format.localActorId,
+        false
+      );
+      setStatus(
+        "Créature rappelée. Sélectionnez une réserve puis Invocation.",
+        "accent"
+      );
+    }
+
+    if (
+      result.outcome ===
+        "summoned"
+    ) {
+      visuals.setCreatureFor(
+        format.localActorId,
+        result.creatureId,
+        {
+          displayName:
+            result.displayName
+        }
+      );
+      visuals.setSlotVisible(
+        format.localActorId,
+        true
+      );
+      renderLocalSkillsForCreature(
+        result.creatureId
+      );
+      setStatus(
+        `${result.displayName} entre en combat.`,
+        "ok"
+      );
+    }
+
+    renderRoster();
+    renderState();
+    return result;
+  }
+
+  function replaceLocalAfterKo() {
+    if (!rosterSession) {
+      return null;
+    }
+
+    const fighter =
+      session.snapshot()
+        .fighters[
+          format.localActorId
+        ];
+
+    if (
+      !fighter ||
+      Number(fighter.hp) > 0
+    ) {
+      return null;
+    }
+
+    const result =
+      rosterSession
+        .replaceKnockedOut(
+          format.localActorId
+        );
+
+    if (
+      result.outcome ===
+        "ko_replaced"
+    ) {
+      visuals.setCreatureFor(
+        format.localActorId,
+        result.creatureId,
+        {
+          displayName:
+            result.displayName
+        }
+      );
+      visuals.setSlotVisible(
+        format.localActorId,
+        true
+      );
+      renderLocalSkillsForCreature(
+        result.creatureId
+      );
+      setStatus(
+        `${result.displayName} remplace automatiquement la créature KO.`,
+        "warn"
+      );
+    }
+
+    renderRoster();
+    return result;
+  }
+
+  const initialLocalCreatureId =
+    activeLocalRosterMember()
+      ?.creatureId ??
+    format.actor(
+      format.localActorId
+    ).creatureId;
+
+  renderLocalSkillsForCreature(
+    initialLocalCreatureId
+  );
+  createRosterControls();
+  renderRoster();
 
   const aiControllers = [];
 
@@ -1371,6 +1840,14 @@ export async function mountCoop2v2Test({
     queueMicrotask(() => {
       aiDecisionQueued = false;
       if (disposed) {
+        return;
+      }
+
+      if (
+        rosterSession &&
+        localRosterState()
+          ?.activeMemberId === null
+      ) {
         return;
       }
 
