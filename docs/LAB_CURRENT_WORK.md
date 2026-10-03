@@ -24326,3 +24326,31 @@ Hors périmètre :
 - Zombicide-40k ;
 - vraie party Capture persistante ;
 - récompenses/capture définitives.
+
+
+### Preview publiée — Exploration Encounter Bridge V1 — 2026-10-03
+
+- work code : `bf28ba7e5466177eff936e8a412c655b2c16cfa8` ;
+- CI : `37137395260` — **SUCCESS** ;
+- preview : `preview/lab-exploration-encounter-bridge-v1-2026-10-03` au même SHA ;
+- intégrée dans le Pages artifact Exploration sous `combat-preview/` ;
+- Pages : `37137861112` — **SUCCESS**.
+
+Vrai adversaire :
+- snapshot `crea_nat_3` -> Ancêtronc ;
+- PV/éléments/capacités lus depuis Capture ;
+- aucun remplacement par un fighter de démo.
+
+Player preview :
+- `capture-party-preview` -> Maraileron, provider explicitement labo.
+
+Visuels :
+- binding Capture réel quand disponible ;
+- sinon fallback visuel générique explicite, sans changer l'identité gameplay.
+
+Fin :
+- callback one-shot depuis le runtime existant ;
+- `CaptureCombatResult v1` ;
+- retour à Exploration via le handoff versionné.
+
+Statut : **PREVALIDATION smartphone utilisateur**.
