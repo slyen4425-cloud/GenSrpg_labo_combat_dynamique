@@ -1,3 +1,56 @@
+# LOT ACTIF — Exploration Encounter Energy Ruleset v1 — 2026-10-03
+
+## Base
+- checkpoint départ : `checkpoint/lab-start-exploration-encounter-energy-ruleset-v1-2026-10-03`
+- SHA base : `bf28ba7e5466177eff936e8a412c655b2c16cfa8`
+- branche : `work/lab-exploration-encounter-energy-ruleset-v1-2026-10-03`
+
+## Retour utilisateur
+Le handoff Exploration -> Combat ouvre le bon combat, la bonne créature et la bonne arène, mais l'énergie reste à zéro et aucune capacité ne peut être lancée.
+
+## Cause démontrée
+`importMonsterCaptureCreatureRecordV1()` applique les defaults historiques :
+- maxEnergy = 0 ;
+- initialEnergy = 0 ;
+- energyChargeAmount = 0 ;
+- energyChargeIntervalMs = 0.
+
+Le Combat Runtime recharge correctement l'énergie quand ces données sont valides.
+
+## Objectif
+Résoudre `snapshot.rules.rulesetId` vers un **ruleset Combat unique**, puis appliquer ce ruleset via l'overlay Capture existant avant création des FighterConfig.
+
+Chaîne :
+```text
+CaptureEncounterSnapshot.rulesetId
+ -> Capture Combat Ruleset Catalog
+ -> applyCaptureCombatRulesToCreatureDraftV1
+ -> Capture Export Adapter
+ -> FighterConfig
+ -> Combat Session / Runtime existants
+```
+
+## Autorités
+- ruleset énergie : Capture Combat Ruleset Catalog ;
+- overlay créature : capture-combat-rules-overlay-v1 ;
+- état énergie : Combat State / Combat Session ;
+- horloge/recharge : Combat Runtime ;
+- Exploration Bridge : transporte seulement rulesetId.
+
+## Interdits
+- aucune recharge dans l'UI ;
+- aucune valeur d'énergie codée dans exploration-encounter.js ;
+- aucun fallback silencieux pour ruleset inconnu ;
+- aucun changement au Combat Runtime ;
+- aucun second timer.
+
+## Tests
+- ruleset standard résolu par id ;
+- ruleset inconnu rejeté ;
+- handoff produit des fighters avec énergie/recharge configurées ;
+- vrai chemin Combat Session : énergie augmente après advanceMs ;
+- identité adverse/arène/loadout inchangés.
+
 # Laboratoire Combat Dynamique — Current Work
 
 Ce fichier est le point de reprise opérationnel du laboratoire.
