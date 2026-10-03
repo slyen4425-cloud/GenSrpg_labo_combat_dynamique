@@ -3111,3 +3111,25 @@ Règles :
 
 Le renderer garde une seule interaction locale de présentation : toucher l’icône crée/affiche sa fiche ; expiration ou cleanse supprime l’icône et la fiche avec le même record HUD.
 Il n’existe aucun observer global, timer global ou second état métier.
+
+## Persistent Zone Contact Clock Sync V1 — contact visible entre deux ticks
+
+Le Combat Runtime reste l'unique propriétaire de la conversion horloge réelle -> temps de CombatSession.
+
+Une frontière interne commune advanceSessionToClock(current) est utilisée par :
+- le tick périodique existant ;
+- reportActionContact() lorsqu'un contact visuel autoritaire arrive entre deux ticks.
+
+Ordre obligatoire lors d'un contact visible :
+1. avancer la CombatSession jusqu'au temps courant ;
+2. fournir le zoneSpatialContext pendant que l'approche ground non résolue existe encore ;
+3. laisser Persistent Zone Runtime détecter et appliquer toute entrée de rayon ;
+4. seulement ensuite traiter release/clash/impact et résoudre l'action au timestamp de contact accepté.
+
+Conséquence : une attaque de contact qui franchit une zone persistante ne peut plus perdre son événement d'entrée simplement parce que le signal de collision visuelle est arrivé avant le prochain tick planifié.
+
+Invariants :
+- les dégâts de zone restent exclusivement dans Persistent Zone Runtime / Combat Damage ;
+- le DOM et la géométrie visuelle ne calculent aucun dégât ;
+- aucun second timer, observer, cache ou état spatial n'est ajouté ;
+- reportActionContact() reste une frontière de synchronisation vers le Runtime, pas une autorité gameplay indépendante.
