@@ -24497,3 +24497,43 @@ et non fabriquer une copie locale de ses réglages.
 3. implémentation minimale ;
 4. suite CI ;
 5. preview Exploration réelle.
+
+### Résultat technique — Preview Loup configuré
+
+TDD :
+- commit test party configurée : `42f0d3b8bba8a1dcd31be10478ebf1ff12e61e64` ;
+- commit test présentation configurée : `1c47c44d9fc9ed96b7e017a67b7ad7aec9e60b10`.
+
+Implémentation :
+- Encounter source consomme directement `crea-loup.capture-creature-transfer-v1.json` ;
+- le loadout vient du transfer, pas du catalogue historique ;
+- les skills Showcase remplacent les définitions de même id via le même principe de catalogue configuré ;
+- le ruleset énergie reste appliqué par l'overlay existant ;
+- la présentation configurée surcharge scale / transform / position / sockets du meta visuel ;
+- le binding global du Loup pointe vers ses vrais assets `loup_volcanique`.
+
+HEAD technique validé :
+`46fbeceb3903deb87e1db6fd1b7a6aac9497ff7c`.
+
+CI :
+- Laboratory CI run `37146109379` — **SUCCESS**.
+
+Checkpoint prévalidation :
+`checkpoint/lab-exploration-preview-loup-configured-v1-prevalidation-green-2026-10-03`.
+
+Preview Combat :
+`preview/lab-exploration-preview-loup-configured-v1-2026-10-03`.
+
+Publication Exploration :
+- PR infra #54 ;
+- merge main Exploration : `c5ddaa84c3ae5133488796975b5064b04433ffba`.
+
+Gate restante :
+validation utilisateur visuelle depuis le vrai chemin Exploration -> Encounter -> Combat :
+- Loup volcanique côté joueur à la place de Maraileron ;
+- taille / profil / socket cohérents ;
+- 150 PV ;
+- loadout configuré visible et utilisable ;
+- aucune régression du retour Exploration.
+
+État : **PREVALIDATION utilisateur — technique GREEN**.
