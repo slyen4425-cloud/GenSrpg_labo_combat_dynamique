@@ -141,6 +141,7 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
 
   let statEffectsByCreatureId = null;
   let statEffectRulesById = null;
+  let neutralStatValuesById = null;
 
   if (
     value.statRegistry != null ||
@@ -191,6 +192,16 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
             )
           })
         ])
+      )
+    );
+    neutralStatValuesById = Object.freeze(
+      Object.fromEntries(
+        registry.stats.map(
+          (definition) => [
+            definition.id,
+            0
+          ]
+        )
       )
     );
     const rawStatValues = arrayValue(
@@ -251,6 +262,7 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
               projected.hasMaxHpProjection,
             statValuesById:
               Object.freeze({
+                ...neutralStatValuesById,
                 ...entry.values
               })
           })
@@ -268,16 +280,31 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
       );
 
   const creatures =
-    statEffectsByCreatureId === null
+    statEffectRulesById === null
       ? exportedV2.creatures
       : exportedV2.creatures.map((creature) => {
           const statEffects =
             statEffectsByCreatureId.get(
               creature.id
-            );
+            ) ?? null;
 
-          if (statEffects === undefined) {
-            return creature;
+          if (statEffects === null) {
+            return {
+              ...creature,
+              combat: {
+                ...creature.combat,
+                statEffects: Object.freeze({
+                  damagePctByChannel:
+                    Object.freeze({}),
+                  resistancePctByChannel:
+                    Object.freeze({}),
+                  chargeTimeReductionPct: 0
+                }),
+                statEffectRulesById,
+                statValuesById:
+                  neutralStatValuesById
+              }
+            };
           }
 
           const {
