@@ -1010,6 +1010,7 @@ function visualSlot(assetId, {
   displayScaleY = 1,
   offsetX = 0,
   offsetY = 0,
+  durationMs = null,
   playbackMode = "once"
 }) {
   const id = optionalText(assetId);
@@ -1064,6 +1065,7 @@ function visualSlot(assetId, {
         layerByView?.opponent ?? "front"
     },
     playbackMode,
+    ...(durationMs == null ? {} : { durationMs }),
     offsetX: finiteNumber(
       offsetX,
       "Décalage horizontal FX"
@@ -1152,7 +1154,12 @@ function presentationForSkill(fields) {
       trigger: "impact",
       anchor: null,
       displayScale:
-        presentation.impactDisplayScale ?? 1
+        presentation.impactDisplayScale ?? 1,
+      durationMs: presentation.impactDurationMs == null || presentation.impactDurationMs === 0
+        ? null : finiteNumber(presentation.impactDurationMs, "Durée visuelle de l’impact"),
+      playbackMode: presentation.impactDurationMs > 0 ? "stretch" : "once",
+      offsetX: presentation.impactOffsetX ?? 0,
+      offsetY: presentation.impactOffsetY ?? 0
     }
   );
   const persistentZone = visualSlot(
@@ -1762,6 +1769,9 @@ export function humanSkillEditorFieldsFromDraftV1(
         impact?.assetId ?? "",
       impactDisplayScale:
         impact?.displayScale ?? 1,
+      impactDurationMs: impact?.durationMs ?? 0,
+      impactOffsetX: impact?.offsetX ?? 0,
+      impactOffsetY: impact?.offsetY ?? 0,
       zoneAssetId:
         zone?.assetId ?? "",
       zoneDisplayScale:
@@ -2434,6 +2444,9 @@ function writeSkillDraftFields(
       "[data-skill-impact-scale]",
       fields.presentation.impactDisplayScale
     ],
+    ["[data-skill-impact-duration]", fields.presentation.impactDurationMs],
+    ["[data-skill-impact-offset-x]", fields.presentation.impactOffsetX],
+    ["[data-skill-impact-offset-y]", fields.presentation.impactOffsetY],
     [
       "[data-skill-zone-fx]",
       fields.presentation.zoneAssetId
@@ -2535,6 +2548,9 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-layer-opponent]", "front"],
     ["[data-skill-impact-fx]", ""],
     ["[data-skill-impact-scale]", 1],
+    ["[data-skill-impact-duration]", 0],
+    ["[data-skill-impact-offset-x]", 0],
+    ["[data-skill-impact-offset-y]", 0],
     ["[data-skill-zone-fx]", ""],
     ["[data-skill-zone-scale]", 1],
     ["[data-skill-zone-scale-x]", 1],
@@ -6045,6 +6061,9 @@ function readSkillFields(root) {
         root,
         "[data-skill-impact-scale]"
       ),
+      impactDurationMs: numericValue(root, "[data-skill-impact-duration]"),
+      impactOffsetX: numericValue(root, "[data-skill-impact-offset-x]"),
+      impactOffsetY: numericValue(root, "[data-skill-impact-offset-y]"),
       zoneAssetId: selectedValue(
         root,
         "[data-skill-zone-fx]"

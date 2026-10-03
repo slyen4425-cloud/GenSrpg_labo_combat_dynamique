@@ -113,6 +113,8 @@ test("impact: visual duration, offset and large scale round-trip independently o
   assert.equal(nodes[0].style.left, "538px");
   assert.equal(nodes[0].style.top, "108px");
   assert.match(animations[0].keyframes[1].transform, /scale\(5\.94/);
+  assert.equal(animations[0].keyframes[0].opacity, 1);
+  assert.equal(animations[0].keyframes[2].opacity, 1);
   assert.doesNotMatch(nodes[0].className, /layer-behind/);
   assert.equal(draft.definition.travelMs, 2400);
   animations[0].resolve();

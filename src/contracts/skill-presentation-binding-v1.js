@@ -142,6 +142,7 @@ function normalizeVisualSlot(raw, field) {
       "layer",
       "trigger",
       "playbackMode",
+      "durationMs",
       "rotationDeg",
       "opacity"
     ]),
@@ -204,6 +205,9 @@ function normalizeVisualSlot(raw, field) {
             `${field}.playbackMode`,
             PLAYBACK_MODES
           ),
+    ...(value.durationMs == null
+      ? {}
+      : { durationMs: positiveNumber(value.durationMs, `${field}.durationMs`) }),
     rotationDeg:
       value.rotationDeg == null
         ? 0

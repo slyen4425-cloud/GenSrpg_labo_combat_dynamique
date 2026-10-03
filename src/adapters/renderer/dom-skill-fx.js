@@ -466,10 +466,10 @@ export function createDomSkillFxRenderer({
     }
 
     const node = arena.ownerDocument.createElement("span");
-    const displayScale = Math.min(
-      4,
-      Math.max(0.25, Number(visual.displayScale) || 1)
-    );
+    const displayScale = Math.max(0.25, Number(visual.displayScale) || 1);
+    const effectDurationMs = Math.max(1, Number(visual.durationMs) || Number(durationMs) || 420);
+    const animatedSprite = Number(visual.frameCount) > 1 || visual.frames?.length > 1;
+    const opacity = clampUnit(visual.opacity, 1);
 
     node.className =
       type === "clash-impact"
@@ -477,13 +477,13 @@ export function createDomSkillFxRenderer({
         : `skill-fx skill-fx--${type}`;
     node.dataset.skillFx = type;
     node.dataset.skillId = skillId ?? "";
-    node.style.left = `${point.x}px`;
-    node.style.top = `${point.y}px`;
+    node.style.left = `${point.x + (Number(visual.offsetX) || 0)}px`;
+    node.style.top = `${point.y + (Number(visual.offsetY) || 0)}px`;
 
     const spriteVisual = applySpriteVisual(
       node,
       visual,
-      durationMs,
+      effectDurationMs,
       animate
     );
     arena.append(node);
@@ -506,22 +506,22 @@ export function createDomSkillFxRenderer({
         {
           transform:
             `translate(-50%, -50%) scale(${startScale * displayScale})`,
-          opacity: 0.15
+          opacity: animatedSprite ? opacity : 0.15 * opacity
         },
         {
           transform:
             `translate(-50%, -50%) scale(${peakScale * displayScale})`,
-          opacity: 1,
+          opacity,
           offset: 0.5
         },
         {
           transform:
             `translate(-50%, -50%) scale(${endScale * displayScale})`,
-          opacity: 0
+          opacity: animatedSprite ? opacity : 0
         }
       ],
       {
-        duration: Math.max(1, Number(durationMs) || 420),
+        duration: Number(visual.durationMs) || spriteVisual.playbackMs || effectDurationMs,
         easing: "ease-out",
         fill: "forwards"
       }

@@ -77,6 +77,7 @@ function resolvedVisual(assetForId, slot) {
       slot.playbackMode ??
       asset.playbackMode ??
       "once",
+    ...(slot.durationMs == null ? {} : { durationMs: slot.durationMs }),
     rotationDeg: slot.rotationDeg ?? 0,
     opacity: slot.opacity ?? 1,
     offsetX: slot.offsetX ?? 0,

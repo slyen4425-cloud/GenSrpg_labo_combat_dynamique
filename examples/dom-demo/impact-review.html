@@ -27,11 +27,15 @@ body.impact-review{margin:0;padding:28px;background:#0b121e;color:#eaf1fb;font:1
 <body class="impact-review">
 <main>
 <h1>Les cinq impacts</h1>
-<p class="review-intro">Lame, coup physique, électrique, eau et plante. Huit images par animation, à 45 ms par image.</p>
+<p class="review-intro">Lame, coup physique, électrique, eau et plante. Compare leur taille et leur durée sans modifier le combat.</p>
 <div class="review-controls">
 <button id="play-all" type="button" disabled>Jouer les cinq</button>
 <label for="background">Fond</label>
 <select id="background"><option value="dark">Sombre</option><option value="light">Clair</option></select>
+<label for="impact-scale">Taille</label>
+<select id="impact-scale"><option value="1">1×</option><option value="2.8" selected>2,8×</option><option value="5.5">5,5×</option></select>
+<label for="impact-duration">Durée</label>
+<select id="impact-duration"><option value="360">360 ms</option><option value="600" selected>600 ms</option><option value="800">800 ms</option><option value="1600">1,6 s</option></select>
 <span id="ready" class="review-status" role="status">Chargement des atlas…</span>
 </div>
 <p class="review-note">Les titres de la planche originale recouvrent une partie de quelques effets, surtout électrique et plante. Les zones masquées restent transparentes. Les huit images ci-dessous permettent de contrôler cette limite avant validation finale.</p>
@@ -93,7 +97,10 @@ for (const [family, label] of families) {
   const renderer = createDomSkillFxRenderer({
     arena: stage,
     anchors: { target: anchor },
-    presentationForSkill: () => ({ impact: { ...visual, displayScale: 2.8 } })
+    presentationForSkill: () => ({ impact: { ...visual,
+      displayScale: Number(document.getElementById("impact-scale").value),
+      durationMs: Number(document.getElementById("impact-duration").value),
+      playbackMode: "stretch" } })
   });
   const player = { card, renderer, visual, ready: false, play() {
     if (!this.ready) return;
@@ -101,7 +108,7 @@ for (const [family, label] of families) {
     poster.style.visibility = "hidden";
     const playback = renderer.play({
       type: "impact", skillId: assetId, targetSlot: "target",
-      durationMs: visual.frameCount * visual.frameMs
+      durationMs: Number(document.getElementById("impact-duration").value)
     });
     card.dataset.playback = playback.status;
     playback.finished.then(result => {

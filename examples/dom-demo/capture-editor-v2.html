@@ -778,7 +778,17 @@
             <select data-skill-impact-fx data-asset-role="impact"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-impact-01" selected>Impact feu</option></select>
           </label>
           <label>Scale impact
-            <input type="number" min="0.25" step="0.05" value="1.70" data-skill-impact-scale>
+            <input type="number" min="0.25" max="8" step="0.05" value="1.70" data-skill-impact-scale>
+          </label>
+          <label>Durée visuelle de l’impact (ms)
+            <input type="number" min="0" step="50" value="0" data-skill-impact-duration>
+          </label>
+          <p class="note">0 = durée du sprite. Une durée plus longue ralentit l’animation d’impact. Les dégâts sont appliqués au contact.</p>
+          <label>Décalage horizontal de l’impact (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-offset-x>
+          </label>
+          <label>Décalage vertical de l’impact (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-offset-y>
           </label>
           <label>Visuel persistant de zone
             <select data-skill-zone-fx data-asset-role="zone"><option value="">Aucun</option></select>

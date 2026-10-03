@@ -1189,7 +1189,7 @@ test("DOM impact renderer plays a multi-file sprite sequence without an atlas", 
     animations[0].keyframes[1].backgroundImage,
     /claw-02\.png/
   );
-  assert.equal(animations[1].options.duration, 420);
+  assert.equal(animations[1].options.duration, 110);
 
   await handle.finished;
   assert.equal(removed, true);
