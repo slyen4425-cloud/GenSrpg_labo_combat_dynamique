@@ -1365,3 +1365,96 @@ test("multi-file cast sequence can loop for the whole preparation slot", async (
   await handle.finished;
   assert.equal(frameCancelled, true);
 });
+
+
+test("DOM impact renderer plays a canonical atlas sequence without placeholder frame files", async () => {
+  const appended = [];
+  const animations = [];
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return {
+          className: "",
+          dataset: {},
+          style: {},
+          remove() {}
+        };
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return { left: 0, top: 0, width: 400, height: 300 };
+    }
+  };
+
+  const anchors = {
+    opponent: {
+      getBoundingClientRect() {
+        return { left: 280, top: 80, width: 40, height: 40 };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill() {
+      return {
+        impact: {
+          assetId: "pack:capture:sprite-impact-electric-01",
+          atlas: {
+            url: "elemental-impact-sheet.png",
+            width: 1536,
+            height: 1024,
+            frames: [
+              { x: 4, y: 450, width: 184, height: 140 },
+              { x: 196, y: 450, width: 184, height: 140 }
+            ]
+          },
+          frameMs: 45,
+          displayScale: 1
+        }
+      };
+    },
+    animate(element, keyframes, options) {
+      animations.push({ element, keyframes, options });
+      return {
+        finished: Promise.resolve(),
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "impact",
+    skillId: "electric-test",
+    targetSlot: "opponent",
+    durationMs: 420
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended.length, 1);
+  assert.equal(
+    appended[0].dataset.assetId,
+    "pack:capture:sprite-impact-electric-01"
+  );
+  assert.equal(
+    appended[0].style.backgroundImage,
+    'url("elemental-impact-sheet.png")'
+  );
+  assert.match(
+    appended[0].style.backgroundSize,
+    /% %$/
+  );
+  assert.equal(animations[0].options.duration, 90);
+  assert.equal(animations[0].keyframes.length, 2);
+  assert.notEqual(
+    animations[0].keyframes[0].backgroundPosition,
+    animations[0].keyframes[1].backgroundPosition
+  );
+
+  await handle.finished;
+});
