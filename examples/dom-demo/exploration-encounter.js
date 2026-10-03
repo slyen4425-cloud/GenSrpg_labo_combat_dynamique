@@ -25,6 +25,9 @@ import {
   demoPresentationAssets
 } from "./demo-assets.js";
 import {
+  createCaptureRuntimePresentationAssetsV1
+} from "../../src/adapters/presentation/capture-runtime-presentation-assets-v1.js";
+import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
@@ -273,13 +276,22 @@ Promise.resolve()
         }
       });
 
+    const runtimePresentationAssets =
+      createCaptureRuntimePresentationAssetsV1({
+        baseAssets:
+          demoPresentationAssets,
+        skillPresentations:
+          nativeCombatSource
+            .skillPresentations
+      });
+
     mountedCombat =
       await mountCoop2v2Test({
         root,
         visuals: mountedVisuals,
         nativeCombatSource,
         presentationAssets:
-          demoPresentationAssets,
+          runtimePresentationAssets,
         onBattleEnd({ outcome }) {
           const completed =
             completeExplorationCombatHandoffV1({
