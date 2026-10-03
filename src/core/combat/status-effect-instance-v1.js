@@ -61,6 +61,12 @@ function optionalPositiveInteger(value, field) {
     : positiveInteger(value, field);
 }
 
+function optionalString(value, field) {
+  return value == null
+    ? null
+    : requiredString(value, field);
+}
+
 export function normalizeStatusEffectRuntimeInstanceV1(
   input,
   field = "StatusEffectRuntimeInstanceV1"
@@ -130,6 +136,10 @@ export function normalizeStatusEffectRuntimeInstanceV1(
       value.sourceActorId,
       field + ".sourceActorId"
     ),
+    sourceSkillId: optionalString(
+      value.sourceSkillId,
+      field + ".sourceSkillId"
+    ),
     appliedAtMs,
     expiresAtMs,
     remainingActionEnds,
@@ -173,6 +183,7 @@ export function isStatusEffectRuntimeInstanceActiveV1(
 export function createStatusEffectRuntimeInstanceV1({
   definition: definitionInput,
   sourceActorId,
+  sourceSkillId = null,
   appliedAtMs,
   stacks = 1
 }) {
@@ -198,6 +209,7 @@ export function createStatusEffectRuntimeInstanceV1({
   return normalizeStatusEffectRuntimeInstanceV1({
     definition,
     sourceActorId,
+    sourceSkillId,
     appliedAtMs: applied,
     expiresAtMs:
       timed
