@@ -23447,3 +23447,48 @@ Aucun :
 - merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview**.
+
+
+## Micro-lot — Showcase Flame Bite V1 — 2026-10-03
+
+Base exacte : `fd9751f16a93e15327c7a25bba613e3d494bfbbf` (Functional Recovery V1 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-showcase-flame-bite-v1-2026-10-03` ;
+- branche : `work/lab-showcase-flame-bite-v1-2026-10-03`.
+
+### Source utilisateur
+
+Export : `gensrpg-capture-skill-lib_flame_bite.json`.
+
+Capacité :
+- id : `lib_flame_bite` ;
+- nom : `Morsure brûlante` ;
+- niveau requis : 15 ;
+- élément : Feu ;
+- forme : contact / déplacement ground ;
+- dégâts directs : 10 feu ;
+- DoT : 5 feu toutes les 2 s pendant 10 s, stack max 10 ;
+- impact : `pack:capture:sprite-impact-physical-01` ;
+- icône : `core:icon-skill-fire-rain-01` ;
+- son impact : `gensrpg:sound:effect-ee93278c` ;
+- teinte statut : rouge `#d73920`, intensité 0.8.
+
+### Politique d'intégration
+
+Le fichier est un `capture-skill-transfer-v1` complet.
+
+Il est intégré dans la bibliothèque vitrine canonique :
+`data/capture/showcase/`
+
+et déclaré une seule fois dans :
+`CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`.
+
+Il n'est PAS recopié dans `data/combat/skills/` ni dans les catalogues legacy/portable/complex.
+
+### TDD
+
+- RED : preset absent de la bibliothèque vitrine ;
+- GREEN : transfert normalisé, déclaré une seule fois, son runtime résolvable ;
+- aucun changement moteur.
+
+État : **LOT OUVERT — TDD avant intégration**.
