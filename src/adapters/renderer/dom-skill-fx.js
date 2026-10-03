@@ -65,102 +65,19 @@ function persistentZoneRadiusScale(radius) {
   return scale;
 }
 
-function atlasSequence(visual) {
-  const atlas = visual?.atlas;
-  if (
-    !atlas ||
-    typeof atlas.url !== "string" ||
-    atlas.url.trim() === "" ||
-    !Number.isFinite(Number(atlas.width)) ||
-    Number(atlas.width) <= 0 ||
-    !Number.isFinite(Number(atlas.height)) ||
-    Number(atlas.height) <= 0 ||
-    !Array.isArray(atlas.frames) ||
-    atlas.frames.length === 0
-  ) {
-    return null;
-  }
-
-  const frames = atlas.frames.map((frame) => {
-    const normalized = Object.freeze({
-      x: Number(frame?.x),
-      y: Number(frame?.y),
-      width: Number(frame?.width),
-      height: Number(frame?.height)
-    });
-
-    if (
-      !Number.isFinite(normalized.x) ||
-      !Number.isFinite(normalized.y) ||
-      !Number.isFinite(normalized.width) ||
-      normalized.width <= 0 ||
-      !Number.isFinite(normalized.height) ||
-      normalized.height <= 0
-    ) {
-      throw new TypeError("atlas frame geometry must be finite and positive");
-    }
-
-    return normalized;
-  });
-
-  const first = frames[0];
-  if (
-    frames.some(
-      (frame) =>
-        frame.width !== first.width ||
-        frame.height !== first.height
-    )
-  ) {
-    throw new RangeError(
-      "atlas sequence frames must share one crop size"
-    );
-  }
-
-  return Object.freeze({
-    url: atlas.url,
-    width: Number(atlas.width),
-    height: Number(atlas.height),
-    frames: Object.freeze(frames)
-  });
-}
-
 function hasSpriteVisual(visual) {
   return Boolean(
     visual?.url ||
-    (Array.isArray(visual?.frames) && visual.frames.length > 0) ||
-    atlasSequence(visual)
+    (Array.isArray(visual?.frames) && visual.frames.length > 0)
   );
 }
 
 function visualPlaybackMs(visual, fallbackMs = 1) {
-  const atlas = atlasSequence(visual);
-  if (atlas) {
-    const frameMs = Math.max(1, Number(visual.frameMs) || 1);
-    return frameMs * atlas.frames.length;
-  }
   if (Array.isArray(visual?.frames) && visual.frames.length > 0) {
     const frameMs = Math.max(1, Number(visual.frameMs) || 1);
     return frameMs * visual.frames.length;
   }
   return Math.max(1, Number(fallbackMs) || 1);
-}
-
-function atlasFrameCss(atlas, frame) {
-  const sizeX = (atlas.width / frame.width) * 100;
-  const sizeY = (atlas.height / frame.height) * 100;
-  const positionX =
-    atlas.width === frame.width
-      ? 0
-      : (frame.x / (atlas.width - frame.width)) * 100;
-  const positionY =
-    atlas.height === frame.height
-      ? 0
-      : (frame.y / (atlas.height - frame.height)) * 100;
-
-  return Object.freeze({
-    backgroundSize: `${sizeX}% ${sizeY}%`,
-    backgroundPosition: `${positionX}% ${positionY}%`
-  });
 }
 
 function applySpriteVisual(node, visual, durationMs, animate) {
@@ -175,62 +92,6 @@ function applySpriteVisual(node, visual, durationMs, animate) {
   node.className += " skill-fx--sprite";
   node.dataset.assetId = visual.assetId ?? "";
   node.style.backgroundRepeat = "no-repeat";
-
-  const atlas = atlasSequence(visual);
-  if (atlas) {
-    const playbackMode =
-      ["once", "loop", "stretch"].includes(visual.playbackMode)
-        ? visual.playbackMode
-        : "once";
-    const nativePlaybackMs =
-      Math.max(1, Number(visual.frameMs) || 1) *
-      atlas.frames.length;
-    const playbackMs =
-      playbackMode === "stretch"
-        ? Math.max(1, Number(durationMs) || nativePlaybackMs)
-        : nativePlaybackMs;
-    const firstFrame =
-      atlasFrameCss(atlas, atlas.frames[0]);
-
-    node.style.backgroundImage =
-      `url("${atlas.url}")`;
-    node.style.backgroundSize =
-      firstFrame.backgroundSize;
-    node.style.backgroundPosition =
-      firstFrame.backgroundPosition;
-
-    let frameAnimation = null;
-    if (atlas.frames.length > 1) {
-      frameAnimation = animate(
-        node,
-        atlas.frames.map((frame, index) => ({
-          backgroundPosition:
-            atlasFrameCss(atlas, frame).backgroundPosition,
-          offset:
-            index / (atlas.frames.length - 1)
-        })),
-        {
-          duration: playbackMs,
-          easing: "steps(1, end)",
-          fill: "forwards",
-          iterations:
-            playbackMode === "loop"
-              ? Infinity
-              : 1
-        }
-      );
-
-      Promise.resolve(
-        frameAnimation?.finished
-      ).catch(() => {});
-    }
-
-    return Object.freeze({
-      bound: true,
-      frameAnimation,
-      playbackMs
-    });
-  }
 
   if (Array.isArray(visual.frames) && visual.frames.length > 0) {
     const frames = visual.frames.filter(Boolean);
