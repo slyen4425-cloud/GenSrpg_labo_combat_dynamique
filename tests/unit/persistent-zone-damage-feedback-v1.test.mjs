@@ -183,7 +183,7 @@ test("1v1 and 2v2 use the same health delta to show number and non-blocking flas
     );
     assert.match(
       source,
-      /onHealthDelta\(feedback\)[\s\S]*damageFeedback\.flash\(\s*feedback\.actorId\s*\)/
+      /onHealthDelta\(feedback\)[\s\S]*damageFeedback\?\.flash\(\s*feedback\.actorId\s*\)/
     );
   }
 });
