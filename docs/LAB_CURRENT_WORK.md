@@ -24416,3 +24416,24 @@ validation smartphone depuis la preview intégrée Exploration :
 4. vérifier recharge automatique ;
 5. utiliser une capacité ;
 6. terminer le combat et vérifier retour Exploration.
+
+
+## Validation utilisateur partielle — Encounter Energy Ruleset — 2026-10-03
+
+Test utilisateur depuis PC :
+- handoff Exploration -> Combat validé visuellement ;
+- bonne créature adverse au démarrage du combat ;
+- bonne page Combat chargée.
+
+Le ruleset énergie est techniquement GREEN :
+- maxEnergy = 12 ;
+- initialEnergy = 2 ;
+- recharge = +1 / 1800 ms ;
+- Combat Runtime inchangé.
+
+Gate utilisateur restante :
+1. vérifier énergie initiale > 0 ;
+2. vérifier recharge automatique ;
+3. lancer au moins une capacité ;
+4. terminer le combat ;
+5. vérifier retour Exploration avec position conservée.
