@@ -479,6 +479,7 @@ test("combat presentation routes cast phase and impact audio without owning game
   presenter.presentOutcome({
     resolution: {
       ok: true,
+      skillId: "teleport-strike",
       outcome: "hit",
       events: [
         {
