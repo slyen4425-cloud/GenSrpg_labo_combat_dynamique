@@ -89,7 +89,7 @@ test("Loup volcanique showcase preset preserves health natural matchup visuals a
 
   assert.equal(imported.kind, "creature");
   assert.equal(record.draft.id, "crea-loup");
-  assert.equal(record.draft.level, 10);
+  assert.equal(record.draft.level, 20);
   assert.equal(record.statValues.values.health, 150);
   assert.equal(record.draft.presentation.profileId, "quadruped");
   assert.equal(record.draft.presentation.displayScale, 1.2);
@@ -108,11 +108,11 @@ test("Loup volcanique showcase preset preserves health natural matchup visuals a
   assert.deepEqual(
     record.loadout.slots.map((slot) => slot.skillId),
     [
-      "fireball",
       "claw",
+      "fireball",
+      "cap_fire_special_1",
       "lib_flame_bite",
-      "lib_fireball",
-      null
+      "cap_fire_atk_6"
     ]
   );
 });
