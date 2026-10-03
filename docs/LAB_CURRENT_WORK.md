@@ -24671,3 +24671,35 @@ La party ne copie ni stats, ni assets, ni skills.
 - aucune modification de Zombicide-40k ;
 - aucun merge main sans gate.
 
+## Prévalidation technique — Exploration Player Party v1
+
+Implémenté :
+- `CaptureParty v1` référence uniquement des `creatureId` ;
+- party sentinelle `capture-party-player-v1` :
+  - actif `crea-loup` ;
+  - réserve `crea_mossback` ;
+- suppression de `PREVIEW_PARTIES`, `configuredPreviewParty` et `capture-party-preview` du bridge Combat ;
+- résolution de la party par `partyRef` ;
+- résolution des membres depuis les transferts Capture configurés existants ;
+- export Combat de tous les membres avec leurs stats/loadouts/présentations ;
+- `skillIdsByCreature` dérivé du même Combat Export canonique ;
+- Encounter UI raccordée à la `Roster Session` existante ;
+- sélection de réserve = `roster.selectReserve` uniquement ;
+- Rappel/Invocation passent par `runtime.startCommand` puis `roster.applyCommandResolution` ;
+- changement de membre met à jour visuel + fighter + barre de compétences ;
+- KO local passe par `roster.replaceKnockedOut` avant toute défaite ;
+- métas visuelles de tous les membres configurés chargées par le même catalogue ;
+- cache-bust `player-party-v1` sur le graphe Encounter modifié.
+
+Sentinelles :
+- vraie transition Loup -> Moussados via Rappel/Invocation ;
+- Moussados : PV 200, Terre 10, Vitesse 2 ;
+- skills Moussados dérivés de son loadout ;
+- aucune copie stats/assets/skills dans la party ;
+- aucun nouveau moteur roster.
+
+HEAD : `54de708d34119c2696605c0d70537ba504211c16`
+CI : `37152573835` — **SUCCESS**.
+
+État : **TECHNIQUE GREEN — publication preview + validation utilisateur restantes**.
+
