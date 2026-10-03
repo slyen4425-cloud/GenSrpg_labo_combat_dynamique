@@ -249,6 +249,57 @@ export function createCombatRuntime({
     return [...activeByActor.values()];
   }
 
+  function zoneSpatialContext({
+    state,
+    intervalStartClockMs
+  }) {
+    const combatStartMs =
+      Number(state?.elapsedMs ?? 0);
+    const approaches = [];
+
+    for (const record of activeRecords()) {
+      if (
+        record.resolved ||
+        record.action?.actionType !== "skill" ||
+        record.action.skill?.approachMode !==
+          "ground"
+      ) {
+        continue;
+      }
+
+      const startedAtCombatMs =
+        combatStartMs +
+        (
+          record.startedAtClockMs -
+          intervalStartClockMs
+        );
+
+      approaches.push(
+        Object.freeze({
+          actorId:
+            record.action.actorId,
+          targetId:
+            record.action.targetId,
+          actionId:
+            record.action.actionId,
+          approachMode: "ground",
+          releaseAtMs:
+            startedAtCombatMs +
+            record.action.releaseAtMs,
+          impactAtMs:
+            startedAtCombatMs +
+            record.action.impactAtMs
+        })
+      );
+    }
+
+    return Object.freeze({
+      mode: "approach-bands-v1",
+      approaches:
+        Object.freeze(approaches)
+    });
+  }
+
   function unresolvedRecords() {
     return activeRecords().filter(
       (record) => !record.resolved
@@ -761,11 +812,28 @@ export function createCombatRuntime({
     }
 
     const current = now();
-    const delta = Math.max(0, current - lastNowMs);
+    const intervalStartClockMs =
+      lastNowMs;
+    const delta = Math.max(
+      0,
+      current - intervalStartClockMs
+    );
     lastNowMs = current;
 
     if (delta > 0) {
-      session.advanceMs(delta);
+      const stateBeforeAdvance =
+        session.snapshot();
+      session.advanceMs(
+        delta,
+        {
+          zoneSpatialContext:
+            zoneSpatialContext({
+              state:
+                stateBeforeAdvance,
+              intervalStartClockMs
+            })
+        }
+      );
       emitStateIfChanged();
     }
 
