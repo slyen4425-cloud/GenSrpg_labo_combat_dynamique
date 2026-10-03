@@ -3146,3 +3146,5 @@ CreaturePresentationBindingV2 garde displayScale/position comme defaults et acce
 L’assemblage de l’export de preview partage uniquement les lignes de définition strictement identiques lorsque les deux camps sélectionnent la même créature, et conserve deux acteurs distincts. Les conflits d’ID restent rejetés par les contrats/Exporters existants. Aucun état canonique, moteur, timer ou stockage parallèle n’est créé.
 
 Référence : docs/LAB_PRESENTATION_FEEDBACK_V1.md ; validation artistique smartphone encore ouverte.
+
+Les overrides nouveaux de vue s’appliquent à la galerie de prévisualisation et au combat. Les surfaces de placement tactile des sockets conservent leur référentiel d’édition antérieur ; aucun offset de combat n’y est injecté. Les points normalisés et leur propriétaire ne changent pas.

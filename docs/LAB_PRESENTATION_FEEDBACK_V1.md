@@ -82,3 +82,15 @@ Preuve de l’éditeur : GenSrpG_Presentation_Controls_1791065271425.jpg, conser
 Sylvain doit apprécier en combat sur son smartphone la lisibilité des impacts, la qualité du cycle projectile et la calibration des vues pour ses créatures. Aucun calibrage arbitraire des presets ni promotion de médias CAST/STATUS. Reprendre depuis les refs et la CI, puis obtenir cette validation avant tout checkpoint GREEN ou intégration main.
 
 Revue finale des surfaces d’édition : les réglages nouveaux par vue s’appliquent à la galerie et au combat. Les images de placement des sockets conservent leur transformation commune antérieure ; aucun offset nouveau de combat n’est injecté dans ce référentiel d’édition. Les coordonnées et le traitement des points ne changent pas.
+
+
+### Clôture de revue — référence finale à utiliser
+
+Révision fonctionnelle finale : 933797f16a0f0ce8f6021d2d6be416dc9ccc7a59 ; CI complète 37157875289 / job 111304978454, 923/923, 0 fail, 0 skipped. La revue a maintenu les surfaces de placement des sockets dans leur référentiel d’édition antérieur : les offsets par vue ne transforment que la galerie et la présentation de combat, jamais les points enregistrés ni leur conversion tactile.
+
+Lien final effectivement ouvert et vérifié :
+https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/933797f16a0f0ce8f6021d2d6be416dc9ccc7a59/examples/dom-demo/capture-editor-v2.html
+
+Après chargement, sauvegarde du modèle avec player 1,2 / opponent 0,8 et offset adversaire (-15,8) confirmée dans l’UI. Galerie : translate(-15px,8px) scale(0.8) en face, scale(1.2) au dos ; surfaces de points : leur scale commun antérieur 1,2. Les nouveaux réglages de projectile et d’impact sont présents, et Tester en combat est disponible.
+Les lectures natives en boucle des huit projectiles ont également terminé arrived / activeCount=0 ; les cinq impacts ont terminé finished et aucun nœud d’effet ne reste présent.
+La révision documentaire de clôture est contrôlée par sa propre CI avant création du checkpoint CI. Validation artistique smartphone utilisateur encore ouverte.

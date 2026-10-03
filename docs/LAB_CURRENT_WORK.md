@@ -24632,3 +24632,15 @@ Le scale impact était plafonné à 4, le fade générique affaiblissait l’alp
 Rapport : docs/LAB_PRESENTATION_FEEDBACK_V1.md. Preuve navigateur : GenSrpG_Presentation_Controls_1791065271425.jpg. ROADMAP et ARCHITECTURE synchronisées. Revue du diff : uniquement périmètre annoncé et complément UI documenté ; aucun preset, média, Runtime/Rules/Session/capteur de collision/audio modifié. Main toujours 3197388f2b3ee7491be6e6125a015315158cffa2 ; global-assets toujours 642587caec5457f1b5ba830bf115ca3cb7f75498.
 
 Checkpoint de clôture technique : checkpoint/lab-presentation-feedback-v1-ci-2026-10-03, à résoudre avec les refs et sa CI. Validation artistique utilisateur sur smartphone ouverte : aucun GREEN artistique, aucun merge main. Pour une capacité anciennement sauvegardée en once, choisir Adapter/Boucler puis Mettre à jour ; aucun mode explicite utilisateur migré silencieusement.
+
+
+### Clôture de revue — référence finale à utiliser
+
+Révision fonctionnelle finale : 933797f16a0f0ce8f6021d2d6be416dc9ccc7a59 ; CI complète 37157875289 / job 111304978454, 923/923, 0 fail, 0 skipped. La revue a maintenu les surfaces de placement des sockets dans leur référentiel d’édition antérieur : les offsets par vue ne transforment que la galerie et la présentation de combat, jamais les points enregistrés ni leur conversion tactile.
+
+Lien final effectivement ouvert et vérifié :
+https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/933797f16a0f0ce8f6021d2d6be416dc9ccc7a59/examples/dom-demo/capture-editor-v2.html
+
+Après chargement, sauvegarde du modèle avec player 1,2 / opponent 0,8 et offset adversaire (-15,8) confirmée dans l’UI. Galerie : translate(-15px,8px) scale(0.8) en face, scale(1.2) au dos ; surfaces de points : leur scale commun antérieur 1,2. Les nouveaux réglages de projectile et d’impact sont présents, et Tester en combat est disponible.
+Les lectures natives en boucle des huit projectiles ont également terminé arrived / activeCount=0 ; les cinq impacts ont terminé finished et aucun nœud d’effet ne reste présent.
+La révision documentaire de clôture est contrôlée par sa propre CI avant création du checkpoint CI. Validation artistique smartphone utilisateur encore ouverte.
