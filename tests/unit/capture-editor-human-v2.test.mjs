@@ -272,8 +272,8 @@ test("human preview shares one configured creature across both camps and keeps c
   const exported = buildHumanEditorExportV3(input);
   assert.equal(exported.creatures.length, 1);
   assert.equal(exported.actors.length, 2);
-  assert.notEqual(exported.actors[0].id, exported.actors[1].id);
-  assert.deepEqual(exported.creaturePresentations[0].viewOverrides, draft.presentation.viewOverrides);
+  assert.notEqual(exported.actors[0].actorId, exported.actors[1].actorId);
+  assert.deepEqual(exported.presentation.creatures[draft.presentation.id].viewOverrides, draft.presentation.viewOverrides);
   assert.throws(() => buildHumanEditorExportV3({ ...input, opponentCreatureDraft: { ...draft, displayName: "Conflicting definition" } }), /duplicate creature draft id/i);
 });
 

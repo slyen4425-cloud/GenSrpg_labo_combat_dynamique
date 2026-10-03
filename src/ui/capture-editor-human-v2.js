@@ -2117,6 +2117,18 @@ export function buildHumanBattleSetupV1({
   });
 }
 
+// Two preview actors may reference the same configured definition.
+// Only identical rows are shared; conflicting IDs still reach the exporter guard.
+function uniqueHumanPreviewRecords(records) {
+  const seen = new Set();
+  return records.filter((record) => {
+    const serialized = JSON.stringify(record);
+    if (seen.has(serialized)) return false;
+    seen.add(serialized);
+    return true;
+  });
+}
+
 export function buildHumanEditorExportV2({
   creatureDraft,
   skillDrafts,
@@ -2128,18 +2140,18 @@ export function buildHumanEditorExportV2({
 }) {
   return exportCaptureEditorDraftsToCombatExportV2({
     battleSetup,
-    creatureDrafts: [
+    creatureDrafts: uniqueHumanPreviewRecords([
       creatureDraft,
       opponentCreatureDraft
-    ],
+    ]),
     skillDrafts: [
       ...skillDrafts,
       ...opponentSkillDrafts
     ],
-    loadouts: [
+    loadouts: uniqueHumanPreviewRecords([
       loadout,
       opponentLoadout
-    ],
+    ]),
     metadata: {
       editor: "capture-human-v2"
     }
@@ -2164,7 +2176,7 @@ export function buildHumanEditorExportV3({
       ? {}
       : {
           statRegistry,
-          statValues
+          statValues: uniqueHumanPreviewRecords(statValues)
         };
   const progressionInput =
     progressionRules === null
@@ -2175,18 +2187,18 @@ export function buildHumanEditorExportV3({
 
   return exportCaptureEditorDraftsToCombatExportV3({
     battleSetup,
-    creatureDrafts: [
+    creatureDrafts: uniqueHumanPreviewRecords([
       creatureDraft,
       opponentCreatureDraft
-    ],
+    ]),
     skillDrafts: [
       ...skillDrafts,
       ...opponentSkillDrafts
     ],
-    loadouts: [
+    loadouts: uniqueHumanPreviewRecords([
       loadout,
       opponentLoadout
-    ],
+    ]),
     ...statsInput,
     ...progressionInput,
     metadata: {
