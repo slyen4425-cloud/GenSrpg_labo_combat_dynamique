@@ -1367,9 +1367,8 @@ test("multi-file cast sequence can loop for the whole preparation slot", async (
 });
 
 
-test("DOM impact renderer plays a canonical atlas sequence without placeholder frame files", async () => {
+test("DOM impact renderer plays a canonical sprite strip without placeholder frame files", async () => {
   const appended = [];
-  const animations = [];
 
   const arena = {
     ownerDocument: {
@@ -1405,22 +1404,14 @@ test("DOM impact renderer plays a canonical atlas sequence without placeholder f
       return {
         impact: {
           assetId: "pack:capture:sprite-impact-electric-01",
-          atlas: {
-            url: "elemental-impact-sheet.png",
-            width: 1536,
-            height: 1024,
-            frames: [
-              { x: 4, y: 450, width: 184, height: 140 },
-              { x: 196, y: 450, width: 184, height: 140 }
-            ]
-          },
+          url: "sprite_impact_electric_atlas_01.webp",
+          frameCount: 8,
           frameMs: 45,
           displayScale: 1
         }
       };
     },
-    animate(element, keyframes, options) {
-      animations.push({ element, keyframes, options });
+    animate() {
       return {
         finished: Promise.resolve(),
         cancel() {}
@@ -1443,18 +1434,11 @@ test("DOM impact renderer plays a canonical atlas sequence without placeholder f
   );
   assert.equal(
     appended[0].style.backgroundImage,
-    'url("elemental-impact-sheet.png")'
+    'url("sprite_impact_electric_atlas_01.webp")'
   );
-  assert.match(
-    appended[0].style.backgroundSize,
-    /^\d+(?:\.\d+)?% \d+(?:\.\d+)?%$/
-  );
-  assert.equal(animations[0].options.duration, 90);
-  assert.equal(animations[0].keyframes.length, 2);
-  assert.notEqual(
-    animations[0].keyframes[0].backgroundPosition,
-    animations[0].keyframes[1].backgroundPosition
-  );
+  assert.equal(appended[0].style.backgroundSize, "800% 100%");
+  assert.equal(appended[0].style.animationName, "skill-fx-strip");
+  assert.equal(appended[0].style.animationDuration, "360ms");
 
   await handle.finished;
 });
