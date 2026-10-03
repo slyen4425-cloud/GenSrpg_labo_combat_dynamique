@@ -24281,3 +24281,48 @@ Invariants :
 - aucun merge vers main.
 
 État : GREEN technique — prêt pour checkpoint/preview.
+
+
+## Micro-lot — Exploration Encounter Bridge v1 — 2026-10-03
+
+Base GREEN :
+`checkpoint/lab-fire-zone-contact-sync-v1-green-2026-10-03`
+SHA `f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d`.
+
+Branche :
+`work/lab-exploration-encounter-bridge-v1-2026-10-03`.
+
+Objectif :
+consommer le contrat public `CaptureEncounterSnapshot v1` produit par Exploration, lancer le moteur Combat existant avec la vraie créature adverse canonique, puis produire `CaptureCombatResult v1`.
+
+Autorités :
+- Capture data/catalog : données créatures et capacités ;
+- Combat Runtime : combat ;
+- adapter Exploration Encounter : traduction snapshot -> source native Combat ;
+- UI bridge : transport/navigation seulement.
+
+Règles :
+- aucune dépendance au dépôt Exploration dans Core ;
+- aucun import de fichier Exploration ;
+- aucun substitut silencieux d'une créature rencontrée ;
+- si un visuel manque, fallback visuel explicitement générique, creatureId gameplay inchangé ;
+- `capture-party-preview` est résolu uniquement par un provider labo explicite ;
+- aucun second Combat Runtime ;
+- aucun timer global supplémentaire ;
+- résultat de combat émis une seule fois.
+
+Périmètre :
+- validateur consommateur du snapshot v1 ;
+- adapter snapshot -> Capture export/native source ;
+- support 1v1 preview ;
+- opponent = creatureId du snapshot ;
+- player preview = Maraileron via provider labo ;
+- CaptureCombatResult v1 ;
+- page bridge dédiée ;
+- callback de fin de combat sur le chemin runtime existant.
+
+Hors périmètre :
+- GenSrpG production ;
+- Zombicide-40k ;
+- vraie party Capture persistante ;
+- récompenses/capture définitives.
