@@ -6607,3 +6607,30 @@ TDD GitHub RED run 37151331040 : 198 pass / 1 fail attendu (source absente). Sen
 Raccord présentation via les champs headingRad/coreAnchor déjà gérés par le renderer ; cache v10-projectile-source-alpha-v1 ; aucune mutation mécanique.
 Rapport et preuves : docs/LAB_PROJECTILE_SOURCE_ALPHA_V1.md et JSON d'extraction ; fixture native projectile-review.html.
 CI complète / publication / preview navigateur à consigner après contrôle. Aucun GREEN artistique final sans validation utilisateur.
+
+
+### Contrôle réel après publication
+
+Médias réellement stockés au commit assets `56e1d89477683e2e3327743701b4bf7c470849d8`, publiés par fast-forward de `global-assets`.
+GitHub Actions **37152624189 : 199/199** ; GitHub Actions laboratoire **37152677737 : 913/913**, au commit présentation `06fd9f6b94993eee9c84ea63294abc81adc950bd`.
+Les huit URLs WebP de `global-assets` répondent 200 ; SHA-256 des réponses égal à l'inventaire, et dimensions décodées 2048 × 256.
+Les 80 entrées du catalogue hors ce lot restent identiques ; le catalogue garde ses 88 IDs uniques.
+
+Preview effectivement ouverte dans le navigateur :
+https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/06fd9f6b94993eee9c84ea63294abc81adc950bd/examples/dom-demo/projectile-review.html
+État : **8 atlas prêts**, **64 PNG chargés en 256 × 256**.
+Les huit lectures natives ont été contrôlées de gauche à droite puis de droite à gauche sur fond clair : chaque résultat `arrived`, `activeCount=0` après nettoyage par l'API existante.
+Inspection directe des 64 phases et de la planche dérivée sur fonds clair et sombre ; le noyau noir/violet et les fragments d'ombre restent présents.
+
+Éditeur effectivement ouvert :
+https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/06fd9f6b94993eee9c84ea63294abc81adc950bd/examples/dom-demo/capture-editor-v2.html
+Champ `[data-skill-travel-fx]`, rôle travel : huit choix `pack:capture:sprite-projectile-<famille>-01`, aucun ID changé.
+Sélection de contrôle `pack:capture:sprite-projectile-fire-01` acceptée ; l'UI a confirmé « Capacité “Boule de feu” exportée ».
+Limite de ce contrôle : le téléchargement automatique de cet export a expiré ; le contenu JSON téléchargé n'est donc pas annoncé relu.
+Le lancement de combat après changement non sauvegardé est correctement refusé par l'éditeur existant. Aucun brouillon d'essai n'a été enregistré ; le rechargement restaure le projectile dédié `pack:capture:sprite-fireball-travel-01`.
+La preuve de lecture des huit nouveaux médias est la fixture native dédiée, sans fallback, et non ce lancement refusé.
+
+Capture de preview conservée : `GenSrpG_Projectiles_Preview_1791060832153.jpg`.
+Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anciens médias provisoires n'a été promu dans ce lot.
+État du lot : médias réels publiés, raccord éditeur vérifié, CI technique réussie ; validation artistique finale utilisateur encore ouverte. Checkpoints de fin nommés **CI**, jamais GREEN artistique.
+
