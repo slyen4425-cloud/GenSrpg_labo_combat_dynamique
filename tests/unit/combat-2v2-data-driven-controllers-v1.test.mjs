@@ -131,6 +131,6 @@ test("2v2 runtime no longer hardcodes demo actor ids or skill lists inside contr
   );
   assert.match(
     source,
-    /skillIdsByActor\[format\.localActorId\]/
+    /skillIdsByCreature\[creatureId\]/
   );
 });
