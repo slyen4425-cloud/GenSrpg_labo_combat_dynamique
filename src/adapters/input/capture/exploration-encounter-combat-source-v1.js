@@ -440,15 +440,15 @@ export function buildExplorationEncounterCombatSourceV1({
       snapshot.rules.rulesetId
     );
 
-  const registry =
-    normalizeCaptureStatRegistryV1(
-      statRegistry
-    );
-
   const party =
     capturePartyByRef(
       partyDefinitions,
       snapshot.player.partyRef
+    );
+
+  const registry =
+    normalizeCaptureStatRegistryV1(
+      statRegistry
     );
 
   const transfersById =
