@@ -24379,3 +24379,47 @@ Hors périmètre :
 - Zombicide-40k ;
 - vraie party Capture persistante ;
 - récompenses/capture définitives.
+
+
+## Preview contrôlée — Moussados vs Loup volcanique — 2026-10-03
+
+Objectif :
+isoler la validation des capacités/stats/visuels du raccord Exploration.
+
+Base :
+- preview énergie : `25897307799d741710dfd9435854f7d813da1b33` ;
+- branche : `preview/lab-showcase-duel-moussados-loup-energy-v1-2026-10-03`.
+
+Presets utilisés :
+- joueur : `crea_mossback` — Moussados ;
+- adversaire : `crea-loup` — Loup volcanique.
+
+Sources d'autorité :
+- creature transfer Showcase pour draft/statValues/loadout/presentation ;
+- Skill Contract existant pour les capacités natives ;
+- skill transfers Showcase pour les capacités Feu configurées ;
+- Combat Runtime existant pour l'exécution.
+
+Aucune copie spéciale de stats, aucun faux creatureId, aucun remplacement du Bridge Exploration.
+
+Loadout Moussados :
+- lib_earth_guard ;
+- claw ;
+- lib_quake ;
+- lib_rock_slam.
+
+Loadout Loup volcanique :
+- claw ;
+- fireball ;
+- cap_fire_special_1 ;
+- lib_flame_bite ;
+- cap_fire_atk_6.
+
+CI :
+- source builder : `f9eea205992d34e8334c790f9fc70ca74e1946c9` — GREEN ;
+- replay sur ruleset énergie :
+  `f4c79f8022f9db3f9fb405ff80ce73816862f3c1` ;
+- run `37142276284` — SUCCESS.
+
+Gate :
+test mobile direct du duel, sans handoff Exploration.
