@@ -1,0 +1,1197 @@
+{
+  "schema": "projectile-elemental-extraction-v1",
+  "original": {
+    "file": "assets/library/capture/sprites/source/projectile_elemental_source_01.jpg",
+    "sha256": "ad41429d03909e3b7799eedb2d1745ec6a41b7110efc919dc4c95624268b8914",
+    "mode": "RGB",
+    "format": "JPEG",
+    "uploadedFilename": "Image ChatGPT 3 oct. 2026, 20_36_51.png",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  "transparent": {
+    "file": "assets/library/capture/sprites/source/projectile_elemental_transparent_01.png",
+    "sha256": "46432a8cadff53dbfc19286d567e298f190f72ea679a631f98d8fee5e10ba50a",
+    "mode": "RGBA",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  "backgroundExtraction": {
+    "tool": "imagegen",
+    "transparentBackground": true,
+    "prompt": "Edit the attached sprite sheet by removing the flattened background ONLY, producing a genuine transparent RGBA PNG. This is asset extraction, not a redesign.\nThe original canvas is 1536 by 1024 pixels. Keep this size and the exact 8-row by 8-column sprite layout and every sprite's location and scale. There are 64 distinct animation phases, eight per element: fire (row 1), water (row 2), earth/rocks (row 3), plant/thorn (row 4), electric purple lightning (row 5), ice (row 6), golden light (row 7), and black/purple shadow (row 8).\nRemove the gray/black checkerboard pattern, all gray rectangular cell outlines, the far-left title/icon column, and the filename text beneath each cell. These areas must be truly transparent, not a painted checkerboard or solid color.\nPreserve all 64 actual projectile artworks from the reference as closely as possible: their silhouettes, original shapes, colors, white hot centers, cyan/blue/golden/purple glows, tails, smoke, little detached sparks, droplets, leaves, rocks, ice fragments, and frame-to-frame progression. Preserve semitransparent soft glow edges naturally. Black and dark-purple cores and trails in the bottom shadow row are actual artwork and MUST remain opaque or semitransparent as appropriate; do not erase dark artwork along with the checkerboard. Do not invent, repaint, simplify, recolor, rotate, resize, replace, add, or omit projectiles. Keep the original diagonal direction from bottom-left toward top-right.\nOutput one transparent spritesheet with only the 64 projectile phases and empty transparent gutters in their original positions.",
+    "note": "AI-assisted alpha extraction from flattened RGB. This is an audited derived image, not a pixel-identical RGB original. All phases and dark shadow cores were inspected on light and dark backgrounds."
+  },
+  "extraction": "Unmodified RGBA rectangular copies, centered with transparent padding. No resizing, color key, alpha threshold, paint or rotation.",
+  "frameSize": [
+    256,
+    256
+  ],
+  "frameMs": 45,
+  "families": [
+    {
+      "name": "fire",
+      "label": "Feu",
+      "sourceRow": 0,
+      "assetId": "pack:capture:sprite-projectile-fire-01",
+      "presentation": {
+        "headingRad": -0.4969686048790533,
+        "coreAnchor": {
+          "x": 0.6796875,
+          "y": 0.40234375
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          755,
+          36
+        ],
+        "tailSourcePoint": [
+          637,
+          100
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_01.png",
+          "sha256": "fa049ee71620e47c3965b50b247144e09938528610b01ff1a20094abdbc2dcbb",
+          "sourceRect": [
+            94,
+            0,
+            274,
+            122
+          ],
+          "offset": [
+            38,
+            67
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_02.png",
+          "sha256": "2b03d48a0641103fbae16c2eb003a86628ed58fa7e9072601887717974ad491c",
+          "sourceRect": [
+            274,
+            0,
+            448,
+            122
+          ],
+          "offset": [
+            41,
+            67
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_03.png",
+          "sha256": "317986460c2b282c53218f3dacd651dd08408fef1c0751d3818e85fce24c07e0",
+          "sourceRect": [
+            448,
+            0,
+            622,
+            122
+          ],
+          "offset": [
+            41,
+            67
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_04.png",
+          "sha256": "8732ea2cae360c3d2e47fdc19d544d6577b682c84f71aafd0195876b1eea3624",
+          "sourceRect": [
+            622,
+            0,
+            796,
+            122
+          ],
+          "offset": [
+            41,
+            67
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_05.png",
+          "sha256": "b9f270ed6439842e98fbf3efcca9f4712b77886d2200b2f9fbd2785b09081e2e",
+          "sourceRect": [
+            796,
+            0,
+            970,
+            122
+          ],
+          "offset": [
+            41,
+            67
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_06.png",
+          "sha256": "430445a585ddf96920e7b816aea95a3f11312cdfa88dc8ec0392cdfabb65cd43",
+          "sourceRect": [
+            976,
+            0,
+            1146,
+            122
+          ],
+          "offset": [
+            43,
+            67
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_07.png",
+          "sha256": "b7436f69ea164e701ab5d215c238d02c61c55128453d292be6c2d409ed8ec761",
+          "sourceRect": [
+            1146,
+            0,
+            1320,
+            122
+          ],
+          "offset": [
+            41,
+            67
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/fire/frames/sprite_projectile_fire_08.png",
+          "sha256": "1329be63a4f1fdc8dab335df5e15ef4c0ce13f98157c31501bbbae3a3988ebbf",
+          "sourceRect": [
+            1320,
+            0,
+            1536,
+            122
+          ],
+          "offset": [
+            20,
+            67
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/fire/atlases/sprite_projectile_fire_atlas_01.webp",
+      "atlasSha256": "7dfd0c6f091294c95e9008a3ac7a2a55a5dce264a03896fa0c38388b62c60c4d",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    },
+    {
+      "name": "water",
+      "label": "Eau",
+      "sourceRow": 1,
+      "assetId": "pack:capture:sprite-projectile-water-01",
+      "presentation": {
+        "headingRad": -0.5024973098693629,
+        "coreAnchor": {
+          "x": 0.65234375,
+          "y": 0.41015625
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          748,
+          164
+        ],
+        "tailSourcePoint": [
+          637,
+          225
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_01.png",
+          "sha256": "9efb3cf27a395e8b0ba6167aebb2f92fd344ceb18e8acf61c5220a4b3b5a2cdd",
+          "sourceRect": [
+            94,
+            122,
+            274,
+            251
+          ],
+          "offset": [
+            38,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_02.png",
+          "sha256": "03381257e2d5e382d6543ac0cd378de0f775dc001647a502db284b50643c6de5",
+          "sourceRect": [
+            274,
+            122,
+            448,
+            251
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_03.png",
+          "sha256": "4c1f5cef37e789b0bf23dbee6d3935ea7a716831d06f9054aa1e1a803e81cc0d",
+          "sourceRect": [
+            448,
+            122,
+            622,
+            251
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_04.png",
+          "sha256": "3e459804502e7d787e8583bc880976c0dfbf76aa2179d624a9c7c49e3228e824",
+          "sourceRect": [
+            622,
+            122,
+            796,
+            251
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_05.png",
+          "sha256": "9aa06364df90fc8f5b54bb1d4ea522053a6664cac51c1b03e63d0a653182499c",
+          "sourceRect": [
+            796,
+            122,
+            970,
+            251
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_06.png",
+          "sha256": "fc264ad154ffceee7787d7fe9ecf36b1766ce8889316ec586c7ddfd4397e08b6",
+          "sourceRect": [
+            976,
+            122,
+            1146,
+            251
+          ],
+          "offset": [
+            43,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_07.png",
+          "sha256": "9d9fc097e085e37149c79443bb1a6d7d609674ae5944b91f686f46cb26c21d98",
+          "sourceRect": [
+            1146,
+            122,
+            1320,
+            251
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/water/frames/sprite_projectile_water_08.png",
+          "sha256": "bebc06930c4708f2ba4a3e6dbd282db5c1254f5c3646165e1ad9d954b0e59ca7",
+          "sourceRect": [
+            1320,
+            122,
+            1536,
+            251
+          ],
+          "offset": [
+            20,
+            63
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/water/atlases/sprite_projectile_water_atlas_01.webp",
+      "atlasSha256": "12c01fb9feb8930d89ba78dabf2d313706ea89c92be5ad46343c21429c44de4a",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    },
+    {
+      "name": "earth",
+      "label": "Terre",
+      "sourceRow": 2,
+      "assetId": "pack:capture:sprite-projectile-earth-01",
+      "presentation": {
+        "headingRad": -0.47808703860357205,
+        "coreAnchor": {
+          "x": 0.6484375,
+          "y": 0.42578125
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          747,
+          297
+        ],
+        "tailSourcePoint": [
+          637,
+          354
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_01.png",
+          "sha256": "acf44fbc55c1c4e83cc39d129ab55af9c189b962ac9a015ffb9293e6c7060e61",
+          "sourceRect": [
+            94,
+            251,
+            274,
+            381
+          ],
+          "offset": [
+            38,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_02.png",
+          "sha256": "2e23033c194900bc303be2f52f1a381fe3958cf273704a3d4619c9fac1def03c",
+          "sourceRect": [
+            274,
+            251,
+            448,
+            381
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_03.png",
+          "sha256": "286079799582db2453fe831ab34f15f85a61c8d33bca7a2902b9f8abd47e07e9",
+          "sourceRect": [
+            448,
+            251,
+            622,
+            381
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_04.png",
+          "sha256": "30c906750f1dfe7d2e74d445cc93e9e7ceb286fb8a4deb0aa9d2514f6d95484d",
+          "sourceRect": [
+            622,
+            251,
+            796,
+            381
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_05.png",
+          "sha256": "554568d6f91dfc433e47f6bff4337d89ca02510e3b3884c24f4f2f01d33b850a",
+          "sourceRect": [
+            796,
+            251,
+            970,
+            381
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_06.png",
+          "sha256": "fed59472cd6b5d3e0be316512df8bda17aa8c35b8889b98ea2141ebd2f133ce4",
+          "sourceRect": [
+            976,
+            251,
+            1146,
+            381
+          ],
+          "offset": [
+            43,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_07.png",
+          "sha256": "9af619d4413f6b8d65d73f388162d662055bc3b0388bd11fec90103dc425b46d",
+          "sourceRect": [
+            1146,
+            251,
+            1320,
+            381
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/earth/frames/sprite_projectile_earth_08.png",
+          "sha256": "9f1a81fe8264724f8c38b098fc871f4d69f201d761c6984f2076747e6366d2c9",
+          "sourceRect": [
+            1320,
+            251,
+            1536,
+            381
+          ],
+          "offset": [
+            20,
+            63
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/earth/atlases/sprite_projectile_earth_atlas_01.webp",
+      "atlasSha256": "508a6112050dab01b635bfdd7aa0f04077bb343ad79bc2b7e5c1046dcaa5868c",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    },
+    {
+      "name": "thorn",
+      "label": "Plante",
+      "sourceRow": 3,
+      "assetId": "pack:capture:sprite-projectile-thorn-01",
+      "presentation": {
+        "headingRad": -0.5317240672588056,
+        "coreAnchor": {
+          "x": 0.75,
+          "y": 0.3359375
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          773,
+          404
+        ],
+        "tailSourcePoint": [
+          637,
+          484
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_01.png",
+          "sha256": "038801bb5fdf7469a6d046a300a752f3120234b6a83383667c4504e4e88b175e",
+          "sourceRect": [
+            94,
+            381,
+            274,
+            510
+          ],
+          "offset": [
+            38,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_02.png",
+          "sha256": "d6cec4595f62cc733050333885d39ba2afdd1714454d3bcb0340e8ad717db533",
+          "sourceRect": [
+            274,
+            381,
+            448,
+            510
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_03.png",
+          "sha256": "4ddf6a3bf12ac7f1cf84ef2ec089d4416a901c9c05c4b88dd9c44362a8e04934",
+          "sourceRect": [
+            448,
+            381,
+            622,
+            510
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_04.png",
+          "sha256": "2be00b79edb0855f9bafdabafd4c54a7179ada84a4da63dc4cf83cd51fbd223d",
+          "sourceRect": [
+            622,
+            381,
+            796,
+            510
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_05.png",
+          "sha256": "4e975c35c40943e2aa326bf44969dfcdfedf9ed004b722e13c427f1c6fae5450",
+          "sourceRect": [
+            796,
+            381,
+            970,
+            510
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_06.png",
+          "sha256": "769e329f69685042e567de8a0e8d2f541b539dc472fed9370a002401fcb11db9",
+          "sourceRect": [
+            976,
+            381,
+            1146,
+            510
+          ],
+          "offset": [
+            43,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_07.png",
+          "sha256": "e352d43d4f42444ff66767f0bd4a70a59e72b381bd62171c9f3d6476d91e4e05",
+          "sourceRect": [
+            1146,
+            381,
+            1320,
+            510
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/thorn/frames/sprite_projectile_thorn_08.png",
+          "sha256": "a01a7d78e1f0f6ad74325d07fd2da304e9e5af34d2a0bcd7d867ee4899df51e5",
+          "sourceRect": [
+            1320,
+            381,
+            1536,
+            510
+          ],
+          "offset": [
+            20,
+            63
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/thorn/atlases/sprite_projectile_thorn_atlas_01.webp",
+      "atlasSha256": "4cf995ccdee14ad90005055e2a5aa992558d03bdaa89daa502682e7a8be4de00",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    },
+    {
+      "name": "electric",
+      "label": "Électrique",
+      "sourceRow": 4,
+      "assetId": "pack:capture:sprite-projectile-electric-01",
+      "presentation": {
+        "headingRad": -0.4417075564088436,
+        "coreAnchor": {
+          "x": 0.72265625,
+          "y": 0.39453125
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          766,
+          548
+        ],
+        "tailSourcePoint": [
+          637,
+          609
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_01.png",
+          "sha256": "4e37151d510cfde29046db534f872cd9f8bfce42e6eacca116f7f56bbfd9a72a",
+          "sourceRect": [
+            94,
+            510,
+            274,
+            640
+          ],
+          "offset": [
+            38,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_02.png",
+          "sha256": "f1686074297ea4bac6a6acbfe012fac5b4bfffe30d61c05485202d7bc646e064",
+          "sourceRect": [
+            274,
+            510,
+            448,
+            640
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_03.png",
+          "sha256": "1e7bc40830f85ae4110d791d09028d14821c29c124c639c8e80198a6a1bfeeda",
+          "sourceRect": [
+            448,
+            510,
+            622,
+            640
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_04.png",
+          "sha256": "ca0d78e46f9baadaa5d0825c45d67cbfa7bd35587cd2f1accc511a518b35aeb6",
+          "sourceRect": [
+            622,
+            510,
+            796,
+            640
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_05.png",
+          "sha256": "dc3efc50a6329fdffbd8ad3f008341570cb43a8e180599e9575fd48ff4d72ef2",
+          "sourceRect": [
+            796,
+            510,
+            970,
+            640
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_06.png",
+          "sha256": "d5a6097bd0974cb92a6a77f01b8816e999e04587a4e94e24ee5148044a737f10",
+          "sourceRect": [
+            976,
+            510,
+            1146,
+            640
+          ],
+          "offset": [
+            43,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_07.png",
+          "sha256": "52c233815c97929857b42f83c94808162befe349ccf78f78a9aae258332aba70",
+          "sourceRect": [
+            1146,
+            510,
+            1320,
+            640
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/electric/frames/sprite_projectile_electric_08.png",
+          "sha256": "3c3aee84a4f867b3e900603edccf0084582c23ca6f6ceca3d9c6b348239fcc03",
+          "sourceRect": [
+            1320,
+            510,
+            1536,
+            640
+          ],
+          "offset": [
+            20,
+            63
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/electric/atlases/sprite_projectile_electric_atlas_01.webp",
+      "atlasSha256": "90c033fbc1fdbc70e1133100734b912c04c4769624827dd2308e2f44b8dade1f",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    },
+    {
+      "name": "ice",
+      "label": "Glace",
+      "sourceRow": 5,
+      "assetId": "pack:capture:sprite-projectile-ice-01",
+      "presentation": {
+        "headingRad": -0.5102610491934162,
+        "coreAnchor": {
+          "x": 0.7421875,
+          "y": 0.34375
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          771,
+          665
+        ],
+        "tailSourcePoint": [
+          637,
+          740
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_01.png",
+          "sha256": "349cbf1c695aeaabddddfa8b320ea7ab2ae0d91736fda9e9e046986e38bbdb79",
+          "sourceRect": [
+            94,
+            640,
+            274,
+            769
+          ],
+          "offset": [
+            38,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_02.png",
+          "sha256": "d026219f94e4b62a85d0a706b65b0a0338b0422c106f72b314c9dd35f2a35403",
+          "sourceRect": [
+            274,
+            640,
+            448,
+            769
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_03.png",
+          "sha256": "f7ffe5d10a306606946cf08bab08e9b4154c2d48fcbbd65a11c888c0d92e07a6",
+          "sourceRect": [
+            448,
+            640,
+            622,
+            769
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_04.png",
+          "sha256": "a80c26c6dc7229ee45511370b5c1831db897d6cbbf1501ba264bf1d28bae57c1",
+          "sourceRect": [
+            622,
+            640,
+            796,
+            769
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_05.png",
+          "sha256": "85aa62f4a80dfcf3d226745f26dcc4046e3b0fc9c352cd5f73e164a149984ca0",
+          "sourceRect": [
+            796,
+            640,
+            970,
+            769
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_06.png",
+          "sha256": "7cd30ba0db5c3f7d4fafb2cc4c8842782d85bac67dbaddec6663747c05c8f346",
+          "sourceRect": [
+            976,
+            640,
+            1146,
+            769
+          ],
+          "offset": [
+            43,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_07.png",
+          "sha256": "83318431930c3ff65909e43352250f0496e5911982f7a887c5d608053e399c71",
+          "sourceRect": [
+            1146,
+            640,
+            1320,
+            769
+          ],
+          "offset": [
+            41,
+            63
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/ice/frames/sprite_projectile_ice_08.png",
+          "sha256": "9a698d5948389ce71101a0987050b3cbad89e0b343c8fca8265456201b00ed82",
+          "sourceRect": [
+            1320,
+            640,
+            1536,
+            769
+          ],
+          "offset": [
+            20,
+            63
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/ice/atlases/sprite_projectile_ice_atlas_01.webp",
+      "atlasSha256": "7794b75efffe22a76a576dac49509c9e9b315c59a9806342336e919a3f3c4bde",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    },
+    {
+      "name": "light",
+      "label": "Lumière",
+      "sourceRow": 6,
+      "assetId": "pack:capture:sprite-projectile-light-01",
+      "presentation": {
+        "headingRad": -0.4860319293400963,
+        "coreAnchor": {
+          "x": 0.6328125,
+          "y": 0.40234375
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          743,
+          806
+        ],
+        "tailSourcePoint": [
+          637,
+          862
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_01.png",
+          "sha256": "01374cfb5903d7fb178cd96f8054f5a1220b8c3a30d97576a7d230870ece4f51",
+          "sourceRect": [
+            94,
+            769,
+            274,
+            893
+          ],
+          "offset": [
+            38,
+            66
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_02.png",
+          "sha256": "b2f0a82891e8d640262fd10e48e1477a0a88a7d102df668dab7390a087d8cb1a",
+          "sourceRect": [
+            274,
+            769,
+            448,
+            893
+          ],
+          "offset": [
+            41,
+            66
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_03.png",
+          "sha256": "02b5defa46819d008fd23454df1a4ece02462473ddf14620303d40aed3adf3c0",
+          "sourceRect": [
+            448,
+            769,
+            622,
+            893
+          ],
+          "offset": [
+            41,
+            66
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_04.png",
+          "sha256": "8510e6c5b35a78cecd52ede2529dc08a36e766f942fa0d139ca1c09b52665e02",
+          "sourceRect": [
+            622,
+            769,
+            796,
+            893
+          ],
+          "offset": [
+            41,
+            66
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_05.png",
+          "sha256": "eeed7f030c03e0b8e13fed46254d0f2e3d670ebdea89fe0c7159457eb2bfef27",
+          "sourceRect": [
+            796,
+            769,
+            970,
+            893
+          ],
+          "offset": [
+            41,
+            66
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_06.png",
+          "sha256": "8185d54c3fdfa98db75c4ba1cefee3a4c761e574d66b0778feaf785c23c7a641",
+          "sourceRect": [
+            976,
+            769,
+            1146,
+            893
+          ],
+          "offset": [
+            43,
+            66
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_07.png",
+          "sha256": "8a6ebe378f71295e0b308c1750410bfef28722ef1b0984c96a94b781c91f34df",
+          "sourceRect": [
+            1146,
+            769,
+            1320,
+            893
+          ],
+          "offset": [
+            41,
+            66
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/light/frames/sprite_projectile_light_08.png",
+          "sha256": "7cd56ce6830d74d226570458d385563969d7e720a2d9b612e0016af551213094",
+          "sourceRect": [
+            1320,
+            769,
+            1536,
+            893
+          ],
+          "offset": [
+            20,
+            66
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/light/atlases/sprite_projectile_light_atlas_01.webp",
+      "atlasSha256": "07d166ec946fe8a906cf42d46bea89d832a7273572dcbe020c959b3d5355ef93",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    },
+    {
+      "name": "shadow",
+      "label": "Ombre",
+      "sourceRow": 7,
+      "assetId": "pack:capture:sprite-projectile-shadow-01",
+      "presentation": {
+        "headingRad": -0.4492601126118805,
+        "coreAnchor": {
+          "x": 0.65625,
+          "y": 0.41796875
+        }
+      },
+      "calibration": {
+        "phase": 4,
+        "headSourcePoint": [
+          749,
+          938
+        ],
+        "tailSourcePoint": [
+          637,
+          992
+        ],
+        "note": "Static visual anchor calibrated on principal phase 04; decorative sparks and first/last phases do not define collision."
+      },
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_01.png",
+          "sha256": "f3bfa19c3e78a8366a5428530b0f0d6acc7a64751f5c45c1ba1685aaf37e6530",
+          "sourceRect": [
+            94,
+            893,
+            274,
+            1024
+          ],
+          "offset": [
+            38,
+            62
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_02.png",
+          "sha256": "0b6744e8d1695537fdf9ed269008c0726201a44ce8bbb7469b901d9197d60cbd",
+          "sourceRect": [
+            274,
+            893,
+            448,
+            1024
+          ],
+          "offset": [
+            41,
+            62
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_03.png",
+          "sha256": "2ac41748f69de3b7fa71531a26739ab9379b44193eb0ae891cc55efdec3db1fb",
+          "sourceRect": [
+            448,
+            893,
+            622,
+            1024
+          ],
+          "offset": [
+            41,
+            62
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_04.png",
+          "sha256": "a16eeae683d2760cac05fac8b96c8d835d7edfea9944c9b20d1882c3989293bb",
+          "sourceRect": [
+            622,
+            893,
+            796,
+            1024
+          ],
+          "offset": [
+            41,
+            62
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_05.png",
+          "sha256": "1638706e23fc46c4c72601dfafb39ad6def75ff419496c13b52b0306b702677d",
+          "sourceRect": [
+            796,
+            893,
+            970,
+            1024
+          ],
+          "offset": [
+            41,
+            62
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_06.png",
+          "sha256": "4ce89ba92e3ec3373b3f89b3c945b8eb9fe641130029c21f3e14a4236f7fa70f",
+          "sourceRect": [
+            976,
+            893,
+            1146,
+            1024
+          ],
+          "offset": [
+            43,
+            62
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_07.png",
+          "sha256": "51962169315dfc0b1ad4038c4f1864ce26a7940a671de420f4c51ff79fcb33b9",
+          "sourceRect": [
+            1146,
+            893,
+            1320,
+            1024
+          ],
+          "offset": [
+            41,
+            62
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/projectiles/shadow/frames/sprite_projectile_shadow_08.png",
+          "sha256": "8b172a3f342982157b4ee6c3cb8fc5b91cae8f5ce51156935f612e0b3df84766",
+          "sourceRect": [
+            1320,
+            893,
+            1536,
+            1024
+          ],
+          "offset": [
+            20,
+            62
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/projectiles/shadow/atlases/sprite_projectile_shadow_atlas_01.webp",
+      "atlasSha256": "b98e268deda0e9dcc4aa6e2eb163e68be49986cf58c7809b97d62dc20d5e741b",
+      "atlasSize": [
+        2048,
+        256
+      ]
+    }
+  ]
+}

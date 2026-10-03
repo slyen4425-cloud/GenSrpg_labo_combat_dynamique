@@ -42,7 +42,8 @@ test("eight projectile assets use 64 genuine RGBA phases extracted from the audi
   const original=readFileSync(new URL(m.original.file,root));
   assert.equal(sha(original),SOURCE_SHA,"original user sheet must remain archived unchanged");
   assert.equal(m.original.sha256,SOURCE_SHA);
-  assert.equal(original[25],2,"the supplied original is flattened RGB, not genuine alpha");
+  assert.equal(original.subarray(0,3).toString("hex"),"ffd8ff","the supplied file is flattened JPEG despite its uploaded .png suffix");
+  assert.equal(m.original.format,"JPEG");
   const matteBytes=readFileSync(new URL(m.transparent.file,root));
   assert.equal(sha(matteBytes),m.transparent.sha256);
   assert.equal(m.backgroundExtraction.tool,"imagegen");
