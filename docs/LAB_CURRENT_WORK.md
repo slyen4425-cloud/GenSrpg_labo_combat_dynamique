@@ -24379,3 +24379,40 @@ Hors périmètre :
 - Zombicide-40k ;
 - vraie party Capture persistante ;
 - récompenses/capture définitives.
+
+
+## Résultat technique — Exploration Encounter Energy Ruleset v1 — 2026-10-03
+
+Cause racine confirmée :
+`importMonsterCaptureCreatureRecordV1()` appliquait les defaults historiques `maxEnergy=0`, `energyChargeAmount=0`, `energyChargeIntervalMs=0`.
+
+Correction :
+- ajout d'un catalogue de rulesets Combat ;
+- `capture.standard.1v1` résout un `CaptureCombatRulesEditorDraftV1` explicite ;
+- valeurs : maxEnergy 12, initialEnergy 2, recharge +1 / 1800 ms, mouvement 2, charge modifier 0 ;
+- le Bridge applique ce ruleset via `applyCaptureCombatRulesToCreatureDraftV1()` ;
+- Combat State / Combat Session / Combat Runtime inchangés ;
+- ruleset inconnu rejeté sans fallback.
+
+TDD :
+- régression énergie zéro reproduite ;
+- vrai chemin `Encounter Snapshot -> Combat Source -> Combat Session -> advanceMs` vérifie que l'énergie augmente ;
+- identité créature adverse / arène / loadout protégés.
+
+SHA technique :
+`25897307799d741710dfd9435854f7d813da1b33`
+
+CI :
+`37140751250` — **SUCCESS**.
+
+Preview Combat :
+`preview/lab-exploration-encounter-energy-ruleset-v1-2026-10-03`
+
+Gate restante :
+validation smartphone depuis la preview intégrée Exploration :
+1. déclencher une rencontre ;
+2. lancer le combat ;
+3. vérifier énergie initiale > 0 ;
+4. vérifier recharge automatique ;
+5. utiliser une capacité ;
+6. terminer le combat et vérifier retour Exploration.
