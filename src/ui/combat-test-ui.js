@@ -8,6 +8,7 @@ import { createOpponentDecisionController } from "../core/combat/opponent-decisi
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
+import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 
@@ -455,6 +456,18 @@ export async function mountCombatTest({
               presentationAssets.statusPresentationFor(
                 statusId
               )
+            );
+          }
+        })
+      : null;
+
+  const damageFeedback =
+    typeof visuals.getStatusPresentationTargetFor ===
+      "function"
+      ? createDomDamageFeedbackRenderer({
+          targetFor(actorId) {
+            return visuals.getStatusPresentationTargetFor(
+              actorId
             );
           }
         })
@@ -1120,6 +1133,9 @@ export async function mountCombatTest({
         amount: feedback.amount,
         durationMs: 700
       });
+      damageFeedback?.flash(
+        feedback.actorId
+      );
     },
     onStarted({ action }) {
       if (action.actionType === "skill") {
@@ -1346,6 +1362,7 @@ export async function mountCombatTest({
       runtime.dispose();
       presenter.dispose();
       statusFx?.dispose();
+      damageFeedback?.dispose();
       combatAudio.dispose();
       fx.dispose();
     }
