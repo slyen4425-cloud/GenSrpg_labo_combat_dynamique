@@ -93,6 +93,42 @@ function injectedSource() {
       "ally-x": ["injected-hit"],
       "enemy-a": ["injected-hit"],
       "enemy-b": ["injected-hit"]
+    },
+    skillIdsByCreature: {
+      "crea-local": ["injected-hit"],
+      "crea-reserve": ["injected-hit"],
+      "crea-ally": ["injected-hit"],
+      "crea-enemy-a": ["injected-hit"],
+      "crea-enemy-b": ["injected-hit"]
+    },
+    fighterConfigs: {
+      "crea-local": fighter("crea-local", 91),
+      "crea-reserve": fighter("crea-reserve", 123),
+      "crea-ally": fighter("crea-ally", 82),
+      "crea-enemy-a": fighter("crea-enemy-a", 73),
+      "crea-enemy-b": fighter("crea-enemy-b", 64)
+    },
+    roster: {
+      teams: {
+        local: {
+          slotId: "local",
+          activeMemberId: "member-local",
+          members: [
+            {
+              id: "member-local",
+              creatureId: "crea-local",
+              displayName: "Local",
+              fighterConfigId: "crea-local"
+            },
+            {
+              id: "member-reserve",
+              creatureId: "crea-reserve",
+              displayName: "Réserve",
+              fighterConfigId: "crea-reserve"
+            }
+          ]
+        }
+      }
     }
   };
 }
@@ -121,6 +157,22 @@ test("2v2 combat bootstrap accepts an injected native source without fetching de
   );
   assert.deepEqual(Object.keys(source.skillsById), ["injected-hit"]);
   assert.equal(source.skillsById["injected-hit"].effect.damage, 7);
+  assert.equal(
+    source.roster.teams.local.activeMemberId,
+    "member-local"
+  );
+  assert.equal(
+    source.roster.teams.local.members[1].creatureId,
+    "crea-reserve"
+  );
+  assert.equal(
+    source.fighterConfigs["crea-reserve"].maxHp,
+    123
+  );
+  assert.deepEqual(
+    source.skillIdsByCreature["crea-reserve"],
+    ["injected-hit"]
+  );
 });
 
 test("2v2 mount consumes the shared source loader instead of rebuilding a second mapping", async () => {
@@ -148,5 +200,44 @@ test("2v2 mount consumes the shared source loader instead of rebuilding a second
   assert.doesNotMatch(
     source,
     /nativeCombatSource[\s\S]*Zombicide-40k/i
+  );
+});
+
+
+test("2v2 Encounter UI wires injected roster through the existing Roster Session and Combat Runtime commands", async () => {
+  const source = await readFile(
+    "src/ui/combat-2v2-test-ui.js",
+    "utf8"
+  );
+  const html = await readFile(
+    "examples/dom-demo/exploration-encounter.html",
+    "utf8"
+  );
+
+  assert.match(source, /createRosterSession/);
+  assert.match(source, /normalizeCombatCommandDefinition/);
+  assert.match(source, /runtime\.startCommand/);
+  assert.match(source, /roster\.applyCommandResolution/);
+  assert.match(source, /skillIdsByCreature/);
+  assert.match(source, /visuals\.setCreatureFor/);
+
+  assert.match(html, /data-combat-team-actions/);
+  assert.match(html, /data-roster-reserve="local-1"/);
+  assert.match(html, /data-team-selection/);
+});
+
+test("Exploration Encounter visual source loads every configured party creature, not only the active member", async () => {
+  const source = await readFile(
+    "examples/dom-demo/exploration-encounter.js",
+    "utf8"
+  );
+
+  assert.match(
+    source,
+    /configuredCreatureTransfers[\s\S]*visualMetaFor/
+  );
+  assert.doesNotMatch(
+    source,
+    /creatureMetas\s*=\s*await Promise\.all\(\[\s*visualMetaFor\(\s*local\.creatureId/
   );
 });
