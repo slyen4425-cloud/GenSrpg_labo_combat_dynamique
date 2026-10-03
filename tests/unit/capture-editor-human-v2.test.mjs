@@ -266,7 +266,7 @@ test("human preview shares one configured creature across both camps and keeps c
     creatureDraft: draft, opponentCreatureDraft: structuredClone(draft),
     skillDrafts: [buildHumanSkillDraftV1(skillFields())], opponentSkillDrafts: [],
     loadout, opponentLoadout: structuredClone(loadout), statRegistry, statValues: [values, structuredClone(values)],
-    battleSetup: buildHumanBattleSetupV1({ battleId: "shared-model-preview", localCreatureId: draft.id,
+    battleSetup: buildHumanBattleSetupV1({ battleId: "shared-model-preview", arenaId: "city", localCreatureId: draft.id,
       opponentCreatureId: draft.id, localDisplayName: draft.displayName, opponentDisplayName: draft.displayName, activePerTeam: 1 })
   };
   const exported = buildHumanEditorExportV3(input);
