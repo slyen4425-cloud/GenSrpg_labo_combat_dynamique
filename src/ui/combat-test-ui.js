@@ -457,6 +457,14 @@ export async function mountCombatTest({
                 statusId
               )
             );
+          },
+          skillPresentationFor(skillId, context = {}) {
+            return (
+              presentationAssets?.presentationForSkill?.(
+                skillId,
+                context
+              ) ?? null
+            );
           }
         })
       : null;
