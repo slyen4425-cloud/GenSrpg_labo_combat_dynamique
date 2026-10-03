@@ -6512,3 +6512,56 @@ Publication fast-forward effectuée sur `global-assets` depuis la branche de tra
 - checkpoint GREEN final prévu : `checkpoint/lab-voltige-assets-green-2026-09-27`.
 
 Le lot est fonctionnellement clos ; la présente note documentaire constitue la clôture de reprise avant création du checkpoint GREEN final.
+
+## Micro-lot — Global Asset Visual Repair V1 — 2026-10-03
+
+Base exacte : `d73ad04dbc6c3f8de492b9a503653c4c6f2e753c` (`global-assets`).
+
+Checkpoint de départ : `checkpoint/global-assets-start-visual-repair-v1-2026-10-03`.
+
+Branche : `work/global-assets-visual-repair-v1-2026-10-03`.
+
+Retour utilisateur :
+- les casts électrique/eau et plusieurs projectiles affichent des symboles/formes simples au lieu des sprites illustrés conçus ;
+- l'audit confirme que le catalogue actif pointe réellement vers des SVG procéduraux simplifiés ; ce n'est pas un défaut du renderer.
+
+Sources illustrées retrouvées :
+- Bibliothèque d’effets d’impact en spritesheet ;
+- Planche de sprites d’effets magiques élémentaires ;
+- Planche d’effets élémentaires en charge ;
+- Planche de sprites de projectiles élémentaires ;
+- Atlas VFX RPG : soins et magie.
+
+Diagnostic architectural :
+- la source de vérité runtime des visuels partagés est `global-assets` + `data/assets/catalog/global-visual-assets.v1.json` ;
+- l'éditeur hydrate ses sélecteurs depuis ce catalogue ;
+- les suites SVG génériques ne doivent plus être présentées comme assets finaux ;
+- aucun correctif UI/renderer ne doit masquer leur mauvaise qualité.
+
+Périmètre autorisé :
+- `data/assets/catalog/global-visual-assets.v1.json` ;
+- documentation du chantier ;
+- tests sentinelles de catalogue ;
+- ensuite seulement les médias binaires validés lorsqu'une source brute exploitable est disponible.
+
+Domaines protégés :
+- Combat Rules / Combat Runtime / Action Resolver ;
+- Animation Core / FX Core / Render Adapter ;
+- SkillDefinition ;
+- dégâts, énergie, timing, cooldown ;
+- `main` ;
+- `Zombicide-40k`.
+
+TDD prévu :
+- RED : le catalogue actuel expose encore les 18 suites SVG génériques casts/impacts/projectiles ;
+- GREEN : ces placeholders sont absents du catalogue actif ;
+- les vrais assets validés (Boule de feu dédiée, téléportations, zone de feu, créatures) restent présents ;
+- compteurs du catalogue cohérents ;
+- CI complète GREEN.
+
+Critère de fin V1 :
+- aucun placeholder SVG générique n'est sélectionnable depuis le catalogue actif ;
+- aucune seconde autorité n'est ajoutée ;
+- les vraies sources illustrées sont tracées comme source de remplacement, sans les redessiner ni les simuler.
+
+État : LOT OUVERT — TDD avant modification du catalogue.
