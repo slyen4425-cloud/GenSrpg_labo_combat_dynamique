@@ -13,8 +13,9 @@ function fields(presentation = {}) {
     usageScopes: ["capture", "combat"], category: "offensive", form: "projectile",
     element: "water", approachMode: "none", energyCost: 3, preparationMs: 300,
     travelMs: 2400, recoveryMs: 450, cooldownMs: 2800,
-    allowedDistances: ["medium", "long"], targetRelations: ["enemy"],
-    damage: 4, heal: 0, stunMs: 0, interruptsPreparation: false,
+    allowedDistances: ["short", "medium", "long"], targetRelations: ["enemy"],
+    damage: 0, heal: 0, stunMs: 0, interruptsPreparation: false,
+    effects: [{ kind: "damage", targetScope: "target", channel: "water", amount: 4 }],
     reaction: { blockForms: [], reflectForms: [], immuneElements: [], counterForms: [], evadeForms: [], evadeApproaches: [] },
     projectileClash: { mode: "none" },
     presentation: {

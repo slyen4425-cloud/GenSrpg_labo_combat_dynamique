@@ -37,7 +37,7 @@ function globalCaptureStripAsset({
     frameCount: 8,
     frameMs,
     displayScale,
-    playbackMode: "once",
+    playbackMode: family === "projectiles" ? "stretch" : "once",
     ...(headingRad == null ? {} : { headingRad }),
     ...(coreAnchor == null ? {} : { coreAnchor: Object.freeze({ ...coreAnchor }) })
   });

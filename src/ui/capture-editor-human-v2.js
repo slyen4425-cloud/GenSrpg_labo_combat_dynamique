@@ -1133,6 +1133,8 @@ function presentationForSkill(fields) {
       anchor: socketId,
       displayScale:
         presentation.travelDisplayScale ?? 1,
+      playbackMode:
+        presentation.travelPlaybackMode ?? "stretch",
       layerByView: {
         player:
           presentation.travelLayerPlayer ??
@@ -1742,6 +1744,8 @@ export function humanSkillEditorFieldsFromDraftV1(
         travel?.assetId ?? "",
       travelDisplayScale:
         travel?.displayScale ?? 1,
+      travelPlaybackMode:
+        travel?.playbackMode ?? "stretch",
       castLayerPlayer:
         cast?.layerByView?.player ??
         "front",
@@ -2403,6 +2407,10 @@ function writeSkillDraftFields(
       fields.presentation.travelDisplayScale
     ],
     [
+      "[data-skill-travel-playback]",
+      fields.presentation.travelPlaybackMode
+    ],
+    [
       "[data-skill-cast-layer-player]",
       fields.presentation.castLayerPlayer
     ],
@@ -2520,6 +2528,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-cast-scale]", 1],
     ["[data-skill-travel-fx]", ""],
     ["[data-skill-travel-scale]", 1],
+    ["[data-skill-travel-playback]", "stretch"],
     ["[data-skill-cast-layer-player]", "front"],
     ["[data-skill-cast-layer-opponent]", "front"],
     ["[data-skill-travel-layer-player]", "front"],
@@ -6007,6 +6016,10 @@ function readSkillFields(root) {
       travelDisplayScale: numericValue(
         root,
         "[data-skill-travel-scale]"
+      ),
+      travelPlaybackMode: selectedValue(
+        root,
+        "[data-skill-travel-playback]"
       ),
       castLayerPlayer: selectedValue(
         root,

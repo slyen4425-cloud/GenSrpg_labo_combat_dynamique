@@ -742,6 +742,14 @@
           <label>Scale projectile
             <input type="number" min="0.25" step="0.05" value="1.90" data-skill-travel-scale>
           </label>
+          <label>Animation du projectile
+            <select data-skill-travel-playback>
+              <option value="stretch" selected>Adapter à la durée du trajet</option>
+              <option value="loop">Boucler pendant le trajet</option>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+            </select>
+          </label>
+          <p class="note">Adapter répartit les phases sur tout le trajet. Boucler répète l’animation jusqu’au contact. La vitesse de déplacement se règle dans « Vers la cible ».</p>
           <label>Charge — vue joueur
             <select data-skill-cast-layer-player>
               <option value="front">Devant la créature</option>

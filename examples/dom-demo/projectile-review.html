@@ -34,6 +34,10 @@ body.projectile-review{margin:0;padding:24px;background:#0b121e;color:#eaf1fb;fo
 <select id="background"><option value="dark">Sombre</option><option value="light">Clair</option></select>
 <label for="direction">Sens</label>
 <select id="direction"><option value="forward">Gauche → droite</option><option value="reverse">Droite → gauche</option></select>
+<label for="travel-duration">Trajet</label>
+<select id="travel-duration"><option value="180">Rapide · 180 ms</option><option value="650">650 ms</option><option value="1200">1,2 s</option><option value="2400" selected>Lent · 2,4 s</option></select>
+<label for="playback-mode">Animation</label>
+<select id="playback-mode"><option value="stretch" selected>Adapter au trajet</option><option value="loop">Boucler</option><option value="once">Une fois à vitesse native</option></select>
 <span id="ready" class="review-status" role="status">Chargement des atlas…</span>
 </div>
 <div id="cards"></div>
@@ -96,7 +100,8 @@ for (const [family, label] of families) {
   card.querySelector(".review-meta").textContent = assetId;
   const renderer = createDomSkillFxRenderer({
     arena: stage, anchors: { source, target },
-    presentationForSkill: () => ({ travel: { ...visual, displayScale: 2.8 } })
+    presentationForSkill: () => ({ travel: { ...visual, displayScale: 2.8,
+      playbackMode: document.getElementById("playback-mode").value } })
   });
   const player = { card, renderer, visual, ready: false, play() {
     if (!this.ready) return;
@@ -108,7 +113,7 @@ for (const [family, label] of families) {
       type: "projectile", skillId: assetId,
       fromSlot: reversed ? "target" : "source",
       targetSlot: reversed ? "source" : "target",
-      durationMs: visual.frameCount * visual.frameMs
+      durationMs: Number(document.getElementById("travel-duration").value)
     });
     card.dataset.playback = playback.status;
     card.dataset.direction = direction.value;
