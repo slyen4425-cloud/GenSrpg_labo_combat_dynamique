@@ -19,27 +19,131 @@ const RUNTIME_AUDIO_ROOT = new URL(
 );
 
 
-function globalCaptureSequenceAsset({
+const ELEMENTAL_SHEET_WIDTH = 1536;
+const ELEMENTAL_SHEET_HEIGHT = 1024;
+
+function gridAtlasFrames({
+  columns,
+  rows,
+  row,
+  leftRail = 0,
+  cropLeft = 0,
+  cropTop = 0,
+  cropRight = 0,
+  cropBottom = 0
+}) {
+  const cellWidth =
+    (ELEMENTAL_SHEET_WIDTH - leftRail) / columns;
+  const cellHeight =
+    ELEMENTAL_SHEET_HEIGHT / rows;
+
+  return Object.freeze(
+    Array.from({ length: columns }, (_, index) =>
+      Object.freeze({
+        x:
+          leftRail +
+          index * cellWidth +
+          cropLeft,
+        y:
+          row * cellHeight +
+          cropTop,
+        width:
+          cellWidth -
+          cropLeft -
+          cropRight,
+        height:
+          cellHeight -
+          cropTop -
+          cropBottom
+      })
+    )
+  );
+}
+
+function globalCaptureAtlasAsset({
   assetId,
-  family,
-  name,
-  prefix,
+  sheet,
+  frames,
   frameMs,
   displayScale = 1
 }) {
-  const frames = Array.from({ length: 8 }, (_, index) => {
-    const frame = String(index + 1).padStart(2, "0");
-    return globalVisualAssetUrl(
-      `capture/sprites/${family}/${name}/frames/sprite_${prefix}_${name}_${frame}.svg`
-    );
-  });
-
   return Object.freeze({
     assetId,
-    frames: Object.freeze(frames),
+    atlas: Object.freeze({
+      url: globalVisualAssetUrl(
+        `capture/sprites/source/${sheet}`
+      ),
+      width: ELEMENTAL_SHEET_WIDTH,
+      height: ELEMENTAL_SHEET_HEIGHT,
+      frames
+    }),
     frameMs,
     displayScale,
     playbackMode: "once"
+  });
+}
+
+const CAST_ROWS = Object.freeze({
+  blade: 0,
+  physical: 1,
+  electric: 2,
+  water: 3,
+  nature: 4
+});
+
+const IMPACT_ROWS = Object.freeze({
+  blade: 0,
+  physical: 1,
+  electric: 2,
+  water: 3,
+  nature: 4
+});
+
+const PROJECTILE_ROWS = Object.freeze({
+  fire: 0,
+  water: 1,
+  earth: 2,
+  thorn: 3,
+  electric: 4,
+  ice: 5,
+  light: 6,
+  shadow: 7
+});
+
+function castAtlasFrames(name) {
+  return gridAtlasFrames({
+    columns: 8,
+    rows: 5,
+    row: CAST_ROWS[name],
+    cropLeft: 4,
+    cropTop: 38,
+    cropRight: 4,
+    cropBottom: 24
+  });
+}
+
+function impactAtlasFrames(name) {
+  return gridAtlasFrames({
+    columns: 8,
+    rows: 5,
+    row: IMPACT_ROWS[name],
+    cropLeft: 4,
+    cropTop: 38,
+    cropRight: 4,
+    cropBottom: 24
+  });
+}
+
+function projectileAtlasFrames(name) {
+  return gridAtlasFrames({
+    columns: 8,
+    rows: 8,
+    row: PROJECTILE_ROWS[name],
+    leftRail: 96,
+    cropLeft: 4,
+    cropTop: 4,
+    cropRight: 4,
+    cropBottom: 24
   });
 }
 
@@ -78,130 +182,112 @@ function captureSequenceAsset({
 }
 
 const ASSETS = Object.freeze({
-  "pack:capture:sprite-cast-blade-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-cast-blade-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-cast-blade-01",
-    family: "casts",
-    name: "blade",
-    prefix: "cast",
+    sheet: "sprite_sheet_casts_elemental_01.png",
+    frames: castAtlasFrames("blade"),
     frameMs: 60
   }),
-  "pack:capture:sprite-cast-electric-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-cast-electric-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-cast-electric-01",
-    family: "casts",
-    name: "electric",
-    prefix: "cast",
+    sheet: "sprite_sheet_casts_elemental_01.png",
+    frames: castAtlasFrames("electric"),
     frameMs: 60
   }),
-  "pack:capture:sprite-cast-nature-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-cast-nature-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-cast-nature-01",
-    family: "casts",
-    name: "nature",
-    prefix: "cast",
+    sheet: "sprite_sheet_casts_elemental_01.png",
+    frames: castAtlasFrames("nature"),
     frameMs: 60
   }),
-  "pack:capture:sprite-cast-physical-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-cast-physical-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-cast-physical-01",
-    family: "casts",
-    name: "physical",
-    prefix: "cast",
+    sheet: "sprite_sheet_casts_elemental_01.png",
+    frames: castAtlasFrames("physical"),
     frameMs: 60
   }),
-  "pack:capture:sprite-cast-water-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-cast-water-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-cast-water-01",
-    family: "casts",
-    name: "water",
-    prefix: "cast",
+    sheet: "sprite_sheet_casts_elemental_01.png",
+    frames: castAtlasFrames("water"),
     frameMs: 60
   }),
-  "pack:capture:sprite-impact-blade-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-impact-blade-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-impact-blade-01",
-    family: "impacts",
-    name: "blade",
-    prefix: "impact",
+    sheet: "sprite_sheet_impacts_elemental_01.png",
+    frames: impactAtlasFrames("blade"),
     frameMs: 45
   }),
-  "pack:capture:sprite-impact-electric-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-impact-electric-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-impact-electric-01",
-    family: "impacts",
-    name: "electric",
-    prefix: "impact",
+    sheet: "sprite_sheet_impacts_elemental_01.png",
+    frames: impactAtlasFrames("electric"),
     frameMs: 45
   }),
-  "pack:capture:sprite-impact-nature-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-impact-nature-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-impact-nature-01",
-    family: "impacts",
-    name: "nature",
-    prefix: "impact",
+    sheet: "sprite_sheet_impacts_elemental_01.png",
+    frames: impactAtlasFrames("nature"),
     frameMs: 45
   }),
-  "pack:capture:sprite-impact-physical-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-impact-physical-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-impact-physical-01",
-    family: "impacts",
-    name: "physical",
-    prefix: "impact",
+    sheet: "sprite_sheet_impacts_elemental_01.png",
+    frames: impactAtlasFrames("physical"),
     frameMs: 45
   }),
-  "pack:capture:sprite-impact-water-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-impact-water-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-impact-water-01",
-    family: "impacts",
-    name: "water",
-    prefix: "impact",
+    sheet: "sprite_sheet_impacts_elemental_01.png",
+    frames: impactAtlasFrames("water"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-earth-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-earth-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-earth-01",
-    family: "projectiles",
-    name: "earth",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("earth"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-electric-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-electric-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-electric-01",
-    family: "projectiles",
-    name: "electric",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("electric"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-fire-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-fire-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-fire-01",
-    family: "projectiles",
-    name: "fire",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("fire"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-ice-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-ice-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-ice-01",
-    family: "projectiles",
-    name: "ice",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("ice"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-light-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-light-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-light-01",
-    family: "projectiles",
-    name: "light",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("light"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-shadow-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-shadow-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-shadow-01",
-    family: "projectiles",
-    name: "shadow",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("shadow"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-thorn-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-thorn-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-thorn-01",
-    family: "projectiles",
-    name: "thorn",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("thorn"),
     frameMs: 45
   }),
-  "pack:capture:sprite-projectile-water-01": globalCaptureSequenceAsset({
+  "pack:capture:sprite-projectile-water-01": globalCaptureAtlasAsset({
     assetId: "pack:capture:sprite-projectile-water-01",
-    family: "projectiles",
-    name: "water",
-    prefix: "projectile",
+    sheet: "sprite_sheet_projectiles_elemental_01.png",
+    frames: projectileAtlasFrames("water"),
     frameMs: 45
   }),
   "core:arena-forest-01": Object.freeze({
