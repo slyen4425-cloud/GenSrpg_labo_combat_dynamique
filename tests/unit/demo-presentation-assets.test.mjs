@@ -250,10 +250,15 @@ test("combat visual assets resolve from the stable global-assets branch", () => 
   ]) {
     const asset = demoPresentationAssets.asset(assetId);
     assert.ok(asset, `${assetId} should resolve from global library`);
-    assert.equal(asset.frames.length, 8);
-    assert.equal(
-      asset.frames.every((url) => url.includes("/global-assets/assets/library/")),
-      true
+    assert.equal(asset.frames, undefined);
+    assert.equal(asset.atlas?.frames.length, 8);
+    assert.match(
+      asset.atlas?.url ?? "",
+      /\/global-assets\/assets\/library\/capture\/sprites\/source\//
+    );
+    assert.doesNotMatch(
+      asset.atlas?.url ?? "",
+      /\.svg(?:\?|$)/
     );
   }
 });
