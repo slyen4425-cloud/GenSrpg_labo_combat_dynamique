@@ -1519,8 +1519,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/impacts/blade/sprite_impact_blade_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/impacts/blade/atlases/sprite_impact_blade_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 45
       },
       "compatibility": {
         "uses": [
@@ -1549,8 +1552,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/impacts/electric/sprite_impact_electric_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/impacts/electric/atlases/sprite_impact_electric_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 45
       },
       "compatibility": {
         "uses": [
@@ -1579,8 +1585,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/impacts/nature/sprite_impact_nature_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/impacts/nature/atlases/sprite_impact_nature_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 45
       },
       "compatibility": {
         "uses": [
@@ -1609,8 +1618,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/impacts/physical/sprite_impact_physical_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/impacts/physical/atlases/sprite_impact_physical_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 45
       },
       "compatibility": {
         "uses": [
@@ -1639,8 +1651,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/impacts/water/sprite_impact_water_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/impacts/water/atlases/sprite_impact_water_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 45
       },
       "compatibility": {
         "uses": [
