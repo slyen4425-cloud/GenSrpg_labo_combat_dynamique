@@ -50,7 +50,7 @@ Aucun moteur, timer, hitbox, contact ou règle de dégâts n'est ajouté ou modi
 
 Les mêmes métadonnées sont transmises par `globalCaptureStripAsset` dans `examples/dom-demo/demo-assets.js`.
 L'éditeur Capture utilise son catalogue global et son resolver existants ; les huit choix `Projectile/trajet` conservent leurs IDs.
-Révision de cache prévue : `2026-10-03-v10-projectile-source-alpha-v1`.
+Révision de cache active : `2026-10-03-v10-projectile-source-alpha-v1`.
 Les impacts publiés précédemment et les médias dédiés de la vraie Boule de feu sont inchangés.
 
 Fixture `examples/dom-demo/projectile-review.html` : huit animations par le Render Adapter existant, 64 PNG de contrôle, fonds clair/sombre et trajets dans les deux sens.
@@ -67,7 +67,33 @@ RED local puis GitHub Actions run **37151331040** : 198 tests passent, la nouvel
 Correction du diagnostic de format de l'original dans la sentinelle : vérification de la signature JPEG et du SHA original, au lieu d'inférer PNG depuis le nom.
 GREEN local : contenu RGBA des 64 phases, hashes, marges, diversité, catalogue et signatures/dimensions des huit WebP vérifiés.
 GREEN local présentation : 8 tests, dont orientation des huit nouveaux projectiles et conservation du binding dédié de Boule de feu.
-Publication, CI complète et contrôle du navigateur sont consignés ensuite dans `LAB_CURRENT_WORK.md`.
+Publication, CI complète et contrôle du navigateur : voir le relevé ci-dessous et `LAB_CURRENT_WORK.md`.
 
 Un checkpoint CI est intermédiaire. La validation artistique finale de Sylvain sur la preview reste requise avant un checkpoint GREEN final, conformément à §34.
 CASTS et STATUS ne sont pas traités par cette planche.
+
+
+### Contrôle réel après publication
+
+Médias réellement stockés au commit assets `56e1d89477683e2e3327743701b4bf7c470849d8`, publiés par fast-forward de `global-assets`.
+GitHub Actions **37152624189 : 199/199** ; GitHub Actions laboratoire **37152677737 : 913/913**, au commit présentation `06fd9f6b94993eee9c84ea63294abc81adc950bd`.
+Les huit URLs WebP de `global-assets` répondent 200 ; SHA-256 des réponses égal à l'inventaire, et dimensions décodées 2048 × 256.
+Les 80 entrées du catalogue hors ce lot restent identiques ; le catalogue garde ses 88 IDs uniques.
+
+Preview effectivement ouverte dans le navigateur :
+https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/06fd9f6b94993eee9c84ea63294abc81adc950bd/examples/dom-demo/projectile-review.html
+État : **8 atlas prêts**, **64 PNG chargés en 256 × 256**.
+Les huit lectures natives ont été contrôlées de gauche à droite puis de droite à gauche sur fond clair : chaque résultat `arrived`, `activeCount=0` après nettoyage par l'API existante.
+Inspection directe des 64 phases et de la planche dérivée sur fonds clair et sombre ; le noyau noir/violet et les fragments d'ombre restent présents.
+
+Éditeur effectivement ouvert :
+https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/06fd9f6b94993eee9c84ea63294abc81adc950bd/examples/dom-demo/capture-editor-v2.html
+Champ `[data-skill-travel-fx]`, rôle travel : huit choix `pack:capture:sprite-projectile-<famille>-01`, aucun ID changé.
+Sélection de contrôle `pack:capture:sprite-projectile-fire-01` acceptée ; l'UI a confirmé « Capacité “Boule de feu” exportée ».
+Limite de ce contrôle : le téléchargement automatique de cet export a expiré ; le contenu JSON téléchargé n'est donc pas annoncé relu.
+Le lancement de combat après changement non sauvegardé est correctement refusé par l'éditeur existant. Aucun brouillon d'essai n'a été enregistré ; le rechargement restaure le projectile dédié `pack:capture:sprite-fireball-travel-01`.
+La preuve de lecture des huit nouveaux médias est la fixture native dédiée, sans fallback, et non ce lancement refusé.
+
+Capture de preview conservée : `GenSrpG_Projectiles_Preview_1791060832153.jpg`.
+Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anciens médias provisoires n'a été promu dans ce lot.
+État du lot : médias réels publiés, raccord éditeur vérifié, CI technique réussie ; validation artistique finale utilisateur encore ouverte. Checkpoints de fin nommés **CI**, jamais GREEN artistique.
