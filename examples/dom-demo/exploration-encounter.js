@@ -269,25 +269,36 @@ Promise.resolve()
     const enemy =
       actorById.get("enemy-1");
 
-    const creatureMetas =
-      await Promise.all([
-        visualMetaFor(
-          local.creatureId,
-          local.displayName,
-          configuredCreatureTransfers
-            .find(
-              (transfer) =>
-                transfer.draft?.id ===
-                local.creatureId
+    const configuredPlayerMetas =
+      await Promise.all(
+        configuredCreatureTransfers.map(
+          (transfer) =>
+            visualMetaFor(
+              transfer.draft.id,
+              transfer.draft.displayName,
+              transfer.draft.presentation
             )
-            ?.draft?.presentation ??
-            null
-        ),
-        visualMetaFor(
-          enemy.creatureId,
-          enemy.displayName
         )
-      ]);
+      );
+
+    const enemyMeta =
+      await visualMetaFor(
+        enemy.creatureId,
+        enemy.displayName
+      );
+
+    const creatureMetas =
+      [
+        ...new Map(
+          [
+            ...configuredPlayerMetas,
+            enemyMeta
+          ].map((meta) => [
+            meta.id,
+            meta
+          ])
+        ).values()
+      ];
 
     applyArena(
       handoff.snapshot.context
