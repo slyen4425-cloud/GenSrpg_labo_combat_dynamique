@@ -5,6 +5,9 @@ import { readFile } from "node:fs/promises";
 import {
   buildExplorationEncounterCombatSourceV1
 } from "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js";
+import {
+  createCombatSession
+} from "../../src/core/combat/combat-session.js";
 
 async function records() {
   const raw = JSON.parse(
@@ -128,5 +131,60 @@ test("bridge rejects an unknown encountered creature instead of substituting a d
         creatureRecords: sourceRecords
       }),
     /opponent/
+  );
+});
+
+
+test("Exploration ruleset gives the bridged Combat Session usable energy", async () => {
+  const source =
+    buildExplorationEncounterCombatSourceV1({
+      snapshot: snapshot(),
+      creatureRecords: await records()
+    });
+
+  const local = source.fighters.find(
+    (fighter) => fighter.id === "local-1"
+  );
+  const enemy = source.fighters.find(
+    (fighter) => fighter.id === "enemy-1"
+  );
+
+  for (const fighter of [local, enemy]) {
+    assert.ok(fighter.maxEnergy > 0);
+    assert.ok(fighter.energyChargeAmount > 0);
+    assert.ok(fighter.energyChargeIntervalMs > 0);
+  }
+
+  const session = createCombatSession({
+    distance: "medium",
+    battleFormat: source.battleFormat,
+    fighters: source.fighters,
+    skillSpeedMultiplier: source.skillSpeedMultiplier
+  });
+
+  const before =
+    session.snapshot().fighters["local-1"].energy;
+
+  session.advanceMs(
+    local.energyChargeIntervalMs
+  );
+
+  const after =
+    session.snapshot().fighters["local-1"].energy;
+
+  assert.ok(after > before);
+});
+
+test("Exploration encounter bridge rejects an unknown Combat ruleset", async () => {
+  const raw = snapshot();
+  raw.rules.rulesetId = "capture.unknown.ruleset";
+
+  assert.throws(
+    () =>
+      buildExplorationEncounterCombatSourceV1({
+        snapshot: raw,
+        creatureRecords: []
+      }),
+    /ruleset/
   );
 });
