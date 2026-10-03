@@ -217,7 +217,7 @@ test("2v2 Encounter UI wires injected roster through the existing Roster Session
   assert.match(source, /createRosterSession/);
   assert.match(source, /normalizeCombatCommandDefinition/);
   assert.match(source, /runtime\.startCommand/);
-  assert.match(source, /roster\.applyCommandResolution/);
+  assert.match(source, /rosterSession\.applyCommandResolution/);
   assert.match(source, /skillIdsByCreature/);
   assert.match(source, /visuals\.setCreatureFor/);
 
