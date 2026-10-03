@@ -10,6 +10,7 @@ import {
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
+import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 
 const DATA_URLS = Object.freeze({
@@ -656,6 +657,18 @@ export async function mountCoop2v2Test({
         })
       : null;
 
+  const damageFeedback =
+    typeof visuals.getStatusPresentationTargetFor ===
+      "function"
+      ? createDomDamageFeedbackRenderer({
+          targetFor(actorId) {
+            return visuals.getStatusPresentationTargetFor(
+              actorId
+            );
+          }
+        })
+      : null;
+
   const presenter = createCombatResolutionPresenter({
     visuals,
     fx,
@@ -1090,6 +1103,9 @@ export async function mountCoop2v2Test({
         amount: feedback.amount,
         durationMs: 700
       });
+      damageFeedback?.flash(
+        feedback.actorId
+      );
     },
     onClock() {
       renderAvailability();
@@ -1229,6 +1245,7 @@ export async function mountCoop2v2Test({
       runtime.dispose();
       presenter.dispose();
       statusFx?.dispose();
+      damageFeedback?.dispose();
       fx.dispose();
       combatAudio.dispose?.();
     }
