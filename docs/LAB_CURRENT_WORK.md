@@ -24616,3 +24616,19 @@ TDD avant chaque implémentation ; sentinelles perspective/retour/contact, CI co
 
 La grille CSS rendait visibles les nouveaux réglages désactivés malgré hidden : correction strictement ciblée dans le HTML autorisé, vérifiée display:none après publication fe63caef15c9af6a9ae183e6b6237866152df5d6.
 La sélection du même modèle configuré dans les deux camps révèle « duplicate creature draft id: crea-loup ». Pour vérifier sa calibration player/opponent en vrai combat, le périmètre UI inclut l’assemblage du seul export de preview : partager les définitions strictement identiques déjà présentes dans les deux camps, conserver deux instances de combattants, garder le rejet canonique de définitions différentes portant le même ID. Aucun changement d’Exporter, Runtime, règles ou stockage. Test de régression RED avant correction : créature/configuration/statValues identiques deux fois, puis conflit explicite conservé.
+
+
+### Presentation Feedback V1 — corrections publiées et contrôle technique terminé
+
+Micro-lots publiés : projectile f67b2a551d9627a0a94f0fe1d57d1a81f6a235e9 ; impact 4a9ca09bf589498234e92d50959263b19935beb9 ; créatures 4afc7aa575028c857df8c3247cfe24c2a74d4e1f. Compléments UI après vraie preview : hidden ciblé fe63caef15c9af6a9ae183e6b6237866152df5d6, modèle partagé 82c8dac19656e18e8a85c7412e1b5ebd5b38a4b0. Seules les lignes strictement identiques sont partagées ; les conflits restent refusés par l’Exporter. Test RED corrigé pour fournir l’arène obligatoire, puis échec réel duplicate creature draft id au commit 50fdbe34b2f8477897211381bf8760a954608c83, avant implantation.
+
+CI complète 37157090124 / job 111302586222 : 923/923, 0 fail, 0 skipped. Le RED principal 37155172039 avait conservé les 913 tests antérieurs verts, avec 8 nouveaux échecs attendus.
+
+Vrai éditeur : https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/82c8dac19656e18e8a85c7412e1b5ebd5b38a4b0/examples/dom-demo/capture-editor-v2.html
+Projectile eau réellement exécuté : animation stretch 2400 ms pour travelMs 2400, noyau/heading conservés. Le même loup est accepté dans les deux camps, avec player 1,2 / opponent 0,8 et offsets indépendants sauvegardés/rechargés. Fixture des huit projectiles dans les deux sens, nettoyage arrived / activeCount=0 vérifié après le sens inverse ; mode loop cadence source 360 ms. Cinq impacts à 5,5 / 1600 ms, opacité 1, couche devant z-index 10 vérifiés, fonds clair/sombre.
+
+Le scale impact était plafonné à 4, le fade générique affaiblissait l’alpha illustré et l’enveloppe de 420 ms ne suivait pas la séquence. Correction uniquement de présentation : durée visuelle réglable (0 = séquence source), scale respecté, offsets appliqués. Dégâts et contact gardent leur propriétaire antérieur.
+
+Rapport : docs/LAB_PRESENTATION_FEEDBACK_V1.md. Preuve navigateur : GenSrpG_Presentation_Controls_1791065271425.jpg. ROADMAP et ARCHITECTURE synchronisées. Revue du diff : uniquement périmètre annoncé et complément UI documenté ; aucun preset, média, Runtime/Rules/Session/capteur de collision/audio modifié. Main toujours 3197388f2b3ee7491be6e6125a015315158cffa2 ; global-assets toujours 642587caec5457f1b5ba830bf115ca3cb7f75498.
+
+Checkpoint de clôture technique : checkpoint/lab-presentation-feedback-v1-ci-2026-10-03, à résoudre avec les refs et sa CI. Validation artistique utilisateur sur smartphone ouverte : aucun GREEN artistique, aucun merge main. Pour une capacité anciennement sauvegardée en once, choisir Adapter/Boucler puis Mettre à jour ; aucun mode explicite utilisateur migré silencieusement.

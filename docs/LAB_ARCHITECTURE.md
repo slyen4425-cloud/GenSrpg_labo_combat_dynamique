@@ -3133,3 +3133,16 @@ Invariants :
 - le DOM et la géométrie visuelle ne calculent aucun dégât ;
 - aucun second timer, observer, cache ou état spatial n'est ajouté ;
 - reportActionContact() reste une frontière de synchronisation vers le Runtime, pas une autorité gameplay indépendante.
+
+
+## Presentation Feedback V1 — paramètres visuels indépendants du gameplay
+
+La lecture travel appartient au SkillPresentationBinding : once / loop / stretch. L’éditeur expose les trois modes ; un nouveau brouillon choisit stretch, un ancien mode explicite est conservé. Le renderer déjà propriétaire de la lecture utilise la durée native de vol pour stretch, sans remplacer travelMs, le contact ou les interruptions. Loop conserve la cadence source jusqu’au nettoyage natif.
+
+La durée visuelle optionnelle durationMs d’un slot FX est positive et finie. Pour l’impact, le renderer utilise la valeur explicite ou la durée de lecture réelle du sprite ; l’enveloppe suit cette même durée. Les sprites animés utilisent leur propre alpha et l’opacité du binding, les images statiques gardent le fade existant. Scale et offsets sont consommés sans limite silencieuse à 4. Le timing des dégâts reste celui du Runtime.
+
+CreaturePresentationBindingV2 garde displayScale/position comme defaults et accepte viewOverrides.player/opponent avec displayScale et/ou position {x,y}. Sans champ de vue, le default est hérité ; sans overrides, le contrat sérialisé antérieur reste identique. La fonction pure creaturePresentationForViewV2 sélectionne ces paramètres au même niveau de contrat. Les adaptateurs de capture et le VisualActor reçoivent la vue active, le Render Adapter consomme ses valeurs. Les métadonnées entrantes gardent la taille propre à chaque vue. Aucun décalage n’est converti en distance métier ni en hitbox métier ; la géométrie visuelle existante suit toujours le modèle réellement transformé.
+
+L’assemblage de l’export de preview partage uniquement les lignes de définition strictement identiques lorsque les deux camps sélectionnent la même créature, et conserve deux acteurs distincts. Les conflits d’ID restent rejetés par les contrats/Exporters existants. Aucun état canonique, moteur, timer ou stockage parallèle n’est créé.
+
+Référence : docs/LAB_PRESENTATION_FEEDBACK_V1.md ; validation artistique smartphone encore ouverte.

@@ -415,3 +415,10 @@ Pour chaque phase :
 pré-audit -> checkpoint départ -> branche de travail -> micro-lot -> tests -> checkpoint GREEN -> documentation -> phase suivante.
 
 Pas de saut de phase structurelle pour gagner du temps.
+
+
+### Avancement des retours de production — Presentation Feedback V1 — 2026-10-03
+
+Les réglages par vue (taille et X/Y), la gestion once/loop/stretch des projectiles et la durée/scale/offset des impacts sont maintenant implémentés dans les contrats et consommateurs existants. CI technique 923/923 au commit 82c8dac19656e18e8a85c7412e1b5ebd5b38a4b0. Les notes ouvertes précédentes restent la source historique ; l’implémentation et ses preuves sont décrites dans docs/LAB_PRESENTATION_FEEDBACK_V1.md.
+
+État : prêt pour test utilisateur dans la preview publiée. Validation artistique réelle sur smartphone encore ouverte ; aucun GREEN final, aucun merge main. Les presets et les médias globaux restent inchangés.
