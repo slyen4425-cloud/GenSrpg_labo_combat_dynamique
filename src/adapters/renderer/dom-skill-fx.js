@@ -65,84 +65,19 @@ function persistentZoneRadiusScale(radius) {
   return scale;
 }
 
-function atlasFrames(visual) {
-  const atlas = visual?.atlas;
-  if (
-    !atlas ||
-    typeof atlas !== "object" ||
-    typeof atlas.url !== "string" ||
-    atlas.url.trim() === "" ||
-    !Array.isArray(atlas.frames) ||
-    atlas.frames.length === 0
-  ) {
-    return null;
-  }
-  return atlas.frames;
-}
-
 function hasSpriteVisual(visual) {
   return Boolean(
     visual?.url ||
-    atlasFrames(visual) ||
     (Array.isArray(visual?.frames) && visual.frames.length > 0)
   );
 }
 
 function visualPlaybackMs(visual, fallbackMs = 1) {
-  const atlas = atlasFrames(visual);
-  if (atlas) {
-    const frameMs = Math.max(1, Number(visual.frameMs) || 1);
-    return frameMs * atlas.length;
-  }
   if (Array.isArray(visual?.frames) && visual.frames.length > 0) {
     const frameMs = Math.max(1, Number(visual.frameMs) || 1);
     return frameMs * visual.frames.length;
   }
   return Math.max(1, Number(fallbackMs) || 1);
-}
-
-function atlasFrameStyle(atlas, frame) {
-  const atlasWidth = Number(atlas.width);
-  const atlasHeight = Number(atlas.height);
-  const x = Number(frame?.x);
-  const y = Number(frame?.y);
-  const width = Number(frame?.width);
-  const height = Number(frame?.height);
-
-  if (
-    !Number.isFinite(atlasWidth) ||
-    atlasWidth <= 0 ||
-    !Number.isFinite(atlasHeight) ||
-    atlasHeight <= 0 ||
-    !Number.isFinite(x) ||
-    x < 0 ||
-    !Number.isFinite(y) ||
-    y < 0 ||
-    !Number.isFinite(width) ||
-    width <= 0 ||
-    !Number.isFinite(height) ||
-    height <= 0 ||
-    x + width > atlasWidth ||
-    y + height > atlasHeight
-  ) {
-    throw new RangeError("Invalid sprite atlas frame");
-  }
-
-  const positionX =
-    atlasWidth === width
-      ? 0
-      : (x / (atlasWidth - width)) * 100;
-  const positionY =
-    atlasHeight === height
-      ? 0
-      : (y / (atlasHeight - height)) * 100;
-
-  return Object.freeze({
-    backgroundSize:
-      `${(atlasWidth / width) * 100}% ${(atlasHeight / height) * 100}%`,
-    backgroundPosition:
-      `${positionX}% ${positionY}%`
-  });
 }
 
 function applySpriteVisual(node, visual, durationMs, animate) {
@@ -157,56 +92,6 @@ function applySpriteVisual(node, visual, durationMs, animate) {
   node.className += " skill-fx--sprite";
   node.dataset.assetId = visual.assetId ?? "";
   node.style.backgroundRepeat = "no-repeat";
-
-  const atlasSequence = atlasFrames(visual);
-  if (atlasSequence) {
-    const atlas = visual.atlas;
-    const playbackMode =
-      ["once", "loop", "stretch"].includes(visual.playbackMode)
-        ? visual.playbackMode
-        : "once";
-    const nativePlaybackMs = visualPlaybackMs(visual, durationMs);
-    const playbackMs =
-      playbackMode === "stretch"
-        ? Math.max(1, Number(durationMs) || nativePlaybackMs)
-        : nativePlaybackMs;
-
-    const styles = atlasSequence.map((frame) =>
-      atlasFrameStyle(atlas, frame)
-    );
-    node.style.backgroundImage = `url("${atlas.url}")`;
-    node.style.backgroundSize = styles[0].backgroundSize;
-    node.style.backgroundPosition = styles[0].backgroundPosition;
-
-    let frameAnimation = null;
-    if (styles.length > 1) {
-      frameAnimation = animate(
-        node,
-        styles.map((style, index) => ({
-          backgroundSize: style.backgroundSize,
-          backgroundPosition: style.backgroundPosition,
-          offset: index / (styles.length - 1)
-        })),
-        {
-          duration: playbackMs,
-          easing: "steps(1, end)",
-          fill: "forwards",
-          iterations:
-            playbackMode === "loop"
-              ? Infinity
-              : 1
-        }
-      );
-
-      Promise.resolve(frameAnimation?.finished).catch(() => {});
-    }
-
-    return Object.freeze({
-      bound: true,
-      frameAnimation,
-      playbackMs
-    });
-  }
 
   if (Array.isArray(visual.frames) && visual.frames.length > 0) {
     const frames = visual.frames.filter(Boolean);
