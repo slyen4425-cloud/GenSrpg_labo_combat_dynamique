@@ -64,7 +64,8 @@ function maskUrl(image) {
 
 export function createDomStatusFxRenderer({
   targetFor,
-  statusPresentationFor
+  statusPresentationFor,
+  skillPresentationFor = null
 }) {
   const resolveTarget = requiredFunction(
     targetFor,
@@ -75,6 +76,10 @@ export function createDomStatusFxRenderer({
       statusPresentationFor,
       "statusPresentationFor"
     );
+  const resolveSkillPresentation =
+    typeof skillPresentationFor === "function"
+      ? skillPresentationFor
+      : () => null;
 
   const records = new Map();
   let disposed = false;
@@ -249,30 +254,58 @@ export function createDomStatusFxRenderer({
       1,
       Number(instance?.stacks) || 1
     );
+    const sourceSkillId =
+      typeof instance?.sourceSkillId === "string" &&
+      instance.sourceSkillId.trim() !== ""
+        ? instance.sourceSkillId.trim()
+        : null;
+    const sourceSkillPresentation =
+      sourceSkillId === null
+        ? null
+        : resolveSkillPresentation(
+            sourceSkillId,
+            {
+              sourceActorId:
+                instance?.sourceActorId ?? null
+            }
+          );
+    const sourceSkillIcon =
+      sourceSkillPresentation?.icon ?? null;
     const sprite =
       presentation?.sprite ?? null;
+    const hudVisual =
+      sourceSkillIcon?.url
+        ? sourceSkillIcon
+        : sprite?.url
+          ? sprite
+          : null;
 
     record.node.dataset.polarity =
       polarity;
     record.node.dataset.stacks =
       String(stacks);
+    record.node.dataset.sourceSkillId =
+      sourceSkillId ?? "";
     record.node.title = statusId;
     record.node.style.backgroundColor =
       presentation?.tintColor ??
       polarityColor(polarity);
 
-    if (sprite?.url) {
+    if (hudVisual?.url) {
       record.node.style.backgroundImage =
         'url("' +
-        String(sprite.url).replace(
+        String(hudVisual.url).replace(
           /"/g,
           "\\\""
         ) +
         '")';
+      record.node.dataset.assetId =
+        hudVisual.assetId ?? "";
       record.glyphNode.textContent = "";
     } else {
       record.node.style.backgroundImage =
         "none";
+      record.node.dataset.assetId = "";
       record.glyphNode.textContent =
         polarityGlyph(polarity);
     }
