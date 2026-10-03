@@ -1,0 +1,181 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_fire_special_1",
+    "description": "Technique Feu utilitaire. Disponible au niveau 12.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_fire_special_1",
+      "name": "Cendre aveuglante",
+      "category": "buff_debuff",
+      "form": "projectile",
+      "loadoutSlot": "standard",
+      "element": "fire",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 1500,
+      "travelMs": 400,
+      "recoveryMs": 0,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "cap_fire_special_1:1",
+            "kind": "stat_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 8000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [
+              "legacy",
+              "debuff"
+            ],
+            "statId": "speed",
+            "modifierMode": "points",
+            "deltaPoints": -50
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status",
+            "kind": "stat_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 8000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "statId": "physical",
+            "modifierMode": "points",
+            "deltaPoints": -50
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_fire_special_1",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "cap_fire_special_1",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-poison-cloud-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-physical-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-projectile-earth-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-nature-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "cap_fire_special_1:1": {
+          "mode": "sprite",
+          "tintColor": "#e84b32",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-teleportation-2",
+            "displayScale": 3,
+            "opacity": 0.85
+          }
+        }
+      }
+    }
+  }
+}
