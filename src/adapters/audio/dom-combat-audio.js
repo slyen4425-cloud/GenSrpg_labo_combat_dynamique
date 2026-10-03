@@ -141,6 +141,7 @@ export function createDomCombatAudio({
     return Object.freeze({
       status: "running",
       assetId: sound.assetId,
+      loop: Boolean(audio.loop),
       stop,
       finished
     });
