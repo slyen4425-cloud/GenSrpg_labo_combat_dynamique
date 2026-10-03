@@ -23492,3 +23492,32 @@ Il n'est PAS recopié dans `data/combat/skills/` ni dans les catalogues legacy/p
 - aucun changement moteur.
 
 État : **LOT OUVERT — TDD avant intégration**.
+
+
+### Résultat — Showcase Flame Bite V1
+
+Preset intégré :
+`data/capture/showcase/lib_flame_bite.capture-skill-transfer-v1.json`.
+
+Déclaration canonique ajoutée une seule fois dans :
+`src/catalogs/capture-showcase-skill-presets-v1.js`.
+
+#### Validation
+
+- RED : `aea0db91e440f9277bcfb44db64af619ce380b32` — FAILURE attendue ;
+- fichier preset : `c2b931d9c298f5061c53b231525ab87e37e1476e` ;
+- déclaration vitrine : `efae1df2e9b699b2e04de09225058ef8bf5e6501` ;
+- CI : `37092110396` — SUCCESS ;
+- suite complète : **880/880 PASS, 0 FAIL**.
+
+#### Vérifications
+
+- format `capture-skill-transfer-v1` normalisé ;
+- asset icône présent dans `global-assets` ;
+- asset impact physique présent dans `global-assets` ;
+- son `gensrpg:sound:effect-ee93278c` présent dans la banque runtime ;
+- aucun changement moteur ;
+- aucun doublon dans `data/combat/skills/` ;
+- aucun changement dans `Zombicide-40k`.
+
+État : **GREEN technique — prêt pour checkpoint/preview**.
