@@ -3055,3 +3055,15 @@ Cela permet aux usages génériques/unitaires hors Combat Runtime de conserver l
 - aucun traitement par identifiant de capacité ;
 - croissance `short -> medium -> long` inchangée ;
 - renderer uniquement consommateur du snapshot.
+
+
+## Live Damage Feedback — présentation non bloquante
+
+Le feedback de dégâts visuel est une projection de `Combat Runtime.onHealthDelta`.
+
+Deux render adapters consomment la même projection :
+- `dom-skill-fx.js` : nombre flottant `-X`, ancré sur le modèle live ;
+- `dom-damage-feedback.js` : scintillement de l'image uniquement.
+
+Le scintillement ne modifie jamais le container de mouvement et ne possède aucun état gameplay.
+Il peut donc s'exécuter pendant une attaque ou une approche sans créer de seconde autorité d'animation de déplacement.
