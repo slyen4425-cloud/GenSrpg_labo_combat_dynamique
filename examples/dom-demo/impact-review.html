@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenSrpG — aperçu des impacts</title>
+<link rel="stylesheet" href="./demo.css">
+<style>
+body.impact-review{margin:0;padding:28px;background:#0b121e;color:#eaf1fb;font:15px/1.5 system-ui,sans-serif}
+.impact-review main{max-width:1140px;margin:auto}.impact-review h1{margin:0;font-size:28px}.impact-review h2{margin:0;font-size:20px}
+.impact-review p{margin:8px 0 16px}.review-intro{color:#b4c5da}.review-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:24px}
+.impact-review button,.impact-review select{font:inherit;border:1px solid #4a607b;border-radius:8px;padding:8px 14px;background:#203349;color:#f4f8fd;cursor:pointer}
+.impact-review button:disabled{opacity:.5;cursor:wait}.impact-review button:focus-visible,.impact-review select:focus-visible{outline:3px solid #62bcff;outline-offset:3px}
+.review-card{margin:18px 0;padding:18px;border:1px solid #2c415a;border-radius:14px;background:#111d2d}
+.review-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.review-status{font-size:13px;color:#b4c5da}
+.review-stage{position:relative;height:240px;border:1px solid #3c4e63;border-radius:10px;margin:14px 0;overflow:hidden;background:#152133}
+.review-anchor{position:absolute;left:50%;top:50%;width:1px;height:1px}
+.review-poster{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:280px;height:280px;object-fit:contain}
+.review-frames{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}.review-frame{margin:0;background:#152133;border-radius:6px;overflow:hidden}
+.review-frame img{display:block;width:100%;aspect-ratio:1;object-fit:contain}.review-frame figcaption{font-size:12px;text-align:center;color:#91a8c1;padding-bottom:4px}
+.review-light .review-stage,.review-light .review-frame{background:#fff}.review-light .review-frame figcaption{color:#465972}
+.review-note{padding:12px 16px;border-left:3px solid #d2af63;color:#d7caa7;background:#1c2330;border-radius:5px}
+.review-error{color:#ffb2ae}.review-meta{font-size:12px;color:#92a9c1;overflow-wrap:anywhere}
+@media(max-width:600px){body.impact-review{padding:14px}.review-card{padding:12px}.review-frames{grid-template-columns:repeat(4,minmax(0,1fr))}.review-stage{height:210px}.review-head{align-items:flex-start}}
+</style>
+</head>
+<body class="impact-review">
+<main>
+<h1>Les cinq impacts</h1>
+<p class="review-intro">Lame, coup physique, électrique, eau et plante. Huit images par animation, à 45 ms par image.</p>
+<div class="review-controls">
+<button id="play-all" type="button" disabled>Jouer les cinq</button>
+<label for="background">Fond</label>
+<select id="background"><option value="dark">Sombre</option><option value="light">Clair</option></select>
+<span id="ready" class="review-status" role="status">Chargement des atlas…</span>
+</div>
+<p class="review-note">Les titres de la planche originale recouvrent une partie de quelques effets, surtout électrique et plante. Les zones masquées restent transparentes. Les huit images ci-dessous permettent de contrôler cette limite avant validation finale.</p>
+<div id="cards"></div>
+<p class="review-meta">Source : planche PNG RGBA 1536 × 1024 fournie dans ce fil. 40 PNG et 5 atlas WebP sans perte.<br>Images servies depuis global-assets ; animations lues par le Render Adapter existant.</p>
+</main>
+<script type="module">
+import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
+import { demoPresentationAssets } from "./demo-assets.js";
+import { globalVisualAssetUrl } from "../../src/assets/global-visual-library.js";
+
+const families = [
+  ["blade","Lame"], ["physical","Coup physique"], ["electric","Électrique"],
+  ["water","Eau"], ["nature","Plante"]
+];
+const cards = document.getElementById("cards");
+const players = [];
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Image indisponible : " + url));
+    image.src = url;
+  });
+}
+for (const [family, label] of families) {
+  const assetId = "pack:capture:sprite-impact-" + family + "-01";
+  const visual = demoPresentationAssets.asset(assetId);
+  if (!visual || !visual.url || visual.frameCount !== 8) {
+    throw new Error("Impact canonique indisponible : " + assetId);
+  }
+  const card = document.createElement("section");
+  card.className = "review-card";
+  card.dataset.family = family;
+  card.innerHTML = '<div class="review-head"><h2>' + label + '</h2><button type="button" disabled>Jouer</button></div>' +
+    '<div class="review-stage"><span class="review-anchor"></span><img class="review-poster" alt="Deuxième image de l’impact ' + label + '"></div>' +
+    '<div class="review-frames"></div><p class="review-meta"></p>';
+  cards.append(card);
+  const stage = card.querySelector(".review-stage");
+  const anchor = card.querySelector(".review-anchor");
+  const poster = card.querySelector(".review-poster");
+  const button = card.querySelector("button");
+  const pngUrl = index => globalVisualAssetUrl(
+    "capture/sprites/impacts/" + family + "/frames/sprite_impact_" + family + "_" + String(index).padStart(2, "0") + ".png"
+  );
+  poster.src = pngUrl(2);
+  for (let index = 1; index <= 8; index += 1) {
+    const frame = document.createElement("figure");
+    frame.className = "review-frame";
+    const image = document.createElement("img");
+    image.src = pngUrl(index);
+    image.alt = label + " — image " + index;
+    const caption = document.createElement("figcaption");
+    caption.textContent = String(index).padStart(2, "0");
+    frame.append(image, caption);
+    card.querySelector(".review-frames").append(frame);
+  }
+  card.querySelector(".review-meta").textContent = assetId;
+  const renderer = createDomSkillFxRenderer({
+    arena: stage,
+    anchors: { target: anchor },
+    presentationForSkill: () => ({ impact: { ...visual, displayScale: 2.8 } })
+  });
+  const player = { card, renderer, visual, ready: false, play() {
+    if (!this.ready) return;
+    renderer.cancelAll();
+    poster.style.visibility = "hidden";
+    const playback = renderer.play({
+      type: "impact", skillId: assetId, targetSlot: "target",
+      durationMs: visual.frameCount * visual.frameMs
+    });
+    card.dataset.playback = playback.status;
+    playback.finished.then(result => {
+      if (renderer.activeCount === 0) {
+        poster.style.visibility = "visible";
+        card.dataset.playback = result.status;
+      }
+    }).catch(error => {
+      card.dataset.playback = "error";
+      document.getElementById("ready").textContent = error.message;
+    });
+    return playback;
+  }};
+  players.push(player);
+  button.addEventListener("click", () => player.play());
+}
+const ready = document.getElementById("ready");
+Promise.all(players.map(async player => {
+  const image = await loadImage(player.visual.url);
+  if (image.naturalWidth !== 3200 || image.naturalHeight !== 400) {
+    throw new Error("Dimensions d’atlas inattendues");
+  }
+  player.ready = true;
+  player.card.querySelector("button").disabled = false;
+})).then(() => {
+  ready.textContent = "5 atlas prêts";
+  document.getElementById("play-all").disabled = false;
+  document.body.dataset.previewReady = "true";
+}).catch(error => {
+  ready.textContent = error.message;
+  ready.classList.add("review-error");
+  document.body.dataset.previewReady = "error";
+});
+document.getElementById("play-all").addEventListener("click", () => {
+  for (const player of players) player.play();
+});
+document.getElementById("background").addEventListener("change", event => {
+  document.body.classList.toggle("review-light", event.target.value === "light");
+});
+window.addEventListener("pagehide", () => {
+  for (const player of players) player.renderer.dispose();
+});
+</script>
+</body>
+</html>
