@@ -1901,15 +1901,18 @@ export async function mountCoop2v2Test({
       renderAvailability();
     },
     onStarted({ action }) {
-      if (action.actionType !== "skill") {
+      if (action.actionType === "skill") {
+        presenter.presentPreparation({
+          action,
+          actorSlot: action.actorId
+        });
+        actionRefs[action.actorId].textContent =
+          `${action.skill.name} · préparation`;
         return;
       }
-      presenter.presentPreparation({
-        action,
-        actorSlot: action.actorId
-      });
+
       actionRefs[action.actorId].textContent =
-        `${action.skill.name} · préparation`;
+        `${action.command.name} · préparation`;
     },
     onProgress(progress) {
       if (!progress.actorId) {
@@ -1945,39 +1948,85 @@ export async function mountCoop2v2Test({
       }
     },
     onRelease({ action }) {
-      if (action.actionType !== "skill") {
+      setCharge(action.actorId);
+
+      if (action.actionType === "skill") {
+        presenter.presentRelease({
+          action,
+          actorSlot: action.actorId,
+          targetSlot: action.targetId
+        });
+        actionRefs[action.actorId].textContent =
+          `${action.skill.name} · lancé`;
         return;
       }
-      presenter.presentRelease({
-        action,
-        actorSlot: action.actorId,
-        targetSlot: action.targetId
-      });
-      setCharge(action.actorId);
+
       actionRefs[action.actorId].textContent =
-        `${action.skill.name} · lancé`;
+        `${action.command.name} · exécution`;
     },
     onResolved(resolution) {
-      const presentation = presenter.presentOutcome({
-        resolution,
-        actorSlot: resolution.actorId,
-        targetSlot: resolution.targetId
-      });
-
       setCharge(resolution.actorId);
-      actionRefs[resolution.actorId].textContent = "Prêt";
+      actionRefs[resolution.actorId].textContent =
+        "Prêt";
 
-      const actor = actorMeta(resolution.actorId);
-      const target = actorMeta(resolution.targetId);
-      if (resolution.outcome === "hit") {
+      if (
+        resolution.actionType ===
+          "command"
+      ) {
+        const rosterResult =
+          applyRosterResolution(
+            resolution
+          );
+
+        if (!rosterResult) {
+          setStatus(
+            "Commande terminée.",
+            "ok"
+          );
+        }
+
+        renderRoster();
+        renderState();
+        queueAiDecisions();
+        return;
+      }
+
+      const presentation =
+        presenter.presentOutcome({
+          resolution,
+          actorSlot:
+            resolution.actorId,
+          targetSlot:
+            resolution.targetId
+        });
+
+      const actorName =
+        actorDisplayName(
+          resolution.actorId
+        );
+      const targetName =
+        actorDisplayName(
+          resolution.targetId
+        );
+
+      if (
+        resolution.outcome ===
+          "hit"
+      ) {
         setStatus(
-          `${actor?.displayName ?? resolution.actorId} touche ${target?.displayName ?? resolution.targetId}.`,
+          `${actorName} touche ${targetName}.`,
           "ok"
         );
       }
 
-      void Promise.resolve(presentation.finished).then(() => {
-        const state = session.snapshot();
+      void Promise.resolve(
+        presentation.finished
+      ).then(() => {
+        replaceLocalAfterKo();
+
+        const state =
+          session.snapshot();
+        renderRoster();
         renderState(state);
 
         if (!battleEnded) {
@@ -1989,9 +2038,21 @@ export async function mountCoop2v2Test({
 
           if (outcome !== null) {
             battleEnded = true;
-            for (const { button } of skillRefs.values()) {
-              button.disabled = true;
+            for (
+              const { button } of
+                skillRefs.values()
+            ) {
+              button.disabled =
+                true;
             }
+            for (
+              const { button } of
+                commandRefs.values()
+            ) {
+              button.disabled =
+                true;
+            }
+
             setStatus(
               outcome === "victory"
                 ? "Combat remporté."
@@ -2013,7 +2074,9 @@ export async function mountCoop2v2Test({
 
         aiReadyAt.set(
           resolution.actorId,
-          Number(state.elapsedMs) + 900
+          Number(
+            state.elapsedMs
+          ) + 900
         );
         queueAiDecisions();
       });
@@ -2055,12 +2118,23 @@ export async function mountCoop2v2Test({
       return selectedTargetId;
     },
     selectTarget,
+    rosterSnapshot:
+      rosterSession
+        ? () =>
+            rosterSession.snapshot()
+        : () => null,
     dispose() {
       if (disposed) {
         return;
       }
       disposed = true;
       clearTargetPulses();
+      for (
+        const cleanup of
+          skillButtonCleanups.splice(0)
+      ) {
+        cleanup();
+      }
       for (const cleanup of cleanups.splice(0)) {
         cleanup();
       }
