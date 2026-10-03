@@ -3067,3 +3067,26 @@ Deux render adapters consomment la même projection :
 
 Le scintillement ne modifie jamais le container de mouvement et ne possède aucun état gameplay.
 Il peut donc s'exécuter pendant une attaque ou une approche sans créer de seconde autorité d'animation de déplacement.
+
+
+## Status Source Skill Provenance V1 — icône HUD depuis l’instance active
+
+La provenance d’une capacité qui applique un statut est conservée sur l’instance runtime active, sans modifier `StatusEffectV1`.
+
+Chaîne autoritaire :
+
+`SkillDefinition.id -> applyImmediateTacticalEffectsV1 -> StatusEffectRuntimeInstanceV1.sourceSkillId -> fighter.statusEffects -> dom-status-fx`.
+
+`sourceSkillId` est une provenance de l’instance active, au même niveau que `sourceActorId`. Elle n’est ni une règle du statut, ni une présentation, ni un registre parallèle.
+
+Lors d’un `replace`, `refresh` ou `stack`, il reste une seule instance par `statusId`. Une réapplication met à jour la provenance avec la dernière application autoritaire ; aucun tableau de sources parallèle n’est créé.
+
+Pour l’icône HUD uniquement :
+1. le renderer résout `sourceSkillId` via le même `presentationForSkill()` canonique que les boutons/capacités ;
+2. si cette capacité fournit une icône, elle est utilisée ;
+3. sinon le renderer réutilise le sprite de présentation du statut ;
+4. sinon il conserve le badge générique de polarité.
+
+La teinte et le sprite persistant du modèle restent résolus par `statusPresentationFor(statusId)`. L’icône de la capacité source ne devient donc jamais une seconde définition du statut.
+
+Les clients 1v1 et 2v2 raccordent le même `dom-status-fx`. Aucun timer, observer, cache métier ou branchement par identifiant de capacité/statut n’est introduit.
