@@ -24514,3 +24514,99 @@ Capture de preview conservée : `GenSrpG_Projectiles_Preview_1791060832153.jpg`.
 Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anciens médias provisoires n'a été promu dans ce lot.
 État du lot : médias réels publiés, raccord éditeur vérifié, CI technique réussie ; validation artistique finale utilisateur encore ouverte. Checkpoints de fin nommés **CI**, jamais GREEN artistique.
 
+
+
+## Retours production à traiter — lisibilité combat et placement par camp — 2026-10-03
+
+Statut : **OUVERT — retours utilisateur à traiter dans des micro-lots dédiés**.
+
+Ces points sont consignés comme besoins de production. Ils ne sont pas considérés comme corrigés ni GREEN par cette note.
+
+### 1. Réglage indépendant joueur / adversaire pour les créatures
+
+Constat utilisateur :
+
+- le rendu d'une même créature peut avoir un scale perçu très différent entre la vue joueur et la vue adversaire ;
+- un scale unique n'offre pas assez de liberté pour compenser le cadrage propre aux deux images et la perspective de l'arène ;
+- le besoin porte aussi sur le placement vertical et horizontal.
+
+Besoin cible :
+
+- pouvoir régler indépendamment la présentation de la vue joueur et de la vue adversaire ;
+- au minimum : scale par camp/vue, offset X et offset Y par camp/vue ;
+- conserver la possibilité de réglages simples par défaut, puis d'affiner lorsque l'asset le nécessite ;
+- ces réglages restent de la **présentation visuelle** et ne doivent jamais modifier hitbox métier, dégâts, portée, distance logique ou règles de combat.
+
+Contraintes d'architecture :
+
+- données portées par le profil / la présentation de créature, pas par des branches codées en dur par créature ;
+- Render Adapter consomme ces données, il n'en devient pas la source de vérité ;
+- aucune seconde autorité de position/scale parallèle au système actuel ;
+- toute évolution devra être TDD et préserver les sentinelles de perspective, collision visuelle et retour à l'état stable.
+
+### 2. Impacts insuffisamment lisibles en combat
+
+Constat utilisateur :
+
+- les sprites d'impact, en particulier les derniers ajoutés, ne ressortent pas assez pendant un vrai combat ;
+- causes possibles à vérifier avant correction : impact trop souvent derrière le modèle, durée trop courte, animation trop rapide, scale insuffisant, anchor/offset ou profondeur visuelle inadaptés.
+
+Diagnostic obligatoire avant modification :
+
+- vérifier le layer réellement utilisé devant/derrière la cible ;
+- vérifier la durée réelle de l'animation et son nombre de frames ;
+- vérifier le scale final après application du renderer ;
+- vérifier l'anchor, l'offset et la position de contact ;
+- vérifier le rendu sur plusieurs tailles de créatures et sur smartphone.
+
+Besoin cible :
+
+- rendre l'impact nettement perceptible sans créer un second moteur FX ;
+- préférer des paramètres data-driven déjà propriétaires de la présentation : scale, durée/vitesse de lecture, offset, profondeur/layer et éventuellement intensité ;
+- ne pas modifier la résolution gameplay ni le timestamp d'impact pour compenser un défaut purement visuel ;
+- validation artistique réelle obligatoire conformément à la section 34 de la charte : CI verte seule insuffisante.
+
+Ordre recommandé :
+
+1. pré-audit du rendu réel ;
+2. identifier la cause dominante ;
+3. micro-lot presentation/renderer minimal ;
+4. tests sentinelles ;
+5. preview smartphone ;
+6. validation utilisateur avant GREEN.
+
+## Chantier — Presentation Feedback V1 — 2026-10-03
+
+Autorisation : retours directs de Sylvain sur les impacts peu visibles, le scale adversaire et le projectile eau dont la séquence termine avant son arrivée.
+Source des notes : work/lab-production-feedback-notes-2026-10-03, 93c68b08f922c5bcb6827529951a6cd6f3638bb4 (deux commits exclusivement documentaires). Leurs notes et la roadmap sont conservées dans cette branche ; aucun ancien code ne remplace le raccord projectile récent.
+
+Base exacte : 3f3367efe9dae94537e4274cda6441a0d1612649, CI Laboratory réussie 37153358027 / 37153466430, 913 tests.
+Dernier checkpoint GREEN antérieur : f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d.
+Bibliothèque réelle : global-assets 642587caec5457f1b5ba830bf115ca3cb7f75498.
+Main protégé : 3197388f2b3ee7491be6e6125a015315158cffa2.
+Checkpoint départ : checkpoint/lab-start-presentation-feedback-v1-2026-10-03 ; branche : work/lab-presentation-feedback-v1-2026-10-03.
+
+Micro-lots séquentiels :
+1. Lecture projectile : exposer once / loop / stretch déjà propriétaires du SkillPresentationBinding, sauver/recharger/exporter ce réglage et lire stretch sur la durée native de trajet. Aucun changement de travelMs.
+2. Impacts : vérifier layer, taille et durée réelles ; rendre la durée visuelle réglable et consommée par le renderer existant, respecter la taille choisie et exposer offsets si nécessaires. Pas de retard de dégâts.
+3. Créatures : overrides de présentation player/opponent pour scale et position, héritage des defaults existants ; aller-retour éditeur/Transfer/export/VisualActor, préserver sockets et perspective.
+
+Fichiers autorisés :
+- src/contracts/skill-presentation-binding-v1.js (durée visuelle optionnelle partagée par V1/V2/V3) ;
+- src/contracts/creature-presentation-binding-v2.js (overrides par vue optionnels) ;
+- src/adapters/renderer/capture-skill-presentation-assets-v2.js, dom-skill-fx.js ;
+- src/adapters/input/capture/capture-export-to-native-visual-source-v1.js, capture-creature-visual-binding-v1.js, creature-presentation-to-visual-actor-v2.js ;
+- src/catalogs/capture-test-creature-options-v1.js seulement pour transporter les vues sans perdre les métadonnées existantes ;
+- src/ui/capture-editor-human-v2.js et demo-app.js uniquement projection du scale/offset de vue ;
+- examples/dom-demo/capture-editor-v2.html, demo-assets.js, projectile-review.html et impact-review.html (données de présentation et fixtures natives) ;
+- tests unitaires concernés + tests de contrat et round-trip ;
+- docs/LAB_CURRENT_WORK.md, LAB_ROADMAP.md, LAB_ARCHITECTURE.md, LAB_PRESENTATION_FEEDBACK_V1.md.
+
+Propriétaires :
+SkillPresentationBinding = paramètres FX ; CreaturePresentationBinding = taille/offsets par vue ; Render Adapter = consommation.
+Combat Runtime conserve timing, progression et contact ; collision visuelle conserve le même capteur du modèle réellement affiché.
+
+Protégés : Rules, Session, Runtime, SkillDefinition, dégâts, vitesses gameplay, énergie, cooldowns, logique/capteurs de collision, audio, sockets existants, presets utilisateur (aucun recalage arbitraire), global-assets et tous ses médias, main, Zombicide-40k.
+Aucun nouveau catalogue, moteur, timer, observer, branche par skillId/créature.
+TDD avant chaque implémentation ; sentinelles perspective/retour/contact, CI complète et preview réelle. GREEN artistique seulement après validation utilisateur.
+État : diagnostic source projectile confirmé (8 × 45 ms = 360 ms, mode once forcé par l'éditeur), périmètre déclaré avant codage.

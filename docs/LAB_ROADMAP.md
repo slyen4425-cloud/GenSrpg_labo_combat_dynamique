@@ -348,6 +348,16 @@ Critère GREEN de la phase complète :
 - CI verte ;
 - validation utilisateur.
 
+
+### Retours de production ouverts — 2026-10-03
+
+Deux besoins de polish doivent être traités après pré-audit, sans créer d'autorité concurrente :
+
+- **présentation des créatures par camp/vue** : permettre des réglages indépendants joueur/adversaire pour scale et offsets X/Y, afin de compenser les différences de cadrage et de perspective entre les assets ; ces réglages restent purement visuels ;
+- **lisibilité des impacts** : les impacts réels doivent être suffisamment visibles en combat. Vérifier d'abord layer, durée/vitesse, scale, anchor/offset et profondeur, puis corriger via les paramètres de présentation/FX existants plutôt que par une règle gameplay ou un second moteur.
+
+Critère de validation : preview réelle sur smartphone et validation utilisateur ; la CI seule ne suffit pas pour déclarer le rendu artistique GREEN.
+
 ## Phase 6 — Performance et robustesse mobile
 
 Objectif : garantir une animation fluide et propre sur smartphone.
