@@ -207,7 +207,12 @@ export function createCombatSession({
         });
   }
 
-  function advanceMs(deltaMs) {
+  function advanceMs(
+    deltaMs,
+    {
+      zoneSpatialContext = null
+    } = {}
+  ) {
     state = advanceStatusEffectsV1({
       state,
       deltaMs
@@ -215,7 +220,8 @@ export function createCombatSession({
     state = advancePersistentZonesV1({
       state,
       deltaMs,
-      battleFormat
+      battleFormat,
+      zoneSpatialContext
     });
     state = advanceCombatTime(
       state,
