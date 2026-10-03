@@ -159,6 +159,27 @@ test("preview party ref resolves to the configured Loup volcanique transfer with
       "cap_fire_atk_6"
     ]
   );
+
+  assert.equal(
+    source.skillPresentations.fireball
+      .visual.icon.assetId,
+    "core:icon-skill-fireball-01"
+  );
+  assert.equal(
+    source.skillPresentations.cap_fire_special_1
+      .visual.travel.assetId,
+    "pack:capture:sprite-projectile-earth-01"
+  );
+  assert.equal(
+    source.skillPresentations.lib_flame_bite
+      .visual.impact.assetId,
+    "pack:capture:sprite-impact-physical-01"
+  );
+  assert.equal(
+    source.skillPresentations.cap_fire_atk_6
+      .visual.aura.assetId,
+    "pack:capture:sprite-fire-zone-loop-01"
+  );
 });
 
 test("bridge rejects unknown party refs instead of inventing a player roster", async () => {
