@@ -17,6 +17,13 @@ const DISTANCE_ORDER = Object.freeze([
   "long"
 ]);
 
+const APPROACH_ENTRY_PROGRESS =
+  Object.freeze({
+    short: 2 / 3,
+    medium: 1 / 3,
+    long: 0
+  });
+
 function distanceIndex(value) {
   const index = DISTANCE_ORDER.indexOf(value);
   if (index < 0) {
@@ -107,12 +114,94 @@ function updateZoneTick(
   );
 }
 
+function spatialModeEnabled(
+  zoneSpatialContext
+) {
+  return (
+    zoneSpatialContext?.mode ===
+      "approach-bands-v1" &&
+    Array.isArray(
+      zoneSpatialContext.approaches
+    )
+  );
+}
+
+function approachFor({
+  zoneSpatialContext,
+  actorId,
+  targetId
+}) {
+  if (
+    !spatialModeEnabled(
+      zoneSpatialContext
+    )
+  ) {
+    return null;
+  }
+
+  return (
+    zoneSpatialContext.approaches.find(
+      (approach) =>
+        approach.actorId === actorId &&
+        approach.targetId === targetId &&
+        approach.approachMode ===
+          "ground"
+    ) ?? null
+  );
+}
+
+function approachProgressAt(
+  approach,
+  atMs
+) {
+  if (!approach) {
+    return null;
+  }
+
+  const releaseAtMs =
+    Number(approach.releaseAtMs);
+  const impactAtMs =
+    Number(approach.impactAtMs);
+
+  if (
+    !Number.isFinite(releaseAtMs) ||
+    !Number.isFinite(impactAtMs)
+  ) {
+    return null;
+  }
+
+  if (atMs < releaseAtMs) {
+    return 0;
+  }
+
+  if (impactAtMs <= releaseAtMs) {
+    return 1;
+  }
+
+  return Math.max(
+    0,
+    Math.min(
+      1,
+      (
+        Number(atMs) -
+        releaseAtMs
+      ) /
+      (
+        impactAtMs -
+        releaseAtMs
+      )
+    )
+  );
+}
+
 function relationInRadius({
   state,
   battleFormat,
   sourceActorId,
   candidateId,
-  radius
+  radius,
+  atMs,
+  zoneSpatialContext
 }) {
   if (candidateId === sourceActorId) {
     return true;
@@ -135,6 +224,33 @@ function relationInRadius({
     }
   }
 
+  if (
+    spatialModeEnabled(
+      zoneSpatialContext
+    )
+  ) {
+    if (radius === "long") {
+      return true;
+    }
+
+    const approach = approachFor({
+      zoneSpatialContext,
+      actorId: candidateId,
+      targetId: sourceActorId
+    });
+    const progress =
+      approachProgressAt(
+        approach,
+        atMs
+      );
+
+    return (
+      progress !== null &&
+      progress >=
+        APPROACH_ENTRY_PROGRESS[radius]
+    );
+  }
+
   return (
     distanceIndex(state.distance) <=
     distanceIndex(radius)
@@ -144,7 +260,10 @@ function relationInRadius({
 function affectedIdsForZone({
   state,
   zone,
-  battleFormat
+  battleFormat,
+  atMs,
+  zoneSpatialContext,
+  excludedTargetIds = null
 }) {
   const candidates =
     resolveTacticalEffectTargetIdsV1({
@@ -157,22 +276,64 @@ function affectedIdsForZone({
 
   return candidates.filter(
     (candidateId) =>
+      (
+        !excludedTargetIds ||
+        !excludedTargetIds.has(
+          candidateId
+        )
+      ) &&
       relationInRadius({
         state,
         battleFormat,
         sourceActorId:
           zone.sourceActorId,
         candidateId,
-        radius: zone.radius
+        radius: zone.radius,
+        atMs,
+        zoneSpatialContext
       })
   );
+}
+
+function applyZoneDamageToTarget({
+  state,
+  zone,
+  targetActorId,
+  atMs
+}) {
+  const damage =
+    computeCombatDamageV1({
+      state,
+      attackerId:
+        zone.sourceActorId,
+      targetId:
+        targetActorId,
+      baseDamage:
+        zone.tickEffect.amount,
+      channel:
+        zone.tickEffect.channel ??
+        zone.skillElement ??
+        "physical",
+      atMs
+    });
+
+  return applyCombatDamageV1({
+    state,
+    sourceActorId:
+      zone.sourceActorId,
+    targetActorId,
+    damage: damage.damage,
+    atMs
+  }).state;
 }
 
 function applyZoneDamageTick({
   state,
   zone,
   atMs,
-  battleFormat
+  battleFormat,
+  zoneSpatialContext,
+  excludedTargetIds = null
 }) {
   let nextState = state;
 
@@ -181,37 +342,121 @@ function applyZoneDamageTick({
     affectedIdsForZone({
       state: nextState,
       zone,
-      battleFormat
+      battleFormat,
+      atMs,
+      zoneSpatialContext,
+      excludedTargetIds
     })
   ) {
-    const damage =
-      computeCombatDamageV1({
+    nextState =
+      applyZoneDamageToTarget({
         state: nextState,
-        attackerId:
-          zone.sourceActorId,
-        targetId:
-          targetActorId,
-        baseDamage:
-          zone.tickEffect.amount,
-        channel:
-          zone.tickEffect.channel ??
-          zone.skillElement ??
-          "physical",
+        zone,
+        targetActorId,
         atMs
       });
-
-    nextState =
-      applyCombatDamageV1({
-        state: nextState,
-        sourceActorId:
-          zone.sourceActorId,
-        targetActorId,
-        damage: damage.damage,
-        atMs
-      }).state;
   }
 
   return nextState;
+}
+
+function approachEntryEventsForZone({
+  state,
+  zone,
+  battleFormat,
+  startMs,
+  endMs,
+  zoneSpatialContext
+}) {
+  if (
+    !spatialModeEnabled(
+      zoneSpatialContext
+    ) ||
+    zone.radius === "long"
+  ) {
+    return [];
+  }
+
+  const threshold =
+    APPROACH_ENTRY_PROGRESS[
+      zone.radius
+    ];
+  const candidates =
+    resolveTacticalEffectTargetIdsV1({
+      format: battleFormat,
+      state,
+      actorId: zone.sourceActorId,
+      targetId: zone.targetId,
+      targetScope: zone.targetScope
+    });
+  const events = [];
+
+  for (const candidateId of candidates) {
+    const approach = approachFor({
+      zoneSpatialContext,
+      actorId: candidateId,
+      targetId: zone.sourceActorId
+    });
+    if (!approach) {
+      continue;
+    }
+
+    const before =
+      approachProgressAt(
+        approach,
+        startMs
+      );
+    const after =
+      approachProgressAt(
+        approach,
+        endMs
+      );
+
+    if (
+      before === null ||
+      after === null ||
+      before >= threshold ||
+      after < threshold
+    ) {
+      continue;
+    }
+
+    const releaseAtMs =
+      Number(approach.releaseAtMs);
+    const impactAtMs =
+      Number(approach.impactAtMs);
+    const crossingAtMs =
+      impactAtMs <= releaseAtMs
+        ? releaseAtMs
+        : (
+            releaseAtMs +
+            (
+              impactAtMs -
+              releaseAtMs
+            ) *
+            threshold
+          );
+
+    if (
+      crossingAtMs < startMs ||
+      crossingAtMs > endMs ||
+      crossingAtMs >
+        zone.expiresAtMs
+    ) {
+      continue;
+    }
+
+    events.push(
+      Object.freeze({
+        type: "entry",
+        atMs: crossingAtMs,
+        targetActorId:
+          candidateId
+      })
+    );
+  }
+
+  return events;
 }
 
 export function applyPersistentZoneEffectsV1({
@@ -309,7 +554,8 @@ export function applyPersistentZoneEffectsV1({
 export function advancePersistentZonesV1({
   state,
   deltaMs,
-  battleFormat = null
+  battleFormat = null,
+  zoneSpatialContext = null
 }) {
   const delta = Number(deltaMs);
   if (
@@ -328,52 +574,122 @@ export function advancePersistentZonesV1({
     return state;
   }
 
+  const startMs =
+    Number(state.elapsedMs ?? 0);
   const endMs =
-    state.elapsedMs + delta;
+    startMs + delta;
   let nextState = state;
   const zoneIds =
     (state.persistentZones ?? [])
       .map((zone) => zone.id);
 
   for (const zoneId of zoneIds) {
-    let zone =
+    const zone =
       (nextState.persistentZones ?? [])
         .find(
           (entry) =>
             entry.id === zoneId
         ) ?? null;
 
+    if (!zone) {
+      continue;
+    }
+
+    const events =
+      approachEntryEventsForZone({
+        state: nextState,
+        zone,
+        battleFormat,
+        startMs,
+        endMs,
+        zoneSpatialContext
+      });
+
+    let nextTickAtMs =
+      zone.nextTickAtMs;
+
     while (
-      zone !== null &&
-      zone.nextTickAtMs <= endMs &&
-      zone.nextTickAtMs <=
+      nextTickAtMs <= endMs &&
+      nextTickAtMs <=
         zone.expiresAtMs
     ) {
-      const tickAt =
-        zone.nextTickAtMs;
+      events.push(
+        Object.freeze({
+          type: "tick",
+          atMs: nextTickAtMs
+        })
+      );
+      nextTickAtMs +=
+        zone.tickIntervalMs;
+    }
+
+    events.sort(
+      (left, right) => {
+        if (left.atMs !== right.atMs) {
+          return (
+            left.atMs -
+            right.atMs
+          );
+        }
+        return left.type === "entry"
+          ? -1
+          : right.type === "entry"
+            ? 1
+            : 0;
+      }
+    );
+
+    for (const event of events) {
+      if (event.type === "entry") {
+        nextState =
+          applyZoneDamageToTarget({
+            state: nextState,
+            zone,
+            targetActorId:
+              event.targetActorId,
+            atMs: event.atMs
+          });
+        continue;
+      }
+
+      const enteredAtSameTime =
+        new Set(
+          events
+            .filter(
+              (candidate) =>
+                candidate.type ===
+                  "entry" &&
+                candidate.atMs ===
+                  event.atMs
+            )
+            .map(
+              (candidate) =>
+                candidate.targetActorId
+            )
+        );
 
       nextState =
         applyZoneDamageTick({
           state: nextState,
           zone,
-          atMs: tickAt,
-          battleFormat
+          atMs: event.atMs,
+          battleFormat,
+          zoneSpatialContext,
+          excludedTargetIds:
+            enteredAtSameTime
         });
+    }
 
+    if (
+      nextTickAtMs !==
+      zone.nextTickAtMs
+    ) {
       nextState =
         updateZoneTick(
           nextState,
           zone.id,
-          tickAt +
-            zone.tickIntervalMs
+          nextTickAtMs
         );
-
-      zone =
-        (nextState.persistentZones ?? [])
-          .find(
-            (entry) =>
-              entry.id === zoneId
-          ) ?? null;
     }
   }
 
