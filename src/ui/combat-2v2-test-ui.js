@@ -653,6 +653,12 @@ export async function mountCoop2v2Test({
                 statusId
               )
             );
+          },
+          skillPresentationFor(skillId, context = {}) {
+            return presentationForActorSkill(
+              skillId,
+              context
+            );
           }
         })
       : null;
