@@ -23744,3 +23744,63 @@ Activation 3 :
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
+
+
+## Micro-lot — Persistent Zone Damage Feedback V1 — 2026-10-03
+
+Base exacte : `24bf433eb754bdc825f4752eae44aa0a67d74c23` (Persistent Zone Approach Radius V1 GREEN).
+
+- checkpoint départ : `checkpoint/lab-start-persistent-zone-damage-feedback-v1-2026-10-03` ;
+- branche : `work/lab-persistent-zone-damage-feedback-v1-2026-10-03`.
+
+### Retour utilisateur
+
+La logique de dégâts de zone persistante fonctionne désormais, mais les dégâts sont peu lisibles :
+- le nombre `-X` n'est pas visible au moment où un ennemi en approche subit le tick ;
+- souhait d'un scintillement de dégâts sur le modèle, même s'il est en train d'attaquer.
+
+### Diagnostic
+
+Le feedback HP est déjà générique :
+`Combat Runtime -> onHealthDelta -> FX damage number`.
+
+Le nombre de dégâts utilise toutefois `targetAnchors`, c'est-à-dire le conteneur/slot stable.
+Pendant une approche, le modèle animé se déplace dans `[data-demo-motion]` alors que le slot reste au camp de départ.
+
+Conséquence : le `-X` peut être dessiné à l'ancienne position pendant que la créature est près de sa cible.
+
+### Objectif
+
+1. ancrer le nombre de dégâts sur le **modèle live** (`anchors`) et non sur le slot stable ;
+2. ajouter un feedback visuel indépendant sur l'image du modèle :
+   - scintillement court ;
+   - ne touche pas au transform/mouvement de `fighter__motion` ;
+   - fonctionne pendant une approche, une attaque ou une animation active ;
+3. utiliser exactement le même `onHealthDelta` pour dégâts directs, DoT et zones persistantes.
+
+### Autorités
+
+- PV/dégâts : Combat Session + moteurs gameplay existants ;
+- détection du delta PV : Combat Runtime ;
+- nombre et scintillement : render adapters uniquement.
+
+Aucun type de dégâts n'est recalculé ou détecté dans l'UI.
+
+### Protégé
+
+- Persistent Zone Runtime inchangé ;
+- Action Resolver inchangé ;
+- aucune condition par skillId/zoneId ;
+- aucun timer global ;
+- aucun état gameplay parallèle ;
+- aucun changement dans `Zombicide-40k` ;
+- aucun merge vers `main`.
+
+### TDD
+
+- RED : nombre `-X` doit suivre le live motion anchor quand le slot stable est ailleurs ;
+- RED : scintillement anime uniquement l'image et n'annule pas l'animation du motion container ;
+- RED : 1v1 et 2v2 déclenchent nombre + scintillement depuis le même `onHealthDelta` ;
+- suite complète GREEN.
+
+État : **LOT OUVERT — TDD avant implémentation**.
