@@ -1,32 +1,32 @@
 import {
   mountCombatDemo
-} from "../../src/ui/demo-app.js?rev=exploration-bridge-convergence-v1";
+} from "../../src/ui/demo-app.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   mountCoop2v2Test
-} from "../../src/ui/combat-2v2-test-ui.js?rev=exploration-bridge-convergence-v1";
+} from "../../src/ui/combat-2v2-test-ui.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   buildExplorationEncounterCombatSourceV1
-} from "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js?rev=exploration-bridge-convergence-v1";
+} from "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   readExplorationCombatHandoffV1,
   completeExplorationCombatHandoffV1
-} from "../../src/ui/exploration-encounter-handoff-v1.js?rev=exploration-bridge-convergence-v1";
+} from "../../src/ui/exploration-encounter-handoff-v1.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   fallbackEncounterCreatureMetaV1,
   bindEncounterCreatureMetaV1
-} from "../../src/ui/exploration-encounter-visual-source-v1.js?rev=exploration-bridge-convergence-v1";
+} from "../../src/ui/exploration-encounter-visual-source-v1.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   captureCreatureVisualBindingForIdV1
-} from "../../src/catalogs/capture-creature-visual-bindings-v1.js";
+} from "../../src/catalogs/capture-creature-visual-bindings-v1.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   globalVisualAssetUrl
 } from "../../src/assets/global-visual-library.js";
 import {
   demoPresentationAssets
-} from "./demo-assets.js";
+} from "./demo-assets.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   createCaptureSkillPresentationAssetsV2
-} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?rev=exploration-bridge-convergence-v1";
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
