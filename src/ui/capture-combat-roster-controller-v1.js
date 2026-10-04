@@ -25,6 +25,12 @@ export function createCaptureCombatRosterControllerV1({
   return Object.freeze({
     snapshot: () => roster.snapshot(),
     activeMember,
+    ownsSlot(actorId) {
+      return Object.prototype.hasOwnProperty.call(
+        roster.snapshot(),
+        actorId
+      );
+    },
     isPresent: actorId => activeMember(actorId) !== null,
     skillIdsFor(actorId) {
       const member = activeMember(actorId);
