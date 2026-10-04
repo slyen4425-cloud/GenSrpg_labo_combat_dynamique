@@ -4,13 +4,11 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04
 
-Dernier lot : combat-tactics-switch-travel-v1, vérification technique réussie, retour utilisateur à recueillir.
-Branche : `work/lab-combat-tactics-switch-travel-v1-2026-10-04`. Source testée : `0e151d26fde11af17525f442f648b2334f07e107` ; CI 1006/1006 (run 37203265282).
-Checkpoint : `checkpoint/lab-combat-tactics-switch-travel-v1-ci-2026-10-04`. Preview : `preview/lab-combat-tactics-switch-travel-v1-2026-10-04`.
-Rapport : `docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md`.
-[Éditeur natif vérifié](https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/0e151d26fde11af17525f442f648b2334f07e107/examples/dom-demo/capture-editor-v2.html).
-Rappel et invocation gratuits en 1 s avec relève instantanée, IA renforcement de zone, statut de temps d’approche configurables. main/global-assets inchangés.
-Les entrées ci-dessous conservent l’historique ; cette synthèse et le rapport indiquent le point de reprise actuel.
+Lot en cours : zone-ko-feedback-v1, retours utilisateur à corriger.
+Branche : `work/lab-zone-ko-feedback-v1-2026-10-04`. Base : `fc5cc99cf7050f7c8013de6ce2ca1998d769b8ba`.
+Checkpoint de départ : `checkpoint/lab-start-zone-ko-feedback-v1-2026-10-04`.
+Rappel précédent validé fonctionnel ; défaut demandé 2 s éditable. Zone de feu/dégâts visibles/relève KO en diagnostic.
+Les entrées historiques ci-dessous restent conservées.
 
 ## État global
 
@@ -24807,3 +24805,20 @@ Documentation synchronisée : rapport LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md, ar
 Checkpoint technique checkpoint/lab-combat-tactics-switch-travel-v1-ci-2026-10-04 et preview preview/lab-combat-tactics-switch-travel-v1-2026-10-04 clôturent ce lot sur son commit documentaire, dont le code est identique à la source testée.
 main = 3197388f2b3ee7491be6e6125a015315158cffa2, global-assets = 0217dca50ec4004d5ac3bb25d6f5998ccf9edc4f, inchangés. Aucun fichier Zombicide-40k, aucun merge main.
 Validation technique réussie ; validation utilisateur encore attendue, aucun GREEN utilisateur prononcé.
+
+## 2026-10-04 — Retours utilisateur : zone de feu, dégâts lisibles, relève KO et délai éditable
+Lot : zone-ko-feedback-v1. Base exacte relue GitHub : fc5cc99cf7050f7c8013de6ce2ca1998d769b8ba, CI de branche réussie (run 37204279655). Dernier GREEN utilisateur reste checkpoint/lab-fire-zone-contact-sync-v1-green-2026-10-03 / f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d.
+Checkpoint départ : checkpoint/lab-start-zone-ko-feedback-v1-2026-10-04. Travail : work/lab-zone-ko-feedback-v1-2026-10-04. Arbre frais 752 entrées non tronqué, aucun AGENTS.md.
+Retours Sylvain : zone de Tempête de flammes affichée mais dégâts absents/intermittents ; nombres de dégâts joueur parfois illisibles ; rappel confirmé fonctionnel, défaut désormais 2 secondes avec réglage ; réserve après KO invisible jusqu'au premier hit.
+
+Propriétaires et fichiers autorisés :
+- Persistent Zone Runtime / Combat Runtime : src/core/combat/persistent-zone-runtime-v1.js, combat-runtime.js, combat-session.js ; examiner franchissement/présence de zone pendant approches et contact réel, sans géométrie DOM gameplay ni deuxième horloge. Le renderer reste projection des rayons natifs.
+- Render Adapter / Visual Controller : src/adapters/renderer/dom-actor-renderer.js, dom-skill-fx.js ; src/ui/demo-app.js ; examples/dom-demo/demo.css. Libérer les animations finies retenues par WAAPI et restaurer le nouvel acteur ; rendre les dégâts lisibles sans changer leur calcul.
+- Command Contract et données switch/recall : src/contracts/combat-command-definition.js, data/combat/commands/*.command.json ; default rappel 2000 ms, énergie 0, arrivée immédiate. Raccord réglable via donnée de scénario native validée, pas un timer UI.
+- Contrat scénario/export et adaptateurs existants : src/contracts/capture-battle-setup-editor-draft-v1.js, capture-combat-export-v1.js ; src/adapters/input/capture/capture-battle-setup-to-export-input-v1.js, capture-editor-exporter-v2.js, capture-export-adapter-stack-v1.js ; src/ui/capture-editor-combat-test-v1.js, capture-editor-human-v2.js, capture-combat-preview-session-v1.js, combat-2v2-test-ui.js, capture-combat-roster-controller-v1.js ; examples/dom-demo/capture-editor-v2.html/.css/.js. Champ clair dans Combat, export/import au chemin canonique si scénario fourni, aucun registre de commande parallèle.
+- Tests unitaires concernés + nouveau zone-ko-feedback-v1 ; docs LAB_CURRENT_WORK, LAB_ARCHITECTURE, LAB_ROADMAP et rapport LAB_ZONE_KO_FEEDBACK_V1.
+
+Méthode : reproduire dans le vrai éditeur et tests RED, corriger la cause démontrée par micro-lots, tests ciblés puis CI complète checkout réel, vraie preview 1v1/2v2 et mobile 360/390/430, revue diff et checkpoint technique.
+Invariants protégés : autorité unique Runtime/Session/Roster, contact et géométrie opaque, états membres, temps d'approche modifié, IA renforcement, présentation/audio existants, presets utilisateur et médias global-assets, main et Zombicide-40k. Aucun second système de zone, animation ou réserve ; aucune branche par ID de créature/capacité. Aucun GREEN utilisateur annoncé à partir de CI seule.
+Risques : un nombre absent peut venir d'un vrai dégât nul ou d'un ancrage sous HUD ; rayon visuel doit être cohérent avec l'éligibilité réelle ; une animation KO WAAPI finie peut continuer à imposer opacity=0 malgré style inline réinitialisé ; ancienne sauvegarde doit garder sa compatibilité.
+Critère de fin : dégâts natifs vérifiés lors des entrées légales, chiffres visibles pour les deux camps, nouveau membre visible dès son arrivée sans hit requis, rappel gratuit 2000 ms par défaut et durée configurée réellement utilisée, CI verte, liens vérifiés et documentation synchronisée.
