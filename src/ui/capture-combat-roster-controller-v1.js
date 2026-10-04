@@ -1,4 +1,5 @@
 import { createRosterSession } from "../core/combat/roster-session.js";
+import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 
 export function createCaptureCombatRosterControllerV1({
   session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals, beforeActorChanged = () => {}, onActorChanged = () => {}
@@ -14,7 +15,7 @@ export function createCaptureCombatRosterControllerV1({
     beforeActorChanged(actorId, result);
     if (result.outcome === "recalled" || result.outcome === "team_defeated") {
       visuals.setSlotVisible(actorId, false);
-    } else if (result.outcome === "summoned" || result.outcome === "ko_replaced") {
+    } else if (["summoned", "ko_replaced", "switched"].includes(result.outcome)) {
       visuals.setCreatureFor(actorId, result.creatureId, { displayName: result.displayName });
       visuals.setSlotVisible(actorId, true);
     } else return result;
@@ -32,9 +33,17 @@ export function createCaptureCombatRosterControllerV1({
     selectReserve(actorId, memberId) {
       return disposed ? { ok: false, outcome: "disposed" } : roster.selectReserve(actorId, memberId);
     },
+    previewCommand(actorId, command) {
+      if (disposed) return { ok: false, outcome: "disposed" };
+      if (command.kind !== "switch") return session.previewCommand({ actorId, command });
+      const preview = roster.previewSwitch(actorId);
+      if (!preview.ok) return preview;
+      const scoped = normalizeCombatCommandDefinition({ ...command, effect: { ...command.effect, rosterMemberId: preview.memberId } });
+      return session.previewCommand({ actorId, command: scoped });
+    },
     applyCommandResolution(resolution) {
       if (disposed) return { ok: false, outcome: "disposed" };
-      if (!["recall", "summon"].includes(resolution?.commandKind)) return null;
+      if (!["recall", "summon", "switch"].includes(resolution?.commandKind)) return null;
       const actorId = resolution.actorId ?? resolution.events?.find(event => event.type === "command-complete")?.actorId;
       if (!resolution.ok || resolution.outcome !== "completed") return { ok: false, outcome: "command_not_completed" };
       return project(actorId, roster.applyCommandResolution(actorId, resolution));
@@ -80,12 +89,14 @@ export function mountCaptureCombatRosterPanelV1({
   }
   for (const button of buttons) {
     const command = commands[button.dataset.combatRosterCommand];
-    button.textContent = command.name + " · " + command.energyCost + "⚡";
+    button.textContent = command.name + (command.energyCost === 0 ? " · Gratuit" : " · " + command.energyCost + "⚡");
   }
   panel.hidden = false;
   function previewCommand(kind) {
     const runtime = getRuntime();
-    if (!runtime || isTransitionPending() || runtime.hasActiveAction || runtime.hasActiveActionFor(format.localActorId)) return { ok: false };
+    if (!runtime || isTransitionPending() || runtime.hasActiveActionFor(format.localActorId)) return { ok: false };
+    if (kind === "switch") return controller.previewCommand(format.localActorId, commands[kind]);
+    if (runtime.hasActiveAction) return { ok: false };
     const team = controller.snapshot()[format.localActorId];
     const active = team?.activeMemberId !== null;
     const reserve = team?.members.find(m => m.id === team.selectedReserveMemberId);
@@ -104,7 +115,7 @@ export function mountCaptureCombatRosterPanelV1({
       ref.node.textContent = member.displayName + " · " + Math.round(member.hp) + "/" + Math.round(member.maxHp) + " PV · "
         + (member.hp <= 0 ? "KO" : member.active ? "Actif" : "Réserve");
       if (ref.actorId === format.localActorId) {
-        ref.node.disabled = member.active || member.hp <= 0 || isTransitionPending() || Boolean(getRuntime()?.hasActiveAction);
+        ref.node.disabled = member.active || member.hp <= 0 || isTransitionPending() || Boolean(getRuntime()?.hasActiveActionFor(format.localActorId));
         ref.node.setAttribute("aria-pressed", member.selected ? "true" : "false");
       }
     }
@@ -114,14 +125,15 @@ export function mountCaptureCombatRosterPanelV1({
     const reserve = event.target.closest?.("[data-roster-member-id]");
     if (reserve && !reserve.disabled) {
       const result = controller.selectReserve(format.localActorId, reserve.dataset.rosterMemberId);
-      if (result.ok) setStatus("Réserve sélectionnée. Utilise Rappel puis Invocation pour la faire entrer.", "info");
+      if (result.ok) setStatus("Réserve sélectionnée. Lance Rappel et invocation : remplacement gratuit après une seconde.", "info");
       render(); return;
     }
     const button = event.target.closest?.("[data-combat-roster-command]");
     if (!button || button.disabled) return;
     const kind = button.dataset.combatRosterCommand;
-    if (!previewCommand(kind).ok) return;
-    const result = getRuntime().startCommand({ actorId: format.localActorId, command: commands[kind] });
+    const preview = previewCommand(kind);
+    if (!preview.ok) return;
+    const result = getRuntime().startCommand({ actorId: format.localActorId, command: preview.action.command });
     setStatus(result.ok ? commands[kind].name + " en préparation…" : "Commande indisponible : " + result.outcome, result.ok ? "accent" : "warn");
     render();
   }

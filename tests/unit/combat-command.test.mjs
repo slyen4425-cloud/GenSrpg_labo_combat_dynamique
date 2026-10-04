@@ -29,6 +29,8 @@ const recall = normalizeCombatCommandDefinition(
 const summon = normalizeCombatCommandDefinition(
   await json("data/combat/commands/summon.command.json")
 );
+const chargedItem = normalizeCombatCommandDefinition({ ...item, id: "charged-item", preparationMs: 2200, recoveryMs: 0, energyCost: 3 });
+
 const stunBolt = normalizeSkillDefinition(
   await json("data/combat/skills/stun-bolt.skill.json")
 );
@@ -76,8 +78,8 @@ test("combat command contract keeps item recall and summon separate from skills"
   assert.equal(summon.kind, "summon");
 
   assert.equal(item.energyCost, 1);
-  assert.equal(recall.energyCost, 2);
-  assert.equal(summon.energyCost, 3);
+  assert.equal(recall.energyCost, 0);
+  assert.equal(summon.energyCost, 0);
 
   assert.equal(item.interruptibleDuringPreparation, true);
   assert.equal(recall.interruptibleDuringPreparation, true);
@@ -149,7 +151,7 @@ test("command start is rejected when energy cannot pay its configured cost", () 
   const result = resolveCommandStart({
     state,
     actorId: "maraileron",
-    command: summon
+    command: chargedItem
   });
 
   assert.equal(result.ok, false);
@@ -186,12 +188,12 @@ test("runtime charges a command and allows stun interruption before release", ()
   runtime.start();
   const started = runtime.startCommand({
     actorId: "maraileron",
-    command: summon
+    command: chargedItem
   });
 
   assert.equal(started.ok, true);
   assert.equal(runtime.activeAction.actionType, "command");
-  assert.equal(runtime.activeAction.actionId, "summon");
+  assert.equal(runtime.activeAction.actionId, chargedItem.id);
 
   clock.setTime(1100);
   clock.fireNext();
@@ -199,7 +201,7 @@ test("runtime charges a command and allows stun interruption before release", ()
   assert.ok(
     progress.some(
       (value) =>
-        value.commandId === "summon" &&
+        value.commandId === chargedItem.id &&
         value.chargeProgress >= 0.49 &&
         value.chargeProgress <= 0.51
     )

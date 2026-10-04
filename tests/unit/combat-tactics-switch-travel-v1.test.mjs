@@ -101,6 +101,32 @@ test("replacement captures the reserve at start and an interrupted recall change
   } finally { h.runtime.dispose(); h.controller.dispose(); }
 });
 
+test("a real stun impact interrupts the native replacement without an UI interruption handler", () => {
+  const h = switching();
+  try {
+    h.runtime.startCommand({ actorId: "local", command: replacement("two") });
+    h.runtime.startSkill({ actorId: "enemy", targetId: "local", skill: skill("stun", { preparationMs: 200, travelMs: 0, form: "projectile", approachMode: "none", effect: { stunMs: 2000, interruptsPreparation: true } }) });
+    h.advance(200);
+    assert.equal(h.runtime.hasActiveActionFor("local"), false);
+    h.advance(1000);
+    assert.equal(h.controller.activeMember("local").id, "one");
+  } finally { h.runtime.dispose(); h.controller.dispose(); }
+});
+
+test("a timed DoT KO cancels recall on the native clock and lets the KO roster path replace the member", () => {
+  const h = switching();
+  try {
+    h.session.useSkill({ actorId: "enemy", targetId: "local", skill: skill("dot", { effect: {}, effects: [{ kind: "apply_status", targetScope: "target", status: { id: "dot", kind: "damage_over_time", damageMode: "fixed", channel: "fire", amount: 150, tickIntervalMs: 500, durationMs: 2000, polarity: "detrimental", stacking: "refresh" } }] }) });
+    h.runtime.startCommand({ actorId: "local", command: replacement("two") });
+    h.advance(500);
+    assert.equal(h.runtime.hasActiveActionFor("local"), false);
+    assert.equal(h.controller.replaceKnockedOut("local").outcome, "ko_replaced");
+    h.advance(1000);
+    assert.equal(h.controller.activeMember("local").id, "two");
+    assert.equal(h.controller.snapshot().local.members[0].hp, 0);
+  } finally { h.runtime.dispose(); h.controller.dispose(); }
+});
+
 test("Roster Session rejects dead/same reserves and restores native member state on an atomic round trip", () => {
   const h = switching();
   try {

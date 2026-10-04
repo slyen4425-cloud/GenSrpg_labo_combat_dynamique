@@ -331,6 +331,10 @@ export function createCombatRuntime({
           })
       }
     );
+    // Timed statuses/zones can KO a fighter before its pending command releases.
+    for (const fighter of Object.values(session.snapshot().fighters)) {
+      if (fighter.hp <= 0) cancelActionsForActor(fighter.id, { includeTargeted: true, reason: "ko" });
+    }
     emitStateIfChanged();
     return true;
   }
@@ -628,6 +632,8 @@ export function createCombatRuntime({
       resolvedAtMs,
       atNowMs
     });
+
+    applyResolutionInterrupt(resolution);
 
     const koActorId = koActorIdFromResolution(resolution);
     if (koActorId) {

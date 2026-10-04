@@ -1,9 +1,9 @@
 {
-  "id": "summon",
-  "name": "Invocation",
-  "kind": "summon",
+  "id": "switch",
+  "name": "Rappel et invocation",
+  "kind": "switch",
   "energyCost": 0,
-  "preparationMs": 0,
+  "preparationMs": 1000,
   "recoveryMs": 0,
   "interruptibleDuringPreparation": true,
   "effect": {}

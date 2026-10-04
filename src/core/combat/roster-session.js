@@ -16,7 +16,11 @@ function cloneFighterForSlot(config, slotId, snapshot = null) {
     energyChargeProgressMs: source.energyChargeProgressMs ?? 0,
     chargeTimeEffects: source.chargeTimeEffects ?? [],
     skillCooldowns: source.skillCooldowns ?? {},
-    skillUseCounts: source.skillUseCounts ?? {}
+    skillUseCounts: source.skillUseCounts ?? {},
+    statusEffects: source.statusEffects ?? [],
+    damageDealtTotal: source.damageDealtTotal ?? 0,
+    damageTakenTotal: source.damageTakenTotal ?? 0,
+    knockoutsTotal: source.knockoutsTotal ?? 0
   };
 }
 
@@ -33,7 +37,11 @@ function snapshotFighter(fighter) {
     chargeTimeModifierPct: fighter.chargeTimeModifierPct,
     chargeTimeEffects: fighter.chargeTimeEffects,
     skillCooldowns: fighter.skillCooldowns,
-    skillUseCounts: fighter.skillUseCounts
+    skillUseCounts: fighter.skillUseCounts,
+    statusEffects: fighter.statusEffects,
+    damageDealtTotal: fighter.damageDealtTotal,
+    damageTakenTotal: fighter.damageTakenTotal,
+    knockoutsTotal: fighter.knockoutsTotal
   });
 }
 
@@ -206,6 +214,9 @@ export function createRosterSession({
     if (!member) {
       return Object.freeze({ ok: false, outcome: "no_reserve_selected" });
     }
+    if ((member.savedFighter?.hp ?? member.fighterConfig.initialHp ?? member.fighterConfig.maxHp) <= 0) {
+      return Object.freeze({ ok: false, outcome: "reserve_ko" });
+    }
 
     const fighter = cloneFighterForSlot(
       member.fighterConfig,
@@ -227,6 +238,34 @@ export function createRosterSession({
       creatureId: member.creatureId,
       displayName: member.displayName
     });
+  }
+
+  function previewSwitch(teamId, memberId = null) {
+    const team = teamOf(teamId);
+    if (!team.activeMemberId) return Object.freeze({ ok: false, outcome: "no_active_member" });
+    if (combatSession.snapshot().fighters[team.slotId]?.hp <= 0) return Object.freeze({ ok: false, outcome: "active_member_ko" });
+    const targetId = memberId ?? team.selectedReserveMemberId;
+    if (targetId === team.activeMemberId) return Object.freeze({ ok: false, outcome: "member_already_active" });
+    const member = team.members.get(targetId);
+    if (!member) return Object.freeze({ ok: false, outcome: "no_reserve_selected" });
+    if ((member.savedFighter?.hp ?? member.fighterConfig.initialHp ?? member.fighterConfig.maxHp) <= 0) return Object.freeze({ ok: false, outcome: "reserve_ko" });
+    return Object.freeze({ ok: true, outcome: "ready", memberId: member.id });
+  }
+
+  function switchMember(teamId, memberId = null) {
+    const preview = previewSwitch(teamId, memberId);
+    if (!preview.ok) return preview;
+    const team = teamOf(teamId);
+    const member = team.members.get(preview.memberId);
+    syncActiveSnapshot(team);
+    const recalledMemberId = team.activeMemberId;
+    const fighter = cloneFighterForSlot(member.fighterConfig, team.slotId, member.savedFighter);
+    // No absent slot: the outgoing member stays targetable until this atomic replacement.
+    combatSession.replaceFighter(team.slotId, fighter);
+    team.activeMemberId = member.id;
+    team.selectedReserveMemberId = recalledMemberId;
+    return Object.freeze({ ok: true, outcome: "switched", teamId, slotId: team.slotId,
+      recalledMemberId, memberId: member.id, creatureId: member.creatureId, displayName: member.displayName });
   }
 
   function replaceKnockedOut(teamId) {
@@ -288,6 +327,11 @@ export function createRosterSession({
     if (resolution.commandKind === "summon") {
       return summon(teamId);
     }
+    if (resolution.commandKind === "switch") {
+      const memberId = resolution.events?.find(event => event.type === "command-complete")?.rosterMemberId;
+      if (!memberId) return Object.freeze({ ok: false, outcome: "no_reserve_selected" });
+      return switchMember(teamId, memberId);
+    }
 
     return Object.freeze({ ok: true, outcome: "no_roster_change" });
   }
@@ -297,6 +341,8 @@ export function createRosterSession({
     selectReserve,
     recall,
     summon,
+    previewSwitch,
+    switchMember,
     replaceKnockedOut,
     applyCommandResolution
   });

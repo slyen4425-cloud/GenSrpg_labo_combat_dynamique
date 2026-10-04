@@ -18,7 +18,8 @@ import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 const DATA_URLS = Object.freeze({
   commands: Object.freeze({
     recall: new URL("../../data/combat/commands/recall.command.json", import.meta.url),
-    summon: new URL("../../data/combat/commands/summon.command.json", import.meta.url)
+    summon: new URL("../../data/combat/commands/summon.command.json", import.meta.url),
+    switch: new URL("../../data/combat/commands/switch.command.json", import.meta.url)
   }),
   format: new URL(
     "../../data/combat/battle-formats/demo-coop-2v2.format.json",
@@ -897,7 +898,7 @@ export async function mountCoop2v2Test({
 
       button.disabled =
         runtime.hasActiveActionFor(format.localActorId) ||
-        runtime.activeActions.some(action => action.actionType === "command") ||
+        runtime.activeActions.some(action => action.actionType === "command" && action.command.kind !== "switch") ||
         !preview.ok;
     }
     rosterPanel?.render();
@@ -1090,7 +1091,7 @@ export async function mountCoop2v2Test({
       }
 
       const state = session.snapshot();
-      if (runtime.activeActions.some(action => action.actionType === "command")) return;
+      if (runtime.activeActions.some(action => action.actionType === "command" && action.command.kind !== "switch")) return;
       for (const controller of aiControllers) {
         const actorId = controller.snapshot().actorId;
         if (

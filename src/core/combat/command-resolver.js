@@ -25,6 +25,8 @@ function spendEnergy(state, fighterId, amount) {
 }
 
 function preparationFor(state, fighterId, command) {
+  // Replacement is a trainer command, independent of the creature's charge speed.
+  if (["recall", "summon", "switch"].includes(command.kind)) return command.preparationMs;
   const fighter = fighterOf(state, fighterId);
   return effectivePreparationMs({
     baseMs: command.preparationMs,
@@ -142,6 +144,7 @@ export function resolveCommandCompletion({
       kind: command.kind,
       itemId: command.effect.itemId,
       summonCreatureId: command.effect.summonCreatureId,
+      ...(command.kind === "switch" ? { rosterMemberId: command.effect.rosterMemberId } : {}),
       heal: command.effect.heal
     }),
     event("command-recovery-complete", impactAtMs + recoveryMs, {
@@ -156,6 +159,7 @@ export function resolveCommandCompletion({
     outcome: "completed",
     commandId: command.id,
     commandKind: command.kind,
+    actorId,
     state: nextState,
     events: Object.freeze(events)
   });

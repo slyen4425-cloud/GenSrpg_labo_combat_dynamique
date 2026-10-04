@@ -29,6 +29,8 @@ const summon = normalizeCombatCommandDefinition(
 const fireball = normalizeSkillDefinition(
   await json("data/combat/skills/fireball.skill.json")
 );
+const chargedItem = normalizeCombatCommandDefinition({ ...item, id: "charged-item", preparationMs: 2200, recoveryMs: 0, energyCost: 3 });
+
 const stunBolt = normalizeSkillDefinition(
   await json("data/combat/skills/stun-bolt.skill.json")
 );
@@ -82,12 +84,12 @@ test("combat commands have their own typed configurable contract", () => {
   assert.equal(item.effect.heal, 20);
 
   assert.equal(recall.kind, "recall");
-  assert.equal(recall.energyCost, 2);
-  assert.equal(recall.preparationMs, 1400);
+  assert.equal(recall.energyCost, 0);
+  assert.equal(recall.preparationMs, 1000);
 
   assert.equal(summon.kind, "summon");
-  assert.equal(summon.energyCost, 3);
-  assert.equal(summon.preparationMs, 2200);
+  assert.equal(summon.energyCost, 0);
+  assert.equal(summon.preparationMs, 0);
   assert.equal(summon.effect.summonCreatureId, null);
 });
 
@@ -173,7 +175,7 @@ test("runtime charges a command on the same clock as skills", () => {
   runtime.start();
   const started = runtime.startCommand({
     actorId: "maraileron",
-    command: summon
+    command: chargedItem
   });
 
   assert.equal(started.ok, true);
@@ -189,7 +191,7 @@ test("runtime charges a command on the same clock as skills", () => {
   assert.ok(
     progress.some(
       (value) =>
-        value.commandId === "summon" &&
+        value.commandId === chargedItem.id &&
         value.phase === "preparation"
     )
   );
@@ -198,7 +200,7 @@ test("runtime charges a command on the same clock as skills", () => {
   clock.fireNext();
 
   assert.equal(resolutions.length, 1);
-  assert.equal(resolutions[0].commandKind, "summon");
+  assert.equal(resolutions[0].commandKind, "item");
   assert.equal(runtime.hasActiveAction, false);
 
   runtime.dispose();
@@ -228,7 +230,7 @@ test("stun interrupt can cancel a charging command before its release", () => {
   runtime.start();
   runtime.startCommand({
     actorId: "maraileron",
-    command: summon
+    command: chargedItem
   });
 
   const stunResolution = resolveSkill({

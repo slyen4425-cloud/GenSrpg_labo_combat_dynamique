@@ -1,7 +1,8 @@
 export const COMBAT_COMMAND_KINDS = Object.freeze([
   "item",
   "recall",
-  "summon"
+  "summon",
+  "switch"
 ]);
 
 const KIND_SET = new Set(COMBAT_COMMAND_KINDS);
@@ -61,7 +62,10 @@ export function normalizeCombatCommandDefinition(input) {
       summonCreatureId: optionalString(
         effect.summonCreatureId,
         "effect.summonCreatureId"
-      )
+      ),
+      ...(kind === "switch" ? {
+        rosterMemberId: optionalString(effect.rosterMemberId, "effect.rosterMemberId")
+      } : {})
     })
   });
 }
