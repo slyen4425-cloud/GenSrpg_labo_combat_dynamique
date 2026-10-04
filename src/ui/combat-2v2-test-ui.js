@@ -743,7 +743,26 @@ export async function mountCoop2v2Test({
   }
 
   function isAlive(actorId, state = session.snapshot()) {
-    return Number(actorState(actorId, state)?.hp) > 0 && (rosterController === null || rosterController.isPresent(actorId));
+    const hasHp =
+      Number(
+        actorState(
+          actorId,
+          state
+        )?.hp
+      ) > 0;
+
+    if (!hasHp) {
+      return false;
+    }
+
+    if (
+      rosterController === null ||
+      !rosterController.ownsSlot(actorId)
+    ) {
+      return true;
+    }
+
+    return rosterController.isPresent(actorId);
   }
 
   function targetNodes(actorId) {
