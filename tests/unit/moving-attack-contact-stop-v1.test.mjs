@@ -103,9 +103,7 @@ test("renderer can stop an active moving attack at its visible pose and return c
     "the renderer must own the contact return instead of adding a second visual controller"
   );
 
-  const returning = renderer.returnActiveToBaseFromCurrent({
-    durationMs: 280
-  });
+  const returning = renderer.returnActiveToBaseFromCurrent();
 
   assert.equal(returning.status, "returning");
   assert.equal(created.length, 2);
@@ -118,7 +116,11 @@ test("renderer can stop an active moving attack at its visible pose and return c
     created[1].keyframes.at(-1).transform,
     composeDomTransform(currentActor)
   );
-  assert.equal(created[1].options.duration, 280);
+  assert.equal(
+    created[1].options.duration,
+    300,
+    "return timing must come from the AnimationPlan home segment"
+  );
 
   const outboundResult = await outbound.finished;
   assert.equal(outboundResult.status, "cancelled");
