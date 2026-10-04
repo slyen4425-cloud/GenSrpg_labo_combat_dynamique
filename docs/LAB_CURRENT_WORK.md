@@ -4,6 +4,8 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04
 
+Lot en cours : combat-reference-pace-v1. Base 200b42055f2063c9545db6da01d3104e18f1fee0 ; branche `work/lab-combat-reference-pace-v1-2026-10-04` ; départ `checkpoint/lab-start-combat-reference-pace-v1-2026-10-04`. Zone-idle-recall-fx-v1 est validé par Sylvain ; GREEN utilisateur `checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04` sur 200b42055f2063c9545db6da01d3104e18f1fee0. Le lot précédent ci-dessous est conservé pour historique.
+
 Lot terminé techniquement : zone-idle-recall-fx-v1. Tempête au repos corrigée selon l'emprise affichée ; rappel/arrivée planifiés par Animation Core, priorité du rappel préservée sous un hit non létal. Validation artistique smartphone utilisateur encore attendue.
 Base : db1b1867d9e1f35d39bc831722282fdc105a7e3e. Départ : `checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04`. Travail : `work/lab-zone-idle-recall-fx-v1-2026-10-04`.
 Source/tests : `794b80d3deecac4705faf5c9d581f130074d5c0c`. CI `37214761522` SUCCESS : **1029 PASS / 0 FAIL**, gardes de structure/indépendance OK.
@@ -24890,3 +24892,16 @@ Rapport et limites de preuve : `docs/LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md`. Rapp
 La priorité ci-dessous est le lot précédent conservé.
 
 Le tick de dégâts ne dépend pas d'une attaque ou d'un refresh. Le contrat spatial pur transporte uniquement les mesures ; Zone Runtime reste propriétaire des intersections et applications. QA native sans attaque de contact desktop et joueur sans action mobile 390 px concluante ; compteur PV 5000 → 4996.97 → 4851.53 sous zone adverse seule. Rappel 3500 ms testé, ancien membre ciblable et nouvel actif visible sans hit. Les images transitoires de la contraction restent à apprécier sur le smartphone utilisateur. Les réglages QA temporaires ne sont pas sauvegardés dans les presets du dépôt.
+
+## 2026-10-04 — combat-reference-pace-v1 : périmètre avant source
+
+Sylvain valide zone-idle-recall-fx-v1 (preview 200b42055f2063c9545db6da01d3104e18f1fee0) puis demande que le rythme habituellement réglé à 0.5 devienne la référence. GREEN utilisateur précédent : checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04 sur ce SHA, CI de clôture 37217700188 SUCCESS, 1029/1029. Aucun merge main.
+
+- Base : 200b42055f2063c9545db6da01d3104e18f1fee0. Départ : checkpoint/lab-start-combat-reference-pace-v1-2026-10-04. Travail : work/lab-combat-reference-pace-v1-2026-10-04.
+- Objectif : l'éditeur affiche 1× pour l'ancien rythme 0.5 ; un nouveau scénario utilise la valeur native 0.5. Les exports et les callers explicites conservent les unités et valeurs natives.
+- Propriétaires : contrat Capture Battle Setup pour constante de référence et conversion pure du facteur affiché ; éditeur humain et Scenario Builder pour la donnée ; Combat Session/Combat Timing gardent seuls les calculs et timestamps. Aucun changement d'horloge, de timings de capacité, de stat, de statut ou de règles cooldown/énergie.
+- Fichiers autorisés : src/contracts/capture-battle-setup-editor-draft-v1.js ; src/ui/capture-editor-human-v2.js ; src/ui/capture-editor-combat-test-v1.js ; examples/dom-demo/capture-editor-v2.html ; tests unitaires concernés (capture-combat-speed-ui-v1 et sentinelle reference pace) ; docs LAB_CURRENT_WORK, LAB_ARCHITECTURE, LAB_ROADMAP et rapport du lot ; mise à jour de la validation du rapport zone-idle-recall-fx-v1.
+- Protégés : main/global-assets/Zombicide-40k, médias et presets utilisateur, contrats natifs de multiplicateur (baseMs / speed), exports legacy avec multiplicateur explicite ou défaut historique 1, rappel gratuit 2s éditable, zone/KO, visuels mono-image.
+- Vérification : tests existants de vitesse réelle et nouveau chemin éditeur → scénario → export → Adapter Stack → source native → Session (préparation/trajet/récupération doublés pour le nouveau 1×), callers explicites inchangés, durées de commande et cadence de ticks non modifiées ; CI complète ; page native et affichage mobile.
+- Risque : convertir une deuxième fois dans Session ou convertir des exports déjà natifs. La conversion n'a lieu qu'à la lecture du facteur UI, avec une constante canonique.
+- Fin : défaut visible 1× et défaut natif 0.5, réglage plus lent/rapide utilisable, vraie chaîne vérifiée, docs/ref preview/checkpoint technique ; le nouveau lot attend ensuite validation utilisateur.
