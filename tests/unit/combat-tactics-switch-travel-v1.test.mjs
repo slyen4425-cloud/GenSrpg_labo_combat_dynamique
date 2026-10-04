@@ -146,6 +146,36 @@ test("Roster Session rejects dead/same reserves and restores native member state
   } finally { h.runtime.dispose(); h.controller.dispose(); }
 });
 
+test("returning reserves do not replay missed status ticks and expired statuses are removed on return", () => {
+  const h = switching();
+  try {
+    const dot = skill("burn", { effect: {}, effects: [{ kind: "apply_status", targetScope: "target", status: { id: "burn", kind: "damage_over_time", damageMode: "fixed", channel: "fire", amount: 5, tickIntervalMs: 500, durationMs: 5000, polarity: "detrimental", stacking: "refresh" } }] });
+    h.session.useSkill({ actorId: "enemy", targetId: "local", skill: dot });
+    h.roster.switchMember("local", "two");
+    h.advance(3000);
+    h.roster.switchMember("local", "one");
+    h.advance(1);
+    assert.equal(h.session.snapshot().fighters.local.hp, 100);
+    h.advance(499);
+    assert.equal(h.session.snapshot().fighters.local.hp, 95);
+    h.roster.switchMember("local", "two");
+    h.advance(2000);
+    h.roster.switchMember("local", "one");
+    assert.equal(h.session.snapshot().fighters.local.statusEffects.length, 0);
+  } finally { h.runtime.dispose(); h.controller.dispose(); }
+});
+
+test("replacement ends the outgoing creature's attached zone without clearing enemy zones", () => {
+  const h = switching();
+  try {
+    const aura = skill("aura", { effect: {}, effects: [{ kind: "persistent_zone", targetScope: "target", zoneId: "zone", radius: "long", durationMs: 7000, tickIntervalMs: 1000, reactivation: "reinforce", maxActivations: 3, radiusGrowthSteps: 1, tickEffect: { kind: "damage", targetScope: "target", amount: 5 } }] });
+    h.session.useSkill({ actorId: "local", targetId: "enemy", skill: aura });
+    h.session.useSkill({ actorId: "enemy", targetId: "local", skill: aura });
+    h.roster.switchMember("local", "two");
+    assert.deepEqual(h.session.snapshot().persistentZones.map(z => z.sourceActorId), ["enemy"]);
+  } finally { h.runtime.dispose(); h.controller.dispose(); }
+});
+
 function zoneAi(energy = 12) {
   const battleFormat = { actors: [{ actorId: "ai" }, { actorId: "target" }], teamOf: id => id === "ai" ? "enemy" : "local" };
   const session = createCombatSession({ battleFormat, fighters: [fighter("ai", { initialEnergy: energy, energyChargeAmount: 1, energyChargeIntervalMs: 1800 }), fighter("target", { maxHp: 10000, initialHp: 10000 })] });
@@ -189,12 +219,37 @@ test("AI respects native activation conditions and usage limits instead of holdi
     const plain = skill("plain", { preparationMs: 0, travelMs: 0 });
     const ai = createBattleActorAiController({ session: h.session, runtime: h.runtime, actorId: "ai", targetIds: ["target"], skillIds: [plain.id, unavailable.id], skillsById: { plain, [unavailable.id]: unavailable } });
     assert.equal(ai.takeTurn().skillId, "plain");
+    h.runtime.cancelActionsForActor("ai", { reason: "test-reset" });
+    const limited = normalizeSkillDefinition({ ...h.zone, maxUsesPerCombat: 1 });
+    h.session.useSkill({ actorId: "ai", targetId: "target", skill: limited });
+    const cappedAi = createBattleActorAiController({ session: h.session, runtime: h.runtime, actorId: "ai", targetIds: ["target"], skillIds: [limited.id, plain.id], skillsById: { plain, [limited.id]: limited } });
+    assert.equal(cappedAi.takeTurn().skillId, "plain");
   } finally { h.runtime.dispose(); }
 });
 
-function travelHarness(modifierPct = 50, stacking = "refresh") {
+test("the unmodified Loup fire storm reaches three activations with its actual energy, cooldown and time requirement", async () => {
+  const storm = normalizeSkillDefinition((await json("data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json")).draft.definition);
+  const plain = skill("plain", { preparationMs: 0, travelMs: 0, recoveryMs: 0, energyCost: 1 });
+  const battleFormat = { actors: [{ actorId: "ai" }, { actorId: "target" }], teamOf: id => id === "ai" ? "enemy" : "local" };
+  const session = createCombatSession({ battleFormat, fighters: [fighter("ai", { initialEnergy: 2, energyChargeAmount: 1, energyChargeIntervalMs: 1800 }), fighter("target", { maxHp: 10000, initialHp: 10000 })] });
+  const h = clock(session);
+  const ai = createBattleActorAiController({ session, runtime: h.runtime, actorId: "ai", targetIds: ["target"], skillIds: [plain.id, storm.id], skillsById: { plain, [storm.id]: storm } });
+  try {
+    assert.equal(ai.takeTurn().skillId, "plain");
+    h.advance(25000);
+    for (const radius of ["short", "medium", "long"]) {
+      assert.equal(ai.takeTurn().skillId, storm.id);
+      h.advance(2000);
+      assert.equal(session.snapshot().persistentZones[0].radius, radius);
+      if (radius !== "long") h.advance(1500);
+    }
+    assert.equal(session.snapshot().fighters.ai.skillUseCounts[storm.id], 3);
+  } finally { h.runtime.dispose(); }
+});
+
+function travelHarness(modifierPct = 50, stacking = "refresh", durationMs = 3000) {
   const session = createCombatSession({ fighters: [fighter("a"), fighter("b")] });
-  const slow = skill("slow", { preparationMs: 0, travelMs: 0, recoveryMs: 0, form: "self", approachMode: "none", effect: {}, effects: [{ kind: "apply_status", targetScope: "target", status: { id: "slow", kind: "approach_time_modifier", modifierPct, durationMs: 3000, polarity: "detrimental", stacking, maxStacks: 2, tags: ["movement"] } }] });
+  const slow = skill("slow", { preparationMs: 0, travelMs: 0, recoveryMs: 0, form: "self", approachMode: "none", effect: {}, effects: [{ kind: "apply_status", targetScope: "target", status: { id: "slow", kind: "approach_time_modifier", modifierPct, durationMs, polarity: "detrimental", stacking, maxStacks: 2, tags: ["movement"] } }] });
   session.useSkill({ actorId: "b", targetId: "a", skill: slow });
   return { session, slow };
 }
@@ -211,6 +266,22 @@ test("approach status gives 1300 to 1950 ms without changing preparation, recove
   presenter.presentRelease({ action, actorSlot: "a", targetSlot: "b" });
   assert.equal(approaches[0].travelMs, 1950);
   presenter.dispose();
+});
+
+test("native contact damage waits for the modified arrival even if the status expires during travel", () => {
+  const { session } = travelHarness(50, "refresh", 500);
+  const h = clock(session), bite = skill("bite");
+  try {
+    h.runtime.startSkill({ actorId: "a", targetId: "b", skill: bite });
+    h.advance(500);
+    assert.equal(session.snapshot().fighters.a.statusEffects.length, 0);
+    h.advance(900);
+    assert.equal(session.snapshot().fighters.b.hp, 200);
+    h.advance(649);
+    assert.equal(session.snapshot().fighters.b.hp, 200);
+    h.advance(1);
+    assert.equal(session.snapshot().fighters.b.hp, 180);
+  } finally { h.runtime.dispose(); }
 });
 
 test("approach modifiers stack and expire/cleanse through native status ownership", () => {

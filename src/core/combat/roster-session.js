@@ -1,3 +1,5 @@
+import { resumeStatusEffectsV1 } from "./status-effect-runtime-v1.js";
+
 function requiredString(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
     throw new TypeError(`${field} must be a non-empty string`);
@@ -5,7 +7,7 @@ function requiredString(value, field) {
   return value.trim();
 }
 
-function cloneFighterForSlot(config, slotId, snapshot = null) {
+function cloneFighterForSlot(config, slotId, snapshot = null, atMs = 0) {
   const source = snapshot ?? config;
   return {
     ...config,
@@ -17,7 +19,7 @@ function cloneFighterForSlot(config, slotId, snapshot = null) {
     chargeTimeEffects: source.chargeTimeEffects ?? [],
     skillCooldowns: source.skillCooldowns ?? {},
     skillUseCounts: source.skillUseCounts ?? {},
-    statusEffects: source.statusEffects ?? [],
+    statusEffects: resumeStatusEffectsV1(source.statusEffects ?? [], atMs),
     damageDealtTotal: source.damageDealtTotal ?? 0,
     damageTakenTotal: source.damageTakenTotal ?? 0,
     knockoutsTotal: source.knockoutsTotal ?? 0
@@ -221,9 +223,10 @@ export function createRosterSession({
     const fighter = cloneFighterForSlot(
       member.fighterConfig,
       team.slotId,
-      member.savedFighter
+      member.savedFighter,
+      combatSession.snapshot().elapsedMs
     );
-    combatSession.replaceFighter(team.slotId, fighter);
+    combatSession.replaceFighter(team.slotId, fighter, { clearSourceZones: true });
 
     team.activeMemberId = member.id;
     team.selectedReserveMemberId =
@@ -259,9 +262,9 @@ export function createRosterSession({
     const member = team.members.get(preview.memberId);
     syncActiveSnapshot(team);
     const recalledMemberId = team.activeMemberId;
-    const fighter = cloneFighterForSlot(member.fighterConfig, team.slotId, member.savedFighter);
+    const fighter = cloneFighterForSlot(member.fighterConfig, team.slotId, member.savedFighter, combatSession.snapshot().elapsedMs);
     // No absent slot: the outgoing member stays targetable until this atomic replacement.
-    combatSession.replaceFighter(team.slotId, fighter);
+    combatSession.replaceFighter(team.slotId, fighter, { clearSourceZones: true });
     team.activeMemberId = member.id;
     team.selectedReserveMemberId = recalledMemberId;
     return Object.freeze({ ok: true, outcome: "switched", teamId, slotId: team.slotId,

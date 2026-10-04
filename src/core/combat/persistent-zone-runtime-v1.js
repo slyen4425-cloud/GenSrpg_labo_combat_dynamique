@@ -17,6 +17,10 @@ const DISTANCE_ORDER = Object.freeze([
   "long"
 ]);
 
+export function removePersistentZonesFromActorV1(state, actorId) {
+  return withPersistentZones(state, (state.persistentZones ?? []).filter(zone => zone.sourceActorId !== actorId));
+}
+
 const APPROACH_ENTRY_PROGRESS =
   Object.freeze({
     short: 2 / 3,

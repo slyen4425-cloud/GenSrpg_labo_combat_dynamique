@@ -965,4 +965,4 @@ html {
 [data-combat-team-rosters] p { margin: 0; padding: .45rem; font-size: .75rem; }
 [data-roster-member-id], .combat-test-team-actions button { min-height: 2.75rem; padding: .5rem; border: 1px solid #42616d; border-radius: .5rem; background: #12303c; color: #d7e8ed; font-size: .75rem; }
 [data-roster-member-id][aria-pressed="true"] { border-color: #7dd9ed; background: #1b4858; }
-.combat-test-team-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+.combat-test-team-actions { display: grid; grid-template-columns: 1fr; gap: .4rem; }

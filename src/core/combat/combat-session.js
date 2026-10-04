@@ -23,7 +23,8 @@ import {
   advanceStatusEffectsOnOwnerActionEndV1
 } from "./status-effect-runtime-v1.js";
 import {
-  advancePersistentZonesV1
+  advancePersistentZonesV1,
+  removePersistentZonesFromActorV1
 } from "./persistent-zone-runtime-v1.js";
 
 export function createCombatSession({
@@ -239,8 +240,9 @@ export function createCombatSession({
     return state;
   }
 
-  function replaceFighter(fighterId, fighter) {
+  function replaceFighter(fighterId, fighter, { clearSourceZones = false } = {}) {
     state = replaceCombatFighter(state, fighterId, fighter);
+    if (clearSourceZones) state = removePersistentZonesFromActorV1(state, fighterId);
     return state;
   }
 

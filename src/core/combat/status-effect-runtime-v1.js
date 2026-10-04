@@ -84,6 +84,17 @@ export function activeStatusEffectsV1(
   );
 }
 
+// A reserve is outside the active combat clock: expire by absolute time,
+// but do not replay damage/heal ticks that were missed while it was absent.
+export function resumeStatusEffectsV1(statusEffects, atMs) {
+  return Object.freeze(statusEffects.filter(instance => isStatusEffectRuntimeInstanceActiveV1(instance, atMs)).map(instance => {
+    if (instance.nextTickAtMs == null || instance.nextTickAtMs > atMs) return instance;
+    const interval = instance.definition.tickIntervalMs;
+    return Object.freeze({ ...instance, nextTickAtMs: instance.nextTickAtMs
+      + (Math.floor((atMs - instance.nextTickAtMs) / interval) + 1) * interval });
+  }));
+}
+
 export function hasActiveStatusKindV1(
   state,
   fighterId,
