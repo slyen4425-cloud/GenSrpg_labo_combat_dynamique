@@ -2,6 +2,29 @@
 
 > ÉTAT ACTIF — 2026-10-04
 >
+> Micro-lot : **Capture Attempt Rules v1**
+>
+> Branche : `work/lab-capture-attempt-rules-v1-2026-10-04`
+>
+> Base GREEN : `checkpoint/lab-capture-reward-rules-v1-green-2026-10-04` @ `d8c822c071f2893d4f4a866f13d88576b36c7914`
+>
+> Checkpoint départ : `checkpoint/lab-start-capture-attempt-rules-v1-2026-10-04`
+>
+> Objectif : remplacer les deux anciennes formules Capture concurrentes par un contrat unique et configurable. La règle utilise explicitement taux de base créature, PV restants et bonus de l'objet ; aucun sniff du nom d'une capsule.
+>
+> Propriétaire : **Capture Attempt Rules**. Ce lot ne modifie pas l'inventaire, la collection, la party ni le Combat Runtime.
+>
+> Fichiers autorisés : nouveau contrat Capture Attempt Rules, preset JSON, tests unitaires, documentation.
+>
+> Hors périmètre : application de la capture, ajout équipe/réserve, consommation réelle inventaire, XP, loot, Rappel/Invocation, Combat Runtime, Roster Session, UI, `Zombicide-40k`.
+>
+> TDD : RED sur contrat absent -> implémentation minimale -> CI -> checkpoint GREEN technique.
+
+---
+
+
+> ÉTAT ACTIF — 2026-10-04
+>
 > Micro-lot : **Capture Reward Rules v1**
 >
 > Branche : `work/lab-capture-reward-rules-v1-2026-10-04`
