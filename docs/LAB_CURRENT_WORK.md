@@ -23700,3 +23700,33 @@ Aucun changement :
 - `Zombicide-40k`.
 
 État : **GREEN technique — contrat/data uniquement, aucun gate smartphone requis**.
+
+
+## Résultat — Capture Reward Rules v1 — 2026-10-04
+
+### TDD
+- RED attendu : CI `37180713015` — FAILURE, contrat volontairement absent.
+- GREEN : CI `37180761466` — SUCCESS après ajout du contrat et du preset.
+
+### Autorité ajoutée
+`CaptureRewardRulesV1` décrit par type de rencontre :
+- monnaie activée/désactivée ;
+- chance de gain ;
+- montant minimum ;
+- base ;
+- coefficient du niveau moyen ennemi ;
+- plage de bonus aléatoire ;
+- chance de loot objet ;
+- identifiant de table de loot ;
+- quantité min/max.
+
+Le preset par défaut reprend les valeurs historiques auditées :
+- sauvage : 45 % monnaie, base 3, +2/niveau moyen, bonus 0..8, minimum 3, 18 % objet ;
+- dresseur : 100 % monnaie, base 8, +3/niveau moyen, bonus 0..12, minimum 5, 25 % objet.
+
+Le RNG est injecté dans les fonctions pures de décision : aucun `Math.random()` caché dans le contrat et aucun accès inventaire.
+
+### Protection
+Aucun changement : Combat Runtime, Roster Session, Rappel/Invocation, inventaire, application de récompenses, XP V2, formule de capture, UI, `Zombicide-40k`.
+
+État : **GREEN technique**.
