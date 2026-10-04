@@ -95,7 +95,11 @@ test("an unmanaged enemy slot must not be treated as recalled by Combat UI", asy
 
   assert.match(
     source,
-    /!rosterController\.ownsSlot\(actorId\)\s*\|\|\s*rosterController\.isPresent\(actorId\)/
+    /!rosterController\.ownsSlot\(actorId\)/
+  );
+  assert.match(
+    source,
+    /return rosterController\.isPresent\(actorId\)/
   );
   assert.doesNotMatch(
     source,
