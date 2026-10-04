@@ -77,7 +77,34 @@ Résultat :
 > - checkpoint fonctionnel final : `checkpoint/lab-exploration-bridge-convergence-v1-bootstrap-green-2026-10-04` ;
 > - preview : `preview/lab-exploration-bridge-convergence-v1-2026-10-04` @ `b641b6c7836d04a174e6431e8be80e2532344801`.
 >
-> État : **TECHNIQUE GREEN — gate navigateur Exploration requis**.
+> Gate navigateur réel — régression présentation détectée puis corrigée :
+> - symptôme : combat bloqué avant montage complet avec `unknown presentation asset: core:icon-skill-fireball-01` ;
+> - symptôme associé : Loup rendu en visuel générique alors que son asset validé existe ;
+> - cause : divergence de branches, avec perte de 4 entrées Core dans l'autorité de résolution `demoPresentationAssets` et perte du binding `crea-loup` dans `capture-creature-visual-bindings-v1` ;
+> - aucune nouvelle autorité créée ;
+> - restaurés depuis la dernière lignée validée : `core:icon-skill-fireball-01`, `core:icon-skill-fire-breath-01`, `core:icon-skill-fire-rain-01`, `core:icon-skill-poison-cloud-01` et `crea-loup -> loup_volcanique.meta.json`.
+>
+> TDD de régression :
+> - RED : `a0dce0c88e8417e3954427929b3283c76613edd2`, CI `37222784746` FAILURE attendue ;
+> - les tests ont reproduit exactement les 4 assets inconnus + `crea-loup` sans binding ;
+> - GREEN fonctionnel : `9c8b7fe6a4dc2283f4ddab01c8361ee2d397852d`, CI `37222850601` SUCCESS ;
+> - versionnement public/cache : HEAD `a961a55f3f2f37665c9d700f815a536090f03784`, CI `37222913004` SUCCESS.
+>
+> Nouvelle sentinelle :
+> - toutes les présentations visuelles des skills Showcase utilisées par le bridge doivent résoudre leur `assetId` avant montage navigateur ;
+> - tous les membres de la Player Party doivent résoudre un vrai binding visuel et ne peuvent plus tomber silencieusement en fallback générique.
+>
+> Publication :
+> - checkpoint prévalidation : `checkpoint/lab-exploration-bridge-presentation-integrity-v1-prevalidation-green-2026-10-04` ;
+> - preview Combat : `preview/lab-exploration-bridge-presentation-integrity-v1-2026-10-04` @ `a961a55f3f2f37665c9d700f815a536090f03784` ;
+> - PR infra Exploration #77 MERGED ;
+> - main infra Exploration : `91ef45887c5472f345a63edee2e360f28f15e658` ;
+> - Pages `37222986645` — **SUCCESS**.
+>
+> Note asset :
+> - `Grainou / crea_nat_1` n'a actuellement aucun asset dans le catalogue global ; son fallback générique est donc explicite et n'est pas remplacé par une fausse créature.
+>
+> État : **TECHNIQUE GREEN — nouveau gate navigateur requis, aucun GREEN final avant validation utilisateur**.
 
 ---
 
