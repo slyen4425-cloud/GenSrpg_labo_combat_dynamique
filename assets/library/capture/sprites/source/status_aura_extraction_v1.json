@@ -1,0 +1,926 @@
+{
+  "schema": "cast-status-source-extraction-v1",
+  "original": {
+    "file": "assets/library/capture/sprites/source/status_aura_source_01.jpg",
+    "sha256": "bcc082152b0b5c83b34b51c890dc43bc48267751120740ad478801fcb8f19904",
+    "format": "JPEG",
+    "mode": "RGB",
+    "size": [
+      1536,
+      1024
+    ],
+    "uploadedFilename": "Image ChatGPT 3 oct. 2026, 20_37_03.png"
+  },
+  "transparent": {
+    "file": "assets/library/capture/sprites/source/status_aura_transparent_01.png",
+    "sha256": "d6cbc9891a4cb7188725f2529ec5de6cd06cbf8cfe111694b46e303371c53b7d",
+    "mode": "RGBA",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  "backgroundExtraction": {
+    "tool": "imagegen",
+    "transparentBackground": true,
+    "prompt": "Use case: background-extraction. Edit the provided AURA/STATUS game sprite sheet into true transparent PNG RGBA, exact 1536x1024 dimensions, identical coordinate layout. Extract the existing illustrations, do not redesign them. Keep every one of the 56 animation phases at its original position and original size: 7 rows, 8 columns. Rows in order: green healing cross and leaves, blue energy shield dome with hexagon texture, ochre brown rock shell sphere, green poison skull and bubbles/puddle, green regeneration spiral and leaves, golden purification rings/light pillar/sparks, purple curse black spires/ring/smoke. Remove all grey checkerboard pixels, rounded tile panels/borders, text/filenames and the left row title/icon column entirely to transparent empty space. Preserve the art's original sharp detail and subtle colored glow, using smooth real alpha. Especially preserve the dark/black spires and smoke INSIDE the purple curse effects as intentional artwork; do not color-key them away. Preserve blue shield's translucent internal texture as proper alpha, keep tiny leaves and sparks. At the empty gaps and around every sprite alpha must be truly zero, not an opaque colored wash, black/grey backdrop or a simulated checkerboard. Each phase remains separate in its original tile, with no relocation, cropping, added symbols or new effects. Only remove background and labels.",
+    "note": "AI-assisted alpha extraction from flattened JPEG. Audited derivative, not pixel-identical original RGB. Original is archived unchanged. Labels/panels removed; light/dark inspection includes black curse cores."
+  },
+  "extraction": "Exact rectangular RGBA copies with transparent padding. No resampling, color-key, alpha threshold, rotation, per-frame recentering or painting.",
+  "frameSize": [
+    256,
+    256
+  ],
+  "frameMs": 90,
+  "families": [
+    {
+      "name": "healing_aura",
+      "label": "Aura de soins",
+      "sourceRow": 0,
+      "assetId": "pack:capture:sprite-status-healing-aura-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_01.png",
+          "sha256": "cb7d694651d100cf7170fdc59b41665e8d062c366736eef79bd9e176be3fa396",
+          "sourceRect": [
+            120,
+            0,
+            284,
+            138
+          ],
+          "offset": [
+            46,
+            59
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_02.png",
+          "sha256": "0e85ad7cfcedf4e05a955a1a0cc44a7742ef6fda28ee5bc0bbafd7d4605cacc7",
+          "sourceRect": [
+            284,
+            0,
+            457,
+            138
+          ],
+          "offset": [
+            41,
+            59
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_03.png",
+          "sha256": "d98df5c7ff949cb6c45c538b32344566e6e9467ec3f944b852134619cc78346b",
+          "sourceRect": [
+            457,
+            0,
+            628,
+            138
+          ],
+          "offset": [
+            42,
+            59
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_04.png",
+          "sha256": "5bd0685d9eeb9edca77ccdbe9d4840714ba6c41eed7d8328953c84b4975bf924",
+          "sourceRect": [
+            628,
+            0,
+            802,
+            138
+          ],
+          "offset": [
+            41,
+            59
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_05.png",
+          "sha256": "9f51d8488dc173951398b36a6b16aaab3387b38119d481424de7f30875a86ebe",
+          "sourceRect": [
+            802,
+            0,
+            974,
+            138
+          ],
+          "offset": [
+            42,
+            59
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_06.png",
+          "sha256": "c123aefdb8ee0aabb0a77dac55575e9744a96727d9a2c60940571d25989e77e0",
+          "sourceRect": [
+            974,
+            0,
+            1147,
+            138
+          ],
+          "offset": [
+            41,
+            59
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_07.png",
+          "sha256": "e2062a071a08d512e8c2a2715dae38d116d561aa03afa3e44d7a30dbbe15895a",
+          "sourceRect": [
+            1147,
+            0,
+            1340,
+            138
+          ],
+          "offset": [
+            31,
+            59
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/healing_aura/frames/sprite_status_healing_aura_08.png",
+          "sha256": "78fe80d952bea39cb2fbc4dfcb2b10189c01c9a1de4118b967b163ee30523caf",
+          "sourceRect": [
+            1340,
+            0,
+            1536,
+            138
+          ],
+          "offset": [
+            30,
+            59
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/statuses/healing_aura/atlases/sprite_status_healing_aura_atlas_01.webp",
+      "atlasSha256": "0054bde3ed55add7f16fda3b2b22a4e13840a374ecbd6f59fa928d7215ce33e0",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/statuses/healing_aura/sprite_status_healing_aura_sequence.json"
+    },
+    {
+      "name": "energy_shield",
+      "label": "Bouclier d’énergie",
+      "sourceRow": 1,
+      "assetId": "pack:capture:sprite-status-energy-shield-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_01.png",
+          "sha256": "4c3bd409a656440a5d66b9d6d43a247c3ca309f9ea005084e0ef24dac1dfbbd8",
+          "sourceRect": [
+            120,
+            138,
+            284,
+            273
+          ],
+          "offset": [
+            46,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_02.png",
+          "sha256": "41f644960b4351c801275f49c8b42f1c07f8168c100a60acb735154897f60ee9",
+          "sourceRect": [
+            284,
+            138,
+            457,
+            273
+          ],
+          "offset": [
+            41,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_03.png",
+          "sha256": "77195ad36878fce0799a08cb96525d813859da7e7012d15575c5c35ce9a53261",
+          "sourceRect": [
+            457,
+            138,
+            628,
+            273
+          ],
+          "offset": [
+            42,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_04.png",
+          "sha256": "889a92681846891457d9d635d5cc3c3e9cf7bc2b848a415928b0b87d07b9d4aa",
+          "sourceRect": [
+            628,
+            138,
+            802,
+            273
+          ],
+          "offset": [
+            41,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_05.png",
+          "sha256": "653aa5a88ba00ff4826e9657eea052ce23ca359e9f4dbc260341efc1bb793292",
+          "sourceRect": [
+            802,
+            138,
+            974,
+            273
+          ],
+          "offset": [
+            42,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_06.png",
+          "sha256": "37e5f7d0742561d42715bef0102a3507c31ee75765a3d8d70862b9157cb9782e",
+          "sourceRect": [
+            974,
+            138,
+            1147,
+            273
+          ],
+          "offset": [
+            41,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_07.png",
+          "sha256": "0ba7e8a4f0793692d5ddeceb1e881bdf1e7fa437d76760ca372d13d2f19b920a",
+          "sourceRect": [
+            1147,
+            138,
+            1340,
+            273
+          ],
+          "offset": [
+            31,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/energy_shield/frames/sprite_status_energy_shield_08.png",
+          "sha256": "9e7a1795fc1fc2bc972a2d47f08b598279e35596247436bc30377ab2dcd49939",
+          "sourceRect": [
+            1340,
+            138,
+            1536,
+            273
+          ],
+          "offset": [
+            30,
+            60
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/statuses/energy_shield/atlases/sprite_status_energy_shield_atlas_01.webp",
+      "atlasSha256": "37af85b3ee84a5e5b91c8b9d0f98d41a730e7070fb90ec38dc86cac9c7c48d11",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/statuses/energy_shield/sprite_status_energy_shield_sequence.json"
+    },
+    {
+      "name": "stone_shell",
+      "label": "Carapace",
+      "sourceRow": 2,
+      "assetId": "pack:capture:sprite-status-stone-shell-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_01.png",
+          "sha256": "828d02b824a0c29356295c3b71a70bd6eeefe17adc9bcf0db11bcdf86512b14e",
+          "sourceRect": [
+            120,
+            273,
+            284,
+            412
+          ],
+          "offset": [
+            46,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_02.png",
+          "sha256": "16165692e35e6ef408468145107d12a0148eeb43ecc29e879ceb38c434fb91dc",
+          "sourceRect": [
+            284,
+            273,
+            457,
+            412
+          ],
+          "offset": [
+            41,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_03.png",
+          "sha256": "1ab08646ed24ca3e03a82092be91ed0804577d2d6d6ceb735d5f4aa7298e8950",
+          "sourceRect": [
+            457,
+            273,
+            628,
+            412
+          ],
+          "offset": [
+            42,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_04.png",
+          "sha256": "95f6ed5865ae4635911da49e8116a898c83ad71956727a82966b8111d3dfcaa0",
+          "sourceRect": [
+            628,
+            273,
+            802,
+            412
+          ],
+          "offset": [
+            41,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_05.png",
+          "sha256": "1f750f76df3df15d094e14c5f8f7bbfe10c3efdb645069937cc68008e0831a9b",
+          "sourceRect": [
+            802,
+            273,
+            974,
+            412
+          ],
+          "offset": [
+            42,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_06.png",
+          "sha256": "086497536c41803ed655b254c302a5010ae6f296df4ee59afff6b28acd146cde",
+          "sourceRect": [
+            974,
+            273,
+            1147,
+            412
+          ],
+          "offset": [
+            41,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_07.png",
+          "sha256": "8ed11d3d5f3ea8ab876a8a677b93587d7b7d044741f4211b24f6c93039a5426f",
+          "sourceRect": [
+            1147,
+            273,
+            1340,
+            412
+          ],
+          "offset": [
+            31,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/stone_shell/frames/sprite_status_stone_shell_08.png",
+          "sha256": "a4bb5bda47232bf0f108b5dc3c29fe0e16c3f2dcb2c32fb40a9183b5b365d588",
+          "sourceRect": [
+            1340,
+            273,
+            1536,
+            412
+          ],
+          "offset": [
+            30,
+            58
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/statuses/stone_shell/atlases/sprite_status_stone_shell_atlas_01.webp",
+      "atlasSha256": "027273454e906358b4bc4b22b92622e5a60122dfa9954a0a21b3e36a7950bda2",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/statuses/stone_shell/sprite_status_stone_shell_sequence.json"
+    },
+    {
+      "name": "poison",
+      "label": "Poison",
+      "sourceRow": 3,
+      "assetId": "pack:capture:sprite-status-poison-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_01.png",
+          "sha256": "8386f00eafd480f8a9e049f82c51a8a7c682c3b01fc9e26490734cb6484766b4",
+          "sourceRect": [
+            120,
+            412,
+            284,
+            552
+          ],
+          "offset": [
+            46,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_02.png",
+          "sha256": "f2897995e1693356b77064e982f55b263f6db3b4b1f3272dde99c6db7958e542",
+          "sourceRect": [
+            284,
+            412,
+            457,
+            552
+          ],
+          "offset": [
+            41,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_03.png",
+          "sha256": "8ed32e66527c68e15e1b333c0f85d4c9c5bd8505ef3b9ffb82d28884573bb8bc",
+          "sourceRect": [
+            457,
+            412,
+            628,
+            552
+          ],
+          "offset": [
+            42,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_04.png",
+          "sha256": "8146d22fd4a0d30708ecd6f42f990a1893a8e0683d218c9a6266882528d52faf",
+          "sourceRect": [
+            628,
+            412,
+            802,
+            552
+          ],
+          "offset": [
+            41,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_05.png",
+          "sha256": "5bd47260405dc96c686b38f47072f78dc3d9dbdac542a6cfbb454d9831f99048",
+          "sourceRect": [
+            802,
+            412,
+            974,
+            552
+          ],
+          "offset": [
+            42,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_06.png",
+          "sha256": "3c8022464f09dfe0008c22fbf22f27aa9d3fc22e588c4c34e8e37c9e09e7e11c",
+          "sourceRect": [
+            974,
+            412,
+            1147,
+            552
+          ],
+          "offset": [
+            41,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_07.png",
+          "sha256": "1d51ac6adb30b304563ada3096958cce4ccf7dad34cf77742572fbe921145491",
+          "sourceRect": [
+            1147,
+            412,
+            1340,
+            552
+          ],
+          "offset": [
+            31,
+            58
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/poison/frames/sprite_status_poison_08.png",
+          "sha256": "d815c3a0ea9b24878a0ad019d493da77b7cb61b4515b56a9e81303baf2ba87d2",
+          "sourceRect": [
+            1340,
+            412,
+            1536,
+            552
+          ],
+          "offset": [
+            30,
+            58
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/statuses/poison/atlases/sprite_status_poison_atlas_01.webp",
+      "atlasSha256": "7c776fa120481b41177d135b30c18d2173feeb7e6c9c23d158da4b1a1f3b34db",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/statuses/poison/sprite_status_poison_sequence.json"
+    },
+    {
+      "name": "regeneration",
+      "label": "Régénération",
+      "sourceRow": 4,
+      "assetId": "pack:capture:sprite-status-regeneration-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_01.png",
+          "sha256": "5e8931bb755fc4c0e0b26d886c9ab1f7ff13090b36b75876901979609dd79088",
+          "sourceRect": [
+            120,
+            552,
+            284,
+            688
+          ],
+          "offset": [
+            46,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_02.png",
+          "sha256": "4ff91d3d9e3b42245e8a964a6ae4cb10f1492173d899e7729a980c4980aa3b36",
+          "sourceRect": [
+            284,
+            552,
+            457,
+            688
+          ],
+          "offset": [
+            41,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_03.png",
+          "sha256": "c9e5c4fd5d41898b7423500dd253eb8c7e25b0f234d6c33efefba7b0c9ba3892",
+          "sourceRect": [
+            457,
+            552,
+            628,
+            688
+          ],
+          "offset": [
+            42,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_04.png",
+          "sha256": "9d7cca00d8e9510178f5227523678729e44c5f4b2f47bc4fc9ae734c3de5a231",
+          "sourceRect": [
+            628,
+            552,
+            802,
+            688
+          ],
+          "offset": [
+            41,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_05.png",
+          "sha256": "a48a79357f7b5878b7875c40e89f48123ab8ef6bf4dd382e2952cca0af18f1b3",
+          "sourceRect": [
+            802,
+            552,
+            974,
+            688
+          ],
+          "offset": [
+            42,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_06.png",
+          "sha256": "80155465c70f3cd0d10a5eadc3f5659bfd6848558ef71cf43a6e578dabf9ca24",
+          "sourceRect": [
+            974,
+            552,
+            1147,
+            688
+          ],
+          "offset": [
+            41,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_07.png",
+          "sha256": "bb933939305828430544c900f2132aa01e183526f7bba99ef383ba7f14824615",
+          "sourceRect": [
+            1147,
+            552,
+            1340,
+            688
+          ],
+          "offset": [
+            31,
+            60
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/regeneration/frames/sprite_status_regeneration_08.png",
+          "sha256": "fe4f88ff6a69f38cc8071469b8bcb68d56918fdf81226c1166b62f1c46248f93",
+          "sourceRect": [
+            1340,
+            552,
+            1536,
+            688
+          ],
+          "offset": [
+            30,
+            60
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/statuses/regeneration/atlases/sprite_status_regeneration_atlas_01.webp",
+      "atlasSha256": "44338272bbd947e5b63bdc99f4fa134e186414198b40719a58e537ed232865ac",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/statuses/regeneration/sprite_status_regeneration_sequence.json"
+    },
+    {
+      "name": "purification",
+      "label": "Purification",
+      "sourceRow": 5,
+      "assetId": "pack:capture:sprite-status-purification-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_01.png",
+          "sha256": "39526b6761791bed1726e88d455bc55c1ef33a429bd336e0cc351da4d01e6948",
+          "sourceRect": [
+            120,
+            688,
+            284,
+            840
+          ],
+          "offset": [
+            46,
+            52
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_02.png",
+          "sha256": "417b9f180bf1649226b2420b82d9413aa454bc1e1295da2a91073864c1393d52",
+          "sourceRect": [
+            284,
+            688,
+            457,
+            840
+          ],
+          "offset": [
+            41,
+            52
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_03.png",
+          "sha256": "67b8110dd9aca6168395a9a48b8e3d199d0a2dccf79250ddb4413da2418d9281",
+          "sourceRect": [
+            457,
+            688,
+            628,
+            840
+          ],
+          "offset": [
+            42,
+            52
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_04.png",
+          "sha256": "3d84f3b48e8395965f5110c643a83c3130ebf275529f18179d107b14a095b105",
+          "sourceRect": [
+            628,
+            688,
+            802,
+            840
+          ],
+          "offset": [
+            41,
+            52
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_05.png",
+          "sha256": "0d1e1c94ccb8f78d615852baf999ac5ec221274fffc34283cb1ea0a4367a4ab4",
+          "sourceRect": [
+            802,
+            688,
+            974,
+            840
+          ],
+          "offset": [
+            42,
+            52
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_06.png",
+          "sha256": "cc6b7461838e11843fe429f625a10d9f22514fa2ab877caf9f3984b269028b21",
+          "sourceRect": [
+            974,
+            688,
+            1147,
+            840
+          ],
+          "offset": [
+            41,
+            52
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_07.png",
+          "sha256": "fdaa34d12c7ef9cc75098a4aa21e67967fd09ebf250fdc521d5548b9949b15b5",
+          "sourceRect": [
+            1147,
+            688,
+            1340,
+            840
+          ],
+          "offset": [
+            31,
+            52
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/purification/frames/sprite_status_purification_08.png",
+          "sha256": "db22d043c047534b9c59f3ddb9dd0f42641d6cf0e40a289c570bf88b1dedf39b",
+          "sourceRect": [
+            1340,
+            688,
+            1536,
+            840
+          ],
+          "offset": [
+            30,
+            52
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/statuses/purification/atlases/sprite_status_purification_atlas_01.webp",
+      "atlasSha256": "a22906ab3d670c3fe480cc5cd99b5eafe10a41f9a5b6ed3eb7db3fde99937ba5",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/statuses/purification/sprite_status_purification_sequence.json"
+    },
+    {
+      "name": "curse",
+      "label": "Malédiction",
+      "sourceRow": 6,
+      "assetId": "pack:capture:sprite-status-curse-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_01.png",
+          "sha256": "3af26e31dd3371d4de5e70e5070b9928d50b5d274e9dbdc7fa8bee1918f02a61",
+          "sourceRect": [
+            120,
+            840,
+            284,
+            1024
+          ],
+          "offset": [
+            46,
+            36
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_02.png",
+          "sha256": "2d906e8af9343eae6a5b03bfbd8d897f7e9c3f3ea5582e9b364a723a49ccc441",
+          "sourceRect": [
+            284,
+            840,
+            457,
+            1024
+          ],
+          "offset": [
+            41,
+            36
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_03.png",
+          "sha256": "fb8e891eb1e3514dca958895e1050a130efa621e63baa8995dd24035fa4246a1",
+          "sourceRect": [
+            457,
+            840,
+            628,
+            1024
+          ],
+          "offset": [
+            42,
+            36
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_04.png",
+          "sha256": "d07d0a90bb7f1d417bc82d45d7e9b81a6878b0b30519ac9e352fb5a72a6963a7",
+          "sourceRect": [
+            628,
+            840,
+            802,
+            1024
+          ],
+          "offset": [
+            41,
+            36
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_05.png",
+          "sha256": "6d444a19e28215c07c115af89582bcab56c7157ddd7b62cd492eb9bdc045070b",
+          "sourceRect": [
+            802,
+            840,
+            974,
+            1024
+          ],
+          "offset": [
+            42,
+            36
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_06.png",
+          "sha256": "1d87de334900025da06721f5016b580272be6756a64bc2f25ffc86c880d01a06",
+          "sourceRect": [
+            974,
+            840,
+            1147,
+            1024
+          ],
+          "offset": [
+            41,
+            36
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_07.png",
+          "sha256": "6d1e425ed3d9df0b8ae8eabcd4374a0fa5eee770f13f7584fc46f48fe3815614",
+          "sourceRect": [
+            1147,
+            840,
+            1340,
+            1024
+          ],
+          "offset": [
+            31,
+            36
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/statuses/curse/frames/sprite_status_curse_08.png",
+          "sha256": "b7115d29714e0d36d55a2d3f23cd25449b332e184972478ca3328cf5b8434f14",
+          "sourceRect": [
+            1340,
+            840,
+            1536,
+            1024
+          ],
+          "offset": [
+            30,
+            36
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/statuses/curse/atlases/sprite_status_curse_atlas_01.webp",
+      "atlasSha256": "7d9429d7e012352517acc6d698a768d45f0f65b4d35bd5317de3de290902dd39",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/statuses/curse/sprite_status_curse_sequence.json"
+    }
+  ]
+}

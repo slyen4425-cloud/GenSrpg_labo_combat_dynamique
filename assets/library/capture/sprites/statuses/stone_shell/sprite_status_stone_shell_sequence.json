@@ -1,0 +1,25 @@
+{
+  "id": "status_stone_shell",
+  "type": "status_aura_sprite_sequence",
+  "frame_ms": 90,
+  "loop": true,
+  "progression": "cycle",
+  "frames": [
+    "frames/sprite_status_stone_shell_01.png",
+    "frames/sprite_status_stone_shell_02.png",
+    "frames/sprite_status_stone_shell_03.png",
+    "frames/sprite_status_stone_shell_04.png",
+    "frames/sprite_status_stone_shell_05.png",
+    "frames/sprite_status_stone_shell_06.png",
+    "frames/sprite_status_stone_shell_07.png",
+    "frames/sprite_status_stone_shell_08.png"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_status_stone_shell_atlas_01.webp",
+    "format": "sprite-strip",
+    "frameCount": 8,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "sourceManifest": "../../source/status_aura_extraction_v1.json"
+}

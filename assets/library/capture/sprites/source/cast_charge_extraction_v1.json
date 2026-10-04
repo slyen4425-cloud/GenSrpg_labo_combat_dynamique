@@ -1,0 +1,679 @@
+{
+  "schema": "cast-status-source-extraction-v1",
+  "original": {
+    "file": "assets/library/capture/sprites/source/cast_charge_source_01.jpg",
+    "sha256": "aac01479c103250ff2fd7cb459f7131364c089d6586d64d813b4da7c59706b69",
+    "format": "JPEG",
+    "mode": "RGB",
+    "size": [
+      1536,
+      1024
+    ],
+    "uploadedFilename": "Image ChatGPT 3 oct. 2026, 20_36_44.png"
+  },
+  "transparent": {
+    "file": "assets/library/capture/sprites/source/cast_charge_transparent_01.png",
+    "sha256": "96880c963b818d980fdd5cce82ef1c9b6618a94bfb5477837a2b8fa5544ea5de",
+    "mode": "RGBA",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  "backgroundExtraction": {
+    "tool": "imagegen",
+    "transparentBackground": true,
+    "prompt": {
+      "steps": [
+        "Use case: background-extraction. Edit the provided CAST/CHARGE sprite sheet into a genuinely transparent PNG RGBA, at the exact 1536x1024 dimensions and same coordinate layout. This is extraction of existing game sprites, not new art. Preserve ALL 40 original effects, five horizontal rows (red blade, brown/gold physical rock, blue electricity, blue water, green nature), eight successive animation phases in the same order and at exactly the same original centers/size. Keep every fine spark, glow, ray, particle, leaf and rock texture, including dim colored edges. Remove the flattened black backdrop completely to alpha=0, including JPEG background noise. Remove all text/file names and the five title badges, leaving transparent empty space there; do not replace them or add new symbols. The art should retain its original RGB appearance on a dark backdrop but composite cleanly over white with smooth real alpha, no black/gray matte or rectangular tile boundaries. Keep each frame separate, no overlap or relocation, and do not crop the sheet. Do not paint new effects or simplify the shapes. Transparent background is essential.",
+        "Use case: background-extraction / sprite sheet cleanup. Edit this already-transparent 1536x1024 RGBA CAST/CHARGE sheet. Preserve the same five rows and eight successive phases per row, same artwork and scale. Essential correction: each of the eight columns is exactly 192 pixels wide. Keep EVERY phase isolated inside its own column with at least 8 pixels of fully transparent vertical gutter at both column edges. Remove stray fragments belonging to neighbouring phases and keep the principal effect and its own particles whole. In the bottom green nature row, phases 4, 5 and 6 currently have leaves or glows crossing column boundaries: fit their own leaf clusters inside the corresponding 192px cells without adding new artwork. Maintain the eight phases and progression, all existing red blade / brown physical / blue electricity / blue water rows unchanged except any needed boundary cleanup. Keep real soft alpha for luminous halos, never paint a black or coloured backdrop. No text, labels, panel borders, checkerboard or title icons. Background and inter-cell gutters must have alpha zero. Keep the same output size and row layout, transparent background.",
+        "Edit the supplied transparent sprite sheet. Make exactly ONE geometric change: in the fifth/bottom row (green nature/leaves), uniformly scale EACH of the eight separate effects down to 75% of its current width and height around its own center. Keep their eight centers at x=96, 288, 480, 672, 864, 1056, 1248, 1440, y=904. This must leave a clean empty vertical gap between effects so none of their leaves intrudes into an adjacent 192-pixel column. Preserve the shapes, eight-phase progression, leaves, highlights and illustration style; do not add leaves or new artwork. The four upper rows must remain unchanged. Keep exact 1536x1024 canvas size. Genuine transparent alpha background, no labels, checkerboard or rectangles. Each nature effect should now be no more than 160 pixels wide, with its own complete leaf cluster; no clipped leaves or fragments from neighbouring phases."
+      ],
+      "note": "Nature silhouettes were reduced in the imagegen derivative to isolate overlapping leaf clusters; cropping below never resamples pixels."
+    },
+    "note": "AI-assisted alpha extraction from flattened JPEG. Audited derivative, not pixel-identical original RGB. Original is archived unchanged. Labels/panels removed; light/dark inspection includes black curse cores."
+  },
+  "extraction": "Exact rectangular RGBA copies with transparent padding. No resampling, color-key, alpha threshold, rotation, per-frame recentering or painting.",
+  "frameSize": [
+    256,
+    256
+  ],
+  "frameMs": 60,
+  "families": [
+    {
+      "name": "blade",
+      "label": "Charge — Lame",
+      "sourceRow": 0,
+      "assetId": "pack:capture:sprite-cast-blade-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_01.png",
+          "sha256": "238961f3d06c15eca87726a1e825a4f92d4248972dbe267e8ecafeb9f3d05a03",
+          "sourceRect": [
+            0,
+            0,
+            192,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_02.png",
+          "sha256": "2cd13dcbd7d80faa69c00f7f5005e2d0b8c282bcdced46cf6cfb0401743254af",
+          "sourceRect": [
+            192,
+            0,
+            384,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_03.png",
+          "sha256": "bf06264dd97a49614390fdcd6b83c0acb66c2b357bca8357060ede0e967a4fd5",
+          "sourceRect": [
+            384,
+            0,
+            576,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_04.png",
+          "sha256": "8a2f78ed32d696045bd3c2f7c9a017a8f39dfe5270435647b577c375299813e5",
+          "sourceRect": [
+            576,
+            0,
+            768,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_05.png",
+          "sha256": "9190b1c5bef657dabc9ab15d68d943d28f37fff7d18707a3e4e3347ab6577019",
+          "sourceRect": [
+            768,
+            0,
+            960,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_06.png",
+          "sha256": "d6e5658599630234f2cdbaad98fc1f23326238526ce5ee8a3887b5c0993aa62a",
+          "sourceRect": [
+            960,
+            0,
+            1152,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_07.png",
+          "sha256": "523084d59f02edcb6b75ffa252d993d5910e239710c7f13c9aa4a9d8205840de",
+          "sourceRect": [
+            1152,
+            0,
+            1344,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/blade/frames/sprite_cast_blade_08.png",
+          "sha256": "29584899105e7b2cd523f4e87852326e54e47184ab1e6a5fc92a4ec327cc38cc",
+          "sourceRect": [
+            1344,
+            0,
+            1536,
+            190
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/casts/blade/atlases/sprite_cast_blade_atlas_01.webp",
+      "atlasSha256": "704151ec7d4760a1a28eb97ea2cc5b057a8299a98b4c9f91c5c3db5a25825cc6",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/casts/blade/sprite_cast_blade_sequence.json"
+    },
+    {
+      "name": "physical",
+      "label": "Charge — Physique",
+      "sourceRow": 1,
+      "assetId": "pack:capture:sprite-cast-physical-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_01.png",
+          "sha256": "c07fbbb047a63dd42889062a24981079f56a1badda4be74c2d8c3455fba322ef",
+          "sourceRect": [
+            0,
+            200,
+            192,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_02.png",
+          "sha256": "a935952d88c9c9ac135035977728dec8a2286550ac8285e6cf06c6c5871c130c",
+          "sourceRect": [
+            192,
+            200,
+            384,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_03.png",
+          "sha256": "f193b6e74b193bec94ff7ef427c069aac5d00b0717c2c961e8fef397330619a6",
+          "sourceRect": [
+            384,
+            200,
+            576,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_04.png",
+          "sha256": "0a8d697959b078819877c7c20716bc41328d910e6675eedfb8f92be8fa633ccc",
+          "sourceRect": [
+            576,
+            200,
+            768,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_05.png",
+          "sha256": "86f3bccc91fa08a36f2b878f04ecdeb6aa55fa5308e96f2347296720ba3c0025",
+          "sourceRect": [
+            768,
+            200,
+            960,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_06.png",
+          "sha256": "ca3d21f28ea35eea5e648e56baf66c3d8d2d4ba8dcf243b8918aed4d6253ba76",
+          "sourceRect": [
+            960,
+            200,
+            1152,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_07.png",
+          "sha256": "b409d4aa75537a2ba06b21e85f2ba1d86e90f5446975e904b78b66886859ce8d",
+          "sourceRect": [
+            1152,
+            200,
+            1344,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/physical/frames/sprite_cast_physical_08.png",
+          "sha256": "3613591ec4a4330f63c29bb99f6e33e405368d71bb0baac1a4e87c9d3b1f21a2",
+          "sourceRect": [
+            1344,
+            200,
+            1536,
+            407
+          ],
+          "offset": [
+            32,
+            24
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/casts/physical/atlases/sprite_cast_physical_atlas_01.webp",
+      "atlasSha256": "e7a4b13a84f953bd5f649cca2f2471a64fef6caed4ebfe9c1283e8169b529e9f",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/casts/physical/sprite_cast_physical_sequence.json"
+    },
+    {
+      "name": "electric",
+      "label": "Charge — Électrique",
+      "sourceRow": 2,
+      "assetId": "pack:capture:sprite-cast-electric-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_01.png",
+          "sha256": "110891b98a137aac75ee65c45115dac8e74396a1bde4067809675c4281f97fc4",
+          "sourceRect": [
+            0,
+            420,
+            192,
+            610
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_02.png",
+          "sha256": "47c139c5738c06f43d61c4c6acb06d82b35408ea125d54805ca8b59048b3bb45",
+          "sourceRect": [
+            192,
+            420,
+            384,
+            610
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_03.png",
+          "sha256": "6a8f1a61e2cd21acc99ae7fee4238136126e52923d1704bca5f27a5a0cb8a168",
+          "sourceRect": [
+            384,
+            420,
+            576,
+            610
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_04.png",
+          "sha256": "351462594d52d4b48c6c2b795b9bd8c5a099fc10fd7719a256491e5bd7eece8e",
+          "sourceRect": [
+            576,
+            420,
+            768,
+            610
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_05.png",
+          "sha256": "c82e5c1914a166045c673c1196412d459ac78f4443748f5ebeba17804cd40a69",
+          "sourceRect": [
+            768,
+            420,
+            978,
+            610
+          ],
+          "offset": [
+            23,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_06.png",
+          "sha256": "16a96a16400b43d0540f200808b6daaf72bc5e74cd828a29a349a4f9b0f759c5",
+          "sourceRect": [
+            978,
+            420,
+            1152,
+            610
+          ],
+          "offset": [
+            41,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_07.png",
+          "sha256": "f83f894299d8a19c4bb840064fc162275593b18f34f98f34dbdcec11fa8f031b",
+          "sourceRect": [
+            1152,
+            420,
+            1344,
+            610
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/electric/frames/sprite_cast_electric_08.png",
+          "sha256": "2699ad204bbceed362dbbed696e5352820cd5d62853ee45540caf1ef2dfdcce1",
+          "sourceRect": [
+            1344,
+            420,
+            1536,
+            610
+          ],
+          "offset": [
+            32,
+            33
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/casts/electric/atlases/sprite_cast_electric_atlas_01.webp",
+      "atlasSha256": "34ca11dd276647a0c6aa0680561f0e8de564c087b082cd769d4a34230192d557",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/casts/electric/sprite_cast_electric_sequence.json"
+    },
+    {
+      "name": "water",
+      "label": "Charge — Eau",
+      "sourceRow": 3,
+      "assetId": "pack:capture:sprite-cast-water-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_01.png",
+          "sha256": "830db263d170706c8f1b542430c4c6a4bae003ef70d5dc2504d4d3d15eeecd15",
+          "sourceRect": [
+            0,
+            625,
+            192,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_02.png",
+          "sha256": "2be75b8553a1954944979140fff2d3e3a14f3bda6733484ff57f10e2d5e37a07",
+          "sourceRect": [
+            192,
+            625,
+            384,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_03.png",
+          "sha256": "9827da0bc41fb7fdfad7e07fd77384897de0224d421a67e578e6589fa5416412",
+          "sourceRect": [
+            384,
+            625,
+            576,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_04.png",
+          "sha256": "d45d4c0aa399c4cc6a089897d3167baf7d93085ef26fe5d9884e195a28dfebd4",
+          "sourceRect": [
+            576,
+            625,
+            768,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_05.png",
+          "sha256": "08e06d3de5f021a84e0d6ed4849ef94629ea42cf36450f5c659417db8532fac5",
+          "sourceRect": [
+            768,
+            625,
+            960,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_06.png",
+          "sha256": "709fa941e8ca99bfe618e1c986bdc38aceeedc500e6a45b07b525c3a1a6b3a78",
+          "sourceRect": [
+            960,
+            625,
+            1152,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_07.png",
+          "sha256": "d6bcb29b95f373c41cbb719926bf50c082aa499c75847e7d1efaa533e2560fea",
+          "sourceRect": [
+            1152,
+            625,
+            1344,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/water/frames/sprite_cast_water_08.png",
+          "sha256": "c6655aae2229973b0795f2774350494cacabdffc2013bd2641c2a9f98c302f8f",
+          "sourceRect": [
+            1344,
+            625,
+            1536,
+            810
+          ],
+          "offset": [
+            32,
+            35
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/casts/water/atlases/sprite_cast_water_atlas_01.webp",
+      "atlasSha256": "140a2c1abb48e1a32784bf5c2369d6a54178c98f21d0d3ec3d5cbdab78128e2a",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/casts/water/sprite_cast_water_sequence.json"
+    },
+    {
+      "name": "nature",
+      "label": "Charge — Nature",
+      "sourceRow": 4,
+      "assetId": "pack:capture:sprite-cast-nature-01",
+      "frames": [
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_01.png",
+          "sha256": "7d96aebcdaaf6846b08ee89f1faf9bdaa49a7db637e2c16e03b7d3a60864de22",
+          "sourceRect": [
+            0,
+            818,
+            192,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_02.png",
+          "sha256": "50750793655c6369999109103205bbc913d17c3f2eaa6c3d17ba732fc1f667ff",
+          "sourceRect": [
+            192,
+            818,
+            384,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_03.png",
+          "sha256": "1e0b4c5db15129ce30f7e60f027a45c2cc5c59abfb3ae3135c9ab3e61e799306",
+          "sourceRect": [
+            384,
+            818,
+            576,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_04.png",
+          "sha256": "f48ea72b4e1d3935022a93117f8c94b923d6c4e6fc0dbabb967b08b370935faf",
+          "sourceRect": [
+            576,
+            818,
+            768,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_05.png",
+          "sha256": "c79397a1145b9ef4b58749ba178c26d6a3193c293f0e6c9ac82c453cd64b30c0",
+          "sourceRect": [
+            768,
+            818,
+            960,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_06.png",
+          "sha256": "1ec0fb304286fff45001d2917621bcad9773d5e85a2a5cff4c079f35cf06227e",
+          "sourceRect": [
+            960,
+            818,
+            1152,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_07.png",
+          "sha256": "00781c287c57cfdbfca0b24c98b591691a133d3761989362dadefa7505c93ab6",
+          "sourceRect": [
+            1152,
+            818,
+            1344,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        },
+        {
+          "file": "assets/library/capture/sprites/casts/nature/frames/sprite_cast_nature_08.png",
+          "sha256": "2be16ca92956a1fca45cd49d77fefc249a3351133c7c88f673e093e81f325c7a",
+          "sourceRect": [
+            1344,
+            818,
+            1536,
+            1024
+          ],
+          "offset": [
+            32,
+            25
+          ]
+        }
+      ],
+      "atlas": "assets/library/capture/sprites/casts/nature/atlases/sprite_cast_nature_atlas_01.webp",
+      "atlasSha256": "c883d4d5d76479bab845365dd4c864edfeb7a7ba4e8e87c5070f6bb909324f5e",
+      "atlasSize": [
+        2048,
+        256
+      ],
+      "sequence": "assets/library/capture/sprites/casts/nature/sprite_cast_nature_sequence.json"
+    }
+  ]
+}

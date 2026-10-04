@@ -5,13 +5,21 @@
   "loop": false,
   "progression": "build_up",
   "frames": [
-    "frames/sprite_cast_electric_01.svg",
-    "frames/sprite_cast_electric_02.svg",
-    "frames/sprite_cast_electric_03.svg",
-    "frames/sprite_cast_electric_04.svg",
-    "frames/sprite_cast_electric_05.svg",
-    "frames/sprite_cast_electric_06.svg",
-    "frames/sprite_cast_electric_07.svg",
-    "frames/sprite_cast_electric_08.svg"
-  ]
+    "frames/sprite_cast_electric_01.png",
+    "frames/sprite_cast_electric_02.png",
+    "frames/sprite_cast_electric_03.png",
+    "frames/sprite_cast_electric_04.png",
+    "frames/sprite_cast_electric_05.png",
+    "frames/sprite_cast_electric_06.png",
+    "frames/sprite_cast_electric_07.png",
+    "frames/sprite_cast_electric_08.png"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_cast_electric_atlas_01.webp",
+    "format": "sprite-strip",
+    "frameCount": 8,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "sourceManifest": "../../source/cast_charge_extraction_v1.json"
 }

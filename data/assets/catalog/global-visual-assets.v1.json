@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 88,
+    "assets": 95,
     "icons": 31,
-    "sprites": 41,
+    "sprites": 48,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -1232,7 +1232,7 @@
     },
     {
       "id": "pack:capture:sprite-cast-blade-01",
-      "label": "cast blade",
+      "label": "Charge — Lame",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "release",
@@ -1249,8 +1249,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/casts/blade/sprite_cast_blade_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/casts/blade/atlases/sprite_cast_blade_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 60
       },
       "compatibility": {
         "uses": [
@@ -1262,7 +1265,7 @@
     },
     {
       "id": "pack:capture:sprite-cast-electric-01",
-      "label": "cast electric",
+      "label": "Charge — Électrique",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "release",
@@ -1279,8 +1282,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/casts/electric/sprite_cast_electric_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/casts/electric/atlases/sprite_cast_electric_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 60
       },
       "compatibility": {
         "uses": [
@@ -1292,7 +1298,7 @@
     },
     {
       "id": "pack:capture:sprite-cast-nature-01",
-      "label": "cast nature",
+      "label": "Charge — Nature",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "release",
@@ -1309,8 +1315,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/casts/nature/sprite_cast_nature_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/casts/nature/atlases/sprite_cast_nature_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 60
       },
       "compatibility": {
         "uses": [
@@ -1322,7 +1331,7 @@
     },
     {
       "id": "pack:capture:sprite-cast-physical-01",
-      "label": "cast physical",
+      "label": "Charge — Physique",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "release",
@@ -1339,8 +1348,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/casts/physical/sprite_cast_physical_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/casts/physical/atlases/sprite_cast_physical_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 60
       },
       "compatibility": {
         "uses": [
@@ -1352,7 +1364,7 @@
     },
     {
       "id": "pack:capture:sprite-cast-water-01",
-      "label": "cast water",
+      "label": "Charge — Eau",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "release",
@@ -1369,8 +1381,11 @@
         "license": "project-internal"
       },
       "resource": {
-        "manifest": "capture/sprites/casts/water/sprite_cast_water_sequence.json",
-        "format": "image-sequence"
+        "file": "capture/sprites/casts/water/atlases/sprite_cast_water_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 60
       },
       "compatibility": {
         "uses": [
@@ -2762,6 +2777,251 @@
           "capture",
           "editor"
         ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-status-healing-aura-01",
+      "label": "Aura de soins",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/sprites/statuses/healing_aura/atlases/sprite_status_healing_aura_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-status-energy-shield-01",
+      "label": "Bouclier d’énergie",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/sprites/statuses/energy_shield/atlases/sprite_status_energy_shield_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-status-stone-shell-01",
+      "label": "Carapace",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/sprites/statuses/stone_shell/atlases/sprite_status_stone_shell_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-status-poison-01",
+      "label": "Poison",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/sprites/statuses/poison/atlases/sprite_status_poison_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-status-regeneration-01",
+      "label": "Régénération",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/sprites/statuses/regeneration/atlases/sprite_status_regeneration_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-status-purification-01",
+      "label": "Purification",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/sprites/statuses/purification/atlases/sprite_status_purification_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-status-curse-01",
+      "label": "Malédiction",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "animated",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/sprites/statuses/curse/atlases/sprite_status_curse_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 90,
+        "playbackMode": "loop"
       }
     }
   ]

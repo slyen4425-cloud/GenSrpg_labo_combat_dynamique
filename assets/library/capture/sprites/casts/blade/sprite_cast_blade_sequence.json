@@ -5,13 +5,21 @@
   "loop": false,
   "progression": "build_up",
   "frames": [
-    "frames/sprite_cast_blade_01.svg",
-    "frames/sprite_cast_blade_02.svg",
-    "frames/sprite_cast_blade_03.svg",
-    "frames/sprite_cast_blade_04.svg",
-    "frames/sprite_cast_blade_05.svg",
-    "frames/sprite_cast_blade_06.svg",
-    "frames/sprite_cast_blade_07.svg",
-    "frames/sprite_cast_blade_08.svg"
-  ]
+    "frames/sprite_cast_blade_01.png",
+    "frames/sprite_cast_blade_02.png",
+    "frames/sprite_cast_blade_03.png",
+    "frames/sprite_cast_blade_04.png",
+    "frames/sprite_cast_blade_05.png",
+    "frames/sprite_cast_blade_06.png",
+    "frames/sprite_cast_blade_07.png",
+    "frames/sprite_cast_blade_08.png"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_cast_blade_atlas_01.webp",
+    "format": "sprite-strip",
+    "frameCount": 8,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "sourceManifest": "../../source/cast_charge_extraction_v1.json"
 }
