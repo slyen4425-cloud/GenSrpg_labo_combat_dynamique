@@ -6634,3 +6634,18 @@ Capture de preview conservée : `GenSrpG_Projectiles_Preview_1791060832153.jpg`.
 Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anciens médias provisoires n'a été promu dans ce lot.
 État du lot : médias réels publiés, raccord éditeur vérifié, CI technique réussie ; validation artistique finale utilisateur encore ouverte. Checkpoints de fin nommés **CI**, jamais GREEN artistique.
 
+
+
+## 2026-10-04 — CAST/CHARGE, AURA/STATUS et ombre mobile — périmètre ouvert
+- Demande Sylvain : intégrer les deux dernières planches comme les impacts/projectiles ; corriger l’ombre qui reste fixe pendant l’attaque. « Parfait » reçu sur le lot présentation précédent ; aucune validation artistique anticipée pour ces deux nouvelles planches.
+- Base labo exacte : `e1d64fcad8bdf63d48d6f3938100c67c60d5fabd` (`work/lab-presentation-feedback-v1-2026-10-03`, CI 37158132052 et 37158058357 success, 923 tests). Base médias : `642587caec5457f1b5ba830bf115ca3cb7f75498` (`global-assets`, CI 37153465994 success, 199 tests).
+- Dernier jalon GREEN existant relu : `checkpoint/lab-fire-zone-contact-sync-v1-green-2026-10-03` = `f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d`. Checkpoints de départ et branches dédiées créés depuis les bases exactes ci-dessus.
+- Source CAST/CHARGE : « Image ChatGPT 3 oct. 2026, 20_36_44.png », en réalité JPEG RGB 1536×1024, SHA256 `aac01479c103250ff2fd7cb459f7131364c089d6586d64d813b4da7c59706b69`, fond noir aplati. Cinq familles × huit phases.
+- Source AURA/STATUS : « Image ChatGPT 3 oct. 2026, 20_37_03.png », en réalité JPEG RGB 1536×1024, SHA256 `bcc082152b0b5c83b34b51c890dc43bc48267751120740ad478801fcb8f19904`, damier aplati. Sept familles × huit phases.
+- Audit catalogue : réutiliser les cinq IDs `pack:capture:sprite-cast-{blade,physical,electric,water,nature}-01`. Aucune famille AURA/STATUS équivalente présente dans les 88 assets actuels ; sept nouveaux IDs canoniques dans le même catalogue, aucun catalogue parallèle.
+- Micro-lot ombre : distinguer la translation du sol de l’élévation dans l’AnimationPlan existant ; projeter l’ombre dans le même renderer/lifecycle que le corps, mêmes offsets/easing/durée, retour/cancel/dispose/KO compris. Le pseudo-élément fixe CSS actuel est la cause observée. Aucun nouveau moteur, timer global ou observer.
+- Micro-lot CAST : alpha dérivé via imagegen, original archivé inchangé, découpe auditée, 40 frames PNG et 5 atlas WebP lossless, manifests et catalogue autoritaire.
+- Micro-lot AURA/STATUS : même procédure, 56 frames PNG et 7 atlas WebP lossless ; raccord aux sélecteurs aura/statut et résolveur natif existants.
+- Périmètre fichiers : plan-animation/animation-plan, dom-keyframes/dom-actor-renderer, demo-app/demo.css ; demo-assets/global-visual-library ; filtres natifs seulement si requis ; tests de vraie chaîne ; scripts/manifests/médias dans global-assets ; docs et preview dédiée.
+- Protégés : `main` (`3197388f2b3ee7491be6e6125a015315158cffa2`), Zombicide-40k, gameplay, règles/IA, collisions/capteurs, sockets/export/presets, chemins et IDs Fireball dédiée, impacts/projectiles validés, réglages de lecture et échelle du lot précédent.
+- Ordre : tests RED ciblés → correctif minimal → CI complète de chaque branche → publication médias par fast-forward → vérification UI réelle et rapport §34. Statut actuel : EN COURS, médias nouveaux NON LIVRÉS, aucun GREEN utilisateur.
