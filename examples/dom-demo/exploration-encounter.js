@@ -25,8 +25,8 @@ import {
   demoPresentationAssets
 } from "./demo-assets.js";
 import {
-  createCaptureRuntimePresentationAssetsV1
-} from "../../src/adapters/presentation/capture-runtime-presentation-assets-v1.js";
+  createCaptureSkillPresentationAssetsV2
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?rev=exploration-bridge-convergence-v1";
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
@@ -314,13 +314,72 @@ Promise.resolve()
         }
       });
 
-    const runtimePresentationAssets =
-      createCaptureRuntimePresentationAssetsV1({
-        baseAssets:
-          demoPresentationAssets,
+    const configuredPresentationAssets =
+      createCaptureSkillPresentationAssetsV2({
         skillPresentations:
           nativeCombatSource
-            .skillPresentations
+            .skillPresentations,
+        assetForId(assetId) {
+          return (
+            demoPresentationAssets
+              .asset(assetId) ??
+            null
+          );
+        },
+        audioAssetForId(assetId) {
+          return (
+            demoPresentationAssets
+              .audioAsset(assetId) ??
+            null
+          );
+        }
+      });
+
+    const runtimePresentationAssets =
+      Object.freeze({
+        presentationForSkill(
+          skillId,
+          context = {}
+        ) {
+          return (
+            configuredPresentationAssets
+              .presentationForSkill(
+                skillId,
+                context
+              ) ??
+            demoPresentationAssets
+              .presentationForSkill(
+                skillId,
+                context
+              )
+          );
+        },
+        statusPresentationFor(
+          statusId,
+          context = {}
+        ) {
+          return (
+            configuredPresentationAssets
+              .statusPresentationFor(
+                statusId,
+                context
+              ) ??
+            demoPresentationAssets
+              .statusPresentationFor?.(
+                statusId,
+                context
+              ) ??
+            null
+          );
+        },
+        audioAsset(assetId) {
+          return (
+            configuredPresentationAssets
+              .audioAsset(assetId) ??
+            demoPresentationAssets
+              .audioAsset(assetId)
+          );
+        }
       });
 
     mountedCombat =
