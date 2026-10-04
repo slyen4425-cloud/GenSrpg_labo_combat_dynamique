@@ -92,7 +92,7 @@ test("persistent zone stretches to Runtime duration without restart on refresh o
   renderer.syncPersistentZones([zone]);
   assert.equal(nodes[0].style.animationIterationCount, "1"); assert.equal(nodes[0].style.animationDuration, "4000ms");
   assert.equal(nodes[0].className.includes("layer-behind"), false);
-  renderer.syncPersistentZones([{ ...zone, radius: "medium", expiresAtMs: 6100 }]);
+  renderer.syncPersistentZones([{ ...zone, radius: "medium", appliedAtMs: 2100, expiresAtMs: 6100 }]);
   assert.equal(nodes.length, 1); assert.equal(nodes[0].style.animationDuration, "6000ms");
   renderer.syncPersistentZones([]); assert.equal(nodes[0].removed, true); assert.equal(renderer.activeCount, 0);
 });

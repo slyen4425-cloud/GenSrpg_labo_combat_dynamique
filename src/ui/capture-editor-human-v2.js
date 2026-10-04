@@ -1,4 +1,12 @@
 import {
+  skillSpriteControlsFromFieldsV1,
+  skillSpriteControlFieldsFromVisualsV1,
+  readSkillSpriteControlsV1,
+  writeSkillSpriteControlsV1,
+  appendStatusSpriteControlsV1,
+  readStatusSpriteControlsV1
+} from "./capture-editor-sprite-controls-v1.js";
+import {
   normalizeCaptureCreatureEditorDraftV2
 } from "../contracts/capture-creature-editor-draft-v2.js";
 import {
@@ -1124,7 +1132,8 @@ function presentationForSkill(fields) {
         opponent:
           presentation.castLayerOpponent ??
           "front"
-      }
+      },
+      ...skillSpriteControlsFromFieldsV1(presentation, "cast")
     }
   );
   const travel = visualSlot(
@@ -1159,7 +1168,8 @@ function presentationForSkill(fields) {
         ? null : finiteNumber(presentation.impactDurationMs, "Durée visuelle de l’impact"),
       playbackMode: presentation.impactDurationMs > 0 ? "stretch" : "once",
       offsetX: presentation.impactOffsetX ?? 0,
-      offsetY: presentation.impactOffsetY ?? 0
+      offsetY: presentation.impactOffsetY ?? 0,
+      ...skillSpriteControlsFromFieldsV1(presentation, "impact")
     }
   );
   const persistentZone = visualSlot(
@@ -1182,7 +1192,7 @@ function presentationForSkill(fields) {
         player: "behind",
         opponent: "behind"
       },
-      playbackMode: "loop"
+      ...skillSpriteControlsFromFieldsV1(presentation, "zone")
     }
   );
 
@@ -1740,6 +1750,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     effectTags:
       [...(definition.effect?.tags ?? [])],
     presentation: {
+      ...skillSpriteControlFieldsFromVisualsV1(visual),
       statusVisuals:
         presentation.statusVisuals ?? {},
       iconAssetId:
@@ -2357,6 +2368,7 @@ function writeSkillDraftFields(
       draft
     );
 
+  writeSkillSpriteControlsV1(root, fields.presentation);
   const values = [
     ["[data-skill-id]", fields.id],
     ["[data-skill-name]", fields.name],
@@ -2532,6 +2544,7 @@ function prepareNewSkillDraftFields(
   id,
   statRegistry = null
 ) {
+  writeSkillSpriteControlsV1(root);
   const values = [
     ["[data-skill-id]", id],
     ["[data-skill-name]", "Nouvelle capacité"],
@@ -3875,7 +3888,7 @@ function appendHumanSkillEffectV1(
         ?.displayScale ?? 1,
       {
         min: 0.25,
-        max: 4,
+        max: 8,
         step: "0.05"
       }
     );
@@ -3929,6 +3942,8 @@ function appendHumanSkillEffectV1(
       statusVisualOpacity
     )
   );
+
+  appendStatusSpriteControlsV1(spriteFields, statusPresentation?.sprite ?? {});
 
   const statusVisualNote =
     document.createElement("small");
@@ -4439,6 +4454,7 @@ function readHumanStatusVisualsV1(root) {
       }
 
       presentation.sprite = {
+        ...readStatusSpriteControlsV1(row),
         assetId,
         displayScale: Number(
           row.querySelector(
@@ -5064,22 +5080,10 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
     return asset.assetType === "icon";
   }
 
-  if (role === "cast") {
-    return (
-      asset.category === "release" ||
-      asset.tags?.includes("cast")
-    );
-  }
-
-  if (role === "travel") {
-    return asset.category === "travel";
-  }
-
-  if (role === "impact") {
-    return asset.category === "impact";
-  }
-
   if (
+    role === "cast" ||
+    role === "travel" ||
+    role === "impact" ||
     role === "zone" ||
     role === "status"
   ) {
@@ -5093,6 +5097,7 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
 
     return (
       !creatureOwned &&
+      (role !== "travel" || asset.category === "travel") &&
       asset.mediaType === "image" &&
       (
         asset.assetType === "sprite" ||
@@ -6071,6 +6076,7 @@ function readSkillFields(root) {
         form
       ),
     presentation: {
+      ...readSkillSpriteControlsV1(root),
       iconAssetId: selectedValue(
         root,
         "[data-skill-icon]"

@@ -80,6 +80,14 @@ function visualPlaybackMs(visual, fallbackMs = 1) {
   return Math.max(1, Number(fallbackMs) || 1);
 }
 
+// Uses the existing Runtime owner's expiry. Refresh extends one playback; it does not create another clock.
+export function spriteOwnerDurationMs(owner, startedAtMs = owner?.appliedAtMs, fallbackMs = 1000) {
+  const duration = owner?.expiresAtMs == null || startedAtMs == null
+    ? 0 : Number(owner.expiresAtMs) - Number(startedAtMs);
+  return Number.isFinite(duration) && duration > 0
+    ? duration : Math.max(1, Number(owner?.definition?.durationMs ?? owner?.durationMs) || Number(fallbackMs) || 1);
+}
+
 export function applySpriteVisual(node, visual, durationMs, animate = defaultAnimate) {
   if (!hasSpriteVisual(visual)) {
     return Object.freeze({
@@ -224,7 +232,8 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
     return Object.freeze({
       bound: true,
       frameAnimation,
-      playbackMs
+      playbackMs,
+      setDuration(duration) { frameAnimation?.effect?.updateTiming?.({ duration: Math.max(1, Number(duration) || 1) }); }
     });
   }
 
@@ -273,7 +282,8 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
   return Object.freeze({
     bound: true,
     frameAnimation: null,
-    playbackMs: duration
+    playbackMs: duration,
+    setDuration(duration) { node.style.animationDuration = `${Math.max(1, Number(duration) || 1)}ms`; }
   });
 }
 
@@ -458,6 +468,7 @@ export function createDomSkillFxRenderer({
     skillId,
     point,
     durationMs,
+    layer = "front",
     type = "impact"
   }) {
     if (!hasSpriteVisual(visual)) {
@@ -477,6 +488,7 @@ export function createDomSkillFxRenderer({
       type === "clash-impact"
         ? "skill-fx skill-fx--impact skill-fx--clash-impact"
         : `skill-fx skill-fx--${type}`;
+    if (layer === "behind") node.className += " skill-fx--layer-behind";
     node.dataset.skillFx = type;
     node.dataset.skillId = skillId ?? "";
     node.style.left = `${point.x + (Number(visual.offsetX) || 0)}px`;
@@ -649,7 +661,7 @@ export function createDomSkillFxRenderer({
         const spriteVisual = applySpriteVisual(
           node,
           visual,
-          1000,
+          spriteOwnerDurationMs(zone),
           animate
         );
         arena.append(node);
@@ -659,11 +671,17 @@ export function createDomSkillFxRenderer({
           animation: null,
           frameAnimation:
             spriteVisual.frameAnimation,
+          spritePlayback: spriteVisual,
+          playbackStartedAtMs: zone.appliedAtMs,
           type: "persistent-zone",
           zoneId
         };
         persistentZones.set(zoneId, record);
         active.add(record);
+      }
+
+      if (visual.playbackMode === "stretch") {
+        record.spritePlayback?.setDuration?.(spriteOwnerDurationMs(zone, record.playbackStartedAtMs));
       }
 
       const offsetX =
@@ -751,7 +769,7 @@ export function createDomSkillFxRenderer({
       );
       const node = arena.ownerDocument.createElement("span");
       const displayScale = Math.min(
-        4,
+        8,
         Math.max(0.25, Number(visual.displayScale) || 1)
       );
 
@@ -764,8 +782,8 @@ export function createDomSkillFxRenderer({
       if (castAnchor) {
         node.dataset.fxAnchor = castAnchor;
       }
-      node.style.left = `${from.x}px`;
-      node.style.top = `${from.y}px`;
+      node.style.left = `${from.x + (Number(visual.offsetX) || 0)}px`;
+      node.style.top = `${from.y + (Number(visual.offsetY) || 0)}px`;
       const spriteVisual = applySpriteVisual(
         node,
         visual,
@@ -1115,6 +1133,7 @@ export function createDomSkillFxRenderer({
         skillId,
         point,
         durationMs,
+        layer: presentation?.impactLayer ?? "front",
         type: "clash-impact"
       });
     }
@@ -1131,6 +1150,7 @@ export function createDomSkillFxRenderer({
         skillId,
         point,
         durationMs,
+        layer: presentation?.impactLayer ?? "front",
         type: "impact"
       });
     }

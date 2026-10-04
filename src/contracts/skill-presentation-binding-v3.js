@@ -104,7 +104,11 @@ function normalizeSprite(raw, field) {
       ![
         "assetId",
         "displayScale",
-        "opacity"
+        "opacity",
+        "playbackMode",
+        "offsetX",
+        "offsetY",
+        "layerByView"
       ].includes(key)
     ) {
       throw new TypeError(
@@ -113,7 +117,34 @@ function normalizeSprite(raw, field) {
     }
   }
 
+  const controls = {};
+  if (value.playbackMode != null) {
+    if (!["once", "loop", "stretch"].includes(value.playbackMode)) {
+      throw new RangeError(field + ".playbackMode must be once, loop or stretch");
+    }
+    controls.playbackMode = value.playbackMode;
+  }
+  for (const key of ["offsetX", "offsetY"]) {
+    if (value[key] != null) {
+      const number = Number(value[key]);
+      if (!Number.isFinite(number)) throw new RangeError(field + "." + key + " must be finite");
+      controls[key] = number;
+    }
+  }
+  if (value.layerByView != null) {
+    const layers = objectValue(value.layerByView, field + ".layerByView");
+    for (const key of Object.keys(layers)) {
+      if (!["player", "opponent"].includes(key)) throw new TypeError(field + ".layerByView contains unknown field: " + key);
+    }
+    const byView = { player: layers.player ?? "front", opponent: layers.opponent ?? "front" };
+    for (const layer of Object.values(byView)) {
+      if (!["front", "behind"].includes(layer)) throw new RangeError(field + ".layerByView must be front or behind");
+    }
+    controls.layerByView = Object.freeze(byView);
+  }
+
   return Object.freeze({
+    ...controls,
     assetId: stableAssetId(
       value.assetId,
       field + ".assetId"

@@ -747,8 +747,22 @@
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
           </label>
           <label>Scale cast
-            <input type="number" min="0.25" step="0.05" value="1.60" data-skill-cast-scale>
+            <input type="number" min="0.25" max="8" step="0.05" value="1.60" data-skill-cast-scale>
           </label>
+          <label>Animation du cast
+            <select data-skill-cast-playback>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+              <option value="loop">Boucler pendant la préparation</option>
+              <option value="stretch">Adapter à la durée de préparation</option>
+            </select>
+          </label>
+          <label>Décalage horizontal du cast (px)
+            <input type="number" step="5" value="0" data-skill-cast-offset-x>
+          </label>
+          <label>Décalage vertical du cast (px)
+            <input type="number" step="5" value="0" data-skill-cast-offset-y>
+          </label>
+          <p class="note">Cast, impact, zone et statut peuvent utiliser tous les sprites d’effets : aura, charge, impact… Le projectile garde sa liste dédiée. Le cast reste affiché pendant la préparation.</p>
           <label>Projectile / trajet
             <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
           </label>
@@ -793,10 +807,23 @@
           <label>Scale impact
             <input type="number" min="0.25" max="8" step="0.05" value="1.70" data-skill-impact-scale>
           </label>
+          <label>Animation de l’impact
+            <select data-skill-impact-playback>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+              <option value="loop">Boucler pendant l’impact</option>
+              <option value="stretch">Adapter à la durée visuelle de l’impact</option>
+            </select>
+          </label>
+          <label>Impact — vue joueur
+            <select data-skill-impact-layer-player><option value="front">Devant la créature</option><option value="behind">Derrière la créature</option></select>
+          </label>
+          <label>Impact — vue ennemi
+            <select data-skill-impact-layer-opponent><option value="front">Devant la créature</option><option value="behind">Derrière la créature</option></select>
+          </label>
           <label>Durée visuelle de l’impact (ms)
             <input type="number" min="0" step="50" value="0" data-skill-impact-duration>
           </label>
-          <p class="note">0 = durée du sprite. Une durée plus longue ralentit l’animation d’impact. Les dégâts sont appliqués au contact.</p>
+          <p class="note">0 = durée automatique. « Adapter » répartit les phases sur la durée choisie. « Boucler » répète le sprite pendant cette durée. Les dégâts restent appliqués au contact.</p>
           <label>Décalage horizontal de l’impact (px)
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-offset-x>
           </label>
@@ -805,6 +832,19 @@
           </label>
           <label>Visuel persistant de zone
             <select data-skill-zone-fx data-asset-role="zone"><option value="">Aucun</option></select>
+          </label>
+          <label>Animation de la zone
+            <select data-skill-zone-playback>
+              <option value="loop" selected>Boucler tant que la zone existe</option>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+              <option value="stretch">Adapter à la durée de la zone</option>
+            </select>
+          </label>
+          <label>Zone — vue joueur
+            <select data-skill-zone-layer-player><option value="front">Devant la créature</option><option value="behind" selected>Derrière la créature</option></select>
+          </label>
+          <label>Zone — vue ennemi
+            <select data-skill-zone-layer-opponent><option value="front">Devant la créature</option><option value="behind" selected>Derrière la créature</option></select>
           </label>
           <label>Scale global de la zone
             <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-zone-scale>
@@ -823,7 +863,7 @@
           </label>
         </div>
         <p class="note">
-          Pour une aura ou une zone persistante, ce visuel reste affiché tant que la zone existe réellement dans le combat. Il suit ses renforcements et disparaît à son expiration ; aucun timer visuel séparé n’est utilisé. Un sprite multi-images ou un atlas animé est joué en boucle pendant toute la durée de la zone. Les décalages horizontal et vertical déplacent uniquement le visuel autour de l’ancre de la créature, sans modifier le rayon ni les dégâts.
+          Pour une aura ou une zone persistante, le visuel reste affiché tant que la zone existe. Choisis une lecture unique, une boucle ou une animation adaptée à sa durée. En lecture unique, la dernière phase reste affichée. Les décalages déplacent uniquement le visuel, sans modifier le rayon ni les dégâts.
         </p>
       </article>
 

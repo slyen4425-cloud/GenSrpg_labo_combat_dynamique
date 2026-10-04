@@ -185,7 +185,8 @@ function statusVisualRegistry(bindings) {
 
 function resolvedStatusPresentation(
   assetForId,
-  presentation
+  presentation,
+  view = "player"
 ) {
   if (!presentation) {
     return null;
@@ -196,10 +197,10 @@ function resolvedStatusPresentation(
         assetForId,
         {
           ...presentation.sprite,
-          playbackMode: "loop",
+          playbackMode: presentation.sprite.playbackMode ?? "loop",
           rotationDeg: 0,
-          offsetX: 0,
-          offsetY: 0
+          offsetX: presentation.sprite.offsetX ?? 0,
+          offsetY: presentation.sprite.offsetY ?? 0
         }
       )
     : null;
@@ -208,7 +209,7 @@ function resolvedStatusPresentation(
     mode: presentation.mode,
     tintColor: presentation.tintColor,
     tintOpacity: presentation.tintOpacity,
-    sprite
+    sprite: sprite ? Object.freeze({ ...sprite, layer: presentation.sprite.layerByView?.[view] ?? "front" }) : null
   });
 }
 
@@ -277,6 +278,7 @@ export function createCaptureSkillPresentationAssetsV2({
         resolveAsset,
         visual.impact
       ),
+      impactLayer: layerFor(visual.impact, binding.version, view),
       persistentZone: resolvedVisual(
         resolveAsset,
         visual.aura
@@ -305,7 +307,7 @@ export function createCaptureSkillPresentationAssetsV2({
     });
   }
 
-  function statusPresentationFor(statusId) {
+  function statusPresentationFor(statusId, context = {}) {
     const id = String(statusId ?? "").trim();
     if (!id) {
       return null;
@@ -313,7 +315,8 @@ export function createCaptureSkillPresentationAssetsV2({
 
     return resolvedStatusPresentation(
       resolveAsset,
-      statusVisuals.get(id) ?? null
+      statusVisuals.get(id) ?? null,
+      semanticView(context)
     );
   }
 

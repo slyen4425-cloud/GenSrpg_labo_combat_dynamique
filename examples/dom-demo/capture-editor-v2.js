@@ -461,8 +461,8 @@ function buildPreviewPresentationAssets(
         )
       );
     },
-    statusPresentationFor(statusId) {
-      return native.statusPresentationFor(statusId);
+    statusPresentationFor(statusId, context = {}) {
+      return native.statusPresentationFor(statusId, context);
     },
     audioAsset(assetId) {
       return (

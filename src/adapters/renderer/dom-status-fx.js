@@ -2,7 +2,7 @@ import {
   projectStatusEffectInfoV1,
   statusEffectInfoTextV1
 } from "./status-effect-info-v1.js";
-import { applySpriteVisual } from "./dom-skill-fx.js";
+import { applySpriteVisual, spriteOwnerDurationMs } from "./dom-skill-fx.js";
 
 function requiredFunction(value, field) {
   if (typeof value !== "function") {
@@ -170,6 +170,7 @@ export function createDomStatusFxRenderer({
     statusId,
     target,
     presentation,
+    instance,
     expected
   }) {
     const sprite = presentation.sprite;
@@ -187,7 +188,7 @@ export function createDomStatusFxRenderer({
     let record =
       records.get(key) ?? null;
     const spriteSignature = JSON.stringify([
-      sprite.assetId, sprite.url, sprite.frames, sprite.frameCount, sprite.frameMs
+      sprite.assetId, sprite.url, sprite.frames, sprite.frameCount, sprite.frameMs, sprite.playbackMode
     ]);
     if (record && (record.spriteSignature !== spriteSignature || record.motion !== target.motion)) {
       removeRecord(key);
@@ -202,8 +203,9 @@ export function createDomStatusFxRenderer({
       node.dataset.statusFx = "sprite";
       node.dataset.statusId = statusId;
       target.motion.append(node);
-      const playback = applySpriteVisual(node, { ...sprite, playbackMode: "loop" }, 1);
-      record = { node, frameAnimation: playback.frameAnimation, spriteSignature, motion: target.motion };
+      const durationMs = spriteOwnerDurationMs(instance, instance?.appliedAtMs, Number(sprite.frameMs) * Number(sprite.frameCount));
+      const playback = applySpriteVisual(node, { ...sprite, playbackMode: sprite.playbackMode ?? "loop" }, durationMs);
+      record = { node, frameAnimation: playback.frameAnimation, spritePlayback: playback, playbackStartedAtMs: instance?.appliedAtMs, spriteSignature, motion: target.motion };
       records.set(key, record);
     }
 
@@ -211,6 +213,12 @@ export function createDomStatusFxRenderer({
       sprite.assetId ?? "";
     record.node.style.opacity =
       String(sprite.opacity ?? 1);
+    record.node.style.left = `calc(50% + ${Number(sprite.offsetX) || 0}px)`;
+    record.node.style.top = `calc(50% + ${Number(sprite.offsetY) || 0}px)`;
+    record.node.style.zIndex = sprite.layer === "behind" ? "-1" : "3";
+    if (sprite.playbackMode === "stretch") {
+      record.spritePlayback?.setDuration?.(spriteOwnerDurationMs(instance, record.playbackStartedAtMs, Number(sprite.frameMs) * Number(sprite.frameCount)));
+    }
     record.node.style.transform =
       "translate(-50%, -50%) scale(" +
       String(sprite.displayScale ?? 1) +
@@ -471,7 +479,7 @@ export function createDomStatusFxRenderer({
         }
 
         const presentation =
-          resolvePresentation(statusId);
+          resolvePresentation(statusId, { actorId });
         const target =
           resolveTarget(actorId);
 
@@ -526,6 +534,7 @@ export function createDomStatusFxRenderer({
             statusId,
             target,
             presentation,
+            instance,
             expected
           });
         }

@@ -451,10 +451,11 @@ export async function mountCombatTest({
                 null
             };
           },
-          statusPresentationFor(statusId) {
+          statusPresentationFor(statusId, context = {}) {
             return (
               presentationAssets.statusPresentationFor(
-                statusId
+                statusId,
+                { view: context.actorId === "opponent" ? "opponent" : "player" }
               )
             );
           },

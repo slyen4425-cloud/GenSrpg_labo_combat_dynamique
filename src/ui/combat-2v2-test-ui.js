@@ -647,10 +647,11 @@ export async function mountCoop2v2Test({
                 null
             };
           },
-          statusPresentationFor(statusId) {
+          statusPresentationFor(statusId, context = {}) {
             return (
               presentationAssets.statusPresentationFor(
-                statusId
+                statusId,
+                { view: resolveCombatPresentationViewV1({ format, actorId: context.actorId }) }
               )
             );
           },
