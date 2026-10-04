@@ -106,16 +106,8 @@ export function createDomActorRenderer({
     return Object.freeze({ transform, opacity, filter });
   }
 
-  function returnActiveToBaseFromCurrent({
-    durationMs = 180,
-    easing = "ease-out"
-  } = {}) {
+  function returnActiveToBaseFromCurrent() {
     assertActiveRenderer();
-
-    const duration = Number(durationMs);
-    if (!Number.isFinite(duration) || duration <= 0) {
-      throw new RangeError("return durationMs must be a positive finite number");
-    }
 
     if (!active) {
       restoreBaseState();
@@ -123,6 +115,23 @@ export function createDomActorRenderer({
         status: "idle",
         finished: Promise.resolve({ status: "finished" })
       });
+    }
+
+    const returnSegment =
+      [...(active.plan?.segments ?? [])]
+        .reverse()
+        .find((segment) =>
+          typeof segment?.label === "string" &&
+          segment.label.endsWith("-home")
+        ) ??
+      active.plan?.segments?.at?.(-1) ??
+      null;
+    const duration = Number(returnSegment?.durationMs);
+    const easing = returnSegment?.easing ?? "ease-out";
+    if (!Number.isFinite(duration) || duration <= 0) {
+      throw new RangeError(
+        "active AnimationPlan must expose a positive home return duration"
+      );
     }
 
     const bodyStart = currentStyleSnapshot(
