@@ -1,6 +1,6 @@
 # Rythme de référence Capture — 2026-10-04
 
-État : vérifié techniquement, prêt pour validation utilisateur du nouveau rythme dans la preview. Le lot zone-idle-recall-fx-v1 précédent est validé par Sylvain sur 200b42055f2063c9545db6da01d3104e18f1fee0 ; checkpoint utilisateur checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04.
+État : GREEN utilisateur. Le nouveau rythme de référence a été validé explicitement par Sylvain le 2026-10-04 après test de la preview. Checkpoint de clôture prévu sur le commit documentaire final : checkpoint/lab-combat-reference-pace-v1-green-2026-10-04.
 
 ## Références
 
@@ -31,4 +31,4 @@ Combat Session / Combat Timing continuent de calculer seuls les durées et times
 - Revue native 390 px : contrôle 1×, texte de référence lisible, rappel 2 secondes et bouton Tester accessibles.
 - CI complète checkout GitHub réel : 1033/1033, zéro échec.
 
-Diff limité à 4 fichiers source/page, 2 fichiers test et documentation déclarée. Aucun asset, preset utilisateur, main, global-assets ou fichier du dépôt principal modifié. La validation du nouveau rythme sur smartphone physique reste ouverte ; aucun nouveau GREEN utilisateur déclaré pour ce lot.
+Diff limité à 4 fichiers source/page, 2 fichiers test et documentation déclarée. Aucun asset, preset utilisateur, main, global-assets ou fichier du dépôt principal modifié. Validation utilisateur reçue : le rythme est accepté. Le lot peut être clôturé GREEN sans modification supplémentaire du moteur.
