@@ -147,7 +147,8 @@ test("Roster Session rejects dead/same reserves and restores native member state
 });
 
 function zoneAi(energy = 12) {
-  const session = createCombatSession({ fighters: [fighter("ai", { initialEnergy: energy, energyChargeAmount: 1, energyChargeIntervalMs: 1800 }), fighter("target", { maxHp: 10000, initialHp: 10000 })] });
+  const battleFormat = { actors: [{ actorId: "ai" }, { actorId: "target" }], teamOf: id => id === "ai" ? "enemy" : "local" };
+  const session = createCombatSession({ battleFormat, fighters: [fighter("ai", { initialEnergy: energy, energyChargeAmount: 1, energyChargeIntervalMs: 1800 }), fighter("target", { maxHp: 10000, initialHp: 10000 })] });
   const strike = skill("plain", { preparationMs: 0, travelMs: 0, recoveryMs: 0, energyCost: 2 });
   const zone = skill("zone-skill", { preparationMs: 2000, travelMs: 0, recoveryMs: 0, cooldownMs: 3500, energyCost: 5, form: "aura", approachMode: "none", effect: {}, effects: [{ kind: "persistent_zone", targetScope: "all_enemies", zoneId: "zone", radius: "short", durationMs: 7000, tickIntervalMs: 1000, reactivation: "reinforce", maxActivations: 3, radiusGrowthSteps: 1, tickEffect: { kind: "damage", targetScope: "all_enemies", amount: 5 } }] });
   const c = clock(session);

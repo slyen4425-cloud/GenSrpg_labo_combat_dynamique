@@ -57,6 +57,19 @@ export function createBattleActorAiController({
     return targets.find((id) => Number(state.fighters[id]?.hp) > 0) ?? null;
   }
 
+  function reinforcementGoal(state, actor, skill) {
+    const usesLeft = skill.maxUsesPerCombat == null ? Infinity
+      : skill.maxUsesPerCombat - Number(actor.skillUseCounts?.[skill.id] ?? 0);
+    if (usesLeft <= 0) return null;
+    for (const effect of skill.effects ?? []) {
+      if (effect.kind !== "persistent_zone" || effect.reactivation !== "reinforce" || effect.radiusGrowthSteps <= 0 || effect.maxActivations <= 1) continue;
+      const zone = (state.persistentZones ?? []).find(entry => entry.sourceActorId === normalizedActorId && entry.skillId === skill.id && entry.zoneId === effect.zoneId && entry.expiresAtMs > state.elapsedMs);
+      if (zone?.radius === "long" || (zone?.activations ?? 0) >= effect.maxActivations) continue;
+      return { active: Boolean(zone), remaining: Math.min(usesLeft, effect.maxActivations - (zone?.activations ?? 0)) };
+    }
+    return null;
+  }
+
   function takeTurn() {
     const state = session.snapshot();
     const actor = state.fighters[normalizedActorId];
@@ -85,10 +98,13 @@ export function createBattleActorAiController({
 
     const attempts = [];
 
-    for (let offset = 0; offset < skills.length; offset += 1) {
-      const candidateIndex =
-        (skillIndex + offset) % skills.length;
-      const skill = skills[candidateIndex];
+    const candidates = skills.map((skill, candidateIndex) => ({ skill, candidateIndex,
+      goal: reinforcementGoal(state, actor, skill) }));
+    candidates.sort((left, right) => Number(Boolean(right.goal)) - Number(Boolean(left.goal))
+      || (left.candidateIndex - skillIndex + skills.length) % skills.length
+        - (right.candidateIndex - skillIndex + skills.length) % skills.length);
+
+    for (const { skill, candidateIndex, goal } of candidates) {
       const preview = session.previewSkill({
         actorId: normalizedActorId,
         targetId,
@@ -109,7 +125,21 @@ export function createBattleActorAiController({
             requiredEnergy: skill.energyCost
           });
         }
+        // Keep the energy available for the next reinforcement during its cooldown.
+        if (goal?.active && preview.outcome === "cooldown") {
+          return Object.freeze({ status: "waiting", actorId: normalizedActorId, targetId,
+            skillId: skill.id, skillName: skill.name, reason: preview.outcome });
+        }
         continue;
+      }
+
+      // Bank the opening sequence before activating a short-lived growing zone.
+      const requiredEnergy = goal && !goal.active
+        ? Math.max(skill.energyCost, Math.min(Number(actor.maxEnergy ?? skill.energyCost), skill.energyCost * goal.remaining))
+        : skill.energyCost;
+      if (actor.energy < requiredEnergy) {
+        return Object.freeze({ status: "saving", actorId: normalizedActorId, targetId,
+          skillId: skill.id, skillName: skill.name, currentEnergy: actor.energy, requiredEnergy });
       }
 
       const result = runtime.startSkill({
