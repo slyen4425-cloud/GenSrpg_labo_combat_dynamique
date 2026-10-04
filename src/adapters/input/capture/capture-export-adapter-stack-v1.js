@@ -75,6 +75,7 @@ export function adaptCaptureCombatExportStackV1(input) {
     fighters,
     skills,
     skillIdsByActor,
+    skillIdsByCreature: Object.freeze(Object.fromEntries(exported.creatures.map(creature => [creature.id, creature.skillIds]))),
     skillPresentations
   });
 }

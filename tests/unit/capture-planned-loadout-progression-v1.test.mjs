@@ -239,7 +239,7 @@ test("Human Editor does not disable planned loadout choices because of current l
   );
 });
 
-test("mobile editor footer stays in document flow so it cannot cover Slot 4", async () => {
+test("mobile editor reserves space for its fixed footer so Slot 4 remains reachable", async () => {
   const css = await readFile(
     new URL(
       "../../examples/dom-demo/capture-editor-v2.css",
@@ -251,9 +251,11 @@ test("mobile editor footer stays in document flow so it cannot cover Slot 4", as
   const mobileStart = css.indexOf("@media (max-width: 520px)");
   assert.notEqual(mobileStart, -1);
   const mobileCss = css.slice(mobileStart);
+  assert.match(mobileCss, /--editor-footer-space:\s*11rem/);
+  assert.match(mobileCss, /calc\(var\(--editor-footer-space\) \+ env\(safe-area-inset-bottom\)\)/);
 
   assert.match(
     mobileCss,
-    /\.editor-footer\s*\{[^}]*position:\s*static\s*;/s
+    /\.editor-footer\s*\{[^}]*position:\s*fixed\s*;/s
   );
 });

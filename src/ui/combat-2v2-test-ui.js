@@ -1,5 +1,7 @@
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
+import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
+import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createBattleActorAiController } from "../core/combat/battle-actor-ai-controller.js";
@@ -14,6 +16,10 @@ import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 
 const DATA_URLS = Object.freeze({
+  commands: Object.freeze({
+    recall: new URL("../../data/combat/commands/recall.command.json", import.meta.url),
+    summon: new URL("../../data/combat/commands/summon.command.json", import.meta.url)
+  }),
   format: new URL(
     "../../data/combat/battle-formats/demo-coop-2v2.format.json",
     import.meta.url
@@ -307,6 +313,9 @@ function normalizedInjectedCombatSource(input) {
     skills,
     skillsById,
     skillIdsByActor,
+    roster: input.roster ?? null,
+    fighterConfigs: input.fighterConfigs ?? null,
+    skillIdsByCreature: input.skillIdsByCreature ?? null,
     skillSpeedMultiplier:
       input.skillSpeedMultiplier ?? 1
   });
@@ -448,6 +457,7 @@ export async function mountCoop2v2Test({
     skills,
     skillsById,
     skillIdsByActor,
+    roster: rosterDefinition, fighterConfigs, skillIdsByCreature,
     skillSpeedMultiplier
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -551,6 +561,9 @@ export async function mountCoop2v2Test({
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
   let runtime = null;
+  let rosterController = null;
+  let rosterPanel = null;
+  const koTransitions = new Set();
   let aiDecisionQueued = false;
 
   for (const actor of format.actors) {
@@ -722,11 +735,13 @@ export async function mountCoop2v2Test({
   }
 
   function actorMeta(actorId) {
-    return format.actor(actorId);
+    const actor = format.actor(actorId);
+    const member = rosterController?.activeMember(actorId);
+    return member ? { ...actor, displayName: member.displayName, creatureId: member.creatureId } : actor;
   }
 
   function isAlive(actorId, state = session.snapshot()) {
-    return Number(actorState(actorId, state)?.hp) > 0;
+    return Number(actorState(actorId, state)?.hp) > 0 && (rosterController === null || rosterController.isPresent(actorId));
   }
 
   function targetNodes(actorId) {
@@ -785,6 +800,13 @@ export async function mountCoop2v2Test({
   }
 
   function renderState(state = session.snapshot()) {
+    if (rosterController) {
+      for (const actor of format.actors) {
+        if (Number(state.fighters[actor.actorId]?.hp) <= 0 && rosterController.isPresent(actor.actorId)) {
+          queueKoReplacement(actor.actorId);
+        }
+      }
+    }
     statusFx?.sync(state);
     for (const actor of format.actors) {
       const fighter = state.fighters[actor.actorId];
@@ -811,6 +833,7 @@ export async function mountCoop2v2Test({
     );
     renderAvailability();
     renderTargetSelection();
+    rosterPanel?.render();
   }
 
   function renderAvailability() {
@@ -874,8 +897,10 @@ export async function mountCoop2v2Test({
 
       button.disabled =
         runtime.hasActiveActionFor(format.localActorId) ||
+        runtime.activeActions.some(action => action.actionType === "command") ||
         !preview.ok;
     }
+    rosterPanel?.render();
   }
 
   function selectTarget(actorId) {
@@ -978,7 +1003,7 @@ export async function mountCoop2v2Test({
 
     button.append(label, cooldown);
 
-    listen(button, "click", () => {
+    const onClick = () => {
       const allowed = isSkillTargetAllowed({
         format,
         actorId: format.localActorId,
@@ -1017,31 +1042,23 @@ export async function mountCoop2v2Test({
         "accent"
       );
       renderAvailability();
-    });
+    };
+    button.addEventListener("click", onClick);
 
-    return Object.freeze({ button, cooldown });
+    return Object.freeze({ button, cooldown, dispose() { button.removeEventListener("click", onClick); } });
   }
 
-  const localSkillIds =
-    skillIdsByActor[format.localActorId];
-  const localSkills = localSkillIds.map((skillId) => {
-    const skill = skillsById[skillId];
-    if (!skill) {
-      throw new RangeError(
-        `Unknown local skill: ${skillId}`
-      );
+  function renderLocalSkills() {
+    for (const refs of skillRefs.values()) refs.dispose();
+    skillRefs.clear();
+    skillContainer.replaceChildren();
+    const ids = rosterController?.skillIdsFor(format.localActorId) ?? skillIdsByActor[format.localActorId];
+    for (const skillId of ids) {
+      const skill = skillsById[skillId];
+      if (!skill) throw new RangeError(`Unknown local skill: ${skillId}`);
+      skillRefs.set(skill.id, { skill, ...createSkillButton(skill) });
+      skillContainer.append(skillRefs.get(skill.id).button);
     }
-    return skill;
-  });
-
-  for (const skill of localSkills) {
-    const refs = createSkillButton(skill);
-    skillContainer.append(refs.button);
-    skillRefs.set(skill.id, {
-      skill,
-      button: refs.button,
-      cooldown: refs.cooldown
-    });
   }
 
   const aiControllers = [];
@@ -1073,6 +1090,7 @@ export async function mountCoop2v2Test({
       }
 
       const state = session.snapshot();
+      if (runtime.activeActions.some(action => action.actionType === "command")) return;
       for (const controller of aiControllers) {
         const actorId = controller.snapshot().actorId;
         if (
@@ -1123,6 +1141,7 @@ export async function mountCoop2v2Test({
     },
     onStarted({ action }) {
       if (action.actionType !== "skill") {
+        actionRefs[action.actorId].textContent = `${action.command.name} · préparation`;
         return;
       }
       presenter.presentPreparation({
@@ -1179,6 +1198,16 @@ export async function mountCoop2v2Test({
         `${action.skill.name} · lancé`;
     },
     onResolved(resolution) {
+      if (resolution.actionType === "command") {
+        const result = rosterController?.applyCommandResolution(resolution);
+        if (result?.slotId) {
+          setCharge(result.slotId);
+          actionRefs[result.slotId].textContent = "Prêt";
+        }
+        renderState();
+        queueAiDecisions();
+        return;
+      }
       const presentation = presenter.presentOutcome({
         resolution,
         actorSlot: resolution.actorId,
@@ -1197,8 +1226,9 @@ export async function mountCoop2v2Test({
         );
       }
 
+      if (presentation.ko) queueKoReplacement(presentation.koActorId, presentation.finished);
       void Promise.resolve(presentation.finished).then(() => {
-        renderState();
+        if (!disposed) renderState();
       });
 
       aiReadyAt.set(
@@ -1218,18 +1248,53 @@ export async function mountCoop2v2Test({
     }
   });
 
-  for (const spec of aiControllerSpecs) {
-    aiControllers.push(
-      createBattleActorAiController({
-        session,
-        runtime,
-        actorId: spec.actorId,
-        targetIds: spec.targetIds,
-        skillIds: spec.skillIds,
-        skillsById
-      })
-    );
+  function refreshAiControllers() {
+    aiControllers.splice(0);
+    for (const spec of aiControllerSpecs) {
+      const ids = rosterController?.skillIdsFor(spec.actorId) ?? spec.skillIds;
+      const targets = spec.targetIds.filter(id => isAlive(id));
+      if (!isAlive(spec.actorId) || ids.length === 0 || targets.length === 0) continue;
+      aiControllers.push(createBattleActorAiController({ session, runtime, actorId: spec.actorId, targetIds: targets, skillIds: ids, skillsById }));
+    }
   }
+
+  function queueKoReplacement(actorId, finished = null) {
+    if (!rosterController || !actorId || koTransitions.has(actorId) || disposed) return;
+    koTransitions.add(actorId);
+    renderAvailability();
+    const completion = finished ?? Promise.resolve(visuals.playEventFor(actorId, "ko"));
+    void Promise.resolve(completion).then(() => {
+      if (disposed) return;
+      runtime.cancelActionsForActor(actorId, { includeTargeted: true, reason: "ko" });
+      const result = rosterController.replaceKnockedOut(actorId);
+      koTransitions.delete(actorId);
+      if (result.outcome === "team_defeated") setStatus("Plus de réserve pour cette créature.", "info");
+      renderState();
+      queueAiDecisions();
+    });
+  }
+
+  if (rosterDefinition && Object.keys(rosterDefinition.teams ?? {}).length > 0) {
+    const commands = Object.fromEntries(await Promise.all(Object.entries(DATA_URLS.commands).map(async ([kind, url]) => [kind, normalizeCombatCommandDefinition(await fetchJson(url, fetchImpl))])));
+    rosterController = createCaptureCombatRosterControllerV1({
+      session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
+      beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
+      onActorChanged(actorId, result) {
+        const actor = actorMeta(actorId);
+        if (result.outcome !== "recalled") for (const element of root.querySelectorAll(`[data-preview-actor-ui="${actorId}"]`)) {
+          for (const label of element.querySelectorAll("[data-demo-label], strong")) label.textContent = actor.displayName;
+        }
+        if (!isAlive(selectedTargetId)) selectedTargetId = previewFormat.enemyActorIds.find(id => isAlive(id)) ?? selectedTargetId;
+        renderLocalSkills();
+        refreshAiControllers();
+        setStatus(result.outcome === "recalled" ? "Créature rappelée. Choisis une réserve puis Invocation." : `${result.displayName ?? actor.displayName} entre en combat.`, "accent");
+        renderState();
+      }
+    });
+    rosterPanel = mountCaptureCombatRosterPanelV1({ root, controller: rosterController, format, commands, session, getRuntime: () => runtime, isTransitionPending: () => koTransitions.size > 0, setStatus });
+  }
+  renderLocalSkills();
+  refreshAiControllers();
 
   renderTargetSelection();
   renderState();
@@ -1240,6 +1305,7 @@ export async function mountCoop2v2Test({
     format,
     session,
     runtime,
+    rosterSnapshot: () => rosterController?.snapshot() ?? null,
     get selectedTargetId() {
       return selectedTargetId;
     },
@@ -1249,6 +1315,11 @@ export async function mountCoop2v2Test({
         return;
       }
       disposed = true;
+      rosterPanel?.dispose();
+      rosterController?.dispose();
+      koTransitions.clear();
+      for (const refs of skillRefs.values()) refs.dispose();
+      skillRefs.clear();
       clearTargetPulses();
       for (const cleanup of cleanups.splice(0)) {
         cleanup();

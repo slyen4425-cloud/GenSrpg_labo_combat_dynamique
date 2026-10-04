@@ -8598,7 +8598,7 @@ export function mountCaptureEditorHumanV2({ root }) {
     }
   );
 
-  Promise.all([
+  const ready = Promise.all([
     hydrateAssetCatalog(root, listen),
     hydratePrivateAudioCatalog(root),
     hydrateNativeSkillCatalog(),
@@ -8972,10 +8972,12 @@ export function mountCaptureEditorHumanV2({ root }) {
           "error"
         );
       }
+      throw error;
     });
 
   return Object.freeze({
     validate,
+    ready,
     getLastExport() {
       return lastExport;
     },

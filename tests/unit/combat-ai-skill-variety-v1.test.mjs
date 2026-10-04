@@ -80,21 +80,10 @@ test("AI keeps deterministic round-robin variety when several skills are usable"
   assert.deepEqual(started, ["skill-a", "skill-b", "skill-c"]);
 });
 
-test("Capture preview opponent exposes at least three distinct test skills", async () => {
-  const source = await readFile(
-    new URL(
-      "../../examples/dom-demo/capture-editor-v2.js",
-      import.meta.url
-    ),
-    "utf8"
-  );
-
-  const ids = [
-    ...source.matchAll(/id:\s*"((?:enemy|opponent)-[^"]+)"/g)
-  ].map((match) => match[1]);
-
-  assert.ok(
-    new Set(ids.filter((id) => id !== "crea-enemy")).size >= 3,
-    "preview opponent must expose at least three distinct skill ids"
-  );
+test("Capture test opponents keep their configured skill variety through the canonical owners", async () => {
+  const source = await readFile(new URL("../../src/ui/capture-editor-combat-test-v1.js", import.meta.url), "utf8");
+  assert.match(source, /skillDrafts: \[\.\.\.configuredSkills\.values\(\)\]/);
+  assert.match(source, /loadouts: records\.map\(record => record\.loadout\)/);
+  const page = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.js", import.meta.url), "utf8");
+  assert.doesNotMatch(page, /enemy-hit|enemy-burst|enemy-heavy-hit/);
 });

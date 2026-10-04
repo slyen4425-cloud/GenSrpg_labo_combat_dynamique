@@ -956,3 +956,13 @@ html {
 .test-team legend { color: #bfeef5; font-size: 0.82rem; font-weight: 800; }
 .test-team__current { display: grid; gap: 0.4rem; margin: 0.6rem 0; font-size: 0.8rem; }
 .test-team [hidden] { display: none; }
+
+.combat-test-team-menu { position: relative; margin-top: .4rem; }
+.combat-test-team-menu summary { min-height: 2.5rem; padding: .65rem; border-radius: .6rem; background: #0b2934; color: #d7e8ed; }
+.combat-test-team-menu__body { position: absolute; z-index: 30; bottom: calc(100% + .4rem); right: 0; width: min(28rem, 88vw); max-height: min(24rem, 66svh); overflow: auto; padding: .75rem; border: 1px solid #42616d; border-radius: .7rem; background: #081820; box-shadow: 0 8px 32px #0009; }
+[data-combat-team-rosters] section { display: grid; gap: .3rem; margin-bottom: .7rem; }
+[data-combat-team-rosters] strong { font-size: .8rem; color: #a3dbe5; }
+[data-combat-team-rosters] p { margin: 0; padding: .45rem; font-size: .75rem; }
+[data-roster-member-id], .combat-test-team-actions button { min-height: 2.75rem; padding: .5rem; border: 1px solid #42616d; border-radius: .5rem; background: #12303c; color: #d7e8ed; font-size: .75rem; }
+[data-roster-member-id][aria-pressed="true"] { border-color: #7dd9ed; background: #1b4858; }
+.combat-test-team-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }

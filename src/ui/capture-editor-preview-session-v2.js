@@ -69,6 +69,11 @@ export function createCaptureEditorPreviewSessionV2({
       );
     }
 
+    if (editorController.ready !== undefined) {
+      await editorController.ready;
+      if (disposed) throw new Error("CaptureEditorPreviewSessionV2 is disposed");
+    }
+
     const exported = await Promise.resolve(
       editorController.validate()
     );

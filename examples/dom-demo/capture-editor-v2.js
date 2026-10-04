@@ -115,7 +115,6 @@ let visualContext = null;
 const visualContextPromise = loadPreviewVisualContext()
   .then((context) => {
     visualContext = context;
-    testButton.disabled = false;
     return context;
   })
   .catch((error) => {
@@ -124,6 +123,13 @@ const visualContextPromise = loadPreviewVisualContext()
     editorStatus.dataset.tone = "error";
     throw error;
   });
+
+Promise.all([visualContextPromise, editor.ready]).then(() => {
+  testButton.disabled = false;
+}).catch(error => {
+  editorStatus.textContent = "Combat de test indisponible : " + error.message;
+  editorStatus.dataset.tone = "error";
+});
 
 function setMode(mode) {
   const preview = mode === "preview";
@@ -368,8 +374,7 @@ testButton.addEventListener("click", async () => {
     const result = await session.launch();
 
     if (!result.ok) {
-      testButton.disabled = false;
-      return;
+        return;
     }
   } catch (error) {
     editorStatus.textContent =

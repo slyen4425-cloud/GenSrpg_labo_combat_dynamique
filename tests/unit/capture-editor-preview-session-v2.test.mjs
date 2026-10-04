@@ -1,6 +1,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+test("native preview waits for active libraries before reading pending editor fields", async () => {
+  let release, validated = false;
+  const ready = new Promise(resolve => { release = resolve; });
+  const session = createCaptureEditorPreviewSessionV2({
+    editor: { ready, validate() { validated = true; return { marker: "ready" }; }, dispose() {} },
+    adaptCombatExport: value => value, adaptVisualExport: value => value,
+    mountPreview: () => ({ dispose() {} })
+  });
+  const launch = session.launch();
+  await Promise.resolve();
+  assert.equal(validated, false);
+  release();
+  assert.equal((await launch).ok, true);
+  session.dispose();
+});
+
 import {
   createCaptureEditorPreviewSessionV2
 } from "../../src/ui/capture-editor-preview-session-v2.js";

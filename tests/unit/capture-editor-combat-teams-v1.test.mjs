@@ -40,6 +40,8 @@ test("copies of the same configured model have independent native combat HP and 
   assert.equal(exported.creatures.length, 1);
   const native = adaptCaptureCombatExportStackV1(exported);
   const loaded = await loadCoop2v2CombatSource({ nativeCombatSource: native, fetchImpl() { throw Error("must use native export"); } });
+  assert.equal(loaded.roster, native.roster, "generic combat client must retain the native roster");
+  assert.equal(loaded.fighterConfigs, native.fighterConfigs);
   const session = createCombatSession({ distance: "medium", fighters: loaded.fighters });
   let now = 0, callback;
   const runtime = createCombatRuntime({ session, now: () => now, setTimer(fn) { callback = fn; return 1; }, clearTimer() {} });
