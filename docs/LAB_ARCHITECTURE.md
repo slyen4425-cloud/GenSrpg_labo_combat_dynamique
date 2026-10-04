@@ -3166,3 +3166,17 @@ DomStatusFxRenderer uses the existing applySpriteVisual exported by DomSkillFxRe
 Le résolveur conserve les contrôles du statut et sa couche selon le porteur. La projection DOM suit la source pour cast/zone et la cible pour impact. Les contextes 1v1/2v2 et le proxy du preview conservent cette sémantique. Les durées visuelles des zones et statuts adaptés viennent de l’expiration Runtime depuis la première activation ; les refresh modifient la durée du playback existant. Aucune horloge ou registry concurrente. Les statuts mesurés en actions n’inventent pas de durée gameplay en ms : playback natif et retrait par Runtime.
 
 Les assets autoritaires et les trajectoires/contact/ombres ne changent pas. Validation : état `d8a1105604e00032573c9ace63f0f4c8cfb5368c`, CI 966/966, parcours natif desktop et capture de l’éditeur ; détail dans `LAB_UNIFIED_SPRITE_CONTROLS_V1.md`.
+
+## 2026-10-04 — Combat de test durable du Human Editor
+
+`capture-editor-combat-test-v1.js` possède uniquement l’assemblage UI du scénario. Il lit configuredCreatures et configuredSkills, conserve les IDs de définition et attribue des IDs distincts à chaque occurrence actor/member. Les contrats Battle Setup et exporters Capture V3 possèdent la validation et l’export. Deux équipes de 1–6 membres donnent 1v1 ou 2v2 avec réserves réparties alternativement entre les actifs.
+
+Les brouillons valides de capacité/créature sont préparés dans une transaction synchrone des deux maps autoritaires. Aucun rendu/await entre staging et export complet ; échec = restauration des références précédentes. La mise à jour d’une capacité n’équipe pas de slot ni ne déplace son ID. L’hydratation expose ready ; les champs propres à une capacité remplacée par un preset sont rechargés depuis configuredSkills si elle était auparavant propre. Une vraie modification utilisateur n’est pas écrasée.
+
+`capture-combat-roster-controller-v1.js` projette createRosterSession dans le client Capture générique. Roster Session possède actif/réserve, HP/énergie/cooldowns/snapshots et remplacement KO. Le panneau consulte previewCommand puis démarre les définitions de commande existantes via Combat Runtime ; aucune règle/timing locale. Runtime/Session conservent leurs clocks et règles. skillIdsByCreature est une projection readonly de l’export canonique : la barre locale et les contrôleurs IA relisent les IDs de l’actif aux mutations du roster.
+
+Le Native Visual Adapter résout également les présentations de tous les membres de réserve. Lorsqu’une fiche possède presentationId null, le renderer reçoit un repère SVG explicitement « SANS IMAGE » : placeholder de rendu sans mutation de fiche ou média global. Toute référence explicitement renseignée mais corrompue reste refusée. Les changements d’actif utilisent les visual controllers existants et annulent les présentations en cours. Les callbacks KO respectent dispose ; le panneau et les listeners de skills sont nettoyés avec la preview.
+
+La page désactive Tester pendant le lancement. Son finally relit session.previewActive : un export refusé permet une correction et une relance ; un combat lancé attend le retour natif à l’éditeur. Aucun nouveau flag d’autorité pour ce mode.
+
+Le footer reste fixed sur les formats mobiles, avec espace réservé et scroll-padding. `editor-mobile-review.html` contient uniquement une iframe de la page native à dimensions sélectionnables, sans moteur ou bibliothèque. Code final `0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7`, CI 989/989 ; détail et limites de validation : `docs/LAB_EDITOR_COMBAT_TEST_V1.md`.

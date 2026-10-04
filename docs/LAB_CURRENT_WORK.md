@@ -24748,3 +24748,16 @@ Le raccord des capacités des réserves doit exposer la projection canonique par
 
 ### editor-combat-test-v1 — reprise du test après un champ invalide
 La QA native constate qu’un export refusé laisse Tester désactivé : le handler de capture-editor-v2.js désactive le bouton, puis retourne sur result.ok=false sans le réactiver. Périmètre déjà déclaré de cette page précisé avant correction : restaurer la disponibilité après tout lancement sans preview (validation refusée ou erreur), conserver la désactivation pendant le lancement et le retour natif après succès. Ajouter une sentinelle exécutant le vrai handler avec un export refusé puis corrigé, sans dupliquer la fonction de production ni créer un owner UI concurrent.
+
+### editor-combat-test-v1 — Livraison technique, parcours natifs et reprise après refus
+
+- Code final : `0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7`. CI complète **989/989**, run **37197128053**, job **111421216146**, gardes OK. CI précédente du raccord de roster : 988/988 au 6e0ef50c68b161a9367663cfffdb68653689df44.
+- Fonctionnel : bibliothèque active entière (103 fiches au démarrage), répétitions/miroirs avec états indépendants, 1–6 membres par camp, 1/2 actifs par camp, réserves natives, menu Équipe, Rappel/Invocation via commandes canoniques, changement réel du loadout/image/profil après invocation et KO.
+- Validation du test : transaction synchrone des brouillons dans configuredSkills/configuredCreatures, rollback sans sauvegarde partielle, loadout stable, hydratation initiale attendue. Pas de stockage ni moteur parallèle.
+- QA native : Loup miroir sans Save ; équipes distinctes de six / quatre actifs / douze membres ; rappel puis Maraileron invoqué avec capacités d’eau ; KO de Maraileron suivi de restauration native du Loup et de ses PV ; Aquafin sans illustration affiché avec repère explicite décodé.
+- Réglages non sauvegardés manuellement : scale 1,35 + travel 1800 ms appliqués par Tester et relus depuis les bibliothèques ; test invalide scale 0 + travel 1900 ms refuse tout changement canonique (1,35/1800 conservés). RED GUI supplémentaire : le refus bloquait le bouton ; correctif vérifié sur le SHA final par refus, correction, puis lancement six Loup dans chacun des camps.
+- Mobile : même éditeur en iframe 360/390/430 × 740 et 740 × 390, footer fixed, pas de débordement horizontal, dernier slot accessible au-dessus de la barre. Combat lancé depuis le bouton fixe à 390 px. Capture sauvegardée : editor-combat-mobile-1791111205888.jpg.
+- Le placeholder « SANS IMAGE » ne concerne que les fiches sans présentation configurée. Aucun média final créé ; les références explicites invalides continuent à échouer. Aucun GREEN artistique revendiqué pour ces fiches.
+- Rapport : `docs/LAB_EDITOR_COMBAT_TEST_V1.md`. Preview native ouverte/vérifiée : https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7/examples/dom-demo/capture-editor-v2.html
+- Références de clôture prévues sur l’état documenté : `checkpoint/lab-editor-combat-test-v1-ci-2026-10-04` et `preview/lab-editor-combat-test-v1-2026-10-04` ; pas de GREEN utilisateur avant validation smartphone de Sylvain.
+- Main et global-assets relus inchangés : 3197388f2b3ee7491be6e6125a015315158cffa2 / 0217dca50ec4004d5ac3bb25d6f5998ccf9edc4f. Zombicide-40k non touché. Aucun merge.

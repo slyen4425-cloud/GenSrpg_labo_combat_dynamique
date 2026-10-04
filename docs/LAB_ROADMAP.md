@@ -431,3 +431,9 @@ Implémentation technique terminée : 12 animations CAST/STATUS source-alpha (96
 ## Suivi 2026-10-04 — Phase 5B, réglages des sprites dans l’éditeur
 
 Choix ouverts pour cast/impact/aura-zone/statut, filtre projectile conservé, réglages de lecture/placement exposés via les contrats existants. CI 966/966 et parcours natif desktop vérifiés sur `d8a1105604e00032573c9ace63f0f4c8cfb5368c`. Validation smartphone utilisateur à faire avant GREEN utilisateur. Détails : `docs/LAB_UNIFIED_SPRITE_CONTROLS_V1.md`.
+
+## Suivi 2026-10-04 — Combat de test conservé dans l’éditeur final
+
+Le test combat reste une fonction durable de l’éditeur. Toute la bibliothèque active est sélectionnable ; les miroirs et répétitions ont des états indépendants. Chaque camp possède 1–6 membres, avec 1 ou 2 actifs et les autres en réserve native. Le menu Équipe, Rappel/Invocation et le remplacement KO restent clients des owners existants. Les modifications valides sont enregistrées au lancement, sans retour aux boutons Save, et un refus permet de corriger puis réessayer. La barre Vérifier/Tester reste fixe sur téléphone.
+
+Code `0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7`, CI **989/989**, parcours natifs miroir/équipes/réserves/KO/pending edits et revue responsive vérifiés. Les fiches sans illustration utilisent un placeholder explicite et n’acquièrent aucun nouveau média. Validation sur smartphone physique de Sylvain encore ouverte avant GREEN utilisateur ; main/global-assets/Zombicide-40k inchangés. Détails : `docs/LAB_EDITOR_COMBAT_TEST_V1.md`.
