@@ -63,7 +63,7 @@ async function configure(){
   await image.decode();if(serial!==token)return;
   arena.dataset.view=view;container.dataset.profile=profile.id;
   const shadow=profile.presentation?.shadow??{};
-  container.style.setProperty("--creature-shadow-bottom",shadow.bottom??"8%");
+  container.style.setProperty("--creature-shadow-bottom",Number.isFinite(Number(shadow.bottomPct))?shadow.bottomPct+"%":"8%");
   container.style.setProperty("--creature-shadow-opacity",shadow.opacity??0.42);
   const actor=normalizeVisualActor({id:"review-actor",creatureId:source.meta.id,profile:profile.id,view,asset:image.src,position:{x:0,y:0},scale:view==="player"?1:0.8,transformOrigin:source.meta.transformOrigin});
   const direction=view==="player"?1:-1, distance=Math.min(320,arena.clientWidth-270);
