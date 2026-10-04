@@ -245,7 +245,7 @@ test("runtime refuses interruption after a command has reached release", () => {
     command: recall
   });
 
-  clock.setTime(1400);
+  clock.setTime(recall.preparationMs + 400);
   const result = runtime.interruptActive({
     targetActorId: "maraileron",
     reason: "stun"
