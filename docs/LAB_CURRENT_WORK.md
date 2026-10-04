@@ -2,6 +2,23 @@
 
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
+## Reprise prioritaire — 2026-10-04 — asset-resolution-audit-v1
+
+Audit demandé après validation GREEN de moving-attack-contact-stop-v1.
+
+Base GREEN utilisateur : `1068a9f1109fc3030eb1a10879744b2c3a8a8a9b`.
+Départ : `checkpoint/lab-start-asset-resolution-audit-v1-2026-10-04`.
+Branche : `work/lab-asset-resolution-audit-v1-2026-10-04`.
+Bibliothèque auditée : `global-assets` @ `0217dca50ec4004d5ac3bb25d6f5998ccf9edc4f`.
+
+Résultat : audit documentaire terminé, aucun asset ni runtime modifié. Rapport : `docs/LAB_ASSET_RESOLUTION_AUDIT_V1.md`.
+
+Constat principal : 16/18 vues créature combat sont 320×320 ; Braisombre est 1024×1024. Zone de feu persistante : 96×96/frame, critique sur PC. Auras/statuts : 256×256, limite pour plein-corps PC. Casts/projectiles 256 et impacts 400 restent adaptés à leurs tailles actuelles.
+
+Recommandation : nouveaux masters créature 1024×1024 ; fire-zone 512×512/frame ; statuts 512 minimum issus d'une vraie source HD. Ne pas résoudre par filtre CSS ou simple upscale considéré comme master. Variantes adaptatives 512/1024 à traiter dans un futur micro-lot Presentation Assets, sans double catalogue.
+
+Aucun changement de `main`, `global-assets`, moteur combat, règles ou presets.
+
 ## Reprise prioritaire — 2026-10-04 — moving-attack-contact-stop-v1
 
 Problème reproduit conceptuellement : lors de deux attaques de contact avec déplacement simultanées (ex. Griffe), le Runtime applique correctement les dégâts au premier contact visuel réel, mais chaque AnimationPlan continue sa phase d'approche vers la position cible capturée au lancement. Les deux créatures peuvent donc se croiser et poursuivre jusqu'à l'ancienne position adverse avant le retour.
