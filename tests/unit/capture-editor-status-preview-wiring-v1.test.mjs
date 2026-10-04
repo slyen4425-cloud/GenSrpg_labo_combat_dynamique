@@ -50,10 +50,10 @@ test("Capture editor preview relays native status presentation resolver", async 
 
   assert.match(
     block,
-    /statusPresentationFor\(statusId\)/
+    /statusPresentationFor\(statusId, context = \{\}\)/
   );
   assert.match(
     block,
-    /native\.statusPresentationFor\(\s*statusId\s*\)/
+    /native\.statusPresentationFor\(\s*statusId,\s*context\s*\)/
   );
 });
