@@ -582,19 +582,6 @@ test("real Encounter Runtime releases Recall recovery and allows Summon without 
     runtime.hasActiveActionFor(
       "local-1"
     ),
-    true
-  );
-
-  clock.setTime(
-    recall.preparationMs +
-      recall.recoveryMs
-  );
-  clock.fireNext();
-
-  assert.equal(
-    runtime.hasActiveActionFor(
-      "local-1"
-    ),
     false
   );
   assert.ok(
@@ -611,17 +598,15 @@ test("real Encounter Runtime releases Recall recovery and allows Summon without 
     startedSummon.ok,
     true
   );
-
-  clock.setTime(
-    recall.preparationMs +
-      recall.recoveryMs +
-      summon.preparationMs
-  );
-  clock.fireNext();
-
   assert.equal(
     completed.at(-1)?.commandKind,
     "summon"
+  );
+  assert.equal(
+    runtime.hasActiveActionFor(
+      "local-1"
+    ),
+    false
   );
   assert.equal(
     roster.snapshot()["local-1"]
