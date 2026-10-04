@@ -1,0 +1,42 @@
+{
+  "schema": "capture-reward-rules-v1",
+  "currencyId": "gold",
+  "encounterTypes": {
+    "wild": {
+      "currency": {
+        "enabled": true,
+        "chancePct": 45,
+        "minAmount": 3,
+        "base": 3,
+        "enemyAverageLevelCoefficient": 2,
+        "randomBonusMin": 0,
+        "randomBonusMax": 8
+      },
+      "item": {
+        "enabled": true,
+        "chancePct": 18,
+        "tableId": "capture-shop-default",
+        "quantityMin": 1,
+        "quantityMax": 1
+      }
+    },
+    "trainer": {
+      "currency": {
+        "enabled": true,
+        "chancePct": 100,
+        "minAmount": 5,
+        "base": 8,
+        "enemyAverageLevelCoefficient": 3,
+        "randomBonusMin": 0,
+        "randomBonusMax": 12
+      },
+      "item": {
+        "enabled": true,
+        "chancePct": 25,
+        "tableId": "capture-shop-default",
+        "quantityMin": 1,
+        "quantityMax": 1
+      }
+    }
+  }
+}
