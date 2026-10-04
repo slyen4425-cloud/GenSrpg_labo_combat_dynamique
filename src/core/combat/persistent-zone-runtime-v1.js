@@ -1,6 +1,7 @@
 import {
   withPersistentZones
 } from "./combat-state.js";
+import { visiblePersistentZoneRelationV1 } from "../../contracts/persistent-zone-spatial-v1.js";
 import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
@@ -201,12 +202,15 @@ function approachProgressAt(
 function relationInRadius({
   state,
   battleFormat,
+  zoneId,
   sourceActorId,
   candidateId,
   radius,
   atMs,
   zoneSpatialContext
 }) {
+  const measured = visiblePersistentZoneRelationV1({ sample: zoneSpatialContext?.visibleZones, zoneId, sourceActorId, radius, candidateId });
+  if (measured !== null) return measured;
   if (candidateId === sourceActorId) {
     return true;
   }
@@ -287,6 +291,7 @@ function affectedIdsForZone({
         )
       ) &&
       relationInRadius({
+        zoneId: zone.id,
         state,
         battleFormat,
         sourceActorId:
@@ -396,6 +401,7 @@ function approachEntryEventsForZone({
   const events = [];
 
   for (const candidateId of candidates) {
+    if (visiblePersistentZoneRelationV1({ sample: zoneSpatialContext?.visibleZones, zoneId: zone.id, sourceActorId: zone.sourceActorId, radius: zone.radius, candidateId }) !== null) continue;
     const approach = approachFor({
       zoneSpatialContext,
       actorId: candidateId,
@@ -464,6 +470,7 @@ function approachEntryEventsForZone({
   // attacker reached the zone owner. Large/mobile sprites can meet before
   // the nominal approach-band threshold, including between equal clock ticks.
   for (const contact of zoneSpatialContext.contacts ?? []) {
+    if (visiblePersistentZoneRelationV1({ sample: zoneSpatialContext?.visibleZones, zoneId: zone.id, sourceActorId: zone.sourceActorId, radius: zone.radius, candidateId: contact.actorId }) !== null) continue;
     if (contact.approachMode !== "ground" || contact.targetId !== zone.sourceActorId ||
         !candidates.includes(contact.actorId) || zone.expiresAtMs <= endMs) continue;
     if (relationInRadius({ state, battleFormat, sourceActorId: zone.sourceActorId,

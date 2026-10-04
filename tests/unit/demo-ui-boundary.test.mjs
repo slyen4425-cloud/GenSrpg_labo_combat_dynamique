@@ -35,7 +35,7 @@ test("all declared visual slots start idle, transient actions return idle, KO do
     source,
     /for \(const slotKey of Object\.keys\(slots\)\) \{[\s\S]*startIdleFor\(slotKey\)/
   );
-  assert.match(source, /!\["idle", "ko"\]\.includes\(type\)/);
+  assert.match(source, /!\["idle", "ko", "recall"\]\.includes\(type\)/);
   assert.match(source, /startIdleFor\(slotKey\)/);
 });
 

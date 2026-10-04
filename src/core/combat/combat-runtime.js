@@ -1,6 +1,7 @@
 import {
   combatHealthDeltaEventsV1
 } from "./combat-health-feedback-v1.js";
+import { normalizePersistentZoneSpatialV1 } from "../../contracts/persistent-zone-spatial-v1.js";
 import {
   projectileClashCandidate,
   resolveProjectileClash
@@ -24,6 +25,7 @@ export function createCombatRuntime({
   now = defaultNow,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
+  readZoneSpatialContext = null,
   onState = () => {},
   onHealthDelta = () => {},
   onClock = () => {},
@@ -39,6 +41,7 @@ export function createCombatRuntime({
   if (!Number.isFinite(tickMs) || tickMs <= 0) {
     throw new RangeError("tickMs must be greater than 0");
   }
+  if (readZoneSpatialContext !== null && typeof readZoneSpatialContext !== "function") throw new TypeError("readZoneSpatialContext must be a function");
 
   let disposed = false;
   let running = false;
@@ -295,6 +298,7 @@ export function createCombatRuntime({
 
     return Object.freeze({
       mode: "approach-bands-v1",
+      visibleZones: normalizePersistentZoneSpatialV1(readZoneSpatialContext?.(state) ?? null),
       approaches:
         Object.freeze(approaches)
     });

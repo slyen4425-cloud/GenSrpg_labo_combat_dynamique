@@ -612,7 +612,7 @@ export function createDomSkillFxRenderer({
 
       const source = centerRelativeTo(
         anchor(
-          targetAnchors,
+          anchors,
           sourceActorId,
           "persistent zone source"
         ).getBoundingClientRect(),
@@ -1312,6 +1312,27 @@ export function createDomSkillFxRenderer({
     });
   }
 
+  function sampleZoneSpatialContext(zones) {
+    if (disposed || !zones.length) return null;
+    // Reproject moving sources before sampling on the Runtime's existing tick.
+    syncPersistentZones(zones);
+    const rect = element => {
+      const r = element?.getBoundingClientRect?.();
+      return r && Number(r.width) > 0 && Number(r.height) > 0
+        ? { left: Number(r.left), top: Number(r.top), width: Number(r.width), height: Number(r.height) } : null;
+    };
+    return {
+      zones: zones.flatMap(zone => {
+        const bounds = rect(persistentZones.get(zone.id)?.node);
+        return bounds ? [{ zoneId: zone.id, sourceActorId: zone.sourceActorId, radius: zone.radius, bounds }] : [];
+      }),
+      actors: Object.entries(anchors).flatMap(([actorId, element]) => {
+        const bounds = rect(element);
+        return bounds ? [{ actorId, bounds }] : [];
+      })
+    };
+  }
+
   function cancelProjectileFor(fromSlot) {
     let cancelled = 0;
 
@@ -1349,6 +1370,7 @@ export function createDomSkillFxRenderer({
   return Object.freeze({
     play,
     syncPersistentZones,
+    sampleZoneSpatialContext,
     cancelProjectileFor,
     cancelAll,
     dispose,

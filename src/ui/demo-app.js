@@ -426,7 +426,7 @@ export async function mountCombatDemo({
   function playEventFor(
     slotKey,
     type,
-    { targetSlot = null } = {}
+    { targetSlot = null, metadata = {} } = {}
   ) {
     if (disposed) {
       return Promise.resolve({ status: "disposed" });
@@ -466,7 +466,8 @@ export async function mountCombatDemo({
           type === "attack" && target?.visible
             ? target.actor.id
             : null,
-        intensity: 1
+        intensity: 1,
+        metadata
       });
 
       const plan = planAnimation({
@@ -481,7 +482,7 @@ export async function mountCombatDemo({
         if (
           result?.status === "finished" &&
           !disposed &&
-          !["idle", "ko"].includes(type) &&
+          !["idle", "ko", "recall"].includes(type) &&
           slot.visible
         ) {
           startIdleFor(slotKey);

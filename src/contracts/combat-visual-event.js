@@ -1,6 +1,7 @@
 export const COMBAT_VISUAL_EVENT_TYPES = Object.freeze([
   "idle",
   "enter",
+  "recall",
   "move",
   "attack",
   "ground-attack",

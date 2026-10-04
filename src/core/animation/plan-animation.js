@@ -1,4 +1,5 @@
 import { createAnimationPlan } from "./animation-plan.js";
+import { ROSTER_TRANSITION_PROFILE_V1 } from "../profiles/roster-transition-profile-v1.js";
 
 function facingSign(actor) {
   return actor.facing === "right" ? 1 : -1;
@@ -239,6 +240,26 @@ export function planAnimation({ event, actor, profile }) {
   const sign = facingSign(actor);
 
   switch (event.type) {
+    case "recall": {
+      const cfg = profile.recall ?? ROSTER_TRANSITION_PROFILE_V1.recall;
+      const durationMs = Number(event.metadata?.durationMs);
+      if (!Number.isFinite(durationMs) || durationMs <= 0) throw new RangeError("recall requires positive command durationMs");
+      const holdMs = durationMs * cfg.holdFraction;
+      return createAnimationPlan({ actorId: actor.id, eventType: event.type, restoreBaseState: false, segments: [
+        { label: "recall-channel", durationMs: holdMs, easing: "ease-in-out", transform: { scaleX: cfg.pulseScale, scaleY: cfg.pulseScale }, ground: { scale: cfg.pulseScale }, opacity: 1, filter: { brightness: cfg.pulseBrightness } },
+        { label: "recall-contract", durationMs: durationMs - holdMs, easing: "ease-in", transform: { scaleX: cfg.endScale, scaleY: cfg.endScale }, ground: { scale: cfg.endScale }, opacity: cfg.endOpacity, filter: { brightness: cfg.endBrightness } }
+      ] });
+    }
+    case "enter": {
+      const cfg = profile.enter ?? ROSTER_TRANSITION_PROFILE_V1.enter;
+      const firstMs = cfg.durationMs * cfg.arrivalFraction;
+      const settleMs = (cfg.durationMs - firstMs) / 2;
+      return createAnimationPlan({ actorId: actor.id, eventType: event.type, segments: [
+        { label: "arrival-flash", durationMs: firstMs, easing: "ease-out", transform: { scaleX: cfg.startScale, scaleY: cfg.startScale }, ground: { scale: cfg.startScale }, opacity: cfg.startOpacity, filter: { brightness: cfg.brightness } },
+        { label: "arrival-expand", durationMs: settleMs, easing: "ease-out", transform: { scaleX: cfg.overshootScale, scaleY: cfg.overshootScale }, ground: { scale: cfg.overshootScale }, opacity: 1 },
+        { label: "arrival-settle", durationMs: settleMs, easing: "ease-in-out", transform: { scaleX: 1, scaleY: 1 }, ground: { scale: 1 }, opacity: 1 }
+      ] });
+    }
     case "idle": {
       const cfg = profile.idle;
       const swayMode = cfg.swayMode ?? "single";

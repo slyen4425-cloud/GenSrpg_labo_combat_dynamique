@@ -978,6 +978,7 @@ export async function mountCombatTest({
       );
       visuals.setSlotVisible(slotId, true);
       projectSlotToCurrentDistance(slotId);
+      presenter.presentRosterArrival({ actorSlot: slotId, result });
       setStatus(
         slotId === "opponent"
           ? `${result.displayName} adverse entre en combat.`
@@ -1099,6 +1100,7 @@ export async function mountCombatTest({
     }
 
     if (result.outcome === "recalled") {
+      presenter.cancelActionPresentation("player");
       visuals.setSlotVisible("player", false);
       setStatus(
         "Monstre rappelé. Choisis une réserve puis Invocation.",
@@ -1114,6 +1116,7 @@ export async function mountCombatTest({
       );
       visuals.setSlotVisible("player", true);
       projectPlayerToCurrentDistance();
+      presenter.presentRosterArrival({ actorSlot: "player", result });
       setStatus(
         `${result.displayName} entre en combat.`,
         "ok"
@@ -1127,6 +1130,7 @@ export async function mountCombatTest({
 
   runtime = createCombatRuntime({
     session,
+    readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       render(state);
 
@@ -1154,12 +1158,7 @@ export async function mountCombatTest({
       );
     },
     onStarted({ action }) {
-      if (action.actionType === "skill") {
-        presenter.presentPreparation({
-          action,
-          actorSlot: action.actorId
-        });
-      }
+      presenter.presentPreparation({ action, actorSlot: action.actorId });
     },
     onProgress(progress) {
       if (!progress.actionId) {

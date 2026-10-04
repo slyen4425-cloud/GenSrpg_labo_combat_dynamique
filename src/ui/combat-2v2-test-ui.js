@@ -1113,6 +1113,7 @@ export async function mountCoop2v2Test({
 
   runtime = createCombatRuntime({
     session,
+    readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       if (rosterController) for (const actor of format.actors) {
         if (Number(state.fighters[actor.actorId]?.hp) <= 0 && rosterController.isPresent(actor.actorId)) {
@@ -1141,6 +1142,7 @@ export async function mountCoop2v2Test({
     },
     onStarted({ action }) {
       if (action.actionType !== "skill") {
+        presenter.presentPreparation({ action, actorSlot: action.actorId });
         actionRefs[action.actorId].textContent = `${action.command.name} · préparation`;
         return;
       }
@@ -1283,6 +1285,7 @@ export async function mountCoop2v2Test({
       session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
       onActorChanged(actorId, result) {
+        presenter.presentRosterArrival({ actorSlot: actorId, result });
         const actor = actorMeta(actorId);
         if (result.outcome !== "recalled") for (const element of root.querySelectorAll(`[data-preview-actor-ui="${actorId}"]`)) {
           for (const label of element.querySelectorAll("[data-demo-label], strong")) label.textContent = actor.displayName;

@@ -52,6 +52,24 @@ export function createCombatResolutionPresenter({
   const preparationAudioByActor = new Map();
   const travelAudioByActor = new Map();
   const outcomeByActor = new Map();
+  const rosterVisualsByActor = new Map();
+
+  function presentRosterVisual(actorSlot, type, options = {}) {
+    const record = { type };
+    rosterVisualsByActor.set(actorSlot, record);
+    const finished = Promise.resolve(visuals.playEventFor(actorSlot, type, options)).catch(() => ({ status: "cancelled" }));
+    // Recall's last pose is held until completion or interruption of the command.
+    if (type !== "recall") void finished.finally(() => {
+      if (rosterVisualsByActor.get(actorSlot) === record) rosterVisualsByActor.delete(actorSlot);
+    });
+    return Object.freeze({ status: type === "recall" ? "preparing" : "arriving", finished });
+  }
+
+  function presentRosterArrival({ actorSlot, result }) {
+    if (disposed) return Object.freeze({ status: "disposed" });
+    if (!result?.ok || !["summoned", "switched", "ko_replaced"].includes(result.outcome)) return Object.freeze({ status: "no_fx" });
+    return presentRosterVisual(actorSlot, "enter");
+  }
 
   function outcomeSequence(actorSlot, firstType, nextType = null) {
     const record = {};
@@ -141,6 +159,8 @@ export function createCombatResolutionPresenter({
   function cancelActionPresentation(
     actorSlot = "player"
   ) {
+    const rosterCancelled = rosterVisualsByActor.delete(actorSlot);
+    if (rosterCancelled) visuals.cancelFor(actorSlot);
     const outcomeCancelled = outcomeByActor.delete(actorSlot);
     const preparationCancelled =
       cancelPreparation(actorSlot);
@@ -155,6 +175,7 @@ export function createCombatResolutionPresenter({
       preparationCancelled ||
       travelCancelled ||
       outcomeCancelled ||
+      rosterCancelled ||
       projectileCount > 0
     );
   }
@@ -168,6 +189,14 @@ export function createCombatResolutionPresenter({
     }
 
     cancelPreparation(actorSlot);
+
+    if (action?.actionType === "command") {
+      if (["recall", "switch"].includes(action.command?.kind) && action.preparationMs > 0) {
+        cancelActionPresentation(actorSlot);
+        return presentRosterVisual(actorSlot, "recall", { metadata: { durationMs: action.preparationMs } });
+      }
+      return Object.freeze({ status: "no_fx" });
+    }
 
     let handle = null;
     for (const fxPlan of planSkillPreparationFx({
@@ -521,6 +550,8 @@ export function createCombatResolutionPresenter({
       return;
     }
     cancelPending();
+    for (const actorSlot of rosterVisualsByActor.keys()) visuals.cancelFor(actorSlot);
+    rosterVisualsByActor.clear();
     const presentationActors = new Set([
       ...preparationFxByActor.keys(),
       ...preparationAudioByActor.keys(),
@@ -537,6 +568,7 @@ export function createCombatResolutionPresenter({
   return Object.freeze({
     present,
     presentPreparation,
+    presentRosterArrival,
     presentRelease,
     presentOutcome,
     cancelPreparation,
