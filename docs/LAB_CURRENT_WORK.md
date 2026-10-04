@@ -22,7 +22,7 @@ Risques : téléportation au retour si la pose courante n'est pas capturée avan
 
 Résultat technique : correction implémentée avec retour renderer depuis la pose visible au contact, timing relu depuis le segment `*-home` du plan actif, Runtime dégâts inchangé. RED `cc0da7e...` / CI 37224643052 attendu ; source/tests `550e609e...` / CI 37224791601 SUCCESS, 1035/1035. Rapport : `docs/LAB_MOVING_ATTACK_CONTACT_STOP_V1.md`. Validation utilisateur reçue le 2026-10-04 : Sylvain a testé la correction sur PC et confirme le comportement OK. Lot GREEN utilisateur.
 
-Critère de fin : lors d'un contact simultané, aucune créature ne poursuit au-delà du contact ; le retour est continu depuis la pose visible courante ; dégâts et récupération Runtime inchangés ; CI verte ; preview réelle puis validation utilisateur avant GREEN.
+Critère de fin : lors d'un contact simultané, aucune créature ne poursuit au-delà du contact ; le retour est continu depuis la pose visible courante ; dégâts et récupération Runtime inchangés ; CI verte ; preview réelle validée par Sylvain ; GREEN utilisateur.
 
 ## Reprise prioritaire — 2026-10-04
 
