@@ -8,6 +8,8 @@ import { loadCoop2v2CombatSource } from "../../src/ui/combat-2v2-test-ui.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
 import { createRosterSession } from "../../src/core/combat/roster-session.js";
+import * as commandContract from "../../src/contracts/combat-command-definition.js";
+import { createCaptureCombatRosterControllerV1 } from "../../src/ui/capture-combat-roster-controller-v1.js";
 
 function fixture() {
   const skill = buildHumanSkillDraftV1({ id: "strike", name: "Strike", description: "Native strike fixture", requiredLevel: 1, usageScopes: ["capture", "combat"], category: "offensive", form: "contact", element: "fire", approachMode: "ground", energyCost: 1, preparationMs: 100, travelMs: 100, recoveryMs: 0, cooldownMs: 0, allowedDistances: ["short", "medium", "long"], targetRelations: ["enemy"], damage: 7 });
@@ -18,6 +20,33 @@ function fixture() {
   }));
   return { configuredCreatures, configuredSkills: new Map([[skill.id, skill]]), localCreatureIds: ["crea-0"], opponentCreatureIds: ["crea-1"], activePerTeam: 1, arenaId: "city", combatRules: { schema: "capture-combat-rules-editor-draft-v1", maxEnergy: 12, initialEnergy: 12, energyChargeAmount: 0, energyChargeIntervalMs: 1000, movementEnergyPerStep: 1, chargeTimeModifierPct: 0 } };
 }
+
+test("editable recall survives the editor export and native load, then swaps at exactly the configured duration", async () => {
+  const exported = buildCaptureEditorCombatTestV1({ ...fixture(), localCreatureIds: ["crea-0", "crea-1"], recallPreparationMs: 3500 });
+  assert.equal(exported.battle.recallPreparationMs, 3500);
+  const native = adaptCaptureCombatExportStackV1(JSON.parse(JSON.stringify(exported)));
+  const loaded = await loadCoop2v2CombatSource({ nativeCombatSource: native });
+  assert.equal(loaded.recallPreparationMs, 3500);
+  const raw = Object.fromEntries(await Promise.all(["recall", "switch", "summon"].map(async kind => [kind, JSON.parse(await readFile(new URL("../../data/combat/commands/" + kind + ".command.json", import.meta.url), "utf8"))])));
+  const commands = commandContract.configureCombatRecallCommandsV1(raw, loaded.recallPreparationMs);
+  assert.deepEqual([commands.recall.preparationMs, commands.switch.preparationMs, commands.summon.preparationMs], [3500, 3500, 0]);
+  const session = createCombatSession({ fighters: loaded.fighters });
+  const controller = createCaptureCombatRosterControllerV1({ session, rosterDefinition: loaded.roster, fighterConfigs: loaded.fighterConfigs, skillIdsByCreature: loaded.skillIdsByCreature, visuals: { setCreatureFor() {}, setSlotVisible() {} } });
+  let now = 0, tick;
+  const runtime = createCombatRuntime({ session, now: () => now, setTimer(fn) { tick = fn; return 1; }, clearTimer() {}, onResolved: r => controller.applyCommandResolution(r) });
+  runtime.start();
+  try {
+    const before = controller.activeMember("local-1").id;
+    const preview = controller.previewCommand("local-1", commands.switch);
+    assert.equal(runtime.startCommand({ actorId: "local-1", command: preview.action.command }).ok, true);
+    now = 3499; tick();
+    assert.equal(controller.activeMember("local-1").id, before);
+    now = 3500; tick();
+    assert.notEqual(controller.activeMember("local-1").id, before);
+    assert.equal(controller.isPresent("local-1"), true);
+    assert.equal(session.snapshot().fighters["local-1"].energy, 12);
+  } finally { runtime.dispose(); controller.dispose(); }
+});
 
 for (const size of [1, 2, 3, 4, 5, 6]) {
   test("native test composes " + size + " distinct members per camp and preserves library records", () => {

@@ -96,10 +96,31 @@ test("damage number follows the live motion anchor, not the stable slot", async 
   );
   assert.equal(
     arena.children[0].style.top,
-    "120px"
+    "100px"
   );
   await handle.finished;
   renderer.dispose();
+});
+
+test("damage remains in the arena and opaque long enough to read at an off-screen player anchor", async () => {
+  const arena = fakeElement({ left: 0, top: 0, width: 360, height: 600 });
+  const player = fakeElement({ left: -100, top: 590, width: 80, height: 80 });
+  arena.ownerDocument = { createElement() { return fakeElement({ left: 0, top: 0, width: 0, height: 0 }); } };
+  let frames;
+  const renderer = createDomSkillFxRenderer({ arena, anchors: { local: player }, presentationForSkill() { return null; }, animate(node, keyframes) { frames = keyframes; return { finished: Promise.resolve(), cancel() {} }; }, requestFrame() {}, cancelFrame() {} });
+  const handle = renderer.play({ type: "damage", targetSlot: "local", amount: 27, durationMs: 700 });
+  assert.equal(arena.children[0].style.left, "32px");
+  assert.equal(arena.children[0].style.top, "576px");
+  assert.equal(frames[0].opacity, 1, "damage is readable from its first frame");
+  assert.ok(frames.some(f => f.opacity === 1 && f.offset >= 0.7), "hold the number before fading");
+  await handle.finished;
+  renderer.dispose();
+});
+
+test("damage overlay is above fighter movement and combat controls", async () => {
+  const css = await readFile(new URL("../../examples/dom-demo/demo.css", import.meta.url), "utf8");
+  const layer = selector => Number(css.match(new RegExp(selector + "\\s*\\{[^}]*z-index:\\s*(\\d+)"))[1]);
+  assert.ok(layer("\\.skill-fx--damage-number") > layer("\\.combat-controls"));
 });
 
 test("damage flash animates only the image so attack/movement animation remains owned by motion renderer", async () => {
