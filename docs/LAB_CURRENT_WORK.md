@@ -2,6 +2,29 @@
 
 > ÉTAT ACTIF — 2026-10-04
 >
+> Micro-lot : **Capture Reward Rules v1**
+>
+> Branche : `work/lab-capture-reward-rules-v1-2026-10-04`
+>
+> Base GREEN : `checkpoint/lab-capture-xp-progression-rules-v2-green-2026-10-04` @ `ac0e1b3173de3c3cca9603637899c752b25bec09`
+>
+> Checkpoint départ : `checkpoint/lab-start-capture-reward-rules-v1-2026-10-04`
+>
+> Objectif : centraliser comme données configurables les règles de monnaie et de loot après victoire. Le preset de départ reproduit les probabilités/formules historiques auditées sans les coder en dur dans le runtime.
+>
+> Propriétaire : **Capture Reward Rules**. Aucun inventaire ni état joueur n'est modifié dans ce lot.
+>
+> Fichiers autorisés : nouveau contrat Reward Rules, preset JSON, tests unitaires et documentation du lot.
+>
+> Hors périmètre : application de récompense, inventaire, table de contenu réelle, XP, capture, Rappel/Invocation, Combat Runtime, Roster Session, UI, `Zombicide-40k`.
+>
+> TDD : RED sur contrat absent -> implémentation minimale -> CI -> checkpoint GREEN technique.
+
+---
+
+
+> ÉTAT ACTIF — 2026-10-04
+>
 > Micro-lot : **Capture XP / Progression Rules v2**
 >
 > Branche : `work/lab-capture-xp-progression-rules-v2-2026-10-04`
