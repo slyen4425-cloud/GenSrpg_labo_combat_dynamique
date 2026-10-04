@@ -48,19 +48,10 @@ test("selected Capture test creature refuses to invent scale when visual metadat
 });
 
 
-test("selected Capture preview passes authoritative metadata into opponent draft builder", async () => {
-  const pageJs = await readFile(
-    new URL(
-      "../../examples/dom-demo/capture-editor-v2.js",
-      import.meta.url
-    ),
-    "utf8"
-  );
-
-  assert.match(pageJs, /option\.metaFile/);
-  assert.match(pageJs, /creatureMetaByOptionId/);
-  assert.match(
-    pageJs,
-    /creatureMeta\s*:\s*\n?\s*visualContext\.creatureMetaByOptionId/
-  );
+test("selected Capture preview routes canonical scales through the native visual adapter", async () => {
+  const pageJs = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.js", import.meta.url), "utf8");
+  assert.match(pageJs, /adaptCaptureExportToNativeVisualSourceV1/);
+  assert.doesNotMatch(pageJs, /creatureMetaByOptionId|buildCaptureTestOpponentDraftV1/);
+  const composition = await readFile(new URL("../../src/ui/capture-editor-combat-test-v1.js", import.meta.url), "utf8");
+  assert.match(composition, /creatureDraft: record\.draft/);
 });

@@ -417,7 +417,7 @@ test("Human Editor keeps shared combat rules outside creature save/load dirty ow
   }
 
   assert.match(
-    source,
+    await readFile(new URL("../../src/ui/capture-editor-combat-test-v1.js", import.meta.url), "utf8"),
     /applyCaptureCombatRulesToCreatureDraftV1/
   );
 });

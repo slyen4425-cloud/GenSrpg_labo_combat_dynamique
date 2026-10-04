@@ -1,4 +1,5 @@
 :root {
+  --editor-footer-space: 8rem;
   color-scheme: dark;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #071017;
@@ -40,7 +41,7 @@ button {
   padding:
     max(0.8rem, env(safe-area-inset-top))
     max(0.8rem, env(safe-area-inset-right))
-    max(6rem, env(safe-area-inset-bottom))
+    calc(var(--editor-footer-space) + env(safe-area-inset-bottom))
     max(0.8rem, env(safe-area-inset-left));
 }
 
@@ -469,6 +470,8 @@ details summary {
 }
 
 .editor-footer p {
+  max-height: 3rem;
+  overflow: auto;
   margin: 0.15rem 0 0;
   color: #839da6;
   font-size: 0.66rem;
@@ -522,7 +525,7 @@ details summary {
     padding:
       max(0.55rem, env(safe-area-inset-top))
       max(0.55rem, env(safe-area-inset-right))
-      max(0.55rem, env(safe-area-inset-bottom))
+      calc(var(--editor-footer-space) + env(safe-area-inset-bottom))
       max(0.55rem, env(safe-area-inset-left));
   }
 
@@ -567,8 +570,10 @@ details summary {
     min-height: 12rem;
   }
 
+  :root { --editor-footer-space: 11rem; }
+
   .editor-footer {
-    position: static;
+    position: fixed;
     align-items: stretch;
     flex-direction: column;
   }
@@ -928,3 +933,26 @@ body[data-editor-view="preview"] {
 }
 
 
+
+html {
+  scroll-padding-bottom: calc(var(--editor-footer-space) + env(safe-area-inset-bottom));
+}
+
+.editor-footer__hint {
+  display: block;
+  margin-top: 0.2rem;
+  color: #9fb8bf;
+  font-size: 0.68rem;
+}
+
+.test-team {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(125, 221, 239, 0.18);
+  border-radius: 0.65rem;
+}
+
+.test-team legend { color: #bfeef5; font-size: 0.82rem; font-weight: 800; }
+.test-team__current { display: grid; gap: 0.4rem; margin: 0.6rem 0; font-size: 0.8rem; }
+.test-team [hidden] { display: none; }

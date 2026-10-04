@@ -132,9 +132,10 @@ export function adaptCaptureExportToNativeVisualSourceV1({
 
   const usedCreatureIds = [
     ...new Set(
-      captureExport.actors.map(
-        (actor) => actor.creatureId
-      )
+      [
+        ...captureExport.actors.map(actor => actor.creatureId),
+        ...captureExport.rosters.flatMap(roster => roster.members.map(member => member.creatureId))
+      ]
     )
   ];
 
@@ -143,9 +144,18 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     const presentationId = creature?.presentationId;
 
     if (!presentationId) {
-      throw new RangeError(
-        `missing presentation for creature: ${creatureId}`
+      if (!profileIds.has("biped")) throw new RangeError("unknown profile: biped");
+      const marker = "data:image/svg+xml," + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180"><rect x="10" y="30" width="160" height="130" rx="24" fill="#233b46" stroke="#769aa8" stroke-width="3"/><text x="90" y="102" text-anchor="middle" fill="#d7e8ed" font-family="sans-serif" font-size="17">SANS IMAGE</text></svg>'
       );
+      return Object.freeze({
+        id: creature.id, name: creature.displayName, profile: "biped",
+        presentationFallback: "missing-creature-image",
+        views: Object.freeze({ player: marker, opponent: marker, icon: marker }),
+        runtimePreview: Object.freeze({ player: marker, opponent: marker, icon: marker }),
+        assetBaseUrl: new URL(".", import.meta.url).href, displayScale: Object.freeze({ player: 1, opponent: 1 }),
+        fxAnchors: Object.freeze({ player: {}, opponent: {} })
+      });
     }
 
     const rawBinding = presentations[presentationId];

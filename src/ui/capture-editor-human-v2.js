@@ -1,3 +1,4 @@
+import { buildCaptureEditorCombatTestV1, prepareCaptureEditorCombatEditsV1, mountCaptureEditorCombatTeamControlsV1 } from "./capture-editor-combat-test-v1.js";
 import {
   skillSpriteControlsFromFieldsV1,
   skillSpriteControlFieldsFromVisualsV1,
@@ -73,9 +74,6 @@ import {
 import {
   normalizeCaptureCombatRulesEditorDraftV1
 } from "../contracts/capture-combat-rules-editor-draft-v1.js";
-import {
-  applyCaptureCombatRulesToCreatureDraftV1
-} from "../adapters/input/capture/capture-combat-rules-overlay-v1.js";
 import {
   CAPTURE_CREATURE_VISUAL_BINDINGS_V1,
   captureCreatureVisualBindingForIdV1
@@ -6303,14 +6301,7 @@ export function preserveUnrepresentedCreatureFieldsV1({
   };
 }
 
-export function mountCaptureEditorHumanV2({
-  root,
-  opponentCreatureDraft,
-  getOpponentCreatureDraft = null,
-  getOpponentCreatureId = null,
-  opponentSkillDrafts,
-  opponentLoadout
-}) {
+export function mountCaptureEditorHumanV2({ root }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
   }
@@ -6326,6 +6317,10 @@ export function mountCaptureEditorHumanV2({
   let lastExport = null;
   let statRegistry = null;
   let progressionRules = null;
+  const combatTeamControls = mountCaptureEditorCombatTeamControlsV1({
+    root, configuredCreatures,
+    getSelectedCreatureId: () => selectedValue(root, "[data-creature-id]")
+  });
 
   function listen(target, type, handler) {
     if (disposed) {
@@ -6813,6 +6808,7 @@ export function mountCaptureEditorHumanV2({
   function refreshCreatureLibraryOptions(
     preferredId = null
   ) {
+    combatTeamControls.refresh();
     const previous =
       preferredId ??
       selectedCreatureId ??
@@ -7066,10 +7062,11 @@ export function mountCaptureEditorHumanV2({
       "[data-creature-id]"
     ).readOnly = true;
     creatureLibrarySelect.value = creatureId;
+    combatTeamControls.refresh();
     updateCreatureLibraryState(
       "Modification de « " +
         record.draft.displayName +
-        " ». Les changements ne sont appliqués qu’après « Mettre à jour ».",
+        " ». Les changements sont enregistrés avec « Mettre à jour » ou au lancement du test.",
       "info"
     );
     setStatus(
@@ -8289,207 +8286,55 @@ export function mountCaptureEditorHumanV2({
 
   function validate() {
     try {
-      if (
-        selectedLegacyState !== null &&
-        !selectedLegacyState.runtimeReady
-      ) {
-        throw new Error(
-          "La capacité historique sélectionnée contient un buff, debuff ou DoT. StatusEffectV1 est requis avant validation complète."
-        );
+      if (selectedLegacyState !== null && !selectedLegacyState.runtimeReady) {
+        throw new Error("La capacité sélectionnée n’est pas encore utilisable en combat.");
       }
-
-      if (currentSkillHasUnsavedChanges()) {
-        throw new Error(
-          "La capacité en cours a été modifiée. Enregistre-la avant de valider le combat."
-        );
-      }
-
-      if (creatureDirty) {
-        throw new Error(
-          "La créature en cours a été modifiée. Enregistre-la avant de valider le combat."
-        );
-      }
-
-      if (
-        !selectedCreatureId ||
-        !configuredCreatures.has(
-          selectedCreatureId
-        )
-      ) {
-        throw new Error(
-          "Enregistre ou sélectionne une créature avant de valider le combat."
-        );
-      }
-
-      const creatureRecord =
-        configuredCreatures.get(
-          selectedCreatureId
-        );
-      const loadout =
-        creatureRecord.loadout;
-
-      if (progressionRules !== null) {
-        validateHumanLoadoutProgressionV1({
-          loadout,
-          progressionRules,
-          creatureLevel:
-            creatureRecord.draft.level,
-          skillDrafts:
-            configuredSkills
-        });
-      }
-
-      const combatRules =
-        readHumanCombatRulesV1(root);
-      const creatureDraft =
-        applyCaptureCombatRulesToCreatureDraftV1({
-          creatureDraft:
-            creatureRecord.draft,
-          combatRules
-        });
-
-      const configuredOpponentCreatureId =
-        typeof getOpponentCreatureId === "function"
-          ? getOpponentCreatureId()
-          : null;
-
-      let opponentSourceDraft = null;
-      let resolvedOpponentSkillDrafts =
-        opponentSkillDrafts;
-      let resolvedOpponentLoadout =
-        opponentLoadout;
-      let resolvedOpponentStatValues = [];
-
-      if (
-        configuredOpponentCreatureId !== null &&
-        configuredOpponentCreatureId !== undefined &&
-        configuredOpponentCreatureId !== ""
-      ) {
-        const configuredOpponentRecord =
-          configuredCreatures.get(
-            configuredOpponentCreatureId
-          );
-
-        if (!configuredOpponentRecord) {
-          throw new RangeError(
-            "Créature adverse configurée introuvable : " +
-              configuredOpponentCreatureId
-          );
-        }
-
-        opponentSourceDraft =
-          configuredOpponentRecord.draft;
-        resolvedOpponentLoadout =
-          configuredOpponentRecord.loadout;
-        resolvedOpponentSkillDrafts = [];
-        resolvedOpponentStatValues =
-          configuredOpponentRecord.statValues == null
-            ? []
-            : [configuredOpponentRecord.statValues];
-
-        if (progressionRules !== null) {
-          validateHumanLoadoutProgressionV1({
-            loadout:
-              configuredOpponentRecord.loadout,
-            progressionRules,
-            creatureLevel:
-              configuredOpponentRecord.draft.level,
-            skillDrafts:
-              configuredSkills
-          });
-        }
-      } else {
-        opponentSourceDraft =
-          typeof getOpponentCreatureDraft === "function"
-            ? getOpponentCreatureDraft()
-            : opponentCreatureDraft;
-      }
-
-      if (
-        !opponentSourceDraft ||
-        typeof opponentSourceDraft !== "object"
-      ) {
-        throw new TypeError(
-          "Créature adverse de test indisponible"
-        );
-      }
-
-      const resolvedOpponentCreatureDraft =
-        applyCaptureCombatRulesToCreatureDraftV1({
-          creatureDraft:
-            opponentSourceDraft,
-          combatRules
-        });
-
-      const battleSetup = buildHumanBattleSetupV1({
-        battleId: "capture-human-preview",
-        localCreatureId: creatureDraft.id,
-        localDisplayName: creatureDraft.displayName,
-        opponentCreatureId:
-          resolvedOpponentCreatureDraft.id,
-        opponentDisplayName:
-          resolvedOpponentCreatureDraft.displayName,
-        arenaId: selectedValue(
-          root,
-          "[data-test-arena]"
-        ),
-        activePerTeam: numericValue(
-          root,
-          "[data-active-per-team]"
-        ),
-        skillSpeedMultiplier: numericValue(
-          root,
-          "[data-combat-skill-speed]"
-        )
+      const result = prepareCaptureEditorCombatEditsV1({
+        configuredSkills, configuredCreatures,
+        selectedSkillId: librarySelect.value || null,
+        selectedCreatureId,
+        readSkillDraft: () => currentSkillHasUnsavedChanges()
+          ? buildHumanSkillDraftV1(readSkillFields(root)) : null,
+        readCreatureRecord: () => creatureDirty || selectedCreatureId === null
+          ? currentCreatureRecord() : null,
+        buildExport: () => buildCaptureEditorCombatTestV1({
+          configuredCreatures, configuredSkills,
+          ...combatTeamControls.read(),
+          arenaId: selectedValue(root, "[data-test-arena]"),
+          combatRules: readHumanCombatRulesV1(root),
+          skillSpeedMultiplier: numericValue(root, "[data-combat-skill-speed]"),
+          statRegistry, progressionRules
+        })
       });
-
-      lastExport = buildHumanEditorExportV3({
-        creatureDraft,
-        skillDrafts: [
-          ...configuredSkills.values()
-        ],
-        loadout,
-        battleSetup,
-        opponentCreatureDraft:
-          resolvedOpponentCreatureDraft,
-        opponentSkillDrafts:
-          resolvedOpponentSkillDrafts,
-        opponentLoadout:
-          resolvedOpponentLoadout,
-        statRegistry,
-        statValues: [
-          ...(creatureRecord.statValues == null
-            ? []
-            : [creatureRecord.statValues]),
-          ...resolvedOpponentStatValues
-        ],
-        progressionRules
-      });
-
-      one(root, "[data-editor-summary]").textContent =
-        lastExport.actors.length +
-        " combattants · " +
-        lastExport.creatures.length +
-        " créatures · " +
-        lastExport.skills.length +
-        " capacités";
-
-      setStatus(
-        root,
-        "Configuration valide. L’export Capture est prêt.",
-        "ok"
+      lastExport = result.exported;
+      if (result.skillDraft !== null) {
+        refreshSkillLibraryOptions(result.skillDraft.id);
+        refreshLoadoutOptions();
+        writeSkillDraftFields(root, result.skillDraft, statRegistry);
+        librarySelect.value = result.skillDraft.id;
+        one(root, "[data-skill-id]").readOnly = true;
+        updateLibraryState({ runtimeReady: true, message: "Modifications de la capacité enregistrées pour le test." });
+      }
+      if (result.creatureRecord !== null) {
+        selectedCreatureId = result.creatureRecord.draft.id;
+        refreshCreatureLibraryOptions(selectedCreatureId);
+        loadCreatureRecord(selectedCreatureId);
+      }
+      combatTeamControls.refresh();
+      const teamSizes = Object.values(lastExport.teams).map(actorIds =>
+        lastExport.rosters.filter(roster => actorIds.includes(roster.slotId))
+          .reduce((size, roster) => size + roster.members.length, 0)
       );
-
+      one(root, "[data-editor-summary]").textContent =
+        teamSizes.join(" contre ") + " monstres · " + lastExport.actors.length + " actifs";
+      setStatus(root, result.skillDraft !== null || result.creatureRecord !== null
+        ? "Configuration valide. Modifications enregistrées pour le test."
+        : "Configuration valide. Le combat de test est prêt.", "ok");
       return lastExport;
     } catch (error) {
       lastExport = null;
-      one(root, "[data-editor-summary]").textContent =
-        "Corrige les champs signalés.";
-      setStatus(
-        root,
-        error.message,
-        "error"
-      );
+      one(root, "[data-editor-summary]").textContent = "Corrige les champs signalés.";
+      setStatus(root, error.message, "error");
       return null;
     }
   }
@@ -9028,6 +8873,8 @@ export function mountCaptureEditorHumanV2({
           ...showcaseCreaturePresets
         ];
 
+        const reloadSelectedSkillAfterPresets = !currentSkillHasUnsavedChanges();
+
         const showcaseResult =
           applyCaptureTransferBatchToEditorStateV1({
             transfers: showcasePresets,
@@ -9051,6 +8898,15 @@ export function mountCaptureEditorHumanV2({
           librarySelect.value
         );
         refreshLoadoutOptions();
+        if (reloadSelectedSkillAfterPresets) {
+          const selectedSkill = configuredSkills.get(librarySelect.value);
+          if (selectedSkill) {
+            writeSkillDraftFields(root, selectedSkill, statRegistry);
+            selectedLegacyState = null;
+            one(root, "[data-skill-id]").readOnly = true;
+          }
+        }
+
         refreshCreatureLibraryOptions(
           selectedCreatureId
         );
@@ -9128,6 +8984,7 @@ export function mountCaptureEditorHumanV2({
         return;
       }
       disposed = true;
+      combatTeamControls.dispose();
       for (const remove of listeners.splice(0)) {
         remove();
       }

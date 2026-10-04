@@ -136,6 +136,26 @@ function profiles() {
   ];
 }
 
+test("native preview prepares canonical reserve presentations before any summon", () => {
+  const exported = baseExport();
+  exported.creatures.push({ ...exported.creatures[1], id: "crea-reserve", presentationId: "creature:crea-reserve" });
+  exported.presentation.creatures["creature:crea-reserve"] = { ...exported.presentation.creatures["creature:crea-enemy"], id: "creature:crea-reserve", subjectId: "crea-reserve" };
+  exported.rosters = [{ slotId: "local-1", activeMemberId: "local-active", members: [{ id: "local-active", creatureId: "crea-local", displayName: "Local" }, { id: "local-reserve", creatureId: "crea-reserve", displayName: "Reserve" }] }];
+  const source = adaptCaptureExportToNativeVisualSourceV1({ exported, assetCatalog: assetCatalog(), profiles: profiles(), assetUrlForFile: file => "https://example.test/" + file });
+  assert.ok(source.creatureMetas.some(meta => meta.id === "crea-reserve"), "reserve missing from native visual source");
+});
+
+test("unillustrated library creatures stay testable with an explicit no-image marker and unchanged definitions", () => {
+  const exported = baseExport();
+  exported.creatures[1].presentationId = null;
+  const before = JSON.stringify(exported);
+  const source = adaptCaptureExportToNativeVisualSourceV1({ exported, assetCatalog: assetCatalog(), profiles: profiles(), assetUrlForFile: file => "https://example.test/" + file });
+  const meta = source.creatureMetas.find(m => m.id === "crea-enemy");
+  assert.equal(meta.presentationFallback, "missing-creature-image");
+  assert.match(decodeURIComponent(meta.views.player), /SANS IMAGE/);
+  assert.equal(JSON.stringify(exported), before);
+});
+
 test("Capture visual adapter resolves actor creature presentations without changing asset ids", () => {
   const source = adaptCaptureExportToNativeVisualSourceV1({
     exported: baseExport(),

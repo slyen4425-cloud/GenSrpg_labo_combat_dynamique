@@ -77,7 +77,7 @@ test("Capture test opponent catalog exposes exactly the nine delivered creature 
   assert.equal(draft.presentation.visual.icon.assetId, option.assets.icon);
 });
 
-test("Capture editor exposes opponent selector and resolves it at validation time", async () => {
+test("Capture editor exposes independent team selectors resolved from the active libraries", async () => {
   const [html, pageJs, humanEditor] = await Promise.all([
     readFile(htmlUrl, "utf8"),
     readFile(pageJsUrl, "utf8"),
@@ -85,10 +85,10 @@ test("Capture editor exposes opponent selector and resolves it at validation tim
   ]);
 
   assert.match(html, /data-test-opponent-creature/);
-  assert.match(pageJs, /CAPTURE_TEST_CREATURE_OPTIONS_V1/);
-  assert.match(pageJs, /buildCaptureTestOpponentDraftV1/);
-  assert.match(pageJs, /getOpponentCreatureDraft/);
-  assert.match(humanEditor, /getOpponentCreatureDraft/);
+  assert.doesNotMatch(pageJs, /CAPTURE_TEST_CREATURE_OPTIONS_V1/);
+  assert.doesNotMatch(pageJs, /buildCaptureTestOpponentDraftV1/);
+  assert.match(humanEditor, /mountCaptureEditorCombatTeamControlsV1/);
+  assert.match(humanEditor, /buildCaptureEditorCombatTestV1/);
 
   assert.doesNotMatch(
     pageJs,

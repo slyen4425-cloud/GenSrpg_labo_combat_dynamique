@@ -101,18 +101,14 @@ test("Human Editor supports configured opponent authority for showcase combat te
     "utf8"
   );
 
-  assert.match(source, /getOpponentCreatureId/);
-  assert.match(
-    source,
-    /configuredCreatures\.get\(\s*configuredOpponentCreatureId/
-  );
-  assert.match(
-    source,
-    /resolvedOpponentStatValues/
-  );
+  assert.match(source, /buildCaptureEditorCombatTestV1/);
+  const composition = await readFile(new URL("../../src/ui/capture-editor-combat-test-v1.js", import.meta.url), "utf8");
+  assert.match(composition, /configuredCreatures\.get/);
+  assert.match(composition, /records\.map\(r => r\.statValues\)/);
+  assert.doesNotMatch(composition, /CAPTURE_TEST_CREATURE_OPTIONS_V1/);
 });
 
-test("DOM demo passes configured opponent ids from the test catalog into the Human Editor", async () => {
+test("DOM demo delegates all test-team choices to the Human Editor active owners", async () => {
   const source = await readFile(
     new URL(
       "../../examples/dom-demo/capture-editor-v2.js",
@@ -121,8 +117,8 @@ test("DOM demo passes configured opponent ids from the test catalog into the Hum
     "utf8"
   );
 
-  assert.match(source, /configuredCreatureId/);
-  assert.match(source, /getOpponentCreatureId/);
+  assert.match(source, /mountCaptureEditorHumanV2\(\{ root \}\)/);
+  assert.doesNotMatch(source, /getOpponentCreatureId|opponentLoadout|enemy-hit/);
 });
 
 

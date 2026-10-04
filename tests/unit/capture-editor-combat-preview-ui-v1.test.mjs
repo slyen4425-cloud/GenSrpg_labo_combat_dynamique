@@ -59,8 +59,7 @@ test("Capture editor page composes Session V2 with native combat and visual owne
     "mountCaptureCombatPreviewV1",
     "GLOBAL_VISUAL_LIBRARY",
     "globalVisualAssetUrl",
-    "CAPTURE_TEST_CREATURE_OPTIONS_V1",
-    "buildCaptureTestOpponentDraftV1"
+    "mountCaptureEditorHumanV2"
   ]) {
     assert.match(source, new RegExp(required));
   }

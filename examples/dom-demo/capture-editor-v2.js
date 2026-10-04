@@ -26,11 +26,6 @@ import {
 import {
   createPrivateAudioPreviewControllerV1
 } from "../../src/ui/private-audio-preview-controller-v1.js";
-import {
-  CAPTURE_TEST_CREATURE_OPTIONS_V1,
-  buildCaptureTestOpponentDraftV1
-} from "../../src/catalogs/capture-test-creature-options-v1.js";
-
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
   new URL("../../data/profiles/quadruped.profile.json", import.meta.url),
@@ -50,127 +45,12 @@ async function fetchJson(url) {
 }
 
 async function loadPreviewVisualContext() {
-  const [
-    assetCatalog,
-    profiles,
-    creatureMetaEntries
-  ] = await Promise.all([
+  const [assetCatalog, profiles] = await Promise.all([
     fetchJson(GLOBAL_VISUAL_LIBRARY.catalogUrl),
-    Promise.all(
-      PROFILE_URLS.map((url) => fetchJson(url))
-    ),
-    Promise.all(
-      CAPTURE_TEST_CREATURE_OPTIONS_V1.map(
-        async (option) => [
-          option.id,
-          await fetchJson(
-            globalVisualAssetUrl(option.metaFile)
-          )
-        ]
-      )
-    )
+    Promise.all(PROFILE_URLS.map(url => fetchJson(url)))
   ]);
-
-  return Object.freeze({
-    assetCatalog,
-    profiles: Object.freeze(profiles),
-    creatureMetaByOptionId: Object.freeze(
-      Object.fromEntries(creatureMetaEntries)
-    )
-  });
+  return Object.freeze({ assetCatalog, profiles: Object.freeze(profiles) });
 }
-
-const opponentSkillDrafts = [
-  {
-    schema: "capture-skill-editor-draft-v1",
-    id: "enemy-hit",
-    description: "Attaque adverse simple.",
-    requiredLevel: 1,
-    usageScopes: ["capture", "combat"],
-    definition: {
-      id: "enemy-hit",
-      name: "Attaque",
-      category: "offensive",
-      form: "contact",
-      element: null,
-      approachMode: "ground",
-      energyCost: 1,
-      preparationMs: 500,
-      travelMs: 500,
-      recoveryMs: 300,
-      cooldownMs: 1600,
-      allowedDistances: ["short", "medium", "long"],
-      targetRelations: ["enemy"],
-      effect: {
-        damage: 2
-      }
-    },
-    presentation: null
-  },
-  {
-    schema: "capture-skill-editor-draft-v1",
-    id: "enemy-burst",
-    description: "Projectile adverse de prévisualisation.",
-    requiredLevel: 1,
-    usageScopes: ["capture", "combat"],
-    definition: {
-      id: "enemy-burst",
-      name: "Trait ardent",
-      category: "offensive",
-      form: "projectile",
-      element: "fire",
-      approachMode: "none",
-      energyCost: 2,
-      preparationMs: 700,
-      travelMs: 550,
-      recoveryMs: 350,
-      cooldownMs: 2600,
-      allowedDistances: ["short", "medium", "long"],
-      targetRelations: ["enemy"],
-      effect: {
-        damage: 3
-      }
-    },
-    presentation: null
-  },
-  {
-    schema: "capture-skill-editor-draft-v1",
-    id: "enemy-heavy-hit",
-    description: "Attaque lourde adverse de prévisualisation.",
-    requiredLevel: 1,
-    usageScopes: ["capture", "combat"],
-    definition: {
-      id: "enemy-heavy-hit",
-      name: "Charge lourde",
-      category: "offensive",
-      form: "contact",
-      element: null,
-      approachMode: "ground",
-      energyCost: 3,
-      preparationMs: 950,
-      travelMs: 650,
-      recoveryMs: 500,
-      cooldownMs: 3400,
-      allowedDistances: ["short", "medium", "long"],
-      targetRelations: ["enemy"],
-      effect: {
-        damage: 4
-      }
-    },
-    presentation: null
-  }
-];
-
-const opponentLoadout = {
-  schema: "capture-active-skill-loadout-v1",
-  creatureId: "crea-enemy",
-  slots: [
-    { id: "slot-1", skillId: "enemy-hit" },
-    { id: "slot-2", skillId: "enemy-burst" },
-    { id: "slot-3", skillId: "enemy-heavy-hit" },
-    { id: "slot-4", skillId: null }
-  ]
-};
 
 const root = document.querySelector(
   "[data-capture-editor-human]"
@@ -193,9 +73,6 @@ const backButton = document.querySelector(
 const editorStatus = root?.querySelector(
   "[data-editor-status]"
 );
-const opponentCreatureSelect = root?.querySelector(
-  "[data-test-opponent-creature]"
-);
 const arenaSelect = root?.querySelector(
   "[data-test-arena]"
 );
@@ -208,24 +85,10 @@ if (
   !testButton ||
   !backButton ||
   !editorStatus ||
-  !opponentCreatureSelect ||
   !arenaSelect
 ) {
   throw new Error("Structure Capture Editor preview incomplète");
 }
-
-opponentCreatureSelect.textContent = "";
-for (const option of CAPTURE_TEST_CREATURE_OPTIONS_V1) {
-  const element = document.createElement("option");
-  element.value = option.id;
-  element.textContent =
-    option.label +
-    (option.configuredCreatureId
-      ? " · modèle configuré"
-      : "");
-  opponentCreatureSelect.append(element);
-}
-opponentCreatureSelect.value = "braisombre";
 
 arenaSelect.textContent = "";
 for (
@@ -239,41 +102,7 @@ for (
 }
 arenaSelect.value = "city";
 
-function getOpponentCreatureDraft() {
-  if (!visualContext?.assetCatalog) {
-    throw new Error(
-      "Catalogue visuel de preview non chargé"
-    );
-  }
-
-  const optionId = opponentCreatureSelect.value;
-
-  return buildCaptureTestOpponentDraftV1({
-    optionId,
-    assetCatalog: visualContext.assetCatalog,
-    creatureMeta:
-      visualContext.creatureMetaByOptionId?.[
-        optionId
-      ]
-  });
-}
-
-function getOpponentCreatureId() {
-  const optionId = opponentCreatureSelect.value;
-  const option = CAPTURE_TEST_CREATURE_OPTIONS_V1.find(
-    (entry) => entry.id === optionId
-  );
-
-  return option?.configuredCreatureId ?? null;
-}
-
-const editor = mountCaptureEditorHumanV2({
-  root,
-  getOpponentCreatureDraft,
-  getOpponentCreatureId,
-  opponentSkillDrafts,
-  opponentLoadout
-});
+const editor = mountCaptureEditorHumanV2({ root });
 
 const audioPreviewController =
   createPrivateAudioPreviewControllerV1({

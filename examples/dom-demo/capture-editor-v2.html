@@ -450,16 +450,31 @@
         <div class="card-title">
           <span class="step">3</span>
           <div>
-            <h2>Format du combat</h2>
-            <p>Le même chemin de données est utilisé pour 1v1 ou 2v2. Le roster et la réserve restent indépendants.</p>
+            <h2>Équipes du test</h2>
+            <p>Choisis les monstres de chaque camp dans ta bibliothèque. Une même créature peut participer plusieurs fois.</p>
           </div>
         </div>
-        <label>Créature adverse du test
-          <select data-test-opponent-creature>
-            <option value="braisombre">Braisombre</option>
-          </select>
-        </label>
-        <p class="note">Ce choix concerne uniquement l’adversaire de la preview de test et ne modifie pas ta créature éditée.</p>
+        <div class="grid two test-teams">
+        <fieldset class="test-team"><legend>Ton équipe</legend>
+          <label>Monstres dans ton équipe<select data-test-local-team-size><option value="1">1 monstre</option><option value="2">2 monstres</option><option value="3">3 monstres</option><option value="4">4 monstres</option><option value="5">5 monstres</option><option value="6">6 monstres</option></select></label>
+          <div class="test-team__current" data-test-team-member data-test-team="local" data-test-team-index="0"><span>1. Créature en cours</span><strong data-test-current-creature>Créature en cours d’édition</strong></div>
+          <label data-test-team-member data-test-team="local" data-test-team-index="1" hidden>2. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="2" hidden>3. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="3" hidden>4. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="4" hidden>5. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="5" hidden>6. Monstre allié<select data-test-local-creature></select></label>
+        </fieldset>
+        <fieldset class="test-team"><legend>Équipe adverse</legend>
+          <label>Monstres dans l’équipe adverse<select data-test-opponent-team-size><option value="1">1 monstre</option><option value="2">2 monstres</option><option value="3">3 monstres</option><option value="4">4 monstres</option><option value="5">5 monstres</option><option value="6">6 monstres</option></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="0">1. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="1" hidden>2. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="2" hidden>3. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="3" hidden>4. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="4" hidden>5. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="5" hidden>6. Monstre adverse<select data-test-opponent-creature></select></label>
+        </fieldset>
+        </div>
+        <p class="note">Le premier monstre de ton équipe suit la créature que tu modifies. Les autres choix restent indépendants.</p>
         <label>Arène du test
           <select data-test-arena></select>
         </label>
@@ -470,7 +485,7 @@
             <option value="2">2 contre 2</option>
           </select>
         </label>
-        <p class="note">Le format indique seulement le nombre de créatures simultanément engagées. Le roster peut contenir davantage de créatures en réserve.</p>
+        <p class="note">Les autres monstres restent en réserve : ils peuvent être invoqués ou remplacer un monstre KO. En 2 contre 2, les réserves sont réparties entre les deux actifs.</p>
         <label>Vitesse globale des attaques
           <input
             type="number"
@@ -893,7 +908,8 @@
     <footer class="editor-footer">
       <div>
         <strong>Validation</strong>
-        <p data-editor-status data-tone="info">Charge de la bibliothèque visuelle…</p>
+        <p data-editor-status data-tone="info" role="status" aria-live="polite">Charge de la bibliothèque visuelle…</p>
+        <small class="editor-footer__hint">Les modifications valides sont enregistrées au lancement du test.</small>
       </div>
       <div class="editor-footer__actions">
         <button type="button" class="secondary-action" data-editor-validate>
