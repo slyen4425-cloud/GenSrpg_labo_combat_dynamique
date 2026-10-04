@@ -38,4 +38,14 @@ test("Exploration Combat public adapter page exists and uses convergence revisio
     script,
     /completeExplorationCombatHandoffV1/
   );
+  assert.match(
+    script,
+    /capture-skill-presentation-assets-v2\.js\?rev=exploration-bridge-convergence-v1/
+  );
+  assert.equal(
+    script.includes(
+      "capture-runtime-presentation-assets-v1.js"
+    ),
+    false
+  );
 });
