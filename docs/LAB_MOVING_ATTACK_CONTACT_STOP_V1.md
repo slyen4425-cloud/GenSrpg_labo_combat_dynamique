@@ -1,6 +1,6 @@
 # Moving attack contact stop V1 — 2026-10-04
 
-État : GREEN technique, validation utilisateur smartphone/preview attendue.
+État : GREEN utilisateur. Sylvain a testé la correction sur PC le 2026-10-04 et confirme le comportement OK.
 
 ## Références
 
@@ -48,6 +48,6 @@ CI finale : 1035 PASS / 0 FAIL.
 
 Aucun asset, aucune règle combat, aucun preset, `main`, `global-assets` ou `Zombicide-40k` modifié.
 
-## Validation attendue
+## Validation utilisateur
 
-Dans la preview, provoquer deux Griffe / attaques de contact avec déplacement simultanées. Au premier contact visible, les deux créatures doivent arrêter la phase aller et repartir vers leur position, sans se traverser ni poursuivre vers l'autre bord. Les dégâts doivent rester appliqués au contact réel.
+Test réel effectué par Sylvain le 2026-10-04 : deux attaques de contact simultanées ne poursuivent plus leur déplacement au-delà du contact ; résultat validé. Checkpoint GREEN utilisateur : `checkpoint/lab-moving-attack-contact-stop-v1-green-2026-10-04`.
