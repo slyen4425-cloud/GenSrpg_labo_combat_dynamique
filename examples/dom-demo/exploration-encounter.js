@@ -1,20 +1,20 @@
 import {
   mountCombatDemo
-} from "../../src/ui/demo-app.js";
+} from "../../src/ui/demo-app.js?rev=exploration-bridge-convergence-v1";
 import {
   mountCoop2v2Test
-} from "../../src/ui/combat-2v2-test-ui.js?rev=player-party-recall-runtime-fix-v1";
+} from "../../src/ui/combat-2v2-test-ui.js?rev=exploration-bridge-convergence-v1";
 import {
   buildExplorationEncounterCombatSourceV1
-} from "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js?rev=player-party-v1";
+} from "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js?rev=exploration-bridge-convergence-v1";
 import {
   readExplorationCombatHandoffV1,
   completeExplorationCombatHandoffV1
-} from "../../src/ui/exploration-encounter-handoff-v1.js";
+} from "../../src/ui/exploration-encounter-handoff-v1.js?rev=exploration-bridge-convergence-v1";
 import {
   fallbackEncounterCreatureMetaV1,
   bindEncounterCreatureMetaV1
-} from "../../src/ui/exploration-encounter-visual-source-v1.js";
+} from "../../src/ui/exploration-encounter-visual-source-v1.js?rev=exploration-bridge-convergence-v1";
 import {
   captureCreatureVisualBindingForIdV1
 } from "../../src/catalogs/capture-creature-visual-bindings-v1.js";
