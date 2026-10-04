@@ -4,7 +4,10 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04
 
-Lot en cours : combat-reference-pace-v1. Base 200b42055f2063c9545db6da01d3104e18f1fee0 ; branche `work/lab-combat-reference-pace-v1-2026-10-04` ; départ `checkpoint/lab-start-combat-reference-pace-v1-2026-10-04`. Zone-idle-recall-fx-v1 est validé par Sylvain ; GREEN utilisateur `checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04` sur 200b42055f2063c9545db6da01d3104e18f1fee0. Le lot précédent ci-dessous est conservé pour historique.
+Lot terminé techniquement : combat-reference-pace-v1. **1× dans l'éditeur = ancien rythme 0.5**, par la constante native Capture 0.5 et une conversion UI unique. Source : `9deff685fef8275c4c1e07d0fa18ac0d7ea24fcc` ; CI `37222043505` SUCCESS : **1033/1033**, gardes OK.
+Base : `200b42055f2063c9545db6da01d3104e18f1fee0`. Branche : `work/lab-combat-reference-pace-v1-2026-10-04`. Départ : `checkpoint/lab-start-combat-reference-pace-v1-2026-10-04`.
+Checkpoint technique : `checkpoint/lab-combat-reference-pace-v1-technical-2026-10-04`. Preview : `preview/lab-combat-reference-pace-v1-2026-10-04`, éditeur natif capture-editor-v2.html. Rapport : `docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md`.
+Validation du nouveau rythme sur smartphone encore attendue. Dernier GREEN utilisateur : `checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04` sur 200b42055f2063c9545db6da01d3104e18f1fee0, validation explicite de Sylvain. Aucun merge main. Les lots antérieurs ci-dessous sont conservés pour historique.
 
 Lot terminé techniquement : zone-idle-recall-fx-v1. Tempête au repos corrigée selon l'emprise affichée ; rappel/arrivée planifiés par Animation Core, priorité du rappel préservée sous un hit non létal. Validation artistique smartphone utilisateur encore attendue.
 Base : db1b1867d9e1f35d39bc831722282fdc105a7e3e. Départ : `checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04`. Travail : `work/lab-zone-idle-recall-fx-v1-2026-10-04`.
@@ -24910,3 +24913,13 @@ Sylvain valide zone-idle-recall-fx-v1 (preview 200b42055f2063c9545db6da01d3104e1
 ### combat-reference-pace-v1 — preuve TDD
 
 3 RED / 1 témoin avant implémentation : défaut natif encore à 1, conversion du facteur UI absente et validation de cette conversion absente. Le témoin confirme que les valeurs natives explicites et les exports legacy doivent conserver leurs timings. Après implémentation : 47/47 sentinelles locales, dont chaîne réelle scénario→export→adapter→source native→Session ; durées de capacité ×2 pour le nouveau 1×, commande rappel 2000 ms et énergie +1 à 1000 ms inchangées. CI complète et preview restent à vérifier.
+
+
+## combat-reference-pace-v1 — clôture technique
+
+Lot terminé techniquement : combat-reference-pace-v1. **1× dans l'éditeur = ancien rythme 0.5**, par la constante native Capture 0.5 et une conversion UI unique. Source : `9deff685fef8275c4c1e07d0fa18ac0d7ea24fcc` ; CI `37222043505` SUCCESS : **1033/1033**, gardes OK.
+Base : `200b42055f2063c9545db6da01d3104e18f1fee0`. Branche : `work/lab-combat-reference-pace-v1-2026-10-04`. Départ : `checkpoint/lab-start-combat-reference-pace-v1-2026-10-04`.
+Checkpoint technique : `checkpoint/lab-combat-reference-pace-v1-technical-2026-10-04`. Preview : `preview/lab-combat-reference-pace-v1-2026-10-04`, éditeur natif capture-editor-v2.html. Rapport : `docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md`.
+Validation du nouveau rythme sur smartphone encore attendue. Dernier GREEN utilisateur : `checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04` sur 200b42055f2063c9545db6da01d3104e18f1fee0, validation explicite de Sylvain. Aucun merge main. Les lots antérieurs ci-dessous sont conservés pour historique.
+
+Preuves : 47 sentinelles ciblées et CI complète 1033/1033 ; chemin natif Griffe 1× → charge affichée 2.3 s, 2× → 1.1 s ; affichage portrait 390 px, note de référence et Tester visibles. Multiplicateurs natifs explicites/legacy conservés ; commande rappel, cadences et presets inchangés. Détails : docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md.

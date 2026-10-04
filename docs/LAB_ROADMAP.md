@@ -461,3 +461,6 @@ Lot zone-idle-recall-fx-v1 techniquement vérifié : la présence dans une zone 
 ## 2026-10-04 — Validation zone-idle-recall et nouvelle référence de rythme
 
 Sylvain valide la preview 200b42055f2063c9545db6da01d3104e18f1fee0. GREEN utilisateur du lot : checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04 sur ce SHA, sans merge main. La référence de vitesse devient ensuite le rythme précédemment utilisé à 0.5 : affichage 1×, vitesse native 0.5. Contrat de facteur UI centralisé, moteur et unités des anciens exports préservés ; micro-lot combat-reference-pace-v1 à vérifier en preview dédiée.
+
+
+Résultat combat-reference-pace-v1 : nouveau 1× équivalent à l'ancien 0.5 et 2× à l'ancien 1, paramètres natifs historiques préservés. Source 9deff685fef8275c4c1e07d0fa18ac0d7ea24fcc, CI 37222043505 : 1033/1033 ; vrai combat Griffe et revue 390 px concluants. Rapport : docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md. Nouveau GREEN utilisateur attend validation du rythme ; dernier GREEN utilisateur zone-idle-recall-fx-v1 conservé.
