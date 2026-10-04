@@ -52,7 +52,28 @@ Critère GREEN technique :
 5. CI complète GREEN ;
 6. aucune seconde autorité Party/Roster.
 
-État : **START — restauration contractuelle en cours**.
+Résultat :
+- base Combat récente conservée : `794b80d3deecac4705faf5c9d581f130074d5c0c` ;
+- restaurés uniquement les contrats/adapters Exploration/Party manquants ;
+- page publique `examples/dom-demo/exploration-encounter.html` restaurée ;
+- `CaptureEncounterSnapshot v1`, `CaptureCombatResult v1`, `CaptureParty v1` restaurés ;
+- catalogue de ruleset Combat requis par le bridge restauré ;
+- vrai source Encounter construit le roster actuel ;
+- test réel Roster : Loup -> Rappel -> Moussados -> Invocation GREEN ;
+- sentinelle publique empêche la disparition future de la page ;
+- révision URL `exploration-bridge-convergence-v1` pour éviter le cache ancien ;
+- Combat Runtime / Recall / Summon / zones / dégâts inchangés.
+>
+> TDD/CI :
+> - échecs intermédiaires attendus pendant restauration des dépendances manquantes ;
+> - CI complète finale : `37216176389` — **SUCCESS** ;
+> - HEAD technique : `0b20b59c10a2b71d5653408c3d3bfdf2c5b4811c`.
+>
+> Prévalidation :
+> - checkpoint : `checkpoint/lab-exploration-bridge-convergence-v1-prevalidation-green-2026-10-04` ;
+> - preview : `preview/lab-exploration-bridge-convergence-v1-2026-10-04`.
+>
+> État : **TECHNIQUE GREEN — publication Exploration + gate utilisateur requis**.
 
 ---
 
