@@ -4,10 +4,13 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04
 
-Lot en cours : zone-ko-feedback-v1, retours utilisateur à corriger.
+Lot terminé techniquement : zone-ko-feedback-v1. Validation smartphone utilisateur attendue.
 Branche : `work/lab-zone-ko-feedback-v1-2026-10-04`. Base : `fc5cc99cf7050f7c8013de6ce2ca1998d769b8ba`.
 Checkpoint de départ : `checkpoint/lab-start-zone-ko-feedback-v1-2026-10-04`.
-Rappel précédent validé fonctionnel ; défaut demandé 2 s éditable. Zone de feu/dégâts visibles/relève KO en diagnostic.
+Source/tests : `ac6ca51ada7dfb2ccfaf1cdd505b779595ee125c`. CI `37211319259` SUCCESS, 1017 PASS / 0 FAIL. Rappel 2 s éditable, contact zone et relève K.O. corrigés ; rendu des dégâts renforcé.
+Rapport : `docs/LAB_ZONE_KO_FEEDBACK_V1_REPORT.md`.
+Preview dédiée : `preview/lab-zone-ko-feedback-v1-2026-10-04`.
+Checkpoint technique : `checkpoint/lab-zone-ko-feedback-v1-technical-2026-10-04`. Dernier GREEN utilisateur inchangé.
 Les entrées historiques ci-dessous restent conservées.
 
 ## État global
@@ -24834,3 +24837,21 @@ Périmètre précisé : src/adapters/renderer/combat-resolution-presenter.js, pr
 - Contrat optionnel `recallPreparationMs` dans BattleSetup et CombatExport ; normalisation/configuration dans CombatCommandDefinition existant, relayée par ExporterV2, AdapterStackV1 et client 2v2. Contrôles UI et note de rappel dérivés des commandes réellement configurées. Pas de nouvelle horloge ou registre.
 - Observation native mobile 390 px : le modèle local standard est au-dessus du HUD ; il n'est pas établi que les chiffres passent derrière le sprite dans tous les cas. Le correctif de présentation protège les cas d'ancre déplacée et de HUD, et prolonge le maintien visible sans modifier les dégâts.
 - Les 31 sentinelles Zone/Contact/HealthFeedback/FX passent après les corrections locales d'entrée de zone et de continuation K.O.
+
+
+### 2026-10-04 — zone-ko-feedback-v1 terminé techniquement
+
+# Rapport — zone-ko-feedback-v1 — 2026-10-04
+
+État : correction technique vérifiée. Validation smartphone utilisateur attendue.
+
+Base : `fc5cc99cf7050f7c8013de6ce2ca1998d769b8ba`.
+Branche : `work/lab-zone-ko-feedback-v1-2026-10-04`.
+Départ : `checkpoint/lab-start-zone-ko-feedback-v1-2026-10-04`.
+Source/test vérifiés : `ac6ca51ada7dfb2ccfaf1cdd505b779595ee125c`.
+CI GitHub : run `37211319259`, **SUCCESS**, structure OK, **1017 tests / 1017 PASS / 0 FAIL**.
+Checkpoint technique prévu : `checkpoint/lab-zone-ko-feedback-v1-technical-2026-10-04`.
+Preview dédiée prévue : `preview/lab-zone-ko-feedback-v1-2026-10-04`.
+
+
+Détails, preuves et limites : `docs/LAB_ZONE_KO_FEEDBACK_V1_REPORT.md`. Aucun GREEN utilisateur ni merge main ; prochaine action : validation smartphone.

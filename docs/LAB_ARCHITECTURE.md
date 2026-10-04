@@ -3197,3 +3197,12 @@ Decision Controller lit les persistentZones natives (sourceActorId, skillId, zon
 StatusEffectV1.approach_time_modifier porte modifierPct signé. Combat Timing.effectiveApproachTimingMs additionne les statuts actifs × stacks pour ground/aerial : base × max(0, 1 + pct/100), puis multiplicateur global natif. Action Resolver fixe action.travelMs et impactAtMs au démarrage ; Runtime, Presenter, fenêtre d’évasion et entrée en zone lisent cette même action. Une expiration en plein trajet ne recalcule pas l’action commencée. Préparation/récupération/cooldown et projectile/beam/teleport/none ne sont pas modifiés.
 
 UI propose ce statut dans les effets de capacité, avec pourcentage, durée, polarité et stacking ; exporter/importer conservent le champ natif. Les fiches de statut affichent le pourcentage réel avec stacks. Rapport et preuve : docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md.
+
+
+## 2026-10-04 — Entrée de zone au contact, remplacement et rappel éditable
+
+- Combat Runtime valide le contact avant de transmettre un événement spatial sémantique de contact au Persistent Zone Runtime. Ce dernier applique l'entrée manquée avant le seuil temporel, même sans avance d'horloge ; pas de double entrée si le seuil natif a déjà été franchi. HP, cible, équipe, expiration et dégâts restent dans les autorités natives.
+- Resolution Presenter possède uniquement les continuations visuelles : une séquence annulée, remplacée ou disposée ne lance plus de K.O. différé. Le client 2v2 ne détecte les K.O. autonomes que sur le signal onState du Runtime ; les résolutions hit fournissent la promesse terminale existante au Roster.
+- recallPreparationMs est une option validée des contrats BattleSetup et CombatExport. ExporterV2, AdapterStackV1 et client natif la relaient vers CombatCommandDefinition existant ; recall/switch prennent cette préparation, summon conserve 0 ms. Défaut canonique 2000 ms, gratuit. Les temps de créature ne modifient pas cette commande du dresseur.
+- DOM Skill FX présente la perte de HP déjà calculée : ancre mobile haute, bornage arène, couche au-dessus du HUD et maintien opaque. Aucune règle de dégâts n'est déplacée dans le renderer.
+- Preuves et limites : LAB_ZONE_KO_FEEDBACK_V1_REPORT.md ; CI 37211319259, 1017 PASS. Validation smartphone utilisateur attendue.

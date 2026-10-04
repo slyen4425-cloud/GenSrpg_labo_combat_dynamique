@@ -446,3 +446,8 @@ Trois besoins utilisateur implémentés par les propriétaires existants : renfo
 Cette demande remplace pour switch seulement le verrou global de commandes de la première V9. Les autres acteurs continuent pendant le rappel ; slot toujours ciblable et relève atomique Roster Session. Le bouton unique du test Capture évite la succession de deux commandes laissant un terrain vide. Les anciennes commandes restent compatibles et gratuites.
 
 Source `0e151d26fde11af17525f442f648b2334f07e107`, CI 1006/1006. Vérification vraie chaîne 1v1/2v2, zone adverse au rayon long, rechargement du statut +50 % dans l’éditeur et affichage en combat, panneau mobile 360/390/430/paysage. Branche `work/lab-combat-tactics-switch-travel-v1-2026-10-04`. Rapport : docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md. Validation technique acquise ; retour utilisateur encore nécessaire pour GREEN utilisateur.
+
+
+## 2026-10-04 — Retours zone / dégâts / rappel / K.O.
+
+Lot zone-ko-feedback-v1 techniquement vérifié : contact anticipé traité par les autorités natives, continuations K.O. annulées au remplacement, chiffres de dégâts mieux placés et lisibles, rappel gratuit 2 secondes éditable par session. CI 37211319259 : 1017 PASS / 0 FAIL. Vérifications natives mobile 390 px et relève avant nouveau dégât réalisées. Validation smartphone Sylvain attendue avant GREEN utilisateur. Rapport : LAB_ZONE_KO_FEEDBACK_V1_REPORT.md. Branche work/lab-zone-ko-feedback-v1-2026-10-04. Aucun raccord au dépôt principal.
