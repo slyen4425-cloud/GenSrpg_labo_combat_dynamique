@@ -607,14 +607,8 @@ export async function mountCombatDemo({
                 }
                 phaseTimers.length = 0;
 
-                const returnMs =
-                  Number(
-                    profile.specialMoves?.[approachMode]?.returnMs
-                  ) || 180;
                 contactReturnHandle =
-                  slot.renderer.returnActiveToBaseFromCurrent({
-                    durationMs: returnMs
-                  });
+                  slot.renderer.returnActiveToBaseFromCurrent();
               }
 
               onContact();
