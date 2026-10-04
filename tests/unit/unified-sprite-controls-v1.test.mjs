@@ -5,6 +5,7 @@ import { buildHumanSkillDraftV1, humanSkillEditorFieldsFromDraftV1, captureEdito
 import { createCaptureSkillPresentationAssetsV2 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
 import { createDomStatusFxRenderer } from "../../src/adapters/renderer/dom-status-fx.js";
+import { exportCaptureSkillTransferJsonV1, importCaptureTransferJsonV1 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 
 const spriteId = "pack:capture:sprite-status-healing-aura-01";
 function fields(presentation = {}) {
@@ -55,7 +56,9 @@ for (const role of ["cast", "impact", "zone"]) for (const playbackMode of ["once
     assert.equal(slot.playbackMode, playbackMode);
     assert.equal(slot.offsetX, 35); assert.equal(slot.offsetY, -25);
     assert.deepEqual(slot.layerByView, { player: "behind", opponent: "front" });
-    const restored = humanSkillEditorFieldsFromDraftV1(JSON.parse(JSON.stringify(draft)));
+    const transferred = importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft));
+    assert.deepEqual(transferred.value.draft, draft);
+    const restored = humanSkillEditorFieldsFromDraftV1(transferred.value.draft);
     assert.deepEqual(buildHumanSkillDraftV1(restored), draft);
     assert.deepEqual(draft.definition, buildHumanSkillDraftV1(fields()).definition);
   });
@@ -99,7 +102,9 @@ test("persistent zone stretches to Runtime duration without restart on refresh o
 
 for (const playbackMode of ["once", "loop", "stretch"]) test("status " + playbackMode + ": binding, resolver and native renderer keep sprite controls", () => {
   const draft = buildHumanSkillDraftV1(fields({ statusVisuals: { aura: { mode: "sprite", sprite: { assetId: spriteId, displayScale: 2, opacity: .8, playbackMode, offsetX: 20, offsetY: -15, layerByView: { player: "behind", opponent: "front" } } } } }));
-  const restored = humanSkillEditorFieldsFromDraftV1(JSON.parse(JSON.stringify(draft)));
+  const transferred = importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft));
+  assert.deepEqual(transferred.value.draft, draft);
+  const restored = humanSkillEditorFieldsFromDraftV1(transferred.value.draft);
   assert.deepEqual(buildHumanSkillDraftV1(restored), draft);
   const presentation = assets(draft), motion = node();
   motion.ownerDocument = { createElement: node };
