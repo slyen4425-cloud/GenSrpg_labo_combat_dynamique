@@ -24669,3 +24669,11 @@ La révision documentaire de clôture est contrôlée par sa propre CI avant cr�
 - VisualController passe le conteneur existant au renderer ; CSS utilise les propriétés de repos/état terminal de l’ombre. Profil bas/opacité et distance-scale existants restent propriétaires de la forme statique.
 - RED reproduit avant implémentation ; 63/63 tests ciblés passent ensuite. Les phases biped ont des durées arrondies : la sentinelle de position compare les fractions déclarées du profil, pas une fraction de millisecondes arrondie qui introduisait 0,02 px d’erreur de mesure.
 - CI complète requise avant checkpoint technique ; preview réelle encore à vérifier. État artistique nouveaux médias : en cours.
+
+
+### AURA/STATUS — ajustement de périmètre après audit natif
+- DomStatusFxRenderer ne lit actuellement qu'un background fixe : un atlas y montrerait huit phases côte à côte. Exporter/réutiliser `applySpriteVisual` dans dom-skill-fx, son lecteur existant, au lieu de créer un second lecteur. Raccord supplémentaire autorisé nécessaire : dom-status-fx + dom-skill-fx.
+- Le lifecycle du statut possède le lecteur : conserver le node aux refreshs Runtime, annuler les pistes de séquence à expiration/remplacement/dispose, laisser le DOM retirer les animations CSS. HUD sans icône de capacité : montrer une seule phase représentative de l’atlas.
+- Pour les strips en boucle, le lecteur commun utilise huit intervalles visibles (`steps(8, jump-none)`) ; once/stretch conservent leur contrat. Aucun timer, moteur supplémentaire ou branche par ID.
+- RED natif : sept statuts échouent au cadrage de frame avant correctif du renderer ; cinq charges gardent leur résolution existante. Sentinelles aura/statut, timing natif, huit phases, refresh sans duplication, expiration et HUD.
+- Les premières découpes ont révélé des fragments voisins : dérivé Nature isolé via imagegen (silhouettes réduites dans la planche dérivée), limites AURA 7/8 corrigées à x=1340. Pas de correction RGB/alpha par code, ni substitution arbitraire ; original JPEG archivé inchangé.
