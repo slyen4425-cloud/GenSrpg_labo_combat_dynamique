@@ -4,6 +4,11 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04
 
+Lot en cours : zone-idle-recall-fx-v1. Retours smartphone précédents : dégâts plus lisibles, zone encore défaillante. Base db1b1867d9e1f35d39bc831722282fdc105a7e3e, branche `work/lab-zone-idle-recall-fx-v1-2026-10-04`, checkpoint `checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04`.
+La priorité ci-dessous est le lot précédent conservé.
+
+### Lot précédent — zone-ko-feedback-v1
+
 Lot terminé techniquement : zone-ko-feedback-v1. Validation smartphone utilisateur attendue.
 Branche : `work/lab-zone-ko-feedback-v1-2026-10-04`. Base : `fc5cc99cf7050f7c8013de6ce2ca1998d769b8ba`.
 Checkpoint de départ : `checkpoint/lab-start-zone-ko-feedback-v1-2026-10-04`.
@@ -24855,3 +24860,17 @@ Preview dédiée prévue : `preview/lab-zone-ko-feedback-v1-2026-10-04`.
 
 
 Détails, preuves et limites : `docs/LAB_ZONE_KO_FEEDBACK_V1_REPORT.md`. Aucun GREEN utilisateur ni merge main ; prochaine action : validation smartphone.
+
+
+## 2026-10-04 — zone-idle-recall-fx-v1 : périmètre autorisé avant source
+
+Retour smartphone : chiffres de dégâts mieux visibles (validation partielle conservée). Tempête de flammes reste incohérente : cible visuellement dans la zone mais dégâts démarrant à une attaque adverse. Rappel/switch doit être animé.
+
+- Base exacte : db1b1867d9e1f35d39bc831722282fdc105a7e3e. Checkpoint checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04. Branche work/lab-zone-idle-recall-fx-v1-2026-10-04.
+- Objectif : reproduire la vraie présence dans la zone pendant l'attente, corriger la divergence constatée dans les propriétaires natifs, rendre rappel et arrivée lisibles sans modifier les durées/coûts/continuité du slot.
+- Owners : Combat Runtime/Session/Zone Runtime pour horloge, position sémantique et dégâts ; CombatCommand/CombatVisualEvent, Animation Core/State, Presenter, DOM Actor/FX renderer pour rappel/summon ; Roster Session seul remplace les membres.
+- Source autorisée : src/core/combat/{persistent-zone-runtime-v1,combat-runtime,combat-session,combat-state,command-resolver,roster-session}.js si cause démontrée ; contrats de zone/spatial existants ou nouveau contrat de contexte spatial pur documenté ; src/contracts/combat-visual-event.js ; src/core/animation/{plan-animation,animation-plan}.js ; src/core/profiles/* si preset nécessaire ; src/adapters/renderer/{combat-resolution-presenter,dom-actor-renderer,dom-skill-fx,dom-keyframes}.js ; contrôleurs visuels dans src/ui/ existants ; src/ui/{combat-2v2-test-ui,combat-test-ui,capture-combat-roster-controller-v1,demo-app}.js ; examples/dom-demo/{demo.css,capture-editor-v2.html} si présentation nécessaire ; tests ciblés nouveaux/affectés ; docs LAB_CURRENT_WORK/ARCHITECTURE/ROADMAP et rapport du lot.
+- Protégés : main/global-assets, Zombicide-40k, assets/presets créatures/capacités de l'utilisateur, compatibilité mono-image, horloge unique, coûts 0 et préparation du rappel éditable (défaut 2 s), arrivée atomique sans adversaire temporairement sans cible, chiffres de dégâts déjà validés.
+- Pré-audit/TDD : vérifier timers en attente, bandes sémantiques vs rendu réel, source/target immobiles et source en approche, activation/renforcement/expiration des trois rayons ; RED natif sans nouvelle action entre ticks ; tests rappel commencé/annulé/K.O./changement de membre/dispose/retour idle et aucun double timer ou mutation gameplay par FX.
+- Risques : rayons et placement du sprite sont purement visuels aujourd'hui ; ne pas prétendre corriger la zone avec un refresh UI, un second ticker ou une règle par ID de compétence. Le diagnostic décide le raccord minimal.
+- Fin : vraie chaîne native testée avec cible immobile et aucun clic d'attaque, présentation recall/summon native inspectée sur mobile, CI complète verte, documentation et preview dédiées. Pas de GREEN utilisateur sans retour smartphone de Sylvain.
