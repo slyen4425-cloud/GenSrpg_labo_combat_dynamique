@@ -456,3 +456,8 @@ Lot zone-ko-feedback-v1 techniquement vérifié : contact anticipé traité par 
 ## 2026-10-04 — Tempête au repos et animation de relève
 
 Lot zone-idle-recall-fx-v1 techniquement vérifié : la présence dans une zone suit l'ellipse affichée et le modèle via un contrat spatial pur, lu sur l'horloge native ; fallback headless conservé. Animation Core planifie rappel/arrivée, Presenter préserve le rappel sous hit non létal. Coût 0, préparation 2000 ms par défaut éditable, relève atomique inchangés. Source 794b80d3deecac4705faf5c9d581f130074d5c0c ; CI 37214761522, 1029/1029. Tests natifs sans attaque au repos desktop/mobile, réserve visible dès l'arrivée. Validation artistique sur smartphone physique ouverte, main protégé. Rapport : docs/LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md.
+
+
+## 2026-10-04 — Validation zone-idle-recall et nouvelle référence de rythme
+
+Sylvain valide la preview 200b42055f2063c9545db6da01d3104e18f1fee0. GREEN utilisateur du lot : checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04 sur ce SHA, sans merge main. La référence de vitesse devient ensuite le rythme précédemment utilisé à 0.5 : affichage 1×, vitesse native 0.5. Contrat de facteur UI centralisé, moteur et unités des anciens exports préservés ; micro-lot combat-reference-pace-v1 à vérifier en preview dédiée.

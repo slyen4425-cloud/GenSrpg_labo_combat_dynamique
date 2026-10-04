@@ -3219,3 +3219,10 @@ CombatVisualEvent accepte recall et le planner existant implémente enter. Anima
 Resolution Presenter traduit préparation recall/switch et arrivée summoned/switched/ko_replaced vers les contrôleurs visuels existants. Interruption, remplacement et dispose annulent la présentation détenue et restaurent corps/ombre via le renderer unique. La fin visuelle n'est jamais attendue pour la commande ou le remplacement du roster : rappel gratuit, 2000 ms par défaut éditables, puis remplacement atomique. Aucun état actif intermédiaire vide, nouveau timer de commande, son externe ou sprite d'asset n'est ajouté.
 
 Le canal recall détenu par Resolution Presenter est prioritaire sur une animation hit non létale : la perte de HP et ses FX restent natifs et visibles, sans remplacer la contraction en cours. Un hit létal libère cette priorité et conserve la séquence K.O. puis remplacement atomique. Sentinelle RED puis GREEN dans zone-idle-recall-fx-v1, source 794b80d3deecac4705faf5c9d581f130074d5c0c ; rapport LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md.
+
+
+## 2026-10-04 — Rythme de référence Capture
+
+CAPTURE_COMBAT_REFERENCE_SPEED_V1 = 0.5 dans le contrat Capture Battle Setup désigne le rythme utilisateur validé. captureCombatPaceToSkillSpeedV1 convertit uniquement le facteur affiché à la lecture du champ humain : 1× → natif 0.5, 2× → natif 1, 4× → natif 2. Les nouveaux Scenario Builders utilisent la même constante par défaut. Le champ exporté skillSpeedMultiplier garde ses unités historiques ; les normalizers legacy et tout appel explicite restent inchangés.
+
+Combat Session / Combat Timing possèdent toujours baseMs / skillSpeedMultiplier, appliqué une seule fois à préparation/trajet/récupération et préparation de réaction. Aucune multiplication supplémentaire dans le Runtime, Presenter ou Renderer. Cooldowns, ticks de zone/statut/énergie et commandes du dresseur conservent leur horloge et durées. Les définitions/presets de capacité ne sont pas réécrits.

@@ -3,6 +3,10 @@ import { normalizeRecallPreparationMs } from "./combat-command-definition.js";
 export const CAPTURE_BATTLE_SETUP_EDITOR_DRAFT_SCHEMA =
   "capture-battle-setup-editor-draft-v1";
 
+// Displayed Capture pace x1 is the validated native half-speed rhythm.
+// Persisted skillSpeedMultiplier keeps its original native units.
+export const CAPTURE_COMBAT_REFERENCE_SPEED_V1 = 0.5;
+
 const TOP_LEVEL_FIELDS = new Set([
   "schema",
   "id",
@@ -74,6 +78,13 @@ function positiveFiniteNumber(value, field, fallback = 1) {
     throw new RangeError(`${field} must be greater than 0`);
   }
   return number;
+}
+
+export function captureCombatPaceToSkillSpeedV1(value = 1) {
+  return positiveFiniteNumber(
+    positiveFiniteNumber(value, "combat pace") * CAPTURE_COMBAT_REFERENCE_SPEED_V1,
+    "skillSpeedMultiplier"
+  );
 }
 
 function normalizeMember(raw, field) {

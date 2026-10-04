@@ -1,4 +1,4 @@
-import { normalizeCaptureBattleSetupEditorDraftV1 } from "../contracts/capture-battle-setup-editor-draft-v1.js";
+import { normalizeCaptureBattleSetupEditorDraftV1, CAPTURE_COMBAT_REFERENCE_SPEED_V1 } from "../contracts/capture-battle-setup-editor-draft-v1.js";
 import { exportCaptureEditorDraftsToCombatExportV3 } from "../adapters/input/capture/capture-editor-exporter-v3.js";
 import { applyCaptureCombatRulesToCreatureDraftV1 } from "../adapters/input/capture/capture-combat-rules-overlay-v1.js";
 import { resolveCaptureSkillSaveModeV1 } from "./capture-editor-skill-save-mode-v1.js";
@@ -36,7 +36,7 @@ function teamSlots(ids, activeCount, prefix, configuredCreatures) {
 // while definitions, planned loadouts and stat values keep their canonical IDs.
 export function buildCaptureEditorCombatTestV1({
   configuredCreatures, configuredSkills, localCreatureIds, opponentCreatureIds,
-  activePerTeam, arenaId, combatRules, skillSpeedMultiplier = 1, recallPreparationMs,
+  activePerTeam, arenaId, combatRules, skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1, recallPreparationMs,
   statRegistry = null, progressionRules = null
 }) {
   const local = teamIds(localCreatureIds, "L’équipe locale", configuredCreatures);

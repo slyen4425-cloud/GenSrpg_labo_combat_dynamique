@@ -24905,3 +24905,8 @@ Sylvain valide zone-idle-recall-fx-v1 (preview 200b42055f2063c9545db6da01d3104e1
 - Vérification : tests existants de vitesse réelle et nouveau chemin éditeur → scénario → export → Adapter Stack → source native → Session (préparation/trajet/récupération doublés pour le nouveau 1×), callers explicites inchangés, durées de commande et cadence de ticks non modifiées ; CI complète ; page native et affichage mobile.
 - Risque : convertir une deuxième fois dans Session ou convertir des exports déjà natifs. La conversion n'a lieu qu'à la lecture du facteur UI, avec une constante canonique.
 - Fin : défaut visible 1× et défaut natif 0.5, réglage plus lent/rapide utilisable, vraie chaîne vérifiée, docs/ref preview/checkpoint technique ; le nouveau lot attend ensuite validation utilisateur.
+
+
+### combat-reference-pace-v1 — preuve TDD
+
+3 RED / 1 témoin avant implémentation : défaut natif encore à 1, conversion du facteur UI absente et validation de cette conversion absente. Le témoin confirme que les valeurs natives explicites et les exports legacy doivent conserver leurs timings. Après implémentation : 47/47 sentinelles locales, dont chaîne réelle scénario→export→adapter→source native→Session ; durées de capacité ×2 pour le nouveau 1×, commande rappel 2000 ms et énergie +1 à 1000 ms inchangées. CI complète et preview restent à vérifier.

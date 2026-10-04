@@ -1,6 +1,6 @@
 # Rapport — zone-idle-recall-fx-v1 — 2026-10-04
 
-État : correctif technique vérifié ; validation artistique sur le smartphone de Sylvain encore ouverte. Aucun GREEN utilisateur ou merge main.
+État : validé par Sylvain le 2026-10-04 sur la preview 200b42055f2063c9545db6da01d3104e18f1fee0. GREEN utilisateur : checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04 sur ce même SHA. Aucun merge main.
 
 ## Références de reprise
 
@@ -41,3 +41,6 @@ Un hit non létal ne remplace plus une animation de rappel active ; ses chiffres
 - Présence = ellipse du sprite contre rectangle transformé du modèle, pas alpha-test pixel par pixel. Un échantillon courant ne reconstruit pas la trajectoire historique pendant une longue suspension de l'onglet.
 
 Les changements de PV/durée/loadout effectués dans la page pendant la QA sont des données temporaires de test ; ils ne font pas partie des commits. Aucun média ajouté, aucune modification de main/global-assets ou du dépôt principal.
+
+
+Validation utilisateur reçue : « ok, c'est validé ». Les observations et limites de capture ci-dessus décrivent la QA technique réalisée avant cette validation, conservées pour traçabilité.

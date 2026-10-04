@@ -36,7 +36,9 @@ import {
   normalizeCaptureActiveSkillLoadoutV1
 } from "../contracts/capture-active-skill-loadout-v1.js";
 import {
-  normalizeCaptureBattleSetupEditorDraftV1
+  normalizeCaptureBattleSetupEditorDraftV1,
+  CAPTURE_COMBAT_REFERENCE_SPEED_V1,
+  captureCombatPaceToSkillSpeedV1
 } from "../contracts/capture-battle-setup-editor-draft-v1.js";
 import {
   exportCaptureEditorDraftsToCombatExportV2
@@ -2057,7 +2059,7 @@ export function buildHumanBattleSetupV1({
   opponentDisplayName,
   arenaId,
   activePerTeam,
-  skillSpeedMultiplier = 1
+  skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1
 }) {
   const count = positiveInteger(
     activePerTeam,
@@ -8320,7 +8322,7 @@ export function mountCaptureEditorHumanV2({ root }) {
           ...combatTeamControls.read(),
           arenaId: selectedValue(root, "[data-test-arena]"),
           combatRules: readHumanCombatRulesV1(root),
-          skillSpeedMultiplier: numericValue(root, "[data-combat-skill-speed]"),
+          skillSpeedMultiplier: captureCombatPaceToSkillSpeedV1(numericValue(root, "[data-combat-skill-speed]")),
           recallPreparationMs: numericValue(root, "[data-recall-seconds]") * 1000,
           statRegistry, progressionRules
         })

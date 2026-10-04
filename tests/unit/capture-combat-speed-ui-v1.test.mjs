@@ -100,7 +100,7 @@ function exported(speed = 1.5) {
   });
 }
 
-test("human battle setup owns a global skill speed multiplier with default 1", () => {
+test("new human battle setup defaults to the reference speed and preserves explicit native multipliers", () => {
   const configured = buildHumanBattleSetupV1({
     battleId: "speed-preview",
     localCreatureId: "local-creature",
@@ -124,7 +124,7 @@ test("human battle setup owns a global skill speed multiplier with default 1", (
     activePerTeam: 1
   });
 
-  assert.equal(defaulted.skillSpeedMultiplier, 1);
+  assert.equal(defaulted.skillSpeedMultiplier, 0.5);
 });
 
 test("Capture export and Adapter Stack preserve battle skill speed", () => {
@@ -183,6 +183,6 @@ test("Capture editor exposes and reads the global combat speed control", async (
   );
   assert.match(
     source,
-    /skillSpeedMultiplier\s*:\s*numericValue/
+    /skillSpeedMultiplier\s*:\s*captureCombatPaceToSkillSpeedV1\(numericValue/
   );
 });
