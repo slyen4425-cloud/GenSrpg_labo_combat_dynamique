@@ -33,7 +33,8 @@ for (const name of families) {
     assert.equal(captureEditorAssetMatchesRoleV1(catalogMetadata, "zone"), true);
     const presentations = createCaptureSkillPresentationAssetsV2({
       skillPresentations: { fixture: { id: "skill:fixture", subjectType: "skill", subjectId: "fixture", version: 3,
-        visual: { aura: { assetId, displayScale: 1.2 } }, audio: {},
+        visual: { aura: { assetId, displayScale: 1.2, attachment: "fixed-source", trigger: "release", playbackMode: "loop",
+          layerByView: { player: "front", opponent: "front" } } }, audio: {},
         statusVisuals: { effect: { mode: "sprite", sprite: { assetId, displayScale: 1.4, opacity: 0.8 } } } } },
       assetForId: id => demoPresentationAssets.asset(id)
     });

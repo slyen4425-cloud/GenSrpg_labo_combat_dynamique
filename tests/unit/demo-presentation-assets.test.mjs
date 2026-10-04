@@ -119,7 +119,7 @@ test("all five combat arenas resolve only through canonical Core assets", () => 
     );
     assert.equal(
       url.searchParams.get("v"),
-      "2026-10-03-v10-projectile-source-alpha-v1",
+      "2026-10-04-v11-cast-status-source-alpha-v1",
       arenaId + " should use the arena refresh cache revision"
     );
   }

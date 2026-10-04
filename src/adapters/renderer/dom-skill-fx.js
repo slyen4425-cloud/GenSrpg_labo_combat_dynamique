@@ -80,7 +80,7 @@ function visualPlaybackMs(visual, fallbackMs = 1) {
   return Math.max(1, Number(fallbackMs) || 1);
 }
 
-function applySpriteVisual(node, visual, durationMs, animate) {
+export function applySpriteVisual(node, visual, durationMs, animate = defaultAnimate) {
   if (!hasSpriteVisual(visual)) {
     return Object.freeze({
       bound: false,
@@ -263,7 +263,9 @@ function applySpriteVisual(node, visual, durationMs, animate) {
   node.style.animationName = "skill-fx-strip";
   node.style.animationDuration = `${duration}ms`;
   node.style.animationTimingFunction =
-    `steps(${Math.max(1, frameCount - 1)}, end)`;
+    frameCount > 1 && playbackMode === "loop"
+      ? `steps(${frameCount}, jump-none)`
+      : `steps(${Math.max(1, frameCount - 1)}, end)`;
   node.style.animationIterationCount =
     playbackMode === "loop" ? "infinite" : "1";
   node.style.animationFillMode = "forwards";

@@ -2,6 +2,7 @@ import {
   projectStatusEffectInfoV1,
   statusEffectInfoTextV1
 } from "./status-effect-info-v1.js";
+import { applySpriteVisual } from "./dom-skill-fx.js";
 
 function requiredFunction(value, field) {
   if (typeof value !== "function") {
@@ -113,6 +114,7 @@ export function createDomStatusFxRenderer({
     if (!record) {
       return false;
     }
+    record.frameAnimation?.cancel?.();
     record.node.remove?.();
     records.delete(key);
     return true;
@@ -171,7 +173,7 @@ export function createDomStatusFxRenderer({
     expected
   }) {
     const sprite = presentation.sprite;
-    if (!sprite?.url) {
+    if (!sprite?.url && !sprite?.frames?.length) {
       return;
     }
 
@@ -184,6 +186,13 @@ export function createDomStatusFxRenderer({
 
     let record =
       records.get(key) ?? null;
+    const spriteSignature = JSON.stringify([
+      sprite.assetId, sprite.url, sprite.frames, sprite.frameCount, sprite.frameMs
+    ]);
+    if (record && (record.spriteSignature !== spriteSignature || record.motion !== target.motion)) {
+      removeRecord(key);
+      record = null;
+    }
     if (!record) {
       const node =
         target.motion.ownerDocument
@@ -193,17 +202,13 @@ export function createDomStatusFxRenderer({
       node.dataset.statusFx = "sprite";
       node.dataset.statusId = statusId;
       target.motion.append(node);
-      record = { node };
+      const playback = applySpriteVisual(node, { ...sprite, playbackMode: "loop" }, 1);
+      record = { node, frameAnimation: playback.frameAnimation, spriteSignature, motion: target.motion };
       records.set(key, record);
     }
 
     record.node.dataset.assetId =
       sprite.assetId ?? "";
-    record.node.style.backgroundImage =
-      'url("' +
-      String(sprite.url)
-        .replace(/"/g, "\\\"") +
-      '")';
     record.node.style.opacity =
       String(sprite.opacity ?? 1);
     record.node.style.transform =
@@ -345,10 +350,11 @@ export function createDomStatusFxRenderer({
       sourceSkillPresentation?.icon ?? null;
     const sprite =
       presentation?.sprite ?? null;
+    const spritePreviewUrl = sprite?.url || sprite?.frames?.[Math.floor((sprite.frames.length - 1) / 2)];
     const hudVisual =
       sourceSkillIcon?.url
         ? sourceSkillIcon
-        : sprite?.url
+        : spritePreviewUrl
           ? sprite
           : null;
 
@@ -378,20 +384,28 @@ export function createDomStatusFxRenderer({
       presentation?.tintColor ??
       polarityColor(polarity);
 
-    if (hudVisual?.url) {
+    const hudUrl = hudVisual?.url || hudVisual?.frames?.[Math.floor((hudVisual.frames.length - 1) / 2)];
+    if (hudUrl) {
       record.node.style.backgroundImage =
         'url("' +
-        String(hudVisual.url).replace(
+        String(hudUrl).replace(
           /"/g,
           "\\\""
         ) +
         '")';
       record.node.dataset.assetId =
         hudVisual.assetId ?? "";
+      const frameCount = hudVisual.url ? Math.max(1, Math.floor(Number(hudVisual.frameCount) || 1)) : 1;
+      record.node.style.backgroundSize = frameCount > 1 ? `${frameCount * 100}% 100%` : "contain";
+      record.node.style.backgroundPosition = frameCount > 1
+        ? `${100 * Math.floor((frameCount - 1) / 2) / (frameCount - 1)}% 0%`
+        : "center";
       record.glyphNode.textContent = "";
     } else {
       record.node.style.backgroundImage =
         "none";
+      record.node.style.backgroundSize = "contain";
+      record.node.style.backgroundPosition = "center";
       record.node.dataset.assetId = "";
       record.glyphNode.textContent =
         polarityGlyph(polarity);

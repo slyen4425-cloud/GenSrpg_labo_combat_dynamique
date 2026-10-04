@@ -24677,3 +24677,10 @@ La révision documentaire de clôture est contrôlée par sa propre CI avant cr�
 - Pour les strips en boucle, le lecteur commun utilise huit intervalles visibles (`steps(8, jump-none)`) ; once/stretch conservent leur contrat. Aucun timer, moteur supplémentaire ou branche par ID.
 - RED natif : sept statuts échouent au cadrage de frame avant correctif du renderer ; cinq charges gardent leur résolution existante. Sentinelles aura/statut, timing natif, huit phases, refresh sans duplication, expiration et HUD.
 - Les premières découpes ont révélé des fragments voisins : dérivé Nature isolé via imagegen (silhouettes réduites dans la planche dérivée), limites AURA 7/8 corrigées à x=1340. Pas de correction RGB/alpha par code, ni substitution arbitraire ; original JPEG archivé inchangé.
+
+
+### AURA/STATUS — lecteur natif raccordé
+- Fixture de test corrigée pour respecter les champs requis aura (attachment/trigger/layerByView). RED confirmé ensuite contre les deux fichiers renderer de la base Git exacte e1d64... : 7/8 échouent précisément sur `backgroundSize` absent, avant le raccord. Le premier RED comportait une fixture incomplète ; il ne sert pas de preuve de régression.
+- Après implémentation : 21/21 sentinelles ciblées passent (sept statuts, cinq casts, résolution dédiée Fireball, status FX et présentation native). Sélecteurs existants aura/statut inchangés ; IDs résolus dans demo-assets ; URLs toujours global-assets ; cache revision v11.
+- DomStatusFx réutilise applySpriteVisual : loop natif, node stable aux refreshs, lecteur annulé lors du retrait, asset/cible remplacée et dispose. HUD sans icône source affiche une phase médiane, pas l’atlas complet. Les icônes source de capacité conservent priorité.
+- full CI encore requise pour ce micro-lot. Les médias finaux restent sur la branche de travail d’assets jusqu’à full CI/inspection réelle.

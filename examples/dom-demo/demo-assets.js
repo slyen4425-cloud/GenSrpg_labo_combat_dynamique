@@ -25,6 +25,7 @@ function globalCaptureStripAsset({
   name,
   prefix,
   frameMs,
+  playbackMode = family === "projectiles" ? "stretch" : family === "statuses" ? "loop" : "once",
   displayScale = 1,
   headingRad = null,
   coreAnchor = null
@@ -37,7 +38,7 @@ function globalCaptureStripAsset({
     frameCount: 8,
     frameMs,
     displayScale,
-    playbackMode: family === "projectiles" ? "stretch" : "once",
+    playbackMode,
     ...(headingRad == null ? {} : { headingRad }),
     ...(coreAnchor == null ? {} : { coreAnchor: Object.freeze({ ...coreAnchor }) })
   });
@@ -78,6 +79,55 @@ function captureSequenceAsset({
 }
 
 const ASSETS = Object.freeze({
+  "pack:capture:sprite-status-healing-aura-01": globalCaptureStripAsset({
+    assetId: "pack:capture:sprite-status-healing-aura-01",
+    family: "statuses",
+    name: "healing_aura",
+    prefix: "status",
+    frameMs: 90
+  }),
+  "pack:capture:sprite-status-energy-shield-01": globalCaptureStripAsset({
+    assetId: "pack:capture:sprite-status-energy-shield-01",
+    family: "statuses",
+    name: "energy_shield",
+    prefix: "status",
+    frameMs: 90
+  }),
+  "pack:capture:sprite-status-stone-shell-01": globalCaptureStripAsset({
+    assetId: "pack:capture:sprite-status-stone-shell-01",
+    family: "statuses",
+    name: "stone_shell",
+    prefix: "status",
+    frameMs: 90
+  }),
+  "pack:capture:sprite-status-poison-01": globalCaptureStripAsset({
+    assetId: "pack:capture:sprite-status-poison-01",
+    family: "statuses",
+    name: "poison",
+    prefix: "status",
+    frameMs: 90
+  }),
+  "pack:capture:sprite-status-regeneration-01": globalCaptureStripAsset({
+    assetId: "pack:capture:sprite-status-regeneration-01",
+    family: "statuses",
+    name: "regeneration",
+    prefix: "status",
+    frameMs: 90
+  }),
+  "pack:capture:sprite-status-purification-01": globalCaptureStripAsset({
+    assetId: "pack:capture:sprite-status-purification-01",
+    family: "statuses",
+    name: "purification",
+    prefix: "status",
+    frameMs: 90
+  }),
+  "pack:capture:sprite-status-curse-01": globalCaptureStripAsset({
+    assetId: "pack:capture:sprite-status-curse-01",
+    family: "statuses",
+    name: "curse",
+    prefix: "status",
+    frameMs: 90
+  }),
   "pack:capture:sprite-cast-blade-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-cast-blade-01",
     family: "casts",
