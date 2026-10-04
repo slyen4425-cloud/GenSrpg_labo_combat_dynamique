@@ -7,7 +7,7 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 Lot terminé techniquement : combat-reference-pace-v1. **1× dans l'éditeur = ancien rythme 0.5**, par la constante native Capture 0.5 et une conversion UI unique. Source : `9deff685fef8275c4c1e07d0fa18ac0d7ea24fcc` ; CI `37222043505` SUCCESS : **1033/1033**, gardes OK.
 Base : `200b42055f2063c9545db6da01d3104e18f1fee0`. Branche : `work/lab-combat-reference-pace-v1-2026-10-04`. Départ : `checkpoint/lab-start-combat-reference-pace-v1-2026-10-04`.
 Checkpoint technique : `checkpoint/lab-combat-reference-pace-v1-technical-2026-10-04`. Preview : `preview/lab-combat-reference-pace-v1-2026-10-04`, éditeur natif capture-editor-v2.html. Rapport : `docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md`.
-Validation du nouveau rythme sur smartphone encore attendue. Dernier GREEN utilisateur : `checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04` sur 200b42055f2063c9545db6da01d3104e18f1fee0, validation explicite de Sylvain. Aucun merge main. Les lots antérieurs ci-dessous sont conservés pour historique.
+Validation utilisateur reçue le 2026-10-04 : rythme de référence accepté par Sylvain. GREEN utilisateur de clôture : `checkpoint/lab-combat-reference-pace-v1-green-2026-10-04`. Aucun merge main. Les lots antérieurs ci-dessous sont conservés pour historique.
 
 Lot terminé techniquement : zone-idle-recall-fx-v1. Tempête au repos corrigée selon l'emprise affichée ; rappel/arrivée planifiés par Animation Core, priorité du rappel préservée sous un hit non létal. Validation artistique smartphone utilisateur encore attendue.
 Base : db1b1867d9e1f35d39bc831722282fdc105a7e3e. Départ : `checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04`. Travail : `work/lab-zone-idle-recall-fx-v1-2026-10-04`.
