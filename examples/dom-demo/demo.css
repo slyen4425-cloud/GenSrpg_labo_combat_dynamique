@@ -157,9 +157,10 @@ summary {
   bottom: var(--creature-shadow-bottom, 8%);
   width: 58%;
   height: 10%;
-  transform:
+  transform: var(--creature-shadow-transform,
     translateX(-50%)
-    scale(var(--creature-display-scale, 1));
+    scale(var(--creature-display-scale, 1)));
+  opacity: var(--creature-shadow-fade, 1);
   transform-origin: center center;
   border-radius: 50%;
   background: rgba(0, 0, 0, var(--creature-shadow-opacity, 0.42));

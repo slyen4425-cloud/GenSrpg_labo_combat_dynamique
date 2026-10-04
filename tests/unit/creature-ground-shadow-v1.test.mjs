@@ -58,7 +58,7 @@ for (const view of ["player", "opponent"]) {
       let elapsed = 0;
       for (let i = 0; i < plan.segments.length - 1; i++) {
         elapsed += plan.segments[i].durationMs;
-        const p = elapsed / 800, frame = timeline.shadowKeyframes[i + 1];
+        const p = registry.get(profile).locomotion.phases[i].at, frame = timeline.shadowKeyframes[i + 1];
         assert.equal(frame.offset, timeline.keyframes[i + 1].offset);
         assert.equal(frame.easing, timeline.keyframes[i + 1].easing);
         assert.equal(translation(frame)[0], translation(timeline.keyframes[i + 1])[0]);

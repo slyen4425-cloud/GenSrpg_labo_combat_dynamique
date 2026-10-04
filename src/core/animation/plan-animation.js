@@ -59,7 +59,8 @@ function locomotionShape({
   intensity,
   sign,
   pathTarget = null,
-  impactScale = null
+  impactScale = null,
+  groundScale = 1
 }) {
   if (!cfg || typeof cfg !== "object" || Array.isArray(cfg)) {
     throw new RangeError("Creature profile has no locomotion preset");
@@ -127,6 +128,11 @@ function locomotionShape({
           : `move-phase-${index + 1}`,
       durationMs: phaseDurationMs,
       easing: phase.easing ?? "ease-in-out",
+      ground: {
+        translateX: pathX + directed(scaled(localTranslateX, intensity), sign),
+        translateY: pathY,
+        scale: 1 + (groundScale - 1) * at
+      },
       transform: {
         translateX:
           pathX +
@@ -410,6 +416,7 @@ export function planAnimation({ event, actor, profile }) {
         intensity,
         sign,
         pathTarget: target,
+        groundScale: perspectiveScale,
         impactScale: {
           x: cfg.impactScaleX * perspectiveScale,
           y: cfg.impactScaleY * perspectiveScale
@@ -491,6 +498,7 @@ export function planAnimation({ event, actor, profile }) {
             label: "teleport-impact",
             durationMs: appearMs,
             easing: "linear",
+            ground: { translateX: target.x, translateY: target.y, scale: perspectiveScale },
             transform: {
               translateX: target.x,
               translateY: target.y,
@@ -504,6 +512,7 @@ export function planAnimation({ event, actor, profile }) {
             label: "teleport-return-vanish",
             durationMs: cfg.returnVanishMs,
             easing: "ease-in",
+            ground: { translateX: target.x, translateY: target.y, scale: perspectiveScale },
             transform: {
               translateX: target.x,
               translateY: target.y,
@@ -569,6 +578,11 @@ export function planAnimation({ event, actor, profile }) {
             label: "aerial-arc-apex",
             durationMs: riseMs,
             easing: "cubic-bezier(0.42, 0, 0.58, 1)",
+            ground: {
+              translateX: target.x * apexProgress,
+              translateY: target.y * apexProgress,
+              scale: 1 + (perspectiveScale - 1) * apexProgress
+            },
             transform: {
               translateX: target.x * apexProgress,
               translateY: apexY,
@@ -582,6 +596,7 @@ export function planAnimation({ event, actor, profile }) {
             label: "aerial-arc-impact",
             durationMs: diveMs,
             easing: "cubic-bezier(0.42, 0, 0.58, 1)",
+            ground: { translateX: target.x, translateY: target.y, scale: perspectiveScale },
             transform: {
               translateX: target.x,
               translateY: target.y,

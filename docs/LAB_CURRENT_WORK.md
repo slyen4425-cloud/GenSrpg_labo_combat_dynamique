@@ -24662,3 +24662,10 @@ La révision documentaire de clôture est contrôlée par sa propre CI avant cr�
 
 ### Ombre — preuve RED avant implementation
 - Nouvelle sentinelle `tests/unit/creature-ground-shadow-v1.test.mjs` : 17 tests ciblés échouent sur la base, projection du sol et copropriété WAAPI absentes. Les 26 sentinelles existantes renderer/attaques spéciales passent inchangées. Couverture : cinq morphologies × deux vues, arc aérien, idle/frappe/recul, téléport/KO, retour/cancel/dispose et raccord natif.
+
+### Ombre — implémentation et sentinelles ciblées
+- AnimationCore calcule `segment.ground` : translation au sol et échelle de profondeur ; le saut/float et les déformations du corps restent dans `segment.transform`. La trajectoire/timing/collision du corps sont inchangés.
+- DomTimeline contient les deux projections aux mêmes offsets/easing/durée. DomActorRenderer possède les deux pistes WAAPI (corps et pseudo-élément `::before`), recale leur `startTime`, observe leurs promesses et annule/restaure les deux dans son lifecycle existant. Aucun timer/observer/autorité parallèle ajouté.
+- VisualController passe le conteneur existant au renderer ; CSS utilise les propriétés de repos/état terminal de l’ombre. Profil bas/opacité et distance-scale existants restent propriétaires de la forme statique.
+- RED reproduit avant implémentation ; 63/63 tests ciblés passent ensuite. Les phases biped ont des durées arrondies : la sentinelle de position compare les fractions déclarées du profil, pas une fraction de millisecondes arrondie qui introduisait 0,02 px d’erreur de mesure.
+- CI complète requise avant checkpoint technique ; preview réelle encore à vérifier. État artistique nouveaux médias : en cours.

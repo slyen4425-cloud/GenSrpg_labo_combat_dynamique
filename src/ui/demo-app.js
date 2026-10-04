@@ -855,6 +855,7 @@ function createSlot({
 
     renderer = createDomActorRenderer({
       element: motion,
+      shadowElement: slotContainer,
       actor
     });
   }

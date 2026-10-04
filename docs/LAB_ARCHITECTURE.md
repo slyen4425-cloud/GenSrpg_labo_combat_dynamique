@@ -3148,3 +3148,8 @@ L’assemblage de l’export de preview partage uniquement les lignes de défini
 Référence : docs/LAB_PRESENTATION_FEEDBACK_V1.md ; validation artistique smartphone encore ouverte.
 
 Les overrides nouveaux de vue s’appliquent à la galerie de prévisualisation et au combat. Les surfaces de placement tactile des sockets conservent leur référentiel d’édition antérieur ; aucun offset de combat n’y est injecté. Les points normalisés et leur propriétaire ne changent pas.
+
+
+## 2026-10-04 — Ground projection in the canonical AnimationPlan
+Each segment carries neutral `ground: { translateX, translateY, scale }` alongside the unchanged body transform. AnimationCore is the sole owner of path/depth: locomotion ground Y excludes local hop/float, special aerial ground Y follows path progress rather than the apex, and perspective scale excludes body squash/rotation. Default lateral translation follows the body; local elevation never becomes ground depth.
+DOM timeline projects the body and ellipse with identical offsets, easing, opacity and duration. DomActorRenderer owns both WAAPI tracks, synchronizes their startTime after readiness, observes both completions, and cancels/restores both together. The ground ellipse remains the native fighter `::before`, with existing profile bottom/opacity and inherited distance scale. Final KO opacity is retained until cancellation/replacement; finite attacks restore the base position. No new timer, observer, gameplay state or collision geometry.

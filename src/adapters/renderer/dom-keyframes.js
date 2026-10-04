@@ -56,6 +56,16 @@ export function composeDomTransform(actor, transient = {}) {
   ].join(" ");
 }
 
+export function composeDomShadowTransform(actor, ground = {}) {
+  const x = finite(actor.position?.x ?? 0, "actor.position.x") +
+    finite(ground.translateX ?? 0, "ground.translateX");
+  const y = finite(actor.position?.y ?? 0, "actor.position.y") +
+    finite(ground.translateY ?? 0, "ground.translateY");
+  const scale = finite(actor.scale ?? 1, "actor.scale") *
+    finite(ground.scale ?? 1, "ground.scale");
+  return `translate3d(${formatNumber(x)}px, ${formatNumber(y)}px, 0) translateX(-50%) scale(${formatNumber(scale)})`;
+}
+
 export function animationPlanToDomTimeline(plan, actor) {
   if (!plan || typeof plan !== "object") {
     throw new TypeError("plan is required");
@@ -96,9 +106,21 @@ export function animationPlanToDomTimeline(plan, actor) {
   }];
 
   let elapsed = 0;
+  const shadowKeyframes = [{
+    offset: 0,
+    transform: composeDomShadowTransform(actor),
+    opacity: 1,
+    easing: plan.segments[0].easing ?? "linear"
+  }];
   for (let index = 0; index < plan.segments.length; index += 1) {
     const segment = plan.segments[index];
     elapsed += segment.durationMs;
+    shadowKeyframes.push({
+      offset: elapsed / totalDurationMs,
+      transform: composeDomShadowTransform(actor, segment.ground),
+      opacity: segment.opacity ?? 1,
+      easing: plan.segments[index + 1]?.easing ?? "linear"
+    });
 
     keyframes.push({
       offset: elapsed / totalDurationMs,
@@ -112,6 +134,7 @@ export function animationPlanToDomTimeline(plan, actor) {
 
   return Object.freeze({
     keyframes: Object.freeze(keyframes.map((frame) => Object.freeze(frame))),
+    shadowKeyframes: Object.freeze(shadowKeyframes.map((frame) => Object.freeze(frame))),
     options: Object.freeze({
       duration: totalDurationMs,
       iterations: plan.loop ? Infinity : 1,

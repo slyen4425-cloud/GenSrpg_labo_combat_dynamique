@@ -1,6 +1,7 @@
 import {
   animationPlanToDomTimeline,
   composeDomFilter,
+  composeDomShadowTransform,
   composeDomTransform
 } from "./dom-keyframes.js";
 
@@ -13,6 +14,7 @@ function defaultAnimate(element, keyframes, options) {
 
 export function createDomActorRenderer({
   element,
+  shadowElement = null,
   actor,
   animate = defaultAnimate
 }) {
@@ -45,6 +47,8 @@ export function createDomActorRenderer({
       `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = "1";
     element.style.filter = "none";
+    shadowElement?.style?.setProperty?.("--creature-shadow-transform", composeDomShadowTransform(actor));
+    shadowElement?.style?.setProperty?.("--creature-shadow-fade", "1");
   }
 
   function applyFinalPlanState(plan) {
@@ -57,12 +61,14 @@ export function createDomActorRenderer({
       `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = String(finalSegment?.opacity ?? 1);
     element.style.filter = composeDomFilter(finalSegment?.filter);
+    shadowElement?.style?.setProperty?.("--creature-shadow-transform", composeDomShadowTransform(actor, finalSegment?.ground));
+    shadowElement?.style?.setProperty?.("--creature-shadow-fade", String(finalSegment?.opacity ?? 1));
   }
 
   function cancel({ restore = true } = {}) {
     sequence += 1;
-    if (active?.animation && typeof active.animation.cancel === "function") {
-      active.animation.cancel();
+    for (const animation of active?.animations ?? []) {
+      animation.cancel?.();
     }
     active = null;
     if (restore) {
@@ -70,10 +76,12 @@ export function createDomActorRenderer({
     }
   }
 
-  function settleAnimation({ animation, plan, token }) {
-    const sourceFinished = animation.finished && typeof animation.finished.then === "function"
-      ? animation.finished
-      : Promise.resolve();
+  function settleAnimation({ animations, plan, token }) {
+    const sourceFinished = Promise.all(animations.map(animation =>
+      animation.finished && typeof animation.finished.then === "function"
+        ? animation.finished
+        : Promise.resolve()
+    ));
 
     return Promise.resolve(sourceFinished)
       .then(() => {
@@ -89,6 +97,7 @@ export function createDomActorRenderer({
       })
       .catch((error) => {
         if (!disposed && active?.token === token) {
+          for (const animation of animations) animation.cancel?.();
           active = null;
           restoreBaseState();
         }
@@ -117,22 +126,52 @@ export function createDomActorRenderer({
       throw new TypeError("animate must return an animation-like object");
     }
 
+    const animations = [animation];
+    let shadowAnimation = null;
+    if (shadowElement) {
+      try {
+        shadowAnimation = animate(shadowElement, timeline.shadowKeyframes, {
+          ...timeline.options,
+          pseudoElement: "::before"
+        });
+        if (!shadowAnimation || typeof shadowAnimation !== "object") {
+          throw new TypeError("animate must return an animation-like object for the shadow");
+        }
+        animations.push(shadowAnimation);
+      } catch (error) {
+        Promise.resolve(animation.finished).catch(() => {});
+        animation.cancel?.();
+        restoreBaseState();
+        throw error;
+      }
+    }
+
     const record = {
       token,
       animation,
+      animations,
       plan,
       timeline
     };
     active = record;
 
+    if (shadowAnimation) {
+      Promise.all([animation.ready, shadowAnimation.ready]).then(() => {
+        if (!disposed && active?.token === token && animation.startTime != null) {
+          shadowAnimation.startTime = animation.startTime;
+        }
+      }).catch(() => {});
+    }
+
     // Always observe Animation.finished, including infinite/looping animations.
     // Web Animations rejects this promise with AbortError when cancel() is called.
     // Consuming that rejection here keeps cancellation owned by the renderer and
     // prevents unhandled promise rejections in clients that do not await the handle.
-    const finished = settleAnimation({ animation, plan, token });
+    const finished = settleAnimation({ animations, plan, token });
 
     return Object.freeze({
       animation,
+      ...(shadowAnimation ? { shadowAnimation } : {}),
       timeline,
       finished
     });

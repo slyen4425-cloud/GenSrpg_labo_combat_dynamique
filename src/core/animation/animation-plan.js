@@ -97,6 +97,11 @@ export function createAnimationPlan({
     }
 
     const transform = segment.transform ?? {};
+    const ground = segment.ground ?? {};
+    const groundScale = finite(ground.scale ?? 1, `segments[${index}].ground.scale`);
+    if (groundScale <= 0) {
+      throw new RangeError("ground.scale must be positive");
+    }
     const opacity = segment.opacity == null
       ? 1
       : finite(segment.opacity, `segments[${index}].opacity`);
@@ -113,6 +118,11 @@ export function createAnimationPlan({
         rotateDeg: finite(transform.rotateDeg ?? 0, "rotateDeg")
       }),
       opacity,
+      ground: Object.freeze({
+        translateX: finite(ground.translateX ?? transform.translateX ?? 0, "ground.translateX"),
+        translateY: finite(ground.translateY ?? 0, "ground.translateY"),
+        scale: groundScale
+      }),
       filter: visualFilter(
         segment.filter ?? {},
         `segments[${index}].filter`
