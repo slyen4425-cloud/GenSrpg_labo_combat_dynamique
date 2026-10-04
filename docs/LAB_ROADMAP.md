@@ -451,3 +451,8 @@ Source `0e151d26fde11af17525f442f648b2334f07e107`, CI 1006/1006. Vérification v
 ## 2026-10-04 — Retours zone / dégâts / rappel / K.O.
 
 Lot zone-ko-feedback-v1 techniquement vérifié : contact anticipé traité par les autorités natives, continuations K.O. annulées au remplacement, chiffres de dégâts mieux placés et lisibles, rappel gratuit 2 secondes éditable par session. CI 37211319259 : 1017 PASS / 0 FAIL. Vérifications natives mobile 390 px et relève avant nouveau dégât réalisées. Validation smartphone Sylvain attendue avant GREEN utilisateur. Rapport : LAB_ZONE_KO_FEEDBACK_V1_REPORT.md. Branche work/lab-zone-ko-feedback-v1-2026-10-04. Aucun raccord au dépôt principal.
+
+
+## 2026-10-04 — Tempête au repos et animation de relève
+
+Lot zone-idle-recall-fx-v1 techniquement vérifié : la présence dans une zone suit l'ellipse affichée et le modèle via un contrat spatial pur, lu sur l'horloge native ; fallback headless conservé. Animation Core planifie rappel/arrivée, Presenter préserve le rappel sous hit non létal. Coût 0, préparation 2000 ms par défaut éditable, relève atomique inchangés. Source 794b80d3deecac4705faf5c9d581f130074d5c0c ; CI 37214761522, 1029/1029. Tests natifs sans attaque au repos desktop/mobile, réserve visible dès l'arrivée. Validation artistique sur smartphone physique ouverte, main protégé. Rapport : docs/LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md.

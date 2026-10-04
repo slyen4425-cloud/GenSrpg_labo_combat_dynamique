@@ -4,7 +4,11 @@ Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04
 
-Lot en cours : zone-idle-recall-fx-v1. Retours smartphone précédents : dégâts plus lisibles, zone encore défaillante. Base db1b1867d9e1f35d39bc831722282fdc105a7e3e, branche `work/lab-zone-idle-recall-fx-v1-2026-10-04`, checkpoint `checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04`.
+Lot terminé techniquement : zone-idle-recall-fx-v1. Tempête au repos corrigée selon l'emprise affichée ; rappel/arrivée planifiés par Animation Core, priorité du rappel préservée sous un hit non létal. Validation artistique smartphone utilisateur encore attendue.
+Base : db1b1867d9e1f35d39bc831722282fdc105a7e3e. Départ : `checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04`. Travail : `work/lab-zone-idle-recall-fx-v1-2026-10-04`.
+Source/tests : `794b80d3deecac4705faf5c9d581f130074d5c0c`. CI `37214761522` SUCCESS : **1029 PASS / 0 FAIL**, gardes de structure/indépendance OK.
+Checkpoint technique : `checkpoint/lab-zone-idle-recall-fx-v1-technical-2026-10-04`. Preview : `preview/lab-zone-idle-recall-fx-v1-2026-10-04`, éditeur natif capture-editor-v2.html.
+Rapport et limites de preuve : `docs/LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md`. Rappel gratuit 2 s par défaut, éditable ; remplacement atomique. Dernier GREEN utilisateur inchangé, aucun merge main.
 La priorité ci-dessous est le lot précédent conservé.
 
 ### Lot précédent — zone-ko-feedback-v1
@@ -24874,3 +24878,15 @@ Retour smartphone : chiffres de dégâts mieux visibles (validation partielle co
 - Pré-audit/TDD : vérifier timers en attente, bandes sémantiques vs rendu réel, source/target immobiles et source en approche, activation/renforcement/expiration des trois rayons ; RED natif sans nouvelle action entre ticks ; tests rappel commencé/annulé/K.O./changement de membre/dispose/retour idle et aucun double timer ou mutation gameplay par FX.
 - Risques : rayons et placement du sprite sont purement visuels aujourd'hui ; ne pas prétendre corriger la zone avec un refresh UI, un second ticker ou une règle par ID de compétence. Le diagnostic décide le raccord minimal.
 - Fin : vraie chaîne native testée avec cible immobile et aucun clic d'attaque, présentation recall/summon native inspectée sur mobile, CI complète verte, documentation et preview dédiées. Pas de GREEN utilisateur sans retour smartphone de Sylvain.
+
+
+## 2026-10-04 — zone-idle-recall-fx-v1 : clôture technique
+
+Lot terminé techniquement : zone-idle-recall-fx-v1. Tempête au repos corrigée selon l'emprise affichée ; rappel/arrivée planifiés par Animation Core, priorité du rappel préservée sous un hit non létal. Validation artistique smartphone utilisateur encore attendue.
+Base : db1b1867d9e1f35d39bc831722282fdc105a7e3e. Départ : `checkpoint/lab-start-zone-idle-recall-fx-v1-2026-10-04`. Travail : `work/lab-zone-idle-recall-fx-v1-2026-10-04`.
+Source/tests : `794b80d3deecac4705faf5c9d581f130074d5c0c`. CI `37214761522` SUCCESS : **1029 PASS / 0 FAIL**, gardes de structure/indépendance OK.
+Checkpoint technique : `checkpoint/lab-zone-idle-recall-fx-v1-technical-2026-10-04`. Preview : `preview/lab-zone-idle-recall-fx-v1-2026-10-04`, éditeur natif capture-editor-v2.html.
+Rapport et limites de preuve : `docs/LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md`. Rappel gratuit 2 s par défaut, éditable ; remplacement atomique. Dernier GREEN utilisateur inchangé, aucun merge main.
+La priorité ci-dessous est le lot précédent conservé.
+
+Le tick de dégâts ne dépend pas d'une attaque ou d'un refresh. Le contrat spatial pur transporte uniquement les mesures ; Zone Runtime reste propriétaire des intersections et applications. QA native sans attaque de contact desktop et joueur sans action mobile 390 px concluante ; compteur PV 5000 → 4996.97 → 4851.53 sous zone adverse seule. Rappel 3500 ms testé, ancien membre ciblable et nouvel actif visible sans hit. Les images transitoires de la contraction restent à apprécier sur le smartphone utilisateur. Les réglages QA temporaires ne sont pas sauvegardés dans les presets du dépôt.
