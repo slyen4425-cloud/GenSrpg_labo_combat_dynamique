@@ -24659,3 +24659,6 @@ La révision documentaire de clôture est contrôlée par sa propre CI avant cr�
 - Périmètre fichiers : plan-animation/animation-plan, dom-keyframes/dom-actor-renderer, demo-app/demo.css ; demo-assets/global-visual-library ; filtres natifs seulement si requis ; tests de vraie chaîne ; scripts/manifests/médias dans global-assets ; docs et preview dédiée.
 - Protégés : `main` (`3197388f2b3ee7491be6e6125a015315158cffa2`), Zombicide-40k, gameplay, règles/IA, collisions/capteurs, sockets/export/presets, chemins et IDs Fireball dédiée, impacts/projectiles validés, réglages de lecture et échelle du lot précédent.
 - Ordre : tests RED ciblés → correctif minimal → CI complète de chaque branche → publication médias par fast-forward → vérification UI réelle et rapport §34. Statut actuel : EN COURS, médias nouveaux NON LIVRÉS, aucun GREEN utilisateur.
+
+### Ombre — preuve RED avant implementation
+- Nouvelle sentinelle `tests/unit/creature-ground-shadow-v1.test.mjs` : 17 tests ciblés échouent sur la base, projection du sol et copropriété WAAPI absentes. Les 26 sentinelles existantes renderer/attaques spéciales passent inchangées. Couverture : cinq morphologies × deux vues, arc aérien, idle/frappe/recul, téléport/KO, retour/cancel/dispose et raccord natif.
