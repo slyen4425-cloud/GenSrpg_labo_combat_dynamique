@@ -1,0 +1,52 @@
+{
+  "schema": "capture-progression-rules-v2",
+  "xp": {
+    "enabled": true,
+    "globalMultiplier": 1,
+    "minimumReward": 1,
+    "distribution": "participants-full",
+    "reward": {
+      "base": 10,
+      "enemyLevelCoefficient": 4,
+      "levelRatio": {
+        "enabled": true,
+        "min": 0.18,
+        "max": 2.25,
+        "exponent": 1
+      },
+      "encounterTypeMultipliers": {
+        "wild": 1,
+        "trainer": 1.2
+      }
+    },
+    "levelCurve": {
+      "base": 35,
+      "linearPerLevel": 18,
+      "quadraticPerLevel": 4,
+      "multiplier": 1,
+      "minimumRequired": 1
+    }
+  },
+  "progression": {
+    "statCap": 300,
+    "statPointsPerLevel": 5,
+    "talentEveryLevels": 5
+  },
+  "skills": {
+    "maxActiveSkills": 4,
+    "slotUnlockSchedule": [
+      {
+        "level": 1,
+        "slots": 2
+      },
+      {
+        "level": 10,
+        "slots": 3
+      },
+      {
+        "level": 20,
+        "slots": 4
+      }
+    ]
+  }
+}
