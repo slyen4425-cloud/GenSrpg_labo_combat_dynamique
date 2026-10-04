@@ -52,7 +52,40 @@ TDD attendu :
 3. GREEN : UI utilise présence Roster seulement si le slot est possédé ;
 4. sentinelles énergie/cooldown/roster existantes GREEN.
 
-État : **START — TDD RED à constater**.
+Résultat :
+- cause reproduite : le slot Combat ennemi non possédé par Roster Session était projeté comme « absent » ;
+- nouvelle frontière explicite `RosterController.ownsSlot(actorId)` ;
+- `isPresent()` n'est consulté que pour un slot réellement possédé par Roster Session ;
+- les acteurs Combat hors roster restent gouvernés par leurs PV Combat ;
+- aucune règle d'énergie, cooldown ou activation recopiée dans l'UI ;
+- aucun ID d'ennemi/camp codé en dur ;
+- Combat Runtime, Action Resolver, Recall/Summon, dégâts et skills inchangés.
+
+TDD/CI :
+- RED : `8371d03c08503147bf4d6e3fb64001d38c901910` ;
+- CI RED : `37224770803` — **FAILURE attendue** ;
+- propriété de slot : `7c0682497a33ec548825abf3aaec387421a8ee4e` ;
+- projection UI corrigée : `6f916b49435efcb66267ce4d9be4193ba1534d94` ;
+- sentinelle découplée de la syntaxe : `1b7f20305ac47baabef6fabe06930566f09a973d` ;
+- CI complète : `37224863232` — **SUCCESS**.
+
+Prévalidation :
+- checkpoint : `checkpoint/lab-exploration-roster-target-availability-v1-prevalidation-green-2026-10-04` ;
+- preview Combat : `preview/lab-exploration-roster-target-availability-v1-2026-10-04` @ `1b7f20305ac47baabef6fabe06930566f09a973d` ;
+- PR infra Exploration #78 — **MERGED** ;
+- main infra Exploration : `dd2898efd511a54a7116b440cbb9a37967345d06` ;
+- Pages : `37224937771` — **SUCCESS** ;
+- lien gate : `https://slyen4425-cloud.github.io/laboratoire_dynamique_exploration-/builder.html?rev=roster-target-availability-v1`.
+
+Gate utilisateur :
+1. lancer Exploration puis un combat ;
+2. dès le départ à 2 énergie, `Griffe` doit être disponible si aucune autre condition ne la bloque ;
+3. à 3 énergie, `Boule de feu` et `Cendre aveuglante` doivent devenir disponibles selon cooldown/état ;
+4. à 5 énergie, `Morsure brûlante` devient disponible selon cooldown/état ;
+5. `Tempête de flammes` reste légitimement indisponible avant 25 s de combat, puis demande 5 énergie ;
+6. refaire un test après Rappel/Invocation.
+
+État : **TECHNIQUE GREEN — gate navigateur utilisateur requis avant GREEN final**.
 
 ---
 
