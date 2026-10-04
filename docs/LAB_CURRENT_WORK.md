@@ -1,5 +1,61 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-04
+
+Lot actif : **exploration-bridge-convergence-v1**.
+
+Base :
+`794b80d3deecac4705faf5c9d581f130074d5c0c`
+(`work/lab-zone-idle-recall-fx-v1-2026-10-04`, CI `37214761522` SUCCESS).
+
+Checkpoint de départ :
+`checkpoint/lab-start-exploration-bridge-convergence-v1-2026-10-04`
+
+Branche :
+`work/lab-exploration-bridge-convergence-v1-2026-10-04`
+
+Cause racine du 404 :
+- la lignée Combat récente a conservé les correctifs Rappel / Invocation / changement de créature ;
+- mais elle ne contient plus l'adaptateur public `examples/dom-demo/exploration-encounter.html` ni ses modules associés ;
+- Exploration navigue légitimement vers cette page contractuelle ;
+- la preview Pages renvoie donc 404 avant même de démarrer Combat.
+
+Mission unique :
+- restaurer l'adaptateur Exploration Encounter sur la lignée Combat corrigée ;
+- réutiliser les contrats/handoff/roster Combat existants ;
+- ne modifier aucune règle de combat, aucun système Recall/Summon, aucune logique Exploration ;
+- ajouter des tests de présence et du vrai chemin bridge.
+
+Fichiers autorisés :
+- `examples/dom-demo/exploration-encounter.html`
+- `examples/dom-demo/exploration-encounter.js`
+- `src/adapters/input/capture/exploration-encounter-combat-source-v1.js`
+- `src/ui/exploration-encounter-handoff-v1.js`
+- `src/ui/exploration-encounter-visual-source-v1.js`
+- tests associés ;
+- documentation du lot.
+
+Protégé :
+- Combat Runtime ;
+- Roster Session ;
+- Recall/Summon ;
+- zone FX ;
+- dégâts ;
+- skill resolver ;
+- `Zombicide-40k`.
+
+Critère GREEN technique :
+1. page `exploration-encounter.html` présente ;
+2. handoff v1 lisible/complétable ;
+3. snapshot Exploration construit le vrai roster Combat actuel ;
+4. rappel -> réserve -> invocation fonctionne dans le vrai source bridge ;
+5. CI complète GREEN ;
+6. aucune seconde autorité Party/Roster.
+
+État : **START — restauration contractuelle en cours**.
+
+---
+
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04
