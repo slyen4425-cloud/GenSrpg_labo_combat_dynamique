@@ -24699,3 +24699,15 @@ La révision documentaire de clôture est contrôlée par sa propre CI avant cr�
 - Éditeur réel : labels des cinq casts et sept statuts/zones visibles. Preview douze animations : 12 atlas/96 phases décodées, zéro image cassée ; loops statut 720 ms steps(8,jump-none), arrêt contrôlé, fonds clair/sombre inspectés.
 - Ombre WAAPI réelle : déplacements X/Y identiques au sol dans les deux vues ; le corps peut monter à −478 px tandis que l’ombre reste à +31 px sur le sol lors de l’attaque aérienne. Contrôle milieu/contact/retour dans shadow-review ; réglages locaux Griffe restaurés à 1200/1500 ms.
 - Rapport complet §34 : docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md. Implémentation/inspection/preview techniques terminées ; validation artistique finale smartphone attendue de Sylvain, aucun GREEN utilisateur, aucun merge main. Ancienne fixture index/profil drake consignée, non modifiée dans ce lot.
+
+
+## 2026-10-04 — Choix libres et réglages des sprites de capacité (unified-sprite-controls-v1)
+
+- Demande explicite : garder le filtre des projectiles, autoriser tous les sprites pour cast / impact / aura-zone / statut et permettre les mêmes réglages de placement et de lecture.
+- Base exacte : `13275bc757fd32e8924b8b1d16c32dcf5b5eccd0`, branche source `work/lab-cast-status-shadow-v1-2026-10-04` ; checkpoint de départ `checkpoint/lab-start-unified-sprite-controls-v1-2026-10-04` ; branche de travail `work/lab-unified-sprite-controls-v1-2026-10-04`.
+- Dernier GREEN utilisateur pertinent : `checkpoint/lab-fire-zone-contact-sync-v1-green-2026-10-03` (`f7364b8ce1dbc285a151ac64ddeadc7c6b611c2d`). Base technique CI : 948/948 ; validation smartphone des dernières planches reste ouverte.
+- Micro-lot autorisé : filtres UI, champs lecture/scale/décalages/couches par vue pour cast, impact, zone et statut ; round-trip des valeurs existantes ; branchements dans les lecteurs DOM existants. Contrats de présentation autoritaires, aucune horloge ni second moteur.
+- Tests RED avant production : filtre projectile exclusif, choix croisés, normalisation et export-rechargement, rendu et nettoyage. Puis CI complète et parcours éditeur/combat natif avec les vrais médias du catalogue global-assets.
+- Hors périmètre : gameplay, trajectoires/contact projectiles, dégâts/rayon/durées métier, loadouts, profils, nouvelles planches, autres branches/PR, main et Zombicide-40k.
+- Catalogue/médias : `global-assets` reste `0217dca50ec4004d5ac3bb25d6f5998ccf9edc4f`. Aucun nouveau média ni catalogue concurrent.
+- État : chantier déclaré, audit terminé ; implémentation et validation réelle à faire. Aucun GREEN utilisateur annoncé.
