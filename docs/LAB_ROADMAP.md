@@ -437,3 +437,12 @@ Choix ouverts pour cast/impact/aura-zone/statut, filtre projectile conservé, r�
 Le test combat reste une fonction durable de l’éditeur. Toute la bibliothèque active est sélectionnable ; les miroirs et répétitions ont des états indépendants. Chaque camp possède 1–6 membres, avec 1 ou 2 actifs et les autres en réserve native. Le menu Équipe, Rappel/Invocation et le remplacement KO restent clients des owners existants. Les modifications valides sont enregistrées au lancement, sans retour aux boutons Save, et un refus permet de corriger puis réessayer. La barre Vérifier/Tester reste fixe sur téléphone.
 
 Code `0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7`, CI **989/989**, parcours natifs miroir/équipes/réserves/KO/pending edits et revue responsive vérifiés. Les fiches sans illustration utilisent un placeholder explicite et n’acquièrent aucun nouveau média. Validation sur smartphone physique de Sylvain encore ouverte avant GREEN utilisateur ; main/global-assets/Zombicide-40k inchangés. Détails : `docs/LAB_EDITOR_COMBAT_TEST_V1.md`.
+
+
+## 2026-10-04 — IA de zone et relève Capture v1 : vérification technique réussie
+
+Trois besoins utilisateur implémentés par les propriétaires existants : renforcement des zones par IA avec économie d’énergie ; remplacement gratuit en 1 s puis arrivée instantanée ; statuts influençant le temps d’approche de la créature.
+
+Cette demande remplace pour switch seulement le verrou global de commandes de la première V9. Les autres acteurs continuent pendant le rappel ; slot toujours ciblable et relève atomique Roster Session. Le bouton unique du test Capture évite la succession de deux commandes laissant un terrain vide. Les anciennes commandes restent compatibles et gratuites.
+
+Source `0e151d26fde11af17525f442f648b2334f07e107`, CI 1006/1006. Vérification vraie chaîne 1v1/2v2, zone adverse au rayon long, rechargement du statut +50 % dans l’éditeur et affichage en combat, panneau mobile 360/390/430/paysage. Branche `work/lab-combat-tactics-switch-travel-v1-2026-10-04`. Rapport : docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md. Validation technique acquise ; retour utilisateur encore nécessaire pour GREEN utilisateur.

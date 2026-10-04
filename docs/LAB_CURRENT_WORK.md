@@ -2,6 +2,16 @@
 
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
+## Reprise prioritaire — 2026-10-04
+
+Dernier lot : combat-tactics-switch-travel-v1, vérification technique réussie, retour utilisateur à recueillir.
+Branche : `work/lab-combat-tactics-switch-travel-v1-2026-10-04`. Source testée : `0e151d26fde11af17525f442f648b2334f07e107` ; CI 1006/1006 (run 37203265282).
+Checkpoint : `checkpoint/lab-combat-tactics-switch-travel-v1-ci-2026-10-04`. Preview : `preview/lab-combat-tactics-switch-travel-v1-2026-10-04`.
+Rapport : `docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md`.
+[Éditeur natif vérifié](https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/0e151d26fde11af17525f442f648b2334f07e107/examples/dom-demo/capture-editor-v2.html).
+Rappel et invocation gratuits en 1 s avec relève instantanée, IA renforcement de zone, statut de temps d’approche configurables. main/global-assets inchangés.
+Les entrées ci-dessous conservent l’historique ; cette synthèse et le rapport indiquent le point de reprise actuel.
+
 ## État global
 
 Date : 2026-09-25
@@ -24786,3 +24796,14 @@ Plan : tests RED avant code (remplacement sous attaque/0 énergie/snapshot/sans 
 Avant corrections complémentaires : tests RED sur le nouveau remplacement. Retour d’une réserve avec DoT après 3000 ms : 30 dégâts anciens rejoués immédiatement (100→70), au lieu d’attendre le prochain tick futur ; et zone attachée au sourceActorId sortant toujours transmise au nouvel actif. Ces points appartiennent au périmètre de persistance/remplacement annoncé.
 
 Correction ciblée prévue : Status Runtime fournit une reprise pure des instances vivantes sur l’horloge native (durées absolues conservées, ticks de réserve non rejoués) ; Persistent Zone Runtime termine uniquement les zones du membre sortant lorsqu’un remplacement Roster demande explicitement le nettoyage de son slot. Les zones adverses et les attaques adverses restent actives. Aucun observer/timer ajouté, aucun effet/cooldown inventé dans UI.
+
+### Clôture technique — combat-tactics-switch-travel-v1 (2026-10-04)
+
+Implémentation par micro-lots : 9b07ab441418ba0b8c317162fda858a88f2fe070 (rappel/remplacement), 1a54b976ec999ab0d0f0537653625403dc37da5f (IA), 7f0084461a33f2fd6503c52074c48a47ef8318c8 (statut trajet), 0e151d26fde11af17525f442f648b2334f07e107 (retour de réserve et zones).
+
+CI complète source 0e151d26fde11af17525f442f648b2334f07e107 : 1006/1006, zéro échec, run 37203265282, job 111439103810. 17 tests dédiés. Vraie chaîne éditeur→Runtime→Roster→Presenter vérifiée : zéro énergie, relève 1000 ms, propre loadout, concurrence 2v2, KO natif après remplacement, zones adverses long, statut trajet +50 % enregistré/rechargé/affiché. Mobile 360/390/430 et paysage 740×390, bouton gratuit accessible, capture combat-labo-verifie-1791118577236.jpg. Aucun test faussement verdi par ajout de médias.
+
+Documentation synchronisée : rapport LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md, architecture, roadmap et synthèse de reprise.
+Checkpoint technique checkpoint/lab-combat-tactics-switch-travel-v1-ci-2026-10-04 et preview preview/lab-combat-tactics-switch-travel-v1-2026-10-04 clôturent ce lot sur son commit documentaire, dont le code est identique à la source testée.
+main = 3197388f2b3ee7491be6e6125a015315158cffa2, global-assets = 0217dca50ec4004d5ac3bb25d6f5998ccf9edc4f, inchangés. Aucun fichier Zombicide-40k, aucun merge main.
+Validation technique réussie ; validation utilisateur encore attendue, aucun GREEN utilisateur prononcé.

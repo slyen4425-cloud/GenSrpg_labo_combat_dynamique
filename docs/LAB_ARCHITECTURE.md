@@ -3180,3 +3180,20 @@ Le Native Visual Adapter résout également les présentations de tous les membr
 La page désactive Tester pendant le lancement. Son finally relit session.previewActive : un export refusé permet une correction et une relance ; un combat lancé attend le retour natif à l’éditeur. Aucun nouveau flag d’autorité pour ce mode.
 
 Le footer reste fixed sur les formats mobiles, avec espace réservé et scroll-padding. `editor-mobile-review.html` contient uniquement une iframe de la page native à dimensions sélectionnables, sans moteur ou bibliothèque. Code final `0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7`, CI 989/989 ; détail et limites de validation : `docs/LAB_EDITOR_COMBAT_TEST_V1.md`.
+
+
+## 2026-10-04 — Remplacement natif, renforcement IA et statut de trajet v1
+
+La demande utilisateur révise explicitement le verrou global V9 pour la commande switch du test Capture. Une action par acteur reste la règle du Combat Runtime ; UI ne bloque pas switch du seul fait qu’un autre acteur agit, et ne gèle pas les autres IA pendant ce rappel.
+
+switch est une CombatCommandDefinition de coût 0, préparation fixe 1000 ms, récupération 0, effect.rosterMemberId. Capture Roster Controller lie le memberId depuis la preview Roster, puis le panneau transmet la commande liée au Runtime. Le memberId de command-complete fait autorité, même si la sélection UI change ensuite. Roster Session valide et remplace le membre atomiquement, sans état actif null. L’ancien reste ciblable pendant le délai ; les actions adverses continuent sur le slot et touchent le membre présent au contact.
+
+Combat Runtime applique l’événement charge-interrupt au vrai impact du stun et annule les actions du slot KO après un tick de statut/zone. Une relève annule sa commande interrompue et conserve le chemin KO natif.
+
+Roster Session sauvegarde aussi statusEffects, damageDealtTotal, damageTakenTotal et knockoutsTotal. Status Runtime.resumeStatusEffectsV1 conserve les instances encore actives, supprime celles expirées et repositionne seulement les prochains ticks futurs, sans rejouer les ticks manqués en réserve. Session.replaceFighter(..., { clearSourceZones: true }) demande au Persistent Zone Runtime de terminer les zones du membre sortant ; aucune zone adverse n’est supprimée.
+
+Decision Controller lit les persistentZones natives (sourceActorId, skillId, zoneId, activations, radius, expiresAtMs). Une zone reinforce avec croissance positive et activations disponibles reçoit priorité via previewSkill légale. Avant sa première activation, budget d’ouverture = coût × activations restantes, plafonné à l’énergie max ; pas de simulation de dépense dans UI. Entre renforcements, le contrôleur attend cooldown/énergie au lieu de dépenser cette réserve dans une autre attaque. Les conditions d’activation, cooldowns, usages et refus restent propriétaires des règles natives. Au plafond, la variété ordinaire reprend. Aucun ID de créature/capacité spécial et aucun timer de décision supplémentaire.
+
+StatusEffectV1.approach_time_modifier porte modifierPct signé. Combat Timing.effectiveApproachTimingMs additionne les statuts actifs × stacks pour ground/aerial : base × max(0, 1 + pct/100), puis multiplicateur global natif. Action Resolver fixe action.travelMs et impactAtMs au démarrage ; Runtime, Presenter, fenêtre d’évasion et entrée en zone lisent cette même action. Une expiration en plein trajet ne recalcule pas l’action commencée. Préparation/récupération/cooldown et projectile/beam/teleport/none ne sont pas modifiés.
+
+UI propose ce statut dans les effets de capacité, avec pourcentage, durée, polarité et stacking ; exporter/importer conservent le champ natif. Les fiches de statut affichent le pourcentage réel avec stacks. Rapport et preuve : docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md.
