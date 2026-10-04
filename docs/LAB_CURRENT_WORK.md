@@ -23627,3 +23627,53 @@ Aucun délai arbitraire n'est ajouté.
 - aucun merge vers `main`.
 
 État : **GREEN technique — prêt pour checkpoint/preview utilisateur**.
+
+
+## Résultat — Capture XP / Progression Rules v2 — 2026-10-04
+
+### TDD
+- RED attendu : CI `37180538308` — FAILURE, le test V2 référençait volontairement le contrat encore absent.
+- GREEN : CI `37180609056` — SUCCESS après ajout du contrat et du preset V2.
+
+### Autorité ajoutée
+`CaptureProgressionRulesV2` possède désormais explicitement :
+- activation XP ;
+- multiplicateur global ;
+- récompense minimale ;
+- politique de distribution XP ;
+- base XP ;
+- coefficient du niveau ennemi ;
+- correction configurable par ratio niveau ennemi / allié ;
+- multiplicateurs par type de rencontre ;
+- courbe XP -> niveau paramétrique ;
+- plafond de stats ;
+- points de stats par niveau ;
+- cadence de points de talent ;
+- slots actifs de compétences par niveau.
+
+Le preset `monster-capture-progression-rules.v2.json` reprend comme valeurs de départ les règles historiques auditées :
+- base XP 10 ;
+- +4 par niveau ennemi ;
+- ratio de niveau borné 0,18 -> 2,25 ;
+- dresseur ×1,20 ;
+- courbe suivante : 35 + 18×niveau + 4×niveau² ;
+- multiplicateur global 1 ;
+- 5 points de stats par niveau ;
+- talent tous les 5 niveaux ;
+- plafond stats 300 ;
+- slots compétences 2 / 3 / 4 aux niveaux 1 / 10 / 20.
+
+Ces valeurs sont des données configurables, pas des nombres magiques runtime.
+
+### Protection du chantier parallèle
+Aucun changement :
+- Combat Runtime ;
+- Combat Session ;
+- Roster Session ;
+- Rappel / Invocation ;
+- UI ;
+- loot ;
+- capture ;
+- `Zombicide-40k`.
+
+État : **GREEN technique — contrat/data uniquement, aucun gate smartphone requis**.
