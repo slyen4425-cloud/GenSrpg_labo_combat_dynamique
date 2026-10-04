@@ -270,6 +270,10 @@ function humanTacticalStatusToContractV1(
     );
   }
 
+  if (output.kind === "approach_time_modifier") {
+    output.modifierPct = finiteNumber(status.modifierPct, "Variation du temps de trajet (%)");
+  }
+
   if (
     output.kind === "damage_over_time" ||
     output.kind === "heal_over_time"
@@ -3212,6 +3216,7 @@ function tacticalTargetScopeLabelV1(scope) {
 function tacticalStatusKindLabelV1(kind) {
   return {
     stat_modifier: "Modification de stat",
+    approach_time_modifier: "Temps de trajet de la créature",
     damage_over_time: "Dégâts périodiques",
     heal_over_time: "Soin périodique",
     shield: "Bouclier",
@@ -3733,6 +3738,16 @@ function appendHumanSkillEffectV1(
     )
   );
 
+  const approachPct = tacticalNumberInputV1(
+    "skillStatusApproachModifierPct", status.modifierPct ?? 50, { step: "1" }
+  );
+  const approachConfig = document.createElement("div");
+  approachConfig.className = "skill-status-config__specific";
+  approachConfig.dataset.skillStatusConfigKind = "approach_time_modifier";
+  const approachNote = document.createElement("p");
+  approachNote.textContent = "Positif : trajet plus lent ; négatif : plus rapide. +50 % transforme 1,3 s en 1,95 s. Agit sur les approches au sol et aériennes, indépendamment de la préparation et du cooldown.";
+  approachConfig.append(tacticalFieldV1("Variation du temps de trajet (%)", approachPct), approachNote);
+
   const statusAmount =
     tacticalNumberInputV1(
       "skillStatusAmount",
@@ -3962,6 +3977,7 @@ function appendHumanSkillEffectV1(
   statusBox.append(
     common,
     statConfig,
+    approachConfig,
     dotConfig,
     hotConfig,
     shieldConfig,
@@ -4306,6 +4322,8 @@ function readHumanSkillEffectsV1(root) {
             "[data-skill-status-delta-points]"
           ).value
         );
+      } else if (statusKind === "approach_time_modifier") {
+        status.modifierPct = Number(row.querySelector("[data-skill-status-approach-modifier-pct]").value);
       } else if (
         statusKind === "damage_over_time"
       ) {

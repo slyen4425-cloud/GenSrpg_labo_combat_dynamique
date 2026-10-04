@@ -9,7 +9,8 @@ import {
 } from "./combat-state.js";
 import {
   effectivePreparationMs,
-  effectiveSkillTimingMs
+  effectiveSkillTimingMs,
+  effectiveApproachTimingMs
 } from "./combat-timing.js";
 import {
   evaluateSkillActivationRequirementsV1
@@ -429,8 +430,11 @@ export function resolveSkillStart({
     skill,
     skillSpeedMultiplier
   );
-  const travelMs = effectiveSkillTimingMs({
+  const travelMs = effectiveApproachTimingMs({
     baseMs: skill.travelMs,
+    approachMode: skill.approachMode,
+    statusEffects: actor.statusEffects,
+    atMs: state.elapsedMs,
     speedMultiplier: skillSpeedMultiplier
   });
   const recoveryMs = effectiveSkillTimingMs({

@@ -207,7 +207,7 @@ test("approach status gives 1300 to 1950 ms without changing preparation, recove
   assert.equal(session.snapshot().fighters.a.skillCooldowns.bite, 4000);
   assert.equal(bite.travelMs, 1300);
   const approaches = [];
-  const presenter = createCombatResolutionPresenter({ visuals: { playEventFor() {}, playApproachFor(id, mode, options) { approaches.push({ id, mode, travelMs: options.travelMs }); }, cancelFor() {} } });
+  const presenter = createCombatResolutionPresenter({ visuals: { playEventFor() { return Promise.resolve(); }, playApproachFor(id, mode, options) { approaches.push({ id, mode, travelMs: options.travelMs }); return Promise.resolve(); }, cancelFor() {} } });
   presenter.presentRelease({ action, actorSlot: "a", targetSlot: "b" });
   assert.equal(approaches[0].travelMs, 1950);
   presenter.dispose();
@@ -238,6 +238,6 @@ test("speed buffs clamp at zero and projectile/teleport timings remain unchanged
 test("human editor exports the signed percentage through the native skill draft contract", () => {
   const effects = buildHumanTacticalSkillEffectsV1([{ kind: "apply_status", targetScope: "target", status: { id: "slow", kind: "approach_time_modifier", modifierPct: 50, polarity: "detrimental", durationSeconds: 3, stacking: "refresh" } }]);
   assert.equal(effects[0].status.modifierPct, 50);
-  const draft = normalizeCaptureSkillEditorDraftV1({ schema: "capture-skill-editor-draft-v1", id: "slow", description: "", requiredLevel: 1, definition: { ...skill("slow"), effect: {}, effects }, presentation: null });
+  const draft = normalizeCaptureSkillEditorDraftV1({ schema: "capture-skill-editor-draft-v1", id: "slow", description: "Ralentit le trajet", requiredLevel: 1, definition: { ...skill("slow"), effect: {}, effects }, presentation: null });
   assert.equal(draft.definition.effects[0].status.modifierPct, 50);
 });

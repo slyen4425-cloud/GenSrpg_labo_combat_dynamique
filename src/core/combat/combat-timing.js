@@ -1,3 +1,5 @@
+import { isStatusEffectRuntimeInstanceActiveV1 } from "./status-effect-instance-v1.js";
+
 function nonNegative(value, field) {
   const number = Number(value);
   if (!Number.isFinite(number) || number < 0) {
@@ -33,6 +35,19 @@ export function effectiveSkillTimingMs({
     speedMultiplier
   );
   return Math.round(base / multiplier);
+}
+
+export function effectiveApproachTimingMs({ baseMs, approachMode, statusEffects = [], atMs = 0, speedMultiplier = 1 }) {
+  const base = nonNegative(baseMs, "baseMs");
+  let modifierPct = 0;
+  if (["ground", "aerial"].includes(approachMode)) {
+    for (const instance of statusEffects) {
+      if (instance.definition.kind === "approach_time_modifier" && isStatusEffectRuntimeInstanceActiveV1(instance, atMs)) {
+        modifierPct += instance.definition.modifierPct * instance.stacks;
+      }
+    }
+  }
+  return effectiveSkillTimingMs({ baseMs: base * Math.max(0, 1 + modifierPct / 100), speedMultiplier });
 }
 
 export function normalizeChargeTimeEffect(input, appliedAtMs = 0) {

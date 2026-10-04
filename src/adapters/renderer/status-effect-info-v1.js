@@ -233,6 +233,11 @@ function effectLinesFor(
   elapsedMs
 ) {
   switch (definition.kind) {
+    case "approach_time_modifier":
+      return Object.freeze([
+        variationLine("Temps de trajet de la créature", definition.modifierPct * instance.stacks,
+          { positiveWord: "augmenté", negativeWord: "réduit" }) ?? "Temps de trajet inchangé"
+      ]);
     case "damage_over_time":
       return Object.freeze([
         compactNumber(definition.amount) +

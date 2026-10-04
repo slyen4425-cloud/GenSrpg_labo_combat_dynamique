@@ -1,5 +1,6 @@
 export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "stat_modifier",
+  "approach_time_modifier",
   "damage_over_time",
   "heal_over_time",
   "shield",
@@ -69,6 +70,10 @@ const COMMON_FIELDS = new Set([
 ]);
 
 const FIELDS_BY_KIND = Object.freeze({
+  approach_time_modifier: new Set([
+    ...COMMON_FIELDS,
+    "modifierPct"
+  ]),
   stat_modifier: new Set([
     ...COMMON_FIELDS,
     "statId",
@@ -332,6 +337,10 @@ export function normalizeStatusEffectV1(input) {
         "StatusEffectV1.percent"
       );
     }
+  }
+
+  if (kind === "approach_time_modifier") {
+    output.modifierPct = finiteNumber(value.modifierPct, "StatusEffectV1.modifierPct");
   }
 
   if (kind === "damage_over_time") {
