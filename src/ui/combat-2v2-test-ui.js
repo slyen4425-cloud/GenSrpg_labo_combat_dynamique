@@ -574,6 +574,7 @@ export async function mountCoop2v2Test({
     context = {}
   ) {
     const sourceActorId =
+      (["impact", "clash-impact"].includes(context.fxType) ? context.targetView : null) ??
       context.sourceActorId ??
       context.sourceView ??
       null;

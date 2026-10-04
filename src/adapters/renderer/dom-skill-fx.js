@@ -748,6 +748,7 @@ export function createDomSkillFxRenderer({
     const presentation = skillId
       ? presentationForSkill(skillId, {
           sourceView: sourceSlot,
+          targetView: targetSlot,
           fxType: type,
           phase
         })

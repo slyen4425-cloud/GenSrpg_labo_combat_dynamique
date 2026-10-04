@@ -23,12 +23,12 @@ function assets(draft) {
   return createCaptureSkillPresentationAssetsV2({ skillPresentations: { [draft.id]: draft.presentation },
     assetForId: id => ({ assetId: id, url: "/real-sprite.webp", frameCount: 8, frameMs: 90 }) });
 }
-function harness(draft, view = "player") {
+function harness(draft, view = null) {
   const nodes = [], animations = [], ownerDocument = { createElement() { const n = node(); n.ownerDocument = ownerDocument; return n; } };
   const arena = { ownerDocument, append(n) { nodes.push(n); }, getBoundingClientRect: () => ({ left: 0, top: 0, width: 600, height: 300 }) };
   const anchors = Object.fromEntries([["player", 40], ["opponent", 500]].map(([id, left]) => [id, { getBoundingClientRect: () => ({ left, top: 100, width: 40, height: 40 }) }]));
   const presentation = assets(draft);
-  const renderer = createDomSkillFxRenderer({ arena, anchors, presentationForSkill: id => presentation.presentationForSkill(id, { view }),
+  const renderer = createDomSkillFxRenderer({ arena, anchors, presentationForSkill: (id, context) => presentation.presentationForSkill(id, view ? { view } : context),
     animate(n, keyframes, options) { let resolve; const finished = new Promise(r => resolve = r); const a = { node: n, keyframes, options, finished, resolve, cancel() { this.cancelled = true; resolve(); } }; animations.push(a); return a; } });
   return { renderer, nodes, animations };
 }
@@ -120,4 +120,15 @@ test("editor provides non-projectile animation and placement controls", async ()
   for (const role of ["cast", "impact", "zone"]) {
     for (const control of ["playback", "layer-player", "layer-opponent", "offset-x", "offset-y"]) assert.match(html, new RegExp("data-skill-" + role + "-" + control));
   }
+});
+
+test("impact uses the target semantic view, while cast uses the source semantic view", () => {
+  const draft = buildHumanSkillDraftV1(fields({ castAssetId: spriteId, impactAssetId: spriteId,
+    castLayerPlayer: "behind", castLayerOpponent: "front", impactLayerPlayer: "behind", impactLayerOpponent: "front" }));
+  const { renderer, nodes } = harness(draft);
+  renderer.play({ type: "cast", skillId: draft.id, fromSlot: "player", durationMs: 500 });
+  renderer.play({ type: "impact", skillId: draft.id, fromSlot: "player", targetSlot: "opponent", durationMs: 420 });
+  assert.equal(nodes[0].className.includes("layer-behind"), true);
+  assert.equal(nodes[1].className.includes("layer-behind"), false);
+  renderer.dispose();
 });
