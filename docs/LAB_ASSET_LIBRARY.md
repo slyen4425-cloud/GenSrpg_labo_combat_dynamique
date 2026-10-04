@@ -1251,3 +1251,8 @@ Règle permanente :
 Une branche `work/`, `preview/` ou `checkpoint/` ne doit jamais devenir la source runtime d'un asset de bibliothèque partagé.
 
 Les branches fonctionnelles peuvent contenir des copies historiques dans leur Git ancestry, mais leur runtime ne doit pas les utiliser comme source de vérité.
+
+
+## 2026-10-04 — CAST / STATUS source-alpha V1
+Les deux dernières planches utilisateur sont publiées sur global-assets au commit `c87478cd9f1ba475bdc5032f3356bb27b9516f36` : 12 animations logiques (5 casts remplacés + 7 statuts nouveaux), 96 PNG RGBA 256², 12 WebP lossless 2048×256, 2 JPEG originaux + 2 PNG dérivés ; **112 fichiers image réels ajoutés**. 40 anciens SVG CAST retirés. Catalogue 95 IDs au total ; chemins et hashes complets dans docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md et les deux manifestes source.
+Les IDs de cast restent stables. Les nouveaux IDs statut sont résolus par les sélecteurs/contrats existants. Loop 720 ms/cycle pendant le lifecycle Runtime, lecteur applySpriteVisual partagé et HUD à phase médiane. Source unique assets/library/ sur global-assets. Previews réelles clair/sombre vérifiées, full CI assets 202/202. Validation artistique utilisateur encore ouverte.

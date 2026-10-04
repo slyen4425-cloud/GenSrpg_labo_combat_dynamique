@@ -422,3 +422,7 @@ Pas de saut de phase structurelle pour gagner du temps.
 Les réglages par vue (taille et X/Y), la gestion once/loop/stretch des projectiles et la durée/scale/offset des impacts sont maintenant implémentés dans les contrats et consommateurs existants. CI technique 923/923 au commit 82c8dac19656e18e8a85c7412e1b5ebd5b38a4b0. Les notes ouvertes précédentes restent la source historique ; l’implémentation et ses preuves sont décrites dans docs/LAB_PRESENTATION_FEEDBACK_V1.md.
 
 État : prêt pour test utilisateur dans la preview publiée. Validation artistique réelle sur smartphone encore ouverte ; aucun GREEN final, aucun merge main. Les presets et les médias globaux restent inchangés.
+
+
+### Dernières planches et ombre — 2026-10-04
+Implémentation technique terminée : 12 animations CAST/STATUS source-alpha (96 phases, 112 fichiers image réels), IDs/catalogue/runtime raccordés, ombre au sol issue du plan canonique et lifecycle WAAPI partagé. Full CI source 948/948 et assets 202/202 ; décodage des 108 fichiers de lecture et preview réelle clair/sombre vérifiés. Main protégé ; validation artistique/tactile finale de Sylvain ouverte. Référence : docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md.
