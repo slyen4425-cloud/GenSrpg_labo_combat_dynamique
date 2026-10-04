@@ -24684,3 +24684,9 @@ La révision documentaire de clôture est contrôlée par sa propre CI avant cr�
 - Après implémentation : 21/21 sentinelles ciblées passent (sept statuts, cinq casts, résolution dédiée Fireball, status FX et présentation native). Sélecteurs existants aura/statut inchangés ; IDs résolus dans demo-assets ; URLs toujours global-assets ; cache revision v11.
 - DomStatusFx réutilise applySpriteVisual : loop natif, node stable aux refreshs, lecteur annulé lors du retrait, asset/cible remplacée et dispose. HUD sans icône source affiche une phase médiane, pas l’atlas complet. Les icônes source de capacité conservent priorité.
 - full CI encore requise pour ce micro-lot. Les médias finaux restent sur la branche de travail d’assets jusqu’à full CI/inspection réelle.
+
+
+### Ombre — contrôle navigateur reproductible
+- Le preview combat Capture s'ouvre après sauvegarde du brouillon local de Griffe. La page index historique échoue sur le profil ancien « drake » ; aucune correction de cette fixture historique n'est incluse dans ce lot.
+- Pour vérifier une phase exacte sans courir après une animation courte/les attaques IA, ajout d'une page de revue de l'ombre avec les profils canoniques, normalizeCombatVisualEvent → planAnimation → DomActorRenderer natif. Ses boutons pilotent uniquement pause/currentTime des deux animations exposées par le renderer. Aucun timer, observateur, moteur ni règle de combat supplémentaire.
+- Périmètre complémentaire : examples/dom-demo/shadow-review.html, fixture réversible de contrôle visuel ; source/runtime de production inchangés. Les réglages locaux de Griffe employés pour le contrôle seront remis à 1200/1500 ms.

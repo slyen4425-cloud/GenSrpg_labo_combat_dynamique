@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GenSrpG — ombre pendant l’attaque</title>
+<link rel="stylesheet" href="./demo.css">
+<style>
+body{margin:0;background:#0c1521;color:#e8eff6;font:16px system-ui}
+main{max-width:1000px;margin:30px auto;padding:0 20px}
+h1{font-size:28px}p{color:#bac9d8;line-height:1.5}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0}
+button,select,a{font:inherit;color:inherit;background:#22374b;border:1px solid #587083;border-radius:8px;padding:10px 14px}
+label{display:flex;gap:8px;align-items:center}
+.shadow-arena{position:relative;height:480px;overflow:hidden;border:1px solid #587083;border-radius:14px;background:linear-gradient(#dae6ed 0 36%,#b5c4b4 36% 100%)}
+.shadow-arena .fighter{top:auto;left:80px;bottom:50px;width:220px;transform:none;transition:none}
+.shadow-arena[data-view="opponent"] .fighter{left:auto;right:80px;bottom:120px}
+.shadow-arena .fighter__image{filter:none}
+#phase{margin:12px 0;color:#e8eff6}
+@media(max-width:650px){.shadow-arena .fighter{left:25px;width:170px}.shadow-arena[data-view="opponent"] .fighter{right:25px}.shadow-arena{height:400px}}
+</style>
+</head>
+<body><main>
+<h1>Ombre pendant l’attaque</h1>
+<p>L’ombre suit la position au sol. Le saut et l’élévation du corps restent au-dessus de cette projection.</p>
+<div class="controls">
+<label>Profil <select id="profile"><option value="biped">Bipède</option><option value="quadruped" selected>Quadrupède</option><option value="massive">Massif</option><option value="serpentine">Serpent</option><option value="flying">Volant</option></select></label>
+<label>Vue <select id="view"><option value="player">Joueur</option><option value="opponent">Adversaire</option></select></label>
+<label>Attaque <select id="event"><option value="ground-attack">Au sol</option><option value="aerial-attack">Aérienne</option><option value="teleport-attack">Téléportation</option></select></label>
+</div>
+<div class="controls">
+<button data-point="start" disabled>Départ</button><button data-point="middle" disabled>Milieu</button><button data-point="contact" disabled>Contact</button><button data-point="return" disabled>Retour</button><button id="play" disabled>Lire l’attaque</button>
+<a href="./capture-editor-v2.html">Ouvrir l’éditeur</a>
+</div>
+<p id="phase" role="status">Chargement…</p>
+<div class="shadow-arena" data-view="player"><article class="fighter"><div class="fighter__motion"><img class="fighter__image" alt="Créature de contrôle"></div></article></div>
+<p>Le profil choisit le mouvement. Les images de contrôle sont celles du loup volcanique et de Braisombre, présentes dans la bibliothèque du labo.</p>
+<script type="module">
+import { normalizeVisualActor } from "../../src/contracts/visual-actor.js";
+import { normalizeCombatVisualEvent } from "../../src/contracts/combat-visual-event.js";
+import { planAnimation } from "../../src/core/animation/plan-animation.js";
+import { createProfileRegistry } from "../../src/core/profiles/profile-registry.js";
+import { createDomActorRenderer } from "../../src/adapters/renderer/dom-actor-renderer.js";
+import { globalVisualAssetUrl } from "../../src/assets/global-visual-library.js";
+
+const profileSelect=document.querySelector("#profile"), viewSelect=document.querySelector("#view"), eventSelect=document.querySelector("#event");
+const arena=document.querySelector(".shadow-arena"), container=arena.querySelector(".fighter"), motion=container.querySelector(".fighter__motion"), image=motion.querySelector("img"), phase=document.querySelector("#phase");
+const profiles=createProfileRegistry(await Promise.all(["biped","quadruped","massive","serpentine","flying"].map(async name=>{
+  const response=await fetch(new URL("../../data/profiles/"+name+".profile.json",import.meta.url));
+  if(!response.ok)throw Error("Profil indisponible : "+name);return response.json();
+})));
+const metaFor=await Promise.all(["loup_volcanique","braisombre"].map(async name=>{
+  const url=globalVisualAssetUrl("capture/creatures/"+name+"/"+name+".meta.json");
+  const response=await fetch(url);if(!response.ok)throw Error("Créature indisponible : "+name);
+  return {meta:await response.json(),base:new URL(".",url)};
+}));
+let renderer=null,handle=null,plan=null,token=0;
+async function configure(){
+  const serial=++token;
+  renderer?.dispose();
+  const profile=profiles.get(profileSelect.value),view=viewSelect.value;
+  const source=metaFor[profile.id==="flying"?1:0];
+  image.src=new URL(source.meta.views[view],source.base).href;
+  await image.decode();if(serial!==token)return;
+  arena.dataset.view=view;container.dataset.profile=profile.id;
+  const shadow=profile.presentation?.shadow??{};
+  container.style.setProperty("--creature-shadow-bottom",shadow.bottom??"8%");
+  container.style.setProperty("--creature-shadow-opacity",shadow.opacity??0.42);
+  const actor=normalizeVisualActor({id:"review-actor",creatureId:source.meta.id,profile:profile.id,view,asset:image.src,position:{x:0,y:0},scale:view==="player"?1:0.8,transformOrigin:source.meta.transformOrigin});
+  const direction=view==="player"?1:-1, distance=Math.min(320,arena.clientWidth-270);
+  const event=normalizeCombatVisualEvent({type:eventSelect.value,actorId:actor.id,targetId:"review-target",
+    metadata:{targetTranslateX:direction*distance,targetTranslateY:direction*-70,travelMs:2500,arenaHeight:480,arenaExitTranslateY:-500}});
+  plan=planAnimation({actor,profile,event});
+  renderer=createDomActorRenderer({element:motion,shadowElement:container,actor});
+  document.querySelectorAll("button").forEach(b=>b.disabled=false);
+  await showPoint("start");
+}
+async function showPoint(point){
+  const serial=token;
+  handle=renderer.play(plan);
+  handle.animation.pause();handle.shadowAnimation.pause();
+  await Promise.all([handle.animation.ready,handle.shadowAnimation.ready]);
+  if(serial!==token)return;
+  const total=handle.timeline.options.duration,returnMs=plan.segments.at(-1).durationMs,contact=total-returnMs;
+  const time={start:0,middle:contact/2,contact,return:contact+returnMs/2}[point];
+  handle.animation.currentTime=time;handle.shadowAnimation.currentTime=time;
+  arena.dataset.point=point;
+  arena.dataset.pseudoElement=handle.shadowAnimation.effect.pseudoElement;
+  phase.textContent=({start:"Départ",middle:"Milieu du déplacement",contact:"Contact avec la cible",return:"Retour au point de départ"})[point];
+}
+document.querySelectorAll("[data-point]").forEach(b=>b.addEventListener("click",()=>showPoint(b.dataset.point).catch(e=>phase.textContent=e.message)));
+document.querySelector("#play").addEventListener("click",()=>{
+  handle=renderer.play(plan);arena.dataset.point="playing";phase.textContent="Attaque en cours";
+  handle.finished.then(result=>{if(result.status==="finished"){arena.dataset.point="finished";phase.textContent="Retour au point de départ";}});
+});
+for(const select of [profileSelect,viewSelect,eventSelect])select.addEventListener("change",()=>configure().catch(e=>phase.textContent=e.message));
+window.addEventListener("pagehide",()=>renderer?.dispose(),{once:true});
+configure().catch(e=>phase.textContent=e.message);
+</script>
+</main></body></html>
