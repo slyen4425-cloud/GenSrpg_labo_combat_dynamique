@@ -953,14 +953,21 @@ export function createDomSkillFxRenderer({
         });
       }
 
-      const to = centerRelativeTo(
-        anchor(
+      const damageRect = anchor(
           anchors,
           targetSlot,
           "live damage target"
-        ).getBoundingClientRect(),
-        arenaRect
-      );
+        ).getBoundingClientRect();
+      const center = centerRelativeTo(damageRect, arenaRect);
+      // Keep floating feedback readable even when the model is large or moving
+      // outside the arena. This affects presentation only, never damage math.
+      const insetX = Math.min(32, arenaRect.width / 2);
+      const insetTop = Math.min(48, arenaRect.height / 2);
+      const insetBottom = Math.min(24, arenaRect.height / 2);
+      const to = {
+        x: Math.max(insetX, Math.min(arenaRect.width - insetX, center.x)),
+        y: Math.max(insetTop, Math.min(arenaRect.height - insetBottom, center.y - damageRect.height / 4))
+      };
 
       const node =
         arena.ownerDocument.createElement("span");
@@ -994,13 +1001,19 @@ export function createDomSkillFxRenderer({
           {
             transform:
               "translate(-50%, -50%) translate3d(0, 0.25rem, 0) scale(0.78)",
-            opacity: 0
+            opacity: 1
           },
           {
             transform:
               "translate(-50%, -50%) translate3d(0, -0.25rem, 0) scale(1.12)",
             opacity: 1,
             offset: 0.2
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(0, -1rem, 0) scale(1)",
+            opacity: 1,
+            offset: 0.7
           },
           {
             transform:

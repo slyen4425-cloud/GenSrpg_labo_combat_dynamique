@@ -1,3 +1,5 @@
+import { normalizeRecallPreparationMs } from "./combat-command-definition.js";
+
 export const CAPTURE_COMBAT_EXPORT_SCHEMA =
   "capture-combat-export-v1";
 
@@ -337,7 +339,10 @@ export function normalizeCaptureCombatExportV1(input) {
     skillSpeedMultiplier: positiveFiniteNumber(
       battleRaw.skillSpeedMultiplier,
       "battle.skillSpeedMultiplier"
-    )
+    ),
+    ...(battleRaw.recallPreparationMs === undefined ? {} : {
+      recallPreparationMs: normalizeRecallPreparationMs(battleRaw.recallPreparationMs, "battle.recallPreparationMs")
+    })
   });
 
   const teams = normalizeTeams(input.teams);

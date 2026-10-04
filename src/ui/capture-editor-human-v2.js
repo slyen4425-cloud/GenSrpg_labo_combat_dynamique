@@ -8321,6 +8321,7 @@ export function mountCaptureEditorHumanV2({ root }) {
           arenaId: selectedValue(root, "[data-test-arena]"),
           combatRules: readHumanCombatRulesV1(root),
           skillSpeedMultiplier: numericValue(root, "[data-combat-skill-speed]"),
+          recallPreparationMs: numericValue(root, "[data-recall-seconds]") * 1000,
           statRegistry, progressionRules
         })
       });

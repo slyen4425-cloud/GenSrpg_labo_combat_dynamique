@@ -51,6 +51,23 @@ export function createCombatResolutionPresenter({
   const preparationFxByActor = new Map();
   const preparationAudioByActor = new Map();
   const travelAudioByActor = new Map();
+  const outcomeByActor = new Map();
+
+  function outcomeSequence(actorSlot, firstType, nextType = null) {
+    const record = {};
+    outcomeByActor.set(actorSlot, record);
+    return visuals.playEventFor(actorSlot, firstType)
+      .then(result => {
+        if (disposed || outcomeByActor.get(actorSlot) !== record || result?.status === "cancelled") {
+          return { status: "cancelled" };
+        }
+        return nextType ? visuals.playEventFor(actorSlot, nextType) : { status: "finished" };
+      })
+      .catch(() => ({ status: "cancelled" }))
+      .finally(() => {
+        if (outcomeByActor.get(actorSlot) === record) outcomeByActor.delete(actorSlot);
+      });
+  }
 
   function schedule(callback, delayMs) {
     const timerId = setTimer(() => {
@@ -124,6 +141,7 @@ export function createCombatResolutionPresenter({
   function cancelActionPresentation(
     actorSlot = "player"
   ) {
+    const outcomeCancelled = outcomeByActor.delete(actorSlot);
     const preparationCancelled =
       cancelPreparation(actorSlot);
     const travelCancelled =
@@ -136,6 +154,7 @@ export function createCombatResolutionPresenter({
     return (
       preparationCancelled ||
       travelCancelled ||
+      outcomeCancelled ||
       projectileCount > 0
     );
   }
@@ -401,14 +420,7 @@ export function createCombatResolutionPresenter({
           visuals.cancelFor(targetSlot);
         }
 
-        finished = visuals
-          .playEventFor(targetSlot, "hit")
-          .then(() =>
-            ko
-              ? visuals.playEventFor(targetSlot, "ko")
-              : { status: "finished" }
-          )
-          .catch(() => ({ status: "cancelled" }));
+        finished = outcomeSequence(targetSlot, "hit", ko ? "ko" : null);
         break;
       }
 
@@ -421,14 +433,7 @@ export function createCombatResolutionPresenter({
         ko = Number(reflectedHit?.hpAfter) <= 0;
         koActorId = ko ? reflectedHit?.actorId ?? null : null;
         visuals.cancelFor(actorSlot);
-        finished = visuals
-          .playEventFor(actorSlot, "hit")
-          .then(() =>
-            ko
-              ? visuals.playEventFor(actorSlot, "ko")
-              : { status: "finished" }
-          )
-          .catch(() => ({ status: "cancelled" }));
+        finished = outcomeSequence(actorSlot, "hit", ko ? "ko" : null);
         break;
       }
 
@@ -526,6 +531,7 @@ export function createCombatResolutionPresenter({
       cancelTravelAudio(actorSlot);
     }
     disposed = true;
+    outcomeByActor.clear();
   }
 
   return Object.freeze({

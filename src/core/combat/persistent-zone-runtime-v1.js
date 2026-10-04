@@ -460,6 +460,18 @@ function approachEntryEventsForZone({
     );
   }
 
+  // A Runtime-accepted contact is already semantic proof that the ground
+  // attacker reached the zone owner. Large/mobile sprites can meet before
+  // the nominal approach-band threshold, including between equal clock ticks.
+  for (const contact of zoneSpatialContext.contacts ?? []) {
+    if (contact.approachMode !== "ground" || contact.targetId !== zone.sourceActorId ||
+        !candidates.includes(contact.actorId) || zone.expiresAtMs <= endMs) continue;
+    if (relationInRadius({ state, battleFormat, sourceActorId: zone.sourceActorId,
+      candidateId: contact.actorId, radius: zone.radius, atMs: endMs, zoneSpatialContext })) continue;
+    if (!events.some(event => event.targetActorId === contact.actorId)) {
+      events.push(Object.freeze({ type: "entry", atMs: endMs, targetActorId: contact.actorId }));
+    }
+  }
   return events;
 }
 
@@ -571,7 +583,7 @@ export function advancePersistentZonesV1({
     );
   }
   if (
-    delta === 0 ||
+    (delta === 0 && !(zoneSpatialContext?.contacts?.length > 0)) ||
     (state.persistentZones ?? [])
       .length === 0
   ) {

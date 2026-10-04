@@ -22,6 +22,24 @@ function nonNegativeNumber(value, field) {
   return number;
 }
 
+export function normalizeRecallPreparationMs(value, field = "recallPreparationMs") {
+  return nonNegativeNumber(value, field);
+}
+
+// Configure the existing trainer commands, keeping summon arrival immediate.
+export function configureCombatRecallCommandsV1(commands, recallPreparationMs) {
+  const duration = recallPreparationMs === undefined
+    ? undefined : normalizeRecallPreparationMs(recallPreparationMs);
+  return Object.freeze(Object.fromEntries(Object.entries(commands).map(([key, command]) => [
+    key,
+    normalizeCombatCommandDefinition({
+      ...command,
+      ...(duration !== undefined && ["recall", "switch"].includes(command.kind)
+        ? { preparationMs: duration } : {})
+    })
+  ])));
+}
+
 function optionalString(value, field) {
   if (value == null) {
     return null;

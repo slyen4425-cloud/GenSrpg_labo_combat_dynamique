@@ -1222,6 +1222,18 @@ export function createCombatRuntime({
       });
     }
 
+    if (record.action.skill.approachMode === "ground") {
+      const spatial = zoneSpatialContext({ state: session.snapshot(), intervalStartClockMs: current });
+      session.advanceMs(0, { zoneSpatialContext: Object.freeze({ ...spatial,
+        contacts: Object.freeze([Object.freeze({ actorId, targetId, approachMode: "ground" })])
+      }) });
+      for (const fighter of Object.values(session.snapshot().fighters)) {
+        if (fighter.hp <= 0) cancelActionsForActor(fighter.id, { includeTargeted: true, reason: "ko" });
+      }
+      emitStateIfChanged();
+      if (activeByActor.get(actorId) !== record) return Object.freeze({ ok: false, outcome: "no_action" });
+    }
+
     const contactImpactAtMs = Math.min(
       record.action.impactAtMs,
       Math.max(

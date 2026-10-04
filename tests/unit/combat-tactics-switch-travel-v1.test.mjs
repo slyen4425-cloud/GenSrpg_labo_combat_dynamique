@@ -56,10 +56,10 @@ test("the real roster panel enables reserve and replacement while only the enemy
   } finally { ui.dispose(); h.runtime.dispose(); h.controller.dispose(); }
 });
 
-test("canonical recall is free and one second; invocation is free and immediate", async () => {
+test("canonical recall is free and two seconds; invocation is free and immediate", async () => {
   const recall = normalizeCombatCommandDefinition(await json("data/combat/commands/recall.command.json"));
   const summon = normalizeCombatCommandDefinition(await json("data/combat/commands/summon.command.json"));
-  assert.deepEqual([recall.energyCost, recall.preparationMs, recall.recoveryMs], [0, 1000, 0]);
+  assert.deepEqual([recall.energyCost, recall.preparationMs, recall.recoveryMs], [0, 2000, 0]);
   assert.deepEqual([summon.energyCost, summon.preparationMs, summon.recoveryMs], [0, 0, 0]);
 });
 

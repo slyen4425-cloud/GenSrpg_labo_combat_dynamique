@@ -539,7 +539,7 @@ button.reserve-card {
 }
 
 .skill-fx--damage-number {
-  z-index: 13;
+  z-index: 22;
   width: max-content;
   aspect-ratio: auto;
   color: #ffdf72;

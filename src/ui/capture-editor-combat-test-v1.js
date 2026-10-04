@@ -36,7 +36,7 @@ function teamSlots(ids, activeCount, prefix, configuredCreatures) {
 // while definitions, planned loadouts and stat values keep their canonical IDs.
 export function buildCaptureEditorCombatTestV1({
   configuredCreatures, configuredSkills, localCreatureIds, opponentCreatureIds,
-  activePerTeam, arenaId, combatRules, skillSpeedMultiplier = 1,
+  activePerTeam, arenaId, combatRules, skillSpeedMultiplier = 1, recallPreparationMs,
   statRegistry = null, progressionRules = null
 }) {
   const local = teamIds(localCreatureIds, "L’équipe locale", configuredCreatures);
@@ -49,6 +49,7 @@ export function buildCaptureEditorCombatTestV1({
   const battleSetup = normalizeCaptureBattleSetupEditorDraftV1({
     schema: "capture-battle-setup-editor-draft-v1", id: "capture-human-preview",
     localActorId: "local-1", arenaId, skillSpeedMultiplier,
+    ...(recallPreparationMs === undefined ? {} : { recallPreparationMs }),
     teams: [
       { id: "local-team", slots: teamSlots(local, count, "local", configuredCreatures) },
       { id: "enemy-team", slots: teamSlots(opponent, count, "opponent", configuredCreatures) }

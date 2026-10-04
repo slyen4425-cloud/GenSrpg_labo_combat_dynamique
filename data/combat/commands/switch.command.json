@@ -3,7 +3,7 @@
   "name": "Rappel et invocation",
   "kind": "switch",
   "energyCost": 0,
-  "preparationMs": 1000,
+  "preparationMs": 2000,
   "recoveryMs": 0,
   "interruptibleDuringPreparation": true,
   "effect": {}

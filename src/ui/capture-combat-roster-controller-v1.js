@@ -65,6 +65,10 @@ export function mountCaptureCombatRosterPanelV1({
   const host = panel.querySelector("[data-combat-team-rosters]");
   const summary = panel.querySelector("[data-combat-team-summary]");
   const buttons = [...panel.querySelectorAll("[data-combat-roster-command]")];
+  const recallDuration = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 3 }).format(commands.switch.preparationMs / 1000)
+    + " seconde" + (commands.switch.preparationMs === 1000 ? "" : "s");
+  const recallNote = panel.querySelector("[data-combat-recall-note]");
+  if (recallNote) recallNote.textContent = `Gratuit. Rappel en ${recallDuration}, puis arrivée immédiate de la réserve sélectionnée. Ta créature reste ciblable pendant le rappel.`;
   const memberRefs = new Map();
   const initial = controller.snapshot();
   host.replaceChildren();
@@ -125,7 +129,7 @@ export function mountCaptureCombatRosterPanelV1({
     const reserve = event.target.closest?.("[data-roster-member-id]");
     if (reserve && !reserve.disabled) {
       const result = controller.selectReserve(format.localActorId, reserve.dataset.rosterMemberId);
-      if (result.ok) setStatus("Réserve sélectionnée. Lance Rappel et invocation : remplacement gratuit après une seconde.", "info");
+      if (result.ok) setStatus(`Réserve sélectionnée. Lance Rappel et invocation : remplacement gratuit après ${recallDuration}.`, "info");
       render(); return;
     }
     const button = event.target.closest?.("[data-combat-roster-command]");

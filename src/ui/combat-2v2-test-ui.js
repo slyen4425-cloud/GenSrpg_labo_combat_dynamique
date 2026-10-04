@@ -1,6 +1,6 @@
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
-import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
+import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
@@ -317,6 +317,7 @@ function normalizedInjectedCombatSource(input) {
     roster: input.roster ?? null,
     fighterConfigs: input.fighterConfigs ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
+    ...(input.recallPreparationMs === undefined ? {} : { recallPreparationMs: input.recallPreparationMs }),
     skillSpeedMultiplier:
       input.skillSpeedMultiplier ?? 1
   });
@@ -459,7 +460,7 @@ export async function mountCoop2v2Test({
     skillsById,
     skillIdsByActor,
     roster: rosterDefinition, fighterConfigs, skillIdsByCreature,
-    skillSpeedMultiplier
+    skillSpeedMultiplier, recallPreparationMs
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
     fetchImpl,
@@ -801,13 +802,6 @@ export async function mountCoop2v2Test({
   }
 
   function renderState(state = session.snapshot()) {
-    if (rosterController) {
-      for (const actor of format.actors) {
-        if (Number(state.fighters[actor.actorId]?.hp) <= 0 && rosterController.isPresent(actor.actorId)) {
-          queueKoReplacement(actor.actorId);
-        }
-      }
-    }
     statusFx?.sync(state);
     for (const actor of format.actors) {
       const fighter = state.fighters[actor.actorId];
@@ -1120,6 +1114,11 @@ export async function mountCoop2v2Test({
   runtime = createCombatRuntime({
     session,
     onState(state) {
+      if (rosterController) for (const actor of format.actors) {
+        if (Number(state.fighters[actor.actorId]?.hp) <= 0 && rosterController.isPresent(actor.actorId)) {
+          queueKoReplacement(actor.actorId);
+        }
+      }
       renderState(state);
       queueAiDecisions();
     },
@@ -1276,7 +1275,10 @@ export async function mountCoop2v2Test({
   }
 
   if (rosterDefinition && Object.keys(rosterDefinition.teams ?? {}).length > 0) {
-    const commands = Object.fromEntries(await Promise.all(Object.entries(DATA_URLS.commands).map(async ([kind, url]) => [kind, normalizeCombatCommandDefinition(await fetchJson(url, fetchImpl))])));
+    const commands = configureCombatRecallCommandsV1(
+      Object.fromEntries(await Promise.all(Object.entries(DATA_URLS.commands).map(async ([kind, url]) => [kind, await fetchJson(url, fetchImpl)]))),
+      recallPreparationMs
+    );
     rosterController = createCaptureCombatRosterControllerV1({
       session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),

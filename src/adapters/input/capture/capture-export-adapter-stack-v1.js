@@ -70,6 +70,7 @@ export function adaptCaptureCombatExportStackV1(input) {
     battleFormat: adaptCaptureExportToBattleFormat(exported),
     skillSpeedMultiplier:
       exported.battle.skillSpeedMultiplier,
+    ...(exported.battle.recallPreparationMs === undefined ? {} : { recallPreparationMs: exported.battle.recallPreparationMs }),
     roster: adaptCaptureExportToRosterDefinition(exported),
     fighterConfigs,
     fighters,

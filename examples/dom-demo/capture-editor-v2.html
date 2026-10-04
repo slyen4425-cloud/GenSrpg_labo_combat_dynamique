@@ -497,6 +497,10 @@
           >
         </label>
         <p class="note">1× conserve les timings des capacités. Ce réglage donne un rythme global ; préparation, trajet, récupération et cooldown restent personnalisables sur chaque capacité.</p>
+        <label>Durée du rappel (secondes)
+          <input type="number" min="0" step="0.1" value="2" data-recall-seconds>
+        </label>
+        <p class="note">Le rappel et l’invocation sont gratuits. La créature reste en combat pendant le rappel, puis la réserve arrive immédiatement.</p>
       </article>
     </section>
 
@@ -1126,7 +1130,7 @@
                   <div class="combat-test-team-actions">
                     <button type="button" data-combat-roster-command="switch">Rappel et invocation</button>
                   </div>
-                  <p>Gratuit. Rappel en 1 seconde, puis arrivée immédiate de la réserve sélectionnée. Ta créature reste ciblable pendant le rappel.</p>
+                  <p data-combat-recall-note></p>
                 </div>
               </details>
             </section>

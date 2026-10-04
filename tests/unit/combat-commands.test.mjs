@@ -85,7 +85,7 @@ test("combat commands have their own typed configurable contract", () => {
 
   assert.equal(recall.kind, "recall");
   assert.equal(recall.energyCost, 0);
-  assert.equal(recall.preparationMs, 1000);
+  assert.equal(recall.preparationMs, 2000);
 
   assert.equal(summon.kind, "summon");
   assert.equal(summon.energyCost, 0);
