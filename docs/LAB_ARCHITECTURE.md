@@ -3157,3 +3157,12 @@ DOM timeline projects the body and ellipse with identical offsets, easing, opaci
 
 ## 2026-10-04 — Shared sprite playback for status FX
 DomStatusFxRenderer uses the existing applySpriteVisual exported by DomSkillFxRenderer. Status presence/refresh/expiry remains owned by Runtime; the renderer owns the node and its sprite lifecycle. Animated strips loop with eight visible intervals, sequence WAAPI tracks cancel on replacement/removal/dispose, and unchanged records preserve their node at refresh. Source skill icons keep HUD priority; a single middle frame is the fallback for a sprite asset. Catalog inputs and presentation bindings remain assetId based; no gameplay branches, extra reader, timer or observer are introduced. Source assets resolve exclusively from global-assets. Reference: docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md.
+
+
+## 2026-10-04 — Réglages de sprites de capacité exposés dans Human Editor
+
+`capture-editor-sprite-controls-v1.js` traduit les champs UI pour cast/impact/aura et pour les sprites de statut V3, sans second owner. Les modes et placements des slots de présentation sont conservés par le vrai transfert JSON Capture. Les sprites de statut acceptent optionnellement playbackMode, offsets et layerByView ; les anciennes sauvegardes conservent leurs omissions et leurs défauts historiques.
+
+Le résolveur conserve les contrôles du statut et sa couche selon le porteur. La projection DOM suit la source pour cast/zone et la cible pour impact. Les contextes 1v1/2v2 et le proxy du preview conservent cette sémantique. Les durées visuelles des zones et statuts adaptés viennent de l’expiration Runtime depuis la première activation ; les refresh modifient la durée du playback existant. Aucune horloge ou registry concurrente. Les statuts mesurés en actions n’inventent pas de durée gameplay en ms : playback natif et retrait par Runtime.
+
+Les assets autoritaires et les trajectoires/contact/ombres ne changent pas. Validation : état `d8a1105604e00032573c9ace63f0f4c8cfb5368c`, CI 966/966, parcours natif desktop et capture de l’éditeur ; détail dans `LAB_UNIFIED_SPRITE_CONTROLS_V1.md`.

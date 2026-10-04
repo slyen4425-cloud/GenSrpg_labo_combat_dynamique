@@ -426,3 +426,8 @@ Les réglages par vue (taille et X/Y), la gestion once/loop/stretch des projecti
 
 ### Dernières planches et ombre — 2026-10-04
 Implémentation technique terminée : 12 animations CAST/STATUS source-alpha (96 phases, 112 fichiers image réels), IDs/catalogue/runtime raccordés, ombre au sol issue du plan canonique et lifecycle WAAPI partagé. Full CI source 948/948 et assets 202/202 ; décodage des 108 fichiers de lecture et preview réelle clair/sombre vérifiés. Main protégé ; validation artistique/tactile finale de Sylvain ouverte. Référence : docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md.
+
+
+## Suivi 2026-10-04 — Phase 5B, réglages des sprites dans l’éditeur
+
+Choix ouverts pour cast/impact/aura-zone/statut, filtre projectile conservé, réglages de lecture/placement exposés via les contrats existants. CI 966/966 et parcours natif desktop vérifiés sur `d8a1105604e00032573c9ace63f0f4c8cfb5368c`. Validation smartphone utilisateur à faire avant GREEN utilisateur. Détails : `docs/LAB_UNIFIED_SPRITE_CONTROLS_V1.md`.

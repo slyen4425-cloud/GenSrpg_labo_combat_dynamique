@@ -24711,3 +24711,15 @@ La révision documentaire de clôture est contrôlée par sa propre CI avant cr�
 - Hors périmètre : gameplay, trajectoires/contact projectiles, dégâts/rayon/durées métier, loadouts, profils, nouvelles planches, autres branches/PR, main et Zombicide-40k.
 - Catalogue/médias : `global-assets` reste `0217dca50ec4004d5ac3bb25d6f5998ccf9edc4f`. Aucun nouveau média ni catalogue concurrent.
 - État : chantier déclaré, audit terminé ; implémentation et validation réelle à faire. Aucun GREEN utilisateur annoncé.
+
+
+### unified-sprite-controls-v1 — Livraison technique et preview vérifiée
+
+- État code/tests : `d8a1105604e00032573c9ace63f0f4c8cfb5368c` ; CI complète **966/966**, run 37181129573, job 111373772904, gardes OK.
+- Choix : seule la liste projectile reste filtrée par catégorie ; cast / impact / zone / statut acceptent les sprites et FX d’effets.
+- Réglages : lecture une fois/boucle/adaptée, scale, offsets et couches par vue ; extension optionnelle des sprites de statut V3. Source pour cast/zone, cible pour impact, porteur pour statut.
+- Reader natif unique, owners Runtime existants, refresh sans doublon ; fichier UI de traduction extrait pour limiter le monolithe.
+- Scénarios desktop : aura en cast, charge en impact, charge en statut, sauvegarde-rechargement, lecture et couche réelle. Export/import natif testé en contrat ; événement de téléchargement GUI non capturé par l’automatisation, donc aucun round-trip GUI complet revendiqué.
+- Rapport : `docs/LAB_UNIFIED_SPRITE_CONTROLS_V1.md`.
+- Lien ouvert/vérifié : https://raw.githack.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/d8a1105604e00032573c9ace63f0f4c8cfb5368c/examples/dom-demo/capture-editor-v2.html
+- Capture finale de l’éditeur sauvegardée. Validation smartphone et GREEN utilisateur restent à faire ; aucun changement main/global-assets ni nouveau média.
