@@ -584,23 +584,58 @@ export async function mountCombatDemo({
     slot.setApproachActive(true, approachDepth);
 
     const handle = slot.renderer.play(plan);
+    const phaseTimers = [];
+    let contactReturnHandle = null;
+    let contactStoppedOutbound = false;
+
     const contactWatcher =
       typeof onContact === "function"
         ? watchVisibleModelContact({
             sourceModel: slot.collisionModel,
             targetModel: target.collisionModel,
             continuous: approachMode !== "teleport",
-            onContact
+            onContact() {
+              if (
+                !contactStoppedOutbound &&
+                approachMode !== "teleport" &&
+                typeof slot.renderer.returnActiveToBaseFromCurrent === "function"
+              ) {
+                contactStoppedOutbound = true;
+                cueSchedule.clear();
+                for (const timerId of phaseTimers) {
+                  globalThis.clearTimeout(timerId);
+                }
+                phaseTimers.length = 0;
+
+                const returnMs =
+                  Number(
+                    profile.specialMoves?.[approachMode]?.returnMs
+                  ) || 180;
+                contactReturnHandle =
+                  slot.renderer.returnActiveToBaseFromCurrent({
+                    durationMs: returnMs
+                  });
+              }
+
+              onContact();
+            }
           })
         : null;
+
+    const finished = handle.finished.then(async (result) => {
+      if (contactReturnHandle) {
+        return contactReturnHandle.finished;
+      }
+      return result;
+    });
+
     const approachRecord = Object.freeze({
       handle,
-      finished: handle.finished,
+      finished,
       contactWatcher
     });
     activeApproachBySlot.set(slotKey, approachRecord);
 
-    const phaseTimers = [];
     let phaseAtMs = 0;
 
     if (typeof onPhase === "function") {
@@ -631,7 +666,7 @@ export async function mountCombatDemo({
       }
     }
 
-    return handle.finished
+    return finished
       .then((result) => {
         if (activeApproachBySlot.get(slotKey) === approachRecord) {
           activeApproachBySlot.delete(slotKey);
