@@ -72,6 +72,12 @@ export function createCombatResolutionPresenter({
   }
 
   function outcomeSequence(actorSlot, firstType, nextType = null) {
+    // A normal recoil cannot replace a still-preparing trainer command's channel.
+    // Damage numbers/flash remain independent; lethal hits keep the native KO flow.
+    if (firstType === "hit" && nextType === null && rosterVisualsByActor.get(actorSlot)?.type === "recall") {
+      return Promise.resolve({ status: "presented" });
+    }
+    if (nextType === "ko") rosterVisualsByActor.delete(actorSlot);
     const record = {};
     outcomeByActor.set(actorSlot, record);
     return visuals.playEventFor(actorSlot, firstType)

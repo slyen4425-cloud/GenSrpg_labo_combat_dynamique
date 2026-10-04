@@ -137,3 +137,13 @@ test("cancelled recall and replacement restore body and ground opacity before ar
   assert.equal(element.style.opacity, "1"); assert.equal(element.style.filter, "none");
   assert.equal(ground["--creature-shadow-fade"], "1"); renderer.dispose();
 });
+test("an ordinary incoming hit does not erase the recall animation, while a lethal hit still presents KO", async () => {
+  const calls = [];
+  const presenter = createCombatResolutionPresenter({ visuals: { playEventFor(id, type) { calls.push([id, type]); return Promise.resolve({ status: "finished" }); }, cancelFor() {} } });
+  presenter.presentPreparation({ actorSlot: "local", action: { actionType: "command", preparationMs: 2000, command: { kind: "switch" } } });
+  const result = hp => ({ ok: true, outcome: "hit", events: [{ type: "hit", actorId: "local", hpAfter: hp }], state: { fighters: { local: { hp } } } });
+  await presenter.presentOutcome({ actorSlot: "enemy", targetSlot: "local", resolution: result(90) }).finished;
+  assert.deepEqual(calls, [["local", "recall"]], "hit feedback must not cancel a still-valid recall command's visual channel");
+  await presenter.presentOutcome({ actorSlot: "enemy", targetSlot: "local", resolution: result(0) }).finished;
+  assert.equal(calls.at(-1)[1], "ko"); presenter.dispose();
+});
