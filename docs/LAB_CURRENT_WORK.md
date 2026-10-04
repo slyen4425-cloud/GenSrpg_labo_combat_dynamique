@@ -6649,3 +6649,6 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Périmètre fichiers : plan-animation/animation-plan, dom-keyframes/dom-actor-renderer, demo-app/demo.css ; demo-assets/global-visual-library ; filtres natifs seulement si requis ; tests de vraie chaîne ; scripts/manifests/médias dans global-assets ; docs et preview dédiée.
 - Protégés : `main` (`3197388f2b3ee7491be6e6125a015315158cffa2`), Zombicide-40k, gameplay, règles/IA, collisions/capteurs, sockets/export/presets, chemins et IDs Fireball dédiée, impacts/projectiles validés, réglages de lecture et échelle du lot précédent.
 - Ordre : tests RED ciblés → correctif minimal → CI complète de chaque branche → publication médias par fast-forward → vérification UI réelle et rapport §34. Statut actuel : EN COURS, médias nouveaux NON LIVRÉS, aucun GREEN utilisateur.
+
+### CAST/STATUS — RED de contenu réel
+- `cast-status-source-alpha-v1.test.mjs` échoue sur les sources/manifests absents et le catalogue encore à 88. La sentinelle vérifie les octets JPEG originaux, les pixels RGBA dérivés, chaque découpe sans resampling, huit phases distinctes/texturées avec alpha partiel, détails noirs de curse, WebP VP8L, IDs/ressources/manifests et comptage réel. Aucun simple chemin placeholder ne satisfait ce contrat.
