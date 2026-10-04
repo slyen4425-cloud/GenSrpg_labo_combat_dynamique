@@ -371,17 +371,14 @@ testButton.addEventListener("click", async () => {
 
   try {
     await visualContextPromise;
-    const result = await session.launch();
-
-    if (!result.ok) {
-        return;
-    }
+    await session.launch();
   } catch (error) {
     editorStatus.textContent =
       "Impossible de lancer le combat : " + error.message;
     editorStatus.dataset.tone = "error";
     setMode("editor");
-    testButton.disabled = visualContext === null;
+  } finally {
+    testButton.disabled = visualContext === null || session.previewActive;
   }
 });
 
