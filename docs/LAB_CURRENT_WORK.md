@@ -24780,3 +24780,9 @@ Périmètre et propriétaires :
 Cette demande autorise la révision ciblée de l’ancien verrou global V9 pour switch seulement ; les autres contrats sont conservés. Aucun asset ni preset créature/capacité remplacé ; main, global-assets et Zombicide-40k hors périmètre.
 
 Plan : tests RED avant code (remplacement sous attaque/0 énergie/snapshot/sans vide/interruption/KO, IA short→medium→long/cooldown/plafond, trajet 1300→1950/stack/expiration/cleanse/présentation) ; trois micro-lots ; CI GitHub complète ; vérification vraie chaîne via éditeur et panneau équipe, 1v1/2v2 et responsive ; rapport et checkpoint technique après résultats. Aucun GREEN utilisateur sans retour de Sylvain.
+
+### Vérification d’intégration — deux cas de relève à fermer (2026-10-04)
+
+Avant corrections complémentaires : tests RED sur le nouveau remplacement. Retour d’une réserve avec DoT après 3000 ms : 30 dégâts anciens rejoués immédiatement (100→70), au lieu d’attendre le prochain tick futur ; et zone attachée au sourceActorId sortant toujours transmise au nouvel actif. Ces points appartiennent au périmètre de persistance/remplacement annoncé.
+
+Correction ciblée prévue : Status Runtime fournit une reprise pure des instances vivantes sur l’horloge native (durées absolues conservées, ticks de réserve non rejoués) ; Persistent Zone Runtime termine uniquement les zones du membre sortant lorsqu’un remplacement Roster demande explicitement le nettoyage de son slot. Les zones adverses et les attaques adverses restent actives. Aucun observer/timer ajouté, aucun effet/cooldown inventé dans UI.
