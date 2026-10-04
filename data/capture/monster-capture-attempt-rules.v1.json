@@ -1,0 +1,31 @@
+{
+  "schema": "capture-attempt-rules-v1",
+  "requiresCaptureItem": true,
+  "consumeItemOnAttempt": true,
+  "minChancePct": 0,
+  "maxChancePct": 95,
+  "baseRateMultiplier": 1,
+  "itemBonusScale": 1,
+  "globalMultiplier": 1,
+  "encounterTypes": {
+    "wild": true,
+    "trainer": false
+  },
+  "hpBands": [
+    {
+      "maxHpPct": 30,
+      "operation": "add",
+      "value": 30
+    },
+    {
+      "maxHpPct": 50,
+      "operation": "multiply",
+      "value": 0.35
+    },
+    {
+      "maxHpPct": 100,
+      "operation": "multiply",
+      "value": 0.1
+    }
+  ]
+}
