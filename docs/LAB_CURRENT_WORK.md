@@ -66,14 +66,18 @@ Résultat :
 >
 > TDD/CI :
 > - échecs intermédiaires attendus pendant restauration des dépendances manquantes ;
-> - CI complète finale : `37216176389` — **SUCCESS** ;
-> - HEAD technique : `0b20b59c10a2b71d5653408c3d3bfdf2c5b4811c`.
+> - CI complète après convergence contractuelle : `37216176389` — **SUCCESS** ;
+> - incident bootstrap navigateur détecté ensuite : ancien import `capture-runtime-presentation-assets-v1.js` absent de la lignée récente ;
+> - correction : raccord au propriétaire canonique existant `capture-skill-presentation-assets-v2.js` ;
+> - sentinelle ajoutée : tous les imports statiques locaux du bootstrap public doivent exister ;
+> - CI bootstrap finale : `37216711034` — **SUCCESS** ;
+> - HEAD runtime publié : `b641b6c7836d04a174e6431e8be80e2532344801`.
 >
 > Prévalidation :
-> - checkpoint : `checkpoint/lab-exploration-bridge-convergence-v1-prevalidation-green-2026-10-04` ;
-> - preview : `preview/lab-exploration-bridge-convergence-v1-2026-10-04`.
+> - checkpoint fonctionnel final : `checkpoint/lab-exploration-bridge-convergence-v1-bootstrap-green-2026-10-04` ;
+> - preview : `preview/lab-exploration-bridge-convergence-v1-2026-10-04` @ `b641b6c7836d04a174e6431e8be80e2532344801`.
 >
-> État : **TECHNIQUE GREEN — publication Exploration + gate utilisateur requis**.
+> État : **TECHNIQUE GREEN — gate navigateur Exploration requis**.
 
 ---
 
