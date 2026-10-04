@@ -6652,3 +6652,12 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 
 ### CAST/STATUS — RED de contenu réel
 - `cast-status-source-alpha-v1.test.mjs` échoue sur les sources/manifests absents et le catalogue encore à 88. La sentinelle vérifie les octets JPEG originaux, les pixels RGBA dérivés, chaque découpe sans resampling, huit phases distinctes/texturées avec alpha partiel, détails noirs de curse, WebP VP8L, IDs/ressources/manifests et comptage réel. Aucun simple chemin placeholder ne satisfait ce contrat.
+
+
+### CAST / STATUS / Ombre — livraison technique vérifiée
+- Payload médias : `c87478cd9f1ba475bdc5032f3356bb27b9516f36`, 128 chemins écrits / 14 768 372 octets ; 112 images réelles (96 frames PNG + 12 atlas WebP + 4 sources), 40 anciens SVG CAST supprimés. 12 IDs concernés, catalogue total 95. Chaque blob et entrée d’arbre Git correspond à son SHA calculé localement.
+- Publication global-assets par fast-forward non forcé après full CI 202/202 (run 37178014153 / job 111364613898), puis CI publication succès (37178051234). Runtime garde cette source autoritative.
+- Rendu natif/ombre : full CI 948/948 au source `3bf7e7d53793e53bcb69e26a171288596384e4b8` (run 37178666223 / job 111366534498). Checkpoints intermédiaires ombre 940, natif 948 et assets 202 enregistrés.
+- Éditeur réel : labels des cinq casts et sept statuts/zones visibles. Preview douze animations : 12 atlas/96 phases décodées, zéro image cassée ; loops statut 720 ms steps(8,jump-none), arrêt contrôlé, fonds clair/sombre inspectés.
+- Ombre WAAPI réelle : déplacements X/Y identiques au sol dans les deux vues ; le corps peut monter à −478 px tandis que l’ombre reste à +31 px sur le sol lors de l’attaque aérienne. Contrôle milieu/contact/retour dans shadow-review ; réglages locaux Griffe restaurés à 1200/1500 ms.
+- Rapport complet §34 : docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md. Implémentation/inspection/preview techniques terminées ; validation artistique finale smartphone attendue de Sylvain, aucun GREEN utilisateur, aucun merge main. Ancienne fixture index/profil drake consignée, non modifiée dans ce lot.
