@@ -23753,3 +23753,36 @@ Le RNG est injecté dans les fonctions pures de décision : aucun `Math.random()
 Aucun changement : Combat Runtime, Roster Session, Rappel/Invocation, inventaire, application de récompenses, XP V2, formule de capture, UI, `Zombicide-40k`.
 
 État : **GREEN technique**.
+
+
+## Résultat — Capture Attempt Rules v1 — 2026-10-04
+
+### TDD
+- RED attendu : CI `37180896543` — FAILURE, contrat volontairement absent.
+- GREEN : CI `37180950853` — SUCCESS après ajout du contrat et du preset.
+
+### Autorité unique ajoutée
+`CaptureAttemptRulesV1` possède désormais :
+- types de rencontres capturables ;
+- objet de capture obligatoire ou non ;
+- consommation de l'objet sur tentative ;
+- chance min/max ;
+- multiplicateur du taux espèce ;
+- échelle du bonus objet ;
+- multiplicateur global ;
+- bandes de PV configurables avec opération `add` ou `multiply`.
+
+Preset Monster Capture :
+- sauvage capturable ; dresseur non capturable ;
+- <=30 % PV : +30 points ;
+- <=50 % PV : taux ×0,35 ;
+- >50 % PV : taux ×0,10 ;
+- bonus objet ajouté explicitement ;
+- plafond 95 %.
+
+La seconde formule historique de combat n'est pas restaurée. Aucun bonus n'est inféré depuis le nom d'un objet.
+
+### Protection
+Aucun changement : inventaire, collection, party, Roster Session, Combat Runtime, Rappel/Invocation, UI, XP/Reward Rules, `Zombicide-40k`.
+
+État : **GREEN technique**.
