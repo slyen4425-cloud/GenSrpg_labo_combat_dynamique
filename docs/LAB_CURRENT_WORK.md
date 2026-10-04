@@ -2,6 +2,26 @@
 
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
+## Reprise prioritaire — 2026-10-04 — moving-attack-contact-stop-v1
+
+Problème reproduit conceptuellement : lors de deux attaques de contact avec déplacement simultanées (ex. Griffe), le Runtime applique correctement les dégâts au premier contact visuel réel, mais chaque AnimationPlan continue sa phase d'approche vers la position cible capturée au lancement. Les deux créatures peuvent donc se croiser et poursuivre jusqu'à l'ancienne position adverse avant le retour.
+
+Base GREEN utilisateur : `b65d2c12cf7e488fb4164127cfe2def199bd1b77`, checkpoint `checkpoint/lab-combat-reference-pace-v1-green-2026-10-04`.
+Départ : `checkpoint/lab-start-moving-attack-contact-stop-v1-2026-10-04`.
+Branche : `work/lab-moving-attack-contact-stop-v1-2026-10-04`.
+
+Objectif : pour toute approche visuelle continue de contact (ground/aerial), le premier contact visuel autoritaire doit terminer la phase aller à la position réellement atteinte puis déclencher le retour vers la base, sans traverser la cible, sans modifier le timestamp/dégâts décidé par Combat Runtime.
+
+Propriétaires : Combat Runtime reste seul propriétaire du contact/dégât ; Demo visual controller orchestre l'approche ; DomActorRenderer reste seul propriétaire WAAPI et du retour visuel. Aucun second capteur, timer de collision ou moteur de trajectoire.
+
+Fichiers autorisés : `src/adapters/renderer/dom-actor-renderer.js`, raccord ciblé `src/ui/demo-app.js`, tests dédiés, documentation. `plan-animation.js` et profils sont protégés sauf faute démontrée.
+
+Tests prévus : RED renderer retour depuis pose courante ; vrai câblage contact -> arrêt aller -> retour ; non-régression contact Runtime ; ground et aerial couverts ; teleport inchangé ; CI complète.
+
+Risques : téléportation au retour si la pose courante n'est pas capturée avant annulation ; double autorité WAAPI ; hit déclenché sur une approche considérée annulée ; ombre désynchronisée.
+
+Critère de fin : lors d'un contact simultané, aucune créature ne poursuit au-delà du contact ; le retour est continu depuis la pose visible courante ; dégâts et récupération Runtime inchangés ; CI verte ; preview réelle puis validation utilisateur avant GREEN.
+
 ## Reprise prioritaire — 2026-10-04
 
 Lot terminé techniquement : combat-reference-pace-v1. **1× dans l'éditeur = ancien rythme 0.5**, par la constante native Capture 0.5 et une conversion UI unique. Source : `9deff685fef8275c4c1e07d0fa18ac0d7ea24fcc` ; CI `37222043505` SUCCESS : **1033/1033**, gardes OK.
