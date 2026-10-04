@@ -1,5 +1,28 @@
 # Laboratoire Combat Dynamique — Current Work
 
+> ÉTAT ACTIF — 2026-10-04
+>
+> Micro-lot : **Capture XP / Progression Rules v2**
+>
+> Branche : `work/lab-capture-xp-progression-rules-v2-2026-10-04`
+>
+> Base GREEN : `checkpoint/lab-combat-audio-sync-v1-green-2026-10-03` @ `c3b20bb037a1d8334aa70aad91808a484ffdac0c`
+>
+> Checkpoint départ : `checkpoint/lab-start-capture-xp-progression-rules-v2-2026-10-04`
+>
+> Objectif : créer un contrat/data purement configurable pour gain XP, courbe de niveau et gains de progression, en conservant les slots de compétences. Le preset par défaut reprend le comportement historique audité mais aucune constante ne doit être cachée dans le runtime.
+>
+> Propriétaire : **Capture Progression Rules**. Combat Runtime, Combat Session, Roster Session et UI sont protégés.
+>
+> Fichiers autorisés : nouveau contrat V2, preset JSON V2, tests unitaires V2, documentation de ce lot.
+>
+> Hors périmètre : loot, formule de capture, inventaire, application des récompenses, Rappel/Invocation, moteur visuel, `Zombicide-40k`.
+>
+> TDD : test RED du contrat manquant, puis implémentation minimale, CI complète, checkpoint GREEN technique. Aucun gate smartphone car aucune UI n'est modifiée.
+
+---
+
+
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## État global
