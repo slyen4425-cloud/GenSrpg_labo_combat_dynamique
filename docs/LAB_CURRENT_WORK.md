@@ -85,7 +85,27 @@ Gate utilisateur :
 5. `Tempête de flammes` reste légitimement indisponible avant 25 s de combat, puis demande 5 énergie ;
 6. refaire un test après Rappel/Invocation.
 
-État : **TECHNIQUE GREEN — gate navigateur utilisateur requis avant GREEN final**.
+État : **GREEN FINAL — gate navigateur validé par l’utilisateur le 2026-10-04**.
+
+Validation utilisateur finale :
+- verdict : « ok ca marche » ;
+- le vrai Encounter démarre avec des capacités disponibles selon énergie/cooldown/état ;
+- Rappel / Invocation / changement de créature restent utilisables ;
+- retour Exploration puis second Combat validés ;
+- l’équipe reste reconnue et utilisable après le premier combat ;
+- aucune régression signalée sur ce gate.
+
+Clôture :
+- preview validée : `preview/lab-exploration-roster-target-availability-v1-2026-10-04` @ `1b7f20305ac47baabef6fabe06930566f09a973d` ;
+- CI complète technique : `37224863232` — **SUCCESS** ;
+- Pages Exploration consommant cette preview : `main` @ `dd2898efd511a54a7116b440cbb9a37967345d06` ;
+- Pages : `37224937771` — **SUCCESS** ;
+- aucun correctif gameplay supplémentaire après le gate ;
+- aucun fallback Party/Roster, aucun retry, aucune seconde autorité ;
+- le blocage historique Player Party / Rappel / Invocation / changement de créature / second combat est clos.
+
+Checkpoint final prévu après CI de cette clôture documentaire :
+`checkpoint/lab-exploration-roster-target-availability-v1-green-2026-10-04`.
 
 ---
 
