@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 
 test("Exploration Combat public adapter page exists and uses convergence revision", async () => {
   const html = await readFile(
@@ -48,4 +48,46 @@ test("Exploration Combat public adapter page exists and uses convergence revisio
     ),
     false
   );
+});
+
+
+test("Exploration Combat bootstrap has no missing local static module import", async () => {
+  const entryUrl = new URL(
+    "../../examples/dom-demo/exploration-encounter.js",
+    import.meta.url
+  );
+  const source = await readFile(
+    entryUrl,
+    "utf8"
+  );
+
+  const specifiers = [
+    ...source.matchAll(
+      /from\s+["']([^"']+)["']/g
+    )
+  ]
+    .map((match) => match[1])
+    .filter((specifier) =>
+      specifier.startsWith(".")
+    );
+
+  assert.ok(
+    specifiers.length > 0
+  );
+
+  for (const specifier of specifiers) {
+    const clean =
+      specifier.split("?")[0];
+    await assert.doesNotReject(
+      () =>
+        access(
+          new URL(
+            clean,
+            entryUrl
+          )
+        ),
+      "missing bootstrap import: " +
+        clean
+    );
+  }
 });
