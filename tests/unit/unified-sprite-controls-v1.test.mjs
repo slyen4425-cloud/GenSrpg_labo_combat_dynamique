@@ -8,7 +8,7 @@ import { createDomStatusFxRenderer } from "../../src/adapters/renderer/dom-statu
 
 const spriteId = "pack:capture:sprite-status-healing-aura-01";
 function fields(presentation = {}) {
-  return { id: "sprite-controls", name: "Réglages sprites", requiredLevel: 1,
+  return { id: "sprite-controls", name: "Réglages sprites", description: "Test des réglages visuels", requiredLevel: 1,
     usageScopes: ["capture", "combat"], category: "offensive", form: "projectile",
     element: "water", approachMode: "none", energyCost: 3, preparationMs: 1500,
     travelMs: 2400, recoveryMs: 450, cooldownMs: 2800,
@@ -64,7 +64,7 @@ for (const role of ["cast", "impact", "zone"]) for (const playbackMode of ["once
 test("cast aura uses configured offset, large scale and looping until preparation finishes", async () => {
   const draft = buildHumanSkillDraftV1(fields({ castAssetId: spriteId, castPlaybackMode: "loop", castOffsetX: 35, castOffsetY: -25, castDisplayScale: 6, castLayerPlayer: "behind" }));
   const { renderer, nodes, animations } = harness(draft);
-  const handle = renderer.play({ type: "cast", skillId: draft.id, sourceSlot: "player", durationMs: 1500 });
+  const handle = renderer.play({ type: "cast", skillId: draft.id, actorSlot: "player", durationMs: 1500 });
   assert.equal(nodes[0].style.left, "95px"); assert.equal(nodes[0].style.top, "95px");
   assert.equal(nodes[0].style.animationIterationCount, "infinite"); assert.equal(nodes[0].style.animationDuration, "720ms");
   assert.match(nodes[0].className, /layer-behind/); assert.match(animations[0].keyframes.at(-1).transform, /scale\(6\)/);
