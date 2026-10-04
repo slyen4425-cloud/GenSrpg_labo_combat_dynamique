@@ -2,6 +2,62 @@
 
 ## Reprise prioritaire — 2026-10-04
 
+Lot actif : **exploration-roster-target-availability-v1**.
+
+Base :
+`731d964d1379b6be540870a24cb4ddc835a251b4`
+(CI `37223061423` SUCCESS).
+
+Checkpoint de départ :
+`checkpoint/lab-start-exploration-roster-target-availability-v1-2026-10-04`
+
+Branche :
+`work/lab-exploration-roster-target-availability-v1-2026-10-04`
+
+Retour navigateur utilisateur :
+- Exploration -> Combat fonctionne ;
+- créatures visibles ;
+- énergie augmente normalement ;
+- toutes les capacités joueur restent grisées, donc impossible d'attaquer.
+
+Cause démontrée :
+- le vrai Encounter source possède un roster uniquement pour `local-1` ;
+- `enemy-1` est un slot Combat valide mais n'est pas possédé par Roster Session ;
+- l'UI `isAlive()` exigeait `rosterController.isPresent(actorId)` pour TOUS les acteurs dès qu'un roster controller existait ;
+- `isPresent("enemy-1")` retourne faux car ce slot n'appartient pas au roster, donc `targetAlive=false` ;
+- `renderAvailability()` court-circuitait alors tous les `session.previewSkill()` et grisait toutes les capacités indépendamment de l'énergie.
+
+Mission unique :
+- rendre explicite la portée d'autorité du Roster Controller ;
+- appliquer la présence roster uniquement aux slots réellement possédés par Roster Session ;
+- laisser Combat State décider HP/énergie/cooldown/activation ;
+- aucune règle spéciale par ID d'acteur ou camp.
+
+Propriétaires :
+- HP/énergie/disponibilité skill : Combat State / Action Resolver ;
+- présence rappel/invocation : Roster Session, uniquement pour ses slots ;
+- UI : projection seulement.
+
+Interdits :
+- aucun `enemy-1` hardcodé ;
+- aucun override de `button.disabled` hors projection canonique ;
+- aucun timer/observer/retry ;
+- aucune règle d'énergie dupliquée dans l'UI ;
+- aucun changement dégâts/skills/Recall/Summon ;
+- aucun changement Exploration ou `Zombicide-40k`.
+
+TDD attendu :
+1. RED : un contrôleur Roster local-only doit déclarer le slot local possédé et le slot ennemi non possédé ;
+2. RED : le vrai Encounter source doit conserver un ennemi ciblable hors autorité Roster ;
+3. GREEN : UI utilise présence Roster seulement si le slot est possédé ;
+4. sentinelles énergie/cooldown/roster existantes GREEN.
+
+État : **START — TDD RED à constater**.
+
+---
+
+## Reprise prioritaire — 2026-10-04
+
 Lot actif : **exploration-bridge-convergence-v1**.
 
 Base :
