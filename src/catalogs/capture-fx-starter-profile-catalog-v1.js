@@ -32,7 +32,16 @@ const PRESENTATION_DEFAULTS = Object.freeze({
   castAudioAssetId: "",
   travelAudioAssetId: "",
   impactAudioAssetId: "",
-  zoneAudioAssetId: ""
+  zoneAudioAssetId: "",
+  fxGlowColor: "#ffffff",
+  fxGlowStrength: 0,
+  fxGlowRadiusPx: 16,
+  impactFlashColor: "#ffffff",
+  impactFlashOpacity: 0,
+  impactFlashDurationMs: 120,
+  impactFlashScale: 1.5,
+  impactShakeAmplitudePx: 0,
+  impactShakeDurationMs: 140
 });
 
 function frozenProfile({
@@ -84,7 +93,16 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       castAudioAssetId:
         "gensrpg:sound:effect-135ee2ed",
       travelAudioAssetId:
-        "gensrpg:sound:genrpg-pack2-a30f1071"
+        "gensrpg:sound:genrpg-pack2-a30f1071",
+      fxGlowColor: "#ff6a1f",
+      fxGlowStrength: 0.85,
+      fxGlowRadiusPx: 20,
+      impactFlashColor: "#fff2c2",
+      impactFlashOpacity: 0.8,
+      impactFlashDurationMs: 120,
+      impactFlashScale: 1.65,
+      impactShakeAmplitudePx: 5,
+      impactShakeDurationMs: 150
     }
   }),
   frozenProfile({
@@ -110,7 +128,16 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       castAudioAssetId:
         "gensrpg:sound:xel-cbc6cf88",
       travelAudioAssetId:
-        "gensrpg:sound:genrpg-pack2-eb271979"
+        "gensrpg:sound:genrpg-pack2-eb271979",
+      fxGlowColor: "#46dfff",
+      fxGlowStrength: 0.65,
+      fxGlowRadiusPx: 16,
+      impactFlashColor: "#e8ffff",
+      impactFlashOpacity: 0.55,
+      impactFlashDurationMs: 120,
+      impactFlashScale: 1.5,
+      impactShakeAmplitudePx: 3,
+      impactShakeDurationMs: 120
     }
   }),
   frozenProfile({
@@ -136,7 +163,16 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       castAudioAssetId:
         "gensrpg:sound:sanctuary-822691df",
       travelAudioAssetId:
-        "gensrpg:sound:genrpg-pack2-350eb251"
+        "gensrpg:sound:genrpg-pack2-350eb251",
+      fxGlowColor: "#a6eaff",
+      fxGlowStrength: 0.9,
+      fxGlowRadiusPx: 22,
+      impactFlashColor: "#ffffff",
+      impactFlashOpacity: 0.85,
+      impactFlashDurationMs: 90,
+      impactFlashScale: 1.65,
+      impactShakeAmplitudePx: 4,
+      impactShakeDurationMs: 110
     }
   }),
   frozenProfile({
@@ -158,7 +194,16 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       travelPlaybackMode: "loop",
       impactAssetId:
         "pack:capture:sprite-impact-nature-01",
-      impactDisplayScale: 1.45
+      impactDisplayScale: 1.45,
+      fxGlowColor: "#7ee35f",
+      fxGlowStrength: 0.55,
+      fxGlowRadiusPx: 14,
+      impactFlashColor: "#d9ffbd",
+      impactFlashOpacity: 0.4,
+      impactFlashDurationMs: 100,
+      impactFlashScale: 1.4,
+      impactShakeAmplitudePx: 2,
+      impactShakeDurationMs: 100
     }
   }),
   frozenProfile({
@@ -178,7 +223,16 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
         "pack:capture:sprite-claw-impact-01",
       impactDisplayScale: 1.35,
       impactAudioAssetId:
-        "gensrpg:sound:effect-7b158ebd"
+        "gensrpg:sound:effect-7b158ebd",
+      fxGlowColor: "#fff1d0",
+      fxGlowStrength: 0.2,
+      fxGlowRadiusPx: 10,
+      impactFlashColor: "#ffffff",
+      impactFlashOpacity: 0.45,
+      impactFlashDurationMs: 80,
+      impactFlashScale: 1.3,
+      impactShakeAmplitudePx: 4,
+      impactShakeDurationMs: 110
     }
   }),
   frozenProfile({
@@ -206,7 +260,16 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       zoneLayerPlayer: "behind",
       zoneLayerOpponent: "behind",
       castAudioAssetId:
-        "gensrpg:sound:effect-135ee2ed"
+        "gensrpg:sound:effect-135ee2ed",
+      fxGlowColor: "#ff5d1c",
+      fxGlowStrength: 0.8,
+      fxGlowRadiusPx: 20,
+      impactFlashColor: "#fff0bd",
+      impactFlashOpacity: 0.65,
+      impactFlashDurationMs: 130,
+      impactFlashScale: 1.7,
+      impactShakeAmplitudePx: 5,
+      impactShakeDurationMs: 150
     }
   }),
   frozenProfile({
@@ -223,7 +286,10 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       zoneDisplayScale: 1.2,
       zonePlaybackMode: "loop",
       zoneLayerPlayer: "front",
-      zoneLayerOpponent: "front"
+      zoneLayerOpponent: "front",
+      fxGlowColor: "#9dffcf",
+      fxGlowStrength: 0.55,
+      fxGlowRadiusPx: 18
     }
   }),
   frozenProfile({
@@ -240,7 +306,10 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       zoneDisplayScale: 1.25,
       zonePlaybackMode: "loop",
       zoneLayerPlayer: "front",
-      zoneLayerOpponent: "front"
+      zoneLayerOpponent: "front",
+      fxGlowColor: "#7de7ff",
+      fxGlowStrength: 0.68,
+      fxGlowRadiusPx: 20
     }
   })
 ]);
