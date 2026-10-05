@@ -1349,6 +1349,26 @@ function presentationFeedbackFromFieldsV1(
             "Opacité traînée"
           )
         )
+      ),
+      anchorX: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.projectileTrailAnchorX ?? 0.5,
+            "Ancrage horizontal traînée"
+          )
+        )
+      ),
+      anchorY: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.projectileTrailAnchorY ?? 0.5,
+            "Ancrage vertical traînée"
+          )
+        )
       )
     };
   }
@@ -1625,18 +1645,19 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      feedback?.castBurst
-        ? 7
-        : feedback?.aftermathSmoke
-          ? 6
-          : feedback?.projectileTrail ||
-            feedback?.impactBurst
-            ? 5
-            : hasFeedback
-              ? 4
-              : hasStatusVisuals
-                ? 3
-                : 2,
+      feedback?.projectileTrail
+        ? 8
+        : feedback?.castBurst
+          ? 7
+          : feedback?.aftermathSmoke
+            ? 6
+            : feedback?.impactBurst
+              ? 5
+              : hasFeedback
+                ? 4
+                : hasStatusVisuals
+                  ? 3
+                  : 2,
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -2250,6 +2271,12 @@ export function humanSkillEditorFieldsFromDraftV1(
       projectileTrailOpacity:
         presentation.feedback?.projectileTrail
           ?.opacity ?? 0,
+      projectileTrailAnchorX:
+        presentation.feedback?.projectileTrail
+          ?.anchorX ?? 0.5,
+      projectileTrailAnchorY:
+        presentation.feedback?.projectileTrail
+          ?.anchorY ?? 0.5,
       impactBurstColor:
         presentation.feedback?.impactBurst
           ?.color ?? "#ffffff",
@@ -6917,6 +6944,16 @@ function readSkillFields(root) {
         root,
         "[data-skill-projectile-trail-opacity]"
       ),
+      projectileTrailAnchorX:
+        numericValue(
+          root,
+          "[data-skill-projectile-trail-anchor-x]"
+        ) / 100,
+      projectileTrailAnchorY:
+        numericValue(
+          root,
+          "[data-skill-projectile-trail-anchor-y]"
+        ) / 100,
       impactBurstColor: selectedValue(
         root,
         "[data-skill-impact-burst-color]"
@@ -7405,6 +7442,14 @@ function writeSkillFeedbackControlsV1(
     [
       "[data-skill-projectile-trail-opacity]",
       presentation.projectileTrailOpacity ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-anchor-x]",
+      (presentation.projectileTrailAnchorX ?? 0.5) * 100
+    ],
+    [
+      "[data-skill-projectile-trail-anchor-y]",
+      (presentation.projectileTrailAnchorY ?? 0.5) * 100
     ],
     [
       "[data-skill-impact-burst-color]",
