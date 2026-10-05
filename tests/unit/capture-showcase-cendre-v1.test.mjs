@@ -232,11 +232,100 @@ test("Cendre aveuglante showcase preset preserves the user export", async () => 
     "Cendre aveuglante"
   );
   assert.equal(draft.requiredLevel, 10);
+  assert.equal(
+    draft.definition.travelMs,
+    800
+  );
+  assert.equal(
+    draft.definition.cooldownMs,
+    60000
+  );
   assert.deepEqual(
     draft.definition.effects.map(
       (effect) => effect.status.statId
     ),
     ["speed", "physical"]
+  );
+  assert.deepEqual(
+    draft.definition.effects.map(
+      (effect) => effect.status.durationMs
+    ),
+    [20000, 20000]
+  );
+
+  assert.equal(
+    draft.presentation.version,
+    8
+  );
+  assert.equal(
+    draft.presentation.visual.icon.assetId,
+    "core:icon-skill-poison-cloud-01"
+  );
+  assert.equal(
+    draft.presentation.visual.travel.assetId,
+    "pack:capture:sprite-projectile-shadow-01"
+  );
+  assert.equal(
+    draft.presentation.visual.travel.anchor,
+    "mouth"
+  );
+  assert.equal(
+    draft.presentation.visual.travel.displayScale,
+    1.45
+  );
+  assert.equal(
+    draft.presentation.visual.impact.assetId,
+    "pack:capture:sprite-status-curse-01"
+  );
+  assert.equal(
+    draft.presentation.visual.impact.durationMs,
+    350
+  );
+
+  assert.equal(
+    draft.presentation.audio.cast.assetId,
+    "gensrpg:sound:academie-01fc18a6"
+  );
+  assert.equal(
+    draft.presentation.audio.impact.assetId,
+    "gensrpg:sound:genrpg-pack2-742f6521"
+  );
+
+  assert.deepEqual(
+    draft.presentation.feedback.projectileTrail,
+    {
+      color: "#5b2067",
+      count: 7,
+      lengthPx: 56,
+      sizePx: 7,
+      opacity: 0.8,
+      anchorX: 0.5,
+      anchorY: 0.5
+    }
+  );
+  assert.deepEqual(
+    draft.presentation.feedback.aftermathSmoke,
+    {
+      color: "#5b2067",
+      count: 6,
+      spreadPx: 58,
+      sizePx: 36,
+      risePx: 56,
+      durationMs: 1250,
+      opacity: 0.64
+    }
+  );
+  assert.deepEqual(
+    draft.presentation.feedback.castBurst,
+    {
+      color: "#5b2067",
+      count: 12,
+      spreadPx: 48,
+      sizePx: 10,
+      risePx: 34,
+      durationMs: 580,
+      opacity: 0.8
+    }
   );
 });
 
