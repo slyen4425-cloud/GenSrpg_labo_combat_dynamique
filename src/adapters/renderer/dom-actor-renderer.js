@@ -58,8 +58,11 @@ export function createDomActorRenderer({
       `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = "1";
     element.style.filter = "none";
-    shadowElement?.style?.setProperty?.("--creature-shadow-transform", composeDomShadowTransform(actor));
-    shadowElement?.style?.setProperty?.("--creature-shadow-fade", "1");
+    if (shadowElement?.style) {
+      shadowElement.style.transform =
+        composeDomShadowTransform(actor);
+      shadowElement.style.opacity = "1";
+    }
   }
 
   function applyFinalPlanState(plan) {
@@ -72,8 +75,15 @@ export function createDomActorRenderer({
       `${actor.transformOrigin.x} ${actor.transformOrigin.y}`;
     element.style.opacity = String(finalSegment?.opacity ?? 1);
     element.style.filter = composeDomFilter(finalSegment?.filter);
-    shadowElement?.style?.setProperty?.("--creature-shadow-transform", composeDomShadowTransform(actor, finalSegment?.ground));
-    shadowElement?.style?.setProperty?.("--creature-shadow-fade", String(finalSegment?.opacity ?? 1));
+    if (shadowElement?.style) {
+      shadowElement.style.transform =
+        composeDomShadowTransform(
+          actor,
+          finalSegment?.ground
+        );
+      shadowElement.style.opacity =
+        String(finalSegment?.opacity ?? 1);
+    }
   }
 
   function cancel({ restore = true } = {}) {
@@ -142,7 +152,7 @@ export function createDomActorRenderer({
     const shadowStart = shadowElement
       ? currentStyleSnapshot(
           shadowElement,
-          "::before",
+          null,
           composeDomShadowTransform(actor)
         )
       : null;
@@ -204,8 +214,7 @@ export function createDomActorRenderer({
             duration,
             iterations: 1,
             fill: "none",
-            easing,
-            pseudoElement: "::before"
+            easing
           }
         );
         if (!shadowAnimation || typeof shadowAnimation !== "object") {
@@ -318,10 +327,11 @@ export function createDomActorRenderer({
     let shadowAnimation = null;
     if (shadowElement) {
       try {
-        shadowAnimation = animate(shadowElement, timeline.shadowKeyframes, {
-          ...timeline.options,
-          pseudoElement: "::before"
-        });
+        shadowAnimation = animate(
+          shadowElement,
+          timeline.shadowKeyframes,
+          timeline.options
+        );
         if (!shadowAnimation || typeof shadowAnimation !== "object") {
           throw new TypeError("animate must return an animation-like object for the shadow");
         }
@@ -371,6 +381,9 @@ export function createDomActorRenderer({
     }
     cancel({ restore: true });
     element.style.willChange = "";
+    if (shadowElement?.style) {
+      shadowElement.style.willChange = "";
+    }
     disposed = true;
   }
 
