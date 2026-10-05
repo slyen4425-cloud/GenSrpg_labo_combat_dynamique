@@ -164,20 +164,30 @@ function statusVisualRegistry(bindings) {
       const existing =
         registry.get(statusId) ?? null;
 
-      if (
-        existing !== null &&
-        JSON.stringify(existing) !==
-          JSON.stringify(presentation)
-      ) {
-        throw new RangeError(
-          "conflicting status presentation: " +
-            statusId
+      if (existing === null) {
+        registry.set(
+          statusId,
+          Object.freeze({
+            presentation,
+            ambiguous: false
+          })
         );
+        continue;
+      }
+
+      if (
+        JSON.stringify(existing.presentation) ===
+        JSON.stringify(presentation)
+      ) {
+        continue;
       }
 
       registry.set(
         statusId,
-        presentation
+        Object.freeze({
+          presentation: null,
+          ambiguous: true
+        })
       );
     }
   }
@@ -323,9 +333,32 @@ export function createCaptureSkillPresentationAssetsV2({
       return null;
     }
 
+    const sourceSkillId =
+      typeof context.sourceSkillId === "string"
+        ? context.sourceSkillId.trim()
+        : "";
+
+    let presentation = null;
+
+    if (sourceSkillId !== "") {
+      presentation =
+        bindings[sourceSkillId]
+          ?.statusVisuals?.[id] ??
+        null;
+    } else {
+      const fallback =
+        statusVisuals.get(id) ?? null;
+
+      presentation =
+        fallback !== null &&
+        fallback.ambiguous === false
+          ? fallback.presentation
+          : null;
+    }
+
     return resolvedStatusPresentation(
       resolveAsset,
-      statusVisuals.get(id) ?? null,
+      presentation,
       semanticView(context)
     );
   }
