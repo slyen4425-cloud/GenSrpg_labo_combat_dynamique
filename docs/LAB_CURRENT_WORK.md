@@ -29,7 +29,12 @@ Résultat technique :
 - GREEN fonctionnel `8e16e58...`, CI `37354123307` : **1054/1054 PASS**, 0 échec ;
 - rapport : `docs/LAB_CAPTURE_FX_ENHANCEMENTS_V1.md`.
 
-État : GREEN technique fonctionnel. Documentation finale / preview dédiée en cours ; validation smartphone utilisateur requise avant GREEN utilisateur.
+CI finale documentation : `37354467467` — SUCCESS sur `a5be7a304e15747ead07ac152b0ee8f36315db2f`.
+
+Checkpoint technique prévu : `checkpoint/lab-capture-fx-enhancements-v1-technical-2026-10-05`.
+Preview dédiée prévue : `preview/lab-capture-fx-enhancements-v1-2026-10-05`, page `examples/dom-demo/capture-editor-v2.html`.
+
+État : GREEN technique. Validation smartphone utilisateur requise avant GREEN utilisateur.
 
 ## Reprise prioritaire — 2026-10-05 — capture-fx-starter-profiles-v1
 
