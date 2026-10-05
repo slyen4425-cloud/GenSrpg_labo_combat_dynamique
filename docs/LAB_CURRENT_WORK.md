@@ -18,6 +18,19 @@ Risques : animer directement l'arène depuis `dom-skill-fx` (interdit : second o
 
 Critère de fin : un profil comme Boule de feu produit visiblement glow + flash + shake en combat, tous configurables depuis le binding, avec zéro changement de résolution gameplay, CI verte et preview dédiée.
 
+Résultat technique :
+- `SkillPresentationBinding V4` ajoute uniquement `feedback.glow / impactFlash / cameraShake` ;
+- le resolver transmet ce feedback sans gameplay ;
+- `dom-skill-fx` rend glow + flash et délègue le shake au propriétaire caméra existant ;
+- Human Editor sauvegarde/recharge les nouveaux réglages via le binding V4 ;
+- les 8 Starter Profiles ont maintenant des valeurs d'enrichissement visibles ;
+- aucun fichier `src/core/combat/` modifié ;
+- RED `47d2601...`, CI `37353386954` : 3 échecs attendus ;
+- GREEN fonctionnel `8e16e58...`, CI `37354123307` : **1054/1054 PASS**, 0 échec ;
+- rapport : `docs/LAB_CAPTURE_FX_ENHANCEMENTS_V1.md`.
+
+État : GREEN technique fonctionnel. Documentation finale / preview dédiée en cours ; validation smartphone utilisateur requise avant GREEN utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-starter-profiles-v1
 
 Base GREEN : `23b133441ff5bb43f54c71c13734335d9031e0ec`, checkpoint `checkpoint/lab-audio-pack2-runtime-v1-green-2026-10-05`.
