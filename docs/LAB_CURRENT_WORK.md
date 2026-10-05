@@ -25251,3 +25251,28 @@ RED :
 - l'éditeur expose `zone/aura` et le combat démarre/arrête le son avec la vie réelle de la zone, sans timer parallèle.
 
 Critère GREEN : 30 sons lisibles dans le labo, aucun chemin/fichier maître privé publié, audio de zone piloté par l'état `persistentZones`, CI complète verte, fichier HTML de test dédié et preview figée.
+
+
+## audio-pack2-runtime-v1 — résultat technique
+
+Statut : **GREEN technique**.
+
+- source privée vérifiée : 30/30 fichiers sous `GenSrpG_audio_prive/audio/genrpg_pack2` ;
+- runtime privé : `c3a175691900090b277ecded1066a2e947878238` ;
+- workflow privé : `37338365590` SUCCESS ;
+- checkpoint privé : `checkpoint/audio-genrpg-pack2-runtime-v1-green-2026-10-05` ;
+- 30 MP3 runtime opaques publiés dans le labo ;
+- catalogue audio labo : **173 -> 203** ;
+- manifeste runtime : **173 -> 203** ;
+- rôles nouveaux : cast / travel / impact / aura / movement ;
+- slot canonique `audio.aura` ajouté pour les zones persistantes ;
+- audio de zone synchronisé depuis `state.persistentZones`, aucun timer parallèle ;
+- son movement-only catalogué sans détournement sémantique ; déclencheur locomotion automatique hors lot ;
+- launcher de test : `examples/dom-demo/lab-test-creator-shadow-audio-v1.html` ;
+- CI pré-doc : `37340901726` SUCCESS, **1045/1045 PASS**, structure/indépendance OK ;
+- rapport : `docs/LAB_AUDIO_PACK2_RUNTIME_V1.md` ;
+- aucun changement main / Zombicide-40k.
+
+### Hors lot noté — Fireball 2
+
+Le scale projectile est désormais appliqué, mais le rendu Fireball 2 reste **très mauvais** alors que les projectiles Eau / Terre sont propres. Ne pas corriger dans ce lot. Faire plus tard un audit comparatif source/atlas/crop/alpha/coreAnchor/heading/renderer contre un projectile validé avant toute nouvelle modification.
