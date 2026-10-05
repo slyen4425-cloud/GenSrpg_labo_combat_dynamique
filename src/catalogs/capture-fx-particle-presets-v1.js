@@ -67,7 +67,7 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       id: "discreet",
       label: "Discrète",
       description:
-        "Quelques particules légères, peu envahissantes.",
+        "Quelques particules légères au Cast, au trajet et à l’impact, avec une fumée discrète.",
       cast: {
         count: 3,
         spreadPx: 28,
@@ -102,7 +102,7 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       id: "visible",
       label: "Visible",
       description:
-        "Traînée et impact bien perceptibles sans surcharger l’écran.",
+        "Cast, traînée, impact et fumée bien perceptibles sans surcharger l’écran.",
       cast: {
         count: 5,
         spreadPx: 38,
@@ -137,7 +137,7 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       id: "intense",
       label: "Intense",
       description:
-        "Particules nombreuses et impact marqué.",
+        "Cast énergique, traînée soutenue, impact marqué et fumée visible.",
       cast: {
         count: 7,
         spreadPx: 48,
@@ -172,7 +172,7 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       id: "very-intense",
       label: "Très intense",
       description:
-        "Effet spectaculaire avec budget mobile toujours borné.",
+        "Effet spectaculaire du Cast à la fumée finale, avec budget mobile toujours borné.",
       cast: {
         count: 10,
         spreadPx: 62,
