@@ -18,6 +18,23 @@ Tests RED : contrat présentation, mapping preset, rendu impact, trail projectil
 
 Critère de fin : Boule de feu possède une traînée et un burst clairement visibles, configurables sans valeurs techniques en mode simple ; CI verte et preview smartphone.
 
+Résultat technique :
+- `SkillPresentationBinding V5` ajoute uniquement `feedback.projectileTrail / impactBurst` ;
+- presets simples : `Aucune / Discrète / Visible / Intense / Très intense` ;
+- budgets mobiles bornés : **10 particules max de traînée**, **18 particules max d'impact** ;
+- traînée attachée au projectile visuel déjà propriétaire de sa trajectoire, sans boucle de simulation parallèle ;
+- burst rendu au point d'impact existant et nettoyé par le cycle de vie FX ;
+- Starter Profiles : Boule de feu = Intense, Électricité = Très intense, Eau/Nature = Visible ;
+- aucun fichier `src/core/combat/`, Runtime, Session, règles, dégâts ou collision modifié ;
+- RED `b497a42...`, CI `37360988702` FAILURE attendue ;
+- GREEN fonctionnel `f35cb80...`, CI `37361823957` : **1065/1065 PASS**, 0 échec ;
+- rapport `docs/LAB_CAPTURE_FX_PARTICLES_V1.md`, CI rapport `37361953386` SUCCESS.
+
+Checkpoint technique : `checkpoint/lab-capture-fx-particles-v1-technical-2026-10-05`.
+Preview dédiée : `preview/lab-capture-fx-particles-v1-2026-10-05`, page `examples/dom-demo/capture-editor-v2.html`.
+
+État : GREEN technique après CI finale. Validation smartphone utilisateur requise avant GREEN utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-readable-presets-v1
 
 Base GREEN technique : `b915f5c2d5b36733c121d4e2b4e4a4d1f84df1d5`.
