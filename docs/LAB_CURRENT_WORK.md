@@ -24945,3 +24945,33 @@ Checkpoint technique : `checkpoint/lab-combat-reference-pace-v1-technical-2026-1
 Validation du nouveau rythme sur smartphone encore attendue. Dernier GREEN utilisateur : `checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04` sur 200b42055f2063c9545db6da01d3104e18f1fee0, validation explicite de Sylvain. Aucun merge main. Les lots antérieurs ci-dessous sont conservés pour historique.
 
 Preuves : 47 sentinelles ciblées et CI complète 1033/1033 ; chemin natif Griffe 1× → charge affichée 2.3 s, 2× → 1.1 s ; affichage portrait 390 px, note de référence et Tester visibles. Multiplicateurs natifs explicites/legacy conservés ; commande rappel, cadences et presets inchangés. Détails : docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md.
+
+
+## Lot actif — fireball-2-hd-assets-v1
+
+Date : 2026-10-05
+
+Objectif : créer un nouveau pack visuel **Boule de feu 2** en haute définition pour Capture, avec trois animations distinctes : cast, projectile et impact. Minimum 12 frames par animation. Cible : frames HD natives, sans simple upscale d'un sprite basse définition.
+
+Base exacte : `1068a9f1109fc3030eb1a10879744b2c3a8a8a9b` (`checkpoint/lab-moving-attack-contact-stop-v1-green-2026-10-04`).
+Checkpoint de départ : `checkpoint/lab-start-fireball-2-hd-assets-v1-2026-10-05`.
+Branche de travail : `work/lab-fireball-2-hd-assets-v1-2026-10-05`.
+
+Propriétaire concerné : Asset Input / bibliothèque visuelle uniquement. Le moteur Animation Core, FX Core, Render Adapter, Combat Runtime et les règles gameplay sont protégés et ne doivent pas être modifiés pour créer ce pack.
+
+Périmètre autorisé :
+- nouveaux fichiers de frames HD et atlas associés sous un chemin dédié `fireball_2` / intitulé utilisateur « Boule de feu 2 » ;
+- métadonnées/catalogue d'assets strictement nécessaires pour référencer ce nouveau pack ;
+- tests de cohérence d'assets/catalogue ;
+- documentation du lot.
+
+Interdit :
+- aucun remplacement silencieux de l'ancienne Boule de feu ;
+- aucune seconde autorité d'animation/projectile/impact ;
+- aucun changement de timing, collision, dégâts, énergie, cooldown ou trajectoire ;
+- aucune modification de `Zombicide-40k` ;
+- aucun direct sur `main`.
+
+Tests prévus : validation dimensions et transparence, nombre de frames >= 12 pour cast/projectile/impact, catalogue sans doublon d'ID, vraie résolution des assets par le resolver existant, CI complète avant GREEN.
+
+Critère de fin : « Boule de feu 2 » existe comme pack visuel séparé, ses trois animations HD sont résolubles par le pipeline d'assets existant, sans modifier l'ancienne Boule de feu ni le moteur.
