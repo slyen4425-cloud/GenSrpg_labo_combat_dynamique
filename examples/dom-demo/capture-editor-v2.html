@@ -930,6 +930,41 @@
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-offset-y>
           </label>
         </div>
+
+        <div class="projectile-clash-config">
+          <h3>Enrichissement FX</h3>
+          <p class="note">Ces réglages sont uniquement visuels. Ils ne changent ni collision, ni dégâts, ni timing gameplay.</p>
+          <div class="grid two">
+            <label>Couleur du glow
+              <input type="color" value="#ff7a2d" data-skill-fx-glow-color>
+            </label>
+            <label>Intensité du glow
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-fx-glow-strength>
+            </label>
+            <label>Rayon du glow (px)
+              <input type="number" min="1" max="64" step="1" value="16" data-skill-fx-glow-radius>
+            </label>
+            <label>Couleur du flash d’impact
+              <input type="color" value="#ffffff" data-skill-impact-flash-color>
+            </label>
+            <label>Opacité du flash d’impact
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-impact-flash-opacity>
+            </label>
+            <label>Durée du flash (ms)
+              <input type="number" min="1" max="1000" step="10" value="120" data-skill-impact-flash-duration>
+            </label>
+            <label>Scale du flash
+              <input type="number" min="0.1" max="5" step="0.05" value="1.5" data-skill-impact-flash-scale>
+            </label>
+            <label>Secousse caméra — amplitude (px)
+              <input type="number" min="0" max="24" step="0.5" value="0" data-skill-impact-shake-amplitude>
+            </label>
+            <label>Secousse caméra — durée (ms)
+              <input type="number" min="1" max="1000" step="10" value="140" data-skill-impact-shake-duration>
+            </label>
+          </div>
+        </div>
+
         <p class="note">
           Pour une aura ou une zone persistante, le visuel reste affiché tant que la zone existe. Choisis une lecture unique, une boucle ou une animation adaptée à sa durée. En lecture unique, la dernière phase reste affichée. Les décalages déplacent uniquement le visuel, sans modifier le rayon ni les dégâts.
         </p>
