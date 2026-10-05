@@ -18,6 +18,21 @@ Tests RED : mapping déterministe des 4 niveaux ; application UI -> champs V4 ; 
 
 Critère de fin : un créateur peut choisir un rendu compréhensible sans connaître les valeurs numériques, puis ouvrir le mode avancé pour affiner. Preview smartphone obligatoire avant GREEN utilisateur.
 
+Résultat technique :
+- quatre niveaux lisibles : `Discret / Visible / Intense / Très intense` ;
+- traduction pure vers `fxGlowStrength / fxGlowRadiusPx` existants ;
+- couleur du glow préservée ;
+- modification avancée -> état `Personnalisé` automatique ;
+- Starter Profiles alignés sur les niveaux lisibles ;
+- Boule de feu : Intense (0.85 / 32 px) ;
+- Électricité : Très intense (1.0 / 48 px) ;
+- aucun fichier Combat Runtime / Session / collision modifié ;
+- RED `5e4c86f...`, CI `37360158435` FAILURE attendue ;
+- GREEN fonctionnel `12e0c24...`, CI `37360533617` : **1059/1059 PASS**, 0 échec ;
+- rapport : `docs/LAB_CAPTURE_FX_READABLE_PRESETS_V1.md`.
+
+État : GREEN technique après CI finale documentaire ; validation smartphone utilisateur requise avant GREEN utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-enhancements-v1
 
 Base GREEN technique : `9e8b51b45122a388ddbde93ff9c10a86ec7ddfb8`.
