@@ -8186,17 +8186,15 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
             );
           }
 
+          const currentPresentation =
+            readSkillFields(root)
+              .presentation;
+
           const presentation =
             applyCaptureFxStarterProfileV1({
               profileId: profile.id,
-              presentation: {
-                socketId:
-                  selectedValue(
-                    root,
-                    "[data-skill-socket]"
-                  ) || null,
-                statusVisuals: {}
-              }
+              presentation:
+                currentPresentation
             });
 
           writeCaptureFxStarterPresentationFieldsV1(
