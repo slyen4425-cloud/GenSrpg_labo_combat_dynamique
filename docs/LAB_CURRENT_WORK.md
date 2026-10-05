@@ -51,7 +51,17 @@ TDD attendu :
 5. CI complète ;
 6. preview Exploration vraie + gate utilisateur.
 
-État : **LOT OUVERT — TDD RED requis avant implémentation**.
+Résultat technique :
+- TDD RED : `5ad034501410045e98d4ca72bb08cb2c79c5a305`, CI `37257376242` — **FAILURE attendue** ;
+- cause confirmée : `mountCoop2v2Test()` ignorait le callback `onBattleEnd` fourni par le pont Exploration ;
+- correction : contrat `onBattleEnd` rétabli avec défaut no-op explicite ;
+- pour les slots hors autorité Roster, la défaite d'équipe est lue depuis le Combat State + `BattleFormat`, sans ID de camp codé en dur ;
+- pour les slots possédés par Roster, `team_defeated` reste l'unique signal de fin après épuisement des réserves ;
+- garde `battleEnded` : callback de fin déclenché au maximum une fois ;
+- aucune navigation ajoutée dans le moteur Combat : l'adapter Exploration existant conserve `completeExplorationCombatHandoffV1()` + `returnUrl` ;
+- CI GREEN : `37257507682` — **SUCCESS**.
+
+État : **TECHNIQUE GREEN — preview Exploration réelle + gate utilisateur requis avant GREEN final**.
 
 ---
 
