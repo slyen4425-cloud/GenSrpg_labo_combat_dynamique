@@ -117,7 +117,10 @@ test("DOM demo delegates all test-team choices to the Human Editor active owners
     "utf8"
   );
 
-  assert.match(source, /mountCaptureEditorHumanV2\(\{ root \}\)/);
+  assert.match(
+    source,
+    /mountCaptureEditorHumanV2\(\{[\s\S]*?root[\s\S]*?creatorVisualAssets[\s\S]*?\}\)/
+  );
   assert.doesNotMatch(source, /getOpponentCreatureId|opponentLoadout|enemy-hit/);
 });
 
