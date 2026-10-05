@@ -292,7 +292,7 @@ test("impact creates a soft smoke aftermath after burst without gameplay authori
 });
 
 
-test("Human Editor round-trips V6 smoke and particle feedback without changing gameplay", () => {
+test("Human Editor round-trips V8 trail anchor, smoke and particle feedback without changing gameplay", () => {
   const fields = {
     id: "fx-smoke-roundtrip",
     name: "FX Smoke Roundtrip",
@@ -383,6 +383,8 @@ test("Human Editor round-trips V6 smoke and particle feedback without changing g
       projectileTrailLengthPx: 56,
       projectileTrailSizePx: 7,
       projectileTrailOpacity: 0.8,
+      projectileTrailAnchorX: 0.5,
+      projectileTrailAnchorY: 0.36,
       impactBurstColor: "#ffd27a",
       impactBurstCount: 12,
       impactBurstSpreadPx: 72,
@@ -404,7 +406,7 @@ test("Human Editor round-trips V6 smoke and particle feedback without changing g
 
   assert.equal(
     draft.presentation.version,
-    6
+    8
   );
   assert.deepEqual(
     draft.presentation.feedback.aftermathSmoke,
@@ -435,6 +437,15 @@ test("Human Editor round-trips V6 smoke and particle feedback without changing g
   assert.equal(
     restored.presentation.aftermathSmokeDurationMs,
     760
+  );
+
+  assert.equal(
+    restored.presentation.projectileTrailAnchorX,
+    0.5
+  );
+  assert.equal(
+    restored.presentation.projectileTrailAnchorY,
+    0.36
   );
 
   const second =
