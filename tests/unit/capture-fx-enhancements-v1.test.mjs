@@ -10,6 +10,14 @@ import {
 import {
   createDomSkillFxRenderer
 } from "../../src/adapters/renderer/dom-skill-fx.js";
+import {
+  buildHumanSkillDraftV1,
+  humanSkillEditorFieldsFromDraftV1
+} from "../../src/ui/capture-editor-human-v2.js";
+import {
+  applyCaptureFxStarterProfileV1
+} from "../../src/catalogs/capture-fx-starter-profile-catalog-v1.js";
+import { readFile } from "node:fs/promises";
 
 function bindingV4() {
   return {
@@ -272,4 +280,196 @@ test("impact renderer uses the existing FX owner for glow/flash and delegates sh
     ),
     true
   );
+});
+
+
+test("starter fireball copies visible enhancement defaults into the editable presentation fields", () => {
+  const presentation =
+    applyCaptureFxStarterProfileV1({
+      profileId:
+        "capture:fx-profile:fireball-classic",
+      presentation: {
+        socketId: "mouth",
+        statusVisuals: {}
+      }
+    });
+
+  assert.equal(
+    presentation.fxGlowStrength > 0,
+    true
+  );
+  assert.equal(
+    presentation.impactFlashOpacity > 0,
+    true
+  );
+  assert.equal(
+    presentation.impactShakeAmplitudePx > 0,
+    true
+  );
+  assert.equal(
+    presentation.socketId,
+    "mouth"
+  );
+});
+
+test("Human Editor round-trips V4 feedback without changing gameplay fields", async () => {
+  const fields = {
+    id: "fx-roundtrip",
+    name: "FX Roundtrip",
+    description: "Presentation only.",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    category: "offensive",
+    form: "projectile",
+    element: "fire",
+    approachMode: "none",
+    energyCost: 3,
+    preparationMs: 600,
+    travelMs: 700,
+    recoveryMs: 300,
+    cooldownMs: 2400,
+    maxUsesPerCombat: null,
+    activationRequirements: {
+      mode: "all",
+      conditions: []
+    },
+    effects: [
+      {
+        kind: "damage",
+        targetScope: "target",
+        amount: 5,
+        channel: "fire"
+      }
+    ],
+    reaction: {
+      blockForms: [],
+      reflectForms: [],
+      immuneElements: [],
+      counterForms: [],
+      evadeForms: [],
+      evadeApproaches: []
+    },
+    projectileClash: {
+      power: 1
+    },
+    presentation: {
+      iconAssetId:
+        "core:icon-skill-fireball-01",
+      castAssetId:
+        "pack:capture:sprite-fireball-cast-01",
+      castDisplayScale: 1.5,
+      castPlaybackMode: "loop",
+      castOffsetX: 0,
+      castOffsetY: 0,
+      castLayerPlayer: "front",
+      castLayerOpponent: "front",
+      travelAssetId:
+        "pack:capture:sprite-fireball-travel-01",
+      travelDisplayScale: 1.6,
+      travelPlaybackMode: "loop",
+      travelLayerPlayer: "front",
+      travelLayerOpponent: "front",
+      impactAssetId:
+        "pack:capture:sprite-fireball-impact-01",
+      impactDisplayScale: 1.7,
+      impactPlaybackMode: "once",
+      impactDurationMs: 0,
+      impactOffsetX: 0,
+      impactOffsetY: 0,
+      impactLayerPlayer: "front",
+      impactLayerOpponent: "front",
+      zoneAssetId: "",
+      zoneDisplayScale: 1,
+      zoneDisplayScaleX: 1,
+      zoneDisplayScaleY: 1,
+      zonePlaybackMode: "loop",
+      zoneOffsetX: 0,
+      zoneOffsetY: 0,
+      zoneLayerPlayer: "behind",
+      zoneLayerOpponent: "behind",
+      socketId: "mouth",
+      statusVisuals: {},
+      castAudioAssetId: "",
+      travelAudioAssetId: "",
+      impactAudioAssetId: "",
+      zoneAudioAssetId: "",
+      fxGlowColor: "#ff6a1f",
+      fxGlowStrength: 0.8,
+      fxGlowRadiusPx: 19,
+      impactFlashColor: "#fff2c2",
+      impactFlashOpacity: 0.75,
+      impactFlashDurationMs: 125,
+      impactFlashScale: 1.6,
+      impactShakeAmplitudePx: 4.5,
+      impactShakeDurationMs: 145
+    }
+  };
+
+  const draft =
+    buildHumanSkillDraftV1(fields);
+  assert.equal(
+    draft.presentation.version,
+    4
+  );
+  assert.deepEqual(
+    draft.presentation.feedback.cameraShake,
+    {
+      amplitudePx: 4.5,
+      durationMs: 145
+    }
+  );
+
+  const restored =
+    humanSkillEditorFieldsFromDraftV1(
+      JSON.parse(JSON.stringify(draft))
+    );
+  assert.equal(
+    restored.presentation.fxGlowColor,
+    "#ff6a1f"
+  );
+  assert.equal(
+    restored.presentation.fxGlowStrength,
+    0.8
+  );
+  assert.equal(
+    restored.presentation.impactFlashOpacity,
+    0.75
+  );
+  assert.equal(
+    restored.presentation.impactShakeAmplitudePx,
+    4.5
+  );
+
+  const second =
+    buildHumanSkillDraftV1(restored);
+  assert.deepEqual(
+    second.definition,
+    draft.definition
+  );
+  assert.deepEqual(
+    second.presentation,
+    draft.presentation
+  );
+
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+  for (const marker of [
+    "data-skill-fx-glow-color",
+    "data-skill-fx-glow-strength",
+    "data-skill-fx-glow-radius",
+    "data-skill-impact-flash-opacity",
+    "data-skill-impact-shake-amplitude"
+  ]) {
+    assert.equal(
+      html.includes(marker),
+      true,
+      "missing FX enhancement control " +
+        marker
+    );
+  }
 });
