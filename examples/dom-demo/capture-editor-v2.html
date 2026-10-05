@@ -179,6 +179,32 @@
           </div>
         </div>
 
+        <div class="creator-visual-import">
+          <h3>Importer un visuel personnel</h3>
+          <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut. La persistance projet sera un lot séparé.</p>
+          <div class="grid three">
+            <label>Usage
+              <select data-creator-visual-role>
+                <option value="creature">Créature / face / dos / icône</option>
+                <option value="icon">Icône de capacité</option>
+                <option value="cast">Cast / préparation</option>
+                <option value="travel">Projectile / trajet</option>
+                <option value="impact">Impact</option>
+                <option value="zone">Zone / aura</option>
+                <option value="status">Statut</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            </label>
+          </div>
+          <button type="button" data-creator-visual-import>Importer dans la session</button>
+          <p class="note" data-creator-visual-state data-tone="info">Aucun visuel personnel importé.</p>
+        </div>
+
         <label>Style de position
           <select data-creature-profile>
             <option value="biped">Bipède</option>
