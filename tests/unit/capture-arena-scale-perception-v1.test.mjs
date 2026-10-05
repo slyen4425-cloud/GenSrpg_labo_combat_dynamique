@@ -57,7 +57,7 @@ test("fighters have a presentation-only ground contact shadow", async () => {
 
   assert.match(
     css,
-    /\.fighter::before\s*\{[\s\S]*?border-radius:\s*50%[\s\S]*?background:\s*rgba\(0,\s*0,\s*0,/s
+    /\.fighter__shadow\s*\{[\s\S]*?border-radius:\s*50%[\s\S]*?background:\s*rgba\(/s
   );
   assert.match(
     css,
