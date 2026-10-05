@@ -610,6 +610,14 @@ export function createDomSkillFxRenderer({
       ) *
       180 /
       Math.PI;
+    const anchorX = clampUnit(
+      trail.anchorX,
+      0.5
+    );
+    const anchorY = clampUnit(
+      trail.anchorY,
+      0.5
+    );
 
     for (
       let index = 0;
@@ -654,14 +662,18 @@ export function createDomSkillFxRenderer({
       particle.style.position =
         "absolute";
       particle.style.left =
-        "calc(50% - " +
+        "calc(" +
+        (anchorX * 100).toFixed(2) +
+        "% - " +
         (
           unitX * offset -
           unitY * lateral
         ).toFixed(2) +
         "px)";
       particle.style.top =
-        "calc(50% - " +
+        "calc(" +
+        (anchorY * 100).toFixed(2) +
+        "% - " +
         (
           unitY * offset +
           unitX * lateral
@@ -724,6 +736,10 @@ export function createDomSkillFxRenderer({
       String(count);
     node.dataset.fxTrailShape =
       "streak";
+    node.dataset.fxTrailAnchorX =
+      String(anchorX);
+    node.dataset.fxTrailAnchorY =
+      String(anchorY);
     return count;
   }
 
@@ -1157,7 +1173,9 @@ export function createDomSkillFxRenderer({
       point.y + "px";
     container.style.width = "1px";
     container.style.height = "1px";
-    container.style.zIndex = "10";
+    container.style.zIndex = "13";
+    container.dataset.fxSmokeVisible =
+      "true";
     container.style.pointerEvents =
       "none";
     container.style.overflow =
