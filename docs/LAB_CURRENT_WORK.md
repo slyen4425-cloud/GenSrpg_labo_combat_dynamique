@@ -25078,3 +25078,37 @@ Statut : **GREEN technique / validation utilisateur en attente**.
 - aucun changement main ni Zombicide-40k.
 
 Publication finale après CI documentaire : checkpoint checkpoint/lab-fireball-2-projectile-alpha-clean-v1-green-2026-10-05, preview preview/lab-fireball-2-projectile-alpha-clean-v1-2026-10-05.
+
+
+## Lot actif — fireball-2-projectile-scale-art-v2
+
+Date : 2026-10-05
+
+Retour utilisateur : le projectile Boule de feu 2 reste visuellement très inférieur au modèle fourni et le scale semble ne pas s'appliquer correctement.
+
+Diagnostic initial démontré :
+- le contrat/éditeur accepte un scale FX jusqu'à 8× ;
+- le renderer projectile limite encore `travelDisplayScale` à 4× ;
+- l'asset projectile alpha-clean V1 est techniquement propre mais son contenu visible occupe trop peu de la frame 512×512, ce qui réduit fortement la taille perçue et donne un rendu pauvre.
+
+Objectif :
+1. réconcilier le renderer projectile avec la plage 0.25–8 déjà autorisée par le contrat ;
+2. remplacer uniquement le visuel Fireball 2 projectile par une version beaucoup plus dense, tourbillonnante et lisible, proche du modèle utilisateur ;
+3. conserver exactement les mêmes IDs, pipeline, collision, timing et responsabilités.
+
+Base fonctionnelle : `bd0d2686a86efb12e60fc16d9100ac35de3bfb56`.
+Checkpoint départ : `checkpoint/lab-start-fireball-2-projectile-scale-art-v2-2026-10-05`.
+Branche work : `work/lab-fireball-2-projectile-scale-art-v2-2026-10-05`.
+Base global-assets : `97c5b8932138db0a88fd75a418cb1d9b0d112ce6`.
+Checkpoint assets départ : `checkpoint/lab-global-assets-before-fireball-2-projectile-scale-art-v2-2026-10-05`.
+Branche assets : `work/lab-global-assets-fireball-2-projectile-scale-art-v2-2026-10-05`.
+
+Propriétaires concernés : Render Adapter uniquement pour la limite de scale ; Asset Input pour le média. Combat Runtime, Combat Rules, collision/contact, Animation Core et FX Core restent protégés.
+
+Tests RED prévus :
+- vrai renderer projectile avec `displayScale: 8` doit produire des keyframes à 8× et non 4× ;
+- sentinelle asset : 12 frames 512×512 RGBA, alpha propre, contenu visible non minuscule (bounding box utile suffisamment large), atlas 6144×512.
+
+Interdit : second loader, logique spécifique Fireball 2 dans l'UI/renderer, modification dégâts/collision/timing/énergie/cooldown, modification Zombicide-40k, direct main.
+
+Critère de fin : scale 0.25–8 réellement respecté en projectile, Fireball 2 projectile visuellement dense et lisible, CI complète verte, preview dédiée, puis validation utilisateur.
