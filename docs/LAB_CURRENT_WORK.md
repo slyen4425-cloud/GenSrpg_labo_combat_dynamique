@@ -25147,7 +25147,7 @@ Branche : `work/lab-creator-visual-import-v1-2026-10-05`.
 
 Propriétaire : Asset Input pour validation/Object URL ; Demo UI uniquement pour le choix du fichier et du rôle ; catalogue/presentation binding existants réutilisés.
 
-Fichiers autorisés : `src/assets/*creator*`, `src/assets/image-source-manager.js` si extension démontrée, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.*`, tests dédiés et documentation.
+Fichiers autorisés : `src/assets/*creator*`, `src/assets/image-source-manager.js` si extension démontrée, `src/ui/capture-editor-human-v2.js`, `src/adapters/input/capture/capture-export-to-native-visual-source-v1.js` pour résoudre un `resource.runtimeUrl` déjà validé par Asset Input, `examples/dom-demo/capture-editor-v2.*`, tests dédiés et documentation.
 
 Protégés : Combat Rules, Combat Runtime, Animation Core, FX Core, Render Adapter, dégâts/collision/timing, global-assets fournis, Zombicide-40k, main.
 
