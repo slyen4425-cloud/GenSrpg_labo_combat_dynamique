@@ -175,3 +175,25 @@ test("starter FX preserves creator audio when already configured", () => {
     "user:audio:zone"
   );
 });
+
+
+test("Capture editor applies starter FX against the real current presentation", async () => {
+  const { readFile } =
+    await import("node:fs/promises");
+  const source = await readFile(
+    new URL(
+      "../../src/ui/capture-editor-human-v2.js",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(
+    source,
+    /const currentPresentation\s*=\s*readSkillFields\(root\)\s*\.presentation/
+  );
+  assert.doesNotMatch(
+    source,
+    /presentation:\s*\{\s*socketId:[\s\S]*statusVisuals:\s*\{\}/
+  );
+});
