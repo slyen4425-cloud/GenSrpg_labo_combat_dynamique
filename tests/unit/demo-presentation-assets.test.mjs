@@ -119,7 +119,7 @@ test("all five combat arenas resolve only through canonical Core assets", () => 
     );
     assert.equal(
       url.searchParams.get("v"),
-      "2026-10-05-v13-fireball-2-projectile-alpha-clean-v1",
+      "2026-10-05-v14-fireball-2-projectile-scale-art-v2",
       arenaId + " should use the arena refresh cache revision"
     );
   }
