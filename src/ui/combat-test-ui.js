@@ -902,6 +902,12 @@ export async function mountCombatTest({
       return;
     }
     lastState = state;
+    fx.syncPersistentZones(
+      state.persistentZones ?? []
+    );
+    combatAudio.syncPersistentZones(
+      state.persistentZones ?? []
+    );
     renderHp(state);
     renderEnergy(state);
     renderAvailability();
