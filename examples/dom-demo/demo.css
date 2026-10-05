@@ -149,21 +149,26 @@ summary {
   width: min(31%, 18rem);
 }
 
-.fighter::before {
-  content: "";
+.fighter__shadow {
   position: absolute;
   z-index: 0;
   left: 50%;
   bottom: var(--creature-shadow-bottom, 8%);
-  width: 58%;
+  display: block;
+  width: 62%;
   height: 10%;
-  transform: var(--creature-shadow-transform,
+  transform:
     translateX(-50%)
-    scale(var(--creature-display-scale, 1)));
-  opacity: var(--creature-shadow-fade, 1);
+    scale(var(--creature-display-scale, 1));
+  opacity: 1;
   transform-origin: center center;
   border-radius: 50%;
-  background: rgba(0, 0, 0, var(--creature-shadow-opacity, 0.42));
+  background: rgba(
+    0,
+    0,
+    0,
+    var(--creature-shadow-opacity, 0.42)
+  );
   filter: blur(3.4px);
   pointer-events: none;
 }
