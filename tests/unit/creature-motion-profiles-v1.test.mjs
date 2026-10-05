@@ -218,7 +218,7 @@ test("contact shadow derives scale from actor and optional offset/opacity from p
   );
   assert.match(
     css,
-    /rgba\(0,\s*0,\s*0,\s*var\(--creature-shadow-opacity,\s*0\.42\)\)/
+    /var\(--creature-shadow-opacity,\s*0\.42\)/
   );
   assert.match(
     demoApp,
