@@ -727,6 +727,260 @@ export function createDomSkillFxRenderer({
     return count;
   }
 
+  function playCastBurst({
+    point,
+    burst
+  }) {
+    if (!burst) {
+      return null;
+    }
+
+    const count = Math.min(
+      12,
+      Math.max(
+        0,
+        Math.floor(
+          Number(burst.count) || 0
+        )
+      )
+    );
+    if (count <= 0) {
+      return null;
+    }
+
+    const spreadPx = Math.max(
+      1,
+      Number(burst.spreadPx) || 1
+    );
+    const sizePx = Math.max(
+      1,
+      Number(burst.sizePx) || 1
+    );
+    const durationMs = Math.max(
+      1,
+      Number(burst.durationMs) || 1
+    );
+    const opacity = clampUnit(
+      burst.opacity,
+      0.65
+    );
+    const color =
+      typeof burst.color === "string" &&
+      /^#[0-9a-fA-F]{6}$/.test(
+        burst.color
+      )
+        ? burst.color
+        : "#f2b15d";
+
+    const container =
+      arena.ownerDocument.createElement(
+        "span"
+      );
+    container.className =
+      "skill-fx skill-fx--cast-burst";
+    container.dataset.skillFx =
+      "cast-burst";
+    container.style.left =
+      point.x + "px";
+    container.style.top =
+      point.y + "px";
+    container.style.width = "1px";
+    container.style.height = "1px";
+    container.style.zIndex = "10";
+    container.style.pointerEvents =
+      "none";
+    container.style.overflow =
+      "visible";
+
+    const animations = [];
+
+    for (
+      let index = 0;
+      index < count;
+      index += 1
+    ) {
+      const particle =
+        arena.ownerDocument.createElement(
+          "span"
+        );
+      const angle =
+        (
+          Math.PI * 2 * index /
+          count
+        ) +
+        (
+          index % 2 === 0
+            ? 0.18
+            : -0.12
+        );
+      const distance =
+        spreadPx *
+        (
+          0.58 +
+          0.16 * (index % 3)
+        );
+      const dx =
+        Math.cos(angle) * distance;
+      const dy =
+        Math.sin(angle) * distance -
+        spreadPx * 0.16;
+      const particleWidth =
+        Math.max(
+          2,
+          sizePx *
+            (
+              1.25 +
+              (index % 3) * 0.18
+            )
+        );
+      const particleHeight =
+        Math.max(
+          1,
+          sizePx *
+            (
+              0.34 +
+              (index % 2) * 0.08
+            )
+        );
+
+      particle.className =
+        "skill-fx__cast-particle";
+      particle.dataset.skillFx =
+        "cast-burst-particle";
+      particle.style.position =
+        "absolute";
+      particle.style.left = "0";
+      particle.style.top = "0";
+      particle.style.width =
+        particleWidth.toFixed(2) +
+        "px";
+      particle.style.height =
+        particleHeight.toFixed(2) +
+        "px";
+      particle.style.borderRadius =
+        "70% 30% 68% 32%";
+      particle.style.background =
+        "linear-gradient(90deg, transparent 0%, " +
+        color +
+        " 42%, " +
+        color +
+        " 100%)";
+      particle.style.boxShadow =
+        "0 0 " +
+        Math.max(
+          2,
+          sizePx * 0.8
+        ).toFixed(1) +
+        "px " +
+        color;
+      particle.style.pointerEvents =
+        "none";
+      container.append(particle);
+
+      const rotate =
+        angle * 180 / Math.PI;
+      const animation = animate(
+        particle,
+        [
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(0, 0, 0) rotate(" +
+              rotate.toFixed(1) +
+              "deg) scale(0.35)",
+            opacity: 0
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(" +
+              (dx * 0.28).toFixed(2) +
+              "px, " +
+              (dy * 0.28).toFixed(2) +
+              "px, 0) rotate(" +
+              rotate.toFixed(1) +
+              "deg) scale(1)",
+            opacity,
+            offset: 0.24
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(" +
+              dx.toFixed(2) +
+              "px, " +
+              dy.toFixed(2) +
+              "px, 0) rotate(" +
+              rotate.toFixed(1) +
+              "deg) scale(0.2)",
+            opacity: 0
+          }
+        ],
+        {
+          duration:
+            durationMs +
+            (index % 4) * 22,
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+      animations.push(animation);
+    }
+
+    arena.append(container);
+
+    const compositeAnimation = {
+      cancel() {
+        for (
+          const animation of animations
+        ) {
+          animation?.cancel?.();
+        }
+      },
+      finished: Promise.all(
+        animations.map(
+          (animation) =>
+            animation?.finished ??
+            Promise.resolve()
+        )
+      )
+    };
+
+    const record = {
+      node: container,
+      animation: compositeAnimation,
+      frameAnimation: null,
+      type: "cast-burst"
+    };
+    active.add(record);
+
+    const finished =
+      Promise.resolve(
+        compositeAnimation.finished
+      )
+        .then(() => {
+          cleanup(record);
+          return {
+            status: "finished"
+          };
+        })
+        .catch((error) => {
+          cleanup(record);
+          if (
+            error?.name ===
+            "AbortError"
+          ) {
+            return {
+              status: "cancelled"
+            };
+          }
+          throw error;
+        });
+
+    return Object.freeze({
+      status: "running",
+      animation: compositeAnimation,
+      finished
+    });
+  }
+
   function playImpactBurst({
     point,
     burst
@@ -1707,7 +1961,13 @@ export function createDomSkillFxRenderer({
 
     if (type === "cast") {
       const visual = presentation?.cast ?? null;
-      if (!hasSpriteVisual(visual)) {
+      const castBurst =
+        presentation?.feedback?.castBurst ??
+        null;
+      if (
+        !hasSpriteVisual(visual) &&
+        !castBurst
+      ) {
         return Object.freeze({
           status: "ignored",
           finished: Promise.resolve({ status: "ignored" })
@@ -1719,6 +1979,24 @@ export function createDomSkillFxRenderer({
         sourceRect(sourceSlot, castAnchor),
         arenaRect
       );
+      const castBurstHandle =
+        playCastBurst({
+          point: from,
+          burst: castBurst
+        });
+
+      if (!hasSpriteVisual(visual)) {
+        return (
+          castBurstHandle ??
+          Object.freeze({
+            status: "ignored",
+            finished:
+              Promise.resolve({
+                status: "ignored"
+              })
+          })
+        );
+      }
       const node = arena.ownerDocument.createElement("span");
       const displayScale = Math.min(
         8,
@@ -1794,10 +2072,34 @@ export function createDomSkillFxRenderer({
           throw error;
         });
 
+      const combinedAnimation =
+        castBurstHandle
+          ? {
+              cancel() {
+                animation?.cancel?.();
+                castBurstHandle.animation
+                  ?.cancel?.();
+              },
+              finished: Promise.all([
+                finished,
+                castBurstHandle.finished
+              ])
+            }
+          : animation;
+
       return Object.freeze({
         status: "running",
-        animation,
-        finished
+        animation:
+          combinedAnimation,
+        finished:
+          castBurstHandle
+            ? Promise.all([
+                finished,
+                castBurstHandle.finished
+              ]).then(() => ({
+                status: "finished"
+              }))
+            : finished
       });
     }
 
