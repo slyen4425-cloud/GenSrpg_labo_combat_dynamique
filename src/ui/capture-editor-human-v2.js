@@ -98,6 +98,12 @@ import {
   applyCaptureFxStarterProfileV1
 } from "../catalogs/capture-fx-starter-profile-catalog-v1.js";
 import {
+  CAPTURE_FX_GLOW_PRESETS_V1,
+  captureFxGlowPresetByIdV1,
+  applyCaptureFxGlowPresetV1,
+  captureFxGlowPresetIdForValuesV1
+} from "../catalogs/capture-fx-glow-presets-v1.js";
+import {
   normalizeCaptureStatRegistryV1
 } from "../contracts/capture-stat-registry-v1.js";
 import {
@@ -6681,6 +6687,79 @@ export function preserveUnrepresentedCreatureFieldsV1({
   };
 }
 
+function skillGlowPresetPresentationFromControlsV1(
+  root
+) {
+  const strength =
+    root.querySelector(
+      "[data-skill-fx-glow-strength]"
+    );
+  const radius =
+    root.querySelector(
+      "[data-skill-fx-glow-radius]"
+    );
+  const color =
+    root.querySelector(
+      "[data-skill-fx-glow-color]"
+    );
+
+  return {
+    fxGlowColor:
+      color?.value ?? "#ffffff",
+    fxGlowStrength:
+      Number(strength?.value) || 0,
+    fxGlowRadiusPx:
+      Number(radius?.value) || 16
+  };
+}
+
+function syncSkillGlowPresetStateV1(
+  root
+) {
+  const select =
+    root.querySelector(
+      "[data-skill-fx-glow-preset]"
+    );
+  const state =
+    root.querySelector(
+      "[data-skill-fx-glow-preset-state]"
+    );
+
+  if (!select) {
+    return "custom";
+  }
+
+  const presetId =
+    captureFxGlowPresetIdForValuesV1(
+      skillGlowPresetPresentationFromControlsV1(
+        root
+      )
+    );
+
+  select.value = presetId;
+
+  if (state) {
+    const preset =
+      captureFxGlowPresetByIdV1(
+        presetId
+      );
+
+    if (preset) {
+      state.textContent =
+        preset.label +
+        " — " +
+        preset.description;
+      state.dataset.tone = "info";
+    } else {
+      state.textContent =
+        "Personnalisé — tes valeurs avancées ne correspondent plus exactement à un préréglage.";
+      state.dataset.tone = "info";
+    }
+  }
+
+  return presetId;
+}
+
 function writeSkillFeedbackControlsV1(
   root,
   presentation = {}
@@ -6735,6 +6814,8 @@ function writeSkillFeedbackControlsV1(
       field.value = String(value ?? "");
     }
   }
+
+  syncSkillGlowPresetStateV1(root);
 }
 
 function writeCaptureFxStarterPresentationFieldsV1(
@@ -6928,6 +7009,117 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
     "[data-transfer-state]"
   );
 
+  const fxGlowPresetSelect =
+    root.querySelector(
+      "[data-skill-fx-glow-preset]"
+    );
+  const fxGlowPresetState =
+    root.querySelector(
+      "[data-skill-fx-glow-preset-state]"
+    );
+
+  function updateGlowPresetStateV1(
+    presetId
+  ) {
+    const preset =
+      captureFxGlowPresetByIdV1(
+        presetId
+      );
+
+    if (!fxGlowPresetState) {
+      return;
+    }
+
+    fxGlowPresetState.textContent =
+      preset
+        ? preset.label +
+          " — " +
+          preset.description
+        : "Personnalisé — ouvre les réglages experts pour affiner précisément le glow.";
+    fxGlowPresetState.dataset.tone =
+      "info";
+  }
+
+  if (fxGlowPresetSelect) {
+    listen(
+      fxGlowPresetSelect,
+      "change",
+      () => {
+        const presetId =
+          fxGlowPresetSelect.value;
+
+        if (presetId === "custom") {
+          updateGlowPresetStateV1(
+            "custom"
+          );
+          return;
+        }
+
+        const applied =
+          applyCaptureFxGlowPresetV1({
+            presetId,
+            presentation:
+              skillGlowPresetPresentationFromControlsV1(
+                root
+              )
+          });
+
+        const strength =
+          root.querySelector(
+            "[data-skill-fx-glow-strength]"
+          );
+        const radius =
+          root.querySelector(
+            "[data-skill-fx-glow-radius]"
+          );
+
+        if (strength) {
+          strength.value = String(
+            applied.fxGlowStrength
+          );
+        }
+        if (radius) {
+          radius.value = String(
+            applied.fxGlowRadiusPx
+          );
+        }
+
+        updateGlowPresetStateV1(
+          presetId
+        );
+        setStatus(
+          "Glow « " +
+            captureFxGlowPresetByIdV1(
+              presetId
+            ).label +
+            " » appliqué. Les valeurs avancées restent modifiables.",
+          "ok"
+        );
+      }
+    );
+  }
+
+  for (const selector of [
+    "[data-skill-fx-glow-strength]",
+    "[data-skill-fx-glow-radius]"
+  ]) {
+    const field =
+      root.querySelector(selector);
+    if (!field) {
+      continue;
+    }
+
+    listen(field, "input", () => {
+      const presetId =
+        syncSkillGlowPresetStateV1(
+          root
+        );
+      updateGlowPresetStateV1(
+        presetId
+      );
+    });
+  }
+
   const fxStarterProfileSelect =
     root.querySelector(
       "[data-skill-fx-starter-profile]"
@@ -6963,6 +7155,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
       !fxStarterLibrariesReady ||
       !fxStarterProfileSelect?.value;
   }
+
+  syncSkillGlowPresetStateV1(root);
 
   if (fxStarterProfileSelect) {
     fxStarterProfileSelect.textContent = "";
