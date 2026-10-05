@@ -205,8 +205,8 @@ test("applying a starter profile copies presentation defaults while preserving s
   );
   assert.equal(
     applied.zoneAssetId,
-    "",
-    "profile application must clear slots owned by a previous profile"
+    "user:old-zone",
+    "starter FX must preserve an authored existing zone instead of replacing configured media"
   );
 });
 
