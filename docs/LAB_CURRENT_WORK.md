@@ -69,6 +69,42 @@ Note de migration utilisateur :
 
 État : **GREEN technique**, validation smartphone utilisateur requise avant GREEN utilisateur.
 
+## Correctif GREEN — 2026-10-06 — starter FX non destructif / Cendre aveuglante
+
+Constat utilisateur : après utilisation des packs FX GenSrpG, `Cendre aveuglante` pouvait ne plus correspondre à sa configuration auteur.
+
+Diagnostic :
+- le preset vitrine `cap_fire_special_1` du 3 octobre n'avait pas été modifié ;
+- le bouton Starter FX appelait le profil avec une présentation artificielle presque vide ;
+- le profil pouvait donc remplacer icône / cast / projectile / impact / zone et perdre des éléments spécifiques si le brouillon était ensuite sauvegardé.
+
+Correctif :
+- `applyCaptureFxStarterProfileV1` conserve désormais tous les médias auteur déjà renseignés ;
+- les sons déjà configurés restent prioritaires ;
+- `socketId` et `statusVisuals` sont conservés ;
+- les enrichissements FX (glow, cast burst, trail, burst, flash, shake, fumée) peuvent toujours être ajoutés ;
+- sur une capacité neuve dont les slots médias sont vides, le pack peut encore fournir Cast / Projectile / Impact ;
+- le bouton utilise maintenant `readSkillFields(root).presentation` au lieu d'un faux objet vide ;
+- UX renommée `Pack FX GenSrpG` avec texte non destructif explicite.
+
+Sentinelle Cendre :
+- icône `core:icon-skill-poison-cloud-01` ;
+- cast `pack:capture:sprite-cast-physical-01`, scale 1 ;
+- projectile `pack:capture:sprite-projectile-earth-01`, scale 2.5 ;
+- impact `pack:capture:sprite-impact-nature-01`, scale 2 ;
+- status visual `pack:capture:sprite-teleportation-2`, scale 3, opacity 0.85 ;
+- appliquer le pack Fireball doit conserver ces valeurs.
+
+RED : `86ce88a3...`, CI `37386306779` — échec attendu.
+GREEN fonctionnel : `3f698bc415cff5b38e0fc9f43ac8131d16043a1a`, CI `37386675219` — **1091/1091 PASS**, 0 échec.
+
+Checkpoint avant : `checkpoint/lab-before-starter-safe-apply-cendre-v1-2026-10-06`.
+Checkpoint GREEN : `checkpoint/lab-capture-fx-starter-safe-apply-v1-technical-2026-10-06`.
+Preview : `preview/lab-capture-fx-starter-safe-apply-v1-2026-10-06`.
+Rapport : `docs/LAB_CAPTURE_FX_STARTER_SAFE_APPLY_V1.md`.
+
+État : **GREEN technique** ; validation utilisateur de Cendre dans la preview requise avant GREEN utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-particles-v1
 
 Base GREEN technique : `0591aac36b79e7d36b626133b88b0fe71b3a52af`.
