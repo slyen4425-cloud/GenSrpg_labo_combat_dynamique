@@ -104,6 +104,11 @@ import {
   captureFxGlowPresetIdForValuesV1
 } from "../catalogs/capture-fx-glow-presets-v1.js";
 import {
+  captureFxParticlePresetByIdV1,
+  applyCaptureFxParticlePresetV1,
+  captureFxParticlePresetIdForValuesV1
+} from "../catalogs/capture-fx-particle-presets-v1.js";
+import {
   normalizeCaptureStatRegistryV1
 } from "../contracts/capture-stat-registry-v1.js";
 import {
@@ -1144,10 +1149,45 @@ function presentationFeedbackFromFieldsV1(
     ) || 0
   );
 
+  function boundedParticleCount(
+    value,
+    maximum,
+    field
+  ) {
+    const number = Number(value) || 0;
+    if (
+      !Number.isInteger(number) ||
+      number < 0 ||
+      number > maximum
+    ) {
+      throw new RangeError(
+        field +
+          " doit être un entier entre 0 et " +
+          maximum
+      );
+    }
+    return number;
+  }
+
+  const trailCount =
+    boundedParticleCount(
+      presentation.projectileTrailCount,
+      10,
+      "Particules de traînée"
+    );
+  const burstCount =
+    boundedParticleCount(
+      presentation.impactBurstCount,
+      18,
+      "Particules d’impact"
+    );
+
   if (
     glowStrength <= 0 &&
     flashOpacity <= 0 &&
-    shakeAmplitude <= 0
+    shakeAmplitude <= 0 &&
+    trailCount <= 0 &&
+    burstCount <= 0
   ) {
     return null;
   }
@@ -1208,6 +1248,83 @@ function presentationFeedbackFromFieldsV1(
           presentation.impactShakeDurationMs ??
             140,
           "Durée shake impact"
+        )
+      )
+    };
+  }
+
+  if (trailCount > 0) {
+    feedback.projectileTrail = {
+      color:
+        String(
+          presentation.projectileTrailColor ??
+            "#ffffff"
+        ),
+      count: trailCount,
+      lengthPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.projectileTrailLengthPx,
+          "Longueur traînée"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.projectileTrailSizePx,
+          "Taille particule traînée"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.projectileTrailOpacity,
+            "Opacité traînée"
+          )
+        )
+      )
+    };
+  }
+
+  if (burstCount > 0) {
+    feedback.impactBurst = {
+      color:
+        String(
+          presentation.impactBurstColor ??
+            "#ffffff"
+        ),
+      count: burstCount,
+      spreadPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactBurstSpreadPx,
+          "Dispersion particules impact"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactBurstSizePx,
+          "Taille particule impact"
+        )
+      ),
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactBurstDurationMs,
+          "Durée particules impact"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.impactBurstOpacity,
+            "Opacité particules impact"
+          )
         )
       )
     };
@@ -1392,11 +1509,14 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      hasFeedback
-        ? 4
-        : hasStatusVisuals
-          ? 3
-          : 2,
+      feedback?.projectileTrail ||
+      feedback?.impactBurst
+        ? 5
+        : hasFeedback
+          ? 4
+          : hasStatusVisuals
+            ? 3
+            : 2,
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -1973,7 +2093,40 @@ export function humanSkillEditorFieldsFromDraftV1(
           ?.amplitudePx ?? 0,
       impactShakeDurationMs:
         presentation.feedback?.cameraShake
-          ?.durationMs ?? 140
+          ?.durationMs ?? 140,
+      projectileTrailColor:
+        presentation.feedback?.projectileTrail
+          ?.color ?? "#ffffff",
+      projectileTrailCount:
+        presentation.feedback?.projectileTrail
+          ?.count ?? 0,
+      projectileTrailLengthPx:
+        presentation.feedback?.projectileTrail
+          ?.lengthPx ?? 0,
+      projectileTrailSizePx:
+        presentation.feedback?.projectileTrail
+          ?.sizePx ?? 0,
+      projectileTrailOpacity:
+        presentation.feedback?.projectileTrail
+          ?.opacity ?? 0,
+      impactBurstColor:
+        presentation.feedback?.impactBurst
+          ?.color ?? "#ffffff",
+      impactBurstCount:
+        presentation.feedback?.impactBurst
+          ?.count ?? 0,
+      impactBurstSpreadPx:
+        presentation.feedback?.impactBurst
+          ?.spreadPx ?? 0,
+      impactBurstSizePx:
+        presentation.feedback?.impactBurst
+          ?.sizePx ?? 0,
+      impactBurstDurationMs:
+        presentation.feedback?.impactBurst
+          ?.durationMs ?? 0,
+      impactBurstOpacity:
+        presentation.feedback?.impactBurst
+          ?.opacity ?? 0
     }
   };
 
@@ -6553,6 +6706,50 @@ function readSkillFields(root) {
       impactShakeDurationMs: numericValue(
         root,
         "[data-skill-impact-shake-duration]"
+      ),
+      projectileTrailColor: selectedValue(
+        root,
+        "[data-skill-projectile-trail-color]"
+      ),
+      projectileTrailCount: numericValue(
+        root,
+        "[data-skill-projectile-trail-count]"
+      ),
+      projectileTrailLengthPx: numericValue(
+        root,
+        "[data-skill-projectile-trail-length]"
+      ),
+      projectileTrailSizePx: numericValue(
+        root,
+        "[data-skill-projectile-trail-size]"
+      ),
+      projectileTrailOpacity: numericValue(
+        root,
+        "[data-skill-projectile-trail-opacity]"
+      ),
+      impactBurstColor: selectedValue(
+        root,
+        "[data-skill-impact-burst-color]"
+      ),
+      impactBurstCount: numericValue(
+        root,
+        "[data-skill-impact-burst-count]"
+      ),
+      impactBurstSpreadPx: numericValue(
+        root,
+        "[data-skill-impact-burst-spread]"
+      ),
+      impactBurstSizePx: numericValue(
+        root,
+        "[data-skill-impact-burst-size]"
+      ),
+      impactBurstDurationMs: numericValue(
+        root,
+        "[data-skill-impact-burst-duration]"
+      ),
+      impactBurstOpacity: numericValue(
+        root,
+        "[data-skill-impact-burst-opacity]"
       )
     }
   };
@@ -6760,6 +6957,97 @@ function syncSkillGlowPresetStateV1(
   return presetId;
 }
 
+function skillParticlePresetPresentationFromControlsV1(
+  root
+) {
+  const value = (selector, fallback = 0) => {
+    const field = root.querySelector(selector);
+    return Number(field?.value) || fallback;
+  };
+  const text = (selector, fallback) =>
+    root.querySelector(selector)?.value ??
+    fallback;
+
+  return {
+    projectileTrailColor: text(
+      "[data-skill-projectile-trail-color]",
+      "#ffffff"
+    ),
+    projectileTrailCount: value(
+      "[data-skill-projectile-trail-count]"
+    ),
+    projectileTrailLengthPx: value(
+      "[data-skill-projectile-trail-length]"
+    ),
+    projectileTrailSizePx: value(
+      "[data-skill-projectile-trail-size]"
+    ),
+    projectileTrailOpacity: value(
+      "[data-skill-projectile-trail-opacity]"
+    ),
+    impactBurstColor: text(
+      "[data-skill-impact-burst-color]",
+      "#ffffff"
+    ),
+    impactBurstCount: value(
+      "[data-skill-impact-burst-count]"
+    ),
+    impactBurstSpreadPx: value(
+      "[data-skill-impact-burst-spread]"
+    ),
+    impactBurstSizePx: value(
+      "[data-skill-impact-burst-size]"
+    ),
+    impactBurstDurationMs: value(
+      "[data-skill-impact-burst-duration]"
+    ),
+    impactBurstOpacity: value(
+      "[data-skill-impact-burst-opacity]"
+    )
+  };
+}
+
+function syncSkillParticlePresetStateV1(
+  root
+) {
+  const select =
+    root.querySelector(
+      "[data-skill-fx-particle-preset]"
+    );
+  const state =
+    root.querySelector(
+      "[data-skill-fx-particle-preset-state]"
+    );
+
+  if (!select) {
+    return "custom";
+  }
+
+  const presetId =
+    captureFxParticlePresetIdForValuesV1(
+      skillParticlePresetPresentationFromControlsV1(
+        root
+      )
+    );
+
+  select.value = presetId;
+
+  if (state) {
+    const preset =
+      captureFxParticlePresetByIdV1(
+        presetId
+      );
+    state.textContent = preset
+      ? preset.label +
+        " — " +
+        preset.description
+      : "Personnalisée — tes valeurs avancées ne correspondent plus exactement à un préréglage.";
+    state.dataset.tone = "info";
+  }
+
+  return presetId;
+}
+
 function writeSkillFeedbackControlsV1(
   root,
   presentation = {}
@@ -6805,6 +7093,52 @@ function writeSkillFeedbackControlsV1(
       "[data-skill-impact-shake-duration]",
       presentation.impactShakeDurationMs ??
         140
+    ],
+    [
+      "[data-skill-projectile-trail-color]",
+      presentation.projectileTrailColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-projectile-trail-count]",
+      presentation.projectileTrailCount ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-length]",
+      presentation.projectileTrailLengthPx ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-size]",
+      presentation.projectileTrailSizePx ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-opacity]",
+      presentation.projectileTrailOpacity ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-color]",
+      presentation.impactBurstColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-impact-burst-count]",
+      presentation.impactBurstCount ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-spread]",
+      presentation.impactBurstSpreadPx ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-size]",
+      presentation.impactBurstSizePx ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-duration]",
+      presentation.impactBurstDurationMs ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-opacity]",
+      presentation.impactBurstOpacity ?? 0
     ]
   ];
 
@@ -6816,6 +7150,7 @@ function writeSkillFeedbackControlsV1(
   }
 
   syncSkillGlowPresetStateV1(root);
+  syncSkillParticlePresetStateV1(root);
 }
 
 function writeCaptureFxStarterPresentationFieldsV1(
@@ -7119,6 +7454,151 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
       );
     });
   }
+
+  const fxParticlePresetSelect =
+    root.querySelector(
+      "[data-skill-fx-particle-preset]"
+    );
+  const fxParticlePresetState =
+    root.querySelector(
+      "[data-skill-fx-particle-preset-state]"
+    );
+
+  function updateParticlePresetStateV1(
+    presetId
+  ) {
+    const preset =
+      captureFxParticlePresetByIdV1(
+        presetId
+      );
+    if (!fxParticlePresetState) {
+      return;
+    }
+    fxParticlePresetState.textContent =
+      preset
+        ? preset.label +
+          " — " +
+          preset.description
+        : "Personnalisée — ouvre les réglages experts pour affiner précisément les particules.";
+    fxParticlePresetState.dataset.tone =
+      "info";
+  }
+
+  if (fxParticlePresetSelect) {
+    listen(
+      fxParticlePresetSelect,
+      "change",
+      () => {
+        const presetId =
+          fxParticlePresetSelect.value;
+
+        if (presetId === "custom") {
+          updateParticlePresetStateV1(
+            "custom"
+          );
+          return;
+        }
+
+        const applied =
+          applyCaptureFxParticlePresetV1({
+            presetId,
+            presentation:
+              skillParticlePresetPresentationFromControlsV1(
+                root
+              )
+          });
+
+        const fields = [
+          [
+            "[data-skill-projectile-trail-count]",
+            applied.projectileTrailCount
+          ],
+          [
+            "[data-skill-projectile-trail-length]",
+            applied.projectileTrailLengthPx
+          ],
+          [
+            "[data-skill-projectile-trail-size]",
+            applied.projectileTrailSizePx
+          ],
+          [
+            "[data-skill-projectile-trail-opacity]",
+            applied.projectileTrailOpacity
+          ],
+          [
+            "[data-skill-impact-burst-count]",
+            applied.impactBurstCount
+          ],
+          [
+            "[data-skill-impact-burst-spread]",
+            applied.impactBurstSpreadPx
+          ],
+          [
+            "[data-skill-impact-burst-size]",
+            applied.impactBurstSizePx
+          ],
+          [
+            "[data-skill-impact-burst-duration]",
+            applied.impactBurstDurationMs
+          ],
+          [
+            "[data-skill-impact-burst-opacity]",
+            applied.impactBurstOpacity
+          ]
+        ];
+
+        for (const [selector, value] of fields) {
+          const field =
+            root.querySelector(selector);
+          if (field) {
+            field.value = String(value);
+          }
+        }
+
+        updateParticlePresetStateV1(
+          presetId
+        );
+        setStatus(
+          root,
+          "Particules « " +
+            captureFxParticlePresetByIdV1(
+              presetId
+            ).label +
+            " » appliquées sans modifier le gameplay.",
+          "ok"
+        );
+      }
+    );
+  }
+
+  for (const selector of [
+    "[data-skill-projectile-trail-count]",
+    "[data-skill-projectile-trail-length]",
+    "[data-skill-projectile-trail-size]",
+    "[data-skill-projectile-trail-opacity]",
+    "[data-skill-impact-burst-count]",
+    "[data-skill-impact-burst-spread]",
+    "[data-skill-impact-burst-size]",
+    "[data-skill-impact-burst-duration]",
+    "[data-skill-impact-burst-opacity]"
+  ]) {
+    const field =
+      root.querySelector(selector);
+    if (!field) {
+      continue;
+    }
+    listen(field, "input", () => {
+      const presetId =
+        syncSkillParticlePresetStateV1(
+          root
+        );
+      updateParticlePresetStateV1(
+        presetId
+      );
+    });
+  }
+
+  syncSkillParticlePresetStateV1(root);
 
   const fxStarterProfileSelect =
     root.querySelector(
