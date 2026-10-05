@@ -792,6 +792,18 @@
                 Appliquer et personnaliser
               </button>
             </div>
+            <label>Présence du glow
+              <select data-skill-fx-glow-preset>
+                <option value="discreet">Discret</option>
+                <option value="visible" selected>Visible</option>
+                <option value="intense">Intense</option>
+                <option value="very-intense">Très intense</option>
+                <option value="custom">Personnalisé</option>
+              </select>
+            </label>
+            <p class="note" data-skill-fx-glow-preset-state data-tone="info">
+              Visible — lueur bien perceptible, conseillée pour la plupart des capacités.
+            </p>
           </div>
           <p class="note" data-skill-fx-starter-state data-tone="info">
             Les médias restent référencés par assetId ; tes imports personnels utilisent ensuite exactement les mêmes champs.
@@ -932,8 +944,8 @@
         </div>
 
         <div class="projectile-clash-config">
-          <h3>Enrichissement FX</h3>
-          <p class="note">Ces réglages sont uniquement visuels. Ils ne changent ni collision, ni dégâts, ni timing gameplay.</p>
+          <h3>Enrichissement FX — Réglages experts</h3>
+          <p class="note">Le mode simple règle automatiquement l’intensité et le rayon du glow. Ici tu peux affiner les valeurs exactes. Ces réglages sont uniquement visuels : ils ne changent ni collision, ni dégâts, ni timing gameplay.</p>
           <div class="grid two">
             <label>Couleur du glow
               <input type="color" value="#ff7a2d" data-skill-fx-glow-color>
