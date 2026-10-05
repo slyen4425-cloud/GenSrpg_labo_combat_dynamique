@@ -211,6 +211,72 @@ test("Capture visual adapter resolves actor creature presentations without chang
   );
 });
 
+test("Capture visual adapter resolves creator user assets from Asset Input runtime URLs", () => {
+  const catalog = assetCatalog();
+  for (const asset of catalog.assets) {
+    if (asset.id === "pack:local-front") {
+      asset.id = "user:front";
+      asset.resource = {
+        runtimeUrl: "blob:https://editor.test/front"
+      };
+    }
+    if (asset.id === "pack:local-back") {
+      asset.id = "user:back";
+      asset.resource = {
+        runtimeUrl: "blob:https://editor.test/back"
+      };
+    }
+    if (asset.id === "pack:local-icon") {
+      asset.id = "user:icon";
+      asset.resource = {
+        runtimeUrl: "blob:https://editor.test/icon"
+      };
+    }
+  }
+
+  const exported = baseExport();
+  const binding =
+    exported.presentation.creatures[
+      "creature:crea-local"
+    ];
+  binding.visual.front.assetId = "user:front";
+  binding.visual.back.assetId = "user:back";
+  binding.visual.icon.assetId = "user:icon";
+
+  let physicalResolverCalls = 0;
+  const source =
+    adaptCaptureExportToNativeVisualSourceV1({
+      exported,
+      assetCatalog: catalog,
+      profiles: profiles(),
+      assetUrlForFile() {
+        physicalResolverCalls += 1;
+        return "https://should-not-be-used.test/";
+      }
+    });
+
+  const local = source.creatureMetas.find(
+    (item) => item.id === "crea-local"
+  );
+  assert.equal(
+    local.runtimePreview.player,
+    "blob:https://editor.test/back"
+  );
+  assert.equal(
+    local.runtimePreview.opponent,
+    "blob:https://editor.test/front"
+  );
+  assert.equal(
+    local.runtimePreview.icon,
+    "blob:https://editor.test/icon"
+  );
+  assert.equal(
+    physicalResolverCalls,
+    1,
+    "only the unchanged enemy library asset should use the physical catalog resolver"
+  );
+});
+
 test("Capture visual adapter rejects missing presentation, asset or profile explicitly", () => {
   const missingPresentation = baseExport();
   delete missingPresentation.presentation.creatures[
