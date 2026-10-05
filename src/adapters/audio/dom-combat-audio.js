@@ -23,6 +23,8 @@ function soundFor(presentation, type, phase) {
       return presentation?.travelSound ?? null;
     case "impact":
       return presentation?.impactSound ?? null;
+    case "aura":
+      return presentation?.persistentZoneSound ?? null;
     case "phase":
       return presentation?.phaseSound?.[phase] ?? null;
     default:
@@ -43,6 +45,7 @@ export function createDomCombatAudio({
   }
 
   const active = new Set();
+  const persistentZoneAudio = new Map();
   let disposed = false;
 
   function play({
@@ -147,7 +150,96 @@ export function createDomCombatAudio({
     });
   }
 
+  function syncPersistentZones(zones = []) {
+    if (disposed) {
+      return Object.freeze({
+        status: "disposed",
+        activeCount: 0
+      });
+    }
+    if (!Array.isArray(zones)) {
+      throw new TypeError(
+        "zones must be an array"
+      );
+    }
+
+    const desired = new Map();
+    for (const zone of zones) {
+      const zoneId =
+        typeof zone?.id === "string"
+          ? zone.id.trim()
+          : "";
+      const skillId =
+        typeof zone?.skillId === "string"
+          ? zone.skillId.trim()
+          : "";
+      if (!zoneId || !skillId) {
+        continue;
+      }
+      desired.set(zoneId, zone);
+    }
+
+    for (
+      const [zoneId, handle] of
+      persistentZoneAudio.entries()
+    ) {
+      if (desired.has(zoneId)) {
+        continue;
+      }
+      persistentZoneAudio.delete(zoneId);
+      handle.stop?.();
+    }
+
+    for (
+      const [zoneId, zone] of
+      desired.entries()
+    ) {
+      if (
+        persistentZoneAudio.has(zoneId)
+      ) {
+        continue;
+      }
+
+      const handle = play({
+        type: "aura",
+        skillId: zone.skillId,
+        actorSlot:
+          zone.sourceActorId ?? null,
+        targetSlot:
+          zone.targetId ?? null
+      });
+
+      if (handle?.status !== "running") {
+        continue;
+      }
+
+      persistentZoneAudio.set(
+        zoneId,
+        handle
+      );
+      Promise.resolve(handle.finished)
+        .finally(() => {
+          if (
+            persistentZoneAudio.get(zoneId) ===
+            handle
+          ) {
+            persistentZoneAudio.delete(
+              zoneId
+            );
+          }
+        })
+        .catch(() => {});
+    }
+
+    return Object.freeze({
+      status: "synced",
+      activeCount:
+        persistentZoneAudio.size
+    });
+  }
+
   function stopAll() {
+    persistentZoneAudio.clear();
     for (const record of [...active]) {
       record.stop?.();
     }
@@ -163,10 +255,14 @@ export function createDomCombatAudio({
 
   return Object.freeze({
     play,
+    syncPersistentZones,
     stopAll,
     dispose,
     get activeCount() {
       return active.size;
+    },
+    get activePersistentZoneCount() {
+      return persistentZoneAudio.size;
     }
   });
 }
