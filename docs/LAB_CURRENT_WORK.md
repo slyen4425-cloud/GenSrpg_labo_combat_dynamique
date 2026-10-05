@@ -35,6 +35,19 @@ Preview dédiée : `preview/lab-capture-fx-particles-v1-2026-10-05`, page `examp
 
 État : GREEN technique après CI finale. Validation smartphone utilisateur requise avant GREEN utilisateur.
 
+Retour smartphone utilisateur 2026-10-05 :
+- aucune fumée / aftermath visible ;
+- traînée projectile jugée trop artificielle : rendu en multiples ronds clairs/blancs ;
+- glow projectile visuellement dégradé par cette traînée.
+
+Correction en cours sur le même chantier non validé utilisateur :
+- checkpoint avant polish : `checkpoint/lab-before-capture-fx-smoke-trail-polish-v1-2026-10-05` ;
+- remplacer les particules rondes de traînée par des streaks effilés/irréguliers dans la direction de déplacement ;
+- couleur de traînée héritée proprement du profil/glow au lieu d'un fallback blanc visible ;
+- ajouter un aftermath fumée configurable et borné, rendu exclusivement par `dom-skill-fx` ;
+- aucun changement Runtime / collision / dégâts / timing.
+
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-readable-presets-v1
 
 Base GREEN technique : `b915f5c2d5b36733c121d4e2b4e4a4d1f84df1d5`.
