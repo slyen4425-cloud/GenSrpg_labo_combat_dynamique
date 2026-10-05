@@ -644,6 +644,14 @@ export async function mountCoop2v2Test({
     sourceAnchorFor(actorId, anchorName) {
       return visuals.getFxAnchorFor(actorId, anchorName);
     },
+    playCameraFx(plan) {
+      return visuals.playCameraFx?.(plan) ?? {
+        status: "ignored",
+        finished: Promise.resolve({
+          status: "ignored"
+        })
+      };
+    },
     presentationForSkill(skillId, context = {}) {
       return presentationForActorSkill(
         skillId,
