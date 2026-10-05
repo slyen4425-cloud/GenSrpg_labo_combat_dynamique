@@ -1110,6 +1110,106 @@ function audioSkillSlot(
       };
 }
 
+function presentationFeedbackFromFieldsV1(
+  presentation
+) {
+  const glowStrength = Math.max(
+    0,
+    Math.min(
+      1,
+      Number(
+        presentation.fxGlowStrength
+      ) || 0
+    )
+  );
+  const flashOpacity = Math.max(
+    0,
+    Math.min(
+      1,
+      Number(
+        presentation.impactFlashOpacity
+      ) || 0
+    )
+  );
+  const shakeAmplitude = Math.max(
+    0,
+    Number(
+      presentation.impactShakeAmplitudePx
+    ) || 0
+  );
+
+  if (
+    glowStrength <= 0 &&
+    flashOpacity <= 0 &&
+    shakeAmplitude <= 0
+  ) {
+    return null;
+  }
+
+  const feedback = {};
+
+  if (glowStrength > 0) {
+    feedback.glow = {
+      color:
+        String(
+          presentation.fxGlowColor ??
+            "#ffffff"
+        ),
+      strength: glowStrength,
+      radiusPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.fxGlowRadiusPx ?? 16,
+          "Rayon glow FX"
+        )
+      )
+    };
+  }
+
+  if (flashOpacity > 0) {
+    feedback.impactFlash = {
+      color:
+        String(
+          presentation.impactFlashColor ??
+            "#ffffff"
+        ),
+      opacity: flashOpacity,
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactFlashDurationMs ??
+            120,
+          "Durée flash impact"
+        )
+      ),
+      scale: Math.max(
+        0.1,
+        finiteNumber(
+          presentation.impactFlashScale ??
+            1.5,
+          "Scale flash impact"
+        )
+      )
+    };
+  }
+
+  if (shakeAmplitude > 0) {
+    feedback.cameraShake = {
+      amplitudePx: shakeAmplitude,
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactShakeDurationMs ??
+            140,
+          "Durée shake impact"
+        )
+      )
+    };
+  }
+
+  return feedback;
+}
+
 function presentationForSkill(fields) {
   const presentation = fields.presentation ?? {};
   const iconAssetId = optionalText(
@@ -1125,6 +1225,12 @@ function presentationForSkill(fields) {
       : {};
   const hasStatusVisuals =
     Object.keys(statusVisuals).length > 0;
+  const feedback =
+    presentationFeedbackFromFieldsV1(
+      presentation
+    );
+  const hasFeedback =
+    feedback !== null;
 
   const cast = visualSlot(
     presentation.castAssetId,
@@ -1235,7 +1341,8 @@ function presentationForSkill(fields) {
   if (
     !hasVisual &&
     !hasAudio &&
-    !hasStatusVisuals
+    !hasStatusVisuals &&
+    !hasFeedback
   ) {
     return null;
   }
@@ -1279,7 +1386,11 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      hasStatusVisuals ? 3 : 2,
+      hasFeedback
+        ? 4
+        : hasStatusVisuals
+          ? 3
+          : 2,
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -1287,9 +1398,14 @@ function presentationForSkill(fields) {
     ),
     visual,
     audio,
-    ...(hasStatusVisuals
-      ? { statusVisuals }
-      : {})
+    ...(hasFeedback
+      ? {
+          statusVisuals,
+          feedback
+        }
+      : hasStatusVisuals
+        ? { statusVisuals }
+        : {})
   };
 }
 
@@ -1824,7 +1940,34 @@ export function humanSkillEditorFieldsFromDraftV1(
       impactAudioAssetId:
         audio.impact?.assetId ?? "",
       zoneAudioAssetId:
-        audio.aura?.assetId ?? ""
+        audio.aura?.assetId ?? "",
+      fxGlowColor:
+        presentation.feedback?.glow?.color ??
+        "#ffffff",
+      fxGlowStrength:
+        presentation.feedback?.glow?.strength ??
+        0,
+      fxGlowRadiusPx:
+        presentation.feedback?.glow?.radiusPx ??
+        16,
+      impactFlashColor:
+        presentation.feedback?.impactFlash
+          ?.color ?? "#ffffff",
+      impactFlashOpacity:
+        presentation.feedback?.impactFlash
+          ?.opacity ?? 0,
+      impactFlashDurationMs:
+        presentation.feedback?.impactFlash
+          ?.durationMs ?? 120,
+      impactFlashScale:
+        presentation.feedback?.impactFlash
+          ?.scale ?? 1.5,
+      impactShakeAmplitudePx:
+        presentation.feedback?.cameraShake
+          ?.amplitudePx ?? 0,
+      impactShakeDurationMs:
+        presentation.feedback?.cameraShake
+          ?.durationMs ?? 140
     }
   };
 
@@ -2388,6 +2531,10 @@ function writeSkillDraftFields(
     );
 
   writeSkillSpriteControlsV1(root, fields.presentation);
+  writeSkillFeedbackControlsV1(
+    root,
+    fields.presentation
+  );
   const values = [
     ["[data-skill-id]", fields.id],
     ["[data-skill-name]", fields.name],
@@ -2638,6 +2785,10 @@ function prepareNewSkillDraftFields(
     root,
     [],
     statRegistry
+  );
+  writeSkillFeedbackControlsV1(
+    root,
+    {}
   );
 
 }
@@ -6360,6 +6511,42 @@ function readSkillFields(root) {
       zoneAudioAssetId: selectedValue(
         root,
         "[data-skill-zone-audio]"
+      ),
+      fxGlowColor: selectedValue(
+        root,
+        "[data-skill-fx-glow-color]"
+      ),
+      fxGlowStrength: numericValue(
+        root,
+        "[data-skill-fx-glow-strength]"
+      ),
+      fxGlowRadiusPx: numericValue(
+        root,
+        "[data-skill-fx-glow-radius]"
+      ),
+      impactFlashColor: selectedValue(
+        root,
+        "[data-skill-impact-flash-color]"
+      ),
+      impactFlashOpacity: numericValue(
+        root,
+        "[data-skill-impact-flash-opacity]"
+      ),
+      impactFlashDurationMs: numericValue(
+        root,
+        "[data-skill-impact-flash-duration]"
+      ),
+      impactFlashScale: numericValue(
+        root,
+        "[data-skill-impact-flash-scale]"
+      ),
+      impactShakeAmplitudePx: numericValue(
+        root,
+        "[data-skill-impact-shake-amplitude]"
+      ),
+      impactShakeDurationMs: numericValue(
+        root,
+        "[data-skill-impact-shake-duration]"
       )
     }
   };
@@ -6494,11 +6681,71 @@ export function preserveUnrepresentedCreatureFieldsV1({
   };
 }
 
+function writeSkillFeedbackControlsV1(
+  root,
+  presentation = {}
+) {
+  const values = [
+    [
+      "[data-skill-fx-glow-color]",
+      presentation.fxGlowColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-fx-glow-strength]",
+      presentation.fxGlowStrength ?? 0
+    ],
+    [
+      "[data-skill-fx-glow-radius]",
+      presentation.fxGlowRadiusPx ?? 16
+    ],
+    [
+      "[data-skill-impact-flash-color]",
+      presentation.impactFlashColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-impact-flash-opacity]",
+      presentation.impactFlashOpacity ?? 0
+    ],
+    [
+      "[data-skill-impact-flash-duration]",
+      presentation.impactFlashDurationMs ??
+        120
+    ],
+    [
+      "[data-skill-impact-flash-scale]",
+      presentation.impactFlashScale ?? 1.5
+    ],
+    [
+      "[data-skill-impact-shake-amplitude]",
+      presentation.impactShakeAmplitudePx ??
+        0
+    ],
+    [
+      "[data-skill-impact-shake-duration]",
+      presentation.impactShakeDurationMs ??
+        140
+    ]
+  ];
+
+  for (const [selector, value] of values) {
+    const field = root.querySelector(selector);
+    if (field) {
+      field.value = String(value ?? "");
+    }
+  }
+}
+
 function writeCaptureFxStarterPresentationFieldsV1(
   root,
   presentation
 ) {
   writeSkillSpriteControlsV1(
+    root,
+    presentation
+  );
+  writeSkillFeedbackControlsV1(
     root,
     presentation
   );
