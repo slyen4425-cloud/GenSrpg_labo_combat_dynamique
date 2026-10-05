@@ -663,8 +663,8 @@ export function createDomSkillFxRenderer({
         "absolute";
       particle.style.left =
         "calc(" +
-        (anchorX * 100).toFixed(2) +
-        "% - " +
+        percent(anchorX) +
+        " - " +
         (
           unitX * offset -
           unitY * lateral
@@ -672,8 +672,8 @@ export function createDomSkillFxRenderer({
         "px)";
       particle.style.top =
         "calc(" +
-        (anchorY * 100).toFixed(2) +
-        "% - " +
+        percent(anchorY) +
+        " - " +
         (
           unitY * offset +
           unitX * lateral
