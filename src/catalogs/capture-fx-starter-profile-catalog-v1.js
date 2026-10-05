@@ -1,3 +1,7 @@
+import {
+  applyCaptureFxParticlePresetV1
+} from "./capture-fx-particle-presets-v1.js";
+
 const PRESENTATION_DEFAULTS = Object.freeze({
   iconAssetId: "",
   castAssetId: "",
@@ -41,7 +45,18 @@ const PRESENTATION_DEFAULTS = Object.freeze({
   impactFlashDurationMs: 120,
   impactFlashScale: 1.5,
   impactShakeAmplitudePx: 0,
-  impactShakeDurationMs: 140
+  impactShakeDurationMs: 140,
+  projectileTrailColor: "#ffffff",
+  projectileTrailCount: 0,
+  projectileTrailLengthPx: 0,
+  projectileTrailSizePx: 0,
+  projectileTrailOpacity: 0,
+  impactBurstColor: "#ffffff",
+  impactBurstCount: 0,
+  impactBurstSpreadPx: 0,
+  impactBurstSizePx: 0,
+  impactBurstDurationMs: 0,
+  impactBurstOpacity: 0
 });
 
 function frozenProfile({
@@ -49,8 +64,18 @@ function frozenProfile({
   label,
   family,
   description,
+  particlePresetId = "none",
   presentation
 }) {
+  const resolvedPresentation =
+    applyCaptureFxParticlePresetV1({
+      presetId: particlePresetId,
+      presentation: {
+        ...PRESENTATION_DEFAULTS,
+        ...presentation
+      }
+    });
+
   return Object.freeze({
     id,
     label,
@@ -58,16 +83,16 @@ function frozenProfile({
     description,
     source: "system",
     protected: true,
-    presentation: Object.freeze({
-      ...PRESENTATION_DEFAULTS,
-      ...presentation
-    })
+    presentation: Object.freeze(
+      resolvedPresentation
+    )
   });
 }
 
 export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
   frozenProfile({
     id: "capture:fx-profile:fireball-classic",
+    particlePresetId: "intense",
     label: "Boule de feu",
     family: "fire",
     description:
@@ -95,6 +120,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       travelAudioAssetId:
         "gensrpg:sound:genrpg-pack2-a30f1071",
       fxGlowColor: "#ff6a1f",
+      projectileTrailColor: "#ff6a1f",
+      impactBurstColor: "#ffd27a",
       fxGlowStrength: 0.85,
       fxGlowRadiusPx: 32,
       impactFlashColor: "#fff2c2",
@@ -107,6 +134,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
   }),
   frozenProfile({
     id: "capture:fx-profile:water-projectile",
+    particlePresetId: "visible",
     label: "Projectile d’eau",
     family: "water",
     description:
@@ -130,6 +158,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       travelAudioAssetId:
         "gensrpg:sound:genrpg-pack2-eb271979",
       fxGlowColor: "#46dfff",
+      projectileTrailColor: "#46dfff",
+      impactBurstColor: "#e8ffff",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22,
       impactFlashColor: "#e8ffff",
@@ -142,6 +172,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
   }),
   frozenProfile({
     id: "capture:fx-profile:electric-projectile",
+    particlePresetId: "very-intense",
     label: "Projectile électrique",
     family: "electric",
     description:
@@ -165,6 +196,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       travelAudioAssetId:
         "gensrpg:sound:genrpg-pack2-350eb251",
       fxGlowColor: "#a6eaff",
+      projectileTrailColor: "#a6eaff",
+      impactBurstColor: "#ffffff",
       fxGlowStrength: 1,
       fxGlowRadiusPx: 48,
       impactFlashColor: "#ffffff",
@@ -177,6 +210,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
   }),
   frozenProfile({
     id: "capture:fx-profile:nature-thorn",
+    particlePresetId: "visible",
     label: "Épine naturelle",
     family: "nature",
     description:
@@ -196,6 +230,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
         "pack:capture:sprite-impact-nature-01",
       impactDisplayScale: 1.45,
       fxGlowColor: "#7ee35f",
+      projectileTrailColor: "#7ee35f",
+      impactBurstColor: "#d7ffb8",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22,
       impactFlashColor: "#d9ffbd",
@@ -208,6 +244,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
   }),
   frozenProfile({
     id: "capture:fx-profile:physical-claw",
+    particlePresetId: "discreet",
     label: "Griffe physique",
     family: "physical",
     description:
@@ -225,6 +262,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       impactAudioAssetId:
         "gensrpg:sound:effect-7b158ebd",
       fxGlowColor: "#fff1d0",
+      projectileTrailColor: "#fff1d0",
+      impactBurstColor: "#ffe3ae",
       fxGlowStrength: 0.35,
       fxGlowRadiusPx: 12,
       impactFlashColor: "#ffffff",
@@ -237,6 +276,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
   }),
   frozenProfile({
     id: "capture:fx-profile:fire-zone",
+    particlePresetId: "intense",
     label: "Zone de flammes",
     family: "fire",
     description:
@@ -262,6 +302,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       castAudioAssetId:
         "gensrpg:sound:effect-135ee2ed",
       fxGlowColor: "#ff5d1c",
+      projectileTrailColor: "#ff5d1c",
+      impactBurstColor: "#ffcc7a",
       fxGlowStrength: 0.85,
       fxGlowRadiusPx: 32,
       impactFlashColor: "#fff0bd",
@@ -274,6 +316,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
   }),
   frozenProfile({
     id: "capture:fx-profile:healing-aura",
+    particlePresetId: "discreet",
     label: "Aura de soins",
     family: "light",
     description:
@@ -288,12 +331,15 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       zoneLayerPlayer: "front",
       zoneLayerOpponent: "front",
       fxGlowColor: "#9dffcf",
+      projectileTrailColor: "#9dffcf",
+      impactBurstColor: "#d8ffeb",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22
     }
   }),
   frozenProfile({
     id: "capture:fx-profile:energy-shield",
+    particlePresetId: "none",
     label: "Bouclier d’énergie",
     family: "defense",
     description:
@@ -308,6 +354,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       zoneLayerPlayer: "front",
       zoneLayerOpponent: "front",
       fxGlowColor: "#7de7ff",
+      projectileTrailColor: "#7de7ff",
+      impactBurstColor: "#d6f8ff",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22
     }
