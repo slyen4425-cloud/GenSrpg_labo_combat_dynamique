@@ -3084,7 +3084,12 @@
         "format": "sprite-strip",
         "mime": "image/webp",
         "frameCount": 12,
-        "frameMs": 45
+        "frameMs": 45,
+        "headingRad": 0,
+        "coreAnchor": {
+          "x": 0.666,
+          "y": 0.5
+        }
       },
       "compatibility": {
         "uses": [
