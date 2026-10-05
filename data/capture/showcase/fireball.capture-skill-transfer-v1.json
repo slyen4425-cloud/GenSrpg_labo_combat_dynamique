@@ -70,7 +70,7 @@
     },
     "presentation": {
       "id": "skill:fireball",
-      "version": 7,
+      "version": 8,
       "subjectType": "skill",
       "subjectId": "fireball",
       "visual": {
@@ -179,7 +179,9 @@
           "count": 7,
           "lengthPx": 56,
           "sizePx": 7,
-          "opacity": 0.8
+          "opacity": 0.8,
+          "anchorX": 0.5,
+          "anchorY": 0.36
         },
         "impactBurst": {
           "color": "#ffd27a",
@@ -190,13 +192,13 @@
           "opacity": 0.9
         },
         "aftermathSmoke": {
-          "color": "#594943",
-          "count": 5,
-          "spreadPx": 46,
-          "sizePx": 28,
-          "risePx": 42,
-          "durationMs": 760,
-          "opacity": 0.42
+          "color": "#75665f",
+          "count": 6,
+          "spreadPx": 58,
+          "sizePx": 36,
+          "risePx": 56,
+          "durationMs": 1250,
+          "opacity": 0.64
         }
       }
     }
