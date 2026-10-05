@@ -460,3 +460,81 @@ test("Human Editor round-trips V8 trail anchor, smoke and particle feedback with
     draft.presentation
   );
 });
+
+
+test("clash impact reuses the same impact feedback owner including smoke", () => {
+  const {
+    renderer,
+    appended
+  } = rendererHarness();
+
+  renderer.play({
+    type: "clash-impact",
+    skillId: "fireball",
+    fromSlot: "player",
+    targetSlot: "opponent",
+    progress: 0.5,
+    durationMs: 520
+  });
+
+  assert.equal(
+    appended.some(
+      (node) =>
+        node.dataset.skillFx ===
+        "impact-burst"
+    ),
+    true,
+    "clash must reuse impact burst feedback"
+  );
+  assert.equal(
+    appended.some(
+      (node) =>
+        node.dataset.skillFx ===
+        "aftermath-smoke"
+    ),
+    true,
+    "clash must reuse aftermath smoke feedback"
+  );
+});
+
+test("smoke peaks after the impact and carries a visible neutral haze core", () => {
+  const {
+    renderer,
+    appended,
+    animations
+  } = rendererHarness();
+
+  renderer.play({
+    type: "impact",
+    skillId: "fireball",
+    targetSlot: "opponent",
+    durationMs: 420
+  });
+
+  const smoke =
+    appended.find(
+      (node) =>
+        node.dataset.skillFx ===
+        "aftermath-smoke"
+    );
+  assert.ok(smoke);
+
+  const puff = smoke.children[0];
+  assert.match(
+    puff.style.background,
+    /rgba\(235, 235, 235/
+  );
+
+  const smokeAnimation =
+    animations.find(
+      ({ target }) =>
+        target.dataset.skillFx ===
+        "aftermath-smoke-puff"
+    );
+  assert.ok(smokeAnimation);
+  assert.equal(
+    smokeAnimation.keyframes[1].offset >= 0.4,
+    true,
+    "smoke should become visible after the initial explosion"
+  );
+});
