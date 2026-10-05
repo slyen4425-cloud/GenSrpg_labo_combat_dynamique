@@ -132,6 +132,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
         "gensrpg:sound:effect-135ee2ed",
       travelAudioAssetId:
         "gensrpg:sound:genrpg-pack2-a30f1071",
+      impactAudioAssetId:
+        "gensrpg:sound:tower-d4a4ecd5",
       fxGlowColor: "#ff6a1f",
       castBurstColor: "#ff9a3d",
       projectileTrailColor: "#ff6a1f",
