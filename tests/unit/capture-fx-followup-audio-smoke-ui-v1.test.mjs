@@ -265,17 +265,29 @@ test("SkillPresentationBinding V7 owns bounded cast particles and renderer uses 
     durationMs: 1200
   });
 
-  const castParticles =
+  const castNode =
     appended.find(
       (node) =>
         node.dataset.skillFx ===
-        "cast-burst"
+        "cast"
     );
 
-  assert.ok(castParticles);
+  assert.ok(castNode);
+
+  const castParticles =
+    castNode.children.filter(
+      (node) =>
+        node.dataset.skillFx ===
+        "cast-burst-particle"
+    );
+
   assert.equal(
-    castParticles.children.length,
+    castParticles.length,
     6
+  );
+  assert.equal(
+    castNode.dataset.fxCastBurstCount,
+    "6"
   );
   assert.equal(
     animations.some(
