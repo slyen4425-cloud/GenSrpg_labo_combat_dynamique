@@ -20,6 +20,7 @@ export const SKILL_PRESENTATION_AUDIO_SLOTS = Object.freeze([
   "release",
   "travel",
   "impact",
+  "aura",
   "vanish",
   "reappear",
   "hit",
