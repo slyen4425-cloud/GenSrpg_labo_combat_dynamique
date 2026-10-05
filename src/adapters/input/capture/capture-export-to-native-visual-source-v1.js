@@ -99,6 +99,15 @@ export function adaptCaptureExportToNativeVisualSourceV1({
 
   function assetUrl(assetId) {
     const asset = assetById.get(assetId);
+    const runtimeUrl =
+      asset?.resource?.runtimeUrl;
+    if (
+      typeof runtimeUrl === "string" &&
+      runtimeUrl.trim() !== ""
+    ) {
+      return runtimeUrl;
+    }
+
     const file = asset?.resource?.file;
 
     if (
