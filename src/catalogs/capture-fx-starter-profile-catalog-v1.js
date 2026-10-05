@@ -408,6 +408,61 @@ export function captureFxStarterProfileByIdV1(
   return BY_ID.get(String(profileId ?? "")) ?? null;
 }
 
+function nonEmptyAssetId(value) {
+  return (
+    typeof value === "string" &&
+    value.trim() !== ""
+  );
+}
+
+function authoredSlotValues(
+  presentation,
+  slot
+) {
+  const assetKey =
+    slot === "icon"
+      ? "iconAssetId"
+      : slot + "AssetId";
+
+  if (
+    !nonEmptyAssetId(
+      presentation[assetKey]
+    )
+  ) {
+    return {};
+  }
+
+  if (slot === "icon") {
+    return {
+      iconAssetId:
+        presentation.iconAssetId
+    };
+  }
+
+  const excludedPrefixes = {
+    cast: ["castBurst", "castAudio"],
+    travel: ["travelAudio"],
+    impact: [
+      "impactFlash",
+      "impactShake",
+      "impactBurst",
+      "impactAudio"
+    ],
+    zone: ["zoneAudio"]
+  }[slot] ?? [];
+
+  return Object.fromEntries(
+    Object.entries(presentation)
+      .filter(([key]) =>
+        key.startsWith(slot) &&
+        !excludedPrefixes.some(
+          (prefix) =>
+            key.startsWith(prefix)
+        )
+      )
+  );
+}
+
 export function applyCaptureFxStarterProfileV1({
   profileId,
   presentation = {}
@@ -446,8 +501,9 @@ export function applyCaptureFxStarterProfileV1({
   const preservedAudio = Object.fromEntries(
     audioKeys
       .filter((key) =>
-        typeof presentation[key] === "string" &&
-        presentation[key].trim() !== ""
+        nonEmptyAssetId(
+          presentation[key]
+        )
       )
       .map((key) => [
         key,
@@ -455,10 +511,34 @@ export function applyCaptureFxStarterProfileV1({
       ])
   );
 
+  const preservedAuthoredMedia = {
+    ...authoredSlotValues(
+      presentation,
+      "icon"
+    ),
+    ...authoredSlotValues(
+      presentation,
+      "cast"
+    ),
+    ...authoredSlotValues(
+      presentation,
+      "travel"
+    ),
+    ...authoredSlotValues(
+      presentation,
+      "impact"
+    ),
+    ...authoredSlotValues(
+      presentation,
+      "zone"
+    )
+  };
+
   return {
     ...presentation,
     ...PRESENTATION_DEFAULTS,
     ...profile.presentation,
+    ...preservedAuthoredMedia,
     ...preservedAudio,
     socketId,
     statusVisuals
