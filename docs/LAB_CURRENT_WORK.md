@@ -25026,3 +25026,36 @@ Publication de validation prévue sur le même SHA final :
 - page : `examples/dom-demo/capture-editor-v2.html`.
 
 Validation utilisateur demandée : sélectionner les trois entrées « Boule de feu 2 » dans Cast / Projectile / Impact, sauvegarder la capacité, lancer le combat et confirmer la netteté/taille/animation sur PC et smartphone. Aucun merge vers `main` avant validation explicite de Sylvain.
+
+
+## Lot actif — fireball-2-projectile-alpha-clean-v1
+
+Date : 2026-10-05
+
+Retour utilisateur : le projectile « Boule de feu 2 » affiche en combat une large forme semi-transparente sous la boule de feu, perçue comme un sous-calque / triangle parasite. Validation visuelle utilisateur : ÉCHEC pour le projectile actuel.
+
+Diagnostic démontré : le générateur V1 du projectile fabrique une nappe alpha très large derrière le noyau (ancienne couverture alpha ~47 % d'une frame 512², dont ~50 % de pixels alpha faibles), puis ajoute un glow large. Le défaut est donc dans la source média, pas dans Combat Runtime, le renderer, le timing ou la collision.
+
+Objectif : remplacer uniquement les 12 frames et l'atlas du projectile `fireball_2` par une version propre, compacte et à alpha serré, sans toucher au cast, à l'impact, au gameplay ou au moteur.
+
+Base fonctionnelle : `3ada7e93d3b66150439801a5fbaea676b54471a8`.
+Checkpoint de départ : `checkpoint/lab-start-fireball-2-projectile-alpha-clean-v1-2026-10-05`.
+Branche fonctionnelle : `work/lab-fireball-2-projectile-alpha-clean-v1-2026-10-05`.
+Base global-assets : `a56f0e627318865e183a68cae739bbe70454e049`.
+Checkpoint assets de départ : `checkpoint/lab-global-assets-before-fireball-2-projectile-alpha-clean-v1-2026-10-05`.
+Branche assets : `work/lab-global-assets-fireball-2-projectile-alpha-clean-v1-2026-10-05`.
+
+Propriétaire : Asset Input / bibliothèque visuelle Capture uniquement.
+
+Fichiers autorisés :
+- `assets/library/capture/sprites/skills/fireball_2/frames/sprite_skill_fireball_2_projectile_*.png` ;
+- `assets/library/capture/sprites/skills/fireball_2/atlases/sprite_skill_fireball_2_projectile_atlas_01.webp` ;
+- test sentinelle spécifique de l'alpha projectile ;
+- cache-buster `src/assets/global-visual-library.js` après publication asset ;
+- documentation du lot.
+
+Protégés : ancienne Boule de feu, Fireball 2 cast/impact, catalogue IDs, SkillDefinition, Combat Rules, Combat Runtime, Animation Core, FX Core, Render Adapter, collision/contact, timing, dégâts, énergie, cooldown, `main`, `Zombicide-40k`.
+
+Test RED/GREEN : la sentinelle mesure directement les pixels alpha PNG. Elle doit rejeter une frame dont le projectile occupe une part excessive de la surface ou dont la majorité de l'effet est un voile faiblement alpha. Cible : couverture alpha < 15 % de 512² et part alpha faible < 35 % des pixels visibles pour chacune des 12 frames. Dimensions 512×512 RGBA et atlas 6144×512 restent inchangés.
+
+Critère de fin : plus aucune nappe / triangle semi-transparent visible derrière le projectile dans le vrai combat ; 12 frames propres, même assetId et même pipeline ; CI complète verte ; preview dédiée ; validation utilisateur avant tout merge main.
