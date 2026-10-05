@@ -25112,3 +25112,24 @@ Tests RED prévus :
 Interdit : second loader, logique spécifique Fireball 2 dans l'UI/renderer, modification dégâts/collision/timing/énergie/cooldown, modification Zombicide-40k, direct main.
 
 Critère de fin : scale 0.25–8 réellement respecté en projectile, Fireball 2 projectile visuellement dense et lisible, CI complète verte, preview dédiée, puis validation utilisateur.
+
+
+## fireball-2-projectile-scale-art-v2 — résultat technique
+
+Statut : **GREEN technique / validation utilisateur en attente**.
+
+- scale : RED `6c751ae66ce663a585de0ab29f632a63aa6820e8`, CI `37325539693` FAILURE attendu ; le renderer plafonnait le projectile à 4× alors que le contrat autorise 8× ;
+- fix scale : `src/adapters/renderer/dom-skill-fx.js`, clamp projectile aligné à 8× ;
+- asset : RED `2e340123856597795cb3966d789fba2f2597aaf6`, CI `37325708492` FAILURE attendu, ancien projectile = 7.3 % de couverture source ;
+- nouveau média V2 : vortex HD dérivé des frames Cast Fireball 2 natives + traînée séparée, sans nappe alpha commune ;
+- asset GREEN : `dff69879fb99372f9727496fb8d67a3f1cd05325` ;
+- checkpoint global-assets : `checkpoint/lab-global-assets-fireball-2-projectile-scale-art-v2-green-2026-10-05`, CI `37326842870` SUCCESS ;
+- global-assets : `dff69879fb99372f9727496fb8d67a3f1cd05325`, CI `37326864054` SUCCESS ;
+- cache revision : `2026-10-05-v14-fireball-2-projectile-scale-art-v2` ;
+- CI fonctionnelle pré-doc : `37326902430` SUCCESS, **1036/1036 PASS**, garde structure/indépendance OK ;
+- rapport : `docs/LAB_FIREBALL_2_PROJECTILE_SCALE_ART_V2.md` ;
+- aucun changement Combat Runtime / Rules / Animation Core / FX Core / collision / timing / dégâts ; aucun Zombicide-40k ; aucun merge main.
+
+Publication finale après CI documentaire :
+- checkpoint : `checkpoint/lab-fireball-2-projectile-scale-art-v2-green-2026-10-05` ;
+- preview : `preview/lab-fireball-2-projectile-scale-art-v2-2026-10-05`.
