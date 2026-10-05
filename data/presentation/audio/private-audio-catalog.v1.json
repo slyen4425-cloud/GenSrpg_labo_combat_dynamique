@@ -8,46 +8,6 @@
   },
   "entries": [
     {
-      "assetId": "gensrpg:sound:academie-3486238a",
-      "label": "Extra academi champ5",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "travel"
-      ],
-      "tags": [
-        "academie"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-adacc45a",
-      "label": "Extra academi champ 2",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "academie",
-        "champion"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-9e32ace1",
-      "label": "Extra leg academie 7",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "academie"
-      ],
-      "status": "reviewed"
-    },
-    {
       "assetId": "gensrpg:sound:academie-01fc18a6",
       "label": "acadamie xtra spell",
       "category": "academie",
@@ -62,73 +22,6 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:academie-bdd3a57c",
-      "label": "academi xtra2",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "academie"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-d2029153",
-      "label": "academi xtra die",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "death"
-      ],
-      "tags": [
-        "academie"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-ca7e09ad",
-      "label": "academi xtra heal",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "heal"
-      ],
-      "tags": [
-        "academie",
-        "magic"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-ac7c1374",
-      "label": "academi xtra hit",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "academie"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-7a0a7cc7",
-      "label": "academi xtra voice",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "academie",
-        "creature"
-      ],
-      "status": "auto"
-    },
-    {
       "assetId": "gensrpg:sound:academie-0acd2505",
       "label": "extra 8",
       "category": "academie",
@@ -138,34 +31,6 @@
       ],
       "tags": [
         "academie"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-da8d5dcd",
-      "label": "extra academi champ 3",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "academie",
-        "champion"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:academie-b0fe6a46",
-      "label": "extra academi champ 6",
-      "category": "academie",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "academie",
-        "champion"
       ],
       "status": "reviewed"
     },
@@ -198,6 +63,19 @@
       "status": "reviewed"
     },
     {
+      "assetId": "gensrpg:sound:academie-3486238a",
+      "label": "Extra academi champ5",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "academie"
+      ],
+      "status": "reviewed"
+    },
+    {
       "assetId": "gensrpg:sound:academie-61dd7cbf",
       "label": "extra leg academi step",
       "category": "academie",
@@ -211,49 +89,130 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:conflux-43060f16",
-      "label": "abiliti t1 conflux",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "cast"
-      ],
-      "tags": [
-        "conflux",
-        "magic"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-4dc90140",
-      "label": "conflux t1 die",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "death"
-      ],
-      "tags": [
-        "conflux"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-d76276f8",
-      "label": "conflux t1 voice",
-      "category": "conflux",
+      "assetId": "gensrpg:sound:academie-7a0a7cc7",
+      "label": "academi xtra voice",
+      "category": "academie",
       "format": "wav",
       "roles": [
         "voice"
       ],
       "tags": [
-        "conflux",
+        "academie",
         "creature"
       ],
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:conflux-643188d7",
-      "label": "conflux t1 voice 5 ok",
+      "assetId": "gensrpg:sound:academie-9e32ace1",
+      "label": "Extra leg academie 7",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "academie"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:academie-ac7c1374",
+      "label": "academi xtra hit",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "academie"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:academie-adacc45a",
+      "label": "Extra academi champ 2",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "academie",
+        "champion"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:academie-b0fe6a46",
+      "label": "extra academi champ 6",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "academie",
+        "champion"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:academie-bdd3a57c",
+      "label": "academi xtra2",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "academie"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:academie-ca7e09ad",
+      "label": "academi xtra heal",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "heal"
+      ],
+      "tags": [
+        "academie",
+        "magic"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:academie-d2029153",
+      "label": "academi xtra die",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "death"
+      ],
+      "tags": [
+        "academie"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:academie-da8d5dcd",
+      "label": "extra academi champ 3",
+      "category": "academie",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "academie",
+        "champion"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-0100cbba",
+      "label": "t1 conflux voice 4 ok",
       "category": "conflux",
       "format": "wav",
       "roles": [
@@ -280,60 +239,6 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:conflux-74460178",
-      "label": "conflux wooch t1",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "travel"
-      ],
-      "tags": [
-        "conflux"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-60df1255",
-      "label": "fire att conf",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "conflux",
-        "fire"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-da9a4465",
-      "label": "spelair t6conf",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "conflux"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-57519c35",
-      "label": "spell t6conf",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "cast"
-      ],
-      "tags": [
-        "conflux",
-        "magic"
-      ],
-      "status": "auto"
-    },
-    {
       "assetId": "gensrpg:sound:conflux-121fd9ca",
       "label": "t1 conflux voice2",
       "category": "conflux",
@@ -345,60 +250,6 @@
         "conflux"
       ],
       "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-7a2e5c19",
-      "label": "t1 conflux voice2 ok",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "conflux"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-61732794",
-      "label": "t1 conflux voice3 ok",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "conflux"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-59ed5bba",
-      "label": "t1 conflux voice 1ok",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "conflux",
-        "creature"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:conflux-0100cbba",
-      "label": "t1 conflux voice 4 ok",
-      "category": "conflux",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "conflux",
-        "creature"
-      ],
-      "status": "auto"
     },
     {
       "assetId": "gensrpg:sound:conflux-16222611",
@@ -428,6 +279,141 @@
       "status": "auto"
     },
     {
+      "assetId": "gensrpg:sound:conflux-22be60bc",
+      "label": "wooch2 conflux",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "other"
+      ],
+      "tags": [
+        "conflux"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-43060f16",
+      "label": "abiliti t1 conflux",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "conflux",
+        "magic"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-4dc90140",
+      "label": "conflux t1 die",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "death"
+      ],
+      "tags": [
+        "conflux"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-57519c35",
+      "label": "spell t6conf",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "conflux",
+        "magic"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-59ed5bba",
+      "label": "t1 conflux voice 1ok",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "conflux",
+        "creature"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-60df1255",
+      "label": "fire att conf",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "conflux",
+        "fire"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-61732794",
+      "label": "t1 conflux voice3 ok",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "conflux"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-643188d7",
+      "label": "conflux t1 voice 5 ok",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "conflux",
+        "creature"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-74460178",
+      "label": "conflux wooch t1",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "conflux"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-7a2e5c19",
+      "label": "t1 conflux voice2 ok",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "conflux"
+      ],
+      "status": "reviewed"
+    },
+    {
       "assetId": "gensrpg:sound:conflux-91909bd9",
       "label": "t6 conf hit",
       "category": "conflux",
@@ -441,17 +427,45 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:conflux-22be60bc",
-      "label": "wooch2 conflux",
+      "assetId": "gensrpg:sound:conflux-d76276f8",
+      "label": "conflux t1 voice",
       "category": "conflux",
       "format": "wav",
       "roles": [
-        "other"
+        "voice"
+      ],
+      "tags": [
+        "conflux",
+        "creature"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:conflux-da9a4465",
+      "label": "spelair t6conf",
+      "category": "conflux",
+      "format": "wav",
+      "roles": [
+        "release"
       ],
       "tags": [
         "conflux"
       ],
       "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:divers_mp3-828333ec",
+      "label": "Creatures, Small, Gizmo, Voice, Singing 24",
+      "category": "divers_mp3",
+      "format": "mp3",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "creature",
+        "misc"
+      ],
+      "status": "auto"
     },
     {
       "assetId": "gensrpg:sound:divers_mp3-9fe7a97d",
@@ -468,15 +482,14 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:divers_mp3-828333ec",
-      "label": "Creatures, Small, Gizmo, Voice, Singing 24",
+      "assetId": "gensrpg:sound:divers_mp3-a1ca84e9",
+      "label": "User Interface, Click, Button Press Click, Tap, Video Game, Main Menu, Select, Positive 03",
       "category": "divers_mp3",
       "format": "mp3",
       "roles": [
-        "voice"
+        "ui"
       ],
       "tags": [
-        "creature",
         "misc"
       ],
       "status": "auto"
@@ -499,19 +512,6 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:divers_mp3-a1ca84e9",
-      "label": "User Interface, Click, Button Press Click, Tap, Video Game, Main Menu, Select, Positive 03",
-      "category": "divers_mp3",
-      "format": "mp3",
-      "roles": [
-        "ui"
-      ],
-      "tags": [
-        "misc"
-      ],
-      "status": "auto"
-    },
-    {
       "assetId": "gensrpg:sound:divers_mp3-fe09528d",
       "label": "User Interface, Click, Digital, Video Game, Select, Positive, Notification 02",
       "category": "divers_mp3",
@@ -525,12 +525,26 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-559c0015",
-      "label": "Dungeon 1",
+      "assetId": "gensrpg:sound:dungeon-239879d2",
+      "label": "dungeon elite 8",
       "category": "dungeon",
       "format": "wav",
       "roles": [
-        "impact"
+        "release"
+      ],
+      "tags": [
+        "dungeon",
+        "elite"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:dungeon-37502a1a",
+      "label": "dungeon3",
+      "category": "dungeon",
+      "format": "wav",
+      "roles": [
+        "movement"
       ],
       "tags": [
         "dungeon"
@@ -538,12 +552,12 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-fb226158",
-      "label": "Dungeon elite1",
+      "assetId": "gensrpg:sound:dungeon-559c0015",
+      "label": "Dungeon 1",
       "category": "dungeon",
       "format": "wav",
       "roles": [
-        "voice"
+        "impact"
       ],
       "tags": [
         "dungeon"
@@ -564,12 +578,12 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-e4616562",
-      "label": "Dungeon elite3",
+      "assetId": "gensrpg:sound:dungeon-84537baf",
+      "label": "dungeon4",
       "category": "dungeon",
       "format": "wav",
       "roles": [
-        "voice"
+        "impact"
       ],
       "tags": [
         "dungeon"
@@ -577,25 +591,12 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-cfb0e46e",
-      "label": "Dungeon elite7",
+      "assetId": "gensrpg:sound:dungeon-90ca8254",
+      "label": "dungeon elite5",
       "category": "dungeon",
       "format": "wav",
       "roles": [
-        "release"
-      ],
-      "tags": [
-        "dungeon"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:dungeon-fb4ab68e",
-      "label": "dungeon-elite9",
-      "category": "dungeon",
-      "format": "wav",
-      "roles": [
-        "voice"
+        "cast"
       ],
       "tags": [
         "dungeon"
@@ -616,32 +617,6 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-37502a1a",
-      "label": "dungeon3",
-      "category": "dungeon",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "dungeon"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:dungeon-84537baf",
-      "label": "dungeon4",
-      "category": "dungeon",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "dungeon"
-      ],
-      "status": "reviewed"
-    },
-    {
       "assetId": "gensrpg:sound:dungeon-c1a676ec",
       "label": "dungeon5",
       "category": "dungeon",
@@ -655,12 +630,12 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-ee185b37",
-      "label": "dungeon elite4",
+      "assetId": "gensrpg:sound:dungeon-cfb0e46e",
+      "label": "Dungeon elite7",
       "category": "dungeon",
       "format": "wav",
       "roles": [
-        "cast"
+        "release"
       ],
       "tags": [
         "dungeon"
@@ -668,12 +643,12 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-90ca8254",
-      "label": "dungeon elite5",
+      "assetId": "gensrpg:sound:dungeon-e4616562",
+      "label": "Dungeon elite3",
       "category": "dungeon",
       "format": "wav",
       "roles": [
-        "cast"
+        "voice"
       ],
       "tags": [
         "dungeon"
@@ -695,94 +670,83 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:dungeon-239879d2",
-      "label": "dungeon elite 8",
+      "assetId": "gensrpg:sound:dungeon-ee185b37",
+      "label": "dungeon elite4",
       "category": "dungeon",
       "format": "wav",
       "roles": [
-        "release"
+        "cast"
       ],
       "tags": [
-        "dungeon",
-        "elite"
+        "dungeon"
       ],
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:effect-ce3fbb1f",
-      "label": "1",
-      "category": "effect",
+      "assetId": "gensrpg:sound:dungeon-fb226158",
+      "label": "Dungeon elite1",
+      "category": "dungeon",
       "format": "wav",
       "roles": [
         "voice"
       ],
       "tags": [
-        "generic"
+        "dungeon"
       ],
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:effect-ea02b196",
-      "label": "2",
-      "category": "effect",
+      "assetId": "gensrpg:sound:dungeon-fb4ab68e",
+      "label": "dungeon-elite9",
+      "category": "dungeon",
       "format": "wav",
       "roles": [
         "voice"
       ],
       "tags": [
-        "generic"
+        "dungeon"
       ],
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:effect-ac558b19",
-      "label": "3",
+      "assetId": "gensrpg:sound:effect-01d545e2",
+      "label": "Fight, Bodyfall, Sand, Rolling Fall 02",
       "category": "effect",
       "format": "wav",
       "roles": [
-        "voice"
+        "impact",
+        "movement"
+      ],
+      "tags": [
+        "generic",
+        "sand"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-0221d6ed",
+      "label": "Type 04, Jump, Short, Video Game 01",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "movement"
       ],
       "tags": [
         "generic"
       ],
-      "status": "reviewed"
+      "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:effect-13980500",
-      "label": "4",
+      "assetId": "gensrpg:sound:effect-0adcb596",
+      "label": "Weapons, Sword, Chop Air 03",
       "category": "effect",
       "format": "wav",
       "roles": [
-        "voice"
+        "impact",
+        "travel"
       ],
       "tags": [
-        "generic"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-8cfab6d3",
-      "label": "5",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "generic"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-7b158ebd",
-      "label": "Battle Axe, Chop, Impact, Person, Fleshy Wound, Guts 02",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "flesh",
+        "air",
         "generic",
         "physical",
         "weapon"
@@ -805,17 +769,15 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:effect-01d545e2",
-      "label": "Fight, Bodyfall, Sand, Rolling Fall 02",
+      "assetId": "gensrpg:sound:effect-1152270d",
+      "label": "Type 04, Jump, Short, Video Game 01 2",
       "category": "effect",
       "format": "wav",
       "roles": [
-        "impact",
         "movement"
       ],
       "tags": [
-        "generic",
-        "sand"
+        "generic"
       ],
       "status": "auto"
     },
@@ -835,19 +797,43 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:effect-df32b429",
-      "label": "Heavy, Two Handed, Attack, Hit Flesh, Impact",
+      "assetId": "gensrpg:sound:effect-13980500",
+      "label": "4",
       "category": "effect",
       "format": "wav",
       "roles": [
-        "impact",
-        "release"
+        "voice"
       ],
       "tags": [
-        "flesh",
+        "generic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-15710328",
+      "label": "Type 04, Jump, Short, Video Game 013",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "generic"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-2bcfd413",
+      "label": "tir ice",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
         "generic",
-        "heavy",
-        "physical"
+        "ice",
+        "projectile"
       ],
       "status": "auto"
     },
@@ -871,11 +857,12 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:effect-0221d6ed",
-      "label": "Type 04, Jump, Short, Video Game 01",
+      "assetId": "gensrpg:sound:effect-79dd62d8",
+      "label": "Wings, Insects, Moth, Wings Flap, Fly Close",
       "category": "effect",
       "format": "wav",
       "roles": [
+        "travel",
         "movement"
       ],
       "tags": [
@@ -884,45 +871,33 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:effect-1152270d",
-      "label": "Type 04, Jump, Short, Video Game 01 2",
+      "assetId": "gensrpg:sound:effect-7b158ebd",
+      "label": "Battle Axe, Chop, Impact, Person, Fleshy Wound, Guts 02",
       "category": "effect",
       "format": "wav",
       "roles": [
-        "movement"
+        "impact"
       ],
       "tags": [
-        "generic"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-15710328",
-      "label": "Type 04, Jump, Short, Video Game 013",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "generic"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-fe15b765",
-      "label": "Weapons, Blunt, Item Pick Up, Wood Baton, Gameplay",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "loot"
-      ],
-      "tags": [
+        "flesh",
         "generic",
         "physical",
         "weapon"
       ],
       "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-8cfab6d3",
+      "label": "5",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "generic"
+      ],
+      "status": "reviewed"
     },
     {
       "assetId": "gensrpg:sound:effect-957e499d",
@@ -932,6 +907,154 @@
       "roles": [
         "impact",
         "movement"
+      ],
+      "tags": [
+        "generic",
+        "physical",
+        "weapon"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-a59c0522",
+      "label": "Weapons, Sword, Drop On Ground, Bounce",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "item"
+      ],
+      "tags": [
+        "generic",
+        "physical",
+        "weapon"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-ac558b19",
+      "label": "3",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "generic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-ad54aecf",
+      "label": "Weapons, Sword, Heavy Sword, Axe, Medieval Melee Weapon, Whoosh, Hard Ringing Impact x5 01",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "impact",
+        "travel"
+      ],
+      "tags": [
+        "generic",
+        "heavy",
+        "physical",
+        "weapon"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-b9969d04",
+      "label": "Weapons, Sword, Drop On Ground, Bounce",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "item"
+      ],
+      "tags": [
+        "generic",
+        "physical",
+        "weapon"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-c046e553",
+      "label": "Weapons, Sword, Remove From Stand",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "equip"
+      ],
+      "tags": [
+        "generic",
+        "physical",
+        "weapon"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-ce3fbb1f",
+      "label": "1",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "generic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-df32b429",
+      "label": "Heavy, Two Handed, Attack, Hit Flesh, Impact",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "impact",
+        "release"
+      ],
+      "tags": [
+        "flesh",
+        "generic",
+        "heavy",
+        "physical"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-ea02b196",
+      "label": "2",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "generic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-ee93278c",
+      "label": "blood",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "flesh",
+        "generic",
+        "physical"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:effect-fe15b765",
+      "label": "Weapons, Blunt, Item Pick Up, Wood Baton, Gameplay",
+      "category": "effect",
+      "format": "wav",
+      "roles": [
+        "loot"
       ],
       "tags": [
         "generic",
@@ -958,141 +1081,17 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:effect-0adcb596",
-      "label": "Weapons, Sword, Chop Air 03",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "impact",
-        "travel"
-      ],
-      "tags": [
-        "air",
-        "generic",
-        "physical",
-        "weapon"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-a59c0522",
-      "label": "Weapons, Sword, Drop On Ground, Bounce",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "item"
-      ],
-      "tags": [
-        "generic",
-        "physical",
-        "weapon"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-b9969d04",
-      "label": "Weapons, Sword, Drop On Ground, Bounce",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "item"
-      ],
-      "tags": [
-        "generic",
-        "physical",
-        "weapon"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-ad54aecf",
-      "label": "Weapons, Sword, Heavy Sword, Axe, Medieval Melee Weapon, Whoosh, Hard Ringing Impact x5 01",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "impact",
-        "travel"
-      ],
-      "tags": [
-        "generic",
-        "heavy",
-        "physical",
-        "weapon"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-c046e553",
-      "label": "Weapons, Sword, Remove From Stand",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "equip"
-      ],
-      "tags": [
-        "generic",
-        "physical",
-        "weapon"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-79dd62d8",
-      "label": "Wings, Insects, Moth, Wings Flap, Fly Close",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "travel",
-        "movement"
-      ],
-      "tags": [
-        "generic"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-ee93278c",
-      "label": "blood",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "flesh",
-        "generic",
-        "physical"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:effect-2bcfd413",
-      "label": "tir ice",
-      "category": "effect",
-      "format": "wav",
-      "roles": [
-        "travel"
-      ],
-      "tags": [
-        "generic",
-        "ice",
-        "projectile"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:fortress-d875ef90",
-      "label": "String, Draw, Slow x2 02",
+      "assetId": "gensrpg:sound:fortress-5648b0c7",
+      "label": "fortress champ2",
       "category": "fortress",
       "format": "wav",
       "roles": [
-        "preparation"
+        "voice"
       ],
       "tags": [
-        "fortress",
-        "projectile"
+        "fortress"
       ],
-      "status": "auto"
+      "status": "reviewed"
     },
     {
       "assetId": "gensrpg:sound:fortress-60d88c72",
@@ -1101,6 +1100,46 @@
       "format": "wav",
       "roles": [
         "travel"
+      ],
+      "tags": [
+        "fortress",
+        "projectile"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:fortress-652247a5",
+      "label": "fortress champ4",
+      "category": "fortress",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "fortress"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:fortress-be1c8b1e",
+      "label": "fortress champ1",
+      "category": "fortress",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "fortress"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:fortress-d875ef90",
+      "label": "String, Draw, Slow x2 02",
+      "category": "fortress",
+      "format": "wav",
+      "roles": [
+        "preparation"
       ],
       "tags": [
         "fortress",
@@ -1122,32 +1161,6 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:fortress-be1c8b1e",
-      "label": "fortress champ1",
-      "category": "fortress",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "fortress"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:fortress-5648b0c7",
-      "label": "fortress champ2",
-      "category": "fortress",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "fortress"
-      ],
-      "status": "reviewed"
-    },
-    {
       "assetId": "gensrpg:sound:fortress-f6c41464",
       "label": "fortress champ3",
       "category": "fortress",
@@ -1161,58 +1174,525 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:fortress-652247a5",
-      "label": "fortress champ4",
-      "category": "fortress",
-      "format": "wav",
+      "assetId": "gensrpg:sound:genrpg-pack2-03b2807d",
+      "label": "Ombre cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
       "roles": [
-        "voice"
+        "cast"
       ],
       "tags": [
-        "fortress"
+        "genrpg-pack2",
+        "magic",
+        "shadow"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-0e09054e",
+      "label": "Light projectile",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-2f09138e",
+      "label": "Earth cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "magic"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-34855cd9",
+      "label": "Ligth cast2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "magic"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-350eb251",
+      "label": "Electrique projectile",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "electric",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-38ce71b8",
+      "label": "Neutral magic2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-3bd3537a",
+      "label": "Neutral magic1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-3e95d6c6",
+      "label": "Ombre projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "projectile",
+        "shadow"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-71e62374",
+      "label": "Earth cast2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "magic"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-742f6521",
+      "label": "Impact earth3",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "impact"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-85f6f942",
+      "label": "Light persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "persistent-zone"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-879fc11a",
+      "label": "Neutral poison projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "poison",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-9291c6e4",
+      "label": "Neutral magic3",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-9320854b",
+      "label": "Move or projectile air",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "movement",
+        "travel"
+      ],
+      "tags": [
+        "air",
+        "genrpg-pack2",
+        "movement"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-963199e0",
+      "label": "Ice projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "ice",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-99a48e77",
+      "label": "Air cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "air",
+        "genrpg-pack2",
+        "magic"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a0b4a892",
+      "label": "Ligth cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "magic"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a1a5682d",
+      "label": "Fire projectile2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "fire",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a30f1071",
+      "label": "Fire projectile",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "fire",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+      "label": "Impact earth2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "impact"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-af938ec6",
+      "label": "Electrique projectile2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "electric",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-b8525ce4",
+      "label": "Ligth cast3",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "magic"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-c0a77bc4",
+      "label": "Ice persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "ice",
+        "persistent-zone"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-c3350e1b",
+      "label": "Electrique persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "electric",
+        "genrpg-pack2",
+        "persistent-zone"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-cc66c3dd",
+      "label": "Neutral magic4",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-d213bf07",
+      "label": "Air persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "air",
+        "genrpg-pack2",
+        "persistent-zone"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-eb271979",
+      "label": "Water projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "projectile",
+        "water"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-ebe64290",
+      "label": "Ombre cast2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "magic",
+        "shadow"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-ecd9f884",
+      "label": "ES Wings, Insect, Tiny, Pass By Epidemic Sound",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "insect",
+        "movement",
+        "wing"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-f75d0d8f",
+      "label": "Impact earth1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "impact"
+      ],
+      "status": "reviewed",
+      "sourcePack": "genrpg_pack2"
+    },
+    {
+      "assetId": "gensrpg:sound:inferno-0c6d976b",
+      "label": "elite inferno4",
+      "category": "inferno",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "elite",
+        "inferno"
       ],
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:inferno-d162e843",
-      "label": "Ghoul Beast, Vocalization, Slobber, Scream, Scary 01",
-      "category": "inferno",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "creature",
-        "dark",
-        "inferno"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:inferno-fb3ce200",
-      "label": "Ghoul Beast, Vocalization, Slobber, Scream, Scary 02",
-      "category": "inferno",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "creature",
-        "dark",
-        "inferno"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:inferno-3bae5dc9",
-      "label": "elite inferno",
+      "assetId": "gensrpg:sound:inferno-26d547f3",
+      "label": "evil1",
       "category": "inferno",
       "format": "wav",
       "roles": [
         "release"
       ],
       "tags": [
-        "elite",
+        "inferno"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:inferno-27f6cfaa",
+      "label": "evil 7",
+      "category": "inferno",
+      "format": "wav",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "dark",
         "inferno"
       ],
       "status": "reviewed"
@@ -1224,6 +1704,20 @@
       "format": "wav",
       "roles": [
         "voice"
+      ],
+      "tags": [
+        "elite",
+        "inferno"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:inferno-3bae5dc9",
+      "label": "elite inferno",
+      "category": "inferno",
+      "format": "wav",
+      "roles": [
+        "release"
       ],
       "tags": [
         "elite",
@@ -1246,15 +1740,28 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:inferno-0c6d976b",
-      "label": "elite inferno4",
+      "assetId": "gensrpg:sound:inferno-530e5e39",
+      "label": "evil 2",
       "category": "inferno",
       "format": "wav",
       "roles": [
-        "movement"
+        "voice"
       ],
       "tags": [
-        "elite",
+        "dark",
+        "inferno"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:inferno-6082fba4",
+      "label": "t6 inferno",
+      "category": "inferno",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
         "inferno"
       ],
       "status": "reviewed"
@@ -1274,33 +1781,6 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:inferno-da834e35",
-      "label": "elite inferno6",
-      "category": "inferno",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "elite",
-        "inferno"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:inferno-26d547f3",
-      "label": "evil1",
-      "category": "inferno",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "inferno"
-      ],
-      "status": "reviewed"
-    },
-    {
       "assetId": "gensrpg:sound:inferno-8d188e7c",
       "label": "evil4",
       "category": "inferno",
@@ -1314,22 +1794,35 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:inferno-530e5e39",
-      "label": "evil 2",
+      "assetId": "gensrpg:sound:inferno-8ec48d46",
+      "label": "wolf",
       "category": "inferno",
       "format": "wav",
       "roles": [
         "voice"
       ],
       "tags": [
-        "dark",
+        "creature",
         "inferno"
       ],
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:inferno-a6db0d36",
-      "label": "evil 3",
+      "assetId": "gensrpg:sound:inferno-9dc8d77e",
+      "label": "t6 inferno2",
+      "category": "inferno",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "inferno"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:inferno-a0ff563d",
+      "label": "evil 6",
       "category": "inferno",
       "format": "wav",
       "roles": [
@@ -1356,26 +1849,12 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:inferno-a0ff563d",
-      "label": "evil 6",
+      "assetId": "gensrpg:sound:inferno-a6db0d36",
+      "label": "evil 3",
       "category": "inferno",
       "format": "wav",
       "roles": [
         "voice"
-      ],
-      "tags": [
-        "dark",
-        "inferno"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:inferno-27f6cfaa",
-      "label": "evil 7",
-      "category": "inferno",
-      "format": "wav",
-      "roles": [
-        "cast"
       ],
       "tags": [
         "dark",
@@ -1397,19 +1876,6 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:inferno-d537aa4e",
-      "label": "inferno3",
-      "category": "inferno",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "inferno"
-      ],
-      "status": "reviewed"
-    },
-    {
       "assetId": "gensrpg:sound:inferno-cca939d1",
       "label": "t1 inf",
       "category": "inferno",
@@ -1423,21 +1889,23 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:inferno-6082fba4",
-      "label": "t6 inferno",
+      "assetId": "gensrpg:sound:inferno-d162e843",
+      "label": "Ghoul Beast, Vocalization, Slobber, Scream, Scary 01",
       "category": "inferno",
       "format": "wav",
       "roles": [
         "voice"
       ],
       "tags": [
+        "creature",
+        "dark",
         "inferno"
       ],
-      "status": "reviewed"
+      "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:inferno-9dc8d77e",
-      "label": "t6 inferno2",
+      "assetId": "gensrpg:sound:inferno-d537aa4e",
+      "label": "inferno3",
       "category": "inferno",
       "format": "wav",
       "roles": [
@@ -1462,6 +1930,20 @@
       "status": "reviewed"
     },
     {
+      "assetId": "gensrpg:sound:inferno-da834e35",
+      "label": "elite inferno6",
+      "category": "inferno",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "elite",
+        "inferno"
+      ],
+      "status": "reviewed"
+    },
+    {
       "assetId": "gensrpg:sound:inferno-f0f017fd",
       "label": "t7 hit inf",
       "category": "inferno",
@@ -1475,8 +1957,8 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:inferno-8ec48d46",
-      "label": "wolf",
+      "assetId": "gensrpg:sound:inferno-fb3ce200",
+      "label": "Ghoul Beast, Vocalization, Slobber, Scream, Scary 02",
       "category": "inferno",
       "format": "wav",
       "roles": [
@@ -1484,62 +1966,8 @@
       ],
       "tags": [
         "creature",
+        "dark",
         "inferno"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-8c37dbdd",
-      "label": "Impact Flesh, Hit Body, Kill, Blood, Whistle",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "death",
-        "impact"
-      ],
-      "tags": [
-        "flesh",
-        "physical",
-        "sanctuary"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-7b4d6f29",
-      "label": "T7 DIE",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-369d3c22",
-      "label": "chute leger",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-8c7d8088",
-      "label": "hit sanctuary t4",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "sanctuary"
       ],
       "status": "auto"
     },
@@ -1557,149 +1985,6 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:sanctuary-7a16129f",
-      "label": "medusa1",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-95d90916",
-      "label": "medusa2",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-582be299",
-      "label": "medusa3",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-846cea9b",
-      "label": "sanvtuary t2 1",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-c2629652",
-      "label": "sanvtuary t2 2",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-51e4d0a5",
-      "label": "sanvtuary t2 3",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-ff6b0fb6",
-      "label": "t4 sanct 2",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-2d73c55e",
-      "label": "t4 sanct die",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "death"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-481ebd2b",
-      "label": "t4 sanctuary1",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-ca2d08f3",
-      "label": "t6 1",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "cast"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-a850c62a",
-      "label": "t6 2",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
       "assetId": "gensrpg:sound:sanctuary-21594cbd",
       "label": "t6 3",
       "category": "sanctuary",
@@ -1713,21 +1998,8 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:sanctuary-30704f7c",
-      "label": "t6 4",
-      "category": "sanctuary",
-      "format": "wav",
-      "roles": [
-        "death"
-      ],
-      "tags": [
-        "sanctuary"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:sanctuary-f225583f",
-      "label": "t6 5",
+      "assetId": "gensrpg:sound:sanctuary-223a51ea",
+      "label": "t7 hit",
       "category": "sanctuary",
       "format": "wav",
       "roles": [
@@ -1752,12 +2024,90 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:sanctuary-eba9d5c5",
-      "label": "t7 2",
+      "assetId": "gensrpg:sound:sanctuary-2d73c55e",
+      "label": "t4 sanct die",
       "category": "sanctuary",
       "format": "wav",
       "roles": [
-        "release"
+        "death"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-30704f7c",
+      "label": "t6 4",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "death"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-367a77dd",
+      "label": "vetement move",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-369d3c22",
+      "label": "chute leger",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-481ebd2b",
+      "label": "t4 sanctuary1",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-51e4d0a5",
+      "label": "sanvtuary t2 3",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-582be299",
+      "label": "medusa3",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "voice"
       ],
       "tags": [
         "sanctuary"
@@ -1778,22 +2128,21 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:sanctuary-eeb1c559",
-      "label": "t7 ability",
+      "assetId": "gensrpg:sound:sanctuary-7a16129f",
+      "label": "medusa1",
       "category": "sanctuary",
       "format": "wav",
       "roles": [
-        "release"
+        "voice"
       ],
       "tags": [
-        "magic",
         "sanctuary"
       ],
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:sanctuary-223a51ea",
-      "label": "t7 hit",
+      "assetId": "gensrpg:sound:sanctuary-7b4d6f29",
+      "label": "T7 DIE",
       "category": "sanctuary",
       "format": "wav",
       "roles": [
@@ -1820,12 +2169,41 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:sanctuary-367a77dd",
-      "label": "vetement move",
+      "assetId": "gensrpg:sound:sanctuary-846cea9b",
+      "label": "sanvtuary t2 1",
       "category": "sanctuary",
       "format": "wav",
       "roles": [
-        "movement"
+        "voice"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-8c37dbdd",
+      "label": "Impact Flesh, Hit Body, Kill, Blood, Whistle",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "death",
+        "impact"
+      ],
+      "tags": [
+        "flesh",
+        "physical",
+        "sanctuary"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-8c7d8088",
+      "label": "hit sanctuary t4",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "impact"
       ],
       "tags": [
         "sanctuary"
@@ -1833,86 +2211,107 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:tower-ccc16d37",
-      "label": "Organic, Wind, Soft, Normal 04",
-      "category": "tower",
-      "format": "wav",
-      "roles": [
-        "cast"
-      ],
-      "tags": [
-        "air",
-        "tower"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:tower-046356fd",
-      "label": "Tiger, Affiliative, Snuggling, Breath, Exhale",
-      "category": "tower",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "creature",
-        "tower"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:tower-9c5a898e",
-      "label": "Rang frost t2",
-      "category": "tower",
+      "assetId": "gensrpg:sound:sanctuary-95d90916",
+      "label": "medusa2",
+      "category": "sanctuary",
       "format": "wav",
       "roles": [
         "release"
       ],
       "tags": [
-        "ice",
-        "tower"
+        "sanctuary"
       ],
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:tower-9fb9e295",
-      "label": "ability t2frost",
-      "category": "tower",
+      "assetId": "gensrpg:sound:sanctuary-a850c62a",
+      "label": "t6 2",
+      "category": "sanctuary",
       "format": "wav",
       "roles": [
-        "cast"
+        "release"
       ],
       "tags": [
-        "magic",
-        "tower"
+        "sanctuary"
       ],
-      "status": "auto"
+      "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:tower-d4a4ecd5",
-      "label": "boom t7",
-      "category": "tower",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "tower"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:tower-09a461ff",
-      "label": "extra frost champ",
-      "category": "tower",
+      "assetId": "gensrpg:sound:sanctuary-c2629652",
+      "label": "sanvtuary t2 2",
+      "category": "sanctuary",
       "format": "wav",
       "roles": [
         "voice"
       ],
       "tags": [
-        "champion",
-        "ice",
-        "tower"
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-ca2d08f3",
+      "label": "t6 1",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-eba9d5c5",
+      "label": "t7 2",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-eeb1c559",
+      "label": "t7 ability",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "magic",
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-f225583f",
+      "label": "t6 5",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "sanctuary"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:sanctuary-ff6b0fb6",
+      "label": "t4 sanct 2",
+      "category": "sanctuary",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "sanctuary"
       ],
       "status": "reviewed"
     },
@@ -1947,6 +2346,35 @@
       "status": "reviewed"
     },
     {
+      "assetId": "gensrpg:sound:tower-046356fd",
+      "label": "Tiger, Affiliative, Snuggling, Breath, Exhale",
+      "category": "tower",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "creature",
+        "tower"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:tower-09a461ff",
+      "label": "extra frost champ",
+      "category": "tower",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "champion",
+        "ice",
+        "tower"
+      ],
+      "status": "reviewed"
+    },
+    {
       "assetId": "gensrpg:sound:tower-6472dc3b",
       "label": "t6 ability",
       "category": "tower",
@@ -1956,6 +2384,61 @@
       ],
       "tags": [
         "magic",
+        "tower"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:tower-6dbf268f",
+      "label": "woush t4frost",
+      "category": "tower",
+      "format": "wav",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "tower"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:tower-9c5a898e",
+      "label": "Rang frost t2",
+      "category": "tower",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "ice",
+        "tower"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:tower-9fb9e295",
+      "label": "ability t2frost",
+      "category": "tower",
+      "format": "wav",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "magic",
+        "tower"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:tower-ccc16d37",
+      "label": "Organic, Wind, Soft, Normal 04",
+      "category": "tower",
+      "format": "wav",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "air",
         "tower"
       ],
       "status": "reviewed"
@@ -1975,17 +2458,58 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:tower-6dbf268f",
-      "label": "woush t4frost",
+      "assetId": "gensrpg:sound:tower-d4a4ecd5",
+      "label": "boom t7",
       "category": "tower",
       "format": "wav",
       "roles": [
-        "travel"
+        "impact"
       ],
       "tags": [
         "tower"
       ],
       "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-05c2bb08",
+      "label": "xel 2 alt",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-07159ab2",
+      "label": "Undead, Evil Groans",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "creature",
+        "dark",
+        "xel"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-07e7b9db",
+      "label": "t3 new5",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
     },
     {
       "assetId": "gensrpg:sound:xel-0b79570e",
@@ -2001,8 +2525,34 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:xel-ebc67d51",
-      "label": "3",
+      "assetId": "gensrpg:sound:xel-18e38a65",
+      "label": "t3 new xel1",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-22f86646",
+      "label": "Video Game, Money, Gold, Drop, Put Down",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "loot"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-23c0ac1a",
+      "label": "t3-xl2",
       "category": "xel",
       "format": "wav",
       "roles": [
@@ -2012,6 +2562,74 @@
         "xel"
       ],
       "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-321eef5b",
+      "label": "t3 new xel3",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-323e212f",
+      "label": "xel t3 5",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-469d74c7",
+      "label": "t3 xel",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-46b94f6b",
+      "label": "xel 3 alt",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-48520d94",
+      "label": "Water Spell, Whoosh, Bubbly, Long, Underwater 01",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "cast",
+        "travel"
+      ],
+      "tags": [
+        "magic",
+        "water",
+        "xel"
+      ],
+      "status": "auto"
     },
     {
       "assetId": "gensrpg:sound:xel-52b05ef8",
@@ -2041,18 +2659,56 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:xel-af119c38",
-      "label": "Female, Fight, Karate Screams",
+      "assetId": "gensrpg:sound:xel-6f911c6c",
+      "label": "xel t3 4",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-727b290b",
+      "label": "Short, Dry 01",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-7459c9de",
+      "label": "t3 new xel4",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-7cf0887c",
+      "label": "t3xel 3",
       "category": "xel",
       "format": "wav",
       "roles": [
         "voice"
       ],
       "tags": [
-        "creature",
         "xel"
       ],
-      "status": "auto"
+      "status": "reviewed"
     },
     {
       "assetId": "gensrpg:sound:xel-8cb37cd3",
@@ -2068,12 +2724,67 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:xel-727b290b",
-      "label": "Short, Dry 01",
+      "assetId": "gensrpg:sound:xel-9c3dd785",
+      "label": "Undead, Evil Groans",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "creature",
+        "dark",
+        "xel"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-9c492c62",
+      "label": "xelt3 7",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "release"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-a0eb83e0",
+      "label": "xel 6",
       "category": "xel",
       "format": "wav",
       "roles": [
         "movement"
+      ],
+      "tags": [
+        "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-af119c38",
+      "label": "Female, Fight, Karate Screams",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "voice"
+      ],
+      "tags": [
+        "creature",
+        "xel"
+      ],
+      "status": "auto"
+    },
+    {
+      "assetId": "gensrpg:sound:xel-b8bdd088",
+      "label": "t3 new xel2",
+      "category": "xel",
+      "format": "wav",
+      "roles": [
+        "impact"
       ],
       "tags": [
         "xel"
@@ -2096,49 +2807,6 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:xel-07159ab2",
-      "label": "Undead, Evil Groans",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "creature",
-        "dark",
-        "xel"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-9c3dd785",
-      "label": "Undead, Evil Groans",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "creature",
-        "dark",
-        "xel"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-22f86646",
-      "label": "Video Game, Money, Gold, Drop, Put Down",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "loot"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "auto"
-    },
-    {
       "assetId": "gensrpg:sound:xel-cbc6cf88",
       "label": "Water Magic Spell, Hydromancy, Water Blast",
       "category": "xel",
@@ -2154,126 +2822,6 @@
       "status": "auto"
     },
     {
-      "assetId": "gensrpg:sound:xel-48520d94",
-      "label": "Water Spell, Whoosh, Bubbly, Long, Underwater 01",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "cast",
-        "travel"
-      ],
-      "tags": [
-        "magic",
-        "water",
-        "xel"
-      ],
-      "status": "auto"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-23c0ac1a",
-      "label": "t3-xl2",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-07e7b9db",
-      "label": "t3 new5",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-18e38a65",
-      "label": "t3 new xel1",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-b8bdd088",
-      "label": "t3 new xel2",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-321eef5b",
-      "label": "t3 new xel3",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-7459c9de",
-      "label": "t3 new xel4",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "impact"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-469d74c7",
-      "label": "t3 xel",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-7cf0887c",
-      "label": "t3xel 3",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
       "assetId": "gensrpg:sound:xel-da28c8e1",
       "label": "xel 1 alt",
       "category": "xel",
@@ -2287,64 +2835,12 @@
       "status": "reviewed"
     },
     {
-      "assetId": "gensrpg:sound:xel-05c2bb08",
-      "label": "xel 2 alt",
+      "assetId": "gensrpg:sound:xel-ebc67d51",
+      "label": "3",
       "category": "xel",
       "format": "wav",
       "roles": [
         "voice"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-46b94f6b",
-      "label": "xel 3 alt",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "voice"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-a0eb83e0",
-      "label": "xel 6",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-6f911c6c",
-      "label": "xel t3 4",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "movement"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-323e212f",
-      "label": "xel t3 5",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "movement"
       ],
       "tags": [
         "xel"
@@ -2354,19 +2850,6 @@
     {
       "assetId": "gensrpg:sound:xel-ed096b78",
       "label": "xel t3 8",
-      "category": "xel",
-      "format": "wav",
-      "roles": [
-        "release"
-      ],
-      "tags": [
-        "xel"
-      ],
-      "status": "reviewed"
-    },
-    {
-      "assetId": "gensrpg:sound:xel-9c492c62",
-      "label": "xelt3 7",
       "category": "xel",
       "format": "wav",
       "roles": [
