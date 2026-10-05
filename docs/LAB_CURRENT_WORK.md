@@ -1,5 +1,32 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-06 — cendre-user-export-v8
+
+Base GREEN : `2757e53373d2ebb0f2853e42ccada7c2b45ac20b` (CI `37379795102` SUCCESS).
+Checkpoint départ : `checkpoint/lab-start-cendre-user-export-v8-2026-10-06`.
+Branche : `work/lab-cendre-user-export-v8-2026-10-06`.
+
+Source utilisateur : export `capture-skill-transfer-v1` de `cap_fire_special_1` / **Cendre aveuglante**, reçu dans `skill.zip`.
+
+Objectif : remplacer uniquement la version vitrine historique de Cendre aveuglante par l'export utilisateur V8, sans créer de doublon ni modifier les règles de combat hors des valeurs explicitement présentes dans l'export.
+
+Points à préserver explicitement :
+- icône : `core:icon-skill-poison-cloud-01` ;
+- projectile : `pack:capture:sprite-projectile-shadow-01`, scale 1.45, socket `mouth` ;
+- impact : `pack:capture:sprite-status-curse-01`, scale 1.45, 350 ms ;
+- audio cast/impact utilisateur ;
+- statut speed -50 et physical -50 pendant 20 s ;
+- cooldown 60 s, travel 800 ms ;
+- feedback V8 : glow, flash, shake, trail anchors 0.5/0.5, burst, smoke, castBurst ;
+- aucun nouveau système, aucune seconde autorité asset/presentation.
+
+Fichiers autorisés :
+- `data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json` ;
+- test vitrine Cendre existant ;
+- documentation de ce micro-lot.
+
+Critère de fin : le preset vitrine hydraté est exactement l'export utilisateur V8, le test verrouille les champs modifiés, CI complète verte, puis checkpoint/preview.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-particles-v1
 
 Base GREEN technique : `0591aac36b79e7d36b626133b88b0fe71b3a52af`.
