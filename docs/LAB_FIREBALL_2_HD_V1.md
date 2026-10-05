@@ -2,7 +2,7 @@
 
 ## Statut
 
-GREEN technique assets. Validation visuelle utilisateur attendue dans l'éditeur Capture avant checkpoint GREEN fonctionnel.
+GREEN technique complet. Validation visuelle utilisateur attendue dans l'éditeur Capture avant checkpoint GREEN utilisateur.
 
 ## Base et branches
 
@@ -49,6 +49,7 @@ Le seul raccord de code est le cache-buster de `src/assets/global-visual-library
 - Sentinelle rendue extensible sans la neutraliser.
 - Nouveau test `tests/unit/fireball-2-hd-assets-v1.test.mjs` sur la branche assets : 36 frames, PNG RGBA 512², 3 atlas, 3 IDs, ancienne Boule de feu conservée.
 - CI finale assets : `37293795011` SUCCESS au SHA `a56f0e627318865e183a68cae739bbe70454e049`.
+- CI fonctionnelle finale : `37294166674` SUCCESS, **1035 / 1035**, au SHA source `eefc1f8868dc99244e071224264e727273426beb`.
 
 ## Validation utilisateur attendue
 
