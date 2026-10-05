@@ -8203,16 +8203,16 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
           );
 
           updateFxStarterState(
-            "Base « " +
+            "Pack « " +
               profile.label +
-              " » copiée dans cette capacité. Tu peux tester immédiatement ou ouvrir les réglages avancés pour la personnaliser.",
+              " » ajouté. Les sprites, sons, sockets et visuels de statut déjà configurés sont conservés ; les réglages FX restent personnalisables.",
             "ok"
           );
           setStatus(
             root,
-            "Profil FX « " +
+            "Pack FX « " +
               profile.label +
-              " » appliqué sans modifier le gameplay.",
+              " » ajouté sans remplacer les médias configurés ni modifier le gameplay.",
             "ok"
           );
         } catch (error) {
