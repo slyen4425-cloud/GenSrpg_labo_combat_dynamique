@@ -1,5 +1,53 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-06 — audio-status-presentation-fix-v1
+
+Base exacte : `2757e53373d2ebb0f2853e42ccada7c2b45ac20b`.
+Checkpoint : `checkpoint/lab-before-audio-status-presentation-fix-v1-2026-10-06`.
+Branche : `work/lab-capture-fx-particles-v1-2026-10-05`.
+
+Retour utilisateur :
+- les sons joués ne correspondent pas aux sons réglés dans l'éditeur ;
+- une coloration de statut réglée violet ressort rouge en combat.
+
+Diagnostic audio :
+- les sélecteurs enregistrent bien des `assetId` ;
+- le registre runtime résout correctement chaque `assetId` vers son fichier homonyme ;
+- le profil FX vitrine Boule de feu contient encore `castAudioAssetId` et `travelAudioAssetId` et peut donc écraser silencieusement des sons déjà choisis lors de l'application du pack.
+
+Diagnostic coloration :
+- les visuels de statut sont actuellement agrégés globalement par `statusId` dans `capture-skill-presentation-assets-v2.js` ;
+- plusieurs capacités utilisent des IDs génériques comme `status` ;
+- le Runtime transporte déjà `sourceSkillId` dans l'instance de statut, mais `dom-status-fx` ne le transmet pas au resolver de présentation ;
+- un visuel de statut doit donc être résolu par `sourceSkillId + statusId`, avec fallback global seulement lorsqu'il est non ambigu.
+
+Périmètre autorisé :
+- `src/catalogs/capture-fx-starter-profile-catalog-v1.js` ;
+- `src/adapters/renderer/capture-skill-presentation-assets-v2.js` ;
+- `src/adapters/renderer/dom-status-fx.js` ;
+- wrappers UI de test qui transmettent le contexte de statut ;
+- tests dédiés ;
+- documentation.
+
+Protégé :
+- aucune modification Combat Runtime / Session / règles / dégâts / statuts métier ;
+- aucune nouvelle autorité audio ;
+- aucune nouvelle autorité de durée de statut ;
+- aucun masquage CSS.
+
+TDD :
+- un preset FX ne doit jamais écraser un audio déjà non vide ;
+- un preset peut fournir un audio par défaut si le champ est vide ;
+- deux skills peuvent définir des couleurs différentes pour le même `statusId` sans conflit global ;
+- le resolver choisit la couleur de `sourceSkillId` ;
+- `dom-status-fx` transmet le `sourceSkillId` de l'instance ;
+- les clients 1v1/2v2 conservent ce contexte.
+
+Critère de fin :
+- les sons choisis restent choisis après application d'un pack FX ;
+- un statut violet reste violet en combat même si une autre capacité possède un statut homonyme rouge ;
+- CI complète verte et preview utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-particles-v1
 
 Base GREEN technique : `0591aac36b79e7d36b626133b88b0fe71b3a52af`.
