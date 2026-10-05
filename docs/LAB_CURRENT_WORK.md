@@ -63,6 +63,34 @@ Résultat du polish :
 
 État du polish : **GREEN technique** ; validation smartphone utilisateur requise avant GREEN utilisateur.
 
+Retour utilisateur suivant — 2026-10-05 :
+- fumée toujours absente sur la Boule de feu réellement testée ;
+- texte parasite `\\n` visible au-dessus des créatures ;
+- demande de particules sur le Cast, pas seulement sur le projectile/impact ;
+- collision projectile/projectile sans son d'impact.
+
+Diagnostic :
+- la Boule de feu vitrine hydratée par Transfer était encore en `presentation.version = 2`, donc sans aucun feedback V4+ ;
+- le template preview contenait quatre `\\n` littéraux ;
+- le presenter ne déclenchait l'audio impact que pour `impact`, pas pour `clash-impact` ;
+- le preset particules ne couvrait pas encore le Cast.
+
+Résultat :
+- suppression à la source des quatre `\\n` littéraux, sans CSS de masquage ;
+- `clash-impact` réutilise exactement le son `impact` configuré, une seule fois ;
+- nouveau `SkillPresentationBinding V7` avec `feedback.castBurst`, budget **12 particules max** ;
+- preset simple `Particules / fumée` étendu à Cast + projectile + impact + fumée ;
+- Cast particles enfants du nœud Cast et annulés par son lifecycle existant ;
+- Boule de feu vitrine migrée réellement vers V7 avec Cast=7, trail=7, impact=12, fumée=5 volutes, glow/flash/shake actifs ;
+- aucun fichier `src/core/combat/` modifié ;
+- CI fonctionnelle `37369052277` : **1073/1073 PASS**, 0 échec ;
+- SHA fonctionnel `5056247bc952bb65b19818198e8c267f6d16353d` ;
+- checkpoint `checkpoint/lab-capture-fx-followup-audio-smoke-ui-v1-technical-2026-10-05` ;
+- preview `preview/lab-capture-fx-followup-audio-smoke-ui-v1-2026-10-05` ;
+- rapport `docs/LAB_CAPTURE_FX_FOLLOWUP_AUDIO_SMOKE_UI_V1.md`.
+
+État follow-up : **GREEN technique** ; validation smartphone utilisateur requise avant GREEN utilisateur.
+
 
 ## Reprise prioritaire — 2026-10-05 — capture-fx-readable-presets-v1
 
