@@ -126,8 +126,8 @@ def build_frame(index):
     source = ImageEnhance.Brightness(source).enhance(1.08)
     source = ImageEnhance.Sharpness(source).enhance(1.12)
 
-    # 330 px head keeps detailed 512px cast texture while leaving space for tail.
-    head = source.resize((330, 330), Image.Resampling.LANCZOS)
+    # 300 px head keeps detailed 512px cast texture while leaving space for tail.
+    head = source.resize((300, 300), Image.Resampling.LANCZOS)
     head = head.rotate(
         math.sin(index / COUNT * math.tau) * 2.2,
         resample=Image.Resampling.BICUBIC,
@@ -135,9 +135,9 @@ def build_frame(index):
     )
 
     canvas = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    head_x = 176
-    head_y = 91
-    head_center = (head_x + 165, head_y + 165)
+    head_x = 191
+    head_y = 106
+    head_center = (head_x + 150, head_y + 150)
 
     tail = flame_tail(index, head_center)
     canvas = Image.alpha_composite(canvas, tail)
