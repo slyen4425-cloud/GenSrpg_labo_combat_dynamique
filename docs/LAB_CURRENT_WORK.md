@@ -24996,3 +24996,33 @@ Résultat :
 Preuve assets : workflow one-shot `37293482898` SUCCESS. La première CI complète a correctement détecté une sentinelle historique figée à 95 assets ; la sentinelle a été rendue extensible et un test dédié Boule de feu 2 a été ajouté. CI finale assets `37293795011` SUCCESS sur `a56f0e627318865e183a68cae739bbe70454e049`.
 
 Raccord fonctionnel autorisé : uniquement le cache-buster du resolver global, révision `2026-10-05-v12-fireball-2-hd-v1`. Aucun moteur, timing, collision, dégâts, cooldown, trajectoire ou binding existant n'est modifié. Validation preview utilisateur encore requise avant GREEN fonctionnel.
+
+
+## fireball-2-hd-assets-v1 — clôture technique
+
+Date : 2026-10-05
+
+Statut : **GREEN technique / validation visuelle utilisateur en attente**.
+
+Preuves finales du lot :
+- branche work vérifiée sur `8a8e18b63dc2496113fb94e554c914750d1801a4` avant clôture documentaire ;
+- publication `global-assets` : `a56f0e627318865e183a68cae739bbe70454e049` ;
+- checkpoint bibliothèque : `checkpoint/lab-global-assets-fireball-2-hd-green-2026-10-05` ;
+- 36 frames sources PNG RGBA natives 512×512 : 12 cast + 12 projectile + 12 impact ;
+- validation de transparence réelle sur chaque frame : canal alpha présent et valeur minimale < 255 ;
+- 3 atlas WebP RGBA 6144×512, 12 frames chacun ;
+- IDs : `pack:capture:sprite-fireball-2-cast-01`, `pack:capture:sprite-fireball-2-projectile-01`, `pack:capture:sprite-fireball-2-impact-01` ;
+- ancienne Boule de feu conservée ; aucun ID remplacé ;
+- pipeline unique conservé : éditeur -> assetId -> catalogue global -> resolver global-assets -> binding de présentation -> renderer existant ;
+- aucun changement Animation Core / FX Core / Render Adapter / Combat Runtime / Combat Rules ;
+- CI assets finale : run `37293795011` SUCCESS ;
+- CI fonctionnelle source : run `37294166674` SUCCESS, 1035/1035 ;
+- CI work après déclaration : run `37305945778` SUCCESS ;
+- aucun merge `main`, aucune modification de `Zombicide-40k`.
+
+Publication de validation prévue sur le même SHA final :
+- checkpoint : `checkpoint/lab-fireball-2-hd-assets-v1-green-2026-10-05` ;
+- preview : `preview/lab-fireball-2-hd-assets-v1-2026-10-05` ;
+- page : `examples/dom-demo/capture-editor-v2.html`.
+
+Validation utilisateur demandée : sélectionner les trois entrées « Boule de feu 2 » dans Cast / Projectile / Impact, sauvegarder la capacité, lancer le combat et confirmer la netteté/taille/animation sur PC et smartphone. Aucun merge vers `main` avant validation explicite de Sylvain.
