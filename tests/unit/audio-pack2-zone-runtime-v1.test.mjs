@@ -20,8 +20,7 @@ test("skill presentation accepts one canonical aura audio slot", () => {
       aura: {
         assetId: "gensrpg:sound:genrpg-pack2-test",
         volume: 0.8,
-        loop: true,
-        trigger: "release"
+        loop: true
       }
     }
   });
