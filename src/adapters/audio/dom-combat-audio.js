@@ -23,6 +23,8 @@ function soundFor(presentation, type, phase) {
       return presentation?.travelSound ?? null;
     case "impact":
       return presentation?.impactSound ?? null;
+    case "aura":
+      return presentation?.auraSound ?? null;
     case "phase":
       return presentation?.phaseSound?.[phase] ?? null;
     default:
