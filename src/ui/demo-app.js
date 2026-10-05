@@ -767,6 +767,9 @@ export async function mountCombatDemo({
     setCreatureFor,
     setSlotVisible,
     getCreatureDescriptor,
+    playCameraFx(plan) {
+      return cameraFx.play(plan);
+    },
     getFxAnchorFor(slotKey, anchorName = "head") {
       return slotOf(slotKey).getFxAnchor(anchorName);
     },
