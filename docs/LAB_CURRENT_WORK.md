@@ -18,6 +18,18 @@ Risques : créer une seconde autorité de présentation ; écraser silencieuseme
 
 Critère de fin : l'éditeur propose des profils vitrine protégés, l'utilisateur peut les appliquer puis personnaliser les réglages existants, aucun gameplay n'est modifié, aucun nouveau stockage parallèle, CI verte et preview dédiée.
 
+Résultat technique :
+- catalogue pur `capture-fx-starter-profile-catalog-v1.js` avec 8 profils système immuables ;
+- mode simple raccordé à l'éditeur par copie vers les champs Presentation Binding existants ;
+- réglages avancés conservés et repliables ;
+- import utilisateur existant inchangé et compatible avec la personnalisation après application ;
+- aucune modification de Combat Runtime / Session / Rules / collision ;
+- aucune modification de `global-assets` ;
+- documentation : `docs/LAB_CAPTURE_FX_STARTER_PROFILES_V1.md` ;
+- CI fonctionnelle run `37351103032` : **1049/1049 PASS**, 0 échec.
+
+État : GREEN technique après CI finale de documentation ; validation ergonomique smartphone / preview utilisateur reste requise avant GREEN utilisateur.
+
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04 — moving-attack-contact-stop-v1
