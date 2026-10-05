@@ -16,7 +16,7 @@ test("Capture skill FX UI explains starter packs instead of presenting them as r
 
   assert.match(
     html,
-    /Pack FX de départ/
+    /Pack FX GenSrpG/
   );
   assert.match(
     html,
@@ -24,7 +24,7 @@ test("Capture skill FX UI explains starter packs instead of presenting them as r
   );
   assert.match(
     html,
-    /Appliquer ce pack/
+    /Ajouter ce pack FX/
   );
 });
 
