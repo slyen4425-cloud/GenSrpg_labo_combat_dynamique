@@ -1210,6 +1210,10 @@ function presentationForSkill(fields) {
   const impactAudio = audioSkillSlot(
     presentation.impactAudioAssetId
   );
+  const auraAudio = audioSkillSlot(
+    presentation.auraAudioAssetId,
+    { loop: true }
+  );
 
   const hasVisual =
     iconAssetId !== null ||
@@ -1220,7 +1224,8 @@ function presentationForSkill(fields) {
   const hasAudio =
     castAudio !== null ||
     travelAudio !== null ||
-    impactAudio !== null;
+    impactAudio !== null ||
+    auraAudio !== null;
 
   if (
     !hasVisual &&
@@ -1256,6 +1261,9 @@ function presentationForSkill(fields) {
   }
   if (impactAudio !== null) {
     audio.impact = impactAudio;
+  }
+  if (auraAudio !== null) {
+    audio.aura = auraAudio;
   }
 
   return {
@@ -1809,7 +1817,9 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelAudioAssetId:
         audio.travel?.assetId ?? "",
       impactAudioAssetId:
-        audio.impact?.assetId ?? ""
+        audio.impact?.assetId ?? "",
+      auraAudioAssetId:
+        audio.aura?.assetId ?? ""
     }
   };
 
@@ -2511,6 +2521,10 @@ function writeSkillDraftFields(
     [
       "[data-skill-impact-audio]",
       fields.presentation.impactAudioAssetId
+    ],
+    [
+      "[data-skill-aura-audio]",
+      fields.presentation.auraAudioAssetId
     ]
   ];
 
@@ -6336,6 +6350,10 @@ function readSkillFields(root) {
       impactAudioAssetId: selectedValue(
         root,
         "[data-skill-impact-audio]"
+      ),
+      auraAudioAssetId: selectedValue(
+        root,
+        "[data-skill-aura-audio]"
       )
     }
   };
