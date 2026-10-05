@@ -503,15 +503,38 @@ export function createDomSkillFxRenderer({
     const secondRadius =
       Math.max(1, radiusPx);
 
+    const red = parseInt(
+      color.slice(1, 3),
+      16
+    );
+    const green = parseInt(
+      color.slice(3, 5),
+      16
+    );
+    const blue = parseInt(
+      color.slice(5, 7),
+      16
+    );
+    const glowColor =
+      "rgba(" +
+      red +
+      ", " +
+      green +
+      ", " +
+      blue +
+      ", " +
+      strength.toFixed(3) +
+      ")";
+
     node.style.filter =
       "drop-shadow(0 0 " +
       firstRadius.toFixed(1) +
       "px " +
-      color +
+      glowColor +
       ") drop-shadow(0 0 " +
       secondRadius.toFixed(1) +
       "px " +
-      color +
+      glowColor +
       ")";
     node.style.opacity =
       String(
