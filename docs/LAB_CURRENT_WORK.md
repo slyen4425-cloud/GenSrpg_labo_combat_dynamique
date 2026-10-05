@@ -25213,3 +25213,36 @@ Statut : **GREEN technique**.
 - CI `37331678296` : **1041/1041 PASS**, garde structure/indépendance OK ;
 - rapport : `docs/LAB_COMBAT_SHADOW_GROUNDING_V2.md` ;
 - aucun changement main / Zombicide-40k.
+
+
+## Lot actif — audio-genrpg-pack2-v1
+
+Date : 2026-10-05
+
+Objectif : raccorder les 30 nouveaux sons déposés dans le dépôt privé `slyen4425-cloud/GenSrpG_audio_prive`, branche source `work/audio-genrpg-pack2-2026-10-04`, sans publier les masters privés ni introduire une seconde bibliothèque audio.
+
+Base labo : `eda964a6a23fed2d4e12f7e377de43a91fb19fdd`.
+Checkpoint labo : `checkpoint/lab-start-audio-genrpg-pack2-v1-2026-10-05`.
+Branche labo : `work/lab-audio-genrpg-pack2-v1-2026-10-05`.
+
+Source privée : `fd378cde1410a67c0e451ff3978a09d61425d7d8` ; 30/30 sources classées : 8 cast, 3 impact, 13 projectile, 2 mouvement, 4 zone_persistante.
+Branche runtime privée : `work/audio-genrpg-pack2-runtime-v1-2026-10-05` ; génération opaque MP3 96k / 44.1 kHz / stéréo.
+
+Architecture :
+- les masters restent dans GenSrpG_audio_prive ;
+- le labo reçoit uniquement les MP3 runtime opaques ;
+- IDs `gensrpg:sound:*` stables ;
+- le catalogue `data/presentation/audio/private-audio-catalog.v1.json` reste l'unique catalogue éditeur ;
+- `private-audio-runtime-library-v1.js` reste l'unique resolver runtime ;
+- ajout d'un rôle/slot `aura` dédié pour les sons de zone persistante, au lieu de les détourner vers impact/cast.
+
+Fichiers autorisés : catalogue/runtime audio, rôle audio UI, SkillPresentation audio slot `aura`, DomCombatAudio, éditeur capacité et tests audio dédiés.
+
+Protégés : Combat Rules, dégâts, collisions, timing combat, Animation Core, FX visuel, fichiers masters privés, Zombicide-40k, main.
+
+RED :
+- le catalogue labo doit compter 203 entrées après ajout et 30 nouveaux IDs uniques ;
+- chaque nouvel ID doit résoudre vers un runtime local existant ;
+- le slot `aura` doit être normalisé, éditable et jouable en boucle sans détourner cast/impact/travel.
+
+Critère GREEN : 30 runtime assets présents, 30 entrées cataloguées, sélecteurs adaptés, preview audio fonctionnelle, zone persistante avec slot audio dédié, CI complète verte.
