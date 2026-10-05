@@ -75,19 +75,19 @@
       "subjectId": "fireball",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-fireball-01"
+          "assetId": "pack:capture:icon-skill-fireball-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-fireball-cast-01",
-          "displayScale": 2,
+          "displayScale": 1.6,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "source",
-          "anchor": "mouth",
+          "anchor": null,
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "preparation-start",
-          "playbackMode": "once",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
@@ -97,15 +97,15 @@
         },
         "travel": {
           "assetId": "pack:capture:sprite-fireball-travel-01",
-          "displayScale": 3,
+          "displayScale": 1.9,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "trajectory",
-          "anchor": "mouth",
+          "anchor": null,
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
-          "playbackMode": "once",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
@@ -115,7 +115,7 @@
         },
         "impact": {
           "assetId": "pack:capture:sprite-fireball-impact-01",
-          "displayScale": 2,
+          "displayScale": 1.7,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
@@ -139,16 +139,17 @@
           "loop": false
         },
         "travel": {
-          "assetId": "gensrpg:sound:conflux-74460178",
+          "assetId": "gensrpg:sound:genrpg-pack2-a30f1071",
           "volume": 1,
           "loop": true
         },
         "impact": {
-          "assetId": "gensrpg:sound:tower-d4a4ecd5",
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
           "volume": 1,
           "loop": false
         }
       },
+      "statusVisuals": {},
       "feedback": {
         "glow": {
           "color": "#ff6a1f",
@@ -164,15 +165,6 @@
         "cameraShake": {
           "amplitudePx": 5,
           "durationMs": 150
-        },
-        "castBurst": {
-          "color": "#ffb347",
-          "count": 7,
-          "spreadPx": 48,
-          "sizePx": 7,
-          "risePx": 34,
-          "durationMs": 580,
-          "opacity": 0.8
         },
         "projectileTrail": {
           "color": "#ff6a1f",
@@ -192,13 +184,22 @@
           "opacity": 0.9
         },
         "aftermathSmoke": {
-          "color": "#75665f",
+          "color": "#594943",
           "count": 6,
           "spreadPx": 58,
           "sizePx": 36,
           "risePx": 56,
           "durationMs": 1250,
           "opacity": 0.64
+        },
+        "castBurst": {
+          "color": "#ffb347",
+          "count": 7,
+          "spreadPx": 48,
+          "sizePx": 7,
+          "risePx": 34,
+          "durationMs": 580,
+          "opacity": 0.8
         }
       }
     }
