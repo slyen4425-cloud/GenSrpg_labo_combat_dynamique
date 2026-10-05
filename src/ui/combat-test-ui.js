@@ -11,6 +11,7 @@ import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
+import { createPersistentZoneAudioSyncV1 } from "../adapters/audio/persistent-zone-audio-sync-v1.js";
 
 const DATA_URLS = Object.freeze({
   fighters: Object.freeze({
@@ -400,6 +401,10 @@ export async function mountCombatTest({
         null
       );
     },
+  });
+
+  const zoneAudio = createPersistentZoneAudioSyncV1({
+    audio: combatAudio
   });
 
   const fx = createDomSkillFxRenderer({
@@ -904,6 +909,9 @@ export async function mountCombatTest({
     lastState = state;
     renderHp(state);
     renderEnergy(state);
+    zoneAudio.sync(
+      state.persistentZones ?? []
+    );
     renderAvailability();
   }
 
