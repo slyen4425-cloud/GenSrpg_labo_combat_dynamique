@@ -1,6 +1,7 @@
 name: One-shot Fireball 2 projectile art v2
 # retry-alpha-tight
 # retry-coverage-balanced
+# retry-head-300
 
 on:
   push:
