@@ -70,7 +70,7 @@
     },
     "presentation": {
       "id": "skill:fireball",
-      "version": 2,
+      "version": 7,
       "subjectType": "skill",
       "subjectId": "fireball",
       "visual": {
@@ -147,6 +147,56 @@
           "assetId": "gensrpg:sound:tower-d4a4ecd5",
           "volume": 1,
           "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ff6a1f",
+          "strength": 0.85,
+          "radiusPx": 32
+        },
+        "impactFlash": {
+          "color": "#fff2c2",
+          "opacity": 0.8,
+          "durationMs": 120,
+          "scale": 1.65
+        },
+        "cameraShake": {
+          "amplitudePx": 5,
+          "durationMs": 150
+        },
+        "castBurst": {
+          "color": "#ff9a3d",
+          "count": 8,
+          "spreadPx": 54,
+          "sizePx": 7,
+          "durationMs": 520,
+          "opacity": 0.78
+        },
+        "projectileTrail": {
+          "color": "#ff6a1f",
+          "count": 7,
+          "lengthPx": 56,
+          "sizePx": 7,
+          "opacity": 0.8
+        },
+        "impactBurst": {
+          "color": "#ffd27a",
+          "count": 12,
+          "spreadPx": 72,
+          "sizePx": 9,
+          "durationMs": 380,
+          "opacity": 0.9
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 6,
+          "spreadPx": 52,
+          "sizePx": 34,
+          "risePx": 48,
+          "durationMs": 880,
+          "opacity": 0.5
         }
       }
     }
