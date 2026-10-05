@@ -13,7 +13,7 @@ test("preview editor restores the dedicated private audio catalog", async () => 
     "data/presentation/audio/private-audio-catalog.v1.json"
   );
   const catalog = JSON.parse(raw);
-  assert.equal(catalog.entries.length, 173);
+  assert.equal(catalog.entries.length, 203);
 
   const html = await text(
     "examples/dom-demo/capture-editor-v2.html"
