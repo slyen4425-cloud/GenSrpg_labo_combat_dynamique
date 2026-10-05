@@ -1,5 +1,23 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-05 — capture-fx-readable-presets-v1
+
+Base GREEN technique : `b915f5c2d5b36733c121d4e2b4e4a4d1f84df1d5`.
+Checkpoint de départ : `checkpoint/lab-start-capture-fx-readable-presets-v1-2026-10-05`.
+Branche : `work/lab-capture-fx-readable-presets-v1-2026-10-05`.
+
+Constat utilisateur : les réglages techniques `0.8 / 18 px / 120 ms` sont trop abstraits et le glow manque de lisibilité visuelle en mode simple.
+
+Objectif : ajouter un niveau UX compréhensible au-dessus des valeurs avancées avec quatre préréglages de présence visuelle : `Discret / Visible / Intense / Très intense`. Chaque préréglage remplit glow + flash + shake dans les champs V4 existants ; les utilisateurs avancés gardent ensuite tous les réglages fins.
+
+Propriétaires : aucun nouveau moteur. Le preset lisible est une traduction UI pure vers les champs `feedback` déjà propriétaires du `SkillPresentationBinding V4`. Le renderer, le camera FX owner et le gameplay restent inchangés.
+
+Règles : le choix simple ne doit jamais masquer les valeurs avancées ; modifier un champ avancé après application doit rester possible ; aucune valeur gameplay ; aucune persistance parallèle ; les profils vitrine peuvent choisir leur niveau par défaut.
+
+Tests RED : mapping déterministe des 4 niveaux ; application UI -> champs V4 ; reload d'un binding existant -> niveau lisible quand il correspond exactement, sinon `Personnalisé` ; absence de modification de SkillDefinition ; CI complète.
+
+Critère de fin : un créateur peut choisir un rendu compréhensible sans connaître les valeurs numériques, puis ouvrir le mode avancé pour affiner. Preview smartphone obligatoire avant GREEN utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-enhancements-v1
 
 Base GREEN technique : `9e8b51b45122a388ddbde93ff9c10a86ec7ddfb8`.
