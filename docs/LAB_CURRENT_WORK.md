@@ -24975,3 +24975,24 @@ Interdit :
 Tests prévus : validation dimensions et transparence, nombre de frames >= 12 pour cast/projectile/impact, catalogue sans doublon d'ID, vraie résolution des assets par le resolver existant, CI complète avant GREEN.
 
 Critère de fin : « Boule de feu 2 » existe comme pack visuel séparé, ses trois animations HD sont résolubles par le pipeline d'assets existant, sans modifier l'ancienne Boule de feu ni le moteur.
+
+
+## fireball-2-hd-assets-v1 — publication technique
+
+La bibliothèque partagée a été publiée sur `global-assets` au SHA `a56f0e627318865e183a68cae739bbe70454e049`, verrouillé par `checkpoint/lab-global-assets-fireball-2-hd-green-2026-10-05`.
+
+Résultat :
+- `Boule de feu 2 — cast` : 12 frames natives 512×512 RGBA ;
+- `Boule de feu 2 — projectile` : 12 frames natives 512×512 RGBA ;
+- `Boule de feu 2 — impact` : 12 frames natives 512×512 RGBA ;
+- 3 atlas WebP 6144×512 ;
+- ancienne Boule de feu conservée ;
+- catalogue 98 assets / 51 sprites ;
+- IDs nouveaux et séparés :
+  - `pack:capture:sprite-fireball-2-cast-01`
+  - `pack:capture:sprite-fireball-2-projectile-01`
+  - `pack:capture:sprite-fireball-2-impact-01`
+
+Preuve assets : workflow one-shot `37293482898` SUCCESS. La première CI complète a correctement détecté une sentinelle historique figée à 95 assets ; la sentinelle a été rendue extensible et un test dédié Boule de feu 2 a été ajouté. CI finale assets `37293795011` SUCCESS sur `a56f0e627318865e183a68cae739bbe70454e049`.
+
+Raccord fonctionnel autorisé : uniquement le cache-buster du resolver global, révision `2026-10-05-v12-fireball-2-hd-v1`. Aucun moteur, timing, collision, dégâts, cooldown, trajectoire ou binding existant n'est modifié. Validation preview utilisateur encore requise avant GREEN fonctionnel.
