@@ -25059,3 +25059,22 @@ Protégés : ancienne Boule de feu, Fireball 2 cast/impact, catalogue IDs, Skill
 Test RED/GREEN : la sentinelle mesure directement les pixels alpha PNG. Elle doit rejeter une frame dont le projectile occupe une part excessive de la surface ou dont la majorité de l'effet est un voile faiblement alpha. Cible : couverture alpha < 15 % de 512² et part alpha faible < 35 % des pixels visibles pour chacune des 12 frames. Dimensions 512×512 RGBA et atlas 6144×512 restent inchangés.
 
 Critère de fin : plus aucune nappe / triangle semi-transparent visible derrière le projectile dans le vrai combat ; 12 frames propres, même assetId et même pipeline ; CI complète verte ; preview dédiée ; validation utilisateur avant tout merge main.
+
+
+## fireball-2-projectile-alpha-clean-v1 — résultat technique
+
+Statut : **GREEN technique / validation utilisateur en attente**.
+
+- cause démontrée : nappe alpha trop large dans le média projectile V1 ; renderer et moteur hors cause ;
+- RED : c4c7092d035a31fbe981ef96e0149ad67fc423b0, CI 37316248547 FAILURE attendu, ancienne frame 01 = couverture alpha 0.471 ;
+- asset GREEN : 97c5b8932138db0a88fd75a418cb1d9b0d112ce6, workflow 37316438128 SUCCESS ;
+- global-assets pointe désormais sur 97c5b8932138db0a88fd75a418cb1d9b0d112ce6 ;
+- 12 frames projectile remplacées, 512×512 RGBA, atlas 6144×512 ; cast/impact inchangés ;
+- sentinelle réelle pixels PNG : couverture alpha < 15 %, voile faible-alpha < 35 % sur chaque frame ;
+- cache revision : 2026-10-05-v13-fireball-2-projectile-alpha-clean-v1 ;
+- source fonctionnelle : 8ed5a1f0d2d0141a689ae3b4dd5f4023cb9612ba ; CI 37316813227 SUCCESS, **1035/1035** ;
+- rapport : docs/LAB_FIREBALL_2_PROJECTILE_ALPHA_CLEAN_V1.md ;
+- aucun changement Combat Runtime / Rules / Animation Core / FX Core / Render Adapter / collision / timing / dégâts ;
+- aucun changement main ni Zombicide-40k.
+
+Publication finale après CI documentaire : checkpoint checkpoint/lab-fireball-2-projectile-alpha-clean-v1-green-2026-10-05, preview preview/lab-fireball-2-projectile-alpha-clean-v1-2026-10-05.
