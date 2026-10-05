@@ -75,7 +75,16 @@ Gate utilisateur :
 3. position/Area restaurées ;
 4. relancer un second combat pour vérifier le handoff consommé proprement.
 
-État : **TECHNIQUE GREEN / PREVALIDATION PUBLIÉE — gate utilisateur requis avant GREEN final**.
+Gate utilisateur final — 2026-10-05 :
+- verdict utilisateur : « test combat validé » ;
+- victoire -> retour automatique Exploration validé ;
+- restauration du flux Exploration validée ;
+- aucune régression signalée sur le gate réel.
+
+État : **GREEN FINAL — gate utilisateur validé le 2026-10-05**.
+
+Checkpoint final prévu après CI documentaire :
+`checkpoint/lab-exploration-battle-end-return-v1-green-2026-10-05`.
 
 ---
 
