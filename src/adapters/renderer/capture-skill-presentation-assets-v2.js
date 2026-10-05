@@ -305,6 +305,10 @@ export function createCaptureSkillPresentationAssetsV2({
       impactSound: resolvedAudio(
         resolveAudio,
         audio.impact
+      ),
+      auraSound: resolvedAudio(
+        resolveAudio,
+        audio.aura
       )
     });
   }
