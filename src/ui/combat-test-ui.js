@@ -468,7 +468,10 @@ export async function mountCombatTest({
             return (
               presentationAssets.statusPresentationFor(
                 statusId,
-                { view: context.actorId === "opponent" ? "opponent" : "player" }
+                {
+                  ...context,
+                  view: context.actorId === "opponent" ? "opponent" : "player"
+                }
               )
             );
           },
