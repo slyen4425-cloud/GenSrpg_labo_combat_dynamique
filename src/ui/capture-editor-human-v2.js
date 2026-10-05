@@ -6175,27 +6175,6 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     syncPreviews(select, images);
   }
 
-  const creatorImportButton =
-    root.querySelector(
-      "[data-creator-visual-import]"
-    );
-  const creatorImportFile =
-    root.querySelector(
-      "[data-creator-visual-file]"
-    );
-  const creatorImportRole =
-    root.querySelector(
-      "[data-creator-visual-role]"
-    );
-  const creatorImportLabel =
-    root.querySelector(
-      "[data-creator-visual-label]"
-    );
-  const creatorImportState =
-    root.querySelector(
-      "[data-creator-visual-state]"
-    );
-
   function refreshCreatorAssetLists() {
     EDITOR_VISUAL_ASSETS_BY_ROOT.set(
       root,
@@ -6214,11 +6193,38 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     }
   }
 
-  if (
-    creatorImportButton &&
-    creatorImportFile &&
-    creatorImportRole
+  function mountCreatorVisualImporter(
+    importer
   ) {
+    const creatorImportButton =
+      importer.querySelector(
+        "[data-creator-visual-import]"
+      );
+    const creatorImportFile =
+      importer.querySelector(
+        "[data-creator-visual-file]"
+      );
+    const creatorImportRole =
+      importer.querySelector(
+        "[data-creator-visual-role]"
+      );
+    const creatorImportLabel =
+      importer.querySelector(
+        "[data-creator-visual-label]"
+      );
+    const creatorImportState =
+      importer.querySelector(
+        "[data-creator-visual-state]"
+      );
+
+    if (
+      !creatorImportButton ||
+      !creatorImportFile ||
+      !creatorImportRole
+    ) {
+      return;
+    }
+
     if (
       !creatorVisualAssets ||
       typeof creatorVisualAssets.importImage !==
@@ -6231,86 +6237,99 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
         creatorImportState.dataset.tone =
           "warning";
       }
-    } else {
-      listen(
-        creatorImportButton,
-        "click",
-        () => {
-          try {
-            const file =
-              creatorImportFile.files?.[0];
-            if (!file) {
-              throw new Error(
-                "Choisis une image PNG, WebP ou JPEG."
-              );
-            }
+      return;
+    }
 
-            const role =
-              String(
-                creatorImportRole.value ?? ""
-              ).trim();
-            const label =
-              String(
-                creatorImportLabel?.value ??
-                  file.name ??
-                  "Asset personnel"
-              ).trim();
+    listen(
+      creatorImportButton,
+      "click",
+      () => {
+        try {
+          const file =
+            creatorImportFile.files?.[0];
+          if (!file) {
+            throw new Error(
+              "Choisis une image PNG, WebP ou JPEG."
+            );
+          }
 
-            const asset =
-              creatorVisualAssets.importImage({
-                file,
-                label,
-                role
-              });
+          const role =
+            String(
+              creatorImportRole.value ?? ""
+            ).trim();
+          const label =
+            String(
+              creatorImportLabel?.value ??
+                file.name ??
+                "Asset personnel"
+            ).trim();
 
-            assets.push(asset);
-            byId.set(asset.id, asset);
-            refreshCreatorAssetLists();
+          const asset =
+            creatorVisualAssets.importImage({
+              file,
+              label,
+              role
+            });
 
-            const preferredSelect =
-              role === "creature"
-                ? frontSelect
-                : root.querySelector(
-                    '[data-asset-role="' +
-                      role +
-                      '"]'
-                  );
-            if (preferredSelect) {
-              preferredSelect.value =
-                asset.id;
-              preferredSelect.dispatchEvent(
-                new Event("change", {
-                  bubbles: true
-                })
-              );
-            }
+          assets.push(asset);
+          byId.set(asset.id, asset);
+          refreshCreatorAssetLists();
 
-            if (creatorImportState) {
-              creatorImportState.textContent =
-                "Importé : " +
-                asset.label +
-                " (" +
-                asset.id +
-                ")";
-              creatorImportState.dataset.tone =
-                "ok";
-            }
+          const preferredSelect =
+            role === "creature"
+              ? frontSelect
+              : root.querySelector(
+                  '[data-asset-role="' +
+                    role +
+                    '"]'
+                );
 
-            creatorImportFile.value = "";
-            if (creatorImportLabel) {
-              creatorImportLabel.value = "";
-            }
-          } catch (error) {
-            if (creatorImportState) {
-              creatorImportState.textContent =
-                error.message;
-              creatorImportState.dataset.tone =
-                "error";
-            }
+          if (preferredSelect) {
+            preferredSelect.value =
+              asset.id;
+            preferredSelect.dispatchEvent(
+              new Event("change", {
+                bubbles: true
+              })
+            );
+          }
+
+          for (
+            const state of root.querySelectorAll(
+              "[data-creator-visual-state]"
+            )
+          ) {
+            state.textContent =
+              "Importé : " +
+              asset.label +
+              " (" +
+              asset.id +
+              ")";
+            state.dataset.tone = "ok";
+          }
+
+          creatorImportFile.value = "";
+          if (creatorImportLabel) {
+            creatorImportLabel.value = "";
+          }
+        } catch (error) {
+          if (creatorImportState) {
+            creatorImportState.textContent =
+              error.message;
+            creatorImportState.dataset.tone =
+              "error";
           }
         }
-      );
-    }
+      }
+    );
+  }
+
+  for (
+    const importer of root.querySelectorAll(
+      "[data-creator-visual-importer]"
+    )
+  ) {
+    mountCreatorVisualImporter(importer);
   }
 
   const scaleInput = one(
