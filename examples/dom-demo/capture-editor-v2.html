@@ -774,9 +774,32 @@
           <span class="step">7</span>
           <div>
             <h2>Effets visuels</h2>
-            <p>Choisis les effets de cast, déplacement et impact dans la bibliothèque.</p>
+            <p>Choisis une base GenSrpG en mode simple, puis personnalise-la seulement si tu en as besoin.</p>
           </div>
         </div>
+
+        <div class="creator-visual-import" data-skill-fx-starter>
+          <h3>Mode simple — Profils FX GenSrpG</h3>
+          <p class="note">Ces profils vitrine sont protégés : « Appliquer et personnaliser » copie leurs réglages dans ta capacité sans modifier la bibliothèque système ni les règles de combat.</p>
+          <div class="grid two">
+            <label>Base FX
+              <select data-skill-fx-starter-profile disabled>
+                <option value="">Chargement des profils FX…</option>
+              </select>
+            </label>
+            <div class="skill-save-actions">
+              <button type="button" class="primary-action" data-skill-fx-starter-apply disabled>
+                Appliquer et personnaliser
+              </button>
+            </div>
+          </div>
+          <p class="note" data-skill-fx-starter-state data-tone="info">
+            Les médias restent référencés par assetId ; tes imports personnels utilisent ensuite exactement les mêmes champs.
+          </p>
+        </div>
+
+        <details data-skill-fx-advanced>
+          <summary>Réglages avancés — sprites, taille, placement, lecture et audio</summary>
 
         <div class="grid two">
           <label>Icône
@@ -910,6 +933,7 @@
         <p class="note">
           Pour une aura ou une zone persistante, le visuel reste affiché tant que la zone existe. Choisis une lecture unique, une boucle ou une animation adaptée à sa durée. En lecture unique, la dernière phase reste affichée. Les décalages déplacent uniquement le visuel, sans modifier le rayon ni les dégâts.
         </p>
+        </details>
       </article>
 
       <article class="card">
