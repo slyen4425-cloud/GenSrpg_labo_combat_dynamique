@@ -804,6 +804,19 @@
             <p class="note" data-skill-fx-glow-preset-state data-tone="info">
               Visible — lueur bien perceptible, conseillée pour la plupart des capacités.
             </p>
+            <label>Présence des particules
+              <select data-skill-fx-particle-preset>
+                <option value="none">Aucune</option>
+                <option value="discreet">Discrète</option>
+                <option value="visible" selected>Visible</option>
+                <option value="intense">Intense</option>
+                <option value="very-intense">Très intense</option>
+                <option value="custom">Personnalisée</option>
+              </select>
+            </label>
+            <p class="note" data-skill-fx-particle-preset-state data-tone="info">
+              Visible — traînée et impact perceptibles sans surcharger l’écran.
+            </p>
           </div>
           <p class="note" data-skill-fx-starter-state data-tone="info">
             Les médias restent référencés par assetId ; tes imports personnels utilisent ensuite exactement les mêmes champs.
@@ -973,6 +986,39 @@
             </label>
             <label>Secousse caméra — durée (ms)
               <input type="number" min="1" max="1000" step="10" value="140" data-skill-impact-shake-duration>
+            </label>
+            <label>Traînée — couleur
+              <input type="color" value="#ff7a2d" data-skill-projectile-trail-color>
+            </label>
+            <label>Traînée — particules
+              <input type="number" min="0" max="10" step="1" value="0" data-skill-projectile-trail-count>
+            </label>
+            <label>Traînée — longueur (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-projectile-trail-length>
+            </label>
+            <label>Traînée — taille particule (px)
+              <input type="number" min="0" max="24" step="1" value="0" data-skill-projectile-trail-size>
+            </label>
+            <label>Traînée — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-projectile-trail-opacity>
+            </label>
+            <label>Impact burst — couleur
+              <input type="color" value="#ffd27a" data-skill-impact-burst-color>
+            </label>
+            <label>Impact burst — particules
+              <input type="number" min="0" max="18" step="1" value="0" data-skill-impact-burst-count>
+            </label>
+            <label>Impact burst — dispersion (px)
+              <input type="number" min="0" max="160" step="2" value="0" data-skill-impact-burst-spread>
+            </label>
+            <label>Impact burst — taille particule (px)
+              <input type="number" min="0" max="24" step="1" value="0" data-skill-impact-burst-size>
+            </label>
+            <label>Impact burst — durée (ms)
+              <input type="number" min="0" max="1200" step="10" value="0" data-skill-impact-burst-duration>
+            </label>
+            <label>Impact burst — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-impact-burst-opacity>
             </label>
           </div>
         </div>
