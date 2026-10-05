@@ -14,6 +14,10 @@ import {
 import {
   applyCaptureFxParticlePresetV1
 } from "../../src/catalogs/capture-fx-particle-presets-v1.js";
+import {
+  buildHumanSkillDraftV1,
+  humanSkillEditorFieldsFromDraftV1
+} from "../../src/ui/capture-editor-human-v2.js";
 
 function v7Binding() {
   return {
@@ -364,4 +368,44 @@ test("projectile clash reuses the owning skill impact sound exactly once", () =>
   );
 
   presenter.dispose();
+});
+
+
+test("showcase Fireball V7 round-trips through the Human Editor without losing FX or gameplay", async () => {
+  const json = JSON.parse(
+    await readFile(
+      new URL(
+        "../../data/capture/showcase/fireball.capture-skill-transfer-v1.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  );
+
+  const sourceDraft = json.draft;
+  const fields =
+    humanSkillEditorFieldsFromDraftV1(
+      JSON.parse(
+        JSON.stringify(sourceDraft)
+      )
+    );
+  const rebuilt =
+    buildHumanSkillDraftV1(fields);
+
+  assert.equal(
+    rebuilt.presentation.version,
+    7
+  );
+  assert.deepEqual(
+    rebuilt.presentation.feedback,
+    sourceDraft.presentation.feedback
+  );
+  assert.deepEqual(
+    rebuilt.presentation.audio,
+    sourceDraft.presentation.audio
+  );
+  assert.deepEqual(
+    rebuilt.definition,
+    sourceDraft.definition
+  );
 });
