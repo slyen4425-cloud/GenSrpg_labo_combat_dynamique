@@ -1,4 +1,5 @@
 name: One-shot Fireball 2 projectile art v2
+# retry-alpha-tight
 
 on:
   push:
