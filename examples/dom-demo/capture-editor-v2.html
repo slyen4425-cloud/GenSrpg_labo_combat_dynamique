@@ -815,7 +815,7 @@
               </select>
             </label>
             <p class="note" data-skill-fx-particle-preset-state data-tone="info">
-              Visible — traînée et impact perceptibles sans surcharger l’écran.
+              Visible — cast, traînée, impact et fumée perceptibles sans surcharger l’écran.
             </p>
           </div>
           <p class="note" data-skill-fx-starter-state data-tone="info">
@@ -987,6 +987,24 @@
             <label>Secousse caméra — durée (ms)
               <input type="number" min="1" max="1000" step="10" value="140" data-skill-impact-shake-duration>
             </label>
+            <label>Cast — couleur des particules
+              <input type="color" value="#ff9a3d" data-skill-cast-burst-color>
+            </label>
+            <label>Cast — particules
+              <input type="number" min="0" max="12" step="1" value="0" data-skill-cast-burst-count>
+            </label>
+            <label>Cast — dispersion (px)
+              <input type="number" min="0" max="140" step="2" value="0" data-skill-cast-burst-spread>
+            </label>
+            <label>Cast — taille particule (px)
+              <input type="number" min="0" max="24" step="1" value="0" data-skill-cast-burst-size>
+            </label>
+            <label>Cast — durée (ms)
+              <input type="number" min="0" max="1200" step="10" value="0" data-skill-cast-burst-duration>
+            </label>
+            <label>Cast — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-cast-burst-opacity>
+            </label>
             <label>Traînée — couleur
               <input type="color" value="#ff7a2d" data-skill-projectile-trail-color>
             </label>
@@ -1114,7 +1132,8 @@
             tabindex="0"
           >
             <span class="visually-hidden" data-demo-label>Créature locale</span>
-            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>\n        <div class="fighter__motion" data-demo-motion>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
               <img class="fighter__image" data-demo-image alt="">
             </div>
           </article>
@@ -1129,7 +1148,8 @@
             tabindex="0"
           >
             <span class="visually-hidden" data-demo-label>Créature alliée</span>
-            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>\n        <div class="fighter__motion" data-demo-motion>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
               <img class="fighter__image" data-demo-image alt="">
             </div>
           </article>
@@ -1144,7 +1164,8 @@
             tabindex="0"
           >
             <span class="visually-hidden" data-demo-label>Adversaire</span>
-            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>\n        <div class="fighter__motion" data-demo-motion>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
               <img class="fighter__image" data-demo-image alt="">
             </div>
           </article>
@@ -1159,7 +1180,8 @@
             tabindex="0"
           >
             <span class="visually-hidden" data-demo-label>Second adversaire</span>
-            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>\n        <div class="fighter__motion" data-demo-motion>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
               <img class="fighter__image" data-demo-image alt="">
             </div>
           </article>
