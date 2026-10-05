@@ -11,19 +11,19 @@ const editorHtmlUrl = new URL(
   import.meta.url
 );
 
-test("private runtime audio manifest exposes all 173 opaque delivered assets", async () => {
+test("private runtime audio manifest exposes all 203 opaque delivered assets", async () => {
   const raw = await readFile(runtimeManifestUrl, "utf8");
   const manifest = JSON.parse(raw);
 
-  assert.equal(manifest.count, 173);
-  assert.equal(manifest.entries.length, 173);
+  assert.equal(manifest.count, 203);
+  assert.equal(manifest.entries.length, 203);
   assert.equal(
     new Set(manifest.entries.map((entry) => entry.assetId)).size,
-    173
+    203
   );
   assert.equal(
     new Set(manifest.entries.map((entry) => entry.runtimeFile)).size,
-    173
+    203
   );
 
   const serialized = JSON.stringify(manifest);
@@ -48,7 +48,7 @@ test("full private audio resolver serves delivered ids and rejects unknown ids",
     "../../src/assets/private-audio-runtime-library-v1.js"
   );
 
-  assert.equal(PRIVATE_AUDIO_RUNTIME_ASSET_IDS_V1.length, 173);
+  assert.equal(PRIVATE_AUDIO_RUNTIME_ASSET_IDS_V1.length, 203);
 
   for (const assetId of PRIVATE_AUDIO_RUNTIME_ASSET_IDS_V1) {
     const asset = privateAudioRuntimeAssetV1(assetId);
@@ -71,8 +71,8 @@ test("every private audio selector has a prelisten action and dedicated controll
 
   assert.equal(
     selectorCount,
-    6,
-    "cast, projectile travel, impact and creature audio selectors must all expose preview"
+    7,
+    "cast, projectile travel, impact, persistent-zone and creature audio selectors must all expose preview"
   );
   assert.equal(previewCount, selectorCount);
 
