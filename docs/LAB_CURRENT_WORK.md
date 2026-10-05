@@ -25156,3 +25156,19 @@ Premier périmètre : import de session uniquement, conformément à LAB_ASSET_L
 RED : un test impose un registre créateur réutilisant ImageSourceManager, générant des IDs `user:*`, exposant des AssetDefinition compatibles éditeur/combat, et révoquant toutes les Object URLs à dispose().
 
 Critère GREEN : fichier perso visible dans les listes de l'éditeur, sélectionnable dans le vrai preview combat, aucune seconde chaîne de chargement, CI complète verte.
+
+
+## creator-visual-import-v1 — résultat technique
+
+Statut : **GREEN technique**.
+
+- Asset Input unique réutilisé : `image-source-manager.js` ;
+- registre de session : `src/assets/creator-visual-asset-session-v1.js` ;
+- IDs stables de session : `user:*` ;
+- rôles : creature / icon / cast / travel / impact / zone / status ;
+- vrai preview combat résout `resource.runtimeUrl` via l'adaptateur natif existant ;
+- Object URLs révoquées à dispose() ;
+- persistance projet volontairement hors lot ;
+- CI pré-doc `37330331980` : **1038/1038 PASS**, structure/indépendance OK ;
+- rapport : `docs/LAB_CREATOR_VISUAL_IMPORT_V1.md` ;
+- aucun changement main / Zombicide-40k.
