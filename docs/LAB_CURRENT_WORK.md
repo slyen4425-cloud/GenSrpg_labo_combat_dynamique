@@ -93,6 +93,25 @@ TDD :
 
 État : **preview testable / non GREEN** tant que la CI du HEAD et le retour smartphone ne sont pas tous deux validés.
 
+Retour smartphone suivant — 2026-10-05 :
+- traînée V8 : **validée utilisateur**, ne plus modifier sans régression ;
+- fumée : toujours aucune trace visible.
+
+Diagnostic ciblé :
+- la vraie Boule de feu vitrine est bien en Presentation Binding V8 avec `aftermathSmoke` présent ;
+- le renderer crée bien la fumée pour `impact` ;
+- mais `clash-impact` ne déclenche actuellement **aucun feedback d'impact** (ni burst ni fumée), alors que les collisions de projectiles sont un cas fréquent du test utilisateur ;
+- sur impact normal, la fumée atteint son pic trop tôt (pendant l'explosion) et son ton sombre peut se fondre dans l'arène.
+
+Correction V3 :
+- checkpoint : `checkpoint/lab-before-capture-fx-smoke-clash-visibility-v3-2026-10-05` ;
+- réutiliser le même owner `playImpactFeedback` pour `impact` et `clash-impact` ;
+- décaler le pic de fumée après l'explosion ;
+- ajouter un cœur de brume neutre léger pour rester visible sur arène sombre, sans changer le gameplay ;
+- aucun changement trail, Runtime, Session, collision ou dégâts.
+
+
+
 Retour utilisateur suivant — 2026-10-05 :
 - fumée toujours absente sur la Boule de feu réellement testée ;
 - texte parasite `\\n` visible au-dessus des créatures ;
