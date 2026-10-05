@@ -25198,3 +25198,18 @@ RED :
 - la largeur de l'ombre doit dériver de l'emprise opaque du sprite, avec bornes sûres, au lieu du 58% fixe.
 
 Critère GREEN : ombre proportionnée au modèle, piste body+ombre synchronisée pendant attaque/retour/KO, CI complète verte, preview dédiée.
+
+
+## combat-shadow-grounding-v2 — résultat technique
+
+Statut : **GREEN technique**.
+
+- pseudo-élément `.fighter::before` remplacé par une vraie surface `[data-demo-shadow]` ;
+- taille dynamique depuis l'emprise opaque du sprite ;
+- même DomActorRenderer / même timeline `ground` ;
+- ombre synchronisée avec approche, retour, KO, téléportation et interruption ;
+- RED `0acb61f2ded800eef31d65039895db7f55a6bae0` ;
+- GREEN pré-doc `a075c2c4f83481ae9a54d58975423f63bcfdbbd0` ;
+- CI `37331678296` : **1041/1041 PASS**, garde structure/indépendance OK ;
+- rapport : `docs/LAB_COMBAT_SHADOW_GROUNDING_V2.md` ;
+- aucun changement main / Zombicide-40k.
