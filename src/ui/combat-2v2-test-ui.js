@@ -680,7 +680,11 @@ export async function mountCoop2v2Test({
             return (
               presentationAssets.statusPresentationFor(
                 statusId,
-                { view: resolveCombatPresentationViewV1({ format, actorId: context.actorId }) }
+                {
+                  ...context,
+                  view: resolveCombatPresentationViewV1({ format, actorId: context.actorId
+                }
+              ) }
               )
             );
           },
