@@ -161,7 +161,9 @@ def build_frame(index):
     canvas.alpha_composite(head, (head_x, head_y))
 
     pixels = np.array(canvas)
-    pixels[pixels[:, :, 3] < 4] = 0
+    # Remove the residual low-alpha haze created by antialiasing/glow.
+    # This keeps fire filaments while preventing another translucent veil.
+    pixels[pixels[:, :, 3] < 14] = 0
     return Image.fromarray(pixels, "RGBA")
 
 def metrics(image):
