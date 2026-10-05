@@ -30,7 +30,7 @@ test("visual selectors distinguish GenSrpG library from creator assets without a
   assert.equal(
     (
       source.match(
-        /creatorVisualAssets\.importImage/g
+        /const asset =\s*creatorVisualAssets\.importImage/g
       ) ?? []
     ).length,
     1,
