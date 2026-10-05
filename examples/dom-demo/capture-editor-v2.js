@@ -2,6 +2,9 @@ import {
   mountCaptureEditorHumanV2
 } from "../../src/ui/capture-editor-human-v2.js";
 import {
+  createCreatorVisualAssetSessionV1
+} from "../../src/assets/creator-visual-asset-session-v1.js";
+import {
   createCaptureEditorPreviewSessionV2
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
@@ -102,7 +105,13 @@ for (
 }
 arenaSelect.value = "city";
 
-const editor = mountCaptureEditorHumanV2({ root });
+const creatorVisualAssets =
+  createCreatorVisualAssetSessionV1();
+
+const editor = mountCaptureEditorHumanV2({
+  root,
+  creatorVisualAssets
+});
 
 const audioPreviewController =
   createPrivateAudioPreviewControllerV1({
@@ -235,6 +244,17 @@ function resolvePreviewPresentationAsset(assetId) {
     return demoAsset;
   }
 
+  const creatorAsset =
+    creatorVisualAssets.asset(assetId);
+  if (creatorAsset) {
+    return Object.freeze({
+      assetId,
+      url: creatorAsset.resource.runtimeUrl,
+      frameCount: 1,
+      playbackMode: "once"
+    });
+  }
+
   const catalogAsset =
     visualContext?.assetCatalog?.assets?.find(
       (asset) => asset.id === assetId
@@ -320,7 +340,13 @@ const session = createCaptureEditorPreviewSessionV2({
 
     return adaptCaptureExportToNativeVisualSourceV1({
       exported,
-      assetCatalog: visualContext.assetCatalog,
+      assetCatalog: {
+        ...visualContext.assetCatalog,
+        assets: [
+          ...(visualContext.assetCatalog.assets ?? []),
+          ...creatorVisualAssets.list()
+        ]
+      },
       profiles: visualContext.profiles,
       assetUrlForFile: globalVisualAssetUrl
     });
@@ -392,6 +418,15 @@ window.addEventListener(
   () => {
     audioPreviewController.dispose();
     session.dispose();
+  },
+  { once: true }
+);
+
+
+globalThis.addEventListener(
+  "pagehide",
+  () => {
+    creatorVisualAssets.dispose();
   },
   { once: true }
 );
