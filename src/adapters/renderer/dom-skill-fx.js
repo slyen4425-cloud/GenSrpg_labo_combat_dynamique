@@ -554,7 +554,8 @@ export function createDomSkillFxRenderer({
     node,
     trail,
     deltaX,
-    deltaY
+    deltaY,
+    fallbackColor = null
   ) {
     if (!node || !trail) {
       return 0;
@@ -585,16 +586,30 @@ export function createDomSkillFxRenderer({
       trail.opacity,
       0.7
     );
-    const color =
-      typeof trail.color === "string"
-        ? trail.color
-        : "#ffffff";
+
+    const validColor = (value) =>
+      typeof value === "string" &&
+      /^#[0-9a-fA-F]{6}$/.test(value);
+
+    const color = validColor(trail.color)
+      ? trail.color
+      : validColor(fallbackColor)
+        ? fallbackColor
+        : "#8aa0b0";
+
     const distance = Math.hypot(
       deltaX,
       deltaY
     ) || 1;
     const unitX = deltaX / distance;
     const unitY = deltaY / distance;
+    const angleDeg =
+      Math.atan2(
+        deltaY,
+        deltaX
+      ) *
+      180 /
+      Math.PI;
 
     for (
       let index = 0;
@@ -609,8 +624,28 @@ export function createDomSkillFxRenderer({
         (index + 1) / (count + 1);
       const offset =
         lengthPx * ratio;
-      const scale =
-        1 - ratio * 0.62;
+      const taper =
+        Math.max(
+          0.28,
+          1 - ratio * 0.68
+        );
+      const width =
+        Math.max(
+          2,
+          sizePx *
+            taper *
+            (2.6 + (index % 3) * 0.34)
+        );
+      const height =
+        Math.max(
+          1,
+          sizePx *
+            taper *
+            (0.46 + (index % 2) * 0.08)
+        );
+      const lateral =
+        ((index % 3) - 1) *
+        Math.min(2.6, sizePx * 0.22);
 
       particle.className =
         "skill-fx__trail-particle";
@@ -620,40 +655,66 @@ export function createDomSkillFxRenderer({
         "absolute";
       particle.style.left =
         "calc(50% - " +
-        (unitX * offset).toFixed(2) +
+        (
+          unitX * offset -
+          unitY * lateral
+        ).toFixed(2) +
         "px)";
       particle.style.top =
         "calc(50% - " +
-        (unitY * offset).toFixed(2) +
+        (
+          unitY * offset +
+          unitX * lateral
+        ).toFixed(2) +
         "px)";
       particle.style.width =
-        Math.max(
-          1,
-          sizePx * scale
-        ).toFixed(2) + "px";
+        width.toFixed(2) + "px";
       particle.style.height =
-        Math.max(
-          1,
-          sizePx * scale
-        ).toFixed(2) + "px";
+        height.toFixed(2) + "px";
       particle.style.borderRadius =
-        "50%";
+        index % 2 === 0
+          ? "70% 34% 58% 42% / 52% 62% 38% 48%"
+          : "62% 38% 72% 28% / 44% 58% 42% 56%";
       particle.style.background =
-        color;
+        "linear-gradient(90deg, transparent 0%, " +
+        color +
+        " 52%, " +
+        color +
+        " 100%)";
       particle.style.opacity =
         String(
           Math.max(
-            0.08,
-            opacity * (1 - ratio * 0.72)
+            0.05,
+            opacity *
+              (1 - ratio * 0.76)
           )
         );
       particle.style.boxShadow =
         "0 0 " +
-        Math.max(2, sizePx * 1.4) +
+        Math.max(
+          1.5,
+          height * 0.85
+        ).toFixed(1) +
         "px " +
         color;
+      particle.style.filter =
+        "blur(" +
+        (
+          0.25 +
+          ratio * 0.55
+        ).toFixed(2) +
+        "px)";
+      particle.style.transformOrigin =
+        "100% 50%";
       particle.style.transform =
-        "translate(-50%, -50%)";
+        "translate(-50%, -50%) rotate(" +
+        angleDeg.toFixed(2) +
+        "deg) scaleX(" +
+        (
+          0.9 +
+          (index % 3) * 0.08
+        ).toFixed(2) +
+        ")";
       particle.style.pointerEvents =
         "none";
       node.append(particle);
@@ -661,6 +722,8 @@ export function createDomSkillFxRenderer({
 
     node.dataset.fxTrailCount =
       String(count);
+    node.dataset.fxTrailShape =
+      "streak";
     return count;
   }
 
@@ -880,6 +943,264 @@ export function createDomSkillFxRenderer({
     });
   }
 
+  function playAftermathSmoke({
+    point,
+    smoke
+  }) {
+    if (!smoke) {
+      return null;
+    }
+
+    const count = Math.min(
+      8,
+      Math.max(
+        0,
+        Math.floor(
+          Number(smoke.count) || 0
+        )
+      )
+    );
+    if (count <= 0) {
+      return null;
+    }
+
+    const spreadPx = Math.max(
+      1,
+      Number(smoke.spreadPx) || 1
+    );
+    const sizePx = Math.max(
+      1,
+      Number(smoke.sizePx) || 1
+    );
+    const risePx = Math.max(
+      1,
+      Number(smoke.risePx) || 1
+    );
+    const durationMs = Math.max(
+      1,
+      Number(smoke.durationMs) || 1
+    );
+    const opacity = clampUnit(
+      smoke.opacity,
+      0.36
+    );
+    const color =
+      typeof smoke.color === "string" &&
+      /^#[0-9a-fA-F]{6}$/.test(
+        smoke.color
+      )
+        ? smoke.color
+        : "#5b5653";
+
+    const container =
+      arena.ownerDocument.createElement(
+        "span"
+      );
+    container.className =
+      "skill-fx skill-fx--aftermath-smoke";
+    container.dataset.skillFx =
+      "aftermath-smoke";
+    container.style.left =
+      point.x + "px";
+    container.style.top =
+      point.y + "px";
+    container.style.width = "1px";
+    container.style.height = "1px";
+    container.style.zIndex = "10";
+    container.style.pointerEvents =
+      "none";
+    container.style.overflow =
+      "visible";
+
+    const animations = [];
+
+    for (
+      let index = 0;
+      index < count;
+      index += 1
+    ) {
+      const puff =
+        arena.ownerDocument.createElement(
+          "span"
+        );
+      const sizeFactor =
+        0.78 +
+        (index % 3) * 0.16;
+      const width =
+        sizePx * sizeFactor;
+      const height =
+        sizePx *
+        (
+          0.56 +
+          ((index + 1) % 3) * 0.11
+        );
+      const lateralRatio =
+        count === 1
+          ? 0
+          : index / (count - 1) - 0.5;
+      const dx =
+        lateralRatio *
+        spreadPx +
+        (
+          index % 2 === 0
+            ? -4
+            : 4
+        );
+      const dy =
+        -risePx *
+        (
+          0.72 +
+          (index % 3) * 0.14
+        );
+
+      puff.className =
+        "skill-fx__smoke-puff";
+      puff.dataset.skillFx =
+        "aftermath-smoke-puff";
+      puff.style.position =
+        "absolute";
+      puff.style.left = "0";
+      puff.style.top = "0";
+      puff.style.width =
+        width.toFixed(2) + "px";
+      puff.style.height =
+        height.toFixed(2) + "px";
+      puff.style.borderRadius =
+        index % 2 === 0
+          ? "46% 54% 61% 39% / 58% 42% 56% 44%"
+          : "58% 42% 49% 51% / 44% 61% 39% 56%";
+      puff.style.background =
+        "radial-gradient(ellipse at " +
+        (index % 2 === 0
+          ? "42% 58%"
+          : "58% 44%") +
+        ", " +
+        color +
+        " 0%, " +
+        color +
+        " 34%, transparent 76%)";
+      puff.style.filter =
+        "blur(" +
+        (
+          3.6 +
+          (index % 3) * 0.9
+        ).toFixed(1) +
+        "px)";
+      puff.style.pointerEvents =
+        "none";
+      container.append(puff);
+
+      const animation = animate(
+        puff,
+        [
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(0, 2px, 0) scale(0.42, 0.34)",
+            opacity: 0
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(" +
+              (dx * 0.25).toFixed(2) +
+              "px, " +
+              (dy * 0.2).toFixed(2) +
+              "px, 0) scale(0.95, 0.72)",
+            opacity:
+              opacity *
+              (
+                0.82 +
+                (index % 2) * 0.1
+              ),
+            offset: 0.22
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(" +
+              dx.toFixed(2) +
+              "px, " +
+              dy.toFixed(2) +
+              "px, 0) scale(" +
+              (
+                1.45 +
+                (index % 3) * 0.12
+              ).toFixed(2) +
+              ", " +
+              (
+                1.15 +
+                (index % 2) * 0.16
+              ).toFixed(2) +
+              ")",
+            opacity: 0
+          }
+        ],
+        {
+          duration:
+            durationMs +
+            (index % 4) * 48,
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+      animations.push(animation);
+    }
+
+    arena.append(container);
+
+    const compositeAnimation = {
+      cancel() {
+        for (
+          const animation of animations
+        ) {
+          animation?.cancel?.();
+        }
+      },
+      finished: Promise.all(
+        animations.map(
+          (animation) =>
+            animation?.finished ??
+            Promise.resolve()
+        )
+      )
+    };
+
+    const record = {
+      node: container,
+      animation: compositeAnimation,
+      frameAnimation: null,
+      type: "aftermath-smoke"
+    };
+    active.add(record);
+
+    const finished =
+      Promise.resolve(
+        compositeAnimation.finished
+      )
+        .then(() => {
+          cleanup(record);
+          return {
+            status: "finished"
+          };
+        })
+        .catch((error) => {
+          cleanup(record);
+          if (
+            error?.name ===
+            "AbortError"
+          ) {
+            return {
+              status: "cancelled"
+            };
+          }
+          throw error;
+        });
+
+    return Object.freeze({
+      status: "running",
+      animation: compositeAnimation,
+      finished
+    });
+  }
+
   function playImpactFeedback({
     point,
     feedback
@@ -1011,6 +1332,17 @@ export function createDomSkillFxRenderer({
       });
     if (burstHandle) {
       handles.push(burstHandle);
+    }
+
+    const smokeHandle =
+      playAftermathSmoke({
+        point,
+        smoke:
+          feedback?.aftermathSmoke ??
+          null
+      });
+    if (smokeHandle) {
+      handles.push(smokeHandle);
     }
 
     const shake =
@@ -1871,7 +2203,9 @@ export function createDomSkillFxRenderer({
       presentation?.feedback?.projectileTrail ??
         null,
       deltaX,
-      deltaY
+      deltaY,
+      presentation?.feedback?.glow?.color ??
+        null
     );
     arena.append(node);
 
