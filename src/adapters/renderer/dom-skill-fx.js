@@ -1243,16 +1243,16 @@ export function createDomSkillFxRenderer({
         (index % 2 === 0
           ? "42% 58%"
           : "58% 44%") +
-        ", " +
+        ", rgba(235, 235, 235, 0.46) 0%, " +
         color +
-        " 0%, " +
+        " 32%, " +
         color +
-        " 34%, transparent 76%)";
+        " 52%, transparent 82%)";
       puff.style.filter =
         "blur(" +
         (
-          3.6 +
-          (index % 3) * 0.9
+          2.2 +
+          (index % 3) * 0.65
         ).toFixed(1) +
         "px)";
       puff.style.pointerEvents =
@@ -1265,7 +1265,8 @@ export function createDomSkillFxRenderer({
           {
             transform:
               "translate(-50%, -50%) translate3d(0, 2px, 0) scale(0.42, 0.34)",
-            opacity: 0
+            opacity: 0,
+            offset: 0.18
           },
           {
             transform:
@@ -1280,7 +1281,7 @@ export function createDomSkillFxRenderer({
                 0.82 +
                 (index % 2) * 0.1
               ),
-            offset: 0.22
+            offset: 0.44
           },
           {
             transform:
@@ -1571,7 +1572,8 @@ export function createDomSkillFxRenderer({
     feedback = null
   }) {
     const feedbackHandle =
-      type === "impact"
+      type === "impact" ||
+      type === "clash-impact"
         ? playImpactFeedback({
             point,
             feedback
