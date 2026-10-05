@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 95,
+    "assets": 98,
     "icons": 31,
-    "sprites": 48,
+    "sprites": 51,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -3022,6 +3022,111 @@
         "frameCount": 8,
         "frameMs": 90,
         "playbackMode": "loop"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fireball-2-cast-01",
+      "label": "Boule de feu 2 — cast",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "skill",
+        "fire",
+        "magic",
+        "cast",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fireball_2/atlases/sprite_skill_fireball_2_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 60
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fireball-2-projectile-01",
+      "label": "Boule de feu 2 — projectile",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "skill",
+        "fire",
+        "magic",
+        "projectile",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fireball_2/atlases/sprite_skill_fireball_2_projectile_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fireball-2-impact-01",
+      "label": "Boule de feu 2 — impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "skill",
+        "fire",
+        "magic",
+        "impact",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fireball_2/atlases/sprite_skill_fireball_2_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
       }
     }
   ]

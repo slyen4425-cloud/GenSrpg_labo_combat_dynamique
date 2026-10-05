@@ -1,0 +1,68 @@
+{
+  "frame_size": [
+    512,
+    512
+  ],
+  "sequences": {
+    "cast": {
+      "frame_count": 12,
+      "frame_ms": 60,
+      "loop": false,
+      "frames": [
+        "frames/sprite_skill_fireball_2_cast_01.png",
+        "frames/sprite_skill_fireball_2_cast_02.png",
+        "frames/sprite_skill_fireball_2_cast_03.png",
+        "frames/sprite_skill_fireball_2_cast_04.png",
+        "frames/sprite_skill_fireball_2_cast_05.png",
+        "frames/sprite_skill_fireball_2_cast_06.png",
+        "frames/sprite_skill_fireball_2_cast_07.png",
+        "frames/sprite_skill_fireball_2_cast_08.png",
+        "frames/sprite_skill_fireball_2_cast_09.png",
+        "frames/sprite_skill_fireball_2_cast_10.png",
+        "frames/sprite_skill_fireball_2_cast_11.png",
+        "frames/sprite_skill_fireball_2_cast_12.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_2_cast_atlas_01.webp"
+    },
+    "projectile": {
+      "frame_count": 12,
+      "frame_ms": 45,
+      "loop": false,
+      "frames": [
+        "frames/sprite_skill_fireball_2_projectile_01.png",
+        "frames/sprite_skill_fireball_2_projectile_02.png",
+        "frames/sprite_skill_fireball_2_projectile_03.png",
+        "frames/sprite_skill_fireball_2_projectile_04.png",
+        "frames/sprite_skill_fireball_2_projectile_05.png",
+        "frames/sprite_skill_fireball_2_projectile_06.png",
+        "frames/sprite_skill_fireball_2_projectile_07.png",
+        "frames/sprite_skill_fireball_2_projectile_08.png",
+        "frames/sprite_skill_fireball_2_projectile_09.png",
+        "frames/sprite_skill_fireball_2_projectile_10.png",
+        "frames/sprite_skill_fireball_2_projectile_11.png",
+        "frames/sprite_skill_fireball_2_projectile_12.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_2_projectile_atlas_01.webp"
+    },
+    "impact": {
+      "frame_count": 12,
+      "frame_ms": 45,
+      "loop": false,
+      "frames": [
+        "frames/sprite_skill_fireball_2_impact_01.png",
+        "frames/sprite_skill_fireball_2_impact_02.png",
+        "frames/sprite_skill_fireball_2_impact_03.png",
+        "frames/sprite_skill_fireball_2_impact_04.png",
+        "frames/sprite_skill_fireball_2_impact_05.png",
+        "frames/sprite_skill_fireball_2_impact_06.png",
+        "frames/sprite_skill_fireball_2_impact_07.png",
+        "frames/sprite_skill_fireball_2_impact_08.png",
+        "frames/sprite_skill_fireball_2_impact_09.png",
+        "frames/sprite_skill_fireball_2_impact_10.png",
+        "frames/sprite_skill_fireball_2_impact_11.png",
+        "frames/sprite_skill_fireball_2_impact_12.png"
+      ],
+      "atlas": "atlases/sprite_skill_fireball_2_impact_atlas_01.webp"
+    }
+  }
+}
