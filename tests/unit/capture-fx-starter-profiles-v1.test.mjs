@@ -42,7 +42,16 @@ const PRESENTATION_KEYS = new Set([
   "castAudioAssetId",
   "travelAudioAssetId",
   "impactAudioAssetId",
-  "zoneAudioAssetId"
+  "zoneAudioAssetId",
+  "fxGlowColor",
+  "fxGlowStrength",
+  "fxGlowRadiusPx",
+  "impactFlashColor",
+  "impactFlashOpacity",
+  "impactFlashDurationMs",
+  "impactFlashScale",
+  "impactShakeAmplitudePx",
+  "impactShakeDurationMs"
 ]);
 
 test("Capture FX starter library exposes protected system profiles only through presentation data", () => {
