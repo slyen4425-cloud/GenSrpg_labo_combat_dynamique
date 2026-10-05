@@ -96,7 +96,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
         "gensrpg:sound:genrpg-pack2-a30f1071",
       fxGlowColor: "#ff6a1f",
       fxGlowStrength: 0.85,
-      fxGlowRadiusPx: 20,
+      fxGlowRadiusPx: 32,
       impactFlashColor: "#fff2c2",
       impactFlashOpacity: 0.8,
       impactFlashDurationMs: 120,
@@ -131,7 +131,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
         "gensrpg:sound:genrpg-pack2-eb271979",
       fxGlowColor: "#46dfff",
       fxGlowStrength: 0.65,
-      fxGlowRadiusPx: 16,
+      fxGlowRadiusPx: 22,
       impactFlashColor: "#e8ffff",
       impactFlashOpacity: 0.55,
       impactFlashDurationMs: 120,
@@ -165,8 +165,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       travelAudioAssetId:
         "gensrpg:sound:genrpg-pack2-350eb251",
       fxGlowColor: "#a6eaff",
-      fxGlowStrength: 0.9,
-      fxGlowRadiusPx: 22,
+      fxGlowStrength: 1,
+      fxGlowRadiusPx: 48,
       impactFlashColor: "#ffffff",
       impactFlashOpacity: 0.85,
       impactFlashDurationMs: 90,
@@ -196,8 +196,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
         "pack:capture:sprite-impact-nature-01",
       impactDisplayScale: 1.45,
       fxGlowColor: "#7ee35f",
-      fxGlowStrength: 0.55,
-      fxGlowRadiusPx: 14,
+      fxGlowStrength: 0.65,
+      fxGlowRadiusPx: 22,
       impactFlashColor: "#d9ffbd",
       impactFlashOpacity: 0.4,
       impactFlashDurationMs: 100,
@@ -225,8 +225,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       impactAudioAssetId:
         "gensrpg:sound:effect-7b158ebd",
       fxGlowColor: "#fff1d0",
-      fxGlowStrength: 0.2,
-      fxGlowRadiusPx: 10,
+      fxGlowStrength: 0.35,
+      fxGlowRadiusPx: 12,
       impactFlashColor: "#ffffff",
       impactFlashOpacity: 0.45,
       impactFlashDurationMs: 80,
@@ -262,8 +262,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       castAudioAssetId:
         "gensrpg:sound:effect-135ee2ed",
       fxGlowColor: "#ff5d1c",
-      fxGlowStrength: 0.8,
-      fxGlowRadiusPx: 20,
+      fxGlowStrength: 0.85,
+      fxGlowRadiusPx: 32,
       impactFlashColor: "#fff0bd",
       impactFlashOpacity: 0.65,
       impactFlashDurationMs: 130,
@@ -288,8 +288,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       zoneLayerPlayer: "front",
       zoneLayerOpponent: "front",
       fxGlowColor: "#9dffcf",
-      fxGlowStrength: 0.55,
-      fxGlowRadiusPx: 18
+      fxGlowStrength: 0.65,
+      fxGlowRadiusPx: 22
     }
   }),
   frozenProfile({
@@ -308,8 +308,8 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       zoneLayerPlayer: "front",
       zoneLayerOpponent: "front",
       fxGlowColor: "#7de7ff",
-      fxGlowStrength: 0.68,
-      fxGlowRadiusPx: 20
+      fxGlowStrength: 0.65,
+      fxGlowRadiusPx: 22
     }
   })
 ]);
