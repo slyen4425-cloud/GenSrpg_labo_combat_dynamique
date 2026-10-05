@@ -7,8 +7,12 @@ import {
 } from "../../src/contracts/skill-presentation-binding.js";
 import {
   CAPTURE_FX_PARTICLE_PRESETS_V1,
-  applyCaptureFxParticlePresetV1
+  applyCaptureFxParticlePresetV1,
+  captureFxParticlePresetIdForValuesV1
 } from "../../src/catalogs/capture-fx-particle-presets-v1.js";
+import {
+  CAPTURE_FX_STARTER_PROFILES_V1
+} from "../../src/catalogs/capture-fx-starter-profile-catalog-v1.js";
 import {
   createDomSkillFxRenderer
 } from "../../src/adapters/renderer/dom-skill-fx.js";
@@ -334,4 +338,29 @@ test("editor exposes simple particle presence before expert particle values", as
     html,
     /data-skill-impact-burst-count/
   );
+});
+
+
+test("showcase FX profiles stay mapped to readable particle levels", () => {
+  const levels = Object.fromEntries(
+    CAPTURE_FX_STARTER_PROFILES_V1.map(
+      (profile) => [
+        profile.label,
+        captureFxParticlePresetIdForValuesV1(
+          profile.presentation
+        )
+      ]
+    )
+  );
+
+  assert.deepEqual(levels, {
+    "Boule de feu": "intense",
+    "Projectile d’eau": "visible",
+    "Projectile électrique": "very-intense",
+    "Épine naturelle": "visible",
+    "Griffe physique": "discreet",
+    "Zone de flammes": "intense",
+    "Aura de soins": "discreet",
+    "Bouclier d’énergie": "none"
+  });
 });
