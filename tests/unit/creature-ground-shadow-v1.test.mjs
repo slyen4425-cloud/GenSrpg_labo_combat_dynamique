@@ -31,9 +31,8 @@ function deferred() {
   return { promise, resolve, reject };
 }
 function harness(actor) {
-  const styles = {};
   const element = { style: {} };
-  const shadowElement = { style: { setProperty(name, value) { styles[name] = value; } } };
+  const shadowElement = { style: {} };
   const calls = [];
   const renderer = createDomActorRenderer({ element, shadowElement, actor,
     animate(target, keyframes, options) {
@@ -45,7 +44,7 @@ function harness(actor) {
       calls.push({ target, keyframes, options, animation, done });
       return animation;
     } });
-  return { renderer, calls, styles, element, shadowElement };
+  return { renderer, calls, element, shadowElement };
 }
 
 for (const view of ["player", "opponent"]) {
@@ -101,9 +100,9 @@ test("teleport and KO share body visibility, depth and terminal ownership", asyn
   assert.equal(h.calls.length, 2);
   h.calls.forEach(c => c.done.resolve());
   await handle.finished;
-  assert.equal(h.styles["--creature-shadow-fade"], "0");
+  assert.equal(h.shadowElement.style.opacity, "0");
   h.renderer.dispose();
-  assert.equal(h.styles["--creature-shadow-fade"], "1");
+  assert.equal(h.shadowElement.style.opacity, "1");
   assert.equal(h.renderer.isDisposed, true);
 });
 test("one renderer owns both WAAPI tracks, synchronizes them and restores after completion", async () => {
@@ -111,14 +110,19 @@ test("one renderer owns both WAAPI tracks, synchronizes them and restores after 
   const handle = h.renderer.play(planFor(actor, "ground-attack"));
   assert.equal(h.calls.length, 2, "body and shadow tracks must be owned together");
   assert.equal(h.calls[1].target, h.shadowElement);
-  assert.equal(h.calls[1].options.pseudoElement, "::before");
+  assert.equal("pseudoElement" in h.calls[1].options, false);
   assert.equal(h.calls[0].options.duration, h.calls[1].options.duration);
   await Promise.resolve(); await Promise.resolve();
   assert.equal(h.calls[1].animation.startTime, h.calls[0].animation.startTime);
   h.calls.forEach(c => c.done.resolve());
   await handle.finished;
-  assert.equal(h.styles["--creature-shadow-fade"], "1");
-  assert.deepEqual(translation({transform: h.styles["--creature-shadow-transform"]}), [12, -4]);
+  assert.equal(h.shadowElement.style.opacity, "1");
+  assert.deepEqual(
+    translation({
+      transform: h.shadowElement.style.transform
+    }),
+    [12, -4]
+  );
 });
 test("attack interruption and dispose cancel both tracks, with no stale shadow restoration", async () => {
   const actor = actorFor("flying", "player"), h = harness(actor);
@@ -134,7 +138,10 @@ test("attack interruption and dispose cancel both tracks, with no stale shadow r
 });
 test("native slot and CSS project the shadow through the existing renderer", async () => {
   const app = await readFile("src/ui/demo-app.js", "utf8"), css = await readFile("examples/dom-demo/demo.css", "utf8");
-  assert.match(app, /shadowElement:\s*slotContainer/);
-  assert.match(css, /var\(--creature-shadow-transform/);
-  assert.match(css, /var\(--creature-shadow-fade/);
+  assert.match(
+    app,
+    /shadowElement\s*=\s*requiredElement[\s\S]*?\[data-demo-shadow\][\s\S]*?shadowElement,/
+  );
+  assert.match(css, /\.fighter__shadow\s*\{/);
+  assert.doesNotMatch(css, /\.fighter::before\s*\{/);
 });
