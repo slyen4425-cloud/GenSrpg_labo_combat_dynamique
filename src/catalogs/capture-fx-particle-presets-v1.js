@@ -3,7 +3,8 @@ function frozenPreset({
   label,
   description,
   trail,
-  burst
+  burst,
+  smoke
 }) {
   return Object.freeze({
     id,
@@ -14,6 +15,9 @@ function frozenPreset({
     }),
     burst: Object.freeze({
       ...burst
+    }),
+    smoke: Object.freeze({
+      ...smoke
     })
   });
 }
@@ -37,6 +41,14 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         sizePx: 0,
         durationMs: 0,
         opacity: 0
+      },
+      smoke: {
+        count: 0,
+        spreadPx: 0,
+        sizePx: 0,
+        risePx: 0,
+        durationMs: 0,
+        opacity: 0
       }
     }),
     frozenPreset({
@@ -56,6 +68,14 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         sizePx: 5,
         durationMs: 260,
         opacity: 0.55
+      },
+      smoke: {
+        count: 2,
+        spreadPx: 28,
+        sizePx: 20,
+        risePx: 26,
+        durationMs: 560,
+        opacity: 0.24
       }
     }),
     frozenPreset({
@@ -75,6 +95,14 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         sizePx: 7,
         durationMs: 320,
         opacity: 0.75
+      },
+      smoke: {
+        count: 3,
+        spreadPx: 36,
+        sizePx: 24,
+        risePx: 34,
+        durationMs: 660,
+        opacity: 0.32
       }
     }),
     frozenPreset({
@@ -94,6 +122,14 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         sizePx: 9,
         durationMs: 380,
         opacity: 0.9
+      },
+      smoke: {
+        count: 5,
+        spreadPx: 46,
+        sizePx: 28,
+        risePx: 42,
+        durationMs: 760,
+        opacity: 0.42
       }
     }),
     frozenPreset({
@@ -113,6 +149,14 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         sizePx: 11,
         durationMs: 460,
         opacity: 1
+      },
+      smoke: {
+        count: 8,
+        spreadPx: 60,
+        sizePx: 34,
+        risePx: 54,
+        durationMs: 920,
+        opacity: 0.5
       }
     })
   ]);
@@ -176,7 +220,19 @@ export function applyCaptureFxParticlePresetV1({
     impactBurstDurationMs:
       preset.burst.durationMs,
     impactBurstOpacity:
-      preset.burst.opacity
+      preset.burst.opacity,
+    aftermathSmokeCount:
+      preset.smoke.count,
+    aftermathSmokeSpreadPx:
+      preset.smoke.spreadPx,
+    aftermathSmokeSizePx:
+      preset.smoke.sizePx,
+    aftermathSmokeRisePx:
+      preset.smoke.risePx,
+    aftermathSmokeDurationMs:
+      preset.smoke.durationMs,
+    aftermathSmokeOpacity:
+      preset.smoke.opacity
   };
 }
 
@@ -195,6 +251,7 @@ export function captureFxParticlePresetIdForValuesV1(
   ) {
     const trail = preset.trail;
     const burst = preset.burst;
+    const smoke = preset.smoke;
 
     if (
       sameNumber(
@@ -232,6 +289,30 @@ export function captureFxParticlePresetIdForValuesV1(
       sameNumber(
         presentation.impactBurstOpacity,
         burst.opacity
+      ) &&
+      sameNumber(
+        presentation.aftermathSmokeCount,
+        smoke.count
+      ) &&
+      sameNumber(
+        presentation.aftermathSmokeSpreadPx,
+        smoke.spreadPx
+      ) &&
+      sameNumber(
+        presentation.aftermathSmokeSizePx,
+        smoke.sizePx
+      ) &&
+      sameNumber(
+        presentation.aftermathSmokeRisePx,
+        smoke.risePx
+      ) &&
+      sameNumber(
+        presentation.aftermathSmokeDurationMs,
+        smoke.durationMs
+      ) &&
+      sameNumber(
+        presentation.aftermathSmokeOpacity,
+        smoke.opacity
       )
     ) {
       return preset.id;
