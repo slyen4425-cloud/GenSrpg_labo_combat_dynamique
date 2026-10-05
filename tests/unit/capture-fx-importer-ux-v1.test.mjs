@@ -20,7 +20,7 @@ test("Capture skill FX UI explains starter packs instead of presenting them as r
   );
   assert.match(
     html,
-    /Cast + Projectile + Impact/
+    /Cast \\+ Projectile \\+ Impact/
   );
   assert.match(
     html,
@@ -42,7 +42,7 @@ test("creator visual import is directly available from the Skills FX panel and r
   );
   assert.match(
     html,
-    /Mes sprites / Importer/
+    /Mes sprites \\/ Importer/
   );
 
   const importerCount =
