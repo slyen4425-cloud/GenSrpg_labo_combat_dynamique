@@ -208,7 +208,10 @@ test("contact shadow derives scale from actor and optional offset/opacity from p
   const flying = await json(profilePaths.flying);
 
   assert.match(css, /--creature-display-scale/);
-  assert.match(css, /fighter::before[\s\S]*var\(--creature-display-scale/);
+  assert.match(
+    css,
+    /fighter__shadow[\s\S]*var\(--creature-display-scale/
+  );
   assert.match(
     css,
     /bottom:\s*var\(--creature-shadow-bottom,\s*8%\)/
