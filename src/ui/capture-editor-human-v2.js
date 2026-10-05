@@ -5551,7 +5551,7 @@ async function hydrateNativeSkillCatalog() {
   );
 }
 
-async function hydrateAssetCatalog(root, listen) {
+async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
     { cache: "no-store" }
@@ -5567,8 +5567,9 @@ async function hydrateAssetCatalog(root, listen) {
 
   const catalog = await response.json();
   const assets = Array.isArray(catalog.assets)
-    ? catalog.assets
+    ? [...catalog.assets]
     : [];
+  catalog.assets = assets;
 
   const byId = new Map(
     assets.map((asset) => [asset.id, asset])
@@ -5588,15 +5589,25 @@ async function hydrateAssetCatalog(root, listen) {
 
   function preview(select, image) {
     const asset = byId.get(select.value);
+    const runtimeUrl =
+      asset?.resource?.runtimeUrl;
     const file = asset?.resource?.file;
+    const url =
+      typeof runtimeUrl === "string" &&
+      runtimeUrl.trim() !== ""
+        ? runtimeUrl
+        : typeof file === "string" &&
+            file.trim() !== ""
+          ? globalVisualAssetUrl(file)
+          : null;
 
-    if (!file) {
+    if (!url) {
       image.removeAttribute("src");
       image.dataset.empty = "true";
       return;
     }
 
-    image.src = globalVisualAssetUrl(file);
+    image.src = url;
     image.alt = asset.label || asset.id;
     image.dataset.empty = "false";
   }
@@ -5643,6 +5654,144 @@ async function hydrateAssetCatalog(root, listen) {
       () => syncPreviews(select, images)
     );
     syncPreviews(select, images);
+  }
+
+  const creatorImportButton =
+    root.querySelector(
+      "[data-creator-visual-import]"
+    );
+  const creatorImportFile =
+    root.querySelector(
+      "[data-creator-visual-file]"
+    );
+  const creatorImportRole =
+    root.querySelector(
+      "[data-creator-visual-role]"
+    );
+  const creatorImportLabel =
+    root.querySelector(
+      "[data-creator-visual-label]"
+    );
+  const creatorImportState =
+    root.querySelector(
+      "[data-creator-visual-state]"
+    );
+
+  function refreshCreatorAssetLists() {
+    EDITOR_VISUAL_ASSETS_BY_ROOT.set(
+      root,
+      Object.freeze([...assets])
+    );
+    for (
+      const select of root.querySelectorAll(
+        "[data-asset-role]"
+      )
+    ) {
+      populateSelect(
+        select,
+        assets,
+        select.dataset.assetRole
+      );
+    }
+  }
+
+  if (
+    creatorImportButton &&
+    creatorImportFile &&
+    creatorImportRole
+  ) {
+    if (
+      !creatorVisualAssets ||
+      typeof creatorVisualAssets.importImage !==
+        "function"
+    ) {
+      creatorImportButton.disabled = true;
+      if (creatorImportState) {
+        creatorImportState.textContent =
+          "Import personnel indisponible dans ce contexte.";
+        creatorImportState.dataset.tone =
+          "warning";
+      }
+    } else {
+      listen(
+        creatorImportButton,
+        "click",
+        () => {
+          try {
+            const file =
+              creatorImportFile.files?.[0];
+            if (!file) {
+              throw new Error(
+                "Choisis une image PNG, WebP ou JPEG."
+              );
+            }
+
+            const role =
+              String(
+                creatorImportRole.value ?? ""
+              ).trim();
+            const label =
+              String(
+                creatorImportLabel?.value ??
+                  file.name ??
+                  "Asset personnel"
+              ).trim();
+
+            const asset =
+              creatorVisualAssets.importImage({
+                file,
+                label,
+                role
+              });
+
+            assets.push(asset);
+            byId.set(asset.id, asset);
+            refreshCreatorAssetLists();
+
+            const preferredSelect =
+              role === "creature"
+                ? frontSelect
+                : root.querySelector(
+                    '[data-asset-role="' +
+                      role +
+                      '"]'
+                  );
+            if (preferredSelect) {
+              preferredSelect.value =
+                asset.id;
+              preferredSelect.dispatchEvent(
+                new Event("change", {
+                  bubbles: true
+                })
+              );
+            }
+
+            if (creatorImportState) {
+              creatorImportState.textContent =
+                "Importé : " +
+                asset.label +
+                " (" +
+                asset.id +
+                ")";
+              creatorImportState.dataset.tone =
+                "ok";
+            }
+
+            creatorImportFile.value = "";
+            if (creatorImportLabel) {
+              creatorImportLabel.value = "";
+            }
+          } catch (error) {
+            if (creatorImportState) {
+              creatorImportState.textContent =
+                error.message;
+              creatorImportState.dataset.tone =
+                "error";
+            }
+          }
+        }
+      );
+    }
   }
 
   const scaleInput = one(
@@ -6321,7 +6470,7 @@ export function preserveUnrepresentedCreatureFieldsV1({
   };
 }
 
-export function mountCaptureEditorHumanV2({ root }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
   }
@@ -8620,7 +8769,7 @@ export function mountCaptureEditorHumanV2({ root }) {
   );
 
   const ready = Promise.all([
-    hydrateAssetCatalog(root, listen),
+    hydrateAssetCatalog(root, listen, creatorVisualAssets),
     hydratePrivateAudioCatalog(root),
     hydrateNativeSkillCatalog(),
     hydrateCaptureStatRegistryV1()
