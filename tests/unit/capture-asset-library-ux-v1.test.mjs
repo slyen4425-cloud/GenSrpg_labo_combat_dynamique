@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import {
+  captureEditorAssetLibraryGroupV1
+} from "../../src/ui/capture-editor-human-v2.js";
 
 async function text(path) {
   return readFile(
@@ -8,6 +11,27 @@ async function text(path) {
     "utf8"
   );
 }
+
+test("asset provenance maps system assets and creator imports to the two visible libraries", () => {
+  assert.equal(
+    captureEditorAssetLibraryGroupV1({
+      source: { scope: "core" }
+    }),
+    "gensrpg"
+  );
+  assert.equal(
+    captureEditorAssetLibraryGroupV1({
+      source: { scope: "pack" }
+    }),
+    "gensrpg"
+  );
+  assert.equal(
+    captureEditorAssetLibraryGroupV1({
+      source: { scope: "user" }
+    }),
+    "user"
+  );
+});
 
 test("visual selectors distinguish GenSrpG library from creator assets without a second importer", async () => {
   const source = await text(
