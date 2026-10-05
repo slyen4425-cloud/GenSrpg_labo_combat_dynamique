@@ -179,8 +179,8 @@
           </div>
         </div>
 
-        <div class="creator-visual-import">
-          <h3>Importer un visuel personnel</h3>
+        <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
+          <h3>Mes visuels / Importer</h3>
           <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut. La persistance projet sera un lot séparé.</p>
           <div class="grid three">
             <label>Usage
@@ -779,8 +779,8 @@
         </div>
 
         <div class="creator-visual-import" data-skill-fx-starter>
-          <h3>Mode simple — Profils FX GenSrpG</h3>
-          <p class="note">Ces profils vitrine sont protégés : « Appliquer et personnaliser » copie leurs réglages dans ta capacité sans modifier la bibliothèque système ni les règles de combat.</p>
+          <h3>Mode simple — Pack FX de départ GenSrpG</h3>
+          <p class="note">Un pack FX n’est pas un sprite unique : il prépare ensemble Cast + Projectile + Impact, puis ajoute les réglages visuels associés (glow, particules, fumée et sons disponibles). Le pack est seulement une base de départ : après application, chaque élément peut être remplacé séparément.</p>
           <div class="grid two">
             <label>Base FX
               <select data-skill-fx-starter-profile disabled>
@@ -789,7 +789,7 @@
             </label>
             <div class="skill-save-actions">
               <button type="button" class="primary-action" data-skill-fx-starter-apply disabled>
-                Appliquer et personnaliser
+                Appliquer ce pack
               </button>
             </div>
             <label>Présence du glow
@@ -821,6 +821,31 @@
           <p class="note" data-skill-fx-starter-state data-tone="info">
             Les médias restent référencés par assetId ; tes imports personnels utilisent ensuite exactement les mêmes champs.
           </p>
+        </div>
+
+        <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
+          <h3>Mes sprites / Importer</h3>
+          <p class="note">Ajoute ton propre PNG, WebP ou JPEG directement à la bibliothèque de cette session. Après import, le sprite apparaît dans la liste correspondante ci-dessous et utilise exactement le même système que les assets GenSrpG.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-visual-role>
+                <option value="icon">Icône de capacité</option>
+                <option value="cast" selected>Cast / préparation</option>
+                <option value="travel">Projectile / trajet</option>
+                <option value="impact">Impact</option>
+                <option value="zone">Zone / aura</option>
+                <option value="status">Statut</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
+          <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
         </div>
 
         <details data-skill-fx-advanced>
