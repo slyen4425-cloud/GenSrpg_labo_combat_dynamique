@@ -104,11 +104,14 @@ for (const sheet of sheets) {
     }
   });
 }
-test("the global catalogue retains one definition per ID and counts the seven new status assets", () => {
+test("the global catalogue retains one definition per ID and the seven status assets", () => {
   const c = JSON.parse(readFileSync(new URL("data/assets/catalog/global-visual-assets.v1.json", root), "utf8"));
-  assert.equal(c.assets.length, 95);
-  assert.equal(new Set(c.assets.map(a => a.id)).size, 95);
-  assert.equal(c.counts.assets, 95);
+  assert.equal(new Set(c.assets.map(a => a.id)).size, c.assets.length);
+  assert.equal(c.counts.assets, c.assets.length);
   assert.equal(c.counts.sprites, c.assets.filter(a => a.assetType === "sprite").length);
+  const statusIds = ["healing-aura", "energy-shield", "stone-shell", "poison", "regeneration", "purification", "curse"]
+    .map(n => "pack:capture:sprite-status-" + n + "-01");
+  assert.equal(c.assets.filter(a => statusIds.includes(a.id)).length, 7);
+  assert.ok(statusIds.every(id => c.assets.some(a => a.id === id)));
   assert.equal(c.storage.branch, "global-assets");
 });
