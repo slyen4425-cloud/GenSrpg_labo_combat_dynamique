@@ -14,6 +14,7 @@ import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
+import { createPersistentZoneAudioSyncV1 } from "../adapters/audio/persistent-zone-audio-sync-v1.js";
 
 const DATA_URLS = Object.freeze({
   commands: Object.freeze({
@@ -626,6 +627,10 @@ export async function mountCoop2v2Test({
     },
   });
 
+  const zoneAudio = createPersistentZoneAudioSyncV1({
+    audio: combatAudio
+  });
+
   const fx = createDomSkillFxRenderer({
     arena,
     onProjectileContact(contact) {
@@ -824,6 +829,9 @@ export async function mountCoop2v2Test({
       `${formatEnergy(local.energy)} / ${formatEnergy(local.maxEnergy)}⚡`;
 
     fx.syncPersistentZones(
+      state.persistentZones ?? []
+    );
+    zoneAudio.sync(
       state.persistentZones ?? []
     );
     renderAvailability();
@@ -1335,6 +1343,7 @@ export async function mountCoop2v2Test({
       statusFx?.dispose();
       damageFeedback?.dispose();
       fx.dispose();
+      zoneAudio.dispose();
       combatAudio.dispose?.();
     }
   });
