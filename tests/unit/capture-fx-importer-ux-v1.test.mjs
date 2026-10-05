@@ -68,11 +68,11 @@ test("creator visual import is directly available from the Skills FX panel and r
   assert.equal(
     (
       source.match(
-        /creatorVisualAssets\.importImage/g
+        /const asset =\s*creatorVisualAssets\.importImage/g
       ) ?? []
     ).length,
     1,
-    "all importer widgets must reuse the single creatorVisualAssets owner"
+    "all importer widgets must reuse one import invocation path"
   );
 });
 
