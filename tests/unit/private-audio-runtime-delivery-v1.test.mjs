@@ -16,8 +16,8 @@ test("every private runtime audio manifest entry has a physically delivered MP3"
     await readFile(manifestUrl, "utf8")
   );
 
-  assert.equal(manifest.count, 173);
-  assert.equal(manifest.entries.length, 173);
+  assert.equal(manifest.count, 203);
+  assert.equal(manifest.entries.length, 203);
 
   const missing = [];
 
