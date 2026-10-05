@@ -2,6 +2,7 @@ function frozenPreset({
   id,
   label,
   description,
+  cast,
   trail,
   burst,
   smoke
@@ -10,6 +11,9 @@ function frozenPreset({
     id,
     label,
     description,
+    cast: Object.freeze({
+      ...cast
+    }),
     trail: Object.freeze({
       ...trail
     }),
@@ -29,6 +33,13 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       label: "Aucune",
       description:
         "Aucune particule supplémentaire.",
+      cast: {
+        count: 0,
+        spreadPx: 0,
+        sizePx: 0,
+        durationMs: 0,
+        opacity: 0
+      },
       trail: {
         count: 0,
         lengthPx: 0,
@@ -56,6 +67,13 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       label: "Discrète",
       description:
         "Quelques particules légères, peu envahissantes.",
+      cast: {
+        count: 3,
+        spreadPx: 28,
+        sizePx: 4,
+        durationMs: 340,
+        opacity: 0.42
+      },
       trail: {
         count: 3,
         lengthPx: 28,
@@ -83,6 +101,13 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       label: "Visible",
       description:
         "Traînée et impact bien perceptibles sans surcharger l’écran.",
+      cast: {
+        count: 5,
+        spreadPx: 40,
+        sizePx: 5,
+        durationMs: 420,
+        opacity: 0.58
+      },
       trail: {
         count: 5,
         lengthPx: 40,
@@ -110,6 +135,13 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       label: "Intense",
       description:
         "Particules nombreuses et impact marqué.",
+      cast: {
+        count: 8,
+        spreadPx: 54,
+        sizePx: 7,
+        durationMs: 520,
+        opacity: 0.78
+      },
       trail: {
         count: 7,
         lengthPx: 56,
@@ -124,12 +156,12 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         opacity: 0.9
       },
       smoke: {
-        count: 5,
-        spreadPx: 46,
-        sizePx: 28,
-        risePx: 42,
-        durationMs: 760,
-        opacity: 0.42
+        count: 6,
+        spreadPx: 52,
+        sizePx: 34,
+        risePx: 48,
+        durationMs: 880,
+        opacity: 0.5
       }
     }),
     frozenPreset({
@@ -137,6 +169,13 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
       label: "Très intense",
       description:
         "Effet spectaculaire avec budget mobile toujours borné.",
+      cast: {
+        count: 12,
+        spreadPx: 72,
+        sizePx: 9,
+        durationMs: 640,
+        opacity: 0.9
+      },
       trail: {
         count: 10,
         lengthPx: 72,
@@ -203,6 +242,16 @@ export function applyCaptureFxParticlePresetV1({
 
   return {
     ...presentation,
+    castBurstCount:
+      preset.cast.count,
+    castBurstSpreadPx:
+      preset.cast.spreadPx,
+    castBurstSizePx:
+      preset.cast.sizePx,
+    castBurstDurationMs:
+      preset.cast.durationMs,
+    castBurstOpacity:
+      preset.cast.opacity,
     projectileTrailCount:
       preset.trail.count,
     projectileTrailLengthPx:
@@ -249,11 +298,32 @@ export function captureFxParticlePresetIdForValuesV1(
     const preset of
       CAPTURE_FX_PARTICLE_PRESETS_V1
   ) {
+    const cast = preset.cast;
     const trail = preset.trail;
     const burst = preset.burst;
     const smoke = preset.smoke;
 
     if (
+      sameNumber(
+        presentation.castBurstCount,
+        cast.count
+      ) &&
+      sameNumber(
+        presentation.castBurstSpreadPx,
+        cast.spreadPx
+      ) &&
+      sameNumber(
+        presentation.castBurstSizePx,
+        cast.sizePx
+      ) &&
+      sameNumber(
+        presentation.castBurstDurationMs,
+        cast.durationMs
+      ) &&
+      sameNumber(
+        presentation.castBurstOpacity,
+        cast.opacity
+      ) &&
       sameNumber(
         presentation.projectileTrailCount,
         trail.count
