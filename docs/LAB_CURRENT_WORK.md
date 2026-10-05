@@ -25213,3 +25213,34 @@ Statut : **GREEN technique**.
 - CI `37331678296` : **1041/1041 PASS**, garde structure/indépendance OK ;
 - rapport : `docs/LAB_COMBAT_SHADOW_GROUNDING_V2.md` ;
 - aucun changement main / Zombicide-40k.
+
+
+## Lot actif — audio-pack2-integration-v1
+
+Date : 2026-10-05
+
+Objectif : raccorder proprement les 30 sons déposés dans `slyen4425-cloud/GenSrpG_audio_prive`, lot `genrpg_pack2`, au catalogue/runtime audio du labo, sans exposer les masters privés et sans deuxième moteur audio.
+
+Base labo : `eda964a6a23fed2d4e12f7e377de43a91fb19fdd`.
+Checkpoint : `checkpoint/lab-start-audio-pack2-integration-v1-2026-10-05`.
+Branche : `work/lab-audio-pack2-integration-v1-2026-10-05`.
+
+Source privée : `GenSrpG_audio_prive`, révision pack2 `fd378cde1410a67c0e451ff3978a09d61425d7d8`, 30 fichiers classés en cast / impact / Projectile / mouvement / zone_persistante.
+
+Pipeline privé : le work branch runtime audio existant transcode les 30 sources en MP3 opaques et génère un manifeste séparé. Les WAV/MP3 masters restent privés.
+
+Propriétaires labo : contrat SkillPresentationBinding pour les slots audio, PrivateAudio runtime library/catalog pour les IDs/URLs, DomCombatAudio pour la lecture, CombatResolutionPresenter pour le cycle de vie de la zone persistante, Human Editor pour la sélection.
+
+Fichiers autorisés : contrat audio presentation, `src/assets/private-audio-*`, `data/presentation/audio/private-audio-catalog.v1.json`, `src/adapters/audio/dom-combat-audio.js`, `src/adapters/renderer/combat-resolution-presenter.js` uniquement pour le cycle de vie audio déjà propriétaire, `src/adapters/renderer/capture-skill-presentation-assets-v2.js`, Human Editor/HTML audio, runtime MP3 pack, tests et documentation.
+
+Protégés : Combat Rules, dégâts, collision, timing gameplay, Animation Core, FX Core visuel, global-assets visuels, Zombicide-40k, main.
+
+Rôle `zone_persistante` : ajout d'un slot audio canonique `aura` dans la présentation. Il ne sera pas déguisé en impact/cast.
+
+RED :
+- contrat refuse actuellement `audio.aura` ;
+- DomCombatAudio ne sait pas encore résoudre `type: aura` ;
+- éditeur n'expose pas encore de sélecteur zone persistante ;
+- pack runtime labo ne contient pas les 30 IDs `genrpg-pack2`.
+
+Critère GREEN : 30/30 sons catalogués et previewables, rôles corrects, audio aura loop stoppé au retrait/dispose, CI complète verte, aucun master privé publié.
