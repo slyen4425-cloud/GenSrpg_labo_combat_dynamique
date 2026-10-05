@@ -90,24 +90,47 @@ test("Fireball 2 projectile does not contain a broad translucent underlayer", ()
 
     let visible = 0;
     let weakAlpha = 0;
-    for (let p = 3; p < pixels.length; p += 4) {
+    let minX = width;
+    let maxX = -1;
+    let minY = height;
+    let maxY = -1;
+
+    for (let p = 3, pixelIndex = 0; p < pixels.length; p += 4, pixelIndex += 1) {
       const alpha = pixels[p];
       if (alpha > 0) {
         visible += 1;
         if (alpha < 32) weakAlpha += 1;
       }
+      if (alpha >= 32) {
+        const x = pixelIndex % width;
+        const y = Math.floor(pixelIndex / width);
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      }
     }
 
     const coverage = visible / (width * height);
     const weakRatio = weakAlpha / Math.max(visible, 1);
+    const strongWidth = maxX >= minX ? (maxX - minX + 1) / width : 0;
+    const strongHeight = maxY >= minY ? (maxY - minY + 1) / height : 0;
 
     assert.ok(
-      coverage < 0.15,
-      "projectile frame " + suffix + " alpha coverage too broad: " + coverage.toFixed(3)
+      coverage > 0.08 && coverage < 0.30,
+      "projectile frame " + suffix + " alpha coverage must stay dense without becoming a veil: " + coverage.toFixed(3)
     );
     assert.ok(
-      weakRatio < 0.35,
+      weakRatio < 0.25,
       "projectile frame " + suffix + " contains too much weak-alpha veil: " + weakRatio.toFixed(3)
+    );
+    assert.ok(
+      strongWidth >= 0.55,
+      "projectile frame " + suffix + " visible fire is too narrow inside the 512px source: " + strongWidth.toFixed(3)
+    );
+    assert.ok(
+      strongHeight >= 0.36,
+      "projectile frame " + suffix + " visible fire is too short inside the 512px source: " + strongHeight.toFixed(3)
     );
   }
 });
