@@ -1,5 +1,61 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-05
+
+Lot actif : **exploration-battle-end-return-v1**.
+
+Base GREEN :
+`9022017d63607b8a047b4ff22f1913f94d8d1513`
+(checkpoint `checkpoint/lab-exploration-roster-target-availability-v1-green-2026-10-04`).
+
+Checkpoint de départ :
+`checkpoint/lab-start-exploration-battle-end-return-v1-2026-10-05`
+
+Branche :
+`work/lab-exploration-battle-end-return-v1-2026-10-05`
+
+Régression utilisateur :
+- gagner un vrai combat issu d'Exploration ne renvoie plus sur la map Aventure ;
+- le pont Exploration passe pourtant un callback `onBattleEnd` à `mountCoop2v2Test()`.
+
+Cause démontrée :
+- `examples/dom-demo/exploration-encounter.js` passe `onBattleEnd({ outcome })` ;
+- `src/ui/combat-2v2-test-ui.js` ne déclare plus `onBattleEnd` dans la signature de `mountCoop2v2Test()` ;
+- le callback est donc ignoré ;
+- aucun `completeExplorationCombatHandoffV1()` ni retour vers `returnUrl` n'est déclenché à la fin réelle d'une équipe.
+
+Mission unique :
+- rétablir le contrat de fin de bataille dans `mountCoop2v2Test()` ;
+- déclencher exactement une fin de bataille lorsque `Roster Session` déclare `team_defeated` ;
+- projeter `victory` si l'équipe défaite est adverse, `defeat` si elle est locale ;
+- laisser l'adapter Exploration propriétaire de l'écriture du résultat et de la navigation retour.
+
+Propriétaires :
+- KO / remplacement / `team_defeated` : Roster Session ;
+- projection victoire/défaite : Demo UI / battle-format ;
+- handoff + navigation Exploration : `exploration-encounter.js` via son callback existant.
+
+Interdits :
+- aucun listener global ou timer supplémentaire ;
+- aucune détection DOM de victoire ;
+- aucun test de HP concurrent avec Roster Session pour décider la fin ;
+- aucun hardcode `enemy-1` ou `local-1` pour décider le vainqueur ;
+- aucun changement dégâts/skills/Recall/Summon ;
+- aucun changement Exploration ou `Zombicide-40k`.
+
+TDD attendu :
+1. RED : la projection d'une équipe défaite doit produire victoire/défaite selon `BattleFormat.teamOf()` ;
+2. RED : la sentinelle publique exige que `mountCoop2v2Test()` accepte `onBattleEnd` ;
+3. GREEN : `team_defeated` déclenche le callback une seule fois après la transition KO ;
+4. tests handoff existants GREEN ;
+5. CI complète ;
+6. preview Exploration vraie + gate utilisateur.
+
+État : **LOT OUVERT — TDD RED requis avant implémentation**.
+
+---
+
+
 ## Reprise prioritaire — 2026-10-04
 
 Lot actif : **exploration-roster-target-availability-v1**.
