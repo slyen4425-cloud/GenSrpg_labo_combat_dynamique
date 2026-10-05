@@ -25213,3 +25213,41 @@ Statut : **GREEN technique**.
 - CI `37331678296` : **1041/1041 PASS**, garde structure/indépendance OK ;
 - rapport : `docs/LAB_COMBAT_SHADOW_GROUNDING_V2.md` ;
 - aucun changement main / Zombicide-40k.
+
+
+## Lot actif — audio-pack2-runtime-v1
+
+Date : 2026-10-05
+
+Objectif : raccorder proprement les 30 nouveaux sons déposés dans `slyen4425-cloud/GenSrpG_audio_prive` au catalogue/runtime audio du labo, sans publier les fichiers maîtres privés et sans créer une seconde chaîne audio.
+
+Base labo : `eda964a6a23fed2d4e12f7e377de43a91fb19fdd`.
+Checkpoint : `checkpoint/lab-start-audio-pack2-runtime-v1-2026-10-05`.
+Branche : `work/lab-audio-pack2-runtime-v1-2026-10-05`.
+
+Source privée : `GenSrpG_audio_prive`, lot `audio/genrpg_pack2`, 30/30 fichiers, classes utilisateur déjà validées : cast, impact, Projectile, mouvement, zone_persistante.
+
+Architecture :
+- dépôt privé = source maître ;
+- labo = MP3 runtime opaques + métadonnées uniquement ;
+- `private-audio-runtime-library-v1.js` reste le resolver unique ;
+- `dom-combat-audio.js` reste l'adaptateur audio unique ;
+- le catalogue éditeur reste `private-audio-catalog.v1.json`.
+
+Périmètre :
+- publier 30 MP3 runtime opaques sous `assets/runtime/audio/private-v1/` ;
+- ajouter 30 métadonnées au catalogue ;
+- ajouter les IDs au resolver runtime ;
+- exposer les rôles réellement utilisés par l'éditeur ;
+- ajouter un slot audio `aura` pour les 4 sons `zone_persistante`, car aucun slot existant n'était sémantiquement correct ;
+- traiter les sons `mouvement` sans les déguiser en impact/cast : ceux explicitement projectile peuvent aussi porter le rôle travel ; le slot mouvement créature reste séparé du lot si le moteur ne possède pas encore de déclencheur canonique.
+
+Protégés : fichiers maîtres privés, Combat Rules, calculs de dégâts/collision, Animation Core, moteur FX, Zombicide-40k, main.
+
+RED :
+- catalogue final = +30 IDs uniques ;
+- resolver runtime reconnaît les 30 nouveaux IDs ;
+- le contrat SkillPresentation accepte `audio.aura` ;
+- l'éditeur expose `zone/aura` et le combat démarre/arrête le son avec la vie réelle de la zone, sans timer parallèle.
+
+Critère GREEN : 30 sons lisibles dans le labo, aucun chemin/fichier maître privé publié, audio de zone piloté par l'état `persistentZones`, CI complète verte, fichier HTML de test dédié et preview figée.
