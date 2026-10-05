@@ -437,10 +437,29 @@ export function applyCaptureFxStarterProfileV1({
   const statusVisuals =
     presentation.statusVisuals ?? {};
 
+  const audioKeys = [
+    "castAudioAssetId",
+    "travelAudioAssetId",
+    "impactAudioAssetId",
+    "zoneAudioAssetId"
+  ];
+  const preservedAudio = Object.fromEntries(
+    audioKeys
+      .filter((key) =>
+        typeof presentation[key] === "string" &&
+        presentation[key].trim() !== ""
+      )
+      .map((key) => [
+        key,
+        presentation[key]
+      ])
+  );
+
   return {
     ...presentation,
     ...PRESENTATION_DEFAULTS,
     ...profile.presentation,
+    ...preservedAudio,
     socketId,
     statusVisuals
   };
