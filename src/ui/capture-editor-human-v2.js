@@ -1181,6 +1181,12 @@ function presentationFeedbackFromFieldsV1(
       18,
       "Particules d’impact"
     );
+  const castBurstCount =
+    boundedParticleCount(
+      presentation.castBurstCount,
+      12,
+      "Particules de Cast"
+    );
   const smokeCount =
     boundedParticleCount(
       presentation.aftermathSmokeCount,
@@ -1192,6 +1198,7 @@ function presentationFeedbackFromFieldsV1(
     glowStrength <= 0 &&
     flashOpacity <= 0 &&
     shakeAmplitude <= 0 &&
+    castBurstCount <= 0 &&
     trailCount <= 0 &&
     burstCount <= 0 &&
     smokeCount <= 0
@@ -1255,6 +1262,56 @@ function presentationFeedbackFromFieldsV1(
           presentation.impactShakeDurationMs ??
             140,
           "Durée shake impact"
+        )
+      )
+    };
+  }
+
+  if (castBurstCount > 0) {
+    feedback.castBurst = {
+      color:
+        String(
+          presentation.castBurstColor ??
+            presentation.fxGlowColor ??
+            "#ffffff"
+        ),
+      count: castBurstCount,
+      spreadPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstSpreadPx,
+          "Dispersion particules Cast"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstSizePx,
+          "Taille particule Cast"
+        )
+      ),
+      risePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstRisePx,
+          "Montée particules Cast"
+        )
+      ),
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstDurationMs,
+          "Durée particules Cast"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.castBurstOpacity,
+            "Opacité particules Cast"
+          )
         )
       )
     };
@@ -1568,16 +1625,18 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      feedback?.aftermathSmoke
-        ? 6
-        : feedback?.projectileTrail ||
-          feedback?.impactBurst
-          ? 5
-          : hasFeedback
-            ? 4
-            : hasStatusVisuals
-              ? 3
-              : 2,
+      feedback?.castBurst
+        ? 7
+        : feedback?.aftermathSmoke
+          ? 6
+          : feedback?.projectileTrail ||
+            feedback?.impactBurst
+            ? 5
+            : hasFeedback
+              ? 4
+              : hasStatusVisuals
+                ? 3
+                : 2,
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -2155,6 +2214,27 @@ export function humanSkillEditorFieldsFromDraftV1(
       impactShakeDurationMs:
         presentation.feedback?.cameraShake
           ?.durationMs ?? 140,
+      castBurstColor:
+        presentation.feedback?.castBurst
+          ?.color ?? "#ffffff",
+      castBurstCount:
+        presentation.feedback?.castBurst
+          ?.count ?? 0,
+      castBurstSpreadPx:
+        presentation.feedback?.castBurst
+          ?.spreadPx ?? 0,
+      castBurstSizePx:
+        presentation.feedback?.castBurst
+          ?.sizePx ?? 0,
+      castBurstRisePx:
+        presentation.feedback?.castBurst
+          ?.risePx ?? 0,
+      castBurstDurationMs:
+        presentation.feedback?.castBurst
+          ?.durationMs ?? 0,
+      castBurstOpacity:
+        presentation.feedback?.castBurst
+          ?.opacity ?? 0,
       projectileTrailColor:
         presentation.feedback?.projectileTrail
           ?.color ?? "#ffffff",
@@ -6789,6 +6869,34 @@ function readSkillFields(root) {
         root,
         "[data-skill-impact-shake-duration]"
       ),
+      castBurstColor: selectedValue(
+        root,
+        "[data-skill-cast-burst-color]"
+      ),
+      castBurstCount: numericValue(
+        root,
+        "[data-skill-cast-burst-count]"
+      ),
+      castBurstSpreadPx: numericValue(
+        root,
+        "[data-skill-cast-burst-spread]"
+      ),
+      castBurstSizePx: numericValue(
+        root,
+        "[data-skill-cast-burst-size]"
+      ),
+      castBurstRisePx: numericValue(
+        root,
+        "[data-skill-cast-burst-rise]"
+      ),
+      castBurstDurationMs: numericValue(
+        root,
+        "[data-skill-cast-burst-duration]"
+      ),
+      castBurstOpacity: numericValue(
+        root,
+        "[data-skill-cast-burst-opacity]"
+      ),
       projectileTrailColor: selectedValue(
         root,
         "[data-skill-projectile-trail-color]"
@@ -7079,6 +7187,28 @@ function skillParticlePresetPresentationFromControlsV1(
     fallback;
 
   return {
+    castBurstColor: text(
+      "[data-skill-cast-burst-color]",
+      "#ffffff"
+    ),
+    castBurstCount: value(
+      "[data-skill-cast-burst-count]"
+    ),
+    castBurstSpreadPx: value(
+      "[data-skill-cast-burst-spread]"
+    ),
+    castBurstSizePx: value(
+      "[data-skill-cast-burst-size]"
+    ),
+    castBurstRisePx: value(
+      "[data-skill-cast-burst-rise]"
+    ),
+    castBurstDurationMs: value(
+      "[data-skill-cast-burst-duration]"
+    ),
+    castBurstOpacity: value(
+      "[data-skill-cast-burst-opacity]"
+    ),
     projectileTrailColor: text(
       "[data-skill-projectile-trail-color]",
       "#ffffff"
@@ -7225,6 +7355,35 @@ function writeSkillFeedbackControlsV1(
       "[data-skill-impact-shake-duration]",
       presentation.impactShakeDurationMs ??
         140
+    ],
+    [
+      "[data-skill-cast-burst-color]",
+      presentation.castBurstColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-cast-burst-count]",
+      presentation.castBurstCount ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-spread]",
+      presentation.castBurstSpreadPx ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-size]",
+      presentation.castBurstSizePx ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-rise]",
+      presentation.castBurstRisePx ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-duration]",
+      presentation.castBurstDurationMs ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-opacity]",
+      presentation.castBurstOpacity ?? 0
     ],
     [
       "[data-skill-projectile-trail-color]",
@@ -7671,6 +7830,30 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
 
         const fields = [
           [
+            "[data-skill-cast-burst-count]",
+            applied.castBurstCount
+          ],
+          [
+            "[data-skill-cast-burst-spread]",
+            applied.castBurstSpreadPx
+          ],
+          [
+            "[data-skill-cast-burst-size]",
+            applied.castBurstSizePx
+          ],
+          [
+            "[data-skill-cast-burst-rise]",
+            applied.castBurstRisePx
+          ],
+          [
+            "[data-skill-cast-burst-duration]",
+            applied.castBurstDurationMs
+          ],
+          [
+            "[data-skill-cast-burst-opacity]",
+            applied.castBurstOpacity
+          ],
+          [
             "[data-skill-projectile-trail-count]",
             applied.projectileTrailCount
           ],
@@ -7757,6 +7940,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
   }
 
   for (const selector of [
+    "[data-skill-cast-burst-count]",
+    "[data-skill-cast-burst-spread]",
+    "[data-skill-cast-burst-size]",
+    "[data-skill-cast-burst-rise]",
+    "[data-skill-cast-burst-duration]",
+    "[data-skill-cast-burst-opacity]",
     "[data-skill-projectile-trail-count]",
     "[data-skill-projectile-trail-length]",
     "[data-skill-projectile-trail-size]",
