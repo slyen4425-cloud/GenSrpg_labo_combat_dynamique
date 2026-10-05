@@ -121,8 +121,8 @@ test("renderer samples current model and zone geometry, follows a moving source 
 test("cancelled recall and replacement restore body and ground opacity before arrival", async () => {
   const profile = await json("data/profiles/quadruped.profile.json");
   const actor = normalizeVisualActor({ id: "local", creatureId: "wolf", profile: "quadruped", asset: "wolf.png", view: "player" });
-  const element = { style: {} }, ground = {};
-  const shadowElement = { style: { setProperty(key, value) { ground[key] = value; } } };
+  const element = { style: {} };
+  const shadowElement = { style: {} };
   const animations = [];
   const renderer = createDomActorRenderer({ element, shadowElement, actor, animate() {
     let resolve, reject; const finished = new Promise((yes, no) => { resolve = yes; reject = no; });
@@ -131,11 +131,11 @@ test("cancelled recall and replacement restore body and ground opacity before ar
   } });
   const recall = renderer.play(planAnimation({ actor, profile, event: normalizeCombatVisualEvent({ type: "recall", actorId: actor.id, metadata: { durationMs: 2000 } }) }));
   renderer.cancel(); await recall.finished;
-  assert.equal(element.style.opacity, "1"); assert.equal(ground["--creature-shadow-fade"], "1");
+  assert.equal(element.style.opacity, "1"); assert.equal(shadowElement.style.opacity, "1");
   const enter = renderer.play(planAnimation({ actor, profile, event: normalizeCombatVisualEvent({ type: "enter", actorId: actor.id }) }));
   animations.slice(-2).forEach(a => a.resolve()); await enter.finished;
   assert.equal(element.style.opacity, "1"); assert.equal(element.style.filter, "none");
-  assert.equal(ground["--creature-shadow-fade"], "1"); renderer.dispose();
+  assert.equal(shadowElement.style.opacity, "1"); renderer.dispose();
 });
 test("an ordinary incoming hit does not erase the recall animation, while a lethal hit still presents KO", async () => {
   const calls = [];
