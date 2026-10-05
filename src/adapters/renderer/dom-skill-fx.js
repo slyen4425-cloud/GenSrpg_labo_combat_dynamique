@@ -1202,7 +1202,7 @@ export function createDomSkillFxRenderer({
     const deltaX = to.x - from.x;
     const deltaY = to.y - from.y;
     const travelDisplayScale = Math.min(
-      4,
+      8,
       Math.max(0.25, Number(travelVisual?.displayScale) || 1)
     );
     let spriteBound = false;
