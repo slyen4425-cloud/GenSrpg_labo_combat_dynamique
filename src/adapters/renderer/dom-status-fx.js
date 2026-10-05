@@ -478,8 +478,20 @@ export function createDomStatusFxRenderer({
           continue;
         }
 
+        const sourceSkillId =
+          typeof instance?.sourceSkillId === "string" &&
+          instance.sourceSkillId.trim() !== ""
+            ? instance.sourceSkillId.trim()
+            : null;
+
         const presentation =
-          resolvePresentation(statusId, { actorId });
+          resolvePresentation(
+            statusId,
+            {
+              actorId,
+              sourceSkillId
+            }
+          );
         const target =
           resolveTarget(actorId);
 
