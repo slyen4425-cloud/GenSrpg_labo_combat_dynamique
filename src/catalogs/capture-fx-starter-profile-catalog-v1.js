@@ -56,7 +56,14 @@ const PRESENTATION_DEFAULTS = Object.freeze({
   impactBurstSpreadPx: 0,
   impactBurstSizePx: 0,
   impactBurstDurationMs: 0,
-  impactBurstOpacity: 0
+  impactBurstOpacity: 0,
+  aftermathSmokeColor: "#594943",
+  aftermathSmokeCount: 0,
+  aftermathSmokeSpreadPx: 0,
+  aftermathSmokeSizePx: 0,
+  aftermathSmokeRisePx: 0,
+  aftermathSmokeDurationMs: 0,
+  aftermathSmokeOpacity: 0
 });
 
 function frozenProfile({
@@ -122,6 +129,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#ff6a1f",
       projectileTrailColor: "#ff6a1f",
       impactBurstColor: "#ffd27a",
+      aftermathSmokeColor: "#594943",
       fxGlowStrength: 0.85,
       fxGlowRadiusPx: 32,
       impactFlashColor: "#fff2c2",
@@ -160,6 +168,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#46dfff",
       projectileTrailColor: "#46dfff",
       impactBurstColor: "#e8ffff",
+      aftermathSmokeColor: "#d6edf0",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22,
       impactFlashColor: "#e8ffff",
@@ -198,6 +207,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#a6eaff",
       projectileTrailColor: "#a6eaff",
       impactBurstColor: "#ffffff",
+      aftermathSmokeColor: "#5d6678",
       fxGlowStrength: 1,
       fxGlowRadiusPx: 48,
       impactFlashColor: "#ffffff",
@@ -232,6 +242,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#7ee35f",
       projectileTrailColor: "#7ee35f",
       impactBurstColor: "#d7ffb8",
+      aftermathSmokeColor: "#65705e",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22,
       impactFlashColor: "#d9ffbd",
@@ -264,6 +275,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#fff1d0",
       projectileTrailColor: "#fff1d0",
       impactBurstColor: "#ffe3ae",
+      aftermathSmokeColor: "#8b7665",
       fxGlowStrength: 0.35,
       fxGlowRadiusPx: 12,
       impactFlashColor: "#ffffff",
@@ -304,6 +316,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#ff5d1c",
       projectileTrailColor: "#ff5d1c",
       impactBurstColor: "#ffcc7a",
+      aftermathSmokeColor: "#493833",
       fxGlowStrength: 0.85,
       fxGlowRadiusPx: 32,
       impactFlashColor: "#fff0bd",
@@ -333,6 +346,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#9dffcf",
       projectileTrailColor: "#9dffcf",
       impactBurstColor: "#d8ffeb",
+      aftermathSmokeColor: "#e6fff3",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22
     }
@@ -356,6 +370,7 @@ export const CAPTURE_FX_STARTER_PROFILES_V1 = Object.freeze([
       fxGlowColor: "#7de7ff",
       projectileTrailColor: "#7de7ff",
       impactBurstColor: "#d6f8ff",
+      aftermathSmokeColor: "#d6f8ff",
       fxGlowStrength: 0.65,
       fxGlowRadiusPx: 22
     }
