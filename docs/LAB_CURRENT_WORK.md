@@ -63,6 +63,36 @@ Résultat du polish :
 
 État du polish : **GREEN technique** ; validation smartphone utilisateur requise avant GREEN utilisateur.
 
+### Retour smartphone — 2026-10-05 — trail-anchor-smoke-visibility-v2
+
+Validation utilisateur :
+- **audio de collision projectile/projectile : OK** ; ne plus modifier ce point sans régression ;
+- parasite littéral `\\n` : corrigé à la source dans le template Capture ;
+- particules Cast : présentes via `feedback.castBurst` / Binding V7.
+
+Non validé visuellement :
+- traînée projectile trop basse par rapport au cœur visuel du sprite ;
+- fumée après impact toujours non perceptible sur smartphone.
+
+Correction V8 :
+- checkpoint avant correction : `checkpoint/lab-before-capture-fx-trail-anchor-smoke-visibility-v2-2026-10-05` ;
+- nouveau `SkillPresentationBinding V8` : `projectileTrail.anchorX / anchorY` normalisés 0..1 ;
+- renderer : la traînée part désormais de cet ancrage visuel au lieu du centre géométrique du shell ;
+- Boule de feu vitrine : ancrage traînée `X=50% / Y=36%` ;
+- réglages experts : ancrage horizontal/vertical en % ;
+- fumée Boule de feu renforcée : 6 volutes, 58 px de dispersion, 36 px, montée 56 px, 1250 ms, opacité 0.64 ;
+- fumée rendue en couche `z-index 13`, au-dessus du sprite d'impact ;
+- presets `Visible / Intense` renforcés pour lisibilité mobile ;
+- aucun fichier `src/core/combat/`, aucune collision, aucun dégât, aucune Session/Runtime modifiés.
+
+TDD :
+- RED : `c81d0166678e55539caa358309b95c76be0ef655`, run `37371530746` : **4 échecs ciblés attendus** sur V8/ancrage/fumée ;
+- HEAD fonctionnel V8 : `6c3a57456f685db52b6390fdc50f0dea7f0fc060` ;
+- run officiel HEAD : `37372078712` actuellement en file GitHub Actions ;
+- preview dédiée : `preview/lab-capture-fx-trail-anchor-smoke-visibility-v2-2026-10-05`.
+
+État : **preview testable / non GREEN** tant que la CI du HEAD et le retour smartphone ne sont pas tous deux validés.
+
 Retour utilisateur suivant — 2026-10-05 :
 - fumée toujours absente sur la Boule de feu réellement testée ;
 - texte parasite `\\n` visible au-dessus des créatures ;
