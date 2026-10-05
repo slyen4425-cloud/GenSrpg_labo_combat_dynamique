@@ -24945,3 +24945,10 @@ Checkpoint technique : `checkpoint/lab-combat-reference-pace-v1-technical-2026-1
 Validation du nouveau rythme sur smartphone encore attendue. Dernier GREEN utilisateur : `checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04` sur 200b42055f2063c9545db6da01d3104e18f1fee0, validation explicite de Sylvain. Aucun merge main. Les lots antérieurs ci-dessous sont conservés pour historique.
 
 Preuves : 47 sentinelles ciblées et CI complète 1033/1033 ; chemin natif Griffe 1× → charge affichée 2.3 s, 2× → 1.1 s ; affichage portrait 390 px, note de référence et Tester visibles. Multiplicateurs natifs explicites/legacy conservés ; commande rappel, cadences et presets inchangés. Détails : docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md.
+
+
+## Chantier différé — qualité HD des assets PC
+
+Audit visuel/résolution du 2026-10-05, à reprendre plus tard dans un micro-lot dédié. Cause confirmée du flou sur grand écran : la majorité des créatures runtime contrôlées sont en 320×320 (Ailevent, Chat mystique, Golem moussu, Guêpe cybernétique, Loup volcanique, Maraileron, Renard magique doré, Voltige), avec icônes 192×192, tandis que Braisombre est déjà en 1024×1024. Le combat PC peut afficher certains combattants autour de 22–25 rem avant displayScale, donc plusieurs sources 320×320 sont agrandies au-delà de leur définition native, encore davantage sur écran HiDPI.
+
+Orientation future : conserver des sources maîtres HD et produire des variantes runtime adaptatives (mobile légère + desktop/HiDPI), sans filtre CSS de “fausse netteté”, sans second pipeline de rendu et sans toucher à l’autorité du renderer combat. Compléter l’audit des FX/atlases avant toute implémentation. Ce chantier est volontairement différé pour laisser l’édition des compétences/créatures continuer.
