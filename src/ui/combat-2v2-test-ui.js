@@ -826,6 +826,9 @@ export async function mountCoop2v2Test({
     fx.syncPersistentZones(
       state.persistentZones ?? []
     );
+    combatAudio.syncPersistentZones(
+      state.persistentZones ?? []
+    );
     renderAvailability();
     renderTargetSelection();
     rosterPanel?.render();
