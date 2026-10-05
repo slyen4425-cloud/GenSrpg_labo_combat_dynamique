@@ -27,6 +27,20 @@ Fichiers autorisés :
 
 Critère de fin : le preset vitrine hydraté est exactement l'export utilisateur V8, le test verrouille les champs modifiés, CI complète verte, puis checkpoint/preview.
 
+Résultat :
+- vitrine `cap_fire_special_1` remplacée par l'export utilisateur V8 exact ;
+- icône conservée : `core:icon-skill-poison-cloud-01` ;
+- projectile shadow / impact curse / audio utilisateur présents ;
+- statuts speed/physical -50 pendant 20 s ; travel 800 ms ; cooldown 60 s ;
+- trail anchors 0.5/0.5, fumée, burst impact et castBurst verrouillés par test ;
+- tous les assetId visuels et audio référencés existent dans les catalogues LIVE ;
+- CI `37381758786` : **1082/1082 PASS**, 0 échec ;
+- SHA fonctionnel : `19fcf3f5327812c75fc5f1474a5148aec0dadae9` ;
+- checkpoint : `checkpoint/lab-cendre-user-export-v8-technical-2026-10-06` ;
+- preview : `preview/lab-cendre-user-export-v8-2026-10-06`.
+
+État : **GREEN technique** ; validation utilisateur de Cendre aveuglante reste requise avant GREEN utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-particles-v1
 
 Base GREEN technique : `0591aac36b79e7d36b626133b88b0fe71b3a52af`.
