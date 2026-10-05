@@ -1,5 +1,23 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-05 — capture-fx-starter-profiles-v1
+
+Base GREEN : `23b133441ff5bb43f54c71c13734335d9031e0ec`, checkpoint `checkpoint/lab-audio-pack2-runtime-v1-green-2026-10-05`.
+Checkpoint de départ : `checkpoint/lab-start-capture-fx-starter-profiles-v1-2026-10-05`.
+Branche : `work/lab-capture-fx-starter-profiles-v1-2026-10-05`.
+
+Objectif : ajouter une Starter Library de profils FX Capture au-dessus des autorités existantes. Un profil est un preset de présentation qui remplit les champs déjà propriétaires du `SkillPresentationBinding` (assets, scales, offsets, playback, layers et audio) puis laisse l'utilisateur personnaliser la copie dans son brouillon de capacité.
+
+Propriétaires : le catalogue global et Asset Input restent propriétaires des médias / IDs ; SkillPresentationBinding reste propriétaire des réglages visuels ; Demo UI applique uniquement un preset aux champs ; Combat Runtime / Session / Action Resolver restent strictement protégés.
+
+Fichiers autorisés : nouveau catalogue pur de profils FX Capture, raccord ciblé `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, CSS ciblé si nécessaire, tests dédiés, documentation. Aucun changement de `global-assets` dans ce lot.
+
+Tests prévus : contrats purs des profils (IDs stables, absence de chemin physique, immutabilité), application déterministe sur un brouillon sans toucher aux champs gameplay, raccord UI simple -> champs avancés, non-régression import utilisateur / binding existant, CI complète.
+
+Risques : créer une seconde autorité de présentation ; écraser silencieusement une capacité existante ; référencer un média physique au lieu d'un assetId ; confondre profil système et asset utilisateur.
+
+Critère de fin : l'éditeur propose des profils vitrine protégés, l'utilisateur peut les appliquer puis personnaliser les réglages existants, aucun gameplay n'est modifié, aucun nouveau stockage parallèle, CI verte et preview dédiée.
+
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## Reprise prioritaire — 2026-10-04 — moving-attack-contact-stop-v1
