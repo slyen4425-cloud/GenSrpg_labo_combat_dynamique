@@ -7,6 +7,9 @@ import {
   applyCaptureFxGlowPresetV1,
   captureFxGlowPresetIdForValuesV1
 } from "../../src/catalogs/capture-fx-glow-presets-v1.js";
+import {
+  CAPTURE_FX_STARTER_PROFILES_V1
+} from "../../src/catalogs/capture-fx-starter-profile-catalog-v1.js";
 
 test("glow presets expose four readable levels with increasingly visible values", () => {
   assert.deepEqual(
@@ -154,4 +157,29 @@ test("Capture editor exposes readable glow presets before expert numeric control
     source,
     /captureFxGlowPresetIdForValuesV1/
   );
+});
+
+
+test("starter FX profiles now map to readable glow levels instead of opaque numbers", () => {
+  const levels = Object.fromEntries(
+    CAPTURE_FX_STARTER_PROFILES_V1.map(
+      (profile) => [
+        profile.label,
+        captureFxGlowPresetIdForValuesV1(
+          profile.presentation
+        )
+      ]
+    )
+  );
+
+  assert.deepEqual(levels, {
+    "Boule de feu": "intense",
+    "Projectile d’eau": "visible",
+    "Projectile électrique": "very-intense",
+    "Épine naturelle": "visible",
+    "Griffe physique": "discreet",
+    "Zone de flammes": "intense",
+    "Aura de soins": "visible",
+    "Bouclier d’énergie": "visible"
+  });
 });
