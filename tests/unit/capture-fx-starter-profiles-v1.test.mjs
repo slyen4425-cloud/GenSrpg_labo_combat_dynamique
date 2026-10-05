@@ -51,7 +51,18 @@ const PRESENTATION_KEYS = new Set([
   "impactFlashDurationMs",
   "impactFlashScale",
   "impactShakeAmplitudePx",
-  "impactShakeDurationMs"
+  "impactShakeDurationMs",
+  "projectileTrailColor",
+  "projectileTrailCount",
+  "projectileTrailLengthPx",
+  "projectileTrailSizePx",
+  "projectileTrailOpacity",
+  "impactBurstColor",
+  "impactBurstCount",
+  "impactBurstSpreadPx",
+  "impactBurstSizePx",
+  "impactBurstDurationMs",
+  "impactBurstOpacity"
 ]);
 
 test("Capture FX starter library exposes protected system profiles only through presentation data", () => {
