@@ -2,9 +2,19 @@
   "schema": "gensrpg-private-audio-metadata-v1",
   "source": {
     "repository": "slyen4425-cloud/GenSrpG_audio_prive",
-    "ref": "work/audio-catalog-classification-2026-09-26",
-    "revision": "01ffe9c8c6ec73d974f572f7e648461a48470e8a",
-    "binaryVisibility": "private"
+    "ref": "work/runtime-audio-pack-v1-2026-09-28",
+    "revision": "4065855148c0a2cbaa41e778f15080cd7fda5726",
+    "binaryVisibility": "private",
+    "sourceRevisions": [
+      {
+        "ref": "work/audio-catalog-classification-2026-09-26",
+        "revision": "01ffe9c8c6ec73d974f572f7e648461a48470e8a"
+      },
+      {
+        "ref": "work/audio-genrpg-pack2-2026-10-04",
+        "revision": "fd378cde1410a67c0e451ff3978a09d61425d7d8"
+      }
+    ]
   },
   "entries": [
     {
@@ -2374,6 +2384,459 @@
       ],
       "tags": [
         "xel"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-350eb251",
+      "label": "Electrique projectile",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "electric",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-af938ec6",
+      "label": "Electrique projectile2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "electric",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a30f1071",
+      "label": "Fire projectile",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "fire",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a1a5682d",
+      "label": "Fire projectile2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "fire",
+        "genrpg-pack2",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-963199e0",
+      "label": "Ice projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "ice",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-0e09054e",
+      "label": "Light projectile",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-3bd3537a",
+      "label": "Neutral magic1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-38ce71b8",
+      "label": "Neutral magic2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-9291c6e4",
+      "label": "Neutral magic3",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-cc66c3dd",
+      "label": "Neutral magic4",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-879fc11a",
+      "label": "Neutral poison projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "neutral",
+        "poison",
+        "projectile"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-3e95d6c6",
+      "label": "Ombre projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "projectile",
+        "shadow"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-eb271979",
+      "label": "Water projectile1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "travel"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "projectile",
+        "water"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-99a48e77",
+      "label": "Air cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "air",
+        "genrpg-pack2",
+        "magic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-2f09138e",
+      "label": "Earth cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "magic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-71e62374",
+      "label": "Earth cast2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "magic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a0b4a892",
+      "label": "Ligth cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "magic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-34855cd9",
+      "label": "Ligth cast2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "magic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-b8525ce4",
+      "label": "Ligth cast3",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "magic"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-03b2807d",
+      "label": "Ombre cast1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "magic",
+        "shadow"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-ebe64290",
+      "label": "Ombre cast2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "cast"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "magic",
+        "shadow"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-f75d0d8f",
+      "label": "Impact earth1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "impact"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+      "label": "Impact earth2",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "impact"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-742f6521",
+      "label": "Impact earth3",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "impact"
+      ],
+      "tags": [
+        "earth",
+        "genrpg-pack2",
+        "impact"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-ecd9f884",
+      "label": "ES Wings, Insect, Tiny, Pass By Epidemic Sound",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "movement"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "insect",
+        "movement",
+        "wing"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-9320854b",
+      "label": "Move or projectile air",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "movement",
+        "travel"
+      ],
+      "tags": [
+        "air",
+        "genrpg-pack2",
+        "movement"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-d213bf07",
+      "label": "Air persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "air",
+        "genrpg-pack2",
+        "persistent-zone"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-c3350e1b",
+      "label": "Electrique persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "electric",
+        "genrpg-pack2",
+        "persistent-zone"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-c0a77bc4",
+      "label": "Ice persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "ice",
+        "persistent-zone"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "assetId": "gensrpg:sound:genrpg-pack2-85f6f942",
+      "label": "Light persistant1",
+      "category": "genrpg_pack2",
+      "format": "mp3",
+      "roles": [
+        "aura"
+      ],
+      "tags": [
+        "genrpg-pack2",
+        "light",
+        "persistent-zone"
       ],
       "status": "reviewed"
     }
