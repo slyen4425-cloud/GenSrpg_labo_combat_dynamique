@@ -61,7 +61,21 @@ Résultat technique :
 - aucune navigation ajoutée dans le moteur Combat : l'adapter Exploration existant conserve `completeExplorationCombatHandoffV1()` + `returnUrl` ;
 - CI GREEN : `37257507682` — **SUCCESS**.
 
-État : **TECHNIQUE GREEN — preview Exploration réelle + gate utilisateur requis avant GREEN final**.
+Prévalidation :
+- checkpoint : `checkpoint/lab-exploration-battle-end-return-v1-prevalidation-green-2026-10-05` @ `8f4b5ee033b444b75033a7fcb4aff2e835805f8e` ;
+- preview Combat : `preview/lab-exploration-battle-end-return-v1-2026-10-05` @ même SHA ;
+- PR infrastructure Exploration #81 — **MERGED** ;
+- publication courante Exploration : `main` @ `de82f122b80ab5877570ea505cc573d99133f2c9` ;
+- Pages : `37258184399` — **SUCCESS** ;
+- lien gate direct : `https://slyen4425-cloud.github.io/laboratoire_dynamique_exploration-/index.html?encounterTest=1&rev=battle-end-return-v1`.
+
+Gate utilisateur :
+1. lancer une rencontre puis gagner le combat ;
+2. après la fin de l'équipe adverse, retour automatique sur Exploration ;
+3. position/Area restaurées ;
+4. relancer un second combat pour vérifier le handoff consommé proprement.
+
+État : **TECHNIQUE GREEN / PREVALIDATION PUBLIÉE — gate utilisateur requis avant GREEN final**.
 
 ---
 
