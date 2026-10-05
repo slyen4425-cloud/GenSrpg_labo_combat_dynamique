@@ -5650,6 +5650,12 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
   return false;
 }
 
+export function captureEditorAssetLibraryGroupV1(asset) {
+  return asset?.source?.scope === "user"
+    ? "user"
+    : "gensrpg";
+}
+
 function populateSelect(select, assets, role) {
   const previous = select.value;
   const allowEmpty =
@@ -5661,14 +5667,52 @@ function populateSelect(select, assets, role) {
     createOption(select, "", "Aucun");
   }
 
-  for (const asset of assets) {
-    if (captureEditorAssetMatchesRoleV1(asset, role)) {
+  const matchingAssets = assets.filter(
+    (asset) =>
+      captureEditorAssetMatchesRoleV1(
+        asset,
+        role
+      )
+  );
+  const libraryGroups = [
+    {
+      id: "gensrpg",
+      label: "Bibliothèque GenSrpG"
+    },
+    {
+      id: "user",
+      label: "Mes assets"
+    }
+  ];
+
+  for (const libraryGroup of libraryGroups) {
+    const groupAssets =
+      matchingAssets.filter(
+        (asset) =>
+          captureEditorAssetLibraryGroupV1(
+            asset
+          ) === libraryGroup.id
+      );
+
+    if (groupAssets.length === 0) {
+      continue;
+    }
+
+    const group =
+      document.createElement("optgroup");
+    group.label = libraryGroup.label;
+    group.dataset.assetOrigin =
+      libraryGroup.id;
+
+    for (const asset of groupAssets) {
       createOption(
-        select,
+        group,
         asset.id,
         asset.label || asset.id
       );
     }
+
+    select.append(group);
   }
 
   if (previous) {
