@@ -25133,3 +25133,26 @@ Statut : **GREEN technique / validation utilisateur en attente**.
 Publication finale après CI documentaire :
 - checkpoint : `checkpoint/lab-fireball-2-projectile-scale-art-v2-green-2026-10-05` ;
 - preview : `preview/lab-fireball-2-projectile-scale-art-v2-2026-10-05`.
+
+
+## Lot actif — creator-visual-import-v1
+
+Date : 2026-10-05
+
+Objectif : permettre au créateur d'importer ses propres images PNG/WebP/JPEG dans l'éditeur Capture, puis de les utiliser immédiatement comme créature, icône, cast, projectile, impact, zone ou statut via les mêmes assetId/bindings que la bibliothèque fournie.
+
+Base : `6394acb60df2a0781ebc0ea5fc66d8a6cef14614`.
+Checkpoint : `checkpoint/lab-start-creator-visual-import-v1-2026-10-05`.
+Branche : `work/lab-creator-visual-import-v1-2026-10-05`.
+
+Propriétaire : Asset Input pour validation/Object URL ; Demo UI uniquement pour le choix du fichier et du rôle ; catalogue/presentation binding existants réutilisés.
+
+Fichiers autorisés : `src/assets/*creator*`, `src/assets/image-source-manager.js` si extension démontrée, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.*`, tests dédiés et documentation.
+
+Protégés : Combat Rules, Combat Runtime, Animation Core, FX Core, Render Adapter, dégâts/collision/timing, global-assets fournis, Zombicide-40k, main.
+
+Premier périmètre : import de session uniquement, conformément à LAB_ASSET_LIBRARY Phase 5B. La persistance projet/IndexedDB appartient à un chantier d'intégration séparé ; aucun Object URL ne doit être sérialisé comme donnée gameplay.
+
+RED : un test impose un registre créateur réutilisant ImageSourceManager, générant des IDs `user:*`, exposant des AssetDefinition compatibles éditeur/combat, et révoquant toutes les Object URLs à dispose().
+
+Critère GREEN : fichier perso visible dans les listes de l'éditeur, sélectionnable dans le vrai preview combat, aucune seconde chaîne de chargement, CI complète verte.
