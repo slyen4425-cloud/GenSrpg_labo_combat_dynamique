@@ -429,6 +429,14 @@ export async function mountCombatTest({
     sourceAnchorFor(slotId, anchorName) {
       return visuals.getFxAnchorFor(slotId, anchorName);
     },
+    playCameraFx(plan) {
+      return visuals.playCameraFx?.(plan) ?? {
+        status: "ignored",
+        finished: Promise.resolve({
+          status: "ignored"
+        })
+      };
+    },
     presentationForSkill(skillId, context = {}) {
       return (
         presentationAssets?.presentationForSkill?.(
