@@ -19,6 +19,9 @@ import {
 import {
   normalizeSkillPresentationBindingV7
 } from "./skill-presentation-binding-v7.js";
+import {
+  normalizeSkillPresentationBindingV8
+} from "./skill-presentation-binding-v8.js";
 
 export function normalizeSkillPresentationBinding(
   input
@@ -71,6 +74,12 @@ export function normalizeSkillPresentationBinding(
 
   if (input.version === 7) {
     return normalizeSkillPresentationBindingV7(
+      input
+    );
+  }
+
+  if (input.version === 8) {
+    return normalizeSkillPresentationBindingV8(
       input
     );
   }
