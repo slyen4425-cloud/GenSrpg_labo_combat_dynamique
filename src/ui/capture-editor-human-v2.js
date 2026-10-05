@@ -93,6 +93,11 @@ import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
 } from "../catalogs/capture-showcase-skill-presets-v1.js";
 import {
+  CAPTURE_FX_STARTER_PROFILES_V1,
+  captureFxStarterProfileByIdV1,
+  applyCaptureFxStarterProfileV1
+} from "../catalogs/capture-fx-starter-profile-catalog-v1.js";
+import {
   normalizeCaptureStatRegistryV1
 } from "../contracts/capture-stat-registry-v1.js";
 import {
@@ -6489,6 +6494,45 @@ export function preserveUnrepresentedCreatureFieldsV1({
   };
 }
 
+function writeCaptureFxStarterPresentationFieldsV1(
+  root,
+  presentation
+) {
+  writeSkillSpriteControlsV1(
+    root,
+    presentation
+  );
+
+  const values = [
+    ["[data-skill-icon]", presentation.iconAssetId],
+    ["[data-skill-cast-fx]", presentation.castAssetId],
+    ["[data-skill-cast-scale]", presentation.castDisplayScale],
+    ["[data-skill-travel-fx]", presentation.travelAssetId],
+    ["[data-skill-travel-scale]", presentation.travelDisplayScale],
+    ["[data-skill-travel-playback]", presentation.travelPlaybackMode],
+    ["[data-skill-travel-layer-player]", presentation.travelLayerPlayer],
+    ["[data-skill-travel-layer-opponent]", presentation.travelLayerOpponent],
+    ["[data-skill-impact-fx]", presentation.impactAssetId],
+    ["[data-skill-impact-scale]", presentation.impactDisplayScale],
+    ["[data-skill-impact-duration]", presentation.impactDurationMs],
+    ["[data-skill-zone-fx]", presentation.zoneAssetId],
+    ["[data-skill-zone-scale]", presentation.zoneDisplayScale],
+    ["[data-skill-zone-scale-x]", presentation.zoneDisplayScaleX],
+    ["[data-skill-zone-scale-y]", presentation.zoneDisplayScaleY],
+    ["[data-skill-cast-audio]", presentation.castAudioAssetId],
+    ["[data-skill-travel-audio]", presentation.travelAudioAssetId],
+    ["[data-skill-impact-audio]", presentation.impactAudioAssetId],
+    ["[data-skill-zone-audio]", presentation.zoneAudioAssetId]
+  ];
+
+  for (const [selector, value] of values) {
+    const field = root.querySelector(selector);
+    if (field) {
+      field.value = String(value ?? "");
+    }
+  }
+}
+
 export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
@@ -6636,6 +6680,192 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
     root,
     "[data-transfer-state]"
   );
+
+  const fxStarterProfileSelect =
+    root.querySelector(
+      "[data-skill-fx-starter-profile]"
+    );
+  const fxStarterApplyButton =
+    root.querySelector(
+      "[data-skill-fx-starter-apply]"
+    );
+  const fxStarterState =
+    root.querySelector(
+      "[data-skill-fx-starter-state]"
+    );
+  let fxStarterLibrariesReady = false;
+  let fxStarterVisualAssetIds = new Set();
+  let fxStarterAudioAssetIds = new Set();
+
+  function updateFxStarterState(
+    message,
+    tone = "info"
+  ) {
+    if (!fxStarterState) {
+      return;
+    }
+    fxStarterState.textContent = message;
+    fxStarterState.dataset.tone = tone;
+  }
+
+  function syncFxStarterApplyButton() {
+    if (!fxStarterApplyButton) {
+      return;
+    }
+    fxStarterApplyButton.disabled =
+      !fxStarterLibrariesReady ||
+      !fxStarterProfileSelect?.value;
+  }
+
+  if (fxStarterProfileSelect) {
+    fxStarterProfileSelect.textContent = "";
+    createOption(
+      fxStarterProfileSelect,
+      "",
+      "Choisir une base FX GenSrpG"
+    );
+
+    for (
+      const profile of
+        CAPTURE_FX_STARTER_PROFILES_V1
+    ) {
+      createOption(
+        fxStarterProfileSelect,
+        profile.id,
+        profile.label
+      );
+    }
+
+    fxStarterProfileSelect.disabled = true;
+    listen(
+      fxStarterProfileSelect,
+      "change",
+      syncFxStarterApplyButton
+    );
+  }
+
+  if (fxStarterApplyButton) {
+    fxStarterApplyButton.disabled = true;
+    listen(
+      fxStarterApplyButton,
+      "click",
+      () => {
+        try {
+          if (!fxStarterLibrariesReady) {
+            throw new Error(
+              "Les bibliothèques FX ne sont pas encore chargées."
+            );
+          }
+
+          const profile =
+            captureFxStarterProfileByIdV1(
+              fxStarterProfileSelect?.value
+            );
+
+          if (profile === null) {
+            throw new Error(
+              "Choisis une base FX GenSrpG."
+            );
+          }
+
+          const visualKeys = [
+            "iconAssetId",
+            "castAssetId",
+            "travelAssetId",
+            "impactAssetId",
+            "zoneAssetId"
+          ];
+          const audioKeys = [
+            "castAudioAssetId",
+            "travelAudioAssetId",
+            "impactAudioAssetId",
+            "zoneAudioAssetId"
+          ];
+          const missingVisual =
+            visualKeys
+              .map(
+                (key) =>
+                  profile.presentation[key]
+              )
+              .filter(
+                (assetId) =>
+                  assetId &&
+                  !fxStarterVisualAssetIds.has(
+                    assetId
+                  )
+              );
+          const missingAudio =
+            audioKeys
+              .map(
+                (key) =>
+                  profile.presentation[key]
+              )
+              .filter(
+                (assetId) =>
+                  assetId &&
+                  !fxStarterAudioAssetIds.has(
+                    assetId
+                  )
+              );
+
+          if (
+            missingVisual.length > 0 ||
+            missingAudio.length > 0
+          ) {
+            throw new Error(
+              "Profil FX incomplet dans les catalogues actifs : " +
+                [
+                  ...missingVisual,
+                  ...missingAudio
+                ].join(", ")
+            );
+          }
+
+          const presentation =
+            applyCaptureFxStarterProfileV1({
+              profileId: profile.id,
+              presentation: {
+                socketId:
+                  selectedValue(
+                    root,
+                    "[data-skill-socket]"
+                  ) || null,
+                statusVisuals: {}
+              }
+            });
+
+          writeCaptureFxStarterPresentationFieldsV1(
+            root,
+            presentation
+          );
+
+          updateFxStarterState(
+            "Base « " +
+              profile.label +
+              " » copiée dans cette capacité. Tu peux tester immédiatement ou ouvrir les réglages avancés pour la personnaliser.",
+            "ok"
+          );
+          setStatus(
+            root,
+            "Profil FX « " +
+              profile.label +
+              " » appliqué sans modifier le gameplay.",
+            "ok"
+          );
+        } catch (error) {
+          updateFxStarterState(
+            error.message,
+            "error"
+          );
+          setStatus(
+            root,
+            error.message,
+            "error"
+          );
+        }
+      }
+    );
+  }
 
   function updateCreatureLibraryState(
     message,
@@ -8804,12 +9034,33 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
   ])
     .then(async ([
       assetCatalog,
-      ,
+      privateAudioCatalog,
       nativeSkills,
       captureData,
       loadedProgressionRules,
       creatureVisualMetaById
     ]) => {
+      fxStarterVisualAssetIds = new Set(
+        (assetCatalog.assets ?? [])
+          .map((asset) => asset?.id)
+          .filter(Boolean)
+      );
+      fxStarterAudioAssetIds = new Set(
+        (privateAudioCatalog?.entries ?? [])
+          .map((entry) => entry?.assetId)
+          .filter(Boolean)
+      );
+      fxStarterLibrariesReady = true;
+      if (fxStarterProfileSelect) {
+        fxStarterProfileSelect.disabled = false;
+      }
+      syncFxStarterApplyButton();
+      updateFxStarterState(
+        CAPTURE_FX_STARTER_PROFILES_V1.length +
+          " profils FX GenSrpG prêts. Choisis une base : elle sera copiée, jamais liée ni verrouillée.",
+        "ok"
+      );
+
       statRegistry = captureData.registry;
       progressionRules =
         loadedProgressionRules;
