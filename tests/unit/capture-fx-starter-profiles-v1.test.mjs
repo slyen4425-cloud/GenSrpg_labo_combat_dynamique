@@ -253,7 +253,7 @@ test("Capture editor exposes simple protected FX profiles before existing advanc
     "data-skill-fx-starter-apply",
     "data-skill-fx-starter-state",
     "data-skill-fx-advanced",
-    "Appliquer et personnaliser"
+    "Appliquer ce pack"
   ]) {
     assert.equal(
       html.includes(marker),
