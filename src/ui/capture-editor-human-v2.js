@@ -1181,13 +1181,20 @@ function presentationFeedbackFromFieldsV1(
       18,
       "Particules d’impact"
     );
+  const smokeCount =
+    boundedParticleCount(
+      presentation.aftermathSmokeCount,
+      8,
+      "Volutes de fumée"
+    );
 
   if (
     glowStrength <= 0 &&
     flashOpacity <= 0 &&
     shakeAmplitude <= 0 &&
     trailCount <= 0 &&
-    burstCount <= 0
+    burstCount <= 0 &&
+    smokeCount <= 0
   ) {
     return null;
   }
@@ -1258,6 +1265,7 @@ function presentationFeedbackFromFieldsV1(
       color:
         String(
           presentation.projectileTrailColor ??
+            presentation.fxGlowColor ??
             "#ffffff"
         ),
       count: trailCount,
@@ -1293,6 +1301,8 @@ function presentationFeedbackFromFieldsV1(
       color:
         String(
           presentation.impactBurstColor ??
+            presentation.impactFlashColor ??
+            presentation.fxGlowColor ??
             "#ffffff"
         ),
       count: burstCount,
@@ -1324,6 +1334,55 @@ function presentationFeedbackFromFieldsV1(
           finiteNumber(
             presentation.impactBurstOpacity,
             "Opacité particules impact"
+          )
+        )
+      )
+    };
+  }
+
+  if (smokeCount > 0) {
+    feedback.aftermathSmoke = {
+      color:
+        String(
+          presentation.aftermathSmokeColor ??
+            "#594943"
+        ),
+      count: smokeCount,
+      spreadPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeSpreadPx,
+          "Dispersion fumée"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeSizePx,
+          "Taille fumée"
+        )
+      ),
+      risePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeRisePx,
+          "Montée fumée"
+        )
+      ),
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeDurationMs,
+          "Durée fumée"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.aftermathSmokeOpacity,
+            "Opacité fumée"
           )
         )
       )
@@ -1509,14 +1568,16 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      feedback?.projectileTrail ||
-      feedback?.impactBurst
-        ? 5
-        : hasFeedback
-          ? 4
-          : hasStatusVisuals
-            ? 3
-            : 2,
+      feedback?.aftermathSmoke
+        ? 6
+        : feedback?.projectileTrail ||
+          feedback?.impactBurst
+          ? 5
+          : hasFeedback
+            ? 4
+            : hasStatusVisuals
+              ? 3
+              : 2,
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -2126,6 +2187,27 @@ export function humanSkillEditorFieldsFromDraftV1(
           ?.durationMs ?? 0,
       impactBurstOpacity:
         presentation.feedback?.impactBurst
+          ?.opacity ?? 0,
+      aftermathSmokeColor:
+        presentation.feedback?.aftermathSmoke
+          ?.color ?? "#594943",
+      aftermathSmokeCount:
+        presentation.feedback?.aftermathSmoke
+          ?.count ?? 0,
+      aftermathSmokeSpreadPx:
+        presentation.feedback?.aftermathSmoke
+          ?.spreadPx ?? 0,
+      aftermathSmokeSizePx:
+        presentation.feedback?.aftermathSmoke
+          ?.sizePx ?? 0,
+      aftermathSmokeRisePx:
+        presentation.feedback?.aftermathSmoke
+          ?.risePx ?? 0,
+      aftermathSmokeDurationMs:
+        presentation.feedback?.aftermathSmoke
+          ?.durationMs ?? 0,
+      aftermathSmokeOpacity:
+        presentation.feedback?.aftermathSmoke
           ?.opacity ?? 0
     }
   };
@@ -6750,6 +6832,34 @@ function readSkillFields(root) {
       impactBurstOpacity: numericValue(
         root,
         "[data-skill-impact-burst-opacity]"
+      ),
+      aftermathSmokeColor: selectedValue(
+        root,
+        "[data-skill-aftermath-smoke-color]"
+      ),
+      aftermathSmokeCount: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-count]"
+      ),
+      aftermathSmokeSpreadPx: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-spread]"
+      ),
+      aftermathSmokeSizePx: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-size]"
+      ),
+      aftermathSmokeRisePx: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-rise]"
+      ),
+      aftermathSmokeDurationMs: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-duration]"
+      ),
+      aftermathSmokeOpacity: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-opacity]"
       )
     }
   };
@@ -7003,6 +7113,28 @@ function skillParticlePresetPresentationFromControlsV1(
     ),
     impactBurstOpacity: value(
       "[data-skill-impact-burst-opacity]"
+    ),
+    aftermathSmokeColor: text(
+      "[data-skill-aftermath-smoke-color]",
+      "#594943"
+    ),
+    aftermathSmokeCount: value(
+      "[data-skill-aftermath-smoke-count]"
+    ),
+    aftermathSmokeSpreadPx: value(
+      "[data-skill-aftermath-smoke-spread]"
+    ),
+    aftermathSmokeSizePx: value(
+      "[data-skill-aftermath-smoke-size]"
+    ),
+    aftermathSmokeRisePx: value(
+      "[data-skill-aftermath-smoke-rise]"
+    ),
+    aftermathSmokeDurationMs: value(
+      "[data-skill-aftermath-smoke-duration]"
+    ),
+    aftermathSmokeOpacity: value(
+      "[data-skill-aftermath-smoke-opacity]"
     )
   };
 }
@@ -7139,6 +7271,35 @@ function writeSkillFeedbackControlsV1(
     [
       "[data-skill-impact-burst-opacity]",
       presentation.impactBurstOpacity ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-color]",
+      presentation.aftermathSmokeColor ??
+        "#594943"
+    ],
+    [
+      "[data-skill-aftermath-smoke-count]",
+      presentation.aftermathSmokeCount ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-spread]",
+      presentation.aftermathSmokeSpreadPx ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-size]",
+      presentation.aftermathSmokeSizePx ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-rise]",
+      presentation.aftermathSmokeRisePx ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-duration]",
+      presentation.aftermathSmokeDurationMs ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-opacity]",
+      presentation.aftermathSmokeOpacity ?? 0
     ]
   ];
 
@@ -7544,6 +7705,30 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
           [
             "[data-skill-impact-burst-opacity]",
             applied.impactBurstOpacity
+          ],
+          [
+            "[data-skill-aftermath-smoke-count]",
+            applied.aftermathSmokeCount
+          ],
+          [
+            "[data-skill-aftermath-smoke-spread]",
+            applied.aftermathSmokeSpreadPx
+          ],
+          [
+            "[data-skill-aftermath-smoke-size]",
+            applied.aftermathSmokeSizePx
+          ],
+          [
+            "[data-skill-aftermath-smoke-rise]",
+            applied.aftermathSmokeRisePx
+          ],
+          [
+            "[data-skill-aftermath-smoke-duration]",
+            applied.aftermathSmokeDurationMs
+          ],
+          [
+            "[data-skill-aftermath-smoke-opacity]",
+            applied.aftermathSmokeOpacity
           ]
         ];
 
@@ -7580,7 +7765,13 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
     "[data-skill-impact-burst-spread]",
     "[data-skill-impact-burst-size]",
     "[data-skill-impact-burst-duration]",
-    "[data-skill-impact-burst-opacity]"
+    "[data-skill-impact-burst-opacity]",
+    "[data-skill-aftermath-smoke-count]",
+    "[data-skill-aftermath-smoke-spread]",
+    "[data-skill-aftermath-smoke-size]",
+    "[data-skill-aftermath-smoke-rise]",
+    "[data-skill-aftermath-smoke-duration]",
+    "[data-skill-aftermath-smoke-opacity]"
   ]) {
     const field =
       root.querySelector(selector);
