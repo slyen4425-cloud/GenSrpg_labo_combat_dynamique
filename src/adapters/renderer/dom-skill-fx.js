@@ -2297,7 +2297,8 @@ export function createDomSkillFxRenderer({
         point,
         durationMs,
         layer: presentation?.impactLayer ?? "front",
-        type: "clash-impact"
+        type: "clash-impact",
+        feedback: presentation?.feedback ?? null
       });
     }
 
