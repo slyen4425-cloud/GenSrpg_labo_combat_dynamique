@@ -48,6 +48,27 @@ Critère de fin :
 - un statut violet reste violet en combat même si une autre capacité possède un statut homonyme rouge ;
 - CI complète verte et preview utilisateur.
 
+Résultat technique :
+- `applyCaptureFxStarterProfileV1` préserve désormais tout audio créateur non vide (`cast/travel/impact/zone`) ; un pack ne fournit un son par défaut que si le slot est vide ;
+- aucun changement au registre/runtime audio : les `assetId` restent la seule identité ;
+- `createCaptureSkillPresentationAssetsV2` résout les visuels de statut par `sourceSkillId + statusId` ;
+- un même `statusId` peut donc être violet pour une capacité et rouge pour une autre sans écrasement global ;
+- le fallback global n'est utilisé que lorsqu'un `statusId` est non ambigu ; en cas d'ambiguïté sans source, résultat `null` au lieu d'un choix arbitraire ;
+- `dom-status-fx` transmet le `sourceSkillId` déjà présent dans l'instance Runtime ;
+- clients 1v1 et 2v2 transmettent désormais tout le contexte de statut au resolver ;
+- aucun fichier `src/core/combat/`, Runtime, Session, règles, dégâts ou contrat de statut gameplay modifié ;
+- RED : `7b843aac...` ;
+- GREEN fonctionnel : `ee998c99464da557147c64267d6c2b8e166b9a9b` ;
+- CI `37384740029` : **1087/1087 PASS**, 0 échec ;
+- checkpoint : `checkpoint/lab-audio-status-presentation-fix-v1-technical-2026-10-06` ;
+- preview : `preview/lab-audio-status-presentation-fix-v1-2026-10-06`, page `examples/dom-demo/capture-editor-v2.html`.
+
+Note de migration utilisateur :
+- les valeurs déjà écrasées avant ce correctif ne peuvent pas être reconstituées sans connaître le choix exact du créateur ;
+- il suffit de re-sélectionner une fois les sons/couleurs voulus dans l'éditeur ; à partir de ce correctif, l'application d'un pack FX ne les écrasera plus et le statut homonyme conservera le visuel de sa capacité source.
+
+État : **GREEN technique**, validation smartphone utilisateur requise avant GREEN utilisateur.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-particles-v1
 
 Base GREEN technique : `0591aac36b79e7d36b626133b88b0fe71b3a52af`.
