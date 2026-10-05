@@ -25172,3 +25172,29 @@ Statut : **GREEN technique**.
 - CI pré-doc `37330331980` : **1038/1038 PASS**, structure/indépendance OK ;
 - rapport : `docs/LAB_CREATOR_VISUAL_IMPORT_V1.md` ;
 - aucun changement main / Zombicide-40k.
+
+
+## Lot actif — combat-shadow-grounding-v2
+
+Date : 2026-10-05
+
+Retour utilisateur : les ombres sont parfois trop petites par rapport au modèle et l'ombre ne suit pas correctement le monstre pendant certaines attaques.
+
+Base : `1492657ab0f86c241d2e4995cd846e289c007f6e`.
+Checkpoint : `checkpoint/lab-start-combat-shadow-grounding-v2-2026-10-05`.
+Branche : `work/lab-combat-shadow-grounding-v2-2026-10-05`.
+
+Diagnostic : la timeline canonique contient déjà `ground` et le renderer possède déjà la piste ombre, mais la surface réelle est un pseudo-élément `.fighter::before` de taille fixe 58%×10%. Cette surface est indépendante de l'emprise alpha réelle du modèle et l'animation WAAPI du pseudo-élément est plus fragile que celle d'un élément DOM explicite.
+
+Objectif : conserver une seule timeline `ground` et un seul DomActorRenderer, mais remplacer le pseudo-élément par un élément ombre réel appartenant au fighter et dimensionner automatiquement son ellipse à partir de l'emprise opaque du sprite déjà calculée par le modèle de collision visuelle.
+
+Fichiers autorisés : `src/adapters/renderer/dom-actor-renderer.js`, `src/adapters/renderer/dom-visible-model-contact.js`, `src/ui/demo-app.js`, HTML de combat/preview, `examples/dom-demo/demo.css`, tests ombre dédiés et documentation.
+
+Protégés : Animation Core (plan/ground), Combat Runtime, Combat Rules, collision sémantique/contact, dégâts, timing, profils locomotion, Zombicide-40k, main.
+
+RED :
+- l'UI de combat doit fournir un vrai `[data-demo-shadow]` ;
+- DomActorRenderer doit animer cette ombre comme élément réel sans `pseudoElement` ;
+- la largeur de l'ombre doit dériver de l'emprise opaque du sprite, avec bornes sûres, au lieu du 58% fixe.
+
+Critère GREEN : ombre proportionnée au modèle, piste body+ombre synchronisée pendant attaque/retour/KO, CI complète verte, preview dédiée.
