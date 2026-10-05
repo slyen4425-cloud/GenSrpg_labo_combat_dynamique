@@ -804,7 +804,7 @@
             <p class="note" data-skill-fx-glow-preset-state data-tone="info">
               Visible — lueur bien perceptible, conseillée pour la plupart des capacités.
             </p>
-            <label>Présence des particules
+            <label>Présence des particules / fumée
               <select data-skill-fx-particle-preset>
                 <option value="none">Aucune</option>
                 <option value="discreet">Discrète</option>
@@ -1019,6 +1019,27 @@
             </label>
             <label>Impact burst — opacité
               <input type="number" min="0" max="1" step="0.05" value="0" data-skill-impact-burst-opacity>
+            </label>
+            <label>Fumée — couleur
+              <input type="color" value="#594943" data-skill-aftermath-smoke-color>
+            </label>
+            <label>Fumée — volutes
+              <input type="number" min="0" max="8" step="1" value="0" data-skill-aftermath-smoke-count>
+            </label>
+            <label>Fumée — dispersion (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-aftermath-smoke-spread>
+            </label>
+            <label>Fumée — taille (px)
+              <input type="number" min="0" max="80" step="2" value="0" data-skill-aftermath-smoke-size>
+            </label>
+            <label>Fumée — montée (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-aftermath-smoke-rise>
+            </label>
+            <label>Fumée — durée (ms)
+              <input type="number" min="0" max="1800" step="20" value="0" data-skill-aftermath-smoke-duration>
+            </label>
+            <label>Fumée — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-aftermath-smoke-opacity>
             </label>
           </div>
         </div>
