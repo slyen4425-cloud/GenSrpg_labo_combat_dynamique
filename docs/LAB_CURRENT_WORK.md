@@ -47,6 +47,22 @@ Correction en cours sur le même chantier non validé utilisateur :
 - ajouter un aftermath fumée configurable et borné, rendu exclusivement par `dom-skill-fx` ;
 - aucun changement Runtime / collision / dégâts / timing.
 
+Résultat du polish :
+- `SkillPresentationBinding V6` ajoute uniquement `feedback.aftermathSmoke` ;
+- fumée bornée à **8 volutes max**, avec couleur, dispersion, taille, montée, durée et opacité ;
+- traînée projectile remplacée par des **streaks effilés, irréguliers et orientés**, plus de suite de ronds blancs ;
+- la couleur de traînée hérite du profil / glow si nécessaire ; aucun fallback blanc visible ;
+- fumée rendue au point d'impact existant, via le même `dom-skill-fx`, sans nouvelle trajectoire ni autorité ;
+- le presenter appelle `fx.play(...)` sans attendre le `finished` : la fumée peut persister visuellement sans retarder le Runtime ;
+- round-trip éditeur V6 testé : sauvegarde / rechargement conserve fumée + particules et laisse la définition gameplay inchangée ;
+- aucun fichier `src/core/combat/`, Runtime, Session, règles, collision ou dégâts modifié ;
+- RED `89acfce...`, CI `37362883309` : **3 échecs attendus** (V6 / streaks / fumée absents) ;
+- GREEN source `100a87159b7821bcb3363cf1bdb1dd06d8ab0877`, CI `37363560909` : **1069/1069 PASS**, 0 échec ;
+- checkpoint technique : `checkpoint/lab-capture-fx-smoke-trail-polish-v1-technical-2026-10-05` ;
+- preview : `preview/lab-capture-fx-smoke-trail-polish-v1-2026-10-05`, page `examples/dom-demo/capture-editor-v2.html`.
+
+État du polish : **GREEN technique** ; validation smartphone utilisateur requise avant GREEN utilisateur.
+
 
 ## Reprise prioritaire — 2026-10-05 — capture-fx-readable-presets-v1
 
