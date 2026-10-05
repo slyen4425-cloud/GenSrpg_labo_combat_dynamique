@@ -143,44 +143,80 @@ for (const outcome of ["hit", "blocked", "reflected", "immune"]) {
   });
 }
 
-for (const outcome of ["evaded", "clashed"]) {
-  test("standard impact audio is not invented for " + outcome, () => {
-    const audioTypes = [];
-    const presenter = createCombatResolutionPresenter({
-      visuals: visuals(),
-      fx: {
-        cancelProjectileFor() { return 0; },
-        play() { return { status: "ignored" }; }
-      },
-      audio: {
-        play(event) {
-          audioTypes.push(event.type);
-          return { status: "ignored", finished: Promise.resolve({ status: "ignored" }) };
-        }
+test("standard impact audio is not invented for evaded", () => {
+  const audioTypes = [];
+  const presenter = createCombatResolutionPresenter({
+    visuals: visuals(),
+    fx: {
+      cancelProjectileFor() { return 0; },
+      play() { return { status: "ignored" }; }
+    },
+    audio: {
+      play(event) {
+        audioTypes.push(event.type);
+        return { status: "ignored", finished: Promise.resolve({ status: "ignored" }) };
       }
-    });
-
-    presenter.presentOutcome({
-      resolution: {
-        ok: true,
-        actionType: "skill",
-        actorId: "player",
-        targetId: "opponent",
-        skillId: "skill",
-        outcome,
-        events:
-          outcome === "clashed"
-            ? [{ type: "projectile-clash", otherActorId: "opponent", progress: 0.5 }]
-            : [{ type: "skill-arrive", skillId: "skill", atMs: 200 }]
-      },
-      actorSlot: "player",
-      targetSlot: "opponent"
-    });
-
-    assert.equal(audioTypes.includes("impact"), false);
-    presenter.dispose();
+    }
   });
-}
+
+  presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      actionType: "skill",
+      actorId: "player",
+      targetId: "opponent",
+      skillId: "skill",
+      outcome: "evaded",
+      events: [
+        { type: "skill-arrive", skillId: "skill", atMs: 200 }
+      ]
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.equal(audioTypes.includes("impact"), false);
+  presenter.dispose();
+});
+
+test("owned projectile clash reuses standard impact audio once", () => {
+  const audioTypes = [];
+  const presenter = createCombatResolutionPresenter({
+    visuals: visuals(),
+    fx: {
+      cancelProjectileFor() { return 0; },
+      play() { return { status: "ignored" }; }
+    },
+    audio: {
+      play(event) {
+        audioTypes.push(event.type);
+        return { status: "ignored", finished: Promise.resolve({ status: "ignored" }) };
+      }
+    }
+  });
+
+  presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      actionType: "skill",
+      actorId: "player",
+      targetId: "opponent",
+      skillId: "skill",
+      outcome: "clashed",
+      events: [
+        { type: "projectile-clash", otherActorId: "z-opponent", progress: 0.5 }
+      ]
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.equal(
+    audioTypes.filter((type) => type === "impact").length,
+    1
+  );
+  presenter.dispose();
+});
 
 test("DOM combat audio exposes whether a playing sound loops", () => {
   const audio = createDomCombatAudio({
