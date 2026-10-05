@@ -309,7 +309,11 @@ export function createCaptureSkillPresentationAssetsV2({
       auraSound: resolvedAudio(
         resolveAudio,
         audio.aura
-      )
+      ),
+      feedback:
+        binding.version >= 4
+          ? binding.feedback
+          : null
     });
   }
 
