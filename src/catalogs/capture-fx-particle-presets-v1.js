@@ -125,12 +125,12 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         opacity: 0.75
       },
       smoke: {
-        count: 3,
-        spreadPx: 36,
-        sizePx: 24,
-        risePx: 34,
-        durationMs: 660,
-        opacity: 0.32
+        count: 4,
+        spreadPx: 42,
+        sizePx: 30,
+        risePx: 42,
+        durationMs: 950,
+        opacity: 0.5
       }
     }),
     frozenPreset({
@@ -160,12 +160,12 @@ export const CAPTURE_FX_PARTICLE_PRESETS_V1 =
         opacity: 0.9
       },
       smoke: {
-        count: 5,
-        spreadPx: 46,
-        sizePx: 28,
-        risePx: 42,
-        durationMs: 760,
-        opacity: 0.42
+        count: 6,
+        spreadPx: 58,
+        sizePx: 36,
+        risePx: 56,
+        durationMs: 1250,
+        opacity: 0.64
       }
     }),
     frozenPreset({
