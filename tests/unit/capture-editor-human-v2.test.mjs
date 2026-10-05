@@ -530,7 +530,7 @@ test("human editor routes asset-catalog listeners through the disposable listene
   );
 
   assert.equal(
-    source.includes("hydrateAssetCatalog(root, listen)"),
+    /hydrateAssetCatalog\(root, listen(?:, creatorVisualAssets)?\)/.test(source),
     true,
     "asset catalog hydration must register listeners through the mount-owned listener registrar"
   );
