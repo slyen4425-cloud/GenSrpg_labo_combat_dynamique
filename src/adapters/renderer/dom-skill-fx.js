@@ -727,6 +727,157 @@ export function createDomSkillFxRenderer({
     return count;
   }
 
+  function appendCastBurstParticles(
+    node,
+    burst,
+    fallbackColor = null
+  ) {
+    if (!node || !burst) {
+      return [];
+    }
+
+    const count = Math.min(
+      12,
+      Math.max(
+        0,
+        Math.floor(
+          Number(burst.count) || 0
+        )
+      )
+    );
+    if (count <= 0) {
+      return [];
+    }
+
+    const spreadPx = Math.max(
+      1,
+      Number(burst.spreadPx) || 1
+    );
+    const sizePx = Math.max(
+      1,
+      Number(burst.sizePx) || 1
+    );
+    const risePx = Math.max(
+      1,
+      Number(burst.risePx) || 1
+    );
+    const durationMs = Math.max(
+      1,
+      Number(burst.durationMs) || 1
+    );
+    const opacity = clampUnit(
+      burst.opacity,
+      0.7
+    );
+    const validColor = (value) =>
+      typeof value === "string" &&
+      /^#[0-9a-fA-F]{6}$/.test(value);
+    const color = validColor(burst.color)
+      ? burst.color
+      : validColor(fallbackColor)
+        ? fallbackColor
+        : "#8aa0b0";
+
+    const animations = [];
+
+    for (
+      let index = 0;
+      index < count;
+      index += 1
+    ) {
+      const particle =
+        arena.ownerDocument.createElement(
+          "span"
+        );
+      const angle =
+        Math.PI * 2 * index / count +
+        (index % 2 === 0 ? 0.14 : -0.09);
+      const distance =
+        spreadPx *
+        (0.5 + (index % 3) * 0.16);
+      const dx =
+        Math.cos(angle) * distance;
+      const dy =
+        Math.sin(angle) * distance -
+        risePx *
+        (0.45 + (index % 3) * 0.18);
+      const size =
+        sizePx *
+        (0.74 + (index % 3) * 0.14);
+
+      particle.className =
+        "skill-fx__cast-particle";
+      particle.dataset.skillFx =
+        "cast-burst-particle";
+      particle.style.position =
+        "absolute";
+      particle.style.left = "50%";
+      particle.style.top = "50%";
+      particle.style.width =
+        size.toFixed(2) + "px";
+      particle.style.height =
+        Math.max(1, size * 0.62).toFixed(2) +
+        "px";
+      particle.style.borderRadius =
+        "66% 34% 58% 42% / 46% 62% 38% 54%";
+      particle.style.background =
+        "radial-gradient(ellipse, " +
+        color +
+        " 0 42%, transparent 76%)";
+      particle.style.boxShadow =
+        "0 0 " +
+        Math.max(2, size * 0.9).toFixed(1) +
+        "px " +
+        color;
+      particle.style.pointerEvents =
+        "none";
+      node.append(particle);
+
+      animations.push(
+        animate(
+          particle,
+          [
+            {
+              transform:
+                "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.35)",
+              opacity: 0
+            },
+            {
+              transform:
+                "translate(-50%, -50%) translate3d(" +
+                (dx * 0.24).toFixed(2) +
+                "px, " +
+                (dy * 0.18).toFixed(2) +
+                "px, 0) scale(1)",
+              opacity,
+              offset: 0.22
+            },
+            {
+              transform:
+                "translate(-50%, -50%) translate3d(" +
+                dx.toFixed(2) +
+                "px, " +
+                dy.toFixed(2) +
+                "px, 0) scale(0.18)",
+              opacity: 0
+            }
+          ],
+          {
+            duration:
+              durationMs +
+              (index % 4) * 24,
+            easing: "ease-out",
+            fill: "forwards"
+          }
+        )
+      );
+    }
+
+    node.dataset.fxCastBurstCount =
+      String(count);
+    return animations;
+  }
+
   function playImpactBurst({
     point,
     burst
@@ -1746,6 +1897,14 @@ export function createDomSkillFxRenderer({
         node,
         presentation?.feedback?.glow
       );
+      const castParticleAnimations =
+        appendCastBurstParticles(
+          node,
+          presentation?.feedback?.castBurst ??
+            null,
+          presentation?.feedback?.glow?.color ??
+            null
+        );
       arena.append(node);
 
       const record = {
@@ -1755,7 +1914,7 @@ export function createDomSkillFxRenderer({
       };
       active.add(record);
 
-      const animation = animate(
+      const spriteAnimation = animate(
         node,
         [
           {
@@ -1778,6 +1937,21 @@ export function createDomSkillFxRenderer({
           fill: "forwards"
         }
       );
+
+      const animation = {
+        cancel() {
+          spriteAnimation?.cancel?.();
+          for (
+            const particleAnimation of
+              castParticleAnimations
+          ) {
+            particleAnimation?.cancel?.();
+          }
+        },
+        finished:
+          spriteAnimation?.finished ??
+          Promise.resolve()
+      };
 
       record.animation = animation;
 
