@@ -1,5 +1,23 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-05 — capture-fx-particles-v1
+
+Base GREEN technique : `0591aac36b79e7d36b626133b88b0fe71b3a52af`.
+Checkpoint de départ : `checkpoint/lab-start-capture-fx-particles-v1-2026-10-05`.
+Branche : `work/lab-capture-fx-particles-v1-2026-10-05`.
+
+Objectif : ajouter des particules procédurales visibles et une traînée de projectile sans nouvelle autorité gameplay. V1 cible deux surfaces : `impactBurst` et `projectileTrail`.
+
+Architecture : nouveau binding de présentation strict si nécessaire ; resolver existant ; rendu uniquement dans `dom-skill-fx`. Les particules lisent le point/chemin déjà fournis par le renderer FX. Elles ne participent jamais à la collision ni aux dégâts.
+
+UX : mode simple avec `Aucune / Discrète / Visible / Intense / Très intense`; couleurs héritées du profil FX. Réglages fins réservés au panneau expert.
+
+Performance mobile : budgets bornés, nombre maximal de particules limité, aucune boucle gameplay, nettoyage via le cycle de vie FX existant.
+
+Tests RED : contrat présentation, mapping preset, rendu impact, trail projectile, cleanup/dispose, budgets bornés, absence de modification Combat Runtime / collision, CI complète.
+
+Critère de fin : Boule de feu possède une traînée et un burst clairement visibles, configurables sans valeurs techniques en mode simple ; CI verte et preview smartphone.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-readable-presets-v1
 
 Base GREEN technique : `b915f5c2d5b36733c121d4e2b4e4a4d1f84df1d5`.
