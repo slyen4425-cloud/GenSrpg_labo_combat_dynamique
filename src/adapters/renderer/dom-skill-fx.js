@@ -298,7 +298,8 @@ export function createDomSkillFxRenderer({
   requestFrame = defaultRequestFrame,
   cancelFrame = defaultCancelFrame,
   onProjectileContact = null,
-  targetCollisionModelFor = null
+  targetCollisionModelFor = null,
+  playCameraFx = null
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
     throw new TypeError("arena must be a DOM-like element");
@@ -332,6 +333,14 @@ export function createDomSkillFxRenderer({
   ) {
     throw new TypeError(
       "targetCollisionModelFor must be a function when projectile contact is enabled"
+    );
+  }
+  if (
+    playCameraFx !== null &&
+    typeof playCameraFx !== "function"
+  ) {
+    throw new TypeError(
+      "playCameraFx must be a function when supplied"
     );
   }
 
@@ -463,19 +472,257 @@ export function createDomSkillFxRenderer({
       requestFrame(check);
   }
 
+  function applyPresentationGlow(
+    node,
+    glow
+  ) {
+    if (!node || !glow) {
+      return;
+    }
+
+    const radiusPx = Math.max(
+      1,
+      Number(glow.radiusPx) || 1
+    );
+    const strength = clampUnit(
+      glow.strength,
+      0
+    );
+    const color =
+      typeof glow.color === "string" &&
+      /^#[0-9a-fA-F]{6}$/.test(glow.color)
+        ? glow.color
+        : "#ffffff";
+
+    if (strength <= 0) {
+      return;
+    }
+
+    const firstRadius =
+      Math.max(1, radiusPx * 0.55);
+    const secondRadius =
+      Math.max(1, radiusPx);
+
+    node.style.filter =
+      "drop-shadow(0 0 " +
+      firstRadius.toFixed(1) +
+      "px " +
+      color +
+      ") drop-shadow(0 0 " +
+      secondRadius.toFixed(1) +
+      "px " +
+      color +
+      ")";
+    node.style.opacity =
+      String(
+        Math.max(
+          0,
+          Math.min(
+            1,
+            Number(node.style.opacity) || 1
+          )
+        )
+      );
+    node.dataset.fxGlowStrength =
+      String(strength);
+  }
+
+  function playImpactFeedback({
+    point,
+    feedback
+  }) {
+    const handles = [];
+
+    const flash =
+      feedback?.impactFlash ?? null;
+    if (flash) {
+      const node =
+        arena.ownerDocument.createElement("span");
+      node.className =
+        "skill-fx skill-fx--impact-flash";
+      node.dataset.skillFx =
+        "impact-flash";
+      node.style.left = point.x + "px";
+      node.style.top = point.y + "px";
+      node.style.width =
+        "clamp(4.8rem, 14vw, 9rem)";
+      node.style.aspectRatio = "1";
+      node.style.borderRadius = "50%";
+      node.style.zIndex = "11";
+      node.style.pointerEvents = "none";
+      node.style.background =
+        "radial-gradient(circle, " +
+        flash.color +
+        " 0 18%, " +
+        flash.color +
+        " 32%, transparent 72%)";
+      node.style.filter = "blur(1.5px)";
+      arena.append(node);
+
+      const record = {
+        node,
+        animation: null,
+        frameAnimation: null,
+        type: "impact-flash"
+      };
+      active.add(record);
+
+      const animation = animate(
+        node,
+        [
+          {
+            transform:
+              "translate(-50%, -50%) scale(" +
+              Math.max(
+                0.1,
+                Number(flash.scale) * 0.45
+              ) +
+              ")",
+            opacity: 0
+          },
+          {
+            transform:
+              "translate(-50%, -50%) scale(" +
+              Math.max(
+                0.1,
+                Number(flash.scale)
+              ) +
+              ")",
+            opacity:
+              clampUnit(
+                flash.opacity,
+                0.7
+              ),
+            offset: 0.22
+          },
+          {
+            transform:
+              "translate(-50%, -50%) scale(" +
+              Math.max(
+                0.1,
+                Number(flash.scale) * 1.18
+              ) +
+              ")",
+            opacity: 0
+          }
+        ],
+        {
+          duration: Math.max(
+            1,
+            Number(flash.durationMs) || 1
+          ),
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+      record.animation = animation;
+
+      const finished =
+        Promise.resolve(
+          animation.finished
+        )
+          .then(() => {
+            cleanup(record);
+            return {
+              status: "finished"
+            };
+          })
+          .catch((error) => {
+            cleanup(record);
+            if (
+              error?.name ===
+              "AbortError"
+            ) {
+              return {
+                status: "cancelled"
+              };
+            }
+            throw error;
+          });
+
+      handles.push(
+        Object.freeze({
+          status: "running",
+          animation,
+          finished
+        })
+      );
+    }
+
+    const shake =
+      feedback?.cameraShake ?? null;
+    if (
+      shake &&
+      playCameraFx !== null
+    ) {
+      const handle =
+        playCameraFx(
+          Object.freeze({
+            type: "camera-shake",
+            amplitudePx:
+              Number(shake.amplitudePx),
+            durationMs:
+              Number(shake.durationMs)
+          })
+        );
+      if (handle) {
+        handles.push(handle);
+      }
+    }
+
+    if (handles.length === 0) {
+      return Object.freeze({
+        status: "ignored",
+        finished:
+          Promise.resolve({
+            status: "ignored"
+          })
+      });
+    }
+
+    return Object.freeze({
+      status: "running",
+      finished: Promise.all(
+        handles.map(
+          (handle) =>
+            handle.finished ??
+            Promise.resolve({
+              status: handle.status
+            })
+        )
+      ).then(() => ({
+        status: "finished"
+      }))
+    });
+  }
+
   function playImpactVisual({
     visual,
     skillId,
     point,
     durationMs,
     layer = "front",
-    type = "impact"
+    type = "impact",
+    feedback = null
   }) {
+    const feedbackHandle =
+      type === "impact"
+        ? playImpactFeedback({
+            point,
+            feedback
+          })
+        : null;
+
     if (!hasSpriteVisual(visual)) {
-      return Object.freeze({
-        status: "ignored",
-        finished: Promise.resolve({ status: "ignored" })
-      });
+      return (
+        feedbackHandle ??
+        Object.freeze({
+          status: "ignored",
+          finished: Promise.resolve({
+            status: "ignored"
+          })
+        })
+      );
     }
 
     const node = arena.ownerDocument.createElement("span");
@@ -499,6 +746,10 @@ export function createDomSkillFxRenderer({
       visual,
       effectDurationMs,
       animate
+    );
+    applyPresentationGlow(
+      node,
+      feedback?.glow
     );
     arena.append(node);
 
@@ -664,6 +915,10 @@ export function createDomSkillFxRenderer({
           spriteOwnerDurationMs(zone),
           animate
         );
+        applyPresentationGlow(
+          node,
+          presentation?.feedback?.glow
+        );
         arena.append(node);
 
         record = {
@@ -790,6 +1045,10 @@ export function createDomSkillFxRenderer({
         visual,
         durationMs,
         animate
+      );
+      applyPresentationGlow(
+        node,
+        presentation?.feedback?.glow
       );
       arena.append(node);
 
@@ -1165,7 +1424,8 @@ export function createDomSkillFxRenderer({
         point,
         durationMs,
         layer: presentation?.impactLayer ?? "front",
-        type: "impact"
+        type: "impact",
+        feedback: presentation?.feedback ?? null
       });
     }
 
@@ -1238,6 +1498,10 @@ export function createDomSkillFxRenderer({
       spriteBound = true;
     }
 
+    applyPresentationGlow(
+      node,
+      presentation?.feedback?.glow
+    );
     arena.append(node);
 
     const record = {
