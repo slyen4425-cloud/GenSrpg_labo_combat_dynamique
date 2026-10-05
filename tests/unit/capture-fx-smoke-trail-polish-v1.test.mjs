@@ -7,6 +7,10 @@ import {
 import {
   createDomSkillFxRenderer
 } from "../../src/adapters/renderer/dom-skill-fx.js";
+import {
+  buildHumanSkillDraftV1,
+  humanSkillEditorFieldsFromDraftV1
+} from "../../src/ui/capture-editor-human-v2.js";
 
 function v6Binding() {
   return {
@@ -284,5 +288,164 @@ test("impact creates a soft smoke aftermath after burst without gameplay authori
         "aftermath-smoke-puff"
     ),
     true
+  );
+});
+
+
+test("Human Editor round-trips V6 smoke and particle feedback without changing gameplay", () => {
+  const fields = {
+    id: "fx-smoke-roundtrip",
+    name: "FX Smoke Roundtrip",
+    description: "Presentation only.",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    category: "offensive",
+    form: "projectile",
+    element: "fire",
+    approachMode: "none",
+    energyCost: 3,
+    preparationMs: 600,
+    travelMs: 700,
+    recoveryMs: 300,
+    cooldownMs: 2400,
+    maxUsesPerCombat: null,
+    activationRequirements: {
+      mode: "all",
+      conditions: []
+    },
+    effects: [
+      {
+        kind: "damage",
+        targetScope: "target",
+        amount: 5,
+        channel: "fire"
+      }
+    ],
+    reaction: {
+      blockForms: [],
+      reflectForms: [],
+      immuneElements: [],
+      counterForms: [],
+      evadeForms: [],
+      evadeApproaches: []
+    },
+    projectileClash: {
+      power: 1
+    },
+    presentation: {
+      iconAssetId: "",
+      castAssetId: "",
+      castDisplayScale: 1,
+      castPlaybackMode: "once",
+      castOffsetX: 0,
+      castOffsetY: 0,
+      castLayerPlayer: "front",
+      castLayerOpponent: "front",
+      travelAssetId: "",
+      travelDisplayScale: 1,
+      travelPlaybackMode: "stretch",
+      travelLayerPlayer: "front",
+      travelLayerOpponent: "front",
+      impactAssetId: "",
+      impactDisplayScale: 1,
+      impactPlaybackMode: "once",
+      impactDurationMs: 0,
+      impactOffsetX: 0,
+      impactOffsetY: 0,
+      impactLayerPlayer: "front",
+      impactLayerOpponent: "front",
+      zoneAssetId: "",
+      zoneDisplayScale: 1,
+      zoneDisplayScaleX: 1,
+      zoneDisplayScaleY: 1,
+      zonePlaybackMode: "loop",
+      zoneOffsetX: 0,
+      zoneOffsetY: 0,
+      zoneLayerPlayer: "behind",
+      zoneLayerOpponent: "behind",
+      socketId: null,
+      statusVisuals: {},
+      castAudioAssetId: "",
+      travelAudioAssetId: "",
+      impactAudioAssetId: "",
+      zoneAudioAssetId: "",
+      fxGlowColor: "#ff6a1f",
+      fxGlowStrength: 0.85,
+      fxGlowRadiusPx: 32,
+      impactFlashColor: "#fff2c2",
+      impactFlashOpacity: 0.8,
+      impactFlashDurationMs: 120,
+      impactFlashScale: 1.65,
+      impactShakeAmplitudePx: 5,
+      impactShakeDurationMs: 150,
+      projectileTrailColor: "#ff6a1f",
+      projectileTrailCount: 7,
+      projectileTrailLengthPx: 56,
+      projectileTrailSizePx: 7,
+      projectileTrailOpacity: 0.8,
+      impactBurstColor: "#ffd27a",
+      impactBurstCount: 12,
+      impactBurstSpreadPx: 72,
+      impactBurstSizePx: 9,
+      impactBurstDurationMs: 380,
+      impactBurstOpacity: 0.9,
+      aftermathSmokeColor: "#594943",
+      aftermathSmokeCount: 5,
+      aftermathSmokeSpreadPx: 46,
+      aftermathSmokeSizePx: 28,
+      aftermathSmokeRisePx: 42,
+      aftermathSmokeDurationMs: 760,
+      aftermathSmokeOpacity: 0.42
+    }
+  };
+
+  const draft =
+    buildHumanSkillDraftV1(fields);
+
+  assert.equal(
+    draft.presentation.version,
+    6
+  );
+  assert.deepEqual(
+    draft.presentation.feedback.aftermathSmoke,
+    {
+      color: "#594943",
+      count: 5,
+      spreadPx: 46,
+      sizePx: 28,
+      risePx: 42,
+      durationMs: 760,
+      opacity: 0.42
+    }
+  );
+
+  const restored =
+    humanSkillEditorFieldsFromDraftV1(
+      JSON.parse(JSON.stringify(draft))
+    );
+
+  assert.equal(
+    restored.presentation.aftermathSmokeColor,
+    "#594943"
+  );
+  assert.equal(
+    restored.presentation.aftermathSmokeCount,
+    5
+  );
+  assert.equal(
+    restored.presentation.aftermathSmokeDurationMs,
+    760
+  );
+
+  const second =
+    buildHumanSkillDraftV1(restored);
+
+  assert.deepEqual(
+    second.definition,
+    draft.definition
+  );
+  assert.deepEqual(
+    second.presentation,
+    draft.presentation
   );
 });
