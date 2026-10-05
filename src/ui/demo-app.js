@@ -4,6 +4,9 @@ import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
 import {
+  shadowGeometryFromOpaqueMaskV2
+} from "../adapters/renderer/dom-ground-shadow-v2.js";
+import {
   createDomVisibleModelCollisionModel,
   watchVisibleModelContact
 } from "../adapters/renderer/dom-visible-model-contact.js";
@@ -814,6 +817,11 @@ function createSlot({
     container ??
     requiredElement(root, `[data-demo-slot="${key}"]`);
 
+  const shadowElement =
+    requiredElement(
+      slotContainer,
+      "[data-demo-shadow]"
+    );
   const motion = requiredElement(slotContainer, "[data-demo-motion]");
   const image = requiredElement(slotContainer, "[data-demo-image]");
   const label = requiredElement(slotContainer, "[data-demo-label]");
@@ -885,7 +893,7 @@ function createSlot({
 
     renderer = createDomActorRenderer({
       element: motion,
-      shadowElement: slotContainer,
+      shadowElement,
       actor
     });
   }
@@ -911,6 +919,30 @@ function createSlot({
         image.hidden = true;
         slotContainer.dataset.visibleCollisionReady = "false";
         return;
+      }
+
+      const frame = collisionModel.snapshot();
+      if (frame?.mask) {
+        const profilePresentation =
+          profiles.get(actor.profile).presentation ??
+          {};
+        const profileShadow =
+          profilePresentation.shadow ?? {};
+        const geometry =
+          shadowGeometryFromOpaqueMaskV2(
+            frame.mask,
+            {
+              widthMultiplier:
+                profileShadow.widthMultiplier ??
+                1.12
+            }
+          );
+        shadowElement.style.width =
+          geometry.widthPct.toFixed(2) + "%";
+        shadowElement.style.height =
+          geometry.heightPct.toFixed(2) + "%";
+        shadowElement.dataset.shadowFootprint =
+          geometry.opaqueWidthRatio.toFixed(3);
       }
 
       assetReady = true;
@@ -1001,6 +1033,7 @@ function createSlot({
     view,
     image,
     motion,
+    shadowElement,
     setCreature,
     setVisible,
     setApproachActive,
