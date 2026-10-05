@@ -28,6 +28,10 @@ Résultat technique :
 - documentation : `docs/LAB_CAPTURE_FX_STARTER_PROFILES_V1.md` ;
 - CI fonctionnelle run `37351103032` : **1049/1049 PASS**, 0 échec.
 
+CI finale documentation : run `37351272626` — SUCCESS.
+Checkpoint technique : `checkpoint/lab-capture-fx-starter-profiles-v1-technical-2026-10-05`.
+Preview dédiée : `preview/lab-capture-fx-starter-profiles-v1-2026-10-05`, page `examples/dom-demo/capture-editor-v2.html`.
+
 État : GREEN technique après CI finale de documentation ; validation ergonomique smartphone / preview utilisateur reste requise avant GREEN utilisateur.
 
 Ce fichier est le point de reprise opérationnel du laboratoire.
