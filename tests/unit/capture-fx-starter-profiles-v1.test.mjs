@@ -64,6 +64,8 @@ const PRESENTATION_KEYS = new Set([
   "projectileTrailLengthPx",
   "projectileTrailSizePx",
   "projectileTrailOpacity",
+  "projectileTrailAnchorX",
+  "projectileTrailAnchorY",
   "impactBurstColor",
   "impactBurstCount",
   "impactBurstSpreadPx",
