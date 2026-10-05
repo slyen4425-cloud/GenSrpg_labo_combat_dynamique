@@ -428,7 +428,10 @@ export function createCombatResolutionPresenter({
 
       if (
         !impactAudioPlayed &&
-        fxPlan.type === "impact" &&
+        (
+          fxPlan.type === "impact" ||
+          fxPlan.type === "clash-impact"
+        ) &&
         outcomeSkillId
       ) {
         audio?.play({
