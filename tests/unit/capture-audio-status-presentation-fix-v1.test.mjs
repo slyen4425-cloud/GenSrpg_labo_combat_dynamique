@@ -230,7 +230,7 @@ test("1v1 and 2v2 wrappers preserve status source skill context", async () => {
 
     assert.match(
       source,
-      /sourceSkillId/
+      /\.\.\.context/
     );
   }
 });
