@@ -550,6 +550,336 @@ export function createDomSkillFxRenderer({
       String(strength);
   }
 
+  function appendProjectileTrailParticles(
+    node,
+    trail,
+    deltaX,
+    deltaY
+  ) {
+    if (!node || !trail) {
+      return 0;
+    }
+
+    const count = Math.min(
+      10,
+      Math.max(
+        0,
+        Math.floor(
+          Number(trail.count) || 0
+        )
+      )
+    );
+    if (count <= 0) {
+      return 0;
+    }
+
+    const lengthPx = Math.max(
+      1,
+      Number(trail.lengthPx) || 1
+    );
+    const sizePx = Math.max(
+      1,
+      Number(trail.sizePx) || 1
+    );
+    const opacity = clampUnit(
+      trail.opacity,
+      0.7
+    );
+    const color =
+      typeof trail.color === "string"
+        ? trail.color
+        : "#ffffff";
+    const distance = Math.hypot(
+      deltaX,
+      deltaY
+    ) || 1;
+    const unitX = deltaX / distance;
+    const unitY = deltaY / distance;
+
+    for (
+      let index = 0;
+      index < count;
+      index += 1
+    ) {
+      const particle =
+        arena.ownerDocument.createElement(
+          "span"
+        );
+      const ratio =
+        (index + 1) / (count + 1);
+      const offset =
+        lengthPx * ratio;
+      const scale =
+        1 - ratio * 0.62;
+
+      particle.className =
+        "skill-fx__trail-particle";
+      particle.dataset.skillFx =
+        "projectile-trail-particle";
+      particle.style.position =
+        "absolute";
+      particle.style.left =
+        "calc(50% - " +
+        (unitX * offset).toFixed(2) +
+        "px)";
+      particle.style.top =
+        "calc(50% - " +
+        (unitY * offset).toFixed(2) +
+        "px)";
+      particle.style.width =
+        Math.max(
+          1,
+          sizePx * scale
+        ).toFixed(2) + "px";
+      particle.style.height =
+        Math.max(
+          1,
+          sizePx * scale
+        ).toFixed(2) + "px";
+      particle.style.borderRadius =
+        "50%";
+      particle.style.background =
+        color;
+      particle.style.opacity =
+        String(
+          Math.max(
+            0.08,
+            opacity * (1 - ratio * 0.72)
+          )
+        );
+      particle.style.boxShadow =
+        "0 0 " +
+        Math.max(2, sizePx * 1.4) +
+        "px " +
+        color;
+      particle.style.transform =
+        "translate(-50%, -50%)";
+      particle.style.pointerEvents =
+        "none";
+      node.append(particle);
+    }
+
+    node.dataset.fxTrailCount =
+      String(count);
+    return count;
+  }
+
+  function playImpactBurst({
+    point,
+    burst
+  }) {
+    if (!burst) {
+      return null;
+    }
+
+    const count = Math.min(
+      18,
+      Math.max(
+        0,
+        Math.floor(
+          Number(burst.count) || 0
+        )
+      )
+    );
+    if (count <= 0) {
+      return null;
+    }
+
+    const container =
+      arena.ownerDocument.createElement(
+        "span"
+      );
+    container.className =
+      "skill-fx skill-fx--impact-burst";
+    container.dataset.skillFx =
+      "impact-burst";
+    container.style.left =
+      point.x + "px";
+    container.style.top =
+      point.y + "px";
+    container.style.width = "1px";
+    container.style.height = "1px";
+    container.style.zIndex = "12";
+    container.style.pointerEvents =
+      "none";
+    container.style.overflow =
+      "visible";
+
+    const spreadPx = Math.max(
+      1,
+      Number(burst.spreadPx) || 1
+    );
+    const sizePx = Math.max(
+      1,
+      Number(burst.sizePx) || 1
+    );
+    const durationMs = Math.max(
+      1,
+      Number(burst.durationMs) || 1
+    );
+    const opacity = clampUnit(
+      burst.opacity,
+      0.8
+    );
+    const color =
+      typeof burst.color === "string"
+        ? burst.color
+        : "#ffffff";
+
+    const animations = [];
+
+    for (
+      let index = 0;
+      index < count;
+      index += 1
+    ) {
+      const particle =
+        arena.ownerDocument.createElement(
+          "span"
+        );
+      particle.className =
+        "skill-fx__impact-particle";
+      particle.dataset.skillFx =
+        "impact-burst-particle";
+      particle.style.position =
+        "absolute";
+      particle.style.left = "0";
+      particle.style.top = "0";
+      particle.style.width =
+        sizePx + "px";
+      particle.style.height =
+        sizePx + "px";
+      particle.style.borderRadius =
+        "50%";
+      particle.style.background =
+        color;
+      particle.style.boxShadow =
+        "0 0 " +
+        Math.max(2, sizePx * 1.2) +
+        "px " +
+        color;
+      particle.style.pointerEvents =
+        "none";
+
+      container.append(particle);
+
+      const angle =
+        (
+          Math.PI * 2 * index /
+          count
+        ) +
+        (
+          index % 2 === 0
+            ? 0.12
+            : -0.08
+        );
+      const distance =
+        spreadPx *
+        (
+          0.58 +
+          0.21 * (index % 3)
+        );
+      const dx =
+        Math.cos(angle) * distance;
+      const dy =
+        Math.sin(angle) * distance;
+
+      const animation = animate(
+        particle,
+        [
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.45)",
+            opacity: 0
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(" +
+              (dx * 0.18).toFixed(2) +
+              "px, " +
+              (dy * 0.18).toFixed(2) +
+              "px, 0) scale(1)",
+            opacity,
+            offset: 0.18
+          },
+          {
+            transform:
+              "translate(-50%, -50%) translate3d(" +
+              dx.toFixed(2) +
+              "px, " +
+              dy.toFixed(2) +
+              "px, 0) scale(0.18)",
+            opacity: 0
+          }
+        ],
+        {
+          duration:
+            durationMs +
+            (index % 4) * 18,
+          easing: "ease-out",
+          fill: "forwards"
+        }
+      );
+      animations.push(animation);
+    }
+
+    arena.append(container);
+
+    const compositeAnimation = {
+      cancel() {
+        for (
+          const animation of animations
+        ) {
+          animation?.cancel?.();
+        }
+      },
+      finished: Promise.all(
+        animations.map(
+          (animation) =>
+            animation?.finished ??
+            Promise.resolve()
+        )
+      )
+    };
+
+    const record = {
+      node: container,
+      animation: compositeAnimation,
+      frameAnimation: null,
+      type: "impact-burst"
+    };
+    active.add(record);
+
+    const finished =
+      Promise.resolve(
+        compositeAnimation.finished
+      )
+        .then(() => {
+          cleanup(record);
+          return {
+            status: "finished"
+          };
+        })
+        .catch((error) => {
+          cleanup(record);
+          if (
+            error?.name ===
+            "AbortError"
+          ) {
+            return {
+              status: "cancelled"
+            };
+          }
+          throw error;
+        });
+
+    return Object.freeze({
+      status: "running",
+      animation: compositeAnimation,
+      finished
+    });
+  }
+
   function playImpactFeedback({
     point,
     feedback
@@ -670,6 +1000,17 @@ export function createDomSkillFxRenderer({
           finished
         })
       );
+    }
+
+    const burstHandle =
+      playImpactBurst({
+        point,
+        burst:
+          feedback?.impactBurst ??
+          null
+      });
+    if (burstHandle) {
+      handles.push(burstHandle);
     }
 
     const shake =
@@ -1524,6 +1865,13 @@ export function createDomSkillFxRenderer({
     applyPresentationGlow(
       node,
       presentation?.feedback?.glow
+    );
+    appendProjectileTrailParticles(
+      node,
+      presentation?.feedback?.projectileTrail ??
+        null,
+      deltaX,
+      deltaY
     );
     arena.append(node);
 
