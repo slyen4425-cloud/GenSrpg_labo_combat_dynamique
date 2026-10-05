@@ -1,5 +1,23 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Reprise prioritaire — 2026-10-05 — capture-fx-enhancements-v1
+
+Base GREEN technique : `9e8b51b45122a388ddbde93ff9c10a86ec7ddfb8`.
+Checkpoint de départ : `checkpoint/lab-start-capture-fx-enhancements-v1-2026-10-05`.
+Branche : `work/lab-capture-fx-enhancements-v1-2026-10-05`.
+
+Objectif : rendre immédiatement visibles les profils FX vitrine avec un enrichissement de présentation V1 : glow configurable, flash d'impact et shake d'impact. Les particules restent le lot suivant.
+
+Propriétaires : `SkillPresentationBinding` porte les paramètres ; `createCaptureSkillPresentationAssetsV2` les résout ; `dom-skill-fx` rend glow/flash ; `dom-camera-fx` reste l'unique propriétaire du shake caméra via le contrôleur visuel existant. Aucun changement Combat Runtime / Session / collision / dégâts.
+
+UI : réglages avancés simples (couleur/intensité glow, flash impact, amplitude/durée shake) + valeurs préremplies par les Starter Profiles. L'import utilisateur reste inchangé et bénéficie des mêmes paramètres.
+
+Tests RED obligatoires : nouveau contrat Presentation Binding V4 ; propagation editor -> binding -> resolver ; glow/flash dans renderer ; shake uniquement via l'owner caméra ; non-régression collision/runtime ; CI complète puis preview smartphone.
+
+Risques : animer directement l'arène depuis `dom-skill-fx` (interdit : second owner caméra) ; faire dépendre le feedback de l'élément gameplay ; créer un timer gameplay ; casser les bindings V1/V2/V3 existants.
+
+Critère de fin : un profil comme Boule de feu produit visiblement glow + flash + shake en combat, tous configurables depuis le binding, avec zéro changement de résolution gameplay, CI verte et preview dédiée.
+
 ## Reprise prioritaire — 2026-10-05 — capture-fx-starter-profiles-v1
 
 Base GREEN : `23b133441ff5bb43f54c71c13734335d9031e0ec`, checkpoint `checkpoint/lab-audio-pack2-runtime-v1-green-2026-10-05`.
