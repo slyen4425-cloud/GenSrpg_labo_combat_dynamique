@@ -35,6 +35,9 @@ import {
   activeTauntSourceActorIdV1,
   hasActiveStatusKindV1
 } from "./status-effect-runtime-v1.js";
+import {
+  skillPresenceReachV1
+} from "./combat-presence-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -114,6 +117,42 @@ function preparationFor(
   return effectiveSkillTimingMs({
     baseMs: modified,
     speedMultiplier: skillSpeedMultiplier
+  });
+}
+
+function presenceEvasionFor(
+  incomingSkill,
+  targetActionContext
+) {
+  const reach =
+    skillPresenceReachV1({
+      skill: incomingSkill,
+      targetActionContext
+    });
+
+  if (
+    !reach.configured ||
+    reach.reachable
+  ) {
+    return Object.freeze({
+      reach,
+      evasion: null
+    });
+  }
+
+  return Object.freeze({
+    reach,
+    evasion: Object.freeze({
+      outcome: "evaded",
+      reason: "presence",
+      presence: reach.presence,
+      sourceSkillId:
+        targetActionContext?.action?.actionId ??
+        null,
+      sourceApproachMode:
+        targetActionContext?.action?.skill
+          ?.approachMode ?? "none"
+    })
   });
 }
 
@@ -690,12 +729,25 @@ export function resolveSkillCompletion({
     impactAtMs
   } = action;
 
+  const presence =
+    presenceEvasionFor(
+      skill,
+      targetActionContext
+    );
   const mobilityEvasion =
-    reaction == null
-      ? mobilityEvasionFor(skill, targetActionContext)
+    reaction == null &&
+    !(
+      presence.reach.configured &&
+      presence.reach.transientPresence
+    )
+      ? mobilityEvasionFor(
+          skill,
+          targetActionContext
+        )
       : null;
   const outcome =
     reaction?.outcome ??
+    presence.evasion?.outcome ??
     mobilityEvasion?.outcome ??
     "hit";
   const reactionReadyAt = reaction?.readyAtMs ?? null;
@@ -872,9 +924,24 @@ export function resolveSkillCompletion({
         skillId: skill.id,
         reactionSkillId: reaction?.skillId ?? null,
         evasionSourceSkillId:
-          mobilityEvasion?.sourceSkillId ?? null,
+          presence.evasion?.sourceSkillId ??
+          mobilityEvasion?.sourceSkillId ??
+          null,
         evasionSourceApproachMode:
-          mobilityEvasion?.sourceApproachMode ?? null
+          presence.evasion?.sourceApproachMode ??
+          mobilityEvasion?.sourceApproachMode ??
+          null,
+        evasionReason:
+          presence.evasion?.reason ??
+          (
+            mobilityEvasion
+              ? "mobility"
+              : reaction
+                ? "reaction"
+                : null
+          ),
+        targetPresence:
+          presence.reach.presence
       }));
     }
   }
@@ -899,7 +966,20 @@ export function resolveSkillCompletion({
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
     evasionApplied:
-      mobilityEvasion?.sourceSkillId ?? null,
+      presence.evasion?.sourceSkillId ??
+      mobilityEvasion?.sourceSkillId ??
+      null,
+    evasionReason:
+      presence.evasion?.reason ??
+      (
+        mobilityEvasion
+          ? "mobility"
+          : reaction
+            ? "reaction"
+            : null
+      ),
+    targetPresence:
+      presence.reach.presence,
     timelineMs: Object.freeze({
       basePreparation: skill.preparationMs,
       preparation: preparationMs,
