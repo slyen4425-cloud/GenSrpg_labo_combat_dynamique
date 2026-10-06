@@ -64,6 +64,17 @@ RED :
 4. attaque explicite `surface + airborne` touche la même cible ;
 5. une attaque legacy sans champ conserve le comportement d'évasion existant.
 
+### Résultat technique LIVE
+
+- RED : CI `37470929134` — 1129 tests, 1126 PASS, 3 FAIL ciblés ;
+- contrat `hitPresenceStates` ajouté avec compatibilité legacy `null` ;
+- présence `airborne` dérivée de l'action aérienne Runtime pendant le travel, sans état parallèle ;
+- surface-only rate airborne ;
+- surface + airborne touche airborne et peut remplacer proprement l'ancienne règle d'évasion par forme pour une compétence explicitement migrée ;
+- compétence legacy sans champ : comportement historique inchangé ;
+- CI fonctionnelle `37471232617` — 1129 / 1129 PASS ;
+- rapport : `docs/LAB_COMBAT_PRESENCE_REACH_V1.md`.
+
 ### Critère de fin
 
 - RED démontré ;
