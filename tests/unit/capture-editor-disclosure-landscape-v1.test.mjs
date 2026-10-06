@@ -23,7 +23,7 @@ test("Human Editor exposes one reusable disclosure owner for existing cards with
   );
   assert.match(
     source,
-    /data-editor-card-toggle/
+    /data-editor-card-toggle|dataset\.editorCardToggle/
   );
   assert.match(
     source,
