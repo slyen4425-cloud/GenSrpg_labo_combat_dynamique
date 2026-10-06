@@ -569,14 +569,9 @@ export function applyPersistentZoneEffectsV1({
       activations,
       tickEffect:
         effect.tickEffect,
-      appliedAtMs:
-        preservesCadence
-          ? existing.appliedAtMs
-          : atMs,
+      appliedAtMs: atMs,
       expiresAtMs:
-        preservesCadence
-          ? existing.expiresAtMs
-          : atMs + effect.durationMs,
+        atMs + effect.durationMs,
       nextTickAtMs:
         preservesCadence
           ? existing.nextTickAtMs
