@@ -74,7 +74,9 @@ test("Capture editor export carries Game Options dodge into native combat source
         maxEnergy: 10,
         initialEnergy: 0,
         energyChargeAmount: 1,
-        energyChargeIntervalMs: 2000
+        energyChargeIntervalMs: 2000,
+        movementEnergyPerStep: 0,
+        chargeTimeModifierPct: 0
       },
       skillSpeedMultiplier: 0.5,
       recallPreparationMs: 2000,
