@@ -99,6 +99,18 @@ Ne pas modifier :
 - écrasement du snapshot actif lors de la propagation des stats source ;
 - confusion teamId Roster vs teamId BattleFormat.
 
+### Résultat technique LIVE
+
+- RED : CI `37486276635` — 1156 tests, 1149 PASS, 7 FAIL ciblés ;
+- `CombatTargetRefV1` ajouté ;
+- `targetLocations` = active par défaut, reserve opt-in ;
+- RosterSession reste propriétaire du banc ;
+- mêmes owners Damage / Status / Immunity consommés via une frame d'évaluation temporaire, jamais persistée ;
+- relations ally/enemy vérifiées avant dépense ;
+- énergie / cooldown / usage viennent du chemin `resolveSkillStart` existant ;
+- CI fonctionnelle `37486922738` — 1157 / 1157 PASS ;
+- rapport : `docs/LAB_RESERVE_TARGETING_V1.md`.
+
 ### Critère de fin
 
 - aucune copie durable de réserve dans CombatState ;
