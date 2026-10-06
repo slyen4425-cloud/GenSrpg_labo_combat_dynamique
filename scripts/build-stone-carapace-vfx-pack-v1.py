@@ -53,7 +53,7 @@ def write_metadata(results):
  PACK.mkdir(parents=True,exist_ok=True)
  (PACK/"README.md").write_text("# Carapace de pierre — sprites Capture HD\n\nPack visuel additif pour armure / carapace de pierre. Aucun changement gameplay ou moteur.\n\n- charge/cast : 16 PNG RGBA 512×512\n- aura protectrice : 16 PNG RGBA 512×512\n- 32 frames individuelles au total\n- 2 atlas WebP horizontaux 8192×512\n- sources de transport WebP Q95 conservées sous `assets/library/capture/sprites/source/stone_carapace_v1/`\n\nLes atlas sont les ressources runtime du catalogue. Le pack est additif et ne remplace aucune capacité existante.\n",encoding="utf-8")
  with (PACK/"manifest.csv").open("w",newline="",encoding="utf-8") as fh:
-  wr=csv.writer(fh); wr.writerow(["sequence","frame","file","width","height","sha256"])
+  wr=csv.writer(fh, lineterminator="\\n"); wr.writerow(["sequence","frame","file","width","height","sha256"])
   for role,spec in SPECS.items():
    for idx in range(1,spec["count"]+1):
     p=frame_path(role,idx); wr.writerow([role,idx,str(p.relative_to(PACK)).replace("\\","/"),512,512,sha_file(p)])
