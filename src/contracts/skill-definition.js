@@ -101,6 +101,22 @@ function nonNegativeNumber(value, field) {
   return number;
 }
 
+function booleanOrDefault(
+  value,
+  field,
+  fallback
+) {
+  if (value == null) {
+    return fallback;
+  }
+  if (typeof value !== "boolean") {
+    throw new TypeError(
+      field + " must be a boolean"
+    );
+  }
+  return value;
+}
+
 function positiveIntegerOrNull(value, field) {
   if (value == null) {
     return null;
@@ -409,6 +425,11 @@ export function normalizeSkillDefinition(input) {
     allowedDistances,
     targetRelations,
     hitPresenceStates,
+    dodgeable: booleanOrDefault(
+      input.dodgeable,
+      "dodgeable",
+      true
+    ),
     activationRequirements:
       normalizeActivationRequirements(
         input.activationRequirements
