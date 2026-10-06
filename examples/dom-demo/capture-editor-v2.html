@@ -850,7 +850,10 @@
         </div>
 
         <details data-skill-fx-advanced>
-          <summary>Réglages avancés — sprites, taille, placement, lecture et audio</summary>
+          <summary>
+            <span>Personnaliser les sprites, taille, placement et audio</span>
+            <small>Cast · Projectile · Impact · Zone · Statut</small>
+          </summary>
 
         <div class="grid two">
           <label>Icône
@@ -1136,6 +1139,13 @@
         <small class="editor-footer__hint">Les modifications valides sont enregistrées au lancement du test.</small>
       </div>
       <div class="editor-footer__actions">
+        <label class="preview-landscape-toggle">
+          <input type="checkbox" data-preview-landscape-mode checked>
+          <span>
+            Combat plein écran paysage
+            <small>Test provisoire</small>
+          </span>
+        </label>
         <button type="button" class="secondary-action" data-editor-validate>
           Vérifier la configuration
         </button>
@@ -1146,7 +1156,11 @@
     </footer>
   </main>
 
-  <section class="capture-preview-shell" data-capture-preview-shell hidden>
+  <section class="capture-preview-shell" data-capture-preview-shell data-landscape-required="false" hidden>
+    <div class="capture-preview-rotate-gate" data-preview-rotate-gate role="status" aria-live="polite">
+      <strong>Tourne ton téléphone</strong>
+      <span>Le combat est configuré pour jouer en plein écran paysage.</span>
+    </div>
     <button type="button" class="capture-preview-back" data-preview-back-editor>
       Retour à l’éditeur
     </button>
