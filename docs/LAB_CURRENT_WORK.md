@@ -78,6 +78,18 @@ RED :
 5. HTML expose les nouveaux contrôles ;
 6. anciens drafts sans champs restent identiques.
 
+### Résultat technique LIVE
+
+- builders contrats GREEN dès le premier lot : mobilité, Burrow, Presence, dodgeable, reserve, immunity et scheduled effect ;
+- première CI `37496102015` : 1168 tests, 1167 PASS, 1 FAIL ciblé car les contrôles n'étaient pas encore présents dans la vraie page HTML ;
+- raccord réel ajouté dans `capture-editor-v2.html` + lecture/écriture Human Editor ;
+- portée par présence reste opt-in pour préserver `hitPresenceStates = null` des anciennes capacités ;
+- CI intermédiaire `37497191300` : un seul FAIL légitime de la sentinelle interdisant l'ancien namespace `data-skill-target...` ;
+- sentinelle conservée telle quelle ; nouveau contrôle renommé `data-skill-location-scope` ;
+- CI fonctionnelle `37497368087` : 1168 / 1168 PASS ;
+- aucun owner moteur / renderer / roster modifié ;
+- rapport : `docs/LAB_HUMAN_EDITOR_EXPRESSIVENESS_V1.md`.
+
 ### Critère de fin
 
 - aucun calcul métier UI ;
