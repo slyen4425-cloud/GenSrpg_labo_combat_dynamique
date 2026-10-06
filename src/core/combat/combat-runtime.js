@@ -621,10 +621,26 @@ export function createCombatRuntime({
           })
         : null;
 
+    const combatNowMs =
+      Number(
+        session.snapshot()?.elapsedMs ?? 0
+      );
+    const completionAtMs =
+      Math.max(
+        0,
+        combatNowMs -
+          Math.max(
+            0,
+            Number(atNowMs) -
+              Number(resolutionClockMs)
+          )
+      );
+
     const resolution = session.completeAction({
       action: effectiveAction,
       reaction: effectiveReaction,
-      targetActionContext
+      targetActionContext,
+      completionAtMs
     });
 
     const resolvedAtMs =
