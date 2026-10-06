@@ -12,8 +12,25 @@ import {
   createCombatSession
 } from "../../src/core/combat/combat-session.js";
 import {
-  importCaptureTransferJsonV1
+  importCaptureTransferJsonV1,
+  planCaptureTransferImportV1
 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import {
+  buildCaptureEditorDatabaseV1,
+  applyCaptureTransferPlanToEditorStateV1
+} from "../../src/ui/capture-editor-file-transfer-v1.js";
+import {
+  normalizeCaptureStatRegistryV1
+} from "../../src/contracts/capture-stat-registry-v1.js";
+import {
+  normalizeCaptureProgressionRulesV1
+} from "../../src/contracts/capture-progression-rules-v1.js";
+import {
+  capturePortableNativeSkillDraftsV1
+} from "../../src/catalogs/capture-portable-native-skill-catalog-v1.js";
+import {
+  captureComplexNativeSkillDraftsV1
+} from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
@@ -348,6 +365,122 @@ test("Cendre aveuglante showcase preset preserves the latest authored V2 export"
   assert.equal(
     draft.presentation.feedback.castBurst.count,
     12
+  );
+});
+
+test("latest Cendre transfer replaces the historical skill through the canonical configuredSkills owner", async () => {
+  const registry =
+    normalizeCaptureStatRegistryV1(
+      await json(
+        "data/capture/monster-capture-stat-registry.v1.json"
+      )
+    );
+  const progressionRules =
+    normalizeCaptureProgressionRulesV1(
+      await json(
+        "data/capture/monster-capture-progression-rules.v1.json"
+      )
+    );
+
+  const configuredSkills = new Map();
+  for (
+    const draft of
+      capturePortableNativeSkillDraftsV1()
+  ) {
+    configuredSkills.set(draft.id, draft);
+  }
+  for (
+    const draft of
+      captureComplexNativeSkillDraftsV1()
+  ) {
+    if (!configuredSkills.has(draft.id)) {
+      configuredSkills.set(draft.id, draft);
+    }
+  }
+
+  const historical =
+    configuredSkills.get(
+      "cap_fire_special_1"
+    );
+  assert.ok(
+    historical,
+    "historical Cendre must exist before showcase replacement"
+  );
+
+  const configuredCreatures = new Map();
+  const transfer =
+    importCaptureTransferJsonV1(
+      await text(CENDRE_FILE)
+    );
+  const beforeSize = configuredSkills.size;
+  const currentDatabase =
+    buildCaptureEditorDatabaseV1({
+      statRegistry: registry,
+      progressionRules,
+      configuredCreatures,
+      configuredSkills,
+      metadata: {
+        producer:
+          "capture-showcase-cendre-author-v2-test"
+      }
+    });
+  const plan =
+    planCaptureTransferImportV1({
+      currentDatabase,
+      transfer,
+      mode: "replace"
+    });
+
+  assert.equal(
+    plan.action,
+    "replace-skill"
+  );
+  assert.equal(
+    plan.id,
+    "cap_fire_special_1"
+  );
+
+  applyCaptureTransferPlanToEditorStateV1({
+    plan,
+    configuredCreatures,
+    configuredSkills,
+    statRegistry: registry,
+    progressionRules
+  });
+
+  assert.equal(
+    configuredSkills.size,
+    beforeSize,
+    "replacement must not duplicate Cendre"
+  );
+
+  const active =
+    configuredSkills.get(
+      "cap_fire_special_1"
+    );
+  assert.equal(
+    active.definition.travelMs,
+    800
+  );
+  assert.equal(
+    active.definition.cooldownMs,
+    60000
+  );
+  assert.equal(
+    active.presentation.visual.travel.assetId,
+    "pack:capture:sprite-projectile-shadow-01"
+  );
+  assert.equal(
+    active.presentation.visual.impact.assetId,
+    "pack:capture:sprite-status-curse-01"
+  );
+  assert.equal(
+    active.presentation.audio.cast.assetId,
+    "gensrpg:sound:academie-01fc18a6"
+  );
+  assert.equal(
+    active.presentation.audio.impact.assetId,
+    "gensrpg:sound:genrpg-pack2-742f6521"
   );
 });
 
