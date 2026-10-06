@@ -172,6 +172,42 @@ test("live release starts attack and projectile without recomputing combat rules
   assert.equal(h.fxCalls[0].durationMs, 550);
 });
 
+test("pure persistent-zone outcome does not recoil or impact the target", async () => {
+  const h = createHarness();
+
+  const result = h.presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      actionType: "skill",
+      skillId: "firestorm",
+      outcome: "hit",
+      persistentZoneOnly: true,
+      events: [
+        {
+          type: "skill-arrive",
+          atMs: 2000,
+          skillId: "firestorm"
+        },
+        {
+          type: "hit",
+          actorId: "opponent",
+          appliedDamage: 0,
+          hpBefore: 100,
+          hpAfter: 100
+        }
+      ]
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.equal(result.outcome, "hit");
+  assert.equal(result.ko, false);
+  await result.finished;
+  assert.deepEqual(h.fxCalls, []);
+  assert.deepEqual(h.calls, []);
+});
+
 test("evaded outcome renders miss feedback without playing hit", () => {
   const h = createHarness();
 
