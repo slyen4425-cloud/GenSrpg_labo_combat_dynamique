@@ -6694,3 +6694,16 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Artwork validé par Sylvain dans la conversation avant insertion (« Parfait ») et transparence explicitement demandée/corrigée.
 - Pas de changement moteur, gameplay ou autorité : uniquement Asset Library + catalogue global + script/test de provenance.
 - Prochaine étape protocolaire : checkpoint GREEN final puis fast-forward non forcé de `global-assets`; côté labo, seul le cache-buster du catalogue sera avancé sur une branche dédiée.
+
+
+## 2026-10-06 — Trait de givre HD V1 — périmètre assets ouvert
+- Demande Sylvain : intégrer les quatre planches validées : cast 16, projectile 12, impact 12, aura givrée 16.
+- Base assets exacte : `a27e3e3e3cfbeb0920f9d496a5b7735979ebe94a`.
+- Checkpoint départ : `checkpoint/global-assets-before-frost-bolt-vfx-pack-v1-2026-10-06`.
+- Branche : `work/global-assets-frost-bolt-vfx-pack-v1-2026-10-06`.
+- Autorité : bibliothèque `global-assets` et catalogue visuel global unique.
+- Périmètre : nouveaux médias frost_bolt, sources/provenance, catalogue, build/test dédié, documentation.
+- Protégés : moteur, renderer, gameplay, collisions, dégâts, énergie, cooldowns, `main`, projectile glace générique existant.
+- Aura : 16 phases, 250 ms/phase ; les 8 dernières sont quasi fixes pour environ 2 s de maintien givré avant boucle.
+- Critère GREEN : 56 PNG RGBA 512×512, 4 atlas WebP, 4 IDs additifs, CI verte, publication non forcée de `global-assets`, checkpoint GREEN.
+- Statut : EN COURS.
