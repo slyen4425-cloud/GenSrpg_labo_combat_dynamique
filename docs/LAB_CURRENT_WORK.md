@@ -1,5 +1,99 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Expressivité combat / architecture V1
+
+Branche : `work/lab-combat-expressiveness-architecture-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-combat-expressiveness-architecture-v1-2026-10-06`
+
+SHA de base :
+`a709b6d670ff288de71b886b371b71e138640572`
+
+### Besoin produit
+
+Préparer proprement l'extension du créateur de capacités et de créatures pour supporter, sans multi-autorité :
+
+- immunité globale dégâts + états ;
+- attaque / déplacement souterrain et évasion pendant cette phase ;
+- matrice pierre-feuille-ciseaux surface / aérien / souterrain ;
+- attaques capables de toucher explicitement une cible aérienne ou souterraine ;
+- action d'esquive générique avec cooldown configurable ;
+- compétences déclarées esquivables ou non ;
+- ciblage d'un membre de réserve, positif ou négatif ;
+- effets différés après délai / condition ;
+- tempo de mobilité créature lent / normal / rapide influençant le temps d'approche sans mélanger gameplay et profil morphologique visuel.
+
+### Audit LIVE
+
+Briques déjà existantes à réutiliser :
+
+- `SkillDefinition.cooldownMs` ;
+- réactions `evadeForms / evadeApproaches` ;
+- évasion de mobilité pendant `travel` ;
+- approches `ground / aerial / teleport` ;
+- conditions d'activation ;
+- `RosterSession` propriétaire actif/réserve ;
+- profils morphologiques séparés du gameplay ;
+- Combat Runtime propriétaire unique de l'horloge.
+
+Aucune de ces briques ne doit être dupliquée.
+
+### Objectif du lot
+
+Architecture uniquement :
+
+1. définir les contrats génériques et leurs propriétaires ;
+2. définir l'ordre des micro-lots fonctionnels ;
+3. définir la compatibilité avec les capacités existantes ;
+4. documenter les règles d'autorité ;
+5. ne modifier aucun comportement runtime dans ce lot.
+
+### Propriétaires
+
+- définition d'une capacité : Skill Contract ;
+- résolution hit/evade/immune : Combat Rules / Action Resolver ;
+- horloge / phases d'action : Combat Runtime ;
+- états persistants / immunité : Status Runtime + primitives d'application existantes ;
+- roster actif/réserve : Roster Session ;
+- effets différés : futur Scheduled Effect Runtime avancé uniquement par l'horloge Combat Runtime ;
+- morphologie / idle : Creature Profile présentation ;
+- vitesse gameplay d'approche : Fighter/Creature combat config + Combat Timing ;
+- rendu souterrain/aérien : Animation Core / Renderer uniquement, sans décision gameplay.
+
+### Fichiers autorisés
+
+- documentation architecture / roadmap / current work uniquement.
+
+### Domaines protégés
+
+Aucune modification de :
+- Combat Runtime / Session / Action Resolver ;
+- SkillDefinition ;
+- Status Runtime ;
+- Roster Session ;
+- renderer / FX / collision ;
+- Tempête de flammes ;
+- données auteur ;
+- profils créatures ;
+- éditeur.
+
+### Tests prévus
+
+- CI complète inchangée ;
+- revue de diff : documentation uniquement ;
+- vérification qu'aucun nouveau propriétaire concurrent n'est proposé.
+
+### Critère de fin
+
+- architecture écrite ;
+- micro-lots ordonnés ;
+- CI GREEN ;
+- checkpoint GREEN architecture ;
+- aucun changement runtime.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : cadence de renforcement / régression V1
 
 Branche : `work/lab-firestorm-reinforce-cadence-regression-v1-2026-10-06`
