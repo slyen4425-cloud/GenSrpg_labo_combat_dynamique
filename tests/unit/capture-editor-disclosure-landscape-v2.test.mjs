@@ -105,16 +105,12 @@ test("landscape preview V2 uses dedicated compact HUD and height-driven fighter 
   );
 });
 
-test("fullscreen request targets the preview shell rather than the whole document element", async () => {
+test("landscape V2 preserves the known-working fullscreen request owner", async () => {
   const source = await text(
     "examples/dom-demo/capture-editor-v2.js"
   );
 
   assert.match(
-    source,
-    /fullscreenHost:\s*previewShell/
-  );
-  assert.doesNotMatch(
     source,
     /fullscreenHost:\s*document\.documentElement/
   );
