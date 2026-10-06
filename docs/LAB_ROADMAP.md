@@ -464,3 +464,27 @@ Sylvain valide la preview 200b42055f2063c9545db6da01d3104e18f1fee0. GREEN utilis
 
 
 Résultat combat-reference-pace-v1 : nouveau 1× équivalent à l'ancien 0.5 et 2× à l'ancien 1, paramètres natifs historiques préservés. Source 9deff685fef8275c4c1e07d0fa18ac0d7ea24fcc, CI 37222043505 : 1033/1033 ; vrai combat Griffe et revue 390 px concluants. Rapport : docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md. Nouveau GREEN utilisateur attend validation du rythme ; dernier GREEN utilisateur zone-idle-recall-fx-v1 conservé.
+
+
+## Extension — Combat expressif Monster Capture
+
+Référence :
+
+`docs/LAB_COMBAT_EXPRESSIVENESS_ARCHITECTURE_V1.md`
+
+Ordre obligatoire des micro-lots :
+
+1. Presence / reach contract ;
+2. Burrow gameplay, puis rendu visuel ;
+3. Dodge générique + `dodgeable` ;
+4. Immunity status dégâts + états négatifs ;
+5. Scheduled effects sur l'horloge Runtime existante ;
+6. Reserve targeting via Roster Session ;
+7. Creature mobility tempo côté combat ;
+8. exposition complète dans Human Editor.
+
+Chaque lot suit :
+
+`documenter -> contrat -> RED -> implémentation minimale -> vraie chaîne -> CI -> checkpoint GREEN`.
+
+Interdiction de traiter ces huit points dans un seul lot.
