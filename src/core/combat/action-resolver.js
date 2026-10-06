@@ -68,6 +68,25 @@ function statAdjustedDamageFor(
   });
 }
 
+function isPurePersistentZoneSkill(skill) {
+  const effects =
+    Array.isArray(skill?.effects)
+      ? skill.effects
+      : [];
+
+  return (
+    effects.length > 0 &&
+    effects.every(
+      (effect) =>
+        effect?.kind === "persistent_zone"
+    ) &&
+    Number(skill?.effect?.damage ?? 0) === 0 &&
+    Number(skill?.effect?.heal ?? 0) === 0 &&
+    skill?.effect?.interruptsPreparation !== true &&
+    Number(skill?.effect?.stunMs ?? 0) === 0
+  );
+}
+
 function event(type, atMs, data = {}) {
   return Object.freeze({ type, atMs, ...data });
 }
@@ -875,6 +894,8 @@ export function resolveSkillCompletion({
     targetId,
     skillId: skill.id,
     outcome,
+    persistentZoneOnly:
+      isPurePersistentZoneSkill(skill),
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
     evasionApplied:
