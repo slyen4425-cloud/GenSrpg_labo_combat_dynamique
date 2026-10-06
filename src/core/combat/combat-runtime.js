@@ -624,7 +624,14 @@ export function createCombatRuntime({
     const resolution = session.completeAction({
       action: effectiveAction,
       reaction: effectiveReaction,
-      targetActionContext
+      targetActionContext,
+      resolutionAtMs:
+        record.startedAtCombatMs +
+        (
+          effectiveReaction?.outcome === "countered"
+            ? effectiveReaction.readyAtMs
+            : effectiveAction.impactAtMs
+        )
     });
 
     const resolvedAtMs =
@@ -931,6 +938,8 @@ export function createCombatRuntime({
       action: result.action,
       reaction: null,
       startedAtClockMs: current,
+      startedAtCombatMs:
+        Number(session.snapshot().elapsedMs) || 0,
       released: false,
       resolved: false,
       resolvedAtMs: null,
