@@ -37,17 +37,52 @@ export function effectiveSkillTimingMs({
   return Math.round(base / multiplier);
 }
 
-export function effectiveApproachTimingMs({ baseMs, approachMode, statusEffects = [], atMs = 0, speedMultiplier = 1 }) {
+export function effectiveApproachTimingMs({
+  baseMs,
+  approachMode,
+  permanentPct = 0,
+  statusEffects = [],
+  atMs = 0,
+  speedMultiplier = 1
+}) {
   const base = nonNegative(baseMs, "baseMs");
   let modifierPct = 0;
-  if (["ground", "aerial", "burrow"].includes(approachMode)) {
+
+  if (
+    ["ground", "aerial", "burrow"].includes(
+      approachMode
+    )
+  ) {
+    modifierPct += finite(
+      permanentPct,
+      "permanentPct"
+    );
+
     for (const instance of statusEffects) {
-      if (instance.definition.kind === "approach_time_modifier" && isStatusEffectRuntimeInstanceActiveV1(instance, atMs)) {
-        modifierPct += instance.definition.modifierPct * instance.stacks;
+      if (
+        instance.definition.kind ===
+          "approach_time_modifier" &&
+        isStatusEffectRuntimeInstanceActiveV1(
+          instance,
+          atMs
+        )
+      ) {
+        modifierPct +=
+          instance.definition.modifierPct *
+          instance.stacks;
       }
     }
   }
-  return effectiveSkillTimingMs({ baseMs: base * Math.max(0, 1 + modifierPct / 100), speedMultiplier });
+
+  return effectiveSkillTimingMs({
+    baseMs:
+      base *
+      Math.max(
+        0,
+        1 + modifierPct / 100
+      ),
+    speedMultiplier
+  });
 }
 
 export function normalizeChargeTimeEffect(input, appliedAtMs = 0) {
