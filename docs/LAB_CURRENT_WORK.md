@@ -84,6 +84,21 @@ RED :
 7. zone résout correctement l'offset par vue ;
 8. round-trip Human Editor conserve les nouveaux champs.
 
+### Résultat technique LIVE
+
+- RED contrat : CI `37510180626` — 1186 tests, 1182 PASS, 4 FAIL ciblés ;
+- Core V9 GREEN : CI `37510523279` — 1186 / 1186 PASS ;
+- RED Human Editor : CI `37510949750` — 1190 tests, 1186 PASS, 4 FAIL ciblés ;
+- compatibilité V1-V8 protégée : aucune migration silencieuse vers V9 ;
+- `mirror_x / same / custom` exposés dans la vraie page pour Cast / Impact / Zone ;
+- status visuals dynamiques utilisent le même contrat ;
+- Cast Burst / Glow suivent le noeud Cast ;
+- Impact Flash / Burst / Smoke suivent le même offset résolu que le sprite Impact ;
+- GREEN Human Editor : CI `37511699400` — 1190 / 1190 PASS ;
+- sentinelle DOM Impact ajoutée ;
+- GREEN finale : CI `37511978095` — 1191 / 1191 PASS ;
+- rapport : `docs/LAB_SKILL_PRESENTATION_SIDE_AWARE_V1.md`.
+
 ### Backlog gameplay confirmé — Stack Mechanics V1
 
 À conserver après ce lot :
