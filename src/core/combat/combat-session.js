@@ -30,6 +30,10 @@ import {
   advanceScheduledEffectsV1
 } from "./scheduled-effect-runtime-v1.js";
 import {
+  rechargeableActionAvailabilityV1,
+  consumeRechargeableActionChargeV1
+} from "./rechargeable-action-v1.js";
+import {
   applyImmediateTacticalEffectsV1
 } from "./immediate-tactical-effects-v1.js";
 
@@ -171,6 +175,104 @@ export function createCombatSession({
     return result;
   }
 
+  function rechargeableActionAvailability(config) {
+    return rechargeableActionAvailabilityV1({
+      state,
+      ...config
+    });
+  }
+
+  function previewRechargeableReaction({
+    action,
+    reactionSkill,
+    elapsedMs,
+    recharge
+  }) {
+    const result = previewReaction({
+      action,
+      reactionSkill,
+      elapsedMs
+    });
+    if (!result.ok) {
+      return result;
+    }
+
+    const availability =
+      rechargeableActionAvailabilityV1({
+        state,
+        actorId: action.targetId,
+        actionId: recharge.actionId,
+        maxCharges: recharge.maxCharges,
+        rechargeMs: recharge.rechargeMs
+      });
+
+    if (availability.charges <= 0) {
+      return Object.freeze({
+        ok: false,
+        outcome: "no_charges",
+        state,
+        availability
+      });
+    }
+
+    return Object.freeze({
+      ...result,
+      availability
+    });
+  }
+
+  function reactWithRechargeableAction({
+    action,
+    reactionSkill,
+    elapsedMs,
+    recharge
+  }) {
+    const preview =
+      previewRechargeableReaction({
+        action,
+        reactionSkill,
+        elapsedMs,
+        recharge
+      });
+    if (!preview.ok) {
+      return preview;
+    }
+
+    const reaction = resolveReaction({
+      state,
+      action,
+      reactionSkill,
+      elapsedMs,
+      skillSpeedMultiplier:
+        normalizedSkillSpeedMultiplier,
+      battleFormat
+    });
+    if (!reaction.ok) {
+      return reaction;
+    }
+
+    const consumed =
+      consumeRechargeableActionChargeV1({
+        state: reaction.state,
+        actorId: action.targetId,
+        actionId: recharge.actionId,
+        maxCharges: recharge.maxCharges,
+        rechargeMs: recharge.rechargeMs
+      });
+    if (!consumed.ok) {
+      return consumed;
+    }
+
+    state = consumed.state;
+
+    return Object.freeze({
+      ...reaction,
+      state,
+      availability:
+        consumed.availability
+    });
+  }
+
   function completeSkill({
     action,
     reaction = null,
@@ -301,6 +403,9 @@ export function createCombatSession({
     startCommand,
     previewReaction,
     reactToSkill,
+    rechargeableActionAvailability,
+    previewRechargeableReaction,
+    reactWithRechargeableAction,
     completeSkill,
     completeCommand,
     completeAction,
