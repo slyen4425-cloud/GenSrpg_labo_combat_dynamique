@@ -490,7 +490,7 @@ test("human editor page exposes expressiveness controls without JSON or runtime 
     "data-creature-approach-time-modifier",
     "data-skill-hit-presence",
     "data-skill-dodgeable",
-    "data-skill-target-location",
+    "data-skill-location-scope",
     'value="burrow"',
     "data-skill-status-immunity-domain",
     "data-skill-scheduled-delay-seconds"
