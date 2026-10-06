@@ -1269,26 +1269,6 @@ html {
 .combat-test-team-actions { display: grid; grid-template-columns: 1fr; gap: .4rem; }
 
 
-/* Capture landscape opponent slot placement V1
-   Presentation owner only: collision, sockets and FX continue to sample
-   the actual rendered geometry. Author displayScale remains untouched. */
-.capture-preview-shell[data-landscape-required="true"]
-  .arena--coop-2v2 {
-  --arena-coop-far-primary-y: 33%;
-  --arena-coop-far-secondary-y: 34%;
-}
-
-.capture-preview-shell[data-landscape-required="true"]
-  .arena--coop-2v2 .fighter--opponent {
-  left: 77%;
-}
-
-.capture-preview-shell[data-landscape-required="true"]
-  .arena--coop-2v2 .fighter--opponent-b {
-  left: 34%;
-}
-
-
 /* Capture Game Options / Dodge V1 — layout only.
    Gameplay availability remains owned by Combat Runtime. */
 .game-option-group {
@@ -1339,3 +1319,23 @@ html {
   padding: 0.18rem 0.28rem;
   font-size: clamp(0.48rem, 1.7dvh, 0.66rem);
 }
+
+/* Capture landscape opponent slot placement V1
+   Presentation owner only: collision, sockets and FX continue to sample
+   the actual rendered geometry. Author displayScale remains untouched. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 {
+  --arena-coop-far-primary-y: 33%;
+  --arena-coop-far-secondary-y: 34%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent {
+  left: 77%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent-b {
+  left: 34%;
+}
+
