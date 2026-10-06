@@ -52,7 +52,7 @@ function percent(value) {
 const PERSISTENT_ZONE_RADIUS_SCALE = Object.freeze({
   short: 1,
   medium: 1.45,
-  long: 1.9
+  long: 2.1
 });
 
 function persistentZoneRadiusScale(radius) {
