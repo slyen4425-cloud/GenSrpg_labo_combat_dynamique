@@ -291,6 +291,7 @@ export function createDomSkillFxRenderer({
   arena,
   anchors,
   targetAnchors = anchors,
+  targetAnchorFor = null,
   sourceAnchorFor = null,
   missLabel = "RATÉ",
   presentationForSkill = () => null,
@@ -312,6 +313,9 @@ export function createDomSkillFxRenderer({
   }
   if (typeof presentationForSkill !== "function") {
     throw new TypeError("presentationForSkill must be a function");
+  }
+  if (targetAnchorFor !== null && typeof targetAnchorFor !== "function") {
+    throw new TypeError("targetAnchorFor must be a function when supplied");
   }
   if (sourceAnchorFor !== null && typeof sourceAnchorFor !== "function") {
     throw new TypeError("sourceAnchorFor must be a function when supplied");
@@ -371,6 +375,27 @@ export function createDomSkillFxRenderer({
     }
 
     return anchor(anchors, slot, "source").getBoundingClientRect();
+  }
+
+  function projectileTargetRect(slot) {
+    if (targetAnchorFor) {
+      const rect = targetAnchorFor(slot);
+      if (
+        rect &&
+        Number.isFinite(Number(rect.left)) &&
+        Number.isFinite(Number(rect.top)) &&
+        Number.isFinite(Number(rect.width)) &&
+        Number.isFinite(Number(rect.height))
+      ) {
+        return rect;
+      }
+    }
+
+    return anchor(
+      targetAnchors,
+      slot,
+      "target"
+    ).getBoundingClientRect();
   }
 
 
@@ -2327,7 +2352,7 @@ export function createDomSkillFxRenderer({
       arenaRect
     );
     const to = centerRelativeTo(
-      anchor(targetAnchors, targetSlot, "target").getBoundingClientRect(),
+      projectileTargetRect(targetSlot),
       arenaRect
     );
 
