@@ -657,7 +657,8 @@ export function resolveSkillCompletion({
   action,
   reaction = null,
   targetActionContext = null,
-  battleFormat = null
+  battleFormat = null,
+  completionAtMs = null
 }) {
   const {
     actorId,
@@ -794,15 +795,27 @@ export function resolveSkillCompletion({
       nextState = tactical.state;
       events.push(...tactical.events);
 
+      const persistentZoneAtMs =
+        completionAtMs === null
+          ? nextState.elapsedMs + impactAtMs
+          : Number(completionAtMs);
+
+      if (
+        !Number.isFinite(persistentZoneAtMs) ||
+        persistentZoneAtMs < 0
+      ) {
+        throw new RangeError(
+          "completionAtMs must be a non-negative finite number when supplied"
+        );
+      }
+
       nextState =
         applyPersistentZoneEffectsV1({
           state: nextState,
           actorId,
           targetId,
           skill,
-          atMs:
-            nextState.elapsedMs +
-            impactAtMs
+          atMs: persistentZoneAtMs
         });
     } else if (outcome === "reflected") {
       const damage =
