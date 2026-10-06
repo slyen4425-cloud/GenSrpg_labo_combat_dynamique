@@ -954,6 +954,60 @@ export async function mountCoop2v2Test({
         runtime.activeActions.some(action => action.actionType === "command" && action.command.kind !== "switch") ||
         !preview.ok;
     }
+
+    if (dodgeButton) {
+      const enabled =
+        dodgeSkill !== null &&
+        dodgeRechargeConfig !== null;
+      dodgeButton.hidden = !enabled;
+
+      if (enabled) {
+        const availability =
+          runtime.rechargeableActionAvailability({
+            actorId:
+              format.localActorId,
+            ...dodgeRechargeConfig
+          });
+
+        const preview =
+          runtime.previewRechargeableReaction(
+            dodgeSkill,
+            {
+              recharge:
+                dodgeRechargeConfig
+            }
+          );
+
+        dodgeButton.disabled =
+          !localAlive ||
+          !preview.ok ||
+          availability.charges <= 0;
+
+        if (dodgeCharges) {
+          dodgeCharges.textContent =
+            availability.charges +
+            " / " +
+            availability.maxCharges;
+        }
+
+        if (dodgeRecharge) {
+          const recharging =
+            availability.nextRechargeMs > 0;
+          dodgeRecharge.hidden =
+            !recharging;
+          dodgeRecharge.textContent =
+            recharging
+              ? "Recharge " +
+                (
+                  availability.nextRechargeMs /
+                  1000
+                ).toFixed(1) +
+                " s"
+              : "";
+        }
+      }
+    }
+
     rosterPanel?.render();
   }
 
@@ -989,6 +1043,53 @@ export async function mountCoop2v2Test({
         }
       });
     }
+  }
+
+  if (dodgeButton) {
+    listen(
+      dodgeButton,
+      "click",
+      () => {
+        if (
+          dodgeSkill === null ||
+          dodgeRechargeConfig === null
+        ) {
+          return;
+        }
+
+        const result =
+          runtime.reactWithRechargeableAction(
+            dodgeSkill,
+            {
+              recharge:
+                dodgeRechargeConfig
+            }
+          );
+
+        if (!result.ok) {
+          setStatus(
+            result.outcome ===
+              "not_dodgeable"
+              ? "Cette attaque n’est pas esquivable."
+              : result.outcome ===
+                  "no_charges"
+                ? "Aucune charge d’esquive disponible."
+                : "Esquive impossible : " +
+                  result.outcome +
+                  ".",
+            "warn"
+          );
+          renderAvailability();
+          return;
+        }
+
+        setStatus(
+          "Esquive déclenchée.",
+          "accent"
+        );
+        renderAvailability();
+      }
+    );
   }
 
   function createSkillButton(skill) {
