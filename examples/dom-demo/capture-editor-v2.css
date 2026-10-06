@@ -1287,3 +1287,55 @@ html {
   .arena--coop-2v2 .fighter--opponent-b {
   left: 34%;
 }
+
+
+/* Capture Game Options / Dodge V1 — layout only.
+   Gameplay availability remains owned by Combat Runtime. */
+.game-option-group {
+  margin-top: 0.9rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(125, 221, 239, 0.18);
+  border-radius: 0.65rem;
+}
+
+.game-option-group legend {
+  padding: 0 0.35rem;
+  font-weight: 800;
+}
+
+.combat-primary-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+.combat-dodge-action {
+  min-width: 5.4rem;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.12rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.65rem;
+}
+
+.combat-dodge-action__charges {
+  font-weight: 800;
+}
+
+.combat-dodge-action small {
+  white-space: nowrap;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .combat-primary-actions {
+  gap: 0.2rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .combat-dodge-action {
+  min-width: clamp(4.5rem, 11vw, 6.4rem);
+  padding: 0.18rem 0.28rem;
+  font-size: clamp(0.48rem, 1.7dvh, 0.66rem);
+}
