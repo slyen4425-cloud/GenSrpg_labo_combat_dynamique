@@ -31,7 +31,8 @@ export const SKILL_APPROACH_MODES = Object.freeze([
   "none",
   "ground",
   "aerial",
-  "teleport"
+  "teleport",
+  "burrow"
 ]);
 
 export const COMBAT_DISTANCES = Object.freeze(["short", "medium", "long"]);
