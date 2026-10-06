@@ -93,6 +93,12 @@ export function planSkillOutcomeFx({
     ]);
   }
 
+  if (
+    resolution.persistentZoneOnly === true
+  ) {
+    return Object.freeze([]);
+  }
+
   if (resolution.outcome === "clashed" && resolution.skillId) {
     const clashEvent = resolution.events?.find(
       (item) => item.type === "projectile-clash"
