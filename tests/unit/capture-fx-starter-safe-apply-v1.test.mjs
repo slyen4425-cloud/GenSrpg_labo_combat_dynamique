@@ -8,45 +8,37 @@ import {
 const cendre = {
   iconAssetId:
     "core:icon-skill-poison-cloud-01",
-  castAssetId:
-    "pack:capture:sprite-cast-physical-01",
-  castDisplayScale: 1,
-  castPlaybackMode: "once",
-  castOffsetX: 0,
-  castOffsetY: 0,
-  castLayerPlayer: "front",
-  castLayerOpponent: "front",
+  castAssetId: "",
   travelAssetId:
-    "pack:capture:sprite-projectile-earth-01",
-  travelDisplayScale: 2.5,
-  travelPlaybackMode: "once",
+    "pack:capture:sprite-projectile-shadow-01",
+  travelDisplayScale: 1.45,
+  travelPlaybackMode: "loop",
   travelLayerPlayer: "front",
   travelLayerOpponent: "front",
   impactAssetId:
-    "pack:capture:sprite-impact-nature-01",
-  impactDisplayScale: 2,
+    "pack:capture:sprite-status-curse-01",
+  impactDisplayScale: 1.45,
   impactPlaybackMode: "once",
-  impactDurationMs: 0,
+  impactDurationMs: 350,
   impactOffsetX: 0,
   impactOffsetY: 0,
   impactLayerPlayer: "front",
   impactLayerOpponent: "front",
   zoneAssetId: "",
   socketId: "mouth",
+  castAudioAssetId:
+    "gensrpg:sound:academie-01fc18a6",
+  impactAudioAssetId:
+    "gensrpg:sound:genrpg-pack2-742f6521",
   statusVisuals: {
     "cap_fire_special_1:1": {
-      mode: "sprite",
-      tintColor: "#e84b32",
+      mode: "tint",
+      tintColor: "#5b2067",
       tintOpacity: 0.35,
-      sprite: {
-        assetId:
-          "pack:capture:sprite-teleportation-2",
-        displayScale: 3,
-        opacity: 0.85
-      }
+      sprite: null
     }
   }
-};
+}
 
 test("starter FX enriches configured Cendre aveuglante without replacing its authored media", () => {
   const applied =
@@ -61,20 +53,16 @@ test("starter FX enriches configured Cendre aveuglante without replacing its aut
     cendre.iconAssetId
   );
   assert.equal(
-    applied.castAssetId,
-    cendre.castAssetId
-  );
-  assert.equal(
-    applied.castDisplayScale,
-    1
-  );
-  assert.equal(
     applied.travelAssetId,
     cendre.travelAssetId
   );
   assert.equal(
     applied.travelDisplayScale,
-    2.5
+    1.45
+  );
+  assert.equal(
+    applied.travelPlaybackMode,
+    "loop"
   );
   assert.equal(
     applied.impactAssetId,
@@ -82,7 +70,11 @@ test("starter FX enriches configured Cendre aveuglante without replacing its aut
   );
   assert.equal(
     applied.impactDisplayScale,
-    2
+    1.45
+  );
+  assert.equal(
+    applied.impactDurationMs,
+    350
   );
   assert.equal(
     applied.socketId,
@@ -91,6 +83,15 @@ test("starter FX enriches configured Cendre aveuglante without replacing its aut
   assert.deepEqual(
     applied.statusVisuals,
     cendre.statusVisuals
+  );
+
+  assert.equal(
+    applied.castAudioAssetId,
+    cendre.castAudioAssetId
+  );
+  assert.equal(
+    applied.impactAudioAssetId,
+    cendre.impactAudioAssetId
   );
 
   assert.equal(
