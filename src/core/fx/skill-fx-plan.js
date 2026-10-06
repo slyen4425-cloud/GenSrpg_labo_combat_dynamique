@@ -1,3 +1,29 @@
+export function isPersistentZoneOnlySkillFxV1(skill) {
+  const effects = Array.isArray(skill?.effects)
+    ? skill.effects
+    : [];
+
+  if (
+    effects.length === 0 ||
+    effects.some(
+      (effect) =>
+        effect?.kind !== "persistent_zone"
+    )
+  ) {
+    return false;
+  }
+
+  const immediate =
+    skill?.effect ?? {};
+
+  return !(
+    Number(immediate.damage) > 0 ||
+    Number(immediate.heal) > 0 ||
+    immediate.interruptsPreparation === true ||
+    Number(immediate.stunMs) > 0
+  );
+}
+
 export function planSkillPreparationFx({
   action,
   actorSlot = "player"
@@ -76,6 +102,7 @@ export function planSkillFx({
 
 export function planSkillOutcomeFx({
   resolution,
+  skill = null,
   actorSlot = "player",
   targetSlot = "opponent"
 }) {
@@ -121,6 +148,12 @@ export function planSkillOutcomeFx({
         durationMs: 520
       })
     ]);
+  }
+
+  if (
+    isPersistentZoneOnlySkillFxV1(skill)
+  ) {
+    return Object.freeze([]);
   }
 
   if (
