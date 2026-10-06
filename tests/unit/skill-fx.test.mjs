@@ -710,6 +710,94 @@ test("live projectile release carries the skill identity for presentation bindin
   );
 });
 
+test("persistent-zone-only skill does not invent projectile or target impact FX", () => {
+  const tempete = {
+    id: "cap_fire_atk_6",
+    form: "beam",
+    element: "fire",
+    effect: {
+      damage: 0,
+      heal: 0,
+      interruptsPreparation: false,
+      stunMs: 0,
+      tags: []
+    },
+    effects: [
+      {
+        kind: "persistent_zone",
+        targetScope: "all_enemies"
+      }
+    ]
+  };
+
+  assert.deepEqual(
+    planSkillReleaseFx({
+      action: {
+        travelMs: 0,
+        skill: tempete
+      },
+      actorSlot: "player",
+      targetSlot: "opponent"
+    }),
+    []
+  );
+
+  assert.deepEqual(
+    planSkillOutcomeFx({
+      resolution: {
+        ok: true,
+        outcome: "hit",
+        skillId: tempete.id
+      },
+      skill: tempete,
+      actorSlot: "player",
+      targetSlot: "opponent"
+    }),
+    []
+  );
+});
+
+test("zone plus a real immediate effect keeps normal target impact FX", () => {
+  const hybrid = {
+    id: "hybrid-zone-hit",
+    form: "beam",
+    element: "fire",
+    effect: {
+      damage: 12,
+      heal: 0,
+      interruptsPreparation: false,
+      stunMs: 0,
+      tags: []
+    },
+    effects: [
+      {
+        kind: "persistent_zone",
+        targetScope: "all_enemies"
+      }
+    ]
+  };
+
+  assert.deepEqual(
+    planSkillOutcomeFx({
+      resolution: {
+        ok: true,
+        outcome: "hit",
+        skillId: hybrid.id
+      },
+      skill: hybrid,
+      targetSlot: "opponent"
+    }),
+    [
+      {
+        type: "impact",
+        skillId: hybrid.id,
+        targetSlot: "opponent",
+        durationMs: 420
+      }
+    ]
+  );
+});
+
 test("resolved fireball hit can request a presentation-only impact FX", () => {
   assert.deepEqual(
     planSkillOutcomeFx({
