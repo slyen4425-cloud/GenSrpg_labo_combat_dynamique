@@ -20,9 +20,9 @@
       "approachMode": "none",
       "energyCost": 3,
       "preparationMs": 1500,
-      "travelMs": 400,
+      "travelMs": 800,
       "recoveryMs": 0,
-      "cooldownMs": 30000,
+      "cooldownMs": 60000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
@@ -68,7 +68,7 @@
             "kind": "stat_modifier",
             "polarity": "detrimental",
             "durationModel": "time_ms",
-            "durationMs": 8000,
+            "durationMs": 20000,
             "stacking": "refresh",
             "maxStacks": 1,
             "tags": [
@@ -88,7 +88,7 @@
             "kind": "stat_modifier",
             "polarity": "detrimental",
             "durationModel": "time_ms",
-            "durationMs": 8000,
+            "durationMs": 20000,
             "stacking": "refresh",
             "maxStacks": 1,
             "tags": [],
@@ -101,42 +101,24 @@
     },
     "presentation": {
       "id": "skill:cap_fire_special_1",
-      "version": 3,
+      "version": 8,
       "subjectType": "skill",
       "subjectId": "cap_fire_special_1",
       "visual": {
         "icon": {
           "assetId": "core:icon-skill-poison-cloud-01"
         },
-        "cast": {
-          "assetId": "pack:capture:sprite-cast-physical-01",
-          "displayScale": 1,
-          "displayScaleX": 1,
-          "displayScaleY": 1,
-          "attachment": "source",
-          "anchor": null,
-          "offsetX": 0,
-          "offsetY": 0,
-          "trigger": "preparation-start",
-          "playbackMode": "once",
-          "rotationDeg": 0,
-          "opacity": 1,
-          "layerByView": {
-            "player": "front",
-            "opponent": "front"
-          }
-        },
         "travel": {
-          "assetId": "pack:capture:sprite-projectile-earth-01",
-          "displayScale": 2.5,
+          "assetId": "pack:capture:sprite-projectile-shadow-01",
+          "displayScale": 1.45,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "trajectory",
-          "anchor": null,
+          "anchor": "mouth",
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
-          "playbackMode": "once",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
@@ -145,8 +127,8 @@
           }
         },
         "impact": {
-          "assetId": "pack:capture:sprite-impact-nature-01",
-          "displayScale": 2,
+          "assetId": "pack:capture:sprite-status-curse-01",
+          "displayScale": 1.45,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
@@ -155,6 +137,7 @@
           "offsetY": 0,
           "trigger": "impact",
           "playbackMode": "once",
+          "durationMs": 350,
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
@@ -163,17 +146,76 @@
           }
         }
       },
-      "audio": {},
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:academie-01fc18a6",
+          "volume": 1,
+          "loop": false
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-742f6521",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {
         "cap_fire_special_1:1": {
-          "mode": "sprite",
-          "tintColor": "#e84b32",
+          "mode": "tint",
+          "tintColor": "#5b2067",
           "tintOpacity": 0.35,
-          "sprite": {
-            "assetId": "pack:capture:sprite-teleportation-2",
-            "displayScale": 3,
-            "opacity": 0.85
-          }
+          "sprite": null
+        }
+      },
+      "feedback": {
+        "glow": {
+          "color": "#5b2067",
+          "strength": 0.65,
+          "radiusPx": 22
+        },
+        "impactFlash": {
+          "color": "#102457",
+          "opacity": 0.4,
+          "durationMs": 100,
+          "scale": 1.4
+        },
+        "cameraShake": {
+          "amplitudePx": 2,
+          "durationMs": 100
+        },
+        "projectileTrail": {
+          "color": "#5b2067",
+          "count": 7,
+          "lengthPx": 56,
+          "sizePx": 7,
+          "opacity": 0.8,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 12,
+          "spreadPx": 72,
+          "sizePx": 9,
+          "durationMs": 380,
+          "opacity": 0.9
+        },
+        "aftermathSmoke": {
+          "color": "#5b2067",
+          "count": 6,
+          "spreadPx": 58,
+          "sizePx": 36,
+          "risePx": 56,
+          "durationMs": 1250,
+          "opacity": 0.64
+        },
+        "castBurst": {
+          "color": "#5b2067",
+          "count": 12,
+          "spreadPx": 48,
+          "sizePx": 10,
+          "risePx": 34,
+          "durationMs": 580,
+          "opacity": 0.8
         }
       }
     }
