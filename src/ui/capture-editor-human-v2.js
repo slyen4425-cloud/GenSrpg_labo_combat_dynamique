@@ -7658,7 +7658,7 @@ export function mountEditorCardDisclosuresV1({
       card.dataset.collapsed !== "true" &&
       card.dataset.collapsed !== "false"
     ) {
-      card.dataset.collapsed = "false";
+      card.dataset.collapsed = "true";
     }
 
     title.dataset.editorCardToggle = "true";
