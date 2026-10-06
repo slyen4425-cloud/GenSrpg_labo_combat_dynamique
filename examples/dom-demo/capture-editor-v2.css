@@ -1320,6 +1320,39 @@ html {
   font-size: clamp(0.48rem, 1.7dvh, 0.66rem);
 }
 
+
+
+/* Creature Movement Group UI V1 — presentation only. */
+.creature-editor-group {
+  margin: 0.9rem 0;
+  padding: 0.85rem;
+  border: 1px solid rgba(125, 221, 239, 0.18);
+  border-radius: 0.65rem;
+}
+
+.creature-editor-group legend {
+  padding: 0 0.35rem;
+  font-weight: 800;
+}
+
+.creature-editor-group__intro {
+  margin: 0 0 0.7rem;
+  opacity: 0.78;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.creature-editor-group label small {
+  display: block;
+  margin-top: 0.25rem;
+  opacity: 0.72;
+  line-height: 1.3;
+}
+
+.creature-movement-advanced {
+  margin-top: 0.65rem;
+}
+
 /* Capture landscape opponent slot placement V1
    Presentation owner only: collision, sockets and FX continue to sample
    the actual rendered geometry. Author displayScale remains untouched. */
