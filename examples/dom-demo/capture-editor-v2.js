@@ -29,6 +29,9 @@ import {
 import {
   createPrivateAudioPreviewControllerV1
 } from "../../src/ui/private-audio-preview-controller-v1.js";
+import {
+  createCapturePreviewDisplayModeV1
+} from "../../src/ui/capture-preview-display-mode-v1.js";
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
   new URL("../../data/profiles/quadruped.profile.json", import.meta.url),
@@ -79,6 +82,9 @@ const editorStatus = root?.querySelector(
 const arenaSelect = root?.querySelector(
   "[data-test-arena]"
 );
+const landscapeMode = root?.querySelector(
+  "[data-preview-landscape-mode]"
+);
 
 if (
   !root ||
@@ -88,7 +94,8 @@ if (
   !testButton ||
   !backButton ||
   !editorStatus ||
-  !arenaSelect
+  !arenaSelect ||
+  !landscapeMode
 ) {
   throw new Error("Structure Capture Editor preview incomplète");
 }
@@ -118,6 +125,15 @@ const audioPreviewController =
     root,
     resolveAudioAsset:
       privateAudioRuntimeAssetV1
+  });
+
+const previewDisplayMode =
+  createCapturePreviewDisplayModeV1({
+    documentRef: document,
+    screenRef: globalThis.screen,
+    fullscreenHost:
+      document.documentElement,
+    previewShell
   });
 
 let visualContext = null;
@@ -395,22 +411,33 @@ setMode("editor");
 testButton.addEventListener("click", async () => {
   testButton.disabled = true;
 
+  const displayModePromise =
+    previewDisplayMode.enter({
+      enabled: landscapeMode.checked
+    });
+
   try {
     await visualContextPromise;
+    await displayModePromise;
     await session.launch();
   } catch (error) {
+    await previewDisplayMode.leave();
     editorStatus.textContent =
       "Impossible de lancer le combat : " + error.message;
     editorStatus.dataset.tone = "error";
     setMode("editor");
   } finally {
-    testButton.disabled = visualContext === null || session.previewActive;
+    testButton.disabled =
+      visualContext === null ||
+      session.previewActive;
   }
 });
 
-backButton.addEventListener("click", () => {
+backButton.addEventListener("click", async () => {
   session.returnToEditor();
-  testButton.disabled = visualContext === null;
+  await previewDisplayMode.leave();
+  testButton.disabled =
+    visualContext === null;
 });
 
 window.addEventListener(
@@ -418,6 +445,7 @@ window.addEventListener(
   () => {
     audioPreviewController.dispose();
     session.dispose();
+    void previewDisplayMode.dispose();
   },
   { once: true }
 );
