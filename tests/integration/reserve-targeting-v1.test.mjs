@@ -10,9 +10,6 @@ import {
 import {
   normalizeSkillDefinition
 } from "../../src/contracts/skill-definition.js";
-import {
-  normalizeStatusEffectV1
-} from "../../src/contracts/status-effect-v1.js";
 
 function fighter(id, overrides = {}) {
   return {
@@ -220,19 +217,29 @@ test("reserve target respects shield and immunity through the existing effect ow
   const { roster } = harness();
 
   assert.equal(
-    roster.applyStatusToReserveForTest({
-      teamId: "opponent",
-      memberId: "enemy-b",
-      status: normalizeStatusEffectV1({
-        id: "bench-immunity",
-        kind: "immunity",
-        polarity: "beneficial",
-        durationMs: 5000,
-        stacking: "refresh",
-        domains: ["damage"]
-      }),
-      sourceActorId: "opponent",
-      sourceSkillId: "bench-protect"
+    roster.useSkillOnTarget({
+      actorId: "opponent",
+      targetRef: reserve("opponent", "enemy-b"),
+      skill: skill({
+        id: "bench-protect",
+        relations: ["ally"],
+        energyCost: 0,
+        cooldownMs: 0,
+        effects: [
+          {
+            kind: "apply_status",
+            targetScope: "target",
+            status: {
+              id: "bench-immunity",
+              kind: "immunity",
+              polarity: "beneficial",
+              durationMs: 5000,
+              stacking: "refresh",
+              domains: ["damage"]
+            }
+          }
+        ]
+      })
     }).ok,
     true
   );
