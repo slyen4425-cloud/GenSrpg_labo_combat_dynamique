@@ -1,3 +1,4 @@
+import { normalizeCaptureGameOptionsV1 } from "./capture-game-options-v1.js";
 import { normalizeRecallPreparationMs } from "./combat-command-definition.js";
 
 export const CAPTURE_COMBAT_EXPORT_SCHEMA =
@@ -342,6 +343,11 @@ export function normalizeCaptureCombatExportV1(input) {
     ),
     ...(battleRaw.recallPreparationMs === undefined ? {} : {
       recallPreparationMs: normalizeRecallPreparationMs(battleRaw.recallPreparationMs, "battle.recallPreparationMs")
+    }),
+    ...(battleRaw.gameOptions === undefined ? {} : {
+      gameOptions: normalizeCaptureGameOptionsV1(
+        battleRaw.gameOptions
+      )
     })
   });
 
