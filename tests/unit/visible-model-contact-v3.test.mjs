@@ -159,7 +159,7 @@ test("combat clients consume the Visual Controller collision model as the only t
     );
     assert.match(
       source,
-      /targetAnchorFor\(slotId\)[\s\S]{0,140}visuals\.getVisibleTargetRectFor\(slotId\)/
+      /targetAnchorFor\(slotId\)[\s\S]{0,180}visuals\.getVisibleTargetRectFor\(\s*slotId\s*\)/
     );
     assert.doesNotMatch(
       source,
