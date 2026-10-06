@@ -1154,6 +1154,9 @@ function visualSlot(assetId, {
   displayScaleY = 1,
   offsetX = 0,
   offsetY = 0,
+  offsetMode = null,
+  opponentOffsetX = null,
+  opponentOffsetY = null,
   durationMs = null,
   playbackMode = "once"
 }) {
@@ -1194,6 +1197,46 @@ function visualSlot(assetId, {
     }
   }
 
+  const normalizedOffsetX =
+    finiteNumber(
+      offsetX,
+      "Décalage horizontal FX"
+    );
+  const normalizedOffsetY =
+    finiteNumber(
+      offsetY,
+      "Décalage vertical FX"
+    );
+
+  let sideOffset = {};
+  if (offsetMode != null && offsetMode !== "") {
+    if (
+      !["same", "mirror_x", "custom"].includes(
+        offsetMode
+      )
+    ) {
+      throw new RangeError(
+        "Mode de décalage visuel invalide: " +
+          offsetMode
+      );
+    }
+    sideOffset = {
+      offsetMode
+    };
+    if (offsetMode === "custom") {
+      sideOffset.opponentOffsetX =
+        finiteNumber(
+          opponentOffsetX,
+          "Décalage horizontal adversaire"
+        );
+      sideOffset.opponentOffsetY =
+        finiteNumber(
+          opponentOffsetY,
+          "Décalage vertical adversaire"
+        );
+    }
+  }
+
   return {
     assetId: id,
     attachment,
@@ -1210,14 +1253,9 @@ function visualSlot(assetId, {
     },
     playbackMode,
     ...(durationMs == null ? {} : { durationMs }),
-    offsetX: finiteNumber(
-      offsetX,
-      "Décalage horizontal FX"
-    ),
-    offsetY: finiteNumber(
-      offsetY,
-      "Décalage vertical FX"
-    ),
+    offsetX: normalizedOffsetX,
+    offsetY: normalizedOffsetY,
+    ...sideOffset,
     rotationDeg: 0,
     opacity: 1
   };
@@ -1761,19 +1799,30 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      feedback?.projectileTrail
-        ? 8
-        : feedback?.castBurst
-          ? 7
-          : feedback?.aftermathSmoke
-            ? 6
-            : feedback?.impactBurst
-              ? 5
-              : hasFeedback
-                ? 4
-                : hasStatusVisuals
-                  ? 3
-                  : 2,
+      (
+        [cast, impact, persistentZone].some(
+          (slot) =>
+            slot?.offsetMode != null
+        ) ||
+        Object.values(statusVisuals).some(
+          (status) =>
+            status?.sprite?.offsetMode != null
+        )
+      )
+        ? 9
+        : feedback?.projectileTrail
+          ? 8
+          : feedback?.castBurst
+            ? 7
+            : feedback?.aftermathSmoke
+              ? 6
+              : feedback?.impactBurst
+                ? 5
+                : hasFeedback
+                  ? 4
+                  : hasStatusVisuals
+                    ? 3
+                    : 2,
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
