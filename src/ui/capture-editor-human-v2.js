@@ -2327,6 +2327,8 @@ export function humanSkillEditorFieldsFromDraftV1(
     effectTags:
       [...(definition.effect?.tags ?? [])],
     presentation: {
+      bindingVersion:
+        presentation.version ?? null,
       ...skillSpriteControlFieldsFromVisualsV1(visual),
       statusVisuals:
         presentation.statusVisuals ?? {},
