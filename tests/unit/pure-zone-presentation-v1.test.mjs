@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  planSkillOutcomeFx
+  planSkillOutcomeFx,
+  planSkillReleaseFx
 } from "../../src/core/fx/skill-fx-plan.js";
 import {
   createCombatResolutionPresenter
@@ -86,6 +87,24 @@ function presenterHarness() {
     fxCalls
   };
 }
+
+test("Tempête-like beam release with zero travel never creates an invisible projectile plan", () => {
+  assert.deepEqual(
+    planSkillReleaseFx({
+      action: {
+        travelMs: 0,
+        skill: {
+          id: "cap_fire_atk_6",
+          form: "beam",
+          element: "fire"
+        }
+      },
+      actorSlot: "player",
+      targetSlot: "opponent"
+    }),
+    []
+  );
+});
 
 test("pure persistent-zone activation does not fabricate a target impact FX", () => {
   assert.deepEqual(
