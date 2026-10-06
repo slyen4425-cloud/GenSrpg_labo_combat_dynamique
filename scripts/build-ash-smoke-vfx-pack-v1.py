@@ -172,7 +172,7 @@ def write_pack_metadata(results: dict) -> None:
         }
 
     with (PACK / "manifest.csv").open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["sequence", "frame", "file", "width", "height", "sha256"])
+        writer = csv.DictWriter(f, fieldnames=["sequence", "frame", "file", "width", "height", "sha256"], lineterminator="\\n")
         writer.writeheader()
         writer.writerows(rows)
 
