@@ -206,6 +206,49 @@ function opaqueAt(mask, unitPoint) {
 }
 
 const boundarySampleCache = new WeakMap();
+const opaqueBoundsCache = new WeakMap();
+
+function opaqueUnitBounds(mask) {
+  if (!validMask(mask)) {
+    return null;
+  }
+
+  const cached = opaqueBoundsCache.get(mask);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  let minX = mask.width;
+  let minY = mask.height;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let y = 0; y < mask.height; y += 1) {
+    for (let x = 0; x < mask.width; x += 1) {
+      if (mask.opaque[y * mask.width + x] !== 1) {
+        continue;
+      }
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+  }
+
+  if (maxX < minX || maxY < minY) {
+    opaqueBoundsCache.set(mask, null);
+    return null;
+  }
+
+  const bounds = Object.freeze({
+    left: minX / mask.width,
+    top: minY / mask.height,
+    right: (maxX + 1) / mask.width,
+    bottom: (maxY + 1) / mask.height
+  });
+  opaqueBoundsCache.set(mask, bounds);
+  return bounds;
+}
 
 function modelUnitToScreen(frame, unitPoint) {
   if (
@@ -234,6 +277,46 @@ function modelUnitToScreen(frame, unitPoint) {
       originY +
       (Number(frame.axisX.y) - originY) * u +
       (Number(frame.axisY.y) - originY) * v
+  });
+}
+
+export function visibleModelOpaqueRect(frame) {
+  if (!frame || !validMask(frame.mask)) {
+    return null;
+  }
+
+  const unitBounds = opaqueUnitBounds(frame.mask);
+  if (!unitBounds) {
+    return null;
+  }
+
+  const corners = [
+    { u: unitBounds.left, v: unitBounds.top },
+    { u: unitBounds.right, v: unitBounds.top },
+    { u: unitBounds.left, v: unitBounds.bottom },
+    { u: unitBounds.right, v: unitBounds.bottom }
+  ]
+    .map((point) => modelUnitToScreen(frame, point))
+    .filter(Boolean);
+
+  if (corners.length !== 4) {
+    return null;
+  }
+
+  const xs = corners.map((point) => Number(point.x));
+  const ys = corners.map((point) => Number(point.y));
+  const left = Math.min(...xs);
+  const right = Math.max(...xs);
+  const top = Math.min(...ys);
+  const bottom = Math.max(...ys);
+
+  return Object.freeze({
+    left,
+    top,
+    width: right - left,
+    height: bottom - top,
+    right,
+    bottom
   });
 }
 
@@ -872,6 +955,9 @@ export function createDomVisibleModelCollisionModel({
     clear,
     refreshFromImage,
     snapshot,
+    visibleRect() {
+      return visibleModelOpaqueRect(snapshot());
+    },
     get ready() {
       return mask !== null;
     },
