@@ -61,6 +61,19 @@ RED :
 - expiration peut être prolongée indépendamment ;
 - `refresh` conserve sa sémantique distincte de remise à zéro.
 
+### Résultat technique LIVE
+
+- RED confirmé sur le HEAD de reprise : CI `37466929197` — 1124 tests, 1123 PASS, 1 FAIL ciblé ;
+- défaut exact : `reinforce` repoussait `nextTickAtMs` de 1000 à 1600 ms lors d'un renforcement à 600 ms ;
+- correction minimale dans le propriétaire unique Persistent Zone Runtime : `reinforce` conserve désormais le tick déjà planifié ;
+- `refresh` conserve sa sémantique distincte de remise à zéro ;
+- aucune fusion / cherry-pick de la branche historique `action-cadence` ;
+- vraie séquence Runtime Tempête mise à jour pour protéger la phase de tick ;
+- CI fonctionnelle GREEN `37467275885` — 1125 / 1125 PASS ;
+- rapport : `docs/LAB_FIRESTORM_REINFORCE_CADENCE_REGRESSION_V1.md` ;
+- configuration auteur, FX, renderer, collision, géométrie et Health Delta inchangés ;
+- validation smartphone toujours requise avant GREEN utilisateur.
+
 ### Critère de fin
 
 - RED reproductible sur ce HEAD ;
