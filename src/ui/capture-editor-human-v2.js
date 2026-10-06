@@ -376,6 +376,12 @@ function humanTacticalStatusToContractV1(
     );
   }
 
+  if (output.kind === "immunity") {
+    output.domains = stableIds(
+      status.domains
+    );
+  }
+
   return output;
 }
 
@@ -410,6 +416,34 @@ export function buildHumanTacticalSkillEffectsV1(
       effect.targetScope,
       "Cible d’effet tactique"
     );
+
+    if (kind === "scheduled_effect") {
+      const delayMs =
+        effect.trigger?.delayMs != null
+          ? finiteNumber(
+              effect.trigger.delayMs,
+              "Délai de l’effet programmé"
+            )
+          : humanTacticalSecondsToMsV1(
+              effect.delaySeconds
+            );
+
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        trigger: {
+          type: "after_ms",
+          delayMs
+        },
+        effects:
+          buildHumanTacticalSkillEffectsV1(
+            effect.effects ?? [],
+            {
+              defaultDamageChannel
+            }
+          )
+      });
+    }
 
     if (kind === "persistent_zone") {
       const tickEffect =
