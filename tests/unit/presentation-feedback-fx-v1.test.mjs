@@ -132,3 +132,58 @@ test("impact: auto duration uses the real sequence and invalid visual durations 
     assert.throws(() => buildHumanSkillDraftV1(fields({ impactDurationMs })), /durée|duration/i);
   }
 });
+
+
+test("V9 opponent impact keeps flash on the same custom side-aware point as the impact sprite", () => {
+  const draft = buildHumanSkillDraftV1(
+    fields({
+      impactOffsetX: 18,
+      impactOffsetY: -12,
+      impactOffsetMode: "custom",
+      impactOpponentOffsetX: -30,
+      impactOpponentOffsetY: 9,
+      impactFlashColor: "#ffffff",
+      impactFlashOpacity: 0.7,
+      impactFlashDurationMs: 120,
+      impactFlashScale: 1.4
+    })
+  );
+
+  assert.equal(
+    draft.presentation.version,
+    9
+  );
+
+  const { renderer, nodes } =
+    harness(draft);
+
+  renderer.play({
+    type: "impact",
+    skillId: draft.id,
+    targetSlot: "opponent",
+    durationMs: 420
+  });
+
+  const flash = nodes.find(
+    (node) =>
+      node.dataset.skillFx ===
+      "impact-flash"
+  );
+  const impact = nodes.find(
+    (node) =>
+      node.dataset.skillFx ===
+      "impact"
+  );
+
+  assert.ok(flash);
+  assert.ok(impact);
+
+  // opponent center is (520, 120);
+  // custom V9 offset is (-30, +9).
+  assert.equal(flash.style.left, "490px");
+  assert.equal(flash.style.top, "129px");
+  assert.equal(impact.style.left, "490px");
+  assert.equal(impact.style.top, "129px");
+
+  renderer.dispose();
+});
