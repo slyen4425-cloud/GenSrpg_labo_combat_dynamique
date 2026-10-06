@@ -1,5 +1,69 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Tempête de flammes : cadence pendant les actions V1
+
+Branche : `work/lab-firestorm-action-cadence-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-firestorm-action-cadence-v1-2026-10-06`
+
+SHA de base :
+`9463b6f3539bc8c7f195e8c9558fb576dd7c820d`
+
+### Retour utilisateur
+
+Même après correction de l’autorité `long`, Sylvain observe encore des séquences où les ticks semblent s’arrêter quand le joueur ou l’ennemi agit.
+
+### Audit supplémentaire
+
+Le scheduler Runtime ne s’arrête pas explicitement pendant une action :
+- chaque tick appelle `advanceSessionToClock()` avant `settleDue()` ;
+- les zones sont donc avancées avant la résolution des actions.
+
+Deux défauts structurels restent toutefois à vérifier / corriger :
+
+1. `reinforce` reconstruit actuellement la zone avec un nouveau `nextTickAtMs = atMs + tickIntervalMs`, ce qui peut repousser un tick déjà prévu ;
+2. le chemin Runtime différé appelle `resolveSkillCompletion` après que `state.elapsedMs` a déjà été avancé jusqu’à l’impact, mais `applyPersistentZoneEffectsV1` reçoit encore `state.elapsedMs + impactAtMs`, ce qui peut décaler l’horloge initiale de la zone une seconde fois.
+
+### Garanties TDD à établir
+
+1. une action ordinaire du joueur ne suspend pas les ticks ;
+2. une action ordinaire de l’ennemi ne suspend pas les ticks ;
+3. chaque tick réel produit le même `onHealthDelta` ;
+4. le premier tick de Tempête Runtime arrive exactement `tickIntervalMs` après son impact réel ;
+5. un renforcement short→medium→long conserve la cadence déjà engagée et ne repousse pas le prochain tick ;
+6. le mode distinct `refresh` conserve son comportement de rafraîchissement ;
+7. aucune modification du renderer / feedback n’est autorisée tant que les PV Runtime ne sont pas démontrés corrects.
+
+### Owners
+
+- cadence / reactivation : `persistent-zone-runtime-v1` ;
+- instant absolu de résolution Runtime : Combat Runtime → Combat Session → Action Resolver ;
+- feedback : lecture seule via `combatHealthDeltaEventsV1`.
+
+### Protégé
+
+Ne pas modifier :
+- renderer FX ;
+- sprite / scale / offsets de Tempête ;
+- géométrie visuelle ;
+- collisions ;
+- dégâts de base ;
+- durée / tickInterval du JSON utilisateur ;
+- autres capacités.
+
+### Critère de fin
+
+- reproductions avec actions intercalées ;
+- RED ciblé si défaut présent ;
+- correction au propriétaire unique ;
+- CI complète ;
+- checkpoint GREEN technique ;
+- preview smartphone dédiée ;
+- validation utilisateur avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : autorité portée longue V1
 
 Branche : `work/lab-firestorm-long-authority-v1-2026-10-06`
