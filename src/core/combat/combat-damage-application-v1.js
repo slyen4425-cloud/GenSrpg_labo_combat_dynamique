@@ -7,6 +7,9 @@ import {
 import {
   isStatusEffectRuntimeInstanceActiveV1
 } from "./status-effect-instance-v1.js";
+import {
+  combatProtectionForIncomingV1
+} from "./combat-protection-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -55,6 +58,27 @@ export function applyCombatDamageV1({
     nextState,
     targetActorId
   );
+  const protection =
+    combatProtectionForIncomingV1({
+      state: nextState,
+      targetActorId,
+      domain: "damage",
+      atMs: time
+    });
+
+  if (protection.protected) {
+    return Object.freeze({
+      state: nextState,
+      requestedDamage: requested,
+      absorbedByShield: 0,
+      immuneDamage: requested,
+      appliedDamage: 0,
+      hpBefore: target.hp,
+      hpAfter: target.hp,
+      protectingStatusIds:
+        protection.protectingStatusIds
+    });
+  }
   const statuses = [
     ...(target.statusEffects ?? [])
   ];
@@ -130,6 +154,7 @@ export function applyCombatDamageV1({
     state: nextState,
     requestedDamage: requested,
     absorbedByShield,
+    immuneDamage: 0,
     appliedDamage,
     hpBefore,
     hpAfter
