@@ -4,6 +4,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "damage_over_time",
   "heal_over_time",
   "shield",
+  "immunity",
   "immobilize",
   "silence",
   "stun",
@@ -40,6 +41,12 @@ export const STATUS_EFFECT_V1_DAMAGE_MODES =
     "fixed"
   ]);
 
+export const STATUS_EFFECT_V1_IMMUNITY_DOMAINS =
+  Object.freeze([
+    "damage",
+    "negative_status"
+  ]);
+
 const KIND_SET = new Set(STATUS_EFFECT_V1_KINDS);
 const POLARITY_SET = new Set(
   STATUS_EFFECT_V1_POLARITIES
@@ -55,6 +62,9 @@ const STAT_MODIFIER_MODE_SET = new Set(
 );
 const DAMAGE_MODE_SET = new Set(
   STATUS_EFFECT_V1_DAMAGE_MODES
+);
+const IMMUNITY_DOMAIN_SET = new Set(
+  STATUS_EFFECT_V1_IMMUNITY_DOMAINS
 );
 
 const COMMON_FIELDS = new Set([
@@ -96,6 +106,10 @@ const FIELDS_BY_KIND = Object.freeze({
   shield: new Set([
     ...COMMON_FIELDS,
     "amount"
+  ]),
+  immunity: new Set([
+    ...COMMON_FIELDS,
+    "domains"
   ]),
   immobilize: COMMON_FIELDS,
   silence: COMMON_FIELDS,
@@ -399,6 +413,27 @@ export function normalizeStatusEffectV1(input) {
       value.amount,
       "StatusEffectV1.amount"
     );
+  }
+
+  if (kind === "immunity") {
+    const domains = stringArray(
+      value.domains,
+      "StatusEffectV1.domains"
+    );
+    if (domains.length === 0) {
+      throw new TypeError(
+        "StatusEffectV1.domains must contain at least one immunity domain"
+      );
+    }
+    for (const domain of domains) {
+      if (!IMMUNITY_DOMAIN_SET.has(domain)) {
+        throw new RangeError(
+          "Unsupported StatusEffectV1.immunity domain: " +
+            domain
+        );
+      }
+    }
+    output.domains = domains;
   }
 
   return Object.freeze(output);
