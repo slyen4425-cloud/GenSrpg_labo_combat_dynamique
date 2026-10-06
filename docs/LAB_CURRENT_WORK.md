@@ -1,5 +1,100 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Scheduled Effects V1
+
+Branche : `work/lab-scheduled-effects-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-scheduled-effects-v1-2026-10-06`
+
+SHA de base :
+`47091e6c88de6136167b3af85a838f86f0d66f75`
+
+### Objectif
+
+Permettre une capacité lancée maintenant dont les effets se résolvent plus tard, exemple Comète à +30 s, sans second timer :
+
+- nouveau `SkillEffectV1.kind = scheduled_effect` ;
+- trigger V1 : `after_ms` + `delayMs` ;
+- effets imbriqués immédiats uniquement ;
+- état programmé stocké dans Combat State ;
+- échéance calculée en temps combat absolu ;
+- progression uniquement via `CombatSession.advanceMs` et l'horloge Combat Runtime existante ;
+- résolution via les mêmes primitives d'effets que les capacités immédiates.
+
+### Autorité
+
+- définition : SkillEffectV1 ;
+- file d'attente : Scheduled Effect Runtime ;
+- temps : `state.elapsedMs` / Combat Runtime existant ;
+- dégâts / soins / status : immediate tactical effects existants ;
+- aucun `setTimeout` gameplay.
+
+### Compatibilité / limites V1
+
+Les effets imbriqués autorisés sont les effets immédiats existants :
+- damage ;
+- heal ;
+- energy_restore ;
+- energy_drain ;
+- apply_status ;
+- cleanse ;
+- dispel.
+
+Interdit dans un `scheduled_effect` V1 :
+- autre `scheduled_effect` ;
+- `persistent_zone` imbriquée.
+
+Ces extensions pourront être ajoutées plus tard dans le même owner si besoin.
+
+### Fichiers autorisés
+
+- SkillEffect contract ;
+- Combat State pour la file programmée ;
+- nouveau Scheduled Effect Runtime ;
+- Immediate Tactical Effects pour enregistrer l'effet programmé ;
+- Combat Session pour avancer cette file avec l'horloge existante ;
+- Status Runtime uniquement si un timestamp d'application explicite est requis ;
+- tests ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime ;
+- timers navigateur ;
+- Damage Calculation ;
+- cooldown ;
+- Presence / Reach ;
+- Burrow ;
+- Dodge ;
+- Immunity ;
+- renderer / FX ;
+- Tempête ;
+- roster ;
+- éditeur.
+
+### TDD prévu
+
+RED :
+1. contrat `scheduled_effect after_ms` normalisé ;
+2. aucun effet avant échéance ;
+3. dégâts exactement à l'échéance ;
+4. une seule résolution même avec plusieurs `advanceMs` ;
+5. un status programmé utilise son vrai timestamp d'échéance ;
+6. immunité active à l'échéance protège normalement ;
+7. aucune API timer supplémentaire.
+
+### Critère de fin
+
+- RED ciblé ;
+- un seul owner de programmation ;
+- même horloge combat ;
+- CI complète GREEN ;
+- checkpoint GREEN.
+
+---
+
 ## Chantier actif — 2026-10-06 — Immunité dégâts / états négatifs V1
 
 Branche : `work/lab-immunity-status-v1-2026-10-06`
