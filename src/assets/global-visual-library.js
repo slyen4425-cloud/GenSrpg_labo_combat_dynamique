@@ -1,6 +1,6 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
-const REVISION = "2026-10-05-v14-fireball-2-projectile-scale-art-v2";
+const REVISION = "2026-10-06-v17-frost-bolt-vfx-pack-v1";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,

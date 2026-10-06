@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { demoPresentationAssets } from "../../examples/dom-demo/demo-assets.js";
+import { demoPresentationAssets } from "../../examples/dom-demo/demo-assets.js";\nimport { GLOBAL_VISUAL_LIBRARY } from "../../src/assets/global-visual-library.js";
 
 const EXPECTED_SKILL_ICONS = Object.freeze({
   fireball: Object.freeze({
