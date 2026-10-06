@@ -17,6 +17,15 @@ export function resolutionHasImmediateTargetEffectV1(
     ? resolution.events
     : [];
 
+  if (
+    resolution?.outcome === "hit" &&
+    !events.some(
+      (event) => event?.type === "hit"
+    )
+  ) {
+    return true;
+  }
+
   for (const event of events) {
     if (event?.type === "hit") {
       const hasExplicitDamageMetrics =
