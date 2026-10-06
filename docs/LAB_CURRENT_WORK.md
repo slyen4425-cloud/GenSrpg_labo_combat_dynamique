@@ -1,5 +1,100 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Alignement FX joueur / socket bouche V1
+
+Branche : `work/lab-player-fx-anchor-alignment-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-player-fx-anchor-alignment-v1-2026-10-06`
+
+SHA de base :
+`05c1976b58505448aa0c9619361d6d5399dd0786`
+
+### Retour utilisateur
+
+Pour Cendre aveuglante et ses FX projectile/glow/trail :
+
+- côté ennemi : position jugée parfaite ;
+- côté joueur : ensemble visuel trop bas.
+
+### Diagnostic démontré
+
+Le renderer FX est unique et commun aux deux camps.
+
+Chaîne actuelle :
+
+`SkillPresentationBinding.travel.anchor = mouth`
+→ `capture-export-to-native-visual-source-v1`
+→ `fxAnchors.player = socket.back`
+→ `fxAnchors.opponent = socket.front`
+→ `visuals.getFxAnchorFor(...)`
+→ renderer FX unique.
+
+Pour le Loup volcanique actif :
+
+- ennemi/front : `mouth = { x: 0.15, y: 0.53 }` ;
+- joueur/back : `mouth = { x: 0.82, y: 0.52 }`.
+
+Le visuel dos montre la bouche plus haute que ce Y actuel. Le retour utilisateur confirme la dérive uniquement sur cette vue.
+
+### Correction ciblée proposée
+
+Conserver exactement l’ancre ennemi/front validée.
+
+Ajuster uniquement le Y joueur/back :
+
+- avant : `{ x: 0.82, y: 0.52 }`
+- essai V1 : `{ x: 0.82, y: 0.47 }`
+
+Soit environ 16 px vers le haut sur le canvas 320 px du visuel.
+
+Cette valeur est un réglage visuel provisoire à valider en preview smartphone. Aucun renderer, glow, trail ou moteur de projectile n’est modifié.
+
+### Owner
+
+- donnée socket : fiche créature Showcase existante ;
+- conversion view-specific : adaptateur existant, inchangé ;
+- renderer FX : protégé, inchangé.
+
+### Fichiers autorisés
+
+- `data/capture/showcase/crea-loup.capture-creature-transfer-v1.json`
+- tests sentinelles Loup / socket
+- documentation du chantier
+
+### Protégé / interdit
+
+Ne pas modifier :
+- `src/adapters/renderer/dom-skill-fx.js` ;
+- FX Core ;
+- projectile trail validé ;
+- glow global ;
+- collision ;
+- dégâts ;
+- Combat Runtime / Session ;
+- Cendre aveuglante ;
+- socket front/opponent `0.15 / 0.53` ;
+- position X joueur `0.82`.
+
+### TDD prévu
+
+RED :
+1. le front/opponent reste exactement `0.15 / 0.53` ;
+2. le back/player doit devenir `0.82 / 0.47` ;
+3. l’adaptateur doit continuer à mapper player→back et opponent→front ;
+4. Cendre doit toujours référencer `anchor = mouth`.
+
+### Critère de fin
+
+- RED démontré sur l’ancien Y `0.52` ;
+- modification d’une seule donnée socket ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- preview combinant aussi l’ergonomie/paysage précédente ;
+- validation visuelle utilisateur avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Ergonomie éditeur / combat plein écran paysage V1
 
 Branche : `work/lab-editor-disclosure-landscape-v1-2026-10-06`
