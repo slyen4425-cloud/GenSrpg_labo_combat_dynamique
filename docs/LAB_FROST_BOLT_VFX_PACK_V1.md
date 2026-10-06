@@ -42,3 +42,14 @@ La sentinelle d'arène est rendue dépendante de `GLOBAL_VISUAL_LIBRARY.revision
 ## Protégé
 Aucun changement FX Core, Animation Core, renderer, gameplay, Combat Rules, dégâts, collision, énergie, cooldown, HUD/esquive ou capacité existante.
 Aucun merge sur `main`.
+
+
+## Validation labo
+- premier candidat : `7f0d05a85b89f89bed96454626f8b671f20df523`
+- CI `37531175715` : rouge uniquement sur une erreur de syntaxe introduite dans la sentinelle `demo-presentation-assets.test.mjs`
+- correction ciblée : `449b1be627aca8875439751d6d7aea520c752743`
+- CI complète : `37531479805` — **1196/1196**, 0 échec
+
+Le correctif ne modifie ni le comportement des arènes ni le moteur : la sentinelle compare désormais le paramètre de cache à l'autorité `GLOBAL_VISUAL_LIBRARY.revision`, sans valeur historique figée.
+
+État du lot : **GREEN technique**, prêt pour checkpoint final. Aucun merge sur `main`.
