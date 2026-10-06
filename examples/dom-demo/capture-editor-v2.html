@@ -205,59 +205,68 @@
           <p class="note" data-creator-visual-state data-tone="info">Aucun visuel personnel importé.</p>
         </div>
 
-        <label>Style de position
-          <select data-creature-profile>
-            <option value="biped">Bipède</option>
-            <option value="quadruped" selected>Quadrupède</option>
-            <option value="serpentine">Serpent / rampant</option>
-            <option value="flying">Volant</option>
-            <option value="massive">Massif / golem</option>
-          </select>
-        </label>
+        <fieldset class="creature-editor-group creature-movement-group" data-creature-movement-group>
+          <legend>Mouvement</legend>
+          <p class="creature-editor-group__intro">Choisis d’abord la manière dont la créature se déplace visuellement, puis son rythme gameplay.</p>
 
-        <div class="grid two">
-          <label>Tempo de déplacement
-            <select data-creature-mobility-preset>
-              <option value="very-fast">Très rapide</option>
-              <option value="fast">Rapide</option>
-              <option value="normal" selected>Normal</option>
-              <option value="slow">Lent</option>
-              <option value="very-slow">Très lent</option>
-              <option value="custom">Personnalisé</option>
-            </select>
-          </label>
-          <label>Variation du temps d’approche (%)
+          <div class="grid two">
+            <label>Archétype d’animation
+              <select data-creature-profile>
+                <option value="biped">Bipède</option>
+                <option value="quadruped" selected>Quadrupède</option>
+                <option value="serpentine">Serpent / rampant</option>
+                <option value="flying">Volant</option>
+                <option value="massive">Massif / golem</option>
+              </select>
+              <small>Définit l’idle et le style de déplacement visuel.</small>
+            </label>
+
+            <label>Tempo de déplacement
+              <select data-creature-mobility-preset>
+                <option value="very-fast">Très rapide</option>
+                <option value="fast">Rapide</option>
+                <option value="normal" selected>Normal</option>
+                <option value="slow">Lent</option>
+                <option value="very-slow">Très lent</option>
+                <option value="custom">Personnalisé</option>
+              </select>
+              <small>Modifie le temps réel nécessaire pour rejoindre la cible.</small>
+            </label>
+          </div>
+
+          <label class="creature-movement-advanced">Réglage avancé — variation du temps d’approche (%)
             <input
               type="number"
               step="1"
               value="0"
               data-creature-approach-time-modifier
             >
+            <small>Négatif = plus rapide · positif = plus lent. Sol, aérien et souterrain utilisent la même valeur.</small>
           </label>
-        </div>
-        <p class="note">
-          Ce réglage est indépendant du profil Bipède / Quadrupède / Volant. Négatif = plus rapide, positif = plus lent. Il agit sur les déplacements au sol, aériens et souterrains sans modifier le temps auteur de la capacité.
-        </p>
+        </fieldset>
 
-        <label>Taille en combat <strong data-creature-scale-value>1.00×</strong>
-          <input
-            data-creature-display-scale
-            type="number"
-            min="0.25"
-            step="0.05"
-            value="1"
-          >
-        </label>
-        <label class="check"><input type="checkbox" data-creature-custom-views>Personnaliser la taille et le placement par vue</label>
-        <div class="grid two" data-creature-view-settings hidden>
-          <label>Taille — joueur (dos)<input type="number" min="0.25" step="0.05" value="1" data-creature-player-scale></label>
-          <label>Taille — adversaire (face)<input type="number" min="0.25" step="0.05" value="1" data-creature-opponent-scale></label>
-          <label>Décalage X — joueur (px)<input type="number" step="5" value="0" data-creature-player-x></label>
-          <label>Décalage X — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-x></label>
-          <label>Décalage Y — joueur (px)<input type="number" step="5" value="0" data-creature-player-y></label>
-          <label>Décalage Y — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-y></label>
-        </div>
-        <p class="note">Sans personnalisation, les deux vues utilisent la taille commune. Les réglages par vue ajustent les images face/dos ; la perspective des déplacements reste automatique.</p>
+        <fieldset class="creature-editor-group creature-placement-group" data-creature-placement-group>
+          <legend>Taille et placement en combat</legend>
+          <label>Taille commune <strong data-creature-scale-value>1.00×</strong>
+            <input
+              data-creature-display-scale
+              type="number"
+              min="0.25"
+              step="0.05"
+              value="1"
+            >
+          </label>
+          <label class="check"><input type="checkbox" data-creature-custom-views>Personnaliser la taille et le placement par vue</label>
+          <div class="grid two" data-creature-view-settings hidden>
+            <label>Taille — joueur (dos)<input type="number" min="0.25" step="0.05" value="1" data-creature-player-scale></label>
+            <label>Taille — adversaire (face)<input type="number" min="0.25" step="0.05" value="1" data-creature-opponent-scale></label>
+            <label>Décalage X — joueur (px)<input type="number" step="5" value="0" data-creature-player-x></label>
+            <label>Décalage X — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-x></label>
+            <label>Décalage Y — joueur (px)<input type="number" step="5" value="0" data-creature-player-y></label>
+            <label>Décalage Y — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-y></label>
+          </div>
+          <p class="note">Sans personnalisation, les deux vues utilisent la taille commune. Les réglages par vue ajustent les images face/dos ; la perspective des déplacements reste automatique.</p>
+        </fieldset>
       </article>
 
       <article class="card">
