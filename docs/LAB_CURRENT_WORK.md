@@ -1,5 +1,101 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Zone-only outcome FX V1
+
+Branche : `work/lab-zone-only-outcome-fx-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-zone-only-outcome-fx-v1-2026-10-06`
+
+SHA de base :
+`cab67439b310f0e8ffe54bd8b806d664de827752`
+
+### Retour utilisateur
+
+Tempête de flammes est désormais fonctionnelle côté cadence/ticks, mais son activation donne encore l’impression qu’un projectile invisible rejoint la cible avant un Impact.
+
+### Diagnostic LIVE
+
+Configuration auteur Tempête :
+- `form = beam` ;
+- `preparationMs = 2000` ;
+- `travelMs = 0` ;
+- aucun `visual.travel` ;
+- aucun `visual.impact` ;
+- seul effet gameplay : `persistent_zone` ;
+- `feedback.impactBurst` existe encore dans le binding V8.
+
+Pipeline :
+- `planSkillReleaseFx` ne crée un projectile que pour `form = projectile` : aucun projectile n’est donc réellement planifié ;
+- `planSkillOutcomeFx` crée aujourd’hui un `impact` générique pour tout résultat `hit` ;
+- `dom-skill-fx` sait jouer `impactBurst` même lorsqu’aucun sprite Impact n’est configuré.
+
+Le faux Impact cible est donc produit par le plan FX générique d’Outcome.
+
+### Correction prévue
+
+Le présentateur garde en mémoire la définition de la compétence réellement relâchée, uniquement pour sa présentation.
+
+`planSkillOutcomeFx` reçoit cette définition et distingue :
+
+- compétence uniquement `persistent_zone`, sans effet immédiat direct → aucun Impact cible générique ;
+- projectile / contact / compétence avec effet immédiat réel → comportement Impact existant inchangé ;
+- clash / miss → comportements existants inchangés.
+
+Tempête conserve :
+- sa préparation auteur de 2000 ms ;
+- son cast audio / castBurst ;
+- l’apparition de sa zone au moment sémantique correct ;
+- sa cadence et ses dégâts déjà validés.
+
+### Owners
+
+- décision de FX d’Outcome : `src/core/fx/skill-fx-plan.js` ;
+- conservation de la compétence active pour le plan de présentation : `combat-resolution-presenter.js` ;
+- Combat Runtime / Session / dégâts / zone Runtime : protégés.
+
+### Fichiers autorisés
+
+- `src/core/fx/skill-fx-plan.js`
+- `src/adapters/renderer/combat-resolution-presenter.js`
+- tests unitaires FX / presenter
+- documentation
+
+### Protégé / interdit
+
+Ne pas modifier :
+- Tempête JSON auteur ;
+- préparation 2000 ms ;
+- Combat Runtime / Session ;
+- Persistent Zone Runtime ;
+- cadence des ticks ;
+- dégâts ;
+- renderer DOM FX ;
+- sprite / scale / offsets ;
+- géométrie / collision ;
+- autres impacts valides.
+
+### TDD prévu
+
+RED :
+1. Tempête zone-only ne planifie aucun projectile Release ;
+2. Tempête zone-only ne planifie aucun Impact Outcome ;
+3. un projectile normal conserve son Impact ;
+4. une compétence avec zone + effet immédiat conserve son Impact ;
+5. le presenter n’émet ni Impact FX ni audio Impact pour Tempête ;
+6. le cache de présentation est nettoyé après outcome / interruption.
+
+### Critère de fin
+
+- RED démontré ;
+- aucune modification gameplay ;
+- CI complète GREEN ;
+- checkpoint technique ;
+- preview exacte ;
+- validation smartphone utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : cadence pendant les actions V1
 
 Branche : `work/lab-firestorm-action-cadence-v1-2026-10-06`
