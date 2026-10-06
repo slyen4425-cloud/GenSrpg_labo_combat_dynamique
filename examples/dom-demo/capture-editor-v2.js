@@ -132,7 +132,7 @@ const previewDisplayMode =
     documentRef: document,
     screenRef: globalThis.screen,
     fullscreenHost:
-      document.documentElement,
+      previewShell,
     previewShell
   });
 
