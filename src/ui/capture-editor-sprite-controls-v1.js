@@ -181,7 +181,7 @@ export function appendStatusSpriteControlsV1(container, sprite = {}) {
     } else if (key === "opponentOffsetY") {
       value =
         sprite.opponentOffsetY ??
-        Number(sprite.offsetY) || 0;
+        (Number(sprite.offsetY) || 0);
     } else {
       value = sprite[key] ?? fallback;
     }
