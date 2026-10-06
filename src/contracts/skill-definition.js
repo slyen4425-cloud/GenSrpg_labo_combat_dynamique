@@ -54,6 +54,11 @@ export const SKILL_TARGET_RELATIONS = Object.freeze([
   "any"
 ]);
 
+export const SKILL_TARGET_LOCATIONS = Object.freeze([
+  "active",
+  "reserve"
+]);
+
 export const SKILL_ACTIVATION_REQUIREMENT_MODES =
   Object.freeze([
     "all",
@@ -81,6 +86,8 @@ const PRESENCE_SET =
   new Set(COMBAT_PRESENCE_STATES);
 const EVASION_WINDOW_SET = new Set(SKILL_EVASION_WINDOWS);
 const TARGET_RELATION_SET = new Set(SKILL_TARGET_RELATIONS);
+const TARGET_LOCATION_SET =
+  new Set(SKILL_TARGET_LOCATIONS);
 const ACTIVATION_REQUIREMENT_MODE_SET =
   new Set(SKILL_ACTIVATION_REQUIREMENT_MODES);
 const ACTIVATION_REQUIREMENT_TYPE_SET =
@@ -300,6 +307,17 @@ export function normalizeSkillDefinition(input) {
     throw new TypeError("targetRelations must contain at least one relation");
   }
 
+  const targetLocations = stringArray(
+    input.targetLocations ?? ["active"],
+    "targetLocations",
+    TARGET_LOCATION_SET
+  );
+  if (targetLocations.length === 0) {
+    throw new TypeError(
+      "targetLocations must contain at least one location"
+    );
+  }
+
   const hitPresenceStates =
     input.hitPresenceStates == null
       ? null
@@ -424,6 +442,7 @@ export function normalizeSkillDefinition(input) {
       input.interruptibleDuringPreparation !== false,
     allowedDistances,
     targetRelations,
+    targetLocations,
     hitPresenceStates,
     dodgeable: booleanOrDefault(
       input.dodgeable,
