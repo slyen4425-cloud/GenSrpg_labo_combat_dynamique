@@ -1,5 +1,82 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Tempête de flammes : autorité portée longue V1
+
+Branche : `work/lab-firestorm-long-authority-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-firestorm-long-authority-v1-2026-10-06`
+
+SHA de base :
+`96ec3d4c513dd82060f7e8e6fd0abfd955634d2b`
+
+### Retour utilisateur
+
+Tempête fonctionne globalement mieux, mais au niveau maximum certains ticks semblent encore manquer. Le symptôme est intermittent : parfois `-5`, parfois rien, alors que la zone est renforcée au maximum.
+
+### Diagnostic
+
+Le contrat gameplay historique protège déjà :
+- activation 1 → short ;
+- activation 2 → medium ;
+- activation 3 → long ;
+- `long` doit couvrir le camp adverse même sans attaque.
+
+Cependant `relationInRadius()` dans `persistent-zone-runtime-v1.js` consulte actuellement la relation visuelle avant la règle canonique `radius === "long"`.
+
+En preview réelle, `visibleZones` existe toujours. Une relation visuelle `false` peut donc écraser la garantie gameplay `long`, notamment si la silhouette idle se trouve juste au bord du visuel de zone pendant un tick.
+
+Cela explique le comportement intermittent : la géométrie visuelle peut osciller autour de la frontière alors que le niveau 3 est censé être une garantie de portée.
+
+### Correction prévue
+
+- la règle gameplay `long` devient prioritaire pour les cibles valides ennemies ;
+- short/medium conservent la géométrie visuelle existante ;
+- aucun changement de scale, de sprite, de durée, de tick, de dégâts ou de feedback ;
+- le renderer continue de fournir la géométrie, mais ne peut plus réduire la portée canonique `long`.
+
+### Propriétaire
+
+- décision d’appartenance : `persistent-zone-runtime-v1.js` uniquement ;
+- géométrie : renderer existant, inchangé ;
+- feedback : Combat Runtime existant, inchangé.
+
+### Fichiers autorisés
+
+- `src/core/combat/persistent-zone-runtime-v1.js`
+- tests persistent-zone dédiés
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Tempête JSON utilisateur ;
+- renderer FX ;
+- CSS ;
+- Combat Session ;
+- calcul des dégâts ;
+- health feedback ;
+- sprite/scale/offset de zone ;
+- short/medium semantics.
+
+### TDD prévu
+
+RED :
+1. une zone `long` doit infliger son tick même si `visibleZones` mesure momentanément la cible hors ellipse ;
+2. le même scénario doit émettre un `onHealthDelta` de 5 ;
+3. short/medium restent autorisés à répondre false lorsque la géométrie visible est hors zone.
+
+### Critère de fin
+
+- RED démontré ;
+- changement minimal d’ordre de décision ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- preview smartphone ;
+- validation utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : export créateur restauré V1
 
 Branche : `work/lab-firestorm-user-config-v1-2026-10-06`
