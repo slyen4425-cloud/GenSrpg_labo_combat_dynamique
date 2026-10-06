@@ -1,5 +1,81 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Esquive générique / dodgeable V1
+
+Branche : `work/lab-generic-dodge-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-generic-dodge-v1-2026-10-06`
+
+SHA de base :
+`55d1b1d5f9c5e4863e4b985d6ab9db5a44e99623`
+
+### Objectif
+
+Rendre l'action d'esquive réellement générique sans second moteur :
+
+- une compétence entrante peut déclarer `dodgeable: true / false` ;
+- valeur par défaut = `true` pour préserver les réactions historiques ;
+- une réaction d'esquive acceptée annule toute la résolution immédiate de l'attaque, donc dégâts et effets négatifs ne sont pas appliqués ;
+- une attaque `dodgeable: false` refuse l'esquive sans dépenser énergie, usage ou cooldown ;
+- l'esquive utilise le cooldown natif de SkillDefinition déjà possédé par Combat State ;
+- le contrat doit couvrir les formes / approches actuelles, y compris `burrow`, sans nom de compétence spécial.
+
+### Audit LIVE
+
+- `resolveReaction` consulte déjà `skillCooldownRemainingMs` ;
+- une réaction acceptée commit déjà `withSkillCooldown` + `withSkillUseRecorded` ;
+- outcome `evaded` empêche déjà le chemin `hit`, donc dégâts et effets tactiques/status ne sont pas appliqués ;
+- aucun timer ou owner de cooldown supplémentaire n'est nécessaire.
+
+### Propriétaires
+
+- esquivable/non esquivable : SkillDefinition ;
+- compatibilité de réaction : Action Resolver ;
+- cooldown : Combat State existant ;
+- horloge : Combat Runtime existant ;
+- bouton/UI : hors périmètre de ce lot.
+
+### Fichiers autorisés
+
+- `src/contracts/skill-definition.js` ;
+- `src/core/combat/action-resolver.js` ;
+- données génériques Dodge uniquement si nécessaire, sans valeur auteur inventée ;
+- tests dédiés ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- système cooldown ;
+- dégâts / status ;
+- Presence / Reach ;
+- Burrow ;
+- renderer / FX ;
+- Tempête ;
+- roster ;
+- éditeur.
+
+### TDD prévu
+
+RED :
+1. SkillDefinition normalise `dodgeable`, true par défaut et false explicitement ;
+2. une attaque dodgeable est évitée par une réaction Dodge et n'applique ni dégâts ni status négatif ;
+3. le cooldown de Dodge est commit par le owner existant et interdit une seconde esquive jusqu'à expiration ;
+4. une attaque non dodgeable refuse la réaction avant toute dépense/cooldown ;
+5. une autre réaction non-esquive reste disponible selon ses propres règles.
+
+### Critère de fin
+
+- RED ciblé ;
+- aucun nouveau cooldown / timer ;
+- compatibilité legacy ;
+- CI complète GREEN ;
+- checkpoint GREEN.
+
+---
+
 ## Chantier actif — 2026-10-06 — Burrow gameplay V1
 
 Branche : `work/lab-burrow-gameplay-v1-2026-10-06`
