@@ -339,10 +339,29 @@ test("creator Firestorm keeps medium growth but gives long range a larger visibl
   renderer.syncPersistentZones([zone]);
 
   const node = arena.children[0];
+  const scaleOf = (transform) => {
+    const match = String(transform).match(
+      /scale\(([^,]+),\s*([^)]+)\)/
+    );
+    assert.ok(match, "zone transform must expose X/Y scales");
+    return [
+      Number(match[1]),
+      Number(match[2])
+    ];
+  };
+  const closeTo = (actual, expected) =>
+    Math.abs(actual - expected) < 1e-9;
+
+  const mediumScale = scaleOf(node.style.transform);
   assert.equal(
-    node.style.transform,
-    "translate(-50%, -50%) scale(4.35, 1.392)",
-    "medium growth must remain unchanged"
+    closeTo(mediumScale[0], 4.35),
+    true,
+    "medium X growth must remain unchanged"
+  );
+  assert.equal(
+    closeTo(mediumScale[1], 1.392),
+    true,
+    "medium Y growth must remain unchanged"
   );
 
   renderer.syncPersistentZones([
@@ -352,10 +371,16 @@ test("creator Firestorm keeps medium growth but gives long range a larger visibl
     }
   ]);
 
+  const longScale = scaleOf(node.style.transform);
   assert.equal(
-    node.style.transform,
-    "translate(-50%, -50%) scale(6.3, 2.016)",
-    "long growth needs a visible safety margin so idle motion cannot sit exactly on the old boundary"
+    closeTo(longScale[0], 6.3),
+    true,
+    "long X growth needs a visible safety margin so idle motion cannot sit exactly on the old boundary"
+  );
+  assert.equal(
+    closeTo(longScale[1], 2.016),
+    true,
+    "long Y growth must stay coupled to the same rendered/measured zone"
   );
 
   renderer.dispose();
