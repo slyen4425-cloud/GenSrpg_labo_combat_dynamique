@@ -75,6 +75,18 @@ RED :
 - preview smartphone ;
 - validation utilisateur.
 
+### Résultat technique
+
+- RED : CI `37436894198` ;
+- correction Runtime : `long` est évalué avant toute réduction par la géométrie visuelle ;
+- short / medium gardent la relation visuelle ;
+- sentinelle `onHealthDelta` : un tick long produit bien `damage: 5` ;
+- ancienne sentinelle contradictoire déplacée sur `medium`, où la frontière visuelle reste pertinente ;
+- CI fonctionnelle après nettoyage : `37439964865` — 1119 / 1119 PASS ;
+- aucun changement du JSON utilisateur Tempête, du renderer, du feedback ou du calcul de dégâts.
+
+État : GREEN technique, validation smartphone encore requise.
+
 ---
 
 ## Chantier actif — 2026-10-06 — Tempête de flammes : export créateur restauré V1
