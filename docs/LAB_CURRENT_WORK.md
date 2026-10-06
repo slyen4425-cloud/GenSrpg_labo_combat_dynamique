@@ -1,5 +1,36 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Décision produit — 2026-10-06 — Capture smartphone paysage définitif
+
+Référence :
+
+`docs/LAB_CAPTURE_LANDSCAPE_PRODUCT_DECISION_V1.md`
+
+Décision validée par Sylvain :
+
+- Monster Capture sur smartphone utilise désormais le paysage comme orientation de gameplay de référence ;
+- cette règle vaut pour Exploration ET Combat ;
+- le plein écran paysage du combat n'est plus considéré comme un simple test provisoire ;
+- l'éditeur reste responsive et n'est pas forcé en paysage ;
+- en combat, la scène 16:9 et le fallback `Tourne ton téléphone` restent les mécanismes de référence ;
+- l'Exploration devra appliquer le même contrat dans son propre dépôt / lot, sans créer de dépendance runtime entre laboratoires.
+
+Nouveau micro-lot UI ajouté à la suite du plan :
+
+`Capture enemy landscape placement V1`
+
+Objectif :
+- déplacer légèrement le camp ennemi vers le haut et vers la droite en paysage smartphone ;
+- 1v1 + 2v2 ;
+- passer par le propriétaire de layout/slots existant ;
+- aucun changement de scale auteur ;
+- aucun offset FX/projectile pour masquer le placement ;
+- collision / sockets doivent suivre naturellement la géométrie rendue.
+
+Ce micro-lot reste séparé de Reserve Targeting / Creature Mobility / Human Editor conformément à la charte.
+
+---
+
 ## Chantier actif — 2026-10-06 — Scheduled Effects V1
 
 Branche : `work/lab-scheduled-effects-v1-2026-10-06`
