@@ -146,9 +146,35 @@ test("native test button allows a retry after invalid fields and a failed previe
     onModeChange: next => { mode = next; }
   });
   // Execute the page's own handlers against the real Preview Session.
+  const landscapeMode = { checked: true };
+  const displayCalls = [];
+  const previewDisplayMode = {
+    enter({ enabled }) {
+      displayCalls.push(["enter", enabled]);
+      return Promise.resolve({
+        enabled,
+        status: enabled
+          ? "rotation-gate"
+          : "disabled"
+      });
+    },
+    leave() {
+      displayCalls.push(["leave"]);
+      return Promise.resolve({
+        status: "released"
+      });
+    }
+  };
+
   runInNewContext(source.slice(start, end), {
-    testButton, backButton, session, editorStatus,
-    visualContext: {}, visualContextPromise: Promise.resolve({}),
+    testButton,
+    backButton,
+    session,
+    editorStatus,
+    landscapeMode,
+    previewDisplayMode,
+    visualContext: {},
+    visualContextPromise: Promise.resolve({}),
     setMode: next => { mode = next; }
   });
   const refused = listeners.test();
@@ -158,6 +184,10 @@ test("native test button allows a retry after invalid fields and a failed previe
   assert.equal(mode, "editor");
   assert.equal(mounts, 0);
   assert.equal(editorStatus.textContent, "Configuration invalide");
+  assert.deepEqual(
+    displayCalls.slice(0, 2),
+    [["enter", true], ["leave"]]
+  );
 
   valid = true;
   await listeners.test();
@@ -167,6 +197,10 @@ test("native test button allows a retry after invalid fields and a failed previe
   listeners.back();
   assert.equal(mode, "editor");
   assert.equal(testButton.disabled, false);
+  assert.equal(
+    displayCalls.at(-1)[0],
+    "leave"
+  );
   adapterFails = true;
   await listeners.test();
   assert.equal(testButton.disabled, false);
