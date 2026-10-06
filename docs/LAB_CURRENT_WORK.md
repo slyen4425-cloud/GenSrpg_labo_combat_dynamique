@@ -6687,4 +6687,10 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Alpha : les 56 frames ont des pixels transparents et non transparents ; extrema globaux 0..255 sur les quatre séquences.
 - Catalogue unique : 102 assets / 55 sprites ; quatre IDs `pack:capture:sprite-ash-smoke-*`, aucun ID préexistant remplacé.
 - Le CSV final contient 57 lignes réelles (header + 56 frames) ; le bootstrap temporaire et son workflow ont été supprimés du payload final.
-- CI complète sur le présent commit documentaire : EN ATTENTE. Publication de `global-assets` interdite avant succès.
+- CI complète du payload + test sentinelle : **GREEN technique**, run `37456501645` — **207/207**, 0 échec. Publication `global-assets` autorisée après ce compte-rendu final.
+
+
+### Fumée cendre HD V1 — clôture
+- Artwork validé par Sylvain dans la conversation avant insertion (« Parfait ») et transparence explicitement demandée/corrigée.
+- Pas de changement moteur, gameplay ou autorité : uniquement Asset Library + catalogue global + script/test de provenance.
+- Prochaine étape protocolaire : checkpoint GREEN final puis fast-forward non forcé de `global-assets`; côté labo, seul le cache-buster du catalogue sera avancé sur une branche dédiée.
