@@ -175,6 +175,7 @@ test("slow permanent mobility tempo increases approach duration", () => {
         ...slow,
         id: "target",
         approachTimeModifierPct: 0,
+        maxEnergy: 10,
         initialEnergy: 10
       }
     ]
