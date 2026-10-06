@@ -1,3 +1,77 @@
+const IMMEDIATE_TARGET_EVENT_TYPES = new Set([
+  "status-applied",
+  "status-cleansed",
+  "status-dispelled",
+  "heal",
+  "energy-restored",
+  "energy-drained",
+  "charge-interrupt"
+]);
+
+export function resolutionHasImmediateTargetEffectV1(
+  resolution
+) {
+  const events = Array.isArray(
+    resolution?.events
+  )
+    ? resolution.events
+    : [];
+
+  for (const event of events) {
+    if (event?.type === "hit") {
+      if (
+        Number(event.baseDamage) > 0 ||
+        Number(event.damage) > 0 ||
+        Number(event.appliedDamage) > 0 ||
+        Number(event.absorbedByShield) > 0 ||
+        event.tacticalEffect === true
+      ) {
+        return true;
+      }
+      continue;
+    }
+
+    if (
+      event?.type === "heal" ||
+      event?.type === "energy-restored" ||
+      event?.type === "energy-drained"
+    ) {
+      if (
+        Number(event.applied) > 0 ||
+        Number(event.requested) > 0
+      ) {
+        return true;
+      }
+      continue;
+    }
+
+    if (
+      event?.type === "status-cleansed" ||
+      event?.type === "status-dispelled"
+    ) {
+      if (
+        Array.isArray(
+          event.removedStatusIds
+        ) &&
+        event.removedStatusIds.length > 0
+      ) {
+        return true;
+      }
+      continue;
+    }
+
+    if (
+      IMMEDIATE_TARGET_EVENT_TYPES.has(
+        event?.type
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function planSkillPreparationFx({
   action,
   actorSlot = "player"
@@ -125,7 +199,13 @@ export function planSkillOutcomeFx({
 
   if (
     ["hit", "blocked", "reflected", "immune"].includes(resolution.outcome) &&
-    resolution.skillId
+    resolution.skillId &&
+    (
+      resolution.outcome !== "hit" ||
+      resolutionHasImmediateTargetEffectV1(
+        resolution
+      )
+    )
   ) {
     return Object.freeze([
       Object.freeze({
