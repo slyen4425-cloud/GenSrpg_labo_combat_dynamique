@@ -108,6 +108,16 @@ Teleport reste instantané/spécifique et n'est pas influencé par la mobilité 
 8. Roster recall/summon conserve la valeur ;
 9. skill.travelMs source reste inchangé.
 
+### Résultat technique LIVE
+
+- RED : CI `37487800215` — 1163 tests, 1158 PASS, 5 FAIL ciblés ;
+- champ unique `approachTimeModifierPct` propagé Draft → Adapter → Fighter → Timing ;
+- permanent + status temporaires partagent le même calcul ;
+- ground / aerial / burrow concernés ; teleport inchangé ;
+- harness Showcase corrigé sans assouplir le validateur ;
+- CI GREEN `37488768025` — 1163 / 1163 PASS ;
+- rapport : `docs/LAB_CREATURE_MOBILITY_TEMPO_V1.md`.
+
 ### Critère de fin
 
 - un seul champ autoritaire ;
