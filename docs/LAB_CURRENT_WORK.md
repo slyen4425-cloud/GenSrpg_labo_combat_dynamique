@@ -74,6 +74,17 @@ RED :
 5. un buff bénéfique passe malgré l'immunité ;
 6. expiration de l'immunité rétablit les dégâts/statuts via l'horloge existante.
 
+### Résultat technique LIVE
+
+- RED : CI `37475806081` — 1144 tests, 1139 PASS, 5 FAIL ciblés ;
+- nouveau status `immunity` avec domaines `damage / negative_status` ;
+- helper unique `combat-protection-v1` sans dépendance circulaire ;
+- dégâts directs, DoT et autres consommateurs de Damage Application héritent de l'immunité ;
+- detrimental status bloqué ; beneficial status autorisé ;
+- feedback `status-immune` sans faux `status-applied` ni faux interrupt ;
+- CI fonctionnelle `37476221683` — 1144 / 1144 PASS ;
+- rapport : `docs/LAB_IMMUNITY_STATUS_V1.md`.
+
 ### Critère de fin
 
 - RED ciblé ;
