@@ -7,6 +7,10 @@ import {
   buildHumanCreatureDraftV2,
   buildHumanCreatureDraftV3,
   buildHumanSkillDraftV1,
+  humanSkillEditorFieldsFromDraftV1,
+  buildHumanTacticalSkillEffectsV1,
+  humanMobilityTempoPresetValueV1,
+  humanMobilityTempoPresetIdV1,
   buildHumanLoadoutV1,
   buildHumanBattleSetupV1,
   buildHumanEditorExportV2,
@@ -304,6 +308,199 @@ test("human skill controls produce real SkillDefinition including cooldown", () 
     draft.presentation.visual.travel.anchor,
     "mouth"
   );
+});
+
+
+test("human creature mobility presets write one authoritative approachTimeModifierPct", () => {
+  assert.equal(
+    humanMobilityTempoPresetValueV1("very-fast"),
+    -40
+  );
+  assert.equal(
+    humanMobilityTempoPresetValueV1("fast"),
+    -20
+  );
+  assert.equal(
+    humanMobilityTempoPresetValueV1("normal"),
+    0
+  );
+  assert.equal(
+    humanMobilityTempoPresetValueV1("slow"),
+    25
+  );
+  assert.equal(
+    humanMobilityTempoPresetValueV1("very-slow"),
+    50
+  );
+  assert.equal(
+    humanMobilityTempoPresetIdV1(-20),
+    "fast"
+  );
+  assert.equal(
+    humanMobilityTempoPresetIdV1(-17),
+    "custom"
+  );
+
+  const draft = buildHumanCreatureDraftV3({
+    ...creatureFields(),
+    combat: {
+      ...creatureFields().combat,
+      approachTimeModifierPct:
+        humanMobilityTempoPresetValueV1(
+          "very-fast"
+        )
+    }
+  });
+
+  assert.equal(
+    draft.combat.approachTimeModifierPct,
+    -40
+  );
+  assert.equal(
+    draft.presentation.profileId,
+    "quadruped"
+  );
+});
+
+test("human skill builder round-trips presence, burrow, dodgeable and reserve targeting", () => {
+  const draft = buildHumanSkillDraftV1({
+    ...skillFields(),
+    approachMode: "burrow",
+    hitPresenceStates: [
+      "surface",
+      "underground"
+    ],
+    dodgeable: false,
+    targetLocations: [
+      "active",
+      "reserve"
+    ]
+  });
+
+  assert.equal(
+    draft.definition.approachMode,
+    "burrow"
+  );
+  assert.deepEqual(
+    draft.definition.hitPresenceStates,
+    ["surface", "underground"]
+  );
+  assert.equal(
+    draft.definition.dodgeable,
+    false
+  );
+  assert.deepEqual(
+    draft.definition.targetLocations,
+    ["active", "reserve"]
+  );
+
+  const fields =
+    humanSkillEditorFieldsFromDraftV1(
+      draft
+    );
+
+  assert.equal(fields.approachMode, "burrow");
+  assert.deepEqual(
+    fields.hitPresenceStates,
+    ["surface", "underground"]
+  );
+  assert.equal(fields.dodgeable, false);
+  assert.deepEqual(
+    fields.targetLocations,
+    ["active", "reserve"]
+  );
+});
+
+test("human tactical status exposes generic immunity domains", () => {
+  const effects =
+    buildHumanTacticalSkillEffectsV1([
+      {
+        kind: "apply_status",
+        targetScope: "target",
+        status: {
+          id: "total-immunity",
+          kind: "immunity",
+          polarity: "beneficial",
+          durationSeconds: 3,
+          stacking: "refresh",
+          domains: [
+            "damage",
+            "negative_status"
+          ]
+        }
+      }
+    ]);
+
+  assert.equal(
+    effects[0].status.kind,
+    "immunity"
+  );
+  assert.deepEqual(
+    effects[0].status.domains,
+    ["damage", "negative_status"]
+  );
+});
+
+test("human tactical effects expose scheduled after_ms effects without timers", () => {
+  const effects =
+    buildHumanTacticalSkillEffectsV1([
+      {
+        kind: "scheduled_effect",
+        targetScope: "target",
+        delaySeconds: 30,
+        effects: [
+          {
+            kind: "damage",
+            targetScope: "target",
+            amount: 25,
+            channel: "fire"
+          }
+        ]
+      }
+    ]);
+
+  assert.equal(
+    effects[0].kind,
+    "scheduled_effect"
+  );
+  assert.deepEqual(
+    effects[0].trigger,
+    {
+      type: "after_ms",
+      delayMs: 30000
+    }
+  );
+  assert.equal(
+    effects[0].effects[0].kind,
+    "damage"
+  );
+});
+
+test("human editor page exposes expressiveness controls without JSON or runtime authority", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  for (const marker of [
+    "data-creature-mobility-preset",
+    "data-creature-approach-time-modifier",
+    "data-skill-hit-presence",
+    "data-skill-dodgeable",
+    "data-skill-target-location",
+    'value="burrow"',
+    "data-skill-status-immunity-domain",
+    "data-skill-scheduled-delay-seconds"
+  ]) {
+    assert.equal(
+      html.includes(marker),
+      true,
+      "human editor must expose " + marker
+    );
+  }
 });
 
 test("human loadout exposes four standard slots plus one ultimate slot", () => {
