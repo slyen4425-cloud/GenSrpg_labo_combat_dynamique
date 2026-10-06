@@ -98,7 +98,7 @@ function zoneSkill() {
         radius: "long",
         durationMs: 5000,
         tickIntervalMs: 1000,
-        reactivation: "keep",
+        reactivation: "refresh",
         maxActivations: 1,
         radiusGrowthSteps: 0,
         tickEffect: {
