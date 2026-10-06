@@ -41,6 +41,15 @@ RED statique :
 - taille / overrides doivent être dans `data-creature-placement-group` ;
 - les sélecteurs historiques doivent rester présents une seule fois.
 
+### Résultat technique LIVE
+
+- RED : CI `37504548865` — 1183 tests, 1181 PASS, 2 FAIL ciblés ;
+- bloc `Mouvement` ajouté sans changer les sélecteurs ;
+- `Taille et placement en combat` séparé visuellement ;
+- aucun JS fonctionnel modifié ;
+- CI GREEN `37504786727` — 1183 / 1183 PASS ;
+- rapport : `docs/LAB_CREATURE_MOVEMENT_GROUP_UI_V1.md`.
+
 ### Critère de fin
 
 - HTML/CSS uniquement ;
