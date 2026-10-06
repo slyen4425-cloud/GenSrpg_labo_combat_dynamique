@@ -214,6 +214,31 @@
             <option value="massive">Massif / golem</option>
           </select>
         </label>
+
+        <div class="grid two">
+          <label>Tempo de déplacement
+            <select data-creature-mobility-preset>
+              <option value="very-fast">Très rapide</option>
+              <option value="fast">Rapide</option>
+              <option value="normal" selected>Normal</option>
+              <option value="slow">Lent</option>
+              <option value="very-slow">Très lent</option>
+              <option value="custom">Personnalisé</option>
+            </select>
+          </label>
+          <label>Variation du temps d’approche (%)
+            <input
+              type="number"
+              step="1"
+              value="0"
+              data-creature-approach-time-modifier
+            >
+          </label>
+        </div>
+        <p class="note">
+          Ce réglage est indépendant du profil Bipède / Quadrupède / Volant. Négatif = plus rapide, positif = plus lent. Il agit sur les déplacements au sol, aériens et souterrains sans modifier le temps auteur de la capacité.
+        </p>
+
         <label>Taille en combat <strong data-creature-scale-value>1.00×</strong>
           <input
             data-creature-display-scale
@@ -704,8 +729,24 @@
           <span>Provocation</span>
           <span>Nettoyage</span>
           <span>Dissipation</span>
+          <span>Immunité dégâts / états négatifs</span>
+          <span>Effet différé après délai</span>
           <span>Zone persistante évolutive</span>
         </div>
+
+        <template data-skill-expressiveness-prototypes>
+          <label class="check">
+            <input type="checkbox" value="damage" data-skill-status-immunity-domain>
+            Immunité aux dégâts
+          </label>
+          <label class="check">
+            <input type="checkbox" value="negative_status" data-skill-status-immunity-domain>
+            Immunité aux états négatifs
+          </label>
+          <label>Délai avant déclenchement (secondes)
+            <input type="number" min="0" step="0.1" value="1" data-skill-scheduled-delay-seconds>
+          </label>
+        </template>
 
         <p class="note">
           Une zone persistante peut durer plusieurs secondes, infliger des dégâts à intervalles réguliers et être renforcée par plusieurs réactivations. Son rayon gameplay utilise les distances Proche → Moyen → Loin ; chaque renforcement peut augmenter ce rayon jusqu’au maximum configuré.
@@ -726,8 +767,28 @@
             <option value="none" selected>Aucun déplacement</option>
             <option value="ground">Approche au sol</option>
             <option value="aerial">Attaque aérienne</option>
+            <option value="burrow">Attaque souterraine</option>
             <option value="teleport">Téléportation</option>
           </select>
+        </label>
+
+        <fieldset class="editor-choice-group">
+          <legend>Présences que cette capacité peut toucher</legend>
+          <label class="check"><input type="checkbox" value="surface" data-skill-hit-presence checked>Surface</label>
+          <label class="check"><input type="checkbox" value="airborne" data-skill-hit-presence>Aérien</label>
+          <label class="check"><input type="checkbox" value="underground" data-skill-hit-presence>Souterrain</label>
+          <p class="note">Exemple : Tornade = Surface + Aérien ; Tremblement de terre = Surface + Souterrain.</p>
+        </fieldset>
+
+        <fieldset class="editor-choice-group">
+          <legend>Cibles disponibles</legend>
+          <label class="check"><input type="checkbox" value="active" data-skill-target-location checked>Créature active</label>
+          <label class="check"><input type="checkbox" value="reserve" data-skill-target-location>Créature en réserve</label>
+        </fieldset>
+
+        <label class="switch-line">
+          <input type="checkbox" data-skill-dodgeable checked>
+          <span>Cette capacité peut être esquivée</span>
         </label>
 
       </article>
