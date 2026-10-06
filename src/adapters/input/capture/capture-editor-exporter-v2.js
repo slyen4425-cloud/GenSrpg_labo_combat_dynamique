@@ -118,7 +118,8 @@ function battleTopology(setup) {
       localActorId: setup.localActorId,
       skillSpeedMultiplier:
         setup.skillSpeedMultiplier,
-      ...(setup.recallPreparationMs === undefined ? {} : { recallPreparationMs: setup.recallPreparationMs })
+      ...(setup.recallPreparationMs === undefined ? {} : { recallPreparationMs: setup.recallPreparationMs }),
+      ...(setup.gameOptions === undefined ? {} : { gameOptions: setup.gameOptions })
     },
     teams,
     actors,
