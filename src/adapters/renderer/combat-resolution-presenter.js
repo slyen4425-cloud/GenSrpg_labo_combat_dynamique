@@ -1,4 +1,5 @@
 import {
+  isPersistentZoneOnlySkillFxV1,
   planSkillFx,
   planSkillOutcomeFx,
   planSkillPreparationFx,
@@ -53,6 +54,7 @@ export function createCombatResolutionPresenter({
   const travelAudioByActor = new Map();
   const outcomeByActor = new Map();
   const rosterVisualsByActor = new Map();
+  const activeSkillByActor = new Map();
 
   function presentRosterVisual(actorSlot, type, options = {}) {
     const record = { type };
@@ -165,6 +167,8 @@ export function createCombatResolutionPresenter({
   function cancelActionPresentation(
     actorSlot = "player"
   ) {
+    const skillCancelled =
+      activeSkillByActor.delete(actorSlot);
     const rosterCancelled = rosterVisualsByActor.delete(actorSlot);
     if (rosterCancelled) visuals.cancelFor(actorSlot);
     const outcomeCancelled = outcomeByActor.delete(actorSlot);
@@ -182,6 +186,7 @@ export function createCombatResolutionPresenter({
       travelCancelled ||
       outcomeCancelled ||
       rosterCancelled ||
+      skillCancelled ||
       projectileCount > 0
     );
   }
@@ -202,6 +207,13 @@ export function createCombatResolutionPresenter({
         return presentRosterVisual(actorSlot, "recall", { metadata: { durationMs: action.preparationMs } });
       }
       return Object.freeze({ status: "no_fx" });
+    }
+
+    if (action?.skill) {
+      activeSkillByActor.set(
+        actorSlot,
+        action.skill
+      );
     }
 
     let handle = null;
@@ -269,6 +281,13 @@ export function createCombatResolutionPresenter({
       actorSlot,
       { audioMode: "loop-only" }
     );
+
+    if (action?.skill) {
+      activeSkillByActor.set(
+        actorSlot,
+        action.skill
+      );
+    }
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
@@ -396,6 +415,12 @@ export function createCombatResolutionPresenter({
     let ko = false;
     let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
+    const activeSkill =
+      activeSkillByActor.get(actorSlot) ?? null;
+    const persistentZoneOnly =
+      isPersistentZoneOnlySkillFxV1(
+        activeSkill
+      );
 
     cancelTravelAudio(actorSlot);
 
@@ -421,6 +446,7 @@ export function createCombatResolutionPresenter({
     let impactAudioPlayed = false;
     for (const fxPlan of planSkillOutcomeFx({
       resolution,
+      skill: activeSkill,
       actorSlot,
       targetSlot
     })) {
@@ -446,6 +472,10 @@ export function createCombatResolutionPresenter({
 
     switch (resolution.outcome) {
       case "hit": {
+        if (persistentZoneOnly) {
+          break;
+        }
+
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&
@@ -495,6 +525,8 @@ export function createCombatResolutionPresenter({
       default:
         break;
     }
+
+    activeSkillByActor.delete(actorSlot);
 
     return Object.freeze({
       status: "resolved",
@@ -572,6 +604,7 @@ export function createCombatResolutionPresenter({
     }
     disposed = true;
     outcomeByActor.clear();
+    activeSkillByActor.clear();
   }
 
   return Object.freeze({
