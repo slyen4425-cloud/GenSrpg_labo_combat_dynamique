@@ -1497,16 +1497,6 @@
               </div>
               <div class="combat-primary-actions">
                 <div class="skill-bar__grid" data-combat-skills></div>
-                <button
-                  type="button"
-                  class="combat-dodge-action"
-                  data-combat-dodge
-                  hidden
-                >
-                  <strong>Esquive</strong>
-                  <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
-                  <small data-combat-dodge-recharge hidden></small>
-                </button>
               </div>
               <details class="combat-test-team-menu" data-combat-team-menu hidden>
                 <summary data-combat-team-summary>Équipe et réserves</summary>
@@ -1520,6 +1510,17 @@
               </details>
             </section>
           </div>
+
+          <button
+            type="button"
+            class="combat-dodge-action combat-dodge-action--arena"
+            data-combat-dodge
+            hidden
+          >
+            <strong>Esquive</strong>
+            <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
+            <small data-combat-dodge-recharge hidden></small>
+          </button>
 
           <p
             class="live-status live-status--coop"
