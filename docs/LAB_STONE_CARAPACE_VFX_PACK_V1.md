@@ -46,4 +46,10 @@ Aucun changement sur FX Core, Animation Core, renderer, gameplay, collisions, d�
 
 ## Validation attendue
 
-CI complète du labo puis checkpoint GREEN final.
+CI complète du labo : run `37473328167` SUCCESS. Checkpoint GREEN final à créer après validation de ce commit documentaire.
+
+
+## Clôture
+
+Le raccord est limité au cache-buster de la bibliothèque globale et aux sentinelles/documentation.
+Le pack est disponible pour l'éditeur Capture via le catalogue existant, sans seconde autorité.

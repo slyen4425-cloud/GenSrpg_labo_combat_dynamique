@@ -40,3 +40,12 @@
 - Interdits : moteur FX, renderer, gameplay, collisions, dégâts, règles de statut, énergie, cooldowns, autres capacités, nouveau catalogue/resolver.
 - Critère GREEN : révision `2026-10-06-v16-stone-carapace-vfx-pack-v1`, tests ciblés et CI complète verts, checkpoint final.
 - Statut : EN COURS.
+
+
+### Carapace de pierre HD V1 — clôture technique
+
+- CI labo du raccord cache/catalogue : run `37473328167` SUCCESS.
+- Révision active : `2026-10-06-v16-stone-carapace-vfx-pack-v1`.
+- Le resolver et le catalogue existants restent les seules autorités.
+- Aucun moteur, renderer, gameplay, collision, dégâts, règle de statut, énergie ou cooldown modifié.
+- État : **GREEN technique**. Aucun merge sur `main`.
