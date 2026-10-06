@@ -41,6 +41,9 @@ import {
   captureCombatPaceToSkillSpeedV1
 } from "../contracts/capture-battle-setup-editor-draft-v1.js";
 import {
+  normalizeCaptureGameOptionsV1
+} from "../contracts/capture-game-options-v1.js";
+import {
   exportCaptureEditorDraftsToCombatExportV2
 } from "../adapters/input/capture/capture-editor-exporter-v2.js";
 import {
@@ -2702,7 +2705,8 @@ export function buildHumanBattleSetupV1({
   opponentDisplayName,
   arenaId,
   activePerTeam,
-  skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1
+  skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1,
+  gameOptions
 }) {
   const count = positiveInteger(
     activePerTeam,
@@ -2762,6 +2766,7 @@ export function buildHumanBattleSetupV1({
       "Arène du combat"
     ),
     skillSpeedMultiplier,
+    ...(gameOptions === undefined ? {} : { gameOptions }),
     teams: [
       {
         id: "local-team",
@@ -2887,6 +2892,33 @@ function selectedValue(root, selector) {
 
 function numericValue(root, selector) {
   return Number(selectedValue(root, selector));
+}
+
+export function readHumanGameOptionsV1(root) {
+  return normalizeCaptureGameOptionsV1({
+    dodge: {
+      enabled:
+        one(
+          root,
+          "[data-game-dodge-enabled]"
+        ).checked,
+      maxCharges: positiveInteger(
+        numericValue(
+          root,
+          "[data-game-dodge-charges]"
+        ),
+        "Charges d’esquive"
+      ),
+      rechargeMs:
+        nonNegativeNumber(
+          numericValue(
+            root,
+            "[data-game-dodge-recharge-seconds]"
+          ) * 1000,
+          "Recharge d’esquive"
+        )
+    }
+  });
 }
 
 export function readHumanCombatRulesV1(root) {
@@ -10683,6 +10715,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
           ...combatTeamControls.read(),
           arenaId: selectedValue(root, "[data-test-arena]"),
           combatRules: readHumanCombatRulesV1(root),
+          gameOptions: readHumanGameOptionsV1(root),
           skillSpeedMultiplier: captureCombatPaceToSkillSpeedV1(numericValue(root, "[data-combat-skill-speed]")),
           recallPreparationMs: numericValue(root, "[data-recall-seconds]") * 1000,
           statRegistry, progressionRules
