@@ -1,5 +1,123 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Creature Mobility Tempo V1
+
+Branche : `work/lab-creature-mobility-tempo-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-creature-mobility-tempo-v1-2026-10-06`
+
+SHA de base :
+`13da10837203e16a23a2c419ba3ba49b8f575e9a`
+
+### Besoin produit
+
+Sous les archétypes morphologiques (bipède, quadrupède, volant, massif, rampant...), l'éditeur doit pouvoir proposer un tempo de mobilité :
+
+- Très rapide ;
+- Rapide ;
+- Normal ;
+- Lent ;
+- Très lent.
+
+Ce tempo influence le temps nécessaire pour parcourir une approche de compétence sans mélanger présentation morphologique et gameplay.
+
+### Autorité
+
+Valeur gameplay unique :
+
+`approachTimeModifierPct`
+
+- négatif = approche plus rapide ;
+- 0 = temps auteur inchangé ;
+- positif = approche plus lente.
+
+Les libellés de preset Human Editor seront uniquement une manière d'écrire cette valeur. Ils ne deviennent pas une deuxième autorité persistée.
+
+### Chaîne
+
+`Creature combat draft.approachTimeModifierPct`
+→ Capture adapter
+→ FighterConfig
+→ CombatState fighter
+→ Action Resolver
+→ `effectiveApproachTimingMs`
+→ `action.travelMs`
+→ Animation Core / renderer consomment le temps effectif existant.
+
+### Combinaison avec statuts
+
+Le modificateur permanent de créature et les statuses `approach_time_modifier` sont additionnés dans le même calcul.
+
+Exemple :
+- créature rapide : -20 % ;
+- ralentissement : +50 % ;
+- total : +30 %.
+
+Aucun second calcul de vitesse.
+
+### Approches concernées
+
+Comme le système temporaire existant :
+- ground ;
+- aerial ;
+- burrow.
+
+Teleport reste instantané/spécifique et n'est pas influencé par la mobilité locomotrice.
+
+### Compatibilité
+
+- absence du champ = 0 % ;
+- toutes les créatures historiques conservent exactement leur timing ;
+- aucune valeur n'est déduite automatiquement de Force/Agilité/archétype ;
+- aucune migration silencieuse des créatures.
+
+### Fichiers autorisés
+
+- Creature Draft contract V1 (hérité par V2/V3) ;
+- Capture creature adapter ;
+- FighterConfig normalization dans Combat State ;
+- Combat Timing ;
+- Action Resolver pour fournir la valeur permanente ;
+- Roster snapshot pour préserver la valeur lors des rappels ;
+- tests ;
+- documentation.
+
+### Protégé
+
+- Creature Presentation Profile / idle ;
+- Animation profiles ;
+- skill.travelMs auteur ;
+- Global skill speed ;
+- statuses `approach_time_modifier` existants ;
+- renderer / FX ;
+- collision ;
+- Reserve Targeting ;
+- Tempête ;
+- éditeur UI dans ce lot.
+
+### RED prévu
+
+1. draft accepte signed finite `approachTimeModifierPct` ;
+2. adapter le transporte explicitement ;
+3. CombatState le conserve, défaut 0 ;
+4. -25 % : 1000 ms -> 750 ms sur ground/aerial/burrow ;
+5. +50 % : 1000 ms -> 1500 ms ;
+6. permanent + status se cumulent une seule fois ;
+7. teleport reste inchangé ;
+8. Roster recall/summon conserve la valeur ;
+9. skill.travelMs source reste inchangé.
+
+### Critère de fin
+
+- un seul champ autoritaire ;
+- timings Runtime réels vérifiés ;
+- ancien gameplay inchangé à 0 % ;
+- CI complète GREEN ;
+- checkpoint GREEN.
+
+---
+
 ## Chantier actif — 2026-10-06 — Reserve Targeting V1
 
 Branche : `work/lab-reserve-targeting-v1-2026-10-06`
