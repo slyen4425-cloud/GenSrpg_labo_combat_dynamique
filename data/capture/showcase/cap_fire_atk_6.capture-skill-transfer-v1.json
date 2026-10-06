@@ -90,7 +90,7 @@
     },
     "presentation": {
       "id": "skill:cap_fire_atk_6",
-      "version": 2,
+      "version": 8,
       "subjectType": "skill",
       "subjectId": "cap_fire_atk_6",
       "visual": {
@@ -99,13 +99,13 @@
         },
         "aura": {
           "assetId": "pack:capture:sprite-fire-zone-loop-01",
-          "displayScale": 3.5,
-          "displayScaleX": 2.3,
-          "displayScaleY": 1,
+          "displayScale": 1.2,
+          "displayScaleX": 2.5,
+          "displayScaleY": 0.8,
           "attachment": "source",
           "anchor": null,
           "offsetX": 0,
-          "offsetY": -50,
+          "offsetY": 0,
           "trigger": "impact",
           "playbackMode": "loop",
           "rotationDeg": 0,
@@ -121,6 +121,47 @@
           "assetId": "gensrpg:sound:effect-135ee2ed",
           "volume": 1,
           "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 10,
+          "lengthPx": 72,
+          "sizePx": 9,
+          "opacity": 0.95,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 18,
+          "spreadPx": 96,
+          "sizePx": 11,
+          "durationMs": 460,
+          "opacity": 1
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 8,
+          "spreadPx": 60,
+          "sizePx": 34,
+          "risePx": 54,
+          "durationMs": 920,
+          "opacity": 0.5
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 10,
+          "spreadPx": 62,
+          "sizePx": 9,
+          "risePx": 44,
+          "durationMs": 700,
+          "opacity": 0.95
         }
       }
     }
