@@ -1,4 +1,17 @@
 import { resumeStatusEffectsV1 } from "./status-effect-runtime-v1.js";
+import {
+  createCombatState
+} from "./combat-state.js";
+import {
+  resolveSkillStart
+} from "./action-resolver.js";
+import {
+  applyImmediateTacticalEffectsV1,
+  unsupportedImmediateTacticalEffectV1
+} from "./immediate-tactical-effects-v1.js";
+import {
+  normalizeCombatTargetRefV1
+} from "../../contracts/combat-target-ref-v1.js";
 
 function requiredString(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -50,7 +63,8 @@ function snapshotFighter(fighter) {
 export function createRosterSession({
   combatSession,
   roster,
-  fighterConfigs
+  fighterConfigs,
+  battleFormat = null
 }) {
   if (!combatSession || typeof combatSession.snapshot !== "function") {
     throw new TypeError("combatSession is required");
@@ -111,6 +125,165 @@ export function createRosterSession({
       throw new RangeError(`Unknown roster team: ${teamId}`);
     }
     return team;
+  }
+
+  function rosterTeamForActor(actorId) {
+    return (
+      [...teams.values()].find(
+        (team) => team.slotId === actorId
+      ) ?? null
+    );
+  }
+
+  function relationToReserveTeam(
+    actorId,
+    targetTeam
+  ) {
+    if (
+      battleFormat &&
+      typeof battleFormat.teamOf === "function"
+    ) {
+      const actorBattleTeam =
+        battleFormat.teamOf(actorId);
+      const targetBattleTeam =
+        battleFormat.teamOf(targetTeam.slotId);
+      if (
+        actorBattleTeam !== null &&
+        actorBattleTeam !== undefined &&
+        targetBattleTeam !== null &&
+        targetBattleTeam !== undefined
+      ) {
+        return actorBattleTeam === targetBattleTeam
+          ? "ally"
+          : "enemy";
+      }
+    }
+
+    const actorRosterTeam =
+      rosterTeamForActor(actorId);
+    return actorRosterTeam?.id === targetTeam.id
+      ? "ally"
+      : "enemy";
+  }
+
+  function reserveActorId(team, member) {
+    return (
+      "__reserve__:" +
+      team.id +
+      ":" +
+      member.id
+    );
+  }
+
+  function materializeReserveFighter(
+    team,
+    member,
+    atMs = combatSession.snapshot().elapsedMs
+  ) {
+    const anchorFighter =
+      combatSession.snapshot().fighters[
+        team.slotId
+      ];
+    if (!anchorFighter) {
+      throw new RangeError(
+        "Missing combat slot: " +
+          team.slotId
+      );
+    }
+
+    const detachedId =
+      reserveActorId(team, member);
+    const raw = cloneFighterForSlot(
+      member.fighterConfig,
+      detachedId,
+      member.savedFighter,
+      atMs
+    );
+    return createCombatState({
+      distance:
+        combatSession.snapshot().distance,
+      fighters: [
+        anchorFighter,
+        raw
+      ],
+      elapsedMs: atMs
+    }).fighters[detachedId];
+  }
+
+  function reserveEffectsForSkill(skill) {
+    const effects = [
+      ...(skill.effects ?? [])
+    ];
+
+    if (
+      Number(skill.effect?.damage) > 0
+    ) {
+      effects.unshift(
+        Object.freeze({
+          kind: "damage",
+          targetScope: "target",
+          amount:
+            Number(skill.effect.damage),
+          channel:
+            skill.element ?? null
+        })
+      );
+    }
+
+    if (
+      Number(skill.effect?.heal) > 0
+    ) {
+      effects.unshift(
+        Object.freeze({
+          kind: "heal",
+          targetScope: "target",
+          amount:
+            Number(skill.effect.heal)
+        })
+      );
+    }
+
+    for (const effect of effects) {
+      if (
+        effect.kind === "persistent_zone" ||
+        effect.kind === "scheduled_effect"
+      ) {
+        return Object.freeze({
+          ok: false,
+          outcome:
+            "unsupported_reserve_effect",
+          kind: effect.kind
+        });
+      }
+      if (effect.targetScope !== "target") {
+        return Object.freeze({
+          ok: false,
+          outcome:
+            "unsupported_reserve_effect",
+          kind: effect.kind,
+          targetScope: effect.targetScope
+        });
+      }
+    }
+
+    return Object.freeze({
+      ok: true,
+      effects: Object.freeze(effects)
+    });
+  }
+
+  function zeroEffectSkill(skill) {
+    return Object.freeze({
+      ...skill,
+      effect: Object.freeze({
+        damage: 0,
+        heal: 0,
+        interruptsPreparation: false,
+        stunMs: 0,
+        tags: Object.freeze([])
+      }),
+      effects: Object.freeze([])
+    });
   }
 
   function syncActiveSnapshot(team) {
@@ -319,6 +492,236 @@ export function createRosterSession({
     });
   }
 
+  function reserveMemberSnapshot(
+    teamId,
+    memberId
+  ) {
+    const team = teamOf(teamId);
+    const member = team.members.get(memberId);
+    if (!member) {
+      throw new RangeError(
+        "Unknown roster member: " +
+          memberId
+      );
+    }
+    if (member.id === team.activeMemberId) {
+      throw new RangeError(
+        "Roster member is active, not reserve: " +
+          memberId
+      );
+    }
+    return snapshotFighter(
+      materializeReserveFighter(
+        team,
+        member
+      )
+    );
+  }
+
+  function useSkillOnTarget({
+    actorId,
+    targetRef: targetRefInput,
+    skill
+  }) {
+    const targetRef =
+      normalizeCombatTargetRefV1(
+        targetRefInput
+      );
+    const locations =
+      skill.targetLocations ?? ["active"];
+
+    if (!locations.includes(targetRef.scope)) {
+      return Object.freeze({
+        ok: false,
+        outcome: "target_location",
+        targetRef
+      });
+    }
+
+    if (targetRef.scope === "active") {
+      return combatSession.useSkill({
+        actorId,
+        targetId: targetRef.actorId,
+        skill
+      });
+    }
+
+    const team = teamOf(targetRef.teamId);
+    const member =
+      team.members.get(targetRef.memberId);
+    if (!member) {
+      throw new RangeError(
+        "Unknown roster member: " +
+          targetRef.memberId
+      );
+    }
+    if (member.id === team.activeMemberId) {
+      return Object.freeze({
+        ok: false,
+        outcome: "target_not_reserve",
+        targetRef
+      });
+    }
+
+    const relation =
+      relationToReserveTeam(
+        actorId,
+        team
+      );
+    if (
+      !skill.targetRelations.includes("any") &&
+      !skill.targetRelations.includes(
+        relation
+      )
+    ) {
+      return Object.freeze({
+        ok: false,
+        outcome: "target_relation",
+        relation,
+        targetRef
+      });
+    }
+
+    const reserveEffects =
+      reserveEffectsForSkill(skill);
+    if (!reserveEffects.ok) {
+      return reserveEffects;
+    }
+
+    const now =
+      combatSession.snapshot().elapsedMs;
+    const reserveFighter =
+      materializeReserveFighter(
+        team,
+        member,
+        now
+      );
+    if (reserveFighter.hp <= 0) {
+      return Object.freeze({
+        ok: false,
+        outcome: "reserve_ko",
+        targetRef
+      });
+    }
+
+    const currentState =
+      combatSession.snapshot();
+    const started = resolveSkillStart({
+      state: currentState,
+      actorId,
+      targetId: team.slotId,
+      skill: zeroEffectSkill(skill),
+      skillSpeedMultiplier:
+        combatSession.skillSpeedMultiplier,
+      battleFormat
+    });
+    if (!started.ok) {
+      return started;
+    }
+
+    if (
+      started.action.targetId !==
+      team.slotId
+    ) {
+      return Object.freeze({
+        ok: false,
+        outcome:
+          "taunted_target_locked",
+        forcedTargetId:
+          started.action.targetId,
+        targetRef
+      });
+    }
+
+    const detachedId =
+      reserveActorId(team, member);
+    const evaluationState =
+      createCombatState({
+        distance: currentState.distance,
+        fighters: [
+          started.state.fighters[
+            actorId
+          ],
+          {
+            ...reserveFighter,
+            id: detachedId
+          }
+        ],
+        elapsedMs: now
+      });
+
+    const evaluationSkill =
+      Object.freeze({
+        ...skill,
+        effect: Object.freeze({
+          damage: 0,
+          heal: 0,
+          interruptsPreparation: false,
+          stunMs: 0,
+          tags: Object.freeze([])
+        }),
+        effects:
+          reserveEffects.effects
+      });
+
+    const unsupported =
+      unsupportedImmediateTacticalEffectV1(
+        evaluationSkill,
+        {
+          state: evaluationState,
+          actorId,
+          targetId: detachedId
+        }
+      );
+    if (unsupported !== null) {
+      return Object.freeze({
+        ok: false,
+        outcome:
+          "unsupported_reserve_effect",
+        tacticalEffect: unsupported,
+        targetRef
+      });
+    }
+
+    const tactical =
+      applyImmediateTacticalEffectsV1({
+        state: evaluationState,
+        actorId,
+        targetId: detachedId,
+        skill: evaluationSkill,
+        atMs: 0,
+        combatAtMs: now,
+        battleFormat: null
+      });
+
+    combatSession.replaceFighter(
+      actorId,
+      tactical.state.fighters[
+        actorId
+      ]
+    );
+    member.savedFighter =
+      snapshotFighter(
+        tactical.state.fighters[
+          detachedId
+        ]
+      );
+
+    return Object.freeze({
+      ok: true,
+      outcome: "resolved",
+      actorId,
+      targetRef,
+      relation,
+      action: started.action,
+      state: combatSession.snapshot(),
+      events: Object.freeze([
+        ...started.events,
+        ...tactical.events
+      ])
+    });
+  }
+
   function applyCommandResolution(teamId, resolution) {
     if (!resolution?.ok || resolution.outcome !== "completed") {
       return Object.freeze({ ok: false, outcome: "command_not_completed" });
@@ -341,6 +744,8 @@ export function createRosterSession({
 
   return Object.freeze({
     snapshot,
+    reserveMemberSnapshot,
+    useSkillOnTarget,
     selectReserve,
     recall,
     summon,
