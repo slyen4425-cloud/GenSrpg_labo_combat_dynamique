@@ -2505,10 +2505,19 @@ export function createDomSkillFxRenderer({
     if (disposed || !zones.length) return null;
     // Reproject moving sources before sampling on the Runtime's existing tick.
     syncPersistentZones(zones);
-    const rect = element => {
-      const r = element?.getBoundingClientRect?.();
+    const rect = value => {
+      const r =
+        typeof value?.getBoundingClientRect === "function"
+          ? value.getBoundingClientRect()
+          : value;
       return r && Number(r.width) > 0 && Number(r.height) > 0
-        ? { left: Number(r.left), top: Number(r.top), width: Number(r.width), height: Number(r.height) } : null;
+        ? {
+            left: Number(r.left),
+            top: Number(r.top),
+            width: Number(r.width),
+            height: Number(r.height)
+          }
+        : null;
     };
     return {
       zones: zones.flatMap(zone => {
@@ -2516,7 +2525,11 @@ export function createDomSkillFxRenderer({
         return bounds ? [{ zoneId: zone.id, sourceActorId: zone.sourceActorId, radius: zone.radius, bounds }] : [];
       }),
       actors: Object.entries(anchors).flatMap(([actorId, element]) => {
-        const bounds = rect(element);
+        const visible =
+          targetAnchorFor?.(actorId) ?? null;
+        const bounds =
+          rect(visible) ??
+          rect(element);
         return bounds ? [{ actorId, bounds }] : [];
       })
     };
