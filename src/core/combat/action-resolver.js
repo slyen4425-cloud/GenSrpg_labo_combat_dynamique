@@ -657,7 +657,8 @@ export function resolveSkillCompletion({
   action,
   reaction = null,
   targetActionContext = null,
-  battleFormat = null
+  battleFormat = null,
+  resolutionAtMs = null
 }) {
   const {
     actorId,
@@ -801,8 +802,12 @@ export function resolveSkillCompletion({
           targetId,
           skill,
           atMs:
-            nextState.elapsedMs +
-            impactAtMs
+            Number.isFinite(
+              Number(resolutionAtMs)
+            )
+              ? Number(resolutionAtMs)
+              : nextState.elapsedMs +
+                impactAtMs
         });
     } else if (outcome === "reflected") {
       const damage =
