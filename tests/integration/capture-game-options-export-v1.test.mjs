@@ -48,7 +48,7 @@ function record(id) {
         { id: "slot-2", skillId: null },
         { id: "slot-3", skillId: null },
         { id: "slot-4", skillId: null },
-        { id: "ultimate", skillId: null }
+        { id: "slot-ultimate", skillId: null }
       ]
     },
     statValues: null
