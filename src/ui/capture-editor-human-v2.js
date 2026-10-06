@@ -2961,13 +2961,10 @@ export function readHumanGameOptionsV1(root) {
         "Charges d’esquive"
       ),
       rechargeMs:
-        nonNegativeNumber(
-          numericValue(
-            root,
-            "[data-game-dodge-recharge-seconds]"
-          ) * 1000,
-          "Recharge d’esquive"
-        )
+        numericValue(
+          root,
+          "[data-game-dodge-recharge-seconds]"
+        ) * 1000
     }
   });
 }
