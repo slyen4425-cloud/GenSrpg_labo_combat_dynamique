@@ -47,7 +47,8 @@ const COMBAT_FIELDS = new Set([
   "energyChargeAmount",
   "energyChargeIntervalMs",
   "movementEnergyPerStep",
-  "chargeTimeModifierPct"
+  "chargeTimeModifierPct",
+  "approachTimeModifierPct"
 ]);
 
 const RESISTANCE_FIELDS = new Set([
@@ -288,6 +289,13 @@ function normalizeCombat(raw) {
     output.chargeTimeModifierPct = finiteNumber(
       value.chargeTimeModifierPct,
       "combat.chargeTimeModifierPct"
+    );
+  }
+
+  if (hasOwn(value, "approachTimeModifierPct")) {
+    output.approachTimeModifierPct = finiteNumber(
+      value.approachTimeModifierPct,
+      "combat.approachTimeModifierPct"
     );
   }
 
