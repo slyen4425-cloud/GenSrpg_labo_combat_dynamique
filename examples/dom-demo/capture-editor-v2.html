@@ -537,21 +537,50 @@
           </select>
         </label>
         <p class="note">Les autres monstres restent en réserve : ils peuvent être invoqués ou remplacer un monstre KO. En 2 contre 2, les réserves sont réparties entre les deux actifs.</p>
-        <label>Vitesse globale des attaques
-          <input
-            type="number"
-            min="0.5"
-            max="4"
-            step="0.05"
-            value="1"
-            data-combat-skill-speed
-          >
-        </label>
-        <p class="note">1× est le rythme de référence. 0,5× ralentit les attaques ; 2× les accélère. Ce réglage agit sur la préparation, le trajet et la récupération des capacités.</p>
-        <label>Durée du rappel (secondes)
-          <input type="number" min="0" step="0.1" value="2" data-recall-seconds>
-        </label>
-        <p class="note">Le rappel et l’invocation sont gratuits. La créature reste en combat pendant le rappel, puis la réserve arrive immédiatement.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">4</span>
+          <div>
+            <h2>Options de jeu</h2>
+            <p>Règles globales de la session de combat. Elles ne modifient pas les fiches des créatures ou des capacités.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Vitesse globale des attaques
+            <input
+              type="number"
+              min="0.5"
+              max="4"
+              step="0.05"
+              value="1"
+              data-combat-skill-speed
+            >
+          </label>
+          <label>Durée du rappel (secondes)
+            <input type="number" min="0" step="0.1" value="2" data-recall-seconds>
+          </label>
+        </div>
+        <p class="note">1× est le rythme de référence. Le rappel reste une commande gratuite et utilise la même horloge de combat.</p>
+
+        <fieldset class="game-option-group">
+          <legend>Esquive</legend>
+          <label class="switch-line">
+            <input type="checkbox" data-game-dodge-enabled checked>
+            <span>Activer la touche Esquive en combat</span>
+          </label>
+          <div class="grid two">
+            <label>Nombre de charges
+              <input type="number" min="1" step="1" value="2" data-game-dodge-charges>
+            </label>
+            <label>Recharge d’une charge (secondes)
+              <input type="number" min="0" step="0.1" value="3" data-game-dodge-recharge-seconds>
+            </label>
+          </div>
+          <p class="note">Une esquive acceptée consomme une charge. Chaque charge revient après le délai indiqué. Une attaque marquée non esquivable ne consomme aucune charge.</p>
+        </fieldset>
       </article>
     </section>
 
@@ -1425,7 +1454,19 @@
                   value="0"
                 ></progress>
               </div>
-              <div class="skill-bar__grid" data-combat-skills></div>
+              <div class="combat-primary-actions">
+                <div class="skill-bar__grid" data-combat-skills></div>
+                <button
+                  type="button"
+                  class="combat-dodge-action"
+                  data-combat-dodge
+                  hidden
+                >
+                  <strong>Esquive</strong>
+                  <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
+                  <small data-combat-dodge-recharge hidden></small>
+                </button>
+              </div>
               <details class="combat-test-team-menu" data-combat-team-menu hidden>
                 <summary data-combat-team-summary>Équipe et réserves</summary>
                 <div class="combat-test-team-menu__body">
