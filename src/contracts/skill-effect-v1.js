@@ -10,7 +10,8 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "apply_status",
   "cleanse",
   "dispel",
-  "persistent_zone"
+  "persistent_zone",
+  "scheduled_effect"
 ]);
 
 export const SKILL_EFFECT_V1_TARGET_SCOPES =
@@ -72,6 +73,11 @@ const FIELDS_BY_KIND = Object.freeze({
     "maxActivations",
     "radiusGrowthSteps",
     "tickEffect"
+  ]),
+  scheduled_effect: new Set([
+    ...COMMON_FIELDS,
+    "trigger",
+    "effects"
   ])
 });
 
@@ -247,6 +253,79 @@ export function normalizeSkillEffectV1(input) {
       value.statusTags,
       "SkillEffectV1.statusTags"
     );
+  }
+
+  if (kind === "scheduled_effect") {
+    if (targetScope !== "target") {
+      throw new RangeError(
+        "scheduled_effect targetScope must be target in V1"
+      );
+    }
+
+    const trigger = objectValue(
+      value.trigger,
+      "SkillEffectV1.trigger"
+    );
+    for (const key of Object.keys(trigger)) {
+      if (!["type", "delayMs"].includes(key)) {
+        throw new TypeError(
+          "SkillEffectV1.trigger contains unknown field: " +
+            key
+        );
+      }
+    }
+
+    const triggerType = requiredString(
+      trigger.type,
+      "SkillEffectV1.trigger.type"
+    );
+    if (triggerType !== "after_ms") {
+      throw new RangeError(
+        "Unsupported SkillEffectV1.trigger.type: " +
+          triggerType
+      );
+    }
+
+    const delayMs = nonNegativeNumber(
+      trigger.delayMs,
+      "SkillEffectV1.trigger.delayMs"
+    );
+
+    if (!Array.isArray(value.effects)) {
+      throw new TypeError(
+        "SkillEffectV1.effects must be an array"
+      );
+    }
+    if (value.effects.length === 0) {
+      throw new TypeError(
+        "scheduled_effect effects must contain at least one effect"
+      );
+    }
+
+    const nestedEffects = Object.freeze(
+      value.effects.map((entry) =>
+        normalizeSkillEffectV1(entry)
+      )
+    );
+
+    for (const nested of nestedEffects) {
+      if (
+        nested.kind === "scheduled_effect" ||
+        nested.kind === "persistent_zone"
+      ) {
+        throw new RangeError(
+          "scheduled_effect cannot contain " +
+            nested.kind +
+            " in V1"
+        );
+      }
+    }
+
+    output.trigger = Object.freeze({
+      type: triggerType,
+      delayMs
+    });
+    output.effects = nestedEffects;
   }
 
   if (kind === "persistent_zone") {
