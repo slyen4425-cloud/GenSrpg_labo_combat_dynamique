@@ -36,6 +36,12 @@ export const SKILL_APPROACH_MODES = Object.freeze([
 
 export const COMBAT_DISTANCES = Object.freeze(["short", "medium", "long"]);
 
+export const COMBAT_PRESENCE_STATES = Object.freeze([
+  "surface",
+  "airborne",
+  "underground"
+]);
+
 export const SKILL_EVASION_WINDOWS = Object.freeze([
   "travel"
 ]);
@@ -70,6 +76,8 @@ const LOADOUT_SLOT_SET =
 const FORM_SET = new Set(SKILL_FORMS);
 const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
 const DISTANCE_SET = new Set(COMBAT_DISTANCES);
+const PRESENCE_SET =
+  new Set(COMBAT_PRESENCE_STATES);
 const EVASION_WINDOW_SET = new Set(SKILL_EVASION_WINDOWS);
 const TARGET_RELATION_SET = new Set(SKILL_TARGET_RELATIONS);
 const ACTIVATION_REQUIREMENT_MODE_SET =
@@ -275,6 +283,23 @@ export function normalizeSkillDefinition(input) {
     throw new TypeError("targetRelations must contain at least one relation");
   }
 
+  const hitPresenceStates =
+    input.hitPresenceStates == null
+      ? null
+      : stringArray(
+          input.hitPresenceStates,
+          "hitPresenceStates",
+          PRESENCE_SET
+        );
+  if (
+    hitPresenceStates !== null &&
+    hitPresenceStates.length === 0
+  ) {
+    throw new TypeError(
+      "hitPresenceStates must contain at least one presence state"
+    );
+  }
+
   const reaction = input.reaction ?? {};
   if (typeof reaction !== "object" || Array.isArray(reaction)) {
     throw new TypeError("reaction must be an object");
@@ -382,6 +407,7 @@ export function normalizeSkillDefinition(input) {
       input.interruptibleDuringPreparation !== false,
     allowedDistances,
     targetRelations,
+    hitPresenceStates,
     activationRequirements:
       normalizeActivationRequirements(
         input.activationRequirements
