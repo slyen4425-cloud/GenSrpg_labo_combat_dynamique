@@ -1,5 +1,89 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Immunité dégâts / états négatifs V1
+
+Branche : `work/lab-immunity-status-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-immunity-status-v1-2026-10-06`
+
+SHA de base :
+`ad0e01b50a54f9f7a43a789b3ecc5504b9fa8893`
+
+### Objectif
+
+Ajouter une immunité persistante générique, sans second moteur :
+
+- nouveau status `kind = immunity` ;
+- domaines configurables initiaux : `damage` et `negative_status` ;
+- `damage` protège contre tous les dégâts qui passent déjà par `applyCombatDamageV1`, y compris dégâts directs, effets structurés, DoT et ticks de zone ;
+- `negative_status` empêche l'application de statuts de polarité `detrimental` ;
+- les soins, buffs et statuts bénéfiques restent autorisés ;
+- l'immunité elle-même est un status normal avec durée / stacking existants ;
+- aucune condition par nom de compétence.
+
+### Autorité
+
+Créer un seul helper Core de protection qui lit les Status Runtime actifs et décide si un domaine entrant est bloqué.
+
+Consommateurs autorisés :
+- `applyCombatDamageV1` pour le domaine damage ;
+- `applyStatusEffectV1` pour le domaine negative_status ;
+- présentation sémantique peut lire le résultat, mais ne décide jamais.
+
+### Contraintes d'architecture
+
+- éviter toute dépendance circulaire entre Damage Application et Status Runtime ;
+- aucun nouveau système de HP ;
+- aucun nouveau système de status ;
+- aucun filtre UI/renderer ;
+- aucune modification silencieuse des compétences existantes ;
+- Combat Runtime reste propriétaire de l'horloge.
+
+### Fichiers autorisés
+
+- `src/contracts/status-effect-v1.js` ;
+- nouveau helper pur de protection ;
+- `src/core/combat/combat-damage-application-v1.js` ;
+- `src/core/combat/status-effect-runtime-v1.js` ;
+- raccord événementiel minimal dans immediate tactical effects si nécessaire ;
+- tests dédiés ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- Combat Damage calcul ;
+- cooldown ;
+- Presence / Reach ;
+- Burrow ;
+- Dodge ;
+- renderer / FX ;
+- Tempête ;
+- roster ;
+- éditeur.
+
+### TDD prévu
+
+RED :
+1. StatusEffectV1 accepte `immunity` + domaines valides et refuse les domaines inconnus ;
+2. immunité damage annule dégâts directs sans modifier HP/statistiques KO ;
+3. immunité damage annule aussi un tick DoT via le même owner ;
+4. immunité negative_status empêche stun/debuff ;
+5. un buff bénéfique passe malgré l'immunité ;
+6. expiration de l'immunité rétablit les dégâts/statuts via l'horloge existante.
+
+### Critère de fin
+
+- RED ciblé ;
+- helper unique ;
+- aucune boucle de dépendance ;
+- CI complète GREEN ;
+- checkpoint GREEN.
+
+---
+
 ## Chantier actif — 2026-10-06 — Esquive générique / dodgeable V1
 
 Branche : `work/lab-generic-dodge-v1-2026-10-06`
