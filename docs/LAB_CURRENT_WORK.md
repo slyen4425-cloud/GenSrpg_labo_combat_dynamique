@@ -1,5 +1,92 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Ergonomie éditeur / combat plein écran paysage V1
+
+Branche : `work/lab-editor-disclosure-landscape-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-editor-disclosure-landscape-v1-2026-10-06`
+
+SHA de base :
+`48e9adb56be7760eccddf141fd5a56bcd017e7e7`
+
+### Retours utilisateur
+
+1. chaque bloc de l’éditeur doit pouvoir être ouvert / refermé rapidement ;
+2. le panneau actuel de personnalisation des sprites est trop discret malgré son comportement déroulant correct ;
+3. le test combat doit pouvoir essayer un mode configurable :
+   - plein écran ;
+   - paysage ;
+   - blocage visuel tant que le téléphone reste en portrait lorsque le verrouillage système n’est pas disponible.
+
+Le retour séparé concernant la position FX joueur / ennemi n’est PAS traité dans ce micro-lot UI. Il fera l’objet du lot suivant après validation de la cause d’ancrage.
+
+### Owners
+
+- ergonomie de l’éditeur : Human Editor / Demo UI existante ;
+- transition vers le test combat : `examples/dom-demo/capture-editor-v2.js` + Preview Session existante ;
+- plein écran / orientation : nouveau petit owner UI dédié, sans autorité gameplay ;
+- Combat Runtime / Session / règles / renderer FX restent inchangés.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js`
+- `src/ui/capture-preview-display-mode-v1.js` (nouveau owner UI si nécessaire)
+- `examples/dom-demo/capture-editor-v2.html`
+- `examples/dom-demo/capture-editor-v2.css`
+- `examples/dom-demo/capture-editor-v2.js`
+- tests unitaires dédiés
+- documentation du chantier
+
+### Protégé / interdit
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- règles de gameplay ;
+- collision ;
+- dégâts ;
+- FX Core ;
+- renderer FX ;
+- assets / catalogues ;
+- presets de capacités / créatures ;
+- données de sockets.
+
+### UX visée
+
+- chaque `.card` de l’éditeur possède une commande explicite `Fermer / Dérouler` ;
+- fermer un bloc ne modifie jamais les valeurs ni l’état `hidden` interne de ses contrôles ;
+- le panneau `Réglages avancés — sprites...` devient visuellement majeur et difficile à manquer ;
+- un réglage `Combat plein écran paysage (test)` est disponible près du bouton `Tester en combat` ;
+- si activé :
+  - demande de plein écran depuis le geste utilisateur ;
+  - tentative de verrouillage paysage ;
+  - fallback sûr : overlay `Tourne ton téléphone` en portrait ;
+  - sortie propre du plein écran / unlock au retour éditeur ;
+- si désactivé : comportement actuel conservé.
+
+### TDD prévu
+
+RED avant implémentation :
+1. présence d’un owner de disclosure réutilisant les cartes existantes ;
+2. aucune mutation `hidden` des contenus de carte pour replier un bloc ;
+3. panneau sprite avancé rendu explicitement proéminent ;
+4. réglage paysage présent et configurable ;
+5. Fullscreen API appelée uniquement depuis l’action utilisateur ;
+6. fallback portrait présent ;
+7. nettoyage orientation/fullscreen au retour.
+
+### Critère de fin
+
+- RED démontré ;
+- implémentation UI minimale ;
+- tests ciblés verts ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- preview smartphone dédiée ;
+- validation utilisateur avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Cendre aveuglante / export auteur V2
 
 Branche : `work/lab-cendre-aveuglante-author-export-v2-2026-10-06`
