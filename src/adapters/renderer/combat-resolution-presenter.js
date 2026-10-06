@@ -451,6 +451,15 @@ export function createCombatResolutionPresenter({
             item.type === "hit" &&
             item.reflected !== true
         );
+
+        if (
+          resolution.persistentZoneOnly === true
+        ) {
+          ko = false;
+          koActorId = null;
+          break;
+        }
+
         ko = Number(hitEvent?.hpAfter) <= 0;
         koActorId = ko ? hitEvent?.actorId ?? null : null;
 
