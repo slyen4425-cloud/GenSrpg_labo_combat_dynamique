@@ -39,7 +39,9 @@ function format1v1() {
   };
 }
 
-async function fireStorm() {
+async function fireStorm({
+  reactivation = "reinforce"
+} = {}) {
   const transfer = JSON.parse(
     await readFile(
       new URL(
@@ -49,9 +51,10 @@ async function fireStorm() {
       "utf8"
     )
   );
+  const source = transfer.draft.definition;
 
   return normalizeSkillDefinition({
-    ...transfer.draft.definition,
+    ...source,
     energyCost: 0,
     preparationMs: 0,
     travelMs: 0,
@@ -61,7 +64,16 @@ async function fireStorm() {
     activationRequirements: {
       mode: "all",
       conditions: []
-    }
+    },
+    effects: source.effects.map(
+      (effect) =>
+        effect.kind === "persistent_zone"
+          ? {
+              ...effect,
+              reactivation
+            }
+          : effect
+    )
   });
 }
 
@@ -117,4 +129,45 @@ test("Firestorm reinforce preserves the already scheduled persistent-zone tick",
     95,
     "the original 1000 ms tick must still fire after reinforcement"
   );
+});
+
+
+test("persistent-zone refresh remains the explicit mode that resets tick origin", async () => {
+  const skill = await fireStorm({
+    reactivation: "refresh"
+  });
+  const session = createCombatSession({
+    distance: "medium",
+    battleFormat: format1v1(),
+    fighters: [
+      fighter("local"),
+      fighter("enemy")
+    ]
+  });
+
+  assert.equal(
+    session.useSkill({
+      actorId: "local",
+      targetId: "enemy",
+      skill
+    }).ok,
+    true
+  );
+
+  session.advanceMs(600);
+
+  assert.equal(
+    session.useSkill({
+      actorId: "local",
+      targetId: "enemy",
+      skill
+    }).ok,
+    true
+  );
+
+  const zone = session.snapshot().persistentZones[0];
+  assert.equal(zone.radius, "short");
+  assert.equal(zone.appliedAtMs, 600);
+  assert.equal(zone.nextTickAtMs, 1600);
+  assert.equal(zone.expiresAtMs, 7600);
 });
