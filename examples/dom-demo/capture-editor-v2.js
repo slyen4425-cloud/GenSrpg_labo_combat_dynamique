@@ -419,7 +419,12 @@ testButton.addEventListener("click", async () => {
   try {
     await visualContextPromise;
     await displayModePromise;
-    await session.launch();
+    const launchResult =
+      await session.launch();
+
+    if (launchResult?.ok !== true) {
+      await previewDisplayMode.leave();
+    }
   } catch (error) {
     await previewDisplayMode.leave();
     editorStatus.textContent =
@@ -433,11 +438,11 @@ testButton.addEventListener("click", async () => {
   }
 });
 
-backButton.addEventListener("click", async () => {
+backButton.addEventListener("click", () => {
   session.returnToEditor();
-  await previewDisplayMode.leave();
   testButton.disabled =
     visualContext === null;
+  void previewDisplayMode.leave();
 });
 
 window.addEventListener(
