@@ -1,5 +1,110 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Skill Presentation Side-Aware V1
+
+Branche : `work/lab-skill-presentation-side-aware-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-skill-presentation-side-aware-v1-2026-10-06`
+
+SHA de base :
+`0cf4d9b9b7f53714e4e42329998a818b764f0a23`
+
+### Retour utilisateur
+
+Les offsets visuels réglés côté joueur sont aujourd'hui réutilisés tels quels côté adversaire alors que la scène est spatialement inversée.
+
+Besoin :
+- réglage joueur = référence canonique ;
+- côté adversaire : miroir horizontal automatique par défaut pour les nouveaux bindings ;
+- possibilité d'override manuel adversaire par rôle ;
+- conserver le comportement legacy des anciens bindings ;
+- appliquer la même décision de phase aux FX liés au visuel : cast + particules/glow, impact + flash/burst/fumée, zone ;
+- ne pas ajouter de renderer concurrent.
+
+### Contrat visé
+
+Nouveau SkillPresentationBinding V9.
+
+Pour chaque rôle éditable `cast / impact / zone` :
+- `offsetX / offsetY` restent les valeurs canoniques joueur ;
+- `offsetMode` :
+  - `same` ;
+  - `mirror_x` ;
+  - `custom` ;
+- si `custom` :
+  - `opponentOffsetX` ;
+  - `opponentOffsetY`.
+
+Sémantique :
+- player => offset canonique ;
+- opponent + same => même X/Y ;
+- opponent + mirror_x => X inversé, Y identique ;
+- opponent + custom => valeurs adversaire explicites.
+
+Legacy V1-V8 : comportement historique inchangé.
+
+### Autorité
+
+- contrat de présentation : SkillPresentationBinding ;
+- résolution par vue : Capture Skill Presentation Assets ;
+- rendu : Dom Skill FX existant ;
+- Human Editor : traduction uniquement ;
+- Combat Rules / collision / dégâts : aucune nouvelle autorité.
+
+### FX liés
+
+- CastBurst et Glow sont enfants du noeud Cast : ils suivent naturellement son offset résolu ;
+- Impact Flash / Impact Burst / Aftermath Smoke doivent recevoir le même point d'impact visuel résolu en V9 ;
+- Zone réutilise le même offset par vue ;
+- aucun offset projectile/collision artificiel n'est ajouté dans ce lot.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- collision projectile ;
+- dégâts ;
+- status ;
+- Roster ;
+- Game Options / Dodge ;
+- scales auteur ;
+- sockets créature ;
+- données Showcase.
+
+### TDD prévu
+
+RED :
+1. V9 normalise same / mirror_x / custom ;
+2. V1-V8 conservent même offset pour les deux vues ;
+3. V9 mirror_x inverse X seulement côté opponent ;
+4. V9 custom utilise les valeurs adversaire ;
+5. cast particles suivent le noeud Cast ;
+6. feedback impact suit l'offset Impact V9 ;
+7. zone résout correctement l'offset par vue ;
+8. round-trip Human Editor conserve les nouveaux champs.
+
+### Backlog gameplay confirmé — Stack Mechanics V1
+
+À conserver après ce lot :
+
+Système de stacks générique permettant à un effet/capacité d'accumuler des charges sur une cible et de déclencher une conséquence à seuil.
+
+Exemples produit :
+- 3 stacks de Givre -> cible Gelée ;
+- 3 Marques mortelles -> exécution / KO si règle configurée ;
+- seuil configurable ;
+- maximum de stacks ;
+- durée / expiration configurable ;
+- mode refresh / add / consume ;
+- effet déclenché configurable ;
+- aucun comportement codé par nom d'élément ou de compétence.
+
+Ce sera un micro-lot gameplay séparé avec un seul owner Core.
+
+---
+
+
 ## Chantier actif — 2026-10-06 — Game Options / Esquive V1
 
 Branche : `work/lab-game-options-dodge-v1-2026-10-06`
