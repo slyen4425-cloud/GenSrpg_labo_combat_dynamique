@@ -1,6 +1,6 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
-const REVISION = "2026-10-06-v15-ash-smoke-vfx-pack-v1";
+const REVISION = "2026-10-06-v16-stone-carapace-vfx-pack-v1";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
