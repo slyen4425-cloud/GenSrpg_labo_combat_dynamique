@@ -214,7 +214,8 @@ export function applyStatusEffectV1({
   targetActorId,
   sourceActorId,
   sourceSkillId = null,
-  status
+  status,
+  atMs = state.elapsedMs
 }) {
   const validation =
     validateStatusEffectForTargetV1({
@@ -230,13 +231,20 @@ export function applyStatusEffectV1({
     );
   }
 
+  const now = Number(atMs);
+  if (!Number.isFinite(now) || now < 0) {
+    throw new RangeError(
+      "atMs must be a non-negative finite number"
+    );
+  }
+
   if (status.polarity === "detrimental") {
     const protection =
       combatProtectionForIncomingV1({
         state,
         targetActorId,
         domain: "negative_status",
-        atMs: state.elapsedMs
+        atMs: now
       });
     if (protection.protected) {
       return state;
@@ -252,7 +260,6 @@ export function applyStatusEffectV1({
       (entry) =>
         entry.definition.id === status.id
     ) ?? null;
-  const now = state.elapsedMs;
 
   if (
     existing === null ||
