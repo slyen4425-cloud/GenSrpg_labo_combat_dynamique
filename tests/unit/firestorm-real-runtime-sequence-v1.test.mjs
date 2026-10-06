@@ -150,6 +150,7 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
   let clock = 0;
   let scheduled = null;
   const seen = [];
+  const resolutions = [];
 
   const runtime = createCombatRuntime({
     session,
@@ -162,6 +163,9 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
     },
     clearTimer() {
       scheduled = null;
+    },
+    onResolved(resolution) {
+      resolutions.push(resolution);
     },
     onState(state) {
       fx.syncPersistentZones(
@@ -228,6 +232,11 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
   const node = arena.children[0];
   const shortTransform = node.style.transform;
   assert.equal(node.dataset.zoneRadius, "short");
+  assert.equal(
+    resolutions[0]?.persistentZoneOnly,
+    true,
+    "Core must expose that Tempête is a pure persistent-zone resolution"
+  );
 
   advanceTo(28500);
   assert.equal(
