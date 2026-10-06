@@ -6676,3 +6676,15 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Sources originales : PNG RGBA avec canal alpha réel ; découpe cible 56 PNG RGBA 512×512, atlas WebP horizontaux.
 - Critère de fin : sources verrouillées par SHA-256, 56 frames valides, 4 atlas décodables, catalogue unique cohérent, CI verte, publication par fast-forward de `global-assets`, checkpoint GREEN.
 - Statut : EN COURS — bootstrap de transfert reproductible, aucun média publié avant validation CI.
+
+
+### Fumée cendre HD V1 — payload généré et contrôlé
+
+- Commit assets générés : `0c2562dad48818b3159f74d7fda485d6da0e722c`.
+- Build bootstrap : run 37456037073 SUCCESS ; normalisation LF : run 37456310714 SUCCESS.
+- Inventaire : 56 PNG RGBA 512×512, 4 atlas WebP (cast/status 8192×512 ; projectile/impact 6144×512), 4 sources PNG RGBA originales.
+- Provenance : archive SHA-256 `50ee1a0af98a2fec27ef092aa02510a836ce1b85e0c42fb0f25659f16837b806` ; SHA-256 source et frame consignés dans `provenance.json` / `manifest.csv`.
+- Alpha : les 56 frames ont des pixels transparents et non transparents ; extrema globaux 0..255 sur les quatre séquences.
+- Catalogue unique : 102 assets / 55 sprites ; quatre IDs `pack:capture:sprite-ash-smoke-*`, aucun ID préexistant remplacé.
+- Le CSV final contient 57 lignes réelles (header + 56 frames) ; le bootstrap temporaire et son workflow ont été supprimés du payload final.
+- CI complète sur le présent commit documentaire : EN ATTENTE. Publication de `global-assets` interdite avant succès.
