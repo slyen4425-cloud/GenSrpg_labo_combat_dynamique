@@ -26,6 +26,12 @@ import {
   advancePersistentZonesV1,
   removePersistentZonesFromActorV1
 } from "./persistent-zone-runtime-v1.js";
+import {
+  advanceScheduledEffectsV1
+} from "./scheduled-effect-runtime-v1.js";
+import {
+  applyImmediateTacticalEffectsV1
+} from "./immediate-tactical-effects-v1.js";
 
 export function createCombatSession({
   distance = "medium",
@@ -218,6 +224,29 @@ export function createCombatSession({
       zoneSpatialContext = null
     } = {}
   ) {
+    state = advanceScheduledEffectsV1({
+      state,
+      deltaMs,
+      resolveEffects({
+        state: scheduledState,
+        record,
+        atMs
+      }) {
+        return applyImmediateTacticalEffectsV1({
+          state: scheduledState,
+          actorId: record.sourceActorId,
+          targetId: record.targetActorId,
+          skill: {
+            id: record.sourceSkillId,
+            element: record.skillElement,
+            effects: record.effects
+          },
+          atMs,
+          combatAtMs: atMs,
+          battleFormat
+        });
+      }
+    });
     state = advanceStatusEffectsV1({
       state,
       deltaMs
