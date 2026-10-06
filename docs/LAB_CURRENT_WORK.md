@@ -52,6 +52,15 @@ Ne pas modifier :
 - durée / tickInterval du JSON utilisateur ;
 - autres capacités.
 
+### Résultat technique
+
+- actions ordinaires joueur + ennemi pendant la zone : PASS, ticks et feedback inchangés ;
+- activation Runtime 2000 ms : `appliedAtMs = 2000`, premier tick = 3000 ;
+- reinforce : durée prolongée mais `nextTickAtMs` préservé ;
+- refresh : comportement de reset conservé ;
+- renforcement Runtime pendant ticks : 100 → 95 → 90 → 85 avec feedback `[5,5,5]` ;
+- CI `37442904928` : 1124 / 1124 PASS.
+
 ### Critère de fin
 
 - reproductions avec actions intercalées ;
