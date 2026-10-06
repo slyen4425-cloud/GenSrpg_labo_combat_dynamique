@@ -27,6 +27,17 @@ function sideOffsetFields(fields, role) {
   if (mode == null || mode === "") {
     return {};
   }
+
+  const sourceVersion =
+    Number(fields.bindingVersion);
+  if (
+    Number.isFinite(sourceVersion) &&
+    sourceVersion > 0 &&
+    sourceVersion < 9 &&
+    mode === "same"
+  ) {
+    return {};
+  }
   if (!["same", "mirror_x", "custom"].includes(mode)) {
     throw new RangeError(
       "Mode de décalage visuel invalide: " +
@@ -107,6 +118,16 @@ export function skillSpriteControlFieldsFromVisualsV1(visual = {}) {
 
 export function readSkillSpriteControlsV1(root) {
   const fields = {};
+  const sourceVersion =
+    Number(
+      root?.dataset?.skillPresentationBindingVersion
+    );
+  if (
+    Number.isFinite(sourceVersion) &&
+    sourceVersion > 0
+  ) {
+    fields.bindingVersion = sourceVersion;
+  }
   for (const role of roles) {
     const defaults = skillSpriteControlFieldsFromVisualsV1({});
     for (const [name, suffix, numeric] of controls) {
@@ -119,6 +140,18 @@ export function readSkillSpriteControlsV1(root) {
 
 export function writeSkillSpriteControlsV1(root, fields = {}) {
   const defaults = skillSpriteControlFieldsFromVisualsV1({});
+  if (root?.dataset) {
+    const version = Number(fields.bindingVersion);
+    if (
+      Number.isFinite(version) &&
+      version > 0
+    ) {
+      root.dataset.skillPresentationBindingVersion =
+        String(version);
+    } else {
+      delete root.dataset.skillPresentationBindingVersion;
+    }
+  }
   for (const role of roles) {
     for (const [name, suffix] of controls) {
       const node = root.querySelector(`[data-skill-${role}-${suffix}]`);
