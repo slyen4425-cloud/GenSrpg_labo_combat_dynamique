@@ -77,11 +77,12 @@ test("Tempete de flammes showcase transfer preserves the editor export with six 
     draft.presentation.visual.aura.assetId,
     "pack:capture:sprite-fire-zone-loop-01"
   );
-  assert.equal(draft.presentation.visual.aura.displayScale, 3.5);
-  assert.equal(draft.presentation.visual.aura.displayScaleX, 2.3);
-  assert.equal(draft.presentation.visual.aura.displayScaleY, 1);
+  assert.equal(draft.presentation.version, 8);
+  assert.equal(draft.presentation.visual.aura.displayScale, 1.2);
+  assert.equal(draft.presentation.visual.aura.displayScaleX, 2.5);
+  assert.equal(draft.presentation.visual.aura.displayScaleY, 0.8);
   assert.equal(draft.presentation.visual.aura.offsetX, 0);
-  assert.equal(draft.presentation.visual.aura.offsetY, -50);
+  assert.equal(draft.presentation.visual.aura.offsetY, 0);
   assert.equal(
     draft.presentation.audio.cast.assetId,
     "gensrpg:sound:effect-135ee2ed"
