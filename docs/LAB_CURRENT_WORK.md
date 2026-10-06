@@ -1,5 +1,119 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Game Options / Esquive V1
+
+Branche : `work/lab-game-options-dodge-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-game-options-dodge-v1-2026-10-06`
+
+SHA de base :
+`8f71546b3e0ca90155650235803c427deb6e28ac`
+
+### Besoin produit
+
+Ajouter une action Esquive dédiée dans l'UI combat, séparée des capacités de la créature.
+
+Placement UI cible :
+- à proximité immédiate du bloc Capacités / PV ;
+- visible uniquement si l'option de jeu Esquive est active ;
+- affiche les charges restantes ;
+- affiche la recharge en cours ;
+- appelle le système de réaction `evaded` déjà GREEN.
+
+Réglages à placer dans la section `Options de jeu` :
+- Esquive active / inactive ;
+- nombre maximal de charges ;
+- temps de recharge d'une charge.
+
+### Sémantique V1 des charges
+
+Chaque esquive acceptée :
+- consomme exactement une charge ;
+- chaque charge consommée revient indépendamment après `rechargeMs` ;
+- aucune charge n'est consommée si aucune attaque n'est esquivable à cet instant ;
+- aucune charge n'est consommée si l'attaque entrante est `dodgeable: false`.
+
+Le temps de recharge est calculé depuis `CombatState.elapsedMs`.
+
+Interdit :
+- `setTimeout` gameplay ;
+- timer UI autoritaire ;
+- cooldown spécial parallèle au Runtime ;
+- décrément de charge dans le renderer.
+
+### Autorités
+
+- configuration globale : `CaptureGameOptionsV1` ;
+- stockage de l'historique de charges consommées : Combat State ;
+- disponibilité/recharge : helper Core `Rechargeable Action` unique ;
+- réaction Esquive : Action Resolver existant ;
+- sélection de l'action ennemie en cours : Combat Runtime existant ;
+- UI : projection seulement.
+
+### Compatibilité
+
+- ancien export sans Game Options : Esquive globale désactivée ;
+- nouveaux tests éditeur : Esquive activée par défaut dans l'UI de création pour permettre le test ;
+- l'ancienne compétence `dodge.skill.json` reste une capacité/réaction historique ; elle n'est pas utilisée comme deuxième owner des charges globales ;
+- le bouton global construit une réaction normalisée à partir de `CaptureGameOptionsV1` et réutilise `resolveReaction`.
+
+### Hors périmètre de ce micro-lot
+
+- système de stacks ;
+- rangement visuel de la section Mouvement ;
+- IA adverse utilisant automatiquement l'action globale Esquive ;
+- animation spéciale d'esquive.
+
+Ces points auront leurs micro-lots dédiés.
+
+### TDD RED prévu
+
+1. normalisation Game Options : enabled / maxCharges / rechargeMs ;
+2. ancien battle setup sans Game Options reste valide et désactive Esquive ;
+3. charge consommée uniquement après réaction réellement acceptée ;
+4. charge refusée à zéro sans appeler une seconde logique d'esquive ;
+5. recharge basée sur `elapsedMs`, sans timer ;
+6. attaque `dodgeable: false` ne consomme aucune charge ;
+7. UI Options de jeu expose les 3 réglages ;
+8. UI combat expose le bouton avec charges + recharge ;
+9. anciennes capacités / combat / roster restent GREEN.
+
+### Critère de fin
+
+- aucune nouvelle horloge ;
+- aucune seconde autorité d'esquive ;
+- UI combat réellement testable ;
+- CI complète GREEN ;
+- checkpoint + preview GREEN.
+
+---
+
+## Décisions produit suivantes déjà enregistrées
+
+### Nettoyage UI Mouvement
+
+Créer un bloc unique `Mouvement` dans l'éditeur Créature regroupant :
+- profil morphologique ;
+- tempo de déplacement ;
+- valeur personnalisée.
+
+Aucune donnée gameplay ne change.
+
+### Stack mechanics V1
+
+Créer ensuite un moteur générique de stacks permettant :
+- ajout / retrait de stacks par capacité ;
+- compteur par cible et par clé de stack ;
+- seuil configurable ;
+- effet(s) déclenché(s) au seuil ;
+- politique au seuil : conserver / consommer / remettre à zéro ;
+- exemples possibles : 3 Givre -> Gel, 3 Marques -> dégâts/KO selon configuration.
+
+Le moteur ne doit jamais connaître les noms Givre / Gel / Marque.
+
+---
+
 ## Chantier actif — 2026-10-06 — Capture enemy landscape placement V1
 
 Branche : `work/lab-capture-enemy-landscape-placement-v1-2026-10-06`
