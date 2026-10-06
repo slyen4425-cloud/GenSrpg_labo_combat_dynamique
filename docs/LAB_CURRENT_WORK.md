@@ -1,5 +1,77 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Tempête de flammes : cadence de renforcement / régression V1
+
+Branche : `work/lab-firestorm-reinforce-cadence-regression-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-firestorm-reinforce-cadence-regression-v1-2026-10-06`
+
+SHA de base :
+`bfcfd65d04615fcf6695594e44d1e39eeec96e87`
+
+### Audit préalable
+
+La branche `sequence-regression` est bien le dernier HEAD Firestorm techniquement GREEN, mais elle diverge de `firestorm-action-cadence` et n'en contient pas la règle de préservation de `nextTickAtMs` lors d'un `reactivation = reinforce`.
+
+Le code LIVE de `sequence-regression` reconstruit encore :
+
+`nextTickAtMs = atMs + tickIntervalMs`
+
+pour chaque renforcement, ce qui peut repousser un tick déjà programmé. Aucun merge/cherry-pick de la branche cadence n'est autorisé : le comportement manquant doit être reproduit puis corrigé minimalement sur la base retenue.
+
+### Objectif
+
+1. ajouter une sentinelle RED montrant qu'un renforcement entre deux ticks ne doit pas déplacer le prochain tick déjà planifié ;
+2. vérifier le vrai chemin Runtime avec Tempête et préparation 2000 ms ;
+3. corriger uniquement l'autorité Persistent Zone si le RED confirme la régression ;
+4. préserver tous les correctifs de `sequence-regression`, notamment `persistentZoneOnly`, l'horloge absolue de résolution et la progression short → medium → long.
+
+### Propriétaire
+
+- cadence d'une zone persistante : `src/core/combat/persistent-zone-runtime-v1.js` ;
+- horloge combat : Combat Runtime existant, inchangé ;
+- présentation / géométrie / collision : propriétaires existants, protégés.
+
+### Fichiers autorisés
+
+- `src/core/combat/persistent-zone-runtime-v1.js` uniquement si le RED l'exige ;
+- test dédié de cadence/renforcement ;
+- documentation du chantier.
+
+### Domaines protégés
+
+Ne pas modifier :
+- configuration auteur `cap_fire_atk_6` ;
+- dégâts 5 / tick 1000 ms / durée 7000 ms ;
+- `preparationMs = 2000` ;
+- long autoritaire ;
+- géométrie visible et collision ;
+- projectile / trail / smoke ;
+- `persistentZoneOnly` et suppression du faux impact ;
+- renderer / FX / Health Delta ;
+- autres capacités.
+
+### TDD prévu
+
+RED :
+- zone existante avec prochain tick à 3000 ms ;
+- renforcement résolu à 2500 ms ;
+- le prochain tick doit rester 3000 ms, pas être repoussé à 3500 ms ;
+- expiration peut être prolongée indépendamment ;
+- `refresh` conserve sa sémantique distincte de remise à zéro.
+
+### Critère de fin
+
+- RED reproductible sur ce HEAD ;
+- correction minimale sans second timer ni seconde autorité ;
+- tests ciblés puis CI complète GREEN ;
+- checkpoint GREEN exact ;
+- preview smartphone exacte ;
+- validation utilisateur avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes / séquence & renforcement visuel V1
 
 Branche : `work/lab-firestorm-sequence-regression-v1-2026-10-06`
