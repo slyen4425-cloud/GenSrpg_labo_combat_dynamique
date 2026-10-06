@@ -1,3 +1,4 @@
+import { normalizeCaptureGameOptionsV1 } from "../../../contracts/capture-game-options-v1.js";
 import {
   normalizeCaptureCombatExportV1
 } from "../../../contracts/capture-combat-export-v1.js";
@@ -71,6 +72,9 @@ export function adaptCaptureCombatExportStackV1(input) {
     skillSpeedMultiplier:
       exported.battle.skillSpeedMultiplier,
     ...(exported.battle.recallPreparationMs === undefined ? {} : { recallPreparationMs: exported.battle.recallPreparationMs }),
+    gameOptions: normalizeCaptureGameOptionsV1(
+      exported.battle.gameOptions
+    ),
     roster: adaptCaptureExportToRosterDefinition(exported),
     fighterConfigs,
     fighters,
