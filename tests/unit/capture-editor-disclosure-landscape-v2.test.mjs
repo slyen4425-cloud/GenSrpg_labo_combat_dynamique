@@ -115,3 +115,19 @@ test("landscape V2 preserves the known-working fullscreen request owner", async 
     /fullscreenHost:\s*document\.documentElement/
   );
 });
+
+
+test("all editor cards start collapsed when no explicit state exists", async () => {
+  const source = await text(
+    "src/ui/capture-editor-human-v2.js"
+  );
+
+  assert.match(
+    source,
+    /card\.dataset\.collapsed\s*=\s*["']true["']/
+  );
+  assert.doesNotMatch(
+    source,
+    /card\.dataset\.collapsed\s*=\s*["']false["']/
+  );
+});
