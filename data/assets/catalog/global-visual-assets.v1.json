@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 98,
+    "assets": 102,
     "icons": 31,
-    "sprites": 51,
+    "sprites": 55,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -3125,6 +3125,160 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 45
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-ash-smoke-cast-01",
+      "label": "Fumée cendre — charge",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "skill",
+        "ash",
+        "smoke",
+        "cinder",
+        "cast",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ash_smoke/atlases/sprite_skill_ash_smoke_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 16,
+        "frameMs": 60
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-ash-smoke-projectile-01",
+      "label": "Fumée cendre — projectile",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "skill",
+        "ash",
+        "smoke",
+        "cinder",
+        "projectile",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ash_smoke/atlases/sprite_skill_ash_smoke_projectile_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45,
+        "headingRad": 0,
+        "coreAnchor": {
+          "x": 0.75,
+          "y": 0.5
+        },
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-ash-smoke-impact-01",
+      "label": "Fumée cendre — impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "skill",
+        "ash",
+        "smoke",
+        "cinder",
+        "impact",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ash_smoke/atlases/sprite_skill_ash_smoke_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-ash-smoke-status-aura-01",
+      "label": "Fumée cendre — aura négative",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "negative",
+        "ash",
+        "smoke",
+        "cinder",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ash_smoke/atlases/sprite_skill_ash_smoke_status_aura_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 16,
+        "frameMs": 90,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

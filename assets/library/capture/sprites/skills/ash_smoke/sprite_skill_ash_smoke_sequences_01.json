@@ -1,0 +1,96 @@
+{
+  "frame_size": [
+    512,
+    512
+  ],
+  "sequences": {
+    "cast": {
+      "frame_count": 16,
+      "frame_ms": 60,
+      "frames": [
+        "frames/sprite_skill_ash_smoke_cast_01.png",
+        "frames/sprite_skill_ash_smoke_cast_02.png",
+        "frames/sprite_skill_ash_smoke_cast_03.png",
+        "frames/sprite_skill_ash_smoke_cast_04.png",
+        "frames/sprite_skill_ash_smoke_cast_05.png",
+        "frames/sprite_skill_ash_smoke_cast_06.png",
+        "frames/sprite_skill_ash_smoke_cast_07.png",
+        "frames/sprite_skill_ash_smoke_cast_08.png",
+        "frames/sprite_skill_ash_smoke_cast_09.png",
+        "frames/sprite_skill_ash_smoke_cast_10.png",
+        "frames/sprite_skill_ash_smoke_cast_11.png",
+        "frames/sprite_skill_ash_smoke_cast_12.png",
+        "frames/sprite_skill_ash_smoke_cast_13.png",
+        "frames/sprite_skill_ash_smoke_cast_14.png",
+        "frames/sprite_skill_ash_smoke_cast_15.png",
+        "frames/sprite_skill_ash_smoke_cast_16.png"
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_cast_atlas_01.webp",
+      "playback_mode": "once"
+    },
+    "projectile": {
+      "frame_count": 12,
+      "frame_ms": 45,
+      "frames": [
+        "frames/sprite_skill_ash_smoke_projectile_01.png",
+        "frames/sprite_skill_ash_smoke_projectile_02.png",
+        "frames/sprite_skill_ash_smoke_projectile_03.png",
+        "frames/sprite_skill_ash_smoke_projectile_04.png",
+        "frames/sprite_skill_ash_smoke_projectile_05.png",
+        "frames/sprite_skill_ash_smoke_projectile_06.png",
+        "frames/sprite_skill_ash_smoke_projectile_07.png",
+        "frames/sprite_skill_ash_smoke_projectile_08.png",
+        "frames/sprite_skill_ash_smoke_projectile_09.png",
+        "frames/sprite_skill_ash_smoke_projectile_10.png",
+        "frames/sprite_skill_ash_smoke_projectile_11.png",
+        "frames/sprite_skill_ash_smoke_projectile_12.png"
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_projectile_atlas_01.webp",
+      "playback_mode": "loop"
+    },
+    "impact": {
+      "frame_count": 12,
+      "frame_ms": 45,
+      "frames": [
+        "frames/sprite_skill_ash_smoke_impact_01.png",
+        "frames/sprite_skill_ash_smoke_impact_02.png",
+        "frames/sprite_skill_ash_smoke_impact_03.png",
+        "frames/sprite_skill_ash_smoke_impact_04.png",
+        "frames/sprite_skill_ash_smoke_impact_05.png",
+        "frames/sprite_skill_ash_smoke_impact_06.png",
+        "frames/sprite_skill_ash_smoke_impact_07.png",
+        "frames/sprite_skill_ash_smoke_impact_08.png",
+        "frames/sprite_skill_ash_smoke_impact_09.png",
+        "frames/sprite_skill_ash_smoke_impact_10.png",
+        "frames/sprite_skill_ash_smoke_impact_11.png",
+        "frames/sprite_skill_ash_smoke_impact_12.png"
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_impact_atlas_01.webp",
+      "playback_mode": "once"
+    },
+    "status_aura": {
+      "frame_count": 16,
+      "frame_ms": 90,
+      "frames": [
+        "frames/sprite_skill_ash_smoke_status_aura_01.png",
+        "frames/sprite_skill_ash_smoke_status_aura_02.png",
+        "frames/sprite_skill_ash_smoke_status_aura_03.png",
+        "frames/sprite_skill_ash_smoke_status_aura_04.png",
+        "frames/sprite_skill_ash_smoke_status_aura_05.png",
+        "frames/sprite_skill_ash_smoke_status_aura_06.png",
+        "frames/sprite_skill_ash_smoke_status_aura_07.png",
+        "frames/sprite_skill_ash_smoke_status_aura_08.png",
+        "frames/sprite_skill_ash_smoke_status_aura_09.png",
+        "frames/sprite_skill_ash_smoke_status_aura_10.png",
+        "frames/sprite_skill_ash_smoke_status_aura_11.png",
+        "frames/sprite_skill_ash_smoke_status_aura_12.png",
+        "frames/sprite_skill_ash_smoke_status_aura_13.png",
+        "frames/sprite_skill_ash_smoke_status_aura_14.png",
+        "frames/sprite_skill_ash_smoke_status_aura_15.png",
+        "frames/sprite_skill_ash_smoke_status_aura_16.png"
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_status_aura_atlas_01.webp",
+      "playback_mode": "loop"
+    }
+  }
+}

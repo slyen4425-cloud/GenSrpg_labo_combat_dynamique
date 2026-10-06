@@ -1,0 +1,376 @@
+{
+  "version": 1,
+  "source": "OpenAI image generation, user-approved transparent ash/smoke sheets",
+  "source_archive_sha256": "50ee1a0af98a2fec27ef092aa02510a836ce1b85e0c42fb0f25659f16837b806",
+  "crop_policy": "proportional grid boundaries, row-major, LANCZOS resize to native 512x512 frame",
+  "results": {
+    "cast": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "80e6c139de6a61242cbc627a20bee5f93592d651d7b2a90a565fcc7003538224",
+      "frame_count": 16,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "6b045caa4ef6766cd1ee8cbeb78839e6f432a04f0e21f08091f933520d495c9b",
+        "b5d23782ab16d5d5bf9a99bc2152bb51e8e9feb6c01ac2bbc30f2fc9e9b45608",
+        "63d5cce81b420f8a4eb90353a007cefa6af0d6ff459e5ef0e0339bc2601c97da",
+        "3684cfe1003bdf756a80ababf937e267681f94107db899a598d4b0ff89dfe78c",
+        "8a4572bad45b36fc0cf2324808440721ab1724215f485b669b3ac828f2df94fa",
+        "f5afc1b76fc5e75e8e4e1408352a42903b40cce856a327c4dc8ab7bcc1d4232c",
+        "2652768fcf798287829b99e7da016a38099d6ca97aba62921b95aa10ca88877e",
+        "4c59936e6fe24371dec65cfdf0ffd4e4e34062dd8db8380f869e87122a9436d8",
+        "4a3f4361a935f18fd9d943664bdd2cfcc46124e6168e1e54ec463d5148213bc3",
+        "1d419c1a8da75c767fd6b7c26bac6b02ee64db72797d98cc032079753987abf5",
+        "228620a51e39cde50786666210802fb0d76fd8f03be792f056f89301e01a2c0f",
+        "b9d41303e0986e1cd98ec181d6ac0865a5da258b82a3096a4727206d759b2bf9",
+        "067dead7ff12045b45e6b0af69409a0e3ab77704cbd83f5a65ac00b9a426f70f",
+        "038a44490051ab2359045286427eeaa01e1c787307227ff320f27ec751fd9f9d",
+        "b98f09f54b434387caa61d6f4f1714417a533e5c31708a9ed14a17aff8eda9e1",
+        "a726ba3c1e7d0a62e04d58bdaf1171fb0571a42643a91bd9a2642b679008904c"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          249
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          255
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_cast_atlas_01.webp",
+      "atlas_size": [
+        8192,
+        512
+      ],
+      "atlas_sha256": "d4cc60b57cde7d65423faa1b3c1a3e3d08aac2126f8513b30dee0402e2b1687f"
+    },
+    "projectile": {
+      "source_size": [
+        1448,
+        1086
+      ],
+      "source_sha256": "0087e33f2fdfc8b2fce5cab9436a607237262f9c3dd1cff4de6a83803715858b",
+      "frame_count": 12,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "ddf17ab05f6e404fbe34ba2a3df00348b66cfd142a0f3227c35e48420db75fb4",
+        "8ccefa7dba6d89c5f7abdcd9d2dd1d31b0e4ee36885e315fdf6b3c8ab1813873",
+        "449eb1ca2c2cffb6c2cf02c208f4dad625d740a18cba63e0df7ab3234cbfca4a",
+        "f4bf2e1a64f9e9331cb39fa57204c3ee4f02d154b7d80c38e6282426dfc09779",
+        "e51a4e5fab5d77f013808fc191372c10159de81247080e945a0d770523fb769c",
+        "f9260aaec1f7024966bab0b3a4fee8497c12a395d3c5bbd1e59836e6da1d4e85",
+        "31f7828a600ee8dc7d54af63035a383093f21498f597a592c37df99b08878138",
+        "9ec35ed01af591a8c3ddf1ca02b742db08b0d546c0973a136336007060964745",
+        "8fa07bfa8553290e4cf6479e0871e409f572a0f59b87bbc4c0d1b2f2f359dacf",
+        "c9cb953459b8bda546f3505820e5a562804628154f2e4f68b85ce546c3983f27",
+        "c83b2046bd4eb6c4bd50cb5b2ea1ca657dc99aae573807b08b49273ee9cb709f",
+        "ea309b76be386a7bad3188db7d5d32b8b55beb8b140265a0aea1ef7197975fe1"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          253
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_projectile_atlas_01.webp",
+      "atlas_size": [
+        6144,
+        512
+      ],
+      "atlas_sha256": "4ea34a68d2c8e66de4b4f5fd244ccc335966e5b67c93d3f223944b2c0e2ce085"
+    },
+    "impact": {
+      "source_size": [
+        1448,
+        1086
+      ],
+      "source_sha256": "ec9144e5be91e603ed97955b14c06e381bb50efb24f9178e956f72430f72d56c",
+      "frame_count": 12,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "760d1e3aa36651a69582c0a7b963ea50cf55f673a467c480327dd51e6f1d14e4",
+        "ebaae725151693e1359bf30305099e5cc224bfde5e83f6e6092a72498b37a7e0",
+        "e1a2958b771fc7d79489e525c3c2740b6c07c6e1548c9d95dbd0e0575d956b8a",
+        "a6b2a88166b1a8d587dad0f722194be1ce324826d63263f781bb2337692e8a36",
+        "07d56ccefda86ceab2c952641d99ba2064dff75f866fb26ec1af92d74406a903",
+        "54323f9bd4d36ed7a9de4bdbcbc3cd92e7a592f8fa137e3a1103ec32313ac297",
+        "439cfdedd8cbd0cfd6fb8474eb321ffcaab84106dc17b48c56a0a9fccc091497",
+        "6863b4648a3e251914185513d70bc3a1b5cad3e146e41935ec29056ed1d76810",
+        "9b9f285800d951d8d9736a687c2d814316b8e1e083ab1e822f2254aff5995009",
+        "9312bea3adf82ff1e8cd35d2cebc4604914677836c579409193e749581a51f15",
+        "2b4d4d8f227e7715bb84fa27b4a422091bcf8ee7d1c80c64ee343cb81c7da6d2",
+        "3aa209a45b251f30e8b5cbc45f397a34b52d8c048ab58b58544559eb54b762af"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          249
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_impact_atlas_01.webp",
+      "atlas_size": [
+        6144,
+        512
+      ],
+      "atlas_sha256": "d60281726f5b42d137d646ac7c15ad841fe6e126874ba8ac69cac7fda315672a"
+    },
+    "status_aura": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "87f1aec33945dfb4e4cb970e50866bd57aa50ea588f6220987a02a7ef27c91b4",
+      "frame_count": 16,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "0f29b5da32471b9ee096baa523e4b56887745a86d08cad1817fc6651173d19ac",
+        "f3d646e09545c9dc2a108ae2a213a827df4040e3e031f82e7bd8f5d1066d3178",
+        "5cf955c19e2d7f6394c4e834f6cde5c11713af9d3fe0f28f07a680f6fb48eaad",
+        "a5e087e89498ae927e1c1272fe02d5e60fbc22150d2bd71f6f62e42bdf32a41c",
+        "9dab09197fc766c4de1d373f5650af2f8f392ebd6e07aad54d35f6709cc25b7e",
+        "883ca315492f52a0f0fd18917cb6a4c6a0051c3df0288a9cbdb0665175c9501f",
+        "3be57bce612cdea7695ff4c6a34352da64d3f064de45a9ae7f0d41e9f539e41d",
+        "95807908f86092885d1e6bedfbfd77540015d3e82e4badfb51517617739f4504",
+        "0fbd963ba7dd71edc1026b5a1d8d5c76487016b540d5550de3c2764f9b404969",
+        "54e06c5a28ac78a8a7deffc1d581c4851609cc9e29f2b7bc936eb4ff9e63164d",
+        "84af267b9c4ff9218c29c0e73607c4895ccd4d22b2229db10eb02027888ec69d",
+        "c360c88ffe8cb383717fd58cd2b8911ccd25ba31f6581fa24baa97990cc7746d",
+        "de9ecfc6d6d47c870665198e90fc11256396d430b643f205697d2d5a1af962d8",
+        "6f46a8da7cb1c56e5aaed704e88b0ff60ec41ac66b4f19944523d09e3c57b8b6",
+        "9c68b9c95ed189ae23cbadc5d298a98e13d2b2d7183d393d1a6d8e6264ce5e92",
+        "49caacc4dd3d59dd1d346cde197dcc0d90e2722143924cf7668ea365024abfd3"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          250
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          247
+        ],
+        [
+          0,
+          254
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_ash_smoke_status_aura_atlas_01.webp",
+      "atlas_size": [
+        8192,
+        512
+      ],
+      "atlas_sha256": "3b7033d9ee79c1ee7238fe2f175c98e7431db6314cfd8235efda8e8e97fb400a"
+    }
+  }
+}
