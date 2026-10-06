@@ -57,6 +57,17 @@ RED :
 4. le contact visuel reste non autoritaire pour burrow ;
 5. les modificateurs de temps d'approche existants s'appliquent aussi à burrow.
 
+### Résultat technique LIVE
+
+- RED : CI `37471825343` — 1134 tests, 1129 PASS, 5 FAIL ciblés ;
+- `approachMode = burrow` ajouté au contrat existant ;
+- Combat Presence projette `underground` pendant le travel sans état parallèle ;
+- `approach_time_modifier` réutilise le même owner pour ground / aerial / burrow ;
+- surface-only rate underground ; une compétence configurée underground peut toucher ;
+- `reportActionContact` reste volontairement non autoritaire pour burrow ;
+- CI fonctionnelle `37471953028` — 1134 / 1134 PASS ;
+- rapport : `docs/LAB_BURROW_GAMEPLAY_V1.md`.
+
 ### Critère de fin
 
 - RED ciblé ;
