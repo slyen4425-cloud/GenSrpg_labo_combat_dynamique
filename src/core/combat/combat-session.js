@@ -168,14 +168,16 @@ export function createCombatSession({
   function completeSkill({
     action,
     reaction = null,
-    targetActionContext = null
+    targetActionContext = null,
+    resolutionAtMs = null
   }) {
     const result = resolveSkillCompletion({
       state,
       action,
       reaction,
       targetActionContext,
-      battleFormat
+      battleFormat,
+      resolutionAtMs
     });
     return commitCompletedOwnerAction(
       result,
@@ -197,14 +199,16 @@ export function createCombatSession({
   function completeAction({
     action,
     reaction = null,
-    targetActionContext = null
+    targetActionContext = null,
+    resolutionAtMs = null
   }) {
     return action.actionType === "command"
       ? completeCommand({ action })
       : completeSkill({
           action,
           reaction,
-          targetActionContext
+          targetActionContext,
+          resolutionAtMs
         });
   }
 
