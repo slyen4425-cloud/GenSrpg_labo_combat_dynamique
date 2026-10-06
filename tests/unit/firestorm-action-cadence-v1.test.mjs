@@ -133,9 +133,9 @@ function harmlessAction(id) {
   });
 }
 
-function createSession() {
+function createSession(distance = "medium") {
   return createCombatSession({
-    distance: "medium",
+    distance,
     battleFormat: format1v1(),
     fighters: [
       fighter("local"),
@@ -191,7 +191,7 @@ function runtimeHarness({
 }
 
 test("real Runtime Tempête applies at semantic impact and first tick is exactly one interval later", async () => {
-  const session = createSession();
+  const session = createSession("short");
   const storm = await fireStorm({
     preparationMs: 2000
   });
@@ -278,9 +278,14 @@ test("reinforce grows the existing zone without postponing its already scheduled
     "reinforce must not reset the damage cadence"
   );
   assert.equal(
+    reinforced.appliedAtMs,
+    600,
+    "reinforce may extend lifetime from its latest activation"
+  );
+  assert.equal(
     reinforced.expiresAtMs,
-    7000,
-    "reinforce must not silently become refresh"
+    7600,
+    "reinforce must extend lifetime so short → medium → long remains reachable"
   );
 
   session.advanceMs(400);
