@@ -57,6 +57,17 @@ Aucune modification :
 3. le bouton paysage doit être réduit d'environ 40 % ;
 4. la règle de taille d'icône existante reste inchangée.
 
+## Résultat technique LIVE
+
+- RED : CI `37529067656` — 1195 tests, 1193 PASS, 2 FAIL ciblés ;
+- cause : Esquive partageait la largeur du bloc Capacités via une seconde colonne de grille ;
+- correction : Esquive déplacée dans un slot HUD arène indépendant, entre PV et Capacités ;
+- largeur Esquive paysage réduite à ~60 % de l'ancienne ;
+- les règles de scale/taille des icônes de capacités restent inchangées ;
+- grille des 5 capacités à nouveau pleine largeur ;
+- CI fonctionnelle `37529214623` — 1195 / 1195 PASS ;
+- rapport : `docs/LAB_COMBAT_HUD_DODGE_LAYOUT_V1.md`.
+
 ## Critère de fin
 
 - correction HTML/CSS seulement ;
