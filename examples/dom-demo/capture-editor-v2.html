@@ -774,10 +774,14 @@
 
         <fieldset class="editor-choice-group">
           <legend>Présences que cette capacité peut toucher</legend>
+          <label class="switch-line">
+            <input type="checkbox" data-skill-hit-presence-enabled>
+            <span>Définir explicitement les présences atteignables</span>
+          </label>
           <label class="check"><input type="checkbox" value="surface" data-skill-hit-presence checked>Surface</label>
           <label class="check"><input type="checkbox" value="airborne" data-skill-hit-presence>Aérien</label>
           <label class="check"><input type="checkbox" value="underground" data-skill-hit-presence>Souterrain</label>
-          <p class="note">Exemple : Tornade = Surface + Aérien ; Tremblement de terre = Surface + Souterrain.</p>
+          <p class="note">Désactivé = comportement historique inchangé. Activé : Tornade peut viser Surface + Aérien ; Tremblement de terre Surface + Souterrain.</p>
         </fieldset>
 
         <fieldset class="editor-choice-group">
