@@ -1,3 +1,71 @@
+# Micro-lot actif — 2026-10-06 — Combat HUD Dodge Layout V1
+
+Branche : `work/lab-combat-hud-dodge-layout-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-combat-hud-dodge-layout-v1-2026-10-06`
+
+SHA de base :
+`2c0e838a3ee0cb18f2b71db02ca5ba1866fb1ab5`
+
+## Retour utilisateur
+
+La preview Side-Aware + validation est visuellement validée, hors test fonctionnel Esquive.
+
+Deux défauts HUD :
+- le bouton Esquive doit vivre dans l'espace libre entre le bloc Capacités et le bloc PV joueur ;
+- le bouton doit être environ 40 % plus petit ;
+- les icônes des capacités sont devenues trop petites en combat et doivent retrouver leur taille perçue antérieure.
+
+## Diagnostic
+
+La taille CSS explicite des icônes n'a pas régressé.
+La régression vient de `.combat-primary-actions`, introduit avec Esquive :
+la grille réserve une seconde colonne au bouton Esquive dans le bloc Capacités et réduit donc la largeur disponible aux cinq capacités.
+
+## Autorité / correction visée
+
+- déplacer uniquement le bouton DOM Esquive hors de la grille des capacités ;
+- conserver `data-combat-dodge` et tout le raccord Runtime existant ;
+- positionner le bouton dans l'espace HUD central entre PV joueur et Capacités ;
+- réduire son empreinte à ~60 % de la taille paysage actuelle ;
+- redonner aux cinq capacités 100 % de la largeur de leur bloc, sans modifier leur scale/asset.
+
+## Fichiers autorisés
+
+- `examples/dom-demo/capture-editor-v2.html`
+- `examples/dom-demo/capture-editor-v2.css`
+- test statique HUD dédié
+- documentation
+
+## Protégé
+
+Aucune modification :
+- Combat Runtime / Session ;
+- Rechargeable Action ;
+- Game Options ;
+- Action Resolver ;
+- Damage / Status / collision / projectile ;
+- SkillPresentationBinding V9 / FX ;
+- données auteur / scale des icônes ;
+- placement des combattants.
+
+## TDD RED
+
+1. le bouton Esquive doit avoir un slot arène dédié et ne plus partager la largeur de la grille des capacités ;
+2. le wrapper capacités ne doit plus réserver une colonne `auto` ;
+3. le bouton paysage doit être réduit d'environ 40 % ;
+4. la règle de taille d'icône existante reste inchangée.
+
+## Critère de fin
+
+- correction HTML/CSS seulement ;
+- CI complète GREEN ;
+- checkpoint + preview identiques ;
+- validation smartphone paysage utilisateur.
+
+---
+
 # Laboratoire Combat Dynamique — Current Work
 
 ## Chantier actif — 2026-10-06 — Side-aware validation regression V1
