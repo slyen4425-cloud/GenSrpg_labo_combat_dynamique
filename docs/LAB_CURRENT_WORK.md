@@ -61,6 +61,16 @@ Ne pas modifier :
 - scales auteur ;
 - données Showcase.
 
+### Résultat technique LIVE
+
+- RED : CI `37518857787` — 1193 tests, 1191 PASS, 2 FAIL ciblés ;
+- cause : helper fantôme `nonNegativeNumber` dans la lecture Game Options ;
+- correction : conversion s -> ms dans l'UI puis validation déléguée au contrat `normalizeCaptureGameOptionsV1` ;
+- aucune modification du renderer V9 ;
+- sentinelles `mirror_x`, round-trip Human Editor et Impact DOM restent GREEN ;
+- CI fonctionnelle `37518946024` — 1193 / 1193 PASS ;
+- rapport : `docs/LAB_SIDE_AWARE_VALIDATION_REGRESSION_V1.md`.
+
 ### Critère de fin
 
 - RED reproductible ;
