@@ -1,5 +1,72 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Burrow gameplay V1
+
+Branche : `work/lab-burrow-gameplay-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-burrow-gameplay-v1-2026-10-06`
+
+SHA de base :
+`abdd822f48c297b64071c03bec7ade3be971259a`
+
+### Objectif
+
+Ajouter proprement l'approche souterraine côté gameplay :
+
+- `approachMode = burrow` ;
+- présence `underground` pendant le travel via Combat Presence existant ;
+- surface-only rate la cible souterraine ;
+- une compétence couvrant underground peut la toucher ;
+- le timing d'approche utilise le même propriétaire Combat Timing ;
+- aucun contact DOM / collision visible n'est autoritaire sous terre.
+
+### Propriétaires
+
+- mode d'approche : SkillDefinition ;
+- présence : Combat Presence V1 existant ;
+- timing : Combat Timing existant ;
+- impact : Combat Runtime nominal existant ;
+- rendu : explicitement hors périmètre de ce lot.
+
+### Fichiers autorisés
+
+- `src/contracts/skill-definition.js` ;
+- `src/core/combat/combat-timing.js` si nécessaire ;
+- tests dédiés ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Action Resolver hors raccord déjà créé Presence ;
+- Combat Runtime ;
+- reportActionContact ;
+- renderer / animation / collision ;
+- compétences historiques ;
+- éditeur ;
+- Tempête ;
+- dégâts / status / roster.
+
+### TDD prévu
+
+RED :
+1. SkillDefinition accepte `burrow` ;
+2. pendant son travel, la cible est underground et une attaque surface-only est evaded ;
+3. une attaque explicitement `surface + underground` touche ;
+4. le contact visuel reste non autoritaire pour burrow ;
+5. les modificateurs de temps d'approche existants s'appliquent aussi à burrow.
+
+### Critère de fin
+
+- RED ciblé ;
+- aucun nouvel owner ;
+- CI complète GREEN ;
+- checkpoint GREEN gameplay ;
+- rendu souterrain reporté au lot animation suivant.
+
+---
+
 ## Chantier actif — 2026-10-06 — Combat Presence / Reach V1
 
 Branche : `work/lab-combat-presence-reach-v1-2026-10-06`
