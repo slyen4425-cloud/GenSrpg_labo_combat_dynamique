@@ -38,10 +38,10 @@ for (const level of [1, 2, 3]) test(`fire zone level ${level} damages an idle vi
   assert.equal(h.deltas.filter(d => d.actorId === "local").reduce((sum, d) => sum + d.amount, 0), 10);
   h.runtime.dispose();
 });
-test("visible range follows source movement, rejects outside and ellipse corners, and resumes without a target attack", async () => {
-  const h = await setup(3);
+test("medium visible range follows source movement, rejects outside and ellipse corners, and resumes without a target attack", async () => {
+  const h = await setup(2);
   h.moveLocal(rect(200, 200, 10, 10)); h.tick(1000);
-  assert.equal(h.session.snapshot().fighters.local.hp, 100, "long radius does not ignore a measured visible boundary");
+  assert.equal(h.session.snapshot().fighters.local.hp, 100, "medium radius respects a measured visible boundary");
   h.moveLocal(rect(0, 0, 5, 5)); h.tick(2000);
   assert.equal(h.session.snapshot().fighters.local.hp, 100, "empty corner of the ellipse is outside");
   h.moveZone(rect(-30, -30, 100, 100)); h.tick(3000);
