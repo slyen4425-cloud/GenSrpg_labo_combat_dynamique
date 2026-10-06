@@ -426,6 +426,11 @@ export async function mountCombatTest({
       )
     },
     targetAnchors: fighterContainers,
+    targetAnchorFor(slotId) {
+      return visuals.getVisibleTargetRectFor(
+        slotId
+      );
+    },
     sourceAnchorFor(slotId, anchorName) {
       return visuals.getFxAnchorFor(slotId, anchorName);
     },
