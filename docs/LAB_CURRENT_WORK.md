@@ -1,5 +1,56 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Creature Movement Group UI V1
+
+Branche : `work/lab-creature-movement-group-ui-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-creature-movement-group-ui-v1-2026-10-06`
+
+SHA de base :
+`0cf4d9b9b7f53714e4e42329998a818b764f0a23`
+
+### Besoin produit
+
+Le bloc Créature est devenu trop plat après l'ajout du tempo de mobilité.
+
+Objectif UI uniquement :
+- regrouper sous un bloc clair `Mouvement` :
+  - archétype d'animation ;
+  - tempo de déplacement ;
+  - valeur réelle de variation du temps d'approche ;
+- regrouper séparément `Taille et placement en combat` ;
+- conserver exactement les mêmes attributs `data-*` et les mêmes valeurs ;
+- ne modifier aucun builder, draft, adapter, Combat Timing ou profile owner.
+
+### Autorité
+
+Ce lot ne crée aucune donnée.
+
+Les owners restent :
+- `profileId` : Creature Presentation ;
+- `approachTimeModifierPct` : combat créature ;
+- presets tempo : projection Human Editor existante ;
+- displayScale / viewOverrides : Creature Presentation.
+
+### TDD
+
+RED statique :
+- vraie page HTML doit exposer `data-creature-movement-group` ;
+- profil + preset + valeur avancée doivent être dans ce groupe ;
+- taille / overrides doivent être dans `data-creature-placement-group` ;
+- les sélecteurs historiques doivent rester présents une seule fois.
+
+### Critère de fin
+
+- HTML/CSS uniquement ;
+- aucune logique JS modifiée ;
+- round-trip créature inchangé ;
+- CI complète GREEN ;
+- checkpoint + preview GREEN.
+
+---
+
 ## Chantier actif — 2026-10-06 — Game Options / Esquive V1
 
 Branche : `work/lab-game-options-dodge-v1-2026-10-06`
