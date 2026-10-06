@@ -87,7 +87,9 @@ async function claw() {
 
 function harness({
   session,
-  startClock = 0
+  startClock = 0,
+  readZoneSpatialContext = null,
+  onHealthDelta = () => {}
 }) {
   let clock = startClock;
   let scheduled = null;
@@ -95,6 +97,8 @@ function harness({
   const runtime = createCombatRuntime({
     session,
     tickMs: 50,
+    readZoneSpatialContext,
+    onHealthDelta,
     now() {
       return clock;
     },
@@ -317,6 +321,157 @@ test("Tempête de flammes level 3 damages the enemy camp without an attack", asy
     session.snapshot().fighters.enemy.hp,
     95,
     "level 3 long zone must cover the enemy camp even with no active attack"
+  );
+
+  h.runtime.dispose();
+});
+
+test("Tempête de flammes long range remains authoritative when a visual sample momentarily reports the enemy outside", async () => {
+  const session = createSession();
+  const zoneSkill =
+    await showcaseFireStorm();
+
+  activateZone(
+    session,
+    zoneSkill,
+    3
+  );
+
+  const deltas = [];
+  const h = harness({
+    session,
+    readZoneSpatialContext(state) {
+      const zone =
+        state.persistentZones[0];
+      return {
+        zones: [
+          {
+            zoneId: zone.id,
+            sourceActorId:
+              zone.sourceActorId,
+            radius: zone.radius,
+            bounds: {
+              left: 0,
+              top: 0,
+              width: 100,
+              height: 100
+            }
+          }
+        ],
+        actors: [
+          {
+            actorId: "local",
+            bounds: {
+              left: 10,
+              top: 10,
+              width: 20,
+              height: 20
+            }
+          },
+          {
+            actorId: "enemy",
+            bounds: {
+              left: 300,
+              top: 300,
+              width: 20,
+              height: 20
+            }
+          }
+        ]
+      };
+    },
+    onHealthDelta(feedback) {
+      deltas.push(feedback);
+    }
+  });
+
+  h.tickAt(1000);
+
+  assert.equal(
+    session.snapshot().fighters.enemy.hp,
+    95,
+    "long range is a gameplay guarantee and must not flicker off at the visual boundary"
+  );
+  assert.deepEqual(
+    deltas.map(({ actorId, kind, amount }) => ({
+      actorId,
+      kind,
+      amount
+    })),
+    [
+      {
+        actorId: "enemy",
+        kind: "damage",
+        amount: 5
+      }
+    ],
+    "the native HP change must emit the same damage feedback event"
+  );
+
+  h.runtime.dispose();
+});
+
+test("Tempête de flammes medium range still respects a visual outside measurement", async () => {
+  const session = createSession();
+  const zoneSkill =
+    await showcaseFireStorm();
+
+  activateZone(
+    session,
+    zoneSkill,
+    2
+  );
+
+  const h = harness({
+    session,
+    readZoneSpatialContext(state) {
+      const zone =
+        state.persistentZones[0];
+      return {
+        zones: [
+          {
+            zoneId: zone.id,
+            sourceActorId:
+              zone.sourceActorId,
+            radius: zone.radius,
+            bounds: {
+              left: 0,
+              top: 0,
+              width: 100,
+              height: 100
+            }
+          }
+        ],
+        actors: [
+          {
+            actorId: "local",
+            bounds: {
+              left: 10,
+              top: 10,
+              width: 20,
+              height: 20
+            }
+          },
+          {
+            actorId: "enemy",
+            bounds: {
+              left: 300,
+              top: 300,
+              width: 20,
+              height: 20
+            }
+          }
+        ]
+      };
+    }
+  });
+
+  h.tickAt(1000);
+
+  assert.equal(
+    session.snapshot().fighters.enemy.hp,
+    100,
+    "medium range must keep using the live visual occupancy rule"
   );
 
   h.runtime.dispose();
