@@ -508,6 +508,8 @@ export function resolveSkillStart({
   const travelMs = effectiveApproachTimingMs({
     baseMs: skill.travelMs,
     approachMode: skill.approachMode,
+    permanentPct:
+      actor.approachTimeModifierPct,
     statusEffects: actor.statusEffects,
     atMs: state.elapsedMs,
     speedMultiplier: skillSpeedMultiplier
