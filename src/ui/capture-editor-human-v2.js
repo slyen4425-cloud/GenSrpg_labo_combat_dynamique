@@ -445,6 +445,38 @@ export function buildHumanTacticalSkillEffectsV1(
       });
     }
 
+    if (kind === "scheduled_effect") {
+      const nestedKind = row.querySelector(
+        "[data-skill-scheduled-effect-kind]"
+      ).value;
+      const nested = {
+        kind: nestedKind,
+        targetScope: "target",
+        amount: Number(
+          row.querySelector(
+            "[data-skill-scheduled-effect-amount]"
+          ).value
+        )
+      };
+      if (nestedKind === "damage") {
+        nested.channel =
+          row.querySelector(
+            "[data-skill-scheduled-effect-channel]"
+          ).value || null;
+      }
+
+      return {
+        kind,
+        targetScope: "target",
+        delaySeconds: Number(
+          row.querySelector(
+            "[data-skill-scheduled-delay-seconds]"
+          ).value
+        ),
+        effects: [nested]
+      };
+    }
+
     if (kind === "persistent_zone") {
       const tickEffect =
         effect.tickEffect ?? {};
@@ -3144,6 +3176,43 @@ function writeSkillDraftFields(
   ).checked =
     fields.loadoutSlot === "ultimate";
 
+  const reachEnabled =
+    fields.hitPresenceStates !== null;
+  one(
+    root,
+    "[data-skill-hit-presence-enabled]"
+  ).checked = reachEnabled;
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-hit-presence]"
+    )
+  ) {
+    input.checked =
+      reachEnabled
+        ? fields.hitPresenceStates.includes(
+            input.value
+          )
+        : input.value === "surface";
+    input.disabled = !reachEnabled;
+  }
+
+  one(
+    root,
+    "[data-skill-dodgeable]"
+  ).checked =
+    fields.dodgeable !== false;
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-target-location]"
+    )
+  ) {
+    input.checked =
+      fields.targetLocations.includes(
+        input.value
+      );
+  }
+
   renderHumanSkillActivationRequirementsV1(
     root,
     fields.activationRequirements
@@ -3220,6 +3289,32 @@ function prepareNewSkillDraftFields(
     root,
     "[data-skill-ultimate]"
   ).checked = false;
+
+  one(
+    root,
+    "[data-skill-hit-presence-enabled]"
+  ).checked = false;
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-hit-presence]"
+    )
+  ) {
+    input.checked =
+      input.value === "surface";
+    input.disabled = true;
+  }
+  one(
+    root,
+    "[data-skill-dodgeable]"
+  ).checked = true;
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-target-location]"
+    )
+  ) {
+    input.checked =
+      input.value === "active";
+  }
 
   renderHumanProjectilePowerV1(
     root,
@@ -3327,6 +3422,10 @@ function writeCreatureRecordFields(
       "[data-creature-display-scale]",
       presentation?.displayScale ?? 1
     ],
+    [
+      "[data-creature-approach-time-modifier]",
+      draft.combat?.approachTimeModifierPct ?? 0
+    ],
     ["[data-creature-player-scale]", presentation?.viewOverrides?.player?.displayScale ?? presentation?.displayScale ?? 1],
     ["[data-creature-opponent-scale]", presentation?.viewOverrides?.opponent?.displayScale ?? presentation?.displayScale ?? 1],
     ["[data-creature-player-x]", presentation?.viewOverrides?.player?.position?.x ?? presentation?.position?.x ?? 0],
@@ -3376,6 +3475,14 @@ function writeCreatureRecordFields(
   for (const [selector, value] of fields) {
     setFieldValue(root, selector, value);
   }
+
+  one(
+    root,
+    "[data-creature-mobility-preset]"
+  ).value =
+    humanMobilityTempoPresetIdV1(
+      draft.combat?.approachTimeModifierPct ?? 0
+    );
 
   one(root, "[data-capturable]").checked =
     draft.capture.capturable;
@@ -3513,6 +3620,8 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-description]", ""],
     ["[data-creature-level]", 1],
     ["[data-creature-profile]", "biped"],
+    ["[data-creature-mobility-preset]", "normal"],
+    ["[data-creature-approach-time-modifier]", 0],
     ["[data-creature-display-scale]", 1],
     ["[data-creature-player-scale]", 1],
     ["[data-creature-opponent-scale]", 1],
@@ -3825,7 +3934,8 @@ function tacticalEffectKindLabelV1(kind) {
     apply_status: "Buff / Debuff / Statut",
     cleanse: "Nettoyage",
     dispel: "Dissipation",
-    persistent_zone: "Zone persistante"
+    persistent_zone: "Zone persistante",
+    scheduled_effect: "Effet différé"
   }[kind] ?? kind;
 }
 
@@ -3846,6 +3956,7 @@ function tacticalStatusKindLabelV1(kind) {
     damage_over_time: "Dégâts périodiques",
     heal_over_time: "Soin périodique",
     shield: "Bouclier",
+    immunity: "Immunité",
     immobilize: "Immobilisation",
     silence: "Silence",
     stun: "Stun",
@@ -4112,6 +4223,18 @@ function syncHumanSkillEffectRowV1(
   const kind = row.querySelector(
     "[data-skill-effect-kind]"
   ).value;
+
+  const scope = row.querySelector(
+    "[data-skill-effect-scope]"
+  );
+  if (scope) {
+    if (kind === "scheduled_effect") {
+      scope.value = "target";
+      scope.disabled = true;
+    } else {
+      scope.disabled = false;
+    }
+  }
 
   for (const node of row.querySelectorAll(
     "[data-skill-effect-config-kind]"
@@ -4464,6 +4587,42 @@ function appendHumanSkillEffectV1(
     )
   );
 
+  const immunityConfig =
+    document.createElement("div");
+  immunityConfig.className =
+    "skill-status-config__specific";
+  immunityConfig.dataset.skillStatusConfigKind =
+    "immunity";
+
+  for (const [value, label] of [
+    ["damage", "Immunité aux dégâts"],
+    [
+      "negative_status",
+      "Immunité aux états négatifs"
+    ]
+  ]) {
+    const field =
+      document.createElement("label");
+    field.className = "check";
+    const input =
+      document.createElement("input");
+    input.type = "checkbox";
+    input.value = value;
+    input.dataset
+      .skillStatusImmunityDomain =
+        "true";
+    input.checked =
+      (status.domains ?? [
+        "damage",
+        "negative_status"
+      ]).includes(value);
+    field.append(
+      input,
+      document.createTextNode(label)
+    );
+    immunityConfig.append(field);
+  }
+
   const statusVisualBox =
     document.createElement("div");
   statusVisualBox.className =
@@ -4607,8 +4766,93 @@ function appendHumanSkillEffectV1(
     dotConfig,
     hotConfig,
     shieldConfig,
+    immunityConfig,
     statusVisualBox
   );
+
+  const scheduledBox =
+    document.createElement("div");
+  scheduledBox.className =
+    "skill-status-config";
+  scheduledBox.dataset.skillEffectConfigKind =
+    "scheduled_effect";
+
+  const scheduledDelay =
+    tacticalNumberInputV1(
+      "skillScheduledDelaySeconds",
+      effect?.trigger?.delayMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            effect.trigger.delayMs
+          ),
+      { min: 0, step: "0.1" }
+    );
+
+  const nestedEffect =
+    effect?.effects?.[0] ?? {
+      kind: "damage",
+      targetScope: "target",
+      amount: 1,
+      channel: ""
+    };
+
+  const scheduledKind =
+    document.createElement("select");
+  scheduledKind.dataset
+    .skillScheduledEffectKind = "true";
+  for (const value of [
+    "damage",
+    "heal",
+    "energy_restore",
+    "energy_drain"
+  ]) {
+    createOption(
+      scheduledKind,
+      value,
+      tacticalEffectKindLabelV1(value)
+    );
+  }
+  scheduledKind.value =
+    nestedEffect.kind ?? "damage";
+
+  const scheduledAmount =
+    tacticalNumberInputV1(
+      "skillScheduledEffectAmount",
+      nestedEffect.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+
+  const scheduledChannel =
+    tacticalTextInputV1(
+      "skillScheduledEffectChannel",
+      nestedEffect.channel ?? ""
+    );
+
+  scheduledBox.append(
+    tacticalFieldV1(
+      "Délai avant déclenchement (secondes)",
+      scheduledDelay
+    ),
+    tacticalFieldV1(
+      "Effet déclenché",
+      scheduledKind
+    ),
+    tacticalFieldV1(
+      "Valeur",
+      scheduledAmount
+    ),
+    tacticalFieldV1(
+      "Canal / élément (si dégâts)",
+      scheduledChannel
+    )
+  );
+
+  const scheduledNote =
+    document.createElement("small");
+  scheduledNote.className = "note";
+  scheduledNote.textContent =
+    "Le délai utilise l’horloge combat existante. Aucun timer navigateur n’est créé par la capacité.";
+  scheduledBox.append(scheduledNote);
 
   const zoneBox =
     document.createElement("div");
@@ -4761,6 +5005,7 @@ function appendHumanSkillEffectV1(
     channelField,
     filterTagsField,
     statusBox,
+    scheduledBox,
     zoneBox
   );
   row.append(header, config);
@@ -4985,6 +5230,14 @@ function readHumanSkillEffectsV1(root) {
             "[data-skill-status-shield-amount]"
           ).value
         );
+      } else if (statusKind === "immunity") {
+        status.domains = [
+          ...row.querySelectorAll(
+            "[data-skill-status-immunity-domain]"
+          )
+        ]
+          .filter((input) => input.checked)
+          .map((input) => input.value);
       }
 
       return {
@@ -6790,7 +7043,13 @@ function readCreatureFields(
         )
       })
     },
-    combat: {},
+    combat: {
+      approachTimeModifierPct:
+        numericValue(
+          root,
+          "[data-creature-approach-time-modifier]"
+        )
+    },
     linkedSkillIds: [
       selectedValue(root, "[data-skill-id]")
     ],
@@ -6881,6 +7140,26 @@ function readSkillFields(root) {
       root,
       "[data-skill-approach]"
     ),
+    hitPresenceStates:
+      one(
+        root,
+        "[data-skill-hit-presence-enabled]"
+      ).checked
+        ? checkedValues(
+            root,
+            "[data-skill-hit-presence]:checked"
+          )
+        : null,
+    dodgeable:
+      one(
+        root,
+        "[data-skill-dodgeable]"
+      ).checked,
+    targetLocations:
+      checkedValues(
+        root,
+        "[data-skill-target-location]:checked"
+      ),
     energyCost: numericValue(
       root,
       "[data-skill-energy-cost]"
