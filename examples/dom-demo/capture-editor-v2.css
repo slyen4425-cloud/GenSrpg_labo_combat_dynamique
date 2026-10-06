@@ -1267,3 +1267,23 @@ html {
 [data-roster-member-id], .combat-test-team-actions button { min-height: 2.75rem; padding: .5rem; border: 1px solid #42616d; border-radius: .5rem; background: #12303c; color: #d7e8ed; font-size: .75rem; }
 [data-roster-member-id][aria-pressed="true"] { border-color: #7dd9ed; background: #1b4858; }
 .combat-test-team-actions { display: grid; grid-template-columns: 1fr; gap: .4rem; }
+
+
+/* Capture landscape opponent slot placement V1
+   Presentation owner only: collision, sockets and FX continue to sample
+   the actual rendered geometry. Author displayScale remains untouched. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 {
+  --arena-coop-far-primary-y: 33%;
+  --arena-coop-far-secondary-y: 34%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent {
+  left: 77%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent-b {
+  left: 34%;
+}
