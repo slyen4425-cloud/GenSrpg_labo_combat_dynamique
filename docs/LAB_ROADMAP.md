@@ -488,3 +488,24 @@ Chaque lot suit :
 `documenter -> contrat -> RED -> implémentation minimale -> vraie chaîne -> CI -> checkpoint GREEN`.
 
 Interdiction de traiter ces huit points dans un seul lot.
+
+
+## Capture smartphone — décision paysage définitive
+
+Référence : `docs/LAB_CAPTURE_LANDSCAPE_PRODUCT_DECISION_V1.md`
+
+Décision produit :
+- gameplay Exploration Capture : smartphone paysage ;
+- gameplay Combat Capture : smartphone paysage ;
+- éditeur : responsive portrait/paysage.
+
+Backlog UI ajouté, à traiter en micro-lot séparé :
+- déplacer légèrement le camp ennemi vers le haut/droite dans la composition paysage ;
+- vérifier 1v1 / 2v2, collision, sockets, FX et smartphone réel ;
+- ne pas toucher aux scales auteur.
+
+Ordre du chantier Combat Expressiveness conservé :
+1. Reserve Targeting V1 ;
+2. Creature Mobility Tempo ;
+3. exposition Human Editor des nouveaux contrats ;
+4. micro-lot placement ennemi paysage (peut être réalisé plus tôt uniquement sur branche dédiée si besoin de validation visuelle).
