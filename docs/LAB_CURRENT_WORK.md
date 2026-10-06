@@ -1,5 +1,81 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Capture enemy landscape placement V1
+
+Branche : `work/lab-capture-enemy-landscape-placement-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-capture-enemy-landscape-placement-v1-2026-10-06`
+
+SHA de base :
+`bf05f7f42b45675ba0ce33bf0c95d17e53968a2e`
+
+### Besoin produit
+
+En smartphone paysage, profiter de l'espace disponible en déplaçant légèrement le camp adverse :
+- vers la droite ;
+- vers le haut.
+
+La décision produit paysage est désormais définitive pour le gameplay Capture :
+- Combat ;
+- Exploration.
+
+Dans le laboratoire Combat, le contrôle "Combat plein écran paysage" ne doit donc plus être présenté comme un test provisoire ni comme une option désactivable.
+
+### Autorité
+
+- placement des acteurs : layout CSS des slots de l'arène ;
+- géométrie collision / sockets / FX : continue de mesurer le DOM réellement rendu ;
+- scales auteur : inchangés ;
+- aucune compensation dans projectile / FX / collision.
+
+### Valeurs V1 paysage
+
+Pour la composition Capture paysage :
+- opponent-1 : +3 points X / -3 points Y ;
+- opponent-2 : +3 points X / -3 points Y.
+
+Le décalage est scoped au shell Capture avec `data-landscape-required="true"`.
+
+### Fichiers autorisés
+
+- `examples/dom-demo/capture-editor-v2.css` ;
+- `examples/dom-demo/capture-editor-v2.html` ;
+- tests de présentation ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- Action Resolver ;
+- collision ;
+- renderer FX ;
+- projectile ;
+- Creature Presentation scales / offsets auteur ;
+- Human Editor gameplay contracts ;
+- Tempête ;
+- Roster ;
+- autres pages demo non Capture.
+
+### RED prévu
+
+1. le contrôle paysage est checked + disabled et ne contient plus "Test provisoire" ;
+2. opponent-1 reçoit un décalage paysage +3 X / -3 Y ;
+3. opponent-2 reçoit le même décalage ;
+4. aucun scale / width auteur n'est modifié par ce lot ;
+5. le scope reste limité à `capture-preview-shell[data-landscape-required="true"]`.
+
+### Critère de fin
+
+- RED ciblé ;
+- layout uniquement ;
+- CI complète GREEN ;
+- checkpoint + preview identiques ;
+- validation smartphone utilisateur du placement.
+
+---
+
 ## Chantier actif — 2026-10-06 — Human Editor Expressiveness V1
 
 Branche : `work/lab-human-editor-expressiveness-v1-2026-10-06`
