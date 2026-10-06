@@ -216,12 +216,14 @@ test("V3 export gives every exported creature registry rules and neutral stat va
   );
 });
 
-test("Cendre aveuglante showcase preset preserves the user export", async () => {
+test("Cendre aveuglante showcase preset preserves the latest authored V2 export", async () => {
   const transfer =
     importCaptureTransferJsonV1(
       await text(CENDRE_FILE)
     );
   const draft = transfer.value.draft;
+  const [speedDebuff, physicalDebuff] =
+    draft.definition.effects;
 
   assert.equal(
     draft.id,
@@ -232,11 +234,120 @@ test("Cendre aveuglante showcase preset preserves the user export", async () => 
     "Cendre aveuglante"
   );
   assert.equal(draft.requiredLevel, 10);
+  assert.equal(
+    draft.definition.travelMs,
+    800
+  );
+  assert.equal(
+    draft.definition.cooldownMs,
+    60000
+  );
+
   assert.deepEqual(
     draft.definition.effects.map(
       (effect) => effect.status.statId
     ),
     ["speed", "physical"]
+  );
+  assert.equal(
+    speedDebuff.status.durationMs,
+    20000
+  );
+  assert.equal(
+    physicalDebuff.status.durationMs,
+    20000
+  );
+  assert.equal(
+    speedDebuff.status.deltaPoints,
+    -50
+  );
+  assert.equal(
+    physicalDebuff.status.deltaPoints,
+    -50
+  );
+
+  assert.equal(
+    draft.presentation.version,
+    8
+  );
+  assert.equal(
+    draft.presentation.visual.icon.assetId,
+    "core:icon-skill-poison-cloud-01"
+  );
+  assert.equal(
+    "cast" in draft.presentation.visual,
+    false,
+    "the latest author export intentionally has no cast sprite"
+  );
+  assert.equal(
+    draft.presentation.visual.travel.assetId,
+    "pack:capture:sprite-projectile-shadow-01"
+  );
+  assert.equal(
+    draft.presentation.visual.travel.displayScale,
+    1.45
+  );
+  assert.equal(
+    draft.presentation.visual.travel.anchor,
+    "mouth"
+  );
+  assert.equal(
+    draft.presentation.visual.travel.playbackMode,
+    "loop"
+  );
+  assert.equal(
+    draft.presentation.visual.impact.assetId,
+    "pack:capture:sprite-status-curse-01"
+  );
+  assert.equal(
+    draft.presentation.visual.impact.displayScale,
+    1.45
+  );
+  assert.equal(
+    draft.presentation.visual.impact.durationMs,
+    350
+  );
+
+  assert.equal(
+    draft.presentation.audio.cast.assetId,
+    "gensrpg:sound:academie-01fc18a6"
+  );
+  assert.equal(
+    draft.presentation.audio.impact.assetId,
+    "gensrpg:sound:genrpg-pack2-742f6521"
+  );
+
+  assert.deepEqual(
+    draft.presentation.statusVisuals[
+      "cap_fire_special_1:1"
+    ],
+    {
+      mode: "tint",
+      tintColor: "#5b2067",
+      tintOpacity: 0.35,
+      sprite: null
+    }
+  );
+
+  assert.deepEqual(
+    draft.presentation.feedback.glow,
+    {
+      color: "#5b2067",
+      strength: 0.65,
+      radiusPx: 22
+    }
+  );
+  assert.equal(
+    draft.presentation.feedback.projectileTrail.count,
+    7
+  );
+  assert.equal(
+    draft.presentation.feedback.aftermathSmoke.count,
+    6
+  );
+  assert.equal(
+    draft.presentation.feedback.castBurst.count,
+    12
   );
 });
 
