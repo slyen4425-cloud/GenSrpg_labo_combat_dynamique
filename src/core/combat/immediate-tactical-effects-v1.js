@@ -16,6 +16,9 @@ import {
   removeStatusEffectsV1,
   validateStatusEffectForTargetV1
 } from "./status-effect-runtime-v1.js";
+import {
+  combatProtectionForIncomingV1
+} from "./combat-protection-v1.js";
 
 const SUPPORTED_KINDS = new Set([
   "damage",
@@ -322,6 +325,36 @@ export function applyImmediateTacticalEffectsV1({
       }
 
       if (effect.kind === "apply_status") {
+        const protection =
+          effect.status.polarity ===
+            "detrimental"
+            ? combatProtectionForIncomingV1({
+                state: nextState,
+                targetActorId: affectedId,
+                domain: "negative_status",
+                atMs
+              })
+            : Object.freeze({
+                protected: false,
+                protectingStatusIds:
+                  Object.freeze([])
+              });
+
+        if (protection.protected) {
+          events.push(Object.freeze({
+            type: "status-immune",
+            atMs,
+            actorId: affectedId,
+            sourceActorId: actorId,
+            skillId: skill.id,
+            statusId: effect.status.id,
+            statusKind: effect.status.kind,
+            protectingStatusIds:
+              protection.protectingStatusIds
+          }));
+          continue;
+        }
+
         nextState = applyStatusEffectV1({
           state: nextState,
           targetActorId: affectedId,
