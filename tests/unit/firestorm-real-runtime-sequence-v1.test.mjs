@@ -202,6 +202,8 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
 
   runtime.start();
 
+  advanceTo(25000);
+
   assert.equal(
     runtime.startSkill({
       actorId: "local",
@@ -211,23 +213,23 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
     true
   );
 
-  advanceTo(2000);
+  advanceTo(27000);
   let zone =
     session.snapshot().persistentZones[0];
   assert.equal(zone.radius, "short");
   assert.equal(zone.activations, 1);
   assert.equal(
     zone.appliedAtMs,
-    2000,
+    27000,
     "zone timestamp must be the real combat impact time, not state time plus preparation twice"
   );
-  assert.equal(zone.nextTickAtMs, 3000);
-  assert.equal(zone.expiresAtMs, 9000);
+  assert.equal(zone.nextTickAtMs, 28000);
+  assert.equal(zone.expiresAtMs, 34000);
   const node = arena.children[0];
   const shortTransform = node.style.transform;
   assert.equal(node.dataset.zoneRadius, "short");
 
-  advanceTo(3500);
+  advanceTo(28500);
   assert.equal(
     runtime.startSkill({
       actorId: "local",
@@ -237,18 +239,18 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
     true
   );
 
-  advanceTo(5500);
+  advanceTo(30500);
   zone = session.snapshot().persistentZones[0];
   assert.equal(zone.radius, "medium");
   assert.equal(zone.activations, 2);
-  assert.equal(zone.appliedAtMs, 5500);
-  assert.equal(zone.nextTickAtMs, 6500);
+  assert.equal(zone.appliedAtMs, 30500);
+  assert.equal(zone.nextTickAtMs, 31500);
   assert.equal(arena.children[0], node);
   const mediumTransform = node.style.transform;
   assert.equal(node.dataset.zoneRadius, "medium");
   assert.notEqual(mediumTransform, shortTransform);
 
-  advanceTo(7000);
+  advanceTo(32000);
   assert.equal(
     runtime.startSkill({
       actorId: "local",
@@ -264,12 +266,12 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
     "during the authored 2 s preparation the already-active zone legitimately stays medium"
   );
 
-  advanceTo(9000);
+  advanceTo(34000);
   zone = session.snapshot().persistentZones[0];
   assert.equal(zone.radius, "long");
   assert.equal(zone.activations, 3);
-  assert.equal(zone.appliedAtMs, 9000);
-  assert.equal(zone.nextTickAtMs, 10000);
+  assert.equal(zone.appliedAtMs, 34000);
+  assert.equal(zone.nextTickAtMs, 35000);
   assert.equal(arena.children[0], node);
   assert.equal(node.dataset.zoneRadius, "long");
   assert.notEqual(
