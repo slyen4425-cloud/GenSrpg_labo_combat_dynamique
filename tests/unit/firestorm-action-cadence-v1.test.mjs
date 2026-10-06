@@ -367,6 +367,129 @@ test("refresh remains the explicit mode that resets zone lifetime and tick origi
   assert.equal(refreshed.expiresAtMs, 7600);
 });
 
+test("Runtime reinforcement keeps ticking during preparation and preserves the next due tick after growth", async () => {
+  const session = createSession("short");
+  const storm = await fireStorm({
+    preparationMs: 2000,
+    cooldownMs: 0,
+    reactivation: "reinforce"
+  });
+  const feedback = [];
+
+  const h = runtimeHarness({
+    session,
+    onHealthDelta(event) {
+      if (
+        event.kind === "damage" &&
+        event.actorId === "enemy"
+      ) {
+        feedback.push(event.amount);
+      }
+    },
+    readZoneSpatialContext(state) {
+      return {
+        zones:
+          (state.persistentZones ?? []).map(
+            (zone) => ({
+              zoneId: zone.id,
+              sourceActorId:
+                zone.sourceActorId,
+              radius: zone.radius,
+              bounds: {
+                left: 0,
+                top: 0,
+                width: 120,
+                height: 120
+              }
+            })
+          ),
+        actors: [
+          {
+            actorId: "local",
+            bounds: {
+              left: 20,
+              top: 20,
+              width: 10,
+              height: 10
+            }
+          },
+          {
+            actorId: "enemy",
+            bounds: {
+              left: 50,
+              top: 50,
+              width: 10,
+              height: 10
+            }
+          }
+        ]
+      };
+    }
+  });
+
+  assert.equal(
+    h.runtime.startSkill({
+      actorId: "local",
+      targetId: "enemy",
+      skill: storm
+    }).ok,
+    true
+  );
+
+  h.tickAt(2000);
+  assert.equal(
+    session.snapshot().persistentZones[0].radius,
+    "short"
+  );
+  assert.equal(
+    session.snapshot().persistentZones[0].nextTickAtMs,
+    3000
+  );
+
+  h.setClock(2500);
+  assert.equal(
+    h.runtime.startSkill({
+      actorId: "local",
+      targetId: "enemy",
+      skill: storm
+    }).ok,
+    true
+  );
+
+  h.tickAt(3000);
+  assert.equal(
+    session.snapshot().fighters.enemy.hp,
+    95,
+    "existing zone must tick while reinforcement is preparing"
+  );
+
+  h.tickAt(4000);
+  assert.equal(
+    session.snapshot().fighters.enemy.hp,
+    90
+  );
+
+  h.tickAt(4500);
+  const reinforced =
+    session.snapshot().persistentZones[0];
+  assert.equal(reinforced.radius, "medium");
+  assert.equal(
+    reinforced.nextTickAtMs,
+    5000,
+    "reinforcement completion must preserve the already-running tick phase"
+  );
+
+  h.tickAt(5000);
+  assert.equal(
+    session.snapshot().fighters.enemy.hp,
+    85,
+    "next native tick must still fire immediately after reinforcement"
+  );
+  assert.deepEqual(feedback, [5, 5, 5]);
+
+  h.runtime.dispose();
+});
+
 test("ordinary actions by both fighters do not suspend long-zone HP ticks or health feedback", async () => {
   const session = createSession();
   const storm = await fireStorm({
