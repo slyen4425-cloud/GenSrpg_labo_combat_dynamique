@@ -1,5 +1,73 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Tempête de flammes / séquence & renforcement visuel V1
+
+Branche : `work/lab-firestorm-sequence-regression-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-firestorm-sequence-regression-v1-2026-10-06`
+
+SHA de base :
+`9463b6f3539bc8c7f195e8c9558fb576dd7c820d`
+
+### Retour utilisateur
+
+Après les derniers correctifs :
+- les dégâts sont jugés globalement corrigés ;
+- le projectile invisible a disparu ;
+- régression restante : la zone semble rester visuellement au niveau 2 ;
+- un délai mort reste perceptible entre activation et apparition de la zone ;
+- la capacité était jugée plus fluide avant.
+
+### Diagnostic déjà démontré
+
+- la fiche auteur est inchangée entre le restore et le HEAD :
+  - `preparationMs = 2000` ;
+  - `travelMs = 0` ;
+  - `reactivation = reinforce` ;
+  - `short → medium → long` ;
+- l'absence de projectile est normale avec `form = beam` + `travelMs = 0` ;
+- le délai restant correspond au temps de préparation configuré, pas à un trajet invisible ;
+- les tests unitaires isolés prouvent que le Runtime sait produire `long` et que le renderer sait redimensionner short/medium/long séparément ;
+- il manque une sentinelle du vrai chemin Runtime temps réel + vraie fiche Showcase + renderer sync.
+
+### Objectif
+
+1. reproduire la vraie séquence utilisateur complète ;
+2. vérifier timestamps de zone, expiration et renforcement sur 3 activations ;
+3. vérifier que le vrai node de zone passe bien short → medium → long ;
+4. vérifier si la préparation de 2 s crée uniquement un délai auteur ou révèle un double comptage temporel ;
+5. ne modifier ni scale ni durée auteur avant faute démontrée.
+
+### Fichiers autorisés
+
+- tests unitaires / intégration dédiés ;
+- Runtime/Session uniquement si faute démontrée ;
+- données Tempête uniquement si le retour utilisateur exige explicitement un changement de timing auteur ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- dégâts 5 / tick 1 s ;
+- règle long autoritaire déjà GREEN ;
+- géométrie visible ;
+- collision ;
+- renderer projectile ;
+- autres capacités ;
+- assets.
+
+### Critère de fin
+
+- reproduction réelle ;
+- cause unique identifiée ;
+- RED avant correctif produit ;
+- CI complète GREEN ;
+- checkpoint + preview ;
+- retour smartphone.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : autorité portée longue V1
 
 Branche : `work/lab-firestorm-long-authority-v1-2026-10-06`
