@@ -7624,6 +7624,103 @@ function writeCaptureFxStarterPresentationFieldsV1(
   }
 }
 
+export function mountEditorCardDisclosuresV1({
+  root,
+  listen
+}) {
+  if (!root || typeof root.querySelectorAll !== "function") {
+    throw new TypeError(
+      "root doit exposer querySelectorAll()"
+    );
+  }
+  if (typeof listen !== "function") {
+    throw new TypeError(
+      "listen doit être une fonction"
+    );
+  }
+
+  let count = 0;
+
+  for (const card of root.querySelectorAll(".card")) {
+    const title = [...card.children].find(
+      (child) =>
+        child?.classList?.contains?.(
+          "card-title"
+        )
+    );
+
+    if (!title) {
+      continue;
+    }
+
+    card.dataset.editorCollapsible = "true";
+    if (
+      card.dataset.collapsed !== "true" &&
+      card.dataset.collapsed !== "false"
+    ) {
+      card.dataset.collapsed = "false";
+    }
+
+    let toggle = title.querySelector(
+      "[data-editor-card-toggle]"
+    );
+
+    if (!toggle) {
+      toggle =
+        root.ownerDocument.createElement(
+          "button"
+        );
+      toggle.type = "button";
+      toggle.className =
+        "editor-card-toggle";
+      toggle.dataset.editorCardToggle = "true";
+      title.append(toggle);
+    }
+
+    const sync = () => {
+      const collapsed =
+        card.dataset.collapsed === "true";
+
+      toggle.setAttribute(
+        "aria-expanded",
+        collapsed ? "false" : "true"
+      );
+      toggle.textContent =
+        collapsed ? "Dérouler" : "Fermer";
+      toggle.setAttribute(
+        "aria-label",
+        (
+          collapsed
+            ? "Dérouler "
+            : "Fermer "
+        ) +
+          (
+            title.querySelector("h2")
+              ?.textContent ??
+            "ce bloc"
+          )
+      );
+    };
+
+    listen(
+      toggle,
+      "click",
+      () => {
+        card.dataset.collapsed =
+          card.dataset.collapsed === "true"
+            ? "false"
+            : "true";
+        sync();
+      }
+    );
+
+    sync();
+    count += 1;
+  }
+
+  return count;
+}
+
 export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
@@ -7654,6 +7751,11 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
       target.removeEventListener(type, handler)
     );
   }
+
+  mountEditorCardDisclosuresV1({
+    root,
+    listen
+  });
 
   for (const tab of root.querySelectorAll("[data-editor-tab]")) {
     listen(tab, "click", () =>
