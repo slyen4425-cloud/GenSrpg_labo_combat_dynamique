@@ -196,6 +196,147 @@ test("evaded outcome renders miss feedback without playing hit", () => {
   ]);
 });
 
+test("persistent-zone-only outcome creates zone without fake target impact or hit reaction", () => {
+  const calls = [];
+  const fxCalls = [];
+  const audioCalls = [];
+
+  const visuals = {
+    playEventFor(slot, event) {
+      calls.push(["play", slot, event]);
+      return Promise.resolve({ status: "finished" });
+    },
+    cancelFor(slot) {
+      calls.push(["cancel", slot]);
+    }
+  };
+
+  const presenter = createCombatResolutionPresenter({
+    visuals,
+    fx: {
+      play(plan) {
+        fxCalls.push(plan);
+        return {
+          status: "running",
+          finished: Promise.resolve({
+            status: "finished"
+          })
+        };
+      }
+    },
+    audio: {
+      play(plan) {
+        audioCalls.push(plan);
+        return {
+          status: "running",
+          loop: false,
+          stop() {},
+          finished: Promise.resolve({
+            status: "finished"
+          })
+        };
+      }
+    }
+  });
+
+  const tempete = {
+    id: "cap_fire_atk_6",
+    form: "beam",
+    element: "fire",
+    approachMode: "none",
+    effect: {
+      damage: 0,
+      heal: 0,
+      interruptsPreparation: false,
+      stunMs: 0,
+      tags: []
+    },
+    effects: [
+      {
+        kind: "persistent_zone",
+        targetScope: "all_enemies"
+      }
+    ]
+  };
+
+  const action = {
+    actionType: "skill",
+    actorId: "player",
+    targetId: "opponent",
+    preparationMs: 2000,
+    travelMs: 0,
+    skill: tempete
+  };
+
+  presenter.presentRelease({
+    action,
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  calls.length = 0;
+  fxCalls.length = 0;
+  audioCalls.length = 0;
+
+  const result = presenter.presentOutcome({
+    resolution: {
+      ok: true,
+      actionType: "skill",
+      actorId: "player",
+      targetId: "opponent",
+      skillId: tempete.id,
+      outcome: "hit",
+      events: [
+        {
+          type: "skill-arrive",
+          atMs: 2000,
+          actorId: "player",
+          targetId: "opponent",
+          skillId: tempete.id,
+          form: "beam",
+          outcome: "hit"
+        },
+        {
+          type: "hit",
+          atMs: 2000,
+          actorId: "opponent",
+          sourceActorId: "player",
+          skillId: tempete.id,
+          appliedDamage: 0,
+          hpBefore: 100,
+          hpAfter: 100
+        }
+      ]
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.equal(result.outcome, "hit");
+  assert.deepEqual(
+    fxCalls,
+    [],
+    "zone-only activation must not emit target impact FX"
+  );
+  assert.equal(
+    audioCalls.some((call) => call.type === "impact"),
+    false,
+    "zone-only activation must not emit impact audio"
+  );
+  assert.equal(
+    calls.some(
+      (call) =>
+        call[0] === "play" &&
+        call[1] === "opponent" &&
+        call[2] === "hit"
+    ),
+    false,
+    "zone-only activation must not make the target recoil"
+  );
+
+  presenter.dispose();
+});
+
 test("live outcome reflection and immunity only present resolved result", () => {
   const reflected = createHarness();
   reflected.presenter.presentOutcome({
