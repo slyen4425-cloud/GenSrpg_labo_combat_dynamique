@@ -3204,7 +3204,7 @@ function writeSkillDraftFields(
 
   for (
     const input of root.querySelectorAll(
-      "[data-skill-target-location]"
+      "[data-skill-location-scope]"
     )
   ) {
     input.checked =
@@ -3309,7 +3309,7 @@ function prepareNewSkillDraftFields(
   ).checked = true;
   for (
     const input of root.querySelectorAll(
-      "[data-skill-target-location]"
+      "[data-skill-location-scope]"
     )
   ) {
     input.checked =
@@ -7158,7 +7158,7 @@ function readSkillFields(root) {
     targetLocations:
       checkedValues(
         root,
-        "[data-skill-target-location]:checked"
+        "[data-skill-location-scope]:checked"
       ),
     energyCost: numericValue(
       root,
