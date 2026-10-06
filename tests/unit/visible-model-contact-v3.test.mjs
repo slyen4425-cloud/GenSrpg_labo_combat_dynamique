@@ -5,7 +5,8 @@ import { readFile } from "node:fs/promises";
 import {
   opaqueMaskFromRgba,
   screenPointToModelUnit,
-  sweptPointHitsOpaqueMask
+  sweptPointHitsOpaqueMask,
+  visibleModelOpaqueRect
 } from "../../src/adapters/renderer/dom-visible-model-contact.js";
 
 function maskFixture() {
@@ -34,6 +35,46 @@ function frame({
 } = {}) {
   return Object.freeze({ origin, axisX, axisY });
 }
+
+
+
+test("visible target rect follows the opaque sprite bounds instead of transparent canvas margins", () => {
+  const mask = maskFixture();
+  const rect = visibleModelOpaqueRect({
+    ...frame(),
+    mask
+  });
+
+  assert.deepEqual(rect, {
+    left: 120,
+    top: 110,
+    width: 30,
+    height: 20,
+    right: 150,
+    bottom: 130
+  });
+});
+
+test("visible target rect follows the same scaled visual frame used by collision", () => {
+  const mask = maskFixture();
+  const rect = visibleModelOpaqueRect({
+    ...frame({
+      origin: { x: 200, y: 100 },
+      axisX: { x: 320, y: 100 },
+      axisY: { x: 200, y: 180 }
+    }),
+    mask
+  });
+
+  assert.deepEqual(rect, {
+    left: 240,
+    top: 120,
+    width: 60,
+    height: 40,
+    right: 300,
+    bottom: 160
+  });
+});
 
 test("transparent sprite margin is not a collision but an opaque pixel is", () => {
   const mask = maskFixture();
