@@ -1,5 +1,81 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Tempête de flammes : export créateur restauré V1
+
+Branche : `work/lab-firestorm-user-config-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-firestorm-user-config-v1-2026-10-06`
+
+SHA de base :
+`19e342700d59c6749dd64c596bc9a9b7667ea10a`
+
+### Objectif
+
+Replacer exactement l'export utilisateur `cap_fire_atk_6` fourni par Sylvain afin qu'il puisse tester le lot précédent d'occupation visible / calques avec sa vraie configuration Tempête de flammes.
+
+### Propriétaire
+
+- fichier showcase Transfer existant ;
+- aucune nouvelle autorité ;
+- chaîne canonique Capture Transfer / configuredSkills conservée.
+
+### Fichiers autorisés
+
+- `data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json`
+- sentinelles qui protègent les valeurs exactes de ce showcase ;
+- documentation.
+
+### Domaines protégés
+
+Aucune modification de :
+- Combat Runtime ;
+- Combat Session ;
+- Persistent Zone Runtime ;
+- renderer FX ;
+- géométrie ;
+- CSS ;
+- dégâts ;
+- collision ;
+- sockets.
+
+### Valeurs auteur restaurées
+
+Gameplay :
+- durée 7000 ms ;
+- tick 1000 ms ;
+- dégâts 5 ;
+- reinforce 3 activations ;
+- short → medium → long.
+
+Présentation :
+- version 8 ;
+- aura scale 1.2 ;
+- scale X 2.5 ;
+- scale Y 0.8 ;
+- offset X/Y 0 ;
+- layer behind des deux vues ;
+- feedback V8 du fichier utilisateur conservé.
+
+### Tests
+
+- comparaison exacte upload ↔ fichier GitHub ;
+- CI complète ;
+- les anciennes sentinelles 3.5 / 2.3 / 1 / -50 doivent être remplacées par les valeurs auteur actuelles, sans modifier le code produit.
+
+### Risque
+
+Le changement est volontairement data-driven : une sentinelle ancienne peut signaler l'ancien export. Ne pas corriger ce rouge en réécrivant l'export utilisateur.
+
+### Critère de fin
+
+- fichier utilisateur identique sur GitHub ;
+- 1117 tests GREEN ;
+- checkpoint GREEN exact ;
+- preview smartphone dédiée.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : occupation visible + calque attaque V1
 
 Branche : `work/lab-zone-visible-occupancy-layer-v1-2026-10-06`
