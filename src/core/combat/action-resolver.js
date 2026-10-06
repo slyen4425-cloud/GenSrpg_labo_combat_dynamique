@@ -778,12 +778,14 @@ export function resolveSkillCompletion({
     mobilityEvasion?.outcome ??
     "hit";
   const reactionReadyAt = reaction?.readyAtMs ?? null;
-  const combatImpactAtMs =
+  const hasAbsoluteResolutionAtMs =
     resolutionAtMs !== null &&
     resolutionAtMs !== undefined &&
-    Number.isFinite(Number(resolutionAtMs))
+    Number.isFinite(Number(resolutionAtMs));
+  const combatImpactAtMs =
+    hasAbsoluteResolutionAtMs
       ? Number(resolutionAtMs)
-      : state.elapsedMs + impactAtMs;
+      : state.elapsedMs;
   let nextState = state;
   const events = [
     event("skill-start", 0, {
@@ -906,7 +908,11 @@ export function resolveSkillCompletion({
           actorId,
           targetId,
           skill,
-          atMs: combatImpactAtMs
+          atMs:
+            hasAbsoluteResolutionAtMs
+              ? combatImpactAtMs
+              : nextState.elapsedMs +
+                impactAtMs
         });
     } else if (outcome === "reflected") {
       const damage =
