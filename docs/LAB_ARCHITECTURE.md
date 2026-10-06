@@ -3244,3 +3244,20 @@ Principes obligatoires :
 - effets différés avancés par l'horloge Combat Runtime existante ;
 - réserve toujours possédée par Roster Session ;
 - vitesse gameplay d'approche séparée du Creature Profile morphologique.
+
+
+## Capture smartphone — orientation de gameplay
+
+Décision produit 2026-10-06 :
+
+`docs/LAB_CAPTURE_LANDSCAPE_PRODUCT_DECISION_V1.md`
+
+Pour Monster Capture, le gameplay smartphone a désormais pour orientation de référence le paysage, en Exploration comme en Combat.
+
+Contraintes architecture :
+- orientation = shell/UI, jamais Combat Rules ;
+- scène combat = 16:9 stable ;
+- Fullscreen/Orientation APIs restent des optimisations avec fallback explicite ;
+- les scales auteur ne sont pas réécrits pour adapter un viewport ;
+- tout ajustement de placement acteur passe par le propriétaire de layout/slot, jamais par les FX ou la collision ;
+- l'Exploration applique le même contrat produit dans son dépôt sans dépendance runtime avec le laboratoire combat.
