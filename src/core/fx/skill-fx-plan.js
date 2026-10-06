@@ -19,6 +19,28 @@ export function resolutionHasImmediateTargetEffectV1(
 
   for (const event of events) {
     if (event?.type === "hit") {
+      const hasExplicitDamageMetrics =
+        Object.prototype.hasOwnProperty.call(
+          event,
+          "baseDamage"
+        ) ||
+        Object.prototype.hasOwnProperty.call(
+          event,
+          "damage"
+        ) ||
+        Object.prototype.hasOwnProperty.call(
+          event,
+          "appliedDamage"
+        ) ||
+        Object.prototype.hasOwnProperty.call(
+          event,
+          "absorbedByShield"
+        );
+
+      if (!hasExplicitDamageMetrics) {
+        return true;
+      }
+
       if (
         Number(event.baseDamage) > 0 ||
         Number(event.damage) > 0 ||
