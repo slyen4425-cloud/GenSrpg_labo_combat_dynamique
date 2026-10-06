@@ -85,6 +85,17 @@ RED :
 6. immunité active à l'échéance protège normalement ;
 7. aucune API timer supplémentaire.
 
+### Résultat technique LIVE
+
+- RED : CI `37477183761` — nouveau contrat absent, échecs ciblés ;
+- `scheduled_effect / after_ms` ajouté sans timer navigateur ;
+- file unique `CombatState.scheduledEffects` + `Scheduled Effect Runtime` ;
+- résolution différée via les primitives Immediate Tactical existantes ;
+- timestamp combat absolu séparé de la timeline relative ;
+- régression Roster intermédiaire détectée puis corrigée à la frontière temporelle, sans modifier Roster Session ;
+- CI fonctionnelle `37478817242` — 1149 / 1149 PASS ;
+- rapport : `docs/LAB_SCHEDULED_EFFECTS_V1.md`.
+
 ### Critère de fin
 
 - RED ciblé ;
