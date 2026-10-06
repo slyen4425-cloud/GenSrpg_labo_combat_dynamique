@@ -6661,3 +6661,18 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Éditeur réel : labels des cinq casts et sept statuts/zones visibles. Preview douze animations : 12 atlas/96 phases décodées, zéro image cassée ; loops statut 720 ms steps(8,jump-none), arrêt contrôlé, fonds clair/sombre inspectés.
 - Ombre WAAPI réelle : déplacements X/Y identiques au sol dans les deux vues ; le corps peut monter à −478 px tandis que l’ombre reste à +31 px sur le sol lors de l’attaque aérienne. Contrôle milieu/contact/retour dans shadow-review ; réglages locaux Griffe restaurés à 1200/1500 ms.
 - Rapport complet §34 : docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md. Implémentation/inspection/preview techniques terminées ; validation artistique finale smartphone attendue de Sylvain, aucun GREEN utilisateur, aucun merge main. Ancienne fixture index/profil drake consignée, non modifiée dans ce lot.
+
+
+## 2026-10-06 — Fumée cendre HD V1 — périmètre assets ouvert
+
+- Demande validée par Sylvain : intégrer les quatre planches transparentes générées (charge 16, projectile 12, impact 12, aura négative 16) dans le labo combat.
+- Autorité médias : branche `global-assets`, aucune seconde bibliothèque.
+- Base exacte global-assets : `dff69879fb99372f9727496fb8d67a3f1cd05325`.
+- Checkpoint départ : `checkpoint/global-assets-before-ash-smoke-vfx-pack-v1-2026-10-06`.
+- Branche travail : `work/global-assets-ash-smoke-vfx-pack-v1-2026-10-06`.
+- Propriétaire : Asset Library / catalogue global visuel. Aucun changement Animation Core, FX Core, renderer, gameplay, collision, dégâts, statuts ou Cendre aveuglante.
+- Fichiers autorisés : `assets/library/capture/sprites/skills/ash_smoke/`, `assets/library/capture/sprites/source/ash_smoke_v1/`, `data/assets/catalog/global-visual-assets.v1.json`, `scripts/build-ash-smoke-vfx-pack-v1.py`, test sentinelle dédié et documentation.
+- Quatre nouveaux IDs additifs prévus : cast, projectile, impact, status/aura. Aucun ID existant n'est remplacé.
+- Sources originales : PNG RGBA avec canal alpha réel ; découpe cible 56 PNG RGBA 512×512, atlas WebP horizontaux.
+- Critère de fin : sources verrouillées par SHA-256, 56 frames valides, 4 atlas décodables, catalogue unique cohérent, CI verte, publication par fast-forward de `global-assets`, checkpoint GREEN.
+- Statut : EN COURS — bootstrap de transfert reproductible, aucun média publié avant validation CI.
