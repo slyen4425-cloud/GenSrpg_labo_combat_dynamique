@@ -209,6 +209,14 @@ function relationInRadius({
   atMs,
   zoneSpatialContext
 }) {
+  // "long" is the canonical full-battlefield radius. A live visual sample
+  // may refine short/medium occupancy, but must never shrink this gameplay
+  // guarantee when an idle/scale transform momentarily moves a silhouette
+  // across the rendered FX boundary.
+  if (radius === "long") {
+    return true;
+  }
+
   const measured = visiblePersistentZoneRelationV1({ sample: zoneSpatialContext?.visibleZones, zoneId, sourceActorId, radius, candidateId });
   if (measured !== null) return measured;
   if (candidateId === sourceActorId) {
