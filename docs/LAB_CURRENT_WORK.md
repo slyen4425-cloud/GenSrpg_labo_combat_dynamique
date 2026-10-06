@@ -66,6 +66,17 @@ RED :
 4. une attaque non dodgeable refuse la réaction avant toute dépense/cooldown ;
 5. une autre réaction non-esquive reste disponible selon ses propres règles.
 
+### Résultat technique LIVE
+
+- RED : CI `37472932155` — 1139 tests, 1137 PASS, 2 FAIL ciblés ;
+- `dodgeable` ajouté au SkillDefinition, `true` par défaut pour compatibilité ;
+- l'outcome `evaded` existant protège déjà dégâts + debuffs sans nouveau moteur ;
+- cooldown / énergie / usages de Dodge restent possédés par les owners existants ;
+- `dodgeable:false` refuse l'esquive avant toute dépense ;
+- block / immune / reflect / counter restent indépendants ;
+- CI fonctionnelle `37473126923` — 1139 / 1139 PASS ;
+- rapport : `docs/LAB_GENERIC_DODGE_V1.md`.
+
 ### Critère de fin
 
 - RED ciblé ;
