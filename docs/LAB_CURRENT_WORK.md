@@ -1,5 +1,94 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Human Editor Expressiveness V1
+
+Branche : `work/lab-human-editor-expressiveness-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-human-editor-expressiveness-v1-2026-10-06`
+
+SHA de base :
+`11a1d7ac1aaefa37f2f3a367bdcbf6f6f810c4a2`
+
+### Objectif
+
+Exposer dans le Human Editor les contrats moteur déjà GREEN, sans recopier leur logique métier dans l'UI.
+
+Créature :
+- preset de mobilité Très rapide / Rapide / Normal / Lent / Très lent ;
+- une seule valeur persistée : `approachTimeModifierPct`.
+
+Capacité :
+- `approachMode = burrow` ;
+- présence atteignable : surface / airborne / underground ;
+- `dodgeable` ;
+- localisation de cible : active / reserve ;
+- status `immunity` avec domaines damage / negative_status ;
+- `scheduled_effect` avec trigger after_ms.
+
+### Autorité
+
+L'éditeur :
+- lit/écrit les contrats ;
+- ne décide jamais hit/miss, esquive, immunité, timing ou ciblage ;
+- ne crée aucun timer ;
+- ne possède aucun calcul de vitesse gameplay ;
+- les presets mobilité ne sont que des mappings UI vers `approachTimeModifierPct`.
+
+### Découpage interne
+
+A. champs simples Draft/Skill :
+- mobilité créature ;
+- burrow ;
+- hitPresenceStates ;
+- dodgeable ;
+- targetLocations.
+
+B. effets expressifs :
+- immunity ;
+- scheduled_effect.
+
+C. HTML / round-trip :
+- lecture ;
+- écriture ;
+- nouveau draft ;
+- import/export ;
+- tests de présence des contrôles.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime ;
+- Action Resolver ;
+- Damage / Status owners ;
+- Roster Session ;
+- Scheduled Effect Runtime ;
+- Persistent Zone Runtime ;
+- renderer / collision ;
+- données auteur existantes ;
+- positionnement ennemi paysage (lot séparé).
+
+### TDD prévu
+
+RED :
+1. builder créature convertit les presets mobilité en valeur unique et round-trip la valeur exacte ;
+2. builder skill round-trip burrow / presence / dodgeable / targetLocations ;
+3. Human Tactical Status round-trip immunity domains ;
+4. Human Tactical Effect round-trip scheduled_effect after_ms ;
+5. HTML expose les nouveaux contrôles ;
+6. anciens drafts sans champs restent identiques.
+
+### Critère de fin
+
+- aucun calcul métier UI ;
+- round-trip sans perte ;
+- compatibilité legacy ;
+- CI complète GREEN ;
+- checkpoint GREEN ;
+- preview smartphone exploitable pour tester les nouveaux réglages.
+
+---
+
 ## Chantier actif — 2026-10-06 — Creature Mobility Tempo V1
 
 Branche : `work/lab-creature-mobility-tempo-v1-2026-10-06`
