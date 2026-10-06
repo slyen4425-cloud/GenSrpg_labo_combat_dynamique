@@ -15,7 +15,7 @@ function baseSkillFields() {
   return {
     id: "side-aware-test",
     name: "Side aware test",
-    description: "",
+    description: "Side-aware presentation test.",
     requiredLevel: 1,
     usageScopes: ["capture", "combat"],
     category: "offensive",
