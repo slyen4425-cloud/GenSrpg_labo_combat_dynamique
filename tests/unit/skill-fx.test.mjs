@@ -74,6 +74,35 @@ test("evaded outcome plans a local miss feedback only", () => {
   );
 });
 
+test("pure persistent-zone resolution does not invent a target impact FX", () => {
+  const plans = planSkillOutcomeFx({
+    resolution: {
+      ok: true,
+      outcome: "hit",
+      skillId: "firestorm",
+      persistentZoneOnly: true,
+      events: [
+        {
+          type: "skill-arrive",
+          atMs: 2000,
+          skillId: "firestorm"
+        },
+        {
+          type: "hit",
+          actorId: "opponent",
+          appliedDamage: 0,
+          hpBefore: 100,
+          hpAfter: 100
+        }
+      ]
+    },
+    actorSlot: "player",
+    targetSlot: "opponent"
+  });
+
+  assert.deepEqual(plans, []);
+});
+
 test("non-projectile skills do not invent a projectile FX", () => {
   const plans = planSkillFx({
     resolution: {
