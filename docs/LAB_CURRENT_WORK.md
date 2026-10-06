@@ -1,5 +1,99 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Tempête de flammes : occupation visible + calque attaque V1
+
+Branche : `work/lab-zone-visible-occupancy-layer-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-zone-visible-occupancy-layer-v1-2026-10-06`
+
+SHA de base :
+`33834f5d41d2e0315be265fd76a59da221e2b18f`
+
+### Retours utilisateur
+
+Tempête de flammes / futur comportement commun des capacités persistantes de zone :
+
+1. après activation adverse puis attaque, le modèle de la créature peut disparaître ;
+2. même avec la zone fortement renforcée et visuellement couvrante, certains ticks de dégâts ne sont pas observés ;
+3. le fait que la taille visuelle / le scale influence naturellement l’entrée dans la zone est acceptable.
+
+### Diagnostic démontré
+
+#### Calques
+
+- Tempête utilise `persistentZoneLayer = behind` ;
+- `.skill-fx--persistent-zone.skill-fx--layer-behind` est à `z-index: 2` ;
+- en 2v2/Capture, un fighter en attaque avec `data-approach-depth="behind"` passe lui aussi à `z-index: 2` ;
+- la zone est appendée après les fighters dans l’arène : à niveau égal, elle peut donc repeindre au-dessus du modèle.
+
+Le problème est un conflit de couche, pas une disparition Runtime du combattant.
+
+#### Occupation / dégâts
+
+Architecture actuelle :
+- Persistent Zone Runtime reste seul propriétaire des ticks, HP, équipes et expiration ;
+- DOM Skill FX ne fournit qu’un échantillon spatial ;
+- la zone est mesurée via son vrai node rendu ;
+- les acteurs de l’échantillon utilisent encore `anchors[*].getBoundingClientRect()`, donc le carré logique `fighter__motion`.
+
+Depuis le lot précédent, Visual Controller possède déjà la géométrie opaque réelle via le collision model et expose `getVisibleTargetRectFor(slot)`.
+
+Le projectile utilise déjà cette source unique, mais l’échantillon de zone ne l’utilise pas encore.
+
+### Correction prévue
+
+1. zone persistante `behind` strictement sous le plus bas niveau de fighter actif ;
+2. `sampleZoneSpatialContext` utilise `targetAnchorFor(actorId)` lorsqu’il est disponible pour les acteurs ;
+3. fallback vers l’anchor logique uniquement si aucune géométrie visible n’est disponible ;
+4. aucune modification de `advancePersistentZonesV1`, du rythme 1 s, de la valeur de dégâts, du rayon short/medium/long ou des données de Tempête.
+
+### Owners
+
+- couche zone : CSS présentation ;
+- géométrie visible acteur : Visual Controller / collision model existant ;
+- décision d’appartenance : `persistent-zone-spatial-v1` ;
+- dégâts : `persistent-zone-runtime-v1`.
+
+### Fichiers autorisés
+
+- `src/adapters/renderer/dom-skill-fx.js`
+- `examples/dom-demo/demo.css`
+- tests unitaires zone / FX
+- documentation
+
+### Protégé / interdit
+
+Ne pas modifier :
+- Combat Runtime ;
+- Combat Session ;
+- Persistent Zone Runtime ;
+- contrats de dégâts ;
+- Tempête de flammes JSON ;
+- scale/offset du sprite de zone ;
+- displayScale des créatures ;
+- sockets ;
+- trail / smoke / projectile renderer hors raccord géométrique existant.
+
+### TDD prévu
+
+RED :
+1. l’échantillon zone préfère la silhouette visible au carré logique ;
+2. deux ticks consécutifs d’une zone visuellement couvrante endommagent sans aucune attaque ;
+3. le fallback historique fonctionne si la silhouette n’est pas disponible ;
+4. le calque persistent-zone behind est strictement inférieur au calque fighter approach-behind.
+
+### Critère de fin
+
+- RED ciblé ;
+- correction sans nouvel owner ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- preview smartphone exacte ;
+- validation utilisateur avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Blocs fermés par défaut + cible projectile visuelle V1
 
 Branche : `work/lab-collapsed-target-geometry-v1-2026-10-06`
