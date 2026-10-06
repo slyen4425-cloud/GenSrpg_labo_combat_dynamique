@@ -675,7 +675,7 @@ button.reserve-card {
 }
 
 .skill-fx--persistent-zone.skill-fx--layer-behind {
-  z-index: 2;
+  z-index: 1;
 }
 
 .skill-fx--clash-impact {
