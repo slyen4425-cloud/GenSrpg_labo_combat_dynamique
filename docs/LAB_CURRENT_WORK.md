@@ -1,5 +1,76 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Side-aware validation regression V1
+
+Branche : `work/lab-side-aware-validation-regression-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-side-aware-validation-regression-v1-2026-10-06`
+
+SHA de base :
+`857074284dfc1641b4d68f210fe8f65c9c540f19`
+
+### Retour utilisateur
+
+Après réglage des offsets visuels/particules :
+- validation affiche `nonNegativeNumber is not defined` ;
+- le miroir horizontal automatique paraît ne pas s'appliquer côté opposant.
+
+### Diagnostic LIVE
+
+Le Human Editor définit :
+- `finiteNumber` ;
+- `positiveInteger` ;
+- `numericValue`.
+
+Mais `readHumanGameOptionsV1` appelle un helper inexistant :
+`nonNegativeNumber(...)`.
+
+Cette lecture est exécutée par la validation globale de l'éditeur. Elle peut donc interrompre la validation/sauvegarde de n'importe quelle modification, y compris les offsets V9 side-aware.
+
+Le renderer V9 et ses sentinelles mirror_x/custom sont déjà GREEN ; ce lot doit d'abord réparer la frontière UI fautive avant de conclure sur une éventuelle seconde anomalie miroir.
+
+### Autorité
+
+- validation de Game Options : `normalizeCaptureGameOptionsV1` ;
+- Human Editor : lecture/traduction uniquement ;
+- side-aware offset : SkillPresentationBinding V9 + renderer existant ;
+- aucun changement Combat Runtime / collision / projectile.
+
+### TDD prévu
+
+RED :
+1. `readHumanGameOptionsV1` doit lire une configuration Dodge valide depuis le vrai contrat DOM minimal sans ReferenceError ;
+2. recharge négative doit rester rejetée par le contrat `normalizeCaptureGameOptionsV1` ;
+3. sentinelles mirror_x V9 existantes restent GREEN.
+
+Correction visée :
+- supprimer l'appel au helper fantôme ;
+- transmettre la valeur convertie en ms au contrat propriétaire ;
+- ne pas ajouter une seconde règle de validation locale.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime ;
+- rechargeable action ;
+- SkillPresentationBinding V9 ;
+- renderer FX sauf si une seconde anomalie miroir est démontrée après correction ;
+- collision ;
+- projectile ;
+- scales auteur ;
+- données Showcase.
+
+### Critère de fin
+
+- RED reproductible ;
+- correction minimale UI ;
+- CI complète GREEN ;
+- preview exacte ;
+- validation utilisateur du miroir sur smartphone.
+
+---
+
 ## Chantier actif — 2026-10-06 — Skill Presentation Side-Aware V1
 
 Branche : `work/lab-skill-presentation-side-aware-v1-2026-10-06`
