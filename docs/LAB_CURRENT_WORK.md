@@ -1,5 +1,103 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Zone pure : supprimer l’impact cible artificiel V1
+
+Branche : `work/lab-pure-zone-presentation-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-pure-zone-presentation-v1-2026-10-06`
+
+SHA de base :
+`cab67439b310f0e8ffe54bd8b806d664de827752`
+
+### Retour utilisateur
+
+Tempête de flammes est désormais jugée fonctionnelle côté ticks, mais son activation donne encore l’impression suivante :
+
+- attente comme pour un projectile invisible ;
+- impact visuel sur le monstre cible ;
+- alors que l’export Tempête ne contient ni sprite travel ni sprite impact.
+
+### Diagnostic
+
+Tempête :
+
+- `form = beam` ;
+- `travelMs = 0` ;
+- dégâts immédiats = `0` ;
+- seul effet gameplay réel à la résolution = `persistent_zone` ;
+- présentation = aura persistante + audio Cast + feedback V8.
+
+Le plan Release ne crée déjà aucun projectile car seuls les skills `form = projectile` passent par `planSkillReleaseFx`.
+
+Le défaut se situe au résultat :
+
+- `resolveSkillCompletion` émet un `hit` générique avec `appliedDamage = 0` ;
+- `planSkillOutcomeFx` transforme tout outcome `hit` en `impact` ;
+- `dom-skill-fx` joue alors `impactBurst` / fumée même sans sprite impact ;
+- `combat-resolution-presenter` joue aussi l’animation `hit` de la cible.
+
+Cela fabrique un faux impact cible pour une activation de zone pure.
+
+### Correction prévue
+
+Définir une règle de présentation générique :
+
+un outcome `hit` possède un impact cible immédiat uniquement si la résolution montre un effet immédiat réel sur une cible, par exemple :
+
+- dégâts réellement appliqués ou absorbés ;
+- heal ;
+- énergie modifiée ;
+- statut appliqué / nettoyé / dissipé ;
+- interruption immédiate.
+
+Une résolution qui ne fait qu’installer une `persistent_zone` avec `0` dégât direct :
+
+- ne génère aucun plan `impact` ;
+- ne joue aucun recul `hit` sur la cible ;
+- conserve le Cast/l’animation du lanceur et la zone persistante ;
+- ne modifie aucun tick, rayon, cooldown ou Runtime.
+
+### Propriétaires
+
+- sémantique gameplay : inchangée ;
+- planification FX : `skill-fx-plan.js` ;
+- réaction visuelle cible : `combat-resolution-presenter.js`.
+
+### Protégé
+
+Ne pas modifier :
+
+- Tempête JSON ;
+- Combat Runtime ;
+- Persistent Zone Runtime ;
+- cadence / long authority ;
+- dégâts ;
+- zone short/medium/long ;
+- renderer projectile ;
+- collision ;
+- layout / scale / sockets.
+
+### TDD prévu
+
+RED :
+
+1. activation de zone pure : aucun impact FX ;
+2. activation de zone pure : aucun `hit` visuel cible ;
+3. attaque directe : impact et recul conservés ;
+4. debuff immédiat sans dégâts : impact conservé via événement `status-applied`;
+5. projectile standard inchangé.
+
+### Critère de fin
+
+- RED ciblé ;
+- correction dans les owners de présentation existants ;
+- CI complète verte ;
+- checkpoint GREEN ;
+- preview smartphone exacte.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : cadence pendant les actions V1
 
 Branche : `work/lab-firestorm-action-cadence-v1-2026-10-06`
