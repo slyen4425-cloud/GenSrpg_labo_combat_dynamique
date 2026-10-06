@@ -66,6 +66,16 @@ Ne pas modifier :
 - checkpoint + preview ;
 - retour smartphone.
 
+### Résultat technique LIVE
+
+- faute moteur démontrée : double comptage de `preparationMs` dans les timestamps de zone lors d'une résolution Runtime asynchrone ;
+- correction : Runtime transmet désormais l'heure combat absolue de résolution, avec fallback synchrone historique inchangé ;
+- vraie Tempête testée avec condition 25 s, préparation 2 s, cooldown, 3 activations et vrai renderer ;
+- progression vérifiée : `short → medium → long` sur le même node ;
+- faux impact/recul cible supprimé génériquement pour les capacités `persistentZoneOnly` ;
+- dernière CI fonctionnelle avant documentation : `37457256376` — 1123 / 1123 PASS ;
+- la préparation 2000 ms reste volontairement inchangée : c'est une valeur auteur historique, pas un projectile caché.
+
 ---
 
 ## Chantier actif — 2026-10-06 — Tempête de flammes : autorité portée longue V1
