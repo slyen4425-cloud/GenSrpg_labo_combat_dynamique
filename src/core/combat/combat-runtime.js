@@ -1044,6 +1044,93 @@ export function createCombatRuntime({
     });
   }
 
+  function previewRechargeableReaction(
+    reactionSkill,
+    {
+      againstActorId = null,
+      recharge
+    } = {}
+  ) {
+    const record = reactionRecord(
+      againstActorId
+    );
+
+    if (!record) {
+      return previewReaction(
+        reactionSkill,
+        { againstActorId }
+      );
+    }
+
+    if (record.reaction) {
+      return Object.freeze({
+        ok: false,
+        outcome:
+          "reaction_already_selected"
+      });
+    }
+
+    return session.previewRechargeableReaction({
+      action: record.action,
+      reactionSkill,
+      elapsedMs:
+        elapsedFor(record, now()),
+      recharge
+    });
+  }
+
+  function reactWithRechargeableAction(
+    reactionSkill,
+    {
+      againstActorId = null,
+      recharge
+    } = {}
+  ) {
+    const record = reactionRecord(
+      againstActorId
+    );
+    if (!record) {
+      return previewRechargeableReaction(
+        reactionSkill,
+        {
+          againstActorId,
+          recharge
+        }
+      );
+    }
+
+    const result =
+      session.reactWithRechargeableAction({
+        action: record.action,
+        reactionSkill,
+        elapsedMs:
+          elapsedFor(record, now()),
+        recharge
+      });
+
+    if (!result.ok) {
+      return result;
+    }
+
+    record.reaction = result.reaction;
+    emitStateIfChanged({ force: true });
+    onProgress(
+      progressSnapshot(
+        record,
+        elapsedFor(record, now())
+      )
+    );
+    return result;
+  }
+
+  function rechargeableActionAvailability(
+    config
+  ) {
+    return session.rechargeableActionAvailability(
+      config
+    );
+  }
+
   function react(
     reactionSkill,
     { againstActorId = null } = {}
@@ -1316,6 +1403,9 @@ export function createCombatRuntime({
     startCommand,
     previewReaction,
     react,
+    previewRechargeableReaction,
+    reactWithRechargeableAction,
+    rechargeableActionAvailability,
     interruptActive,
     applyResolutionInterrupt,
     reportActionContact,
