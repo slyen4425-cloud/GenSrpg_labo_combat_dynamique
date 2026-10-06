@@ -6707,3 +6707,12 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Aura : 16 phases, 250 ms/phase ; les 8 dernières sont quasi fixes pour environ 2 s de maintien givré avant boucle.
 - Critère GREEN : 56 PNG RGBA 512×512, 4 atlas WebP, 4 IDs additifs, CI verte, publication non forcée de `global-assets`, checkpoint GREEN.
 - Statut : EN COURS.
+
+
+### Trait de givre HD V1 — payload généré
+- Build `37530496680` SUCCESS ; commit assets `cfd8c76cc4111e010520a630835842e586de9b4e`.
+- 56 frames PNG RGBA 512×512, 4 atlas WebP, 4 sources WebP alpha.
+- Catalogue unique : 108 assets / 61 sprites.
+- Aura givrée : formation sur la première moitié puis maintien visuel quasi fixe sur les 8 dernières phases (~2 s à 250 ms/phase).
+- Aucun asset glace générique remplacé.
+- CI complète du payload à valider sur le commit documentaire suivant avant GREEN/publication.

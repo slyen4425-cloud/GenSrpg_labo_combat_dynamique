@@ -27,3 +27,17 @@ IDs additifs :
 - `pack:capture:sprite-frost-bolt-status-aura-01`
 
 Le projectile générique `pack:capture:sprite-projectile-ice-01` reste inchangé.
+
+
+## Build généré
+- bootstrap : `d30a4cb27f9107bd8e41732e405807472a0b06a3`
+- build assets : run `37530496680` — SUCCESS
+- commit généré : `cfd8c76cc4111e010520a630835842e586de9b4e`
+- inventaire : 56 PNG RGBA 512×512 + 4 atlas WebP
+- atlas cast/aura : 8192×512
+- atlas projectile/impact : 6144×512
+- catalogue : 108 assets / 61 sprites
+- alpha réel présent sur les 56 frames
+- les 4 IDs frost-bolt sont additifs ; `pack:capture:sprite-projectile-ice-01` reste inchangé
+
+La CI normale du dépôt est déclenchée par le présent commit documentaire après le push du bot de build.
