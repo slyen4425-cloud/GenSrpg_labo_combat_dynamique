@@ -197,10 +197,27 @@ function mobilityEvasionFor(
   });
 }
 
+function reactionEvasionMatches(
+  skill,
+  reactionSkill
+) {
+  return (
+    reactionSkill.reaction.evadeForms.includes(
+      skill.form
+    ) ||
+    reactionSkill.reaction.evadeApproaches.includes(
+      skill.approachMode
+    )
+  );
+}
+
 function reactionOutcome(skill, reactionSkill) {
   if (
-    reactionSkill.reaction.evadeForms.includes(skill.form) ||
-    reactionSkill.reaction.evadeApproaches.includes(skill.approachMode)
+    skill.dodgeable !== false &&
+    reactionEvasionMatches(
+      skill,
+      reactionSkill
+    )
   ) {
     return "evaded";
   }
@@ -576,9 +593,19 @@ export function resolveReaction({
   const outcome = reactionOutcome(action.skill, reactionSkill);
 
   if (!outcome) {
+    const attemptedForbiddenDodge =
+      action.skill.dodgeable === false &&
+      reactionEvasionMatches(
+        action.skill,
+        reactionSkill
+      );
+
     return Object.freeze({
       ok: false,
-      outcome: "no_effect",
+      outcome:
+        attemptedForbiddenDodge
+          ? "not_dodgeable"
+          : "no_effect",
       state,
       reaction: null
     });
