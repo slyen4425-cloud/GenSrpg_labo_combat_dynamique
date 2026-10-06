@@ -532,6 +532,10 @@ export function applyPersistentZoneEffectsV1({
               existing.activations + 1
             )
           : existing.activations;
+    const preservesCadence =
+      existing !== null &&
+      effect.reactivation ===
+        "reinforce";
 
     const zone = Object.freeze({
       id,
@@ -565,11 +569,18 @@ export function applyPersistentZoneEffectsV1({
       activations,
       tickEffect:
         effect.tickEffect,
-      appliedAtMs: atMs,
+      appliedAtMs:
+        preservesCadence
+          ? existing.appliedAtMs
+          : atMs,
       expiresAtMs:
-        atMs + effect.durationMs,
+        preservesCadence
+          ? existing.expiresAtMs
+          : atMs + effect.durationMs,
       nextTickAtMs:
-        atMs + effect.tickIntervalMs
+        preservesCadence
+          ? existing.nextTickAtMs
+          : atMs + effect.tickIntervalMs
     });
 
     nextState =
