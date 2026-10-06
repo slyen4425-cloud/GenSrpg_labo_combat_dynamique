@@ -1,4 +1,5 @@
 import { normalizeRecallPreparationMs } from "./combat-command-definition.js";
+import { normalizeCaptureGameOptionsV1 } from "./capture-game-options-v1.js";
 
 export const CAPTURE_BATTLE_SETUP_EDITOR_DRAFT_SCHEMA =
   "capture-battle-setup-editor-draft-v1";
@@ -14,6 +15,7 @@ const TOP_LEVEL_FIELDS = new Set([
   "arenaId",
   "skillSpeedMultiplier",
   "recallPreparationMs",
+  "gameOptions",
   "teams"
 ]);
 
@@ -294,6 +296,11 @@ export function normalizeCaptureBattleSetupEditorDraftV1(input) {
     ),
     ...(value.recallPreparationMs === undefined ? {} : {
       recallPreparationMs: normalizeRecallPreparationMs(value.recallPreparationMs)
+    }),
+    ...(value.gameOptions === undefined ? {} : {
+      gameOptions: normalizeCaptureGameOptionsV1(
+        value.gameOptions
+      )
     }),
     teams: Object.freeze(teams)
   });
