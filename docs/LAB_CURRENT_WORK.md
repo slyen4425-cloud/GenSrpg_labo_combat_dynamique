@@ -85,14 +85,30 @@ RED :
 5. le presenter n’émet ni Impact FX ni audio Impact pour Tempête ;
 6. le cache de présentation est nettoyé après outcome / interruption.
 
+### Résultat
+
+RED :
+- CI `37446065151` ;
+- 1125 / 1127 PASS ;
+- 2 FAIL ciblés : Impact FX zone-only + réaction hit cible.
+
+GREEN fonctionnel :
+- plan FX : `e54388444f3bcdfa591d9d61c82c0c378a1e42f9` ;
+- presenter : `b9d1066547fd2672e2b76ea210917de0054955bd` ;
+- CI `37446279051` ;
+- 1127 / 1127 PASS.
+
+Tempête conserve sa préparation 2000 ms et sa cadence ; elle ne crée plus de projectile ni d'Impact cible générique, et la cible ne joue plus de réaction `hit` à l'installation de la zone.
+
 ### Critère de fin
 
-- RED démontré ;
-- aucune modification gameplay ;
-- CI complète GREEN ;
-- checkpoint technique ;
-- preview exacte ;
-- validation smartphone utilisateur.
+- RED démontré : OK ;
+- aucune modification gameplay : OK ;
+- CI fonctionnelle GREEN : OK ;
+- CI finale documentaire : en attente ;
+- checkpoint technique : en attente ;
+- preview exacte : en attente ;
+- validation smartphone utilisateur : en attente.
 
 ---
 
