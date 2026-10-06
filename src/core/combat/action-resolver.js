@@ -778,6 +778,12 @@ export function resolveSkillCompletion({
     mobilityEvasion?.outcome ??
     "hit";
   const reactionReadyAt = reaction?.readyAtMs ?? null;
+  const combatImpactAtMs =
+    resolutionAtMs !== null &&
+    resolutionAtMs !== undefined &&
+    Number.isFinite(Number(resolutionAtMs))
+      ? Number(resolutionAtMs)
+      : state.elapsedMs + impactAtMs;
   let nextState = state;
   const events = [
     event("skill-start", 0, {
@@ -850,7 +856,7 @@ export function resolveSkillCompletion({
           sourceActorId: actorId,
           targetActorId: targetId,
           damage: damage.damage,
-          atMs: impactAtMs
+          atMs: combatImpactAtMs
         });
       nextState = applied.state;
 
@@ -888,6 +894,7 @@ export function resolveSkillCompletion({
           targetId,
           skill,
           atMs: impactAtMs,
+          combatAtMs: combatImpactAtMs,
           battleFormat
         });
       nextState = tactical.state;
@@ -899,15 +906,7 @@ export function resolveSkillCompletion({
           actorId,
           targetId,
           skill,
-          atMs:
-            resolutionAtMs !== null &&
-            resolutionAtMs !== undefined &&
-            Number.isFinite(
-              Number(resolutionAtMs)
-            )
-              ? Number(resolutionAtMs)
-              : nextState.elapsedMs +
-                impactAtMs
+          atMs: combatImpactAtMs
         });
     } else if (outcome === "reflected") {
       const damage =
@@ -923,7 +922,7 @@ export function resolveSkillCompletion({
           sourceActorId: targetId,
           targetActorId: actorId,
           damage: damage.damage,
-          atMs: impactAtMs
+          atMs: combatImpactAtMs
         });
       nextState = applied.state;
 
