@@ -7661,33 +7661,21 @@ export function mountEditorCardDisclosuresV1({
       card.dataset.collapsed = "false";
     }
 
-    let toggle = title.querySelector(
-      "[data-editor-card-toggle]"
-    );
-
-    if (!toggle) {
-      toggle =
-        root.ownerDocument.createElement(
-          "button"
-        );
-      toggle.type = "button";
-      toggle.className =
-        "editor-card-toggle";
-      toggle.dataset.editorCardToggle = "true";
-      title.append(toggle);
-    }
+    title.dataset.editorCardToggle = "true";
+    title.setAttribute("role", "button");
+    title.tabIndex = 0;
 
     const sync = () => {
       const collapsed =
         card.dataset.collapsed === "true";
 
-      toggle.setAttribute(
+      title.setAttribute(
         "aria-expanded",
         collapsed ? "false" : "true"
       );
-      toggle.textContent =
+      title.dataset.disclosureLabel =
         collapsed ? "Dérouler" : "Fermer";
-      toggle.setAttribute(
+      title.setAttribute(
         "aria-label",
         (
           collapsed
@@ -7702,15 +7690,33 @@ export function mountEditorCardDisclosuresV1({
       );
     };
 
+    const toggle = () => {
+      card.dataset.collapsed =
+        card.dataset.collapsed === "true"
+          ? "false"
+          : "true";
+      sync();
+    };
+
     listen(
-      toggle,
+      title,
       "click",
       () => {
-        card.dataset.collapsed =
-          card.dataset.collapsed === "true"
-            ? "false"
-            : "true";
-        sync();
+        toggle();
+      }
+    );
+
+    listen(
+      title,
+      "keydown",
+      (event) => {
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
+          event.preventDefault();
+          toggle();
+        }
       }
     );
 
