@@ -117,12 +117,14 @@ test("fighter permanent mobility tempo modifies ground aerial and burrow action 
       fighters: [
         {
           ...fast,
+          maxEnergy: 10,
           initialEnergy: 10
         },
         {
           ...fast,
           id: "target",
           approachTimeModifierPct: 0,
+          maxEnergy: 10,
           initialEnergy: 10
         }
       ]
@@ -166,6 +168,7 @@ test("slow permanent mobility tempo increases approach duration", () => {
     fighters: [
       {
         ...slow,
+        maxEnergy: 10,
         initialEnergy: 10
       },
       {
@@ -246,11 +249,13 @@ test("missing mobility tempo remains zero for legacy fighter configs", () => {
     fighters: [
       {
         ...legacy,
+        maxEnergy: 10,
         initialEnergy: 10
       },
       {
         ...legacy,
         id: "target",
+        maxEnergy: 10,
         initialEnergy: 10
       }
     ]
