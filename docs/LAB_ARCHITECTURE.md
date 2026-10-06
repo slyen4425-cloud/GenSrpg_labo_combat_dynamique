@@ -3226,3 +3226,21 @@ Le canal recall détenu par Resolution Presenter est prioritaire sur une animati
 CAPTURE_COMBAT_REFERENCE_SPEED_V1 = 0.5 dans le contrat Capture Battle Setup désigne le rythme utilisateur validé. captureCombatPaceToSkillSpeedV1 convertit uniquement le facteur affiché à la lecture du champ humain : 1× → natif 0.5, 2× → natif 1, 4× → natif 2. Les nouveaux Scenario Builders utilisent la même constante par défaut. Le champ exporté skillSpeedMultiplier garde ses unités historiques ; les normalizers legacy et tout appel explicite restent inchangés.
 
 Combat Session / Combat Timing possèdent toujours baseMs / skillSpeedMultiplier, appliqué une seule fois à préparation/trajet/récupération et préparation de réaction. Aucune multiplication supplémentaire dans le Runtime, Presenter ou Renderer. Cooldowns, ticks de zone/statut/énergie et commandes du dresseur conservent leur horloge et durées. Les définitions/presets de capacité ne sont pas réécrits.
+
+
+## Extension — Combat expressif / présence, esquive, réserve et effets différés
+
+L'architecture détaillée de l'extension demandée le 2026-10-06 est définie dans :
+
+`docs/LAB_COMBAT_EXPRESSIVENESS_ARCHITECTURE_V1.md`
+
+Principes obligatoires :
+
+- présence de combat sémantique indépendante du renderer ;
+- surface / airborne / underground comme données de Combat Rules ;
+- portée contre ces présences déclarée par la compétence, sans condition par nom ;
+- esquive via le système de réactions existant ;
+- immunité via Status Runtime et une décision de protection commune aux dégâts/statuts ;
+- effets différés avancés par l'horloge Combat Runtime existante ;
+- réserve toujours possédée par Roster Session ;
+- vitesse gameplay d'approche séparée du Creature Profile morphologique.
