@@ -191,6 +191,53 @@ function optionalText(value) {
 }
 
 
+const HUMAN_MOBILITY_TEMPO_PRESETS_V1 =
+  Object.freeze({
+    "very-fast": -40,
+    fast: -20,
+    normal: 0,
+    slow: 25,
+    "very-slow": 50
+  });
+
+export function humanMobilityTempoPresetValueV1(
+  presetId
+) {
+  const id = String(presetId ?? "").trim();
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      HUMAN_MOBILITY_TEMPO_PRESETS_V1,
+      id
+    )
+  ) {
+    throw new RangeError(
+      "Preset de mobilité inconnu : " + id
+    );
+  }
+  return HUMAN_MOBILITY_TEMPO_PRESETS_V1[id];
+}
+
+export function humanMobilityTempoPresetIdV1(
+  modifierPct
+) {
+  const value = finiteNumber(
+    modifierPct,
+    "Tempo de mobilité"
+  );
+  for (
+    const [id, presetValue] of
+    Object.entries(
+      HUMAN_MOBILITY_TEMPO_PRESETS_V1
+    )
+  ) {
+    if (presetValue === value) {
+      return id;
+    }
+  }
+  return "custom";
+}
+
+
 export function humanTacticalSecondsToMsV1(value) {
   const number = finiteNumber(
     value,
@@ -1819,6 +1866,10 @@ export function buildHumanCreatureDraftV2(fields) {
       chargeTimeModifierPct: finiteNumber(
         fields.combat?.chargeTimeModifierPct,
         "Modificateur de charge"
+      ),
+      approachTimeModifierPct: finiteNumber(
+        fields.combat?.approachTimeModifierPct ?? 0,
+        "Tempo de mobilité"
       )
     },
     skillIds: stableIds(fields.linkedSkillIds),
@@ -2133,6 +2184,14 @@ export function humanSkillEditorFieldsFromDraftV1(
     element: definition.element,
     approachMode:
       definition.approachMode ?? "none",
+    hitPresenceStates:
+      definition.hitPresenceStates == null
+        ? null
+        : [...definition.hitPresenceStates],
+    dodgeable:
+      definition.dodgeable !== false,
+    targetLocations:
+      [...(definition.targetLocations ?? ["active"])],
     energyCost: definition.energyCost,
     preparationMs: definition.preparationMs,
     travelMs: definition.travelMs,
@@ -2375,6 +2434,18 @@ export function buildHumanSkillDraftV1(fields) {
         fields.approachMode ?? "none",
         "Déplacement"
       ),
+      hitPresenceStates:
+        fields.hitPresenceStates == null
+          ? null
+          : stableIds(
+              fields.hitPresenceStates
+            ),
+      dodgeable:
+        fields.dodgeable !== false,
+      targetLocations:
+        stableIds(
+          fields.targetLocations ?? ["active"]
+        ),
       energyCost: finiteNumber(
         fields.energyCost,
         "Coût énergie"
