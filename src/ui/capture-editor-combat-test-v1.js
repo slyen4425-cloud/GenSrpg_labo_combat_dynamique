@@ -37,6 +37,7 @@ function teamSlots(ids, activeCount, prefix, configuredCreatures) {
 export function buildCaptureEditorCombatTestV1({
   configuredCreatures, configuredSkills, localCreatureIds, opponentCreatureIds,
   activePerTeam, arenaId, combatRules, skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1, recallPreparationMs,
+  gameOptions,
   statRegistry = null, progressionRules = null
 }) {
   const local = teamIds(localCreatureIds, "L’équipe locale", configuredCreatures);
@@ -50,6 +51,7 @@ export function buildCaptureEditorCombatTestV1({
     schema: "capture-battle-setup-editor-draft-v1", id: "capture-human-preview",
     localActorId: "local-1", arenaId, skillSpeedMultiplier,
     ...(recallPreparationMs === undefined ? {} : { recallPreparationMs }),
+    ...(gameOptions === undefined ? {} : { gameOptions }),
     teams: [
       { id: "local-team", slots: teamSlots(local, count, "local", configuredCreatures) },
       { id: "enemy-team", slots: teamSlots(opponent, count, "opponent", configuredCreatures) }
