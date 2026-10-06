@@ -1,5 +1,115 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Reserve Targeting V1
+
+Branche : `work/lab-reserve-targeting-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-reserve-targeting-v1-2026-10-06`
+
+SHA de base :
+`53baa6dfd0bfcfbc080988ae45a3345ba00c9746`
+
+### Objectif
+
+Permettre à une capacité de cibler explicitement une créature en réserve, alliée ou ennemie, sans ajouter la réserve dans CombatState.
+
+V1 couvre :
+- cible active ou réserve déclarée par contrat ;
+- dégâts directs structurés sur réserve ;
+- soin ;
+- énergie ;
+- apply_status ;
+- cleanse / dispel ;
+- immunité / shield / résistances via les mêmes primitives que l'actif ;
+- coût énergie / cooldown / usage de la compétence via le même owner que les compétences actives ;
+- cible de réserve vivante uniquement en V1.
+
+### Contraintes d'autorité
+
+- RosterSession reste l'unique propriétaire des membres en réserve ;
+- CombatState ne contient toujours que les combattants actifs ;
+- aucune copie durable du banc dans CombatState ;
+- aucun moteur de dégâts / status spécifique à la réserve ;
+- les calculs existants doivent être factorisés/réutilisés ;
+- les effets programmés et zones persistantes sur réserve sont hors périmètre V1 ;
+- la réserve reste hors de l'horloge active : aucun tick DoT/HoT manqué n'est rejoué pendant l'absence, conformément au contrat Roster existant.
+
+### Contrat cible
+
+Nouveau `CombatTargetRefV1` :
+- actif : `{ scope: "active", actorId }` ;
+- réserve : `{ scope: "reserve", teamId, memberId }`.
+
+SkillDefinition expose un contrat de localisation de cible :
+- `active` par défaut ;
+- `reserve` opt-in ;
+- les compétences historiques restent inchangées.
+
+### Stratégie d'implémentation
+
+1. contrat cible + targetLocations ;
+2. factoriser une primitive unique d'application d'effets à une paire source/cible sans dépendre de leur stockage ;
+3. adapter Immediate Tactical Effects actif à cette primitive ;
+4. faire consommer la même primitive par RosterSession pour une réserve ;
+5. factoriser le commit acteur (énergie/cooldown/usages) afin d'éviter de dupliquer resolveSkillStart ;
+6. vrai chemin Reserve Targeting avec timing d'action ;
+7. CI + checkpoint GREEN.
+
+### Fichiers autorisés
+
+- contrats de cible / SkillDefinition ;
+- primitives combat nécessaires à la factorisation ;
+- Action Resolver uniquement pour factoriser l'activation/commit acteur ;
+- Roster Session ;
+- Combat Session si une API de commit atomique existante doit être exposée ;
+- tests ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime ;
+- timers ;
+- renderer / FX ;
+- collision ;
+- Presence / Reach ;
+- Burrow ;
+- Dodge ;
+- Scheduled Effect owner ;
+- Tempête ;
+- positionnement visuel des camps ;
+- éditeur.
+
+### RED prévu
+
+1. skill active-only refuse une targetRef reserve ;
+2. skill reserve-enabled accepte cible alliée et ennemie selon targetRelations ;
+3. dégâts réserve utilisent résistances / shield / immunity existants ;
+4. soin / buff / debuff utilisent les mêmes primitives ;
+5. source active reçoit ses statistiques de dégâts/KO via la même autorité ;
+6. réserve ciblée reste hors CombatState après résolution ;
+7. énergie / cooldown / usage sont consommés une seule fois ;
+8. ancienne API active reste GREEN.
+
+### Risques
+
+- duplication de logique Action Resolver ;
+- mauvaise datation des statuts réserve ;
+- écrasement du snapshot actif lors de la propagation des stats source ;
+- confusion teamId Roster vs teamId BattleFormat.
+
+### Critère de fin
+
+- aucune copie durable de réserve dans CombatState ;
+- primitive d'effet unique ;
+- vrai chemin capacité -> réserve ;
+- legacy actif inchangé ;
+- CI complète GREEN ;
+- checkpoint GREEN.
+
+---
+
 ## Décision produit — 2026-10-06 — Capture smartphone paysage définitif
 
 Référence :
