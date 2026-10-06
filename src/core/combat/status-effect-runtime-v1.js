@@ -12,6 +12,9 @@ import {
   createStatusEffectRuntimeInstanceV1,
   isStatusEffectRuntimeInstanceActiveV1
 } from "./status-effect-instance-v1.js";
+import {
+  combatProtectionForIncomingV1
+} from "./combat-protection-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -225,6 +228,19 @@ export function applyStatusEffectV1({
       "Unsupported status statId: " +
         validation.statId
     );
+  }
+
+  if (status.polarity === "detrimental") {
+    const protection =
+      combatProtectionForIncomingV1({
+        state,
+        targetActorId,
+        domain: "negative_status",
+        atMs: state.elapsedMs
+      });
+    if (protection.protected) {
+      return state;
+    }
   }
 
   const target = fighterOf(
