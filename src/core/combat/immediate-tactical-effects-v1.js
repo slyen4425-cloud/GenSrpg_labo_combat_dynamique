@@ -19,6 +19,9 @@ import {
 import {
   combatProtectionForIncomingV1
 } from "./combat-protection-v1.js";
+import {
+  scheduleSkillEffectV1
+} from "./scheduled-effect-runtime-v1.js";
 
 const SUPPORTED_KINDS = new Set([
   "damage",
@@ -28,7 +31,8 @@ const SUPPORTED_KINDS = new Set([
   "apply_status",
   "cleanse",
   "dispel",
-  "persistent_zone"
+  "persistent_zone",
+  "scheduled_effect"
 ]);
 
 const MULTI_TARGET_SCOPES = new Set([
@@ -146,7 +150,8 @@ function applyDamageEffect({
   affectedId,
   skill,
   effect,
-  atMs
+  atMs,
+  combatAtMs
 }) {
   const damage = computeCombatDamageV1({
     state,
@@ -157,7 +162,7 @@ function applyDamageEffect({
       effect.channel ??
       skill.element ??
       "physical",
-    atMs
+    atMs: combatAtMs
   });
 
   const applied = applyCombatDamageV1({
@@ -165,7 +170,7 @@ function applyDamageEffect({
     sourceActorId: actorId,
     targetActorId: affectedId,
     damage: damage.damage,
-    atMs
+    atMs: combatAtMs
   });
 
   return Object.freeze({
@@ -201,6 +206,7 @@ export function applyImmediateTacticalEffectsV1({
   targetId,
   skill,
   atMs,
+  combatAtMs = atMs,
   battleFormat = null
 }) {
   const unsupported =
@@ -232,6 +238,33 @@ export function applyImmediateTacticalEffectsV1({
       continue;
     }
 
+    if (effect.kind === "scheduled_effect") {
+      const scheduled =
+        scheduleSkillEffectV1({
+          state: nextState,
+          sourceActorId: actorId,
+          targetActorId: targetId,
+          sourceSkillId: skill.id,
+          skillElement:
+            skill.element ?? null,
+          effect,
+          atMs: combatAtMs
+        });
+      nextState = scheduled.state;
+      events.push(Object.freeze({
+        type: "scheduled-effect-created",
+        atMs,
+        actorId,
+        targetId,
+        skillId: skill.id,
+        scheduledEffectId:
+          scheduled.record.id,
+        dueAtMs:
+          scheduled.record.dueAtMs
+      }));
+      continue;
+    }
+
     const affectedIds =
       targetIdsForEffect({
         state: nextState,
@@ -249,7 +282,8 @@ export function applyImmediateTacticalEffectsV1({
           affectedId,
           skill,
           effect,
-          atMs
+          atMs,
+          combatAtMs
         });
         nextState = applied.state;
         events.push(applied.event);
@@ -332,7 +366,7 @@ export function applyImmediateTacticalEffectsV1({
                 state: nextState,
                 targetActorId: affectedId,
                 domain: "negative_status",
-                atMs
+                atMs: combatAtMs
               })
             : Object.freeze({
                 protected: false,
@@ -360,7 +394,8 @@ export function applyImmediateTacticalEffectsV1({
           targetActorId: affectedId,
           sourceActorId: actorId,
           sourceSkillId: skill.id,
-          status: effect.status
+          status: effect.status,
+          atMs: combatAtMs
         });
         events.push(Object.freeze({
           type: "status-applied",
