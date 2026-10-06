@@ -1,0 +1,383 @@
+{
+  "version": 1,
+  "source": "OpenAI image generation, user-approved frost bolt sheets",
+  "transport": "Q90 WebP with alpha, derived from generated transparent PNG sheets before GitHub transfer",
+  "source_archive_sha256": "fedb4e34afff8a2b775d685b5be3b71cabb6be6c22c583328d21f155e54a6054",
+  "generation_ids": {
+    "cast": "c7078f27-9492-4e03-b667-8fec8c138e1f",
+    "projectile": "212d4d11-f9cc-4cab-ad49-0b1c69ea08ca",
+    "impact": "bb03e3de-5136-47ad-8800-ac3dbf1bb646",
+    "status_aura": "b64af66f-5802-4613-a7c6-ca3dd6d427f0"
+  },
+  "crop_policy": "four equal columns; cast/aura proportional rows; projectile and impact audited row bands; contain-resize centered to 512x512",
+  "results": {
+    "cast": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "b3cd6e8534c0cd02a7fe10f81d5f11161eea0cd0633c3f1910792758bfc20946",
+      "frame_count": 16,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "9d2ed4c5a32090ff00a46154961b8eb54bdfd04a7907d734f3a9b3ce0fe2c89a",
+        "1fd9e30ae8fd893d990e88f269b60f6d04e7cc1a8d7ebaf0211586c13b90ada8",
+        "c30c79869221db7c51e864f0a11ef1005d170a133d916e957a6b64c2dc141869",
+        "668db01455f7d8727328a75e8d8fecba96cc9735928b011892f6dec11d934eb6",
+        "32502701999990b97c26a3f0bbf5c50ea7a1e1c610ffd6628625773137997f55",
+        "68260392b32cdcae027a61b9c4b9e25094d22ee78fcef2d46be6a783009f6f17",
+        "e1da6f0b07732ca292755020cc0782127987fd8566d6f72e36e4c4716e157a28",
+        "cab9453498618b63e7eca84f643404602406410a98234e2769315eba2d35242a",
+        "c1e4f1cd5c49db7bc63a8fb5ea01d33feaee3781e08390e27f3b96d8acff0499",
+        "0e394774cd2bc3d0eed3db554f04268789d425315907d40c890ca08ef14b6509",
+        "359cfa75beddc7d75611f495560048aa6e9750dc790e78bdba7b1796d45b6597",
+        "ec1c843636ae4fba0c286636dcc2f151e418498077f3c3b896a53ede75187e45",
+        "8b7c6436ca361c0c8c233e7aa08f952631a71f208b51237292a31c726f800cf3",
+        "cbce3a28f16e838e43af3c4b733784a435226932e079f0bc6e9403c1544cfa6b",
+        "f3bb56a404f4f1f4b164fba79b52b7300ddd4d77e814e612d53054db3394d5c8",
+        "8dc954139632424450ffcaa79121d46c602a0250375062b5b553604ae86f2469"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          206
+        ],
+        [
+          0,
+          251
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          252
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_frost_bolt_cast_atlas_01.webp",
+      "atlas_size": [
+        8192,
+        512
+      ],
+      "atlas_sha256": "8a2929065e6c29d27bfc8c26fb8732b8622b3ff377ea93d9faf8618fddf9c833"
+    },
+    "projectile": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "2fec6b023bbdceecb6ee75d9bc9348abfcd539e152f4c8660b60f779a4f4b876",
+      "frame_count": 12,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "5dc706056a932d7e508dd45f37bf45fb58dc24a2ca14e82d981533e93f4a283a",
+        "852d10ae40df311a595a4c389dc52289999a9051550519d2742b89d7e832504f",
+        "8a7bf957f6291485ae6bb8565f30ab3710acd8dfd4d574226b097074f858a182",
+        "4e052035d13572fb75d552e935209761511fab8807d5bd175a4068355551d685",
+        "a268084b8449191df55259e8cace5fefb8650edf97dff1ff8886430522fc8354",
+        "df6123407c77839cc945bd779f5890dde7d239ab3899aa3af0eab851b30dfc1d",
+        "76053c446783b686e9e35bf96eeb153ece820c7e8bba0488dee1a043d13e5997",
+        "42b59fec2e98c9392a98164d0b4d9475909e806a81484d403cfabf2083dcb9bd",
+        "d6b48c92372d197a82c32cce35f9a99e369196533335ce4597f5dcebe9d972d6",
+        "127c0d11801a6e4313376e453f1404b35c40dd763192f5931c7e3e196bc87c60",
+        "617b62c1c7f30e46cd679835f855b2b3196c4bbf54ae4e26670699ab90a52804",
+        "4bc419f8e10d58113704d3f620320c873e8950b68a38325d4c799fd4cc0a174e"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_frost_bolt_projectile_atlas_01.webp",
+      "atlas_size": [
+        6144,
+        512
+      ],
+      "atlas_sha256": "d698eda74f4b5d2c845b72fd1de3614f2f60d560c089407d4118c4000c1200db"
+    },
+    "impact": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "54143d3bb9dc0ff71876bb35ab5a35a0bde39170b425603162963cfea1ff49a0",
+      "frame_count": 12,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "595ce27ee843f95f743951a6a0c3d4cc1323f696327053ea0fadd04280022f3e",
+        "1c6023aca10a46d411022cae954b49bce0ff6ad9238568e05f6cceb074709038",
+        "3b74fdde59b32c5093a3479666637a570a74cf34a2d85932984d3d09f17bf70e",
+        "3f3c4a114973b9489612ae808c13389b0ad3f45ac55fa26435b0a716a68afd47",
+        "ac53785a1e6d059d60f25b48225e676c30e0f004b0f08d661b2729dbb43f5161",
+        "ab2407c8086bb43efd747beef08d9252328180804fee5f2ce74efa34b6c7491f",
+        "1b7cce265170d8ae12adb8bbe74fc84492e456b6de73670790f78800ace8f245",
+        "14cc7211feff8ff57a159f042bd2399b7503fd199c0a191c58079b1489a63605",
+        "165df062d39bac647d382c32537a11c4175a1c5c6392102d16aa12f10b853525",
+        "1e4c2d02ab7f1759d3b91c4d9707ec281464aeff5c0f62aeda61060983d5f1a2",
+        "abbea22179179d6d9fc77db964e31ba5a9f2742e8e0fba2eb3a42a873ceca634",
+        "dabf113bd7679b4951951f7054c4749b056845873ca532bdfd1cf21bca6db111"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          255
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_frost_bolt_impact_atlas_01.webp",
+      "atlas_size": [
+        6144,
+        512
+      ],
+      "atlas_sha256": "04da033eb973ff29756a43a8cc3d11d8ad9c913ad1c2bbe8c07a17e0bfdef0f3"
+    },
+    "status_aura": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "82139f9f16e55d91b5b8838fe05e5842c4283d7cc57f1cdfad62a55e6474476d",
+      "frame_count": 16,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "3ffc58a452e1815ccf12828ade2e3855757d9febdbc4cab1e31684518d5c087d",
+        "1456f495721ec4ed7e5c89fcbd6532bc79f0c98948eddae1871b2d626003fff9",
+        "adf9ce4ea6de0d6e8b02faae4d41c7993e478157082e21809f34a049619a79e1",
+        "b0b3ee6fe85d0bdae5421e53ef64fa9bf6da3016fd393a7ba191fda8b7a13a7e",
+        "074bd5341ff55c7723f11aa4fbbdf0084d255fec9284f2e2715376cb14239e30",
+        "61742feb522592def9ea3bff86a10a292cc4dcd24a45975d1047bb950aea0712",
+        "65b47b3bd5570a4c03f64925507deb2449ba05f7a4d771b369cc6a99ffa18cc3",
+        "54641d0d2e06dbb9cc177f24fc79f26ca00fe797cb0b17c1c95e47feb322596b",
+        "4655164b6f89a8917c218523452886651960d826ce3b1ac3bbc2b81145309d3e",
+        "ccfe4d7183b36c74828656bc1730cd3eb0b017c9015b2a5a1c7958a1e89f6bd3",
+        "809e2003d0383ac16bfe47cd869416b5d863d49bf51a51cb4b09ce1ca9a71deb",
+        "99d0fd94907335ace7823b36b5c56487ecb916986354899c21788f3cc9f86860",
+        "281f500c286b0cb47fa1fc5173cbce1153a19584946a1b8c4b718e32d2dd1abb",
+        "187592f3768c3d9e21a83ede08262bdbc22323c411f35c4cc0ae2726481baea6",
+        "d34b0f4f98ecc49b6122065a09e6b5cdf24cedc67e86a72782de749561da2209",
+        "6de8eae05d09a6885b41e05ceee6c99615cffc2f06051fb980e1853881ec4268"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          244
+        ],
+        [
+          0,
+          251
+        ],
+        [
+          0,
+          251
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_frost_bolt_status_aura_atlas_01.webp",
+      "atlas_size": [
+        8192,
+        512
+      ],
+      "atlas_sha256": "a850a6b75905b3f5f0aaf0ffd18ac9f2d7c91348d2a54a68292f1c3f97caf308"
+    }
+  }
+}

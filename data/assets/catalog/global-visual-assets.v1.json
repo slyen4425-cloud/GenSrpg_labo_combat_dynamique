@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 104,
+    "assets": 108,
     "icons": 31,
-    "sprites": 57,
+    "sprites": 61,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -3356,6 +3356,159 @@
         "mime": "image/webp",
         "frameCount": 16,
         "frameMs": 90,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-frost-bolt-cast-01",
+      "label": "Trait de givre — charge",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "skill",
+        "ice",
+        "frost",
+        "magic",
+        "cast",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/frost_bolt/atlases/sprite_skill_frost_bolt_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 16,
+        "frameMs": 60
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-frost-bolt-projectile-01",
+      "label": "Trait de givre — projectile",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "skill",
+        "ice",
+        "frost",
+        "magic",
+        "projectile",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/frost_bolt/atlases/sprite_skill_frost_bolt_projectile_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45,
+        "headingRad": 0,
+        "coreAnchor": {
+          "x": 0.76,
+          "y": 0.5
+        },
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-frost-bolt-impact-01",
+      "label": "Trait de givre — impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "skill",
+        "ice",
+        "frost",
+        "magic",
+        "impact",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/frost_bolt/atlases/sprite_skill_frost_bolt_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-frost-bolt-status-aura-01",
+      "label": "Trait de givre — créature givrée",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "frozen",
+        "ice",
+        "frost",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/frost_bolt/atlases/sprite_skill_frost_bolt_status_aura_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 16,
+        "frameMs": 250,
         "playbackMode": "loop"
       },
       "compatibility": {
