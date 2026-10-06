@@ -1284,20 +1284,26 @@ html {
 }
 
 .combat-primary-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.35rem;
-  align-items: stretch;
+  display: block;
+  width: 100%;
 }
 
 .combat-dodge-action {
-  min-width: 5.4rem;
+  min-width: 3.25rem;
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 0.12rem;
-  padding: 0.35rem 0.45rem;
-  border-radius: 0.65rem;
+  gap: 0.08rem;
+  padding: 0.2rem 0.28rem;
+  border-radius: 0.55rem;
+}
+
+.combat-dodge-action--arena {
+  position: absolute;
+  z-index: 16;
+  left: 50%;
+  bottom: 0.45rem;
+  transform: translateX(-50%);
 }
 
 .combat-dodge-action__charges {
@@ -1309,15 +1315,10 @@ html {
 }
 
 .capture-preview-shell[data-landscape-required="true"]
-  .combat-primary-actions {
-  gap: 0.2rem;
-}
-
-.capture-preview-shell[data-landscape-required="true"]
   .combat-dodge-action {
-  min-width: clamp(4.5rem, 11vw, 6.4rem);
-  padding: 0.18rem 0.28rem;
-  font-size: clamp(0.48rem, 1.7dvh, 0.66rem);
+  min-width: clamp(2.7rem, 6.6vw, 3.85rem);
+  padding: 0.12rem 0.18rem;
+  font-size: clamp(0.42rem, 1.25dvh, 0.56rem);
 }
 
 /* Capture landscape opponent slot placement V1
