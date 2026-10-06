@@ -276,6 +276,91 @@ test("persistent-zone renderer applies radius with independent X/Y scale", () =>
   );
 });
 
+test("creator Firestorm keeps medium growth but gives long range a larger visible margin", () => {
+  const arena = fakeElement({
+    left: 0,
+    top: 0,
+    width: 400,
+    height: 300
+  });
+  const source = fakeElement({
+    left: 80,
+    top: 180,
+    width: 40,
+    height: 40
+  });
+  arena.ownerDocument = {
+    createElement() {
+      const node = fakeElement();
+      node.ownerDocument =
+        arena.ownerDocument;
+      return node;
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors: { local: source },
+    targetAnchors: { local: source },
+    presentationForSkill() {
+      return {
+        persistentZone: {
+          assetId:
+            "pack:capture:sprite-fire-zone-loop-01",
+          frames: ["f1.webp", "f2.webp"],
+          frameMs: 80,
+          playbackMode: "loop",
+          displayScale: 1.2,
+          displayScaleX: 2.5,
+          displayScaleY: 0.8
+        },
+        persistentZoneLayer: "behind"
+      };
+    },
+    animate() {
+      return {
+        finished: new Promise(() => {}),
+        cancel() {}
+      };
+    },
+    requestFrame() {
+      return null;
+    },
+    cancelFrame() {}
+  });
+
+  const zone = {
+    id: "local:cap_fire_atk_6:zone",
+    skillId: "cap_fire_atk_6",
+    sourceActorId: "local",
+    radius: "medium"
+  };
+
+  renderer.syncPersistentZones([zone]);
+
+  const node = arena.children[0];
+  assert.equal(
+    node.style.transform,
+    "translate(-50%, -50%) scale(4.35, 1.392)",
+    "medium growth must remain unchanged"
+  );
+
+  renderer.syncPersistentZones([
+    {
+      ...zone,
+      radius: "long"
+    }
+  ]);
+
+  assert.equal(
+    node.style.transform,
+    "translate(-50%, -50%) scale(6.3, 2.016)",
+    "long growth needs a visible safety margin so idle motion cannot sit exactly on the old boundary"
+  );
+
+  renderer.dispose();
+});
+
 test("Human Editor uses size wording instead of misleading duration refresh wording for persistent zones", async () => {
   const source = await readFile(
     new URL(
