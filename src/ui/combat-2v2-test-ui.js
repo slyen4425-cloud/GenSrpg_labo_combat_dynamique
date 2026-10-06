@@ -641,6 +641,11 @@ export async function mountCoop2v2Test({
     },
     anchors: motionAnchors,
     targetAnchors: fighterContainers,
+    targetAnchorFor(slotId) {
+      return visuals.getVisibleTargetRectFor(
+        slotId
+      );
+    },
     sourceAnchorFor(actorId, anchorName) {
       return visuals.getFxAnchorFor(actorId, anchorName);
     },
