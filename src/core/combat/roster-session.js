@@ -50,6 +50,8 @@ function snapshotFighter(fighter) {
     energyChargeProgressMs: fighter.energyChargeProgressMs,
     movementEnergyPerStep: fighter.movementEnergyPerStep,
     chargeTimeModifierPct: fighter.chargeTimeModifierPct,
+    approachTimeModifierPct:
+      fighter.approachTimeModifierPct,
     chargeTimeEffects: fighter.chargeTimeEffects,
     skillCooldowns: fighter.skillCooldowns,
     skillUseCounts: fighter.skillUseCounts,
