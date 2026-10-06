@@ -1,5 +1,101 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Blocs fermés par défaut + cible projectile visuelle V1
+
+Branche : `work/lab-collapsed-target-geometry-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-collapsed-target-geometry-v1-2026-10-06`
+
+SHA de base :
+`0c2a0b6b6594f2603a5475a8181241f1fba7fa4e`
+
+### Retours utilisateur
+
+1. tous les blocs repliables de l’éditeur doivent être fermés à l’ouverture de l’application ;
+2. projectile joueur -> ennemi vise trop haut après changement de layout/scale ;
+3. la cible doit suivre automatiquement la taille réellement visible du sprite et non une ancienne géométrie logique.
+
+### Diagnostic démontré
+
+Disclosure :
+- `mountEditorCardDisclosuresV1` initialise actuellement les cartes nouvelles avec `data-collapsed="false"`.
+
+Projectile :
+- la source utilise déjà le socket réel via `visuals.getFxAnchorFor(...)` ;
+- la collision projectile utilise déjà `createDomVisibleModelCollisionModel`, qui connaît le masque opaque, l’object-fit, le transform et le scale visuel ;
+- mais la destination du renderer utilise encore :
+  `targetAnchors = fighterContainers`
+  puis le centre de `fighterContainer.getBoundingClientRect()`;
+- ce centre appartient au slot logique et non à la silhouette opaque réellement affichée.
+
+La différence devient visible quand le ratio/layout ou le scale d’un fighter change.
+
+### Correction prévue
+
+Éditeur :
+- initialiser toutes les cartes repliables à `collapsed=true` au premier montage ;
+- conserver l’état courant si une carte porte déjà explicitement true/false au moment d’un remontage.
+
+Projectile :
+- étendre le propriétaire géométrique existant `dom-visible-model-contact` pour exposer le rectangle écran de la silhouette opaque ;
+- dériver ce rectangle du même masque et des mêmes axes que la collision, sans second calcul DOM concurrent ;
+- permettre à `dom-skill-fx` de demander un `targetAnchorFor(slot)` fourni par Visual Controller ;
+- 1v1 et 2v2 doivent fournir cette géométrie via le même `visuals.getVisibleTargetRectFor(slot)`;
+- conserver `targetAnchors` comme fallback legacy uniquement si aucune géométrie visuelle n’est disponible.
+
+### Propriétaires
+
+- état de repli initial : Human Editor ;
+- géométrie visible : `dom-visible-model-contact` ;
+- Visual Controller : expose la géométrie possédée par le collision model ;
+- renderer FX : consomme une cible, ne calcule pas une silhouette parallèle.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js`
+- `src/adapters/renderer/dom-visible-model-contact.js`
+- `src/ui/demo-app.js`
+- `src/adapters/renderer/dom-skill-fx.js`
+- `src/ui/combat-test-ui.js`
+- `src/ui/combat-2v2-test-ui.js`
+- tests unitaires dédiés
+- documentation
+
+### Protégé / interdit
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- collision sémantique / dégâts ;
+- règles de compétence ;
+- données `displayScale` ;
+- positions / sockets des créatures ;
+- Cendre aveuglante ;
+- layout paysage 16:9 V2 ;
+- traînée, fumée et glow validés.
+
+### TDD prévu
+
+RED :
+1. toutes les cartes sans état explicite démarrent fermées ;
+2. un masque avec marges transparentes produit un rectangle cible centré sur les pixels opaques, pas sur le canvas complet ;
+3. ce rectangle suit scale / translation / rotation via les mêmes axes du collision model ;
+4. projectile renderer préfère `targetAnchorFor` au slot logique ;
+5. 1v1 et 2v2 raccordent le même Visual Controller ;
+6. fallback historique `targetAnchors` reste couvert.
+
+### Critère de fin
+
+- RED démontré ;
+- pas d’offset magique ;
+- vrai chemin preview couvert ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- preview smartphone exacte ;
+- validation utilisateur avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Ergonomie blocs + scène paysage 16:9 V2
 
 Branche : `work/lab-editor-disclosure-landscape-v2-2026-10-06`
