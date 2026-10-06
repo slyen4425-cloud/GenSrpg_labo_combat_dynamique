@@ -220,6 +220,14 @@ export function adaptCaptureCreatureToFighterConfig(
     "movementEnergyPerStep"
   );
 
+  if (hasOwn(combat, "approachTimeModifierPct")) {
+    output.approachTimeModifierPct =
+      finiteNumber(
+        combat.approachTimeModifierPct,
+        "combat.approachTimeModifierPct"
+      );
+  }
+
   const statEffects =
     normalizeStatEffects(combat.statEffects);
   const naturalResistancePctByChannel =
