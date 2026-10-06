@@ -2,7 +2,8 @@ import {
   planSkillFx,
   planSkillOutcomeFx,
   planSkillPreparationFx,
-  planSkillReleaseFx
+  planSkillReleaseFx,
+  resolutionHasImmediateTargetEffectV1
 } from "../../core/fx/skill-fx-plan.js";
 
 function defaultSetTimer(callback, delayMs) {
@@ -451,14 +452,30 @@ export function createCombatResolutionPresenter({
             item.type === "hit" &&
             item.reflected !== true
         );
-        ko = Number(hitEvent?.hpAfter) <= 0;
-        koActorId = ko ? hitEvent?.actorId ?? null : null;
+        const hasImmediateTargetEffect =
+          resolutionHasImmediateTargetEffectV1(
+            resolution
+          );
+
+        ko =
+          hasImmediateTargetEffect &&
+          Number(hitEvent?.hpAfter) <= 0;
+        koActorId =
+          ko
+            ? hitEvent?.actorId ?? null
+            : null;
 
         if (ko) {
           visuals.cancelFor(targetSlot);
         }
 
-        finished = outcomeSequence(targetSlot, "hit", ko ? "ko" : null);
+        if (hasImmediateTargetEffect) {
+          finished = outcomeSequence(
+            targetSlot,
+            "hit",
+            ko ? "ko" : null
+          );
+        }
         break;
       }
 
