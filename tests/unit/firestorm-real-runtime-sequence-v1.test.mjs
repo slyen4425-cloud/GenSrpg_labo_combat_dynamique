@@ -253,7 +253,11 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
   assert.equal(zone.radius, "medium");
   assert.equal(zone.activations, 2);
   assert.equal(zone.appliedAtMs, 30500);
-  assert.equal(zone.nextTickAtMs, 31500);
+  assert.equal(
+    zone.nextTickAtMs,
+    31000,
+    "reinforcement must preserve the already-running tick phase instead of restarting it from resolution"
+  );
   assert.equal(arena.children[0], node);
   const mediumTransform = node.style.transform;
   assert.equal(node.dataset.zoneRadius, "medium");
