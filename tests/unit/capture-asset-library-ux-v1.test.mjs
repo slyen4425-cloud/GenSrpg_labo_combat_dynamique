@@ -93,7 +93,7 @@ test("creator import owner still emits user assetIds for the canonical presentat
   );
 });
 
-test("Loup volcanique showcase keeps its icon and aligns mouth socket with repaired visual metadata", async () => {
+test("Loup volcanique keeps the validated enemy mouth and latest raised player mouth alignment", async () => {
   const showcase = JSON.parse(
     await text(
       "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json"
@@ -127,6 +127,6 @@ test("Loup volcanique showcase keeps its icon and aligns mouth socket with repai
   );
   assert.deepEqual(
     mouth.back,
-    { x: 0.82, y: 0.52 }
+    { x: 0.82, y: 0.47 }
   );
 });
