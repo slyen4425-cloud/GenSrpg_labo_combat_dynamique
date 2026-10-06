@@ -40,7 +40,7 @@ export function effectiveSkillTimingMs({
 export function effectiveApproachTimingMs({ baseMs, approachMode, statusEffects = [], atMs = 0, speedMultiplier = 1 }) {
   const base = nonNegative(baseMs, "baseMs");
   let modifierPct = 0;
-  if (["ground", "aerial"].includes(approachMode)) {
+  if (["ground", "aerial", "burrow"].includes(approachMode)) {
     for (const instance of statusEffects) {
       if (instance.definition.kind === "approach_time_modifier" && isStatusEffectRuntimeInstanceActiveV1(instance, atMs)) {
         modifierPct += instance.definition.modifierPct * instance.stacks;
