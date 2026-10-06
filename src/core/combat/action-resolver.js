@@ -802,6 +802,8 @@ export function resolveSkillCompletion({
           targetId,
           skill,
           atMs:
+            resolutionAtMs !== null &&
+            resolutionAtMs !== undefined &&
             Number.isFinite(
               Number(resolutionAtMs)
             )
