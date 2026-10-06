@@ -1,0 +1,217 @@
+{
+  "version": 1,
+  "source": "OpenAI image generation, user-approved stone carapace sheets",
+  "transport": "Q95 WebP with alpha, derived from generated transparent PNG sheets before GitHub transfer",
+  "source_archive_sha256": "fb37afab9c30ccc0dd898233a6fdae1e37d1dde521bf3658bfe050ed14a0e8b0",
+  "generation_ids": {
+    "cast": "489a9b38-ab14-4346-876e-d00c24a9a449",
+    "aura": "8592b7cd-b6b5-4ffa-b979-a829ef0baf47"
+  },
+  "crop_policy": "proportional 4x4 grid boundaries, row-major, LANCZOS resize to 512x512",
+  "results": {
+    "cast": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "c33cf229667b24638bc2a6628c9c4ec397c9a040d80ac3d912e19fd2dc583289",
+      "frame_count": 16,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "eeed4ba8c3c0a66c871fe9aa1f0d4606f372d842d2121989088ae19af204534d",
+        "e9d472ee3550ebe6cd85490f16c3b17d820e36d0623320341256b9ff61184664",
+        "6b801bb9fe19c7b13c7a9cf50639c30484d3fc0df13086d77fd99e84895f6071",
+        "40572bf35716b3c88939a6e5380b1097fdadb316a2a4f84d9e0d249f55dfc5f4",
+        "30f8a91c107f8bf17d2f6d31267b2420b5887373edf346a01d5f9524178de95e",
+        "56589d09a7d72f5258e5b9c846f2d13f31f6ac5d623a36af910dd444df033f0e",
+        "2c0a36191c2fb63791198f41c7c8ce3e9682b0f710f358e2907911f3edcfbfa3",
+        "d35e100edde766b2b6c19e44a1c9456965d173c50a19ab978ee399f540c77784",
+        "0fa7c4e3be49e46d01c52a47d4067bec097e3705342091efa2767f5980a1f006",
+        "24b58640f53809d6c7a49214b2db4983714619304227ff936f0eafc96c48be1e",
+        "7efaa1a154fdf771925e63e84dfd3111e2b7394931242ead652958b7466984f1",
+        "18f6d2e58af4c86e245fed373fd52813e7116698f0e57c8f042a42baf4bec52c",
+        "8d87ec170112401cef9cc20cb504dbf9ff70f8a2190ba1492e798d99a7ff4997",
+        "d86316123f3708e3fa2dd1eacc75d7804a2f9b2394f29177c1f17255cf7f1f2c",
+        "8de376962fc09aeae072658faec65a3821c5e39e00a1ec8d3a2254396e4cf812",
+        "2c37fcf4f779a5e0c8429c94cb751182ea29983874b997dd514e7200735a3aad"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_stone_carapace_cast_atlas_01.webp",
+      "atlas_size": [
+        8192,
+        512
+      ],
+      "atlas_sha256": "67ad94df25fb7f9757c98d3ed32b8371642b4464f61724fe5d370120aebb5da8"
+    },
+    "aura": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "ee27569ec15d6010383d7bf781c72d5bd687a09355e82669238b07e7c4ad8e88",
+      "frame_count": 16,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "d906d62227cf73b6b70057de164c177be0ba2b467ad95960495aa77b29296a31",
+        "8fa64b654316ab1ed3d04318e05940b96e3bd7f7557b950e9596e952f287e49e",
+        "1eb15bd7791d0cc8afc6f4b94d81d38815468477931ca39d5be1ada918c36177",
+        "a622b16cdd8f74b6265109c7a029d1616617f76633f695e22a23021273057407",
+        "8c5cabb18f6a5860dce648d353c70cf0e50d1688a7b0e0b2238ea27904105d77",
+        "38957876548c42e13a582fc383e46b1e5867d982e0398f57dd05daeb962c580a",
+        "6b9d0f7c0354d826db51e65803a42c71905cd62ce82914fe995f8bd8ccad94ef",
+        "c5b2069c57c12523495386b375415320d0acf131f3fd8bdb3755dd62ba5c0e5c",
+        "20127721d196a59d750b3105d0f3d18134da525d1106849e095765d2ef2cc28b",
+        "3275706cb2c7d410020a2e7a826b726b626779ff743597bf623d04743baee759",
+        "56292569c35f0adf7085ac7abe875e66188e4939aad2078b088fbd366244f7d5",
+        "cff0b1ca1694439c7174d705ec589c7840f3bb7ec046960eb768054b85262e45",
+        "5f15f7e3ce4a9ddb686f4b19bab3c422c8494dd29d2ff8101e4af471cf405c62",
+        "b8d905c1675cd25b9d7477df79da2347ce4ab8b2dddf745b3e514fbf7dfbfa58",
+        "1aeb620572811584fc9b9413ac970dbc3fe3a2c9f8880c1e44b19cb0a3a4bac7",
+        "75c53c794c3637c286dd9ce75f6567af1c00a4081bb1851c85ca83dd041bbbff"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          252
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_stone_carapace_aura_atlas_01.webp",
+      "atlas_size": [
+        8192,
+        512
+      ],
+      "atlas_sha256": "6c03223c8a92d964a41419e6e66715047d9912391e25f34e60c7c43b778d4d2b"
+    }
+  }
+}

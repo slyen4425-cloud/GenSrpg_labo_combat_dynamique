@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 102,
+    "assets": 104,
     "icons": 31,
-    "sprites": 55,
+    "sprites": 57,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -3274,6 +3274,84 @@
       },
       "resource": {
         "file": "capture/sprites/skills/ash_smoke/atlases/sprite_skill_ash_smoke_status_aura_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 16,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-stone-carapace-cast-01",
+      "label": "Carapace de pierre — charge",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "skill",
+        "earth",
+        "stone",
+        "armor",
+        "carapace",
+        "cast",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/stone_carapace/atlases/sprite_skill_stone_carapace_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 16,
+        "frameMs": 60
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-stone-carapace-aura-01",
+      "label": "Carapace de pierre — aura",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "status",
+        "aura",
+        "protective",
+        "earth",
+        "stone",
+        "armor",
+        "carapace",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/stone_carapace/atlases/sprite_skill_stone_carapace_aura_atlas_01.webp",
         "format": "sprite-strip",
         "mime": "image/webp",
         "frameCount": 16,
