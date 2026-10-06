@@ -1,5 +1,96 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Tempête de flammes : marge visuelle portée longue V1
+
+Branche : `work/lab-firestorm-long-visual-margin-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-firestorm-long-visual-margin-v1-2026-10-06`
+
+SHA de base :
+`96ec3d4c513dd82060f7e8e6fd0abfd955634d2b`
+
+### Retour utilisateur
+
+Avec la configuration auteur restaurée de Tempête de flammes :
+- le système fonctionne globalement ;
+- au rayon maximum, certains ticks restent intermittents ;
+- le visuel semble juste à la limite de la créature adverse ;
+- le principe validé reste : le scale visuel peut influencer l'occupation réelle.
+
+### Diagnostic
+
+Le comportement validé le 2026-10-04 doit être conservé :
+- présence = ellipse réellement rendue contre géométrie visuelle du modèle ;
+- une cible réellement hors du visuel, même en rayon `long`, ne doit pas subir de dégâts ;
+- la zone suit la source.
+
+L'hypothèse `long = toujours vrai` a été testée sur une branche abandonnée et rejetée par la sentinelle historique qui protège cette règle.
+
+Avec l'export utilisateur actuel :
+- aura global scale = 1.2 ;
+- X = 2.5 ;
+- Y = 0.8 ;
+- croissance actuelle : short 1 / medium 1.45 / long 1.9.
+
+Le niveau long reste donc très proche de la frontière adverse. Une faible variation visuelle/idle suffit à faire basculer l'intersection d'un tick à l'autre.
+
+### Correction prévue
+
+Ajuster uniquement la croissance visuelle canonique du niveau `long` :
+
+- short = 1 (inchangé) ;
+- medium = 1.45 (inchangé) ;
+- long = 2.10 (au lieu de 1.90).
+
+Le même node visuel étant la source de la mesure spatiale, cet agrandissement augmente à la fois :
+- ce que le joueur voit ;
+- l'emprise géométrique mesurée.
+
+Il n'existe donc aucun écart entre rendu et dégâts.
+
+### Propriétaire
+
+- croissance visuelle des rayons : `PERSISTENT_ZONE_RADIUS_SCALE` dans le renderer existant ;
+- décision d'appartenance : contrat spatial existant, inchangé ;
+- dégâts : Persistent Zone Runtime, inchangé.
+
+### Fichiers autorisés
+
+- `src/adapters/renderer/dom-skill-fx.js`
+- tests persistent-zone visuels
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Tempête JSON utilisateur ;
+- short / medium ;
+- Combat Runtime ;
+- Persistent Zone Runtime ;
+- health feedback ;
+- collision modèle ;
+- offsets / displayScale auteur ;
+- durée 7 s / tick 1 s / dégâts 5.
+
+### TDD prévu
+
+RED :
+1. avec la configuration auteur actuelle, long doit produire `scaleX = 6.3` et `scaleY = 2.016` ;
+2. medium reste exactement sur son ancienne valeur ;
+3. aucune règle gameplay `long = toujours vrai` n'est ajoutée.
+
+### Critère de fin
+
+- RED ciblé ;
+- un seul coefficient central modifié ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- preview smartphone ;
+- validation utilisateur du nouveau bord max.
+
+---
+
 ## Chantier actif — 2026-10-06 — Tempête de flammes : export créateur restauré V1
 
 Branche : `work/lab-firestorm-user-config-v1-2026-10-06`
