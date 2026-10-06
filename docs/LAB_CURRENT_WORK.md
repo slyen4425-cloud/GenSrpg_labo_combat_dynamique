@@ -79,6 +79,19 @@ Ces points auront leurs micro-lots dédiés.
 8. UI combat expose le bouton avec charges + recharge ;
 9. anciennes capacités / combat / roster restent GREEN.
 
+### Résultat technique LIVE
+
+- RED Core : CI `37502180842` — 1173 tests, 1170 PASS, 3 FAIL ciblés ;
+- RED UI : CI `37502728409` — 1181 tests, 1178 PASS, 3 FAIL ciblés ;
+- `CaptureGameOptionsV1` ajouté avec Esquive active / charges / recharge ;
+- propriétaire générique `rechargeable-action-v1` basé uniquement sur `state.elapsedMs` ;
+- réaction atomique : charge consommée uniquement si `resolveReaction` accepte l'Esquive ;
+- attaque `dodgeable: false` ne consomme aucune charge ;
+- Options de jeu exportées jusqu'à la source native de preview ;
+- bouton Esquive ajouté à côté des capacités avec compteur + recharge ;
+- CI GREEN `37503893109` — 1181 / 1181 PASS ;
+- rapport : `docs/LAB_GAME_OPTIONS_DODGE_V1.md`.
+
 ### Critère de fin
 
 - aucune nouvelle horloge ;
