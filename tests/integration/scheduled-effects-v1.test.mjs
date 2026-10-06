@@ -336,3 +336,40 @@ test("scheduled damage reuses immunity state that is active at the due timestamp
     []
   );
 });
+
+
+test("scheduled delay is anchored to absolute combat time, not action-relative impact time", () => {
+  const combat = session();
+  combat.advanceMs(10000);
+
+  combat.useSkill({
+    actorId: "source",
+    targetId: "target",
+    skill: skill(
+      "late-comet",
+      [
+        scheduled({
+          delayMs: 3000,
+          effects: [damage(15)]
+        })
+      ]
+    )
+  });
+
+  assert.equal(
+    combat.snapshot().scheduledEffects[0].dueAtMs,
+    13000
+  );
+
+  combat.advanceMs(2999);
+  assert.equal(
+    combat.snapshot().fighters.target.hp,
+    100
+  );
+
+  combat.advanceMs(1);
+  assert.equal(
+    combat.snapshot().fighters.target.hp,
+    85
+  );
+});
