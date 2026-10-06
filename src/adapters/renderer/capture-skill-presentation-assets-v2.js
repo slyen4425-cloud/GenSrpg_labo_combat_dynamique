@@ -46,7 +46,54 @@ function normalizePresentationMap(input) {
   );
 }
 
-function resolvedVisual(assetForId, slot) {
+function effectiveViewOffset(slot, view) {
+  const offsetX = Number(slot?.offsetX) || 0;
+  const offsetY = Number(slot?.offsetY) || 0;
+
+  if (
+    view !== "opponent" ||
+    slot?.offsetMode == null
+  ) {
+    return Object.freeze({
+      x: offsetX,
+      y: offsetY
+    });
+  }
+
+  if (slot.offsetMode === "same") {
+    return Object.freeze({
+      x: offsetX,
+      y: offsetY
+    });
+  }
+
+  if (slot.offsetMode === "mirror_x") {
+    return Object.freeze({
+      x: -offsetX,
+      y: offsetY
+    });
+  }
+
+  if (slot.offsetMode === "custom") {
+    return Object.freeze({
+      x:
+        Number(slot.opponentOffsetX) || 0,
+      y:
+        Number(slot.opponentOffsetY) || 0
+    });
+  }
+
+  throw new RangeError(
+    "Unsupported presentation offsetMode: " +
+      slot.offsetMode
+  );
+}
+
+function resolvedVisual(
+  assetForId,
+  slot,
+  view = "player"
+) {
   if (!slot) {
     return null;
   }
@@ -57,6 +104,9 @@ function resolvedVisual(assetForId, slot) {
       `unknown presentation asset: ${slot.assetId}`
     );
   }
+
+  const viewOffset =
+    effectiveViewOffset(slot, view);
 
   return Object.freeze({
     ...asset,
@@ -80,8 +130,8 @@ function resolvedVisual(assetForId, slot) {
     ...(slot.durationMs == null ? {} : { durationMs: slot.durationMs }),
     rotationDeg: slot.rotationDeg ?? 0,
     opacity: slot.opacity ?? 1,
-    offsetX: slot.offsetX ?? 0,
-    offsetY: slot.offsetY ?? 0
+    offsetX: viewOffset.x,
+    offsetY: viewOffset.y
   });
 }
 
@@ -209,11 +259,16 @@ function resolvedStatusPresentation(
         assetForId,
         {
           ...presentation.sprite,
-          playbackMode: presentation.sprite.playbackMode ?? "loop",
+          playbackMode:
+            presentation.sprite.playbackMode ??
+            "loop",
           rotationDeg: 0,
-          offsetX: presentation.sprite.offsetX ?? 0,
-          offsetY: presentation.sprite.offsetY ?? 0
-        }
+          offsetX:
+            presentation.sprite.offsetX ?? 0,
+          offsetY:
+            presentation.sprite.offsetY ?? 0
+        },
+        view
       )
     : null;
 
@@ -259,15 +314,37 @@ export function createCaptureSkillPresentationAssetsV2({
     const visual = binding.visual;
     const audio = binding.audio;
 
+    const castVisual =
+      resolvedVisual(
+        resolveAsset,
+        visual.cast,
+        view
+      );
+    const travelVisual =
+      resolvedVisual(
+        resolveAsset,
+        visual.travel,
+        view
+      );
+    const impactVisual =
+      resolvedVisual(
+        resolveAsset,
+        visual.impact,
+        view
+      );
+    const persistentZoneVisual =
+      resolvedVisual(
+        resolveAsset,
+        visual.aura,
+        view
+      );
+
     return Object.freeze({
       icon: resolvedIcon(
         resolveAsset,
         visual.icon
       ),
-      cast: resolvedVisual(
-        resolveAsset,
-        visual.cast
-      ),
+      cast: castVisual,
       castAnchor:
         visual.cast?.anchor ?? null,
       castLayer: layerFor(
@@ -275,10 +352,7 @@ export function createCaptureSkillPresentationAssetsV2({
         binding.version,
         view
       ),
-      travel: resolvedVisual(
-        resolveAsset,
-        visual.travel
-      ),
+      travel: travelVisual,
       travelSourceAnchor:
         visual.travel?.anchor ?? null,
       travelLayer: layerFor(
@@ -286,15 +360,19 @@ export function createCaptureSkillPresentationAssetsV2({
         binding.version,
         view
       ),
-      impact: resolvedVisual(
-        resolveAsset,
-        visual.impact
-      ),
+      impact: impactVisual,
+      impactFeedbackOffset:
+        binding.version >= 9
+          ? Object.freeze({
+              x:
+                impactVisual?.offsetX ?? 0,
+              y:
+                impactVisual?.offsetY ?? 0
+            })
+          : null,
       impactLayer: layerFor(visual.impact, binding.version, view),
-      persistentZone: resolvedVisual(
-        resolveAsset,
-        visual.aura
-      ),
+      persistentZone:
+        persistentZoneVisual,
       persistentZoneLayer: layerFor(
         visual.aura,
         binding.version,
