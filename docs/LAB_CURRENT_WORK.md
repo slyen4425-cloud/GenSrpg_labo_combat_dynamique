@@ -1,5 +1,105 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Cendre aveuglante / export auteur V2
+
+Branche : `work/lab-cendre-aveuglante-author-export-v2-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-cendre-aveuglante-author-export-v2-2026-10-06`
+
+SHA de base :
+`7992bbfca54236af05b1e66cd03053ee52e44fe0`
+
+### Source de vérité
+
+Export utilisateur fourni le 2026-10-06 :
+
+`gensrpg-capture-skill-cap_fire_special_1(1).json`
+
+ID stable :
+`cap_fire_special_1`
+
+La charte §33.1 impose que cet export éditeur remplace la fiche active existante sans fusion champ par champ, sans recalcul silencieux et sans duplication.
+
+### Diff auteur attendu
+
+Gameplay :
+- `travelMs` : 400 -> 800 ;
+- `cooldownMs` : 30000 -> 60000 ;
+- les deux statuts passent de 8000 ms à 20000 ms ;
+- `deltaPoints` reste -50 pour `speed` et `physical`.
+
+Présentation V8 :
+- icône conservée : `core:icon-skill-poison-cloud-01` ;
+- ancien Cast supprimé par l'export ;
+- projectile : `pack:capture:sprite-projectile-shadow-01`, scale 1.45, loop, anchor mouth ;
+- impact : `pack:capture:sprite-status-curse-01`, scale 1.45, durée 350 ms ;
+- sons : `gensrpg:sound:academie-01fc18a6` au Cast et `gensrpg:sound:genrpg-pack2-742f6521` à l'impact ;
+- statut vitesse : teinte violette `#5b2067`, opacité 0.35, sans sprite ;
+- feedback V8 auteur : glow, flash, shake, trail, burst, smoke et castBurst tels qu'exportés.
+
+### Audit assets
+
+Présents dans les catalogues autoritaires :
+- `pack:capture:sprite-projectile-shadow-01` ;
+- `pack:capture:sprite-status-curse-01` ;
+- `core:icon-skill-poison-cloud-01` ;
+- `gensrpg:sound:academie-01fc18a6` ;
+- `gensrpg:sound:genrpg-pack2-742f6521`.
+
+Aucun nouvel asset ni catalogue n'est créé.
+
+### Propriétaires
+
+- fiche capacité Showcase : transfer canonique existant ;
+- remplacement en éditeur : `configuredSkills` via Transfer owner existant ;
+- présentation : `SkillPresentationBinding` existant ;
+- assets : catalogue global existant ;
+- audio : catalogue privé existant ;
+- Runtime / dégâts / statuts : inchangés.
+
+### Fichiers autorisés
+
+- `data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json`
+- `tests/unit/capture-showcase-cendre-v1.test.mjs`
+- `tests/unit/capture-fx-starter-safe-apply-v1.test.mjs`
+- test dédié de remplacement auteur si nécessaire
+- documentation du chantier
+
+### Protégé / interdit
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- règles de statuts ;
+- collision ;
+- renderer FX ;
+- catalogue assets ;
+- catalogue audio ;
+- autres capacités Showcase ;
+- Loup et ses sockets ;
+- traînée/fumée globales validées.
+
+### TDD prévu
+
+RED avant remplacement :
+1. le transfer canonique doit reproduire exactement les valeurs structurantes du nouvel export ;
+2. le vrai chemin `importCaptureTransferJsonV1` doit lire le binding V8 attendu ;
+3. le plan de remplacement doit rester `replace-skill` sur le même ID ;
+4. Starter FX doit préserver les nouveaux médias/audio/status visuals auteur ;
+5. le catalogue Showcase doit contenir Cendre exactement une fois.
+
+### Critère de fin
+
+- RED démontré sur l'ancienne fiche ;
+- remplacement intégral par l'export utilisateur ;
+- sentinelles historiques adaptées à la nouvelle source auteur ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- preview dédiée smartphone ;
+- validation utilisateur requise avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Bibliothèque créateur / import visuel UX V1
 
 Branche : `work/lab-capture-asset-library-ux-v1-2026-10-06`
