@@ -1594,13 +1594,23 @@ export function createDomSkillFxRenderer({
     durationMs,
     layer = "front",
     type = "impact",
-    feedback = null
+    feedback = null,
+    feedbackOffset = null
   }) {
+    const feedbackPoint =
+      Object.freeze({
+        x:
+          point.x +
+          (Number(feedbackOffset?.x) || 0),
+        y:
+          point.y +
+          (Number(feedbackOffset?.y) || 0)
+      });
     const feedbackHandle =
       type === "impact" ||
       type === "clash-impact"
         ? playImpactFeedback({
-            point,
+            point: feedbackPoint,
             feedback
           })
         : null;
@@ -2323,7 +2333,10 @@ export function createDomSkillFxRenderer({
         durationMs,
         layer: presentation?.impactLayer ?? "front",
         type: "clash-impact",
-        feedback: presentation?.feedback ?? null
+        feedback: presentation?.feedback ?? null,
+        feedbackOffset:
+          presentation?.impactFeedbackOffset ??
+          null
       });
     }
 
@@ -2341,7 +2354,10 @@ export function createDomSkillFxRenderer({
         durationMs,
         layer: presentation?.impactLayer ?? "front",
         type: "impact",
-        feedback: presentation?.feedback ?? null
+        feedback: presentation?.feedback ?? null,
+        feedbackOffset:
+          presentation?.impactFeedbackOffset ??
+          null
       });
     }
 
