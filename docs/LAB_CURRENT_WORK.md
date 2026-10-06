@@ -1,5 +1,95 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Ergonomie blocs + scène paysage 16:9 V2
+
+Branche : `work/lab-editor-disclosure-landscape-v2-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-editor-disclosure-landscape-v2-2026-10-06`
+
+SHA de base :
+`79d180e9e6b5e9c1f8fe821efe2dd7c0fb2c30ff`
+
+### Régression utilisateur démontrée
+
+Retour smartphone + screenshot réel :
+1. les commandes Fermer / Dérouler ajoutées en V1 ne sont pas visibles / exploitables dans l’éditeur mobile ;
+2. le plein écran paysage étire le shell hors du ratio de l’arène ;
+3. le fond 16:9 reste centré alors que combattants et HUD utilisent l’espace étiré ;
+4. résultat : échelles perçues différentes, côtés incohérents et HUD trop gros.
+
+### Diagnostic
+
+- les cartes utilisent un header flex avec un bouton ajouté dynamiquement en fin de ligne ; sur faible largeur le texte conserve sa largeur minimale et peut chasser le bouton hors zone utile ;
+- le shell preview prend 100vw × 100dvh, alors que les arènes sont conçues en 16:9 ;
+- le background peut rester en 16:9 dans un conteneur beaucoup plus large, alors que les positions acteurs/HUD sont calculées sur le conteneur large ;
+- la V1 ajoute aussi un padding haut permanent pour le bouton Retour, réduisant encore la scène.
+
+### Correction V2
+
+Éditeur :
+- abandon du petit bouton latéral comme affordance principale ;
+- tout le `.card-title` devient le contrôle de disclosure ;
+- chevron + texte `Fermer` / `Dérouler` toujours visibles dans une colonne réservée ;
+- interaction clic + clavier ;
+- aucun champ enfant ne change son attribut `hidden`.
+
+Preview paysage :
+- le shell reste fullscreen, mais la `.arena` devient une scène 16:9 centrée ;
+- aucune déformation / crop latéral causé par le viewport ultra-large ;
+- le bouton Retour est overlay et ne consomme plus de hauteur de scène ;
+- HUD compact dédié au paysage ;
+- taille combattants stabilisée à partir de la hauteur disponible au lieu d’un agrandissement implicite par la largeur ultra-large ;
+- aucun changement des `displayScale` des créatures dans les données.
+
+### Owners
+
+- disclosure : Human Editor / Demo UI ;
+- composition paysage : CSS de composition de la preview uniquement ;
+- Fullscreen owner existant conservé mais doit viser le shell preview ;
+- Runtime / Session / renderer / profils / données créatures protégés.
+
+### Fichiers autorisés
+
+- `src/ui/capture-editor-human-v2.js`
+- `examples/dom-demo/capture-editor-v2.css`
+- `examples/dom-demo/capture-editor-v2.js`
+- tests UI dédiés
+- documentation
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime / Session ;
+- renderer FX ;
+- renderer acteur ;
+- Creature Profile ;
+- données de scale / position créatures ;
+- Cendre ;
+- sockets ;
+- dégâts / collision / règles.
+
+### TDD prévu
+
+RED :
+1. disclosure piloté par `.card-title` entier, avec rôle bouton + clavier ;
+2. CSS réserve une colonne visible au chevron même sur mobile ;
+3. mode paysage impose une arène `aspect-ratio: 16 / 9` centrée ;
+4. aucun padding top de preview en mode paysage ;
+5. HUD paysage possède des tailles compactes propres ;
+6. fullscreen host = `previewShell`, pas `documentElement`.
+
+### Critère de fin
+
+- RED reproductible ;
+- implémentation minimale ;
+- CI complète verte ;
+- checkpoint GREEN technique ;
+- lien test smartphone ;
+- validation utilisateur requise avant GREEN utilisateur.
+
+---
+
 ## Chantier actif — 2026-10-06 — Alignement FX joueur / socket bouche V1
 
 Branche : `work/lab-player-fx-anchor-alignment-v1-2026-10-06`
