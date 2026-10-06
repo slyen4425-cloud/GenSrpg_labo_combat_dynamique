@@ -8,6 +8,7 @@ import {
 } from "../adapters/renderer/dom-ground-shadow-v2.js";
 import {
   createDomVisibleModelCollisionModel,
+  visibleModelOpaqueRect,
   watchVisibleModelContact
 } from "../adapters/renderer/dom-visible-model-contact.js";
 import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
@@ -775,6 +776,11 @@ export async function mountCombatDemo({
     },
     getCollisionModelFor(slotKey) {
       return slotOf(slotKey).collisionModel;
+    },
+    getVisibleTargetRectFor(slotKey) {
+      const frame =
+        slotOf(slotKey).collisionModel.snapshot();
+      return visibleModelOpaqueRect(frame);
     },
     getStatusPresentationTargetFor(slotKey) {
       const slot = slotOf(slotKey);
