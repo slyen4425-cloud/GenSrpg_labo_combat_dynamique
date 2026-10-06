@@ -164,14 +164,49 @@ h1 {
 }
 
 .card-title {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.65rem;
   align-items: center;
+  min-height: 44px;
   margin-bottom: 0.75rem;
+}
+
+.card-title > div {
+  min-width: 0;
 }
 
 .card[data-editor-collapsible="true"] > .card-title {
   position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card[data-editor-collapsible="true"] > .card-title::after {
+  content: "▾ Fermer";
+  display: grid;
+  min-width: 5.6rem;
+  min-height: 44px;
+  place-items: center;
+  padding: 0.4rem 0.62rem;
+  border: 1px solid rgba(131, 230, 247, 0.25);
+  border-radius: 0.65rem;
+  background: rgba(11, 42, 52, 0.88);
+  color: #dff8fc;
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.card[data-collapsed="true"] > .card-title::after {
+  content: "▸ Dérouler";
+}
+
+.card[data-editor-collapsible="true"] > .card-title:focus-visible {
+  outline: 2px solid rgba(124, 229, 247, 0.85);
+  outline-offset: 3px;
+  border-radius: 0.65rem;
 }
 
 .card[data-collapsed="true"] > :not(.card-title) {
@@ -180,26 +215,6 @@ h1 {
 
 .card[data-collapsed="true"] > .card-title {
   margin-bottom: 0;
-}
-
-.editor-card-toggle {
-  flex: 0 0 auto;
-  min-width: 5.5rem;
-  min-height: 44px;
-  margin-left: auto;
-  padding: 0.45rem 0.7rem;
-  border: 1px solid rgba(131, 230, 247, 0.25);
-  border-radius: 0.65rem;
-  background: rgba(11, 42, 52, 0.88);
-  color: #dff8fc;
-  font-size: 0.7rem;
-  font-weight: 950;
-  cursor: pointer;
-}
-
-.editor-card-toggle:focus-visible {
-  outline: 2px solid rgba(124, 229, 247, 0.85);
-  outline-offset: 2px;
 }
 
 .card-title h2,
@@ -937,6 +952,138 @@ body[data-preview-landscape-active="true"] {
   min-height: 0;
 }
 
+/* Landscape preview V2: keep the combat scene on its authored 16:9 canvas.
+   The fullscreen shell may be wider than 16:9; the scene itself must not stretch. */
+.capture-preview-shell[data-landscape-required="true"] .capture-preview-host {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding:
+    max(0.18rem, env(safe-area-inset-top))
+    max(0.18rem, env(safe-area-inset-right))
+    max(0.18rem, env(safe-area-inset-bottom))
+    max(0.18rem, env(safe-area-inset-left));
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .capture-preview-host > .game {
+  display: grid;
+  width: min(
+    calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)),
+    calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 16 / 9)
+  );
+  height: auto;
+  max-height: 100dvh;
+  aspect-ratio: 16 / 9;
+  place-items: stretch;
+  padding: 0;
+}
+
+.capture-preview-shell[data-landscape-required="true"] .arena {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+}
+
+/* Keep perceived creature size tied to the short edge in landscape.
+   Data-owned displayScale remains untouched. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--player {
+  width: min(29dvh, 15.5rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--ally {
+  width: min(27dvh, 14.5rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent {
+  width: min(31dvh, 16.5rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent-b {
+  width: min(30dvh, 16rem);
+}
+
+/* Compact landscape HUD: preserve hierarchy without covering the combat. */
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full {
+  width: min(11.5rem, 28%);
+  min-height: 3.8rem;
+  padding: 0.34rem 0.4rem;
+  gap: 0.2rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full strong {
+  font-size: clamp(0.68rem, 2.3dvh, 0.88rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full .squad-card__hp span,
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full small {
+  font-size: clamp(0.42rem, 1.55dvh, 0.56rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--opponent,
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--opponent-b {
+  width: min(10.5rem, 25%);
+  min-height: 3.35rem;
+  padding: 0.3rem 0.36rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .coop-command-stack {
+  width: min(15rem, 35%);
+  gap: 0.2rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .coop-controls {
+  gap: 0.16rem;
+  padding: 0.2rem;
+  border-radius: 0.65rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .skill-bar__grid {
+  gap: 0.1rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .action-option--skill {
+  min-height: 2.9rem;
+  padding: 0.1rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .action-option--skill strong {
+  font-size: clamp(0.38rem, 1.4dvh, 0.48rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .action-option__icon {
+  width: clamp(1.45rem, 5.5dvh, 2rem);
+  height: clamp(1.45rem, 5.5dvh, 2rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .capture-preview-back {
+  top: max(0.28rem, env(safe-area-inset-top));
+  left: max(0.28rem, env(safe-area-inset-left));
+  min-height: 2rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.68rem;
+}
+
 @media (max-width: 520px) {
   .editor-footer__actions {
     display: grid;
@@ -983,6 +1130,11 @@ body[data-preview-landscape-active="true"] {
       max(0.18rem, env(safe-area-inset-right))
       max(0.18rem, env(safe-area-inset-bottom))
       max(0.18rem, env(safe-area-inset-left));
+  }
+
+  .capture-preview-shell[data-landscape-required="true"]
+    .capture-preview-host > .game {
+    padding: 0;
   }
 }
 
