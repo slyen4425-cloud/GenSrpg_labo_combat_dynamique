@@ -146,7 +146,8 @@ function createSession(distance = "medium") {
 
 function runtimeHarness({
   session,
-  onHealthDelta = () => {}
+  onHealthDelta = () => {},
+  readZoneSpatialContext = null
 }) {
   let clock = 0;
   let scheduled = null;
@@ -155,6 +156,7 @@ function runtimeHarness({
     session,
     tickMs: 50,
     onHealthDelta,
+    readZoneSpatialContext,
     now() {
       return clock;
     },
@@ -195,7 +197,48 @@ test("real Runtime Tempête applies at semantic impact and first tick is exactly
   const storm = await fireStorm({
     preparationMs: 2000
   });
-  const h = runtimeHarness({ session });
+  const h = runtimeHarness({
+    session,
+    readZoneSpatialContext(state) {
+      return {
+        zones:
+          (state.persistentZones ?? []).map(
+            (zone) => ({
+              zoneId: zone.id,
+              sourceActorId:
+                zone.sourceActorId,
+              radius: zone.radius,
+              bounds: {
+                left: 0,
+                top: 0,
+                width: 100,
+                height: 100
+              }
+            })
+          ),
+        actors: [
+          {
+            actorId: "local",
+            bounds: {
+              left: 20,
+              top: 20,
+              width: 10,
+              height: 10
+            }
+          },
+          {
+            actorId: "enemy",
+            bounds: {
+              left: 40,
+              top: 40,
+              width: 10,
+              height: 10
+            }
+          }
+        ]
+      };
+    }
+  });
 
   const started = h.runtime.startSkill({
     actorId: "local",
