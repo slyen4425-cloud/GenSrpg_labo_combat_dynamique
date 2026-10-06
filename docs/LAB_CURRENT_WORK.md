@@ -66,6 +66,17 @@ Ne pas modifier :
 4. aucun scale / width auteur n'est modifié par ce lot ;
 5. le scope reste limité à `capture-preview-shell[data-landscape-required="true"]`.
 
+### Résultat technique LIVE
+
+- RED : CI `37498712822`, 1170 tests, 1168 PASS, 2 FAIL ciblés ;
+- paysage Capture rendu définitif dans la preview : contrôle checked + disabled, plus de mention "Test provisoire" ;
+- opponent-1 paysage : X 77 %, Y 33 % ;
+- opponent-2 paysage : X 34 %, Y 34 % ;
+- aucun width / scale auteur modifié ;
+- aucune compensation projectile / FX / collision ;
+- GREEN fonctionnel : HEAD `a78a10b8d5d4132dcb52d343edcdd8b6960c54ac`, CI `37499050948`, 1170 / 1170 PASS ;
+- rapport : `docs/LAB_CAPTURE_ENEMY_LANDSCAPE_PLACEMENT_V1.md`.
+
 ### Critère de fin
 
 - RED ciblé ;
