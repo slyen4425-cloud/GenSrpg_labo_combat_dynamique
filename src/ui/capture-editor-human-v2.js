@@ -8155,6 +8155,70 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
 
   setTab(root, "creature");
 
+  const mobilityPreset = one(
+    root,
+    "[data-creature-mobility-preset]"
+  );
+  const mobilityModifier = one(
+    root,
+    "[data-creature-approach-time-modifier]"
+  );
+
+  listen(
+    mobilityPreset,
+    "change",
+    () => {
+      if (
+        mobilityPreset.value !== "custom"
+      ) {
+        mobilityModifier.value = String(
+          humanMobilityTempoPresetValueV1(
+            mobilityPreset.value
+          )
+        );
+        mobilityModifier.dispatchEvent(
+          new Event("input", {
+            bubbles: true
+          })
+        );
+      }
+    }
+  );
+
+  listen(
+    mobilityModifier,
+    "input",
+    () => {
+      mobilityPreset.value =
+        humanMobilityTempoPresetIdV1(
+          Number(mobilityModifier.value)
+        );
+    }
+  );
+
+  const hitPresenceEnabled = one(
+    root,
+    "[data-skill-hit-presence-enabled]"
+  );
+
+  function syncHitPresenceControlsV1() {
+    for (
+      const input of root.querySelectorAll(
+        "[data-skill-hit-presence]"
+      )
+    ) {
+      input.disabled =
+        !hitPresenceEnabled.checked;
+    }
+  }
+
+  listen(
+    hitPresenceEnabled,
+    "change",
+    syncHitPresenceControlsV1
+  );
+  syncHitPresenceControlsV1();
+
   const librarySelect = one(
     root,
     "[data-skill-library-select]"
