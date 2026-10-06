@@ -250,6 +250,10 @@ function normalizeFighter(input) {
       input.chargeTimeModifierPct ?? 0,
       `${id}.chargeTimeModifierPct`
     ),
+    approachTimeModifierPct: finiteNumber(
+      input.approachTimeModifierPct ?? 0,
+      `${id}.approachTimeModifierPct`
+    ),
     chargeTimeEffects: Object.freeze(effects),
     skillCooldowns: normalizeSkillCooldowns(
       input.skillCooldowns,
