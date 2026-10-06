@@ -147,11 +147,19 @@ test("combat clients consume the Visual Controller collision model as the only t
     demo,
     /getCollisionModelFor\(slotKey\)[\s\S]{0,100}slotOf\(slotKey\)\.collisionModel/
   );
+  assert.match(
+    demo,
+    /getVisibleTargetRectFor\(slotKey\)[\s\S]{0,160}visibleModelOpaqueRect/
+  );
 
   for (const source of [duel, coop]) {
     assert.match(
       source,
       /targetCollisionModelFor\(slotId\)[\s\S]{0,120}visuals\.getCollisionModelFor\(slotId\)/
+    );
+    assert.match(
+      source,
+      /targetAnchorFor\(slotId\)[\s\S]{0,140}visuals\.getVisibleTargetRectFor\(slotId\)/
     );
     assert.doesNotMatch(
       source,
