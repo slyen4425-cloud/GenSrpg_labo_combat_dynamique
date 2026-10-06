@@ -1,5 +1,80 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier actif — 2026-10-06 — Combat Presence / Reach V1
+
+Branche : `work/lab-combat-presence-reach-v1-2026-10-06`
+
+Checkpoint de départ :
+`checkpoint/lab-start-combat-presence-reach-v1-2026-10-06`
+
+SHA de base :
+`b807415b0145af350dc1d2b64ab666a5d9ae4326`
+
+### Objectif
+
+Introduire la fondation générique pierre-feuille-ciseaux sans ajouter encore le mouvement souterrain visuel :
+
+- contrat de présence : `surface / airborne / underground` ;
+- champ optionnel de compétence `hitPresenceStates` ;
+- dérivation de la présence transitoire depuis l'action Runtime existante ;
+- une compétence explicitement configurée peut toucher ou rater une cible aérienne ;
+- les compétences historiques sans ce champ conservent exactement l'évasion historique.
+
+### Propriétaires
+
+- contrat de portée par présence : SkillDefinition ;
+- présence transitoire : fonction pure Combat Rules dérivée du contexte d'action Runtime ;
+- résultat hit/evaded : Action Resolver ;
+- Runtime reste propriétaire des actions et de leur temps ;
+- renderer protégé.
+
+### Compatibilité
+
+`hitPresenceStates = null` signifie : comportement legacy inchangé.
+
+Si une compétence fournit explicitement `hitPresenceStates`, ce contrat devient autoritaire pour la question de présence. Cela permet à une future attaque anti-aérienne de toucher une cible `airborne` même si les anciennes données d'évasion de mobilité étaient basées sur la forme.
+
+### Fichiers autorisés
+
+- `src/contracts/skill-definition.js` ;
+- nouveau helper Combat Presence pur ;
+- `src/core/combat/action-resolver.js` ;
+- tests unitaires / intégration dédiés ;
+- documentation.
+
+### Protégé
+
+Ne pas modifier :
+- Combat Runtime ;
+- Combat Session ;
+- renderer / FX / collision ;
+- Tempête de flammes ;
+- données des compétences historiques ;
+- profils créatures ;
+- éditeur ;
+- roster ;
+- dégâts / statuts.
+
+### TDD prévu
+
+RED :
+1. SkillDefinition accepte une liste explicite de présences et refuse les valeurs invalides ;
+2. une cible en trajet aérien est `airborne` ; avant release et après travel elle est `surface` ;
+3. attaque explicite `surface` rate une cible airborne ;
+4. attaque explicite `surface + airborne` touche la même cible ;
+5. une attaque legacy sans champ conserve le comportement d'évasion existant.
+
+### Critère de fin
+
+- RED démontré ;
+- nouveau contrat générique ;
+- aucune mutation des skills historiques ;
+- vraie chaîne Runtime concurrente testée ;
+- CI complète GREEN ;
+- checkpoint GREEN.
+
+---
+
 ## Chantier actif — 2026-10-06 — Expressivité combat / architecture V1
 
 Branche : `work/lab-combat-expressiveness-architecture-v1-2026-10-06`
