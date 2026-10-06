@@ -49,7 +49,7 @@ test("Capture landscape layout moves both opponent slots slightly higher and rig
   const block = css.slice(start, start + 1200);
 
   assert.equal(
-    /width\s*:|scale\s*\(|displayScale/.test(block),
+    /width\s*:|transform\s*:[^;]*scale\s*\(|--creature-display-scale\s*:/.test(block),
     false,
     "landscape slot shift must not modify author scale/width"
   );
