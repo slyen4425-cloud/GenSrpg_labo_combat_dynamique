@@ -12,3 +12,14 @@
 - Interdits : moteur FX, renderer, gameplay, collisions, dégâts, énergie, cooldown, données de Cendre aveuglante, autres capacités, nouveau catalogue/resolver.
 - Critère GREEN : cache-buster avancé, tests ciblés + CI complète verts, aucune autre source runtime modifiée.
 - Statut : EN COURS.
+
+
+### Fumée cendre HD V1 — clôture GREEN
+
+- global-assets publié : `d8a635a4bb0cb17de5b379942d08614b90096142` ; CI publication run `37456705713` SUCCESS.
+- Raccord labo : révision `2026-10-06-v15-ash-smoke-vfx-pack-v1`.
+- Première CI du cache-buster : une sentinelle d'arène avait la révision v14 figée en dur ; corrigée pour comparer à l'autorité `GLOBAL_VISUAL_LIBRARY.revision`, sans assouplir le contrat d'arène.
+- CI finale labo : run `37457043132` — **1130/1130**, 0 échec.
+- Tests explicitement verts : pack Fumée cendre / cache global et cinq arènes canoniques.
+- Aucun moteur, gameplay, collision, dégâts, énergie, cooldown ou capacité existante modifié.
+- État : **GREEN**. Aucun merge sur `main`.
