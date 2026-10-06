@@ -975,9 +975,23 @@
           <label>Décalage horizontal du cast (px)
             <input type="number" step="5" value="0" data-skill-cast-offset-x>
           </label>
-          <label>Décalage vertical du cast (px)
+          <label>Décalage vertical du cast — joueur (px)
             <input type="number" step="5" value="0" data-skill-cast-offset-y>
           </label>
+          <label>Cast — côté adversaire
+            <select data-skill-cast-offset-mode>
+              <option value="mirror_x" selected>Miroir horizontal automatique</option>
+              <option value="same">Même décalage des deux côtés</option>
+              <option value="custom">Réglage séparé</option>
+            </select>
+          </label>
+          <label>Cast — décalage horizontal adversaire (px)
+            <input type="number" step="5" value="0" data-skill-cast-opponent-offset-x>
+          </label>
+          <label>Cast — décalage vertical adversaire (px)
+            <input type="number" step="5" value="0" data-skill-cast-opponent-offset-y>
+          </label>
+          <p class="note">Les décalages X/Y sont réglés côté joueur. « Miroir horizontal automatique » inverse X côté adversaire et conserve Y. « Réglage séparé » utilise les deux valeurs adversaire ci-dessus. Les particules de Cast et le glow restent attachés au même repère.</p>
           <p class="note">Cast, impact, zone et statut peuvent utiliser tous les sprites d’effets : aura, charge, impact… Le projectile garde sa liste dédiée. Le cast reste affiché pendant la préparation.</p>
           <label>Projectile / trajet
             <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
@@ -1043,9 +1057,23 @@
           <label>Décalage horizontal de l’impact (px)
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-offset-x>
           </label>
-          <label>Décalage vertical de l’impact (px)
+          <label>Décalage vertical de l’impact — joueur (px)
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-offset-y>
           </label>
+          <label>Impact — côté adversaire
+            <select data-skill-impact-offset-mode>
+              <option value="mirror_x" selected>Miroir horizontal automatique</option>
+              <option value="same">Même décalage des deux côtés</option>
+              <option value="custom">Réglage séparé</option>
+            </select>
+          </label>
+          <label>Impact — décalage horizontal adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-opponent-offset-x>
+          </label>
+          <label>Impact — décalage vertical adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-opponent-offset-y>
+          </label>
+          <p class="note">Le flash, les particules d’impact et la fumée utilisent le même point visuel que le sprite d’impact.</p>
           <label>Visuel persistant de zone
             <select data-skill-zone-fx data-asset-role="zone"><option value="">Aucun</option></select>
           </label>
@@ -1074,8 +1102,21 @@
           <label>Décalage horizontal de la zone (px)
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-offset-x>
           </label>
-          <label>Décalage vertical de la zone (px)
+          <label>Décalage vertical de la zone — joueur (px)
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-offset-y>
+          </label>
+          <label>Zone — côté adversaire
+            <select data-skill-zone-offset-mode>
+              <option value="mirror_x" selected>Miroir horizontal automatique</option>
+              <option value="same">Même décalage des deux côtés</option>
+              <option value="custom">Réglage séparé</option>
+            </select>
+          </label>
+          <label>Zone — décalage horizontal adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-opponent-offset-x>
+          </label>
+          <label>Zone — décalage vertical adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-opponent-offset-y>
           </label>
         </div>
 
