@@ -1,5 +1,9 @@
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
+import {
+  normalizeCaptureGameOptionsV1,
+  buildCaptureDodgeReactionSkillV1
+} from "../contracts/capture-game-options-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
@@ -319,6 +323,10 @@ function normalizedInjectedCombatSource(input) {
     fighterConfigs: input.fighterConfigs ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
     ...(input.recallPreparationMs === undefined ? {} : { recallPreparationMs: input.recallPreparationMs }),
+    gameOptions:
+      normalizeCaptureGameOptionsV1(
+        input.gameOptions
+      ),
     skillSpeedMultiplier:
       input.skillSpeedMultiplier ?? 1
   });
@@ -402,6 +410,8 @@ export async function loadCoop2v2CombatSource({
     skills,
     skillsById,
     skillIdsByActor,
+    gameOptions:
+      normalizeCaptureGameOptionsV1(),
     skillSpeedMultiplier: 1
   });
 }
@@ -461,7 +471,7 @@ export async function mountCoop2v2Test({
     skillsById,
     skillIdsByActor,
     roster: rosterDefinition, fighterConfigs, skillIdsByCreature,
-    skillSpeedMultiplier, recallPreparationMs
+    skillSpeedMultiplier, recallPreparationMs, gameOptions
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
     fetchImpl,
@@ -486,6 +496,30 @@ export async function mountCoop2v2Test({
     root,
     `[data-combat-energy-value="${format.localActorId}"]`
   );
+  const dodgeButton =
+    root.querySelector("[data-combat-dodge]");
+  const dodgeCharges =
+    root.querySelector(
+      "[data-combat-dodge-charges]"
+    );
+  const dodgeRecharge =
+    root.querySelector(
+      "[data-combat-dodge-recharge]"
+    );
+  const dodgeSkill =
+    buildCaptureDodgeReactionSkillV1(
+      gameOptions
+    );
+  const dodgeRechargeConfig =
+    dodgeSkill === null
+      ? null
+      : Object.freeze({
+          actionId: dodgeSkill.id,
+          maxCharges:
+            gameOptions.dodge.maxCharges,
+          rechargeMs:
+            gameOptions.dodge.rechargeMs
+        });
 
   const previewFormat =
     resolveCombatPreviewFormatV1(format);
