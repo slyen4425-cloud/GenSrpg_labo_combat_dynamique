@@ -46,6 +46,16 @@ Périmètre V1 :
 4. UI : importeurs créature + capacité, options catalogue et resolver combiné ;
 5. CI complète.
 
+## Résultat technique LIVE
+
+- RED : `37620877217` — 1214 tests, 1208 PASS, 6 FAIL ciblés ;
+- Audio Source Manager + Creator Audio Asset Session ajoutés ;
+- import MP3/WAV/OGG de session avec `user:*` ;
+- importeurs UI créature + capacité raccordés au catalogue audio existant ;
+- vrai trajet capacité `user:* -> SkillPresentation -> DomCombatAudio` validé ;
+- GREEN fonctionnel : `37621182595` — 1214 / 1214 PASS ;
+- rapport : `docs/LAB_CREATOR_AUDIO_IMPORT_V1.md`.
+
 ## Critère de fin
 
 - RED ciblé ;
