@@ -272,7 +272,7 @@ export function createCombatResolutionPresenter({
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
-      ["ground", "teleport", "aerial"].includes(approachMode) &&
+      ["ground", "teleport", "aerial", "burrow"].includes(approachMode) &&
       typeof visuals.playApproachFor === "function"
     ) {
       const skillId = action.skill?.id ?? null;
@@ -281,6 +281,7 @@ export function createCombatResolutionPresenter({
           travelMs: action.travelMs,
           targetSlot,
           onContact:
+            approachMode !== "burrow" &&
             action.skill?.form === "contact" &&
             typeof onActionContact === "function"
               ? () =>
