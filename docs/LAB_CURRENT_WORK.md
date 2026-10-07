@@ -1,15 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Validation utilisateur précédente
-
-Sylvain a validé sur smartphone :
-- correction de la bibliothèque de créatures ;
-- attaque souterraine / Burrow Visual V1.
-
-Base GREEN utilisateur retenue :
-`69fe844ef3c24ce7d0210fa6b36f78c9c2fbde97`.
-
-## Lot actif
+## Lot techniquement GREEN
 
 Water Atk1 Author Export V1
 
@@ -19,60 +10,67 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-water-atk1-author-export-v1-2026-10-07`
 
-Base exacte :
+Base :
 `69fe844ef3c24ce7d0210fa6b36f78c9c2fbde97`
 
-## Objectif
+## Validation utilisateur précédente
 
-Intégrer exactement l'export auteur :
-- ID stable : `cap_water_atk_1`
-- nom : `Goutte vive`
-- schema : `capture-skill-transfer-v1`
+Sylvain a validé sur smartphone :
+- correction de la bibliothèque de créatures ;
+- attaque souterraine / Burrow Visual V1.
 
-Le fichier utilisateur est la source de vérité complète selon §33.
+## Résultat
 
-## Owner
+`cap_water_atk_1` / **Goutte vive** est intégré via le vrai Capture Transfer en mode remplacement, sans duplication.
 
-- `configuredSkills` reste l'unique owner actif ;
-- Capture Transfer reste le seul chemin de remplacement ;
-- Showcase startup ne fait qu'appliquer le transfert auteur en mode `replace`.
+Fichier auteur :
+`data/capture/showcase/cap_water_atk_1.capture-skill-transfer-v1.json`
 
-## Fichiers autorisés
+Blob exact :
+`53046be3171e46b571edc763666bb45397fe9785`
 
-- `data/capture/showcase/cap_water_atk_1.capture-skill-transfer-v1.json`
-- `src/catalogs/capture-showcase-skill-presets-v1.js`
-- test auteur dédié
-- documentation du lot
+Le fichier GitHub correspond exactement à l'export fourni.
+
+## Ownership
+
+Inchangé :
+- `configuredSkills` = unique owner actif ;
+- Capture Transfer = unique chemin de remplacement ;
+- Showcase = simple source d'import au démarrage.
+
+## TDD
+
+RED :
+- commit `5c60e748239891dac8adb8c7f727fc71e9f5cacb`
+- CI `37671589125`
+- 1237 / 1240 PASS
+- 3 FAIL ciblés.
+
+GREEN fonctionnel :
+- commit `ca403a4a4f8a421906222f220f19e01eb61e7ed0`
+- CI `37671779676`
+- 1240 / 1240 PASS
+- 0 FAIL
+- structure / frontières / indépendance : OK.
+
+Rapport :
+`docs/LAB_WATER_ATK1_AUTHOR_EXPORT_V1.md`
 
 ## Domaines protégés
 
-Ne pas modifier :
-- données auteur ;
+Inchangés :
 - créatures ;
 - Combat Runtime / Session / Timing ;
 - Animation / FX / Burrow ;
 - collision ;
 - Roster ;
 - Dodge ;
-- audio selector policy (lot séparé) ;
+- audio selector policy ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## TDD prévu
+## Prochaine action
 
-1. RED : le preset auteur exact n'existe pas dans la vitrine ;
-2. intégrer le fichier sans transformation ;
-3. ajouter l'ID au catalogue Showcase ;
-4. vérifier import exact, valeurs auteur et remplacement stable ;
-5. CI complète ;
-6. checkpoint GREEN ;
-7. lot audio séparé.
-
-## Critère de fin
-
-- fichier GitHub identique à l'export fourni ;
-- `cap_water_atk_1` remplacé via l'owner existant ;
-- aucune duplication ;
-- présentation / audio auteur préservés ;
-- CI verte.
+Créer checkpoint GREEN du lot puis ouvrir séparément :
+**Audio Role Tags V1** — tous les sons sélectionnables, rôles utilisés comme tags de classement uniquement.
