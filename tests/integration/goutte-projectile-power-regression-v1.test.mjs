@@ -109,12 +109,7 @@ test("Goutte vive keeps authored projectile power 1 through active owner export 
     );
 
   const configuredCreatures =
-    new Map([
-      [
-        creatureTransfer.value.draft.id,
-        creatureTransfer.value
-      ]
-    ]);
+    new Map();
 
   const database =
     buildCaptureEditorDatabaseV1({
@@ -151,6 +146,15 @@ test("Goutte vive keeps authored projectile power 1 through active owner export 
     ).definition.projectileClash.power,
     1,
     "configuredSkills must own the author value after replacement"
+  );
+
+  configuredCreatures.set(
+    creatureTransfer.value.draft.id,
+    Object.freeze({
+      draft: creatureTransfer.value.draft,
+      statValues: creatureTransfer.value.statValues,
+      loadout: creatureTransfer.value.loadout
+    })
   );
 
   const exported =
