@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Régression active
+## Correctif techniquement GREEN — validation smartphone ouverte
 
 Creature Library Regression V1
 
@@ -10,78 +10,81 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-creature-library-regression-v1-2026-10-07`
 
-Base exacte reproduite :
+Base reproduite :
 `36e90e6152b079584f1f4f8aafa53494435befda`
 
-Preview concernée :
-`preview/lab-burrow-visual-v1-2026-10-07`
+## Symptôme
 
-## Symptôme utilisateur
+La preview Burrow Visual V1 pouvait afficher une bibliothèque de créatures vide.
 
-Dans la preview publiée après Maraileron + Burrow Visual V1 :
-**plus aucune créature visible dans la bibliothèque de l'éditeur**.
+## Diagnostic démontré
 
-Le lot précédent n'est donc pas validable utilisateur malgré CI verte.
+Le vrai jeu de données n'est pas vidé par le Capture Transfer batch :
+- 110 entrées historiques brutes ;
+- 102 créatures canoniques après retrait des 8 alias historiques ;
+- 103 créatures après Showcase (Loup ajouté, Maraileron et Moussados remplacés par ID stable).
 
-## Règle charte appliquée
+Le défaut était l'initialisation Human Editor :
+un `Promise.all` global rendait le remplissage de `configuredCreatures` dépendant de ressources de présentation optionnelles.
 
-§11 :
-1. reproduire ;
-2. identifier le premier changement responsable ;
-3. corriger la cause démontrée ;
-4. ajouter une sentinelle de régression ;
-5. ne pas ajouter de fallback concurrent.
+Une erreur assets/audio/metadata pouvait donc empêcher le remplissage de la bibliothèque.
 
-§26 / §33.8 :
-la CI seule ne suffit pas pour une UI ; le vrai chemin éditeur et la validation smartphone sont obligatoires.
+## Correctif
 
-## Hypothèses à départager par tests
+Nouveau helper :
+`src/ui/capture-editor-startup-v1.js`
 
-A. Le batch Showcase vide ou remplace à tort `configuredCreatures`.
-B. Le chargement historique des 110 créatures est bloqué par une dépendance parallèle non liée à la bibliothèque.
-C. Une erreur UI efface le select après hydratation.
-D. Un preset auteur déclenche une exception qui contourne le rechargement complet.
+Essentiels bloquants :
+- capacités natives ;
+- catalogue + registre créatures ;
+- progression.
 
-Aucune correction n'est autorisée avant reproduction.
+Optionnels non bloquants pour la bibliothèque :
+- catalogue visuel ;
+- audio privé ;
+- metadata visuelle.
 
-## Owners protégés
+Les optionnels utilisent `Promise.allSettled`.
 
-- `configuredCreatures` reste l'unique owner de la bibliothèque active ;
-- Capture Transfer reste l'unique chemin de remplacement de presets ;
-- Demo UI ne devient pas une seconde source ;
-- Combat Runtime / Animation / FX / collision restent hors périmètre.
+`configuredCreatures` reste l'unique owner.
 
-## Fichiers autorisés
+## TDD
 
-- tests de régression du démarrage Human Editor ;
-- `src/ui/capture-editor-human-v2.js` uniquement si la cause est démontrée dans l'initialisation ;
-- helper pur éventuellement extrait pour rendre le vrai chemin testable ;
-- `docs/LAB_CURRENT_WORK.md` ;
-- rapport dédié.
+RED startup :
+- commit `2802725e1533f6f1c8cbe93e53f1bdf061ddae39`.
+
+GREEN :
+- helper `6ed012244e20332e1b026f3a727b11542ba38a1c`;
+- raccord `7d31a81a7e868d3432bcb7220a41ee978af1dcd5`;
+- sentinelle ownership listener `96af0937247ee4bcbb1e9625b63f7af56a8d8166`;
+- CI `37666680690`;
+- 1237 / 1237 PASS ;
+- 0 FAIL ;
+- structure / frontières / indépendance : OK.
+
+Rapport :
+`docs/LAB_CREATURE_LIBRARY_REGRESSION_V1.md`
 
 ## Domaines protégés
 
-Ne pas modifier :
-- données auteur Maraileron / Morsure de marée ;
+Inchangés :
+- données auteur Maraileron / Morsure ;
+- Capture Transfer ;
 - Combat Runtime / Session / Timing ;
-- Animation Core / Burrow Visual ;
+- Burrow Visual / Animation Core ;
 - FX ;
 - collision ;
 - Roster ;
 - Dodge ;
-- audio métier ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Critère de fin
+## Prochaine action
 
-- bibliothèque non vide sur le vrai chemin ;
-- les 110 historiques restent présents ;
-- Maraileron remplace son ID stable ;
-- Moussados remplace son ID stable ;
-- Loup est ajouté sans effacer les historiques ;
-- erreurs de ressources non liées ne doivent pas vider silencieusement la bibliothèque si elles ne sont pas nécessaires à son contenu ;
-- CI verte ;
-- nouvelle preview ;
+- CI finale documentaire ;
+- checkpoint GREEN ;
+- preview dédiée ;
 - validation smartphone Sylvain.
+
+Ne pas reprendre un autre chantier avant ce test utilisateur.
