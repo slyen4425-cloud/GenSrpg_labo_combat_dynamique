@@ -1,77 +1,118 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Micro-lot actif
 
-Maraileron Author Export V1
+Burrow Visual V1
 
 Branche :
-`work/lab-maraileron-author-export-v1-2026-10-07`
+`work/lab-burrow-visual-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-maraileron-author-export-v1-2026-10-07`
+`checkpoint/lab-start-burrow-visual-v1-2026-10-07`
 
-Base :
-`539d7b82a11e9df83de2af65bdecdef0eeb81ac2`
+Base exacte :
+`55dfafaee495c3e058363572b723a4f9ea7c8fc5`
 
-## Résultat
+Base GREEN précédente :
+`checkpoint/lab-maraileron-author-export-v1-green-2026-10-07`
 
-Les deux exports auteur fournis par Sylvain sont intégrés par le vrai pipeline §33, sans reconstruction :
-- `cap_water_atk_2` — Morsure de marée ;
-- `crea_maraileron` — Maraileron.
+## Besoin utilisateur
 
-Les deux fichiers GitHub ont été comparés aux fichiers utilisateur : correspondance texte exacte.
+Pour toute compétence dont `approachMode === "burrow"` :
+1. la créature descend visuellement vers le sol ;
+2. elle disparaît comme si elle passait sous terre ;
+3. le déplacement vers la cible se fait invisible ;
+4. elle réapparaît légèrement sous la position de la cible ;
+5. elle remonte rapidement pour donner l'impression d'une attaque qui sort du sol ;
+6. l'impact reste calé sur le timing Runtime existant ;
+7. la créature revient ensuite proprement à sa position normale.
 
-Chemin :
-`Showcase transfer -> importCaptureTransferJsonV1 -> planCaptureTransferImportV1(mode:"replace") -> applyCaptureTransferPlanToEditorStateV1 -> configuredSkills/configuredCreatures`.
+Le comportement doit être générique et piloté par `approachMode`, jamais par le nom d'une capacité ou créature.
 
-## TDD
+## Cause reproduite
 
-RED :
-- commit `39ddc04153f8ef6d0ae440c6ca5ebc36b0e29d7e`;
-- CI `37663672396`;
-- 1226 / 1230 PASS ;
-- 4 FAIL ciblés.
+Le gameplay `burrow` existe déjà et possède correctement :
+- présence `underground` pendant le trajet ;
+- timing via le Combat Runtime ;
+- résolution des impacts via l'horloge Runtime.
 
-GREEN fonctionnel :
-- commit `4f85547073512aefc3610a70b03418edb36737d5`;
-- CI `37664111065`;
-- 1230 / 1230 PASS ;
-- 0 FAIL.
+Mais la projection visuelle ne reconnaît pas `burrow` :
+- `CombatResolutionPresenter.presentRelease` ne route que `ground / teleport / aerial` vers `playApproachFor` ;
+- `Demo Visual Controller.playApproachFor` ne reconnaît également que ces trois modes ;
+- le `CombatVisualEvent` ne possède pas encore `burrow-attack` ;
+- Animation Core ne possède donc aucun plan visuel souterrain.
 
-Rapport :
-`docs/LAB_MARAILERON_AUTHOR_EXPORT_V1.md`
+Résultat actuel : `burrow` retombe sur l'animation `attack` générique.
+
+## Owners
+
+- gameplay / présence / impact / timing : Combat Runtime existant — INCHANGÉ ;
+- projection release : Combat Resolution Presenter ;
+- géométrie de scène / événement visuel : Visual Controller existant ;
+- contrat d'événement : CombatVisualEvent ;
+- séquence : Animation Core ;
+- paramètres visuels burrow : preset générique dédié ;
+- rendu : DomActorRenderer existant.
+
+## Contrainte critique
+
+Le lot gameplay Burrow V1 interdit déjà de rendre le contact DOM autoritaire.
+
+Donc :
+- aucun `reportActionContact` pour burrow ;
+- aucun watcher de collision pour burrow ;
+- aucune seconde horloge ;
+- aucun `setTimeout` gameplay ;
+- la somme des segments de descente/cache/émergence doit être exactement `action.travelMs` fourni par le Runtime.
+
+## Fichiers autorisés
+
+- `src/contracts/combat-visual-event.js`
+- `src/core/profiles/burrow-visual-profile-v1.js`
+- `src/core/animation/plan-animation.js`
+- `src/adapters/renderer/combat-resolution-presenter.js`
+- `src/ui/demo-app.js`
+- tests dédiés
+- documentation du lot
 
 ## Domaines protégés
 
-Inchangés :
+Ne pas modifier :
 - Combat Runtime / Session ;
-- Animation Core ;
-- FX Core ;
-- renderer ;
-- collision ;
+- Combat Timing ;
+- présence gameplay ;
+- dégâts/status ;
+- collision owner ;
+- projectile ;
+- SkillDefinition ;
+- Roster ;
 - Dodge ;
-- persistent zones ;
-- roster ;
+- Tempête / zones persistantes ;
+- données auteur Maraileron / Morsure ;
 - audio ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochain micro-lot
+## TDD attendu
 
-Burrow Visual V1.
+RED :
+- `burrow-attack` non reconnu par CombatVisualEvent ;
+- aucun plan Animation Core burrow ;
+- Presenter ne route pas burrow vers `playApproachFor` ;
+- Visual Controller retombe sur attack.
 
-Cause déjà reproduite :
-- `approachMode: "burrow"` existe dans le gameplay ;
-- `CombatResolutionPresenter` ne projette actuellement que ground / teleport / aerial ;
-- `Visual Controller.playApproachFor` ne reconnaît également que ground / teleport / aerial ;
-- burrow retombe donc sur l'attaque générique.
+GREEN :
+- événement générique `burrow-attack` ;
+- descente vers le sol + disparition ;
+- repositionnement invisible vers la cible ;
+- émergence rapide depuis sous la cible ;
+- somme descente/cache/émergence = `travelMs` ;
+- retour home après impact ;
+- aucune collision/contact DOM burrow ;
+- vraie chaîne Presenter -> Visual Controller -> CombatVisualEvent -> Animation Core -> Renderer ;
+- CI complète verte.
 
-Contrainte :
-le rendu burrow doit suivre le timing Runtime existant et ne doit jamais créer de contact DOM/collision autoritaire.
+## Critère de fin
 
-## Prochaine action protocolaire
-
-- CI finale documentaire ;
-- checkpoint GREEN et preview de ce lot ;
-- ouvrir ensuite un checkpoint/branche séparés pour Burrow Visual V1.
+Checkpoint GREEN + preview dédiée + tests smartphone utilisateur.
