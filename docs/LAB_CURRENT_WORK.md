@@ -1,3 +1,37 @@
+# Micro-lot actif — 2026-10-07 — Fireball Author Export V3
+
+Branche : `work/lab-fireball-author-export-v3-2026-10-07`
+Checkpoint départ : `checkpoint/lab-start-fireball-author-export-v3-2026-10-07`
+Base : `7f66a9c420c52a7e7815494b40e02606222a18fd`
+
+## Source auteur
+Export fourni par Sylvain : `capture-skill-transfer-v1`, ID stable `fireball`.
+
+Conformément à LAB_CHARTE §33 :
+- l'export est la source de vérité ;
+- remplacement par ID stable dans `configuredSkills` ;
+- aucune fusion champ par champ ;
+- aucune seconde fiche / fallback ;
+- préserver définition, présentation, audio et feedback tels qu'exportés.
+
+## Fichier autoritaire autorisé
+- `data/capture/showcase/fireball.capture-skill-transfer-v1.json`
+- tests Fireball Showcase
+- documentation
+
+## Vérifications obligatoires
+- collision ID `fireball` ;
+- assets visuels/audio référencés disponibles ;
+- RED sur les valeurs auteur ;
+- vrai plan d'import `replace-skill` ;
+- taille de configuredSkills inchangée ;
+- CI complète.
+
+## Protégé
+Runtime, Session, collision, Damage/Status, renderer, Asset Library, autres capacités.
+
+---
+
 # Micro-lot actif — 2026-10-07 — Combat HUD Dodge Height V3
 
 Branche : `work/lab-combat-hud-dodge-height-v3-2026-10-07`
