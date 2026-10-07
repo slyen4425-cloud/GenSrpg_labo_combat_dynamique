@@ -1,76 +1,80 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Lot actif
 
-Water Atk1 Author Export V1
+Audio Role Tags V1
 
 Branche :
-`work/lab-water-atk1-author-export-v1-2026-10-07`
+`work/lab-audio-role-tags-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-water-atk1-author-export-v1-2026-10-07`
+`checkpoint/lab-start-audio-role-tags-v1-2026-10-07`
 
-Base :
-`69fe844ef3c24ce7d0210fa6b36f78c9c2fbde97`
+Base exacte :
+`ce2213051669c6706849d3cada0c38210d9c7cde`
 
-## Validation utilisateur précédente
+Base GREEN précédente :
+`checkpoint/lab-water-atk1-author-export-v1-green-2026-10-07`
 
-Sylvain a validé sur smartphone :
-- correction de la bibliothèque de créatures ;
-- attaque souterraine / Burrow Visual V1.
+## Besoin utilisateur
 
-## Résultat
+Les sons sont actuellement verrouillés par attribution de rôle
+(`cast`, `travel/projectile`, `impact`, etc.).
 
-`cap_water_atk_1` / **Goutte vive** est intégré via le vrai Capture Transfer en mode remplacement, sans duplication.
+Comportement cible :
+- **tous les sons du catalogue doivent être sélectionnables dans chaque champ audio** ;
+- les rôles restent des tags / groupes permettant de trouver plus vite le son pertinent ;
+- le rôle du champ peut prioriser visuellement les groupes recommandés, mais ne filtre jamais la liste ;
+- aucune duplication de catalogue ni de son.
 
-Fichier auteur :
-`data/capture/showcase/cap_water_atk_1.capture-skill-transfer-v1.json`
+## Cause actuelle
 
-Blob exact :
-`53046be3171e46b571edc763666bb45397fe9785`
+`buildPrivateAudioRoleGroupsV1(entries, acceptedRoles)` construit `roleOrder` uniquement depuis `acceptedRoles` lorsqu'ils existent, puis ignore toute entrée n'appartenant pas à ces rôles.
 
-Le fichier GitHub correspond exactement à l'export fourni.
+Le verrou est donc dans le propriétaire existant du classement UI.
 
-## Ownership
+## Owner
 
-Inchangé :
-- `configuredSkills` = unique owner actif ;
-- Capture Transfer = unique chemin de remplacement ;
-- Showcase = simple source d'import au démarrage.
+- catalogue : `data/presentation/audio/private-audio-catalog.v1.json` inchangé ;
+- classement / projection UI : `src/ui/private-audio-role-groups-v1.js` ;
+- `populatePrivateAudioSelect` reste consommateur du helper ;
+- les rôles restent metadata, jamais autorité de compatibilité gameplay.
 
-## TDD
+## Fichiers autorisés
 
-RED :
-- commit `5c60e748239891dac8adb8c7f727fc71e9f5cacb`
-- CI `37671589125`
-- 1237 / 1240 PASS
-- 3 FAIL ciblés.
-
-GREEN fonctionnel :
-- commit `ca403a4a4f8a421906222f220f19e01eb61e7ed0`
-- CI `37671779676`
-- 1240 / 1240 PASS
-- 0 FAIL
-- structure / frontières / indépendance : OK.
-
-Rapport :
-`docs/LAB_WATER_ATK1_AUTHOR_EXPORT_V1.md`
+- `src/ui/private-audio-role-groups-v1.js`
+- tests audio taxonomy / role groups
+- éventuellement texte UI strictement nécessaire
+- documentation du lot
 
 ## Domaines protégés
 
-Inchangés :
-- créatures ;
-- Combat Runtime / Session / Timing ;
+Ne pas modifier :
+- catalogue audio source et assetIds ;
+- runtime audio / résolution des URLs ;
+- données auteur Goutte vive ;
+- SkillDefinition / Combat Runtime ;
 - Animation / FX / Burrow ;
-- collision ;
-- Roster ;
-- Dodge ;
-- audio selector policy ;
+- créatures ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochaine action
+## TDD prévu
 
-Créer checkpoint GREEN du lot puis ouvrir séparément :
-**Audio Role Tags V1** — tous les sons sélectionnables, rôles utilisés comme tags de classement uniquement.
+1. RED : un champ `cast` doit encore contenir un son uniquement taggé `impact` ;
+2. RED : le groupe recommandé `cast` doit rester placé avant les autres ;
+3. correction dans le helper existant ;
+4. chaque asset doit apparaître une seule fois ;
+5. les rôles restent visibles comme groupes/tags ;
+6. CI complète ;
+7. preview dédiée ;
+8. validation smartphone.
+
+## Critère de fin
+
+- aucun son exclu à cause de `data-audio-roles` ;
+- groupe recommandé en tête ;
+- aucune duplication d'assetId ;
+- catalogue et runtime audio inchangés ;
+- CI verte.
