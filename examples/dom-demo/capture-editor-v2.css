@@ -1301,9 +1301,8 @@ html {
 .combat-dodge-action--arena {
   position: absolute;
   z-index: 16;
-  left: 50%;
+  right: calc(min(20rem, 42vw) + 0.75rem);
   bottom: 0.45rem;
-  transform: translateX(-50%);
 }
 
 .combat-dodge-action__charges {
@@ -1315,10 +1314,15 @@ html {
 }
 
 .capture-preview-shell[data-landscape-required="true"]
+  .combat-dodge-action--arena {
+  right: calc(min(15rem, 35%) + 0.65rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
   .combat-dodge-action {
-  min-width: clamp(2.7rem, 6.6vw, 3.85rem);
-  padding: 0.12rem 0.18rem;
-  font-size: clamp(0.42rem, 1.25dvh, 0.56rem);
+  min-width: clamp(3.2rem, 7.8vw, 4.5rem);
+  padding: 0.16rem 0.24rem;
+  font-size: clamp(0.46rem, 1.45dvh, 0.6rem);
 }
 
 /* Capture landscape opponent slot placement V1
