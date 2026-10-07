@@ -68,7 +68,11 @@ function presentationV2ToV1Input(presentation) {
     subjectType: presentation.subjectType,
     subjectId: presentation.subjectId,
     profileId: presentation.profileId,
-    visual: presentation.visual,
+    visual: {
+      front: presentation.visual.front,
+      back: presentation.visual.back,
+      icon: presentation.visual.icon
+    },
     sockets: presentation.sockets,
     audio: presentation.audio
   };
