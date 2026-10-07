@@ -179,6 +179,43 @@
           </div>
         </div>
 
+        <div class="grid two">
+          <label>Effet visuel d’esquive
+            <select data-creature-dodge-fx data-asset-role="dodge">
+              <option value="">Aucun</option>
+            </select>
+          </label>
+          <label>Taille de l’effet
+            <input
+              type="number"
+              min="0.25"
+              max="8"
+              step="0.05"
+              value="1"
+              data-creature-dodge-scale
+            >
+          </label>
+          <label>Décalage X
+            <input
+              type="number"
+              step="1"
+              value="0"
+              data-creature-dodge-offset-x
+            >
+          </label>
+          <label>Décalage Y
+            <input
+              type="number"
+              step="1"
+              value="0"
+              data-creature-dodge-offset-y
+            >
+          </label>
+        </div>
+        <p class="note">
+          Cet effet appartient à l’apparence de la créature. Il accompagne sa disparition pendant l’Esquive : éclair, feuilles, poussière, fumée… Aucun effet n’est choisi automatiquement selon l’élément.
+        </p>
+
         <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
           <h3>Mes visuels / Importer</h3>
           <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut. La persistance projet sera un lot séparé.</p>
@@ -192,6 +229,7 @@
                 <option value="impact">Impact</option>
                 <option value="zone">Zone / aura</option>
                 <option value="status">Statut</option>
+                <option value="dodge">Esquive / disparition</option>
               </select>
             </label>
             <label>Nom
