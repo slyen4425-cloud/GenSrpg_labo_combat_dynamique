@@ -1,84 +1,103 @@
-# Micro-lot actif — Dodge Vanish Visual V1 — 2026-10-07
+# Point de reprise courant — 2026-10-07
 
-Branche : `work/lab-dodge-vanish-visual-v1-2026-10-07`
+## Lot techniquement GREEN
 
-Checkpoint de départ : `checkpoint/lab-start-dodge-vanish-visual-v1-2026-10-07`
-Base exacte : `e87a6acc4c5a2262cb466d2001d698aeb7e9bbd5`
+Dodge Vanish Visual V1
 
-## Besoin utilisateur
+Branche :
+`work/lab-dodge-vanish-visual-v1-2026-10-07`
 
-Quand l'Esquive proactive est activée, la créature doit :
-- disparaître visuellement pendant la fenêtre active ;
-- avoir un petit effet de disparition/réapparition ;
-- revenir exactement à son état visuel normal à la fin ;
-- ne modifier aucune règle gameplay d'esquive.
+Checkpoint de départ :
+`checkpoint/lab-start-dodge-vanish-visual-v1-2026-10-07`
 
-Évolution souhaitée ensuite :
-- permettre un sprite/FX personnel de disparition via la bibliothèque visuelle créateur.
+Base :
+`e87a6acc4c5a2262cb466d2001d698aeb7e9bbd5`
 
-## Diagnostic
+## Résultat
 
-Le Runtime possède déjà l'autorité unique :
-- activation proactive ;
-- charges ;
-- recharge ;
-- `activeWindowMs` ;
-- résolution réelle `evaded`.
+L'Esquive proactive existante possède maintenant une projection visuelle générique :
 
-Le contrat `CombatVisualEvent` contient déjà `dodge`, mais `planAnimation` ne possède actuellement aucun cas `dodge`.
-Le bouton Esquive n'envoie actuellement aucun événement visuel.
+`HUD -> Runtime -> result.window.remainingMs -> Visual Controller -> CombatVisualEvent dodge -> Animation Core -> DomActorRenderer`
+
+Quand l'activation Runtime réussit :
+- la créature disparaît ;
+- son ombre disparaît avec elle ;
+- elle reste invisible pendant la fenêtre active ;
+- elle réapparaît proprement ;
+- la durée visuelle totale est exactement celle renvoyée par le Runtime.
+
+Aucun timer gameplay ou état Dodge parallèle n'a été ajouté.
 
 ## Propriétaires
 
-- durée gameplay : Combat Runtime existant ;
-- événement visuel : CombatVisualEvent existant ;
-- séquencement visuel : Animation Core ;
-- application DOM : DomActorRenderer existant ;
-- déclenchement : Combat 2v2 UI, projection uniquement.
-
-## Périmètre V1
-
-- plan d'animation `dodge` générique ;
-- durée fournie par `activeWindowMs` du Runtime/UI, aucune seconde horloge gameplay ;
-- disparition + courte transition entrée/sortie ;
-- ombre suit la même opacité via le renderer existant ;
-- raccord du bouton Esquive au vrai `visuals.playEventFor(..., "dodge")` ;
-- tests du vrai chemin.
-
-## Hors périmètre de ce micro-lot
-
-- persistance assets projet ;
-- import d'arènes ;
-- raccord World Builder ;
-- nouveau moteur FX ;
-- modification des règles Dodge ;
-- sprite personnel Dodge : traité dans le micro-lot suivant via le système Asset/Presentation existant, sans coder un chemin spécial utilisateur ici.
-
-## Protégé
-
-Aucun changement de :
-- Combat Rules / résolution `evaded` ;
-- Rechargeable Action ;
-- Damage / Status ;
-- collision / projectile ;
-- SkillPresentation ;
-- Showcase ;
-- audio ;
-- roster ;
-- main ;
-- dépôt GenSrpG principal ;
-- dépôt Exploration.
+- fenêtre/charges/recharge/résolution : Combat Runtime existant ;
+- événement : CombatVisualEvent existant ;
+- séquence visuelle : Animation Core ;
+- rendu : DomActorRenderer existant ;
+- UI : déclenchement/projection uniquement.
 
 ## TDD
 
-1. RED : `planAnimation(dodge)` absent ;
-2. RED : bouton Dodge n'appelle pas le visuel ;
-3. GREEN : durée totale strictement égale à `activeWindowMs` ;
-4. GREEN : opacité atteint 0 pendant la fenêtre et revient à 1 ;
-5. GREEN : aucune minuterie gameplay ajoutée ;
-6. CI complète ;
-7. checkpoint GREEN + preview.
+RED :
+- commit `e6ff459c0ac1d8b4d81bde5e3f024919a7605b2f` ;
+- CI `37649766483` ;
+- 1223 / 1226 PASS ;
+- 3 FAIL ciblés.
 
-## Critère de fin
+GREEN fonctionnel :
+- commit `e99453deaf9e1680e8fecee2910ecbc8c1484878` ;
+- CI `37650601948` ;
+- 1226 / 1226 PASS ;
+- 0 FAIL.
 
-Une activation Dodge réussie déclenche exactement une animation visuelle possédée par Animation Core, synchronisée sur la durée active, sans modifier le comportement gameplay existant.
+Rapport :
+`docs/LAB_DODGE_VANISH_VISUAL_V1.md`
+
+## Fichiers fonctionnels
+
+- `src/core/profiles/dodge-visual-profile-v1.js`
+- `src/core/animation/plan-animation.js`
+- `src/ui/combat-2v2-test-ui.js`
+- `tests/unit/dodge-vanish-visual-v1.test.mjs`
+- `tests/unit/contracts-and-planner.test.mjs`
+
+## Domaines protégés
+
+Inchangés :
+- Combat Runtime / Session ;
+- Rechargeable Action ;
+- Damage / Status ;
+- collision / projectile ;
+- SkillDefinition ;
+- Roster ;
+- audio ;
+- Showcase ;
+- main ;
+- GenSrpG principal ;
+- Exploration.
+
+## Chantiers futurs déjà enregistrés
+
+Le lot `Portable Project Assets Notes V1`, présent dans la lignée de cette base, conserve les décisions suivantes pour l'intégration finale :
+- bibliothèque de sons/assets personnelle persistante ;
+- son importé réutilisable dans tout slot audio compatible ;
+- rôle/catégorie = tag/tri/suggestion, pas une restriction ;
+- game partagée transporte/résout ses créatures, sons et médias nécessaires ;
+- arènes utilisateur importables par assetId ;
+- futur raccord World Builder environnement/zone -> une ou plusieurs arènes.
+
+## Suite après validation de ce lot
+
+Micro-lot séparé possible :
+**Dodge Custom Vanish FX V2**
+- sprite/FX optionnel de disparition/réapparition ;
+- import créateur via Asset Input existant ;
+- aucun second moteur FX ;
+- aucune modification des règles Dodge.
+
+## Prochaine action protocolaire
+
+- CI finale sur le SHA documenté ;
+- checkpoint `checkpoint/lab-dodge-vanish-visual-v1-green-2026-10-07` ;
+- preview `preview/lab-dodge-vanish-visual-v1-2026-10-07` ;
+- validation smartphone utilisateur avant GREEN utilisateur.
