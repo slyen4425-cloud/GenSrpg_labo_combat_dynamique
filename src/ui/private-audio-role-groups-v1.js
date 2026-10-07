@@ -73,10 +73,12 @@ export function buildPrivateAudioRoleGroupsV1(
 ) {
   const source = requiredEntries(entries);
   const requested = normalizedRoles(acceptedRoles);
-  const roleOrder =
-    requested.length > 0
-      ? requested
-      : PRIVATE_AUDIO_ROLE_ORDER_V1;
+  const roleOrder = Object.freeze([
+    ...requested,
+    ...PRIVATE_AUDIO_ROLE_ORDER_V1.filter(
+      (role) => !requested.includes(role)
+    )
+  ]);
 
   const groups = new Map(
     roleOrder.map((role) => [role, []])
@@ -87,13 +89,10 @@ export function buildPrivateAudioRoleGroupsV1(
       ? rawEntry.roles
       : [];
 
-    const role = roleOrder.find((candidate) =>
-      entryRoles.includes(candidate)
-    );
-
-    if (!role) {
-      continue;
-    }
+    const role =
+      roleOrder.find((candidate) =>
+        entryRoles.includes(candidate)
+      ) ?? "other";
 
     if (!groups.has(role)) {
       groups.set(role, []);
