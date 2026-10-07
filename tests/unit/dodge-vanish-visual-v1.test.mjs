@@ -105,6 +105,14 @@ test("dodge visual path disappears for the Runtime-owned active window and resto
     ),
     1
   );
+  assert.equal(
+    timeline.shadowKeyframes.some(
+      (frame) =>
+        Number(frame.opacity) === 0
+    ),
+    true,
+    "the existing renderer must hide the ground shadow with the actor"
+  );
 });
 
 test("dodge visual requires the positive Runtime active-window duration", () => {
@@ -137,7 +145,11 @@ test("combat Dodge activation projects the successful Runtime window to the exis
 
   assert.match(
     source,
-    /activateRechargeableReaction[\s\S]{0,2600}playEventFor\([\s\S]{0,500}["']dodge["'][\s\S]{0,800}durationMs\s*:\s*result\.window\.remainingMs/
+    /const visualDurationMs[\s\S]{0,300}result\.window\?\.remainingMs/
+  );
+  assert.match(
+    source,
+    /playEventFor\([\s\S]{0,500}["']dodge["'][\s\S]{0,700}durationMs\s*:\s*visualDurationMs/
   );
 
   for (const forbidden of [
