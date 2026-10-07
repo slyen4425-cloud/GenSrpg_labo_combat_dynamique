@@ -33,6 +33,11 @@
       "targetRelations": [
         "enemy"
       ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
@@ -101,15 +106,34 @@
     },
     "presentation": {
       "id": "skill:cap_fire_special_1",
-      "version": 8,
+      "version": 9,
       "subjectType": "skill",
       "subjectId": "cap_fire_special_1",
       "visual": {
         "icon": {
           "assetId": "core:icon-skill-poison-cloud-01"
         },
+        "cast": {
+          "assetId": "pack:capture:sprite-ash-smoke-cast-01",
+          "displayScale": 0.7,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 30,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "front"
+          },
+          "offsetMode": "mirror_x"
+        },
         "travel": {
-          "assetId": "pack:capture:sprite-projectile-shadow-01",
+          "assetId": "pack:capture:sprite-ash-smoke-projectile-01",
           "displayScale": 1.45,
           "displayScaleX": 1,
           "displayScaleY": 1,
@@ -124,10 +148,11 @@
           "layerByView": {
             "player": "front",
             "opponent": "front"
-          }
+          },
+          "offsetMode": "same"
         },
         "impact": {
-          "assetId": "pack:capture:sprite-status-curse-01",
+          "assetId": "pack:capture:sprite-ash-smoke-impact-01",
           "displayScale": 1.45,
           "displayScaleX": 1,
           "displayScaleY": 1,
@@ -137,43 +162,55 @@
           "offsetY": 0,
           "trigger": "impact",
           "playbackMode": "once",
-          "durationMs": 350,
+          "durationMs": 500,
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
             "player": "front",
             "opponent": "front"
-          }
+          },
+          "offsetMode": "same"
         }
       },
       "audio": {
         "cast": {
-          "assetId": "gensrpg:sound:academie-01fc18a6",
+          "assetId": "gensrpg:sound:tower-ccc16d37",
           "volume": 1,
           "loop": false
         },
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-3e95d6c6",
+          "volume": 1,
+          "loop": true
+        },
         "impact": {
-          "assetId": "gensrpg:sound:genrpg-pack2-742f6521",
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
           "volume": 1,
           "loop": false
         }
       },
       "statusVisuals": {
         "cap_fire_special_1:1": {
-          "mode": "tint",
+          "mode": "sprite",
           "tintColor": "#5b2067",
           "tintOpacity": 0.35,
-          "sprite": null
+          "sprite": {
+            "offsetY": -15,
+            "assetId": "pack:capture:sprite-ash-smoke-status-aura-01",
+            "displayScale": 1.5,
+            "opacity": 0.65,
+            "offsetMode": "same"
+          }
         }
       },
       "feedback": {
         "glow": {
-          "color": "#5b2067",
+          "color": "#d4dde4",
           "strength": 0.65,
           "radiusPx": 22
         },
         "impactFlash": {
-          "color": "#102457",
+          "color": "#d4dde4",
           "opacity": 0.4,
           "durationMs": 100,
           "scale": 1.4
@@ -183,7 +220,7 @@
           "durationMs": 100
         },
         "projectileTrail": {
-          "color": "#5b2067",
+          "color": "#d4dde4",
           "count": 7,
           "lengthPx": 56,
           "sizePx": 7,
@@ -200,7 +237,7 @@
           "opacity": 0.9
         },
         "aftermathSmoke": {
-          "color": "#5b2067",
+          "color": "#d4dde4",
           "count": 6,
           "spreadPx": 58,
           "sizePx": 36,
@@ -209,7 +246,7 @@
           "opacity": 0.64
         },
         "castBurst": {
-          "color": "#5b2067",
+          "color": "#d4dde4",
           "count": 12,
           "spreadPx": 48,
           "sizePx": 10,
