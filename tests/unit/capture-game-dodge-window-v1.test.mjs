@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 
 import {
   CAPTURE_GAME_OPTIONS_V1_DEFAULT,
-  normalizeCaptureGameOptionsV1
+  normalizeCaptureGameOptionsV1,
+  captureDodgeActiveWindowMsV1
 } from "../../src/contracts/capture-game-options-v1.js";
 import {
   activateRechargeableActionV1,
@@ -38,23 +39,21 @@ test("Capture dodge defaults to 30 seconds recharge and a 500ms active window", 
   );
 });
 
-test("legacy explicit dodge config without activeWindowMs receives the 500ms default", () => {
-  assert.deepEqual(
-    normalizeCaptureGameOptionsV1({
-      dodge: {
-        enabled: true,
-        maxCharges: 2,
-        rechargeMs: 1500
-      }
-    }),
-    {
-      dodge: {
-        enabled: true,
-        maxCharges: 2,
-        rechargeMs: 1500,
-        activeWindowMs: 500
-      }
+test("legacy explicit dodge config keeps its shape while resolving the 500ms semantic default", () => {
+  const legacy = {
+    dodge: {
+      enabled: true,
+      maxCharges: 2,
+      rechargeMs: 1500
     }
+  };
+  assert.deepEqual(
+    normalizeCaptureGameOptionsV1(legacy),
+    legacy
+  );
+  assert.equal(
+    captureDodgeActiveWindowMsV1(legacy),
+    500
   );
 });
 
