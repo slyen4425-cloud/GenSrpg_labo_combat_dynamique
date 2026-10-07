@@ -5,6 +5,9 @@ import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
 import {
+  createCreatorAudioAssetSessionV1
+} from "../../src/assets/creator-audio-asset-session-v1.js";
+import {
   createCaptureEditorPreviewSessionV2
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
@@ -114,17 +117,28 @@ arenaSelect.value = "city";
 
 const creatorVisualAssets =
   createCreatorVisualAssetSessionV1();
+const creatorAudioAssets =
+  createCreatorAudioAssetSessionV1();
+
+function resolveEditorAudioAsset(assetId) {
+  return (
+    creatorAudioAssets.runtimeAsset(assetId) ??
+    privateAudioRuntimeAssetV1(assetId) ??
+    demoPresentationAssets.audioAsset(assetId)
+  );
+}
 
 const editor = mountCaptureEditorHumanV2({
   root,
-  creatorVisualAssets
+  creatorVisualAssets,
+  creatorAudioAssets
 });
 
 const audioPreviewController =
   createPrivateAudioPreviewControllerV1({
     root,
     resolveAudioAsset:
-      privateAudioRuntimeAssetV1
+      resolveEditorAudioAsset
   });
 
 const previewDisplayMode =
@@ -310,10 +324,7 @@ function buildPreviewPresentationAssets(
         nativeCombatSource.skillPresentations ?? {},
       assetForId: resolvePreviewPresentationAsset,
       audioAssetForId(assetId) {
-        return (
-          privateAudioRuntimeAssetV1(assetId) ??
-          demoPresentationAssets.audioAsset(assetId)
-        );
+        return resolveEditorAudioAsset(assetId);
       }
     });
 
@@ -338,8 +349,7 @@ function buildPreviewPresentationAssets(
     audioAsset(assetId) {
       return (
         native.audioAsset(assetId) ??
-        privateAudioRuntimeAssetV1(assetId) ??
-        demoPresentationAssets.audioAsset(assetId)
+        resolveEditorAudioAsset(assetId)
       );
     }
   });
@@ -459,6 +469,7 @@ window.addEventListener(
 globalThis.addEventListener(
   "pagehide",
   () => {
+    creatorAudioAssets.dispose();
     creatorVisualAssets.dispose();
   },
   { once: true }
