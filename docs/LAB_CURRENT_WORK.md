@@ -19,8 +19,9 @@ Base GREEN précédente :
 ## Retour utilisateur
 
 Boule de feu :
-- l'auteur attend un cast horizontal à `-30` côté joueur ;
-- côté opposant, le cast reste visuellement au centre / n'utilise pas le placement opposé attendu.
+- la valeur de référence / joueur est `+30` ;
+- l'auteur avait réglé explicitement le côté opposant à `-30` ;
+- côté opposant, le cast reste visuellement au centre / le réglage `-30` n'est pas conservé dans le binding actuel.
 
 ## Diagnostic
 
@@ -38,13 +39,13 @@ Le support side-aware existe déjà en V9 :
 ## Correction cible
 
 Faire évoluer uniquement la présentation Boule de feu en V9 :
-- `visual.cast.offsetX = -30`
+- `visual.cast.offsetX = 30`
 - `visual.cast.offsetY = 0`
 - `visual.cast.offsetMode = "mirror_x"`
 
 Résultat attendu :
-- joueur : `-30`
-- opposant : `+30`
+- joueur : `+30`
+- opposant : `-30`
 
 Les autres slots visuels V9 garderont explicitement `offsetMode: "same"` pour conserver leur comportement actuel.
 
@@ -76,8 +77,8 @@ Ne pas modifier :
 
 ## TDD
 
-1. RED : Fireball doit être V9, cast joueur -30, mirror_x ;
-2. RED : resolver doit produire joueur -30 / opposant +30 ;
+1. RED : Fireball doit être V9, cast joueur +30, mirror_x ;
+2. RED : resolver doit produire joueur +30 / opposant -30 ;
 3. modifier uniquement le binding auteur nécessaire ;
 4. préserver les autres valeurs auteur ;
 5. CI complète ;
