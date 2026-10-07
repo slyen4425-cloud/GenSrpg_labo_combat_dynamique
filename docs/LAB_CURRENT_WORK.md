@@ -1,84 +1,72 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Lot actif
 
-Projectile Power Help V1
+Projectile Power Values V1
 
 Branche :
-`work/lab-projectile-power-help-v1-2026-10-07`
+`work/lab-projectile-power-values-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-projectile-power-help-v1-2026-10-07`
+`checkpoint/lab-start-projectile-power-values-v1-2026-10-07`
 
-Base :
-`9e37c39d6c3bbb9a231f8e7d3dc00ccacacd4477`
+Base exacte :
+`129e6f0c6121868ad98f63d8f636f398d14d5533`
 
-## Résultat
+Base GREEN précédente :
+`checkpoint/lab-projectile-power-help-v1-green-2026-10-07`
 
-Le bloc `Collision entre projectiles` explique désormais clairement :
+## Demande utilisateur
 
-- `0` = hors système de clash ;
-- minimum actif = `1` ;
-- `1 contre 1` = annulation mutuelle ;
-- `2 contre 1` = puissance 2 détruit puissance 1 et continue ;
-- puissance de clash indépendante des dégâts ;
-- aucune règle élémentaire n'est appliquée dans ce contrat actuel.
+Régler uniquement les puissances projectile auteur :
 
-## Ownership
+- Boule de feu : `2`
+- Cendre aveuglante : `1`
+- Goutte vive : `1`
 
-Aucun changement d'owner.
+## État de départ vérifié
 
-Inchangés :
-- `ProjectilePowerV1` ;
-- `projectile-clash` ;
-- Combat Runtime ;
-- données auteur.
+- Boule de feu : `1`
+- Cendre aveuglante : `0`
+- Goutte vive : `1`
 
-L'UI décrit seulement le contrat existant.
+Donc seules Boule de feu et Cendre aveuglante nécessitent une modification.
+Goutte vive doit rester strictement inchangée.
 
-## TDD
+## Périmètre autorisé
 
-RED :
-- `580709f6918c39accb09b85f966ea5eae5d8a629`
-- CI `37679035816`
-- 1245 / 1246 PASS.
-
-GREEN :
-- `814734fdfc5d1941d36ba1e4efd09e1a9fbfba9a`
-- CI `37679147775`
-- 1246 / 1246 PASS
-- 0 FAIL
-- structure / frontières / indépendance : OK.
-
-Rapport :
-`docs/LAB_PROJECTILE_POWER_HELP_V1.md`
-
-## Correctif paysage inclus dans cette base
-
-Le lot précédent est également inclus :
-- toggle paysage supprimé ;
-- paysage automatique via `previewDisplayMode.enter({ enabled: true })` ;
-- rotate gate conservé uniquement comme secours navigateur.
-
-Checkpoint précédent :
-`checkpoint/lab-landscape-toggle-removal-v1-green-2026-10-07`
+- `data/capture/showcase/fireball.capture-skill-transfer-v1.json`
+- `data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json`
+- test sentinelle dédié
+- documentation
 
 ## Domaines protégés
 
-Inchangés :
-- Combat Rules / Runtime ;
-- Goutte vive ;
-- Animation / FX ;
-- audio ;
+Ne pas modifier :
+- Goutte vive hors sentinelle de valeur ;
+- dégâts ;
+- éléments ;
+- énergie ;
+- timings ;
+- FX / audio / sockets ;
+- ProjectilePowerV1 / projectile-clash ;
+- Combat Runtime ;
 - créatures ;
-- Roster ;
+- paysage ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochaine action protocolaire
+## TDD
 
-- CI documentaire finale ;
-- checkpoint `checkpoint/lab-projectile-power-help-v1-green-2026-10-07` ;
-- preview `preview/lab-projectile-power-help-v1-2026-10-07` ;
-- validation smartphone utilisateur.
+1. RED : attendre exactement `2 / 1 / 1` ;
+2. modifier uniquement les deux champs auteur nécessaires ;
+3. vérifier que Goutte vive conserve exactement son blob ;
+4. CI complète ;
+5. checkpoint/preview GREEN.
+
+## Critère de fin
+
+Les trois valeurs auteur sont exactement :
+`Boule de feu 2 / Cendre aveuglante 1 / Goutte vive 1`,
+sans autre changement fonctionnel.
