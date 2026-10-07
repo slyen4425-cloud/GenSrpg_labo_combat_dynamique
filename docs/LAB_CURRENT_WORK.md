@@ -20,6 +20,11 @@ Demo UI / CSS uniquement.
 ## Protégé
 Combat Runtime, Rechargeable Action, Game Options, dégâts, collision, FX, icônes et données auteur.
 
+## Résultat technique
+- RED `37602292175` : 1205 PASS / 1 FAIL ciblé ;
+- GREEN `37602379188` : 1206 / 1206 PASS ;
+- rapport : `docs/LAB_COMBAT_HUD_DODGE_HEIGHT_V3.md`.
+
 ## TDD
 RED : exiger une hauteur tactile paysage plus grande et un bottom supérieur à V2.
 GREEN : CI complète, aucun changement des tailles d'icônes.
