@@ -512,7 +512,7 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "disposed" });
     }
 
-    if (!["ground", "teleport", "aerial"].includes(approachMode)) {
+    if (!["ground", "teleport", "aerial", "burrow"].includes(approachMode)) {
       return playEventFor(slotKey, "attack", {
         targetSlot
       });
@@ -549,7 +549,9 @@ export async function mountCombatDemo({
         ? "ground-attack"
         : approachMode === "teleport"
           ? "teleport-attack"
-          : "aerial-attack";
+          : approachMode === "aerial"
+            ? "aerial-attack"
+            : "burrow-attack";
 
     const arenaExitTranslateY =
       -(actorRect.bottom - arenaRect.top + 24);
@@ -593,6 +595,7 @@ export async function mountCombatDemo({
     let contactStoppedOutbound = false;
 
     const contactWatcher =
+      approachMode !== "burrow" &&
       typeof onContact === "function"
         ? watchVisibleModelContact({
             sourceModel: slot.collisionModel,
