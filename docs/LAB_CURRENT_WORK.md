@@ -1,108 +1,87 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Régression active
 
-Burrow Visual V1
+Creature Library Regression V1
 
 Branche :
-`work/lab-burrow-visual-v1-2026-10-07`
+`work/lab-creature-library-regression-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-burrow-visual-v1-2026-10-07`
+`checkpoint/lab-start-creature-library-regression-v1-2026-10-07`
 
-Base :
-`55dfafaee495c3e058363572b723a4f9ea7c8fc5`
+Base exacte reproduite :
+`36e90e6152b079584f1f4f8aafa53494435befda`
 
-Base GREEN précédente :
-`checkpoint/lab-maraileron-author-export-v1-green-2026-10-07`
+Preview concernée :
+`preview/lab-burrow-visual-v1-2026-10-07`
 
-## Résultat
+## Symptôme utilisateur
 
-`approachMode: "burrow"` possède maintenant une projection visuelle générique :
+Dans la preview publiée après Maraileron + Burrow Visual V1 :
+**plus aucune créature visible dans la bibliothèque de l'éditeur**.
 
-`Runtime travelMs -> Presenter -> Visual Controller -> CombatVisualEvent burrow-attack -> Animation Core -> Renderer`
+Le lot précédent n'est donc pas validable utilisateur malgré CI verte.
 
-Séquence :
-1. `burrow-dive` ;
-2. `burrow-hidden` ;
-3. `burrow-emerge-impact` ;
-4. `burrow-home`.
+## Règle charte appliquée
 
-La créature descend, disparaît, est repositionnée invisiblement sous la cible puis remonte rapidement vers elle.
+§11 :
+1. reproduire ;
+2. identifier le premier changement responsable ;
+3. corriger la cause démontrée ;
+4. ajouter une sentinelle de régression ;
+5. ne pas ajouter de fallback concurrent.
 
-La somme descente + cache + émergence est exactement le `travelMs` donné par le Runtime.
+§26 / §33.8 :
+la CI seule ne suffit pas pour une UI ; le vrai chemin éditeur et la validation smartphone sont obligatoires.
 
-## Autorité gameplay protégée
+## Hypothèses à départager par tests
 
-Le gameplay Burrow existant reste inchangé :
-- présence underground : Runtime ;
-- timing : Runtime ;
-- impact : Runtime ;
-- dégâts : owners existants.
+A. Le batch Showcase vide ou remplace à tort `configuredCreatures`.
+B. Le chargement historique des 110 créatures est bloqué par une dépendance parallèle non liée à la bibliothèque.
+C. Une erreur UI efface le select après hydratation.
+D. Un preset auteur déclenche une exception qui contourne le rechargement complet.
 
-Aucun contact DOM n'est autoritaire :
-- Presenter transmet `onContact: null` pour burrow ;
-- Visual Controller interdit aussi le watcher visible pour burrow ;
-- aucun `reportActionContact` burrow ajouté.
+Aucune correction n'est autorisée avant reproduction.
 
-## TDD
+## Owners protégés
 
-RED :
-- commit `b850914970ccb8da3b69ba6201f967af2eedfa28`;
-- CI `37664557618`;
-- 1230 / 1234 PASS ;
-- 4 FAIL ciblés.
+- `configuredCreatures` reste l'unique owner de la bibliothèque active ;
+- Capture Transfer reste l'unique chemin de remplacement de presets ;
+- Demo UI ne devient pas une seconde source ;
+- Combat Runtime / Animation / FX / collision restent hors périmètre.
 
-GREEN fonctionnel :
-- commit `507ca13631372fe4289355f8cbeb0c7c6095ad89`;
-- CI `37665033128`;
-- 1234 / 1234 PASS ;
-- 0 FAIL.
+## Fichiers autorisés
 
-Rapport :
-`docs/LAB_BURROW_VISUAL_V1.md`
-
-## Fichiers fonctionnels
-
-- `src/core/profiles/burrow-visual-profile-v1.js`
-- `src/contracts/combat-visual-event.js`
-- `src/core/animation/plan-animation.js`
-- `src/adapters/renderer/combat-resolution-presenter.js`
-- `src/ui/demo-app.js`
-- `tests/unit/burrow-visual-v1.test.mjs`
-- `tests/unit/demo-ui-boundary.test.mjs`
+- tests de régression du démarrage Human Editor ;
+- `src/ui/capture-editor-human-v2.js` uniquement si la cause est démontrée dans l'initialisation ;
+- helper pur éventuellement extrait pour rendre le vrai chemin testable ;
+- `docs/LAB_CURRENT_WORK.md` ;
+- rapport dédié.
 
 ## Domaines protégés
 
-Inchangés :
+Ne pas modifier :
+- données auteur Maraileron / Morsure de marée ;
 - Combat Runtime / Session / Timing ;
-- gameplay presence ;
-- Damage / Status ;
-- collision owner ;
-- projectile ;
+- Animation Core / Burrow Visual ;
+- FX ;
+- collision ;
 - Roster ;
 - Dodge ;
-- persistent zones ;
-- audio ;
-- données auteur ;
+- audio métier ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Point auteur de la lignée
+## Critère de fin
 
-Le lot précédent a intégré exactement :
-- `cap_water_atk_2` — Morsure de marée ;
-- `crea_maraileron` — Maraileron.
-
-Checkpoint :
-`checkpoint/lab-maraileron-author-export-v1-green-2026-10-07`.
-
-## Prochaine action protocolaire
-
-- CI finale documentaire ;
-- checkpoint `checkpoint/lab-burrow-visual-v1-green-2026-10-07` ;
-- preview `preview/lab-burrow-visual-v1-2026-10-07` ;
-- validation smartphone utilisateur avant GREEN utilisateur.
-
-Le chantier Dodge Custom Vanish FX V2 reste séparé et n'est pas ouvert depuis ce lot.
+- bibliothèque non vide sur le vrai chemin ;
+- les 110 historiques restent présents ;
+- Maraileron remplace son ID stable ;
+- Moussados remplace son ID stable ;
+- Loup est ajouté sans effacer les historiques ;
+- erreurs de ressources non liées ne doivent pas vider silencieusement la bibliothèque si elles ne sont pas nécessaires à son contenu ;
+- CI verte ;
+- nouvelle preview ;
+- validation smartphone Sylvain.
