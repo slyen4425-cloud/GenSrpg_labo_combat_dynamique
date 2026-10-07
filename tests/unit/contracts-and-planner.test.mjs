@@ -159,7 +159,7 @@ test("unsupported V1 event fails instead of silently inventing behavior", () => 
   assert.throws(() => planAnimation({
     actor,
     profile: registry.get("flying"),
-    event: normalizeCombatVisualEvent({ type: "dodge", actorId: actor.id })
+    event: normalizeCombatVisualEvent({ type: "recover", actorId: actor.id })
   }), /No V1 animation planner/);
 });
 
