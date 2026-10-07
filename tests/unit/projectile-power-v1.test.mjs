@@ -485,3 +485,23 @@ test("non-projectile skill cannot own positive projectile power", () => {
     /requires form=projectile/i
   );
 });
+
+
+test("Human Editor explains that projectile power zero opts out and active clash starts at one", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(
+    html,
+    /0 = hors système de clash/i
+  );
+  assert.match(
+    html,
+    /Minimum actif = 1/i
+  );
+});
