@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-08
 
-## Lot actif
+## Lot techniquement GREEN
 
 Creature Library Browser Startup Regression V1
 
@@ -10,71 +10,87 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-creature-library-browser-startup-regression-v1-2026-10-08`
 
-Base exacte :
+Base :
 `181cada1bf19f919961fcc546b9eee5bebb7c5bc`
 
-Base GREEN précédente :
-`checkpoint/lab-creature-dodge-appearance-fx-v1-green-2026-10-07`
+## Retour utilisateur
 
-## Retour utilisateur autoritaire
+La preview smartphone affichait une bibliothèque de créatures vide.
 
-Sur la preview smartphone réelle :
-- la page s'affiche ;
-- la bibliothèque de créatures est de nouveau vide.
+Ce retour invalide le GREEN utilisateur du lot précédent sur ce point.
 
-La validation utilisateur invalide donc le GREEN fonctionnel précédent sur ce point, malgré la CI.
+## Cause architecturale corrigée
 
-## Trou dans la sentinelle existante
+Le vrai point d'entrée navigateur chargeait statiquement des modules uniquement nécessaires à la preview combat :
 
-Le test :
-`tests/unit/capture-editor-creature-library-regression-v1.test.mjs`
+- `capture-combat-preview-v1.js` ;
+- `capture-export-to-native-visual-source-v1.js`.
 
-reconstruit correctement 103 créatures en Node, mais ne couvre pas le graphe de modules chargé par la vraie page :
-`examples/dom-demo/capture-editor-v2.js`.
+Le lot Dodge Appearance avait ajouté derrière ces modules de nouvelles dépendances de présentation/renderer.
 
-## Diagnostic architectural
+Un échec dans cette branche preview pouvait donc empêcher le bootstrap complet de l'éditeur avant l'hydratation de la bibliothèque.
 
-Le point d'entrée navigateur charge statiquement des modules uniquement nécessaires à la preview combat, avant même que l'éditeur soit monté :
+## Correction
 
-- `capture-combat-preview-v1.js` -> `demo-app.js` -> nouveau `dom-creature-dodge-fx-v1.js` ;
-- `capture-export-to-native-visual-source-v1.js` -> nouveau `creature-presentation-binding.js`.
+Nouveau chemin :
 
-Une indisponibilité/erreur de ce graphe preview peut donc empêcher tout le module d'entrée de s'évaluer et laisser l'HTML statique avec une bibliothèque vide.
+`Editor bootstrap -> editor.ready -> lazy Preview Runtime`
 
-Cela recrée une dépendance de démarrage que le lot Creature Library Regression V1 avait précisément cherché à supprimer pour les ressources optionnelles.
+Nouveau loader :
+`src/ui/capture-editor-preview-runtime-loader-v1.js`
 
-## Correction cible
+La vraie entrée navigateur n'importe plus statiquement :
+- le combat preview ;
+- l'adaptateur visuel de preview.
 
-Séparer le bootstrap essentiel de l'éditeur du runtime optionnel de preview combat :
-
-`Editor bootstrap -> creature library`
-
-doit rester chargeable indépendamment de :
-
-`Preview runtime -> visual adapter -> combat preview -> Dodge FX renderer`
-
-Les modules preview seront chargés dynamiquement après le démarrage essentiel de l'éditeur. Une erreur de preview doit désactiver le test combat et afficher une erreur, sans vider/bloquer la bibliothèque.
+La preview combat reste optionnelle et ne possède plus le démarrage de la bibliothèque de créatures.
 
 ## TDD
 
-1. RED structurel sur la vraie entrée navigateur :
-   - aucun import statique de `capture-combat-preview-v1.js` ;
-   - aucun import statique de `capture-export-to-native-visual-source-v1.js` ;
-   - runtime preview chargé dynamiquement.
-2. conserver la sentinelle historique 103 créatures ;
-3. vérifier l'échec du runtime preview sans casser `editor.ready` ;
-4. CI complète ;
-5. nouveau checkpoint/preview utilisateur.
+RED :
+- `fbcc44937d0c8a2089b30b525790765003f9a476`
+- CI `37696130792`
+- 1256 / 1257 PASS.
+
+Implémentation :
+- loader `c87c15b0a92bdfeaa8683ce59470e4835524dbac`
+- isolation entrée navigateur `06632d74978e37274b22edc8e98f7a105de37a9a`
+- sentinelle retry alignée `0746053d366f608bc1f0e2980a687759d7bea8b9`
+
+GREEN :
+- CI `37696439236`
+- 1257 / 1257 PASS
+- 0 FAIL
+- structure / frontières / indépendance : OK.
+
+## Anti-régression
+
+La même CI vérifie maintenant :
+- entrée navigateur sans import statique du runtime preview ;
+- 103 créatures actives après bootstrap de données + showcase ;
+- conservation des IDs historiques ;
+- retry du test combat après erreur.
+
+Rapport :
+`docs/LAB_CREATURE_LIBRARY_BROWSER_STARTUP_REGRESSION_V1.md`
 
 ## Domaines protégés
 
-Ne pas modifier :
+Inchangés :
 - données créatures ;
-- configuredCreatures comme owner ;
+- `configuredCreatures` comme owner ;
+- Creature Dodge Appearance FX ;
 - Combat Runtime / Rules ;
 - Dodge gameplay ;
-- Creature Dodge Appearance FX lui-même ;
-- puissance projectile / Fireball / Goutte / Cendre ;
+- Projectile Clash ;
+- Fireball / Goutte / Cendre ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
+
+## Prochaine action protocolaire
+
+- CI documentaire finale ;
+- checkpoint `checkpoint/lab-creature-library-browser-startup-regression-v1-green-2026-10-08` ;
+- preview `preview/lab-creature-library-browser-startup-regression-v1-2026-10-08` ;
+- validation smartphone utilisateur.
