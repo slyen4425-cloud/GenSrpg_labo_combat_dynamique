@@ -58,16 +58,17 @@ test("editor CSS collapses card contents structurally and makes sprite customiza
   );
 });
 
-test("combat preview exposes a configurable fullscreen landscape trial and portrait rotation gate", async () => {
-  const html = await text(
-    "examples/dom-demo/capture-editor-v2.html"
-  );
+test("combat preview uses automatic landscape mode and keeps only the portrait rotation gate", async () => {
+  const [html, source] = await Promise.all([
+    text("examples/dom-demo/capture-editor-v2.html"),
+    text("examples/dom-demo/capture-editor-v2.js")
+  ]);
 
-  assert.match(
+  assert.doesNotMatch(
     html,
     /data-preview-landscape-mode/
   );
-  assert.match(
+  assert.doesNotMatch(
     html,
     /Combat plein écran paysage/
   );
@@ -78,6 +79,10 @@ test("combat preview exposes a configurable fullscreen landscape trial and portr
   assert.match(
     html,
     /Tourne ton téléphone/
+  );
+  assert.match(
+    source,
+    /previewDisplayMode\.enter\(\{\s*enabled:\s*true\s*\}\)/
   );
 });
 
