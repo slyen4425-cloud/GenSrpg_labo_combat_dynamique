@@ -30,7 +30,7 @@ async function json(relative) {
   return JSON.parse(await text(relative));
 }
 
-test("Fireball showcase preserves stable authored values around the explicit V4 socket correction", async () => {
+test("Fireball showcase preserves stable authored values around the explicit V9 side-aware cast correction", async () => {
   const transfer = importCaptureTransferJsonV1(
     await text(FIREBALL_FILE)
   );
@@ -52,7 +52,7 @@ test("Fireball showcase preserves stable authored values around the explicit V4 
   assert.equal(draft.definition.effects[0].amount, 25);
   assert.equal(draft.definition.effects[0].channel, "fire");
 
-  assert.equal(draft.presentation.version, 8);
+  assert.equal(draft.presentation.version, 9);
   assert.equal(
     draft.presentation.visual.cast.assetId,
     "pack:capture:sprite-fireball-2-cast-01"
@@ -72,6 +72,10 @@ test("Fireball showcase preserves stable authored values around the explicit V4 
   assert.equal(
     draft.presentation.visual.cast.offsetY,
     0
+  );
+  assert.equal(
+    draft.presentation.visual.cast.offsetMode,
+    "mirror_x"
   );
   assert.equal(
     draft.presentation.visual.travel.assetId,
