@@ -17,6 +17,7 @@ test("Capture editor exposes Game Options dodge controls and combat dodge button
     "data-game-dodge-enabled",
     "data-game-dodge-charges",
     "data-game-dodge-recharge-seconds",
+    "data-game-dodge-active-seconds",
     "data-combat-dodge",
     "data-combat-dodge-charges",
     "data-combat-dodge-recharge"
@@ -37,8 +38,8 @@ test("2v2 combat UI delegates dodge to Runtime rechargeable reaction APIs", asyn
 
   for (const marker of [
     "buildCaptureDodgeReactionSkillV1",
-    "previewRechargeableReaction",
-    "reactWithRechargeableAction",
+    "activateRechargeableReaction",
+    "rechargeableReactionWindowStatus",
     "rechargeableActionAvailability"
   ]) {
     assert.equal(
@@ -103,7 +104,8 @@ test("Human Editor reads valid dodge Game Options without a helper ReferenceErro
       dodge: {
         enabled: true,
         maxCharges: 2,
-        rechargeMs: 1500
+        rechargeMs: 1500,
+        activeWindowMs: 500
       }
     }
   );
