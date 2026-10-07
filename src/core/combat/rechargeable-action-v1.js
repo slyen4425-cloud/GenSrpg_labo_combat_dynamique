@@ -177,7 +177,7 @@ export function consumeRechargeableActionChargeV1({
 
   const nextActive =
     availability.rechargeMs === 0
-      ? active
+      ? [Number(atMs)]
       : [...active, Number(atMs)];
 
   const actorActions = {
@@ -218,6 +218,144 @@ export function consumeRechargeableActionChargeV1({
           availability.maxCharges,
         rechargeMs:
           availability.rechargeMs,
+        atMs
+      })
+  });
+}
+
+
+export function rechargeableActionWindowStatusV1({
+  state,
+  actorId,
+  actionId,
+  activeWindowMs,
+  atMs = state.elapsedMs
+}) {
+  const actor = requiredId(
+    actorId,
+    "actorId"
+  );
+  const action = requiredId(
+    actionId,
+    "actionId"
+  );
+  const duration = nonNegative(
+    activeWindowMs,
+    "activeWindowMs"
+  );
+  const now = nonNegative(
+    atMs,
+    "atMs"
+  );
+
+  if (!state.fighters?.[actor]) {
+    throw new RangeError(
+      "Unknown fighter: " + actor
+    );
+  }
+
+  const spent = historyFor(
+    state,
+    actor,
+    action
+  ).filter(
+    (spentAtMs) =>
+      Number(spentAtMs) <= now
+  );
+  const activatedAtMs =
+    spent.length === 0
+      ? null
+      : Math.max(
+          ...spent.map(Number)
+        );
+  const activeUntilMs =
+    activatedAtMs === null
+      ? null
+      : activatedAtMs + duration;
+  const active =
+    activatedAtMs !== null &&
+    duration > 0 &&
+    activeUntilMs > now;
+
+  return Object.freeze({
+    actorId: actor,
+    actionId: action,
+    activeWindowMs: duration,
+    activatedAtMs,
+    activeUntilMs,
+    active,
+    remainingMs:
+      active
+        ? Math.max(
+            0,
+            activeUntilMs - now
+          )
+        : 0
+  });
+}
+
+export function activateRechargeableActionV1({
+  state,
+  actorId,
+  actionId,
+  maxCharges,
+  rechargeMs,
+  activeWindowMs,
+  atMs = state.elapsedMs
+}) {
+  const before =
+    rechargeableActionWindowStatusV1({
+      state,
+      actorId,
+      actionId,
+      activeWindowMs,
+      atMs
+    });
+
+  if (before.active) {
+    return Object.freeze({
+      ok: false,
+      outcome: "already_active",
+      state,
+      availability:
+        rechargeableActionAvailabilityV1({
+          state,
+          actorId,
+          actionId,
+          maxCharges,
+          rechargeMs,
+          atMs
+        }),
+      window: before
+    });
+  }
+
+  const consumed =
+    consumeRechargeableActionChargeV1({
+      state,
+      actorId,
+      actionId,
+      maxCharges,
+      rechargeMs,
+      atMs
+    });
+
+  if (!consumed.ok) {
+    return Object.freeze({
+      ...consumed,
+      window: before
+    });
+  }
+
+  return Object.freeze({
+    ...consumed,
+    outcome: "activated",
+    window:
+      rechargeableActionWindowStatusV1({
+        state: consumed.state,
+        actorId,
+        actionId,
+        activeWindowMs,
         atMs
       })
   });
