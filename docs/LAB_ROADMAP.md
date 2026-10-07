@@ -509,3 +509,54 @@ Ordre du chantier Combat Expressiveness conservé :
 2. Creature Mobility Tempo ;
 3. exposition Human Editor des nouveaux contrats ;
 4. micro-lot placement ennemi paysage (peut être réalisé plus tôt uniquement sur branche dédiée si besoin de validation visuelle).
+
+
+## Décision différée — Projet portable : médias utilisateur + arènes
+
+Décision produit enregistrée le 2026-10-07. Ce chantier est **reporté jusqu'au raccord réel à l'application GenSrpG** ; il ne doit pas être développé dans le laboratoire de manière isolée.
+
+### Bibliothèque audio utilisateur
+
+Un son importé par un créateur devient un **asset audio du projet**, réutilisable partout où un slot audio compatible existe.
+
+Règles cibles :
+- l'import ne doit pas enfermer le son dans « créature », « capacité », « cast », « impact », etc. ;
+- ces notions deviennent des **rôles/tags de classement, filtrage et suggestion**, jamais des interdictions d'usage ;
+- un même `assetId` peut être référencé par plusieurs créatures, capacités, objets, événements ou systèmes de présentation ;
+- les octets audio doivent être persistés avec le projet via le futur propriétaire de stockage GenSrpG, et non via une simple Object URL de session ;
+- l'export/partage d'une game doit transporter les médias utilisateur nécessaires, ou un paquet/manifeste permettant de les restaurer sans dépendre du poste du créateur ;
+- lorsqu'un autre joueur importe/ouvre la game, les monstres, capacités et sons référencés doivent être disponibles avec les mêmes `assetId` ;
+- le gameplay et les fiches continuent à ne stocker que des références stables, jamais des chemins locaux ni des URL temporaires.
+
+Architecture cible à préciser lors du raccord application :
+`Project Asset Library -> assetId stable -> Project Package/Manifest + blobs -> import destinataire -> Asset Catalog -> bindings existants`.
+
+### Visuels et créatures utilisateur
+
+La même exigence de portabilité s'applique aux visuels, créatures, capacités et autres médias utilisateur : une game partagée doit rester jouable sans réimport manuel des fichiers d'origine.
+
+### Arènes utilisateur
+
+Le système d'import devra aussi accepter des **arènes personnalisées** comme assets de projet :
+- import d'image d'arène via l'Asset Input existant/généralisé ;
+- `assetId` stable ;
+- sélection dans les combats de test puis dans les données de game ;
+- transport avec le projet partagé selon le même mécanisme de paquet/manifeste.
+
+### Raccord World Builder futur
+
+Dans le futur chantier Exploration / World Builder, un environnement ou une zone devra pouvoir référencer une ou plusieurs arènes par `assetId`.
+
+Exemples de correspondance :
+- forêt -> arènes forêt configurées ;
+- neige -> arènes neige configurées ;
+- ville -> arènes ville configurées.
+
+Le World Builder ne doit ni copier les fichiers ni devenir propriétaire des médias : il référence la **Project Asset Library** par ID stable.
+
+### Frontières
+
+- aucun raccord au dépôt Exploration depuis ce lot documentaire ;
+- aucune persistance IndexedDB/projet ajoutée dans le laboratoire maintenant ;
+- aucune seconde bibliothèque média ;
+- Creator Audio Import V1 et Creator Visual Import V1 restent des prototypes de session jusqu'au chantier d'intégration application.
