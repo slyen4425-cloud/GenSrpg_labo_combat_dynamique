@@ -1,3 +1,31 @@
+# Micro-lot actif — 2026-10-07 — Combat HUD Dodge Height V3
+
+Branche : `work/lab-combat-hud-dodge-height-v3-2026-10-07`
+
+Checkpoint de départ : `checkpoint/lab-start-combat-hud-dodge-height-v3-2026-10-07`
+
+SHA de base : `d35e783c08b1231e781ee4702edbb4b37d5f6826`
+
+## Objectif
+Retour utilisateur : agrandir Esquive surtout en hauteur et la remonter légèrement, sans la remettre dans l'encadré Capacités.
+
+## Propriétaire
+Demo UI / CSS uniquement.
+
+## Fichiers autorisés
+- `examples/dom-demo/capture-editor-v2.css`
+- tests HUD Dodge
+- documentation du lot
+
+## Protégé
+Combat Runtime, Rechargeable Action, Game Options, dégâts, collision, FX, icônes et données auteur.
+
+## TDD
+RED : exiger une hauteur tactile paysage plus grande et un bottom supérieur à V2.
+GREEN : CI complète, aucun changement des tailles d'icônes.
+
+---
+
 # Micro-lot actif — 2026-10-07 — Dodge Active Window V1
 
 Branche : `work/lab-dodge-active-window-v1-2026-10-07`
