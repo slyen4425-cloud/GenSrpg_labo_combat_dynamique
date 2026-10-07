@@ -6229,7 +6229,11 @@ function populatePrivateAudioSelect(select, entries) {
   }
 }
 
-async function hydratePrivateAudioCatalog(root) {
+async function hydratePrivateAudioCatalog(
+  root,
+  listen,
+  creatorAudioAssets = null
+) {
   const response = await fetch(
     PRIVATE_AUDIO_CATALOG_URL,
     { cache: "no-store" }
@@ -6238,22 +6242,166 @@ async function hydratePrivateAudioCatalog(root) {
   if (!response.ok) {
     throw new Error(
       "Catalogue audio indisponible (" +
-      response.status +
-      ")"
+        response.status +
+        ")"
     );
   }
 
   const catalog = await response.json();
   const entries = Array.isArray(catalog.entries)
-    ? catalog.entries
+    ? [...catalog.entries]
     : [];
+  catalog.entries = entries;
+
+  function refreshAudioSelects() {
+    for (
+      const select of root.querySelectorAll(
+        "[data-private-audio]"
+      )
+    ) {
+      populatePrivateAudioSelect(
+        select,
+        entries
+      );
+    }
+  }
+
+  function mountCreatorAudioImporter(importer) {
+    const importButton = importer.querySelector(
+      "[data-creator-audio-import]"
+    );
+    const fileInput = importer.querySelector(
+      "[data-creator-audio-file]"
+    );
+    const roleInput = importer.querySelector(
+      "[data-creator-audio-role]"
+    );
+    const labelInput = importer.querySelector(
+      "[data-creator-audio-label]"
+    );
+    const state = importer.querySelector(
+      "[data-creator-audio-state]"
+    );
+
+    if (
+      !importButton ||
+      !fileInput ||
+      !roleInput
+    ) {
+      return;
+    }
+
+    if (
+      !creatorAudioAssets ||
+      typeof creatorAudioAssets.importAudio !==
+        "function"
+    ) {
+      importButton.disabled = true;
+      if (state) {
+        state.textContent =
+          "Import audio personnel indisponible dans ce contexte.";
+        state.dataset.tone = "warning";
+      }
+      return;
+    }
+
+    listen(
+      importButton,
+      "click",
+      () => {
+        try {
+          const file =
+            fileInput.files?.[0] ?? null;
+          if (!file) {
+            throw new Error(
+              "Choisis un son MP3, WAV ou OGG."
+            );
+          }
+
+          const role =
+            String(
+              roleInput.value ?? ""
+            ).trim();
+          const label =
+            String(
+              labelInput?.value ??
+                file.name ??
+                "Son personnel"
+            ).trim();
+
+          const asset =
+            creatorAudioAssets.importAudio({
+              file,
+              label,
+              role
+            });
+
+          entries.push(asset);
+          refreshAudioSelects();
+
+          const card =
+            importer.closest?.(".card") ??
+            importer.parentElement;
+          const compatibleSelect =
+            [
+              ...(
+                card?.querySelectorAll?.(
+                  "select[data-private-audio]"
+                ) ?? []
+              )
+            ].find((select) =>
+              String(
+                select.dataset.audioRoles ?? ""
+              )
+                .split(",")
+                .map(value => value.trim())
+                .filter(Boolean)
+                .includes(role)
+            ) ?? null;
+
+          if (compatibleSelect) {
+            compatibleSelect.value =
+              asset.assetId;
+            compatibleSelect.dispatchEvent(
+              new Event("change", {
+                bubbles: true
+              })
+            );
+          }
+
+          if (state) {
+            state.textContent =
+              "Importé : " +
+              asset.label +
+              " (" +
+              asset.assetId +
+              ")";
+            state.dataset.tone = "ok";
+          }
+
+          fileInput.value = "";
+          if (labelInput) {
+            labelInput.value = "";
+          }
+        } catch (error) {
+          if (state) {
+            state.textContent =
+              error.message;
+            state.dataset.tone = "error";
+          }
+        }
+      }
+    );
+  }
+
+  refreshAudioSelects();
 
   for (
-    const select of root.querySelectorAll(
-      "[data-private-audio]"
+    const importer of root.querySelectorAll(
+      "[data-creator-audio-importer]"
     )
   ) {
-    populatePrivateAudioSelect(select, entries);
+    mountCreatorAudioImporter(importer);
   }
 
   return catalog;
@@ -8204,7 +8352,7 @@ export function mountEditorCardDisclosuresV1({
   return count;
 }
 
-export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
   }
@@ -11076,7 +11224,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null }) 
 
   const ready = Promise.all([
     hydrateAssetCatalog(root, listen, creatorVisualAssets),
-    hydratePrivateAudioCatalog(root),
+    hydratePrivateAudioCatalog(root, listen, creatorAudioAssets),
     hydrateNativeSkillCatalog(),
     hydrateCaptureStatRegistryV1()
       .then(async (registry) => ({
