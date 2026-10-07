@@ -366,6 +366,11 @@ test("current skill editor keeps the durable presentation controls under export 
     }
   }
 
+  assert.match(
+    humanSource,
+    /ensureSkillSocketReferenceOptionV1\([\s\S]*fields\.presentation\.socketId/
+  );
+
   for (const controlName of [
     "PlaybackMode",
     "OffsetX",
