@@ -11,7 +11,7 @@ async function readSkill(path) {
   );
 }
 
-test("author projectile powers are exactly fireball 2, blind ash 1, living drop 1", async () => {
+test("author projectile powers are exactly fireball 2, blind ash 1, living drop 2", async () => {
   const [fireball, cendre, goutte] =
     await Promise.all([
       readSkill(
@@ -37,7 +37,7 @@ test("author projectile powers are exactly fireball 2, blind ash 1, living drop 
   );
   assert.equal(
     goutte.draft.definition.projectileClash.power,
-    1,
-    "Goutte vive doit rester puissance projectile 1"
+    2,
+    "Goutte vive doit être puissance projectile 2"
   );
 });
