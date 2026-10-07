@@ -4,6 +4,10 @@ import {
   DODGE_VISUAL_PROFILE_V1,
   dodgeVisualDurationsV1
 } from "../profiles/dodge-visual-profile-v1.js";
+import {
+  BURROW_VISUAL_PROFILE_V1,
+  burrowVisualDurationsV1
+} from "../profiles/burrow-visual-profile-v1.js";
 
 function facingSign(actor) {
   return actor.facing === "right" ? 1 : -1;
@@ -645,6 +649,110 @@ export function planAnimation({ event, actor, profile }) {
             opacity: 1
           }
         ]
+      });
+    }
+
+    case "burrow-attack": {
+      const target = visualTarget(event);
+      const perspectiveScale =
+        approachPerspectiveScale(
+          target,
+          profile.specialMoves?.perspective ?? {}
+        );
+      const timing =
+        burrowVisualDurationsV1(
+          target.travelMs,
+          BURROW_VISUAL_PROFILE_V1
+        );
+      const cfg =
+        BURROW_VISUAL_PROFILE_V1;
+      const hiddenY =
+        target.y + cfg.emergeStartOffsetY;
+      const segments = [];
+
+      if (timing.diveMs > 0) {
+        segments.push({
+          label: "burrow-dive",
+          durationMs: timing.diveMs,
+          easing: "ease-in",
+          transform: {
+            translateX: 0,
+            translateY: cfg.diveY,
+            scaleX: cfg.diveScaleX,
+            scaleY: cfg.diveScaleY,
+            rotateDeg: 0
+          },
+          opacity: 0
+        });
+      }
+
+      if (timing.hiddenMs > 0) {
+        segments.push({
+          label: "burrow-hidden",
+          durationMs: timing.hiddenMs,
+          easing: "linear",
+          ground: {
+            translateX: target.x,
+            translateY: target.y,
+            scale: perspectiveScale
+          },
+          transform: {
+            translateX: target.x,
+            translateY: hiddenY,
+            scaleX: perspectiveScale,
+            scaleY: perspectiveScale,
+            rotateDeg: 0
+          },
+          opacity: 0
+        });
+      }
+
+      if (timing.emergeMs > 0) {
+        segments.push({
+          label: "burrow-emerge-impact",
+          durationMs: timing.emergeMs,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          ground: {
+            translateX: target.x,
+            translateY: target.y,
+            scale: perspectiveScale
+          },
+          transform: {
+            translateX: target.x,
+            translateY: target.y,
+            scaleX:
+              cfg.impactScaleX *
+              perspectiveScale,
+            scaleY:
+              cfg.impactScaleY *
+              perspectiveScale,
+            rotateDeg: 0
+          },
+          opacity: 1
+        });
+      }
+
+      segments.push({
+        label: "burrow-home",
+        durationMs: cfg.returnMs,
+        easing: "ease-out",
+        transform: {
+          translateX: 0,
+          translateY: 0,
+          scaleX: 1,
+          scaleY: 1,
+          rotateDeg: 0
+        },
+        opacity: 1
+      });
+
+      return createAnimationPlan({
+        actorId: actor.id,
+        eventType: event.type,
+        transformOrigin:
+          profile.idle?.transformOrigin ??
+          null,
+        segments
       });
     }
 
