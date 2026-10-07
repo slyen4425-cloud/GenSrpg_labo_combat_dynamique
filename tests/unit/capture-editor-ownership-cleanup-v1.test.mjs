@@ -60,7 +60,7 @@ test("skill socket selector contains no hardcoded creature socket ids", async ()
   assert.match(block, /Centre par défaut/);
 });
 
-test("skill socket options derive only from actual creature sockets", () => {
+test("skill socket options derive from creature sockets without erasing an authored unresolved reference", () => {
   const existingOptions = [
     { value: "", label: "Centre par défaut" }
   ];
@@ -107,7 +107,17 @@ test("skill socket options derive only from actual creature sockets", () => {
     ]
   });
 
-  assert.equal(stale.value, "");
+  assert.equal(stale.value, "head");
+  assert.equal(
+    stale.options.some(
+      (option) =>
+        option.value === "head" &&
+        /référence sauvegardée/.test(
+          option.label
+        )
+    ),
+    true
+  );
 });
 
 test("generic Buff / Debuff creation is enabled only through the tactical effects surface", async () => {
