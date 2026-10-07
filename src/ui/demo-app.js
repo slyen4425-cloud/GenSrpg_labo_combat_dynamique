@@ -12,6 +12,9 @@ import {
   watchVisibleModelContact
 } from "../adapters/renderer/dom-visible-model-contact.js";
 import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
+import {
+  playDomCreatureDodgeFxV1
+} from "../adapters/renderer/dom-creature-dodge-fx-v1.js";
 import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
@@ -253,6 +256,7 @@ export async function mountCombatDemo({
     })
   );
   const activeApproachBySlot = new Map();
+  const activeDodgeFxBySlot = new Map();
 
   function slotOf(slotKey) {
     const slot = slots[slotKey];
@@ -285,6 +289,79 @@ export async function mountCombatDemo({
       return slotOf(targetSlot);
     }
     return defaultTargetFor(slot);
+  }
+
+  function cancelDodgeAppearanceFx(
+    slotKey
+  ) {
+    const active =
+      activeDodgeFxBySlot.get(slotKey) ??
+      null;
+    if (!active) {
+      return false;
+    }
+    activeDodgeFxBySlot.delete(slotKey);
+    active.cancel?.();
+    return true;
+  }
+
+  function playDodgeAppearanceFx(
+    slotKey,
+    durationMs
+  ) {
+    const slot = slotOf(slotKey);
+    const visual =
+      slot.meta?.dodgeFx ?? null;
+
+    cancelDodgeAppearanceFx(slotKey);
+
+    if (
+      visual === null ||
+      !slot.visible
+    ) {
+      return Object.freeze({
+        status: "ignored",
+        finished: Promise.resolve({
+          status: "ignored"
+        }),
+        cancel() {}
+      });
+    }
+
+    const handle =
+      playDomCreatureDodgeFxV1({
+        arena,
+        anchor: slot.motion,
+        visual,
+        durationMs
+      });
+
+    if (handle.status !== "running") {
+      return handle;
+    }
+
+    activeDodgeFxBySlot.set(
+      slotKey,
+      handle
+    );
+
+    Promise.resolve(
+      handle.finished
+    )
+      .finally(() => {
+        if (
+          activeDodgeFxBySlot.get(
+            slotKey
+          ) === handle
+        ) {
+          activeDodgeFxBySlot.delete(
+            slotKey
+          );
+        }
+      })
+      .catch(() => {});
+
+    return handle;
   }
 
   function startIdleFor(slotKey) {
@@ -480,7 +557,21 @@ export async function mountCombatDemo({
         profile: profiles.get(slot.actor.profile)
       });
 
-      const handle = slot.renderer.play(plan);
+      const dodgeAppearance =
+        type === "dodge"
+          ? playDodgeAppearanceFx(
+              slotKey,
+              metadata?.durationMs
+            )
+          : null;
+
+      let handle;
+      try {
+        handle = slot.renderer.play(plan);
+      } catch (error) {
+        dodgeAppearance?.cancel?.();
+        throw error;
+      }
 
       return handle.finished.then((result) => {
         if (
@@ -701,6 +792,7 @@ export async function mountCombatDemo({
       activeApproachBySlot.get(slotKey) ?? null;
     activeApproach?.contactWatcher?.cancel();
     activeApproachBySlot.delete(slotKey);
+    cancelDodgeAppearanceFx(slotKey);
     slot.setApproachActive(false);
     slot.renderer.cancel();
     if (slot.visible) {
@@ -723,6 +815,7 @@ export async function mountCombatDemo({
     }
 
     const slot = slotOf(slotKey);
+    cancelDodgeAppearanceFx(slotKey);
     slot.setCreature(meta, displayName);
     slot.setVisible(true);
     startIdleFor(slotKey);
@@ -737,6 +830,9 @@ export async function mountCombatDemo({
 
   function setSlotVisible(slotKey, visible) {
     const slot = slotOf(slotKey);
+    if (!visible) {
+      cancelDodgeAppearanceFx(slotKey);
+    }
     slot.setVisible(Boolean(visible));
     if (slot.visible) {
       startIdleFor(slotKey);
@@ -804,6 +900,13 @@ export async function mountCombatDemo({
       }
       disposed = true;
       activeApproachBySlot.clear();
+      for (
+        const handle of
+        activeDodgeFxBySlot.values()
+      ) {
+        handle.cancel?.();
+      }
+      activeDodgeFxBySlot.clear();
       for (const timerId of movementCueTimers) {
         globalThis.clearTimeout(timerId);
       }
