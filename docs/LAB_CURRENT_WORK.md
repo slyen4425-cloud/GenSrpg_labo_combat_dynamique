@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot actif
+## Lot techniquement GREEN
 
 Audio Role Tags V1
 
@@ -10,71 +10,88 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-audio-role-tags-v1-2026-10-07`
 
-Base exacte :
+Base :
 `ce2213051669c6706849d3cada0c38210d9c7cde`
 
 Base GREEN précédente :
 `checkpoint/lab-water-atk1-author-export-v1-green-2026-10-07`
 
-## Besoin utilisateur
+## Résultat
 
-Les sons sont actuellement verrouillés par attribution de rôle
-(`cast`, `travel/projectile`, `impact`, etc.).
+Les rôles audio ne sont plus des permissions.
 
-Comportement cible :
-- **tous les sons du catalogue doivent être sélectionnables dans chaque champ audio** ;
-- les rôles restent des tags / groupes permettant de trouver plus vite le son pertinent ;
-- le rôle du champ peut prioriser visuellement les groupes recommandés, mais ne filtre jamais la liste ;
-- aucune duplication de catalogue ni de son.
+Dans chaque champ audio :
+- le ou les rôles recommandés sont affichés en premier ;
+- tous les autres groupes restent accessibles ;
+- chaque asset n'apparaît qu'une seule fois ;
+- aucun son n'est exclu à cause de son rôle.
 
-## Cause actuelle
+Les 7 configurations réelles de l'éditeur exposent chacune les 203 sons privés, sans doublon.
 
-`buildPrivateAudioRoleGroupsV1(entries, acceptedRoles)` construit `roleOrder` uniquement depuis `acceptedRoles` lorsqu'ils existent, puis ignore toute entrée n'appartenant pas à ces rôles.
+## Ownership
 
-Le verrou est donc dans le propriétaire existant du classement UI.
+Inchangé :
+- catalogue audio existant = source des métadonnées ;
+- `buildPrivateAudioRoleGroupsV1` = propriétaire du classement UI ;
+- Human Editor = consommateur ;
+- runtime audio inchangé.
 
-## Owner
+Aucune seconde liste, aucun fallback concurrent, aucune règle gameplay ajoutée.
 
-- catalogue : `data/presentation/audio/private-audio-catalog.v1.json` inchangé ;
-- classement / projection UI : `src/ui/private-audio-role-groups-v1.js` ;
-- `populatePrivateAudioSelect` reste consommateur du helper ;
-- les rôles restent metadata, jamais autorité de compatibilité gameplay.
+## TDD
 
-## Fichiers autorisés
+RED :
+- `05e40c89f38d23ce1ff424b9fadf8ee3d4f1eb7c`
+- `b19af6a2d12b9b7d77f16e316065adbf54de8470`
+- CI `37672377379`
+- 1238 / 1242 PASS
+- 4 FAIL ciblés.
 
-- `src/ui/private-audio-role-groups-v1.js`
-- tests audio taxonomy / role groups
-- éventuellement texte UI strictement nécessaire
-- documentation du lot
+GREEN :
+- helper `61eec01b9068f20bf9546b75945776cfa0b3de47`
+- renommage sémantique UI `b497e14a744a5b4db5d97a46656baffbfbc7fe5e`
+- CI `37672549322`
+- 1242 / 1242 PASS
+- 0 FAIL
+- structure / frontières / indépendance : OK.
+
+Rapport :
+`docs/LAB_AUDIO_ROLE_TAGS_V1.md`
+
+## Goutte vive
+
+Le lot précédent a intégré :
+- `cap_water_atk_1`
+- **Goutte vive**
+
+Fichier exact :
+`data/capture/showcase/cap_water_atk_1.capture-skill-transfer-v1.json`
+
+Blob auteur exact :
+`53046be3171e46b571edc763666bb45397fe9785`
+
+Checkpoint :
+`checkpoint/lab-water-atk1-author-export-v1-green-2026-10-07`
 
 ## Domaines protégés
 
-Ne pas modifier :
-- catalogue audio source et assetIds ;
-- runtime audio / résolution des URLs ;
+Inchangés :
+- catalogue audio source / assetIds ;
+- runtime audio ;
 - données auteur Goutte vive ;
-- SkillDefinition / Combat Runtime ;
-- Animation / FX / Burrow ;
 - créatures ;
+- Combat Runtime / Session / Timing ;
+- Animation / FX / Burrow ;
+- collision ;
+- Roster ;
+- Dodge ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## TDD prévu
+## Prochaine action protocolaire
 
-1. RED : un champ `cast` doit encore contenir un son uniquement taggé `impact` ;
-2. RED : le groupe recommandé `cast` doit rester placé avant les autres ;
-3. correction dans le helper existant ;
-4. chaque asset doit apparaître une seule fois ;
-5. les rôles restent visibles comme groupes/tags ;
-6. CI complète ;
-7. preview dédiée ;
-8. validation smartphone.
-
-## Critère de fin
-
-- aucun son exclu à cause de `data-audio-roles` ;
-- groupe recommandé en tête ;
-- aucune duplication d'assetId ;
-- catalogue et runtime audio inchangés ;
-- CI verte.
+- CI documentaire finale ;
+- checkpoint `checkpoint/lab-audio-role-tags-v1-green-2026-10-07` ;
+- preview `preview/lab-audio-role-tags-v1-2026-10-07` ;
+- validation smartphone utilisateur.
