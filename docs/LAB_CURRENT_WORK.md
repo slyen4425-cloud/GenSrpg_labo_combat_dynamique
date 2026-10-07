@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot actif
+## Lot techniquement GREEN
 
 Landscape Toggle Removal V1
 
@@ -10,66 +10,69 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-landscape-toggle-removal-v1-2026-10-07`
 
-Base exacte :
+Base :
 `9d0c5101c68b835652f5b94626b42e1490c3894d`
 
-Base GREEN précédente :
-`checkpoint/lab-goutte-projectile-power-regression-v1-green-2026-10-07`
+## Résultat
 
-## Décision produit existante
+Le contrôle utilisateur paysage devenu inutile est supprimé :
+- plus de checkbox `data-preview-landscape-mode` ;
+- plus d'encadré `Combat plein écran paysage / Mode de jeu Capture` ;
+- plus de dépendance JS `landscapeMode` ;
+- plus de styles morts du toggle.
 
-`docs/LAB_CAPTURE_LANDSCAPE_PRODUCT_DECISION_V1.md` définit déjà le gameplay Capture smartphone en paysage comme norme produit.
-
-Le propriétaire UI reste :
-`createCapturePreviewDisplayModeV1`.
-
-Le gate « Tourne ton téléphone » reste nécessaire uniquement quand le navigateur ne peut pas verrouiller l'orientation.
-
-## Retour utilisateur
-
-L'encadré :
-« Combat plein écran paysage / Mode de jeu Capture »
-avec sa checkbox cochée et désactivée est devenu inutile.
-
-## Objectif
-
-Supprimer uniquement le contrôle/toggle devenu obsolète.
-
-Le lancement du combat doit appeler systématiquement le propriétaire display mode en paysage :
+Le paysage reste automatique :
 `previewDisplayMode.enter({ enabled: true })`.
 
-## Fichiers autorisés
+## Owner
 
-- `examples/dom-demo/capture-editor-v2.html`
-- `examples/dom-demo/capture-editor-v2.js`
-- CSS uniquement pour retirer le style mort du toggle
-- tests UI preview
-- documentation
+Inchangé :
+`createCapturePreviewDisplayModeV1`.
+
+Il reste seul propriétaire de :
+- fullscreen ;
+- orientation lock paysage ;
+- libération fullscreen/orientation ;
+- rotate gate portrait.
+
+## Gate portrait
+
+Le message `Tourne ton téléphone` est conservé uniquement comme secours quand le navigateur ne peut pas verrouiller l'orientation.
+
+## TDD
+
+RED :
+- `1a5c7d62527bbc49930485717fdfd05bc9e848d6`
+- CI `37678243272`
+- 1243 / 1245 PASS
+- 2 FAIL ciblés.
+
+GREEN :
+- dernier commit fonctionnel/test `80a02c42b811214ec99bd26302595ed06e03e050`
+- CI `37678566741`
+- 1245 / 1245 PASS
+- 0 FAIL
+- structure / frontières / indépendance : OK.
+
+Rapport :
+`docs/LAB_LANDSCAPE_TOGGLE_REMOVAL_V1.md`
 
 ## Domaines protégés
 
-Ne pas modifier :
-- `src/ui/capture-preview-display-mode-v1.js` sauf preuve ;
-- fullscreen/orientation lock ;
-- rotate gate ;
-- scène 16:9 ;
+Inchangés :
+- display mode owner ;
 - Combat Runtime / Rules ;
+- Animation / FX ;
+- projectile clash ;
 - Goutte vive ;
 - audio ;
 - créatures ;
+- Roster ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## TDD
+## Prochaine action
 
-1. RED : le HTML ne doit plus contenir `data-preview-landscape-mode` ni l'encadré ;
-2. RED : le script ne doit plus dépendre de `landscapeMode` ;
-3. RED : lancement test => `enter({ enabled: true })` ;
-4. conserver leave/dispose et rotate gate ;
-5. CI complète ;
-6. preview dédiée.
-
-## Critère de fin
-
-Le contrôle utilisateur disparaît, mais le paysage reste la norme automatique et le propriétaire UI existant reste seul responsable du fullscreen/orientation.
+Créer checkpoint/preview GREEN puis ouvrir séparément :
+**Projectile Power Help V1** — détailler dans l'éditeur le fonctionnement de la puissance projectile sans modifier aucune règle gameplay.
