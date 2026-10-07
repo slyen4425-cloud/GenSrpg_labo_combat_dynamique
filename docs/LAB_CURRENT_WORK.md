@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot actif
+## Lot techniquement GREEN
 
 Projectile Power Help V1
 
@@ -10,58 +10,75 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-projectile-power-help-v1-2026-10-07`
 
-Base exacte :
+Base :
 `9e37c39d6c3bbb9a231f8e7d3dc00ccacacd4477`
 
-Base GREEN précédente :
-`checkpoint/lab-landscape-toggle-removal-v1-green-2026-10-07`
+## Résultat
 
-## Besoin utilisateur
+Le bloc `Collision entre projectiles` explique désormais clairement :
 
-Rendre le fonctionnement de la puissance projectile plus clair directement dans l'éditeur.
-
-## Règle existante à expliquer, sans la modifier
-
-- `0` = hors système de clash : les projectiles peuvent se traverser ;
+- `0` = hors système de clash ;
 - minimum actif = `1` ;
-- puissance égale = annulation mutuelle ;
-- puissance supérieure = le projectile le plus fort détruit l'autre et continue ;
-- la puissance de clash est indépendante des dégâts ;
-- aucune priorité élémentaire (ex. Eau > Feu) n'est appliquée dans ce contrat actuel.
+- `1 contre 1` = annulation mutuelle ;
+- `2 contre 1` = puissance 2 détruit puissance 1 et continue ;
+- puissance de clash indépendante des dégâts ;
+- aucune règle élémentaire n'est appliquée dans ce contrat actuel.
 
-## Périmètre
+## Ownership
 
-UI informative uniquement :
-- `examples/dom-demo/capture-editor-v2.html`
-- test sentinelle projectile power
-- documentation
+Aucun changement d'owner.
+
+Inchangés :
+- `ProjectilePowerV1` ;
+- `projectile-clash` ;
+- Combat Runtime ;
+- données auteur.
+
+L'UI décrit seulement le contrat existant.
+
+## TDD
+
+RED :
+- `580709f6918c39accb09b85f966ea5eae5d8a629`
+- CI `37679035816`
+- 1245 / 1246 PASS.
+
+GREEN :
+- `814734fdfc5d1941d36ba1e4efd09e1a9fbfba9a`
+- CI `37679147775`
+- 1246 / 1246 PASS
+- 0 FAIL
+- structure / frontières / indépendance : OK.
+
+Rapport :
+`docs/LAB_PROJECTILE_POWER_HELP_V1.md`
+
+## Correctif paysage inclus dans cette base
+
+Le lot précédent est également inclus :
+- toggle paysage supprimé ;
+- paysage automatique via `previewDisplayMode.enter({ enabled: true })` ;
+- rotate gate conservé uniquement comme secours navigateur.
+
+Checkpoint précédent :
+`checkpoint/lab-landscape-toggle-removal-v1-green-2026-10-07`
 
 ## Domaines protégés
 
-Ne pas modifier :
-- `src/contracts/projectile-power-v1.js` ;
-- `src/core/combat/projectile-clash.js` ;
-- Combat Runtime ;
-- données auteur Goutte vive ;
-- valeurs de puissance ;
-- éléments ;
+Inchangés :
+- Combat Rules / Runtime ;
+- Goutte vive ;
 - Animation / FX ;
-- paysage ;
 - audio ;
 - créatures ;
+- Roster ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## TDD
+## Prochaine action protocolaire
 
-1. RED : l'éditeur doit expliquer les 4 cas fondamentaux ;
-2. exemples visibles `1 vs 1` et `2 vs 1` ;
-3. rappeler puissance de clash ≠ dégâts ;
-4. préciser qu'aucune règle élémentaire n'est appliquée aujourd'hui ;
-5. CI complète ;
-6. checkpoint/preview GREEN.
-
-## Critère de fin
-
-Un joueur peut comprendre le réglage sans connaître le moteur, sans qu'aucune règle gameplay ne soit dupliquée dans l'UI.
+- CI documentaire finale ;
+- checkpoint `checkpoint/lab-projectile-power-help-v1-green-2026-10-07` ;
+- preview `preview/lab-projectile-power-help-v1-2026-10-07` ;
+- validation smartphone utilisateur.
