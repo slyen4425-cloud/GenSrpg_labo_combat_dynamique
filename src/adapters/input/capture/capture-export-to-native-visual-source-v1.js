@@ -2,10 +2,9 @@ import {
   normalizeCaptureCombatExportV1
 } from "../../../contracts/capture-combat-export-v1.js";
 import {
-  normalizeCreaturePresentationBindingV1
-} from "../../../contracts/creature-presentation-binding-v1.js";
+  normalizeCreaturePresentationBinding
+} from "../../../contracts/creature-presentation-binding.js";
 import {
-  normalizeCreaturePresentationBindingV2,
   creaturePresentationForViewV2
 } from "../../../contracts/creature-presentation-binding-v2.js";
 import {
@@ -20,17 +19,9 @@ function requiredFunction(value, field) {
 }
 
 function normalizePresentation(raw) {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    throw new TypeError(
-      "creature presentation must be an object"
-    );
-  }
-
-  if (raw.version === 2) {
-    return normalizeCreaturePresentationBindingV2(raw);
-  }
-
-  return normalizeCreaturePresentationBindingV1(raw);
+  return normalizeCreaturePresentationBinding(
+    raw
+  );
 }
 
 function anchorMap(sockets, view) {
@@ -130,6 +121,51 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     return url;
   }
 
+  function dodgeFxFor(binding) {
+    const slot =
+      binding.version >= 3
+        ? binding.visual?.dodge ?? null
+        : null;
+
+    if (slot === null) {
+      return null;
+    }
+
+    const asset = assetById.get(slot.assetId);
+    if (!asset) {
+      throw new RangeError(
+        "unknown asset: " + slot.assetId
+      );
+    }
+
+    const resource = asset.resource ?? {};
+    const frameCount = Math.max(
+      1,
+      Math.floor(
+        Number(resource.frameCount) || 1
+      )
+    );
+    const frameMs =
+      Number.isFinite(Number(resource.frameMs)) &&
+      Number(resource.frameMs) > 0
+        ? Number(resource.frameMs)
+        : null;
+
+    return Object.freeze({
+      assetId: slot.assetId,
+      url: assetUrl(slot.assetId),
+      frameCount,
+      frameMs,
+      format:
+        typeof resource.format === "string"
+          ? resource.format
+          : null,
+      displayScale: slot.displayScale,
+      offsetX: slot.offsetX,
+      offsetY: slot.offsetY
+    });
+  }
+
   const creatureById = new Map(
     captureExport.creatures.map((creature) => [
       creature.id,
@@ -163,7 +199,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         views: Object.freeze({ player: marker, opponent: marker, icon: marker }),
         runtimePreview: Object.freeze({ player: marker, opponent: marker, icon: marker }),
         assetBaseUrl: new URL(".", import.meta.url).href, displayScale: Object.freeze({ player: 1, opponent: 1 }),
-        fxAnchors: Object.freeze({ player: {}, opponent: {} })
+        fxAnchors: Object.freeze({ player: {}, opponent: {} }),
+        dodgeFx: null
       });
     }
 
@@ -205,7 +242,7 @@ export function adaptCaptureExportToNativeVisualSourceV1({
           );
 
     const viewSettings = Object.fromEntries(["player", "opponent"].map(view => [view,
-      binding.version === 2 ? creaturePresentationForViewV2(binding, view)
+      binding.version >= 2 ? creaturePresentationForViewV2(binding, view)
         : { displayScale: 1, position: { x: 0, y: 0 } }
     ]));
 
@@ -233,7 +270,7 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         opponent: viewSettings.opponent.position
       }),
       offset: Object.freeze(
-        binding.version === 2
+        binding.version >= 2
           ? {
               x: binding.position.x,
               y: binding.position.y
@@ -241,7 +278,7 @@ export function adaptCaptureExportToNativeVisualSourceV1({
           : { x: 0, y: 0 }
       ),
       transformOrigin: Object.freeze(
-        binding.version === 2
+        binding.version >= 2
           ? {
               x: binding.transformOrigin.x,
               y: binding.transformOrigin.y
@@ -260,7 +297,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
           binding.sockets,
           "opponent"
         )
-      })
+      }),
+      dodgeFx: dodgeFxFor(binding)
     });
   });
 
