@@ -9,7 +9,8 @@ const CREATOR_VISUAL_ROLES_V1 = Object.freeze([
   "travel",
   "impact",
   "zone",
-  "status"
+  "status",
+  "dodge"
 ]);
 
 function defaultCreateId() {
