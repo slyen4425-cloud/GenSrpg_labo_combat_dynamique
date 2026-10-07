@@ -2,6 +2,21 @@ import {
   applySpriteVisual
 } from "./dom-skill-fx.js";
 
+const DODGE_APPEARANCE_FX_PRESET_V1 =
+  Object.freeze({
+    zIndex: 15,
+    enterScale: 0.72,
+    activeScale: 1,
+    holdScale: 1.06,
+    exitScale: 1.12,
+    enterOffset: 0.18,
+    holdOffset: 0.72,
+    enterOpacity: 0,
+    activeOpacity: 1,
+    holdOpacity: 0.92,
+    exitOpacity: 0
+  });
+
 function defaultAnimate(
   element,
   keyframes,
@@ -152,7 +167,11 @@ export function playDomCreatureDodgeFxV1({
   node.style.height =
     baseSize * displayScale + "px";
   node.style.aspectRatio = "1";
-  node.style.zIndex = "15";
+  node.style.zIndex =
+    String(
+      DODGE_APPEARANCE_FX_PRESET_V1
+        .zIndex
+    );
   node.style.pointerEvents = "none";
 
   const sprite =
@@ -183,26 +202,50 @@ export function playDomCreatureDodgeFxV1({
       node,
       [
         {
-          opacity: 0,
+          opacity:
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .enterOpacity,
           transform:
-            "translate(-50%, -50%) scale(0.72)"
+            "translate(-50%, -50%) scale(" +
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .enterScale +
+            ")"
         },
         {
-          opacity: 1,
+          opacity:
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .activeOpacity,
           transform:
-            "translate(-50%, -50%) scale(1)",
-          offset: 0.18
+            "translate(-50%, -50%) scale(" +
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .activeScale +
+            ")",
+          offset:
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .enterOffset
         },
         {
-          opacity: 0.92,
+          opacity:
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .holdOpacity,
           transform:
-            "translate(-50%, -50%) scale(1.06)",
-          offset: 0.72
+            "translate(-50%, -50%) scale(" +
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .holdScale +
+            ")",
+          offset:
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .holdOffset
         },
         {
-          opacity: 0,
+          opacity:
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .exitOpacity,
           transform:
-            "translate(-50%, -50%) scale(1.12)"
+            "translate(-50%, -50%) scale(" +
+            DODGE_APPEARANCE_FX_PRESET_V1
+              .exitScale +
+            ")"
         }
       ],
       {
