@@ -73,7 +73,7 @@ function configuredSkillMap() {
   return map;
 }
 
-test("Goutte vive keeps authored projectile power 1 through active owner export native adapter and Runtime clash", async () => {
+test("Goutte vive keeps authored projectile power 2 through active owner export native adapter and Runtime clash", async () => {
   const configuredSkills =
     configuredSkillMap();
 
@@ -96,7 +96,7 @@ test("Goutte vive keeps authored projectile power 1 through active owner export 
 
   assert.equal(
     skillTransfer.value.draft.definition.projectileClash.power,
-    1,
+    2,
     "author transfer is the source of truth"
   );
 
@@ -144,7 +144,7 @@ test("Goutte vive keeps authored projectile power 1 through active owner export 
     configuredSkills.get(
       "cap_water_atk_1"
     ).definition.projectileClash.power,
-    1,
+    2,
     "configuredSkills must own the author value after replacement"
   );
 
@@ -188,7 +188,7 @@ test("Goutte vive keeps authored projectile power 1 through active owner export 
   assert.equal(
     exportedGoutte.definition
       .projectileClash.power,
-    1,
+    2,
     "combat export must not fall back to historical power 0"
   );
 
@@ -202,7 +202,7 @@ test("Goutte vive keeps authored projectile power 1 through active owner export 
 
   assert.equal(
     goutte.projectileClash.power,
-    1,
+    2,
     "native combat skill must retain author power"
   );
 
@@ -264,7 +264,7 @@ test("Goutte vive keeps authored projectile power 1 through active owner export 
       .map((resolution) => resolution.outcome)
       .sort(),
     ["clashed", "clashed"],
-    "power 1 versus power 1 must mutually cancel instead of crossing"
+    "power 2 versus power 2 must mutually cancel instead of crossing"
   );
 
   runtime.dispose();
