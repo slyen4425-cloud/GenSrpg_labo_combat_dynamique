@@ -1,5 +1,9 @@
 import { createAnimationPlan } from "./animation-plan.js";
 import { ROSTER_TRANSITION_PROFILE_V1 } from "../profiles/roster-transition-profile-v1.js";
+import {
+  DODGE_VISUAL_PROFILE_V1,
+  dodgeVisualDurationsV1
+} from "../profiles/dodge-visual-profile-v1.js";
 
 function facingSign(actor) {
   return actor.facing === "right" ? 1 : -1;
@@ -641,6 +645,81 @@ export function planAnimation({ event, actor, profile }) {
             opacity: 1
           }
         ]
+      });
+    }
+
+    case "dodge": {
+      const durationMs = Number(
+        event.metadata?.durationMs
+      );
+      const timing =
+        dodgeVisualDurationsV1(
+          durationMs,
+          DODGE_VISUAL_PROFILE_V1
+        );
+
+      const hiddenTransform = {
+        translateX: 0,
+        translateY: 0,
+        rotateDeg: 0,
+        scaleX:
+          DODGE_VISUAL_PROFILE_V1
+            .vanishScaleX,
+        scaleY:
+          DODGE_VISUAL_PROFILE_V1
+            .vanishScaleY
+      };
+
+      const segments = [
+        {
+          label: "dodge-vanish",
+          durationMs: timing.vanishMs,
+          easing: "ease-in",
+          transform: hiddenTransform,
+          opacity: 0,
+          filter: {
+            brightness:
+              DODGE_VISUAL_PROFILE_V1
+                .vanishBrightness
+          }
+        }
+      ];
+
+      if (timing.hiddenMs > 0) {
+        segments.push({
+          label: "dodge-hidden",
+          durationMs: timing.hiddenMs,
+          easing: "linear",
+          transform: hiddenTransform,
+          opacity: 0,
+          filter: {
+            brightness:
+              DODGE_VISUAL_PROFILE_V1
+                .vanishBrightness
+          }
+        });
+      }
+
+      if (timing.returnMs > 0) {
+        segments.push({
+          label: "dodge-return",
+          durationMs: timing.returnMs,
+          easing: "ease-out",
+          transform: {
+            translateX: 0,
+            translateY: 0,
+            rotateDeg: 0,
+            scaleX: 1,
+            scaleY: 1
+          },
+          opacity: 1
+        });
+      }
+
+      return createAnimationPlan({
+        actorId: actor.id,
+        eventType: event.type,
+        segments
       });
     }
 
