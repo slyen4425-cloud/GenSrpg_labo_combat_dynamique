@@ -51,6 +51,7 @@ export function createCombatRuntime({
   let lastStateSignal = null;
   let lastFeedbackState = null;
   const activeByActor = new Map();
+  const armedRechargeableReactions = new Map();
 
   function stateSignal(state) {
     return JSON.stringify({
@@ -552,6 +553,77 @@ export function createCombatRuntime({
     }
   }
 
+  function rechargeableReactionKey(
+    actorId,
+    actionId
+  ) {
+    return String(actorId) + "::" + String(actionId);
+  }
+
+  function armedRechargeableReactionFor({
+    record,
+    action,
+    impactAtMs
+  }) {
+    if (
+      action?.actionType !== "skill" ||
+      record.reaction !== null
+    ) {
+      return null;
+    }
+
+    const resolutionAtMs =
+      record.startedAtCombatMs +
+      impactAtMs;
+
+    for (
+      const [key, armed] of
+      armedRechargeableReactions
+    ) {
+      if (armed.actorId !== action.targetId) {
+        continue;
+      }
+
+      const window =
+        session.rechargeableActionWindowStatus({
+          actorId: armed.actorId,
+          actionId: armed.actionId,
+          activeWindowMs:
+            armed.activeWindowMs,
+          atMs: resolutionAtMs
+        });
+
+      if (!window.active) {
+        const combatNow =
+          Number(
+            session.snapshot().elapsedMs
+          ) || 0;
+        if (
+          window.activeUntilMs !== null &&
+          window.activeUntilMs <= combatNow
+        ) {
+          armedRechargeableReactions.delete(
+            key
+          );
+        }
+        continue;
+      }
+
+      const preview = session.previewReaction({
+        action,
+        reactionSkill:
+          armed.reactionSkill,
+        elapsedMs: impactAtMs
+      });
+
+      if (preview.ok) {
+        return preview.reaction;
+      }
+    }
+
+    return null;
+  }
+
   function processResolution(
     record,
     atNowMs,
@@ -591,6 +663,17 @@ export function createCombatRuntime({
             impactAtMs: effectiveImpactAtMs
           })
         : record.action;
+    const automaticReaction =
+      armedRechargeableReactionFor({
+        record,
+        action: effectiveAction,
+        impactAtMs: effectiveImpactAtMs
+      });
+
+    if (automaticReaction !== null) {
+      record.reaction = automaticReaction;
+    }
+
     const effectiveReaction =
       record.reaction === null ||
       record.reaction?.readyAtMs <=
@@ -1131,6 +1214,86 @@ export function createCombatRuntime({
     );
   }
 
+  function rechargeableReactionWindowStatus({
+    actorId,
+    recharge,
+    activeWindowMs
+  }) {
+    const status =
+      session.rechargeableActionWindowStatus({
+        actorId,
+        actionId: recharge.actionId,
+        activeWindowMs
+      });
+
+    if (
+      !status.active &&
+      status.activeUntilMs !== null &&
+      status.activeUntilMs <=
+        Number(
+          session.snapshot().elapsedMs
+        )
+    ) {
+      armedRechargeableReactions.delete(
+        rechargeableReactionKey(
+          actorId,
+          recharge.actionId
+        )
+      );
+    }
+
+    return status;
+  }
+
+  function activateRechargeableReaction(
+    reactionSkill,
+    {
+      actorId,
+      recharge,
+      activeWindowMs
+    } = {}
+  ) {
+    if (disposed) {
+      return Object.freeze({
+        ok: false,
+        outcome: "disposed"
+      });
+    }
+
+    const current = now();
+    advanceSessionToClock(current);
+    settleDue(current);
+
+    const result =
+      session.activateRechargeableAction({
+        actorId,
+        actionId: recharge.actionId,
+        maxCharges: recharge.maxCharges,
+        rechargeMs: recharge.rechargeMs,
+        activeWindowMs
+      });
+
+    if (!result.ok) {
+      return result;
+    }
+
+    armedRechargeableReactions.set(
+      rechargeableReactionKey(
+        actorId,
+        recharge.actionId
+      ),
+      Object.freeze({
+        actorId,
+        actionId: recharge.actionId,
+        reactionSkill,
+        activeWindowMs
+      })
+    );
+
+    emitStateIfChanged({ force: true });
+    return result;
+  }
+
   function react(
     reactionSkill,
     { againstActorId = null } = {}
@@ -1394,6 +1557,7 @@ export function createCombatRuntime({
     disposed = true;
     running = false;
     cancelActive();
+    armedRechargeableReactions.clear();
     clearScheduledTick();
   }
 
@@ -1406,6 +1570,8 @@ export function createCombatRuntime({
     previewRechargeableReaction,
     reactWithRechargeableAction,
     rechargeableActionAvailability,
+    rechargeableReactionWindowStatus,
+    activateRechargeableReaction,
     interruptActive,
     applyResolutionInterrupt,
     reportActionContact,
