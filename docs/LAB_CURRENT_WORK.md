@@ -154,4 +154,15 @@ Inchangés :
 - Règle : les icônes sont additives et ne remplacent aucune icône/binding de compétence sans décision explicite.
 - Tests : six IDs uniques dans le catalogue, six ressources image valides, résolveur global, CI assets puis CI labo complète.
 - Critère GREEN : publication `global-assets` verte, cache labo avancé, CI complète verte, documentation synchronisée, checkpoint GREEN final.
-- Statut : EN COURS.
+- Statut : EN COURS — assets publiés, raccord cache labo à valider en CI.
+
+
+### Capture Skill Icons V1 — publication assets
+
+- `global-assets` publié : `211401f5b9e1ced4410a03bd0002039dea0a4dba`.
+- checkpoint assets : `checkpoint/global-assets-capture-skill-icons-v1-green-2026-10-08`.
+- CI branche assets : `37697790834` SUCCESS.
+- CI checkpoint assets : `37697834458` SUCCESS.
+- CI publication `global-assets` : `37697838724` SUCCESS.
+- Raccord labo : cache-buster `2026-10-08-v18-capture-skill-icons-v1`, resolver existant uniquement.
+- Aucun binding de compétence existant modifié.
