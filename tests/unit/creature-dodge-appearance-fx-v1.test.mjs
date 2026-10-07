@@ -12,6 +12,9 @@ import {
 import {
   adaptCaptureExportToNativeVisualSourceV1
 } from "../../src/adapters/input/capture/capture-export-to-native-visual-source-v1.js";
+import {
+  playDomCreatureDodgeFxV1
+} from "../../src/adapters/renderer/dom-creature-dodge-fx-v1.js";
 
 function creatureFields() {
   return {
@@ -354,4 +357,134 @@ test("visual controller owns a creature Dodge FX path without adding a gameplay 
     source,
     /dodgeAppearanceTimer|dodgeFxTimer/
   );
+});
+
+
+test("creature without authored Dodge FX remains Creature Presentation V2", () => {
+  const fields = creatureFields();
+  fields.visual = {
+    frontAssetId: fields.visual.frontAssetId,
+    backAssetId: fields.visual.backAssetId,
+    iconAssetId: fields.visual.iconAssetId,
+    dodgeAssetId: ""
+  };
+
+  const draft =
+    buildHumanCreatureDraftV3(fields);
+
+  assert.equal(
+    draft.presentation.version,
+    2
+  );
+  assert.equal(
+    "dodge" in draft.presentation.visual,
+    false
+  );
+});
+
+test("DOM Dodge FX uses the Runtime duration, creature geometry and authored appearance offsets", async () => {
+  let appended = null;
+  let removed = false;
+  let animationOptions = null;
+  let cancelled = false;
+
+  const ownerDocument = {
+    createElement() {
+      return {
+        ownerDocument,
+        className: "",
+        dataset: {},
+        style: {},
+        remove() {
+          removed = true;
+        }
+      };
+    }
+  };
+
+  const arena = {
+    ownerDocument,
+    append(node) {
+      appended = node;
+    },
+    getBoundingClientRect() {
+      return {
+        left: 10,
+        top: 20,
+        width: 600,
+        height: 340
+      };
+    }
+  };
+
+  const anchor = {
+    getBoundingClientRect() {
+      return {
+        left: 110,
+        top: 120,
+        width: 80,
+        height: 60
+      };
+    }
+  };
+
+  const handle =
+    playDomCreatureDodgeFxV1({
+      arena,
+      anchor,
+      visual: {
+        assetId:
+          "pack:test:dodge-electric",
+        url:
+          "https://assets.test/dodge.webp",
+        frameCount: 8,
+        frameMs: 45,
+        format: "sprite-strip",
+        displayScale: 1.4,
+        offsetX: 6,
+        offsetY: -8
+      },
+      durationMs: 500,
+      animate(node, keyframes, options) {
+        animationOptions = options;
+        return {
+          finished: Promise.resolve(),
+          cancel() {
+            cancelled = true;
+          }
+        };
+      }
+    });
+
+  assert.equal(handle.status, "running");
+  assert.equal(
+    appended.dataset.skillFx,
+    "creature-dodge"
+  );
+  assert.equal(
+    appended.dataset.assetId,
+    "pack:test:dodge-electric"
+  );
+  assert.equal(appended.style.left, "146px");
+  assert.equal(appended.style.top, "122px");
+  assert.equal(appended.style.width, "112px");
+  assert.equal(appended.style.height, "112px");
+  assert.equal(
+    appended.style.backgroundSize,
+    "800% 100%"
+  );
+  assert.equal(
+    appended.style.animationDuration,
+    "500ms",
+    "sprite playback must stretch to the Runtime-owned dodge window"
+  );
+  assert.equal(
+    animationOptions.duration,
+    500
+  );
+
+  const result = await handle.finished;
+  assert.equal(result.status, "finished");
+  assert.equal(removed, true);
+  assert.equal(cancelled, false);
 });
