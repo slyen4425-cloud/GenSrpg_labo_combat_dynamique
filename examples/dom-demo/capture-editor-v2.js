@@ -85,9 +85,6 @@ const editorStatus = root?.querySelector(
 const arenaSelect = root?.querySelector(
   "[data-test-arena]"
 );
-const landscapeMode = root?.querySelector(
-  "[data-preview-landscape-mode]"
-);
 
 if (
   !root ||
@@ -97,8 +94,7 @@ if (
   !testButton ||
   !backButton ||
   !editorStatus ||
-  !arenaSelect ||
-  !landscapeMode
+  !arenaSelect
 ) {
   throw new Error("Structure Capture Editor preview incomplète");
 }
@@ -423,7 +419,7 @@ testButton.addEventListener("click", async () => {
 
   const displayModePromise =
     previewDisplayMode.enter({
-      enabled: landscapeMode.checked
+      enabled: true
     });
 
   try {
