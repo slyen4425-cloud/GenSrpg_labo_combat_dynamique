@@ -1,138 +1,80 @@
-# Point de reprise courant — 2026-10-07
+# Point de reprise courant — 2026-10-08
 
-## Lot techniquement GREEN
+## Lot actif
 
-Creature Dodge Appearance FX V1
+Creature Library Browser Startup Regression V1
 
 Branche :
-`work/lab-creature-dodge-appearance-fx-v1-2026-10-07`
+`work/lab-creature-library-browser-startup-regression-v1-2026-10-08`
 
 Checkpoint de départ :
-`checkpoint/lab-start-creature-dodge-appearance-fx-v1-2026-10-07`
+`checkpoint/lab-start-creature-library-browser-startup-regression-v1-2026-10-08`
 
-Base :
-`f1ef3c934e6065cfdef0e515a8bc19fa06f1c235`
+Base exacte :
+`181cada1bf19f919961fcc546b9eee5bebb7c5bc`
 
-## Résultat
+Base GREEN précédente :
+`checkpoint/lab-creature-dodge-appearance-fx-v1-green-2026-10-07`
 
-L'Esquive conserve sa disparition/réapparition générique existante.
+## Retour utilisateur autoritaire
 
-Une créature peut désormais posséder un visuel d'Esquive optionnel dans son **Apparence** :
+Sur la preview smartphone réelle :
+- la page s'affiche ;
+- la bibliothèque de créatures est de nouveau vide.
 
-- asset ;
-- taille ;
-- décalage X ;
-- décalage Y.
+La validation utilisateur invalide donc le GREEN fonctionnel précédent sur ce point, malgré la CI.
 
-Exemples possibles :
-- éclair ;
-- feuilles ;
-- poussière ;
-- fumée ;
-- asset personnel.
+## Trou dans la sentinelle existante
 
-Aucun effet n'est déduit automatiquement de l'élément.
+Le test :
+`tests/unit/capture-editor-creature-library-regression-v1.test.mjs`
 
-## Ownership
+reconstruit correctement 103 créatures en Node, mais ne couvre pas le graphe de modules chargé par la vraie page :
+`examples/dom-demo/capture-editor-v2.js`.
 
-Gameplay inchangé :
+## Diagnostic architectural
 
-`HUD -> Combat Runtime -> activeWindowMs -> Visual Event dodge`
+Le point d'entrée navigateur charge statiquement des modules uniquement nécessaires à la preview combat, avant même que l'éditeur soit monté :
 
-Visuel additionnel :
+- `capture-combat-preview-v1.js` -> `demo-app.js` -> nouveau `dom-creature-dodge-fx-v1.js` ;
+- `capture-export-to-native-visual-source-v1.js` -> nouveau `creature-presentation-binding.js`.
 
-`Creature Presentation -> Combat Export -> Native Visual Source -> Visual Controller -> DOM Dodge FX`
+Une indisponibilité/erreur de ce graphe preview peut donc empêcher tout le module d'entrée de s'évaluer et laisser l'HTML statique avec une bibliothèque vide.
 
-Le Runtime reste seul propriétaire du timing et des règles d'Esquive.
+Cela recrée une dépendance de démarrage que le lot Creature Library Regression V1 avait précisément cherché à supprimer pour les ressources optionnelles.
 
-Aucun second timer Dodge.
+## Correction cible
 
-## Contrat
+Séparer le bootstrap essentiel de l'éditeur du runtime optionnel de preview combat :
 
-`CreaturePresentationBinding V3` ajoute uniquement :
+`Editor bootstrap -> creature library`
 
-`visual.dodge = { assetId, displayScale, offsetX, offsetY }`
+doit rester chargeable indépendamment de :
 
-Compatibilité :
-- V1/V2 restent supportés ;
-- sans Dodge FX, une créature reste V2 ;
-- aucune migration silencieuse.
+`Preview runtime -> visual adapter -> combat preview -> Dodge FX renderer`
 
-## Éditeur
-
-Carte Apparence :
-- `Effet visuel d’esquive`
-- `Taille de l’effet`
-- `Décalage X`
-- `Décalage Y`
-
-Import visuel :
-- nouveau rôle `Esquive / disparition`
-- bibliothèque GenSrpG + Mes assets.
+Les modules preview seront chargés dynamiquement après le démarrage essentiel de l'éditeur. Une erreur de preview doit désactiver le test combat et afficher une erreur, sans vider/bloquer la bibliothèque.
 
 ## TDD
 
-RED :
-- `35b0c1f2fcd6ddfd66463e8dc0354a5555fad7c0`
-- CI `37683689539`
-- 1248 / 1252 PASS
-- 4 FAIL ciblés.
-
-Premier GREEN complet :
-- `fc04b5adf465107661a611b54718750585f0cfdc`
-- CI `37684672450`
-- 1252 / 1252 PASS.
-
-Renderer + compatibilité V2 :
-- `c9bc40a3db5d9b0113b42f4a90f50114d42bb787`
-- CI `37684809806`
-- 1254 / 1254 PASS.
-
-Vraie chaîne :
-- `ec4302bcf09f9ea799caf60c160403530c5759b1`
-- CI `37684989902`
-- 1255 / 1255 PASS.
-
-GREEN final fonctionnel :
-- `70f9de2e36e7127389abfa88fd847c7023b1ff2a`
-- CI `37685167740`
-- 1255 / 1255 PASS
-- 0 FAIL
-- structure / frontières / indépendance : OK.
-
-Rapport :
-`docs/LAB_CREATURE_DODGE_APPEARANCE_FX_V1.md`
-
-## Correctifs précédents inclus dans cette base
-
-Boule de feu :
-- puissance projectile 2 ;
-- cast joueur +30 ;
-- cast opposant -30.
-
-Cendre aveuglante :
-- puissance projectile 1.
-
-Goutte vive :
-- puissance projectile 2.
+1. RED structurel sur la vraie entrée navigateur :
+   - aucun import statique de `capture-combat-preview-v1.js` ;
+   - aucun import statique de `capture-export-to-native-visual-source-v1.js` ;
+   - runtime preview chargé dynamiquement.
+2. conserver la sentinelle historique 103 créatures ;
+3. vérifier l'échec du runtime preview sans casser `editor.ready` ;
+4. CI complète ;
+5. nouveau checkpoint/preview utilisateur.
 
 ## Domaines protégés
 
-Inchangés :
+Ne pas modifier :
+- données créatures ;
+- configuredCreatures comme owner ;
 - Combat Runtime / Rules ;
-- charges / recharge / durée Esquive ;
-- Skill Contract ;
-- dégâts / collision ;
-- Projectile Clash ;
-- Roster ;
-- audio ;
+- Dodge gameplay ;
+- Creature Dodge Appearance FX lui-même ;
+- puissance projectile / Fireball / Goutte / Cendre ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
-
-## Prochaine action protocolaire
-
-- CI documentaire finale ;
-- checkpoint `checkpoint/lab-creature-dodge-appearance-fx-v1-green-2026-10-07` ;
-- preview `preview/lab-creature-dodge-appearance-fx-v1-2026-10-07` ;
-- validation smartphone utilisateur.
