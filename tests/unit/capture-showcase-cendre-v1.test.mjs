@@ -233,7 +233,7 @@ test("V3 export gives every exported creature registry rules and neutral stat va
   );
 });
 
-test("Cendre aveuglante showcase preset preserves the latest authored V2 export", async () => {
+test("Cendre aveuglante showcase preset preserves the latest authored V3 export", async () => {
   const transfer =
     importCaptureTransferJsonV1(
       await text(CENDRE_FILE)
@@ -285,20 +285,35 @@ test("Cendre aveuglante showcase preset preserves the latest authored V2 export"
 
   assert.equal(
     draft.presentation.version,
-    8
+    9
   );
   assert.equal(
     draft.presentation.visual.icon.assetId,
     "core:icon-skill-poison-cloud-01"
   );
   assert.equal(
-    "cast" in draft.presentation.visual,
-    false,
-    "the latest author export intentionally has no cast sprite"
+    draft.presentation.visual.cast.assetId,
+    "pack:capture:sprite-ash-smoke-cast-01"
+  );
+  assert.equal(
+    draft.presentation.visual.cast.anchor,
+    "mouth"
+  );
+  assert.equal(
+    draft.presentation.visual.cast.offsetX,
+    30
+  );
+  assert.equal(
+    draft.presentation.visual.cast.offsetY,
+    0
+  );
+  assert.equal(
+    draft.presentation.visual.cast.offsetMode,
+    "mirror_x"
   );
   assert.equal(
     draft.presentation.visual.travel.assetId,
-    "pack:capture:sprite-projectile-shadow-01"
+    "pack:capture:sprite-ash-smoke-projectile-01"
   );
   assert.equal(
     draft.presentation.visual.travel.displayScale,
@@ -314,7 +329,7 @@ test("Cendre aveuglante showcase preset preserves the latest authored V2 export"
   );
   assert.equal(
     draft.presentation.visual.impact.assetId,
-    "pack:capture:sprite-status-curse-01"
+    "pack:capture:sprite-ash-smoke-impact-01"
   );
   assert.equal(
     draft.presentation.visual.impact.displayScale,
@@ -322,16 +337,20 @@ test("Cendre aveuglante showcase preset preserves the latest authored V2 export"
   );
   assert.equal(
     draft.presentation.visual.impact.durationMs,
-    350
+    500
   );
 
   assert.equal(
     draft.presentation.audio.cast.assetId,
-    "gensrpg:sound:academie-01fc18a6"
+    "gensrpg:sound:tower-ccc16d37"
+  );
+  assert.equal(
+    draft.presentation.audio.travel.assetId,
+    "gensrpg:sound:genrpg-pack2-3e95d6c6"
   );
   assert.equal(
     draft.presentation.audio.impact.assetId,
-    "gensrpg:sound:genrpg-pack2-742f6521"
+    "gensrpg:sound:genrpg-pack2-a3d02c0f"
   );
 
   assert.deepEqual(
@@ -339,17 +358,23 @@ test("Cendre aveuglante showcase preset preserves the latest authored V2 export"
       "cap_fire_special_1:1"
     ],
     {
-      mode: "tint",
+      mode: "sprite",
       tintColor: "#5b2067",
       tintOpacity: 0.35,
-      sprite: null
+      sprite: {
+        offsetY: -15,
+        assetId: "pack:capture:sprite-ash-smoke-status-aura-01",
+        displayScale: 1.5,
+        opacity: 0.65,
+        offsetMode: "same"
+      }
     }
   );
 
   assert.deepEqual(
     draft.presentation.feedback.glow,
     {
-      color: "#5b2067",
+      color: "#d4dde4",
       strength: 0.65,
       radiusPx: 22
     }
@@ -468,11 +493,11 @@ test("latest Cendre transfer replaces the historical skill through the canonical
   );
   assert.equal(
     active.presentation.visual.travel.assetId,
-    "pack:capture:sprite-projectile-shadow-01"
+    "pack:capture:sprite-ash-smoke-projectile-01"
   );
   assert.equal(
     active.presentation.visual.impact.assetId,
-    "pack:capture:sprite-status-curse-01"
+    "pack:capture:sprite-ash-smoke-impact-01"
   );
   assert.equal(
     active.presentation.audio.cast.assetId,
@@ -480,7 +505,7 @@ test("latest Cendre transfer replaces the historical skill through the canonical
   );
   assert.equal(
     active.presentation.audio.impact.assetId,
-    "gensrpg:sound:genrpg-pack2-742f6521"
+    "gensrpg:sound:genrpg-pack2-a3d02c0f"
   );
 });
 
