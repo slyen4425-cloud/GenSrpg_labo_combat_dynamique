@@ -1,33 +1,47 @@
-# Point de reprise courant — 2026-10-07
+# Micro-lot actif — Cendre aveuglante Author Export V3 — 2026-10-07
 
-## Lot techniquement GREEN
+Branche : `work/lab-cendre-author-export-v3-2026-10-07`
 
-Portable Project Assets Notes V1
+Checkpoint de départ : `checkpoint/lab-start-cendre-author-export-v3-2026-10-07`
+Base exacte : `75da9f9ff87a4953dd0e972be02dbc429bc67f1c`
 
-Branche :
-`work/lab-portable-project-assets-notes-v1-2026-10-07`
+## Source de vérité
 
-Checkpoint de départ :
-`checkpoint/lab-start-portable-project-assets-notes-v1-2026-10-07`
+Export utilisateur reçu : `gensrpg-capture-skill-cap_fire_special_1.json`.
+ID stable : `cap_fire_special_1`.
 
-Base :
-`b05a0ad48879676b9a80a23653b85138c4a9f88c`
+La charte §33 impose le remplacement complet de la fiche par ID stable, sans reconstruction ni merge champ par champ.
 
-## Décisions enregistrées
+## Différences auteur principales
 
-Le futur raccord application devra fournir une Project Asset Library persistante et portable :
-- sons utilisateur réutilisables dans tout slot compatible ;
-- catégories/rôles audio = tags/tri/suggestions, jamais restrictions d'usage ;
-- médias, créatures et capacités transportables avec une game partagée ;
-- arènes utilisateur importables avec assetId stable ;
-- futur World Builder : environnement/zone -> une ou plusieurs arènes par assetId.
+Le nouvel export apporte notamment :
+- SkillPresentation V9 ;
+- cast `pack:capture:sprite-ash-smoke-cast-01`, socket `mouth`, X 30/Y 0, miroir X ;
+- travel `pack:capture:sprite-ash-smoke-projectile-01` ;
+- impact `pack:capture:sprite-ash-smoke-impact-01`, 500 ms ;
+- aura de statut `pack:capture:sprite-ash-smoke-status-aura-01` ;
+- nouveaux sons cast/travel/impact ;
+- `targetLocations:[active]`, `hitPresenceStates:null`, `dodgeable:true` ;
+- couleurs FX cendre.
 
-Aucune implémentation de persistance, aucun raccord Exploration et aucune modification du dépôt principal n'ont été réalisés dans ce lot.
+## Vérifications préalables
 
-## Preuve
+Les 4 assetIds cendre sont présents dans le catalogue visuel global actif.
+Les 3 assetIds audio sont présents dans le catalogue audio privé actif.
 
-CI `37641269922` : SUCCESS.
+## Protégé
 
-## Prochaine action
+Aucun changement au Runtime, Damage/Status, collision, renderer, audio engine, Dodge, Roster, autres presets Showcase, main, GenSrpG principal ou dépôt Exploration.
 
-Intégrer le nouvel export auteur `cap_fire_special_1` (Cendre aveuglante) dans un lot dédié, puis traiter l'animation visuelle d'esquive dans un lot séparé.
+## TDD
+
+1. RED sur les valeurs V3 attendues ;
+2. remplacement atomique du preset Showcase par l'export utilisateur ;
+3. vrai chemin `import -> plan replace -> apply configuredSkills` ;
+4. nombre de capacités inchangé / aucune duplication ;
+5. CI complète ;
+6. checkpoint GREEN + preview.
+
+## Critère de fin
+
+La fiche active `cap_fire_special_1` correspond au nouvel export utilisateur et reste remplaçable/rechargeable via le pipeline canonique.
