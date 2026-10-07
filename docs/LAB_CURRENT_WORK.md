@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot actif
+## Lot techniquement GREEN
 
 Goutte Vive Projectile Power 2 V1
 
@@ -10,60 +10,67 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-goutte-projectile-power-2-v1-2026-10-07`
 
-Base exacte :
+Base :
 `c86f81733c3b2f392717124e9d16ef802aea0daa`
 
-Base GREEN précédente :
-`checkpoint/lab-fireball-cast-side-placement-v1-green-2026-10-07`
+## Résultat
 
-## Correction utilisateur
-
-La valeur correcte de Goutte vive est :
+Goutte vive :
 `projectileClash.power = 2`
 
-La valeur `1` du lot précédent était une erreur de consigne corrigée par l'auteur.
-
-## Objectif
-
-Modifier uniquement la puissance projectile auteur de Goutte vive :
+Modification auteur unique :
 `1 -> 2`
 
-et réaligner les sentinelles qui validaient l'ancienne décision à 1.
+## Vraie chaîne
 
-## Périmètre autorisé
+La valeur 2 est conservée dans :
+Author Transfer -> configuredSkills -> Combat Export -> Native Adapter -> Combat Runtime.
 
-- `data/capture/showcase/cap_water_atk_1.capture-skill-transfer-v1.json`
-- tests/sentinelles Goutte vive concernant explicitement projectileClash.power
-- documentation
+Deux projectiles Goutte vive puissance 2 s'annulent mutuellement lorsqu'ils se rencontrent, conformément au contrat égalité existant.
+
+## TDD
+
+RED :
+- `d21dd700c71af411643c1f5c0b5d37c17833e950`
+- CI `37682665363`
+- 1247 / 1248 PASS.
+
+Donnée :
+- `5be9cf13a178f265a53076eeb88cca6abe89b692`
+
+GREEN :
+- sentinelle true-path `ac08d10b05a319700af46347ee285d480536c6ee`
+- CI `37682851059`
+- 1248 / 1248 PASS
+- 0 FAIL.
+
+Rapport :
+`docs/LAB_GOUTTE_PROJECTILE_POWER_2_V1.md`
+
+## Inclus depuis le GREEN précédent
+
+Boule de feu :
+- cast joueur `+30`
+- cast opposant `-30`
+- SkillPresentationBinding V9 side-aware.
 
 ## Domaines protégés
 
-Ne pas modifier :
-- dégâts ;
-- élément Eau ;
-- énergie ;
-- timings ;
+Inchangés :
+- dégâts / éléments / énergie / timings Goutte vive ;
 - FX / audio / sockets ;
 - ProjectilePowerV1 / projectile-clash ;
 - Combat Runtime ;
-- Boule de feu ;
 - Cendre aveuglante ;
 - créatures ;
-- esquive ;
 - paysage ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## TDD
+## Prochaine action
 
-1. RED : Goutte vive doit être puissance 2 ;
-2. modifier uniquement le champ auteur `projectileClash.power` ;
-3. réaligner les anciennes sentinelles de valeur 1 avec la décision corrigée ;
-4. vérifier la vraie chaîne configuredSkills -> export -> adapter -> Runtime ;
-5. CI complète ;
-6. checkpoint/preview GREEN.
-
-## Critère de fin
-
-Goutte vive est puissance projectile 2 partout dans la vraie chaîne, sans autre changement auteur.
+- CI documentaire finale ;
+- checkpoint `checkpoint/lab-goutte-projectile-power-2-v1-green-2026-10-07` ;
+- preview `preview/lab-goutte-projectile-power-2-v1-2026-10-07` ;
+- puis chantier séparé **Creature Dodge Appearance FX V1**.
