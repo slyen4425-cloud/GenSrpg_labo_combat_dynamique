@@ -1109,6 +1109,25 @@ export async function mountCoop2v2Test({
           return;
         }
 
+        const visualDurationMs =
+          Number(
+            result.window?.remainingMs ?? 0
+          );
+        if (visualDurationMs > 0) {
+          visuals
+            .playEventFor(
+              format.localActorId,
+              "dodge",
+              {
+                metadata: {
+                  durationMs:
+                    visualDurationMs
+                }
+              }
+            )
+            .catch(() => {});
+        }
+
         setStatus(
           "Esquive active pendant " +
             (
