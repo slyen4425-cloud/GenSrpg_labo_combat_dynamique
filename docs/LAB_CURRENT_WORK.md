@@ -1,76 +1,108 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Lot actif
 
-Goutte Vive Projectile Power 2 V1
+Creature Dodge Appearance FX V1
 
 Branche :
-`work/lab-goutte-projectile-power-2-v1-2026-10-07`
+`work/lab-creature-dodge-appearance-fx-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-goutte-projectile-power-2-v1-2026-10-07`
+`checkpoint/lab-start-creature-dodge-appearance-fx-v1-2026-10-07`
 
-Base :
-`c86f81733c3b2f392717124e9d16ef802aea0daa`
+Base exacte :
+`f1ef3c934e6065cfdef0e515a8bc19fa06f1c235`
 
-## Résultat
+Base GREEN précédente :
+`checkpoint/lab-goutte-projectile-power-2-v1-green-2026-10-07`
 
-Goutte vive :
-`projectileClash.power = 2`
+## Besoin utilisateur
 
-Modification auteur unique :
-`1 -> 2`
+L'Esquive possède déjà sa disparition/réapparition générique.
 
-## Vraie chaîne
+Ajouter un sprite/FX optionnel d'Esquive, mais le rattacher à **l'apparence de la créature** :
+- une créature Foudre peut laisser un éclair ;
+- une créature Terre/Nature peut laisser feuilles/poussière ;
+- le choix est auteur et par créature ;
+- ne pas le déduire automatiquement de l'élément.
 
-La valeur 2 est conservée dans :
-Author Transfer -> configuredSkills -> Combat Export -> Native Adapter -> Combat Runtime.
+## Architecture cible
 
-Deux projectiles Goutte vive puissance 2 s'annulent mutuellement lorsqu'ils se rencontrent, conformément au contrat égalité existant.
+Source de vérité :
+`Creature Presentation`.
 
-## TDD
+Le gameplay Esquive reste :
+`HUD -> Combat Runtime -> activeWindowMs -> Visual Event dodge`.
 
-RED :
-- `d21dd700c71af411643c1f5c0b5d37c17833e950`
-- CI `37682665363`
-- 1247 / 1248 PASS.
+Le nouveau visuel suit :
+`Creature Presentation -> Combat Export -> Native Visual Source -> Visual Controller -> DOM Dodge FX`.
 
-Donnée :
-- `5be9cf13a178f265a53076eeb88cca6abe89b692`
+Aucune nouvelle minuterie gameplay.
+La durée visuelle utilise la durée Runtime déjà transmise dans `metadata.durationMs`.
 
-GREEN :
-- sentinelle true-path `ac08d10b05a319700af46347ee285d480536c6ee`
-- CI `37682851059`
-- 1248 / 1248 PASS
-- 0 FAIL.
+## Contrat
 
-Rapport :
-`docs/LAB_GOUTTE_PROJECTILE_POWER_2_V1.md`
+Étendre la présentation créature de façon versionnée :
+- V1/V2 restent compatibles ;
+- V3 ajoute `visual.dodge` optionnel ;
+- champs V1 :
+  - `assetId`
+  - `displayScale`
+  - `offsetX`
+  - `offsetY`
 
-## Inclus depuis le GREEN précédent
+Une créature sans sprite Dodge conserve exactement la disparition générique actuelle.
 
-Boule de feu :
-- cast joueur `+30`
-- cast opposant `-30`
-- SkillPresentationBinding V9 side-aware.
+## Éditeur
+
+Dans `Apparence` :
+- sélecteur `Effet visuel d'esquive` ;
+- scale ;
+- décalage X/Y ;
+- option `Esquive / disparition` dans l'import visuel personnel.
+
+Le sélecteur peut utiliser la bibliothèque GenSrpG et `Mes assets`.
+
+## Périmètre autorisé
+
+- contrat Creature Presentation versionné ;
+- normalisation Capture Creature Draft V3 ;
+- exporter/adapter visuel Capture ;
+- Human Editor Apparence ;
+- Creator Visual Asset role ;
+- renderer DOM dédié Dodge FX ;
+- raccord Visual Controller existant ;
+- tests/docs.
 
 ## Domaines protégés
 
-Inchangés :
-- dégâts / éléments / énergie / timings Goutte vive ;
-- FX / audio / sockets ;
-- ProjectilePowerV1 / projectile-clash ;
+Ne pas modifier :
 - Combat Runtime ;
+- règles/charges/recharge de l'Esquive ;
+- durée active de l'Esquive ;
+- Skill Contract ;
+- dégâts / collision ;
+- Projectile Clash ;
+- Boule de feu ;
+- Goutte vive ;
 - Cendre aveuglante ;
-- créatures ;
-- paysage ;
+- audio ;
+- Roster ownership ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochaine action
+## TDD
 
-- CI documentaire finale ;
-- checkpoint `checkpoint/lab-goutte-projectile-power-2-v1-green-2026-10-07` ;
-- preview `preview/lab-goutte-projectile-power-2-v1-2026-10-07` ;
-- puis chantier séparé **Creature Dodge Appearance FX V1**.
+1. RED : contrôle Apparence + rôle import `dodge` ;
+2. RED : build créature conserve `visual.dodge` via une présentation versionnée ;
+3. RED : export/native visual source conserve le sprite ;
+4. RED : Visual Controller joue le FX uniquement sur l'événement `dodge`, avec la durée Runtime ;
+5. absence de sprite = comportement V1 inchangé ;
+6. CI complète ;
+7. checkpoint/preview GREEN.
+
+## Critère de fin
+
+Le joueur peut attribuer un visuel d'esquive à une créature depuis son Apparence.
+Ce visuel accompagne la disparition d'Esquive sans posséder ni recréer la règle gameplay.
