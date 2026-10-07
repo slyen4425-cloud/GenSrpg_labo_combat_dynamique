@@ -30,7 +30,7 @@ async function json(relative) {
   return JSON.parse(await text(relative));
 }
 
-test("Fireball showcase preserves Sylvain author export V3 exactly on important authored values", async () => {
+test("Fireball showcase preserves stable authored values around the explicit V4 socket correction", async () => {
   const transfer = importCaptureTransferJsonV1(
     await text(FIREBALL_FILE)
   );
@@ -62,8 +62,16 @@ test("Fireball showcase preserves Sylvain author export V3 exactly on important 
     1.6
   );
   assert.equal(
-    draft.presentation.visual.cast.offsetY,
+    draft.presentation.visual.cast.anchor,
+    "mouth"
+  );
+  assert.equal(
+    draft.presentation.visual.cast.offsetX,
     30
+  );
+  assert.equal(
+    draft.presentation.visual.cast.offsetY,
+    0
   );
   assert.equal(
     draft.presentation.visual.travel.assetId,
@@ -122,7 +130,10 @@ test("Fireball author export replaces the existing configured skill through the 
   const historicalDraft = structuredClone(authoredDraft);
   historicalDraft.presentation.visual.cast.assetId =
     "pack:capture:sprite-fireball-cast-01";
-  historicalDraft.presentation.visual.cast.offsetY = 0;
+  historicalDraft.presentation.visual.cast.anchor = null;
+  historicalDraft.presentation.visual.travel.anchor = null;
+  historicalDraft.presentation.visual.cast.offsetX = 0;
+  historicalDraft.presentation.visual.cast.offsetY = 30;
   historicalDraft.presentation.visual.travel.displayScale = 1.9;
   historicalDraft.presentation.visual.impact.assetId =
     "pack:capture:sprite-fireball-impact-01";
@@ -171,7 +182,10 @@ test("Fireball author export replaces the existing configured skill through the 
     active.presentation.visual.cast.assetId,
     "pack:capture:sprite-fireball-2-cast-01"
   );
-  assert.equal(active.presentation.visual.cast.offsetY, 30);
+  assert.equal(active.presentation.visual.cast.anchor, "mouth");
+  assert.equal(active.presentation.visual.travel.anchor, "mouth");
+  assert.equal(active.presentation.visual.cast.offsetX, 30);
+  assert.equal(active.presentation.visual.cast.offsetY, 0);
   assert.equal(active.presentation.visual.travel.displayScale, 2.5);
   assert.equal(
     active.presentation.visual.impact.assetId,
