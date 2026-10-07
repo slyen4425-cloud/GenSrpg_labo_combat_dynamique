@@ -59,6 +59,19 @@ La fenêtre active est dérivée du timestamp de consommation existant `spentAtM
 8. aucune nouvelle minuterie gameplay ;
 9. Human Editor expose 30 s + 0,5 s et exporte les deux valeurs.
 
+## Résultat technique LIVE
+
+- RED : CI `37587807955` — 1203 tests, 1196 PASS, 7 FAIL ciblés ;
+- recharge par défaut nouvelle configuration : 30 s ;
+- durée active par défaut : 0,5 s ;
+- activation proactive consomme une charge immédiatement ;
+- fenêtre dérivée de `Rechargeable Action.spentAtMs` et `CombatState.elapsedMs`, aucun timer parallèle ;
+- impact esquivable dans la fenêtre : réaction Esquive existante ;
+- `dodgeable:false` traverse la fenêtre ;
+- compatibilité legacy sans migration silencieuse de forme ;
+- CI fonctionnelle `37588239528` — 1205 / 1205 PASS ;
+- rapport : `docs/LAB_DODGE_ACTIVE_WINDOW_V1.md`.
+
 ## Critère de fin
 
 - vraie chaîne Editor -> Export -> Runtime ;
