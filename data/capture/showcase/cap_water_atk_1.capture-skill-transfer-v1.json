@@ -1,0 +1,168 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_water_atk_1",
+    "description": "Attaque Eau de puissance 3. Disponible au niveau 1.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_water_atk_1",
+      "name": "Goutte vive",
+      "category": "offensive",
+      "form": "projectile",
+      "loadoutSlot": "standard",
+      "element": "water",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 800,
+      "travelMs": 800,
+      "recoveryMs": 200,
+      "cooldownMs": 15000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 10,
+          "channel": "water"
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_water_atk_1",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_water_atk_1",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-meteor-shower-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-water-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 30,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "mirror_x"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-projectile-water-01",
+          "displayScale": 1.7,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-water-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:xel-cbc6cf88",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:xel-48520d94",
+          "volume": 1,
+          "loop": true
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
