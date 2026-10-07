@@ -11,11 +11,8 @@ import {
   createCaptureEditorPreviewSessionV2
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
-  adaptCaptureExportToNativeVisualSourceV1
-} from "../../src/adapters/input/capture/capture-export-to-native-visual-source-v1.js";
-import {
-  mountCaptureCombatPreviewV1
-} from "../../src/ui/capture-combat-preview-v1.js";
+  loadCaptureEditorPreviewRuntimeV1
+} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
@@ -130,6 +127,23 @@ const editor = mountCaptureEditorHumanV2({
   creatorAudioAssets
 });
 
+let previewRuntime = null;
+const previewRuntimePromise = editor.ready
+  .then(() =>
+    loadCaptureEditorPreviewRuntimeV1()
+  )
+  .then((runtime) => {
+    previewRuntime = runtime;
+    return runtime;
+  })
+  .catch((error) => {
+    editorStatus.textContent =
+      "Runtime de preview combat indisponible : " +
+      error.message;
+    editorStatus.dataset.tone = "error";
+    throw error;
+  });
+
 const audioPreviewController =
   createPrivateAudioPreviewControllerV1({
     root,
@@ -159,7 +173,11 @@ const visualContextPromise = loadPreviewVisualContext()
     throw error;
   });
 
-Promise.all([visualContextPromise, editor.ready]).then(() => {
+Promise.all([
+  visualContextPromise,
+  previewRuntimePromise,
+  editor.ready
+]).then(() => {
   testButton.disabled = false;
 }).catch(error => {
   editorStatus.textContent = "Combat de test indisponible : " + error.message;
@@ -360,7 +378,14 @@ const session = createCaptureEditorPreviewSessionV2({
       );
     }
 
-    return adaptCaptureExportToNativeVisualSourceV1({
+    if (!previewRuntime) {
+      throw new Error(
+        "Runtime de preview combat non chargé"
+      );
+    }
+
+    return previewRuntime
+      .adaptCaptureExportToNativeVisualSourceV1({
       exported,
       assetCatalog: {
         ...visualContext.assetCatalog,
@@ -386,7 +411,15 @@ const session = createCaptureEditorPreviewSessionV2({
       nativeVisualSource.arenaId
     );
 
-    const mounted = await mountCaptureCombatPreviewV1({
+    if (!previewRuntime) {
+      throw new Error(
+        "Runtime de preview combat non chargé"
+      );
+    }
+
+    const mounted =
+      await previewRuntime
+        .mountCaptureCombatPreviewV1({
       root: previewRoot,
       nativeCombatSource,
       nativeVisualSource,
@@ -423,7 +456,10 @@ testButton.addEventListener("click", async () => {
     });
 
   try {
-    await visualContextPromise;
+    await Promise.all([
+      visualContextPromise,
+      previewRuntimePromise
+    ]);
     await displayModePromise;
     const launchResult =
       await session.launch();
