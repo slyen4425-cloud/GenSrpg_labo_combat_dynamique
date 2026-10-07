@@ -6193,7 +6193,7 @@ function populateSelect(select, assets, role) {
 
 function populatePrivateAudioSelect(select, entries) {
   const previous = select.value;
-  const acceptedRoles = String(
+  const preferredRoles = String(
     select.dataset.audioRoles ?? ""
   )
     .split(",")
@@ -6206,7 +6206,7 @@ function populatePrivateAudioSelect(select, entries) {
   const groups =
     buildPrivateAudioRoleGroupsV1(
       entries,
-      acceptedRoles
+      preferredRoles
     );
 
   for (const audioGroup of groups) {
