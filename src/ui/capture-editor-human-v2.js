@@ -3113,6 +3113,10 @@ function writeSkillDraftFields(
     root,
     fields.presentation
   );
+  ensureSkillSocketReferenceOptionV1(
+    root,
+    fields.presentation.socketId
+  );
   const values = [
     ["[data-skill-id]", fields.id],
     ["[data-skill-name]", fields.name],
@@ -7100,12 +7104,76 @@ export function syncCaptureSkillSocketOptionsV1({
     );
   }
 
+  const requestedValue =
+    typeof existingValue === "string"
+      ? existingValue.trim()
+      : "";
+
+  if (
+    requestedValue !== "" &&
+    !seen.has(requestedValue)
+  ) {
+    const previous =
+      existingOptions.find(
+        (option) =>
+          option?.value === requestedValue
+      ) ?? null;
+    const previousLabel =
+      typeof previous?.label === "string"
+        ? previous.label.trim()
+        : "";
+
+    seen.add(requestedValue);
+    options.push(
+      Object.freeze({
+        value: requestedValue,
+        label:
+          previousLabel !== ""
+            ? previousLabel
+            : requestedValue +
+              " · référence sauvegardée"
+      })
+    );
+  }
+
   return Object.freeze({
     options: Object.freeze(options),
-    value: seen.has(existingValue)
-      ? existingValue
+    value: seen.has(requestedValue)
+      ? requestedValue
       : ""
   });
+}
+
+function ensureSkillSocketReferenceOptionV1(
+  root,
+  socketId
+) {
+  const value =
+    typeof socketId === "string"
+      ? socketId.trim()
+      : "";
+
+  if (value === "") {
+    return;
+  }
+
+  const select = one(
+    root,
+    "[data-skill-socket]"
+  );
+  if (
+    [...select.options].some(
+      (option) => option.value === value
+    )
+  ) {
+    return;
+  }
+
+  createOption(
+    select,
+    value,
+    value + " · référence sauvegardée"
+  );
 }
 
 function syncSkillSocketSelect(root, sockets) {
