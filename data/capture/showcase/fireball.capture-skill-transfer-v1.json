@@ -33,6 +33,11 @@
       "targetRelations": [
         "enemy"
       ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
@@ -78,14 +83,14 @@
           "assetId": "pack:capture:icon-skill-fireball-01"
         },
         "cast": {
-          "assetId": "pack:capture:sprite-fireball-cast-01",
+          "assetId": "pack:capture:sprite-fireball-2-cast-01",
           "displayScale": 1.6,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "source",
           "anchor": null,
           "offsetX": 0,
-          "offsetY": 0,
+          "offsetY": 30,
           "trigger": "preparation-start",
           "playbackMode": "loop",
           "rotationDeg": 0,
@@ -97,7 +102,7 @@
         },
         "travel": {
           "assetId": "pack:capture:sprite-fireball-travel-01",
-          "displayScale": 1.9,
+          "displayScale": 2.5,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "trajectory",
@@ -114,7 +119,7 @@
           }
         },
         "impact": {
-          "assetId": "pack:capture:sprite-fireball-impact-01",
+          "assetId": "pack:capture:sprite-fireball-2-impact-01",
           "displayScale": 1.7,
           "displayScaleX": 1,
           "displayScaleY": 1,
