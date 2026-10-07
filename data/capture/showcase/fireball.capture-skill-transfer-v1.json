@@ -75,7 +75,7 @@
     },
     "presentation": {
       "id": "skill:fireball",
-      "version": 8,
+      "version": 9,
       "subjectType": "skill",
       "subjectId": "fireball",
       "visual": {
@@ -91,6 +91,7 @@
           "anchor": "mouth",
           "offsetX": 30,
           "offsetY": 0,
+          "offsetMode": "mirror_x",
           "trigger": "preparation-start",
           "playbackMode": "loop",
           "rotationDeg": 0,
