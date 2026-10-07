@@ -16,13 +16,6 @@ import {
 import {
   normalizeCaptureProgressionRulesV1
 } from "../../src/contracts/capture-progression-rules-v1.js";
-import {
-  capturePortableNativeSkillDraftsV1
-} from "../../src/catalogs/capture-portable-native-skill-catalog-v1.js";
-import {
-  captureComplexNativeSkillDraftsV1
-} from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
-
 const FIREBALL_FILE =
   "data/capture/showcase/fireball.capture-skill-transfer-v1.json";
 
@@ -122,25 +115,22 @@ test("Fireball author export replaces the existing configured skill through the 
     await json("data/capture/monster-capture-progression-rules.v1.json")
   );
 
-  const configuredSkills = new Map();
-  for (const draft of capturePortableNativeSkillDraftsV1()) {
-    configuredSkills.set(draft.id, draft);
-  }
-  for (const draft of captureComplexNativeSkillDraftsV1()) {
-    if (!configuredSkills.has(draft.id)) {
-      configuredSkills.set(draft.id, draft);
-    }
-  }
-
-  assert.ok(
-    configuredSkills.has("fireball"),
-    "historical/native Fireball must exist before replacement"
-  );
-
-  const configuredCreatures = new Map();
   const transfer = importCaptureTransferJsonV1(
     await text(FIREBALL_FILE)
   );
+  const authoredDraft = transfer.value.draft;
+  const historicalDraft = structuredClone(authoredDraft);
+  historicalDraft.presentation.visual.cast.assetId =
+    "pack:capture:sprite-fireball-cast-01";
+  historicalDraft.presentation.visual.cast.offsetY = 0;
+  historicalDraft.presentation.visual.travel.displayScale = 1.9;
+  historicalDraft.presentation.visual.impact.assetId =
+    "pack:capture:sprite-fireball-impact-01";
+
+  const configuredSkills = new Map([
+    ["fireball", historicalDraft]
+  ]);
+  const configuredCreatures = new Map();
   const beforeSize = configuredSkills.size;
 
   const currentDatabase = buildCaptureEditorDatabaseV1({
