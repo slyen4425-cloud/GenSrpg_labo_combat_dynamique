@@ -2,8 +2,8 @@ import {
   normalizeCaptureCreatureEditorDraftV2
 } from "./capture-creature-editor-draft-v2.js";
 import {
-  normalizeCreaturePresentationBindingV2
-} from "./creature-presentation-binding-v2.js";
+  normalizeCreaturePresentationBinding
+} from "./creature-presentation-binding.js";
 
 export const CAPTURE_CREATURE_EDITOR_DRAFT_V3_SCHEMA =
   "capture-creature-editor-draft-v3";
@@ -51,7 +51,11 @@ function presentationV2ToV1Input(presentation) {
     subjectType: presentation.subjectType,
     subjectId: presentation.subjectId,
     profileId: presentation.profileId,
-    visual: presentation.visual,
+    visual: {
+      front: presentation.visual.front,
+      back: presentation.visual.back,
+      icon: presentation.visual.icon
+    },
     sockets: presentation.sockets,
     audio: presentation.audio
   };
@@ -81,7 +85,7 @@ export function normalizeCaptureCreatureEditorDraftV3(input) {
   const presentation =
     value.presentation == null
       ? null
-      : normalizeCreaturePresentationBindingV2(
+      : normalizeCreaturePresentationBinding(
           value.presentation
         );
 
