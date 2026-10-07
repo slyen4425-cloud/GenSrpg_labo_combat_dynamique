@@ -1,71 +1,45 @@
-# Point de reprise courant — 2026-10-07
-
-## Lot techniquement GREEN
-
-Capture Skill Export Fidelity V1
+# Micro-lot actif — 2026-10-07 — Fireball Author Correction V4
 
 Branche :
-`work/lab-capture-skill-export-fidelity-v1-2026-10-07`
+`work/lab-fireball-author-correction-v4-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-capture-skill-export-fidelity-v1-2026-10-07`
+`checkpoint/lab-start-fireball-author-correction-v4-2026-10-07`
 
 Base :
-`c2caf8c1067fa26e9b0c87c29ea46e43972966ff`
+`9f7bb7e0e10fab9d058d65808047ead24f5961dd`
 
-## Résultat
+## Justification
 
-Le Human Editor ne remet plus silencieusement une référence de socket de capacité à `Centre par défaut` lorsque la créature courante ne possède pas ce socket.
+Retour utilisateur explicite sur la fiche Boule de feu intégrée :
+- le point de sortie devait être `mouth` et non Centre ;
+- le décalage du cast devait être horizontal `30` ;
+- le décalage vertical devait être `0`.
 
-Une référence déjà enregistrée est conservée comme référence sauvegardée, sans hardcode d'IDs de sockets dans le sélecteur.
+La charte §33 autorise une correction volontaire des données auteur lorsqu'elle est fondée sur un retour utilisateur explicite.
 
-Les sentinelles de fidélité couvrent désormais :
-- socket ;
-- X/Y joueur ;
-- modes miroir / même / custom ;
-- X/Y adversaire ;
-- playback ;
-- layers ;
-- scales ;
-- impact duration ;
-- audio ;
-- feedback FX ;
-- status visuals ;
-- principaux champs gameplay de la capacité ;
-- round-trip draft -> export -> import -> projection éditeur -> réexport.
+## Périmètre
 
-Cas de régression verrouillé :
-`mouth + cast offsetX=30 + cast offsetY=0`.
+Uniquement :
+- `data/capture/showcase/fireball.capture-skill-transfer-v1.json` ;
+- sentinelle auteur Fireball ;
+- rapport du lot.
+
+Aucun moteur ni contrat n'est modifié.
+
+## Invariant
+
+La capacité garde toutes les autres valeurs du dernier export V3.
+
+Le socket de capacité est commun au cast et au projectile dans le Human Editor ; la correction doit donc conserver `anchor: mouth` sur cast et travel.
 
 ## TDD
 
-RED :
-- commit `aa4faef85c066728c223e751fc14a0c541db70b7` ;
-- CI `37630334223` ;
-- 1219 tests / 1218 PASS / 1 FAIL ciblé ;
-- socket `mouth` détruit en `""`.
+RED sur :
+- cast.anchor = mouth ;
+- travel.anchor = mouth ;
+- cast.offsetX = 30 ;
+- cast.offsetY = 0.
 
-Correction :
-- `src/ui/capture-editor-human-v2.js` ;
-- aucune modification Runtime/Combat/FX/Audio/Damage/Collision.
-
-GREEN fonctionnel :
-- commit `65c44d2d9ffb8b5ac8dad8517ee5a6264811d055` ;
-- CI `37630829983` ;
-- 1219 / 1219 PASS.
-
-Rapport :
-`docs/LAB_CAPTURE_SKILL_EXPORT_FIDELITY_V1.md`
-
-## Note importante
-
-Le chemin X/Y actuel est démontré fidèle. L'ancien export utilisateur contenant `offsetX=0 / offsetY=30` ne permet pas d'identifier rétroactivement avec certitude le commit historique qui a produit cette inversion ; à partir de ce lot, ce cas est protégé par CI.
-
-Les presets d'interface restent des raccourcis : leurs valeurs résultantes sont exportées, pas l'identifiant du preset.
-
-## Prochaine action
-
-Créer le checkpoint GREEN et la preview sur le SHA final après CI complète.
-
-La correction de la fiche Showcase Fireball elle-même doit rester un micro-lot auteur séparé, fondé sur le retour utilisateur explicite (`mouth`, X=30, Y=0), après fermeture du présent lot.
+Puis remplacement ciblé des quatre valeurs explicitement corrigées, CI complète, checkpoint GREEN et preview.
 
