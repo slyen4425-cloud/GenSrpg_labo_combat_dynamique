@@ -31,7 +31,9 @@ import {
 } from "./scheduled-effect-runtime-v1.js";
 import {
   rechargeableActionAvailabilityV1,
-  consumeRechargeableActionChargeV1
+  consumeRechargeableActionChargeV1,
+  rechargeableActionWindowStatusV1,
+  activateRechargeableActionV1
 } from "./rechargeable-action-v1.js";
 import {
   applyImmediateTacticalEffectsV1
@@ -180,6 +182,25 @@ export function createCombatSession({
       state,
       ...config
     });
+  }
+
+  function rechargeableActionWindowStatus(config) {
+    return rechargeableActionWindowStatusV1({
+      state,
+      ...config
+    });
+  }
+
+  function activateRechargeableAction(config) {
+    const result =
+      activateRechargeableActionV1({
+        state,
+        ...config
+      });
+    if (result.ok) {
+      state = result.state;
+    }
+    return result;
   }
 
   function previewRechargeableReaction({
@@ -404,6 +425,8 @@ export function createCombatSession({
     previewReaction,
     reactToSkill,
     rechargeableActionAvailability,
+    rechargeableActionWindowStatus,
+    activateRechargeableAction,
     previewRechargeableReaction,
     reactWithRechargeableAction,
     completeSkill,
