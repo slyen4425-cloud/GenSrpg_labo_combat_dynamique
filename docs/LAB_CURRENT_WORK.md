@@ -136,3 +136,22 @@ Inchangés :
 - checkpoint `checkpoint/lab-creature-dodge-appearance-fx-v1-green-2026-10-07` ;
 - preview `preview/lab-creature-dodge-appearance-fx-v1-2026-10-07` ;
 - validation smartphone utilisateur.
+
+
+## 2026-10-08 — Capture Skill Icons V1
+
+- Objectif : publier six nouvelles icônes de capacités Capture et les rendre disponibles dans le catalogue visuel global existant.
+- Base labo exacte : `181cada1bf19f919961fcc546b9eee5bebb7c5bc`.
+- Checkpoint départ : `checkpoint/lab-start-capture-skill-icons-v1-2026-10-08`.
+- Branche labo : `work/lab-capture-skill-icons-v1-2026-10-08`.
+- Base assets exacte : `e5a32bcdc33f564b3d42892eeda6d5f67e792a86`.
+- Checkpoint assets départ : `checkpoint/global-assets-before-capture-skill-icons-v1-2026-10-08`.
+- Branche assets : `work/global-assets-capture-skill-icons-v1-2026-10-08`.
+- Propriétaire : Asset Catalog / bibliothèque visuelle `global-assets`.
+- Icônes ciblées : Cendre aveuglante, Goutte d'eau, Morsure marine, Carapace de terre, Éclair foudroyant, Trait de givre.
+- Périmètre autorisé : `assets/library/capture/icons/skills/`, sources/provenance du pack, catalogue global, test dédié, documentation, puis cache-buster `GLOBAL_VISUAL_LIBRARY` côté labo.
+- Protégés : SkillDefinition gameplay, configuredSkills, FX Core, Animation Core, Render Adapter, Combat Rules, dégâts, énergie, cooldowns, collisions, autres bindings, `main`, `Zombicide-40k`.
+- Règle : les icônes sont additives et ne remplacent aucune icône/binding de compétence sans décision explicite.
+- Tests : six IDs uniques dans le catalogue, six ressources image valides, résolveur global, CI assets puis CI labo complète.
+- Critère GREEN : publication `global-assets` verte, cache labo avancé, CI complète verte, documentation synchronisée, checkpoint GREEN final.
+- Statut : EN COURS.
