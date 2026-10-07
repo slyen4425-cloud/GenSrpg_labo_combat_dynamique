@@ -637,17 +637,17 @@ test("primary charge display shows runtime action name and authoritative remaini
   assert.doesNotMatch(source, /setInterval/);
 });
 
-test("ground aerial and teleport approaches all use visual target geometry", async () => {
+test("ground aerial teleport and burrow approaches all use visual target geometry", async () => {
   const source = await readFile("src/ui/demo-app.js", "utf8");
   const presenter = await readFile(
     "src/adapters/renderer/combat-resolution-presenter.js",
     "utf8"
   );
 
-  assert.match(source, /\["ground", "teleport", "aerial"\]\.includes\(approachMode\)/);
+  assert.match(source, /\["ground", "teleport", "aerial", "burrow"\]\.includes\(approachMode\)/);
   assert.match(source, /arenaExitTranslateY/);
   assert.match(source, /"ground-attack"/);
-  assert.match(presenter, /\["ground", "teleport", "aerial"\]\.includes\(approachMode\)/);
+  assert.match(presenter, /\["ground", "teleport", "aerial", "burrow"\]\.includes\(approachMode\)/);
 });
 
 
