@@ -50,4 +50,6 @@ Inchangés :
 
 ## Validation
 
-CI complète labo requise avant checkpoint GREEN.
+`21bf8011a63039f04c72cbbf9ce99ea42560c797` a d'abord produit la CI `37697945453` : 1256 PASS / 1 FAIL, uniquement sur une sentinelle d'arène qui figeait encore la révision cache v14. La sentinelle a été corrigée pour comparer à l'autorité `GLOBAL_VISUAL_LIBRARY.revision`, sans assouplir son contrat. Le correctif `30b3b3d2b3c7412052bb349c1c57cb97f072d006` passe la CI `37698029428` : **1257/1257 PASS**, 0 échec.
+
+Le lot est GREEN technique ; une CI documentaire finale est exécutée avant création du checkpoint exact.

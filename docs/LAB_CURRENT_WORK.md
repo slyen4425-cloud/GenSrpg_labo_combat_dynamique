@@ -166,3 +166,15 @@ Inchangés :
 - CI publication `global-assets` : `37697838724` SUCCESS.
 - Raccord labo : cache-buster `2026-10-08-v18-capture-skill-icons-v1`, resolver existant uniquement.
 - Aucun binding de compétence existant modifié.
+
+
+### Capture Skill Icons V1 — clôture technique
+
+- Premier raccord labo : `21bf8011a63039f04c72cbbf9ce99ea42560c797`.
+- CI `37697945453` : 1256 PASS / 1 FAIL, uniquement la sentinelle d'arènes avec l'ancienne révision cache v14 figée.
+- Correction soustractive : la sentinelle compare désormais le paramètre de cache à `GLOBAL_VISUAL_LIBRARY.revision`, sans changer le contrat des arènes.
+- Correctif : `30b3b3d2b3c7412052bb349c1c57cb97f072d006`.
+- CI complète finale fonctionnelle : `37698029428` — **1257/1257 PASS**, 0 échec.
+- Révision active : `2026-10-08-v18-capture-skill-icons-v1`.
+- Aucun configuredSkill, gameplay, moteur FX/animation, renderer, collision, dégâts, énergie ou cooldown modifié.
+- État : **GREEN technique**, en attente uniquement du checkpoint exact après CI documentaire finale.
