@@ -146,7 +146,6 @@ test("native test button allows a retry after invalid fields and a failed previe
     onModeChange: next => { mode = next; }
   });
   // Execute the page's own handlers against the real Preview Session.
-  const landscapeMode = { checked: true };
   const displayCalls = [];
   const previewDisplayMode = {
     enter({ enabled }) {
@@ -171,7 +170,6 @@ test("native test button allows a retry after invalid fields and a failed previe
     backButton,
     session,
     editorStatus,
-    landscapeMode,
     previewDisplayMode,
     visualContext: {},
     visualContextPromise: Promise.resolve({}),
@@ -207,4 +205,42 @@ test("native test button allows a retry after invalid fields and a failed previe
   assert.equal(mode, "editor");
   assert.match(editorStatus.textContent, /missing preview asset/);
   session.dispose();
+});
+
+
+test("landscape is automatic and the obsolete landscape checkbox is absent", async () => {
+  const [html, source] = await Promise.all([
+    readFile(htmlUrl, "utf8"),
+    readFile(jsUrl, "utf8")
+  ]);
+
+  assert.doesNotMatch(
+    html,
+    /data-preview-landscape-mode/
+  );
+  assert.doesNotMatch(
+    html,
+    /preview-landscape-toggle/
+  );
+  assert.doesNotMatch(
+    source,
+    /landscapeMode/
+  );
+  assert.doesNotMatch(
+    source,
+    /data-preview-landscape-mode/
+  );
+  assert.match(
+    source,
+    /previewDisplayMode\.enter\(\{\s*enabled:\s*true\s*\}\)/
+  );
+
+  assert.match(
+    html,
+    /data-preview-rotate-gate/
+  );
+  assert.match(
+    html,
+    /Tourne ton téléphone/
+  );
 });
