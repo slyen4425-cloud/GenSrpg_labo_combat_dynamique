@@ -1,4 +1,8 @@
-# Micro-lot actif — 2026-10-07 — Fireball Author Correction V4
+# Point de reprise courant — 2026-10-07
+
+## Lot techniquement GREEN
+
+Fireball Author Correction V4
 
 Branche :
 `work/lab-fireball-author-correction-v4-2026-10-07`
@@ -9,37 +13,48 @@ Checkpoint de départ :
 Base :
 `9f7bb7e0e10fab9d058d65808047ead24f5961dd`
 
-## Justification
+## Résultat
 
-Retour utilisateur explicite sur la fiche Boule de feu intégrée :
-- le point de sortie devait être `mouth` et non Centre ;
-- le décalage du cast devait être horizontal `30` ;
-- le décalage vertical devait être `0`.
+La fiche Showcase `fireball` a été corrigée uniquement sur les valeurs explicitement signalées par l'utilisateur :
 
-La charte §33 autorise une correction volontaire des données auteur lorsqu'elle est fondée sur un retour utilisateur explicite.
+- socket cast : `mouth` ;
+- socket travel : `mouth` ;
+- cast `offsetX = 30` ;
+- cast `offsetY = 0`.
 
-## Périmètre
+Toutes les autres valeurs auteur de Fireball restent inchangées.
 
-Uniquement :
-- `data/capture/showcase/fireball.capture-skill-transfer-v1.json` ;
-- sentinelle auteur Fireball ;
-- rapport du lot.
+Le remplacement canonique reste possédé par le Transfer pipeline existant :
+`import -> plan mode replace -> apply`.
 
-Aucun moteur ni contrat n'est modifié.
-
-## Invariant
-
-La capacité garde toutes les autres valeurs du dernier export V3.
-
-Le socket de capacité est commun au cast et au projectile dans le Human Editor ; la correction doit donc conserver `anchor: mouth` sur cast et travel.
+Aucun moteur, Runtime, renderer, contrat gameplay ou autre preset n'a été modifié.
 
 ## TDD
 
-RED sur :
-- cast.anchor = mouth ;
-- travel.anchor = mouth ;
-- cast.offsetX = 30 ;
-- cast.offsetY = 0.
+RED :
+- commit `000eb77040979da5634fc17d0a49acc896f2bee7` ;
+- CI `37631531458` ;
+- sentinelle V4 rouge sur `anchor: null !== mouth`.
 
-Puis remplacement ciblé des quatre valeurs explicitement corrigées, CI complète, checkpoint GREEN et preview.
+Correction données :
+- commit `255f36113bb57601d41f643cac2b52a8c7aef8df`.
+
+Sentinelle historique alignée :
+- commit `7d7c4f214da4c719f27fe54a8e3c404154aefe06`.
+
+GREEN fonctionnel :
+- CI `37631687787` ;
+- 1221 / 1221 PASS ;
+- 0 FAIL.
+
+Rapport :
+`docs/LAB_FIREBALL_AUTHOR_CORRECTION_V4.md`
+
+## Prochaine action
+
+Après CI finale sur le SHA documenté :
+- créer `checkpoint/lab-fireball-author-correction-v4-green-2026-10-07` ;
+- créer `preview/lab-fireball-author-correction-v4-2026-10-07` ;
+- fournir le lien de test smartphone ;
+- attendre la validation utilisateur avant GREEN utilisateur.
 
