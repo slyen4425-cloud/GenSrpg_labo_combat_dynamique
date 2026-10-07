@@ -2006,6 +2006,27 @@ export function buildHumanCreatureDraftV3(fields) {
     fields?.displayScale ?? 1,
     "Taille en combat"
   );
+  const dodgeAssetId = optionalText(
+    fields?.visual?.dodgeAssetId
+  );
+  const dodgeVisual =
+    dodgeAssetId === null
+      ? null
+      : {
+          assetId: dodgeAssetId,
+          displayScale: finiteNumber(
+            fields?.visual?.dodgeDisplayScale ?? 1,
+            "Taille de l’effet d’esquive"
+          ),
+          offsetX: finiteNumber(
+            fields?.visual?.dodgeOffsetX ?? 0,
+            "Décalage X de l’effet d’esquive"
+          ),
+          offsetY: finiteNumber(
+            fields?.visual?.dodgeOffsetY ?? 0,
+            "Décalage Y de l’effet d’esquive"
+          )
+        };
 
   return normalizeCaptureCreatureEditorDraftV3({
     ...base,
@@ -2015,7 +2036,10 @@ export function buildHumanCreatureDraftV3(fields) {
         ? null
         : {
             ...base.presentation,
-            version: 2,
+            version:
+              dodgeVisual === null
+                ? 2
+                : 3,
             displayScale,
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
@@ -2027,7 +2051,15 @@ export function buildHumanCreatureDraftV3(fields) {
               fields?.transformOrigin ?? {
                 x: "50%",
                 y: "50%"
-              }
+              },
+            ...(dodgeVisual === null
+              ? {}
+              : {
+                  visual: {
+                    ...base.presentation.visual,
+                    dodge: dodgeVisual
+                  }
+                })
           }
   });
 }
@@ -3553,6 +3585,22 @@ function writeCreatureRecordFields(
       presentation?.visual?.icon?.assetId ?? ""
     ],
     [
+      "[data-creature-dodge-fx]",
+      presentation?.visual?.dodge?.assetId ?? ""
+    ],
+    [
+      "[data-creature-dodge-scale]",
+      presentation?.visual?.dodge?.displayScale ?? 1
+    ],
+    [
+      "[data-creature-dodge-offset-x]",
+      presentation?.visual?.dodge?.offsetX ?? 0
+    ],
+    [
+      "[data-creature-dodge-offset-y]",
+      presentation?.visual?.dodge?.offsetY ?? 0
+    ],
+    [
       "[data-creature-audio-attack]",
       creatureAudioAssetId(
         presentation?.audio?.attack
@@ -3732,6 +3780,10 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-front-select]", ""],
     ["[data-creature-back-select]", ""],
     ["[data-creature-icon-select]", ""],
+    ["[data-creature-dodge-fx]", ""],
+    ["[data-creature-dodge-scale]", 1],
+    ["[data-creature-dodge-offset-x]", 0],
+    ["[data-creature-dodge-offset-y]", 0],
     ["[data-creature-audio-attack]", ""],
     ["[data-creature-audio-hit]", ""],
     ["[data-creature-audio-ko]", ""],
@@ -7395,6 +7447,22 @@ function readCreatureFields(
       iconAssetId: selectedValue(
         root,
         "[data-creature-icon-select]"
+      ),
+      dodgeAssetId: selectedValue(
+        root,
+        "[data-creature-dodge-fx]"
+      ),
+      dodgeDisplayScale: numericValue(
+        root,
+        "[data-creature-dodge-scale]"
+      ),
+      dodgeOffsetX: numericValue(
+        root,
+        "[data-creature-dodge-offset-x]"
+      ),
+      dodgeOffsetY: numericValue(
+        root,
+        "[data-creature-dodge-offset-y]"
       )
     },
     sockets: socketList(sockets),
