@@ -6080,7 +6080,8 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
     role === "travel" ||
     role === "impact" ||
     role === "zone" ||
-    role === "status"
+    role === "status" ||
+    role === "dodge"
   ) {
     const tags = Array.isArray(asset.tags)
       ? asset.tags
