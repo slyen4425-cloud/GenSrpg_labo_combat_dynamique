@@ -1,81 +1,75 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Lot actif
 
-Goutte Projectile Power Regression V1
+Landscape Toggle Removal V1
 
 Branche :
-`work/lab-goutte-projectile-power-regression-v1-2026-10-07`
+`work/lab-landscape-toggle-removal-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-goutte-projectile-power-regression-v1-2026-10-07`
+`checkpoint/lab-start-landscape-toggle-removal-v1-2026-10-07`
 
-Base :
-`ffdb2533bfa28446a2bea22afa36c5093c4d8cce`
+Base exacte :
+`9d0c5101c68b835652f5b94626b42e1490c3894d`
 
-## Résultat
+Base GREEN précédente :
+`checkpoint/lab-goutte-projectile-power-regression-v1-green-2026-10-07`
 
-Le contrat existant est confirmé :
-- `projectileClash.power = 0` = hors système de clash ;
-- puissance positive = participe au clash ;
-- puissance supérieure = survit ;
-- puissance égale = annulation mutuelle.
+## Décision produit existante
 
-L'export auteur de Goutte vive possède déjà `power = 1`.
+`docs/LAB_CAPTURE_LANDSCAPE_PRODUCT_DECISION_V1.md` définit déjà le gameplay Capture smartphone en paysage comme norme produit.
 
-Le vrai chemin complet a été testé :
-`Author Transfer -> configuredSkills -> Combat Export -> Native Adapter -> Combat Runtime`.
+Le propriétaire UI reste :
+`createCapturePreviewDisplayModeV1`.
 
-Résultat :
-- historique natif avant remplacement : 0 ;
-- auteur / configuredSkills / export / natif : 1 ;
-- Runtime : 1 vs 1 => mutual cancel.
+Le gate « Tourne ton téléphone » reste nécessaire uniquement quand le navigateur ne peut pas verrouiller l'orientation.
 
-Aucune règle gameplay n'a été modifiée.
+## Retour utilisateur
 
-## Correction UI
+L'encadré :
+« Combat plein écran paysage / Mode de jeu Capture »
+avec sa checkbox cochée et désactivée est devenu inutile.
 
-Le champ explique désormais :
-`0 = hors système de clash : les projectiles se traversent. Minimum actif = 1.`
+## Objectif
 
-## TDD
+Supprimer uniquement le contrôle/toggle devenu obsolète.
 
-Premier test de fixture invalide :
-- commit `f12c78d342b3f8e899118a9f6bfa67c0902d8fab`
-- CI `37676606620`
-- l'échec venait uniquement du fixture CaptureDatabase.
+Le lancement du combat doit appeler systématiquement le propriétaire display mode en paysage :
+`previewDisplayMode.enter({ enabled: true })`.
 
-Fixture corrigé :
-- `4c23cd165b21a096e159c76158f10e3162392dc4`
-- CI `37676741992` SUCCESS.
+## Fichiers autorisés
 
-Clarté UI :
-- `88505159d8bc942d5c9fd86e8f64396a50516d95`
-- sentinelle `4382e5bde5d2e2bd1af427d94828c8d0ba3a3b50`
-- CI `37677076374`
-- 1244 / 1244 PASS
-- 0 FAIL
-- structure / frontières / indépendance : OK.
-
-Rapport :
-`docs/LAB_GOUTTE_PROJECTILE_POWER_REGRESSION_V1.md`
+- `examples/dom-demo/capture-editor-v2.html`
+- `examples/dom-demo/capture-editor-v2.js`
+- CSS uniquement pour retirer le style mort du toggle
+- tests UI preview
+- documentation
 
 ## Domaines protégés
 
-Inchangés :
-- donnée auteur Goutte vive ;
-- Projectile Clash / Combat Rules ;
-- Combat Runtime ;
-- Animation / FX ;
-- collision DOM ;
-- Roster ;
+Ne pas modifier :
+- `src/ui/capture-preview-display-mode-v1.js` sauf preuve ;
+- fullscreen/orientation lock ;
+- rotate gate ;
+- scène 16:9 ;
+- Combat Runtime / Rules ;
+- Goutte vive ;
 - audio ;
 - créatures ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochaine action
+## TDD
 
-Créer le checkpoint GREEN puis ouvrir séparément le lot UI :
-**Landscape Toggle Removal V1** — supprimer l'encadré/toggle paysage devenu inutile, sans changer le mode paysage devenu norme.
+1. RED : le HTML ne doit plus contenir `data-preview-landscape-mode` ni l'encadré ;
+2. RED : le script ne doit plus dépendre de `landscapeMode` ;
+3. RED : lancement test => `enter({ enabled: true })` ;
+4. conserver leave/dispose et rotate gate ;
+5. CI complète ;
+6. preview dédiée.
+
+## Critère de fin
+
+Le contrôle utilisateur disparaît, mais le paysage reste la norme automatique et le propriétaire UI existant reste seul responsable du fullscreen/orientation.
