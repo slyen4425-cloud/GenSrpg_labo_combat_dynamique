@@ -11296,11 +11296,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const ready =
     settleCaptureEditorStartupDependenciesV1({
       assetCatalogPromise:
-        hydrateAssetCatalog(
-          root,
-          listen,
-          creatorVisualAssets
-        ),
+        hydrateAssetCatalog(root, listen, creatorVisualAssets),
       privateAudioCatalogPromise:
         hydratePrivateAudioCatalog(
           root,
