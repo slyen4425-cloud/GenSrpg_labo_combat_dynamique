@@ -146,6 +146,9 @@ import {
 import {
   validateCaptureLoadoutSkillSlotsV1
 } from "../adapters/input/capture/capture-loadout-skill-slot-v1.js";
+import {
+  settleCaptureEditorStartupDependenciesV1
+} from "./capture-editor-startup-v1.js";
 
 const PRIVATE_AUDIO_CATALOG_URL = new URL(
   "../../data/presentation/audio/private-audio-catalog.v1.json",
@@ -11290,29 +11293,46 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
   );
 
-  const ready = Promise.all([
-    hydrateAssetCatalog(root, listen, creatorVisualAssets),
-    hydratePrivateAudioCatalog(root, listen, creatorAudioAssets),
-    hydrateNativeSkillCatalog(),
-    hydrateCaptureStatRegistryV1()
-      .then(async (registry) => ({
-        registry,
-        records:
-          await hydrateMonsterCaptureCreatureCatalog(
-            registry
-          )
-      })),
-    hydrateCaptureProgressionRulesV1(),
-    hydrateCaptureCreatureVisualMetadataV1()
-  ])
-    .then(async ([
+  const ready =
+    settleCaptureEditorStartupDependenciesV1({
+      assetCatalogPromise:
+        hydrateAssetCatalog(
+          root,
+          listen,
+          creatorVisualAssets
+        ),
+      privateAudioCatalogPromise:
+        hydratePrivateAudioCatalog(
+          root,
+          listen,
+          creatorAudioAssets
+        ),
+      nativeSkillsPromise:
+        hydrateNativeSkillCatalog(),
+      captureDataPromise:
+        hydrateCaptureStatRegistryV1()
+          .then(async (registry) => ({
+            registry,
+            records:
+              await hydrateMonsterCaptureCreatureCatalog(
+                registry
+              )
+          })),
+      progressionRulesPromise:
+        hydrateCaptureProgressionRulesV1(),
+      creatureVisualMetaPromise:
+        hydrateCaptureCreatureVisualMetadataV1()
+    })
+    .then(async ({
       assetCatalog,
       privateAudioCatalog,
       nativeSkills,
       captureData,
       loadedProgressionRules,
-      creatureVisualMetaById
-    ]) => {
+      creatureVisualMetaById,
+      availability,
+      warnings
+    }) => {
       fxStarterVisualAssetIds = new Set(
         (assetCatalog.assets ?? [])
           .map((asset) => asset?.id)
@@ -11323,15 +11343,22 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           .map((entry) => entry?.assetId)
           .filter(Boolean)
       );
-      fxStarterLibrariesReady = true;
+      fxStarterLibrariesReady =
+        availability.assetCatalog &&
+        availability.privateAudioCatalog;
       if (fxStarterProfileSelect) {
-        fxStarterProfileSelect.disabled = false;
+        fxStarterProfileSelect.disabled =
+          !fxStarterLibrariesReady;
       }
       syncFxStarterApplyButton();
       updateFxStarterState(
-        CAPTURE_FX_STARTER_PROFILES_V1.length +
-          " profils FX GenSrpG prêts. Choisis une base : elle sera copiée, jamais liée ni verrouillée.",
-        "ok"
+        fxStarterLibrariesReady
+          ? CAPTURE_FX_STARTER_PROFILES_V1.length +
+              " profils FX GenSrpG prêts. Choisis une base : elle sera copiée, jamais liée ni verrouillée."
+          : "Profils FX temporairement indisponibles : la bibliothèque de créatures reste utilisable.",
+        fxStarterLibrariesReady
+          ? "ok"
+          : "warning"
       );
 
       statRegistry = captureData.registry;
@@ -11453,16 +11480,24 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           captureCreatureVisualBindingForIdV1(
             record.draft.id
           );
-        const visualRecord =
+        const creatureMeta =
           binding === null
+            ? null
+            : (
+                creatureVisualMetaById[
+                  binding.metaId
+                ] ?? null
+              );
+        const visualRecord =
+          binding === null ||
+          !availability.assetCatalog ||
+          !availability.creatureVisualMeta ||
+          creatureMeta === null
             ? recordWithLoadout
             : applyCaptureCreatureVisualBindingV1({
                 record: recordWithLoadout,
                 binding,
-                creatureMeta:
-                  creatureVisualMetaById[
-                    binding.metaId
-                  ],
+                creatureMeta,
                 availableAssetIds
               });
         const hydratedRecord =
@@ -11561,16 +11596,28 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
       syncLoadoutAvailability();
 
+      const optionalStartupMessage =
+        warnings.length === 0
+          ? ""
+          : " Ressources de présentation partielles : " +
+            warnings.join(" · ");
+
       updateCreatureLibraryState(
-        "Catalogue Monster Capture historique chargé. Chargement des modèles vitrine…",
-        "ok"
+        "Catalogue Monster Capture historique chargé. Chargement des modèles vitrine…" +
+          optionalStartupMessage,
+        warnings.length === 0
+          ? "ok"
+          : "warning"
       );
 
       if (!disposed) {
         setStatus(
           root,
-          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des modèles vitrine en cours.",
-          "info"
+          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des modèles vitrine en cours." +
+            optionalStartupMessage,
+          warnings.length === 0
+            ? "info"
+            : "warning"
         );
       }
 
@@ -11648,15 +11695,21 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         syncLoadoutAvailability();
 
         updateCreatureLibraryState(
-          "Catalogue Monster Capture historique + 2 modèles vitrine chargés. Sélectionne une créature pour la modifier ou crée une nouvelle entrée.",
-          "ok"
+          "Catalogue Monster Capture historique + 3 modèles vitrine chargés. Sélectionne une créature pour la modifier ou crée une nouvelle entrée." +
+            optionalStartupMessage,
+          warnings.length === 0
+            ? "ok"
+            : "warning"
         );
 
         if (!disposed) {
           setStatus(
             root,
-            "Bibliothèques principales, 9 capacités laboratoire + 103 capacités Capture natives et 2 modèles vitrine chargés.",
-            "info"
+            "Bibliothèques principales, 9 capacités laboratoire + 103 capacités Capture natives et 3 modèles vitrine chargés." +
+              optionalStartupMessage,
+            warnings.length === 0
+              ? "info"
+              : "warning"
           );
         }
       } catch (presetError) {
