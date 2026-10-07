@@ -312,6 +312,28 @@
             <select data-creature-audio-ko data-private-audio data-audio-roles="death"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
         </div>
+        <div class="creator-audio-import" data-creator-audio-importer>
+          <h3>Importer un son personnel</h3>
+          <p class="note">Import temporaire de session. Le projet conserve uniquement l’assetId ; le fichier audio n’est jamais copié dans les données gameplay.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-audio-role>
+                <option value="release">Attaque / déclenchement</option>
+                <option value="voice">Voix créature</option>
+                <option value="impact">Touché / impact</option>
+                <option value="death">KO / mort</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon son" data-creator-audio-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/ogg,.mp3,.wav,.ogg" data-creator-audio-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-audio-import>Importer mon son</button>
+          <p class="note" data-creator-audio-state data-tone="info">Aucun son personnel importé dans cette session.</p>
+        </div>
       </article>
 
       <article class="card">
@@ -1265,6 +1287,30 @@
           <label>Son de zone / aura
             <select data-skill-zone-audio data-private-audio data-audio-roles="aura"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
+        </div>
+        <div class="creator-audio-import" data-creator-audio-importer>
+          <h3>Importer un son personnel</h3>
+          <p class="note">Le son importé rejoint les mêmes sélecteurs et le même Audio Adapter que la bibliothèque GenSrpG.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-audio-role>
+                <option value="cast">Cast / incantation</option>
+                <option value="release">Déclenchement</option>
+                <option value="preparation">Préparation</option>
+                <option value="travel">Trajet / projectile</option>
+                <option value="impact">Impact</option>
+                <option value="aura">Zone / aura</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon son" data-creator-audio-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/ogg,.mp3,.wav,.ogg" data-creator-audio-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-audio-import>Importer mon son</button>
+          <p class="note" data-creator-audio-state data-tone="info">Aucun son personnel importé dans cette session.</p>
         </div>
         <p class="note">Le son de trajet est joué uniquement pendant le déplacement d'un projectile et s'arrête à l'impact, au clash ou à l'interruption de l'action. Le son de zone boucle tant que la zone persistante existe et s'arrête avec elle.</p>
       </article>
