@@ -1,74 +1,88 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Lot actif
 
-Projectile Power Values V1
+Fireball Cast Side Placement V1
 
 Branche :
-`work/lab-projectile-power-values-v1-2026-10-07`
+`work/lab-fireball-cast-side-placement-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-projectile-power-values-v1-2026-10-07`
+`checkpoint/lab-start-fireball-cast-side-placement-v1-2026-10-07`
 
-Base :
-`129e6f0c6121868ad98f63d8f636f398d14d5533`
+Base exacte :
+`1bb89aecce8ed4e5848d2ccb98cbd72c423aeb67`
 
-## Résultat
+Base GREEN précédente :
+`checkpoint/lab-projectile-power-values-v1-green-2026-10-07`
 
-Valeurs auteur finales :
+## Retour utilisateur
 
-- Boule de feu : `2`
-- Cendre aveuglante : `1`
-- Goutte vive : `1`
+Boule de feu :
+- l'auteur attend un cast horizontal à `-30` côté joueur ;
+- côté opposant, le cast reste visuellement au centre / n'utilise pas le placement opposé attendu.
 
-## Modifications réelles
+## Diagnostic
 
-Deux lignes de données uniquement :
+La chaîne runtime sait déjà résoudre la vue sémantique du lanceur.
 
-- Boule de feu : `1 -> 2`
-- Cendre aveuglante : `0 -> 1`
+Le défaut est dans la donnée auteur actuelle :
+- présentation Boule de feu encore en `SkillPresentationBinding V8` ;
+- `visual.cast.offsetX = 30` ;
+- V8 ne possède pas `offsetMode`.
 
-Goutte vive est restée strictement inchangée.
+Le support side-aware existe déjà en V9 :
+- `mirror_x` conserve l'offset joueur comme référence ;
+- côté opposant, X est inversé automatiquement.
 
-Blob Goutte vive :
-`53046be3171e46b571edc763666bb45397fe9785`
+## Correction cible
 
-## TDD
+Faire évoluer uniquement la présentation Boule de feu en V9 :
+- `visual.cast.offsetX = -30`
+- `visual.cast.offsetY = 0`
+- `visual.cast.offsetMode = "mirror_x"`
 
-RED :
-- commit `20736cd856661b965672c8fb72a35f40a7ff8460`
-- CI `37681164571`
+Résultat attendu :
+- joueur : `-30`
+- opposant : `+30`
 
-GREEN :
-- Boule de feu `e014291d9bbaa254881c8713bc0aa5241b9af13e`
-- Cendre aveuglante `1404cd78d4bfe6640c2a4f19bcd7d98e75f3df50`
-- CI `37681281954`
-- 1247 / 1247 PASS
-- 0 FAIL
-- structure / frontières / indépendance : OK.
+Les autres slots visuels V9 garderont explicitement `offsetMode: "same"` pour conserver leur comportement actuel.
 
-Rapport :
-`docs/LAB_PROJECTILE_POWER_VALUES_V1.md`
+## Périmètre autorisé
+
+- `data/capture/showcase/fireball.capture-skill-transfer-v1.json`
+- sentinelles Fireball auteur
+- test dédié de résolution player/opponent
+- documentation
 
 ## Domaines protégés
 
-Inchangés :
+Ne pas modifier :
+- moteur side-aware V9 ;
+- Combat Runtime / Rules ;
+- collision ;
+- puissance projectile 2 ;
 - dégâts ;
 - éléments ;
 - énergie ;
 - timings ;
-- FX / audio / sockets ;
-- ProjectilePowerV1 / projectile-clash ;
-- Combat Runtime ;
+- FX assets / audio ;
+- autres compétences ;
 - créatures ;
-- paysage ;
+- esquive (chantier interrompu/différé) ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochaine action protocolaire
+## TDD
 
-- CI documentaire finale ;
-- checkpoint `checkpoint/lab-projectile-power-values-v1-green-2026-10-07` ;
-- preview `preview/lab-projectile-power-values-v1-2026-10-07` ;
-- validation utilisateur au besoin.
+1. RED : Fireball doit être V9, cast joueur -30, mirror_x ;
+2. RED : resolver doit produire joueur -30 / opposant +30 ;
+3. modifier uniquement le binding auteur nécessaire ;
+4. préserver les autres valeurs auteur ;
+5. CI complète ;
+6. checkpoint/preview GREEN.
+
+## Critère de fin
+
+Boule de feu utilise le même owner V9 side-aware déjà existant, sans règle spécifique Fireball dans le renderer.
