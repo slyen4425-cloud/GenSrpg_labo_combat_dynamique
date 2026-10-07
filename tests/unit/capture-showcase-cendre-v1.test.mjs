@@ -501,7 +501,11 @@ test("latest Cendre transfer replaces the historical skill through the canonical
   );
   assert.equal(
     active.presentation.audio.cast.assetId,
-    "gensrpg:sound:academie-01fc18a6"
+    "gensrpg:sound:tower-ccc16d37"
+  );
+  assert.equal(
+    active.presentation.audio.travel.assetId,
+    "gensrpg:sound:genrpg-pack2-3e95d6c6"
   );
   assert.equal(
     active.presentation.audio.impact.assetId,
