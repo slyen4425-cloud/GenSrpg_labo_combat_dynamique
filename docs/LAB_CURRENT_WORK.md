@@ -1,90 +1,78 @@
 # Point de reprise courant — 2026-10-07
 
-## Correctif techniquement GREEN — validation smartphone ouverte
+## Validation utilisateur précédente
 
-Creature Library Regression V1
+Sylvain a validé sur smartphone :
+- correction de la bibliothèque de créatures ;
+- attaque souterraine / Burrow Visual V1.
+
+Base GREEN utilisateur retenue :
+`69fe844ef3c24ce7d0210fa6b36f78c9c2fbde97`.
+
+## Lot actif
+
+Water Atk1 Author Export V1
 
 Branche :
-`work/lab-creature-library-regression-v1-2026-10-07`
+`work/lab-water-atk1-author-export-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-creature-library-regression-v1-2026-10-07`
+`checkpoint/lab-start-water-atk1-author-export-v1-2026-10-07`
 
-Base reproduite :
-`36e90e6152b079584f1f4f8aafa53494435befda`
+Base exacte :
+`69fe844ef3c24ce7d0210fa6b36f78c9c2fbde97`
 
-## Symptôme
+## Objectif
 
-La preview Burrow Visual V1 pouvait afficher une bibliothèque de créatures vide.
+Intégrer exactement l'export auteur :
+- ID stable : `cap_water_atk_1`
+- nom : `Goutte vive`
+- schema : `capture-skill-transfer-v1`
 
-## Diagnostic démontré
+Le fichier utilisateur est la source de vérité complète selon §33.
 
-Le vrai jeu de données n'est pas vidé par le Capture Transfer batch :
-- 110 entrées historiques brutes ;
-- 102 créatures canoniques après retrait des 8 alias historiques ;
-- 103 créatures après Showcase (Loup ajouté, Maraileron et Moussados remplacés par ID stable).
+## Owner
 
-Le défaut était l'initialisation Human Editor :
-un `Promise.all` global rendait le remplissage de `configuredCreatures` dépendant de ressources de présentation optionnelles.
+- `configuredSkills` reste l'unique owner actif ;
+- Capture Transfer reste le seul chemin de remplacement ;
+- Showcase startup ne fait qu'appliquer le transfert auteur en mode `replace`.
 
-Une erreur assets/audio/metadata pouvait donc empêcher le remplissage de la bibliothèque.
+## Fichiers autorisés
 
-## Correctif
-
-Nouveau helper :
-`src/ui/capture-editor-startup-v1.js`
-
-Essentiels bloquants :
-- capacités natives ;
-- catalogue + registre créatures ;
-- progression.
-
-Optionnels non bloquants pour la bibliothèque :
-- catalogue visuel ;
-- audio privé ;
-- metadata visuelle.
-
-Les optionnels utilisent `Promise.allSettled`.
-
-`configuredCreatures` reste l'unique owner.
-
-## TDD
-
-RED startup :
-- commit `2802725e1533f6f1c8cbe93e53f1bdf061ddae39`.
-
-GREEN :
-- helper `6ed012244e20332e1b026f3a727b11542ba38a1c`;
-- raccord `7d31a81a7e868d3432bcb7220a41ee978af1dcd5`;
-- sentinelle ownership listener `96af0937247ee4bcbb1e9625b63f7af56a8d8166`;
-- CI `37666680690`;
-- 1237 / 1237 PASS ;
-- 0 FAIL ;
-- structure / frontières / indépendance : OK.
-
-Rapport :
-`docs/LAB_CREATURE_LIBRARY_REGRESSION_V1.md`
+- `data/capture/showcase/cap_water_atk_1.capture-skill-transfer-v1.json`
+- `src/catalogs/capture-showcase-skill-presets-v1.js`
+- test auteur dédié
+- documentation du lot
 
 ## Domaines protégés
 
-Inchangés :
-- données auteur Maraileron / Morsure ;
-- Capture Transfer ;
+Ne pas modifier :
+- données auteur ;
+- créatures ;
 - Combat Runtime / Session / Timing ;
-- Burrow Visual / Animation Core ;
-- FX ;
+- Animation / FX / Burrow ;
 - collision ;
 - Roster ;
 - Dodge ;
+- audio selector policy (lot séparé) ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochaine action
+## TDD prévu
 
-- CI finale documentaire ;
-- checkpoint GREEN ;
-- preview dédiée ;
-- validation smartphone Sylvain.
+1. RED : le preset auteur exact n'existe pas dans la vitrine ;
+2. intégrer le fichier sans transformation ;
+3. ajouter l'ID au catalogue Showcase ;
+4. vérifier import exact, valeurs auteur et remplacement stable ;
+5. CI complète ;
+6. checkpoint GREEN ;
+7. lot audio séparé.
 
-Ne pas reprendre un autre chantier avant ce test utilisateur.
+## Critère de fin
+
+- fichier GitHub identique à l'export fourni ;
+- `cap_water_atk_1` remplacé via l'owner existant ;
+- aucune duplication ;
+- présentation / audio auteur préservés ;
+- CI verte.
