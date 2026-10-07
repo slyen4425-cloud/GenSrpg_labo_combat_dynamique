@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "pack": "Capture Skill Icons V1",
+  "author": "GenSrpG",
+  "license": "project-internal",
+  "source": "OpenAI image generation, user-approved Capture Monster style icons",
+  "processing": "Generated transparent PNG -> contained/resized to 128x128 -> WebP quality 75 with alpha",
+  "assets": [
+    {
+      "id": "pack:capture:icon-skill-blinding-ash-01",
+      "label": "Cendre aveuglante",
+      "file": "capture/icons/skills/icon_skill_blinding_ash_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "5f7b0cadacbaa74960828889c4ccb3a9266241375e53e9ef129c2d278c459bf2",
+      "generation_id": "b64ffb5f-d04e-438a-83d6-f2c7d5fe1866"
+    },
+    {
+      "id": "pack:capture:icon-skill-water-drop-01",
+      "label": "Goutte d’eau",
+      "file": "capture/icons/skills/icon_skill_water_drop_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "2d7782b0567914e47b89c8364b32eb6c32dcf3bb0713a093e2c9182a7e805e76",
+      "generation_id": "ab401f7d-f633-4295-8c41-683aa0fbdd8f"
+    },
+    {
+      "id": "pack:capture:icon-skill-marine-bite-01",
+      "label": "Morsure marine",
+      "file": "capture/icons/skills/icon_skill_marine_bite_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "564d3d8426259882264fe27b54aff017876fc06f4af4d86b9415359b0e069e7c",
+      "generation_id": "7c986f21-3e46-435f-bd6e-0067a6b9c0fe"
+    },
+    {
+      "id": "pack:capture:icon-skill-earth-carapace-01",
+      "label": "Carapace de terre",
+      "file": "capture/icons/skills/icon_skill_earth_carapace_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "5c52fb237c83cdd49aeaf150bd4ae9cbc61f17a19d2ecfa6e2f212636ac5ed3c",
+      "generation_id": "e9fb866f-e013-4272-8249-859bb2075d60"
+    },
+    {
+      "id": "pack:capture:icon-skill-lightning-strike-01",
+      "label": "Éclair foudroyant",
+      "file": "capture/icons/skills/icon_skill_lightning_strike_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "66ce4ca4b0ff7ebcb529529527d81a3127a3b62ade26c3074d21093b201f1ecc",
+      "generation_id": "69a28c6f-c34a-4f69-a91c-043dc7781575"
+    },
+    {
+      "id": "pack:capture:icon-skill-frost-bolt-01",
+      "label": "Trait de givre",
+      "file": "capture/icons/skills/icon_skill_frost_bolt_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "49930c68a70202fac181d1625a941e765df8616c2122c238d198cbcea491cad1",
+      "generation_id": "1e3f6fd6-c359-4b19-9865-5d9009a5b6a0"
+    }
+  ]
+}
