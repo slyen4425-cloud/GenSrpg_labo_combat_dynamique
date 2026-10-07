@@ -1,3 +1,73 @@
+# Micro-lot actif — 2026-10-07 — Dodge Active Window V1
+
+Branche : `work/lab-dodge-active-window-v1-2026-10-07`
+
+Checkpoint de départ :
+`checkpoint/lab-start-dodge-active-window-v1-2026-10-07`
+
+SHA de base :
+`7689416cfe3ca803946f112c3be8c652de2f3124`
+
+## Décision produit
+
+Esquive devient une action proactive :
+- recharge par défaut : 30 secondes ;
+- fenêtre active par défaut : 0,5 seconde ;
+- les deux valeurs restent configurables dans Options de jeu ;
+- une activation consomme une charge immédiatement ;
+- toute technique esquivable dont l'impact/contact tombe dans la fenêtre active est évitée ;
+- une technique non esquivable traverse la fenêtre ;
+- une activation peut protéger de plusieurs impacts esquivables pendant ses 0,5 s ;
+- aucune seconde horloge.
+
+## Autorité
+
+- configuration : `CaptureGameOptionsV1` ;
+- charge/recharge + timestamp d'activation : `Rechargeable Action V1` existant ;
+- temps : `CombatState.elapsedMs` uniquement ;
+- orchestration des réactions : `CombatRuntime` existant ;
+- résultat Esquive : `resolveReaction` existant ;
+- UI : déclenchement + projection uniquement.
+
+La fenêtre active est dérivée du timestamp de consommation existant `spentAtMs`; aucun timer, cooldown ou état parallèle n'est créé.
+
+## Compatibilité
+
+- ancien export sans `gameOptions` : comportement inchangé, Esquive désactivée ;
+- ancien `gameOptions.dodge` sans `activeWindowMs` : défaut 500 ms ;
+- anciens appels réactifs `reactWithRechargeableAction` restent disponibles et testés.
+
+## Protégé
+
+- Damage / Status ;
+- projectile / collision / contact ;
+- SkillDefinition cooldown ;
+- FX / présentation V9 ;
+- Roster ;
+- Persistent Zone ;
+- valeurs auteur des capacités.
+
+## TDD prévu
+
+1. défaut contrat = 30 000 ms recharge + 500 ms fenêtre ;
+2. ancien dodge explicite sans fenêtre reçoit 500 ms ;
+3. activation consomme une charge immédiatement ;
+4. fenêtre active à 0..499 ms, expirée à 500 ms ;
+5. activation avant une attaque esquivable -> impact dans fenêtre = evaded ;
+6. impact après fenêtre = hit ;
+7. attaque `dodgeable:false` n'est pas évitée ;
+8. aucune nouvelle minuterie gameplay ;
+9. Human Editor expose 30 s + 0,5 s et exporte les deux valeurs.
+
+## Critère de fin
+
+- vraie chaîne Editor -> Export -> Runtime ;
+- CI complète GREEN ;
+- checkpoint + preview ;
+- validation utilisateur smartphone paysage.
+
+---
+
 # Micro-lot actif — 2026-10-07 — Combat HUD Dodge Position V2
 
 Branche : `work/lab-combat-hud-dodge-position-v2-2026-10-07`
