@@ -1,27 +1,33 @@
-# Micro-lot actif — Portable Project Assets Notes V1 — 2026-10-07
+# Point de reprise courant — 2026-10-07
 
-Branche : `work/lab-portable-project-assets-notes-v1-2026-10-07`
+## Lot techniquement GREEN
 
-Checkpoint de départ : `checkpoint/lab-start-portable-project-assets-notes-v1-2026-10-07`
-Base exacte : `b05a0ad48879676b9a80a23653b85138c4a9f88c`
+Portable Project Assets Notes V1
 
-## Objectif
+Branche :
+`work/lab-portable-project-assets-notes-v1-2026-10-07`
 
-Consigner sans implémentation les décisions produit utilisateur pour le futur raccord application :
-- audio importé persistant et portable ;
-- rôles audio utilisés comme tags/tri et non restrictions d'usage ;
-- médias/monstres/capacités transportables avec une game partagée ;
-- arènes personnelles importables ;
-- futur mapping environnement World Builder -> arènes par assetId.
+Checkpoint de départ :
+`checkpoint/lab-start-portable-project-assets-notes-v1-2026-10-07`
 
-## Périmètre
+Base :
+`b05a0ad48879676b9a80a23653b85138c4a9f88c`
 
-Documentation uniquement : `docs/LAB_ROADMAP.md` et ce point de reprise.
+## Décisions enregistrées
 
-## Protégé
+Le futur raccord application devra fournir une Project Asset Library persistante et portable :
+- sons utilisateur réutilisables dans tout slot compatible ;
+- catégories/rôles audio = tags/tri/suggestions, jamais restrictions d'usage ;
+- médias, créatures et capacités transportables avec une game partagée ;
+- arènes utilisateur importables avec assetId stable ;
+- futur World Builder : environnement/zone -> une ou plusieurs arènes par assetId.
 
-Aucun code, Runtime, renderer, asset existant, dépôt principal ou dépôt Exploration modifié.
+Aucune implémentation de persistance, aucun raccord Exploration et aucune modification du dépôt principal n'ont été réalisés dans ce lot.
 
-## Critère de fin
+## Preuve
 
-Documentation enregistrée, CI complète verte, checkpoint documentaire créé.
+CI `37641269922` : SUCCESS.
+
+## Prochaine action
+
+Intégrer le nouvel export auteur `cap_fire_special_1` (Cendre aveuglante) dans un lot dédié, puis traiter l'animation visuelle d'esquive dans un lot séparé.
