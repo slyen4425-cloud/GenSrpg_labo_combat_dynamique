@@ -2,7 +2,8 @@ import { normalizeBattleFormatDefinition } from "../contracts/battle-format-defi
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import {
   normalizeCaptureGameOptionsV1,
-  buildCaptureDodgeReactionSkillV1
+  buildCaptureDodgeReactionSkillV1,
+  captureDodgeActiveWindowMsV1
 } from "../contracts/capture-game-options-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
@@ -520,6 +521,12 @@ export async function mountCoop2v2Test({
           rechargeMs:
             gameOptions.dodge.rechargeMs
         });
+  const dodgeActiveWindowMs =
+    dodgeSkill === null
+      ? 0
+      : captureDodgeActiveWindowMsV1(
+          gameOptions
+        );
 
   const previewFormat =
     resolveCombatPreviewFormatV1(format);
@@ -969,19 +976,24 @@ export async function mountCoop2v2Test({
             ...dodgeRechargeConfig
           });
 
-        const preview =
-          runtime.previewRechargeableReaction(
-            dodgeSkill,
-            {
-              recharge:
-                dodgeRechargeConfig
-            }
-          );
+        const windowStatus =
+          runtime.rechargeableReactionWindowStatus({
+            actorId:
+              format.localActorId,
+            recharge:
+              dodgeRechargeConfig,
+            activeWindowMs:
+              dodgeActiveWindowMs
+          });
 
         dodgeButton.disabled =
           !localAlive ||
-          !preview.ok ||
+          windowStatus.active ||
           availability.charges <= 0;
+        dodgeButton.dataset.active =
+          windowStatus.active
+            ? "true"
+            : "false";
 
         if (dodgeCharges) {
           dodgeCharges.textContent =
@@ -993,17 +1005,27 @@ export async function mountCoop2v2Test({
         if (dodgeRecharge) {
           const recharging =
             availability.nextRechargeMs > 0;
+          const showingStatus =
+            windowStatus.active ||
+            recharging;
           dodgeRecharge.hidden =
-            !recharging;
+            !showingStatus;
           dodgeRecharge.textContent =
-            recharging
-              ? "Recharge " +
+            windowStatus.active
+              ? "Active " +
                 (
-                  availability.nextRechargeMs /
+                  windowStatus.remainingMs /
                   1000
                 ).toFixed(1) +
                 " s"
-              : "";
+              : recharging
+                ? "Recharge " +
+                  (
+                    availability.nextRechargeMs /
+                    1000
+                  ).toFixed(1) +
+                  " s"
+                : "";
         }
       }
     }
@@ -1058,22 +1080,26 @@ export async function mountCoop2v2Test({
         }
 
         const result =
-          runtime.reactWithRechargeableAction(
+          runtime.activateRechargeableReaction(
             dodgeSkill,
             {
+              actorId:
+                format.localActorId,
               recharge:
-                dodgeRechargeConfig
+                dodgeRechargeConfig,
+              activeWindowMs:
+                dodgeActiveWindowMs
             }
           );
 
         if (!result.ok) {
           setStatus(
             result.outcome ===
-              "not_dodgeable"
-              ? "Cette attaque n’est pas esquivable."
+              "no_charges"
+              ? "Aucune charge d’esquive disponible."
               : result.outcome ===
-                  "no_charges"
-                ? "Aucune charge d’esquive disponible."
+                  "already_active"
+                ? "Esquive déjà active."
                 : "Esquive impossible : " +
                   result.outcome +
                   ".",
@@ -1084,7 +1110,12 @@ export async function mountCoop2v2Test({
         }
 
         setStatus(
-          "Esquive déclenchée.",
+          "Esquive active pendant " +
+            (
+              dodgeActiveWindowMs /
+              1000
+            ).toFixed(1) +
+            " s.",
           "accent"
         );
         renderAvailability();
