@@ -1,3 +1,47 @@
+# Micro-lot actif — 2026-10-07 — Combat HUD Dodge Position V2
+
+Branche : `work/lab-combat-hud-dodge-position-v2-2026-10-07`
+
+Checkpoint de départ :
+`checkpoint/lab-start-combat-hud-dodge-position-v2-2026-10-07`
+
+SHA de base :
+`f2fae88f8dd89de561e725f24174d99d0b1c8d43`
+
+## Retour utilisateur
+
+Le bouton Esquive V1 est un peu trop petit et trop éloigné du bloc des capacités.
+
+Objectif :
+- rester hors de l'encadré Capacités ;
+- être placé juste à gauche du bloc Capacités pour réduire le déplacement du pouce ;
+- être légèrement agrandi par rapport à V1, sans revenir à la taille trop grande initiale.
+
+## Autorité
+
+Présentation CSS uniquement. Aucun changement :
+- Combat Runtime ;
+- Game Options ;
+- Rechargeable Action ;
+- logique d'Esquive ;
+- capacité / icônes / scales auteur.
+
+## TDD prévu
+
+1. en paysage, le bouton n'est plus centré à 50 % de l'arène ;
+2. il est ancré immédiatement à gauche du `.coop-command-stack` ;
+3. sa largeur paysage est supérieure à V1 mais inférieure à l'ancienne V0 ;
+4. la grille de 5 capacités garde toute sa largeur.
+
+## Critère de fin
+
+- HTML inchangé ;
+- CSS uniquement ;
+- CI complète GREEN ;
+- checkpoint + preview identiques.
+
+---
+
 # Micro-lot actif — 2026-10-06 — Combat HUD Dodge Layout V1
 
 Branche : `work/lab-combat-hud-dodge-layout-v1-2026-10-06`
