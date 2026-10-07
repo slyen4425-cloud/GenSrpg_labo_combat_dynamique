@@ -8,7 +8,8 @@ const DODGE_FIELDS =
   new Set([
     "enabled",
     "maxCharges",
-    "rechargeMs"
+    "rechargeMs",
+    "activeWindowMs"
   ]);
 
 function objectValue(value, field) {
@@ -67,12 +68,27 @@ function nonNegative(value, field) {
   return number;
 }
 
+function positiveFinite(value, field) {
+  const number = Number(value);
+  if (
+    !Number.isFinite(number) ||
+    number <= 0
+  ) {
+    throw new RangeError(
+      field +
+        " must be a positive finite number"
+    );
+  }
+  return number;
+}
+
 export const CAPTURE_GAME_OPTIONS_V1_DEFAULT =
   Object.freeze({
     dodge: Object.freeze({
       enabled: false,
       maxCharges: 1,
-      rechargeMs: 2000
+      rechargeMs: 30000,
+      activeWindowMs: 500
     })
   });
 
@@ -120,9 +136,35 @@ export function normalizeCaptureGameOptionsV1(
       rechargeMs: nonNegative(
         dodge.rechargeMs,
         "CaptureGameOptionsV1.dodge.rechargeMs"
+      ),
+      ...(
+        Object.prototype.hasOwnProperty.call(
+          dodge,
+          "activeWindowMs"
+        )
+          ? {
+              activeWindowMs: positiveFinite(
+                dodge.activeWindowMs,
+                "CaptureGameOptionsV1.dodge.activeWindowMs"
+              )
+            }
+          : {}
       )
     })
   });
+}
+
+export function captureDodgeActiveWindowMsV1(
+  input = CAPTURE_GAME_OPTIONS_V1_DEFAULT
+) {
+  const options =
+    normalizeCaptureGameOptionsV1(input);
+  return positiveFinite(
+    options.dodge.activeWindowMs ??
+      CAPTURE_GAME_OPTIONS_V1_DEFAULT.dodge
+        .activeWindowMs,
+    "CaptureGameOptionsV1.dodge.activeWindowMs"
+  );
 }
 
 export function buildCaptureDodgeReactionSkillV1(
