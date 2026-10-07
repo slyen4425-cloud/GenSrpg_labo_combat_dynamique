@@ -1,103 +1,84 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Micro-lot actif
 
-Dodge Vanish Visual V1
+Maraileron Author Export V1
 
 Branche :
-`work/lab-dodge-vanish-visual-v1-2026-10-07`
+`work/lab-maraileron-author-export-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-dodge-vanish-visual-v1-2026-10-07`
+`checkpoint/lab-start-maraileron-author-export-v1-2026-10-07`
 
-Base :
-`e87a6acc4c5a2262cb466d2001d698aeb7e9bbd5`
+Base exacte :
+`539d7b82a11e9df83de2af65bdecdef0eeb81ac2`
 
-## Résultat
+Base précédente :
+`checkpoint/lab-dodge-vanish-visual-v1-green-2026-10-07`
 
-L'Esquive proactive existante possède maintenant une projection visuelle générique :
+## Objectif
 
-`HUD -> Runtime -> result.window.remainingMs -> Visual Controller -> CombatVisualEvent dodge -> Animation Core -> DomActorRenderer`
+Intégrer sans reconstruction les deux exports auteur fournis par Sylvain :
+- capacité `cap_water_atk_2` — Morsure de marée ;
+- créature `crea_maraileron` — Maraileron.
 
-Quand l'activation Runtime réussit :
-- la créature disparaît ;
-- son ombre disparaît avec elle ;
-- elle reste invisible pendant la fenêtre active ;
-- elle réapparaît proprement ;
-- la durée visuelle totale est exactement celle renvoyée par le Runtime.
+Le chemin obligatoire reste :
+`importCaptureTransferJsonV1 -> planCaptureTransferImportV1(mode:"replace") -> applyCaptureTransferPlanToEditorStateV1`.
 
-Aucun timer gameplay ou état Dodge parallèle n'a été ajouté.
+L'export auteur est la source de vérité conformément à LAB_CHARTE §33.
 
-## Propriétaires
+## Owners concernés
 
-- fenêtre/charges/recharge/résolution : Combat Runtime existant ;
-- événement : CombatVisualEvent existant ;
-- séquence visuelle : Animation Core ;
-- rendu : DomActorRenderer existant ;
-- UI : déclenchement/projection uniquement.
+- données capacité : `configuredSkills` ;
+- données créature : `configuredCreatures` ;
+- import/remplacement : Capture Transfer owner existant ;
+- hydratation vitrine : catalogues Showcase existants.
 
-## TDD
+Aucun nouvel owner n'est autorisé.
 
-RED :
-- commit `e6ff459c0ac1d8b4d81bde5e3f024919a7605b2f` ;
-- CI `37649766483` ;
-- 1223 / 1226 PASS ;
-- 3 FAIL ciblés.
+## Fichiers autorisés
 
-GREEN fonctionnel :
-- commit `e99453deaf9e1680e8fecee2910ecbc8c1484878` ;
-- CI `37650601948` ;
-- 1226 / 1226 PASS ;
-- 0 FAIL.
-
-Rapport :
-`docs/LAB_DODGE_VANISH_VISUAL_V1.md`
-
-## Fichiers fonctionnels
-
-- `src/core/profiles/dodge-visual-profile-v1.js`
-- `src/core/animation/plan-animation.js`
-- `src/ui/combat-2v2-test-ui.js`
-- `tests/unit/dodge-vanish-visual-v1.test.mjs`
-- `tests/unit/contracts-and-planner.test.mjs`
+- `data/capture/showcase/cap_water_atk_2.capture-skill-transfer-v1.json`
+- `data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json`
+- `src/catalogs/capture-showcase-skill-presets-v1.js`
+- `src/catalogs/capture-showcase-creature-presets-v1.js`
+- tests dédiés au round-trip/remplacement
+- `docs/LAB_CURRENT_WORK.md`
+- rapport de lot
 
 ## Domaines protégés
 
-Inchangés :
+Ne pas modifier :
 - Combat Runtime / Session ;
-- Rechargeable Action ;
-- Damage / Status ;
-- collision / projectile ;
-- SkillDefinition ;
-- Roster ;
+- Animation Core ;
+- FX Core ;
+- renderer ;
+- collisions ;
+- Dodge ;
+- Tempête / zones persistantes ;
 - audio ;
-- Showcase ;
-- main ;
-- GenSrpG principal ;
-- Exploration.
+- roster ;
+- dépôt Zombicide-40k ;
+- dépôt Exploration ;
+- main.
 
-## Chantiers futurs déjà enregistrés
+## TDD prévu
 
-Le lot `Portable Project Assets Notes V1`, présent dans la lignée de cette base, conserve les décisions suivantes pour l'intégration finale :
-- bibliothèque de sons/assets personnelle persistante ;
-- son importé réutilisable dans tout slot audio compatible ;
-- rôle/catégorie = tag/tri/suggestion, pas une restriction ;
-- game partagée transporte/résout ses créatures, sons et médias nécessaires ;
-- arènes utilisateur importables par assetId ;
-- futur raccord World Builder environnement/zone -> une ou plusieurs arènes.
+RED :
+- les exports Maraileron/Morsure ne sont pas encore présents dans les presets showcase ;
+- le vrai chemin de remplacement par ID stable n'est donc pas encore protégé par une sentinelle dédiée.
 
-## Suite après validation de ce lot
+GREEN attendu :
+- les deux transferts sont importables ;
+- `cap_water_atk_2` remplace exactement l'ancienne capacité sans changer le nombre de capacités ;
+- `crea_maraileron` remplace exactement l'ancienne créature sans changer le nombre de créatures ;
+- valeurs auteur importantes conservées ;
+- Maraileron garde son loadout exact, dont `cap_water_atk_2` en slot-2 ;
+- round-trip export/import stable ;
+- CI complète verte.
 
-Micro-lot séparé possible :
-**Dodge Custom Vanish FX V2**
-- sprite/FX optionnel de disparition/réapparition ;
-- import créateur via Asset Input existant ;
-- aucun second moteur FX ;
-- aucune modification des règles Dodge.
+## Suite séparée
 
-## Prochaine action protocolaire
-
-- CI finale sur le SHA documenté ;
-- checkpoint `checkpoint/lab-dodge-vanish-visual-v1-green-2026-10-07` ;
-- preview `preview/lab-dodge-vanish-visual-v1-2026-10-07` ;
-- validation smartphone utilisateur avant GREEN utilisateur.
+Après GREEN technique de ce lot seulement :
+**Burrow Visual V1** sur une nouvelle branche/checkpoint.
+Le gameplay burrow reste possédé par Combat Runtime ; le lot suivant ne modifiera que la projection visuelle générique.
