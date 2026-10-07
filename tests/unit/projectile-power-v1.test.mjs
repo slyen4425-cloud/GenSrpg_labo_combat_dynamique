@@ -505,3 +505,31 @@ test("Human Editor explains that projectile power zero opts out and active clash
     /Minimum actif = 1/i
   );
 });
+
+
+test("Human Editor documents projectile clash examples and separates clash power from damage and element", async () => {
+  const html = await readFile(
+    new URL(
+      "../../examples/dom-demo/capture-editor-v2.html",
+      import.meta.url
+    ),
+    "utf8"
+  );
+
+  assert.match(
+    html,
+    /1\s*(?:contre|vs)\s*1[^<]*(?:annul|dispara)/i
+  );
+  assert.match(
+    html,
+    /2\s*(?:contre|vs)\s*1[^<]*(?:2|plus puissant)[^<]*(?:continue|survit)/i
+  );
+  assert.match(
+    html,
+    /indépendante? des dégâts|ne dépend pas des dégâts/i
+  );
+  assert.match(
+    html,
+    /aucune règle élémentaire|élément[^<]*(?:ne change pas|n.?intervient pas|non appliquée)/i
+  );
+});
