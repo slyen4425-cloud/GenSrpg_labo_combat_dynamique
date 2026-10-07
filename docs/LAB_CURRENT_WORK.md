@@ -1,3 +1,61 @@
+# Micro-lot actif — 2026-10-07 — Creator Audio Import V1
+
+Branche : `work/lab-creator-audio-import-v1-2026-10-07`
+
+Checkpoint de départ :
+`checkpoint/lab-start-creator-audio-import-v1-2026-10-07`
+
+SHA de base :
+`5f9d2ae11ccd6b84098d625117de20261fb10997`
+
+## Objectif
+
+Permettre au créateur d'importer ses propres sons pour une créature ou une capacité, en session, par la chaîne Asset Input existante.
+
+Périmètre V1 :
+- MP3 / WAV / OGG ;
+- Asset ID stable `user:*` ;
+- rôles audio de créature et de capacité ;
+- ajout au catalogue audio actif de l'éditeur ;
+- écoute immédiate ;
+- utilisation immédiate en preview combat pour les sons de capacité ;
+- teardown avec révocation des Object URLs ;
+- export JSON = référence assetId seulement, jamais les octets.
+
+## Propriétaires
+
+- fichier / URL temporaire : Asset Input ;
+- métadonnées / session créateur : Asset Library ;
+- sélection : Human Editor ;
+- lecture : Audio Adapter existant ;
+- gameplay : inchangé.
+
+## Interdictions
+
+- aucun stockage IndexedDB dans ce lot ;
+- aucun binaire dans les exports Capture ;
+- aucun second moteur audio ;
+- aucune modification Damage / Runtime / collision / FX ;
+- aucun hardcode de créature ou capacité.
+
+## TDD prévu
+
+1. Source Manager audio : MIME / fichier vide / cleanup ;
+2. session créateur : `user:*`, metadata et lifecycle ;
+3. vrai chemin user asset -> SkillPresentation -> DomCombatAudio ;
+4. UI : importeurs créature + capacité, options catalogue et resolver combiné ;
+5. CI complète.
+
+## Critère de fin
+
+- RED ciblé ;
+- GREEN complet ;
+- preview dédiée ;
+- checkpoint final ;
+- validation smartphone utilisateur requise.
+
+---
+
 # Micro-lot actif — 2026-10-07 — Fireball Author Export V3
 
 Branche : `work/lab-fireball-author-export-v3-2026-10-07`
