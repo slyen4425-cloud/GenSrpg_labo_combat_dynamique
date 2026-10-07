@@ -1,78 +1,67 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot techniquement GREEN
+## Lot actif
 
-Landscape Toggle Removal V1
+Projectile Power Help V1
 
 Branche :
-`work/lab-landscape-toggle-removal-v1-2026-10-07`
+`work/lab-projectile-power-help-v1-2026-10-07`
 
 Checkpoint de départ :
-`checkpoint/lab-start-landscape-toggle-removal-v1-2026-10-07`
+`checkpoint/lab-start-projectile-power-help-v1-2026-10-07`
 
-Base :
-`9d0c5101c68b835652f5b94626b42e1490c3894d`
+Base exacte :
+`9e37c39d6c3bbb9a231f8e7d3dc00ccacacd4477`
 
-## Résultat
+Base GREEN précédente :
+`checkpoint/lab-landscape-toggle-removal-v1-green-2026-10-07`
 
-Le contrôle utilisateur paysage devenu inutile est supprimé :
-- plus de checkbox `data-preview-landscape-mode` ;
-- plus d'encadré `Combat plein écran paysage / Mode de jeu Capture` ;
-- plus de dépendance JS `landscapeMode` ;
-- plus de styles morts du toggle.
+## Besoin utilisateur
 
-Le paysage reste automatique :
-`previewDisplayMode.enter({ enabled: true })`.
+Rendre le fonctionnement de la puissance projectile plus clair directement dans l'éditeur.
 
-## Owner
+## Règle existante à expliquer, sans la modifier
 
-Inchangé :
-`createCapturePreviewDisplayModeV1`.
+- `0` = hors système de clash : les projectiles peuvent se traverser ;
+- minimum actif = `1` ;
+- puissance égale = annulation mutuelle ;
+- puissance supérieure = le projectile le plus fort détruit l'autre et continue ;
+- la puissance de clash est indépendante des dégâts ;
+- aucune priorité élémentaire (ex. Eau > Feu) n'est appliquée dans ce contrat actuel.
 
-Il reste seul propriétaire de :
-- fullscreen ;
-- orientation lock paysage ;
-- libération fullscreen/orientation ;
-- rotate gate portrait.
+## Périmètre
 
-## Gate portrait
-
-Le message `Tourne ton téléphone` est conservé uniquement comme secours quand le navigateur ne peut pas verrouiller l'orientation.
-
-## TDD
-
-RED :
-- `1a5c7d62527bbc49930485717fdfd05bc9e848d6`
-- CI `37678243272`
-- 1243 / 1245 PASS
-- 2 FAIL ciblés.
-
-GREEN :
-- dernier commit fonctionnel/test `80a02c42b811214ec99bd26302595ed06e03e050`
-- CI `37678566741`
-- 1245 / 1245 PASS
-- 0 FAIL
-- structure / frontières / indépendance : OK.
-
-Rapport :
-`docs/LAB_LANDSCAPE_TOGGLE_REMOVAL_V1.md`
+UI informative uniquement :
+- `examples/dom-demo/capture-editor-v2.html`
+- test sentinelle projectile power
+- documentation
 
 ## Domaines protégés
 
-Inchangés :
-- display mode owner ;
-- Combat Runtime / Rules ;
+Ne pas modifier :
+- `src/contracts/projectile-power-v1.js` ;
+- `src/core/combat/projectile-clash.js` ;
+- Combat Runtime ;
+- données auteur Goutte vive ;
+- valeurs de puissance ;
+- éléments ;
 - Animation / FX ;
-- projectile clash ;
-- Goutte vive ;
+- paysage ;
 - audio ;
 - créatures ;
-- Roster ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
 
-## Prochaine action
+## TDD
 
-Créer checkpoint/preview GREEN puis ouvrir séparément :
-**Projectile Power Help V1** — détailler dans l'éditeur le fonctionnement de la puissance projectile sans modifier aucune règle gameplay.
+1. RED : l'éditeur doit expliquer les 4 cas fondamentaux ;
+2. exemples visibles `1 vs 1` et `2 vs 1` ;
+3. rappeler puissance de clash ≠ dégâts ;
+4. préciser qu'aucune règle élémentaire n'est appliquée aujourd'hui ;
+5. CI complète ;
+6. checkpoint/preview GREEN.
+
+## Critère de fin
+
+Un joueur peut comprendre le réglage sans connaître le moteur, sans qu'aucune règle gameplay ne soit dupliquée dans l'UI.
