@@ -41,6 +41,7 @@ import {
   captureCombatPaceToSkillSpeedV1
 } from "../contracts/capture-battle-setup-editor-draft-v1.js";
 import {
+  CAPTURE_GAME_OPTIONS_V1_DEFAULT,
   normalizeCaptureGameOptionsV1
 } from "../contracts/capture-game-options-v1.js";
 import {
@@ -2946,6 +2947,11 @@ function numericValue(root, selector) {
 }
 
 export function readHumanGameOptionsV1(root) {
+  const activeWindowInput =
+    root.querySelector(
+      "[data-game-dodge-active-seconds]"
+    );
+
   return normalizeCaptureGameOptionsV1({
     dodge: {
       enabled:
@@ -2964,7 +2970,14 @@ export function readHumanGameOptionsV1(root) {
         numericValue(
           root,
           "[data-game-dodge-recharge-seconds]"
-        ) * 1000
+        ) * 1000,
+      activeWindowMs:
+        activeWindowInput === null
+          ? CAPTURE_GAME_OPTIONS_V1_DEFAULT
+              .dodge.activeWindowMs
+          : Number(
+              activeWindowInput.value
+            ) * 1000
     }
   });
 }
