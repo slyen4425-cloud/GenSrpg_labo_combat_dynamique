@@ -147,3 +147,46 @@ test("human editor delegates audio grouping to the role taxonomy model", async (
     false
   );
 });
+
+
+test("every real editor audio selector hint still exposes all 203 catalog sounds", async () => {
+  const catalog = JSON.parse(
+    await readFile(
+      new URL(
+        "../../data/presentation/audio/private-audio-catalog.v1.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  );
+  const entries = catalog.entries ?? [];
+  assert.equal(entries.length, 203);
+
+  for (const hints of [
+    ["release", "voice"],
+    ["impact"],
+    ["death"],
+    ["cast", "release", "preparation"],
+    ["travel"],
+    ["impact"],
+    ["aura"]
+  ]) {
+    const groups =
+      buildPrivateAudioRoleGroupsV1(
+        entries,
+        hints
+      );
+    const ids = flattenedIds(groups);
+
+    assert.equal(
+      ids.length,
+      203,
+      "selector hints " + hints.join(",") + " must not filter audio"
+    );
+    assert.equal(
+      new Set(ids).size,
+      203,
+      "selector hints " + hints.join(",") + " must not duplicate audio"
+    );
+  }
+});
