@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Micro-lot actif
+## Lot techniquement GREEN
 
 Maraileron Author Export V1
 
@@ -10,75 +10,68 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-maraileron-author-export-v1-2026-10-07`
 
-Base exacte :
+Base :
 `539d7b82a11e9df83de2af65bdecdef0eeb81ac2`
 
-Base précédente :
-`checkpoint/lab-dodge-vanish-visual-v1-green-2026-10-07`
+## Résultat
 
-## Objectif
+Les deux exports auteur fournis par Sylvain sont intégrés par le vrai pipeline §33, sans reconstruction :
+- `cap_water_atk_2` — Morsure de marée ;
+- `crea_maraileron` — Maraileron.
 
-Intégrer sans reconstruction les deux exports auteur fournis par Sylvain :
-- capacité `cap_water_atk_2` — Morsure de marée ;
-- créature `crea_maraileron` — Maraileron.
+Les deux fichiers GitHub ont été comparés aux fichiers utilisateur : correspondance texte exacte.
 
-Le chemin obligatoire reste :
-`importCaptureTransferJsonV1 -> planCaptureTransferImportV1(mode:"replace") -> applyCaptureTransferPlanToEditorStateV1`.
+Chemin :
+`Showcase transfer -> importCaptureTransferJsonV1 -> planCaptureTransferImportV1(mode:"replace") -> applyCaptureTransferPlanToEditorStateV1 -> configuredSkills/configuredCreatures`.
 
-L'export auteur est la source de vérité conformément à LAB_CHARTE §33.
+## TDD
 
-## Owners concernés
+RED :
+- commit `39ddc04153f8ef6d0ae440c6ca5ebc36b0e29d7e`;
+- CI `37663672396`;
+- 1226 / 1230 PASS ;
+- 4 FAIL ciblés.
 
-- données capacité : `configuredSkills` ;
-- données créature : `configuredCreatures` ;
-- import/remplacement : Capture Transfer owner existant ;
-- hydratation vitrine : catalogues Showcase existants.
+GREEN fonctionnel :
+- commit `4f85547073512aefc3610a70b03418edb36737d5`;
+- CI `37664111065`;
+- 1230 / 1230 PASS ;
+- 0 FAIL.
 
-Aucun nouvel owner n'est autorisé.
-
-## Fichiers autorisés
-
-- `data/capture/showcase/cap_water_atk_2.capture-skill-transfer-v1.json`
-- `data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json`
-- `src/catalogs/capture-showcase-skill-presets-v1.js`
-- `src/catalogs/capture-showcase-creature-presets-v1.js`
-- tests dédiés au round-trip/remplacement
-- `docs/LAB_CURRENT_WORK.md`
-- rapport de lot
+Rapport :
+`docs/LAB_MARAILERON_AUTHOR_EXPORT_V1.md`
 
 ## Domaines protégés
 
-Ne pas modifier :
+Inchangés :
 - Combat Runtime / Session ;
 - Animation Core ;
 - FX Core ;
 - renderer ;
-- collisions ;
+- collision ;
 - Dodge ;
-- Tempête / zones persistantes ;
-- audio ;
+- persistent zones ;
 - roster ;
-- dépôt Zombicide-40k ;
-- dépôt Exploration ;
-- main.
+- audio ;
+- main ;
+- Zombicide-40k ;
+- Exploration.
 
-## TDD prévu
+## Prochain micro-lot
 
-RED :
-- les exports Maraileron/Morsure ne sont pas encore présents dans les presets showcase ;
-- le vrai chemin de remplacement par ID stable n'est donc pas encore protégé par une sentinelle dédiée.
+Burrow Visual V1.
 
-GREEN attendu :
-- les deux transferts sont importables ;
-- `cap_water_atk_2` remplace exactement l'ancienne capacité sans changer le nombre de capacités ;
-- `crea_maraileron` remplace exactement l'ancienne créature sans changer le nombre de créatures ;
-- valeurs auteur importantes conservées ;
-- Maraileron garde son loadout exact, dont `cap_water_atk_2` en slot-2 ;
-- round-trip export/import stable ;
-- CI complète verte.
+Cause déjà reproduite :
+- `approachMode: "burrow"` existe dans le gameplay ;
+- `CombatResolutionPresenter` ne projette actuellement que ground / teleport / aerial ;
+- `Visual Controller.playApproachFor` ne reconnaît également que ground / teleport / aerial ;
+- burrow retombe donc sur l'attaque générique.
 
-## Suite séparée
+Contrainte :
+le rendu burrow doit suivre le timing Runtime existant et ne doit jamais créer de contact DOM/collision autoritaire.
 
-Après GREEN technique de ce lot seulement :
-**Burrow Visual V1** sur une nouvelle branche/checkpoint.
-Le gameplay burrow reste possédé par Combat Runtime ; le lot suivant ne modifiera que la projection visuelle générique.
+## Prochaine action protocolaire
+
+- CI finale documentaire ;
+- checkpoint GREEN et preview de ce lot ;
+- ouvrir ensuite un checkpoint/branche séparés pour Burrow Visual V1.
