@@ -1,6 +1,6 @@
 # Point de reprise courant — 2026-10-07
 
-## Lot actif
+## Lot techniquement GREEN
 
 Goutte Projectile Power Regression V1
 
@@ -10,49 +10,62 @@ Branche :
 Checkpoint de départ :
 `checkpoint/lab-start-goutte-projectile-power-regression-v1-2026-10-07`
 
-Base exacte :
+Base :
 `ffdb2533bfa28446a2bea22afa36c5093c4d8cce`
 
-## Retour utilisateur
+## Résultat
 
-En combat :
-- Goutte vive observée avec puissance projectile 0 ;
-- projectile adverse observé avec puissance 1 ;
-- les deux se croisent sans clash.
+Le contrat existant est confirmé :
+- `projectileClash.power = 0` = hors système de clash ;
+- puissance positive = participe au clash ;
+- puissance supérieure = survit ;
+- puissance égale = annulation mutuelle.
 
-## Contrat existant confirmé
+L'export auteur de Goutte vive possède déjà `power = 1`.
 
-`projectileClash.power = 0` signifie explicitement :
-**hors système de clash projectile**.
+Le vrai chemin complet a été testé :
+`Author Transfer -> configuredSkills -> Combat Export -> Native Adapter -> Combat Runtime`.
 
-Les puissances positives participent au clash :
-- plus forte : survit ;
-- égales : annulation mutuelle.
+Résultat :
+- historique natif avant remplacement : 0 ;
+- auteur / configuredSkills / export / natif : 1 ;
+- Runtime : 1 vs 1 => mutual cancel.
 
-L'export auteur intégré de `cap_water_atk_1` contient pourtant :
-`projectileClash.power = 1`.
+Aucune règle gameplay n'a été modifiée.
 
-La donnée auteur ne doit donc pas être modifiée à l'aveugle.
+## Correction UI
 
-## Objectif
+Le champ explique désormais :
+`0 = hors système de clash : les projectiles se traversent. Minimum actif = 1.`
 
-Reproduire le vrai chemin :
-`Author Transfer -> configuredSkills -> Combat Export -> Native Adapter -> Combat Runtime`
+## TDD
 
-et identifier l'endroit exact où la valeur 1 devient éventuellement 0.
+Premier test de fixture invalide :
+- commit `f12c78d342b3f8e899118a9f6bfa67c0902d8fab`
+- CI `37676606620`
+- l'échec venait uniquement du fixture CaptureDatabase.
 
-## Owners
+Fixture corrigé :
+- `4c23cd165b21a096e159c76158f10e3162392dc4`
+- CI `37676741992` SUCCESS.
 
-- SkillDefinition / ProjectilePowerV1 : contrat de puissance ;
-- Combat Rules / projectile-clash : résolution de clash ;
-- configuredSkills : owner de la compétence active ;
-- aucun calcul de puissance dans l'UI ou le renderer.
+Clarté UI :
+- `88505159d8bc942d5c9fd86e8f64396a50516d95`
+- sentinelle `4382e5bde5d2e2bd1af427d94828c8d0ba3a3b50`
+- CI `37677076374`
+- 1244 / 1244 PASS
+- 0 FAIL
+- structure / frontières / indépendance : OK.
+
+Rapport :
+`docs/LAB_GOUTTE_PROJECTILE_POWER_REGRESSION_V1.md`
 
 ## Domaines protégés
 
-Ne pas modifier sans preuve :
-- fichier auteur Goutte vive ;
-- logique élémentaire ;
+Inchangés :
+- donnée auteur Goutte vive ;
+- Projectile Clash / Combat Rules ;
+- Combat Runtime ;
 - Animation / FX ;
 - collision DOM ;
 - Roster ;
@@ -62,15 +75,7 @@ Ne pas modifier sans preuve :
 - Zombicide-40k ;
 - Exploration.
 
-## TDD
+## Prochaine action
 
-1. test vrai chemin Goutte vive jusqu'au Runtime ;
-2. vérifier puissance native ;
-3. vérifier 1 vs 1 => mutual_cancel ;
-4. si RED : corriger uniquement le premier owner fautif ;
-5. si GREEN : chercher le chemin UI qui réécrit la compétence avant export ;
-6. CI complète.
-
-## Deuxième correctif séparé
-
-La suppression de l'encadré/toggle paysage sera traitée après ce lot, sans mélanger gameplay et UI produit.
+Créer le checkpoint GREEN puis ouvrir séparément le lot UI :
+**Landscape Toggle Removal V1** — supprimer l'encadré/toggle paysage devenu inutile, sans changer le mode paysage devenu norme.
