@@ -10,19 +10,27 @@ const css = await readFile(
   "examples/dom-demo/capture-editor-v2.css",
   "utf8"
 );
+const js = await readFile(
+  "examples/dom-demo/capture-editor-v2.js",
+  "utf8"
+);
 
-test("Capture smartphone landscape is presented as the definitive gameplay mode", () => {
-  assert.match(
+test("Capture smartphone landscape is the definitive automatic gameplay mode", () => {
+  assert.doesNotMatch(
     html,
-    /data-preview-landscape-mode[^>]*checked[^>]*disabled|data-preview-landscape-mode[^>]*disabled[^>]*checked/
+    /data-preview-landscape-mode/
+  );
+  assert.doesNotMatch(
+    html,
+    /Combat plein écran paysage/
   );
   assert.equal(
     html.includes("Test provisoire"),
     false
   );
   assert.match(
-    html,
-    /Mode de jeu Capture/
+    js,
+    /previewDisplayMode\.enter\(\{\s*enabled:\s*true\s*\}\)/
   );
 });
 
