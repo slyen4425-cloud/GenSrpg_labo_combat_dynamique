@@ -19,6 +19,23 @@ Conformément à LAB_CHARTE §33 :
 - tests Fireball Showcase
 - documentation
 
+## Résultat technique
+- RED `37602814192` : 1206 PASS / 2 FAIL ciblés ;
+- remplacement exact de l'export auteur dans la source Showcase ;
+- fixture du vrai chemin corrigée sans changement produit ;
+- GREEN `37603053691` : 1208 / 1208 PASS ;
+- rapport : `docs/LAB_FIREBALL_AUTHOR_EXPORT_V3.md`.
+
+## Audit connexe demandé — import audio personnel
+État LIVE vérifié :
+- catalogue audio + préécoute : présents ;
+- binding audio créature/capacité : présent ;
+- import personnel image de session : présent ;
+- **Audio Asset Input utilisateur : absent** ;
+- aucun `data-creator-audio`, aucun input fichier audio personnel dans l'éditeur ;
+- `src/assets/README.md` confirme explicitement qu'Audio Asset Input reste à implémenter.
+Un futur lot devra réutiliser la chaîne Asset Input -> AssetDefinition user:* -> catalogue actif -> binding -> Audio Adapter, sans second loader.
+
 ## Vérifications obligatoires
 - collision ID `fireball` ;
 - assets visuels/audio référencés disponibles ;
