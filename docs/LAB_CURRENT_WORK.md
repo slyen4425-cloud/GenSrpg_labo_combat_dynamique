@@ -33,6 +33,15 @@ Présentation CSS uniquement. Aucun changement :
 3. sa largeur paysage est supérieure à V1 mais inférieure à l'ancienne V0 ;
 4. la grille de 5 capacités garde toute sa largeur.
 
+## Résultat technique LIVE
+
+- RED : CI `37587209369` — 1196 tests, 1195 PASS, 1 FAIL ciblé ;
+- bouton paysage ancré juste à gauche du bloc Capacités ;
+- taille légèrement remontée par rapport à V1 ;
+- anciennes sentinelles de design V1 réconciliées avec le nouveau retour utilisateur ;
+- CI fonctionnelle `37587443908` — 1196 / 1196 PASS ;
+- rapport : `docs/LAB_COMBAT_HUD_DODGE_POSITION_V2.md`.
+
 ## Critère de fin
 
 - HTML inchangé ;
