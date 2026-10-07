@@ -1316,12 +1316,14 @@ html {
 .capture-preview-shell[data-landscape-required="true"]
   .combat-dodge-action--arena {
   right: calc(min(15rem, 35%) + 0.65rem);
+  bottom: 0.8rem;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .combat-dodge-action {
   min-width: clamp(3.2rem, 7.8vw, 4.5rem);
-  padding: 0.16rem 0.24rem;
+  min-height: clamp(2.6rem, 8.5dvh, 3.4rem);
+  padding: 0.28rem 0.24rem;
   font-size: clamp(0.46rem, 1.45dvh, 0.6rem);
 }
 
