@@ -145,7 +145,7 @@ test("real Human Editor startup data keeps historical creature library when auth
     );
   }
 
-  assert.equal(configuredCreatures.size, 110);
+  assert.equal(configuredCreatures.size, 102);
   assert.equal(configuredCreatures.has("crea_maraileron"), true);
   assert.equal(configuredCreatures.has("crea_mossback"), true);
   assert.equal(configuredCreatures.has("crea-loup"), false);
@@ -180,8 +180,8 @@ test("real Human Editor startup data keeps historical creature library when auth
 
   assert.equal(
     configuredCreatures.size,
-    111,
-    "Showcase replacement must preserve 110 historical creatures and add only the non-historical Loup"
+    103,
+    "Showcase replacement must preserve 102 canonical historical creatures and add only the non-historical Loup"
   );
   assert.equal(
     configuredCreatures.get("crea_maraileron")?.draft?.displayName,
@@ -201,7 +201,10 @@ test("real Human Editor startup data keeps historical creature library when auth
   );
 
   const historicalIds =
-    new Set(historical.entries.map((entry) => entry.id));
+    new Set(
+      canonicalCaptureCreatureRecordsV1(historical.entries)
+        .map((entry) => entry.id)
+    );
   for (const id of historicalIds) {
     assert.equal(
       configuredCreatures.has(id),
