@@ -1,71 +1,71 @@
-# Micro-lot actif — 2026-10-07 — Capture Skill Export Fidelity V1
+# Point de reprise courant — 2026-10-07
 
-Branche : `work/lab-capture-skill-export-fidelity-v1-2026-10-07`
+## Lot techniquement GREEN
+
+Capture Skill Export Fidelity V1
+
+Branche :
+`work/lab-capture-skill-export-fidelity-v1-2026-10-07`
 
 Checkpoint de départ :
 `checkpoint/lab-start-capture-skill-export-fidelity-v1-2026-10-07`
 
-SHA de base :
+Base :
 `c2caf8c1067fa26e9b0c87c29ea46e43972966ff`
 
-## Problème reproduit
+## Résultat
 
-Un export utilisateur de Boule de feu a enregistré `anchor: null`, `offsetX: 0`, `offsetY: 30` alors que le réglage attendu par l'utilisateur était socket `mouth`, décalage horizontal 30, vertical 0.
+Le Human Editor ne remet plus silencieusement une référence de socket de capacité à `Centre par défaut` lorsque la créature courante ne possède pas ce socket.
 
-Le remplacement GitHub n'est pas autorisé à corriger silencieusement ces valeurs : la fidélité doit être garantie avant intégration.
+Une référence déjà enregistrée est conservée comme référence sauvegardée, sans hardcode d'IDs de sockets dans le sélecteur.
 
-## Objectif
+Les sentinelles de fidélité couvrent désormais :
+- socket ;
+- X/Y joueur ;
+- modes miroir / même / custom ;
+- X/Y adversaire ;
+- playback ;
+- layers ;
+- scales ;
+- impact duration ;
+- audio ;
+- feedback FX ;
+- status visuals ;
+- principaux champs gameplay de la capacité ;
+- round-trip draft -> export -> import -> projection éditeur -> réexport.
 
-Garantir le vrai round-trip :
-`UI durable -> draft canonique -> export JSON -> import -> projection éditeur -> draft canonique -> réexport`.
-
-Le second export doit être canoniquement identique au premier pour tous les réglages durables actuellement exposés par l'éditeur.
-
-## Propriétaires
-
-- lecture/écriture UI : Human Editor ;
-- traduction sprite : `capture-editor-sprite-controls-v1.js` ;
-- modèle canonique : CaptureSkillEditorDraft + SkillPresentationBinding ;
-- transfert : `capture-entity-transfer-v1.js`.
-
-## Périmètre autorisé
-
-- tests de fidélité export/import ;
-- traduction UI des champs de présentation ;
-- conservation des références de socket lors du changement de créature / chargement d'une capacité ;
-- documentation.
-
-## Protégé
-
-Aucun changement de :
-- Combat Runtime / Session ;
-- Damage / Status resolution ;
-- collision / projectile ;
-- FX renderer ;
-- audio runtime ;
-- Dodge ;
-- roster ;
-- données auteur Showcase, sauf lot séparé après GREEN.
-
-## Interdictions
-
-- pas de second format d'export ;
-- pas de merge champ par champ à l'import ;
-- pas de correction silencieuse des données auteur ;
-- pas de hardcode Fireball dans le mécanisme ;
-- pas de reset silencieux d'un champ durable vers une valeur par défaut.
+Cas de régression verrouillé :
+`mouth + cast offsetX=30 + cast offsetY=0`.
 
 ## TDD
 
-1. test round-trip complet draft/export/import/projection/réexport ;
-2. test DOM translator X/Y, playback, layers, modes et offsets adversaire ;
-3. test socket conservé même si le socket n'est pas présent dans la créature actuellement chargée ;
-4. sentinelle de couverture des contrôles durables de capacité ;
-5. CI complète.
+RED :
+- commit `aa4faef85c066728c223e751fc14a0c541db70b7` ;
+- CI `37630334223` ;
+- 1219 tests / 1218 PASS / 1 FAIL ciblé ;
+- socket `mouth` détruit en `""`.
 
-## Fin
+Correction :
+- `src/ui/capture-editor-human-v2.js` ;
+- aucune modification Runtime/Combat/FX/Audio/Damage/Collision.
 
-RED ciblé -> correction cause -> CI GREEN -> rapport -> checkpoint GREEN -> preview -> validation utilisateur.
+GREEN fonctionnel :
+- commit `65c44d2d9ffb8b5ac8dad8517ee5a6264811d055` ;
+- CI `37630829983` ;
+- 1219 / 1219 PASS.
 
----
+Rapport :
+`docs/LAB_CAPTURE_SKILL_EXPORT_FIDELITY_V1.md`
+
+## Note importante
+
+Le chemin X/Y actuel est démontré fidèle. L'ancien export utilisateur contenant `offsetX=0 / offsetY=30` ne permet pas d'identifier rétroactivement avec certitude le commit historique qui a produit cette inversion ; à partir de ce lot, ce cas est protégé par CI.
+
+Les presets d'interface restent des raccourcis : leurs valeurs résultantes sont exportées, pas l'identifiant du preset.
+
+## Prochaine action
+
+Créer le checkpoint GREEN et la preview sur le SHA final après CI complète.
+
+La correction de la fiche Showcase Fireball elle-même doit rester un micro-lot auteur séparé, fondé sur le retour utilisateur explicite (`mouth`, X=30, Y=0), après fermeture du présent lot.
 
