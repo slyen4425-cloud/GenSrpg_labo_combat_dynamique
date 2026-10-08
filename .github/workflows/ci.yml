@@ -13,3 +13,13 @@ jobs:
         with:
           node-version: 22
       - run: npm run ci
+
+  creature-library-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium creature library startup smoke
+        run: node tests/browser/capture-creature-library-smoke.mjs

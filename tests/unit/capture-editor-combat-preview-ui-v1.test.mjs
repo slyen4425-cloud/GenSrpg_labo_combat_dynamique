@@ -173,6 +173,7 @@ test("native test button allows a retry after invalid fields and a failed previe
     previewDisplayMode,
     visualContext: {},
     visualContextPromise: Promise.resolve({}),
+    previewRuntimePromise: Promise.resolve({}),
     setMode: next => { mode = next; }
   });
   const refused = listeners.test();
