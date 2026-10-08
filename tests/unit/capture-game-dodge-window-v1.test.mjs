@@ -28,18 +28,18 @@ function fighter(id) {
   };
 }
 
-test("Capture dodge defaults to 30 seconds recharge and a 500ms active window", () => {
+test("Capture dodge defaults to 30 seconds recharge and a 250ms active window", () => {
   assert.equal(
     CAPTURE_GAME_OPTIONS_V1_DEFAULT.dodge.rechargeMs,
     30000
   );
   assert.equal(
     CAPTURE_GAME_OPTIONS_V1_DEFAULT.dodge.activeWindowMs,
-    500
+    250
   );
 });
 
-test("legacy explicit dodge config keeps its shape while resolving the 500ms semantic default", () => {
+test("legacy explicit dodge config keeps its shape while resolving the 250ms semantic default", () => {
   const legacy = {
     dodge: {
       enabled: true,
@@ -53,7 +53,7 @@ test("legacy explicit dodge config keeps its shape while resolving the 500ms sem
   );
   assert.equal(
     captureDodgeActiveWindowMsV1(legacy),
-    500
+    250
   );
 });
 
@@ -96,4 +96,18 @@ test("rechargeable action activation consumes one charge and derives its window 
   });
   assert.equal(expired.active, false);
   assert.equal(expired.remainingMs, 0);
+});
+
+
+test("an explicitly configured 500ms dodge stays 500ms after changing new defaults", () => {
+  const configured = {
+    dodge: {
+      enabled: true,
+      maxCharges: 2,
+      rechargeMs: 30000,
+      activeWindowMs: 500
+    }
+  };
+  assert.deepEqual(normalizeCaptureGameOptionsV1(configured), configured);
+  assert.equal(captureDodgeActiveWindowMsV1(configured), 500);
 });
