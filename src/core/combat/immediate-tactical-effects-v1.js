@@ -162,6 +162,10 @@ function applyDamageEffect({
       effect.channel ??
       skill.element ??
       "physical",
+    ignoreResistancePct:
+      effect.ignoreResistancePct ?? 0,
+    ignoreDamageReductionPct:
+      effect.ignoreDamageReductionPct ?? 0,
     atMs: combatAtMs
   });
 
