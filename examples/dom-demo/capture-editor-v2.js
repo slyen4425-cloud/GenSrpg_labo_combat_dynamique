@@ -18,6 +18,9 @@ import {
   globalVisualAssetUrl
 } from "../../src/assets/global-visual-library.js";
 import {
+  createGlobalPresentationAssetResolverV1
+} from "../../src/assets/global-presentation-asset-resolver-v1.js";
+import {
   demoPresentationAssets
 } from "./demo-assets.js";
 import {
@@ -185,6 +188,11 @@ let visualContext = null;
 const visualContextPromise = loadPreviewVisualContext()
   .then((context) => {
     visualContext = context;
+    resolveGlobalPresentationAsset =
+      createGlobalPresentationAssetResolverV1({
+        assetCatalog: context.assetCatalog,
+        assetUrlForFile: globalVisualAssetUrl
+      });
     return context;
   })
   .catch((error) => {
@@ -303,6 +311,8 @@ function applyPreviewArenaPresentation(
   );
 }
 
+let resolveGlobalPresentationAsset = () => null;
+
 function resolvePreviewPresentationAsset(assetId) {
   const demoAsset = demoPresentationAssets.asset(assetId);
   if (demoAsset) {
@@ -320,34 +330,7 @@ function resolvePreviewPresentationAsset(assetId) {
     });
   }
 
-  const catalogAsset =
-    visualContext?.assetCatalog?.assets?.find(
-      (asset) => asset.id === assetId
-    ) ?? null;
-  const resource = catalogAsset?.resource ?? null;
-  const file = resource?.file;
-
-  if (typeof file !== "string" || file.trim() === "") {
-    return null;
-  }
-
-  return Object.freeze({
-    assetId,
-    url: globalVisualAssetUrl(file),
-    frameCount: Math.max(
-      1,
-      Math.floor(Number(resource?.frameCount) || 1)
-    ),
-    frameMs:
-      Number.isFinite(Number(resource?.frameMs)) &&
-      Number(resource.frameMs) > 0
-        ? Number(resource.frameMs)
-        : undefined,
-    playbackMode:
-      resource?.playbackMode === "loop"
-        ? "loop"
-        : "once"
-  });
+  return resolveGlobalPresentationAsset(assetId);
 }
 
 function buildPreviewPresentationAssets(
