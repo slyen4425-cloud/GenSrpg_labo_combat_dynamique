@@ -336,3 +336,20 @@ test("V9 same mode keeps zone offset unchanged on both sides", () => {
     4
   );
 });
+
+
+test("beam end uses target-view impact offsets while mouth cast uses source-view offsets", () => {
+  const assets = assetsFor(binding(9));
+  const playerToOpponent = assets.presentationForSkill("test", {
+    sourceView:"player",targetView:"opponent",fxType:"beam"
+  });
+  assert.equal(playerToOpponent.cast.offsetX,24);
+  assert.deepEqual(playerToOpponent.impactFeedbackOffset,{x:-30,y:9},
+    "beam end must join the exact eventual impact on the opponent");
+  const opponentToPlayer = assets.presentationForSkill("test", {
+    sourceView:"opponent",targetView:"player",fxType:"beam"
+  });
+  assert.equal(opponentToPlayer.cast.offsetX,-24);
+  assert.deepEqual(opponentToPlayer.impactFeedbackOffset,{x:12,y:6},
+    "beam end must join the exact eventual impact on the player");
+});
