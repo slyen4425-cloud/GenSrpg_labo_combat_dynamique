@@ -450,3 +450,13 @@ Inchangés :
 - Invariants : 1 seul sélecteur par son/phase (pas de nouvelle authority), choix audio et boutons Écouter inchangés, réversibilité de l'UI au changement de style et au dispose, source fixe sur socket bouche, longueur/angle dynamiques, dégâts/contact/temps et suivi de cible inchangés, protection 103 créatures et autres capacités.
 - Plan TDD : RED sur trois sélecteurs audio non déplacés et recouvrement de corps absent ; GREEN sur correctif minimum et CI Node + browser réel 103 créatures ; checkpoint exact après CI, publication Pages contrôlée et validation esthétique Android séparée.
 - Protégés : les assets d'origine, capacités auteur Eau, modes non-Beam, Combat Runtime, 103 créatures, `main`, `global-assets`, `Zombicide-40k`, Exploration.
+
+
+### Beam Seam & Audio Editor V1 — clôture technique candidate
+
+- Régression reproduite : absence des trois sélecteurs son du panneau Beam et corps visuel sans recouvrement sous ses deux embouts.
+- Correction : 15 contrôles canoniques (7 départ + 4 corps + 4 impact), mêmes rôles Audio et mêmes boutons Écouter, sans duplication ; `DomSkillFxRenderer` prolonge la même image du corps sous les deux embouts sur les ancres autoritaires (35 % du diamètre de cap, borné pour les petites distances). Rayon ancien sans cap inchangé.
+- Test RED : `37830555903`, `37830560916` ; navigateur RED intermédiaire `37830679214` uniquement sur ancienne cardinalité attendue 12, sentinelle recalée à 15.
+- GREEN avant doc : CI `37830808315`, 1296 / 1296 Node PASS et Chromium 103 créatures PASS en 4 scénarios, dont CDN inaccessible/suspendu.
+- Rapport : `docs/LAB_BEAM_SEAM_AUDIO_EDITOR_V1.md`.
+- Suite : CI du commit documentaire final, checkpoint GREEN exact, preview et déploiement gh-pages avec protection du SHA, validation Android utilisateur. Aucun GREEN artistique avant confirmation tactile.
