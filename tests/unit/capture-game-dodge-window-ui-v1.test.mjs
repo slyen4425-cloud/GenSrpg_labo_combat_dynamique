@@ -31,7 +31,7 @@ test("Human Editor exposes 30s recharge and 0.25s dodge active window defaults",
   );
   assert.match(
     html,
-    /value="0\.5" data-game-dodge-active-seconds/
+    /value="0\\.25" data-game-dodge-active-seconds/
   );
 });
 
