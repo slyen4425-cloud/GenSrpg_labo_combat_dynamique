@@ -14,6 +14,7 @@ import { normalizeCaptureStatRegistryV1 } from "../../src/contracts/capture-stat
 import { normalizeCaptureProgressionRulesV1 } from "../../src/contracts/capture-progression-rules-v1.js";
 import { capturePortableNativeSkillDraftsV1 } from "../../src/catalogs/capture-portable-native-skill-catalog-v1.js";
 import { captureComplexNativeSkillDraftsV1 } from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
+import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
 const PRESETS = Object.freeze([
@@ -143,5 +144,29 @@ test("both author versions replace via the single configuredSkills batch without
   assert.deepEqual([...configuredCreatures.entries()], initialCreatures);
   for (const preset of PRESETS) {
     assert.equal(configuredSkills.get(preset.id).definition.name, preset.name);
+  }
+});
+
+
+test("both authored water attacks resolve through real Combat Session without shadowing effects", async () => {
+  function fighter(id) {
+    return {
+      id, maxHp:100, initialHp:100,
+      maxEnergy:20, initialEnergy:20,
+      energyChargeAmount:0, energyChargeIntervalMs:2000,
+      movementEnergyPerStep:0, chargeTimeModifierPct:0
+    };
+  }
+  for (const [id,damage,energyDrain] of [
+    ["cap_water_atk_1",10,0],
+    ["cap_water_atk_2",20,3]
+  ]) {
+    const d=(await loadAuthorSkill(id)).transfer.value.draft;
+    const session=createCombatSession({distance:"short",fighters:[fighter("player"),fighter("target")]});
+    const result=session.useSkill({actorId:"player",targetId:"target",skill:d.definition});
+    assert.equal(result.ok,true,id+" must activate");
+    const target=session.snapshot().fighters.target;
+    assert.equal(target.hp,100-damage,id+" damage");
+    assert.equal(target.energy,20-energyDrain,id+" energy drain");
   }
 });
