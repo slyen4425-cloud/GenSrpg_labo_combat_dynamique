@@ -852,36 +852,32 @@
         <div class="card-title">
           <span class="step">4 bis</span>
           <div>
-            <h2>Rayon continu — 4 étapes liées</h2>
-            <p>Juste après les effets tactiques et les zones au sol : règle ici les quatre images d’un rayon, sans chercher dans les paramètres avancés.</p>
+            <h2>Rayon continu — 3 phases</h2>
+            <p>Juste après les effets tactiques et les zones au sol : règle ici les trois parties d’un rayon, sans chercher dans les paramètres avancés.</p>
           </div>
         </div>
-        <p class="note">Les quatre étapes utilisent les mêmes réglages officiels de la capacité. Sélectionner « Rayon » dans le champ Style active ce groupe. Ce n’est pas une aura au sol : le rayon part de la créature et rejoint la cible.</p>
+        <p class="note">Les trois phases utilisent les mêmes réglages officiels de la capacité. Sélectionner « Rayon » dans le champ Style active ce groupe. Ce n’est pas une aura au sol : le rayon part de la créature et rejoint la cible.</p>
         <div data-skill-beam-pack>
           <button type="button" class="primary-action" data-skill-beam-pack-apply disabled>
-            Utiliser les 4 sprites « Jet pressurisé »
+            Appliquer le modèle de rayon d’eau
           </button>
-          <p class="note" data-skill-beam-pack-state data-tone="info">Chargement des quatre visuels…</p>
+          <button type="button" class="secondary-action" data-skill-beam-pack-undo disabled>Annuler le modèle — retrouver mes réglages</button>
+          <p class="note" data-skill-beam-pack-state data-tone="info">Chargement des visuels du rayon…</p>
         </div>
-        <p class="note" data-beam-four-stage-help>Choisis Style : Rayon, ou utilise le bouton pour remplir les quatre étapes sans changer les dégâts, l’énergie ou le cooldown.</p>
+        <p class="note" data-beam-four-stage-help>Choisis Style : Rayon, ou utilise le bouton pour renseigner les trois phases sans changer les dégâts, l’énergie ou le cooldown.</p>
         <div class="grid two">
-          <fieldset class="editor-choice-group" data-beam-stage="cast" hidden>
-            <legend>1 — Charge (avant le tir)</legend>
-            <p class="note">Sprite de préparation et point de sortie (bouche, main…), partagé avec le départ du rayon.</p>
-            <div class="grid two" data-beam-stage-fields="cast"></div>
-          </fieldset>
           <fieldset class="editor-choice-group" data-beam-stage="start" hidden>
-            <legend>2 — Départ du rayon</legend>
-            <p class="note">Le sprite reste collé au point de sortie du lanceur.</p>
+            <legend>1 — Charge à la bouche et départ</legend>
+            <p class="note">Le départ du rayon sert aussi de charge pendant la préparation, au même point de sortie (bouche, main…). Un cast différent reste un réglage manuel optionnel.</p>
             <div class="grid two" data-beam-stage-fields="start"></div>
           </fieldset>
           <fieldset class="editor-choice-group" data-beam-stage="body" hidden>
-            <legend>3 — Corps continu du rayon</legend>
+            <legend>2 — Corps continu du rayon</legend>
             <p class="note">Il s’étire automatiquement de la source jusqu’à la cible, sans projectile qui se déplace.</p>
             <div class="grid two" data-beam-stage-fields="body"></div>
           </fieldset>
           <fieldset class="editor-choice-group" data-beam-stage="impact" hidden>
-            <legend>4 — Extrémité cible et impact</legend>
+            <legend>3 — Extrémité cible et impact</legend>
             <p class="note">L’extrémité suit la cible pendant le tir ; l’animation d’impact se joue aux dégâts réels.</p>
             <div class="grid two" data-beam-stage-fields="impact"></div>
           </fieldset>
