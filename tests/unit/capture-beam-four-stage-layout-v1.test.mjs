@@ -54,7 +54,7 @@ test("Rayon editor has one coherent 3-phase card immediately after tactical zone
  const move=html.indexOf('<h2>Mouvement</h2>');
  assert.ok(start>tactical && start<move,"Rayon should be adjacent to tactical zone");
  assert.ok(html.indexOf('data-skill-beam-pack')>tactical && html.indexOf('data-skill-beam-pack')<move,"existing pack must be in same card");
- for(const step of ["cast","start","body","impact"]){
+ for(const step of ["start","body","impact"]){
    assert.equal(html.split(`data-beam-stage-fields="${step}"`).length-1,1);
  }
  for(const [sel] of config){assert.equal(html.split(sel.slice(1,-1)).length-1,1,sel+" must remain ONE canonical control");}
