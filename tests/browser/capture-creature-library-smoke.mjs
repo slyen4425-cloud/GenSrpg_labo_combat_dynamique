@@ -24,7 +24,19 @@ const server = createServer(async (req, res) => {
       res.writeHead(403).end();
       return;
     }
-    const contents = await readFile(filepath);
+    let contents = await readFile(filepath);
+    // Test-only network-stall simulation: leave the real module graph and data path intact.
+    // Only presentation CDN requests remain pending, like a stalled mobile connection.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("stall-presentation")) {
+      const html = contents.toString("utf8");
+      const intercept = '<script>' +
+        'const normalFetch = window.fetch.bind(window);' +
+        'window.fetch = (...args) => String(args[0]).includes("raw.githubusercontent.com")' +
+        ' ? new Promise(() => {}) : normalFetch(...args);' +
+        '</script>';
+      contents = Buffer.from(html.replace("<head>", "<head>" + intercept));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -106,6 +118,8 @@ try {
   assertCreatures(await dumpDom(url, [
     "--host-resolver-rules=MAP raw.githubusercontent.com 127.0.0.1,EXCLUDE localhost"
   ]), "presentation host blocked");
+  assertCreatures(await dumpDom(url + "?stall-presentation=1"),
+    "presentation requests never complete");
 } finally {
   server.close();
 }
