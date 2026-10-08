@@ -430,3 +430,11 @@ Inchangés :
 - TDD RED : reproduire le défaut de son travel absent et de non-annulation à l'impact pour `beam`; démontrer que le rayon suit le cast/impact malgré offsets et cible mouvante. GREEN : Node, CI structure, Chromium 103 créatures, publication uniquement avec lease et checkpoint.
 - Protégés : 103 créatures, `cap_water_atk_{1,2,3}` et ses JSON auteur, FX/médias globaux, dégâts, énergie, timings, réglages UI de rayon existants, `main`, `Zombicide-40k`, Exploration.
 - La conformité artistique réelle et les sons entendus sur Android demeurent une validation utilisateur distincte.
+
+
+### Rayon continuité audio / offsets — clôture technique candidate
+
+- Causes corrigées dans les propriétaires existants : `CombatResolutionPresenter` (beam audio travel, stop à impact + nettoyage FX) ; `DomSkillFxRenderer` (origine rayon = point cast avec offsets, extrémité = impact avec offsets, suivi de cible) ; `CaptureSkillPresentationAssetsV2` (embout d'impact résolu dans la vue de la cible, pas du lanceur).
+- Tests RED `37827929958` et `37828136771`, GREEN `37828213599` : **1296 Node PASS, 0 FAIL**, Chromium 103 créatures PASS.
+- Rapport : `docs/LAB_BEAM_CONTINUITY_SOUND_OFFSETS_V1.md`. 0 média ajouté, aucune modification de skill auteur, modèle rayon UI ni moteur de dégâts/timing.
+- Reste : CI du dernier commit documentaire, checkpoint GREEN exact et preview, déplacement Pages protégé sur base `76524b596d6e421de1a0e7563ddb615e3a0024f9`, Pages SUCCESS. Validation artistique Android distincte.
