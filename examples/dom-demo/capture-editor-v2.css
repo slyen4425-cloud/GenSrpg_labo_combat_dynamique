@@ -311,6 +311,35 @@ select:focus {
   opacity: 0.78;
 }
 
+.creature-dodge-appearance {
+  margin-bottom: 0.8rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(133, 225, 242, 0.22);
+  border-radius: 0.8rem;
+  background:
+    linear-gradient(145deg, rgba(16, 56, 69, 0.62), rgba(9, 31, 39, 0.72));
+}
+
+.creature-dodge-appearance__title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.creature-dodge-appearance__title strong {
+  color: #eafcff;
+  font-size: 0.82rem;
+}
+
+.creature-dodge-appearance__title span {
+  color: #80a8b3;
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
 .asset-trio {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
