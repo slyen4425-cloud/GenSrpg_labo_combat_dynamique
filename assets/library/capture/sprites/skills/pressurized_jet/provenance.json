@@ -1,0 +1,383 @@
+{
+  "version": 1,
+  "source": "OpenAI image generation, user-approved Jet pressurisé sheets",
+  "transport": "Q90 WebP with alpha, derived from generated transparent PNG sheets before GitHub transfer",
+  "source_archive_sha256": "dd2393ebb156b2a537cccb42ada6828af290b4b6711dcbc1c92b6e245605d300",
+  "generation_ids": {
+    "cast": "16b89c4c-f236-4461-9153-b6051f57ab40",
+    "beam_start": "fa49ab68-4878-45cf-bf8a-e2fe90e3cd97",
+    "beam_body": "b7302874-0982-413e-8fdc-f6e32fe0769e",
+    "impact": "411f5ccb-a087-4248-9a73-4f78f5ba7c65"
+  },
+  "crop_policy": "cast: proportional 5x4 grid; beam_start/beam_body/impact: proportional 4x3 grids; row-major; contain-resize centered to 512x512",
+  "results": {
+    "cast": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "8d6cbba4ae709c646da74e3de11b5e40c58f2585df7bc5ca71d56190e3fc27a4",
+      "frame_count": 20,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "7b3cdcdf3ee92130b121ff6d199c16a6ae47e88254228a86415b3c03bd44d890",
+        "71d77f866f3bb12dd9ddd32859f9eb01b0c744af0446afb1e7259dc2ab13c788",
+        "b01a4eaa150be002cea712db172bcb0b73af295489ca922807081add9b84d68c",
+        "b3ea131bd330ba7b591ee7ba8ac643aee8b0743992140a20ef5aef0d28d6b734",
+        "8846a42a1b85d6ae6d9534eef4e7f46f58b2aa79fccbd4b5986cf18b69040e3e",
+        "62b9b724cb3fa5f414e1ec505575444d2a624075f4cf4f2963decf39f492a28e",
+        "8a61c83ba515eddc9a3cbfeded8c45ac6599fdc6d6d29fff2cf848249edaab45",
+        "e7892fc02517b5659f2c439ba84f3101e448914b5bcb92896ea7ba2c3b8c6d87",
+        "b3f05faae940d0d6f1d67281ee110c07574cbe0bd503bc904f04b050a25c66ea",
+        "6645b9d1df7188f2bdbca43c306cbe5a897906577038919bd08ee25163197cc4",
+        "ddaeaaafb46088f949b0c267517cafd206b26164df3f6155510504c0b33a6235",
+        "1118100106dfc25b82b38e1dc731b24ffec83c50a45b6ef47a1b2fe62f787fc2",
+        "42a1dc4e42cf55a9eb1ce3bf062e15498cba790ce2037067c9c3b006326a5014",
+        "dc3baceef2db818bebb5cb31d9aa8cc37b4ef7e90b71d8440ff68d6956b02a6c",
+        "122f428e8cb6bd5b26db361de451f56d53cab3a5199cc329a2ecdcc8433f20c2",
+        "47b3a709f1be0b0386f496cb8374864d0b6afc1109e787fc117663a2cf3f0495",
+        "bdd24bed81e817d339c9636b41a6003465f8b3d070f4b228a41a5ee2f96ff38c",
+        "93973e7b676737f14b6b26ada5c9914bcb5b74df8d5baa5328aa217e9db3823a",
+        "6e1b5d47a4fab88277183b8dae9cf877e34a3e278f00a606259a2088e5aca304",
+        "7968a5c22910e0f6f391696c71ea6b12d0bdd0a61e8c780c603ec5ea6c68770e"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_pressurized_jet_cast_atlas_01.webp",
+      "atlas_size": [
+        10240,
+        512
+      ],
+      "atlas_sha256": "f6f786582a00d4d427d67f5deda81e1d1dd5a366a1709f88fb44e85ea5104c40"
+    },
+    "beam_start": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "026ca2aafae746a18d5726eb80dea89639515d0c48db4e0496945f1d54a92c9d",
+      "frame_count": 12,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "6124e0bba6ba98fdddc0c3c21400f32cf7f5bd5325892442dd478108c588e865",
+        "02d17ec1af9d7ae466a4584944f2b24f3b373fb210bd5c21441dd6d7c2cf1fb7",
+        "7c7c80fdee582ed8377da8a249848993c5bf874a51cbbe5df12e6d99041df623",
+        "aa0f516365033d297a15ce95e25931aa3f6c7291f6d19adb3a5d6a078ebb543b",
+        "121192daca912a8fe2b4baad716d725c5eb64b160461556b28704a2d3272235f",
+        "26a1840da6223bf820f10059899a9dca74521ae5c60f8c8fabb1ee37b416e82d",
+        "c586ca373c6a85e33be6e68b9223c3b8dc8fa1d043fda87e373f76eaee187faa",
+        "77fba38603103d69d564fe4f93b44fc4e4fc50c0412cc859db512aa8dcea1fb3",
+        "c95665ff18c7682e8025673f453fb6521d9f747f994de6a5cbecbf73ad028903",
+        "4d4d642eeb88520b0cc77dbe0c21588ea47912c52d0b1f93b15090ee37021be5",
+        "4c0248ac478fccf07cfd2a15e9daf174228dd38a2d8675a812de4301adb3e38a",
+        "526867e27d39b4e474d9527bc5160f3d1b57df02bcafe644069a9688f7b01db3"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_pressurized_jet_beam_start_atlas_01.webp",
+      "atlas_size": [
+        6144,
+        512
+      ],
+      "atlas_sha256": "06cc1dbfd7dc1c99a6ee58e88da2f30385c6c846c2608e1a1ad372f3c2a30c6f"
+    },
+    "beam_body": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "82be065c95e1b2d5289e3354e9fa6f738528045d6757aedc7648826f36857206",
+      "frame_count": 12,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "8b60850bd058bc080b9e07386020cea2566bae0d862c422b05f2055faffb58ac",
+        "6f517fe983be62557da47e8fed25978e08537302148eea6115d82d62f1837a4c",
+        "960d2e67c8c9388a77c04a2a83d7f13e1cb5ca6c1aeee8e482ce91b050d9f4e3",
+        "38fa776ff51ac26a6e0af7e955c609ba7e9961ef18df31b1ec063b08e2307cdc",
+        "c8e6c34c7bc896eab2c9421ee89adf615801de4e5833422f768a57185f3bba28",
+        "fd0af2f19138efc4ae5df6a8bd3aa2d8b9b7621d5fb63e0c0083087b1947d371",
+        "1dbab94721af9a4b545bed8635131f0d46941e12c6199ea81bafe3e04b9691be",
+        "14f5601085ce6869d63bd5b98c4dbace7bb7835cc097d5e2188e9f77b61880e5",
+        "1d7edc42709cad6776352ace64a0b8df2177d86b7733ab9cac98382a81ccb4f7",
+        "d4be6fbecb7bdea9ad6148e6c504e462c96841decc80abccf831326274a67905",
+        "aa158a1e616a2ac2e1786926cbc44cf0292e9c3c5bcdff422704f5f4961cca7e",
+        "6b1eb87870be438ec0c210be6aa22b5fd8674cadf9937a9cf5b26a3e91853433"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_pressurized_jet_beam_body_atlas_01.webp",
+      "atlas_size": [
+        6144,
+        512
+      ],
+      "atlas_sha256": "c215b654eaaebb5d4e09fd83b25069d8bebd66edbb8ef45784fa6f56da645699"
+    },
+    "impact": {
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_sha256": "ffa47b255f9e9dd7ad7206e647cae65a565439039a39bc153ab034f3f6b9f0de",
+      "frame_count": 12,
+      "frame_size": [
+        512,
+        512
+      ],
+      "frame_sha256": [
+        "dbc6e7db42a53d5ec94882567d35463de8a3bb2c1812e8fe3f36f17e028c6dd9",
+        "cea141535248e7e3e5437c5cb90ec7f666810e3fe39f6043a45be8e5c3d641c2",
+        "2d8ecd32a29587db94145315a420e2f400695e29042130f8393c56a0a3553298",
+        "9df44123aebe581490cbd9b73242fa116271f7844a9364f550179aca179aa233",
+        "3b8dc6aa4105c32c9508b50959d034be2527dc2cd31fc225b8ea6fce64ddd752",
+        "edc40bb9285e06d6b1e5b453043decc5a8d218e28590f950cc1d34d29508d54f",
+        "1ffbf46469123d7ea31ba340ef8c621c2be97c903a01862863547707e9e8922b",
+        "63d5f7f179eb0955480472c070f893d640ce976d9490da3bc71cbd004d997868",
+        "f8719541d2c460250a5688d59c3152dc60e66675910f5437061f4da28ad5b1bb",
+        "11b233f8c11114059bc76aca932229e60914a9d41470c70fda6828e07b7cce96",
+        "d51241e33ff2a759f4b0fb9011bff82d88273f01eb0f28bc9507448b1c2ddaee",
+        "19e9ae0dacfa9ad82fd895cdd0130ba9eba8707eb7524311933b365efa1186e3"
+      ],
+      "alpha_extrema": [
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          254
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          253
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          252
+        ],
+        [
+          0,
+          252
+        ]
+      ],
+      "atlas": "atlases/sprite_skill_pressurized_jet_impact_atlas_01.webp",
+      "atlas_size": [
+        6144,
+        512
+      ],
+      "atlas_sha256": "b6dea032866b2609c29179761b44cbedfde814097d3abe66cc9f4162f8b85e3d"
+    }
+  }
+}
