@@ -3605,6 +3605,10 @@ function writeCreatureRecordFields(
       presentation?.visual?.dodge?.displayScale ?? 1
     ],
     [
+      "[data-creature-dodge-duration]",
+      presentation?.visual?.dodge?.durationMs ?? 700
+    ],
+    [
       "[data-creature-dodge-offset-x]",
       presentation?.visual?.dodge?.offsetX ?? 0
     ],
@@ -3794,6 +3798,7 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-icon-select]", ""],
     ["[data-creature-dodge-fx]", ""],
     ["[data-creature-dodge-scale]", 1],
+    ["[data-creature-dodge-duration]", 700],
     ["[data-creature-dodge-offset-x]", 0],
     ["[data-creature-dodge-offset-y]", 0],
     ["[data-creature-audio-attack]", ""],
@@ -7501,6 +7506,10 @@ function readCreatureFields(
       dodgeDisplayScale: numericValue(
         root,
         "[data-creature-dodge-scale]"
+      ),
+      dodgeDurationMs: numericValue(
+        root,
+        "[data-creature-dodge-duration]"
       ),
       dodgeOffsetX: numericValue(
         root,
