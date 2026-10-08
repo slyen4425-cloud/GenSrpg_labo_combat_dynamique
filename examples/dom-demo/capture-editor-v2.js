@@ -121,10 +121,31 @@ function resolveEditorAudioAsset(assetId) {
   );
 }
 
-const editor = mountCaptureEditorHumanV2({
-  root,
-  creatorVisualAssets,
-  creatorAudioAssets
+let editor;
+try {
+  editor = mountCaptureEditorHumanV2({
+    root,
+    creatorVisualAssets,
+    creatorAudioAssets
+  });
+} catch (error) {
+  editorStatus.textContent =
+    "Initialisation de l'éditeur impossible : " +
+    (error?.message ?? String(error));
+  editorStatus.dataset.tone = "error";
+  throw error;
+}
+
+const creatureLibraryState = root.querySelector(
+  "[data-creature-library-state]"
+);
+editor.ready.catch((error) => {
+  if (creatureLibraryState) {
+    creatureLibraryState.textContent =
+      "Chargement des créatures impossible : " +
+      (error?.message ?? String(error));
+    creatureLibraryState.dataset.tone = "error";
+  }
 });
 
 let previewRuntime = null;
