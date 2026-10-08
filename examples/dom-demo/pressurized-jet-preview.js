@@ -58,10 +58,11 @@ function binding() {
     subjectType: "skill",
     subjectId: "pressurized-jet-preview",
     visual: {
-      cast: slot(IDS.cast, {
+      cast: slot(IDS.start, {
         attachment: "source",
         trigger: "preparation-start",
-        displayScale: 2.2
+        playbackMode: "loop",
+        displayScale: 1
       }),
       beamStart: slot(IDS.start, {
         attachment: "source",
@@ -146,7 +147,7 @@ async function runOnce() {
   playButton.disabled = true;
 
   try {
-    status.textContent = "Charge…";
+    status.textContent = "Le départ du rayon se concentre à la source…";
     await renderer.play({
       type: "cast",
       skillId: "pressurized-jet-preview",
