@@ -14,7 +14,7 @@
       "id": "cap_water_atk_3",
       "name": "Jet pressurisé",
       "category": "offensive",
-      "form": "projectile",
+      "form": "beam",
       "loadoutSlot": "standard",
       "element": "water",
       "approachMode": "none",
@@ -47,7 +47,7 @@
         "incomingForms": []
       },
       "projectileClash": {
-        "power": 3
+        "power": 0
       },
       "reaction": {
         "blockForms": [],
@@ -84,31 +84,12 @@
         "icon": {
           "assetId": "core:icon-skill-aqua-dash-01"
         },
-        "cast": {
-          "assetId": "pack:capture:sprite-cast-water-01",
-          "displayScale": 1.5,
+        "beamStart": {
+          "assetId": "pack:capture:sprite-pressurized-jet-beam-start-01",
+          "displayScale": 1.2,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "source",
-          "anchor": "mouth",
-          "offsetX": 30,
-          "offsetY": 0,
-          "trigger": "preparation-start",
-          "playbackMode": "loop",
-          "rotationDeg": 0,
-          "opacity": 1,
-          "layerByView": {
-            "player": "front",
-            "opponent": "front"
-          },
-          "offsetMode": "same"
-        },
-        "travel": {
-          "assetId": "pack:capture:sprite-frost-bolt-projectile-01",
-          "displayScale": 2.5,
-          "displayScaleX": 1,
-          "displayScaleY": 1,
-          "attachment": "trajectory",
           "anchor": "mouth",
           "offsetX": 0,
           "offsetY": 0,
@@ -122,9 +103,28 @@
           },
           "offsetMode": "same"
         },
+        "travel": {
+          "assetId": "pack:capture:sprite-pressurized-jet-beam-body-01",
+          "displayScale": 0.7,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
         "impact": {
           "assetId": "pack:capture:sprite-impact-water-01",
-          "displayScale": 1.7,
+          "displayScale": 1.3,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
@@ -143,7 +143,18 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:xel-48520d94",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:sanctuary-17b7fa2c",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {},
       "feedback": {
         "glow": {
