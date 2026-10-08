@@ -313,3 +313,17 @@ Inchangés :
 - Aucun auto-bind d'une compétence auteur, aucun changement de dégâts/énergie/cooldown/résistances, aucune modification de `main` ou `Zombicide-40k`.
 - Critère : CI de la branche de publication verte, puis déplacement de `gh-pages` avec lease depuis le SHA de base exact, puis GitHub Pages SUCCESS et validation smartphone utilisateur.
 - Statut : EN COURS.
+
+
+## 2026-10-08 — Jet pressurisé : export auteur après chantier Beam GREEN
+
+- Demande : examiner le dernier état du rayon sur l'autre fil et intégrer `gensrpg-capture-skill-cap_water_atk_3.json` sur cette base sans diverger.
+- Base exacte : `ed647100c4eacc6317ddcb4578b1568e3639895f` (`gh-pages` publié, Beam renderer, pack `global-assets`, preview dédiée, CI Pages SUCCESS).
+- Checkpoint départ : `checkpoint/lab-start-water-atk3-author-after-beam-v1-2026-10-08`. Branche : `work/lab-water-atk3-author-after-beam-v1-2026-10-08`.
+- Owners existants : `CaptureShowcaseSkillPresetsV1` référence les transferts auteur, `Capture Transfer` charge/normalise, `configuredSkills` possède l'ID, `CombatSession` calcule dégâts ; `SkillDefinition.form = beam` et `DomSkillFxRenderer` possèdent le visuel continu sans branche par ID.
+- Import utilisateur EXACT : `cap_water_atk_3` / `Jet pressurisé`, `capture-skill-transfer-v1`, niveau 10, 25 dégâts Eau, pénétration 100% canal + défense globale, coût 6, préparation 2500ms, trajet 900ms, récupération 300ms, cooldown 30000ms.
+- Écart identifié : l'export auteur contient `form=projectile` et `visual.travel.assetId=pack:capture:sprite-frost-bolt-projectile-01` (asset existant) ; le vrai renderer `beam` utilise `form=beam` et le nouvel asset `pack:capture:sprite-pressurized-jet-beam-body-01`. **Ne pas changer silencieusement l'export auteur pour lui substituer un beam.** Le futur changement auteur peut se faire dans l'éditeur (option « Rayon » déjà présente) avec sélection du nouveau pack.
+- Périmètre autorisé : nouveau `data/capture/showcase/cap_water_atk_3.capture-skill-transfer-v1.json` conforme exactement à l'upload, 1 entrée supplémentaire dans le catalogue Showcase existant, tests de contrat, roundtrip, import atomique, vrai gameplay et CI Chromium 103 créatures ; documentation. Aucun changement moteur, renderer, global-assets, autres capacités ou créatures.
+- Empreinte sémantique JSON.stringify de l'upload : SHA-256 `d799c2f54712f93982a2f8d135785aa163b4cd43234983f83b451ba75d304f55` ; octets source 4133.
+- Tests TDD RED->GREEN; vérification de l'asset référencé dans le catalogue `global-assets`, pas de fallback, pas d'invention de nouveau média, `main` inchangé. Après GREEN, preview et GitHub Pages à publier seulement par fast-forward protégé + CI réussie.
+- Les effets du nouveau rayon ne seront pas visibles avec `form=projectile` dans cette version exacte ; demander validation utilisateur pour changer les valeurs de l'export si nécessaire.
