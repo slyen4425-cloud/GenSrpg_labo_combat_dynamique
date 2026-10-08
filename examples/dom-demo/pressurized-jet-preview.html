@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Jet pressurisé — Preview beam</title>
+  <link rel="stylesheet" href="./demo.css">
+  <style>
+    body { overflow: auto; }
+    .beam-preview {
+      min-height: 100svh;
+      padding: max(0.5rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.5rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+      display: grid;
+      gap: 0.75rem;
+      align-content: start;
+    }
+    .beam-preview__arena {
+      position: relative;
+      width: 100%;
+      min-height: 68svh;
+      overflow: hidden;
+      border-radius: 1rem;
+      border: 1px solid rgba(137,223,240,.28);
+      background:
+        radial-gradient(circle at 50% 30%, rgba(40,120,160,.22), transparent 35%),
+        linear-gradient(180deg,#173442,#10242e 58%,#163129);
+    }
+    .beam-preview__fighter {
+      position: absolute;
+      top: 50%;
+      width: clamp(5rem, 18vw, 9rem);
+      aspect-ratio: 1;
+      transform: translate(-50%,-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(140,235,255,.22), rgba(35,78,96,.8) 65%, rgba(10,25,34,.95));
+      border: 2px solid rgba(160,235,255,.32);
+      box-shadow: 0 1rem 2rem rgba(0,0,0,.35);
+      display:grid;
+      place-items:center;
+      z-index:3;
+    }
+    .beam-preview__fighter--source { left: 18%; }
+    .beam-preview__fighter--target { left: 82%; }
+    .beam-preview__fighter span { font-weight: 900; font-size: clamp(.65rem,2vw,.9rem); }
+    .beam-preview__controls {
+      display:flex;
+      gap:.6rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .beam-preview__controls button {
+      min-height: 2.8rem;
+      padding: .65rem 1rem;
+      border: 1px solid rgba(139,232,248,.35);
+      border-radius: .7rem;
+      background: rgba(14,48,62,.95);
+      color: #eef7fb;
+      font-weight: 900;
+    }
+    .beam-preview__status {
+      margin:0;
+      color:#c8eaf2;
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+  <main class="beam-preview">
+    <section class="beam-preview__arena" data-beam-arena aria-label="Preview Jet pressurisé">
+      <div class="beam-preview__fighter beam-preview__fighter--source" data-beam-source><span>Source</span></div>
+      <div class="beam-preview__fighter beam-preview__fighter--target" data-beam-target><span>Cible</span></div>
+    </section>
+    <div class="beam-preview__controls">
+      <button type="button" data-beam-play>Tester Jet pressurisé</button>
+      <button type="button" data-beam-loop>Auto : OFF</button>
+      <p class="beam-preview__status" data-beam-status>Prêt.</p>
+    </div>
+  </main>
+  <script type="module" src="./pressurized-jet-preview.js"></script>
+</body>
+</html>
