@@ -1892,7 +1892,7 @@ export function createDomSkillFxRenderer({
       });
     }
     if (
-      !["cast", "projectile", "impact", "clash-impact", "miss", "damage", "phase"].includes(type)
+      !["cast", "projectile", "beam", "impact", "clash-impact", "miss", "damage", "phase"].includes(type)
     ) {
       return Object.freeze({
         status: "ignored",
@@ -2361,6 +2361,166 @@ export function createDomSkillFxRenderer({
       });
     }
 
+    if (type === "beam") {
+      const travelVisual = presentation?.travel ?? null;
+      if (!hasSpriteVisual(travelVisual)) {
+        return Object.freeze({
+          status: "ignored",
+          finished: Promise.resolve({ status: "ignored" })
+        });
+      }
+
+      const travelSourceAnchor =
+        presentation?.travelSourceAnchor ?? null;
+      const from = centerRelativeTo(
+        sourceRect(fromSlot, travelSourceAnchor),
+        arenaRect
+      );
+      const to = centerRelativeTo(
+        projectileTargetRect(targetSlot),
+        arenaRect
+      );
+      const deltaX = to.x - from.x;
+      const deltaY = to.y - from.y;
+      const distancePx = Math.max(
+        1,
+        Math.hypot(deltaX, deltaY)
+      );
+      const headingRad = Number.isFinite(
+        Number(travelVisual.headingRad)
+      )
+        ? Number(travelVisual.headingRad)
+        : 0;
+      const rotationRad =
+        Math.atan2(deltaY, deltaX) - headingRad;
+      const displayScale = Math.min(
+        8,
+        Math.max(
+          0.25,
+          Number(travelVisual.displayScale) || 1
+        )
+      );
+      const displayScaleY = Math.min(
+        8,
+        Math.max(
+          0.25,
+          Number(travelVisual.displayScaleY) || 1
+        )
+      );
+      const thicknessPx =
+        96 * displayScale * displayScaleY;
+
+      const node =
+        arena.ownerDocument.createElement("span");
+      node.className =
+        "skill-fx skill-fx--beam skill-fx--sprite-shell";
+      if (presentation?.travelLayer === "behind") {
+        node.className +=
+          " skill-fx--layer-behind";
+      }
+      node.dataset.skillFx = "beam";
+      node.dataset.assetId =
+        travelVisual.assetId ?? "";
+      if (skillId) {
+        node.dataset.skillId = skillId;
+      }
+      if (element) {
+        node.dataset.element = element;
+      }
+      if (travelSourceAnchor) {
+        node.dataset.fxAnchor =
+          travelSourceAnchor;
+      }
+      node.style.left = `${from.x}px`;
+      node.style.top = `${from.y}px`;
+      node.style.width =
+        `${distancePx}px`;
+      node.style.height =
+        `${thicknessPx}px`;
+      node.style.transformOrigin =
+        "0 50%";
+      node.style.transform =
+        `translateY(-50%) rotate(${rotationRad}rad)`;
+      node.style.pointerEvents = "none";
+
+      const spriteNode =
+        arena.ownerDocument.createElement("span");
+      spriteNode.className =
+        "skill-fx__sprite skill-fx__beam-body";
+      spriteNode.style.position = "absolute";
+      spriteNode.style.left = "0";
+      spriteNode.style.top = "0";
+      spriteNode.style.width = "100%";
+      spriteNode.style.height = "100%";
+      spriteNode.style.transform = "none";
+      const spriteVisual = applySpriteVisual(
+        spriteNode,
+        travelVisual,
+        durationMs,
+        animate
+      );
+      node.append(spriteNode);
+
+      applyPresentationGlow(
+        node,
+        presentation?.feedback?.glow
+      );
+      arena.append(node);
+
+      const record = {
+        node,
+        animation: null,
+        frameAnimation:
+          spriteVisual.frameAnimation,
+        type: "beam",
+        skillId,
+        fromSlot,
+        targetSlot,
+        contactFrameId: null,
+        contactReported: false
+      };
+      active.add(record);
+
+      const animation = animate(
+        node,
+        [
+          { opacity: 0.35 },
+          { opacity: 1, offset: 0.12 },
+          { opacity: 1, offset: 0.88 },
+          { opacity: 0.25 }
+        ],
+        {
+          duration: Math.max(
+            1,
+            Number(durationMs) || 1
+          ),
+          easing: "linear",
+          fill: "forwards"
+        }
+      );
+      record.animation = animation;
+
+      const finished =
+        Promise.resolve(animation.finished)
+          .then(() => {
+            cleanup(record);
+            return { status: "arrived" };
+          })
+          .catch((error) => {
+            cleanup(record);
+            if (error?.name === "AbortError") {
+              return { status: "cancelled" };
+            }
+            throw error;
+          });
+
+      return Object.freeze({
+        status: "running",
+        animation,
+        finished
+      });
+    }
+
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
     const from = centerRelativeTo(
@@ -2556,7 +2716,7 @@ export function createDomSkillFxRenderer({
 
     for (const record of [...active]) {
       if (
-        record.type !== "projectile" ||
+        !["projectile", "beam"].includes(record.type) ||
         record.fromSlot !== fromSlot
       ) {
         continue;
