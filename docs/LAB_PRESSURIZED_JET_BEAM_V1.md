@@ -4,7 +4,7 @@ Date : 2026-10-08
 
 ## Statut
 
-GREEN technique candidat, avant CI documentaire finale et checkpoint exact.
+GREEN technique.
 
 Base de travail :
 `8f8d2f66104220054f939c9500e36e2653206e37`
