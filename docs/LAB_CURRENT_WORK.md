@@ -378,3 +378,13 @@ Inchangés :
 - Sentinelle dédiée RED puis GREEN et CI intégrale Node/Chromium 103 créatures exigées.
 - 0 média nouveau ; statuts Android et continuité esthétique finale à valider manuellement.
 - Rapport existant actualisé : `docs/LAB_BEAM_LINKED_FX_UI_V1.md`.
+
+
+## 2026-10-08 — Ergonomie Rayon : 4 étapes côte à côte, près de la zone persistante
+
+- Retour utilisateur : la configuration rayon est mal placée et confuse. Exigence : les **quatre composants** du pouvoir (1 Charge, 2 Départ de rayon, 3 Corps de rayon, 4 Impact) configurables ensemble près de la section effets tactiques/aura au sol, pas 3 composants ni un bouton sans explication.
+- Base publique exacte : `4e9083570561a284838888d1d5e23a6b6a915369` (GitHub Pages + CI SUCCESS; démo Rayon 3 parties publiée). Checkpoint `checkpoint/lab-start-beam-editor-four-stages-v1-2026-10-08`; branche `work/lab-beam-editor-four-stages-v1-2026-10-08`.
+- Audit : `src/ui/capture-editor-human-v2.js` dispose déjà des champs canoniques Cast, BeamStart, Travel, Impact dans `data-skill-fx-advanced`; un bouton pack au début de la section #7 configure le Style Rayon et les 4 assets, mais les champs sont dispersés. Les trois sous-images du beam FX partagent déjà les points d'ancrage dans `DomSkillFxRenderer` et suivent les sources/cibles mobiles.
+- Périmètre : réordonner le seul éditeur de présentation via **déplacement des vrais contrôles DOM** vers une carte « Rayon continu — 4 étapes » après la section 4 zone persistante. Pas de second jeu de champs, pas de double source de vérité. Si Style != Rayon, remettre les mêmes contrôles dans Personnaliser les sprites pour les projectiles normaux. Bouton pack dans le nouveau panneau, retour utilisateur explicitement « 4 étapes ». Préserver le socket de sortie pour alignment.
+- Tests : TDD RED/GREEN sur DOM, une seule copie par champ, réversibilité du passage Rayon/Projectile, persistance roundtrip, CI Node, véritable smoke Chromium 103 créatures, publication Pages après checkpoint technique. Test esthétique Android obligatoire.
+- Fichiers prévus : `examples/dom-demo/capture-editor-v2.html`, `src/ui/capture-editor-human-v2.js`, nouveau petit `src/ui/capture-editor-beam-stage-layout-v1.js` (uniquement présentation UI), sentinelles tests, docs. Aucun changement aux contrats, moteurs, assets, données Showcase ou `main`.
