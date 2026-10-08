@@ -3,10 +3,13 @@ import {
 } from "./creature-presentation-binding-v2.js";
 
 export const CREATURE_PRESENTATION_BINDING_V3_VERSION = 3;
+// Visual-only timing; the Combat Runtime still owns Dodge invulnerability.
+export const CREATURE_DODGE_VISUAL_DEFAULT_DURATION_MS_V3 = 700;
 
 const DODGE_VISUAL_FIELDS = new Set([
   "assetId",
   "displayScale",
+  "durationMs",
   "offsetX",
   "offsetY"
 ]);
@@ -105,6 +108,12 @@ function normalizeDodgeVisual(raw) {
       value.displayScale ?? 1,
       "visual.dodge.displayScale"
     ),
+    ...(value.durationMs === undefined ? {} : {
+      durationMs: positiveNumber(
+        value.durationMs,
+        "visual.dodge.durationMs"
+      )
+    }),
     offsetX: finiteNumber(
       value.offsetX ?? 0,
       "visual.dodge.offsetX"
