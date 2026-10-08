@@ -388,3 +388,13 @@ Inchangés :
 - Périmètre : réordonner le seul éditeur de présentation via **déplacement des vrais contrôles DOM** vers une carte « Rayon continu — 4 étapes » après la section 4 zone persistante. Pas de second jeu de champs, pas de double source de vérité. Si Style != Rayon, remettre les mêmes contrôles dans Personnaliser les sprites pour les projectiles normaux. Bouton pack dans le nouveau panneau, retour utilisateur explicitement « 4 étapes ». Préserver le socket de sortie pour alignment.
 - Tests : TDD RED/GREEN sur DOM, une seule copie par champ, réversibilité du passage Rayon/Projectile, persistance roundtrip, CI Node, véritable smoke Chromium 103 créatures, publication Pages après checkpoint technique. Test esthétique Android obligatoire.
 - Fichiers prévus : `examples/dom-demo/capture-editor-v2.html`, `src/ui/capture-editor-human-v2.js`, nouveau petit `src/ui/capture-editor-beam-stage-layout-v1.js` (uniquement présentation UI), sentinelles tests, docs. Aucun changement aux contrats, moteurs, assets, données Showcase ou `main`.
+
+
+### Rayon 4 étapes — clôture technique candidate
+
+- Nouveau panneau situé immédiatement après « 4 — Effets tactiques » / zone persistante, avant Mouvement.
+- Quatre étapes sont enfin affichées ensemble : (1) charge/point de sortie, (2) départ du rayon, (3) corps continu, (4) extrémité et impact ; action « Utiliser les 4 sprites Jet pressurisé » au même endroit.
+- `capture-editor-beam-stage-layout-v1.js` déplace les **douze labels canoniques** depuis le panneau avancé vers les quatre étapes lors de Style=Rayon (4/2/3/3), et les rétablit dans leur emplacement d'origine pour les autres styles/au dispose. Aucune nouvelle autorité ni duplication de valeurs.
+- Protection de l'ancien chemin `Style=Projectile` : champs, données de combat, présentation V9, moteur beam, assets, 103 créatures inchangés. Correction CSS width-only préservant l'ancien test paysage.
+- Tests RED `37813264628` ; GREEN Node + vrai Chromium 103 créatures + injection DOM réelle contrôlant les quatre étapes : CI `37813820439` SUCCESS, 0 régression.
+- Documentation : `docs/LAB_BEAM_EDITOR_FOUR_STAGES_V1.md`. CI documentaire finale, checkpoint technique, publication Pages et test tactile Android encore requis.
