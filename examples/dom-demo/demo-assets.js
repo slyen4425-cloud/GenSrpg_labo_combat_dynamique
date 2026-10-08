@@ -270,47 +270,6 @@ const ASSETS = Object.freeze({
     headingRad: -0.5024973098693629,
     coreAnchor: {"x":0.65234375,"y":0.41015625}
   }),
-  "pack:capture:sprite-pressurized-jet-cast-01": Object.freeze({
-    assetId: "pack:capture:sprite-pressurized-jet-cast-01",
-    url: globalVisualAssetUrl(
-      "capture/sprites/skills/pressurized_jet/atlases/sprite_skill_pressurized_jet_cast_atlas_01.webp"
-    ),
-    frameCount: 20,
-    frameMs: 60,
-    playbackMode: "once",
-    displayScale: 1
-  }),
-  "pack:capture:sprite-pressurized-jet-beam-start-01": Object.freeze({
-    assetId: "pack:capture:sprite-pressurized-jet-beam-start-01",
-    url: globalVisualAssetUrl(
-      "capture/sprites/skills/pressurized_jet/atlases/sprite_skill_pressurized_jet_beam_start_atlas_01.webp"
-    ),
-    frameCount: 12,
-    frameMs: 45,
-    playbackMode: "once",
-    displayScale: 1
-  }),
-  "pack:capture:sprite-pressurized-jet-beam-body-01": Object.freeze({
-    assetId: "pack:capture:sprite-pressurized-jet-beam-body-01",
-    url: globalVisualAssetUrl(
-      "capture/sprites/skills/pressurized_jet/atlases/sprite_skill_pressurized_jet_beam_body_atlas_01.webp"
-    ),
-    frameCount: 12,
-    frameMs: 45,
-    playbackMode: "loop",
-    headingRad: 0,
-    displayScale: 1
-  }),
-  "pack:capture:sprite-pressurized-jet-impact-01": Object.freeze({
-    assetId: "pack:capture:sprite-pressurized-jet-impact-01",
-    url: globalVisualAssetUrl(
-      "capture/sprites/skills/pressurized_jet/atlases/sprite_skill_pressurized_jet_impact_atlas_01.webp"
-    ),
-    frameCount: 12,
-    frameMs: 45,
-    playbackMode: "once",
-    displayScale: 1
-  }),
   "core:arena-forest-01": Object.freeze({
     assetId: "core:arena-forest-01",
     url: globalVisualAssetUrl(
