@@ -41,3 +41,12 @@ Choisir « Style : Rayon » activait le plan FX beam, mais le `DomSkillFxRendere
 ## Protections
 
 `main`, le dépôt `Zombicide-40k`, Exploration, `global-assets`, les 103 créatures et les compétences existantes restent intacts ; aucun second moteur FX, pas de nouvelle autorité sur timing/dégâts. Rollback sur `01e44318a2337f4bffddc29cc712ad6f560dd1fc`.
+
+
+## Additif V1 — Page publique de démonstration
+
+- La page `examples/dom-demo/pressurized-jet-preview.js` dispose à présent du slot `visual.beamStart`, résolu depuis `pack:capture:sprite-pressurized-jet-beam-start-01`, en plus du `visual.travel` (corps) et de `visual.impact` (extrémité / animation de contact).
+- Le même `DomSkillFxRenderer` rend les trois éléments ; aucun timer ni calcul parallèle. La durée et les points d'ancrage restent identiques à l'événement `beam`.
+- Micro-lot isolé `work/lab-beam-preview-three-parts-v1-2026-10-08`, départ checkpoint `checkpoint/lab-start-beam-preview-three-parts-v1-2026-10-08`, base Pages `5e902634792b6a3396f17a3fd15e431ff0f50d8a`.
+- Sentinelle `tests/unit/pressurized-jet-three-part-demo-v1.test.mjs`, avec CI complète/103 créatures avant déploiement.
+- Aucun nouveau média : 0 ajouté, 0 remplacé ; source canonique `global-assets` intacte. Validation visuelle utilisateur Android toujours requise.
