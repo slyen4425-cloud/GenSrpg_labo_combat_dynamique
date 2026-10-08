@@ -49,6 +49,11 @@ function percent(value) {
   return `${rounded}%`;
 }
 
+// Visual seam allowance: the animated body extends under the endcap sprites.
+// The authoritative beam anchors, direction and hit distance remain unchanged.
+const BEAM_CAP_BASE_SIZE_PX = 96;
+const BEAM_CAP_OVERLAP_RATIO = 0.35;
+
 const PERSISTENT_ZONE_RADIUS_SCALE = Object.freeze({
   short: 1,
   medium: 1.45,
@@ -2385,7 +2390,7 @@ export function createDomSkillFxRenderer({
       const displayScaleY = Math.min(
         8, Math.max(0.25, Number(travelVisual.displayScaleY) || 1)
       );
-      const thicknessPx = 96 * displayScale * displayScaleY;
+      const thicknessPx = BEAM_CAP_BASE_SIZE_PX * displayScale * displayScaleY;
 
       const node = arena.ownerDocument.createElement("span");
       node.className = "skill-fx skill-fx--beam skill-fx--sprite-shell";
@@ -2433,7 +2438,7 @@ export function createDomSkillFxRenderer({
         const scale = Math.min(
           8, Math.max(0.25, Number(visual.displayScale) || 1)
         );
-        const size = 96 * scale;
+        const size = BEAM_CAP_BASE_SIZE_PX * scale;
         cap.style.width = `${size}px`;
         cap.style.height = `${size * Math.min(8, Math.max(0.25, Number(visual.displayScaleY) || 1))}px`;
         cap.style.transform = "translate(-50%, -50%)";
@@ -2480,6 +2485,18 @@ export function createDomSkillFxRenderer({
         const distancePx = Math.max(
           1, Math.hypot(endX - startX, endY - startY)
         );
+        // Keep the center of both endcaps on the authoritative anchors;
+        // tuck the body underneath their alpha edges in the SAME rotated FX.
+        // Cap the inset for close targets so neither end can pass the other.
+        const capOverlap = (visual) => hasSpriteVisual(visual)
+          ? BEAM_CAP_BASE_SIZE_PX *
+            Math.min(8, Math.max(0.25, Number(visual.displayScale) || 1)) *
+            BEAM_CAP_OVERLAP_RATIO
+          : 0;
+        const fromOverlap = Math.min(distancePx / 3, capOverlap(startVisual));
+        const toOverlap = Math.min(distancePx / 3, capOverlap(targetVisual));
+        body.style.left = `${-fromOverlap}px`;
+        body.style.width = `${distancePx + fromOverlap + toOverlap}px`;
         const rotationRad = Math.atan2(
           endY - startY, endX - startX
         ) - headingRad;
