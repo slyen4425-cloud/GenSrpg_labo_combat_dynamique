@@ -370,3 +370,11 @@ Inchangés :
 - La page de démo `pressurized-jet-preview.js` utilisait encore un binding local test avec cast/body/impact mais sans `beamStart`. Son visuel restait incomplet, même après la correction générique du moteur.
 - Périmètre : rattacher l'ID `pack:capture:sprite-pressurized-jet-beam-start-01` au binding V9 de démonstration, écrire une sentinelle dédiée, lancer CI Node+Chromium/103, mettre à jour la documentation. Aucun autre changement moteur, skill auteur, médias, main ni autres dépôts.
 - La démo reste une illustration, ne devient pas un deuxième moteur ni une compétence gameplay.
+
+
+### Démo Rayon 3 parties — clôture technique candidate
+
+- Preview autonome raccordée aux trois assets réels via un unique binding V9 : départ `beamStart`, corps `travel`, cible `impact`, sans changer la compétence Gameplay/Showcase.
+- Sentinelle dédiée RED puis GREEN et CI intégrale Node/Chromium 103 créatures exigées.
+- 0 média nouveau ; statuts Android et continuité esthétique finale à valider manuellement.
+- Rapport existant actualisé : `docs/LAB_BEAM_LINKED_FX_UI_V1.md`.
