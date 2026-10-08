@@ -39,13 +39,13 @@ const server = createServer(async (req, res) => {
     }
     // Probe the actual mounted editor once, with the same inputs and module graph.
     if (pathname.endsWith("/capture-editor-v2.html") &&
-        new URL(req.url, "http://localhost").searchParams.has("verify-four-stage-rayon")) {
+        new URL(req.url, "http://localhost").searchParams.has("verify-three-phase-rayon")) {
       const html = contents.toString("utf8");
       const probe = '<script>document.addEventListener("DOMContentLoaded",()=>{' +
         'const f=document.querySelector("[data-skill-form]");' +
         'f.value="beam";f.dispatchEvent(new Event("change",{bubbles:true}));' +
         'const h=document.querySelector("[data-skill-beam-stage-editor]");' +
-        'h.dataset.beamProbe=["cast","start","body","impact"].map(x=>' +
+        'h.dataset.beamProbe=["start","body","impact"].map(x=>' +
         'document.querySelectorAll("[data-beam-stage-fields="+x+"] label").length).join(",");' +
         '});</script>';
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
@@ -138,13 +138,13 @@ try {
       throw new Error("Human Editor browser missing damage penetration control: " + marker);
     }
   }
-  const rayonDom = await dumpDom(url + "?verify-four-stage-rayon=1");
-  assertCreatures(rayonDom, "rayon four-stage browser bootstrap");
-  if (!/data-beam-probe="4,2,3,3"/.test(rayonDom) ||
+  const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
+  assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
+  if (!/data-beam-probe="6,3,3"/.test(rayonDom) ||
       !/data-beam-active="true"/.test(rayonDom)) {
-    throw new Error("Rayon browser UI did not move the original 12 controls into 4 stages");
+    throw new Error("Rayon browser UI did not move the original 12 controls into 3 phases");
   }
-  console.log("Rayon browser UI: 4 + 2 + 3 + 3 canonical labels grouped successfully");
+  console.log("Rayon browser UI: 6 + 3 + 3 canonical labels grouped successfully");
   // Optional global presentation host unavailable: creatures must still load.
   assertCreatures(await dumpDom(url, [
     "--host-resolver-rules=MAP raw.githubusercontent.com 127.0.0.1,EXCLUDE localhost"
