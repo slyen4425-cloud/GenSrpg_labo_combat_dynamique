@@ -4534,7 +4534,7 @@ function appendHumanSkillEffectV1(
     { min: 0, max: 100, step: "5" }
   );
   const ignoreResistanceField = tacticalFieldV1(
-    "Ignorer la résistance (%)",
+    "Ignorer la résistance du canal (Feu, Physique, Eau… %) ",
     ignoreResistance
   );
   ignoreResistanceField.dataset.skillEffectConfigKind = "damage";
@@ -4549,6 +4549,56 @@ function appendHumanSkillEffectV1(
     ignoreDefense
   );
   ignoreDefenseField.dataset.skillEffectConfigKind = "damage";
+
+  // Presentation-only convenience: write the existing two authoritative
+  // SkillEffect fields together. There is deliberately no third saved value.
+  const ignoreAll = tacticalNumberInputV1(
+    "skillEffectIgnoreAllMitigationPct",
+    Number(ignoreResistance.value) === Number(ignoreDefense.value)
+      ? ignoreResistance.value
+      : "",
+    { min: 0, max: 100, step: "5" }
+  );
+  const ignoreAllField = tacticalFieldV1(
+    "Ignorer toutes les résistances (%)",
+    ignoreAll
+  );
+  ignoreAllField.dataset.skillEffectConfigKind = "damage";
+
+  const advancedPenetration = document.createElement("details");
+  advancedPenetration.dataset.skillEffectConfigKind = "damage";
+  const advancedTitle = document.createElement("summary");
+  advancedTitle.textContent =
+    "Réglages avancés : résistance du canal et défense globale";
+  advancedPenetration.append(
+    advancedTitle,
+    ignoreResistanceField,
+    ignoreDefenseField
+  );
+  if (Number(ignoreResistance.value) !== Number(ignoreDefense.value)) {
+    advancedPenetration.open = true;
+    ignoreAll.placeholder = "Personnalisé";
+  }
+  ignoreAll.addEventListener("input", () => {
+    if (ignoreAll.value === "") return;
+    const pct = Number(ignoreAll.value);
+    if (!Number.isFinite(pct) || pct < 0 || pct > 100) return;
+    ignoreResistance.value = ignoreAll.value;
+    ignoreDefense.value = ignoreAll.value;
+  });
+  const syncMaster = () => {
+    ignoreAll.value =
+      Number(ignoreResistance.value) === Number(ignoreDefense.value)
+        ? ignoreResistance.value : "";
+  };
+  ignoreResistance.addEventListener("input", syncMaster);
+  ignoreDefense.addEventListener("input", syncMaster);
+
+  const penetrationNote = document.createElement("small");
+  penetrationNote.dataset.skillEffectConfigKind = "damage";
+  penetrationNote.className = "note";
+  penetrationNote.textContent =
+    "0 % : défenses normales ; 100 % : ignore la résistance physique/élémentaire du coup et la défense globale. Les boucliers et immunités restent actifs.";
 
   const filterTags = tacticalTextInputV1(
     "skillEffectStatusTags",
@@ -5198,8 +5248,9 @@ function appendHumanSkillEffectV1(
   config.append(
     amountField,
     channelField,
-    ignoreResistanceField,
-    ignoreDefenseField,
+    ignoreAllField,
+    advancedPenetration,
+    penetrationNote,
     filterTagsField,
     statusBox,
     scheduledBox,
