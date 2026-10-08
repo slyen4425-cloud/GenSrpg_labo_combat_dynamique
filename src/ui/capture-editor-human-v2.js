@@ -9213,6 +9213,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           presentation: current
         });
         one(root, "[data-skill-form]").value = "beam";
+        writeSkillSpriteControlsV1(root, next);
         for (const [selector, value] of [
           ["[data-skill-cast-fx]", next.castAssetId],
           ["[data-skill-cast-scale]", next.castDisplayScale],
