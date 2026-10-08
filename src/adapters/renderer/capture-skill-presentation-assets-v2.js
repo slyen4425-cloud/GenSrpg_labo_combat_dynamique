@@ -320,6 +320,12 @@ export function createCaptureSkillPresentationAssetsV2({
         visual.cast,
         view
       );
+    const beamStartVisual =
+      resolvedVisual(
+        resolveAsset,
+        visual.beamStart,
+        view
+      );
     const travelVisual =
       resolvedVisual(
         resolveAsset,
@@ -352,6 +358,8 @@ export function createCaptureSkillPresentationAssetsV2({
         binding.version,
         view
       ),
+      beamStart: beamStartVisual,
+      beamStartLayer: layerFor(visual.beamStart, binding.version, view),
       travel: travelVisual,
       travelSourceAnchor:
         visual.travel?.anchor ?? null,
