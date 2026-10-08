@@ -88,7 +88,26 @@
       "subjectId": "cap_water_atk_2",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-aqua-dash-01"
+          "assetId": "pack:capture:icon-skill-marine-bite-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-water-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
         },
         "impact": {
           "assetId": "pack:capture:sprite-impact-physical-01",
@@ -110,16 +129,38 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:xel-48520d94",
+          "volume": 1,
+          "loop": false
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:effect-df32b429",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {},
       "feedback": {
         "glow": null,
         "impactFlash": null,
-        "cameraShake": null,
+        "cameraShake": {
+          "amplitudePx": 120,
+          "durationMs": 140
+        },
         "projectileTrail": null,
         "impactBurst": null,
         "aftermathSmoke": null,
-        "castBurst": null
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 4,
+          "spreadPx": 5,
+          "sizePx": 5,
+          "risePx": 1,
+          "durationMs": 3,
+          "opacity": 0
+        }
       }
     }
   }
