@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { demoPresentationAssets } from "../../examples/dom-demo/demo-assets.js";
+import { GLOBAL_VISUAL_LIBRARY } from "../../src/assets/global-visual-library.js";
 
 const EXPECTED_SKILL_ICONS = Object.freeze({
   fireball: Object.freeze({
@@ -119,8 +120,8 @@ test("all five combat arenas resolve only through canonical Core assets", () => 
     );
     assert.equal(
       url.searchParams.get("v"),
-      "2026-10-05-v14-fireball-2-projectile-scale-art-v2",
-      arenaId + " should use the arena refresh cache revision"
+      GLOBAL_VISUAL_LIBRARY.revision,
+      arenaId + " should use the current canonical library cache revision"
     );
   }
 
