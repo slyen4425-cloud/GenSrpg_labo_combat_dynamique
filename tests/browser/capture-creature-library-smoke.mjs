@@ -113,7 +113,16 @@ try {
   const origin = "http://127.0.0.1:" + server.address().port;
   const url = origin + "/examples/dom-demo/capture-editor-v2.html";
   // Validates the complete browser module graph and real Human Editor DOM projection.
-  assertCreatures(await dumpDom(url), "normal browser bootstrap");
+  const normalDom = await dumpDom(url);
+  assertCreatures(normalDom, "normal browser bootstrap");
+  for (const marker of [
+    "data-skill-effect-ignore-resistance-pct",
+    "data-skill-effect-ignore-damage-reduction-pct"
+  ]) {
+    if (!normalDom.includes(marker)) {
+      throw new Error("Human Editor browser missing damage penetration control: " + marker);
+    }
+  }
   // Optional global presentation host unavailable: creatures must still load.
   assertCreatures(await dumpDom(url, [
     "--host-resolver-rules=MAP raw.githubusercontent.com 127.0.0.1,EXCLUDE localhost"
