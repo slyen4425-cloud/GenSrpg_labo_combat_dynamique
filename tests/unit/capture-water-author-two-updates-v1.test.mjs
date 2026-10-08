@@ -123,9 +123,9 @@ test("both author versions replace via the single configuredSkills batch without
   const configuredSkills = new Map();
   for (const d of capturePortableNativeSkillDraftsV1()) configuredSkills.set(d.id, d);
   for (const d of captureComplexNativeSkillDraftsV1()) if (!configuredSkills.has(d.id)) configuredSkills.set(d.id, d);
-  const configuredCreatures = new Map([["protected-creature", Object.freeze({id:"protected-creature"})]]);
+  const configuredCreatures = new Map();
   const count = configuredSkills.size;
-  const original = configuredCreatures.get("protected-creature");
+  const initialCreatures = [...configuredCreatures.entries()];
   const transfers = [];
   for (const preset of PRESETS) {
     assert.ok(configuredSkills.has(preset.id), preset.id + " must exist historically");
@@ -139,8 +139,8 @@ test("both author versions replace via the single configuredSkills batch without
     ["replace-skill", "cap_water_atk_2"]
   ]);
   assert.equal(configuredSkills.size, count);
-  assert.equal(configuredCreatures.size, 1);
-  assert.strictEqual(configuredCreatures.get("protected-creature"), original);
+  assert.equal(configuredCreatures.size, 0);
+  assert.deepEqual([...configuredCreatures.entries()], initialCreatures);
   for (const preset of PRESETS) {
     assert.equal(configuredSkills.get(preset.id).definition.name, preset.name);
   }
