@@ -73,8 +73,8 @@ test("pack selects coherent beam parts and preserves mechanics, custom audio and
   ).value.draft;
   assert.deepEqual(roundtrip, updated);
   assert.equal(humanSkillEditorFieldsFromDraftV1(roundtrip).presentation.beamStartAssetId, pack.beamStart);
-  assert.equal(JSON.parse(await readFile(inputFile, "utf8")).draft.definition.form, "projectile",
-    "pack authoring cannot silently overwrite the saved Showcase skill");
+  assert.equal(JSON.parse(await readFile(inputFile, "utf8")).draft.definition.form, "beam",
+    "pack authoring cannot silently overwrite the saved Beam Showcase skill");
 
   const resolved = createCaptureSkillPresentationAssetsV2({
     skillPresentations: { [updated.id]: updated.presentation },
