@@ -2,8 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  demoPresentationAssets
-} from "../../examples/dom-demo/demo-assets.js";
+  createGlobalPresentationAssetResolverV1
+} from "../../src/assets/global-presentation-asset-resolver-v1.js";
+import {
+  globalVisualAssetUrl
+} from "../../src/assets/global-visual-library.js";
 import {
   createCaptureSkillPresentationAssetsV2
 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
@@ -17,6 +20,62 @@ const IDS = Object.freeze({
   body: "pack:capture:sprite-pressurized-jet-beam-body-01",
   impact: "pack:capture:sprite-pressurized-jet-impact-01"
 });
+
+const CATALOG = Object.freeze({
+  assets: Object.freeze([
+    Object.freeze({
+      id: IDS.cast,
+      resource: Object.freeze({
+        file:
+          "capture/sprites/skills/pressurized_jet/atlases/" +
+          "sprite_skill_pressurized_jet_cast_atlas_01.webp",
+        frameCount: 20,
+        frameMs: 60,
+        playbackMode: "once"
+      })
+    }),
+    Object.freeze({
+      id: IDS.start,
+      resource: Object.freeze({
+        file:
+          "capture/sprites/skills/pressurized_jet/atlases/" +
+          "sprite_skill_pressurized_jet_beam_start_atlas_01.webp",
+        frameCount: 12,
+        frameMs: 45,
+        playbackMode: "once"
+      })
+    }),
+    Object.freeze({
+      id: IDS.body,
+      resource: Object.freeze({
+        file:
+          "capture/sprites/skills/pressurized_jet/atlases/" +
+          "sprite_skill_pressurized_jet_beam_body_atlas_01.webp",
+        frameCount: 12,
+        frameMs: 45,
+        playbackMode: "loop",
+        headingRad: 0
+      })
+    }),
+    Object.freeze({
+      id: IDS.impact,
+      resource: Object.freeze({
+        file:
+          "capture/sprites/skills/pressurized_jet/atlases/" +
+          "sprite_skill_pressurized_jet_impact_atlas_01.webp",
+        frameCount: 12,
+        frameMs: 45,
+        playbackMode: "once"
+      })
+    })
+  ])
+});
+
+const resolveAsset =
+  createGlobalPresentationAssetResolverV1({
+    assetCatalog: CATALOG,
+    assetUrlForFile: globalVisualAssetUrl
+  });
 
 function slot(assetId, {
   attachment,
@@ -98,7 +157,7 @@ function element() {
   };
 }
 
-test("preview registry resolves all four Jet pressurisé global assets", () => {
+test("canonical global presentation resolver maps all four Jet pressurisé assets", () => {
   const expected = [
     [IDS.cast, 20, "once", /pressurized_jet_cast_atlas_01\.webp/],
     [IDS.start, 12, "once", /pressurized_jet_beam_start_atlas_01\.webp/],
@@ -106,8 +165,11 @@ test("preview registry resolves all four Jet pressurisé global assets", () => {
     [IDS.impact, 12, "once", /pressurized_jet_impact_atlas_01\.webp/]
   ];
 
-  for (const [id, frameCount, playbackMode, urlPattern] of expected) {
-    const asset = demoPresentationAssets.asset(id);
+  for (
+    const [id, frameCount, playbackMode, urlPattern]
+    of expected
+  ) {
+    const asset = resolveAsset(id);
     assert.ok(asset, id);
     assert.equal(asset.assetId, id);
     assert.equal(asset.frameCount, frameCount);
@@ -118,6 +180,15 @@ test("preview registry resolves all four Jet pressurisé global assets", () => {
       /\/global-assets\/assets\/library\/capture\/sprites\/skills\/pressurized_jet\/atlases\//
     );
   }
+
+  assert.equal(
+    resolveAsset(IDS.body).headingRad,
+    0
+  );
+  assert.equal(
+    resolveAsset("pack:capture:missing"),
+    null
+  );
 });
 
 test("real V9 binding resolves Jet pressurisé body then renders one continuous beam", async () => {
@@ -126,9 +197,7 @@ test("real V9 binding resolves Jet pressurisé body then renders one continuous 
       skillPresentations: {
         "test-pressurized-jet": binding()
       },
-      assetForId(assetId) {
-        return demoPresentationAssets.asset(assetId);
-      }
+      assetForId: resolveAsset
     });
 
   const presentation =
