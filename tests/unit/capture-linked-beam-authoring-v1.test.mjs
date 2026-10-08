@@ -75,7 +75,7 @@ test("pack selects coherent beam parts and preserves mechanics, custom audio and
 
   const resolved = createCaptureSkillPresentationAssetsV2({
     skillPresentations: { [updated.id]: updated.presentation },
-    assetForId(id) { return demoPresentationAssets.asset(id); }
+    assetForId(id) { return demoPresentationAssets.asset(id) ?? (id === "core:icon-skill-aqua-dash-01" ? {url:"icon.webp"} : null); }
   }).presentationForSkill(updated.id, { sourceView: "player", targetView: "opponent", fxType: "beam" });
   assert.equal(resolved.beamStart.assetId, pack.beamStart);
   assert.equal(resolved.travel.assetId, pack.travel);
