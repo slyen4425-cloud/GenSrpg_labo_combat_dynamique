@@ -1,4 +1,8 @@
 import {
+  mountCaptureBeamStageLayoutV1,
+  syncCaptureBeamStageLayoutV1
+} from "./capture-editor-beam-stage-layout-v1.js";
+import {
   captureBeamVisualPackV1,
   applyCaptureBeamVisualPackV1
 } from "./capture-editor-beam-visual-pack-v1.js";
@@ -3346,6 +3350,7 @@ function writeSkillDraftFields(
     one(root, selector).value =
       String(value ?? "");
   }
+  syncCaptureBeamStageLayoutV1(root);
 
   one(
     root,
@@ -3463,6 +3468,7 @@ function prepareNewSkillDraftFields(
   for (const [selector, value] of values) {
     one(root, selector).value = String(value);
   }
+  syncCaptureBeamStageLayoutV1(root);
 
   one(
     root,
@@ -8672,6 +8678,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
+  const beamStageLayout = mountCaptureBeamStageLayoutV1(root);
+  listen(one(root, "[data-skill-form]"), "change", () => beamStageLayout.sync());
+
   mountEditorCardDisclosuresV1({
     root,
     listen
@@ -9195,7 +9204,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     if (beamPackButton) beamPackButton.disabled = missing.length > 0;
     if (beamPackState) {
       beamPackState.textContent = missing.length === 0
-        ? "Pack prêt : départ, corps et arrivée liés. Clique pour appliquer aux champs de la capacité, puis enregistre."
+        ? "Pack prêt : charge, départ, corps et impact liés. Clique pour appliquer aux champs de la capacité, puis enregistre."
         : "Pack indisponible : médias non chargés : " + missing.join(", ");
       beamPackState.dataset.tone = missing.length === 0 ? "ok" : "warning";
     }
@@ -9213,6 +9222,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           presentation: current
         });
         one(root, "[data-skill-form]").value = "beam";
+        beamStageLayout.sync();
         writeSkillSpriteControlsV1(root, next);
         for (const [selector, value] of [
           ["[data-skill-cast-fx]", next.castAssetId],
@@ -9231,7 +9241,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           one(root, selector).value = String(value);
         }
         setStatus(root,
-          "Rayon Jet pressurisé prêt : 3 parties liées. Vérifie puis utilise « Mettre à jour la capacité existante » pour enregistrer.",
+          "Rayon Jet pressurisé prêt : 4 étapes liées. Vérifie puis utilise « Mettre à jour la capacité existante » pour enregistrer.",
           "ok");
         if (beamPackState) {
           beamPackState.textContent = "Rayon préparé, sans modification des dégâts, de l’énergie ou du cooldown. Enregistrement nécessaire.";
@@ -12023,6 +12033,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         return;
       }
       disposed = true;
+      beamStageLayout.dispose();
       combatTeamControls.dispose();
       for (const remove of listeners.splice(0)) {
         remove();
