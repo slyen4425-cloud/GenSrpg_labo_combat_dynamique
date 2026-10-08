@@ -105,7 +105,7 @@ test("Human Editor reads valid dodge Game Options without a helper ReferenceErro
         enabled: true,
         maxCharges: 2,
         rechargeMs: 1500,
-        activeWindowMs: 500
+        activeWindowMs: 250
       }
     }
   );
