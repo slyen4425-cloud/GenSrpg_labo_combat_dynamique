@@ -303,3 +303,14 @@ Inchangés :
 - CI finale mono-autorité `37798626210` : foundation SUCCESS + Chromium Creature Library SUCCESS.
 - Le checkpoint V1 existant reste immuable sur l'ancienne variante ; il n'est pas déplacé.
 - Statut : GREEN technique mono-autorité à figer sous `checkpoint/lab-pressurized-jet-preview-routing-v2-green-2026-10-08` sur le SHA documentaire final. Test smartphone artistique encore requis.
+
+
+### Pressurized Jet Preview Routing V1 — clôture technique
+
+- Raccord canonique confirmé : les 4 IDs Jet pressurisé restent hors du registre legacy `demo-assets.js` et sont résolus par `createGlobalPresentationAssetResolverV1` depuis le catalogue `global-assets`.
+- Preview dédiée : `examples/dom-demo/pressurized-jet-preview.html` + `pressurized-jet-preview.js`.
+- La preview utilise un binding V9 de test uniquement, sans créer ni modifier une compétence auteur active.
+- Vrai chemin : catalogue global -> assetId -> PresentationBinding V9 -> `createCaptureSkillPresentationAssetsV2` -> `DomSkillFxRenderer` -> beam continu.
+- CI finale : run `37799950075` SUCCESS sur `972a68ad6bcfea3e796d5384baa11b730d1b1b13`; smoke Chromium 103 créatures également SUCCESS.
+- Aucun doublon d'autorité asset ; aucune modification gameplay.
+- Statut : prêt à figer en GREEN et à publier sur GitHub Pages pour validation smartphone.
