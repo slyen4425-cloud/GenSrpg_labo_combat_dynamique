@@ -460,3 +460,17 @@ Inchangés :
 - GREEN avant doc : CI `37830808315`, 1296 / 1296 Node PASS et Chromium 103 créatures PASS en 4 scénarios, dont CDN inaccessible/suspendu.
 - Rapport : `docs/LAB_BEAM_SEAM_AUDIO_EDITOR_V1.md`.
 - Suite : CI du commit documentaire final, checkpoint GREEN exact, preview et déploiement gh-pages avec protection du SHA, validation Android utilisateur. Aucun GREEN artistique avant confirmation tactile.
+
+
+## 2026-10-08 — Jet pressurisé : remplacement exact du preset auteur Beam V1 (en cours)
+
+- Demande utilisateur : remplacer le preset vitrine de `cap_water_atk_3` par l'export `capture-skill-transfer-v1` joint au message, sans reconfigurer silencieusement les champs.
+- Source de vérité : export `gensrpg-capture-skill-cap_water_atk_3(1).json` (ID `cap_water_atk_3`, forme `beam`, effets/FX/sons auteur). Le fichier Showcase préexistant est actuellement `projectile`.
+- Base exacte : `de8afdce8a3944ecf19e52176b5dfa8e86c756d0` (`gh-pages` techniquement GREEN).
+- Checkpoint départ : `checkpoint/lab-start-water-atk3-beam-author-update-v1-2026-10-08`.
+- Branche de travail : `work/lab-water-atk3-beam-author-update-v1-2026-10-08`.
+- Propriétaire autoritaire inchangé : `configuredSkills` ; intégration depuis `data/capture/showcase/cap_water_atk_3.capture-skill-transfer-v1.json` déjà déclaré par le catalogue Showcase. Pas de nouvelle copie.
+- Périmètre : JSON auteur existant, tests ciblés de chargement/round-trip/runtime/son/loadout et sentinelles déjà liées à l'ancien fichier, documentation de rapport et présente ligne de reprise.
+- Protégés : autres presets, 103 créatures et leurs loadouts, combat gameplay et FX, moteurs, bibliothèques assets, `main`, `global-assets`, dépôts GenSrpG et Exploration.
+- Audit initial : ancien chantier `work/lab-water-atk3-author-after-beam-v1-2026-10-08` divergé et déjà clos, ne contient pas le Beam actuel ; les assets de départ/corps et les deux sons existent dans les catalogues actuels.
+- TDD : RED sur mismatch ancien preset (`projectile`) versus auteur (`beam`) et valeurs précises ; GREEN sur import `capture-skill-transfer-v1`, identifiant unique dans `configuredSkills`, non-mutation des loadouts et tests Node + Chromium; création checkpoint GREEN uniquement après CI ; Pages sous lease et validation Android utilisateur séparée.
