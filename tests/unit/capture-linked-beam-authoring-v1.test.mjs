@@ -55,7 +55,7 @@ test("pack selects coherent beam parts and preserves mechanics, custom audio and
   assert.equal(visuals.castAudioAssetId, extraAudioId);
 
   const updated = buildHumanSkillDraftV1({
-    ...fields, form: "beam", presentation: visuals
+    ...fields, form: "beam", projectileClash: {power:0}, presentation: visuals
   });
   assert.equal(updated.definition.form, "beam");
   assert.equal(updated.definition.id, "cap_water_atk_3");
@@ -138,14 +138,14 @@ test("beam FX follows moving actor anchors; start, body and target share one can
   assert.equal(added.length,1);
   assert.deepEqual(added[0].children.map(x=>x.dataset.beamPart),["body","start","target"]);
   assert.equal(added[0].style.left,"70px");
-  assert.equal(added[0].style.width,"390px");
+  assert.equal(Number.parseFloat(added[0].style.width),Math.hypot(390,20));
   assert.equal(added[0].children[1].style.left,"0");
   assert.equal(added[0].children[2].style.left,"100%");
 
   const frame = [...frameCallbacks.values()][0];
   movingX=490;
   frame();
-  assert.equal(added[0].style.width,"440px");
+  assert.equal(Number.parseFloat(added[0].style.width),Math.hypot(440,20));
   assert.equal(added[0].children[2].style.left,"100%");
   pendingFinish();
   assert.deepEqual(await result.finished,{status:"arrived"});
