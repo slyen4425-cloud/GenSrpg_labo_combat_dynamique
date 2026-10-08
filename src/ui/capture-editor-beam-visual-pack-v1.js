@@ -2,7 +2,7 @@
 export const CAPTURE_BEAM_VISUAL_PACKS_V1 = Object.freeze([
   Object.freeze({
     id: "pressurized-jet",
-    label: "Rayon Jet pressurisé",
+    label: "Rayon d’eau",
     cast: "pack:capture:sprite-pressurized-jet-cast-01",
     beamStart: "pack:capture:sprite-pressurized-jet-beam-start-01",
     travel: "pack:capture:sprite-pressurized-jet-beam-body-01",
@@ -29,8 +29,8 @@ export function applyCaptureBeamVisualPackV1({
   // Visual selection only. Preserve sounds, skill mechanics and all other FX.
   return Object.freeze({
     ...presentation,
-    castAssetId: pack.cast,
-    castDisplayScale: 1.5,
+    castAssetId: pack.beamStart,
+    castDisplayScale: 1,
     castPlaybackMode: "loop",
     castOffsetX: 0,
     castOffsetY: 0,
@@ -48,4 +48,53 @@ export function applyCaptureBeamVisualPackV1({
     impactOffsetX: 0,
     impactOffsetY: 0
   });
+}
+
+// Ephemeral UI undo snapshot: only the actual form fields overwritten by the
+// example, never a second source of truth for a saved skill or combat state.
+export const CAPTURE_BEAM_PRESET_CONTROL_SELECTORS_V1 = Object.freeze([
+  "[data-skill-form]",
+  "[data-skill-cast-fx]",
+  "[data-skill-cast-scale]",
+  "[data-skill-cast-playback]",
+  "[data-skill-cast-offset-x]",
+  "[data-skill-cast-offset-y]",
+  "[data-skill-cast-offset-mode]",
+  "[data-skill-cast-opponent-offset-x]",
+  "[data-skill-cast-opponent-offset-y]",
+  "[data-skill-beam-start-fx]",
+  "[data-skill-beam-start-scale]",
+  "[data-skill-travel-fx]",
+  "[data-skill-travel-scale]",
+  "[data-skill-travel-playback]",
+  "[data-skill-impact-fx]",
+  "[data-skill-impact-scale]",
+  "[data-skill-impact-duration]",
+  "[data-skill-impact-offset-x]",
+  "[data-skill-impact-offset-y]"
+]);
+
+export function snapshotCaptureBeamPresetControlsV1(root) {
+  return Object.freeze(
+    Object.fromEntries(
+      CAPTURE_BEAM_PRESET_CONTROL_SELECTORS_V1.map(selector => {
+        const control = root.querySelector(selector);
+        if (!control) throw new Error("Rayon : contrôle manquant : " + selector);
+        return [selector, control.value];
+      })
+    )
+  );
+}
+
+export function restoreCaptureBeamPresetControlsV1(root, snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    throw new TypeError("Rayon : aucun réglage antérieur à restaurer");
+  }
+  for (const selector of CAPTURE_BEAM_PRESET_CONTROL_SELECTORS_V1) {
+    const control = root.querySelector(selector);
+    if (!control || !Object.hasOwn(snapshot, selector)) {
+      throw new Error("Rayon : ancienne valeur manquante : " + selector);
+    }
+    control.value = snapshot[selector];
+  }
 }
