@@ -37,7 +37,9 @@ const FIELDS_BY_KIND = Object.freeze({
   damage: new Set([
     ...COMMON_FIELDS,
     "amount",
-    "channel"
+    "channel",
+    "ignoreResistancePct",
+    "ignoreDamageReductionPct"
   ]),
   heal: new Set([
     ...COMMON_FIELDS,
@@ -111,6 +113,14 @@ function nonNegativeNumber(value, field) {
       field +
         " must be a non-negative finite number"
     );
+  }
+  return number;
+}
+
+function penetrationPercentV1(value, field) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0 || number > 100) {
+    throw new RangeError(field + " must be between 0 and 100");
   }
   return number;
 }
@@ -237,6 +247,17 @@ export function normalizeSkillEffectV1(input) {
             value.channel,
             "SkillEffectV1.channel"
           );
+    for (const key of [
+      "ignoreResistancePct",
+      "ignoreDamageReductionPct"
+    ]) {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        output[key] = penetrationPercentV1(
+          value[key],
+          "SkillEffectV1." + key
+        );
+      }
+    }
   }
 
   if (kind === "apply_status") {
