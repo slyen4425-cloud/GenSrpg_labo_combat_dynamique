@@ -1,10 +1,10 @@
 // Editor-only layout: relocate the exact existing fields, never shadow their state.
 // Gameplay, Capture Transfer and Sprite Render stay owned by their existing modules.
 const STAGE_FIELDS = Object.freeze([
-  ["[data-skill-socket]", "cast"],
-  ["[data-skill-cast-fx]", "cast"],
-  ["[data-skill-cast-scale]", "cast"],
-  ["[data-skill-cast-playback]", "cast"],
+  ["[data-skill-socket]", "start"],
+  ["[data-skill-cast-fx]", "start"],
+  ["[data-skill-cast-scale]", "start"],
+  ["[data-skill-cast-playback]", "start"],
   ["[data-skill-beam-start-fx]", "start"],
   ["[data-skill-beam-start-scale]", "start"],
   ["[data-skill-travel-fx]", "body"],
@@ -28,7 +28,7 @@ export function mountCaptureBeamStageLayoutV1(root) {
   }
 
   const moved = [];
-  const stages = ["cast", "start", "body", "impact"];
+  const stages = ["start", "body", "impact"];
   for (const [selector, stage] of STAGE_FIELDS) {
     const input = root.querySelector(selector);
     const label = input?.closest("label");
@@ -59,8 +59,8 @@ export function mountCaptureBeamStageLayoutV1(root) {
     const help = root.querySelector("[data-beam-four-stage-help]");
     if (help) {
       help.textContent = active
-        ? "Les quatre éléments ci-dessous sont reliés au même rayon. Tu peux modifier leurs sprites et tailles directement ici ; il faudra ensuite enregistrer la capacité."
-        : "Choisis Style : Rayon, ou utilise le bouton Jet pressurisé : les quatre composants apparaîtront ensemble ici.";
+        ? "Les trois phases ci-dessous sont reliées au même rayon. Tu peux modifier leurs sprites et tailles directement ici ; il faudra ensuite enregistrer la capacité."
+        : "Choisis Style : Rayon, ou applique le modèle de rayon d’eau pour configurer les trois phases ici.";
     }
   };
 
