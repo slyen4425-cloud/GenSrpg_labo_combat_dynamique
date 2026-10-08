@@ -2030,6 +2030,10 @@ export function buildHumanCreatureDraftV3(fields) {
             fields?.visual?.dodgeDisplayScale ?? 1,
             "Taille de l’effet d’esquive"
           ),
+          durationMs: finiteNumber(
+            fields?.visual?.dodgeDurationMs ?? 700,
+            "Durée visuelle de l’esquive"
+          ),
           offsetX: finiteNumber(
             fields?.visual?.dodgeOffsetX ?? 0,
             "Décalage X de l’effet d’esquive"
