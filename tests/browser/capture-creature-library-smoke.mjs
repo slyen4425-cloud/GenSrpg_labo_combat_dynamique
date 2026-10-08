@@ -46,7 +46,7 @@ const server = createServer(async (req, res) => {
         'f.value="beam";f.dispatchEvent(new Event("change",{bubbles:true}));' +
         'const h=document.querySelector("[data-skill-beam-stage-editor]");' +
         'h.dataset.beamProbe=["cast","start","body","impact"].map(x=>' +
-        'document.querySelectorAll("[data-beam-stage-fields=\\\""+x+"\\\"] label").length).join(",");' +
+        'document.querySelectorAll("[data-beam-stage-fields="+x+"] label").length).join(",");' +
         '});</script>';
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
     }
