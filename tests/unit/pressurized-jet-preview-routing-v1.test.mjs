@@ -57,6 +57,12 @@ function binding() {
         trigger: "preparation-start",
         anchor: "mouth"
       }),
+      beamStart: slot(IDS.start, {
+        attachment: "source",
+        trigger: "travel-start",
+        playbackMode: "loop",
+        anchor: "mouth"
+      }),
       travel: slot(IDS.body, {
         attachment: "trajectory",
         trigger: "travel-start",
@@ -141,6 +147,7 @@ test("real V9 binding resolves Jet pressurisé body then renders one continuous 
     );
 
   assert.equal(presentation.cast.assetId, IDS.cast);
+  assert.equal(presentation.beamStart.assetId, IDS.start);
   assert.equal(presentation.travel.assetId, IDS.body);
   assert.equal(presentation.travel.frameCount, 12);
   assert.equal(presentation.travel.playbackMode, "loop");
@@ -220,7 +227,13 @@ test("real V9 binding resolves Jet pressurisé body then renders one continuous 
   assert.equal(appended[0].dataset.skillFx, "beam");
   assert.equal(appended[0].dataset.assetId, IDS.body);
   assert.equal(appended[0].style.width, "380px");
-  assert.equal(appended[0].children.length, 1);
+  assert.equal(appended[0].children.length, 3);
+  assert.equal(appended[0].children[1].dataset.beamPart, "start");
+  assert.equal(appended[0].children[2].dataset.beamPart, "target");
+  assert.match(appended[0].children[1].style.backgroundImage, /pressurized_jet_beam_start_atlas_01/);
+  assert.match(appended[0].children[2].style.backgroundImage, /pressurized_jet_impact_atlas_01/);
+  assert.equal(appended[0].children[1].style.left, "0");
+  assert.equal(appended[0].children[2].style.left, "100%");
   assert.match(
     appended[0].children[0].style.backgroundImage,
     /pressurized_jet_beam_body_atlas_01\.webp/
