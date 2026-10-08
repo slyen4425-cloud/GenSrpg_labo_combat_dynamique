@@ -1321,7 +1321,6 @@ html {
   display: none !important;
 }
 [data-skill-beam-stage-editor] [data-beam-stage] {
-  min-width: 0;
   margin: 0;
   padding: 0.75rem;
   border: 1px solid rgba(122, 222, 241, 0.25);
@@ -1336,10 +1335,5 @@ html {
   margin-top: 0.55rem;
 }
 [data-skill-beam-stage-editor] [data-beam-stage-fields] label {
-  min-width: 0;
-}
-[data-skill-beam-stage-editor] [data-beam-stage-fields] select,
-[data-skill-beam-stage-editor] [data-beam-stage-fields] input {
-  width: 100%;
-  min-width: 0;
+  display: block;
 }
