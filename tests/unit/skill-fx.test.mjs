@@ -1553,3 +1553,319 @@ test("DOM impact renderer plays a canonical sprite strip without placeholder fra
 
   await handle.finished;
 });
+
+
+test("beam FX plan follows canonical beam form without inventing projectile travel", () => {
+  assert.deepEqual(
+    planSkillReleaseFx({
+      action: {
+        skill: {
+          id: "water-beam",
+          form: "beam",
+          element: "water"
+        },
+        travelMs: 700
+      },
+      actorSlot: "player",
+      targetSlot: "opponent"
+    }),
+    [
+      {
+        type: "beam",
+        skillId: "water-beam",
+        element: "water",
+        fromSlot: "player",
+        targetSlot: "opponent",
+        delayMs: 0,
+        durationMs: 700
+      }
+    ]
+  );
+
+  assert.deepEqual(
+    planSkillFx({
+      resolution: {
+        ok: true,
+        events: [
+          {
+            type: "skill-release",
+            atMs: 300,
+            skillId: "water-beam",
+            form: "beam",
+            element: "water"
+          },
+          {
+            type: "skill-arrive",
+            atMs: 900
+          }
+        ]
+      }
+    }),
+    [
+      {
+        type: "beam",
+        skillId: "water-beam",
+        element: "water",
+        fromSlot: "player",
+        targetSlot: "opponent",
+        delayMs: 300,
+        durationMs: 600
+      }
+    ]
+  );
+});
+
+test("DOM beam spans source to target as one continuous non-moving visual", async () => {
+  const appended = [];
+  const animations = [];
+
+  function element() {
+    return {
+      className: "",
+      dataset: {},
+      style: {},
+      children: [],
+      append(child) {
+        this.children.push(child);
+      },
+      remove() {}
+    };
+  }
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return element();
+      }
+    },
+    append(node) {
+      appended.push(node);
+    },
+    getBoundingClientRect() {
+      return {
+        left: 0,
+        top: 0,
+        width: 500,
+        height: 300
+      };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return {
+          left: 40,
+          top: 140,
+          width: 40,
+          height: 40
+        };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return {
+          left: 340,
+          top: 140,
+          width: 40,
+          height: 40
+        };
+      }
+    }
+  };
+
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill() {
+      return {
+        travel: {
+          assetId:
+            "pack:capture:sprite-pressurized-jet-beam-body-01",
+          url: "beam.webp",
+          frameCount: 12,
+          frameMs: 45,
+          playbackMode: "loop",
+          displayScale: 1,
+          displayScaleY: 1,
+          headingRad: 0
+        },
+        travelLayer: "front",
+        travelSourceAnchor: null,
+        feedback: null
+      };
+    },
+    animate(element, keyframes, options) {
+      animations.push({
+        element,
+        keyframes,
+        options
+      });
+      return {
+        finished: Promise.resolve(),
+        cancel() {}
+      };
+    }
+  });
+
+  const handle = renderer.play({
+    type: "beam",
+    skillId: "water-beam",
+    element: "water",
+    fromSlot: "player",
+    targetSlot: "opponent",
+    durationMs: 600
+  });
+
+  assert.equal(handle.status, "running");
+  assert.equal(appended.length, 1);
+  const beam = appended[0];
+  assert.equal(beam.dataset.skillFx, "beam");
+  assert.equal(
+    beam.dataset.assetId,
+    "pack:capture:sprite-pressurized-jet-beam-body-01"
+  );
+  assert.equal(beam.style.left, "60px");
+  assert.equal(beam.style.top, "160px");
+  assert.equal(beam.style.width, "300px");
+  assert.equal(beam.style.height, "96px");
+  assert.equal(
+    beam.style.transform,
+    "translateY(-50%) rotate(0rad)"
+  );
+  assert.equal(beam.children.length, 1);
+  assert.equal(beam.children[0].style.width, "100%");
+  assert.equal(beam.children[0].style.height, "100%");
+  assert.equal(
+    beam.children[0].style.backgroundImage,
+    'url("beam.webp")'
+  );
+  assert.equal(
+    beam.children[0].style.backgroundSize,
+    "1200% 100%"
+  );
+
+  const positionAnimations =
+    animations.filter(
+      ({ keyframes }) =>
+        Array.isArray(keyframes) &&
+        keyframes.some(
+          (frame) =>
+            typeof frame?.transform === "string" &&
+            frame.transform.includes("translate3d")
+        )
+    );
+  assert.equal(
+    positionAnimations.length,
+    0,
+    "beam body must not be animated as a travelling projectile"
+  );
+
+  assert.deepEqual(
+    await handle.finished,
+    { status: "arrived" }
+  );
+  assert.equal(renderer.activeCount, 0);
+});
+
+test("legacy cancelProjectileFor also owns active beam travel cleanup", () => {
+  let cancelled = false;
+  let removed = false;
+
+  const makeElement = () => ({
+    className: "",
+    dataset: {},
+    style: {},
+    append() {},
+    remove() {
+      removed = true;
+    }
+  });
+
+  const arena = {
+    ownerDocument: {
+      createElement() {
+        return makeElement();
+      }
+    },
+    append() {},
+    getBoundingClientRect() {
+      return {
+        left: 0,
+        top: 0,
+        width: 400,
+        height: 300
+      };
+    }
+  };
+
+  const anchors = {
+    player: {
+      getBoundingClientRect() {
+        return {
+          left: 20,
+          top: 100,
+          width: 40,
+          height: 40
+        };
+      }
+    },
+    opponent: {
+      getBoundingClientRect() {
+        return {
+          left: 300,
+          top: 100,
+          width: 40,
+          height: 40
+        };
+      }
+    }
+  };
+
+  let animationCount = 0;
+  const renderer = createDomSkillFxRenderer({
+    arena,
+    anchors,
+    presentationForSkill() {
+      return {
+        travel: {
+          assetId: "beam",
+          url: "beam.webp",
+          frameCount: 1,
+          displayScale: 1
+        },
+        travelLayer: "front",
+        feedback: null
+      };
+    },
+    animate() {
+      animationCount += 1;
+      return {
+        finished:
+          animationCount === 1
+            ? new Promise(() => {})
+            : new Promise(() => {}),
+        cancel() {
+          cancelled = true;
+        }
+      };
+    }
+  });
+
+  renderer.play({
+    type: "beam",
+    skillId: "water-beam",
+    fromSlot: "player",
+    targetSlot: "opponent",
+    durationMs: 800
+  });
+
+  assert.equal(renderer.activeCount, 1);
+  assert.equal(
+    renderer.cancelProjectileFor("player"),
+    1
+  );
+  assert.equal(renderer.activeCount, 0);
+  assert.equal(cancelled, true);
+  assert.equal(removed, true);
+});
