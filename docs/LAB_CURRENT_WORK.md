@@ -474,3 +474,13 @@ Inchangés :
 - Protégés : autres presets, 103 créatures et leurs loadouts, combat gameplay et FX, moteurs, bibliothèques assets, `main`, `global-assets`, dépôts GenSrpG et Exploration.
 - Audit initial : ancien chantier `work/lab-water-atk3-author-after-beam-v1-2026-10-08` divergé et déjà clos, ne contient pas le Beam actuel ; les assets de départ/corps et les deux sons existent dans les catalogues actuels.
 - TDD : RED sur mismatch ancien preset (`projectile`) versus auteur (`beam`) et valeurs précises ; GREEN sur import `capture-skill-transfer-v1`, identifiant unique dans `configuredSkills`, non-mutation des loadouts et tests Node + Chromium; création checkpoint GREEN uniquement après CI ; Pages sous lease et validation Android utilisateur séparée.
+
+### Jet pressurisé Beam auteur — clôture technique candidate
+
+- Export auteur intégré **sans mutation** : empreinte SHA-256 sémantique `d17d57096c9e694023fca2727ff24f35bb9abb05421954a34c83d7727be1b6df`, version du fichier Showcase inchangée (`capture-skill-transfer-v1`, v1).
+- La forme historique `projectile` devient exactement `beam` avec `power: 0`, 3 phases visuelles de l'export, deux sons ID stables, timings/dégâts/prérequis conservés.
+- Le catalogue vitrine référence déjà le fichier une seule fois ; l'import canonique remplace `configuredSkills` sous le même ID ; Maraileron garde `cap_water_atk_3` dans `slot-3`. Pas de nouveau propriétaire.
+- Tests RED : `37838171203`; anciens attendus désuets RED `37838220805` / `37838237222`, alignés sans neutraliser les sentinelles.
+- Code GREEN : CI `37838330911` SUCCESS — **1298/1298 Node PASS, 0 FAIL** ; vrai Chromium creature-library-browser SUCCESS (103 créatures).
+- Documentation : `docs/LAB_WATER_ATK3_BEAM_AUTHOR_UPDATE_V1.md`.
+- Avant checkpoint GREEN : CI du commit documentaire final, comparaison du delta et branche publiée avec lease. GREEN utilisateur uniquement après validation smartphone du Beam et de l'audio.
