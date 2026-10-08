@@ -2467,14 +2467,24 @@ export function createDomSkillFxRenderer({
           projectileTargetRect(targetSlot),
           currentArena
         );
+        // The three linked pieces use the same authored attachment coordinates.
+        // The cast is the visible charge at the mouth; prefer its V9 view
+        // offsets. An older beam without cast may use start/travel offsets.
+        // The contact sprite's V9 offset also defines the beam end point.
+        const sourceVisual = presentation?.cast ?? startVisual ?? travelVisual;
+        const startX = from.x + (Number(sourceVisual?.offsetX) || 0);
+        const startY = from.y + (Number(sourceVisual?.offsetY) || 0);
+        const targetOffset = presentation?.impactFeedbackOffset ?? targetVisual;
+        const endX = to.x + (Number(targetOffset?.x ?? targetOffset?.offsetX) || 0);
+        const endY = to.y + (Number(targetOffset?.y ?? targetOffset?.offsetY) || 0);
         const distancePx = Math.max(
-          1, Math.hypot(to.x - from.x, to.y - from.y)
+          1, Math.hypot(endX - startX, endY - startY)
         );
         const rotationRad = Math.atan2(
-          to.y - from.y, to.x - from.x
+          endY - startY, endX - startX
         ) - headingRad;
-        node.style.left = `${from.x}px`;
-        node.style.top = `${from.y}px`;
+        node.style.left = `${startX}px`;
+        node.style.top = `${startY}px`;
         node.style.width = `${distancePx}px`;
         node.style.transform =
           `translateY(-50%) rotate(${rotationRad}rad)`;
