@@ -140,11 +140,11 @@ try {
   }
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
-  if (!/data-beam-probe="6,3,3"/.test(rayonDom) ||
+  if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
       !/data-beam-active="true"/.test(rayonDom)) {
-    throw new Error("Rayon browser UI did not move the original 12 controls into 3 phases");
+    throw new Error("Rayon browser UI did not move the original 15 controls (including skill sounds) into 3 phases");
   }
-  console.log("Rayon browser UI: 6 + 3 + 3 canonical labels grouped successfully");
+  console.log("Rayon browser UI: 7 + 4 + 4 canonical labels grouped successfully");
   // Optional global presentation host unavailable: creatures must still load.
   assertCreatures(await dumpDom(url, [
     "--host-resolver-rules=MAP raw.githubusercontent.com 127.0.0.1,EXCLUDE localhost"
