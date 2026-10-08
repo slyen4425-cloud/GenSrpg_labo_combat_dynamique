@@ -3,6 +3,7 @@ export const SKILL_PRESENTATION_BINDING_VERSION = 1;
 export const SKILL_PRESENTATION_VISUAL_SLOTS = Object.freeze([
   "icon",
   "cast",
+  "beamStart",
   "travel",
   "impact",
   "hit",
