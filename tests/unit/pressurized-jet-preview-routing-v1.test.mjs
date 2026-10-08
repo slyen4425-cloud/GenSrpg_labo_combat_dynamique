@@ -8,6 +8,9 @@ import {
   globalVisualAssetUrl
 } from "../../src/assets/global-visual-library.js";
 import {
+  demoPresentationAssets
+} from "../../examples/dom-demo/demo-assets.js";
+import {
   createCaptureSkillPresentationAssetsV2
 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import {
@@ -156,6 +159,16 @@ function element() {
     remove() {}
   };
 }
+
+test("Jet pressurisé is not duplicated in the legacy demo asset registry", () => {
+  for (const id of Object.values(IDS)) {
+    assert.equal(
+      demoPresentationAssets.asset(id),
+      null,
+      id + " must resolve from the global catalog, not demo-assets.js"
+    );
+  }
+});
 
 test("canonical global presentation resolver maps all four Jet pressurisé assets", () => {
   const expected = [
