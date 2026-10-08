@@ -88,7 +88,7 @@ export const CAPTURE_GAME_OPTIONS_V1_DEFAULT =
       enabled: false,
       maxCharges: 1,
       rechargeMs: 30000,
-      activeWindowMs: 500
+      activeWindowMs: 250
     })
   });
 
