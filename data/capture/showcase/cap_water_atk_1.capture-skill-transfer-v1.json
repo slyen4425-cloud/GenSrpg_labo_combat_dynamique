@@ -80,7 +80,7 @@
       "subjectId": "cap_water_atk_1",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-meteor-shower-01"
+          "assetId": "pack:capture:icon-skill-water-drop-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-water-01",
@@ -111,7 +111,7 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
-          "playbackMode": "stretch",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
@@ -151,6 +151,11 @@
           "assetId": "gensrpg:sound:xel-48520d94",
           "volume": 1,
           "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:sanctuary-17b7fa2c",
+          "volume": 1,
+          "loop": false
         }
       },
       "statusVisuals": {},
