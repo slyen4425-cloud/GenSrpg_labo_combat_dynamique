@@ -438,3 +438,15 @@ Inchangés :
 - Tests RED `37827929958` et `37828136771`, GREEN `37828213599` : **1296 Node PASS, 0 FAIL**, Chromium 103 créatures PASS.
 - Rapport : `docs/LAB_BEAM_CONTINUITY_SOUND_OFFSETS_V1.md`. 0 média ajouté, aucune modification de skill auteur, modèle rayon UI ni moteur de dégâts/timing.
 - Reste : CI du dernier commit documentaire, checkpoint GREEN exact et preview, déplacement Pages protégé sur base `76524b596d6e421de1a0e7563ddb615e3a0024f9`, Pages SUCCESS. Validation artistique Android distincte.
+
+
+## 2026-10-08 — Beam Seam & Audio Editor V1
+
+- Retour utilisateur : pas de choix de son visible dans les trois phases de Rayon ; vide visuel entre le départ à la bouche et le corps pendant le tir.
+- Base exacte déployée : `0c2386aa8526bb74867259ee8a14a803a8cb9a9e` (Beam Continuity Sound Offsets V1, CI Node/Chromium et Pages GREEN).
+- Checkpoint départ : `checkpoint/lab-start-beam-seam-audio-editor-v1-2026-10-08` ; branche isolée : `work/lab-beam-seam-audio-editor-v1-2026-10-08`.
+- Propriétaires : `CaptureBeamStageLayoutV1` = déplacement UI des *mêmes* trois champs audio canonique cast/travel/impact dans leurs phases ; `DomSkillFxRenderer` = géométrie du *même* corps de rayon et raccords des deux embouts. `CombatResolutionPresenter` et catalogue audio déjà GREEN : protégés, inchangés.
+- Périmètre autorisé : `src/ui/capture-editor-beam-stage-layout-v1.js`, `src/adapters/renderer/dom-skill-fx.js`, le libellé dans `examples/dom-demo/capture-editor-v2.html`, tests de layout et de continuité, docs.
+- Invariants : 1 seul sélecteur par son/phase (pas de nouvelle authority), choix audio et boutons Écouter inchangés, réversibilité de l'UI au changement de style et au dispose, source fixe sur socket bouche, longueur/angle dynamiques, dégâts/contact/temps et suivi de cible inchangés, protection 103 créatures et autres capacités.
+- Plan TDD : RED sur trois sélecteurs audio non déplacés et recouvrement de corps absent ; GREEN sur correctif minimum et CI Node + browser réel 103 créatures ; checkpoint exact après CI, publication Pages contrôlée et validation esthétique Android séparée.
+- Protégés : les assets d'origine, capacités auteur Eau, modes non-Beam, Combat Runtime, 103 créatures, `main`, `global-assets`, `Zombicide-40k`, Exploration.
