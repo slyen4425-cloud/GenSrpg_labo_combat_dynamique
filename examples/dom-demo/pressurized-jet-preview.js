@@ -1,5 +1,17 @@
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
-import { demoPresentationAssets } from "./demo-assets.js";
+import { createCaptureSkillPresentationAssetsV2 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+import { createGlobalPresentationAssetResolverV1 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
+import {
+  GLOBAL_VISUAL_LIBRARY,
+  globalVisualAssetUrl
+} from "../../src/assets/global-visual-library.js";
+
+const IDS = Object.freeze({
+  cast: "pack:capture:sprite-pressurized-jet-cast-01",
+  start: "pack:capture:sprite-pressurized-jet-beam-start-01",
+  body: "pack:capture:sprite-pressurized-jet-beam-body-01",
+  impact: "pack:capture:sprite-pressurized-jet-impact-01"
+});
 
 const arena = document.querySelector("[data-beam-arena]");
 const source = document.querySelector("[data-beam-source]");
@@ -8,40 +20,111 @@ const playButton = document.querySelector("[data-beam-play]");
 const loopButton = document.querySelector("[data-beam-loop]");
 const status = document.querySelector("[data-beam-status]");
 
-const assets = Object.freeze({
-  cast: demoPresentationAssets.asset("pack:capture:sprite-pressurized-jet-cast-01"),
-  start: demoPresentationAssets.asset("pack:capture:sprite-pressurized-jet-beam-start-01"),
-  travel: demoPresentationAssets.asset("pack:capture:sprite-pressurized-jet-beam-body-01"),
-  impact: demoPresentationAssets.asset("pack:capture:sprite-pressurized-jet-impact-01")
-});
-
-for (const [name, asset] of Object.entries(assets)) {
-  if (!asset) {
-    throw new Error("Asset Jet pressurisé introuvable: " + name);
-  }
+function slot(assetId, {
+  attachment,
+  trigger,
+  playbackMode = "once",
+  anchor = null,
+  displayScale = 1,
+  displayScaleY = 1,
+  durationMs = undefined
+}) {
+  return {
+    assetId,
+    displayScale,
+    displayScaleX: 1,
+    displayScaleY,
+    attachment,
+    anchor,
+    offsetX: 0,
+    offsetY: 0,
+    trigger,
+    playbackMode,
+    rotationDeg: 0,
+    opacity: 1,
+    layerByView: {
+      player: "front",
+      opponent: "front"
+    },
+    offsetMode: "same",
+    ...(durationMs === undefined ? {} : { durationMs })
+  };
 }
 
-const renderer = createDomSkillFxRenderer({
-  arena,
-  anchors: Object.freeze({
-    player: source,
-    opponent: target
-  }),
-  presentationForSkill() {
-    return Object.freeze({
-      cast: assets.cast,
-      castLayer: "front",
-      castAnchor: null,
-      travel: assets.travel,
-      travelLayer: "front",
-      travelSourceAnchor: null,
-      impact: assets.impact,
-      impactLayer: "front",
-      feedback: null
-    });
-  }
-});
+function binding() {
+  return {
+    id: "skill:pressurized-jet-preview",
+    version: 9,
+    subjectType: "skill",
+    subjectId: "pressurized-jet-preview",
+    visual: {
+      cast: slot(IDS.cast, {
+        attachment: "source",
+        trigger: "preparation-start",
+        displayScale: 2.2
+      }),
+      travel: slot(IDS.body, {
+        attachment: "trajectory",
+        trigger: "travel-start",
+        playbackMode: "loop",
+        displayScaleY: 0.72
+      }),
+      impact: slot(IDS.impact, {
+        attachment: "fixed-target",
+        trigger: "impact",
+        displayScale: 2,
+        durationMs: 540
+      })
+    },
+    audio: {},
+    statusVisuals: {},
+    feedback: {
+      glow: null,
+      impactFlash: null,
+      cameraShake: null,
+      projectileTrail: null,
+      impactBurst: null,
+      aftermathSmoke: null,
+      castBurst: null
+    }
+  };
+}
 
+async function loadPresentationAssets() {
+  const response = await fetch(
+    GLOBAL_VISUAL_LIBRARY.catalogUrl,
+    { cache: "no-store" }
+  );
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue global indisponible: HTTP " + response.status
+    );
+  }
+
+  const catalog = await response.json();
+  const resolveAsset =
+    createGlobalPresentationAssetResolverV1({
+      assetCatalog: catalog,
+      assetUrlForFile: globalVisualAssetUrl
+    });
+
+  for (const [name, id] of Object.entries(IDS)) {
+    if (!resolveAsset(id)) {
+      throw new Error(
+        "Asset Jet pressurisé introuvable: " + name
+      );
+    }
+  }
+
+  return createCaptureSkillPresentationAssetsV2({
+    skillPresentations: {
+      "pressurized-jet-preview": binding()
+    },
+    assetForId: resolveAsset
+  });
+}
+
+let renderer = null;
 let playing = false;
 let auto = false;
 let autoTimer = null;
@@ -51,12 +134,12 @@ function sleep(ms) {
 }
 
 async function runOnce() {
-  if (playing) return;
+  if (playing || renderer === null) return;
   playing = true;
   playButton.disabled = true;
-  status.textContent = "Charge…";
 
   try {
+    status.textContent = "Charge…";
     await renderer.play({
       type: "cast",
       skillId: "pressurized-jet-preview",
@@ -64,8 +147,6 @@ async function runOnce() {
       durationMs: 1200
     }).finished;
 
-    // Le beam_start est bien résolu et vérifié dans le registre; le contrat
-    // runtime actuel ne possède pas encore de slot séparé pour ce visuel.
     status.textContent = "Jet continu…";
     await renderer.play({
       type: "beam",
@@ -85,6 +166,10 @@ async function runOnce() {
     }).finished;
 
     status.textContent = "Terminé.";
+    await sleep(250);
+  } catch (error) {
+    status.textContent = "Erreur preview : " + error.message;
+    throw error;
   } finally {
     playing = false;
     playButton.disabled = false;
@@ -105,6 +190,29 @@ function syncAuto() {
   }
 }
 
+async function boot() {
+  status.textContent = "Chargement du catalogue global…";
+  const presentationAssets = await loadPresentationAssets();
+
+  renderer = createDomSkillFxRenderer({
+    arena,
+    anchors: Object.freeze({
+      player: source,
+      opponent: target
+    }),
+    presentationForSkill(skillId, context) {
+      return presentationAssets.presentationForSkill(
+        skillId,
+        context
+      );
+    }
+  });
+
+  status.textContent = "Prêt.";
+  playButton.disabled = false;
+}
+
+playButton.disabled = true;
 playButton.addEventListener("click", () => {
   void runOnce();
 });
@@ -116,5 +224,9 @@ loopButton.addEventListener("click", () => {
 
 window.addEventListener("pagehide", () => {
   if (autoTimer !== null) clearInterval(autoTimer);
-  renderer.dispose();
+  renderer?.dispose();
 }, { once: true });
+
+boot().catch((error) => {
+  status.textContent = "Erreur chargement : " + error.message;
+});
