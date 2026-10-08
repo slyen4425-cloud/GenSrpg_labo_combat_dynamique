@@ -2495,8 +2495,11 @@ export function createDomSkillFxRenderer({
           : 0;
         const fromOverlap = Math.min(distancePx / 3, capOverlap(startVisual));
         const toOverlap = Math.min(distancePx / 3, capOverlap(targetVisual));
-        body.style.left = `${-fromOverlap}px`;
-        body.style.width = `${distancePx + fromOverlap + toOverlap}px`;
+        // No caps (legacy beams): preserve the original 100%-wide body.
+        body.style.left = fromOverlap > 0 ? `${-fromOverlap}px` : "0";
+        body.style.width = fromOverlap > 0 || toOverlap > 0
+          ? `${distancePx + fromOverlap + toOverlap}px`
+          : "100%";
         const rotationRad = Math.atan2(
           endY - startY, endX - startX
         ) - headingRad;
