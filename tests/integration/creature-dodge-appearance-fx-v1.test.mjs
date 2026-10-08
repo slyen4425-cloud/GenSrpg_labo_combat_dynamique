@@ -66,6 +66,8 @@ function fields(
               dodge.assetId,
             dodgeDisplayScale:
               dodge.displayScale,
+            dodgeDurationMs:
+              dodge.durationMs ?? 700,
             dodgeOffsetX:
               dodge.offsetX,
             dodgeOffsetY:
@@ -87,6 +89,7 @@ test("Editor creature Dodge appearance survives the true preview export and nati
             assetId:
               "pack:test:dodge-lightning",
             displayScale: 1.35,
+            durationMs: 1000,
             offsetX: -4,
             offsetY: 7
           }
@@ -146,6 +149,7 @@ test("Editor creature Dodge appearance survives the true preview export and nati
       assetId:
         "pack:test:dodge-lightning",
       displayScale: 1.35,
+      durationMs: 1000,
       offsetX: -4,
       offsetY: 7
     }
@@ -238,6 +242,7 @@ test("Editor creature Dodge appearance survives the true preview export and nati
       frameMs: 50,
       format: "sprite-strip",
       displayScale: 1.35,
+      durationMs: 1000,
       offsetX: -4,
       offsetY: 7
     }
