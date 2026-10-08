@@ -283,20 +283,21 @@ Inchangés :
 - Checkpoint départ : `checkpoint/lab-start-pressurized-jet-preview-routing-v1-2026-10-08`.
 - Branche : `work/lab-pressurized-jet-preview-routing-v1-2026-10-08`.
 - Objectif : raccorder les 4 IDs Jet pressurisé au vrai résolveur de présentation utilisé par la preview/éditeur et prouver le chemin `assetId -> presentation -> DomSkillFxRenderer beam` sans créer de seconde autorité.
-- Owner visuel : `demoPresentationAssets.asset()` / registre de présentation de la démo ; owner de binding : `SkillPresentationBinding`; owner rendu : `DomSkillFxRenderer`.
+- Owner média : catalogue `global-assets`; adaptation runtime : `createGlobalPresentationAssetResolverV1`; owner de binding : `SkillPresentationBinding`; owner rendu : `DomSkillFxRenderer`.
 - Fichiers autorisés : registre assets de démo, tests de présentation/renderer, documentation ; uniquement les fichiers strictement nécessaires au raccord de preview.
 - Protégés : SkillDefinition gameplay, dégâts, énergie, cooldowns, résistances/pénétration, 103 créatures, exports auteur eau, global-assets déjà GREEN, main, gh-pages, Zombicide-40k, Exploration.
-- TDD : test RED d'un vrai binding V9 utilisant cast/travel/impact Jet pressurisé via le résolveur de démo ; le renderer doit produire un `beam` continu avec l'asset réel ; CI complète + smoke Chromium 103 créatures.
+- TDD : vrai binding V9 utilisant cast/travel/impact Jet pressurisé via le résolveur canonique du catalogue global ; `demo-assets.js` doit rester sans doublon Jet pressurisé ; le renderer doit produire un `beam` continu ; CI complète + smoke Chromium 103 créatures.
 - Aucun nouveau skill gameplay ne sera inventé : le test utilisera un binding fixture uniquement. Aucun auto-bind aux compétences existantes sans export auteur explicite.
-- Critère GREEN : 4 IDs résolus par le registre de preview, vrai chemin testé, CI verte, checkpoint exact ; preview utilisateur seulement ensuite.
+- Critère GREEN : 4 IDs résolus depuis le catalogue global sans seconde autorité, vrai chemin testé, CI verte, checkpoint exact ; preview utilisateur seulement ensuite.
 - Statut : EN COURS.
 
 
 ### Pressurized Jet Preview Routing V1 — clôture technique
 
-- Registre preview : 4 IDs Jet pressurisé résolus depuis `GLOBAL_VISUAL_LIBRARY` / `global-assets`.
-- Vrai chemin testé : `assetId -> demoPresentationAssets -> SkillPresentationBinding V9 -> DomSkillFxRenderer beam`.
+- Résolution preview : 4 IDs Jet pressurisé résolus depuis le catalogue `global-assets` par `createGlobalPresentationAssetResolverV1`.
+- `demo-assets.js` ne possède plus de copie des 4 entrées Jet pressurisé.
+- Vrai chemin testé : `assetId -> global-assets catalog -> canonical presentation resolver -> SkillPresentationBinding V9 -> DomSkillFxRenderer beam`.
 - Aucun skill gameplay permanent ajouté ; aucun auto-bind aux compétences existantes.
-- CI `37795485943` : SUCCESS, 1281/1281 Node PASS, 0 FAIL, Chromium Creature Library SUCCESS, 103 créatures protégées.
+- CI `37798423324` : SUCCESS, foundation SUCCESS, Chromium Creature Library SUCCESS, 103 créatures protégées.
 - Rapport : `docs/LAB_PRESSURIZED_JET_PREVIEW_ROUTING_V1.md`.
 - Statut : GREEN technique candidat après CI documentaire finale + checkpoint exact ; test smartphone artistique encore requis.
