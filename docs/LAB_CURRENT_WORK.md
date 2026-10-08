@@ -361,3 +361,12 @@ Inchangés :
 - CI moteur/roundtrip : `37809784765` SUCCESS (dont suivi cible mobile, 103 créatures Chromium). Test navigateur mis à jour pour garantir l'apparition des nouveaux contrôles ; CI finale de smoke à contrôler.
 - Médias : 0 fichier ajouté ou remplacé ; IDs existants inchangés dans le pack canonique `global-assets`.
 - Rapport `docs/LAB_BEAM_LINKED_FX_UI_V1.md`. Ne déclarer GREEN technique final qu'après CI documentaire + checkpoint exact + déploiement Pages. Test Android toujours nécessaire pour juger la continuité artistique.
+
+
+## 2026-10-08 — Démo Rayon : alignement 3 parties (suivi)
+
+- Base exacte déjà publiée `5e902634792b6a3396f17a3fd15e431ff0f50d8a` (GREEN technique `Rayon lié`), protégé par `checkpoint/lab-beam-linked-fx-ui-v1-green-2026-10-08`.
+- Départ : `checkpoint/lab-start-beam-preview-three-parts-v1-2026-10-08`, branche : `work/lab-beam-preview-three-parts-v1-2026-10-08`.
+- La page de démo `pressurized-jet-preview.js` utilisait encore un binding local test avec cast/body/impact mais sans `beamStart`. Son visuel restait incomplet, même après la correction générique du moteur.
+- Périmètre : rattacher l'ID `pack:capture:sprite-pressurized-jet-beam-start-01` au binding V9 de démonstration, écrire une sentinelle dédiée, lancer CI Node+Chromium/103, mettre à jour la documentation. Aucun autre changement moteur, skill auteur, médias, main ni autres dépôts.
+- La démo reste une illustration, ne devient pas un deuxième moteur ni une compétence gameplay.
