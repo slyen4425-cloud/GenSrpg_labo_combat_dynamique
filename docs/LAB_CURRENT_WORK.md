@@ -352,3 +352,12 @@ Inchangés :
 - Ergonomie : bouton « Configurer le rayon Jet pressurisé » dans Effets visuels qui choisit le Style Rayon et les 4 visuels canonique (cast, départ, corps, impact) avec un seul clic ; choix avancé `Départ du rayon` pour les autres effets. Ne modifie ni capacités enregistrées ni dégâts tant que l'auteur n'enregistre pas.
 - Protection : import auteur `cap_water_atk_3` demeure **projectile de givre** dans Showcase, autres compétences, 103 créatures, `global-assets`, `main`, Zombicide-40k et Exploration inchangés.
 - TDD : tests RED (résolution `beamStart`, trio visuel synchro), tests GREEN avec vrai binding, navigateur Chromium 103 créatures, rollbacks/checkpoints; déploiement Pages seulement après CI. Aucun faux GREEN avant validation Android.
+
+
+### Rayon lié V1 — état d'implémentation
+
+- Implémenté sur la branche isolée : nouveau slot optionnel `beamStart` reconnu par SkillPresentationBinding V9, résolu par le seul Presentation Adapter ; rendu lié départ/corps/cible dans un seul owner DOM FX avec relecture des sockets source et cible durant le beam et cleanup par le même record.
+- UI : bouton « Configurer le rayon Jet pressurisé » en section Effets visuels, 4 assets réels renseignés ensemble (cast + 3 parties du rayon), champs avancés pour départ / taille, sans altérer les dégâts ni la compétence auteur enregistrée avant l'action « Mettre à jour ».
+- CI moteur/roundtrip : `37809784765` SUCCESS (dont suivi cible mobile, 103 créatures Chromium). Test navigateur mis à jour pour garantir l'apparition des nouveaux contrôles ; CI finale de smoke à contrôler.
+- Médias : 0 fichier ajouté ou remplacé ; IDs existants inchangés dans le pack canonique `global-assets`.
+- Rapport `docs/LAB_BEAM_LINKED_FX_UI_V1.md`. Ne déclarer GREEN technique final qu'après CI documentaire + checkpoint exact + déploiement Pages. Test Android toujours nécessaire pour juger la continuité artistique.
