@@ -84,6 +84,13 @@ Inchangés :
 
 ## Statut
 
-GREEN technique après CI documentaire finale et checkpoint exact.
+GREEN technique après CI finale `37798626210` (foundation + Chromium SUCCESS).
+
+Le checkpoint V1 historique `checkpoint/lab-pressurized-jet-preview-routing-v1-green-2026-10-08`
+reste immuable sur l'ancienne variante qui dupliquait encore les quatre assets
+dans `demo-assets.js`.
+
+La correction mono-autorité est figée séparément comme V2 :
+`checkpoint/lab-pressurized-jet-preview-routing-v2-green-2026-10-08`.
 
 La validation artistique du rayon sur smartphone reste distincte.
