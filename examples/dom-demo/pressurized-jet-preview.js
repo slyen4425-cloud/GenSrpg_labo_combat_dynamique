@@ -63,6 +63,13 @@ function binding() {
         trigger: "preparation-start",
         displayScale: 2.2
       }),
+      beamStart: slot(IDS.start, {
+        attachment: "source",
+        trigger: "travel-start",
+        playbackMode: "loop",
+        anchor: null,
+        displayScale: 1
+      }),
       travel: slot(IDS.body, {
         attachment: "trajectory",
         trigger: "travel-start",
