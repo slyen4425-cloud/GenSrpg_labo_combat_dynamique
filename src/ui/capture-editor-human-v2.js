@@ -4,7 +4,9 @@ import {
 } from "./capture-editor-beam-stage-layout-v1.js";
 import {
   captureBeamVisualPackV1,
-  applyCaptureBeamVisualPackV1
+  applyCaptureBeamVisualPackV1,
+  snapshotCaptureBeamPresetControlsV1,
+  restoreCaptureBeamPresetControlsV1
 } from "./capture-editor-beam-visual-pack-v1.js";
 import { buildCaptureEditorCombatTestV1, prepareCaptureEditorCombatEditsV1, mountCaptureEditorCombatTeamControlsV1 } from "./capture-editor-combat-test-v1.js";
 import {
@@ -9197,6 +9199,16 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   const beamPack = captureBeamVisualPackV1("pressurized-jet");
   const beamPackButton = root.querySelector("[data-skill-beam-pack-apply]");
+  const beamUndoButton = root.querySelector("[data-skill-beam-pack-undo]");
+  let beamUndoSnapshot = null;
+  function clearBeamUndo() {
+    beamUndoSnapshot = null;
+    if (beamUndoButton) beamUndoButton.disabled = true;
+  }
+  for (const selector of ["[data-skill-library-select]", "[data-skill-new]"]) {
+    const control = root.querySelector(selector);
+    if (control) listen(control, selector === "[data-skill-new]" ? "click" : "change", clearBeamUndo);
+  }
   const beamPackState = root.querySelector("[data-skill-beam-pack-state]");
   function syncBeamPackReady() {
     const ids = [beamPack.cast, beamPack.beamStart, beamPack.travel, beamPack.impact];
@@ -9216,6 +9228,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         if (ids.some(id => !fxStarterVisualAssetIds.has(id))) {
           throw new Error("Catalogue visuel du rayon indisponible.");
         }
+        const originalInputs = snapshotCaptureBeamPresetControlsV1(root);
         const current = readSkillFields(root).presentation;
         const next = applyCaptureBeamVisualPackV1({
           packId: beamPack.id,
@@ -9240,13 +9253,32 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ]) {
           one(root, selector).value = String(value);
         }
+        beamUndoSnapshot ??= originalInputs;
+        if (beamUndoButton) beamUndoButton.disabled = false;
         setStatus(root,
-          "Rayon Jet pressurisé prêt : 4 étapes liées. Vérifie puis utilise « Mettre à jour la capacité existante » pour enregistrer.",
+          "Modèle de rayon d’eau prêt : trois phases liées. Tu peux annuler ou enregistrer explicitement.",
           "ok");
         if (beamPackState) {
-          beamPackState.textContent = "Rayon préparé, sans modification des dégâts, de l’énergie ou du cooldown. Enregistrement nécessaire.";
+          beamPackState.textContent = "Rayon préparé à la bouche, sans modifier les dégâts ni les timings. Annuler le modèle reste possible.";
           beamPackState.dataset.tone = "ok";
         }
+      } catch (error) {
+        setStatus(root, error.message, "error");
+      }
+    });
+  }
+  if (beamUndoButton) {
+    listen(beamUndoButton, "click", () => {
+      if (!beamUndoSnapshot) return;
+      try {
+        restoreCaptureBeamPresetControlsV1(root, beamUndoSnapshot);
+        beamStageLayout.sync();
+        clearBeamUndo();
+        if (beamPackState) {
+          beamPackState.textContent = "Réglages précédents restaurés. La capacité enregistrée est inchangée.";
+          beamPackState.dataset.tone = "info";
+        }
+        setStatus(root, "Modèle de rayon annulé : tes choix visuels précédents sont restaurés.", "ok");
       } catch (error) {
         setStatus(root, error.message, "error");
       }
