@@ -117,7 +117,9 @@ try {
   assertCreatures(normalDom, "normal browser bootstrap");
   for (const marker of [
     "data-skill-effect-ignore-resistance-pct",
-    "data-skill-effect-ignore-damage-reduction-pct"
+    "data-skill-effect-ignore-damage-reduction-pct",
+    "data-skill-beam-pack-apply",
+    "data-skill-beam-start-fx"
   ]) {
     if (!normalDom.includes(marker)) {
       throw new Error("Human Editor browser missing damage penetration control: " + marker);
