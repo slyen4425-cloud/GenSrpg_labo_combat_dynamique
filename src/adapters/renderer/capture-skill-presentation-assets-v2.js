@@ -311,6 +311,13 @@ export function createCaptureSkillPresentationAssetsV2({
     }
 
     const view = semanticView(context);
+    // Beam start/body belong to the source view; its target endcap
+    // must share the exact view-dependent position of the eventual impact.
+    const impactView =
+      context.fxType === "beam" &&
+      ["player", "opponent"].includes(context.targetView)
+        ? context.targetView
+        : view;
     const visual = binding.visual;
     const audio = binding.audio;
 
@@ -336,7 +343,7 @@ export function createCaptureSkillPresentationAssetsV2({
       resolvedVisual(
         resolveAsset,
         visual.impact,
-        view
+        impactView
       );
     const persistentZoneVisual =
       resolvedVisual(
@@ -378,7 +385,7 @@ export function createCaptureSkillPresentationAssetsV2({
                 impactVisual?.offsetY ?? 0
             })
           : null,
-      impactLayer: layerFor(visual.impact, binding.version, view),
+      impactLayer: layerFor(visual.impact, binding.version, impactView),
       persistentZone:
         persistentZoneVisual,
       persistentZoneLayer: layerFor(
