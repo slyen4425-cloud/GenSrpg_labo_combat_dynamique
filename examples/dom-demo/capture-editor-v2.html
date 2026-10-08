@@ -938,6 +938,15 @@
           </div>
         </div>
 
+        <div class="creator-visual-import" data-skill-beam-pack>
+          <h3>Rayon lié — un seul réglage pour les 3 parties</h3>
+          <p class="note">Le départ reste fixé au lanceur, le corps relie les deux créatures et l'extrémité suit la cible. L'impact final se joue au moment réel des dégâts. Le pack règle uniquement Style et les sprites, sans changer les dégâts, la préparation ni le cooldown.</p>
+          <button type="button" class="primary-action" data-skill-beam-pack-apply disabled>
+            Configurer le rayon Jet pressurisé
+          </button>
+          <p class="note" data-skill-beam-pack-state data-tone="info">Chargement des visuels du rayon…</p>
+        </div>
+
         <div class="creator-visual-import" data-skill-fx-starter>
           <h3>Mode simple — Pack FX GenSrpG</h3>
           <p class="note">Sur une capacité déjà configurée, le pack ajoute surtout glow, particules, fumée et réglages FX sans remplacer tes sprites, sons, sockets ni visuels de statut. Sur une capacité neuve et vide, il peut fournir Cast + Projectile + Impact comme base de départ.</p>
@@ -1059,6 +1068,13 @@
           </label>
           <p class="note">Les décalages X/Y sont réglés côté joueur. « Miroir horizontal automatique » inverse X côté adversaire et conserve Y. « Réglage séparé » utilise les deux valeurs adversaire ci-dessus. Les particules de Cast et le glow restent attachés au même repère.</p>
           <p class="note">Cast, impact, zone et statut peuvent utiliser tous les sprites d’effets : aura, charge, impact… Le projectile garde sa liste dédiée. Le cast reste affiché pendant la préparation.</p>
+          <label>Départ du rayon (lié au lanceur)
+            <select data-skill-beam-start-fx data-asset-role="cast"><option value="">Aucun</option></select>
+          </label>
+          <label>Taille du départ du rayon
+            <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-beam-start-scale>
+          </label>
+          <p class="note">Disponible pour Style « Rayon ». Ce sprite reste connecté au point de sortie et suit automatiquement le corps du rayon. L'impact garde son animation au contact de la cible.</p>
           <label>Projectile / trajet
             <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
           </label>
