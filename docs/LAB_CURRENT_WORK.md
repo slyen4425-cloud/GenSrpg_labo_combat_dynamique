@@ -327,3 +327,10 @@ Inchangés :
 - Empreinte sémantique JSON.stringify de l'upload : SHA-256 `d799c2f54712f93982a2f8d135785aa163b4cd43234983f83b451ba75d304f55` ; octets source 4133.
 - Tests TDD RED->GREEN; vérification de l'asset référencé dans le catalogue `global-assets`, pas de fallback, pas d'invention de nouveau média, `main` inchangé. Après GREEN, preview et GitHub Pages à publier seulement par fast-forward protégé + CI réussie.
 - Les effets du nouveau rayon ne seront pas visibles avec `form=projectile` dans cette version exacte ; demander validation utilisateur pour changer les valeurs de l'export si nécessaire.
+
+### Jet pressurisé author import V1 — clôture technique
+
+- Source auteur `cap_water_atk_3` ajoutée à l'unique catalogue Showcase, JSON conservé mot pour mot (égalité sémantique SHA-256 testée).
+- CI RED `37803890706` (absence source/catalogue), GREEN initial `37803945003` (1285 Node PASS / 0 FAIL + vrai Chromium 103 créatures), tests de pénétration et de remplacement canonique validés.
+- Aucun changement Beam/renderer/FX/Combat Rules/Global-assets ; `form=projectile` et sprite Frost Bolt restent les choix exacts du fichier enregistré, distincts du nouvel effet Beam disponible.
+- Rapport : `docs/LAB_WATER_ATK3_AUTHOR_AFTER_BEAM_V1.md`. CI documentaire, checkpoint GREEN et publication GitHub Pages nécessaires avant test utilisateur.
