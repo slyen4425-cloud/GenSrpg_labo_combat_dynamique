@@ -107,6 +107,11 @@ test("beam shares authored cast and impact offsets at both ends during target mo
   follow();
   assert.equal(Number.parseFloat(node.style.width),Math.hypot(415,35),"moving target keeps the same offset and attachment");
   assert.deepEqual(node.children.map(x=>x.dataset.beamPart),["body","start","target"]);
+  const body=node.children[0];
+  assert.ok(Number.parseFloat(body.style.left)<0,"beam body must overlap underneath the source cap, not start at its midpoint");
+  assert.ok(Number.parseFloat(body.style.width)>Number.parseFloat(node.style.width),"beam body must extend underneath both caps without changing contact length");
+  assert.equal(node.children[1].style.left,"0","source cap remains anchored at the mouth");
+  assert.equal(node.children[2].style.left,"100%","target cap remains at the impact anchor");
   resolveAnimation();
   assert.deepEqual(await handle.finished,{status:"arrived"});
   assert.equal(renderer.activeCount,0);
