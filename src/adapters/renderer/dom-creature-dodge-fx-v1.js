@@ -1,6 +1,9 @@
 import {
   applySpriteVisual
 } from "./dom-skill-fx.js";
+import {
+  CREATURE_DODGE_VISUAL_DEFAULT_DURATION_MS_V3
+} from "../../contracts/creature-presentation-binding-v3.js";
 
 const DODGE_APPEARANCE_FX_PRESET_V1 =
   Object.freeze({
@@ -108,10 +111,11 @@ export function playDomCreatureDodgeFxV1({
     });
   }
 
+  // This timing is purely presentation-owned, not the combat invulnerability window.
   const duration =
     finitePositive(
-      durationMs,
-      "durationMs"
+      visual.durationMs ?? CREATURE_DODGE_VISUAL_DEFAULT_DURATION_MS_V3,
+      "visual.durationMs"
     );
   const displayScale =
     finitePositive(
