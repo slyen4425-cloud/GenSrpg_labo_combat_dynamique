@@ -408,3 +408,12 @@ Inchangés :
 - Périmètre : renommer UI en « Rayon continu », afficher 3 phases au lieu de 4 (rassembler contrôles du cast et du départ dans la phase 1 sans les dupliquer), preset générique d'eau qui utilise le sprite `beam-start` comme visuel de préparation **et** de départ à la bouche (aucune charge additionnelle imposée), vrai bouton `Annuler le modèle` qui restaure précisément les valeurs des champs visuels et du Style telles qu'elles étaient avant l'application; preview dédiée à aligner. Les assets `pack:capture:sprite-pressurized-jet-*` déjà validés sont réutilisés sans transfert binaire.
 - Aucun changement de `cap_water_atk_3` sauvegardé automatiquement : le fichier auteur reste `projectile` tant que l'utilisateur ne valide pas explicitement une mise à jour. Aucun effet sur dégâts/coûts/énergie/cooldowns, autres compétences, 103 créatures, `main`, `global-assets`, Zombicide-40k ou Exploration.
 - TDD RED→GREEN, maintien de roundtrip source, vrai smoke Chromium 103 créatures, revue diff, checkpoint final, publication Pages seulement après CI. Validation Android requise pour l'alignement artistique.
+
+
+### Rayon générique à trois phases — clôture technique candidate
+
+- UI visible : Rayon continu 3 phases immédiatement après les effets tactiques / zone persistante, douze champs canoniques (6/3/3), ancien placement restauré pour les styles non-rayon et lors du dispose.
+- Pack de démonstration `Rayon d’eau` : phase départ animée à la bouche pendant la préparation ET à l’émission; le sprite cast supplémentaire n'est plus imposé; corps continu et extrémité cible conservés dans un seul FX owner.
+- Action utilisateur : `Appliquer le modèle de rayon d’eau`, accompagnée de `Annuler le modèle — retrouver mes réglages` (retour exact au style, sprites, offsets et tailles précédents avant sauvegarde). Aucune mutation des capacités enregistrées.
+- Test RED CI `37817811130`; test GREEN initial `37818320673` : foundation 1293/1293, Chromium réel PASS sur regroupement 6+3+3 et 103 créatures. Sentinelle additionnelle du socket bouche du vrai `cap_water_atk_3` ajoutée ensuite.
+- 0 média ajouté/remplacé. Rapport : `docs/LAB_BEAM_SIMPLIFIED_REVERSIBLE_UI_V1.md`; attente de la CI documentaire finale, checkpoint GREEN et Pages SUCCESS. Validation tactile/esthétique Android séparée.
