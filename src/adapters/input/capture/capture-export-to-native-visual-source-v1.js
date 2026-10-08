@@ -161,6 +161,7 @@ export function adaptCaptureExportToNativeVisualSourceV1({
           ? resource.format
           : null,
       displayScale: slot.displayScale,
+      ...(slot.durationMs === undefined ? {} : { durationMs: slot.durationMs }),
       offsetX: slot.offsetX,
       offsetY: slot.offsetY
     });
