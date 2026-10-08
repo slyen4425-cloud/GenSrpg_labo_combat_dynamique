@@ -67,7 +67,9 @@ export function mountCaptureBeamStageLayoutV1(root) {
   const dispose = () => {
     for (const { label, marker } of moved) {
       if (marker.parentNode) {
-        marker.parentNode.insertBefore(label, marker.nextSibling);
+        if (label !== marker.nextSibling) {
+          marker.parentNode.insertBefore(label, marker.nextSibling);
+        }
         marker.remove();
       }
     }
