@@ -108,7 +108,7 @@ test("Morsure de maree author export is preserved exactly through Capture Transf
   assert.equal(draft.presentation.version, 9);
   assert.equal(
     draft.presentation.visual.icon.assetId,
-    "core:icon-skill-aqua-dash-01"
+    "pack:capture:icon-skill-marine-bite-01"
   );
   assert.equal(
     draft.presentation.visual.impact.assetId,
