@@ -11,7 +11,7 @@ function root() {
     ["[data-game-dodge-enabled]", { checked: true, value: "" }],
     ["[data-game-dodge-charges]", { checked: false, value: "2" }],
     ["[data-game-dodge-recharge-seconds]", { checked: false, value: "30" }],
-    ["[data-game-dodge-active-seconds]", { checked: false, value: "0.5" }]
+    ["[data-game-dodge-active-seconds]", { checked: false, value: "0.25" }]
   ]);
   return {
     querySelector(selector) {
@@ -20,7 +20,7 @@ function root() {
   };
 }
 
-test("Human Editor exposes 30s recharge and 0.5s dodge active window defaults", async () => {
+test("Human Editor exposes 30s recharge and 0.25s dodge active window defaults", async () => {
   const html = await readFile(
     "examples/dom-demo/capture-editor-v2.html",
     "utf8"
@@ -43,7 +43,7 @@ test("Human Editor exports the dodge active window in milliseconds", () => {
         enabled: true,
         maxCharges: 2,
         rechargeMs: 30000,
-        activeWindowMs: 500
+        activeWindowMs: 250
       }
     }
   );
