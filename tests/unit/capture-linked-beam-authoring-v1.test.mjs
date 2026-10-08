@@ -64,6 +64,9 @@ test("pack selects coherent beam parts and preserves mechanics, custom audio and
   assert.equal(updated.definition.preparationMs, originalMechanics.preparationMs);
   assert.deepEqual(updated.definition.effects, originalMechanics.effects);
   assert.equal(updated.presentation.visual.beamStart.assetId, pack.beamStart);
+  assert.equal(updated.presentation.visual.cast.assetId, pack.beamStart);
+  assert.equal(updated.presentation.visual.cast.anchor, "mouth");
+  assert.equal(updated.presentation.visual.beamStart.anchor, "mouth");
 
   const roundtrip = importCaptureTransferJsonV1(
     exportCaptureSkillTransferJsonV1(updated)
