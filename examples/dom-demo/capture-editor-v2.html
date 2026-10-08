@@ -130,14 +130,57 @@
         </label>
       </article>
 
-      <article class="card">
+      <article class="card" data-creature-appearance-card data-collapsed="false">
         <div class="card-title">
           <span class="step">2</span>
           <div>
             <h2>Apparence</h2>
-            <p>Face, dos, icône et posture de combat.</p>
+            <p>Face, dos, icône, effet d’esquive et posture de combat.</p>
           </div>
         </div>
+
+        <section class="creature-dodge-appearance" data-creature-dodge-appearance>
+          <div class="creature-dodge-appearance__title">
+            <strong>Esquive — effet visuel</strong>
+            <span>Apparence de la créature</span>
+          </div>
+          <div class="grid two">
+            <label>Effet visuel d’esquive
+              <select data-creature-dodge-fx data-asset-role="dodge">
+                <option value="">Aucun</option>
+              </select>
+            </label>
+            <label>Taille de l’effet
+              <input
+                type="number"
+                min="0.25"
+                max="8"
+                step="0.05"
+                value="1"
+                data-creature-dodge-scale
+              >
+            </label>
+            <label>Décalage X
+              <input
+                type="number"
+                step="1"
+                value="0"
+                data-creature-dodge-offset-x
+              >
+            </label>
+            <label>Décalage Y
+              <input
+                type="number"
+                step="1"
+                value="0"
+                data-creature-dodge-offset-y
+              >
+            </label>
+          </div>
+          <p class="note">
+            Ce visuel accompagne la disparition pendant l’Esquive : éclair, feuilles, poussière, fumée… Aucun effet n’est imposé par l’élément. Pour un sprite personnel, utilise « Mes visuels / Importer » plus bas avec le rôle « Esquive / disparition ».
+          </p>
+        </section>
 
         <div class="asset-trio">
           <div class="asset-card">
@@ -178,43 +221,6 @@
             </label>
           </div>
         </div>
-
-        <div class="grid two">
-          <label>Effet visuel d’esquive
-            <select data-creature-dodge-fx data-asset-role="dodge">
-              <option value="">Aucun</option>
-            </select>
-          </label>
-          <label>Taille de l’effet
-            <input
-              type="number"
-              min="0.25"
-              max="8"
-              step="0.05"
-              value="1"
-              data-creature-dodge-scale
-            >
-          </label>
-          <label>Décalage X
-            <input
-              type="number"
-              step="1"
-              value="0"
-              data-creature-dodge-offset-x
-            >
-          </label>
-          <label>Décalage Y
-            <input
-              type="number"
-              step="1"
-              value="0"
-              data-creature-dodge-offset-y
-            >
-          </label>
-        </div>
-        <p class="note">
-          Cet effet appartient à l’apparence de la créature. Il accompagne sa disparition pendant l’Esquive : éclair, feuilles, poussière, fumée… Aucun effet n’est choisi automatiquement selon l’élément.
-        </p>
 
         <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
           <h3>Mes visuels / Importer</h3>
