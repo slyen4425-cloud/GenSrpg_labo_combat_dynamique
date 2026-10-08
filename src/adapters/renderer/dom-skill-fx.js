@@ -2370,108 +2370,129 @@ export function createDomSkillFxRenderer({
         });
       }
 
+      // The existing renderer owns all three linked beam pieces, and the
+      // Runtime owns their common duration. No independent FX clocks.
+      const startVisual = presentation?.beamStart ?? null;
+      const targetVisual = presentation?.impact ?? null;
       const travelSourceAnchor =
         presentation?.travelSourceAnchor ?? null;
-      const from = centerRelativeTo(
-        sourceRect(fromSlot, travelSourceAnchor),
-        arenaRect
-      );
-      const to = centerRelativeTo(
-        projectileTargetRect(targetSlot),
-        arenaRect
-      );
-      const deltaX = to.x - from.x;
-      const deltaY = to.y - from.y;
-      const distancePx = Math.max(
-        1,
-        Math.hypot(deltaX, deltaY)
-      );
-      const headingRad = Number.isFinite(
-        Number(travelVisual.headingRad)
-      )
+      const headingRad = Number.isFinite(Number(travelVisual.headingRad))
         ? Number(travelVisual.headingRad)
         : 0;
-      const rotationRad =
-        Math.atan2(deltaY, deltaX) - headingRad;
       const displayScale = Math.min(
-        8,
-        Math.max(
-          0.25,
-          Number(travelVisual.displayScale) || 1
-        )
+        8, Math.max(0.25, Number(travelVisual.displayScale) || 1)
       );
       const displayScaleY = Math.min(
-        8,
-        Math.max(
-          0.25,
-          Number(travelVisual.displayScaleY) || 1
-        )
+        8, Math.max(0.25, Number(travelVisual.displayScaleY) || 1)
       );
-      const thicknessPx =
-        96 * displayScale * displayScaleY;
+      const thicknessPx = 96 * displayScale * displayScaleY;
 
-      const node =
-        arena.ownerDocument.createElement("span");
-      node.className =
-        "skill-fx skill-fx--beam skill-fx--sprite-shell";
+      const node = arena.ownerDocument.createElement("span");
+      node.className = "skill-fx skill-fx--beam skill-fx--sprite-shell";
       if (presentation?.travelLayer === "behind") {
-        node.className +=
-          " skill-fx--layer-behind";
+        node.className += " skill-fx--layer-behind";
       }
       node.dataset.skillFx = "beam";
-      node.dataset.assetId =
-        travelVisual.assetId ?? "";
-      if (skillId) {
-        node.dataset.skillId = skillId;
-      }
-      if (element) {
-        node.dataset.element = element;
-      }
-      if (travelSourceAnchor) {
-        node.dataset.fxAnchor =
-          travelSourceAnchor;
-      }
-      node.style.left = `${from.x}px`;
-      node.style.top = `${from.y}px`;
-      node.style.width =
-        `${distancePx}px`;
-      node.style.height =
-        `${thicknessPx}px`;
-      node.style.transformOrigin =
-        "0 50%";
-      node.style.transform =
-        `translateY(-50%) rotate(${rotationRad}rad)`;
+      node.dataset.assetId = travelVisual.assetId ?? "";
+      if (skillId) node.dataset.skillId = skillId;
+      if (element) node.dataset.element = element;
+      if (travelSourceAnchor) node.dataset.fxAnchor = travelSourceAnchor;
+      node.style.height = `${thicknessPx}px`;
+      node.style.transformOrigin = "0 50%";
       node.style.pointerEvents = "none";
 
-      const spriteNode =
-        arena.ownerDocument.createElement("span");
-      spriteNode.className =
-        "skill-fx__sprite skill-fx__beam-body";
-      spriteNode.style.position = "absolute";
-      spriteNode.style.left = "0";
-      spriteNode.style.top = "0";
-      spriteNode.style.width = "100%";
-      spriteNode.style.height = "100%";
-      spriteNode.style.transform = "none";
-      const spriteVisual = applySpriteVisual(
-        spriteNode,
-        travelVisual,
-        durationMs,
-        animate
+      const frameAnimations = [];
+      const body = arena.ownerDocument.createElement("span");
+      body.className = "skill-fx__sprite skill-fx__beam-body";
+      body.dataset.beamPart = "body";
+      body.style.position = "absolute";
+      body.style.left = "0";
+      body.style.top = "0";
+      body.style.width = "100%";
+      body.style.height = "100%";
+      body.style.transform = "none";
+      const bodyPlayback = applySpriteVisual(
+        body, travelVisual, durationMs, animate
       );
-      node.append(spriteNode);
+      if (bodyPlayback.frameAnimation) {
+        frameAnimations.push(bodyPlayback.frameAnimation);
+      }
+      node.append(body);
 
-      applyPresentationGlow(
-        node,
-        presentation?.feedback?.glow
+      // Endcaps share the beam's coordinates and single lifecycle. The
+      // impact animation at the authoritative hit is still independent.
+      function appendEndcap(visual, part, point, layer) {
+        if (!hasSpriteVisual(visual)) return;
+        const cap = arena.ownerDocument.createElement("span");
+        cap.className = "skill-fx__sprite skill-fx__beam-" + part;
+        if (layer === "behind") cap.className += " skill-fx--layer-behind";
+        cap.dataset.beamPart = part;
+        cap.style.position = "absolute";
+        cap.style.left = point;
+        cap.style.top = "50%";
+        const scale = Math.min(
+          8, Math.max(0.25, Number(visual.displayScale) || 1)
+        );
+        const size = 96 * scale;
+        cap.style.width = `${size}px`;
+        cap.style.height = `${size * Math.min(8, Math.max(0.25, Number(visual.displayScaleY) || 1))}px`;
+        cap.style.transform = "translate(-50%, -50%)";
+        cap.style.pointerEvents = "none";
+        cap.style.opacity = String(visual.opacity ?? 1);
+        const playback = applySpriteVisual(
+          cap,
+          { ...visual, playbackMode: "loop" },
+          durationMs,
+          animate
+        );
+        if (playback.frameAnimation) {
+          frameAnimations.push(playback.frameAnimation);
+        }
+        node.append(cap);
+      }
+      appendEndcap(
+        startVisual, "start", "0", presentation?.beamStartLayer
       );
+      appendEndcap(
+        targetVisual, "target", "100%", presentation?.impactLayer
+      );
+
+      function positionBeam() {
+        const currentArena = arena.getBoundingClientRect();
+        const from = centerRelativeTo(
+          sourceRect(fromSlot, travelSourceAnchor),
+          currentArena
+        );
+        const to = centerRelativeTo(
+          projectileTargetRect(targetSlot),
+          currentArena
+        );
+        const distancePx = Math.max(
+          1, Math.hypot(to.x - from.x, to.y - from.y)
+        );
+        const rotationRad = Math.atan2(
+          to.y - from.y, to.x - from.x
+        ) - headingRad;
+        node.style.left = `${from.x}px`;
+        node.style.top = `${from.y}px`;
+        node.style.width = `${distancePx}px`;
+        node.style.transform =
+          `translateY(-50%) rotate(${rotationRad}rad)`;
+      }
+      positionBeam();
+      applyPresentationGlow(node, presentation?.feedback?.glow);
       arena.append(node);
 
       const record = {
         node,
         animation: null,
-        frameAnimation:
-          spriteVisual.frameAnimation,
+        frameAnimation: {
+          cancel() {
+            for (const frameAnimation of frameAnimations) {
+              frameAnimation.cancel?.();
+            }
+          }
+        },
         type: "beam",
         skillId,
         fromSlot,
@@ -2480,6 +2501,14 @@ export function createDomSkillFxRenderer({
         contactReported: false
       };
       active.add(record);
+
+      function followAnchors() {
+        record.contactFrameId = null;
+        if (disposed || !active.has(record)) return;
+        positionBeam();
+        record.contactFrameId = requestFrame(followAnchors);
+      }
+      record.contactFrameId = requestFrame(followAnchors);
 
       const animation = animate(
         node,
@@ -2490,29 +2519,25 @@ export function createDomSkillFxRenderer({
           { opacity: 0.25 }
         ],
         {
-          duration: Math.max(
-            1,
-            Number(durationMs) || 1
-          ),
+          duration: Math.max(1, Number(durationMs) || 1),
           easing: "linear",
           fill: "forwards"
         }
       );
       record.animation = animation;
 
-      const finished =
-        Promise.resolve(animation.finished)
-          .then(() => {
-            cleanup(record);
-            return { status: "arrived" };
-          })
-          .catch((error) => {
-            cleanup(record);
-            if (error?.name === "AbortError") {
-              return { status: "cancelled" };
-            }
-            throw error;
-          });
+      const finished = Promise.resolve(animation.finished)
+        .then(() => {
+          cleanup(record);
+          return { status: "arrived" };
+        })
+        .catch((error) => {
+          cleanup(record);
+          if (error?.name === "AbortError") {
+            return { status: "cancelled" };
+          }
+          throw error;
+        });
 
       return Object.freeze({
         status: "running",
