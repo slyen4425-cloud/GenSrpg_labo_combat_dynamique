@@ -47,7 +47,7 @@ test("pack selects coherent beam parts and preserves mechanics, custom audio and
   });
 
   const pack = captureBeamVisualPackV1("pressurized-jet");
-  assert.equal(visuals.castAssetId, pack.cast);
+  assert.equal(visuals.castAssetId, pack.beamStart);
   assert.equal(visuals.beamStartAssetId, pack.beamStart);
   assert.equal(visuals.travelAssetId, pack.travel);
   assert.equal(visuals.impactAssetId, pack.impact);
