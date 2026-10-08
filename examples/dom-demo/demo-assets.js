@@ -19,6 +19,31 @@ const RUNTIME_AUDIO_ROOT = new URL(
 );
 
 
+function captureSkillAtlasAsset({
+  assetId,
+  file,
+  frameCount,
+  frameMs,
+  playbackMode = "once",
+  displayScale = 1,
+  displayScaleY = 1,
+  headingRad = null
+}) {
+  return Object.freeze({
+    assetId,
+    url: globalVisualAssetUrl(
+      `capture/sprites/skills/pressurized_jet/atlases/${file}`
+    ),
+    frameCount,
+    frameMs,
+    playbackMode,
+    displayScale,
+    displayScaleY,
+    ...(headingRad == null ? {} : { headingRad })
+  });
+}
+
+
 function globalCaptureStripAsset({
   assetId,
   family,
@@ -79,6 +104,37 @@ function captureSequenceAsset({
 }
 
 const ASSETS = Object.freeze({
+  "pack:capture:sprite-pressurized-jet-cast-01": captureSkillAtlasAsset({
+    assetId: "pack:capture:sprite-pressurized-jet-cast-01",
+    file: "sprite_skill_pressurized_jet_cast_atlas_01.webp",
+    frameCount: 20,
+    frameMs: 60,
+    displayScale: 2.2
+  }),
+  "pack:capture:sprite-pressurized-jet-beam-start-01": captureSkillAtlasAsset({
+    assetId: "pack:capture:sprite-pressurized-jet-beam-start-01",
+    file: "sprite_skill_pressurized_jet_beam_start_atlas_01.webp",
+    frameCount: 12,
+    frameMs: 45,
+    displayScale: 1.6
+  }),
+  "pack:capture:sprite-pressurized-jet-beam-body-01": captureSkillAtlasAsset({
+    assetId: "pack:capture:sprite-pressurized-jet-beam-body-01",
+    file: "sprite_skill_pressurized_jet_beam_body_atlas_01.webp",
+    frameCount: 12,
+    frameMs: 45,
+    playbackMode: "loop",
+    displayScale: 1,
+    displayScaleY: 0.72,
+    headingRad: 0
+  }),
+  "pack:capture:sprite-pressurized-jet-impact-01": captureSkillAtlasAsset({
+    assetId: "pack:capture:sprite-pressurized-jet-impact-01",
+    file: "sprite_skill_pressurized_jet_impact_atlas_01.webp",
+    frameCount: 12,
+    frameMs: 45,
+    displayScale: 2
+  }),
   "pack:capture:sprite-status-healing-aura-01": globalCaptureStripAsset({
     assetId: "pack:capture:sprite-status-healing-aura-01",
     family: "statuses",
