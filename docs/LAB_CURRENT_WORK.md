@@ -1,131 +1,89 @@
-# Point de reprise courant — 2026-10-07
+# Point de reprise courant — 2026-10-08
 
 ## Lot techniquement GREEN
 
-Creature Dodge Appearance FX V1
+Creature Library Browser Startup Regression V1
 
 Branche :
-`work/lab-creature-dodge-appearance-fx-v1-2026-10-07`
+`work/lab-creature-library-browser-startup-regression-v1-2026-10-08`
 
 Checkpoint de départ :
-`checkpoint/lab-start-creature-dodge-appearance-fx-v1-2026-10-07`
+`checkpoint/lab-start-creature-library-browser-startup-regression-v1-2026-10-08`
 
 Base :
-`f1ef3c934e6065cfdef0e515a8bc19fa06f1c235`
+`181cada1bf19f919961fcc546b9eee5bebb7c5bc`
 
-## Résultat
+## Retour utilisateur
 
-L'Esquive conserve sa disparition/réapparition générique existante.
+La preview smartphone affichait une bibliothèque de créatures vide.
 
-Une créature peut désormais posséder un visuel d'Esquive optionnel dans son **Apparence** :
+Ce retour invalide le GREEN utilisateur du lot précédent sur ce point.
 
-- asset ;
-- taille ;
-- décalage X ;
-- décalage Y.
+## Cause architecturale corrigée
 
-Exemples possibles :
-- éclair ;
-- feuilles ;
-- poussière ;
-- fumée ;
-- asset personnel.
+Le vrai point d'entrée navigateur chargeait statiquement des modules uniquement nécessaires à la preview combat :
 
-Aucun effet n'est déduit automatiquement de l'élément.
+- `capture-combat-preview-v1.js` ;
+- `capture-export-to-native-visual-source-v1.js`.
 
-## Ownership
+Le lot Dodge Appearance avait ajouté derrière ces modules de nouvelles dépendances de présentation/renderer.
 
-Gameplay inchangé :
+Un échec dans cette branche preview pouvait donc empêcher le bootstrap complet de l'éditeur avant l'hydratation de la bibliothèque.
 
-`HUD -> Combat Runtime -> activeWindowMs -> Visual Event dodge`
+## Correction
 
-Visuel additionnel :
+Nouveau chemin :
 
-`Creature Presentation -> Combat Export -> Native Visual Source -> Visual Controller -> DOM Dodge FX`
+`Editor bootstrap -> editor.ready -> lazy Preview Runtime`
 
-Le Runtime reste seul propriétaire du timing et des règles d'Esquive.
+Nouveau loader :
+`src/ui/capture-editor-preview-runtime-loader-v1.js`
 
-Aucun second timer Dodge.
+La vraie entrée navigateur n'importe plus statiquement :
+- le combat preview ;
+- l'adaptateur visuel de preview.
 
-## Contrat
-
-`CreaturePresentationBinding V3` ajoute uniquement :
-
-`visual.dodge = { assetId, displayScale, offsetX, offsetY }`
-
-Compatibilité :
-- V1/V2 restent supportés ;
-- sans Dodge FX, une créature reste V2 ;
-- aucune migration silencieuse.
-
-## Éditeur
-
-Carte Apparence :
-- `Effet visuel d’esquive`
-- `Taille de l’effet`
-- `Décalage X`
-- `Décalage Y`
-
-Import visuel :
-- nouveau rôle `Esquive / disparition`
-- bibliothèque GenSrpG + Mes assets.
+La preview combat reste optionnelle et ne possède plus le démarrage de la bibliothèque de créatures.
 
 ## TDD
 
 RED :
-- `35b0c1f2fcd6ddfd66463e8dc0354a5555fad7c0`
-- CI `37683689539`
-- 1248 / 1252 PASS
-- 4 FAIL ciblés.
+- `fbcc44937d0c8a2089b30b525790765003f9a476`
+- CI `37696130792`
+- 1256 / 1257 PASS.
 
-Premier GREEN complet :
-- `fc04b5adf465107661a611b54718750585f0cfdc`
-- CI `37684672450`
-- 1252 / 1252 PASS.
+Implémentation :
+- loader `c87c15b0a92bdfeaa8683ce59470e4835524dbac`
+- isolation entrée navigateur `06632d74978e37274b22edc8e98f7a105de37a9a`
+- sentinelle retry alignée `0746053d366f608bc1f0e2980a687759d7bea8b9`
 
-Renderer + compatibilité V2 :
-- `c9bc40a3db5d9b0113b42f4a90f50114d42bb787`
-- CI `37684809806`
-- 1254 / 1254 PASS.
-
-Vraie chaîne :
-- `ec4302bcf09f9ea799caf60c160403530c5759b1`
-- CI `37684989902`
-- 1255 / 1255 PASS.
-
-GREEN final fonctionnel :
-- `70f9de2e36e7127389abfa88fd847c7023b1ff2a`
-- CI `37685167740`
-- 1255 / 1255 PASS
+GREEN :
+- CI `37696439236`
+- 1257 / 1257 PASS
 - 0 FAIL
 - structure / frontières / indépendance : OK.
 
+## Anti-régression
+
+La même CI vérifie maintenant :
+- entrée navigateur sans import statique du runtime preview ;
+- 103 créatures actives après bootstrap de données + showcase ;
+- conservation des IDs historiques ;
+- retry du test combat après erreur.
+
 Rapport :
-`docs/LAB_CREATURE_DODGE_APPEARANCE_FX_V1.md`
-
-## Correctifs précédents inclus dans cette base
-
-Boule de feu :
-- puissance projectile 2 ;
-- cast joueur +30 ;
-- cast opposant -30.
-
-Cendre aveuglante :
-- puissance projectile 1.
-
-Goutte vive :
-- puissance projectile 2.
+`docs/LAB_CREATURE_LIBRARY_BROWSER_STARTUP_REGRESSION_V1.md`
 
 ## Domaines protégés
 
 Inchangés :
+- données créatures ;
+- `configuredCreatures` comme owner ;
+- Creature Dodge Appearance FX ;
 - Combat Runtime / Rules ;
-- charges / recharge / durée Esquive ;
-- Skill Contract ;
-- dégâts / collision ;
+- Dodge gameplay ;
 - Projectile Clash ;
-- Roster ;
-- audio ;
+- Fireball / Goutte / Cendre ;
 - main ;
 - Zombicide-40k ;
 - Exploration.
@@ -133,6 +91,45 @@ Inchangés :
 ## Prochaine action protocolaire
 
 - CI documentaire finale ;
-- checkpoint `checkpoint/lab-creature-dodge-appearance-fx-v1-green-2026-10-07` ;
-- preview `preview/lab-creature-dodge-appearance-fx-v1-2026-10-07` ;
+- checkpoint `checkpoint/lab-creature-library-browser-startup-regression-v1-green-2026-10-08` ;
+- preview `preview/lab-creature-library-browser-startup-regression-v1-2026-10-08` ;
 - validation smartphone utilisateur.
+
+
+## 2026-10-08 — Creature Library Browser Real Smoke V1 (en cours)
+
+- Incident : bibliothèque de créatures vide sur smartphone malgré les tests de données GREEN.
+- Propriétaire : démarrage navigateur de l'éditeur Capture et sentinelle du sélecteur DOM réel ; `configuredCreatures` reste seul propriétaire des données.
+- SHA de base vérifié : `cbcb081e88661d0b2c09acae40923146d7ccc3bf` (correctif précédent + diagnostic explicite d'hydratation).
+- Checkpoint de départ : `checkpoint/lab-start-creature-library-browser-real-smoke-v1-2026-10-08`.
+- Branche : `work/lab-creature-library-browser-real-smoke-v1-2026-10-08`.
+- Fichiers autorisés : tests navigateur dédiés, workflow CI, puis exclusivement point d'entrée / chargement des ressources de bibliothèque s'il existe un défaut réellement reproduit ; documentation.
+- Protégés : données catalogue historique, IDs et presets créature, `configuredCreatures`, combat/FX/esquive, moteur audio, `main`, `Zombicide-40k`, Exploration.
+- Plan TDD : ouvrir `examples/dom-demo/capture-editor-v2.html` dans un vrai Chromium servi sur HTTP depuis le dépôt, attendre la vraie hydratation, vérifier 103 identifiants actifs et Maraileron/Moussados/Loup dans le `select`; tester un échec des ressources de présentation sans perte de bibliothèque ; CI complète ; seulement ensuite GREEN.
+- Risque : import statique / erreur de chargement navigateur avant initialisation ; attente indéfinie de ressources non essentielles ; faux GREEN de tests isolés.
+- Critère final : CI unitaire + navigateur verts, échec reproductible identifié si présent, preview dédiée, vérification smartphone requise avant GREEN utilisateur.
+
+### Creature Library Browser Real Smoke V1 — clôture technique provisoire
+
+- RED `653fcc2d28261f0aa17cfd037d35222b2acb1895` / CI `37744006241` : échec ciblé sur requête optionnelle en attente.
+- Correction `3366eca53186e5210395673ce6eba6aebc7d00b9` : attente optionnelle bornée à 6000 ms, erreur visible, données obligatoires inchangées.
+- Browser smoke `212fabdf3bc258652839e41844cdd12872e33653` / CI `37744147049` : SUCCESS.
+- 1258 / 1258 tests Node ; 3 vrais scénarios Chromium (normal, serveur visuel indisponible, requête visuelle suspendue), **103 créatures visibles** dans chaque scénario.
+- Rapport : `docs/LAB_CREATURE_LIBRARY_BROWSER_REAL_SMOKE_V1.md`.
+- Reste : CI documentaire finale, checkpoint GREEN exact, preview figée `rawcdn.githack.com`, validation Android. Aucun GREEN utilisateur avant retour réel.
+
+
+## 2026-10-08 — Creature Library GitHub Pages Delivery V1
+
+- Incident utilisateur : URL rawcdn.githack.com affiche HTTP 429 sur Android ; erreur du CDN de preview, indépendante de l'état des créatures.
+- Objectif : publier la preview Creature Library Real Browser Smoke V1 sur l'hébergeur GitHub Pages déjà actif, sans tiers rawcdn.
+- Propriétaire : publication statique `gh-pages` uniquement ; aucune modification moteur/éditeur/données.
+- Base de publication vérifiée : `e62c513a9f74ef408c45694fe58970b91f6b527f` (`gh-pages`).
+- Checkpoint de départ : `checkpoint/lab-start-pages-creature-library-delivery-v1-2026-10-08`.
+- Branche du lot : `work/lab-pages-creature-library-delivery-v1-2026-10-08`.
+- Source fonctionnelle : `479d14c3a7a47ed5681eb902b6209f4db583e073` (`preview/lab-creature-library-browser-real-smoke-v1-2026-10-08`, CI 37744379527 SUCCESS : 1258 tests Node + 3 vrais scénarios Chromium).
+- Périmètre autorisé : synchronisation exacte du snapshot testé vers publication, conservation `index.html` et `.nojekyll`, documentation de la livraison, vérification des CI et du site Pages.
+- Protégés : `main`, les autres laboratoires, `Zombicide-40k`, données et moteur Capture, branches de preview parallèles, contenus spécifiques de `gh-pages`.
+- Critères : comparaison de l'arbre (uniquement changements déjà testés), tests unitaires/Chromium sur la branche de livraison, checkout Pages, CI Pages SUCCESS, puis validation Android utilisateur.
+- Ne pas appeler GREEN utilisateur tant que l'ouverture depuis le smartphone n'est pas confirmée ; tout commit `gh-pages` doit conserver une parenté directe et un rollback possible.
+- URL cible (après publication réussie) : https://slyen4425-cloud.github.io/GenSrpg_labo_combat_dynamique/examples/dom-demo/capture-editor-v2.html
