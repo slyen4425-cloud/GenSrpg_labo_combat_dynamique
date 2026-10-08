@@ -24,13 +24,16 @@ export function planSkillReleaseFx({
   actorSlot = "player",
   targetSlot = "opponent"
 }) {
-  if (!action?.skill || action.skill.form !== "projectile") {
+  if (
+    !action?.skill ||
+    !["projectile", "beam"].includes(action.skill.form)
+  ) {
     return Object.freeze([]);
   }
 
   return Object.freeze([
     Object.freeze({
-      type: "projectile",
+      type: action.skill.form,
       skillId: action.skill.id,
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
@@ -53,7 +56,11 @@ export function planSkillFx({
   const release = resolution.events.find((item) => item.type === "skill-release");
   const arrive = resolution.events.find((item) => item.type === "skill-arrive");
 
-  if (!release || !arrive || release.form !== "projectile") {
+  if (
+    !release ||
+    !arrive ||
+    !["projectile", "beam"].includes(release.form)
+  ) {
     return Object.freeze([]);
   }
 
@@ -62,7 +69,7 @@ export function planSkillFx({
 
   return Object.freeze([
     Object.freeze({
-      type: "projectile",
+      type: release.form,
       ...(release.skillId ? { skillId: release.skillId } : {}),
       element: release.element ?? null,
       fromSlot: actorSlot,
