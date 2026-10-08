@@ -26,8 +26,8 @@ class Node {
   closest(sel){return sel==="label"?this.parentNode:null;}
 }
 const config=[
-  ["[data-skill-socket]","cast"],
-  ["[data-skill-cast-fx]","cast"],["[data-skill-cast-scale]","cast"],["[data-skill-cast-playback]","cast"],
+  ["[data-skill-socket]","start"],
+  ["[data-skill-cast-fx]","start"],["[data-skill-cast-scale]","start"],["[data-skill-cast-playback]","start"],
   ["[data-skill-beam-start-fx]","start"],["[data-skill-beam-start-scale]","start"],
   ["[data-skill-travel-fx]","body"],["[data-skill-travel-scale]","body"],["[data-skill-travel-playback]","body"],
   ["[data-skill-impact-fx]","impact"],["[data-skill-impact-scale]","impact"],["[data-skill-impact-duration]","impact"]
@@ -40,14 +40,14 @@ function testFixture(){
  const form=new Node("style",doc);form.value="projectile";
  const selectors={"[data-skill-beam-stage-editor]":host,"[data-skill-form]":form};
  const stages={};
- for(const step of ["cast","start","body","impact"]){const stage=new Node(step,doc);host.append(stage);stages[step]=stage;selectors[`[data-beam-stage-fields="${step}"]`]=stage;}
+ for(const step of ["start","body","impact"]){const stage=new Node(step,doc);host.append(stage);stages[step]=stage;selectors[`[data-beam-stage-fields="${step}"]`]=stage;}
  const labels={};
  for(const [selector] of config){const label=new Node("label "+selector,doc);const input=new Node("input "+selector,doc);label.append(input);advanced.append(label);selectors[selector]=input;labels[selector]=label;}
  const root={ownerDocument:doc,querySelector(selector){return selectors[selector]??null;}};
  return {root,advanced,host,stages,labels,form};
 }
 
-test("Rayon editor has one coherent 4-stage card immediately after tactical zone and before movement",async()=>{
+test("Rayon editor has one coherent 3-phase card immediately after tactical zone and before movement",async()=>{
  const html=await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
  const start=html.indexOf('data-skill-beam-stage-editor');
  const tactical=html.indexOf('data-skill-effects-host');
@@ -69,8 +69,7 @@ test("switching Rayon / Projectile reuses same 12 canonical controls, without co
  for(const [selector,stage] of config){
    assert.equal(f.labels[selector].parentNode,f.stages[stage]);
  }
- assert.equal(f.stages.cast.children.length,4);
- assert.equal(f.stages.start.children.length,2);
+ assert.equal(f.stages.start.children.length,6);
  assert.equal(f.stages.body.children.length,3);
  assert.equal(f.stages.impact.children.length,3);
  assert.equal(f.advanced.children.filter(x=>x.name.startsWith("label ")).length,0);
