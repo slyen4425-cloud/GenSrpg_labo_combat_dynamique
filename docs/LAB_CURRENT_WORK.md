@@ -300,4 +300,6 @@ Inchangés :
 - Aucun skill gameplay permanent ajouté ; aucun auto-bind aux compétences existantes.
 - CI `37798423324` : SUCCESS, foundation SUCCESS, Chromium Creature Library SUCCESS, 103 créatures protégées.
 - Rapport : `docs/LAB_PRESSURIZED_JET_PREVIEW_ROUTING_V1.md`.
-- Statut : GREEN technique candidat après CI documentaire finale + checkpoint exact ; test smartphone artistique encore requis.
+- CI finale mono-autorité `37798626210` : foundation SUCCESS + Chromium Creature Library SUCCESS.
+- Le checkpoint V1 existant reste immuable sur l'ancienne variante ; il n'est pas déplacé.
+- Statut : GREEN technique mono-autorité à figer sous `checkpoint/lab-pressurized-jet-preview-routing-v2-green-2026-10-08` sur le SHA documentaire final. Test smartphone artistique encore requis.
