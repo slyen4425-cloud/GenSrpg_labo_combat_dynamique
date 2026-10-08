@@ -9211,12 +9211,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
   const beamPackState = root.querySelector("[data-skill-beam-pack-state]");
   function syncBeamPackReady() {
-    const ids = [beamPack.cast, beamPack.beamStart, beamPack.travel, beamPack.impact];
+    const ids = [beamPack.beamStart, beamPack.travel, beamPack.impact];
     const missing = ids.filter(id => !fxStarterVisualAssetIds.has(id));
     if (beamPackButton) beamPackButton.disabled = missing.length > 0;
     if (beamPackState) {
       beamPackState.textContent = missing.length === 0
-        ? "Pack prêt : charge, départ, corps et impact liés. Clique pour appliquer aux champs de la capacité, puis enregistre."
+        ? "Modèle prêt : départ/charge à la bouche, corps continu et impact. Applique le modèle pour préremplir les champs, ou configure-les manuellement."
         : "Pack indisponible : médias non chargés : " + missing.join(", ");
       beamPackState.dataset.tone = missing.length === 0 ? "ok" : "warning";
     }
@@ -9224,7 +9224,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   if (beamPackButton) {
     listen(beamPackButton, "click", () => {
       try {
-        const ids = [beamPack.cast, beamPack.beamStart, beamPack.travel, beamPack.impact];
+        const ids = [beamPack.beamStart, beamPack.travel, beamPack.impact];
         if (ids.some(id => !fxStarterVisualAssetIds.has(id))) {
           throw new Error("Catalogue visuel du rayon indisponible.");
         }
