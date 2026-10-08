@@ -417,3 +417,16 @@ Inchangés :
 - Action utilisateur : `Appliquer le modèle de rayon d’eau`, accompagnée de `Annuler le modèle — retrouver mes réglages` (retour exact au style, sprites, offsets et tailles précédents avant sauvegarde). Aucune mutation des capacités enregistrées.
 - Test RED CI `37817811130`; test GREEN initial `37818320673` : foundation 1293/1293, Chromium réel PASS sur regroupement 6+3+3 et 103 créatures. Sentinelle additionnelle du socket bouche du vrai `cap_water_atk_3` ajoutée ensuite.
 - 0 média ajouté/remplacé. Rapport : `docs/LAB_BEAM_SIMPLIFIED_REVERSIBLE_UI_V1.md`; attente de la CI documentaire finale, checkpoint GREEN et Pages SUCCESS. Validation tactile/esthétique Android séparée.
+
+
+## 2026-10-08 — Continuité rayon : audio de trajet et raccord des offsets
+
+- Reprise depuis `gh-pages` SHA `76524b596d6e421de1a0e7563ddb615e3a0024f9` GREEN (CI + Pages), sur checkpoint préexistant `checkpoint/lab-start-beam-continuity-sound-offsets-v1-2026-10-08` et branche préexistante `work/lab-beam-continuity-sound-offsets-v1-2026-10-08`. La branche n'avait aucun delta avant reprise.
+- Retour utilisateur : mieux relier départ bouche → rayon → impact, pas de charge supplémentaire; conserver panneau générique 3 phases près zone et Undo du préréglage. Ne rien dupliquer dans l'UI.
+- Audit causal : `CombatResolutionPresenter.presentRelease` démarre l'audio `travel` uniquement si `form===projectile`, alors que le plan FX reconnaît `beam`. `presentOutcome` n'annule le visuel de trajet qu'en cas de `projectile`, alors que `cancelProjectileFor` du renderer possède déjà le nettoyage `beam`. Les deux exclusions créent une discontinuité sonore/visuelle à la résolution.
+- Autre défaut : `DomSkillFxRenderer.positionBeam` relie les centres géométriques source/cible sans les offsets V9 de cast/impact, pourtant l'éditeur expose des décalages; le cast peut être décentré du départ et le corps ne finit plus sur l'impact.
+- Périmètre micro-lot : étendre le **même presenter audio/FX** à `beam` (comme `projectile`), et faire relier le **même renderer** à la position du cast à la source et à l'offset d'impact cible; suivi dynamique pendant l'action. Pas de moteur/binding ou horloge bis. Conserver l'animation de contact et le traitement immunité/esquive.
+- Fichiers attendus : `src/adapters/renderer/combat-resolution-presenter.js`, `src/adapters/renderer/dom-skill-fx.js`, tests unitaires et docs. Rien de plus sans nécessité prouvée.
+- TDD RED : reproduire le défaut de son travel absent et de non-annulation à l'impact pour `beam`; démontrer que le rayon suit le cast/impact malgré offsets et cible mouvante. GREEN : Node, CI structure, Chromium 103 créatures, publication uniquement avec lease et checkpoint.
+- Protégés : 103 créatures, `cap_water_atk_{1,2,3}` et ses JSON auteur, FX/médias globaux, dégâts, énergie, timings, réglages UI de rayon existants, `main`, `Zombicide-40k`, Exploration.
+- La conformité artistique réelle et les sons entendus sur Android demeurent une validation utilisateur distincte.
