@@ -18,6 +18,8 @@ export function computeCombatDamageV1({
   targetId,
   baseDamage,
   channel = "physical",
+  ignoreResistancePct = 0,
+  ignoreDamageReductionPct = 0,
   atMs = state.elapsedMs
 }) {
   const attacker = fighterOf(state, attackerId);
@@ -91,15 +93,27 @@ export function computeCombatDamageV1({
       )
     );
 
+  // Penetration affects only the current damage event, never a fighter's
+  // resistance/status state. Negative resistance is a vulnerability, not
+  // protection, and must remain a vulnerability even at 100% penetration.
+  const effectiveResistancePct =
+    resistancePct > 0
+      ? resistancePct *
+        (1 - ignoreResistancePct / 100)
+      : resistancePct;
+  const effectiveDamageReductionPct =
+    damageReductionPct *
+    (1 - ignoreDamageReductionPct / 100);
+
   const boosted =
     amount *
     Math.max(0, 1 + damageBonusPct / 100);
   const rawDamage =
     boosted *
-    Math.max(0, 1 - resistancePct / 100) *
+    Math.max(0, 1 - effectiveResistancePct / 100) *
     Math.max(
       0,
-      1 - damageReductionPct / 100
+      1 - effectiveDamageReductionPct / 100
     );
   const damage =
     Math.round(rawDamage * 100) / 100;
