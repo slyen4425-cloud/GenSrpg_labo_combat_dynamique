@@ -58,6 +58,7 @@ function creatureFields() {
       iconAssetId: "pack:test:icon",
       dodgeAssetId: "pack:test:dodge-electric",
       dodgeDisplayScale: 1.4,
+      dodgeDurationMs: 1000,
       dodgeOffsetX: 6,
       dodgeOffsetY: -8
     },
@@ -78,6 +79,7 @@ test("Creature Appearance editor exposes an optional Dodge FX and creator dodge 
   for (const marker of [
     "data-creature-dodge-fx",
     "data-creature-dodge-scale",
+    "data-creature-dodge-duration",
     "data-creature-dodge-offset-x",
     "data-creature-dodge-offset-y"
   ]) {
@@ -124,6 +126,7 @@ test("Human creature builder stores Dodge FX in versioned Creature Presentation"
     {
       assetId: "pack:test:dodge-electric",
       displayScale: 1.4,
+      durationMs: 1000,
       offsetX: 6,
       offsetY: -8
     }
@@ -213,6 +216,7 @@ function visualExport() {
             dodge: {
               assetId: "pack:test:dodge-electric",
               displayScale: 1.4,
+              durationMs: 1000,
               offsetX: 6,
               offsetY: -8
             }
@@ -314,6 +318,7 @@ test("Capture native visual source carries creature-owned Dodge FX without deriv
       frameMs: 45,
       format: "sprite-strip",
       displayScale: 1.4,
+      durationMs: 1000,
       offsetX: 6,
       offsetY: -8
     }
@@ -382,7 +387,7 @@ test("creature without authored Dodge FX remains Creature Presentation V2", () =
   );
 });
 
-test("DOM Dodge FX uses the Runtime duration, creature geometry and authored appearance offsets", async () => {
+test("DOM Dodge FX uses creature-authored visual duration independent of Runtime, creature geometry and authored appearance offsets", async () => {
   let appended = null;
   let removed = false;
   let animationOptions = null;
@@ -441,10 +446,11 @@ test("DOM Dodge FX uses the Runtime duration, creature geometry and authored app
         frameMs: 45,
         format: "sprite-strip",
         displayScale: 1.4,
+        durationMs: 1000,
         offsetX: 6,
         offsetY: -8
       },
-      durationMs: 500,
+      durationMs: 250,
       animate(node, keyframes, options) {
         animationOptions = options;
         return {
@@ -475,16 +481,58 @@ test("DOM Dodge FX uses the Runtime duration, creature geometry and authored app
   );
   assert.equal(
     appended.style.animationDuration,
-    "500ms",
-    "sprite playback must stretch to the Runtime-owned dodge window"
+    "1000ms",
+    "sprite playback must stretch to the creature-owned FX duration"
   );
   assert.equal(
     animationOptions.duration,
-    500
+    1000
   );
 
   const result = await handle.finished;
   assert.equal(result.status, "finished");
   assert.equal(removed, true);
   assert.equal(cancelled, false);
+});
+
+
+test("Dodge visual fallback lasts 700ms while the gameplay window remains 250ms", async () => {
+  const animations = [];
+  const ownerDocument = {
+    createElement() {
+      return {
+        ownerDocument,
+        dataset: {}, style: {}, className: "",
+        remove() {}
+      };
+    }
+  };
+  const arena = {
+    ownerDocument,
+    append() {},
+    getBoundingClientRect() {
+      return {left:0,top:0,width:600,height:360};
+    }
+  };
+  const anchor = {
+    getBoundingClientRect() {
+      return {left:50,top:50,width:70,height:70};
+    }
+  };
+  const visual = {
+    assetId: "pack:test:dodge",
+    url: "https://assets.test/dodge.webp",
+    frameCount: 8,
+    format: "sprite-strip"
+  };
+  const fx = playDomCreatureDodgeFxV1({
+    arena, anchor, visual, durationMs:250,
+    animate(node, frames, options) {
+      animations.push(options.duration);
+      return {finished:Promise.resolve(),cancel(){}};
+    }
+  });
+  assert.equal(fx.status,"running");
+  assert.equal(animations.at(-1),700);
+  await fx.finished;
 });
