@@ -398,3 +398,13 @@ Inchangés :
 - Protection de l'ancien chemin `Style=Projectile` : champs, données de combat, présentation V9, moteur beam, assets, 103 créatures inchangés. Correction CSS width-only préservant l'ancien test paysage.
 - Tests RED `37813264628` ; GREEN Node + vrai Chromium 103 créatures + injection DOM réelle contrôlant les quatre étapes : CI `37813820439` SUCCESS, 0 régression.
 - Documentation : `docs/LAB_BEAM_EDITOR_FOUR_STAGES_V1.md`. CI documentaire finale, checkpoint technique, publication Pages et test tactile Android encore requis.
+
+
+## 2026-10-08 — Rayon générique, préparation bouche et annulation du préréglage
+
+- Retour utilisateur : ne pas nommer le réglage visuel d'après la capacité « Jet pressurisé », trois phases cohérentes (départ/charge bouche → corps continu → impact), ne pas imposer un cast supplémentaire, bouton réversible. Proximité des réglages de zone conservée.
+- Base exacte `95485f318c1593aa2b369afa3faf9c7057000a91` (GitHub Pages + CI success). Checkpoint de départ `checkpoint/lab-start-beam-simplified-reversible-ui-v1-2026-10-08` ; branche `work/lab-beam-simplified-reversible-ui-v1-2026-10-08`.
+- Propriétaires uniques conservés : formulaire Human Editor et ses champs DOM canoniques, `CaptureBeamStageLayoutV1` simple relocalisation des labels, `CaptureBeamVisualPackV1` valeurs du pack, `DomSkillFxRenderer` rendu existant. Pas de nouvel owner FX / timing / dégâts.
+- Périmètre : renommer UI en « Rayon continu », afficher 3 phases au lieu de 4 (rassembler contrôles du cast et du départ dans la phase 1 sans les dupliquer), preset générique d'eau qui utilise le sprite `beam-start` comme visuel de préparation **et** de départ à la bouche (aucune charge additionnelle imposée), vrai bouton `Annuler le modèle` qui restaure précisément les valeurs des champs visuels et du Style telles qu'elles étaient avant l'application; preview dédiée à aligner. Les assets `pack:capture:sprite-pressurized-jet-*` déjà validés sont réutilisés sans transfert binaire.
+- Aucun changement de `cap_water_atk_3` sauvegardé automatiquement : le fichier auteur reste `projectile` tant que l'utilisateur ne valide pas explicitement une mise à jour. Aucun effet sur dégâts/coûts/énergie/cooldowns, autres compétences, 103 créatures, `main`, `global-assets`, Zombicide-40k ou Exploration.
+- TDD RED→GREEN, maintien de roundtrip source, vrai smoke Chromium 103 créatures, revue diff, checkpoint final, publication Pages seulement après CI. Validation Android requise pour l'alignement artistique.
