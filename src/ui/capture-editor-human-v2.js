@@ -596,7 +596,19 @@ export function buildHumanTacticalSkillEffectsV1(
           "Dégâts tactiques"
         ),
         channel:
-          optionalText(effect.channel)
+          optionalText(effect.channel),
+        ...(effect.ignoreResistancePct === undefined ? {} : {
+          ignoreResistancePct: finiteNumber(
+            effect.ignoreResistancePct,
+            "Résistance ignorée (%)"
+          )
+        }),
+        ...(effect.ignoreDamageReductionPct === undefined ? {} : {
+          ignoreDamageReductionPct: finiteNumber(
+            effect.ignoreDamageReductionPct,
+            "Défense ignorée (%)"
+          )
+        })
       });
     }
 
@@ -4507,6 +4519,28 @@ function appendHumanSkillEffectV1(
   channelField.dataset.skillEffectConfigKind =
     "damage";
 
+  const ignoreResistance = tacticalNumberInputV1(
+    "skillEffectIgnoreResistancePct",
+    effect?.ignoreResistancePct ?? 0,
+    { min: 0, max: 100, step: "5" }
+  );
+  const ignoreResistanceField = tacticalFieldV1(
+    "Ignorer la résistance (%)",
+    ignoreResistance
+  );
+  ignoreResistanceField.dataset.skillEffectConfigKind = "damage";
+
+  const ignoreDefense = tacticalNumberInputV1(
+    "skillEffectIgnoreDamageReductionPct",
+    effect?.ignoreDamageReductionPct ?? 0,
+    { min: 0, max: 100, step: "5" }
+  );
+  const ignoreDefenseField = tacticalFieldV1(
+    "Ignorer la défense globale (%)",
+    ignoreDefense
+  );
+  ignoreDefenseField.dataset.skillEffectConfigKind = "damage";
+
   const filterTags = tacticalTextInputV1(
     "skillEffectStatusTags",
     (effect?.statusTags ?? []).join(", ")
@@ -5155,6 +5189,8 @@ function appendHumanSkillEffectV1(
   config.append(
     amountField,
     channelField,
+    ignoreResistanceField,
+    ignoreDefenseField,
     filterTagsField,
     statusBox,
     scheduledBox,
@@ -5429,6 +5465,16 @@ function readHumanSkillEffectsV1(root) {
         row.querySelector(
           "[data-skill-effect-channel]"
         ).value || null;
+      output.ignoreResistancePct = Number(
+        row.querySelector(
+          "[data-skill-effect-ignore-resistance-pct]"
+        ).value
+      );
+      output.ignoreDamageReductionPct = Number(
+        row.querySelector(
+          "[data-skill-effect-ignore-damage-reduction-pct]"
+        ).value
+      );
     }
 
     return output;
