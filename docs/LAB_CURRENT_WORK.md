@@ -226,3 +226,24 @@ Inchangés :
 - Ce contrôle ignore toutes les mitigations ordinaires du moteur (résistance du canal concerné y compris physique/élémentaire, défense globale), **pas** les boucliers et les immunités. Une future propriété « non-pénétrable » est un chantier à décider distinctement, pas une autorité ajoutée.
 - Test RED puis GREEN : UI DOM/rond-trip de valeurs synchronisées 0/50/100 et legacy différencié, 100% traverse physique + feu + défense dans la chaîne de dégâts, 103 créatures Chromium, CI, preview. Garder Cendre inchangée.
 - Protégés : 103 créatures, Cendre Showcase, Dodge FX, moteur, statuts, Runtime, `gh-pages`, `main`, Zombicide-40k, Exploration.
+
+
+## 2026-10-08 — Pressurized Jet Beam V1
+
+- Demande utilisateur : intégrer proprement le nouveau set eau « Jet pressurisé » : charge 20 frames, départ de jet 12 frames, corps de rayon continu 12 frames et impact 12 frames ; rendre le rayon réellement continu entre source et cible.
+- Base labo exacte : `8f38faadf4d0c64604db5a1287f5cf091f0a8684` (`checkpoint/lab-unified-penetration-editor-v1-green-2026-10-08`).
+- Checkpoint départ : `checkpoint/lab-start-pressurized-jet-beam-v1-2026-10-08`.
+- Branche labo : `work/lab-pressurized-jet-beam-v1-2026-10-08`.
+- Base assets exacte : `211401f5b9e1ced4410a03bd0002039dea0a4dba` (`global-assets`).
+- Checkpoint assets départ : `checkpoint/global-assets-before-pressurized-jet-vfx-v1-2026-10-08`.
+- Branche assets : `work/global-assets-pressurized-jet-vfx-v1-2026-10-08`.
+- Owners : `global-assets` = médias/catalogue ; `SkillDefinition.form=beam` = sémantique gameplay existante ; `SkillFxPlan` = plan visuel ; `DomSkillFxRenderer` = géométrie/rendu ; `SkillPresentationBinding.visual.travel` = asset visuel du trajet. Aucun owner parallèle.
+- Périmètre assets : `assets/library/capture/sprites/skills/pressurized_jet/**`, sources/provenance, catalogue global, builder/tests/docs dédiés.
+- Périmètre labo : `src/core/fx/skill-fx-plan.js`, `src/adapters/renderer/dom-skill-fx.js`, cache `GLOBAL_VISUAL_LIBRARY`, tests beam dédiés, documentation.
+- Règle : le support `beam` doit être générique, jamais conditionné au nom/ID « Jet pressurisé ». Le corps du rayon relie géométriquement source et cible sans projectile mobile concurrent.
+- Le sprite `beam_start` est publié comme asset distinct ; aucune nouvelle clé de présentation n'est inventée dans ce lot si le contrat courant ne peut pas l'exprimer sans nouvelle version. Le trajet canonique reste `visual.travel`.
+- Protégés : dégâts, résistances/pénétration, énergie, cooldowns, timings gameplay, collisions projectile, Dodge, statuts, configuredSkills/configuredCreatures, 103 créatures, `main`, `gh-pages`, `Zombicide-40k`, Exploration.
+- TDD : beam planifié depuis les vrais événements release/arrive ; renderer beam dimensionné source→cible et orienté ; sprite travel animé sans déplacement d'un projectile ; annulation/dispose propres ; projectile historique inchangé ; catalogue + 56 PNG RGBA 512×512 + 4 atlas validés ; CI complète.
+- Risques : étirer un projectile au lieu de rendre un beam ; créer une seconde horloge ; casser le cleanup projectile ; déformer le rendu mobile ; introduire un binding spécial par capacité.
+- Critère GREEN : assets publiés avec CI verte ; beam générique testé ; CI labo complète verte ; documentation synchronisée ; checkpoints GREEN exacts. Aucun merge `main` sans validation.
+- Statut : EN COURS.
