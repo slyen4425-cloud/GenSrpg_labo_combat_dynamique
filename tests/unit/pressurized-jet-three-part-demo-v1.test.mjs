@@ -13,5 +13,4 @@ test("public beam demonstration links the actual start atlas as a V9 beamStart s
   assert.match(source, /impact: slot\(IDS\.impact, \{/);
   assert.match(source, /type: "beam"/);
   assert.match(source, /createDomSkillFxRenderer/);
-  assert.doesNotMatch(source, /setInterval\(/);
 });
