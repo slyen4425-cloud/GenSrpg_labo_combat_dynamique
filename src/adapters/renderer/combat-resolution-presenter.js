@@ -341,7 +341,7 @@ export function createCombatResolutionPresenter({
     cancelTravelAudio(actorSlot);
     if (
       releaseSkillId &&
-      action.skill?.form === "projectile" &&
+      ["projectile", "beam"].includes(action.skill?.form) &&
       Number(action.travelMs) > 0
     ) {
       const travelHandle =
@@ -413,7 +413,7 @@ export function createCombatResolutionPresenter({
       null;
 
     if (
-      releaseEvent?.form === "projectile" &&
+      ["projectile", "beam"].includes(releaseEvent?.form) &&
       resolution.outcome !== "clashed"
     ) {
       fx?.cancelProjectileFor?.(actorSlot);
