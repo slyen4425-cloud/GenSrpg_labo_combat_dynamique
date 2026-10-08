@@ -1,3 +1,7 @@
+import {
+  captureBeamVisualPackV1,
+  applyCaptureBeamVisualPackV1
+} from "./capture-editor-beam-visual-pack-v1.js";
 import { buildCaptureEditorCombatTestV1, prepareCaptureEditorCombatEditsV1, mountCaptureEditorCombatTeamControlsV1 } from "./capture-editor-combat-test-v1.js";
 import {
   skillSpriteControlsFromFieldsV1,
@@ -1680,6 +1684,20 @@ function presentationForSkill(fields) {
       ...skillSpriteControlsFromFieldsV1(presentation, "cast")
     }
   );
+  const beamStart = visualSlot(
+    presentation.beamStartAssetId,
+    {
+      attachment: "source",
+      trigger: "travel-start",
+      anchor: socketId,
+      displayScale: presentation.beamStartDisplayScale ?? 1,
+      playbackMode: "loop",
+      layerByView: {
+        player: "front",
+        opponent: "front"
+      }
+    }
+  );
   const travel = visualSlot(
     presentation.travelAssetId,
     {
@@ -1758,6 +1776,7 @@ function presentationForSkill(fields) {
   const hasVisual =
     iconAssetId !== null ||
     cast !== null ||
+    beamStart !== null ||
     travel !== null ||
     impact !== null ||
     persistentZone !== null;
@@ -1782,6 +1801,9 @@ function presentationForSkill(fields) {
   }
   if (cast !== null) {
     visual.cast = cast;
+  }
+  if (beamStart !== null) {
+    visual.beamStart = beamStart;
   }
   if (travel !== null) {
     visual.travel = travel;
@@ -2337,6 +2359,7 @@ export function humanSkillEditorFieldsFromDraftV1(
   const visual = presentation.visual ?? {};
   const audio = presentation.audio ?? {};
   const cast = visual.cast ?? null;
+  const beamStart = visual.beamStart ?? null;
   const travel = visual.travel ?? null;
   const impact = visual.impact ?? null;
   const zone = visual.aura ?? null;
@@ -2388,6 +2411,10 @@ export function humanSkillEditorFieldsFromDraftV1(
         visual.icon?.assetId ?? "",
       castAssetId:
         cast?.assetId ?? "",
+      beamStartAssetId:
+        beamStart?.assetId ?? "",
+      beamStartDisplayScale:
+        beamStart?.displayScale ?? 1,
       castDisplayScale:
         cast?.displayScale ?? 1,
       travelAssetId:
@@ -3232,6 +3259,8 @@ function writeSkillDraftFields(
       "[data-skill-cast-scale]",
       fields.presentation.castDisplayScale
     ],
+    ["[data-skill-beam-start-fx]", fields.presentation.beamStartAssetId],
+    ["[data-skill-beam-start-scale]", fields.presentation.beamStartDisplayScale],
     [
       "[data-skill-travel-fx]",
       fields.presentation.travelAssetId
@@ -3405,6 +3434,8 @@ function prepareNewSkillDraftFields(
     ["[data-skill-socket]", ""],
     ["[data-skill-cast-fx]", ""],
     ["[data-skill-cast-scale]", 1],
+    ["[data-skill-beam-start-fx]", ""],
+    ["[data-skill-beam-start-scale]", 1],
     ["[data-skill-travel-fx]", ""],
     ["[data-skill-travel-scale]", 1],
     ["[data-skill-travel-playback]", "stretch"],
@@ -7713,6 +7744,14 @@ function readSkillFields(root) {
         root,
         "[data-skill-cast-scale]"
       ),
+      beamStartAssetId: selectedValue(
+        root,
+        "[data-skill-beam-start-fx]"
+      ),
+      beamStartDisplayScale: numericValue(
+        root,
+        "[data-skill-beam-start-scale]"
+      ),
       travelAssetId: selectedValue(
         root,
         "[data-skill-travel-fx]"
@@ -9147,6 +9186,61 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root.querySelector(
       "[data-skill-fx-starter-state]"
     );
+  const beamPack = captureBeamVisualPackV1("pressurized-jet");
+  const beamPackButton = root.querySelector("[data-skill-beam-pack-apply]");
+  const beamPackState = root.querySelector("[data-skill-beam-pack-state]");
+  function syncBeamPackReady() {
+    const ids = [beamPack.cast, beamPack.beamStart, beamPack.travel, beamPack.impact];
+    const missing = ids.filter(id => !fxStarterVisualAssetIds.has(id));
+    if (beamPackButton) beamPackButton.disabled = missing.length > 0;
+    if (beamPackState) {
+      beamPackState.textContent = missing.length === 0
+        ? "Pack prêt : départ, corps et arrivée liés. Clique pour appliquer aux champs de la capacité, puis enregistre."
+        : "Pack indisponible : médias non chargés : " + missing.join(", ");
+      beamPackState.dataset.tone = missing.length === 0 ? "ok" : "warning";
+    }
+  }
+  if (beamPackButton) {
+    listen(beamPackButton, "click", () => {
+      try {
+        const ids = [beamPack.cast, beamPack.beamStart, beamPack.travel, beamPack.impact];
+        if (ids.some(id => !fxStarterVisualAssetIds.has(id))) {
+          throw new Error("Catalogue visuel du rayon indisponible.");
+        }
+        const current = readSkillFields(root).presentation;
+        const next = applyCaptureBeamVisualPackV1({
+          packId: beamPack.id,
+          presentation: current
+        });
+        one(root, "[data-skill-form]").value = "beam";
+        for (const [selector, value] of [
+          ["[data-skill-cast-fx]", next.castAssetId],
+          ["[data-skill-cast-scale]", next.castDisplayScale],
+          ["[data-skill-beam-start-fx]", next.beamStartAssetId],
+          ["[data-skill-beam-start-scale]", next.beamStartDisplayScale],
+          ["[data-skill-travel-fx]", next.travelAssetId],
+          ["[data-skill-travel-scale]", next.travelDisplayScale],
+          ["[data-skill-travel-playback]", next.travelPlaybackMode],
+          ["[data-skill-impact-fx]", next.impactAssetId],
+          ["[data-skill-impact-scale]", next.impactDisplayScale],
+          ["[data-skill-impact-duration]", next.impactDurationMs],
+          ["[data-skill-impact-offset-x]", next.impactOffsetX],
+          ["[data-skill-impact-offset-y]", next.impactOffsetY]
+        ]) {
+          one(root, selector).value = String(value);
+        }
+        setStatus(root,
+          "Rayon Jet pressurisé prêt : 3 parties liées. Vérifie puis utilise « Mettre à jour la capacité existante » pour enregistrer.",
+          "ok");
+        if (beamPackState) {
+          beamPackState.textContent = "Rayon préparé, sans modification des dégâts, de l’énergie ou du cooldown. Enregistrement nécessaire.";
+          beamPackState.dataset.tone = "ok";
+        }
+      } catch (error) {
+        setStatus(root, error.message, "error");
+      }
+    });
+  }
   let fxStarterLibrariesReady = false;
   let fxStarterVisualAssetIds = new Set();
   let fxStarterAudioAssetIds = new Set();
@@ -11526,6 +11620,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           !fxStarterLibrariesReady;
       }
       syncFxStarterApplyButton();
+      syncBeamPackReady();
       updateFxStarterState(
         fxStarterLibrariesReady
           ? CAPTURE_FX_STARTER_PROFILES_V1.length +
