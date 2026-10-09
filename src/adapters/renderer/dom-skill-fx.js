@@ -1974,21 +1974,22 @@ export function createDomSkillFxRenderer({
       };
       active.add(record);
 
+      const configuredOpacity = clampUnit(visual.opacity, 1);
       const spriteAnimation = animate(
         node,
         [
           {
             transform: `translate(-50%, -50%) scale(${0.7 * displayScale})`,
-            opacity: 0.35
+            opacity: 0.35 * configuredOpacity
           },
           {
             transform: `translate(-50%, -50%) scale(${1.08 * displayScale})`,
-            opacity: 1,
+            opacity: configuredOpacity,
             offset: 0.72
           },
           {
             transform: `translate(-50%, -50%) scale(${displayScale})`,
-            opacity: 1
+            opacity: configuredOpacity
           }
         ],
         {
