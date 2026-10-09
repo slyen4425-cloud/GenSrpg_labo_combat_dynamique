@@ -1027,9 +1027,9 @@ export function buildHumanProgressionRulesV1({
           : []
     });
 
-  if (rules.maxActiveSkills > 4) {
+  if (rules.maxActiveSkills > 5) {
     throw new RangeError(
-      "Le loadout Capture V1 accepte au maximum 4 capacités actives"
+      "Le loadout Capture accepte au maximum 4 capacités standards et 1 ultime"
     );
   }
 
@@ -6210,7 +6210,7 @@ function renderHumanProgressionRulesV1(
         document.createElement("input");
       slotsInput.type = "number";
       slotsInput.min = "1";
-      slotsInput.max = "4";
+      slotsInput.max = "5";
       slotsInput.value = String(step.slots);
       slotsInput.dataset.progressionSlots =
         "true";
@@ -9818,7 +9818,11 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       configuredSkills.get(
         ultimateSlot.value
       ) ?? null;
+    const ultimateUnlocked =
+      progressionRules.maxActiveSkills < 5 ||
+      captureActiveSkillSlotsForLevelV1(progressionRules, level) >= 5;
     const ultimateActive =
+      ultimateUnlocked &&
       ultimateDraft !== null &&
       ultimateDraft.requiredLevel <= level;
     ultimateSlot.dataset.activeNow =
@@ -9828,7 +9832,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ? "Slot réservé aux capacités ultimes"
         : ultimateActive
           ? "Capacité ultime disponible au niveau actuel"
-          : "Capacité ultime configurée, disponible quand son niveau requis sera atteint";
+          : !ultimateUnlocked
+            ? "Capacité ultime configurée, débloquée au cinquième palier de progression"
+            : "Capacité ultime configurée, disponible quand son niveau requis sera atteint";
     const ultimateLabel =
       ultimateSlot.closest("label");
     if (ultimateLabel) {
@@ -9847,7 +9853,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       (unlocked > 1 ? "s" : "") +
       " au niveau " +
       level +
-      ". Les 4 slots standards suivent la progression ; le slot Ultime est séparé et respecte le niveau requis de sa capacité.";
+      ". Les 4 slots standards suivent les quatre premiers paliers ; le 5e déverrouille le slot Ultime (qui respecte aussi le niveau requis).";
   }
 
   function refreshCreatureLibraryOptions(
@@ -11350,7 +11356,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           gameOptions: readHumanGameOptionsV1(root),
           skillSpeedMultiplier: captureCombatPaceToSkillSpeedV1(numericValue(root, "[data-combat-skill-speed]")),
           recallPreparationMs: numericValue(root, "[data-recall-seconds]") * 1000,
-          statRegistry, progressionRules
+          statRegistry, progressionRules,
+          previewLevel: numericValue(root, "[data-test-creature-level]")
         })
       });
       lastExport = result.exported;
