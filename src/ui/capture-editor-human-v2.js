@@ -11821,6 +11821,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           buildCaptureCreatureHistoricalLoadoutV1({
             creatureId: record.draft.id,
             level: record.draft.level,
+            selectionMode: "planned",
             abilityIds:
               record.draft.skillIds,
             runtimeSkillIds
