@@ -716,3 +716,11 @@ Inchangés :
 - **Critère de fin** : durée 15 s vérifiée depuis la capacité réelle sur les deux camps, suite CI complète et Chromium SUCCESS sur SHA final, diff strict, checkpoint GREEN, preview et publication Pages contrôlées. Validation tactile sur Android physique distincte.
 
 - **Sentinelles historiques détectées par la première CI GREEN candidate** : CI `37980795445`, 1332 PASS / 2 FAIL (deux assertions historiques restées à 7000 ms : `capture-showcase-skill-presets-v1` et `zone-idle-recall-fx-v1`), Chromium Firestorm SUCCESS ; les deux fichiers de tests sont autorisés ci-dessus **avant** leur adaptation. Aucun nouveau comportement moteur à modifier, seul l'instant d'expiration attendu passe de 7 à 15 s.
+
+### Durée 15s — GREEN fonctionnel et livraison documentaire
+
+- **TDD RED** SHA `af524aab8eb90ca13ab5458afd0e1ca3eec5ff12`, CI `37980669164`, six assertions Node attendent 15000 contre 7000 et navigateur Firestorm échoue sur la durée (avant modification).
+- **Donnée source** commit `ed96b44c67b4b9dcd2328c9b98d293fef58a6323` : un seul champ `durationMs` de la zone de `cap_fire_atk_6` : 7000 -> 15000. Aucune modification des règles moteur ni autre paramètre auteur.
+- Deux anciens tests à durée figée révélés dans la première CI candidate `37980795445`, adaptés après déclaration d'extension du scope ; pas de correctif hors tests.
+- **GREEN fonctionnel** SHA `df6c5419f9b051be53bfb3914a5e002a056f339e` ; CI `37980914120` **SUCCESS**, 1334/1334 Node PASS, navigateur bibliothèque 103 SUCCESS, vrai Chromium Firestorm **8/8** (joueur/IA × 1v1/2v2 × normal/expiration durant préparation).
+- Rapport `docs/LAB_FIRESTORM_ZONE_DURATION_15S_V1.md` ; publication conditionnée à la CI **du SHA documentaire**, revue diff, checkpoint et preview exacts, lease `gh-pages`, GitHub Pages SUCCESS. Validation Android physique reste séparée.
