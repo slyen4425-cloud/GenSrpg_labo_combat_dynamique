@@ -484,3 +484,15 @@ Inchangés :
 - Code GREEN : CI `37838330911` SUCCESS — **1298/1298 Node PASS, 0 FAIL** ; vrai Chromium creature-library-browser SUCCESS (103 créatures).
 - Documentation : `docs/LAB_WATER_ATK3_BEAM_AUTHOR_UPDATE_V1.md`.
 - Avant checkpoint GREEN : CI du commit documentaire final, comparaison du delta et branche publiée avec lease. GREEN utilisateur uniquement après validation smartphone du Beam et de l'audio.
+
+
+## 2026-10-09 — Ciblage soin et confirmation PV V1 (en cours)
+
+- Retour smartphone : compétence de soin perçue comme indisponible (icône grise sur cible ennemie initiale), découverte fortuite du ciblage sur soi ; absence de confirmation claire après soin.
+- Base exacte `gh-pages` : `b13aeb6616bc94f9b01c4b4ef8551debc4c7a9f6` (CI Node, Chromium et Pages SUCCESS).
+- Checkpoint de départ : `checkpoint/lab-start-heal-target-clarity-v1-2026-10-09` ; branche : `work/lab-heal-target-clarity-v1-2026-10-09`.
+- Propriétaires : `src/ui/combat-2v2-test-ui.js` seul propriétaire du ciblage HUD et de l'indication des candidats ; `CombatSession.previewSkill` et `isSkillTargetAllowed` restent seuls arbitres de faisabilité ; `CombatRuntime.onHealthDelta` propriétaire des deltas de PV effectivement constatés ; renderer `DomSkillFxRenderer` propriétaire du nombre flottant.
+- Causes auditées : `initialTargetId` est un ennemi ; `renderAvailability` désactive une compétence si ce seul ennemi n'est pas admissible, sans offrir le ciblage ; `onHealthDelta` des deux UIs ignore explicitement `heal`, bien que `applyImmediateTacticalEffectsV1` augmente déjà les PV et émette `heal` ; au plafond PV il n'y a aucun delta et aucun retour.
+- Périmètre : commandes UI 2v2/HUD de ciblage et indicateurs CSS `examples/dom-demo/demo.css` ; projection de `heal` dans les deux consommateurs runtime santé sans recalcul ; FX flottant générique `dom-skill-fx.js` ; message du résultat (incl. soin à 0 effectif) dans UI 2v2 ; tests unitaires/integration + documentation. Modifier le presenter uniquement si le faux hit visuel sur soin est reproduit par sentinelle.
+- Protégés : calculs de soins/dégâts, Combat Rules/Runtime/Session, `configuredSkills`, bibliothèques assets/audio, 103 créatures, loadouts, Jet pressurisé, `main`, `Zombicide-40k`, Exploration.
+- TDD RED : soigneur ne peut activer tant que cible ennemie initiale ; aucune cible conseillée ; soin de PV ne produit pas de feedback `+X` ; soin 0 PV n'affiche pas plafond ; revue de l'ancien coup reçu au lieu de soin. GREEN : libérer les boutons si au moins une cible légale peut recevoir l'action ; armer/mettre en évidence les candidats et confirmer sur cible ; message d'usage ; positif exact basé sur `health-delta`; aucune mutation de données ni nouveau moteur ; CI Node, vrai navigateur Chromium 103 créatures, Pages après lease et validation Android distincte.
