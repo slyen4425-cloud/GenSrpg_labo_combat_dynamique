@@ -6,6 +6,7 @@ import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { normalizeBattleFormatDefinition } from "../../src/contracts/battle-format-definition.js";
 import { combatSkillTargetOptionsV1 } from "../../src/ui/combat-2v2-test-ui.js";
 import { combatHealthDeltaEventsV1 } from "../../src/core/combat/combat-health-feedback-v1.js";
+import { createCombatResolutionPresenter } from "../../src/adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
 
 const format = normalizeBattleFormatDefinition({
@@ -128,4 +129,38 @@ test("actual Combat Session applies healing for both tactical and legacy editor 
     assert.equal(session.snapshot().fighters.local.hp,65,skill.id);
     assert.equal(result.events.some(event=>event.type==="heal" && event.applied===25),true,skill.id);
   }
+});
+
+test("healing-only skill outcome never makes its beneficiary play hit recoil", async () => {
+  const animationEvents = [];
+  const fxEvents = [];
+  const presenter = createCombatResolutionPresenter({
+    visuals: {
+      cancelFor() {},
+      playEventFor(actorId, kind) {
+        animationEvents.push({ actorId, kind });
+        return Promise.resolve({status:"finished"});
+      }
+    },
+    fx: {
+      play(event) { fxEvents.push(event); return {status:"finished",finished:Promise.resolve()}; },
+      cancelProjectileFor() {}
+    }
+  });
+  const resolved=presenter.presentOutcome({
+    actorSlot:"local",targetSlot:"local",
+    resolution: {
+      ok:true, outcome:"hit", skillId:"heal-local",
+      events: [
+        {type:"skill-release",form:"self",skillId:"heal-local"},
+        {type:"skill-arrive",skillId:"heal-local",outcome:"hit"},
+        {type:"hit",actorId:"local",hpAfter:65,appliedDamage:0},
+        {type:"heal",actorId:"local",sourceActorId:"local",applied:25}
+      ]
+    }
+  });
+  await resolved.finished;
+  assert.equal(animationEvents.some(event=>event.kind==="hit"),false);
+  assert.equal(fxEvents.some(event=>event.type==="impact"),true,"existing skill impact FX remains allowed");
+  presenter.dispose();
 });
