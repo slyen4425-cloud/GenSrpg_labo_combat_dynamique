@@ -87,5 +87,5 @@ test("editor includes tactile native info controls, live previews and no forced 
   assert.match(html,/data-context-skill-summary/);
   assert.match(html,/<summary[^>]*>[^<]*ⓘ/);
   assert.match(ui,/mountCaptureContextualHelpV1/);
-  assert.match(ui,/data-stat-definition-remove/);
+  assert.match(ui,/statDefinitionRemove/);
 });
