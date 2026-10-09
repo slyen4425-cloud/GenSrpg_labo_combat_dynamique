@@ -89,6 +89,11 @@ const server = createServer(async (req, res) => {
             try {
               select.value = "lib_aqua_heal";
               select.dispatchEvent(new Event("change",{bubbles:true}));
+              document.querySelector("[data-export-current-skill]").click();
+              const blankWarning = document.querySelector("[data-transfer-state]").textContent;
+              if (!blankWarning.includes("aucun effet de récupération de PV")) {
+                throw new Error("No explicit warning for empty healing draft: " + blankWarning);
+              }
               document.querySelector("[data-skill-effect-add]").click();
               const row = document.querySelector("[data-skill-effect-row]");
               const set = (selector,value) => {
