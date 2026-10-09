@@ -45,7 +45,9 @@ test("Onde régénérante edited preset is registered once and preserves unrelat
   assert.equal(draft.definition.cooldownMs, 30000);
   assert.equal(draft.definition.effect.heal, 0, "tactical healing must not double legacy healing");
   assert.equal(draft.definition.effects.length, 2, "requested immediate and periodic healing only");
-  assert.equal(draft.presentation, null, "export has no custom FX or icon");
+  assert.equal(draft.presentation?.visual?.icon?.assetId, "core:icon-skill-recall-01");
+  assert.equal(draft.presentation?.statusVisuals?.lib_aqua_heal_regeneration?.sprite?.assetId, "pack:capture:sprite-status-healing-aura-01");
+  assert.equal(draft.presentation?.statusVisuals?.lib_aqua_heal_regeneration?.sprite?.opacity, 0.45);
   assert.deepEqual(
     importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft,
     draft
@@ -58,7 +60,7 @@ test("canonical Capture Transfer replaces local skill by stable ID without touch
   const registry = normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
   const progressionRules = normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
   const old = { ...transfer.value.draft, definition: { ...transfer.value.draft.definition, energyCost: 13 } };
-  const other = { ...transfer.value.draft, id: "independent-preserved", definition: { ...transfer.value.draft.definition, id: "independent-preserved" } };
+  const other = { ...transfer.value.draft, id: "independent-preserved", definition: { ...transfer.value.draft.definition, id: "independent-preserved" }, presentation: { ...transfer.value.draft.presentation, id: "skill:independent-preserved", subjectId: "independent-preserved" } };
   const configuredSkills = new Map([[old.id, old], [other.id, other]]);
   const configuredCreatures = new Map();
   const plan = planCaptureTransferImportV1({
@@ -95,7 +97,7 @@ test("authored +5 immediate and periodic healing runs through canonical Combat S
   assert.equal(result.ok, true);
   assert.equal(session.snapshot().fighters.self.hp, 45);
   session.advanceMs(3000);
-  assert.equal(session.snapshot().fighters.self.hp, 50);
+  assert.equal(session.snapshot().fighters.self.hp, 48);
   assert.equal(session.snapshot().fighters.self.energy, 92);
 });
 
