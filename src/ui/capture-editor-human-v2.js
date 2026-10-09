@@ -1,3 +1,4 @@
+import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
   syncCaptureBeamStageLayoutV1
@@ -8716,6 +8717,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
+  const contextualHelp = mountCaptureContextualHelpV1({
+    root, listen, getStatRegistry: () => statRegistry
+  });
   const beamStageLayout = mountCaptureBeamStageLayoutV1(root);
   listen(one(root, "[data-skill-form]"), "change", () => beamStageLayout.sync());
 
@@ -9594,6 +9598,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         root,
         statRegistry
       );
+      contextualHelp.sync();
       renderHumanProgressionRulesV1(
         root,
         progressionRules
@@ -10869,6 +10874,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           root,
           statRegistry
         );
+        contextualHelp.sync();
         renderHumanStatValuesV1(
           root,
           statRegistry,
@@ -10976,6 +10982,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           root,
           statRegistry
         );
+        contextualHelp.sync();
         renderHumanStatValuesV1(
           root,
           statRegistry,
@@ -11055,6 +11062,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           root,
           statRegistry
         );
+        contextualHelp.sync();
         renderHumanStatValuesV1(
           root,
           statRegistry,
@@ -11728,6 +11736,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         root,
         statRegistry
       );
+      contextualHelp.sync();
       renderHumanProgressionRulesV1(
         root,
         progressionRules
