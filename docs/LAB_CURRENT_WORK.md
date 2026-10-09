@@ -542,3 +542,16 @@ Inchangés :
 - Rapport `docs/LAB_AQUA_HEAL_AUTHOR_PRESET_V1.md`. Aucun asset ajouté (0 média).
 - Limite explicite : cet export ne soigne réellement **aucun PV**. L'intégration du preset peut être GREEN technique, mais pas la fonction de guérison; un nouvel export avec effet heal positif est nécessaire pour ce test fonctionnel. Description alliée et ciblage self contradictoires tels qu'exportés : aucune correction silencieuse.
 - Suite : CI du dernier commit documentaire, revue du diff exact, checkpoint GREEN, preview, promotion `gh-pages` sous lease et contrôle du Pages SUCCESS; validation tactile utilisateur séparée.
+
+
+## 2026-10-09 — Audit perte déclarée du soin périodique à l'export : traçabilité et avertissement
+
+- Source utilisateur : `lib_aqua_heal` devait contenir un soin périodique mais export joint `effects=[]`, `effect.heal=0`, `presentation=null`. Ne pas prétendre que l'utilisateur n'avait jamais configuré son soin. Ne pas inventer montant/durée.
+- Base `gh-pages` : `c631699d5d4e0de5a3fee27d59cb0576c10bc0ec`. Checkpoint départ `checkpoint/lab-start-hot-editor-export-audit-v1-2026-10-09`. Branche : `work/lab-hot-editor-export-audit-v1-2026-10-09`.
+- Propriétaires : `readHumanSkillEffectsV1` -> `buildHumanSkillDraftV1` -> `exportCaptureSkillTransferJsonV1` (inchangés), avertissement uniquement présentation dans `src/ui/capture-editor-human-v2.js`.
+- Reproduction vrai navigateur : ajout HoT 7 PV / 1,5 s / durée 6 s, sauvegarde Mise à jour puis export JSON Blob ; **toutes les valeurs préservées**. CI `37918935392` SUCCESS. Le parcours testé ne démontre pas de défaut d'export ; cause de la perte d'origine inconnue.
+- Correctif préventif minimal : catégorie `heal` sans soin réel positif, le message d'export annonce clairement `aucun effet de récupération de PV` ; le fichier auteur non modifié reste téléchargeable, aucun moteur/règle/timing bis. Sentinelles Node et Chromium dédiées.
+- TDD RED `37919156484` : UI n'avertissait pas ; GREEN `37919247696` : **1312/1312 Node PASS** et Chromium réel PASS avec mise à jour + export HoT + avertissement sur brouillon sans soin + 103 créatures et Jet pressurisé.
+- Rapport : `docs/LAB_HOT_EDITOR_EXPORT_AUDIT_V1.md`.
+- Protégés : preset `lib_aqua_heal` source, les autres skills, 103 créatures et leurs loadouts, FX, sons, Combat Runtime, `main`, `global-assets`, `Zombicide-40k` et Exploration.
+- Suite : CI documentaire finale sur SHA exact, checkpoint GREEN et preview, promotion `gh-pages` par fast-forward lease, CI + déploiement Pages, test tactile Android. Ne pas annoncer correction d'une perte historique non reproduite.
