@@ -54,7 +54,7 @@ const server = createServer(async (req, res) => {
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-hot-export")) {
       const html = contents.toString("utf8");
-      const probe = \`<script>
+      const probe = `<script>
         document.addEventListener("DOMContentLoaded", () => {
           const native = URL.createObjectURL.bind(URL);
           URL.createObjectURL = (blob) => {
@@ -115,7 +115,7 @@ const server = createServer(async (req, res) => {
             } catch(e) {document.body.dataset.hotExportProbe = "ui-error:" + e.message; }
           },200);
         });
-      </script>\`;
+      </script>`;
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
     }
     res.writeHead(200, {
