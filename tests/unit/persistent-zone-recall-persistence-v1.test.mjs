@@ -211,3 +211,34 @@ test("rendered status zone stays on its ground coordinate after source slot anch
   assert.equal(node.removed,true);
   fx.dispose();
 });
+
+test("replacement slot is a new on-enter occupant for enemy poison, not the departed member",()=>{
+  const {session,roster}=harness();
+  session.useSkill({
+    actorId:"opponent",targetId:"player",
+    skill:zone({scope:"all_enemies",kind:"damage_over_time",zoneId:"enemy-poison",skillId:"enemy-poison"})
+  });
+  session.advanceMs(1);
+  assert.equal(session.snapshot().fighters.player.statusEffects.length,1);
+  roster.switchMember("player","earth");
+  assert.equal(session.snapshot().fighters.player.statusEffects.length,0);
+  session.advanceMs(1);
+  assert.equal(session.snapshot().fighters.player.statusEffects.length,1,
+    "the new creature enters an already-active enemy zone independently");
+  session.advanceMs(1000);
+  assert.equal(session.snapshot().fighters.player.hp,95);
+});
+
+test("KO replacement keeps a persistent support zone, while ordinary statuses are not transferred",()=>{
+  const {session,roster}=harness();
+  session.useSkill({actorId:"player",targetId:"player",skill:zone({persistent:true})});
+  session.advanceMs(1);
+  session.replaceFighter("player",{...f("player"),initialHp:0});
+  const replaced=roster.replaceKnockedOut("player");
+  assert.equal(replaced.outcome,"ko_replaced");
+  assert.equal(session.snapshot().persistentZones.length,1);
+  assert.equal(session.snapshot().persistentZones[0].originRosterMemberId,"water");
+  session.advanceMs(1);
+  assert.equal(attackReduction(session),15);
+  assert.equal(roster.reserveMemberSnapshot("player","water").hp,0);
+});
