@@ -555,3 +555,15 @@ Inchangés :
 - Rapport : `docs/LAB_HOT_EDITOR_EXPORT_AUDIT_V1.md`.
 - Protégés : preset `lib_aqua_heal` source, les autres skills, 103 créatures et leurs loadouts, FX, sons, Combat Runtime, `main`, `global-assets`, `Zombicide-40k` et Exploration.
 - Suite : CI documentaire finale sur SHA exact, checkpoint GREEN et preview, promotion `gh-pages` par fast-forward lease, CI + déploiement Pages, test tactile Android. Ne pas annoncer correction d'une perte historique non reproduite.
+
+
+## 2026-10-09 — Onde régénérante, soin immédiat et soin périodique configurés à la demande (en cours)
+
+- Instruction explicite utilisateur : remplacer la fiche existante `lib_aqua_heal` avec **5 PV immédiatement lorsque le sort se résout**, puis un statut de soin sur **20 s** de **5 PV toutes les 3 s** ; garder tous les autres paramètres (dont `self`, niveau 15, coût 8, prépa 2500 ms, cooldown 30000 ms, identité).
+- Base exact `gh-pages` : `de6ec3eb1caf524475ef9c8256b6bd085bacee72` (dernier GREEN audit export HoT). Checkpoint : `checkpoint/lab-start-aqua-heal-five-plus-hot-v1-2026-10-09`. Work : `work/lab-aqua-heal-five-plus-hot-v1-2026-10-09`.
+- Autorité : seul transfert `data/capture/showcase/lib_aqua_heal.capture-skill-transfer-v1.json`, consommé par `configuredSkills` déjà existant, remplacement par ID, aucun autre catalogue ni variante spéciale.
+- Représentation canonique souhaitée : `definition.effect.heal=0` car effets tactiques actifs ; `definition.effects=[{kind:"heal",targetScope:"self",amount:5},{kind:"apply_status",targetScope:"self",status:{id:"lib_aqua_heal_regeneration",kind:"heal_over_time",polarity:"beneficial",durationMs:20000,stacking:"refresh",amount:5,tickIntervalMs:3000,tags:[]}}]`.
+- 6 ticks complets à t=3,6,9,12,15,18 s depuis l'application, théoriquement +5 immédiat +30 en 20 s (cap PV appliqué).
+- TDD RED : corriger sentinelle historique de preset zéro soin en sentinelle de soins demandés, test réel CombatSession à instant puis ticks exacts, non-duplication, round-trip éditeur et retour à la bibliothèque, navigateur 103 créatures, autres capacités & loadouts intacts.
+- Protégés : nom, description, forme, cible `self`, tous timings/coûts hors effet, `presentation=null`, 103 créatures et loadouts, autres capacités, moteur/FX/assets, `main`, `Zombicide-40k`, labo exploration.
+- GREEN technique uniquement après CI Node + Chromium du SHA exact, checkpoint et revue diff, publication `gh-pages` par fast-forward protégé avec lease, Pages SUCCESS. Validation smartphone distincte.
