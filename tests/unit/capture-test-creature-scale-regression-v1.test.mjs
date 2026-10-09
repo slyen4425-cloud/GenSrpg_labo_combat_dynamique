@@ -53,5 +53,5 @@ test("selected Capture preview routes canonical scales through the native visual
   assert.match(pageJs, /adaptCaptureExportToNativeVisualSourceV1/);
   assert.doesNotMatch(pageJs, /creatureMetaByOptionId|buildCaptureTestOpponentDraftV1/);
   const composition = await readFile(new URL("../../src/ui/capture-editor-combat-test-v1.js", import.meta.url), "utf8");
-  assert.match(composition, /creatureDraft: record\.draft/);
+  assert.match(composition, /creatureDraft:\s*\{\s*\.\.\.record\.draft,\s*level:\s*previewLevel\s*\}/);
 });
