@@ -200,7 +200,7 @@ test("1v1 and 2v2 use the same health delta to show number and non-blocking flas
     );
     assert.match(
       source,
-      /onHealthDelta\(feedback\)[\s\S]*fx\.play\([\s\S]*type:\s*"damage"/
+      /onHealthDelta\(feedback\)[\s\S]*fx\.play\([\s\S]*type:\s*feedback\.kind/
     );
     assert.match(
       source,
