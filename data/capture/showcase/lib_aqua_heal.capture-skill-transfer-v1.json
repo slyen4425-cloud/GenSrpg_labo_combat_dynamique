@@ -82,7 +82,8 @@
             "maxStacks": 1,
             "amount": 5,
             "tickIntervalMs": 3000,
-            "tags": []
+            "tags": [],
+            "durationModel": "time_ms"
           }
         }
       ]
