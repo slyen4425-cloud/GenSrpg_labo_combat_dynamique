@@ -47,7 +47,9 @@ const server = createServer(async (req, res) => {
         const timer = setInterval(() => {
           const library=document.querySelector("[data-skill-library-select]");
           const defense=document.querySelector('[data-stat-value="defense"]');
-          if (!library?.querySelector('option[value="cap_fire_atk_6"]') ||
+          const showcaseReady = document.querySelector("[data-creature-library-state]")
+            ?.textContent?.includes("3 modèles vitrine chargés");
+          if (!showcaseReady || !library?.querySelector('option[value="cap_fire_atk_6"]') ||
               !library?.querySelector('option[value="lib_aqua_heal"]') || !defense) {
             if (++attempts > 50) {clearInterval(timer);document.body.dataset.contextHelpProbe="timeout";}
             return;
@@ -318,6 +320,59 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
+    // Browser-only grouping probe: exercise the actual mounted owners and select DOM.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-element-library")) {
+      const html = contents.toString("utf8");
+      const probe = `<script>
+        document.addEventListener("DOMContentLoaded", () => {
+          let attempts=0;
+          const timer=setInterval(() => {
+            const creature=document.querySelector("[data-creature-library-select]");
+            const skill=document.querySelector("[data-skill-library-select]");
+            const state=document.querySelector("[data-creature-library-state]");
+            if (!state?.textContent?.includes("3 modèles vitrine chargés") ||
+                !creature?.querySelector('option[value="crea_aquafin"]') ||
+                !skill?.querySelector('option[value="lib_tidal_bite"]')) {
+              if (++attempts > 50) {clearInterval(timer);document.body.dataset.elementLibraryProbe="timeout";}
+              return;
+            }
+            clearInterval(timer);
+            try {
+              const groups=(select)=>[...select.querySelectorAll("optgroup")].map(x=>x.label);
+              const creatureGroups=groups(creature);
+              const skillGroups=groups(skill);
+              if (!["Feu","Eau","Air"].every(x=>creatureGroups.includes(x)))
+                throw Error("creature groups: "+creatureGroups.join(","));
+              if (!["Feu","Eau"].every(x=>skillGroups.includes(x)))
+                throw Error("skill groups: "+skillGroups.join(","));
+              const ids=[...creature.options].map(x=>x.value).filter(Boolean);
+              if(ids.length!==103 || new Set(ids).size!==103)
+                throw Error("creature identity count "+ids.length);
+              creature.value="crea_aquafin";
+              creature.dispatchEvent(new Event("change",{bubbles:true}));
+              if(document.querySelector("[data-creature-id]").value!=="crea_aquafin")
+                throw Error("creature selection lost ID");
+              creature.value="crea_dracendre";
+              creature.dispatchEvent(new Event("change",{bubbles:true}));
+              if(![...creature.options].find(x=>x.value==="crea_dracendre")?.textContent?.includes("Feu + Air"))
+                throw Error("multi-element label missing");
+              if(document.querySelector("[data-creature-id]").value!=="crea_dracendre")
+                throw Error("multi-element selected wrong ID");
+              const names=[...skill.options].filter(x=>x.value==="lib_tidal_bite" || x.value==="cap_water_atk_2");
+              if(names.length!==2 || names.some(x=>!x.textContent.includes(x.value)))
+                throw Error("same-name skills not disambiguated");
+              const fx=document.querySelector('[data-asset-role="cast"]');
+              const assetGroups=fx ? groups(fx) : [];
+              if(assetGroups.length && assetGroups.some(x=>!x.includes(" · ")))
+                throw Error("asset provenance + element grouping missing: "+assetGroups.join(","));
+              document.body.dataset.elementLibraryProbe="ok:103:multi:skill:asset";
+            }catch(error){document.body.dataset.elementLibraryProbe="fail:"+error.message;}
+          },200);
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -469,6 +524,12 @@ try {
   if(help!=="ok:default:five:custom:removed:firestorm:live:heal")
     throw Error("Actual editor help is not interactive or not value-derived: "+help);
   console.log("Context help real editor: touch opens, 0.2% defense, 5pt=1%, custom rate, deletion, Firestorm live edit, heal switch");
+  const elementDom=await dumpDom(url+"?verify-element-library=1");
+  assertCreatures(elementDom,"element groups actual browser bootstrap");
+  const elementProbe=elementDom.match(/data-element-library-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(elementProbe!=="ok:103:multi:skill:asset")
+    throw Error("Real editor element grouping / identity regression: "+elementProbe);
+  console.log("Element library UI: 103 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
