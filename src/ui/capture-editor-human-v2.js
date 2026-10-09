@@ -5559,9 +5559,41 @@ function readHumanSkillEffectsV1(root) {
     ).value;
 
     if (kind === "persistent_zone") {
+      const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
+      const zsKind=row.querySelector("[data-skill-zone-status-kind]").value;
+      const zs={
+        id:row.querySelector("[data-skill-zone-status-id]").value,
+        kind:zsKind,
+        polarity:row.querySelector("[data-skill-zone-status-polarity]").value,
+        durationSeconds:Number(row.querySelector("[data-skill-zone-status-duration-seconds]").value),
+        stacking:row.querySelector("[data-skill-zone-status-stacking]").value,
+        maxStacks:Number(row.querySelector("[data-skill-zone-status-max-stacks]").value),
+        tags:commaValuesV1(row.querySelector("[data-skill-zone-status-tags]").value)
+      };
+      if(zsKind==="stat_modifier"){
+        zs.statId=row.querySelector("[data-skill-zone-status-stat-id]").value;
+        zs.deltaPoints=Number(row.querySelector("[data-skill-zone-status-delta-points]").value);
+      } else if(zsKind==="damage_reflection"){
+        zs.percent=Number(row.querySelector("[data-skill-zone-status-reflection-percent]").value);
+      } else if(zsKind==="approach_time_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-approach-modifier-pct]").value);
+      } else if(["damage_over_time","heal_over_time","shield"].includes(zsKind)){
+        zs.amount=Number(row.querySelector("[data-skill-zone-status-amount]").value);
+        if(zsKind!=="shield")
+          zs.tickSeconds=Number(row.querySelector("[data-skill-zone-status-tick-seconds]").value);
+        if(zsKind==="damage_over_time")
+          zs.channel=row.querySelector("[data-skill-zone-status-channel]").value;
+      } else if(zsKind==="immunity"){
+        zs.domains=[...row.querySelectorAll("[data-skill-zone-status-immunity-domain]")]
+          .filter(x=>x.checked).map(x=>x.value);
+      }
       return {
         kind,
         targetScope,
+        ...(zoneEffectKind==="apply_status"?{
+          statusBehavior:row.querySelector("[data-skill-zone-status-behavior]").value,
+          tickEffect:{kind:"apply_status",targetScope,status:zs}
+        }:{}),
         zoneId: row.querySelector(
           "[data-skill-zone-id]"
         ).value,
@@ -5591,14 +5623,10 @@ function readHumanSkillEffectsV1(root) {
             "[data-skill-zone-radius-growth-steps]"
           ).value
         ),
-        tickDamage: Number(
-          row.querySelector(
-            "[data-skill-zone-tick-damage]"
-          ).value
-        ),
-        channel: row.querySelector(
-          "[data-skill-zone-channel]"
-        ).value || null
+        ...(zoneEffectKind==="damage"?{
+          tickDamage:Number(row.querySelector("[data-skill-zone-tick-damage]").value),
+          channel:row.querySelector("[data-skill-zone-channel]").value || null
+        }:{})
       };
     }
 
