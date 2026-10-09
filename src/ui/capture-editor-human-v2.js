@@ -395,6 +395,10 @@ function humanTacticalStatusToContractV1(
     );
   }
 
+  if (output.kind === "damage_reflection") {
+    output.percent = finiteNumber(status.percent, "Renvoi des dégâts reçus (%)");
+  }
+
   if (output.kind === "immunity") {
     output.domains = stableIds(
       status.domains
@@ -4255,6 +4259,7 @@ function tacticalStatusKindLabelV1(kind) {
     damage_over_time: "Dégâts périodiques",
     heal_over_time: "Soin périodique",
     shield: "Bouclier",
+    damage_reflection: "Renvoi de dégâts",
     immunity: "Immunité",
     immobilize: "Immobilisation",
     silence: "Silence",
@@ -4958,6 +4963,18 @@ function appendHumanSkillEffectV1(
     )
   );
 
+  const reflectionPercent = tacticalNumberInputV1(
+    "skillStatusReflectionPercent",
+    status.percent ?? 25,
+    { min: 0, max: 100, step: "1" }
+  );
+  const reflectionConfig = document.createElement("div");
+  reflectionConfig.className = "skill-status-config__specific";
+  reflectionConfig.dataset.skillStatusConfigKind = "damage_reflection";
+  reflectionConfig.append(
+    tacticalFieldV1("Dégâts réellement reçus renvoyés (%)", reflectionPercent)
+  );
+
   const immunityConfig =
     document.createElement("div");
   immunityConfig.className =
@@ -5136,6 +5153,7 @@ function appendHumanSkillEffectV1(
     dotConfig,
     hotConfig,
     shieldConfig,
+    reflectionConfig,
     immunityConfig,
     statusVisualBox
   );
@@ -5603,6 +5621,8 @@ function readHumanSkillEffectsV1(root) {
             "[data-skill-status-shield-amount]"
           ).value
         );
+      } else if (statusKind === "damage_reflection") {
+        status.percent = Number(row.querySelector("[data-skill-status-reflection-percent]").value);
       } else if (statusKind === "immunity") {
         status.domains = [
           ...row.querySelectorAll(

@@ -66,6 +66,7 @@ function explainEffect(effect) {
       if(status.kind === "damage_over_time") return "Inflige "+decimal(status.amount ?? 0)+" dégâts de base toutes les "+seconds(status.tickIntervalMs)+dur+" "+where;
       if(status.kind === "stat_modifier") return "Modifie la stat "+(status.statId ?? "choisie")+" de "+decimal(status.deltaPoints ?? 0)+" points"+dur+" "+where;
       if(status.kind === "shield") return "Bouclier de "+decimal(status.amount ?? 0)+" points"+dur+" "+where;
+      if(status.kind === "damage_reflection") return "Renvoie "+decimal(status.percent ?? 0)+" % des dégâts subis (après boucliers et réductions), sans renvoi en chaîne"+dur+" "+where;
       const kinds={stun:"Étourdit",root:"Immobilise",silence:"Empêche certaines capacités",taunt:"Provoque",immunity:"Protège"};
       return (kinds[status.kind] ?? "Applique un statut ("+(status.kind??"personnalisé")+")")+dur+" "+where;
     }
@@ -118,6 +119,7 @@ function liveSkill(root) {
         kind:statusKind,
         statId:readField(row,"[data-skill-status-stat-id]"),
         deltaPoints:numberField(row,"[data-skill-status-delta-points]",0),
+        percent:numberField(row,"[data-skill-status-reflection-percent]",0),
         durationMs:numberField(row,"[data-skill-status-duration-seconds]",0)*1000,
         amount:numberField(row, statusKind==="heal_over_time" ? "[data-skill-status-hot-amount]" : statusKind==="shield" ? "[data-skill-status-shield-amount]" : "[data-skill-status-amount]",0),
         tickIntervalMs:numberField(row,statusKind==="heal_over_time" ? "[data-skill-status-hot-tick-seconds]" : "[data-skill-status-tick-seconds]",0)*1000

@@ -4,6 +4,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "damage_over_time",
   "heal_over_time",
   "shield",
+  "damage_reflection",
   "immunity",
   "immobilize",
   "silence",
@@ -106,6 +107,10 @@ const FIELDS_BY_KIND = Object.freeze({
   shield: new Set([
     ...COMMON_FIELDS,
     "amount"
+  ]),
+  damage_reflection: new Set([
+    ...COMMON_FIELDS,
+    "percent"
   ]),
   immunity: new Set([
     ...COMMON_FIELDS,
@@ -413,6 +418,16 @@ export function normalizeStatusEffectV1(input) {
       value.amount,
       "StatusEffectV1.amount"
     );
+  }
+
+  if (kind === "damage_reflection") {
+    output.percent = finiteNumber(
+      value.percent,
+      "StatusEffectV1.percent"
+    );
+    if (output.percent < 0 || output.percent > 100) {
+      throw new RangeError("StatusEffectV1.percent must be between 0 and 100");
+    }
   }
 
   if (kind === "immunity") {

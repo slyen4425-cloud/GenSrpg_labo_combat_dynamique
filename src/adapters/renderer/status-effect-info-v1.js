@@ -291,6 +291,12 @@ function effectLinesFor(
       ]);
     }
 
+    case "damage_reflection":
+      return Object.freeze([
+        compactNumber(definition.percent * instance.stacks) +
+          " % des dégâts subis renvoyés à l’attaquant"
+      ]);
+
     case "shield":
       return Object.freeze([
         "Bouclier : " +

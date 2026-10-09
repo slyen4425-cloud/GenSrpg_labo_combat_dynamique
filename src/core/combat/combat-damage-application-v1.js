@@ -37,7 +37,8 @@ export function applyCombatDamageV1({
   sourceActorId,
   targetActorId,
   damage,
-  atMs = state.elapsedMs
+  atMs = state.elapsedMs,
+  allowReflection = true
 }) {
   const requested = Math.max(
     0,
@@ -73,6 +74,7 @@ export function applyCombatDamageV1({
       absorbedByShield: 0,
       immuneDamage: requested,
       appliedDamage: 0,
+      reflection: null,
       hpBefore: target.hp,
       hpAfter: target.hp,
       protectingStatusIds:
@@ -150,12 +152,58 @@ export function applyCombatDamageV1({
     );
   }
 
+  // Reactive damage belongs to the same Combat Damage Application authority.
+  // Calculate from real HP loss, never from raw damage or absorbed shields.
+  // The reciprocal application explicitly cannot reflect again.
+  let reflection = null;
+  if (
+    allowReflection &&
+    appliedDamage > 0 &&
+    sourceActorId !== targetActorId &&
+    Number(nextState.fighters[sourceActorId]?.hp) > 0
+  ) {
+    const reflectionPercent = Math.min(
+      100,
+      (fighterOf(nextState, targetActorId).statusEffects ?? [])
+        .filter((instance) =>
+          instance.definition?.kind === "damage_reflection" &&
+          isStatusEffectRuntimeInstanceActiveV1(instance, time)
+        )
+        .reduce((total, instance) =>
+          total + instance.definition.percent * instance.stacks, 0
+        )
+    );
+    const reflectedRequested = Math.round(
+      appliedDamage * reflectionPercent
+    ) / 100;
+    if (reflectedRequested > 0) {
+      const appliedReflection = applyCombatDamageV1({
+        state: nextState,
+        sourceActorId: targetActorId,
+        targetActorId: sourceActorId,
+        damage: reflectedRequested,
+        atMs: time,
+        allowReflection: false
+      });
+      nextState = appliedReflection.state;
+      reflection = Object.freeze({
+        sourceActorId: targetActorId,
+        targetActorId: sourceActorId,
+        requestedDamage: reflectedRequested,
+        appliedDamage: appliedReflection.appliedDamage,
+        absorbedByShield: appliedReflection.absorbedByShield,
+        immuneDamage: appliedReflection.immuneDamage
+      });
+    }
+  }
+
   return Object.freeze({
     state: nextState,
     requestedDamage: requested,
     absorbedByShield,
     immuneDamage: 0,
     appliedDamage,
+    reflection,
     hpBefore,
     hpAfter
   });
