@@ -60,7 +60,7 @@ test("canonical Capture Transfer replaces local skill by stable ID without touch
   const registry = normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
   const progressionRules = normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
   const old = { ...transfer.value.draft, definition: { ...transfer.value.draft.definition, energyCost: 13 } };
-  const other = { ...transfer.value.draft, id: "independent-preserved", definition: { ...transfer.value.draft.definition, id: "independent-preserved" } };
+  const other = { ...transfer.value.draft, id: "independent-preserved", definition: { ...transfer.value.draft.definition, id: "independent-preserved" }, presentation: { ...transfer.value.draft.presentation, id: "skill:independent-preserved", subjectId: "independent-preserved" } };
   const configuredSkills = new Map([[old.id, old], [other.id, other]]);
   const configuredCreatures = new Map();
   const plan = planCaptureTransferImportV1({
