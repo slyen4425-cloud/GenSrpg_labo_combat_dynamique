@@ -38,8 +38,12 @@ export function buildCaptureEditorCombatTestV1({
   configuredCreatures, configuredSkills, localCreatureIds, opponentCreatureIds,
   activePerTeam, arenaId, combatRules, skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1, recallPreparationMs,
   gameOptions,
-  statRegistry = null, progressionRules = null
+  statRegistry = null, progressionRules = null,
+  previewLevel = 20
 }) {
+  if (!Number.isInteger(previewLevel) || previewLevel < 1 || previewLevel > 100) {
+    throw new RangeError("Le niveau du combat de test doit être un entier de 1 à 100.");
+  }
   const local = teamIds(localCreatureIds, "L’équipe locale", configuredCreatures);
   const opponent = teamIds(opponentCreatureIds, "L’équipe adverse", configuredCreatures);
   const count = Number(activePerTeam);
@@ -59,7 +63,10 @@ export function buildCaptureEditorCombatTestV1({
   });
   return exportCaptureEditorDraftsToCombatExportV3({
     battleSetup,
-    creatureDrafts: records.map(record => applyCaptureCombatRulesToCreatureDraftV1({ creatureDraft: record.draft, combatRules })),
+    // Ephemeral combat-only projection: never change configuredCreatures or exported authored drafts.
+    creatureDrafts: records.map(record => applyCaptureCombatRulesToCreatureDraftV1({
+      creatureDraft: { ...record.draft, level: previewLevel }, combatRules
+    })),
     skillDrafts: [...configuredSkills.values()],
     loadouts: records.map(record => record.loadout),
     ...(statRegistry === null ? {} : { statRegistry, statValues: records.map(r => r.statValues).filter(Boolean) }),
