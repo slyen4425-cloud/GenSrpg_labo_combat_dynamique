@@ -320,3 +320,127 @@ test("Tempête's remaining apparent wait is authored preparation, not projectile
     "projectile"
   );
 });
+
+
+test("Firestorm player and AI use the same real Runtime reinforcement and renderer projection in 1v1 and 2v2", async () => {
+  const draft = await firestormDraft();
+  const skill = normalizeSkillDefinition(draft.definition);
+  const { createBattleActorAiController } = await import("../../src/core/combat/battle-actor-ai-controller.js");
+
+  for (const teams of [
+    { local: ["player"], enemy: ["opponent"] },
+    { local: ["player-a", "player-b"], enemy: ["opponent-a", "opponent-b"] }
+  ]) {
+    const allIds = [...teams.local, ...teams.enemy];
+    const battleFormat = {
+      actors: allIds.map(actorId => ({ actorId })),
+      teamOf(actorId) {
+        if (teams.local.includes(actorId)) return "local";
+        if (teams.enemy.includes(actorId)) return "enemy";
+        return null;
+      }
+    };
+    for (const owner of ["player", "ai"]) {
+      const actorId = owner === "player" ? teams.local[0] : teams.enemy[0];
+      const targetId = owner === "player" ? teams.enemy[0] : teams.local[0];
+      const session = createCombatSession({
+        distance: "long",
+        battleFormat,
+        fighters: allIds.map(id => fighter(id))
+      });
+      const arena = fakeNode({ left: 0, top: 0, width: 600, height: 300 });
+      arena.ownerDocument = {
+        createElement() {
+          const node = fakeNode();
+          node.ownerDocument = arena.ownerDocument;
+          return node;
+        }
+      };
+      const anchors = Object.fromEntries(
+        allIds.map((id, index) => [id, fakeNode({
+          left: 60 + index * 120, top: 80, width: 50, height: 50
+        })])
+      );
+      const fx = createDomSkillFxRenderer({
+        arena,
+        anchors,
+        targetAnchors: anchors,
+        presentationForSkill(id) {
+          assert.equal(id, skill.id);
+          return {
+            persistentZone: { ...draft.presentation.visual.aura, url: "fire-zone.webp" },
+            persistentZoneLayer: "behind"
+          };
+        },
+        animate() {
+          return { finished: new Promise(() => {}), cancel() {} };
+        },
+        requestFrame() { return null; },
+        cancelFrame() {}
+      });
+      let clock = 0;
+      let scheduled = null;
+      const runtime = createCombatRuntime({
+        session,
+        now() { return clock; },
+        setTimer(callback) { scheduled = callback; return 1; },
+        clearTimer() { scheduled = null; },
+        onState(state) { fx.syncPersistentZones(state.persistentZones ?? []); }
+      });
+      const advance = atMs => {
+        clock = atMs;
+        const callback = scheduled;
+        scheduled = null;
+        assert.equal(typeof callback, "function");
+        callback();
+      };
+      runtime.start();
+      advance(25000);
+
+      const ai = owner === "ai" ? createBattleActorAiController({
+        session, runtime, actorId, targetIds: [targetId],
+        skillIds: [skill.id], skillsById: new Map([[skill.id, skill]])
+      }) : null;
+      const activate = () => {
+        if (ai) assert.equal(ai.takeTurn().status, "skill_started");
+        else assert.equal(runtime.startSkill({ actorId, targetId, skill }).ok, true);
+      };
+
+      const snapshots = [];
+      for (const [startAt, finishAt, radius] of [
+        [25000, 27000, "short"],
+        [28500, 30500, "medium"],
+        [32000, 34000, "long"]
+      ]) {
+        if (clock !== startAt) advance(startAt);
+        activate();
+        advance(finishAt);
+        const zone = session.snapshot().persistentZones.find(z => z.sourceActorId === actorId);
+        assert.ok(zone, owner + " zone must be present after valid cast");
+        assert.equal(zone.radius, radius, owner + " must reach " + radius);
+        assert.equal(zone.activations, snapshots.length + 1);
+        assert.equal(zone.id, actorId + ":" + skill.id + ":zone");
+        const node = arena.children.at(-1);
+        assert.equal(node.dataset.zoneRadius, radius);
+        snapshots.push({ node, transform: node.style.transform, zone });
+      }
+      assert.equal(snapshots[0].node, snapshots[1].node);
+      assert.equal(snapshots[1].node, snapshots[2].node);
+      assert.notEqual(snapshots[0].transform, snapshots[1].transform);
+      assert.notEqual(snapshots[1].transform, snapshots[2].transform);
+      assert.equal(snapshots[2].zone.expiresAtMs, 41000);
+      advance(41001);
+      assert.equal(session.snapshot().persistentZones.length, 0, "zone must expire normally");
+
+      advance(42000);
+      assert.equal(runtime.startSkill({ actorId, targetId, skill }).ok, true);
+      advance(44000);
+      const restarted = session.snapshot().persistentZones[0];
+      assert.equal(restarted.radius, "short", "a new cast after expiry starts at short");
+      assert.equal(restarted.activations, 1);
+      assert.notEqual(arena.children.at(-1), snapshots[2].node);
+      runtime.dispose();
+      fx.dispose();
+    }
+  }
+});
