@@ -108,19 +108,19 @@ test("editor combat preview defaults to level 20 for all combat participants wit
   };
   const preview = buildCaptureEditorCombatTestV1(input);
   for (const member of preview.creatures) {
-    assert.equal(member.level, 20);
+    assert.equal(member.metadata.editor.level, 20);
     assert.deepEqual(member.skillIds, skillIds);
   }
   assert.deepEqual([...locals.values()].map(({draft,loadout}) => JSON.stringify({draft,loadout})), original);
   const atOne = buildCaptureEditorCombatTestV1({...input, previewLevel: 1});
-  assert.deepEqual(atOne.creatures.map(c => c.level), [1,1]);
+  assert.deepEqual(atOne.creatures.map(c => c.metadata.editor.level), [1,1]);
   assert.deepEqual(atOne.creatures.map(c => c.skillIds), [["skill-1"], ["skill-1"]]);
   assert.deepEqual([...locals.values()].map(({draft,loadout}) => JSON.stringify({draft,loadout})), original);
   const realGame = exportCaptureEditorDraftsToCombatExportV3({
     battleSetup: battle(), creatureDrafts: [...locals.values()].map(r=>r.draft),
     skillDrafts: skills, loadouts: [...locals.values()].map(r=>r.loadout), progressionRules
   });
-  assert.deepEqual(realGame.creatures.map(c => c.level), [1,5]);
+  assert.deepEqual(realGame.creatures.map(c => c.metadata.editor.level), [1,5]);
   assert.deepEqual(realGame.creatures.map(c => c.skillIds), [["skill-1"], ["skill-1","skill-2"]]);
 });
 
