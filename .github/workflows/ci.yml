@@ -23,3 +23,13 @@ jobs:
           node-version: 22
       - name: Real Chromium creature library startup smoke
         run: node tests/browser/capture-creature-library-smoke.mjs
+
+  firestorm-zone-growth-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium Firestorm player and AI zone growth (1v1 / 2v2)
+        run: node tests/browser/firestorm-zone-growth-smoke.mjs
