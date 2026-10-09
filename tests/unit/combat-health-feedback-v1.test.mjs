@@ -153,7 +153,7 @@ test("both combat clients consume Runtime health delta without damage math", asy
       "utf8"
     );
     assert.match(source, /onHealthDelta\(feedback\)/);
-    assert.match(source, /type:\s*"damage"/);
+    assert.match(source, /type:\s*feedback\.kind/);
     assert.match(source, /amount:\s*feedback\.amount/);
     assert.doesNotMatch(
       source,
