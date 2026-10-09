@@ -37,7 +37,7 @@
       "damagePctPerPoint": 0,
       "resistancePctPerPoint": 0,
       "chargeTimeReductionPctPerPoint": 0,
-      "damageReductionPctPerPoint": 1
+      "damageReductionPctPerPoint": 0.2
     },
     {
       "id": "fire",
