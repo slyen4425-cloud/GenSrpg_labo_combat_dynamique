@@ -75,7 +75,8 @@ const FIELDS_BY_KIND = Object.freeze({
     "maxActivations",
     "radiusGrowthSteps",
     "tickEffect",
-    "statusBehavior"
+    "statusBehavior",
+    "persistAfterRecall"
   ]),
   scheduled_effect: new Set([
     ...COMMON_FIELDS,
@@ -424,6 +425,15 @@ export function normalizeSkillEffectV1(input) {
 
     if (!["damage", "apply_status"].includes(output.tickEffect.kind)) {
       throw new RangeError("persistent_zone tickEffect must be damage or apply_status");
+    }
+    if (value.persistAfterRecall !== undefined) {
+      if (typeof value.persistAfterRecall !== "boolean") {
+        throw new TypeError("SkillEffectV1.persistAfterRecall must be boolean");
+      }
+      if (value.persistAfterRecall && output.tickEffect.kind !== "apply_status") {
+        throw new RangeError("persistAfterRecall requires a status zone in V1");
+      }
+      output.persistAfterRecall = value.persistAfterRecall;
     }
     if (output.tickEffect.kind === "apply_status") {
       output.statusBehavior = requiredString(
