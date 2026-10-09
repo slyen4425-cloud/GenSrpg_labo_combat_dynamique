@@ -9,7 +9,7 @@ import {createDomStatusFxRenderer} from "../../src/adapters/renderer/dom-status-
 
 const FILE = "../../data/capture/showcase/lib_aqua_heal.capture-skill-transfer-v1.json";
 const ICON = "core:icon-skill-recall-01";
-const AURA = "pack:capture:sprite-status-healing-aura-01";
+const AURA = "pack:capture:sprite-water-healing-bubble-01";
 const STATUS = "lib_aqua_heal_regeneration";
 async function read() {
   return importCaptureTransferJsonV1(await readFile(new URL(FILE, import.meta.url), "utf8")).value.draft;
@@ -36,7 +36,7 @@ function spriteAssetCatalog() {
   // Exact ID, file and frame metadata independently checked on global-assets.
   return {assets:[
     {id:ICON,resource:{file:"core/icons/skills/icon_skill_recall_01.webp"}},
-    {id:AURA,resource:{file:"capture/sprites/statuses/healing_aura/atlases/sprite_status_healing_aura_atlas_01.webp",frameCount:8,frameMs:90,playbackMode:"loop"}}
+    {id:AURA,resource:{file:"capture/sprites/skills/water_healing_bubble/atlases/sprite_heal_water_bubble_atlas_20f_384.webp",frameCount:20,frameMs:70,playbackMode:"loop"}}
   ]};
 }
 function element(doc) {
@@ -56,8 +56,8 @@ test("actual presentation resolver + status renderer produce visible 45 percent 
   const presentation = resolver.statusPresentationFor(STATUS,{sourceSkillId:draft.id,view:"player"});
   assert.equal(presentation.mode,"sprite");
   assert.equal(presentation.sprite.assetId,AURA);
-  assert.equal(presentation.sprite.frameCount,8);
-  assert.equal(presentation.sprite.frameMs,90);
+  assert.equal(presentation.sprite.frameCount,20);
+  assert.equal(presentation.sprite.frameMs,70);
   assert.equal(presentation.sprite.opacity,0.45);
   assert.equal(presentation.sprite.displayScale,1.7);
   const doc={createElement(){return element(doc)}};
@@ -73,7 +73,7 @@ test("actual presentation resolver + status renderer produce visible 45 percent 
   assert.equal(motion.children.length,1,"one persistent aura node, no duplicate renderer authority");
   assert.equal(motion.children[0].dataset.statusId,STATUS);
   assert.equal(motion.children[0].style.opacity,"0.45");
-  assert.match(motion.children[0].style.backgroundImage, /sprite_status_healing_aura_atlas_01.webp/);
+  assert.match(motion.children[0].style.backgroundImage, /sprite_heal_water_bubble_atlas_20f_384.webp/);
   renderer.dispose();
 });
 import {createHash} from "node:crypto";
