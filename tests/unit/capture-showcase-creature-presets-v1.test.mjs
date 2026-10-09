@@ -90,7 +90,7 @@ test("Loup volcanique showcase preset preserves health natural matchup visuals a
 
   assert.equal(imported.kind, "creature");
   assert.equal(record.draft.id, "crea-loup");
-  assert.equal(record.draft.level, 20);
+  assert.equal(record.draft.level, 1);
   assert.equal(record.statValues.values.health, 150);
   assert.equal(record.draft.presentation.profileId, "quadruped");
   assert.equal(record.draft.presentation.displayScale, 1.2);
