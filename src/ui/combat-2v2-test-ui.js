@@ -440,6 +440,38 @@ function relationLabel(relation) {
   return "ennemi";
 }
 
+// The combat UI derives candidate targets from the existing Rules preview;
+ // it never owns targeting permissions or an independent availability clock.
+export function combatSkillTargetOptionsV1({
+  format, actorId, skill, state, previewSkill,
+  isPresent = () => true
+}) {
+  if (typeof previewSkill !== "function") {
+    throw new TypeError("previewSkill must be a function");
+  }
+  const allowedIds = [];
+  const availableIds = [];
+  const previewsById = {};
+  for (const actor of format.actors) {
+    const targetId = actor.actorId;
+    if (!(Number(state?.fighters?.[targetId]?.hp) > 0) || !isPresent(targetId)) {
+      continue;
+    }
+    if (!isSkillTargetAllowed({ format, actorId, targetId, skill }).ok) {
+      continue;
+    }
+    allowedIds.push(targetId);
+    const preview = previewSkill({ actorId, targetId, skill });
+    previewsById[targetId] = preview;
+    if (preview?.ok) availableIds.push(targetId);
+  }
+  return Object.freeze({
+    allowedIds: Object.freeze(allowedIds),
+    availableIds: Object.freeze(availableIds),
+    previewsById: Object.freeze(previewsById)
+  });
+}
+
 export async function mountCoop2v2Test({
   root,
   visuals,
@@ -604,6 +636,7 @@ export async function mountCoop2v2Test({
   const targetPulseTimers = new Map();
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
+  let pendingSkillId = null;
   let runtime = null;
   let rosterController = null;
   let rosterPanel = null;
@@ -846,7 +879,25 @@ export async function mountCoop2v2Test({
     targetPulseTimers.set(actorId, timerId);
   }
 
+  function skillTargetOptions(skill, state = session.snapshot()) {
+    return combatSkillTargetOptionsV1({
+      format,
+      actorId: format.localActorId,
+      skill,
+      state,
+      previewSkill: ({ actorId, targetId, skill }) =>
+        session.previewSkill({ actorId, targetId, skill }),
+      isPresent: actorId =>
+        rosterController === null || rosterController.isPresent(actorId)
+    });
+  }
+
   function renderTargetSelection() {
+    const armedSkill = pendingSkillId === null
+      ? null : skillRefs.get(pendingSkillId)?.skill ?? null;
+    const candidates = armedSkill
+      ? new Set(skillTargetOptions(armedSkill).availableIds)
+      : new Set();
     for (const actor of format.actors) {
       const relation = targetRelation({
         format,
@@ -860,6 +911,8 @@ export async function mountCoop2v2Test({
             ? "true"
             : "false";
         node.dataset.targetRelation = relation;
+        node.dataset.skillTargetCandidate =
+          candidates.has(actor.actorId) ? "true" : "false";
       }
     }
   }
@@ -904,24 +957,33 @@ export async function mountCoop2v2Test({
 
     const state = session.snapshot();
     const localAlive = isAlive(format.localActorId, state);
-    const targetAlive = isAlive(selectedTargetId, state);
+    const lockedByAction =
+      runtime.hasActiveActionFor(format.localActorId) ||
+      runtime.activeActions.some(action =>
+        action.actionType === "command" && action.command.kind !== "switch"
+      );
+
+    if (pendingSkillId !== null) {
+      const pending = skillRefs.get(pendingSkillId)?.skill;
+      if (!pending || lockedByAction || skillTargetOptions(pending, state).availableIds.length === 0) {
+        pendingSkillId = null;
+      }
+    }
 
     for (const { button, cooldown, skill } of skillRefs.values()) {
-      const allowed = isSkillTargetAllowed({
-        format,
-        actorId: format.localActorId,
-        targetId: selectedTargetId,
-        skill
-      });
-
-      const preview =
-        localAlive && targetAlive && allowed.ok
-          ? session.previewSkill({
-              actorId: format.localActorId,
-              targetId: selectedTargetId,
-              skill
-            })
-          : { ok: false };
+      const options = skillTargetOptions(skill, state);
+      const preview = options.previewsById[selectedTargetId] ??
+        options.previewsById[options.allowedIds[0]] ?? { ok: false };
+      button.dataset.targetRequired =
+        options.availableIds.length > 0 &&
+        !options.availableIds.includes(selectedTargetId)
+          ? "true" : "false";
+      button.dataset.targeting =
+        pendingSkillId === skill.id ? "true" : "false";
+      button.title =
+        button.dataset.targetRequired === "true"
+          ? skill.name + " — choisir une cible autorisée"
+          : skill.name;
 
       const remainingCooldownMs =
         preview?.outcome === "cooldown"
@@ -957,9 +1019,7 @@ export async function mountCoop2v2Test({
       );
 
       button.disabled =
-        runtime.hasActiveActionFor(format.localActorId) ||
-        runtime.activeActions.some(action => action.actionType === "command" && action.command.kind !== "switch") ||
-        !preview.ok;
+        !localAlive || lockedByAction || options.availableIds.length === 0;
     }
 
     if (dodgeButton) {
@@ -1031,10 +1091,18 @@ export async function mountCoop2v2Test({
     }
 
     rosterPanel?.render();
+    renderTargetSelection();
   }
 
   function selectTarget(actorId) {
     if (!actorMeta(actorId) || !isAlive(actorId)) {
+      return;
+    }
+
+    const armedSkill = pendingSkillId === null
+      ? null : skillRefs.get(pendingSkillId)?.skill ?? null;
+    if (armedSkill && !skillTargetOptions(armedSkill).availableIds.includes(actorId)) {
+      setStatus("Cette créature ne peut pas recevoir " + armedSkill.name + ". Choisis une cible mise en évidence.", "warn");
       return;
     }
 
@@ -1052,6 +1120,10 @@ export async function mountCoop2v2Test({
     );
     renderTargetSelection();
     pulseTarget(actorId);
+    if (armedSkill) {
+      pendingSkillId = null;
+      activateLocalSkill(armedSkill, actorId);
+    }
     renderAvailability();
   }
 
@@ -1142,6 +1214,31 @@ export async function mountCoop2v2Test({
     );
   }
 
+  function activateLocalSkill(skill, targetId) {
+    const allowed = isSkillTargetAllowed({
+      format, actorId: format.localActorId, targetId, skill
+    });
+    if (!allowed.ok || !skillTargetOptions(skill).availableIds.includes(targetId)) {
+      setStatus(skill.name + " : cible indisponible.", "warn");
+      renderAvailability();
+      return;
+    }
+    const result = runtime.startSkill({
+      actorId: format.localActorId, targetId, skill
+    });
+    if (!result.ok) {
+      setStatus(result.outcome === "insufficient_energy"
+        ? "Énergie insuffisante."
+        : "Action impossible : " + result.outcome + ".", "warn");
+      renderAvailability();
+      return;
+    }
+    pendingSkillId = null;
+    const target = actorMeta(targetId);
+    setStatus(skill.name + " se prépare sur " + target.displayName + ".", "accent");
+    renderAvailability();
+  }
+
   function createSkillButton(skill) {
     const button = root.ownerDocument.createElement("button");
     button.type = "button";
@@ -1209,44 +1306,16 @@ export async function mountCoop2v2Test({
     button.append(label, cooldown);
 
     const onClick = () => {
-      const allowed = isSkillTargetAllowed({
-        format,
-        actorId: format.localActorId,
-        targetId: selectedTargetId,
-        skill
-      });
-
-      if (!allowed.ok) {
-        setStatus(
-          `${skill.name} ne peut pas cibler ${relationLabel(allowed.relation)} pour le moment.`,
-          "warn"
-        );
-        return;
-      }
-
-      const result = runtime.startSkill({
-        actorId: format.localActorId,
-        targetId: selectedTargetId,
-        skill
-      });
-
-      if (!result.ok) {
-        setStatus(
-          result.outcome === "insufficient_energy"
-            ? "Énergie insuffisante."
-            : `Action impossible : ${result.outcome}.`,
-          "warn"
-        );
+      const options = skillTargetOptions(skill);
+      if (!options.availableIds.includes(selectedTargetId)) {
+        pendingSkillId = skill.id;
+        setStatus(skill.name + " : touche une cible mise en évidence pour lancer la capacité.", "accent");
         renderAvailability();
+        renderTargetSelection();
         return;
       }
-
-      const target = actorMeta(selectedTargetId);
-      setStatus(
-        `${skill.name} se prépare sur ${target.displayName}.`,
-        "accent"
-      );
-      renderAvailability();
+      pendingSkillId = null;
+      activateLocalSkill(skill, selectedTargetId);
     };
     button.addEventListener("click", onClick);
 
@@ -1254,6 +1323,7 @@ export async function mountCoop2v2Test({
   }
 
   function renderLocalSkills() {
+    pendingSkillId = null;
     for (const refs of skillRefs.values()) refs.dispose();
     skillRefs.clear();
     skillContainer.replaceChildren();
@@ -1334,18 +1404,16 @@ export async function mountCoop2v2Test({
       queueAiDecisions();
     },
     onHealthDelta(feedback) {
-      if (feedback.kind !== "damage") {
-        return;
-      }
+      if (!["damage", "heal"].includes(feedback.kind)) return;
       fx.play({
-        type: "damage",
+        type: feedback.kind,
         targetSlot: feedback.actorId,
         amount: feedback.amount,
         durationMs: 700
       });
-      damageFeedback?.flash(
-        feedback.actorId
-      );
+      if (feedback.kind === "damage") {
+        damageFeedback?.flash(feedback.actorId);
+      }
     },
     onClock() {
       renderAvailability();
@@ -1431,7 +1499,18 @@ export async function mountCoop2v2Test({
 
       const actor = actorMeta(resolution.actorId);
       const target = actorMeta(resolution.targetId);
-      if (resolution.outcome === "hit") {
+      const healEvents = resolution.events?.filter(event => event.type === "heal") ?? [];
+      if (resolution.outcome === "hit" && healEvents.length > 0) {
+        const totalHealed = healEvents.reduce(
+          (sum, event) => sum + Math.max(0, Number(event.applied) || 0), 0
+        );
+        setStatus(
+          totalHealed > 0
+            ? `${actor?.displayName ?? resolution.actorId} soigne +${totalHealed} PV.`
+            : "Soin appliqué : PV déjà au maximum.",
+          "ok"
+        );
+      } else if (resolution.outcome === "hit") {
         setStatus(
           `${actor?.displayName ?? resolution.actorId} touche ${target?.displayName ?? resolution.targetId}.`,
           "ok"
