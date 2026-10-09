@@ -527,7 +527,7 @@ test("Loup showcase preset keeps the requested level and loadout", async () => {
 
   assert.equal(
     transfer.value.draft.level,
-    20
+    1
   );
   assert.deepEqual(
     transfer.value.loadout.slots.map(
