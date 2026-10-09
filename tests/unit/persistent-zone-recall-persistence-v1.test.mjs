@@ -69,6 +69,12 @@ test("contract defaults to legacy recall cleanup and validates optional status-z
   assert.equal(lasting.persistAfterRecall,true);
   assert.throws(()=>normalizeSkillEffectV1({...lasting,persistAfterRecall:"yes"}),/persistAfterRecall/);
   assert.throws(()=>normalizeSkillEffectV1({...lasting,persistAfterRecall:1}),/persistAfterRecall/);
+  assert.throws(()=>normalizeSkillEffectV1({
+    kind:"persistent_zone",targetScope:"all_enemies",zoneId:"fire",
+    radius:"short",durationMs:1000,tickIntervalMs:100,
+    tickEffect:{kind:"damage",targetScope:"all_enemies",amount:5,channel:"fire"},
+    persistAfterRecall:true
+  }),/requires a status zone/);
 });
 
 test("Voile brumeux: switch keeps original ground zone, new fighter gains buff and old reserve cannot keep it",()=>{
