@@ -129,6 +129,77 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
     }
+    // Browser-authorized input path: choose current skill, change visible percent fields,
+    // save via the existing active library, export through the real Blob URL.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-sprite-opacity")) {
+      const html = contents.toString("utf8");
+      const probe = `<script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const nativeUrl = URL.createObjectURL.bind(URL);
+          URL.createObjectURL = (blob) => {
+            if (blob.type.includes("json")) {
+              blob.text().then(value => {
+                try {
+                  const draft = JSON.parse(value).draft;
+                  const visual = draft.presentation.visual;
+                  const status = draft.presentation.statusVisuals.lib_aqua_heal_regeneration;
+                  document.body.dataset.spriteOpacityProbe =
+                    [draft.id, visual.cast.opacity, visual.aura.opacity,
+                     status.sprite.opacity, status.sprite.assetId ? "sprite" : "missing",
+                     draft.definition.effects.length].join(":");
+                } catch(error) { document.body.dataset.spriteOpacityProbe = "json-error:" + error.message; }
+              });
+            }
+            return nativeUrl(blob);
+          };
+          let attempts = 0;
+          const timer = setInterval(() => {
+            const library = document.querySelector("[data-skill-library-select]");
+            const cast = document.querySelector("[data-skill-cast-fx]");
+            const aura = document.querySelector("[data-skill-zone-fx]");
+            if (!library?.querySelector('option[value="lib_aqua_heal"]') ||
+                ![...cast.options].some(option => option.value) ||
+                ![...aura.options].some(option => option.value)) {
+              if (++attempts > 40) {
+                clearInterval(timer);
+                document.body.dataset.spriteOpacityProbe = "timeout";
+              }
+              return;
+            }
+            clearInterval(timer);
+            try {
+              library.value = "lib_aqua_heal";
+              library.dispatchEvent(new Event("change", {bubbles:true}));
+              const set = (selector, value) => {
+                const field = document.querySelector(selector);
+                if (!field) throw new Error("Missing " + selector);
+                field.value = String(value);
+                field.dispatchEvent(new Event("change", {bubbles:true}));
+              };
+              set("[data-skill-cast-fx]", [...cast.options].find(o=>o.value).value);
+              set("[data-skill-zone-fx]", [...aura.options].find(o=>o.value).value);
+              set("[data-skill-cast-opacity-pct]", 40);
+              set("[data-skill-zone-opacity-pct]", 25);
+              const row = [...document.querySelectorAll("[data-skill-effect-row]")]
+                .find(el => el.querySelector("[data-skill-status-id]")?.value === "lib_aqua_heal_regeneration");
+              if (!row) throw new Error("Missing authored regeneration status");
+              const mode = row.querySelector("[data-skill-status-visual-mode]");
+              mode.value = "sprite";
+              mode.dispatchEvent(new Event("change",{bubbles:true}));
+              const asset = row.querySelector("[data-skill-status-visual-asset]");
+              const first = [...asset.options].find(o=>o.value);
+              if (!first) throw new Error("Missing available status sprite asset");
+              asset.value = first.value;
+              row.querySelector("[data-skill-status-visual-opacity]").value = "35";
+              document.querySelector("[data-skill-update]").click();
+              document.querySelector("[data-export-current-skill]").click();
+            } catch(error) { document.body.dataset.spriteOpacityProbe = "ui-error:" + error.message; }
+          }, 200);
+        });
+      </script>`;
+      contents = Buffer.from(html.replace("</head>", probe + "</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -250,6 +321,16 @@ try {
     throw new Error("Active author preset not loaded with +5 immediate and +5/3s/20s in real editor");
   }
   console.log("HoT browser save/export: author +5 instant / 5 per 3s during 20s, extra 7/1.5s/6s preserved");
+  const opacityDom = await dumpDom(url + "?verify-sprite-opacity=1");
+  assertCreatures(opacityDom, "sprite opacity real editor bootstrap");
+  const opacityMatch = opacityDom.match(/data-sprite-opacity-probe="([^"]+)"/);
+  if (!opacityMatch || opacityMatch[1].split(":").slice(0,4).join(":") !==
+      "lib_aqua_heal:0.4:0.25:0.35" ||
+      !opacityMatch[1].includes(":sprite:2")) {
+    throw new Error("Actual editor save/export lost cast/aura/status opacity: " +
+      (opacityMatch?.[1] ?? "browser opacity probe missing"));
+  }
+  console.log("Opacity real editor save/export: cast 40%, zone 25%, status 35% and existing HoT preserved");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
