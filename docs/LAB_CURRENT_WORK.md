@@ -632,3 +632,13 @@ Inchangés :
 - Test : vérifier `catalogUrl`, branche et URL de l'atlas ainsi que le cache-buster et la CI complète. Éditeur choisira cet asset par identifiant, sans affectation forcée à `lib_aqua_heal` : conserver exactement son `presentation=null` et ses deux effets tactiques actuels.
 - Protégés : les 103 créatures, 112 compétences, slots progression, assets historiques soin, `main`, moteur/soins/Beam, `Zombicide-40k`, Exploration.
 - Attendre CI GREEN avant checkpoint final, preview et éventuelle publication `gh-pages` par lease ; validation utilisateur mobile séparée.
+
+
+### Bulle de soin aquatique — code GREEN, validation technique du 2026-10-09
+
+- Assets officiellement publiés sur `global-assets` SHA `b4dd093f9e449c3a9b2e2563b1f9a87cda6eaf62`, CI assets `37940236407` SUCCESS.
+- Dans le labo, seul le cache-buster de la bibliothèque visuelle canonique évolue vers `2026-10-09-v20-water-healing-bubble` ; le nouvel identifiant reste `pack:capture:sprite-water-healing-bubble-01`. Aucun composant propriétaire doublé.
+- RED initial `37940678898` : deux anciennes sentinelles imposaient un numéro de catalogue périmé. Assertions d'origine (IDs et chemins du catalogue, Jet pressurisé) préservées, seule la révision attendue mise à jour.
+- GREEN `37940962875` sur SHA `491f5a94abc50e05b67cfe54d7ae7a66ddf9b421` : **1325 tests Node réussis, 0 échec, vrai Chromium réussi**.
+- Conserve `lib_aqua_heal`, les 103 créatures et leurs fiches, la progression 1/5/10/15/20, le Beam et ses visuels, les FX et sons, et `main`. Le sprite n'a aucune autorité sur les soins.
+- Restent la CI finale de ce rapport, le checkpoint GREEN sur le SHA exact, la promotion `gh-pages` sous lease et le contrôle Pages, puis validation manuelle Android utilisateur.
