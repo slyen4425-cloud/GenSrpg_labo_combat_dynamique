@@ -556,23 +556,16 @@ export function buildHumanTacticalSkillEffectsV1(
           "Activations max de zone"
         ),
         radiusGrowthSteps,
-        tickEffect: {
-          kind: "damage",
-          targetScope:
-            tickEffect.targetScope ??
-            targetScope,
-          amount: finiteNumber(
-            tickEffect.amount ??
-              effect.tickDamage ??
-              0,
-            "Dégâts par tick de zone"
-          ),
-          channel:
-            optionalText(
-              tickEffect.channel ??
-              effect.channel
-            )
-        }
+        ...(tickEffect.kind === "apply_status"
+          ? {statusBehavior:effect.statusBehavior ?? "while_inside"} : {}),
+        tickEffect: tickEffect.kind === "apply_status"
+          ? {kind:"apply_status",targetScope,
+              status:humanTacticalStatusToContractV1(tickEffect.status,
+                {defaultDamageChannel})}
+          : {kind:"damage",targetScope:tickEffect.targetScope ?? targetScope,
+              amount:finiteNumber(tickEffect.amount ?? effect.tickDamage ?? 0,
+                "Dégâts par tick de zone"),
+              channel:optionalText(tickEffect.channel ?? effect.channel)}
       });
     }
 
