@@ -29,7 +29,8 @@ import {
   projectStatusStatEffectsV1
 } from "./status-effect-projection-v1.js";
 import {
-  applyPersistentZoneEffectsV1
+  applyPersistentZoneEffectsV1,
+  snapshotPersistentZoneReinforcementsV1
 } from "./persistent-zone-runtime-v1.js";
 import {
   activeTauntSourceActorIdV1,
@@ -524,6 +525,9 @@ export function resolveSkillStart({
     actorId,
     targetId: effectiveTargetId,
     skill,
+    persistentZoneReinforcementsAtStart: snapshotPersistentZoneReinforcementsV1({
+      state, actorId, skill
+    }),
     preparationMs,
     travelMs,
     recoveryMs,
@@ -914,7 +918,8 @@ export function resolveSkillCompletion({
             hasAbsoluteResolutionAtMs
               ? combatImpactAtMs
               : nextState.elapsedMs +
-                impactAtMs
+                impactAtMs,
+          reinforcementsAtStart: action.persistentZoneReinforcementsAtStart ?? []
         });
     } else if (outcome === "reflected") {
       const damage =
