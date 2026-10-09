@@ -5314,6 +5314,16 @@ function appendHumanSkillEffectV1(
       { min: 0, max: 2, step: "1" }
     );
 
+  const zoneEffectKind = document.createElement("select");
+  zoneEffectKind.dataset.skillZoneEffectKind = "true";
+  createOption(zoneEffectKind, "damage", "Dégâts périodiques");
+  createOption(zoneEffectKind, "apply_status", "Bonus / Malus / Statut");
+
+  const zoneStatusBehavior = document.createElement("select");
+  zoneStatusBehavior.dataset.skillZoneStatusBehavior = "true";
+  createOption(zoneStatusBehavior, "while_inside", "Actif uniquement dans la zone");
+  createOption(zoneStatusBehavior, "on_enter", "À l’entrée : conserve sa durée après sortie");
+
   const zoneTickDamage =
     tacticalNumberInputV1(
       "skillZoneTickDamage",
@@ -5326,6 +5336,64 @@ function appendHumanSkillEffectV1(
       "skillZoneChannel",
       effect?.tickEffect?.channel ?? ""
     );
+
+  const zs = effect?.tickEffect?.status ?? {};
+  const zoneStatusKind = document.createElement("select");
+  zoneStatusKind.dataset.skillZoneStatusKind = "true";
+  for (const kind of STATUS_EFFECT_V1_KINDS) {
+    createOption(zoneStatusKind,kind,tacticalStatusKindLabelV1(kind));
+  }
+  const zoneStatusPolarity = document.createElement("select");
+  zoneStatusPolarity.dataset.skillZoneStatusPolarity = "true";
+  for (const kind of STATUS_EFFECT_V1_POLARITIES) {
+    createOption(zoneStatusPolarity,kind,tacticalPolarityLabelV1(kind));
+  }
+  const zoneStatusStacking = document.createElement("select");
+  zoneStatusStacking.dataset.skillZoneStatusStacking = "true";
+  for (const kind of STATUS_EFFECT_V1_STACKING) {
+    createOption(zoneStatusStacking,kind,tacticalStackingLabelV1(kind));
+  }
+  const zoneStatusConfig = document.createElement("div");
+  zoneStatusConfig.className = "skill-status-config__grid";
+  zoneStatusConfig.dataset.skillZoneEffectConfigKind = "apply_status";
+  const zoneStatusNumber = (label,key,value,options={},kinds="") => {
+    const field = tacticalFieldV1(label,tacticalNumberInputV1(key,value,options));
+    if (kinds) field.dataset.skillZoneStatusConfigKind = kinds;
+    return field;
+  };
+  const zoneStatusText = (label,key,value,kinds="") => {
+    const field = tacticalFieldV1(label,tacticalTextInputV1(key,value));
+    if (kinds) field.dataset.skillZoneStatusConfigKind = kinds;
+    return field;
+  };
+  const zoneStatId = document.createElement("select");
+  zoneStatId.dataset.skillZoneStatusStatId = "true";
+  fillStatusStatSelectV1(zoneStatId,statRegistry,zs.statId ?? "");
+  const zoneStatField = tacticalFieldV1("Statistique",zoneStatId);
+  zoneStatField.dataset.skillZoneStatusConfigKind = "stat_modifier";
+  zoneStatusConfig.append(
+    zoneStatusText("ID du statut","skillZoneStatusId",zs.id ?? "aura"),
+    tacticalFieldV1("Type",zoneStatusKind),
+    tacticalFieldV1("Polarité",zoneStatusPolarity),
+    zoneStatusNumber("Durée du statut (secondes)","skillZoneStatusDurationSeconds",
+      zs.durationMs == null ? 3 : humanTacticalMsToSecondsV1(zs.durationMs),{min:0.1,step:"0.1"}),
+    tacticalFieldV1("Empilement",zoneStatusStacking),
+    zoneStatusNumber("Stacks max","skillZoneStatusMaxStacks",zs.maxStacks ?? 1,{min:1,step:"1"}),
+    zoneStatusText("Tags (virgules)","skillZoneStatusTags",(zs.tags??[]).join(", ")),
+    zoneStatField,
+    zoneStatusNumber("Variation de stat (points)","skillZoneStatusDeltaPoints",
+      zs.deltaPoints ?? 25,{step:"0.1"},"stat_modifier"),
+    zoneStatusNumber("Dégâts renvoyés (%)","skillZoneStatusReflectionPercent",
+      zs.percent ?? 25,{min:0,max:100,step:"1"},"damage_reflection"),
+    zoneStatusNumber("Temps de trajet (%)","skillZoneStatusApproachModifierPct",
+      zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
+    zoneStatusNumber("Dégâts / soins / bouclier","skillZoneStatusAmount",
+      zs.amount ?? 5,{min:0.1,step:"0.1"},"damage_over_time,heal_over_time,shield"),
+    zoneStatusNumber("Intervalle (secondes)","skillZoneStatusTickSeconds",
+      zs.tickIntervalMs == null ? 1 : humanTacticalMsToSecondsV1(zs.tickIntervalMs),
+      {min:0.1,step:"0.1"},"damage_over_time,heal_over_time"),
+    zoneStatusText("Élément DoT","skillZoneStatusChannel",zs.channel ?? "poison","damage_over_time")
+  );
 
   const zoneGrid =
     document.createElement("div");
