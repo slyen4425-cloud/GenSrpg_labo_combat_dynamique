@@ -41,6 +41,20 @@ La zone possède déjà une sprite et un calque dédiés. Lorsque son propriéta
 
 Aucun changement de `main`, de `global-assets`, de `Zombicide-40k`, du World Builder, des 103 fiches créatures, bibliothèques de sons/sprites ou des données auteur. Aucun média nouveau. La persistance des zones à dégâts directs et le déclencheur autonome de **Miroir destructeur** restent deux extensions distinctes ; la zone appliquant un statut `damage_reflection` est utilisable avec cette option dès ce lot. Le test tactile Android physique de Sylvain n'est pas revendiqué.
 
-## Preuves de CI et décision de livraison
+## Correctif de présence : rappel sans invocation immédiate
 
-À renseigner après vérification de la CI du commit documentaire final, revue du diff, checkpoint GREEN, preview et publication.
+La commande explicite de rappel peut laisser le slot de combat en attente d'invocation tandis que Roster Session n'a **aucun membre actif** sur ce slot. Au départ, le propriétaire de zones conserve un marqueur de présence `absentRosterSlots` **dans chaque zone déjà existante** : ce n'est qu'une projection de la décision du Roster Session, pas un second roster. Les dégâts de zone, les statuts `while_inside` et `on_enter` ne touchent plus cet acteur pendant cet intervalle. Les autres alliés conservent le buff. À l'invocation, le slot redevient éligible et sa présence est recalculée. En 2v2, le départ d'un combattant n'évacue aucune zone adverse ou alliée sans lien.
+
+La projection d'absence est associée aux **zones déjà actives** au moment du départ. Le cas d'une zone totalement nouvelle créée par un adversaire pendant un long intervalle sans invocation relève d'un futur raccord explicite entre présence roster et ciblage global du combat ; aucun faux état de réserve n'est ajouté au moteur.
+
+## Correctif de décision IA
+
+`battle-actor-ai-controller.js` ignorera une zone `detachedFromSource` lorsqu'il décide si le nouveau membre doit renforcer une zone qu'il aurait prétendument posée. Il peut créer sa propre zone native avec une nouvelle identité ; il ne peut ni rafraîchir une zone appartenant à son prédécesseur, ni réserver artificiellement ses actions/cooldowns pour celle-ci.
+
+## Preuves de tests et décision de livraison
+
+- TDD RED du lot initial : `0728b255b1f96bb26b2262f3c83a4b65b3cf9816` ; GREEN source + UI `fa83d879acecc7700e6249c3601cd31e6229fadd`, CI `38000962630` SUCCESS (Node/Chromium). Vrai Human Editor : sauvegarde et export JSON de la case « Persiste après rappel » sur la Défense tandis que la zone Poison reste sans cette option.
+- RED du garde AI : `8cc2ee7ca6ec816c7aae6296527e24e36182a25a` ; GREEN AI `e833d836cb3ea0a7e8eed134e63469e83b4883e7`, CI `38001204965` SUCCESS.
+- RED présence pendant rappel : `4e86427f5f12400670ae7ece78540eb8ae422b16` ; GREEN fondation `fd658f94b107a2adda6b4a63e93d29809098e064`, CI `38001325454` SUCCESS : **1372 / 1372 tests Node réussis**, Chromium bibliothèque et Firestorm SUCCESS.
+- Une CI intermédiaire de navigateur a expiré sur son timeout de démarrage Chromium (50 s). Le commit fondation corrigé et la suite réelle sont ensuite passés. Seuls les runs verts complets sont utilisables pour GREEN.
+- La dernière validation du SHA documentaire, le checkpoint GREEN, la branche preview, la publication sous lease et Pages publics devront être reportés après leur exécution. Aucun test tactile Android physique revendiqué.
