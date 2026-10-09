@@ -622,3 +622,13 @@ Inchangés :
 - CI `37938743309` SHA `69ecdf6d37dbe04e1c95c31edfaedaf8c1b4b65b` **SUCCESS : 1324 Node PASS, 0 FAIL, navigateur Chromium réel PASS** ; 103 créatures, 112 compétences, Onde régénérante et ses effets précédemment publiés, Jet Beam et réglages opacité intacts.
 - Rapport `docs/LAB_PROGRESSION_PREVIEW_LEVEL_V1.md`. Le nouvel export de soin joint présente 3 PV périodiques, différent des 5 PV précédemment demandés : ne pas écraser la capacité durant ce lot non lié.
 - À faire : CI sur SHA documentaire, revue diff exacte, checkpoint GREEN, preview et promotion Pages sous lease ; validation utilisateur smartphone distincte.
+
+
+## 2026-10-09 — Bulle de soin aquatique : raccord au catalogue du labo
+
+- Source canonique média publiée : branche `global-assets`, SHA `b4dd093f9e449c3a9b2e2563b1f9a87cda6eaf62`, CI `37940236407` SUCCESS ; 20 WebP 512×512 + atlas 20×384, unique ID `pack:capture:sprite-water-healing-bubble-01` dans le catalogue (119 assets/66 sprites).
+- Base labo `gh-pages` `ac8cef7e01159d28c42cc9cd54e0c24f62951890`, checkpoint `checkpoint/lab-start-water-healing-bubble-library-refresh-v1-2026-10-09`, branche isolée `work/lab-water-healing-bubble-library-refresh-v1-2026-10-09`.
+- Unique modification runtime : augmenter `GLOBAL_VISUAL_LIBRARY.revision` à `2026-10-09-v20-water-healing-bubble` pour rafraîchir la bibliothèque visuelle existante sans doubler résolveur, index ou ownership.
+- Test : vérifier `catalogUrl`, branche et URL de l'atlas ainsi que le cache-buster et la CI complète. Éditeur choisira cet asset par identifiant, sans affectation forcée à `lib_aqua_heal` : conserver exactement son `presentation=null` et ses deux effets tactiques actuels.
+- Protégés : les 103 créatures, 112 compétences, slots progression, assets historiques soin, `main`, moteur/soins/Beam, `Zombicide-40k`, Exploration.
+- Attendre CI GREEN avant checkpoint final, preview et éventuelle publication `gh-pages` par lease ; validation utilisateur mobile séparée.
