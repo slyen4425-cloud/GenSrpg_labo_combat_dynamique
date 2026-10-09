@@ -50,6 +50,74 @@ const server = createServer(async (req, res) => {
         '});</script>';
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
     }
+    // Exercise the real add/status/save/export route from the browser UI.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-hot-export")) {
+      const html = contents.toString("utf8");
+      const probe = \`<script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const native = URL.createObjectURL.bind(URL);
+          URL.createObjectURL = (blob) => {
+            if (blob.type.includes("json")) {
+              blob.text().then(text => {
+                try {
+                  const draft = JSON.parse(text).draft;
+                  const hot = draft.definition.effects.find(x =>
+                    x.kind === "apply_status" &&
+                    x.status.kind === "heal_over_time"
+                  );
+                  document.body.dataset.hotExportProbe = hot
+                    ? ["ok",hot.status.amount,hot.status.tickIntervalMs,hot.status.durationMs,
+                       hot.targetScope,draft.definition.category,draft.id].join(":")
+                    : "missing:effects=" + JSON.stringify(draft.definition.effects);
+                } catch (e) { document.body.dataset.hotExportProbe = "json-error:" + e.message; }
+              });
+            }
+            return native(blob);
+          };
+          let attempts = 0;
+          const timer = setInterval(() => {
+            const select = document.querySelector("[data-skill-library-select]");
+            if (!select || !select.querySelector('option[value="lib_aqua_heal"]')) {
+              if (++attempts > 40) {
+                clearInterval(timer);
+                document.body.dataset.hotExportProbe = "timeout";
+              }
+              return;
+            }
+            clearInterval(timer);
+            try {
+              select.value = "lib_aqua_heal";
+              select.dispatchEvent(new Event("change",{bubbles:true}));
+              document.querySelector("[data-skill-effect-add]").click();
+              const row = document.querySelector("[data-skill-effect-row]");
+              const set = (selector,value) => {
+                const input=row.querySelector(selector);
+                if (!input) throw new Error("Missing " + selector);
+                input.value=String(value);
+                input.dispatchEvent(new Event("change",{bubbles:true}));
+              };
+              set("[data-skill-effect-kind]","apply_status");
+              set("[data-skill-effect-scope]","self");
+              set("[data-skill-status-kind]","heal_over_time");
+              set("[data-skill-status-id]","regen-browser-audit");
+              set("[data-skill-status-polarity]","beneficial");
+              set("[data-skill-status-duration-seconds]",6);
+              set("[data-skill-status-hot-amount]",7);
+              set("[data-skill-status-hot-tick-seconds]",1.5);
+              document.querySelector("[data-skill-update]").click();
+              const savedRows=document.querySelectorAll("[data-skill-effect-row]");
+              if (savedRows.length !== 1 ||
+                  savedRows[0].querySelector("[data-skill-status-kind]").value !== "heal_over_time") {
+                throw new Error("HoT row disappeared on update: " + savedRows.length);
+              }
+              document.querySelector("[data-export-current-skill]").click();
+            } catch(e) {document.body.dataset.hotExportProbe = "ui-error:" + e.message; }
+          },200);
+        });
+      </script>\`;
+      contents = Buffer.from(html.replace("</head>", probe + "</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -161,6 +229,13 @@ try {
       throw new Error("Human Editor browser missing damage penetration control: " + marker);
     }
   }
+  const hotDom = await dumpDom(url + "?verify-hot-export=1");
+  assertCreatures(hotDom, "HoT authoring browser bootstrap");
+  const hotMatch = hotDom.match(/data-hot-export-probe="([^"]+)"/);
+  if (!hotMatch || hotMatch[1] !== "ok:7:1500:6000:self:heal:lib_aqua_heal") {
+    throw new Error("Live HoT save/export lost values: " + (hotMatch?.[1] ?? "probe did not run"));
+  }
+  console.log("HoT browser save/export: user-specified 7 PV/1.5s/6s preserved");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
