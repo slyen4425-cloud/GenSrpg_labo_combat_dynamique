@@ -1175,9 +1175,9 @@ export async function mountCombatTest({
         amount: feedback.amount,
         durationMs: 700
       });
-      damageFeedback?.flash(
-        feedback.actorId
-      );
+      if (feedback.kind === "damage") {
+        damageFeedback?.flash(feedback.actorId);
+      }
     },
     onStarted({ action }) {
       presenter.presentPreparation({ action, actorSlot: action.actorId });
