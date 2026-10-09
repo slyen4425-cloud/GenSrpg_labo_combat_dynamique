@@ -360,6 +360,7 @@ export function createRosterSession({
 
     syncActiveSnapshot(team);
     const recalledMemberId = team.activeMemberId;
+    combatSession.departFighter(team.slotId, {departingMemberId: recalledMemberId});
     team.activeMemberId = null;
 
     if (
@@ -439,7 +440,10 @@ export function createRosterSession({
     const recalledMemberId = team.activeMemberId;
     const fighter = cloneFighterForSlot(member.fighterConfig, team.slotId, member.savedFighter, combatSession.snapshot().elapsedMs);
     // No absent slot: the outgoing member stays targetable until this atomic replacement.
-    combatSession.replaceFighter(team.slotId, fighter, { clearSourceZones: true });
+    combatSession.replaceFighter(team.slotId, fighter, {
+      clearSourceZones: true,
+      departingMemberId: recalledMemberId
+    });
     team.activeMemberId = member.id;
     team.selectedReserveMemberId = recalledMemberId;
     return Object.freeze({ ok: true, outcome: "switched", teamId, slotId: team.slotId,
@@ -459,6 +463,7 @@ export function createRosterSession({
 
     syncActiveSnapshot(team);
     const defeatedMemberId = team.activeMemberId;
+    combatSession.departFighter(team.slotId, {departingMemberId: defeatedMemberId});
     team.activeMemberId = null;
 
     const replacement = [...team.members.values()].find((member) => {
