@@ -432,6 +432,82 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
+    // Native browser route: author a real defensive zone and poison entry.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-zone-status")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        const old=URL.createObjectURL.bind(URL);
+        URL.createObjectURL=(blob)=>{
+          if(blob.type.includes("json"))blob.text().then(content=>{
+            try{
+              const draft=JSON.parse(content).draft;
+              const zones=draft.definition.effects.filter(e=>e.kind==="persistent_zone" &&
+                e.tickEffect.kind==="apply_status");
+              const defense=zones.find(e=>e.zoneId==="browser-mist");
+              const poison=zones.find(e=>e.zoneId==="browser-poison");
+              document.body.dataset.zoneStatusProbe=defense?.statusBehavior==="while_inside" &&
+                defense.tickEffect.status.kind==="stat_modifier" &&
+                defense.tickEffect.status.deltaPoints===25 &&
+                defense.durationMs===12000 &&
+                poison?.statusBehavior==="on_enter" &&
+                poison.tickEffect.status.kind==="damage_over_time" &&
+                poison.tickEffect.status.amount===4 &&
+                poison.tickEffect.status.tickIntervalMs===1000 &&
+                draft.definition.effects.some(e=>e.kind==="heal")
+                ? "ok:mist:25:poison:4":"fail:export:"+JSON.stringify(zones);
+            }catch(e){document.body.dataset.zoneStatusProbe="fail:json:"+e.message;}
+          });
+          return old(blob);
+        };
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const library=document.querySelector("[data-skill-library-select]");
+          if(!document.querySelector("[data-creature-library-state]")?.textContent?.includes("3 modèles vitrine chargés") ||
+              !library?.querySelector('option[value="lib_aqua_heal"]')){
+            if(++attempts>70){clearInterval(timer);document.body.dataset.zoneStatusProbe="fail:timeout";}
+            return;
+          }
+          clearInterval(timer);
+          try{
+            library.value="lib_aqua_heal";
+            library.dispatchEvent(new Event("change",{bubbles:true}));
+            const set=(row,selector,value)=>{
+              const el=row.querySelector(selector);
+              if(!el)throw Error("missing "+selector);
+              el.value=String(value);
+              el.dispatchEvent(new Event("change",{bubbles:true}));
+            };
+            const add=(id,behavior,statusKind)=>{
+              document.querySelector("[data-skill-effect-add]").click();
+              const row=[...document.querySelectorAll("[data-skill-effect-row]")].at(-1);
+              set(row,"[data-skill-effect-kind]","persistent_zone");
+              set(row,"[data-skill-effect-scope]","self");
+              set(row,"[data-skill-zone-id]",id);
+              set(row,"[data-skill-zone-duration-seconds]",12);
+              set(row,"[data-skill-zone-effect-kind]","apply_status");
+              set(row,"[data-skill-zone-status-behavior]",behavior);
+              set(row,"[data-skill-zone-status-kind]",statusKind);
+              set(row,"[data-skill-zone-status-id]",id+"-status");
+              return row;
+            };
+            const mist=add("browser-mist","while_inside","stat_modifier");
+            set(mist,"[data-skill-zone-status-stat-id]","defense");
+            set(mist,"[data-skill-zone-status-delta-points]",25);
+            const poison=add("browser-poison","on_enter","damage_over_time");
+            set(poison,"[data-skill-zone-status-polarity]","detrimental");
+            set(poison,"[data-skill-zone-status-amount]",4);
+            set(poison,"[data-skill-zone-status-tick-seconds]",1);
+            set(poison,"[data-skill-zone-status-channel]","poison");
+            document.querySelector("[data-skill-update]").click();
+            document.querySelector("[data-export-current-skill]").click();
+          }catch(e){document.body.dataset.zoneStatusProbe="fail:ui:"+e.message;}
+        },200);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -595,6 +671,12 @@ try {
   if(reflectionProbe!=="ok:35:12000")
     throw Error("Human Editor saved reflection status is missing from real export: "+reflectionProbe);
   console.log("Damage reflection real editor: 35% during 12s saved and exported, 103 creatures retained");
+  const zoneStatusDom=await dumpDom(url+"?verify-zone-status=1");
+  assertCreatures(zoneStatusDom,"zone status actual editor bootstrap");
+  const zoneStatusProbe=zoneStatusDom.match(/data-zone-status-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(zoneStatusProbe!=="ok:mist:25:poison:4")
+    throw Error("Real UI zone buff/poison save/export failed: "+zoneStatusProbe);
+  console.log("Native area status authoring: defense while inside, poison on entry, original skill preserved");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
