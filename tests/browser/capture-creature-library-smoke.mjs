@@ -37,6 +37,62 @@ const server = createServer(async (req, res) => {
         '</script>';
       contents = Buffer.from(html.replace("<head>", "<head>" + intercept));
     }
+    // Browser-only UX probe: real mounted stats, custom rate, removal and live skill draft.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-context-help")) {
+      const html = contents.toString("utf8");
+      const probe = `<script>
+      document.addEventListener("DOMContentLoaded", () => {
+        let attempts = 0;
+        const timer = setInterval(() => {
+          const library=document.querySelector("[data-skill-library-select]");
+          const defense=document.querySelector('[data-stat-value="defense"]');
+          if (!library?.querySelector('option[value="cap_fire_atk_6"]') ||
+              !library?.querySelector('option[value="lib_aqua_heal"]') || !defense) {
+            if (++attempts > 50) {clearInterval(timer);document.body.dataset.contextHelpProbe="timeout";}
+            return;
+          }
+          clearInterval(timer);
+          try {
+            const statText=()=>document.querySelector("[data-context-stat-summary]").textContent;
+            const skillText=()=>document.querySelector("[data-context-skill-summary]").textContent;
+            const set=(el,val)=>{if(!el)throw Error("field missing");el.value=String(val);el.dispatchEvent(new Event("input",{bubbles:true}));};
+            document.querySelector('[data-context-help="stats"] summary').click();
+            if(!document.querySelector('[data-context-help="stats"]').open)throw Error("info button not opened by tap");
+            if(!statText().includes("0,2 %"))throw Error("default defense help: "+statText());
+            set(defense,5);
+            if(!statText().includes("1 %"))throw Error("five points not one percent: "+statText());
+            const coef=[...document.querySelectorAll("[data-stat-definition]")].find(x=>x.dataset.statDefinition==="defense")
+              ?.querySelector("[data-stat-definition-damage-reduction-rate]");
+            set(coef,0.5);
+            if(!statText().includes("0,5 %") || !statText().includes("2,5 %"))
+              throw Error("custom coefficient help did not update: "+statText());
+            document.querySelector("[data-stat-registry-apply]").click();
+            if(!statText().includes("0,5 %"))throw Error("applied rate not reflected");
+            const remove=[...document.querySelectorAll("[data-stat-definition-remove]")].find(x=>x.dataset.statDefinitionRemove==="defense");
+            if(!remove)throw Error("removal control absent");
+            remove.click();
+            if(document.querySelector('[data-stat-value="defense"]') ||
+              !statText().includes("retirée"))throw Error("defense removal not reflected: "+statText());
+            document.querySelector('[data-context-help="skill"] summary').click();
+            if(!document.querySelector('[data-context-help="skill"]').open)throw Error("skill info cannot open");
+            library.value="cap_fire_atk_6";
+            library.dispatchEvent(new Event("change",{bubbles:true}));
+            if(!skillText().includes("15 s") || !skillText().includes("5 dégâts") ||
+              !skillText().includes("agrandit"))throw Error("authored Firestorm missing: "+skillText());
+            set(document.querySelector("[data-skill-zone-duration-seconds]"),13);
+            if(!skillText().includes("13 s") || skillText().includes("15 s"))throw Error("skill edit not live: "+skillText());
+            library.value="lib_aqua_heal";
+            library.dispatchEvent(new Event("change",{bubbles:true}));
+            if(!skillText().includes("5 PV") || !skillText().includes("3 PV") ||
+              !skillText().includes("20 s"))throw Error("heal switch not live: "+skillText());
+            document.body.dataset.contextHelpProbe="ok:default:five:custom:removed:firestorm:live:heal";
+          } catch(e) {document.body.dataset.contextHelpProbe="fail:"+e.message;}
+        },100);
+      });
+      </script>`;
+      contents = Buffer.from(html.replace("</head>", probe + "</head>"));
+    }
     // Probe the actual mounted editor once, with the same inputs and module graph.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-three-phase-rayon")) {
@@ -407,6 +463,12 @@ try {
     throw new Error("Actual editor identity level 1 or fire zone 50% missing: " + failure);
   }
   console.log("Authored creature identity browser: four canonical/showcase identities at 1, preview at 20, ultimate zone at 50%");
+  const helpDom=await dumpDom(url+"?verify-context-help=1");
+  assertCreatures(helpDom,"context help actual browser bootstrap");
+  const help=helpDom.match(/data-context-help-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(help!=="ok:default:five:custom:removed:firestorm:live:heal")
+    throw Error("Actual editor help is not interactive or not value-derived: "+help);
+  console.log("Context help real editor: touch opens, 0.2% defense, 5pt=1%, custom rate, deletion, Firestorm live edit, heal switch");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
