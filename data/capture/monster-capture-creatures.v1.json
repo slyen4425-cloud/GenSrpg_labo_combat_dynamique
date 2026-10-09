@@ -17,7 +17,7 @@
       "id": "crea_embercub",
       "name": "Braiseau",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 18,
       "stats": {
         "force": 13,
@@ -57,7 +57,7 @@
       "id": "crea_aquafin",
       "name": "Aquafin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 20,
       "stats": {
         "force": 10,
@@ -128,7 +128,7 @@
       "id": "crea_mossback",
       "name": "Moussados",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 24,
       "stats": {
         "force": 14,
@@ -168,7 +168,7 @@
       "id": "crea_voltik",
       "name": "Voltige",
       "category": "creature",
-      "level": 6,
+      "level": 1,
       "hp": 17,
       "stats": {
         "force": 9,
@@ -239,7 +239,7 @@
       "id": "crea_galewing",
       "name": "Ailevent",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 16,
       "stats": {
         "force": 9,
@@ -279,7 +279,7 @@
       "id": "crea_lumipup",
       "name": "Lumilo",
       "category": "creature",
-      "level": 4,
+      "level": 1,
       "hp": 18,
       "stats": {
         "force": 8,
@@ -319,7 +319,7 @@
       "id": "crea_nightfang",
       "name": "Noctecroc",
       "category": "creature",
-      "level": 7,
+      "level": 1,
       "hp": 21,
       "stats": {
         "force": 15,
@@ -359,7 +359,7 @@
       "id": "crea_rockhorn",
       "name": "Rocorne",
       "category": "creature",
-      "level": 8,
+      "level": 1,
       "hp": 28,
       "stats": {
         "force": 18,
@@ -399,7 +399,7 @@
       "id": "crea_sparkmoth",
       "name": "Luciéclair",
       "category": "creature",
-      "level": 6,
+      "level": 1,
       "hp": 15,
       "stats": {
         "force": 7,
@@ -441,7 +441,7 @@
       "id": "crea_miragecat",
       "name": "Mirachat",
       "category": "creature",
-      "level": 7,
+      "level": 1,
       "hp": 17,
       "stats": {
         "force": 10,
@@ -483,7 +483,7 @@
       "id": "crea_tidejaw",
       "name": "Marémâchoire",
       "category": "creature",
-      "level": 8,
+      "level": 1,
       "hp": 26,
       "stats": {
         "force": 17,
@@ -523,7 +523,7 @@
       "id": "crea_ashdrake",
       "name": "Dracendre",
       "category": "creature",
-      "level": 10,
+      "level": 1,
       "hp": 30,
       "stats": {
         "force": 19,
@@ -565,7 +565,7 @@
       "id": "crea_braiseau",
       "name": "Braiseau",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 18,
       "stats": {
         "power": 13,
@@ -634,7 +634,7 @@
       "id": "crea_pyrolynx",
       "name": "Pyrolynx",
       "category": "creature",
-      "level": 16,
+      "level": 1,
       "hp": 34,
       "stats": {
         "power": 25,
@@ -703,7 +703,7 @@
       "id": "crea_infernox",
       "name": "Infernox",
       "category": "creature",
-      "level": 36,
+      "level": 1,
       "hp": 62,
       "stats": {
         "power": 44,
@@ -767,7 +767,7 @@
       "id": "crea_maraileron",
       "name": "Maraileron",
       "category": "creature",
-      "level": 16,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 21,
@@ -841,7 +841,7 @@
       "id": "crea_leviambre",
       "name": "Léviambre",
       "category": "creature",
-      "level": 36,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 38,
@@ -910,7 +910,7 @@
       "id": "crea_poussroc",
       "name": "Pouss'Roc",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 24,
       "stats": {
         "power": 12,
@@ -984,7 +984,7 @@
       "id": "crea_moussegarde",
       "name": "Moussegarde",
       "category": "creature",
-      "level": 16,
+      "level": 1,
       "hp": 45,
       "stats": {
         "power": 22,
@@ -1058,7 +1058,7 @@
       "id": "crea_sylvaroc",
       "name": "Sylvaroc",
       "category": "creature",
-      "level": 36,
+      "level": 1,
       "hp": 82,
       "stats": {
         "power": 38,
@@ -1127,7 +1127,7 @@
       "id": "crea_fulguro",
       "name": "Fulguro",
       "category": "creature",
-      "level": 16,
+      "level": 1,
       "hp": 30,
       "stats": {
         "power": 22,
@@ -1201,7 +1201,7 @@
       "id": "crea_raijag",
       "name": "Raijag",
       "category": "creature",
-      "level": 36,
+      "level": 1,
       "hp": 53,
       "stats": {
         "power": 39,
@@ -1281,7 +1281,7 @@
       "id": "crea_ailevent",
       "name": "Ailevent",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 16,
       "stats": {
         "power": 9,
@@ -1350,7 +1350,7 @@
       "id": "crea_rafalcor",
       "name": "Rafalcor",
       "category": "creature",
-      "level": 16,
+      "level": 1,
       "hp": 29,
       "stats": {
         "power": 20,
@@ -1424,7 +1424,7 @@
       "id": "crea_ouraganis",
       "name": "Ouraganis",
       "category": "creature",
-      "level": 36,
+      "level": 1,
       "hp": 51,
       "stats": {
         "power": 35,
@@ -1493,7 +1493,7 @@
       "id": "crea_lumilo",
       "name": "Lumilo",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 18,
       "stats": {
         "power": 8,
@@ -1562,7 +1562,7 @@
       "id": "crea_solarys",
       "name": "Solarys",
       "category": "creature",
-      "level": 18,
+      "level": 1,
       "hp": 35,
       "stats": {
         "power": 17,
@@ -1636,7 +1636,7 @@
       "id": "crea_heliarque",
       "name": "Héliarque",
       "category": "creature",
-      "level": 38,
+      "level": 1,
       "hp": 64,
       "stats": {
         "power": 30,
@@ -1705,7 +1705,7 @@
       "id": "crea_noctecroc",
       "name": "Noctecroc",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 14,
@@ -1774,7 +1774,7 @@
       "id": "crea_ombrage",
       "name": "Ombrage",
       "category": "creature",
-      "level": 18,
+      "level": 1,
       "hp": 37,
       "stats": {
         "power": 28,
@@ -1843,7 +1843,7 @@
       "id": "crea_noxferal",
       "name": "Noxferal",
       "category": "creature",
-      "level": 38,
+      "level": 1,
       "hp": 67,
       "stats": {
         "power": 49,
@@ -1907,7 +1907,7 @@
       "id": "crea_venipic",
       "name": "Vénipic",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 17,
       "stats": {
         "power": 10,
@@ -1976,7 +1976,7 @@
       "id": "crea_toxironce",
       "name": "Toxironce",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 34,
       "stats": {
         "power": 21,
@@ -2045,7 +2045,7 @@
       "id": "crea_veneflore",
       "name": "Vénéflore",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 63,
       "stats": {
         "power": 37,
@@ -2109,7 +2109,7 @@
       "id": "crea_rocabri",
       "name": "Rocabri",
       "category": "creature",
-      "level": 7,
+      "level": 1,
       "hp": 27,
       "stats": {
         "power": 16,
@@ -2178,7 +2178,7 @@
       "id": "crea_rocorne",
       "name": "Rocorne",
       "category": "creature",
-      "level": 24,
+      "level": 1,
       "hp": 58,
       "stats": {
         "power": 34,
@@ -2247,7 +2247,7 @@
       "id": "crea_lucieclair",
       "name": "Luciéclair",
       "category": "creature",
-      "level": 6,
+      "level": 1,
       "hp": 15,
       "stats": {
         "power": 8,
@@ -2332,7 +2332,7 @@
       "id": "crea_foudrillon",
       "name": "Foudrillon",
       "category": "creature",
-      "level": 24,
+      "level": 1,
       "hp": 36,
       "stats": {
         "power": 25,
@@ -2412,7 +2412,7 @@
       "id": "crea_mirachat",
       "name": "Mirachat",
       "category": "creature",
-      "level": 7,
+      "level": 1,
       "hp": 17,
       "stats": {
         "power": 10,
@@ -2497,7 +2497,7 @@
       "id": "crea_chimerage",
       "name": "Chimérage",
       "category": "creature",
-      "level": 26,
+      "level": 1,
       "hp": 42,
       "stats": {
         "power": 30,
@@ -2577,7 +2577,7 @@
       "id": "crea_dracendre",
       "name": "Dracendre",
       "category": "creature",
-      "level": 10,
+      "level": 1,
       "hp": 30,
       "stats": {
         "power": 19,
@@ -2662,7 +2662,7 @@
       "id": "crea_volcadrake",
       "name": "Volcadrake",
       "category": "creature",
-      "level": 28,
+      "level": 1,
       "hp": 65,
       "stats": {
         "power": 43,
@@ -2742,7 +2742,7 @@
       "id": "crea_tox_1",
       "name": "Toxipuce",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -2816,7 +2816,7 @@
       "id": "crea_tox_2",
       "name": "Venombre",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -2890,7 +2890,7 @@
       "id": "crea_tox_3",
       "name": "Nécrovenin",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -2959,7 +2959,7 @@
       "id": "crea_fer_1",
       "name": "Ferlin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -3023,7 +3023,7 @@
       "id": "crea_fer_2",
       "name": "Aciergarde",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -3087,7 +3087,7 @@
       "id": "crea_fer_3",
       "name": "Métallion",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -3146,7 +3146,7 @@
       "id": "crea_psy_1",
       "name": "Psylume",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -3205,7 +3205,7 @@
       "id": "crea_psy_2",
       "name": "Mentara",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -3264,7 +3264,7 @@
       "id": "crea_psy_3",
       "name": "Noétis",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -3318,7 +3318,7 @@
       "id": "crea_givre_1",
       "name": "Flocotin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -3382,7 +3382,7 @@
       "id": "crea_givre_2",
       "name": "Cryoloup",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -3446,7 +3446,7 @@
       "id": "crea_givre_3",
       "name": "Glacérion",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -3505,7 +3505,7 @@
       "id": "crea_ombre_1",
       "name": "Ombrelot",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -3574,7 +3574,7 @@
       "id": "crea_ombre_2",
       "name": "Noctigriffe",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -3643,7 +3643,7 @@
       "id": "crea_ombre_3",
       "name": "Éclipsar",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -3707,7 +3707,7 @@
       "id": "crea_lumi_1",
       "name": "Luciolys",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -3776,7 +3776,7 @@
       "id": "crea_lumi_2",
       "name": "Auracorne",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -3845,7 +3845,7 @@
       "id": "crea_lumi_3",
       "name": "Célestyr",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -3909,7 +3909,7 @@
       "id": "crea_roc_1",
       "name": "Terrapik",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -3983,7 +3983,7 @@
       "id": "crea_roc_2",
       "name": "Rocadonte",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -4057,7 +4057,7 @@
       "id": "crea_roc_3",
       "name": "Montarok",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -4126,7 +4126,7 @@
       "id": "crea_mer_1",
       "name": "Bulline",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -4200,7 +4200,7 @@
       "id": "crea_mer_2",
       "name": "Mariloutre",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -4274,7 +4274,7 @@
       "id": "crea_mer_3",
       "name": "Krakenor",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -4343,7 +4343,7 @@
       "id": "crea_feu_1",
       "name": "Cendrin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -4412,7 +4412,7 @@
       "id": "crea_feu_2",
       "name": "Flamdrake",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -4481,7 +4481,7 @@
       "id": "crea_feu_3",
       "name": "Volcanor",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -4545,7 +4545,7 @@
       "id": "crea_volt_1",
       "name": "Étincel",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -4619,7 +4619,7 @@
       "id": "crea_volt_2",
       "name": "Voltlynx",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -4693,7 +4693,7 @@
       "id": "crea_volt_3",
       "name": "Tempestrik",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -4762,7 +4762,7 @@
       "id": "crea_air_1",
       "name": "Plumet",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -4836,7 +4836,7 @@
       "id": "crea_air_2",
       "name": "Cisailair",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -4910,7 +4910,7 @@
       "id": "crea_air_3",
       "name": "Stratocor",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -4979,7 +4979,7 @@
       "id": "crea_nat_1",
       "name": "Grainou",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -5055,7 +5055,7 @@
       "id": "crea_nat_2",
       "name": "Lianor",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -5131,7 +5131,7 @@
       "id": "crea_nat_3",
       "name": "Ancêtronc",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -5202,7 +5202,7 @@
       "id": "crea_spect_1",
       "name": "Âmelin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -5278,7 +5278,7 @@
       "id": "crea_spect_2",
       "name": "Fantombre",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -5354,7 +5354,7 @@
       "id": "crea_spect_3",
       "name": "Nécroâme",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -5425,7 +5425,7 @@
       "id": "crea_crys_1",
       "name": "Éclatin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -5510,7 +5510,7 @@
       "id": "crea_crys_2",
       "name": "Gemmor",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -5595,7 +5595,7 @@
       "id": "crea_crys_3",
       "name": "Prismagon",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -5675,7 +5675,7 @@
       "id": "crea_boue_1",
       "name": "Bourboul",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -5771,7 +5771,7 @@
       "id": "crea_boue_2",
       "name": "Marécor",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -5867,7 +5867,7 @@
       "id": "crea_boue_3",
       "name": "Paludrax",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -5958,7 +5958,7 @@
       "id": "crea_son_1",
       "name": "Sonilin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -6039,7 +6039,7 @@
       "id": "crea_son_2",
       "name": "Échoryx",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -6120,7 +6120,7 @@
       "id": "crea_son_3",
       "name": "Harmonis",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -6196,7 +6196,7 @@
       "id": "crea_magma_1",
       "name": "Charbonix",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -6281,7 +6281,7 @@
       "id": "crea_magma_2",
       "name": "Lavabête",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -6366,7 +6366,7 @@
       "id": "crea_magma_3",
       "name": "Magmagor",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -6446,7 +6446,7 @@
       "id": "crea_mecha_1",
       "name": "Cogicube",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -6522,7 +6522,7 @@
       "id": "crea_mecha_2",
       "name": "Mécanâme",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -6598,7 +6598,7 @@
       "id": "crea_mecha_3",
       "name": "Omnicore",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -6669,7 +6669,7 @@
       "id": "crea_guepe_1",
       "name": "Toximoust",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -6759,7 +6759,7 @@
       "id": "crea_guepe_2",
       "name": "Veniguêpe",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -6849,7 +6849,7 @@
       "id": "crea_guepe_3",
       "name": "Vespérine",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -6934,7 +6934,7 @@
       "id": "crea_reve_1",
       "name": "Songelin",
       "category": "creature",
-      "level": 5,
+      "level": 1,
       "hp": 19,
       "stats": {
         "power": 10,
@@ -7010,7 +7010,7 @@
       "id": "crea_reve_2",
       "name": "Cauchemaris",
       "category": "creature",
-      "level": 17,
+      "level": 1,
       "hp": 38,
       "stats": {
         "power": 23,
@@ -7086,7 +7086,7 @@
       "id": "crea_reve_3",
       "name": "Abyssprit",
       "category": "creature",
-      "level": 37,
+      "level": 1,
       "hp": 70,
       "stats": {
         "power": 42,
@@ -7157,7 +7157,7 @@
       "id": "crea_scar_1",
       "name": "Scarabébé",
       "category": "creature",
-      "level": 8,
+      "level": 1,
       "hp": 27,
       "stats": {
         "power": 15,
@@ -7221,7 +7221,7 @@
       "id": "crea_scar_2",
       "name": "Scarabacier",
       "category": "creature",
-      "level": 24,
+      "level": 1,
       "hp": 52,
       "stats": {
         "power": 31,
@@ -7280,7 +7280,7 @@
       "id": "crea_med_1",
       "name": "Méduline",
       "category": "creature",
-      "level": 8,
+      "level": 1,
       "hp": 27,
       "stats": {
         "power": 15,
@@ -7365,7 +7365,7 @@
       "id": "crea_med_2",
       "name": "Médusine",
       "category": "creature",
-      "level": 24,
+      "level": 1,
       "hp": 52,
       "stats": {
         "power": 31,
@@ -7445,7 +7445,7 @@
       "id": "crea_corb_1",
       "name": "Corbillume",
       "category": "creature",
-      "level": 8,
+      "level": 1,
       "hp": 27,
       "stats": {
         "power": 15,
@@ -7521,7 +7521,7 @@
       "id": "crea_corb_2",
       "name": "Psycorbeau",
       "category": "creature",
-      "level": 24,
+      "level": 1,
       "hp": 52,
       "stats": {
         "power": 31,
@@ -7592,7 +7592,7 @@
       "id": "crea_taup_1",
       "name": "Taupinox",
       "category": "creature",
-      "level": 8,
+      "level": 1,
       "hp": 27,
       "stats": {
         "power": 15,
@@ -7668,7 +7668,7 @@
       "id": "crea_taup_2",
       "name": "Blindotaupe",
       "category": "creature",
-      "level": 24,
+      "level": 1,
       "hp": 52,
       "stats": {
         "power": 31,
