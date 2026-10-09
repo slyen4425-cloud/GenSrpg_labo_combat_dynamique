@@ -1,5 +1,6 @@
 import {
-  withPersistentZones
+  withPersistentZones,
+  withFighterStatusEffects
 } from "./combat-state.js";
 import { visiblePersistentZoneRelationV1 } from "../../contracts/persistent-zone-spatial-v1.js";
 import {
@@ -11,6 +12,8 @@ import {
 import {
   resolveTacticalEffectTargetIdsV1
 } from "./tactical-effect-targeting-v1.js";
+import { applyStatusEffectV1 } from "./status-effect-runtime-v1.js";
+import { isStatusEffectRuntimeInstanceActiveV1 } from "./status-effect-instance-v1.js";
 
 const DISTANCE_ORDER = Object.freeze([
   "short",
@@ -18,8 +21,52 @@ const DISTANCE_ORDER = Object.freeze([
   "long"
 ]);
 
+// Zone binding ids are native status ids with a reserved collision-resistant
+// namespace. Neither author-created statuses nor other zones are removed.
+function zoneStatusIdV1(zone) {
+  return "__zone_status__:" + encodeURIComponent(zone.id) +
+    ":" + encodeURIComponent(zone.tickEffect.status.id);
+}
+function isBoundStatusZoneV1(zone) {
+  return zone?.tickEffect?.kind === "apply_status" &&
+    zone.statusBehavior === "while_inside";
+}
+function stripZoneBoundStatusV1(state, zone, targetIds = Object.keys(state.fighters)) {
+  if (!isBoundStatusZoneV1(zone)) return state;
+  const id = zoneStatusIdV1(zone);
+  let result = state;
+  for (const actorId of targetIds) {
+    const fighter = result.fighters[actorId];
+    if (!fighter?.statusEffects?.some(entry => entry.definition.id === id)) continue;
+    result = withFighterStatusEffects(result, actorId,
+      fighter.statusEffects.filter(entry => entry.definition.id !== id));
+  }
+  return result;
+}
+
 export function removePersistentZonesFromActorV1(state, actorId) {
-  return withPersistentZones(state, (state.persistentZones ?? []).filter(zone => zone.sourceActorId !== actorId));
+  const zones = state.persistentZones ?? [];
+  let result = state;
+  for (const zone of zones.filter(entry => entry.sourceActorId === actorId)) {
+    result = stripZoneBoundStatusV1(result, zone);
+  }
+  return withPersistentZones(result, zones.filter(zone => zone.sourceActorId !== actorId));
+}
+
+export function prepareZoneStatusDeparturesV1({
+  state, deltaMs, battleFormat = null, zoneSpatialContext = null
+}) {
+  const endMs = state.elapsedMs + Number(deltaMs);
+  let result = state;
+  for (const zone of state.persistentZones ?? []) {
+    if (!isBoundStatusZoneV1(zone)) continue;
+    const current = zone.expiresAtMs > endMs
+      ? affectedIdsForZone({state:result,zone,battleFormat,atMs:endMs,zoneSpatialContext})
+      : [];
+    const left = (zone.occupiedActorIds ?? []).filter(id => !current.includes(id));
+    result = stripZoneBoundStatusV1(result, zone, left);
+  }
+  return result;
 }
 
 const APPROACH_ENTRY_PROGRESS =
@@ -136,6 +183,78 @@ function updateZoneTick(
           : zone
     )
   );
+}
+
+function updateZoneOccupancyV1(state, zoneId, occupiedActorIds) {
+  return withPersistentZones(state, (state.persistentZones ?? []).map(zone =>
+    zone.id === zoneId
+      ? Object.freeze({...zone, occupiedActorIds: Object.freeze([...occupiedActorIds])})
+      : zone
+  ));
+}
+
+// An entry poison retains its native lifetime after leaving; a while-inside
+// buff/debuff is bound to the zone and removed when occupancy ends.
+function applyZoneStatusV1({state, zone, targetActorId, atMs, whileInside}) {
+  const status = zone.tickEffect.status;
+  const id = zoneStatusIdV1(zone);
+  const existing = state.fighters[targetActorId]?.statusEffects?.find(
+    entry => entry.definition.id === id
+  );
+  if (whileInside && existing &&
+      isStatusEffectRuntimeInstanceActiveV1(existing, atMs) &&
+      existing.expiresAtMs >= zone.expiresAtMs) {
+    return state;
+  }
+  const effectiveStatus = {
+    ...status,
+    id,
+    ...(whileInside
+      ? { durationMs: Math.max(status.durationMs, zone.expiresAtMs - atMs + 1),
+          stacking: "refresh", maxStacks: 1 }
+      : {})
+  };
+  return applyStatusEffectV1({
+    state,
+    targetActorId,
+    sourceActorId: zone.sourceActorId,
+    sourceSkillId: zone.skillId,
+    status: effectiveStatus,
+    atMs
+  });
+}
+
+function updateZoneStatusOccupancyV1({
+  state, zone, endMs, battleFormat, zoneSpatialContext, entryEvents
+}) {
+  const current = zone.expiresAtMs > endMs
+    ? affectedIdsForZone({state,zone,battleFormat,atMs:endMs,zoneSpatialContext})
+    : [];
+  const previous = zone.occupiedActorIds ?? [];
+  let result = state;
+  if (zone.statusBehavior === "while_inside") {
+    result = stripZoneBoundStatusV1(result, zone,
+      previous.filter(id => !current.includes(id)));
+    for (const targetActorId of current) {
+      result = applyZoneStatusV1({
+        state:result,zone,targetActorId,atMs:endMs,whileInside:true
+      });
+    }
+  } else {
+    const entrants = new Map();
+    for (const event of entryEvents) {
+      if (event.type === "entry") entrants.set(event.targetActorId, event.atMs);
+    }
+    for (const id of current) {
+      if (!previous.includes(id) && !entrants.has(id)) entrants.set(id,endMs);
+    }
+    for (const [targetActorId, atMs] of entrants) {
+      result = applyZoneStatusV1({
+        state:result,zone,targetActorId,atMs,whileInside:false
+      });
+    }
+  }
+  return updateZoneOccupancyV1(result, zone.id, current);
 }
 
 function spatialModeEnabled(
@@ -594,6 +713,10 @@ export function applyPersistentZoneEffectsV1({
       activations,
       tickEffect:
         effect.tickEffect,
+      ...(effect.tickEffect.kind === "apply_status"
+        ? { statusBehavior: effect.statusBehavior,
+            occupiedActorIds: existing?.occupiedActorIds ?? Object.freeze([]) }
+        : {}),
       appliedAtMs: atMs,
       expiresAtMs:
         atMs + effect.durationMs,
@@ -666,6 +789,14 @@ export function advancePersistentZonesV1({
         endMs,
         zoneSpatialContext
       });
+
+    if (zone.tickEffect.kind === "apply_status") {
+      nextState = updateZoneStatusOccupancyV1({
+        state:nextState,zone,endMs,battleFormat,zoneSpatialContext,
+        entryEvents:events
+      });
+      continue;
+    }
 
     let nextTickAtMs =
       zone.nextTickAtMs;
@@ -755,12 +886,8 @@ export function advancePersistentZonesV1({
     }
   }
 
-  return withPersistentZones(
-    nextState,
-    (nextState.persistentZones ?? [])
-      .filter(
-        (zone) =>
-          zone.expiresAtMs > endMs
-      )
-  );
+  const expired = (nextState.persistentZones ?? []).filter(zone => zone.expiresAtMs <= endMs);
+  for (const zone of expired) nextState = stripZoneBoundStatusV1(nextState, zone);
+  return withPersistentZones(nextState,
+    (nextState.persistentZones ?? []).filter(zone => zone.expiresAtMs > endMs));
 }

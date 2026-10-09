@@ -74,7 +74,8 @@ const FIELDS_BY_KIND = Object.freeze({
     "reactivation",
     "maxActivations",
     "radiusGrowthSteps",
-    "tickEffect"
+    "tickEffect",
+    "statusBehavior"
   ]),
   scheduled_effect: new Set([
     ...COMMON_FIELDS,
@@ -421,10 +422,19 @@ export function normalizeSkillEffectV1(input) {
       );
     }
 
-    if (output.tickEffect.kind !== "damage") {
-      throw new RangeError(
-        "persistent_zone tickEffect must be damage in V1"
+    if (!["damage", "apply_status"].includes(output.tickEffect.kind)) {
+      throw new RangeError("persistent_zone tickEffect must be damage or apply_status");
+    }
+    if (output.tickEffect.kind === "apply_status") {
+      output.statusBehavior = requiredString(
+        value.statusBehavior ?? "while_inside",
+        "SkillEffectV1.statusBehavior"
       );
+      if (!["while_inside", "on_enter"].includes(output.statusBehavior)) {
+        throw new RangeError("Unsupported SkillEffectV1.statusBehavior: " + output.statusBehavior);
+      }
+    } else if (value.statusBehavior != null) {
+      throw new TypeError("SkillEffectV1.statusBehavior is only valid for status zones");
     }
   }
 

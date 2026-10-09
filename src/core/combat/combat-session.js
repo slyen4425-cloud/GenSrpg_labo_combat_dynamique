@@ -24,6 +24,7 @@ import {
 } from "./status-effect-runtime-v1.js";
 import {
   advancePersistentZonesV1,
+  prepareZoneStatusDeparturesV1,
   removePersistentZonesFromActorV1
 } from "./persistent-zone-runtime-v1.js";
 import {
@@ -369,6 +370,11 @@ export function createCombatSession({
           battleFormat
         });
       }
+    });
+    // Remove departed/expired zone-bound statuses before the native status
+    // clock can apply an obsolete periodic effect outside its real radius.
+    state = prepareZoneStatusDeparturesV1({
+      state, deltaMs, battleFormat, zoneSpatialContext
     });
     state = advanceStatusEffectsV1({
       state,
