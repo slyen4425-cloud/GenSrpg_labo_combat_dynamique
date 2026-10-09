@@ -104,8 +104,8 @@ test("Capture combat routes target selection and visual heal to existing owners"
 });
 
 test("actual Combat Session applies healing for both tactical and legacy editor healing values", () => {
-  const fighter = () => ({
-    id: "local", maxHp: 100, initialHp: 40, maxEnergy: 50,
+  const fighter = (id, hp = 40) => ({
+    id, maxHp: 100, initialHp: hp, maxEnergy: 50,
     initialEnergy: 50, energyChargeAmount: 0, energyChargeIntervalMs: 2000,
     movementEnergyPerStep: 1, chargeTimeModifierPct: 0
   });
@@ -122,7 +122,7 @@ test("actual Combat Session applies healing for both tactical and legacy editor 
     skillWith("heal-legacy-editor", {heal:25}, [])
   ];
   for (const skill of examples) {
-    const session = createCombatSession({distance:"medium",fighters:[fighter()]});
+    const session = createCombatSession({distance:"medium",fighters:[fighter("local"), fighter("enemy", 100)]});
     const result=session.useSkill({actorId:"local",targetId:"local",skill});
     assert.equal(result.ok,true,skill.id);
     assert.equal(session.snapshot().fighters.local.hp,65,skill.id);
