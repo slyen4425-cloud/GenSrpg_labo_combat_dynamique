@@ -77,17 +77,40 @@
             "id": "lib_aqua_heal_regeneration",
             "kind": "heal_over_time",
             "polarity": "beneficial",
+            "durationModel": "time_ms",
             "durationMs": 20000,
             "stacking": "refresh",
             "maxStacks": 1,
-            "amount": 5,
-            "tickIntervalMs": 3000,
             "tags": [],
-            "durationModel": "time_ms"
+            "amount": 3,
+            "tickIntervalMs": 3000
           }
         }
       ]
     },
-    "presentation": null
+    "presentation": {
+      "id": "skill:lib_aqua_heal",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "lib_aqua_heal",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-recall-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "lib_aqua_heal_regeneration": {
+          "mode": "sprite",
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-status-healing-aura-01",
+            "displayScale": 1.7,
+            "opacity": 0.45
+          }
+        }
+      }
+    }
   }
 }
