@@ -5436,7 +5436,7 @@ function appendHumanSkillEffectV1(
   zoneDamageBox.className="skill-status-config__grid";
   zoneDamageBox.dataset.skillZoneEffectConfigKind="damage";
   zoneDamageBox.append(
-    tacticalFieldV1("Intervalle entre dégâts (secondes)",zoneTick),
+    tacticalFieldV1("Intervalle entre les dégâts (secondes)",zoneTick),
     tacticalFieldV1("Dégâts à chaque intervalle",zoneTickDamage),
     tacticalFieldV1("Élément des dégâts",zoneChannel)
   );
