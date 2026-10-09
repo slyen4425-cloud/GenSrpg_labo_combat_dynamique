@@ -105,7 +105,7 @@
           "tintColor": "#9b59d0",
           "tintOpacity": 0.35,
           "sprite": {
-            "assetId": "pack:capture:sprite-status-healing-aura-01",
+            "assetId": "pack:capture:sprite-water-healing-bubble-01",
             "displayScale": 1.7,
             "opacity": 0.45
           }
