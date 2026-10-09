@@ -65,7 +65,8 @@ export function buildCaptureCreatureHistoricalLoadoutV1({
   level,
   abilityIds,
   runtimeSkillIds,
-  maxMoves = 4
+  maxMoves = 4,
+  selectionMode = "unlocked"
 }) {
   const id = requiredText(
     creatureId,
@@ -77,6 +78,9 @@ export function buildCaptureCreatureHistoricalLoadoutV1({
   const runtimeIds =
     runtimeIdSet(runtimeSkillIds);
 
+  if (!["unlocked", "planned"].includes(selectionMode)) {
+    throw new RangeError("selectionMode must be unlocked or planned");
+  }
   const moveLimit = Number(maxMoves);
   if (
     !Number.isInteger(moveLimit) ||
@@ -106,7 +110,7 @@ export function buildCaptureCreatureHistoricalLoadoutV1({
       Number(ability.requiredLevel) || 1
     );
 
-    if (requiredLevel <= currentLevel) {
+    if (selectionMode === "planned" || requiredLevel <= currentLevel) {
       historicalActiveIds.push(abilityId);
     }
 
