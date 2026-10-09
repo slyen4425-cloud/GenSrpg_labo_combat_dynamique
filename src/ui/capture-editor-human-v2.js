@@ -556,6 +556,7 @@ export function buildHumanTacticalSkillEffectsV1(
           "Activations max de zone"
         ),
         radiusGrowthSteps,
+        ...(effect.persistAfterRecall === true ? {persistAfterRecall:true} : {}),
         ...(tickEffect.kind === "apply_status"
           ? {statusBehavior:effect.statusBehavior ?? "while_inside"} : {}),
         tickEffect: tickEffect.kind === "apply_status"
@@ -5325,6 +5326,11 @@ function appendHumanSkillEffectV1(
       { min: 0, max: 2, step: "1" }
     );
 
+  const zonePersistAfterRecall = document.createElement("input");
+  zonePersistAfterRecall.type = "checkbox";
+  zonePersistAfterRecall.dataset.skillZonePersistAfterRecall = "true";
+  zonePersistAfterRecall.checked = effect?.persistAfterRecall === true;
+
   const zoneEffectKind = document.createElement("select");
   zoneEffectKind.dataset.skillZoneEffectKind = "true";
   createOption(zoneEffectKind, "damage", "Dégâts périodiques");
@@ -5444,6 +5450,7 @@ function appendHumanSkillEffectV1(
     ),
     tacticalFieldV1("Croissance du rayon par activation",zoneRadiusGrowth),
     tacticalFieldV1("Effet de zone",zoneEffectKind),
+    tacticalFieldV1("Persiste après rappel / changement de créature (statuts)",zonePersistAfterRecall),
     tacticalFieldV1("Comportement du statut",zoneStatusBehavior)
   );
   const zoneDamageBox=document.createElement("div");
@@ -5459,7 +5466,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. Dégâts : intervalle de ticks natifs. Statut : « Dans la zone » applique/retrait au contact et à la sortie ; « À l’entrée » déclenche le statut puis sa durée native continue après sortie. Les zones classiques disparaissent toujours au rappel du lanceur.";
+    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. Dégâts : intervalle de ticks natifs. Statut : « Dans la zone » applique/retrait au contact et à la sortie ; « À l’entrée » déclenche le statut puis sa durée native continue après sortie. Si « Persiste après rappel » est coché, le statut de zone reste actif pour le remplaçant jusqu’à expiration. Les zones de dégâts classiques disparaissent au rappel.";
 
   zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneNote);
 
@@ -5492,6 +5499,11 @@ function appendHumanSkillEffectV1(
     effect?.radius ?? "short";
   zoneReactivation.value = effect?.reactivation ?? "refresh";
   zoneEffectKind.value = effect?.tickEffect?.kind ?? "damage";
+  zonePersistAfterRecall.disabled = zoneEffectKind.value !== "apply_status";
+  zoneEffectKind.addEventListener("change", () => {
+    zonePersistAfterRecall.disabled = zoneEffectKind.value !== "apply_status";
+    if (zonePersistAfterRecall.disabled) zonePersistAfterRecall.checked = false;
+  });
   zoneStatusBehavior.value = effect?.statusBehavior ?? "while_inside";
   zoneStatusKind.value = zs.kind ?? "stat_modifier";
   zoneStatusPolarity.value = zs.polarity ?? "beneficial";
@@ -5604,6 +5616,9 @@ function readHumanSkillEffectsV1(root) {
       return {
         kind,
         targetScope,
+        ...(zoneEffectKind==="apply_status" &&
+            row.querySelector("[data-skill-zone-persist-after-recall]").checked
+          ? {persistAfterRecall:true} : {}),
         ...(zoneEffectKind==="apply_status"?{
           statusBehavior:row.querySelector("[data-skill-zone-status-behavior]").value,
           tickEffect:{kind:"apply_status",targetScope,status:zs}
