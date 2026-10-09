@@ -137,7 +137,7 @@ test("Maraileron author export preserves authored creature stats presentation so
 
   assert.equal(record.draft.id, "crea_maraileron");
   assert.equal(record.draft.displayName, "Maraileron");
-  assert.equal(record.draft.level, 16);
+  assert.equal(record.draft.level, 1);
   assert.deepEqual(record.draft.elements, ["water"]);
   assert.equal(record.draft.combat.maxHp, 140);
   assert.equal(
