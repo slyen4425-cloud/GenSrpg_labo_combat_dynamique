@@ -178,7 +178,7 @@ test("cast animation obeys authored opacity while retaining preparation duration
   const handle = renderer.play({
     type: "cast", skillId: draft.id, actorSlot: "player", durationMs: 1500
   });
-  assert.equal(animations[0].keyframes[0].opacity, .14);
+  assert.ok(Math.abs(animations[0].keyframes[0].opacity - .14) < 1e-12);
   assert.equal(animations[0].keyframes[1].opacity, .4);
   assert.equal(animations[0].keyframes[2].opacity, .4);
   assert.equal(animations[0].options.duration, 1500);
