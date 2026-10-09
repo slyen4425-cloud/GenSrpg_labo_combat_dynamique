@@ -531,3 +531,14 @@ Inchangés :
 - Audit ID : `lib_aqua_heal` ne figure pas dans les catalogues de compétences native/vitrine publiés : insertion initiale dans le Showcase ; toute fiche locale préexistante du même ID est remplacée, jamais dupliquée.
 - **Avertissement auteur critique** : l'export a `effect.heal = 0`, `effects = []` et `presentation = null`, donc ne produit aucun gain de PV et ne possède aucun FX auteur. Sa description promet une cible alliée, mais `targetRelations = [\"self\"]` / `form = \"self\"` limite réellement au lanceur. `requiredLevel = 15`. Ces valeurs seront préservées sans correction silencieuse.
 - TDD : RED sur preset/catégorie absent, GREEN sur import exact, round-trip, sélection `configuredSkills`, non-duplication/replacement, préservation des 103 créatures/loadouts, test réel de 0 gain PV conforme à l'export, CI complète Node + Chromium et Pages uniquement avec lease. Aucun GREEN d'efficacité de soin ni validation Android avant export valide doté d'un soin positif et test smartphone.
+
+### Onde régénérante — transfert auteur importé / code GREEN
+
+- Source utilisateur `lib_aqua_heal` importée sans réécriture : SHA-256 sémantique `05e90de6436a45288b33ce172f65ad3a94f8a77726abb3e821bb6f0b055af13a` (v1, ID stable, niveau 15, cible self, coût 8, 2500 ms, 30000 ms cooldown, `heal=0`, `effects=[]`, `presentation=null`).
+- Un seul nouveau fichier `data/capture/showcase/lib_aqua_heal.capture-skill-transfer-v1.json`, une déclaration dans `capture-showcase-skill-presets-v1.js`; réutilisation de `configuredSkills` et de l'import batch atomique `mode:replace`, sans toucher aux loadouts des 103 créatures ni au Runtime.
+- TDD RED `37914000943` (nouvelle entrée et fichier auteur absents). CI `37914060477` SUCCESS (1308 Node PASS, 0 FAIL, navigateur des 103 créatures PASS).
+- La sentinelle Chromium étendue a d'abord échoué à compiler à cause de sa regex de test (`37914191826`), puis corrigée par un parseur de sélection sans ambiguïté.
+- CI dernier code `37914308875` SUCCESS : **1308 Node PASS, 0 FAIL** ; **Chromium réel PASS**, 103 créatures et 112 capacités actives ; `lib_aqua_heal` exactement 1 fois, `cap_water_atk_3` toujours présent ; réseau visuel bloqué/suspendu vérifié.
+- Rapport `docs/LAB_AQUA_HEAL_AUTHOR_PRESET_V1.md`. Aucun asset ajouté (0 média).
+- Limite explicite : cet export ne soigne réellement **aucun PV**. L'intégration du preset peut être GREEN technique, mais pas la fonction de guérison; un nouvel export avec effet heal positif est nécessaire pour ce test fonctionnel. Description alliée et ciblage self contradictoires tels qu'exportés : aucune correction silencieuse.
+- Suite : CI du dernier commit documentaire, revue du diff exact, checkpoint GREEN, preview, promotion `gh-pages` sous lease et contrôle du Pages SUCCESS; validation tactile utilisateur séparée.
