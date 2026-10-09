@@ -5459,7 +5459,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "Réactivation : prolonge la zone (et éventuellement agrandit son rayon). Dégâts : intervalle de ticks natifs. Statut : « Dans la zone » applique/retrait au contact et à la sortie ; « À l’entrée » déclenche le statut puis sa durée native continue après sortie. Les zones classiques disparaissent toujours au rappel du lanceur.";
+    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. Dégâts : intervalle de ticks natifs. Statut : « Dans la zone » applique/retrait au contact et à la sortie ; « À l’entrée » déclenche le statut puis sa durée native continue après sortie. Les zones classiques disparaissent toujours au rappel du lanceur.";
 
   zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneNote);
 
