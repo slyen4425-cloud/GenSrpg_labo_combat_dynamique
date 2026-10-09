@@ -510,3 +510,10 @@ Inchangés :
 - Corrigé : `effect.heal` legacy est acheminé une seule fois par `applyImmediateTacticalEffectsV1` vers `withFighterHp` ; aucun second calcul. `heal` et `damage` visibles depuis `CombatRuntime.onHealthDelta` sur les deux clients, vert `+PV`, sans faux flash de dégâts et sans recul `hit` lorsque le soin pur ne retire aucun PV ; message si PV déjà maximum.
 - CI code `37911958753` SUCCESS : **1304 Node PASS, 0 FAIL**, vrai Chromium (103 créatures) SUCCESS. Rapport `docs/LAB_HEAL_TARGET_CLARITY_V1.md`.
 - Encore nécessaire : CI finale sur SHA exact du rapport, revue du diff, checkpoint GREEN technique, preview et Pages déployée avec lease; validation smartphone utilisateur distincte.
+
+### Soin / ciblage — code GREEN après revue finale
+
+- Dernière CI code `37912170724` SUCCESS : **1304 / 1304 Node PASS**, 0 FAIL et **vrai Chromium creature-library-browser SUCCESS** (103 créatures, quatre scénarios dont réseau média dégradé).
+- Revue additionnelle : le client combat 1v1 ne doit jamais flasher une animation de dégât sur un `heal`; garde `damageFeedback.flash` uniquement si `feedback.kind === "damage"`.
+- 0 assets ajoutés/modifiés ; aucune capacité ou créature modifiée ; aucune dépendance runtime à `Zombicide-40k`.
+- Prévu une fois CI de clôture GREEN : `checkpoint/lab-heal-target-clarity-v1-green-2026-10-09`, `preview/lab-heal-target-clarity-v1-2026-10-09`, `gh-pages` par fast-forward protégé et validation Android ultérieure.
