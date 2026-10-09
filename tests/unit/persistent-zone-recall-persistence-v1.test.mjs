@@ -5,6 +5,7 @@ import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.j
 import { normalizeSkillEffectV1 } from "../../src/contracts/skill-effect-v1.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createRosterSession } from "../../src/core/combat/roster-session.js";
+import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
 import { computeCombatDamageV1 } from "../../src/core/combat/combat-damage-v1.js";
 import { buildHumanTacticalSkillEffectsV1 } from "../../src/ui/capture-editor-human-v2.js";
 
@@ -173,4 +174,40 @@ test("Human Editor roundtrips and exposes explicit persistence checkbox without 
   const ui=await readFile(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
   assert.match(ui,/skillZonePersistAfterRecall/);
   assert.match(ui,/data-skill-zone-persist-after-recall/);
+});
+
+test("rendered status zone stays on its ground coordinate after source slot anchor moves",()=>{
+  let sourceRect={left:80,top:180,width:40,height:40};
+  const fake = rect => ({
+    className:"",dataset:{},style:{},children:[],removed:false,
+    append(child){this.children.push(child)},
+    remove(){this.removed=true},
+    getBoundingClientRect(){return typeof rect==="function"?rect():rect;}
+  });
+  const arena=fake({left:0,top:0,width:400,height:300});
+  const source=fake(()=>sourceRect);
+  arena.ownerDocument={createElement(){
+    const node=fake({left:0,top:0,width:20,height:20});
+    node.ownerDocument=arena.ownerDocument;return node;
+  }};
+  const fx=createDomSkillFxRenderer({
+    arena,anchors:{player:source},targetAnchors:{player:source},
+    presentationForSkill(){return {persistentZone:{
+      assetId:"mist-visual",url:"zone.webp",displayScale:1,playbackMode:"loop"
+    },persistentZoneLayer:"behind"}},
+    animate(){return {finished:new Promise(()=>{}),cancel(){}}},
+    requestFrame(){return null},cancelFrame(){}
+  });
+  const zoneView={id:"player:mist:mist",skillId:"mist",sourceActorId:"player",radius:"short"};
+  fx.syncPersistentZones([zoneView]);
+  const node=arena.children[0];
+  assert.equal(node.style.left,"100px");
+  assert.equal(node.style.top,"200px");
+  sourceRect={left:300,top:20,width:40,height:40};
+  fx.syncPersistentZones([{...zoneView,detachedFromSource:true,originRosterMemberId:"water"}]);
+  assert.equal(node.style.left,"100px","the zone must not follow incoming monster's anchor");
+  assert.equal(node.style.top,"200px");
+  fx.syncPersistentZones([]);
+  assert.equal(node.removed,true);
+  fx.dispose();
 });
