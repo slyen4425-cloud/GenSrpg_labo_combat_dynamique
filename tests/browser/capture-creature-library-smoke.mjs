@@ -116,10 +116,10 @@ const server = createServer(async (req, res) => {
                const originalMode = originalStatus.querySelector("[data-skill-status-visual-mode]")?.value;
                const icon = document.querySelector("[data-skill-icon]")?.value;
                if (icon !== "core:icon-skill-recall-01" ||
-                   originalVisualAsset !== "pack:capture:sprite-status-healing-aura-01" ||
+                   originalVisualAsset !== "pack:capture:sprite-water-healing-bubble-01" ||
                    originalMode !== "sprite" ||
                    Number(originalScale) !== 1.7 || Number(originalOpacity) !== 45) {
-                 throw new Error("Original author media missing from selected editor form: " + [icon,originalVisualAsset,originalMode,originalScale,originalOpacity].join(":"));
+                 throw new Error("Current authored water-healing bubble missing from editor form: " + [icon,originalVisualAsset,originalMode,originalScale,originalOpacity].join(":"));
                }
                document.body.dataset.aquaHealPresetProbe = "ok:5:3:3:20:icon:aura:1.7:45";
               document.querySelector("[data-skill-effect-add]").click();
@@ -346,10 +346,10 @@ try {
     throw new Error("Real editor lost five-tier progression or default preview level 20");
   }
   console.log("Progression browser: five unlock tiers and isolated test level 20 visible");
-  if (!/data-hot-export-media-probe="core:icon-skill-recall-01:pack:capture:sprite-status-healing-aura-01:1.7:0.45"/.test(hotDom)) {
+  if (!/data-hot-export-media-probe="core:icon-skill-recall-01:pack:capture:sprite-water-healing-bubble-01:1.7:0.45"/.test(hotDom)) {
     throw new Error("Real skill export lost the exact authored icon, aura, scale or opacity");
   }
-  console.log("HoT browser save/export: +5 instant / +3 per 3s during 20s, original icon and aura scale 1.7 opacity 45%, and added effect preserved");
+  console.log("HoT browser save/export: +5 instant / +3 per 3s during 20s, authored icon and water healing bubble scale 1.7 opacity 45%, and added effect preserved");
   const opacityDom = await dumpDom(url + "?verify-sprite-opacity=1");
   assertCreatures(opacityDom, "sprite opacity real editor bootstrap");
   const opacityMatch = opacityDom.match(/data-sprite-opacity-probe="([^"]+)"/);
