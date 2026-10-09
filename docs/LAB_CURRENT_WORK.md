@@ -824,3 +824,8 @@ Inchangés :
 ### Lot 3 — Extension de périmètre AI avant GREEN
 
 L'audit du vrai consommateur `src/core/combat/battle-actor-ai-controller.js` révèle une dépendance légitime au champ `persistentZones.sourceActorId` : l'IA prendrait une zone détachée pour sa propre zone renforçable en cas de changement de membre sur le même slot. Ce cas brise l'ownership même si le moteur refuse le renforcement. **Extension autorisée** : un filtre de projection `detachedFromSource !== true` dans ce seul consommateur et sentinelle dans `tests/unit/persistent-zone-recall-persistence-v1.test.mjs`. Aucun changement de politique IA, cooldown, économie d'énergie ou zone propriétaire en dehors de ce garde. TDD RED→GREEN puis CI et browser.
+
+
+### Lot 3 — Cas limite de rappel sans invocation immédiate
+
+Le rappel `recall` laisse momentanément un slot Combat existant alors que Roster Session signale qu'il est vide. Le propriétaire Zone Runtime doit traiter ce slot comme **absent** de ses effets, en projetant uniquement dans les instances de zone courantes le signal de départ transmis par Roster ; à l'invocation, le nouvel occupant n'hérite d'aucun statut et redevient éligible. Fichiers déjà autorisés : `persistent-zone-runtime-v1.js`, `combat-session.js`, test du lot. Ce signal ne devient pas une deuxième autorité du roster, ne modifie pas HP/KO ni les anciens tick rates, et ne doit pas propager de buff dans la réserve. RED→GREEN dédié obligatoire.
