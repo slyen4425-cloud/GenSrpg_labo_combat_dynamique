@@ -11,6 +11,22 @@ const offsetModes = [
   ["custom", "Réglage séparé côté adversaire"]
 ];
 const roles = ["cast", "impact", "zone"];
+const opacityRoles = new Set(["cast", "zone"]);
+
+export function skillSpriteOpacityPercentToUnitV1(value) {
+  const percent = Number(value);
+  if (!Number.isFinite(percent) || percent < 0 || percent > 100) {
+    throw new RangeError("Opacité du sprite (%) : choisir une valeur entre 0 et 100");
+  }
+  return percent / 100;
+}
+
+function roleControls(role) {
+  return opacityRoles.has(role)
+    ? [...controls, ["OpacityPct", "opacity-pct", true]]
+    : controls;
+}
+
 const controls = [
   ["PlaybackMode", "playback", false],
   ["OffsetX", "offset-x", true],
@@ -80,6 +96,9 @@ export function skillSpriteControlsFromFieldsV1(fields = {}, role) {
     offsetX: fields[role + "OffsetX"] ?? 0,
     offsetY: fields[role + "OffsetY"] ?? 0,
     ...sideOffsetFields(fields, role),
+    ...(opacityRoles.has(role) ? {
+      opacity: skillSpriteOpacityPercentToUnitV1(fields[role + "OpacityPct"] ?? 100)
+    } : {}),
     layerByView: {
       player: fields[role + "LayerPlayer"] ?? layer,
       opponent: fields[role + "LayerOpponent"] ?? layer
@@ -98,6 +117,9 @@ export function skillSpriteControlFieldsFromVisualsV1(visual = {}) {
       slot?.offsetMode ?? "same";
 
     fields[role + "PlaybackMode"] = slot?.playbackMode ?? fallback.playbackMode;
+    if (opacityRoles.has(role)) {
+      fields[role + "OpacityPct"] = (slot?.opacity ?? 1) * 100;
+    }
     fields[role + "OffsetX"] = offsetX;
     fields[role + "OffsetY"] = offsetY;
     fields[role + "OffsetMode"] = offsetMode;
@@ -130,7 +152,7 @@ export function readSkillSpriteControlsV1(root) {
   }
   for (const role of roles) {
     const defaults = skillSpriteControlFieldsFromVisualsV1({});
-    for (const [name, suffix, numeric] of controls) {
+    for (const [name, suffix, numeric] of roleControls(role)) {
       const node = root.querySelector(`[data-skill-${role}-${suffix}]`);
       fields[role + name] = node ? (numeric ? Number(node.value) : node.value) : defaults[role + name];
     }
@@ -153,7 +175,7 @@ export function writeSkillSpriteControlsV1(root, fields = {}) {
     }
   }
   for (const role of roles) {
-    for (const [name, suffix] of controls) {
+    for (const [name, suffix] of roleControls(role)) {
       const node = root.querySelector(`[data-skill-${role}-${suffix}]`);
       if (node) {
         node.value = String(
