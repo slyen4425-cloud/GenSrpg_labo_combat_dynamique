@@ -52,13 +52,43 @@ export function removeInheritedZoneBoundStatusesV1(state, actorId) {
     fighter.statusEffects.filter(x => !x.definition.id.startsWith("__zone_bound_status__:")));
 }
 
-export function removePersistentZonesFromActorV1(state, actorId) {
+// The roster owns member identities; a kept zone retains its original
+// caster even when another member occupies the same combat slot.
+export function removePersistentZonesFromActorV1(state, actorId, {departingMemberId = null} = {}) {
   const zones = state.persistentZones ?? [];
   let result = state;
-  for (const zone of zones.filter(entry => entry.sourceActorId === actorId)) {
-    result = stripZoneBoundStatusV1(result, zone);
+  const kept = [];
+  for (const zone of zones) {
+    if (zone.sourceActorId !== actorId) {
+      kept.push(zone);
+      continue;
+    }
+    if (zone.persistAfterRecall === true) {
+      kept.push(Object.freeze({
+        ...zone,
+        detachedFromSource: true,
+        originRosterMemberId: zone.originRosterMemberId ?? departingMemberId
+      }));
+    } else {
+      result = stripZoneBoundStatusV1(result, zone);
+    }
   }
-  return withPersistentZones(result, zones.filter(zone => zone.sourceActorId !== actorId));
+  return withPersistentZones(result, kept);
+}
+
+// A replacement is a new occupant even though its stable combat slot is the
+// same. All zones must recompute entry after that atomic roster transition.
+export function resetPersistentZoneOccupancyForSlotV1(state, actorId) {
+  const zones = state.persistentZones ?? [];
+  if (!zones.some(zone => zone.occupiedActorIds?.includes(actorId))) return state;
+  return withPersistentZones(state, zones.map(zone =>
+    zone.occupiedActorIds?.includes(actorId)
+      ? Object.freeze({
+          ...zone,
+          occupiedActorIds: Object.freeze(zone.occupiedActorIds.filter(id => id !== actorId))
+        })
+      : zone
+  ));
 }
 
 export function prepareZoneStatusDeparturesV1({
@@ -118,18 +148,29 @@ function radiusFor({
   ];
 }
 
-function zoneInstanceId(
-  actorId,
-  skillId,
-  zoneId
-) {
-  return (
-    String(actorId) +
-    ":" +
-    String(skillId) +
-    ":" +
-    String(zoneId)
-  );
+function zoneInstanceId(actorId, skillId, zoneId) {
+  return String(actorId) + ":" + String(skillId) + ":" + String(zoneId);
+}
+
+// A detached zone cannot be refreshed by a different member casting the
+// same skill. A new generation is created without touching the old area.
+function activeZoneOwnedBySlotV1(state, actorId, skillId, zoneId) {
+  return (state.persistentZones ?? []).find(zone =>
+    zone.sourceActorId === actorId &&
+    zone.skillId === skillId &&
+    zone.zoneId === zoneId &&
+    zone.detachedFromSource !== true &&
+    zone.expiresAtMs > state.elapsedMs
+  ) ?? null;
+}
+function nextZoneInstanceIdV1(state, actorId, skillId, zoneId) {
+  const base = zoneInstanceId(actorId, skillId, zoneId);
+  if (!(state.persistentZones ?? []).some(zone => zone.id === base)) return base;
+  let generation = 2;
+  while ((state.persistentZones ?? []).some(zone => zone.id === base + ":generation:" + generation)) {
+    generation += 1;
+  }
+  return base + ":generation:" + generation;
 }
 
 // A reinforcement is chosen when the Combat Rules accept its cast, not after
@@ -140,10 +181,8 @@ export function snapshotPersistentZoneReinforcementsV1({ state, actorId, skill }
     (skill.effects ?? [])
       .filter(effect => effect.kind === "persistent_zone" && effect.reactivation === "reinforce")
       .flatMap(effect => {
-        const id = zoneInstanceId(actorId, skill.id, effect.zoneId);
-        const active = (state.persistentZones ?? []).find(
-          zone => zone.id === id && zone.expiresAtMs > state.elapsedMs
-        );
+        const active = activeZoneOwnedBySlotV1(state, actorId, skill.id, effect.zoneId);
+        const id = active?.id ?? null;
         return active
           ? [Object.freeze({ id, activations: active.activations, expiresAtMs: active.expiresAtMs })]
           : [];
@@ -663,17 +702,8 @@ export function applyPersistentZoneEffectsV1({
       continue;
     }
 
-    const id =
-      zoneInstanceId(
-        actorId,
-        skill.id,
-        effect.zoneId
-      );
-    const existing =
-      (nextState.persistentZones ?? [])
-        .find(
-          (zone) => zone.id === id
-        ) ?? null;
+    const existing = activeZoneOwnedBySlotV1(nextState, actorId, skill.id, effect.zoneId);
+    const id = existing?.id ?? nextZoneInstanceIdV1(nextState, actorId, skill.id, effect.zoneId);
 
     // Only recover the accepted reinforcement when the previous zone expired
     // during preparation. An activation STARTED after expiration has no seed.
@@ -727,6 +757,8 @@ export function applyPersistentZoneEffectsV1({
       activations,
       tickEffect:
         effect.tickEffect,
+      ...(effect.persistAfterRecall !== undefined
+        ? {persistAfterRecall: effect.persistAfterRecall} : {}),
       ...(effect.tickEffect.kind === "apply_status"
         ? { statusBehavior: effect.statusBehavior,
             occupiedActorIds: existing?.occupiedActorIds ?? Object.freeze([]) }
