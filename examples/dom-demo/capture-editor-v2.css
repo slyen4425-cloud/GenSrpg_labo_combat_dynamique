@@ -1337,3 +1337,33 @@ html {
 [data-skill-beam-stage-editor] [data-beam-stage-fields] label {
   display: block;
 }
+
+
+/* Informations tactiles : panneaux repliés, accessibles au clavier et sur mobile. */
+.editor-context-help {
+  margin: .55rem 0 .8rem;
+  border: 1px solid rgba(131,230,247,.25);
+  border-radius: .65rem;
+  padding: .35rem .65rem;
+  background: rgba(5,25,36,.34);
+}
+.editor-context-help > summary {
+  cursor: pointer;
+  user-select: none;
+  color: #a9e8f6;
+  font-weight: 700;
+  font-size: .88rem;
+  min-height: 2.2rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  list-style: none;
+}
+.editor-context-help > summary::-webkit-details-marker {display:none;}
+.editor-context-help > summary:focus-visible {outline:2px solid #b8f1fa;outline-offset:2px;}
+.editor-context-help[open] > summary {border-bottom:1px solid rgba(131,230,247,.18);margin-bottom:.4rem;}
+.editor-context-help .note {margin:.45rem 0;line-height:1.55;overflow-wrap:anywhere;}
+@media(max-width:520px) {
+  .editor-context-help {padding:.35rem .55rem;}
+  .editor-context-help > summary {min-height:2.75rem;}
+}
