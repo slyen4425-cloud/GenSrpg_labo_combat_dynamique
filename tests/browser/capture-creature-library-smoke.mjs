@@ -62,10 +62,10 @@ const server = createServer(async (req, res) => {
               blob.text().then(text => {
                 try {
                   const draft = JSON.parse(text).draft;
-                  const hot = draft.definition.effects.find(x =>
+                  const hot = draft.definition.effects.filter(x =>
                     x.kind === "apply_status" &&
                     x.status.kind === "heal_over_time"
-                  );
+                  ).at(-1);
                   document.body.dataset.hotExportProbe = hot
                     ? ["ok",hot.status.amount,hot.status.tickIntervalMs,hot.status.durationMs,
                        hot.targetScope,draft.definition.category,draft.id].join(":")
