@@ -38,6 +38,7 @@ test("Onde régénérante is configured exactly: +5 immediate and +5/3s for 20s"
       id:"lib_aqua_heal_regeneration",
       kind:"heal_over_time",
       polarity:"beneficial",
+      durationModel:"time_ms",
       durationMs:20000,
       stacking:"refresh",
       maxStacks:1,
