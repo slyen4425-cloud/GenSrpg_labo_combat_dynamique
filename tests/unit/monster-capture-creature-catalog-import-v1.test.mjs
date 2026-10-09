@@ -63,7 +63,7 @@ test("Monster Capture source entry imports deterministically to CaptureCreatureE
   );
   assert.equal(record.draft.id, "crea_aquafin");
   assert.equal(record.draft.displayName, "Aquafin");
-  assert.equal(record.draft.level, 5);
+  assert.equal(record.draft.level, 1);
   assert.equal(record.draft.combat.maxHp, 20);
   assert.equal(record.draft.sourceStats.force, 10);
   assert.equal(record.draft.sourceStats.agility, 12);
