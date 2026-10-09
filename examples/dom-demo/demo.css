@@ -559,6 +559,21 @@ button.reserve-card {
   white-space: nowrap;
 }
 
+.skill-fx--heal-number {
+  z-index: 23;
+  width: max-content;
+  aspect-ratio: auto;
+  color: #a6ffc2;
+  font-size: clamp(1rem, 4.4vw, 1.7rem);
+  font-weight: 1000;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0.08rem 0.12rem rgba(0, 0, 0, 0.98),
+    0 0 0.42rem rgba(5, 125, 70, 0.9);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .skill-fx--miss {
   z-index: 11;
   width: max-content;
@@ -1157,6 +1172,40 @@ button.reserve-card {
   filter:
     drop-shadow(0 0 0.35rem rgba(124, 225, 255, 0.95))
     drop-shadow(0 0 0.8rem rgba(74, 174, 255, 0.65));
+}
+
+.arena--coop-2v2 .fighter[data-skill-target-candidate="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 3%;
+  border: 2px dashed rgba(122, 245, 193, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 0 0.65rem rgba(45, 230, 155, 0.85);
+  background: rgba(37, 215, 158, 0.08);
+  pointer-events: none;
+  z-index: 3;
+  animation: candidate-glow 1.15s ease-in-out infinite alternate;
+}
+.arena--coop-2v2 .squad-card[data-skill-target-candidate="true"] {
+  outline: 2px dashed rgba(122, 245, 193, 0.95);
+  outline-offset: 2px;
+  box-shadow: 0 0 0.72rem rgba(45, 230, 155, 0.65);
+}
+.action-option--skill[data-target-required="true"] {
+  border-color: rgba(122, 245, 193, 0.85);
+}
+.action-option--skill[data-targeting="true"] {
+  border-color: rgba(122, 245, 193, 1);
+  box-shadow: 0 0 0 2px rgba(122, 245, 193, 0.55);
+}
+@keyframes candidate-glow {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arena--coop-2v2 .fighter[data-skill-target-candidate="true"]::before {
+    animation: none;
+  }
 }
 
 .arena--coop-2v2 .fighter[data-target-pulse="true"]::after {
