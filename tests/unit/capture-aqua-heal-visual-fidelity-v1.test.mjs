@@ -76,3 +76,23 @@ test("actual presentation resolver + status renderer produce visible 45 percent 
   assert.match(motion.children[0].style.backgroundImage, /sprite_status_healing_aura_atlas_01.webp/);
   renderer.dispose();
 });
+import {createHash} from "node:crypto";
+
+function sortRecordKeys(value) {
+  if (Array.isArray(value)) return value.map(sortRecordKeys);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map(key => [key, sortRecordKeys(value[key])]));
+  }
+  return value;
+}
+
+test("full author export content remains lossless, not merely selected visual fields", async () => {
+  const file = JSON.parse(await readFile(new URL(FILE, import.meta.url), "utf8"));
+  const fingerprint = createHash("sha256")
+    .update(JSON.stringify(sortRecordKeys(file)), "utf8")
+    .digest("hex");
+  assert.equal(fingerprint,
+    "75b4c9b404c56333a0cf22cd6be1fe2410531477d137be99ba089f1ec93133e5",
+    "published authored transfer diverged from user source: icon, status FX, gameplay or other field was changed"
+  );
+});
