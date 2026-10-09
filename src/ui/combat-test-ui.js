@@ -1168,11 +1168,9 @@ export async function mountCombatTest({
       }
     },
     onHealthDelta(feedback) {
-      if (feedback.kind !== "damage") {
-        return;
-      }
+      if (!["damage", "heal"].includes(feedback.kind)) return;
       fx.play({
-        type: "damage",
+        type: feedback.kind,
         targetSlot: feedback.actorId,
         amount: feedback.amount,
         durationMs: 700
