@@ -6,7 +6,7 @@
     "id": "crea_maraileron",
     "displayName": "Maraileron",
     "description": "Chasseur marin protégé par des nageoires cuirassées.",
-    "level": 16,
+    "level": 1,
     "sourceStats": {
       "force": 21,
       "agility": 20,
