@@ -49,3 +49,7 @@ Branche : `work/lab-aqua-heal-author-preset-v1-2026-10-09`.
 Lancer l'éditeur Capture puis sélectionner **Onde régénérante**. Pour essayer effectivement une récupération de PV, l'utilisateur devra enregistrer une quantité positive dans un effet de soin et exporter/sauvegarder à nouveau la compétence. Selon l'intention, conserver le ciblage `self` ou autoriser également l'allié. Lier au loadout d'une créature de niveau adéquat au besoin ; aucune modification de loadout automatique n'est faite par cette importation.
 
 Aucun asset média ajouté : **0 image, 0 son, 0 FX**. 1 fichier JSON métier, 1 référence de catalogue.
+
+## Résultat CI du navigateur réel
+
+CI 37914308875 : SUCCESS, 1308 tests Node réussis et aucun échec. Chromium montre lib_aqua_heal une seule fois parmi 112 compétences et 103 créatures; Jet pressurisé reste présent. Le sondage du sélecteur ne remplace pas un test de guérison : le transfert auteur garde 0 PV de soin.
