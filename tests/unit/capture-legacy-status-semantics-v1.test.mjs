@@ -282,7 +282,7 @@ test("standard Capture registry owns defense as readable global damage reduction
 
   assert.ok(defense);
   assert.equal(defense.label, "Défense");
-  assert.equal(defense.damageReductionPctPerPoint, 1);
+  assert.equal(defense.damageReductionPctPerPoint, 0.2);
 });
 
 test("combat damage combines channel resistance with global defense reduction", () => {
