@@ -137,3 +137,76 @@ test("impact uses the target semantic view, while cast uses the source semantic 
   assert.equal(nodes[1].className.includes("layer-behind"), false);
   renderer.dispose();
 });
+
+
+test("opacity editor maps percentage 0..100 to canonical cast and aura units and preserves export/import", () => {
+  for (const [role, percent] of [["cast", 40], ["zone", 25]]) {
+    const draft = buildHumanSkillDraftV1(fields({
+      [role + "AssetId"]: spriteId, [role + "OpacityPct"]: percent
+    }));
+    const slot = draft.presentation.visual[role === "zone" ? "aura" : role];
+    assert.equal(slot.opacity, percent / 100);
+    const exported = importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft;
+    assert.equal(exported.presentation.visual[role === "zone" ? "aura" : role].opacity, percent / 100);
+    const restored = humanSkillEditorFieldsFromDraftV1(exported);
+    assert.equal(restored.presentation[role + "OpacityPct"], percent);
+    assert.deepEqual(buildHumanSkillDraftV1(restored), draft);
+  }
+});
+
+test("opacity control defaults to 100% and honors an exactly 0% invisible sprite", () => {
+  for (const role of ["cast", "zone"]) {
+    const opaque = buildHumanSkillDraftV1(fields({ [role + "AssetId"]: spriteId }));
+    const transparent = buildHumanSkillDraftV1(fields({
+      [role + "AssetId"]: spriteId, [role + "OpacityPct"]: 0
+    }));
+    const key = role === "zone" ? "aura" : role;
+    assert.equal(opaque.presentation.visual[key].opacity, 1);
+    assert.equal(transparent.presentation.visual[key].opacity, 0);
+    assert.throws(() => buildHumanSkillDraftV1(fields({
+      [role + "AssetId"]: spriteId, [role + "OpacityPct"]: 110
+    })), /opacit|0.*100/i);
+  }
+});
+
+test("cast animation obeys authored opacity while retaining preparation duration and layering", async () => {
+  const draft = buildHumanSkillDraftV1(fields({
+    castAssetId: spriteId, castOpacityPct: 40,
+    castPlaybackMode: "loop", castLayerPlayer: "front"
+  }));
+  const { renderer, nodes, animations } = harness(draft);
+  const handle = renderer.play({
+    type: "cast", skillId: draft.id, actorSlot: "player", durationMs: 1500
+  });
+  assert.equal(animations[0].keyframes[0].opacity, .14);
+  assert.equal(animations[0].keyframes[1].opacity, .4);
+  assert.equal(animations[0].keyframes[2].opacity, .4);
+  assert.equal(animations[0].options.duration, 1500);
+  assert.equal(nodes[0].className.includes("layer-behind"), false);
+  animations[0].resolve(); await handle.finished;
+  assert.equal(renderer.activeCount, 0);
+});
+
+test("persisted aura opacity is actually applied to renderer nodes independent of layering", () => {
+  const draft = buildHumanSkillDraftV1(fields({
+    zoneAssetId: spriteId, zoneOpacityPct: 25,
+    zoneLayerPlayer: "front", zonePlaybackMode: "loop"
+  }));
+  const { renderer, nodes } = harness(draft);
+  renderer.syncPersistentZones([{
+    id: "opacity-zone", skillId: draft.id, sourceActorId: "player",
+    radius: "short", appliedAtMs: 100, expiresAtMs: 4100
+  }]);
+  assert.equal(nodes[0].style.opacity, "0.25");
+  assert.equal(nodes[0].className.includes("layer-behind"), false);
+  renderer.dispose();
+});
+
+test("editor exposes clear percentage controls for cast, zone and persistent status sprite", async () => {
+  const html = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url), "utf8");
+  const source = await readFile(new URL("../../src/ui/capture-editor-human-v2.js", import.meta.url), "utf8");
+  for (const role of ["cast", "zone"]) {
+    assert.match(html, new RegExp('data-skill-' + role + '-opacity-pct'));
+  }
+  assert.match(source, /Opacité du sprite \\(\\%\\)/);
+});
