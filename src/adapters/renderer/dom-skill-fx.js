@@ -1768,7 +1768,7 @@ export function createDomSkillFxRenderer({
         continue;
       }
 
-      const source = centerRelativeTo(
+      const liveSource = centerRelativeTo(
         anchor(
           anchors,
           sourceActorId,
@@ -1776,6 +1776,11 @@ export function createDomSkillFxRenderer({
         ).getBoundingClientRect(),
         arenaRect
       );
+      // The visual area is anchored on the ground once its caster leaves.
+      // Its cached view coordinates never determine occupancy/damage.
+      const source = zone.detachedFromSource && record?.zoneCenter
+        ? record.zoneCenter
+        : liveSource;
       const displayScale = Math.max(
         0.25,
         Number(visual.displayScale) || 1
@@ -1846,6 +1851,8 @@ export function createDomSkillFxRenderer({
         record.spritePlayback?.setDuration?.(spriteOwnerDurationMs(zone, record.playbackStartedAtMs));
       }
 
+      if (!zone.detachedFromSource) record.zoneCenter = source;
+      else if (!record.zoneCenter) record.zoneCenter = source;
       const offsetX =
         Number(visual.offsetX) || 0;
       const offsetY =
