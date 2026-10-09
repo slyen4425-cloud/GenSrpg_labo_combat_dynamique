@@ -54,8 +54,14 @@ function explainEffect(effect) {
       const tick=seconds(effect.tickIntervalMs);
       const dmg=decimal(effect.tickEffect?.amount ?? 0);
       const reinforce=effect.reactivation === "reinforce";
-      return "Zone "+(effect.radius ?? "short")+" "+where+
-        " : "+dmg+" dégâts de base toutes les "+tick+" pendant "+duration+
+      const zoneDescription=effect.tickEffect?.kind === "apply_status"
+        ? " : statut "+(effect.tickEffect.status?.kind ?? "personnalisé")+
+          (effect.statusBehavior === "on_enter"
+            ? " appliqué à l’entrée (garde sa durée après sortie)"
+            : " actif seulement tant que la cible reste dans la zone")+
+          " pendant "+duration
+        : " : "+dmg+" dégâts de base toutes les "+tick+" pendant "+duration;
+      return "Zone "+(effect.radius ?? "short")+" "+where+zoneDescription+
         (reinforce ? " ; chaque réactivation agrandit la zone (jusqu'à "+decimal(effect.maxActivations ?? 1)+" activations, selon le pas choisi)"
           : " ; chaque réactivation renouvelle la durée sans agrandir le rayon");
     }
@@ -111,7 +117,14 @@ function liveSkill(root) {
       tickIntervalMs:numberField(row,"[data-skill-zone-tick-seconds]",0)*1000,
       reactivation:readField(row,"[data-skill-zone-reactivation]","refresh"),
       maxActivations:numberField(row,"[data-skill-zone-max-activations]",1),
-      tickEffect:{amount:numberField(row,"[data-skill-zone-tick-damage]",0)}
+      statusBehavior:readField(row,"[data-skill-zone-status-behavior]","while_inside"),
+      tickEffect:readField(row,"[data-skill-zone-effect-kind]","damage")==="apply_status"
+        ? {kind:"apply_status",status:{
+          kind:readField(row,"[data-skill-zone-status-kind]","stat_modifier"),
+          statId:readField(row,"[data-skill-zone-status-stat-id]",""),
+          deltaPoints:numberField(row,"[data-skill-zone-status-delta-points]",0),
+          percent:numberField(row,"[data-skill-zone-status-reflection-percent]",0)
+        }} : {kind:"damage",amount:numberField(row,"[data-skill-zone-tick-damage]",0)}
     };
     if(kind==="apply_status") {
       const statusKind=readField(row,"[data-skill-status-kind]","stat_modifier");
