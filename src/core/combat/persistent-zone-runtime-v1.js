@@ -12,7 +12,7 @@ import {
 import {
   resolveTacticalEffectTargetIdsV1
 } from "./tactical-effect-targeting-v1.js";
-import { applyStatusEffectV1 } from "./status-effect-runtime-v1.js";
+import { applyStatusEffectV1, validateStatusEffectForTargetV1 } from "./status-effect-runtime-v1.js";
 import { isStatusEffectRuntimeInstanceActiveV1 } from "./status-effect-instance-v1.js";
 
 const DISTANCE_ORDER = Object.freeze([
@@ -214,6 +214,12 @@ function applyZoneStatusV1({state, zone, targetActorId, atMs, whileInside}) {
       existing.expiresAtMs >= zone.expiresAtMs) {
     return state;
   }
+  const validated = validateStatusEffectForTargetV1({
+    state, targetActorId, status
+  });
+  // A custom game may define Defense only for a subset of creatures.
+  // A zone must never crash its combat clock on an unsupported stat.
+  if (!validated.ok) return state;
   const effectiveStatus = {
     ...status,
     id,
