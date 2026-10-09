@@ -2589,6 +2589,35 @@ export function humanSkillEditorFieldsFromDraftV1(
   );
 }
 
+// Presentation-only diagnostic: healing still belongs exclusively to Combat Rules.
+// A creator may export an unfinished draft, but must not be told an empty heal is ready.
+function hasPositiveHealingSkillEffectV1(effect) {
+  if (effect?.kind === "heal") {
+    return Number(effect.amount) > 0;
+  }
+  if (effect?.kind === "apply_status") {
+    return effect.status?.kind === "heal_over_time" &&
+      Number(effect.status.amount) > 0;
+  }
+  if (effect?.kind === "scheduled_effect") {
+    return Array.isArray(effect.effects) &&
+      effect.effects.some(hasPositiveHealingSkillEffectV1);
+  }
+  return false;
+}
+
+export function humanSkillHealExportWarningV1(draft) {
+  const definition = draft?.definition;
+  if (definition?.category !== "heal") {
+    return null;
+  }
+  if (Number(definition.effect?.heal) > 0 ||
+      definition.effects?.some(hasPositiveHealingSkillEffectV1)) {
+    return null;
+  }
+  return "Attention : la capacité est classée Soin mais aucun effet de récupération de PV n'est configuré. Vérifie les Effets tactiques et le Soin périodique : le fichier exporté ne restaurera aucun PV.";
+}
+
 export function buildHumanSkillDraftV1(fields) {
   if (!fields || typeof fields !== "object") {
     throw new TypeError("Données capacité invalides");
@@ -11413,6 +11442,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           buildHumanSkillDraftV1(
             readSkillFields(root)
           );
+        const healExportWarning = humanSkillHealExportWarningV1(draft);
         const json =
           exportCaptureSkillTransferJsonV1(
             draft
@@ -11431,14 +11461,16 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         updateTransferState(
           "Capacité « " +
             draft.definition.name +
-            " » exportée.",
-          "ok"
+            " » exportée." +
+            (healExportWarning ? " " + healExportWarning : ""),
+          healExportWarning ? "warning" : "ok"
         );
         setStatus(
           root,
           "Export capacité prêt : " +
-            filename,
-          "ok"
+            filename +
+            (healExportWarning ? " " + healExportWarning : ""),
+          healExportWarning ? "warn" : "ok"
         );
       } catch (error) {
         updateTransferState(
