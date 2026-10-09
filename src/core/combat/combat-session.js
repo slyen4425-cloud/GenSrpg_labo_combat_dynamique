@@ -407,7 +407,7 @@ export function createCombatSession({
   function departFighter(fighterId, {departingMemberId = null} = {}) {
     state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
     state = removeInheritedZoneBoundStatusesV1(state, fighterId);
-    state = resetPersistentZoneOccupancyForSlotV1(state, fighterId);
+    state = resetPersistentZoneOccupancyForSlotV1(state, fighterId, {absent:true});
     return state;
   }
 
