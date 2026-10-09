@@ -123,3 +123,50 @@ test("Human Editor exports status-bearing zones without breaking the damage zone
  assert.match(ui,/skillZoneEffectKind/);
  assert.match(ui,/skillZoneStatusBehavior/);
 });
+
+const bounds=(left,top,width=20,height=20)=>({left,top,width,height});
+function spatial(zone,candidates){
+  return {visibleZones:{
+    zones:[{zoneId:zone.id,sourceActorId:zone.sourceActorId,radius:zone.radius,bounds:bounds(0,0,100,100)}],
+    actors:Object.entries(candidates).map(([actorId,xy])=>({actorId,bounds:bounds(...xy)}))
+  }};
+}
+
+test("real visible ellipse drives distinct 2v2 buffs, removes an ally on exit and adds entering ally",()=>{
+ const session=createCombatSession({distance:"short",battleFormat:format,fighters:[f("a"),f("ally"),f("b"),f("enemy2")]});
+ session.useSkill({actorId:"a",targetId:"a",skill:skill(effect(status()),"all_allies")});
+ const zone=session.snapshot().persistentZones[0];
+ session.advanceMs(1,{zoneSpatialContext:spatial(zone,{a:[20,20],ally:[20,20],b:[200,200],enemy2:[200,200]})});
+ assert.equal(session.snapshot().fighters.ally.statusEffects.length,1);
+ session.advanceMs(100,{zoneSpatialContext:spatial(zone,{a:[20,20],ally:[200,200],b:[200,200],enemy2:[200,200]})});
+ assert.equal(session.snapshot().fighters.ally.statusEffects.length,0,"buff must disappear as soon as ally leaves ellipse");
+ session.advanceMs(100,{zoneSpatialContext:spatial(zone,{a:[20,20],ally:[20,20],b:[200,200],enemy2:[200,200]})});
+ assert.equal(session.snapshot().fighters.ally.statusEffects.length,1,"returning occupant reacquires native buff");
+});
+
+test("while-inside poison is removed before the native DoT tick when its victim exits",()=>{
+ const session=createCombatSession({distance:"short",battleFormat:format,fighters:[f("a"),f("ally"),f("b"),f("enemy2")]});
+ const original=skill(effect(status("damage_over_time","venom")),"all_enemies");
+ const aura=normalizeSkillDefinition({...original,effects:[{
+   ...original.effects[0],statusBehavior:"while_inside"
+ }]});
+ session.useSkill({actorId:"a",targetId:"b",skill:aura});
+ const zone=session.snapshot().persistentZones[0];
+ session.advanceMs(1,{zoneSpatialContext:spatial(zone,{a:[20,20],b:[20,20],enemy2:[200,200]})});
+ assert.equal(session.snapshot().fighters.b.statusEffects.length,1);
+ session.advanceMs(1200,{zoneSpatialContext:spatial(zone,{a:[20,20],b:[200,200],enemy2:[200,200]})});
+ assert.equal(session.snapshot().fighters.b.hp,100,"no obsolete DoT tick after leaving");
+ assert.equal(session.snapshot().fighters.b.statusEffects.length,0);
+});
+
+test("a saved recalled member cannot revive a detached zone buff from its reserve snapshot",()=>{
+ const session=createCombatSession({distance:"short",battleFormat:format,fighters:[f("a"),f("ally"),f("b"),f("enemy2")]});
+ session.useSkill({actorId:"a",targetId:"a",skill:skill(effect(status()))});
+ session.advanceMs(1);
+ const oldSnapshot=session.snapshot().fighters.a;
+ assert.equal(oldSnapshot.statusEffects.length,1);
+ session.replaceFighter("a",f("a"),{clearSourceZones:true});
+ assert.equal(session.snapshot().persistentZones.length,0);
+ session.replaceFighter("a",{...f("a"),statusEffects:oldSnapshot.statusEffects},{clearSourceZones:true});
+ assert.equal(session.snapshot().fighters.a.statusEffects.length,0);
+});
