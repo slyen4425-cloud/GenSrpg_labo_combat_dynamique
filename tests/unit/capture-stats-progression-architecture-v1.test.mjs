@@ -354,8 +354,10 @@ test("default Monster Capture progression policy is data-owned and configurable"
   );
   const rules = normalizeCaptureProgressionRulesV1(raw);
 
-  assert.equal(rules.maxActiveSkills, 4);
-  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 1), 2);
+  assert.equal(rules.maxActiveSkills, 5);
+  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 1), 1);
+  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 5), 2);
   assert.equal(captureActiveSkillSlotsForLevelV1(rules, 10), 3);
-  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 20), 4);
+  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 15), 4);
+  assert.equal(captureActiveSkillSlotsForLevelV1(rules, 20), 5);
 });
