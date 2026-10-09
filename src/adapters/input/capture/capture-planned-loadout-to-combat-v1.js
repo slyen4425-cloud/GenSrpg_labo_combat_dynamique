@@ -113,9 +113,18 @@ export function projectCapturePlannedLoadoutsToCombatV1({
               slot.id ===
               CAPTURE_ULTIMATE_SKILL_SLOT_ID;
 
+            // The fifth milestone, when configured, unlocks the
+            // existing ultimate slot (after the four standard slots).
+            // Legacy four-slot policies keep their former ultimate
+            // requiredLevel behavior for imported/custom worlds.
+            const ultimateLockedByProgression =
+              isUltimate &&
+              rules.maxActiveSkills >= 5 &&
+              unlockedSlotCount < 5;
+
             if (
-              !isUltimate &&
-              index >= unlockedSlotCount
+              (!isUltimate && index >= unlockedSlotCount) ||
+              ultimateLockedByProgression
             ) {
               return {
                 id: slot.id,
