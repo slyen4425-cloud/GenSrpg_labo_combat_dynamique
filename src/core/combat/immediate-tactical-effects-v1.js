@@ -237,7 +237,15 @@ export function applyImmediateTacticalEffectsV1({
   let nextState = state;
   const events = [];
 
-  for (const effect of skill.effects ?? []) {
+  // Legacy editor field effect.heal uses the SAME canonical tactical HP
+  // application and event path as modern effects[].heal. The Skill Contract
+  // rejects a positive legacy heal combined with an effects[] heal.
+  const legacyHeal = Math.max(0, Number(skill.effect?.heal) || 0);
+  const effects = legacyHeal > 0
+    ? [{ kind: "heal", targetScope: "target", amount: legacyHeal }, ...(skill.effects ?? [])]
+    : skill.effects ?? [];
+
+  for (const effect of effects) {
     if (effect.kind === "persistent_zone") {
       continue;
     }
