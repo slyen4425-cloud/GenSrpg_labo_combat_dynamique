@@ -16,7 +16,7 @@ const transferFile = async () => importCaptureTransferJsonV1(
   await readFile(new URL(FILE, import.meta.url), "utf8")
 );
 
-test("Onde régénérante is configured exactly: +5 immediate and +5/3s for 20s", async () => {
+test("Onde régénérante latest author export: +5 immediate and +3/3s for 20s", async () => {
   const transfer = await transferFile();
   assert.equal(transfer.kind, "skill");
   const draft = transfer.value.draft;
@@ -42,16 +42,17 @@ test("Onde régénérante is configured exactly: +5 immediate and +5/3s for 20s"
       durationMs:20000,
       stacking:"refresh",
       maxStacks:1,
-      amount:5,
+      amount:3,
       tickIntervalMs:3000,
       tags:[]
     }}
   ]);
-  assert.equal(draft.presentation, null, "no fictional FX or audio");
+  assert.equal(draft.presentation?.visual?.icon?.assetId,"core:icon-skill-recall-01");
+  assert.equal(draft.presentation?.statusVisuals?.lib_aqua_heal_regeneration?.sprite?.opacity,0.45);
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft, draft);
 });
 
-test("CombatSession heals 5 instantly and ticks 5 only every 3s through 20s, then expires", async () => {
+test("CombatSession heals 5 instantly and ticks 3 every 3s through 20s, then expires", async () => {
   const draft = (await transferFile()).value.draft;
   const fighter = (id,hp) => ({
     id,maxHp:100,initialHp:hp,maxEnergy:100,initialEnergy:100,
@@ -69,9 +70,9 @@ test("CombatSession heals 5 instantly and ticks 5 only every 3s through 20s, the
   assert.equal(session.snapshot().fighters.self.statusEffects.length,1);
   assert.equal(session.snapshot().fighters.self.statusEffects[0].definition.kind,"heal_over_time");
   const steps = [
-    [2999,30], [1,35], [2999,35], [1,40], [3000,45],
-    [3000,50], [3000,55], [3000,60],
-    [1999,60], [1,60], [3000,60]
+    [2999,30], [1,33], [2999,33], [1,36], [3000,39],
+    [3000,42], [3000,45], [3000,48],
+    [1999,48], [1,48], [3000,48]
   ];
   for (const [ms,hp] of steps) {
     session.advanceMs(ms);
