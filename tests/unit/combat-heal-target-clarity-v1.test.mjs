@@ -94,7 +94,7 @@ test("Capture combat routes target selection and visual heal to existing owners"
   assert.match(ui,/data\.skillTargetCandidate|dataset\.skillTargetCandidate/);
   assert.match(ui,/pendingSkillId/);
   assert.match(ui,/combatSkillTargetOptionsV1/);
-  assert.match(ui,/feedback\.kind\s*===\s*"heal"|feedback\.kind\s*===\s*'heal'/);
+  assert.match(ui, /\["damage", "heal"\]\.includes\(feedback\.kind\)/);
   assert.match(ui,/type:\s*feedback\.kind/);
   assert.match(ui,/PV déjà au maximum/);
   assert.match(css,/skill-target-candidate/);
