@@ -2128,7 +2128,7 @@ export function createDomSkillFxRenderer({
       });
     }
 
-    if (type === "damage") {
+    if (type === "damage" || type === "heal") {
       const numericAmount = Math.max(
         0,
         Number(amount) || 0
@@ -2142,12 +2142,12 @@ export function createDomSkillFxRenderer({
         });
       }
 
-      const damageRect = anchor(
+      const feedbackRect = anchor(
           anchors,
           targetSlot,
-          "live damage target"
+          "live health target"
         ).getBoundingClientRect();
-      const center = centerRelativeTo(damageRect, arenaRect);
+      const center = centerRelativeTo(feedbackRect, arenaRect);
       // Keep floating feedback readable even when the model is large or moving
       // outside the arena. This affects presentation only, never damage math.
       const insetX = Math.min(32, arenaRect.width / 2);
@@ -2155,16 +2155,19 @@ export function createDomSkillFxRenderer({
       const insetBottom = Math.min(24, arenaRect.height / 2);
       const to = {
         x: Math.max(insetX, Math.min(arenaRect.width - insetX, center.x)),
-        y: Math.max(insetTop, Math.min(arenaRect.height - insetBottom, center.y - damageRect.height / 4))
+        y: Math.max(insetTop, Math.min(arenaRect.height - insetBottom, center.y - feedbackRect.height / 4))
       };
 
       const node =
         arena.ownerDocument.createElement("span");
       node.className =
-        "skill-fx skill-fx--damage-number";
-      node.dataset.skillFx = "damage";
-      node.dataset.damageAmount =
-        String(numericAmount);
+        "skill-fx skill-fx--" + (type === "heal" ? "heal-number" : "damage-number");
+      node.dataset.skillFx = type;
+      if (type === "heal") {
+        node.dataset.healAmount = String(numericAmount);
+      } else {
+        node.dataset.damageAmount = String(numericAmount);
+      }
 
       const label =
         Number.isInteger(numericAmount)
@@ -2173,7 +2176,7 @@ export function createDomSkillFxRenderer({
               .toFixed(1)
               .replace(/\.0$/, "");
 
-      node.textContent = "-" + label;
+      node.textContent = (type === "heal" ? "+" : "-") + label;
       node.style.left = `${to.x}px`;
       node.style.top = `${to.y}px`;
       arena.append(node);
