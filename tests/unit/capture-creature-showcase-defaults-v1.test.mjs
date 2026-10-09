@@ -26,7 +26,7 @@ test("historical showcase loadout follows GenSrpG level order and max 4 rule", a
   const result =
     buildCaptureCreatureHistoricalLoadoutV1({
       creatureId: maraileron.id,
-      level: maraileron.level,
+      level: 16,
       abilityIds: maraileron.abilityIds,
       runtimeSkillIds: new Set([
         "cap_water_atk_1",
@@ -73,7 +73,7 @@ test("historical showcase loadout preserves an unavailable legacy active slot in
   const result =
     buildCaptureCreatureHistoricalLoadoutV1({
       creatureId: voltige.id,
-      level: voltige.level,
+      level: 6,
       abilityIds: voltige.abilityIds,
       runtimeSkillIds: new Set([
         "lib_chain_lightning",
@@ -125,7 +125,7 @@ test("historical showcase loadout never invents an ability outside the creature 
   const result =
     buildCaptureCreatureHistoricalLoadoutV1({
       creatureId: ailevent.id,
-      level: ailevent.level,
+      level: 5,
       abilityIds: ailevent.abilityIds,
       runtimeSkillIds: new Set([
         "cap_air_atk_1",
