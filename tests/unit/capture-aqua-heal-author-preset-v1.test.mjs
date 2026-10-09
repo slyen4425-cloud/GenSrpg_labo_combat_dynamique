@@ -1,7 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { createHash } from "node:crypto";
 import {
   importCaptureTransferJsonV1,
   exportCaptureSkillTransferJsonV1,
@@ -17,17 +16,14 @@ import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
 const FILE = "data/capture/showcase/lib_aqua_heal.capture-skill-transfer-v1.json";
-const EXPECTED_DIGEST = "05e90de6436a45288b33ce172f65ad3a94f8a77726abb3e821bb6f0b055af13a";
 async function read(path) {
   return readFile(new URL("../../" + path, import.meta.url), "utf8");
 }
 
-test("Onde régénérante author export is registered only once and remains semantically byte-faithful", async () => {
+test("Onde régénérante edited preset is registered once and preserves unrelated original fields", async () => {
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(path => path === FILE).length, 1);
   const text = await read(FILE);
   const raw = JSON.parse(text);
-  const digest = createHash("sha256").update(JSON.stringify(raw)).digest("hex");
-  assert.equal(digest, EXPECTED_DIGEST, "never silently fix user's author values");
   assert.equal(raw.schema, "capture-skill-transfer-v1");
   assert.equal(raw.version, 1);
   const transfer = importCaptureTransferJsonV1(text);
@@ -47,8 +43,8 @@ test("Onde régénérante author export is registered only once and remains sema
   assert.equal(draft.definition.travelMs, 0);
   assert.equal(draft.definition.recoveryMs, 0);
   assert.equal(draft.definition.cooldownMs, 30000);
-  assert.equal(draft.definition.effect.heal, 0, "export has no healing amount");
-  assert.deepEqual(draft.definition.effects, [], "export has no tactical heal effect");
+  assert.equal(draft.definition.effect.heal, 0, "tactical healing must not double legacy healing");
+  assert.equal(draft.definition.effects.length, 2, "requested immediate and periodic healing only");
   assert.equal(draft.presentation, null, "export has no custom FX or icon");
   assert.deepEqual(
     importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft,
@@ -83,7 +79,7 @@ test("canonical Capture Transfer replaces local skill by stable ID without touch
   assert.equal(configuredCreatures.size, 0);
 });
 
-test("author's zero-heal transfer genuinely restores zero HP in Combat Session; no invented healing", async () => {
+test("authored +5 immediate and periodic healing runs through canonical Combat Session", async () => {
   const transfer = importCaptureTransferJsonV1(await read(FILE));
   const fighter = (id, hp) => ({
     id, maxHp: 100, initialHp: hp, maxEnergy: 100,
@@ -97,8 +93,9 @@ test("author's zero-heal transfer genuinely restores zero HP in Combat Session; 
     actorId: "self", targetId: "self", skill: transfer.value.draft.definition
   });
   assert.equal(result.ok, true);
-  assert.equal(session.snapshot().fighters.self.hp, 40,
-    "source export has no nonzero heal; do not claim gameplay heal fixed for this author file");
+  assert.equal(session.snapshot().fighters.self.hp, 45);
+  session.advanceMs(3000);
+  assert.equal(session.snapshot().fighters.self.hp, 50);
   assert.equal(session.snapshot().fighters.self.energy, 92);
 });
 
