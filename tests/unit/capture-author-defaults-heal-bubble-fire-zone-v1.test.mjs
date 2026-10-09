@@ -20,14 +20,13 @@ test("the source-owned identities of all 110 historical entries and 3 showcase t
     "data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json",
     "data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json"
   ];
+  const statRegistry = await readJson("data/capture/monster-capture-stat-registry.v1.json");
   for (const path of paths) {
     const transfer = await readJson(path);
     assert.equal(transfer.draft.level, 1, path);
-    assert.deepEqual(importCaptureTransferJsonV1(
-      exportCaptureCreatureTransferJsonV1(
-        importCaptureTransferJsonV1(JSON.stringify(transfer)).value
-      )
-    ).value.draft, importCaptureTransferJsonV1(JSON.stringify(transfer)).value.draft);
+    const loaded = importCaptureTransferJsonV1(JSON.stringify(transfer), {statRegistry});
+    const exported = exportCaptureCreatureTransferJsonV1(loaded.value, {statRegistry});
+    assert.deepEqual(importCaptureTransferJsonV1(exported, {statRegistry}).value, loaded.value);
   }
 });
 
