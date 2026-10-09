@@ -1,0 +1,51 @@
+{
+  "id": "pack:capture:sprite-water-healing-bubble-01",
+  "element": "water",
+  "usage": "visual-only",
+  "frame_size": [
+    512,
+    512
+  ],
+  "runtime_frame_size": [
+    384,
+    384
+  ],
+  "frame_count": 20,
+  "frame_ms": 70,
+  "loop": true,
+  "playback_mode": "loop",
+  "frames": [
+    "frames/sprite_heal_water_bubble_01.webp",
+    "frames/sprite_heal_water_bubble_02.webp",
+    "frames/sprite_heal_water_bubble_03.webp",
+    "frames/sprite_heal_water_bubble_04.webp",
+    "frames/sprite_heal_water_bubble_05.webp",
+    "frames/sprite_heal_water_bubble_06.webp",
+    "frames/sprite_heal_water_bubble_07.webp",
+    "frames/sprite_heal_water_bubble_08.webp",
+    "frames/sprite_heal_water_bubble_09.webp",
+    "frames/sprite_heal_water_bubble_10.webp",
+    "frames/sprite_heal_water_bubble_11.webp",
+    "frames/sprite_heal_water_bubble_12.webp",
+    "frames/sprite_heal_water_bubble_13.webp",
+    "frames/sprite_heal_water_bubble_14.webp",
+    "frames/sprite_heal_water_bubble_15.webp",
+    "frames/sprite_heal_water_bubble_16.webp",
+    "frames/sprite_heal_water_bubble_17.webp",
+    "frames/sprite_heal_water_bubble_18.webp",
+    "frames/sprite_heal_water_bubble_19.webp",
+    "frames/sprite_heal_water_bubble_20.webp"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_heal_water_bubble_atlas_20f_384.webp",
+    "format": "sprite-strip",
+    "frameCount": 20,
+    "frameWidth": 384,
+    "frameHeight": 384
+  },
+  "source_size": [
+    1402,
+    1122
+  ],
+  "note": "Export 512x512 redimensionné depuis 20 cellules générées d'environ 280x280 pixels. Atlas mobile 384x384 par frame."
+}

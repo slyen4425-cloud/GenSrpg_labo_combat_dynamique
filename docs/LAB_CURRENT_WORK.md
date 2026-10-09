@@ -6716,3 +6716,14 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Aura givrée : formation sur la première moitié puis maintien visuel quasi fixe sur les 8 dernières phases (~2 s à 250 ms/phase).
 - Aucun asset glace générique remplacé.
 - CI complète du payload à valider sur le commit documentaire suivant avant GREEN/publication.
+
+
+## 2026-10-09 — Bulle de soin aquatique, 20 frames — lot assets
+
+- Demande utilisateur : découper 20 frames d'une aura eau/soin, conserver 512×512 par frame, puis ajouter dans la bibliothèque Labo Combat.
+- Propriétaire unique : `global-assets` + `data/assets/catalog/global-visual-assets.v1.json` ; le moteur de soin et la fiche `lib_aqua_heal` ne sont pas modifiés.
+- Base exacte : `74ac3314f2d20eeadad77b439d5f229f5dacee3e` ; checkpoint `checkpoint/global-assets-before-water-healing-bubble-v1-2026-10-09` ; branche `work/global-assets-water-healing-bubble-v1-2026-10-09`.
+- Périmètre : 20 WebP 512×512 avec alpha, atlas WebP 20×384, manifeste, catalogue additif d'un seul asset ID, sentinelle Node et documentation.
+- Protections : anciens `healing_aura`/`regeneration`, autres sprites, combat/soin/runtime, `main`, GenSrpG et exploration.
+- Limite de résolution : 512×512 est un export rééchantillonné de cellules originales ≈280×280 ; l'atlas 384 optimise la taille de texture mobile.
+- Tests : dimensions RIFF/WEBP des 20 frames + atlas, ID unique, file et compte catalogue ; CI Node et structure. Ne pas appeler GREEN avant vérification de la CI et promotion `global-assets` sans force.

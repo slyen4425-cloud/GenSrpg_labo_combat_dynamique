@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 118,
+    "assets": 119,
     "icons": 37,
-    "sprites": 65,
+    "sprites": 66,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -3840,6 +3840,46 @@
         "frameCount": 12,
         "frameMs": 45,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-water-healing-bubble-01",
+      "label": "Bulle de soin aquatique — aura",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "heal",
+        "water",
+        "status",
+        "regeneration",
+        "aura",
+        "bubble",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/water_healing_bubble/atlases/sprite_heal_water_bubble_atlas_20f_384.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [
