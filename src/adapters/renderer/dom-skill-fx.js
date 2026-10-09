@@ -1897,7 +1897,7 @@ export function createDomSkillFxRenderer({
       });
     }
     if (
-      !["cast", "projectile", "beam", "impact", "clash-impact", "miss", "damage", "phase"].includes(type)
+      !["cast", "projectile", "beam", "impact", "clash-impact", "miss", "damage", "heal", "phase"].includes(type)
     ) {
       return Object.freeze({
         status: "ignored",
