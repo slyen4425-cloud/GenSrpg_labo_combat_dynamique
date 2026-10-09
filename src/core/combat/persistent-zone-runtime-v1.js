@@ -490,6 +490,7 @@ function affectedIdsForZone({
 
   return candidates.filter(
     (candidateId) =>
+      !zone.absentRosterSlots?.includes(candidateId) &&
       (
         !excludedTargetIds ||
         !excludedTargetIds.has(
@@ -607,6 +608,7 @@ function approachEntryEventsForZone({
   const events = [];
 
   for (const candidateId of candidates) {
+    if (zone.absentRosterSlots?.includes(candidateId)) continue;
     if (visiblePersistentZoneRelationV1({ sample: zoneSpatialContext?.visibleZones, zoneId: zone.id, sourceActorId: zone.sourceActorId, radius: zone.radius, candidateId }) !== null) continue;
     const approach = approachFor({
       zoneSpatialContext,
@@ -677,6 +679,7 @@ function approachEntryEventsForZone({
   // the nominal approach-band threshold, including between equal clock ticks.
   for (const contact of zoneSpatialContext.contacts ?? []) {
     if (visiblePersistentZoneRelationV1({ sample: zoneSpatialContext?.visibleZones, zoneId: zone.id, sourceActorId: zone.sourceActorId, radius: zone.radius, candidateId: contact.actorId }) !== null) continue;
+    if (zone.absentRosterSlots?.includes(contact.actorId)) continue;
     if (contact.approachMode !== "ground" || contact.targetId !== zone.sourceActorId ||
         !candidates.includes(contact.actorId) || zone.expiresAtMs <= endMs) continue;
     if (relationInRadius({ state, battleFormat, sourceActorId: zone.sourceActorId,
