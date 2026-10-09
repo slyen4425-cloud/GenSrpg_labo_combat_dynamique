@@ -517,3 +517,17 @@ Inchangés :
 - Revue additionnelle : le client combat 1v1 ne doit jamais flasher une animation de dégât sur un `heal`; garde `damageFeedback.flash` uniquement si `feedback.kind === "damage"`.
 - 0 assets ajoutés/modifiés ; aucune capacité ou créature modifiée ; aucune dépendance runtime à `Zombicide-40k`.
 - Prévu une fois CI de clôture GREEN : `checkpoint/lab-heal-target-clarity-v1-green-2026-10-09`, `preview/lab-heal-target-clarity-v1-2026-10-09`, `gh-pages` par fast-forward protégé et validation Android ultérieure.
+
+
+## 2026-10-09 — Onde régénérante : intégration exacte de l'export auteur V1 (en cours)
+
+- Retour utilisateur : avant de tester la nouvelle UX des soins, intégrer/remplacer sa capacité exportée `gensrpg-capture-skill-lib_aqua_heal(1).json`.
+- Source de vérité : export joint `capture-skill-transfer-v1`, ID `lib_aqua_heal`, nom `Onde régénérante`.
+- SHA de base exact publié `df45bd9a7c87213e6bb4b90034b7559f0cc78549` (lot Heal Target Clarity V1, CI Chromium + Pages SUCCESS).
+- Checkpoint de départ `checkpoint/lab-start-aqua-heal-author-preset-v1-2026-10-09` ; branche isolée `work/lab-aqua-heal-author-preset-v1-2026-10-09`.
+- Propriétaire : `configuredSkills`, alimenté exclusivement par `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` et le pipeline `importCaptureTransferJsonV1` / `applyCaptureTransferBatchToEditorStateV1` en mode `replace`.
+- Périmètre : un JSON auteur dans `data/capture/showcase/`, une entrée canonique au registre de presets existant, nouveaux tests sentinelles et rapport de reprise ; pas de modification runtime ni donnée créature.
+- Protégés : toutes les autres capacités, les 103 créatures, loadouts, règles de combat, FX, son, `main`, `global-assets`, `Zombicide-40k`, Exploration et leurs branches parallèles.
+- Audit ID : `lib_aqua_heal` ne figure pas dans les catalogues de compétences native/vitrine publiés : insertion initiale dans le Showcase ; toute fiche locale préexistante du même ID est remplacée, jamais dupliquée.
+- **Avertissement auteur critique** : l'export a `effect.heal = 0`, `effects = []` et `presentation = null`, donc ne produit aucun gain de PV et ne possède aucun FX auteur. Sa description promet une cible alliée, mais `targetRelations = [\"self\"]` / `form = \"self\"` limite réellement au lanceur. `requiredLevel = 15`. Ces valeurs seront préservées sans correction silencieuse.
+- TDD : RED sur preset/catégorie absent, GREEN sur import exact, round-trip, sélection `configuredSkills`, non-duplication/replacement, préservation des 103 créatures/loadouts, test réel de 0 gain PV conforme à l'export, CI complète Node + Chromium et Pages uniquement avec lease. Aucun GREEN d'efficacité de soin ni validation Android avant export valide doté d'un soin positif et test smartphone.
