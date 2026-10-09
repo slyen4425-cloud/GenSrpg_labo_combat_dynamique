@@ -4558,6 +4558,17 @@ function syncHumanSkillEffectRowV1(
     node.hidden = !kinds.includes(statusKind);
   }
 
+  const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]")?.value ?? "damage";
+  for(const node of row.querySelectorAll("[data-skill-zone-effect-config-kind]")){
+    node.hidden = !node.dataset.skillZoneEffectConfigKind.split(",").includes(zoneEffectKind);
+  }
+  const zoneStatusKind=row.querySelector("[data-skill-zone-status-kind]")?.value ?? "stat_modifier";
+  for(const node of row.querySelectorAll("[data-skill-zone-status-config-kind]")){
+    node.hidden = !node.dataset.skillZoneStatusConfigKind.split(",").includes(zoneStatusKind);
+  }
+  const zoneBehavior=row.querySelector("[data-skill-zone-status-behavior]");
+  if(zoneBehavior) zoneBehavior.disabled = zoneEffectKind !== "apply_status";
+
   const stacking =
     row.querySelector(
       "[data-skill-status-stacking]"
@@ -5412,30 +5423,22 @@ function appendHumanSkillEffectV1(
       "Durée (secondes)",
       zoneDuration
     ),
-    tacticalFieldV1(
-      "Intervalle entre les dégâts (secondes)",
-      zoneTick
-    ),
-    tacticalFieldV1(
-      "Réactivation",
-      zoneReactivation
-    ),
+    tacticalFieldV1("Réactivation",zoneReactivation),
     tacticalFieldV1(
       "Activations max",
       zoneMaxActivations
     ),
-    tacticalFieldV1(
-      "Croissance du rayon par activation",
-      zoneRadiusGrowth
-    ),
-    tacticalFieldV1(
-      "Dégâts à chaque intervalle",
-      zoneTickDamage
-    ),
-    tacticalFieldV1(
-      "Élément des dégâts",
-      zoneChannel
-    )
+    tacticalFieldV1("Croissance du rayon par activation",zoneRadiusGrowth),
+    tacticalFieldV1("Effet de zone",zoneEffectKind),
+    tacticalFieldV1("Comportement du statut",zoneStatusBehavior)
+  );
+  const zoneDamageBox=document.createElement("div");
+  zoneDamageBox.className="skill-status-config__grid";
+  zoneDamageBox.dataset.skillZoneEffectConfigKind="damage";
+  zoneDamageBox.append(
+    tacticalFieldV1("Intervalle entre dégâts (secondes)",zoneTick),
+    tacticalFieldV1("Dégâts à chaque intervalle",zoneTickDamage),
+    tacticalFieldV1("Élément des dégâts",zoneChannel)
   );
 
   const zoneNote =
@@ -5444,10 +5447,7 @@ function appendHumanSkillEffectV1(
   zoneNote.textContent =
     "Toute réactivation renouvelle la durée automatiquement. « Garder la même taille » conserve le rayon actuel. « Agrandir la zone » fait évoluer le rayon Proche → Moyen → Loin selon la croissance choisie et le maximum d’activations. Intervalle = temps entre deux applications de dégâts. « Même élément que la capacité » applique automatiquement son élément aux dégâts.";
 
-  zoneBox.append(
-    zoneGrid,
-    zoneNote
-  );
+  zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneNote);
 
   config.append(
     amountField,
@@ -5476,9 +5476,16 @@ function appendHumanSkillEffectV1(
     statusPresentation?.mode ?? "none";
   zoneRadius.value =
     effect?.radius ?? "short";
-  zoneReactivation.value =
-    effect?.reactivation ?? "refresh";
-
+  zoneReactivation.value = effect?.reactivation ?? "refresh";
+  zoneEffectKind.value = effect?.tickEffect?.kind ?? "damage";
+  zoneStatusBehavior.value = effect?.statusBehavior ?? "while_inside";
+  zoneStatusKind.value = zs.kind ?? "stat_modifier";
+  zoneStatusPolarity.value = zs.polarity ?? "beneficial";
+  zoneStatusStacking.value = zs.stacking ?? "refresh";
+  zoneStatusKind.addEventListener("change",()=> {
+    zoneStatusPolarity.value = ["damage_over_time","stun","immobilize","silence","taunt"]
+      .includes(zoneStatusKind.value) ? "detrimental" : "beneficial";
+  });
   syncHumanSkillEffectRowV1(row);
   return row;
 }
