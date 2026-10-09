@@ -590,3 +590,14 @@ Inchangés :
 - Protection absolue : conserver les 103 créatures, toute la bibliothèque configurée, Onde régénérante +5 immédiat +5/3s 20s, Jet pressurisé et ses trois phases, beam, cast burst/particles (pas de modification de leur intensité), zone hit/ticks, effets status, chemins audio/FX, `main`, dépôt GenSrpG et Exploration.
 - Tests RED→GREEN : réglages cast 45% / zone 30% / statut 40% depuis les vrais champs, round-trip exact draft/export/import/editor, valeurs par défaut inchangées, validation 0/100, application aux keyframes cast sans altérer le mode de playback, zones/status natifs, vérification du vrai éditeur Chromium et bibliothèque 103 créatures. Aucune seconde autorité ni nouveau catalogue.
 - Publication : CI Node + Chromium GREEN sur SHA exact, diff revu, checkpoint GREEN et preview, promotion `gh-pages` par fast-forward sous lease, Pages CI SUCCESS ; validation du rendu sur smartphone utilisateur distincte.
+
+
+### Opacité des sprites — candidat GREEN avec vrai navigateur
+
+- Contrat conservé : `opacity` V9 déjà existant, en unité 0..1. UI 0..100 % pour cast/zone et sprite de statut ; 100 % par défaut pour anciens cast/zone, statut ancien `0.85` projeté en `85 %`.
+- Défaillance reproduite : `visualSlot` forçait `opacity:1` même lorsque le translator avait lu 40 % ; animations cast ignoraient également le pourcentage. Correction dans leurs propriétaires existants, pas de double système.
+- RED `37934285797` : nouvelles sentinelles de mapping, rendu, export, UI échouaient avant implémentation. Correctifs progressifs ; la CI `37934561893` ne restait rouge que par comparaison flottante strictement exacte 0.13999999999 contre 0.14, sentinelle ajustée à une tolérance numérique.
+- Code + vraie interface Chromium **SUCCESS**, run `37935175618` sur SHA `5b9838a08a0abf402b5c814e7a979db81a3fce2b` : **1320/1320 Node PASS, 0 FAIL** ; vrai navigateur 103 créatures PASS ; échange Beam intègre ; auteur `lib_aqua_heal` et HoT conservés ; édition/sauvegarde/export depuis le vrai navigateur **cast 40 % / zone 25 % / aura de statut 35 %** conservés dans le fichier exporté.
+- Exécution intermédiaire `37934960758` : timeout ponctuel Chromium 50 secondes lors du nouveau scénario sans échec Node ; même scénario passé en `37935175618` sans changement de son code. Pas de preuve de régression fonctionnelle, mais le timeout ponctuel reste documenté.
+- Rapport `docs/LAB_SPRITE_OPACITY_CONTROLS_V1.md` ; 0 asset modifié, 0 capacité modifiée, aucune dépendance GenSrpG.
+- À faire : CI finale du SHA exact après la documentation, revue de branche, checkpoint et preview, promotion sous lease `gh-pages`, CI + Pages SUCCESS, validation smartphone sur vrai rendu ensuite.
