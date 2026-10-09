@@ -39,3 +39,12 @@ Réutiliser la mécanique de reflet statutaire et exposer le déclencheur de zon
 ## Protocole et garanties
 
 Pour chaque lot, charte + roadmap + current_work, checkpoint départ, branche dédiée, RED puis code minimal, Node complet et vrais Chromium, revue, checkpoint GREEN exact puis publication gardée sous lease. Ne pas retoucher `main`, `global-assets`, `Zombicide-40k` ni les deux autres laboratoires. Aucune promesse que les 4 lots ont été livrés parce que le contrat ci-dessus est écrit.
+
+
+## Résultat vérifié du micro-lot 1 — 2026-10-09
+
+- `StatusEffectV1.damage_reflection` est reconnu, valide un pourcentage de 0 à 100, et utilise les durée/stacking natifs. Le Human Editor propose le champ « Dégâts réellement reçus renvoyés (%) » dans le formulaire Buff / Debuff / Statut. La description contextualisée et la fiche de statut affichent le pourcentage.
+- L'autorité `Combat Damage Application` applique le renvoi une fois, sur PV effectivement perdus, sans déclencher une réaction à la réaction : refléter 40 % de 20 PV retirés = 8 dégâts renvoyés avant bouclier ou immunité du frappeur. Un bouclier qui absorbe intégralement = 0 ; un miroir réciproque ne boucle pas ; KO crédité une fois.
+- Preuves RED `37995395397`, GREEN source `37995536906` : **1350/1350 Node PASS**, Chrome bibliothèque et Firestorm tous verts. GREEN avec parcours réel de l'éditeur `37995645963` : sauvegarde + export JSON d'un statut **35 % / 12 s** puis vérification de 103 créatures et scénarios de Firestorm.
+- Diff comparé au point de départ publié `9a1ce6b2ad0f5194a3b6adf53154b5b78abbe984` : neuf fichiers, 4 commits, 0 behind. Aucune mutation de preset, assets, ancienne zone, source de dégâts parallèle.
+- Attention : les zones de support ou d'empoisonnement, la survie au changement de créature et le miroir de zone **ne sont pas implémentés** dans cette V1. L'éditeur peut maintenant créer une compétence de renvoi pour son lanceur ou une cible, mais un sprite de zone n'accordera pas encore automatiquement cet effet aux occupants. Aucun feedback visuel dédié au choc réfléchi n'est revendiqué.
