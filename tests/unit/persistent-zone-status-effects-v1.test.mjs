@@ -170,3 +170,13 @@ test("a saved recalled member cannot revive a detached zone buff from its reserv
  session.replaceFighter("a",{...f("a"),statusEffects:oldSnapshot.statusEffects},{clearSourceZones:true});
  assert.equal(session.snapshot().fighters.a.statusEffects.length,0);
 });
+
+test("a zone cannot crash combat when an occupant lacks the author's optional custom stat",()=>{
+ const fighters=[f("a"),f("ally"),{...f("b"),statEffectRulesById:{}},f("enemy2")];
+ const session=createCombatSession({distance:"short",battleFormat:format,fighters});
+ const debuff={...status(),polarity:"detrimental",deltaPoints:-10};
+ session.useSkill({actorId:"a",targetId:"b",skill:skill(effect(debuff),"all_enemies")});
+ assert.doesNotThrow(()=>session.advanceMs(1));
+ assert.equal(session.snapshot().fighters.b.statusEffects.length,0);
+ assert.equal(session.snapshot().fighters.enemy2.statusEffects.length,1);
+});
