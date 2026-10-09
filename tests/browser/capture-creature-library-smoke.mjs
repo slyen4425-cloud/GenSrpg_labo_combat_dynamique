@@ -451,6 +451,8 @@ const server = createServer(async (req, res) => {
                 defense.tickEffect.status.kind==="stat_modifier" &&
                 defense.tickEffect.status.deltaPoints===25 &&
                 defense.durationMs===12000 &&
+                defense.persistAfterRecall===true &&
+                poison?.persistAfterRecall===undefined &&
                 poison?.statusBehavior==="on_enter" &&
                 poison.tickEffect.status.kind==="damage_over_time" &&
                 poison.tickEffect.status.amount===4 &&
@@ -495,6 +497,10 @@ const server = createServer(async (req, res) => {
             const mist=add("browser-mist","while_inside","stat_modifier");
             set(mist,"[data-skill-zone-status-stat-id]","defense");
             set(mist,"[data-skill-zone-status-delta-points]",25);
+            const stay=mist.querySelector("[data-skill-zone-persist-after-recall]");
+            if(!stay || stay.disabled)throw Error("missing active recall persistence checkbox");
+            stay.checked=true;
+            stay.dispatchEvent(new Event("change",{bubbles:true}));
             const poison=add("browser-poison","on_enter","damage_over_time");
             set(poison,"[data-skill-zone-status-polarity]","detrimental");
             set(poison,"[data-skill-zone-status-amount]",4);
