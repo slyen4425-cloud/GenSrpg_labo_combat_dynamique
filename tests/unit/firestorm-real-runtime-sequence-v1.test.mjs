@@ -222,13 +222,14 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
     session.snapshot().persistentZones[0];
   assert.equal(zone.radius, "short");
   assert.equal(zone.activations, 1);
+  assert.equal(zone.expiresAtMs - zone.appliedAtMs, 15000);
   assert.equal(
     zone.appliedAtMs,
     27000,
     "zone timestamp must be the real combat impact time, not state time plus preparation twice"
   );
   assert.equal(zone.nextTickAtMs, 28000);
-  assert.equal(zone.expiresAtMs, 34000);
+  assert.equal(zone.expiresAtMs, 42000);
   const node = arena.children[0];
   const shortTransform = node.style.transform;
   assert.equal(node.dataset.zoneRadius, "short");
@@ -428,13 +429,13 @@ test("Firestorm player and AI use the same real Runtime reinforcement and render
       assert.equal(snapshots[1].node, snapshots[2].node);
       assert.notEqual(snapshots[0].transform, snapshots[1].transform);
       assert.notEqual(snapshots[1].transform, snapshots[2].transform);
-      assert.equal(snapshots[2].zone.expiresAtMs, 41000);
-      advance(41001);
+      assert.equal(snapshots[2].zone.expiresAtMs, 49000);
+      advance(49001);
       assert.equal(session.snapshot().persistentZones.length, 0, "zone must expire normally");
 
-      advance(42000);
+      advance(50000);
       assert.equal(runtime.startSkill({ actorId, targetId, skill }).ok, true);
-      advance(44000);
+      advance(52000);
       const restarted = session.snapshot().persistentZones[0];
       assert.equal(restarted.radius, "short", "a new cast after expiry starts at short");
       assert.equal(restarted.activations, 1);
@@ -473,28 +474,28 @@ test("RED: a player's valid Firestorm reinforcement begun before zone expiry kee
   advance(27000);
   const first = session.snapshot().persistentZones[0];
   assert.equal(first.radius, "short");
-  assert.equal(first.expiresAtMs, 34000);
+  assert.equal(first.expiresAtMs, 42000);
 
   // The human begins a valid second cast while the first zone is still live.
   // Its authored 2s preparation crosses the natural 7s expiration boundary.
-  advance(33000);
+  advance(41000);
   assert.equal(session.snapshot().persistentZones[0]?.radius, "short");
   assert.equal(runtime.startSkill({ actorId: "local", targetId: "enemy", skill }).ok, true);
-  advance(34001);
+  advance(42001);
   assert.equal(session.snapshot().persistentZones.length, 0, "ticks and lifetime still stop at their author-defined time");
-  advance(35000);
+  advance(43000);
   const reinforced = session.snapshot().persistentZones[0];
   assert.ok(reinforced);
   assert.equal(reinforced.radius, "medium", "cast already initiated as reinforcement must not silently restart from short");
   assert.equal(reinforced.activations, 2);
-  assert.equal(reinforced.appliedAtMs, 35000);
-  assert.equal(reinforced.expiresAtMs, 42000);
+  assert.equal(reinforced.appliedAtMs, 43000);
+  assert.equal(reinforced.expiresAtMs, 58000);
 
   // A skill started only AFTER the existing zone has expired is a fresh first cast.
-  advance(42001);
+  advance(58001);
   assert.equal(session.snapshot().persistentZones.length, 0);
   assert.equal(runtime.startSkill({ actorId: "local", targetId: "enemy", skill }).ok, true);
-  advance(44001);
+  advance(60001);
   assert.equal(session.snapshot().persistentZones[0].radius, "short");
   assert.equal(session.snapshot().persistentZones[0].activations, 1);
   runtime.dispose();

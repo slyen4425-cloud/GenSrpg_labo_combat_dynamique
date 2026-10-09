@@ -82,6 +82,9 @@ test("the existing level-20 ultimate Tempête de flammes preserves its zone and 
   assert.equal(draft.presentation.visual.aura.assetId, "pack:capture:sprite-fire-zone-loop-01");
   assert.equal(draft.presentation.visual.aura.opacity, 0.5);
   assert.equal(draft.definition.effects[0].kind, "persistent_zone");
+  assert.equal(draft.definition.effects[0].durationMs, 15000);
+  assert.equal(draft.definition.effects[0].tickIntervalMs, 1000);
+  assert.equal(draft.definition.effects[0].tickEffect.amount, 5);
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft, draft);
   const view = createCaptureSkillPresentationAssetsV2({
     skillPresentations: {[draft.id]: draft.presentation},
