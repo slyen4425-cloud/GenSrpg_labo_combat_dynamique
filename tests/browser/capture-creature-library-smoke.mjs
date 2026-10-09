@@ -122,12 +122,27 @@ function assertCreatures(dom, scenario) {
   console.log(scenario + ": " + options.length + " active creatures, all required IDs present");
 }
 
+function assertAquaHealSkill(dom, scenario) {
+  const select = dom.match(/<select\\b[^>]*data-skill-library-select[^>]*>([\\s\\S]*?)<\\/select>/i);
+  if (!select) throw new Error(scenario + ": active skill library <select> missing");
+  const ids = [...select[1].matchAll(/<option\\b[^>]*value="([^"]+)"/g)]
+    .map(match => match[1]).filter(Boolean);
+  if (ids.filter(id => id === "lib_aqua_heal").length !== 1) {
+    throw new Error(scenario + ": author lib_aqua_heal must appear exactly once in active skill selector");
+  }
+  if (!ids.includes("cap_water_atk_3")) {
+    throw new Error(scenario + ": existing Jet pressurisé disappeared from active skill selector");
+  }
+  console.log(scenario + ": lib_aqua_heal visible once alongside existing skills (" + ids.length + ")");
+}
+
 try {
   const origin = "http://127.0.0.1:" + server.address().port;
   const url = origin + "/examples/dom-demo/capture-editor-v2.html";
   // Validates the complete browser module graph and real Human Editor DOM projection.
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
+  assertAquaHealSkill(normalDom, "normal browser bootstrap");
   for (const marker of [
     "data-skill-effect-ignore-resistance-pct",
     "data-skill-effect-ignore-damage-reduction-pct",
