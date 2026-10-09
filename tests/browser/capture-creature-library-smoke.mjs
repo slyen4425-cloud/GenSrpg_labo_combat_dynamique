@@ -222,6 +222,46 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
     }
+    // Verify the actual active editor identity field and fire zone opacity independently
+    // of the synthetic unit data; uses the real mounted selection event path.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-author-defaults")) {
+      const html = contents.toString("utf8");
+      const probe = `<script>
+        document.addEventListener("DOMContentLoaded", () => {
+          let attempts=0;
+          const timer=setInterval(() => {
+            const creature=document.querySelector("[data-creature-library-select]");
+            const skill=document.querySelector("[data-skill-library-select]");
+            if (!creature?.querySelector('option[value="crea-loup"]') ||
+                !skill?.querySelector('option[value="cap_fire_atk_6"]')) {
+              if (++attempts>40){clearInterval(timer);document.body.dataset.authorDefaultsProbe="timeout";}
+              return;
+            }
+            clearInterval(timer);
+            try {
+              for (const id of ["crea_aquafin","crea_maraileron","crea_mossback","crea-loup"]) {
+                creature.value=id;
+                creature.dispatchEvent(new Event("change",{bubbles:true}));
+                const level=document.querySelector("[data-creature-level]").value;
+                if (level!=="1") throw new Error("Identity "+id+" level="+level+" expected=1");
+              }
+              const testLevel=document.querySelector("[data-test-creature-level]").value;
+              if(testLevel!=="20")throw new Error("Test level lost its independent value "+testLevel);
+              skill.value="cap_fire_atk_6";
+              skill.dispatchEvent(new Event("change",{bubbles:true}));
+              const zoneOpacity=document.querySelector("[data-skill-zone-opacity-pct]").value;
+              const zoneSprite=document.querySelector("[data-skill-zone-fx]").value;
+              if (Number(zoneOpacity)!==50 ||
+                  zoneSprite!=="pack:capture:sprite-fire-zone-loop-01")
+                throw new Error("Fire ultimate zone="+zoneOpacity+":"+zoneSprite);
+              document.body.dataset.authorDefaultsProbe="ok:4:1:20:50";
+            }catch(error){document.body.dataset.authorDefaultsProbe="ui-error:"+error.message;}
+          },200);
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -360,6 +400,13 @@ try {
       (opacityMatch?.[1] ?? "browser opacity probe missing"));
   }
   console.log("Opacity real editor save/export: cast 40%, zone 25%, status 35% and existing HoT preserved");
+  const authorDefaultsDom = await dumpDom(url + "?verify-author-defaults=1");
+  assertCreatures(authorDefaultsDom, "author defaults identity browser bootstrap");
+  if (!/data-author-defaults-probe="ok:4:1:20:50"/.test(authorDefaultsDom)) {
+    const failure = authorDefaultsDom.match(/data-author-defaults-probe="([^"]+)"/)?.[1] ?? "no probe";
+    throw new Error("Actual editor identity level 1 or fire zone 50% missing: " + failure);
+  }
+  console.log("Authored creature identity browser: four canonical/showcase identities at 1, preview at 20, ultimate zone at 50%");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
