@@ -1186,7 +1186,7 @@ button.reserve-card {
   z-index: 3;
   animation: candidate-glow 1.15s ease-in-out infinite alternate;
 }
-.arena--coop-2v2 .squad-card[data-skill-target-candidate="true"] {
+.squad-card[data-skill-target-candidate="true"] {
   outline: 2px dashed rgba(122, 245, 193, 0.95);
   outline-offset: 2px;
   box-shadow: 0 0 0.72rem rgba(45, 230, 155, 0.65);
