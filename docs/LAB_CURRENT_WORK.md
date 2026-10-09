@@ -567,3 +567,14 @@ Inchangés :
 - TDD RED : corriger sentinelle historique de preset zéro soin en sentinelle de soins demandés, test réel CombatSession à instant puis ticks exacts, non-duplication, round-trip éditeur et retour à la bibliothèque, navigateur 103 créatures, autres capacités & loadouts intacts.
 - Protégés : nom, description, forme, cible `self`, tous timings/coûts hors effet, `presentation=null`, 103 créatures et loadouts, autres capacités, moteur/FX/assets, `main`, `Zombicide-40k`, labo exploration.
 - GREEN technique uniquement après CI Node + Chromium du SHA exact, checkpoint et revue diff, publication `gh-pages` par fast-forward protégé avec lease, Pages SUCCESS. Validation smartphone distincte.
+
+### Onde régénérante +5 immédiat et +5/3 s pendant 20 s — code GREEN
+
+- À la demande expresse de l'utilisateur, remplacement ciblé des effets vides de `lib_aqua_heal` uniquement; tous les paramètres antérieurs conservés, dont soin sur soi, niveau 15, coût 8, préparation 2500 ms, cooldown 30000 ms.
+- Deux effets tactiques dans la fiche active `configuredSkills` issue du transfert canonique : `heal amount=5 targetScope=self` puis `apply_status heal_over_time amount=5 tickIntervalMs=3000 durationMs=20000 targetScope=self`. Le legacy `effect.heal=0` évite le double comptage.
+- Ticks exacts à 3/6/9/12/15/18 s, statut expiré à 20 s ; jusqu'à 35 PV au total (si manque de PV suffisant), avec plafond PV autoritaire.
+- RED sur l'ancien export non soignant : CI `37921315324` FAILURE attendu.
+- Code GREEN CI `37921721141` **SUCCESS : 1315 Node PASS, 0 FAIL** ; vrai Chromium SUCCESS, 103 créatures conservées, lib_aqua_heal une seule fois parmi 112 capacités, Jet pressurisé intact, éditeur recharge les 2 effets et permet un 3e HoT édité/exporté sans perdre les deux existants.
+- Sentinelles anciennes réconciliées avec la nouvelle intention utilisateur ; avertissement export sans soin reste testé sur un brouillon explicitement vide, sans perdre cette protection.
+- Documentation : `docs/LAB_AQUA_HEAL_FIVE_PLUS_HOT_V1.md`. Aucun changement moteur, FX, asset, audio, catalogue, ni loadout ; seul JSON preset + tests + documentation.
+- Suite : CI du commit doc final exact, revue diff, checkpoint/preview et `gh-pages` par mise à jour sous lease, Pages et CI de branche publiées GREEN ; vérification tactile Android ultérieure.
