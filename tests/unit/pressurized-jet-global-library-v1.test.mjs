@@ -36,7 +36,7 @@ test("Jet pressurisé V1 resolves only through the canonical global visual libra
   );
   assert.equal(
     GLOBAL_VISUAL_LIBRARY.revision,
-    "2026-10-08-v19-pressurized-jet-vfx-v1"
+    "2026-10-09-v20-water-healing-bubble"
   );
 
   for (const [assetId, relativePath] of EXPECTED) {
