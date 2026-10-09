@@ -89,13 +89,19 @@ const server = createServer(async (req, res) => {
             try {
               select.value = "lib_aqua_heal";
               select.dispatchEvent(new Event("change",{bubbles:true}));
-              document.querySelector("[data-export-current-skill]").click();
-              const blankWarning = document.querySelector("[data-transfer-state]").textContent;
-              if (!blankWarning.includes("aucun effet de récupération de PV")) {
-                throw new Error("No explicit warning for empty healing draft: " + blankWarning);
+              const originalRows = [...document.querySelectorAll("[data-skill-effect-row]")];
+              if (originalRows.length !== 2 ||
+                  originalRows[0].querySelector("[data-skill-effect-kind]").value !== "heal" ||
+                  Number(originalRows[0].querySelector("[data-skill-effect-amount]").value) !== 5 ||
+                  originalRows[1].querySelector("[data-skill-status-kind]").value !== "heal_over_time" ||
+                  Number(originalRows[1].querySelector("[data-skill-status-hot-amount]").value) !== 5 ||
+                  Number(originalRows[1].querySelector("[data-skill-status-hot-tick-seconds]").value) !== 3 ||
+                  Number(originalRows[1].querySelector("[data-skill-status-duration-seconds]").value) !== 20) {
+                throw new Error("Configured +5 immediate / +5 each 3s for 20s not rehydrated in real editor");
               }
+              document.body.dataset.aquaHealPresetProbe = "ok:5:5:3:20";
               document.querySelector("[data-skill-effect-add]").click();
-              const row = document.querySelector("[data-skill-effect-row]");
+              const row = [...document.querySelectorAll("[data-skill-effect-row]")].at(-1);
               const set = (selector,value) => {
                 const input=row.querySelector(selector);
                 if (!input) throw new Error("Missing " + selector);
@@ -112,8 +118,8 @@ const server = createServer(async (req, res) => {
               set("[data-skill-status-hot-tick-seconds]",1.5);
               document.querySelector("[data-skill-update]").click();
               const savedRows=document.querySelectorAll("[data-skill-effect-row]");
-              if (savedRows.length !== 1 ||
-                  savedRows[0].querySelector("[data-skill-status-kind]").value !== "heal_over_time") {
+              if (savedRows.length !== 3 ||
+                  savedRows[2].querySelector("[data-skill-status-kind]").value !== "heal_over_time") {
                 throw new Error("HoT row disappeared on update: " + savedRows.length);
               }
               document.querySelector("[data-export-current-skill]").click();
@@ -240,7 +246,10 @@ try {
   if (!hotMatch || hotMatch[1] !== "ok:7:1500:6000:self:heal:lib_aqua_heal") {
     throw new Error("Live HoT save/export lost values: " + (hotMatch?.[1] ?? "probe did not run"));
   }
-  console.log("HoT browser save/export: user-specified 7 PV/1.5s/6s preserved");
+  if (!/data-aqua-heal-preset-probe="ok:5:5:3:20"/.test(hotDom)) {
+    throw new Error("Active author preset not loaded with +5 immediate and +5/3s/20s in real editor");
+  }
+  console.log("HoT browser save/export: author +5 instant / 5 per 3s during 20s, extra 7/1.5s/6s preserved");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
