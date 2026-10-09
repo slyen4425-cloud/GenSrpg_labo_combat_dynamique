@@ -12,6 +12,7 @@ import { buildCaptureEditorCombatTestV1, prepareCaptureEditorCombatEditsV1, moun
 import {
   skillSpriteControlsFromFieldsV1,
   skillSpriteControlFieldsFromVisualsV1,
+  skillSpriteOpacityPercentToUnitV1,
   readSkillSpriteControlsV1,
   writeSkillSpriteControlsV1,
   appendStatusSpriteControlsV1,
@@ -5007,12 +5008,11 @@ function appendHumanSkillEffectV1(
   const statusVisualOpacity =
     tacticalNumberInputV1(
       "skillStatusVisualOpacity",
-      statusPresentation?.sprite
-        ?.opacity ?? 0.85,
+      (statusPresentation?.sprite?.opacity ?? 0.85) * 100,
       {
-        min: 0.05,
-        max: 1,
-        step: "0.05"
+        min: 0,
+        max: 100,
+        step: 1
       }
     );
 
@@ -5049,7 +5049,7 @@ function appendHumanSkillEffectV1(
       statusVisualScale
     ),
     tacticalFieldV1(
-      "Opacité du sprite",
+      "Opacité du sprite (%)",
       statusVisualOpacity
     )
   );
@@ -5682,10 +5682,10 @@ function readHumanStatusVisualsV1(root) {
             "[data-skill-status-visual-scale]"
           )?.value ?? 1
         ),
-        opacity: Number(
+        opacity: skillSpriteOpacityPercentToUnitV1(
           row.querySelector(
             "[data-skill-status-visual-opacity]"
-          )?.value ?? 0.85
+          )?.value ?? 85
         )
       };
     }
