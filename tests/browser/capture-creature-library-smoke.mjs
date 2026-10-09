@@ -87,6 +87,11 @@ const server = createServer(async (req, res) => {
             }
             clearInterval(timer);
             try {
+              const schedule = [...document.querySelectorAll("[data-progression-step]")]
+                .map(row => row.querySelector("[data-progression-level]").value +
+                  "/" + row.querySelector("[data-progression-slots]").value).join(",");
+              document.body.dataset.previewProgressionProbe =
+                schedule + ":" + document.querySelector("[data-test-creature-level]").value;
               select.value = "lib_aqua_heal";
               select.dispatchEvent(new Event("change",{bubbles:true}));
               const originalRows = [...document.querySelectorAll("[data-skill-effect-row]")];
@@ -320,6 +325,10 @@ try {
   if (!/data-aqua-heal-preset-probe="ok:5:5:3:20"/.test(hotDom)) {
     throw new Error("Active author preset not loaded with +5 immediate and +5/3s/20s in real editor");
   }
+  if (!/data-preview-progression-probe="1\/1,5\/2,10\/3,15\/4,20\/5:20"/.test(hotDom)) {
+    throw new Error("Real editor lost five-tier progression or default preview level 20");
+  }
+  console.log("Progression browser: five unlock tiers and isolated test level 20 visible");
   console.log("HoT browser save/export: author +5 instant / 5 per 3s during 20s, extra 7/1.5s/6s preserved");
   const opacityDom = await dumpDom(url + "?verify-sprite-opacity=1");
   assertCreatures(opacityDom, "sprite opacity real editor bootstrap");
