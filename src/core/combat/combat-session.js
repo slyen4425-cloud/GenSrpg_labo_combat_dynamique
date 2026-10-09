@@ -25,7 +25,8 @@ import {
 import {
   advancePersistentZonesV1,
   prepareZoneStatusDeparturesV1,
-  removePersistentZonesFromActorV1
+  removePersistentZonesFromActorV1,
+  removeInheritedZoneBoundStatusesV1
 } from "./persistent-zone-runtime-v1.js";
 import {
   advanceScheduledEffectsV1
@@ -404,7 +405,10 @@ export function createCombatSession({
 
   function replaceFighter(fighterId, fighter, { clearSourceZones = false } = {}) {
     state = replaceCombatFighter(state, fighterId, fighter);
-    if (clearSourceZones) state = removePersistentZonesFromActorV1(state, fighterId);
+    if (clearSourceZones) {
+      state = removePersistentZonesFromActorV1(state, fighterId);
+      state = removeInheritedZoneBoundStatusesV1(state, fighterId);
+    }
     return state;
   }
 

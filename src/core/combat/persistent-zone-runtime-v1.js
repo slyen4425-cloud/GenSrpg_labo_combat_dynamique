@@ -24,8 +24,8 @@ const DISTANCE_ORDER = Object.freeze([
 // Zone binding ids are native status ids with a reserved collision-resistant
 // namespace. Neither author-created statuses nor other zones are removed.
 function zoneStatusIdV1(zone) {
-  return "__zone_status__:" + encodeURIComponent(zone.id) +
-    ":" + encodeURIComponent(zone.tickEffect.status.id);
+  return (isBoundStatusZoneV1(zone) ? "__zone_bound_status__:" : "__zone_entry_status__:") +
+    encodeURIComponent(zone.id) + ":" + encodeURIComponent(zone.tickEffect.status.id);
 }
 function isBoundStatusZoneV1(zone) {
   return zone?.tickEffect?.kind === "apply_status" &&
@@ -42,6 +42,14 @@ function stripZoneBoundStatusV1(state, zone, targetIds = Object.keys(state.fight
       fighter.statusEffects.filter(entry => entry.definition.id !== id));
   }
   return result;
+}
+
+// A reserved roster snapshot must not revive a removed area buff on re-summon.
+export function removeInheritedZoneBoundStatusesV1(state, actorId) {
+  const fighter = state.fighters[actorId];
+  if (!fighter?.statusEffects?.some(x => x.definition.id.startsWith("__zone_bound_status__:"))) return state;
+  return withFighterStatusEffects(state, actorId,
+    fighter.statusEffects.filter(x => !x.definition.id.startsWith("__zone_bound_status__:")));
 }
 
 export function removePersistentZonesFromActorV1(state, actorId) {
