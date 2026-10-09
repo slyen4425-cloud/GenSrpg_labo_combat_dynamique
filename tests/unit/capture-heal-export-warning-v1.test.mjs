@@ -10,7 +10,10 @@ const read=(p)=>readFile(new URL("../../"+p,import.meta.url),"utf8");
 
 test("an authored heal skill with no HP effect exports with a clear warning, not silent success",async()=>{
   const transfer=JSON.parse(await read("data/capture/showcase/lib_aqua_heal.capture-skill-transfer-v1.json"));
-  const warning=humanSkillHealExportWarningV1(transfer.draft);
+  // Preserve the missing-heal sentinel with an explicit unfinished draft;
+  // the published authored lib_aqua_heal now has real healing by request.
+  const unfinished={...transfer.draft,definition:{...transfer.draft.definition,effect:{...transfer.draft.definition.effect,heal:0},effects:[]}};
+  const warning=humanSkillHealExportWarningV1(unfinished);
   assert.match(warning,/soin|PV/i);
   assert.match(warning,/effet|périodique/i);
 });
