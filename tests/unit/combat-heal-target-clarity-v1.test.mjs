@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
+import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { normalizeBattleFormatDefinition } from "../../src/contracts/battle-format-definition.js";
 import { combatSkillTargetOptionsV1 } from "../../src/ui/combat-2v2-test-ui.js";
 import { combatHealthDeltaEventsV1 } from "../../src/core/combat/combat-health-feedback-v1.js";
@@ -99,4 +101,31 @@ test("Capture combat routes target selection and visual heal to existing owners"
   assert.match(ui,/PV déjà au maximum/);
   assert.match(css,/skill-target-candidate/);
   assert.match(css,/skill-fx--heal-number/);
+});
+
+test("actual Combat Session applies healing for both tactical and legacy editor healing values", () => {
+  const fighter = () => ({
+    id: "local", maxHp: 100, initialHp: 40, maxEnergy: 50,
+    initialEnergy: 50, energyChargeAmount: 0, energyChargeIntervalMs: 2000,
+    movementEnergyPerStep: 1, chargeTimeModifierPct: 0
+  });
+  const skillWith = (id, effect, effects) => normalizeSkillDefinition({
+    id, name: id, category: "heal", form: "self",
+    targetRelations: ["self"], energyCost: 0,
+    preparationMs: 0, travelMs: 0, recoveryMs: 0, cooldownMs: 0,
+    effect, effects
+  });
+  const examples = [
+    skillWith("heal-tactical", {heal:0}, [{
+      kind:"heal",targetScope:"self",amount:25
+    }]),
+    skillWith("heal-legacy-editor", {heal:25}, [])
+  ];
+  for (const skill of examples) {
+    const session = createCombatSession({distance:"medium",fighters:[fighter()]});
+    const result=session.useSkill({actorId:"local",targetId:"local",skill});
+    assert.equal(result.ok,true,skill.id);
+    assert.equal(session.snapshot().fighters.local.hp,65,skill.id);
+    assert.equal(result.events.some(event=>event.type==="heal" && event.applied===25),true,skill.id);
+  }
 });
