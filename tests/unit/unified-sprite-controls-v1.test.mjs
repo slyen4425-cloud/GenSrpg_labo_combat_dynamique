@@ -208,5 +208,5 @@ test("editor exposes clear percentage controls for cast, zone and persistent sta
   for (const role of ["cast", "zone"]) {
     assert.match(html, new RegExp('data-skill-' + role + '-opacity-pct'));
   }
-  assert.match(source, /Opacité du sprite \\(\\%\\)/);
+  assert.ok(source.includes("Opacité du sprite (%)"));
 });
