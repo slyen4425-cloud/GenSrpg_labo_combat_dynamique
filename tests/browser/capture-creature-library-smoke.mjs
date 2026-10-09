@@ -373,6 +373,65 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
+    // Actual Human Editor: author a damage-reflection status, save through
+    // configuredSkills, and export the canonical SkillDefinition in Chromium.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-damage-reflection")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        const native=URL.createObjectURL.bind(URL);
+        URL.createObjectURL=(blob)=>{
+          if(blob.type.includes("json"))blob.text().then(value=>{
+            try {
+              const draft=JSON.parse(value).draft;
+              const effect=draft.definition.effects.find(x=>x.kind==="apply_status" &&
+                x.status.kind==="damage_reflection" && x.status.id==="browser-mirror");
+              document.body.dataset.damageReflectionProbe=effect &&
+                effect.status.percent===35 && effect.status.durationMs===12000
+                ? "ok:35:12000":"fail:export:"+JSON.stringify(draft.definition.effects);
+            }catch(error){document.body.dataset.damageReflectionProbe="fail:json:"+error.message;}
+          });
+          return native(blob);
+        };
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const library=document.querySelector("[data-skill-library-select]");
+          const state=document.querySelector("[data-creature-library-state]");
+          if(!state?.textContent?.includes("3 modèles vitrine chargés") ||
+             !library?.querySelector('option[value="lib_aqua_heal"]')){
+            if(++attempts>70){clearInterval(timer);document.body.dataset.damageReflectionProbe="fail:timeout";}
+            return;
+          }
+          clearInterval(timer);
+          try {
+            library.value="lib_aqua_heal";
+            library.dispatchEvent(new Event("change",{bubbles:true}));
+            document.querySelector("[data-skill-effect-add]").click();
+            const row=[...document.querySelectorAll("[data-skill-effect-row]")].at(-1);
+            const set=(selector,value)=>{
+              const node=row.querySelector(selector);
+              if(!node)throw Error("missing "+selector);
+              node.value=String(value);
+              node.dispatchEvent(new Event("change",{bubbles:true}));
+              return node;
+            };
+            set("[data-skill-effect-kind]","apply_status");
+            set("[data-skill-status-kind]","damage_reflection");
+            set("[data-skill-status-id]","browser-mirror");
+            set("[data-skill-status-polarity]","beneficial");
+            set("[data-skill-status-duration-seconds]",12);
+            const pct=set("[data-skill-status-reflection-percent]",35);
+            if(pct.value!=="35"||!row.querySelector('[data-skill-status-config-kind="damage_reflection"]'))
+              throw Error("reflection field not visible");
+            document.querySelector("[data-skill-update]").click();
+            document.querySelector("[data-export-current-skill]").click();
+          }catch(error){document.body.dataset.damageReflectionProbe="fail:ui:"+error.message;}
+        },200);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -530,6 +589,12 @@ try {
   if(elementProbe!=="ok:103:multi:skill:asset")
     throw Error("Real editor element grouping / identity regression: "+elementProbe);
   console.log("Element library UI: 103 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
+  const reflectionDom=await dumpDom(url+"?verify-damage-reflection=1");
+  assertCreatures(reflectionDom,"damage reflection real editor bootstrap");
+  const reflectionProbe=reflectionDom.match(/data-damage-reflection-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(reflectionProbe!=="ok:35:12000")
+    throw Error("Human Editor saved reflection status is missing from real export: "+reflectionProbe);
+  console.log("Damage reflection real editor: 35% during 12s saved and exported, 103 creatures retained");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
