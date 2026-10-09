@@ -578,3 +578,15 @@ Inchangés :
 - Sentinelles anciennes réconciliées avec la nouvelle intention utilisateur ; avertissement export sans soin reste testé sur un brouillon explicitement vide, sans perdre cette protection.
 - Documentation : `docs/LAB_AQUA_HEAL_FIVE_PLUS_HOT_V1.md`. Aucun changement moteur, FX, asset, audio, catalogue, ni loadout ; seul JSON preset + tests + documentation.
 - Suite : CI du commit doc final exact, revue diff, checkpoint/preview et `gh-pages` par mise à jour sous lease, Pages et CI de branche publiées GREEN ; vérification tactile Android ultérieure.
+
+
+## 2026-10-09 — Réglage opacité des sprites de capacité V1 (en cours)
+
+- Demande utilisateur : une aura de soin peut cacher intégralement la créature en layer front et disparaître en layer behind ; proposer une transparence réglable sur cast, aura/zone et aura de buff/debuff ; conserver indépendance du calque et des offsets.
+- Base publiée GREEN : `176bd50b528364dd5507f50b824e32d610c4991f` ; checkpoint de départ `checkpoint/lab-start-sprite-opacity-controls-v1-2026-10-09` ; branche `work/lab-sprite-opacity-controls-v1-2026-10-09`.
+- Autorité UNIQUE : propriété `opacity` existante (0..1) dans SkillPresentationBindingV1/V9, résolue par `capture-skill-presentation-assets-v2`, appliquée par le renderer DOM. Le Human Editor propose un pourcentage 0..100 (100 par défaut pour les nouveaux cast/zone ; retour fidèle des sprites existants) puis le convertit à la frontière input/output, sans contrat gameplay ni moteur d'opacité bis.
+- État de référence : `dom-skill-fx` applique déjà `persistentZone.opacity` et `dom-status-fx` applique `sprite.opacity`. En revanche les keyframes cast forcent 0.35 -> 1 -> 1 ; le Human Editor n'expose pas la propriété pour cast/zone ; le sprite de statut expose actuellement l'opacité en fraction peu intuitive 0.05..1.
+- Périmètre : `src/ui/capture-editor-sprite-controls-v1.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, `src/adapters/renderer/dom-skill-fx.js`, tests ciblés de contrat/éditeur/export/renderer + navigateur, rapport `docs/LAB_SPRITE_OPACITY_CONTROLS_V1.md`, et ce registre. Ajuster le mapping sprite status uniquement dans le Human Editor existant.
+- Protection absolue : conserver les 103 créatures, toute la bibliothèque configurée, Onde régénérante +5 immédiat +5/3s 20s, Jet pressurisé et ses trois phases, beam, cast burst/particles (pas de modification de leur intensité), zone hit/ticks, effets status, chemins audio/FX, `main`, dépôt GenSrpG et Exploration.
+- Tests RED→GREEN : réglages cast 45% / zone 30% / statut 40% depuis les vrais champs, round-trip exact draft/export/import/editor, valeurs par défaut inchangées, validation 0/100, application aux keyframes cast sans altérer le mode de playback, zones/status natifs, vérification du vrai éditeur Chromium et bibliothèque 103 créatures. Aucune seconde autorité ni nouveau catalogue.
+- Publication : CI Node + Chromium GREEN sur SHA exact, diff revu, checkpoint GREEN et preview, promotion `gh-pages` par fast-forward sous lease, Pages CI SUCCESS ; validation du rendu sur smartphone utilisateur distincte.
