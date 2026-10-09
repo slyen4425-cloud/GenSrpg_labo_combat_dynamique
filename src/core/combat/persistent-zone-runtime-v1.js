@@ -77,6 +77,25 @@ function zoneInstanceId(
   );
 }
 
+// A reinforcement is chosen when the Combat Rules accept its cast, not after
+// the subsequent preparation delay. Capture only the old owner's identity and
+// activation count, never a second persistent-zone/tick state.
+export function snapshotPersistentZoneReinforcementsV1({ state, actorId, skill }) {
+  return Object.freeze(
+    (skill.effects ?? [])
+      .filter(effect => effect.kind === "persistent_zone" && effect.reactivation === "reinforce")
+      .flatMap(effect => {
+        const id = zoneInstanceId(actorId, skill.id, effect.zoneId);
+        const active = (state.persistentZones ?? []).find(
+          zone => zone.id === id && zone.expiresAtMs > state.elapsedMs
+        );
+        return active
+          ? [Object.freeze({ id, activations: active.activations, expiresAtMs: active.expiresAtMs })]
+          : [];
+      })
+  );
+}
+
 function replaceZone(
   state,
   zone
@@ -495,7 +514,8 @@ export function applyPersistentZoneEffectsV1({
   actorId,
   targetId,
   skill,
-  atMs = state.elapsedMs
+  atMs = state.elapsedMs,
+  reinforcementsAtStart = []
 }) {
   let nextState = state;
 
@@ -522,16 +542,21 @@ export function applyPersistentZoneEffectsV1({
           (zone) => zone.id === id
         ) ?? null;
 
+    // Only recover the accepted reinforcement when the previous zone expired
+    // during preparation. An activation STARTED after expiration has no seed.
+    const acceptedPrior =
+      existing === null && effect.reactivation === "reinforce"
+        ? reinforcementsAtStart.find(
+            prior => prior.id === id && prior.expiresAtMs <= atMs
+          ) ?? null
+        : null;
+    const prior = existing ?? acceptedPrior;
     const activations =
-      existing === null
+      prior === null
         ? 1
-        : effect.reactivation ===
-            "reinforce"
-          ? Math.min(
-              effect.maxActivations,
-              existing.activations + 1
-            )
-          : existing.activations;
+        : effect.reactivation === "reinforce"
+          ? Math.min(effect.maxActivations, prior.activations + 1)
+          : prior.activations;
     const preservesCadence =
       existing !== null &&
       effect.reactivation ===
