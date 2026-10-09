@@ -1185,7 +1185,8 @@ function visualSlot(assetId, {
   opponentOffsetX = null,
   opponentOffsetY = null,
   durationMs = null,
-  playbackMode = "once"
+  playbackMode = "once",
+  opacity = 1
 }) {
   const id = optionalText(assetId);
   if (id === null) {
@@ -1284,7 +1285,13 @@ function visualSlot(assetId, {
     offsetY: normalizedOffsetY,
     ...sideOffset,
     rotationDeg: 0,
-    opacity: 1
+    opacity: (() => {
+      const amount = finiteNumber(opacity, "Opacité FX");
+      if (amount < 0 || amount > 1) {
+        throw new RangeError("Opacité FX doit être entre 0 et 1");
+      }
+      return amount;
+    })()
   };
 }
 
