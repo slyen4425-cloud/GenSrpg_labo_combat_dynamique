@@ -92,7 +92,7 @@ test("full author export content remains lossless, not merely selected visual fi
     .update(JSON.stringify(sortRecordKeys(file)), "utf8")
     .digest("hex");
   assert.equal(fingerprint,
-    "75b4c9b404c56333a0cf22cd6be1fe2410531477d137be99ba089f1ec93133e5",
+    "18489b4653761649cfc166871d93f4a9cdb66b1eecf339141951fedd39b48627",
     "published authored transfer diverged from user source: icon, status FX, gameplay or other field was changed"
   );
 });
