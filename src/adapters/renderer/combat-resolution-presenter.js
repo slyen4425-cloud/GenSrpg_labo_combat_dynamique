@@ -461,6 +461,21 @@ export function createCombatResolutionPresenter({
           break;
         }
 
+        // The canonical heal event means successful healing, not an incoming
+        // hit. Recoil would make self/ally healing look like taking damage.
+        // Keep the existing impact FX and the Runtime's actual +HP feedback.
+        const appliedHeal = resolution.events?.some(
+          item => item.type === "heal"
+        );
+        const appliedDamage = resolution.events?.some(
+          item =>
+            item.type === "hit" &&
+            Number(item.appliedDamage) > 0
+        );
+        if (appliedHeal && !appliedDamage) {
+          break;
+        }
+
         ko = Number(hitEvent?.hpAfter) <= 0;
         koActorId = ko ? hitEvent?.actorId ?? null : null;
 
