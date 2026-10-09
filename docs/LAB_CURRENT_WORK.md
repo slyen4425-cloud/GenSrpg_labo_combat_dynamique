@@ -613,3 +613,12 @@ Inchangés :
 - Protections : pas de modification de presets créatures ni auteur `lib_aqua_heal`, ses +5 PV et HoT, aucune capacité Jet/Beam, 103 créatures, 112 capacités, FX/sons/renderer, `main`, `Zombicide-40k`, Exploration. Aucun changement du niveau de la fiche lors des exports de base/imports/jeu ni des choix de loadout futurs.
 - TDD : défauts RED du calendrier et de l'accès prématuré à l'ultime, projection du niveau test, absence de mutation, UI visible 20 et export réel Chromium, CI Node+Chromium, checkpoint GREEN + preview + promotion gh-pages par fast-forward lease et Pages success. Niveau utilisateur smartphone à valider.
 - Capacité export annoncée par l'utilisateur : aucune pièce jointe nouvelle dans ce message ; vérifier dès réception, ne pas substituer la précédente au nouveau fichier.
+
+
+### Progression cinq capacités + test niveau 20 — candidat GREEN
+
+- Implémenté : règle 1/5/10/15/20 → 1/2/3/4/5 depuis le fichier propriétaire ; cinquième slot = Ultime existant, quatre standards inchangés ; règles custom legacy quatre places préservées.
+- Le Human Editor affiche les cinq étapes et propose niveau 20 (sélecteur de niveau de test 1..100). `buildCaptureEditorCombatTestV1` projette le niveau seulement sur des drafts éphémères de l'export Combat ; aucune mutation de `configuredCreatures`, aucune réécriture de `level` dans la base ou les imports.
+- CI `37938743309` SHA `69ecdf6d37dbe04e1c95c31edfaedaf8c1b4b65b` **SUCCESS : 1324 Node PASS, 0 FAIL, navigateur Chromium réel PASS** ; 103 créatures, 112 compétences, Onde régénérante et ses effets précédemment publiés, Jet Beam et réglages opacité intacts.
+- Rapport `docs/LAB_PROGRESSION_PREVIEW_LEVEL_V1.md`. Le nouvel export de soin joint présente 3 PV périodiques, différent des 5 PV précédemment demandés : ne pas écraser la capacité durant ce lot non lié.
+- À faire : CI sur SHA documentaire, revue diff exacte, checkpoint GREEN, preview et promotion Pages sous lease ; validation utilisateur smartphone distincte.
