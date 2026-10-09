@@ -64,7 +64,28 @@
         "stunMs": 0,
         "tags": []
       },
-      "effects": []
+      "effects": [
+        {
+          "kind": "heal",
+          "targetScope": "self",
+          "amount": 5
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "lib_aqua_heal_regeneration",
+            "kind": "heal_over_time",
+            "polarity": "beneficial",
+            "durationMs": 20000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "amount": 5,
+            "tickIntervalMs": 3000,
+            "tags": []
+          }
+        }
+      ]
     },
     "presentation": null
   }
