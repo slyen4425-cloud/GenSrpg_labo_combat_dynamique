@@ -5,6 +5,7 @@ import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.j
 import { normalizeSkillEffectV1 } from "../../src/contracts/skill-effect-v1.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createRosterSession } from "../../src/core/combat/roster-session.js";
+import { createBattleActorAiController } from "../../src/core/combat/battle-actor-ai-controller.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
 import { computeCombatDamageV1 } from "../../src/core/combat/combat-damage-v1.js";
 import { buildHumanTacticalSkillEffectsV1 } from "../../src/ui/capture-editor-human-v2.js";
@@ -241,4 +242,39 @@ test("KO replacement keeps a persistent support zone, while ordinary statuses ar
   session.advanceMs(1);
   assert.equal(attackReduction(session),15);
   assert.equal(roster.reserveMemberSnapshot("player","water").hp,0);
+});
+
+test("AI does not falsely reinforce a detached zone from previous member in the same slot",()=>{
+  const old={
+    id:"player:mist-skill:mist",sourceActorId:"player",skillId:"mist-skill",
+    zoneId:"mist",radius:"short",activations:1,expiresAtMs:10000,
+    detachedFromSource:true,originRosterMemberId:"water"
+  };
+  const reinforcing={
+    id:"mist-skill",name:"Mist",energyCost:2,
+    effects:[{kind:"persistent_zone",zoneId:"mist",reactivation:"reinforce",
+      radiusGrowthSteps:1,maxActivations:3}]
+  };
+  const attack={id:"quick-hit",name:"Hit",energyCost:0,effects:[]};
+  const session={
+    snapshot(){return {elapsedMs:0,fighters:{
+      player:{hp:100,energy:10,maxEnergy:10,skillUseCounts:{}},
+      opponent:{hp:100}
+    },persistentZones:[old]};},
+    previewSkill({skill}){return skill.id==="mist-skill"
+      ? {ok:false,outcome:"cooldown"}:{ok:true};}
+  };
+  const runtime={
+    hasActiveActionFor(){return false;},
+    startSkill({skill}){return {ok:true,skillId:skill.id};}
+  };
+  const ai=createBattleActorAiController({
+    session,runtime,actorId:"player",targetIds:["opponent"],
+    skillIds:["mist-skill","quick-hit"],
+    skillsById:{"mist-skill":reinforcing,"quick-hit":attack}
+  });
+  const result=ai.takeTurn();
+  assert.equal(result.status,"skill_started");
+  assert.equal(result.skillId,"quick-hit",
+    "incoming AI must not treat the departing member's area as its own active reinforcement");
 });
