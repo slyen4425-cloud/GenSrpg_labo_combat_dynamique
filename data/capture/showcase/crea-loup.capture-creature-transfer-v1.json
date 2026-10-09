@@ -6,7 +6,7 @@
     "id": "crea-loup",
     "displayName": "Loup volcanique",
     "description": "Créature volcanique rapide.",
-    "level": 20,
+    "level": 1,
     "sourceStats": {
       "force": 0,
       "agility": 0,
