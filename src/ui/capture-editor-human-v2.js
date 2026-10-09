@@ -5382,6 +5382,19 @@ function appendHumanSkillEffectV1(
   fillStatusStatSelectV1(zoneStatId,statRegistry,zs.statId ?? "");
   const zoneStatField = tacticalFieldV1("Statistique",zoneStatId);
   zoneStatField.dataset.skillZoneStatusConfigKind = "stat_modifier";
+  const zoneImmunity=document.createElement("div");
+  zoneImmunity.dataset.skillZoneStatusConfigKind="immunity";
+  for(const [value,label] of [["damage","Immunité aux dégâts"],["negative_status","Immunité aux statuts négatifs"]]){
+    const field=document.createElement("label");
+    field.className="check";
+    const checkbox=document.createElement("input");
+    checkbox.type="checkbox";
+    checkbox.value=value;
+    checkbox.dataset.skillZoneStatusImmunityDomain="true";
+    checkbox.checked=(zs.domains??["damage"]).includes(value);
+    field.append(checkbox,document.createTextNode(label));
+    zoneImmunity.append(field);
+  }
   zoneStatusConfig.append(
     zoneStatusText("ID du statut","skillZoneStatusId",zs.id ?? "aura"),
     tacticalFieldV1("Type",zoneStatusKind),
@@ -5403,7 +5416,8 @@ function appendHumanSkillEffectV1(
     zoneStatusNumber("Intervalle (secondes)","skillZoneStatusTickSeconds",
       zs.tickIntervalMs == null ? 1 : humanTacticalMsToSecondsV1(zs.tickIntervalMs),
       {min:0.1,step:"0.1"},"damage_over_time,heal_over_time"),
-    zoneStatusText("Élément DoT","skillZoneStatusChannel",zs.channel ?? "poison","damage_over_time")
+    zoneStatusText("Élément DoT","skillZoneStatusChannel",zs.channel ?? "poison","damage_over_time"),
+    zoneImmunity
   );
 
   const zoneGrid =
@@ -5445,7 +5459,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "Toute réactivation renouvelle la durée automatiquement. « Garder la même taille » conserve le rayon actuel. « Agrandir la zone » fait évoluer le rayon Proche → Moyen → Loin selon la croissance choisie et le maximum d’activations. Intervalle = temps entre deux applications de dégâts. « Même élément que la capacité » applique automatiquement son élément aux dégâts.";
+    "Réactivation : prolonge la zone (et éventuellement agrandit son rayon). Dégâts : intervalle de ticks natifs. Statut : « Dans la zone » applique/retrait au contact et à la sortie ; « À l’entrée » déclenche le statut puis sa durée native continue après sortie. Les zones classiques disparaissent toujours au rappel du lanceur.";
 
   zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneNote);
 
