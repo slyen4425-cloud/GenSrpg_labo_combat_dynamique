@@ -26,6 +26,7 @@ import {
   advancePersistentZonesV1,
   prepareZoneStatusDeparturesV1,
   removePersistentZonesFromActorV1,
+  resetPersistentZoneOccupancyForSlotV1,
   removeInheritedZoneBoundStatusesV1
 } from "./persistent-zone-runtime-v1.js";
 import {
@@ -403,11 +404,23 @@ export function createCombatSession({
     return state;
   }
 
-  function replaceFighter(fighterId, fighter, { clearSourceZones = false } = {}) {
+  function departFighter(fighterId, {departingMemberId = null} = {}) {
+    state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
+    state = removeInheritedZoneBoundStatusesV1(state, fighterId);
+    state = resetPersistentZoneOccupancyForSlotV1(state, fighterId);
+    return state;
+  }
+
+  function replaceFighter(fighterId, fighter, {
+    clearSourceZones = false, departingMemberId = null
+  } = {}) {
+    if (clearSourceZones) {
+      state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
+    }
     state = replaceCombatFighter(state, fighterId, fighter);
     if (clearSourceZones) {
-      state = removePersistentZonesFromActorV1(state, fighterId);
       state = removeInheritedZoneBoundStatusesV1(state, fighterId);
+      state = resetPersistentZoneOccupancyForSlotV1(state, fighterId);
     }
     return state;
   }
@@ -446,6 +459,7 @@ export function createCombatSession({
     advance,
     addChargeEffect,
     replaceFighter,
+    departFighter,
     reset
   });
 }
