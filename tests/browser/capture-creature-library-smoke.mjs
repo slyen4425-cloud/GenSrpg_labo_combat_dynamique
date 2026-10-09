@@ -66,7 +66,12 @@ const server = createServer(async (req, res) => {
                     x.kind === "apply_status" &&
                     x.status.kind === "heal_over_time"
                   ).at(-1);
-                  document.body.dataset.hotExportProbe = hot
+                  const media = draft.presentation?.statusVisuals?.lib_aqua_heal_regeneration?.sprite;
+                   document.body.dataset.hotExportMediaProbe = [
+                     draft.presentation?.visual?.icon?.assetId, media?.assetId,
+                     media?.displayScale, media?.opacity
+                   ].join(":");
+                   document.body.dataset.hotExportProbe = hot
                     ? ["ok",hot.status.amount,hot.status.tickIntervalMs,hot.status.durationMs,
                        hot.targetScope,draft.definition.category,draft.id].join(":")
                     : "missing:effects=" + JSON.stringify(draft.definition.effects);
@@ -99,12 +104,24 @@ const server = createServer(async (req, res) => {
                   originalRows[0].querySelector("[data-skill-effect-kind]").value !== "heal" ||
                   Number(originalRows[0].querySelector("[data-skill-effect-amount]").value) !== 5 ||
                   originalRows[1].querySelector("[data-skill-status-kind]").value !== "heal_over_time" ||
-                  Number(originalRows[1].querySelector("[data-skill-status-hot-amount]").value) !== 5 ||
+                  Number(originalRows[1].querySelector("[data-skill-status-hot-amount]").value) !== 3 ||
                   Number(originalRows[1].querySelector("[data-skill-status-hot-tick-seconds]").value) !== 3 ||
                   Number(originalRows[1].querySelector("[data-skill-status-duration-seconds]").value) !== 20) {
-                throw new Error("Configured +5 immediate / +5 each 3s for 20s not rehydrated in real editor");
+                throw new Error("Latest authored +5 immediate / +3 each 3s for 20s not rehydrated in real editor");
               }
-              document.body.dataset.aquaHealPresetProbe = "ok:5:5:3:20";
+              const originalStatus = originalRows[1];
+               const originalVisualAsset = originalStatus.querySelector("[data-skill-status-visual-asset]")?.value;
+               const originalScale = originalStatus.querySelector("[data-skill-status-visual-scale]")?.value;
+               const originalOpacity = originalStatus.querySelector("[data-skill-status-visual-opacity]")?.value;
+               const originalMode = originalStatus.querySelector("[data-skill-status-visual-mode]")?.value;
+               const icon = document.querySelector("[data-skill-icon]")?.value;
+               if (icon !== "core:icon-skill-recall-01" ||
+                   originalVisualAsset !== "pack:capture:sprite-status-healing-aura-01" ||
+                   originalMode !== "sprite" ||
+                   Number(originalScale) !== 1.7 || Number(originalOpacity) !== 45) {
+                 throw new Error("Original author media missing from selected editor form: " + [icon,originalVisualAsset,originalMode,originalScale,originalOpacity].join(":"));
+               }
+               document.body.dataset.aquaHealPresetProbe = "ok:5:3:3:20:icon:aura:1.7:45";
               document.querySelector("[data-skill-effect-add]").click();
               const row = [...document.querySelectorAll("[data-skill-effect-row]")].at(-1);
               const set = (selector,value) => {
@@ -322,14 +339,17 @@ try {
   if (!hotMatch || hotMatch[1] !== "ok:7:1500:6000:self:heal:lib_aqua_heal") {
     throw new Error("Live HoT save/export lost values: " + (hotMatch?.[1] ?? "probe did not run"));
   }
-  if (!/data-aqua-heal-preset-probe="ok:5:5:3:20"/.test(hotDom)) {
-    throw new Error("Active author preset not loaded with +5 immediate and +5/3s/20s in real editor");
+  if (!/data-aqua-heal-preset-probe="ok:5:3:3:20:icon:aura:1.7:45"/.test(hotDom)) {
+    throw new Error("Active author preset not loaded with exact authored healing and media");
   }
   if (!/data-preview-progression-probe="1\/1,5\/2,10\/3,15\/4,20\/5:20"/.test(hotDom)) {
     throw new Error("Real editor lost five-tier progression or default preview level 20");
   }
   console.log("Progression browser: five unlock tiers and isolated test level 20 visible");
-  console.log("HoT browser save/export: author +5 instant / 5 per 3s during 20s, extra 7/1.5s/6s preserved");
+  if (!/data-hot-export-media-probe="core:icon-skill-recall-01:pack:capture:sprite-status-healing-aura-01:1.7:0.45"/.test(hotDom)) {
+    throw new Error("Real skill export lost the exact authored icon, aura, scale or opacity");
+  }
+  console.log("HoT browser save/export: +5 instant / +3 per 3s during 20s, original icon and aura scale 1.7 opacity 45%, and added effect preserved");
   const opacityDom = await dumpDom(url + "?verify-sprite-opacity=1");
   assertCreatures(opacityDom, "sprite opacity real editor bootstrap");
   const opacityMatch = opacityDom.match(/data-sprite-opacity-probe="([^"]+)"/);
