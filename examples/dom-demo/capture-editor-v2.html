@@ -438,6 +438,11 @@
           </div>
         </div>
 
+        <details class="editor-context-help" data-context-help="stats">
+          <summary aria-label="Informations sur les statistiques">ⓘ Comprendre les statistiques</summary>
+          <p class="note" data-context-stat-summary>Les valeurs de vos statistiques seront expliquées ici.</p>
+          <p class="note">Les coefficients sont propres à votre jeu. Vous pouvez modifier, ajouter ou retirer n’importe quelle statistique dans « Configurer le système de stats ». La Défense générale protège contre tous les types de dégâts, en plus des résistances propres aux éléments.</p>
+        </details>
         <div class="stat-values-grid" data-stat-values-host>
           <p class="note">Chargement du registre de stats…</p>
         </div>
@@ -694,6 +699,10 @@
           </div>
         </div>
 
+        <details class="editor-context-help" data-context-help="skill">
+          <summary aria-label="Explication de la capacité configurée">ⓘ Que fait cette capacité ?</summary>
+          <p class="note" data-context-skill-summary>Lecture des effets configurés…</p>
+        </details>
         <div class="grid two">
           <label>Nom<input data-skill-name value="Boule de feu"></label>
           <label class="technical-field">Identifiant<input data-skill-id value="fireball"></label>
@@ -744,6 +753,9 @@
           <label>Coût énergie<input type="number" min="0" data-skill-energy-cost value="3"></label>
           <label>Niveau de déverrouillage<input type="number" min="1" data-skill-required-level value="1"></label>
         </div>
+        <details class="editor-context-help"><summary>ⓘ Niveau, énergie et ultime</summary>
+          <p class="note">Énergie : coût à payer pour lancer la capacité. Niveau : niveau minimum. Ultime : emplacement spécial. Ces règles sont indépendantes ; la disponibilité dépend aussi des slots, conditions et utilisations restantes.</p>
+        </details>
         <label class="switch-line">
           <input type="checkbox" data-skill-ultimate>
           <span>Capacité ultime — uniquement dans le slot Ultime</span>
@@ -764,6 +776,9 @@
           <span>Activer des conditions d’activation</span>
         </label>
 
+        <details class="editor-context-help"><summary>ⓘ Quand la capacité devient-elle utilisable ?</summary>
+          <p class="note">Le niveau et les conditions de combat sont indépendants. « Toutes » demande chaque condition ; « Au moins une » suffit avec une seule. Sans conditions supplémentaires, les règles normales de la capacité restent actives.</p>
+        </details>
         <div class="skill-activation-config" data-skill-activation-config hidden>
           <label>Comment débloquer la capacité ?
             <select data-skill-activation-mode>
@@ -803,6 +818,9 @@
           </div>
         </div>
 
+        <details class="editor-context-help"><summary>ⓘ Cibles, dégâts, buffs et zones</summary>
+          <p class="note">Les dégâts sont des valeurs de base : Défense et résistances les modifient avant de retirer des PV. Une zone persistante peut toucher plusieurs ennemis régulièrement. Un soin rend des PV et un statut dure un temps précis. Ouvrez « Que fait cette capacité ? » pour lire vos réglages.</p>
+        </details>
         <div class="skill-effects-list" data-skill-effects-host></div>
 
         <button type="button" class="secondary-action" data-skill-effect-add>
@@ -898,6 +916,9 @@
           </div>
         </div>
 
+        <details class="editor-context-help"><summary>ⓘ Déplacement, présence et esquive</summary>
+          <p class="note">Le déplacement décrit l’approche du lanceur, pas ses dégâts. Les présences Surface/Aérien/Souterrain limitent les cibles atteignables uniquement si ce filtre est activé. L’esquive dépend aussi des règles du combat.</p>
+        </details>
         <label>Déplacement de la créature
           <select data-skill-approach>
             <option value="none" selected>Aucun déplacement</option>
@@ -942,6 +963,9 @@
           </div>
         </div>
 
+        <details class="editor-context-help"><summary>ⓘ Comprendre les temps de la capacité</summary>
+          <p class="note">Préparation : avant la résolution. Trajet : durée vers la cible. Récupération : délai avant de refaire une action. Cooldown : délai avant de réutiliser cette capacité précise. 1000 ms = 1 seconde.</p>
+        </details>
         <div class="timing-grid">
           <label>Préparation (ms)<input type="number" min="0" data-skill-preparation value="900"></label>
           <label>Vers la cible (ms)<input type="number" min="0" data-skill-travel-time value="650"></label>
@@ -979,6 +1003,9 @@
           </div>
         </div>
 
+        <details class="editor-context-help"><summary>ⓘ À quoi servent les effets visuels ?</summary>
+          <p class="note">Cast = animation de lancement ; Trajet = projectile ou corps du rayon ; Impact = effet à l’arrivée ; Zone = animation persistante. Échelle, décalage, opacité et calques ne changent jamais les valeurs de dégâts dans le moteur.</p>
+        </details>
         <div class="creator-visual-import" data-skill-fx-starter>
           <h3>Mode simple — Pack FX GenSrpG</h3>
           <p class="note">Sur une capacité déjà configurée, le pack ajoute surtout glow, particules, fumée et réglages FX sans remplacer tes sprites, sons, sockets ni visuels de statut. Sur une capacité neuve et vide, il peut fournir Cast + Projectile + Impact comme base de départ.</p>
