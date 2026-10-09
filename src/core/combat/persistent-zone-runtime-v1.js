@@ -78,17 +78,24 @@ export function removePersistentZonesFromActorV1(state, actorId, {departingMembe
 
 // A replacement is a new occupant even though its stable combat slot is the
 // same. All zones must recompute entry after that atomic roster transition.
-export function resetPersistentZoneOccupancyForSlotV1(state, actorId) {
+export function resetPersistentZoneOccupancyForSlotV1(state, actorId, {absent = false} = {}) {
   const zones = state.persistentZones ?? [];
-  if (!zones.some(zone => zone.occupiedActorIds?.includes(actorId))) return state;
-  return withPersistentZones(state, zones.map(zone =>
-    zone.occupiedActorIds?.includes(actorId)
-      ? Object.freeze({
-          ...zone,
-          occupiedActorIds: Object.freeze(zone.occupiedActorIds.filter(id => id !== actorId))
-        })
-      : zone
-  ));
+  if (zones.length === 0) return state;
+  return withPersistentZones(state, zones.map(zone => {
+    const occupied = (zone.occupiedActorIds ?? []).filter(id => id !== actorId);
+    const oldAbsent = zone.absentRosterSlots ?? [];
+    const newAbsent = absent
+      ? [...new Set([...oldAbsent, actorId])]
+      : oldAbsent.filter(id => id !== actorId);
+    const occupancyChanged = occupied.length !== (zone.occupiedActorIds ?? []).length;
+    const absentChanged = newAbsent.length !== oldAbsent.length;
+    if (!occupancyChanged && !absentChanged) return zone;
+    return Object.freeze({
+      ...zone,
+      ...(zone.occupiedActorIds ? {occupiedActorIds: Object.freeze(occupied)} : {}),
+      absentRosterSlots: Object.freeze(newAbsent)
+    });
+  }));
 }
 
 export function prepareZoneStatusDeparturesV1({
