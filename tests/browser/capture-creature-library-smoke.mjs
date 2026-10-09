@@ -123,9 +123,17 @@ function assertCreatures(dom, scenario) {
 }
 
 function assertAquaHealSkill(dom, scenario) {
-  const select = dom.match(/<select\\b[^>]*data-skill-library-select[^>]*>([\\s\\S]*?)<\\/select>/i);
-  if (!select) throw new Error(scenario + ": active skill library <select> missing");
-  const ids = [...select[1].matchAll(/<option\\b[^>]*value="([^"]+)"/g)]
+  const marker = "data-skill-library-select";
+  const at = dom.indexOf(marker);
+  if (at < 0 || dom.lastIndexOf("<select", at) < 0) {
+    throw new Error(scenario + ": active skill library <select> missing");
+  }
+  const openEnd = dom.indexOf(">", at);
+  const close = dom.indexOf("</select>", openEnd);
+  if (openEnd < 0 || close < 0) {
+    throw new Error(scenario + ": active skill library </select> missing");
+  }
+  const ids = [...dom.slice(openEnd + 1, close).matchAll(/value="([^"]+)"/g)]
     .map(match => match[1]).filter(Boolean);
   if (ids.filter(id => id === "lib_aqua_heal").length !== 1) {
     throw new Error(scenario + ": author lib_aqua_heal must appear exactly once in active skill selector");
