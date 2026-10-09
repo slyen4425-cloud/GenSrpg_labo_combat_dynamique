@@ -278,3 +278,23 @@ test("AI does not falsely reinforce a detached zone from previous member in the 
   assert.equal(result.skillId,"quick-hit",
     "incoming AI must not treat the departing member's area as its own active reinforcement");
 });
+
+test("during an explicit recall gap, an absent roster slot cannot receive an area buff; allies still can",()=>{
+  const {session,roster}=harness({duo:true});
+  session.useSkill({actorId:"player",targetId:"player",
+    skill:zone({persistent:true,scope:"all_allies"})});
+  session.advanceMs(1);
+  assert.equal(session.snapshot().fighters.player.statusEffects.length,1);
+  assert.equal(session.snapshot().fighters.ally.statusEffects.length,1);
+  roster.recall("player");
+  assert.equal(session.snapshot().fighters.player.statusEffects.length,0);
+  session.advanceMs(100);
+  assert.equal(session.snapshot().fighters.player.statusEffects.length,0,
+    "the last roster member is not a live occupant during recall gap");
+  assert.equal(session.snapshot().fighters.ally.statusEffects.length,1);
+  roster.selectReserve("player","earth");
+  roster.summon("player");
+  session.advanceMs(1);
+  assert.equal(session.snapshot().fighters.player.statusEffects.length,1,
+    "new summoned member must become eligible again");
+});
