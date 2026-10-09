@@ -51,10 +51,10 @@ test("medium visible range follows source movement, rejects outside and ellipse 
   h.runtime.dispose();
 });
 test("visual occupancy never revives an expired fire zone", async () => {
-  const h = await setup(); h.tick(7000);
+  const h = await setup(); h.tick(15000);
   const hp = h.session.snapshot().fighters.local.hp;
   assert.ok(hp < 100); assert.equal(h.session.snapshot().persistentZones.length, 0);
-  h.tick(9000); assert.equal(h.session.snapshot().fighters.local.hp, hp);
+  h.tick(17000); assert.equal(h.session.snapshot().fighters.local.hp, hp);
   h.runtime.dispose();
 });
 test("recall Animation Core uses command preparation and an interruptible held final pose", async () => {

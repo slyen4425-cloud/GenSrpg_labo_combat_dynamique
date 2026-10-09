@@ -62,7 +62,7 @@ test("Tempete de flammes showcase transfer preserves the editor export with six 
   const zone = draft.definition.effects[0];
   assert.equal(zone.kind, "persistent_zone");
   assert.equal(zone.radius, "short");
-  assert.equal(zone.durationMs, 7000);
+  assert.equal(zone.durationMs, 15000);
   assert.equal(zone.tickIntervalMs, 1000);
   assert.equal(zone.reactivation, "reinforce");
   assert.equal(zone.maxActivations, 3);
