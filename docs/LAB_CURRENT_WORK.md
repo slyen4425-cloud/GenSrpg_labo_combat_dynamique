@@ -601,3 +601,15 @@ Inchangés :
 - Exécution intermédiaire `37934960758` : timeout ponctuel Chromium 50 secondes lors du nouveau scénario sans échec Node ; même scénario passé en `37935175618` sans changement de son code. Pas de preuve de régression fonctionnelle, mais le timeout ponctuel reste documenté.
 - Rapport `docs/LAB_SPRITE_OPACITY_CONTROLS_V1.md` ; 0 asset modifié, 0 capacité modifiée, aucune dépendance GenSrpG.
 - À faire : CI finale du SHA exact après la documentation, revue de branche, checkpoint et preview, promotion sous lease `gh-pages`, CI + Pages SUCCESS, validation smartphone sur vrai rendu ensuite.
+
+
+## 2026-10-09 — Progression cinq capacités et niveau de combat de test isolé (en cours)
+
+- Instruction utilisateur : déblocage de 1 capacité niveau 1, 2 niveau 5, 3 niveau 10, 4 niveau 15, 5 niveau 20. Le loadout canonique dispose déjà de **quatre slots standards + un slot Ultime**. Le cinquième palier déverrouille l'Ultime, jamais un cinquième standard fictif.
+- Instruction utilisateur : pouvoir tester sans éditer chaque créature ; le combat de test de l'éditeur applique niveau 20 (modifiable depuis les options de test) à toutes les occurrences engagées et de réserve, sans mutation des fiches enregistrées, loadouts, stats ni progression d'une vraie partie. Une nouvelle créature conserve son niveau de départ 1 ; les fiches existantes ne sont pas réécrites arbitrairement.
+- Base `gh-pages` exacte `ac418d9a92ee3e53434bafebd9584830e191487a` ; checkpoint départ `checkpoint/lab-start-progression-preview-level-v1-2026-10-09` ; travail `work/lab-progression-preview-level-v1-2026-10-09`.
+- Propriétaire unique progression : `data/capture/monster-capture-progression-rules.v1.json` -> `capture-progression-rules-v1` -> `capture-planned-loadout-to-combat-v1`. Propriétaire test : `buildCaptureEditorCombatTestV1` qui projette les drafts dans `exportCaptureEditorDraftsToCombatExportV3`, aucun stockage de niveau de test dans `configuredCreatures`.
+- Périmètre : fichier JSON progression, `src/adapters/input/capture/capture-planned-loadout-to-combat-v1.js`, `src/contracts/capture-progression-rules-v1.js` si nécessaire, `src/ui/capture-editor-human-v2.js` (UI progression + test level), `src/ui/capture-editor-combat-test-v1.js`, `examples/dom-demo/capture-editor-v2.html`, tests unitaires + vrai navigateur, documentation.
+- Protections : pas de modification de presets créatures ni auteur `lib_aqua_heal`, ses +5 PV et HoT, aucune capacité Jet/Beam, 103 créatures, 112 capacités, FX/sons/renderer, `main`, `Zombicide-40k`, Exploration. Aucun changement du niveau de la fiche lors des exports de base/imports/jeu ni des choix de loadout futurs.
+- TDD : défauts RED du calendrier et de l'accès prématuré à l'ultime, projection du niveau test, absence de mutation, UI visible 20 et export réel Chromium, CI Node+Chromium, checkpoint GREEN + preview + promotion gh-pages par fast-forward lease et Pages success. Niveau utilisateur smartphone à valider.
+- Capacité export annoncée par l'utilisateur : aucune pièce jointe nouvelle dans ce message ; vérifier dès réception, ne pas substituer la précédente au nouveau fichier.
