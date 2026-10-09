@@ -74,7 +74,7 @@
           "targetScope": "all_enemies",
           "zoneId": "zone",
           "radius": "short",
-          "durationMs": 7000,
+          "durationMs": 15000,
           "tickIntervalMs": 1000,
           "reactivation": "reinforce",
           "maxActivations": 3,
