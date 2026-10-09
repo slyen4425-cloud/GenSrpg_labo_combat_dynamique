@@ -2337,6 +2337,55 @@ export function humanSkillSelectorGroupsV1(entries) {
 }
 
 
+
+/**
+ * Display-only groups. Never consolidate records by display name:
+ * the creator's stable ID and authored draft remain authoritative.
+ */
+export function humanCreatureSelectorGroupsV1(records) {
+  if (!Array.isArray(records)) {
+    throw new TypeError("creature selector records must be an array");
+  }
+  return humanSkillSelectorGroupsV1(
+    records.map((record) => {
+      const draft = record?.draft ?? record;
+      const elements = Array.isArray(draft?.elements)
+        ? [...draft.elements]
+        : [];
+      return Object.freeze({
+        id: draft.id,
+        name: draft.displayName,
+        element: elements[0] ?? null,
+        elements: Object.freeze(elements),
+        requiredLevel: 0
+      });
+    })
+  );
+}
+
+/**
+ * Same French display name is a navigation ambiguity, not permission
+ * to delete either skill: both IDs and their gameplay remain intact.
+ */
+export function humanSkillDuplicateNameIdsV1(entries) {
+  const counts = new Map();
+  for (const entry of entries) {
+    const name = String(entry.name ?? "")
+      .trim()
+      .toLocaleLowerCase("fr");
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return new Set(
+    entries
+      .filter((entry) =>
+        counts.get(
+          String(entry.name ?? "").trim().toLocaleLowerCase("fr")
+        ) > 1
+      )
+      .map((entry) => entry.id)
+  );
+}
+
 export function humanConfiguredSkillLibraryEntriesV1(
   configuredSkills
 ) {
@@ -6349,6 +6398,91 @@ export function captureEditorAssetLibraryGroupV1(asset) {
     : "gensrpg";
 }
 
+
+/**
+ * Asset elements come from the existing catalog tags and creator-given
+ * names/filenames. Synonyms are navigation vocabulary, never gameplay
+ * metadata or a replacement for the authored asset definition.
+ */
+const HUMAN_ASSET_ELEMENT_WORDS_V1 = Object.freeze({
+  fire: ["fire", "feu", "fireball", "flame", "flamme", "flammes", "lava", "lave", "volcan", "volcanique"],
+  water: ["water", "eau", "aqua", "aquatique", "aquafin", "maree", "hydro"],
+  earth: ["earth", "terre", "rock", "roche", "pierre", "stone", "moss"],
+  air: ["air", "vent", "wind", "tornade"],
+  electric: ["electric", "electricity", "electrique", "electricite", "foudre", "lightning", "eclair", "electro"],
+  light: ["light", "lumiere", "luminous", "lumineux"],
+  shadow: ["shadow", "ombre", "tenebres", "dark"],
+  nature: ["nature", "plante", "plant", "thorn", "ronce"],
+  ice: ["ice", "glace", "givre", "frost"],
+  poison: ["poison", "toxique", "toxic"],
+  steel: ["steel", "acier", "metal"],
+  psy: ["psy", "psychique", "psychic"],
+  spirit: ["spirit", "esprit", "spectre"]
+});
+
+function humanAssetWordsV1(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+function humanAssetElementFromWordsV1(words) {
+  for (const known of HUMAN_SKILL_ELEMENT_GROUP_META_V1) {
+    const aliases = HUMAN_ASSET_ELEMENT_WORDS_V1[known.element] ?? [known.element];
+    if (words.some((word) => aliases.includes(word))) {
+      return known.element;
+    }
+  }
+  return null;
+}
+
+export function humanVisualAssetElementV1(asset) {
+  const tags = Array.isArray(asset?.tags)
+    ? asset.tags.flatMap(humanAssetWordsV1)
+    : [];
+  const tagged = humanAssetElementFromWordsV1(tags);
+  if (tagged !== null) return tagged;
+
+  const named = [
+    asset?.label,
+    asset?.resource?.originalName,
+    asset?.resource?.file,
+    asset?.id
+  ].flatMap(humanAssetWordsV1);
+  return humanAssetElementFromWordsV1(named);
+}
+
+export function humanVisualAssetGroupsV1(assets) {
+  if (!Array.isArray(assets)) {
+    throw new TypeError("visual assets must be an array");
+  }
+  const byId = new Map();
+  for (const asset of assets) {
+    if (typeof asset?.id === "string" && !byId.has(asset.id)) {
+      byId.set(asset.id, asset);
+    }
+  }
+  const entries = [...byId.values()].map((asset) => ({
+    id: asset.id,
+    name: asset.label || asset.id,
+    element: humanVisualAssetElementV1(asset),
+    requiredLevel: 0,
+    asset
+  }));
+  return Object.freeze(
+    humanSkillSelectorGroupsV1(entries).map((group) =>
+      Object.freeze({
+        element: group.element,
+        label: group.element === null ? "Autres / non classés" : group.label,
+        entries: Object.freeze(group.entries.map((entry) => entry.asset))
+      })
+    )
+  );
+}
+
 function populateSelect(select, assets, role) {
   const previous = select.value;
   const allowEmpty =
@@ -6391,21 +6525,21 @@ function populateSelect(select, assets, role) {
       continue;
     }
 
-    const group =
-      document.createElement("optgroup");
-    group.label = libraryGroup.label;
-    group.dataset.assetOrigin =
-      libraryGroup.id;
+    for (const elementGroup of humanVisualAssetGroupsV1(groupAssets)) {
+      const group = document.createElement("optgroup");
+      group.label = libraryGroup.label + " · " + elementGroup.label;
+      group.dataset.assetOrigin = libraryGroup.id;
+      group.dataset.assetElement = elementGroup.element ?? "none";
 
-    for (const asset of groupAssets) {
-      createOption(
-        group,
-        asset.id,
-        asset.label || asset.id
-      );
+      for (const asset of elementGroup.entries) {
+        createOption(
+          group,
+          asset.id,
+          asset.label || asset.id
+        );
+      }
+      select.append(group);
     }
-
-    select.append(group);
   }
 
   if (previous) {
@@ -9879,16 +10013,26 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         : "Choisir une créature"
     );
 
-    for (
-      const record of configuredCreatures.values()
-    ) {
-      createOption(
-        creatureLibrarySelect,
-        record.draft.id,
-        record.draft.displayName +
-          " · " +
-          record.draft.id
-      );
+    const groups = humanCreatureSelectorGroupsV1(
+      [...configuredCreatures.values()]
+    );
+    for (const group of groups) {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = group.label;
+      optgroup.dataset.creatureElement = group.element ?? "none";
+      for (const entry of group.entries) {
+        const multiElement = entry.elements.length > 1
+          ? " · " + entry.elements.map(
+              (element) => humanSkillSelectorElementMetaV1(element).label
+            ).join(" + ")
+          : "";
+        createOption(
+          optgroup,
+          entry.id,
+          entry.name + multiElement + " · " + entry.id
+        );
+      }
+      creatureLibrarySelect.append(optgroup);
     }
 
     if (
@@ -10170,6 +10314,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         )
       );
 
+    const duplicatedNames = humanSkillDuplicateNameIdsV1(
+      groups.flatMap((group) => group.entries)
+    );
     for (const group of groups) {
       const optgroup =
         document.createElement("optgroup");
@@ -10187,7 +10334,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           entry.name +
             " · niv. " +
             entry.requiredLevel +
-            slotLabel
+            slotLabel +
+            (duplicatedNames.has(entry.id) ? " · " + entry.id : "")
         );
       }
 
@@ -10253,6 +10401,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           }))
         );
 
+      const duplicatedNames = humanSkillDuplicateNameIdsV1(
+        groups.flatMap((group) => group.entries)
+      );
       for (const group of groups) {
         const optgroup =
           document.createElement("optgroup");
@@ -10264,7 +10415,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
             entry.id,
             entry.name +
               " · déblocage niv. " +
-              entry.requiredLevel
+              entry.requiredLevel +
+              (duplicatedNames.has(entry.id) ? " · " + entry.id : "")
           );
         }
 
