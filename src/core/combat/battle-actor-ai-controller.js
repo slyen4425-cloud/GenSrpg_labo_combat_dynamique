@@ -63,7 +63,7 @@ export function createBattleActorAiController({
     if (usesLeft <= 0) return null;
     for (const effect of skill.effects ?? []) {
       if (effect.kind !== "persistent_zone" || effect.reactivation !== "reinforce" || effect.radiusGrowthSteps <= 0 || effect.maxActivations <= 1) continue;
-      const zone = (state.persistentZones ?? []).find(entry => entry.sourceActorId === normalizedActorId && entry.skillId === skill.id && entry.zoneId === effect.zoneId && entry.expiresAtMs > state.elapsedMs);
+      const zone = (state.persistentZones ?? []).find(entry => entry.sourceActorId === normalizedActorId && entry.detachedFromSource !== true && entry.skillId === skill.id && entry.zoneId === effect.zoneId && entry.expiresAtMs > state.elapsedMs);
       if (zone?.radius === "long" || (zone?.activations ?? 0) >= effect.maxActivations) continue;
       return { active: Boolean(zone), remaining: Math.min(usesLeft, effect.maxActivations - (zone?.activations ?? 0)) };
     }
