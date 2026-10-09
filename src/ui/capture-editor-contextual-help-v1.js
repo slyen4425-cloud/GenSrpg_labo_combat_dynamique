@@ -63,7 +63,8 @@ function explainEffect(effect) {
         : " : "+dmg+" dégâts de base toutes les "+tick+" pendant "+duration;
       return "Zone "+(effect.radius ?? "short")+" "+where+zoneDescription+
         (reinforce ? " ; chaque réactivation agrandit la zone (jusqu'à "+decimal(effect.maxActivations ?? 1)+" activations, selon le pas choisi)"
-          : " ; chaque réactivation renouvelle la durée sans agrandir le rayon");
+          : " ; chaque réactivation renouvelle la durée sans agrandir le rayon")+
+        (effect.persistAfterRecall ? " ; persiste après rappel de la créature" : " ; disparaît au rappel de la créature");
     }
     case "apply_status": {
       const status=effect.status ?? {};
