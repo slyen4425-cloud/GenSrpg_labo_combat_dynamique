@@ -487,13 +487,14 @@ export function resolveCombatSkillClickTargetV1({
     return available.includes(actorId) ? actorId : null;
   }
 
-  // 1v1 (or the last eligible foe in 2v2): no enemy to choose between.
-  if (relations.length === 1 && relations[0] === "enemy" &&
-      available.length === 1) {
+  // A single Rules-approved, available target needs no extra click,
+  // including positive skills offering self OR ally in a 1v1 battle.
+  // Keep explicit selection only when more than one candidate exists.
+  if (available.length === 1) {
     return available[0];
   }
 
-  // Keep a deliberate 2v2 enemy selection and explicit ally/mixed targeting.
+  // Preserve a deliberate selection when multiple enemies/allies are legal.
   return available.includes(selectedTargetId) ? selectedTargetId : null;
 }
 
