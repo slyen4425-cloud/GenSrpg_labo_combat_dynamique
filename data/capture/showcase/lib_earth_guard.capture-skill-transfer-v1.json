@@ -104,9 +104,10 @@
           "tintColor": "#9b59d0",
           "tintOpacity": 0.35,
           "sprite": {
-            "assetId": "pack:capture:sprite-status-stone-shell-01",
+            "playbackMode": "hold-last",
+            "assetId": "pack:capture:sprite-stone-carapace-aura-01",
             "displayScale": 1.6,
-            "opacity": 0.6
+            "opacity": 0.75
           }
         }
       }
