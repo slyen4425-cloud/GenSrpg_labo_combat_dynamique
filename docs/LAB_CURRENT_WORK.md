@@ -1146,3 +1146,13 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - Test dédié `tests/unit/capture-charge-tellurique-author-v1.test.mjs` : valeurs auteur, roundtrip, anti-doublon, remplacement sans perte et vraie activation de l'aura `energy_regen_modifier`.
 - CI du code `48399a7ab3da6933ca016d9e579f77aff1508491` : run `38092200377` **SUCCESS** (foundation, Firestorm navigateur, bibliothèque créatures navigateur). Deux IDs de média existants et vérifiés ; **aucun média à livrer**.
 - Rapport `docs/LAB_CHARGE_TELLURIQUE_AUTHOR_V1.md`. Recontrôle CI sur SHA documentaire final puis checkpoint GREEN et publication gh-pages ; validation visuelle Android reste utilisateur.
+
+
+## 2026-10-11 — Descriptions HUD des statuts de récupération
+
+- **Incident** : les cartes des statuts actifs n'affichent aucune ligne d'effet pour `energy_regen_modifier` et `skill_cooldown_rate_modifier`; un ID auteur auto-généré est affiché à la place d'un nom métier compréhensible.
+- **Base exacte GREEN** : `gh-pages` `72576fc465e0d5cb819d9126e798b900c2998163` (Laboratory CI `38092349490` SUCCESS, Pages `38092348817` SUCCESS). Checkpoint départ `checkpoint/lab-start-status-recovery-descriptions-v1-2026-10-11`; branche `work/lab-status-recovery-descriptions-v1-2026-10-11`.
+- **Owner unique** : `src/adapters/renderer/status-effect-info-v1.js` pour les textes des cartes HUD ; les contrats, durées, ticks et cooldowns du moteur restent intacts.
+- **Périmètre** : ce module de projection, `tests/unit/status-info-card-v1.test.mjs`, présent journal, rapport. Tests RED puis GREEN sur les deux nouveaux kind, buff +, debuff −, pause à ≤−100 %, stacks, source auteur, ancien statut inchangé, affichage via même renderer. CI complète et navigateurs sur SHA final avant checkpoint GREEN, publication `gh-pages` seulement sous lease et CI SUCCESS. Android utilisateur reste distinct.
+- **Protégés** : gameplay, Combat Runtime/State/Session/Timing, skill authorés, catalogue 103 créatures, sprites/FX, skyfall, burrow, `global-assets`, `main`, GenSrpG principal et Exploration.
+- **Critère de fin** : descriptions françaises exactes, sans seconde source de calcul, sentinelles tests et CI green, preview reproductible. Le correctif gameplay projectile/souterrain fera un **lot distinct** depuis le dernier HEAD publié validé.
