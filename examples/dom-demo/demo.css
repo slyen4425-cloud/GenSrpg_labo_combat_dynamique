@@ -354,6 +354,29 @@ summary {
   display: none;
 }
 
+/* The player/ally cards sit against the lower arena edge. The original
+   downward status popover was clipped by .arena { overflow: hidden }.
+   Keep the enemy's top HUD behavior unchanged, and anchor only lower
+   cards upward. Horizontal anchoring also avoids clipping at 320px. */
+.squad-card--player .status-icon__details {
+  top: auto;
+  bottom: calc(100% + 0.42rem);
+  left: 0;
+  transform: none;
+  width: min(15rem, calc(100dvw - 2rem));
+}
+
+.squad-card--command-ally .status-icon__details {
+  top: auto;
+  bottom: calc(100% + 0.42rem);
+  left: auto;
+  right: 0;
+  transform: none;
+  width: min(15rem, calc(100dvw - 2rem));
+}
+
+
+
 .status-icon__stack {
   position: absolute;
   right: -0.22rem;
