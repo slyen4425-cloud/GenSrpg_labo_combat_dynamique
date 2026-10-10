@@ -7,9 +7,9 @@ const file = async path => readFile(path,"utf8");
 
 test("always-visible recap puts a compact recall badge inside the fixed summary, not scrollable popup",async()=>{
   const html=await file("examples/dom-demo/capture-editor-v2.html");
-  const menu=html.match(/<details class="combat-test-team-menu"[\\s\\S]*?<\\/details>/)?.[0];
+  const menu=html.match(/<details class="combat-test-team-menu"[\s\S]*?<\/details>/)?.[0];
   assert.ok(menu,"native roster dropdown must exist");
-  const summary=menu.match(/<summary[\\s\\S]*?<\\/summary>/)?.[0];
+  const summary=menu.match(/<summary[\s\S]*?<\/summary>/)?.[0];
   assert.ok(summary,"always-visible summary must exist");
   assert.match(summary,/data-combat-team-summary-label/);
   assert.match(summary,/data-combat-recall-countdown/);
@@ -20,10 +20,10 @@ test("always-visible recap puts a compact recall badge inside the fixed summary,
 
 test("compact pill styles fit landscape/mobile and are hidden cleanly at zero",async()=>{
   const css=await file("examples/dom-demo/capture-editor-v2.css");
-  assert.match(css,/\\.combat-test-team-menu\\s+summary/);
-  assert.match(css,/\\[data-combat-recall-countdown\\]/);
-  assert.match(css,/\\[data-combat-recall-countdown\\]\\[hidden\\]/);
-  assert.match(css,/font-variant-numeric:\\s*tabular-nums/);
+  assert.match(css,/\.combat-test-team-menu\s+summary/);
+  assert.match(css,/\[data-combat-recall-countdown\]/);
+  assert.match(css,/\[data-combat-recall-countdown\]\[hidden\]/);
+  assert.match(css,/font-variant-numeric:\s*tabular-nums/);
 });
 
 function node(extra={}) {
