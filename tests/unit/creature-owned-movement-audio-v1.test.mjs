@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { normalizeCaptureStatRegistryV1 } from "../../src/contracts/capture-stat-registry-v1.js";
 import { createDomCombatAudio } from "../../src/adapters/audio/dom-combat-audio.js";
 import { createCombatResolutionPresenter } from "../../src/adapters/renderer/combat-resolution-presenter.js";
 import { normalizeCreaturePresentationBinding } from "../../src/contracts/creature-presentation-binding.js";
@@ -10,6 +11,7 @@ const read = path => readFile(new URL("../../" + path, import.meta.url), "utf8")
 const CREATURE_FILE = "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json";
 
 test("new creature movement sound is normalized without changing old V2/V3 presentation and transfers roundtrip", async () => {
+  const registry = normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
   const oldRaw = JSON.parse(await read(CREATURE_FILE));
   const original = normalizeCreaturePresentationBinding(oldRaw.draft.presentation);
   assert.equal(original.audio.movement, undefined);
@@ -18,13 +20,10 @@ test("new creature movement sound is normalized without changing old V2/V3 prese
   const binding = normalizeCreaturePresentationBinding(raw.draft.presentation);
   assert.deepEqual(binding.audio.movement, {assetId:"gensrpg:sound:light-steps-01", volume:0.7});
   assert.equal(binding.audio.ko, undefined);
-  const transfer = importCaptureTransferJsonV1(JSON.stringify(raw));
+  const transfer = importCaptureTransferJsonV1(JSON.stringify(raw), { statRegistry: registry });
   assert.equal(transfer.kind, "creature");
   assert.deepEqual(transfer.value.draft.presentation.audio.movement, binding.audio.movement);
-  const output = importCaptureTransferJsonV1(exportCaptureCreatureTransferJsonV1({
-    ...transfer.value,
-    draft: transfer.value.draft
-  }));
+  const output = importCaptureTransferJsonV1(exportCaptureCreatureTransferJsonV1(transfer.value, { statRegistry: registry }), { statRegistry: registry });
   assert.deepEqual(output.value.draft.presentation.audio.movement, binding.audio.movement);
   assert.equal(output.value.draft.id, "crea-loup");
 });
