@@ -206,3 +206,61 @@ export function advanceEnergyTicks({
     ticks
   });
 }
+
+
+/**
+ * Advance the existing absolute ready-at deadlines without creating a second
+ * cooldown clock. Temporary statuses only change how much cooldown work
+ * passes while they are active. Split at each activation/expiration boundary:
+ * large animation frames and many small frames yield the same result.
+ */
+export function advanceSkillCooldownDeadlinesV1({
+  cooldowns,
+  atMs,
+  deltaMs,
+  statusEffects = []
+}) {
+  const start = nonNegative(atMs, "atMs");
+  const delta = nonNegative(deltaMs, "deltaMs");
+  if (!cooldowns || typeof cooldowns !== "object" || Array.isArray(cooldowns)) {
+    throw new TypeError("cooldowns must be an object");
+  }
+  if (!Array.isArray(statusEffects)) {
+    throw new TypeError("statusEffects must be an array");
+  }
+  const end = start + delta;
+  const modifiers = statusEffects.filter(
+    instance => instance?.definition?.kind === "skill_cooldown_rate_modifier"
+  );
+  const boundaries = new Set([start, end]);
+  for (const instance of modifiers) {
+    for (const boundary of [instance.appliedAtMs, instance.expiresAtMs]) {
+      if (boundary !== null && Number.isFinite(boundary) && boundary > start && boundary < end) {
+        boundaries.add(boundary);
+      }
+    }
+  }
+  const times = [...boundaries].sort((a, b) => a - b);
+  const result = {};
+  for (const [skillId, readyAtMs] of Object.entries(cooldowns)) {
+    let remaining = nonNegative(readyAtMs, "readyAtMs") - start;
+    if (remaining <= 0) continue;
+    for (let index = 0; index + 1 < times.length && remaining > 0; index++) {
+      const from = times[index];
+      const until = times[index + 1];
+      const middle = from + (until - from) / 2;
+      let bonusPct = 0;
+      for (const instance of modifiers) {
+        if (instance.appliedAtMs <= middle &&
+            isStatusEffectRuntimeInstanceActiveV1(instance, middle)) {
+          bonusPct += instance.definition.modifierPct * instance.stacks;
+        }
+      }
+      remaining -= (until - from) * Math.max(0, 1 + bonusPct / 100);
+    }
+    if (remaining > 0) {
+      result[skillId] = end + remaining;
+    }
+  }
+  return Object.freeze(result);
+}
