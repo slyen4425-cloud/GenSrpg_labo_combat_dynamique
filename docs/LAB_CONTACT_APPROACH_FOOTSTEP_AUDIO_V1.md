@@ -30,3 +30,7 @@ Réutiliser le champ sonore déjà existant « Son du trajet » comme bruit de p
 - Couvre : vrais plans d'approche massif 4 / quadrupède 2 / bipède 3 / volant et serpentin 0 ; callback Presenter par appui ; prise en compte du même assetId `travel` et du `loop:false` contextuel ; projetile conserve sa boucle ; aucune fausse lecture sur une forme non contact ; interruption, callbacks retardés, dispose, résolution ; lisibilité du réglage éditeur.
 - Exécution de toute la CI Foundation, Chromium bibliothèque et Firestorm avant checkpoint GREEN. Test auditif Android utilisateur distinct des tests automatiques.
 - Zéro nouvel asset média, `main`, `Zombicide-40k`, Exploration et branche `global-assets` non modifiés.
+
+## Correctif d'autorité ultérieur — 10 octobre 2026
+
+**Cette partie du rapport reste l'historique du premier lot, mais l'association au skill `audio.travel` pour les appuis contact est devenue obsolète.** Le propriétaire définitif du son des pas est `CreaturePresentationBinding.audio.movement`, sélectionnable par créature dans l'éditeur. Le même timing des cues d'appui est conservé ; projectile/rayon restent associés à `skill.audio.travel`. Voir `docs/LAB_CREATURE_OWNED_MOVEMENT_AUDIO_V1.md`.
