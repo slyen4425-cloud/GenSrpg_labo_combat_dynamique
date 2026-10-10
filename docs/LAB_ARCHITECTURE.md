@@ -3274,3 +3274,10 @@ Le slot existant `SkillPresentationBinding.audio.travel` est l'unique entrée au
 - **interruption / rappel / dispose** : le Presenter invalide la génération de callbacks de l'approche et arrête les handles en cours ; à l'impact normal, les one-shots déjà démarrés finissent naturellement mais aucun nouveau cue retardataire ne s'enclenche.
 
 Le son d'impact reste propriétaire du canal `audio.impact` et du résultat sémantique. Les noms de compétence, d'espèce ou de profil ne sont jamais utilisés pour choisir le nombre de lectures. Aucun timer audio indépendant, nouvelle bibliothèque, contrôle éditorial dupliqué ni calcul de durée gameplay.
+
+
+## 2026-10-10 — Audio des pas : la créature est propriétaire, pas la capacité
+
+Le slot optionnel `CreaturePresentationBinding.audio.movement` est l'unique source du bruit d'appui de la créature. Le Human Editor le lit et l'exporte depuis `configuredCreatures`. La projection visuelle native garde `binding.audio` dans la meta de la créature actuellement montée sur le slot. `getCreatureAudioFor(actorSlot)` et `DomCombatAudio.presentationForCreature(actorSlot)` consomment cette seule fiche. Le `CombatResolutionPresenter` convertit les cues `footfall` existants en `audio.play({type:"movement",actorSlot,loop:false})` exclusivement lors des attaques contact ; profils sans contact: une lecture au départ.
+
+Cela **remplace explicitement** l'ancien routage du même cue vers `SkillPresentationBinding.audio.travel` en attaque contact. Le slot capacité `audio.travel` reste strictement propriétaire des projectiles/rayons, sans fallback pour une créature non configurée. Ni plan de mouvement ni règles de gameplay n'ont été modifiés. Référence détaillée : `docs/LAB_CREATURE_OWNED_MOVEMENT_AUDIO_V1.md`.
