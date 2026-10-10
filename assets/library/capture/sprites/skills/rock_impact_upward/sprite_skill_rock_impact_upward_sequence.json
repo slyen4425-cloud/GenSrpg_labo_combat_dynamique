@@ -1,0 +1,52 @@
+{
+  "id": "pack:capture:sprite-rock-impact-upward-01",
+  "type": "capture_skill_sprite_sequence",
+  "category": "impact",
+  "element": "earth",
+  "frame_size": [
+    512,
+    512
+  ],
+  "frame_count": 16,
+  "frame_ms": 75,
+  "loop": false,
+  "playback_mode": "once",
+  "frames": [
+    "frames/sprite_skill_rock_impact_upward_01.webp",
+    "frames/sprite_skill_rock_impact_upward_02.webp",
+    "frames/sprite_skill_rock_impact_upward_03.webp",
+    "frames/sprite_skill_rock_impact_upward_04.webp",
+    "frames/sprite_skill_rock_impact_upward_05.webp",
+    "frames/sprite_skill_rock_impact_upward_06.webp",
+    "frames/sprite_skill_rock_impact_upward_07.webp",
+    "frames/sprite_skill_rock_impact_upward_08.webp",
+    "frames/sprite_skill_rock_impact_upward_09.webp",
+    "frames/sprite_skill_rock_impact_upward_10.webp",
+    "frames/sprite_skill_rock_impact_upward_11.webp",
+    "frames/sprite_skill_rock_impact_upward_12.webp",
+    "frames/sprite_skill_rock_impact_upward_13.webp",
+    "frames/sprite_skill_rock_impact_upward_14.webp",
+    "frames/sprite_skill_rock_impact_upward_15.webp",
+    "frames/sprite_skill_rock_impact_upward_16.webp"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_skill_rock_impact_upward_atlas_01.webp",
+    "format": "sprite-strip",
+    "frameCount": 16,
+    "frameWidth": 384,
+    "frameHeight": 384
+  },
+  "source": {
+    "file": "planche_de_sprites_d_éruption_terrestre.png",
+    "pixel_size": [
+      1254,
+      1254
+    ],
+    "frame_cell_approx": [
+      313.5,
+      313.5
+    ],
+    "sha256": "069626ea23d8a9beccdc95a94dfb482c8cf56cec748664dfc6fe1b60cf5dccc4",
+    "note": "Each 512px PNG/WebP frame is upscaled from the source grid cell, not a native 512px generation."
+  }
+}
