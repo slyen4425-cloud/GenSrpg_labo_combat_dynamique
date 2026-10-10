@@ -3261,3 +3261,16 @@ Contraintes architecture :
 - les scales auteur ne sont pas réécrits pour adapter un viewport ;
 - tout ajustement de placement acteur passe par le propriétaire de layout/slot, jamais par les FX ou la collision ;
 - l'Exploration applique le même contrat produit dans son dépôt sans dépendance runtime avec le laboratoire combat.
+
+
+## 2026-10-10 — Audio de déplacement des attaques contact : cues locomotion partagés
+
+Le slot existant `SkillPresentationBinding.audio.travel` est l'unique entrée auteur pour les sons du trajet. Son interprétation dépend du type de déplacement :
+
+- **projectile / rayon** : le `CombatResolutionPresenter` conserve sa lecture continue existante avec l'option de boucle du Binding et son arrêt à la résolution / au clash ;
+- **attaque de forme `contact` avec approche** : le Presenter demande au `Visual Controller.playApproachFor()` un callback `onFootfall` ; l'Animation Core conserve seul les `plan.cues(type="footfall")` basés sur les contacts des `profile.locomotion`, et le scheduler existant `schedulePlanCues()` les redistribue en même temps que les FX caméra ;
+- **sans contacts** (volant, glissement, téléportation, creusement) : un seul signal `movement` au début de l'approche, sans inventer de faux pieds ni modifier la morphologie ;
+- **chaque signal** : `DomCombatAudio.play(type="travel",loop=false)` crée une lecture one-shot du même `assetId` ; la boucle des projectiles n'est jamais écrasée par ce paramètre contextuel ;
+- **interruption / rappel / dispose** : le Presenter invalide la génération de callbacks de l'approche et arrête les handles en cours ; à l'impact normal, les one-shots déjà démarrés finissent naturellement mais aucun nouveau cue retardataire ne s'enclenche.
+
+Le son d'impact reste propriétaire du canal `audio.impact` et du résultat sémantique. Les noms de compétence, d'espèce ou de profil ne sont jamais utilisés pour choisir le nombre de lectures. Aucun timer audio indépendant, nouvelle bibliothèque, contrôle éditorial dupliqué ni calcul de durée gameplay.
