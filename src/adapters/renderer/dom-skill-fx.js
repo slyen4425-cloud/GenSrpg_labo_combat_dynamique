@@ -2591,16 +2591,25 @@ export function createDomSkillFxRenderer({
       });
     }
 
+    const travelVisual = presentation?.travel ?? null;
+    const skyfall = travelVisual?.trajectoryMode === "skyfall";
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
-    const from = centerRelativeTo(
-      sourceRect(fromSlot, travelSourceAnchor),
-      arenaRect
-    );
     const to = centerRelativeTo(
       projectileTargetRect(targetSlot),
       arenaRect
     );
+    // Skyfall is authored on visual.travel: the source actor never becomes
+    // the origin. The same Runtime travel duration and contact sensor apply.
+    const from = skyfall
+      ? {
+          x: to.x + travelVisual.fallOffsetXPx,
+          y: to.y - travelVisual.fallHeightPx
+        }
+      : centerRelativeTo(
+          sourceRect(fromSlot, travelSourceAnchor),
+          arenaRect
+        );
 
     const node = arena.ownerDocument.createElement("span");
     node.className = "skill-fx skill-fx--projectile";
@@ -2620,7 +2629,6 @@ export function createDomSkillFxRenderer({
       node.dataset.fxAnchor = travelSourceAnchor;
     }
 
-    const travelVisual = presentation?.travel ?? null;
     const deltaX = to.x - from.x;
     const deltaY = to.y - from.y;
     const travelDisplayScale = Math.min(
@@ -2638,7 +2646,9 @@ export function createDomSkillFxRenderer({
         ? Number(travelVisual.headingRad)
         : 0;
       const travelAngle = Math.atan2(deltaY, deltaX);
-      const rotationRad = travelAngle - headingRad;
+      // A falling stone keeps its authored upright pose instead of rotating
+      // as if it had been fired horizontally from the caster.
+      const rotationRad = skyfall ? 0 : travelAngle - headingRad;
 
       node.className += " skill-fx--sprite-shell";
       node.dataset.assetId = travelVisual.assetId ?? "";
