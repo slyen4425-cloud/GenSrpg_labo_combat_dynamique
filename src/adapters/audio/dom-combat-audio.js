@@ -52,7 +52,8 @@ export function createDomCombatAudio({
     skillId,
     actorSlot = null,
     targetSlot = null,
-    phase = null
+    phase = null,
+    loop = null
   }) {
     if (disposed || !skillId) {
       return Object.freeze({
@@ -95,7 +96,9 @@ export function createDomCombatAudio({
       sound.volume ?? asset.volume,
       1
     );
-    audio.loop = Boolean(sound.loop ?? asset.loop);
+    // A footfall reuses the travel asset but must play once per existing cue.
+    // Projectile/beam travel still keeps the authored loop setting.
+    audio.loop = loop === null ? Boolean(sound.loop ?? asset.loop) : Boolean(loop);
 
     let settled = false;
     let resolveFinished;
