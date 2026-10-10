@@ -6748,3 +6748,8 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - **Protections** : tous les autres assets et leurs IDs, `main`, `gh-pages` dans ce lot, `Zombicide-40k`, Exploration ; 103 créatures, compétences, skill `cap_earth_atk_4`, Combat Rules/Session, skyfall runtime/renderer et systèmes de collision inchangés.
 - **Tests** : exactement 20 + 16 WebP 512×512 et deux atlas 7680×384 / 6144×384, manifestes cohérents, ID uniques, sans suppression du catalogue existant, CI Node complète. Checkpoint GREEN seulement après CI exacte ; ensuite fast-forward `global-assets` sous contrôle du SHA et lot laboratoire indépendant pour rafraîchir le cache catalogue et vérifier l'éditeur.
 - **Validation smartphone** : distincte du GREEN technique ; aucune compétence n'est affectée automatiquement sans décision sur son binding.
+
+### 2026-10-10 — Pack roche ciel/impact : CI code verte
+
+- 36 WebP 512×512 alpha, 2 atlas WebP 384 par cellule, 2 identifiants uniques ; manifeste/provenance/README et sentinelle catalogues. CI `38080497789` SUCCESS sur code/catalogue SHA `166631c3e2b0affc41dee6dc74f74ae1752d3208`.
+- Rapport : `docs/LAB_ROCK_SKYFALL_DUAL_VFX_ASSET_PACK_V1.md`. Attente CI du SHA documentaire pour checkpoint exact, puis publication FF sur global-assets et raccord cache labo.
