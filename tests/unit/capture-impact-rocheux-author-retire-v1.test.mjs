@@ -40,13 +40,15 @@ test("author transfer replaces cap_earth_atk_4 exactly once with V10 skyfall, wi
   assert.equal(d.presentation.version, 10);
   assert.equal(d.presentation.visual.icon.assetId, "core:icon-skill-rock-smash-01");
   assert.equal(d.presentation.visual.cast.assetId, "pack:capture:sprite-stone-carapace-cast-01");
-  assert.equal(d.presentation.visual.travel.assetId, "pack:capture:sprite-projectile-earth-01");
+  assert.equal(d.presentation.visual.travel.assetId, "pack:capture:sprite-falling-rock-skyfall-01");
   assert.equal(d.presentation.visual.travel.trajectoryMode, "skyfall");
   assert.equal(d.presentation.visual.travel.fallHeightPx, 650);
   assert.equal(d.presentation.visual.travel.fallOffsetXPx, 0);
   assert.equal(d.presentation.visual.travel.displayScale, 2);
-  assert.equal(d.presentation.visual.impact.assetId, "pack:capture:sprite-impact-physical-01");
-  assert.equal(d.presentation.visual.impact.displayScale, 1.5);
+  assert.equal(d.presentation.visual.impact.assetId, "pack:capture:sprite-rock-impact-upward-01");
+  assert.equal(d.presentation.visual.impact.displayScale, 1);
+  assert.equal(d.presentation.visual.impact.offsetY, -25);
+  assert.equal(d.presentation.visual.impact.durationMs, 750);
   assert.equal(d.presentation.feedback.cameraShake.amplitudePx, 600);
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(d)).value.draft, d);
   const fields = humanSkillEditorFieldsFromDraftV1(d);
