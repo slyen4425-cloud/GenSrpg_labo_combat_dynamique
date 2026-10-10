@@ -1158,6 +1158,22 @@
             </select>
           </label>
           <p class="note">Adapter répartit les phases sur tout le trajet. Boucler répète l’animation jusqu’au contact. La vitesse de déplacement se règle dans « Vers la cible ».</p>
+          <fieldset class="editor-choice-group" data-skill-skyfall-settings>
+            <legend>Trajectoire du projectile</legend>
+            <label>Mode de déplacement
+              <select data-skill-trajectory-mode>
+                <option value="linear" selected>Lanceur → cible (classique)</option>
+                <option value="skyfall">Chute du ciel (vers la cible)</option>
+              </select>
+            </label>
+            <label>Hauteur de départ — chute du ciel (px)
+              <input type="number" min="1" max="1400" step="10" value="400" data-skill-fall-height>
+            </label>
+            <label>Décalage horizontal du départ (px)
+              <input type="number" min="-700" max="700" step="10" value="0" data-skill-fall-offset-x>
+            </label>
+            <p class="note">Pour « Chute de pierre » : choisis Style « Projectile », puis « Chute du ciel ». Le projectile apparaît au-dessus de la cible, descend durant « Vers la cible (ms) » et déclenche l’impact habituel. Utilise ton sprite de pierre dans « Projectile / trajet » ; l’option ne change ni les dégâts, ni le ciblage, ni la collision des autres compétences.</p>
+          </fieldset>
           <label>Charge — vue joueur
             <select data-skill-cast-layer-player>
               <option value="front">Devant la créature</option>
