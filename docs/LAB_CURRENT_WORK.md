@@ -1034,3 +1034,10 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Périmètre** : JSON auteur de Carapace, test de transfert/raccord `tests/unit/defense-buff-description-author-presets-v1.test.mjs`, ce journal et rapport dédié. Aucun nouveau catalogue, média, moteur ou logique d'animation.
 - **Protégés** : `cap_earth_atk_2` et autres skills, créatures 103 et loadouts, statuts/Combat Runtime/FX, atlas et catalogue de `global-assets`, `main`, GenSrpG et Exploration.
 - **Tests** : RED de fidélité export par assetId/playback/opacity et non-régression; GREEN par transfert strict, roundtrip et remplacement ID, maintien vrai statut + suppression, vérification URL atlas 12 frames, Node/Chromium en CI ; checkpoint GREEN SHA exact et publication Pages par fast-forward avec lease ; validation smartphone de la nouvelle fiche distincte.
+
+### État code — transfert auteur Carapace HD
+- RED `8a83a47bbb24715c608d1dc003c9960b6f034c5c` / CI `38071060538` FAILURE attendu sur la sentinelle de nouveau sprite.
+- Remplacement de l'unique preset existant `lib_earth_guard` : `b42396aee7effc8aca011b1c03ed8f12e1f82bb2`. Seuls le nouvel `assetId` HD, le `playbackMode='hold-last'` et `opacity=0.75` changent ; `displayScale=1.6` inchangé.
+- Sentinelle de fidélité auteur mise à jour ; identité, buff +200 pendant 25 s, paramètres coût/niveau/cooldown, icône et autres réglages strictement conservés. Catalogue natif et registre `configuredSkills` non modifiés.
+- Rapport `docs/LAB_EARTH_GUARD_HD_HOLD_LAST_AUTHOR_REFRESH_V1.md`.
+- Avant GREEN : CI sur ce SHA documentaire, checkpoint exact, promotion en fast-forward sous lease, CI + Pages sur `gh-pages`, validation smartphone utilisateur distincte.
