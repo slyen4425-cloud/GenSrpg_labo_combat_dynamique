@@ -21,6 +21,8 @@ function soundFor(presentation, type, phase) {
       return presentation?.releaseSound ?? null;
     case "travel":
       return presentation?.travelSound ?? null;
+    case "movement":
+      return presentation?.movementSound ?? null;
     case "impact":
       return presentation?.impactSound ?? null;
     case "aura":
@@ -34,11 +36,15 @@ function soundFor(presentation, type, phase) {
 
 export function createDomCombatAudio({
   presentationForSkill = () => null,
+  movementSoundForActor = () => null,
   resolveAudioAsset = () => null,
   createAudio = defaultCreateAudio
 } = {}) {
   if (typeof presentationForSkill !== "function") {
     throw new TypeError("presentationForSkill must be a function");
+  }
+  if (typeof movementSoundForActor !== "function") {
+    throw new TypeError("movementSoundForActor must be a function");
   }
   if (typeof resolveAudioAsset !== "function") {
     throw new TypeError("resolveAudioAsset must be a function");
@@ -55,7 +61,7 @@ export function createDomCombatAudio({
     phase = null,
     loop = null
   }) {
-    if (disposed || !skillId) {
+    if (disposed || (type !== "movement" && !skillId)) {
       return Object.freeze({
         status: disposed ? "disposed" : "ignored",
         finished: Promise.resolve({
@@ -64,12 +70,14 @@ export function createDomCombatAudio({
       });
     }
 
-    const presentation = presentationForSkill(skillId, {
-      audioType: type,
-      sourceView: actorSlot,
-      targetView: targetSlot,
-      phase
-    });
+    const presentation = type === "movement"
+      ? { movementSound: movementSoundForActor(actorSlot) }
+      : presentationForSkill(skillId, {
+          audioType: type,
+          sourceView: actorSlot,
+          targetView: targetSlot,
+          phase
+        });
     const sound = soundFor(presentation, type, phase);
 
     if (!sound?.assetId) {
@@ -96,9 +104,11 @@ export function createDomCombatAudio({
       sound.volume ?? asset.volume,
       1
     );
-    // A footfall reuses the travel asset but must play once per existing cue.
-    // Projectile/beam travel still keeps the authored loop setting.
-    audio.loop = loop === null ? Boolean(sound.loop ?? asset.loop) : Boolean(loop);
+    // Creature-owned movement samples are one-shot; projectile and beam
+    // travel keep their own authored loop semantics.
+    audio.loop = type === "movement"
+      ? false
+      : loop === null ? Boolean(sound.loop ?? asset.loop) : Boolean(loop);
 
     let settled = false;
     let resolveFinished;
