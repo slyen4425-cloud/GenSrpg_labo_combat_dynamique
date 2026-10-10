@@ -104,7 +104,7 @@
           "offsetMode": "same"
         },
         "travel": {
-          "assetId": "pack:capture:sprite-projectile-earth-01",
+          "assetId": "pack:capture:sprite-falling-rock-skyfall-01",
           "displayScale": 2,
           "displayScaleX": 1,
           "displayScaleY": 1,
@@ -126,16 +126,17 @@
           "fallOffsetXPx": 0
         },
         "impact": {
-          "assetId": "pack:capture:sprite-impact-physical-01",
-          "displayScale": 1.5,
+          "assetId": "pack:capture:sprite-rock-impact-upward-01",
+          "displayScale": 1,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
           "anchor": null,
           "offsetX": 0,
-          "offsetY": 0,
+          "offsetY": -25,
           "trigger": "impact",
           "playbackMode": "once",
+          "durationMs": 750,
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
@@ -145,7 +146,18 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:tower-6dbf268f",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {},
       "feedback": {
         "glow": null,
