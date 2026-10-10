@@ -132,7 +132,14 @@ function resolvedVisual(
     opacity: slot.opacity ?? 1,
     offsetX: viewOffset.x,
     offsetY: viewOffset.y,
-    attachment: slot.attachment
+    attachment: slot.attachment,
+    ...(slot.trajectoryMode == null ? {} : {
+      trajectoryMode: slot.trajectoryMode,
+      ...(slot.trajectoryMode === "skyfall" ? {
+        fallHeightPx: slot.fallHeightPx,
+        fallOffsetXPx: slot.fallOffsetXPx
+      } : {})
+    })
   });
 }
 
