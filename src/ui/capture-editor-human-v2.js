@@ -4568,7 +4568,12 @@ function syncHumanSkillEffectRowV1(
     node.hidden = !node.dataset.skillZoneStatusConfigKind.split(",").includes(zoneStatusKind);
   }
   const zoneBehavior=row.querySelector("[data-skill-zone-status-behavior]");
-  if(zoneBehavior) zoneBehavior.disabled = zoneEffectKind !== "apply_status";
+  if (zoneBehavior) zoneBehavior.disabled = zoneEffectKind !== "apply_status";
+  const zonePersist=row.querySelector("[data-skill-zone-persist-after-recall]");
+  if (zonePersist) zonePersist.disabled = zoneEffectKind !== "apply_status";
+  const zoneStacks=row.querySelector("[data-skill-zone-status-max-stacks-field]");
+  const zoneStacking=row.querySelector("[data-skill-zone-status-stacking]")?.value;
+  if (zoneStacks) zoneStacks.hidden = zoneStacking !== "stack";
 
   const stacking =
     row.querySelector(
@@ -5401,14 +5406,21 @@ function appendHumanSkillEffectV1(
     field.append(checkbox,document.createTextNode(label));
     zoneImmunity.append(field);
   }
+  const zoneMaxStacksField = zoneStatusNumber(
+    "Stacks max", "skillZoneStatusMaxStacks", zs.maxStacks ?? 1,
+    {min:1,step:"1"}
+  );
+  zoneMaxStacksField.dataset.skillZoneStatusMaxStacksField = "true";
   zoneStatusConfig.append(
+    tacticalFieldV1("Quand appliquer le statut ?", zoneStatusBehavior),
+    tacticalFieldV1("Conserver la zone après rappel / changement", zonePersistAfterRecall),
     zoneStatusText("ID du statut","skillZoneStatusId",zs.id ?? "aura"),
     tacticalFieldV1("Type",zoneStatusKind),
     tacticalFieldV1("Polarité",zoneStatusPolarity),
     zoneStatusNumber("Durée du statut (secondes)","skillZoneStatusDurationSeconds",
       zs.durationMs == null ? 3 : humanTacticalMsToSecondsV1(zs.durationMs),{min:0.1,step:"0.1"}),
     tacticalFieldV1("Empilement",zoneStatusStacking),
-    zoneStatusNumber("Stacks max","skillZoneStatusMaxStacks",zs.maxStacks ?? 1,{min:1,step:"1"}),
+    zoneMaxStacksField,
     zoneStatusText("Tags (virgules)","skillZoneStatusTags",(zs.tags??[]).join(", ")),
     zoneStatField,
     zoneStatusNumber("Variation de stat (points)","skillZoneStatusDeltaPoints",
@@ -5449,9 +5461,7 @@ function appendHumanSkillEffectV1(
       zoneMaxActivations
     ),
     tacticalFieldV1("Croissance du rayon par activation",zoneRadiusGrowth),
-    tacticalFieldV1("Effet de zone",zoneEffectKind),
-    tacticalFieldV1("Persiste après rappel / changement de créature (statuts)",zonePersistAfterRecall),
-    tacticalFieldV1("Comportement du statut",zoneStatusBehavior)
+    tacticalFieldV1("Effet appliqué par cette zone",zoneEffectKind)
   );
   const zoneDamageBox=document.createElement("div");
   zoneDamageBox.className="skill-status-config__grid";
@@ -5466,7 +5476,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. Dégâts : intervalle de ticks natifs. Statut : « Dans la zone » applique/retrait au contact et à la sortie ; « À l’entrée » déclenche le statut puis sa durée native continue après sortie. Si « Persiste après rappel » est coché, le statut de zone reste actif pour le remplaçant jusqu’à expiration. Les zones de dégâts classiques disparaissent au rappel.";
+    "La zone contient directement son effet : inutile d’ajouter un buff indépendant. Les champs des dégâts ou du statut apparaissent selon « Effet appliqué ». Le mode « Dans la zone » retire le statut à la sortie ; « À l’entrée » laisse sa durée normale après sortie. La persistance après rappel n’est disponible que pour les zones à statut.";
 
   zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneNote);
 
@@ -5499,11 +5509,6 @@ function appendHumanSkillEffectV1(
     effect?.radius ?? "short";
   zoneReactivation.value = effect?.reactivation ?? "refresh";
   zoneEffectKind.value = effect?.tickEffect?.kind ?? "damage";
-  zonePersistAfterRecall.disabled = zoneEffectKind.value !== "apply_status";
-  zoneEffectKind.addEventListener("change", () => {
-    zonePersistAfterRecall.disabled = zoneEffectKind.value !== "apply_status";
-    if (zonePersistAfterRecall.disabled) zonePersistAfterRecall.checked = false;
-  });
   zoneStatusBehavior.value = effect?.statusBehavior ?? "while_inside";
   zoneStatusKind.value = zs.kind ?? "stat_modifier";
   zoneStatusPolarity.value = zs.polarity ?? "beneficial";
@@ -11011,7 +11016,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           "[data-skill-effect-kind], " +
           "[data-skill-status-kind], " +
           "[data-skill-status-stacking], " +
-          "[data-skill-status-visual-mode]"
+          "[data-skill-status-visual-mode], " +
+          "[data-skill-zone-effect-kind], " +
+          "[data-skill-zone-status-kind], " +
+          "[data-skill-zone-status-stacking]"
         )
       ) {
         syncHumanSkillEffectRowV1(row);
