@@ -702,6 +702,9 @@ export async function mountCoop2v2Test({
   }
 
   const combatAudio = createDomCombatAudio({
+    presentationForCreature(actorSlot) {
+      return visuals.getCreatureAudioFor?.(actorSlot) ?? null;
+    },
     resolveAudioAsset(assetId) {
       return presentationAssets?.audioAsset?.(assetId) ?? null;
     },
