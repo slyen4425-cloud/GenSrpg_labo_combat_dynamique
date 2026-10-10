@@ -388,6 +388,14 @@ export function createCombatSession({
         )
       ])
     );
+    const cooldownStatusAtStart = Object.fromEntries(
+      Object.entries(state.fighters).map(([id, fighter]) => [
+        id,
+        fighter.statusEffects.filter(
+          instance => instance.definition.kind === "skill_cooldown_rate_modifier"
+        )
+      ])
+    );
     state = advanceStatusEffectsV1({
       state,
       deltaMs
@@ -401,7 +409,7 @@ export function createCombatSession({
     state = advanceCombatTime(
       state,
       deltaMs,
-      { energyStatusAtStart }
+      { energyStatusAtStart, cooldownStatusAtStart }
     );
     return state;
   }
