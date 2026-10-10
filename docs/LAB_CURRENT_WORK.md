@@ -6727,3 +6727,12 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Protections : anciens `healing_aura`/`regeneration`, autres sprites, combat/soin/runtime, `main`, GenSrpG et exploration.
 - Limite de résolution : 512×512 est un export rééchantillonné de cellules originales ≈280×280 ; l'atlas 384 optimise la taille de texture mobile.
 - Tests : dimensions RIFF/WEBP des 20 frames + atlas, ID unique, file et compte catalogue ; CI Node et structure. Ne pas appeler GREEN avant vérification de la CI et promotion `global-assets` sans force.
+
+
+## 2026-10-10 — Correction visuelle Carapace de pierre (aura figée)
+- **Retour utilisateur** : en mode « jouer puis conserver dernière frame », la carapace se rétracte en fin de sprite.
+- **Inspection réelle GitHub** : 16 PNG de l'aura `stone_carapace` vérifiés ; carapace complète à la frame **12**, puis inversion/démontage visible frames **13–16** (la frame 16 est largement ouverte). Aucune nouvelle image générée.
+- **Autorité** : `global-assets`, asset ID inchangé `pack:capture:sprite-stone-carapace-aura-01`. Conserver frame 1 à 12, vitesse 90 ms/frame, WebP lossless 6144×512 reconstruit avec pixels visibles strictement identiques aux PNG d'origine ; suppression des seuls 4 PNG dérivés inutiles. La source transport historique 16 frames, le cast 16 frames et les autres assets restent inchangés.
+- **Métadonnées** : catalogue global frameCount 12, manifeste CSV, séquence, provenance SHA-256, README, script source reproductible, sentinelle VFX pack mis à jour. Mode `hold-last` reste dans la présentation de la capacité côté labo (pas de modification de gameplay ou de la valeur générale `loop` de l'asset de bibliothèque).
+- **Base / checkpoint** : base `b4dd093f9e449c3a9b2e2563b1f9a87cda6eaf62`, checkpoint `checkpoint/global-assets-before-stone-carapace-aura-trim-2026-10-10`, work `work/global-assets-stone-carapace-aura-trim-v1-2026-10-10`.
+- **Validation** : génération binaire sur runner (Pillow) et comparaison stricte alpha + RGB pour tous les pixels visibles des 12 frames ; suppression du workflow éphémère ; CI Node globale au commit définitif ; checkpoint GREEN et FF global-assets après réussite. Avancer la révision cache du catalogue côté `gh-pages` sur une seconde branche, avec CI Pages, puis validation visuelle smartphone séparée.
