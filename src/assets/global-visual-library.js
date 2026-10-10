@@ -1,6 +1,6 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
-const REVISION = "2026-10-10-v21-stone-carapace-aura-12-frame";
+const REVISION = "2026-10-10-v22-rock-skyfall-impact";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
