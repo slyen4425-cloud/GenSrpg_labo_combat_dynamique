@@ -1184,3 +1184,12 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - Owner : `Combat UI` seul résout le clic implicite après `Combat Rules` ; `Combat Rules` reste propriétaire des cibles permises et de leur disponibilité. Si une seule cible est réellement admissible ET disponible, clic direct quel que soit le type de compétence ; plusieurs alliés possibles exigent une sélection.
 - Autorisés : `src/ui/combat-2v2-test-ui.js`, `tests/unit/combat-implicit-single-target-ui-v1.test.mjs`, présent journal et rapport. Aucun changement sur les données auteur de Charge tellurique, le gameplay, les presets/103 créatures, la zone, les FX, global-assets, main, GenSrpG ni Exploration.
 - TDD : reproduire RED les compétences mixtes soi+allié en 1v1 et dernier allié disponible en 2v2, et tester la vraie définition importée `cap_earth_atk_3` ; conserver le choix explicite quand deux alliés sont disponibles. CI complète avant checkpoint GREEN et publication sous lease, validation Android séparée.
+
+
+## 2026-10-11 — Dernière image figée des zones persistantes
+
+- Demande : l'option « Jouer une fois puis garder la dernière image » n'est disponible que dans l'éditeur de sprites de statuts ; le sprite de zone (aura) manque cette option bien que `applySpriteVisual` la supporte déjà.
+- Base exacte `gh-pages` : `1720efbc90339962fd176e486ca43ba2c378265b`, checkpoint `checkpoint/lab-start-persistent-zone-hold-last-v1-2026-10-11`, branche `work/lab-persistent-zone-hold-last-v1-2026-10-11`.
+- Propriétaires : `SkillPresentationBindingV1` valide le champ visuel aura (toutes versions V1..V10 passant par lui) ; `capture-editor-v2.html` offre seulement le choix ; `DomSkillFxRenderer` existant conserve la dernière frame jusqu'à la suppression native de zone. Aucune seconde animation ni timer.
+- Fichiers autorisés : `src/contracts/skill-presentation-binding-v1.js`, `examples/dom-demo/capture-editor-v2.html`, `tests/unit/unified-sprite-controls-v1.test.mjs`, présent journal et rapport. Aucun changement de gameplay, statuts, vitesse, recettes de sprites, Charge tellurique auteur, 103 créatures, autres animations, `main`, `global-assets`, GenSrpG ou Exploration.
+- TDD : test RED option UI et `visual.aura.playbackMode=hold-last` au vrai chemin éditeur->draft->export/import->resolver->renderer; test que le visuel reste figé après lecture mais est détruit avec la zone; autres sprites cast/impact restent stricts et zone loop/stretch inchangée. CI Node + Chrome avant GREEN, checkpoint et publication fast-forward sous lease; Android manuel séparé.
