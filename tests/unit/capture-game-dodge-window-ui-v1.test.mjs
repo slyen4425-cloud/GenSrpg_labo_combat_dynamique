@@ -39,6 +39,7 @@ test("Human Editor exports the dodge active window in milliseconds", () => {
   assert.deepEqual(
     readHumanGameOptionsV1(root()),
     {
+      recallCooldownMs: 45000,
       dodge: {
         enabled: true,
         maxCharges: 2,
