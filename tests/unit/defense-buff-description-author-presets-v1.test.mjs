@@ -130,7 +130,7 @@ test("authored Earth transfers use replace-by-ID in canonical configuredSkills w
     });
     const plan = planCaptureTransferImportV1({
       currentDatabase: database, transfer,
-      mode: configuredSkills.has(transfer.value.draft.id) ? "replace" : "add"
+      mode: configuredSkills.has(transfer.value.draft.id) ? "replace" : "reject"
     });
     applyCaptureTransferPlanToEditorStateV1({
       plan, configuredSkills, configuredCreatures, statRegistry, progressionRules
