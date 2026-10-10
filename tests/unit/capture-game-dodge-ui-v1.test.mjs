@@ -101,6 +101,7 @@ test("Human Editor reads valid dodge Game Options without a helper ReferenceErro
       gameOptionsRoot()
     ),
     {
+      recallCooldownMs: 45000,
       dodge: {
         enabled: true,
         maxCharges: 2,
