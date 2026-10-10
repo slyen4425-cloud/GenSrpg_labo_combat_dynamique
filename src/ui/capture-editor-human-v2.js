@@ -106,7 +106,8 @@ import {
   CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
 } from "../catalogs/capture-showcase-creature-presets-v1.js";
 import {
-  CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
+  CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
+  CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
 } from "../catalogs/capture-showcase-skill-presets-v1.js";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
@@ -12154,10 +12155,14 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         }
       }
 
+      const retiredNativeSkillIds = new Set(
+        CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
+      );
+
       for (
         const [skillId, draft] of nativeSkills
       ) {
-        if (!configuredSkills.has(skillId)) {
+        if (!retiredNativeSkillIds.has(skillId) && !configuredSkills.has(skillId)) {
           configuredSkills.set(
             skillId,
             draft
@@ -12168,7 +12173,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       for (
         const draft of capturePortableNativeSkillDraftsV1()
       ) {
-        if (!configuredSkills.has(draft.id)) {
+        if (!retiredNativeSkillIds.has(draft.id) && !configuredSkills.has(draft.id)) {
           configuredSkills.set(
             draft.id,
             draft
@@ -12179,7 +12184,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       for (
         const draft of captureComplexNativeSkillDraftsV1()
       ) {
-        if (!configuredSkills.has(draft.id)) {
+        if (!retiredNativeSkillIds.has(draft.id) && !configuredSkills.has(draft.id)) {
           configuredSkills.set(
             draft.id,
             draft
