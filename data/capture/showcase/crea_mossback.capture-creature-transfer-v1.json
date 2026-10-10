@@ -88,13 +88,16 @@
       "energyChargeAmount": 0,
       "energyChargeIntervalMs": 0,
       "movementEnergyPerStep": 0,
-      "chargeTimeModifierPct": 0
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 25
     },
     "skillIds": [
       "lib_earth_guard",
       "lib_root_snare",
       "lib_quake",
-      "claw"
+      "claw",
+      "cap_earth_atk_2",
+      "cap_earth_atk_4"
     ],
     "presentation": {
       "id": "creature:crea_mossback",
@@ -184,7 +187,12 @@
           }
         }
       ],
-      "audio": {}
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:genrpg-pack2-f75d0d8f",
+          "volume": 1
+        }
+      }
     }
   },
   "statValues": {
@@ -211,18 +219,22 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "lib_earth_guard"
+        "skillId": "cap_earth_atk_2"
       },
       {
         "id": "slot-2",
-        "skillId": "claw"
+        "skillId": "lib_earth_guard"
       },
       {
         "id": "slot-3",
-        "skillId": "lib_quake"
+        "skillId": "cap_earth_atk_4"
       },
       {
         "id": "slot-4",
+        "skillId": null
+      },
+      {
+        "id": "slot-ultimate",
         "skillId": null
       }
     ]
