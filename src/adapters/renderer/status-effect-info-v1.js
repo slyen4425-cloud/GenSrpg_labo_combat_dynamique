@@ -218,7 +218,11 @@ function semanticStatModifierLines({
     lines.push(
       variationLine(
         "Dégâts reçus",
-        effects.damageReductionPct
+        effects.damageReductionPct,
+        {
+          positiveWord: "réduits",
+          negativeWord: "augmentés"
+        }
       )
     );
   }
