@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { normalizeSkillPresentationBinding } from "../../src/contracts/skill-presentation-binding.js";
 import { createCaptureSkillPresentationAssetsV2 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
+import { buildHumanSkillDraftV1, humanSkillEditorFieldsFromDraftV1 } from "../../src/ui/capture-editor-human-v2.js";
 
 const assetId = "user:rockfall-projectile";
 const binding = (mode = "skyfall") => ({
@@ -102,4 +103,34 @@ test("Capture editor exposes skyfall controls with preservation in load/new/save
   assert.match(ui,/presentation\.travelTrajectoryMode/);
   assert.match(ui,/presentation\.fallHeightPx/);
   assert.match(ui,/presentation\.fallOffsetXPx/);
+});
+
+test("author creates Chute de pierre through actual Capture skill builder and keeps V10 fields on reload",()=>{
+  const skill=buildHumanSkillDraftV1({
+    id:"rockfall",name:"Chute de pierre",description:"Une pierre tombe du ciel.",
+    requiredLevel:1,usageScopes:["capture"],category:"offensive",
+    form:"projectile",element:"earth",approachMode:"none",
+    energyCost:2,preparationMs:500,travelMs:800,recoveryMs:200,cooldownMs:1000,
+    allowedDistances:["medium","long"],targetRelations:["enemy"],
+    damage:12,heal:0,stunMs:0,
+    presentation:{
+      travelAssetId:assetId,travelDisplayScale:2,travelPlaybackMode:"loop",
+      travelTrajectoryMode:"skyfall",fallHeightPx:540,fallOffsetXPx:-80
+    }
+  });
+  assert.equal(skill.presentation.version,10);
+  assert.equal(skill.presentation.visual.travel.fallHeightPx,540);
+  assert.equal(skill.presentation.visual.travel.fallOffsetXPx,-80);
+  assert.equal(skill.presentation.visual.travel.displayScale,2);
+  assert.equal(skill.definition.travelMs,800);
+  const fields=humanSkillEditorFieldsFromDraftV1(skill);
+  assert.equal(fields.presentation.travelTrajectoryMode,"skyfall");
+  assert.equal(fields.presentation.fallHeightPx,540);
+  assert.equal(fields.presentation.fallOffsetXPx,-80);
+  assert.equal(fields.presentation.travelAssetId,assetId);
+  const refreshed=buildHumanSkillDraftV1(fields);
+  assert.equal(refreshed.presentation.version,10);
+  assert.equal(refreshed.presentation.visual.travel.trajectoryMode,"skyfall");
+  assert.equal(refreshed.presentation.visual.travel.fallHeightPx,540);
+  assert.equal(refreshed.presentation.visual.travel.fallOffsetXPx,-80);
 });
