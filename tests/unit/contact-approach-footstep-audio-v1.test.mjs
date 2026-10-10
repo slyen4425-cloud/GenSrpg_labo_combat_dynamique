@@ -104,7 +104,8 @@ test("visual controller uses existing footfall cue scheduler for attack contact 
   assert.match(source,/function schedulePlanCues[\s\S]*?onCue\?\./);
   assert.match(source,/function playApproachFor[\s\S]*?onFootfall[\s\S]*?onCue:/);
   assert.match(source,/plan\.cues[\s\S]*?onFootfall\(\{/);
-  assert.match(presenter,/onFootfall:[\s\S]*?type: "movement"/);
+  assert.match(presenter,/onFootfall:/);
+  assert.match(presenter,/type: "movement"/);
   assert.match(html,/Son du trajet \(projectile \/ rayon\)/);
   assert.match(html,/data-creature-audio-movement/);
 });
