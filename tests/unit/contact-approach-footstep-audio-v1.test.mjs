@@ -105,3 +105,66 @@ test("visual controller uses existing footfall cue scheduler for attack contact 
   assert.match(presenter,/onFootfall:[\s\S]*?type: "travel"/);
   assert.match(html,/Son du trajet \(projectile \/ rayon \/ contact\)/);
 });
+
+test("canceling a contact attack stops active footsteps and rejects delayed cues from the old approach",()=>{
+  const plays=[], callbacks=[];
+  const presenter=createCombatResolutionPresenter({
+    visuals:{
+      playEventFor(){return Promise.resolve({status:"finished"})},
+      cancelFor(){},
+      playApproachFor(actor,mode,options){callbacks.push(options);return Promise.resolve({status:"finished"})}
+    },
+    audio:{play(event){
+      plays.push(event);
+      if(event.type!=="travel")return {status:"ignored",finished:Promise.resolve({status:"ignored"})};
+      const handle={status:"running",finished:new Promise(()=>{}),stop(){handle.stopped=true}};
+      plays.at(-1).handle=handle;
+      return handle;
+    }}
+  });
+  presenter.presentRelease({action:{skill:{id:"step",form:"contact",approachMode:"ground"},travelMs:1000},actorSlot:"player",targetSlot:"opponent"});
+  const first=callbacks.at(-1);
+  first.onFootfall({type:"footfall",atMs:300});
+  const firstHandle=plays.filter(e=>e.type==="travel")[0].handle;
+  assert.equal(firstHandle.stopped,undefined);
+  assert.equal(presenter.cancelActionPresentation("player"),true);
+  assert.equal(firstHandle.stopped,true);
+  first.onFootfall({type:"footfall",atMs:600});
+  assert.equal(plays.filter(e=>e.type==="travel").length,1,"stale timers cannot produce a footstep after cancellation");
+  presenter.presentRelease({action:{skill:{id:"new",form:"contact",approachMode:"aerial"},travelMs:800},actorSlot:"player",targetSlot:"opponent"});
+  callbacks.at(-1).onFootfall({type:"movement",atMs:0});
+  assert.equal(plays.filter(e=>e.type==="travel").length,2);
+  presenter.dispose();
+  assert.equal(plays.filter(e=>e.type==="travel")[1].handle.stopped,true);
+});
+
+test("semantic outcome rejects future footfall cues but does not cut off a triggered one-shot",()=>{
+  const events=[],callbacks=[];
+  const presenter=createCombatResolutionPresenter({
+    visuals:{
+      playEventFor(){return Promise.resolve({status:"finished"})},
+      cancelFor(){},
+      playApproachFor(actor,mode,options){callbacks.push(options);return Promise.resolve({status:"finished"})}
+    },
+    audio:{play(event){
+      events.push(event);
+      const h={status:"running",finished:new Promise(()=>{}),stop(){h.stopped=true}};
+      event.handle=h;return h;
+    }}
+  });
+  presenter.presentRelease({action:{skill:{id:"strike",form:"contact",approachMode:"ground"},travelMs:500},actorSlot:"player",targetSlot:"opponent"});
+  callbacks[0].onFootfall({type:"footfall",atMs:250});
+  const step=events.find(e=>e.type==="travel").handle;
+  presenter.presentOutcome({
+    resolution:{ok:true,outcome:"hit",events:[
+      {type:"skill-release",form:"contact",skillId:"strike"},
+      {type:"skill-arrive",skillId:"strike"}
+    ]},
+    actorSlot:"player",targetSlot:"opponent"
+  });
+  assert.equal(step.stopped,undefined,"natural footstep tail survives the impact");
+  callbacks[0].onFootfall({type:"footfall",atMs:500});
+  assert.equal(events.filter(e=>e.type==="travel").length,1);
+  presenter.dispose();
+  assert.equal(step.stopped,true);
+});
