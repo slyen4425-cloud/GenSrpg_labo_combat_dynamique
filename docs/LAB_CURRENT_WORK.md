@@ -941,7 +941,12 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Demande** : empêcher le spam de rappels/échanges volontaires par un verrou configurable, **45 secondes par défaut**, avec **0 seconde** autorisée ; KO et relève automatique sont totalement exemptés.
 - **Base exacte** : `gh-pages` `c65b5d370815c3ab5744f121729bdad89d9d7da2` ; checkpoint de départ `checkpoint/lab-start-voluntary-recall-cooldown-v1-2026-10-10` ; branche `work/lab-voluntary-recall-cooldown-v1-2026-10-10`.
 - **Unique propriétaire** : `Roster Session` stocke le prochain instant d'échange volontaire autorisé par slot, sur `Combat Session.snapshot().elapsedMs`. `CaptureGameOptionsV1` valide la durée, l'éditeur la saisit et le panneau affiche le reste sans posséder d'horloge.
-- **Autorisé** : `src/contracts/capture-game-options-v1.js`, `src/core/combat/roster-session.js`, `src/ui/capture-combat-roster-controller-v1.js`, `src/ui/combat-2v2-test-ui.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, tests ciblés, ce document et rapport du lot.
+- **Autorisé** : `src/contracts/roster-switch-policy-v1.js`, `src/contracts/capture-game-options-v1.js`, `src/core/combat/roster-session.js`, `src/ui/capture-combat-roster-controller-v1.js`, `src/ui/combat-2v2-test-ui.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, tests ciblés, ce document et rapport du lot.
 - **Protégés** : commandes de préparation 2 s et coût nul, `Combat Runtime` et combat/FX, `Combat Session` et effets, `replaceKnockedOut` et relève instantanée, bibliothèque 103 créatures, exports anciens, `main`, `Zombicide-40k`, Exploration.
 - **TDD** : RED normalisation (45 000 / 0 / 60 000), refus preview et completion pendant le verrou, horloge simulée via `session.advanceMs`, exemption KO, durée par slot et remise à zéro au nouveau combat, éditeur/HTML, vrais exports et tests Node + Chromium existants.
 - **Fin** : CI verte SHA exact, rapport, checkpoint GREEN, preview et publication `gh-pages` sous lease ; validation smartphone physique distincte.
+
+### Délai de rappel volontaire V1 — validation en cours
+- RED ciblé CI `38045491255` ; implémentation et sentinelles en branche, CI `38045663599` SUCCESS (Foundation et navigateurs) avant ajout du test UI/contrôleur complémentaire.
+- Rapport : `docs/LAB_VOLUNTARY_RECALL_COOLDOWN_V1.md`.
+- Exiger la réussite CI au SHA final avant tout checkpoint GREEN ou publication. La validation smartphone de Sylvain reste distincte.
