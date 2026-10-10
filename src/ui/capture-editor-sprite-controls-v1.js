@@ -15,7 +15,7 @@ const offsetModes = [
   ["custom", "Réglage séparé côté adversaire"]
 ];
 const roles = ["cast", "impact", "zone"];
-const opacityRoles = new Set(["cast", "zone"]);
+const opacityRoles = new Set(["cast", "impact", "zone"]);
 
 export function skillSpriteOpacityPercentToUnitV1(value) {
   const percent = Number(value);
