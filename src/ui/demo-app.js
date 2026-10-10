@@ -391,7 +391,8 @@ export async function mountCombatDemo({
     slot,
     profile,
     plan,
-    finalBoundaryMs
+    finalBoundaryMs,
+    onCue = null
   }) {
     const emitCue = (cue) => {
       if (disposed || !slot.visible) {
@@ -403,6 +404,9 @@ export async function mountCombatDemo({
       })) {
         cameraFx.play(fxPlan);
       }
+      // The same Animation Core contact cue drives optional attack-step audio.
+      // No second timing sequence is created.
+      try { onCue?.(cue); } catch {}
     };
 
     const finalCues = [];
@@ -596,7 +600,8 @@ export async function mountCombatDemo({
       travelMs,
       targetSlot = null,
       onPhase = null,
-      onContact = null
+      onContact = null,
+      onFootfall = null
     } = {}
   ) {
     if (disposed) {
@@ -616,6 +621,10 @@ export async function mountCombatDemo({
       throw new TypeError(
         "onContact must be a function when supplied"
       );
+    }
+
+    if (onFootfall !== null && typeof onFootfall !== "function") {
+      throw new TypeError("onFootfall must be a function when supplied");
     }
 
     const slot = slotOf(slotKey);
@@ -675,12 +684,19 @@ export async function mountCombatDemo({
       slot,
       profile,
       plan,
-      finalBoundaryMs: planDurationMs
+      finalBoundaryMs: planDurationMs,
+      onCue: onFootfall ? cue => {
+        if (cue.type === "footfall") onFootfall(cue);
+      } : null
     });
 
     slot.setApproachActive(true, approachDepth);
 
     const handle = slot.renderer.play(plan);
+    // Flight/gliding/teleport have no footfalls: one travel sound at takeoff.
+    if (onFootfall && !(plan.cues ?? []).some(cue => cue.type === "footfall")) {
+      try { onFootfall({ type: "movement", atMs: 0, intensity: 1 }); } catch {}
+    }
     const phaseTimers = [];
     let contactReturnHandle = null;
     let contactStoppedOutbound = false;
