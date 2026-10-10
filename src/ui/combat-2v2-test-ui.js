@@ -19,6 +19,7 @@ import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createCombatEnergyOrbsRendererV1 } from "../adapters/renderer/combat-energy-orbs-v1.js";
+import { createCombatCastChargePresenterV1 } from "../adapters/renderer/combat-cast-charge-presentation-v1.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 import { createPersistentZoneAudioSyncV1 } from "../adapters/audio/persistent-zone-audio-sync-v1.js";
 
@@ -635,6 +636,13 @@ export async function mountCoop2v2Test({
     ])
   );
 
+  const chargePresenters = Object.fromEntries(
+    Object.entries(chargeRefs).map(([actorId, bar]) => [
+      actorId,
+      createCombatCastChargePresenterV1({ bar })
+    ])
+  );
+
   const cleanups = [];
   const skillRefs = new Map();
   const targetPulseTimers = new Map();
@@ -816,20 +824,8 @@ export async function mountCoop2v2Test({
     status.dataset.tone = tone;
   }
 
-  function setCharge(actorId, {
-    value = 0,
-    active = false
-  } = {}) {
-    const bar = chargeRefs[actorId];
-    if (!bar) {
-      return;
-    }
-
-    bar.value = Math.max(
-      0,
-      Math.min(1, Number(value) || 0)
-    );
-    bar.dataset.active = active ? "true" : "false";
+  function setCharge(actorId, snapshot = {}) {
+    chargePresenters[actorId]?.render(snapshot);
   }
 
   function actorState(actorId, state = session.snapshot()) {
@@ -1455,7 +1451,9 @@ export async function mountCoop2v2Test({
 
       setCharge(progress.actorId, {
         value: preparing ? progress.chargeProgress : 0,
-        active: preparing
+        active: preparing,
+        actionName: progress.actionName,
+        remainingMs: preparing ? progress.remainingPreparationMs : 0
       });
 
       if (!progress.actionId) {
