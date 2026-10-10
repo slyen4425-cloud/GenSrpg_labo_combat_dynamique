@@ -389,6 +389,9 @@ export async function mountCombatTest({
   let runtime = null;
 
   const combatAudio = createDomCombatAudio({
+    movementSoundForActor(actorSlot) {
+      return visuals.getMovementSoundFor?.(actorSlot) ?? null;
+    },
     resolveAudioAsset(assetId) {
       return presentationAssets?.audioAsset?.(assetId) ?? null;
     },
