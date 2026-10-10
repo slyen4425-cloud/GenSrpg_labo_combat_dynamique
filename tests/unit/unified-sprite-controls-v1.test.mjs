@@ -214,7 +214,8 @@ test("editor exposes clear percentage controls for cast, zone and persistent sta
 
 test("persistent zone offers hold-last as explicit editor option while keeping cast and impact modes unchanged", async () => {
   const html=await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
-  assert.match(html, /<select data-skill-zone-playback>[\\s\\S]*?<option value="hold-last">Jouer une fois puis garder la derni/);
+  const zonePlayback=html.slice(html.indexOf("<select data-skill-zone-playback>"),html.indexOf("</select>",html.indexOf("<select data-skill-zone-playback>")));
+  assert.match(zonePlayback, /<option value="hold-last">Jouer une fois puis garder la derni/);
   for (const role of ["cast","impact"]) {
     assert.throws(()=>buildHumanSkillDraftV1(fields({
       [role+"AssetId"]:spriteId, [role+"PlaybackMode"]:"hold-last"
