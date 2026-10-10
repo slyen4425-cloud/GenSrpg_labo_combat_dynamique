@@ -1227,7 +1227,16 @@ html {
 .test-team [hidden] { display: none; }
 
 .combat-test-team-menu { position: relative; margin-top: .4rem; }
-.combat-test-team-menu summary { min-height: 2.5rem; padding: .65rem; border-radius: .6rem; background: #0b2934; color: #d7e8ed; }
+.combat-test-team-menu summary { display: flex; align-items: center; gap: .4rem; min-height: 2.5rem; padding: .45rem .55rem; border-radius: .6rem; background: #0b2934; color: #d7e8ed; cursor: pointer; list-style: none; font-size: .72rem; }
+.combat-test-team-menu summary::-webkit-details-marker { display: none; }
+.combat-test-team-menu summary::before { content: "▸"; flex: 0 0 auto; color: #94c8d6; }
+.combat-test-team-menu[open] summary::before { content: "▾"; }
+.combat-test-team-menu summary:focus-visible { outline: 2px solid #9ae1f4; outline-offset: 2px; }
+[data-combat-team-summary-label] { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+[data-combat-recall-countdown] { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 2.6rem; padding: .19rem .32rem; border: 1px solid rgba(234,192,116,.48); border-radius: 999px; background: rgba(87,58,22,.40); color: #f3dfb7; font-size: .63rem; font-weight: 750; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+[data-combat-recall-countdown][hidden] { display: none; }
+.capture-preview-shell[data-landscape-required="true"] .combat-test-team-menu summary { min-height: 2rem; padding: .22rem .4rem; font-size: clamp(.52rem, 1.7dvh, .66rem); }
+.capture-preview-shell[data-landscape-required="true"] [data-combat-recall-countdown] { padding: .15rem .28rem; min-width: 2.35rem; font-size: clamp(.5rem, 1.5dvh, .6rem); }
 .combat-test-team-menu__body { position: absolute; z-index: 30; bottom: calc(100% + .4rem); right: 0; width: min(28rem, 88vw); max-height: min(24rem, 66svh); overflow: auto; padding: .75rem; border: 1px solid #42616d; border-radius: .7rem; background: #081820; box-shadow: 0 8px 32px #0009; }
 [data-combat-team-rosters] section { display: grid; gap: .3rem; margin-bottom: .7rem; }
 [data-combat-team-rosters] strong { font-size: .8rem; color: #a3dbe5; }
