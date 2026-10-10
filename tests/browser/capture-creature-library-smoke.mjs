@@ -488,9 +488,26 @@ const server = createServer(async (req, res) => {
               set(row,"[data-skill-effect-scope]","self");
               set(row,"[data-skill-zone-id]",id);
               set(row,"[data-skill-zone-duration-seconds]",12);
+              const damageControls=row.querySelector('[data-skill-zone-effect-config-kind="damage"]');
+              const statusControls=row.querySelector('[data-skill-zone-effect-config-kind="apply_status"]');
+              const mode=row.querySelector("[data-skill-zone-status-behavior]");
+              if(!damageControls || !statusControls || !mode)
+                throw Error("zone UI sub-panels missing");
+              if(damageControls.hidden || !statusControls.hidden)
+                throw Error("legacy damage zone controls must be visible by default");
               set(row,"[data-skill-zone-effect-kind]","apply_status");
+              if(!damageControls.hidden || statusControls.hidden || mode.disabled ||
+                  mode.options.length!==2 || !statusControls.contains(mode))
+                throw Error("zone status UI is not an enabled, exclusive editable panel");
               set(row,"[data-skill-zone-status-behavior]",behavior);
+              if(mode.value!==behavior)throw Error("zone status trigger option not selectable");
               set(row,"[data-skill-zone-status-kind]",statusKind);
+              const statField=row.querySelector('[data-skill-zone-status-config-kind="stat_modifier"]');
+              const dotField=row.querySelector('[data-skill-zone-status-config-kind="damage_over_time"]');
+              if(!statField || !dotField ||
+                  statField.hidden!==(statusKind!=="stat_modifier") ||
+                  dotField.hidden!==(statusKind!=="damage_over_time"))
+                throw Error("zone status-specific fields not synchronized");
               set(row,"[data-skill-zone-status-id]",id+"-status");
               return row;
             };
