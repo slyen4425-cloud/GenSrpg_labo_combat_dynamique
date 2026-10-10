@@ -73,9 +73,9 @@ test("Moussados showcase preset preserves the editor-authored model", async () =
   assert.deepEqual(
     record.loadout.slots.map((slot) => slot.skillId),
     [
+      "cap_earth_atk_2",
       "lib_earth_guard",
-      "claw",
-      "lib_quake",
+      "cap_earth_atk_4",
       null,
       null
     ]
