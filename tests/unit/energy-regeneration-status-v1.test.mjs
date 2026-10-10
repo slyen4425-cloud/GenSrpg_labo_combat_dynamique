@@ -7,6 +7,7 @@ import { applyStatusEffectV1, removeStatusEffectsV1 } from "../../src/core/comba
 import { advanceEnergyTicks } from "../../src/core/combat/combat-timing.js";
 import { advanceCombatTime } from "../../src/core/combat/combat-state.js";
 import { buildHumanTacticalSkillEffectsV1 } from "../../src/ui/capture-editor-human-v2.js";
+import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
 import { readFileSync } from "node:fs";
 
 const effect = (pct, overrides={}) => ({
@@ -59,4 +60,34 @@ test("human tactical authoring builds regen status without changing baseline ene
  assert.match(source,/skillStatusEnergyRegenModifierPct/);
  assert.match(source,/skillZoneStatusEnergyRegenModifierPct/);
  assert.match(source,/Régénération d’énergie/);
+});
+
+test("native CombatSession skill applies self-buff, restores boosted energy, and expires cleanly",()=>{
+ const c=createCombatSession({fighters:[{...fighter("player"),initialEnergy:4},fighter("opponent")]});
+ const ability=normalizeSkillDefinition({
+  id:"energy-regen-ability",name:"Rechargement",category:"support",form:"projectile",
+  element:null,approachMode:"none",energyCost:2,preparationMs:0,travelMs:0,
+  recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
+  targetRelations:["self"],effect:{damage:0,heal:0,tags:[]},
+  effects:[{kind:"apply_status",targetScope:"self",status:effect(100,{durationMs:2500})}]
+ });
+ const result=c.useSkill({actorId:"player",targetId:"player",skill:ability});
+ assert.equal(result.ok,true);
+ assert.equal(c.snapshot().fighters.player.statusEffects[0].definition.kind,"energy_regen_modifier");
+ assert.equal(c.snapshot().fighters.player.energy,2);
+ c.advanceMs(4000);
+ assert.equal(c.snapshot().fighters.player.energy,14,"native gain 2+4+4+2+2");
+ assert.equal(c.snapshot().fighters.player.statusEffects.length,0);
+ assert.equal(c.snapshot().fighters.player.energyChargeAmount,2);
+});
+test("native stacking and refresh use same status owner and cleanse removes only the target buff",()=>{
+ const base=session().snapshot();
+ let state=applyStatusEffectV1({state:base,targetActorId:"player",sourceActorId:"player",status:norm(50,{stacking:"stack",maxStacks:3})});
+ state=applyStatusEffectV1({state,targetActorId:"player",sourceActorId:"player",status:norm(50,{stacking:"stack",maxStacks:3})});
+ assert.equal(state.fighters.player.statusEffects[0].stacks,2);
+ state=advanceCombatTime(state,1000);
+ assert.equal(state.fighters.player.energy,4,"2 energy * (1+100%)");
+ const cleared=removeStatusEffectsV1({state,targetActorId:"player",polarity:"beneficial",statusTags:["energy"]});
+ assert.equal(cleared.fighters.player.statusEffects.length,0);
+ assert.equal(cleared.fighters.opponent.energy,0);
 });
