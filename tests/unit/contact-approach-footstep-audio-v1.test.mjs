@@ -31,7 +31,7 @@ test("canonical contact approach cues have 4 massive, 2 quadruped, 3 biped and z
   }
 });
 
-test("presenter turns each real contact footfall into a one-shot travel sound for that skill, not release/impact",()=>{
+test("presenter turns each real contact footfall into a one-shot creature movement sound, not release/impact",()=>{
   const events=[], callbacks=[];
   const presenter=createCombatResolutionPresenter({
     visuals:{
@@ -48,15 +48,15 @@ test("presenter turns each real contact footfall into a one-shot travel sound fo
   callbacks[0].onFootfall({type:"footfall",atMs:700});
   callbacks[0].onFootfall({type:"footfall",atMs:1050});
   callbacks[0].onFootfall({type:"footfall",atMs:1400});
-  const travel=events.filter(event=>event.type==="travel");
+  const travel=events.filter(event=>event.type==="movement");
   assert.equal(travel.length,4);
-  assert.ok(travel.every(event=>event.skillId==="contact-skill"&&event.loop===false));
+  assert.ok(travel.every(event=>event.actorSlot==="player"&&event.loop===false));
   assert.ok(events.some(event=>event.type==="release"));
   assert.ok(!events.some(event=>event.type==="impact"));
   presenter.dispose();
 });
 
-test("contact approach with no footfalls can trigger one travel sample and other forms do not get step callbacks",()=>{
+test("contact approach with no footfalls can trigger one movement sample and other forms do not get step callbacks",()=>{
   const events=[], callbacks=[];
   const presenter=createCombatResolutionPresenter({
     visuals:{
@@ -69,7 +69,7 @@ test("contact approach with no footfalls can trigger one travel sample and other
   presenter.presentRelease({action:{skill:{id:"flight",form:"contact",approachMode:"aerial"},travelMs:1300},actorSlot:"player",targetSlot:"opponent"});
   assert.equal(typeof callbacks[0].onFootfall,"function");
   callbacks[0].onFootfall({type:"movement",atMs:0});
-  assert.equal(events.filter(e=>e.type==="travel"&&e.skillId==="flight").length,1);
+  assert.equal(events.filter(e=>e.type==="movement"&&e.actorSlot==="player").length,1);
   presenter.presentRelease({action:{skill:{id:"projectile",form:"projectile",approachMode:"ground"},travelMs:1300},actorSlot:"player",targetSlot:"opponent"});
   assert.equal(callbacks[1].onFootfall,null);
   presenter.presentRelease({action:{skill:{id:"silent",form:"contact",approachMode:"ground"},travelMs:0},actorSlot:"player",targetSlot:"opponent"});
@@ -81,10 +81,11 @@ test("audio adapter overrides loop=true with a one-shot for footfall without cha
   const created=[];
   const audio=createDomCombatAudio({
     presentationForSkill(){return {travelSound:{assetId:"sound:travel",loop:true}}},
+    presentationForCreature(){return {movement:{assetId:"sound:footsteps"}}},
     resolveAudioAsset(){return {url:"https://example.test/step.mp3",loop:true}},
     createAudio(){const item={volume:1,loop:false,currentTime:0,play(){return Promise.resolve()},pause(){}};created.push(item);return item}
   });
-  const oneShot=audio.play({type:"travel",skillId:"contact",loop:false});
+  const oneShot=audio.play({type:"movement",actorSlot:"player",loop:false});
   assert.equal(oneShot.status,"running");
   assert.equal(oneShot.loop,false);
   assert.equal(created[0].loop,false);
@@ -102,8 +103,9 @@ test("visual controller uses existing footfall cue scheduler for attack contact 
   assert.match(source,/function schedulePlanCues[\s\S]*?onCue\?\./);
   assert.match(source,/function playApproachFor[\s\S]*?onFootfall[\s\S]*?onCue:/);
   assert.match(source,/plan\.cues[\s\S]*?onFootfall\(\{/);
-  assert.match(presenter,/onFootfall:[\s\S]*?type: "travel"/);
-  assert.match(html,/Son du trajet \(projectile \/ rayon \/ contact\)/);
+  assert.match(presenter,/onFootfall:[\s\S]*?type: "movement"/);
+  assert.match(html,/Son du trajet \(projectile \/ rayon\)/);
+  assert.match(html,/data-creature-audio-movement/);
 });
 
 test("canceling a contact attack stops active footsteps and rejects delayed cues from the old approach",()=>{
@@ -116,7 +118,7 @@ test("canceling a contact attack stops active footsteps and rejects delayed cues
     },
     audio:{play(event){
       plays.push(event);
-      if(event.type!=="travel")return {status:"ignored",finished:Promise.resolve({status:"ignored"})};
+      if(event.type!=="movement")return {status:"ignored",finished:Promise.resolve({status:"ignored"})};
       const handle={status:"running",finished:new Promise(()=>{}),stop(){handle.stopped=true}};
       plays.at(-1).handle=handle;
       return handle;
@@ -125,7 +127,7 @@ test("canceling a contact attack stops active footsteps and rejects delayed cues
   presenter.presentRelease({action:{skill:{id:"step",form:"contact",approachMode:"ground"},travelMs:1000},actorSlot:"player",targetSlot:"opponent"});
   const first=callbacks.at(-1);
   first.onFootfall({type:"footfall",atMs:300});
-  const firstHandle=plays.filter(e=>e.type==="travel")[0].handle;
+  const firstHandle=plays.filter(e=>e.type==="movement")[0].handle;
   assert.equal(firstHandle.stopped,undefined);
   assert.equal(presenter.cancelActionPresentation("player"),true);
   assert.equal(firstHandle.stopped,true);
