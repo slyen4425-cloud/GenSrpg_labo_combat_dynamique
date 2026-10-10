@@ -173,11 +173,11 @@ export function createCombatResolutionPresenter({
     return Boolean(token || handles?.size);
   }
 
-  function playFootfallAudio({ actorSlot, targetSlot, skillId, token }) {
+  function playFootfallAudio({ actorSlot, targetSlot, token }) {
     if (disposed || footfallTokenByActor.get(actorSlot) !== token) return;
-    // Each contact reuses the authored travel asset as an independent one-shot.
+    // Creature, not skill, owns the sound. Same animation cue, active actor slot.
     const handle = audio?.play({
-      type: "travel", skillId, actorSlot, targetSlot, loop: false
+      type: "movement", actorSlot, targetSlot, loop: false
     });
     if (handle?.status !== "running") return;
     let handles = footfallAudioByActor.get(actorSlot);
@@ -320,7 +320,7 @@ export function createCombatResolutionPresenter({
           travelMs: action.travelMs,
           targetSlot,
           onFootfall: footfallToken ? () => playFootfallAudio({
-            actorSlot, targetSlot, skillId, token: footfallToken
+            actorSlot, targetSlot, token: footfallToken
           }) : null,
           onContact:
             approachMode !== "burrow" &&
