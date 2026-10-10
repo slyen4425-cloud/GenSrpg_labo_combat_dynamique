@@ -1,0 +1,115 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "lib_earth_guard",
+    "description": "Renforce l’armure temporairement.",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "lib_earth_guard",
+      "name": "Carapace minérale",
+      "category": "defensive",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "earth",
+      "approachMode": "none",
+      "energyCost": 2,
+      "preparationMs": 800,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 45000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "lib_earth_guard:0",
+            "kind": "stat_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 25000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [
+              "legacy",
+              "buff"
+            ],
+            "statId": "defense",
+            "modifierMode": "points",
+            "deltaPoints": 200
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:lib_earth_guard",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "lib_earth_guard",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-earth-carapace-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "lib_earth_guard:0": {
+          "mode": "sprite",
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-status-stone-shell-01",
+            "displayScale": 1.6,
+            "opacity": 0.6
+          }
+        }
+      }
+    }
+  }
+}
