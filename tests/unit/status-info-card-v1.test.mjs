@@ -404,3 +404,69 @@ test("status info explains physical stat reduction with gameplay meaning instead
     ]
   );
 });
+
+
+test("recovery status HUD describes energy regeneration buff/debuff and author source", () => {
+  const source = { id: "cap_earth_atk_3", name: "Charge tellurique" };
+  const info = pct => projectStatusEffectInfoV1({
+    instance: dotInstance({
+      sourceSkillId: "cap_earth_atk_3",
+      stacks: 1,
+      definition: {
+        ...dotInstance().definition,
+        id: "cap_earth_atk_3:0",
+        kind: "energy_regen_modifier",
+        polarity: pct < 0 ? "detrimental" : "beneficial",
+        modifierPct: pct
+      }
+    }),
+    elapsedMs: 1000,
+    sourceSkill: source
+  });
+  assert.equal(info(50).statusName, "Régénération d’énergie");
+  assert.equal(info(50).sourceSkillName, "Charge tellurique");
+  assert.deepEqual(info(50).effectLines, [
+    "Énergie récupérée par tick augmentée de 50 %"
+  ]);
+  assert.deepEqual(info(-50).effectLines, [
+    "Énergie récupérée par tick réduite de 50 %"
+  ]);
+  assert.deepEqual(info(-120).effectLines, [
+    "Régénération d’énergie suspendue (0 énergie par tick)"
+  ]);
+  assert.deepEqual(info(0).effectLines, [
+    "Énergie récupérée par tick inchangée"
+  ]);
+});
+
+test("recovery status HUD describes cooldown rate, stacks and paused recovery", () => {
+  const info = (pct, stacks = 1) => projectStatusEffectInfoV1({
+    instance: dotInstance({
+      stacks,
+      definition: {
+        ...dotInstance().definition,
+        id: "cooldown-speed-1",
+        kind: "skill_cooldown_rate_modifier",
+        polarity: pct < 0 ? "detrimental" : "beneficial",
+        modifierPct: pct
+      }
+    }),
+    elapsedMs: 4000
+  });
+  assert.equal(info(100).statusName, "Recharge des compétences");
+  assert.deepEqual(info(100).effectLines, [
+    "Vitesse de recharge des compétences augmentée de 100 %"
+  ]);
+  assert.deepEqual(info(-50).effectLines, [
+    "Vitesse de recharge des compétences réduite de 50 %"
+  ]);
+  assert.deepEqual(info(-100).effectLines, [
+    "Recharge des compétences en pause"
+  ]);
+  assert.deepEqual(info(50, 2).effectLines, [
+    "Vitesse de recharge des compétences augmentée de 100 %"
+  ]);
+  assert.deepEqual(info(0).effectLines, [
+    "Vitesse de recharge des compétences inchangée"
+  ]);
+});
