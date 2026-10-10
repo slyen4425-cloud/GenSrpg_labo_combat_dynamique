@@ -131,10 +131,7 @@ function presenceEvasionFor(
       targetActionContext
     });
 
-  if (
-    !reach.configured ||
-    reach.reachable
-  ) {
+  if (reach.reachable) {
     return Object.freeze({
       reach,
       evasion: null
