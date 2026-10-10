@@ -1,0 +1,56 @@
+{
+  "id": "pack:capture:sprite-falling-rock-skyfall-01",
+  "type": "capture_skill_sprite_sequence",
+  "category": "travel",
+  "element": "earth",
+  "frame_size": [
+    512,
+    512
+  ],
+  "frame_count": 20,
+  "frame_ms": 70,
+  "loop": false,
+  "playback_mode": "once",
+  "frames": [
+    "frames/sprite_skill_falling_rock_skyfall_01.webp",
+    "frames/sprite_skill_falling_rock_skyfall_02.webp",
+    "frames/sprite_skill_falling_rock_skyfall_03.webp",
+    "frames/sprite_skill_falling_rock_skyfall_04.webp",
+    "frames/sprite_skill_falling_rock_skyfall_05.webp",
+    "frames/sprite_skill_falling_rock_skyfall_06.webp",
+    "frames/sprite_skill_falling_rock_skyfall_07.webp",
+    "frames/sprite_skill_falling_rock_skyfall_08.webp",
+    "frames/sprite_skill_falling_rock_skyfall_09.webp",
+    "frames/sprite_skill_falling_rock_skyfall_10.webp",
+    "frames/sprite_skill_falling_rock_skyfall_11.webp",
+    "frames/sprite_skill_falling_rock_skyfall_12.webp",
+    "frames/sprite_skill_falling_rock_skyfall_13.webp",
+    "frames/sprite_skill_falling_rock_skyfall_14.webp",
+    "frames/sprite_skill_falling_rock_skyfall_15.webp",
+    "frames/sprite_skill_falling_rock_skyfall_16.webp",
+    "frames/sprite_skill_falling_rock_skyfall_17.webp",
+    "frames/sprite_skill_falling_rock_skyfall_18.webp",
+    "frames/sprite_skill_falling_rock_skyfall_19.webp",
+    "frames/sprite_skill_falling_rock_skyfall_20.webp"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_skill_falling_rock_skyfall_atlas_01.webp",
+    "format": "sprite-strip",
+    "frameCount": 20,
+    "frameWidth": 384,
+    "frameHeight": 384
+  },
+  "source": {
+    "file": "sprite_sheet_d_impact_météorique.png",
+    "pixel_size": [
+      1402,
+      1122
+    ],
+    "frame_cell_approx": [
+      280.4,
+      280.5
+    ],
+    "sha256": "87e48b68373f655c7431d9f153a878e4ffa9a79c3876ccfb447345dadac55ba1",
+    "note": "Each 512px PNG/WebP frame is upscaled from the source grid cell, not a native 512px generation."
+  }
+}
