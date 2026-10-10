@@ -346,6 +346,9 @@
           <label>Attaque
             <select data-creature-audio-attack data-private-audio data-audio-roles="release,voice"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
+          <label>Pas / déplacement (attaque contact)
+            <select data-creature-audio-movement data-private-audio data-audio-roles="movement"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
           <label>Touché
             <select data-creature-audio-hit data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
@@ -363,6 +366,7 @@
                 <option value="voice">Voix créature</option>
                 <option value="impact">Touché / impact</option>
                 <option value="death">KO / mort</option>
+                <option value="movement">Pas / déplacement</option>
               </select>
             </label>
             <label>Nom
@@ -1410,7 +1414,7 @@
           <label>Son de cast
             <select data-skill-cast-audio data-private-audio data-audio-roles="cast,release,preparation"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
-          <label>Son du trajet (projectile / rayon / contact)
+          <label>Son du trajet (projectile / rayon)
             <select data-skill-travel-audio data-private-audio data-audio-roles="travel"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
           <label>Son d'impact
