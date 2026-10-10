@@ -1,4 +1,5 @@
 import { resumeStatusEffectsV1 } from "./status-effect-runtime-v1.js";
+import { normalizeRosterVoluntarySwitchCooldownMsV1 } from "../../contracts/roster-switch-policy-v1.js";
 import {
   createCombatState
 } from "./combat-state.js";
@@ -66,8 +67,10 @@ export function createRosterSession({
   combatSession,
   roster,
   fighterConfigs,
-  battleFormat = null
+  battleFormat = null,
+  recallCooldownMs
 }) {
+  const voluntaryCooldownMs = normalizeRosterVoluntarySwitchCooldownMsV1(recallCooldownMs);
   if (!combatSession || typeof combatSession.snapshot !== "function") {
     throw new TypeError("combatSession is required");
   }
@@ -117,7 +120,8 @@ export function createRosterSession({
       slotId,
       members,
       activeMemberId,
-      selectedReserveMemberId: firstReserve
+      selectedReserveMemberId: firstReserve,
+      nextVoluntarySwitchAtMs: 0
     });
   }
 
@@ -326,6 +330,7 @@ export function createRosterSession({
         slotId: team.slotId,
         activeMemberId: team.activeMemberId,
         selectedReserveMemberId: team.selectedReserveMemberId,
+        voluntarySwitchCooldownRemainingMs: remainingVoluntaryCooldownMs(team),
         members: Object.freeze(
           [...team.members.values()].map((member) =>
             memberView(
@@ -338,6 +343,29 @@ export function createRosterSession({
       });
     }
     return Object.freeze(result);
+  }
+
+  // The combat session clock is authoritative. No UI clock or independent timer.
+  function remainingVoluntaryCooldownMs(team) {
+    return Math.max(0, team.nextVoluntarySwitchAtMs - combatSession.snapshot().elapsedMs);
+  }
+
+  function voluntaryCooldownPreview(team) {
+    const remainingMs = remainingVoluntaryCooldownMs(team);
+    return remainingMs > 0
+      ? Object.freeze({ ok: false, outcome: "recall_cooldown", remainingMs })
+      : null;
+  }
+
+  function commitVoluntaryCooldown(team) {
+    team.nextVoluntarySwitchAtMs = combatSession.snapshot().elapsedMs + voluntaryCooldownMs;
+  }
+
+  function previewRecall(teamId) {
+    const team = teamOf(teamId);
+    if (!team.activeMemberId) return Object.freeze({ ok: false, outcome: "no_active_member" });
+    if (combatSession.snapshot().fighters[team.slotId]?.hp <= 0) return Object.freeze({ ok: false, outcome: "active_member_ko" });
+    return voluntaryCooldownPreview(team) ?? Object.freeze({ ok: true, outcome: "ready" });
   }
 
   function selectReserve(teamId, memberId) {
@@ -353,15 +381,15 @@ export function createRosterSession({
   }
 
   function recall(teamId) {
+    const preview = previewRecall(teamId);
+    if (!preview.ok) return preview;
     const team = teamOf(teamId);
-    if (!team.activeMemberId) {
-      return Object.freeze({ ok: false, outcome: "no_active_member" });
-    }
 
     syncActiveSnapshot(team);
     const recalledMemberId = team.activeMemberId;
     combatSession.departFighter(team.slotId, {departingMemberId: recalledMemberId});
     team.activeMemberId = null;
+    commitVoluntaryCooldown(team);
 
     if (
       !team.selectedReserveMemberId ||
@@ -423,6 +451,8 @@ export function createRosterSession({
     const team = teamOf(teamId);
     if (!team.activeMemberId) return Object.freeze({ ok: false, outcome: "no_active_member" });
     if (combatSession.snapshot().fighters[team.slotId]?.hp <= 0) return Object.freeze({ ok: false, outcome: "active_member_ko" });
+    const cooldown = voluntaryCooldownPreview(team);
+    if (cooldown) return cooldown;
     const targetId = memberId ?? team.selectedReserveMemberId;
     if (targetId === team.activeMemberId) return Object.freeze({ ok: false, outcome: "member_already_active" });
     const member = team.members.get(targetId);
@@ -446,6 +476,7 @@ export function createRosterSession({
     });
     team.activeMemberId = member.id;
     team.selectedReserveMemberId = recalledMemberId;
+    commitVoluntaryCooldown(team);
     return Object.freeze({ ok: true, outcome: "switched", teamId, slotId: team.slotId,
       recalledMemberId, memberId: member.id, creatureId: member.creatureId, displayName: member.displayName });
   }
@@ -756,6 +787,7 @@ export function createRosterSession({
     selectReserve,
     recall,
     summon,
+    previewRecall,
     previewSwitch,
     switchMember,
     replaceKnockedOut,
