@@ -40,7 +40,7 @@ function harness({duo=false}={}) {
     distance:"long",battleFormat,fighters:actors.map(f)
   });
   const roster=createRosterSession({
-    combatSession:session,
+    combatSession:session, recallCooldownMs:0,
     roster:{teams:{
       player:{slotId:"player",activeMemberId:"water",
         members:[
