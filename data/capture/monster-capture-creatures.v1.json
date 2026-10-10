@@ -143,7 +143,6 @@
       ],
       "resistances": [],
       "abilityIds": [
-        "lib_rock_slam",
         "lib_earth_guard",
         "lib_root_snare",
         "lib_quake"
@@ -374,7 +373,6 @@
       ],
       "resistances": [],
       "abilityIds": [
-        "lib_rock_slam",
         "lib_guard_break",
         "lib_earth_guard",
         "lib_stunning_blow"
