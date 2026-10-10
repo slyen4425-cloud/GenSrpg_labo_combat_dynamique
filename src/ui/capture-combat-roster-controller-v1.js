@@ -35,6 +35,10 @@ export function createCaptureCombatRosterControllerV1({
     },
     previewCommand(actorId, command) {
       if (disposed) return { ok: false, outcome: "disposed" };
+      if (command.kind === "recall") {
+        const preview = roster.previewRecall(actorId);
+        return preview.ok ? session.previewCommand({ actorId, command }) : preview;
+      }
       if (command.kind !== "switch") return session.previewCommand({ actorId, command });
       const preview = roster.previewSwitch(actorId);
       if (!preview.ok) return preview;
@@ -68,7 +72,8 @@ export function mountCaptureCombatRosterPanelV1({
   const recallDuration = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 3 }).format(commands.switch.preparationMs / 1000)
     + " seconde" + (commands.switch.preparationMs === 1000 ? "" : "s");
   const recallNote = panel.querySelector("[data-combat-recall-note]");
-  if (recallNote) recallNote.textContent = `Gratuit. Rappel en ${recallDuration}, puis arrivée immédiate de la réserve sélectionnée. Ta créature reste ciblable pendant le rappel.`;
+  const baseRecallNote = `Gratuit. Rappel en ${recallDuration}, puis arrivée immédiate de la réserve sélectionnée. Ta créature reste ciblable pendant le rappel.`;
+  if (recallNote) recallNote.textContent = baseRecallNote;
   const memberRefs = new Map();
   const initial = controller.snapshot();
   host.replaceChildren();
@@ -99,7 +104,7 @@ export function mountCaptureCombatRosterPanelV1({
   function previewCommand(kind) {
     const runtime = getRuntime();
     if (!runtime || isTransitionPending() || runtime.hasActiveActionFor(format.localActorId)) return { ok: false };
-    if (kind === "switch") return controller.previewCommand(format.localActorId, commands[kind]);
+    if (kind === "switch" || kind === "recall") return controller.previewCommand(format.localActorId, commands[kind]);
     if (runtime.hasActiveAction) return { ok: false };
     const team = controller.snapshot()[format.localActorId];
     const active = team?.activeMemberId !== null;
@@ -122,6 +127,13 @@ export function mountCaptureCombatRosterPanelV1({
         ref.node.disabled = member.active || member.hp <= 0 || isTransitionPending() || Boolean(getRuntime()?.hasActiveActionFor(format.localActorId));
         ref.node.setAttribute("aria-pressed", member.selected ? "true" : "false");
       }
+    }
+    const remainingMs = state[format.localActorId]?.voluntarySwitchCooldownRemainingMs ?? 0;
+    if (recallNote) {
+      const note = remainingMs > 0
+        ? `${baseRecallNote} Prochain changement volontaire dans ${Math.ceil(remainingMs / 1000)} s. Un KO permet toujours une relève immédiate.`
+        : baseRecallNote;
+      if (recallNote.textContent !== note) recallNote.textContent = note;
     }
     buttons.forEach(button => { button.disabled = !previewCommand(button.dataset.combatRosterCommand).ok; });
   }
