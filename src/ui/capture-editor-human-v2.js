@@ -1731,6 +1731,15 @@ function presentationForSkill(fields) {
       }
     }
   );
+  if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
+    travel.trajectoryMode = "skyfall";
+    travel.fallHeightPx = finiteNumber(
+      presentation.fallHeightPx ?? 400, "Hauteur de chute du projectile"
+    );
+    travel.fallOffsetXPx = finiteNumber(
+      presentation.fallOffsetXPx ?? 0, "Décalage du projectile tombant"
+    );
+  }
   const impact = visualSlot(
     presentation.impactAssetId,
     {
@@ -1850,7 +1859,9 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      (
+      travel?.trajectoryMode === "skyfall"
+        ? 10
+        : (
         [cast, impact, persistentZone].some(
           (slot) =>
             slot?.offsetMode != null
@@ -2485,6 +2496,9 @@ export function humanSkillEditorFieldsFromDraftV1(
         travel?.displayScale ?? 1,
       travelPlaybackMode:
         travel?.playbackMode ?? "stretch",
+      travelTrajectoryMode: travel?.trajectoryMode ?? "linear",
+      fallHeightPx: travel?.fallHeightPx ?? 400,
+      fallOffsetXPx: travel?.fallOffsetXPx ?? 0,
       castLayerPlayer:
         cast?.layerByView?.player ??
         "front",
@@ -3370,6 +3384,9 @@ function writeSkillDraftFields(
       "[data-skill-travel-playback]",
       fields.presentation.travelPlaybackMode
     ],
+    ["[data-skill-trajectory-mode]", fields.presentation.travelTrajectoryMode],
+    ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
+    ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
     [
       "[data-skill-cast-layer-player]",
       fields.presentation.castLayerPlayer
@@ -3541,6 +3558,9 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-fx]", ""],
     ["[data-skill-travel-scale]", 1],
     ["[data-skill-travel-playback]", "stretch"],
+    ["[data-skill-trajectory-mode]", "linear"],
+    ["[data-skill-fall-height]", 400],
+    ["[data-skill-fall-offset-x]", 0],
     ["[data-skill-cast-layer-player]", "front"],
     ["[data-skill-cast-layer-opponent]", "front"],
     ["[data-skill-travel-layer-player]", "front"],
@@ -8136,6 +8156,9 @@ function readSkillFields(root) {
         root,
         "[data-skill-travel-playback]"
       ),
+      travelTrajectoryMode: selectedValue(root, "[data-skill-trajectory-mode]"),
+      fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
+      fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
       castLayerPlayer: selectedValue(
         root,
         "[data-skill-cast-layer-player]"
@@ -8888,6 +8911,9 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-travel-fx]", presentation.travelAssetId],
     ["[data-skill-travel-scale]", presentation.travelDisplayScale],
     ["[data-skill-travel-playback]", presentation.travelPlaybackMode],
+    ["[data-skill-trajectory-mode]", presentation.travelTrajectoryMode],
+    ["[data-skill-fall-height]", presentation.fallHeightPx],
+    ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
     ["[data-skill-travel-layer-player]", presentation.travelLayerPlayer],
     ["[data-skill-travel-layer-opponent]", presentation.travelLayerOpponent],
     ["[data-skill-impact-fx]", presentation.impactAssetId],
