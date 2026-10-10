@@ -68,6 +68,8 @@ export function mountCaptureCombatRosterPanelV1({
   if (!panel) return Object.freeze({ render() {}, dispose() {} });
   const host = panel.querySelector("[data-combat-team-rosters]");
   const summary = panel.querySelector("[data-combat-team-summary]");
+  const summaryLabel = summary.querySelector?.("[data-combat-team-summary-label]") ?? summary;
+  const recallCountdown = summary.querySelector?.("[data-combat-recall-countdown]") ?? null;
   const buttons = [...panel.querySelectorAll("[data-combat-roster-command]")];
   const recallDuration = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 3 }).format(commands.switch.preparationMs / 1000)
     + " seconde" + (commands.switch.preparationMs === 1000 ? "" : "s");
@@ -118,7 +120,7 @@ export function mountCaptureCombatRosterPanelV1({
     const localTeamId = format.teamOf(format.localActorId);
     const count = format.actors.filter(actor => actor.teamId === localTeamId)
       .reduce((n, actor) => n + (state[actor.actorId]?.members.length ?? 0), 0);
-    summary.textContent = "Équipe · " + count + " monstre" + (count > 1 ? "s" : "");
+    summaryLabel.textContent = "Rappel · " + count + " monstre" + (count > 1 ? "s" : "");
     for (const team of Object.values(state)) for (const member of team.members) {
       const ref = memberRefs.get(member.id);
       if (!ref) continue;
@@ -130,11 +132,16 @@ export function mountCaptureCombatRosterPanelV1({
       }
     }
     const remainingMs = state[format.localActorId]?.voluntarySwitchCooldownRemainingMs ?? 0;
-    if (recallNote) {
-      const note = remainingMs > 0
-        ? `${baseRecallNote} Prochain changement volontaire dans ${Math.ceil(remainingMs / 1000)} s. Un KO permet toujours une relève immédiate.`
-        : baseRecallNote;
-      if (recallNote.textContent !== note) recallNote.textContent = note;
+    if (recallCountdown) {
+      const seconds = Math.ceil(remainingMs / 1000);
+      const visible = seconds > 0;
+      const text = visible ? seconds + " s" : "";
+      if (recallCountdown.textContent !== text) recallCountdown.textContent = text;
+      if (recallCountdown.hidden !== !visible) recallCountdown.hidden = !visible;
+      const accessibilityLabel = visible ? "Rappel : encore " + seconds + " secondes" : "";
+      if (recallCountdown.getAttribute?.("aria-label") !== accessibilityLabel) {
+        recallCountdown.setAttribute("aria-label", accessibilityLabel);
+      }
     }
     buttons.forEach(button => { button.disabled = !previewCommand(button.dataset.combatRosterCommand).ok; });
   }
