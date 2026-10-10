@@ -1,9 +1,13 @@
 import {
   normalizeSkillDefinition
 } from "./skill-definition.js";
+import {
+  ROSTER_VOLUNTARY_SWITCH_COOLDOWN_DEFAULT_MS,
+  normalizeRosterVoluntarySwitchCooldownMsV1
+} from "./roster-switch-policy-v1.js";
 
 const GAME_OPTION_FIELDS =
-  new Set(["dodge"]);
+  new Set(["dodge", "recallCooldownMs"]);
 const DODGE_FIELDS =
   new Set([
     "enabled",
@@ -84,6 +88,7 @@ function positiveFinite(value, field) {
 
 export const CAPTURE_GAME_OPTIONS_V1_DEFAULT =
   Object.freeze({
+    recallCooldownMs: ROSTER_VOLUNTARY_SWITCH_COOLDOWN_DEFAULT_MS,
     dodge: Object.freeze({
       enabled: false,
       maxCharges: 1,
@@ -127,6 +132,9 @@ export function normalizeCaptureGameOptionsV1(
   }
 
   return Object.freeze({
+    ...(Object.prototype.hasOwnProperty.call(value, "recallCooldownMs")
+      ? { recallCooldownMs: normalizeRosterVoluntarySwitchCooldownMsV1(value.recallCooldownMs) }
+      : {}),
     dodge: Object.freeze({
       enabled: dodge.enabled,
       maxCharges: positiveInteger(
