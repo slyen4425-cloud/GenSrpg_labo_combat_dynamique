@@ -5,6 +5,7 @@ import { normalizeSkillEffectV1 } from "../../src/contracts/skill-effect-v1.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { applyStatusEffectV1, removeStatusEffectsV1 } from "../../src/core/combat/status-effect-runtime-v1.js";
 import { advanceEnergyTicks } from "../../src/core/combat/combat-timing.js";
+import { advanceCombatTime } from "../../src/core/combat/combat-state.js";
 import { buildHumanTacticalSkillEffectsV1 } from "../../src/ui/capture-editor-human-v2.js";
 import { readFileSync } from "node:fs";
 
@@ -35,7 +36,6 @@ test("real combat status buffs recovery, expires, refreshes and supports cleanse
  let c=session();
  let state=c.snapshot();
  state=applyStatusEffectV1({state,targetActorId:"player",sourceActorId:"player",status:norm(100)});
- const {advanceCombatTime}=await import("../../src/core/combat/combat-state.js");
  state=advanceCombatTime(state,4000);
  assert.equal(state.fighters.player.energy,12);
  assert.equal(state.fighters.opponent.energy,8);
