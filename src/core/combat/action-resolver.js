@@ -172,10 +172,23 @@ function mobilityEvasionFor(
   }
 
   const evasion = targetAction.skill?.evasion;
-  if (
-    evasion?.window !== "travel" ||
-    !evasion.incomingForms.includes(incomingSkill.form)
-  ) {
+  const explicitMobilityEvasion =
+    evasion?.window === "travel" &&
+    evasion.incomingForms.includes(incomingSkill.form);
+  // The renderer fixes a projectile's destination at release. A target
+  // currently approaching/teleporting must not be auto-hit there simply
+  // because the nominal projectile timer elapsed. Only the active travel
+  // window counts, so this does not grant a permanent dodge buff.
+  const movingOutOfProjectilePath =
+    incomingSkill.form === "projectile" &&
+    incomingSkill.category === "offensive" &&
+    ["ground", "aerial", "teleport", "burrow"].includes(
+      targetAction.skill?.approachMode ?? "none"
+    ) &&
+    elapsedMs >= targetAction.releaseAtMs &&
+    elapsedMs < targetAction.impactAtMs;
+
+  if (!explicitMobilityEvasion && !movingOutOfProjectilePath) {
     return null;
   }
 
@@ -188,6 +201,10 @@ function mobilityEvasionFor(
 
   return Object.freeze({
     outcome: "evaded",
+    reason:
+      movingOutOfProjectilePath
+        ? "moving_target"
+        : "mobility",
     sourceSkillId: targetAction.actionId,
     sourceApproachMode:
       targetAction.skill?.approachMode ?? "none",
@@ -1009,7 +1026,7 @@ export function resolveSkillCompletion({
       presence.evasion?.reason ??
       (
         mobilityEvasion
-          ? "mobility"
+          ? mobilityEvasion.reason ?? "mobility"
           : reaction
             ? "reaction"
             : null
