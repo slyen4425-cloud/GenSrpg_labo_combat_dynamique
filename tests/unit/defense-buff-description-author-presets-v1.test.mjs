@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { projectStatusEffectInfoV1 } from "../../src/adapters/renderer/status-effect-info-v1.js";
+import { projectStatusEffectInfoV1, statusEffectInfoTextV1 } from "../../src/adapters/renderer/status-effect-info-v1.js";
+import { createStatusEffectRuntimeInstanceV1 } from "../../src/core/combat/status-effect-instance-v1.js";
+import { buildCaptureEditorDatabaseV1, applyCaptureTransferPlanToEditorStateV1 } from "../../src/ui/capture-editor-file-transfer-v1.js";
+import { planCaptureTransferImportV1 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import { normalizeCaptureStatRegistryV1 } from "../../src/contracts/capture-stat-registry-v1.js";
+import { normalizeCaptureProgressionRulesV1 } from "../../src/contracts/capture-progression-rules-v1.js";
 import { importCaptureTransferJsonV1, exportCaptureSkillTransferJsonV1 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
@@ -89,4 +94,50 @@ test("both exported Earth abilities enter canonical configuredSkills only once a
     } else { assert.fail("unexpected skill ID " + draft.id); }
   }
   assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size, CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length);
+});
+
+test("actual authored Carapace effect projects as reduced incoming damage in HUD info text", async () => {
+  const transfer = importCaptureTransferJsonV1(await read(paths.carapace));
+  const status = transfer.value.draft.definition.effects[0].status;
+  const instance = createStatusEffectRuntimeInstanceV1({
+    definition: status, sourceActorId: "local-1", sourceSkillId: "lib_earth_guard", appliedAtMs: 0
+  });
+  const registry = JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json"));
+  const defenseRule = registry.stats.find(stat => stat.id === "defense");
+  const info = projectStatusEffectInfoV1({
+    instance, elapsedMs: 1000, sourceSkill: transfer.value.draft.definition,
+    fighter: { statValuesById: { defense: 0 }, statEffectRulesById: { defense: defenseRule }, statusEffects: [instance] }
+  });
+  const hudText = statusEffectInfoTextV1(info);
+  assert.match(hudText, /Origine : Carapace minérale/);
+  assert.match(hudText, /Dégâts reçus réduits de 40 %/);
+  assert.doesNotMatch(hudText, /Dégâts reçus augmentés/);
+});
+
+test("authored Earth transfers use replace-by-ID in canonical configuredSkills without lost native skills", async () => {
+  const transfers = await Promise.all(Object.values(paths).map(async path => importCaptureTransferJsonV1(await read(path))));
+  const statRegistry = normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
+  const progressionRules = normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
+  const guard = transfers[0].value.draft;
+  const oldGuard = { ...guard, definition: { ...guard.definition, energyCost: 99 } };
+  const native = { ...guard, id: "native-retained", definition: { ...guard.definition, id: "native-retained" }, presentation: { ...guard.presentation, subjectId: "native-retained", id: "skill:native-retained" } };
+  const configuredSkills = new Map([[oldGuard.id, oldGuard], [native.id, native]]);
+  const configuredCreatures = new Map();
+  for (const transfer of transfers) {
+    const database = buildCaptureEditorDatabaseV1({
+      statRegistry, progressionRules, configuredSkills, configuredCreatures,
+      metadata: { producer: "earth-presets-regression-test" }
+    });
+    const plan = planCaptureTransferImportV1({
+      currentDatabase: database, transfer,
+      mode: configuredSkills.has(transfer.value.draft.id) ? "replace" : "add"
+    });
+    applyCaptureTransferPlanToEditorStateV1({
+      plan, configuredSkills, configuredCreatures, statRegistry, progressionRules
+    });
+  }
+  assert.equal(configuredSkills.size, 3);
+  assert.deepEqual(configuredSkills.get("lib_earth_guard"), transfers[0].value.draft);
+  assert.deepEqual(configuredSkills.get("cap_earth_atk_2"), transfers[1].value.draft);
+  assert.deepEqual(configuredSkills.get("native-retained"), native);
 });
