@@ -103,7 +103,8 @@ test("visual controller uses existing footfall cue scheduler for attack contact 
   assert.match(source,/function schedulePlanCues[\s\S]*?onCue\?\./);
   assert.match(source,/function playApproachFor[\s\S]*?onFootfall[\s\S]*?onCue:/);
   assert.match(source,/plan\.cues[\s\S]*?onFootfall\(\{/);
-  assert.match(presenter,/onFootfall:[\s\S]*?type: "movement"/);
+  assert.match(presenter,/type: "movement", actorSlot, targetSlot, loop: false/);
+  assert.match(presenter,/onFootfall: footfallToken/);
   assert.match(html,/Son du trajet \(projectile \/ rayon\)/);
   assert.match(html,/data-creature-audio-movement/);
 });
@@ -132,12 +133,12 @@ test("canceling a contact attack stops active footsteps and rejects delayed cues
   assert.equal(presenter.cancelActionPresentation("player"),true);
   assert.equal(firstHandle.stopped,true);
   first.onFootfall({type:"footfall",atMs:600});
-  assert.equal(plays.filter(e=>e.type==="travel").length,1,"stale timers cannot produce a footstep after cancellation");
+  assert.equal(plays.filter(e=>e.type==="movement").length,1,"stale timers cannot produce a footstep after cancellation");
   presenter.presentRelease({action:{skill:{id:"new",form:"contact",approachMode:"aerial"},travelMs:800},actorSlot:"player",targetSlot:"opponent"});
   callbacks.at(-1).onFootfall({type:"movement",atMs:0});
-  assert.equal(plays.filter(e=>e.type==="travel").length,2);
+  assert.equal(plays.filter(e=>e.type==="movement").length,2);
   presenter.dispose();
-  assert.equal(plays.filter(e=>e.type==="travel")[1].handle.stopped,true);
+  assert.equal(plays.filter(e=>e.type==="movement")[1].handle.stopped,true);
 });
 
 test("semantic outcome rejects future footfall cues but does not cut off a triggered one-shot",()=>{
@@ -156,7 +157,7 @@ test("semantic outcome rejects future footfall cues but does not cut off a trigg
   });
   presenter.presentRelease({action:{skill:{id:"strike",form:"contact",approachMode:"ground"},travelMs:500},actorSlot:"player",targetSlot:"opponent"});
   callbacks[0].onFootfall({type:"footfall",atMs:250});
-  const step=events.find(e=>e.type==="travel").handle;
+  const step=events.find(e=>e.type==="movement").handle;
   presenter.presentOutcome({
     resolution:{ok:true,outcome:"hit",events:[
       {type:"skill-release",form:"contact",skillId:"strike"},
@@ -166,7 +167,7 @@ test("semantic outcome rejects future footfall cues but does not cut off a trigg
   });
   assert.equal(step.stopped,undefined,"natural footstep tail survives the impact");
   callbacks[0].onFootfall({type:"footfall",atMs:500});
-  assert.equal(events.filter(e=>e.type==="travel").length,1);
+  assert.equal(events.filter(e=>e.type==="movement").length,1);
   presenter.dispose();
   assert.equal(step.stopped,true);
 });
