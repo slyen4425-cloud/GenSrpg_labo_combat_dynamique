@@ -80,7 +80,12 @@ test("both exported Earth abilities enter canonical configuredSkills only once a
       assert.equal(draft.definition.effects[0].status.deltaPoints, 200);
       assert.equal(draft.definition.effects[0].status.durationMs, 25000);
       assert.equal(draft.presentation.visual.icon.assetId, "pack:capture:icon-skill-earth-carapace-01");
-      assert.equal(draft.presentation.statusVisuals["lib_earth_guard:0"].sprite.assetId, "pack:capture:sprite-status-stone-shell-01");
+      assert.equal(draft.presentation.statusVisuals["lib_earth_guard:0"].sprite.assetId, "pack:capture:sprite-stone-carapace-aura-01");
+      assert.equal(draft.presentation.statusVisuals["lib_earth_guard:0"].sprite.playbackMode, "hold-last");
+      assert.equal(draft.presentation.statusVisuals["lib_earth_guard:0"].sprite.displayScale, 1.6);
+      assert.equal(draft.presentation.statusVisuals["lib_earth_guard:0"].sprite.opacity, 0.75);
+      assert.equal(draft.presentation.statusVisuals["lib_earth_guard:0"].tintColor, "#9b59d0");
+      assert.equal(draft.presentation.statusVisuals["lib_earth_guard:0"].tintOpacity, 0.35);
     } else if (draft.id === "cap_earth_atk_2") {
       assert.equal(draft.definition.name, "Coup minéral");
       assert.equal(draft.requiredLevel, 1);
