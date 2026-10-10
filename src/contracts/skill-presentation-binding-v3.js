@@ -119,8 +119,8 @@ function normalizeSprite(raw, field) {
 
   const controls = {};
   if (value.playbackMode != null) {
-    if (!["once", "loop", "stretch"].includes(value.playbackMode)) {
-      throw new RangeError(field + ".playbackMode must be once, loop or stretch");
+    if (!["once", "loop", "stretch", "hold-last"].includes(value.playbackMode)) {
+      throw new RangeError(field + ".playbackMode must be once, loop, stretch or hold-last");
     }
     controls.playbackMode = value.playbackMode;
   }
