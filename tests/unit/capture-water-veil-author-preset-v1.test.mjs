@@ -8,7 +8,7 @@ import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createDomStatusFxRenderer} from "../../src/adapters/renderer/dom-status-fx.js";
 
 const FILE="data/capture/showcase/cap_water_special_2.capture-skill-transfer-v1.json";
-const SOURCE_SHA256="aec01c4df6299e29964f2ffd6920e8945cc20c47bb39fd15353943530e550a19";
+const SOURCE_SHA256="911b33e756b83652dc25f367b8719e91393864824f5d6f00f2d9b0fd766f7606";
 async function rawFile(){return readFile(new URL("../../"+FILE,import.meta.url));}
 async function transfer(){return importCaptureTransferJsonV1((await rawFile()).toString("utf8")).value.draft;}
 function fighter(id){return {id,maxHp:200,initialHp:200,maxEnergy:20,initialEnergy:20,statValuesById:{defense:0},statEffectRulesById:{defense:{damageReductionPctPerPoint:0.2,damagePctPerPoint:0,resistancePctPerPoint:0,chargeTimeReductionPctPerPoint:0}}};}
@@ -23,6 +23,11 @@ test("author transfer is stored losslessly and registered exactly once as an Ult
   const draft=await transfer();
   assert.equal(draft.id,"cap_water_special_2");
   assert.equal(draft.definition.name,"Voile aqueux");
+  assert.equal(draft.definition.preparationMs,2000);
+  assert.equal(draft.definition.maxUsesPerCombat,1);
+  assert.equal(draft.presentation.visual.aura.attachment,"fixed-source");
+  assert.equal(draft.presentation.visual.aura.displayScale,4);
+  assert.equal(draft.presentation.visual.aura.offsetY,-35);
   assert.equal(draft.definition.loadoutSlot,"ultimate");
   assert.equal(draft.requiredLevel,20);
   assert.equal(draft.definition.effects[0].durationMs,60000);

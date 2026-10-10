@@ -131,7 +131,8 @@ function resolvedVisual(
     rotationDeg: slot.rotationDeg ?? 0,
     opacity: slot.opacity ?? 1,
     offsetX: viewOffset.x,
-    offsetY: viewOffset.y
+    offsetY: viewOffset.y,
+    attachment: slot.attachment
   });
 }
 

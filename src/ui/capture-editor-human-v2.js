@@ -1750,7 +1750,7 @@ function presentationForSkill(fields) {
   const persistentZone = visualSlot(
     presentation.zoneAssetId,
     {
-      attachment: "source",
+      attachment: presentation.zoneAttachment ?? "source",
       trigger: "impact",
       anchor: null,
       displayScale:
@@ -2506,6 +2506,8 @@ export function humanSkillEditorFieldsFromDraftV1(
       impactOffsetY: impact?.offsetY ?? 0,
       zoneAssetId:
         zone?.assetId ?? "",
+      zoneAttachment:
+        zone?.attachment ?? "source",
       zoneDisplayScale:
         zone?.displayScale ?? 1,
       zoneDisplayScaleX:
@@ -3396,6 +3398,10 @@ function writeSkillDraftFields(
       fields.presentation.zoneAssetId
     ],
     [
+      "[data-skill-zone-attachment]",
+      fields.presentation.zoneAttachment
+    ],
+    [
       "[data-skill-zone-scale]",
       fields.presentation.zoneDisplayScale
     ],
@@ -3541,6 +3547,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-impact-offset-x]", 0],
     ["[data-skill-impact-offset-y]", 0],
     ["[data-skill-zone-fx]", ""],
+    ["[data-skill-zone-attachment]", "source"],
     ["[data-skill-zone-scale]", 1],
     ["[data-skill-zone-scale-x]", 1],
     ["[data-skill-zone-scale-y]", 1],
@@ -8145,6 +8152,7 @@ function readSkillFields(root) {
         root,
         "[data-skill-zone-fx]"
       ),
+      zoneAttachment: selectedValue(root, "[data-skill-zone-attachment]"),
       zoneDisplayScale: numericValue(
         root,
         "[data-skill-zone-scale]"
@@ -8871,6 +8879,7 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-impact-scale]", presentation.impactDisplayScale],
     ["[data-skill-impact-duration]", presentation.impactDurationMs],
     ["[data-skill-zone-fx]", presentation.zoneAssetId],
+    ["[data-skill-zone-attachment]", presentation.zoneAttachment],
     ["[data-skill-zone-scale]", presentation.zoneDisplayScale],
     ["[data-skill-zone-scale-x]", presentation.zoneDisplayScaleX],
     ["[data-skill-zone-scale-y]", presentation.zoneDisplayScaleY],

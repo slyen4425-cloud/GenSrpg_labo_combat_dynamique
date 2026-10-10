@@ -1776,9 +1776,14 @@ export function createDomSkillFxRenderer({
         ).getBoundingClientRect(),
         arenaRect
       );
-      // The visual area is anchored on the ground once its caster leaves.
-      // Its cached view coordinates never determine occupancy/damage.
-      const source = zone.detachedFromSource && record?.zoneCenter
+      // This renderer alone owns the visual anchor. fixed-source pins an
+      // authored field at first activation; source follows the living caster.
+      // A recalled caster also leaves its last field position fixed.
+      // Gameplay occupancy continues through the existing native zone sample.
+      const fixedAtGround =
+        visual.attachment === "fixed-source" ||
+        zone.detachedFromSource === true;
+      const source = fixedAtGround && record?.zoneCenter
         ? record.zoneCenter
         : liveSource;
       const displayScale = Math.max(
@@ -1851,8 +1856,7 @@ export function createDomSkillFxRenderer({
         record.spritePlayback?.setDuration?.(spriteOwnerDurationMs(zone, record.playbackStartedAtMs));
       }
 
-      if (!zone.detachedFromSource) record.zoneCenter = source;
-      else if (!record.zoneCenter) record.zoneCenter = source;
+      if (!fixedAtGround || !record.zoneCenter) record.zoneCenter = source;
       const offsetX =
         Number(visual.offsetX) || 0;
       const offsetY =

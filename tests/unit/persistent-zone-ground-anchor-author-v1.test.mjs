@@ -4,7 +4,7 @@ import {readFile} from "node:fs/promises";
 import {importCaptureTransferJsonV1,exportCaptureSkillTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
-import {humanSkillEditorFieldsFromDraftV1,buildHumanSkillEditorDraftV1} from "../../src/ui/capture-editor-human-v2.js";
+import {humanSkillEditorFieldsFromDraftV1} from "../../src/ui/capture-editor-human-v2.js";
 
 async function json(relative) {
  return JSON.parse(await readFile(new URL("../../"+relative, import.meta.url),"utf8"));

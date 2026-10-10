@@ -100,7 +100,8 @@
       "cap_water_atk_6",
       "cap_water_atk_7",
       "cap_water_special_1",
-      "cap_water_special_2"
+      "cap_water_special_2",
+      "lib_aqua_heal"
     ],
     "presentation": {
       "id": "creature:crea_maraileron",
@@ -245,11 +246,11 @@
       },
       {
         "id": "slot-4",
-        "skillId": "cap_water_atk_4"
+        "skillId": "lib_aqua_heal"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "cap_water_special_2"
       }
     ]
   }

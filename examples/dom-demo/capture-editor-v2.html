@@ -1221,6 +1221,13 @@
           <label>Visuel persistant de zone
             <select data-skill-zone-fx data-asset-role="zone"><option value="">Aucun</option></select>
           </label>
+          <label>Ancrage visuel de la zone
+            <select data-skill-zone-attachment>
+              <option value="source" selected>Suit la créature (ex. Vague de flammes)</option>
+              <option value="fixed-source">Reste au sol dès l'activation (ex. Voile aqueux)</option>
+            </select>
+          </label>
+          <p class="note">L’ancrage est visuel : le moteur garde seul l’autorité du rayon, de la durée et des buffs de zone.</p>
           <label>Opacité de la zone / aura (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-zone-opacity-pct>
           </label>
