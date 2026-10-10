@@ -4,6 +4,8 @@ import { readFile } from "node:fs/promises";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createRosterSession } from "../../src/core/combat/roster-session.js";
 import { normalizeCaptureGameOptionsV1 } from "../../src/contracts/capture-game-options-v1.js";
+import { readHumanGameOptionsV1 } from "../../src/ui/capture-editor-human-v2.js";
+import { createCaptureCombatRosterControllerV1 } from "../../src/ui/capture-combat-roster-controller-v1.js";
 
 const load = async path => JSON.parse(await readFile(path,"utf8"));
 const [rosterDefinition, maraileron, braisombre] = await Promise.all([
@@ -86,4 +88,48 @@ test("HTML game options and human editor expose recall cooldown alongside existi
   assert.match(html,/data-game-recall-cooldown-seconds/);
   assert.match(js,/\[data-game-recall-cooldown-seconds\]/);
   assert.match(html,/data-recall-seconds/);
+});
+
+test("human editor reads creator-selected zero or 60 seconds, without altering native recall cast", () => {
+  for (const seconds of [0,60]) {
+    const fields = new Map([
+      ["[data-game-recall-cooldown-seconds]", {value:String(seconds)}],
+      ["[data-game-dodge-enabled]",{checked:false}],
+      ["[data-game-dodge-charges]",{value:"1"}],
+      ["[data-game-dodge-recharge-seconds]",{value:"30"}],
+      ["[data-game-dodge-active-seconds]",{value:"0.25"}]
+    ]);
+    const root = {querySelector:selector=>fields.get(selector) ?? null};
+    assert.equal(readHumanGameOptionsV1(root).recallCooldownMs,seconds*1000);
+  }
+});
+
+test("real roster controller previews reject both recall and switch during combat-clock restriction",async()=>{
+  const session=createCombatSession({distance:"medium",fighters:[
+    {...maraileron,id:"player",initialHp:80},
+    {...braisombre,id:"opponent",initialHp:90}
+  ]});
+  const actions=[];
+  const controller=createCaptureCombatRosterControllerV1({
+    session,rosterDefinition,fighterConfigs:{maraileron,braisombre},
+    recallCooldownMs:45000,skillIdsByCreature:{},
+    visuals:{setCreatureFor:(...args)=>actions.push(["creature",...args]),
+             setSlotVisible:(...args)=>actions.push(["visible",...args])}
+  });
+  try{
+    const [switchCommand,recallCommand]=await Promise.all([
+      load("data/combat/commands/switch.command.json"),
+      load("data/combat/commands/recall.command.json")
+    ]);
+    assert.equal(controller.previewCommand("player",switchCommand).ok,true);
+    const outcome=controller.applyCommandResolution({
+      ok:true,outcome:"completed",actorId:"player",commandKind:"switch",
+      events:[{type:"command-complete",actorId:"player",rosterMemberId:"player-drakon"}]
+    });
+    assert.equal(outcome.outcome,"switched");
+    assert.equal(controller.previewCommand("player",switchCommand).outcome,"recall_cooldown");
+    assert.equal(controller.previewCommand("player",recallCommand).outcome,"recall_cooldown");
+    session.advanceMs(45000);
+    assert.equal(controller.previewCommand("player",switchCommand).ok,true);
+  }finally{controller.dispose()}
 });
