@@ -907,6 +907,9 @@ export async function mountCombatDemo({
     getCreatureFor(slotKey) {
       return slotOf(slotKey).meta.id;
     },
+    getCreatureAudioFor(slotKey) {
+      return slotOf(slotKey).meta.audio ?? null;
+    },
     get slotKeys() {
       return Object.freeze(Object.keys(slots));
     },
