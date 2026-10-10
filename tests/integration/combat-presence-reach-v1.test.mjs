@@ -334,3 +334,52 @@ test("legacy attack without hitPresenceStates keeps existing mobility evasion se
 
   runtime.dispose();
 });
+
+
+test("unconfigured offensive projectile misses a target buried during the entire travel window", () => {
+  const { session, clock, runtime, resolutions } = harness();
+  const underground = skill({
+    id: "burrow-travel",
+    form: "contact",
+    approachMode: "burrow",
+    travelMs: 2000,
+    damage: 0
+  });
+  const incoming = skill({
+    id: "legacy-sky-attack",
+    form: "projectile",
+    travelMs: 1000,
+    damage: 12
+  });
+  assert.equal(runtime.startSkill({
+    actorId: "player", targetId: "opponent", skill: underground
+  }).ok, true);
+  assert.equal(runtime.startSkill({
+    actorId: "opponent", targetId: "player", skill: incoming
+  }).ok, true);
+
+  clock.setTime(1000);
+  clock.fireNext();
+  const result = resolutions.find(item => item.skillId === "legacy-sky-attack");
+  assert.ok(result);
+  assert.equal(result.outcome, "evaded");
+  assert.equal(result.targetPresence, "underground");
+  assert.equal(session.snapshot().fighters.player.hp, 100);
+  runtime.dispose();
+});
+
+test("an explicitly underground-capable projectile still hits a burrowing target", () => {
+  const { session, clock, runtime, resolutions } = harness();
+  const burrow = skill({id:"burrow-attack",form:"contact",approachMode:"burrow",travelMs:2000,damage:0});
+  const groundPiercer = skill({
+    id:"earth-piercer",form:"projectile",travelMs:1000,damage:12,
+    hitPresenceStates:["surface","underground"]
+  });
+  runtime.startSkill({actorId:"player",targetId:"opponent",skill:burrow});
+  runtime.startSkill({actorId:"opponent",targetId:"player",skill:groundPiercer});
+  clock.setTime(1000);
+  clock.fireNext();
+  assert.equal(resolutions.find(item=>item.skillId==="earth-piercer")?.outcome,"hit");
+  assert.equal(session.snapshot().fighters.player.hp,88);
+  runtime.dispose();
+});
