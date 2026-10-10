@@ -378,6 +378,16 @@ export function createCombatSession({
     state = prepareZoneStatusDeparturesV1({
       state, deltaMs, battleFormat, zoneSpatialContext
     });
+    // Keep timed energy buffs visible to the single energy clock even if
+    // StatusRuntime expires them within this large frame step.
+    const energyStatusAtStart = Object.fromEntries(
+      Object.entries(state.fighters).map(([id, fighter]) => [
+        id,
+        fighter.statusEffects.filter(
+          instance => instance.definition.kind === "energy_regen_modifier"
+        )
+      ])
+    );
     state = advanceStatusEffectsV1({
       state,
       deltaMs
@@ -390,7 +400,8 @@ export function createCombatSession({
     });
     state = advanceCombatTime(
       state,
-      deltaMs
+      deltaMs,
+      { energyStatusAtStart }
     );
     return state;
   }
