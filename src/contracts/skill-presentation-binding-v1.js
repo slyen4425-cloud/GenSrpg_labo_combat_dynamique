@@ -50,6 +50,7 @@ const TRIGGERS = new Set([
   "end"
 ]);
 const PLAYBACK_MODES = new Set(["once", "loop", "stretch"]);
+const ZONE_PLAYBACK_MODES = new Set([...PLAYBACK_MODES, "hold-last"]);
 
 function objectValue(value, field) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -205,7 +206,7 @@ function normalizeVisualSlot(raw, field) {
         : enumValue(
             value.playbackMode,
             `${field}.playbackMode`,
-            PLAYBACK_MODES
+            field === "visual.aura" ? ZONE_PLAYBACK_MODES : PLAYBACK_MODES
           ),
     ...(value.durationMs == null
       ? {}
