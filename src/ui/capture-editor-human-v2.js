@@ -355,7 +355,7 @@ function humanTacticalStatusToContractV1(
     );
   }
 
-  if (output.kind === "approach_time_modifier" || output.kind === "energy_regen_modifier") {
+  if (output.kind === "approach_time_modifier" || output.kind === "energy_regen_modifier" || output.kind === "skill_cooldown_rate_modifier") {
     output.modifierPct = finiteNumber(status.modifierPct, "Variation du statut (%)");
   }
 
@@ -4290,6 +4290,7 @@ function tacticalStatusKindLabelV1(kind) {
     stat_modifier: "Modification de stat",
     approach_time_modifier: "Temps de trajet de la créature",
     energy_regen_modifier: "Régénération d’énergie (%)",
+    skill_cooldown_rate_modifier: "Recharge des compétences (%)",
     damage_over_time: "Dégâts périodiques",
     heal_over_time: "Soin périodique",
     shield: "Bouclier",
@@ -4945,6 +4946,20 @@ function appendHumanSkillEffectV1(
       return note; })()
   );
 
+  const skillCooldownPct = tacticalNumberInputV1(
+    "skillStatusCooldownRateModifierPct", status.modifierPct ?? 100, {step:"5"}
+  );
+  const skillCooldownConfig = document.createElement("div");
+  skillCooldownConfig.className = "skill-status-config__specific";
+  skillCooldownConfig.dataset.skillStatusConfigKind = "skill_cooldown_rate_modifier";
+  const skillCooldownHelp = document.createElement("p");
+  skillCooldownHelp.className = "note";
+  skillCooldownHelp.textContent = "+100 % : recharge 2× plus rapide, -50 % : moitié de la vitesse, -100 % : pause. Les compétences déjà en recharge accélèrent aussi. Le progrès acquis est conservé à la fin du statut.";
+  skillCooldownConfig.append(
+    tacticalFieldV1("Vitesse de recharge des compétences (%)", skillCooldownPct),
+    skillCooldownHelp
+  );
+
   const statusAmount =
     tacticalNumberInputV1(
       "skillStatusAmount",
@@ -5223,6 +5238,7 @@ function appendHumanSkillEffectV1(
     statConfig,
     approachConfig,
     energyRegenConfig,
+    skillCooldownConfig,
     dotConfig,
     hotConfig,
     shieldConfig,
@@ -5506,6 +5522,8 @@ function appendHumanSkillEffectV1(
       zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
     zoneStatusNumber("Régénération d'énergie (%)","skillZoneStatusEnergyRegenModifierPct",
       zs.modifierPct ?? 100,{step:"5"},"energy_regen_modifier"),
+    zoneStatusNumber("Recharge des compétences (%)","skillZoneStatusCooldownRateModifierPct",
+      zs.modifierPct ?? 100,{step:"5"},"skill_cooldown_rate_modifier"),
     zoneStatusNumber("Dégâts / soins / bouclier","skillZoneStatusAmount",
       zs.amount ?? 5,{min:0.1,step:"0.1"},"damage_over_time,heal_over_time,shield"),
     zoneStatusNumber("Intervalle (secondes)","skillZoneStatusTickSeconds",
@@ -5687,6 +5705,8 @@ function readHumanSkillEffectsV1(root) {
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-approach-modifier-pct]").value);
       } else if(zsKind==="energy_regen_modifier"){
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-energy-regen-modifier-pct]").value);
+      } else if(zsKind==="skill_cooldown_rate_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-cooldown-rate-modifier-pct]").value);
       } else if(["damage_over_time","heal_over_time","shield"].includes(zsKind)){
         zs.amount=Number(row.querySelector("[data-skill-zone-status-amount]").value);
         if(zsKind!=="shield")
@@ -5797,6 +5817,8 @@ function readHumanSkillEffectsV1(root) {
         status.modifierPct = Number(row.querySelector("[data-skill-status-approach-modifier-pct]").value);
       } else if (statusKind === "energy_regen_modifier") {
         status.modifierPct = Number(row.querySelector("[data-skill-status-energy-regen-modifier-pct]").value);
+      } else if (statusKind === "skill_cooldown_rate_modifier") {
+        status.modifierPct = Number(row.querySelector("[data-skill-status-cooldown-rate-modifier-pct]").value);
       } else if (
         statusKind === "damage_over_time"
       ) {
