@@ -383,3 +383,67 @@ test("an explicitly underground-capable projectile still hits a burrowing target
   assert.equal(session.snapshot().fighters.player.hp,88);
   runtime.dispose();
 });
+
+
+test("moving ground target evades a falling projectile without needing a bespoke dodge preset", () => {
+  const { session, clock, runtime, resolutions } = harness();
+  const moving = skill({
+    id: "moving-ground-approach",
+    form: "contact",
+    approachMode: "ground",
+    travelMs: 2000,
+    damage: 0
+  });
+  const fallingRock = skill({
+    id: "falling-rock",
+    form: "projectile",
+    travelMs: 1000,
+    damage: 15
+  });
+  assert.equal(runtime.startSkill({
+    actorId: "player", targetId: "opponent", skill: moving
+  }).ok, true);
+  assert.equal(runtime.startSkill({
+    actorId: "opponent", targetId: "player", skill: fallingRock
+  }).ok, true);
+
+  clock.setTime(1000);
+  clock.fireNext();
+  const resolved = resolutions.find(item => item.skillId === "falling-rock");
+  assert.ok(resolved);
+  assert.equal(resolved.outcome, "evaded");
+  assert.equal(resolved.evasionReason, "moving_target");
+  assert.equal(session.snapshot().fighters.player.hp, 100);
+  runtime.dispose();
+});
+
+test("standing target still takes normal projectile damage; moving target is not immune to non-projectile damage", () => {
+  {
+    const { session, clock, runtime, resolutions } = harness();
+    runtime.startSkill({
+      actorId:"opponent",targetId:"player",
+      skill:skill({id:"falling-rock-static",form:"projectile",travelMs:1000,damage:15})
+    });
+    clock.setTime(1000);
+    clock.fireNext();
+    assert.equal(resolutions.find(item=>item.skillId==="falling-rock-static")?.outcome,"hit");
+    assert.equal(session.snapshot().fighters.player.hp,85);
+    runtime.dispose();
+  }
+  {
+    const { session, clock, runtime, resolutions } = harness();
+    runtime.startSkill({
+      actorId:"player",targetId:"opponent",
+      skill:skill({id:"moving-ground",form:"contact",approachMode:"ground",travelMs:2000,damage:0})
+    });
+    runtime.startSkill({
+      actorId:"opponent",targetId:"player",
+      skill:skill({id:"pulse-not-projectile",form:"area",travelMs:1000,damage:15})
+    });
+    clock.setTime(1000);
+    clock.fireNext();
+    assert.equal(resolutions.find(item=>item.skillId==="pulse-not-projectile")?.outcome,"hit");
+    assert.equal(session.snapshot().fighters.player.hp,85);
+    runtime.dispose();
+  }
+});
