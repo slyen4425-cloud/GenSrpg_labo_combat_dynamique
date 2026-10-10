@@ -1,0 +1,192 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_earth_atk_4",
+    "description": "Attaque Terre de puissance 6. Disponible au niveau 16.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_earth_atk_4",
+      "name": "Impact rocheux",
+      "category": "offensive",
+      "form": "projectile",
+      "loadoutSlot": "standard",
+      "element": "earth",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 2500,
+      "travelMs": 1200,
+      "recoveryMs": 0,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "all_enemies",
+          "amount": 30,
+          "channel": "earth",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_earth_atk_4",
+      "version": 10,
+      "subjectType": "skill",
+      "subjectId": "cap_earth_atk_4",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-rock-smash-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-stone-carapace-cast-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.6,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-projectile-earth-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "skyfall",
+          "fallHeightPx": 650,
+          "fallOffsetXPx": 0
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-physical-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": {
+          "color": "#ffffff",
+          "opacity": 1,
+          "durationMs": 120,
+          "scale": 1.5
+        },
+        "cameraShake": {
+          "amplitudePx": 600,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 8,
+          "lengthPx": 120,
+          "sizePx": 120,
+          "opacity": 1,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 18,
+          "spreadPx": 1,
+          "sizePx": 1,
+          "durationMs": 1,
+          "opacity": 0
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 8,
+          "spreadPx": 50,
+          "sizePx": 120,
+          "risePx": 150,
+          "durationMs": 500,
+          "opacity": 0.5
+        },
+        "castBurst": null
+      }
+    }
+  }
+}
