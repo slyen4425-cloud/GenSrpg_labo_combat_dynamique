@@ -52,3 +52,7 @@ Before publication to `global-assets`:
 2. create GREEN checkpoint;
 3. fast-forward `global-assets` non-forced;
 4. then update only the lab catalogue cache revision on a dedicated lab branch and run full lab CI.
+
+## 2026-10-10 — Retrait de l'animation finale inverse
+
+Inspection directe des frames aura : la carapace est complète sur la frame 12, puis se défait progressivement de 13 à 16. La version active conserve 12 frames 512×512 (90 ms chacune), un atlas WebP 6144×512, et le même assetId canonique. Cast reste 16 frames. Les sources historiques originales 16 frames sont inchangées. Le mode de gel sur la dernière image reste configuré sur le visuel du statut dans l'éditeur, pas dans le gameplay.

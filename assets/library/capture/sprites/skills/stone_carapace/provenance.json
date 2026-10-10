@@ -117,7 +117,7 @@
         1254
       ],
       "source_sha256": "ee27569ec15d6010383d7bf781c72d5bd687a09355e82669238b07e7c4ad8e88",
-      "frame_count": 16,
+      "frame_count": 12,
       "frame_size": [
         512,
         512
@@ -134,11 +134,7 @@
         "20127721d196a59d750b3105d0f3d18134da525d1106849e095765d2ef2cc28b",
         "3275706cb2c7d410020a2e7a826b726b626779ff743597bf623d04743baee759",
         "56292569c35f0adf7085ac7abe875e66188e4939aad2078b088fbd366244f7d5",
-        "cff0b1ca1694439c7174d705ec589c7840f3bb7ec046960eb768054b85262e45",
-        "5f15f7e3ce4a9ddb686f4b19bab3c422c8494dd29d2ff8101e4af471cf405c62",
-        "b8d905c1675cd25b9d7477df79da2347ce4ab8b2dddf745b3e514fbf7dfbfa58",
-        "1aeb620572811584fc9b9413ac970dbc3fe3a2c9f8880c1e44b19cb0a3a4bac7",
-        "75c53c794c3637c286dd9ce75f6567af1c00a4081bb1851c85ca83dd041bbbff"
+        "cff0b1ca1694439c7174d705ec589c7840f3bb7ec046960eb768054b85262e45"
       ],
       "alpha_extrema": [
         [
@@ -188,30 +184,29 @@
         [
           0,
           255
-        ],
-        [
-          0,
-          255
-        ],
-        [
-          0,
-          255
-        ],
-        [
-          0,
-          255
-        ],
-        [
-          0,
-          252
         ]
       ],
       "atlas": "atlases/sprite_skill_stone_carapace_aura_atlas_01.webp",
       "atlas_size": [
-        8192,
+        6144,
         512
       ],
-      "atlas_sha256": "6c03223c8a92d964a41419e6e66715047d9912391e25f34e60c7c43b778d4d2b"
+      "atlas_sha256": "7c2de963966417895119c378aff377da2b383242177e1a40e4b9752059552dc6"
     }
+  },
+  "hold_last_trim_v1": {
+    "cutoff_frame": 12,
+    "original_frame_count": 16,
+    "omitted_frames": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "reason": "frames 13..16 progressively dismantle stone armor; 12 is the last complete shell",
+    "source_sheet_sha256": "ee27569ec15d6010383d7bf781c72d5bd687a09355e82669238b07e7c4ad8e88",
+    "original_atlas_sha256": "6c03223c8a92d964a41419e6e66715047d9912391e25f34e60c7c43b778d4d2b",
+    "trimmed_atlas_sha256": "7c2de963966417895119c378aff377da2b383242177e1a40e4b9752059552dc6",
+    "original_source_preserved": true
   }
 }

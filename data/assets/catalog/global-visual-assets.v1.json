@@ -3354,7 +3354,7 @@
         "file": "capture/sprites/skills/stone_carapace/atlases/sprite_skill_stone_carapace_aura_atlas_01.webp",
         "format": "sprite-strip",
         "mime": "image/webp",
-        "frameCount": 16,
+        "frameCount": 12,
         "frameMs": 90,
         "playbackMode": "loop"
       },

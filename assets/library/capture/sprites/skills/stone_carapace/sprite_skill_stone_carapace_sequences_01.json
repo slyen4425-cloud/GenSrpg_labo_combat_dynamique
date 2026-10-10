@@ -29,7 +29,7 @@
       "playback_mode": "once"
     },
     "aura": {
-      "frame_count": 16,
+      "frame_count": 12,
       "frame_ms": 90,
       "frames": [
         "frames/sprite_skill_stone_carapace_aura_01.png",
@@ -43,11 +43,7 @@
         "frames/sprite_skill_stone_carapace_aura_09.png",
         "frames/sprite_skill_stone_carapace_aura_10.png",
         "frames/sprite_skill_stone_carapace_aura_11.png",
-        "frames/sprite_skill_stone_carapace_aura_12.png",
-        "frames/sprite_skill_stone_carapace_aura_13.png",
-        "frames/sprite_skill_stone_carapace_aura_14.png",
-        "frames/sprite_skill_stone_carapace_aura_15.png",
-        "frames/sprite_skill_stone_carapace_aura_16.png"
+        "frames/sprite_skill_stone_carapace_aura_12.png"
       ],
       "atlas": "atlases/sprite_skill_stone_carapace_aura_atlas_01.webp",
       "playback_mode": "loop"
