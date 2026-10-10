@@ -1091,3 +1091,12 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - Contrôle de présence physique `global-assets` pour les quatre médias de l'export : PASS.
 - Nouveau test RED/CI puis correction de l'oubli `statRegistry` dans le test ; sur commit `4b3279ec49fff18b81c0c348feddd4c610ef1055` : Laboratory CI `38080310397` **SUCCESS**, Foundation + Firestorm navigateur + Creature Library navigateur.
 - Rapport `docs/LAB_IMPACT_ROCHEUX_AUTHOR_REPLACE_RETIRE_V1.md`. Étape finale : rerun CI après documentation sur SHA exact, checkpoint GREEN et promotion Pages sans force, CI et Pages publics ; validation tactile Android distincte.
+
+## 2026-10-10 — Raccord bibliothèque Capture : sprites roche skyfall / impact (lot isolé)
+
+- Source visuelle officielle : `global-assets` SHA `268fa5fb09d09ad9f361792e66814f70a13e3310`, CI du work source `38080565947` SUCCESS, checkpoint `checkpoint/global-assets-rock-skyfall-dual-vfx-v1-green-2026-10-10`. Deux IDs disponibles : `pack:capture:sprite-falling-rock-skyfall-01` (travel 20f) et `pack:capture:sprite-rock-impact-upward-01` (impact 16f).
+- Base labo exacte : `gh-pages` `651a884677b8cea902ed512d0834ebe796074e7d`. Checkpoint de départ `checkpoint/lab-start-rock-skyfall-assets-refresh-v1-2026-10-10`. Branche `work/lab-rock-skyfall-assets-refresh-v1-2026-10-10`.
+- Propriétaire : bibliothèque visuelle préexistante `GLOBAL_VISUAL_LIBRARY` (branche et catalogue immuables) ; seul le cache-buster `src/assets/global-visual-library.js` change. Aucun nouvel asset resolver, aucune nouvelle UI ni nouvelle mécanique de projectile.
+- Périmètre autorisé : mise à jour de `GLOBAL_VISUAL_LIBRARY.revision`, tests sentinelles adéquats, présent journal, rapport. Ne jamais affecter de force les deux sprites à `cap_earth_atk_4` ou à une autre compétence, puisque l'assetId est choisi par l'auteur dans son presentation binding existant.
+- Protégés : `main`, `global-assets` après publication, moteur skyfall V10, renderer, 103 créatures, tous les presets/skills et loadouts, sons/FX, soins, Jet Beam, Zombicide-40k, Exploration et branches parallèles.
+- Validation : catalogue/URLs des deux nouveaux IDs, maintient de l'ancien catalogue et du cache, CI Node + vrai Chromium sur SHA final, checkpoint GREEN, publication `gh-pages` fast-forward avec lease, CI Pages et contrôle utilisateur Android à part.
