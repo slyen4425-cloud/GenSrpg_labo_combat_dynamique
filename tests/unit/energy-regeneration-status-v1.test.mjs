@@ -65,7 +65,7 @@ test("human tactical authoring builds regen status without changing baseline ene
 test("native CombatSession skill applies self-buff, restores boosted energy, and expires cleanly",()=>{
  const c=createCombatSession({fighters:[{...fighter("player"),initialEnergy:4},fighter("opponent")]});
  const ability=normalizeSkillDefinition({
-  id:"energy-regen-ability",name:"Rechargement",category:"support",form:"projectile",
+  id:"energy-regen-ability",name:"Rechargement",category:"buff_debuff",form:"projectile",
   element:null,approachMode:"none",energyCost:2,preparationMs:0,travelMs:0,
   recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
   targetRelations:["self"],effect:{damage:0,heal:0,tags:[]},
@@ -89,5 +89,5 @@ test("native stacking and refresh use same status owner and cleanse removes only
  assert.equal(state.fighters.player.energy,4,"2 energy * (1+100%)");
  const cleared=removeStatusEffectsV1({state,targetActorId:"player",polarity:"beneficial",statusTags:["energy"]});
  assert.equal(cleared.fighters.player.statusEffects.length,0);
- assert.equal(cleared.fighters.opponent.energy,0);
+ assert.equal(cleared.fighters.opponent.energy,2);
 });
