@@ -76,7 +76,7 @@ test("Moussados showcase preset preserves the editor-authored model", async () =
       "lib_earth_guard",
       "claw",
       "lib_quake",
-      "lib_rock_slam",
+      null,
       null
     ]
   );
