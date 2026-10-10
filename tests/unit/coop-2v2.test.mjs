@@ -323,14 +323,16 @@ test("coop HUD renders runtime charge bars for all four actors and preserves loc
   assert.match(source, /function setCharge\(actorId/);
   assert.match(source, /progress\.chargeProgress/);
   assert.match(source, /progress\.phase === "preparation"/);
+  assert.match(source, /createCombatCastChargePresenterV1/);
+  assert.match(css, /\.squad-card__charge-readout\[hidden\]/);
 
   assert.match(
     css,
-    /\.squad-card__charge\s*\{[\s\S]*height:\s*0\.38rem/
+    /\.squad-card__charge\s*\{[\s\S]*height:\s*0\.64rem/
   );
   assert.match(
     css,
-    /\.squad-card--local-full \.squad-card__charge\s*\{[\s\S]*height:\s*0\.56rem/
+    /\.squad-card--local-full \.squad-card__charge\s*\{[\s\S]*height:\s*0\.8rem/
   );
   assert.match(
     css,
