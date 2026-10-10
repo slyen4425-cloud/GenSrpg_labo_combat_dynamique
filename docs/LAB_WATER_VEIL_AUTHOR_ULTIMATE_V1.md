@@ -23,3 +23,11 @@ La bibliothèque des capacités recharge ses entrées sur `CAPTURE_SHOWCASE_SKIL
 Tests TDD : conservation octet pour octet de l'export, ID/slot/propriétés, import/export, Combat Session -> statut de zone -> HUD icône source -> sortie/expiration, et Human Editor mode durée; bibliothèque 103 créatures, tests Firestorm sur Chromium. Le validateur de chaque capacité dépend du registre de statistiques du monde: si `defense` n'y est pas déclaré, la zone refuse correctement de lui appliquer le bonus plutôt que de créer une stat fictive.
 
 La validation tactile sur un appareil physique reste distincte ; aucune valeur du fichier n'est modifiée silencieusement. Le dossier source de l'auteur n'est pas une nouvelle capacité codée en dur.
+
+
+## Résultat de tests réel
+
+- Test RED catalogue absent : commit `3940deefe3487059da140a5f771b66c4401b6a43`, CI `38024674783` rouge attendue.
+- Test réel Chromium de bascule UI : `b3f6c33ea2cec9cec87c00631043ea707350eda0`, CI `38024769329` rouge identifiant une cause **réelle** : changement `data-skill-zone-status-behavior` absent du délégateur. Correction soustractive dans l'unique listener existant `bb2743893a6766ebf7815d2f24ca31e17bb1291e` ; CI `38024833766` **SUCCESS**, **1375 Node PASS / 0 FAIL**, navigateur Chromium : Ultime `cap_water_special_2` dans le slot, lecture des 60 s / 10 s / +100, bascule cache/révèle durée, 103 créatures ; Chromium Firestorm PASS. 
+- Export auteur strict conservé, status runtime réellement soumis à la zone, HUD status icon consomme l'icône de capacité par `sourceSkillId`. Aucun média créé, 0 fichier image/audio, aucun loadout modifié.
+- Checkpoint GREEN / promotion publique : les vérifier au SHA final avant d'annoncer publication.
