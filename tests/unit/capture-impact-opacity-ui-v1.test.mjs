@@ -5,6 +5,7 @@ import {skillSpriteControlsFromFieldsV1,skillSpriteControlFieldsFromVisualsV1,re
 import {humanSkillEditorFieldsFromDraftV1,buildHumanSkillDraftV1} from "../../src/ui/capture-editor-human-v2.js";
 import {importCaptureTransferJsonV1,exportCaptureSkillTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
 
 const read=p=>readFileSync(new URL("../../"+p,import.meta.url),"utf8");
 test("impact visual opacity is editable 0..100% and roundtrips through native UI",()=>{
@@ -33,4 +34,31 @@ test("impact opacity changes only SkillPresentationBinding and real presenter",(
  assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(next)).value.draft,next);
  const p=createCaptureSkillPresentationAssetsV2({skillPresentations:{[next.id]:next.presentation},assetForId:id=>({assetId:id,url:"/asset.webp",frameCount:16,frameMs:75})});
  assert.equal(p.presentationForSkill(next.id,{view:"player"}).impact.opacity,0.35);
+});
+
+test("real DOM impact renderer applies 0, 35, 100 percent opacity to sprite animation", async()=>{
+ const old=importCaptureTransferJsonV1(read("data/capture/showcase/cap_earth_atk_4.capture-skill-transfer-v1.json")).value.draft;
+ for(const percent of [0,35,100]){
+  const fields=humanSkillEditorFieldsFromDraftV1(old);
+  fields.presentation.impactOpacityPct=percent;
+  const draft=buildHumanSkillDraftV1(fields);
+  const resolved=createCaptureSkillPresentationAssetsV2({
+   skillPresentations:{[draft.id]:draft.presentation},
+   assetForId:id=>({assetId:id,url:"/asset.webp",frameCount:16,frameMs:75})
+  });
+  const nodes=[],animations=[];
+  const document={createElement(){return {style:{},dataset:{},children:[],className:"",append(node){this.children.push(node);},remove(){this.removed=true;}};}};
+  const arena={ownerDocument:document,append(node){nodes.push(node);},getBoundingClientRect(){return {left:0,top:0,width:600,height:300};}};
+  const anchors={player:{getBoundingClientRect(){return {left:40,top:100,width:40,height:40};}},opponent:{getBoundingClientRect(){return {left:500,top:100,width:40,height:40};}}};
+  const renderer=createDomSkillFxRenderer({arena,anchors,presentationForSkill:(id,context)=>resolved.presentationForSkill(id,context),
+   animate(node,keyframes,options){let finish;const finished=new Promise(resolve=>finish=resolve);const a={keyframes,options,finished,cancel(){finish();}};animations.push(a);a.finish=finish;return a;}
+  });
+  const handle=renderer.play({type:"impact",skillId:draft.id,targetSlot:"opponent",durationMs:420});
+  assert.equal(nodes.length,1);
+  const impactAnimation=animations.find(a=>a.keyframes.some(f=>typeof f.transform==="string"&&f.transform.includes("scale")));
+  assert.ok(impactAnimation);
+  assert.equal(impactAnimation.keyframes[1].opacity,percent/100);
+  renderer.dispose();
+  await handle.finished;
+ }
 });
