@@ -11,7 +11,7 @@ import { applySpriteVisual } from "../../src/adapters/renderer/dom-skill-fx.js";
 const spriteId="pack:capture:sprite-status-stone-shell-01";
 const draftFields=()=>({
   id:"status-stone",name:"Armure de pierre",description:"Test visuel",requiredLevel:1,
-  usageScopes:["capture","combat"],category:"support",form:"self",element:"earth",
+  usageScopes:["capture","combat"],category:"buff_debuff",form:"self",element:"earth",
   approachMode:"none",energyCost:1,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:3000,
   allowedDistances:["short","medium","long"],targetRelations:["self"],damage:0,heal:0,stunMs:0,
   interruptsPreparation:false,effects:[{kind:"apply_status",targetScope:"self",status:{
