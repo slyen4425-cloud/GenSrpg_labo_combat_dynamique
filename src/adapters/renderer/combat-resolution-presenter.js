@@ -51,6 +51,8 @@ export function createCombatResolutionPresenter({
   const preparationFxByActor = new Map();
   const preparationAudioByActor = new Map();
   const travelAudioByActor = new Map();
+  const footfallAudioByActor = new Map();
+  const footfallTokenByActor = new Map();
   const outcomeByActor = new Map();
   const rosterVisualsByActor = new Map();
 
@@ -162,6 +164,36 @@ export function createCombatResolutionPresenter({
     return true;
   }
 
+  function cancelFootfallAudio(actorSlot = "player") {
+    const token = footfallTokenByActor.get(actorSlot);
+    footfallTokenByActor.delete(actorSlot);
+    const handles = footfallAudioByActor.get(actorSlot);
+    footfallAudioByActor.delete(actorSlot);
+    for (const handle of handles ?? []) handle.stop?.();
+    return Boolean(token || handles?.size);
+  }
+
+  function playFootfallAudio({ actorSlot, targetSlot, skillId, token }) {
+    if (disposed || footfallTokenByActor.get(actorSlot) !== token) return;
+    // Each contact reuses the authored travel asset as an independent one-shot.
+    const handle = audio?.play({
+      type: "travel", skillId, actorSlot, targetSlot, loop: false
+    });
+    if (handle?.status !== "running") return;
+    let handles = footfallAudioByActor.get(actorSlot);
+    if (!handles) {
+      handles = new Set();
+      footfallAudioByActor.set(actorSlot, handles);
+    }
+    handles.add(handle);
+    Promise.resolve(handle.finished).finally(() => {
+      handles.delete(handle);
+      if (footfallAudioByActor.get(actorSlot) === handles && handles.size === 0) {
+        footfallAudioByActor.delete(actorSlot);
+      }
+    }).catch(() => {});
+  }
+
   function cancelActionPresentation(
     actorSlot = "player"
   ) {
@@ -172,6 +204,8 @@ export function createCombatResolutionPresenter({
       cancelPreparation(actorSlot);
     const travelCancelled =
       cancelTravelAudio(actorSlot);
+    const footfallCancelled =
+      cancelFootfallAudio(actorSlot);
     const projectileCount =
       Number(
         fx?.cancelProjectileFor?.(actorSlot) ?? 0
@@ -180,6 +214,7 @@ export function createCombatResolutionPresenter({
     return (
       preparationCancelled ||
       travelCancelled ||
+      footfallCancelled ||
       outcomeCancelled ||
       rosterCancelled ||
       projectileCount > 0
@@ -269,6 +304,7 @@ export function createCombatResolutionPresenter({
       actorSlot,
       { audioMode: "loop-only" }
     );
+    cancelFootfallAudio(actorSlot);
 
     const approachMode = action.skill?.approachMode ?? "none";
     if (
@@ -276,10 +312,16 @@ export function createCombatResolutionPresenter({
       typeof visuals.playApproachFor === "function"
     ) {
       const skillId = action.skill?.id ?? null;
+      const footfallToken = skillId && action.skill?.form === "contact" &&
+        Number(action.travelMs) > 0 ? {} : null;
+      if (footfallToken) footfallTokenByActor.set(actorSlot, footfallToken);
       visuals
         .playApproachFor(actorSlot, approachMode, {
           travelMs: action.travelMs,
           targetSlot,
+          onFootfall: footfallToken ? () => playFootfallAudio({
+            actorSlot, targetSlot, skillId, token: footfallToken
+          }) : null,
           onContact:
             approachMode !== "burrow" &&
             action.skill?.form === "contact" &&
@@ -399,6 +441,9 @@ export function createCombatResolutionPresenter({
     let finished = Promise.resolve({ status: "presented" });
 
     cancelTravelAudio(actorSlot);
+    // Stop accepting later movement cues at semantic resolution, but let each
+    // already-triggered one-shot finish naturally (including the final step).
+    footfallTokenByActor.delete(actorSlot);
 
     const releaseEvent =
       resolution.events?.find(
@@ -589,11 +634,14 @@ export function createCombatResolutionPresenter({
     const presentationActors = new Set([
       ...preparationFxByActor.keys(),
       ...preparationAudioByActor.keys(),
-      ...travelAudioByActor.keys()
+      ...travelAudioByActor.keys(),
+      ...footfallAudioByActor.keys(),
+      ...footfallTokenByActor.keys()
     ]);
     for (const actorSlot of presentationActors) {
       cancelPreparation(actorSlot);
       cancelTravelAudio(actorSlot);
+      cancelFootfallAudio(actorSlot);
     }
     disposed = true;
     outcomeByActor.clear();
