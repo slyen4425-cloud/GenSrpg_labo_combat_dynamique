@@ -1578,6 +1578,7 @@ export async function mountCoop2v2Test({
     );
     rosterController = createCaptureCombatRosterControllerV1({
       session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
+      recallCooldownMs: gameOptions.recallCooldownMs,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
       onActorChanged(actorId, result) {
         presenter.presentRosterArrival({ actorSlot: actorId, result });
