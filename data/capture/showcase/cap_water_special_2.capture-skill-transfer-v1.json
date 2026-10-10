@@ -1,0 +1,142 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_water_special_2",
+    "description": "Technique Eau utilitaire. Disponible au niveau 28.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_water_special_2",
+      "name": "Voile aqueux",
+      "category": "defensive",
+      "form": "self",
+      "loadoutSlot": "ultimate",
+      "element": "water",
+      "approachMode": "none",
+      "energyCost": 0,
+      "preparationMs": 0,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "persistent_zone",
+          "targetScope": "self",
+          "zoneId": "zone",
+          "radius": "short",
+          "durationMs": 60000,
+          "tickIntervalMs": 1000,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "apply_status",
+            "targetScope": "self",
+            "status": {
+              "id": "aura",
+              "kind": "stat_modifier",
+              "polarity": "beneficial",
+              "durationModel": "time_ms",
+              "durationMs": 10000,
+              "stacking": "refresh",
+              "maxStacks": 1,
+              "tags": [],
+              "statId": "defense",
+              "modifierMode": "points",
+              "deltaPoints": 100
+            }
+          },
+          "persistAfterRecall": true,
+          "statusBehavior": "while_inside"
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_water_special_2",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_water_special_2",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-barrier-dome-01"
+        },
+        "aura": {
+          "assetId": "pack:capture:sprite-status-energy-shield-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.5,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

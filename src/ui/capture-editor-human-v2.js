@@ -4569,6 +4569,15 @@ function syncHumanSkillEffectRowV1(
   }
   const zoneBehavior=row.querySelector("[data-skill-zone-status-behavior]");
   if (zoneBehavior) zoneBehavior.disabled = zoneEffectKind !== "apply_status";
+  // A bound status lives exactly as long as its zone occupancy. Preserve the
+  // authored duration field for on_enter without making it look authoritative.
+  const zoneBound = kind === "persistent_zone" &&
+    zoneEffectKind === "apply_status" &&
+    zoneBehavior?.value === "while_inside";
+  const zoneDurationField=row.querySelector("[data-skill-zone-status-duration-field]");
+  const zoneDurationNote=row.querySelector("[data-skill-zone-status-duration-note]");
+  if (zoneDurationField) zoneDurationField.hidden = zoneBound;
+  if (zoneDurationNote) zoneDurationNote.hidden = !zoneBound;
   const zonePersist=row.querySelector("[data-skill-zone-persist-after-recall]");
   if (zonePersist) zonePersist.disabled = zoneEffectKind !== "apply_status";
   const zoneStacks=row.querySelector("[data-skill-zone-status-max-stacks-field]");
@@ -5411,14 +5420,26 @@ function appendHumanSkillEffectV1(
     {min:1,step:"1"}
   );
   zoneMaxStacksField.dataset.skillZoneStatusMaxStacksField = "true";
+  const zoneStatusDurationField = zoneStatusNumber(
+    "Durée du statut (secondes)", "skillZoneStatusDurationSeconds",
+    zs.durationMs == null ? 3 : humanTacticalMsToSecondsV1(zs.durationMs),
+    {min:0.1,step:"0.1"}
+  );
+  zoneStatusDurationField.dataset.skillZoneStatusDurationField = "true";
+  const zoneStatusDurationNote = document.createElement("small");
+  zoneStatusDurationNote.dataset.skillZoneStatusDurationNote = "true";
+  zoneStatusDurationNote.className = "note";
+  zoneStatusDurationNote.textContent =
+    "Tant que la créature reste dans la zone : le bonus est actif jusqu’à la sortie ou à la fin de la zone. " +
+    "La durée du statut enregistrée est conservée pour le mode « À l’entrée ».";
   zoneStatusConfig.append(
     tacticalFieldV1("Quand appliquer le statut ?", zoneStatusBehavior),
     tacticalFieldV1("Conserver la zone après rappel / changement", zonePersistAfterRecall),
+    zoneStatusDurationNote,
     zoneStatusText("ID du statut","skillZoneStatusId",zs.id ?? "aura"),
     tacticalFieldV1("Type",zoneStatusKind),
     tacticalFieldV1("Polarité",zoneStatusPolarity),
-    zoneStatusNumber("Durée du statut (secondes)","skillZoneStatusDurationSeconds",
-      zs.durationMs == null ? 3 : humanTacticalMsToSecondsV1(zs.durationMs),{min:0.1,step:"0.1"}),
+    zoneStatusDurationField,
     tacticalFieldV1("Empilement",zoneStatusStacking),
     zoneMaxStacksField,
     zoneStatusText("Tags (virgules)","skillZoneStatusTags",(zs.tags??[]).join(", ")),
