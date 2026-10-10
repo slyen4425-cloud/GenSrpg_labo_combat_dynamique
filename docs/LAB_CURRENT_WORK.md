@@ -968,3 +968,14 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - UI : `summary` du menu Équipe/Rappel montre toujours le compteur, qu'il soit ouvert ou fermé. L'ancien message de décompte dans la popup est supprimé ; la description statique est préservée.
 - Rapport : `docs/LAB_COMPACT_RECALL_COUNTDOWN_HUD_V1.md`.
 - Dernier contrôle requis : réussite CI au SHA exact final, puis checkpoint GREEN/preview/publication lease ; confirmation visuelle par Sylvain ensuite.
+
+
+## 2026-10-10 — Correction sémantique des descriptions de défense + deux capacités Terre
+- **Retour utilisateur** : Carapace minérale réduit effectivement les dégâts reçus de 40 %, mais la carte de buff écrit l'inverse. Deux exports de capacités joints : `lib_earth_guard` (Carapace minérale), `cap_earth_atk_2` (Coup minéral).
+- **Base GREEN publique** : `70af0686fafa3c2ffd4e1e9dd2cdcc6d8d8f5fed`, CI `38047065872` SUCCESS, Pages `38047065644` SUCCESS. Départ `checkpoint/lab-start-defense-buff-description-v1-2026-10-10`, branche `work/lab-defense-buff-description-v1-2026-10-10`.
+- **Cause prouvée** : `projectStatusStatEffectsV1` produit `damageReductionPct>0` pour +200 défense x coefficient standard 0.2 = 40 % de dégâts reçus réduits, mais `status-effect-info-v1.js` emploie par défaut un libellé `augmentés` lorsqu'il est positif. L'éditeur affiche déjà correctement `-40 % dégâts reçus`.
+- **Autorité** : règles et statut dans `Combat Session` et `Status Effect Projection` intacts ; seul `status-effect-info-v1.js` change les mots. Les presets exportés sont fidèlement sauvegardés et référencés par `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`, leur hydratation utilise le propriétaire `configuredSkills`.
+- **Périmètre** : `src/adapters/renderer/status-effect-info-v1.js`, `src/catalogs/capture-showcase-skill-presets-v1.js`, deux `data/capture/showcase/*.json`, `tests/unit/defense-buff-description-author-presets-v1.test.mjs`, ce document et rapport.
+- **Protégés** : formules combat et taux de défense, tous les autres status/FX, loadouts, fiches créatures, progression, modèles, `main`, GenSrpG et Exploration.
+- **TDD** : test RED +40 % devient « dégâts reçus réduits de 40 % », -20 % devient « dégâts reçus augmentés de 20 % », ligne physique résistances inchangée, 0 % sans ligne, import/roundtrip des deux transferts, paramètres auteurs inchangés, `assetId` réellement répertoriés, test CI Node/Chromium. GREEN et publication uniquement après CI réussie au SHA exact, checkpoint, compare+lease.
+- **Validation visuelle smartphone** : ultérieure, distincte du GREEN technique.
