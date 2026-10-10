@@ -979,3 +979,9 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Protégés** : formules combat et taux de défense, tous les autres status/FX, loadouts, fiches créatures, progression, modèles, `main`, GenSrpG et Exploration.
 - **TDD** : test RED +40 % devient « dégâts reçus réduits de 40 % », -20 % devient « dégâts reçus augmentés de 20 % », ligne physique résistances inchangée, 0 % sans ligne, import/roundtrip des deux transferts, paramètres auteurs inchangés, `assetId` réellement répertoriés, test CI Node/Chromium. GREEN et publication uniquement après CI réussie au SHA exact, checkpoint, compare+lease.
 - **Validation visuelle smartphone** : ultérieure, distincte du GREEN technique.
+
+### Défense Carapace / capacités Terre — vérification GREEN de code
+- TDD RED `38051562513` (échec attendu), après correction et import des deux fichiers source, `38051736579` SUCCESS à `331ef37b21a2022551db234c545e41998fd97f0e` (Foundation + Chromium bibliothèque + Firestorm 1v1/2v2).
+- Code : seule la formulation de `damageReductionPct` a changé ; +40 % de réduction = dégâts reçus **réduits de 40 %**, -20 % = **augmentés de 20 %**.
+- Deux presets Terra authored `lib_earth_guard` et `cap_earth_atk_2` conservés tels quels, assets réels trouvés dans `global-assets`, registre unique `configuredSkills` et test d'import/remplacement, aucun autre loadout modifié.
+- Rapport : `docs/LAB_DEFENSE_BUFF_DESCRIPTION_EARTH_AUTHOR_PRESETS_V1.md`. GREEN final soumis à CI sur dernière édition documentaire, checkpoint puis lease de `gh-pages` ; la validation manuelle smartphone reste distincte.
