@@ -109,7 +109,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
   if (Array.isArray(visual.frames) && visual.frames.length > 0) {
     const frames = visual.frames.filter(Boolean);
     const playbackMode =
-      ["once", "loop", "stretch"].includes(visual.playbackMode)
+      ["once", "loop", "stretch", "hold-last"].includes(visual.playbackMode)
         ? visual.playbackMode
         : "once";
     const nativePlaybackMs = visualPlaybackMs(visual, durationMs);
@@ -124,7 +124,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
 
     if (
       frames.length > 1 &&
-      playbackMode === "loop" &&
+      ["loop", "hold-last"].includes(playbackMode) &&
       node.ownerDocument?.createElement
     ) {
       node.style.backgroundImage = "none";
@@ -190,7 +190,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
             duration: playbackMs,
             easing: "linear",
             fill: "both",
-            iterations: Infinity
+            iterations: playbackMode === "loop" ? Infinity : 1
           }
         );
         frameAnimations.push(animation);
@@ -247,7 +247,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
     Math.floor(Number(visual.frameCount) || 1)
   );
   const playbackMode =
-    ["once", "loop", "stretch"].includes(
+    ["once", "loop", "stretch", "hold-last"].includes(
       visual.playbackMode
     )
       ? visual.playbackMode
