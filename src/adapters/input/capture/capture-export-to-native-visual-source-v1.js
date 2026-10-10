@@ -251,6 +251,7 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       id: creature.id,
       name: creature.displayName,
       profile: binding.profileId,
+      movementSound: binding.audio?.movement ?? null,
       views: Object.freeze({
         player: backUrl,
         opponent: frontUrl,
