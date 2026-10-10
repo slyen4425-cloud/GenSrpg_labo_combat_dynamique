@@ -1,0 +1,87 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFile} from "node:fs/promises";
+import {importCaptureTransferJsonV1, exportCaptureSkillTransferJsonV1, planCaptureTransferImportV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import {buildCaptureEditorDatabaseV1, applyCaptureTransferPlanToEditorStateV1} from "../../src/ui/capture-editor-file-transfer-v1.js";
+import {normalizeCaptureStatRegistryV1} from "../../src/contracts/capture-stat-registry-v1.js";
+import {normalizeCaptureProgressionRulesV1} from "../../src/contracts/capture-progression-rules-v1.js";
+import {capturePortableNativeSkillDraftsV1} from "../../src/catalogs/capture-portable-native-skill-catalog-v1.js";
+import {captureComplexNativeSkillDraftsV1} from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
+import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
+import {createCombatSession} from "../../src/core/combat/combat-session.js";
+
+const path="data/capture/showcase/cap_earth_atk_3.capture-skill-transfer-v1.json";
+const read=async file=>readFile(new URL("../../"+file,import.meta.url),"utf8");
+
+test("Charge tellurique registers exactly once with author-approved 30s energy aura",async()=>{
+ assert.deepEqual(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p.includes("cap_earth_atk_3")),[path]);
+ const transfer=importCaptureTransferJsonV1(await read(path));
+ assert.equal(transfer.kind,"skill");
+ const d=transfer.value.draft,def=d.definition;
+ assert.equal(d.id,"cap_earth_atk_3");
+ assert.equal(def.id,d.id);
+ assert.equal(def.name,"Charge tellurique");
+ assert.equal(d.requiredLevel,15);
+ assert.equal(def.category,"buff_debuff");
+ assert.equal(def.form,"aura");
+ assert.equal(def.element,"earth");
+ assert.equal(def.energyCost,3);
+ assert.equal(def.preparationMs,2000);
+ assert.equal(def.cooldownMs,60000);
+ assert.deepEqual(def.targetRelations,["self"]);
+ assert.equal(def.effects.length,1);
+ const zone=def.effects[0],status=zone.tickEffect.status;
+ assert.equal(zone.kind,"persistent_zone");
+ assert.equal(zone.targetScope,"self");
+ assert.equal(zone.radius,"short");
+ assert.equal(zone.durationMs,30000);
+ assert.equal(zone.tickIntervalMs,1000);
+ assert.equal(zone.persistAfterRecall,true);
+ assert.equal(zone.statusBehavior,"while_inside");
+ assert.equal(status.kind,"energy_regen_modifier");
+ assert.equal(status.modifierPct,50);
+ assert.equal(status.durationMs,3000);
+ assert.equal(status.stacking,"stack");
+ assert.equal(status.maxStacks,1);
+ assert.equal(d.presentation.version,9);
+ assert.equal(d.presentation.visual.icon.assetId,"core:icon-skill-thorn-vines-01");
+ assert.equal(d.presentation.visual.aura.assetId,"pack:capture:sprite-cast-nature-01");
+ assert.equal(d.presentation.visual.aura.displayScale,2.5);
+ assert.equal(d.presentation.visual.aura.opacity,0.6);
+ assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(d)).value.draft,d);
+});
+
+test("original native cap_earth_atk_3 is replaced by ID without changing other skills",async()=>{
+ const skills=new Map(capturePortableNativeSkillDraftsV1().map(d=>[d.id,d]));
+ for(const d of captureComplexNativeSkillDraftsV1())if(!skills.has(d.id))skills.set(d.id,d);
+ const historical=skills.get("cap_earth_atk_3");
+ assert.ok(historical,"historical native ability should exist");
+ const beforeCount=skills.size;
+ const untouched=skills.get("cap_earth_atk_4");
+ const statRegistry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
+ const progressionRules=normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
+ const transfer=importCaptureTransferJsonV1(await read(path));
+ const creatures=new Map();
+ const database=buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures:creatures,configuredSkills:skills,metadata:{producer:"charge-tellurique-author-v1"}});
+ const plan=planCaptureTransferImportV1({currentDatabase:database,transfer,mode:"replace"});
+ assert.equal(plan.action,"replace-skill");
+ applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures:creatures,configuredSkills:skills,statRegistry,progressionRules});
+ assert.equal(skills.size,beforeCount);
+ assert.deepEqual(skills.get("cap_earth_atk_3"),transfer.value.draft);
+ assert.equal(skills.get("cap_earth_atk_4"),untouched);
+});
+
+test("real combat consumes Charge tellurique self-aura energy regen without changing base charge",async()=>{
+ const skill=importCaptureTransferJsonV1(await read(path)).value.draft.definition;
+ const fighter=id=>({id,maxHp:100,initialHp:100,maxEnergy:30,initialEnergy:10,energyChargeAmount:2,energyChargeIntervalMs:1000});
+ const session=createCombatSession({distance:"short",fighters:[fighter("player"),fighter("opponent")]});
+ const result=session.useSkill({actorId:"player",targetId:"player",skill});
+ assert.equal(result.ok,true);
+ assert.equal(session.snapshot().persistentZones.length,1);
+ assert.equal(session.snapshot().persistentZones[0].durationMs,30000);
+ session.advanceMs(1000);
+ const buff=session.snapshot().fighters.player.statusEffects.find(s=>s.definition.kind==="energy_regen_modifier");
+ assert.ok(buff,"zone should confer author's energy regeneration modifier");
+ assert.equal(buff.definition.modifierPct,50);
+ assert.equal(session.snapshot().fighters.player.energyChargeAmount,2);
+});
