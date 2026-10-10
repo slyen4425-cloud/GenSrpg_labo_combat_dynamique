@@ -25,9 +25,9 @@ function switching() {
   const configs = { first: fighter("first", { maxHp: 100, initialHp: 100, initialEnergy: 0, chargeTimeModifierPct: -50 }), second: fighter("second"), third: fighter("third", { maxHp: 300, initialHp: 300 }) };
   const session = createCombatSession({ fighters: [{ ...configs.first, id: "local" }, fighter("enemy")] });
   const definition = { teams: { local: { slotId: "local", activeMemberId: "one", members: ["first", "second", "third"].map((id, i) => ({ id: ["one", "two", "three"][i], creatureId: id, displayName: id, fighterConfigId: id })) } } };
-  const roster = createRosterSession({ combatSession: session, roster: definition, fighterConfigs: configs });
+  const roster = createRosterSession({ combatSession: session, roster: definition, fighterConfigs: configs, recallCooldownMs: 0 });
   const visualCalls = [];
-  const controller = createCaptureCombatRosterControllerV1({ session, rosterDefinition: definition, fighterConfigs: configs, skillIdsByCreature: { first: ["bite"], second: ["splash"] }, visuals: { setCreatureFor(...args) { visualCalls.push(["creature", ...args]); }, setSlotVisible(...args) { visualCalls.push(["visible", ...args]); } } });
+  const controller = createCaptureCombatRosterControllerV1({ session, rosterDefinition: definition, fighterConfigs: configs, recallCooldownMs: 0, skillIdsByCreature: { first: ["bite"], second: ["splash"] }, visuals: { setCreatureFor(...args) { visualCalls.push(["creature", ...args]); }, setSlotVisible(...args) { visualCalls.push(["visible", ...args]); } } });
   const c = clock(session, { onResolved: r => controller.applyCommandResolution(r) });
   return { configs, session, roster, controller, visualCalls, ...c };
 }
