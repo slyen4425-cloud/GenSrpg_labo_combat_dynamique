@@ -4,6 +4,10 @@ const modes = [
   ["loop", "Boucler pendant l’effet"],
   ["stretch", "Adapter à la durée de l’effet"]
 ];
+const statusModes = [
+  ...modes,
+  ["hold-last", "Jouer une fois puis garder la dernière image (jusqu’à la fin du statut)"]
+];
 const layers = [["front", "Devant la créature"], ["behind", "Derrière la créature"]];
 const offsetModes = [
   ["mirror_x", "Miroir horizontal automatique"],
@@ -188,7 +192,7 @@ export function writeSkillSpriteControlsV1(root, fields = {}) {
 }
 
 const statusControls = [
-  ["playbackMode", "playback", "Animation du statut", "loop", modes],
+  ["playbackMode", "playback", "Animation du statut", "loop", statusModes],
   ["offsetX", "offset-x", "Décalage horizontal joueur (px)", 0],
   ["offsetY", "offset-y", "Décalage vertical joueur (px)", 0],
   ["offsetMode", "offset-mode", "Décalage côté adversaire", "same", offsetModes],
