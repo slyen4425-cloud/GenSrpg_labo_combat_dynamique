@@ -210,3 +210,43 @@ test("editor exposes clear percentage controls for cast, zone and persistent sta
   }
   assert.ok(source.includes("Opacité du sprite (%)"));
 });
+
+
+test("persistent zone offers hold-last as explicit editor option while keeping cast and impact modes unchanged", async () => {
+  const html=await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
+  assert.match(html, /<select data-skill-zone-playback>[\\s\\S]*?<option value="hold-last">Jouer une fois puis garder la derni/);
+  for (const role of ["cast","impact"]) {
+    assert.throws(()=>buildHumanSkillDraftV1(fields({
+      [role+"AssetId"]:spriteId, [role+"PlaybackMode"]:"hold-last"
+    })),/playbackMode/);
+  }
+});
+
+test("persistent zone hold-last survives editor export and shows final atlas frame until native zone removal", () => {
+  const draft=buildHumanSkillDraftV1(fields({
+    zoneAssetId:spriteId, zonePlaybackMode:"hold-last", zoneLayerPlayer:"front", zoneOpacityPct:75
+  }));
+  assert.equal(draft.presentation.visual.aura.playbackMode,"hold-last");
+  const imported=importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft));
+  assert.deepEqual(imported.value.draft,draft);
+  const restored=humanSkillEditorFieldsFromDraftV1(imported.value.draft);
+  assert.equal(restored.presentation.zonePlaybackMode,"hold-last");
+  assert.deepEqual(buildHumanSkillDraftV1(restored),draft);
+  assert.equal(assets(draft).presentationForSkill(draft.id,{view:"player"}).persistentZone.playbackMode,"hold-last");
+  const {renderer,nodes}=harness(draft);
+  const zone={id:"hold-zone",skillId:draft.id,sourceActorId:"player",radius:"short",appliedAtMs:100,expiresAtMs:5100};
+  renderer.syncPersistentZones([zone]);
+  const sprite=nodes[0];
+  assert.equal(sprite.style.animationIterationCount,"1");
+  assert.equal(sprite.style.animationFillMode,"forwards");
+  assert.equal(sprite.style.animationDuration,"720ms");
+  assert.equal(sprite.style.animationTimingFunction,"steps(7, end)");
+  assert.equal(sprite.style.opacity,"0.75");
+  renderer.syncPersistentZones([{...zone,expiresAtMs:8100,radius:"medium"}]);
+  assert.equal(nodes.length,1,"refresh does not restart or duplicate sprite");
+  assert.equal(sprite.style.animationDuration,"720ms","hold-last does not stretch with zone lifetime");
+  assert.equal(sprite.removed,undefined);
+  renderer.syncPersistentZones([]);
+  assert.equal(sprite.removed,true,"only the native zone lifetime removes held frame");
+  assert.equal(renderer.activeCount,0);
+});
