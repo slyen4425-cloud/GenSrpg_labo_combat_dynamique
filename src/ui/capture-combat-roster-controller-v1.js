@@ -2,9 +2,9 @@ import { createRosterSession } from "../core/combat/roster-session.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 
 export function createCaptureCombatRosterControllerV1({
-  session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals, beforeActorChanged = () => {}, onActorChanged = () => {}
+  session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals, recallCooldownMs, beforeActorChanged = () => {}, onActorChanged = () => {}
 }) {
-  const roster = createRosterSession({ combatSession: session, roster: rosterDefinition, fighterConfigs });
+  const roster = createRosterSession({ combatSession: session, roster: rosterDefinition, fighterConfigs, recallCooldownMs });
   let disposed = false;
   function activeMember(actorId) {
     const state = roster.snapshot()[actorId];
@@ -104,8 +104,9 @@ export function mountCaptureCombatRosterPanelV1({
   function previewCommand(kind) {
     const runtime = getRuntime();
     if (!runtime || isTransitionPending() || runtime.hasActiveActionFor(format.localActorId)) return { ok: false };
-    if (kind === "switch" || kind === "recall") return controller.previewCommand(format.localActorId, commands[kind]);
+    if (kind === "switch") return controller.previewCommand(format.localActorId, commands[kind]);
     if (runtime.hasActiveAction) return { ok: false };
+    if (kind === "recall") return controller.previewCommand(format.localActorId, commands[kind]);
     const team = controller.snapshot()[format.localActorId];
     const active = team?.activeMemberId !== null;
     const reserve = team?.members.find(m => m.id === team.selectedReserveMemberId);
