@@ -907,6 +907,10 @@ export async function mountCombatDemo({
     getCreatureFor(slotKey) {
       return slotOf(slotKey).meta.id;
     },
+    getMovementSoundFor(slotKey) {
+      // The slot meta changes on roster swaps; never cache by skill or species.
+      return slotOf(slotKey).meta.movementSound ?? null;
+    },
     get slotKeys() {
       return Object.freeze(Object.keys(slots));
     },
