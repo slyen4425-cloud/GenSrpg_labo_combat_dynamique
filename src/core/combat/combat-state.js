@@ -7,6 +7,7 @@ import {
 } from "./status-effect-instance-v1.js";
 import {
   advanceEnergyTicks,
+  advanceSkillCooldownDeadlinesV1,
   normalizeChargeTimeEffect
 } from "./combat-timing.js";
 
@@ -680,7 +681,7 @@ export function addChargeTimeEffect(state, fighterId, effect) {
   });
 }
 
-export function advanceCombatTime(state, deltaMs, { energyStatusAtStart = {} } = {}) {
+export function advanceCombatTime(state, deltaMs, { energyStatusAtStart = {}, cooldownStatusAtStart = {} } = {}) {
   const delta = finiteNonNegative(deltaMs, "deltaMs");
   if (delta === 0) {
     return state;
@@ -724,6 +725,32 @@ export function advanceCombatTime(state, deltaMs, { energyStatusAtStart = {} } =
       energyStatusEffects
     });
 
+    const priorCooldown = cooldownStatusAtStart[fighter.id] ?? [];
+    const currentCooldown = fighter.statusEffects.filter(
+      instance => instance.definition.kind === "skill_cooldown_rate_modifier"
+    );
+    const cooldownStatusEffects = [
+      ...priorCooldown.map(old => {
+        const replacement = currentCooldown.find(instance =>
+          instance.definition.id === old.definition.id &&
+          instance.appliedAtMs !== old.appliedAtMs
+        );
+        return replacement && old.expiresAtMs !== null
+          ? { ...old, expiresAtMs: Math.min(old.expiresAtMs, replacement.appliedAtMs) }
+          : old;
+      }).filter(old => !currentCooldown.some(instance =>
+        instance.definition.id === old.definition.id &&
+        instance.appliedAtMs === old.appliedAtMs
+      )),
+      ...currentCooldown
+    ];
+    const skillCooldowns = advanceSkillCooldownDeadlinesV1({
+      cooldowns: fighter.skillCooldowns,
+      atMs: state.elapsedMs,
+      deltaMs: delta,
+      statusEffects: cooldownStatusEffects
+    });
+
     fighters[fighter.id] = Object.freeze({
       ...fighter,
       energy: charged.energy,
@@ -731,13 +758,7 @@ export function advanceCombatTime(state, deltaMs, { energyStatusAtStart = {} } =
       chargeTimeEffects: Object.freeze(
         fighter.chargeTimeEffects.filter((effect) => effect.expiresAtMs > elapsedMs)
       ),
-      skillCooldowns: Object.freeze(
-        Object.fromEntries(
-          Object.entries(fighter.skillCooldowns).filter(
-            ([, readyAtMs]) => readyAtMs > elapsedMs
-          )
-        )
-      )
+      skillCooldowns
     });
   }
 
