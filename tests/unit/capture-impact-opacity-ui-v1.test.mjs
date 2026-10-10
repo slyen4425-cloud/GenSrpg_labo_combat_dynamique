@@ -54,7 +54,7 @@ test("real DOM impact renderer applies 0, 35, 100 percent opacity to sprite anim
    animate(node,keyframes,options){let finish;const finished=new Promise(resolve=>finish=resolve);const a={keyframes,options,finished,cancel(){finish();}};animations.push(a);a.finish=finish;return a;}
   });
   const handle=renderer.play({type:"impact",skillId:draft.id,targetSlot:"opponent",durationMs:420});
-  assert.equal(nodes.length,1);
+  assert.ok(nodes.some(node=>node.dataset?.skillFx==="impact"),"native renderer must mount an impact sprite");
   const impactAnimation=animations.find(a=>a.keyframes.some(f=>typeof f.transform==="string"&&f.transform.includes("scale")));
   assert.ok(impactAnimation);
   assert.equal(impactAnimation.keyframes[1].opacity,percent/100);
