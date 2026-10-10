@@ -47,10 +47,15 @@ test("same contact skill plays distinct creature-owned footsteps for light and h
   assert.deepEqual(created.slice(2).map(x=>x.url),Array(4).fill("https://sound.test/sound:heavy"));
   assert.ok(created.slice(0,2).every(x=>x.volume===0.25&&x.loop===false));
   assert.ok(created.slice(2).every(x=>x.volume===0.9&&x.loop===false));
+  // A roster replacement switches the sound on the same actor slot immediately.
+  sounds.player = { movement: {assetId:"sound:heavy",volume:0.9} };
+  audio.play({type:"movement",actorSlot:"player",loop:false});
+  assert.equal(created.at(-1).url,"https://sound.test/sound:heavy");
+  assert.equal(created.at(-1).volume,0.9);
   sounds.player = {};
   const result = audio.play({type:"movement",actorSlot:"player",loop:false});
   assert.equal(result.status,"ignored", "NO fallback to skill or opponent audio");
-  assert.equal(created.length,6);
+  assert.equal(created.length,7);
   const projectile = audio.play({type:"travel",skillId:"shared-contact-skill",actorSlot:"player"});
   assert.equal(projectile.loop,true,"projectile keeps its loop and skill owner");
   assert.equal(created.at(-1).url,"https://sound.test/sound:projectile");
