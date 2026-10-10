@@ -474,6 +474,29 @@ export function combatSkillTargetOptionsV1({
   });
 }
 
+// Only the UI chooses an unambiguous target; Combat Rules still validates
+// eligibility and Combat Runtime still owns the action commitment.
+export function resolveCombatSkillClickTargetV1({
+  actorId, skill, selectedTargetId, availableIds
+}) {
+  const available = Array.isArray(availableIds) ? availableIds : [];
+  const relations = skill?.targetRelations ?? ["enemy"];
+
+  // A self-only skill never needs a prior click on the caster.
+  if (relations.length === 1 && relations[0] === "self") {
+    return available.includes(actorId) ? actorId : null;
+  }
+
+  // 1v1 (or the last eligible foe in 2v2): no enemy to choose between.
+  if (relations.length === 1 && relations[0] === "enemy" &&
+      available.length === 1) {
+    return available[0];
+  }
+
+  // Keep a deliberate 2v2 enemy selection and explicit ally/mixed targeting.
+  return available.includes(selectedTargetId) ? selectedTargetId : null;
+}
+
 export async function mountCoop2v2Test({
   root,
   visuals,
@@ -981,9 +1004,12 @@ export async function mountCoop2v2Test({
       const options = skillTargetOptions(skill, state);
       const preview = options.previewsById[selectedTargetId] ??
         options.previewsById[options.allowedIds[0]] ?? { ok: false };
+      const resolvedTargetId = resolveCombatSkillClickTargetV1({
+        actorId: format.localActorId, skill,
+        selectedTargetId, availableIds: options.availableIds
+      });
       button.dataset.targetRequired =
-        options.availableIds.length > 0 &&
-        !options.availableIds.includes(selectedTargetId)
+        options.availableIds.length > 0 && resolvedTargetId === null
           ? "true" : "false";
       button.dataset.targeting =
         pendingSkillId === skill.id ? "true" : "false";
@@ -1314,7 +1340,11 @@ export async function mountCoop2v2Test({
 
     const onClick = () => {
       const options = skillTargetOptions(skill);
-      if (!options.availableIds.includes(selectedTargetId)) {
+      const resolvedTargetId = resolveCombatSkillClickTargetV1({
+        actorId: format.localActorId, skill,
+        selectedTargetId, availableIds: options.availableIds
+      });
+      if (resolvedTargetId === null) {
         pendingSkillId = skill.id;
         setStatus(skill.name + " : touche une cible mise en évidence pour lancer la capacité.", "accent");
         renderAvailability();
@@ -1322,7 +1352,7 @@ export async function mountCoop2v2Test({
         return;
       }
       pendingSkillId = null;
-      activateLocalSkill(skill, selectedTargetId);
+      activateLocalSkill(skill, resolvedTargetId);
     };
     button.addEventListener("click", onClick);
 
