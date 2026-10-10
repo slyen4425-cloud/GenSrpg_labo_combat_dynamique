@@ -5171,7 +5171,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   statusVisualNote.className = "note";
   statusVisualNote.textContent =
-    "Ce visuel appartient uniquement à la présentation. Il suit automatiquement la durée réelle du statut et disparaît à son expiration ou lorsqu'il est retiré.";
+    "Ce visuel appartient uniquement à la présentation. Mode « dernière image » : le sprite joue une seule fois à sa vitesse normale, garde la dernière image tant que le statut existe, puis disparaît à son expiration ou lorsqu'il est retiré.";
 
   statusVisualBox.append(
     tacticalFieldV1(
