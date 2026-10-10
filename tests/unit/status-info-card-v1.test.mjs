@@ -242,6 +242,76 @@ test("tap on the active HUD icon opens a compact card from the same status snaps
   assert.equal(icon.removed, true);
 });
 
+test("same status renderer exposes own-creature buffs and enemy debuffs with independent cards", () => {
+  const document = fakeDocument();
+  const hosts = Object.fromEntries(["local-1", "opponent-1"].map(id => {
+    const motion = fakeNode();
+    const image = fakeNode();
+    const statusHost = fakeNode();
+    for (const node of [motion, image, statusHost]) node.ownerDocument = document;
+    image.src = "https://example.test/creature.webp";
+    return [id, { motion, image, statusHost }];
+  }));
+  const ownBuff = dotInstance({
+    sourceActorId: "local-1",
+    sourceSkillId: "lib_aqua_heal",
+    stacks: 1,
+    expiresAtMs: 12000,
+    definition: {
+      ...dotInstance().definition,
+      id: "healing",
+      kind: "heal_over_time",
+      polarity: "beneficial",
+      durationMs: 12000,
+      stacking: "refresh",
+      amount: 3,
+      tickIntervalMs: 2000
+    }
+  });
+  const renderer = createDomStatusFxRenderer({
+    targetFor: actorId => hosts[actorId],
+    statusPresentationFor: () => null,
+    skillPresentationFor: () => null,
+    skillDefinitionFor: skillId => ({
+      id: skillId,
+      name: skillId === "lib_aqua_heal" ? "Aura de soin" : "Morsure brûlante"
+    })
+  });
+  renderer.sync({
+    elapsedMs: 2000,
+    fighters: {
+      "local-1": { statusEffects: [ownBuff] },
+      "opponent-1": { statusEffects: [dotInstance()] }
+    }
+  });
+  const own = hosts["local-1"].statusHost.children[0];
+  const enemy = hosts["opponent-1"].statusHost.children[0];
+  assert.equal(own.dataset.polarity, "beneficial");
+  assert.equal(enemy.dataset.polarity, "detrimental");
+  own.onclick({ stopPropagation() {} });
+  enemy.onclick({ stopPropagation() {} });
+  const ownDetails = own.children.find(node => node.dataset.statusFx === "hud-details");
+  const enemyDetails = enemy.children.find(node => node.dataset.statusFx === "hud-details");
+  assert.equal(ownDetails.hidden, false);
+  assert.match(ownDetails.textContent, /Buff/);
+  assert.match(ownDetails.textContent, /Aura de soin/);
+  assert.match(ownDetails.textContent, /3 PV toutes les 2 s/);
+  assert.equal(enemyDetails.hidden, false);
+  assert.match(enemyDetails.textContent, /Debuff/);
+  assert.match(enemyDetails.textContent, /Morsure brûlante/);
+
+  renderer.sync({
+    elapsedMs: 12000,
+    fighters: {
+      "local-1": { statusEffects: [] },
+      "opponent-1": { statusEffects: [dotInstance({ expiresAtMs: 14000 })] }
+    }
+  });
+  assert.equal(own.removed, true);
+  assert.notEqual(enemy.removed, true);
+  renderer.dispose();
+});
+
 test("status info presentation has no independent clock and both clients provide canonical skill definitions", async () => {
   const infoSource = await readFile(
     new URL(
