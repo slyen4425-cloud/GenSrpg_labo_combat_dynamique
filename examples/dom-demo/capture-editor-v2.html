@@ -634,8 +634,11 @@
           <label>Durée du rappel (secondes)
             <input type="number" min="0" step="0.1" value="2" data-recall-seconds>
           </label>
+          <label>Attente entre changements volontaires (secondes)
+            <input type="number" min="0" step="1" value="45" data-game-recall-cooldown-seconds>
+          </label>
         </div>
-        <p class="note">1× est le rythme de référence. Le rappel reste une commande gratuite et utilise la même horloge de combat.</p>
+        <p class="note">1× est le rythme de référence. Le rappel reste gratuit et prend 2 secondes par défaut. Après un changement volontaire, le prochain est bloqué pendant 45 secondes par défaut (0 = sans délai). Une relève après KO est toujours immédiate et ne subit pas ce verrou.</p>
 
         <fieldset class="game-option-group">
           <legend>Esquive</legend>
