@@ -1139,3 +1139,10 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Assets** : `core:icon-skill-thorn-vines-01` et `pack:capture:sprite-cast-nature-01` vérifiés par ID dans l'unique catalogue `global-assets` ; aucun média ajouté/remplacé dans ce lot.
 - **Périmètre autorisé** : nouveau JSON authoré inchangé, ligne unique de registre, tests de fidélité et de vrai chargement/roundtrip/Runtime, rapport dédié et présent journal. **Interdits** : `main`, `global-assets`, nouveaux assets, autre skill/creature, zones/status/Combat Rules, cooldown engine, Zombicide-40k, Exploration.
 - **Tests / publication** : TDD sentinelle RED sur preset absent, import/export strict, unicité de l'ID historique et remplacement runtime dans editor, test de compétence réelle déclenchant le statut si possible, Node CI + navigateurs, checkpoint GREEN puis fast-forward sous lease de `gh-pages` seulement si CI SUCCESS ; Pages SUCCESS, essai visuel Android utilisateur séparé.
+
+### Charge tellurique — implémentation et premier contrôle
+- Source auteur `gensrpg-capture-skill-cap_earth_atk_3.json` conservée avec **égalité complète des données structurées** dans `data/capture/showcase/cap_earth_atk_3.capture-skill-transfer-v1.json`.
+- Un seul ajout dans `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`, remplacement par ID historique via l'unique transfert d'éditeur ; aucune modification du runtime ou des autres capacités.
+- Test dédié `tests/unit/capture-charge-tellurique-author-v1.test.mjs` : valeurs auteur, roundtrip, anti-doublon, remplacement sans perte et vraie activation de l'aura `energy_regen_modifier`.
+- CI du code `48399a7ab3da6933ca016d9e579f77aff1508491` : run `38092200377` **SUCCESS** (foundation, Firestorm navigateur, bibliothèque créatures navigateur). Deux IDs de média existants et vérifiés ; **aucun média à livrer**.
+- Rapport `docs/LAB_CHARGE_TELLURIQUE_AUTHOR_V1.md`. Recontrôle CI sur SHA documentaire final puis checkpoint GREEN et publication gh-pages ; validation visuelle Android reste utilisateur.
