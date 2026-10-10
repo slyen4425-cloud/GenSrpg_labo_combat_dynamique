@@ -3123,7 +3123,11 @@ export function readHumanGameOptionsV1(root) {
       "[data-game-dodge-active-seconds]"
     );
 
+  const recallCooldownInput = root.querySelector("[data-game-recall-cooldown-seconds]");
   return normalizeCaptureGameOptionsV1({
+    recallCooldownMs: recallCooldownInput === null
+      ? CAPTURE_GAME_OPTIONS_V1_DEFAULT.recallCooldownMs
+      : Number(recallCooldownInput.value) * 1000,
     dodge: {
       enabled:
         one(
