@@ -35,3 +35,9 @@ Le contrat préexistant `SkillPresentationBindingV1` accepte déjà `source` et 
 ## Protocole
 
 Base publiée `e5fd873e0b0a98c4d062471267cee884130aec87`. Checkpoint de départ `checkpoint/lab-start-zone-ground-anchor-author-refresh-v1-2026-10-10`; branche `work/lab-zone-ground-anchor-author-refresh-v1-2026-10-10`. Rapport de CI/changelog, checkpoint GREEN et publication à ajouter après validation du SHA final ; aucun test tactile sur smartphone physique revendiqué.
+
+## Preuves de validation GREEN (source)
+
+Source de référence : commit `1e102e1155e027c9695c910041c061a9b00c00c4`, GitHub Actions `38033316529` SUCCESS. **1379 tests unitaires Node validés**, zéro FAIL ; navigateur Chromium bibliothèque + véritable édition/save de l'ancrage et choix d'ultime Maraileron SUCCESS ; Chromium Firestorm zone-progress SUCCESS. Une première CI fonctionnelle `38033133369` était rouge car les trois anciennes sentinelles supposaient encore les anciens exports ; leur correction ciblée est documentée dans `LAB_CURRENT_WORK.md`. Aucun changement indirect des autres presets ni du gameplay zone/Combat.
+
+Il reste à consigner l'ID du checkpoint GREEN, de la preview et du SHA public après vérification effective ; ceci ne présume pas la publication.
