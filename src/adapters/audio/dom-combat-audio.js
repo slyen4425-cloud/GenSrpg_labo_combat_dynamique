@@ -21,6 +21,8 @@ function soundFor(presentation, type, phase) {
       return presentation?.releaseSound ?? null;
     case "travel":
       return presentation?.travelSound ?? null;
+    case "movement":
+      return presentation?.movement ?? null;
     case "impact":
       return presentation?.impactSound ?? null;
     case "aura":
@@ -34,11 +36,15 @@ function soundFor(presentation, type, phase) {
 
 export function createDomCombatAudio({
   presentationForSkill = () => null,
+  presentationForCreature = () => null,
   resolveAudioAsset = () => null,
   createAudio = defaultCreateAudio
 } = {}) {
   if (typeof presentationForSkill !== "function") {
     throw new TypeError("presentationForSkill must be a function");
+  }
+  if (typeof presentationForCreature !== "function") {
+    throw new TypeError("presentationForCreature must be a function");
   }
   if (typeof resolveAudioAsset !== "function") {
     throw new TypeError("resolveAudioAsset must be a function");
@@ -55,7 +61,7 @@ export function createDomCombatAudio({
     phase = null,
     loop = null
   }) {
-    if (disposed || !skillId) {
+    if (disposed || (type === "movement" ? !actorSlot : !skillId)) {
       return Object.freeze({
         status: disposed ? "disposed" : "ignored",
         finished: Promise.resolve({
@@ -64,12 +70,18 @@ export function createDomCombatAudio({
       });
     }
 
-    const presentation = presentationForSkill(skillId, {
-      audioType: type,
-      sourceView: actorSlot,
-      targetView: targetSlot,
-      phase
-    });
+    const presentation = type === "movement"
+      ? presentationForCreature(actorSlot, {
+          audioType: type,
+          sourceView: actorSlot,
+          targetView: targetSlot
+        })
+      : presentationForSkill(skillId, {
+          audioType: type,
+          sourceView: actorSlot,
+          targetView: targetSlot,
+          phase
+        });
     const sound = soundFor(presentation, type, phase);
 
     if (!sound?.assetId) {
@@ -96,8 +108,8 @@ export function createDomCombatAudio({
       sound.volume ?? asset.volume,
       1
     );
-    // A footfall reuses the travel asset but must play once per existing cue.
-    // Projectile/beam travel still keeps the authored loop setting.
+    // Creature movement plays once per existing footfall; projectile/beam
+    // travel retains the configured loop on its separate skill-owned asset.
     audio.loop = loop === null ? Boolean(sound.loop ?? asset.loop) : Boolean(loop);
 
     let settled = false;
