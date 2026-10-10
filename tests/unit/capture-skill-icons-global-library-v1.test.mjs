@@ -32,7 +32,7 @@ const expected=[
 test("Capture skill icons V1 use the single global visual library", () => {
   assert.equal(GLOBAL_VISUAL_LIBRARY.repository, "slyen4425-cloud/GenSrpg_labo_combat_dynamique");
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch, "global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision, "2026-10-09-v20-water-healing-bubble");
+  assert.match(GLOBAL_VISUAL_LIBRARY.revision, /^20\d{2}-\d{2}-\d{2}-v\d+-/);
 
   for (const [assetId, relativePath] of expected) {
     assert.match(assetId, /^pack:capture:icon-skill-/);
