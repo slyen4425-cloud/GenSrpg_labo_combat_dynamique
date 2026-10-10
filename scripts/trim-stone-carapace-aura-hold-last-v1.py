@@ -5,7 +5,7 @@ No regeneration or repaint: the original 16-frame source sheet stays archived.
 from __future__ import annotations
 import csv, hashlib, io, json
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageChops
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "assets/library/capture/sprites/skills/stone_carapace"
@@ -52,8 +52,18 @@ def main():
             raise AssertionError("Trimmed atlas dimensions mismatch")
         assert readback.getchannel("A").getextrema() == (0,255)
         for index,frame in enumerate(images):
-            if readback.crop((512*index,0,512*(index+1),512)).tobytes() != frame.tobytes():
-                raise AssertionError(f"Frame {index+1} changed: expected lossless copy")
+            actual = readback.crop((512*index,0,512*(index+1),512)).convert("RGBA")
+            # WebP lossless may canonicalize invisible RGB. Verify alpha and
+            # every visible RGB value instead of comparing transparent RGB.
+            mask = frame.getchannel("A").point(lambda value: 255 if value else 0)
+            original_channels = frame.split()
+            readback_channels = actual.split()
+            if ImageChops.difference(original_channels[3],readback_channels[3]).getbbox():
+                raise AssertionError(f"Frame {index+1} alpha changed")
+            for channel in range(3):
+                diff = ImageChops.difference(original_channels[channel],readback_channels[channel])
+                if ImageChops.multiply(diff,mask).getbbox():
+                    raise AssertionError(f"Frame {index+1} visible RGB changed")
 
     sequence = json.loads(SEQUENCE.read_text(encoding="utf-8"))
     aura = sequence["sequences"]["aura"]
