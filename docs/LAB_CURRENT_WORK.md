@@ -961,3 +961,10 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Protégés** : `Roster Session`, `Combat Runtime`, `CaptureGameOptionsV1`, combat timing et commandes, les buffs et leurs widgets, les 103 créatures, le stockage et l'éditeur des capacités, `main`, GenSrpG et Exploration.
 - **TDD** : badge statique dans le `summary` toujours visible lorsque `details` est fermé, texte compact et masquage à zéro, aucune duplication/reflow continu, test lecture du vrai snapshot, progression via `onClock` natif, assertions CSS paysage 390/430 et clavier; toutes suites Node/Chromium.
 - **GREEN technique** : CI du SHA final + revue/rapport + checkpoint exact + publication lease ; approbation visuelle réelle par l'utilisateur distincte.
+
+
+### Compteur compact Rappel — état technique
+- TDD RED sur `tests/unit/compact-recall-countdown-hud-v1.test.mjs` avant modifications HTML/CSS/UI ; pas de nouvelle autorité.
+- UI : `summary` du menu Équipe/Rappel montre toujours le compteur, qu'il soit ouvert ou fermé. L'ancien message de décompte dans la popup est supprimé ; la description statique est préservée.
+- Rapport : `docs/LAB_COMPACT_RECALL_COUNTDOWN_HUD_V1.md`.
+- Dernier contrôle requis : réussite CI au SHA exact final, puis checkpoint GREEN/preview/publication lease ; confirmation visuelle par Sylvain ensuite.
