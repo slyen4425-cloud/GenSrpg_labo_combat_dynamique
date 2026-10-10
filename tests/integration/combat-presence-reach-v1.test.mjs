@@ -10,6 +10,9 @@ import {
 import {
   createCombatRuntime
 } from "../../src/core/combat/combat-runtime.js";
+import {
+  planSkillOutcomeFx
+} from "../../src/core/fx/skill-fx-plan.js";
 
 function fighter(id) {
   return {
@@ -413,6 +416,14 @@ test("moving ground target evades a falling projectile without needing a bespoke
   assert.ok(resolved);
   assert.equal(resolved.outcome, "evaded");
   assert.equal(resolved.evasionReason, "moving_target");
+  const fxPlans = planSkillOutcomeFx({
+    resolution: resolved,
+    actorSlot: "opponent",
+    targetSlot: "player"
+  });
+  assert.equal(fxPlans.some(plan => plan.type === "miss"), true);
+  assert.equal(fxPlans.some(plan => plan.type === "impact"), false,
+    "the target must not receive a tracking impact sprite after a missed stone");
   assert.equal(session.snapshot().fighters.player.hp, 100);
   runtime.dispose();
 });
