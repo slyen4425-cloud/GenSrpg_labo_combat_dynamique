@@ -355,8 +355,8 @@ function humanTacticalStatusToContractV1(
     );
   }
 
-  if (output.kind === "approach_time_modifier") {
-    output.modifierPct = finiteNumber(status.modifierPct, "Variation du temps de trajet (%)");
+  if (output.kind === "approach_time_modifier" || output.kind === "energy_regen_modifier") {
+    output.modifierPct = finiteNumber(status.modifierPct, "Variation du statut (%)");
   }
 
   if (
@@ -4289,6 +4289,7 @@ function tacticalStatusKindLabelV1(kind) {
   return {
     stat_modifier: "Modification de stat",
     approach_time_modifier: "Temps de trajet de la créature",
+    energy_regen_modifier: "Régénération d’énergie (%)",
     damage_over_time: "Dégâts périodiques",
     heal_over_time: "Soin périodique",
     shield: "Bouclier",
@@ -4931,6 +4932,19 @@ function appendHumanSkillEffectV1(
   approachNote.textContent = "Positif : trajet plus lent ; négatif : plus rapide. +50 % transforme 1,3 s en 1,95 s. Agit sur les approches au sol et aériennes, indépendamment de la préparation et du cooldown.";
   approachConfig.append(tacticalFieldV1("Variation du temps de trajet (%)", approachPct), approachNote);
 
+  const energyRegenPct = tacticalNumberInputV1(
+    "skillStatusEnergyRegenModifierPct", status.modifierPct ?? 100, {step:"5"}
+  );
+  const energyRegenConfig = document.createElement("div");
+  energyRegenConfig.className = "skill-status-config__specific";
+  energyRegenConfig.dataset.skillStatusConfigKind = "energy_regen_modifier";
+  energyRegenConfig.append(
+    tacticalFieldV1("Bonus de régénération d'énergie (%)", energyRegenPct),
+    (() => { const note = document.createElement("p"); note.className = "note";
+      note.textContent = "+100 % : double l’énergie à chaque récupération, -50 % : moitié ; 0 % : aucun changement. Le temps entre ticks ne change pas. Fin du buff : retour au réglage de base.";
+      return note; })()
+  );
+
   const statusAmount =
     tacticalNumberInputV1(
       "skillStatusAmount",
@@ -5208,6 +5222,7 @@ function appendHumanSkillEffectV1(
     common,
     statConfig,
     approachConfig,
+    energyRegenConfig,
     dotConfig,
     hotConfig,
     shieldConfig,
@@ -5489,6 +5504,8 @@ function appendHumanSkillEffectV1(
       zs.percent ?? 25,{min:0,max:100,step:"1"},"damage_reflection"),
     zoneStatusNumber("Temps de trajet (%)","skillZoneStatusApproachModifierPct",
       zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
+    zoneStatusNumber("Régénération d'énergie (%)","skillZoneStatusEnergyRegenModifierPct",
+      zs.modifierPct ?? 100,{step:"5"},"energy_regen_modifier"),
     zoneStatusNumber("Dégâts / soins / bouclier","skillZoneStatusAmount",
       zs.amount ?? 5,{min:0.1,step:"0.1"},"damage_over_time,heal_over_time,shield"),
     zoneStatusNumber("Intervalle (secondes)","skillZoneStatusTickSeconds",
@@ -5668,6 +5685,8 @@ function readHumanSkillEffectsV1(root) {
         zs.percent=Number(row.querySelector("[data-skill-zone-status-reflection-percent]").value);
       } else if(zsKind==="approach_time_modifier"){
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-approach-modifier-pct]").value);
+      } else if(zsKind==="energy_regen_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-energy-regen-modifier-pct]").value);
       } else if(["damage_over_time","heal_over_time","shield"].includes(zsKind)){
         zs.amount=Number(row.querySelector("[data-skill-zone-status-amount]").value);
         if(zsKind!=="shield")
@@ -5776,6 +5795,8 @@ function readHumanSkillEffectsV1(root) {
         );
       } else if (statusKind === "approach_time_modifier") {
         status.modifierPct = Number(row.querySelector("[data-skill-status-approach-modifier-pct]").value);
+      } else if (statusKind === "energy_regen_modifier") {
+        status.modifierPct = Number(row.querySelector("[data-skill-status-energy-regen-modifier-pct]").value);
       } else if (
         statusKind === "damage_over_time"
       ) {
