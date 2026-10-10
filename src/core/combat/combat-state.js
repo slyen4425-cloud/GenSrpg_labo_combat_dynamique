@@ -680,7 +680,7 @@ export function addChargeTimeEffect(state, fighterId, effect) {
   });
 }
 
-export function advanceCombatTime(state, deltaMs) {
+export function advanceCombatTime(state, deltaMs, { energyStatusAtStart = {} } = {}) {
   const delta = finiteNonNegative(deltaMs, "deltaMs");
   if (delta === 0) {
     return state;
@@ -690,13 +690,29 @@ export function advanceCombatTime(state, deltaMs) {
   const fighters = {};
 
   for (const fighter of Object.values(state.fighters)) {
+    // StatusRuntime may have discarded statuses expiring inside this advance.
+    // Retain their original lifetime only for energy tick evaluation, while
+    // newly applied statuses remain gated by their appliedAtMs timestamp.
+    const prior = energyStatusAtStart[fighter.id] ?? [];
+    const current = fighter.statusEffects.filter(
+      instance => instance.definition.kind === "energy_regen_modifier"
+    );
+    const energyStatusEffects = [
+      ...prior,
+      ...current.filter(instance => !prior.some(
+        old => old.definition.id === instance.definition.id &&
+          old.appliedAtMs === instance.appliedAtMs
+      ))
+    ];
     const charged = advanceEnergyTicks({
       energy: fighter.energy,
       maxEnergy: fighter.maxEnergy,
       progressMs: fighter.energyChargeProgressMs,
       amount: fighter.energyChargeAmount,
       intervalMs: fighter.energyChargeIntervalMs,
-      deltaMs: delta
+      deltaMs: delta,
+      atMs: state.elapsedMs,
+      energyStatusEffects
     });
 
     fighters[fighter.id] = Object.freeze({
