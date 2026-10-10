@@ -1064,3 +1064,11 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Périmètre** : nouveau contrat V10 + routeur versionné, `src/ui/capture-editor-human-v2.js`, HTML éditeur, `src/adapters/renderer/capture-skill-presentation-assets-v2.js`, `src/adapters/renderer/dom-skill-fx.js`, tests dédiés, présent journal et rapport.
 - **Invariants** : skills historiques V1–V9, projectiles source→cible, beam, contact masque, timing runtime, impact, audio, multi-cibles et collision/clash restent inchangés. Pas de nouvelle fiche skill ni média automatiquement, aucune modification des 103 créatures, loadouts, `global-assets`, `main`, GenSrpG, Exploration.
 - **Validation** : TDD RED→GREEN ; sauvegarde, normalisation, roundtrip de transfert, rendu descendant avec origine indépendante du lanceur, scale et animation inchangés, absence d'autotouch si cible indisponible, tests Node/Chromium, checkpoint SHA exact puis fast-forward Pages sous lease et CI sur version publiée. Validation visuelle Android séparée.
+
+### Chute du ciel V1 — code et sentinelles
+- RED `3c34d61597a51747cf25e946b160e059f7adc2ce` : test de mode vertical absent, échecs attendus avant implémentation.
+- Contrat versionné V10 `src/contracts/skill-presentation-binding-v10.js` et routage strict V1–V9 conservé ; transport des métadonnées par le seul adaptateur de présentation ; géométrie dans `DomSkillFxRenderer` existant. Aucun changement aux règles, au contact natif, ni à l'horloge.
+- Éditeur Capture : sélecteur classique/chute, hauteur 1–1400 px, décalage -700…+700 px, nouveau skill/réédition/import et export préservant les réglages. Pas de skill ou sprite « Chute de pierre » injecté à la place de la création auteur.
+- Nouveau test `tests/unit/capture-skyfall-projectile-v1.test.mjs` : validation V10, aller-retour JSON, asset projection, trajectoire verticale vs classique, vrai constructeur `buildHumanSkillDraftV1` puis rechargement `humanSkillEditorFieldsFromDraftV1`, sentinelles UI.
+- Première CI complète GREEN au SHA `aa9949e8da76552d197f31f50d27363c2c07bc8d`, run `38075658453` SUCCESS (Foundation + deux suites navigateurs). Rapport `docs/LAB_SKYFALL_PROJECTILE_V1.md`.
+- Validation finale : CI sur SHA documentaire exact, checkpoint GREEN, fast-forward `gh-pages` sous lease, CI et Pages SUCCESS sur SHA publié ; essai tactile Android utilisateur distinct.
