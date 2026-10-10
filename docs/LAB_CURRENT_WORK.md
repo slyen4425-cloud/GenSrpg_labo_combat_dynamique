@@ -950,3 +950,14 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - RED ciblé CI `38045491255` ; implémentation et sentinelles en branche, CI `38045663599` SUCCESS (Foundation et navigateurs) avant ajout du test UI/contrôleur complémentaire.
 - Rapport : `docs/LAB_VOLUNTARY_RECALL_COOLDOWN_V1.md`.
 - Exiger la réussite CI au SHA final avant tout checkpoint GREEN ou publication. La validation smartphone de Sylvain reste distincte.
+
+
+## 2026-10-10 — Compteur discret près du rappel en combat V1
+- **Retour smartphone validé** : le délai 45 s fonctionne ; le temps restant actuellement annoncé dans le long paragraphe `[data-combat-recall-note]` requiert le défilement du panneau déroulant et occupe trop d'espace.
+- **Base GREEN publique exacte** : `f08f2cea84ac309ee6245c424dbfa4217d895c6a`, CI `38045812501` SUCCESS, Pages `38045812328` SUCCESS, checkpoint `checkpoint/lab-voluntary-recall-cooldown-v1-green-2026-10-10`.
+- **Checkpoint départ** : `checkpoint/lab-start-compact-recall-countdown-hud-v1-2026-10-10` ; branche `work/lab-compact-recall-countdown-hud-v1-2026-10-10`.
+- **Propriétaire** : `Roster Session` garde `voluntarySwitchCooldownRemainingMs` ; `CaptureCombatRosterPanelV1` affiche ce snapshot dans un badge compact situé **dans l'en-tête permanent du rappel**, hors popup scrollable, sans ajouter de timer, sans changer les blocages.
+- **Fichiers autorisés** : `src/ui/capture-combat-roster-controller-v1.js`, `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.css`, `tests/unit/compact-recall-countdown-hud-v1.test.mjs`, documentation du lot et présent registre.
+- **Protégés** : `Roster Session`, `Combat Runtime`, `CaptureGameOptionsV1`, combat timing et commandes, les buffs et leurs widgets, les 103 créatures, le stockage et l'éditeur des capacités, `main`, GenSrpG et Exploration.
+- **TDD** : badge statique dans le `summary` toujours visible lorsque `details` est fermé, texte compact et masquage à zéro, aucune duplication/reflow continu, test lecture du vrai snapshot, progression via `onClock` natif, assertions CSS paysage 390/430 et clavier; toutes suites Node/Chromium.
+- **GREEN technique** : CI du SHA final + revue/rapport + checkpoint exact + publication lease ; approbation visuelle réelle par l'utilisateur distincte.
