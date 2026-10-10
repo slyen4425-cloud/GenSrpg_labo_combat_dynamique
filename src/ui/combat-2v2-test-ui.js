@@ -487,14 +487,15 @@ export function resolveCombatSkillClickTargetV1({
     return available.includes(actorId) ? actorId : null;
   }
 
-  // A single Rules-approved, available target needs no extra click,
-  // including positive skills offering self OR ally in a 1v1 battle.
-  // Keep explicit selection only when more than one candidate exists.
-  if (available.length === 1) {
+  // Self-capable support needs no extra click when only one valid ally exists.
+  // Preserve explicit ally-only targeting and any multi-candidate choice.
+  if (available.length === 1 &&
+      (relations.includes("self") ||
+       (relations.length === 1 && relations[0] === "enemy"))) {
     return available[0];
   }
 
-  // Preserve a deliberate selection when multiple enemies/allies are legal.
+  // Preserve explicit selection for ally-only and multiple-candidate skills.
   return available.includes(selectedTargetId) ? selectedTargetId : null;
 }
 
