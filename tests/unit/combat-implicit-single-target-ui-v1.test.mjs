@@ -101,3 +101,27 @@ test("combat skill button and target-required indicator use the same resolver, w
   assert.match(source,/activateLocalSkill\(skill, resolvedTargetId\)/);
   assert.match(source,/runtime\.startSkill\(/);
 });
+
+
+test("1v1 positive ability allowing self OR ally launches immediately when only caster is available", () => {
+  const result=target(format(1),skill("self","ally"),"foe-1");
+  assert.deepEqual(result.options.availableIds,["hero-1"]);
+  assert.equal(result.targetId,"hero-1");
+});
+
+test("2v2 supportive ability auto-selects only eligible ally without bypassing preview/KO", () => {
+  const battle=format(2),support=skill("self","ally");
+  assert.equal(target(battle,support,"foe-1",{deadIds:["hero-2"]}).targetId,"hero-1");
+  assert.equal(target(battle,support,"foe-1",{unavailableIds:["hero-1"]}).targetId,"hero-2");
+  assert.equal(target(battle,support,"foe-1",{unavailableIds:["hero-1","hero-2"]}).targetId,null);
+  assert.equal(target(battle,support,"foe-1").targetId,null,"two valid support targets still require choice");
+});
+
+test("authored Charge tellurique keeps its self-only target and can cast from an enemy selection", async () => {
+  const json=JSON.parse(await readFile(new URL("../../data/capture/showcase/cap_earth_atk_3.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
+  const { adaptCaptureSkillToSkillDefinition }=await import("../../src/adapters/input/capture/capture-skill-to-skill-definition.js");
+  const definition=adaptCaptureSkillToSkillDefinition({id:json.draft.id,definition:json.draft.definition});
+  assert.equal(definition.name,"Charge tellurique");
+  assert.deepEqual(definition.targetRelations,["self"]);
+  assert.equal(target(format(1),definition,"foe-1").targetId,"hero-1");
+});
