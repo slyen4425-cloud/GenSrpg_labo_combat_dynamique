@@ -35,3 +35,5 @@ jobs:
           git diff --cached --quiet && { echo "No changes found"; exit 1; }
           git commit -m "assets: trim stone carapace aura to complete frame 12 (12/16)"
           git push origin HEAD:work/global-assets-stone-carapace-aura-trim-v1-2026-10-10
+
+# one-shot retry after visible RGB fidelity check
