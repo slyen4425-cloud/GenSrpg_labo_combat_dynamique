@@ -147,7 +147,9 @@ export function advanceEnergyTicks({
   progressMs = 0,
   amount,
   intervalMs,
-  deltaMs
+  deltaMs,
+  atMs = 0,
+  energyStatusEffects = []
 }) {
   const current = nonNegative(energy, "energy");
   const max = nonNegative(maxEnergy, "maxEnergy");
@@ -155,6 +157,10 @@ export function advanceEnergyTicks({
   const gain = nonNegative(amount, "amount");
   const interval = nonNegative(intervalMs, "intervalMs");
   const delta = nonNegative(deltaMs, "deltaMs");
+  const start = nonNegative(atMs, "atMs");
+  if (!Array.isArray(energyStatusEffects)) {
+    throw new TypeError("energyStatusEffects must be an array");
+  }
 
   if (interval <= 0) {
     throw new RangeError("intervalMs must be greater than 0");
@@ -169,8 +175,30 @@ export function advanceEnergyTicks({
 
   const accumulated = progress + delta;
   const ticks = Math.floor(accumulated / interval);
-  const gained = ticks * gain;
-  const nextEnergy = Math.min(max, current + gained);
+  // One clock and one permanent base rate. The status only changes the
+  // quantity gained at each already-scheduled native tick; it never
+  // restarts progress or changes the creature's base energy rules.
+  let nextEnergy = current;
+  if (energyStatusEffects.length === 0) {
+    nextEnergy = Math.min(max, current + ticks * gain);
+  } else {
+    for (let index = 0; index < ticks && nextEnergy < max; index += 1) {
+      const tickAtMs = start + interval - progress + index * interval;
+      let modifierPct = 0;
+      for (const instance of energyStatusEffects) {
+        if (
+          instance?.definition?.kind === "energy_regen_modifier" &&
+          isStatusEffectRuntimeInstanceActiveV1(instance, tickAtMs)
+        ) {
+          modifierPct += instance.definition.modifierPct * instance.stacks;
+        }
+      }
+      nextEnergy = Math.min(
+        max,
+        nextEnergy + gain * Math.max(0, 1 + modifierPct / 100)
+      );
+    }
+  }
 
   return Object.freeze({
     energy: nextEnergy,
