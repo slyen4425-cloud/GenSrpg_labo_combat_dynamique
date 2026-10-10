@@ -98,3 +98,28 @@ test("editor status/zone exposes signed percent and human authoring preserves it
  assert.match(ui,/skillZoneStatusCooldownRateModifierPct/);
  assert.match(ui,/Recharge des compétences/);
 });
+
+test("one large time step and four smaller steps give identical accelerated cooldown",()=>{
+ const start=assign(withSkillCooldown(initial(),"player","fireball",8000),100,2500);
+ const coarse=advanceCombatTime(start,4000);
+ let fine=start;
+ for(let step=0;step<4;step++)fine=advanceCombatTime(fine,1000);
+ assert.equal(skillCooldownRemainingMs(coarse,"player","fireball"),1500);
+ assert.equal(skillCooldownRemainingMs(fine,"player","fireball"),1500);
+ assert.deepEqual(fine.fighters.player.skillCooldowns,coarse.fighters.player.skillCooldowns);
+});
+
+test("existing authored skill transfer preserves cooldown buff through export/import and field re-editing",async()=>{
+ const {importCaptureTransferJsonV1,exportCaptureSkillTransferJsonV1}=await import("../../src/adapters/input/capture/capture-entity-transfer-v1.js");
+ const {humanSkillEditorFieldsFromDraftV1,buildHumanSkillDraftV1}=await import("../../src/ui/capture-editor-human-v2.js");
+ const source=importCaptureTransferJsonV1(readFileSync(new URL("../../data/capture/showcase/cap_earth_atk_4.capture-skill-transfer-v1.json",import.meta.url),"utf8")).value.draft;
+ const eff={kind:"apply_status",targetScope:"self",status:status(100,{id:"cooldown-haste",durationMs:6000})};
+ const draft={...source,definition:{...source.definition,effects:[...source.definition.effects,eff]}};
+ const exported=exportCaptureSkillTransferJsonV1(draft);
+ const imported=importCaptureTransferJsonV1(exported).value.draft;
+ assert.deepEqual(imported.definition.effects.at(-1).status,eff.status);
+ const fields=humanSkillEditorFieldsFromDraftV1(imported);
+ const restored=buildHumanSkillDraftV1(fields);
+ assert.deepEqual(restored.definition.effects.at(-1).status,eff.status);
+ assert.equal(restored.definition.cooldownMs,source.definition.cooldownMs);
+});
