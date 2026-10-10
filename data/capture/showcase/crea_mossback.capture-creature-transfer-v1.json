@@ -91,7 +91,6 @@
       "chargeTimeModifierPct": 0
     },
     "skillIds": [
-      "lib_rock_slam",
       "lib_earth_guard",
       "lib_root_snare",
       "lib_quake",
@@ -224,7 +223,7 @@
       },
       {
         "id": "slot-4",
-        "skillId": "lib_rock_slam"
+        "skillId": null
       }
     ]
   }
