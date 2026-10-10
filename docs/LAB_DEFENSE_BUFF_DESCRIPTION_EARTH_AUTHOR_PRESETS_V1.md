@@ -32,5 +32,5 @@ Source des visuels : catalogue `global-assets/data/assets/catalog/global-visual-
 - Checkpoint départ : `checkpoint/lab-start-defense-buff-description-v1-2026-10-10`.
 - Test RED dédié : `tests/unit/defense-buff-description-author-presets-v1.test.mjs`, CI `38051562513` en échec attendu avant correction.
 - Tests ciblés : projection +40/-20/0, Carapace issu du véritable fichier auteur via instance de statut canonique, texte final du HUD, parsing et roundtrip des deux exports, remplacement d'ID dans `configuredSkills` sans supprimer le natif.
-- Foundation, suites navigateur et publication sous lease à confirmer **sur SHA final**. Validation visuelle smartphone distincte du GREEN technique.
+- Suite avant édition finale du rapport : CI `38051736579` SUCCESS sur `331ef37b21a2022551db234c545e41998fd97f0e` (Foundation + Chromium bibliothèque et Firestorm 1v1/2v2). Publication sous lease après GREEN au SHA de la dernière édition documentaire. Validation visuelle smartphone distincte du GREEN technique.
 - `main`, `Zombicide-40k`, exploration et tous les propriétaires gameplay non modifiés.
