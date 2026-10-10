@@ -698,11 +698,20 @@ export function advanceCombatTime(state, deltaMs, { energyStatusAtStart = {} } =
       instance => instance.definition.kind === "energy_regen_modifier"
     );
     const energyStatusEffects = [
-      ...prior,
-      ...current.filter(instance => !prior.some(
-        old => old.definition.id === instance.definition.id &&
-          old.appliedAtMs === instance.appliedAtMs
-      ))
+      ...prior.map(old => {
+        const replacement = current.find(instance =>
+          instance.definition.id === old.definition.id &&
+          instance.appliedAtMs !== old.appliedAtMs
+        );
+        return replacement && old.expiresAtMs !== null
+          ? { ...old, expiresAtMs: Math.min(old.expiresAtMs, replacement.appliedAtMs) }
+          : old;
+      }).filter(old => !current.some(instance =>
+        instance.definition.id === old.definition.id &&
+        instance.appliedAtMs === old.appliedAtMs
+      )),
+      // Latest refresh wins when the same ID keeps its original appliedAtMs.
+      ...current
     ];
     const charged = advanceEnergyTicks({
       energy: fighter.energy,
