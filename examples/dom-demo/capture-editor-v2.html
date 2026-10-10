@@ -1410,7 +1410,7 @@
           <label>Son de cast
             <select data-skill-cast-audio data-private-audio data-audio-roles="cast,release,preparation"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
-          <label>Son du trajet (projectile / rayon)
+          <label>Son du trajet (projectile / rayon / contact)
             <select data-skill-travel-audio data-private-audio data-audio-roles="travel"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
           <label>Son d'impact
@@ -1444,7 +1444,7 @@
           <button type="button" class="primary-action" data-creator-audio-import>Importer mon son</button>
           <p class="note" data-creator-audio-state data-tone="info">Aucun son personnel importé dans cette session.</p>
         </div>
-        <p class="note">Le son de trajet est joué uniquement pendant le déplacement d'un projectile et s'arrête à l'impact, au clash ou à l'interruption de l'action. Le son de zone boucle tant que la zone persistante existe et s'arrête avec elle.</p>
+        <p class="note">Le même son de trajet sert aux projectiles / rayons (lecture continue arrêtée à la résolution) et aux attaques de contact : un son à chaque appui / rebond de la créature (ou une seule fois au départ pour un déplacement volant ou sans appui). Le son d'impact reste distinct. Le son de zone boucle tant que la zone persistante existe et s'arrête avec elle.</p>
       </article>
     </section>
 
