@@ -181,8 +181,8 @@ test("Maraileron author export preserves authored creature stats presentation so
       "cap_water_atk_1",
       "cap_water_atk_2",
       "cap_water_atk_3",
-      "cap_water_atk_4",
-      null
+      "lib_aqua_heal",
+      "cap_water_special_2"
     ]
   );
 

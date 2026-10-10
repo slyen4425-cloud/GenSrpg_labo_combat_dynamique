@@ -100,6 +100,17 @@ test("Goutte vive keeps authored projectile power 2 through active owner export 
     "author transfer is the source of truth"
   );
 
+  // This author's latest creature now actually equips a V9 ultimate and a
+  // healing ability. Feed the canonical configuredSkills owner with those
+  // authored skills rather than mistakenly relying on old native templates.
+  for (const file of [
+    "data/capture/showcase/cap_water_special_2.capture-skill-transfer-v1.json",
+    "data/capture/showcase/lib_aqua_heal.capture-skill-transfer-v1.json"
+  ]) {
+    const authored = importCaptureTransferJsonV1(await text(file)).value.draft;
+    configuredSkills.set(authored.id, authored);
+  }
+
   const creatureTransfer =
     importCaptureTransferJsonV1(
       await text(

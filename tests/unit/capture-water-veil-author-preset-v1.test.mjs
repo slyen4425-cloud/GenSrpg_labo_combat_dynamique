@@ -70,7 +70,8 @@ test("native persistent zone owns buff lifetime and exposes source icon under pr
   assert.equal(host.children.length,1,"HUD must show a status below affected creature");
   assert.equal(host.children[0].dataset.sourceSkillId,draft.id);
   assert.match(host.children[0].style.backgroundImage,/barrier-dome.webp/);
-  session.advanceMs(59998);
+  const zoneExpiresAt = snapshot.persistentZones[0].expiresAtMs;
+  session.advanceMs(zoneExpiresAt - snapshot.elapsedMs - 1);
   snapshot=session.snapshot();
   assert.equal(snapshot.persistentZones.length,1);
   assert.equal(snapshot.fighters.player.statusEffects.length,1);

@@ -137,6 +137,25 @@ const server = createServer(async (req, res) => {
             behavior.dispatchEvent(new Event("change",{bubbles:true}));
             const isUltimate=document.querySelector("[data-skill-ultimate]")?.checked;
             if(!isUltimate)throw Error("saved skill lost ultimate flag");
+            const attachment=document.querySelector("[data-skill-zone-attachment]");
+            if(attachment?.value!=="fixed-source")throw Error("Veil must start anchored to ground");
+            if(![...attachment.options].some(option=>option.value==="source"))throw Error("Moving zones mode absent");
+            attachment.value="source";
+            attachment.dispatchEvent(new Event("change",{bubbles:true}));
+            attachment.value="fixed-source";
+            attachment.dispatchEvent(new Event("change",{bubbles:true}));
+            document.querySelector("[data-skill-update]").click();
+            if(document.querySelector("[data-skill-zone-attachment]")?.value!=="fixed-source")
+              throw Error("Saved author fixed-source field was dropped");
+            const creature=document.querySelector("[data-creature-library-select]");
+            creature.value="crea_maraileron";
+            creature.dispatchEvent(new Event("change",{bubbles:true}));
+            const activeUltimate=document.querySelector('[data-loadout-slot-type="ultimate"]');
+            if(activeUltimate?.value!=="cap_water_special_2")
+              throw Error("Maraileron lost active Ultimate slot: "+activeUltimate?.value);
+            const healingSlot=[...document.querySelectorAll("[data-loadout-slot]")].find(x=>x.dataset.loadoutSlot==="slot-4");
+            if(healingSlot && healingSlot.value!=="lib_aqua_heal")
+              throw Error("Maraileron lost authored healing loadout");
             document.body.dataset.waterVeilUltimateProbe="ok:20:60:10:100";
           }catch(e){document.body.dataset.waterVeilUltimateProbe="fail:"+e.message;}
         },100);
