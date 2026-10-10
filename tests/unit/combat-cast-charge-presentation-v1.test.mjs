@@ -44,7 +44,7 @@ test("combat charge adapter reuses one DOM readout, reports snapshots, and reset
   assert.equal(inserted[0].before, bar);
   assert.equal(bar.value, 0.4);
   assert.equal(bar.dataset.active, "true");
-  assert.equal(bar["aria-valuetext"], "Préparation : Boule de feu, 40 %, 1,3 seconde restante");
+  assert.equal(bar["aria-valuetext"], "Préparation : Boule de feu, 40 %, 1,3 secondes restantes");
   assert.equal(inserted[0].child.textContent, "40 % · 1,3 s");
   assert.equal(inserted[0].child.hidden, false);
   presenter.render({ active: false });
