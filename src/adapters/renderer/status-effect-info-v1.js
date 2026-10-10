@@ -242,6 +242,42 @@ function effectLinesFor(
         variationLine("Temps de trajet de la créature", definition.modifierPct * instance.stacks,
           { positiveWord: "augmenté", negativeWord: "réduit" }) ?? "Temps de trajet inchangé"
       ]);
+    case "energy_regen_modifier": {
+      const modifierPct =
+        finiteNumber(definition.modifierPct) *
+        Math.max(1, finiteNumber(instance.stacks, 1));
+      return Object.freeze([
+        modifierPct <= -100
+          ? "Régénération d’énergie suspendue (0 énergie par tick)"
+          : variationLine(
+              "Énergie récupérée par tick",
+              modifierPct,
+              {
+                positiveWord: "augmentée",
+                negativeWord: "réduite"
+              }
+            ) ?? "Énergie récupérée par tick inchangée"
+      ]);
+    }
+
+    case "skill_cooldown_rate_modifier": {
+      const modifierPct =
+        finiteNumber(definition.modifierPct) *
+        Math.max(1, finiteNumber(instance.stacks, 1));
+      return Object.freeze([
+        modifierPct <= -100
+          ? "Recharge des compétences en pause"
+          : variationLine(
+              "Vitesse de recharge des compétences",
+              modifierPct,
+              {
+                positiveWord: "augmentée",
+                negativeWord: "réduite"
+              }
+            ) ?? "Vitesse de recharge des compétences inchangée"
+      ]);
+    }
+
     case "damage_over_time":
       return Object.freeze([
         compactNumber(definition.amount) +
@@ -420,7 +456,12 @@ export function projectStatusEffectInfoV1({
 
   return Object.freeze({
     statusId,
-    statusName: humanIdentifier(statusId),
+    statusName:
+      definition.kind === "energy_regen_modifier"
+        ? "Régénération d’énergie"
+        : definition.kind === "skill_cooldown_rate_modifier"
+          ? "Recharge des compétences"
+          : humanIdentifier(statusId),
     sourceSkillId,
     sourceSkillName,
     typeLabel:
