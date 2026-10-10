@@ -1143,7 +1143,7 @@ function audioSlots(raw) {
   }
 
   const output = {};
-  for (const role of ["attack", "hit", "ko"]) {
+  for (const role of ["attack", "hit", "ko", "movement"]) {
     const entry = raw[role];
     if (entry == null || entry === "") {
       continue;
@@ -3762,6 +3762,12 @@ function writeCreatureRecordFields(
       )
     ],
     [
+      "[data-creature-audio-movement]",
+      creatureAudioAssetId(
+        presentation?.audio?.movement
+      )
+    ],
+    [
       "[data-creature-audio-hit]",
       creatureAudioAssetId(
         presentation?.audio?.hit
@@ -3941,6 +3947,7 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-dodge-offset-x]", 0],
     ["[data-creature-dodge-offset-y]", 0],
     ["[data-creature-audio-attack]", ""],
+    ["[data-creature-audio-movement]", ""],
     ["[data-creature-audio-hit]", ""],
     ["[data-creature-audio-ko]", ""],
     ["[data-capture-rate]", 30],
@@ -7972,6 +7979,10 @@ function readCreatureFields(
       attack: selectedValue(
         root,
         "[data-creature-audio-attack]"
+      ),
+      movement: selectedValue(
+        root,
+        "[data-creature-audio-movement]"
       ),
       hit: selectedValue(
         root,
