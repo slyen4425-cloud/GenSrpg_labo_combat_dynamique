@@ -15,7 +15,7 @@ const draftFields=()=>({
   approachMode:"none",energyCost:1,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:3000,
   allowedDistances:["short","medium","long"],targetRelations:["self"],damage:0,heal:0,stunMs:0,
   interruptsPreparation:false,effects:[{kind:"apply_status",targetScope:"self",status:{
-    id:"stone-armor",kind:"buff",polarity:"beneficial",durationMs:10000,stacking:"refresh",maxStacks:1
+    id:"stone-armor",kind:"stat_modifier",statId:"defense",deltaPoints:200,polarity:"beneficial",durationMs:10000,stacking:"refresh",maxStacks:1
   }}],
   reaction:{blockForms:[],reflectForms:[],immuneElements:[],counterForms:[],evadeForms:[],evadeApproaches:[]},
   projectileClash:{mode:"none"},
