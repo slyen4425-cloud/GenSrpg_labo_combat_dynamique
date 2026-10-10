@@ -5476,7 +5476,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "La zone contient directement son effet : inutile d’ajouter un buff indépendant. Les champs des dégâts ou du statut apparaissent selon « Effet appliqué ». Le mode « Dans la zone » retire le statut à la sortie ; « À l’entrée » laisse sa durée normale après sortie. La persistance après rappel n’est disponible que pour les zones à statut.";
+    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. La zone contient directement son effet : inutile d’ajouter un buff indépendant. Les champs des dégâts ou du statut apparaissent selon « Effet appliqué ». Le mode « Dans la zone » retire le statut à la sortie ; « À l’entrée » laisse sa durée normale après sortie. La persistance après rappel n’est disponible que pour les zones à statut.";
 
   zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneNote);
 
