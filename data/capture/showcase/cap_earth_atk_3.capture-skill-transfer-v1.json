@@ -1,0 +1,140 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_earth_atk_3",
+    "description": "Augmente la régénération d énergie pendant 30sec.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_earth_atk_3",
+      "name": "Charge tellurique",
+      "category": "buff_debuff",
+      "form": "aura",
+      "loadoutSlot": "standard",
+      "element": "earth",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 2000,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 60000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "persistent_zone",
+          "targetScope": "self",
+          "zoneId": "zone",
+          "radius": "short",
+          "durationMs": 30000,
+          "tickIntervalMs": 1000,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "apply_status",
+            "targetScope": "self",
+            "status": {
+              "id": "aura",
+              "kind": "energy_regen_modifier",
+              "polarity": "beneficial",
+              "durationModel": "time_ms",
+              "durationMs": 3000,
+              "stacking": "stack",
+              "maxStacks": 1,
+              "tags": [],
+              "modifierPct": 50
+            }
+          },
+          "persistAfterRecall": true,
+          "statusBehavior": "while_inside"
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_earth_atk_3",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_earth_atk_3",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-thorn-vines-01"
+        },
+        "aura": {
+          "assetId": "pack:capture:sprite-cast-nature-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.6,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
