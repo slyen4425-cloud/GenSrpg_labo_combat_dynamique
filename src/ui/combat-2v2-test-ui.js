@@ -18,6 +18,7 @@ import { createCombatResolutionPresenter } from "../adapters/renderer/combat-res
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
+import { createCombatEnergyOrbsRendererV1 } from "../adapters/renderer/combat-energy-orbs-v1.js";
 import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
 import { createPersistentZoneAudioSyncV1 } from "../adapters/audio/persistent-zone-audio-sync-v1.js";
 
@@ -529,6 +530,9 @@ export async function mountCoop2v2Test({
     root,
     `[data-combat-energy-value="${format.localActorId}"]`
   );
+  const energyOrbs = createCombatEnergyOrbsRendererV1({
+    host: requiredElement(root, `[data-combat-energy-orbs="${format.localActorId}"]`)
+  });
   const dodgeButton =
     root.querySelector("[data-combat-dodge]");
   const dodgeCharges =
@@ -938,6 +942,10 @@ export async function mountCoop2v2Test({
     energyBar.value = local.energy;
     energyValue.textContent =
       `${formatEnergy(local.energy)} / ${formatEnergy(local.maxEnergy)}⚡`;
+    energyOrbs.render({
+      energy: local.energy,
+      maxEnergy: local.maxEnergy
+    });
 
     fx.syncPersistentZones(
       state.persistentZones ?? []
