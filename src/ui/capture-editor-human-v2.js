@@ -11040,7 +11040,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           "[data-skill-status-visual-mode], " +
           "[data-skill-zone-effect-kind], " +
           "[data-skill-zone-status-kind], " +
-          "[data-skill-zone-status-stacking]"
+          "[data-skill-zone-status-stacking], " +
+          "[data-skill-zone-status-behavior]"
         )
       ) {
         syncHumanSkillEffectRowV1(row);
