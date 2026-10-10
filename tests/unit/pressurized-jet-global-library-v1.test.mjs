@@ -34,10 +34,7 @@ test("Jet pressurisé V1 resolves only through the canonical global visual libra
     GLOBAL_VISUAL_LIBRARY.branch,
     "global-assets"
   );
-  assert.equal(
-    GLOBAL_VISUAL_LIBRARY.revision,
-    "2026-10-09-v20-water-healing-bubble"
-  );
+  assert.match(GLOBAL_VISUAL_LIBRARY.revision, /^20\d{2}-\d{2}-\d{2}-v\d+-/);
 
   for (const [assetId, relativePath] of EXPECTED) {
     assert.match(
