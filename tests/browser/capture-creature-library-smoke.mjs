@@ -95,6 +95,55 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
     }
+    // Author-provided Ultimate must survive real bootstrap and expose native
+    // bound-status duration UX while preserving the ten-second authored value.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-water-veil-ultimate")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const library=document.querySelector("[data-skill-library-select]");
+          const option=library?.querySelector('option[value="cap_water_special_2"]');
+          const showcaseReady=document.querySelector("[data-creature-library-state]")
+            ?.textContent?.includes("3 modèles vitrine chargés");
+          if(!showcaseReady || !option){
+            if(++attempts>80){clearInterval(timer);document.body.dataset.waterVeilUltimateProbe="timeout";}
+            return;
+          }
+          clearInterval(timer);
+          try{
+            const slot=document.querySelector('[data-loadout-slot-type="ultimate"]');
+            if(!slot?.querySelector('option[value="cap_water_special_2"]'))throw Error("ultimate slot has no authored skill");
+            library.value="cap_water_special_2";
+            library.dispatchEvent(new Event("change",{bubbles:true}));
+            const root=document.querySelector('[data-skill-effects-host]');
+            const row=[...root.querySelectorAll("[data-skill-effect-row]")]
+              .find(x=>x.querySelector("[data-skill-zone-status-behavior]"));
+            if(!row)throw Error("authored zone effect not selected");
+            const behavior=row.querySelector("[data-skill-zone-status-behavior]");
+            const durationField=row.querySelector("[data-skill-zone-status-duration-field]");
+            const durationInput=row.querySelector("[data-skill-zone-status-duration-seconds]");
+            const note=row.querySelector("[data-skill-zone-status-duration-note]");
+            if(behavior.value!=="while_inside" || !durationField.hidden ||
+                !note || note.hidden || Number(durationInput.value)!==10)
+              throw Error("while_inside must hide separate duration but preserve 10s");
+            behavior.value="on_enter";
+            behavior.dispatchEvent(new Event("change",{bubbles:true}));
+            if(durationField.hidden || !note.hidden || Number(durationInput.value)!==10)
+              throw Error("on_enter must reveal original saved duration");
+            behavior.value="while_inside";
+            behavior.dispatchEvent(new Event("change",{bubbles:true}));
+            const isUltimate=document.querySelector("[data-skill-ultimate]")?.checked;
+            if(!isUltimate)throw Error("saved skill lost ultimate flag");
+            document.body.dataset.waterVeilUltimateProbe="ok:20:60:10:100";
+          }catch(e){document.body.dataset.waterVeilUltimateProbe="fail:"+e.message;}
+        },100);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     // Probe the actual mounted editor once, with the same inputs and module graph.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-three-phase-rayon")) {
@@ -642,6 +691,12 @@ try {
       throw new Error("Human Editor browser missing damage penetration control: " + marker);
     }
   }
+  const veilDom=await dumpDom(url+"?verify-water-veil-ultimate=1");
+  assertCreatures(veilDom,"Voile aqueux ultimate browser bootstrap");
+  const veilProbe=veilDom.match(/data-water-veil-ultimate-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(veilProbe!=="ok:20:60:10:100")
+    throw Error("Real editor Voile aqueux Ultimate slot/duration regression: "+veilProbe);
+  console.log("Voile aqueux browser: Ultime registered; 60s zone +100 DEF, 10s fallback hidden only while inside");
   const hotDom = await dumpDom(url + "?verify-hot-export=1");
   assertCreatures(hotDom, "HoT authoring browser bootstrap");
   const hotMatch = hotDom.match(/data-hot-export-probe="([^"]+)"/);
