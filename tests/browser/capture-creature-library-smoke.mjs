@@ -37,6 +37,43 @@ const server = createServer(async (req, res) => {
         '</script>';
       contents = Buffer.from(html.replace("<head>", "<head>" + intercept));
     }
+    // Chromium smoke: actual HUD orb renderer inside the native editor page.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-energy-orbs")) {
+      const html=contents.toString("utf8");
+      const plugin=`<script type="module">
+        import {createCombatEnergyOrbsRendererV1} from "../../src/adapters/renderer/combat-energy-orbs-v1.js";
+        try {
+          const host=document.createElement("div");
+          host.className="hud__energy-orbs";
+          host.style.width="180px";
+          document.body.append(host);
+          const hud=createCombatEnergyOrbsRendererV1({host});
+          hud.render({energy:5,maxEnergy:12});
+          if(host.children.length!==12 ||
+              host.children[4].style.getPropertyValue("--energy-orb-fill")!=="100%" ||
+              host.children[5].style.getPropertyValue("--energy-orb-fill")!=="0%")
+            throw Error("native 5-of-12 is not drawn");
+          if(getComputedStyle(host.children[0]).borderRadius!=="50%")
+            throw Error("orb is not circular");
+          hud.render({energy:5.5,maxEnergy:12});
+          if(host.children[5].style.getPropertyValue("--energy-orb-fill")!=="50%")
+            throw Error("half-filled orb missing");
+          if(host.scrollWidth>host.clientWidth+1)
+            throw Error("energy circles overflow 180px");
+          hud.render({energy:6,maxEnergy:24});
+          if(host.children.length!==12 || host.children[2].style.getPropertyValue("--energy-orb-fill")!=="100%" ||
+              host.children[3].style.getPropertyValue("--energy-orb-fill")!=="0%")
+            throw Error("proportional max>12 projection incorrect");
+          if(host.getAttribute("aria-label")!=="Énergie : 6 sur 24")
+            throw Error("accessible value mismatch");
+          document.body.dataset.energyOrbsProbe="ok:12:5:50%";
+        } catch(error) {
+          document.body.dataset.energyOrbsProbe="fail:"+error.message;
+        }
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",plugin+"</head>"));
+    }
     // Browser-only UX probe: real mounted stats, custom rate, removal and live skill draft.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-context-help")) {
@@ -710,6 +747,11 @@ try {
       throw new Error("Human Editor browser missing damage penetration control: " + marker);
     }
   }
+  const energyDom=await dumpDom(url+"?verify-energy-orbs=1");
+  const energyProbe=energyDom.match(/data-energy-orbs-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(energyProbe!=="ok:12:5:50%")
+    throw Error("Real Chrome energy orbs regression: "+energyProbe);
+  console.log("Capture HUD energy orbs: real Chrome 12 circles, partial fill, 180px wrap, capacity 24 and accessible count");
   const veilDom=await dumpDom(url+"?verify-water-veil-ultimate=1");
   assertCreatures(veilDom,"Voile aqueux ultimate browser bootstrap");
   const veilProbe=veilDom.match(/data-water-veil-ultimate-probe="([^"]+)"/)?.[1] ?? "missing";
