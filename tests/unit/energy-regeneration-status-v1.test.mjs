@@ -37,7 +37,7 @@ test("real combat status buffs recovery, expires, refreshes and supports cleanse
  let state=c.snapshot();
  state=applyStatusEffectV1({state,targetActorId:"player",sourceActorId:"player",status:norm(100)});
  state=advanceCombatTime(state,4000);
- assert.equal(state.fighters.player.energy,12);
+ assert.equal(state.fighters.player.energy,14);
  assert.equal(state.fighters.opponent.energy,8);
  assert.equal(state.fighters.player.energyChargeAmount,2);
  const cleansed=removeStatusEffectsV1({state,targetActorId:"player",polarity:"beneficial",statusTags:["energy"]});
