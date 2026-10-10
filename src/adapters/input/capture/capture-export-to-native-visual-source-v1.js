@@ -299,6 +299,7 @@ export function adaptCaptureExportToNativeVisualSourceV1({
           "opponent"
         )
       }),
+      audio: binding.audio,
       dodgeFx: dodgeFxFor(binding)
     });
   });
