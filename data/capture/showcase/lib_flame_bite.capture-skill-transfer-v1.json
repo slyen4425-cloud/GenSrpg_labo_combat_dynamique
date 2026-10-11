@@ -93,7 +93,7 @@
       "subjectId": "lib_flame_bite",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-fire-rain-01"
+          "assetId": "pack:capture:icon-skill-burning-bite-01"
         },
         "impact": {
           "assetId": "pack:capture:sprite-impact-physical-01",

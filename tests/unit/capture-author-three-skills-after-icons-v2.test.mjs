@@ -13,7 +13,7 @@ import { captureComplexNativeSkillDraftsV1 } from "../../src/catalogs/capture-co
 const manifest = [
   ["cap_earth_atk_7","2e4b69a84147aa4a0c22dd464e2e0915bc3c82528aa8d67ea5a8bbead345dde1","pack:capture:icon-skill-seismic-shock-01"],
   ["cap_earth_atk_3","51f0a7eb1d648167ca908c3cd7d73e28ab970b49b33726e9e4859118803afc07","core:icon-skill-thorn-vines-01"],
-  ["cap_fire_special_1","c1d1cc723aed981362f56c9b2439c2882b6c88d2038f02d2c2c68916015fa572","pack:capture:icon-skill-burning-bite-01"]
+  ["cap_fire_special_1","c1d1cc723aed981362f56c9b2439c2882b6c88d2038f02d2c2c68916015fa572","pack:capture:icon-skill-blinding-ash-01"]
 ];
 const read = path => readFile(new URL("../../"+path,import.meta.url),"utf8");
 
@@ -22,7 +22,11 @@ test("the three user-supplied skill exports replace existing stable ids byte-for
    const path="data/capture/showcase/"+id+".capture-skill-transfer-v1.json";
    assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===path).length,1,id+" must only be registered once");
    const raw=await read(path);
-   assert.equal(createHash("sha256").update(raw).digest("hex"),sha,id+" must preserve authored file bytes");
+   const authorBytesWithoutRequestedIconChange = id === "cap_fire_special_1" ? raw.replace(
+     '"assetId": "pack:capture:icon-skill-blinding-ash-01"',
+     '"assetId": "pack:capture:icon-skill-burning-bite-01"'
+   ) : raw;
+   assert.equal(createHash("sha256").update(authorBytesWithoutRequestedIconChange).digest("hex"),sha,id+" must preserve author bytes except requested icon change");
    const imported=importCaptureTransferJsonV1(raw);
    assert.equal(imported.kind,"skill");
    assert.equal(imported.value.draft.id,id);
