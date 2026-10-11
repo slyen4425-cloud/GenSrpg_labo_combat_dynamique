@@ -7,6 +7,7 @@ import { createRosterSession } from "../core/combat/roster-session.js";
 import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
+import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
@@ -1155,10 +1156,17 @@ export async function mountCombatTest({
     return result;
   }
 
+  const impactHealthCue = createCombatImpactHealthCueSyncV1({
+    presentationForSkill(skillId, context = {}) {
+      return presentationAssets?.presentationForSkill?.(skillId, context) ?? null;
+    }
+  });
+
   runtime = createCombatRuntime({
     session,
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
+      impactHealthCue.clear();
       render(state);
 
       if (
@@ -1172,14 +1180,16 @@ export async function mountCombatTest({
     },
     onHealthDelta(feedback) {
       if (!["damage", "heal"].includes(feedback.kind)) return;
+      const delayMs = impactHealthCue.delayFor(feedback);
       fx.play({
         type: feedback.kind,
         targetSlot: feedback.actorId,
         amount: feedback.amount,
-        durationMs: 700
+        durationMs: 700,
+        delayMs
       });
       if (feedback.kind === "damage") {
-        damageFeedback?.flash(feedback.actorId);
+        damageFeedback?.flash(feedback.actorId, { delayMs });
       }
     },
     onStarted({ action }) {
@@ -1245,6 +1255,7 @@ export async function mountCombatTest({
       }
     },
     onResolved(resolution) {
+      impactHealthCue.register(resolution);
       setCharge({ slotId: resolution.actorId });
 
       if (resolution.actionType === "skill") {
