@@ -1322,3 +1322,11 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Frontières protégées** : Combat Runtime/Rules, skyfall et renderer, animations, icônes/sprites/sons, catalogues, les 103 créatures et autres skills, `global-assets`, `main`, `Zombicide-40k`, Exploration.
 - **Plan TDD** : test RED sur les six réglages et invariants de la fiche (ID unique au catalogue, normalisation + aller/retour export/import, aucun changement aux autres champs) ; modification chirurgicale des octets du JSON auteur ; Node CI + smokes Chromium, checkpoint GREEN au SHA final puis fast-forward `gh-pages` sous contrôle de SHA ; validation du rendu Android réservée à l'utilisateur.
 - **Risque connu** : ces valeurs sont un diagnostic visuel et ne prouvent pas l'absence d'un problème d'ancrage du moteur skyfall ; **ne pas** corriger le renderer dans ce lot.
+
+### Résolution des valeurs FX Impact rocheux
+
+- Source active mise à jour au commit `5a717cee7122a46f2b9fa1004b2e26f971df2626` : seulement six nombres de présentation, sans évolution de contrat ni renderer.
+- Nouvelle sentinelle : vérifie toutes les valeurs souhaitées, le transit import/export, la trajectoire skyfall et la conservation octet par octet de l'ancienne source après inversion exacte des six nombres (SHA Git `8da9dceb1396fc428f39fddab6cddd23a957f906`).
+- CI `38146871900` a relevé deux assertions historiques obsolètes/mal placées. L'ancienne sentinelle exigée par l'export précédent (`600 px`) est actualisée pour respecter **l'autorisation expresse** ; le test sémantique de cible est fait sur le transfert brut avant normalisation.
+- CI `38147064678` **SUCCESS** pour foundation + deux smokes Chromium ; les compétences et créatures non ciblées restent inchangées.
+- Rapport : `docs/LAB_ROCK_IMPACT_FX_TEST_VALUES_V1.md`. Après documentation finale CI exacte, checkpoint GREEN + FF `gh-pages` + Pages ; Android non validé tant que l'utilisateur n'a pas essayé.
