@@ -74,6 +74,62 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",plugin+"</head>"));
     }
+    // Real editor interaction: choosing FX style must NOT edit a skill until Appliquer.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-fx-quick")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const library=document.querySelector("[data-skill-library-select]");
+          const ready=document.querySelector("[data-creature-library-state]")
+            ?.textContent?.includes("3 modèles vitrine chargés");
+          if(!ready || !library?.querySelector('option[value="cap_earth_atk_4"]')){
+            if(++attempts>70){clearInterval(timer);document.body.dataset.fxQuickProbe="timeout";}
+            return;
+          }
+          clearInterval(timer);
+          try{
+            library.value="cap_earth_atk_4";
+            library.dispatchEvent(new Event("change",{bubbles:true}));
+            const read=s=>document.querySelector(s)?.value;
+            const style=document.querySelector("[data-skill-fx-quick-profile]");
+            const apply=document.querySelector("[data-skill-fx-quick-apply]");
+            const preview=document.querySelector("[data-skill-fx-quick-preview]");
+            if(!style||!apply||!preview)throw Error("quick controls absent");
+            if(read("[data-skill-projectile-trail-size]")!=="8"||
+               read("[data-skill-impact-shake-amplitude]")!=="5")
+              throw Error("authored rock FX changed on initial load");
+            if(style.value!=="current")throw Error("saved custom values presented as preset");
+            style.value="spectacular";
+            style.dispatchEvent(new Event("change",{bubbles:true}));
+            if(preview.dataset.level!=="spectacular"||apply.disabled)
+              throw Error("indicative preview did not react");
+            if(read("[data-skill-projectile-trail-size]")!=="8" ||
+               read("[data-skill-impact-shake-amplitude]")!=="5")
+              throw Error("preview silently overwrote author settings");
+            apply.click();
+            if(read("[data-skill-projectile-trail-size]")!=="7" ||
+               read("[data-skill-impact-shake-amplitude]")!=="9" ||
+               read("[data-skill-aftermath-smoke-size]")!=="36" ||
+               read("[data-skill-fx-glow-strength]")!=="0.85")
+              throw Error("quick apply did not reuse real V1 presets");
+            if(read("[data-skill-travel-fx]")!=="pack:capture:sprite-falling-rock-skyfall-01")
+              throw Error("quick preset replaced authored rock sprite");
+            if(read("[data-skill-trajectory-mode]")!=="skyfall")
+              throw Error("quick preset changed trajectory");
+            const trail=document.querySelector("[data-skill-projectile-trail-size]");
+            trail.value="8";
+            trail.dispatchEvent(new Event("input",{bubbles:true}));
+            if(style.value!=="current")throw Error("advanced edit did not restore custom label");
+            document.body.dataset.fxQuickProbe="ok:preview:explicit-apply:presets:skyfall:advanced";
+          }catch(e){document.body.dataset.fxQuickProbe="fail:"+e.message;}
+        },100);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     // Browser-only UX probe: real mounted stats, custom rate, removal and live skill draft.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-context-help")) {
@@ -792,6 +848,12 @@ try {
     throw new Error("Actual editor identity level 1 or fire zone 50% missing: " + failure);
   }
   console.log("Authored creature identity browser: four canonical/showcase identities at 1, preview at 20, ultimate zone at 50%");
+  const quickDom=await dumpDom(url+"?verify-fx-quick=1");
+  assertCreatures(quickDom,"FX beginner mode actual editor startup");
+  const quick=quickDom.match(/data-fx-quick-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(quick!=="ok:preview:explicit-apply:presets:skyfall:advanced")
+    throw Error("Real FX beginner mode did not preserve author values and explicit application: "+quick);
+  console.log("Capture FX quick mode: indicative preview, explicit preset apply, skyfall preserved, advanced edit restores custom label");
   const helpDom=await dumpDom(url+"?verify-context-help=1");
   assertCreatures(helpDom,"context help actual browser bootstrap");
   const help=helpDom.match(/data-context-help-probe="([^"]+)"/)?.[1] ?? "missing";
