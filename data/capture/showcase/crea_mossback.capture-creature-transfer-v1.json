@@ -98,7 +98,8 @@
       "claw",
       "cap_earth_atk_2",
       "cap_earth_atk_4",
-      "cap_earth_atk_3"
+      "cap_earth_atk_3",
+      "cap_earth_atk_7"
     ],
     "presentation": {
       "id": "creature:crea_mossback",
@@ -236,7 +237,7 @@
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "cap_earth_atk_7"
       }
     ]
   }
