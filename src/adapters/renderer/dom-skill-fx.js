@@ -1928,7 +1928,8 @@ export function createDomSkillFxRenderer({
     phase = null,
     progress = null,
     amount = null,
-    durationMs
+    durationMs,
+    delayMs = 0
   }) {
     if (disposed) {
       return Object.freeze({
@@ -2220,6 +2221,9 @@ export function createDomSkillFxRenderer({
       node.textContent = (type === "heal" ? "+" : "-") + label;
       node.style.left = `${to.x}px`;
       node.style.top = `${to.y}px`;
+      // The Runtime has already applied HP. Hide only this visual cue until
+      // the impact sprite is shown; never create a second gameplay timer.
+      if (Number(delayMs) > 0) node.style.opacity = "0";
       arena.append(node);
 
       const record = {
@@ -2260,7 +2264,8 @@ export function createDomSkillFxRenderer({
             Number(durationMs) || 700
           ),
           easing: "ease-out",
-          fill: "forwards"
+          fill: "forwards",
+          ...(Number(delayMs) > 0 ? { delay: Number(delayMs) } : {})
         }
       );
       record.animation = animation;
