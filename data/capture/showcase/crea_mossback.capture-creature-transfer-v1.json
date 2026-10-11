@@ -112,6 +112,22 @@
         "x": 0,
         "y": 0
       },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.7,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 1.2,
+          "position": {
+            "x": -30,
+            "y": 35
+          }
+        }
+      },
       "transformOrigin": {
         "x": "50%",
         "y": "88%"
