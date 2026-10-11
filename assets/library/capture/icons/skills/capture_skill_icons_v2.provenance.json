@@ -1,0 +1,77 @@
+{
+  "version": 2,
+  "date": "2026-10-11",
+  "pack": "Capture Skill Icons V2",
+  "author": "GenSrpG",
+  "license": "project-internal",
+  "format": "WebP 128x128 RGB (illustration avec bordure dorée)",
+  "source": "Illustrations originales générées pour Monster Capture et déposées en archive par l'utilisateur",
+  "origin_archive_sha256": "b7e570c267a202e3ee478f56da5258619b8bda0a4b4d75dfd7a8c0eaadbfe40f",
+  "processing": "Extraction ZIP à empreintes contrôlées par GitHub Actions, sans réencodage; archive source retirée après contrôle",
+  "assets": [
+    {
+      "id": "pack:capture:icon-skill-seismic-shock-01",
+      "label": "Secousse sismique",
+      "file": "capture/icons/skills/icon_skill_seismic_shock_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "ca5ea3439c3635dbe5d6549ac675a523dd00de8374e684092743e8d52ac2828d"
+    },
+    {
+      "id": "pack:capture:icon-skill-energy-blossom-01",
+      "label": "Fleuraison énergie",
+      "file": "capture/icons/skills/icon_skill_energy_blossom_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "871d878c55904f2ac9695ccf485ddb836233f96cdd904272604fdfa7d483d8bd"
+    },
+    {
+      "id": "pack:capture:icon-skill-burning-bite-01",
+      "label": "Morsure brûlante",
+      "file": "capture/icons/skills/icon_skill_burning_bite_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "013f36e0702c5ff574cc730645750964ca995fcc234122bd616fb36db902f421"
+    },
+    {
+      "id": "pack:capture:icon-skill-healing-wave-01",
+      "label": "Onde de soin",
+      "file": "capture/icons/skills/icon_skill_healing_wave_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "47daffbddfaa4240cc8bd712f6cb2a7126b3741b50e7a579cad93f6d50186960"
+    },
+    {
+      "id": "pack:capture:icon-skill-rock-impact-01",
+      "label": "Impact rocheux",
+      "file": "capture/icons/skills/icon_skill_rock_impact_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "91a1512c1bf22ac98b69ece7d51fbf6d63430a4264a89227e6ebe091034ecc3f"
+    },
+    {
+      "id": "pack:capture:icon-skill-earth-charge-01",
+      "label": "Charge tellurique",
+      "file": "capture/icons/skills/icon_skill_earth_charge_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "42369b2f23f35dae3818b7080ddfc77079b1cdff8ca8b498e2bd03c19e1d35e4"
+    },
+    {
+      "id": "pack:capture:icon-skill-flame-storm-01",
+      "label": "Tempête de flammes",
+      "file": "capture/icons/skills/icon_skill_flame_storm_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "017b11cbeb0c7c83bec5fdd7f94c4da47a4fd17a11efc0a2ffbf9ebf4b59d310"
+    },
+    {
+      "id": "pack:capture:icon-skill-pressurized-jet-01",
+      "label": "Jet pressurisé",
+      "file": "capture/icons/skills/icon_skill_pressurized_jet_01.webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "26df67a9dcc2820d2d52f08c82fb95db27de5cb4d39b51f9d8527aebf2c539d6"
+    }
+  ]
+}

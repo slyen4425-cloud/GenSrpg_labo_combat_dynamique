@@ -6753,3 +6753,13 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 
 - 36 WebP 512×512 alpha, 2 atlas WebP 384 par cellule, 2 identifiants uniques ; manifeste/provenance/README et sentinelle catalogues. CI `38080497789` SUCCESS sur code/catalogue SHA `166631c3e2b0affc41dee6dc74f74ae1752d3208`.
 - Rapport : `docs/LAB_ROCK_SKYFALL_DUAL_VFX_ASSET_PACK_V1.md`. Attente CI du SHA documentaire pour checkpoint exact, puis publication FF sur global-assets et raccord cache labo.
+
+
+## Sous-lot asset indépendant — Capture Skill Icons V2 — 2026-10-11
+
+- Propriétaire médias : `global-assets`. Base GREEN : `d39afa6b69de7abb830f9742a5daa4b02ab8239e`.
+- Départ : `checkpoint/global-assets-before-capture-skill-icons-v2-2026-10-11` ; branche `work/global-assets-capture-skill-icons-v2-2026-10-11`.
+- Objet : huit icônes WebP 128 px Capture ajoutées au catalogue unique, sans modifier les compétences ni le runtime ; aucune action sur `main` ou `Zombicide-40k`.
+- Fichiers autorisés : icônes et provenance sous `assets/library/capture/icons/skills/`, catalogue global, test sentinelle et documentation. Archive de transfert et workflow ponctuel retirés avant publication.
+- Risques : collisions d'IDs, mauvais chemin de fichier et cache catalogue obsolète. Sentinelles : 8 SHA + dimensions + catalogue + CI complète ; vérification de l'éditeur via version de cache séparée.
+- Fin : tests, checkpoint GREEN exact, fast-forward `global-assets`, raccord `gh-pages` après validation CI.
