@@ -1369,3 +1369,11 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Invariants** : les sélections ne modifient rien avant clic d'application, le rendu des presets écrits demeure sous les propriétaires existants, aucune mutation des JSON exports des 103 créatures ou des skills, import assets et test combat conservés. Si un pack est appliqué, l'étiquette d'intensité revient à « Réglages actuels » (comportement du propriétaire courant).
 - **Livrables** : un lot HTML/CSS à structure UI minimaliste, aide des libellés/retours, test RED structure et interactions navigateur réel avec le modèle `cap_earth_atk_4` et la bibliothèque de 103 créatures ; documentation et CI foundation + deux Chromium sur SHA final ; checkpoint GREEN et fast-forward `gh-pages` sous lease seulement après tests.
 - **Périmètre exclu** : FX Renderer, Combat Core, génération des presets/catalogues, profils audiovisuels, assets, les JSON auteur, autres dépôts, `main` et `global-assets`. Validation sur Android appartient à l'utilisateur.
+
+### Résolution du parcours FX unifié
+
+- Un seul panneau de guidage Style → Intensité → Personnaliser ; anciens raccourcis Glow et Particules déplacés sous détail repliable, même contrat et mêmes handlers.
+- Seuls HTML/CSS/retours de statut UI et les tests de présentation changent ; aucune autre autorité touchée.
+- RED `38157473496` FAILURE attendue ; tests historiques rendus compatibles avec le nouveau vocabulaire, sans suppression de sentinelles.
+- CI `38157846259` **SUCCESS** sur le SHA technique `914541311a8fac747f06f8eba5d3f86a559dd911` : Foundation + 2 navigations Chromium GREEN ; test de l'ordre des étapes et des effets non destructifs, 103 créatures inchangées.
+- Rapport `docs/LAB_CAPTURE_FX_UNIFIED_FLOW_V1.md`. Sortie : CI SHA documentaire, checkpoint GREEN identique, publication FF sous SHA lease et vérification Pages/CI. Contrôle d'ergonomie Android toujours nécessaire.
