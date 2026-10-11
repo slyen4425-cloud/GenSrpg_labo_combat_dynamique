@@ -97,7 +97,8 @@
       "lib_quake",
       "claw",
       "cap_earth_atk_2",
-      "cap_earth_atk_4"
+      "cap_earth_atk_4",
+      "cap_earth_atk_3"
     ],
     "presentation": {
       "id": "creature:crea_mossback",
@@ -231,7 +232,7 @@
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "cap_earth_atk_3"
       },
       {
         "id": "slot-ultimate",
