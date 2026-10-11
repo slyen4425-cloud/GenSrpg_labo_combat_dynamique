@@ -1,0 +1,132 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_earth_atk_7",
+    "description": "Attaque Terre de puissance 10. Disponible au niveau 46.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_earth_atk_7",
+      "name": "Séisme primordial",
+      "category": "offensive",
+      "form": "projectile",
+      "loadoutSlot": "ultimate",
+      "element": "earth",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 3500,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": [
+        "surface",
+        "underground"
+      ],
+      "dodgeable": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "all_enemies",
+          "amount": 100,
+          "channel": "earth",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 100
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_earth_atk_7",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_earth_atk_7",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-aerial-dive-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-rock-impact-upward-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "durationMs": 500,
+          "rotationDeg": 0,
+          "opacity": 0.004,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": {
+          "color": "#ffffff",
+          "opacity": 1,
+          "durationMs": 250,
+          "scale": 3
+        },
+        "cameraShake": {
+          "amplitudePx": 50,
+          "durationMs": 1200
+        },
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
