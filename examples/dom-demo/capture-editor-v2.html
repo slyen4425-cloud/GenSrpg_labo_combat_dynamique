@@ -1013,6 +1013,33 @@
         <details class="editor-context-help"><summary>ⓘ À quoi servent les effets visuels ?</summary>
           <p class="note">Cast = animation de lancement ; Trajet = projectile ou corps du rayon ; Impact = effet à l’arrivée ; Zone = animation persistante. Échelle, décalage, opacité et calques ne changent jamais les valeurs de dégâts dans le moteur.</p>
         </details>
+        <section class="fx-quick-card" data-skill-fx-quick>
+          <h3>Réglages faciles — Choisis l'intensité</h3>
+          <p class="note">Un seul choix pour la lueur, les particules de lancement, la traînée, l'impact, la fumée et la secousse. Les couleurs, sprites, sons, trajectoires et dégâts restent inchangés.</p>
+          <div class="grid two">
+            <label>Je veux un effet…
+              <select data-skill-fx-quick-profile>
+                <option value="current" selected>Conserver mes réglages actuels</option>
+                <option value="discreet">Discret — léger et lisible</option>
+                <option value="balanced">Équilibré — conseillé</option>
+                <option value="spectacular">Spectaculaire — puissant</option>
+              </select>
+            </label>
+            <div class="skill-save-actions">
+              <button type="button" class="primary-action" data-skill-fx-quick-apply disabled>Appliquer cette intensité</button>
+            </div>
+          </div>
+          <div class="fx-quick-preview" data-skill-fx-quick-preview data-level="current" aria-hidden="true">
+            <span class="fx-quick-preview__trail"></span>
+            <span class="fx-quick-preview__core"></span>
+            <span class="fx-quick-preview__smoke"></span>
+          </div>
+          <p class="note" data-skill-fx-quick-state data-tone="info">Aperçu indicatif : sélectionner un style ne remplace jamais ta configuration. Appuie sur Appliquer, puis sur Tester le combat pour voir le véritable rendu.</p>
+          <p class="note" data-skill-fx-quick-context data-tone="info">Selon la trajectoire du projectile, les effets ne s'affichent pas au même endroit.</p>
+          <p class="note" data-skill-fx-quick-warning data-tone="info" aria-live="polite">Tes réglages enregistrés sont conservés.</p>
+          <p class="note">Tu peux ensuite régler séparément la lueur et les particules avec les listes ci-dessous, ou ouvrir <strong>Réglages avancés</strong> pour tous les paramètres précis.</p>
+        </section>
+
         <div class="creator-visual-import" data-skill-fx-starter>
           <h3>Mode simple — Pack FX GenSrpG</h3>
           <p class="note">Sur une capacité déjà configurée, le pack ajoute surtout glow, particules, fumée et réglages FX sans remplacer tes sprites, sons, sockets ni visuels de statut. Sur une capacité neuve et vide, il peut fournir Cast + Projectile + Impact comme base de départ.</p>
