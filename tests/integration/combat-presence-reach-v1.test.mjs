@@ -35,6 +35,7 @@ function skill({
   travelMs = 1000,
   damage = 10,
   hitPresenceStates,
+  projectileTargeting,
   evasionIncomingForms = []
 }) {
   const input = {
@@ -71,6 +72,8 @@ function skill({
         evasionIncomingForms
     }
   };
+
+  if (projectileTargeting !== undefined) input.projectileTargeting = projectileTargeting;
 
   if (hitPresenceStates !== undefined) {
     input.hitPresenceStates =
@@ -400,6 +403,7 @@ test("moving ground target evades a falling projectile without needing a bespoke
   const fallingRock = skill({
     id: "falling-rock",
     form: "projectile",
+    projectileTargeting: "fixed_point",
     travelMs: 1000,
     damage: 15
   });
@@ -457,4 +461,26 @@ test("standing target still takes normal projectile damage; moving target is not
     assert.equal(session.snapshot().fighters.player.hp,85);
     runtime.dispose();
   }
+});
+
+test("ordinary direct fireball hits a ground-moving target without an explicit dodge", () => {
+  const { session, clock, runtime, resolutions } = harness();
+  runtime.startSkill({
+    actorId: "player", targetId: "opponent",
+    skill: skill({id:"moving-ground-for-fireball",form:"contact",approachMode:"ground",travelMs:2000,damage:0})
+  });
+  runtime.startSkill({
+    actorId: "opponent", targetId: "player",
+    skill: skill({id:"direct-fireball",form:"projectile",projectileTargeting:"direct",travelMs:1000,damage:25})
+  });
+  clock.setTime(1000);
+  clock.fireNext();
+  const result = resolutions.find(item => item.skillId === "direct-fireball");
+  assert.equal(result?.outcome,"hit","ground movement must not automatically dodge a direct fireball");
+  assert.equal(session.snapshot().fighters.player.hp,75);
+  runtime.dispose();
+});
+
+test("invalid projectile targeting mode is rejected by the Combat Rules contract", () => {
+  assert.throws(() => skill({id:"bad-targeting",projectileTargeting:"unknown"}), /projectileTargeting/);
 });
