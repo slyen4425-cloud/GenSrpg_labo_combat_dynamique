@@ -69,7 +69,7 @@ test("Moussados author JSON is exact, unique, imports views without changing sta
   assert.deepEqual(loadout.slots.map(s=>s.skillId),
     ["cap_earth_atk_2","lib_earth_guard","cap_earth_atk_4","cap_earth_atk_3","cap_earth_atk_7"]);
   assert.deepEqual(
-    importCaptureTransferJsonV1(exportCaptureCreatureTransferJsonV1(imported.value), {statRegistry:registry}).value,
+    importCaptureTransferJsonV1(exportCaptureCreatureTransferJsonV1(imported.value,{statRegistry:registry}), {statRegistry:registry}).value,
     imported.value
   );
 });
