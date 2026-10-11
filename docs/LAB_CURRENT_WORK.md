@@ -6793,3 +6793,16 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Périmètre : remplacer uniquement `assets/library/capture/icons/skills/icon_skill_blinding_ash_01.webp` en gardant `pack:capture:icon-skill-blinding-ash-01`, modifier sa provenance V1 (SHA source et nouvelle empreinte), renforcer la sentinelle V1, ce journal et le rapport du lot. Le catalogue reste unique et ne change pas.
 - Protégés : 129 autres médias, tous les exports de compétences, `configuredSkills`, les 103 créatures, Combat Core/FX, `main`, GenSrpG et Exploration.
 - Critère technique : échec contrôlé avant remplacement, WebP source restauré 128×128, transparence conforme au PNG original, décodeur réel OK, CI assets verte au SHA final, checkpoint GREEN puis FF assets sous lease. Lot `gh-pages` séparé pour nouvelle révision de cache si nécessaire ; test manuel Android **obligatoire avant validation artistique**.
+
+
+## Lot asset — Quatre animations Air Monster Capture — 2026-10-11
+
+- Objectif : placer quatre VFX Air (charge, rafale projectile, tornade projectile, impact) de 20 images 512×512 avec atlas WebP transparent, nommage et manifestes, sans rattacher automatiquement une capacité.
+- Propriétaire unique : bibliothèque visuelle `global-assets`, catalogue `data/assets/catalog/global-visual-assets.v1.json`. Aucun propriétaire parallèle.
+- Base connue : `18b0673a17c12ba9f80f7ff539bb58b4ee20af01` (CI `38140077764` verte). Checkpoint avant travaux : `checkpoint/lab-start-capture-air-vfx-pack-v1-2026-10-11`.
+- Branche : `work/lab-capture-air-vfx-pack-v1-2026-10-11`.
+- Fichiers autorisés : `assets/library/capture/sprites/skills/air_*/`, quatre atlas et leurs 80 frames, fichiers de provenance/manifeste; entrée cataloguée par `assetId`, `tests/unit/capture-air-vfx-assets-v1.test.mjs`, documentation `docs/LAB_CAPTURE_AIR_VFX_ASSET_PACK_V1.md` et présent journal. Pour le transfert média exclusivement : workflow GitHub Actions temporaire à supprimer avant GREEN.
+- Protégés : `main`, `Zombicide-40k`, `gh-pages` hors lot ultérieur de cache, Combat Rules/Core, FX Core, skills, `configuredSkills`, toutes les autres ressources existantes.
+- Tests : 4 atlas WebP RGBA, 20 frames chacun, 512×512, SHA, sens horizontal de la bande, 4 IDs uniques, chemins et types de catalogue, CI complète et vérification de résolution catalogue réelle. Pas de faux placeholder.
+- Risques : sources générées 1402×1122 (512 est un upscale), transparence des pixels faibles, temps de chargement mobile (atlas horizontal 10240×512), cache catalogue périmé ; conserver les réglages dans la source de vérité.
+- Critère sortie : médias et fichiers réels dans la branche, tests verts, checkpoint GREEN sur SHA exact, publication `global-assets` uniquement en fast-forward sous lease, puis cache du Labo en lot séparé et test visuel Android.
