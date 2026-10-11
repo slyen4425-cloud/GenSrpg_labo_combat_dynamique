@@ -43,7 +43,12 @@
       "dodgeable": false,
       "activationRequirements": {
         "mode": "all",
-        "conditions": []
+        "conditions": [
+          {
+            "type": "damage_taken",
+            "threshold": 100
+          }
+        ]
       },
       "evasion": {
         "window": null,
@@ -85,7 +90,7 @@
       "subjectId": "cap_earth_atk_7",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-aerial-dive-01"
+          "assetId": "pack:capture:icon-skill-seismic-shock-01"
         },
         "impact": {
           "assetId": "pack:capture:sprite-rock-impact-upward-01",
