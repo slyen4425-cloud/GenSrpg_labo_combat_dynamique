@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 const root=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(root,"data/assets/catalog/global-visual-assets.v1.json"),"utf8"));
 const cases=[
@@ -77,5 +78,30 @@ test("Air VFX 80 frames are transparent 512px PNG; four atlases real WebP",()=>{
    assert.equal(b.readUInt32BE(20),512);
    assert.equal(b.readUInt8(25),6);
   }
+ }
+});
+
+
+test("Air VFX media hashes and alpha match real generated source and provenance",()=>{
+ const sha=b=>createHash("sha256").update(b).digest("hex");
+ for(const c of cases){
+  const folder=path.join(root,"assets/library/capture/sprites/skills/air_"+c.slug);
+  const raw=fs.readFileSync(path.join(folder,"sources/sprite_air_"+c.slug+"_source_512.webp"));
+  assert.equal(sha(raw),c.sourceHash,"original source checksum: "+c.slug);
+  const manifest=JSON.parse(fs.readFileSync(path.join(folder,"sprite_air_"+c.slug+"_sequence.json"),"utf8"));
+  assert.equal(manifest.sourceSHA256,c.sourceHash);
+  const p=fs.readFileSync(path.join(folder,"provenance.csv"),"utf8").trim().split(/\r?\n/);
+  assert.equal(p.length,21,"20 recorded frame hashes plus CSV header");
+  const hashes=new Map(p.slice(1).map(line=>{const v=line.split(",");return [v[1],v[2]];}));
+  assert.equal(hashes.size,20);
+  for(const frame of manifest.frames){
+   const data=fs.readFileSync(path.join(folder,frame.file));
+   assert.equal(sha(data),hashes.get(frame.file),"must be exact authored frame: "+frame.file);
+  }
+  const b=fs.readFileSync(path.join(folder,manifest.atlas));
+  assert.equal(b.toString("ascii",12,16),"VP8X");
+  assert.equal((b[20]&16),16,"alpha flag required in runtime atlas");
+  assert.equal(1+b.readUIntLE(24,3),7680);
+  assert.equal(1+b.readUIntLE(27,3),384);
  }
 });
