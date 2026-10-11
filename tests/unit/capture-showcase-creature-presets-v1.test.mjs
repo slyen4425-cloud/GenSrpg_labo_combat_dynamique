@@ -76,7 +76,7 @@ test("Moussados showcase preset preserves the editor-authored model", async () =
       "cap_earth_atk_2",
       "lib_earth_guard",
       "cap_earth_atk_4",
-      null,
+      "cap_earth_atk_3",
       null
     ]
   );
