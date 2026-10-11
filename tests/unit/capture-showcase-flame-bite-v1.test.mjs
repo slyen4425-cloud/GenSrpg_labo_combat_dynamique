@@ -44,7 +44,7 @@ test("Morsure brulante showcase transfer keeps the exported combat and presentat
 
   assert.equal(
     draft.presentation.visual.icon.assetId,
-    "core:icon-skill-fire-rain-01"
+    "pack:capture:icon-skill-burning-bite-01"
   );
   assert.equal(
     draft.presentation.visual.impact.assetId,
