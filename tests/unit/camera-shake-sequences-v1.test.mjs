@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { normalizeSkillPresentationBinding } from "../../src/contracts/skill-presentation-binding.js";
 import { createDomCameraFxRenderer } from "../../src/adapters/renderer/dom-camera-fx.js";
+import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
+import { createCaptureSkillPresentationAssetsV2 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import { buildHumanSkillDraftV1, humanSkillEditorFieldsFromDraftV1 } from "../../src/ui/capture-editor-human-v2.js";
 
 const sequence = [
@@ -82,4 +84,54 @@ test("editor shows ordered quake shake rows, add/remove, and original single-sha
   const code=await readFile(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
   for(const key of ["data-skill-impact-shake-sequence-host","data-skill-impact-shake-add","data-skill-impact-shake-amplitude","data-skill-impact-shake-duration"])assert.match(html,new RegExp(key));
   for(const name of ["impactShakeSequence","skillImpactShakePulsePause","skillImpactShakePulseAmplitude","skillImpactShakePulseDuration"])assert.match(code,new RegExp(name));
+});
+
+
+test("real skill draft -> status-free impact -> presentation adapter -> skill FX -> camera single-owner sequence",()=>{
+  const draft=buildHumanSkillDraftV1(fields({
+    impactShakeAmplitudePx:9,impactShakeDurationMs:210,impactShakeSequence:sequence
+  }));
+  const presentation=createCaptureSkillPresentationAssetsV2({
+    skillPresentations:{quake:draft.presentation},assetForId:()=>null
+  });
+  const calls=[];
+  const nativeCamera=createDomCameraFxRenderer({
+    element:{},animate:(node,frames,options)=>{
+      calls.push({frames,options});
+      return {finished:Promise.resolve(),cancel(){}};
+    }
+  });
+  const document={createElement(){return {dataset:{},style:{},append(){},remove(){}}}};
+  const arena={
+    ownerDocument:document,append(){},
+    getBoundingClientRect(){return {left:0,top:0,width:600,height:300}}
+  };
+  const anchor=left=>({getBoundingClientRect(){return {left,top:100,width:40,height:50}}});
+  const renderer=createDomSkillFxRenderer({
+    arena,anchors:{player:anchor(80),opponent:anchor(440)},
+    presentationForSkill:presentation.presentationForSkill,
+    playCameraFx:nativeCamera.play
+  });
+  renderer.play({type:"impact",skillId:"quake",targetSlot:"opponent",durationMs:420});
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].options.duration,1190);
+  assert.deepEqual(draft.definition.effects,[{kind:"damage",targetScope:"target",amount:4,channel:"earth"}]);
+  renderer.dispose();
+  nativeCamera.dispose();
+});
+
+test("legacy single camera shake keeps its original ease-out movement and cadence",()=>{
+  const calls=[];
+  const camera=createDomCameraFxRenderer({
+    element:{},animate:(element,frames,options)=>{
+      calls.push({frames,options});
+      return {finished:Promise.resolve(),cancel(){}};
+    }
+  });
+  camera.play({type:"camera-shake",amplitudePx:6,durationMs:140});
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].options.duration,140);
+  assert.equal(calls[0].options.easing,"ease-out");
+  assert.equal(calls[0].frames.length,5);
+  camera.dispose();
 });
