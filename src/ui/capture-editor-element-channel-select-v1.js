@@ -30,9 +30,6 @@ export function captureEditorElementChannelChoicesV1({
     const label = idOf(stat?.label);
     if (stat?.damageChannel) add(stat.damageChannel, label);
     if (stat?.resistanceChannel) add(stat.resistanceChannel, label);
-    if (stat?.id && (stat.damageChannel || stat.resistanceChannel)) {
-      add(stat.id, label);
-    }
   }
   if (customStat) add(customStat.id, customStat.label);
   // Imported author channels can pre-date the current registry. Keep them
