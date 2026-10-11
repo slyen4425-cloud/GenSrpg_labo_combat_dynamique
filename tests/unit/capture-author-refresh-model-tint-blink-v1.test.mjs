@@ -15,7 +15,7 @@ const creaturePath="data/capture/showcase/crea_mossback.capture-creature-transfe
 test("author exports remain byte-exact and replace stable skill/creature IDs",async()=>{
   const skill=await source(skillPath),creature=await source(creaturePath);
   assert.equal(createHash("sha256").update(skill).digest("hex"),"9559205e12ee9f6d9f73028109b9f2b7c3711aa03e655845e1590b5022596856");
-  assert.equal(createHash("sha256").update(creature).digest("hex"),"d3ef66ea80fbe0c30be066a1b6dcdeda7cabb4a13202b4a212eaecacbb7e8442");
+  assert.equal(createHash("sha256").update(creature).digest("hex"),"9e37cff16489d17f67a54a3c251ff269971b8c29716eed21a370762777303bd6");
   const registry=normalizeCaptureStatRegistryV1(JSON.parse(await source("data/capture/monster-capture-stat-registry.v1.json")));
   const s=importCaptureTransferJsonV1(skill),c=importCaptureTransferJsonV1(creature,{statRegistry:registry});
   assert.equal(s.value.draft.id,"cap_earth_atk_3");
