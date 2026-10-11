@@ -1,0 +1,56 @@
+{
+  "id": "pack:capture:sprite-flowering-meadow-ground-01",
+  "type": "capture_skill_sprite_sequence",
+  "category": "skill",
+  "element": "nature",
+  "frame_size": [
+    512,
+    512
+  ],
+  "frame_count": 20,
+  "frame_ms": 80,
+  "loop": false,
+  "playback_mode": "once",
+  "frames": [
+    "frames/sprite_skill_flowering_meadow_01.webp",
+    "frames/sprite_skill_flowering_meadow_02.webp",
+    "frames/sprite_skill_flowering_meadow_03.webp",
+    "frames/sprite_skill_flowering_meadow_04.webp",
+    "frames/sprite_skill_flowering_meadow_05.webp",
+    "frames/sprite_skill_flowering_meadow_06.webp",
+    "frames/sprite_skill_flowering_meadow_07.webp",
+    "frames/sprite_skill_flowering_meadow_08.webp",
+    "frames/sprite_skill_flowering_meadow_09.webp",
+    "frames/sprite_skill_flowering_meadow_10.webp",
+    "frames/sprite_skill_flowering_meadow_11.webp",
+    "frames/sprite_skill_flowering_meadow_12.webp",
+    "frames/sprite_skill_flowering_meadow_13.webp",
+    "frames/sprite_skill_flowering_meadow_14.webp",
+    "frames/sprite_skill_flowering_meadow_15.webp",
+    "frames/sprite_skill_flowering_meadow_16.webp",
+    "frames/sprite_skill_flowering_meadow_17.webp",
+    "frames/sprite_skill_flowering_meadow_18.webp",
+    "frames/sprite_skill_flowering_meadow_19.webp",
+    "frames/sprite_skill_flowering_meadow_20.webp"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_skill_flowering_meadow_atlas_01.webp",
+    "format": "sprite-strip",
+    "frameCount": 20,
+    "frameWidth": 384,
+    "frameHeight": 384
+  },
+  "source": {
+    "file": "animation_de_prairie_fleurie_magique.png",
+    "pixel_size": [
+      1402,
+      1122
+    ],
+    "grid": [
+      5,
+      4
+    ],
+    "sha256": "0d2080cb54e0c9f5f8f14129f659b627acc08d5d5cf2aafe8b878095e5af20d2",
+    "note": "512px frames enlarged from roughly 280px source cells, not generated at native 512. Grid separators excluded."
+  }
+}

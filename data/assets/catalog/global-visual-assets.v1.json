@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 121,
+    "assets": 122,
     "icons": 37,
-    "sprites": 68,
+    "sprites": 69,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -3958,6 +3958,45 @@
         "mime": "image/webp",
         "frameCount": 16,
         "frameMs": 75,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-flowering-meadow-ground-01",
+      "label": "Prairie fleurie — pousse au sol",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "nature",
+        "grass",
+        "flowers",
+        "ground",
+        "zone",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/flowering_meadow/atlases/sprite_skill_flowering_meadow_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 80,
         "playbackMode": "once"
       },
       "compatibility": {
