@@ -16,15 +16,15 @@ test("Capture skill FX UI explains starter packs instead of presenting them as r
 
   assert.match(
     html,
-    /Pack FX GenSrpG/
+    /data-skill-fx-unified-flow/
   );
   assert.match(
     html,
-    /Cast \+ Projectile \+ Impact/
+    /cast, un trajet et un impact/
   );
   assert.match(
     html,
-    /Ajouter ce pack FX/
+    /Appliquer ce style/
   );
 });
 
