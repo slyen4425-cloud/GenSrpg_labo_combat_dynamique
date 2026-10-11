@@ -40,11 +40,20 @@ export function adaptCaptureCombatExportStackV1(input) {
     )
   );
 
+  const skillPresentations = Object.freeze(
+    Object.fromEntries(
+      exported.skills.map((skill) => [
+        skill.id,
+        adaptCaptureSkillPresentationBinding(exported, skill.id)
+      ])
+    )
+  );
+
   const skills = Object.freeze(
     Object.fromEntries(
       exported.skills.map((skill) => [
         skill.id,
-        adaptCaptureSkillToSkillDefinition(skill)
+        adaptCaptureSkillToSkillDefinition(skill,skillPresentations[skill.id])
       ])
     )
   );
@@ -54,15 +63,6 @@ export function adaptCaptureCombatExportStackV1(input) {
       exported.actors.map((actor) => [
         actor.actorId,
         creatureById.get(actor.creatureId).skillIds
-      ])
-    )
-  );
-
-  const skillPresentations = Object.freeze(
-    Object.fromEntries(
-      exported.skills.map((skill) => [
-        skill.id,
-        adaptCaptureSkillPresentationBinding(exported, skill.id)
       ])
     )
   );

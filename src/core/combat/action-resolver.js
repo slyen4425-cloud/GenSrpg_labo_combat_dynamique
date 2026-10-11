@@ -175,12 +175,11 @@ function mobilityEvasionFor(
   const explicitMobilityEvasion =
     evasion?.window === "travel" &&
     evasion.incomingForms.includes(incomingSkill.form);
-  // The renderer fixes a projectile's destination at release. A target
-  // currently approaching/teleporting must not be auto-hit there simply
-  // because the nominal projectile timer elapsed. Only the active travel
-  // window counts, so this does not grant a permanent dodge buff.
+  // Only fixed-point projectiles (e.g. skyfall) lock the target location at
+  // release; direct projectiles do not grant a passive dodge while moving.
   const movingOutOfProjectilePath =
     incomingSkill.form === "projectile" &&
+    incomingSkill.projectileTargeting === "fixed_point" &&
     incomingSkill.category === "offensive" &&
     ["ground", "aerial", "teleport", "burrow"].includes(
       targetAction.skill?.approachMode ?? "none"

@@ -18,6 +18,8 @@ export const SKILL_LOADOUT_SLOTS = Object.freeze([
   "ultimate"
 ]);
 
+export const SKILL_PROJECTILE_TARGETINGS = Object.freeze(["direct", "fixed_point"]);
+
 export const SKILL_FORMS = Object.freeze([
   "contact",
   "projectile",
@@ -80,6 +82,7 @@ const CATEGORY_SET = new Set(SKILL_CATEGORIES);
 const LOADOUT_SLOT_SET =
   new Set(SKILL_LOADOUT_SLOTS);
 const FORM_SET = new Set(SKILL_FORMS);
+const PROJECTILE_TARGETING_SET = new Set(SKILL_PROJECTILE_TARGETINGS);
 const APPROACH_SET = new Set(SKILL_APPROACH_MODES);
 const DISTANCE_SET = new Set(COMBAT_DISTANCES);
 const PRESENCE_SET =
@@ -281,6 +284,9 @@ export function normalizeSkillDefinition(input) {
     );
   }
 
+  const projectileTargeting = nonEmptyString(input.projectileTargeting ?? "direct", "projectileTargeting");
+  if (!PROJECTILE_TARGETING_SET.has(projectileTargeting)) throw new RangeError(`Unsupported projectileTargeting: ${projectileTargeting}`);
+
   const element = input.element == null
     ? null
     : nonEmptyString(input.element, "element");
@@ -426,6 +432,7 @@ export function normalizeSkillDefinition(input) {
     name,
     category,
     form,
+    projectileTargeting,
     loadoutSlot,
     element,
     approachMode,

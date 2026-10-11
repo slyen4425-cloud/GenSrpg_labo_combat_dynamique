@@ -16,7 +16,7 @@ function requiredString(value, field) {
   return value.trim();
 }
 
-export function adaptCaptureSkillToSkillDefinition(skill) {
+export function adaptCaptureSkillToSkillDefinition(skill, presentation = null) {
   objectValue(skill, "skill");
 
   const id = requiredString(skill.id, "skill.id");
@@ -35,5 +35,9 @@ export function adaptCaptureSkillToSkillDefinition(skill) {
     );
   }
 
-  return normalizeSkillDefinition(definition);
+  // Project authored trajectory semantics once at the Capture boundary;
+  // Combat Rules never reads the renderer or asset library.
+  const projectileTargeting = definition.projectileTargeting ??
+    (presentation?.visual?.travel?.trajectoryMode === "skyfall" ? "fixed_point" : "direct");
+  return normalizeSkillDefinition({...definition, projectileTargeting});
 }
