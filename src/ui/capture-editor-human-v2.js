@@ -430,7 +430,7 @@ export function buildHumanTacticalSkillEffectsV1(
     );
   }
 
-  return effects.map((effect) => {
+  const builtEffects = effects.map((effect) => {
     if (
       !effect ||
       typeof effect !== "object" ||
@@ -641,6 +641,22 @@ export function buildHumanTacticalSkillEffectsV1(
       )
     });
   });
+  // The combat status runtime owns active statuses by ID.
+  // Never silently replace another effect of the same authored skill.
+  const statusIds = new Set();
+  for (const effect of builtEffects) {
+    if (effect.kind !== "apply_status") continue;
+    const id = effect.status.id;
+    if (statusIds.has(id)) {
+      throw new RangeError(
+        "Deux effets de statut utilisent le même identifiant « " +
+          id +
+          " ». Choisis un ID différent pour chaque effet."
+      );
+    }
+    statusIds.add(id);
+  }
+  return builtEffects;
 }
 
 
@@ -4683,6 +4699,15 @@ function syncHumanSkillEffectRowV1(
   );
 }
 
+export function nextHumanTacticalStatusIdV1(existingIds = []) {
+  const taken = new Set(
+    [...existingIds].map((x) => String(x ?? "").trim())
+  );
+  let next = 1;
+  while (taken.has("status-" + next)) next += 1;
+  return "status-" + next;
+}
+
 function appendHumanSkillEffectV1(
   root,
   effect = null,
@@ -4853,7 +4878,10 @@ function appendHumanSkillEffectV1(
 
   const statusId = tacticalTextInputV1(
     "skillStatusId",
-    status.id ?? "status"
+    status.id ?? nextHumanTacticalStatusIdV1(
+      [...host.querySelectorAll("[data-skill-status-id]")]
+        .map((input) => input.value)
+    )
   );
   const statusKind =
     document.createElement("select");

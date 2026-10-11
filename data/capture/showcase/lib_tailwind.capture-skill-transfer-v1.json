@@ -92,7 +92,7 @@
           "kind": "apply_status",
           "targetScope": "target",
           "status": {
-            "id": "status",
+            "id": "lib_tailwind:cooldown",
             "kind": "skill_cooldown_rate_modifier",
             "polarity": "beneficial",
             "durationModel": "time_ms",
@@ -107,7 +107,7 @@
           "kind": "apply_status",
           "targetScope": "target",
           "status": {
-            "id": "status",
+            "id": "lib_tailwind:energy",
             "kind": "energy_regen_modifier",
             "polarity": "beneficial",
             "durationModel": "time_ms",
@@ -122,7 +122,7 @@
           "kind": "apply_status",
           "targetScope": "target",
           "status": {
-            "id": "status",
+            "id": "lib_tailwind:defense",
             "kind": "stat_modifier",
             "polarity": "detrimental",
             "durationModel": "time_ms",
@@ -149,7 +149,7 @@
       },
       "audio": {},
       "statusVisuals": {
-        "status": {
+        "lib_tailwind:cooldown": {
           "mode": "tint",
           "tintBlinkEnabled": true,
           "tintBlinkPeriodMs": 1800,

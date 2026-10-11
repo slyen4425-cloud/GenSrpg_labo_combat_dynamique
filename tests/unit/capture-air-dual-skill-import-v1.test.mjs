@@ -14,7 +14,7 @@ const files=[
   {
     "path": "data/capture/showcase/lib_tailwind.capture-skill-transfer-v1.json",
     "id": "lib_tailwind",
-    "sha256": "012c4d275eb33288700008fdb7d0e105d90dfc4e6220044bde4e2769617a6f75"
+    "sha256": "90360500d9dc5cdc93525d178849c206772b5f15cdd70183e6a2210d33a085bb"
   },
   {
     "path": "data/capture/showcase/cap_air_atk_3.capture-skill-transfer-v1.json",
@@ -34,11 +34,11 @@ test("two user-authored air skills preserve exact source bytes and canonical ref
  }
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,16);
 });
-test("Vent arrière author status effects remain untouched for separate runtime diagnosis",async()=>{
+test("Vent arrière repaired statuses keep author effect values and unique IDs",async()=>{
  const record=importCaptureTransferJsonV1(await read(files[0].path)).value.draft;
  assert.equal(record.definition.name,"Vent arrière");
  assert.equal(record.definition.effects.length,4);
- assert.deepEqual(record.definition.effects.map(x=>x.status.id),["lib_tailwind:0","status","status","status"]);
+ assert.deepEqual(record.definition.effects.map(x=>x.status.id),["lib_tailwind:0","lib_tailwind:cooldown","lib_tailwind:energy","lib_tailwind:defense"]);
  assert.deepEqual(record.definition.effects.map(x=>x.status.kind),["stat_modifier","skill_cooldown_rate_modifier","energy_regen_modifier","stat_modifier"]);
  assert.deepEqual(record.definition.effects.map(x=>x.targetScope),["self","target","target","target"]);
  assert.deepEqual(record.definition.effects.map(x=>x.status.durationMs),[15000,15000,15000,15000]);
