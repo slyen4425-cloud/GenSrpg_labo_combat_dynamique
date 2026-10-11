@@ -1,4 +1,5 @@
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
+import { captureEditorElementChannelChoicesV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
   syncCaptureBeamStageLayoutV1
@@ -4366,38 +4367,45 @@ function tacticalTextInputV1(
   return input;
 }
 
-const TACTICAL_DAMAGE_ELEMENTS_V1 = Object.freeze([
-  ["fire", "Feu"],
-  ["water", "Eau"],
-  ["earth", "Terre"],
-  ["air", "Air"],
-  ["electric", "Électricité"],
-  ["light", "Lumière"],
-  ["shadow", "Ombre"],
-  ["nature", "Nature"],
-  ["ice", "Glace"],
-  ["poison", "Poison"],
-  ["steel", "Acier"],
-  ["psy", "Psy"],
-  ["spirit", "Esprit"]
-]);
-
-function tacticalDamageElementSelectV1(
-  datasetKey,
-  value
-) {
-  const select = document.createElement("select");
-  select.dataset[datasetKey] = "true";
-  createOption(
-    select,
-    "",
-    "Même élément que la capacité"
-  );
-  for (const [element, label] of TACTICAL_DAMAGE_ELEMENTS_V1) {
-    createOption(select, element, label);
-  }
-  select.value = String(value ?? "");
+// Options come from the existing Capture element selector and live stat registry.
+function humanNativeElementChoicesV1(root) {
+  const select = root.querySelector("[data-skill-element]");
+  if (select) return [...select.options].filter(o=>o.value).map(o=>({id:o.value,label:o.textContent}));
+  return [...root.querySelectorAll("[data-element]")].map(input=>({
+    id:input.value,label:input.closest("label")?.textContent?.trim()||input.value
+  }));
+}
+function populateHumanElementChannelSelectV1(root,select,statRegistry,selectedId="") {
+  const sameSkill=select.dataset.elementChannelSameSkill==="true";
+  const customStat=select.dataset.elementChannelCustomBuilder==="true" ? {
+    id:root.querySelector("[data-stat-custom-id]")?.value??"",
+    label:root.querySelector("[data-stat-custom-label]")?.value??""
+  } : null;
+  const options=captureEditorElementChannelChoicesV1({
+    nativeElements:humanNativeElementChoicesV1(root),statRegistry,
+    selectedId,customStat
+  });
+  select.textContent="";
+  createOption(select,"",sameSkill?"Même élément que la capacité":"Aucun canal");
+  for(const {id,label} of options)createOption(select,id,label+" ("+id+")");
+  select.value=selectedId??"";
+}
+function humanElementChannelSelectV1(root,statRegistry,datasetKey,selectedId,{sameSkill=false,customBuilder=false}={}) {
+  const select=document.createElement("select");
+  select.dataset[datasetKey]="true";
+  select.dataset.elementChannelChoice="true";
+  select.dataset.elementChannelSameSkill=String(sameSkill);
+  select.dataset.elementChannelCustomBuilder=String(customBuilder);
+  populateHumanElementChannelSelectV1(root,select,statRegistry,selectedId??"");
   return select;
+}
+function refreshHumanElementChannelSelectsV1(root,statRegistry) {
+  for(const select of root.querySelectorAll("[data-element-channel-choice]")) {
+    populateHumanElementChannelSelectV1(root,select,statRegistry,select.value);
+  }
+}
+function tacticalDamageElementSelectV1(root,statRegistry,datasetKey,value) {
+  return humanElementChannelSelectV1(root,statRegistry,datasetKey,value,{sameSkill:true});
 }
 
 function fillStatusStatSelectV1(
@@ -4708,9 +4716,8 @@ function appendHumanSkillEffectV1(
   amountField.dataset.skillEffectConfigKind =
     "damage,heal,energy_restore,energy_drain";
 
-  const channel = tacticalTextInputV1(
-    "skillEffectChannel",
-    effect?.channel ?? ""
+  const channel = humanElementChannelSelectV1(
+    root,statRegistry,"skillEffectChannel",effect?.channel??"",{sameSkill:true}
   );
   const channelField = tacticalFieldV1(
     "Canal / élément",
@@ -4978,8 +4985,7 @@ function appendHumanSkillEffectV1(
     );
   const statusChannel =
     tacticalDamageElementSelectV1(
-      "skillStatusChannel",
-      status.channel ?? ""
+      root,statRegistry,"skillStatusChannel",status.channel??""
     );
 
   const dotConfig = document.createElement("div");
@@ -5351,9 +5357,9 @@ function appendHumanSkillEffectV1(
     );
 
   const scheduledChannel =
-    tacticalTextInputV1(
-      "skillScheduledEffectChannel",
-      nestedEffect.channel ?? ""
+    humanElementChannelSelectV1(
+      root,statRegistry,"skillScheduledEffectChannel",
+      nestedEffect.channel??"",{sameSkill:true}
     );
 
   scheduledBox.append(
@@ -5485,8 +5491,7 @@ function appendHumanSkillEffectV1(
 
   const zoneChannel =
     tacticalDamageElementSelectV1(
-      "skillZoneChannel",
-      effect?.tickEffect?.channel ?? ""
+      root,statRegistry,"skillZoneChannel",effect?.tickEffect?.channel??""
     );
 
   const zs = effect?.tickEffect?.status ?? {};
@@ -5580,7 +5585,9 @@ function appendHumanSkillEffectV1(
     zoneStatusNumber("Intervalle (secondes)","skillZoneStatusTickSeconds",
       zs.tickIntervalMs == null ? 1 : humanTacticalMsToSecondsV1(zs.tickIntervalMs),
       {min:0.1,step:"0.1"},"damage_over_time,heal_over_time"),
-    zoneStatusText("Élément DoT","skillZoneStatusChannel",zs.channel ?? "poison","damage_over_time"),
+    (()=>{ const field=tacticalFieldV1(
+      "Élément DoT",tacticalDamageElementSelectV1(root,statRegistry,"skillZoneStatusChannel",zs.channel??"poison")
+    );field.dataset.skillZoneStatusConfigKind="damage_over_time";return field;})(),
     zoneImmunity
   );
 
@@ -6309,14 +6316,9 @@ function renderHumanStatRegistryV1(
       "Libellé " + definition.id
     );
 
-    const damageChannel =
-      document.createElement("input");
-    damageChannel.value =
-      definition.damageChannel ?? "";
-    damageChannel.placeholder =
-      "canal dégâts";
-    damageChannel.dataset.statDefinitionDamageChannel =
-      "true";
+    const damageChannel=humanElementChannelSelectV1(
+      root,normalized,"statDefinitionDamageChannel",definition.damageChannel??""
+    );
 
     const damageRate =
       document.createElement("input");
@@ -6329,14 +6331,9 @@ function renderHumanStatRegistryV1(
     damageRate.dataset.statDefinitionDamageRate =
       "true";
 
-    const resistanceChannel =
-      document.createElement("input");
-    resistanceChannel.value =
-      definition.resistanceChannel ?? "";
-    resistanceChannel.placeholder =
-      "canal résistance";
-    resistanceChannel.dataset.statDefinitionResistanceChannel =
-      "true";
+    const resistanceChannel=humanElementChannelSelectV1(
+      root,normalized,"statDefinitionResistanceChannel",definition.resistanceChannel??""
+    );
 
     const resistanceRate =
       document.createElement("input");
