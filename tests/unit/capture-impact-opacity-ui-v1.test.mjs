@@ -25,7 +25,7 @@ test("impact opacity changes only SkillPresentationBinding and real presenter",(
  const path="data/capture/showcase/cap_earth_atk_4.capture-skill-transfer-v1.json";
  const old=importCaptureTransferJsonV1(read(path)).value.draft;
  const fields=humanSkillEditorFieldsFromDraftV1(old);
- assert.equal(fields.presentation.impactOpacityPct,100);
+ assert.equal(fields.presentation.impactOpacityPct,70);
  assert.deepEqual(buildHumanSkillDraftV1(fields).presentation,old.presentation);
  fields.presentation.impactOpacityPct=35;
  const next=buildHumanSkillDraftV1(fields);
