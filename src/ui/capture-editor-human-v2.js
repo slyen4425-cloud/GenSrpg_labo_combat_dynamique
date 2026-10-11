@@ -9859,7 +9859,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       const shake = root.querySelector("[data-skill-impact-shake-amplitude]");
       if (shake) shake.value = String(applied.impactShakeAmplitudePx);
       refreshSkillFxQuickControlStateV1(root);
-      setStatus(root, "Style « "+profile.label+" » appliqué. Les sprites, sons et la progression ne changent pas. Enregistre ta capacité pour conserver les effets.", "ok");
+      setStatus(root, "Intensité « "+profile.label+" » appliquée. Les sprites, sons et la progression ne changent pas. Enregistre ta capacité pour conserver les effets.", "ok");
     });
   }
   // Detailed edits mark the short-cut as custom; never overwrite authored settings.
@@ -10121,16 +10121,16 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           );
 
           updateFxStarterState(
-            "Pack « " +
+            "Style « " +
               profile.label +
-              " » ajouté. Les sprites, sons, sockets et visuels de statut déjà configurés sont conservés ; les réglages FX restent personnalisables.",
+              " » appliqué. Les sprites, sons, sockets et visuels de statut déjà configurés sont conservés ; les réglages FX restent personnalisables.",
             "ok"
           );
           setStatus(
             root,
-            "Pack FX « " +
+            "Style visuel « " +
               profile.label +
-              " » ajouté sans remplacer les médias configurés ni modifier le gameplay.",
+              " » appliqué sans remplacer les médias configurés ni modifier le gameplay.",
             "ok"
           );
         } catch (error) {
