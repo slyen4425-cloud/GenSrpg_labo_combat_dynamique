@@ -6763,3 +6763,15 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Fichiers autorisés : icônes et provenance sous `assets/library/capture/icons/skills/`, catalogue global, test sentinelle et documentation. Archive de transfert et workflow ponctuel retirés avant publication.
 - Risques : collisions d'IDs, mauvais chemin de fichier et cache catalogue obsolète. Sentinelles : 8 SHA + dimensions + catalogue + CI complète ; vérification de l'éditeur via version de cache séparée.
 - Fin : tests, checkpoint GREEN exact, fast-forward `global-assets`, raccord `gh-pages` après validation CI.
+
+## 2026-10-11 — Cendre aveuglante : réparation WebP corrompu (en cours)
+
+- **Retour Android utilisateur** : icône Cendre aveuglante (cap_fire_special_1) affichée anormalement.
+- **Owner unique** : `global-assets` pour le fichier binaire ; `gh-pages` ne consomme que l'ID catalogue inchangé.
+- **Base exacte** : `global-assets` `0c78b519588baa3535654beae6f185046beb3499`.
+- **Checkpoint de départ** : `checkpoint/global-assets-before-blinding-ash-webp-repair-v1-2026-10-11`.
+- **Branche** : `work/global-assets-blinding-ash-webp-repair-v1-2026-10-11`.
+- **Diagnostic confirmé** : WebP `assets/library/capture/icons/skills/icon_skill_blinding_ash_01.webp` est long de 9679 octets, mais son RIFF déclare 9672 octets de payload (= 9680 octets réels) ; chunk VP8 final incomplet d'un octet. Décodage initial impossible, décodage valide après ajout d'un octet 0x00 final sans toucher à la partie graphique existante. Le SHA256 historique de provenance ne correspond déjà pas au blob actuellement déployé et sera resynchronisé.
+- **Périmètre autorisé** : uniquement cet unique WebP, la provenance V1 déjà autoritaire, le test sentinelle V1 pour valider les longueurs RIFF/chunks et le SHA, ce journal et un rapport ciblé. Cache-buster du consommateur `gh-pages` dans un lot séparé après assets GREEN.
+- **Protégés** : les autres 129 assets, catalogue (ID `pack:capture:icon-skill-blinding-ash-01` et chemin inchangés), exports auteurs, compétences, le moteur Combat, les 103 créatures, `main`, GenSrpG et Exploration.
+- **TDD** : reproduire en RED la corruption réelle via validation RIFF/chunks sur les 6 icônes V1, restaurer l'octet final, inspecter le décodage réel WebP, vérifier provenance, CI `global-assets` au SHA final, checkpoint GREEN exact puis FF `global-assets` seulement après CI. Validation smartphone reste distincte.
