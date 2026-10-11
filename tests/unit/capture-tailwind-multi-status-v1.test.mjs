@@ -38,6 +38,8 @@ test("real CombatSession applies all 4 effects on same actor and HUD exposes 4 i
  const started=session.startSkill({actorId:"player",targetId:"player",skill});
  assert.equal(started.ok,true);
  session.advanceMs(1600);
+ const completed=session.completeSkill({action:started.action});
+ assert.equal(completed.ok,true,"combat runtime completes the queued cast explicitly");
  const state=session.snapshot();
  const statuses=state.fighters.player.statusEffects;
  assert.equal(statuses.length,4,"same-ID status previously erased its siblings");
