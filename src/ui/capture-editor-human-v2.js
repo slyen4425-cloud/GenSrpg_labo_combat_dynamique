@@ -1464,7 +1464,9 @@ function presentationFeedbackFromFieldsV1(
         pauseMs: Number(pulse.pauseMs),
         amplitudePx: Number(pulse.amplitudePx),
         durationMs: Number(pulse.durationMs)
-      })) } : {})
+      })) } : {}),
+      ...(["during","after"].includes(presentation.impactVisualTiming)
+        ? { impactVisualTiming: presentation.impactVisualTiming } : {})
     };
   }
 
@@ -2587,6 +2589,8 @@ export function humanSkillEditorFieldsFromDraftV1(
           ?.durationMs ?? 140,
       impactShakeSequence:
         presentation.feedback?.cameraShake?.sequence?.map((pulse) => ({...pulse})) ?? [],
+      impactVisualTiming:
+        presentation.feedback?.cameraShake?.impactVisualTiming ?? "immediate",
       castBurstColor:
         presentation.feedback?.castBurst
           ?.color ?? "#ffffff",
@@ -8387,6 +8391,7 @@ function readSkillFields(root) {
         "[data-skill-impact-shake-duration]"
       ),
       impactShakeSequence: readHumanCameraShakeSequenceV1(root),
+      impactVisualTiming: selectedValue(root, "[data-skill-impact-visual-timing]"),
       castBurstColor: selectedValue(
         root,
         "[data-skill-cast-burst-color]"
@@ -8925,6 +8930,10 @@ function writeSkillFeedbackControlsV1(
         140
     ],
     [
+      "[data-skill-impact-visual-timing]",
+      presentation.impactVisualTiming ?? "immediate"
+    ],
+    [
       "[data-skill-cast-burst-color]",
       presentation.castBurstColor ??
         "#ffffff"
@@ -9255,6 +9264,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       }
     }
     appendHumanCameraShakePulseRowV1(root);
+  });
+
+  listen(one(root, "[data-skill-impact-shake-preset]"), "click", () => {
+    // Fast authoring shortcut only: writes ordinary editable sequence rows.
+    renderHumanCameraShakeSequenceV1(root, [
+      {pauseMs:0,amplitudePx:4,durationMs:180},
+      {pauseMs:90,amplitudePx:9,durationMs:220},
+      {pauseMs:120,amplitudePx:16,durationMs:320},
+      {pauseMs:130,amplitudePx:7,durationMs:210}
+    ]);
+    const timing = root.querySelector("[data-skill-impact-visual-timing]");
+    if (timing) timing.value = "after";
   });
 
   for (const tab of root.querySelectorAll("[data-editor-tab]")) {
