@@ -36,7 +36,7 @@ test("Capture FX has one ordered style -> intensity -> personalization journey, 
     'data-skill-fx-glow-preset', 'data-skill-fx-particle-preset',
     'data-skill-fx-advanced', 'data-skill-visual-importer'
   ]) {
-    assert.equal(html.split(marker).length - 1, 1, "must keep one existing control: " + marker);
+    assert.equal((html.match(new RegExp(marker + '(?=[\\s>])', 'g')) ?? []).length, 1, "must keep one existing control: " + marker);
   }
   assert.ok(html.indexOf('data-skill-fx-advanced') > importer,
     "all detailed sprite/audio/FX settings remain present after personal assets");
