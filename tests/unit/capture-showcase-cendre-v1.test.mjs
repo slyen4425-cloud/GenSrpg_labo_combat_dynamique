@@ -289,7 +289,7 @@ test("Cendre aveuglante showcase preset preserves the latest authored V3 export"
   );
   assert.equal(
     draft.presentation.visual.icon.assetId,
-    "core:icon-skill-poison-cloud-01"
+    "pack:capture:icon-skill-burning-bite-01"
   );
   assert.equal(
     draft.presentation.visual.cast.assetId,
