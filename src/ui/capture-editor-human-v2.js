@@ -5131,6 +5131,34 @@ function appendHumanSkillEffectV1(
       status
     );
 
+  // Palette de démarrage et choix hexadécimal libre partagent le même
+  // champ couleur canonique du modèle, sans deuxième registre.
+  const statusTintColorPreset = document.createElement("select");
+  statusTintColorPreset.dataset.skillStatusTintColorPreset = "true";
+  const tintPalette = [
+    ["#000000", "Noir"], ["#ffffff", "Blanc"],
+    ["#ef4444", "Rouge"], ["#22c55e", "Vert"],
+    ["#3b82f6", "Bleu"], ["#facc15", "Jaune"],
+    ["#f97316", "Orange"], ["#a855f7", "Violet"],
+    ["#ec4899", "Rose"], ["#06b6d4", "Cyan"],
+    ["#6b7280", "Gris"], ["#92400e", "Brun"]
+  ];
+  createOption(statusTintColorPreset, "custom", "Personnalisée");
+  for (const [hex, label] of tintPalette) {
+    createOption(statusTintColorPreset, hex, label);
+  }
+  statusTintColorPreset.value = tintPalette.some(([hex]) => hex === statusTintColor.value.toLowerCase())
+    ? statusTintColor.value.toLowerCase() : "custom";
+  statusTintColorPreset.addEventListener("change", () => {
+    if (statusTintColorPreset.value !== "custom") {
+      statusTintColor.value = statusTintColorPreset.value;
+    }
+  });
+  statusTintColor.addEventListener("input", () => {
+    statusTintColorPreset.value = tintPalette.some(([hex]) => hex === statusTintColor.value.toLowerCase())
+      ? statusTintColor.value.toLowerCase() : "custom";
+  });
+
   const statusTintOpacity =
     tacticalNumberInputV1(
       "skillStatusTintOpacity",
@@ -5142,6 +5170,17 @@ function appendHumanSkillEffectV1(
         step: "0.05"
       }
     );
+
+  const statusTintBlinkEnabled = document.createElement("input");
+  statusTintBlinkEnabled.type = "checkbox";
+  statusTintBlinkEnabled.dataset.skillStatusTintBlinkEnabled = "true";
+  statusTintBlinkEnabled.checked = statusPresentation?.tintBlinkEnabled === true;
+
+  const statusTintBlinkPeriodMs = tacticalNumberInputV1(
+    "skillStatusTintBlinkPeriodMs",
+    statusPresentation?.tintBlinkPeriodMs ?? 600,
+    { min: 120, max: 5000, step: "20" }
+  );
 
   const statusVisualAsset =
     document.createElement("select");
@@ -5185,12 +5224,24 @@ function appendHumanSkillEffectV1(
     "true";
   tintFields.append(
     tacticalFieldV1(
-      "Couleur du statut",
+      "Palette de couleurs (noir, blanc, rouge, vert…)",
+      statusTintColorPreset
+    ),
+    tacticalFieldV1(
+      "Couleur libre du modèle",
       statusTintColor
     ),
     tacticalFieldV1(
       "Intensité coloration (0 à 1)",
       statusTintOpacity
+    ),
+    tacticalFieldV1(
+      "Faire clignoter la coloration",
+      statusTintBlinkEnabled
+    ),
+    tacticalFieldV1(
+      "Vitesse du clignotement — cycle complet (ms)",
+      statusTintBlinkPeriodMs
     )
   );
 
@@ -5963,6 +6014,15 @@ function readHumanStatusVisualsV1(root) {
         row.querySelector(
           "[data-skill-status-tint-opacity]"
         )?.value ?? 0.35
+      ),
+      tintBlinkEnabled:
+        row.querySelector(
+          "[data-skill-status-tint-blink-enabled]"
+        )?.checked === true,
+      tintBlinkPeriodMs: Number(
+        row.querySelector(
+          "[data-skill-status-tint-blink-period-ms]"
+        )?.value ?? 600
       )
     };
 
