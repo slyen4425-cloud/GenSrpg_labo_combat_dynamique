@@ -1394,3 +1394,7 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - Protégés : `global-assets` (owner), `main`, `Zombicide-40k`, Exploration, Combat Rules, `configuredSkills`, `configuredCreatures`, FX/Render Core et les 103 créatures.
 
 - Validation : sentinelles de bibliothèque et recherche catalogue, CI complète + Chromium sur SHA exact, checkpoint GREEN, publication FF sous lease `gh-pages`, Pages SUCCESS ; test manuel Android de l'affichage des nouveaux médias par l'utilisateur.
+
+### Sentinelle historique à conserver pendant le changement de cache Air
+
+Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` impose encore l'ancienne chaîne exacte de révision `v26`, alors que le cache doit avancer à `v27`. Extension minime du périmètre à cette sentinelle : remplacer l'égalité globale d'une version historique par une vérification de révision datée >= v26, tout en conservant les contrôles des huit icônes et de leurs URLs. Le nouveau test Air vérifiera expressément v27 et la résolution des quatre médias via le resolver déjà existant. Aucun second chargeur ni modification du runtime.
