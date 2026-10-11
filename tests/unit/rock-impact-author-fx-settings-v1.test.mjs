@@ -24,7 +24,7 @@ test("Impact rocheux uses only the six user-approved diagnostic FX values", asyn
   assert.equal(visual.travel.fallHeightPx, 650);
   assert.equal(visual.travel.fallOffsetXPx, 0);
   assert.equal(visual.travel.displayScale, 2);
-  assert.equal(adaptCaptureSkillToSkillDefinition({ id: draft.id, definition: draft.definition }, draft.presentation).projectileTargeting, "fixed_point");
+  assert.equal(adaptCaptureSkillToSkillDefinition({ id: original.draft.id, definition: original.draft.definition }, original.draft.presentation).projectileTargeting, "fixed_point");
 
   assert.equal(feedback.projectileTrail.sizePx, 8);
   assert.equal(feedback.projectileTrail.lengthPx, 50);
