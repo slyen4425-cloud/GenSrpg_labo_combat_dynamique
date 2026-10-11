@@ -180,7 +180,8 @@ function normalizeCameraShake(raw) {
     new Set([
       "amplitudePx",
       "durationMs",
-      "sequence"
+      "sequence",
+      "impactVisualTiming"
     ]),
     "feedback.cameraShake"
   );
@@ -196,7 +197,12 @@ function normalizeCameraShake(raw) {
     ),
     ...(value.sequence == null
       ? {}
-      : { sequence: normalizeCameraShakeSequence(value.sequence) })
+      : { sequence: normalizeCameraShakeSequence(value.sequence) }),
+    ...(value.impactVisualTiming == null || value.impactVisualTiming === "immediate"
+      ? {}
+      : ["during", "after"].includes(value.impactVisualTiming)
+        ? { impactVisualTiming: value.impactVisualTiming }
+        : (() => { throw new RangeError("feedback.cameraShake.impactVisualTiming must be immediate, during or after"); })())
   });
 }
 
