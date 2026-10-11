@@ -42,31 +42,12 @@ test("Impact rocheux uses only the six user-approved diagnostic FX values", asyn
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p => p === path).length, 1);
 });
 
-test("Impact rocheux preserves all original author-export bytes except precisely six FX numbers", async () => {
+
+test("new Impact rocheux export replaces old author file but preserves all new authored bytes except fixed-point correction", async () => {
   const raw = await read();
-  const swap = (text, newer, older) => {
-    const index = text.indexOf(newer);
-    assert.ok(index >= 0, "expected authored FX span missing: " + newer);
-    assert.equal(text.indexOf(newer, index + newer.length), -1, "FX replacement must be unique");
-    return text.replace(newer, older);
-  };
-  const old = [
-    [
-      '"cameraShake": {\n          "amplitudePx": 5,',
-      '"cameraShake": {\n          "amplitudePx": 600,'
-    ],
-    [
-      '"projectileTrail": {\n          "color": "#ffffff",\n          "count": 6,\n          "lengthPx": 50,\n          "sizePx": 8,\n          "opacity": 1,\n          "anchorX": 0.5,\n          "anchorY": 0.4',
-      '"projectileTrail": {\n          "color": "#ffffff",\n          "count": 8,\n          "lengthPx": 120,\n          "sizePx": 120,\n          "opacity": 1,\n          "anchorX": 0.5,\n          "anchorY": 0.5'
-    ],
-    [
-      '"aftermathSmoke": {\n          "color": "#594943",\n          "count": 8,\n          "spreadPx": 50,\n          "sizePx": 35,',
-      '"aftermathSmoke": {\n          "color": "#594943",\n          "count": 8,\n          "spreadPx": 50,\n          "sizePx": 120,'
-    ]
-  ].reduce((text, [newValue, oldValue]) => swap(text, newValue, oldValue), raw);
-  const sha = createHash("sha1")
-    .update("blob " + Buffer.byteLength(old) + "\0", "utf8")
-    .update(old, "utf8")
-    .digest("hex");
-  assert.equal(sha, "8da9dceb1396fc428f39fddab6cddd23a957f906");
+  const sha = value => createHash("sha256").update(value,"utf8").digest("hex");
+  assert.equal(sha(raw), "04c1330d6993bb0d5e90afd2c39d544944d2c8aa4b009cdbd075f18d4c4bed6b");
+  const original = raw.replace('"projectileTargeting": "fixed_point"', '"projectileTargeting": "direct"');
+  assert.notEqual(original, raw);
+  assert.equal(sha(original), "67554e742c0045b882bbfe6053cd4d5dfb93e1bb2855ea4b13eb0f68d2632bb9");
 });
