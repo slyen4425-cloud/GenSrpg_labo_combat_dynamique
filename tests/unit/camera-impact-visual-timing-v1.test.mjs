@@ -16,7 +16,7 @@ test("shake impact visual timing is optional, strict and backward compatible",()
   assert.equal(impactVisualDelayForCameraShakeV1({amplitudePx:6,durationMs:150}),0);
 });
 function fields(presentation){return {
-  id:"quake-test",name:"Séisme",description:"",requiredLevel:20,usageScopes:["capture","combat"],
+  id:"quake-test",name:"Séisme",description:"Séisme visuel",requiredLevel:20,usageScopes:["capture","combat"],
   category:"offensive",form:"aura",element:"earth",approachMode:"none",
   energyCost:6,preparationMs:3500,travelMs:0,recoveryMs:0,cooldownMs:0,
   allowedDistances:["short","medium","long"],targetRelations:["enemy"],damage:0,heal:0,stunMs:0,interruptsPreparation:false,
