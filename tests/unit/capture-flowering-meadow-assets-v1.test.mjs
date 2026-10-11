@@ -55,7 +55,7 @@ test("Flowering meadow: canonical catalog, visual only, no duplicate ID", () => 
   assert.ok(found[0].tags.includes("ground"));
   assert.ok(found[0].tags.includes("zone"));
   assert.ok(catalog.counts.assets>=122, "must retain the original 122 assets even as new packs are added");
-  assert.equal(catalog.counts.sprites,69);
+  assert.ok(catalog.counts.sprites>=69,"must retain original 69 sprites while allowing additive packs");
   assert.equal(catalog.counts.assets,catalog.assets.length);
   assert.equal(catalog.counts.sprites,catalog.assets.filter(a=>a.assetType==="sprite").length);
   assert.equal(new Set(catalog.assets.map(a=>a.id)).size,catalog.assets.length);
