@@ -13,7 +13,8 @@ const expected = [
 test("Capture Air VFX V1 resolves four canonically cataloged media through the existing presentation resolver", () => {
   assert.equal(GLOBAL_VISUAL_LIBRARY.repository,"slyen4425-cloud/GenSrpg_labo_combat_dynamique");
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-11-v27-capture-air-vfx");
+  assert.match(GLOBAL_VISUAL_LIBRARY.revision,/^20\d{2}-\d{2}-\d{2}-v\d+-/);
+  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=27, "Previous Air pack cache revision must remain current");
   const catalogURL=new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
   assert.ok(catalogURL.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
   assert.equal(catalogURL.searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);

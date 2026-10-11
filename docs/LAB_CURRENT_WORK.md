@@ -1409,3 +1409,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Respect des valeurs source : 170 PV, 15 Air, 20 Vitesse, 10 Défense, résistances Terre +35/Électricité -50, sockets et poses, loadout de quatre compétences, évolution vers Rafalcor et audio auteur. Anciens `sourceStats` et résistances non cataloguées conservés, aucun moteur/statRegistry modifié.
 - Interdits : `main`, `global-assets`, autres skills/créatures, Core/FX, son, visuels, `Zombicide-40k`, Exploration. Test RED `f7880becde0d113da24549e6d4f46be1d94e0285`; test exact SHA + import normalisé + 102→103 / 1 occurrence ID ; CI complète et Chromium requis avant GREEN/FF.
 - Rapport : `docs/LAB_AILEVENT_AUTHOR_PRESET_V1.md`. Test visuel Android à demander après publication.
+
+## 2026-10-11 — Raccord du cache Vent arrière (client de la bibliothèque)
+
+- Base `gh-pages` `b804d02b31aafda55e500e311ca77512f1d62819` ; checkpoint `checkpoint/lab-start-capture-tailwind-cache-v1-2026-10-11`, branche `work/lab-capture-tailwind-cache-v1-2026-10-11`.
+- Média déjà publié dans `global-assets` SHA `c262eeaf4bbdc242409728e680e50bfffab0e121`, 1 icône WebP 128², ID `pack:capture:icon-skill-tailwind-feather-01`, 135 assets / 46 icônes.
+- Owner consommateur : `src/assets/global-visual-library.js`, cache v27 → `2026-10-11-v28-capture-tailwind-icon`. Strict périmètre : ce fichier, nouvelle sentinelle et ancien test Air ajusté pour progression additive de version, ce journal et documentation `docs/LAB_CAPTURE_TAILWIND_CACHE_V1.md`.
+- Aucun changement gameplay, assets, données auteur, configurations de compétences, `main`, `Zombicide-40k`, Exploration ou second resolver.
+- Validation : CI au SHA final, checkpoint GREEN exact, publication FF sous lease, CI + Pages en post-publication ; vérification visuelle Android par utilisateur. Pas d'attribution automatique de l'icône.
