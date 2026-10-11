@@ -8838,6 +8838,46 @@ function syncSkillParticlePresetStateV1(
   return presetId;
 }
 
+// Editor-only controls: the canonical value is presentation.feedback.cameraShake.
+function readHumanCameraShakeSequenceV1(root) {
+  return [...root.querySelectorAll("[data-skill-impact-shake-pulse]")].map((row) => ({
+    pauseMs: Number(row.querySelector("[data-skill-impact-shake-pulse-pause]")?.value),
+    amplitudePx: Number(row.querySelector("[data-skill-impact-shake-pulse-amplitude]")?.value),
+    durationMs: Number(row.querySelector("[data-skill-impact-shake-pulse-duration]")?.value)
+  }));
+}
+
+function appendHumanCameraShakePulseRowV1(root, pulse = {pauseMs:120, amplitudePx:8, durationMs:180}) {
+  const host = root.querySelector("[data-skill-impact-shake-sequence-host]");
+  if (!host) return;
+  if (host.querySelectorAll("[data-skill-impact-shake-pulse]").length >= 8) return;
+  const row = document.createElement("div");
+  row.className = "grid two";
+  row.dataset.skillImpactShakePulse = "true";
+  const pause = tacticalNumberInputV1("skillImpactShakePulsePause", pulse.pauseMs, {min:0,max:2500,step:"10"});
+  const amplitude = tacticalNumberInputV1("skillImpactShakePulseAmplitude", pulse.amplitudePx, {min:0.5,max:24,step:"0.5"});
+  const duration = tacticalNumberInputV1("skillImpactShakePulseDuration", pulse.durationMs, {min:30,max:2000,step:"10"});
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer cette secousse";
+  remove.addEventListener("click", () => row.remove());
+  row.append(
+    tacticalFieldV1("Pause avant (ms)", pause),
+    tacticalFieldV1("Amplitude (px)", amplitude),
+    tacticalFieldV1("Durée (ms)", duration),
+    remove
+  );
+  host.append(row);
+}
+
+function renderHumanCameraShakeSequenceV1(root, pulses=[]) {
+  const host = root.querySelector("[data-skill-impact-shake-sequence-host]");
+  if (!host) return;
+  host.textContent = "";
+  for (const pulse of pulses) appendHumanCameraShakePulseRowV1(root,pulse);
+}
+
 function writeSkillFeedbackControlsV1(
   root,
   presentation = {}
@@ -9005,6 +9045,7 @@ function writeSkillFeedbackControlsV1(
     }
   }
 
+  renderHumanCameraShakeSequenceV1(root,presentation.impactShakeSequence ?? []);
   syncSkillGlowPresetStateV1(root);
   syncSkillParticlePresetStateV1(root);
 }
@@ -9199,6 +9240,21 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   mountEditorCardDisclosuresV1({
     root,
     listen
+  });
+
+  listen(one(root, "[data-skill-impact-shake-add]"), "click", () => {
+    const existing = readHumanCameraShakeSequenceV1(root);
+    // First activation keeps the former single shake as the first pulse.
+    if (existing.length === 0) {
+      const legacyAmplitude = Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0;
+      const legacyDuration = Number(root.querySelector("[data-skill-impact-shake-duration]")?.value) || 140;
+      if (legacyAmplitude > 0) {
+        appendHumanCameraShakePulseRowV1(root, {
+          pauseMs:0, amplitudePx:legacyAmplitude, durationMs:legacyDuration
+        });
+      }
+    }
+    appendHumanCameraShakePulseRowV1(root);
   });
 
   for (const tab of root.querySelectorAll("[data-editor-tab]")) {
