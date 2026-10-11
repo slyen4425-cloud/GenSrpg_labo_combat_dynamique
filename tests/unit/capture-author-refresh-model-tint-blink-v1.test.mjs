@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { normalizeCaptureStatRegistryV1 } from "../../src/contracts/capture-stat-registry-v1.js";
 import { normalizeSkillPresentationBinding } from "../../src/contracts/skill-presentation-binding.js";
 import { createCaptureSkillPresentationAssetsV2 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import { createDomStatusFxRenderer } from "../../src/adapters/renderer/dom-status-fx.js";
@@ -15,7 +16,8 @@ test("author exports remain byte-exact and replace stable skill/creature IDs",as
   const skill=await source(skillPath),creature=await source(creaturePath);
   assert.equal(createHash("sha256").update(skill).digest("hex"),"9559205e12ee9f6d9f73028109b9f2b7c3711aa03e655845e1590b5022596856");
   assert.equal(createHash("sha256").update(creature).digest("hex"),"d3ef66ea80fbe0c30be066a1b6dcdeda7cabb4a13202b4a212eaecacbb7e8442");
-  const s=importCaptureTransferJsonV1(skill),c=importCaptureTransferJsonV1(creature);
+  const registry=normalizeCaptureStatRegistryV1(JSON.parse(await source("data/capture/monster-capture-stat-registry.v1.json")));
+  const s=importCaptureTransferJsonV1(skill),c=importCaptureTransferJsonV1(creature,{statRegistry:registry});
   assert.equal(s.value.draft.id,"cap_earth_atk_3");
   assert.equal(c.value.draft.id,"crea_mossback");
   assert.deepEqual(s.value.draft.definition.targetRelations,["ally","self"]);
@@ -34,7 +36,7 @@ const skillBinding=(visual)=>normalizeSkillPresentationBinding({
 test("native status tint contract accepts black, arbitrary hex and pulse configuration without changing legacy",()=>{
   const legacy=skillBinding({mode:"tint",tintColor:"#112233",tintOpacity:0.35});
   assert.equal(legacy.statusVisuals.test.tintColor,"#112233");
-  assert.equal(legacy.statusVisuals.test.tintBlinkEnabled,false);
+  assert.equal(legacy.statusVisuals.test.tintBlinkEnabled,undefined,"legacy presentation has no added fields");
   const updated=skillBinding({mode:"tint",tintColor:"#000000",tintOpacity:0.8,tintBlinkEnabled:true,tintBlinkPeriodMs:300});
   assert.equal(updated.statusVisuals.test.tintColor,"#000000");
   assert.equal(updated.statusVisuals.test.tintBlinkEnabled,true);
@@ -45,7 +47,7 @@ test("native status tint contract accepts black, arbitrary hex and pulse configu
 
 test("resolved tint uses the single status presentation adapter and native DOM animation, not another timer",()=>{
   const bind=skillBinding({mode:"tint",tintColor:"#000000",tintOpacity:0.7,tintBlinkEnabled:true,tintBlinkPeriodMs:280});
-  const resolved=createCaptureSkillPresentationAssetsV2({skillPresentations:{s:bind},assetForId:()=>null});
+  const resolved=createCaptureSkillPresentationAssetsV2({skillPresentations:{"test-tint":bind},assetForId:()=>null});
   const visual=resolved.statusPresentationFor("test",{view:"player"});
   assert.equal(visual.tintBlinkEnabled,true);
   assert.equal(visual.tintBlinkPeriodMs,280);
