@@ -127,6 +127,14 @@ import {
   captureFxParticlePresetIdForValuesV1
 } from "../catalogs/capture-fx-particle-presets-v1.js";
 import {
+  CAPTURE_FX_QUICK_PROFILES_V1,
+  captureFxQuickProfileByIdV1,
+  applyCaptureFxQuickProfileV1,
+  captureFxQuickWarningsV1,
+  captureFxQuickTrajectoryHintV1
+} from "./capture-fx-quick-mode-v1.js";
+
+import {
   normalizeCaptureStatRegistryV1
 } from "../contracts/capture-stat-registry-v1.js";
 import {
@@ -8891,6 +8899,42 @@ function renderHumanCameraShakeSequenceV1(root, pulses=[]) {
   for (const pulse of pulses) appendHumanCameraShakePulseRowV1(root,pulse);
 }
 
+
+function refreshSkillFxQuickControlStateV1(root, {resetSelection = false} = {}) {
+  const select = root.querySelector("[data-skill-fx-quick-profile]");
+  if (!select) return;
+  if (resetSelection) select.value = "current";
+  const profile = captureFxQuickProfileByIdV1(select.value);
+  const apply = root.querySelector("[data-skill-fx-quick-apply]");
+  if (apply) apply.disabled = profile === null;
+  const preview = root.querySelector("[data-skill-fx-quick-preview]");
+  if (preview) preview.dataset.level = profile?.id ?? "current";
+  const info = root.querySelector("[data-skill-fx-quick-state]");
+  if (info) info.textContent = profile
+    ? profile.label + " — " + profile.description +
+      " Aperçu indicatif seulement : appuie sur Appliquer pour changer les valeurs, puis teste le vrai combat."
+    : "Aperçu indicatif : tes réglages actuels sont conservés. Choisis un style puis appuie sur Appliquer, ou personnalise avec les contrôles détaillés.";
+
+  const context = root.querySelector("[data-skill-fx-quick-context]");
+  if (context) context.textContent = captureFxQuickTrajectoryHintV1({
+    form: root.querySelector("[data-skill-form]")?.value,
+    trajectoryMode: root.querySelector("[data-skill-trajectory-mode]")?.value
+  });
+  const warning = root.querySelector("[data-skill-fx-quick-warning]");
+  if (warning) {
+    const fx = {
+      ...skillParticlePresetPresentationFromControlsV1(root),
+      impactShakeAmplitudePx: Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0,
+      impactShakeSequence: readHumanCameraShakeSequenceV1(root)
+    };
+    const notes = captureFxQuickWarningsV1(fx);
+    warning.textContent = notes.length
+      ? notes.join(" ")
+      : "Tailles et secousses dans les limites conseillées. Tu peux affiner sans risque dans Réglages avancés.";
+    warning.dataset.tone = notes.length ? "warning" : "info";
+  }
+}
+
 function writeSkillFeedbackControlsV1(
   root,
   presentation = {}
@@ -9065,6 +9109,7 @@ function writeSkillFeedbackControlsV1(
   renderHumanCameraShakeSequenceV1(root,presentation.impactShakeSequence ?? []);
   syncSkillGlowPresetStateV1(root);
   syncSkillParticlePresetStateV1(root);
+  refreshSkillFxQuickControlStateV1(root, {resetSelection:true});
 }
 
 function writeCaptureFxStarterPresentationFieldsV1(
@@ -9782,6 +9827,53 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
 
   syncSkillParticlePresetStateV1(root);
+
+  const fxQuickSelect = root.querySelector("[data-skill-fx-quick-profile]");
+  const fxQuickApply = root.querySelector("[data-skill-fx-quick-apply]");
+  if (fxQuickSelect) {
+    listen(fxQuickSelect, "change", () => refreshSkillFxQuickControlStateV1(root));
+  }
+  if (fxQuickApply) {
+    listen(fxQuickApply, "click", () => {
+      const profile = captureFxQuickProfileByIdV1(fxQuickSelect?.value);
+      if (!profile) return;
+      // Compose through existing FX V1 owners. The button is the only write action;
+      // switching the preview choice or loading a skill must not mutate any field.
+      const applied = applyCaptureFxQuickProfileV1({
+        profileId: profile.id,
+        presentation: {
+          ...skillGlowPresetPresentationFromControlsV1(root),
+          ...skillParticlePresetPresentationFromControlsV1(root),
+          impactShakeAmplitudePx: Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0
+        }
+      });
+      // Reuse the existing glow and particle handlers: no second setter or FX owner.
+      if (fxGlowPresetSelect) {
+        fxGlowPresetSelect.value = profile.glowPresetId;
+        fxGlowPresetSelect.dispatchEvent(new Event("change", {bubbles:true}));
+      }
+      if (fxParticlePresetSelect) {
+        fxParticlePresetSelect.value = profile.particlePresetId;
+        fxParticlePresetSelect.dispatchEvent(new Event("change", {bubbles:true}));
+      }
+      const shake = root.querySelector("[data-skill-impact-shake-amplitude]");
+      if (shake) shake.value = String(applied.impactShakeAmplitudePx);
+      refreshSkillFxQuickControlStateV1(root);
+      setStatus(root, "Style « "+profile.label+" » appliqué. Les sprites, sons et la progression ne changent pas. Enregistre ta capacité pour conserver les effets.", "ok");
+    });
+  }
+  // Detailed edits mark the short-cut as custom; never overwrite authored settings.
+  for (const selector of [
+    "[data-skill-form]", "[data-skill-trajectory-mode]",
+    "[data-skill-fx-glow-strength]", "[data-skill-fx-glow-radius]",
+    "[data-skill-projectile-trail-count]", "[data-skill-projectile-trail-length]",
+    "[data-skill-projectile-trail-size]", "[data-skill-projectile-trail-anchor-y]",
+    "[data-skill-impact-shake-amplitude]", "[data-skill-aftermath-smoke-size]"
+  ]) {
+    const field = root.querySelector(selector);
+    if (field) listen(field, "input", () => refreshSkillFxQuickControlStateV1(root, {resetSelection:true}));
+  }
+  refreshSkillFxQuickControlStateV1(root);
 
   const fxStarterProfileSelect =
     root.querySelector(
