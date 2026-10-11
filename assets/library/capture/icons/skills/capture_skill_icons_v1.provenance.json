@@ -13,8 +13,9 @@
       "file": "capture/icons/skills/icon_skill_blinding_ash_01.webp",
       "width": 128,
       "height": 128,
-      "sha256": "5f7b0cadacbaa74960828889c4ccb3a9266241375e53e9ef129c2d278c459bf2",
-      "generation_id": "b64ffb5f-d04e-438a-83d6-f2c7d5fe1866"
+      "sha256": "c3631d0087fb9279c2e8be6fa2317e3e4ac26a13cf0fd0fd8558ce2122c54a97",
+      "generation_id": "b64ffb5f-d04e-438a-83d6-f2c7d5fe1866",
+      "repair": "2026-10-11: appended missing terminal 0x00 byte to complete VP8 payload; source artwork preserved; original deployed file sha256=5524a4df5213236634d0abab024c6d2695fb55e7e023ac477864dc7831454f70"
     },
     {
       "id": "pack:capture:icon-skill-water-drop-01",
