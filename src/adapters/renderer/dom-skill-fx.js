@@ -1558,7 +1558,10 @@ export function createDomSkillFxRenderer({
             amplitudePx:
               Number(shake.amplitudePx),
             durationMs:
-              Number(shake.durationMs)
+              Number(shake.durationMs),
+            ...(Array.isArray(shake.sequence) && shake.sequence.length > 0
+              ? { sequence: shake.sequence }
+              : {})
           })
         );
       if (handle) {
