@@ -173,6 +173,8 @@ function normalizeStatusVisual(
         "mode",
         "tintColor",
         "tintOpacity",
+        "tintBlinkEnabled",
+        "tintBlinkPeriodMs",
         "sprite"
       ].includes(key)
     ) {
@@ -206,8 +208,18 @@ function normalizeStatusVisual(
     );
   }
 
+  if (value.tintBlinkEnabled != null && typeof value.tintBlinkEnabled !== "boolean") {
+    throw new TypeError(field + ".tintBlinkEnabled must be a boolean");
+  }
+  const blinkPeriod = value.tintBlinkPeriodMs ?? 600;
+  if (!Number.isInteger(blinkPeriod) || blinkPeriod < 120 || blinkPeriod > 5000) {
+    throw new RangeError(field + ".tintBlinkPeriodMs must be between 120 and 5000");
+  }
+
   return Object.freeze({
     mode,
+    tintBlinkEnabled: value.tintBlinkEnabled === true,
+    tintBlinkPeriodMs: blinkPeriod,
     tintColor: colorValue(
       value.tintColor,
       field + ".tintColor"
