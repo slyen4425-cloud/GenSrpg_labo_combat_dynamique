@@ -284,6 +284,8 @@ function resolvedStatusPresentation(
     mode: presentation.mode,
     tintColor: presentation.tintColor,
     tintOpacity: presentation.tintOpacity,
+    tintBlinkEnabled: presentation.tintBlinkEnabled === true,
+    tintBlinkPeriodMs: presentation.tintBlinkPeriodMs ?? 600,
     sprite: sprite ? Object.freeze({ ...sprite, layer: presentation.sprite.layerByView?.[view] ?? "front" }) : null
   });
 }
