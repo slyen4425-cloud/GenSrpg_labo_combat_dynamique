@@ -16,6 +16,7 @@ import {
 } from "../core/combat/targeting.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js";
+import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createCombatEnergyOrbsRendererV1 } from "../adapters/renderer/combat-energy-orbs-v1.js";
@@ -1430,10 +1431,17 @@ export async function mountCoop2v2Test({
     });
   }
 
+  const impactHealthCue = createCombatImpactHealthCueSyncV1({
+    presentationForSkill(skillId, context = {}) {
+      return presentationForActorSkill(skillId, context);
+    }
+  });
+
   runtime = createCombatRuntime({
     session,
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
+      impactHealthCue.clear();
       if (rosterController) for (const actor of format.actors) {
         if (Number(state.fighters[actor.actorId]?.hp) <= 0 && rosterController.isPresent(actor.actorId)) {
           queueKoReplacement(actor.actorId);
@@ -1444,14 +1452,16 @@ export async function mountCoop2v2Test({
     },
     onHealthDelta(feedback) {
       if (!["damage", "heal"].includes(feedback.kind)) return;
+      const delayMs = impactHealthCue.delayFor(feedback);
       fx.play({
         type: feedback.kind,
         targetSlot: feedback.actorId,
         amount: feedback.amount,
-        durationMs: 700
+        durationMs: 700,
+        delayMs
       });
       if (feedback.kind === "damage") {
-        damageFeedback?.flash(feedback.actorId);
+        damageFeedback?.flash(feedback.actorId, { delayMs });
       }
     },
     onClock() {
@@ -1519,6 +1529,7 @@ export async function mountCoop2v2Test({
         `${action.skill.name} · lancé`;
     },
     onResolved(resolution) {
+      impactHealthCue.register(resolution);
       if (resolution.actionType === "command") {
         const result = rosterController?.applyCommandResolution(resolution);
         if (result?.slotId) {
