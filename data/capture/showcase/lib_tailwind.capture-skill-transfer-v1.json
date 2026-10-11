@@ -32,8 +32,6 @@
         "long"
       ],
       "targetRelations": [
-        "enemy",
-        "ally",
         "self"
       ],
       "targetLocations": [
@@ -90,7 +88,7 @@
         },
         {
           "kind": "apply_status",
-          "targetScope": "target",
+          "targetScope": "self",
           "status": {
             "id": "lib_tailwind:cooldown",
             "kind": "skill_cooldown_rate_modifier",
@@ -105,7 +103,7 @@
         },
         {
           "kind": "apply_status",
-          "targetScope": "target",
+          "targetScope": "self",
           "status": {
             "id": "lib_tailwind:energy",
             "kind": "energy_regen_modifier",
@@ -120,7 +118,7 @@
         },
         {
           "kind": "apply_status",
-          "targetScope": "target",
+          "targetScope": "self",
           "status": {
             "id": "lib_tailwind:defense",
             "kind": "stat_modifier",

@@ -14,7 +14,7 @@ const files=[
   {
     "path": "data/capture/showcase/lib_tailwind.capture-skill-transfer-v1.json",
     "id": "lib_tailwind",
-    "sha256": "90360500d9dc5cdc93525d178849c206772b5f15cdd70183e6a2210d33a085bb"
+    "sha256": "a76ce1197e283bf13afba1da3c3ab5a6fa601becb912b6f1c0f5c75f7d863504"
   },
   {
     "path": "data/capture/showcase/cap_air_atk_3.capture-skill-transfer-v1.json",
@@ -40,7 +40,8 @@ test("Vent arrière repaired statuses keep author effect values and unique IDs",
  assert.equal(record.definition.effects.length,4);
  assert.deepEqual(record.definition.effects.map(x=>x.status.id),["lib_tailwind:0","lib_tailwind:cooldown","lib_tailwind:energy","lib_tailwind:defense"]);
  assert.deepEqual(record.definition.effects.map(x=>x.status.kind),["stat_modifier","skill_cooldown_rate_modifier","energy_regen_modifier","stat_modifier"]);
- assert.deepEqual(record.definition.effects.map(x=>x.targetScope),["self","target","target","target"]);
+ assert.deepEqual(record.definition.effects.map(x=>x.targetScope),["self","self","self","self"]);
+ assert.deepEqual(record.definition.targetRelations,["self"]);
  assert.deepEqual(record.definition.effects.map(x=>x.status.durationMs),[15000,15000,15000,15000]);
  assert.equal(record.presentation.visual.icon.assetId,"core:icon-skill-portal-dash-01");
 });

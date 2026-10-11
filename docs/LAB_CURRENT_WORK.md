@@ -1428,3 +1428,14 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Diagnostic du vrai propriétaire : dans `status-effect-runtime-v1`, une entrée par `status.id`; 3 identifiants `status` dans Vent arrière font du refresh, perdant 2 définitions. Le HUD projette l'état restant. Pas de correction d'affichage isolée.
 - Périmètre : corriger seulement les IDs en conflit dans le preset `lib_tailwind`, garder son visuel blanc sous la clé cooldown, modifier uniquement `src/ui/capture-editor-human-v2.js` pour des IDs nouveaux uniques et rejet visible des doublons en édition, 2 tests liés et doc `docs/LAB_CAPTURE_TAILWIND_MULTI_STATUS_V1.md` et ce journal. Valeurs, durées, cibles, skill Charge aérienne, 103 créatures, moteur, renderer, assets et dépôts externes interdits de modification.
 - TDD RED commit `37d88237fea31fafb9feb8ea4d50eb9501c2df7d`; test réel de 4 statuts et 4 icônes, puis CI/Chromium, checkpoint GREEN SHA exact, FF et Pages. Validation manuelle du rendu sur téléphone.
+
+
+## 2026-10-11 — Correction Vent arrière, ciblage réel et audit des compétences équipées
+
+- Signal utilisateur : après réparation des 3 collisions ID `status`, combat affiche encore seulement un effet sur le lanceur, et certaines capacités équipées semblent avoir perdu leur configuration.
+- Diagnostic owner : `src/ui/combat-2v2-test-ui.js` cible l'ennemi par défaut, Vent arrière avait `targetRelations:[enemy,ally,self]` et les 3 derniers statuts `targetScope:target` : vitesse sur lanceur, 3 autres effets chez cible ennemie, même si IDs désormais uniques. Les tests précédents forçaient `targetId:player` et ne couvraient pas le bouton réel.
+- Base `gh-pages` `7212ec92fc9fdc62d194e0c6125379573fee952a`, checkpoint `checkpoint/lab-start-capture-tailwind-self-target-2026-10-11`, branche `work/lab-capture-tailwind-self-target-2026-10-11`.
+- Owner : données du preset `lib_tailwind` uniquement, `targetRelations:[self]`, 4 scopes `self`, 3 buffs et 1 malus de défense intacts pour 15 s. IDs, valeurs, présentation, coûts et autre capacité `cap_air_atk_3` intacts.
+- Fichiers autorisés : `data/capture/showcase/lib_tailwind.capture-skill-transfer-v1.json`, 3 tests ciblés, `docs/LAB_CAPTURE_TAILWIND_SELF_TARGET_V1.md`, ce journal. Aucun moteur/renderer/new loader/main/global-assets/GenSrpG/exploration.
+- Auditor : les IDs `cap_air_atk_1..4` sont toujours assignés à Ailevent ; `cap_air_atk_3` a ses médias/sons auteur; les 3 autres restent des compétences natives sans fichier preset auteur actuellement. Les réglages d'une session locale non exportée ne sont pas garantis persistants par GitHub.
+- TDD RED `d80ba9fbcb7767ea05d4747af52e1b9ab18e0dca`, sentinelle ciblage bouton/CombatSession/HUD/1v1-2v2 puis CI et checkpoint GREEN + FF / Pages; vérification manuelle sur téléphone ensuite.

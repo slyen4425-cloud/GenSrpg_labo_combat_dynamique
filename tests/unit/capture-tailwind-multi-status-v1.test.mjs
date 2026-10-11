@@ -21,6 +21,8 @@ function fakeDocument(){const doc={createElement(){const node=fakeNode();node.ow
 
 test("Vent arrière retains four distinct status definitions and current author values",()=>{
  assert.equal(skill.id,"lib_tailwind");
+ assert.deepEqual(skill.targetRelations,["self"]);
+ assert.deepEqual(skill.effects.map(x=>x.targetScope),["self","self","self","self"]);
  assert.equal(skill.effects.length,4);
  assert.equal(new Set(skill.effects.map(x=>x.status.id)).size,4,"status IDs must be unique per skill to avoid runtime replacement");
  assert.deepEqual(skill.effects.map(x=>x.status.kind),[
