@@ -1332,11 +1332,20 @@
             <label>Secousse caméra simple — durée (ms)
               <input type="number" min="1" max="1000" step="10" value="140" data-skill-impact-shake-duration>
             </label>
+            <label>Quand montrer l'impact visuel ?
+              <select data-skill-impact-visual-timing>
+                <option value="immediate">Dès le début (comme avant)</option>
+                <option value="during">Pendant les secousses (au milieu)</option>
+                <option value="after">Après les secousses (à la fin)</option>
+              </select>
+            </label>
             <div class="skill-status-visual-config" style="grid-column: 1 / -1;">
               <h4>Séquence de tremblements — Séisme / impacts</h4>
               <p class="note">Ajoute plusieurs secousses successives. Pour chaque secousse : pause avant, force et durée. Si une séquence existe, elle remplace les réglages de secousse simple sans les effacer. Un seul mouvement de caméra, sans modifier les dégâts.</p>
               <div data-skill-impact-shake-sequence-host></div>
+              <button type="button" class="small-action" data-skill-impact-shake-preset>Préparer 4 secousses de séisme</button>
               <button type="button" class="small-action" data-skill-impact-shake-add>+ Ajouter une secousse</button>
+              <p class="note">Le préréglage remplace les secousses saisies et choisit l'impact visuel après la séquence. Tu peux ensuite modifier chaque secousse. Les dégâts du combat ne sont pas décalés.</p>
             </div>
             <label>Cast — couleur particules
               <input type="color" value="#ffb347" data-skill-cast-burst-color>
