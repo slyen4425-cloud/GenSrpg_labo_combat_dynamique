@@ -87,3 +87,14 @@ test("Cendre aveuglante published WebP matches canonical file provenance",()=>{
   const bytes=fs.readFileSync(path.join(root,"assets/library",e.file));
   assert.equal(createHash("sha256").update(bytes).digest("hex"),e.sha256);
 });
+
+test("Cendre aveuglante is freshly restored from its approved original PNG, not patched old WebP",()=>{
+  const base="assets/library/capture/icons/skills/";
+  const provenance=JSON.parse(fs.readFileSync(path.join(root,base+"capture_skill_icons_v1.provenance.json"),"utf8"));
+  const asset=provenance.assets.find(x=>x.id==="pack:capture:icon-skill-blinding-ash-01");
+  assert.ok(asset);
+  assert.equal(asset.sourcePngSha256,"e6e0f885a335f66007ac75499502d293e61170a08a70280acd41f80a58fcc4d6");
+  assert.equal(asset.sha256,"bb452c0435928f7ac88973bee301c6672ed7c16503628bb98fbf6fa82aa17110");
+  const actual=createHash("sha256").update(fs.readFileSync(path.join(root,"assets/library",asset.file))).digest("hex");
+  assert.equal(actual,asset.sha256);
+});
