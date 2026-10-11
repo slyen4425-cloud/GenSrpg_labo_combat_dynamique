@@ -30,7 +30,8 @@ export function createDomDamageFeedbackRenderer({
   function flash(
     actorId,
     {
-      durationMs = 280
+      durationMs = 280,
+      delayMs = 0
     } = {}
   ) {
     if (disposed) {
@@ -76,7 +77,8 @@ export function createDomDamageFeedbackRenderer({
           Number(durationMs) || 280
         ),
         easing: "linear",
-        fill: "none"
+        fill: "none",
+        ...(Number(delayMs) > 0 ? { delay: Number(delayMs) } : {})
       }
     );
 
