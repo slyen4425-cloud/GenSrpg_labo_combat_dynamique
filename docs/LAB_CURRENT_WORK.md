@@ -1312,3 +1312,13 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Protégés** : le catalogue actif, les 103 créatures, les compétences et exports, combat/FX, les 129 autres médias, `global-assets` dans ce lot, `main`, `Zombicide-40k`, Exploration.
 - **Test RED / GREEN** : rendre la sentinelle RED sur v25, corriger la révision unique, vérifier Node + deux smokes Chromium du vrai éditeur 103 créatures, CI au SHA documentaire final, checkpoint exact GREEN, FF `gh-pages` sous lease et GitHub Pages SUCCESS.
 - **Risque / validation** : cache navigateur et cache raw.githubusercontent.com distincts ; ne pas déclarer l'apparence mobile corrigée sans nouveau test Android utilisateur.
+
+## 2026-10-11 — Impact rocheux : valeurs FX de test demandées explicitement
+
+- **Retour utilisateur** : `Impact rocheux` présente une traînée/glow visuellement décalée ; après inspection, demande expresse de **placer les valeurs conseillées pour un test manuel**.
+- **Autorité** : capacité auteur `cap_earth_atk_4` via le seul transfert `data/capture/showcase/cap_earth_atk_4.capture-skill-transfer-v1.json`, ensuite `configuredSkills` ; aucun second preset ni compensation dans le renderer.
+- **Base live exacte** : `gh-pages` `38bceb6db26141f17a9da614d3df55e9eea4be9a` (CI/Pages GREEN) ; checkpoint `checkpoint/lab-start-rock-impact-fx-settings-v1-2026-10-11` ; branche `work/lab-rock-impact-fx-settings-v1-2026-10-11`.
+- **Six champs autorisés** : `feedback.projectileTrail.sizePx: 120 → 8`, `lengthPx: 120 → 50`, `count: 8 → 6`, `anchorY: 0.5 → 0.4`, `feedback.cameraShake.amplitudePx: 600 → 5`, `feedback.aftermathSmoke.sizePx: 120 → 35`. `anchorX=0.5` et `visual.travel.fallHeightPx=650` sont conservés, ainsi que les 100 % autres champs, ids et identités.
+- **Frontières protégées** : Combat Runtime/Rules, skyfall et renderer, animations, icônes/sprites/sons, catalogues, les 103 créatures et autres skills, `global-assets`, `main`, `Zombicide-40k`, Exploration.
+- **Plan TDD** : test RED sur les six réglages et invariants de la fiche (ID unique au catalogue, normalisation + aller/retour export/import, aucun changement aux autres champs) ; modification chirurgicale des octets du JSON auteur ; Node CI + smokes Chromium, checkpoint GREEN au SHA final puis fast-forward `gh-pages` sous contrôle de SHA ; validation du rendu Android réservée à l'utilisateur.
+- **Risque connu** : ces valeurs sont un diagnostic visuel et ne prouvent pas l'absence d'un problème d'ancrage du moteur skyfall ; **ne pas** corriger le renderer dans ce lot.
