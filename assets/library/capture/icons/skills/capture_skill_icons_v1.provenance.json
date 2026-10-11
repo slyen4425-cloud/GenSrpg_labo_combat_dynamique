@@ -13,9 +13,12 @@
       "file": "capture/icons/skills/icon_skill_blinding_ash_01.webp",
       "width": 128,
       "height": 128,
-      "sha256": "c3631d0087fb9279c2e8be6fa2317e3e4ac26a13cf0fd0fd8558ce2122c54a97",
+      "sha256": "bb452c0435928f7ac88973bee301c6672ed7c16503628bb98fbf6fa82aa17110",
       "generation_id": "b64ffb5f-d04e-438a-83d6-f2c7d5fe1866",
-      "repair": "2026-10-11: appended missing terminal 0x00 byte to complete VP8 payload; source artwork preserved; original deployed file sha256=5524a4df5213236634d0abab024c6d2695fb55e7e023ac477864dc7831454f70"
+      "repair": "Prior 2026-10-11 RIFF terminal-byte patch (sha256=c3631d0087fb9279c2e8be6fa2317e3e4ac26a13cf0fd0fd8558ce2122c54a97) superseded after Android reported faulty rendering",
+      "sourcePngSha256": "e6e0f885a335f66007ac75499502d293e61170a08a70280acd41f80a58fcc4d6",
+      "sourcePngFilename": "image-gen-1(20261007-190701).png",
+      "processing": "2026-10-11: original 1254x1254 RGBA PNG resized 128x128 Lanczos and freshly encoded WebP quality 84 method 6 with exact transparent RGB; preserved original alpha pixel-for-pixel after resize"
     },
     {
       "id": "pack:capture:icon-skill-water-drop-01",
