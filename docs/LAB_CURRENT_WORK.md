@@ -1284,3 +1284,13 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Correction d'auteur EXPRESSÉMENT DEMANDÉE** : `cap_fire_special_1` Cendre aveuglante -> `pack:capture:icon-skill-blinding-ash-01`, et `lib_flame_bite` Morsure brûlante -> `pack:capture:icon-skill-burning-bite-01`. Les autres octets de leurs exports (stats, effets, sons et visuels) restent intacts, ID unique, pas de rechargement depuis legacy.
 - **Périmètre** : `src/contracts/skill-definition.js`, `src/core/combat/action-resolver.js`, deux adaptateurs Capture, deux JSON auteur, tests sentinelles existants et nouveaux, ce journal/rapport. Protégés : `global-assets`, `main`, les 103 créatures, autres compétences, FX, timeline, explicit dodge, présence et burrow, GenSrpG et Exploration.
 - **Critères** : tests Node/integration et navigateur, CI SUCCESS au SHA final, puis checkpoint GREEN exact ; publication gh-pages uniquement fast-forward sous lease ; validation paysage Android distincte.
+
+## 2026-10-11 — Cendre aveuglante : publication de la réparation WebP via cache
+
+- **Retour utilisateur** : l'icône Cendre aveuglante s'affiche anormalement en jeu ; vrai diagnostic dans `global-assets` (WebP tronqué d'un octet).
+- **Base GREEN labo** : `gh-pages` `0f356996578ff92fce75a2c48f762449bc90a1bb` ; **base owner asset corrigée** `global-assets` `b24364147c5392a79b1eac9b1286fa11e4cd84a5` (CI `38137772675` SUCCESS ; checkpoint `checkpoint/lab-blinding-ash-webp-repair-v1-green-2026-10-11`).
+- **Checkpoint de départ** : `checkpoint/lab-start-blinding-ash-webp-cache-v1-2026-10-11` ; branche `work/lab-blinding-ash-webp-cache-v1-2026-10-11`.
+- **Owner unique** : `src/assets/global-visual-library.js`, révision d'URL de l'unique resolver; les octets binaires restent uniquement sur `global-assets`.
+- **Périmètre** : le cache-buster `2026-10-11-v24-capture-skill-icons-v2` -> `2026-10-11-v25-blinding-ash-webp-repair`, test sentinelle et documentation ; aucun transfert, icon ID, catalogue, Combat Core, FX ou UI modifiés.
+- **Protégés** : 103 créatures, règles de ciblage et projectile, fichiers de compétences, autres médias, `main`, GenSrpG, Exploration.
+- **TDD et sortie** : CI RED attendue sur la nouvelle révision, correction minimale, CI foundation + Chromium réel, checkpoint GREEN exact et fast-forward `gh-pages` sous lease ; GitHub Pages doit réussir. Validation Android reste requise pour le rendu.

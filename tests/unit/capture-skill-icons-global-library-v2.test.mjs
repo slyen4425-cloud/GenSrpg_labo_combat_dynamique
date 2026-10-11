@@ -39,7 +39,7 @@ const cases=[
 
 test("Capture Skill Icons V2 refreshes the single global-assets catalog URL",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-11-v24-capture-skill-icons-v2");
+  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-11-v25-blinding-ash-webp-repair");
   const catalogUrl=new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
   assert.ok(catalogUrl.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
   assert.equal(catalogUrl.searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);
