@@ -1013,9 +1013,31 @@
         <details class="editor-context-help"><summary>ⓘ À quoi servent les effets visuels ?</summary>
           <p class="note">Cast = animation de lancement ; Trajet = projectile ou corps du rayon ; Impact = effet à l’arrivée ; Zone = animation persistante. Échelle, décalage, opacité et calques ne changent jamais les valeurs de dégâts dans le moteur.</p>
         </details>
-        <section class="fx-quick-card" data-skill-fx-quick>
-          <h3>Réglages faciles — Choisis l'intensité</h3>
-          <p class="note">Un seul choix pour la lueur, les particules de lancement, la traînée, l'impact, la fumée et la secousse. Les couleurs, sprites, sons, trajectoires et dégâts restent inchangés.</p>
+        <section class="fx-unified-flow" data-skill-fx-unified-flow aria-label="Parcours simplifié des effets visuels">
+          <p class="note">Un seul parcours en trois étapes : applique un style si tu le souhaites, règle son intensité, puis personnalise uniquement ce qui est nécessaire.</p>
+        <div class="fx-flow-step" data-skill-fx-starter>
+          <h3>1. Choisir un style</h3>
+          <p class="note">Choisis une base visuelle (feu, eau, soin…). Pour une capacité existante, tes sprites, sons et ancrages restent conservés. Pour une nouvelle capacité vide, le style peut également ajouter un cast, un trajet et un impact.</p>
+          <div class="grid two">
+            <label>Style de départ
+              <select data-skill-fx-starter-profile disabled>
+                <option value="">Chargement des profils FX…</option>
+              </select>
+            </label>
+            <div class="skill-save-actions">
+              <button type="button" class="primary-action" data-skill-fx-starter-apply disabled>
+                Appliquer ce style
+              </button>
+            </div>
+          </div>
+          <p class="note" data-skill-fx-starter-state data-tone="info">
+            Les médias restent référencés par assetId ; tes imports personnels utilisent ensuite exactement les mêmes champs.
+          </p>
+        </div>
+
+        <div class="fx-flow-step fx-quick-card" data-skill-fx-quick>
+          <h3>2. Choisir l'intensité</h3>
+          <p class="note">Après le style, ajuste en un clic la lueur, la traînée, la fumée et la secousse. Choisir une intensité affiche un aperçu, sans rien appliquer avant ton clic.</p>
           <div class="grid two">
             <label>Je veux un effet…
               <select data-skill-fx-quick-profile>
@@ -1037,23 +1059,12 @@
           <p class="note" data-skill-fx-quick-state data-tone="info">Aperçu indicatif : sélectionner un style ne remplace jamais ta configuration. Appuie sur Appliquer, puis sur Tester le combat pour voir le véritable rendu.</p>
           <p class="note" data-skill-fx-quick-context data-tone="info">Selon la trajectoire du projectile, les effets ne s'affichent pas au même endroit.</p>
           <p class="note" data-skill-fx-quick-warning data-tone="info" aria-live="polite">Tes réglages enregistrés sont conservés.</p>
-          <p class="note">Tu peux ensuite régler séparément la lueur et les particules avec les listes ci-dessous, ou ouvrir <strong>Réglages avancés</strong> pour tous les paramètres précis.</p>
-        </section>
-
-        <div class="creator-visual-import" data-skill-fx-starter>
-          <h3>Mode simple — Pack FX GenSrpG</h3>
-          <p class="note">Sur une capacité déjà configurée, le pack ajoute surtout glow, particules, fumée et réglages FX sans remplacer tes sprites, sons, sockets ni visuels de statut. Sur une capacité neuve et vide, il peut fournir Cast + Projectile + Impact comme base de départ.</p>
+          <p class="note">Envie de modifier un seul effet ? Ouvre l’étape 3, ou utilise les réglages avancés pour des valeurs précises.</p>
+        </div>
+        <details class="fx-flow-personalize" data-skill-fx-personalize>
+          <summary>3. Personnaliser — Glow, particules et détails</summary>
+          <p class="note">Facultatif : adapte indépendamment la lumière et les particules. Ces réglages remplacent uniquement les valeurs concernées, sans modifier le style, les sprites ou les sons.</p>
           <div class="grid two">
-            <label>Pack FX
-              <select data-skill-fx-starter-profile disabled>
-                <option value="">Chargement des profils FX…</option>
-              </select>
-            </label>
-            <div class="skill-save-actions">
-              <button type="button" class="primary-action" data-skill-fx-starter-apply disabled>
-                Ajouter ce pack FX
-              </button>
-            </div>
             <label>Présence du glow
               <select data-skill-fx-glow-preset>
                 <option value="discreet">Discret</option>
@@ -1080,10 +1091,9 @@
               Visible — Cast, traînée, impact et fumée perceptibles sans surcharger l’écran.
             </p>
           </div>
-          <p class="note" data-skill-fx-starter-state data-tone="info">
-            Les médias restent référencés par assetId ; tes imports personnels utilisent ensuite exactement les mêmes champs.
-          </p>
-        </div>
+          <p class="note">Les contrôles fins (taille, ancrage, fumée, positions, sons et sprites) se trouvent plus bas dans « Réglages avancés ». Tes réglages restent enregistrables et exportables comme avant.</p>
+        </details>
+        </section>
 
         <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
           <h3>Mes assets — Mes sprites / Importer un sprite</h3>
