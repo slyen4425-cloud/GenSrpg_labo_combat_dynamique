@@ -11,6 +11,7 @@ import { normalizeCaptureStatRegistryV1 } from "../../src/contracts/capture-stat
 import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 import { CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 } from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import { adaptCaptureSkillToSkillDefinition } from "../../src/adapters/input/capture/capture-skill-to-skill-definition.js";
+import { buildHumanSkillDraftV1, humanSkillEditorFieldsFromDraftV1 } from "../../src/ui/capture-editor-human-v2.js";
 
 const skillPath = "data/capture/showcase/cap_earth_atk_4.capture-skill-transfer-v1.json";
 const creaturePath = "data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json";
@@ -19,7 +20,7 @@ const sha = raw => createHash("sha256").update(raw).digest("hex");
 
 test("the new Impact rocheux author JSON is exact, unique, has its preserved FX and authored direct targeting", async () => {
   const raw = await load(skillPath);
-  assert.equal(sha(raw), "67554e742c0045b882bbfe6053cd4d5dfb93e1bb2855ea4b13eb0f68d2632bb9");
+  assert.equal(sha(raw), "04c1330d6993bb0d5e90afd2c39d544944d2c8aa4b009cdbd075f18d4c4bed6b");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p => p === skillPath).length, 1);
   const authored = JSON.parse(raw);
   const imported = importCaptureTransferJsonV1(raw);
@@ -27,9 +28,12 @@ test("the new Impact rocheux author JSON is exact, unique, has its preserved FX 
   const d = imported.value.draft;
   assert.equal(d.id, "cap_earth_atk_4");
   assert.equal(d.definition.name, "Impact rocheux");
-  assert.equal(authored.draft.definition.projectileTargeting, "direct");
+  assert.equal(authored.draft.definition.projectileTargeting, "fixed_point");
+  const userOriginalBytes = raw.replace('"projectileTargeting": "fixed_point"', '"projectileTargeting": "direct"');
+  assert.equal(sha(userOriginalBytes), "67554e742c0045b882bbfe6053cd4d5dfb93e1bb2855ea4b13eb0f68d2632bb9", "all author bytes except approved targeting correction");
   assert.equal(authored.draft.presentation.visual.travel.trajectoryMode, "skyfall");
-  assert.equal(adaptCaptureSkillToSkillDefinition({ id: authored.draft.id, definition: authored.draft.definition }, authored.draft.presentation).projectileTargeting, "direct");
+  assert.equal(adaptCaptureSkillToSkillDefinition({ id: authored.draft.id, definition: authored.draft.definition }, authored.draft.presentation).projectileTargeting, "fixed_point");
+  assert.equal(buildHumanSkillDraftV1(humanSkillEditorFieldsFromDraftV1(d)).definition.projectileTargeting, "fixed_point", "saving after opening editor must keep skyfall fixed-point");
   assert.equal(d.presentation.visual.travel.fallHeightPx, 650);
   assert.equal(d.presentation.visual.impact.displayScale, 1.7);
   assert.equal(d.presentation.visual.impact.offsetY, 0);
@@ -68,4 +72,17 @@ test("Moussados author JSON is exact, unique, imports views without changing sta
     importCaptureTransferJsonV1(exportCaptureCreatureTransferJsonV1(imported.value), {statRegistry:registry}).value,
     imported.value
   );
+});
+
+test("Human editor derives fixed_point from skyfall and direct from linear without extra game authority", () => {
+  const base = {
+    id:"skyfall-export-test",name:"Skyfall export",description:"",requiredLevel:1,
+    usageScopes:["capture"],category:"offensive",form:"projectile",element:"earth",
+    approachMode:"none",energyCost:1,preparationMs:100,travelMs:400,recoveryMs:100,
+    cooldownMs:1000,allowedDistances:["medium"],targetRelations:["enemy"],
+    damage:10,heal:0,stunMs:0,presentation:{travelAssetId:"pack:capture:sprite-falling-rock-skyfall-01",travelTrajectoryMode:"skyfall",fallHeightPx:650,fallOffsetXPx:0}
+  };
+  assert.equal(buildHumanSkillDraftV1(base).definition.projectileTargeting,"fixed_point");
+  const linear = {...base,presentation:{...base.presentation,travelTrajectoryMode:"linear"}};
+  assert.equal(buildHumanSkillDraftV1(linear).definition.projectileTargeting,"direct");
 });
