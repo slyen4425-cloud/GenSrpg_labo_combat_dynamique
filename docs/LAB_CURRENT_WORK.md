@@ -1253,3 +1253,13 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Périmètre** : adaptateur renderer de délai de feedback, `src/adapters/renderer/dom-skill-fx.js`, `src/adapters/renderer/dom-damage-feedback.js`, les deux vrais clients `src/ui/combat-test-ui.js` et `src/ui/combat-2v2-test-ui.js`, tests dédiés et ce document. Aucun changement au core, à la valeur des PV, aux événements, à l'import/export de Séisme, à la bibliothèque, à `main`, `global-assets`, GenSrpG ou Exploration.
 - **TDD et GREEN** : les nombres flottants et le flash du modèle démarrent lors de l'impact visuel au timing `during`/`after` ; cas legacy zéro inchangé ; multi-cibles, 1v1 et 2v2 ; ne jamais retarder un tick de dégâts de zone ni un soin ; une ancienne correspondance est effacée à chaque état du runtime ; annulation WAAPI et nettoyage. Fondation + deux smokes Chromium, checkpoint GREEN exact, publication sous lease et nouvelle CI/Pages. Validation artistique Android séparée.
 - **Limite explicitée** : la jauge de PV et le KO dérivent toujours immédiatement de l'état autoritaire : aucun faux HP visuel ni retard des règles ; un véritable décalage des PV ou de l'animation de recul requiert un chantier de timeline de résolution séparé.
+
+
+## Raccord Labo — icônes Capture V2 — 2026-10-11
+
+- Base déploiement `gh-pages` : `51a53742209c8505b387271e729c89d0025dc487` ; checkpoint `checkpoint/lab-start-capture-skill-icons-v2-library-cache-2026-10-11`.
+- Branche `work/lab-capture-skill-icons-v2-library-cache-2026-10-11`, périmètre uniquement cache catalogue `src/assets/global-visual-library.js`, test dédié et cette documentation.
+- Asset owner inchangé : `global-assets` SHA GREEN `0c78b519588baa3535654beae6f185046beb3499`, huit icônes avec IDs stables et CI verte.
+- Objectif : nouvelle révision `2026-10-11-v24-capture-skill-icons-v2` afin de recharger le catalogue pour la bibliothèque visuelle de l’éditeur ; aucune modification de `configuredSkills`, gameplay, FX Core ou renderer.
+- Vérifications : URL propriétaire `global-assets`, 8 chemins de ressource, tests lab complets, checkpoint GREEN exact avant FF `gh-pages`.
+- Risques : cache obsolète et concurrence de déploiement ; un seul resolver existant réutilisé, pas de seconde bibliothèque.
