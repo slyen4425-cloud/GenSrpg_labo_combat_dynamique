@@ -25,7 +25,7 @@ jobs:
         run: |
           set -euo pipefail
           git add -- assets/library/capture/sprites/skills/air_*/
-          test "$(git diff --cached --name-only | grep -Ec '/frames/.*\\.png$')" -eq 80
-          test "$(git diff --cached --name-only | grep -Ec '/atlases/.*\\.webp$')" -eq 4
+          test "$(git diff --cached --name-only | grep -Ec '/frames/.*[.]png$')" -eq 80
+          test "$(git diff --cached --name-only | grep -Ec '/atlases/.*[.]webp$')" -eq 4
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "assets(capture): build Air VFX frames and mobile atlases from verified sources"
           git push origin HEAD:work/lab-capture-air-vfx-pack-v1-2026-10-11
