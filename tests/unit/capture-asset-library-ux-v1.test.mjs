@@ -62,7 +62,7 @@ test("visual selectors distinguish GenSrpG library from creator assets without a
   );
 });
 
-test("skill FX copy explains library, personal assets and importer as separate choices from Pack FX", async () => {
+test("skill FX copy explains library, personal assets and importer as separate choices from the style of the unified FX flow", async () => {
   const html = await text(
     "examples/dom-demo/capture-editor-v2.html"
   );
@@ -70,7 +70,7 @@ test("skill FX copy explains library, personal assets and importer as separate c
   assert.match(html, /Bibliothèque GenSrpG/);
   assert.match(html, /Mes assets/);
   assert.match(html, /Importer un sprite/);
-  assert.match(html, /Pack FX GenSrpG/);
+  assert.match(html, /Le style visuel de l’étape 1/);
 });
 
 test("creator import owner still emits user assetIds for the canonical presentation pipeline", async () => {
