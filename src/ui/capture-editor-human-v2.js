@@ -1313,6 +1313,9 @@ function audioSkillSlot(
 function presentationFeedbackFromFieldsV1(
   presentation
 ) {
+  const shakeSequence = Array.isArray(presentation.impactShakeSequence)
+    ? presentation.impactShakeSequence
+    : [];
   const glowStrength = Math.max(
     0,
     Math.min(
@@ -1387,6 +1390,7 @@ function presentationFeedbackFromFieldsV1(
     glowStrength <= 0 &&
     flashOpacity <= 0 &&
     shakeAmplitude <= 0 &&
+    shakeSequence.length === 0 &&
     castBurstCount <= 0 &&
     trailCount <= 0 &&
     burstCount <= 0 &&
@@ -1442,17 +1446,25 @@ function presentationFeedbackFromFieldsV1(
     };
   }
 
-  if (shakeAmplitude > 0) {
+  if (shakeAmplitude > 0 || shakeSequence.length > 0) {
     feedback.cameraShake = {
-      amplitudePx: shakeAmplitude,
-      durationMs: Math.max(
-        1,
-        finiteNumber(
-          presentation.impactShakeDurationMs ??
-            140,
-          "Durée shake impact"
-        )
-      )
+      // An authored sequence supersedes the old simple shake while
+      // retaining the original scalar fields for old exports.
+      amplitudePx: shakeSequence.length ? Number(shakeSequence[0].amplitudePx) : shakeAmplitude,
+      durationMs: shakeSequence.length
+        ? Number(shakeSequence[0].durationMs)
+        : Math.max(
+            1,
+            finiteNumber(
+              presentation.impactShakeDurationMs ?? 140,
+              "Durée shake impact"
+            )
+          ),
+      ...(shakeSequence.length ? { sequence: shakeSequence.map((pulse) => ({
+        pauseMs: Number(pulse.pauseMs),
+        amplitudePx: Number(pulse.amplitudePx),
+        durationMs: Number(pulse.durationMs)
+      })) } : {})
     };
   }
 
@@ -2573,6 +2585,8 @@ export function humanSkillEditorFieldsFromDraftV1(
       impactShakeDurationMs:
         presentation.feedback?.cameraShake
           ?.durationMs ?? 140,
+      impactShakeSequence:
+        presentation.feedback?.cameraShake?.sequence?.map((pulse) => ({...pulse})) ?? [],
       castBurstColor:
         presentation.feedback?.castBurst
           ?.color ?? "#ffffff",
@@ -8372,6 +8386,7 @@ function readSkillFields(root) {
         root,
         "[data-skill-impact-shake-duration]"
       ),
+      impactShakeSequence: readHumanCameraShakeSequenceV1(root),
       castBurstColor: selectedValue(
         root,
         "[data-skill-cast-burst-color]"
