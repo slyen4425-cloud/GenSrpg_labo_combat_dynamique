@@ -2751,6 +2751,14 @@ export function buildHumanSkillDraftV1(fields) {
         "Type de capacité"
       ),
       form: requiredText(fields.form, "Style de capacité"),
+      // The authored trajectory owns projectile targeting in the Capture editor.
+      // A skyfall targets a fixed landing point, not a moving creature;
+      // other projectiles remain direct. Combat Rules reads only this definition.
+      projectileTargeting:
+        fields.form === "projectile" &&
+        fields.presentation?.travelTrajectoryMode === "skyfall"
+          ? "fixed_point"
+          : "direct",
       loadoutSlot:
         fields.loadoutSlot === "ultimate"
           ? "ultimate"
