@@ -6783,3 +6783,13 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - CI `38137689583` : SUCCESS sur le correctif et son test ; les cinq autres icônes V1 sont conformes.
 - Rapport : `docs/LAB_BLINDING_ASH_WEBP_REPAIR_V1.md`.
 - Suite protocolaire : CI sur le SHA documentaire final, checkpoint GREEN puis FF `global-assets` sous lease. Publier ensuite la révision de cache consommateur `gh-pages`, en lot distinct, sans modifier gameplay.
+
+## 2026-10-11 — Cendre aveuglante : remplacement par l'image source originale
+
+- Retour utilisateur : l'icône paraît toujours endommagée après l'ajout d'un octet au WebP. **Ne pas traiter le test RIFF réussi comme validation de rendu Android**.
+- Autorité : `global-assets`, SHA de base `b24364147c5392a79b1eac9b1286fa11e4cd84a5`, checkpoint `checkpoint/global-assets-before-blinding-ash-source-restore-v1-2026-10-11`, branche `work/global-assets-blinding-ash-source-restore-v1-2026-10-11`.
+- Nouvelle source vérifiée : fichier image original `image-gen-1(20261007-190701).png`, 1254×1254 RGBA, SHA256 `e6e0f885a335f66007ac75499502d293e61170a08a70280acd41f80a58fcc4d6` ; illustration cendre et fumée inspectée dans sa série de six images.
+- Diagnostic : le correctif précédent complétait un flux WebP compressé ancien, sans revenir à sa source PNG et sans certifier son rendu en jeu. Export neuf depuis la source, puis alpha/dimensions/qualité visuelle vérifiés.
+- Périmètre : remplacer uniquement `assets/library/capture/icons/skills/icon_skill_blinding_ash_01.webp` en gardant `pack:capture:icon-skill-blinding-ash-01`, modifier sa provenance V1 (SHA source et nouvelle empreinte), renforcer la sentinelle V1, ce journal et le rapport du lot. Le catalogue reste unique et ne change pas.
+- Protégés : 129 autres médias, tous les exports de compétences, `configuredSkills`, les 103 créatures, Combat Core/FX, `main`, GenSrpG et Exploration.
+- Critère technique : échec contrôlé avant remplacement, WebP source restauré 128×128, transparence conforme au PNG original, décodeur réel OK, CI assets verte au SHA final, checkpoint GREEN puis FF assets sous lease. Lot `gh-pages` séparé pour nouvelle révision de cache si nécessaire ; test manuel Android **obligatoire avant validation artistique**.
