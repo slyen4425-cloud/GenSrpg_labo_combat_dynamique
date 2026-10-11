@@ -168,17 +168,17 @@
           "scale": 1.5
         },
         "cameraShake": {
-          "amplitudePx": 600,
+          "amplitudePx": 5,
           "durationMs": 140
         },
         "projectileTrail": {
           "color": "#ffffff",
-          "count": 8,
-          "lengthPx": 120,
-          "sizePx": 120,
+          "count": 6,
+          "lengthPx": 50,
+          "sizePx": 8,
           "opacity": 1,
           "anchorX": 0.5,
-          "anchorY": 0.5
+          "anchorY": 0.4
         },
         "impactBurst": {
           "color": "#ffffff",
@@ -192,7 +192,7 @@
           "color": "#594943",
           "count": 8,
           "spreadPx": 50,
-          "sizePx": 120,
+          "sizePx": 35,
           "risePx": 150,
           "durationMs": 500,
           "opacity": 0.5
