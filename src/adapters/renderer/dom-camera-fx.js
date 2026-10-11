@@ -104,7 +104,7 @@ export function createDomCameraFxRenderer({
     cancel();
     const animation = animate(element, timeline.keyframes, {
       duration: timeline.durationMs,
-      easing: "linear",
+      easing: Array.isArray(plan.sequence) && plan.sequence.length > 0 ? "linear" : "ease-out",
       fill: "none"
     });
 
