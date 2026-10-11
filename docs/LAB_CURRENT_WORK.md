@@ -1398,3 +1398,14 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 ### Sentinelle historique à conserver pendant le changement de cache Air
 
 Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` impose encore l'ancienne chaîne exacte de révision `v26`, alors que le cache doit avancer à `v27`. Extension minime du périmètre à cette sentinelle : remplacer l'égalité globale d'une version historique par une vérification de révision datée >= v26, tout en conservant les contrôles des huit icônes et de leurs URLs. Le nouveau test Air vérifiera expressément v27 et la résolution des quatre médias via le resolver déjà existant. Aucun second chargeur ni modification du runtime.
+
+
+## 2026-10-11 — Modèle auteur Ailevent / Capture
+
+- Source exacte : export `gensrpg-capture-creature-crea_ailevent.json`, `capture-creature-transfer-v1`, SHA-256 `25b6d8a088a728651671c474c3503a59fdb34ddab6053668364622f2690f96ee` (5368 octets).
+- Base `gh-pages` `4b583763923edc5b5c0ecec0ca89a2398993fea4`, checkpoint `checkpoint/lab-start-capture-ailevent-author-v1-2026-10-11`, branche `work/lab-capture-ailevent-author-v1-2026-10-11`.
+- Owner unique : presets de showcase Capture via transfert existant, remplacement par ID `crea_ailevent` des 103 créatures canonisées ; aucun second catalogue ni mutation du gameplay.
+- Fichiers autorisés : un JSON sous `data/capture/showcase/`, `src/catalogs/capture-showcase-creature-presets-v1.js`, tests source/contrat/startup, le présent journal et `docs/LAB_AILEVENT_AUTHOR_PRESET_V1.md`.
+- Respect des valeurs source : 170 PV, 15 Air, 20 Vitesse, 10 Défense, résistances Terre +35/Électricité -50, sockets et poses, loadout de quatre compétences, évolution vers Rafalcor et audio auteur. Anciens `sourceStats` et résistances non cataloguées conservés, aucun moteur/statRegistry modifié.
+- Interdits : `main`, `global-assets`, autres skills/créatures, Core/FX, son, visuels, `Zombicide-40k`, Exploration. Test RED `f7880becde0d113da24549e6d4f46be1d94e0285`; test exact SHA + import normalisé + 102→103 / 1 occurrence ID ; CI complète et Chromium requis avant GREEN/FF.
+- Rapport : `docs/LAB_AILEVENT_AUTHOR_PRESET_V1.md`. Test visuel Android à demander après publication.

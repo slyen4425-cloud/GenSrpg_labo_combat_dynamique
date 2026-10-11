@@ -175,6 +175,15 @@ test("startup library remains complete while showcase presets are applied throug
   );
   assert.ok(configuredCreatures.has("crea_mossback"));
   assert.ok(configuredCreatures.has("crea-loup"));
+  const ailevent = configuredCreatures.get("crea_ailevent");
+  assert.ok(ailevent,"Ailevent remains the one canonical ID");
+  assert.equal(ailevent.statValues.values.health,170);
+  assert.equal(ailevent.statValues.values.air,15);
+  assert.equal(ailevent.draft.presentation.profileId,"flying");
+  assert.equal(ailevent.draft.capture.evolution.targetId,"crea_rafalcor");
+  assert.deepEqual(ailevent.loadout.slots.map(x=>x.skillId),
+    ["cap_air_atk_1","cap_air_atk_2","cap_air_atk_3","cap_air_atk_4",null]);
+
 
   assert.equal(
     buildCaptureEditorDatabaseV1({

@@ -1,0 +1,265 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_ailevent",
+    "displayName": "Ailevent",
+    "description": "Oisillon des courants, extrêmement mobile.",
+    "level": 1,
+    "sourceStats": {
+      "force": 9,
+      "agility": 17,
+      "intelligence": 0,
+      "spirit": 9,
+      "endurance": 7,
+      "initiative": 20
+    },
+    "elements": [
+      "air"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 0
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": 35
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": -50
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 62,
+      "spawnChance": 18,
+      "spawnTags": [
+        "air"
+      ],
+      "evolution": {
+        "condition": "level",
+        "level": 16,
+        "targetId": "crea_rafalcor"
+      }
+    },
+    "combat": {
+      "maxHp": 170,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": -20
+    },
+    "skillIds": [
+      "cap_air_atk_1",
+      "cap_air_atk_2",
+      "cap_air_atk_3",
+      "cap_air_atk_4",
+      "cap_air_atk_5",
+      "cap_air_atk_6",
+      "cap_air_atk_7",
+      "cap_air_special_1",
+      "cap_air_special_2"
+    ],
+    "presentation": {
+      "id": "creature:crea_ailevent",
+      "version": 2,
+      "subjectType": "creature",
+      "subjectId": "crea_ailevent",
+      "profileId": "flying",
+      "displayScale": 1.08,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.8,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 1.4,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "78%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-ailevent-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-ailevent-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-ailevent-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.25567011388076477,
+            "y": 0.6090277830759684
+          },
+          "back": {
+            "x": 0.7835051195253538,
+            "y": 0.4473090171813965
+          }
+        },
+        {
+          "id": "head",
+          "label": "Tête",
+          "front": {
+            "x": 0.2,
+            "y": 0.4
+          },
+          "back": {
+            "x": 0.8,
+            "y": 0.4
+          }
+        },
+        {
+          "id": "left-hand",
+          "label": "Main / patte gauche",
+          "front": {
+            "x": 0.1,
+            "y": 0.77
+          },
+          "back": {
+            "x": 0.7,
+            "y": 0.78
+          }
+        },
+        {
+          "id": "right-hand",
+          "label": "Main / patte droite",
+          "front": {
+            "x": 0.31,
+            "y": 0.78
+          },
+          "back": {
+            "x": 0.92,
+            "y": 0.76
+          }
+        },
+        {
+          "id": "tail",
+          "label": "Queue",
+          "front": {
+            "x": 0.81,
+            "y": 0.73
+          },
+          "back": {
+            "x": 0.18,
+            "y": 0.72
+          }
+        }
+      ],
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:conflux-da9a4465",
+          "volume": 1
+        }
+      }
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_ailevent",
+    "values": {
+      "health": 170,
+      "speed": 20,
+      "physical": 0,
+      "defense": 10,
+      "fire": 0,
+      "water": 0,
+      "earth": 0,
+      "air": 15,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_ailevent",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "cap_air_atk_1"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "cap_air_atk_2"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "cap_air_atk_3"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "cap_air_atk_4"
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": null
+      }
+    ]
+  }
+}
