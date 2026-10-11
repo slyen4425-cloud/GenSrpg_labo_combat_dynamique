@@ -359,6 +359,8 @@ test("Cendre aveuglante showcase preset preserves the latest authored V3 export"
     ],
     {
       mode: "sprite",
+      tintBlinkEnabled: false,
+      tintBlinkPeriodMs: 600,
       tintColor: "#5b2067",
       tintOpacity: 0.35,
       sprite: {
