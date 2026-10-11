@@ -1925,3 +1925,60 @@ button.reserve-card {
     transition: none;
   }
 }
+
+
+/* Capture FX editor's visual *guide*: no impact on the combat FX renderer. */
+.fx-quick-card {
+  margin: 0.85rem 0;
+  padding: 0.9rem;
+  border: 1px solid rgba(135, 221, 228, 0.3);
+  border-radius: 0.9rem;
+  background: rgba(26, 63, 76, 0.35);
+}
+.fx-quick-card h3 { margin: 0 0 0.4rem; }
+.fx-quick-preview {
+  --quick-glow: 0.22;
+  --quick-size: 1;
+  position: relative;
+  height: 4.75rem;
+  margin: 0.5rem 0;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(140, 200, 213, 0.3);
+  background: radial-gradient(ellipse at 52% 50%, rgba(112, 156, 165, 0.16), transparent 75%), #0b1c26;
+  overflow: hidden;
+}
+.fx-quick-preview[data-level="discreet"] { --quick-glow: 0.26; --quick-size: 0.65; }
+.fx-quick-preview[data-level="balanced"] { --quick-glow: 0.58; --quick-size: 1; }
+.fx-quick-preview[data-level="spectacular"] { --quick-glow: 0.94; --quick-size: 1.4; }
+.fx-quick-preview__core {
+  position: absolute;
+  top: 50%;
+  left: 53%;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fff9e5, #ffb66a 48%, #b54d29 82%);
+  transform: translate(-50%, -50%) scale(var(--quick-size));
+  box-shadow: 0 0 calc(0.7rem * var(--quick-size)) rgba(255, 155, 85, var(--quick-glow));
+}
+.fx-quick-preview__trail {
+  position: absolute;
+  top: 50%;
+  right: 47%;
+  width: calc(2.8rem * var(--quick-size));
+  height: calc(0.7rem * var(--quick-size));
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255, 172, 99, var(--quick-glow)));
+  filter: blur(0.18rem);
+}
+.fx-quick-preview__smoke {
+  position: absolute;
+  top: 25%;
+  left: 65%;
+  width: calc(1.4rem * var(--quick-size));
+  height: calc(1.4rem * var(--quick-size));
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(187, 189, 184, var(--quick-glow)), transparent 73%);
+  filter: blur(0.3rem);
+}
