@@ -15,7 +15,7 @@ const FILE = "data/capture/showcase/cap_earth_atk_4.capture-skill-transfer-v1.js
 const ID = "cap_earth_atk_4";
 const RETIRED = "lib_rock_slam";
 
-test("author transfer replaces cap_earth_atk_4 exactly once with V10 skyfall, without changing author settings", async () => {
+test("author transfer replaces cap_earth_atk_4 exactly once with V10 skyfall, preserving all settings except six user-approved FX test values", async () => {
   const paths = CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(path => path.includes("cap_earth_atk_4"));
   assert.deepEqual(paths, [FILE]);
   const transfer = importCaptureTransferJsonV1(await read(FILE));
@@ -49,7 +49,13 @@ test("author transfer replaces cap_earth_atk_4 exactly once with V10 skyfall, wi
   assert.equal(d.presentation.visual.impact.displayScale, 1);
   assert.equal(d.presentation.visual.impact.offsetY, -25);
   assert.equal(d.presentation.visual.impact.durationMs, 750);
-  assert.equal(d.presentation.feedback.cameraShake.amplitudePx, 600);
+  assert.equal(d.presentation.feedback.cameraShake.amplitudePx, 5);
+  assert.equal(d.presentation.feedback.projectileTrail.count, 6);
+  assert.equal(d.presentation.feedback.projectileTrail.lengthPx, 50);
+  assert.equal(d.presentation.feedback.projectileTrail.sizePx, 8);
+  assert.equal(d.presentation.feedback.projectileTrail.anchorX, 0.5);
+  assert.equal(d.presentation.feedback.projectileTrail.anchorY, 0.4);
+  assert.equal(d.presentation.feedback.aftermathSmoke.sizePx, 35);
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(d)).value.draft, d);
   const fields = humanSkillEditorFieldsFromDraftV1(d);
   assert.equal(fields.presentation.travelTrajectoryMode, "skyfall");
