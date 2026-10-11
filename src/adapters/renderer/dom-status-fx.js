@@ -136,6 +136,10 @@ export function createDomStatusFxRenderer({
 
     let record =
       records.get(key) ?? null;
+    if (record && record.motion !== target.motion) {
+      removeRecord(key);
+      record = null;
+    }
     if (!record) {
       const node =
         target.motion.ownerDocument
@@ -145,7 +149,7 @@ export function createDomStatusFxRenderer({
       node.dataset.statusFx = "tint";
       node.dataset.statusId = statusId;
       target.motion.append(node);
-      record = { node };
+      record = { node, motion: target.motion, pulseSignature: null, frameAnimation: null };
       records.set(key, record);
     }
 
@@ -154,6 +158,30 @@ export function createDomStatusFxRenderer({
       presentation.tintColor;
     record.node.style.opacity =
       String(presentation.tintOpacity);
+
+    // One browser-owned Web Animation per live status, never a JS clock.
+    // Native removal and renderer.dispose() cancel its animation.
+    const blinking = presentation.tintBlinkEnabled === true;
+    const opacity = Number(presentation.tintOpacity);
+    const period = Number(presentation.tintBlinkPeriodMs ?? 600);
+    const pulseSignature = JSON.stringify([blinking, opacity, period]);
+    if (record.pulseSignature !== pulseSignature) {
+      record.frameAnimation?.cancel?.();
+      record.frameAnimation = null;
+      record.pulseSignature = pulseSignature;
+      if (blinking && typeof record.node.animate === "function") {
+        record.frameAnimation = record.node.animate([
+          { opacity: String(opacity), offset: 0 },
+          { opacity: "0", offset: 0.5 },
+          { opacity: String(opacity), offset: 1 }
+        ], {
+          duration: period,
+          easing: "ease-in-out",
+          iterations: Infinity,
+          fill: "both"
+        });
+      }
+    }
     record.node.style.mixBlendMode = "normal";
     record.node.style.maskImage = mask;
     record.node.style.webkitMaskImage = mask;
