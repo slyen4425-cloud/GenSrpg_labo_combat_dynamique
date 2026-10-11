@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 const root=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(root,"data/assets/catalog/global-visual-assets.v1.json"),"utf8"));
@@ -60,4 +61,29 @@ test("Capture skill icons V1 point to six valid WebP runtime files",()=>{
     assert.equal(bytes.subarray(0,4).toString("ascii"),"RIFF");
     assert.equal(bytes.subarray(8,12).toString("ascii"),"WEBP");
   }
+});
+
+test("Capture V1 WebP RIFF and internal chunks are not truncated",()=>{
+  for(const item of expected){
+    const bytes=fs.readFileSync(path.join(root,"assets/library",item.file));
+    assert.equal(bytes.readUInt32LE(4)+8,bytes.length,item.id+" complete RIFF");
+    let offset=12;
+    while(offset<bytes.length){
+      assert.ok(offset+8<=bytes.length,item.id+" complete chunk header");
+      const size=bytes.readUInt32LE(offset+4);
+      const kind=bytes.toString("ascii",offset,offset+4);
+      assert.ok(offset+8+size<=bytes.length,item.id+" complete "+kind+" payload");
+      offset+=8+size+(size&1);
+    }
+    assert.equal(offset,bytes.length,item.id+" aligned chunk chain");
+  }
+});
+
+test("Cendre aveuglante published WebP matches canonical file provenance",()=>{
+  const p=path.join(root,"assets/library/capture/icons/skills");
+  const provenance=JSON.parse(fs.readFileSync(path.join(p,"capture_skill_icons_v1.provenance.json"),"utf8"));
+  const e=provenance.assets.find(x=>x.id==="pack:capture:icon-skill-blinding-ash-01");
+  assert.ok(e);
+  const bytes=fs.readFileSync(path.join(root,"assets/library",e.file));
+  assert.equal(createHash("sha256").update(bytes).digest("hex"),e.sha256);
 });
