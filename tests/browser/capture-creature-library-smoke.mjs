@@ -97,7 +97,31 @@ const server = createServer(async (req, res) => {
             const style=document.querySelector("[data-skill-fx-quick-profile]");
             const apply=document.querySelector("[data-skill-fx-quick-apply]");
             const preview=document.querySelector("[data-skill-fx-quick-preview]");
-            if(!style||!apply||!preview)throw Error("quick controls absent");
+            const workflow=document.querySelector("[data-skill-fx-unified-flow]");
+            const starter=document.querySelector("[data-skill-fx-starter]");
+            const starterSelect=document.querySelector("[data-skill-fx-starter-profile]");
+            const starterApply=document.querySelector("[data-skill-fx-starter-apply]");
+            const personalize=document.querySelector("[data-skill-fx-personalize]");
+            const glowPreset=document.querySelector("[data-skill-fx-glow-preset]");
+            const particlePreset=document.querySelector("[data-skill-fx-particle-preset]");
+            if(!style||!apply||!preview||!workflow||!starter||!starterSelect||!starterApply||!personalize||!glowPreset||!particlePreset)
+              throw Error("unified FX controls absent");
+            if(!workflow.contains(starter)||!workflow.contains(style)||!workflow.contains(personalize))
+              throw Error("one FX workflow does not own all three steps");
+            if(!(starter.compareDocumentPosition(style) & Node.DOCUMENT_POSITION_FOLLOWING) ||
+               !(style.compareDocumentPosition(personalize) & Node.DOCUMENT_POSITION_FOLLOWING))
+              throw Error("FX steps not ordered style > intensity > personalization");
+            if(personalize.open)throw Error("optional customization should be collapsed by default");
+            if(document.querySelectorAll("[data-skill-fx-starter-profile], [data-skill-fx-quick-profile]").length!==2)
+              throw Error("duplicate simple FX owners");
+            if(!starterSelect.disabled && starterSelect.options.length>1){
+              starterSelect.value=starterSelect.options[1].value;
+              starterSelect.dispatchEvent(new Event("change",{bubbles:true}));
+              if(read("[data-skill-projectile-trail-size]")!=="8")
+                throw Error("choosing a style silently replaced rock FX");
+              starterSelect.value="";
+              starterSelect.dispatchEvent(new Event("change",{bubbles:true}));
+            }
             if(read("[data-skill-projectile-trail-size]")!=="8"||
                read("[data-skill-impact-shake-amplitude]")!=="5")
               throw Error("authored rock FX changed on initial load");
@@ -123,6 +147,13 @@ const server = createServer(async (req, res) => {
             trail.value="8";
             trail.dispatchEvent(new Event("input",{bubbles:true}));
             if(style.value!=="current")throw Error("advanced edit did not restore custom label");
+            personalize.open=true;
+            glowPreset.value="discreet";
+            glowPreset.dispatchEvent(new Event("change",{bubbles:true}));
+            if(read("[data-skill-fx-glow-strength]")!=="0.35")
+              throw Error("customization did not reuse original glow preset owner");
+            if(read("[data-skill-travel-fx]")!=="pack:capture:sprite-falling-rock-skyfall-01")
+              throw Error("customization modified authored media");
             document.body.dataset.fxQuickProbe="ok:preview:explicit-apply:presets:skyfall:advanced";
           }catch(e){document.body.dataset.fxQuickProbe="fail:"+e.message;}
         },100);
