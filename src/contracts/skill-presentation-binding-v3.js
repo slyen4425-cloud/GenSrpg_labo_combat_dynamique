@@ -218,8 +218,8 @@ function normalizeStatusVisual(
 
   return Object.freeze({
     mode,
-    tintBlinkEnabled: value.tintBlinkEnabled === true,
-    tintBlinkPeriodMs: blinkPeriod,
+    ...(value.tintBlinkEnabled == null ? {} : { tintBlinkEnabled: value.tintBlinkEnabled }),
+    ...(value.tintBlinkPeriodMs == null ? {} : { tintBlinkPeriodMs: blinkPeriod }),
     tintColor: colorValue(
       value.tintColor,
       field + ".tintColor"
