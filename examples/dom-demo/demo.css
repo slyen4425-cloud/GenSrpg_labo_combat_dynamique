@@ -1982,3 +1982,42 @@ button.reserve-card {
   background: radial-gradient(circle, rgba(187, 189, 184, var(--quick-glow)), transparent 73%);
   filter: blur(0.3rem);
 }
+
+
+/* Single progressive FX authoring journey. Old preset owners remain unchanged. */
+.fx-unified-flow {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0.85rem 0;
+  padding: clamp(0.65rem, 2vw, 1rem);
+  border: 1px solid rgba(135, 221, 228, 0.33);
+  border-radius: 0.9rem;
+  background: rgba(18, 47, 59, 0.28);
+}
+.fx-unified-flow > .note:first-child { margin: 0; }
+.fx-unified-flow .fx-flow-step {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(135, 221, 228, 0.18);
+  border-radius: 0.72rem;
+  background: rgba(23, 55, 68, 0.24);
+}
+.fx-unified-flow .fx-flow-step h3 { margin: 0 0 0.45rem; }
+.fx-unified-flow .fx-quick-card { border-color: rgba(135, 221, 228, 0.18); }
+.fx-flow-personalize {
+  padding: 0.75rem;
+  border: 1px solid rgba(135, 221, 228, 0.23);
+  border-radius: 0.72rem;
+  background: rgba(23, 55, 68, 0.24);
+}
+.fx-flow-personalize summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.fx-flow-personalize[open] summary { margin-bottom: 0.7rem; }
+.fx-flow-personalize label, .fx-unified-flow label { min-width: 0; }
+@media (max-width: 600px) {
+  .fx-unified-flow { padding: 0.55rem; gap: 0.65rem; }
+  .fx-unified-flow .fx-flow-step, .fx-flow-personalize { padding: 0.55rem; }
+}
