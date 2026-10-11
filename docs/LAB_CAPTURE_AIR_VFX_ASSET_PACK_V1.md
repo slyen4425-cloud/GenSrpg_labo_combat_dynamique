@@ -30,3 +30,12 @@ Chaque source image de 1402x1122 en grille 5x4 est montée à 20 frames RGBA 512
 - wind_bolt: SHA256 `82436f328c67acc854d64af6aba14d9e633fafbc5e517d58211acb5977f0fee7`.
 - wind_tornado: SHA256 `de9ccc4584c67f81db0fa441e5c3c4586fc8dbf74e3184948927891492c6f273`.
 - wind_impact: SHA256 `128a2417bfafa13068325d5b1e86f65a18bb8a68c5babf41fffb88db9ef5a4c4`.
+
+## Validation technique réelle — 2026-10-11
+
+- Aperçu local des quatre séries contrôlé à partir du pack original : charge, rafale dirigée, tornade, et impact visuellement différenciés. Les graphismes sont des images réelles, pas des placeholders ; le rendu exact sur Android reste à tester par l'utilisateur.
+- 100 fichiers dans les quatre répertoires d'assets : 80 frames PNG RGBA 512×512, 4 bandes runtime WebP RGBA 7680×384, 4 bandes-source WebP RGBA 10240×512, 4 manifestes JSON, 4 fichiers de provenance CSV et 4 README.
+- Les 4 sources ont été comparées à leurs SHA-256 connus ; les 80 frames à leurs SHA-256 de provenance ; chaque atlas runtime a été validé pour son entête WebP étendu, son canal alpha et sa largeur/hauteur par la sentinelle dédiée.
+- Le premier passage a trouvé trois tests historiques bloquant les nouveaux totaux et quatre manifestes contenant une fin `\\n` parasite. Ces seuls défauts ont été corrigés ; les tests des compétences et médias historiques restent actifs.
+- CI du dernier commit de validation : GitHub Actions `38163521259` SUCCESS sur `7a2ff8c913c4c1ff9656c20f101adfd9654c59aa`. Le workflow temporaire de génération a été supprimé après constitution du pack ; script de conversion conservé pour la reproductibilité des médias.
+- Prochaine étape protocolaire : CI sur SHA documentaire final, checkpoint GREEN exact, publication non forcée vers `global-assets`, puis lot distinct de révision du cache côté `gh-pages`.
