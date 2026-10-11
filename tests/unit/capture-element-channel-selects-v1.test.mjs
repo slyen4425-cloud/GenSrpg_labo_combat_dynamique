@@ -26,7 +26,7 @@ test("all free-text channels in skill effects and stat resistance editor are sel
   const html=await rootText("examples/dom-demo/capture-editor-v2.html");
   for(const key of ["statDefinitionDamageChannel","statDefinitionResistanceChannel","skillEffectChannel","skillScheduledEffectChannel","skillZoneStatusChannel","skillStatusChannel","skillZoneChannel"]){
     assert.match(js,new RegExp("captureEditorElementChannelChoicesV1|humanElementChannelSelectV1"));
-    if(key.startsWith("statDefinition")||["skillEffectChannel","skillScheduledEffectChannel","skillZoneStatusChannel"].includes(key))assert.doesNotMatch(js,new RegExp('tacticalTextInputV1\\(\\s*["\\']'+key));
+    if(key.startsWith("statDefinition")||["skillEffectChannel","skillScheduledEffectChannel","skillZoneStatusChannel"].includes(key)) assert.doesNotMatch(js,new RegExp(String.raw`tacticalTextInputV1\\(\\s*["']`+key));
   }
   assert.match(html,/<select[^>]+data-stat-custom-resistance-channel/);
   assert.match(html,/<select[^>]+data-stat-custom-damage-channel/);
