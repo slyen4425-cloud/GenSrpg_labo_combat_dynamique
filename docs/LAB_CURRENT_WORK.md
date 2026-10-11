@@ -1302,3 +1302,13 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - Révision canonique `2026-10-11-v25-blinding-ash-webp-repair`; assetId et catalogue inchangés.
 - Rapport : `docs/LAB_BLINDING_ASH_WEBP_CACHE_V1.md`.
 - Fin : CI du SHA documentaire, checkpoint GREEN, FF `gh-pages`, Pages SUCCESS ; retour utilisateur Android pour validation réelle.
+
+## 2026-10-11 — Cendre aveuglante : cache de l'icône restaurée depuis sa source
+
+- **Retour utilisateur** : l'icône reste endommagée après réparation du terminal RIFF. Nouveau WebP 128×128 réellement réencodé depuis le PNG original et publié par le seul propriétaire `global-assets` (SHA `18b0673a17c12ba9f80f7ff539bb58b4ee20af01`, CI `38140035474` SUCCESS, checkpoint `checkpoint/lab-blinding-ash-source-restore-v1-green-2026-10-11`).
+- **Base exacte** : `gh-pages` `61d09fa488002d4a6c49823939e7daec0bac16e3`, checkpoint `checkpoint/lab-start-blinding-ash-source-restore-cache-v1-2026-10-11`, travail `work/lab-blinding-ash-source-restore-cache-v1-2026-10-11`.
+- **Autorité** : l'unique `src/assets/global-visual-library.js` doit rafraîchir l'URL du média sans nouveau resolver, sans import d'assets en dur et sans changer l'asset ID `pack:capture:icon-skill-blinding-ash-01`.
+- **Périmètre** : la constante de révision globale `REVISION` (`v25` -> `2026-10-11-v26-blinding-ash-source-restore`), sa sentinelle dans `tests/unit/capture-skill-icons-global-library-v2.test.mjs`, ce journal et un rapport dédié. Aucun changement aux autres fichiers n'est autorisé.
+- **Protégés** : le catalogue actif, les 103 créatures, les compétences et exports, combat/FX, les 129 autres médias, `global-assets` dans ce lot, `main`, `Zombicide-40k`, Exploration.
+- **Test RED / GREEN** : rendre la sentinelle RED sur v25, corriger la révision unique, vérifier Node + deux smokes Chromium du vrai éditeur 103 créatures, CI au SHA documentaire final, checkpoint exact GREEN, FF `gh-pages` sous lease et GitHub Pages SUCCESS.
+- **Risque / validation** : cache navigateur et cache raw.githubusercontent.com distincts ; ne pas déclarer l'apparence mobile corrigée sans nouveau test Android utilisateur.
