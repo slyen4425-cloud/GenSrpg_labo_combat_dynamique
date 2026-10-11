@@ -36,13 +36,13 @@ test("actual button target then CombatSession show four statuses on player and z
  assert.equal(start.ok,true);
  session.advanceMs(1600);
  assert.equal(session.completeSkill({action:start.action}).ok,true);
- const state=session.snapshot();
- assert.equal(state.fighters["local-1"].statusEffects.length,4);
- assert.equal(state.fighters["opponent-1"].statusEffects.length,0);
+ const snapshot=session.snapshot();
+ assert.equal(snapshot.fighters["local-1"].statusEffects.length,4);
+ assert.equal(snapshot.fighters["opponent-1"].statusEffects.length,0);
  const document=doc(), statusHost={dataset:{},style:{},children:[],ownerDocument:document,append(...xs){this.children.push(...xs)}};
  const motion={ownerDocument:document,style:{}},image={ownerDocument:document,style:{},src:"https://example.test/test.webp"};
  const renderer=createDomStatusFxRenderer({targetFor:()=>({motion,image,statusHost}),statusPresentationFor:()=>null,skillDefinitionFor:()=>tailwind});
- renderer.sync(state);
+ renderer.sync(snapshot);
  assert.equal(statusHost.children.filter(x=>x.dataset.statusFx==="hud-icon"&&!x.removed).length,4);
  renderer.dispose();
 });
