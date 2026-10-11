@@ -1,6 +1,6 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
-const REVISION = "2026-10-11-v26-blinding-ash-source-restore";
+const REVISION = "2026-10-11-v27-capture-air-vfx";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
