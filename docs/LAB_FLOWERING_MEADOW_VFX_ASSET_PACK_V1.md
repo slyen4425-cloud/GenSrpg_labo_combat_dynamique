@@ -30,3 +30,8 @@ Dépôt : `slyen4425-cloud/GenSrpg_labo_combat_dynamique`. Propriétaire binaire
 - Catalogue après ajout : 122 assets, dont 69 sprites.
 - Contrôle visuel des frames et des séparations effectué pendant la préparation du pack.
 - Les tests automatiques et la validation du chargement via `gh-pages` doivent précéder la déclaration GREEN.
+
+## CI structurelle — GREEN technique
+- Commit pack + catalogue + sentinelles : `5774dd26d9d507750dbbb3321a3d95008363e5b5`.
+- Workflow `Laboratory CI` : [run 38109312816](https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/38109312816), conclusion : **SUCCESS**.
+- La validation visuelle sur smartphone et la vérification du sélecteur dans la preview constituent la validation utilisateur restante. Elles ne sont pas prétendues effectuées.
