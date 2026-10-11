@@ -1377,3 +1377,20 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - RED `38157473496` FAILURE attendue ; tests historiques rendus compatibles avec le nouveau vocabulaire, sans suppression de sentinelles.
 - CI `38157846259` **SUCCESS** sur le SHA technique `914541311a8fac747f06f8eba5d3f86a559dd911` : Foundation + 2 navigations Chromium GREEN ; test de l'ordre des étapes et des effets non destructifs, 103 créatures inchangées.
 - Rapport `docs/LAB_CAPTURE_FX_UNIFIED_FLOW_V1.md`. Sortie : CI SHA documentaire, checkpoint GREEN identique, publication FF sous SHA lease et vérification Pages/CI. Contrôle d'ergonomie Android toujours nécessaire.
+
+
+## 2026-10-11 — Raccord cache de la bibliothèque VFX Air (consommateur Labo Combat)
+
+- Base LIVE `gh-pages` : `d093b4dd2b519bb6cc07dd3d9c424e4f575f8ee6` (CI `38158034825` SUCCESS, déploiement Pages `38158034091` SUCCESS).
+
+- Checkpoint départ : `checkpoint/lab-start-capture-air-vfx-cache-v1-2026-10-11` ; branche : `work/lab-capture-air-vfx-cache-v1-2026-10-11`.
+
+- Autorité médias : `global-assets` GREEN `8633466eae72e320a6cd1c017a8d8f1bc10afcf3` (4 sprites Air, 80 images, 4 atlases, 134 assets dont 73 sprites). Le consommateur ne devient pas propriétaire des fichiers.
+
+- Objectif : actualiser uniquement la révision du cache de l'unique `GLOBAL_VISUAL_LIBRARY` `v26` -> `v27` pour exposer les quatre `assetId` dans l'éditeur. Test sentinelle de résolution d'URL par ID avec la vraie structure du catalogue, maintenue pure et utilisable depuis l'éditeur. Aucune attribution automatique de capacités.
+
+- Fichiers autorisés : `src/assets/global-visual-library.js`, `tests/unit/capture-air-vfx-global-library-v1.test.mjs` (test uniquement) et ce journal; les tests historiques qui fixent une révision exacte ancienne pourront être révisés au minimum si la CI les désigne et l'addendum de périmètre le documente. Aucun autre fichier de production, aucune retouche aux médias ni au moteur.
+
+- Protégés : `global-assets` (owner), `main`, `Zombicide-40k`, Exploration, Combat Rules, `configuredSkills`, `configuredCreatures`, FX/Render Core et les 103 créatures.
+
+- Validation : sentinelles de bibliothèque et recherche catalogue, CI complète + Chromium sur SHA exact, checkpoint GREEN, publication FF sous lease `gh-pages`, Pages SUCCESS ; test manuel Android de l'affichage des nouveaux médias par l'utilisateur.
