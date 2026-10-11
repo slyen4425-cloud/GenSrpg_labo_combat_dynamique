@@ -117,11 +117,11 @@ test("2v2 supportive ability auto-selects only eligible ally without bypassing p
   assert.equal(target(battle,support,"foe-1").targetId,null,"two valid support targets still require choice");
 });
 
-test("authored Charge tellurique keeps its self-only target and can cast from an enemy selection", async () => {
+test("authored Charge tellurique now supports self and ally, and auto-picks only possible caster in 1v1", async () => {
   const json=JSON.parse(await readFile(new URL("../../data/capture/showcase/cap_earth_atk_3.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
   const { adaptCaptureSkillToSkillDefinition }=await import("../../src/adapters/input/capture/capture-skill-to-skill-definition.js");
   const definition=adaptCaptureSkillToSkillDefinition({id:json.draft.id,definition:json.draft.definition});
   assert.equal(definition.name,"Charge tellurique");
-  assert.deepEqual(definition.targetRelations,["self"]);
+  assert.deepEqual(definition.targetRelations,["ally","self"]);
   assert.equal(target(format(1),definition,"foe-1").targetId,"hero-1");
 });
