@@ -37,3 +37,10 @@ Cette intervention permet de tester une **hypothèse de réglage** : des tailles
 **Validation Android paysage distincte** : l'utilisateur vérifie l'apparence réelle dans son combat et répond avant de conclure à un rendu artistique validé.
 
 Tout le reste est protégé : Combat Core/Runtime/Rules, modèle de contact, FX Renderer, `global-assets`, autres capacités, 103 créatures, `main`, GenSrpG principal et Exploration.
+
+## CI et sentinelles — résultat avant clôture
+
+- Premier correctif `5a717cee7122a46f2b9fa1004b2e26f971df2626` : `38146871900` en FAILURE foundation, mais les deux tests navigateurs sont SUCCESS. La cause a été diagnostiquée depuis les logs GitHub : une ancienne sentinelle `capture-impact-rocheux-author-retire-v1.test.mjs` imposait encore `600` au lieu des `5` explicitement autorisés ; le nouveau test interrogeait le type de ciblage sur une définition déjà normalisée `direct`, plutôt que sur l'export brut où `skyfall` est sémantiquement dérivé à la frontière.
+- Correctifs **des seuls tests** : test de routage depuis l'auteur brut (`aa855df49804879e272b623f3ec50c2950ee27b4`) et ancienne sentinelle actualisée avec les six valeurs (`34c491e473900afd5f486a3685c802862f13e206`). Aucun changement additionnel de données, de moteur ou de sprite.
+- CI `38147064678` sur `34c491e473900afd5f486a3685c802862f13e206` : **SUCCESS**, jobs `foundation`, `creature-library-browser`, `firestorm-zone-growth-browser` tous SUCCESS.
+- Dernière porte : CI du commit documentaire final, checkpoint GREEN exact, fast-forward sous contrôle du HEAD et Pages SUCCESS.
