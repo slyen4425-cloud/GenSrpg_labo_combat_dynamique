@@ -24,7 +24,7 @@ L'empreinte `sha256` de provenance publiée auparavant (`5f7b...`) ne correspond
 - Inspection réelle du WebP endommagé et de sa version restaurée : OK.
 - Les cinq autres WebP du lot V1 ont été contrôlés et sont complets.
 - Test RED volontaire : GitHub Actions `38137601918` FAILED sur ancienne image.
-- Tests et CI du commit correctif : à contrôler.
-- Checkpoint GREEN, publication `global-assets`, cache consommateur `gh-pages` et validation visuelle smartphone : à contrôler.
+- Tests et CI du commit correctif : **SUCCESS** (workflow `38137689583`, commit `55fb10428ef88d7734e3415213ac2f7e27da2050`).
+- CI documentaire, checkpoint GREEN, publication `global-assets`, cache consommateur `gh-pages` et validation visuelle smartphone : à contrôler.
 
 Le statut GREEN artistique sur Android doit attendre la validation utilisateur réelle.

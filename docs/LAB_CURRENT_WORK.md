@@ -6775,3 +6775,11 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - **Périmètre autorisé** : uniquement cet unique WebP, la provenance V1 déjà autoritaire, le test sentinelle V1 pour valider les longueurs RIFF/chunks et le SHA, ce journal et un rapport ciblé. Cache-buster du consommateur `gh-pages` dans un lot séparé après assets GREEN.
 - **Protégés** : les autres 129 assets, catalogue (ID `pack:capture:icon-skill-blinding-ash-01` et chemin inchangés), exports auteurs, compétences, le moteur Combat, les 103 créatures, `main`, GenSrpG et Exploration.
 - **TDD** : reproduire en RED la corruption réelle via validation RIFF/chunks sur les 6 icônes V1, restaurer l'octet final, inspecter le décodage réel WebP, vérifier provenance, CI `global-assets` au SHA final, checkpoint GREEN exact puis FF `global-assets` seulement après CI. Validation smartphone reste distincte.
+
+### Correction Cendre aveuglante — résultats
+
+- TDD RED `f807c789d7fc5e87b5eb8bfc6c1cbc4e82587a30`, CI `38137601918` FAILURE attendue (validation RIFF/WebP).
+- Réparation ciblée `55fb10428ef88d7734e3415213ac2f7e27da2050` : 1 fichier WebP 128×128 passé de 9679 à 9680 octets, source visuelle préservée, décodage et inspection de l'image réparée OK ; SHA256 corrigé `c3631d0087fb9279c2e8be6fa2317e3e4ac26a13cf0fd0fd8558ce2122c54a97`.
+- CI `38137689583` : SUCCESS sur le correctif et son test ; les cinq autres icônes V1 sont conformes.
+- Rapport : `docs/LAB_BLINDING_ASH_WEBP_REPAIR_V1.md`.
+- Suite protocolaire : CI sur le SHA documentaire final, checkpoint GREEN puis FF `global-assets` sous lease. Publier ensuite la révision de cache consommateur `gh-pages`, en lot distinct, sans modifier gameplay.
