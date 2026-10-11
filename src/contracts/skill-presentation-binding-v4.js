@@ -142,6 +142,31 @@ function normalizeImpactFlash(raw) {
   });
 }
 
+function normalizeCameraShakeSequence(raw) {
+  if (!Array.isArray(raw) || raw.length < 1 || raw.length > 8) {
+    throw new RangeError("feedback.cameraShake.sequence requires 1 to 8 pulses");
+  }
+  let totalMs = 0;
+  const pulses = raw.map((pulse, index) => {
+    const field = "feedback.cameraShake.sequence[" + index + "]";
+    const value = objectValue(pulse, field);
+    assertKnownFields(value, new Set(["pauseMs", "amplitudePx", "durationMs"]), field);
+    const pauseMs = finiteNumber(value.pauseMs, field + ".pauseMs");
+    const amplitudePx = positiveNumber(value.amplitudePx, field + ".amplitudePx");
+    const durationMs = positiveNumber(value.durationMs, field + ".durationMs");
+    if (pauseMs < 0 || pauseMs > 2500 ||
+        amplitudePx > 24 || durationMs < 30 || durationMs > 2000) {
+      throw new RangeError(field + " exceeds the camera shake sequence limits");
+    }
+    totalMs += pauseMs + durationMs;
+    return Object.freeze({ pauseMs, amplitudePx, durationMs });
+  });
+  if (totalMs > 10000) {
+    throw new RangeError("feedback.cameraShake.sequence total duration exceeds 10000 ms");
+  }
+  return Object.freeze(pulses);
+}
+
 function normalizeCameraShake(raw) {
   if (raw == null) {
     return null;
@@ -154,7 +179,8 @@ function normalizeCameraShake(raw) {
     value,
     new Set([
       "amplitudePx",
-      "durationMs"
+      "durationMs",
+      "sequence"
     ]),
     "feedback.cameraShake"
   );
@@ -167,7 +193,10 @@ function normalizeCameraShake(raw) {
     durationMs: positiveNumber(
       value.durationMs,
       "feedback.cameraShake.durationMs"
-    )
+    ),
+    ...(value.sequence == null
+      ? {}
+      : { sequence: normalizeCameraShakeSequence(value.sequence) })
   });
 }
 
