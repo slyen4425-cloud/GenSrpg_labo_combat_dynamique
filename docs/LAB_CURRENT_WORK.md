@@ -1294,3 +1294,11 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - **Périmètre** : le cache-buster `2026-10-11-v24-capture-skill-icons-v2` -> `2026-10-11-v25-blinding-ash-webp-repair`, test sentinelle et documentation ; aucun transfert, icon ID, catalogue, Combat Core, FX ou UI modifiés.
 - **Protégés** : 103 créatures, règles de ciblage et projectile, fichiers de compétences, autres médias, `main`, GenSrpG, Exploration.
 - **TDD et sortie** : CI RED attendue sur la nouvelle révision, correction minimale, CI foundation + Chromium réel, checkpoint GREEN exact et fast-forward `gh-pages` sous lease ; GitHub Pages doit réussir. Validation Android reste requise pour le rendu.
+
+### Cendre aveuglante WebP — résolution de cache
+
+- Fichier unique réparé et publié sur `global-assets` SHA `b24364147c5392a79b1eac9b1286fa11e4cd84a5` ; CI `38137772675` SUCCESS.
+- RED cache `38137867989` FAILURE attendue ; mise à jour minimale `fcb0e7be876eb7670078f1bf12c8760825ea9a01` ; CI `38137905665` SUCCESS (foundation + deux tests navigateur).
+- Révision canonique `2026-10-11-v25-blinding-ash-webp-repair`; assetId et catalogue inchangés.
+- Rapport : `docs/LAB_BLINDING_ASH_WEBP_CACHE_V1.md`.
+- Fin : CI du SHA documentaire, checkpoint GREEN, FF `gh-pages`, Pages SUCCESS ; retour utilisateur Android pour validation réelle.
