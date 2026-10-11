@@ -28,8 +28,13 @@ test("Charge tellurique registers exactly once with author-approved 30s energy a
  assert.equal(def.energyCost,3);
  assert.equal(def.preparationMs,2000);
  assert.equal(def.cooldownMs,60000);
- assert.deepEqual(def.targetRelations,["self"]);
- assert.equal(def.effects.length,1);
+ assert.deepEqual(def.targetRelations,["ally","self"]);
+ assert.equal(def.effects.length,2);
+ assert.equal(def.effects[1].kind,"apply_status");
+ assert.equal(def.effects[1].targetScope,"target");
+ assert.equal(def.effects[1].status.kind,"skill_cooldown_rate_modifier");
+ assert.equal(def.effects[1].status.modifierPct,50);
+ assert.equal(def.effects[1].status.durationMs,30000);
  const zone=def.effects[0],status=zone.tickEffect.status;
  assert.equal(zone.kind,"persistent_zone");
  assert.equal(zone.targetScope,"self");
@@ -45,9 +50,11 @@ test("Charge tellurique registers exactly once with author-approved 30s energy a
  assert.equal(status.maxStacks,1);
  assert.equal(d.presentation.version,9);
  assert.equal(d.presentation.visual.icon.assetId,"core:icon-skill-thorn-vines-01");
- assert.equal(d.presentation.visual.aura.assetId,"pack:capture:sprite-cast-nature-01");
- assert.equal(d.presentation.visual.aura.displayScale,2.5);
- assert.equal(d.presentation.visual.aura.opacity,0.6);
+ assert.equal(d.presentation.visual.aura.assetId,"pack:capture:sprite-flowering-meadow-ground-01");
+ assert.equal(d.presentation.visual.aura.displayScale,1.5);
+ assert.equal(d.presentation.visual.aura.opacity,0.85);
+ assert.equal(d.presentation.visual.aura.playbackMode,"hold-last");
+ assert.equal(d.presentation.statusVisuals.status.tintColor,"#5fad47");
  assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(d)).value.draft,d);
 });
 
