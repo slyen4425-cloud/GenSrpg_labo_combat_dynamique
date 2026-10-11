@@ -49,6 +49,15 @@ function percent(value) {
   return `${rounded}%`;
 }
 
+export function impactVisualDelayForCameraShakeV1(shake) {
+  if (!shake || !["during","after"].includes(shake.impactVisualTiming)) return 0;
+  const total = Array.isArray(shake.sequence) && shake.sequence.length > 0
+    ? shake.sequence.reduce((ms,pulse) => ms + Number(pulse.pauseMs) + Number(pulse.durationMs),0)
+    : Number(shake.durationMs);
+  if (!Number.isFinite(total) || total <= 0) return 0;
+  return Math.round(shake.impactVisualTiming === "during" ? total / 2 : total);
+}
+
 // Visual seam allowance: the animated body extends under the endcap sprites.
 // The authoritative beam anchors, direction and hit distance remain unchanged.
 const BEAM_CAP_BASE_SIZE_PX = 96;
@@ -93,7 +102,7 @@ export function spriteOwnerDurationMs(owner, startedAtMs = owner?.appliedAtMs, f
     ? duration : Math.max(1, Number(owner?.definition?.durationMs ?? owner?.durationMs) || Number(fallbackMs) || 1);
 }
 
-export function applySpriteVisual(node, visual, durationMs, animate = defaultAnimate) {
+export function applySpriteVisual(node, visual, durationMs, animate = defaultAnimate, delayMs = 0) {
   if (!hasSpriteVisual(visual)) {
     return Object.freeze({
       bound: false,
@@ -188,6 +197,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
           keyframes,
           {
             duration: playbackMs,
+            delay: delayMs,
             easing: "linear",
             fill: "both",
             iterations: playbackMode === "loop" ? Infinity : 1
@@ -222,8 +232,9 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
         })),
         {
           duration: playbackMs,
+          delay: delayMs,
           easing: "steps(1, end)",
-          fill: "forwards",
+          fill: delayMs > 0 ? "both" : "forwards",
           iterations:
             playbackMode === "loop"
               ? Infinity
@@ -276,6 +287,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
   node.style.backgroundPosition = "0% 0%";
   node.style.animationName = "skill-fx-strip";
   node.style.animationDuration = `${duration}ms`;
+  if (delayMs > 0) node.style.animationDelay = `${delayMs}ms`;
   node.style.animationTimingFunction =
     frameCount > 1 && playbackMode === "loop"
       ? `steps(${frameCount}, jump-none)`
@@ -926,7 +938,8 @@ export function createDomSkillFxRenderer({
 
   function playImpactBurst({
     point,
-    burst
+    burst,
+    delayMs = 0
   }) {
     if (!burst) {
       return null;
@@ -1076,8 +1089,9 @@ export function createDomSkillFxRenderer({
           duration:
             durationMs +
             (index % 4) * 18,
+          delay: delayMs,
           easing: "ease-out",
-          fill: "forwards"
+          fill: delayMs > 0 ? "both" : "forwards"
         }
       );
       animations.push(animation);
@@ -1142,7 +1156,8 @@ export function createDomSkillFxRenderer({
 
   function playAftermathSmoke({
     point,
-    smoke
+    smoke,
+    delayMs = 0
   }) {
     if (!smoke) {
       return null;
@@ -1337,8 +1352,9 @@ export function createDomSkillFxRenderer({
           duration:
             durationMs +
             (index % 4) * 48,
+          delay: delayMs,
           easing: "ease-out",
-          fill: "forwards"
+          fill: delayMs > 0 ? "both" : "forwards"
         }
       );
       animations.push(animation);
@@ -1403,7 +1419,8 @@ export function createDomSkillFxRenderer({
 
   function playImpactFeedback({
     point,
-    feedback
+    feedback,
+    delayMs = 0
   }) {
     const handles = [];
 
@@ -1485,8 +1502,9 @@ export function createDomSkillFxRenderer({
             1,
             Number(flash.durationMs) || 1
           ),
+          delay: delayMs,
           easing: "ease-out",
-          fill: "forwards"
+          fill: delayMs > 0 ? "both" : "forwards"
         }
       );
       record.animation = animation;
@@ -1528,7 +1546,8 @@ export function createDomSkillFxRenderer({
         point,
         burst:
           feedback?.impactBurst ??
-          null
+          null,
+        delayMs
       });
     if (burstHandle) {
       handles.push(burstHandle);
@@ -1539,7 +1558,8 @@ export function createDomSkillFxRenderer({
         point,
         smoke:
           feedback?.aftermathSmoke ??
-          null
+          null,
+        delayMs
       });
     if (smokeHandle) {
       handles.push(smokeHandle);
@@ -1614,12 +1634,16 @@ export function createDomSkillFxRenderer({
           point.y +
           (Number(feedbackOffset?.y) || 0)
       });
+    const visualDelayMs = type === "impact" && playCameraFx !== null
+      ? impactVisualDelayForCameraShakeV1(feedback?.cameraShake)
+      : 0;
     const feedbackHandle =
       type === "impact" ||
       type === "clash-impact"
         ? playImpactFeedback({
             point: feedbackPoint,
-            feedback
+            feedback,
+            delayMs: visualDelayMs
           })
         : null;
 
@@ -1655,7 +1679,8 @@ export function createDomSkillFxRenderer({
       node,
       visual,
       effectDurationMs,
-      animate
+      animate,
+      visualDelayMs
     );
     applyPresentationGlow(
       node,
@@ -1681,7 +1706,7 @@ export function createDomSkillFxRenderer({
         {
           transform:
             `translate(-50%, -50%) scale(${startScale * displayScale})`,
-          opacity: animatedSprite ? opacity : 0.15 * opacity
+          opacity: visualDelayMs > 0 ? 0 : animatedSprite ? opacity : 0.15 * opacity
         },
         {
           transform:
@@ -1697,8 +1722,9 @@ export function createDomSkillFxRenderer({
       ],
       {
         duration: Number(visual.durationMs) || spriteVisual.playbackMs || effectDurationMs,
+        delay: visualDelayMs,
         easing: "ease-out",
-        fill: "forwards"
+        fill: visualDelayMs > 0 ? "both" : "forwards"
       }
     );
 
