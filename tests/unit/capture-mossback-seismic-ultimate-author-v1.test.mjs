@@ -29,7 +29,7 @@ test("seismic ultimate referenced by Mossback has its exact author transfer and 
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(path => path === skillPath).length, 1,
     "Missing author skill transfer cap_earth_atk_7: do not publish the creature's unresolved ultimate");
   const bytes = await load(skillPath);
-  assert.equal(createHash("sha256").update(bytes).digest("hex"), "c55b4f384bccdd485f1d9e4fc9d39f58d7f28b679c9897b81e88b6fdb1c7f865");
+  assert.equal(createHash("sha256").update(bytes).digest("hex"), "2e4b69a84147aa4a0c22dd464e2e0915bc3c82528aa8d67ea5a8bbead345dde1");
   const imported = importCaptureTransferJsonV1(bytes);
   assert.equal(imported.kind, "skill");
   assert.equal(imported.value.draft.id, "cap_earth_atk_7");
