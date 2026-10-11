@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "assetId": "pack:capture:sprite-air-wind-impact-01",
+  "label": "Impact de vent",
+  "category": "impact",
+  "frameCount": 20,
+  "frameWidth": 512,
+  "frameHeight": 512,
+  "runtimeFrameWidth": 384,
+  "runtimeFrameHeight": 384,
+  "frameMs": 65,
+  "playbackMode": "once",
+  "frames": [
+    {
+      "frame": 1,
+      "file": "frames/sprite_air_wind_impact_01.png"
+    },
+    {
+      "frame": 2,
+      "file": "frames/sprite_air_wind_impact_02.png"
+    },
+    {
+      "frame": 3,
+      "file": "frames/sprite_air_wind_impact_03.png"
+    },
+    {
+      "frame": 4,
+      "file": "frames/sprite_air_wind_impact_04.png"
+    },
+    {
+      "frame": 5,
+      "file": "frames/sprite_air_wind_impact_05.png"
+    },
+    {
+      "frame": 6,
+      "file": "frames/sprite_air_wind_impact_06.png"
+    },
+    {
+      "frame": 7,
+      "file": "frames/sprite_air_wind_impact_07.png"
+    },
+    {
+      "frame": 8,
+      "file": "frames/sprite_air_wind_impact_08.png"
+    },
+    {
+      "frame": 9,
+      "file": "frames/sprite_air_wind_impact_09.png"
+    },
+    {
+      "frame": 10,
+      "file": "frames/sprite_air_wind_impact_10.png"
+    },
+    {
+      "frame": 11,
+      "file": "frames/sprite_air_wind_impact_11.png"
+    },
+    {
+      "frame": 12,
+      "file": "frames/sprite_air_wind_impact_12.png"
+    },
+    {
+      "frame": 13,
+      "file": "frames/sprite_air_wind_impact_13.png"
+    },
+    {
+      "frame": 14,
+      "file": "frames/sprite_air_wind_impact_14.png"
+    },
+    {
+      "frame": 15,
+      "file": "frames/sprite_air_wind_impact_15.png"
+    },
+    {
+      "frame": 16,
+      "file": "frames/sprite_air_wind_impact_16.png"
+    },
+    {
+      "frame": 17,
+      "file": "frames/sprite_air_wind_impact_17.png"
+    },
+    {
+      "frame": 18,
+      "file": "frames/sprite_air_wind_impact_18.png"
+    },
+    {
+      "frame": 19,
+      "file": "frames/sprite_air_wind_impact_19.png"
+    },
+    {
+      "frame": 20,
+      "file": "frames/sprite_air_wind_impact_20.png"
+    }
+  ],
+  "atlas": "atlases/sprite_air_wind_impact_atlas_01.webp",
+  "atlasWidth": 7680,
+  "atlasHeight": 384,
+  "sourceSHA256": "128a2417bfafa13068325d5b1e86f65a18bb8a68c5babf41fffb88db9ef5a4c4"
+}\n

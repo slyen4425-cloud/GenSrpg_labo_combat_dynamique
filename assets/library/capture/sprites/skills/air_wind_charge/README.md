@@ -1,0 +1,1 @@
+# Charge de vent\n\n20 frames PNG 512x512 RGBA, atlas runtime 20x384 WebP RGBA (7680x384), source 20x512 WebP (10240x512). Les frames originales provenaient d'une grille 1402x1122 (5x4), cellules 280x280 agrandies à 512; la résolution 512 n'est pas native.\n\nPropriétaire: global-assets. Usage: présentation Capture uniquement; pas de règle gameplay.\n

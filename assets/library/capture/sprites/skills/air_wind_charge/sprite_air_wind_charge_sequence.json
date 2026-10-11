@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "assetId": "pack:capture:sprite-air-wind-charge-01",
+  "label": "Charge de vent",
+  "category": "release",
+  "frameCount": 20,
+  "frameWidth": 512,
+  "frameHeight": 512,
+  "runtimeFrameWidth": 384,
+  "runtimeFrameHeight": 384,
+  "frameMs": 80,
+  "playbackMode": "once",
+  "frames": [
+    {
+      "frame": 1,
+      "file": "frames/sprite_air_wind_charge_01.png"
+    },
+    {
+      "frame": 2,
+      "file": "frames/sprite_air_wind_charge_02.png"
+    },
+    {
+      "frame": 3,
+      "file": "frames/sprite_air_wind_charge_03.png"
+    },
+    {
+      "frame": 4,
+      "file": "frames/sprite_air_wind_charge_04.png"
+    },
+    {
+      "frame": 5,
+      "file": "frames/sprite_air_wind_charge_05.png"
+    },
+    {
+      "frame": 6,
+      "file": "frames/sprite_air_wind_charge_06.png"
+    },
+    {
+      "frame": 7,
+      "file": "frames/sprite_air_wind_charge_07.png"
+    },
+    {
+      "frame": 8,
+      "file": "frames/sprite_air_wind_charge_08.png"
+    },
+    {
+      "frame": 9,
+      "file": "frames/sprite_air_wind_charge_09.png"
+    },
+    {
+      "frame": 10,
+      "file": "frames/sprite_air_wind_charge_10.png"
+    },
+    {
+      "frame": 11,
+      "file": "frames/sprite_air_wind_charge_11.png"
+    },
+    {
+      "frame": 12,
+      "file": "frames/sprite_air_wind_charge_12.png"
+    },
+    {
+      "frame": 13,
+      "file": "frames/sprite_air_wind_charge_13.png"
+    },
+    {
+      "frame": 14,
+      "file": "frames/sprite_air_wind_charge_14.png"
+    },
+    {
+      "frame": 15,
+      "file": "frames/sprite_air_wind_charge_15.png"
+    },
+    {
+      "frame": 16,
+      "file": "frames/sprite_air_wind_charge_16.png"
+    },
+    {
+      "frame": 17,
+      "file": "frames/sprite_air_wind_charge_17.png"
+    },
+    {
+      "frame": 18,
+      "file": "frames/sprite_air_wind_charge_18.png"
+    },
+    {
+      "frame": 19,
+      "file": "frames/sprite_air_wind_charge_19.png"
+    },
+    {
+      "frame": 20,
+      "file": "frames/sprite_air_wind_charge_20.png"
+    }
+  ],
+  "atlas": "atlases/sprite_air_wind_charge_atlas_01.webp",
+  "atlasWidth": 7680,
+  "atlasHeight": 384,
+  "sourceSHA256": "2b87e3d35b70d17564de8395be3957005914cbd6fb3e4604fe9501f22caf709a"
+}\n
