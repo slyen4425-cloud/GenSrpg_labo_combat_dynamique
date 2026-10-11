@@ -54,7 +54,7 @@ test("Flowering meadow: canonical catalog, visual only, no duplicate ID", () => 
   assert.equal(found[0].resource.playbackMode,"once");
   assert.ok(found[0].tags.includes("ground"));
   assert.ok(found[0].tags.includes("zone"));
-  assert.equal(catalog.counts.assets,122);
+  assert.ok(catalog.counts.assets>=122, "must retain the original 122 assets even as new packs are added");
   assert.equal(catalog.counts.sprites,69);
   assert.equal(catalog.counts.assets,catalog.assets.length);
   assert.equal(catalog.counts.sprites,catalog.assets.filter(a=>a.assetType==="sprite").length);

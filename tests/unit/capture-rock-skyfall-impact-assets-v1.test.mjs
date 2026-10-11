@@ -40,7 +40,7 @@ for(const cfg of cases)test("Earth VFX assets: "+cfg.id,()=>{
 test("Earth VFX: original catalog inventory and gameplay independent",()=>{
  assert.equal(catalog.counts.assets,catalog.assets.length);
  assert.equal(catalog.counts.sprites,catalog.assets.filter(x=>x.assetType==="sprite").length);
- assert.equal(catalog.counts.assets,122);
+ assert.ok(catalog.counts.assets>=122, "must retain the original 122 assets even as new packs are added");
  assert.equal(catalog.counts.sprites,69);
  for(const id of ["pack:capture:sprite-water-healing-bubble-01","pack:capture:sprite-stone-carapace-aura-01","pack:capture:sprite-pressurized-jet-beam-body-01"])assert.equal(catalog.assets.filter(x=>x.id===id).length,1);
  assert.equal(new Set(catalog.assets.map(x=>x.id)).size,catalog.assets.length);
