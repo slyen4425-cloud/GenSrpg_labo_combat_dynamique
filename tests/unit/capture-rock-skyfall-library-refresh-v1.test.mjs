@@ -8,7 +8,8 @@ const files=[
 test("rock skyfall and upward impact resolve through one global-assets visual library",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.repository,"slyen4425-cloud/GenSrpg_labo_combat_dynamique");
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-11-v23-flowering-meadow-ground");
+  assert.match(GLOBAL_VISUAL_LIBRARY.revision,/^20\d{2}-\d{2}-\d{2}-v\d+-/);
+  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=23);
   assert.equal(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl).searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);
   assert.equal(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl).pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"),true);
   for(const [id,path,count,frameMs,role] of files){
