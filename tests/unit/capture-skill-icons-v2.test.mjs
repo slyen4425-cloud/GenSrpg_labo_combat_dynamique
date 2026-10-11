@@ -61,7 +61,7 @@ const expected=[
 test("Capture V2 icons remain unique, additive and selectable from canonical library",()=>{
   assert.equal(catalog.storage.branch,"global-assets");
   assert.ok(catalog.counts.assets>=130,"must retain original 130 catalogue assets while allowing additive packs");
-  assert.equal(catalog.counts.icons,45);
+  assert.ok(catalog.counts.icons>=45,"Original 45 icons must survive additive asset packs");
   assert.equal(catalog.counts.assets,catalog.assets.length);
   assert.equal(catalog.counts.icons,catalog.assets.filter(x=>x.assetType==="icon").length);
   assert.equal(new Set(catalog.assets.map(a=>a.id)).size,catalog.assets.length);

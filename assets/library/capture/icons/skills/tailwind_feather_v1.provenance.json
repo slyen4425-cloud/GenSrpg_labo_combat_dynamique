@@ -1,0 +1,31 @@
+{
+  "schema": "capture-skill-icon-provenance-v1",
+  "date": "2026-10-11",
+  "assetId": "pack:capture:icon-skill-tailwind-feather-01",
+  "label": "Vent arrière",
+  "category": "skill",
+  "element": "air",
+  "sourceType": "imagegen-original-in-chat",
+  "sourceFile": "plume_enchantée_dans_le_vent_céleste.png",
+  "sourceDimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "sourceMode": "RGB",
+  "sourceSha256": "cc75b288a3be3e04589c19ba28c875ee038b15fd8c004e41c89a93d8ad1bbda5",
+  "derivedFile": "capture/icons/skills/icon_skill_tailwind_feather_01.webp",
+  "derivedDimensions": {
+    "width": 128,
+    "height": 128
+  },
+  "derivedMime": "image/webp",
+  "derivedColorModel": "RGB",
+  "derivedBytes": 5206,
+  "derivedSha256": "85b57236179f89b6313e063f74e41199947dd3485d017901edeee9c359d385f8",
+  "sourceTransform": "Pillow LANCZOS 1254x1254 -> 128x128, WebP lossy quality=60 method=6; original generated plume blanche-bleue, aura d'air and gold framing kept",
+  "license": "project-internal",
+  "owner": "global-assets",
+  "contentVerification": "Original 1254px image inspected; derived 128px WEBP visually inspected as feather with air swirls; RIFF/VP8 validation required in sentinel test",
+  "authorBinding": "No automatic binding to existing skill; icon available in visual library by assetId",
+  "rollback": "checkpoint/lab-start-capture-tailwind-icon-v1-2026-10-11"
+}

@@ -47,7 +47,7 @@ test("Air VFX catalogue is additive, single-owner and has four unique IDs",()=>{
  assert.equal(catalog.storage.branch,"global-assets");
  assert.equal(catalog.counts.assets,catalog.assets.length);
  assert.equal(catalog.counts.sprites,catalog.assets.filter(a=>a.assetType==="sprite").length);
- assert.equal(catalog.counts.assets,134);
+ assert.ok(catalog.counts.assets>=134,"Original 134 assets must survive additive packs");
  assert.equal(catalog.counts.sprites,73);
  assert.equal(new Set(catalog.assets.map(a=>a.id)).size,catalog.assets.length);
  for(const c of cases){

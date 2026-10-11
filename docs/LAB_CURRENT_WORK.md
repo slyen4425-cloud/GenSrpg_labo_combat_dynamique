@@ -6814,3 +6814,13 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Extension de fichiers autorisés strictement à ces 3 sentinelles : conserver les contrôles de médias/IDs originaux, mais remplacer les égalités globales historiques par des bornes minimales, et continuer de comparer les compteurs au catalogue réel. Aucun code moteur/compétence/renderer modifié.
 - Le test Air de la CI précédente ne trouvait pas encore son manifeste sur son commit ; les médias et manifestes sont apparus dans le commit bot `2d5437010a401f1851307b1c647bd72375f879e5`, sans CI déclenchée automatiquement sur ce commit. Nouvelle CI obligatoire sur le SHA avec corrections, ainsi que la vérification du contenu graphique et de la transparence.
 - Archive d'export originale et aperçus inspectés localement, quatre animations visuellement distinctes. Le contrôle visuel mobile reste réservé à l'utilisateur après publication.
+
+## Lot Capture — icône Vent arrière (plume), 2026-10-11
+
+- Source image générée dans la conversation `plume_enchantée_dans_le_vent_céleste.png` (1254 RGB), WebP 128×128 de plume et tourbillon inspecté localement.
+- Owner unique `global-assets`, base `8633466eae72e320a6cd1c017a8d8f1bc10afcf3` (CI `38163641916` SUCCESS).
+- Checkpoint `checkpoint/lab-start-capture-tailwind-icon-v1-2026-10-11`; branche `work/lab-capture-tailwind-icon-v1-2026-10-11`.
+- Périmètre : fichier `capture/icons/skills/icon_skill_tailwind_feather_01.webp`, provenance JSON correspondante, `data/assets/catalog/global-visual-assets.v1.json`, test dédié, corrections conservatrices de deux sentinelles historiques, journal et `docs/LAB_CAPTURE_TAILWIND_ICON_V1.md`.
+- Attendu : 1 nouvelle icône `pack:capture:icon-skill-tailwind-feather-01` (Vent arrière), 135 assets / 46 icônes. SHA-256 binary `85b57236179f89b6313e063f74e41199947dd3485d017901edeee9c359d385f8`; octets Git Blob vérifiés.
+- Protégés : les 134 assets précédents, gameplay et règles, créatures, compétences et slots auteur, `main`, `gh-pages` hors raccord cache en sous-lot séparé, `Zombicide-40k`, Exploration. Aucun second registre.
+- Risques : anciens tests de compteurs, cache v27, ancien lien possible de compétence. CI au SHA final + checkpoint GREEN + publication FF, puis micro-lot `gh-pages` et vérifications CI/Pages. Test visuel smartphone par utilisateur.

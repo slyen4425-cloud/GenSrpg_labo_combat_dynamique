@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 134,
-    "icons": 45,
+    "assets": 135,
+    "icons": 46,
     "sprites": 73,
     "fx": 2,
     "portraits": 9,
@@ -4382,6 +4382,37 @@
         "frameCount": 20,
         "frameMs": 65,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-tailwind-feather-01",
+      "label": "Vent arrière",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "air",
+        "support",
+        "capture",
+        "feather"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_tailwind_feather_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [
