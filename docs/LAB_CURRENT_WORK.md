@@ -1417,3 +1417,8 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Owner consommateur : `src/assets/global-visual-library.js`, cache v27 → `2026-10-11-v28-capture-tailwind-icon`. Strict périmètre : ce fichier, nouvelle sentinelle et ancien test Air ajusté pour progression additive de version, ce journal et documentation `docs/LAB_CAPTURE_TAILWIND_CACHE_V1.md`.
 - Aucun changement gameplay, assets, données auteur, configurations de compétences, `main`, `Zombicide-40k`, Exploration ou second resolver.
 - Validation : CI au SHA final, checkpoint GREEN exact, publication FF sous lease, CI + Pages en post-publication ; vérification visuelle Android par utilisateur. Pas d'attribution automatique de l'icône.
+
+## 2026-10-11 — Remplacement de deux compétences Air auteur, avant diagnostic HUD
+- Base `gh-pages`: `50a4bd36a0572c34b05c79be2bd650f900039f5e` (CI et Pages GREEN), checkpoint `checkpoint/lab-start-capture-air-dual-skill-import-2026-10-11`, branche `work/lab-capture-air-dual-skill-import-2026-10-11`.
+- Ajout exact de deux exports utilisateur `lib_tailwind` et `cap_air_atk_3` sous `data/capture/showcase`; enregistrement dans le registre unique `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`, remplacement par ID via Transfer `configuredSkills`, conservation des paramètres auteur (dont 3 statuts réutilisant l'ID `status` et l'icône `core:icon-skill-portal-dash-01`). Aucun changement des règles ou du moteur dans ce lot.
+- Fichiers autorisés : deux JSON, catalogue de presets, test dédié, documentation `docs/LAB_CAPTURE_AIR_DUAL_AUTHOR_IMPORT_V1.md`, présent journal ; test CI/Chromium requis, checkpoint GREEN puis FF gh-pages. Diagnostic séparé après publication pour pourquoi Vent arrière n'affiche qu'un statut.
