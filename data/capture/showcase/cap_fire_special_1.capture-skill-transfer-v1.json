@@ -111,7 +111,7 @@
       "subjectId": "cap_fire_special_1",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-poison-cloud-01"
+          "assetId": "pack:capture:icon-skill-burning-bite-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-ash-smoke-cast-01",
@@ -192,6 +192,8 @@
       "statusVisuals": {
         "cap_fire_special_1:1": {
           "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
           "tintColor": "#5b2067",
           "tintOpacity": 0.35,
           "sprite": {
