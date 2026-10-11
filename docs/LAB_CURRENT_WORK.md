@@ -6806,3 +6806,11 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Tests : 4 atlas WebP RGBA, 20 frames chacun, 512×512, SHA, sens horizontal de la bande, 4 IDs uniques, chemins et types de catalogue, CI complète et vérification de résolution catalogue réelle. Pas de faux placeholder.
 - Risques : sources générées 1402×1122 (512 est un upscale), transparence des pixels faibles, temps de chargement mobile (atlas horizontal 10240×512), cache catalogue périmé ; conserver les réglages dans la source de vérité.
 - Critère sortie : médias et fichiers réels dans la branche, tests verts, checkpoint GREEN sur SHA exact, publication `global-assets` uniquement en fast-forward sous lease, puis cache du Labo en lot séparé et test visuel Android.
+
+
+### Addendum périmètre — sentinelles historiques du catalogue Air (2026-10-11)
+
+- Diagnostic CI `38162048659`: les 4 nouveaux sprites font évoluer `counts.sprites` de 69 à 73 et `counts.assets` de 130 à 134 ; trois anciens tests exigent indûment les nombres historiques (`capture-flowering-meadow-assets-v1.test.mjs`, `capture-rock-skyfall-impact-assets-v1.test.mjs`, `capture-skill-icons-v2.test.mjs`).
+- Extension de fichiers autorisés strictement à ces 3 sentinelles : conserver les contrôles de médias/IDs originaux, mais remplacer les égalités globales historiques par des bornes minimales, et continuer de comparer les compteurs au catalogue réel. Aucun code moteur/compétence/renderer modifié.
+- Le test Air de la CI précédente ne trouvait pas encore son manifeste sur son commit ; les médias et manifestes sont apparus dans le commit bot `2d5437010a401f1851307b1c647bd72375f879e5`, sans CI déclenchée automatiquement sur ce commit. Nouvelle CI obligatoire sur le SHA avec corrections, ainsi que la vérification du contenu graphique et de la transparence.
+- Archive d'export originale et aperçus inspectés localement, quatre animations visuellement distinctes. Le contrôle visuel mobile reste réservé à l'utilisateur après publication.
