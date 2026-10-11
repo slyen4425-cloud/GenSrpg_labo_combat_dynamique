@@ -1263,3 +1263,14 @@ Le rappel `recall` laisse momentanément un slot Combat existant alors que Roste
 - Objectif : nouvelle révision `2026-10-11-v24-capture-skill-icons-v2` afin de recharger le catalogue pour la bibliothèque visuelle de l’éditeur ; aucune modification de `configuredSkills`, gameplay, FX Core ou renderer.
 - Vérifications : URL propriétaire `global-assets`, 8 chemins de ressource, tests lab complets, checkpoint GREEN exact avant FF `gh-pages`.
 - Risques : cache obsolète et concurrence de déploiement ; un seul resolver existant réutilisé, pas de seconde bibliothèque.
+
+
+## 2026-10-11 — Remplacement de trois compétences auteur après Skill Icons V2
+
+- **Base GREEN** : `gh-pages` `b5676ad01ec8352df2623b7c020ccf9f4c5d0a97` (CI `38133415589` et Pages `38133415460` réussies).
+- **Checkpoint départ** : `checkpoint/lab-start-author-skill-triple-replace-v1-2026-10-11`; branche de travail unique `work/lab-author-skill-triple-replace-v1-2026-10-11`.
+- **Dernier travail repris** : huit icônes Capture V2, propriétaire exclusif `global-assets` SHA `0c78b519588baa3535654beae6f185046beb3499`, cache éditeur V24 déjà publié ; ne pas recréer ni réinstaller les icônes.
+- **Demande et source de vérité** : remplacer exactement trois transferts auteur `cap_earth_atk_7` / `cap_earth_atk_3` / `cap_fire_special_1` par les JSON de ce fil ; identifiants stables et entrée catalogue unique, aucune mutation des autres compétences ou des loadouts de créatures.
+- **Fichiers permis** : les trois `data/capture/showcase/*.capture-skill-transfer-v1.json`, leurs tests d'intégrité / de raccord et tests hérités à empreinte ancienne, ce journal, rapport ciblé. Les contrats / FX / règles de combat / assets / UI / autres labs / `main` sont hors périmètre.
+- **Validation requise** : test RED préalable ; SHA-256 octet exact auteur, import/export, catalogue `configuredSkills` par ID, Icônes disponibles, Charge tellurique tint clignotant 1,5 s, Cendre aveuglante, Séisme primordial et sa contrainte `damage_taken` ; tests foundation et smokes Chromium au commit final, checkpoint GREEN et fast-forward sous lease ; contrôle Pages et CI après publication, validation tactile Android distincte.
+- **Points de vigilance** : ne pas remplacer l'icon `Morsure brûlante` par un asset à un nom plus logique : respecter le JSON reçu ; `Séisme primordial` conserve son shake simple de 50 px et ne demande pas automatiquement un timing d'impact différé ; éviter de masquer ce comportement.
