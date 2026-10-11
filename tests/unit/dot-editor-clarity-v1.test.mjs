@@ -108,7 +108,7 @@ test("DoT editor reuses the canonical element selector instead of free text", as
 
   assert.match(
     source,
-    /tacticalDamageElementSelectV1\(\s*"skillStatusChannel"/
+    /tacticalDamageElementSelectV1\(\s*root,\s*statRegistry,\s*"skillStatusChannel"/
   );
   assert.match(
     source,
