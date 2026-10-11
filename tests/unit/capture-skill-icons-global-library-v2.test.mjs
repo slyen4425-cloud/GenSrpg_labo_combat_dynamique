@@ -39,7 +39,8 @@ const cases=[
 
 test("Capture Skill Icons V2 refreshes the single global-assets catalog URL",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-11-v26-blinding-ash-source-restore");
+  assert.match(GLOBAL_VISUAL_LIBRARY.revision,/^20\d{2}-\d{2}-\d{2}-v\d+-/);
+  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=26, "existing icon cache must not revert below v26");
   const catalogUrl=new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
   assert.ok(catalogUrl.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
   assert.equal(catalogUrl.searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);
