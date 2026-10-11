@@ -5707,6 +5707,7 @@ function refreshHumanSkillEffectStatOptionsV1(
   root,
   statRegistry
 ) {
+  refreshHumanElementChannelSelectsV1(root,statRegistry);
   for (
     const select of root.querySelectorAll(
       "[data-skill-status-stat-id]"
@@ -6424,6 +6425,7 @@ function renderHumanStatRegistryV1(
     );
     host.append(row);
   }
+  refreshHumanElementChannelSelectsV1(root,normalized);
 }
 
 function readHumanStatRegistryV1(root) {
@@ -11376,6 +11378,13 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       }
     }
   );
+
+  // Offer the pending custom stat ID immediately, even before saving it.
+  for (const selector of ["[data-stat-custom-id]","[data-stat-custom-label]"]) {
+    listen(one(root,selector),"input",()=>{
+      refreshHumanElementChannelSelectsV1(root,statRegistry);
+    });
+  }
 
   listen(
     statCustomAddButton,
