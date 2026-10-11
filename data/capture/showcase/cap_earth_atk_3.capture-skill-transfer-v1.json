@@ -144,6 +144,8 @@
       "statusVisuals": {
         "status": {
           "mode": "tint",
+          "tintBlinkEnabled": true,
+          "tintBlinkPeriodMs": 1500,
           "tintColor": "#5fad47",
           "tintOpacity": 0.35,
           "sprite": null
