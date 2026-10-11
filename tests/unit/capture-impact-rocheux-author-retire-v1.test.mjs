@@ -101,6 +101,6 @@ test("retired duplicate is excluded from every active native hydration path and 
   const mossback=importCaptureTransferJsonV1(await read("data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json"),{statRegistry}).value;
   assert.equal(mossback.draft.skillIds.includes(RETIRED),false);
   assert.equal(mossback.loadout.slots.some(slot=>slot.skillId===RETIRED),false);
-  assert.equal(mossback.loadout.slots.find(slot=>slot.id==="slot-4").skillId,null);
+  assert.equal(mossback.loadout.slots.find(slot=>slot.id==="slot-4").skillId,"cap_earth_atk_3");
   assert.ok(mossback.loadout.slots.some(slot=>slot.skillId==="lib_earth_guard"));
 });
