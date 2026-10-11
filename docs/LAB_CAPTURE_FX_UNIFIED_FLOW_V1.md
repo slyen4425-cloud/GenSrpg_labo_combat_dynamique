@@ -35,3 +35,7 @@ L'ordre et le nom des étapes clarifient la différence entre une **base graphiq
 - Les tests historiques sur d'anciens libellés ont été mis à jour, sans amoindrir les assertions de présence réelle des contrôles.
 - CI complète (foundation, firestorm Chromium, bibliothèque créatures Chromium), checkpoint GREEN à SHA final, FF `gh-pages` sous lease, GitHub Pages SUCCESS requis pour diffusion.
 - La validation finale du confort smartphone / Android reste une étape utilisateur, distincte de la CI.
+
+## Résultat des contrôles techniques
+
+La CI `38157846259` est **SUCCESS** à `914541311a8fac747f06f8eba5d3f86a559dd911`, avec `foundation`, `firestorm-zone-growth-browser` et `creature-library-browser` GREEN. Les assertions tests couvrent les trois étapes en DOM réel, l'absence de modification à la sélection et le propriétaire de Glow réel après ouverture de la personnalisation ; les 103 créatures restent chargées. La clôture documentaire nécessite une CI finale sur le dernier SHA, une branche checkpoint GREEN identique et les workflows `gh-pages` / Pages.
