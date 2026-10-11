@@ -46,8 +46,10 @@ test("author transfer replaces cap_earth_atk_4 exactly once with V10 skyfall, pr
   assert.equal(d.presentation.visual.travel.fallOffsetXPx, 0);
   assert.equal(d.presentation.visual.travel.displayScale, 2);
   assert.equal(d.presentation.visual.impact.assetId, "pack:capture:sprite-rock-impact-upward-01");
-  assert.equal(d.presentation.visual.impact.displayScale, 1);
-  assert.equal(d.presentation.visual.impact.offsetY, -25);
+  assert.equal(d.presentation.visual.impact.displayScale, 1.7);
+  assert.equal(d.presentation.visual.impact.offsetY, 0);
+  assert.equal(d.presentation.visual.impact.opacity, 0.7);
+  assert.equal(d.definition.projectileTargeting, "fixed_point");
   assert.equal(d.presentation.visual.impact.durationMs, 750);
   assert.equal(d.presentation.feedback.cameraShake.amplitudePx, 5);
   assert.equal(d.presentation.feedback.projectileTrail.count, 6);
