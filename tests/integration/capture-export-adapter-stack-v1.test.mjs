@@ -307,3 +307,23 @@ test("Capture adapter stack has no GenSrpG, DOM, storage, network or renderer au
     /Zombicide-40k|captureFix\d+|github\.com|window\.|document\.|localStorage|sessionStorage|indexedDB|MutationObserver|fetch\(|XMLHttpRequest|querySelector|Renderer|render\(/
   );
 });
+
+test("Capture adapter stack projects real authored skyfall as fixed-point while direct fireballs remain direct", async () => {
+  const skyfallTransfer = JSON.parse(await readFile(
+    new URL("../../data/capture/showcase/cap_earth_atk_4.capture-skill-transfer-v1.json",import.meta.url),
+    "utf8"
+  ));
+  const skyfall = export1v1();
+  skyfall.presentation.skills["skill:fireball"] = {
+    ...skyfallTransfer.draft.presentation,
+    id: "skill:fireball",
+    subjectId: "fireball"
+  };
+  const fixed = adaptCaptureCombatExportStackV1(skyfall);
+  const direct = adaptCaptureCombatExportStackV1(export1v1());
+  assert.equal(fixed.skills.fireball.projectileTargeting, "fixed_point");
+  assert.equal(fixed.skillPresentations.fireball.visual.travel.trajectoryMode, "skyfall");
+  assert.equal(direct.skills.fireball.projectileTargeting, "direct");
+  assert.equal("trajectoryMode" in direct.skills.fireball, false,
+    "Combat Rules receives an immutable semantic mode, never rendering properties");
+});
