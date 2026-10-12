@@ -1194,6 +1194,13 @@
               <option value="once">Lire une fois à la vitesse du sprite</option>
             </select>
           </label>
+          <label>Vitesse de boucle du sprite — 1× normal, 2× plus rapide, jusqu’à 4×
+            <input type="number" min="0.25" max="4" step="0.25" value="1" data-skill-travel-frame-speed>
+          </label>
+          <label>Perspective pendant le trajet — 0 = désactivée, 0.25 = 25% de différence de taille
+            <input type="number" min="0" max="0.5" step="0.05" value="0" data-skill-travel-perspective>
+          </label>
+          <p class="note">Pour Tornade : choisis « Boucler pendant le trajet », puis augmente « Vitesse de boucle » à 2× ou 3×. Cela accélère les images, sans accélérer le projectile. La perspective réduit progressivement un tir joueur → ennemi et agrandit un tir ennemi → joueur. Laisse-la à 0 pour préserver la taille d’origine. Non applicable aux chutes du ciel ni au rayon.</p>
           <p class="note">Adapter répartit les phases sur tout le trajet. Boucler répète l’animation jusqu’au contact. La vitesse de déplacement se règle dans « Vers la cible ».</p>
           <fieldset class="editor-choice-group" data-skill-skyfall-settings>
             <legend>Trajectoire du projectile</legend>
