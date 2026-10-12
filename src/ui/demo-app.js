@@ -897,6 +897,15 @@ export async function mountCombatDemo({
         slotOf(slotKey).collisionModel.snapshot();
       return visibleModelOpaqueRect(frame);
     },
+    // Actor profile alone owns its base placement. The FX renderer uses
+    // this resting offset without following transient flight/burrow motion.
+    getRestingOffsetFor(slotKey) {
+      const position = slotOf(slotKey).actor?.position;
+      return Object.freeze({
+        x: Number(position?.x) || 0,
+        y: Number(position?.y) || 0
+      });
+    },
     getStatusPresentationTargetFor(slotKey) {
       const slot = slotOf(slotKey);
       return Object.freeze({
