@@ -1586,3 +1586,14 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Réglage principal : ratio de taille distante V12 ; ancien V11 `perspectiveAmount` placé dans les détails « historique » tout en restant éditable/importable. Tornade conserve profondeur 0.25 et calque arrivée front, retire uniquement l'ancienne perspective redondante 0.5 → 0 ; dégâts/sprite/sockets/audio/cadence inchangés.
 - CI code exact `a2f2d7d80fd2e1ad2d7e3543a49ab734b51d3ee9` run `38271486545` SUCCESS (foundation, Firestorm Chromium, Creature Library Chromium).
 - `docs/LAB_PROJECTILE_ORIENTATION_V1.md` ; valider le SHA documentaire exact CI, checkpoint GREEN, FF `gh-pages` sous lease puis CI et Pages post publication ; essai Android utilisateur distinct.
+
+
+## 2026-10-12 — Trois compétences Air / visibilité des réserves adverses (lot officiel)
+
+- Retour utilisateur : remplacer à l'identique trois exports auteur (`cap_air_atk_7` Ouragan, `lib_tailwind` Vent arrière, `cap_air_atk_4` Tornade) puis rendre les réserves ennemies visibles à la demande en affichant leurs PV et en facilitant le ciblage exact depuis le HUD. Conserver les deux formes : effet automatique `all_enemy_reserves` et compétence à cible individuelle `targetLocations:reserve`.
+- Base publiée GREEN `gh-pages` : `dc2c71851d3bf67318f2970e322588eaa14e2bab`, CI `38271801205` et Pages `38271800874` success.
+- Checkpoint initial `checkpoint/lab-start-air-skill-bench-ui-v1-2026-10-12` ; branche de travail `work/lab-air-skill-bench-ui-v1-2026-10-12`.
+- Propriétaires : fichiers de capacités auteur = unique source dans showcase ; Roster Session reste propriétaire des PV de réserve ; panneau UI/renderer HUD projette uniquement ses snapshots, et appelle l'action de ciblage existante sans modifier règles, coûts, cooldowns ni gestion du rappel.
+- Fichiers autorisés : `data/capture/showcase/cap_air_atk_7.capture-skill-transfer-v1.json`, `data/capture/showcase/lib_tailwind.capture-skill-transfer-v1.json`, `data/capture/showcase/cap_air_atk_4.capture-skill-transfer-v1.json`, `src/catalogs/capture-showcase-skill-presets-v1.js`, `src/ui/capture-combat-roster-controller-v1.js`, `src/ui/combat-2v2-test-ui.js`, `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.css`, tests de sentinelle/import/interaction, note dédiée et ce journal.
+- Protégés : combat Runtime, résolution damage/heal/KO, système Rappel et cooldown, collision/rendu FX, bibliothèque de créatures, autres compétences, `main`, `global-assets`, dépôt GenSrpG et Exploration.
+- Tests : contrat d'import des 3 fichiers auteur, identification sans doublons et comportement Ouragan splash actif/réserves, panneau fermé par défaut et ouvrable au toucher, PV des réserves adverses mis à jour via Roster, KO, sélection d'une réserve ennemie autorisée, pas de mutation du rappel, 1v1/2v2, Chromium et fondation. TDD et publication sous lease ; validation manuelle Android distincte.
