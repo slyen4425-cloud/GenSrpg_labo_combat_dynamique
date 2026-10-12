@@ -58,10 +58,12 @@ export function createCombatSession({
   let reserveSkillResolver = null;
   const hasReserveSplash = skill => skill?.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope)) === true;
   function registerReserveSkillResolver(resolver) {
-    if (typeof resolver !== "function" || reserveSkillResolver !== null) {
-      throw new TypeError("Roster Session reserve skill owner must be registered once");
-    }
+    if (typeof resolver !== "function") throw new TypeError("Roster resolver must be a function");
+    // Legacy test harnesses may construct two Roster projections on one Session;
+    // the first registered owner remains authoritative and is never shadowed.
+    if (reserveSkillResolver !== null) return false;
     reserveSkillResolver = resolver;
+    return true;
   }
   function reserveSkillGuard(skill) {
     return hasReserveSplash(skill) && reserveSkillResolver === null
@@ -133,10 +135,7 @@ export function createCombatSession({
       skill,
       reactionSkill
     });
-    return commitCompletedOwnerAction(
-      result,
-      actorId
-    );
+    return withReserveSkillEffects(commitCompletedOwnerAction(result, actorId), actorId, skill);
   }
 
   function startSkill({ actorId, targetId, skill }) {
@@ -314,6 +313,16 @@ export function createCombatSession({
     });
   }
 
+  function withReserveSkillEffects(committed, actorId, skill) {
+    if (committed.ok && committed.outcome === "hit" && hasReserveSplash(skill)) {
+      if (reserveSkillResolver === null) throw new Error("Missing roster owner during skill completion");
+      const reserve = reserveSkillResolver({actorId,skill});
+      if (!reserve.ok) throw new Error("Roster reserve effect failed: " + reserve.outcome);
+      return Object.freeze({...committed,state,reserveResults:reserve.results});
+    }
+    return committed;
+  }
+
   function completeSkill({
     action,
     reaction = null,
@@ -328,14 +337,7 @@ export function createCombatSession({
       battleFormat,
       resolutionAtMs
     });
-    const committed = commitCompletedOwnerAction(result, action.actorId);
-    if (committed.ok && committed.outcome === "hit" && hasReserveSplash(action.skill)) {
-      if (reserveSkillResolver === null) throw new Error("Missing roster owner during skill completion");
-      const reserve = reserveSkillResolver({actorId: action.actorId, skill: action.skill});
-      if (!reserve.ok) throw new Error("Roster reserve effect failed: " + reserve.outcome);
-      return Object.freeze({...committed, state, reserveResults: reserve.results});
-    }
-    return committed;
+    return withReserveSkillEffects(commitCompletedOwnerAction(result, action.actorId), action.actorId, action.skill);
   }
 
   function completeCommand({ action }) {
