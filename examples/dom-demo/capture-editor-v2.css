@@ -1416,3 +1416,33 @@ html {
 .capture-preview-shell[data-landscape-required="true"] .combat-test-enemy-reserves > summary {
   min-height:1.8rem; font-size:clamp(.53rem,1.7dvh,.7rem);
 }
+
+/* The enemy reserve inspector belongs beside the upper opponent health HUD. */
+.capture-preview-shell .arena--coop-2v2 > .combat-test-enemy-reserves {
+  position:absolute;
+  z-index:24;
+  top:0.45rem;
+  right:calc(min(12.5rem, 30vw) + 0.8rem);
+  width:clamp(6rem, 17vw, 9rem);
+  max-width:26%;
+  margin:0;
+}
+.combat-test-enemy-reserves__body {
+  top:calc(100% + .35rem);
+  bottom:auto;
+  right:auto;
+  left:0;
+  width:min(19rem, 65vw);
+  max-height:min(17rem, 60svh);
+}
+.capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2 > .combat-test-enemy-reserves {
+  right:calc(min(10.5rem, 25%) + 0.8rem);
+  width:clamp(5.8rem, 18%, 9rem);
+  max-width:25%;
+}
+.capture-preview-shell[data-landscape-required="true"] .combat-test-enemy-reserves__body {
+  left:auto;
+  right:0;
+  width:min(20rem, 70vw);
+  max-height:min(16rem, 62svh);
+}
