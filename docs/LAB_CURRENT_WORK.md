@@ -6824,3 +6824,15 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Attendu : 1 nouvelle icône `pack:capture:icon-skill-tailwind-feather-01` (Vent arrière), 135 assets / 46 icônes. SHA-256 binary `85b57236179f89b6313e063f74e41199947dd3485d017901edeee9c359d385f8`; octets Git Blob vérifiés.
 - Protégés : les 134 assets précédents, gameplay et règles, créatures, compétences et slots auteur, `main`, `gh-pages` hors raccord cache en sous-lot séparé, `Zombicide-40k`, Exploration. Aucun second registre.
 - Risques : anciens tests de compteurs, cache v27, ancien lien possible de compétence. CI au SHA final + checkpoint GREEN + publication FF, puis micro-lot `gh-pages` et vérifications CI/Pages. Test visuel smartphone par utilisateur.
+
+## Note de conception future — Dernier sursaut / Esprit combatif (2026-10-12)
+
+- Statut : **BACKLOG DE CONCEPTION UNIQUEMENT — non développé, aucun changement au combat**, à planifier après validation utilisateur.
+- Dépôt propriétaire de cette note : Labo Combat ; intégration future au gameplay/progression Capture uniquement via contrats et chantier indépendant, jamais directement dans `Zombicide-40k`.
+- Base documentaire vérifiée : `global-assets` au SHA `a6cb242ca62db1674aebfe0e02c1f79bd293cf84` ; CI `38275351706` SUCCESS.
+- Checkpoint de départ : `checkpoint/lab-start-capture-last-stand-design-2026-10-12`.
+- Branche documentaire : `work/lab-capture-last-stand-design-2026-10-12`.
+- Propriétaire visé (future implémentation seulement) : Combat Rules / Combat State pour KO et sursaut ; profil de créature pour bonus ; progression/inventaire Capture pour décès définitif et pierre d'expérience. Aucun propriétaire runtime n'est modifié maintenant.
+- Périmètre autorisé : présent journal, `docs/LAB_ROADMAP.md`, note `docs/LAB_CAPTURE_LAST_STAND_FUTURE.md`. Protégés : code, données de créatures, compétences, assets, moteur, CI, `main`, production et autres dépôts.
+- Critère du lot : documentation cohérente, diff strictement documentaire, CI du SHA, checkpoint GREEN documentaire ; aucune preview de fonctionnalité ni test manuel de gameplay attendu.
+- Prochaine action fonctionnelle : **aucune sans nouveau chantier explicitement lancé**. Les paramètres non décidés restent ouverts ; voir la note de conception.
