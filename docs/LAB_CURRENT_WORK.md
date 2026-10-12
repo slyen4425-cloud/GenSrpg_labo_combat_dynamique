@@ -1527,3 +1527,15 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Chemin direct/sprite, combat Runtime, SKYFALL/beam, Library 103, GenSrpG et main non modifiés.
 - Test RED nouveau `tests/integration/reserve-effect-targeting-v2.test.mjs` au commit `7dab27a329055090f687e0bac0c2987b1fac2643` ; GREEN 1563/1563 Node à `0eff3468dd0957390992101c0de90d04b4d5248d` CI `38253184241`, avec les deux vrais Chromium OK. Cas mixtes damage/heal, cible réserve nommée, KO exclus, coût unique, rosterless guard; cible UI banc et rappel indépendant.
 - Documentation `docs/LAB_RESERVE_TARGETING_V2.md`. Checkpoint GREEN sous condition de CI complète réussie au SHA documentaire final; FF `gh-pages` sous lease, Pages et test utilisateur Android ensuite. Le chemin de ciblage réserve individuel V1 s'exécute immédiatement sans projectile visuel hors terrain, comme documenté.
+
+
+## 2026-10-12 — Projectile Animation / Depth V1 — chantier officiel
+
+- Demande : Tornade et sprites de projectile avec cadence de boucle indépendante de la durée de trajet ; perspective de taille vers l'ennemi (rétrécit) ou depuis l'ennemi (grossit) ; réglage individuel dans l'éditeur.
+- Base technique GREEN publiée `gh-pages` : `00d10a87c4a1041abf8e3a62fa85c0095bd54d66`, CI 38253674926 SUCCESS et Pages 38253674207 SUCCESS. Validation smartphone précédente de Reserve V2 encore attendue ; les travaux restent isolés.
+- Départ : `checkpoint/lab-start-projectile-animation-depth-v1-2026-10-12` ; branche : `work/lab-projectile-animation-depth-v1-2026-10-12` ; SHA de base ci-dessus.
+- Ownership : Skill Presentation Binding (nouveau V11 additif) valide les réglages ; Asset Projection expose cadence/vues ; renderer FX applique animation et scale visuels ; Human Editor saisit/importe/exporte sans calcul visuel métier.
+- Fichiers autorisés : `src/contracts/skill-presentation-binding-v11.js`, `src/contracts/skill-presentation-binding.js`, `src/adapters/renderer/capture-skill-presentation-assets-v2.js`, `src/adapters/renderer/dom-skill-fx.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, tests spécifiques, `docs/LAB_PROJECTILE_ANIMATION_DEPTH_V1.md`, ce journal.
+- Protégés : géométrie/contacts/swept alpha, trajectoire projectile direct/SKYFALL, timeline Runtime, dégâts/cooldowns, asset library 103 créatures, sons, autres sprites existants, `main`, `global-assets`, GenSrpG et Exploration.
+- TDD : sentinelles RED du contrat V11, vitesse des frames, les deux sens de perspective, conservation des defaults anciens, persistance editor/import-export et vrai rendu ; implémentation minimale puis CI Node + Chromium ; GREEN seulement après CI exacte et publication FF sous lease. Validation Android utilisateur distincte.
+- Choix de sécurité : réglages opt-in par compétence ; aucune modification silencieuse des projectiles existants ni de leur contact.
