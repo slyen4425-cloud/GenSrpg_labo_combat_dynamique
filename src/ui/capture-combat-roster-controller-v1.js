@@ -64,10 +64,11 @@ export function createCaptureCombatRosterControllerV1({
 // UI projects Roster Session snapshots and starts the canonical Runtime commands.
 // It never replaces fighters or calculates command costs/timings itself.
 export function mountCaptureCombatRosterPanelV1({
-  root, controller, format, commands, session, getRuntime, isTransitionPending, setStatus
+  root, controller, format, commands, session, getRuntime, isTransitionPending, setStatus,
+  reserveTargetCandidates = () => [], onTargetReserve = () => false
 }) {
   const panel = root.querySelector("[data-combat-team-menu]");
-  if (!panel) return Object.freeze({ render() {}, dispose() {} });
+  if (!panel) return Object.freeze({ render() {}, openForSkill() {}, dispose() {} });
   const host = panel.querySelector("[data-combat-team-rosters]");
   const summary = panel.querySelector("[data-combat-team-summary]");
   const summaryLabel = summary.querySelector?.("[data-combat-team-summary-label]") ?? summary;
@@ -90,11 +91,11 @@ export function mountCaptureCombatRosterPanelV1({
       : actor.teamId === format.teamOf(format.localActorId) ? "Allié et sa réserve" : "Adversaire et sa réserve";
     group.append(title);
     for (const member of team.members) {
-      const node = root.ownerDocument.createElement(actor.actorId === format.localActorId ? "button" : "p");
-      if (actor.actorId === format.localActorId) {
-        node.type = "button";
-        node.dataset.rosterMemberId = member.id;
-      }
+      // Every bench can be deliberately selected for a reserve-target skill.
+      // Only the local bench remains a candidate for voluntary recall.
+      const node = root.ownerDocument.createElement("button");
+      node.type = "button";
+      node.dataset.rosterMemberId = member.id;
       memberRefs.set(member.id, { actorId: actor.actorId, node });
       group.append(node);
     }
@@ -119,6 +120,9 @@ export function mountCaptureCombatRosterPanelV1({
   }
   function render() {
     const state = controller.snapshot();
+    const targetableReserveKeys = new Set(reserveTargetCandidates().map(candidate =>
+      candidate.targetRef.teamId + ":" + candidate.targetRef.memberId
+    ));
     const localTeamId = format.teamOf(format.localActorId);
     const count = format.actors.filter(actor => actor.teamId === localTeamId)
       .reduce((n, actor) => n + (state[actor.actorId]?.members.length ?? 0), 0);
@@ -128,8 +132,13 @@ export function mountCaptureCombatRosterPanelV1({
       if (!ref) continue;
       ref.node.textContent = member.displayName + " · " + Math.round(member.hp) + "/" + Math.round(member.maxHp) + " PV · "
         + (member.hp <= 0 ? "KO" : member.active ? "Actif" : "Réserve");
+      const availableForSkill = !member.active && member.hp > 0 &&
+        targetableReserveKeys.has(ref.actorId + ":" + member.id);
+      ref.node.dataset.skillReserveCandidate = availableForSkill ? "true" : "false";
+      const busy = isTransitionPending() || Boolean(getRuntime()?.hasActiveActionFor(format.localActorId));
+      const recallCandidate = ref.actorId === format.localActorId && !member.active && member.hp > 0;
+      ref.node.disabled = busy || !(availableForSkill || recallCandidate);
       if (ref.actorId === format.localActorId) {
-        ref.node.disabled = member.active || member.hp <= 0 || isTransitionPending() || Boolean(getRuntime()?.hasActiveActionFor(format.localActorId));
         ref.node.setAttribute("aria-pressed", member.selected ? "true" : "false");
       }
     }
@@ -150,6 +159,13 @@ export function mountCaptureCombatRosterPanelV1({
   function onClick(event) {
     const reserve = event.target.closest?.("[data-roster-member-id]");
     if (reserve && !reserve.disabled) {
+      const memberRef = memberRefs.get(reserve.dataset.rosterMemberId);
+      if (memberRef && reserve.dataset.skillReserveCandidate === "true") {
+        if (onTargetReserve({scope:"reserve",teamId:memberRef.actorId,memberId:reserve.dataset.rosterMemberId})) {
+          render(); return;
+        }
+      }
+      if (!memberRef || memberRef.actorId !== format.localActorId) return;
       const result = controller.selectReserve(format.localActorId, reserve.dataset.rosterMemberId);
       if (result.ok) setStatus(`Réserve sélectionnée. Lance Rappel et invocation : remplacement gratuit après ${recallDuration}.`, "info");
       render(); return;
@@ -164,5 +180,6 @@ export function mountCaptureCombatRosterPanelV1({
     render();
   }
   panel.addEventListener("click", onClick);
-  return Object.freeze({ render, dispose() { panel.removeEventListener("click", onClick); memberRefs.clear(); } });
+  return Object.freeze({ render, openForSkill() { panel.hidden = false; panel.open = true; render(); },
+    dispose() { panel.removeEventListener("click", onClick); memberRefs.clear(); } });
 }
