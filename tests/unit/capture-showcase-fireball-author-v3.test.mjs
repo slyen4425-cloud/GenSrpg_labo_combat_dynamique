@@ -47,7 +47,7 @@ test("Fireball showcase preserves stable authored values around the explicit V9 
     draft.definition.targetLocations,
     ["active"]
   );
-  assert.equal(draft.definition.hitPresenceStates, null);
+  assert.deepEqual(draft.definition.hitPresenceStates,["surface"]);
   assert.equal(draft.definition.dodgeable, true);
   assert.equal(draft.definition.effects[0].amount, 25);
   assert.equal(draft.definition.effects[0].channel, "fire");

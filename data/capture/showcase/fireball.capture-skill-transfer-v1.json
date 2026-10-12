@@ -36,7 +36,9 @@
       "targetLocations": [
         "active"
       ],
-      "hitPresenceStates": null,
+      "hitPresenceStates": [
+        "surface"
+      ],
       "dodgeable": true,
       "activationRequirements": {
         "mode": "all",

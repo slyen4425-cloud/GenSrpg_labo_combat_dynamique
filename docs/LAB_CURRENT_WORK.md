@@ -1439,3 +1439,14 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : `data/capture/showcase/lib_tailwind.capture-skill-transfer-v1.json`, 3 tests ciblés, `docs/LAB_CAPTURE_TAILWIND_SELF_TARGET_V1.md`, ce journal. Aucun moteur/renderer/new loader/main/global-assets/GenSrpG/exploration.
 - Auditor : les IDs `cap_air_atk_1..4` sont toujours assignés à Ailevent ; `cap_air_atk_3` a ses médias/sons auteur; les 3 autres restent des compétences natives sans fichier preset auteur actuellement. Les réglages d'une session locale non exportée ne sont pas garantis persistants par GitHub.
 - TDD RED `d80ba9fbcb7767ea05d4747af52e1b9ab18e0dca`, sentinelle ciblage bouton/CombatSession/HUD/1v1-2v2 puis CI et checkpoint GREEN + FF / Pages; vérification manuelle sur téléphone ensuite.
+
+
+## 2026-10-12 — Régression Fireball : tir direct et présence airborne
+
+- Retour utilisateur : Boule de feu touche une créature en plein déplacement aérien. Ancienne règle à préserver : projectile direct suit une cible en déplacement au sol, mais pas une présence aérienne qu'il ne sait pas atteindre.
+- Sources LIVE lues : `LAB_CHARTE`, `LAB_ROADMAP`, `LAB_ARCHITECTURE`, `LAB_CURRENT_WORK`, `LAB_CHECKPOINT_POLICY`, `LAB_PROJECTILE_DIRECT_SKYFALL_ICONS_V1` et sentinelles de présence.
+- Base `gh-pages` `8139980d6845eaad78f85f63f9a162f23e7c000f`, checkpoint `checkpoint/lab-start-fireball-airborne-presence-2026-10-12`, branche `work/lab-fireball-airborne-presence-2026-10-12`.
+- Test RED sur vrai export de Boule de feu / vraie Charge aérienne, `CombatRuntime`, `CombatSession` et `planSkillOutcomeFx` au commit `75f4e3d407a65e21e7a5ea829e33789dc80cd21f` : `hitPresenceStates:null`, hit aérien confirmé.
+- Owner : preset actif unique `data/capture/showcase/fireball.capture-skill-transfer-v1.json`; seul champ modifié `hitPresenceStates` passe de `null` à `["surface"]`. Les autres valeurs auteur, sprites/sockets/sons/dégâts et capacités sont protégés. Aucune modification du moteur ou de `global-assets`.
+- Périmètre fichiers : fiche Fireball, `tests/unit/capture-showcase-fireball-author-v3.test.mjs`, `tests/integration/capture-fireball-airborne-regression-v1.test.mjs`, doc `docs/LAB_FIREBALL_AIRBORNE_PRESENCE_REGRESSION_V1.md`, présent journal.
+- Sentinelles : air raté et pas de dégâts/FX d'impact, sol en mouvement et statique touchés, anti-aérien déclaré autorisé. CI full + Chromium, checkpoint GREEN, FF et Pages, validation tactile Android de l'utilisateur avant GREEN manuel.
