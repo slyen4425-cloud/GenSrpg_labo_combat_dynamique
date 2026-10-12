@@ -1460,3 +1460,62 @@ html {
   width:min(20rem, 70vw);
   max-height:min(16rem, 62svh);
 }
+
+
+/* Rayon : même éditeur 3 phases, dans la seule carte Visuels et uniquement Style Rayon. */
+[data-skill-beam-stage-editor][data-beam-active="false"] { display: none; }
+.beam-visual-editor {
+  margin: 0.9rem 0;
+  padding: 0.8rem;
+  border: 1px solid rgba(128, 221, 242, 0.33);
+  border-radius: 0.8rem;
+  background: rgba(20, 60, 74, 0.28);
+}
+.beam-visual-editor__heading h3 { margin: 0 0 0.2rem; color: #ddf8fd; font-size: 1rem; }
+.beam-visual-editor__heading p { margin: 0 0 0.65rem; color: #a5cdd7; font-size: 0.78rem; line-height: 1.45; }
+.beam-visual-editor [data-beam-stage] { min-width: 0; }
+.beam-visual-editor [data-beam-stage-fields] label { min-width: 0; }
+
+/* Mouvement : options compactes et cliquables, sans hériter du label grid et input width:100%. */
+.skill-movement-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 0.45rem;
+  padding: 0.65rem;
+  margin: 0.7rem 0;
+  border: 1px solid rgba(131, 230, 247, 0.24);
+  border-radius: 0.65rem;
+}
+.skill-movement-choices > legend { padding: 0 0.28rem; font-size: 0.86rem; font-weight: 800; color: #d4edf4; }
+.skill-movement-choices > .switch-line,
+.skill-movement-choices > .note { grid-column: 1 / -1; }
+.skill-movement-choices > .switch-line { min-height: 2.5rem; }
+.skill-movement-choices > label.check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.65rem;
+  margin: 0;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.55rem;
+  background: rgba(16, 44, 56, 0.64);
+  cursor: pointer;
+}
+.skill-movement-choices > label.check input[type="checkbox"] {
+  width: 1.13rem;
+  height: 1.13rem;
+  min-width: 1.13rem;
+  min-height: 0;
+  flex: 0 0 1.13rem;
+  padding: 0;
+  margin: 0;
+  accent-color: #b2a2eb;
+}
+.skill-movement-choices > label.check:focus-within { border-color: #b6e5f5; }
+.skill-movement-choices > .note { margin: 0.25rem 0 0; line-height: 1.4; }
+@media (max-width: 600px) {
+  .skill-movement-choices { grid-template-columns: 1fr; padding: 0.6rem; }
+  .beam-visual-editor { padding: 0.6rem; }
+}
