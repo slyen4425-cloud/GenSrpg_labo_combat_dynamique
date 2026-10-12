@@ -556,6 +556,59 @@ export function createRosterSession({
     );
   }
 
+  // Roster alone owns bench members. A completed active action can distribute
+  // extra damage/healing to eligible reserve snapshots without another cast,
+  // cooldown, energy payment, combat clock or persistent CombatState fighter.
+  function resolveReserveSkillEffectsV2({ actorId, skill }) {
+    const effects = (skill.effects ?? []).filter(effect =>
+      effect.targetScope === "all_enemy_reserves" ||
+      effect.targetScope === "all_ally_reserves"
+    );
+    const now = combatSession.snapshot().elapsedMs;
+    let sourceFighter = combatSession.snapshot().fighters[actorId];
+    if (!sourceFighter) return Object.freeze({ok:false,outcome:"unknown_source"});
+    const results = [];
+
+    for (const effect of effects) {
+      const relation = effect.targetScope === "all_enemy_reserves" ? "enemy" : "ally";
+      for (const team of teams.values()) {
+        if (relationToReserveTeam(actorId, team) !== relation) continue;
+        for (const member of team.members.values()) {
+          if (member.id === team.activeMemberId) continue;
+          const reserveFighter = materializeReserveFighter(team, member, now);
+          if (reserveFighter.hp <= 0) continue;
+          const detachedId = reserveActorId(team, member);
+          const scopedSkill = Object.freeze({
+            ...zeroEffectSkill(skill),
+            effects: Object.freeze([Object.freeze({...effect,targetScope:"target"})])
+          });
+          const evaluationState = createCombatState({
+            distance: combatSession.snapshot().distance,
+            fighters: [sourceFighter, {...reserveFighter,id:detachedId}],
+            elapsedMs: now
+          });
+          const tactical = applyImmediateTacticalEffectsV1({
+            state: evaluationState,
+            actorId,
+            targetId: detachedId,
+            skill: scopedSkill,
+            atMs: 0,
+            combatAtMs: now,
+            battleFormat: null
+          });
+          sourceFighter = tactical.state.fighters[actorId];
+          member.savedFighter = snapshotFighter(tactical.state.fighters[detachedId]);
+          results.push(Object.freeze({
+            targetRef: Object.freeze({scope:"reserve",teamId:team.id,memberId:member.id}),
+            events: tactical.events
+          }));
+        }
+      }
+    }
+    if (results.length > 0) combatSession.replaceFighter(actorId, sourceFighter);
+    return Object.freeze({ok:true,outcome:"resolved",results:Object.freeze(results)});
+  }
+
   function useSkillOnTarget({
     actorId,
     targetRef: targetRefInput,
@@ -779,6 +832,8 @@ export function createRosterSession({
 
     return Object.freeze({ ok: true, outcome: "no_roster_change" });
   }
+
+  combatSession.registerReserveSkillResolver(resolveReserveSkillEffectsV2);
 
   return Object.freeze({
     snapshot,
