@@ -1639,7 +1639,7 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 
 
 ### Hiérarchie de l'éditeur — code proposé pour validation CI
-- Contrôles auteur `Cast`, `Projectile / Rayon`, `Impact`, `Zone / Aura` désormais séparés par de vrais en-têtes dans la section principale **Personnaliser les animations**, ouverte par défaut et repliable au toucher. Import de sprite personnel repositionné après ces réglages pour privilégier le réglage direct.
+- Contrôles auteur `Cast`, `Projectile / Rayon`, `Impact`, `Zone / Aura` désormais séparés par de vrais en-têtes dans la section principale **Personnaliser les animations**, ouverte par défaut et repliable au toucher. Import de sprite personnel conservé avant les réglages fins, conformément au parcours et aux sentinelles existants.
 - Le même panneau continue d'héberger tous les `data-skill-*` d'origine sans duplication. Les détails experts `Glow / traînée / fumée / particules` sont regroupés sous `data-skill-fx-expert` fermé par défaut. Préréglages rapides Discret/Équilibré/Spectaculaire inchangés ; raccourci optionnel Glow/particules reste replié.
 - Sentinelle RED `tests/unit/skill-editor-visual-hierarchy-v1.test.mjs` commit `ff4d8b4f5a42224174cf4e7c7742f26035a2b51e` et CI RED `38291228766`; code HTML/CSS commit `700b85bd2b0947e0caf77e53366fca50eb1c7417`. Aucune mutation du moteur, de `src/ui`, des assets ou des données auteur.
 - Backlog et diagnostic des mécanismes en `docs/LAB_CAPTURE_FUTURE_MECHANICS_BACKLOG_V1.md` ; aucune fonctionnalité de combat nouvelle déclarée livrée.
