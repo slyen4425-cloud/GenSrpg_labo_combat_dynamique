@@ -1434,3 +1434,50 @@ html {
   width:min(20rem, 70vw);
   max-height:min(16rem, 62svh);
 }
+
+/* Visual authoring now has first-class Cast / Projectile / Impact stages.
+   Advanced particle numerical controls remain closed without changing presets. */
+[data-skill-fx-advanced] > summary {
+  border-radius: .72rem;
+  background: linear-gradient(115deg, rgba(22,91,102,.35), rgba(22,46,61,.25));
+}
+.skill-fx-primary-grid { padding-block: .55rem; }
+.skill-fx-phase, .skill-fx-expert {
+  margin: .55rem .65rem;
+  border: 1px solid rgba(125,229,247,.28);
+  border-radius: .7rem;
+  overflow: hidden;
+  background: rgba(9,31,41,.78);
+}
+.skill-fx-phase > summary, .skill-fx-expert > summary {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 2.65rem;
+  padding: .55rem .7rem;
+  font-weight: 850;
+  font-size: .84rem;
+  line-height: 1.25;
+  cursor: pointer;
+  touch-action: manipulation;
+  color: #d2f5ff;
+  list-style: none;
+}
+.skill-fx-phase > summary::before, .skill-fx-expert > summary::before {
+  content: "▸";
+  color: #8bdce9;
+  flex: none;
+}
+.skill-fx-phase[open] > summary::before, .skill-fx-expert[open] > summary::before { content: "▾"; }
+.skill-fx-phase > summary::-webkit-details-marker, .skill-fx-expert > summary::-webkit-details-marker { display: none; }
+.skill-fx-phase > summary:focus-visible, .skill-fx-expert > summary:focus-visible { outline: 2px solid #8bdce9; outline-offset: -2px; }
+.skill-fx-phase > summary { background: rgba(19,72,87,.53); }
+.skill-fx-phase[open] > summary { border-bottom: 1px solid rgba(125,229,247,.2); }
+.skill-fx-phase > .grid, .skill-fx-expert > .projectile-clash-config { padding: .65rem; }
+.skill-fx-expert { border-color: rgba(133,160,172,.23); background: rgba(7,23,29,.5); }
+.skill-fx-expert > summary { color: #a5c1cb; font-weight: 700; font-size: .75rem; }
+.skill-fx-expert > summary::before { color: #a5c1cb; }
+@media(max-width:520px) {
+  .skill-fx-phase, .skill-fx-expert { margin-inline: .3rem; }
+  .skill-fx-phase > summary { min-height: 2.85rem; font-size: .8rem; }
+}
