@@ -1507,3 +1507,15 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - GREEN code CI `38248554062` : 1556/1556 tests Node, Chromium Firestorm et Creature Library SUCCESS. RED `dcb2b63b6d22527a4228b8d521f48b35ce2715f2` avant implémentation.
 - Point de collision et dégâts `CombatRuntime` inchangé, `hitPresenceStates` Fireball inchangé ; le renderer calcule une fois la ligne de tir sur point alpha réel + position native auteur, puis conserve la trajectoire ; SKYFALL/beam exclus.
 - Rapport `docs/LAB_DIRECT_PROJECTILE_REST_GEOMETRY_V2.md`. Étapes finales : CI SHA documentation, checkpoint GREEN SHA identique, fast-forward non forcé de `gh-pages` si HEAD conforme, CI/Pages après publication ; test smartphone utilisateur distinct.
+
+
+## 2026-10-12 — Reserve Effect Targeting V2 (chantier officiel)
+
+- Validation utilisateur : rest geometry V2 confirmé sur smartphone ; base GREEN publiée `gh-pages` `8946e587443a720a86910153a70b0935fbd3345f` (CI 38249187061 SUCCESS, Pages 38249186892 SUCCESS).
+- Audit : Reserve Targeting V1 existe dans Roster Session via `useSkillOnTarget` et `CombatTargetRefV1`, mais cible unique et hors chemin de sélection du client; les effets multi-target réserve sont explicitement refusés; le HUD ne propose que des targets actifs.
+- Objectifs : dégâts/soins distincts sur cible active et réserves du camp visé; soin/dégât sur un membre de réserve ciblé par ID, prix/charge payés une seule fois, sauvegarde des PV par Roster Session.
+- Ownership : Skill Contract décrit l'effet; Combat Rules applique effets actifs; Roster Session seul possède la réserve et ses snapshots; Combat Session raccorde une unique commande aux deux propriétaires; Demo UI n'est que présentation/ciblage.
+- Départ : `checkpoint/lab-start-reserve-effect-targeting-v2-2026-10-12`; travail `work/lab-reserve-effect-targeting-v2-2026-10-12`; SHA base exact `8946e587443a720a86910153a70b0935fbd3345f`.
+- Périmètre autorisé : `src/contracts/skill-effect-v1.js`, `src/contracts/skill-definition.js`, `src/core/combat/action-resolver.js`, `src/core/combat/combat-session.js`, `src/core/combat/roster-session.js`, `src/ui/capture-combat-roster-controller-v1.js`, `src/ui/combat-2v2-test-ui.js`, `src/ui/capture-editor-human-v2.js`, sentinelles nouvelles et existantes ciblées, `docs/LAB_RESERVE_TARGETING_V2.md`, ce journal.
+- Protégés : projectile direct/swept alpha, FX/SKYFALL, sprite/audio, capacités existantes, library 103, Arena, Combat Runtime timing/energy, main/global-assets, GenSrpG et Exploration.
+- Garde-fous : valider effet/portée avant dépense; ancienne cible unique active inchangée; aucun banc dans CombatState; KO ignoré; même owner de résistance, bouclier et soins; aucune seconde dépense/horloge; 1v1 et 2v2; tests Node/Chromium puis checkpoint GREEN sur SHA CI. Smartphone utilisateur requis pour validation manuelle.
