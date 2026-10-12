@@ -729,10 +729,12 @@ export function humanSkillTargetRelationsFromTacticalEffectsV1(
         relations.add("self");
         break;
 
+      case "all_enemy_reserves":
       case "all_enemies":
         relations.add("enemy");
         break;
 
+      case "all_ally_reserves":
       case "all_allies":
         addTargetRelationsV1(
           relations,
@@ -4332,7 +4334,9 @@ function tacticalTargetScopeLabelV1(scope) {
     self: "Soi-même",
     all_enemies: "Tous les ennemis",
     all_allies: "Tous les alliés",
-    all_except_self: "Tous sauf soi"
+    all_except_self: "Tous sauf soi",
+    all_enemy_reserves: "Tous les ennemis en réserve",
+    all_ally_reserves: "Toutes les réserves alliées"
   }[scope] ?? scope;
 }
 
