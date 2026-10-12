@@ -1500,3 +1500,10 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : `src/ui/demo-app.js`, `src/ui/combat-2v2-test-ui.js` (passage de donnée uniquement), `src/adapters/renderer/dom-visible-model-contact.js` (point opaque), `src/adapters/renderer/dom-skill-fx.js` (géométrie de tir), `tests/unit/direct-projectile-rest-geometry-v2.test.mjs`, `docs/LAB_DIRECT_PROJECTILE_REST_GEOMETRY_V2.md` et ce journal. Ajustements minimaux des tests sentinelles déjà existants uniquement en cas de contradiction prouvée.
 - Protégés : `data/capture/showcase`, `configuredCreatures` (103), `configuredSkills`, sockets/FX source/impact, tir SKYFALL, beam, contact opaque live, dégâts, `hitPresenceStates`, changement de cible, CI et mobilité, `main`, `global-assets`, `Zombicide-40k`, Exploration.
 - TDD : RED sur offset auteur positif/négatif + cible immobile, pixel opaque réel avec masque à centre transparent, scale variable, invariance air/souterrain et deux sens de tir ; GREEN sentinelles Fireball surface-only, MIDFIELD swept contact, SKYFALL/beam ; CI Node et vrais Chromium. Aucun checkpoint GREEN avant CI au SHA exact. Publication `gh-pages` seulement fast-forward après réussite et recontrôle du HEAD ; validation réelle Android distincte.
+
+### Rest geometry V2 — validation technique du code
+
+- Code : `d4c83b1bd9d1da03f92e2668e2429128e94e0288` ; correction du test de notation CSS `458252c827547961883f885368c343654994a388`.
+- GREEN code CI `38248554062` : 1556/1556 tests Node, Chromium Firestorm et Creature Library SUCCESS. RED `dcb2b63b6d22527a4228b8d521f48b35ce2715f2` avant implémentation.
+- Point de collision et dégâts `CombatRuntime` inchangé, `hitPresenceStates` Fireball inchangé ; le renderer calcule une fois la ligne de tir sur point alpha réel + position native auteur, puis conserve la trajectoire ; SKYFALL/beam exclus.
+- Rapport `docs/LAB_DIRECT_PROJECTILE_REST_GEOMETRY_V2.md`. Étapes finales : CI SHA documentation, checkpoint GREEN SHA identique, fast-forward non forcé de `gh-pages` si HEAD conforme, CI/Pages après publication ; test smartphone utilisateur distinct.
