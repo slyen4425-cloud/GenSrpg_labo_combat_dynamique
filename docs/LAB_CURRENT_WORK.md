@@ -1567,3 +1567,14 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - JSON utilisateur `cap_air_atk_4` conservé à l'identique hormis version V12 et deux options visuelles ; showcase 17→18 items avec tests sentinelles adaptés. Cast/impact auteur initialement <1% opaques, intention préservée.
 - RED `b1aea2c1a91ccd892b77ec2ed1b98298f0b50a0c`. Code `599232f1fa17065082d86002b94b5845bd6b7e24` CI `38263241612` SUCCESS : 1576/1576 Node, Firestorm Chromium et Creature Library Chromium GREEN.
 - Rapport : `docs/LAB_TORNADO_PERSPECTIVE_OCCLUSION_V1.md`. À valider ensuite : CI SHA documentaire, checkpoint GREEN exact, FF gh-pages sous lease, CI et Pages post-publication ; essai smartphone manuel utilisateur distinct.
+
+
+## 2026-10-12 — Projectile sprite orientation and perspective UI (chantier officiel)
+
+- Retour Android : projectile Tornade `cap_air_atk_4` vu à l'envers lorsqu'il est tiré par l'IA ; deux réglages perspective apparaissent concurrents dans l'éditeur.
+- Base GREEN publiée `gh-pages` `5fc32b67a191f3c8532899d3ee664e24381bf736`, CI 38263945963 et Pages 38263944824 SUCCESS. Départ : `checkpoint/lab-start-projectile-orientation-v1-2026-10-12`, branche : `work/lab-projectile-orientation-v1-2026-10-12`.
+- Cause à corriger : le Render Adapter applique `atan2(target-source)-headingRad` à tous les projectiles linéaires ; un FX intrinsèquement vertical pivote de ~180° pour le camp opposé. L'asset metadata `headingRad` est la source de vérité existante pour les visuels directionnels.
+- Ownership : Asset Resolver conserve la métadonnée de direction ; FX Renderer ne tourne vers la cible que les sprites explicitement munis d'une orientation native directionnelle ; les sprites neutres/imports restent à l'endroit, quelle que soit la provenance. Human Editor présente `farScaleRatio` comme réglage principal, ancien V11 `perspectiveAmount` en compatibilité avancée ; le contrat historique est conservé.
+- Fichiers autorisés : `src/adapters/renderer/dom-skill-fx.js`, `src/assets/global-presentation-asset-resolver-v1.js` uniquement si cause prouvée, `src/ui/capture-editor-human-v2.js` seulement si indispensable à l'UI, `examples/dom-demo/capture-editor-v2.html`, `data/capture/showcase/cap_air_atk_4.capture-skill-transfer-v1.json` si utile, sentinelles/tests dédiés, `docs/LAB_PROJECTILE_ORIENTATION_V1.md`, et ce journal.
+- Protégés : Beam, SKYFALL, trajectoire/contact direct, gameplay/timings/dégâts/coûts, autres compétences, contrats V1–V12, `main`, `global-assets`, `Zombicide-40k`, Exploration.
+- TDD : test RED pour image non directionnelle vue joueur/IA et import utilisateur, sprite explicitement directionnel préservé, SKYFALL inchangé, aucune régression de scale/calque, éditeur compat et données Tornade ; CI Node + navigateurs ; commit/test/Checkpoint GREEN SHA exact puis FF `gh-pages` sous lease ; validation téléphone utilisateur distincte.
