@@ -1,0 +1,181 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_air_atk_4",
+    "description": "Attaque Air de puissance",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_air_atk_4",
+      "name": "Tornade",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "air",
+      "approachMode": "none",
+      "energyCost": 8,
+      "preparationMs": 3200,
+      "travelMs": 2500,
+      "recoveryMs": 0,
+      "cooldownMs": 15000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 3
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 45,
+          "channel": "air",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_air_atk_4",
+      "version": 12,
+      "subjectType": "skill",
+      "subjectId": "cap_air_atk_4",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-wind-tornado-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-air-wind-charge-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 25,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.006999999999999999,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-air-wind-tornado-01",
+          "displayScale": 5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 1.5,
+          "perspectiveAmount": 0.5,
+          "farScaleRatio": 0.25,
+          "arrivalLayer": "front"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-air-wind-impact-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 500,
+          "rotationDeg": 0,
+          "opacity": 0.006,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-99a48e77",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:conflux-43060f16",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
