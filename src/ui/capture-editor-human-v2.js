@@ -1773,6 +1773,14 @@ function presentationForSkill(fields) {
       }
     }
   );
+  if (travel !== null) {
+    const speed = finiteNumber(presentation.travelFrameSpeedMultiplier ?? 1, "Vitesse de boucle du projectile");
+    const depth = finiteNumber(presentation.travelPerspectiveAmount ?? 0, "Perspective du projectile");
+    if (speed < 0.25 || speed > 4) throw new RangeError("Vitesse de boucle : de 0.25 à 4");
+    if (depth < 0 || depth > 0.5) throw new RangeError("Perspective : de 0 à 0.5");
+    if (speed !== 1) travel.frameSpeedMultiplier = speed;
+    if (depth !== 0) travel.perspectiveAmount = depth;
+  }
   if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
     travel.trajectoryMode = "skyfall";
     travel.fallHeightPx = finiteNumber(
@@ -1901,8 +1909,10 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      travel?.trajectoryMode === "skyfall"
-        ? 10
+      (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
+        ? 11
+        : travel?.trajectoryMode === "skyfall"
+          ? 10
         : (
         [cast, impact, persistentZone].some(
           (slot) =>
@@ -2538,6 +2548,8 @@ export function humanSkillEditorFieldsFromDraftV1(
         travel?.displayScale ?? 1,
       travelPlaybackMode:
         travel?.playbackMode ?? "stretch",
+      travelFrameSpeedMultiplier: travel?.frameSpeedMultiplier ?? 1,
+      travelPerspectiveAmount: travel?.perspectiveAmount ?? 0,
       travelTrajectoryMode: travel?.trajectoryMode ?? "linear",
       fallHeightPx: travel?.fallHeightPx ?? 400,
       fallOffsetXPx: travel?.fallOffsetXPx ?? 0,
@@ -3438,6 +3450,8 @@ function writeSkillDraftFields(
       "[data-skill-travel-playback]",
       fields.presentation.travelPlaybackMode
     ],
+    ["[data-skill-travel-frame-speed]", fields.presentation.travelFrameSpeedMultiplier],
+    ["[data-skill-travel-perspective]", fields.presentation.travelPerspectiveAmount],
     ["[data-skill-trajectory-mode]", fields.presentation.travelTrajectoryMode],
     ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
@@ -3612,6 +3626,8 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-fx]", ""],
     ["[data-skill-travel-scale]", 1],
     ["[data-skill-travel-playback]", "stretch"],
+    ["[data-skill-travel-frame-speed]", 1],
+    ["[data-skill-travel-perspective]", 0],
     ["[data-skill-trajectory-mode]", "linear"],
     ["[data-skill-fall-height]", 400],
     ["[data-skill-fall-offset-x]", 0],
@@ -8325,6 +8341,8 @@ function readSkillFields(root) {
         root,
         "[data-skill-travel-playback]"
       ),
+      travelFrameSpeedMultiplier: numericValue(root, "[data-skill-travel-frame-speed]"),
+      travelPerspectiveAmount: numericValue(root, "[data-skill-travel-perspective]"),
       travelTrajectoryMode: selectedValue(root, "[data-skill-trajectory-mode]"),
       fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
       fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
@@ -9164,6 +9182,8 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-travel-fx]", presentation.travelAssetId],
     ["[data-skill-travel-scale]", presentation.travelDisplayScale],
     ["[data-skill-travel-playback]", presentation.travelPlaybackMode],
+    ["[data-skill-travel-frame-speed]", presentation.travelFrameSpeedMultiplier ?? 1],
+    ["[data-skill-travel-perspective]", presentation.travelPerspectiveAmount ?? 0],
     ["[data-skill-trajectory-mode]", presentation.travelTrajectoryMode],
     ["[data-skill-fall-height]", presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
