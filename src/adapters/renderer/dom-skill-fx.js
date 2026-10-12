@@ -1,4 +1,4 @@
-import { sweptPointHitsOpaqueMask } from "./dom-visible-model-contact.js";
+import { sweptPointHitsOpaqueMask, visibleModelOpaqueAimPoint } from "./dom-visible-model-contact.js";
 
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
@@ -311,7 +311,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
  * cancel out; the aim is sampled once at release, never tracked in flight.
  * Actual hit detection remains owned by the live opaque-mask collision model.
  */
-export function restingProjectileAimRectV1({slotRect,motionRect,visibleRect}) {
+export function restingProjectileAimRectV1({slotRect,motionRect,visibleRect,restingOffset=null,opaquePoint=null}) {
   const center = rect => ({
     x: Number(rect.left) + Number(rect.width) / 2,
     y: Number(rect.top) + Number(rect.height) / 2
@@ -319,13 +319,21 @@ export function restingProjectileAimRectV1({slotRect,motionRect,visibleRect}) {
   const valid = rect => rect &&
     [rect.left,rect.top,rect.width,rect.height].every(v=>Number.isFinite(Number(v))) &&
     Number(rect.width)>0 && Number(rect.height)>0;
-  if (!valid(slotRect) || !valid(motionRect) || !valid(visibleRect)) return slotRect;
+  const validOpaque = opaquePoint &&
+    Number.isFinite(Number(opaquePoint.x)) &&
+    Number.isFinite(Number(opaquePoint.y));
+  if (!valid(slotRect) || !valid(motionRect) ||
+      (!valid(visibleRect) && !validOpaque)) return slotRect;
   const slot = center(slotRect);
   const motion = center(motionRect);
-  const body = center(visibleRect);
+  const body = validOpaque
+    ? {x:Number(opaquePoint.x),y:Number(opaquePoint.y)}
+    : center(visibleRect);
+  const authoredX = Number(restingOffset?.x ?? 0);
+  const authoredY = Number(restingOffset?.y ?? 0);
   return Object.freeze({
-    left: slot.x + body.x - motion.x,
-    top: slot.y + body.y - motion.y,
+    left: slot.x + (Number.isFinite(authoredX) ? authoredX : 0) + body.x - motion.x,
+    top: slot.y + (Number.isFinite(authoredY) ? authoredY : 0) + body.y - motion.y,
     width: 0,
     height: 0
   });
@@ -337,6 +345,7 @@ export function createDomSkillFxRenderer({
   targetAnchors = anchors,
   targetAnchorFor = null,
   sourceAnchorFor = null,
+  restingOffsetFor = null,
   missLabel = "RATÉ",
   presentationForSkill = () => null,
   animate = defaultAnimate,
@@ -363,6 +372,9 @@ export function createDomSkillFxRenderer({
   }
   if (sourceAnchorFor !== null && typeof sourceAnchorFor !== "function") {
     throw new TypeError("sourceAnchorFor must be a function when supplied");
+  }
+  if (restingOffsetFor !== null && typeof restingOffsetFor !== "function") {
+    throw new TypeError("restingOffsetFor must be a function when supplied");
   }
   if (typeof requestFrame !== "function" || typeof cancelFrame !== "function") {
     throw new TypeError("frame scheduler functions are required");
@@ -2656,10 +2668,14 @@ export function createDomSkillFxRenderer({
     const skyfall = travelVisual?.trajectoryMode === "skyfall";
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
-    // Direct fire follows a single straight resting BODY lane: use the
-    // opaque model's relative offset within its moving anchor, projected
-    // onto the stable slot. Aerial/underground translations cancel out.
-    // Skyfall intentionally uses the live target as before.
+    // Direct fire keeps the actor's AUTHORED rest placement and a point
+    // on its existing physical alpha mask. Only transient translations
+    // disappear from the projected resting lane. Skyfall remains live.
+    const opaquePoint = !skyfall && targetCollisionModelFor
+      ? visibleModelOpaqueAimPoint(
+          targetCollisionModelFor(targetSlot)?.snapshot?.() ?? null
+        )
+      : null;
     const to = centerRelativeTo(
       skyfall
         ? projectileTargetRect(targetSlot)
@@ -2672,6 +2688,10 @@ export function createDomSkillFxRenderer({
             ).getBoundingClientRect(),
             visibleRect: targetAnchorFor
               ? targetAnchorFor(targetSlot)
+              : null,
+            opaquePoint,
+            restingOffset: restingOffsetFor
+              ? restingOffsetFor(targetSlot)
               : null
           }),
       arenaRect
