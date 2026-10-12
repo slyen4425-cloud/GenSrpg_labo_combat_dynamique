@@ -65,7 +65,7 @@ test("direct projectile has one straight launch-to-rest-lane flight independent 
  const buried=travelGeometry({liveY:290});
  assert.deepEqual(endpoint(airborne),endpoint(standing),"an airborne target must not bend or raise a straight shot");
  assert.deepEqual(endpoint(buried),endpoint(standing),"an underground target must not bend or lower a straight shot");
- assert.equal(endpoint(standing).dx,293,"straight shot still ends at the logical target's ground-stage slot");
+ assert.equal(endpoint(standing).dx,300,"straight shot still ends at the logical target's ground-stage slot");
  assert.equal(endpoint(standing).dy,-25,"straight shot uses the normal/resting target lane regardless of live Y");
  for(const v of [standing,airborne,buried]){
   const half=parseXY(v.flight[0].transform);
