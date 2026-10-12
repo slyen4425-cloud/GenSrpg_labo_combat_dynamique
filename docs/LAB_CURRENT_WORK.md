@@ -1539,3 +1539,12 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Protégés : géométrie/contacts/swept alpha, trajectoire projectile direct/SKYFALL, timeline Runtime, dégâts/cooldowns, asset library 103 créatures, sons, autres sprites existants, `main`, `global-assets`, GenSrpG et Exploration.
 - TDD : sentinelles RED du contrat V11, vitesse des frames, les deux sens de perspective, conservation des defaults anciens, persistance editor/import-export et vrai rendu ; implémentation minimale puis CI Node + Chromium ; GREEN seulement après CI exacte et publication FF sous lease. Validation Android utilisateur distincte.
 - Choix de sécurité : réglages opt-in par compétence ; aucune modification silencieuse des projectiles existants ni de leur contact.
+
+
+### Projectile Animation / Depth V1 — validation du code
+
+- Nouveau contrat strict V11 (travel uniquement): cadence des frames `frameSpeedMultiplier: 0.25..4` en mode loop; perspective directionnelle `perspectiveAmount: 0..0.5` en projectile linéaire, désactivée par défaut, non compatible avec SKYFALL.
+- Éditeur Capture : nouveaux champs visibles, nouveau/charger/sauver/exporter/importer raccordés. Projection d'asset conserve le flux historique et la vue source; un seul renderer FX anime frames et scale sans toucher au Runtime ou au contact opaque.
+- TDD RED `be4b28c975dc44337f3bd66f5e1c308816f47ac2`; code+HTML GREEN `99e8a7f0399a921b7d32c722d15021633b75f042` ; CI `38255845203` SUCCESS (fondation Node + Firestorm Chromium + Library 103 Chromium).
+- Invariants : anciens projectiles gardent leurs keyframes 0.94 / 1.04 / 0.98, vitesse native et règles inchangées; aucun changement à `main`, `global-assets`, `Zombicide-40k` ou Exploration.
+- Rapport : `docs/LAB_PROJECTILE_ANIMATION_DEPTH_V1.md`. Checkpoint final sur SHA documentaire testé, publication FF sous lease et validation smartphone utilisateur distincte.
