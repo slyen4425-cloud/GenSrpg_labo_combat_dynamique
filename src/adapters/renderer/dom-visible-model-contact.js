@@ -280,6 +280,42 @@ function modelUnitToScreen(frame, unitPoint) {
   });
 }
 
+// The same alpha mask used by physical contact chooses a real opaque pixel
+// for a resting projectile's visual aim. Cache only local mask coordinates;
+// transforms, author scale and movement are applied from the live frame.
+const opaqueAimUnitCache = new WeakMap();
+
+export function visibleModelOpaqueAimPoint(frame) {
+  if (!frame || !validMask(frame.mask)) return null;
+  const mask = frame.mask;
+  let unit = opaqueAimUnitCache.get(mask);
+  if (unit === undefined) {
+    const bounds = opaqueUnitBounds(mask);
+    if (!bounds) {
+      opaqueAimUnitCache.set(mask, null);
+      return null;
+    }
+    const midpointU = (bounds.left + bounds.right) / 2;
+    const midpointV = (bounds.top + bounds.bottom) / 2;
+    let bestDistance = Infinity;
+    unit = null;
+    for (let y = 0; y < mask.height; y += 1) {
+      for (let x = 0; x < mask.width; x += 1) {
+        if (mask.opaque[y * mask.width + x] !== 1) continue;
+        const u = (x + 0.5) / mask.width;
+        const v = (y + 0.5) / mask.height;
+        const distance = (u - midpointU) ** 2 + (v - midpointV) ** 2;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          unit = Object.freeze({ u, v });
+        }
+      }
+    }
+    opaqueAimUnitCache.set(mask, unit);
+  }
+  return unit ? modelUnitToScreen(frame, unit) : null;
+}
+
 export function visibleModelOpaqueRect(frame) {
   if (!frame || !validMask(frame.mask)) {
     return null;
