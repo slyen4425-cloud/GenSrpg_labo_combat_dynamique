@@ -1780,6 +1780,14 @@ function presentationForSkill(fields) {
     if (depth < 0 || depth > 0.5) throw new RangeError("Perspective : de 0 à 0.5");
     if (speed !== 1) travel.frameSpeedMultiplier = speed;
     if (depth !== 0) travel.perspectiveAmount = depth;
+    const far = finiteNumber(presentation.travelFarScaleRatio ?? 1, "Taille distante du projectile");
+    if (far < 0.15 || far > 1) throw new RangeError("Taille distante : de 0.15 à 1");
+    if (far !== 1) travel.farScaleRatio = far;
+    const arrival = presentation.travelArrivalLayer ?? "same";
+    if (!["same","front","behind"].includes(arrival)) {
+      throw new RangeError("Calque d’arrivée du projectile invalide");
+    }
+    if (arrival !== "same") travel.arrivalLayer = arrival;
   }
   if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
     travel.trajectoryMode = "skyfall";
@@ -1909,8 +1917,10 @@ function presentationForSkill(fields) {
         "ID capacité"
       ),
     version:
-      (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
-        ? 11
+      (travel?.farScaleRatio != null || travel?.arrivalLayer != null)
+        ? 12
+        : (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
+          ? 11
         : travel?.trajectoryMode === "skyfall"
           ? 10
         : (
@@ -2550,6 +2560,8 @@ export function humanSkillEditorFieldsFromDraftV1(
         travel?.playbackMode ?? "stretch",
       travelFrameSpeedMultiplier: travel?.frameSpeedMultiplier ?? 1,
       travelPerspectiveAmount: travel?.perspectiveAmount ?? 0,
+      travelFarScaleRatio: travel?.farScaleRatio ?? 1,
+      travelArrivalLayer: travel?.arrivalLayer ?? "same",
       travelTrajectoryMode: travel?.trajectoryMode ?? "linear",
       fallHeightPx: travel?.fallHeightPx ?? 400,
       fallOffsetXPx: travel?.fallOffsetXPx ?? 0,
@@ -3452,6 +3464,8 @@ function writeSkillDraftFields(
     ],
     ["[data-skill-travel-frame-speed]", fields.presentation.travelFrameSpeedMultiplier],
     ["[data-skill-travel-perspective]", fields.presentation.travelPerspectiveAmount],
+    ["[data-skill-travel-far-scale]", fields.presentation.travelFarScaleRatio],
+    ["[data-skill-travel-arrival-layer]", fields.presentation.travelArrivalLayer],
     ["[data-skill-trajectory-mode]", fields.presentation.travelTrajectoryMode],
     ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
@@ -3628,6 +3642,8 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-playback]", "stretch"],
     ["[data-skill-travel-frame-speed]", 1],
     ["[data-skill-travel-perspective]", 0],
+    ["[data-skill-travel-far-scale]", 1],
+    ["[data-skill-travel-arrival-layer]", "same"],
     ["[data-skill-trajectory-mode]", "linear"],
     ["[data-skill-fall-height]", 400],
     ["[data-skill-fall-offset-x]", 0],
@@ -8343,6 +8359,8 @@ function readSkillFields(root) {
       ),
       travelFrameSpeedMultiplier: numericValue(root, "[data-skill-travel-frame-speed]"),
       travelPerspectiveAmount: numericValue(root, "[data-skill-travel-perspective]"),
+      travelFarScaleRatio: numericValue(root, "[data-skill-travel-far-scale]"),
+      travelArrivalLayer: selectedValue(root, "[data-skill-travel-arrival-layer]"),
       travelTrajectoryMode: selectedValue(root, "[data-skill-trajectory-mode]"),
       fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
       fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
@@ -9184,6 +9202,8 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-travel-playback]", presentation.travelPlaybackMode],
     ["[data-skill-travel-frame-speed]", presentation.travelFrameSpeedMultiplier ?? 1],
     ["[data-skill-travel-perspective]", presentation.travelPerspectiveAmount ?? 0],
+    ["[data-skill-travel-far-scale]", presentation.travelFarScaleRatio ?? 1],
+    ["[data-skill-travel-arrival-layer]", presentation.travelArrivalLayer ?? "same"],
     ["[data-skill-trajectory-mode]", presentation.travelTrajectoryMode],
     ["[data-skill-fall-height]", presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
