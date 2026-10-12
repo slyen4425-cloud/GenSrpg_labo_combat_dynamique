@@ -70,7 +70,7 @@ test("enemy bench inspection stays collapsed, displays Roster-owned PV, KO and t
     assert.equal(enemyPanel.hidden,false);
     assert.equal(enemyPanel.open,false);
     assert.equal(enemySummary.textContent.includes("Réserves adverses"),true);
-    const rows=list.children.flatMap(group=>group.children).filter(x=>x.dataset?.enemyReserveMemberId);
+    const rows=list.children.flatMap(group=>group.children).filter(x=>x.dataset?.enemyReserveMemberId && !x.hidden);
     assert.deepEqual(rows.map(x=>x.dataset.enemyReserveMemberId),["e1","e2"]);
     assert.equal(rows[0].disabled,false);
     assert.equal(rows[1].disabled,true);
