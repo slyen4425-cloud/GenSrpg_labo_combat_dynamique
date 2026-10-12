@@ -2856,7 +2856,7 @@ export function createDomSkillFxRenderer({
           const depth = startDepth + (endDepth - startDepth) * ratio;
           return {
             offset: ratio,
-            transform: `translate(-50%, -50%) translate3d(${deltaX * ratio}px, ${deltaY * ratio}px, 0) scale(${pulse * travelDisplayScale * depth})`,
+            transform: `translate(-50%, -50%) translate3d(${deltaX * ratio}px, ${deltaY * ratio}px, 0) scale(${Number((pulse * travelDisplayScale * depth).toFixed(6))})`,
             opacity: ratio === 0 ? 0.95 : 1,
             zIndex: ratio < 0.38 ? (startLayer === "behind" ? "2" : "7")
               : (endLayer === "behind" ? "2" : "7")
