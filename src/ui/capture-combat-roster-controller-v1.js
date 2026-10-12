@@ -68,7 +68,13 @@ export function mountCaptureCombatRosterPanelV1({
   reserveTargetCandidates = () => [], onTargetReserve = () => false
 }) {
   const panel = root.querySelector("[data-combat-team-menu]");
-  if (!panel) return Object.freeze({ render() {}, openForSkill() {}, dispose() {} });
+  if (!panel) return Object.freeze({ render() {}, openForSkill() {}, openEnemyForSkill() {}, dispose() {} });
+  const enemyCandidate = root.querySelector("[data-combat-enemy-reserves]");
+  const enemyList = enemyCandidate?.querySelector?.("[data-combat-enemy-reserves-list]");
+  const enemyPanel = enemyCandidate !== panel &&
+    enemyCandidate?.tagName?.toLowerCase() === "details" && enemyList ? enemyCandidate : null;
+  const enemyHost = enemyPanel ? enemyList : null;
+  const enemySummary = enemyPanel?.querySelector("[data-combat-enemy-reserves-summary]") ?? null;
   const host = panel.querySelector("[data-combat-team-rosters]");
   const summary = panel.querySelector("[data-combat-team-summary]");
   const summaryLabel = summary.querySelector?.("[data-combat-team-summary-label]") ?? summary;
@@ -100,6 +106,38 @@ export function mountCaptureCombatRosterPanelV1({
       group.append(node);
     }
     host.append(group);
+  }
+  // One native inspection row per enemy member; Roster Session owns every PV.
+  const enemyRefs = new Map();
+  if (enemyPanel) {
+    enemyHost.replaceChildren();
+    for (const actor of format.actors) {
+      if (actor.teamId === format.teamOf(format.localActorId)) continue;
+      const team = initial[actor.actorId];
+      if (!team) continue;
+      const group = root.ownerDocument.createElement("section");
+      group.className = "combat-enemy-reserves__team";
+      const title = root.ownerDocument.createElement("strong");
+      title.textContent = actor.displayName ?? "Équipe adverse";
+      group.append(title);
+      for (const member of team.members) {
+        const row = root.ownerDocument.createElement("button");
+        row.type = "button";
+        row.className = "combat-enemy-reserves__member";
+        row.dataset.enemyReserveTeamId = actor.actorId;
+        row.dataset.enemyReserveMemberId = member.id;
+        const label = root.ownerDocument.createElement("span");
+        label.className = "combat-enemy-reserves__name";
+        const hp = root.ownerDocument.createElement("progress");
+        hp.className = "combat-enemy-reserves__hp";
+        const hpText = root.ownerDocument.createElement("small");
+        hpText.className = "combat-enemy-reserves__value";
+        row.append(label,hp,hpText);
+        enemyRefs.set(actor.actorId+":"+member.id,{actorId:actor.actorId,memberId:member.id,row,label,hp,hpText});
+        group.append(row);
+      }
+      enemyHost.append(group);
+    }
   }
   for (const button of buttons) {
     const command = commands[button.dataset.combatRosterCommand];
@@ -142,6 +180,32 @@ export function mountCaptureCombatRosterPanelV1({
         ref.node.setAttribute("aria-pressed", member.selected ? "true" : "false");
       }
     }
+    if (enemyPanel) {
+      let benchCount = 0;
+      for (const ref of enemyRefs.values()) {
+        const member = state[ref.actorId]?.members.find(x=>x.id===ref.memberId);
+        if (!member) { ref.row.hidden = true; continue; }
+        ref.row.hidden = Boolean(member.active);
+        if (member.active) continue;
+        benchCount++;
+        const maxHp = Math.max(1,Number(member.maxHp)||1);
+        const hp = Math.max(0,Math.min(maxHp,Number(member.hp)||0));
+        ref.label.textContent = member.displayName;
+        ref.hp.max = maxHp;
+        ref.hp.value = hp;
+        ref.hpText.textContent = hp<=0 ? "KO · 0 / "+Math.round(maxHp)+" PV" :
+          Math.round(hp)+" / "+Math.round(maxHp)+" PV";
+        const available = hp>0 && targetableReserveKeys.has(ref.actorId+":"+ref.memberId);
+        const busy = isTransitionPending() || Boolean(getRuntime()?.hasActiveActionFor(format.localActorId));
+        ref.row.disabled = busy || !available;
+        ref.row.dataset.skillReserveCandidate = available?"true":"false";
+        ref.row.dataset.defeated = hp<=0?"true":"false";
+        ref.row.title = available ? "Toucher pour cibler "+member.displayName :
+          "PV de "+member.displayName+" · une capacité ciblant la réserve est requise";
+      }
+      enemyPanel.hidden = benchCount===0;
+      if(enemySummary)enemySummary.textContent="Réserves adverses · "+benchCount;
+    }
     const remainingMs = state[format.localActorId]?.voluntarySwitchCooldownRemainingMs ?? 0;
     if (recallCountdown) {
       const seconds = Math.ceil(remainingMs / 1000);
@@ -179,7 +243,30 @@ export function mountCaptureCombatRosterPanelV1({
     setStatus(result.ok ? commands[kind].name + " en préparation…" : "Commande indisponible : " + result.outcome, result.ok ? "accent" : "warn");
     render();
   }
-  panel.addEventListener("click", onClick);
-  return Object.freeze({ render, openForSkill() { panel.hidden = false; panel.open = true; render(); },
-    dispose() { panel.removeEventListener("click", onClick); memberRefs.clear(); } });
+  function onEnemyClick(event) {
+    const row = event.target.closest?.("[data-enemy-reserve-member-id]");
+    if (!row || row.disabled || row.dataset.skillReserveCandidate!=="true") return;
+    const member = enemyRefs.get(row.dataset.enemyReserveTeamId+":"+row.dataset.enemyReserveMemberId);
+    if (!member) return;
+    if (onTargetReserve({scope:"reserve",teamId:member.actorId,memberId:member.memberId})) {
+      enemyPanel.open=false;
+      render();
+    }
+  }
+  panel.addEventListener("click",onClick);
+  enemyPanel?.addEventListener("click",onEnemyClick);
+  return Object.freeze({
+    render,
+    openForSkill(){panel.hidden=false;panel.open=true;if(enemyPanel)enemyPanel.open=false;render();},
+    openEnemyForSkill(){
+      if(enemyPanel){enemyPanel.hidden=false;enemyPanel.open=true;panel.open=false;}
+      else {panel.hidden=false;panel.open=true;}
+      render();
+    },
+    dispose(){
+      panel.removeEventListener("click",onClick);
+      enemyPanel?.removeEventListener("click",onEnemyClick);
+      memberRefs.clear();enemyRefs.clear();
+    }
+  });
 }

@@ -1406,8 +1406,13 @@ export async function mountCoop2v2Test({
       const reserveOptions = reserveSkillTargetOptions(skill);
       if (reserveOptions.length > 0) {
         pendingSkillId = skill.id;
-        setStatus(skill.name + " : touche une créature active, ou sélectionne précisément une réserve dans le menu Rappel.", "accent");
-        rosterPanel?.openForSkill();
+        const enemyBench = reserveOptions.some(x =>
+          format.teamOf(x.targetRef.teamId)!==format.teamOf(format.localActorId));
+        setStatus(skill.name+(enemyBench
+          ? " : touche une cible active ou choisis une créature dans Réserves adverses."
+          : " : touche une cible active ou choisis une réserve alliée dans Rappel."),"accent");
+        if(enemyBench)rosterPanel?.openEnemyForSkill();
+        else rosterPanel?.openForSkill();
         renderAvailability();
         renderTargetSelection();
         return;
