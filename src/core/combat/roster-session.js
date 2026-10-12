@@ -612,7 +612,8 @@ export function createRosterSession({
   function useSkillOnTarget({
     actorId,
     targetRef: targetRefInput,
-    skill
+    skill,
+    preview = false
   }) {
     const targetRef =
       normalizeCombatTargetRefV1(
@@ -630,7 +631,7 @@ export function createRosterSession({
     }
 
     if (targetRef.scope === "active") {
-      return combatSession.useSkill({
+      return (preview ? combatSession.previewSkill : combatSession.useSkill)({
         actorId,
         targetId: targetRef.actorId,
         skill
@@ -774,6 +775,10 @@ export function createRosterSession({
       });
     }
 
+    if (preview) {
+      return Object.freeze({ok:true,outcome:"ready",targetRef,relation,action:started.action});
+    }
+
     const tactical =
       applyImmediateTacticalEffectsV1({
         state: evaluationState,
@@ -813,6 +818,10 @@ export function createRosterSession({
     });
   }
 
+  function previewSkillOnTarget(options) {
+    return useSkillOnTarget({...options,preview:true});
+  }
+
   function applyCommandResolution(teamId, resolution) {
     if (!resolution?.ok || resolution.outcome !== "completed") {
       return Object.freeze({ ok: false, outcome: "command_not_completed" });
@@ -839,6 +848,7 @@ export function createRosterSession({
     snapshot,
     reserveMemberSnapshot,
     useSkillOnTarget,
+    previewSkillOnTarget,
     selectReserve,
     recall,
     summon,
