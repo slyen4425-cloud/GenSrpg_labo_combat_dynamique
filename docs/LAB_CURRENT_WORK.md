@@ -1681,3 +1681,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 ### Adaptation de sentinelle historique Rayon
 - La CI du code révèle une unique attente de présentation devenue contradictoire dans `tests/unit/beam-movement-ui-v1.test.mjs` : l'ancien lot imposait de masquer **tout** le panneau si Style != Rayon. C'est précisément la régression UX reproduite ; les contrôles de vrai déplacement, d'unicité, de stages et de Mouvement restent valides.
 - Extension de périmètre autorisée pour **cette seule assertion CSS** : `tests/unit/beam-movement-ui-v1.test.mjs`. Modifier l'attente en « bouton modèle visible à tout moment, phases masquées hors Rayon » ; aucune suppression des tests de non-duplication ni du contrôleur. CI complète exigée de nouveau.
+
+
+### Rayon : récupération du bouton préréglé / code et protection
+- Reproduction RED `e3a82caa40e2d99a656b6d24786505cb07e50991`, CI `38301177943` : échec attendu uniquement pour panneau totalement masqué hors Style Rayon.
+- Correctif soustractif : suppression du seul sélecteur CSS qui masquait le conteneur `[data-skill-beam-stage-editor][data-beam-active="false"]`. Les `fieldset[data-beam-stage]` restent masqués hors Style Rayon par leurs attributs `hidden` et le layout canonique. Le bouton `Appliquer le modèle de rayon d'eau` et l'annulation restent visibles dans Visuels, y compris avec une forme Projectile : le contrôleur déjà présent sélectionne Rayon, synchronise les phases et applique le même pack trois sprites (Cast/départ, corps, impact).
+- Description HTML clarifiée : modèle complet prêt, emplacement dans Visuels, choix d'assets personnalisables, alternative manuelle en sélectionnant Style Rayon.
+- Code `9388cea41dded4b5f75110e8b9549d571183d4d6`, titre existant conservé par `d2fe59db3d27fa6da9c8962c005d95a92e303f72` ; CI `38301311976` déclare une seule sentinelle historique obsolète, rectifiée `fea35cab497c662a48684191f9e1c9c9719bb653` : elle protège désormais la visibilité du bouton et le masquage des phases, sans supprimer les tests de mouvement/raccord.
+- Aucun changement dans le JS, la logique du pack, les assets, dégâts, sockets, Audio ou fichiers de capacités. Publication uniquement après CI exacte du commit final et checkpoint GREEN ; validation Android à confirmer, indépendamment du gate technique.
