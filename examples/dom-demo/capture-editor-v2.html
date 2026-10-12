@@ -1121,13 +1121,13 @@
           <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
         </div>
 
-        <details data-skill-fx-advanced>
+        <details data-skill-fx-advanced open>
           <summary>
-            <span>Réglages avancés — sprites, taille, placement et audio</span>
-            <small>Cast · Projectile · Impact · Zone · Statut</small>
+            <span>Personnaliser les animations — Cast · Projectile · Impact</span>
+            <small>Accès direct à chaque animation · FX experts facultatifs</small>
           </summary>
 
-        <div class="grid two">
+        <div class="grid two skill-fx-primary-grid">
           <label>Icône
             <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
           </label>
@@ -1137,6 +1137,10 @@
             </select>
           </label>
           <p class="note">Les coordonnées sont définies uniquement dans l’onglet Créature. Ici, la capacité ne fait que référencer un point existant.</p>
+        </div>
+        <details class="skill-fx-phase" data-skill-fx-phase="cast">
+          <summary>1 · Cast — préparation et point de sortie</summary>
+          <div class="grid two">
           <label>Effet de cast
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
           </label>
@@ -1181,6 +1185,11 @@
             <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-beam-start-scale>
           </label>
           <p class="note">Disponible pour Style « Rayon ». Ce sprite reste connecté au point de sortie et suit automatiquement le corps du rayon. L'impact garde son animation au contact de la cible.</p>
+          </div>
+        </details>
+        <details class="skill-fx-phase" data-skill-fx-phase="projectile">
+          <summary>2 · Projectile / trajet — sprite, vitesse et trajectoire</summary>
+          <div class="grid two">
           <label>Projectile / trajet
             <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
           </label>
@@ -1233,6 +1242,11 @@
             </label>
             <p class="note">Pour « Chute de pierre » : choisis Style « Projectile », puis « Chute du ciel ». Le projectile apparaît au-dessus de la cible, descend durant « Vers la cible (ms) » et déclenche l’impact habituel. Utilise ton sprite de pierre dans « Projectile / trajet » ; l’option ne change ni les dégâts, ni le ciblage, ni la collision des autres compétences.</p>
           </fieldset>
+          </div>
+        </details>
+        <details class="skill-fx-phase" data-skill-fx-phase="layers">
+          <summary>Calques et profondeur — devant / derrière</summary>
+          <div class="grid two">
           <label>Charge — vue joueur
             <select data-skill-cast-layer-player>
               <option value="front">Devant la créature</option>
@@ -1257,6 +1271,11 @@
               <option value="behind">Derrière la créature</option>
             </select>
           </label>
+          </div>
+        </details>
+        <details class="skill-fx-phase" data-skill-fx-phase="impact">
+          <summary>3 · Impact — sprite et placement sur la cible</summary>
+          <div class="grid two">
           <label>Impact
             <select data-skill-impact-fx data-asset-role="impact"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-impact-01" selected>Impact feu</option></select>
           </label>
@@ -1303,6 +1322,11 @@
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-opponent-offset-y>
           </label>
           <p class="note">Le flash, les particules d’impact et la fumée utilisent le même point visuel que le sprite d’impact.</p>
+          </div>
+        </details>
+        <details class="skill-fx-phase" data-skill-fx-phase="zone">
+          <summary>Zone / aura — animation persistante (si utilisée)</summary>
+          <div class="grid two">
           <label>Visuel persistant de zone
             <select data-skill-zone-fx data-asset-role="zone"><option value="">Aucun</option></select>
           </label>
@@ -1358,9 +1382,12 @@
           <label>Zone — décalage vertical adversaire (px)
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-opponent-offset-y>
           </label>
-        </div>
+          </div>
+        </details>
 
-        <div class="projectile-clash-config">
+        <details class="skill-fx-expert" data-skill-fx-expert>
+          <summary>FX experts (facultatif) — Glow, fumée, traînée et secousses</summary>
+          <div class="projectile-clash-config">
           <h3>Enrichissement FX — Réglages experts</h3>
           <p class="note">Le mode simple règle automatiquement l’intensité et le rayon du glow. Ici tu peux affiner les valeurs exactes. Ces réglages sont uniquement visuels : ils ne changent ni collision, ni dégâts, ni timing gameplay.</p>
           <div class="grid two">
@@ -1489,6 +1516,7 @@
             </label>
           </div>
         </div>
+        </details>
 
         <p class="note">
           Pour une aura ou une zone persistante, le visuel reste affiché tant que la zone existe. Choisis une lecture unique, une boucle ou une animation adaptée à sa durée. En lecture unique, la dernière phase reste affichée. Les décalages déplacent uniquement le visuel, sans modifier le rayon ni les dégâts.
