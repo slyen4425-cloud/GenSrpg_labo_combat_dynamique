@@ -77,7 +77,9 @@ export function createGlobalPresentationAssetResolverV1({
       frameCount,
       ...(frameMs === undefined ? {} : { frameMs }),
       playbackMode,
-      ...(Number.isFinite(Number(resource.headingRad))
+      // Null is not a declared heading: a creator's neutral sprite must
+      // not silently become directional through Number(null) === 0.
+      ...(resource.headingRad != null && Number.isFinite(Number(resource.headingRad))
         ? { headingRad: Number(resource.headingRad) }
         : {}),
       ...(Number.isFinite(Number(resource.displayScale))
