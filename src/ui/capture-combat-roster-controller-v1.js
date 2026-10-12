@@ -2,9 +2,9 @@ import { createRosterSession } from "../core/combat/roster-session.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 
 export function createCaptureCombatRosterControllerV1({
-  session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals, recallCooldownMs, beforeActorChanged = () => {}, onActorChanged = () => {}
+  session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals, recallCooldownMs, battleFormat = null, beforeActorChanged = () => {}, onActorChanged = () => {}
 }) {
-  const roster = createRosterSession({ combatSession: session, roster: rosterDefinition, fighterConfigs, recallCooldownMs });
+  const roster = createRosterSession({ combatSession: session, roster: rosterDefinition, fighterConfigs, recallCooldownMs, battleFormat });
   let disposed = false;
   function activeMember(actorId) {
     const state = roster.snapshot()[actorId];
@@ -24,6 +24,8 @@ export function createCaptureCombatRosterControllerV1({
   }
   return Object.freeze({
     snapshot: () => roster.snapshot(),
+    previewSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.previewSkillOnTarget(options); },
+    useSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.useSkillOnTarget(options); },
     activeMember,
     isPresent: actorId => activeMember(actorId) !== null,
     skillIdsFor(actorId) {
