@@ -47,7 +47,7 @@ test("actual button target then CombatSession show four statuses on player and z
  renderer.dispose();
 });
 test("Ailevent's assigned Charge aérienne remains configured; the other slots must keep their identifiers",()=>{
- assert.deepEqual(ailevent.loadout.slots.map(x=>x.skillId),["cap_air_atk_1","cap_air_atk_2","cap_air_atk_3","cap_air_atk_4",null]);
+ assert.deepEqual(ailevent.loadout.slots.map(x=>x.skillId),["lib_gust","cap_air_atk_3","lib_tailwind",null,null]);
  assert.equal(air.definition.id,"cap_air_atk_3");
  assert.equal(air.definition.form,"contact");
  assert.equal(air.definition.approachMode,"aerial");

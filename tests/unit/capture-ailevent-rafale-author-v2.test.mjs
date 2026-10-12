@@ -72,7 +72,7 @@ test("Real Transfer batch replaces one native Rafale and one Ailevent without du
  assert.ok(skills.has("lib_tailwind"),"authored Vent arrière must remain accessible");
  const oldSkill=skills.get("cap_air_atk_3");
  const baselineSkillCount=skills.size;
- const oldCreature={...ailevent.value,loadout:{...ailevent.value.loadout,slots:ailevent.value.loadout.slots.map((s,i)=>({...s,skillId:i<4?"cap_air_atk_"+(i+1):null}))}};
+ const oldCreature={draft:ailevent.value.draft,statValues:ailevent.value.statValues,loadout:{...ailevent.value.loadout,slots:ailevent.value.loadout.slots.map((s,i)=>({...s,skillId:i<4?"cap_air_atk_"+(i+1):null}))}};
  const creatures=new Map([["crea_ailevent",oldCreature]]);
  const result=applyCaptureTransferBatchToEditorStateV1({
   transfers:[gust,ailevent],configuredCreatures:creatures,configuredSkills:skills,statRegistry:registry,progressionRules,mode:"replace"
