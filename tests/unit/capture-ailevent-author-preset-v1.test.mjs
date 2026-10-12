@@ -15,7 +15,7 @@ const record=imported.value;
 
 test("Ailevent author file and showcase catalog preserve exact export, only one canonical creature ID",async()=>{
   assert.equal(createHash("sha256").update(raw).digest("hex"),
-    "25b6d8a088a728651671c474c3503a59fdb34ddab6053668364622f2690f96ee");
+    "6605ee3255f732ce9303be2f7f405aad1ec3f9b947255905944f46b5ce6d9af1");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===presetPath).length,1);
   assert.equal(imported.kind,"creature");
   assert.equal(record.draft.id,"crea_ailevent");
@@ -50,9 +50,10 @@ test("Ailevent authored stats, natural resistances, scale, sockets and sound are
 
 test("Ailevent native abilities and 5-slot loadout retain author choices without inventing skills",()=>{
   const available = new Set([...capturePortableNativeSkillDraftsV1(),...captureComplexNativeSkillDraftsV1()].map(x=>x.id));
-  assert.equal(record.draft.skillIds.length,9);
+  assert.equal(record.draft.skillIds.length,11);
   for(const id of record.draft.skillIds) assert.ok(available.has(id),id);
   assert.deepEqual(record.loadout.slots.map(x=>x.skillId),
-    ["cap_air_atk_1","cap_air_atk_2","cap_air_atk_3","cap_air_atk_4",null]);
-  assert.ok(!record.draft.skillIds.includes("lib_gust"));
+    ["lib_gust","cap_air_atk_3","lib_tailwind",null,null]);
+  assert.ok(record.draft.skillIds.includes("lib_gust"));
+  assert.ok(record.draft.skillIds.includes("lib_tailwind"));
 });

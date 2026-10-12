@@ -1450,3 +1450,12 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Owner : preset actif unique `data/capture/showcase/fireball.capture-skill-transfer-v1.json`; seul champ modifié `hitPresenceStates` passe de `null` à `["surface"]`. Les autres valeurs auteur, sprites/sockets/sons/dégâts et capacités sont protégés. Aucune modification du moteur ou de `global-assets`.
 - Périmètre fichiers : fiche Fireball, `tests/unit/capture-showcase-fireball-author-v3.test.mjs`, `tests/integration/capture-fireball-airborne-regression-v1.test.mjs`, doc `docs/LAB_FIREBALL_AIRBORNE_PRESENCE_REGRESSION_V1.md`, présent journal.
 - Sentinelles : air raté et pas de dégâts/FX d'impact, sol en mouvement et statique touchés, anti-aérien déclaré autorisé. CI full + Chromium, checkpoint GREEN, FF et Pages, validation tactile Android de l'utilisateur avant GREEN manuel.
+
+
+## 2026-10-12 — Ailevent + Rafale, deux exports utilisateur
+
+- Base GREEN `gh-pages` `033fb8921f42dae07564badbe4b79e2336a7aab5`; checkpoint `checkpoint/lab-start-capture-ailevent-rafale-author-v2-2026-10-12`, branche `work/lab-capture-ailevent-rafale-author-v2-2026-10-12`.
+- Mission : deux fichiers utilisateur exacts. Ailevent SHA256 `6605ee3255f732ce9303be2f7f405aad1ec3f9b947255905944f46b5ce6d9af1` (5391 octets), Rafale SHA256 `27ba4466558875a97845e571b2d5b3b5e6529ac7097dad4e592b694e59a92c29` (4696 octets).
+- Owner : transfert Capture officiel de `data/capture/showcase/` ; remplacement du preset `crea_ailevent` par le même ID (11 compétences, slots `lib_gust/cap_air_atk_3/lib_tailwind/vide/vide`), ajout de `lib_gust` au registre `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` pour remplacement du même ID natif, sans second registre.
+- Périmètre : 2 JSON, 1 registre, 4 tests existants d'invariant auteur, 1 test de régression dédié, `docs/LAB_AILEVENT_RAFALE_AUTHOR_V2.md`, présent journal ; aucun moteur, données tiers, `main`, `global-assets`, GenSrpG ni Exploration.
+- Contrats : données média et de jeu non modifiées ; test exact SHA + transfert batch + inventaire loadout + préservation du garde Fireball airborne ; CI foundation + Chromium ; checkpoint GREEN et FF uniquement après succès, CI/Pages après publication. Test mobile utilisateur distinct.

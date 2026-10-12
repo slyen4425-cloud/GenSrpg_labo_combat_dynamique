@@ -104,7 +104,9 @@
       "cap_air_atk_6",
       "cap_air_atk_7",
       "cap_air_special_1",
-      "cap_air_special_2"
+      "cap_air_special_2",
+      "lib_gust",
+      "lib_tailwind"
     ],
     "presentation": {
       "id": "creature:crea_ailevent",
@@ -242,19 +244,19 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "cap_air_atk_1"
+        "skillId": "lib_gust"
       },
       {
         "id": "slot-2",
-        "skillId": "cap_air_atk_2"
-      },
-      {
-        "id": "slot-3",
         "skillId": "cap_air_atk_3"
       },
       {
+        "id": "slot-3",
+        "skillId": "lib_tailwind"
+      },
+      {
         "id": "slot-4",
-        "skillId": "cap_air_atk_4"
+        "skillId": null
       },
       {
         "id": "slot-ultimate",

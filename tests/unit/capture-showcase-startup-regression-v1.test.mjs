@@ -182,7 +182,7 @@ test("startup library remains complete while showcase presets are applied throug
   assert.equal(ailevent.draft.presentation.profileId,"flying");
   assert.equal(ailevent.draft.capture.evolution.targetId,"crea_rafalcor");
   assert.deepEqual(ailevent.loadout.slots.map(x=>x.skillId),
-    ["cap_air_atk_1","cap_air_atk_2","cap_air_atk_3","cap_air_atk_4",null]);
+    ["lib_gust","cap_air_atk_3","lib_tailwind",null,null]);
 
 
   assert.equal(
