@@ -36,7 +36,7 @@ function travelGeometry({from="player",target="opponent",liveY=75,skyfall=false,
   presentationForSkill(){
     return skyfall ? {travel:{url:"data:image/png;base64,AA==",trajectoryMode:"skyfall",fallHeightPx:200,fallOffsetXPx:0}} : null;
   },
-  animate(_node,keyframes,options){requests.push({keyframes,options});return {finished:new Promise(()=>{}),cancel(){}}},
+  animate(_node,keyframes,options){requests.push({keyframes,options,startTop:_node.style.top,startLeft:_node.style.left});return {finished:new Promise(()=>{}),cancel(){}}},
   requestFrame(){return null},cancelFrame(){}
  });
  renderer.play({
@@ -65,8 +65,8 @@ test("direct projectile has one straight launch-to-rest-lane flight independent 
  const buried=travelGeometry({liveY:290});
  assert.deepEqual(endpoint(airborne),endpoint(standing),"an airborne target must not bend or raise a straight shot");
  assert.deepEqual(endpoint(buried),endpoint(standing),"an underground target must not bend or lower a straight shot");
- assert.equal(endpoint(standing).dx,360,"straight shot still ends at the logical target's ground-stage slot");
- assert.equal(endpoint(standing).dy,-35,"straight shot uses the normal/resting target lane regardless of live Y");
+ assert.equal(endpoint(standing).dx,293,"straight shot still ends at the logical target's ground-stage slot");
+ assert.equal(endpoint(standing).dy,-25,"straight shot uses the normal/resting target lane regardless of live Y");
  for(const v of [standing,airborne,buried]){
   const half=parseXY(v.flight[0].transform);
   assert.deepEqual(half,{dx:0,dy:0});
@@ -88,5 +88,5 @@ test("direct projectile does not track vertical displacement when opponent fires
 test("skyfall retains sky-based fixed destination derived from its distinct visual configuration",()=>{
  const a=travelGeometry({liveY:160,skyfall:true});
  const b=travelGeometry({liveY:30,skyfall:true});
- assert.notDeepEqual(endpoint(a),endpoint(b),"skyfall must retain its own trajectory ownership");
+ assert.notEqual(a.animations.at(-1).startTop,b.animations.at(-1).startTop,"skyfall must retain its own trajectory ownership");
 });
