@@ -10,7 +10,7 @@ import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 } from "../../src/catalogs/captu
 
 const id = "user:wind-tornado";
 const base = {
-  id:"tornado-occlusion",name:"Tornade profondeur",requiredLevel:1,usageScopes:["capture","combat"],
+  id:"tornado-occlusion",name:"Tornade profondeur",description:"Essai animation et calques",requiredLevel:1,usageScopes:["capture","combat"],
   category:"offensive",form:"projectile",element:"air",approachMode:"none",energyCost:2,
   preparationMs:100,travelMs:2500,recoveryMs:0,cooldownMs:0,
   allowedDistances:["short","medium","long"],targetRelations:["enemy"],
