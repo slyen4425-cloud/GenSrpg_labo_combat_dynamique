@@ -15,7 +15,9 @@ test("the one existing beam three-phase editor belongs to Visuals, never a numbe
   assert.doesNotMatch(html,/class="step">4 bis/);
   assert.equal((html.match(/data-skill-beam-stage-editor/g)||[]).length,1);
   assert.match(html,/<section[^>]*data-skill-beam-stage-editor[^>]*data-beam-active="false"/);
-  assert.match(css,/\[data-skill-beam-stage-editor\]\[data-beam-active="false"\]/);
+  assert.doesNotMatch(css,/\[data-skill-beam-stage-editor\]\[data-beam-active="false"\]\s*\{\s*display:\s*none\s*;/);
+  assert.match(css,/\[data-skill-beam-stage-editor\]\s+\[data-beam-stage\]\[hidden\]/);
+  assert.match(html,/data-skill-beam-pack-apply/);
   for(const stage of ["start","body","impact"]){
     assert.equal((html.match(new RegExp('data-beam-stage="'+stage+'"','g'))||[]).length,1);
     assert.equal((html.match(new RegExp('data-beam-stage-fields="'+stage+'"','g'))||[]).length,1);
