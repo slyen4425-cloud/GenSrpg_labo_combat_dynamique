@@ -394,3 +394,13 @@ Pour chaque phase :
 pré-audit -> checkpoint départ -> branche de travail -> micro-lot -> tests -> checkpoint GREEN -> documentation -> phase suivante.
 
 Pas de saut de phase structurelle pour gagner du temps.
+
+## Backlog futur Monster Capture — Dernier sursaut / Esprit combatif (proposition du 12 octobre 2026)
+
+**NON ENGAGÉ — aucun code ni changement de règles dans ce lot.**
+
+Après un K.O., une créature pourrait exceptionnellement se relever et continuer le combat grâce à un bonus propre à son espèce/profil, potentiellement évolutif sur plusieurs paliers. Employer ce mécanisme comporterait un **risque de mort définitive**. En cas de décès, le propriétaire recevrait une **pierre d'expérience transmettant 50 % de l'XP possédée par la créature disparue à une nouvelle créature**.
+
+Conception détaillée, points non tranchés (déclenchement, paliers, probabilités, définition de la base XP), frontières combat/progression et tests attendus : [LAB_CAPTURE_LAST_STAND_FUTURE.md](LAB_CAPTURE_LAST_STAND_FUTURE.md).
+
+À prioriser uniquement après décision explicite ; aucune modification de `Zombicide-40k`, du gameplay Combat ou de la persistance sans chantier et checkpoints dédiés.
