@@ -1471,3 +1471,12 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Test RED `6fbc673e8e1cdb0ee1b5777cab9c1138355e668a`, scénarios cible volante/souterraine dans les deux sens, trajectoire stable/skyfall propriétaire distinct. CI Chromium, checkpoint GREEN et FF sous lease après réussite, puis déploiement Pages; test visuel smartphone distinct.
 
 - Tests hérités mis à jour dans le même périmètre : `tests/unit/skill-fx.test.mjs` exigeait l'ancienne visée sur modèle en hauteur ; vérifie maintenant le slot stable au repos. Le nouveau test contrôle la notation CSS réelle de la frame de départ (zéro sans px). Aucune modification métier supplémentaire.
+
+
+## 2026-10-12 — Projet direct et collision d'une cible au sol à mi-arène
+
+- Demande : un projectile horizontal doit rester sur sa ligne de repos malgré les mouvements aérien/souterrain, mais **une cible au sol qui croise la ligne avant l'arrivée** doit être touchée au point de rencontre ; le projectile s'arrête, l'impact est sur l'image de la cible à sa position mobile, les PV diminuent immédiatement (joueur et adversaire).
+- Base `gh-pages` `781f057b3e574d42bfb710ce6fcd5e15e158db4e` (CI/Pages GREEN) ; checkpoint `checkpoint/lab-start-direct-projectile-midfield-contact-2026-10-12` ; branche `work/lab-direct-projectile-midfield-contact-2026-10-12`.
+- Cause potentielle vérifiée dans la chaîne existante : `dom-skill-fx` détecte `sweptPointHitsOpaqueMask` ; `CombatRuntime.reportActionContact` abrège le trajet ; `combat-resolution-presenter` annule et positionne le sprite d'impact sur le modèle vivant. Pas de second calcul physique/dégâts à créer si la sentinelle passe.
+- Périmètre du lot : `tests/integration/capture-direct-projectile-midfield-contact-v1.test.mjs`, `docs/LAB_DIRECT_PROJECTILE_MIDFIELD_CONTACT_V1.md`, `docs/LAB_CURRENT_WORK.md`. Aucun changement gameplay, renderer, presets, FX média, `main`, `global-assets`, `Zombicide-40k`, Exploration.
+- Critères : au moins une frame sans contact suivie d'un contact vers 50 % arène, 1 hit + dégâts avant temps nominal, projectile annulé, FX d'impact sur la créature mobile, pas de doublon, deux directions, autres sentinelles air/souterrain/skyfall maintenues, CI complète verte, checkpoint GREEN et FF `gh-pages` ; test manuel Android restant.
