@@ -1,3 +1,4 @@
+import { isReserveEffectTargetScopeV2 } from "../../contracts/skill-effect-v1.js";
 import {
   addChargeTimeEffect,
   advanceCombatTime,
@@ -54,6 +55,18 @@ export function createCombatSession({
     );
   const initialDistance = distance;
   const initialFighters = fighters.map((fighter) => ({ ...fighter }));
+  let reserveSkillResolver = null;
+  const hasReserveSplash = skill => skill?.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope)) === true;
+  function registerReserveSkillResolver(resolver) {
+    if (typeof resolver !== "function" || reserveSkillResolver !== null) {
+      throw new TypeError("Roster Session reserve skill owner must be registered once");
+    }
+    reserveSkillResolver = resolver;
+  }
+  function reserveSkillGuard(skill) {
+    return hasReserveSplash(skill) && reserveSkillResolver === null
+      ? Object.freeze({ok:false,outcome:"reserve_roster_required",state}) : null;
+  }
   let state = createCombatState({
     distance: initialDistance,
     fighters: initialFighters
@@ -99,6 +112,8 @@ export function createCombatSession({
   }
 
   function previewSkill({ actorId, targetId, skill, reactionSkill = null }) {
+    const guard = reserveSkillGuard(skill);
+    if (guard) return guard;
     return resolveSkill({
       state,
       actorId,
@@ -125,6 +140,8 @@ export function createCombatSession({
   }
 
   function startSkill({ actorId, targetId, skill }) {
+    const guard = reserveSkillGuard(skill);
+    if (guard) return guard;
     const result = resolveSkillStart({
       state,
       actorId,
@@ -311,10 +328,14 @@ export function createCombatSession({
       battleFormat,
       resolutionAtMs
     });
-    return commitCompletedOwnerAction(
-      result,
-      action.actorId
-    );
+    const committed = commitCompletedOwnerAction(result, action.actorId);
+    if (committed.ok && committed.outcome === "hit" && hasReserveSplash(action.skill)) {
+      if (reserveSkillResolver === null) throw new Error("Missing roster owner during skill completion");
+      const reserve = reserveSkillResolver({actorId: action.actorId, skill: action.skill});
+      if (!reserve.ok) throw new Error("Roster reserve effect failed: " + reserve.outcome);
+      return Object.freeze({...committed, state, reserveResults: reserve.results});
+    }
+    return committed;
   }
 
   function completeCommand({ action }) {
@@ -457,6 +478,7 @@ export function createCombatSession({
       return normalizedSkillSpeedMultiplier;
     },
     snapshot,
+    registerReserveSkillResolver,
     previewMovement,
     previewSkill,
     previewCommand,
