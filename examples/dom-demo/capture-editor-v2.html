@@ -1200,7 +1200,18 @@
           <label>Perspective pendant le trajet — 0 = désactivée, 0.25 = 25% de différence de taille
             <input type="number" min="0" max="0.5" step="0.05" value="0" data-skill-travel-perspective>
           </label>
-          <p class="note">Pour Tornade : choisis « Boucler pendant le trajet », puis augmente « Vitesse de boucle » à 2× ou 3×. Cela accélère les images, sans accélérer le projectile. La perspective réduit progressivement un tir joueur → ennemi et agrandit un tir ennemi → joueur. Laisse-la à 0 pour préserver la taille d’origine. Non applicable aux chutes du ciel ni au rayon.</p>
+          <label>Taille du projectile côté éloigné (ratio) — 1 = identique, 0.25 = un quart de la taille
+            <input type="number" min="0.15" max="1" step="0.05" value="1" data-skill-travel-far-scale>
+          </label>
+          <label>Projectile à l’arrivée — calque devant / derrière la créature ciblée
+            <select data-skill-travel-arrival-layer>
+              <option value="same" selected>Conserver le calque du départ (historique)</option>
+              <option value="front">Passer devant la cible avant l’impact</option>
+              <option value="behind">Passer derrière la cible avant l’impact</option>
+            </select>
+          </label>
+          <p class="note">La taille côté éloigné permet un effet de profondeur plus fort que le réglage historique « Perspective » limité à 50 %. À 0.25, la tornade est quatre fois plus petite au fond de l’arène ; ce ratio est prioritaire si activé. Le calque d’arrivée change pendant le même déplacement, sans nouveau délai ni contact artificiel. Pour la tornade : départ derrière le lanceur, arrivée devant l’adversaire. Les effets ne concernent pas Chute du ciel ni Rayon.</p>
+          <p class="note">Pour Tornade : choisis « Boucler pendant le trajet », puis augmente « Vitesse de boucle » à 2× ou 3×. Cela accélère les images, sans accélérer le projectile. Laisse le ratio côté éloigné à 1 pour conserver l’ancien réglage de perspective.</p>
           <p class="note">Adapter répartit les phases sur tout le trajet. Boucler répète l’animation jusqu’au contact. La vitesse de déplacement se règle dans « Vers la cible ».</p>
           <fieldset class="editor-choice-group" data-skill-skyfall-settings>
             <legend>Trajectoire du projectile</legend>
