@@ -1,5 +1,6 @@
 import {
-  normalizeSkillEffectV1
+  normalizeSkillEffectV1,
+  isReserveEffectTargetScopeV2
 } from "./skill-effect-v1.js";
 import {
   normalizeProjectilePowerV1
@@ -408,6 +409,11 @@ export function normalizeSkillDefinition(input) {
       normalizeSkillEffectV1(entry)
     )
   );
+
+  if (effects.some(entry => isReserveEffectTargetScopeV2(entry.targetScope)) &&
+      !targetLocations.includes("active")) {
+    throw new RangeError("Reserve splash effects require an active target location");
+  }
 
   if (
     normalizedLegacyEffect.damage > 0 &&
