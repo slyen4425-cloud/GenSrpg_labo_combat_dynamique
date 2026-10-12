@@ -1096,6 +1096,32 @@
         </section>
 
 
+        <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
+          <h3>Mes assets — Mes sprites / Importer un sprite</h3>
+          <p class="note">Dans chaque liste Icône, Cast, Projectile, Impact, Zone ou Statut, « Bibliothèque GenSrpG » contient les visuels fournis avec GenSrpG et « Mes assets » contient tes imports. Le style visuel de l’étape 1 est une base prête à l’emploi : ce n’est pas une deuxième bibliothèque.</p>
+          <p class="note">Ajoute ton propre PNG, WebP ou JPEG directement à la bibliothèque de cette session. Après import, le sprite reçoit un assetId personnel et apparaît dans la liste correspondante en utilisant exactement le même binding et le même rendu que les assets GenSrpG.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-visual-role>
+                <option value="icon">Icône de capacité</option>
+                <option value="cast" selected>Cast / préparation</option>
+                <option value="travel">Projectile / trajet</option>
+                <option value="impact">Impact</option>
+                <option value="zone">Zone / aura</option>
+                <option value="status">Statut</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
+          <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
+        </div>
+
         <details class="skill-fx-authoring" data-skill-fx-advanced open>
           <summary>
             <span>Personnaliser les animations — Cast, Projectile, Impact, Zone</span>
@@ -1478,31 +1504,6 @@
         </p>
         </details>
 
-        <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
-          <h3>Mes assets — Mes sprites / Importer un sprite</h3>
-          <p class="note">Dans chaque liste Icône, Cast, Projectile, Impact, Zone ou Statut, « Bibliothèque GenSrpG » contient les visuels fournis avec GenSrpG et « Mes assets » contient tes imports. Le style visuel de l’étape 1 est une base prête à l’emploi : ce n’est pas une deuxième bibliothèque.</p>
-          <p class="note">Ajoute ton propre PNG, WebP ou JPEG directement à la bibliothèque de cette session. Après import, le sprite reçoit un assetId personnel et apparaît dans la liste correspondante en utilisant exactement le même binding et le même rendu que les assets GenSrpG.</p>
-          <div class="grid three">
-            <label>Utiliser comme
-              <select data-creator-visual-role>
-                <option value="icon">Icône de capacité</option>
-                <option value="cast" selected>Cast / préparation</option>
-                <option value="travel">Projectile / trajet</option>
-                <option value="impact">Impact</option>
-                <option value="zone">Zone / aura</option>
-                <option value="status">Statut</option>
-              </select>
-            </label>
-            <label>Nom
-              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
-            </label>
-            <label>Fichier
-              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
-            </label>
-          </div>
-          <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
-          <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
-        </div>
 
       </article>
 
