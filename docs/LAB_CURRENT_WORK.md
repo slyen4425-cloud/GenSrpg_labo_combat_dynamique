@@ -1559,3 +1559,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : `src/contracts/skill-presentation-binding-v12.js`, `src/contracts/skill-presentation-binding.js`, `src/adapters/renderer/capture-skill-presentation-assets-v2.js`, `src/adapters/renderer/dom-skill-fx.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, `src/catalogs/capture-showcase-skill-presets-v1.js`, `data/capture/showcase/cap_air_atk_4.capture-skill-transfer-v1.json`, tests dédiés et de non-régression, `docs/LAB_TORNADO_PERSPECTIVE_OCCLUSION_V1.md`, ce journal.
 - Protégés : `CombatRuntime`, action contact/opaque target collision et rest point, skyfall/beam, Timeline durée/énergie, sons, actifs 103 créatures, autres skills et leurs V1-V11, `main`, `global-assets`, `Zombicide-40k` et Exploration.
 - TDD : test RED vrai Binding→Asset→FX→HUD & imported Tornade, z-index évolutif et scale 25% distance, deux sens, ancien comportement identique, runtime durée conservée, import/export/hydratation. CI Node + navigateur Chromium ; checkpoint GREEN au SHA vérifié puis FF `gh-pages` sous lease et CI/Pages post-publication. Validation Android utilisateur séparée.
+
+
+### Tornade perspective / calque V1 — GREEN du code à vérifier au SHA de documentation
+
+- Nouveau contrat V12 additif : ratio distant optionnel `farScaleRatio` 0.15..1, arrivée `arrivalLayer` front/behind ; ancienne perspective V11 inchangée. Le projectile reste derrière son lanceur puis passe devant sa cible avant contact sur le **même** mouvement FX. Tout le gameplay, le mask de collision et la durée restent identiques.
+- JSON utilisateur `cap_air_atk_4` conservé à l'identique hormis version V12 et deux options visuelles ; showcase 17→18 items avec tests sentinelles adaptés. Cast/impact auteur initialement <1% opaques, intention préservée.
+- RED `b1aea2c1a91ccd892b77ec2ed1b98298f0b50a0c`. Code `599232f1fa17065082d86002b94b5845bd6b7e24` CI `38263241612` SUCCESS : 1576/1576 Node, Firestorm Chromium et Creature Library Chromium GREEN.
+- Rapport : `docs/LAB_TORNADO_PERSPECTIVE_OCCLUSION_V1.md`. À valider ensuite : CI SHA documentaire, checkpoint GREEN exact, FF gh-pages sous lease, CI et Pages post-publication ; essai smartphone manuel utilisateur distinct.
