@@ -1635,3 +1635,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Propriétaire : Demo UI (HTML/CSS), documentation uniquement. Fichiers autorisés : `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.css`, `tests/unit/capture-skill-editor-clarity-v1.test.mjs`, `docs/LAB_CAPTURE_NEXT_MECHANICS_AND_EDITOR_V1.md`, `docs/LAB_CURRENT_WORK.md`.
 - Protégés : valeurs des compétences, assets, rendu projectile / déplacement / collision, statuts/dégâts/KO, Roster/ciblage, contrôle presets existants, `main`, `global-assets`, projet principal et Exploration.
 - TDD : RED sentinelle sur unicité selectors, visibilité de groupes fonctionnels Cast/Projectile/Impact/Zone via boutons `<summary>` et expert FX replié, aucun champ exporté perdu, behavior presets conservé; tests fondation et navigateur existants, CI GREEN exact puis checkpoint GREEN, FF gh-pages sous lease et contrôle Pages ; essai Android utilisateur séparé.
+
+
+### Capacité — séparation des contrôles visuels, code et CI GREEN
+
+- TDD RED initial `fe2117bc8d26003cd671151a9caafa4d5f6f1596`, puis séparation HTML `a15ec76d8863fb478e8fdc4ebd5f4ab62db3ebe5` et CSS `80d6fadaaa520a2ec10b5b8bd0dc9234be416e4c`, sentinelle corrigée `95dd262ea9abce8046912c080425b7a1ab26d228` (CI `38291934580` SUCCESS : foundation et deux Chromium), inventaire source `docs/LAB_CAPTURE_NEXT_MECHANICS_AND_EDITOR_V1.md`.
+- Le panneau principal « Personnaliser les animations » s'ouvre, cinq sections typées `<details>` sont visibles et indépendamment repliables ; le volet FX experts Glow/Traînée/Fumée/Secousses est fermé par défaut. Inputs, valeurs, exports et système de presets existants inchangés, Roster et règles protégés.
+- Le SHA avec documentation `ff071dc26ba959ce5130394dae9d572ce896343e` a passé CI complète `38292074853` (foundation + Firestorm Chromium + Creature Library Chromium).
+- Suite : créer checkpoint GREEN sur SHA exact après ce journal, publication fast-forward sous lease sur `gh-pages`, vérifier CI et Pages après publication. Validation tactile Android humaine non usurpée.
