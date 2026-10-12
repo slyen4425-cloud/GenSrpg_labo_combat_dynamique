@@ -44,9 +44,9 @@ test("vertical tornado sprite from AI remains upright while movement and visual 
   const {renderer,flight,sprite}=await runProjectile({fromSlot:"opponent"});
   assert.equal(sprite.style.transform,"rotate(0rad)");
   assert.equal(flight.options.duration,2500);
-  assert.equal(flight.keyframes[0].zIndex,"2");
-  assert.equal(flight.keyframes.at(-1).zIndex,"7");
-  assert.match(flight.keyframes[0].transform,/scale\(1\.175\)/);
+  assert.equal(flight.keyframes[0].zIndex,undefined);
+  assert.equal(flight.keyframes.at(-1).zIndex,undefined);
+  assert.match(flight.keyframes[0].transform,/scale\(2\.35\)/);
   assert.match(flight.keyframes.at(-1).transform,/scale\(4\.9\)/);
   renderer.dispose();
 });

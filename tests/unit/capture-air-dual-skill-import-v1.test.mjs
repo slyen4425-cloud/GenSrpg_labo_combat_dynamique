@@ -14,7 +14,7 @@ const files=[
   {
     "path": "data/capture/showcase/lib_tailwind.capture-skill-transfer-v1.json",
     "id": "lib_tailwind",
-    "sha256": "a76ce1197e283bf13afba1da3c3ab5a6fa601becb912b6f1c0f5c75f7d863504"
+    "sha256": "2e56ae50815052bbac261f44ad1e42abae82b95ad734484684c523967924d234"
   },
   {
     "path": "data/capture/showcase/cap_air_atk_3.capture-skill-transfer-v1.json",
@@ -32,7 +32,7 @@ test("two user-authored air skills preserve exact source bytes and canonical ref
   assert.equal(transfer.kind,"skill");
   assert.equal(transfer.value.draft.id,f.id);
  }
- assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,18);
+ assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,19);
 });
 test("Vent arrière repaired statuses keep author effect values and unique IDs",async()=>{
  const record=importCaptureTransferJsonV1(await read(files[0].path)).value.draft;

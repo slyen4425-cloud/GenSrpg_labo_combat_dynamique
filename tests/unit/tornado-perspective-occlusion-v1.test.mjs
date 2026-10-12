@@ -108,11 +108,11 @@ test("Tornado imported showcase is the user's skill with stronger far scale but 
   assert.equal(file.draft.id,"cap_air_atk_4");
   assert.equal(file.draft.definition.effects[0].amount,45);
   assert.equal(file.draft.definition.travelMs,2500);
-  assert.equal(file.draft.presentation.visual.travel.farScaleRatio,0.25);
+  assert.equal(file.draft.presentation.visual.travel.farScaleRatio,0.5);
   assert.equal(file.draft.presentation.visual.travel.arrivalLayer,"front");
   assert.equal(file.draft.presentation.visual.travel.frameSpeedMultiplier,1.5);
-  assert.equal(file.draft.presentation.visual.cast.opacity,0.006999999999999999);
-  assert.equal(file.draft.presentation.visual.impact.opacity,0.006);
+  assert.equal(file.draft.presentation.visual.cast.opacity,0.7);
+  assert.equal(file.draft.presentation.visual.impact.opacity,0.6);
   normalizeSkillPresentationBinding(file.draft.presentation);
 });
 

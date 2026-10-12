@@ -145,7 +145,13 @@
           "assetId": "core:icon-skill-portal-dash-01"
         }
       },
-      "audio": {},
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-34855cd9",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {
         "lib_tailwind:cooldown": {
           "mode": "tint",
