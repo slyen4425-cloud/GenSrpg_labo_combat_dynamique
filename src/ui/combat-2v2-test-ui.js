@@ -455,6 +455,9 @@ export function combatSkillTargetOptionsV1({
   const allowedIds = [];
   const availableIds = [];
   const previewsById = {};
+  if (!(skill?.targetLocations ?? ["active"]).includes("active")) {
+    return Object.freeze({allowedIds:Object.freeze([]),availableIds:Object.freeze([]),previewsById:Object.freeze({})});
+  }
   for (const actor of format.actors) {
     const targetId = actor.actorId;
     if (!(Number(state?.fighters?.[targetId]?.hp) > 0) || !isPresent(targetId)) {
@@ -473,6 +476,27 @@ export function combatSkillTargetOptionsV1({
     availableIds: Object.freeze(availableIds),
     previewsById: Object.freeze(previewsById)
   });
+}
+
+// The UI projects canonical Roster candidate previews; no team/HP/damage rules
+// are duplicated here. A reserve ref always identifies its exact member.
+export function combatSkillReserveTargetOptionsV2({
+  format, actorId, skill, rosterSnapshot, previewTarget
+}) {
+  if (!(skill?.targetLocations ?? ["active"]).includes("reserve") || !rosterSnapshot) return Object.freeze([]);
+  if (typeof previewTarget !== "function") throw new TypeError("previewTarget is required");
+  const available = [];
+  for (const actor of format.actors) {
+    const team = rosterSnapshot[actor.actorId];
+    if (!team) continue;
+    for (const member of team.members) {
+      if (member.active || !(Number(member.hp) > 0)) continue;
+      const targetRef = Object.freeze({scope:"reserve",teamId:actor.actorId,memberId:member.id});
+      const preview = previewTarget({actorId,targetRef,skill});
+      if (preview?.ok) available.push(Object.freeze({targetRef,preview,displayName:member.displayName}));
+    }
+  }
+  return Object.freeze(available);
 }
 
 // Only the UI chooses an unambiguous target; Combat Rules still validates
@@ -911,6 +935,14 @@ export async function mountCoop2v2Test({
     targetPulseTimers.set(actorId, timerId);
   }
 
+  function reserveSkillTargetOptions(skill) {
+    return combatSkillReserveTargetOptionsV2({
+      format, actorId:format.localActorId, skill,
+      rosterSnapshot:rosterController?.snapshot() ?? null,
+      previewTarget:args=>rosterController.previewSkillOnTarget(args)
+    });
+  }
+
   function skillTargetOptions(skill, state = session.snapshot()) {
     return combatSkillTargetOptionsV1({
       format,
@@ -1001,21 +1033,23 @@ export async function mountCoop2v2Test({
 
     if (pendingSkillId !== null) {
       const pending = skillRefs.get(pendingSkillId)?.skill;
-      if (!pending || lockedByAction || skillTargetOptions(pending, state).availableIds.length === 0) {
+      if (!pending || lockedByAction ||
+        (skillTargetOptions(pending, state).availableIds.length === 0 && reserveSkillTargetOptions(pending).length === 0)) {
         pendingSkillId = null;
       }
     }
 
     for (const { button, cooldown, skill } of skillRefs.values()) {
       const options = skillTargetOptions(skill, state);
+      const reserveOptions = reserveSkillTargetOptions(skill);
       const preview = options.previewsById[selectedTargetId] ??
-        options.previewsById[options.allowedIds[0]] ?? { ok: false };
+        options.previewsById[options.allowedIds[0]] ?? reserveOptions[0]?.preview ?? { ok: false };
       const resolvedTargetId = resolveCombatSkillClickTargetV1({
         actorId: format.localActorId, skill,
         selectedTargetId, availableIds: options.availableIds
       });
       button.dataset.targetRequired =
-        options.availableIds.length > 0 && resolvedTargetId === null
+        reserveOptions.length > 0 || (options.availableIds.length > 0 && resolvedTargetId === null)
           ? "true" : "false";
       button.dataset.targeting =
         pendingSkillId === skill.id ? "true" : "false";
@@ -1058,7 +1092,7 @@ export async function mountCoop2v2Test({
       );
 
       button.disabled =
-        !localAlive || lockedByAction || options.availableIds.length === 0;
+        !localAlive || lockedByAction || (options.availableIds.length === 0 && reserveOptions.length === 0);
     }
 
     if (dodgeButton) {
@@ -1253,6 +1287,29 @@ export async function mountCoop2v2Test({
     );
   }
 
+  function activateLocalReserveSkill(skill, targetRef) {
+    const eligible = reserveSkillTargetOptions(skill).some(option =>
+      option.targetRef.teamId === targetRef.teamId && option.targetRef.memberId === targetRef.memberId
+    );
+    if (!eligible || runtime.hasActiveActionFor(format.localActorId)) {
+      setStatus(skill.name + " : créature de réserve indisponible.", "warn");
+      renderAvailability();
+      return false;
+    }
+    const result = rosterController.useSkillOnTarget({actorId:format.localActorId,targetRef,skill});
+    if (!result.ok) {
+      setStatus(skill.name + " : " + result.outcome + ".", "warn");
+      renderAvailability();
+      return false;
+    }
+    pendingSkillId = null;
+    const member = rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
+    setStatus(skill.name + " sur " + (member?.displayName ?? targetRef.memberId) + " (réserve) : effet appliqué.", "ok");
+    renderState();
+    queueAiDecisions();
+    return true;
+  }
+
   function activateLocalSkill(skill, targetId) {
     const allowed = isSkillTargetAllowed({
       format, actorId: format.localActorId, targetId, skill
@@ -1346,6 +1403,15 @@ export async function mountCoop2v2Test({
 
     const onClick = () => {
       const options = skillTargetOptions(skill);
+      const reserveOptions = reserveSkillTargetOptions(skill);
+      if (reserveOptions.length > 0) {
+        pendingSkillId = skill.id;
+        setStatus(skill.name + " : touche une créature active, ou sélectionne précisément une réserve dans le menu Rappel.", "accent");
+        rosterPanel?.openForSkill();
+        renderAvailability();
+        renderTargetSelection();
+        return;
+      }
       const resolvedTargetId = resolveCombatSkillClickTargetV1({
         actorId: format.localActorId, skill,
         selectedTargetId, availableIds: options.availableIds
@@ -1627,6 +1693,7 @@ export async function mountCoop2v2Test({
     );
     rosterController = createCaptureCombatRosterControllerV1({
       session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
+      battleFormat:format,
       recallCooldownMs: gameOptions.recallCooldownMs,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
       onActorChanged(actorId, result) {
@@ -1642,7 +1709,14 @@ export async function mountCoop2v2Test({
         renderState();
       }
     });
-    rosterPanel = mountCaptureCombatRosterPanelV1({ root, controller: rosterController, format, commands, session, getRuntime: () => runtime, isTransitionPending: () => koTransitions.size > 0, setStatus });
+    rosterPanel = mountCaptureCombatRosterPanelV1({ root, controller: rosterController, format, commands, session,
+      getRuntime: () => runtime, isTransitionPending: () => koTransitions.size > 0, setStatus,
+      reserveTargetCandidates: () => pendingSkillId === null ? [] : reserveSkillTargetOptions(skillRefs.get(pendingSkillId)?.skill),
+      onTargetReserve(targetRef) {
+        const skill = pendingSkillId === null ? null : skillRefs.get(pendingSkillId)?.skill;
+        return skill ? activateLocalReserveSkill(skill,targetRef) : false;
+      }
+    });
   }
   renderLocalSkills();
   refreshAiControllers();
