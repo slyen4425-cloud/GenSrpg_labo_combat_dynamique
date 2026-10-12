@@ -1,4 +1,5 @@
 import { movementEnergyCost, isSkillInRange } from "./distance.js";
+import { isReserveEffectTargetScopeV2 } from "../../contracts/skill-effect-v1.js";
 import {
   skillCooldownRemainingMs,
   skillUseCount,
@@ -913,7 +914,9 @@ export function resolveSkillCompletion({
           state: nextState,
           actorId,
           targetId,
-          skill,
+          skill: skill.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope))
+            ? { ...skill, effects: skill.effects.filter(effect => !isReserveEffectTargetScopeV2(effect.targetScope)) }
+            : skill,
           atMs: impactAtMs,
           combatAtMs: combatImpactAtMs,
           battleFormat
