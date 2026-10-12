@@ -124,7 +124,7 @@
           "offsetMode": "same",
           "trajectoryMode": "linear",
           "frameSpeedMultiplier": 1.5,
-          "perspectiveAmount": 0.5,
+          "perspectiveAmount": 0,
           "farScaleRatio": 0.25,
           "arrivalLayer": "front"
         },
