@@ -1605,3 +1605,14 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - `all_enemy_reserves` group effects are unchanged and require no per-member selection; active target remains a normal combat target. No reserve actors have been added to CombatState, no duplicate HP or action owner.
 - New RED sentinels `tests/unit/air-skills-enemy-bench-inspection-v1.test.mjs` commit `ac055694b5ba8c70a57c3ac1a08b0f08f8fac4db`; creator imports `f9aff5ce3adf925168734c981f23cdef79117cdf`, UI `ac3a807f443da5d2a2afc95de92eb714123b59fc`. Updated obsolete fixture expectations to the last author JSON, retaining historic tests for engine geometry.
 - Final CI must succeed (Node + Chromium Firestorm + Chromium Library), then create checkpoint GREEN on exact commit, FF `gh-pages` under lease, re-check CI/Pages on published SHA. Phone user validation remains pending.
+
+
+## 2026-10-12 — Placement du panneau réserve adverse près des PV joueur 2 (lot officiel)
+
+- Retour utilisateur validé : le panneau « Réserves adverses », techniquement GREEN à `836519f1baf94f0a3ee0533b39d024d582db0606` (CI `38278438539`, Pages `38278437865`), est actuellement sous la barre de capacités locale ; il doit être situé **en haut de l'arène, directement à côté du HUD de PV adverse**, séparé du bouton adversaire pour préserver le ciblage normal.
+- Objectif unique : déplacer **le même** `<details data-combat-enemy-reserves>` à la suite de la carte PV `opponent-1`, le présenter comme un onglet compact en haut à gauche de la carte adverse, avec popover qui s'ouvre vers le bas et reste dans la scène mobile paysage. Aucun clone du panneau.
+- Départ : `checkpoint/lab-start-enemy-bench-hud-placement-v1-2026-10-12` ; branche `work/lab-enemy-bench-hud-placement-v1-2026-10-12` ; SHA base exact `836519f1baf94f0a3ee0533b39d024d582db0606`.
+- Propriétaire : Demo UI (HTML/CSS) seulement, propriétaire Roster inchangé ; aucun déplacement des cartes adverses ni changement aux dégâts.
+- Fichiers autorisés : `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.css`, sentinelles du placement / vrai montage et journal courant ; note de validation dédiée seulement si nécessaire.
+- Protégés : fichiers JSON des 3 compétences, commandes / ciblage Roster, `src/ui/combat-2v2-test-ui.js`, FX, Runtime, 103 créatures, positions des combattants, gameplay, `main`, `global-assets`, GenSrpG / Exploration.
+- TDD : test RED d'unicité DOM, proximité immédiate entre HUD opponent-1 et panneau, hors du bouton sélectionnable ; CSS position en haut adjacent aux PV et popover en dessous / taille smartphone paysage ; conserver compat JS et test Node + navigateurs Chromium. GREEN uniquement CI SHA exact, checkpoint exact et publication fast-forward sous lease, validation visuelle Android utilisateur séparée.
