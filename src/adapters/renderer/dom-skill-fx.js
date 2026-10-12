@@ -2759,13 +2759,17 @@ export function createDomSkillFxRenderer({
       const spriteNode = arena.ownerDocument.createElement("span");
       const coreAnchorX = clampUnit(travelVisual.coreAnchor?.x, 0.5);
       const coreAnchorY = clampUnit(travelVisual.coreAnchor?.y, 0.5);
-      const headingRad = Number.isFinite(Number(travelVisual.headingRad))
-        ? Number(travelVisual.headingRad)
-        : 0;
-      const travelAngle = Math.atan2(deltaY, deltaX);
-      // A falling stone keeps its authored upright pose instead of rotating
-      // as if it had been fired horizontally from the caster.
-      const rotationRad = skyfall ? 0 : travelAngle - headingRad;
+      // A sprite without an explicitly authored native heading is a
+      // non-directional visual (e.g. Tornade or a player's imported FX):
+      // translating it between camps must never turn it upside down.
+      // Only a directional asset declaring headingRad follows the shot line.
+      // Skyfall remains upright regardless of heading metadata.
+      const headingRad = travelVisual.headingRad;
+      const hasDirectionalHeading = typeof headingRad === "number" &&
+        Number.isFinite(headingRad);
+      const rotationRad = skyfall || !hasDirectionalHeading
+        ? 0
+        : Math.atan2(deltaY, deltaX) - headingRad;
 
       node.className += " skill-fx--sprite-shell";
       node.dataset.assetId = travelVisual.assetId ?? "";
