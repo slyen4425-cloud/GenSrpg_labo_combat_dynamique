@@ -132,6 +132,8 @@ function resolvedVisual(
     frameSpeedMultiplier: slot.frameSpeedMultiplier ?? 1,
     perspectiveAmount: slot.perspectiveAmount ?? 0,
     perspectiveView: view,
+    ...(slot.farScaleRatio == null ? {} : { farScaleRatio: slot.farScaleRatio }),
+    ...(slot.arrivalLayer == null ? {} : { arrivalLayer: slot.arrivalLayer }),
     ...(slot.durationMs == null ? {} : { durationMs: slot.durationMs }),
     rotationDeg: slot.rotationDeg ?? 0,
     opacity: slot.opacity ?? 1,
@@ -390,6 +392,9 @@ export function createCaptureSkillPresentationAssetsV2({
         binding.version,
         view
       ),
+      // Independent from the source layer: only V12 projectiles opt into
+      // depth switching while the existing shell animation is progressing.
+      travelArrivalLayer: visual.travel?.arrivalLayer ?? null,
       impact: impactVisual,
       impactFeedbackOffset:
         binding.version >= 9
