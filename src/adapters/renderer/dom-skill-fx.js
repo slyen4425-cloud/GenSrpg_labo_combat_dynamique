@@ -2629,8 +2629,18 @@ export function createDomSkillFxRenderer({
     const skyfall = travelVisual?.trajectoryMode === "skyfall";
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
+    // Direct projectiles use the stable combat slot as their aiming lane.
+    // An actor can rise or burrow while the cast is in flight: its LIVE model
+    // still owns contact and impact, but it must not tilt the shot vertically.
+    // Skyfall deliberately keeps its own live destination at release.
     const to = centerRelativeTo(
-      projectileTargetRect(targetSlot),
+      skyfall
+        ? projectileTargetRect(targetSlot)
+        : anchor(
+            targetAnchors,
+            targetSlot,
+            "resting projectile lane"
+          ).getBoundingClientRect(),
       arenaRect
     );
     // Skyfall is authored on visual.travel: the source actor never becomes

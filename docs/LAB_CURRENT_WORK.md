@@ -1459,3 +1459,13 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Owner : transfert Capture officiel de `data/capture/showcase/` ; remplacement du preset `crea_ailevent` par le même ID (11 compétences, slots `lib_gust/cap_air_atk_3/lib_tailwind/vide/vide`), ajout de `lib_gust` au registre `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` pour remplacement du même ID natif, sans second registre.
 - Périmètre : 2 JSON, 1 registre, 4 tests existants d'invariant auteur, 1 test de régression dédié, `docs/LAB_AILEVENT_RAFALE_AUTHOR_V2.md`, présent journal ; aucun moteur, données tiers, `main`, `global-assets`, GenSrpG ni Exploration.
 - Contrats : données média et de jeu non modifiées ; test exact SHA + transfert batch + inventaire loadout + préservation du garde Fireball airborne ; CI foundation + Chromium ; checkpoint GREEN et FF uniquement après succès, CI/Pages après publication. Test mobile utilisateur distinct.
+
+
+## 2026-10-12 — Tir direct : ligne de repos stable indépendante des hauteurs de la cible
+
+- Signal utilisateur : Boule de feu MISS une cible aérienne mais le rendu pointe visiblement vers la créature en hauteur ; la simulation de présence seule ne suffit pas à vérifier la collision physique.
+- Diagnostic : `src/adapters/renderer/dom-skill-fx.js` prend la cible du vecteur non-skyfall depuis `targetAnchorFor`, qui fournit `getVisibleTargetRectFor` mobile dans le 2v2. La géométrie du projectile suit donc la hauteur/enterrement de la créature.
+- Base `gh-pages` `57a4e9a00d1174d56964439194352fabe03d5b3e` avec CI/Pages SUCCESS ; checkpoint `checkpoint/lab-start-direct-projectile-rest-lane-2026-10-12` ; work `work/lab-direct-projectile-rest-lane-2026-10-12`.
+- Owner : seul FX renderer. Projectiles directs visent le slot stable `targetAnchors`, SKYFALL conserve cible live ; impact & collision continuent de lire modèle réel et Runtime seul tranche le hit et les dégâts.
+- Périmètre : `src/adapters/renderer/dom-skill-fx.js`, `tests/unit/direct-projectile-rest-lane-v1.test.mjs`, `docs/LAB_DIRECT_PROJECTILE_REST_LANE_V1.md`, ce journal. Aucun déplacement des sprites ni changement du gameplay, du moteur, du statRegistry, de `main`, `global-assets`, GenSrpG ou Exploration.
+- Test RED `6fbc673e8e1cdb0ee1b5777cab9c1138355e668a`, scénarios cible volante/souterraine dans les deux sens, trajectoire stable/skyfall propriétaire distinct. CI Chromium, checkpoint GREEN et FF sous lease après réussite, puis déploiement Pages; test visuel smartphone distinct.
