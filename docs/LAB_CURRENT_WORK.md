@@ -1677,3 +1677,7 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.css`, `tests/unit/beam-preset-discoverability-v1.test.mjs`, documentation de ce lot.
 - Protégés : aucun changement de timing, audio, sprites, valeurs auteurs, import/export, Runtime, combat, HUD, Mouvement, assets, `main`, `global-assets`, GenSrpG, Exploration.
 - TDD : nouvelle sentinelle RED démontre que le CSS ne masque plus `data-skill-beam-stage-editor` en entier ; contrôle visibilité permanente des boutons pack/Undo, phases effectivement cachées hors style Rayon, une seule source de champs, conformité JS et pack complet réversible. Puis CI Node/Chromium, checkpoint GREEN sur commit testé et FF Pages sous lease ; test réel Android utilisateur distinct.
+
+### Adaptation de sentinelle historique Rayon
+- La CI du code révèle une unique attente de présentation devenue contradictoire dans `tests/unit/beam-movement-ui-v1.test.mjs` : l'ancien lot imposait de masquer **tout** le panneau si Style != Rayon. C'est précisément la régression UX reproduite ; les contrôles de vrai déplacement, d'unicité, de stages et de Mouvement restent valides.
+- Extension de périmètre autorisée pour **cette seule assertion CSS** : `tests/unit/beam-movement-ui-v1.test.mjs`. Modifier l'attente en « bouton modèle visible à tout moment, phases masquées hors Rayon » ; aucune suppression des tests de non-duplication ni du contrôleur. CI complète exigée de nouveau.
