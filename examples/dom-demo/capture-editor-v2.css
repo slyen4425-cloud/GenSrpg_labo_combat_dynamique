@@ -1378,7 +1378,11 @@ html {
 }
 
 /* Native expandable enemy bench HUD, accessible on touch and keyboard. */
-.combat-test-enemy-reserves { position:relative; margin-top:.24rem; }
+.capture-preview-shell .arena--coop-2v2 > .combat-test-enemy-reserves {
+  position:absolute; z-index:24; top:0.45rem;
+  right:calc(min(12.5rem, 30vw) + 0.8rem);
+  width:clamp(6rem, 17vw, 9rem); max-width:26%; margin:0;
+}
 .combat-test-enemy-reserves > summary {
   min-height:2rem; display:flex; align-items:center; padding:.25rem .5rem;
   border:1px solid rgba(120,202,235,.38); border-radius:.6rem;
@@ -1390,8 +1394,8 @@ html {
 .combat-test-enemy-reserves[open] > summary::before { content:"▾"; }
 .combat-test-enemy-reserves > summary:focus-visible { outline:2px solid #ade7ff; }
 .combat-test-enemy-reserves__body {
-  position:absolute; z-index:40; bottom:calc(100% + .35rem); right:0;
-  width:min(22rem,84vw); max-height:min(22rem,63svh); overflow:auto;
+  position:absolute; z-index:40; top:calc(100% + .35rem); bottom:auto; left:0; right:auto;
+  width:min(19rem,65vw); max-height:min(17rem,60svh); overflow:auto;
   padding:.55rem; border:1px solid #4d7184; border-radius:.7rem;
   background:rgba(5,21,30,.98); box-shadow:0 .6rem 1.4rem #0009;
 }
@@ -1417,24 +1421,8 @@ html {
   min-height:1.8rem; font-size:clamp(.53rem,1.7dvh,.7rem);
 }
 
-/* The enemy reserve inspector belongs beside the upper opponent health HUD. */
-.capture-preview-shell .arena--coop-2v2 > .combat-test-enemy-reserves {
-  position:absolute;
-  z-index:24;
-  top:0.45rem;
-  right:calc(min(12.5rem, 30vw) + 0.8rem);
-  width:clamp(6rem, 17vw, 9rem);
-  max-width:26%;
-  margin:0;
-}
-.combat-test-enemy-reserves__body {
-  top:calc(100% + .35rem);
-  bottom:auto;
-  right:auto;
-  left:0;
-  width:min(19rem, 65vw);
-  max-height:min(17rem, 60svh);
-}
+
+/* Compact adjacency to enemy HP in phone landscape; drop-down remains on screen. */
 .capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2 > .combat-test-enemy-reserves {
   right:calc(min(10.5rem, 25%) + 0.8rem);
   width:clamp(5.8rem, 18%, 9rem);
