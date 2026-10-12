@@ -20,8 +20,15 @@ export const SKILL_EFFECT_V1_TARGET_SCOPES =
     "self",
     "all_enemies",
     "all_allies",
-    "all_except_self"
+    "all_except_self",
+    "all_enemy_reserves",
+    "all_ally_reserves"
   ]);
+
+export const RESERVE_EFFECT_TARGET_SCOPES_V2 = Object.freeze(["all_enemy_reserves", "all_ally_reserves"]);
+export function isReserveEffectTargetScopeV2(scope) {
+  return RESERVE_EFFECT_TARGET_SCOPES_V2.includes(scope);
+}
 
 const KIND_SET = new Set(SKILL_EFFECT_V1_KINDS);
 const TARGET_SCOPE_SET = new Set(
@@ -222,6 +229,10 @@ export function normalizeSkillEffectV1(input) {
       "Unsupported SkillEffectV1.targetScope: " +
         targetScope
     );
+  }
+
+  if (isReserveEffectTargetScopeV2(targetScope) && !["damage", "heal"].includes(kind)) {
+    throw new RangeError("Reserve effect scopes support damage/heal only: " + kind);
   }
 
   const output = {
