@@ -255,8 +255,8 @@ test("DOM direct projectile aims at stable ground-stage slot instead of elevated
     targetAnchorFor(slotId) {
       assert.equal(slotId, "opponent");
       return {
-        left: 250,
-        top: 90,
+        left: 310,
+        top: 30,
         width: 20,
         height: 20
       };

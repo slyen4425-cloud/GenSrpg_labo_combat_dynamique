@@ -8,7 +8,7 @@ const fireball=importCaptureTransferJsonV1(readFileSync(new URL("../../data/capt
 const rect=(left,top,width=30,height=30)=>({left,top,width,height});
 const CENTER=rect(0,0,500,400);
 
-function travelGeometry({from="player",target="opponent",liveY=75,skyfall=false,liveX=null}={}){
+function travelGeometry({from="player",target="opponent",liveY=75,skyfall=false,liveX=null,bodyOffsetY=0}={}){
  const requests=[];
  const makeNode=()=>({
   style:{},dataset:{},className:"",children:[],ownerDocument:null,
@@ -25,11 +25,15 @@ function travelGeometry({from="player",target="opponent",liveY=75,skyfall=false,
   player:rect(82,205,10,10),
   opponent:rect(355,174,10,10)
  };
- const live={
+ const liveMotion={
   ...stable, [target]:rect(liveX??stable[target].left,liveY,stable[target].width,stable[target].height)
  };
+ const live={
+  ...liveMotion,
+  [target]:rect(liveMotion[target].left,liveMotion[target].top+bodyOffsetY,liveMotion[target].width,liveMotion[target].height)
+ };
  const renderer=createDomSkillFxRenderer({
-  arena,anchors:{player:{getBoundingClientRect(){return stable.player}},opponent:{getBoundingClientRect(){return stable.opponent}}},
+  arena,anchors:{player:{getBoundingClientRect(){return liveMotion.player}},opponent:{getBoundingClientRect(){return liveMotion.opponent}}},
   targetAnchors:{player:{getBoundingClientRect(){return stable.player}},opponent:{getBoundingClientRect(){return stable.opponent}}},
   targetAnchorFor(slot){return live[slot]},
   sourceAnchorFor(slot){return mouth[slot]},
@@ -88,4 +92,13 @@ test("skyfall retains sky-based fixed destination derived from its distinct visu
  const a=travelGeometry({liveY:160,skyfall:true});
  const b=travelGeometry({liveY:30,skyfall:true});
  assert.notEqual(a.animations.at(-1).startTop,b.animations.at(-1).startTop,"skyfall must retain its own trajectory ownership");
+});
+
+test("straight wind bolt uses resting visible BODY center, not the unrelated full slot center",()=>{
+ const atRest=travelGeometry({liveY:160,bodyOffsetY:30});
+ const inFlight=travelGeometry({liveY:20,bodyOffsetY:30});
+ const buried=travelGeometry({liveY:290,bodyOffsetY:30});
+ assert.equal(endpoint(atRest).dy,5,"the actual center of the rested sprite sits 30px below slot center");
+ assert.deepEqual(endpoint(inFlight),endpoint(atRest),"airborne translation must not raise wind bolt");
+ assert.deepEqual(endpoint(buried),endpoint(atRest),"burrowing translation must not lower wind bolt");
 });

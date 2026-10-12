@@ -18,7 +18,7 @@ import { buildCaptureCreatureHistoricalLoadoutV1 } from "../../src/catalogs/capt
 function read(relative){return readFileSync(new URL("../../"+relative,import.meta.url),"utf8")}
 const files=[
  {path:"data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json",hash:"6605ee3255f732ce9303be2f7f405aad1ec3f9b947255905944f46b5ce6d9af1",kind:"creature"},
- {path:"data/capture/showcase/lib_gust.capture-skill-transfer-v1.json",hash:"27ba4466558875a97845e571b2d5b3b5e6529ac7097dad4e592b694e59a92c29",kind:"skill"}
+ {path:"data/capture/showcase/lib_gust.capture-skill-transfer-v1.json",hash:"5104d712da06e7c4818950dbd86bb6f3fb6ce4241842173a969a138a9ea7af55",kind:"skill"}
 ];
 const registry=normalizeCaptureStatRegistryV1(JSON.parse(read("data/capture/monster-capture-stat-registry.v1.json")));
 const progressionRules=normalizeCaptureProgressionRulesV1(JSON.parse(read("data/capture/monster-capture-progression-rules.v1.json")));
@@ -57,6 +57,7 @@ test("Rafale authored projectile, damage and media preserve original values",()=
  assert.equal(s.definition.energyCost,3);
  assert.equal(s.definition.preparationMs,800);
  assert.equal(s.definition.travelMs,700);
+ assert.equal(s.definition.projectileClash.power,2);
  assert.equal(s.definition.cooldownMs,8000);
  assert.equal(s.definition.effects.length,1);
  assert.equal(s.definition.effects[0].amount,4);

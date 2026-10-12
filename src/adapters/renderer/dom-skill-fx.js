@@ -304,6 +304,33 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
   });
 }
 
+/**
+ * Stable aim point for a straight projectile: transfer only the offset of
+ * the VISIBLE opaque creature body relative to its MOVING model anchor into
+ * the RESTING combat slot. Vertical translations (flight/burrowing/approach)
+ * cancel out; the aim is sampled once at release, never tracked in flight.
+ * Actual hit detection remains owned by the live opaque-mask collision model.
+ */
+export function restingProjectileAimRectV1({slotRect,motionRect,visibleRect}) {
+  const center = rect => ({
+    x: Number(rect.left) + Number(rect.width) / 2,
+    y: Number(rect.top) + Number(rect.height) / 2
+  });
+  const valid = rect => rect &&
+    [rect.left,rect.top,rect.width,rect.height].every(v=>Number.isFinite(Number(v))) &&
+    Number(rect.width)>0 && Number(rect.height)>0;
+  if (!valid(slotRect) || !valid(motionRect) || !valid(visibleRect)) return slotRect;
+  const slot = center(slotRect);
+  const motion = center(motionRect);
+  const body = center(visibleRect);
+  return Object.freeze({
+    left: slot.x + body.x - motion.x,
+    top: slot.y + body.y - motion.y,
+    width: 0,
+    height: 0
+  });
+}
+
 export function createDomSkillFxRenderer({
   arena,
   anchors,
@@ -2629,18 +2656,24 @@ export function createDomSkillFxRenderer({
     const skyfall = travelVisual?.trajectoryMode === "skyfall";
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
-    // Direct projectiles use the stable combat slot as their aiming lane.
-    // An actor can rise or burrow while the cast is in flight: its LIVE model
-    // still owns contact and impact, but it must not tilt the shot vertically.
-    // Skyfall deliberately keeps its own live destination at release.
+    // Direct fire follows a single straight resting BODY lane: use the
+    // opaque model's relative offset within its moving anchor, projected
+    // onto the stable slot. Aerial/underground translations cancel out.
+    // Skyfall intentionally uses the live target as before.
     const to = centerRelativeTo(
       skyfall
         ? projectileTargetRect(targetSlot)
-        : anchor(
-            targetAnchors,
-            targetSlot,
-            "resting projectile lane"
-          ).getBoundingClientRect(),
+        : restingProjectileAimRectV1({
+            slotRect: anchor(
+              targetAnchors, targetSlot, "resting projectile lane"
+            ).getBoundingClientRect(),
+            motionRect: anchor(
+              anchors, targetSlot, "moving target model"
+            ).getBoundingClientRect(),
+            visibleRect: targetAnchorFor
+              ? targetAnchorFor(targetSlot)
+              : null
+          }),
       arenaRect
     );
     // Skyfall is authored on visual.travel: the source actor never becomes
