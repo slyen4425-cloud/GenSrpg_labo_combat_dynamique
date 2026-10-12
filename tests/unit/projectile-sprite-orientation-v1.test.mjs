@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { createCaptureSkillPresentationAssetsV2 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
 import { normalizeSkillPresentationBinding } from "../../src/contracts/skill-presentation-binding.js";
+import { createGlobalPresentationAssetResolverV1 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
 
 const fixturePath = "../../data/capture/showcase/cap_air_atk_4.capture-skill-transfer-v1.json";
 const spriteAsset = {url:"/creator-tornado.png",frameCount:8,frameMs:90,coreAnchor:{x:0.5,y:0.5}};
@@ -76,4 +77,19 @@ test("editor offers one principal far-depth setting and places V11 historical pe
   assert.ok(detail,"legacy control is inside collapsible compatibility details");
   assert.match(detail[1],/data-skill-travel-perspective/);
   assert.match(html,/data-skill-travel-far-scale/);
+});
+
+test("global asset resolver preserves explicit heading zero but ignores missing/null heading",()=>{
+  for (const heading of [null,undefined]) {
+    const resolve=createGlobalPresentationAssetResolverV1({
+      assetCatalog:{assets:[{id:"neutral",resource:{file:"fx.png",headingRad:heading}}]},
+      assetUrlForFile:()=>"/fx.png"
+    });
+    assert.equal("headingRad" in resolve("neutral"),false);
+  }
+  const resolve=createGlobalPresentationAssetResolverV1({
+    assetCatalog:{assets:[{id:"directed",resource:{file:"fx.png",headingRad:0}}]},
+    assetUrlForFile:()=>"/fx.png"
+  });
+  assert.equal(resolve("directed").headingRad,0);
 });
