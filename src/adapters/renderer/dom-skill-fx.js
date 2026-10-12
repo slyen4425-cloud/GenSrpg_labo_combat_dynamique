@@ -122,10 +122,13 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
         ? visual.playbackMode
         : "once";
     const nativePlaybackMs = visualPlaybackMs(visual, durationMs);
+    const frameSpeed = playbackMode === "loop"
+      ? Math.max(0.25, Math.min(4, Number(visual.frameSpeedMultiplier) || 1))
+      : 1;
     const playbackMs =
       playbackMode === "stretch"
         ? Math.max(1, Number(durationMs) || nativePlaybackMs)
-        : nativePlaybackMs;
+        : nativePlaybackMs / frameSpeed;
 
     node.style.backgroundImage = `url("${frames[0]}")`;
     node.style.backgroundSize = "100% 100%";
@@ -280,7 +283,9 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
           1,
           Number(durationMs) || nativePlaybackMs
         )
-      : nativePlaybackMs;
+      : nativePlaybackMs / (playbackMode === "loop"
+          ? Math.max(0.25, Math.min(4, Number(visual.frameSpeedMultiplier) || 1))
+          : 1);
 
   node.style.backgroundImage = `url("${visual.url}")`;
   node.style.backgroundSize = `${frameCount * 100}% 100%`;
@@ -2732,6 +2737,16 @@ export function createDomSkillFxRenderer({
       8,
       Math.max(0.25, Number(travelVisual?.displayScale) || 1)
     );
+    // The only depth authority is this projectile visual. Its shell remains
+    // centered on the exact same trajectory/contact core; the scaling is
+    // opt-in, and historical projectiles keep identical transform keyframes.
+    const perspectiveAmount = !skyfall
+      ? Math.min(0.5, Math.max(0, Number(travelVisual?.perspectiveAmount) || 0))
+      : 0;
+    const inbound = travelVisual?.perspectiveView === "opponent";
+    const startDepth = inbound ? 1 - perspectiveAmount : 1;
+    const endDepth = inbound ? 1 : 1 - perspectiveAmount;
+    const midwayDepth = (startDepth + endDepth) / 2;
     let spriteBound = false;
     let projectileFrameAnimation = null;
 
@@ -2798,16 +2813,16 @@ export function createDomSkillFxRenderer({
     const keyframes = spriteBound
       ? [
           {
-            transform: `translate(-50%, -50%) translate3d(0, 0, 0) scale(${0.94 * travelDisplayScale})`,
+            transform: `translate(-50%, -50%) translate3d(0, 0, 0) scale(${0.94 * travelDisplayScale * startDepth})`,
             opacity: 0.95
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(${1.04 * travelDisplayScale})`,
+            transform: `translate(-50%, -50%) translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(${1.04 * travelDisplayScale * midwayDepth})`,
             opacity: 1,
             offset: 0.5
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(${0.98 * travelDisplayScale})`,
+            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(${0.98 * travelDisplayScale * endDepth})`,
             opacity: 1
           }
         ]
