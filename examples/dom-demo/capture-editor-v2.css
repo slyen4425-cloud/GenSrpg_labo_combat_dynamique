@@ -801,6 +801,32 @@ body[data-editor-view="preview"] {
   font-size: 0.66rem;
 }
 
+.skill-fx-stage-heading {
+  grid-column: 1 / -1;
+  margin: 1.05rem 0 0.2rem;
+  padding: 0.55rem 0.7rem;
+  border-left: 3px solid #8adfeb;
+  border-radius: 0.3rem 0.6rem 0.6rem 0.3rem;
+  background: rgba(81, 174, 197, 0.13);
+  color: #e6fbff;
+  font-size: clamp(0.84rem, 2.7vw, 1rem);
+  letter-spacing: 0.07em;
+}
+[data-skill-fx-expert] {
+  margin: 0.85rem;
+  border: 1px solid rgba(125, 229, 247, 0.2);
+  border-radius: 0.65rem;
+  background: rgba(2, 13, 23, 0.42);
+}
+[data-skill-fx-expert] > summary {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  color: #a9cbd3;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+[data-skill-fx-expert] > summary:focus-visible { outline: 2px solid #ade7ff; outline-offset: 2px; }
 [data-skill-fx-advanced] {
   margin-top: 0.85rem;
   border: 1px solid rgba(125, 229, 247, 0.34);

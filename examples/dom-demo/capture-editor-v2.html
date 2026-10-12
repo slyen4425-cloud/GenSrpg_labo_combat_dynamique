@@ -1014,7 +1014,7 @@
           <p class="note">Cast = animation de lancement ; Trajet = projectile ou corps du rayon ; Impact = effet à l’arrivée ; Zone = animation persistante. Échelle, décalage, opacité et calques ne changent jamais les valeurs de dégâts dans le moteur.</p>
         </details>
         <section class="fx-unified-flow" data-skill-fx-unified-flow aria-label="Parcours simplifié des effets visuels">
-          <p class="note">Un seul parcours en trois étapes : applique un style si tu le souhaites, règle son intensité, puis personnalise uniquement ce qui est nécessaire.</p>
+          <p class="note">Choisis un style ou une intensité rapidement. Pour choisir précisément les sprites et positions Cast / Projectile / Impact, utilise ensuite la section « Personnaliser les animations ».</p>
         <div class="fx-flow-step" data-skill-fx-starter>
           <h3>1. Choisir un style</h3>
           <p class="note">Choisis une base visuelle (feu, eau, soin…). Pour une capacité existante, tes sprites, sons et ancrages restent conservés. Pour une nouvelle capacité vide, le style peut également ajouter un cast, un trajet et un impact.</p>
@@ -1059,10 +1059,10 @@
           <p class="note" data-skill-fx-quick-state data-tone="info">Aperçu indicatif : choisir une intensité ne remplace jamais ta configuration. Appuie sur Appliquer, puis sur Tester le combat pour voir le véritable rendu.</p>
           <p class="note" data-skill-fx-quick-context data-tone="info">Selon la trajectoire du projectile, les effets ne s'affichent pas au même endroit.</p>
           <p class="note" data-skill-fx-quick-warning data-tone="info" aria-live="polite">Tes réglages enregistrés sont conservés.</p>
-          <p class="note">Envie de modifier un seul effet ? Ouvre l’étape 3, ou utilise les réglages avancés pour des valeurs précises.</p>
+          <p class="note">Pour aller plus loin, ouvre « Personnaliser les animations » puis, si nécessaire, les détails Glow et fumée. Les valeurs fines restent repliées.</p>
         </div>
         <details class="fx-flow-personalize" data-skill-fx-personalize>
-          <summary>3. Personnaliser — Glow, particules et détails</summary>
+          <summary>Optionnel — Préréglages Glow et particules</summary>
           <p class="note">Facultatif : adapte indépendamment la lumière et les particules. Ces réglages remplacent uniquement les valeurs concernées, sans modifier le style, les sprites ou les sons.</p>
           <div class="grid two">
             <label>Présence du glow
@@ -1095,37 +1095,13 @@
         </details>
         </section>
 
-        <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
-          <h3>Mes assets — Mes sprites / Importer un sprite</h3>
-          <p class="note">Dans chaque liste Icône, Cast, Projectile, Impact, Zone ou Statut, « Bibliothèque GenSrpG » contient les visuels fournis avec GenSrpG et « Mes assets » contient tes imports. Le style visuel de l’étape 1 est une base prête à l’emploi : ce n’est pas une deuxième bibliothèque.</p>
-          <p class="note">Ajoute ton propre PNG, WebP ou JPEG directement à la bibliothèque de cette session. Après import, le sprite reçoit un assetId personnel et apparaît dans la liste correspondante en utilisant exactement le même binding et le même rendu que les assets GenSrpG.</p>
-          <div class="grid three">
-            <label>Utiliser comme
-              <select data-creator-visual-role>
-                <option value="icon">Icône de capacité</option>
-                <option value="cast" selected>Cast / préparation</option>
-                <option value="travel">Projectile / trajet</option>
-                <option value="impact">Impact</option>
-                <option value="zone">Zone / aura</option>
-                <option value="status">Statut</option>
-              </select>
-            </label>
-            <label>Nom
-              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
-            </label>
-            <label>Fichier
-              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
-            </label>
-          </div>
-          <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
-          <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
-        </div>
 
-        <details data-skill-fx-advanced>
+        <details class="skill-fx-authoring" data-skill-fx-advanced open>
           <summary>
-            <span>Réglages avancés — sprites, taille, placement et audio</span>
-            <small>Cast · Projectile · Impact · Zone · Statut</small>
+            <span>Personnaliser les animations — Cast, Projectile, Impact, Zone</span>
+            <small>Sprites · Taille · Placement — ouvrir ou replier</small>
           </summary>
+          <p class="note">Les animations et leurs positions se règlent ici, indépendamment des préréglages rapides. Les détails Glow, traînée et fumée restent repliés plus bas.</p>
 
         <div class="grid two">
           <label>Icône
@@ -1137,6 +1113,7 @@
             </select>
           </label>
           <p class="note">Les coordonnées sont définies uniquement dans l’onglet Créature. Ici, la capacité ne fait que référencer un point existant.</p>
+          <h3 class="skill-fx-stage-heading">CAST</h3>
           <label>Effet de cast
             <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
           </label>
@@ -1181,6 +1158,7 @@
             <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-beam-start-scale>
           </label>
           <p class="note">Disponible pour Style « Rayon ». Ce sprite reste connecté au point de sortie et suit automatiquement le corps du rayon. L'impact garde son animation au contact de la cible.</p>
+          <h3 class="skill-fx-stage-heading">PROJECTILE / RAYON</h3>
           <label>Projectile / trajet
             <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
           </label>
@@ -1257,6 +1235,7 @@
               <option value="behind">Derrière la créature</option>
             </select>
           </label>
+          <h3 class="skill-fx-stage-heading">IMPACT</h3>
           <label>Impact
             <select data-skill-impact-fx data-asset-role="impact"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-impact-01" selected>Impact feu</option></select>
           </label>
@@ -1303,6 +1282,7 @@
             <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-opponent-offset-y>
           </label>
           <p class="note">Le flash, les particules d’impact et la fumée utilisent le même point visuel que le sprite d’impact.</p>
+          <h3 class="skill-fx-stage-heading">ZONE / AURA</h3>
           <label>Visuel persistant de zone
             <select data-skill-zone-fx data-asset-role="zone"><option value="">Aucun</option></select>
           </label>
@@ -1360,9 +1340,11 @@
           </label>
         </div>
 
-        <div class="projectile-clash-config">
-          <h3>Enrichissement FX — Réglages experts</h3>
-          <p class="note">Le mode simple règle automatiquement l’intensité et le rayon du glow. Ici tu peux affiner les valeurs exactes. Ces réglages sont uniquement visuels : ils ne changent ni collision, ni dégâts, ni timing gameplay.</p>
+        <details class="skill-fx-expert" data-skill-fx-expert>
+          <summary>Affiner Glow, traînée, fumée et particules (facultatif)</summary>
+          <div class="projectile-clash-config">
+            <h3>Réglages FX détaillés</h3>
+            <p class="note">Le mode simple règle automatiquement l’intensité et le rayon du glow. Ici tu peux affiner les valeurs exactes. Ces réglages sont uniquement visuels : ils ne changent ni collision, ni dégâts, ni timing gameplay.</p>
           <div class="grid two">
             <label>Couleur du glow
               <input type="color" value="#ff7a2d" data-skill-fx-glow-color>
@@ -1488,12 +1470,40 @@
               <input type="number" min="0" max="1" step="0.05" value="0" data-skill-aftermath-smoke-opacity>
             </label>
           </div>
-        </div>
+          </div>
+        </details>
 
         <p class="note">
           Pour une aura ou une zone persistante, le visuel reste affiché tant que la zone existe. Choisis une lecture unique, une boucle ou une animation adaptée à sa durée. En lecture unique, la dernière phase reste affichée. Les décalages déplacent uniquement le visuel, sans modifier le rayon ni les dégâts.
         </p>
         </details>
+
+        <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
+          <h3>Mes assets — Mes sprites / Importer un sprite</h3>
+          <p class="note">Dans chaque liste Icône, Cast, Projectile, Impact, Zone ou Statut, « Bibliothèque GenSrpG » contient les visuels fournis avec GenSrpG et « Mes assets » contient tes imports. Le style visuel de l’étape 1 est une base prête à l’emploi : ce n’est pas une deuxième bibliothèque.</p>
+          <p class="note">Ajoute ton propre PNG, WebP ou JPEG directement à la bibliothèque de cette session. Après import, le sprite reçoit un assetId personnel et apparaît dans la liste correspondante en utilisant exactement le même binding et le même rendu que les assets GenSrpG.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-visual-role>
+                <option value="icon">Icône de capacité</option>
+                <option value="cast" selected>Cast / préparation</option>
+                <option value="travel">Projectile / trajet</option>
+                <option value="impact">Impact</option>
+                <option value="zone">Zone / aura</option>
+                <option value="status">Statut</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
+          <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
+        </div>
+
       </article>
 
       <article class="card">
