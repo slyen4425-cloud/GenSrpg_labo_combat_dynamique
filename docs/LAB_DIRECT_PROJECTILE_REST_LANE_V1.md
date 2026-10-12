@@ -24,3 +24,7 @@ Périmètre autorisé : `src/adapters/renderer/dom-skill-fx.js`, sentinelle `tes
 **Limite honnête** : ce lot n'invente pas de nouvelles coordonnées de monde ni de détection gameplay 3D. La condition de présence `hitPresenceStates` demeure la source métier pour airborne/underground ; le capteur détecte le contact 2D réel. Le moteur conserve sa gestion nominale de résolution par temps s'il n'obtient pas de signal de contact : ce n'est pas transformé ici. Validation tactile en paysage nécessaire pour confirmer la qualité visuelle du segment, la terminaison et la lisibilité de la collision.
 
 **Interdits inchangés** : `main`, `global-assets`, `Zombicide-40k`, Exploration, médias, fiches de compétences, charges, buffs, valeurs, audio et éditeur.
+
+### Ajustement des sentinelles existantes
+
+Le test historique `tests/unit/skill-fx.test.mjs` attendait l'ancien trajet vers le modèle visible (dx=200,dy=-140) : il conserve la même fixture et garantit désormais le trajet direct vers le slot stable (dx=260,dy=-100). La sentinelle nouvelle contrôle le départ sous forme `translate3d(0, 0, 0)` effectivement émise par le renderer. Ces assertions ne désactivent aucune vérification.

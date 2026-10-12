@@ -68,8 +68,7 @@ test("direct projectile has one straight launch-to-rest-lane flight independent 
  assert.equal(endpoint(standing).dx,300,"straight shot still ends at the logical target's ground-stage slot");
  assert.equal(endpoint(standing).dy,-25,"straight shot uses the normal/resting target lane regardless of live Y");
  for(const v of [standing,airborne,buried]){
-  const half=parseXY(v.flight[0].transform);
-  assert.deepEqual(half,{dx:0,dy:0});
+  assert.match(v.flight[0].transform,/translate3d\(0, 0, 0\)/);
   const trajectory=endpoint(v);
   assert.equal(v.flight.at(-1).transform.includes("translate3d"),true);
   assert.equal(Number.isFinite(trajectory.dx),true);

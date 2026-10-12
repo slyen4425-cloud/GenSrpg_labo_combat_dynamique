@@ -205,7 +205,7 @@ test("DOM projectile adapter keeps its arrived node until semantic cleanup", asy
   assert.equal(removed, true);
 });
 
-test("DOM projectile prefers visible target geometry over the stable logical slot", async () => {
+test("DOM direct projectile aims at stable ground-stage slot instead of elevated visible target", async () => {
   const done = deferred();
   let capturedKeyframes = null;
 
@@ -280,7 +280,7 @@ test("DOM projectile prefers visible target geometry over the stable logical slo
 
   assert.match(
     capturedKeyframes[1].transform,
-    /translate3d\(200px, -140px, 0\)/
+    /translate3d\(260px, -100px, 0\)/
   );
 
   done.resolve();
