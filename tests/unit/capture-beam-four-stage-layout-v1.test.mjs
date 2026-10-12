@@ -48,13 +48,15 @@ function testFixture(){
  return {root,advanced,audio,host,stages,labels,form};
 }
 
-test("Rayon editor has one coherent 3-phase card immediately after tactical zone and before movement",async()=>{
+test("Rayon editor has one coherent three-phase section in Visuals, distinct from tactical damage and movement",async()=>{
  const html=await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
  const start=html.indexOf('data-skill-beam-stage-editor');
  const tactical=html.indexOf('data-skill-effects-host');
  const move=html.indexOf('<h2>Mouvement</h2>');
- assert.ok(start>tactical && start<move,"Rayon should be adjacent to tactical zone");
- assert.ok(html.indexOf('data-skill-beam-pack')>tactical && html.indexOf('data-skill-beam-pack')<move,"existing pack must be in same card");
+ const visuals=html.indexOf('<h2>Effets visuels</h2>');
+ const audio=html.indexOf('<h2>Audio de la capacité</h2>');
+ assert.ok(tactical<move && move<visuals && visuals<start && start<audio,"beam must belong to visual effects, not tactical/movement");
+ assert.ok(html.indexOf('data-skill-beam-pack')>visuals && html.indexOf('data-skill-beam-pack')<audio,"existing reversible pack must stay in beam section");
  for(const step of ["start","body","impact"]){
    assert.equal(html.split(`data-beam-stage-fields="${step}"`).length-1,1);
  }

@@ -64,12 +64,14 @@ test("reversing the beam model restores form, custom sprite controls, cast offse
   }
 });
 
-test("beam UI is a generic, reversible, adjacent-to-zone three-phase editor with no new gameplay authority", async () => {
+test("beam UI is a generic, reversible three-phase Visuals editor with no new gameplay authority", async () => {
   const html=await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url),"utf8");
   const marker=html.indexOf('data-skill-beam-stage-editor');
   const zone=html.indexOf('data-skill-effects-host');
   const movement=html.indexOf('<h2>Mouvement</h2>');
-  assert.ok(zone<marker && marker<movement);
+  const visuals=html.indexOf('<h2>Effets visuels</h2>');
+  const audio=html.indexOf('<h2>Audio de la capacité</h2>');
+  assert.ok(zone<movement && movement<visuals && visuals<marker && marker<audio);
   assert.match(html,/data-skill-beam-pack-undo/);
   assert.match(html,/Appliquer le modèle de rayon d’eau/);
   assert.doesNotMatch(html,/Utiliser les 4 sprites « Jet pressurisé »/);
