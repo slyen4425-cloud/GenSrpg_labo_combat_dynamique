@@ -87,7 +87,7 @@ function render({fromSlot="player",targetSlot="opponent",nativeX=14,nativeY=35,m
   fx.play({type:"projectile",skillId:"fireball",fromSlot,targetSlot,durationMs:700});
   const animation=animations.at(-1);
   assert.ok(animation);
-  const match=/translate3d\\(([-0-9.]+)px, ([-0-9.]+)px, 0\\)/.exec(animation.at(-1).transform);
+  const match=/translate3d[(]([-0-9.]+)px, ([-0-9.]+)px, 0[)]/.exec(animation.at(-1).transform);
   assert.ok(match,animation.at(-1).transform);
   const launch=center(slots[fromSlot]),landing={x:launch.x+Number(match[1]),y:launch.y+Number(match[2])};
   fx.dispose();
