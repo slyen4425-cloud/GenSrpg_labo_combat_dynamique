@@ -2743,9 +2743,14 @@ export function createDomSkillFxRenderer({
     const perspectiveAmount = !skyfall
       ? Math.min(0.5, Math.max(0, Number(travelVisual?.perspectiveAmount) || 0))
       : 0;
-    const inbound = travelVisual?.perspectiveView === "opponent";
-    const startDepth = inbound ? 1 - perspectiveAmount : 1;
-    const endDepth = inbound ? 1 : 1 - perspectiveAmount;
+    const authoredFarRatio = Number(travelVisual?.farScaleRatio);
+    const farRatio = !skyfall && Number.isFinite(authoredFarRatio)
+      ? Math.min(1, Math.max(0.15, authoredFarRatio))
+      : 1 - perspectiveAmount;
+    const inbound = travelVisual?.perspectiveView === "opponent" ||
+      (typeof fromSlot === "string" && /^opponent(?:-|$)/.test(fromSlot));
+    const startDepth = inbound ? farRatio : 1;
+    const endDepth = inbound ? 1 : farRatio;
     const midwayDepth = (startDepth + endDepth) / 2;
     let spriteBound = false;
     let projectileFrameAnimation = null;
@@ -2837,9 +2842,30 @@ export function createDomSkillFxRenderer({
           }
         ];
 
+    // One and the same projectile animation also owns optical occlusion:
+    // leave the caster behind, then clear the enemy in FRONT before impact.
+    // No second RAF/timeout, no change to core trajectory or collision.
+    const startLayer = presentation?.travelLayer === "behind" ? "behind" : "front";
+    const endLayer = !skyfall && ["front", "behind"].includes(presentation?.travelArrivalLayer)
+      ? presentation.travelArrivalLayer : startLayer;
+    const actualKeyframes = spriteBound && startLayer !== endLayer
+      ? [0, 0.37, 0.38, 0.5, 1].map((ratio) => {
+          const pulse = ratio <= 0.5
+            ? 0.94 + 0.1 * (ratio / 0.5)
+            : 1.04 - 0.06 * ((ratio - 0.5) / 0.5);
+          const depth = startDepth + (endDepth - startDepth) * ratio;
+          return {
+            offset: ratio,
+            transform: `translate(-50%, -50%) translate3d(${deltaX * ratio}px, ${deltaY * ratio}px, 0) scale(${pulse * travelDisplayScale * depth})`,
+            opacity: ratio === 0 ? 0.95 : 1,
+            zIndex: ratio < 0.38 ? (startLayer === "behind" ? "2" : "7")
+              : (endLayer === "behind" ? "2" : "7")
+          };
+        })
+      : keyframes;
     const animation = animate(
       node,
-      keyframes,
+      actualKeyframes,
       {
         duration: Math.max(1, Number(durationMs) || 1),
         easing: "linear",
