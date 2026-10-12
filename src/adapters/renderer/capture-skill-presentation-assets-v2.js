@@ -127,6 +127,11 @@ function resolvedVisual(
       slot.playbackMode ??
       asset.playbackMode ??
       "once",
+    // Presentation V11: preserve the asset's native cadence and adjust only
+    // the visual frame playback of this one authored projectile.
+    frameSpeedMultiplier: slot.frameSpeedMultiplier ?? 1,
+    perspectiveAmount: slot.perspectiveAmount ?? 0,
+    perspectiveView: view,
     ...(slot.durationMs == null ? {} : { durationMs: slot.durationMs }),
     rotationDeg: slot.rotationDeg ?? 0,
     opacity: slot.opacity ?? 1,
