@@ -1578,3 +1578,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : `src/adapters/renderer/dom-skill-fx.js`, `src/assets/global-presentation-asset-resolver-v1.js` uniquement si cause prouvée, `src/ui/capture-editor-human-v2.js` seulement si indispensable à l'UI, `examples/dom-demo/capture-editor-v2.html`, `data/capture/showcase/cap_air_atk_4.capture-skill-transfer-v1.json` si utile, sentinelles/tests dédiés, `docs/LAB_PROJECTILE_ORIENTATION_V1.md`, et ce journal.
 - Protégés : Beam, SKYFALL, trajectoire/contact direct, gameplay/timings/dégâts/coûts, autres compétences, contrats V1–V12, `main`, `global-assets`, `Zombicide-40k`, Exploration.
 - TDD : test RED pour image non directionnelle vue joueur/IA et import utilisateur, sprite explicitement directionnel préservé, SKYFALL inchangé, aucune régression de scale/calque, éditeur compat et données Tornade ; CI Node + navigateurs ; commit/test/Checkpoint GREEN SHA exact puis FF `gh-pages` sous lease ; validation téléphone utilisateur distincte.
+
+### Projectile orientation V1 — revue / code GREEN
+
+- RED sentinelles `447a052ac2286094317f5ba045194ef927440258` : foundation FAILED comme attendu, navigateurs inchangés SUCCESS.
+- Implémentation : `DomSkillFxRenderer` conserve les sprites de déplacement vertical/non directionnels à `rotate(0rad)` pour les deux camps ; seule la métadonnée directionnelle **explicite** `headingRad` enclenche `atan2`. Asset resolver rejette `headingRad:null` comme absence de métadonnée (au lieu de traiter null comme zéro).
+- Réglage principal : ratio de taille distante V12 ; ancien V11 `perspectiveAmount` placé dans les détails « historique » tout en restant éditable/importable. Tornade conserve profondeur 0.25 et calque arrivée front, retire uniquement l'ancienne perspective redondante 0.5 → 0 ; dégâts/sprite/sockets/audio/cadence inchangés.
+- CI code exact `a2f2d7d80fd2e1ad2d7e3543a49ab734b51d3ee9` run `38271486545` SUCCESS (foundation, Firestorm Chromium, Creature Library Chromium).
+- `docs/LAB_PROJECTILE_ORIENTATION_V1.md` ; valider le SHA documentaire exact CI, checkpoint GREEN, FF `gh-pages` sous lease puis CI et Pages post publication ; essai Android utilisateur distinct.
