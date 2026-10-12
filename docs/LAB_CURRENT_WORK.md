@@ -1616,3 +1616,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.css`, sentinelles du placement / vrai montage et journal courant ; note de validation dédiée seulement si nécessaire.
 - Protégés : fichiers JSON des 3 compétences, commandes / ciblage Roster, `src/ui/combat-2v2-test-ui.js`, FX, Runtime, 103 créatures, positions des combattants, gameplay, `main`, `global-assets`, GenSrpG / Exploration.
 - TDD : test RED d'unicité DOM, proximité immédiate entre HUD opponent-1 et panneau, hors du bouton sélectionnable ; CSS position en haut adjacent aux PV et popover en dessous / taille smartphone paysage ; conserver compat JS et test Node + navigateurs Chromium. GREEN uniquement CI SHA exact, checkpoint exact et publication fast-forward sous lease, validation visuelle Android utilisateur séparée.
+
+
+### Placement réserve adverse — validation du code
+
+- Un seul `<details data-combat-enemy-reserves>` déplacé **immédiatement après le bouton HUD `opponent-1`** dans `examples/dom-demo/capture-editor-v2.html`, hors du bouton cible et avant `opponent-2`, sans doublon, ni déplacement d'un HUD de PV.
+- Style consolidé en un seul bloc par propriété, sans surcouche redondante : onglet `position:absolute`, `top:0.45rem`, à gauche du HUD adverse (largeurs paysage correspondant à `min(10.5rem,25%)`) ; menu déroulant vers le bas, limité en largeur/hauteur avec défilement. Le toucher, le clavier et l'ouverture automatique par compétence continuent via le même contrôleur Roster et ses données de PV.
+- Test de non-régression RED `tests/unit/enemy-bench-hud-placement-v1.test.mjs` : contrôle unicité et structure, hors commandes locales, position et ouverture paysage. Nouveau micro-lot de présentation uniquement, aucun changement aux compétences importées, Runtime, FX ou sélection des réserves.
+- Validation attendue : CI complète Node + 2 Chromium sur SHA documentaire exact ; checkpoint GREEN puis publication non forcée avec lease ; validation visuelle sur Android à confirmer par l'utilisateur.
