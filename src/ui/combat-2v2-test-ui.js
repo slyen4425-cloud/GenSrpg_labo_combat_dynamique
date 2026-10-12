@@ -761,6 +761,9 @@ export async function mountCoop2v2Test({
         slotId
       );
     },
+    restingOffsetFor(slotId) {
+      return visuals.getRestingOffsetFor?.(slotId) ?? null;
+    },
     sourceAnchorFor(actorId, anchorName) {
       return visuals.getFxAnchorFor(actorId, anchorName);
     },
