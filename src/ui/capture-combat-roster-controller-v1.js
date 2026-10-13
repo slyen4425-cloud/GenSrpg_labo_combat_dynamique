@@ -65,7 +65,8 @@ export function createCaptureCombatRosterControllerV1({
 // It never replaces fighters or calculates command costs/timings itself.
 export function mountCaptureCombatRosterPanelV1({
   root, controller, format, commands, session, getRuntime, isTransitionPending, setStatus,
-  reserveTargetCandidates = () => [], onTargetReserve = () => false
+  reserveTargetCandidates = () => [], onTargetReserve = () => false,
+  getCreatureDescriptor = () => null
 }) {
   const panel = root.querySelector("[data-combat-team-menu]");
   if (!panel) return Object.freeze({ render() {}, openForSkill() {}, openEnemyForSkill() {}, dispose() {} });
@@ -85,6 +86,22 @@ export function mountCaptureCombatRosterPanelV1({
   const recallNote = panel.querySelector("[data-combat-recall-note]");
   const baseRecallNote = `Gratuit. Rappel en ${recallDuration}, puis arrivée immédiate de la réserve sélectionnée. Ta créature reste ciblable pendant le rappel.`;
   if (recallNote) recallNote.textContent = baseRecallNote;
+  // Pure presentation: reuse the existing Creature Descriptor icon for this exact roster member.
+  // Missing/unknown artwork leaves the native text/PV row intact; no fake asset or second library.
+  function attachPortrait(parent, creatureId, className) {
+    let descriptor = null;
+    try { descriptor = getCreatureDescriptor(creatureId); } catch { return false; }
+    if (typeof descriptor?.iconUrl !== "string" || !descriptor.iconUrl.trim()) return false;
+    const portrait = root.ownerDocument.createElement("img");
+    portrait.className = className;
+    portrait.src = descriptor.iconUrl;
+    portrait.alt = "";
+    portrait.loading = "lazy";
+    portrait.decoding = "async";
+    portrait.dataset.assetId = descriptor.id ?? creatureId;
+    parent.append(portrait);
+    return true;
+  }
   const memberRefs = new Map();
   const initial = controller.snapshot();
   host.replaceChildren();
@@ -102,7 +119,13 @@ export function mountCaptureCombatRosterPanelV1({
       const node = root.ownerDocument.createElement("button");
       node.type = "button";
       node.dataset.rosterMemberId = member.id;
-      memberRefs.set(member.id, { actorId: actor.actorId, node });
+      node.className = "combat-reserve-member";
+      const hasPortrait = attachPortrait(node, member.creatureId, "combat-reserve-member__portrait");
+      node.dataset.hasPortrait = hasPortrait ? "true" : "false";
+      const label = root.ownerDocument.createElement("span");
+      label.className = "combat-reserve-member__label";
+      node.append(label);
+      memberRefs.set(member.id, { actorId: actor.actorId, node, label });
       group.append(node);
     }
     host.append(group);
@@ -126,6 +149,8 @@ export function mountCaptureCombatRosterPanelV1({
         row.className = "combat-enemy-reserves__member";
         row.dataset.enemyReserveTeamId = actor.actorId;
         row.dataset.enemyReserveMemberId = member.id;
+        const hasPortrait = attachPortrait(row, member.creatureId, "combat-enemy-reserves__portrait");
+        row.dataset.hasPortrait = hasPortrait ? "true" : "false";
         const label = root.ownerDocument.createElement("span");
         label.className = "combat-enemy-reserves__name";
         const hp = root.ownerDocument.createElement("progress");
@@ -168,7 +193,7 @@ export function mountCaptureCombatRosterPanelV1({
     for (const team of Object.values(state)) for (const member of team.members) {
       const ref = memberRefs.get(member.id);
       if (!ref) continue;
-      ref.node.textContent = member.displayName + " · " + Math.round(member.hp) + "/" + Math.round(member.maxHp) + " PV · "
+      ref.label.textContent = member.displayName + " · " + Math.round(member.hp) + "/" + Math.round(member.maxHp) + " PV · "
         + (member.hp <= 0 ? "KO" : member.active ? "Actif" : "Réserve");
       const availableForSkill = !member.active && member.hp > 0 &&
         targetableReserveKeys.has(ref.actorId + ":" + member.id);
