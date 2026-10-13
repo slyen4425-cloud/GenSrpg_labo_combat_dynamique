@@ -119,6 +119,38 @@ function normalizeSkillIdsByActor(
   return Object.freeze(normalized);
 }
 
+// Client-side selection of which LOCAL human actor owns the single visible HUD.
+// It never mutates BattleFormat, Combat Session, AI controllers or the fighter roster.
+export function createLocalControlSelectionV1({ format, onChange = () => {} }) {
+  const localId = format?.localActorId;
+  const localActor = format?.actor?.(localId) ?? format?.actors?.find(actor => actor.actorId === localId);
+  if (!localActor || localActor.controllerId !== "human-local") {
+    throw new RangeError("A local human actor is required");
+  }
+  const localHumans = format.actors.filter(actor =>
+    actor.teamId === localActor.teamId && actor.controllerId === "human-local"
+  ).map(actor => actor.actorId);
+  // A future remote human is deliberately not treated as local or as an AI.
+  const mode = localHumans.length === 2 ? "solo-dual" : "human-ai";
+  let currentActorId = localId;
+  return Object.freeze({
+    mode,
+    get actorId() { return currentActorId; },
+    select(actorId) {
+      if (!localHumans.includes(actorId)) {
+        return Object.freeze({ ok: false, outcome: "not_local_human", changed: false });
+      }
+      if (currentActorId === actorId) {
+        return Object.freeze({ ok: true, outcome: "already_controlled", changed: false });
+      }
+      const oldActorId = currentActorId;
+      currentActorId = actorId;
+      onChange(actorId, oldActorId);
+      return Object.freeze({ ok: true, outcome: "control_switched", changed: true });
+    }
+  });
+}
+
 export function resolveCombatPresentationViewV1({
   format,
   actorId
