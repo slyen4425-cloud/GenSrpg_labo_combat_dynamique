@@ -4706,7 +4706,8 @@ function appendReflectionAuthorControlsV1(host, status, group) {
     kinds.append(field);
   }
   section.append(kinds);
-  const fixed = tacticalNumberInputV1("reflectionContactDamage" + group,
+  // dataset keys must be valid JS identifiers: authored group labels can include hyphens.
+  const fixed = tacticalNumberInputV1("reflectionContactDamage" + group.replace(/[^a-zA-Z0-9]/g, ""),
     status.contactDamage ?? 0, {min:0,step:"0.1"});
   fixed.dataset.reflectionContactDamage = "true";
   section.append(tacticalFieldV1(
