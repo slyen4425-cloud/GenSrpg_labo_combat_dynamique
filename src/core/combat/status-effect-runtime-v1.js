@@ -210,22 +210,24 @@ function refreshedLifetime(existing, now) {
   };
 }
 
-function resolveStackThresholdV1({ state, status, sourceActorId, targetActorId, sourceSkillId, atMs, hitsIntangible, before, after, thresholdDepth }) {
+function resolveStackThresholdV1({ state, status, sourceActorId, targetActorId, sourceSkillId, atMs, eventAtMs, hitsIntangible, before, after, thresholdDepth, onThresholdEvents }) {
   const trigger = status.onStackThreshold;
   if (!trigger || !(before < trigger.count && after >= trigger.count)) return state;
   if (thresholdDepth >= 8) throw new RangeError("Stack threshold recursion limit reached");
   const consumed = trigger.consume === "reset"
     ? removeInstanceById(state, targetActorId, status.id)
     : state;
-  return applyImmediateTacticalEffectsV1({
+  const resolved = applyImmediateTacticalEffectsV1({
     state: consumed,
     actorId: sourceActorId,
     targetId: targetActorId,
     skill: { id: sourceSkillId ?? status.id, effects: trigger.effects, hitsIntangible },
-    atMs,
+    atMs: eventAtMs,
     combatAtMs: atMs,
     thresholdDepth: thresholdDepth + 1
-  }).state;
+  });
+  if (typeof onThresholdEvents === "function") onThresholdEvents(resolved.events);
+  return resolved.state;
 }
 
 export function applyStatusEffectV1({
@@ -236,7 +238,9 @@ export function applyStatusEffectV1({
   status,
   atMs = state.elapsedMs,
   hitsIntangible = false,
-  thresholdDepth = 0
+  thresholdDepth = 0,
+  eventAtMs = atMs,
+  onThresholdEvents = null
 }) {
   const validation =
     validateStatusEffectForTargetV1({
@@ -299,7 +303,8 @@ export function applyStatusEffectV1({
       })
     );
     return resolveStackThresholdV1({ state: applied, status, sourceActorId, targetActorId,
-      sourceSkillId, atMs: now, hitsIntangible, before: 0, after: 1, thresholdDepth });
+      sourceSkillId, atMs: now, eventAtMs, hitsIntangible, before: 0, after: 1,
+      thresholdDepth, onThresholdEvents });
   }
 
   if (status.stacking === "refresh") {
@@ -344,8 +349,8 @@ export function applyStatusEffectV1({
 
   const applied = replaceInstance(state, targetActorId, stacked);
   return resolveStackThresholdV1({state: applied, status, sourceActorId, targetActorId,
-    sourceSkillId, atMs: now, hitsIntangible, before: existing.stacks,
-    after: nextStacks, thresholdDepth });
+    sourceSkillId, atMs: now, eventAtMs, hitsIntangible, before: existing.stacks,
+    after: nextStacks, thresholdDepth, onThresholdEvents });
 }
 
 function tagsMatch(definition, tags) {
