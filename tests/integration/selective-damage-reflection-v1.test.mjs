@@ -106,3 +106,54 @@ test("zone entry-only contract is specific to damaging zones and does not rewrit
   durationMs:1000,stacking:"refresh"}
  }}),/damageTrigger|zone/i);
 });
+
+
+test("zone entry-only inflicts damage at real approach-band crossing, never repeats on periodic clock",()=>{
+  const battleFormat={
+    actors:[{actorId:"attacker"},{actorId:"defender"}],
+    teamOf(id){return id==="defender"?"friendly":id==="attacker"?"hostile":null;}
+  };
+  const session=createCombatSession({
+    distance:"medium",fighters:["attacker","defender"].map(fighter),battleFormat
+  });
+  const zoneSkill=normalizeSkillDefinition({
+    id:"spike-zone",name:"Spiked aura",category:"offensive",form:"aura",
+    approachMode:"none",element:"physical",
+    energyCost:0,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+    allowedDistances:["short","medium","long"],targetRelations:["enemy"],
+    effect:{damage:0,heal:0,tags:[]},effects:[zone("entry_only")]
+  });
+  const cast=session.useSkill({actorId:"defender",targetId:"attacker",skill:zoneSkill});
+  assert.equal(cast.ok,true);
+  assert.equal(session.snapshot().persistentZones[0].damageTrigger,"entry_only");
+  const spatial={mode:"approach-bands-v1",
+    approaches:[{actorId:"attacker",targetId:"defender",approachMode:"ground",
+      releaseAtMs:0,impactAtMs:1000}]};
+  session.advanceMs(600,{zoneSpatialContext:spatial});
+  assert.equal(session.snapshot().fighters.attacker.hp,100);
+  session.advanceMs(150,{zoneSpatialContext:spatial});
+  assert.equal(session.snapshot().fighters.attacker.hp,93);
+  session.advanceMs(1500,{zoneSpatialContext:spatial});
+  assert.equal(session.snapshot().fighters.attacker.hp,93,
+    "entry-only zone must never cause later periodic damage");
+  assert.equal(session.snapshot().fighters.defender.hp,100);
+});
+
+test("human contract preserves selective reflection and entry-only zones through author draft normalization",async()=>{
+  const {buildHumanTacticalSkillEffectsV1}=await import("../../src/ui/capture-editor-human-v2.js");
+  const [effect]=buildHumanTacticalSkillEffectsV1([{
+    kind:"apply_status",targetScope:"self",
+    status:{id:"thorns",kind:"damage_reflection",polarity:"beneficial",durationSeconds:5,
+      stacking:"refresh",percent:30,incomingKinds:["contact"],contactDamage:7}
+  }]);
+  assert.deepEqual(effect.status.incomingKinds,["contact"]);
+  assert.equal(effect.status.contactDamage,7);
+  const [aura]=buildHumanTacticalSkillEffectsV1([{
+    kind:"persistent_zone",targetScope:"all_enemies",zoneId:"thorn-zone",radius:"short",
+    durationSeconds:3,tickSeconds:1,reactivation:"refresh",maxActivations:1,radiusGrowthSteps:0,
+    damageTrigger:"entry_only",tickEffect:{kind:"damage",targetScope:"all_enemies",
+      amount:9,channel:"physical"}
+  }]);
+  assert.equal(aura.damageTrigger,"entry_only");
+  assert.equal(aura.tickEffect.amount,9);
+});
