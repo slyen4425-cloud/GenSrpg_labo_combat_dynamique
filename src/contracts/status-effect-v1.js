@@ -2,6 +2,7 @@ import { normalizeSkillEffectV1 } from "./skill-effect-v1.js";
 
 export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "stat_modifier",
+  "stack_counter",
   "approach_time_modifier",
   "energy_regen_modifier",
   "skill_cooldown_rate_modifier",
@@ -87,6 +88,7 @@ const COMMON_FIELDS = new Set([
 ]);
 
 const FIELDS_BY_KIND = Object.freeze({
+  stack_counter: COMMON_FIELDS,
   approach_time_modifier: new Set([
     ...COMMON_FIELDS,
     "modifierPct"
