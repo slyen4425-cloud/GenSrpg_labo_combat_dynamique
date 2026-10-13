@@ -1747,3 +1747,14 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - **Protégés** : Miroir réellement projectile, `damage_reflection`, immunity ancienne non-intangible, boucliers, projetiles droits/skyfall, esquive/présence, 1v1/2v2, équipe/réserve, bibliothèques des 103 créatures et exports JSON auteur, préréglage Beam, CI et Pages. Aucun visuel non demandé ni refonte générale.
 - **TDD RED** : contrat/status, ordre protection/bouclier, attaques directes/tactiques/zone/DoT, impact de capacité explicitement admise, buff bénéfique, expiration, coexistence avec immunité générale, miroir et KO/crédits, 1v1/2v2/réserve ; tests avant code, puis CI complète Foundation et Chromium.
 - **Critères de fin technique** : tous sentinelles GREEN au SHA final, documentation vraie chaîne, checkpoint GREEN exact, publication uniquement fast-forward protégé du `gh-pages` si base inchangée puis vérification CI/Pages. Tests Android utilisateur et feedback visuel optionnel séparés. Pas de déclaration GREEN prématurée.
+
+
+### Immatériel V1 — clôture du code, portes de publication
+
+- TDD RED au commit `d3df9dd65f414cfbfb298d6497f9a2beb75d89d9` : Laboratory CI `38343286956` FAILURE attendue sur les contrats non encore implémentés.
+- Contrats et unique source de vérité : `StatusEffectV1.immunity.intangible=true`, domaines damage + negative_status ; `SkillDefinition.hitsIntangible` explicitement opt-in et faux par défaut. `combatProtectionForIncomingV1` distingue l'immunité Immatériel des immunités standards ; aucun second moteur d'états, timer ou dégâts.
+- Raccordés au même owner : hit direct/reflected dans Action Resolver, dégâts/statuts tactiques, DoT via instance native, zone persistante et effet programmé via records existants. Le stun historique sans dégâts consulte désormais la protection aux états négatifs.
+- UI : une case « Immatériel » sur la fiche du statut Immunité force la polarité bénéfique et les deux domaines ; une case indépendante par compétence autorise à toucher une cible immatérielle. Le Human Editor importe/exporte exclusivement les contrats canoniques. 103 créatures et médias auteur inchangés.
+- Tests réels `tests/integration/intangible-status-v1.test.mjs`, puis CI intégrale au commit de code `b412be59599de39bb3f9146c2ea9783c26c26fcc` : run `38343710483` SUCCESS, Foundation + Firestorm Chromium + bibliothèque créatures Chromium. Rapport `docs/LAB_INTANGIBLE_V1.md`, commit documentaire `53f3732f1fe5e082e254ebbc077c64a8cf3203c3`, run `38343767667` SUCCESS (les trois jobs).
+- **Sortie technique conditionnée** à checkpoint GREEN sur SHA exact du dernier journal CI SUCCESS, fast-forward sous lease sur `gh-pages`, puis CI/Pages post-publication SUCCESS.
+- **Miroir V1 : validation Android paysage EN ATTENTE à la demande de l'auteur. Immatériel V1 : validation utilisateur elle aussi EN ATTENTE ; aucun GREEN utilisateur présumé.** La future animation/feedback de traversée est un autre lot, non livré.
