@@ -6859,3 +6859,10 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Tests : ZIP exacts, manifestes SHA, chemins, transparence PNG/WebP, résolution catalogue, CI SHA exact, checkpoint GREEN, fast-forward global-assets ; sous-lot gh-pages distinct pour cache et résolveur, puis test Android.
 - Risques : upscale de 1402x1122 vers 512x512, poids mobile et raccord visuel ; aucune validation artistique avant essai réel.
 - Statut : extraction en cours, pas de publication déclarée avant gates.
+
+
+### Rayon électrique jaune — extraction et catalogue (2026-10-13)
+- Transfert des 3 ZIP utilisateur contrôlé par workflow one-shot : 73 médias/fichiers canonisés, 60 frames PNG, 5 atlas WebP, 3 sources, manifests ; ZIP staging supprimés. CSV normalisé LF (l'outil git diff refusait les CRLF comme espaces fin de ligne) sans toucher au contenu graphique.
+- Ajout de 3 IDs dans le catalogue canonique (+3 sprites, 141 assets / 76 sprites), sans capacité auteur modifiée ; Cast 20, Beam body 12, Impact 12, format de Jet pressurisé ; le 4e visuel beamStart demeure facultatif et inexistant pour le nouveau pack.
+- Suppression dans ce commit du workflow et script d'import temporaires ; test de présence, SHA et non-régression ; rapport docs/LAB_CAPTURE_ELECTRIC_BEAM_YELLOW_V1.md.
+- État : code asset prêt à gate CI ; promotion global-assets puis raccord cache gh-pages seulement après validation réelle des runs du SHA final.

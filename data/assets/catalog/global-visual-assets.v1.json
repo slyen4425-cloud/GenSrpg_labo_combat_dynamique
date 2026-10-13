@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 138,
+    "assets": 141,
     "icons": 49,
-    "sprites": 73,
+    "sprites": 76,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -4506,6 +4506,116 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_attaque_aerienne_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-electric-yellow-beam-cast-01",
+      "label": "Rayon électrique jaune — charge (Cast)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "skill",
+        "electric",
+        "beam",
+        "cast",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/electric_beam_yellow/atlases/sprite_skill_electric_beam_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 60,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-electric-yellow-beam-body-01",
+      "label": "Rayon électrique jaune — corps du rayon",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "skill",
+        "electric",
+        "beam",
+        "continuous",
+        "travel",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/electric_beam_yellow/atlases/sprite_skill_electric_beam_beam_body_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45,
+        "playbackMode": "loop",
+        "headingRad": 0
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-electric-yellow-beam-impact-01",
+      "label": "Rayon électrique jaune — impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "skill",
+        "electric",
+        "beam",
+        "impact",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/electric_beam_yellow/atlases/sprite_skill_electric_beam_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 45,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [
