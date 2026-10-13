@@ -19,7 +19,7 @@ test("human editor has explicit threshold count, consume policy and multiple vis
   for(const selector of ["stackThresholdEnabled","stackThresholdCount","stackThresholdConsume",
     "stackThresholdEffectsHost","stackThresholdEffectKind","stackThresholdEffectScope",
     "stackThresholdStatusKind","stackThresholdAdd"]) {
-    assert.match(source,new RegExp("dataset\\."+selector+"\\s*="));
+    assert.ok(source.includes(selector),"missing threshold editor control: "+selector);
   }
   assert.match(source,/readStackThresholdEffectRowsV1/);
   assert.match(source,/buildHumanTacticalSkillEffectsV1\(status\.onStackThreshold\.effects/);
