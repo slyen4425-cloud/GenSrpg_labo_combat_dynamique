@@ -1338,24 +1338,44 @@ html {
   font-size: clamp(0.46rem, 1.45dvh, 0.6rem);
 }
 
-/* Capture landscape 2v2 depth V2: keep both enemies in the far half,
-   materially smaller than near allies. CSS owns visible slot geometry;
-   native contact sensors, projectiles and sockets sample that geometry.
-   No author displayScale or 1v1 styling is changed. */
+/* Capture landscape opponent slot placement V1.
+   Shared preview arena is also used for 1v1; these are the EXACT
+   original 1v1 landscape values (from production before the 2v2 polish).
+   Do not move the single enemy when changing 2v2 composition. */
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 {
+  --arena-coop-far-primary-y: 33%;
+  --arena-coop-far-secondary-y: 34%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent {
+  left: 77%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent-b {
+  left: 34%;
+}
+
+/* Capture landscape 2v2 depth V2: only if the real BattleFormat exposes
+   TWO active allies/opponents. The 1v1 preview shares arena--coop-2v2,
+   so that class alone MUST NEVER enable this perspective.
+   Visible slot geometry remains the native source for hit/FX anchors. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] {
   --arena-coop-far-primary-y: 26%;
   --arena-coop-far-secondary-y: 28%;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
-  .arena--coop-2v2 .fighter--opponent {
+  .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent {
   left: 58%;
   width: min(24dvh, 13rem);
 }
 
 .capture-preview-shell[data-landscape-required="true"]
-  .arena--coop-2v2 .fighter--opponent-b {
+  .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent-b {
   left: 36%;
   width: min(23dvh, 12.5rem);
 }
