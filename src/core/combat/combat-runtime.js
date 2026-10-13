@@ -1,6 +1,7 @@
 import {
   combatHealthDeltaEventsV1
 } from "./combat-health-feedback-v1.js";
+import { isStatusEffectRuntimeInstanceActiveV1 } from "./status-effect-instance-v1.js";
 import { normalizePersistentZoneSpatialV1 } from "../../contracts/persistent-zone-spatial-v1.js";
 import {
   projectileClashCandidate,
@@ -51,6 +52,9 @@ export function createCombatRuntime({
   let lastStateSignal = null;
   let lastFeedbackState = null;
   const activeByActor = new Map();
+  // Returning shots share the authoritative scheduler without occupying the defender action slot.
+  const returningProjectiles = new Map();
+  const MAX_MIRROR_BOUNCES = 2;
   const armedRechargeableReactions = new Map();
 
   function stateSignal(state) {
@@ -250,7 +254,71 @@ export function createCombatRuntime({
   }
 
   function activeRecords() {
-    return [...activeByActor.values()];
+    return [...activeByActor.values(), ...returningProjectiles.values()];
+  }
+
+  function recordIsActive(record) {
+    return record.mirrorReturn === true
+      ? returningProjectiles.get(record.sequence) === record
+      : activeByActor.get(record.action.actorId) === record;
+  }
+
+  function removeRecord(record) {
+    if (record.mirrorReturn === true) {
+      returningProjectiles.delete(record.sequence);
+    } else {
+      activeByActor.delete(record.action.actorId);
+    }
+  }
+
+  function activeMirrorFor(targetActorId, atMs) {
+    const defender = session.snapshot().fighters[targetActorId];
+    return (defender?.statusEffects ?? []).some((instance) =>
+      instance.definition?.kind === "projectile_mirror" &&
+      isStatusEffectRuntimeInstanceActiveV1(instance, atMs)
+    );
+  }
+
+  function mirrorCanIntercept(record, action, atMs, visibleContact) {
+    return visibleContact &&
+      action.actionType === "skill" &&
+      action.skill?.form === "projectile" &&
+      action.skill?.projectileTargeting !== "fixed_point" &&
+      action.actorId !== action.targetId &&
+      Number(action.mirrorReturn?.bounceCount ?? 0) < MAX_MIRROR_BOUNCES &&
+      activeMirrorFor(action.targetId, atMs);
+  }
+
+  function returnMirroredProjectile(action, atNowMs, contactPoint = null) {
+    const returnDurationMs = Math.max(1, Number(action.skill?.travelMs) || Number(action.travelMs) || 1);
+    const mirrored = Object.freeze({
+      ...action,
+      actorId: action.targetId,
+      targetId: action.actorId,
+      preparationMs: 0,
+      releaseAtMs: 0,
+      travelMs: returnDurationMs,
+      impactAtMs: returnDurationMs,
+      recoveryMs: 0,
+      mirrorReturn: Object.freeze({
+        originalActorId: action.mirrorReturn?.originalActorId ?? action.actorId,
+        bounceCount: Number(action.mirrorReturn?.bounceCount ?? 0) + 1,
+        ...(contactPoint !== null ? { contactPoint } : {})
+      })
+    });
+    const returnRecord = {
+      action: mirrored,
+      reaction: null,
+      startedAtClockMs: atNowMs,
+      startedAtCombatMs: Number(session.snapshot().elapsedMs) || 0,
+      released: false,
+      resolved: false,
+      resolvedAtMs: null,
+      sequence: sequence++,
+      mirrorReturn: true
+    };
+    returningProjectiles.set(returnRecord.sequence, returnRecord);
+    processRelease(returnRecord);
   }
 
   function zoneSpatialContext({
@@ -369,8 +437,7 @@ export function createCombatRuntime({
     atNowMs
   ) {
     if (
-      activeByActor.get(record.action.actorId) !==
-        record ||
+      !recordIsActive(record) ||
       !record.resolved
     ) {
       return false;
@@ -385,12 +452,8 @@ export function createCombatRuntime({
       return false;
     }
 
-    activeByActor.delete(
-      record.action.actorId
-    );
-    onProgress(
-      idleProgress(record.action.actorId)
-    );
+    removeRecord(record);
+    if (!record.mirrorReturn) onProgress(idleProgress(record.action.actorId));
     return true;
   }
 
@@ -413,16 +476,12 @@ export function createCombatRuntime({
     );
 
     if (recoveryMs <= 0) {
-      activeByActor.delete(
-        record.action.actorId
-      );
-      onProgress(
-        idleProgress(record.action.actorId)
-      );
+      removeRecord(record);
+      if (!record.mirrorReturn) onProgress(idleProgress(record.action.actorId));
       return false;
     }
 
-    onProgress(
+    if (!record.mirrorReturn) onProgress(
       progressSnapshot(
         record,
         elapsedFor(record, atNowMs)
@@ -488,13 +547,11 @@ export function createCombatRuntime({
         continue;
       }
 
-      if (
-        activeByActor.get(record.action.actorId) !== record
-      ) {
+      if (!recordIsActive(record)) {
         continue;
       }
 
-      activeByActor.delete(record.action.actorId);
+      removeRecord(record);
       if (record.resolved) {
         onProgress(
           idleProgress(record.action.actorId)
@@ -533,7 +590,7 @@ export function createCombatRuntime({
 
   function processRelease(record) {
     if (
-      activeByActor.get(record.action.actorId) !== record ||
+      !recordIsActive(record) ||
       record.released
     ) {
       return;
@@ -627,10 +684,10 @@ export function createCombatRuntime({
   function processResolution(
     record,
     atNowMs,
-    { impactAtMs = null } = {}
+    { impactAtMs = null, visibleContact = false, contactPoint = null } = {}
   ) {
     if (
-      activeByActor.get(record.action.actorId) !== record ||
+      !recordIsActive(record) ||
       record.resolved
     ) {
       return null;
@@ -704,8 +761,14 @@ export function createCombatRuntime({
           })
         : null;
 
+    const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionClockMs, visibleContact);
+    // An uncaught returning projectile cannot inflict damage at a timer boundary.
+    const forcedOutcome = mirrorContact ? "mirrored" :
+      (record.mirrorReturn && !visibleContact ? "evaded" : null);
+
     const resolution = session.completeAction({
       action: effectiveAction,
+      forcedOutcome,
       reaction: effectiveReaction,
       targetActionContext,
       resolutionAtMs:
@@ -738,6 +801,9 @@ export function createCombatRuntime({
     }
 
     onResolved(resolution);
+    if (mirrorContact) {
+      returnMirroredProjectile(effectiveAction, atNowMs, contactPoint);
+    }
     emitStateIfChanged({ force: true });
     return resolution;
   }
@@ -748,8 +814,8 @@ export function createCombatRuntime({
     candidate
   }) {
     if (
-      activeByActor.get(leftRecord.action.actorId) !== leftRecord ||
-      activeByActor.get(rightRecord.action.actorId) !== rightRecord ||
+      !recordIsActive(leftRecord) ||
+      !recordIsActive(rightRecord) ||
       leftRecord.resolved ||
       rightRecord.resolved
     ) {
@@ -931,7 +997,7 @@ export function createCombatRuntime({
         }
       });
 
-    for (const record of activeRecords()) {
+    for (const record of activeByActor.values()) {
       onProgress(
         progressSnapshot(
           record,
@@ -1416,7 +1482,8 @@ export function createCombatRuntime({
   function reportActionContact({
     actorId,
     targetId,
-    skillId = null
+    skillId = null,
+    contactPoint = null
   }) {
     if (disposed) {
       return Object.freeze({
@@ -1438,7 +1505,14 @@ export function createCombatRuntime({
     // an earlier Runtime-owned event.
     settleDue(current);
 
-    const record = activeByActor.get(actorId);
+    const nativeRecord = activeByActor.get(actorId);
+    const returnRecord = [...returningProjectiles.values()].find((candidate) =>
+      candidate.action.actorId === actorId &&
+      candidate.action.targetId === targetId &&
+      (skillId == null || String(candidate.action.skill?.id) === String(skillId)) &&
+      !candidate.resolved
+    );
+    const record = returnRecord ?? nativeRecord;
     if (!record) {
       return Object.freeze({
         ok: false,
@@ -1505,10 +1579,14 @@ export function createCombatRuntime({
       )
     );
 
+    const visualPoint = contactPoint &&
+      Number.isFinite(contactPoint.x) && Number.isFinite(contactPoint.y)
+        ? Object.freeze({ x: Number(contactPoint.x), y: Number(contactPoint.y) })
+        : null;
     const resolution = processResolution(
       record,
       current,
-      { impactAtMs: contactImpactAtMs }
+      { impactAtMs: contactImpactAtMs, visibleContact: true, contactPoint: visualPoint }
     );
 
     if (!resolution) {
@@ -1542,9 +1620,10 @@ export function createCombatRuntime({
 
     const records = activeRecords();
     activeByActor.clear();
+    returningProjectiles.clear();
 
     for (const record of records) {
-      onProgress(idleProgress(record.action.actorId));
+      if (!record.mirrorReturn) onProgress(idleProgress(record.action.actorId));
     }
 
     return records.length > 0;

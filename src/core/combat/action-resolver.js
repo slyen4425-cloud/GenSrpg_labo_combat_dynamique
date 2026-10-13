@@ -763,7 +763,8 @@ export function resolveSkillCompletion({
   reaction = null,
   targetActionContext = null,
   battleFormat = null,
-  resolutionAtMs = null
+  resolutionAtMs = null,
+  forcedOutcome = null
 }) {
   const {
     actorId,
@@ -793,6 +794,7 @@ export function resolveSkillCompletion({
         )
       : null;
   const outcome =
+    forcedOutcome ??
     reaction?.outcome ??
     presence.evasion?.outcome ??
     mobilityEvasion?.outcome ??
@@ -868,7 +870,7 @@ export function resolveSkillCompletion({
       const damage =
         statAdjustedDamageFor(
           nextState,
-          actorId,
+          action.mirrorReturn?.originalActorId ?? actorId,
           targetId,
           skill
         );

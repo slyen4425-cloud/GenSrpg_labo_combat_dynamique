@@ -327,7 +327,8 @@ export function createCombatSession({
     action,
     reaction = null,
     targetActionContext = null,
-    resolutionAtMs = null
+    resolutionAtMs = null,
+    forcedOutcome = null
   }) {
     const result = resolveSkillCompletion({
       state,
@@ -335,9 +336,13 @@ export function createCombatSession({
       reaction,
       targetActionContext,
       battleFormat,
-      resolutionAtMs
+      resolutionAtMs,
+      forcedOutcome
     });
-    return withReserveSkillEffects(commitCompletedOwnerAction(result, action.actorId), action.actorId, action.skill);
+    const committed = action.mirrorReturn
+      ? (state = result.state, result)
+      : commitCompletedOwnerAction(result, action.actorId);
+    return withReserveSkillEffects(committed, action.actorId, action.skill);
   }
 
   function completeCommand({ action }) {
@@ -355,7 +360,8 @@ export function createCombatSession({
     action,
     reaction = null,
     targetActionContext = null,
-    resolutionAtMs = null
+    resolutionAtMs = null,
+    forcedOutcome = null
   }) {
     return action.actionType === "command"
       ? completeCommand({ action })
@@ -363,7 +369,8 @@ export function createCombatSession({
           action,
           reaction,
           targetActionContext,
-          resolutionAtMs
+          resolutionAtMs,
+          forcedOutcome
         });
   }
 

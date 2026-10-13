@@ -1707,3 +1707,29 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - CI initiale `38336429864` : 1596/1598 tests Node, seules deux sentinelles de SHA historiques ont échoué suite au remplacement demandé des IDs d'icône de Rafale et Charge aérienne. Tests moteur/compétences/Chromium non en cause.
 - Périmètre additionnel limité : `tests/unit/capture-ailevent-rafale-author-v2.test.mjs`, `tests/unit/capture-air-dual-skill-import-v1.test.mjs` ; normaliser **uniquement** le nouvel `assetId` d'icône vers l'ancien pour calculer le SHA historique et conserver tous les autres octets d'auteur intacts ; affirmer également les nouvelles icônes en runtime.
 - Les deux JSON auteurs sont restitués sans newline final, comme à l'origine. La seule différence d'octets demeure l'`assetId` de l'icône. CI complète à refaire, GREEN suspendu jusque-là.
+
+
+## 2026-10-13 — Projectile Mirror V1 — chantier ouvert, non livré
+
+- Base exacte : `ffd0318fb7b45ae1fd2a1caab6c9711e12d6c818` (checkpoint `checkpoint/lab-beam-preset-discoverability-v1-green-2026-10-12` ; Laboratory CI `38301685502` SUCCESS ; Pages `38301682440` SUCCESS).
+- Checkpoint de départ, posé AVANT toute modification : `checkpoint/lab-start-projectile-mirror-v1-2026-10-13` sur ce SHA.
+- Branche isolée : `work/lab-projectile-mirror-v1-2026-10-13`.
+- Objectif : statut bénéfique Miroir activable par capacité, renvoi réel d'un projectile droit éligible depuis le contact visible, trajectoire inverse et collision réelle, dégâts seulement après contact avec le lanceur, attribution au défenseur, protections/esquives/clash respectés. Aucun changement de `damage_reflection`.
+- Owners : `StatusEffectV1` pour la configuration du statut, `CombatRuntime` / `CombatSession` et `ActionResolver` pour le timing et les dégâts, `ProjectileClash` pour les collisions inter-projectiles, `CombatResolutionPresenter` + `DomSkillFx` comme simples consommateurs visuels, `Human Editor` pour la saisie. Pas d'autre moteur ni boucle ad hoc.
+- Fichiers autorisés si le défaut y est reproduit : `src/contracts/status-effect-v1.js`, `src/core/combat/{action-resolver,combat-runtime,combat-session,projectile-clash}.js`, `src/adapters/renderer/{combat-resolution-presenter,dom-skill-fx}.js`, `src/core/fx/skill-fx-plan.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, `tests/integration/projectile-mirror-real-flight-v1.test.mjs`, tests sentinelles impact/clash/protection/présentation, et docs du lot.
+- Protégés : `main`, `global-assets`, `Zombicide-40k`, Exploration, données capacités et créatures auteur, préréglage Rayon, 103 créatures, esquive aérienne/souterraine, projectiles fixes tombant du ciel, protections `immunity`, `damage_reflection` et tous les import/exports.
+- Contrat minimal : miroir intercepté par le propriétaire Combat Rules au point de contact, aucun PV retiré à cet instant ; le projectile effectue un vrai trajet de retour avec une collision distincte ; aucun dégât sans contact ; une limite déterministe de renvois garantit l'arrêt même avec deux miroirs ; en 2v2 le projectile revient uniquement à son lanceur réel ; les dégâts et crédits passent par `applyCombatDamageV1`.
+- TDD : d'abord RED nouveau test de vrai Runtime (cast miroir -> projectile direct -> contact défenseur -> retour -> contact lanceur), puis implémentation ; sentinelles projectile direct/skyfall, clash, KO, statuts/immunités, combat 1v1/2v2, intégration Presenter/DomSkillFx et Chromium de l'éditeur ; CI intégrale et Pages seulement après GREEN.
+- Risque élevé : `reaction.reflectForms` est actuellement un renvoi de dégâts instantané au premier impact et `damage_reflection` est indépendant ; interdiction de maquiller l'un ou l'autre en animation sans collision de retour. Pas de publication de code inachevé, ni de checkpoint GREEN sans trajet réellement démontré.
+
+
+### Projectile Mirror V1 — contrôle technique et demande de validation Android
+
+- Contrat distinct `StatusEffectV1.projectile_mirror` disponible depuis le Human Editor ; le renvoi `damage_reflection` en pourcentage et l'ancien `reaction.reflectForms` sont conservés sans modification fonctionnelle.
+- Le même `CombatRuntime` ordonnance le trajet inverse ; origine = point de contact réel du projectile sur le masque de la cible, puis nouvelle collision réelle au retour avant le calcul des dégâts. Maximum deux rebonds successifs, pas de dégâts si retour sans collision. Les tirs `fixed_point` sont exclus du lot.
+- 1v1 / 2v2, aucun dégât prématuré, KO attribué à la créature miroir, double miroir borné, projectile clash et métadonnées du point d'impact : tests réels `tests/integration/projectile-mirror-real-flight-v1.test.mjs` + sentinelles de collisions mises à jour.
+- RED initial : `4db9fde751593848c879039ef8d76e50a9b08f4c` / CI `38335885725` (3 échecs attendus).
+- GREEN sur implémentation et rapport `d8302aecfb9e6ea67b2ba48b915876efe5cb8542` / Laboratory CI `38337068176` : SUCCESS, 1603 / 1603 tests Node, creature-library-browser SUCCESS, Firestorm Chromium SUCCESS.
+- Revue de périmètre : uniquement `src/contracts`, `src/core/combat`, `src/core/fx`, `src/adapters/renderer`, `src/ui/capture-editor-human-v2.js`, sentinelles et documentation. Aucun fichier auteur ni branche `main` / `global-assets` / dépôt tiers touché. Rapport : `docs/LAB_PROJECTILE_MIRROR_V1.md`.
+- Publication de la preview sur `gh-pages` autorisée seulement si le SHA final avec cette mise à jour documentaire passe la CI, que le checkpoint GREEN corresponde exactement, et que l'avance de `gh-pages` est fast-forward avec vérification Pages SUCCESS.
+- **Validation utilisateur smartphone paysage toujours attendue** : aucun GREEN utilisateur avant essai visuel en combat du renvoi.

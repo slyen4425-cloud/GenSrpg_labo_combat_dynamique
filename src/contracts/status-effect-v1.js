@@ -7,6 +7,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "heal_over_time",
   "shield",
   "damage_reflection",
+  "projectile_mirror",
   "immunity",
   "immobilize",
   "silence",
@@ -122,6 +123,7 @@ const FIELDS_BY_KIND = Object.freeze({
     ...COMMON_FIELDS,
     "percent"
   ]),
+  projectile_mirror: COMMON_FIELDS,
   immunity: new Set([
     ...COMMON_FIELDS,
     "domains"
@@ -438,6 +440,10 @@ export function normalizeStatusEffectV1(input) {
     if (output.percent < 0 || output.percent > 100) {
       throw new RangeError("StatusEffectV1.percent must be between 0 and 100");
     }
+  }
+
+  if (kind === "projectile_mirror" && polarity !== "beneficial") {
+    throw new RangeError("StatusEffectV1.projectile_mirror must be beneficial");
   }
 
   if (kind === "immunity") {

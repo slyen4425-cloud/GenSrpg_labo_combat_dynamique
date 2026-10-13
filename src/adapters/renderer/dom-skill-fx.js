@@ -544,7 +544,9 @@ export function createDomSkillFxRenderer({
           Object.freeze({
             actorId: record.fromSlot,
             targetId: record.targetSlot,
-            skillId: record.skillId ?? null
+            skillId: record.skillId ?? null,
+            // Coordinates describe only the hit location for follow-up visual FX.
+            contactPoint: Object.freeze({ x: projectilePoint.x, y: projectilePoint.y })
           })
         );
         return;
@@ -1969,6 +1971,7 @@ export function createDomSkillFxRenderer({
     actorSlot = null,
     fromSlot,
     targetSlot,
+    fromPoint = null,
     phase = null,
     progress = null,
     amount = null,
@@ -2708,10 +2711,12 @@ export function createDomSkillFxRenderer({
           x: to.x + travelVisual.fallOffsetXPx,
           y: to.y - travelVisual.fallHeightPx
         }
-      : centerRelativeTo(
-          sourceRect(fromSlot, travelSourceAnchor),
-          arenaRect
-        );
+      : fromPoint && Number.isFinite(fromPoint.x) && Number.isFinite(fromPoint.y)
+        ? { x: fromPoint.x - arenaRect.left, y: fromPoint.y - arenaRect.top }
+        : centerRelativeTo(
+            sourceRect(fromSlot, travelSourceAnchor),
+            arenaRect
+          );
 
     const node = arena.ownerDocument.createElement("span");
     node.className = "skill-fx skill-fx--projectile";
