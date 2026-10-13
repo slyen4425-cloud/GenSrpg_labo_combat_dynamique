@@ -174,7 +174,8 @@ function applyDamageEffect({
     sourceActorId: actorId,
     targetActorId: affectedId,
     damage: damage.damage,
-    atMs: combatAtMs
+    atMs: combatAtMs,
+    hitsIntangible: skill.hitsIntangible === true
   });
 
   return Object.freeze({
@@ -259,6 +260,7 @@ export function applyImmediateTacticalEffectsV1({
           sourceSkillId: skill.id,
           skillElement:
             skill.element ?? null,
+          hitsIntangible: skill.hitsIntangible === true,
           effect,
           atMs: combatAtMs
         });
@@ -378,7 +380,8 @@ export function applyImmediateTacticalEffectsV1({
                 state: nextState,
                 targetActorId: affectedId,
                 domain: "negative_status",
-                atMs: combatAtMs
+                atMs: combatAtMs,
+                hitsIntangible: skill.hitsIntangible === true
               })
             : Object.freeze({
                 protected: false,
@@ -407,7 +410,8 @@ export function applyImmediateTacticalEffectsV1({
           sourceActorId: actorId,
           sourceSkillId: skill.id,
           status: effect.status,
-          atMs: combatAtMs
+          atMs: combatAtMs,
+          hitsIntangible: skill.hitsIntangible === true
         });
         events.push(Object.freeze({
           type: "status-applied",
