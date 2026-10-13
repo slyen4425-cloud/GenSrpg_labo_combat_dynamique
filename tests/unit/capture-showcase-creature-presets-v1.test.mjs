@@ -35,14 +35,15 @@ async function importedPreset(file) {
   );
 }
 
-test("showcase preset catalog discovers four transfer files without duplicating creature ids", () => {
+test("showcase preset catalog discovers five transfer files without duplicating creature ids", () => {
   assert.deepEqual(
     CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1,
     [
       "data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json",
-      "data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json"
+      "data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json",
+      "data/capture/showcase/crea_voltik.capture-creature-transfer-v1.json"
     ]
   );
 });
