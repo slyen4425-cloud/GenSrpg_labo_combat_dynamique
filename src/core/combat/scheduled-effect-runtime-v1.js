@@ -57,6 +57,7 @@ export function scheduleSkillEffectV1({
   targetActorId,
   sourceSkillId,
   skillElement = null,
+  hitsIntangible = false,
   effect,
   atMs = state.elapsedMs
 }) {
@@ -104,6 +105,7 @@ export function scheduleSkillEffectV1({
       skillElement == null
         ? null
         : String(skillElement),
+    hitsIntangible: hitsIntangible === true,
     scheduledAtMs: appliedAtMs,
     dueAtMs,
     effects: Object.freeze([
