@@ -16,7 +16,7 @@ function teamIds(ids, label, configuredCreatures) {
   return ids;
 }
 
-function teamSlots(ids, activeCount, prefix, configuredCreatures) {
+function teamSlots(ids, activeCount, prefix, configuredCreatures, allyControlMode = "ai") {
   return Array.from({ length: activeCount }, (_, slotIndex) => {
     const actorId = prefix + "-" + (slotIndex + 1);
     const members = ids.flatMap((creatureId, memberIndex) => memberIndex % activeCount === slotIndex
@@ -26,7 +26,7 @@ function teamSlots(ids, activeCount, prefix, configuredCreatures) {
       actorId,
       creatureId: members[0].creatureId,
       displayName: members[0].displayName,
-      controllerId: prefix === "opponent" ? "ai-enemy" : slotIndex === 0 ? "human-local" : "ai-ally",
+      controllerId: prefix === "opponent" ? "ai-enemy" : slotIndex === 0 || allyControlMode === "solo" ? "human-local" : "ai-ally",
       roster: { activeMemberId: members[0].id, members }
     };
   });
@@ -37,7 +37,7 @@ function teamSlots(ids, activeCount, prefix, configuredCreatures) {
 export function buildCaptureEditorCombatTestV1({
   configuredCreatures, configuredSkills, localCreatureIds, opponentCreatureIds,
   activePerTeam, arenaId, combatRules, skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1, recallPreparationMs,
-  gameOptions,
+  allyControlMode = "ai", gameOptions,
   statRegistry = null, progressionRules = null,
   previewLevel = 20
 }) {
@@ -47,6 +47,9 @@ export function buildCaptureEditorCombatTestV1({
   const local = teamIds(localCreatureIds, "L’équipe locale", configuredCreatures);
   const opponent = teamIds(opponentCreatureIds, "L’équipe adverse", configuredCreatures);
   const count = Number(activePerTeam);
+  if (!["ai", "solo"].includes(allyControlMode)) {
+    throw new RangeError("Mode de contrôle allié invalide");
+  }
   if (![1, 2].includes(count) || count > local.length || count > opponent.length) {
     throw new RangeError("Choisis 1 ou 2 créatures actives et au moins autant de membres dans chaque équipe.");
   }
@@ -57,7 +60,7 @@ export function buildCaptureEditorCombatTestV1({
     ...(recallPreparationMs === undefined ? {} : { recallPreparationMs }),
     ...(gameOptions === undefined ? {} : { gameOptions }),
     teams: [
-      { id: "local-team", slots: teamSlots(local, count, "local", configuredCreatures) },
+      { id: "local-team", slots: teamSlots(local, count, "local", configuredCreatures, allyControlMode) },
       { id: "enemy-team", slots: teamSlots(opponent, count, "opponent", configuredCreatures) }
     ]
   });
@@ -117,6 +120,7 @@ export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatur
   const localCount = root.querySelector("[data-test-local-team-size]");
   const opponentCount = root.querySelector("[data-test-opponent-team-size]");
   const active = root.querySelector("[data-active-per-team]");
+  const allyControl = root.querySelector("[data-test-ally-control-mode]");
   const localSelects = [...root.querySelectorAll("[data-test-local-creature]")];
   const opponentSelects = [...root.querySelectorAll("[data-test-opponent-creature]")];
   const members = [...root.querySelectorAll("[data-test-team-member]")];
@@ -134,6 +138,7 @@ export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatur
     const two = [...active.options].find(o => o.value === "2");
     if (two) two.disabled = !enoughMembers;
     if (!enoughMembers && active.value === "2") active.value = "1";
+    if (allyControl) allyControl.disabled = active.value !== "2";
   }
   function refresh() {
     if (disposed) return;
@@ -152,7 +157,7 @@ export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatur
     if (current) current.textContent = configuredCreatures.get(getSelectedCreatureId())?.draft.displayName ?? "Créature en cours d’édition";
     syncVisibility();
   }
-  for (const select of [localCount, opponentCount]) {
+  for (const select of [localCount, opponentCount, active]) {
     select.addEventListener("change", syncVisibility);
     listeners.push(() => select.removeEventListener("change", syncVisibility));
   }
@@ -163,7 +168,8 @@ export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatur
       return {
         localCreatureIds: [getSelectedCreatureId(), ...localSelects.map(s => s.value)].slice(0, Number(localCount.value)),
         opponentCreatureIds: opponentSelects.map(s => s.value).slice(0, Number(opponentCount.value)),
-        activePerTeam: Number(active.value)
+        activePerTeam: Number(active.value),
+        ...(allyControl?.value === "solo" && active.value === "2" ? { allyControlMode: "solo" } : {})
       };
     },
     dispose() { if (disposed) return; disposed = true; listeners.splice(0).forEach(remove => remove()); }
