@@ -448,6 +448,19 @@ export function applyImmediateTacticalEffectsV1({
         }));
         events.push(...triggeredEvents);
 
+        if (effect.status.kind === "immobilize") {
+          // Runtime owns action cancellation; effect projection only announces
+          // the successfully applied control status, not its animation.
+          events.push(Object.freeze({
+            type: "movement-interrupt",
+            atMs,
+            actorId: affectedId,
+            sourceActorId: actorId,
+            skillId: skill.id,
+            reason: "immobilized"
+          }));
+        }
+
         if (effect.status.kind === "stun") {
           events.push(Object.freeze({
             type: "charge-interrupt",
