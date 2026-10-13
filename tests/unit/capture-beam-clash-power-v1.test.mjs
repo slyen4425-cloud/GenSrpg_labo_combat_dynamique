@@ -37,7 +37,7 @@ test("Beam and projectile collide at the beginning of their shared active interv
     assert.ok(c);
     assert.equal(c.atClockMs,1000);
     assert.equal(c.outcome,outcome);
-    assert.equal(c.leftProgress,0.5);
+    assert.equal(c.leftProgress,1);
     assert.equal(c.rightProgress,0);
   }
   const delayed=candidate(skill("beam","beam",2),skill("shot","projectile",1),250,0);
