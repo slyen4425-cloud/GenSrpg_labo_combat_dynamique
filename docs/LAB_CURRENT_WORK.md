@@ -1913,3 +1913,8 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Invariants : IA alliée historique par défaut, solo switch A/B déjà validé, futur human-remote, ciblage allié/ennemi, vraies actions parallèles, l'Esquive native, Rappel, PV, énergie/cooldowns par acteur, capacités, FX, rayon électrique jaune v30, les 103 créatures et leurs scales auteur, la réserve, 1v1, `main`, `global-assets`, Zombicide-40k, Exploration, autres lots.
 - TDD sentinelle RED sur CSS avant correction, puis GREEN Foundation + 2 Chromium au SHA exact ; checkpoint GREEN du code/document final ; publication FF sous lease seulement après HEAD identique et CI complète ; CI/Pages post-publication ; essai tactile Android du nouveau placement **à confirmer**.
 
+
+### Extension de périmètre justifiée par la CI GREEN historique
+
+- La première CI sur code modifié `38416549945` a révélé un échec unique de l'ancienne sentinelle `tests/unit/capture-enemy-landscape-placement-v1.test.mjs` qui imposait **exactement** les anciennes coordonnées 33/34 % et 77/34 %, et interdisait toute largeur de slot. Ce verrou contredit la demande explicite de recul et réduction **visuelle** des adversaires. Il ne signale pas une régression du moteur.
+- Extension minimale autorisée à cette sentinelle historique : remplacer uniquement ses assertions d'anciennes coordonnées par la nouvelle configuration 2v2 en paysage, maintenir les garde-fous sur `--creature-display-scale`, `transform: scale()`, le 1v1, les frontières CSS et les tests historiques sans affaiblissement global. Cette sentinelle n'est pas supprimée.
