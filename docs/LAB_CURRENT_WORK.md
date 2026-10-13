@@ -2124,3 +2124,6 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 
 ### Voltige V3 — octets sources contrôlés
 - Blob Git `f4d21b0a7ef70aedae100deff375beb4dba20493` **exactement égal** au fichier utilisateur de 5430 octets ; commit de remplacement `615b557a59ed785a71ab65113ac5c7e4445244ef`. Diff sémantique limité aux 2 champs de vue adverse (1→0.7, Y0→60), aucun autre champ ou owner touché. Test RED créé avant le remplacement ; CI complète requise sur le SHA documentaire final, puis checkpoint/FF et CI Pages. Rapport `docs/LAB_VOLTIGE_V3_AUTHOR_UPDATE_V1.md`.
+
+### Sentinelle Voltige historique — adaptation minimale après RED
+- CI de code 38478210807 : 1707 tests PASS / 1 FAIL ; ancien test `tests/unit/capture-voltige-static-bite-showcase-v1.test.mjs` impose `opponent.displayScale===1`, valeur devenue obsolète dans l'export auteur (0.7). Extension strictement limitée à cette assertion, nouveau check `position.y===60` dans la même sentinelle. Toutes autres attentes conservées. Aucune correction des données ou du moteur pour satisfaire l'ancien test.
