@@ -25,6 +25,14 @@ const server = createServer(async (req, res) => {
       return;
     }
     let contents = await readFile(filepath);
+    if (pathname.endsWith("/capture-editor-v2.html")) {
+      const html=contents.toString("utf8");
+      const diagnostic=`<script>
+        window.addEventListener("error",e=>document.documentElement.dataset.bootstrapError=e.message);
+        window.addEventListener("unhandledrejection",e=>document.documentElement.dataset.bootstrapError=String(e.reason?.message??e.reason));
+      </script>`;
+      contents=Buffer.from(html.replace("<head>","<head>"+diagnostic));
+    }
     // Test-only network-stall simulation: leave the real module graph and data path intact.
     // Only presentation CDN requests remain pending, like a stalled mobile connection.
     if (pathname.endsWith("/capture-editor-v2.html") &&
@@ -786,7 +794,12 @@ function assertCreatures(dom, scenario) {
   const required = ["crea_maraileron", "crea_mossback", "crea-loup"];
   for (const id of required) {
     if (!options.includes(id)) {
-      throw new Error(scenario + ": missing real creature " + id + "; loaded=" + options.length);
+      const libraryStatus = dom.match(/<p\\b[^>]*data-creature-library-state[^>]*>([\\s\\S]*?)<\\/p>/i)?.[1]?.trim() ?? "not mounted";
+      const editorStatus = dom.match(/<[^>]*data-editor-status[^>]*>([\\s\\S]*?)<\\/[^>]+>/i)?.[1]?.trim() ?? "not mounted";
+      const error = dom.match(/data-bootstrap-error="([^"]+)"/i)?.[1] ?? "no captured JS error";
+      throw new Error(scenario + ": missing real creature " + id + "; loaded=" + options.length +
+        "; libraryStatus=" + libraryStatus.slice(0,300) + "; editorStatus=" + editorStatus.slice(0,300) +
+        "; jsError=" + error.slice(0,600));
     }
   }
   if (options.length !== 103 || new Set(options).size !== 103) {
