@@ -770,6 +770,7 @@ export function applyPersistentZoneEffectsV1({
       activations,
       tickEffect:
         effect.tickEffect,
+      ...(effect.damageTrigger ? {damageTrigger:effect.damageTrigger} : {}),
       ...(effect.persistAfterRecall !== undefined
         ? {persistAfterRecall: effect.persistAfterRecall} : {}),
       ...(effect.tickEffect.kind === "apply_status"
@@ -861,6 +862,7 @@ export function advancePersistentZonesV1({
       zone.nextTickAtMs;
 
     while (
+      zone.damageTrigger !== "entry_only" &&
       nextTickAtMs <= endMs &&
       nextTickAtMs <=
         zone.expiresAtMs
