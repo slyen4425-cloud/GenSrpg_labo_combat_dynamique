@@ -353,6 +353,7 @@ export function createDomStatusFxRenderer({
       1,
       Number(instance?.stacks) || 1
     );
+    const thresholdCount = Number(instance?.definition?.onStackThreshold?.count) || null;
     const sourceSkillId =
       typeof instance?.sourceSkillId === "string" &&
       instance.sourceSkillId.trim() !== ""
@@ -403,10 +404,10 @@ export function createDomStatusFxRenderer({
     record.node.title =
       info.typeLabel +
       " · " +
-      info.statusName;
+      info.statusName + (thresholdCount ? " · " + stacks + "/" + thresholdCount + " stacks" : "");
     record.node.setAttribute?.(
       "aria-label",
-      statusEffectInfoTextV1(info)
+      statusEffectInfoTextV1(info) + (thresholdCount ? " · " + stacks + "/" + thresholdCount + " stacks" : "")
     );
 
     if (
@@ -447,7 +448,7 @@ export function createDomStatusFxRenderer({
         polarityGlyph(polarity);
     }
 
-    if (stacks > 1) {
+    if (stacks > 1 || thresholdCount !== null) {
       if (!record.stackNode) {
         const stackNode =
           target.statusHost.ownerDocument
@@ -458,7 +459,7 @@ export function createDomStatusFxRenderer({
         record.stackNode = stackNode;
       }
       record.stackNode.textContent =
-        String(stacks);
+        thresholdCount === null ? String(stacks) : stacks + "/" + thresholdCount;
     } else if (record.stackNode) {
       record.stackNode.remove?.();
       record.stackNode = null;
