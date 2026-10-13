@@ -17,7 +17,7 @@ function finiteNumber(
 function projectilePower(action) {
   if (
     action?.actionType !== "skill" ||
-    action.skill?.form !== "projectile"
+    !["projectile", "beam"].includes(action.skill?.form)
   ) {
     return 0;
   }
@@ -127,75 +127,40 @@ export function projectileClashCandidate({
       "rightAction.impactAtMs"
     );
 
-  const atClockMs =
-    (
-      rightTravelMs *
-        leftRelease +
-      leftTravelMs *
-        rightRelease +
-      leftTravelMs *
-        rightTravelMs
-    ) /
-    (
-      leftTravelMs +
-      rightTravelMs
-    );
-
-  const sharedTravelStart =
-    Math.max(
-      leftRelease,
-      rightRelease
-    );
-  const sharedTravelEnd =
-    Math.min(
-      leftImpact,
-      rightImpact
-    );
+  // The original moving-projectile intersection stays exact. A beam is a
+  // continuous line occupying the whole lane during its native travel window:
+  // it meets the opposing moving shot at the first instant both are active,
+  // or another opposing beam at the lane midpoint.
+  const leftIsBeam = leftAction.skill?.form === "beam";
+  const rightIsBeam = rightAction.skill?.form === "beam";
+  const sharedTravelStart = Math.max(leftRelease, rightRelease);
+  const sharedTravelEnd = Math.min(leftImpact, rightImpact);
+  const atClockMs = leftIsBeam || rightIsBeam
+    ? sharedTravelStart
+    : (
+        rightTravelMs * leftRelease +
+        leftTravelMs * rightRelease +
+        leftTravelMs * rightTravelMs
+      ) / (leftTravelMs + rightTravelMs);
 
   if (
-    atClockMs <
-      sharedTravelStart -
-        EPSILON_MS ||
-    atClockMs >
-      sharedTravelEnd +
-        EPSILON_MS
+    atClockMs < sharedTravelStart - EPSILON_MS ||
+    atClockMs > sharedTravelEnd + EPSILON_MS
   ) {
     return null;
   }
 
-  const leftProgress =
-    Math.min(
-      1,
-      Math.max(
-        0,
-        (
-          atClockMs -
-          leftRelease
-        ) /
-          leftTravelMs
-      )
-    );
-  const rightProgress =
-    Math.min(
-      1,
-      Math.max(
-        0,
-        (
-          atClockMs -
-          rightRelease
-        ) /
-          rightTravelMs
-      )
-    );
+  const progressAt = (release, duration) => Math.min(
+    1, Math.max(0, (atClockMs - release) / duration)
+  );
+  const leftProgress = leftIsBeam
+    ? (rightIsBeam ? 0.5 : 1 - progressAt(rightRelease, rightTravelMs))
+    : progressAt(leftRelease, leftTravelMs);
+  const rightProgress = rightIsBeam
+    ? (leftIsBeam ? 0.5 : 1 - progressAt(leftRelease, leftTravelMs))
+    : progressAt(rightRelease, rightTravelMs);
 
-  if (
-    Math.abs(
-      leftProgress +
-        rightProgress -
-        1
-    ) >
-    1e-6
-  ) {
+  if (Math.abs(leftProgress + rightProgress - 1) > 1e-6) {
     return null;
   }
 
