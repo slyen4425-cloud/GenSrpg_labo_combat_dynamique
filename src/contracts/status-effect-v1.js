@@ -126,7 +126,8 @@ const FIELDS_BY_KIND = Object.freeze({
   projectile_mirror: COMMON_FIELDS,
   immunity: new Set([
     ...COMMON_FIELDS,
-    "domains"
+    "domains",
+    "intangible"
   ]),
   immobilize: COMMON_FIELDS,
   silence: COMMON_FIELDS,
@@ -465,6 +466,16 @@ export function normalizeStatusEffectV1(input) {
       }
     }
     output.domains = domains;
+    if (value.intangible != null && typeof value.intangible !== "boolean") {
+      throw new TypeError("StatusEffectV1.intangible must be a boolean");
+    }
+    if (value.intangible === true) {
+      if (polarity !== "beneficial" ||
+          !domains.includes("damage") || !domains.includes("negative_status")) {
+        throw new RangeError("StatusEffectV1.intangible requires beneficial damage and negative_status immunity");
+      }
+      output.intangible = true;
+    }
   }
 
   return Object.freeze(output);
