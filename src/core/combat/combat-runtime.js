@@ -289,7 +289,7 @@ export function createCombatRuntime({
       activeMirrorFor(action.targetId, atMs);
   }
 
-  function returnMirroredProjectile(action, atNowMs) {
+  function returnMirroredProjectile(action, atNowMs, contactPoint = null) {
     const returnDurationMs = Math.max(1, Number(action.skill?.travelMs) || Number(action.travelMs) || 1);
     const mirrored = Object.freeze({
       ...action,
@@ -302,7 +302,8 @@ export function createCombatRuntime({
       recoveryMs: 0,
       mirrorReturn: Object.freeze({
         originalActorId: action.mirrorReturn?.originalActorId ?? action.actorId,
-        bounceCount: Number(action.mirrorReturn?.bounceCount ?? 0) + 1
+        bounceCount: Number(action.mirrorReturn?.bounceCount ?? 0) + 1,
+        ...(contactPoint !== null ? { contactPoint } : {})
       })
     });
     const returnRecord = {
@@ -683,7 +684,7 @@ export function createCombatRuntime({
   function processResolution(
     record,
     atNowMs,
-    { impactAtMs = null, visibleContact = false } = {}
+    { impactAtMs = null, visibleContact = false, contactPoint = null } = {}
   ) {
     if (
       !recordIsActive(record) ||
@@ -801,7 +802,7 @@ export function createCombatRuntime({
 
     onResolved(resolution);
     if (mirrorContact) {
-      returnMirroredProjectile(effectiveAction, atNowMs);
+      returnMirroredProjectile(effectiveAction, atNowMs, contactPoint);
     }
     emitStateIfChanged({ force: true });
     return resolution;
@@ -1481,7 +1482,8 @@ export function createCombatRuntime({
   function reportActionContact({
     actorId,
     targetId,
-    skillId = null
+    skillId = null,
+    contactPoint = null
   }) {
     if (disposed) {
       return Object.freeze({
@@ -1577,10 +1579,14 @@ export function createCombatRuntime({
       )
     );
 
+    const visualPoint = contactPoint &&
+      Number.isFinite(contactPoint.x) && Number.isFinite(contactPoint.y)
+        ? Object.freeze({ x: Number(contactPoint.x), y: Number(contactPoint.y) })
+        : null;
     const resolution = processResolution(
       record,
       current,
-      { impactAtMs: contactImpactAtMs, visibleContact: true }
+      { impactAtMs: contactImpactAtMs, visibleContact: true, contactPoint: visualPoint }
     );
 
     if (!resolution) {
