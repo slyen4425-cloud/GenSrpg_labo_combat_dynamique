@@ -7,7 +7,7 @@ const html = readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.htm
 const ui = readFileSync(new URL("../../src/ui/combat-2v2-test-ui.js", import.meta.url),"utf8");
 
 test("2v2 far opponents are smaller and deeper in the real landscape arena, without 1v1 overrides", () => {
-  const section = css.slice(css.indexOf("/* Capture landscape opponent slot placement V1"));
+  const section = css.slice(css.indexOf("/* Capture landscape 2v2 depth V2"));
   assert.match(section,/--arena-coop-far-primary-y:\s*2[4-9]%/);
   assert.match(section,/--arena-coop-far-secondary-y:\s*2[4-9]%/);
   assert.match(section,/\.arena--coop-2v2 \.fighter--opponent\s*\{[^}]*width:\s*min\(2[0-6]dvh/s);
