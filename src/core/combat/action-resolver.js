@@ -964,7 +964,8 @@ export function resolveSkillCompletion({
           combatAtMs: combatImpactAtMs,
           battleFormat,
           // No lifesteal from the return leg of a mirrored projectile.
-          directDamageApplied: action.mirrorReturn ? 0 : applied.appliedDamage
+          directDamageApplied: action.mirrorReturn ? 0 : applied.appliedDamage,
+          allowLifeSteal: !action.mirrorReturn
         });
       nextState = tactical.state;
       events.push(...tactical.events);
