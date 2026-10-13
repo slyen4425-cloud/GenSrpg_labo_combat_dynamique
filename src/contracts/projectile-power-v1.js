@@ -68,10 +68,11 @@ export function normalizeProjectilePowerV1(
 
   if (
     power > 0 &&
-    form !== "projectile"
+    form !== "projectile" &&
+    form !== "beam"
   ) {
     throw new RangeError(
-      "ProjectilePowerV1 requires form=projectile when power > 0"
+      "ProjectilePowerV1 requires form=projectile or beam when power > 0"
     );
   }
 
