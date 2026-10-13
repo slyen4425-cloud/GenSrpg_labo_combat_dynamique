@@ -215,7 +215,8 @@ export function applyStatusEffectV1({
   sourceActorId,
   sourceSkillId = null,
   status,
-  atMs = state.elapsedMs
+  atMs = state.elapsedMs,
+  hitsIntangible = false
 }) {
   const validation =
     validateStatusEffectForTargetV1({
@@ -244,7 +245,8 @@ export function applyStatusEffectV1({
         state,
         targetActorId,
         domain: "negative_status",
-        atMs: now
+        atMs: now,
+        hitsIntangible
       });
     if (protection.protected) {
       return state;
@@ -272,6 +274,7 @@ export function applyStatusEffectV1({
         definition: status,
         sourceActorId,
         sourceSkillId,
+        hitsIntangible,
         appliedAtMs: now
       })
     );
@@ -282,7 +285,8 @@ export function applyStatusEffectV1({
       ...existing,
       ...refreshedLifetime(existing, now),
       sourceActorId,
-      sourceSkillId
+      sourceSkillId,
+      hitsIntangible
     });
     return replaceInstance(
       state,
@@ -302,6 +306,7 @@ export function applyStatusEffectV1({
     ...refreshedLifetime(existing, now),
     sourceActorId,
     sourceSkillId,
+    hitsIntangible,
     stacks: nextStacks,
     shieldRemaining:
       existing.definition.kind === "shield"
@@ -455,7 +460,8 @@ function applyDotTick({
         instance.sourceActorId,
       targetActorId: fighterId,
       damage: amount,
-      atMs
+      atMs,
+      hitsIntangible: instance.hitsIntangible === true
     }).state;
   }
 
@@ -477,7 +483,8 @@ function applyDotTick({
       instance.sourceActorId,
     targetActorId: fighterId,
     damage: damage.damage,
-    atMs
+    atMs,
+    hitsIntangible: instance.hitsIntangible === true
   }).state;
 }
 
