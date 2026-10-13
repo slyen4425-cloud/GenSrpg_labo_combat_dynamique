@@ -71,3 +71,31 @@ test("Stack threshold timer uses native status expiry; no independent stack cloc
  assert.doesNotMatch(renderer,/setInterval|setTimeout/);
  assert.match(css,/\.status-icon__expiry\s*\{/);
 });
+
+test("Real HUD shows the actual shared remaining lifetime alongside 2/3 then 1/3 and removes on expiry",async()=>{
+ const {createDomStatusFxRenderer}=await import("../../src/adapters/renderer/dom-status-fx.js");
+ const doc={createElement(){const n={className:"",dataset:{},style:{},hidden:false,textContent:"",children:[],append(...c){this.children.push(...c)},remove(){this.removed=true},setAttribute(){}};n.ownerDocument=doc;return n}};
+ const statusHost=doc.createElement("div");
+ const renderer=createDomStatusFxRenderer({targetFor:()=>({statusHost}),statusPresentationFor:()=>null,skillPresentationFor:()=>null,skillDefinitionFor:()=>null});
+ const definition={id:"stack",kind:"stack_counter",polarity:"detrimental",durationModel:"time_ms",durationMs:10000,stacking:"stack",maxStacks:3,tags:[],onStackThreshold:{count:3,consume:"reset",effects:[{kind:"damage",targetScope:"target",amount:1,channel:"electric"}]}};
+ const status=(stacks,expiresAtMs)=>({definition,sourceActorId:"enemy",sourceSkillId:"lib_static_bite",stacks,appliedAtMs:1000,expiresAtMs});
+ const sync=(elapsedMs,instances)=>renderer.sync({elapsedMs,fighters:{enemy:{statusEffects:instances}}});
+ sync(2000,[status(2,10000)]);
+ const icon=statusHost.children[0];
+ let badge=icon.children.find(c=>c.className==="status-icon__expiry");
+ let count=icon.children.find(c=>c.className==="status-icon__stack");
+ assert.equal(badge.textContent,"8 s");
+ assert.equal(count.textContent,"2/3");
+ sync(4000,[status(2,10000)]);
+ assert.equal(badge.textContent,"6 s");
+ // The native Runtime refreshes the shared expiry on a newly acquired charge.
+ sync(5000,[status(3,15000)]);
+ assert.equal(badge.textContent,"10 s");
+ assert.equal(count.textContent,"3/3");
+ sync(9000,[status(1,15000)]);
+ assert.equal(badge.textContent,"6 s");
+ assert.equal(count.textContent,"1/3");
+ sync(15000,[]);
+ assert.equal(icon.removed,true);
+ renderer.dispose();
+});
