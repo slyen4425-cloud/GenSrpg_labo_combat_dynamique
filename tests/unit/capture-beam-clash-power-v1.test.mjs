@@ -5,6 +5,7 @@ import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.j
 import { projectileClashCandidate, resolveProjectileClash } from "../../src/core/combat/projectile-clash.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
+import { readHumanProjectilePowerV1 } from "../../src/ui/capture-editor-human-v2.js";
 
 const skill = (id, form, power, travelMs=700, preparationMs=1000) =>
   normalizeSkillDefinition({
@@ -98,4 +99,14 @@ test("Real Runtime resolves opposite beam vs projectile clash without a late hit
   assert.equal(session.snapshot().fighters.player.hp,100,"the weaker shot must never hit");
   assert.ok(session.snapshot().fighters.opponent.hp<100,"stronger beam keeps its native hit");
   runtime.dispose();
+});
+
+test("Human Editor saves projectile and beam power without erasing on edit; contact stays outside system", async()=>{
+ const root={querySelector:selector=>selector==="[data-skill-projectile-power]"?{value:"2"}:null};
+ assert.deepEqual(readHumanProjectilePowerV1(root,"beam"),{power:2});
+ assert.deepEqual(readHumanProjectilePowerV1(root,"projectile"),{power:2});
+ assert.deepEqual(readHumanProjectilePowerV1(root,"contact"),{power:0});
+ const markup=await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
+ assert.match(markup,/Collision entre projectiles et rayons/);
+ assert.match(markup,/Puissance de collision \(projectile \/ rayon\)/);
 });
