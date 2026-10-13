@@ -40,13 +40,19 @@ test("Silence restricts ranged forms, not contact; no rejected resource spend",(
   const melee=session.startSkill({actorId:"b",targetId:"a",skill:contact});
   assert.equal(melee.ok,true,"contact is allowed while silenced");
   const ranged=affected("silence");
-  for(const form of ["projectile","beam","area","aura","self"]) {
+  for(const form of ["projectile","beam","area"]) {
     const before=ranged.snapshot().fighters.b.energy;
     const denied=ranged.startSkill({actorId:"b",targetId:"a",
       skill:skill("ranged-"+form,{form,approachMode:"none"})});
     assert.equal(denied.outcome,"silenced");
     assert.equal(denied.ok,false);
     assert.equal(ranged.snapshot().fighters.b.energy,before);
+  }
+  for (const form of ["self","aura"]) {
+    const allowed=affected("silence");
+    const cast=allowed.startSkill({actorId:"b",targetId:"a",
+      skill:skill("support-"+form,{form,approachMode:"none"})});
+    assert.equal(cast.ok,true,"silence must not block stationary "+form+" abilities");
   }
 });
 test("Immobilization denies approach starts while allowing a stationary spell; stun still wins",()=>{
