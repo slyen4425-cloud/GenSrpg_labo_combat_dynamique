@@ -612,6 +612,13 @@
             <option value="2">2 contre 2</option>
           </select>
         </label>
+        <label>Contrôle du deuxième allié (2 contre 2)
+          <select data-test-ally-control-mode disabled>
+            <option value="ai" selected>IA alliée (mode actuel)</option>
+            <option value="solo">Solo : je contrôle mes deux créatures</option>
+          </select>
+        </label>
+        <p class="note">En solo 2v2, touche une créature alliée pour passer instantanément sa barre de capacités, son énergie, son esquive et son Rappel au premier plan. Le mode IA reste disponible. Deux joueurs humains distincts : futur chantier.</p>
         <p class="note">Les autres monstres restent en réserve : ils peuvent être invoqués ou remplacer un monstre KO. En 2 contre 2, les réserves sont réparties entre les deux actifs.</p>
       </article>
 
@@ -1779,6 +1786,7 @@
             </button>
 
             <section class="coop-controls" aria-label="Capacités de la créature locale">
+              <div class="coop-controls__controlled-name" data-combat-controlled-name hidden aria-live="polite"></div>
               <div class="hud__energy">
                 <div class="hud__energy-line">
                   <strong>Votre énergie</strong>
