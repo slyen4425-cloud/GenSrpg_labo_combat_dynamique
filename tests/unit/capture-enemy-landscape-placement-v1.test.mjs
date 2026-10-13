@@ -39,10 +39,13 @@ test("Capture landscape 2v2 keeps two distant enemy slots with real geometry and
   const start = css.indexOf(marker);
   assert.ok(start >= 0, "single owned landscape section must exist");
   const block = css.slice(start, css.indexOf("/* Rayon :", start));
+  assert.match(block, /\.arena--coop-2v2\[data-combat-active-count="2"\]\s*\{/);
+  assert.doesNotMatch(block, /\.arena--coop-2v2 \.fighter--opponent\s*\{/,
+    "2v2-only depth must never reach the shared 1v1 arena");
   assert.match(block, /--arena-coop-far-primary-y:\s*26%;/);
   assert.match(block, /--arena-coop-far-secondary-y:\s*28%;/);
-  assert.match(block, /\.arena--coop-2v2 \.fighter--opponent\s*\{\s*left:\s*58%;\s*width:\s*min\(24dvh,\s*13rem\);/);
-  assert.match(block, /\.arena--coop-2v2 \.fighter--opponent-b\s*\{\s*left:\s*36%;\s*width:\s*min\(23dvh,\s*12\.5rem\);/);
+  assert.match(block, /\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent\s*\{\s*left:\s*58%;\s*width:\s*min\(24dvh,\s*13rem\);/);
+  assert.match(block, /\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent-b\s*\{\s*left:\s*36%;\s*width:\s*min\(23dvh,\s*12\.5rem\);/);
   assert.doesNotMatch(block, /transform\s*:|--creature-display-scale\s*:|--distance-scale\s*:/,
     "landscape depth must move/size the actual DOM slot and must never override author scale");
 
