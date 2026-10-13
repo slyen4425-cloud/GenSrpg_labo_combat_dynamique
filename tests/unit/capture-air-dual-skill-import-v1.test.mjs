@@ -33,7 +33,7 @@ test("two user-authored air skills preserve exact source bytes and canonical ref
   assert.equal(transfer.kind,"skill");
   assert.equal(transfer.value.draft.id,f.id);
  }
- assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,19);
+ assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,20);
 });
 test("Vent arrière repaired statuses keep author effect values and unique IDs",async()=>{
  const record=importCaptureTransferJsonV1(await read(files[0].path)).value.draft;
