@@ -211,3 +211,27 @@ test("persistent damage zone inherits authored intangible strike without a secon
     assert.equal(session.snapshot().fighters.target.hp,hitsIntangible?85:100);
   }
 });
+
+
+test("legacy preparation-interrupt flag is still a negative effect even when its damage is zero", () => {
+  const session=createCombatSession({fighters:[fighter("source"),fighter("target")]});
+  session.useSkill({actorId:"target",targetId:"target",
+    skill:normalizeSkillDefinition({id:"ghost",name:"ghost",category:"buff_debuff",
+      form:"self",energyCost:0,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+      targetRelations:["self"],effect:{damage:0},effects:[{
+        kind:"apply_status",targetScope:"self",status:intangible()
+      }]})
+  });
+  const attack=(hitsIntangible)=>normalizeSkillDefinition({
+    id:hitsIntangible?"phase-stun":"ordinary-stun",name:"stun",
+    category:"offensive",form:"contact",approachMode:"none",
+    energyCost:0,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+    hitsIntangible,effect:{damage:0,interruptsPreparation:true,stunMs:700}
+  });
+  const result=session.useSkill({actorId:"source",targetId:"target",skill:attack(false)});
+  assert.equal(result.ok,true);
+  assert.equal(result.events.some(e=>e.type==="charge-interrupt"),false);
+  const piercing=session.useSkill({actorId:"source",targetId:"target",skill:attack(true)});
+  assert.equal(piercing.ok,true);
+  assert.equal(piercing.events.some(e=>e.type==="charge-interrupt"),true);
+});
