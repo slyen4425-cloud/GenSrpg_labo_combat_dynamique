@@ -8,7 +8,7 @@ const ui = readFileSync(new URL("../../src/ui/combat-2v2-test-ui.js", import.met
 
 test("2v2 far opponents are smaller and deeper in the real landscape arena, without 1v1 overrides", () => {
   const section = css.slice(css.indexOf("/* Capture landscape 2v2 depth V2"));
-  assert.match(section,/--arena-coop-far-primary-y:\s*2[4-9]%/);
+  assert.match(section,/--arena-coop-far-primary-y:\s*30%/);
   assert.match(section,/--arena-coop-far-secondary-y:\s*2[4-9]%/);
   assert.match(section,/\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent\s*\{[^}]*width:\s*min\(2[0-6]dvh/s);
   assert.match(section,/\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent-b\s*\{[^}]*width:\s*min\(2[0-6]dvh/s);
