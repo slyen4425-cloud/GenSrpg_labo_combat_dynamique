@@ -12,8 +12,8 @@ test("Vent arrière uses the single canonical catalog and preserves earlier asse
   assert.equal(catalog.storage.branch, "global-assets");
   assert.equal(catalog.counts.assets, catalog.assets.length);
   assert.equal(catalog.counts.icons, catalog.assets.filter(x=>x.assetType==="icon").length);
-  assert.equal(catalog.counts.assets,135);
-  assert.equal(catalog.counts.icons,46);
+  assert.ok(catalog.counts.assets>=135);
+  assert.ok(catalog.counts.icons>=46);
   assert.equal(new Set(catalog.assets.map(x=>x.id)).size,catalog.assets.length);
   const matches=catalog.assets.filter(x=>x.id===id);
   assert.equal(matches.length,1);

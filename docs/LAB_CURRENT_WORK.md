@@ -6836,3 +6836,14 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Périmètre autorisé : présent journal, `docs/LAB_ROADMAP.md`, note `docs/LAB_CAPTURE_LAST_STAND_FUTURE.md`. Protégés : code, données de créatures, compétences, assets, moteur, CI, `main`, production et autres dépôts.
 - Critère du lot : documentation cohérente, diff strictement documentaire, CI du SHA, checkpoint GREEN documentaire ; aucune preview de fonctionnalité ni test manuel de gameplay attendu.
 - Prochaine action fonctionnelle : **aucune sans nouveau chantier explicitement lancé**. Les paramètres non décidés restent ouverts ; voir la note de conception.
+
+
+## Lot Capture — trois icônes Air cartoon, 2026-10-13
+
+- Demande : trois icônes Rafale / Souffle / Attaque aérienne, couleurs marron, fond clair, motifs distincts, intégration au labo combat.
+- Autorité : branche canonique `global-assets` et unique catalogue visuel. Pas de changement des règles Combat, FX, animations, `main`, GenSrpG ni Exploration.
+- SHA de départ : `5965d22fba72d3cee7130d05665bc4735c054413`; checkpoint : `checkpoint/global-assets-before-capture-air-icons-v1-2026-10-13`; work : `work/global-assets-capture-air-icons-v1-2026-10-13`.
+- Périmètre : 3 WebP 128 px `assets/library/capture/icons/skills/`, provenance, catalogue, test dédié, adaptation additive de sentinelle Tailwind, rapport et CURRENT_WORK.
+- Risques : chemins erronés, cache `gh-pages`, lisibilité sur smartphone, anciennes assertions de compteur absolu ; vérifier WebP RIFF/dimensions/SHA/uniqueness + CI réelle.
+- Critère : CI GREEN sur SHA de travail, checkpoint exact, fast-forward sans force de `global-assets`. Raccord `gh-pages` en lot distinct via IDs, seulement pour les compétences existantes appropriées ; Souffle libre sans skill homonyme.
+- Statut : EN COURS, validation CI et smartphone non revendiquée avant vérification.

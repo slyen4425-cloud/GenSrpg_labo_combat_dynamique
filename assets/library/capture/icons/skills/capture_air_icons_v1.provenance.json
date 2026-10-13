@@ -1,0 +1,46 @@
+{
+  "schema": "capture-skill-icon-provenance-v1",
+  "date": "2026-10-13",
+  "owner": "global-assets",
+  "license": "project-internal",
+  "sourceType": "imagegen-original-in-chat",
+  "sourceDimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "derivedDimensions": {
+    "width": 128,
+    "height": 128
+  },
+  "format": "RGB WebP VP8 lossy quality=52",
+  "note": "Cartoon Monster Capture, dominant beige/brown with bright background; distinct silhouettes for gust/breath/aerial strike.",
+  "assets": [
+    {
+      "id": "pack:capture:icon-skill-rafale-01",
+      "label": "Rafale",
+      "sourceFile": "tourbillon_de_lames_dorées.png",
+      "sourceSha256": "68063689edc6a9157002e185436da270ca75f0a56f15adcaabd59c26dfdb7e82",
+      "derivedFile": "capture/icons/skills/icon_skill_rafale_01.webp",
+      "derivedBytes": 3654,
+      "derivedSha256": "d59655141cef9b9a6d05e03f5cf7f937a69f9f7b3a7164ad1b8e0013b2cdde9e"
+    },
+    {
+      "id": "pack:capture:icon-skill-souffle-01",
+      "label": "Souffle",
+      "sourceFile": "déferlante_dorée_de_poussière_et_de_vent.png",
+      "sourceSha256": "4eea1e786f4569cb44bb5ce1384f75862641ff191378494efac2d012912dcee8",
+      "derivedFile": "capture/icons/skills/icon_skill_souffle_01.webp",
+      "derivedBytes": 3610,
+      "derivedSha256": "3c74f458ff628b4ed23acf3f231d872d7b3e3902a38990eeaa55876310a5cc22"
+    },
+    {
+      "id": "pack:capture:icon-skill-aerial-attack-01",
+      "label": "Attaque aérienne",
+      "sourceFile": "aigle_flamboyant_en_piqué_fracassant_le_sol.png",
+      "sourceSha256": "04915d62979175e2493c50077471878d660f8f6c42c7f4ffc5c90ee199f378a3",
+      "derivedFile": "capture/icons/skills/icon_skill_attaque_aerienne_01.webp",
+      "derivedBytes": 4698,
+      "derivedSha256": "8cc8cc80ea68c17055afcf898b88583d01c38c638a68a2977193a83ecb6269c1"
+    }
+  ]
+}

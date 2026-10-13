@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 135,
-    "icons": 46,
+    "assets": 138,
+    "icons": 49,
     "sprites": 73,
     "fx": 2,
     "portraits": 9,
@@ -4412,6 +4412,99 @@
       },
       "resource": {
         "file": "capture/icons/skills/icon_skill_tailwind_feather_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-rafale-01",
+      "label": "Rafale",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "air",
+        "wind",
+        "gust",
+        "skill",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_rafale_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-souffle-01",
+      "label": "Souffle",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "air",
+        "wind",
+        "breath",
+        "skill",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_souffle_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-aerial-attack-01",
+      "label": "Attaque aérienne",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "air",
+        "aerial",
+        "strike",
+        "skill",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_attaque_aerienne_01.webp",
         "mime": "image/webp"
       },
       "compatibility": {
