@@ -16,11 +16,11 @@ test("2v2 far opponents are smaller and deeper in the real landscape arena, with
     "opponent placement must use real slot geometry, not a hidden transform");
 });
 
-test("solo HUD is one wide low dock, with the compact ally alongside commands, not stacked over them", () => {
-  assert.match(css,/\[data-local-control-mode="solo-dual"\] \.coop-command-stack\s*\{[^}]*grid-template-columns\s*:/s);
-  assert.match(css,/\[data-local-control-mode="solo-dual"\] \.squad-card--command-ally\s*\{[^}]*min-height\s*:/s);
-  assert.match(css,/\[data-local-control-mode="solo-dual"\] \.coop-controls\s*\{[^}]*min-width\s*:/s);
-  assert.match(css,/\[data-local-control-mode="solo-dual"\] \.combat-dodge-action--arena\s*\{[^}]*right\s*:/s);
+test("shared IA and solo 2v2 HUD is compact with ally alongside, never stacked over commands", () => {
+  assert.match(css,/\[data-combat-active-count="2"\] \.coop-command-stack\s*\{[^}]*grid-template-columns\s*:/s);
+  assert.match(css,/\[data-combat-active-count="2"\] \.squad-card--command-ally\s*\{[^}]*min-height\s*:/s);
+  assert.match(css,/\[data-combat-active-count="2"\] \.coop-controls\s*\{[^}]*min-width\s*:/s);
+  assert.match(css,/\[data-combat-active-count="2"\] \.combat-dodge-action--arena\s*\{[^}]*right\s*:/s);
   assert.match(html,/class="skill-bar__grid" data-combat-skills/);
   assert.match(html,/data-combat-roster-command="switch"/);
   assert.match(html,/data-combat-dodge/);
@@ -31,8 +31,8 @@ test("the UI layout contract leaves actor authority, AI/solo choice and 1v1 inta
   assert.match(ui,/const controlledActorId = \(\) => localControl\.actorId/);
   assert.match(html,/<option value="ai" selected>IA alliée/);
   assert.match(html,/<option value="solo">Solo/);
-  const solo = css.slice(css.indexOf("/* Solo landscape HUD V1"));
-  assert.doesNotMatch(solo,/\[data-local-control-mode="human-ai"\]/,
+  const solo = css.slice(css.indexOf("/* Combat 2v2 readable mobile HUD and enemy bench V1"));
+  assert.doesNotMatch(solo,/\[data-combat-active-count="human-ai"\]/,
     "the solo dock must not rewrite the historical AI mode");
   assert.doesNotMatch(solo,/\.arena:not\(/, "1v1 must remain unchanged");
 });
