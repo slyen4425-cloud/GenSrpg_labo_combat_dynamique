@@ -352,9 +352,11 @@ export function resolveSkillStart({
     ["silence", "silenced"],
     ["immobilize", "immobilized"]
   ]) {
-    // Silence prevents ranged/magical abilities, not physical contact.
+    // Silence prevents only distance/beam/area abilities. Contact, self
+    // and aura abilities stay available unless another status blocks them.
     // Immobilize prevents movement-based approaches, not stationary attacks.
-    if (kind === "silence" && skill.form === "contact") continue;
+    if (kind === "silence" &&
+        !["projectile", "beam", "area"].includes(skill.form)) continue;
     if (kind === "immobilize" &&
         (skill.approachMode ?? "none") === "none") continue;
     if (
