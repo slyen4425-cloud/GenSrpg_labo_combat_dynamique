@@ -141,3 +141,19 @@ test("stack threshold rejects a non-tactical zone as a direct immediate effect",
       durationMs:1000,tickIntervalMs:1000,reactivation:"refresh",maxActivations:1,
       radiusGrowthSteps:0,tickEffect:{kind:"damage",targetScope:"target",amount:1}}]}}),/Unsupported onStackThreshold effect/);
 });
+
+
+test("native stack_counter is harmless before threshold, supports positive and negative polarity",()=>{
+  for(const polarity of ["beneficial","detrimental"]){
+    const s=normalizeStatusEffectV1({id:"counted",kind:"stack_counter",polarity,
+      durationMs:5000,stacking:"stack",maxStacks:5,
+      onStackThreshold:{count:3,consume:"reset",effects:[amount("damage",6)]}});
+    let game=start(["a","b","partner","other"]);
+    game=add(game,s);game=add(game,s);
+    assert.equal(game.fighters.b.hp,70);
+    assert.equal(game.fighters.b.statusEffects.find(x=>x.definition.id==="counted").stacks,2);
+    game=add(game,s);
+    assert.equal(game.fighters.b.hp,64);
+    assert.equal(game.fighters.partner.hp,70);
+  }
+});
