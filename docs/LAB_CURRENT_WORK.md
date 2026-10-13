@@ -1795,3 +1795,8 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Périmètre autorisé : `src/contracts/status-effect-v1.js`, `src/core/combat/{combat-damage-application-v1,action-resolver,immediate-tactical-effects-v1,persistent-zone-runtime-v1,status-effect-runtime-v1}.js`, `src/ui/capture-editor-human-v2.js`, tests d'intégration ciblés, `docs/LAB_REFLECTION_TRIGGER_V1.md`, journal actuel. Extension uniquement si une sentinelle échoue et cause prouvée.
 - Protégés : `main`, `global-assets`, Exploration, `Zombicide-40k`, 103 créatures, capacités et médias auteur, imports historiques, HUD, `projectile_mirror`, immunités et boucliers, projectile direct/skyfall, rayon, ciblage 1v1/2v2, KO et Roster Session.
 - RED avant code, tests d'inclusion/exclusion et compatibilité historique, riposte contact sur bouclier et sans dégâts, évitement, limite antiréflexion, miroir, zones et 2v2. CI Foundation + deux Chromium et checkpoint GREEN exact, publication FF sous contrôle SHA, puis CI/Pages post-publication ; validation utilisateur Android paysage distincte et toujours en attente.
+
+### Retour utilisateur — Stacks à seuil, 13 octobre 2026
+
+- L'auteur confirme explicitement avoir testé et **validé** le système de stacks livré au SHA `c66d26f212ed0c6bb878d2e910308e508acc12b0`. Le lot `stack-threshold-v1` passe donc son jalon de validation utilisateur pour le fonctionnement testé. Cela ne valide ni Miroir ni Immatériel, qui restent en attente de leurs essais.
+- Ce retour est consigné ici à titre de gouvernance uniquement ; aucune mécanique de stacks n'est modifiée dans le chantier actuel.
