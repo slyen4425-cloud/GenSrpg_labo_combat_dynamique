@@ -216,7 +216,8 @@ export function applyImmediateTacticalEffectsV1({
   combatAtMs = atMs,
   battleFormat = null,
   thresholdDepth = 0,
-  directDamageApplied = 0
+  directDamageApplied = 0,
+  allowLifeSteal = true
 }) {
   const unsupported =
     unsupportedImmediateTacticalEffectV1(
@@ -512,7 +513,8 @@ export function applyImmediateTacticalEffectsV1({
 
   // HP returns through the exact same native fighter HP primitive and heal
   // event as regular healing. A dead caster cannot be resurrected by leeching.
-  if (lifeStealDamage > 0 && Number(fighterOf(nextState, actorId).hp) > 0) {
+  if (allowLifeSteal && lifeStealDamage > 0 &&
+      Number(fighterOf(nextState, actorId).hp) > 0) {
     for (const effect of effects) {
       if (effect.kind !== "life_steal") continue;
       const requested = Math.min(
