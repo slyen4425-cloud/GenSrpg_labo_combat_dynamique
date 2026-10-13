@@ -1704,3 +1704,14 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - TDD : d'abord RED nouveau test de vrai Runtime (cast miroir -> projectile direct -> contact défenseur -> retour -> contact lanceur), puis implémentation ; sentinelles projectile direct/skyfall, clash, KO, statuts/immunités, combat 1v1/2v2, intégration Presenter/DomSkillFx et Chromium de l'éditeur ; CI intégrale et Pages seulement après GREEN.
 - Risque élevé : `reaction.reflectForms` est actuellement un renvoi de dégâts instantané au premier impact et `damage_reflection` est indépendant ; interdiction de maquiller l'un ou l'autre en animation sans collision de retour. Pas de publication de code inachevé, ni de checkpoint GREEN sans trajet réellement démontré.
 
+
+### Projectile Mirror V1 — contrôle technique et demande de validation Android
+
+- Contrat distinct `StatusEffectV1.projectile_mirror` disponible depuis le Human Editor ; le renvoi `damage_reflection` en pourcentage et l'ancien `reaction.reflectForms` sont conservés sans modification fonctionnelle.
+- Le même `CombatRuntime` ordonnance le trajet inverse ; origine = point de contact réel du projectile sur le masque de la cible, puis nouvelle collision réelle au retour avant le calcul des dégâts. Maximum deux rebonds successifs, pas de dégâts si retour sans collision. Les tirs `fixed_point` sont exclus du lot.
+- 1v1 / 2v2, aucun dégât prématuré, KO attribué à la créature miroir, double miroir borné, projectile clash et métadonnées du point d'impact : tests réels `tests/integration/projectile-mirror-real-flight-v1.test.mjs` + sentinelles de collisions mises à jour.
+- RED initial : `4db9fde751593848c879039ef8d76e50a9b08f4c` / CI `38335885725` (3 échecs attendus).
+- GREEN sur implémentation et rapport `d8302aecfb9e6ea67b2ba48b915876efe5cb8542` / Laboratory CI `38337068176` : SUCCESS, 1603 / 1603 tests Node, creature-library-browser SUCCESS, Firestorm Chromium SUCCESS.
+- Revue de périmètre : uniquement `src/contracts`, `src/core/combat`, `src/core/fx`, `src/adapters/renderer`, `src/ui/capture-editor-human-v2.js`, sentinelles et documentation. Aucun fichier auteur ni branche `main` / `global-assets` / dépôt tiers touché. Rapport : `docs/LAB_PROJECTILE_MIRROR_V1.md`.
+- Publication de la preview sur `gh-pages` autorisée seulement si le SHA final avec cette mise à jour documentaire passe la CI, que le checkpoint GREEN corresponde exactement, et que l'avance de `gh-pages` est fast-forward avec vérification Pages SUCCESS.
+- **Validation utilisateur smartphone paysage toujours attendue** : aucun GREEN utilisateur avant essai visuel en combat du renvoi.
