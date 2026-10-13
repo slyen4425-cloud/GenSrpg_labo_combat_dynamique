@@ -1934,3 +1934,12 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Owner / plan : `src/ui/combat-2v2-test-ui.js` expose uniquement sur l'arène le **nombre réel** d'actifs locaux de `BattleFormat`, issu de `resolveCombatPreviewFormatV1`, sans changer la mécanique ; `capture-editor-v2.css` retrouve exactement les valeurs 1v1 pré-régression de la section paysage et applique l'avancement/réduction adversaire **seulement** quand l'arène annonce 2 actifs. Pas de changement d'échelle auteur, combat, collisions/FX, IA, Rappel, Esquive, réseau ou assets.
 - Périmètre : `src/ui/combat-2v2-test-ui.js`, `examples/dom-demo/capture-editor-v2.css`, nouvelle sentinelle `tests/unit/capture-1v1-visual-regression-scope-v1.test.mjs`, deux sentinelles CSS ciblées concernées si nécessaire, `docs/LAB_1V1_RESTORE_2V2_SCOPE_V1.md` et ce journal. Ne modifier aucune autre source. Préserver solo 2v2 switch, mode IA alliée, futur humain distant.
 - TDD RED sur régression prouvée ; après correctif GREEN Foundation + Chromium créatures + Firestorm, checkpoint GREEN au dernier SHA, FF protégé gh-pages seulement si HEAD inchangé, CI/Pages post-publication, re-test vrai 1v1 Android par l'auteur **non présumé acquis**.
+
+### Régression 1v1 — restauration du rendu original en 2 scopes
+
+- TDD RED commit `a24247bdf93fe04efbacbee6787379997c97bef8`, CI `38419798924` FAILURE attendue : manque de distinction 1v1/2v2 sur la classe CSS commune.
+- Réparation CSS : restaurer exactement les coordonnées paysage antérieures du 1v1 (Y far 33/34, X far 77/34, largeurs initiales) en base ; activer la nouvelle perspective (Y 26/28, X 58/36, largeurs 24/23dvh) uniquement sous `[data-combat-active-count="2"]` dérivé du vrai `BattleFormat`. Aucun `transform:scale` supplémentaire.
+- Sentinelles d'anciens placements strictement mises à jour pour exiger la sélection sur le **format réel**, plus nouvelle sentinelle des valeurs historiques 1v1 et du contrat de scope. Le HUD du solo deux-créatures reste inchangé.
+- Dernier SHA de code `15b2f89666acc5fc8fe9e917e140cc5994f877be`, CI `38420059850` **SUCCESS** (Foundation et les deux Chromium). Rapport `docs/LAB_1V1_RESTORE_2V2_SCOPE_V1.md`.
+- CI SHA documentaire final, checkpoint et vérification de concurrence prépublication toujours requis ; validation manuelle 1v1 par l'auteur **À CONFIRMER** après publication.
+
