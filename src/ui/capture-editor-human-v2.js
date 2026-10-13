@@ -623,6 +623,15 @@ export function buildHumanTacticalSkillEffectsV1(
       });
     }
 
+    if (kind === "life_steal") {
+      return normalizeSkillEffectV1({
+        kind, targetScope,
+        percent: finiteNumber(effect.percent, "Drain de vie (%)"),
+        ...(effect.maxHeal === undefined || effect.maxHeal === "" || effect.maxHeal === null
+          ? {} : {maxHeal: finiteNumber(effect.maxHeal, "Plafond du drain")})
+      });
+    }
+
     if (kind === "damage") {
       return normalizeSkillEffectV1({
         kind,
@@ -4372,6 +4381,7 @@ function tacticalEffectKindLabelV1(kind) {
     heal: "Soin",
     energy_restore: "Gain d’énergie",
     energy_drain: "Drain d’énergie",
+    life_steal: "Drain de vie — % des PV retirés",
     apply_status: "Buff / Debuff / Statut",
     cleanse: "Nettoyage",
     dispel: "Dissipation",
@@ -4915,8 +4925,8 @@ function syncHumanSkillEffectRowV1(
     "[data-skill-effect-scope]"
   );
   if (scope) {
-    if (kind === "scheduled_effect") {
-      scope.value = "target";
+    if (kind === "scheduled_effect" || kind === "life_steal") {
+      scope.value = kind === "life_steal" ? "self" : "target";
       scope.disabled = true;
     } else {
       scope.disabled = false;
@@ -5082,6 +5092,27 @@ function appendHumanSkillEffectV1(
   );
   amountField.dataset.skillEffectConfigKind =
     "damage,heal,energy_restore,energy_drain";
+
+  const lifePercent = tacticalNumberInputV1(
+    "skillEffectLifeStealPercent", effect?.percent ?? 50,
+    {min:0,max:100,step:"1"}
+  );
+  const lifeMaximum = tacticalNumberInputV1(
+    "skillEffectLifeStealMaxHeal", effect?.maxHeal ?? "",
+    {min:0,step:"0.1"}
+  );
+  const lifePercentField = tacticalFieldV1(
+    "Drain de vie : pourcentage des PV réellement perdus par les ennemis", lifePercent
+  );
+  lifePercentField.dataset.skillEffectConfigKind = "life_steal";
+  const lifeMaximumField = tacticalFieldV1(
+    "Plafond de soin par utilisation (vide = sans plafond)", lifeMaximum
+  );
+  lifeMaximumField.dataset.skillEffectConfigKind = "life_steal";
+  const lifeNote = document.createElement("small");
+  lifeNote.className = "note";
+  lifeNote.dataset.skillEffectConfigKind = "life_steal";
+  lifeNote.textContent = "Un coup esquivé, immunisé ou entièrement absorbé ne soigne pas. Le soin dépend des vrais PV retirés par l'attaque et ses dégâts immédiats, pas des zones et DoT.";
 
   const channel = humanElementChannelSelectV1(
     root,statRegistry,"skillEffectChannel",effect?.channel??"",{sameSkill:true}
@@ -6080,6 +6111,9 @@ function appendHumanSkillEffectV1(
 
   config.append(
     amountField,
+    lifePercentField,
+    lifeMaximumField,
+    lifeNote,
     channelField,
     ignoreAllField,
     advancedPenetration,
@@ -6404,6 +6438,15 @@ function readHumanSkillEffectsV1(root) {
             "[data-skill-effect-status-tags]"
           ).value
         )
+      };
+    }
+
+    if (kind === "life_steal") {
+      const max = row.querySelector("[data-skill-effect-life-steal-max-heal]").value;
+      return {
+        kind, targetScope:"self",
+        percent:Number(row.querySelector("[data-skill-effect-life-steal-percent]").value),
+        ...(max.trim() === "" ? {} : {maxHeal:Number(max)})
       };
     }
 
