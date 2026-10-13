@@ -1800,3 +1800,13 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 
 - L'auteur confirme explicitement avoir testé et **validé** le système de stacks livré au SHA `c66d26f212ed0c6bb878d2e910308e508acc12b0`. Le lot `stack-threshold-v1` passe donc son jalon de validation utilisateur pour le fonctionnement testé. Cela ne valide ni Miroir ni Immatériel, qui restent en attente de leurs essais.
 - Ce retour est consigné ici à titre de gouvernance uniquement ; aucune mécanique de stacks n'est modifiée dans le chantier actuel.
+
+
+### Reflet sélectif / Armure de pointes V1 — code, sentinelles, état de sortie
+
+- RED contrat et vraie chaîne : `ae199576dfee5bfdbe82346ac0c708a9100f73cc`; les propriétaires Combat Damage, ActionResolver et PersistentZone sont étendus sans créer de compteur ni de boucle concurrents.
+- `StatusEffectV1.damage_reflection` : option `incomingKinds` (par forme/source), `contactDamage` sur attaque de forme `contact` réellement touchante, même si bouclier a tout absorbé. Ancien statut sans option = renvoi proportionnel pour toutes sources sur PV réellement perdus uniquement. `SkillEffectV1.persistent_zone.damageTrigger="entry_only"` rend la zone punitive sensible à l'entrée effective, sans les ticks supplémentaires.
+- UI Human Editor : types d'attaques, dégâts fixes, et déclenchement d'une zone uniquement à l'entrée ; statut principal, statut imbriqué de stacks, et zone à statut utilisent le même contrat. Import/export classiques préservés, aucune fiche auteur réécrite.
+- Régression réelle du premier montage navigateur : `reflectionContactDamagezone-status` n'était pas une clé valide de `DOMStringMap`, empêchant le montage complet de la bibliothèque (seulement une option statique). Fix à la source `09bfbee6551e05938c3700a2ce6ad36f6f3ce96b`, aucune donnée de créature manquante. Extension justifiée de `tests/browser/capture-creature-library-smoke.mjs` pour rapporter l'erreur de bootstrap et l'état du catalogue lors d'un échec, sans réduire les assertions des 103 IDs.
+- Test étendu `tests/integration/selective-damage-reflection-v1.test.mjs`, comprenant la vraie entrée de zone, absence de reticks et roundtrip Human Editor. CI de code `57d24f22597c0ad33b7501847dc17e7ce165b440`, run `38378030619` **SUCCESS**, **1637/1637 tests Node**, deux Chromium **SUCCESS**.
+- Rapport : `docs/LAB_REFLECTION_TRIGGER_V1.md`. Publication encore conditionnée à CI sur SHA documentaire exact, checkpoint GREEN sur même SHA, publication fast-forward avec lease et CI/Pages post-publication SUCCESS ; validation Android par l'auteur distincte et non présumée.
