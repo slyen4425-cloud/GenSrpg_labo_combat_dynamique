@@ -968,12 +968,12 @@
 
 
         <div class="projectile-clash-config">
-          <h3>Collision entre projectiles</h3>
-          <label>Puissance du projectile
+          <h3>Collision entre projectiles et rayons</h3>
+          <label>Puissance de collision (projectile / rayon)
             <input type="number" min="0" step="0.1" data-skill-projectile-power value="1">
           </label>
           <p class="note">
-            <strong>Comment fonctionne la puissance projectile :</strong> 0 = hors système de clash : les projectiles se traversent. Minimum actif = 1. Exemple : 1 contre 1 = puissance égale, les deux projectiles sont annulés et disparaissent. 2 contre 1 = le projectile de puissance 2 détruit celui de puissance 1 et continue sa trajectoire. La puissance de clash est indépendante des dégâts infligés. L’élément n’intervient pas dans cette règle actuelle : aucune règle élémentaire (par exemple Eau &gt; Feu) n’est appliquée ici.
+            <strong>Puissance de collision :</strong> 0 = ne participe pas aux collisions. Disponible pour les projectiles et les rayons ; les rayons couvrent leur trajectoire pendant leur phase de tir. À puissance égale, les deux attaques sont annulées. À puissance différente, la plus forte continue (ex. 2 contre 1). Cette puissance est indépendante des dégâts et des éléments. Les autres formes de capacité ne participent pas à cette règle.
           </p>
         </div>
       </article>
