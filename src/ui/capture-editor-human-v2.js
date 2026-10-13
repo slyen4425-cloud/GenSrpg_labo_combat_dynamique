@@ -4656,6 +4656,169 @@ function syncHumanStatusVisualFieldsV1(
   }
 }
 
+
+const STACK_THRESHOLD_EFFECT_KINDS_V1 = Object.freeze([
+  "damage", "heal", "energy_restore", "energy_drain",
+  "apply_status", "cleanse", "dispel"
+]);
+
+// Editor only: the existing tactical-effect contract and combat runtime
+// remain the sole validators and executors of threshold effects.
+function appendStackThresholdEffectRowV1(host, effect = {}) {
+  const row = document.createElement("div");
+  row.className = "skill-effect-row";
+  row.dataset.stackThresholdEffectRow = "true";
+  const addField = (parent, label, key, value, {number = false, min = null, step = "1"} = {}) => {
+    const input = number
+      ? tacticalNumberInputV1(key, value, {min, step})
+      : tacticalTextInputV1(key, value);
+    parent.append(tacticalFieldV1(label, input));
+    return input;
+  };
+  const select = (parent, label, key, values, selected) => {
+    const node = document.createElement("select");
+    node.dataset[key] = "true";
+    for (const [value, caption] of values) createOption(node, value, caption);
+    node.value = selected;
+    parent.append(tacticalFieldV1(label, node));
+    return node;
+  };
+  const header = document.createElement("div");
+  header.className = "skill-effect-row__header";
+  const kind = select(header, "Effet au seuil", "stackThresholdEffectKind",
+    STACK_THRESHOLD_EFFECT_KINDS_V1.map(x=>[x,tacticalEffectKindLabelV1(x)]),
+    effect.kind ?? "damage");
+  select(header, "Cible", "stackThresholdEffectScope",
+    [["target","Créature portant les stacks"],["self","Source des stacks"]],
+    effect.targetScope ?? "target");
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer cet effet";
+  remove.dataset.stackThresholdRemove = "true";
+  header.append(remove);
+  const config = document.createElement("div");
+  config.className = "skill-status-config__grid";
+  const amountBox = document.createElement("div");
+  const damageChannelBox = document.createElement("div");
+  const tagsBox = document.createElement("div");
+  const statusBox = document.createElement("div");
+  statusBox.className = "skill-status-config";
+  addField(amountBox, "Quantité (dégâts / PV / énergie)", "stackThresholdAmount", effect.amount ?? 10,
+    {number:true,min:0,step:"0.1"});
+  addField(damageChannelBox, "Canal des dégâts (vide = élément de la compétence)",
+    "stackThresholdChannel", effect.channel ?? "");
+  addField(tagsBox, "Tags des statuts à retirer (séparés par des virgules)",
+    "stackThresholdTags", (effect.statusTags ?? []).join(", "));
+  const st = effect.status ?? {};
+  const stKind = select(statusBox, "Type de buff / malus", "stackThresholdStatusKind",
+    STATUS_EFFECT_V1_KINDS.map(x=>[x,tacticalStatusKindLabelV1(x)]), st.kind ?? "stun");
+  addField(statusBox, "ID du statut appliqué", "stackThresholdStatusId", st.id ?? "stack-result");
+  const pol = select(statusBox, "Polarité", "stackThresholdStatusPolarity",
+    STATUS_EFFECT_V1_POLARITIES.map(x=>[x,tacticalPolarityLabelV1(x)]),
+    st.polarity ?? "detrimental");
+  addField(statusBox, "Durée du statut (secondes)", "stackThresholdStatusDuration",
+    st.durationMs == null ? 3 : humanTacticalMsToSecondsV1(st.durationMs),
+    {number:true,min:0.1,step:"0.1"});
+  const stAmount = addField(statusBox, "Valeur (PV, shield ou points)",
+    "stackThresholdStatusAmount", st.amount ?? st.deltaPoints ?? st.percent ?? st.modifierPct ?? 10,
+    {number:true,step:"0.1"});
+  const stTick = addField(statusBox, "Intervalle DoT / HoT (secondes)",
+    "stackThresholdStatusTick", st.tickIntervalMs == null ? 1 : humanTacticalMsToSecondsV1(st.tickIntervalMs),
+    {number:true,min:0.1,step:"0.1"});
+  const stChannel = addField(statusBox, "Canal DoT", "stackThresholdStatusChannel", st.channel ?? "physical");
+  const stStat = addField(statusBox, "ID statistique", "stackThresholdStatusStatId", st.statId ?? "force");
+  const immunity = document.createElement("label");
+  immunity.className = "check";
+  const intangible = document.createElement("input");
+  intangible.type = "checkbox";
+  intangible.dataset.stackThresholdStatusIntangible = "true";
+  intangible.checked = st.intangible === true;
+  immunity.append(intangible, document.createTextNode("Immatériel (immunité dégâts et malus)"));
+  statusBox.append(immunity);
+  const note = document.createElement("small");
+  note.className = "note";
+  note.textContent = "Le buff/malus se crée dans le moteur de statuts existant. Les autres types d'effets utilisent les mêmes règles de combat.";
+  statusBox.append(note);
+  config.append(amountBox, damageChannelBox, tagsBox, statusBox);
+  row.append(header, config);
+  host.append(row);
+  function sync() {
+    const k = kind.value;
+    amountBox.hidden = !["damage","heal","energy_restore","energy_drain"].includes(k);
+    damageChannelBox.hidden = k !== "damage";
+    tagsBox.hidden = !["cleanse","dispel"].includes(k);
+    statusBox.hidden = k !== "apply_status";
+    const sk = stKind.value;
+    stAmount.parentElement.hidden = ![
+      "stat_modifier","approach_time_modifier","energy_regen_modifier",
+      "skill_cooldown_rate_modifier","damage_over_time","heal_over_time",
+      "shield","damage_reflection"
+    ].includes(sk);
+    stTick.parentElement.hidden = !["damage_over_time","heal_over_time"].includes(sk);
+    stChannel.parentElement.hidden = sk !== "damage_over_time";
+    stStat.parentElement.hidden = sk !== "stat_modifier";
+    immunity.hidden = sk !== "immunity";
+    if (sk === "projectile_mirror" || (sk === "immunity" && intangible.checked)) {
+      pol.value = "beneficial";
+    }
+    if (sk === "immunity" && intangible.checked) {
+      // The native immunity contract requires both domains.
+    }
+  }
+  kind.addEventListener("change",sync);
+  stKind.addEventListener("change",()=>{
+    pol.value = ["damage_over_time","stun","immobilize","silence","taunt"]
+      .includes(stKind.value) ? "detrimental" : "beneficial";
+    sync();
+  });
+  intangible.addEventListener("change",sync);
+  remove.addEventListener("click",()=>row.remove());
+  sync();
+  return row;
+}
+
+function readStackThresholdEffectRowsV1(host) {
+  return [...host.querySelectorAll("[data-stack-threshold-effect-row]")].map(row => {
+    const field = name => row.querySelector("[data-" + name + "]")?.value;
+    const kind = field("stack-threshold-effect-kind");
+    const targetScope = field("stack-threshold-effect-scope");
+    if (kind === "cleanse" || kind === "dispel") {
+      return {kind,targetScope,statusTags:commaValuesV1(field("stack-threshold-tags"))};
+    }
+    if (kind === "apply_status") {
+      const sk = field("stack-threshold-status-kind");
+      const amount = Number(field("stack-threshold-status-amount"));
+      const st = {
+        id: field("stack-threshold-status-id"), kind:sk,
+        polarity:field("stack-threshold-status-polarity"),
+        durationSeconds:Number(field("stack-threshold-status-duration")),
+        stacking:"replace"
+      };
+      if (sk === "stat_modifier") {
+        st.statId = field("stack-threshold-status-stat-id");
+        st.deltaPoints = amount;
+      } else if (["approach_time_modifier","energy_regen_modifier","skill_cooldown_rate_modifier"].includes(sk)) {
+        st.modifierPct = amount;
+      } else if (["damage_over_time","heal_over_time"].includes(sk)) {
+        st.amount = amount;
+        st.tickSeconds = Number(field("stack-threshold-status-tick"));
+        if (sk === "damage_over_time") st.channel = field("stack-threshold-status-channel");
+      } else if (sk === "shield") {
+        st.amount = amount;
+      } else if (sk === "damage_reflection") {
+        st.percent = amount;
+      } else if (sk === "immunity") {
+        st.domains = ["damage","negative_status"];
+        if (row.querySelector("[data-stack-threshold-status-intangible]")?.checked) st.intangible = true;
+      }
+      return {kind,targetScope,status:st};
+    }
+    return {kind,targetScope,amount:Number(field("stack-threshold-amount")),
+      ...(kind === "damage" ? {channel:field("stack-threshold-channel") || null} : {})};
+  });
+}
+
 function syncHumanSkillEffectRowV1(
   row
 ) {
