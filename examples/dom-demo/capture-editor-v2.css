@@ -1269,6 +1269,14 @@ html {
 [data-combat-team-rosters] p { margin: 0; padding: .45rem; font-size: .75rem; }
 [data-roster-member-id], .combat-test-team-actions button { min-height: 2.75rem; padding: .5rem; border: 1px solid #42616d; border-radius: .5rem; background: #12303c; color: #d7e8ed; font-size: .75rem; }
 [data-roster-member-id][aria-pressed="true"] { border-color: #7dd9ed; background: #1b4858; }
+/* Reserve portrait V1 — compact projection of the canonical creature icon. */
+.combat-reserve-member { display:flex; align-items:center; gap:.45rem; text-align:left; }
+.combat-reserve-member__portrait {
+  width:clamp(1.9rem, 5.2dvh, 2.3rem); height:clamp(1.9rem, 5.2dvh, 2.3rem);
+  flex:0 0 auto; border-radius:.38rem; background:#091b26; object-fit:contain;
+}
+.combat-reserve-member__label { flex:1 1 auto; min-width:0; overflow-wrap:anywhere; }
+
 .combat-test-team-actions { display: grid; grid-template-columns: 1fr; gap: .4rem; }
 
 
@@ -1429,7 +1437,7 @@ html {
 .combat-enemy-reserves__team { display:grid; gap:.3rem; margin-bottom:.45rem; }
 .combat-enemy-reserves__team > strong { font-size:.71rem; color:#a9d7e9; }
 .combat-enemy-reserves__member {
-  display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center;
+  display:grid; grid-template-columns:clamp(1.9rem,5.2dvh,2.3rem) minmax(0,1fr) auto; align-items:center;
   gap:.17rem .45rem; width:100%; min-height:2.65rem; padding:.33rem .45rem;
   border:1px solid #496675; border-radius:.48rem; color:#edf8ff;
   background:#15313c; text-align:left; touch-action:manipulation;
@@ -1440,9 +1448,18 @@ html {
 }
 .combat-enemy-reserves__member:disabled { opacity:.86; }
 .combat-enemy-reserves__member[data-defeated="true"] { opacity:.5; }
-.combat-enemy-reserves__name { font-size:.73rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.combat-enemy-reserves__portrait {
+  grid-column:1; grid-row:1 / span 2; width:clamp(1.9rem,5.2dvh,2.3rem);
+  height:clamp(1.9rem,5.2dvh,2.3rem); border-radius:.38rem;
+  background:#0a1a24; object-fit:contain;
+}
+.combat-enemy-reserves__member[data-has-portrait="false"] { grid-template-columns:minmax(0,1fr) auto; }
+.combat-enemy-reserves__name { grid-column:2; font-size:.73rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.combat-enemy-reserves__member[data-has-portrait="false"] .combat-enemy-reserves__name { grid-column:1; }
 .combat-enemy-reserves__value { font-size:.63rem; font-weight:700; white-space:nowrap; }
-.combat-enemy-reserves__hp { grid-column:1/-1; width:100%; height:.43rem; accent-color:#69df8e; }
+.combat-enemy-reserves__hp { grid-column:2/-1; width:100%; height:.43rem; accent-color:#69df8e; }
+.combat-enemy-reserves__member[data-has-portrait="false"] .combat-enemy-reserves__hp { grid-column:1/-1; }
+.combat-enemy-reserves__member[data-has-portrait="false"] .combat-enemy-reserves__value { grid-column:2; }
 .capture-preview-shell[data-landscape-required="true"] .combat-test-enemy-reserves > summary {
   min-height:1.8rem; font-size:clamp(.53rem,1.7dvh,.7rem);
 }
