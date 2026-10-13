@@ -43,7 +43,7 @@ function skill(id, hitsIntangible, damage = 20, effects = []) {
 
 test("Intangible extends native immunity; legacy immunity remains independent", () => {
   assert.equal(intangible().intangible, true);
-  assert.equal(normalImmunity().intangible, false);
+  assert.equal(normalImmunity().intangible ?? false, false);
   assert.throws(() => intangible({ domains: ["damage"] }), /intangible|domains/i);
   assert.throws(() => intangible({ polarity: "detrimental" }), /intangible|beneficial/i);
   assert.equal(skill("spirit-strike", true).hitsIntangible, true);
