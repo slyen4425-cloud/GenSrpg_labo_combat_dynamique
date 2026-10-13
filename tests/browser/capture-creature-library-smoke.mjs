@@ -794,8 +794,8 @@ function assertCreatures(dom, scenario) {
   const required = ["crea_maraileron", "crea_mossback", "crea-loup"];
   for (const id of required) {
     if (!options.includes(id)) {
-      const libraryStatus = dom.match(/<p\\b[^>]*data-creature-library-state[^>]*>([\\s\\S]*?)<\\/p>/i)?.[1]?.trim() ?? "not mounted";
-      const editorStatus = dom.match(/<[^>]*data-editor-status[^>]*>([\\s\\S]*?)<\\/[^>]+>/i)?.[1]?.trim() ?? "not mounted";
+      const libraryStatus = dom.match(/data-creature-library-state[^>]*>([^<]*)/i)?.[1]?.trim() ?? "not mounted";
+      const editorStatus = dom.match(/data-editor-status[^>]*>([^<]*)/i)?.[1]?.trim() ?? "not mounted";
       const error = dom.match(/data-bootstrap-error="([^"]+)"/i)?.[1] ?? "no captured JS error";
       throw new Error(scenario + ": missing real creature " + id + "; loaded=" + options.length +
         "; libraryStatus=" + libraryStatus.slice(0,300) + "; editorStatus=" + editorStatus.slice(0,300) +
