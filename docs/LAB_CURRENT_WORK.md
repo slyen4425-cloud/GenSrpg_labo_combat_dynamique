@@ -1918,3 +1918,9 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 
 - La première CI sur code modifié `38416549945` a révélé un échec unique de l'ancienne sentinelle `tests/unit/capture-enemy-landscape-placement-v1.test.mjs` qui imposait **exactement** les anciennes coordonnées 33/34 % et 77/34 %, et interdisait toute largeur de slot. Ce verrou contredit la demande explicite de recul et réduction **visuelle** des adversaires. Il ne signale pas une régression du moteur.
 - Extension minimale autorisée à cette sentinelle historique : remplacer uniquement ses assertions d'anciennes coordonnées par la nouvelle configuration 2v2 en paysage, maintenir les garde-fous sur `--creature-display-scale`, `transform: scale()`, le 1v1, les frontières CSS et les tests historiques sans affaiblissement global. Cette sentinelle n'est pas supprimée.
+
+### Solo 2v2 paysage — implémentation CSS et sentinelles
+
+- Modification exclusivement présentation : dock de contrôle solo paysage horizontal avec deux colonnes, carte secondaire compacte et première carte locale réduite ; Esquive adjacente et barre unique plus large. Le mode IA conserve l'ancienne disposition de ses commandes. Adversaires 2v2 paysage reculés en Y et visuellement réduits via les tailles de **slots** et non l'échelle auteur ; les capteurs natifs lisent la vraie géométrie DOM.
+- TDD RED sur `tests/unit/solo-2v2-landscape-layout-v1.test.mjs`. CI de code a révélé l'ancienne assertion de coordonnées exactes dans `tests/unit/capture-enemy-landscape-placement-v1.test.mjs` ; modification ciblée en conservant garde-fous 1v1/scales. Aucun moteur ni données auteur modifiés.
+- Rapport : `docs/LAB_SOLO_2V2_LANDSCAPE_LAYOUT_V1.md`. Toute validation technique reste distincte de la validation visuelle smartphone Android par l'auteur.
