@@ -34,31 +34,21 @@ test("Capture smartphone landscape is the definitive automatic gameplay mode", (
   );
 });
 
-test("Capture landscape layout moves both opponent slots slightly higher and right without scale overrides", () => {
-  assert.match(
-    css,
-    /\.capture-preview-shell\[data-landscape-required="true"\][\s\S]*\.arena--coop-2v2[\s\S]*--arena-coop-far-primary-y:\s*33%;[\s\S]*--arena-coop-far-secondary-y:\s*34%;/
-  );
-
-  assert.match(
-    css,
-    /\.capture-preview-shell\[data-landscape-required="true"\][\s\S]*\.arena--coop-2v2 \.fighter--opponent\s*\{[\s\S]*left:\s*77%;[\s\S]*\}/
-  );
-
-  assert.match(
-    css,
-    /\.capture-preview-shell\[data-landscape-required="true"\][\s\S]*\.arena--coop-2v2 \.fighter--opponent-b\s*\{[\s\S]*left:\s*34%;[\s\S]*\}/
-  );
-
-  const marker =
-    "Capture landscape opponent slot placement V1";
+test("Capture landscape 2v2 keeps two distant enemy slots with real geometry and unchanged 1v1 scales", async () => {
+  const marker = "Capture landscape 2v2 depth V2";
   const start = css.indexOf(marker);
-  assert.ok(start >= 0);
-  const block = css.slice(start, start + 1200);
+  assert.ok(start >= 0, "single owned landscape section must exist");
+  const block = css.slice(start, css.indexOf("/* Rayon :", start));
+  assert.match(block, /--arena-coop-far-primary-y:\s*26%;/);
+  assert.match(block, /--arena-coop-far-secondary-y:\s*28%;/);
+  assert.match(block, /\.arena--coop-2v2 \.fighter--opponent\s*\{\s*left:\s*58%;\s*width:\s*min\(24dvh,\s*13rem\);/);
+  assert.match(block, /\.arena--coop-2v2 \.fighter--opponent-b\s*\{\s*left:\s*36%;\s*width:\s*min\(23dvh,\s*12\.5rem\);/);
+  assert.doesNotMatch(block, /transform\s*:|--creature-display-scale\s*:|--distance-scale\s*:/,
+    "landscape depth must move/size the actual DOM slot and must never override author scale");
 
-  assert.equal(
-    /width\s*:|transform\s*:[^;]*scale\s*\(|--creature-display-scale\s*:/.test(block),
-    false,
-    "landscape slot shift must not modify author scale/width"
-  );
+  const original = await readFile("examples/dom-demo/demo.css","utf8");
+  assert.match(original, /--arena-far-y:\s*38%;/,
+    "1v1 depth must remain unchanged");
+  assert.match(original, /\.fighter--opponent\s*\{\s*z-index:\s*3;\s*top:\s*var\(--arena-far-y\)/,
+    "the 1v1 positional owner must remain unchanged");
 });
