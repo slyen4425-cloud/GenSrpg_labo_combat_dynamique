@@ -138,7 +138,7 @@ test("2v2 combat projects persistent zones only from renderState/onState, not on
   );
 
   const clockStart = source.indexOf(
-    "onClock()"
+    "onClock(state)"
   );
   const clockEnd = source.indexOf(
     "onStarted(",
@@ -153,6 +153,10 @@ test("2v2 combat projects persistent zones only from renderState/onState, not on
   assert.doesNotMatch(
     clockBlock,
     /syncPersistentZones/
+  );
+  assert.match(
+    clockBlock,
+    /statusFx\?\.syncCountdowns\(state\)/
   );
   assert.doesNotMatch(
     source,
