@@ -180,6 +180,17 @@ function mobilityEvasionFor(
     evasion.incomingForms.includes(incomingSkill.form);
   // Only fixed-point projectiles (e.g. skyfall) lock the target location at
   // release; direct projectiles do not grant a passive dodge while moving.
+  // A teleport has no target model on the direct projectile lane between
+  // its release (disappearance) and impact (reappearance). This is distinct
+  // from ground/aerial movement, which a direct projectile still tracks.
+  const vanishedFromDirectProjectile =
+    incomingSkill.category === "offensive" &&
+    incomingSkill.form === "projectile" &&
+    incomingSkill.projectileTargeting === "direct" &&
+    targetAction.skill?.approachMode === "teleport" &&
+    elapsedMs >= targetAction.releaseAtMs &&
+    elapsedMs < targetAction.impactAtMs;
+
   const movingOutOfProjectilePath =
     incomingSkill.form === "projectile" &&
     incomingSkill.projectileTargeting === "fixed_point" &&
@@ -190,7 +201,8 @@ function mobilityEvasionFor(
     elapsedMs >= targetAction.releaseAtMs &&
     elapsedMs < targetAction.impactAtMs;
 
-  if (!explicitMobilityEvasion && !movingOutOfProjectilePath) {
+  if (!explicitMobilityEvasion && !movingOutOfProjectilePath &&
+      !vanishedFromDirectProjectile) {
     return null;
   }
 
@@ -204,9 +216,11 @@ function mobilityEvasionFor(
   return Object.freeze({
     outcome: "evaded",
     reason:
-      movingOutOfProjectilePath
-        ? "moving_target"
-        : "mobility",
+      vanishedFromDirectProjectile
+        ? "teleport_vanish"
+        : movingOutOfProjectilePath
+          ? "moving_target"
+          : "mobility",
     sourceSkillId: targetAction.actionId,
     sourceApproachMode:
       targetAction.skill?.approachMode ?? "none",
