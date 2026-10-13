@@ -1830,3 +1830,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Réparation minimale unique dans `action-resolver.js`, `mobilityEvasionFor` : projectile offensif direct contre téléportation réellement dans la fenêtre `releaseAtMs <= t < impactAtMs` -> `evaded` avec raison `teleport_vanish`. Aucun élargissement ground/aerial ; avant release et après impact, l'attaque reste touchante ; les tirs fixed_point conservent l'ancienne règle.
 - Code `0edbddd67a83764d48a1df62e8b12d567815fb5d`, Laboratory CI `38379737449` **SUCCESS** : 1644/1644 Node, Firestorm Chromium SUCCESS, créatures Chromium SUCCESS. Aucune fiche auteur/sprite/son/HTML modifiée.
 - Rapport `docs/LAB_TELEPORT_DIRECT_PROJECTILE_EVASION_V1.md`. Portes obligatoires : CI exacte sur dernier SHA documentaire, checkpoint technique GREEN même SHA, `gh-pages` toujours sur base non concurrencée ou sinon ne pas publier, FF avec lease, CI/Pages post-publication SUCCESS. Validation smartphone utilisateur distincte.
+
+
+## 2026-10-13 — Consommateur Labo Combat : rayon électrique jaune
+- Base live gh-pages : 24f66890b29b03e957e8a4a0a32b4ffdda802282 ; checkpoint de départ checkpoint/lab-start-electric-beam-yellow-consumer-v1-2026-10-13, work/lab-electric-beam-yellow-consumer-v1-2026-10-13.
+- Autorité du média déjà GREEN : global-assets@ffed974c51d58d59a2e5cf20fd9eca00d76ec111, CI assets 38380599014 SUCCESS, catalogue unique 141 assets / 76 sprites.
+- Périmètre exclusif : révision cache src/assets/global-visual-library.js v30, test des trois IDs/sprite-strip et du vrai résolveur de présentation, ajustement non-régressif de sentinelle ancienne Air, présent journal et rapport. Aucun HTML, FX Engine, Combat Core, compétence existante, 103 créatures ou autre dépôt ne doit être modifié.
+- But : les 3 sprites deviennent disponibles par les champs existants de l'éditeur : cast, travel/corps, impact, avec form=beam ; ne pas imposer une nouvelle compétence à l'auteur ni toucher au Jet pressurisé. BeamStart reste optionnel/non fourni.
+- Gates : CI sur SHA final exact, checkpoint GREEN, fast-forward gh-pages sous lease si aucun travail concurrent, CI+Pages SUCCESS sur SHA publié, test visuel Android distinct.

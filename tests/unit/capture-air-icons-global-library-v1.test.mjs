@@ -26,7 +26,7 @@ test("Air skill icons bind only existing author drafts through the canonical sho
 });
 test("real assetId path: authored presentation -> presenter -> canonical global-assets URL, without runtime/gameplay fork",async()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-13-v29-capture-air-icons");
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=29,"Existing Air icon cache must remain fresh");
  const definitions=cases.map(x=>({id:x.icon,label:x.label,assetType:"icon",mediaType:"image",category:"skill",resource:{file:x.file,mime:"image/webp"}}));
  definitions.push({id:"pack:capture:icon-skill-souffle-01",label:"Souffle",assetType:"icon",mediaType:"image",category:"skill",resource:{file:"capture/icons/skills/icon_skill_souffle_01.webp",mime:"image/webp"}});
  const canonicalResolver=createGlobalPresentationAssetResolverV1({assetCatalog:{assets:definitions},assetUrlForFile:globalVisualAssetUrl});
