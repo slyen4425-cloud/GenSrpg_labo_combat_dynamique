@@ -2009,3 +2009,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - CI du code corrigé `38443017508` au SHA `2356eb0827ba828107c07b825e4ea598f299537d` : **SUCCESS** Foundation, Chromium Firestorm et Chromium bibliothèque 103 créatures. Rapport détaillé `docs/LAB_VOLTIGE_STATIC_BITE_SHOWCASE_V1.md`.
 - Source originale volontairement inchangée : icône de Crocs statiques pointe encore vers l'asset de Morsure brûlante ; son d'impact libellé projeté « Electrique projectile2 ». Assets référencés existants aux catalogues, aucun nouveau média et aucune nouvelle certification asset. Aucun changement `global-assets`.
 - CI complète sur SHA documentaire final, checkpoint GREEN exact, publication FF sous lease et contrôle post-publication CI/Pages restent les portes obligatoires. Validation visuelle Android de ces deux presets en attente de retour utilisateur.
+
+
+## 2026-10-13 — Huit icônes Capture / activation dans le Labo Combat
+- Médias certifiés : `global-assets@e55fea3b559c348be596d7c16250808a39c315a1`, huit WebP 128×128, huit IDs, catalogue 149 assets / 57 icônes, CI SUCCESS, checkpoint `checkpoint/lab-eight-skill-icons-assets-green-2026-10-13`.
+- Code base `gh-pages@eab6e5064f03510c7543952f0705360d887b6710`, checkpoint `checkpoint/lab-start-eight-skill-icons-consumer-v1-2026-10-13`, work `work/lab-eight-skill-icons-consumer-v1-2026-10-13`.
+- Changement : révision cache v31, test générique de résolution par ID, preview 8 vraies images `examples/dom-demo/capture-eight-skill-icons-preview.html`, documentation `docs/LAB_EIGHT_SKILL_ICONS_CONSUMER_V1.md`.
+- Protégés : 103 créatures, fiches de compétences et leurs attributions actuelles, Combat/FX, 2v2, main, GenSrpG et Exploration.
+- Gates : CI SHA final, checkpoint GREEN exact, fast-forward gh-pages protégé, CI et Pages sur SHA déployé. Contrôle visuel Android de l'utilisateur requis séparément.
