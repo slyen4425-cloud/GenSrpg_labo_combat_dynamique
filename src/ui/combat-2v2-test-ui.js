@@ -649,6 +649,9 @@ export async function mountCoop2v2Test({
 
   const previewFormat =
     resolveCombatPreviewFormatV1(format);
+  // The HTML preview class is shared by 1v1 and 2v2. Only the actual
+  // BattleFormat may opt into 2v2-only landscape presentation.
+  arena.dataset.combatActiveCount = String(previewFormat.localActorIds.length);
   // UI ownership only: the same two actor slots keep separate state/actions.
   const controlledLabel = root.querySelector("[data-combat-controlled-name]");
   const localControl = createLocalControlSelectionV1({
