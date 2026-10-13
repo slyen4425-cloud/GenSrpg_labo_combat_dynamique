@@ -462,7 +462,7 @@ test("unknown stat_modifier id is rejected instead of inventing a formula", () =
   assert.equal(session.snapshot().fighters.a.energy, 10);
 });
 
-test("immobilize silence and stun block their owned actions before resource spend", () => {
+test("immobilize movement, silence ranged skills, and stun all actions before resource spend", () => {
   const moveSession = createCombatSession({
     distance: "short",
     fighters: [fighter("a"), fighter("b")]
@@ -502,7 +502,7 @@ test("immobilize silence and stun block their owned actions before resource spen
     targetId: "a",
     skill: skill("costly", {
       category: "offensive",
-      form: "contact",
+      form: "projectile",
       damage: 10,
       energyCost: 4,
       targetRelations: ["enemy"]
