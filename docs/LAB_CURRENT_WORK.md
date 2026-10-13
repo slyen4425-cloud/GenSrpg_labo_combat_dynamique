@@ -6871,3 +6871,12 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 ### Sentinelle ancienne Air — nouvelle extension additive du catalogue
 - CI initiale du SHA 137170772b3fab4aa424dc1223619496ded9ffeb / run 38380314214 : échec de l'unique assertion historique imposant count.sprites === 73, alors que le catalogue compte bien 76 après l'ajout demandé ; tests images Air existantes inchangés.
 - Périmètre autorisé étendu uniquement à tests/unit/capture-air-vfx-assets-v1.test.mjs : convertir la comparaison 73 exacte en plancher >=73, et garder la comparaison réelle des compteurs catalogue, les 4 IDs Air originaux, les SHA des 80 frames et leurs alphas. CI complète requise sur SHA suivant.
+
+
+## 2026-10-13 — Pack de huit icônes Capture (publication en bibliothèque)
+- Demande : placer et nommer les 8 créations suivantes : Croc électrique, Beam électrique, Attaque téléporte, Armure de pointe, Miroir magique, Drain de vie, Comète, Pique de pierre.
+- Charte LIVE §§14,15-19,32,34,35 vérifiée; base `ffed974c51d58d59a2e5cf20fd9eca00d76ec111`, checkpoint départ `checkpoint/global-assets-before-eight-skill-icons-v1-2026-10-13`, work `work/global-assets-eight-skill-icons-v1-2026-10-13`.
+- Propriétaire : catalogue `global-assets`, 8 WebP 128×128 sous `assets/library/capture/icons/skills/`, provenance, test exact média, docs/journal uniquement; futur lot consommateur `gh-pages` séparé.
+- Protégés : 141 assets initiaux, toutes données de compétence/roster, moteurs et règles combat, `main`, Zombicide-40k, Exploration.
+- Gates : Git blobs réels et hash sourcés, CI SHA exact, checkpoint GREEN, publication FF uniquement ; preview réelle et essai smartphone côté produit.
+- Statut : chantier en vérification, ne pas déclarer GREEN avant CI finale.

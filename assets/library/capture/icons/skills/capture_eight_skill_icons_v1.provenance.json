@@ -1,0 +1,90 @@
+{
+  "schema": "capture-eight-skill-icon-provenance-v1",
+  "date": "2026-10-13",
+  "owner": "global-assets",
+  "sourceType": "ChatGPT original image generation, exported to RGB WebP",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "license": "project-internal",
+  "format": "image/webp VP8 RGB quality=15",
+  "assets": [
+    {
+      "assetId": "pack:capture:icon-skill-croc-electrique-01",
+      "label": "Croc électrique",
+      "source": "morsure_du_tonnerre_doré.png",
+      "sourceSha256": "a4504253aab1663f2563998405a4d15e219276adef2db691ebec14dc90b2fb6e",
+      "derivedFile": "capture/icons/skills/icon_skill_croc_electrique_01.webp",
+      "derivedSha256": "b4ed639ad833a025493211c594054d0ddf0e46e2aaf3091a391523c117621d30",
+      "bytes": 2746
+    },
+    {
+      "assetId": "pack:capture:icon-skill-beam-electrique-01",
+      "label": "Beam électrique",
+      "source": "rayon_électrique_doré_fulgurant.png",
+      "sourceSha256": "12d7684da31bbe33bf255aa9dbe7a92a3f90343490443dcf5bf9c9798cf2f73d",
+      "derivedFile": "capture/icons/skills/icon_skill_beam_electrique_01.webp",
+      "derivedSha256": "475d7f0fdcdf8b425aa6719a3033e519c738c20e66da330cd3e9f257fba23a90",
+      "bytes": 2392
+    },
+    {
+      "assetId": "pack:capture:icon-skill-attaque-teleporte-01",
+      "label": "Attaque téléporte",
+      "source": "assaut_spectral_à_travers_les_portails.png",
+      "sourceSha256": "a08c873697baa64d35834401827368b92043c1a837b69546a06609fc79d972be",
+      "derivedFile": "capture/icons/skills/icon_skill_attaque_teleporte_01.webp",
+      "derivedSha256": "0cfec9a74e1f67db1b31bc95a9acb968ef49649d83ddb5f31cbb818da0f89a78",
+      "bytes": 3032
+    },
+    {
+      "assetId": "pack:capture:icon-skill-armure-de-pointe-01",
+      "label": "Armure de pointe",
+      "source": "icône_d_armure_épineuse_explosive.png",
+      "sourceSha256": "1b1db59e88fa2c5511d9ad23e22175164f6cefe9c2dc14d7741feb7651d7dc71",
+      "derivedFile": "capture/icons/skills/icon_skill_armure_de_pointe_01.webp",
+      "derivedSha256": "083c7165804323db9927c09733010dec4f887773458dc18882bf6b2d14f5a355",
+      "bytes": 3168
+    },
+    {
+      "assetId": "pack:capture:icon-skill-miroir-magique-01",
+      "label": "Miroir magique",
+      "source": "miroir_magique_contre_attaque_enchantée.png",
+      "sourceSha256": "a64b6e6ced0fa27e2b355c16c18b00e3b749d7c75c3406a169907f6fa50915ca",
+      "derivedFile": "capture/icons/skills/icon_skill_miroir_magique_01.webp",
+      "derivedSha256": "d869866d9f10a79762b9f9bc5c96991557560c2de4e17e00f3109875b49a2c2d",
+      "bytes": 3110
+    },
+    {
+      "assetId": "pack:capture:icon-skill-drain-de-vie-01",
+      "label": "Drain de vie",
+      "source": "siphon_d_âme_infernal.png",
+      "sourceSha256": "f2b7cd0a8402c8a1b1d0913ba695dd732d8f45b507f243606beba1e700d9f3fd",
+      "derivedFile": "capture/icons/skills/icon_skill_drain_de_vie_01.webp",
+      "derivedSha256": "4823240c81bb46bedcfe6123ba33f9e15396e685ca6878a5495793cb21ee9ca4",
+      "bytes": 2252
+    },
+    {
+      "assetId": "pack:capture:icon-skill-comete-01",
+      "label": "Comète",
+      "source": "météore_flamboyant_en_piqué.png",
+      "sourceSha256": "e7fd822f05656eefa2004b739bb232934b39e91806fbc1745d123134eef0808c",
+      "derivedFile": "capture/icons/skills/icon_skill_comete_01.webp",
+      "derivedSha256": "79b3f64b34d037cccc366d196e2fcd4fcbcc0efb85da6a8eabb4c20b27902f6b",
+      "bytes": 2468
+    },
+    {
+      "assetId": "pack:capture:icon-skill-pique-de-pierre-01",
+      "label": "Pique de pierre",
+      "source": "éruption_de_pics_rocheux_dorés.png",
+      "sourceSha256": "54405fb5965d068b607730f21f80c3f5ae0f324001578ed0a14cebe1843b87b8",
+      "derivedFile": "capture/icons/skills/icon_skill_pique_de_pierre_01.webp",
+      "derivedSha256": "a36389c1844b9ee8b0503f15064333ed6cef56d57adfa864eb80002ac7e783fc",
+      "bytes": 2890
+    }
+  ]
+}
