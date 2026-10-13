@@ -28,6 +28,7 @@ const SUPPORTED_KINDS = new Set([
   "heal",
   "energy_restore",
   "energy_drain",
+  "life_steal",
   "apply_status",
   "cleanse",
   "dispel",
@@ -214,7 +215,8 @@ export function applyImmediateTacticalEffectsV1({
   atMs,
   combatAtMs = atMs,
   battleFormat = null,
-  thresholdDepth = 0
+  thresholdDepth = 0,
+  directDamageApplied = 0
 }) {
   const unsupported =
     unsupportedImmediateTacticalEffectV1(
@@ -239,6 +241,10 @@ export function applyImmediateTacticalEffectsV1({
 
   let nextState = state;
   const events = [];
+  // The originating ActionResolver has already applied this skill's direct hit.
+  // Only real HP lost counts, not damage requested, shields or later reflected HP.
+  let lifeStealDamage = actorId !== targetId
+    ? Math.max(0, Number(directDamageApplied) || 0) : 0;
 
   // Legacy editor field effect.heal uses the SAME canonical tactical HP
   // application and event path as modern effects[].heal. The Skill Contract
@@ -250,6 +256,11 @@ export function applyImmediateTacticalEffectsV1({
 
   for (const effect of effects) {
     if (effect.kind === "persistent_zone") {
+      continue;
+    }
+
+    if (effect.kind === "life_steal") {
+      // Collected once at the end, so effect order in the editor is irrelevant.
       continue;
     }
 
@@ -302,6 +313,12 @@ export function applyImmediateTacticalEffectsV1({
           combatAtMs
         });
         nextState = applied.state;
+        // Only damage dealt by this immediate skill to its designated enemy
+        // targets enters the drain pool. Zones/DoT/retaliation remain separate.
+        if (affectedId !== actorId &&
+            ["target", "all_enemies"].includes(effect.targetScope)) {
+          lifeStealDamage += applied.event.appliedDamage;
+        }
         events.push(applied.event);
         continue;
       }
@@ -490,6 +507,28 @@ export function applyImmediateTacticalEffectsV1({
             )
         }));
       }
+    }
+  }
+
+  // HP returns through the exact same native fighter HP primitive and heal
+  // event as regular healing. A dead caster cannot be resurrected by leeching.
+  if (lifeStealDamage > 0 && Number(fighterOf(nextState, actorId).hp) > 0) {
+    for (const effect of effects) {
+      if (effect.kind !== "life_steal") continue;
+      const requested = Math.min(
+        effect.maxHeal ?? Infinity,
+        Math.round(lifeStealDamage * effect.percent) / 100
+      );
+      if (requested <= 0) continue;
+      const before = fighterOf(nextState, actorId).hp;
+      nextState = withFighterHp(nextState, actorId, before + requested);
+      const after = fighterOf(nextState, actorId).hp;
+      events.push(Object.freeze({
+        type: "heal", lifeSteal: true, atMs, actorId,
+        sourceActorId: actorId, skillId: skill.id,
+        damageBasis: lifeStealDamage, requested,
+        applied: after - before, hpBefore: before, hpAfter: after
+      }));
     }
   }
 
