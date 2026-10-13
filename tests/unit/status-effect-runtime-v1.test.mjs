@@ -502,7 +502,7 @@ test("immobilize silence and stun block their owned actions before resource spen
     targetId: "a",
     skill: skill("costly", {
       category: "offensive",
-      form: "contact",
+      form: "projectile",
       damage: 10,
       energyCost: 4,
       targetRelations: ["enemy"]
