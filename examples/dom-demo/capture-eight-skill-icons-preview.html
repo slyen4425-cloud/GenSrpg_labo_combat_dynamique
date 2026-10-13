@@ -1,0 +1,15 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capture — huit nouvelles icônes</title><style>
+:root{color-scheme:dark;font:16px system-ui}body{margin:0;background:#171921;color:#f6f6fb}header,main,footer{max-width:820px;margin:auto;padding:16px}h1{font-size:1.35rem}p{color:#c5c5d6;line-height:1.5}main{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.tile{padding:12px;border-radius:12px;background:#26293a;border:1px solid #505367;text-align:center;min-width:0}.tile img{width:100%;max-width:128px;height:auto;aspect-ratio:1;object-fit:contain;border-radius:6px}.title{font-size:.9rem;font-weight:700;margin-top:8px}.status{font-size:.73rem;color:#c3c6da;margin-top:4px}.error{color:#ffb6aa}@media(max-width:560px){main{grid-template-columns:repeat(2,minmax(0,1fr))}}a{color:#bfd8ff}
+</style></head><body><header><h1>Monster Capture — huit icônes</h1><p>Aperçu des vrais médias de la bibliothèque GitHub. Toute image indisponible est indiquée explicitement, sans image de remplacement.</p></header><main id="gallery"></main><footer><a href="./capture-editor-v2.html">Retour au Labo Combat</a></footer><script type="module">
+import {globalVisualAssetUrl} from "../../src/assets/global-visual-library.js";
+const icons=[{"id":"pack:capture:icon-skill-croc-electrique-01","label":"Croc électrique","path":"capture/icons/skills/icon_skill_croc_electrique_01.webp"},{"id":"pack:capture:icon-skill-beam-electrique-01","label":"Beam électrique","path":"capture/icons/skills/icon_skill_beam_electrique_01.webp"},{"id":"pack:capture:icon-skill-attaque-teleporte-01","label":"Attaque téléporte","path":"capture/icons/skills/icon_skill_attaque_teleporte_01.webp"},{"id":"pack:capture:icon-skill-armure-de-pointe-01","label":"Armure de pointe","path":"capture/icons/skills/icon_skill_armure_de_pointe_01.webp"},{"id":"pack:capture:icon-skill-miroir-magique-01","label":"Miroir magique","path":"capture/icons/skills/icon_skill_miroir_magique_01.webp"},{"id":"pack:capture:icon-skill-drain-de-vie-01","label":"Drain de vie","path":"capture/icons/skills/icon_skill_drain_de_vie_01.webp"},{"id":"pack:capture:icon-skill-comete-01","label":"Comète","path":"capture/icons/skills/icon_skill_comete_01.webp"},{"id":"pack:capture:icon-skill-pique-de-pierre-01","label":"Pique de pierre","path":"capture/icons/skills/icon_skill_pique_de_pierre_01.webp"}];
+for(const x of icons){
+const tile=document.createElement("article");tile.className="tile";
+const img=document.createElement("img");img.alt=x.label;img.width=128;img.height=128;
+const title=document.createElement("div");title.className="title";title.textContent=x.label;
+const state=document.createElement("div");state.className="status";state.textContent="Chargement…";
+img.addEventListener("load",()=>{state.textContent="Image chargée";});
+img.addEventListener("error",()=>{state.textContent="Image indisponible";state.classList.add("error");});
+tile.append(img,title,state);document.querySelector("#gallery").append(tile);img.src=globalVisualAssetUrl(x.path);
+}
+</script></body></html>
