@@ -280,7 +280,8 @@ function applyZoneStatusV1({state, zone, targetActorId, atMs, whileInside}) {
     sourceActorId: zone.sourceActorId,
     sourceSkillId: zone.skillId,
     status: effectiveStatus,
-    atMs
+    atMs,
+    hitsIntangible: zone.hitsIntangible === true
   });
 }
 
@@ -539,7 +540,8 @@ function applyZoneDamageToTarget({
       zone.sourceActorId,
     targetActorId,
     damage: damage.damage,
-    atMs
+    atMs,
+    hitsIntangible: zone.hitsIntangible === true
   }).state;
 }
 
@@ -742,6 +744,7 @@ export function applyPersistentZoneEffectsV1({
       skillId: skill.id,
       skillElement:
         skill.element ?? null,
+      hitsIntangible: skill.hitsIntangible === true,
       zoneId: effect.zoneId,
       targetScope:
         effect.targetScope,
