@@ -15,6 +15,7 @@ import {
 import {
   combatProtectionForIncomingV1
 } from "./combat-protection-v1.js";
+import { applyImmediateTacticalEffectsV1 } from "./immediate-tactical-effects-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -209,6 +210,24 @@ function refreshedLifetime(existing, now) {
   };
 }
 
+function resolveStackThresholdV1({ state, status, sourceActorId, targetActorId, sourceSkillId, atMs, hitsIntangible, before, after, thresholdDepth }) {
+  const trigger = status.onStackThreshold;
+  if (!trigger || !(before < trigger.count && after >= trigger.count)) return state;
+  if (thresholdDepth >= 8) throw new RangeError("Stack threshold recursion limit reached");
+  const consumed = trigger.consume === "reset"
+    ? removeInstanceById(state, targetActorId, status.id)
+    : state;
+  return applyImmediateTacticalEffectsV1({
+    state: consumed,
+    actorId: sourceActorId,
+    targetId: targetActorId,
+    skill: { id: sourceSkillId ?? status.id, effects: trigger.effects, hitsIntangible },
+    atMs,
+    combatAtMs: atMs,
+    thresholdDepth: thresholdDepth + 1
+  }).state;
+}
+
 export function applyStatusEffectV1({
   state,
   targetActorId,
@@ -216,7 +235,8 @@ export function applyStatusEffectV1({
   sourceSkillId = null,
   status,
   atMs = state.elapsedMs,
-  hitsIntangible = false
+  hitsIntangible = false,
+  thresholdDepth = 0
 }) {
   const validation =
     validateStatusEffectForTargetV1({
@@ -267,7 +287,7 @@ export function applyStatusEffectV1({
     existing === null ||
     status.stacking === "replace"
   ) {
-    return replaceInstance(
+    const applied = replaceInstance(
       state,
       targetActorId,
       createStatusEffectRuntimeInstanceV1({
@@ -278,6 +298,8 @@ export function applyStatusEffectV1({
         appliedAtMs: now
       })
     );
+    return resolveStackThresholdV1({ state: applied, status, sourceActorId, targetActorId,
+      sourceSkillId, atMs: now, hitsIntangible, before: 0, after: 1, thresholdDepth });
   }
 
   if (status.stacking === "refresh") {
@@ -320,11 +342,10 @@ export function applyStatusEffectV1({
         : existing.shieldRemaining
   });
 
-  return replaceInstance(
-    state,
-    targetActorId,
-    stacked
-  );
+  const applied = replaceInstance(state, targetActorId, stacked);
+  return resolveStackThresholdV1({state: applied, status, sourceActorId, targetActorId,
+    sourceSkillId, atMs: now, hitsIntangible, before: existing.stacks,
+    after: nextStacks, thresholdDepth });
 }
 
 function tagsMatch(definition, tags) {
