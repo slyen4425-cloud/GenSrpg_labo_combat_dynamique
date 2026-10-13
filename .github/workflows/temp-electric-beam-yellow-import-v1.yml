@@ -1,4 +1,4 @@
-name: One-shot electric beam ZIP import
+name: One-shot electric beam ZIP import (normalized CSV)
 on:
   push:
     branches:

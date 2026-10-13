@@ -15,7 +15,7 @@ for archive_name in archive_names:
                 raise SystemExit(f"Unexpected or duplicate ZIP item: {name}")
             data=archive.read(item)
             if len(data)!=item.file_size: raise SystemExit(f"Truncated ZIP item: {name}")
-            planned[name]=data
+            planned[name]=data.replace(b"\r\n",b"\n") if name.endswith("manifest.csv") else data
 if len(planned)!=73: raise SystemExit(f"Expected 73 canonical files; got {len(planned)}")
 for name,data in planned.items():
     dst=root/name
