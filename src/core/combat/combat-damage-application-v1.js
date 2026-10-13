@@ -38,7 +38,8 @@ export function applyCombatDamageV1({
   targetActorId,
   damage,
   atMs = state.elapsedMs,
-  allowReflection = true
+  allowReflection = true,
+  hitsIntangible = false
 }) {
   const requested = Math.max(
     0,
@@ -64,7 +65,8 @@ export function applyCombatDamageV1({
       state: nextState,
       targetActorId,
       domain: "damage",
-      atMs: time
+      atMs: time,
+      hitsIntangible
     });
 
   if (protection.protected) {
