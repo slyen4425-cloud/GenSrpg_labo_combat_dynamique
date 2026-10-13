@@ -14,6 +14,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/lib_flame_bite.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_static_bite.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_chain_lightning.capture-skill-transfer-v1.json",
+    "data/capture/showcase/teleport-strike.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json",
     "data/capture/showcase/fireball.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_tailwind.capture-skill-transfer-v1.json",
