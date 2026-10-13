@@ -353,6 +353,15 @@ function humanTacticalStatusToContractV1(
     );
   }
 
+  if (status.onStackThreshold != null && output.stacking === "stack") {
+    output.onStackThreshold = {
+      count: positiveInteger(status.onStackThreshold.count, "Seuil de stacks"),
+      consume: status.onStackThreshold.consume ?? "reset",
+      effects: buildHumanTacticalSkillEffectsV1(status.onStackThreshold.effects ?? [],
+        {defaultDamageChannel})
+    };
+  }
+
   if (output.kind === "stat_modifier") {
     output.statId = requiredText(
       status.statId,
@@ -4912,6 +4921,10 @@ function syncHumanSkillEffectRowV1(
   if (maxStacks) {
     maxStacks.hidden = stacking !== "stack";
   }
+  const thresholdEnabled = row.querySelector("[data-stack-threshold-enabled]");
+  const thresholdSettings = row.querySelector("[data-stack-threshold-settings]");
+  if (thresholdEnabled) thresholdEnabled.disabled = stacking !== "stack";
+  if (thresholdSettings) thresholdSettings.hidden = stacking !== "stack" || thresholdEnabled?.checked !== true;
 
   syncHumanStatusVisualFieldsV1(
     row
@@ -5586,8 +5599,54 @@ function appendHumanSkillEffectV1(
     statusVisualNote
   );
 
+  const thresholdBox = document.createElement("div");
+  thresholdBox.className = "skill-status-config";
+  thresholdBox.dataset.stackThresholdBox = "true";
+  const thresholdLabel = document.createElement("label");
+  thresholdLabel.className = "check";
+  const thresholdEnable = document.createElement("input");
+  thresholdEnable.type = "checkbox";
+  thresholdEnable.dataset.stackThresholdEnabled = "true";
+  thresholdEnable.checked = status.onStackThreshold != null;
+  thresholdLabel.append(thresholdEnable,document.createTextNode("Déclencher des effets à un seuil de stacks"));
+  const thresholdSettings = document.createElement("div");
+  thresholdSettings.dataset.stackThresholdSettings = "true";
+  const thresholdGrid = document.createElement("div");
+  thresholdGrid.className = "skill-status-config__grid";
+  const thresholdCount = tacticalNumberInputV1("stackThresholdCount",status.onStackThreshold?.count ?? 2,{min:1,step:"1"});
+  const thresholdConsume = document.createElement("select");
+  thresholdConsume.dataset.stackThresholdConsume = "true";
+  for(const [value,label] of [["reset","Consommer toutes les charges, recommencer"],["keep","Conserver les charges, déclencher une seule fois"]])createOption(thresholdConsume,value,label);
+  thresholdConsume.value = status.onStackThreshold?.consume ?? "reset";
+  thresholdGrid.append(tacticalFieldV1("Nombre de stacks nécessaire",thresholdCount),
+    tacticalFieldV1("Après activation",thresholdConsume));
+  const thresholdEffectsHost = document.createElement("div");
+  thresholdEffectsHost.dataset.stackThresholdEffectsHost = "true";
+  for(const triggered of status.onStackThreshold?.effects ?? []) {
+    appendStackThresholdEffectRowV1(thresholdEffectsHost,triggered);
+  }
+  const addTrigger = document.createElement("button");
+  addTrigger.type = "button";
+  addTrigger.className = "small-action";
+  addTrigger.textContent = "Ajouter un effet déclenché";
+  addTrigger.dataset.stackThresholdAdd = "true";
+  addTrigger.addEventListener("click",()=>appendStackThresholdEffectRowV1(thresholdEffectsHost));
+  if (thresholdEnable.checked && thresholdEffectsHost.children.length === 0) {
+    appendStackThresholdEffectRowV1(thresholdEffectsHost);
+  }
+  thresholdEnable.addEventListener("change",()=>{
+    if(thresholdEnable.checked && thresholdEffectsHost.children.length === 0)appendStackThresholdEffectRowV1(thresholdEffectsHost);
+    syncHumanSkillEffectRowV1(row);
+  });
+  const thresholdNote = document.createElement("small");
+  thresholdNote.className = "note";
+  thresholdNote.textContent = "Un seul déclenchement au franchissement du seuil. Les effets respectent les immunités, PV, boucliers et énergie existants. Cible = porteur des stacks ; Source = créature qui applique le statut.";
+  thresholdSettings.append(thresholdGrid,thresholdEffectsHost,addTrigger,thresholdNote);
+  thresholdBox.append(thresholdLabel,thresholdSettings);
+
   statusBox.append(
     common,
+    thresholdBox,
     statConfig,
     approachConfig,
     energyRegenConfig,
@@ -6223,6 +6282,13 @@ function readHumanSkillEffectsV1(root) {
         if (row.querySelector("[data-skill-status-intangible]")?.checked === true) {
           status.intangible = true;
         }
+      }
+      if (status.stacking === "stack" && row.querySelector("[data-stack-threshold-enabled]")?.checked) {
+        status.onStackThreshold = {
+          count:Number(row.querySelector("[data-stack-threshold-count]").value),
+          consume:row.querySelector("[data-stack-threshold-consume]").value,
+          effects:readStackThresholdEffectRowsV1(row.querySelector("[data-stack-threshold-effects-host]"))
+        };
       }
 
       return {
@@ -11657,6 +11723,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           "[data-skill-effect-kind], " +
           "[data-skill-status-kind], " +
           "[data-skill-status-stacking], " +
+          "[data-stack-threshold-enabled], " +
           "[data-skill-status-intangible], " +
           "[data-skill-status-visual-mode], " +
           "[data-skill-zone-effect-kind], " +
