@@ -43,13 +43,13 @@ test("Arc électrique preserves authored beam, status, FX, sounds and complete T
  assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(s)).value,t.value);
 });
 
-test("Arc électrique replaces historical skill by stable ID without adding a duplicate or editing others",async()=>{
+test("Arc électrique is imported by stable ID and never duplicates or changes other skills",async()=>{
  const native = new Map();
  for(const draft of [...capturePortableNativeSkillDraftsV1(),...captureComplexNativeSkillDraftsV1()])
    if(!native.has(draft.id))native.set(draft.id,draft);
- const current=await load("data/combat/skills/catalog.v1.json");
- const original=current.entries.find(x=>x.definition?.id==="lib_chain_lightning");
- assert.ok(original,"author exported existing historical ID");
+ const creatureCatalog=await load("data/capture/monster-capture-creatures.v1.json");
+ assert.ok(creatureCatalog.entries.some(x=>x.skills?.includes?.("lib_chain_lightning")||x.skillIds?.includes?.("lib_chain_lightning")),
+   "original Capture library already references Arc électrique");
  const previous=native.get("lib_chain_lightning")??null;
  const others=new Map(native);
  const t=importCaptureTransferJsonV1(JSON.stringify(await load(path)));
@@ -58,6 +58,7 @@ test("Arc électrique replaces historical skill by stable ID without adding a du
    progressionRules,mode:"replace"
  });
  assert.equal(result.actions.length,1);
+ assert.equal(result.actions[0].action,previous?"replace-skill":"insert-skill");
  assert.equal(native.get("lib_chain_lightning").definition.name,"Arc électrique");
  assert.equal(native.get("lib_chain_lightning").presentation.feedback.glow.radiusPx,32);
  for(const [key,old] of others)if(key!=="lib_chain_lightning")assert.deepEqual(native.get(key),old);
