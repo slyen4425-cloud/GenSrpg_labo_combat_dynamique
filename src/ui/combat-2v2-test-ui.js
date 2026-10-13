@@ -649,6 +649,19 @@ export async function mountCoop2v2Test({
 
   const previewFormat =
     resolveCombatPreviewFormatV1(format);
+  // UI ownership only: the same two actor slots keep separate state/actions.
+  const controlledLabel = root.querySelector("[data-combat-controlled-name]");
+  const localControl = createLocalControlSelectionV1({
+    format,
+    onChange(nextActorId) {
+      pendingSkillId = null;
+      renderLocalSkills();
+      renderState();
+      setStatus("Tu contrôles maintenant " + (actorMeta(nextActorId)?.displayName ?? nextActorId) + ".", "accent");
+    }
+  });
+  const controlledActorId = () => localControl.actorId;
+  root.dataset.localControlMode = localControl.mode;
   const allyActorId = previewFormat.allyActorId;
   const allyIcon =
     allyActorId === null
@@ -969,7 +982,7 @@ export async function mountCoop2v2Test({
 
   function reserveSkillTargetOptions(skill) {
     return combatSkillReserveTargetOptionsV2({
-      format, actorId:format.localActorId, skill,
+      format, actorId:controlledActorId(), skill,
       rosterSnapshot:rosterController?.snapshot() ?? null,
       previewTarget:args=>rosterController.previewSkillOnTarget(args)
     });
@@ -978,7 +991,7 @@ export async function mountCoop2v2Test({
   function skillTargetOptions(skill, state = session.snapshot()) {
     return combatSkillTargetOptionsV1({
       format,
-      actorId: format.localActorId,
+      actorId: controlledActorId(),
       skill,
       state,
       previewSkill: ({ actorId, targetId, skill }) =>
@@ -986,6 +999,20 @@ export async function mountCoop2v2Test({
       isPresent: actorId =>
         rosterController === null || rosterController.isPresent(actorId)
     });
+  }
+
+  function renderControlledSelection() {
+    const isDual = localControl.mode === "solo-dual";
+    if (controlledLabel) {
+      controlledLabel.hidden = !isDual;
+      if (isDual) controlledLabel.textContent = "Commandes : " +
+        (actorMeta(controlledActorId())?.displayName ?? controlledActorId());
+    }
+    for (const actor of format.actors) {
+      for (const node of targetNodes(actor.actorId)) {
+        node.dataset.controlledActor = isDual && actor.actorId === controlledActorId() ? "true" : "false";
+      }
+    }
   }
 
   function renderTargetSelection() {
@@ -997,7 +1024,7 @@ export async function mountCoop2v2Test({
     for (const actor of format.actors) {
       const relation = targetRelation({
         format,
-        actorId: format.localActorId,
+        actorId: controlledActorId(),
         targetId: actor.actorId
       });
 
@@ -1029,7 +1056,7 @@ export async function mountCoop2v2Test({
       }
     }
 
-    const local = state.fighters[format.localActorId];
+    const local = state.fighters[controlledActorId()];
     energyBar.max = local.maxEnergy;
     energyBar.value = local.energy;
     energyValue.textContent =
@@ -1047,6 +1074,7 @@ export async function mountCoop2v2Test({
     );
     renderAvailability();
     renderTargetSelection();
+    renderControlledSelection();
     rosterPanel?.render();
   }
 
@@ -1056,12 +1084,12 @@ export async function mountCoop2v2Test({
     }
 
     const state = session.snapshot();
-    const localAlive = isAlive(format.localActorId, state);
+    const localAlive = isAlive(controlledActorId(), state);
     const lockedByAction =
-      runtime.hasActiveActionFor(format.localActorId) ||
-      runtime.activeActions.some(action =>
+      runtime.hasActiveActionFor(controlledActorId()) ||
+      (localControl.mode !== "solo-dual" && runtime.activeActions.some(action =>
         action.actionType === "command" && action.command.kind !== "switch"
-      );
+      ));
 
     if (pendingSkillId !== null) {
       const pending = skillRefs.get(pendingSkillId)?.skill;
@@ -1077,7 +1105,7 @@ export async function mountCoop2v2Test({
       const preview = options.previewsById[selectedTargetId] ??
         options.previewsById[options.allowedIds[0]] ?? reserveOptions[0]?.preview ?? { ok: false };
       const resolvedTargetId = resolveCombatSkillClickTargetV1({
-        actorId: format.localActorId, skill,
+        actorId: controlledActorId(), skill,
         selectedTargetId, availableIds: options.availableIds
       });
       button.dataset.targetRequired =
@@ -1137,14 +1165,14 @@ export async function mountCoop2v2Test({
         const availability =
           runtime.rechargeableActionAvailability({
             actorId:
-              format.localActorId,
+              controlledActorId(),
             ...dodgeRechargeConfig
           });
 
         const windowStatus =
           runtime.rechargeableReactionWindowStatus({
             actorId:
-              format.localActorId,
+              controlledActorId(),
             recharge:
               dodgeRechargeConfig,
             activeWindowMs:
@@ -1203,6 +1231,15 @@ export async function mountCoop2v2Test({
     if (!actorMeta(actorId) || !isAlive(actorId)) {
       return;
     }
+    // In optional solo 2v2 an unarmed tap on either allied model/card
+    // switches the HUD owner, not the target nor the roster.
+    if (localControl.mode === "solo-dual" &&
+        previewFormat.localActorIds.includes(actorId) &&
+        pendingSkillId === null) {
+      localControl.select(actorId);
+      renderControlledSelection();
+      return;
+    }
 
     const armedSkill = pendingSkillId === null
       ? null : skillRefs.get(pendingSkillId)?.skill ?? null;
@@ -1214,7 +1251,7 @@ export async function mountCoop2v2Test({
     selectedTargetId = actorId;
     const relation = targetRelation({
       format,
-      actorId: format.localActorId,
+      actorId: controlledActorId(),
       targetId: actorId
     });
     const actor = actorMeta(actorId);
@@ -1261,7 +1298,7 @@ export async function mountCoop2v2Test({
             dodgeSkill,
             {
               actorId:
-                format.localActorId,
+                controlledActorId(),
               recharge:
                 dodgeRechargeConfig,
               activeWindowMs:
@@ -1293,7 +1330,7 @@ export async function mountCoop2v2Test({
         if (visualDurationMs > 0) {
           visuals
             .playEventFor(
-              format.localActorId,
+              controlledActorId(),
               "dodge",
               {
                 metadata: {
@@ -1323,12 +1360,12 @@ export async function mountCoop2v2Test({
     const eligible = reserveSkillTargetOptions(skill).some(option =>
       option.targetRef.teamId === targetRef.teamId && option.targetRef.memberId === targetRef.memberId
     );
-    if (!eligible || runtime.hasActiveActionFor(format.localActorId)) {
+    if (!eligible || runtime.hasActiveActionFor(controlledActorId())) {
       setStatus(skill.name + " : créature de réserve indisponible.", "warn");
       renderAvailability();
       return false;
     }
-    const result = rosterController.useSkillOnTarget({actorId:format.localActorId,targetRef,skill});
+    const result = rosterController.useSkillOnTarget({actorId:controlledActorId(),targetRef,skill});
     if (!result.ok) {
       setStatus(skill.name + " : " + result.outcome + ".", "warn");
       renderAvailability();
@@ -1344,7 +1381,7 @@ export async function mountCoop2v2Test({
 
   function activateLocalSkill(skill, targetId) {
     const allowed = isSkillTargetAllowed({
-      format, actorId: format.localActorId, targetId, skill
+      format, actorId: controlledActorId(), targetId, skill
     });
     if (!allowed.ok || !skillTargetOptions(skill).availableIds.includes(targetId)) {
       setStatus(skill.name + " : cible indisponible.", "warn");
@@ -1352,7 +1389,7 @@ export async function mountCoop2v2Test({
       return;
     }
     const result = runtime.startSkill({
-      actorId: format.localActorId, targetId, skill
+      actorId: controlledActorId(), targetId, skill
     });
     if (!result.ok) {
       setStatus(result.outcome === "insufficient_energy"
@@ -1380,7 +1417,7 @@ export async function mountCoop2v2Test({
         skill.id,
         {
           sourceActorId:
-            format.localActorId
+            controlledActorId()
         }
       );
     if (presentation?.icon?.url) {
@@ -1439,7 +1476,7 @@ export async function mountCoop2v2Test({
       if (reserveOptions.length > 0) {
         pendingSkillId = skill.id;
         const enemyBench = reserveOptions.some(x =>
-          format.teamOf(x.targetRef.teamId)!==format.teamOf(format.localActorId));
+          format.teamOf(x.targetRef.teamId)!==format.teamOf(controlledActorId()));
         setStatus(skill.name+(enemyBench
           ? " : touche une cible active ou choisis une créature dans Réserves adverses."
           : " : touche une cible active ou choisis une réserve alliée dans Rappel."),"accent");
@@ -1450,7 +1487,7 @@ export async function mountCoop2v2Test({
         return;
       }
       const resolvedTargetId = resolveCombatSkillClickTargetV1({
-        actorId: format.localActorId, skill,
+        actorId: controlledActorId(), skill,
         selectedTargetId, availableIds: options.availableIds
       });
       if (resolvedTargetId === null) {
@@ -1473,7 +1510,7 @@ export async function mountCoop2v2Test({
     for (const refs of skillRefs.values()) refs.dispose();
     skillRefs.clear();
     skillContainer.replaceChildren();
-    const ids = rosterController?.skillIdsFor(format.localActorId) ?? skillIdsByActor[format.localActorId];
+    const ids = rosterController?.skillIdsFor(controlledActorId()) ?? skillIdsByActor[controlledActorId()];
     for (const skillId of ids) {
       const skill = skillsById[skillId];
       if (!skill) throw new RangeError(`Unknown local skill: ${skillId}`);
@@ -1617,7 +1654,7 @@ export async function mountCoop2v2Test({
           `${progress.actionName} · ${progress.phase}`;
       }
 
-      if (progress.actorId === format.localActorId) {
+      if (progress.actorId === controlledActorId()) {
         renderAvailability();
       }
     },
@@ -1747,6 +1784,7 @@ export async function mountCoop2v2Test({
       }
     });
     rosterPanel = mountCaptureCombatRosterPanelV1({ root, controller: rosterController, format, commands, session,
+      getControlledActorId: controlledActorId,
       getCreatureDescriptor: creatureId => visuals.getCreatureDescriptor(creatureId),
       getRuntime: () => runtime, isTransitionPending: () => koTransitions.size > 0, setStatus,
       reserveTargetCandidates: () => pendingSkillId === null ? [] : reserveSkillTargetOptions(skillRefs.get(pendingSkillId)?.skill),
@@ -1772,6 +1810,8 @@ export async function mountCoop2v2Test({
     get selectedTargetId() {
       return selectedTargetId;
     },
+    get controlledActorId() { return controlledActorId(); },
+    get controlMode() { return localControl.mode; },
     selectTarget,
     dispose() {
       if (disposed) {
