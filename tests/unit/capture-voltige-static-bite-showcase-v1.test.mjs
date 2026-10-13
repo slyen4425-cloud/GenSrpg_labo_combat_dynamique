@@ -39,7 +39,8 @@ test("Voltige preserves the full exported creature, stats, sockets and *planned*
  assert.equal(record.draft.presentation.profileId,"biped");
  assert.equal(record.draft.presentation.displayScale,1.08);
  assert.equal(record.draft.presentation.viewOverrides.player.displayScale,0.9);
- assert.equal(record.draft.presentation.viewOverrides.opponent.displayScale,1);
+ assert.equal(record.draft.presentation.viewOverrides.opponent.displayScale,0.7);
+ assert.equal(record.draft.presentation.viewOverrides.opponent.position.y,60);
  assert.equal(record.draft.combat.approachTimeModifierPct,-40);
  assert.deepEqual(record.draft.sourceStats,raw.draft.sourceStats);
  assert.deepEqual(record.draft.presentation.sockets,raw.draft.presentation.sockets,"front/back coordinates never swapped or rounded");
