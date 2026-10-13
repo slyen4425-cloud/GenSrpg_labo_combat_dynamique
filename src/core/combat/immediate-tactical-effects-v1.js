@@ -175,7 +175,8 @@ function applyDamageEffect({
     targetActorId: affectedId,
     damage: damage.damage,
     atMs: combatAtMs,
-    hitsIntangible: skill.hitsIntangible === true
+    hitsIntangible: skill.hitsIntangible === true,
+    incomingKind: skill.form ?? "scheduled"
   });
 
   return Object.freeze({
