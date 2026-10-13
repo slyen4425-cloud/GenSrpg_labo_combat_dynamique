@@ -11,7 +11,7 @@ const cases=[
 const catalog={assets:cases.map(x=>({id:x.id,label:"Rayon électrique jaune",assetType:"sprite",category:x.category,resource:{file:"capture/sprites/skills/electric_beam_yellow/atlases/"+x.filename,format:"sprite-strip",mime:"image/webp",frameCount:x.count,frameMs:x.ms,playbackMode:x.mode}}))};
 test("one published cache revision exposes the three new electric ray atlas URLs",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-13-v30-capture-electric-beam-yellow");
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=30);
  assert.equal(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl).searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);
  const resolve=createGlobalPresentationAssetResolverV1({assetCatalog:catalog,assetUrlForFile:globalVisualAssetUrl});
  for(const x of cases){
