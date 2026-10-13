@@ -462,6 +462,7 @@ export function normalizeSkillDefinition(input) {
       "dodgeable",
       true
     ),
+    hitsIntangible: booleanOrDefault(input.hitsIntangible, "hitsIntangible", false),
     activationRequirements:
       normalizeActivationRequirements(
         input.activationRequirements
