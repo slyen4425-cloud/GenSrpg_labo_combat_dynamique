@@ -26,6 +26,7 @@ import {
 import {
   applyCombatDamageV1
 } from "./combat-damage-application-v1.js";
+import { combatProtectionForIncomingV1 } from "./combat-protection-v1.js";
 import {
   projectStatusStatEffectsV1
 } from "./status-effect-projection-v1.js";
@@ -902,7 +903,11 @@ export function resolveSkillCompletion({
         hpAfter: applied.hpAfter
       }));
 
-      if (skill.effect.interruptsPreparation && applied.immuneDamage === 0) {
+      if (skill.effect.interruptsPreparation && !combatProtectionForIncomingV1({
+        state: nextState, targetActorId: targetId,
+        domain: "negative_status", atMs: combatImpactAtMs,
+        hitsIntangible: skill.hitsIntangible === true
+      }).protected) {
         events.push(event("charge-interrupt", impactAtMs, {
           actorId: targetId,
           sourceActorId: actorId,
