@@ -2,6 +2,7 @@ import {
   combatHealthDeltaEventsV1
 } from "./combat-health-feedback-v1.js";
 import { isStatusEffectRuntimeInstanceActiveV1 } from "./status-effect-instance-v1.js";
+import { hasActiveStatusKindV1 } from "./status-effect-runtime-v1.js";
 import { normalizePersistentZoneSpatialV1 } from "../../contracts/persistent-zone-spatial-v1.js";
 import {
   projectileClashCandidate,
@@ -408,6 +409,7 @@ export function createCombatRuntime({
     for (const fighter of Object.values(session.snapshot().fighters)) {
       if (fighter.hp <= 0) cancelActionsForActor(fighter.id, { includeTargeted: true, reason: "ko" });
     }
+    stopImmobilizedApproaches();
     emitStateIfChanged();
     return true;
   }
@@ -586,6 +588,21 @@ export function createCombatRuntime({
       includeTargeted,
       cancelled: Object.freeze(cancelled)
     });
+  }
+
+  // The Combat Session alone owns whether a status is active. A new
+  // immobilization stops an actual approach immediately; the existing
+  // interrupt callback cancels the same visual movement on screen.
+  function stopImmobilizedApproaches() {
+    const state = session.snapshot();
+    for (const record of activeRecords()) {
+      if (record.resolved || record.action?.actionType !== "skill") continue;
+      if ((record.action.skill?.approachMode ?? "none") === "none") continue;
+      const actorId = record.action.actorId;
+      if (hasActiveStatusKindV1(state, actorId, "immobilize")) {
+        cancelActionsForActor(actorId, { reason: "immobilized" });
+      }
+    }
   }
 
   function processRelease(record) {
@@ -791,6 +808,9 @@ export function createCombatRuntime({
     });
 
     applyResolutionInterrupt(resolution);
+    // A direct immobilization hit can arrive between clock ticks.
+    // Stop the target's still-moving action before any later impact.
+    stopImmobilizedApproaches();
 
     const koActorId = koActorIdFromResolution(resolution);
     if (koActorId) {
