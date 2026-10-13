@@ -1893,3 +1893,11 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : `src/ui/combat-2v2-test-ui.js` et éventuel helper UI pur dédié, `src/ui/capture-editor-combat-test-v1.js` (scénario de test), `src/ui/capture-combat-roster-controller-v1.js` (projection de commandes Rappel pour le contrôlé), `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.css`, tests dédiés `tests/unit/dual-human-2v2-v1.test.mjs` et sentinelles ciblées, `docs/LAB_DUAL_HUMAN_2V2_V1.md`, journal.
 - Protégés : moteur Combat Rules, Runtime, Session, dommages, HP, statuts, IA existante (sauf sélection des acteurs par le client), Roster Session, états actifs, assets `global-assets` et cache V30, 103 créatures/skills auteurs, `main`, Exploration, GenSrpG principal et autres fils.
 - TDD RED avant correction, GREEN Foundation et deux Chromium sur SHA final, checkpoint GREEN exact, FF sous lease après contrôle de concurrence, CI/Pages après publication. Essais réels Android paysage restent à confirmer séparément.
+
+### Contrôle solo 2v2 V1 — résultats de code
+
+- TDD RED `e15bfc66f55546453d37329d2bb3a393bb0f3932` CI `38401112003` : contrat de sélection local absent (échec attendu).
+- L'éditeur conserve IA par défaut, option `solo` seulement en 2v2, mêmes `controllerId` de format ; pas de réseau, aucun changement permanent des fiches. La source unique du HUD et du Rappel lit désormais l'acteur humain sélectionné. Tap allié sans skill armé = changement de HUD, pas cible ni rappel. Cooldowns, charges et combat Runtime restent individuels.
+- Tests nouveaux: humain+IA conservé, solo A/B/A, futur distant non capturé, double cast simultané/énergie indépendante, sélection éditeur 1v1/2v2. Deux sentinelles historiques regex adaptées pour vérifier `controlledActorId()` au lieu d'exiger un acteur local constant, sans retirer les garde-fous. Toutes les autres classes de source/propriétaires restent protégées.
+- GREEN du code : SHA `8c26482518caddc5a6c3cec73e969eca990fe9f0`, CI `38402179715` Foundation + Firestorm Chromium + bibliothèque 103 créatures SUCCESS. Rapport `docs/LAB_DUAL_HUMAN_2V2_V1.md`.
+- CI sur SHA documentaire exact et checkpoint GREEN puis publication FF protégée + CI/Pages à vérifier ; validation manuelle Android paysage **en attente**.
