@@ -1,0 +1,134 @@
+{
+  "schema": "capture-electric-beam-yellow-v1",
+  "date": "2026-10-13",
+  "owner": "global-assets (intended, not published)",
+  "target_repo": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+  "target_path": "assets/library/capture/sprites/skills/electric_beam_yellow/",
+  "license": "project-internal",
+  "source_origin": "ImageGen images created in current conversation",
+  "source_dimensions": [
+    1402,
+    1122
+  ],
+  "source_grid": [
+    5,
+    4
+  ],
+  "source_cell_approx": [
+    280.4,
+    280.5
+  ],
+  "output_frame": [
+    512,
+    512
+  ],
+  "upscale_note": "512 x 512 frames are LANCZOS-upscaled from approximately 280 x 280 generated source cells; not native 512px art",
+  "format": "PNG RGBA frames, WebP RGBA atlases, quality 90",
+  "original_frame_count": {
+    "cast": 20,
+    "beam_body": 20,
+    "impact": 20
+  },
+  "jet_pressurise_comparison": "Jet pressurisé = cast20, beam_start12, beam_body12, impact12. This pack provides cast/body/impact only; dedicated beam_start not generated.",
+  "sequences": {
+    "cast": {
+      "source": "sources/source_sprite_sheet_electric_beam_cast_5x4.png",
+      "source_sha256": "b7a54096240fe1ed5e248e4644655603e81a57705bd093d07ec1ec05c43e1b74",
+      "source_mode": "RGBA",
+      "source_size": [
+        1402,
+        1122
+      ],
+      "all_frame_count": 20,
+      "runtime_frame_count": 20,
+      "atlas_runtime": {
+        "file": "atlases/sprite_skill_electric_beam_cast_atlas_01.webp",
+        "sha256": "265fedf44a98565b57558cd1839831c92e4c407a40351ea9045692255f570c7a",
+        "bytes": 2055510,
+        "size": [
+          10240,
+          512
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ]
+      },
+      "atlas_full20": null
+    },
+    "beam_body": {
+      "source": "sources/source_sprite_sheet_electric_beam_beam_body_5x4.png",
+      "source_sha256": "6bbadaa63013ff53bbc6fcce0a898e048aa657e5096ba2e677b71b6ca507739e",
+      "source_mode": "RGBA",
+      "source_size": [
+        1402,
+        1122
+      ],
+      "all_frame_count": 20,
+      "runtime_frame_count": 12,
+      "atlas_runtime": {
+        "file": "atlases/sprite_skill_electric_beam_beam_body_atlas_01.webp",
+        "sha256": "8ac498480144a921d57b3aa72440091e2b783dc74695b4c798a2576f89737927",
+        "bytes": 1151004,
+        "size": [
+          6144,
+          512
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ]
+      },
+      "atlas_full20": {
+        "file": "atlases/sprite_skill_electric_beam_beam_body_full20_atlas_01.webp",
+        "sha256": "0bb28cfc1781e83c6d70ea831612b98300075176797bed2fe88f693d990efa77",
+        "bytes": 1924568,
+        "size": [
+          10240,
+          512
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ]
+      }
+    },
+    "impact": {
+      "source": "sources/source_sprite_sheet_electric_beam_impact_5x4.png",
+      "source_sha256": "28a6927190e62a6b30abab272624f99112a0a1bdd7397209efb31465f0a07e9e",
+      "source_mode": "RGBA",
+      "source_size": [
+        1402,
+        1122
+      ],
+      "all_frame_count": 20,
+      "runtime_frame_count": 12,
+      "atlas_runtime": {
+        "file": "atlases/sprite_skill_electric_beam_impact_atlas_01.webp",
+        "sha256": "2d967c66c611cae5a9e8899674b3fa3c63826d3ef9295d8ebf90cabafe32a220",
+        "bytes": 1384940,
+        "size": [
+          6144,
+          512
+        ],
+        "alpha_extrema": [
+          0,
+          253
+        ]
+      },
+      "atlas_full20": {
+        "file": "atlases/sprite_skill_electric_beam_impact_full20_atlas_01.webp",
+        "sha256": "a454ebddeb2d3606cab7cf4183df28d5fe5701ea36d1686923d4366bcb1aba80",
+        "bytes": 2290496,
+        "size": [
+          10240,
+          512
+        ],
+        "alpha_extrema": [
+          0,
+          253
+        ]
+      }
+    }
+  }
+}
