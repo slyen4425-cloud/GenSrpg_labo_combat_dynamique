@@ -1338,23 +1338,26 @@ html {
   font-size: clamp(0.46rem, 1.45dvh, 0.6rem);
 }
 
-/* Capture landscape opponent slot placement V1
-   Presentation owner only: collision, sockets and FX continue to sample
-   the actual rendered geometry. Author displayScale remains untouched. */
+/* Capture landscape 2v2 depth V2: keep both enemies in the far half,
+   materially smaller than near allies. CSS owns visible slot geometry;
+   native contact sensors, projectiles and sockets sample that geometry.
+   No author displayScale or 1v1 styling is changed. */
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 {
-  --arena-coop-far-primary-y: 33%;
-  --arena-coop-far-secondary-y: 34%;
+  --arena-coop-far-primary-y: 26%;
+  --arena-coop-far-secondary-y: 28%;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 .fighter--opponent {
-  left: 77%;
+  left: 58%;
+  width: min(24dvh, 13rem);
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 .fighter--opponent-b {
-  left: 34%;
+  left: 36%;
+  width: min(23dvh, 12.5rem);
 }
 
 
@@ -1538,6 +1541,92 @@ html {
   .beam-visual-editor { padding: 0.6rem; }
 }
 
+
+/* Solo landscape HUD V1 — one flat command dock, not an ally card stacked
+   on top of a narrow vertical tower. Scoped to opt-in solo, leaving AI and
+   single-actor previews visually and functionally unchanged. */
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .coop-command-stack {
+  display: grid;
+  grid-template-columns: minmax(6.2rem, 0.27fr) minmax(0, 1fr);
+  align-items: end;
+  width: min(42rem, 72%);
+  gap: clamp(0.22rem, 0.9dvh, 0.38rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .squad-card--command-ally {
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  align-self: end;
+  min-height: 3.7rem;
+  gap: 0.15rem;
+  padding: 0.23rem 0.33rem;
+  border-radius: 0.55rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__creature-icon {
+  width: 1.55rem;
+  height: 1.55rem;
+  float: left;
+  margin-right: 0.25rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__body {
+  gap: 0.11rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .squad-card--command-ally strong {
+  font-size: clamp(0.56rem, 1.8dvh, 0.74rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .squad-card--local-full {
+  width: min(11rem, 24%);
+  min-height: 3.65rem;
+  padding: 0.28rem 0.34rem;
+  gap: 0.16rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .coop-controls {
+  min-width: 0;
+  padding: 0.28rem 0.38rem;
+  gap: 0.14rem;
+  border-radius: 0.6rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .action-option--skill {
+  min-height: clamp(2.8rem, 8.4dvh, 3.7rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .action-option__icon {
+  width: clamp(1.65rem, 5.2dvh, 2.05rem);
+  height: clamp(1.65rem, 5.2dvh, 2.05rem);
+}
+
+/* Esquive stays a genuine native control, adjacent to the horizontal dock,
+   rather than floating underneath the enemy cards. */
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .combat-dodge-action--arena {
+  right: calc(72% + 0.55rem);
+  bottom: 0.65rem;
+}
+
+@media (max-height: 440px) and (orientation: landscape) {
+  .capture-preview-shell[data-landscape-required="true"]
+    [data-local-control-mode="solo-dual"] .coop-command-stack {
+    width: min(40rem, 70%);
+    grid-template-columns: minmax(5.6rem, 0.24fr) minmax(0, 1fr);
+  }
+  .capture-preview-shell[data-landscape-required="true"]
+    [data-local-control-mode="solo-dual"] .combat-dodge-action--arena {
+    right: calc(70% + 0.5rem);
+  }
+}
 
 /* Solo 2v2 controls only: render focus for the local human actor, never the target. */
 [data-local-control-mode="solo-dual"] [data-controlled-actor="true"] {
