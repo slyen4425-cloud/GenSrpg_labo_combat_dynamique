@@ -26,7 +26,8 @@ export function combatProtectionForIncomingV1({
   state,
   targetActorId,
   domain,
-  atMs = state.elapsedMs
+  atMs = state.elapsedMs,
+  hitsIntangible = false
 }) {
   if (!DOMAIN_SET.has(domain)) {
     throw new RangeError(
@@ -55,7 +56,8 @@ export function combatProtectionForIncomingV1({
           ) &&
           instance.definition.domains.includes(
             domain
-          )
+          ) &&
+          !(hitsIntangible === true && instance.definition.intangible === true)
       )
       .map(
         (instance) =>
