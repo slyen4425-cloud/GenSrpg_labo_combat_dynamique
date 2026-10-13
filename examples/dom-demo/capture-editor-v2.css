@@ -1537,3 +1537,23 @@ html {
   .skill-movement-choices { grid-template-columns: 1fr; padding: 0.6rem; }
   .beam-visual-editor { padding: 0.6rem; }
 }
+
+
+/* Solo 2v2 controls only: render focus for the local human actor, never the target. */
+[data-local-control-mode="solo-dual"] [data-controlled-actor="true"] {
+  outline:2px solid #83e5dd;
+  outline-offset:2px;
+  box-shadow:0 0 .5rem rgba(80,214,201,.38);
+}
+.coop-controls__controlled-name {
+  padding:.15rem .45rem;
+  margin-bottom:.25rem;
+  color:#b4f6e7;
+  border-left:3px solid #7be1c9;
+  font-size:clamp(.62rem,1.7dvh,.81rem);
+  font-weight:750;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.coop-controls__controlled-name[hidden] { display:none; }
