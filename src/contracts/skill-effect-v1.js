@@ -7,6 +7,7 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "heal",
   "energy_restore",
   "energy_drain",
+  "life_steal",
   "apply_status",
   "cleanse",
   "dispel",
@@ -59,6 +60,11 @@ const FIELDS_BY_KIND = Object.freeze({
   energy_drain: new Set([
     ...COMMON_FIELDS,
     "amount"
+  ]),
+  life_steal: new Set([
+    ...COMMON_FIELDS,
+    "percent",
+    "maxHeal"
   ]),
   apply_status: new Set([
     ...COMMON_FIELDS,
@@ -236,10 +242,21 @@ export function normalizeSkillEffectV1(input) {
     throw new RangeError("Reserve effect scopes support damage/heal only: " + kind);
   }
 
+  if (kind === "life_steal" && targetScope !== "self") {
+    throw new RangeError("SkillEffectV1.life_steal targetScope must be self");
+  }
+
   const output = {
     kind,
     targetScope
   };
+
+  if (kind === "life_steal") {
+    output.percent = penetrationPercentV1(value.percent, "SkillEffectV1.percent");
+    if (value.maxHeal !== undefined) {
+      output.maxHeal = nonNegativeNumber(value.maxHeal, "SkillEffectV1.maxHeal");
+    }
+  }
 
   if (
     kind === "damage" ||
