@@ -30,9 +30,9 @@ test("The real active team count gates shared IA and solo compact 2v2 HUD, never
  assert.doesNotMatch(layout, /\[data-combat-active-count="1"\]/);
 });
 
-test("Both 2v2 enemies shift modestly right, without changing their Y, sizes, or 1v1 fallback",()=>{
- assert.match(perspective, /\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent\s*\{\s*left:\s*63%;\s*width:\s*min\(24dvh,\s*13rem\)/);
- assert.match(perspective, /\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent-b\s*\{\s*left:\s*41%;\s*width:\s*min\(23dvh,\s*12\.5rem\)/);
+test("Both 2v2 enemies shift modestly right, while lowering only the far-right opponent, preserving sizes and 1v1 fallback",()=>{
+ assert.match(perspective, /\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent\s*\{\s*left:\s*68%;\s*width:\s*min\(24dvh,\s*13rem\)/);
+ assert.match(perspective, /\.arena--coop-2v2\[data-combat-active-count="2"\] \.fighter--opponent-b\s*\{\s*left:\s*46%;\s*width:\s*min\(23dvh,\s*12\.5rem\)/);
  const fallback = css.slice(css.indexOf("/* Capture landscape opponent slot placement V1"),css.indexOf("/* Capture landscape 2v2 depth V2"));
  assert.match(fallback, /--arena-coop-far-primary-y:\s*33%/);
  assert.match(fallback, /\.fighter--opponent\s*\{\s*left:\s*77%/);
