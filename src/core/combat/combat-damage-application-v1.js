@@ -39,7 +39,8 @@ export function applyCombatDamageV1({
   damage,
   atMs = state.elapsedMs,
   allowReflection = true,
-  hitsIntangible = false
+  hitsIntangible = false,
+  incomingKind = "other"
 }) {
   const requested = Math.max(
     0,
@@ -169,7 +170,9 @@ export function applyCombatDamageV1({
       (fighterOf(nextState, targetActorId).statusEffects ?? [])
         .filter((instance) =>
           instance.definition?.kind === "damage_reflection" &&
-          isStatusEffectRuntimeInstanceActiveV1(instance, time)
+          isStatusEffectRuntimeInstanceActiveV1(instance, time) &&
+          (instance.definition.incomingKinds === undefined ||
+           instance.definition.incomingKinds.includes(incomingKind))
         )
         .reduce((total, instance) =>
           total + instance.definition.percent * instance.stacks, 0
@@ -208,5 +211,36 @@ export function applyCombatDamageV1({
     reflection,
     hpBefore,
     hpAfter
+  });
+}
+
+// One real melee impact may hurt its attacker even when damage was shielded.
+// This is NOT a second hit resolver: the same Combat Damage authority owns HP,
+// immunity, shields, knockout credit and anti-recursive reflection.
+export function applyCombatContactRetaliationV1({
+  state, attackerId, defenderId, atMs = state.elapsedMs,
+  incomingKind = "contact"
+}) {
+  fighterOf(state, attackerId);
+  fighterOf(state, defenderId);
+  if (attackerId === defenderId || incomingKind !== "contact" ||
+      Number(state.fighters[attackerId].hp) <= 0) {
+    return Object.freeze({ state, requestedDamage: 0, appliedDamage: 0, absorbedByShield: 0 });
+  }
+  const requestedDamage = (state.fighters[defenderId].statusEffects ?? [])
+    .filter(instance =>
+      instance.definition?.kind === "damage_reflection" &&
+      isStatusEffectRuntimeInstanceActiveV1(instance, atMs) &&
+      (instance.definition.incomingKinds === undefined ||
+       instance.definition.incomingKinds.includes("contact")))
+    .reduce((sum, instance) =>
+      sum + (instance.definition.contactDamage ?? 0) * instance.stacks, 0);
+  if (requestedDamage <= 0) {
+    return Object.freeze({ state, requestedDamage: 0, appliedDamage: 0, absorbedByShield: 0 });
+  }
+  return applyCombatDamageV1({
+    state, sourceActorId: defenderId, targetActorId: attackerId,
+    damage: requestedDamage, atMs, allowReflection: false,
+    incomingKind: "other"
   });
 }
