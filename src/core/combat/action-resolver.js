@@ -880,7 +880,8 @@ export function resolveSkillCompletion({
           sourceActorId: actorId,
           targetActorId: targetId,
           damage: damage.damage,
-          atMs: combatImpactAtMs
+          atMs: combatImpactAtMs,
+          hitsIntangible: skill.hitsIntangible === true
         });
       nextState = applied.state;
 
@@ -901,7 +902,7 @@ export function resolveSkillCompletion({
         hpAfter: applied.hpAfter
       }));
 
-      if (skill.effect.interruptsPreparation) {
+      if (skill.effect.interruptsPreparation && applied.immuneDamage === 0) {
         events.push(event("charge-interrupt", impactAtMs, {
           actorId: targetId,
           sourceActorId: actorId,
@@ -953,7 +954,8 @@ export function resolveSkillCompletion({
           sourceActorId: targetId,
           targetActorId: actorId,
           damage: damage.damage,
-          atMs: combatImpactAtMs
+          atMs: combatImpactAtMs,
+          hitsIntangible: skill.hitsIntangible === true
         });
       nextState = applied.state;
 
