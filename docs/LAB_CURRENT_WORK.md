@@ -1774,3 +1774,13 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 ### Extension de périmètre sentinelle HUD — affichage de progression uniquement
 
 - Besoin directement issu du backlog stacks : rendre le seuil visible sans second compteur. Autorise uniquement `src/adapters/renderer/dom-status-fx.js` pour remplacer l'indication actuelle des stacks par `actuels / seuil` si `onStackThreshold` existe. Ce composant lit exclusivement `Status RuntimeInstance.definition` et `instance.stacks`, sans jamais calculer ou incrémenter une charge. Aucun changement de HUD pour les statuts sans seuil ni du moteur de présentation/timers. Ajouter une sentinelle dédiée dans `tests/unit/stack-threshold-hud-v1.test.mjs`; repasser les tests Chromium de la bibliothèque et de Firestorm. Le reste du HUD demeure protégé.
+
+
+### Stacks à seuil V1 — implémentation et vérifications réalisées
+
+- Source code : le status V1 autorise `onStackThreshold` et le kind pur `stack_counter`. Test RED `65a58f4d9af5e876e7467b768aad95a608c68098` / CI `38361044445` (échec attendu), puis implementation avec une seule autorité d'instance et l'exécuteur des effets tactiques existants.
+- Déclenchement seulement au franchissement strict : `reset` consomme le statut avant l'effet, `keep` garde les charges sans rafale au plafond ; antirécursion et sortie des événements de dégâts/soin/énergie via le flux tactique. Le canal natif des dommages garde les immunités et le crédit KO.
+- Auteur : panneau par statut stack avec seuil entier, choix reset/keep, ajout/retrait de plusieurs effets (dont buff/debuff et énergie), et statut compteur neutre ; `configuredSkills` et contrats import/export restent uniques. Affichage HUD `stacks/seuil` depuis `instance.stacks` existant, uniquement si seuil explicite.
+- Extension de périmètre HUD autorisée et notée AVANT modification. Aucun média ni fichier auteur touché ; miroir, immatériel, ciblage/rayon, roster et autres dépôts protégés.
+- Test `tests/integration/stack-threshold-v1.test.mjs` et sentinelle `tests/unit/stack-threshold-hud-v1.test.mjs`. CI de code exacte `103627884ea8269fb9c995b1cc06d61605a7e36a` / run `38362418910` : **SUCCESS**, 1629/1629 Node, creature-library-browser Chromium SUCCESS, firestorm-zone-growth-browser Chromium SUCCESS.
+- Rapport `docs/LAB_STACK_THRESHOLD_V1.md`. Gate final : CI complète sur le SHA **documentaire** courant, checkpoint `checkpoint/lab-stack-threshold-v1-green-2026-10-13` sur ce SHA exact, vérification fast-forward `gh-pages` avec lease et CI/Pages post-déploiement. **Validation manuelle Android distincte, EN ATTENTE** (y compris Miroir/Immatériel). Le drain de vie proportionnel reste un lot indépendant.
