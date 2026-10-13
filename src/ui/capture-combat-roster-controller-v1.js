@@ -132,6 +132,7 @@ export function mountCaptureCombatRosterPanelV1({
   }
   // One native inspection row per enemy member; Roster Session owns every PV.
   const enemyRefs = new Map();
+  let emptyEnemyBench = null;
   if (enemyPanel) {
     enemyHost.replaceChildren();
     for (const actor of format.actors) {
@@ -163,6 +164,12 @@ export function mountCaptureCombatRosterPanelV1({
       }
       enemyHost.append(group);
     }
+    // Keep the native inspection shortcut reachable even when there is no bench.
+    // No extra roster truth: the note reflects the same snapshot as its rows.
+    emptyEnemyBench = root.ownerDocument.createElement("p");
+    emptyEnemyBench.className = "combat-test-enemy-reserves__empty";
+    emptyEnemyBench.textContent = "Aucune créature en réserve adverse.";
+    enemyHost.append(emptyEnemyBench);
   }
   for (const button of buttons) {
     const command = commands[button.dataset.combatRosterCommand];
@@ -228,7 +235,8 @@ export function mountCaptureCombatRosterPanelV1({
         ref.row.title = available ? "Toucher pour cibler "+member.displayName :
           "PV de "+member.displayName+" · une capacité ciblant la réserve est requise";
       }
-      enemyPanel.hidden = benchCount===0;
+      enemyPanel.hidden = false;
+      if (emptyEnemyBench) emptyEnemyBench.hidden = benchCount !== 0;
       if(enemySummary)enemySummary.textContent="Réserves adverses · "+benchCount;
     }
     const remainingMs = state[getControlledActorId()]?.voluntarySwitchCooldownRemainingMs ?? 0;
