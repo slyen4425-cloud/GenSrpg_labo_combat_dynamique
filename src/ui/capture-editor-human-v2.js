@@ -131,6 +131,7 @@ import {
   CAPTURE_FX_QUICK_PROFILES_V1,
   captureFxQuickProfileByIdV1,
   applyCaptureFxQuickProfileV1,
+  captureFxQuickProfileIdForValuesV1,
   captureFxQuickWarningsV1,
   captureFxQuickTrajectoryHintV1
 } from "./capture-fx-quick-mode-v1.js";
@@ -9374,19 +9375,30 @@ function renderHumanCameraShakeSequenceV1(root, pulses=[]) {
 }
 
 
-function refreshSkillFxQuickControlStateV1(root, {resetSelection = false} = {}) {
+function refreshSkillFxQuickControlStateV1(root, {resetSelection = false, restoreSaved = false} = {}) {
   const select = root.querySelector("[data-skill-fx-quick-profile]");
   if (!select) return;
-  if (resetSelection) select.value = "current";
+  // Saved FX values remain the only truth. Selection alone never edits them.
+  const values = {
+    ...skillGlowPresetPresentationFromControlsV1(root),
+    ...skillParticlePresetPresentationFromControlsV1(root),
+    impactShakeAmplitudePx: Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0
+  };
+  const savedPresetId = captureFxQuickProfileIdForValuesV1(values);
+  if (restoreSaved) select.value = savedPresetId;
+  else if (resetSelection) select.value = "current";
   const profile = captureFxQuickProfileByIdV1(select.value);
+  const alreadyApplied = profile !== null && profile.id === savedPresetId;
   const apply = root.querySelector("[data-skill-fx-quick-apply]");
-  if (apply) apply.disabled = profile === null;
+  if (apply) apply.disabled = profile === null || alreadyApplied;
   const preview = root.querySelector("[data-skill-fx-quick-preview]");
   if (preview) preview.dataset.level = profile?.id ?? "current";
   const info = root.querySelector("[data-skill-fx-quick-state]");
   if (info) info.textContent = profile
     ? profile.label + " — " + profile.description +
-      " Aperçu indicatif seulement : appuie sur Appliquer pour changer les valeurs, puis teste le vrai combat."
+      (alreadyApplied
+        ? " Les valeurs actuelles correspondent déjà à ce préréglage. Enregistre la capacité pour conserver tes réglages."
+        : " Aperçu indicatif seulement : appuie sur Appliquer pour changer les valeurs, puis teste le vrai combat.")
     : "Aperçu indicatif : tes réglages actuels sont conservés. Choisis un style puis appuie sur Appliquer, ou personnalise avec les contrôles détaillés.";
 
   const context = root.querySelector("[data-skill-fx-quick-context]");
@@ -9583,7 +9595,7 @@ function writeSkillFeedbackControlsV1(
   renderHumanCameraShakeSequenceV1(root,presentation.impactShakeSequence ?? []);
   syncSkillGlowPresetStateV1(root);
   syncSkillParticlePresetStateV1(root);
-  refreshSkillFxQuickControlStateV1(root, {resetSelection:true});
+  refreshSkillFxQuickControlStateV1(root, {restoreSaved:true});
 }
 
 function writeCaptureFxStarterPresentationFieldsV1(
