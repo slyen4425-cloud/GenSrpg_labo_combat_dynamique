@@ -140,6 +140,7 @@ export function normalizeStatusEffectRuntimeInstanceV1(
       value.sourceSkillId,
       field + ".sourceSkillId"
     ),
+    hitsIntangible: value.hitsIntangible === true,
     appliedAtMs,
     expiresAtMs,
     remainingActionEnds,
@@ -184,6 +185,7 @@ export function createStatusEffectRuntimeInstanceV1({
   definition: definitionInput,
   sourceActorId,
   sourceSkillId = null,
+  hitsIntangible = false,
   appliedAtMs,
   stacks = 1
 }) {
@@ -210,6 +212,7 @@ export function createStatusEffectRuntimeInstanceV1({
     definition,
     sourceActorId,
     sourceSkillId,
+    hitsIntangible,
     appliedAtMs: applied,
     expiresAtMs:
       timed
