@@ -2144,3 +2144,9 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 
 ### CI de code — sentinelle historique zones persistantes
 - CI 38479371767 : 1709 tests PASS / 1 échec d'assertion statique historique dans `tests/unit/persistent-zone-visual-sync-v1.test.mjs` : recherche exacte de `onClock()` sans argument, maintenant remplacé par `onClock(state)` pour le badge. Le vrai comportement `fx.syncPersistentZones` demeure **exclusivement** dans `renderState/onState`, et les deux jobs Chromium sont verts. Extension du périmètre autorisée **uniquement** à la recherche de signature et à une assertion positive du rafraîchissement du compte à rebours, sans supprimer la sentinelle de zones ni toucher au moteur.
+
+## 2026-10-14 — Backlog IA Capture tactique (DOCUMENTATION UNIQUEMENT)
+- Constat utilisateur à conserver : IA ne déclenche jamais l'Esquive et répète ses capacités en rotation ; améliorer pour les tests et jeu réel **plus tard**. Le diagnostic source montre le `skillIndex` cyclique et `runtime.startSkill` uniquement, sans stratégie de réaction défensive.
+- Base production `gh-pages@78bfcee12f21d985eb7b5381581499bc442edfc1` ; checkpoint `checkpoint/lab-start-capture-ai-tactics-backlog-2026-10-14`, branche documentaire `work/lab-capture-ai-tactics-backlog-2026-10-14`.
+- Lot strictement docs : `docs/LAB_CAPTURE_AI_TACTICS_BACKLOG_V1.md`, `docs/LAB_ROADMAP.md` et présent journal. Protection absolue du moteur, IA courante, UI, statuts, timer corrigé, Arc Beam2 validé, assets, données auteur, main, global-assets, GenSrpG/Exploration.
+- Pas d'implémentation ni de nouveaux paramètres supposés. Critère documentaire : CI GREEN au SHA exact, checkpoint GREEN documentaire, FF protégé et CI/Pages. Nouveau chantier AI nécessite décision explicite de conception avec RED et vrai Runtime 1v1/2v2.

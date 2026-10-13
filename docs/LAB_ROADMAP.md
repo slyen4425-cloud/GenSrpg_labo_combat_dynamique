@@ -560,3 +560,18 @@ Le World Builder ne doit ni copier les fichiers ni devenir propriétaire des mé
 - aucune persistance IndexedDB/projet ajoutée dans le laboratoire maintenant ;
 - aucune seconde bibliothèque média ;
 - Creator Audio Import V1 et Creator Visual Import V1 restent des prototypes de session jusqu'au chantier d'intégration application.
+
+
+## Backlog séparé — IA tactique Capture : Esquive et choix de compétences (2026-10-14)
+
+**Statut : conception future seulement, NE PAS IMPLÉMENTER dans le chantier actuel.** L'auteur valide la mécanique Beam Clash/puissance du rayon et demande une IA plus intelligente pour les tests et le futur jeu réel.
+
+Constat confirmé : `src/core/combat/battle-actor-ai-controller.js` effectue une rotation déterministe `skillIndex` sur les capacités autorisées, privilégie certains objectifs de zones, et sélectionne la première cible vivante. Le contrôleur ne pilote pas d'Esquive réactive. Il n'emploie pas une appréciation de danger, du rôle tactique, des PV, de l'effet de statut ou de l'intérêt d'une capacité au moment choisi.
+
+Résultat attendu après conception et validation :
+- **Réactions défensives** : évaluer la menace d'une attaque ennemie visible (`projectile/beam/contact/zone` selon le vrai contrat), les fenêtres d'impact et les charges/cooldowns de l'Esquive native ; ne pas esquiver un tir non esquivable, ne pas « voir » des données interdites ; respecter le timing et le coût comme le joueur ;
+- **Choix tactique** : comparer actions réellement disponibles, portée/cible, PV, soins, protections, dégâts élémentaires, statuts, buffs, debuffs, coût énergie, cooldown, objectifs de combat et usage ultime ; éviter la répétition mécaniquement circulaire et ne pas sacrifier l'efficacité pour du hasard ;
+- **Variété contrôlée** : plusieurs profils IA configurables (agressive/équilibrée/prudente), variabilité maîtrisée reproductible en tests (graine déterministe si du hasard intervient) ; aucune liste de tours fixée ni scripts liés aux noms de capacités ;
+- **Adaptation 1v1/2v2** : évaluer menace et cibles pour chaque acteur, ne pas voler le contrôle à l'allié humain solo, ni contourner `CombatRuntime`, `Combat Rules`, `BattleFormat` ou `Roster Session`.
+
+**Ordre requis quand ce chantier sera autorisé** : diagnostic de l'IA existante -> contrat de décision -> tests RED de réaction/esquive et choix varié -> petit correctif du propriétaire AI -> tests du vrai Runtime 1v1/2v2 -> CI GREEN + smartphone. Les valeurs de difficulté, probabilités, timing de réaction et profils devront être décidés lors de la conception. Aucun travail de moteur ou UI aujourd'hui.
