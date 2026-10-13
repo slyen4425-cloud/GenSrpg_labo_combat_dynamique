@@ -1,6 +1,6 @@
 // UI-only shortcuts over the existing V1 FX presets. Not a new FX or gameplay authority.
-import { applyCaptureFxGlowPresetV1 } from "../catalogs/capture-fx-glow-presets-v1.js";
-import { applyCaptureFxParticlePresetV1 } from "../catalogs/capture-fx-particle-presets-v1.js";
+import { applyCaptureFxGlowPresetV1, captureFxGlowPresetIdForValuesV1 } from "../catalogs/capture-fx-glow-presets-v1.js";
+import { applyCaptureFxParticlePresetV1, captureFxParticlePresetIdForValuesV1 } from "../catalogs/capture-fx-particle-presets-v1.js";
 
 export const CAPTURE_FX_QUICK_PROFILES_V1 = Object.freeze([
   Object.freeze({id:"discreet",label:"Discret",description:"Effets légers pour lire clairement les combats.",glowPresetId:"discreet",particlePresetId:"discreet",shakeAmplitudePx:2}),
@@ -10,6 +10,20 @@ export const CAPTURE_FX_QUICK_PROFILES_V1 = Object.freeze([
 
 export function captureFxQuickProfileByIdV1(id) {
   return CAPTURE_FX_QUICK_PROFILES_V1.find(p=>p.id===id) ?? null;
+}
+
+// Reconstruct a preset choice from the exact saved FX values rather than storing
+// a second persistent preset ID. Advanced custom values remain author-owned.
+export function captureFxQuickProfileIdForValuesV1(presentation = {}) {
+  const glow = captureFxGlowPresetIdForValuesV1(presentation);
+  const particles = captureFxParticlePresetIdForValuesV1(presentation);
+  const shake = Number(presentation.impactShakeAmplitudePx);
+  const preset = CAPTURE_FX_QUICK_PROFILES_V1.find(profile =>
+    profile.glowPresetId === glow &&
+    profile.particlePresetId === particles &&
+    profile.shakeAmplitudePx === shake
+  );
+  return preset?.id ?? "current";
 }
 
 export function applyCaptureFxQuickProfileV1({profileId,presentation = {}}) {
