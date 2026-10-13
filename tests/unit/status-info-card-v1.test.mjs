@@ -160,7 +160,7 @@ test("status info derives stat modifiers and immobilization from the active defi
   });
   assert.deepEqual(
     root.effectLines,
-    ["Impossible de se déplacer"]
+    ["Déplacement et approches impossibles ; approche en cours arrêtée. Attaques stationnaires possibles."]
   );
 });
 
