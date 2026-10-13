@@ -487,7 +487,8 @@ function applyDotTick({
       targetActorId: fighterId,
       damage: amount,
       atMs,
-      hitsIntangible: instance.hitsIntangible === true
+      hitsIntangible: instance.hitsIntangible === true,
+      incomingKind: "dot"
     }).state;
   }
 
@@ -510,7 +511,8 @@ function applyDotTick({
     targetActorId: fighterId,
     damage: damage.damage,
     atMs,
-    hitsIntangible: instance.hitsIntangible === true
+    hitsIntangible: instance.hitsIntangible === true,
+    incomingKind: "dot"
   }).state;
 }
 
