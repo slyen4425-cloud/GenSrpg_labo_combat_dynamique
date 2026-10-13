@@ -86,3 +86,58 @@ test("zero-effect old stack status remains compatible",()=>{
  assert.equal(game.fighters.b.statusEffects[0].stacks,3);
  assert.equal(game.fighters.b.statusEffects[0].shieldRemaining,9);
 });
+
+
+test("threshold 1 fires on first application, while refresh and no-threshold stay unchanged",()=>{
+  const once = status({onStackThreshold:{count:1,consume:"reset",effects:[amount("heal",9)]}});
+  const a=add(start(),once);
+  assert.equal(a.fighters.b.hp,79);
+  assert.equal(a.fighters.b.statusEffects.some(x=>x.definition.id===once.id),false);
+});
+
+test("threshold events reach the same tactical outcome stream as an ordinary action",async()=>{
+  const {applyImmediateTacticalEffectsV1} = await import("../../src/core/combat/immediate-tactical-effects-v1.js");
+  const s=status({onStackThreshold:{count:2,consume:"reset",
+    effects:[amount("damage",7),amount("energy_drain",3)]}});
+  const effect={kind:"apply_status",targetScope:"target",status:s};
+  let game=start();
+  let result=applyImmediateTacticalEffectsV1({state:game,actorId:"a",targetId:"b",
+    skill:{id:"charges",effects:[effect]},atMs:0,combatAtMs:0});
+  assert.equal(result.events.some(x=>x.type==="hit"),false);
+  result=applyImmediateTacticalEffectsV1({state:result.state,actorId:"a",targetId:"b",
+    skill:{id:"charges",effects:[effect]},atMs:50,combatAtMs:0});
+  assert.equal(result.state.fighters.b.hp,63);
+  assert.equal(result.state.fighters.b.energy,17);
+  assert.deepEqual(result.events.filter(x=>["hit","energy-drained"].includes(x.type)).map(x=>x.type),
+    ["hit","energy-drained"]);
+  assert.equal(result.events.find(x=>x.type==="hit").atMs,50);
+});
+
+test("editor tactical skill builder preserves native multi-effect threshold contract",async()=>{
+  const {buildHumanTacticalSkillEffectsV1}=await import("../../src/ui/capture-editor-human-v2.js");
+  const output=buildHumanTacticalSkillEffectsV1([{
+    kind:"apply_status",targetScope:"target",status:{
+      id:"stack-author",kind:"shield",polarity:"beneficial",amount:4,
+      durationSeconds:6,stacking:"stack",maxStacks:5,
+      onStackThreshold:{count:3,consume:"reset",effects:[
+        {kind:"heal",amount:10,targetScope:"target"},
+        {kind:"energy_restore",amount:3,targetScope:"self"},
+        {kind:"apply_status",targetScope:"target",status:{
+          id:"status-result",kind:"stun",polarity:"detrimental",
+          durationSeconds:2,stacking:"replace"
+        }}
+      ]}
+    }
+  }]);
+  const rule=output[0].status.onStackThreshold;
+  assert.equal(rule.count,3);assert.equal(rule.effects.length,3);
+  assert.equal(rule.effects[2].status.durationMs,2000);
+  assert.equal(output[0].status.durationMs,6000);
+});
+
+test("stack threshold rejects a non-tactical zone as a direct immediate effect",()=>{
+  assert.throws(()=>status({onStackThreshold:{count:2,consume:"reset",
+    effects:[{kind:"persistent_zone",targetScope:"target",zoneId:"z",radius:"short",
+      durationMs:1000,tickIntervalMs:1000,reactivation:"refresh",maxActivations:1,
+      radiusGrowthSteps:0,tickEffect:{kind:"damage",targetScope:"target",amount:1}}]}}),/Unsupported onStackThreshold effect/);
+});
