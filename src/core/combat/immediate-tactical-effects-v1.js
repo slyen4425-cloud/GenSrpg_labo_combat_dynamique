@@ -212,7 +212,8 @@ export function applyImmediateTacticalEffectsV1({
   skill,
   atMs,
   combatAtMs = atMs,
-  battleFormat = null
+  battleFormat = null,
+  thresholdDepth = 0
 }) {
   const unsupported =
     unsupportedImmediateTacticalEffectV1(
@@ -411,7 +412,8 @@ export function applyImmediateTacticalEffectsV1({
           sourceSkillId: skill.id,
           status: effect.status,
           atMs: combatAtMs,
-          hitsIntangible: skill.hitsIntangible === true
+          hitsIntangible: skill.hitsIntangible === true,
+          thresholdDepth
         });
         events.push(Object.freeze({
           type: "status-applied",
