@@ -973,7 +973,7 @@
             <input type="number" min="0" step="0.1" data-skill-projectile-power value="1">
           </label>
           <p class="note">
-            <strong>Puissance de collision :</strong> 0 = ne participe pas aux collisions. Disponible pour les projectiles et les rayons ; les rayons couvrent leur trajectoire pendant leur phase de tir. À puissance égale, les deux attaques sont annulées. À puissance différente, la plus forte continue (ex. 2 contre 1). Cette puissance est indépendante des dégâts et des éléments. Les autres formes de capacité ne participent pas à cette règle.
+            <strong>Puissance de collision :</strong> 0 = hors système de clash : l’attaque ne participe pas aux collisions. Minimum actif = 1. Les projectiles et les rayons se rencontrent pendant leur phase de tir. 1 contre 1 = puissance égale, les deux attaques sont annulées. 2 contre 1 = la puissance 2 survit et continue son attaque. La puissance de collision est indépendante des dégâts ; l’élément n’intervient pas dans cette règle. Les autres formes de capacité restent hors système.
           </p>
         </div>
       </article>
