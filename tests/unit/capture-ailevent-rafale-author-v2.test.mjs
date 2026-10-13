@@ -29,7 +29,8 @@ const slots=["lib_gust","cap_air_atk_3","lib_tailwind",null,null];
 test("Exact author JSON files and single canonical showcase ownership",()=>{
  for(const f of files){
   const raw=read(f.path);
-  assert.equal(createHash("sha256").update(raw).digest("hex"),f.hash);
+  const historicAuthorBytes=f.kind==="skill" ? raw.replace('"assetId": "pack:capture:icon-skill-rafale-01"','"assetId": "core:icon-skill-energy-beam-01"') : raw;
+  assert.equal(createHash("sha256").update(historicAuthorBytes).digest("hex"),f.hash);
   assert.equal(importCaptureTransferJsonV1(raw,{statRegistry:registry}).kind,f.kind);
  }
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===files[0].path).length,1);
@@ -63,6 +64,7 @@ test("Rafale authored projectile, damage and media preserve original values",()=
  assert.equal(s.definition.effects[0].amount,4);
  assert.equal(s.definition.effects[0].channel,"air");
  assert.equal(s.definition.effects[0].ignoreDamageReductionPct,100);
+ assert.equal(s.presentation.visual.icon.assetId,"pack:capture:icon-skill-rafale-01");
  assert.equal(s.presentation.visual.travel.assetId,"pack:capture:sprite-air-wind-bolt-01");
  assert.equal(s.presentation.visual.travel.anchor,"mouth");
  assert.equal(s.presentation.visual.impact.assetId,"pack:capture:sprite-air-wind-impact-01");

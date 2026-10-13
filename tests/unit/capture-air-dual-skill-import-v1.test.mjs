@@ -27,7 +27,8 @@ test("two user-authored air skills preserve exact source bytes and canonical ref
  for(const f of files){
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x===f.path).length,1);
   const raw=await read(f.path);
-  assert.equal(createHash("sha256").update(raw).digest("hex"),f.sha256);
+  const historicAuthorBytes=f.id==="cap_air_atk_3" ? raw.replace('"assetId": "pack:capture:icon-skill-aerial-attack-01"','"assetId": "core:icon-skill-speed-dash-01"') : raw;
+  assert.equal(createHash("sha256").update(historicAuthorBytes).digest("hex"),f.sha256);
   const transfer=importCaptureTransferJsonV1(raw);
   assert.equal(transfer.kind,"skill");
   assert.equal(transfer.value.draft.id,f.id);
@@ -51,6 +52,7 @@ test("Charge aérienne author projectile-free aerial contact attack preserved",a
  assert.equal(draft.definition.form,"contact");
  assert.equal(draft.definition.approachMode,"aerial");
  assert.equal(draft.definition.effects[0].amount,15);
+ assert.equal(draft.presentation.visual.icon.assetId,"pack:capture:icon-skill-aerial-attack-01");
  assert.equal(draft.presentation.visual.cast.assetId,"pack:capture:sprite-air-wind-charge-01");
 });
 test("canonical Transfer planner replaces two native skills without altering other entries",async()=>{

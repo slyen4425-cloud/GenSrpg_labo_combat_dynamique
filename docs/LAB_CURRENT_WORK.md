@@ -1701,3 +1701,9 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Tests : vrais transferts JSON, `createCaptureSkillPresentationAssetsV2`, résolveur canonique et chemins WebP ; CI générale au SHA exact, checkpoint GREEN et fast-forward sous lease.
 - Risque : cache versionné, utilisateurs ayant des sauvegardes préexistantes, test visuel Android restant ; aucun écrasement de sauvegarde.
 - Statut : EN COURS jusqu'à CI + checkpoint, validation smartphone distincte.
+
+### Compatibilité des sentinelles d'exports auteurs (2026-10-13)
+
+- CI initiale `38336429864` : 1596/1598 tests Node, seules deux sentinelles de SHA historiques ont échoué suite au remplacement demandé des IDs d'icône de Rafale et Charge aérienne. Tests moteur/compétences/Chromium non en cause.
+- Périmètre additionnel limité : `tests/unit/capture-ailevent-rafale-author-v2.test.mjs`, `tests/unit/capture-air-dual-skill-import-v1.test.mjs` ; normaliser **uniquement** le nouvel `assetId` d'icône vers l'ancien pour calculer le SHA historique et conserver tous les autres octets d'auteur intacts ; affirmer également les nouvelles icônes en runtime.
+- Les deux JSON auteurs sont restitués sans newline final, comme à l'origine. La seule différence d'octets demeure l'`assetId` de l'icône. CI complète à refaire, GREEN suspendu jusque-là.
