@@ -1715,6 +1715,7 @@ export async function mountCoop2v2Test({
       }
     });
     rosterPanel = mountCaptureCombatRosterPanelV1({ root, controller: rosterController, format, commands, session,
+      getCreatureDescriptor: creatureId => visuals.getCreatureDescriptor(creatureId),
       getRuntime: () => runtime, isTransitionPending: () => koTransitions.size > 0, setStatus,
       reserveTargetCandidates: () => pendingSkillId === null ? [] : reserveSkillTargetOptions(skillRefs.get(pendingSkillId)?.skill),
       onTargetReserve(targetRef) {
