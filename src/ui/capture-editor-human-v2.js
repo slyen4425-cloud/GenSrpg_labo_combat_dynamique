@@ -413,6 +413,7 @@ function humanTacticalStatusToContractV1(
     output.domains = stableIds(
       status.domains
     );
+    if (status.intangible === true) output.intangible = true;
   }
 
   return output;
@@ -2518,6 +2519,7 @@ export function humanSkillEditorFieldsFromDraftV1(
         : [...definition.hitPresenceStates],
     dodgeable:
       definition.dodgeable !== false,
+    hitsIntangible: definition.hitsIntangible === true,
     targetLocations:
       [...(definition.targetLocations ?? ["active"])],
     energyCost: definition.energyCost,
@@ -2826,6 +2828,7 @@ export function buildHumanSkillDraftV1(fields) {
             ),
       dodgeable:
         fields.dodgeable !== false,
+      hitsIntangible: fields.hitsIntangible === true,
       targetLocations:
         stableIds(
           fields.targetLocations ?? ["active"]
@@ -3579,6 +3582,7 @@ function writeSkillDraftFields(
     "[data-skill-dodgeable]"
   ).checked =
     fields.dodgeable !== false;
+  one(root, "[data-skill-hits-intangible]").checked = fields.hitsIntangible === true;
 
   for (
     const input of root.querySelectorAll(
@@ -3696,6 +3700,7 @@ function prepareNewSkillDraftFields(
     root,
     "[data-skill-dodgeable]"
   ).checked = true;
+  one(root, "[data-skill-hits-intangible]").checked = false;
   for (
     const input of root.querySelectorAll(
       "[data-skill-location-scope]"
@@ -4686,7 +4691,13 @@ function syncHumanSkillEffectRowV1(
     )?.value ?? "";
 
   const statusPolarity = row.querySelector("[data-skill-status-polarity]");
-  if (statusPolarity && statusKind === "projectile_mirror") {
+  const intangibleToggle = row.querySelector("[data-skill-status-intangible]");
+  const intangibleSelected = statusKind === "immunity" && intangibleToggle?.checked === true;
+  for (const domain of row.querySelectorAll("[data-skill-status-immunity-domain]")) {
+    if (intangibleSelected) domain.checked = true;
+    domain.disabled = intangibleSelected;
+  }
+  if (statusPolarity && (statusKind === "projectile_mirror" || intangibleSelected)) {
     statusPolarity.value = "beneficial";
     statusPolarity.disabled = true;
   } else if (statusPolarity) {
@@ -5215,6 +5226,16 @@ function appendHumanSkillEffectV1(
     );
     immunityConfig.append(field);
   }
+  const intangibleLabel = document.createElement("label");
+  intangibleLabel.className = "check";
+  const intangibleInput = document.createElement("input");
+  intangibleInput.type = "checkbox";
+  intangibleInput.dataset.skillStatusIntangible = "true";
+  intangibleInput.checked = status.intangible === true;
+  intangibleLabel.append(intangibleInput, document.createTextNode(
+    "Immatériel : traverse les dégâts et malus ordinaires (sauf attaque explicitement compatible)"
+  ));
+  immunityConfig.append(intangibleLabel);
 
   const statusVisualBox =
     document.createElement("div");
@@ -6036,6 +6057,9 @@ function readHumanSkillEffectsV1(root) {
         ]
           .filter((input) => input.checked)
           .map((input) => input.value);
+        if (row.querySelector("[data-skill-status-intangible]")?.checked === true) {
+          status.intangible = true;
+        }
       }
 
       return {
@@ -8285,6 +8309,7 @@ function readSkillFields(root) {
         root,
         "[data-skill-dodgeable]"
       ).checked,
+    hitsIntangible: one(root, "[data-skill-hits-intangible]").checked,
     targetLocations:
       checkedValues(
         root,
@@ -11469,6 +11494,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           "[data-skill-effect-kind], " +
           "[data-skill-status-kind], " +
           "[data-skill-status-stacking], " +
+          "[data-skill-status-intangible], " +
           "[data-skill-status-visual-mode], " +
           "[data-skill-zone-effect-kind], " +
           "[data-skill-zone-status-kind], " +
