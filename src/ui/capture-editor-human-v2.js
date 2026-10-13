@@ -42,7 +42,8 @@ import {
 import {
   STATUS_EFFECT_V1_KINDS,
   STATUS_EFFECT_V1_POLARITIES,
-  STATUS_EFFECT_V1_STACKING
+  STATUS_EFFECT_V1_STACKING,
+  DAMAGE_REFLECTION_INCOMING_KINDS_V1
 } from "../contracts/status-effect-v1.js";
 import {
   CAPTURE_ULTIMATE_SKILL_SLOT_ID,
@@ -416,6 +417,10 @@ function humanTacticalStatusToContractV1(
 
   if (output.kind === "damage_reflection") {
     output.percent = finiteNumber(status.percent, "Renvoi des dégâts reçus (%)");
+    if (status.incomingKinds !== undefined) output.incomingKinds = stableIds(status.incomingKinds);
+    if (status.contactDamage !== undefined) {
+      output.contactDamage = finiteNumber(status.contactDamage, "Riposte de contact");
+    }
   }
 
   if (output.kind === "immunity") {
@@ -576,6 +581,7 @@ export function buildHumanTacticalSkillEffectsV1(
           "Activations max de zone"
         ),
         radiusGrowthSteps,
+        ...(effect.damageTrigger !== undefined ? {damageTrigger:effect.damageTrigger} : {}),
         ...(effect.persistAfterRecall === true ? {persistAfterRecall:true} : {}),
         ...(tickEffect.kind === "apply_status"
           ? {statusBehavior:effect.statusBehavior ?? "while_inside"} : {}),
@@ -4667,6 +4673,71 @@ function syncHumanStatusVisualFieldsV1(
 }
 
 
+// Author fields only: both the regular status and a zone-applied status
+// use the same native damage_reflection contract. No UI-side hit decision.
+function appendReflectionAuthorControlsV1(host, status, group) {
+  const section = document.createElement("div");
+  section.className = "skill-status-config__specific";
+  section.dataset.reflectionControls = group;
+  const all = document.createElement("input");
+  all.type = "checkbox";
+  all.dataset.reflectionAll = "true";
+  all.checked = status.incomingKinds === undefined;
+  const label = document.createElement("label");
+  label.className = "check";
+  label.append(all, document.createTextNode("Toutes les attaques (ancien comportement)"));
+  section.append(label);
+  const kinds = document.createElement("div");
+  kinds.className = "skill-status-config__grid";
+  const captions = {
+    contact:"Corps à corps", projectile:"Projectile direct",
+    beam:"Rayon", area:"Attaque de zone", zone:"Zone persistante",
+    dot:"Dégâts périodiques", scheduled:"Effet différé", other:"Autre dégât"
+  };
+  for (const kind of DAMAGE_REFLECTION_INCOMING_KINDS_V1) {
+    const field = document.createElement("label");
+    field.className = "check";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = kind;
+    checkbox.dataset.reflectionKind = "true";
+    checkbox.checked = status.incomingKinds?.includes(kind) ?? false;
+    field.append(checkbox, document.createTextNode(captions[kind] ?? kind));
+    kinds.append(field);
+  }
+  section.append(kinds);
+  const fixed = tacticalNumberInputV1("reflectionContactDamage" + group,
+    status.contactDamage ?? 0, {min:0,step:"0.1"});
+  fixed.dataset.reflectionContactDamage = "true";
+  section.append(tacticalFieldV1(
+    "Armure de pointes : dégâts fixes sur coup de contact touchant (même avec bouclier)",
+    fixed
+  ));
+  const hint = document.createElement("small");
+  hint.className = "note";
+  hint.textContent = "Le pourcentage dépend des PV réellement perdus ; la riposte fixe exige un coup de corps à corps effectivement touchant. Une zone au déclenchement « entrée uniquement » se configure séparément dans Effet de zone.";
+  section.append(hint);
+  const sync = () => { kinds.hidden = all.checked; };
+  all.addEventListener("change", sync);
+  sync();
+  host.append(section);
+  return section;
+}
+function readReflectionAuthorControlsV1(section, status) {
+  if (!section) return;
+  const all = section.querySelector("[data-reflection-all]")?.checked === true;
+  if (!all) {
+    const incomingKinds = [...section.querySelectorAll("[data-reflection-kind]")]
+      .filter(x => x.checked).map(x => x.value);
+    if (incomingKinds.length === 0) {
+      throw new RangeError("Sélectionne au moins une catégorie d'attaque pour le renvoi de dégâts");
+    }
+    status.incomingKinds = incomingKinds;
+  }
+  const fixed = Number(section.querySelector("[data-reflection-contact-damage]")?.value ?? 0);
+  if (fixed > 0) status.contactDamage = fixed;
+}
+
 const STACK_THRESHOLD_EFFECT_KINDS_V1 = Object.freeze([
   "damage", "heal", "energy_restore", "energy_drain",
   "apply_status", "cleanse", "dispel"
@@ -4746,6 +4817,7 @@ function appendStackThresholdEffectRowV1(host, effect = {}) {
   intangible.checked = st.intangible === true;
   immunity.append(intangible, document.createTextNode("Immatériel (immunité dégâts et malus)"));
   statusBox.append(immunity);
+  const reflectionSubform = appendReflectionAuthorControlsV1(statusBox, st, "stack-result");
   const note = document.createElement("small");
   note.className = "note";
   note.textContent = "Le buff/malus se crée dans le moteur de statuts existant. Les autres types d'effets utilisent les mêmes règles de combat.";
@@ -4769,6 +4841,7 @@ function appendStackThresholdEffectRowV1(host, effect = {}) {
     stChannel.parentElement.hidden = sk !== "damage_over_time";
     stStat.parentElement.hidden = sk !== "stat_modifier";
     immunity.hidden = sk !== "immunity";
+    reflectionSubform.hidden = sk !== "damage_reflection";
     if (sk === "projectile_mirror" || (sk === "immunity" && intangible.checked)) {
       pol.value = "beneficial";
     }
@@ -4818,6 +4891,7 @@ function readStackThresholdEffectRowsV1(host) {
         st.amount = amount;
       } else if (sk === "damage_reflection") {
         st.percent = amount;
+        readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="stack-result"]'), st);
       } else if (sk === "immunity") {
         st.domains = ["damage","negative_status"];
         if (row.querySelector("[data-stack-threshold-status-intangible]")?.checked) st.intangible = true;
@@ -5362,6 +5436,7 @@ function appendHumanSkillEffectV1(
   reflectionConfig.append(
     tacticalFieldV1("Dégâts réellement reçus renvoyés (%)", reflectionPercent)
   );
+  appendReflectionAuthorControlsV1(reflectionConfig, status, "main");
 
   const mirrorHelp = document.createElement("small");
   mirrorHelp.className = "note";
@@ -5839,6 +5914,11 @@ function appendHumanSkillEffectV1(
   createOption(zoneStatusBehavior, "while_inside", "Actif uniquement dans la zone");
   createOption(zoneStatusBehavior, "on_enter", "À l’entrée : conserve sa durée après sortie");
 
+  const zoneDamageTrigger = document.createElement("select");
+  zoneDamageTrigger.dataset.skillZoneDamageTrigger = "true";
+  createOption(zoneDamageTrigger, "entry_and_tick", "À l'entrée et périodiquement (historique)");
+  createOption(zoneDamageTrigger, "entry_only", "Uniquement à chaque entrée réelle");
+
   const zoneTickDamage =
     tacticalNumberInputV1(
       "skillZoneTickDamage",
@@ -5931,6 +6011,12 @@ function appendHumanSkillEffectV1(
       zs.deltaPoints ?? 25,{step:"0.1"},"stat_modifier"),
     zoneStatusNumber("Dégâts renvoyés (%)","skillZoneStatusReflectionPercent",
       zs.percent ?? 25,{min:0,max:100,step:"1"},"damage_reflection"),
+    (() => {
+      const container = document.createElement("div");
+      container.dataset.skillZoneStatusConfigKind = "damage_reflection";
+      appendReflectionAuthorControlsV1(container, zs, "zone-status");
+      return container;
+    })(),
     zoneStatusNumber("Temps de trajet (%)","skillZoneStatusApproachModifierPct",
       zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
     zoneStatusNumber("Régénération d'énergie (%)","skillZoneStatusEnergyRegenModifierPct",
@@ -5977,6 +6063,7 @@ function appendHumanSkillEffectV1(
   zoneDamageBox.className="skill-status-config__grid";
   zoneDamageBox.dataset.skillZoneEffectConfigKind="damage";
   zoneDamageBox.append(
+    tacticalFieldV1("Déclencher les dégâts", zoneDamageTrigger),
     tacticalFieldV1("Intervalle entre les dégâts (secondes)",zoneTick),
     tacticalFieldV1("Dégâts à chaque intervalle",zoneTickDamage),
     tacticalFieldV1("Élément des dégâts",zoneChannel)
@@ -6019,6 +6106,7 @@ function appendHumanSkillEffectV1(
     effect?.radius ?? "short";
   zoneReactivation.value = effect?.reactivation ?? "refresh";
   zoneEffectKind.value = effect?.tickEffect?.kind ?? "damage";
+  zoneDamageTrigger.value = effect?.damageTrigger ?? "entry_and_tick";
   zoneStatusBehavior.value = effect?.statusBehavior ?? "while_inside";
   zoneStatusKind.value = zs.kind ?? "stat_modifier";
   zoneStatusPolarity.value = zs.polarity ?? "beneficial";
@@ -6117,6 +6205,7 @@ function readHumanSkillEffectsV1(root) {
         zs.deltaPoints=Number(row.querySelector("[data-skill-zone-status-delta-points]").value);
       } else if(zsKind==="damage_reflection"){
         zs.percent=Number(row.querySelector("[data-skill-zone-status-reflection-percent]").value);
+        readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="zone-status"]'), zs);
       } else if(zsKind==="approach_time_modifier"){
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-approach-modifier-pct]").value);
       } else if(zsKind==="energy_regen_modifier"){
@@ -6173,6 +6262,8 @@ function readHumanSkillEffectsV1(root) {
           ).value
         ),
         ...(zoneEffectKind==="damage"?{
+          ...(row.querySelector("[data-skill-zone-damage-trigger]").value === "entry_only"
+            ? {damageTrigger:"entry_only"} : {}),
           tickDamage:Number(row.querySelector("[data-skill-zone-tick-damage]").value),
           channel:row.querySelector("[data-skill-zone-channel]").value || null
         }:{})
@@ -6272,6 +6363,7 @@ function readHumanSkillEffectsV1(root) {
         );
       } else if (statusKind === "damage_reflection") {
         status.percent = Number(row.querySelector("[data-skill-status-reflection-percent]").value);
+        readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="main"]'), status);
       } else if (statusKind === "immunity") {
         status.domains = [
           ...row.querySelectorAll(
