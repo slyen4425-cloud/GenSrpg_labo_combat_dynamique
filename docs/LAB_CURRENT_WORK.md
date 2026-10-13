@@ -2141,3 +2141,6 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 
 ### Compteur de charges — correction branchée sur le vrai onClock
 - TDD RED commit `53c42d0868f13b11b7d11554cdb2f386a9d67548` / CI `38479106164` FAILURE attendue. Code commit `e51e567fe5e5f60346e01d88bc49d39c8892ccb5` : seul le HUD existant se met à jour depuis le snapshot natif `onClock`; label entier `ceil` + barrette de durée; les deux chemins Combat UI raccordés. Aucun changement Status/Combat Core, ni nouvelle horloge. Rapport `docs/LAB_STACK_EXPIRY_CLOCK_UI_V1.md`. CI complète et gates finales obligatoires, test Android non revendiqué.
+
+### CI de code — sentinelle historique zones persistantes
+- CI 38479371767 : 1709 tests PASS / 1 échec d'assertion statique historique dans `tests/unit/persistent-zone-visual-sync-v1.test.mjs` : recherche exacte de `onClock()` sans argument, maintenant remplacé par `onClock(state)` pour le badge. Le vrai comportement `fx.syncPersistentZones` demeure **exclusivement** dans `renderState/onState`, et les deux jobs Chromium sont verts. Extension du périmètre autorisée **uniquement** à la recherche de signature et à une assertion positive du rafraîchissement du compte à rebours, sans supprimer la sentinelle de zones ni toucher au moteur.
