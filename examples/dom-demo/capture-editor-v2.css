@@ -1562,88 +1562,135 @@ html {
 }
 
 
-/* Solo landscape HUD V1 — one flat command dock, not an ally card stacked
-   on top of a narrow vertical tower. Scoped to opt-in solo, leaving AI and
-   single-actor previews visually and functionally unchanged. */
+/* Combat 2v2 readable mobile HUD and enemy bench V1.
+   Active count comes from BattleFormat: NEVER change 1v1 layouts here.
+   Keep opposite cards separated so two fighters can be identified at a glance. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--opponent {
+  top: .45rem;
+  right: .45rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--opponent-b {
+  top: .45rem;
+  left: clamp(4.5rem, 8%, 7rem);
+  right: auto;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] > .combat-test-enemy-reserves {
+  top: clamp(2.25rem, 7dvh, 3rem);
+  left: 33%;
+  right: auto;
+  width: clamp(6.6rem, 17%, 9rem);
+  max-width: 22%;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] > .combat-test-enemy-reserves .combat-test-enemy-reserves__body {
+  left: 0;
+  right: auto;
+}
+.combat-test-enemy-reserves__empty {
+  margin: .25rem 0;
+  color: #b8ced9;
+  font-size: .7rem;
+  line-height: 1.35;
+}
+.combat-test-enemy-reserves__empty[hidden] { display: none; }
+
+/* Restore a visible second ally: its actual render slot moves toward arena
+   center, while the command dock loses the huge 72%-wide footprint.
+   The renderer/collision/FX all read these same real DOM positions. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .fighter--ally {
+  left: 52%;
+}
+
+/* Only optional solo TWO-active HUD: the historical 1v1 and AI 2v2
+   keep their own controls intact. */
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .coop-command-stack {
   display: grid;
-  grid-template-columns: minmax(6.2rem, 0.27fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: end;
-  width: min(42rem, 72%);
-  gap: clamp(0.22rem, 0.9dvh, 0.38rem);
+  width: min(19rem, 34%);
+  gap: .18rem;
 }
-
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .squad-card--command-ally {
-  grid-template-columns: 1.65rem minmax(0, 1fr);
-  align-content: center;
-  align-self: end;
-  min-height: 3.7rem;
-  gap: 0.15rem;
-  padding: 0.23rem 0.33rem;
-  border-radius: 0.55rem;
+  position: absolute;
+  right: calc(100% + 8.5rem);
+  bottom: 0;
+  left: auto;
+  width: clamp(8rem, 14vw, 10rem);
+  min-height: 3.35rem;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  align-items: center;
+  gap: .22rem;
+  padding: .24rem .3rem;
 }
-
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__creature-icon {
-  width: 1.55rem;
-  height: 1.55rem;
-  flex: 0 0 auto;
+  width: 1.65rem;
+  height: 1.65rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__body {
-  gap: 0.11rem;
+  gap: .1rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .squad-card--command-ally strong {
-  font-size: clamp(0.56rem, 1.8dvh, 0.74rem);
+  font-size: clamp(.57rem, 1.8dvh, .73rem);
 }
-
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .squad-card--local-full {
-  width: min(11rem, 24%);
-  min-height: 3.65rem;
-  padding: 0.28rem 0.34rem;
-  gap: 0.16rem;
+  width: min(11rem, 23%);
+  min-height: 3.6rem;
+  padding: .27rem .33rem;
+  gap: .16rem;
 }
-
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .coop-controls {
   min-width: 0;
-  padding: 0.28rem 0.38rem;
-  gap: 0.14rem;
-  border-radius: 0.6rem;
+  gap: .12rem;
+  padding: .22rem .28rem;
+  border-radius: .55rem;
 }
-
+.capture-preview-shell[data-landscape-required="true"]
+  [data-local-control-mode="solo-dual"] .hud__energy-orbs {
+  gap: .1rem;
+  padding: .05rem 0;
+  min-height: 1rem;
+}
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .action-option--skill {
-  min-height: clamp(2.8rem, 8.4dvh, 3.7rem);
+  aspect-ratio: auto;
+  min-height: clamp(2.45rem, 9.2dvh, 3.05rem);
+  height: clamp(2.45rem, 9.2dvh, 3.05rem);
+  padding: .1rem;
 }
-
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .action-option__icon {
-  width: clamp(1.65rem, 5.2dvh, 2.05rem);
-  height: clamp(1.65rem, 5.2dvh, 2.05rem);
+  width: clamp(1.35rem, 4.9dvh, 1.8rem);
+  height: clamp(1.35rem, 4.9dvh, 1.8rem);
 }
-
-/* Esquive stays a genuine native control, adjacent to the horizontal dock,
-   rather than floating underneath the enemy cards. */
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .combat-dodge-action--arena {
-  right: calc(72% + 0.55rem);
-  bottom: 0.65rem;
+  right: calc(min(19rem, 34%) + .58rem);
+  bottom: .6rem;
 }
-
 @media (max-height: 440px) and (orientation: landscape) {
   .capture-preview-shell[data-landscape-required="true"]
     [data-local-control-mode="solo-dual"] .coop-command-stack {
-    width: min(40rem, 70%);
-    grid-template-columns: minmax(5.6rem, 0.24fr) minmax(0, 1fr);
+    width: min(18rem, 35%);
+  }
+  .capture-preview-shell[data-landscape-required="true"]
+    [data-local-control-mode="solo-dual"] .squad-card--command-ally {
+    right: calc(100% + 6rem);
+    width: clamp(7.3rem, 13vw, 9rem);
   }
   .capture-preview-shell[data-landscape-required="true"]
     [data-local-control-mode="solo-dual"] .combat-dodge-action--arena {
-    right: calc(70% + 0.5rem);
+    right: calc(min(18rem, 35%) + .5rem);
   }
 }
 
