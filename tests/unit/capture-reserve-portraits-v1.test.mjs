@@ -62,7 +62,7 @@ test("reserve rows show their own canonical creature icon, preserve KO and missi
     assert.equal(localImg.dataset.assetId,"asset:beta");
     assert.equal(localImg.alt,"");
     assert.equal(localReserve.attributes["aria-pressed"],"true");
-    assert.match(localReserve.textContent + localReserve.children.map(n=>n.textContent).join(" "),"Beta");
+    assert.match(localReserve.textContent + localReserve.children.map(n=>n.textContent).join(" "),/Beta/);
 
     const enemyKO=nodes.find(n=>n.dataset.enemyReserveMemberId==="e1");
     const enemyPortrait=enemyKO.children.find(n=>n.tagName==="IMG");
@@ -74,6 +74,6 @@ test("reserve rows show their own canonical creature icon, preserve KO and missi
     const noImage=nodes.find(n=>n.dataset.enemyReserveMemberId==="e2");
     assert.equal(noImage.children.some(n=>n.tagName==="IMG" && !n.hidden),false,
       "no fabricated placeholder asset");
-    assert.match(noImage.children.map(n=>n.textContent).join(" "),"Inconnu");
+    assert.match(noImage.children.map(n=>n.textContent).join(" "),/Inconnu/);
   } finally { ui.dispose(); }
 });
