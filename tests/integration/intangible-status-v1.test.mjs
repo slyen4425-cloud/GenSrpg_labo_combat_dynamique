@@ -153,3 +153,61 @@ test("expiration restores ordinary contact and damage while non-target teammates
   assert.equal(hit.state.fighters.source.knockoutsTotal,1);
   assert.equal(hit.state.fighters.teammate.hp,100);
 });
+
+
+test("native DoT keeps the original skill's intangible authorization across later ticks", () => {
+  let s = state();
+  const dot = id => normalizeStatusEffectV1({
+    id, kind:"damage_over_time", polarity:"detrimental",
+    durationMs:3000, tickIntervalMs:1000, stacking:"replace",
+    amount:12, channel:"physical", damageMode:"fixed"
+  });
+  s = applyStatusEffectV1({state:s,targetActorId:"target",sourceActorId:"source",
+    sourceSkillId:"ordinary-poison",status:dot("ordinary-dot")});
+  s = applyStatusEffectV1({state:s,targetActorId:"target",sourceActorId:"source",
+    sourceSkillId:"phase-poison",status:dot("phase-dot"),hitsIntangible:true});
+  s=grant(s);
+  s=advanceStatusEffectsV1({state:s,deltaMs:1000});
+  assert.equal(s.fighters.target.hp,88,"ordinary DoT blocked; explicit phase DoT uses same native tick");
+  assert.equal(s.fighters.source.damageDealtTotal,12);
+});
+
+test("persistent damage zone inherits authored intangible strike without a second tick authority", () => {
+  for (const hitsIntangible of [false,true]) {
+    const format = {
+      actors:[{actorId:"source"},{actorId:"target"}],
+      teamOf:id=>id==="source"?"local":"enemy"
+    };
+    const session=createCombatSession({
+      distance:"short",fighters:[fighter("source"),fighter("target")],
+      battleFormat:format
+    });
+    assert.equal(session.useSkill({actorId:"target",targetId:"target",
+      skill:normalizeSkillDefinition({
+        id:"phase-self",name:"phase-self",category:"buff_debuff",form:"self",
+        approachMode:"none",energyCost:0,preparationMs:0,travelMs:0,
+        recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
+        targetRelations:["self"],effect:{damage:0},effects:[{
+          kind:"apply_status",targetScope:"self",status:intangible()
+        }]
+      })
+    }).ok,true);
+    const zoneSkill=normalizeSkillDefinition({
+      id:"phase-flames",name:"phase-flames",category:"offensive",form:"aura",
+      approachMode:"none",energyCost:0,preparationMs:0,travelMs:0,
+      recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
+      targetRelations:["enemy"],hitsIntangible,effect:{damage:0},
+      effects:[{
+        kind:"persistent_zone",targetScope:"all_enemies",zoneId:"phase-zone",
+        radius:"short",durationMs:3000,tickIntervalMs:1000,
+        reactivation:"reinforce",maxActivations:1,radiusGrowthSteps:0,
+        tickEffect:{kind:"damage",targetScope:"all_enemies",
+          amount:15,channel:"physical"}
+      }]
+    });
+    assert.equal(session.useSkill({actorId:"source",targetId:"target",skill:zoneSkill}).ok,true);
+    assert.equal(session.snapshot().persistentZones.length,1);
+    session.advanceMs(1000);
+    assert.equal(session.snapshot().fighters.target.hp,hitsIntangible?85:100);
+  }
+});
