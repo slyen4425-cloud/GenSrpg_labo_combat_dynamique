@@ -1370,13 +1370,13 @@ html {
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent {
-  left: 58%;
+  left: 63%;
   width: min(24dvh, 13rem);
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent-b {
-  left: 36%;
+  left: 41%;
   width: min(23dvh, 12.5rem);
 }
 
@@ -1605,10 +1605,10 @@ html {
   left: 52%;
 }
 
-/* Only optional solo TWO-active HUD: the historical 1v1 and AI 2v2
-   keep their own controls intact. */
+/* Shared compact TWO-active HUD for IA + solo-dual; 1v1 is excluded
+   through the real BattleFormat active count. */
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .coop-command-stack {
+  .arena--coop-2v2[data-combat-active-count="2"] .coop-command-stack {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: end;
@@ -1616,7 +1616,7 @@ html {
   gap: .18rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .squad-card--command-ally {
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally {
   position: absolute;
   right: calc(100% + 8.5rem);
   bottom: 0;
@@ -1629,67 +1629,67 @@ html {
   padding: .24rem .3rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__creature-icon {
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally .squad-card__creature-icon {
   width: 1.65rem;
   height: 1.65rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__body {
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally .squad-card__body {
   gap: .1rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .squad-card--command-ally strong {
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally strong {
   font-size: clamp(.57rem, 1.8dvh, .73rem);
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .squad-card--local-full {
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--local-full {
   width: min(11rem, 23%);
   min-height: 3.6rem;
   padding: .27rem .33rem;
   gap: .16rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .coop-controls {
+  .arena--coop-2v2[data-combat-active-count="2"] .coop-controls {
   min-width: 0;
   gap: .12rem;
   padding: .22rem .28rem;
   border-radius: .55rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .hud__energy-orbs {
+  .arena--coop-2v2[data-combat-active-count="2"] .hud__energy-orbs {
   gap: .1rem;
   padding: .05rem 0;
   min-height: 1rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .action-option--skill {
+  .arena--coop-2v2[data-combat-active-count="2"] .action-option--skill {
   aspect-ratio: auto;
   min-height: clamp(2.45rem, 9.2dvh, 3.05rem);
   height: clamp(2.45rem, 9.2dvh, 3.05rem);
   padding: .1rem;
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .action-option__icon {
+  .arena--coop-2v2[data-combat-active-count="2"] .action-option__icon {
   width: clamp(1.35rem, 4.9dvh, 1.8rem);
   height: clamp(1.35rem, 4.9dvh, 1.8rem);
 }
 .capture-preview-shell[data-landscape-required="true"]
-  [data-local-control-mode="solo-dual"] .combat-dodge-action--arena {
+  .arena--coop-2v2[data-combat-active-count="2"] .combat-dodge-action--arena {
   right: calc(min(19rem, 34%) + .58rem);
   bottom: .6rem;
 }
 @media (max-height: 440px) and (orientation: landscape) {
   .capture-preview-shell[data-landscape-required="true"]
-    [data-local-control-mode="solo-dual"] .coop-command-stack {
+    .arena--coop-2v2[data-combat-active-count="2"] .coop-command-stack {
     width: min(18rem, 35%);
   }
   .capture-preview-shell[data-landscape-required="true"]
-    [data-local-control-mode="solo-dual"] .squad-card--command-ally {
+    .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally {
     right: calc(100% + 6rem);
     width: clamp(7.3rem, 13vw, 9rem);
   }
   .capture-preview-shell[data-landscape-required="true"]
-    [data-local-control-mode="solo-dual"] .combat-dodge-action--arena {
+    .arena--coop-2v2[data-combat-active-count="2"] .combat-dodge-action--arena {
     right: calc(min(18rem, 35%) + .5rem);
   }
 }
