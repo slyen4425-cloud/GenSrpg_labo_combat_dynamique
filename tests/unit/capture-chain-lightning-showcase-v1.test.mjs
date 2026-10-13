@@ -48,7 +48,7 @@ test("Arc électrique is imported by stable ID and never duplicates or changes o
  for(const draft of [...capturePortableNativeSkillDraftsV1(),...captureComplexNativeSkillDraftsV1()])
    if(!native.has(draft.id))native.set(draft.id,draft);
  const creatureCatalog=await load("data/capture/monster-capture-creatures.v1.json");
- assert.ok(creatureCatalog.entries.some(x=>x.skills?.includes?.("lib_chain_lightning")||x.skillIds?.includes?.("lib_chain_lightning")),
+ assert.ok(creatureCatalog.entries.some(x=>x.abilityIds?.includes("lib_chain_lightning")),
    "original Capture library already references Arc électrique");
  const previous=native.get("lib_chain_lightning")??null;
  const others=new Map(native);
