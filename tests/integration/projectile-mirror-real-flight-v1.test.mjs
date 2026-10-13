@@ -25,6 +25,7 @@ function skill(id, form, damage, effects = []) {
     id, name: id, category: damage ? "offensive" : "buff_debuff",
     form, approachMode: "none", element: "physical",
     projectileTargeting: "direct",
+    ...(form === "projectile" ? { projectileClash: { power: 1 } } : {}),
     energyCost: 0, preparationMs: 0, travelMs: form === "projectile" ? 1000 : 0,
     recoveryMs: 0, cooldownMs: 0,
     allowedDistances: ["short", "medium", "long"],
@@ -192,15 +193,13 @@ test("the real returning record is eligible for the existing projectile clash sc
   const h = scenario({fighterIds:["player","opponent"],attackerId:"player",defenderId:"opponent"});
   h.advanceTo(250);
   h.runtime.reportActionContact({actorId:"player",targetId:"opponent",skillId:"direct-bolt"});
-  const second = normalizeSkillDefinition({
-    ...skill("intercept","projectile",10),
-    projectileClash:{power:1},
-    id:"intercept",name:"intercept"
-  });
-  // The original projectile must likewise be clash-eligible.
+  const second = skill("intercept","projectile",10);
+  // The original and intercepted projectile use the same native clash power.
   assert.equal(h.runtime.startSkill({actorId:"player",targetId:"opponent",skill:second}).ok,true);
   h.advanceTo(800);
   assert.equal(h.session.snapshot().fighters.player.hp,100);
   assert.equal(h.session.snapshot().fighters.opponent.hp,100);
+  assert.deepEqual(h.resolutions.filter(r => r.outcome === "clashed").map(r => r.actorId).sort(),
+    ["opponent","player"], "return flight must actually collide and cancel with a new projectile");
   h.runtime.dispose();
 });
