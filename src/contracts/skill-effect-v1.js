@@ -83,6 +83,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "radiusGrowthSteps",
     "tickEffect",
     "statusBehavior",
+    "damageTrigger",
     "persistAfterRecall"
   ]),
   scheduled_effect: new Set([
@@ -436,6 +437,12 @@ export function normalizeSkillEffectV1(input) {
 
     if (!["damage", "apply_status"].includes(output.tickEffect.kind)) {
       throw new RangeError("persistent_zone tickEffect must be damage or apply_status");
+    }
+    if (value.damageTrigger !== undefined) {
+      if (output.tickEffect.kind !== "damage" || !["entry_only", "entry_and_tick"].includes(value.damageTrigger)) {
+        throw new RangeError("SkillEffectV1.damageTrigger requires a damaging zone and entry_only or entry_and_tick");
+      }
+      output.damageTrigger = value.damageTrigger;
     }
     if (value.persistAfterRecall !== undefined) {
       if (typeof value.persistAfterRecall !== "boolean") {
