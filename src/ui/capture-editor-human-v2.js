@@ -4382,6 +4382,7 @@ function tacticalStatusKindLabelV1(kind) {
     heal_over_time: "Soin périodique",
     shield: "Bouclier",
     damage_reflection: "Renvoi de dégâts",
+    projectile_mirror: "Miroir — renvoi réel de projectile",
     immunity: "Immunité",
     immobilize: "Immobilisation",
     silence: "Silence",
@@ -4683,6 +4684,14 @@ function syncHumanSkillEffectRowV1(
     row.querySelector(
       "[data-skill-status-kind]"
     )?.value ?? "";
+
+  const statusPolarity = row.querySelector("[data-skill-status-polarity]");
+  if (statusPolarity && statusKind === "projectile_mirror") {
+    statusPolarity.value = "beneficial";
+    statusPolarity.disabled = true;
+  } else if (statusPolarity) {
+    statusPolarity.disabled = false;
+  }
 
   for (const node of row.querySelectorAll(
     "[data-skill-status-config-kind]"
@@ -5166,6 +5175,11 @@ function appendHumanSkillEffectV1(
     tacticalFieldV1("Dégâts réellement reçus renvoyés (%)", reflectionPercent)
   );
 
+  const mirrorHelp = document.createElement("small");
+  mirrorHelp.className = "note";
+  mirrorHelp.dataset.skillStatusConfigKind = "projectile_mirror";
+  mirrorHelp.textContent = "Renvoie les projectiles directs après leur collision réelle avec le miroir. Le projectile doit ensuite rencontrer son lanceur pour lui infliger des dégâts. Sans effet sur le renvoi de dégâts en %. Il est possible de choisir un visuel persistant du statut ci-dessous.";
+
   const immunityConfig =
     document.createElement("div");
   immunityConfig.className =
@@ -5398,6 +5412,7 @@ function appendHumanSkillEffectV1(
     hotConfig,
     shieldConfig,
     reflectionConfig,
+    mirrorHelp,
     immunityConfig,
     statusVisualBox
   );
