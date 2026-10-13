@@ -1448,16 +1448,35 @@ export function createCombatRuntime({
       (item) => item.type === "charge-interrupt"
     );
 
-    if (!interruptEvent) {
-      return Object.freeze({
-        ok: false,
-        outcome: "no_interrupt_effect"
+    if (interruptEvent) {
+      const interrupted = interruptActive({
+        targetActorId: interruptEvent.actorId,
+        reason: interruptEvent.reason ?? "stun"
       });
+      if (interrupted.ok) return interrupted;
     }
 
-    return interruptActive({
-      targetActorId: interruptEvent.actorId,
-      reason: interruptEvent.reason ?? "stun"
+    // The status owner emits a semantic event; Combat Runtime alone owns
+    // stopping the actual moving action and cancelling its presentation.
+    const movementEvent = resolution?.events?.find(
+      (item) => item.type === "movement-interrupt"
+    );
+    if (movementEvent) {
+      const record = activeByActor.get(movementEvent.actorId);
+      if (
+        record && !record.resolved &&
+        record.action.actionType === "skill" &&
+        record.action.skill?.approachMode !== "none"
+      ) {
+        return cancelActionsForActor(movementEvent.actorId, {
+          reason: movementEvent.reason ?? "immobilized"
+        });
+      }
+    }
+
+    return Object.freeze({
+      ok: false,
+      outcome: "no_interrupt_effect"
     });
   }
 
