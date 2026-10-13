@@ -1364,19 +1364,19 @@ html {
    Visible slot geometry remains the native source for hit/FX anchors. */
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2[data-combat-active-count="2"] {
-  --arena-coop-far-primary-y: 26%;
+  --arena-coop-far-primary-y: 30%;
   --arena-coop-far-secondary-y: 28%;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent {
-  left: 63%;
+  left: 68%;
   width: min(24dvh, 13rem);
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent-b {
-  left: 41%;
+  left: 46%;
   width: min(23dvh, 12.5rem);
 }
 
