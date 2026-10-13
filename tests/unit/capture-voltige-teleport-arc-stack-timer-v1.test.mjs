@@ -44,10 +44,10 @@ test("Teleport strike author data survives official import/export and is discove
  assert.equal(tr.value.draft.presentation.audio.travel.assetId,"gensrpg:sound:tower-6dbf268f");
  assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(tr.value.draft)).value,tr.value);
 });
-test("Arc électrique projectile collision power is 2; authored spell FX, damage and audio remain intact",()=>{
+test("Arc électrique remains contract-valid beam, with no fictional projectile clash; other authored fields unchanged",()=>{
  const s=importCaptureTransferJsonV1(at(arcPath)).value.draft;
  assert.equal(s.id,"lib_chain_lightning");
- assert.equal(s.definition.projectileClash.power,2);
+ assert.equal(s.definition.projectileClash.power,0);
  assert.equal(s.definition.effects[0].amount,20);
  assert.equal(s.definition.effects[0].ignoreDamageReductionPct,30);
  assert.equal(s.definition.effects[1].status.durationMs,3000);
