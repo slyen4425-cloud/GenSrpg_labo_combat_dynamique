@@ -46,10 +46,10 @@ test("2v2 enemies use separate top-left and top-right health cards, without movi
 });
 test("solo 2v2 retains a genuinely narrow skill panel and exposes ally in freed arena space",()=>{
  const block=css.slice(css.indexOf("/* Combat 2v2 readable mobile HUD and enemy bench V1"));
- assert.match(block,/\[data-local-control-mode="solo-dual"\] \.coop-command-stack\s*\{[^}]*width\s*:\s*min\(\d+(?:\.\d+)?rem,\s*3[0-9]%\)/s);
- assert.match(block,/\[data-local-control-mode="solo-dual"\] \.action-option--skill\s*\{[^}]*aspect-ratio\s*:\s*auto/s);
+ assert.match(block,/\[data-combat-active-count="2"\] \.coop-command-stack\s*\{[^}]*width\s*:\s*min\(\d+(?:\.\d+)?rem,\s*3[0-9]%\)/s);
+ assert.match(block,/\[data-combat-active-count="2"\] \.action-option--skill\s*\{[^}]*aspect-ratio\s*:\s*auto/s);
  assert.match(block,/\[data-combat-active-count="2"\] \.fighter--ally\s*\{[^}]*left\s*:/s);
- assert.match(block,/\[data-local-control-mode="solo-dual"\] \.squad-card--command-ally\s*\{[^}]*position\s*:\s*absolute/s);
+ assert.match(block,/\[data-combat-active-count="2"\] \.squad-card--command-ally\s*\{[^}]*position\s*:\s*absolute/s);
  assert.match(html,/data-combat-dodge/);
  assert.match(html,/data-combat-roster-command="switch"/);
 });
