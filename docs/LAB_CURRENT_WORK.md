@@ -6847,3 +6847,15 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Risques : chemins erronés, cache `gh-pages`, lisibilité sur smartphone, anciennes assertions de compteur absolu ; vérifier WebP RIFF/dimensions/SHA/uniqueness + CI réelle.
 - Critère : CI GREEN sur SHA de travail, checkpoint exact, fast-forward sans force de `global-assets`. Raccord `gh-pages` en lot distinct via IDs, seulement pour les compétences existantes appropriées ; Souffle libre sans skill homonyme.
 - Statut : EN COURS, validation CI et smartphone non revendiquée avant vérification.
+
+
+## 2026-10-13 — Rayon électrique jaune (pack visuel, bibliothèque)
+- Mission : intégrer depuis trois ZIP utilisateur Cast/Corps/Impact du rayon électrique jaune au Labo Combat, sans remplacer Jet pressurisé.
+- Source d'autorité : global-assets et catalogue unique data/assets/catalog/global-visual-assets.v1.json.
+- Base GREEN publiée : 6f0b006693d672c20a79d93d32582205fa3eed64 ; checkpoint préalable : checkpoint/global-assets-before-electric-beam-yellow-v1-2026-10-13 ; branche work/global-assets-electric-beam-yellow-v1-2026-10-13.
+- Périmètre autorisé : assets/library/capture/sprites/skills/electric_beam_yellow/, catalogue (+3 IDs), sentinelle, documentation et journal ; supprimer les trois ZIP staging et le workflow/script temporaire après extraction contrôlée.
+- Séquences : Cast 20 frames (60 ms), Corps 12 (45 ms, loop), Impact 12 (45 ms, once), 512x512 ; 60 frames sources, 5 atlas WebP et 3 planches. BeamStart distinct non généré ; n'emprunter aucun sprite à Jet pressurisé.
+- Domaines protégés : 138 assets précédents, toutes compétences et créatures, FX/Combat Core, main, Zombicide-40k, Exploration et gh-pages tant que le lot assets n'est pas GREEN.
+- Tests : ZIP exacts, manifestes SHA, chemins, transparence PNG/WebP, résolution catalogue, CI SHA exact, checkpoint GREEN, fast-forward global-assets ; sous-lot gh-pages distinct pour cache et résolveur, puis test Android.
+- Risques : upscale de 1402x1122 vers 512x512, poids mobile et raccord visuel ; aucune validation artistique avant essai réel.
+- Statut : extraction en cours, pas de publication déclarée avant gates.
