@@ -70,6 +70,10 @@ const STAT_MODIFIER_MODE_SET = new Set(
 const DAMAGE_MODE_SET = new Set(
   STATUS_EFFECT_V1_DAMAGE_MODES
 );
+export const DAMAGE_REFLECTION_INCOMING_KINDS_V1 = Object.freeze([
+  "contact", "projectile", "beam", "area", "zone", "dot", "scheduled", "other"
+]);
+const DAMAGE_REFLECTION_INCOMING_KIND_SET = new Set(DAMAGE_REFLECTION_INCOMING_KINDS_V1);
 const IMMUNITY_DOMAIN_SET = new Set(
   STATUS_EFFECT_V1_IMMUNITY_DOMAINS
 );
@@ -126,7 +130,9 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   damage_reflection: new Set([
     ...COMMON_FIELDS,
-    "percent"
+    "percent",
+    "incomingKinds",
+    "contactDamage"
   ]),
   projectile_mirror: COMMON_FIELDS,
   immunity: new Set([
@@ -482,6 +488,21 @@ export function normalizeStatusEffectV1(input) {
     );
     if (output.percent < 0 || output.percent > 100) {
       throw new RangeError("StatusEffectV1.percent must be between 0 and 100");
+    }
+  }
+
+  if (kind === "damage_reflection") {
+    if (value.incomingKinds !== undefined) {
+      const incomingKinds = stringArray(value.incomingKinds, "StatusEffectV1.incomingKinds");
+      if (incomingKinds.length === 0 || incomingKinds.some(entry => !DAMAGE_REFLECTION_INCOMING_KIND_SET.has(entry))) {
+        throw new RangeError("StatusEffectV1.incomingKinds must select known attack kinds");
+      }
+      output.incomingKinds = incomingKinds;
+    }
+    if (value.contactDamage !== undefined) {
+      const contactDamage = finiteNumber(value.contactDamage, "StatusEffectV1.contactDamage");
+      if (contactDamage < 0) throw new RangeError("StatusEffectV1.contactDamage must be non-negative");
+      output.contactDamage = contactDamage;
     }
   }
 
