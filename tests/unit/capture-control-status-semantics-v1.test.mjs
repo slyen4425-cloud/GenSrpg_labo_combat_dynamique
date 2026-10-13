@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
-import { formatStatusEffectDescriptionV1 } from "../../src/adapters/renderer/status-effect-info-v1.js";
 
 function actor(id) {
   return { id, maxHp:100, initialHp:100, maxEnergy:20, initialEnergy:20,
@@ -91,7 +90,7 @@ test("An immobilization applied during a live approach interrupts actual Combat 
  runtime.dispose();
 });
 
-test("Root does not cancel stationary casts in progress; silence text and root text explain their own limitations",()=>{
+test("Root does not cancel stationary casts in progress",()=>{
  const session=setup();
  let time=0; const interrupted=[];
  const runtime=createCombatRuntime({session,now:()=>time,onInterrupted:x=>interrupted.push(x)});
