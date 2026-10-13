@@ -3319,13 +3319,13 @@ function renderHumanProjectilePowerV1(
   );
 }
 
-function readHumanProjectilePowerV1(
+export function readHumanProjectilePowerV1(
   root,
   form
 ) {
   return {
     power:
-      form === "projectile"
+      (form === "projectile" || form === "beam")
         ? numericValue(
             root,
             "[data-skill-projectile-power]"
