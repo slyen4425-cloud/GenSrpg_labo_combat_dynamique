@@ -1178,6 +1178,9 @@ export async function mountCombatTest({
         runOpponentTurn();
       }
     },
+    onClock(state) {
+      statusFx?.syncCountdowns(state);
+    },
     onHealthDelta(feedback) {
       if (!["damage", "heal"].includes(feedback.kind)) return;
       const delayMs = impactHealthCue.delayFor(feedback);

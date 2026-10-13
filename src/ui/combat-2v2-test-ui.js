@@ -1610,7 +1610,8 @@ export async function mountCoop2v2Test({
         damageFeedback?.flash(feedback.actorId, { delayMs });
       }
     },
-    onClock() {
+    onClock(state) {
+      statusFx?.syncCountdowns(state);
       renderAvailability();
     },
     onStarted({ action }) {

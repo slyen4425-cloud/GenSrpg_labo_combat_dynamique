@@ -253,6 +253,40 @@ export function createDomStatusFxRenderer({
       ")";
   }
 
+  // Single CombatState clock: this adapter never schedules its own ticks.
+  function refreshStackExpiryHud(record, instance, elapsedMs) {
+    if (!record?.expiryNode) return;
+    const expiresAt = Number(instance?.expiresAtMs);
+    const duration = Number(instance?.definition?.durationMs);
+    const remainingMs = Number.isFinite(expiresAt)
+      ? Math.max(0, expiresAt - Math.max(0, Number(elapsedMs) || 0))
+      : 0;
+    const label = Math.ceil(remainingMs / 1000) + " s";
+    if (record.expiryNode.textContent !== label) record.expiryNode.textContent = label;
+    const percentage = Number.isFinite(duration) && duration > 0
+      ? Math.round(100 * Math.max(0, Math.min(1, remainingMs / duration))) : 0;
+    const width = percentage + "%";
+    if (record.expiryFillNode && record.expiryFillNode.style.width !== width) {
+      record.expiryFillNode.style.width = width;
+    }
+  }
+
+  // Lightweight existing-clock-only refresh; never rebuilds sprite FX.
+  function syncCountdowns(state) {
+    if (disposed || !state?.fighters) return;
+    const elapsedMs = Number(state.elapsedMs) || 0;
+    for (const [actorId, fighter] of Object.entries(state.fighters)) {
+      for (const instance of statusInstances(fighter)) {
+        const definition = instance?.definition;
+        if (definition?.durationModel !== "time_ms" ||
+            !Number(definition?.onStackThreshold?.count)) continue;
+        const statusId = String(definition?.id ?? "").trim();
+        if (!statusId) continue;
+        refreshStackExpiryHud(records.get(recordKey(actorId, statusId, "hud")), instance, elapsedMs);
+      }
+    }
+  }
+
   function ensureHudIcon({
     actorId,
     statusId,
@@ -297,6 +331,8 @@ export function createDomStatusFxRenderer({
         glyphNode,
         stackNode: null,
         expiryNode: null,
+        expiryTrack: null,
+        expiryFillNode: null,
         detailsNode: null,
         currentInfo: null
       };
@@ -481,10 +517,23 @@ export function createDomStatusFxRenderer({
         record.node.append(expiryNode);
         record.expiryNode = expiryNode;
       }
-      record.expiryNode.textContent = info.remainingLabel;
+      if (!record.expiryTrack) {
+        const track = target.statusHost.ownerDocument.createElement("span");
+        track.className = "status-icon__expiry-track";
+        const fill = target.statusHost.ownerDocument.createElement("span");
+        fill.className = "status-icon__expiry-fill";
+        track.append(fill);
+        record.node.append(track);
+        record.expiryTrack = track;
+        record.expiryFillNode = fill;
+      }
+      refreshStackExpiryHud(record, instance, elapsedMs);
     } else if (record.expiryNode) {
       record.expiryNode.remove?.();
+      record.expiryTrack?.remove?.();
       record.expiryNode = null;
+      record.expiryTrack = null;
+      record.expiryFillNode = null;
     }
   }
 
@@ -628,6 +677,7 @@ export function createDomStatusFxRenderer({
 
   return Object.freeze({
     sync,
+    syncCountdowns,
     dispose,
     get activeCount() {
       return records.size;
