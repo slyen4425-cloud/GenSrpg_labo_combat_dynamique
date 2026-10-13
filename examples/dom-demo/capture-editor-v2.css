@@ -1556,7 +1556,7 @@ html {
 
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .squad-card--command-ally {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: 1.65rem minmax(0, 1fr);
   align-content: center;
   align-self: end;
   min-height: 3.7rem;
@@ -1569,8 +1569,7 @@ html {
   [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__creature-icon {
   width: 1.55rem;
   height: 1.55rem;
-  float: left;
-  margin-right: 0.25rem;
+  flex: 0 0 auto;
 }
 .capture-preview-shell[data-landscape-required="true"]
   [data-local-control-mode="solo-dual"] .squad-card--command-ally .squad-card__body {
