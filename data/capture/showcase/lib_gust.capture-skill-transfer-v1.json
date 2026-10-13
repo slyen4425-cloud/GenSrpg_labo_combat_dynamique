@@ -83,7 +83,7 @@
       "subjectId": "lib_gust",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-energy-beam-01"
+          "assetId": "pack:capture:icon-skill-rafale-01"
         },
         "travel": {
           "assetId": "pack:capture:sprite-air-wind-bolt-01",

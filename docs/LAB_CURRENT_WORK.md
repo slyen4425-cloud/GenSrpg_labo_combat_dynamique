@@ -1689,3 +1689,15 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Description HTML clarifiée : modèle complet prêt, emplacement dans Visuels, choix d'assets personnalisables, alternative manuelle en sélectionnant Style Rayon.
 - Code `9388cea41dded4b5f75110e8b9549d571183d4d6`, titre existant conservé par `d2fe59db3d27fa6da9c8962c005d95a92e303f72` ; CI `38301311976` déclare une seule sentinelle historique obsolète, rectifiée `fea35cab497c662a48684191f9e1c9c9719bb653` : elle protège désormais la visibilité du bouton et le masquage des phases, sans supprimer les tests de mouvement/raccord.
 - Aucun changement dans le JS, la logique du pack, les assets, dégâts, sockets, Audio ou fichiers de capacités. Publication uniquement après CI exacte du commit final et checkpoint GREEN ; validation Android à confirmer, indépendamment du gate technique.
+
+
+## Lot Labo Combat — raccord icônes Air du catalogue global, 2026-10-13
+
+- Mission utilisateur : Rafale/Souffle/Attaque aérienne en style cartoon marron, fond clair, ajout GitHub et raccord au labo combat.
+- Bibliothèque GREEN publiée : `global-assets@6f0b006693d672c20a79d93d32582205fa3eed64` (3 WebP, catalogue 138 assets/49 icônes, CI assets SUCCESS).
+- Base labo `gh-pages` : `ffd0318fb7b45ae1fd2a1caab6c9711e12d6c818`; checkpoint départ `checkpoint/lab-start-capture-air-icon-bindings-v1-2026-10-13`; work `work/lab-capture-air-icon-bindings-v1-2026-10-13`.
+- Propriétaire : SkillPresentationBinding / résolveur de bibliothèque ; modifier exclusivement deux bindings `lib_gust` et `cap_air_atk_3`, cache-buster canonique, tests et documents. `Souffle` reste disponible dans l'éditeur sans auto-binding.
+- Protégés : gameplay (dégâts/énergie/effets), autres compétences, créatures, FX, mouvement, Combat Core, fichiers HTML, `main`, `Zombicide-40k`, Exploration.
+- Tests : vrais transferts JSON, `createCaptureSkillPresentationAssetsV2`, résolveur canonique et chemins WebP ; CI générale au SHA exact, checkpoint GREEN et fast-forward sous lease.
+- Risque : cache versionné, utilisateurs ayant des sauvegardes préexistantes, test visuel Android restant ; aucun écrasement de sauvegarde.
+- Statut : EN COURS jusqu'à CI + checkpoint, validation smartphone distincte.

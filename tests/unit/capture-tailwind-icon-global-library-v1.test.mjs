@@ -8,7 +8,7 @@ const file="capture/icons/skills/icon_skill_tailwind_feather_01.webp";
 test("Vent arrière exposes the new version of the one canonical library",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.repository,"slyen4425-cloud/GenSrpg_labo_combat_dynamique");
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-11-v28-capture-tailwind-icon");
+  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=28,"tailwind cache revision must not regress");
   const catalogURL=new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
   assert.ok(catalogURL.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
   assert.equal(catalogURL.searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);

@@ -83,7 +83,7 @@
       "subjectId": "cap_air_atk_3",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-speed-dash-01"
+          "assetId": "pack:capture:icon-skill-aerial-attack-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-air-wind-charge-01",
