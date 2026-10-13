@@ -541,7 +541,8 @@ function applyZoneDamageToTarget({
     targetActorId,
     damage: damage.damage,
     atMs,
-    hitsIntangible: zone.hitsIntangible === true
+    hitsIntangible: zone.hitsIntangible === true,
+    incomingKind: "zone"
   }).state;
 }
 
