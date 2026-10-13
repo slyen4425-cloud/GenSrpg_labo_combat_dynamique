@@ -352,12 +352,12 @@ function effectLinesFor(
 
     case "immobilize":
       return Object.freeze([
-        "Impossible de se déplacer"
+        "Déplacements et approches impossibles ; mouvement en cours interrompu"
       ]);
 
     case "silence":
       return Object.freeze([
-        "Impossible d’utiliser des capacités"
+        "Capacités à distance interdites (projectile, rayon, zone) ; mêlée et capacités sur soi autorisées"
       ]);
 
     case "stun":
