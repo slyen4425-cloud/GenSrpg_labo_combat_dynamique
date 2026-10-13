@@ -349,8 +349,14 @@ export function resolveSkillStart({
 
   for (const [kind, outcome] of [
     ["stun", "stunned"],
-    ["silence", "silenced"]
+    ["silence", "silenced"],
+    ["immobilize", "immobilized"]
   ]) {
+    // Silence prevents ranged/magical abilities, not physical contact.
+    // Immobilize prevents movement-based approaches, not stationary attacks.
+    if (kind === "silence" && skill.form === "contact") continue;
+    if (kind === "immobilize" &&
+        (skill.approachMode ?? "none") === "none") continue;
     if (
       hasActiveStatusKindV1(
         state,
