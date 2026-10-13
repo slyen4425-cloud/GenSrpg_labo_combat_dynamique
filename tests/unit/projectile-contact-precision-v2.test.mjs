@@ -153,13 +153,15 @@ test("continuous projectile sensor catches tunneling across a stationary model b
 
   h.runFrame();
 
-  assert.deepEqual(h.contacts, [
+  assert.deepEqual(h.contacts.map(({ contactPoint, ...identity }) => identity), [
     {
       actorId: "player",
       targetId: "opponent",
       skillId: "fireball"
     }
   ]);
+  assert.equal(Number.isFinite(h.contacts[0].contactPoint.x), true);
+  assert.equal(Number.isFinite(h.contacts[0].contactPoint.y), true);
   assert.equal(h.renderer.activeCount, 1);
 });
 
