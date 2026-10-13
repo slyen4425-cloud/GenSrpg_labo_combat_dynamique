@@ -347,9 +347,15 @@ export function resolveSkillStart({
   const actor = fighterOf(state, actorId);
   fighterOf(state, targetId);
 
+  // Control statuses have separate owners: stun blocks any skill;
+  // immobilize blocks only skills requiring an approach/movement;
+  // silence blocks distance forms, not contact or self/aura skills.
+  const movementSkill = skill.approachMode !== "none";
+  const rangedSkill = ["projectile", "beam", "area"].includes(skill.form);
   for (const [kind, outcome] of [
     ["stun", "stunned"],
-    ["silence", "silenced"]
+    ...(movementSkill ? [["immobilize", "immobilized"]] : []),
+    ...(rangedSkill ? [["silence", "silenced"]] : [])
   ]) {
     if (
       hasActiveStatusKindV1(
