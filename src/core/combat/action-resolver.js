@@ -24,7 +24,8 @@ import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
 import {
-  applyCombatDamageV1
+  applyCombatDamageV1,
+  applyCombatContactRetaliationV1
 } from "./combat-damage-application-v1.js";
 import { combatProtectionForIncomingV1 } from "./combat-protection-v1.js";
 import {
@@ -882,7 +883,8 @@ export function resolveSkillCompletion({
           targetActorId: targetId,
           damage: damage.damage,
           atMs: combatImpactAtMs,
-          hitsIntangible: skill.hitsIntangible === true
+          hitsIntangible: skill.hitsIntangible === true,
+          incomingKind: skill.form
         });
       nextState = applied.state;
 
@@ -902,6 +904,25 @@ export function resolveSkillCompletion({
         hpBefore: applied.hpBefore,
         hpAfter: applied.hpAfter
       }));
+
+      // A confirmed melee hit can trigger spikes even when its HP damage
+      // was zero or shielded. Evades and mirror interceptions do not hit.
+      if (skill.form === "contact") {
+        const thorns = applyCombatContactRetaliationV1({
+          state: nextState, attackerId: actorId, defenderId: targetId,
+          atMs: combatImpactAtMs
+        });
+        nextState = thorns.state;
+        if (thorns.requestedDamage > 0) {
+          events.push(event("hit", impactAtMs, {
+            actorId, sourceActorId: targetId, skillId: skill.id,
+            contactRetaliation: true, damage: thorns.requestedDamage,
+            appliedDamage: thorns.appliedDamage,
+            absorbedByShield: thorns.absorbedByShield,
+            hpBefore: thorns.hpBefore, hpAfter: thorns.hpAfter
+          }));
+        }
+      }
 
       if (skill.effect.interruptsPreparation && !combatProtectionForIncomingV1({
         state: nextState, targetActorId: targetId,
@@ -960,7 +981,8 @@ export function resolveSkillCompletion({
           targetActorId: actorId,
           damage: damage.damage,
           atMs: combatImpactAtMs,
-          hitsIntangible: skill.hitsIntangible === true
+          hitsIntangible: skill.hitsIntangible === true,
+          incomingKind: skill.form
         });
       nextState = applied.state;
 
