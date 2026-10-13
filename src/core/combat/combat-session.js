@@ -395,6 +395,7 @@ export function createCombatSession({
           skill: {
             id: record.sourceSkillId,
             element: record.skillElement,
+            hitsIntangible: record.hitsIntangible === true,
             effects: record.effects
           },
           atMs,
