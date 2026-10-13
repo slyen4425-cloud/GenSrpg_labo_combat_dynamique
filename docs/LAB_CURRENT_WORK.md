@@ -6866,3 +6866,8 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Ajout de 3 IDs dans le catalogue canonique (+3 sprites, 141 assets / 76 sprites), sans capacité auteur modifiée ; Cast 20, Beam body 12, Impact 12, format de Jet pressurisé ; le 4e visuel beamStart demeure facultatif et inexistant pour le nouveau pack.
 - Suppression dans ce commit du workflow et script d'import temporaires ; test de présence, SHA et non-régression ; rapport docs/LAB_CAPTURE_ELECTRIC_BEAM_YELLOW_V1.md.
 - État : code asset prêt à gate CI ; promotion global-assets puis raccord cache gh-pages seulement après validation réelle des runs du SHA final.
+
+
+### Sentinelle ancienne Air — nouvelle extension additive du catalogue
+- CI initiale du SHA 137170772b3fab4aa424dc1223619496ded9ffeb / run 38380314214 : échec de l'unique assertion historique imposant count.sprites === 73, alors que le catalogue compte bien 76 après l'ajout demandé ; tests images Air existantes inchangés.
+- Périmètre autorisé étendu uniquement à tests/unit/capture-air-vfx-assets-v1.test.mjs : convertir la comparaison 73 exacte en plancher >=73, et garder la comparaison réelle des compteurs catalogue, les 4 IDs Air originaux, les SHA des 80 frames et leurs alphas. CI complète requise sur SHA suivant.
