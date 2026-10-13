@@ -405,6 +405,7 @@ export function applyImmediateTacticalEffectsV1({
           continue;
         }
 
+        const triggeredEvents = [];
         nextState = applyStatusEffectV1({
           state: nextState,
           targetActorId: affectedId,
@@ -413,7 +414,9 @@ export function applyImmediateTacticalEffectsV1({
           status: effect.status,
           atMs: combatAtMs,
           hitsIntangible: skill.hitsIntangible === true,
-          thresholdDepth
+          thresholdDepth,
+          eventAtMs: atMs,
+          onThresholdEvents: more => triggeredEvents.push(...more)
         });
         events.push(Object.freeze({
           type: "status-applied",
@@ -424,6 +427,7 @@ export function applyImmediateTacticalEffectsV1({
           statusId: effect.status.id,
           statusKind: effect.status.kind
         }));
+        events.push(...triggeredEvents);
 
         if (effect.status.kind === "stun") {
           events.push(Object.freeze({
