@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
 import { normalizeSkillEffectV1 } from "../../src/contracts/skill-effect-v1.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
+import { applyImmediateTacticalEffectsV1 } from "../../src/core/combat/immediate-tactical-effects-v1.js";
+import { createCombatState } from "../../src/core/combat/combat-state.js";
 import { buildHumanTacticalSkillEffectsV1 } from "../../src/ui/capture-editor-human-v2.js";
 const fighter=(id,hp=100)=>({id,maxHp:100,initialHp:hp,maxEnergy:30,initialEnergy:30,
   energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
@@ -99,4 +101,35 @@ test("editor contract round trip exports percent/cap unchanged and never confuse
  assert.deepEqual(output,[life(35,8)]);
  const withoutCap=buildHumanTacticalSkillEffectsV1([life(25)]);
  assert.deepEqual(withoutCap,[life(25)]);
+});
+
+test("explicit mirror-return guard forbids a second drain even if tactical damage resolves",()=>{
+ const base=createCombatState({fighters:[fighter("a",40),fighter("b")]});
+ const skillDefinition=skill("reflected-tactical",0,[
+  {kind:"damage",targetScope:"target",amount:20,channel:"physical"},
+  life(50)
+ ]);
+ const returned=applyImmediateTacticalEffectsV1({
+  state:base,actorId:"a",targetId:"b",skill:skillDefinition,
+  atMs:0,combatAtMs:0,allowLifeSteal:false,directDamageApplied:20
+ });
+ assert.equal(returned.state.fighters.b.hp,80);
+ assert.equal(returned.state.fighters.a.hp,40);
+ assert.equal(returned.events.filter(x=>x.lifeSteal).length,0);
+});
+test("life steal does not resurrect a caster killed by the reflected damage",()=>{
+ const s=battle(5);
+ castBuff(s,"b",status("damage_reflection",{percent:100}));
+ const res=s.useSkill({actorId:"a",targetId:"b",skill:skill("fatal-bite",20)});
+ assert.equal(res.ok,true);
+ assert.equal(s.snapshot().fighters.a.hp,0);
+ assert.equal(res.events.filter(x=>x.lifeSteal).length,0);
+});
+test("life steal authoring fields remain available in the Human Editor without rewriting beam slots",async()=>{
+ const {readFile}=await import("node:fs/promises");
+ const ui=await readFile(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
+ for(const marker of ["skillEffectLifeStealPercent","skillEffectLifeStealMaxHeal",
+  "data-skill-effect-life-steal-percent","data-skill-effect-life-steal-max-heal"]){
+  assert.ok(ui.includes(marker),marker);
+ }
 });
