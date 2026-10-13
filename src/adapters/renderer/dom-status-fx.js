@@ -296,6 +296,7 @@ export function createDomStatusFxRenderer({
         node,
         glyphNode,
         stackNode: null,
+        expiryNode: null,
         detailsNode: null,
         currentInfo: null
       };
@@ -463,6 +464,27 @@ export function createDomStatusFxRenderer({
     } else if (record.stackNode) {
       record.stackNode.remove?.();
       record.stackNode = null;
+    }
+
+    // A stacked status has ONE shared lifetime, refreshed by the canonical
+    // Status Runtime when another charge arrives. Show that native expiry
+    // rather than inventing separate per-charge clocks or JS timers.
+    const showExpiry =
+      thresholdCount !== null &&
+      instance?.definition?.durationModel === "time_ms" &&
+      Boolean(info.remainingLabel);
+    if (showExpiry) {
+      if (!record.expiryNode) {
+        const expiryNode =
+          target.statusHost.ownerDocument.createElement("span");
+        expiryNode.className = "status-icon__expiry";
+        record.node.append(expiryNode);
+        record.expiryNode = expiryNode;
+      }
+      record.expiryNode.textContent = info.remainingLabel;
+    } else if (record.expiryNode) {
+      record.expiryNode.remove?.();
+      record.expiryNode = null;
     }
   }
 
