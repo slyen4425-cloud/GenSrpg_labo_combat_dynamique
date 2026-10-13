@@ -1,3 +1,5 @@
+import { normalizeSkillEffectV1 } from "./skill-effect-v1.js";
+
 export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "stat_modifier",
   "approach_time_modifier",
@@ -80,7 +82,8 @@ const COMMON_FIELDS = new Set([
   "durationActions",
   "stacking",
   "maxStacks",
-  "tags"
+  "tags",
+  "onStackThreshold"
 ]);
 
 const FIELDS_BY_KIND = Object.freeze({
@@ -329,6 +332,43 @@ export function normalizeStatusEffectV1(input) {
       "StatusEffectV1.tags"
     )
   };
+
+  if (value.onStackThreshold != null) {
+    if (stacking !== "stack") {
+      throw new RangeError("onStackThreshold requires stacking: stack");
+    }
+    const threshold = value.onStackThreshold;
+    if (!threshold || typeof threshold !== "object" || Array.isArray(threshold)) {
+      throw new TypeError("onStackThreshold must be an object");
+    }
+    assertKnownFields(threshold, new Set(["count", "consume", "effects"]), "onStackThreshold");
+    const count = positiveInteger(threshold.count, "onStackThreshold.count");
+    if (count > output.maxStacks) {
+      throw new RangeError("onStackThreshold.count must not exceed maxStacks");
+    }
+    const consume = requiredString(threshold.consume ?? "reset", "onStackThreshold.consume");
+    if (!["reset", "keep"].includes(consume)) {
+      throw new RangeError("Unsupported onStackThreshold.consume: " + consume);
+    }
+    if (!Array.isArray(threshold.effects) || threshold.effects.length === 0 ||
+        threshold.effects.length > 12) {
+      throw new RangeError("onStackThreshold.effects must contain 1 to 12 effects");
+    }
+    const effects = threshold.effects.map(rawEffect => {
+      const effect = normalizeSkillEffectV1(rawEffect);
+      if (!["damage", "heal", "energy_restore", "energy_drain",
+          "apply_status", "cleanse", "dispel"].includes(effect.kind)) {
+        throw new RangeError("Unsupported onStackThreshold effect: " + effect.kind);
+      }
+      if (!["target", "self"].includes(effect.targetScope)) {
+        throw new RangeError("onStackThreshold targetScope must be target or self");
+      }
+      return effect;
+    });
+    output.onStackThreshold = Object.freeze({
+      count, consume, effects: Object.freeze(effects)
+    });
+  }
 
   if (kind === "stat_modifier") {
     output.statId = requiredString(
