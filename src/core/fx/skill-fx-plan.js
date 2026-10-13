@@ -38,6 +38,7 @@ export function planSkillReleaseFx({
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
+      ...(action.mirrorReturn?.contactPoint ? { fromPoint: action.mirrorReturn.contactPoint } : {}),
       delayMs: 0,
       durationMs: Math.max(0, Number(action.travelMs) || 0)
     })
@@ -137,7 +138,7 @@ export function planSkillOutcomeFx({
   }
 
   if (
-    ["hit", "blocked", "reflected", "immune"].includes(resolution.outcome) &&
+    ["hit", "blocked", "reflected", "immune", "mirrored"].includes(resolution.outcome) &&
     resolution.skillId
   ) {
     return Object.freeze([
