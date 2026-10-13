@@ -4389,6 +4389,7 @@ function tacticalTargetScopeLabelV1(scope) {
 function tacticalStatusKindLabelV1(kind) {
   return {
     stat_modifier: "Modification de stat",
+    stack_counter: "Compteur de charges (sans effet avant le seuil)",
     approach_time_modifier: "Temps de trajet de la créature",
     energy_regen_modifier: "Régénération d’énergie (%)",
     skill_cooldown_rate_modifier: "Recharge des compétences (%)",
