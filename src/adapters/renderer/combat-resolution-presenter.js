@@ -356,7 +356,7 @@ export function createCombatResolutionPresenter({
           }
         })
         .catch(() => {});
-    } else {
+    } else if (!action.mirrorReturn) {
       visuals
         .playEventFor(actorSlot, "attack", { targetSlot })
         .catch(() => {});
@@ -371,7 +371,7 @@ export function createCombatResolutionPresenter({
     }
 
     const releaseSkillId = action.skill?.id ?? null;
-    if (releaseSkillId) {
+    if (releaseSkillId && !action.mirrorReturn) {
       audio?.play({
         type: "release",
         skillId: releaseSkillId,
