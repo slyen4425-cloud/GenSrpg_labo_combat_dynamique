@@ -357,7 +357,7 @@ function effectLinesFor(
 
     case "silence":
       return Object.freeze([
-        "Capacités à distance bloquées ; attaques de contact autorisées."
+        "Projectiles, rayons et zones à distance bloqués ; contact et capacités sur soi autorisés."
       ]);
 
     case "stun":
