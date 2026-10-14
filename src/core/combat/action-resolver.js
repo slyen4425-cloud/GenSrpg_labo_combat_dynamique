@@ -36,13 +36,13 @@ import {
   snapshotPersistentZoneReinforcementsV1
 } from "./persistent-zone-runtime-v1.js";
 import {
-  activeStatusEffectsV1,
   activeTauntSourceActorIdV1,
   hasActiveStatusKindV1
 } from "./status-effect-runtime-v1.js";
 import {
   skillPresenceReachV1
 } from "./combat-presence-v1.js";
+import { applyEventTriggeredBuffsV2 } from "./triggered-buff-events-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -351,19 +351,26 @@ export function resolveMovement({ state, actorId, toDistance }) {
 
   const spent = spendEnergy(state, actorId, cost);
   const next = withDistance(spent, toDistance);
-
+  // A zero-distance confirmation is not a new movement event.
+  const triggered = state.distance !== toDistance
+    ? applyEventTriggeredBuffsV2({
+        state: next, statusState: state, eventType: "movement",
+        ownerId: actorId, otherId: actorId, combatAtMs: state.elapsedMs
+      })
+    : {state:next,events:[]};
   return Object.freeze({
     ok: true,
     outcome: "moved",
     cost,
-    state: next,
+    state: triggered.state,
     events: Object.freeze([
       event("distance-changed", 0, {
         actorId,
         from: state.distance,
         to: toDistance,
         cost
-      })
+      }),
+      ...triggered.events
     ])
   });
 }
@@ -813,51 +820,34 @@ export function resolveReaction({
   });
 }
 
-// Triggers consume real, *original* HP-loss events from one resolved skill.
-// Proc events are appended only after the source event snapshot is closed:
-// a proc can never recursively create another proc in the same resolution.
-function applyTriggeredBuffsForOriginalDamageV1({
-  state, statusState, actorId, skill, events, atMs, combatAtMs, battleFormat
+// Map only canonical original HP-loss records to the one shared event
+// dispatcher. No triggered event can itself become another trigger.
+function dispatchConfirmedDamageEventsV2({
+  state, statusState, events, skill, atMs, combatAtMs, battleFormat
 }) {
-  const active = activeStatusEffectsV1(statusState, actorId, combatAtMs)
-    .filter(entry => entry.definition.kind === "triggered_buff");
-  if (active.length === 0) return {state, events: []};
+  let nextState = state;
+  const generated = [];
   const originals = events.filter(entry =>
     entry.type === "hit" &&
-    entry.sourceActorId === actorId &&
-    entry.actorId !== actorId &&
+    entry.actorId !== entry.sourceActorId &&
     entry.reflected !== true &&
     entry.contactRetaliation !== true &&
     Number(entry.appliedDamage) > 0
   );
-  let nextState = state;
-  const generated = [];
   for (const hit of originals) {
-    for (const activeBuff of active) {
-      const procSkill = {
-        id: activeBuff.sourceSkillId || activeBuff.definition.id,
-        element: skill.element,
-        form: skill.form,
-        effect: {damage:0,heal:0},
-        effects: activeBuff.definition.onDamageDealt.effects
-      };
-      const result = applyImmediateTacticalEffectsV1({
-        state: nextState,
-        actorId,
-        targetId: hit.actorId,
-        skill: procSkill,
-        atMs,
-        combatAtMs,
-        battleFormat,
-        thresholdDepth: 1,
-        directDamageApplied: 0,
-        allowLifeSteal: false
+    for (const [eventType, ownerId, otherId] of [
+      ["damage_dealt", hit.sourceActorId, hit.actorId],
+      ["damage_taken", hit.actorId, hit.sourceActorId]
+    ]) {
+      const result = applyEventTriggeredBuffsV2({
+        state: nextState, statusState, eventType, ownerId, otherId,
+        skill, atMs, combatAtMs, battleFormat
       });
       nextState = result.state;
       generated.push(...result.events);
     }
   }
-  return {state:nextState,events:generated};
+  return { state:nextState, events:generated };
 }
 
 export function resolveSkillCompletion({
@@ -1062,10 +1052,9 @@ export function resolveSkillCompletion({
       events.push(...tactical.events);
 
       const originalHitEvents = [...events];
-      const triggered = applyTriggeredBuffsForOriginalDamageV1({
+      const triggered = dispatchConfirmedDamageEventsV2({
         state: nextState,
         statusState: state,
-        actorId,
         skill,
         events: originalHitEvents,
         atMs: impactAtMs,
@@ -1154,6 +1143,23 @@ export function resolveSkillCompletion({
           presence.reach.presence
       }));
     }
+  }
+
+  if (outcome === "evaded") {
+    // The *defender* owns evasion, after the native resolver confirms it.
+    const evasion = applyEventTriggeredBuffsV2({
+      state: nextState,
+      statusState: state,
+      eventType: "evaded",
+      ownerId: targetId,
+      otherId: actorId,
+      skill,
+      atMs: impactAtMs,
+      combatAtMs: combatImpactAtMs,
+      battleFormat
+    });
+    nextState = evasion.state;
+    events.push(...evasion.events);
   }
 
   const resolutionAt =
