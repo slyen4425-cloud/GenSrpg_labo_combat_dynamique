@@ -1,0 +1,190 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_electric_special_2",
+    "description": "Technique Électricité utilitaire. Disponible au niveau 28.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_electric_special_2",
+      "name": "Surcharge",
+      "category": "buff_debuff",
+      "form": "self",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "electric",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 2000,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally",
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "approach_time_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 60000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": -50
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "cap_electric_special_2:1",
+            "kind": "skill_cooldown_rate_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 60000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [
+              "legacy",
+              "debuff"
+            ],
+            "modifierPct": 100
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-2",
+            "kind": "energy_regen_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 60000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": 50
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-3",
+            "kind": "stat_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 60000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "statId": "electric",
+            "modifierMode": "points",
+            "deltaPoints": 50
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-4",
+            "kind": "triggered_buff",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 60000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "onEvent": {
+              "event": "damage_dealt",
+              "effects": [
+                {
+                  "kind": "damage",
+                  "targetScope": "target",
+                  "amount": 10,
+                  "channel": null
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_electric_special_2",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "cap_electric_special_2",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-recall-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-impact-electric-01",
+            "displayScale": 1.7,
+            "opacity": 0.5
+          }
+        }
+      }
+    }
+  }
+}
