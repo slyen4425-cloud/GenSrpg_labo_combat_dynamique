@@ -9,7 +9,7 @@ import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-def
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
-import { createBattleActorAiController } from "../core/combat/battle-actor-ai-controller.js";
+import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js";
 import {
   isSkillTargetAllowed,
   targetRelation
@@ -1613,6 +1613,14 @@ export async function mountCoop2v2Test({
     onClock(state) {
       statusFx?.syncCountdowns(state);
       renderAvailability();
+      for (const controller of aiControllers) {
+        const decision = controller.maybeDodge({ elapsedMs: state.elapsedMs });
+        if (decision.status === "dodged") {
+          void Promise.resolve(visuals.playEventFor(decision.actorId, "dodge", {
+            metadata: { durationMs: decision.durationMs }
+          })).catch(() => {});
+        }
+      }
     },
     onStarted({ action }) {
       if (action.actionType !== "skill") {
@@ -1663,6 +1671,9 @@ export async function mountCoop2v2Test({
       }
     },
     onRelease({ action }) {
+      for (const controller of aiControllers) {
+        controller.observeRelease({ action, elapsedMs: session.snapshot().elapsedMs });
+      }
       if (action.actionType !== "skill") {
         return;
       }
@@ -1744,7 +1755,18 @@ export async function mountCoop2v2Test({
       const ids = rosterController?.skillIdsFor(spec.actorId) ?? spec.skillIds;
       const targets = spec.targetIds.filter(id => isAlive(id));
       if (!isAlive(spec.actorId) || ids.length === 0 || targets.length === 0) continue;
-      aiControllers.push(createBattleActorAiController({ session, runtime, actorId: spec.actorId, targetIds: targets, skillIds: ids, skillsById }));
+      const allyIds = format.actors
+        .filter(actor => actor.actorId !== spec.actorId && format.teamOf(actor.actorId) === format.teamOf(spec.actorId))
+        .map(actor => actor.actorId);
+      aiControllers.push(createBattleActorAiController({
+        session, runtime, actorId: spec.actorId, targetIds: targets, allyIds, skillIds: ids, skillsById,
+        tactics: CAPTURE_AI_TACTICS_V1_DEFAULT,
+        dodge: dodgeSkill === null ? null : {
+          skill: dodgeSkill,
+          recharge: dodgeRechargeConfig,
+          activeWindowMs: dodgeActiveWindowMs
+        }
+      }));
     }
   }
 
