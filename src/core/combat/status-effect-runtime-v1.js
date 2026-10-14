@@ -607,6 +607,7 @@ export function advanceStatusEffectsOnOwnerActionEndV1({
       nextState,
       fighterId,
       statusId,
+      sourceSkillId,
       instance.remainingActionEnds - 1
     );
   }
