@@ -18,7 +18,7 @@ La règle est générique ; aucune condition spéciale « compétence X → év�
 | --- | --- | --- | --- |
 | `damage_dealt` | Une attaque ou effet tactique immédiat inflige effectivement des PV à une cible (HP perdus > 0) | Porteur attaquant | Victime |
 | `damage_taken` | Le porteur perd réellement des PV sur ce même coup | Porteur blessé | Source du coup |
-| `movement` | Un changement de bande de distance tactique est validé et modifie la distance (pas un appel sans mouvement ni refus) | Créature déplacée | Créature déplacée |
+| `movement` | Changement tactique de bande **ou** approche de compétence (`ground`, `aerial`, `teleport`, `burrow`) réellement achevée avec trajet positif | Porteur qui se déplace | Cible de l’approche, ou porteur en déplacement tactique |
 | `evaded` | Le resolver confirme `outcome=evaded` pour l'attaque ciblée, manuelle ou automatique | Défenseur ayant esquivé | Attaquant |
 
 Les dégâts `onDamageDealt` de V1 continuent de fonctionner et sont lus par **le même dispatcher** ; les exports V1 restent au format d'origine jusqu'à changement explicite du type d'événement dans l'éditeur. Le contrat refuse `onEvent` et `onDamageDealt` simultanés. Aucun effet déclenché n'est réutilisé lui-même comme source : pas de boucle infinie.
@@ -35,7 +35,7 @@ Les dégâts `onDamageDealt` de V1 continuent de fonctionner et sont lus par **l
 
 ## Limites clairement assumées
 
-La liste est **extensible** mais ces 4 types seulement ont actuellement un événement métier branché. Un déplacement d'attaque (course, bond, vol, téléportation), le glissement de sprite et l'exploration ne sont **pas encore** l'événement de déplacement tactique `movement` ; ils demandent des précisions de timing pour éviter plusieurs procs par frame. Les dégâts de DoT, de zone persistante, les contre-dégâts, la protection par bouclier sans perte HP et les soins ne sont pas encore tous émetteurs de déclencheurs. Les réactions `evaded` correspondent au résultat final d'esquive d'une attaque ciblée, non au simple clic sur Esquive.
+La liste est **extensible** mais seuls ces quatre événements sont aujourd'hui branchés. Les approches natives de compétences déclenchent **une fois à la fin du mouvement**, pas à chaque frame ; les déplacements purement graphiques ou en exploration ne le font pas. Les dégâts de DoT, de zones persistantes, les renvois et les soins ne sont pas encore des déclencheurs spécifiques. `evaded` exige une vraie issue d'esquive, pas un clic sur le bouton.
 
 Les critères complémentaires sont pour de futurs micro-lots : d'autres événements (début déplacement, fin d'approche, soin reçu/donné, KO, effet de statut appliqué, entrée/sortie de zone), conditions/chances/cooldown, multiples événements par même statut et passifs permanents. Les conditions doivent être définies sur des événements canoniques du gameplay, jamais par le renderer.
 
@@ -45,3 +45,10 @@ Les critères complémentaires sont pour de futurs micro-lots : d'autres événe
 - `tests/unit/capture-event-triggers-v2.test.mjs` : contrat, refus configuration ambiguë, ancienne V1, `move` effectif et preview sans mutation, malédiction de mouvement qui expire, soin du défenseur à l'esquive confirmée, dégâts subis, protection 2v2, builder Human Editor et sélection du déclencheur.
 - Tests existants de `capture-triggered-buff-v1`, dommages, mobilité, IA, rayons et status sont conservés.
 - CI Foundation + deux Chromium et déploiement GitHub Pages sur SHA final sont requis avant publication GREEN. Validation smartphone réelle lors du test global par l'auteur, non revendiquée.
+
+
+## V2.1 — véritable mouvement d'approche dans les compétences Capture
+
+- Le **même dispatcher** `applyEventTriggeredBuffsV2` consomme l'événement `movement` à `SkillCompletion` quand `approachMode` appartient à ground/aerial/teleport/burrow et `travelMs > 0`. L'autre acteur est la cible de l'approche. Les annulations avant résolution et les projectiles/rayons immobiles restent exclus. Événement unique par approche achevée, aucune animation ne devient une autorité gameplay.
+- Test natif `tests/unit/capture-approach-movement-trigger-v1.test.mjs` : vrai CombatSession, curse -7 PV pour les quatre modes, attaques stationnaires, expiration, 2v2. Aucun schéma de statut supplémentaire ni modification de Runtime, horloge, FX ou fichiers auteur.
+- Base `gh-pages@7666e2951377be718f9f555bb13ecbfa836dafc6`, branche `work/lab-approach-movement-trigger-v1-2026-10-14`, checkpoint de départ `checkpoint/lab-start-approach-movement-trigger-v1-2026-10-14`.
