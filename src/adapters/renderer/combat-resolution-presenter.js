@@ -55,6 +55,7 @@ export function createCombatResolutionPresenter({
   const footfallTokenByActor = new Map();
   const outcomeByActor = new Map();
   const rosterVisualsByActor = new Map();
+  const approachVisualsByActor = new Map();
 
   function presentRosterVisual(actorSlot, type, options = {}) {
     const record = { type };
@@ -198,11 +199,11 @@ export function createCombatResolutionPresenter({
     actorSlot = "player"
   ) {
     const rosterCancelled = rosterVisualsByActor.delete(actorSlot);
-    // CombatRuntime's onInterrupted is also invoked for a skill already
-    // travelling. Such approaches use visuals.playApproachFor(), not the
-    // roster visual map. Always cancel this actor's current visual motion,
-    // otherwise the animation can finish after native stun cancellation.
-    visuals.cancelFor(actorSlot);
+    // Movement is started through playApproachFor, outside the roster map.
+    // Cancel the creature only if an owned visual is actually active.
+    // Unconditional cancelFor would double-cancel the recall/enter sequence.
+    const approachCancelled = approachVisualsByActor.delete(actorSlot);
+    if (rosterCancelled || approachCancelled) visuals.cancelFor(actorSlot);
     const outcomeCancelled = outcomeByActor.delete(actorSlot);
     const preparationCancelled =
       cancelPreparation(actorSlot);
@@ -319,6 +320,8 @@ export function createCombatResolutionPresenter({
       const footfallToken = skillId && action.skill?.form === "contact" &&
         Number(action.travelMs) > 0 ? {} : null;
       if (footfallToken) footfallTokenByActor.set(actorSlot, footfallToken);
+      const approachToken = {};
+      approachVisualsByActor.set(actorSlot, approachToken);
       visuals
         .playApproachFor(actorSlot, approachMode, {
           // Native -100% speed modifier permits an instantaneous impact.
@@ -362,7 +365,12 @@ export function createCombatResolutionPresenter({
             });
           }
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => {
+          if (approachVisualsByActor.get(actorSlot) === approachToken) {
+            approachVisualsByActor.delete(actorSlot);
+          }
+        });
     } else if (!action.mirrorReturn) {
       visuals
         .playEventFor(actorSlot, "attack", { targetSlot })
@@ -636,8 +644,11 @@ export function createCombatResolutionPresenter({
       return;
     }
     cancelPending();
-    for (const actorSlot of rosterVisualsByActor.keys()) visuals.cancelFor(actorSlot);
+    for (const actorSlot of new Set([
+      ...rosterVisualsByActor.keys(), ...approachVisualsByActor.keys()
+    ])) visuals.cancelFor(actorSlot);
     rosterVisualsByActor.clear();
+    approachVisualsByActor.clear();
     const presentationActors = new Set([
       ...preparationFxByActor.keys(),
       ...preparationAudioByActor.keys(),
