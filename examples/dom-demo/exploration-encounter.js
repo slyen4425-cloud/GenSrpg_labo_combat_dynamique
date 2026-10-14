@@ -22,6 +22,7 @@ import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../../src/assets/global-visual-library.js";
+import { createCaptureLibraryAssetResolverV1 } from "../../src/assets/capture-library-asset-resolver-v1.js";
 import {
   demoPresentationAssets
 } from "./demo-assets.js?rev=exploration-bridge-presentation-integrity-v1";
@@ -317,24 +318,11 @@ Promise.resolve()
         }
       });
 
-    // The global visual catalog is the one source of asset records; the demo
-    // registry is a typed renderer adapter, not an alternate asset owner.
-    const officialAssets = new Map(
-      (visualCatalog.assets ?? []).map(asset => [asset.id, asset])
-    );
-    function resolveVisualAsset(assetId) {
-      const fromDemo = demoPresentationAssets.asset(assetId);
-      if (fromDemo) return fromDemo;
-      const resource = officialAssets.get(assetId)?.resource;
-      if (!resource?.file) return null;
-      return Object.freeze({
-        assetId,
-        url: globalVisualAssetUrl(resource.file),
-        frameCount: Math.max(1, Math.floor(Number(resource.frameCount) || 1)),
-        ...(Number(resource.frameMs) > 0 ? {frameMs:Number(resource.frameMs)} : {}),
-        playbackMode: resource.playbackMode === "loop" ? "loop" : "once"
-      });
-    }
+    const resolveVisualAsset = createCaptureLibraryAssetResolverV1({
+      catalog: visualCatalog,
+      assetForId: assetId => demoPresentationAssets.asset(assetId),
+      assetUrlForFile: globalVisualAssetUrl
+    });
 
     const configuredPresentationAssets =
       createCaptureSkillPresentationAssetsV2({
