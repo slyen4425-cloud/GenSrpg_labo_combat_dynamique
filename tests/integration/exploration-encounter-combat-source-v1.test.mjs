@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
 import {
   buildExplorationEncounterCombatSourceV1
@@ -48,10 +49,7 @@ async function configuredSource(rawSnapshot = snapshot()) {
     json("data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json"),
     json("data/combat/skills/catalog.v1.json"),
     json("data/capture/monster-capture-stat-registry.v1.json"),
-    json("data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json"),
-    json("data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json"),
-    json("data/capture/showcase/fireball.capture-skill-transfer-v1.json"),
-    json("data/capture/showcase/lib_flame_bite.capture-skill-transfer-v1.json")
+    ...CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.map(json)
   ]);
 
   return buildExplorationEncounterCombatSourceV1({
@@ -238,10 +236,11 @@ test("player party ref resolves configured active and reserve creatures without 
   assert.deepEqual(
     source.skillIdsByCreature.crea_mossback,
     [
+      "cap_earth_atk_2",
       "lib_earth_guard",
-      "claw",
-      "lib_quake",
-      "lib_rock_slam"
+      "cap_earth_atk_4",
+      "cap_earth_atk_3",
+      "cap_earth_atk_7"
     ]
   );
 });
@@ -425,10 +424,11 @@ test("real Encounter roster switches from Loup to Moussados through Roster Sessi
       summoned.creatureId
     ],
     [
+      "cap_earth_atk_2",
       "lib_earth_guard",
-      "claw",
-      "lib_quake",
-      "lib_rock_slam"
+      "cap_earth_atk_4",
+      "cap_earth_atk_3",
+      "cap_earth_atk_7"
     ]
   );
 });
