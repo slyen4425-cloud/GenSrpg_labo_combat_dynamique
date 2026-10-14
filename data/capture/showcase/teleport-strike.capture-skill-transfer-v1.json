@@ -20,10 +20,10 @@
       "element": null,
       "approachMode": "teleport",
       "energyCost": 3,
-      "preparationMs": 1200,
+      "preparationMs": 500,
       "travelMs": 120,
-      "recoveryMs": 650,
-      "cooldownMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 20000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
@@ -70,7 +70,7 @@
         {
           "kind": "damage",
           "targetScope": "target",
-          "amount": 24,
+          "amount": 16,
           "channel": null,
           "ignoreResistancePct": 0,
           "ignoreDamageReductionPct": 0

@@ -37,9 +37,12 @@ test("Teleport strike author data survives official import/export and is discove
  assert.equal(tr.value.draft.id,"teleport-strike");
  assert.equal(tr.value.draft.definition.approachMode,"teleport");
  assert.equal(tr.value.draft.definition.form,"contact");
- assert.equal(tr.value.draft.definition.effects[0].amount,24);
+ assert.equal(tr.value.draft.definition.effects[0].amount,16);
  assert.equal(tr.value.draft.definition.energyCost,3);
- assert.equal(tr.value.draft.definition.cooldownMs,0);
+ assert.equal(tr.value.draft.definition.cooldownMs,20000);
+ assert.equal(tr.value.draft.definition.preparationMs,500);
+ assert.equal(tr.value.draft.definition.travelMs,120);
+ assert.equal(tr.value.draft.definition.recoveryMs,0);
  assert.equal(tr.value.draft.presentation.visual.icon.assetId,"core:icon-skill-teleport-strike-01");
  assert.equal(tr.value.draft.presentation.audio.travel.assetId,"gensrpg:sound:tower-6dbf268f");
  assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(tr.value.draft)).value,tr.value);
