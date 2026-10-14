@@ -16,6 +16,8 @@ import { captureComplexNativeSkillDraftsV1 } from "../../src/catalogs/capture-co
 import { CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 as creatureFiles } from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 as skillFiles } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
+import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
+import { normalizeCaptureSkillEditorDraftV1 } from "../../src/contracts/capture-skill-editor-draft-v1.js";
 
 const cPath="data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json";
 const sPath="data/capture/showcase/cap_fire_atk_7.capture-skill-transfer-v1.json";
@@ -95,7 +97,15 @@ test("Brasier primordial conserves ultimate, its authored required level and its
 });
 
 test("the existing canonical Transfer batch installs both author models without creating a second owner",()=>{
- const configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(d=>[d.id,d]));
+ const configuredSkills=new Map(JSON.parse(read("data/combat/skills/catalog.v1.json")).entries.map(entry=>{
+   const definition=normalizeSkillDefinition(entry.definition);
+   const draft=normalizeCaptureSkillEditorDraftV1({
+     schema:"capture-skill-editor-draft-v1",id:definition.id,description:"Capacité native du laboratoire.",
+     requiredLevel:1,usageScopes:["capture","combat"],definition,presentation:null
+   });
+   return [draft.id,draft];
+ }));
+ for(const d of capturePortableNativeSkillDraftsV1())if(!configuredSkills.has(d.id))configuredSkills.set(d.id,d);
  for(const d of captureComplexNativeSkillDraftsV1()) if(!configuredSkills.has(d.id)) configuredSkills.set(d.id,d);
  const configuredCreatures=new Map();
  const existing=JSON.parse(read("data/capture/monster-capture-creatures.v1.json"));
