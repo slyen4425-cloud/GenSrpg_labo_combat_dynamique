@@ -350,6 +350,14 @@ function effectLinesFor(
           )
       ]);
 
+    case "triggered_buff":
+      return Object.freeze([
+        "Après chaque attaque retirant des PV à une cible, déclenche " +
+          definition.onDamageDealt.effects.length +
+          " effet(s) configuré(s) sur soi ou sur la victime. " +
+          "Les dégâts périodiques et effets déclenchés ne se redéclenchent pas."
+      ]);
+
     case "auto_dodge":
       return Object.freeze([
         "Esquive automatiquement les attaques ciblées esquivables pendant la durée du buff, sans consommer de charge d’Esquive."
