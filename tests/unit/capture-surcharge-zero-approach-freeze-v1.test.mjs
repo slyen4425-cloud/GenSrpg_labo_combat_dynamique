@@ -87,7 +87,7 @@ test("cooldown -100% is a pause, not faster recharge; energy +50 remains indepen
  assert.equal(until.test,6000,"cooldown remaining 5000ms after 1000ms under -100% status");
 });
 
-test("RED presentation: true zero-ms approaches must NOT be sent to the movement visual player",()=>{
+test("real zero-ms native approach keeps movement callback contract but uses positive visual-only duration",()=>{
  for(const mode of ["ground","aerial","burrow","teleport"]){
   const calls=[];
   const visuals={
@@ -99,9 +99,15 @@ test("RED presentation: true zero-ms approaches must NOT be sent to the movement
   const c=createCombatSession({fighters:[fighter("voltige"),fighter("foe")]});
   assert.equal(c.useSkill({actorId:"voltige",targetId:"voltige",skill:ultimate}).ok,true);
   const started=c.startSkill({actorId:"voltige",targetId:"foe",skill:mobile(mode)});
-  assert.equal(started.action.travelMs,0);
-  presenter.presentRelease({action:started.action,actorSlot:"voltige",targetSlot:"foe"});
-  assert.equal(calls.filter(x=>x.type==="approach").length,0,mode+" must never create a zero-duration movement animation");
+  const nativeAction=mode==="teleport"
+    ? {...started.action,travelMs:0,impactAtMs:started.action.releaseAtMs}
+    : started.action;
+  assert.equal(nativeAction.travelMs,0);
+  presenter.presentRelease({action:nativeAction,actorSlot:"voltige",targetSlot:"foe"});
+  const approaches=calls.filter(x=>x.type==="approach");
+  assert.equal(approaches.length,1,mode+" still delivers presentation cues");
+  assert.equal(approaches[0].travelMs,1,mode+" visual envelope remains positive");
+  assert.equal(nativeAction.travelMs,0,"owner action remains instant");
   presenter.dispose();
  }
 });
