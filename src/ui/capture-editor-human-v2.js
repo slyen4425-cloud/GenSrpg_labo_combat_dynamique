@@ -4429,7 +4429,7 @@ function tacticalStatusKindLabelV1(kind) {
     damage_reflection: "Renvoi de dégâts",
     projectile_mirror: "Miroir — renvoi réel de projectile",
     auto_dodge: "Esquive automatique (durée X)",
-    triggered_buff: "Effet conditionnel (événement → effets)",
+    triggered_buff: "Buff à déclenchement — événement → effets",
     immunity: "Immunité",
     immobilize: "Immobilisation",
     silence: "Silence",
@@ -4798,7 +4798,7 @@ function appendStackThresholdEffectRowV1(host, effect = {}, { damageBuff = false
     effect.kind ?? "damage");
   select(header, "Cible", "stackThresholdEffectScope",
     damageBuff
-      ? [["target","Victime ayant subi des dégâts"],["self","Porteur du buff"]]
+      ? [["target","Autre acteur (ou soi pour déplacement)"],["self","Porteur du statut"]]
       : [["target","Créature portant les stacks"],["self","Source des stacks"]],
     effect.targetScope ?? "target");
   const remove = document.createElement("button");
