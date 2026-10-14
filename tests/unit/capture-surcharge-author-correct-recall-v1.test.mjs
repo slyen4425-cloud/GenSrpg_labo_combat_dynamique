@@ -60,7 +60,7 @@ test("Showcase inserts the complex historical Surcharge ID once then replaces on
  const updatedDb=buildCaptureEditorDatabaseV1({statRegistry:registry,progressionRules:progression,
   configuredCreatures,configuredSkills,metadata:{producer:"surcharge-regression-reload"}});
  const reload=planCaptureTransferImportV1({currentDatabase:updatedDb,transfer:transferred(),mode:"replace"});
- assert.equal(reload.action,"replace-skill","same author ID must replace on every later reload");
+ assert.equal(reload.action,"noop","unchanged author ID must reload idempotently without any duplicate");
  applyCaptureTransferPlanToEditorStateV1({plan:reload,configuredCreatures,configuredSkills,statRegistry:registry,progressionRules});
  assert.equal(configuredSkills.size,before+1,"no duplicate from re-import");
 });
