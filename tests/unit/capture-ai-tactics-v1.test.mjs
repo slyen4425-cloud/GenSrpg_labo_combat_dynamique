@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
+import { createCombatSession } from "../../src/core/combat/combat-session.js";
+import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
+import { buildCaptureDodgeReactionSkillV1 } from "../../src/contracts/capture-game-options-v1.js";
+
 import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../../src/core/combat/battle-actor-ai-controller.js";
 
 function harness({abilities, hp = 100, maxHp = 100, targets = ["enemy"], skillsById = null, tactics = { ...CAPTURE_AI_TACTICS_V1_DEFAULT, dodgeChancePct: 100 }, dodge = null } = {}) {
@@ -67,4 +72,42 @@ test("Real 2v2 test UI hands released visible attacks to AI and runs its reactio
  assert.match(code,/controller\.maybeDodge\(/);
  assert.match(code,/CAPTURE_AI_TACTICS_V1_DEFAULT/);
  assert.doesNotMatch(code,/aiDodgeTimeout|aiDodgeInterval|setInterval\([^)]*ai/i);
+});
+
+test("Real Combat Runtime: AI dodge after observable release consumes a native charge and evades at impact", () => {
+  const fighter=id=>({id,maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,
+    energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
+  const session=createCombatSession({distance:"medium",fighters:[fighter("ai"),fighter("enemy")]});
+  const skill=normalizeSkillDefinition({id:"real-incoming",name:"real-incoming",category:"offensive",
+    form:"projectile",approachMode:"none",element:null,energyCost:0,preparationMs:0,
+    travelMs:700,recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
+    targetRelations:["enemy"],effect:{damage:20,heal:0,interruptsPreparation:false,stunMs:0,tags:[]}});
+  const dodgeSkill=buildCaptureDodgeReactionSkillV1({dodge:{enabled:true,maxCharges:1,rechargeMs:30000,activeWindowMs:250}});
+  const recharge={actionId:dodgeSkill.id,maxCharges:1,rechargeMs:30000};
+  let clock=0, timer=null, ai=null;
+  const outcomes=[], reactions=[];
+  const runtime=createCombatRuntime({
+    session,now:()=>clock,setTimer(cb){timer=cb;return 1},clearTimer(){},
+    onRelease({action}) {ai?.observeRelease({action,elapsedMs:session.snapshot().elapsedMs});},
+    onClock(state) {if(ai){const d=ai.maybeDodge({elapsedMs:state.elapsedMs});if(d.status==="dodged")reactions.push(d)}},
+    onResolved(result){outcomes.push(result)}
+  });
+  ai=createBattleActorAiController({
+    session,runtime,actorId:"ai",targetIds:["enemy"],skillIds:["real-incoming"],
+    skillsById:{"real-incoming":skill},tactics:{...CAPTURE_AI_TACTICS_V1_DEFAULT,dodgeChancePct:100},
+    dodge:{skill:dodgeSkill,recharge,activeWindowMs:250}
+  });
+  runtime.start();
+  const began=runtime.startSkill({actorId:"enemy",targetId:"ai",skill});
+  assert.equal(began.ok,true);
+  clock=300;timer();
+  assert.equal(reactions.length,0,"must not dodge far ahead of visible impact");
+  clock=550;timer();
+  assert.equal(reactions.length,1,"dodge should be activated during the real impact window");
+  assert.equal(runtime.rechargeableActionAvailability({actorId:"ai",...recharge}).charges,0);
+  clock=700;timer();
+  assert.equal(outcomes.length,1);
+  assert.equal(outcomes[0].outcome,"evaded");
+  assert.equal(session.snapshot().fighters.ai.hp,100);
+  runtime.dispose();
 });
