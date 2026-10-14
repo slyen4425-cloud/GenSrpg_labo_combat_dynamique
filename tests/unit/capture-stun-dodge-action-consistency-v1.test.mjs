@@ -54,7 +54,7 @@ test("RED: authentic Arc stun cancels active post-release melee approach rather 
 test("RED: an ordinary dodge is not activated mid-attack and never spends charges",()=>{
  const h=harness();
  h.runtime.startSkill({actorId:"victim",targetId:"caster",skill:skill("long-attack",{prep:500,travel:2000,recovery:500})});
- const chargeCount=()=>h.runtime.rechargeableActionAvailability(dodge.recharge).charges;
+ const chargeCount=()=>h.runtime.rechargeableActionAvailability({actorId:dodge.actorId,...dodge.recharge}).charges;
  assert.equal(chargeCount(),2);
  for(const t of [0,650,2650]){
    h.step(t);
