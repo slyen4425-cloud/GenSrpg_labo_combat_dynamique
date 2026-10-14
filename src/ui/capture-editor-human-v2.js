@@ -5013,10 +5013,17 @@ function syncHumanSkillEffectRowV1(
   const zoneStacking=row.querySelector("[data-skill-zone-status-stacking]")?.value;
   if (zoneStacks) zoneStacks.hidden = zoneStacking !== "stack";
 
-  const stacking =
-    row.querySelector(
-      "[data-skill-status-stacking]"
-    )?.value ?? "refresh";
+  const stackingSelect = row.querySelector("[data-skill-status-stacking]");
+  if (stackingSelect) {
+    // Triggered buffs have one lifetime, never independent stacks. A
+    // switch from a stack-counter must not silently create invalid data.
+    const stackOption = [...stackingSelect.options].find(option => option.value === "stack");
+    if (stackOption) stackOption.disabled = statusKind === "triggered_buff";
+    if (statusKind === "triggered_buff" && stackingSelect.value === "stack") {
+      stackingSelect.value = "refresh";
+    }
+  }
+  const stacking = stackingSelect?.value ?? "refresh";
   const maxStacks = row.querySelector(
     "[data-skill-status-max-stacks-field]"
   );
