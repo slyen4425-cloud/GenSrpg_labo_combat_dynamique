@@ -17,6 +17,13 @@ import {
 } from "./combat-protection-v1.js";
 import { applyImmediateTacticalEffectsV1 } from "./immediate-tactical-effects-v1.js";
 
+// Status IDs are authored locally to each skill (often "status-1").
+ // The runtime identity is therefore (sourceSkillId, definition.id), not id alone.
+function sameStatusSourceV1(entry, statusId, sourceSkillId) {
+  return entry.definition.id === statusId &&
+    (entry.sourceSkillId ?? null) === (sourceSkillId ?? null);
+}
+
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
   if (!fighter) {
@@ -38,8 +45,7 @@ function replaceInstance(
   ];
   const index = statuses.findIndex(
     (entry) =>
-      entry.definition.id ===
-      instance.definition.id
+      sameStatusSourceV1(entry, instance.definition.id, instance.sourceSkillId)
   );
 
   if (index < 0) {
@@ -58,15 +64,15 @@ function replaceInstance(
 function removeInstanceById(
   state,
   fighterId,
-  statusId
+  statusId,
+  sourceSkillId = null
 ) {
   const fighter = fighterOf(state, fighterId);
   return withFighterStatusEffects(
     state,
     fighterId,
     fighter.statusEffects.filter(
-      (entry) =>
-        entry.definition.id !== statusId
+      (entry) => !sameStatusSourceV1(entry,statusId,sourceSkillId)
     )
   );
 }
@@ -215,7 +221,7 @@ function resolveStackThresholdV1({ state, status, sourceActorId, targetActorId, 
   if (!trigger || !(before < trigger.count && after >= trigger.count)) return state;
   if (thresholdDepth >= 8) throw new RangeError("Stack threshold recursion limit reached");
   const consumed = trigger.consume === "reset"
-    ? removeInstanceById(state, targetActorId, status.id)
+    ? removeInstanceById(state, targetActorId, status.id, sourceSkillId)
     : state;
   const resolved = applyImmediateTacticalEffectsV1({
     state: consumed,
@@ -284,7 +290,7 @@ export function applyStatusEffectV1({
   const existing =
     target.statusEffects.find(
       (entry) =>
-        entry.definition.id === status.id
+        sameStatusSourceV1(entry, status.id, sourceSkillId)
     ) ?? null;
 
   if (
@@ -397,12 +403,13 @@ function updateTickSchedule(
   state,
   fighterId,
   statusId,
+  sourceSkillId,
   nextTickAtMs
 ) {
   const fighter = fighterOf(state, fighterId);
   const statuses = fighter.statusEffects.map(
     (instance) =>
-      instance.definition.id === statusId
+      sameStatusSourceV1(instance,statusId,sourceSkillId)
         ? Object.freeze({
             ...instance,
             nextTickAtMs
@@ -420,20 +427,22 @@ function updateRemainingActionEnds(
   state,
   fighterId,
   statusId,
+  sourceSkillId,
   remainingActionEnds
 ) {
   if (remainingActionEnds <= 0) {
     return removeInstanceById(
       state,
       fighterId,
-      statusId
+      statusId,
+      sourceSkillId
     );
   }
 
   const fighter = fighterOf(state, fighterId);
   const statuses = fighter.statusEffects.map(
     (instance) =>
-      instance.definition.id === statusId
+      sameStatusSourceV1(instance,statusId,sourceSkillId)
         ? Object.freeze({
             ...instance,
             remainingActionEnds
@@ -533,18 +542,17 @@ export function advanceStatusEffectsOnOwnerActionEndV1({
           "owner_action_end"
       )
       .map(
-        (instance) =>
-          instance.definition.id
+        (instance) => ({id:instance.definition.id,sourceSkillId:instance.sourceSkillId})
       );
 
-  for (const statusId of statusIds) {
+  for (const {id:statusId, sourceSkillId} of statusIds) {
     let instance =
       fighterOf(
         nextState,
         fighterId
       ).statusEffects.find(
         (entry) =>
-          entry.definition.id === statusId
+          sameStatusSourceV1(entry,statusId,sourceSkillId)
       );
 
     if (
@@ -588,7 +596,7 @@ export function advanceStatusEffectsOnOwnerActionEndV1({
         fighterId
       ).statusEffects.find(
         (entry) =>
-          entry.definition.id === statusId
+          sameStatusSourceV1(entry,statusId,sourceSkillId)
       );
 
     if (!instance) {
@@ -637,11 +645,10 @@ export function advanceStatusEffectsV1({
             "time_ms"
         )
         .map(
-          (instance) =>
-            instance.definition.id
+          (instance) => ({id:instance.definition.id,sourceSkillId:instance.sourceSkillId})
         );
 
-    for (const statusId of statusIds) {
+    for (const {id:statusId, sourceSkillId} of statusIds) {
       let instance =
         fighterOf(
           nextState,
@@ -695,8 +702,7 @@ export function advanceStatusEffectsV1({
             fighterId
           ).statusEffects.find(
             (entry) =>
-              entry.definition.id ===
-              statusId
+              sameStatusSourceV1(entry,statusId,sourceSkillId)
           );
 
         if (!instance) {
@@ -710,6 +716,7 @@ export function advanceStatusEffectsV1({
           nextState,
           fighterId,
           statusId,
+          sourceSkillId,
           nextTickAtMs
         );
         instance =
@@ -718,8 +725,7 @@ export function advanceStatusEffectsV1({
             fighterId
           ).statusEffects.find(
             (entry) =>
-              entry.definition.id ===
-              statusId
+              sameStatusSourceV1(entry,statusId,sourceSkillId)
           );
       }
     }
