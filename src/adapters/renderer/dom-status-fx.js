@@ -95,18 +95,10 @@ export function createDomStatusFxRenderer({
   const records = new Map();
   let disposed = false;
 
-  function recordKey(
-    actorId,
-    statusId,
-    kind
-  ) {
-    return (
-      actorId +
-      "::" +
-      statusId +
-      "::" +
-      kind
-    );
+  function recordKey(actorId, statusId, kind, sourceSkillId = null) {
+    // HUD, sprite and tint must use the same identity as the Status Runtime.
+    // Keep statusId unmodified for user visual lookups (statusVisuals[id]).
+    return JSON.stringify([actorId, sourceSkillId ?? null, statusId, kind]);
   }
 
   function removeRecord(key) {
@@ -123,6 +115,7 @@ export function createDomStatusFxRenderer({
   function ensureTint({
     actorId,
     statusId,
+    instance,
     target,
     presentation,
     expected
@@ -130,7 +123,8 @@ export function createDomStatusFxRenderer({
     const key = recordKey(
       actorId,
       statusId,
-      "tint"
+      "tint",
+      instance?.sourceSkillId
     );
     expected.add(key);
 
@@ -209,7 +203,8 @@ export function createDomStatusFxRenderer({
     const key = recordKey(
       actorId,
       statusId,
-      "sprite"
+      "sprite",
+      instance?.sourceSkillId
     );
     expected.add(key);
 
@@ -282,7 +277,7 @@ export function createDomStatusFxRenderer({
             !Number(definition?.onStackThreshold?.count)) continue;
         const statusId = String(definition?.id ?? "").trim();
         if (!statusId) continue;
-        refreshStackExpiryHud(records.get(recordKey(actorId, statusId, "hud")), instance, elapsedMs);
+        refreshStackExpiryHud(records.get(recordKey(actorId, statusId, "hud", instance?.sourceSkillId)), instance, elapsedMs);
       }
     }
   }
@@ -304,7 +299,8 @@ export function createDomStatusFxRenderer({
     const key = recordKey(
       actorId,
       statusId,
-      "hud"
+      "hud",
+      instance?.sourceSkillId
     );
     expected.add(key);
 
@@ -630,6 +626,7 @@ export function createDomStatusFxRenderer({
           ensureTint({
             actorId,
             statusId,
+            instance,
             target,
             presentation,
             expected
