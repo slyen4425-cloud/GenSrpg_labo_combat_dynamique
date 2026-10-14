@@ -43,6 +43,7 @@ import {
   STATUS_EFFECT_V1_KINDS,
   STATUS_EFFECT_V1_POLARITIES,
   STATUS_EFFECT_V1_STACKING,
+  TRIGGERED_BUFF_EVENT_TYPES_V2,
   DAMAGE_REFLECTION_INCOMING_KINDS_V1
 } from "../contracts/status-effect-v1.js";
 import {
@@ -425,10 +426,15 @@ function humanTacticalStatusToContractV1(
   }
 
   if (output.kind === "triggered_buff") {
-    output.onDamageDealt = {
-      effects: buildHumanTacticalSkillEffectsV1(status.onDamageDealt?.effects ?? [],
-        { defaultDamageChannel })
-    };
+    const effects = buildHumanTacticalSkillEffectsV1(
+      status.onEvent?.effects ?? status.onDamageDealt?.effects ?? [],
+      {defaultDamageChannel}
+    );
+    if (status.onEvent != null) {
+      output.onEvent = {event:requiredText(status.onEvent.event,"Déclencheur du buff"),effects};
+    } else {
+      output.onDamageDealt = {effects};
+    }
   }
 
   if (output.kind === "immunity") {
@@ -4423,7 +4429,7 @@ function tacticalStatusKindLabelV1(kind) {
     damage_reflection: "Renvoi de dégâts",
     projectile_mirror: "Miroir — renvoi réel de projectile",
     auto_dodge: "Esquive automatique (durée X)",
-    triggered_buff: "Buff à déclenchement (sur dégâts infligés)",
+    triggered_buff: "Effet conditionnel (événement → effets)",
     immunity: "Immunité",
     immobilize: "Immobilisation",
     silence: "Silence",
@@ -4967,7 +4973,7 @@ function syncHumanSkillEffectRowV1(
     if (intangibleSelected) domain.checked = true;
     domain.disabled = intangibleSelected;
   }
-  if (statusPolarity && (statusKind === "projectile_mirror" || statusKind === "auto_dodge" || statusKind === "triggered_buff" || intangibleSelected)) {
+  if (statusPolarity && (statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
     statusPolarity.value = "beneficial";
     statusPolarity.disabled = true;
   } else if (statusPolarity) {
@@ -5736,16 +5742,31 @@ function appendHumanSkillEffectV1(
   triggeredBuffBox.className = "skill-status-config__specific";
   triggeredBuffBox.dataset.skillStatusConfigKind = "triggered_buff";
   const triggeredBuffTitle = document.createElement("strong");
-  triggeredBuffTitle.textContent = "À chaque dégât réellement infligé pendant le buff";
+  triggeredBuffTitle.textContent = "Quand cet événement se produit → déclencher les effets";
+  const triggeredBuffEvent = document.createElement("select");
+  triggeredBuffEvent.dataset.triggeredBuffEvent = "true";
+  const triggerCaptions = {
+    damage_dealt:"La créature inflige des dégâts (perte de PV)",
+    damage_taken:"La créature subit des dégâts (perte de PV)",
+    movement:"La créature se déplace (changement de distance réussi)",
+    evaded:"La créature esquive réellement une attaque"
+  };
+  for (const name of TRIGGERED_BUFF_EVENT_TYPES_V2) {
+    createOption(triggeredBuffEvent,name,triggerCaptions[name]);
+  }
+  triggeredBuffEvent.value = status.onEvent?.event ?? "damage_dealt";
+  // Existing author's onDamageDealt export retains its original format
+  // unless a different event is actively selected.
+  triggeredBuffEvent.dataset.legacy = String(status.onDamageDealt != null && status.onEvent == null);
   const triggeredBuffHost = document.createElement("div");
   triggeredBuffHost.dataset.triggeredBuffEffectsHost = "true";
-  for (const triggered of status.onDamageDealt?.effects ?? []) {
+  for (const triggered of status.onEvent?.effects ?? status.onDamageDealt?.effects ?? []) {
     appendStackThresholdEffectRowV1(triggeredBuffHost, triggered, {damageBuff:true});
   }
   const addTriggeredBuffEffect = document.createElement("button");
   addTriggeredBuffEffect.type = "button";
   addTriggeredBuffEffect.className = "small-action";
-  addTriggeredBuffEffect.textContent = "Ajouter un effet à chaque dégât";
+  addTriggeredBuffEffect.textContent = "Ajouter un effet déclenché";
   addTriggeredBuffEffect.addEventListener("click", () =>
     appendStackThresholdEffectRowV1(triggeredBuffHost, {
       kind:"apply_status", targetScope:"target",
@@ -5755,8 +5776,13 @@ function appendHumanSkillEffectV1(
   const triggeredBuffNote = document.createElement("small");
   triggeredBuffNote.className = "note";
   triggeredBuffNote.textContent =
-    "Effets sur les PV réellement perdus lors des attaques directes. Cible : victime ; Soi : créature possédant le buff. Une brûlure déjà appliquée garde sa propre durée. Sans boucles de déclenchement.";
-  triggeredBuffBox.append(triggeredBuffTitle,triggeredBuffHost,addTriggeredBuffEffect,triggeredBuffNote);
+    "Soi = porteur du statut. Cible = l'autre combattant de l'événement (ennemi blessé, agresseur si esquive/dégâts reçus). Pour un déplacement, la cible est le porteur. Les effets ne s'auto-déclenchent jamais.";
+  triggeredBuffEvent.addEventListener("change",()=>{
+    triggeredBuffEvent.dataset.legacy = "false";
+  });
+  triggeredBuffBox.append(triggeredBuffTitle,
+    tacticalFieldV1("Événement déclencheur",triggeredBuffEvent),
+    triggeredBuffHost,addTriggeredBuffEffect,triggeredBuffNote);
   if (status.kind === "triggered_buff" && triggeredBuffHost.children.length === 0) {
     addTriggeredBuffEffect.click();
   }
@@ -6455,11 +6481,15 @@ function readHumanSkillEffectsV1(root) {
         status.percent = Number(row.querySelector("[data-skill-status-reflection-percent]").value);
         readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="main"]'), status);
       } else if (statusKind === "triggered_buff") {
-        status.onDamageDealt = {
-          effects: readStackThresholdEffectRowsV1(
-            row.querySelector("[data-triggered-buff-effects-host]")
-          )
-        };
+        const triggerNode = row.querySelector("[data-triggered-buff-event]");
+        const effects = readStackThresholdEffectRowsV1(
+          row.querySelector("[data-triggered-buff-effects-host]")
+        );
+        if (triggerNode?.dataset.legacy === "true" && triggerNode.value === "damage_dealt") {
+          status.onDamageDealt = {effects};
+        } else {
+          status.onEvent = {event:triggerNode?.value ?? "damage_dealt",effects};
+        }
       } else if (statusKind === "immunity") {
         status.domains = [
           ...row.querySelectorAll(
