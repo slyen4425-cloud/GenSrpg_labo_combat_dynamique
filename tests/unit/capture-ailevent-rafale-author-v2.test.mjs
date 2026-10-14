@@ -35,7 +35,7 @@ test("Exact author JSON files and single canonical showcase ownership",()=>{
  }
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===files[0].path).length,1);
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x===files[1].path).length,1);
- assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,22);
+ assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,23);
 });
 test("Ailevent authored loadout and creature stats survive exact import",()=>{
  const c=ailevent.value;
