@@ -11,6 +11,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "shield",
   "damage_reflection",
   "projectile_mirror",
+  "auto_dodge",
   "immunity",
   "immobilize",
   "silence",
@@ -135,6 +136,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "contactDamage"
   ]),
   projectile_mirror: COMMON_FIELDS,
+  auto_dodge: COMMON_FIELDS,
   immunity: new Set([
     ...COMMON_FIELDS,
     "domains",
@@ -503,6 +505,15 @@ export function normalizeStatusEffectV1(input) {
       const contactDamage = finiteNumber(value.contactDamage, "StatusEffectV1.contactDamage");
       if (contactDamage < 0) throw new RangeError("StatusEffectV1.contactDamage must be non-negative");
       output.contactDamage = contactDamage;
+    }
+  }
+
+  if (kind === "auto_dodge") {
+    if (polarity !== "beneficial") {
+      throw new RangeError("StatusEffectV1.auto_dodge must be beneficial");
+    }
+    if (duration.durationModel !== "time_ms") {
+      throw new RangeError("StatusEffectV1.auto_dodge requires time_ms duration");
     }
   }
 
