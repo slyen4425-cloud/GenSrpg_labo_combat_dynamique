@@ -57,8 +57,8 @@ test("RED: true Arc stun stops the moving action AND the already playing creatur
  assert.equal(h.session.snapshot().fighters.caster.hp,100,"no late collision or hit from cancelled approach");
  h.dispose();
 });
-test("RED: every native movement profile is cancelled visually by the same callback",()=>{
- for(const mode of ["ground","aerial","teleport","burrow"]){
+test("RED: ground, aerial and teleport movement that receive Arc stun stop visually",()=>{
+ for(const mode of ["ground","aerial","teleport"]){
   const h=harness();
   h.runtime.startSkill({actorId:"victim",targetId:"caster",skill:movingSkill("approach-"+mode,mode)});
   h.runtime.startSkill({actorId:"caster",targetId:"victim",skill:arc});
@@ -67,6 +67,16 @@ test("RED: every native movement profile is cancelled visually by the same callb
   assert.equal(h.visualCalls.filter(x=>x[0]==="cancel"&&x[1]==="victim").length,1,mode);
   h.dispose();
  }
+});
+test("Native burrow immunity is preserved: Arc cannot stun a genuinely underground target",()=>{
+ const h=harness();
+ h.runtime.startSkill({actorId:"victim",targetId:"caster",skill:movingSkill("burrow", "burrow")});
+ h.runtime.startSkill({actorId:"caster",targetId:"victim",skill:arc});
+ h.step(400);h.step(1600);
+ assert.equal(h.session.snapshot().fighters.victim.statusEffects.some(x=>x.definition.kind==="stun"),false);
+ assert.equal(h.runtime.hasActiveActionFor("victim"),true);
+ assert.equal(h.visualCalls.some(x=>x[0]==="cancel"&&x[1]==="victim"),false);
+ h.dispose();
 });
 test("RED: cancelling a live approach by the existing UI callback immediately cancels its visual",()=>{
  const h=harness();
