@@ -56,3 +56,31 @@ test("no second version of Esquive foudroyante skill exists in native author cat
  assert.equal(portable.capturePortableNativeSkillDraftsV1().filter(d=>d.id==="dodge").length,0);
  assert.equal(complex.captureComplexNativeSkillDraftsV1().filter(d=>d.id==="dodge").length,0);
 });
+
+test("the real Showcase import writes exactly one dodge into configuredSkills and preserves author fields on reload",async()=>{
+ const {applyCaptureTransferBatchToEditorStateV1}=await import("../../src/ui/capture-editor-file-transfer-v1.js");
+ const {normalizeCaptureStatRegistryV1}=await import("../../src/contracts/capture-stat-registry-v1.js");
+ const {normalizeCaptureProgressionRulesV1}=await import("../../src/contracts/capture-progression-rules-v1.js");
+ const {capturePortableNativeSkillDraftsV1}=await import("../../src/catalogs/capture-portable-native-skill-catalog-v1.js");
+ const {captureComplexNativeSkillDraftsV1}=await import("../../src/catalogs/capture-complex-native-skill-catalog-v1.js");
+ const statRegistry=normalizeCaptureStatRegistryV1(JSON.parse(
+   await readFile(new URL("../../data/capture/monster-capture-stat-registry.v1.json",import.meta.url),"utf8")));
+ const progressionRules=normalizeCaptureProgressionRulesV1(JSON.parse(
+   await readFile(new URL("../../data/capture/monster-capture-progression-rules.v1.json",import.meta.url),"utf8")));
+ const configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(d=>[d.id,d]));
+ for(const draft of captureComplexNativeSkillDraftsV1())if(!configuredSkills.has(draft.id))configuredSkills.set(draft.id,draft);
+ const configuredCreatures=new Map();
+ const transfer=importCaptureTransferJsonV1(await readAuthor());
+ applyCaptureTransferBatchToEditorStateV1({
+   transfers:[transfer],
+   configuredCreatures,
+   configuredSkills,
+   statRegistry,
+   progressionRules,
+   mode:"replace",
+   metadata:{producer:"esquive-foudroyante-test"}
+ });
+ assert.equal([...configuredSkills.keys()].filter(id=>id==="dodge").length,1);
+ assert.deepEqual(configuredSkills.get("dodge"),transfer.value.draft);
+ assert.equal(configuredSkills.get("dodge").presentation.statusVisuals["status-1"].tintBlinkEnabled,true);
+});
