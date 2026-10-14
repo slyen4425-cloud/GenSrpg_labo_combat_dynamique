@@ -309,9 +309,6 @@ export function createCombatResolutionPresenter({
     const approachMode = action.skill?.approachMode ?? "none";
     if (
       ["ground", "teleport", "aerial", "burrow"].includes(approachMode) &&
-      // -100% timed approach is instant by contract: do not ask the visual
-      // movement runner to divide an already-elapsed path into motion steps.
-      Number(action.travelMs) > 0 &&
       typeof visuals.playApproachFor === "function"
     ) {
       const skillId = action.skill?.id ?? null;
@@ -320,7 +317,10 @@ export function createCombatResolutionPresenter({
       if (footfallToken) footfallTokenByActor.set(actorSlot, footfallToken);
       visuals
         .playApproachFor(actorSlot, approachMode, {
-          travelMs: action.travelMs,
+          // Native -100% speed modifier permits an instantaneous impact.
+          // Visual movement planning and cue dispatch require positive
+          // duration: use a 1ms visual-only envelope, never mutate action.
+          travelMs: Math.max(1, Number(action.travelMs) || 0),
           targetSlot,
           onFootfall: footfallToken ? () => playFootfallAudio({
             actorSlot, targetSlot, token: footfallToken
