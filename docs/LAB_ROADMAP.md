@@ -579,7 +579,7 @@ Résultat attendu après conception et validation :
 
 ## Backlog — Buffs génériques à déclenchement événementiel (2026-10-14)
 
-**Statut : idée produit enregistrée, PAS IMPLÉMENTÉE.** Référence : `docs/LAB_TRIGGERED_BUFFS_BACKLOG_V1.md`.
+**Statut : V1 implémentée dans le Labo Combat, sous réserve des contrôles GREEN finaux.** Références : `docs/LAB_TRIGGERED_BUFF_V1.md` (portée effective), `docs/LAB_TRIGGERED_BUFFS_BACKLOG_V1.md` (extensions futures).
 
 Demande auteur : une capacité, notamment **ultime**, pose un buff temporaire (exemple **60 s**) qui fait **à chaque dégât infligé par son porteur** une action paramétrable : brûlure sur la victime, soin du porteur, application d'un autre statut, ou combinaison. Les déclenchements cessent à l'expiration. La même infrastructure pourra plus tard alimenter des **capacités passives**.
 
@@ -588,3 +588,8 @@ Architecture cible à étudier : `événement de combat canonique -> conditions 
 Avant tout code, définir les cas PV réellement perdus / bouclier / DoT / renvoi / AOE, l'ordre et la quantité de déclenchements, les protections contre les boucles de procs, stacking/réactivation, mort/rappel et les règles des passifs. Puis TDD RED, lot minimal de contrat et vrai moteur, extension éditeur et tests 1v1/2v2 séparés. Ne pas confondre avec `onStackThreshold`, `activationRequirements.damage_dealt` ou `auto_dodge`.
 
 Aucune modification autorisée à l'IA tactique actuelle, aux capacités/monstres auteur, à Beam Clash ou à l'Esquive foudroyante par ce backlog documentaire.
+
+### V1 — Buff temporaire à déclenchement sur dégâts
+`StatusEffectV1.triggered_buff` : durée éditable, événement d'origine `onDamageDealt` (seulement PV réellement retirés par des attaques directes/tactiques immédiates), liste d'effets à cible victime/soi, réutilisation de `SkillEffectV1`, moteur et Human Editor existants. Brûlure/soin configurables, exclusion des attaques évitées et dégâts indirects, protection contre récursion. Sources/tests et parcours détaillés dans `docs/LAB_TRIGGERED_BUFF_V1.md`.
+
+Extension future distincte : passifs permanents, déclencheurs universels et dégâts périodiques/zone persistante, conditions avancées, probabilité/proc, multi-cibles complexes et contrôle smartphone physique.
