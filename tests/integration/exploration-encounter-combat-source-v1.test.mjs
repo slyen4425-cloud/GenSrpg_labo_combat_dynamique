@@ -178,7 +178,7 @@ test("player party ref resolves configured active and reserve creatures without 
   assert.equal(
     source.skillPresentations.fireball
       .visual.icon.assetId,
-    "core:icon-skill-fireball-01"
+    "pack:capture:icon-skill-fireball-01"
   );
   assert.equal(
     source.skillPresentations.cap_fire_special_1
