@@ -19,6 +19,7 @@ import {
   captureCreatureVisualBindingForIdV1
 } from "../../src/catalogs/capture-creature-visual-bindings-v1.js?rev=exploration-bridge-presentation-integrity-v1";
 import {
+  GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../../src/assets/global-visual-library.js";
 import {
@@ -210,12 +211,14 @@ Promise.resolve()
       playerParty,
       nativeSkillCatalog,
       statRegistry,
+      visualCatalog,
       ...tail
     ] = await Promise.all([
       fetchJson(CREATURES_URL),
       fetchJson(PLAYER_PARTY_URL),
       fetchJson(NATIVE_SKILL_CATALOG_URL),
       fetchJson(STAT_REGISTRY_URL),
+      fetchJson(GLOBAL_VISUAL_LIBRARY.catalogUrl),
       ...CONFIGURED_CREATURE_URLS.map(fetchJson),
       ...SHOWCASE_SKILL_URLS.map(fetchJson),
       ...PROFILE_URLS.map(fetchJson)
@@ -314,18 +317,31 @@ Promise.resolve()
         }
       });
 
+    // The global visual catalog is the one source of asset records; the demo
+    // registry is a typed renderer adapter, not an alternate asset owner.
+    const officialAssets = new Map(
+      (visualCatalog.assets ?? []).map(asset => [asset.id, asset])
+    );
+    function resolveVisualAsset(assetId) {
+      const fromDemo = demoPresentationAssets.asset(assetId);
+      if (fromDemo) return fromDemo;
+      const resource = officialAssets.get(assetId)?.resource;
+      if (!resource?.file) return null;
+      return Object.freeze({
+        assetId,
+        url: globalVisualAssetUrl(resource.file),
+        frameCount: Math.max(1, Math.floor(Number(resource.frameCount) || 1)),
+        ...(Number(resource.frameMs) > 0 ? {frameMs:Number(resource.frameMs)} : {}),
+        playbackMode: resource.playbackMode === "loop" ? "loop" : "once"
+      });
+    }
+
     const configuredPresentationAssets =
       createCaptureSkillPresentationAssetsV2({
         skillPresentations:
           nativeCombatSource
             .skillPresentations,
-        assetForId(assetId) {
-          return (
-            demoPresentationAssets
-              .asset(assetId) ??
-            null
-          );
-        },
+        assetForId: resolveVisualAsset,
         audioAssetForId(assetId) {
           return (
             demoPresentationAssets
