@@ -175,26 +175,23 @@ test("player party ref resolves configured active and reserve creatures without 
     ]
   );
 
-  assert.equal(
-    source.skillPresentations.fireball
-      .visual.icon.assetId,
-    "pack:capture:icon-skill-fireball-01"
-  );
-  assert.equal(
-    source.skillPresentations.cap_fire_special_1
-      .visual.travel.assetId,
-    "pack:capture:sprite-projectile-earth-01"
-  );
-  assert.equal(
-    source.skillPresentations.lib_flame_bite
-      .visual.impact.assetId,
-    "pack:capture:sprite-impact-physical-01"
-  );
-  assert.equal(
-    source.skillPresentations.cap_fire_atk_6
-      .visual.aura.assetId,
-    "pack:capture:sprite-fire-zone-loop-01"
-  );
+  // The Encounter adapter must retain the *current author file* asset ids,
+  // not a frozen October 5 expected icon/FX for those skills.
+  for (const [skillId, visualKey] of [
+    ["fireball", "icon"],
+    ["cap_fire_special_1", "travel"],
+    ["lib_flame_bite", "impact"],
+    ["cap_fire_atk_6", "aura"]
+  ]) {
+    const authored = await json(
+      "data/capture/showcase/" + skillId + ".capture-skill-transfer-v1.json"
+    );
+    assert.equal(
+      source.skillPresentations[skillId]?.visual?.[visualKey]?.assetId,
+      authored.draft.presentation?.visual?.[visualKey]?.assetId,
+      "Encounter must use authored current visual: " + skillId + "/" + visualKey
+    );
+  }
 
   const roster =
     source.roster.teams["local-1"];
