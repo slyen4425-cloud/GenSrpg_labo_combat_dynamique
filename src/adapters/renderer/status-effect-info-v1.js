@@ -350,6 +350,11 @@ function effectLinesFor(
           )
       ]);
 
+    case "auto_dodge":
+      return Object.freeze([
+        "Esquive automatiquement les attaques ciblées esquivables pendant la durée du buff, sans consommer de charge d’Esquive."
+      ]);
+
     case "immobilize":
       return Object.freeze([
         "Déplacement et approches impossibles ; approche en cours arrêtée. Attaques stationnaires possibles."
