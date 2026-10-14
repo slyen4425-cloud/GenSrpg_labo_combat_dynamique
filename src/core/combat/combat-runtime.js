@@ -1350,6 +1350,17 @@ export function createCombatRuntime({
     advanceSessionToClock(current);
     settleDue(current);
 
+    // A manual dodge is an action of its own. It cannot overlap the actor's
+    // still active preparation, travel, or recovery. Check *before* consuming
+    // a rechargeable charge, in the native owner (not just the button).
+    const occupied = canStartAction(actorId);
+    if (occupied) {
+      return Object.freeze({
+        ...occupied,
+        state: session.snapshot()
+      });
+    }
+
     const result =
       session.activateRechargeableAction({
         actorId,
@@ -1475,10 +1486,22 @@ export function createCombatRuntime({
       });
     }
 
-    return interruptActive({
-      targetActorId: interruptEvent.actorId,
-      reason: interruptEvent.reason ?? "stun"
-    });
+    const targetActorId = interruptEvent.actorId;
+    const reason = interruptEvent.reason ?? "stun";
+    // A real stun *status* is a hard control: while an actor still owns an
+    // unresolved attack/approach, terminate its native action and visual.
+    // The historical "interruptsPreparation" effect without an active stun
+    // remains governed by interruptibleDuringPreparation/releaseAtMs below.
+    if (reason === "stun" &&
+        hasActiveStatusKindV1(session.snapshot(), targetActorId, "stun")) {
+      const record = activeByActor.get(targetActorId);
+      if (record && !record.resolved) {
+        const cancelled = cancelActionsForActor(targetActorId, {reason:"stun"});
+        return cancelled.cancelled[0] ?? Object.freeze({ok:false,outcome:"no_action"});
+      }
+    }
+
+    return interruptActive({targetActorId,reason});
   }
 
   function actionUsesVisibleContact(action) {
