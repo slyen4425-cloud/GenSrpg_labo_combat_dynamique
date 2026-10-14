@@ -309,6 +309,9 @@ export function createCombatResolutionPresenter({
     const approachMode = action.skill?.approachMode ?? "none";
     if (
       ["ground", "teleport", "aerial", "burrow"].includes(approachMode) &&
+      // -100% timed approach is instant by contract: do not ask the visual
+      // movement runner to divide an already-elapsed path into motion steps.
+      Number(action.travelMs) > 0 &&
       typeof visuals.playApproachFor === "function"
     ) {
       const skillId = action.skill?.id ?? null;
