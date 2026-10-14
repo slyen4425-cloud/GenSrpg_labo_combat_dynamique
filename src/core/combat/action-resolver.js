@@ -1162,6 +1162,27 @@ export function resolveSkillCompletion({
     events.push(...evasion.events);
   }
 
+  // Native skill approaches are movement too. They are recorded once when
+  // the actual action reaches its impact/completion, never per animation
+  // frame and never for a stationary projectile or a countered preparation.
+  if (outcome !== "countered" &&
+      skill.approachMode !== "none" &&
+      Number(travelMs) > 0) {
+    const movement = applyEventTriggeredBuffsV2({
+      state: nextState,
+      statusState: state,
+      eventType: "movement",
+      ownerId: actorId,
+      otherId: targetId,
+      skill,
+      atMs: impactAtMs,
+      combatAtMs: combatImpactAtMs,
+      battleFormat
+    });
+    nextState = movement.state;
+    events.push(...movement.events);
+  }
+
   const resolutionAt =
     outcome === "countered" ? reactionReadyAt : impactAtMs;
 
