@@ -424,6 +424,13 @@ function humanTacticalStatusToContractV1(
     }
   }
 
+  if (output.kind === "triggered_buff") {
+    output.onDamageDealt = {
+      effects: buildHumanTacticalSkillEffectsV1(status.onDamageDealt?.effects ?? [],
+        { defaultDamageChannel })
+    };
+  }
+
   if (output.kind === "immunity") {
     output.domains = stableIds(
       status.domains
@@ -4416,6 +4423,7 @@ function tacticalStatusKindLabelV1(kind) {
     damage_reflection: "Renvoi de dégâts",
     projectile_mirror: "Miroir — renvoi réel de projectile",
     auto_dodge: "Esquive automatique (durée X)",
+    triggered_buff: "Buff à déclenchement (sur dégâts infligés)",
     immunity: "Immunité",
     immobilize: "Immobilisation",
     silence: "Silence",
@@ -4758,7 +4766,7 @@ const STACK_THRESHOLD_EFFECT_KINDS_V1 = Object.freeze([
 
 // Editor only: the existing tactical-effect contract and combat runtime
 // remain the sole validators and executors of threshold effects.
-function appendStackThresholdEffectRowV1(host, effect = {}) {
+function appendStackThresholdEffectRowV1(host, effect = {}, { damageBuff = false } = {}) {
   const row = document.createElement("div");
   row.className = "skill-effect-row";
   row.dataset.stackThresholdEffectRow = "true";
@@ -4779,11 +4787,13 @@ function appendStackThresholdEffectRowV1(host, effect = {}) {
   };
   const header = document.createElement("div");
   header.className = "skill-effect-row__header";
-  const kind = select(header, "Effet au seuil", "stackThresholdEffectKind",
+  const kind = select(header, damageBuff ? "Effet après dégâts" : "Effet au seuil", "stackThresholdEffectKind",
     STACK_THRESHOLD_EFFECT_KINDS_V1.map(x=>[x,tacticalEffectKindLabelV1(x)]),
     effect.kind ?? "damage");
   select(header, "Cible", "stackThresholdEffectScope",
-    [["target","Créature portant les stacks"],["self","Source des stacks"]],
+    damageBuff
+      ? [["target","Victime ayant subi des dégâts"],["self","Porteur du buff"]]
+      : [["target","Créature portant les stacks"],["self","Source des stacks"]],
     effect.targetScope ?? "target");
   const remove = document.createElement("button");
   remove.type = "button";
@@ -4806,7 +4816,7 @@ function appendStackThresholdEffectRowV1(host, effect = {}) {
     "stackThresholdTags", (effect.statusTags ?? []).join(", "));
   const st = effect.status ?? {};
   const stKind = select(statusBox, "Type de buff / malus", "stackThresholdStatusKind",
-    STATUS_EFFECT_V1_KINDS.map(x=>[x,tacticalStatusKindLabelV1(x)]), st.kind ?? "stun");
+    STATUS_EFFECT_V1_KINDS.filter(x=>x !== "triggered_buff").map(x=>[x,tacticalStatusKindLabelV1(x)]), st.kind ?? "stun");
   addField(statusBox, "ID du statut appliqué", "stackThresholdStatusId", st.id ?? "stack-result");
   const pol = select(statusBox, "Polarité", "stackThresholdStatusPolarity",
     STATUS_EFFECT_V1_POLARITIES.map(x=>[x,tacticalPolarityLabelV1(x)]),
@@ -4957,7 +4967,7 @@ function syncHumanSkillEffectRowV1(
     if (intangibleSelected) domain.checked = true;
     domain.disabled = intangibleSelected;
   }
-  if (statusPolarity && (statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
+  if (statusPolarity && (statusKind === "projectile_mirror" || statusKind === "auto_dodge" || statusKind === "triggered_buff" || intangibleSelected)) {
     statusPolarity.value = "beneficial";
     statusPolarity.disabled = true;
   } else if (statusPolarity) {
@@ -4974,6 +4984,10 @@ function syncHumanSkillEffectRowV1(
     node.hidden = !kinds.includes(statusKind);
   }
 
+  const triggerHost = row.querySelector("[data-triggered-buff-effects-host]");
+  if (statusKind === "triggered_buff" && triggerHost && triggerHost.children.length === 0) {
+    row.querySelector('[data-skill-status-config-kind="triggered_buff"] button')?.click();
+  }
   const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]")?.value ?? "damage";
   for(const node of row.querySelectorAll("[data-skill-zone-effect-config-kind]")){
     node.hidden = !node.dataset.skillZoneEffectConfigKind.split(",").includes(zoneEffectKind);
@@ -5709,6 +5723,37 @@ function appendHumanSkillEffectV1(
     statusVisualNote
   );
 
+  // This is an authoring-only view of the canonical temporary status trigger.
+  // Reuse the existing nested tactical-effect editor and its serializer.
+  const triggeredBuffBox = document.createElement("div");
+  triggeredBuffBox.className = "skill-status-config__specific";
+  triggeredBuffBox.dataset.skillStatusConfigKind = "triggered_buff";
+  const triggeredBuffTitle = document.createElement("strong");
+  triggeredBuffTitle.textContent = "À chaque dégât réellement infligé pendant le buff";
+  const triggeredBuffHost = document.createElement("div");
+  triggeredBuffHost.dataset.triggeredBuffEffectsHost = "true";
+  for (const triggered of status.onDamageDealt?.effects ?? []) {
+    appendStackThresholdEffectRowV1(triggeredBuffHost, triggered, {damageBuff:true});
+  }
+  const addTriggeredBuffEffect = document.createElement("button");
+  addTriggeredBuffEffect.type = "button";
+  addTriggeredBuffEffect.className = "small-action";
+  addTriggeredBuffEffect.textContent = "Ajouter un effet à chaque dégât";
+  addTriggeredBuffEffect.addEventListener("click", () =>
+    appendStackThresholdEffectRowV1(triggeredBuffHost, {
+      kind:"apply_status", targetScope:"target",
+      status:{id:"buff-trigger-burn",kind:"damage_over_time",polarity:"detrimental",
+        durationMs:3000,stacking:"refresh",amount:2,tickIntervalMs:1000,channel:"fire"}
+    }, {damageBuff:true}));
+  const triggeredBuffNote = document.createElement("small");
+  triggeredBuffNote.className = "note";
+  triggeredBuffNote.textContent =
+    "Effets sur les PV réellement perdus lors des attaques directes. Cible : victime ; Soi : créature possédant le buff. Une brûlure déjà appliquée garde sa propre durée. Sans boucles de déclenchement.";
+  triggeredBuffBox.append(triggeredBuffTitle,triggeredBuffHost,addTriggeredBuffEffect,triggeredBuffNote);
+  if (status.kind === "triggered_buff" && triggeredBuffHost.children.length === 0) {
+    addTriggeredBuffEffect.click();
+  }
+
   const thresholdBox = document.createElement("div");
   thresholdBox.className = "skill-status-config";
   thresholdBox.dataset.stackThresholdBox = "true";
@@ -5757,6 +5802,7 @@ function appendHumanSkillEffectV1(
   statusBox.append(
     common,
     thresholdBox,
+    triggeredBuffBox,
     statConfig,
     approachConfig,
     energyRegenConfig,
@@ -6401,6 +6447,12 @@ function readHumanSkillEffectsV1(root) {
       } else if (statusKind === "damage_reflection") {
         status.percent = Number(row.querySelector("[data-skill-status-reflection-percent]").value);
         readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="main"]'), status);
+      } else if (statusKind === "triggered_buff") {
+        status.onDamageDealt = {
+          effects: readStackThresholdEffectRowsV1(
+            row.querySelector("[data-triggered-buff-effects-host]")
+          )
+        };
       } else if (statusKind === "immunity") {
         status.domains = [
           ...row.querySelectorAll(
