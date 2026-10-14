@@ -36,6 +36,7 @@ import {
   snapshotPersistentZoneReinforcementsV1
 } from "./persistent-zone-runtime-v1.js";
 import {
+  activeStatusEffectsV1,
   activeTauntSourceActorIdV1,
   hasActiveStatusKindV1
 } from "./status-effect-runtime-v1.js";
@@ -812,6 +813,53 @@ export function resolveReaction({
   });
 }
 
+// Triggers consume real, *original* HP-loss events from one resolved skill.
+// Proc events are appended only after the source event snapshot is closed:
+// a proc can never recursively create another proc in the same resolution.
+function applyTriggeredBuffsForOriginalDamageV1({
+  state, statusState, actorId, skill, events, atMs, combatAtMs, battleFormat
+}) {
+  const active = activeStatusEffectsV1(statusState, actorId, combatAtMs)
+    .filter(entry => entry.definition.kind === "triggered_buff");
+  if (active.length === 0) return {state, events: []};
+  const originals = events.filter(entry =>
+    entry.type === "hit" &&
+    entry.sourceActorId === actorId &&
+    entry.actorId !== actorId &&
+    entry.reflected !== true &&
+    entry.contactRetaliation !== true &&
+    Number(entry.appliedDamage) > 0
+  );
+  let nextState = state;
+  const generated = [];
+  for (const hit of originals) {
+    for (const activeBuff of active) {
+      const procSkill = {
+        id: activeBuff.sourceSkillId || activeBuff.definition.id,
+        element: skill.element,
+        form: skill.form,
+        effect: {damage:0,heal:0},
+        effects: activeBuff.definition.onDamageDealt.effects
+      };
+      const result = applyImmediateTacticalEffectsV1({
+        state: nextState,
+        actorId,
+        targetId: hit.actorId,
+        skill: procSkill,
+        atMs,
+        combatAtMs,
+        battleFormat,
+        thresholdDepth: 1,
+        directDamageApplied: 0,
+        allowLifeSteal: false
+      });
+      nextState = result.state;
+      generated.push(...result.events);
+    }
+  }
+  return {state:nextState,events:generated};
+}
+
 export function resolveSkillCompletion({
   state,
   action,
@@ -1012,6 +1060,20 @@ export function resolveSkillCompletion({
         });
       nextState = tactical.state;
       events.push(...tactical.events);
+
+      const originalHitEvents = [...events];
+      const triggered = applyTriggeredBuffsForOriginalDamageV1({
+        state: nextState,
+        statusState: state,
+        actorId,
+        skill,
+        events: originalHitEvents,
+        atMs: impactAtMs,
+        combatAtMs: combatImpactAtMs,
+        battleFormat
+      });
+      nextState = triggered.state;
+      events.push(...triggered.events);
 
       nextState =
         applyPersistentZoneEffectsV1({
