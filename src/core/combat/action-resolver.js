@@ -228,6 +228,37 @@ function mobilityEvasionFor(
   });
 }
 
+function autoDodgeEvasionFor({state, actorId, targetId, skill, atMs}) {
+  // This is an evasion of an incoming, targeted *attack*, not damage
+  // immunity. Persistent-zone ticks and other sources of ambient damage
+  // remain owned by their existing resolvers.
+  if (
+    actorId === targetId ||
+    skill.category !== "offensive" ||
+    skill.dodgeable === false ||
+    skill.form === "self" ||
+    // A single target must not evade damage intended for its teammates.
+    (skill.effects ?? []).some(effect =>
+      ["all_enemies", "all_allies", "all_except_self", "all_enemy_reserves",
+        "all_ally_reserves"].includes(effect.targetScope)
+    ) ||
+    !hasActiveStatusKindV1(state, targetId, "auto_dodge", atMs)
+  ) {
+    return null;
+  }
+
+  const instance = state.fighters[targetId].statusEffects.find(entry =>
+    entry.definition.kind === "auto_dodge" &&
+    entry.appliedAtMs <= atMs &&
+    (entry.expiresAtMs == null || atMs < entry.expiresAtMs)
+  );
+  return Object.freeze({
+    outcome: "evaded",
+    reason: "auto_dodge",
+    sourceSkillId: instance?.sourceSkillId ?? null
+  });
+}
+
 function reactionEvasionMatches(
   skill,
   reactionSkill
@@ -817,12 +848,6 @@ export function resolveSkillCompletion({
           targetActionContext
         )
       : null;
-  const outcome =
-    forcedOutcome ??
-    reaction?.outcome ??
-    presence.evasion?.outcome ??
-    mobilityEvasion?.outcome ??
-    "hit";
   const reactionReadyAt = reaction?.readyAtMs ?? null;
   const hasAbsoluteResolutionAtMs =
     resolutionAtMs !== null &&
@@ -832,6 +857,16 @@ export function resolveSkillCompletion({
     hasAbsoluteResolutionAtMs
       ? Number(resolutionAtMs)
       : state.elapsedMs;
+  const autoDodge = forcedOutcome == null && reaction == null
+    ? autoDodgeEvasionFor({state, actorId, targetId, skill, atMs:combatImpactAtMs})
+    : null;
+  const outcome =
+    forcedOutcome ??
+    reaction?.outcome ??
+    autoDodge?.outcome ??
+    presence.evasion?.outcome ??
+    mobilityEvasion?.outcome ??
+    "hit";
   let nextState = state;
   const events = [
     event("skill-start", 0, {
@@ -1035,6 +1070,7 @@ export function resolveSkillCompletion({
         skillId: skill.id,
         reactionSkillId: reaction?.skillId ?? null,
         evasionSourceSkillId:
+          autoDodge?.sourceSkillId ??
           presence.evasion?.sourceSkillId ??
           mobilityEvasion?.sourceSkillId ??
           null,
@@ -1043,6 +1079,7 @@ export function resolveSkillCompletion({
           mobilityEvasion?.sourceApproachMode ??
           null,
         evasionReason:
+          autoDodge?.reason ??
           presence.evasion?.reason ??
           (
             mobilityEvasion
@@ -1077,10 +1114,12 @@ export function resolveSkillCompletion({
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
     evasionApplied:
+      autoDodge?.sourceSkillId ??
       presence.evasion?.sourceSkillId ??
       mobilityEvasion?.sourceSkillId ??
       null,
     evasionReason:
+      autoDodge?.reason ??
       presence.evasion?.reason ??
       (
         mobilityEvasion
