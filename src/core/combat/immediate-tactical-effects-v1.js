@@ -12,6 +12,7 @@ import {
   resolveTacticalEffectTargetIdsV1
 } from "./tactical-effect-targeting-v1.js";
 import {
+  activeStatusEffectsV1,
   applyStatusEffectV1,
   removeStatusEffectsV1,
   validateStatusEffectForTargetV1
@@ -242,6 +243,23 @@ export function applyImmediateTacticalEffectsV1({
 
   let nextState = state;
   const events = [];
+  // Multi-target attack impacts have one target-specific evasion decision
+  // per victim, not one global outcome for the entire skill. This is made
+  // from the status snapshot at true impact, not mutable intermediate effects.
+  const perVictimAutoDodge = new Map();
+  const hasHostileMultiTargetEffect = skill.category === "offensive" &&
+    skill.dodgeable !== false &&
+    skill.form !== "self" &&
+    (skill.effects ?? []).some(item =>
+      ["all_enemies", "all_except_self"].includes(item.targetScope) &&
+      ["damage", "apply_status", "energy_drain", "dispel"].includes(item.kind)
+    );
+  const isHostileEffect = effect =>
+    effect.kind === "damage" ||
+    effect.kind === "energy_drain" ||
+    effect.kind === "dispel" ||
+    (effect.kind === "apply_status" &&
+      effect.status.polarity === "detrimental");
   // The originating ActionResolver has already applied this skill's direct hit.
   // Only real HP lost counts, not damage requested, shields or later reflected HP.
   let lifeStealDamage = actorId !== targetId
@@ -303,6 +321,31 @@ export function applyImmediateTacticalEffectsV1({
       });
 
     for (const affectedId of affectedIds) {
+      if (hasHostileMultiTargetEffect && isHostileEffect(effect) &&
+          actorId !== affectedId) {
+        if (!perVictimAutoDodge.has(affectedId)) {
+          const activeDodge = activeStatusEffectsV1(state, affectedId, combatAtMs)
+            .find(entry => entry.definition.kind === "auto_dodge");
+          perVictimAutoDodge.set(affectedId, activeDodge ?? null);
+        }
+        const protection = perVictimAutoDodge.get(affectedId);
+        if (protection) {
+          if (!events.some(entry => entry.type === "skill-target-evaded" &&
+            entry.actorId === affectedId)) {
+            events.push(Object.freeze({
+              type: "skill-target-evaded",
+              atMs,
+              actorId: affectedId,
+              targetId: affectedId,
+              sourceActorId: actorId,
+              skillId: skill.id,
+              evasionReason: "auto_dodge",
+              evasionSourceSkillId: protection.sourceSkillId ?? null
+            }));
+          }
+          continue;
+        }
+      }
       if (effect.kind === "damage") {
         const applied = applyDamageEffect({
           state: nextState,
