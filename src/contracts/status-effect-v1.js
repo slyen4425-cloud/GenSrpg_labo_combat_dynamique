@@ -20,6 +20,11 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "taunt"
 ]);
 
+// Canonical event registry, shared with Human Editor and Combat Rules.
+export const TRIGGERED_BUFF_EVENT_TYPES_V2 = Object.freeze([
+  "damage_dealt", "damage_taken", "movement", "evaded"
+]);
+
 export const STATUS_EFFECT_V1_POLARITIES = Object.freeze([
   "beneficial",
   "detrimental",
@@ -138,7 +143,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   projectile_mirror: COMMON_FIELDS,
   auto_dodge: COMMON_FIELDS,
-  triggered_buff: new Set([...COMMON_FIELDS, "onDamageDealt"]),
+  triggered_buff: new Set([...COMMON_FIELDS, "onDamageDealt", "onEvent"]),
   immunity: new Set([
     ...COMMON_FIELDS,
     "domains",
@@ -511,38 +516,59 @@ export function normalizeStatusEffectV1(input) {
   }
 
   if (kind === "triggered_buff") {
-    if (polarity !== "beneficial") {
-      throw new RangeError("StatusEffectV1.triggered_buff must be beneficial");
-    }
     if (duration.durationModel !== "time_ms") {
       throw new RangeError("StatusEffectV1.triggered_buff requires time_ms duration");
     }
     if (stacking === "stack") {
       throw new RangeError("StatusEffectV1.triggered_buff supports replace or refresh only");
     }
-    const trigger = value.onDamageDealt;
-    if (!trigger || typeof trigger !== "object" || Array.isArray(trigger)) {
-      throw new TypeError("StatusEffectV1.onDamageDealt must be an object");
+    const hasOld = value.onDamageDealt != null;
+    const hasNew = value.onEvent != null;
+    if (hasOld && hasNew) {
+      throw new RangeError("onDamageDealt and onEvent are mutually exclusive (not both)");
     }
-    assertKnownFields(trigger, new Set(["effects"]), "StatusEffectV1.onDamageDealt");
+    if (!hasOld && !hasNew) {
+      throw new TypeError("StatusEffectV1 requires onEvent or onDamageDealt");
+    }
+    // Legacy V1 author exports retain their exact documented semantics.
+    if (hasOld && polarity !== "beneficial") {
+      throw new RangeError("StatusEffectV1.triggered_buff onDamageDealt must be beneficial");
+    }
+    const trigger = hasNew ? value.onEvent : value.onDamageDealt;
+    const label = hasNew ? "onEvent" : "onDamageDealt";
+    if (!trigger || typeof trigger !== "object" || Array.isArray(trigger)) {
+      throw new TypeError("StatusEffectV1." + label + " must be an object");
+    }
+    assertKnownFields(trigger, new Set(hasNew ? ["event", "effects"] : ["effects"]),
+      "StatusEffectV1." + label);
+    if (hasNew && !TRIGGERED_BUFF_EVENT_TYPES_V2.includes(trigger.event)) {
+      throw new RangeError("Unsupported triggered buff event: " + trigger.event);
+    }
     if (!Array.isArray(trigger.effects) || trigger.effects.length < 1 || trigger.effects.length > 12) {
-      throw new RangeError("StatusEffectV1.onDamageDealt.effects must contain 1 to 12 effects");
+      throw new RangeError("StatusEffectV1." + label + ".effects must contain 1 to 12 effects");
     }
     const effects = trigger.effects.map(raw => {
       const effect = normalizeSkillEffectV1(raw);
       if (!["damage", "heal", "energy_restore", "energy_drain",
         "apply_status", "cleanse", "dispel"].includes(effect.kind)) {
-        throw new RangeError("Unsupported onDamageDealt effect: " + effect.kind);
+        throw new RangeError("Unsupported triggered effect: " + effect.kind);
       }
       if (!["target", "self"].includes(effect.targetScope)) {
-        throw new RangeError("onDamageDealt targetScope must be target or self");
+        throw new RangeError("triggered_buff targetScope must be target or self");
       }
       if (effect.kind === "apply_status" && effect.status.kind === "triggered_buff") {
         throw new RangeError("Nested triggered_buff is not supported");
       }
       return effect;
     });
-    output.onDamageDealt = Object.freeze({ effects: Object.freeze(effects) });
+    if (hasNew) {
+      output.onEvent = Object.freeze({
+        event: trigger.event,
+        effects: Object.freeze(effects)
+      });
+    } else {
+      output.onDamageDealt = Object.freeze({ effects: Object.freeze(effects) });
+    }
   }
 
   if (kind === "auto_dodge") {
