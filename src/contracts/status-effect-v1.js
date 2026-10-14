@@ -12,6 +12,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "damage_reflection",
   "projectile_mirror",
   "auto_dodge",
+  "triggered_buff",
   "immunity",
   "immobilize",
   "silence",
@@ -137,6 +138,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   projectile_mirror: COMMON_FIELDS,
   auto_dodge: COMMON_FIELDS,
+  triggered_buff: new Set([...COMMON_FIELDS, "onDamageDealt"]),
   immunity: new Set([
     ...COMMON_FIELDS,
     "domains",
@@ -506,6 +508,41 @@ export function normalizeStatusEffectV1(input) {
       if (contactDamage < 0) throw new RangeError("StatusEffectV1.contactDamage must be non-negative");
       output.contactDamage = contactDamage;
     }
+  }
+
+  if (kind === "triggered_buff") {
+    if (polarity !== "beneficial") {
+      throw new RangeError("StatusEffectV1.triggered_buff must be beneficial");
+    }
+    if (duration.durationModel !== "time_ms") {
+      throw new RangeError("StatusEffectV1.triggered_buff requires time_ms duration");
+    }
+    if (stacking === "stack") {
+      throw new RangeError("StatusEffectV1.triggered_buff supports replace or refresh only");
+    }
+    const trigger = value.onDamageDealt;
+    if (!trigger || typeof trigger !== "object" || Array.isArray(trigger)) {
+      throw new TypeError("StatusEffectV1.onDamageDealt must be an object");
+    }
+    assertKnownFields(trigger, new Set(["effects"]), "StatusEffectV1.onDamageDealt");
+    if (!Array.isArray(trigger.effects) || trigger.effects.length < 1 || trigger.effects.length > 12) {
+      throw new RangeError("StatusEffectV1.onDamageDealt.effects must contain 1 to 12 effects");
+    }
+    const effects = trigger.effects.map(raw => {
+      const effect = normalizeSkillEffectV1(raw);
+      if (!["damage", "heal", "energy_restore", "energy_drain",
+        "apply_status", "cleanse", "dispel"].includes(effect.kind)) {
+        throw new RangeError("Unsupported onDamageDealt effect: " + effect.kind);
+      }
+      if (!["target", "self"].includes(effect.targetScope)) {
+        throw new RangeError("onDamageDealt targetScope must be target or self");
+      }
+      if (effect.kind === "apply_status" && effect.status.kind === "triggered_buff") {
+        throw new RangeError("Nested triggered_buff is not supported");
+      }
+      return effect;
+    });
+    output.onDamageDealt = Object.freeze({ effects: Object.freeze(effects) });
   }
 
   if (kind === "auto_dodge") {
