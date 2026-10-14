@@ -27,7 +27,7 @@ test("Voltige authored transfer replaces its previous entry without mutating oth
  assert.equal(tr.value.draft.combat.approachTimeModifierPct,-40);
  assert.equal(tr.value.statValues.values.health,120);
  assert.ok(tr.value.draft.skillIds.includes("teleport-strike"));
- assert.deepEqual(tr.value.loadout.slots.map(x=>x.skillId),["teleport-strike","lib_static_bite","lib_chain_lightning","lib_paralyze",null]);
+ assert.deepEqual(tr.value.loadout.slots.map(x=>x.skillId),["teleport-strike","lib_static_bite","lib_chain_lightning","dodge","cap_electric_special_2"]);
  assert.deepEqual(tr.value.draft.presentation.sockets,raw.draft.presentation.sockets);
  assert.deepEqual(importCaptureTransferJsonV1(exportCaptureCreatureTransferJsonV1(tr.value,{statRegistry:registry}),{statRegistry:registry}).value,tr.value);
 });
