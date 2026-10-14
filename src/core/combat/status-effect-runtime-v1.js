@@ -19,9 +19,13 @@ import { applyImmediateTacticalEffectsV1 } from "./immediate-tactical-effects-v1
 
 // Status IDs are authored locally to each skill (often "status-1").
  // The runtime identity is therefore (sourceSkillId, definition.id), not id alone.
-function sameStatusSourceV1(entry, statusId, sourceSkillId) {
-  return entry.definition.id === statusId &&
-    (entry.sourceSkillId ?? null) === (sourceSkillId ?? null);
+function sameStatusSourceV1(entry, statusId, sourceSkillId, definition = null) {
+  if (entry.definition.id !== statusId) return false;
+  if ((entry.sourceSkillId ?? null) === (sourceSkillId ?? null)) return true;
+  // Preserve established cross-skill stacking/refresh for truly identical
+  // authored status definitions; distinct kinds/settings must never collide.
+  return definition !== null &&
+    JSON.stringify(entry.definition) === JSON.stringify(definition);
 }
 
 function fighterOf(state, fighterId) {
@@ -45,7 +49,7 @@ function replaceInstance(
   ];
   const index = statuses.findIndex(
     (entry) =>
-      sameStatusSourceV1(entry, instance.definition.id, instance.sourceSkillId)
+      sameStatusSourceV1(entry, instance.definition.id, instance.sourceSkillId, instance.definition)
   );
 
   if (index < 0) {
@@ -290,7 +294,7 @@ export function applyStatusEffectV1({
   const existing =
     target.statusEffects.find(
       (entry) =>
-        sameStatusSourceV1(entry, status.id, sourceSkillId)
+        sameStatusSourceV1(entry, status.id, sourceSkillId, status)
     ) ?? null;
 
   if (
