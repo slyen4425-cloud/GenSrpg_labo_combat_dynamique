@@ -24,6 +24,7 @@ export function createCaptureCombatRosterControllerV1({
   }
   return Object.freeze({
     snapshot: () => roster.snapshot(),
+    ownsSlot: actorId => Object.prototype.hasOwnProperty.call(rosterDefinition.teams, actorId),
     previewSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.previewSkillOnTarget(options); },
     useSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.useSkillOnTarget(options); },
     activeMember,
