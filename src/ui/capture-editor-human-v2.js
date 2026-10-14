@@ -4415,6 +4415,7 @@ function tacticalStatusKindLabelV1(kind) {
     shield: "Bouclier",
     damage_reflection: "Renvoi de dégâts",
     projectile_mirror: "Miroir — renvoi réel de projectile",
+    auto_dodge: "Esquive automatique (durée X)",
     immunity: "Immunité",
     immobilize: "Immobilisation",
     silence: "Silence",
@@ -4956,7 +4957,7 @@ function syncHumanSkillEffectRowV1(
     if (intangibleSelected) domain.checked = true;
     domain.disabled = intangibleSelected;
   }
-  if (statusPolarity && (statusKind === "projectile_mirror" || intangibleSelected)) {
+  if (statusPolarity && (statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
     statusPolarity.value = "beneficial";
     statusPolarity.disabled = true;
   } else if (statusPolarity) {
