@@ -18,6 +18,10 @@ import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 as skillFiles } from "../../src/
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
 import { normalizeCaptureSkillEditorDraftV1 } from "../../src/contracts/capture-skill-editor-draft-v1.js";
+import { canonicalCaptureCreatureRecordsV1 } from "../../src/catalogs/capture-canonical-creature-catalog-v1.js";
+import { importMonsterCaptureCreatureRecordV1 } from "../../src/adapters/input/capture/monster-capture-creature-import-v1.js";
+import { importMonsterCaptureStatValuesV1 } from "../../src/adapters/input/capture/monster-capture-stat-values-v1.js";
+import { buildCaptureCreatureHistoricalLoadoutV1 } from "../../src/catalogs/capture-creature-historical-loadout-v1.js";
 
 const cPath="data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json";
 const sPath="data/capture/showcase/cap_fire_atk_7.capture-skill-transfer-v1.json";
@@ -111,17 +115,34 @@ test("the existing canonical Transfer batch installs both author models without 
  const existing=JSON.parse(read("data/capture/monster-capture-creatures.v1.json"));
  assert.equal(existing.entries.filter(x=>x.id==="crea_dracendre").length,1);
  assert.equal(existing.entries.filter(x=>x.id==="crea_volcadrake").length,1);
+ // The editor first loads the canonical historical roster, including the evolution target.
+ const nativeSkillIds=new Set(configuredSkills.keys());
+ for(const entry of canonicalCaptureCreatureRecordsV1(existing.entries)){
+   const imported=importMonsterCaptureCreatureRecordV1(entry);
+   const historical=buildCaptureCreatureHistoricalLoadoutV1({
+     creatureId:imported.draft.id,level:imported.draft.level,selectionMode:"planned",
+     abilityIds:imported.draft.skillIds,runtimeSkillIds:nativeSkillIds
+   });
+   configuredCreatures.set(imported.draft.id,{
+     draft:imported.draft,loadout:historical.loadout,
+     statValues:importMonsterCaptureStatValuesV1(entry,registry)
+   });
+ }
+ assert.ok(configuredCreatures.has("crea_dracendre"));
+ assert.ok(configuredCreatures.has("crea_volcadrake"));
+ const creatureCountBefore=configuredCreatures.size;
  const sizeBefore=configuredSkills.size;
  const actions=applyCaptureTransferBatchToEditorStateV1({transfers:[skill(),creature()],
   configuredSkills,configuredCreatures,statRegistry:registry,progressionRules,mode:"replace"});
  assert.deepEqual(actions.actions.map(x=>x.id),["cap_fire_atk_7","crea_dracendre"]);
+ assert.deepEqual(actions.actions.map(x=>x.action),["replace-skill","replace-creature"]);
  assert.equal(configuredSkills.get("cap_fire_atk_7").definition.effects[0].amount,10);
  assert.equal(configuredCreatures.get("crea_dracendre").draft.presentation.profileId,"flying");
- assert.equal(configuredCreatures.size,1);
+ assert.equal(configuredCreatures.size,creatureCountBefore);
  assert.equal(configuredSkills.size,sizeBefore+(actions.actions[0].action==="insert-skill"?1:0));
  const next=applyCaptureTransferBatchToEditorStateV1({transfers:[skill(),creature()],
   configuredSkills,configuredCreatures,statRegistry:registry,progressionRules,mode:"replace"});
  assert.deepEqual(next.actions.map(x=>x.action),["noop","noop"]);
- assert.equal(configuredCreatures.size,1);
+ assert.equal(configuredCreatures.size,creatureCountBefore);
  assert.deepEqual(configuredCreatures.get("crea_dracendre").loadout.slots.map(x=>x.skillId),["lib_heat_wave","fireball","cap_fire_special_2","cap_fire_atk_5",null]);
 });
