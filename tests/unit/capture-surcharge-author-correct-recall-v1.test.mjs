@@ -43,7 +43,7 @@ test("RED: corrected author Surcharge imported byte-compatible except requested 
 });
 test("RED: native showcase registration contains Surcharge once and replaces the stable historical id",()=>{
  const source=readFileSync(new URL("../../src/catalogs/capture-showcase-skill-presets-v1.js",import.meta.url),"utf8");
- assert.equal((source.match(/cap_electric_special_2\\.capture-skill-transfer-v1\\.json/g)??[]).length,1);
+ assert.equal((source.match(/cap_electric_special_2\.capture-skill-transfer-v1\.json/g)??[]).length,1);
  const configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(d=>[d.id,d]));
  assert.ok(configuredSkills.has("cap_electric_special_2"));
  const configuredCreatures=new Map();
