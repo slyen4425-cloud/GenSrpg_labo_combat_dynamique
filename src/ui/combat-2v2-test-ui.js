@@ -973,7 +973,9 @@ export async function mountCoop2v2Test({
   }
 
   function isAlive(actorId, state = session.snapshot()) {
-    return Number(actorState(actorId, state)?.hp) > 0 && (rosterController === null || rosterController.isPresent(actorId));
+    if (!(Number(actorState(actorId, state)?.hp) > 0)) return false;
+    if (!rosterController || !rosterController.ownsSlot(actorId)) return true;
+    return rosterController.isPresent(actorId);
   }
 
   function targetNodes(actorId) {
@@ -1030,7 +1032,7 @@ export async function mountCoop2v2Test({
       previewSkill: ({ actorId, targetId, skill }) =>
         session.previewSkill({ actorId, targetId, skill }),
       isPresent: actorId =>
-        rosterController === null || rosterController.isPresent(actorId)
+        rosterController === null || !rosterController.ownsSlot(actorId) || rosterController.isPresent(actorId)
     });
   }
 
@@ -1624,7 +1626,8 @@ export async function mountCoop2v2Test({
         if (Number(state.fighters[actor.actorId]?.hp) > 0 ||
             koTransitions.has(actor.actorId) || koSettled.has(actor.actorId)) continue;
         const slot = nativeRoster[actor.actorId] ?? null;
-        if (!slot || rosterController.isPresent(actor.actorId)) {
+        if (!rosterController || !rosterController.ownsSlot(actor.actorId) ||
+            (slot && rosterController.isPresent(actor.actorId))) {
           queueKoReplacement(actor.actorId);
         }
       }
@@ -1834,7 +1837,9 @@ export async function mountCoop2v2Test({
       if (disposed || battleEnded) return;
       runtime.cancelActionsForActor(actorId, {includeTargeted:true, reason:"ko"});
       // Only a slot owned by the Roster Session may be replaced by the roster.
-      const rosterSlot = rosterController?.snapshot()?.[actorId] ?? null;
+      const rosterSlot = rosterController?.ownsSlot(actorId)
+        ? rosterController.snapshot()[actorId]
+        : null;
       const result = rosterSlot
         ? rosterController.replaceKnockedOut(actorId)
         : {ok:true, outcome:"team_defeated"};
