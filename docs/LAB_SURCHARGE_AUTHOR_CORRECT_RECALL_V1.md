@@ -4,7 +4,7 @@ Date : 14 octobre 2026. Dépôt : `slyen4425-cloud/GenSrpg_labo_combat_dynamique
 
 ## Livraison exacte
 - Fichier source auteur : `gensrpg-capture-skill-cap_electric_special_2.json`, schema `capture-skill-transfer-v1`, `draft.id=cap_electric_special_2`, `definition.id=cap_electric_special_2`, nom **Surcharge**.
-- Emplacement natif : `data/capture/showcase/cap_electric_special_2.capture-skill-transfer-v1.json`, inscrit **une fois** dans `src/catalogs/capture-showcase-skill-presets-v1.js`. L'éditeur recharge les SkillTransfer via `hydrateCaptureShowcaseSkillPresetsV1`, en remplaçant la définition historique du même ID sans nouveau doublon.
+- Emplacement natif : `data/capture/showcase/cap_electric_special_2.capture-skill-transfer-v1.json`, inscrit **une fois** dans `src/catalogs/capture-showcase-skill-presets-v1.js`. L'éditeur recharge les SkillTransfer via `hydrateCaptureShowcaseSkillPresetsV1`, en créant la fiche du même ID au premier chargement (l’ancienne capacité complexe reste une source historique non migrée en natif), puis en la remplaçant lors des chargements suivants sans nouveau doublon.
 - **Modifications seules** faites par rapport au fichier remis :
   1. `approach_time_modifier.modifierPct` : `-100 → -50` = temps de déplacement / 2, **à vitesse de combat identique**, pour les approches natives ground/aerial/burrow déjà prises en charge par l'effet ;
   2. `skill_cooldown_rate_modifier.modifierPct` : `-100 → +100` = progression du cooldown multipliée par 2 au cours du buff ;
