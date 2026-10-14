@@ -575,3 +575,16 @@ Résultat attendu après conception et validation :
 - **Adaptation 1v1/2v2** : évaluer menace et cibles pour chaque acteur, ne pas voler le contrôle à l'allié humain solo, ni contourner `CombatRuntime`, `Combat Rules`, `BattleFormat` ou `Roster Session`.
 
 **Ordre requis quand ce chantier sera autorisé** : diagnostic de l'IA existante -> contrat de décision -> tests RED de réaction/esquive et choix varié -> petit correctif du propriétaire AI -> tests du vrai Runtime 1v1/2v2 -> CI GREEN + smartphone. Les valeurs de difficulté, probabilités, timing de réaction et profils devront être décidés lors de la conception. Aucun travail de moteur ou UI aujourd'hui.
+
+
+## Backlog — Buffs génériques à déclenchement événementiel (2026-10-14)
+
+**Statut : idée produit enregistrée, PAS IMPLÉMENTÉE.** Référence : `docs/LAB_TRIGGERED_BUFFS_BACKLOG_V1.md`.
+
+Demande auteur : une capacité, notamment **ultime**, pose un buff temporaire (exemple **60 s**) qui fait **à chaque dégât infligé par son porteur** une action paramétrable : brûlure sur la victime, soin du porteur, application d'un autre statut, ou combinaison. Les déclenchements cessent à l'expiration. La même infrastructure pourra plus tard alimenter des **capacités passives**.
+
+Architecture cible à étudier : `événement de combat canonique -> conditions -> effets réutilisables -> cible`, buff possédé par Status Runtime et horloge native, validation par les règles, configuration via Human Editor, import/export fidèle. Pas d'effets cachés en dur par compétence.
+
+Avant tout code, définir les cas PV réellement perdus / bouclier / DoT / renvoi / AOE, l'ordre et la quantité de déclenchements, les protections contre les boucles de procs, stacking/réactivation, mort/rappel et les règles des passifs. Puis TDD RED, lot minimal de contrat et vrai moteur, extension éditeur et tests 1v1/2v2 séparés. Ne pas confondre avec `onStackThreshold`, `activationRequirements.damage_dealt` ou `auto_dodge`.
+
+Aucune modification autorisée à l'IA tactique actuelle, aux capacités/monstres auteur, à Beam Clash ou à l'Esquive foudroyante par ce backlog documentaire.
