@@ -593,3 +593,12 @@ Aucune modification autorisée à l'IA tactique actuelle, aux capacités/monstre
 `StatusEffectV1.triggered_buff` : durée éditable, événement d'origine `onDamageDealt` (seulement PV réellement retirés par des attaques directes/tactiques immédiates), liste d'effets à cible victime/soi, réutilisation de `SkillEffectV1`, moteur et Human Editor existants. Brûlure/soin configurables, exclusion des attaques évitées et dégâts indirects, protection contre récursion. Sources/tests et parcours détaillés dans `docs/LAB_TRIGGERED_BUFF_V1.md`.
 
 Extension future distincte : passifs permanents, déclencheurs universels et dégâts périodiques/zone persistante, conditions avancées, probabilité/proc, multi-cibles complexes et contrôle smartphone physique.
+
+
+## 2026-10-14 — Évolution des buffs : événements génériques V2
+
+Nouvelle exigence auteur : **ne pas limiter les buffs à `sur dégâts infligés`**. Un éditeur doit séparer **événement déclencheur** et **effet(s)**, afin de composer une malédiction `quand on se déplace → subir des dégâts`, un buff `quand on esquive → se soigner`, ou tout autre enchaînement futur sans coder une capacité spéciale.
+
+Premier micro-lot du dispatch générique : `damage_dealt`, `damage_taken`, `movement` (changement tactique de distance confirmé), `evaded` (esquive confirmée). Statut V2 `onEvent:{event,effects}` ; ancien `onDamageDealt` supporté par le même propriétaire sans altération d'exports. Déclenchement réel à partir de Combat Rules/Status Runtime/horloge unique, prévention de récursivité, UI de sélection dans Human Editor. Référence `docs/LAB_EVENT_TRIGGERS_V2.md`.
+
+Autres événements à ajouter par lots propres selon les vrais propriétaires (approches et déplacements visuels, DoT, zones, soin, KO, conditions/charges/hasard et passifs), **sans requalifier rétroactivement les événements déjà existants**. Pas de deuxième moteur et pas de changement de compétences/monstres auteur.
