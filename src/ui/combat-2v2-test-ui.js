@@ -556,13 +556,39 @@ export function resolveCombatSkillClickTargetV1({
   return available.includes(selectedTargetId) ? selectedTargetId : null;
 }
 
+
+// Pure, read-only projection over the canonical CombatSession and RosterSession.
+// Never tracks a second HP/roster truth.
+export function combatTeamIsDefeatedV1({ format, state, teamId, rosterSnapshot = null }) {
+  if (!format || !Array.isArray(format.actors)) throw new TypeError("format.actors is required");
+  const actors = format.actors.filter(actor => actor.teamId === teamId);
+  if (actors.length === 0) throw new RangeError("battle team is unresolved");
+  return actors.every(actor => {
+    const rosterSlot = rosterSnapshot?.[actor.actorId] ?? null;
+    if (rosterSlot) {
+      return !rosterSlot.members.some(member => Number(member.hp) > 0);
+    }
+    return Number(state?.fighters?.[actor.actorId]?.hp) <= 0;
+  });
+}
+
+export function battleOutcomeForDefeatedActorV1({ format, defeatedActorId, rosterOutcome = "team_defeated" }) {
+  if (rosterOutcome !== "team_defeated") return null;
+  if (!format || typeof format.teamOf !== "function") throw new TypeError("format.teamOf is required");
+  const localTeamId = format.teamOf(format.localActorId);
+  const defeatedTeamId = format.teamOf(defeatedActorId);
+  if (!localTeamId || !defeatedTeamId) throw new RangeError("battle end actor team is unresolved");
+  return defeatedTeamId === localTeamId ? "defeat" : "victory";
+}
+
 export async function mountCoop2v2Test({
   root,
   visuals,
   presentationAssets = null,
   fetchImpl = fetch,
   formatUrl = DATA_URLS.format,
-  nativeCombatSource = null
+  nativeCombatSource = null,
+  onBattleEnd = () => {}
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -580,6 +606,8 @@ export async function mountCoop2v2Test({
       "visuals must provide generic actor slot controls and creature descriptors"
     );
   }
+
+  if (typeof onBattleEnd !== "function") throw new TypeError("onBattleEnd must be a function");
 
   const {
     format,
@@ -752,6 +780,8 @@ export async function mountCoop2v2Test({
   let rosterPanel = null;
   const koTransitions = new Set();
   let aiDecisionQueued = false;
+  let battleEnded = false;
+  const koSettled = new Set();
 
   for (const actor of format.actors) {
     visuals.setCreatureFor(
@@ -1540,14 +1570,14 @@ export async function mountCoop2v2Test({
   );
 
   function queueAiDecisions() {
-    if (disposed || aiDecisionQueued || !runtime) {
+    if (disposed || battleEnded || aiDecisionQueued || !runtime) {
       return;
     }
 
     aiDecisionQueued = true;
     queueMicrotask(() => {
       aiDecisionQueued = false;
-      if (disposed) {
+      if (disposed || battleEnded) {
         return;
       }
 
@@ -1589,8 +1619,12 @@ export async function mountCoop2v2Test({
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       impactHealthCue.clear();
-      if (rosterController) for (const actor of format.actors) {
-        if (Number(state.fighters[actor.actorId]?.hp) <= 0 && rosterController.isPresent(actor.actorId)) {
+      const nativeRoster = rosterController?.snapshot() ?? {};
+      for (const actor of format.actors) {
+        if (Number(state.fighters[actor.actorId]?.hp) > 0 ||
+            koTransitions.has(actor.actorId) || koSettled.has(actor.actorId)) continue;
+        const slot = nativeRoster[actor.actorId] ?? null;
+        if (!slot || rosterController.isPresent(actor.actorId)) {
           queueKoReplacement(actor.actorId);
         }
       }
@@ -1771,17 +1805,46 @@ export async function mountCoop2v2Test({
     }
   }
 
+  function finishBattleFromNativeState(defeatedActorId) {
+    if (disposed || battleEnded || koTransitions.size > 0) return false;
+    const state = session.snapshot();
+    const rosterSnapshot = rosterController?.snapshot() ?? null;
+    const defeatedTeamId = format.teamOf(defeatedActorId);
+    if (!combatTeamIsDefeatedV1({format, state, teamId:defeatedTeamId, rosterSnapshot})) return false;
+    // A simultaneous knockout is not silently converted into a victory.
+    for (const otherTeamId of new Set(format.actors.map(actor => actor.teamId))) {
+      if (otherTeamId !== defeatedTeamId &&
+        combatTeamIsDefeatedV1({format, state, teamId:otherTeamId, rosterSnapshot})) return false;
+    }
+    const outcome = battleOutcomeForDefeatedActorV1({format, defeatedActorId});
+    if (!outcome) return false;
+    battleEnded = true;
+    runtime.cancelActive();
+    onBattleEnd(Object.freeze({outcome, defeatedActorId, defeatedTeamId}));
+    return true;
+  }
+
   function queueKoReplacement(actorId, finished = null) {
-    if (!rosterController || !actorId || koTransitions.has(actorId) || disposed) return;
+    if (!actorId || koTransitions.has(actorId) || koSettled.has(actorId) ||
+        disposed || battleEnded) return;
     koTransitions.add(actorId);
     renderAvailability();
     const completion = finished ?? Promise.resolve(visuals.playEventFor(actorId, "ko"));
     void Promise.resolve(completion).then(() => {
-      if (disposed) return;
-      runtime.cancelActionsForActor(actorId, { includeTargeted: true, reason: "ko" });
-      const result = rosterController.replaceKnockedOut(actorId);
+      if (disposed || battleEnded) return;
+      runtime.cancelActionsForActor(actorId, {includeTargeted:true, reason:"ko"});
+      // Only a slot owned by the Roster Session may be replaced by the roster.
+      const rosterSlot = rosterController?.snapshot()?.[actorId] ?? null;
+      const result = rosterSlot
+        ? rosterController.replaceKnockedOut(actorId)
+        : {ok:true, outcome:"team_defeated"};
       koTransitions.delete(actorId);
-      if (result.outcome === "team_defeated") setStatus("Plus de réserve pour cette créature.", "info");
+      if (result.outcome === "team_defeated") {
+        koSettled.add(actorId);
+        setStatus("Plus de réserve pour cette créature.", "info");
+        finishBattleFromNativeState(actorId);
+      }
+      if (disposed || battleEnded) return;
       renderState();
       queueAiDecisions();
     });
@@ -1848,6 +1911,7 @@ export async function mountCoop2v2Test({
       rosterPanel?.dispose();
       rosterController?.dispose();
       koTransitions.clear();
+      koSettled.clear();
       for (const refs of skillRefs.values()) refs.dispose();
       skillRefs.clear();
       clearTargetPulses();
