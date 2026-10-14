@@ -117,8 +117,10 @@ function normalizeStatusEffects(input, fighterId) {
       )
   );
 
+  // Different authored skills frequently reuse IDs such as "status-1".
+  // Only a duplicate within the SAME source skill is ambiguous.
   const ids = normalized.map(
-    (entry) => entry.definition.id
+    entry => JSON.stringify([entry.sourceSkillId ?? null,entry.definition.id])
   );
   if (new Set(ids).size !== ids.length) {
     throw new RangeError(
