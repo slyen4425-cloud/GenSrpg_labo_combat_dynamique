@@ -83,3 +83,52 @@ test("Human Editor exposes the triggered buff as a time-limited buff with editab
   const resolver=readFileSync(new URL("../../src/core/combat/action-resolver.js",import.meta.url),"utf8");
   assert.doesNotMatch(resolver,/setTimeout|setInterval/);
 });
+
+test("confirmed effect damage also triggers but proc damage cannot recursively trigger itself",()=>{
+  const c=combat();
+  const proc={...triggered,id:"damage-proc-buff",
+    onDamageDealt:{effects:[{kind:"damage",targetScope:"target",amount:5,channel:"physical"}]}};
+  const add=skill("damage-proc",{category:"buff_debuff",form:"self",relations:["self"],
+    effects:[{kind:"apply_status",targetScope:"self",status:proc}]});
+  c.useSkill({actorId:"attacker",targetId:"attacker",skill:add});
+  const onlyEffect=skill("multi-hit-author",{damage:0,effects:[{kind:"damage",targetScope:"target",amount:20}]});
+  const result=c.useSkill({actorId:"attacker",targetId:"victim",skill:onlyEffect});
+  assert.equal(result.outcome,"hit");
+  assert.equal(c.snapshot().fighters.victim.hp,75);
+  assert.equal(result.events.filter(e=>e.type==="hit" && Number(e.appliedDamage)>0).length,2);
+  assert.equal(result.events.filter(e=>e.type==="hit" && Number(e.appliedDamage)===5).length,1);
+});
+test("shield fully absorbs the original attack, preventing the buff proc",()=>{
+  const c=combat();apply(c);
+  const shield=skill("shield",{category:"buff_debuff",form:"self",relations:["self"],
+    effects:[{kind:"apply_status",targetScope:"self",status:{id:"absorb",kind:"shield",
+      polarity:"beneficial",durationMs:10000,stacking:"refresh",amount:100}}]});
+  c.useSkill({actorId:"victim",targetId:"victim",skill:shield});
+  const result=hit(c);
+  assert.equal(result.outcome,"hit");
+  assert.equal(c.snapshot().fighters.victim.hp,100);
+  assert.equal(c.snapshot().fighters.victim.statusEffects.some(s=>s.definition.id==="flame-burn"),false);
+  assert.equal(result.events.filter(e=>e.type==="heal" && e.sourceActorId==="attacker").length,0);
+});
+test("the existing Human Editor author contract preserves onDamageDealt on build and on JSON transfer",async()=>{
+  const {buildHumanTacticalSkillEffectsV1}=await import("../../src/ui/capture-editor-human-v2.js");
+  const {importCaptureTransferJsonV1,exportCaptureSkillTransferJsonV1}=await import("../../src/adapters/input/capture/capture-entity-transfer-v1.js");
+  const source=JSON.parse(readFileSync(new URL("../../data/capture/showcase/lib_static_bite.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
+  const original=importCaptureTransferJsonV1(JSON.stringify(source)).value.draft;
+  const effects=buildHumanTacticalSkillEffectsV1([{kind:"apply_status",targetScope:"self",status:{
+    id:"author-proc",kind:"triggered_buff",polarity:"beneficial",durationSeconds:60,stacking:"refresh",
+    onDamageDealt:{effects:[
+      {kind:"apply_status",targetScope:"target",status:{id:"author-burn",kind:"damage_over_time",polarity:"detrimental",
+        durationSeconds:3,stacking:"refresh",amount:2,tickSeconds:1,channel:"fire"}},
+      {kind:"heal",targetScope:"self",amount:12}
+    ]}}}]);
+  assert.equal(effects[0].status.durationMs,60000);
+  assert.equal(effects[0].status.onDamageDealt.effects[0].status.durationMs,3000);
+  const updated=JSON.parse(JSON.stringify(original));
+  updated.definition.effects=effects;
+  updated.definition.effect={damage:0,heal:0,interruptsPreparation:false,stunMs:0,tags:[]};
+  const json=exportCaptureSkillTransferJsonV1(updated);
+  const round=importCaptureTransferJsonV1(json).value.draft;
+  assert.equal(round.definition.effects[0].status.kind,"triggered_buff");
+  assert.deepEqual(round.definition.effects[0].status.onDamageDealt,effects[0].status.onDamageDealt);
+});
