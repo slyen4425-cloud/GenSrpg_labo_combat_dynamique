@@ -43,7 +43,7 @@ test("authored status applies with the usual effect contract and evades direct a
   const statuses=combat.snapshot().fighters.defender.statusEffects;
   assert.equal(statuses.length,1);
   assert.equal(statuses[0].definition.kind,"auto_dodge");
-  assert.match(projectStatusEffectInfoV1({instance:statuses[0],elapsedMs:0}).descriptionLines.join(" "),/esquiv/i);
+  assert.match(projectStatusEffectInfoV1({instance:statuses[0],elapsedMs:0}).effectLines.join(" "),/esquiv/i);
   for(const form of ["contact","projectile","beam","area"]){
     const result=attack(combat,{form});
     assert.equal(result.outcome,"evaded",form);
