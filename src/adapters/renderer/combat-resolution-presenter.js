@@ -198,7 +198,11 @@ export function createCombatResolutionPresenter({
     actorSlot = "player"
   ) {
     const rosterCancelled = rosterVisualsByActor.delete(actorSlot);
-    if (rosterCancelled) visuals.cancelFor(actorSlot);
+    // CombatRuntime's onInterrupted is also invoked for a skill already
+    // travelling. Such approaches use visuals.playApproachFor(), not the
+    // roster visual map. Always cancel this actor's current visual motion,
+    // otherwise the animation can finish after native stun cancellation.
+    visuals.cancelFor(actorSlot);
     const outcomeCancelled = outcomeByActor.delete(actorSlot);
     const preparationCancelled =
       cancelPreparation(actorSlot);
