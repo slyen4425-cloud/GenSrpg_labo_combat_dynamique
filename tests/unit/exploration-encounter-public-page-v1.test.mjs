@@ -99,3 +99,17 @@ test("Exploration Combat bootstrap has no missing local static module import", a
     );
   }
 });
+
+test("Encounter page owns all visual model/shadow slots required by modern renderer", async () => {
+  const html = await readFile(
+    new URL("../../examples/dom-demo/exploration-encounter.html",import.meta.url),
+    "utf8"
+  );
+  const renderedActors = [...html.matchAll(/data-demo-slot="(local-1|enemy-1)"/g)].map(m => m[1]);
+  assert.deepEqual(renderedActors, ["local-1", "enemy-1"]);
+  assert.equal([...html.matchAll(/data-demo-shadow/g)].length, 2);
+  assert.equal([...html.matchAll(/data-demo-motion/g)].length, 2);
+  assert.equal([...html.matchAll(/data-demo-image/g)].length, 2);
+  assert.match(html, /data-combat-energy-orbs="local-1"/);
+  assert.match(html, /data-combat-team-rosters/);
+});
