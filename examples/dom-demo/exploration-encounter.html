@@ -107,42 +107,46 @@
       </button>
 
       <div class="coop-command-stack">
-        <section
-          class="reserve reserve--player"
-          aria-label="Équipe Capture"
-        >
-          <strong>Équipe</strong>
-          <div
-            class="reserve__list"
-            data-roster-reserve="local-1"
-          ></div>
-          <p
-            class="team-selection"
-            data-team-selection
-          >
-            Aucune réserve sélectionnée
-          </p>
-          <div
-            class="skill-bar__grid"
-            data-combat-team-actions
-          ></div>
-        </section>
-
         <section class="coop-controls" aria-label="Capacités de la créature locale">
+          <div class="coop-controls__controlled-name" data-combat-controlled-name hidden></div>
           <div class="hud__energy">
             <div class="hud__energy-line">
               <strong>Votre énergie</strong>
-              <span data-combat-energy-value="local-1">0 / 0⚡</span>
+              <span data-combat-energy-value="local-1">0 / 10⚡</span>
             </div>
-            <progress
-              data-combat-energy="local-1"
-              max="1"
-              value="0"
-            ></progress>
+            <div class="hud__energy-orbs" data-combat-energy-orbs="local-1"
+                 role="img" aria-label="Énergie de combat"></div>
+            <progress class="hud__energy-native" data-combat-energy="local-1"
+                      aria-hidden="true" max="10" value="0"></progress>
           </div>
-          <div class="skill-bar__grid" data-combat-skills></div>
+          <div class="combat-primary-actions">
+            <div class="skill-bar__grid" data-combat-skills></div>
+          </div>
+          <details class="combat-test-team-menu" data-combat-team-menu hidden>
+            <summary data-combat-team-summary>
+              <span data-combat-team-summary-label>Rappel · équipe</span>
+              <small data-combat-recall-countdown hidden></small>
+            </summary>
+            <div class="combat-test-team-menu__body">
+              <div data-combat-team-rosters></div>
+              <div class="combat-test-team-actions">
+                <button type="button" data-combat-roster-command="switch">Rappel et invocation</button>
+              </div>
+              <p data-combat-recall-note></p>
+            </div>
+          </details>
+          <details data-combat-enemy-reserves hidden>
+            <summary data-combat-enemy-reserves-summary>Réserve adverse</summary>
+            <div data-combat-enemy-reserves-list></div>
+          </details>
         </section>
       </div>
+      <button type="button" class="combat-dodge-action combat-dodge-action--arena"
+              data-combat-dodge hidden>
+        <strong>Esquive</strong>
+        <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
+        <small data-combat-dodge-recharge hidden></small>
+      </button>
 
       <p
         class="live-status live-status--coop"
@@ -155,6 +159,6 @@
     </section>
   </main>
 
-  <script type="module" src="./exploration-encounter.js?rev=exploration-bridge-presentation-integrity-v1"></script>
+  <script type="module" src="./exploration-encounter.js?rev=exploration-modern-bridge-v1"></script>
 </body>
 </html>
