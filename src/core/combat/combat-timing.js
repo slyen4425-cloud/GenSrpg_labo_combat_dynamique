@@ -74,7 +74,7 @@ export function effectiveApproachTimingMs({
     }
   }
 
-  const effectiveMs = effectiveSkillTimingMs({
+  return effectiveSkillTimingMs({
     baseMs:
       base *
       Math.max(
@@ -83,15 +83,6 @@ export function effectiveApproachTimingMs({
       ),
     speedMultiplier
   });
-
-  // A real approach with authored travel time cannot collapse to an
-  // instantaneous release/impact pair. That would leave the movement
-  // presentation without a travel phase when -100% (or stacked reductions)
-  // is active. Preserve intentionally stationary zero-base actions.
-  if (base > 0 && ["ground", "aerial", "burrow", "teleport"].includes(approachMode)) {
-    return Math.max(1, effectiveMs);
-  }
-  return effectiveMs;
 }
 
 export function normalizeChargeTimeEffect(input, appliedAtMs = 0) {
