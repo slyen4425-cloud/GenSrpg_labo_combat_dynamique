@@ -16,4 +16,15 @@
 
 La base `gh-pages@c527e9ae578aa4bd07209f7fa2d69acecf372420` a une CI Laboratoire **FAILURE** (run `38624745283`, uniquement `creature-library-browser`: timeout à 50s après les premiers scénarios; foundation et Firestorm SUCCESS) malgré GitHub Pages SUCCESS. Ne pas présenter un nouvel état comme GREEN ni publier sur `gh-pages` sans CI complète verte sur le nouveau SHA, sans lease protégeant les branches concurrentes.
 
-À compléter après CI : SHA des validations, résultats, checkpoint exact, statut de publication et validation Android.
+## Résultat du vrai chemin et vérifications
+
+- Commit de la capacité et des tests : `f63c8b561c1396b2311042c1ecfc5d3df4f2442a`.
+- Import octet-identique du fichier utilisateur : Git Blob `d5306701dae6b9082a0c708d473c72508e6e029a` et SHA-256 auteur `9229bcb607939e0ffd6f8e284f3e1f2ba24ab5ec1ef493343a9000ef09f53ab2`.
+- Unicité de l'ID `teleport-strike` dans le catalogue Showcase, roundtrip Transfer réussi.
+- CombatSession : 16 dégâts, activation bloquée avant la fin des 20000 ms de cooldown, 16 dégâts supplémentaires à la réactivation.
+- Tests de branche sur `f63c8b561c1396b2311042c1ecfc5d3df4f2442a` : CI `38627241110`, **3 jobs SUCCESS** dont Foundation 1776/1776 tests et 2 scénarios de contrôle Chromium (Firestorm et Creature Library).
+- CI de base `c527e9a` : le premier passage avait échoué sur timeout Browser (run `38624745283`), puis nouvelle exécution indépendante SUCCESS (`38626906282`). Pas de régression reproduite du catalogue.
+
+## Finalisation attendue
+
+Rendre la CI documentaire finale verte sur son SHA exact, créer le checkpoint GREEN correspondant, publier sous contrôle de concurrence et vérifier CI/Pages en production. Vérification visuelle smartphone par l'auteur encore attendue ; ne pas inventer de GREEN utilisateur.

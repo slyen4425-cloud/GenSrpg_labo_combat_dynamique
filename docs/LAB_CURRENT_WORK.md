@@ -2393,3 +2393,13 @@ Le test existant `tests/unit/capture-skill-icons-global-library-v2.test.mjs` imp
 - Fichiers autorisés : le preset `teleport-strike` existant ; sentinelle `tests/unit/capture-voltige-teleport-arc-stack-timer-v1.test.mjs` (anciennes valeurs attendues désormais obsolètes), sentinelle spécifique de transfert/runtime ; rapport `docs/LAB_TELEPORT_STRIKE_AUTHOR_REFRESH_V1.md` et le présent journal. Aucun fichier moteur, autre preset, créature ou asset.
 - Tests prévus : cohérence fidèle export/import de l'export auteur, unicité catalogue/IDs, non-régression Voltige et Arc électrique, effets/montants/cooldown/charge dans le vrai `CombatSession`, CI foundation + Firestorm Chromium + Creature Library Chromium (sans prétendre GREEN si le timeout indépendant persiste). Vérification Android utilisateur nécessaire avant GREEN produit.
 - Critère de livraison : contrôles unitaires et 3 jobs CI sur le SHA documenté, checkpoint GREEN sur SHA exact uniquement si tous verts, mise à jour `gh-pages` sous lease uniquement sans travail concurrent, puis CI/Pages postpublication ; sinon laisser la branche isolée et rapporter le blocage réel.
+
+
+### Vérifications techniques effectuées
+
+- Commit source + tests : `f63c8b561c1396b2311042c1ecfc5d3df4f2442a`.
+- Fichier auteur : Git Blob `d5306701dae6b9082a0c708d473c72508e6e029a`, égal au blob calculé localement sur le fichier original de 2415 octets ; SHA-256 auteur `9229bcb607939e0ffd6f8e284f3e1f2ba24ab5ec1ef493343a9000ef09f53ab2`.
+- Diff JSON exhaustif par rapport à l'ancien preset : **4 propriétés uniquement** (`preparationMs`, `recoveryMs`, `cooldownMs`, `effects[0].amount`). Aucun changement d'assets, d'ID ou de créature.
+- CI de branche `38627241110` : **SUCCESS** pour `foundation` (1776/1776 tests Node), `firestorm-zone-growth-browser` et `creature-library-browser`.
+- Le timeout Chromium observé sur le premier passage de la base `c527e9a` ne s'est pas reproduit : CI base rejouée en SUCCESS `38626906282`; ne pas le confondre avec une régression introduite par Frappe téléportée.
+- Publication conditionnée au résultat des 3 jobs de CI du commit documentaire final ; checkpoint GREEN sur le SHA final exact ; fast-forward avec lease sur `gh-pages`, postpublication CI + Pages, validation Android par l'auteur. **Aucune validation Android automatique revendiquée.**
