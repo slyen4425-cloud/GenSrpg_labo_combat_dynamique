@@ -1184,6 +1184,7 @@ export async function mountCoop2v2Test({
 
         dodgeButton.disabled =
           !localAlive ||
+          lockedByAction ||
           windowStatus.active ||
           availability.charges <= 0;
         dodgeButton.dataset.active =
