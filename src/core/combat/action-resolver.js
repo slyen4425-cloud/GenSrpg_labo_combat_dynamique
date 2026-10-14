@@ -1064,6 +1064,28 @@ export function resolveSkillCompletion({
       nextState = triggered.state;
       events.push(...triggered.events);
 
+      // A multi-target attack can be evaded by one victim while still
+      // hitting another. Preserve the existing per-defender reactive buff
+      // trigger, using only the native evasion events of the original hit.
+      // Generated proc hits are never fed back into the trigger dispatcher.
+      for (const avoided of tactical.events.filter(entry =>
+        entry.type === "skill-target-evaded"
+      )) {
+        const reaction = applyEventTriggeredBuffsV2({
+          state: nextState,
+          statusState: state,
+          eventType: "evaded",
+          ownerId: avoided.actorId,
+          otherId: actorId,
+          skill,
+          atMs: impactAtMs,
+          combatAtMs: combatImpactAtMs,
+          battleFormat
+        });
+        nextState = reaction.state;
+        events.push(...reaction.events);
+      }
+
       nextState =
         applyPersistentZoneEffectsV1({
           state: nextState,
