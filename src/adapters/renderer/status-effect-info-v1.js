@@ -350,13 +350,24 @@ function effectLinesFor(
           )
       ]);
 
-    case "triggered_buff":
+    case "triggered_buff": {
+      const trigger = definition.onEvent ??
+        (definition.onDamageDealt
+          ? {event:"damage_dealt",effects:definition.onDamageDealt.effects}
+          : null);
+      const descriptions = {
+        damage_dealt: "Après les dégâts réellement infligés",
+        damage_taken: "Après les dégâts réellement subis",
+        movement: "Après un déplacement tactique réussi",
+        evaded: "Après avoir effectivement esquivé une attaque"
+      };
       return Object.freeze([
-        "Après chaque attaque retirant des PV à une cible, déclenche " +
-          definition.onDamageDealt.effects.length +
-          " effet(s) configuré(s) sur soi ou sur la victime. " +
-          "Les dégâts périodiques et effets déclenchés ne se redéclenchent pas."
+        (descriptions[trigger?.event] ?? "Après l'événement configuré") +
+        " : déclenche " + (trigger?.effects.length ?? 0) +
+        " effet(s) configuré(s). Soi = porteur ; cible = autre acteur, " +
+        "ou le porteur si déplacement. Pas de déclenchement récursif."
       ]);
+    }
 
     case "auto_dodge":
       return Object.freeze([
