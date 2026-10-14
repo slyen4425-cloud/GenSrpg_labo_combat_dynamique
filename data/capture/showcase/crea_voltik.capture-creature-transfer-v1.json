@@ -109,7 +109,8 @@
       "cap_electric_atk_7",
       "cap_electric_special_1",
       "cap_electric_special_2",
-      "teleport-strike"
+      "teleport-strike",
+      "dodge"
     ],
     "presentation": {
       "id": "creature:crea_voltik",
@@ -254,11 +255,11 @@
       },
       {
         "id": "slot-4",
-        "skillId": "lib_paralyze"
+        "skillId": "dodge"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "cap_electric_special_2"
       }
     ]
   }
