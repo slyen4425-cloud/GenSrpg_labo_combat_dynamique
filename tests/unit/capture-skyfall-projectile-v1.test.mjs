@@ -98,7 +98,8 @@ test("Capture editor exposes skyfall controls with preservation in load/new/save
     assert.match(html,new RegExp("data-skill-"+key));
     assert.match(ui,new RegExp("data-skill-"+key));
   }
-  assert.match(ui,/travelTrajectoryMode:\s*travel\?\.trajectoryMode/);
+  assert.match(ui,/travelTrajectoryMode:\s*definition\.projectileTargeting === "expanding_wave"/);
+  assert.match(ui,/: travel\?\.trajectoryMode \?\? "linear"/);
   assert.match(ui,/travel\.trajectoryMode\s*=\s*"skyfall"/);
   assert.match(ui,/presentation\.travelTrajectoryMode/);
   assert.match(ui,/presentation\.fallHeightPx/);
