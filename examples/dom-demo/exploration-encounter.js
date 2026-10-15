@@ -36,12 +36,12 @@ import {
   CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 
-const root =
-  document.querySelector("[data-combat-demo]");
-const arena =
-  document.querySelector("[data-combat-arena]");
+const previewHost =
+  document.querySelector("[data-capture-preview-host]");
 const bridgeStatus =
   document.querySelector("[data-bridge-status]");
+let root = null;
+let arena = null;
 
 const PROFILE_URLS = [
   "biped",
@@ -127,6 +127,56 @@ function setBridgeStatus(
 ) {
   bridgeStatus.textContent = message;
   bridgeStatus.dataset.state = state;
+}
+
+
+/**
+ * The Editor Capture preview is the only presentation template.
+ * Exploration supplies a native Encounter source and bridge callback; it does
+ * not own or copy the combat HUD, layout, or sprite placeholder policy.
+ */
+async function mountCanonicalCaptureView(nativeCombatSource) {
+  const response = await fetch("./capture-editor-v2.html", {
+    cache: "no-cache"
+  });
+  if (!response.ok) {
+    throw new Error("Vue Capture courante indisponible : HTTP " + response.status);
+  }
+  const page = new DOMParser().parseFromString(
+    await response.text(), "text/html"
+  );
+  const canonical = page.querySelector("[data-capture-preview-template]");
+  if (!canonical) {
+    throw new Error("Template officiel du combat Capture introuvable");
+  }
+
+  // Editor calls its opposing actors opponent-1/2. The immutable exploration
+  // snapshot uses enemy-1/2; this is a DOM adapter, never a second team model.
+  const template = document.createElement("template");
+  template.innerHTML = canonical.innerHTML
+    .replaceAll("opponent-1", "enemy-1")
+    .replaceAll("opponent-2", "enemy-2");
+
+  previewHost.replaceChildren(template.content.cloneNode(true));
+  root = previewHost.querySelector("[data-combat-demo]");
+  arena = previewHost.querySelector("[data-combat-arena]");
+  if (!root || !arena) {
+    throw new Error("Vue officielle du combat Capture incomplète");
+  }
+
+  const actorById = new Map(
+    nativeCombatSource.battleFormat.actors.map(actor => [actor.actorId, actor])
+  );
+  for (const element of root.querySelectorAll("[data-preview-actor-ui]")) {
+    const actor = actorById.get(element.dataset.previewActorUi);
+    element.hidden = !actor;
+    if (actor) {
+      for (const label of element.querySelectorAll("[data-demo-label], strong")) {
+        label.textContent = actor.displayName;
+      }
+    }
+  }
+  return root;
 }
 
 async function visualMetaFor(
@@ -303,6 +353,8 @@ Promise.resolve()
           ])
         ).values()
       ];
+
+    await mountCanonicalCaptureView(nativeCombatSource);
 
     applyArena(
       handoff.snapshot.context

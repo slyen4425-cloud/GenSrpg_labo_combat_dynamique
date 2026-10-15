@@ -4,163 +4,37 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>GenSrpG — Combat Capture</title>
+  <!-- Exactly the two stylesheets used by the authoring Combat preview. -->
   <link rel="stylesheet" href="./demo.css">
+  <link rel="stylesheet" href="./capture-editor-v2.css">
   <style>
-    .bridge-banner {
-      position: fixed;
-      z-index: 50;
-      top: max(8px, env(safe-area-inset-top));
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(92vw, 680px);
-      padding: .55rem .8rem;
-      border-radius: 14px;
-      background: rgba(14, 18, 20, .82);
-      color: #fff;
-      font: 600 14px/1.25 system-ui, sans-serif;
-      text-align: center;
-      backdrop-filter: blur(8px);
-      pointer-events: none;
-    }
+    body { margin: 0; background: #071016; }
+    .bridge-banner { position: absolute; z-index: 145;
+      bottom: max(.4rem, env(safe-area-inset-bottom));
+      left: 50%; transform: translateX(-50%);
+      max-width: min(94vw, 36rem);
+      padding: .32rem .6rem; border-radius: .6rem;
+      background: rgba(10, 20, 24, .85); color: #fff;
+      font: 600 12px/1.25 system-ui, sans-serif;
+      text-align: center; pointer-events: none; }
+    .bridge-banner[data-state="ready"] { display: none; }
     .bridge-banner[data-state="error"] {
-      background: rgba(92, 22, 22, .92);
-    }
+      display: block; background: rgba(92, 22, 22, .94);
+      bottom: auto; top: 10%; }
   </style>
 </head>
 <body>
-  <p class="bridge-banner" data-bridge-status>
-    Chargement de la rencontre…
-  </p>
-
-  <main class="game game--coop-2v2" data-combat-demo>
-    <section class="arena arena--coop-2v2" data-combat-arena aria-label="Combat Capture issu de l'exploration">
-      <div class="arena__ground" aria-hidden="true"></div>
-
-      <article
-        class="fighter fighter--player"
-        data-demo-slot="local-1"
-        data-demo-view="player"
-        data-target-actor="local-1"
-        role="button"
-        tabindex="0"
-      >
-        <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
-        <span class="visually-hidden" data-demo-label>Créature locale</span>
-        <div class="fighter__motion" data-demo-motion>
-          <img class="fighter__image" data-demo-image alt="">
-        </div>
-      </article>
-
-      <article
-        class="fighter fighter--opponent"
-        data-demo-slot="enemy-1"
-        data-demo-view="opponent"
-        data-target-actor="enemy-1"
-        role="button"
-        tabindex="0"
-      >
-        <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
-        <span class="visually-hidden" data-demo-label>Créature adverse</span>
-        <div class="fighter__motion" data-demo-motion>
-          <img class="fighter__image" data-demo-image alt="">
-        </div>
-      </article>
-
-      <button
-        type="button"
-        class="squad-card squad-card--player squad-card--local-full"
-        data-target-actor="local-1"
-      >
-        <strong>Votre créature</strong>
-        <div class="squad-card__hp">
-          <progress data-combat-hp="local-1" max="100" value="100"></progress>
-          <span data-combat-hp-value="local-1">100 / 100 PV</span>
-        </div>
-        <div class="status-icons" data-combat-status-icons="local-1"></div>
-        <small data-combat-action="local-1">Prêt</small>
-        <progress
-          class="squad-card__charge squad-card__charge--local"
-          data-combat-actor-charge="local-1"
-          data-active="false"
-          max="1"
-          value="0"
-        ></progress>
-      </button>
-
-      <button
-        type="button"
-        class="squad-card squad-card--opponent"
-        data-target-actor="enemy-1"
-      >
-        <strong>Adversaire</strong>
-        <div class="squad-card__hp">
-          <progress data-combat-hp="enemy-1" max="100" value="100"></progress>
-          <span data-combat-hp-value="enemy-1">100 / 100 PV</span>
-        </div>
-        <div class="status-icons" data-combat-status-icons="enemy-1"></div>
-        <small data-combat-action="enemy-1">Prêt</small>
-        <progress
-          class="squad-card__charge"
-          data-combat-actor-charge="enemy-1"
-          data-active="false"
-          max="1"
-          value="0"
-        ></progress>
-      </button>
-
-      <div class="coop-command-stack">
-        <section class="coop-controls" aria-label="Capacités de la créature locale">
-          <div class="coop-controls__controlled-name" data-combat-controlled-name hidden></div>
-          <div class="hud__energy">
-            <div class="hud__energy-line">
-              <strong>Votre énergie</strong>
-              <span data-combat-energy-value="local-1">0 / 10⚡</span>
-            </div>
-            <div class="hud__energy-orbs" data-combat-energy-orbs="local-1"
-                 role="img" aria-label="Énergie de combat"></div>
-            <progress class="hud__energy-native" data-combat-energy="local-1"
-                      aria-hidden="true" max="10" value="0"></progress>
-          </div>
-          <div class="combat-primary-actions">
-            <div class="skill-bar__grid" data-combat-skills></div>
-          </div>
-          <details class="combat-test-team-menu" data-combat-team-menu hidden>
-            <summary data-combat-team-summary>
-              <span data-combat-team-summary-label>Rappel · équipe</span>
-              <small data-combat-recall-countdown hidden></small>
-            </summary>
-            <div class="combat-test-team-menu__body">
-              <div data-combat-team-rosters></div>
-              <div class="combat-test-team-actions">
-                <button type="button" data-combat-roster-command="switch">Rappel et invocation</button>
-              </div>
-              <p data-combat-recall-note></p>
-            </div>
-          </details>
-          <details data-combat-enemy-reserves hidden>
-            <summary data-combat-enemy-reserves-summary>Réserve adverse</summary>
-            <div data-combat-enemy-reserves-list></div>
-          </details>
-        </section>
-      </div>
-      <button type="button" class="combat-dodge-action combat-dodge-action--arena"
-              data-combat-dodge hidden>
-        <strong>Esquive</strong>
-        <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
-        <small data-combat-dodge-recharge hidden></small>
-      </button>
-
-      <p
-        class="live-status live-status--coop"
-        data-combat-live-status
-        data-tone="info"
-        role="status"
-      >
-        Préparation du combat…
-      </p>
-    </section>
-  </main>
-
-  <script type="module" src="./exploration-encounter.js?rev=exploration-current-combat-2026-10-15"></script>
+  <section class="capture-preview-shell" data-capture-preview-shell
+           data-landscape-required="true" aria-label="Combat Capture issu de l'exploration">
+    <div class="capture-preview-rotate-gate" role="status" aria-live="polite">
+      <strong>Tourne ton téléphone</strong>
+      <span>Le combat se joue en mode paysage.</span>
+    </div>
+    <div class="capture-preview-host" data-capture-preview-host>
+      <p role="status" aria-busy="true">Chargement du combat Capture…</p>
+    </div>
+    <p class="bridge-banner" data-bridge-status>Préparation du combat…</p>
+  </section>
+  <script type="module" src="./exploration-encounter.js?rev=exploration-native-view-2026-10-15"></script>
 </body>
 </html>
