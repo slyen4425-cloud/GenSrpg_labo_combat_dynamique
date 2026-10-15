@@ -20,23 +20,23 @@ test("Exploration Combat public adapter page exists and uses convergence revisio
 
   assert.match(
     html,
-    /exploration-encounter\.js\?rev=exploration-modern-bridge-v1/
+    /exploration-encounter\.js\?rev=exploration-current-combat-2026-10-15/
   );
   assert.match(
     script,
-    /combat-2v2-test-ui\.js\?rev=exploration-modern-bridge-v1/
+    /combat-2v2-test-ui\.js\?rev=exploration-current-combat-2026-10-15/
   );
   assert.match(
     script,
-    /exploration-encounter-handoff-v1\.js\?rev=exploration-modern-bridge-v1/
+    /exploration-encounter-handoff-v1\.js\?rev=exploration-current-combat-2026-10-15/
   );
   assert.match(
     script,
-    /capture-creature-visual-bindings-v1\.js\?rev=exploration-modern-bridge-v1/
+    /capture-creature-visual-bindings-v1\.js\?rev=exploration-current-combat-2026-10-15/
   );
   assert.match(
     script,
-    /demo-assets\.js\?rev=exploration-modern-bridge-v1/
+    /demo-assets\.js\?rev=exploration-current-combat-2026-10-15/
   );
   assert.match(
     script,
@@ -48,7 +48,7 @@ test("Exploration Combat public adapter page exists and uses convergence revisio
   );
   assert.match(
     script,
-    /capture-skill-presentation-assets-v2\.js\?rev=exploration-modern-bridge-v1/
+    /capture-skill-presentation-assets-v2\.js\?rev=exploration-current-combat-2026-10-15/
   );
   assert.equal(
     script.includes(

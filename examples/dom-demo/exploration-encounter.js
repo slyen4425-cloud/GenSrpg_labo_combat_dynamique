@@ -22,7 +22,7 @@ import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../../src/assets/global-visual-library.js";
-import { createCaptureLibraryAssetResolverV1 } from "../../src/assets/capture-library-asset-resolver-v1.js";
+import { createGlobalPresentationAssetResolverV1 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
 import {
   demoPresentationAssets
 } from "./demo-assets.js?rev=exploration-current-combat-2026-10-15";
@@ -318,11 +318,12 @@ Promise.resolve()
         }
       });
 
-    const resolveVisualAsset = createCaptureLibraryAssetResolverV1({
-      catalog: visualCatalog,
-      assetForId: assetId => demoPresentationAssets.asset(assetId),
+    const canonicalVisualAsset = createGlobalPresentationAssetResolverV1({
+      assetCatalog: visualCatalog,
       assetUrlForFile: globalVisualAssetUrl
     });
+    const resolveVisualAsset = assetId =>
+      demoPresentationAssets.asset(assetId) ?? canonicalVisualAsset(assetId);
 
     const configuredPresentationAssets =
       createCaptureSkillPresentationAssetsV2({

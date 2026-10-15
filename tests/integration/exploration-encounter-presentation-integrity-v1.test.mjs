@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { createCaptureLibraryAssetResolverV1 } from "../../src/assets/capture-library-asset-resolver-v1.js";
+import { createGlobalPresentationAssetResolverV1 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
 import { globalVisualAssetUrl } from "../../src/assets/global-visual-library.js";
 
 import {
@@ -70,11 +70,11 @@ function visualAssetIds(presentation) {
 
 test("Exploration bridge resolves every configured skill visual asset through the canonical presentation resolver", async () => {
   const catalog = await json("tests/fixtures/global-visual-assets.v1.json");
-  const resolveAsset = createCaptureLibraryAssetResolverV1({
-    catalog,
-    assetForId: id => demoPresentationAssets.asset(id),
+  const canonicalAsset = createGlobalPresentationAssetResolverV1({
+    assetCatalog: catalog,
     assetUrlForFile: globalVisualAssetUrl
   });
+  const resolveAsset = id => demoPresentationAssets.asset(id) ?? canonicalAsset(id);
   const missing = [];
 
   for (
