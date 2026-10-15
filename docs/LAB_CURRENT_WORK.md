@@ -1,5 +1,24 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier isolé en cours — Fluide météorite (2026-10-15)
+
+**Statut : PARTIEL — dépôt GitHub des véritables fichiers PNG en attente de transfert. Ne pas annoncer GREEN.**
+
+- Objectif : déposer les 3 séquences visuelles Capture de la compétence **Fluide météorite** (Cast, Pluie de météorites, Impact multiple de feu), 20 frames transparentes de 512×512 pour chacune.
+- Dépôt : `slyen4425-cloud/GenSrpg_labo_combat_dynamique`.
+- Base : `global-assets` au SHA `e55fea3b559c348be596d7c16250808a39c315a1`.
+- Checkpoint de départ : `checkpoint/lab-start-fluide-meteorite-assets-2026-10-15` sur ce SHA.
+- Branche : `work/lab-fluide-meteorite-assets-2026-10-15`.
+- Propriétaire : `Asset Input / assets/library/capture/sprites/skills/fluide_meteorite`; domaines gameplay et FX runtime protégés.
+- Périmètre : images de la compétence uniquement, manifeste, provenance, atlas, contrôles d'import ; aucun changement de moteur, règles, dégâts, sons, éditeur ou `Zombicide-40k`.
+- Import : dépôt d'une archive utilisateur `_incoming/fluide_meteorite_upload_github.zip` ; vérification stricte et extraction par `.github/workflows/import-fluide-meteorite-vfx.yml`.
+- Sources : trois planches générées dans ChatGPT, 1402×1122 pixels (grilles 5×4) ; frames 512px obtenues par agrandissement depuis environ 280px, résolution 512 non native.
+- Vérification locale : 60 frames PNG réellement inspectées, alpha RGBA, 512px, 3 atlas 7680×384, archives ZIP testées, hashes et noms vérifiés.
+- Statut GitHub : seul le protocole d'import (script/workflow/README) est enregistré ; **aucune frame binaire n'a été envoyée à GitHub pour l'instant**.
+- Tests requis avant GREEN : import véritable des 60 frames + 3 atlas ; hash et contenu visuel vérifiés ; CI du labo ; vrai assetId canonique ; sélection éditeur/rendu si raccordés ; preview smartphone.
+- Risques : ZIP > seuil upload web évité par archive dédiée <25 Mio ; traitement GIF preview laissé hors runtime ; pas de placeholder déclaré comme média.
+- Prochaine action : transférer l'archive, confirmer le commit GitHub contenant les médias, puis vérifier et relier le vrai chemin si souhaité.
+
 Ce fichier est le point de reprise opérationnel du laboratoire.
 
 ## État global
