@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 149,
+    "assets": 153,
     "icons": 57,
-    "sprites": 76,
+    "sprites": 80,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -4626,6 +4626,46 @@
       }
     },
     {
+      "id": "pack:capture:sprite-fire-bubble-expansion-01",
+      "label": "Bulle de feu expansive",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "fire",
+        "expanding",
+        "sphere",
+        "ground",
+        "aerial",
+        "zone",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fire_bubble_expansion/atlases/sprite_skill_fire_bubble_expansion_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 80,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
       "id": "pack:capture:icon-skill-croc-electrique-01",
       "label": "Croc électrique",
       "assetType": "icon",
@@ -4861,6 +4901,122 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_pique_de_pierre_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fluide-meteorite-cast-01",
+      "label": "Fluide météorite — Cast épique",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "skill",
+        "fire",
+        "meteorite",
+        "magic",
+        "cast",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fluide_meteorite/atlases/sprite_skill_fluide_meteorite_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fluide-meteorite-projectile-01",
+      "label": "Fluide météorite — Pluie de météorites",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "skill",
+        "fire",
+        "meteorite",
+        "skyfall",
+        "projectile",
+        "travel",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fluide_meteorite/atlases/sprite_skill_fluide_meteorite_projectile_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fluide-meteorite-impact-01",
+      "label": "Fluide météorite — Impact multiple de feu",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "skill",
+        "fire",
+        "meteorite",
+        "explosion",
+        "impact",
+        "multi-hit",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fluide_meteorite/atlases/sprite_skill_fluide_meteorite_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 55,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [
