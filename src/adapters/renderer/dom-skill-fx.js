@@ -2534,11 +2534,12 @@ export function createDomSkillFxRenderer({
       };
       active.add(record);
       const duration = Math.max(1, Number(durationMs) || 1);
+      const waveOpacity = clampUnit(travelVisual?.opacity, 1);
       const animation = animate(
         node,
         [
-          { transform: "translate(-50%, -50%) scale(" + (startRadiusPx / endRadiusPx) + ")", opacity: 0.4 },
-          { transform: "translate(-50%, -50%) scale(1)", opacity: 1 }
+          { transform: "translate(-50%, -50%) scale(" + (startRadiusPx / endRadiusPx) + ")", opacity: 0.4 * waveOpacity },
+          { transform: "translate(-50%, -50%) scale(1)", opacity: waveOpacity }
         ],
         { duration, easing: "linear", fill: "forwards" }
       );
