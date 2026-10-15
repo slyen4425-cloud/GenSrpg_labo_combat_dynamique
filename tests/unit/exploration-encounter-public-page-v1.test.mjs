@@ -20,7 +20,7 @@ test("Exploration Combat public adapter page exists and uses convergence revisio
 
   assert.match(
     html,
-    /exploration-encounter\.js\?rev=exploration-current-combat-2026-10-15/
+    /exploration-encounter\\.js\\?rev=exploration-native-view-2026-10-15/
   );
   assert.match(
     script,
@@ -100,16 +100,31 @@ test("Exploration Combat bootstrap has no missing local static module import", a
   }
 });
 
-test("Encounter page owns all visual model/shadow slots required by modern renderer", async () => {
-  const html = await readFile(
-    new URL("../../examples/dom-demo/exploration-encounter.html",import.meta.url),
-    "utf8"
-  );
-  const renderedActors = [...html.matchAll(/data-demo-slot="(local-1|enemy-1)"/g)].map(m => m[1]);
-  assert.deepEqual(renderedActors, ["local-1", "enemy-1"]);
-  assert.equal([...html.matchAll(/data-demo-shadow/g)].length, 2);
-  assert.equal([...html.matchAll(/data-demo-motion/g)].length, 2);
-  assert.equal([...html.matchAll(/data-demo-image/g)].length, 2);
-  assert.match(html, /data-combat-energy-orbs="local-1"/);
-  assert.match(html, /data-combat-team-rosters/);
+test("Encounter page reuses the authoritative editor Capture presentation and its landscape CSS", async () => {
+  const html = await readFile(new URL("../../examples/dom-demo/exploration-encounter.html", import.meta.url), "utf8");
+  const script = await readFile(new URL("../../examples/dom-demo/exploration-encounter.js", import.meta.url), "utf8");
+  const editor = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url), "utf8");
+
+  assert.match(html, /capture-editor-v2\\.css/);
+  assert.match(html, /data-capture-preview-host/);
+  assert.match(html, /data-landscape-required="true"/);
+  assert.doesNotMatch(html, /data-demo-slot=/,
+    "Encounter must not duplicate the authoring combat layout");
+  assert.match(script, /fetch\\("\\.\\/capture-editor-v2\\.html"/);
+  assert.match(script, /data-capture-preview-template/);
+  assert.match(script, /template\\.content\\.cloneNode\\(true\\)/);
+  assert.match(script, /onBattleEnd/);
+  for (const marker of [
+    'data-demo-slot="local-1"',
+    'data-demo-slot="opponent-1"',
+    'data-demo-shadow',
+    'data-demo-motion',
+    'data-demo-image',
+    'data-combat-energy-orbs="local-1"',
+    'data-combat-skills',
+    'data-combat-team-rosters',
+    'data-combat-live-status'
+  ]) {
+    assert.ok(editor.includes(marker), "Authoritative Combat Editor template missing " + marker);
+  }
 });
