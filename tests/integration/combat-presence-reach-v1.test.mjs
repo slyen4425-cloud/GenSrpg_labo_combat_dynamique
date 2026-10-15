@@ -484,3 +484,84 @@ test("ordinary direct fireball hits a ground-moving target without an explicit d
 test("invalid projectile targeting mode is rejected by the Combat Rules contract", () => {
   assert.throws(() => skill({id:"bad-targeting",projectileTargeting:"unknown"}), /projectileTargeting/);
 });
+
+test("ordinary terrestrial Griffe/contact misses a dragon in active aerial approach", () => {
+  const {session,clock,runtime,resolutions}=harness();
+  try {
+    const dragonFlight=skill({
+      id:"dragon-aerial-approach",
+      form:"contact",
+      approachMode:"aerial",
+      travelMs:2000,
+      damage:0
+    });
+    const claw=skill({
+      id:"normal-ground-claw",
+      form:"contact",
+      approachMode:"ground",
+      travelMs:1000,
+      damage:17
+    });
+    assert.equal(runtime.startSkill({actorId:"player",targetId:"opponent",skill:dragonFlight}).ok,true);
+    assert.equal(runtime.startSkill({actorId:"opponent",targetId:"player",skill:claw}).ok,true);
+    clock.setTime(1000);
+    clock.fireNext();
+    const outcome=resolutions.find(x=>x.skillId==="normal-ground-claw");
+    assert.ok(outcome,"ground melee must resolve through actual CombatRuntime");
+    assert.equal(outcome.outcome,"evaded");
+    assert.equal(outcome.evasionReason,"presence");
+    assert.equal(outcome.targetPresence,"airborne");
+    assert.equal(session.snapshot().fighters.player.hp,100);
+    assert.equal(outcome.events.some(e=>e.type==="hit"),false);
+    const fx=planSkillOutcomeFx({resolution:outcome,actorSlot:"opponent",targetSlot:"player"});
+    assert.equal(fx.some(x=>x.type==="miss"),true);
+    assert.equal(fx.some(x=>x.type==="impact"),false);
+  } finally {
+    runtime.dispose();
+  }
+});
+
+test("ground melee still hits a grounded target and an explicitly airborne-reachable target",()=>{
+  for(const antiAir of [false,true]){
+    const {session,clock,runtime,resolutions}=harness();
+    try {
+      if(antiAir){
+        runtime.startSkill({
+          actorId:"player",targetId:"opponent",
+          skill:skill({id:"flight-target",form:"contact",approachMode:"aerial",travelMs:2000,damage:0})
+        });
+      }
+      const claw=skill({
+        id:antiAir?"anti-air-claw":"ordinary-ground-claw",
+        form:"contact",
+        approachMode:"ground",
+        travelMs:1000,
+        damage:17,
+        ...(antiAir?{hitPresenceStates:["surface","airborne"]}:{})
+      });
+      assert.equal(runtime.startSkill({actorId:"opponent",targetId:"player",skill:claw}).ok,true);
+      clock.setTime(1000);
+      clock.fireNext();
+      const hit=resolutions.find(x=>x.skillId===claw.id);
+      assert.ok(hit);
+      assert.equal(hit.outcome,"hit");
+      assert.equal(session.snapshot().fighters.player.hp,83);
+    } finally {
+      runtime.dispose();
+    }
+  }
+});
+
+test("aerial contact and distance attacks preserve existing airborne reach semantics",()=>{
+  const {session,clock,runtime,resolutions}=harness();
+  try{
+    runtime.startSkill({actorId:"player",targetId:"opponent",
+      skill:skill({id:"flying-target",form:"contact",approachMode:"aerial",travelMs:2000,damage:0})});
+    runtime.startSkill({actorId:"opponent",targetId:"player",
+      skill:skill({id:"aerial-melee-chaser",form:"contact",approachMode:"aerial",travelMs:1000,damage:11})});
+    clock.setTime(1000);
+    clock.fireNext();
+    assert.equal(resolutions.find(x=>x.skillId==="aerial-melee-chaser")?.outcome,"hit");
+    assert.equal(session.snapshot().fighters.player.hp,89);
+  } finally{runtime.dispose();}
+});

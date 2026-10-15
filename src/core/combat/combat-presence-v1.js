@@ -84,6 +84,15 @@ export function skillPresenceReachV1({
     !configured &&
     presence === "underground" &&
     skill?.category === "offensive";
+  // Ordinary ground-contact melee is surface-bound, even if its visual
+  // approach starts while the defender is mid-flight. An authored anti-air
+  // ability must opt into airborne explicitly via hitPresenceStates.
+  const implicitAirborneGroundMeleeRestriction =
+    !configured &&
+    presence === "airborne" &&
+    skill?.category === "offensive" &&
+    skill?.form === "contact" &&
+    skill?.approachMode === "ground";
 
   return Object.freeze({
     configured,
@@ -92,6 +101,9 @@ export function skillPresenceReachV1({
     transientPresence,
     reachable: configured
       ? skill.hitPresenceStates.includes(presence)
-      : !implicitUndergroundRestriction
+      : !(
+          implicitUndergroundRestriction ||
+          implicitAirborneGroundMeleeRestriction
+        )
   });
 }

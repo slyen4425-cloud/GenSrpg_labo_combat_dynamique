@@ -143,6 +143,24 @@ function requiredElement(root, selector) {
   return element;
 }
 
+// Stable ground-facing aim for a target whose model is temporarily flying.
+// This is a visual geometry helper, not a second combat reach or damage owner.
+export function restingTargetCenterForApproachV1(targetSlot) {
+  const container = targetSlot.container;
+  const rect = container.getBoundingClientRect();
+  const nativeWidth = Number(container.offsetWidth);
+  const scale =
+    Number.isFinite(nativeWidth) && nativeWidth > 0
+      ? rect.width / nativeWidth
+      : 1;
+  return Object.freeze({
+    x: rect.left + rect.width / 2 +
+      (Number(targetSlot.actor?.position?.x) || 0) * scale,
+    y: rect.top + rect.height / 2 +
+      (Number(targetSlot.actor?.position?.y) || 0) * scale
+  });
+}
+
 export async function mountCombatDemo({
   root,
   fetchImpl = fetch,
@@ -639,8 +657,20 @@ export async function mountCombatDemo({
 
     const actorCenterX = actorRect.left + actorRect.width / 2;
     const actorCenterY = actorRect.top + actorRect.height / 2;
-    const targetCenterX = targetRect.left + targetRect.width / 2;
-    const targetCenterY = targetRect.top + targetRect.height / 2;
+    // Ground melee must never use the vertical translation of an opponent's
+    // active aerial attack as its own destination. The live silhouettes
+    // remain authoritative for deciding whether physical contact happens.
+    const airborneTarget =
+      approachMode === "ground" &&
+      activeApproachBySlot.get(targetSlot)?.approachMode === "aerial";
+    const targetAim = airborneTarget
+      ? restingTargetCenterForApproachV1(target)
+      : {
+          x: targetRect.left + targetRect.width / 2,
+          y: targetRect.top + targetRect.height / 2
+        };
+    const targetCenterX = targetAim.x;
+    const targetCenterY = targetAim.y;
     const approachDepth =
       actorCenterY >= targetCenterY ? "front" : "behind";
 
@@ -740,7 +770,8 @@ export async function mountCombatDemo({
     const approachRecord = Object.freeze({
       handle,
       finished,
-      contactWatcher
+      contactWatcher,
+      approachMode
     });
     activeApproachBySlot.set(slotKey, approachRecord);
 
@@ -1177,6 +1208,7 @@ function createSlot({
     image,
     motion,
     shadowElement,
+    container: slotContainer,
     setCreature,
     setVisible,
     setApproachActive,
