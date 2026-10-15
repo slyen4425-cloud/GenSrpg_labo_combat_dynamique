@@ -9,7 +9,11 @@ const read = relative => readFileSync(new URL(relative, import.meta.url), "utf8"
 const author = () => importCaptureTransferJsonV1(read("../../data/capture/showcase/cap_fire_atk_5.capture-skill-transfer-v1.json")).value.draft;
 const draftAtOpacity = pct => {
   const fields=humanSkillEditorFieldsFromDraftV1(author());
-  return buildHumanSkillDraftV1({...fields,presentation:{...fields.presentation,travelOpacityPct:pct}});
+  return buildHumanSkillDraftV1({...fields,form:"projectile",
+    presentation:{...fields.presentation,travelOpacityPct:pct,
+      travelAssetId:"pack:capture:sprite-fire-bubble-expansion-01",
+      travelTrajectoryMode:"expanding_wave",
+      waveStartRadiusPct:8,waveEndRadiusPct:65,waveThicknessPct:8}});
 };
 
 test("human editor exposes a percentage opacity field for projectile including the expanding wave",()=>{
@@ -26,7 +30,7 @@ test("wave opacity is editable and roundtrips via the one canonical presentation
     assert.equal(restored.presentation.visual.travel.opacity,percent/100);
     assert.equal(humanSkillEditorFieldsFromDraftV1(restored).presentation.travelOpacityPct,percent);
     assert.equal(restored.definition.projectileTargeting,"expanding_wave");
-    assert.deepEqual(restored.definition.expandingWave,author().definition.expandingWave);
+    assert.deepEqual(restored.definition.expandingWave,{startRadiusPct:8,endRadiusPct:65,thicknessPct:8});
   }
   assert.equal(humanSkillEditorFieldsFromDraftV1(author()).presentation.travelOpacityPct,100);
   assert.throws(()=>draftAtOpacity(101),/Opacité du sprite|0.*100/);
