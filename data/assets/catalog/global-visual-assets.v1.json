@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 149,
+    "assets": 150,
     "icons": 57,
-    "sprites": 76,
+    "sprites": 77,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -4615,6 +4615,46 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 45,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fire-bubble-expansion-01",
+      "label": "Bulle de feu expansive",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "fire",
+        "expanding",
+        "sphere",
+        "ground",
+        "aerial",
+        "zone",
+        "animated",
+        "capture",
+        "hd"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fire_bubble_expansion/atlases/sprite_skill_fire_bubble_expansion_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 80,
         "playbackMode": "once"
       },
       "compatibility": {

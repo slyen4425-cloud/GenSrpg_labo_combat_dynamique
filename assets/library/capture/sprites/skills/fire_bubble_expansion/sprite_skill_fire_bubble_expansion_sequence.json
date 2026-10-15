@@ -1,0 +1,65 @@
+{
+  "id": "pack:capture:sprite-fire-bubble-expansion-01",
+  "type": "capture_skill_sprite_sequence",
+  "category": "skill",
+  "element": "fire",
+  "frame_size": [
+    512,
+    512
+  ],
+  "frame_count": 20,
+  "frame_ms": 80,
+  "loop": false,
+  "playback_mode": "once",
+  "frames": [
+    "frames/sprite_skill_fire_bubble_expansion_01.webp",
+    "frames/sprite_skill_fire_bubble_expansion_02.webp",
+    "frames/sprite_skill_fire_bubble_expansion_03.webp",
+    "frames/sprite_skill_fire_bubble_expansion_04.webp",
+    "frames/sprite_skill_fire_bubble_expansion_05.webp",
+    "frames/sprite_skill_fire_bubble_expansion_06.webp",
+    "frames/sprite_skill_fire_bubble_expansion_07.webp",
+    "frames/sprite_skill_fire_bubble_expansion_08.webp",
+    "frames/sprite_skill_fire_bubble_expansion_09.webp",
+    "frames/sprite_skill_fire_bubble_expansion_10.webp",
+    "frames/sprite_skill_fire_bubble_expansion_11.webp",
+    "frames/sprite_skill_fire_bubble_expansion_12.webp",
+    "frames/sprite_skill_fire_bubble_expansion_13.webp",
+    "frames/sprite_skill_fire_bubble_expansion_14.webp",
+    "frames/sprite_skill_fire_bubble_expansion_15.webp",
+    "frames/sprite_skill_fire_bubble_expansion_16.webp",
+    "frames/sprite_skill_fire_bubble_expansion_17.webp",
+    "frames/sprite_skill_fire_bubble_expansion_18.webp",
+    "frames/sprite_skill_fire_bubble_expansion_19.webp",
+    "frames/sprite_skill_fire_bubble_expansion_20.webp"
+  ],
+  "atlas": {
+    "file": "atlases/sprite_skill_fire_bubble_expansion_atlas_01.webp",
+    "format": "sprite-strip",
+    "frameCount": 20,
+    "frameWidth": 384,
+    "frameHeight": 384
+  },
+  "source": {
+    "file": "explosion_de_feu_en_20_images.png",
+    "pixel_size": [
+      1402,
+      1122
+    ],
+    "grid": [
+      5,
+      4
+    ],
+    "sha256": "328b6dc5015054618010c17a69a48df113f3a4965f55d77f5e6e12a60d20b42a",
+    "note": "20 source cells around 280px each, resized to 512px outputs, not native 512px generation. Thin cell gutters removed; 5px alpha feather suppresses cross-tile contamination."
+  },
+  "visual": {
+    "role": "expanding-spherical-fire-wave",
+    "origin": "centered-on-caster",
+    "targets": [
+      "ground",
+      "air"
+    ],
+    "gameplay_collision": "not_defined_by_sprite"
+  }
+}
