@@ -1807,6 +1807,7 @@ function presentationForSkill(fields) {
       anchor: socketId,
       displayScale:
         presentation.travelDisplayScale ?? 1,
+      opacity: skillSpriteOpacityPercentToUnitV1(presentation.travelOpacityPct ?? 100),
       playbackMode:
         presentation.travelPlaybackMode ?? "stretch",
       layerByView: {
@@ -2603,6 +2604,7 @@ export function humanSkillEditorFieldsFromDraftV1(
         travel?.assetId ?? "",
       travelDisplayScale:
         travel?.displayScale ?? 1,
+      travelOpacityPct: (travel?.opacity ?? 1) * 100,
       travelPlaybackMode:
         travel?.playbackMode ?? "stretch",
       travelFrameSpeedMultiplier: travel?.frameSpeedMultiplier ?? 1,
@@ -3520,6 +3522,7 @@ function writeSkillDraftFields(
       "[data-skill-travel-scale]",
       fields.presentation.travelDisplayScale
     ],
+    ["[data-skill-travel-opacity-pct]", fields.presentation.travelOpacityPct],
     [
       "[data-skill-travel-playback]",
       fields.presentation.travelPlaybackMode
@@ -3705,6 +3708,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-beam-start-scale]", 1],
     ["[data-skill-travel-fx]", ""],
     ["[data-skill-travel-scale]", 1],
+    ["[data-skill-travel-opacity-pct]", 100],
     ["[data-skill-travel-playback]", "stretch"],
     ["[data-skill-travel-frame-speed]", 1],
     ["[data-skill-travel-perspective]", 0],
@@ -8915,6 +8919,7 @@ function readSkillFields(root) {
         root,
         "[data-skill-travel-scale]"
       ),
+      travelOpacityPct: numericValue(root, "[data-skill-travel-opacity-pct]"),
       travelPlaybackMode: selectedValue(
         root,
         "[data-skill-travel-playback]"
@@ -9775,6 +9780,7 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-cast-scale]", presentation.castDisplayScale],
     ["[data-skill-travel-fx]", presentation.travelAssetId],
     ["[data-skill-travel-scale]", presentation.travelDisplayScale],
+    ["[data-skill-travel-opacity-pct]", presentation.travelOpacityPct],
     ["[data-skill-travel-playback]", presentation.travelPlaybackMode],
     ["[data-skill-travel-frame-speed]", presentation.travelFrameSpeedMultiplier ?? 1],
     ["[data-skill-travel-perspective]", presentation.travelPerspectiveAmount ?? 0],
