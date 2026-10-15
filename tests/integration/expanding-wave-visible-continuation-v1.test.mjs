@@ -151,7 +151,8 @@ test("real contact deals damage once and the wave keeps visually expanding until
   h.step(0.05);
   assert.equal(h.reported.length,0);
   h.now(300);
-  h.step(0.11);
+  // At 150% arena width, the opponent's opaque edge is crossed at ~12% scale.
+  h.step(0.15);
   assert.equal(h.reported.length,1);
   assert.equal(h.session.snapshot().fighters.opponent.hp,80);
   assert.equal(h.fx.activeCount,1,"sprite must remain mounted after damage");
