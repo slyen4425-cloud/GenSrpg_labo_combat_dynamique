@@ -29,6 +29,12 @@ export const CAPTURE_CREATURE_VISUAL_BINDINGS_V1 =
         "capture/creatures/golem_moussu/golem_moussu.meta.json"
     }),
     Object.freeze({
+      creatureId: "crea-loup",
+      metaId: "loup_volcanique",
+      metaFile:
+        "capture/creatures/loup_volcanique/loup_volcanique.meta.json"
+    }),
+    Object.freeze({
       creatureId: "crea_lumilo",
       metaId: "renard_magique_dore",
       metaFile:
