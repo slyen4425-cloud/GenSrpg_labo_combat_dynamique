@@ -1233,7 +1233,11 @@ function audioSlots(raw) {
       ),
       ...(entry.volume == null
         ? {}
-        : { volume: finiteNumber(entry.volume, "Volume " + role) })
+        : { volume: finiteNumber(entry.volume, "Volume " + role) }),
+      ...(role==="movement"&&entry.mode!=null?{mode:requiredText(entry.mode,"Mode déplacement")}:{}),
+      ...(role==="movement"&&entry.repeatIntervalMs!=null
+        ? {repeatIntervalMs:finiteNumber(entry.repeatIntervalMs,"Intervalle déplacement")}
+        : {})
     };
   }
 
@@ -3919,6 +3923,8 @@ function writeCreatureRecordFields(
         presentation?.audio?.movement
       )
     ],
+    ["[data-creature-audio-movement-mode]",presentation?.audio?.movement?.mode??"once"],
+    ["[data-creature-audio-movement-interval]",presentation?.audio?.movement?.repeatIntervalMs??400],
     [
       "[data-creature-audio-hit]",
       creatureAudioAssetId(
@@ -4100,6 +4106,8 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-dodge-offset-y]", 0],
     ["[data-creature-audio-attack]", ""],
     ["[data-creature-audio-movement]", ""],
+    ["[data-creature-audio-movement-mode]", "once"],
+    ["[data-creature-audio-movement-interval]", 400],
     ["[data-creature-audio-hit]", ""],
     ["[data-creature-audio-ko]", ""],
     ["[data-capture-rate]", 30],
@@ -8726,10 +8734,17 @@ function readCreatureFields(
         root,
         "[data-creature-audio-attack]"
       ),
-      movement: selectedValue(
-        root,
-        "[data-creature-audio-movement]"
-      ),
+      movement:(()=>{
+        const assetId=selectedValue(root,"[data-creature-audio-movement]");
+        if(!assetId)return "";
+        const mode=selectedValue(root,"[data-creature-audio-movement-mode]");
+        if(mode==="once")return assetId;
+        return {
+          assetId,
+          mode,
+          ...(mode==="repeat"?{repeatIntervalMs:numericValue(root,"[data-creature-audio-movement-interval]")}: {})
+        };
+      })(),
       hit: selectedValue(
         root,
         "[data-creature-audio-hit]"

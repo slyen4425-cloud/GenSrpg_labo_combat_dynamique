@@ -349,6 +349,16 @@
           <label>Pas / déplacement (attaque contact)
             <select data-creature-audio-movement data-private-audio data-audio-roles="movement"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
+          <label>Mode du son de déplacement
+            <select data-creature-audio-movement-mode>
+              <option value="once">Une lecture par appui / début de vol</option>
+              <option value="repeat">Répéter — pause entre deux lectures</option>
+              <option value="loop">Boucle continue pendant le vol</option>
+            </select>
+          </label>
+          <label>Pause entre répétitions (ms)
+            <input type="number" data-creature-audio-movement-interval min="100" max="5000" step="50" value="400"/>
+          </label>
           <label>Touché
             <select data-creature-audio-hit data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>

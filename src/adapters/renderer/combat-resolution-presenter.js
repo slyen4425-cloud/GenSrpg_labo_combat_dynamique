@@ -53,6 +53,7 @@ export function createCombatResolutionPresenter({
   const travelAudioByActor = new Map();
   const footfallAudioByActor = new Map();
   const footfallTokenByActor = new Map();
+  const repeatingMovementByActor = new Map();
   const outcomeByActor = new Map();
   const rosterVisualsByActor = new Map();
   const approachVisualsByActor = new Map();
@@ -168,31 +169,61 @@ export function createCombatResolutionPresenter({
   function cancelFootfallAudio(actorSlot = "player") {
     const token = footfallTokenByActor.get(actorSlot);
     footfallTokenByActor.delete(actorSlot);
+    const repeating=repeatingMovementByActor.get(actorSlot);
+    repeatingMovementByActor.delete(actorSlot);
+    if(repeating?.timerId!=null){
+      clearTimer(repeating.timerId);
+      timers.delete(repeating.timerId);
+    }
     const handles = footfallAudioByActor.get(actorSlot);
     footfallAudioByActor.delete(actorSlot);
     for (const handle of handles ?? []) handle.stop?.();
-    return Boolean(token || handles?.size);
+    return Boolean(token || repeating || handles?.size);
   }
 
-  function playFootfallAudio({ actorSlot, targetSlot, token }) {
+  function playFootfallAudio({ actorSlot, targetSlot, token, approachMode }) {
     if (disposed || footfallTokenByActor.get(actorSlot) !== token) return;
-    // Each contact uses the active creature movement sound, not the skill.
-    const handle = audio?.play({
-      type: "movement", actorSlot, targetSlot, loop: false
-    });
-    if (handle?.status !== "running") return;
-    let handles = footfallAudioByActor.get(actorSlot);
-    if (!handles) {
-      handles = new Set();
-      footfallAudioByActor.set(actorSlot, handles);
-    }
-    handles.add(handle);
-    Promise.resolve(handle.finished).finally(() => {
-      handles.delete(handle);
-      if (footfallAudioByActor.get(actorSlot) === handles && handles.size === 0) {
-        footfallAudioByActor.delete(actorSlot);
+    // The creature owns its sound; only aerial approach replaces the
+    // footfall cue by an optional continuous or interval-based wing sound.
+    const sound=audio?.movementForCreature?.(actorSlot)??null;
+    const mode=approachMode==="aerial"&&["repeat","loop"].includes(sound?.mode)
+      ? sound.mode:"once";
+    if(mode!=="once"&&repeatingMovementByActor.has(actorSlot))return;
+    const repeating=mode==="once"?null:{
+      token,timerId:null,intervalMs:sound?.repeatIntervalMs??400
+    };
+    if(repeating)repeatingMovementByActor.set(actorSlot,repeating);
+    function playOnce(){
+      if(disposed||footfallTokenByActor.get(actorSlot)!==token)return;
+      if(repeating&&repeatingMovementByActor.get(actorSlot)!==repeating)return;
+      const handle=audio?.play({
+        type:"movement",actorSlot,targetSlot,loop:mode==="loop"
+      });
+      if(handle?.status!=="running")return;
+      let handles=footfallAudioByActor.get(actorSlot);
+      if(!handles){
+        handles=new Set();
+        footfallAudioByActor.set(actorSlot,handles);
       }
-    }).catch(() => {});
+      handles.add(handle);
+      Promise.resolve(handle.finished).finally(()=>{
+        handles.delete(handle);
+        if(footfallAudioByActor.get(actorSlot)===handles&&handles.size===0){
+          footfallAudioByActor.delete(actorSlot);
+        }
+      }).catch(()=>{});
+      if(mode==="repeat"){
+        Promise.resolve(handle.finished).then(()=>{
+          if(disposed||repeatingMovementByActor.get(actorSlot)!==repeating||
+            footfallTokenByActor.get(actorSlot)!==token)return;
+          repeating.timerId=schedule(()=>{
+            repeating.timerId=null;
+            playOnce();
+          },repeating.intervalMs);
+        }).catch(()=>{});
+      }
+    }
+    playOnce();
   }
 
   function cancelActionPresentation(
@@ -330,7 +361,7 @@ export function createCombatResolutionPresenter({
           travelMs: Math.max(1, Number(action.travelMs) || 0),
           targetSlot,
           onFootfall: footfallToken ? () => playFootfallAudio({
-            actorSlot, targetSlot, token: footfallToken
+            actorSlot, targetSlot, token: footfallToken, approachMode
           }) : null,
           onContact:
             approachMode !== "burrow" &&
@@ -369,6 +400,9 @@ export function createCombatResolutionPresenter({
         .finally(() => {
           if (approachVisualsByActor.get(actorSlot) === approachToken) {
             approachVisualsByActor.delete(actorSlot);
+            if(repeatingMovementByActor.get(actorSlot)?.token===footfallToken){
+              cancelFootfallAudio(actorSlot);
+            }
           }
         });
     } else if (!action.mirrorReturn) {
@@ -456,9 +490,10 @@ export function createCombatResolutionPresenter({
     let finished = Promise.resolve({ status: "presented" });
 
     cancelTravelAudio(actorSlot);
-    // Stop accepting later movement cues at semantic resolution, but let each
-    // already-triggered one-shot finish naturally (including the final step).
-    footfallTokenByActor.delete(actorSlot);
+    // Finish aerial loop/repeats on semantic arrival; old one-shot
+    // footsteps retain their historical natural end.
+    if(repeatingMovementByActor.has(actorSlot))cancelFootfallAudio(actorSlot);
+    else footfallTokenByActor.delete(actorSlot);
 
     const releaseEvent =
       resolution.events?.find(
@@ -654,7 +689,8 @@ export function createCombatResolutionPresenter({
       ...preparationAudioByActor.keys(),
       ...travelAudioByActor.keys(),
       ...footfallAudioByActor.keys(),
-      ...footfallTokenByActor.keys()
+      ...footfallTokenByActor.keys(),
+      ...repeatingMovementByActor.keys()
     ]);
     for (const actorSlot of presentationActors) {
       cancelPreparation(actorSlot);

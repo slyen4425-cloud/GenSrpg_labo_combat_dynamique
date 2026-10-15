@@ -42,7 +42,9 @@ const AUDIO_FIELDS = new Set([
 
 const AUDIO_SLOT_FIELDS = new Set([
   "assetId",
-  "volume"
+  "volume",
+  "mode",
+  "repeatIntervalMs"
 ]);
 
 function objectValue(value, field) {
@@ -198,6 +200,18 @@ function normalizeAudioSlot(raw, field) {
     field
   );
 
+  const movement=field==="audio.movement";
+  if(!movement&&(value.mode!=null||value.repeatIntervalMs!=null)){
+    throw new TypeError(field+" movement options only apply to audio.movement");
+  }
+  const mode=value.mode??"once";
+  if(movement&&!["once","repeat","loop"].includes(mode)){
+    throw new RangeError(field+".mode must be once, repeat or loop");
+  }
+  const interval=value.repeatIntervalMs??400;
+  if(movement&&(typeof interval!=="number"||!Number.isInteger(interval)||interval<100||interval>5000)){
+    throw new RangeError(field+".repeatIntervalMs must be an integer between 100 and 5000");
+  }
   return Object.freeze({
     assetId: stableAssetId(
       value.assetId,
@@ -209,7 +223,9 @@ function normalizeAudioSlot(raw, field) {
         : unitNumber(
             value.volume,
             `${field}.volume`
-          )
+          ),
+    ...(movement&&value.mode!=null?{mode}:{}),
+    ...(movement&&value.repeatIntervalMs!=null?{repeatIntervalMs:interval}:{})
   });
 }
 

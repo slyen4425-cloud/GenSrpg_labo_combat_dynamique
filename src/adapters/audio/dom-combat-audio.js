@@ -164,6 +164,13 @@ export function createDomCombatAudio({
     });
   }
 
+  // Read-only configuration from the very same creature presentation owner.
+  function movementForCreature(actorSlot){
+    if(disposed||!actorSlot)return null;
+    return soundFor(presentationForCreature(actorSlot,{
+      audioType:"movement",sourceView:actorSlot,targetView:null
+    }),"movement",null);
+  }
   function stopAll() {
     for (const record of [...active]) {
       record.stop?.();
@@ -180,6 +187,7 @@ export function createDomCombatAudio({
 
   return Object.freeze({
     play,
+    movementForCreature,
     stopAll,
     dispose,
     get activeCount() {
