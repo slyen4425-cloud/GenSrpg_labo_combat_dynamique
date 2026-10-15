@@ -1,0 +1,103 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_fire_atk_5",
+    "description": "Attaque Feu de puissance",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_fire_atk_5",
+      "name": "Vague incendiaire",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "fire",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 1700,
+      "travelMs": 2500,
+      "recoveryMs": 0,
+      "cooldownMs": 45,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": [
+        "surface",
+        "airborne"
+      ],
+      "dodgeable": true,
+      "hitsIntangible": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 25,
+          "channel": "fire",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-2",
+            "kind": "damage_over_time",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "amount": 8,
+            "channel": "fire",
+            "damageMode": "combat",
+            "tickIntervalMs": 2000
+          }
+        }
+      ]
+    },
+    "presentation": null
+  }
+}
