@@ -18,10 +18,7 @@ test("Exploration Combat public adapter page exists and uses convergence revisio
     "utf8"
   );
 
-  assert.match(
-    html,
-    /exploration-encounter\\.js\\?rev=exploration-native-view-2026-10-15/
-  );
+  assert.ok(html.includes("exploration-encounter.js?rev=exploration-native-view-2026-10-15"));
   assert.match(
     script,
     /combat-2v2-test-ui\.js\?rev=exploration-current-combat-2026-10-15/
@@ -105,15 +102,15 @@ test("Encounter page reuses the authoritative editor Capture presentation and it
   const script = await readFile(new URL("../../examples/dom-demo/exploration-encounter.js", import.meta.url), "utf8");
   const editor = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url), "utf8");
 
-  assert.match(html, /capture-editor-v2\\.css/);
-  assert.match(html, /data-capture-preview-host/);
-  assert.match(html, /data-landscape-required="true"/);
-  assert.doesNotMatch(html, /data-demo-slot=/,
+  assert.ok(html.includes("capture-editor-v2.css"));
+  assert.ok(html.includes("data-capture-preview-host"));
+  assert.ok(html.includes('data-landscape-required="true"'));
+  assert.equal(html.includes("data-demo-slot="), false,
     "Encounter must not duplicate the authoring combat layout");
-  assert.match(script, /fetch\\("\\.\\/capture-editor-v2\\.html"/);
-  assert.match(script, /data-capture-preview-template/);
-  assert.match(script, /template\\.content\\.cloneNode\\(true\\)/);
-  assert.match(script, /onBattleEnd/);
+  assert.ok(script.includes('fetch("./capture-editor-v2.html"'));
+  assert.ok(script.includes("data-capture-preview-template"));
+  assert.ok(script.includes("template.content.cloneNode(true)"));
+  assert.ok(script.includes("onBattleEnd"));
   for (const marker of [
     'data-demo-slot="local-1"',
     'data-demo-slot="opponent-1"',
