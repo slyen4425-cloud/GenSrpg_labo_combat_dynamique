@@ -9,6 +9,7 @@ import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx
 import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createCombatRuntime} from "../../src/core/combat/combat-runtime.js";
+import {projectileClashCandidate} from "../../src/core/combat/projectile-clash.js";
 
 const wave=()=>normalizeSkillDefinition({
  id:"fire-wave",name:"Onde de feu",category:"offensive",form:"projectile",
@@ -216,4 +217,16 @@ test("wave never claims contact with an unselected 2v2 enemy even when visually 
  assert.equal(game.reported.length,1);
  assert.equal(game.reported[0].targetId,"opponent-2");
  game.fx.dispose();
+});
+
+
+test("expanding radial wave never triggers a fictitious ballistic midpoint clash against a true projectile",()=>{
+ const radial={actionType:"skill",actorId:"player",targetId:"opponent",
+  skill:{...wave(),projectileClash:{power:7}},
+  releaseAtMs:0,impactAtMs:1000,travelMs:1000};
+ const direct={actionType:"skill",actorId:"opponent",targetId:"player",
+  skill:{...wave(),projectileTargeting:"direct",expandingWave:undefined,projectileClash:{power:5}},
+  releaseAtMs:0,impactAtMs:1000,travelMs:1000};
+ assert.equal(projectileClashCandidate({leftAction:radial,leftStartedAtClockMs:0,
+  rightAction:direct,rightStartedAtClockMs:0}),null);
 });
