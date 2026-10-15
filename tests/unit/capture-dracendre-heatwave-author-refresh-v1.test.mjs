@@ -57,3 +57,34 @@ test("Heat Wave source has exactly the authored aerial attack, delayed modifier 
  const audio=JSON.parse(read("data/presentation/audio/private-audio-catalog.v1.json"));
  assert.ok(JSON.stringify(audio).includes("gensrpg:sound:sanctuary-367a77dd"));
 });
+
+test("Heat Wave replaces its native draft through the canonical configuredSkills owner and keeps its loadout ID",async()=>{
+ const {applyCaptureTransferBatchToEditorStateV1}=await import("../../src/ui/capture-editor-file-transfer-v1.js");
+ const {capturePortableNativeSkillDraftsV1}=await import("../../src/catalogs/capture-portable-native-skill-catalog-v1.js");
+ const {captureComplexNativeSkillDraftsV1}=await import("../../src/catalogs/capture-complex-native-skill-catalog-v1.js");
+ const {normalizeCaptureProgressionRulesV1}=await import("../../src/contracts/capture-progression-rules-v1.js");
+ const skills=new Map();
+ for(const d of [...capturePortableNativeSkillDraftsV1(),...captureComplexNativeSkillDraftsV1()])skills.set(d.id,d);
+ const old=skills.get("lib_heat_wave");
+ assert.ok(old,"native author ID must exist");
+ const n=skills.size;
+ const progressionRules=normalizeCaptureProgressionRulesV1(JSON.parse(read("data/capture/monster-capture-progression-rules.v1.json")));
+ const input=importCaptureTransferJsonV1(read(sPath).toString("utf8"));
+ const opts={transfers:[input],configuredCreatures:new Map(),configuredSkills:skills,statRegistry:registry,progressionRules,mode:"replace"};
+ const first=applyCaptureTransferBatchToEditorStateV1(opts);
+ assert.deepEqual(first.actions.map(a=>a.action),["replace-skill"]);
+ assert.equal(skills.size,n);
+ assert.notDeepEqual(skills.get("lib_heat_wave"),old);
+ assert.deepEqual(skills.get("lib_heat_wave"),input.value.draft);
+ const second=applyCaptureTransferBatchToEditorStateV1(opts);
+ assert.deepEqual(second.actions.map(a=>a.action),["noop"]);
+ assert.equal(skills.size,n);
+ const roster=importCaptureTransferJsonV1(read(cPath).toString("utf8"),{statRegistry:registry}).value;
+ assert.equal(roster.loadout.slots[0].skillId,"lib_heat_wave");
+ const {createCombatSession}=await import("../../src/core/combat/combat-session.js");
+ const fighter=id=>({id,maxHp:100,initialHp:100,maxEnergy:100,initialEnergy:100,energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
+ const session=createCombatSession({distance:"short",fighters:[fighter("player"),fighter("enemy")]});
+ const attack=session.useSkill({actorId:"player",targetId:"enemy",skill:input.value.draft.definition});
+ assert.equal(attack.ok,true);
+ assert.equal(session.snapshot().fighters.enemy.hp,90);
+});
