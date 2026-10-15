@@ -2572,7 +2572,8 @@ export function createDomSkillFxRenderer({
             for (const other of [...active]) {
               if (!active.has(record)) break;
               if (other === record || other.type !== "projectile" ||
-                  other.expandingWave || !other.projectilePower ||
+                  other.expandingWave || other.visualOnly ||
+                  !other.projectilePower ||
                   other.fromSlot !== targetSlot ||
                   other.targetSlot !== fromSlot ||
                   !other.node?.getBoundingClientRect ||
@@ -3111,7 +3112,10 @@ export function createDomSkillFxRenderer({
     };
   }
 
-  function cancelProjectileFor(fromSlot) {
+  function cancelProjectileFor(fromSlot, {
+    preserveContactedWave = false,
+    skillId = null
+  } = {}) {
     let cancelled = 0;
 
     for (const record of [...active]) {
@@ -3119,6 +3123,30 @@ export function createDomSkillFxRenderer({
         !["projectile", "beam"].includes(record.type) ||
         record.fromSlot !== fromSlot
       ) {
+        continue;
+      }
+
+      // The FIRST real collision already settled damage in Combat Runtime.
+      // An expanding wave may finish its visible growth without reporting
+      // additional contacts or clashes; it is presentation-only from now on.
+      if (
+        preserveContactedWave &&
+        record.expandingWave != null &&
+        record.contactReported === true &&
+        record.skillId === skillId &&
+        record.visualOnly !== true &&
+        record.animation?.finished
+      ) {
+        record.visualOnly = true;
+        if (record.contactFrameId != null) {
+          cancelFrame(record.contactFrameId);
+          record.contactFrameId = null;
+        }
+        record.observedProjectiles?.clear?.();
+        Promise.resolve(record.animation.finished).then(
+          () => cleanup(record),
+          () => cleanup(record)
+        );
         continue;
       }
 

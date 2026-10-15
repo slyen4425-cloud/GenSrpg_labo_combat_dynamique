@@ -511,7 +511,13 @@ export function createCombatResolutionPresenter({
       ["projectile", "beam"].includes(releaseEvent?.form) &&
       resolution.outcome !== "clashed"
     ) {
-      fx?.cancelProjectileFor?.(actorSlot);
+      // On an actual wave contact, let the same sprite shell finish
+      // expanding visually. The hit has already been resolved by Combat
+      // Runtime, so this does not extend or repeat gameplay collisions.
+      fx?.cancelProjectileFor?.(actorSlot, {
+        preserveContactedWave: resolution.outcome === "hit",
+        skillId: outcomeSkillId
+      });
     }
 
     let impactAudioPlayed = false;
