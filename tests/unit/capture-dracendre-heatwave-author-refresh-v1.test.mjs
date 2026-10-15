@@ -82,7 +82,20 @@ test("Heat Wave replaces its native draft through the canonical configuredSkills
  const roster=importCaptureTransferJsonV1(read(cPath).toString("utf8"),{statRegistry:registry}).value;
  assert.equal(roster.loadout.slots[0].skillId,"lib_heat_wave");
  const {createCombatSession}=await import("../../src/core/combat/combat-session.js");
- const fighter=id=>({id,maxHp:100,initialHp:100,maxEnergy:100,initialEnergy:100,energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
+ const speedRule=registry.stats.find(s=>s.id==="speed");
+ assert.ok(speedRule,"real Capture speed rule must exist");
+ const fighter=id=>({
+   id,maxHp:100,initialHp:100,maxEnergy:100,initialEnergy:100,
+   energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0,
+   statValuesById:{speed:15},
+   statEffectRulesById:{speed:{
+     damageChannel:speedRule.damageChannel,
+     resistanceChannel:speedRule.resistanceChannel,
+     damagePctPerPoint:speedRule.damagePctPerPoint,
+     resistancePctPerPoint:speedRule.resistancePctPerPoint,
+     chargeTimeReductionPctPerPoint:speedRule.chargeTimeReductionPctPerPoint
+   }}
+ });
  const session=createCombatSession({distance:"short",fighters:[fighter("player"),fighter("enemy")]});
  const attack=session.useSkill({actorId:"player",targetId:"enemy",skill:input.value.draft.definition});
  assert.equal(attack.ok,true);
