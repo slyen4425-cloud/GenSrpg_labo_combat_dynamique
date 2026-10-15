@@ -34,9 +34,9 @@ const skill=()=>importCaptureTransferJsonV1(read(sPath).toString("utf8"));
 
 test("Dracendre and Brasier exports are exact author bytes and registered once",()=>{
  const cb=read(cPath), sb=read(sPath);
- assert.equal(cb.byteLength,4322);
+ assert.equal(cb.byteLength,4452);
  assert.equal(sb.byteLength,1901);
- assert.equal(sha(cb),"a531d53c9edefd7c8c28ce0f3dc6fdf36a699a834d2573282e161247e519ef0a");
+ assert.equal(sha(cb),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
  assert.equal(sha(sb),"1e63b095a72d07673fc7c584e54f2b411d0188d44f4007ad551b9282c627deea");
  assert.equal(creatureFiles.filter(x=>x===cPath).length,1);
  assert.equal(skillFiles.filter(x=>x===sPath).length,1);
@@ -68,6 +68,7 @@ test("Dracendre preserves stats, two elements, resistances, Braisombre assets, a
  assert.deepEqual(c.draft.presentation.viewOverrides.player,{displayScale:1.6,position:{x:0,y:0}});
  assert.deepEqual(c.draft.presentation.viewOverrides.opponent,{displayScale:0.9,position:{x:0,y:30}});
  assert.deepEqual(c.draft.presentation.sockets,[]);
+ assert.deepEqual(c.draft.presentation.audio.movement,{assetId:"gensrpg:sound:sanctuary-367a77dd",volume:1});
  assert.equal(c.draft.presentation.visual.front.assetId,"pack:capture:creature-braisombre-opponent-01");
  assert.equal(c.draft.presentation.visual.back.assetId,"pack:capture:creature-braisombre-player-01");
  assert.equal(c.draft.presentation.visual.icon.assetId,"pack:capture:creature-braisombre-icon-01");
@@ -75,7 +76,7 @@ test("Dracendre preserves stats, two elements, resistances, Braisombre assets, a
  assert.equal(c.draft.capture.evolution.level,28);
  assert.equal(c.draft.skillIds.length,20);
  assert.ok(c.draft.skillIds.includes("cap_fire_atk_7"));
- assert.deepEqual(c.loadout.slots.map(s=>s.skillId),["lib_heat_wave","fireball","cap_fire_special_2","cap_fire_atk_5",null]);
+ assert.deepEqual(c.loadout.slots.map(s=>s.skillId),["lib_heat_wave","fireball","cap_fire_special_2","cap_fire_atk_5","cap_fire_atk_7"]);
 });
 
 test("Brasier primordial conserves ultimate, its authored required level and its precise 10 fire damage",()=>{
@@ -144,5 +145,5 @@ test("the existing canonical Transfer batch installs both author models without 
   configuredSkills,configuredCreatures,statRegistry:registry,progressionRules,mode:"replace"});
  assert.deepEqual(next.actions.map(x=>x.action),["noop","noop"]);
  assert.equal(configuredCreatures.size,creatureCountBefore);
- assert.deepEqual(configuredCreatures.get("crea_dracendre").loadout.slots.map(x=>x.skillId),["lib_heat_wave","fireball","cap_fire_special_2","cap_fire_atk_5",null]);
+ assert.deepEqual(configuredCreatures.get("crea_dracendre").loadout.slots.map(x=>x.skillId),["lib_heat_wave","fireball","cap_fire_special_2","cap_fire_atk_5","cap_fire_atk_7"]);
 });
