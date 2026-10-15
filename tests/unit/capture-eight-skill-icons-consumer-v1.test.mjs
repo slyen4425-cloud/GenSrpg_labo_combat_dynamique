@@ -8,7 +8,7 @@ const icons=[{"id":"pack:capture:icon-skill-croc-electrique-01","label":"Croc é
 const catalog={assets:icons.map(x=>({id:x.id,label:x.label,assetType:"icon",mediaType:"image",category:"skill",resource:{file:x.path,mime:"image/webp"}}))};
 test("Eight real icon identifiers have unique production URLs with new cache revision",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-13-v31-capture-eight-skill-icons");
+ assert.match(GLOBAL_VISUAL_LIBRARY.revision,/^20\d{2}-\d{2}-\d{2}-v\d+-/);
  assert.equal(new Set(icons.map(x=>x.id)).size,8);
  const resolve=createGlobalPresentationAssetResolverV1({assetCatalog:catalog,assetUrlForFile:globalVisualAssetUrl});
  for(const x of icons){

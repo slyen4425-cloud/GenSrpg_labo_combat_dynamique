@@ -35,3 +35,6 @@ L'auteur ne trouve pas la sphère de feu dans l'éditeur du laboratoire Combat.
   `gh-pages` est resté sur la base ; vérification Pages et test Android.
 
 **Statut :** correctif soumis aux vérifications ; aucune validation smartphone annoncée.
+
+### Ajustement de sentinelle historique (CI)
+La première CI du lot a exécuté 1827 tests : 1826 réussites, seul le test des **huit icônes anciennes** exigeait une égalité stricte avec la révision de cache du 13 octobre. On conserve les contrôles des huit IDs et des URL réelles, mais leur test accepte une révision de catalogue ultérieure, au lieu d'interdire toute nouvelle intégration d'asset.
