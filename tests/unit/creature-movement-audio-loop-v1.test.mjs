@@ -34,6 +34,7 @@ test("same audio owner drives repeated aerial wing beats after each sample compl
   movementForCreature(slot){return {assetId:"sound:"+slot,mode:"repeat",repeatIntervalMs:300}},
   play(e){
    events.push(e);
+   if(e.type!=="movement")return {status:"ignored",finished:Promise.resolve({status:"ignored"})};
    let settle;
    const finished=new Promise(res=>{settle=res});
    const h={status:"running",finished,stop(){settle({status:"stopped"});return true},end(){settle({status:"finished"})}};
@@ -72,7 +73,12 @@ test("aerial loop stops on outcome, terrestrial steps stay separate and projecti
  const events=[],handles=[],approaches=[];
  const audio={
   movementForCreature(){return {assetId:"sound:wings",mode:"loop",repeatIntervalMs:200}},
-  play(e){events.push(e);const handle={status:"running",loop:e.loop,stop(){handle.stopped=true},finished:new Promise(()=>{})};handles.push(handle);return handle}
+  play(e){
+    events.push(e);
+    if(e.type!=="movement")return {status:"ignored",finished:Promise.resolve({status:"ignored"})};
+    const handle={status:"running",loop:e.loop,stop(){handle.stopped=true},finished:new Promise(()=>{})};
+    handles.push(handle);return handle;
+  }
  };
  const presenter=createCombatResolutionPresenter({
   audio,
