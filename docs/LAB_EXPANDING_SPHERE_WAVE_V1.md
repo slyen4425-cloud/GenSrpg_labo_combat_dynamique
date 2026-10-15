@@ -22,7 +22,7 @@ Le Dragon doit pouvoir utiliser une bulle/auréole de feu qui **s'agrandit réel
 3. **Le même sprite/anneau** animant le grossissement sert de géométrie : rayon calculé à partir du `getBoundingClientRect` du shell réellement transformé.
 4. Le capteur central `dom-visible-model-contact` compare l'anneau balayé entre deux frames (pas de tunneling) avec les échantillons de bord **opaque** de la vraie créature, y compris ses transformations et ses déplacements ; cap de calcul pour la fluidité mobile. Les images transparentes ne deviennent pas des cibles pleines.
 5. Un contact confirmé déclenche `CombatRuntime.reportActionContact`. Une seule résolution canonique (dégâts, résistances, protections, présence et esquive existantes), puis le projectile est annulé par le Presenter. À échéance sans contact, résultat **`evaded`** sans dégâts ; aucun fallback automatique sur le timer.
-6. Les projectiles ordinaires directs, ciel, beams, contact et collision des projectiles restent sur leur code actuel. La sphère n'est pas une arme balistique reflétable par un miroir de projectile ordinaire.
+6. Les projectiles ordinaires directs, ciel, beams, contact et collision des projectiles restent sur leur code actuel. La sphère n'est pas une arme balistique reflétable par un miroir de projectile ordinaire. Le calcul canonique de clash (intersection à mi-parcours) ignore également le mode `expanding_wave`, même si un vieux champ de puissance existe dans l'export.
 
 ## Portée V1 et limites honnêtes
 
