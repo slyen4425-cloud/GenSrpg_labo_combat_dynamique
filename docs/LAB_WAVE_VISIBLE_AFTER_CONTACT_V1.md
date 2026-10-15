@@ -21,3 +21,10 @@ Cette V1 reste **mono-cible sélectionnée**, et ne prétend pas ajouter des dom
 ## Validation
 
 Le test `tests/integration/expanding-wave-visible-continuation-v1.test.mjs` vérifie la taille de shell 150 % avec **vrai sprite présent**, la croissance WAAPI d'un bout à l'autre, le chemin réel Combat Runtime → collision → dégâts → Presenter → animation restante, une seule résolution, disparition à la fin de l'animation, annulations de sécurité, et absence d'extension pour les projectiles classiques. Sentinelles existantes expanding-wave, collision d'images opaques, clash et navigateur 1v1/2v2 à conserver. CI 3 jobs sur SHA exact ; GREEN et publication seulement sur preuve, test esthétique réel sur Android séparé.
+
+## Résultat de validation technique
+
+- Commit code + tests `af73157e251e5794f261ed68682c2efacc49f0af`.
+- CI complète `38796850769` : **Foundation SUCCESS (1831/1831 tests Node)**, **Firestorm Chromium SUCCESS**, **Creature Library Chromium SUCCESS**, même SHA.
+- Un premier run `38796680475` avait signalé une fixture trop courte pour franchir la distance à `endRadiusPct:150` : le test de balayage a été corrigé pour traverser réellement la cible à environ 15 % de la taille finale, sans modifier la collision du moteur. Tous les jobs réussissent au commit ci-dessus.
+- Les checks sur le commit de documentation final, le checkpoint, la preview et la publication sont distincts ; **aucune publication ni validation Android n'est anticipée dans cette preuve**.
