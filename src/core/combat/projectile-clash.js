@@ -22,6 +22,12 @@ function projectilePower(action) {
     return 0;
   }
 
+  // An expanding ring is not a projectile travelling between opposing
+  // points. The old ballistic midpoint clash would be a fictitious impact.
+  if (action.skill?.projectileTargeting === "expanding_wave") {
+    return 0;
+  }
+
   const power = Number(
     action.skill?.projectileClash?.power ??
       0
