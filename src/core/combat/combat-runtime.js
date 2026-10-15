@@ -6,6 +6,7 @@ import { hasActiveStatusKindV1 } from "./status-effect-runtime-v1.js";
 import { normalizePersistentZoneSpatialV1 } from "../../contracts/persistent-zone-spatial-v1.js";
 import {
   projectileClashCandidate,
+  projectileClashAtVisualContactV1,
   resolveProjectileClash
 } from "./projectile-clash.js";
 
@@ -834,7 +835,8 @@ export function createCombatRuntime({
   function processProjectileClash({
     leftRecord,
     rightRecord,
-    candidate
+    candidate,
+    visualContact = false
   }) {
     if (
       !recordIsActive(leftRecord) ||
@@ -845,12 +847,20 @@ export function createCombatRuntime({
       return;
     }
 
-    const currentCandidate = projectileClashCandidate({
-      leftAction: leftRecord.action,
-      leftStartedAtClockMs: leftRecord.startedAtClockMs,
-      rightAction: rightRecord.action,
-      rightStartedAtClockMs: rightRecord.startedAtClockMs
-    });
+    const currentCandidate = visualContact
+      ? projectileClashAtVisualContactV1({
+          leftAction: leftRecord.action,
+          rightAction: rightRecord.action,
+          atClockMs: candidate.atClockMs,
+          leftProgress: candidate.leftProgress,
+          rightProgress: candidate.rightProgress
+        })
+      : projectileClashCandidate({
+          leftAction: leftRecord.action,
+          leftStartedAtClockMs: leftRecord.startedAtClockMs,
+          rightAction: rightRecord.action,
+          rightStartedAtClockMs: rightRecord.startedAtClockMs
+        });
 
     if (
       !currentCandidate ||
@@ -911,6 +921,7 @@ export function createCombatRuntime({
     }
 
     emitStateIfChanged({ force: true });
+    return currentCandidate;
   }
 
   function settleDue(atNowMs) {
@@ -1525,6 +1536,62 @@ export function createCombatRuntime({
     );
   }
 
+  // Geometry is supplied by DomSkillFxRenderer only when two opposing
+  // visible projectile shells have actually intersected. No midpoint guess.
+  // The existing CombatRuntime owns every cancellation, effect and outcome.
+  function reportProjectileClashContact({
+    waveActorId,
+    waveSkillId = null,
+    projectileActorId,
+    projectileSkillId = null
+  }) {
+    if (disposed) return Object.freeze({ok:false,outcome:"disposed"});
+    const current = now();
+    advanceSessionToClock(current);
+    settleDue(current);
+    const waveRecord = activeByActor.get(waveActorId);
+    const projectileRecord = activeByActor.get(projectileActorId);
+    if (!waveRecord || !projectileRecord ||
+        waveRecord === projectileRecord ||
+        waveRecord.resolved || projectileRecord.resolved ||
+        !waveRecord.released || !projectileRecord.released) {
+      return Object.freeze({ok:false,outcome:"no_active_pair"});
+    }
+    if (waveSkillId != null && String(waveRecord.action.skill?.id) !== String(waveSkillId) ||
+        projectileSkillId != null && String(projectileRecord.action.skill?.id) !== String(projectileSkillId)) {
+      return Object.freeze({ok:false,outcome:"skill_mismatch"});
+    }
+    if (current > absoluteResolutionAt(waveRecord) ||
+        current > absoluteResolutionAt(projectileRecord)) {
+      return Object.freeze({ok:false,outcome:"travel_finished"});
+    }
+    const progress = record => {
+      const duration = Math.max(1,Number(record.action.travelMs)||1);
+      return Math.max(0,Math.min(1,(
+        current-(record.startedAtClockMs+record.action.releaseAtMs)
+      )/duration));
+    };
+    const candidate = projectileClashAtVisualContactV1({
+      leftAction: waveRecord.action,
+      rightAction: projectileRecord.action,
+      atClockMs: current,
+      leftProgress: progress(waveRecord),
+      rightProgress: progress(projectileRecord)
+    });
+    if (!candidate) return Object.freeze({ok:false,outcome:"incompatible_clash"});
+    const settled = processProjectileClash({
+      leftRecord: waveRecord,
+      rightRecord: projectileRecord,
+      candidate,
+      visualContact: true
+    });
+    return Object.freeze({
+      ok: Boolean(settled),
+      outcome: settled?.outcome ?? "no_active_pair",
+      ...(settled ? {candidate: settled} : {})
+    });
+  }
+
   function reportActionContact({
     actorId,
     targetId,
@@ -1700,6 +1767,7 @@ export function createCombatRuntime({
     interruptActive,
     applyResolutionInterrupt,
     reportActionContact,
+    reportProjectileClashContact,
     cancelActionsForActor,
     cancelActive,
     dispose,

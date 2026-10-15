@@ -1,4 +1,4 @@
-import { sweptPointHitsOpaqueMask, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1 } from "./dom-visible-model-contact.js";
+import { sweptPointHitsOpaqueMask, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js";
 
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
@@ -357,6 +357,7 @@ export function createDomSkillFxRenderer({
   requestFrame = defaultRequestFrame,
   cancelFrame = defaultCancelFrame,
   onProjectileContact = null,
+  onProjectileClashContact = null,
   targetCollisionModelFor = null,
   playCameraFx = null
 }) {
@@ -391,6 +392,10 @@ export function createDomSkillFxRenderer({
     throw new TypeError(
       "onProjectileContact must be a function when supplied"
     );
+  }
+  if (onProjectileClashContact !== null &&
+      typeof onProjectileClashContact !== "function") {
+    throw new TypeError("onProjectileClashContact must be a function");
   }
   if (
     onProjectileContact !== null &&
@@ -1976,6 +1981,7 @@ export function createDomSkillFxRenderer({
     progress = null,
     amount = null,
     expandingWave = null,
+    projectilePower = 0,
     durationMs,
     delayMs = 0
   }) {
@@ -2520,7 +2526,11 @@ export function createDomSkillFxRenderer({
         skillId, fromSlot, targetSlot,
         contactFrameId: null, contactReported: false,
         previousRadiusPx: startRadiusPx,
-        previousTargetFrame: null
+        previousTargetFrame: null,
+        expandingWave: wave,
+        projectilePower: Math.max(0,Number(projectilePower)||0),
+        observedProjectiles: new Map(),
+        clashedProjectiles: new Set()
       };
       active.add(record);
       const duration = Math.max(1, Number(durationMs) || 1);
@@ -2538,6 +2548,9 @@ export function createDomSkillFxRenderer({
         ? targetCollisionModelFor(targetSlot) : null;
       if (collisionModel && typeof collisionModel.snapshot === "function") {
         record.previousTargetFrame = collisionModel.snapshot();
+      }
+      if ((collisionModel && typeof collisionModel.snapshot === "function") ||
+          onProjectileClashContact) {
         const center = Object.freeze({
           x: arenaRect.left + position.x,
           y: arenaRect.top + position.y
@@ -2550,16 +2563,52 @@ export function createDomSkillFxRenderer({
             record.previousRadiusPx,
             Math.min(Number(rect.width), Number(rect.height)) / 2
           );
-          const targetFrame = collisionModel.snapshot();
           const thicknessPx = thicknessEndPx * radiusPx / endRadiusPx;
-          const hit = targetFrame && sweptExpandingWaveHitsOpaqueMaskV1({
-            center,
-            previousRadiusPx: record.previousRadiusPx,
-            radiusPx,
-            thicknessPx,
-            previousFrame: record.previousTargetFrame,
-            frame: targetFrame
-          });
+
+          // This is the same wave shell used for monster contact, but a
+          // projectile's point follows its OWN live visual trajectory.
+          // Only a real crossed ring may request a native power comparison.
+          if (onProjectileClashContact && record.projectilePower > 0) {
+            for (const other of [...active]) {
+              if (!active.has(record)) break;
+              if (other === record || other.type !== "projectile" ||
+                  other.expandingWave || !other.projectilePower ||
+                  other.fromSlot !== targetSlot ||
+                  other.targetSlot !== fromSlot ||
+                  !other.node?.getBoundingClientRect ||
+                  record.clashedProjectiles.has(other)) continue;
+              const point = rectCenter(other.node.getBoundingClientRect());
+              const previousPoint = record.observedProjectiles.get(other) ?? point;
+              record.observedProjectiles.set(other,point);
+              if (!sweptExpandingWaveMeetsProjectileV1({
+                center,
+                previousRadiusPx: record.previousRadiusPx,
+                radiusPx,
+                thicknessPx,
+                previousPoint,
+                point
+              })) continue;
+              const collision = onProjectileClashContact(Object.freeze({
+                waveActorId: fromSlot,
+                waveSkillId: skillId,
+                projectileActorId: other.fromSlot,
+                projectileSkillId: other.skillId,
+                contactPoint: point
+              }));
+              if (collision?.ok) record.clashedProjectiles.add(other);
+            }
+          }
+          if (!active.has(record)) return;
+          const targetFrame = collisionModel?.snapshot?.() ?? null;
+          const hit = targetFrame && onProjectileContact &&
+            sweptExpandingWaveHitsOpaqueMaskV1({
+              center,
+              previousRadiusPx: record.previousRadiusPx,
+              radiusPx,
+              thicknessPx,
+              previousFrame: record.previousTargetFrame,
+              frame: targetFrame
+            });
           record.previousRadiusPx = radiusPx;
           record.previousTargetFrame = targetFrame;
           if (hit) {
@@ -2943,7 +2992,8 @@ export function createDomSkillFxRenderer({
       fromSlot,
       targetSlot,
       contactFrameId: null,
-      contactReported: false
+      contactReported: false,
+      projectilePower: Math.max(0,Number(projectilePower)||0)
     };
     active.add(record);
 

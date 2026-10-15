@@ -1044,3 +1044,52 @@ export function sweptExpandingWaveHitsOpaqueMaskV1({
   }
   return false;
 }
+
+
+/**
+ * One real, moving projectile point crosses a growing spherical wave shell.
+ * The quadratic solves |P0 + t(P1-P0) - C| = R0 + t(R1-R0)
+ * for the SAME t in [0,1]; a purely spatial midpoint is not a hit.
+ * The visible ring's authored thickness also counts as a contact at a
+ * snapshot, but cannot generate phantom contacts when lanes do not meet.
+ */
+export function sweptExpandingWaveMeetsProjectileV1({
+  center,
+  previousRadiusPx,
+  radiusPx,
+  thicknessPx,
+  previousPoint,
+  point
+}) {
+  if (!validPoint(center) || !validPoint(previousPoint) || !validPoint(point)) {
+    return false;
+  }
+  const r0 = Number(previousRadiusPx);
+  const r1 = Number(radiusPx);
+  const thickness = Number(thicknessPx);
+  if (![r0,r1,thickness].every(Number.isFinite) ||
+      r0 < 0 || r1 < r0 || thickness < 0) return false;
+  const x0 = Number(previousPoint.x) - Number(center.x);
+  const y0 = Number(previousPoint.y) - Number(center.y);
+  const vx = Number(point.x) - Number(previousPoint.x);
+  const vy = Number(point.y) - Number(previousPoint.y);
+  const dr = r1-r0;
+  const distance0 = Math.hypot(x0,y0);
+  const distance1 = Math.hypot(x0+vx,y0+vy);
+  if ((distance0 >= Math.max(0,r0-thickness) && distance0 <= r0) ||
+      (distance1 >= Math.max(0,r1-thickness) && distance1 <= r1)) return true;
+  const a = vx*vx+vy*vy-dr*dr;
+  const b = 2*(x0*vx+y0*vy-r0*dr);
+  const c = x0*x0+y0*y0-r0*r0;
+  const roots = [];
+  if (Math.abs(a) < 1e-8) {
+    if (Math.abs(b) > 1e-8) roots.push(-c/b);
+  } else {
+    const discriminant = b*b-4*a*c;
+    if (discriminant >= 0) {
+      const root = Math.sqrt(discriminant);
+      roots.push((-b-root)/(2*a),(-b+root)/(2*a));
+    }
+  }
+  return roots.some(t => t >= 0 && t <= 1 && r0+t*dr >= 0);
+}

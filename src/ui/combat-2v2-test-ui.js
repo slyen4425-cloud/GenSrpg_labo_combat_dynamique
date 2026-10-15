@@ -823,6 +823,9 @@ export async function mountCoop2v2Test({
     onProjectileContact(contact) {
       runtime?.reportActionContact(contact);
     },
+    onProjectileClashContact(contact) {
+      return runtime?.reportProjectileClashContact(contact) ?? null;
+    },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
     },

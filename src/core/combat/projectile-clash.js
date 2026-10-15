@@ -184,6 +184,49 @@ export function projectileClashCandidate({
   });
 }
 
+
+/**
+ * A visual wave/projectile intersection is observed by the existing
+ * renderer. Runtime validates the actors/timing; this pure contract only
+ * compares the native authored power, never applies damage itself.
+ * Ordinary ballistic clashes continue through projectileClashCandidate().
+ */
+export function projectileClashAtVisualContactV1({
+  leftAction,
+  rightAction,
+  atClockMs,
+  leftProgress = 0,
+  rightProgress = 0
+}) {
+  const isWave = action =>
+    action?.skill?.form === "projectile" &&
+    action?.skill?.projectileTargeting === "expanding_wave";
+  const isBallistic = action =>
+    action?.skill?.form === "projectile" &&
+    action?.skill?.projectileTargeting !== "expanding_wave";
+  if (!((isWave(leftAction) && isBallistic(rightAction)) ||
+        (isWave(rightAction) && isBallistic(leftAction)))) return null;
+  if (leftAction.actorId !== rightAction.targetId ||
+      leftAction.targetId !== rightAction.actorId) return null;
+  const power = action => {
+    const n = Number(action.skill?.projectileClash?.power ?? 0);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+  const leftPower = power(leftAction);
+  const rightPower = power(rightAction);
+  const clock = Number(atClockMs);
+  if (leftPower <= 0 || rightPower <= 0 ||
+      !Number.isFinite(clock) || clock < 0) return null;
+  return Object.freeze({
+    atClockMs: clock,
+    leftPower,
+    rightPower,
+    outcome: clashOutcome(leftPower,rightPower),
+    leftProgress: Math.max(0,Math.min(1,Number(leftProgress)||0)),
+    rightProgress: Math.max(0,Math.min(1,Number(rightProgress)||0))
+  });
+}
+
 function cancelledResolution({
   state,
   action,

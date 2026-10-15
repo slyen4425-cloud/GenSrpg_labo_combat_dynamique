@@ -416,6 +416,9 @@ export async function mountCombatTest({
     onProjectileContact(contact) {
       runtime?.reportActionContact(contact);
     },
+    onProjectileClashContact(contact) {
+      return runtime?.reportProjectileClashContact(contact) ?? null;
+    },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
     },
