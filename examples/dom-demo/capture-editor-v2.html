@@ -1212,9 +1212,6 @@
           <label>Scale projectile
             <input type="number" min="0.25" step="0.05" value="1.90" data-skill-travel-scale>
           </label>
-          <label>Opacité du projectile / de l’onde (%) — 100 = opaque, 0 = invisible
-            <input type="number" min="0" max="100" step="5" value="100" data-skill-travel-opacity-pct>
-          </label>
           <label>Animation du projectile
             <select data-skill-travel-playback>
               <option value="stretch" selected>Adapter à la durée du trajet</option>
@@ -1270,6 +1267,9 @@
               </label>
               <label>Épaisseur de l'anneau (% largeur de l'arène)
                 <input type="number" min="0.5" max="150" step="0.5" value="6" data-skill-wave-thickness>
+              </label>
+              <label>Opacité de l’onde (%) — 100 = opaque, 0 = invisible
+                <input type="number" min="0" max="100" step="5" value="100" data-skill-travel-opacity-pct>
               </label>
               <p class="note">Choisis « Onde sphérique expansive ». Le sprite « Projectile / trajet » s'agrandit du rayon initial au final pendant « Vers la cible (ms) ». La collision suit le bord de l'anneau au lieu du centre d'un projectile. Pour toucher le sol et les créatures en vol, active les deux présences dans les réglages de cible. Version initiale : collision avec la cible sélectionnée, pas encore de dégâts multi-cibles 2v2.</p>
             </fieldset>
