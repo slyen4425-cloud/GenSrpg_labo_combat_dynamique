@@ -113,3 +113,26 @@ test("Encounter page owns all visual model/shadow slots required by modern rende
   assert.match(html, /data-combat-energy-orbs="local-1"/);
   assert.match(html, /data-combat-team-rosters/);
 });
+
+
+test("Exploration Encounter uses the real Capture Editor landscape HUD stylesheet and 16:9 shell", async () => {
+  const html = await readFile(new URL("../../examples/dom-demo/exploration-encounter.html", import.meta.url), "utf8");
+  const editorHtml = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url), "utf8");
+  const css = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.css", import.meta.url), "utf8");
+
+  assert.match(editorHtml, /href="\.\/capture-editor-v2\.css"/);
+  assert.match(html, /href="\.\/capture-editor-v2\.css"/);
+  assert.match(html, /class="capture-preview-shell" data-landscape-required="true"/);
+  assert.match(html, /class="capture-preview-host"/);
+  assert.match(html, /data-combat-active-count="1"/);
+  assert.match(css, /aspect-ratio:\\s*16\\s*\\/\\s*9/);
+  assert.match(css, /\.capture-preview-shell\\[data-landscape-required="true"\\]/);
+
+  // The 1v1 opponent reserves must be a direct arena child; when nested
+  // inside the command dock they rendered as an oversized, always-visible row.
+  assert.match(html, /<details class="combat-test-enemy-reserves" data-combat-enemy-reserves hidden>/);
+  const enemyBench = html.indexOf('class="combat-test-enemy-reserves"');
+  const commandDock = html.indexOf('class="coop-command-stack"');
+  assert.ok(enemyBench > 0 && enemyBench < commandDock);
+  assert.match(html, /\.bridge-banner\\[data-state="ready"\\]\\s*\\{\\s*display:\\s*none;/);
+});
