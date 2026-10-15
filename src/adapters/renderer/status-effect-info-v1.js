@@ -214,6 +214,15 @@ function semanticStatModifierLines({
     );
   }
 
+  if (effects.outgoingDamagePct !== 0) {
+    lines.push(
+      variationLine(
+        "Dégâts infligés (tous types)",
+        effects.outgoingDamagePct
+      )
+    );
+  }
+
   if (effects.damageReductionPct !== 0) {
     lines.push(
       variationLine(
@@ -237,6 +246,18 @@ function effectLinesFor(
   elapsedMs
 ) {
   switch (definition.kind) {
+    case "outgoing_damage_modifier": {
+      const modifierPct =
+        finiteNumber(definition.modifierPct) *
+        Math.max(1, finiteNumber(instance.stacks, 1));
+      return Object.freeze([
+        variationLine(
+          "Dégâts infligés (tous types)",
+          modifierPct
+        ) ?? "Dégâts infligés (tous types) inchangés"
+      ]);
+    }
+
     case "approach_time_modifier":
       return Object.freeze([
         variationLine("Temps de trajet de la créature", definition.modifierPct * instance.stacks,
@@ -481,7 +502,9 @@ export function projectStatusEffectInfoV1({
   return Object.freeze({
     statusId,
     statusName:
-      definition.kind === "energy_regen_modifier"
+      definition.kind === "outgoing_damage_modifier"
+        ? "Dégâts infligés"
+        : definition.kind === "energy_regen_modifier"
         ? "Régénération d’énergie"
         : definition.kind === "skill_cooldown_rate_modifier"
           ? "Recharge des compétences"

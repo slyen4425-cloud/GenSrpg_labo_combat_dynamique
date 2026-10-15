@@ -99,7 +99,11 @@
       "version": 3,
       "subjectType": "skill",
       "subjectId": "lib_heat_wave",
-      "visual": {},
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-fire-breath-01"
+        }
+      },
       "audio": {},
       "statusVisuals": {
         "status-1": {

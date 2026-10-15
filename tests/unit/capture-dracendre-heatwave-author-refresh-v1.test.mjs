@@ -14,9 +14,9 @@ const registry=normalizeCaptureStatRegistryV1(JSON.parse(read("data/capture/mons
 test("Dracendre and Heat Wave authored exports replace exactly one existing owner",()=>{
  const cb=read(cPath),sb=read(sPath);
  assert.equal(cb.length,4452);
- assert.equal(sb.length,2936);
+ assert.equal(sb.length,3025);
  assert.equal(sha(cb),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
- assert.equal(sha(sb),"e3bbd45ef5763f35727be806123008be034ef303322d76d85e017eeaff05ce12");
+ assert.equal(sha(sb),"322ff8b9ef8cf05b3f9c8bbd2d5fb4bea45bed24024280c24105ae3b643cb5c2");
  assert.equal(creatureFiles.filter(x=>x===cPath).length,1);
  assert.equal(skillFiles.filter(x=>x===sPath).length,1);
  assert.equal(new Set(creatureFiles).size,creatureFiles.length);

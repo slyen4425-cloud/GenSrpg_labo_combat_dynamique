@@ -1,0 +1,158 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_fire_special_2",
+    "description": "Technique Feu utilitaire.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_fire_special_2",
+      "name": "Surchauffe",
+      "category": "buff_debuff",
+      "form": "self",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "fire",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 700,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 60000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally",
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 20000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": 50
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_fire_special_2",
+      "version": 8,
+      "subjectType": "skill",
+      "subjectId": "cap_fire_special_2",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-flame-storm-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "status-1": {
+          "mode": "tint",
+          "tintBlinkEnabled": true,
+          "tintBlinkPeriodMs": 1200,
+          "tintColor": "#ff8605",
+          "tintOpacity": 1,
+          "sprite": null
+        }
+      },
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.85,
+          "radiusPx": 32
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 9,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 7,
+          "lengthPx": 56,
+          "sizePx": 7,
+          "opacity": 0.8,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 12,
+          "spreadPx": 72,
+          "sizePx": 9,
+          "durationMs": 380,
+          "opacity": 0.9
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 6,
+          "spreadPx": 58,
+          "sizePx": 36,
+          "risePx": 56,
+          "durationMs": 1250,
+          "opacity": 0.64
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 7,
+          "spreadPx": 48,
+          "sizePx": 7,
+          "risePx": 34,
+          "durationMs": 580,
+          "opacity": 0.8
+        }
+      }
+    }
+  }
+}
