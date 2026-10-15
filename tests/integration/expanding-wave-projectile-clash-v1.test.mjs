@@ -5,6 +5,7 @@ import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js"
 import {sweptExpandingWaveMeetsProjectileV1} from "../../src/adapters/renderer/dom-visible-model-contact.js";
 import {projectileClashCandidate,projectileClashAtVisualContactV1} from "../../src/core/combat/projectile-clash.js";
 import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
+import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createCombatRuntime} from "../../src/core/combat/combat-runtime.js";
 
@@ -129,4 +130,83 @@ test("actual 1v1/2v2 client uses the same visual sensor and canonical Runtime ca
   const ui=readFileSync(new URL("../../src/ui/"+client,import.meta.url),"utf8");
   assert.match(ui,/reportProjectileClashContact\(contact\)/);
  }
+});
+
+test("actual expanding-wave DOM shell reports spatial projectile collision to CombatRuntime exactly once",()=>{
+ const game=harness(7,4);
+ const rect=(left,top,width,height)=>({left,top,width,height});
+ let frames=[];
+ const doc={createElement(){
+  return {
+   className:"",dataset:{},style:{},children:[],
+   append(...children){this.children.push(...children);},
+   remove(){this.removed=true;},
+   getBoundingClientRect(){
+    const diameter=Number.parseFloat(this.style.width)||30;
+    const scale=this.currentScale ?? 1;
+    const width=diameter*scale;
+    const height=(Number.parseFloat(this.style.height)||30)*scale;
+    const cx=this.currentX ?? Number.parseFloat(this.style.left) ?? 0;
+    const cy=Number.parseFloat(this.style.top)||0;
+    return rect(cx-width/2,cy-height/2,width,height);
+   }
+  };
+ }};
+ const arena={
+  ownerDocument:doc,nodes:[],
+  append(node){this.nodes.push(node);},
+  getBoundingClientRect(){return rect(0,0,1000,500);}
+ };
+ const anchor=(left,top)=>({getBoundingClientRect(){return rect(left,top,20,20);}});
+ const anchors={player:anchor(90,190),opponent:anchor(290,190)};
+ const calls=[];
+ const fx=createDomSkillFxRenderer({
+  arena,anchors,targetAnchors:anchors,
+  presentationForSkill:()=>null,
+  targetCollisionModelFor:()=>({snapshot:()=>null}),
+  onProjectileContact:()=>null,
+  onProjectileClashContact:contact=>{
+   const result=game.runtime.reportProjectileClashContact(contact);
+   calls.push(result);
+   return result;
+  },
+  requestFrame:callback=>{frames.push(callback);return frames.length;},
+  cancelFrame:()=>{},
+  animate:()=>({finished:new Promise(()=>{}),cancel(){}})
+ });
+ const waveFx=planSkillReleaseFx({
+  action:{skill:wave(7),travelMs:2000},actorSlot:"player",targetSlot:"opponent"
+ })[0];
+ const boltFx=planSkillReleaseFx({
+  action:{skill:bolt(4),travelMs:2000},actorSlot:"opponent",targetSlot:"player"
+ })[0];
+ fx.play(waveFx);
+ fx.play(boltFx);
+ const shell=arena.nodes.find(x=>x.dataset.waveMode==="expanding_wave");
+ const bullet=arena.nodes.find(x=>x.dataset.skillId==="bolt");
+ assert.ok(shell);
+ assert.ok(bullet);
+ function frame(scale,x,t){
+  game.setTime(t);
+  shell.currentScale=scale;
+  bullet.currentX=x;
+  const callbacks=frames;frames=[];
+  for(const callback of callbacks)callback();
+ }
+ // The distant projectile is not touched just because two attacks coexist.
+ frame(0.05,300,180);
+ assert.equal(calls.length,0);
+ frame(0.10,300,250);
+ assert.equal(calls.length,0);
+ // Move the ACTUAL projectile point across the ring while it grows.
+ frame(0.20,170,410);
+ assert.equal(calls.length,1);
+ assert.equal(calls[0].ok,true);
+ assert.equal(calls[0].outcome,"left_survives");
+ assert.equal(game.resolutions.length,1);
+ assert.equal(game.resolutions[0].outcome,"clashed");
+ frame(0.30,150,500);
+ assert.equal(calls.length,1);
+ assert.equal(game.session.snapshot().fighters.opponent.hp,100);
+ fx.dispose();game.runtime.dispose();
 });
