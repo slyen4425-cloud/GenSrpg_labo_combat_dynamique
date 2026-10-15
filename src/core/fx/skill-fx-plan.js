@@ -38,7 +38,9 @@ export function planSkillReleaseFx({
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
-      projectilePower: action.skill.projectileClash?.power ?? 0,
+      ...(Number(action.skill.projectileClash?.power) > 0
+        ? { projectilePower: action.skill.projectileClash.power }
+        : {}),
       ...(action.skill.projectileTargeting === "expanding_wave"
         ? { expandingWave: action.skill.expandingWave }
         : {}),
