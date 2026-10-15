@@ -2496,3 +2496,11 @@ Propositions seulement, hors lot : répétition configurable du son de déplacem
 
 - Le lot `work/lab-expanding-wave-projectile-power-2026-10-15` possède des tests géométriques et un vrai test DOM → `reportProjectileClashContact` → `resolveProjectileClash` avec valeurs 7 vs 4, 4 vs 4 et 2 vs 6, ainsi que la vérification anti-double-clash et les 2 clients 1v1/2v2.
 - CI complète GREEN `38765752953` au code `6ea895ed54b650a811514a3f66d3e55da5f62a16`. Documentation finale et publication restent conditionnées à une CI verte sur SHA de livraison.
+
+
+## 2026-10-15 — Refresh du sélecteur Bulle de feu expansive
+
+- Production base `gh-pages@47b0e89173688c67b354c7cb41dd7e1a07d428b7`, checkpoint `checkpoint/lab-start-fire-bubble-selector-refresh-2026-10-15`, branche `work/lab-fire-bubble-selector-refresh-2026-10-15`.
+- Problème réel : asset `pack:capture:sprite-fire-bubble-expansion-01` présent et catalogué sur `global-assets`, mais révision de cache consommateur datée du 13/10 et filtre `role=travel` excluant `category=skill` malgré `tag=expanding`.
+- Périmètre : révision `src/assets/global-visual-library.js`, filtre propriétaire dans `src/ui/capture-editor-human-v2.js`, test dédié, rapport et ce journal uniquement. `global-assets`, `main`, Combat Rules, exports auteur, GenSrpG et Exploration protégés.
+- Validation : sentinelle filtre/URL/HTML + CI 3 jobs ; checkpoint GREEN et publication sous lease uniquement si vérifiés, contrôle Android de l'auteur séparé. Aucun média inventé ni sprite auto-équipé.

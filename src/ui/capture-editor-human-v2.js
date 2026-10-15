@@ -7339,7 +7339,8 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
 
     return (
       !creatureOwned &&
-      (role !== "travel" || asset.category === "travel") &&
+      (role !== "travel" || asset.category === "travel" ||
+        (asset.category === "skill" && tags.includes("expanding"))) &&
       asset.mediaType === "image" &&
       (
         asset.assetType === "sprite" ||
