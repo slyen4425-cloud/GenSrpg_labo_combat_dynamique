@@ -23,3 +23,10 @@ Le réglage EXISTANT `projectileClash.power` dans Human Editor > Puissance de pr
 
 Test `tests/integration/expanding-wave-projectile-clash-v1.test.mjs` : puissance conservée dans plan visuel, géométrie (onde fixe/croissance + projectile en mouvement rapide + lanes séparées), non-regression midpoint, moteur réel puissances égale/supérieure/inférieure et protection anti-double-résolution, zéro/identifiants inconnus, raccord commun 1v1/2v2. Sentinelles expanding sphere, projectile clash, miroir, skyfall et collisions normales incluses dans CI.
 Trois jobs (foundation, firestorm-zone-growth-browser, creature-library-browser) attendus SUCCESS au SHA final, checkpoint GREEN et livraison fast-forward `gh-pages` sous lease, puis CI et Pages. Validation physique smartphone par l'auteur distincte.
+
+## Tests réellement exécutés et provenance des correctifs
+
+- Code + vrai test DOM/Runtime : `6ea895ed54b650a811514a3f66d3e55da5f62a16`.
+- CI `38765752953` : **foundation SUCCESS**, **firestorm-zone-growth-browser SUCCESS**, **creature-library-browser SUCCESS**, même SHA.
+- Les essais antérieurs ont signalé et permis de corriger : (a) deux anciennes comparaisons strictes du FX plan affectées par un `projectilePower:0` superflu, supprimé pour les capacités historiques ; (b) un timeout ponctuel Chromium de 50 s sur une suite bibliothèque ; la nouvelle exécution complète au SHA ci-dessus est GREEN sans assouplir aucun test.
+- 1v1 et 2v2 consomment la même interface native. Le capteur de collision pure et le test DOM avec vrai `CombatRuntime` sont couverts. La validation physique sur smartphone n'est pas prétendue.
