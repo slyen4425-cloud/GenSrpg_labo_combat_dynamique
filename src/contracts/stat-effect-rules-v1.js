@@ -44,7 +44,8 @@ const RULE_FIELDS = new Set([
   "damagePctPerPoint",
   "resistancePctPerPoint",
   "chargeTimeReductionPctPerPoint",
-  "damageReductionPctPerPoint"
+  "damageReductionPctPerPoint",
+  "outgoingDamagePctPerPoint"
 ]);
 
 export function normalizeStatEffectRulesByIdV1(
@@ -120,6 +121,9 @@ export function normalizeStatEffectRulesByIdV1(
             statId +
             ".chargeTimeReductionPctPerPoint"
         ),
+      ...(Object.prototype.hasOwnProperty.call(rule,"outgoingDamagePctPerPoint")
+        ? {outgoingDamagePctPerPoint:nonNegative(rule.outgoingDamagePctPerPoint,field+"."+statId+".outgoingDamagePctPerPoint")}
+        : {}),
       ...(
         Object.prototype.hasOwnProperty.call(
           rule,

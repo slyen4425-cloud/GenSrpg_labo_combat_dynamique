@@ -141,7 +141,8 @@ function normalizeStatEffects(input) {
     "damagePctByChannel",
     "resistancePctByChannel",
     "chargeTimeReductionPct",
-    "damageReductionPct"
+    "damageReductionPct",
+    "outgoingDamagePct"
   ]);
   for (const key of Object.keys(value)) {
     if (!allowed.has(key)) {
@@ -172,7 +173,8 @@ function normalizeStatEffects(input) {
       nonNegativeNumber(
         value.damageReductionPct ?? 0,
         "combat.statEffects.damageReductionPct"
-      )
+      ),
+    outgoingDamagePct:nonNegativeNumber(value.outgoingDamagePct??0,"combat.statEffects.outgoingDamagePct")
   });
 }
 
@@ -257,6 +259,7 @@ export function adaptCaptureCreatureToFighterConfig(
       statEffects.damagePctByChannel;
     output.damageReductionPct =
       statEffects.damageReductionPct;
+    if(statEffects.outgoingDamagePct!==0)output.outgoingDamagePct=statEffects.outgoingDamagePct;
   }
 
   if (

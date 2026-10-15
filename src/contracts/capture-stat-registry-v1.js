@@ -15,6 +15,7 @@ const STAT_FIELDS = new Set([
   "resistancePctPerPoint",
   "chargeTimeReductionPctPerPoint",
   "damageReductionPctPerPoint",
+  "outgoingDamagePctPerPoint",
   "maxHpPerPoint"
 ]);
 
@@ -103,6 +104,9 @@ function normalizeStat(raw, index) {
         field + ".maxHpPerPoint",
         0
       ),
+    ...(Object.prototype.hasOwnProperty.call(value,"outgoingDamagePctPerPoint")
+      ? {outgoingDamagePctPerPoint:nonNegativeNumber(value.outgoingDamagePctPerPoint,field+".outgoingDamagePctPerPoint",0)}
+      : {}),
     ...(
       Object.prototype.hasOwnProperty.call(
         value,

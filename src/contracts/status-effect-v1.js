@@ -2,6 +2,7 @@ import { normalizeSkillEffectV1 } from "./skill-effect-v1.js";
 
 export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "stat_modifier",
+  "outgoing_damage_modifier",
   "stack_counter",
   "approach_time_modifier",
   "energy_regen_modifier",
@@ -112,6 +113,7 @@ const FIELDS_BY_KIND = Object.freeze({
     ...COMMON_FIELDS,
     "modifierPct"
   ]),
+  outgoing_damage_modifier: new Set([...COMMON_FIELDS,"modifierPct"]),
   stat_modifier: new Set([
     ...COMMON_FIELDS,
     "statId",
@@ -428,7 +430,7 @@ export function normalizeStatusEffectV1(input) {
     }
   }
 
-  if (kind === "approach_time_modifier" || kind === "energy_regen_modifier" || kind === "skill_cooldown_rate_modifier") {
+  if (kind === "approach_time_modifier" || kind === "energy_regen_modifier" || kind === "skill_cooldown_rate_modifier" || kind === "outgoing_damage_modifier") {
     output.modifierPct = finiteNumber(value.modifierPct, "StatusEffectV1.modifierPct");
   }
 

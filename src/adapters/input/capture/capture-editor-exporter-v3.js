@@ -181,6 +181,9 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
             chargeTimeReductionPctPerPoint:
               definition
                 .chargeTimeReductionPctPerPoint,
+            ...((definition.outgoingDamagePctPerPoint??0)!==0
+              ? {outgoingDamagePctPerPoint:definition.outgoingDamagePctPerPoint}
+              : {}),
             ...(
               (
                 definition
@@ -260,6 +263,7 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
               projected.chargeTimeReductionPct,
             damageReductionPct:
               projected.damageReductionPct,
+            outgoingDamagePct:projected.outgoingDamagePct,
             maxHp:
               projected.maxHp,
             hasMaxHpProjection:
@@ -335,6 +339,9 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
                   statEffects.resistancePctByChannel,
                 chargeTimeReductionPct:
                   statEffects.chargeTimeReductionPct,
+                ...(statEffects.outgoingDamagePct!==0
+                  ? {outgoingDamagePct:statEffects.outgoingDamagePct}
+                  : {}),
                 ...(
                   statEffects.damageReductionPct !== 0
                     ? {

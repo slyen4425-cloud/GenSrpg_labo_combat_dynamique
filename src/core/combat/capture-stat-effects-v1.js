@@ -24,6 +24,7 @@ function projectDefinition(definition, pointsInput) {
   return Object.freeze({
     damagePct:
       points * definition.damagePctPerPoint,
+    outgoingDamagePct:points*(definition.outgoingDamagePctPerPoint??0),
     resistancePct:
       points * definition.resistancePctPerPoint,
     chargeTimeReductionPct:
@@ -83,6 +84,7 @@ export function projectCaptureStatEffectsV1({
   const resistancePctByChannel = {};
   let chargeTimeReductionPct = 0;
   let damageReductionPct = 0;
+  let outgoingDamagePct = 0;
   let maxHp = 0;
   const hasMaxHpProjection =
     registry.stats.some(
@@ -111,6 +113,7 @@ export function projectCaptureStatEffectsV1({
       projected.chargeTimeReductionPct;
     damageReductionPct +=
       projected.damageReductionPct;
+    outgoingDamagePct += projected.outgoingDamagePct;
     maxHp += projected.maxHp;
   }
 
@@ -122,6 +125,7 @@ export function projectCaptureStatEffectsV1({
       Object.freeze(resistancePctByChannel),
     chargeTimeReductionPct,
     damageReductionPct,
+    outgoingDamagePct,
     maxHp,
     hasMaxHpProjection
   });

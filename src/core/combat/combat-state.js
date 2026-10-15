@@ -286,6 +286,9 @@ function normalizeFighter(input) {
     )
   };
 
+  if(hasOwn(input,"outgoingDamagePct")){
+    output.outgoingDamagePct=finiteNumber(input.outgoingDamagePct,id+".outgoingDamagePct");
+  }
   if (hasOwn(input, "damagePctByChannel")) {
     output.damagePctByChannel =
       normalizePercentByChannel(

@@ -365,6 +365,9 @@ function humanTacticalStatusToContractV1(
     };
   }
 
+  if(output.kind==="outgoing_damage_modifier"){
+    output.modifierPct=finiteNumber(status.modifierPct,"Variation dégâts infligés (%)");
+  }
   if (output.kind === "stat_modifier") {
     output.statId = requiredText(
       status.statId,
@@ -4419,6 +4422,7 @@ function tacticalTargetScopeLabelV1(scope) {
 function tacticalStatusKindLabelV1(kind) {
   return {
     stat_modifier: "Modification de stat",
+    outgoing_damage_modifier:"Dégâts infligés (tous types, %)",
     stack_counter: "Compteur de charges (sans effet avant le seuil)",
     approach_time_modifier: "Temps de trajet de la créature",
     energy_regen_modifier: "Régénération d’énergie (%)",
@@ -5360,6 +5364,13 @@ function appendHumanSkillEffectV1(
     )
   );
 
+  const outgoingDamagePctInput=tacticalNumberInputV1(
+    "skillStatusOutgoingDamageModifierPct",status.modifierPct??-30,{step:"1"}
+  );
+  const outgoingDamageConfig=document.createElement("div");
+  outgoingDamageConfig.className="skill-status-config__specific";
+  outgoingDamageConfig.dataset.skillStatusConfigKind="outgoing_damage_modifier";
+  outgoingDamageConfig.append(tacticalFieldV1("Dégâts infligés, tous éléments (%) — négatif = malus",outgoingDamagePctInput));
   const approachPct = tacticalNumberInputV1(
     "skillStatusApproachModifierPct", status.modifierPct ?? 50, { step: "1" }
   );
@@ -5837,6 +5848,7 @@ function appendHumanSkillEffectV1(
     thresholdBox,
     triggeredBuffBox,
     statConfig,
+    outgoingDamageConfig,
     approachConfig,
     energyRegenConfig,
     skillCooldownConfig,
@@ -6436,6 +6448,8 @@ function readHumanSkillEffectsV1(root) {
             "[data-skill-status-delta-points]"
           ).value
         );
+      } else if(statusKind==="outgoing_damage_modifier"){
+        status.modifierPct=Number(row.querySelector("[data-skill-status-outgoing-damage-modifier-pct]").value);
       } else if (statusKind === "approach_time_modifier") {
         status.modifierPct = Number(row.querySelector("[data-skill-status-approach-modifier-pct]").value);
       } else if (statusKind === "energy_regen_modifier") {
@@ -6765,6 +6779,10 @@ export function humanStatEffectSummaryV1({
     );
   }
 
+  if((normalized.outgoingDamagePctPerPoint??0)>0){
+    perPoint.push("+"+statEffectNumber(normalized.outgoingDamagePctPerPoint)+" % tous dégâts infligés");
+    current.push("+"+statEffectNumber(projected.outgoingDamagePct)+" % tous dégâts infligés");
+  }
   if (normalized.maxHpPerPoint > 0) {
     perPoint.push(
       "+" +
@@ -6964,6 +6982,12 @@ function renderHumanStatRegistryV1(
     maxHpRate.dataset.statDefinitionMaxHpRate =
       "true";
 
+    const outgoingRate=document.createElement("input");
+    outgoingRate.type="number";
+    outgoingRate.min="0";
+    outgoingRate.step="0.05";
+    outgoingRate.value=String(definition.outgoingDamagePctPerPoint??0);
+    outgoingRate.dataset.statDefinitionOutgoingDamageRate="true";
     const damageReductionRate =
       document.createElement("input");
     damageReductionRate.type = "number";
@@ -7007,6 +7031,7 @@ function renderHumanStatRegistryV1(
         "Réduction charge % / point",
         chargeRate
       ),
+      statDefinitionField("Tous dégâts infligés % / point",outgoingRate),
       statDefinitionField(
         "Réduction dégâts reçus % / point",
         damageReductionRate
@@ -7072,6 +7097,10 @@ function readHumanStatRegistryV1(root) {
           ).value,
           "Réduction charge % par point"
         ),
+      outgoingDamagePctPerPoint:finiteNumber(
+        row.querySelector("[data-stat-definition-outgoing-damage-rate]").value,
+        "Tous dégâts infligés % par point"
+      ),
       damageReductionPctPerPoint:
         finiteNumber(
           row.querySelector(
