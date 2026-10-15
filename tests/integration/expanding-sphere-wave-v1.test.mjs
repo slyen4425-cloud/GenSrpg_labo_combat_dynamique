@@ -5,6 +5,7 @@ import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js"
 import {importCaptureTransferJsonV1,exportCaptureSkillTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import {humanSkillEditorFieldsFromDraftV1,buildHumanSkillDraftV1} from "../../src/ui/capture-editor-human-v2.js";
 import {sweptExpandingWaveHitsOpaqueMaskV1} from "../../src/adapters/renderer/dom-visible-model-contact.js";
+import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
 import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createCombatRuntime} from "../../src/core/combat/combat-runtime.js";
@@ -134,4 +135,85 @@ test("visual + rules are coupled only for wave; old direct projectile, skyfall a
  assert.match(visualSource,/sweptExpandingWaveHitsOpaqueMaskV1/);
  assert.match(visualSource,/onProjectileContact/);
  assert.match(visualSource,/node\.getBoundingClientRect\(\)/);
+});
+
+
+function waveRendererFixture({selectedTarget="opponent",targetX=270}={}){
+ const rect=(left,top,width,height)=>({left,top,width,height});
+ const frames=[];
+ const doc={createElement(){
+  const obj={
+   className:"",dataset:{},style:{},children:[],
+   append(...children){this.children.push(...children);},
+   remove(){this.removed=true;},
+   getBoundingClientRect(){
+    const diameter=Number.parseFloat(this.style.width)||30;
+    const scale=this.currentScale ?? 1;
+    const width=diameter*scale;
+    const height=(Number.parseFloat(this.style.height)||30)*scale;
+    const centerX=Number.parseFloat(this.style.left)||0;
+    const centerY=Number.parseFloat(this.style.top)||0;
+    return rect(centerX-width/2,centerY-height/2,width,height);
+   }
+  };
+  return obj;
+ }};
+ const arena={
+  ownerDocument:doc,nodes:[],append(node){this.nodes.push(node);},
+  getBoundingClientRect(){return rect(0,0,1000,500);}
+ };
+ const anchor=(left,top)=>({getBoundingClientRect(){return rect(left,top,20,20)}});
+ const anchors={player:anchor(90,190),opponent:anchor(targetX,190),"opponent-2":anchor(500,190)};
+ const reported=[];
+ const modelFrame=(left)=>frame(left,195);
+ const fx=createDomSkillFxRenderer({
+  arena,anchors,targetAnchors:anchors,
+  presentationForSkill:()=>null,
+  targetCollisionModelFor:slot=>({snapshot(){
+   return slot === "opponent" ? modelFrame(targetX) : modelFrame(500);
+  }}),
+  onProjectileContact:contact=>reported.push(contact),
+  requestFrame:fn=>{frames.push(fn);return frames.length;},
+  cancelFrame:()=>{},
+  animate:(_node,keyframes,options)=>{
+   return {keyframes,options,finished:new Promise(()=>{}),cancel(){}};
+  }
+ });
+ const result=fx.play({type:"projectile",skillId:"fire-wave",
+  fromSlot:"player",targetSlot:selectedTarget,
+  durationMs:1000,expandingWave:wave().expandingWave});
+ const shell=arena.nodes[0];
+ return {fx,frames,reported,result,shell,step(scale){
+  shell.currentScale=scale;
+  const callback=frames.shift();assert.equal(typeof callback,"function");
+  callback();
+ }};
+}
+
+test("actual DOM wave renderer grows one hitbox with its sprite shell, sees alpha only at ring crossing and emits once",()=>{
+ const game=waveRendererFixture();
+ assert.equal(game.result.status,"running");
+ assert.equal(game.shell.dataset.waveMode,"expanding_wave");
+ assert.equal(game.shell.style.width,"1300px");
+ game.step(0.15);
+ assert.equal(game.reported.length,0);
+ game.step(0.32);
+ assert.equal(game.reported.length,1);
+ assert.equal(game.reported[0].actorId,"player");
+ assert.equal(game.reported[0].targetId,"opponent");
+ assert.equal(game.reported[0].skillId,"fire-wave");
+ assert.equal(game.fx.cancelProjectileFor("player"),1);
+ assert.equal(game.fx.activeCount,0);
+ game.fx.dispose();
+});
+
+test("wave never claims contact with an unselected 2v2 enemy even when visually expansive",()=>{
+ const game=waveRendererFixture({selectedTarget:"opponent-2"});
+ game.step(0.15);
+ game.step(0.32);
+ assert.equal(game.reported.length,0);
+ game.step(1);
+ assert.equal(game.reported.length,1);
+ assert.equal(game.reported[0].targetId,"opponent-2");
+ game.fx.dispose();
 });
