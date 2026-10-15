@@ -40,7 +40,7 @@ test('Fluide météorite — 60 vrais fichiers PNG RGBA, manifestes et atlas',()
  assert.deepEqual(manifest.frame_size,[512,512]);
  assert.equal(readdirSync(resolve(assetRoot,'frames')).length,60);
  assert.equal(readdirSync(resolve(assetRoot,'atlases')).length,3);
- const csv=readFileSync(resolve(assetRoot,'provenance.csv'),'utf8').trim().split(/\\r?\\n/);
+ const csv=readFileSync(resolve(assetRoot,'provenance.csv'),'utf8').trim().split(/\r?\n/);
  assert.equal(csv.length,61,'header + 60 provenance rows');
  const lines=csv.slice(1).map(line=>line.split(','));
  const byFrame=new Map(lines.map(v=>[v[6],v[7]]));
