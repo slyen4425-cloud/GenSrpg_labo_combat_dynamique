@@ -162,7 +162,12 @@
         }
       },
       "sockets": [],
-      "audio": {}
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:sanctuary-367a77dd",
+          "volume": 1
+        }
+      }
     }
   },
   "statValues": {
@@ -205,7 +210,7 @@
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "cap_fire_atk_7"
       }
     ]
   }
