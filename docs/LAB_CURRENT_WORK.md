@@ -1,3 +1,13 @@
+## 2026-10-15 — Correction structurelle : afficher la véritable vue Capture dans Exploration
+
+- Signalement auteur confirmé sur Pixel : le raccord publié affichait une page de démonstration avec panneaux massifs et bannière couvrant l'arène, très différente de l'éditeur Combat récent. Ce défaut n'est **pas** causé par les sprites provisoires ; l'auteur accepte explicitement les silhouettes génériques des créatures encore non créées.
+- Base de production lue : `gh-pages@dc668f34eecc392cfc2f00d1ccc68fa8891932b4`. Checkpoint `checkpoint/lab-start-exploration-native-view-2026-10-15` ; branche `work/lab-exploration-native-view-2026-10-15`. Source ancien bridge `c61798e78fa6cc454aeb5f25294e997e398729f7` réintégrée dans le code récent **sans remplacer les moteurs existants**.
+- Propriété de la vue : `capture-editor-v2.html > [data-capture-preview-template]` et `capture-editor-v2.css` restent source de vérité du HUD, orientation paysage, positionnement 16:9 et commandes. `exploration-encounter.html` n'a **plus de seconde copie** de l'interface ; `exploration-encounter.js` charge le template officiel et adapte uniquement les identifiants DOM `opponent-1/2` vers `enemy-1/2` du snapshot.
+- Le moteur `mountCoop2v2Test` de la base actuelle fournit le résultat natif `onBattleEnd` (déclenchement unique, roster/KO), connecté au `CaptureCombatResult` et retour Exploration. Les créatures inachevées peuvent utiliser le fallback visuel existant ; binding Loup conservé.
+- Correction sur branche : `85f5bc607266bfefdad233dcac50ff94797dfa18`. CI laboratoire `38790911605` **SUCCESS** (foundation, bibliothèque en vrai navigateur, Firestorm Chromium). La CI de l'Exploration épingle ce commit.
+- Validation inter-dépôts : `work/exploration-native-combat-view-2026-10-15` ; CI `38791457656` et `38791457834` **SUCCESS** au SHA `535b6d10b4b995edbc3e31ab2461d1dfd5a28ff0`, dont vrai Chromium géométrique plein écran, audit propriétaire, Builder et entrée Encounter.
+- Strictement protégés : `gh-pages` production Combat, `main`, dépôt GenSrpG, game rules, compétences, médias utilisateur. Aucune publication Combat effectuée depuis ce lot. Validation utilisateur Pixel et vrai combat complet/retour requis avant GREEN FINAL.
+
 # Point de reprise courant — 2026-10-08
 
 ## Lot techniquement GREEN
