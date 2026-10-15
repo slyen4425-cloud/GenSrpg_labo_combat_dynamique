@@ -6880,3 +6880,18 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - Protégés : 141 assets initiaux, toutes données de compétence/roster, moteurs et règles combat, `main`, Zombicide-40k, Exploration.
 - Gates : Git blobs réels et hash sourcés, CI SHA exact, checkpoint GREEN, publication FF uniquement ; preview réelle et essai smartphone côté produit.
 - Statut : chantier en vérification, ne pas déclarer GREEN avant CI finale.
+
+
+## Lot parallèle assets — Bulle de feu expansive (2026-10-15)
+
+- **Objet** : déposer la séquence FX *Bulle de feu expansive* (20 frames) préparée à partir de la source générée dans la conversation ; préparation asset sans ajout de mécanique de combat.
+- **Dépôt / autorité** : `slyen4425-cloud/GenSrpg_labo_combat_dynamique`, branche propriétaire `global-assets`, périmètre visuels Capture uniquement.
+- **Base SHA** : `e55fea3b559c348be596d7c16250808a39c315a1` (HEAD `global-assets` relevé avant chantier).
+- **Checkpoint** : `checkpoint/global-assets-before-fire-bubble-expansion-v1-2026-10-15`.
+- **Branche de travail** : `work/global-assets-fire-bubble-expansion-v1-2026-10-15`.
+- **Propriétaire** : Asset Input / Capture Visual Asset Library ; l'effet visuel ne décide jamais si une cible est au sol/en l'air, ni de la collision.
+- **Fichiers autorisés** : `assets/library/capture/sprites/skills/fire_bubble_expansion/**`, `data/assets/catalog/global-visual-assets.v1.json` (une entrée additive), `tests/unit/capture-fire-bubble-expansion-assets-v1.test.mjs`, `docs/LAB_FIRE_BUBBLE_EXPANSION_V1.md`, ce bloc de `LAB_CURRENT_WORK.md`.
+- **Hors périmètre protégé** : `main`, `gh-pages` avant validation, `Zombicide-40k`, combat rules, FX runtime, UI, données de créatures et autres assets.
+- **Tests prévus** : 20 WebP RGBA différents 512×512, ordre/identifiants, alpha, atlas WebP 7680×384, unicité de l'assetId, référence catalogue et compteurs, sentinelles de tests existants, revue des fichiers et CI.
+- **Risques** : source initiale 1402×1122 en grille 5×4 (agrandissement à 512 et non résolution source native 512) ; atlas horizontal 7680px ; usages en combat dépendant d'un réglage séparé de capacité.
+- **Fin** : publication contrôlée et vérification CI ; GREEN uniquement si la CI est verte, la source runtime est mise à jour et la validation visuelle requise faite. Ne pas revendiquer un test mobile non effectué.
