@@ -2609,7 +2609,11 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelPerspectiveAmount: travel?.perspectiveAmount ?? 0,
       travelFarScaleRatio: travel?.farScaleRatio ?? 1,
       travelArrivalLayer: travel?.arrivalLayer ?? "same",
-      travelTrajectoryMode: travel?.trajectoryMode ?? "linear",
+      travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
+        ? "expanding_wave" : travel?.trajectoryMode ?? "linear",
+      waveStartRadiusPct: definition.expandingWave?.startRadiusPct ?? 3,
+      waveEndRadiusPct: definition.expandingWave?.endRadiusPct ?? 65,
+      waveThicknessPct: definition.expandingWave?.thicknessPct ?? 6,
       fallHeightPx: travel?.fallHeightPx ?? 400,
       fallOffsetXPx: travel?.fallOffsetXPx ?? 0,
       castLayerPlayer:
@@ -2852,10 +2856,20 @@ export function buildHumanSkillDraftV1(fields) {
       // A skyfall targets a fixed landing point, not a moving creature;
       // other projectiles remain direct. Combat Rules reads only this definition.
       projectileTargeting:
-        fields.form === "projectile" &&
-        fields.presentation?.travelTrajectoryMode === "skyfall"
-          ? "fixed_point"
-          : "direct",
+        fields.form !== "projectile" ? "direct"
+          : fields.presentation?.travelTrajectoryMode === "expanding_wave"
+            ? "expanding_wave"
+            : fields.presentation?.travelTrajectoryMode === "skyfall"
+              ? "fixed_point"
+              : "direct",
+      ...(fields.form === "projectile" &&
+        fields.presentation?.travelTrajectoryMode === "expanding_wave"
+          ? {expandingWave:{
+              startRadiusPct: finiteNumber(fields.presentation.waveStartRadiusPct ?? 3,"Rayon de départ de l’onde"),
+              endRadiusPct: finiteNumber(fields.presentation.waveEndRadiusPct ?? 65,"Rayon final de l’onde"),
+              thicknessPct: finiteNumber(fields.presentation.waveThicknessPct ?? 6,"Épaisseur de l’onde")
+            }}
+          : {}),
       loadoutSlot:
         fields.loadoutSlot === "ultimate"
           ? "ultimate"
@@ -3515,6 +3529,9 @@ function writeSkillDraftFields(
     ["[data-skill-travel-far-scale]", fields.presentation.travelFarScaleRatio],
     ["[data-skill-travel-arrival-layer]", fields.presentation.travelArrivalLayer],
     ["[data-skill-trajectory-mode]", fields.presentation.travelTrajectoryMode],
+    ["[data-skill-wave-start-radius]", fields.presentation.waveStartRadiusPct],
+    ["[data-skill-wave-end-radius]", fields.presentation.waveEndRadiusPct],
+    ["[data-skill-wave-thickness]", fields.presentation.waveThicknessPct],
     ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
     [
@@ -3694,6 +3711,9 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-far-scale]", 1],
     ["[data-skill-travel-arrival-layer]", "same"],
     ["[data-skill-trajectory-mode]", "linear"],
+    ["[data-skill-wave-start-radius]", 3],
+    ["[data-skill-wave-end-radius]", 65],
+    ["[data-skill-wave-thickness]", 6],
     ["[data-skill-fall-height]", 400],
     ["[data-skill-fall-offset-x]", 0],
     ["[data-skill-cast-layer-player]", "front"],
@@ -8903,6 +8923,9 @@ function readSkillFields(root) {
       travelFarScaleRatio: numericValue(root, "[data-skill-travel-far-scale]"),
       travelArrivalLayer: selectedValue(root, "[data-skill-travel-arrival-layer]"),
       travelTrajectoryMode: selectedValue(root, "[data-skill-trajectory-mode]"),
+      waveStartRadiusPct: numericValue(root, "[data-skill-wave-start-radius]"),
+      waveEndRadiusPct: numericValue(root, "[data-skill-wave-end-radius]"),
+      waveThicknessPct: numericValue(root, "[data-skill-wave-thickness]"),
       fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
       fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
       castLayerPlayer: selectedValue(
@@ -9757,6 +9780,9 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-travel-far-scale]", presentation.travelFarScaleRatio ?? 1],
     ["[data-skill-travel-arrival-layer]", presentation.travelArrivalLayer ?? "same"],
     ["[data-skill-trajectory-mode]", presentation.travelTrajectoryMode],
+    ["[data-skill-wave-start-radius]", presentation.waveStartRadiusPct ?? 3],
+    ["[data-skill-wave-end-radius]", presentation.waveEndRadiusPct ?? 65],
+    ["[data-skill-wave-thickness]", presentation.waveThicknessPct ?? 6],
     ["[data-skill-fall-height]", presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
     ["[data-skill-travel-layer-player]", presentation.travelLayerPlayer],

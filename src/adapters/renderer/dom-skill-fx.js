@@ -1,4 +1,4 @@
-import { sweptPointHitsOpaqueMask, visibleModelOpaqueAimPoint } from "./dom-visible-model-contact.js";
+import { sweptPointHitsOpaqueMask, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1 } from "./dom-visible-model-contact.js";
 
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
@@ -1975,6 +1975,7 @@ export function createDomSkillFxRenderer({
     phase = null,
     progress = null,
     amount = null,
+    expandingWave = null,
     durationMs,
     delayMs = 0
   }) {
@@ -2460,6 +2461,128 @@ export function createDomSkillFxRenderer({
           presentation?.impactFeedbackOffset ??
           null
       });
+    }
+
+
+    if (type === "projectile" && expandingWave !== null) {
+      // The animated shell and its expanding annular hit sensor are the
+      // *same object*. The Combat Runtime remains the only damage owner.
+      // Percentages refer to arena width, so the reach adapts in landscape.
+      const wave = expandingWave;
+      const endRadiusPx = arenaRect.width * wave.endRadiusPct / 100;
+      const startRadiusPx = arenaRect.width * wave.startRadiusPct / 100;
+      const thicknessEndPx = arenaRect.width * wave.thicknessPct / 100;
+      const travelVisual = presentation?.travel ?? null;
+      const position = centerRelativeTo(
+        sourceRect(fromSlot, presentation?.travelSourceAnchor ?? null),
+        arenaRect
+      );
+      const node = arena.ownerDocument.createElement("span");
+      node.className = "skill-fx skill-fx--projectile skill-fx--expanding-wave";
+      if (presentation?.travelLayer === "behind") {
+        node.className += " skill-fx--layer-behind";
+      }
+      node.dataset.skillFx = "projectile";
+      node.dataset.waveMode = "expanding_wave";
+      if (skillId) node.dataset.skillId = skillId;
+      if (element) node.dataset.element = element;
+      node.style.left = position.x + "px";
+      node.style.top = position.y + "px";
+      node.style.width = (endRadiusPx * 2) + "px";
+      node.style.height = (endRadiusPx * 2) + "px";
+      node.style.boxSizing = "border-box";
+      node.style.borderRadius = "50%";
+      node.style.pointerEvents = "none";
+
+      let frameAnimation = null;
+      if (hasSpriteVisual(travelVisual)) {
+        node.className += " skill-fx--sprite-shell";
+        node.dataset.assetId = travelVisual.assetId ?? "";
+        const spriteNode = arena.ownerDocument.createElement("span");
+        spriteNode.className = "skill-fx__sprite";
+        const playback = applySpriteVisual(
+          spriteNode, travelVisual, durationMs, animate
+        );
+        frameAnimation = playback.frameAnimation;
+        node.append(spriteNode);
+      } else {
+        // Visible fallback when the user has not yet imported their sprite.
+        // Not an authored asset, never catalogued as one.
+        node.style.border = Math.max(2, thicknessEndPx) +
+          "px solid rgba(255,111,15,0.85)";
+        node.style.background =
+          "radial-gradient(circle, transparent 55%, rgba(255,78,0,0.2) 75%, transparent 100%)";
+      }
+      applyPresentationGlow(node, presentation?.feedback?.glow);
+      arena.append(node);
+      const record = {
+        node, animation: null, frameAnimation, type: "projectile",
+        skillId, fromSlot, targetSlot,
+        contactFrameId: null, contactReported: false,
+        previousRadiusPx: startRadiusPx,
+        previousTargetFrame: null
+      };
+      active.add(record);
+      const duration = Math.max(1, Number(durationMs) || 1);
+      const animation = animate(
+        node,
+        [
+          { transform: "translate(-50%, -50%) scale(" + (startRadiusPx / endRadiusPx) + ")", opacity: 0.4 },
+          { transform: "translate(-50%, -50%) scale(1)", opacity: 1 }
+        ],
+        { duration, easing: "linear", fill: "forwards" }
+      );
+      record.animation = animation;
+
+      const collisionModel = onProjectileContact && targetCollisionModelFor
+        ? targetCollisionModelFor(targetSlot) : null;
+      if (collisionModel && typeof collisionModel.snapshot === "function") {
+        record.previousTargetFrame = collisionModel.snapshot();
+        const center = Object.freeze({
+          x: arenaRect.left + position.x,
+          y: arenaRect.top + position.y
+        });
+        const observe = () => {
+          record.contactFrameId = null;
+          if (disposed || !active.has(record) || record.contactReported) return;
+          const rect = node.getBoundingClientRect();
+          const radiusPx = Math.max(
+            record.previousRadiusPx,
+            Math.min(Number(rect.width), Number(rect.height)) / 2
+          );
+          const targetFrame = collisionModel.snapshot();
+          const thicknessPx = thicknessEndPx * radiusPx / endRadiusPx;
+          const hit = targetFrame && sweptExpandingWaveHitsOpaqueMaskV1({
+            center,
+            previousRadiusPx: record.previousRadiusPx,
+            radiusPx,
+            thicknessPx,
+            previousFrame: record.previousTargetFrame,
+            frame: targetFrame
+          });
+          record.previousRadiusPx = radiusPx;
+          record.previousTargetFrame = targetFrame;
+          if (hit) {
+            record.contactReported = true;
+            onProjectileContact(Object.freeze({
+              actorId: fromSlot, targetId: targetSlot, skillId,
+              contactPoint: center
+            }));
+            return;
+          }
+          record.contactFrameId = requestFrame(observe);
+        };
+        record.contactFrameId = requestFrame(observe);
+      }
+
+      const finished = Promise.resolve(animation.finished)
+        .then(() => ({ status: "arrived" }))
+        .catch(error => {
+          cleanup(record);
+          if (error?.name === "AbortError") return { status: "cancelled" };
+          throw error;
+        });
+      return Object.freeze({ status: "running", animation, finished });
     }
 
     if (type === "beam") {

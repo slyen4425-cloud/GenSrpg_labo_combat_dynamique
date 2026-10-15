@@ -284,7 +284,7 @@ export function createCombatRuntime({
     return visibleContact &&
       action.actionType === "skill" &&
       action.skill?.form === "projectile" &&
-      action.skill?.projectileTargeting !== "fixed_point" &&
+      action.skill?.projectileTargeting === "direct" &&
       action.actorId !== action.targetId &&
       Number(action.mirrorReturn?.bounceCount ?? 0) < MAX_MIRROR_BOUNCES &&
       activeMirrorFor(action.targetId, atMs);
@@ -781,7 +781,10 @@ export function createCombatRuntime({
     const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionClockMs, visibleContact);
     // An uncaught returning projectile cannot inflict damage at a timer boundary.
     const forcedOutcome = mirrorContact ? "mirrored" :
-      (record.mirrorReturn && !visibleContact ? "evaded" : null);
+      (record.mirrorReturn && !visibleContact ? "evaded" :
+        (effectiveAction.actionType === "skill" &&
+         effectiveAction.skill?.projectileTargeting === "expanding_wave" &&
+         !visibleContact ? "evaded" : null));
 
     const resolution = session.completeAction({
       action: effectiveAction,

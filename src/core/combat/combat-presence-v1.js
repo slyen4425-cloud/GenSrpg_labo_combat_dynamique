@@ -80,6 +80,10 @@ export function skillPresenceReachV1({
   // A legacy offensive skill without an explicit reach list is a
   // surface attack. Burrow is a gameplay presence, not visual opacity.
   // Keep legacy airborne/evasion semantics and support skills unchanged.
+  const waveUndergroundRestriction =
+    !configured &&
+    skill?.projectileTargeting === "expanding_wave" &&
+    presence === "underground";
   const implicitUndergroundRestriction =
     !configured &&
     presence === "underground" &&
@@ -103,6 +107,7 @@ export function skillPresenceReachV1({
       ? skill.hitPresenceStates.includes(presence)
       : !(
           implicitUndergroundRestriction ||
+          waveUndergroundRestriction ||
           implicitAirborneGroundMeleeRestriction
         )
   });

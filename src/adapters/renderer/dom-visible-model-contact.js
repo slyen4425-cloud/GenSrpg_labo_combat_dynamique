@@ -1009,3 +1009,38 @@ export function createDomVisibleModelCollisionModel({
     }
   });
 }
+
+/**
+ * A growing spherical shockwave touches the ACTUAL moving alpha boundary.
+ * Test the swept radius [previous outer edge, current outer edge] (with
+ * authored ring thickness), so a fast animation cannot tunnel through a
+ * thin limb between animation frames. Positions are screen-space points
+ * transformed by the same frame as all other visible-model collisions.
+ * The sparse boundary sample cap keeps mobile CPU bounded.
+ */
+export function sweptExpandingWaveHitsOpaqueMaskV1({
+  center, previousRadiusPx, radiusPx, thicknessPx,
+  previousFrame = null, frame
+}) {
+  if (!validPoint(center) || !frame || !validMask(frame.mask)) return false;
+  const previous = Number(previousRadiusPx);
+  const current = Number(radiusPx);
+  const thickness = Number(thicknessPx);
+  if (![previous,current,thickness].every(Number.isFinite) ||
+      previous < 0 || current < previous || thickness < 0) return false;
+  const boundary = boundarySamples(frame.mask);
+  const stride = Math.max(1, Math.floor(boundary.length / 128));
+  const inner = Math.max(0, previous - thickness);
+  for (let i = 0; i < boundary.length; i += stride) {
+    const point = modelUnitToScreen(frame, boundary[i]);
+    if (!point) continue;
+    const prevPoint = previousFrame
+      ? modelUnitToScreen(previousFrame, boundary[i]) : point;
+    if (!prevPoint) continue;
+    const nowDistance = Math.hypot(point.x - center.x, point.y - center.y);
+    const prevDistance = Math.hypot(prevPoint.x - center.x, prevPoint.y - center.y);
+    if (Math.min(nowDistance,prevDistance) <= current &&
+        Math.max(nowDistance,prevDistance) >= inner) return true;
+  }
+  return false;
+}

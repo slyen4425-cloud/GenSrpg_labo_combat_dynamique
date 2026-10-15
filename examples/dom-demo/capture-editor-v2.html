@@ -1248,6 +1248,7 @@
               <select data-skill-trajectory-mode>
                 <option value="linear" selected>Lanceur → cible (classique)</option>
                 <option value="skyfall">Chute du ciel (vers la cible)</option>
+                <option value="expanding_wave">Onde sphérique expansive (depuis la créature)</option>
               </select>
             </label>
             <label>Hauteur de départ — chute du ciel (px)
@@ -1256,6 +1257,19 @@
             <label>Décalage horizontal du départ (px)
               <input type="number" min="-700" max="700" step="10" value="0" data-skill-fall-offset-x>
             </label>
+            <fieldset class="editor-choice-group" data-skill-wave-settings>
+              <legend>Onde expansive — collision sur le rayon visible</legend>
+              <label>Rayon initial (% largeur de l'arène)
+                <input type="number" min="1" max="60" step="1" value="3" data-skill-wave-start-radius>
+              </label>
+              <label>Rayon final (% largeur de l'arène)
+                <input type="number" min="2" max="150" step="1" value="65" data-skill-wave-end-radius>
+              </label>
+              <label>Épaisseur de l'anneau (% largeur de l'arène)
+                <input type="number" min="0.5" max="150" step="0.5" value="6" data-skill-wave-thickness>
+              </label>
+              <p class="note">Choisis « Onde sphérique expansive ». Le sprite « Projectile / trajet » s'agrandit du rayon initial au final pendant « Vers la cible (ms) ». La collision suit le bord de l'anneau au lieu du centre d'un projectile. Pour toucher le sol et les créatures en vol, active les deux présences dans les réglages de cible. Version initiale : collision avec la cible sélectionnée, pas encore de dégâts multi-cibles 2v2.</p>
+            </fieldset>
             <p class="note">Pour « Chute de pierre » : choisis Style « Projectile », puis « Chute du ciel ». Le projectile apparaît au-dessus de la cible, descend durant « Vers la cible (ms) » et déclenche l’impact habituel. Utilise ton sprite de pierre dans « Projectile / trajet » ; l’option ne change ni les dégâts, ni le ciblage, ni la collision des autres compétences.</p>
           </fieldset>
           <label>Charge — vue joueur

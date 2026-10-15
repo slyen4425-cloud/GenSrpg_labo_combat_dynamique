@@ -19,7 +19,7 @@ export const SKILL_LOADOUT_SLOTS = Object.freeze([
   "ultimate"
 ]);
 
-export const SKILL_PROJECTILE_TARGETINGS = Object.freeze(["direct", "fixed_point"]);
+export const SKILL_PROJECTILE_TARGETINGS = Object.freeze(["direct", "fixed_point", "expanding_wave"]);
 
 export const SKILL_FORMS = Object.freeze([
   "contact",
@@ -288,6 +288,34 @@ export function normalizeSkillDefinition(input) {
   const projectileTargeting = nonEmptyString(input.projectileTargeting ?? "direct", "projectileTargeting");
   if (!PROJECTILE_TARGETING_SET.has(projectileTargeting)) throw new RangeError(`Unsupported projectileTargeting: ${projectileTargeting}`);
 
+  if (projectileTargeting === "expanding_wave" && form !== "projectile") {
+    throw new RangeError("expanding_wave requires projectile form");
+  }
+  if (projectileTargeting !== "expanding_wave" && input.expandingWave != null) {
+    throw new RangeError("expandingWave requires expanding_wave projectileTargeting");
+  }
+  const wave = input.expandingWave ?? {};
+  if (projectileTargeting === "expanding_wave" && (!wave || typeof wave !== "object" || Array.isArray(wave))) {
+    throw new TypeError("expandingWave must be an object");
+  }
+  if (projectileTargeting === "expanding_wave") {
+    for (const key of Object.keys(wave)) {
+      if (!["startRadiusPct","endRadiusPct","thicknessPct"].includes(key)) {
+        throw new TypeError("expandingWave contains unknown field: " + key);
+      }
+    }
+  }
+  const startRadiusPct = Number(wave?.startRadiusPct ?? 3);
+  const endRadiusPct = Number(wave?.endRadiusPct ?? 65);
+  const thicknessPct = Number(wave?.thicknessPct ?? 6);
+  if (projectileTargeting === "expanding_wave" && (
+    !Number.isFinite(startRadiusPct) || startRadiusPct < 1 || startRadiusPct > 60 ||
+    !Number.isFinite(endRadiusPct) || endRadiusPct <= startRadiusPct || endRadiusPct > 150 ||
+    !Number.isFinite(thicknessPct) || thicknessPct < 0.5 || thicknessPct > endRadiusPct
+  )) {
+    throw new RangeError("expandingWave requires 1..60% start, larger end up to 150%, and 0.5..end% thickness");
+  }
+
   const element = input.element == null
     ? null
     : nonEmptyString(input.element, "element");
@@ -439,6 +467,7 @@ export function normalizeSkillDefinition(input) {
     category,
     form,
     projectileTargeting,
+    ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     loadoutSlot,
     element,
     approachMode,

@@ -38,6 +38,9 @@ export function planSkillReleaseFx({
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
+      ...(action.skill.projectileTargeting === "expanding_wave"
+        ? { expandingWave: action.skill.expandingWave }
+        : {}),
       ...(action.mirrorReturn?.contactPoint ? { fromPoint: action.mirrorReturn.contactPoint } : {}),
       delayMs: 0,
       durationMs: Math.max(0, Number(action.travelMs) || 0)
