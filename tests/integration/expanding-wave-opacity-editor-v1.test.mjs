@@ -19,7 +19,7 @@ const draftAtOpacity = pct => {
 test("human editor exposes a percentage opacity field for projectile including the expanding wave",()=>{
   const html=read("../../examples/dom-demo/capture-editor-v2.html");
   assert.match(html,/data-skill-travel-opacity-pct/);
-  assert.match(html,/Opacité du projectile/i);
+  assert.match(html,/Opacité de l’onde/i);
 });
 
 test("wave opacity is editable and roundtrips via the one canonical presentation binding",()=>{
