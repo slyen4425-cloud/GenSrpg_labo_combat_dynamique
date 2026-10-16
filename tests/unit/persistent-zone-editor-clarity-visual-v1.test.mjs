@@ -202,7 +202,8 @@ test("DOM persistent-zone FX follows CombatState zones, grows with radius, and d
   ]);
 
   assert.equal(renderer.activeCount, 1);
-  assert.equal(arena.children.length, 1);
+  assert.equal(arena.children.filter(x=>x.dataset.skillFx==="persistent-zone").length, 1);
+  assert.equal(arena.children.filter(x=>x.dataset.tacticalRadius==="persistent-zone").length, 1);
   const node = arena.children[0];
   assert.equal(node.dataset.skillFx, "persistent-zone");
   assert.equal(node.dataset.zoneRadius, "short");
