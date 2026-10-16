@@ -191,12 +191,12 @@ export function createBattleActorAiController({
 
   // Only released, observable hostile attacks can create an AI dodge threat.
   function observeRelease({ action, elapsedMs }) {
-    if (!adaptive || !dodge?.skill || action?.actionType !== "skill" ||
+    if (!adaptive || !dodge || (dodge.type !== "defense" && !dodge.skill) || action?.actionType !== "skill" ||
       action.targetId !== normalizedActorId || action.actorId === normalizedActorId) {
       return Object.freeze({status:"ignored"});
     }
     const form = action.skill?.form;
-    if (!dodge.skill.reaction?.evadeForms?.includes(form)) {
+    if (dodge.type !== "defense" && !dodge.skill.reaction?.evadeForms?.includes(form)) {
       return Object.freeze({status:"ignored"});
     }
     const travel = Number(action.impactAtMs) - Number(action.releaseAtMs);
@@ -209,7 +209,7 @@ export function createBattleActorAiController({
   }
 
   function maybeDodge({elapsedMs}) {
-    if (!adaptive || !dodge?.skill || !visibleThreat) return Object.freeze({status:"disabled"});
+    if (!adaptive || !dodge || (dodge.type !== "defense" && !dodge.skill) || !visibleThreat) return Object.freeze({status:"disabled"});
     const threat = visibleThreat;
     const actor = session.snapshot().fighters[normalizedActorId];
     if (!actor || Number(actor.hp) <= 0) {
@@ -229,14 +229,16 @@ export function createBattleActorAiController({
     const active = runtime.rechargeableReactionWindowStatus({actorId:normalizedActorId,
       recharge:dodge.recharge,activeWindowMs:windowMs});
     if (active.active) { threat.decided = true; return Object.freeze({status:"already_active"}); }
-    const preview = runtime.previewRechargeableReaction(dodge.skill,
-      {againstActorId:threat.sourceActorId,recharge:dodge.recharge});
-    if (!preview.ok) return Object.freeze({status:"not_legal",reason:preview.outcome});
+    if (dodge.type !== "defense") {
+      const preview = runtime.previewRechargeableReaction(dodge.skill,
+        {againstActorId:threat.sourceActorId,recharge:dodge.recharge});
+      if (!preview.ok) return Object.freeze({status:"not_legal",reason:preview.outcome});
+    }
     const result = runtime.activateRechargeableReaction(dodge.skill,
       {actorId:normalizedActorId,recharge:dodge.recharge,activeWindowMs:windowMs});
     if (!result.ok) return Object.freeze({status:"not_legal",reason:result.outcome});
     threat.decided = true;
-    return Object.freeze({status:"dodged",actorId:normalizedActorId,
+    return Object.freeze({status:dodge.type === "defense" ? "defended" : "dodged",actorId:normalizedActorId,
       durationMs:Number(result.window?.remainingMs ?? windowMs),result});
   }
 
