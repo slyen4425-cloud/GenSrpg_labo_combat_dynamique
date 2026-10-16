@@ -2672,3 +2672,10 @@ La CI du correctif ciblé relève deux assertions anciennes à `2.5` désormais 
 - Critères de fin : RED/GREEN, trois jobs CI (foundation, Firestorm navigateur, Creature Library navigateur), checkpoint GREEN sur SHA exact, fast-forward prudent de `gh-pages`, Pages réussi ; validation esthétique Android laissée à l'auteur.
 
 - Extension ciblée du périmètre de tests, déclarée avant codage navigateur : ajout de `tests/browser/expanding-wave-2v2-smoke.mjs` et de son job isolé à `.github/workflows/ci.yml`, afin d'obtenir une preuve Chromium DOM + vraie animation + CombatSession + CombatRuntime, dans les deux sens joueur et IA, et non uniquement une simulation de l'anneau. Aucun nouveau propriétaire de gameplay.
+
+### Résultat technique — raccord natif 2v2
+
+- Une unique onde animée balaie à présent les modèles opaques de chacun des deux ennemis, avec résolution indépendante par `CombatSession.resolveSkillCompletion` et garde anti-double dans `CombatRuntime`; l'action, le cooldown et l'énergie sont uniques. Le 1v1 demeure sur sa route existante.
+- La première cible mise K.O. ne supprime plus l'onde avant qu'elle touche la deuxième ; les alliés restent exclus. Aucun changement de palette, du cercle feu à 18 %, ni de projectile direct, ni du sprite auteur.
+- Tests RED initiaux puis GREEN ; CI sur commit code + contrat `00cf3ac27bb5e9617a5292319a2538508a989527`, run `38915180817`, **SUCCESS 4/4** : Foundation, Firestorm Chromium réel, Creature Library Chromium réel, et nouveau wave 2v2 Chromium DOM/WAAPI, équipes joueur et adversaire.
+- Ce commit de journal final doit réussir lui aussi les quatre jobs au SHA exact, avant création du checkpoint GREEN et promotion fast-forward de `gh-pages` sous lease. La validation physique Android reste ouverte.
