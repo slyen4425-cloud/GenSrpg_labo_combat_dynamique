@@ -63,6 +63,10 @@ async function scenario(source){
  const contacts=[],resolutions=[];
  const fx=createDomSkillFxRenderer({
    arena,anchors,targetAnchors:anchors,presentationForSkill:()=>null,
+   // Headless Chromium's virtual-time budget can suspend normal RAF paint.
+   // Only the test scheduler uses ticks; sampling remains real DOM/WAAPI.
+   requestFrame:callback=>setTimeout(callback,16),
+   cancelFrame:handle=>clearTimeout(handle),
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
    },
