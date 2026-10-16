@@ -13,6 +13,8 @@ import {
 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import { buildCaptureEditorCombatTestV1 } from "../../src/ui/capture-editor-combat-test-v1.js";
 import { adaptCaptureCombatExportStackV1 } from "../../src/adapters/input/capture/capture-export-adapter-stack-v1.js";
+
+import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
 import { createCombatState } from "../../src/core/combat/combat-state.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
@@ -176,4 +178,69 @@ test("real editor combat export -> native fighter adapter carries creature Defen
   assert.equal(native.fighterConfigs.enemy.defensiveReaction.type,"none");
   assert.equal(native.fighterConfigs.local.maxEnergy,15);
   assert.equal(native.fighterConfigs.local.initialEnergy,4);
+});
+
+
+test("the real CombatSession resolves a non-dodgeable projectile through Defense, not as a dodge",()=>{
+  const id="crea_foudrillon",actionId=captureCreatureReactionActionIdV1(id,"defense");
+  const session=createCombatSession({
+    fighters:[fighter("player",reaction,id),fighter("opponent")],
+    distance:"medium"
+  });
+  const incoming=normalizeSkillDefinition({
+    id:"defense-test-projectile",name:"Projectile",category:"offensive",
+    form:"projectile",element:null,approachMode:"none",
+    energyCost:0,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+    dodgeable:false,allowedDistances:["short","medium","long"],
+    targetRelations:["enemy"],
+    effect:{damage:50,heal:0,interruptsPreparation:false,stunMs:0,tags:[]}
+  });
+  assert.equal(session.activateRechargeableAction({
+    actorId:"player",actionId,maxCharges:3,rechargeMs:30000,
+    activeWindowMs:500
+  }).ok,true);
+  const guarded=session.useSkill({actorId:"opponent",targetId:"player",skill:incoming});
+  assert.equal(guarded.ok,true);
+  assert.equal(guarded.outcome,"hit");
+  assert.equal(session.snapshot().fighters.player.hp,180); // 50 damage reduced 60% -> 20
+  session.advanceMs(500);
+  const after=session.useSkill({actorId:"opponent",targetId:"player",skill:incoming});
+  assert.equal(after.ok,true);
+  assert.equal(session.snapshot().fighters.player.hp,130);
+});
+
+test("roster replacement retains each creature's independent cooldown and prevents guard leaking to the next member",()=>{
+  const original="crea_foudrillon",reserve="crea_mossback";
+  const first=captureCreatureReactionActionIdV1(original,"defense");
+  const second=captureCreatureReactionActionIdV1(reserve,"defense");
+  const session=createCombatSession({
+    fighters:[fighter("player",reaction,original),fighter("opponent")]
+  });
+  assert.equal(session.activateRechargeableAction({
+    actorId:"player",actionId:first,maxCharges:1,
+    rechargeMs:30000,activeWindowMs:500
+  }).ok,true);
+  assert.equal(session.rechargeableActionAvailability({
+    actorId:"player",actionId:first,maxCharges:1,rechargeMs:30000
+  }).charges,0);
+  session.replaceFighter("player",fighter("player",reaction,reserve));
+  assert.equal(computeCombatDamageV1({
+    state:session.snapshot(),attackerId:"opponent",
+    targetId:"player",baseDamage:100
+  }).damage,100,"Foudrillon's guard must not protect Moussados");
+  assert.equal(session.rechargeableActionAvailability({
+    actorId:"player",actionId:second,maxCharges:1,rechargeMs:30000
+  }).charges,1);
+  assert.equal(session.activateRechargeableAction({
+    actorId:"player",actionId:second,maxCharges:1,
+    rechargeMs:30000,activeWindowMs:500
+  }).ok,true);
+  assert.equal(computeCombatDamageV1({
+    state:session.snapshot(),attackerId:"opponent",
+    targetId:"player",baseDamage:100
+  }).damage,40);
+  session.replaceFighter("player",fighter("player",reaction,original));
+  assert.equal(session.rechargeableActionAvailability({
+    actorId:"player",actionId:first,maxCharges:1,rechargeMs:30000
+  }).charges,0,"switching back cannot refresh original charges");
 });
