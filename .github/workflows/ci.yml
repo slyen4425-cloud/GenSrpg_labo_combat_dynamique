@@ -33,3 +33,13 @@ jobs:
           node-version: 22
       - name: Real Chromium Firestorm player and AI zone growth (1v1 / 2v2)
         run: node tests/browser/firestorm-zone-growth-smoke.mjs
+
+  expanding-wave-2v2-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium expanding wave on two independent 2v2 targets
+        run: node tests/browser/expanding-wave-2v2-smoke.mjs
