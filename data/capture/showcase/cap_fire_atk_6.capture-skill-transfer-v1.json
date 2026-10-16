@@ -100,7 +100,7 @@
         "aura": {
           "assetId": "pack:capture:sprite-fire-zone-loop-01",
           "displayScale": 1.2,
-          "displayScaleX": 2.5,
+          "displayScaleX": 1.6,
           "displayScaleY": 0.8,
           "attachment": "source",
           "anchor": null,
