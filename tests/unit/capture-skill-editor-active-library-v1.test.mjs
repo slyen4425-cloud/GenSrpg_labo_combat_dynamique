@@ -118,7 +118,7 @@ test("showcase Tempete draft expands to complete editable fields from the active
     "pack:capture:sprite-fire-zone-loop-01"
   );
   assert.equal(fields.presentation.zoneDisplayScale, 1.2);
-  assert.equal(fields.presentation.zoneDisplayScaleX, 2.5);
+  assert.equal(fields.presentation.zoneDisplayScaleX, 1.6);
   assert.equal(fields.presentation.zoneDisplayScaleY, 0.8);
   assert.equal(fields.presentation.zoneOffsetX, 0);
   assert.equal(fields.presentation.zoneOffsetY, 0);
