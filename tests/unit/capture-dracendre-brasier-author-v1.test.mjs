@@ -35,9 +35,9 @@ const skill=()=>importCaptureTransferJsonV1(read(sPath).toString("utf8"));
 test("Dracendre and Brasier exports are exact author bytes and registered once",()=>{
  const cb=read(cPath), sb=read(sPath);
  assert.equal(cb.byteLength,4452);
- assert.equal(sb.byteLength,1901);
+ assert.equal(sb.byteLength,5260);
  assert.equal(sha(cb),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
- assert.equal(sha(sb),"1e63b095a72d07673fc7c584e54f2b411d0188d44f4007ad551b9282c627deea");
+ assert.equal(sha(sb),"e2669fccbb4d6bcf9eb7c2d1f1eddabb0b5bfeb14e4f44e3f5614d8b9d4a909f");
  assert.equal(creatureFiles.filter(x=>x===cPath).length,1);
  assert.equal(skillFiles.filter(x=>x===sPath).length,1);
  assert.equal(new Set(creatureFiles).size,creatureFiles.length);
@@ -79,7 +79,7 @@ test("Dracendre preserves stats, two elements, resistances, Braisombre assets, a
  assert.deepEqual(c.loadout.slots.map(s=>s.skillId),["lib_heat_wave","fireball","cap_fire_special_2","cap_fire_atk_5","cap_fire_atk_7"]);
 });
 
-test("Brasier primordial conserves ultimate, its authored required level and its precise 10 fire damage",()=>{
+test("Brasier primordial retains author's level, 50 fire damage to all enemies, reserve reach and three meteorite sprites",()=>{
  const d=skill().value.draft;
  assert.equal(d.definition.id,"cap_fire_atk_7");
  assert.equal(d.definition.name,"Brasier primordial");
@@ -90,15 +90,26 @@ test("Brasier primordial conserves ultimate, its authored required level and its
  assert.equal(d.definition.form,"projectile");
  assert.equal(d.definition.energyCost,0);
  assert.equal(d.definition.cooldownMs,0);
- assert.equal(d.definition.effects[0].amount,10);
- assert.equal(d.definition.effects[0].channel,"fire");
- assert.equal(d.presentation,null);
+ assert.equal(d.definition.projectileTargeting,"fixed_point");
+ assert.equal(d.definition.preparationMs,3500);
+ assert.equal(d.definition.travelMs,1000);
+ assert.deepEqual(d.definition.effects.map(e=>[e.kind,e.targetScope,e.amount,e.channel]),[
+  ["damage","all_enemies",50,"fire"],
+  ["damage","all_enemy_reserves",50,null]
+ ]);
+ assert.equal(d.presentation.version,10);
+ assert.equal(d.presentation.visual.cast.assetId,"pack:capture:sprite-fluide-meteorite-cast-01");
+ assert.equal(d.presentation.visual.travel.assetId,"pack:capture:sprite-fluide-meteorite-projectile-01");
+ assert.equal(d.presentation.visual.impact.assetId,"pack:capture:sprite-fluide-meteorite-impact-01");
+ assert.equal(d.presentation.visual.travel.trajectoryMode,"skyfall");
 
+ // A reserve-wide effect intentionally requires the roster owner: never
+ // silently fall back to a single-target hit when no roster is mounted.
  const f=id=>({id,maxHp:100,initialHp:100,maxEnergy:20,initialEnergy:20,energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
  const session=createCombatSession({distance:"short",fighters:[f("player"),f("target")]});
- const result=session.useSkill({actorId:"player",targetId:"target",skill:d.definition});
- assert.equal(result.ok,true);
- assert.equal(session.snapshot().fighters.target.hp,90);
+ const result=session.previewSkill({actorId:"player",targetId:"target",skill:d.definition});
+ assert.equal(result.ok,false);
+ assert.equal(result.outcome,"reserve_roster_required");
 });
 
 test("the existing canonical Transfer batch installs both author models without creating a second owner",()=>{
@@ -137,7 +148,7 @@ test("the existing canonical Transfer batch installs both author models without 
   configuredSkills,configuredCreatures,statRegistry:registry,progressionRules,mode:"replace"});
  assert.deepEqual(actions.actions.map(x=>x.id),["cap_fire_atk_7","crea_dracendre"]);
  assert.deepEqual(actions.actions.map(x=>x.action),["replace-skill","replace-creature"]);
- assert.equal(configuredSkills.get("cap_fire_atk_7").definition.effects[0].amount,10);
+ assert.equal(configuredSkills.get("cap_fire_atk_7").definition.effects[0].amount,50);
  assert.equal(configuredCreatures.get("crea_dracendre").draft.presentation.profileId,"flying");
  assert.equal(configuredCreatures.size,creatureCountBefore);
  assert.equal(configuredSkills.size,sizeBefore+(actions.actions[0].action==="insert-skill"?1:0));
