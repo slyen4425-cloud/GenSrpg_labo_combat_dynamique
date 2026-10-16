@@ -239,7 +239,8 @@ test("persistent-zone atlas visual loops instead of freezing after one pass", ()
     }
   ]);
 
-  assert.equal(arena.children.length, 1);
+  assert.equal(arena.children.filter(x=>x.dataset.skillFx==="persistent-zone").length, 1);
+  assert.equal(arena.children.filter(x=>x.dataset.tacticalRadius==="persistent-zone").length, 1);
   const node = arena.children[0];
   assert.equal(node.style.animationName, "skill-fx-strip");
   assert.equal(
