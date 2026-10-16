@@ -104,3 +104,21 @@ test("fire persistent-zone ring alone is low-contrast; validated expanding wave 
   const html=readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
   assert.ok(html.includes('href="./demo.css?v=fire-zone-subtle-20261016"'),"mobile editor must request new CSS URL");
 });
+
+test("Firestorm ground ring alone has a barely visible stroke, with expanding bubble protected",()=>{
+  const css=readFileSync(new URL("../../examples/dom-demo/demo.css",import.meta.url),"utf8");
+  const base='.skill-fx--tactical-zone[data-element="fire"],\\n.skill-fx--expanding-wave[data-element="fire"] {'.replace("\\\\n","\\n");
+  assert.ok(css.includes(base),"existing common fire element palette preserved");
+  const section=css.slice(css.indexOf(base),css.indexOf("}",css.indexOf(base)));
+  assert.ok(section.includes("--tactical-edge: rgba(255, 91, 64, 0.52);"),
+    "the approved expanding bubble must keep its original 52% edge");
+  const override='.skill-fx--tactical-zone[data-element="fire"] {';
+  const at=css.indexOf(override);
+  assert.ok(at>=0,"only persistent ground fire-zone has a separate subtle style");
+  const rules=css.slice(at,css.indexOf("}",at));
+  assert.ok(rules.includes("--tactical-edge: rgba(255, 91, 64, 0.18);"),"fire zone ring must become faint");
+  assert.ok(rules.includes("--tactical-halo: rgba(255, 50, 44, 0);"),"no distracting glow");
+  assert.ok(rules.includes("--tactical-fill: transparent;"),"no overlay tint over the flames");
+  assert.ok(rules.includes("border-width: 1px;"),"reduce only ground zone line width");
+  assert.ok(!override.includes("expanding-wave"),"do not touch the growing bubble");
+});
