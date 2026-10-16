@@ -125,3 +125,13 @@ test("Encounter page reuses the authoritative editor Capture presentation and it
     assert.ok(editor.includes(marker), "Authoritative Combat Editor template missing " + marker);
   }
 });
+
+
+test("Encounter offers a real user-gesture fullscreen request using the canonical Capture display owner", async () => {
+  const html = await readFile(new URL("../../examples/dom-demo/exploration-encounter.html", import.meta.url), "utf8");
+  const script = await readFile(new URL("../../examples/dom-demo/exploration-encounter.js", import.meta.url), "utf8");
+  assert.match(html, /data-encounter-fullscreen/);
+  assert.match(script, /createCapturePreviewDisplayModeV1/);
+  assert.match(script, /enter\(\{\s*enabled:\s*true\s*\}\)/);
+  assert.match(script, /fullscreenchange/);
+});
