@@ -2568,3 +2568,7 @@ Le test navigateur existant `tests/browser/firestorm-zone-growth-smoke.mjs` est 
 - Propriétaires : `configuredSkills` (entrée unique indexée ID) et chargeur showcase existant. Aucun code moteur/FX ou autre compétence modifié ; aucun autre dépôt et ni `main` ni `global-assets`.
 - Fichiers autorisés : JSON de transfert ci-dessus, nouveau `tests/integration/fire-wave-author-showcase-v1.test.mjs`, `docs/LAB_FIRE_WAVE_AUTHOR_PRESET_V1.md`, ce journal. Test : intégrité de tout l'export auteur, roundtrip via import canonique, exactitude expanding wave 8/65/8, coût/45 s, puissance 4, sprite assetId, dégâts/DoT, identité avec le loadout Dracendre et sans seconde fiche, validation CI Foundation + deux Chromium, checkpoint GREEN au SHA final avant publication sous lease.
 - Risques : cache mobile auteur / media CDN non chargé, ancien test historique de projectile direct, délai de CI, possible conflit si gh-pages avance. Android manuel reste à confirmer.
+
+### Extension strictement nécessaire — sentinelles du preset historique
+
+La CI RED confirme que `tests/unit/capture-vague-incendiaire-author-v1.test.mjs` et `tests/integration/expanding-sphere-wave-v1.test.mjs` attendent encore l'**ancienne fiche** `direct` (hash 2440 octets, cooldown 45 ms, aucun sprite), ce qui contredit explicitement le nouveau transfert auteur. Autorisation de modifier **uniquement ces deux sentinelles** pour refléter l'export fourni et vérifier le vrai chemin d'onde en conservant un test de projectile direct séparé. Aucun ajustement au moteur ni aux autres données auteur.
