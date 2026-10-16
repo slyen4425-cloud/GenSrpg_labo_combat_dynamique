@@ -1366,7 +1366,7 @@ export async function mountCoop2v2Test({
           visuals
             .playEventFor(
               controlledActorId(),
-              reaction.type === "defense" ? "hit" : "dodge",
+              reaction.type === "defense" ? "defense" : "dodge",
               {
                 metadata: {
                   durationMs: visualDurationMs,
