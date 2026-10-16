@@ -190,10 +190,11 @@
                 <option value="none">Aucune réaction</option>
               </select>
             </label>
-            <label>Icône du bouton en combat
+            <label>Icône du bouton en combat — bibliothèque complète
               <select data-creature-reaction-icon data-asset-role="icon">
                 <option value="">Icône par défaut selon le type</option>
               </select>
+              <small>Toutes les icônes GenSrpG, plus tes icônes importées.</small>
             </label>
             <div class="preview-box preview-box--icon" aria-label="Aperçu de l’icône de réaction">
               <img data-preview-reaction-icon alt="Aperçu du bouton" data-empty="true">
@@ -1893,7 +1894,17 @@
             data-combat-dodge
             hidden
           >
-            <img data-combat-reaction-icon class="combat-dodge-action__icon" alt="" aria-hidden="true" hidden>
+            <span class="action-option__icon-shell combat-dodge-action__icon-shell"
+                  data-combat-reaction-icon-shell aria-hidden="true" hidden>
+              <img data-combat-reaction-icon
+                   class="action-option__icon action-option__icon--base combat-dodge-action__icon"
+                   alt="" hidden>
+              <img data-combat-reaction-icon-color
+                   class="action-option__icon action-option__icon--color combat-dodge-action__icon"
+                   alt="" hidden>
+              <span class="action-option__cooldown-dial"></span>
+              <span class="action-option__cooldown-needle"></span>
+            </span>
             <strong>Esquive</strong>
             <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
             <small data-combat-dodge-recharge hidden></small>
