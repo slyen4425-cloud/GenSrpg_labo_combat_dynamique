@@ -2626,3 +2626,9 @@ La CI du correctif ciblé relève deux assertions anciennes à `2.5` désormais 
 - Propriétaire unique : simple CSS de présentation `examples/dom-demo/demo.css`, sans toucher `DomSkillFxRenderer`, les compétences/presets auteur, assets, collision, combat runtime, exploration ou dépôt principal. Contrôles existants des contours natifs conservés.
 - Périmètre fichiers autorisés : `examples/dom-demo/demo.css`, `tests/integration/elemental-tactical-radii-v1.test.mjs`, `tests/browser/firestorm-zone-growth-smoke.mjs` (nouvel invariant opacité CSS calculée), `docs/LAB_TACTICAL_OUTLINE_SOFTEN_V1.md` et ce journal.
 - Tests RED → GREEN : 13 éléments et neutre, border/halo/inner/fill opacités explicites ; Firestorm Chrome réel valide l'alpha effectif du contour et le vrai chemin 1v1/2v2 (joueur + IA), zone court/moyen et sprite plein champ long, nettoyage à expiration. Foundation + Firestorm Chromium + Creature Library Chromium sur SHA final exact, checkpoint GREEN puis publication fast-forward sous lease, Pages CI. Validation esthétique physique Android distincte.
+
+### Résultat technique — atténuation tactique
+
+- Test RED : nouvelles sentinelles de transparence et le test Firestorm calculé ont échoué sur la version trop opaque. Correction purement CSS : 13 couleurs sans changement de RGB (trait .52, halo .14, anneau .18, remplissage .012) et fallback neutre adouci. Aucun fichier JavaScript/moteur, skill JSON, asset ou contrat de combat modifié.
+- CI du code `38894202046` **SUCCESS 3/3** sur `4c865841f7c7a39518b75bc08345ea8e345dcf67` : Foundation + Firestorm Chromium réel + Creature Library Chromium. 1v1/2v2, contrôles / IA, portée et affichage long, expiration/cleanup protégés.
+- Documentation détaillée : `docs/LAB_TACTICAL_OUTLINE_SOFTEN_V1.md`. Le SHA final, qui inclut ce journal, exige une nouvelle CI 3/3 avant checkpoint GREEN et promotion sous lease. Validation du rendu sur smartphone Android de l'auteur toujours attendue.
