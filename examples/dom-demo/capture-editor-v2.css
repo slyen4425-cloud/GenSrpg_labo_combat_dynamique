@@ -1316,6 +1316,9 @@ html {
   bottom: 0.45rem;
 }
 
+/* Icon belongs to the same established dodge/defense button, never a new action. */
+.combat-dodge-action__icon { width: clamp(1.65rem, 5dvh, 2.35rem); height: clamp(1.65rem, 5dvh, 2.35rem); display: block; object-fit: contain; pointer-events: none; }
+.combat-dodge-action__icon[hidden] { display: none; }
 .combat-dodge-action__charges {
   font-weight: 800;
 }
