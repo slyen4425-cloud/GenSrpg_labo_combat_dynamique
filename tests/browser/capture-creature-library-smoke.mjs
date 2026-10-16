@@ -763,16 +763,25 @@ const server = createServer(async (req, res) => {
             set(field("recharge"),26);
             set(field("window"),0.55);
             set(field("reduction"),60);
+            const iconId="pack:capture:icon-reaction-defense-01";
+            if(![...field("icon").options].some(o=>o.value===iconId))
+              throw Error("reaction icon missing from GenSrpG assets");
+            set(field("icon"),iconId);
+            const preview=q("[data-preview-reaction-icon]");
+            if(!preview?.src.includes("icon_reaction_defense_01.webp") || preview.dataset.empty==="true")
+              throw Error("reaction icon preview did not resolve from global library");
             q("[data-creature-update]").click();
             if(!q("[data-creature-library-state]").textContent.includes("mise à jour"))
               throw Error("real update refused: "+q("[data-editor-status]")?.textContent?.slice(0,120));
             selectCreature("crea_mossback");
-            if(field("type").value!=="legacy")
-              throw Error("Foudrillon settings leaked to other creature");
+            if(field("type").value!=="legacy" || field("icon").value!=="")
+              throw Error("Foudrillon icon/settings leaked to another creature");
             selectCreature("crea_foudrillon");
             if(field("type").value!=="defense" || field("charges").value!=="3" ||
                field("recharge").value!=="26" || field("window").value!=="0.55" ||
                field("reduction").value!=="60" ||
+               field("icon").value!=="pack:capture:icon-reaction-defense-01" ||
+               !q("[data-preview-reaction-icon]")?.src.includes("icon_reaction_defense_01.webp") ||
                q("[data-creature-reaction-defense-field]").hidden)
               throw Error("saved guard fields not roundtripped in real editor");
             set(field("type"),"dodge");
