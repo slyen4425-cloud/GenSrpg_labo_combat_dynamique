@@ -15,6 +15,7 @@ import {
   applyCaptureTransferBatchToEditorStateV1
 } from "../../src/ui/capture-editor-file-transfer-v1.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
+import {createCombatRuntime} from "../../src/core/combat/combat-runtime.js";
 
 const path="data/capture/showcase/cap_fire_atk_5.capture-skill-transfer-v1.json";
 const read=p=>readFileSync(new URL("../../"+p,import.meta.url));
@@ -27,8 +28,8 @@ const sha256=b=>createHash("sha256").update(b).digest("hex");
 
 test("Vague incendiaire is the exact uploaded transfer and the only active author preset for this ID",()=>{
  const bytes=sourceBytes();
- assert.equal(bytes.length,2440);
- assert.equal(sha256(bytes),"940b888b237212bbe5235c34c140931a06e2dadbfc4ad29da342009646a21a44");
+ assert.equal(bytes.length,3352);
+ assert.equal(sha256(bytes),"9e940251a53f66fd2d04e40c1bf4fb09d5abcbfdce074f47e674e29a382ee3c3");
  assert.equal(presetFiles.filter(p=>p===path).length,1);
  assert.equal(presetFiles.length,28);
  assert.equal(new Set(presetFiles).size,presetFiles.length);
@@ -41,20 +42,23 @@ test("Vague incendiaire is the exact uploaded transfer and the only active autho
  );
 });
 
-test("author's Vague incendiaire keeps projectile, damage, DOT, targeting and absent presentation unchanged",()=>{
+test("author's Vague incendiaire keeps expanding wave, damage, DOT and exact sprite unchanged",()=>{
  const d=skill(),s=d.definition;
  assert.equal(d.requiredLevel,15);
  assert.equal(s.name,"Vague incendiaire");
  assert.equal(s.form,"projectile");
- assert.equal(s.projectileTargeting,"direct");
+ assert.equal(s.projectileTargeting,"expanding_wave");
+ assert.deepEqual(s.expandingWave,{startRadiusPct:8,endRadiusPct:65,thicknessPct:8});
+ assert.equal(s.projectileClash.power,4);
  assert.equal(s.element,"fire");
  assert.equal(s.energyCost,6);
  assert.equal(s.preparationMs,1700);
  assert.equal(s.travelMs,2500);
- assert.equal(s.cooldownMs,45);
+ assert.equal(s.cooldownMs,45000);
  assert.deepEqual(s.hitPresenceStates,["surface","airborne"]);
- assert.equal(s.hitsIntangible,true);
- assert.equal(d.presentation,null);
+ assert.equal(s.hitsIntangible,false);
+ assert.equal(d.presentation.visual.travel.assetId,"pack:capture:sprite-fire-bubble-expansion-01");
+ assert.equal(d.presentation.visual.travel.opacity,1);
  assert.equal(s.effects.length,2);
  assert.deepEqual(
   {kind:s.effects[0].kind,amount:s.effects[0].amount,channel:s.effects[0].channel},
@@ -97,18 +101,35 @@ test("showcase preload replaces existing configuredSkills owner without doubling
  assert.equal(dracendre.loadout.slots[3].skillId,"cap_fire_atk_5");
 });
 
-test("real combat executes the author's direct fire damage and applies its timed fire damage status",()=>{
+test("the author's wave requires real Runtime contact before fire damage and status",()=>{
  const f=id=>({id,maxHp:120,initialHp:120,maxEnergy:50,initialEnergy:50,
   energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
  const session=createCombatSession({distance:"short",fighters:[f("player"),f("enemy")]});
- const result=session.useSkill({actorId:"player",targetId:"enemy",skill:skill().definition});
- assert.equal(result.ok,true);
- const enemy=session.snapshot().fighters.enemy;
- assert.equal(enemy.hp,95);
- assert.equal(enemy.statusEffects.length,1);
- const applied=enemy.statusEffects[0];
+ const skillDefinition=skill().definition;
+ assert.equal(skillDefinition.projectileTargeting,"expanding_wave");
+ assert.equal(skillDefinition.effects.length,2);
+ const clock={now:0,seq:0,timers:new Map()};
+ const runtime=createCombatRuntime({session,now:()=>clock.now,
+  setTimer:cb=>{const id=++clock.seq;clock.timers.set(id,cb);return id;},
+  clearTimer:id=>clock.timers.delete(id)});
+ runtime.start();
+ assert.equal(runtime.startSkill({actorId:"player",targetId:"enemy",skill:skillDefinition}).ok,true);
+ assert.equal(session.snapshot().fighters.enemy.hp,120);
+ // The same Runtime release and collision path used by animated wave skills.
+ clock.now=1700;
+ const tick=clock.timers.entries().next().value;
+ assert.ok(tick);
+ clock.timers.delete(tick[0]);tick[1]();
+ assert.equal(session.snapshot().fighters.enemy.hp,120);
+ clock.now=1900;
+ const contacted=runtime.reportActionContact({actorId:"player",targetId:"enemy",skillId:"cap_fire_atk_5"});
+ assert.equal(contacted.ok,true);
+ assert.equal(session.snapshot().fighters.enemy.hp,95);
+ const applied=session.snapshot().fighters.enemy.statusEffects[0];
  assert.equal(applied.definition.kind,"damage_over_time");
  assert.equal(applied.definition.amount,8);
  assert.equal(applied.definition.tickIntervalMs,2000);
  assert.equal(applied.definition.durationMs,10000);
+ runtime.dispose();
 });
+
