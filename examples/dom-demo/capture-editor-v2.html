@@ -179,8 +179,34 @@
           </div>
         </div>
 
+        <fieldset data-creature-defensive-reaction>
+          <legend>Réaction défensive de cette créature</legend>
+          <div class="grid two">
+            <label>Réaction
+              <select data-creature-reaction-type>
+                <option value="legacy">Ancienne règle globale (compatibilité)</option>
+                <option value="dodge">Esquive — évite l’attaque</option>
+                <option value="defense">Défense — réduit les dégâts</option>
+                <option value="none">Aucune réaction</option>
+              </select>
+            </label>
+            <label>Charges
+              <input type="number" min="1" max="99" step="1" value="2" data-creature-reaction-charges>
+            </label>
+            <label>Recharge (secondes)
+              <input type="number" min="0" step="0.1" value="30" data-creature-reaction-recharge>
+            </label>
+            <label>Fenêtre active (secondes)
+              <input type="number" min="0.05" step="0.05" value="0.25" data-creature-reaction-window>
+            </label>
+            <label data-creature-reaction-defense-field>Réduction de dégâts en Défense (%)
+              <input type="number" min="0" max="100" step="1" value="50" data-creature-reaction-reduction>
+            </label>
+          </div>
+          <p class="note">Les charges, la recharge et le mode appartiennent à cette créature. Le moteur conserve ses règles de combat et ses timings. Les anciens exports peuvent garder la règle globale.</p>
+        </fieldset>
         <div class="grid two">
-          <label>Effet visuel d’esquive
+          <label>Effet visuel d’esquive / défense
             <select data-creature-dodge-fx data-asset-role="dodge">
               <option value="">Aucun</option>
             </select>
@@ -195,7 +221,7 @@
               data-creature-dodge-scale
             >
           </label>
-          <label>Durée du sprite d’esquive (ms)
+          <label>Durée du sprite de réaction (ms)
             <input type="number" min="50" max="10000" step="50" value="700" data-creature-dodge-duration>
           </label>
           <label>Décalage X
@@ -216,7 +242,7 @@
           </label>
         </div>
         <p class="note">
-          Cet effet appartient à l’apparence de la créature. Il accompagne sa disparition pendant l’Esquive : éclair, feuilles, poussière, fumée… Aucun effet n’est choisi automatiquement selon l’élément.
+          Cet effet appartient à la créature. En Esquive elle disparaît temporairement ; en Défense elle reste visible. Même sélection de sprite et mêmes réglages, sans changement automatique selon l’élément.
         </p>
 
         <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
