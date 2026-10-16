@@ -43,3 +43,13 @@ jobs:
           node-version: 22
       - name: Real Chromium expanding wave on two independent 2v2 targets
         run: node tests/browser/expanding-wave-2v2-smoke.mjs
+
+  expanding-wave-mobile-preview-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium standalone 2v2 mobile preview startup
+        run: node tests/browser/expanding-wave-mini-preview-smoke.mjs
