@@ -763,6 +763,60 @@ button.reserve-card {
   z-index: 1;
 }
 
+/* One-pixel gameplay readability, never another collision or effect clock.
+   Wave edges inherit the EXACT transformed shell; their alpha stays stable
+   even if the decorative sprite fades to 0%. */
+.skill-fx__tactical-radius {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(244, 215, 155, 0.52);
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: none;
+}
+
+.skill-fx__tactical-wave-inner {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid rgba(244, 215, 155, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.skill-fx--expanding-wave > .skill-fx__sprite,
+.skill-fx__tactical-fallback {
+  z-index: 1;
+}
+
+.skill-fx__tactical-fallback {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Persistent zones: ellipse cloned from the *native sampled FX bounds*.
+   The one-pixel line is deliberately quieter than the authored VFX. */
+.skill-fx--persistent-zone.skill-fx--tactical-zone {
+  z-index: 5;
+  box-sizing: border-box;
+  border: 1px solid rgba(244, 215, 155, 0.48);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 0.5px rgba(244, 215, 155, 0.1);
+  pointer-events: none;
+}
+
+.skill-fx--persistent-zone.skill-fx--tactical-zone.skill-fx--layer-behind {
+  z-index: 0;
+}
+
+.skill-fx--persistent-zone.skill-fx--tactical-full-arena {
+  border-radius: 6px;
+  aspect-ratio: auto;
+}
+
 .skill-fx--clash-impact {
   z-index: 12;
   width: clamp(5.2rem, 15vw, 9rem);
