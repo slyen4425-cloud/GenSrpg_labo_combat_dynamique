@@ -1316,9 +1316,31 @@ html {
   bottom: 0.45rem;
 }
 
-/* Icon belongs to the same established dodge/defense button, never a new action. */
-.combat-dodge-action__icon { width: clamp(1.65rem, 5dvh, 2.35rem); height: clamp(1.65rem, 5dvh, 2.35rem); display: block; object-fit: contain; pointer-events: none; }
+/* One reaction button with the SAME skill dial/artwork from demo.css.
+   The native Combat Session drives --cooldown-progress, not CSS timers. */
+.combat-dodge-action__icon-shell {
+  width: clamp(1.65rem, 5dvh, 2.35rem);
+  height: clamp(1.65rem, 5dvh, 2.35rem);
+  flex: 0 0 auto;
+}
+.combat-dodge-action__icon-shell[hidden] { display: none; }
+.combat-dodge-action__icon { object-fit: contain; pointer-events: none; }
 .combat-dodge-action__icon[hidden] { display: none; }
+.combat-dodge-action[data-cooldown-active="true"] .action-option__icon--base {
+  filter: grayscale(1) saturate(0) brightness(0.48)
+    drop-shadow(0 0.18rem 0.24rem rgba(0, 0, 0, 0.42));
+}
+.combat-dodge-action[data-cooldown-active="true"] .action-option__cooldown-dial,
+.combat-dodge-action[data-cooldown-active="true"] .action-option__cooldown-needle {
+  opacity: 1;
+}
+.combat-dodge-action[data-cooldown-active="true"]:disabled {
+  opacity: 1;
+  filter: none;
+}
+.combat-dodge-action[data-cooldown-exhausted="true"] {
+  border-color: rgba(145, 193, 205, 0.28);
+}
 .combat-dodge-action__charges {
   font-weight: 800;
 }
