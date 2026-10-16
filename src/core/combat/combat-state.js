@@ -1,3 +1,4 @@
+import { normalizeCaptureCreatureDefensiveReactionV1 } from "../../contracts/capture-creature-defensive-reaction-v1.js";
 import { assertCombatDistance } from "./distance.js";
 import {
   normalizeStatEffectRulesByIdV1
@@ -283,7 +284,11 @@ function normalizeFighter(input) {
     damageReductionPct: finiteNonNegative(
       input.damageReductionPct ?? 0,
       id + ".damageReductionPct"
-    )
+    ),
+    ...(input.defensiveReaction == null ? {} : {
+      defensiveReaction: normalizeCaptureCreatureDefensiveReactionV1(input.defensiveReaction),
+      defensiveCreatureId: String(input.defensiveCreatureId ?? id)
+    })
   };
 
   if(hasOwn(input,"outgoingDamagePct")){
