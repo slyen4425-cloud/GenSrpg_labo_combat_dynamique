@@ -1,0 +1,40 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body.wave-mini-body { margin:0; min-height:100vh; background:#101a24; color:#edf3fb; font: 500 15px/1.4 system-ui, sans-serif; }
+.wave-mini { max-width:1150px; margin:auto; padding:12px clamp(10px,3vw,22px) 20px; }
+.wave-mini__header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.wave-mini__header strong {font-size:clamp(15px,2.1vw,20px);}
+.wave-mini__header p {margin:2px 0 0; color:#bbcadb; font-size:12px;}
+.wave-mini__header a {font-size:12px;color:#a8d6ff;}
+.wave-mini__stage {position:relative; overflow:hidden; width:100%; height:clamp(260px,55vh,520px); border:1px solid #445974; border-radius:16px; isolation:isolate; background:radial-gradient(ellipse at center,#27485a 0%,#142934 76%,#12232b 100%);}
+.wave-mini__field {position:absolute;inset:0;pointer-events:none; background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 1px),rgba(255,255,255,.04) calc(10% - 1px),rgba(255,255,255,.04) 10%);}
+.wave-mini__actor {position:absolute;z-index:3;display:flex;flex-direction:column;align-items:center;gap:4px;transform:translate(-50%,-50%);width:85px; text-align:center; font-size:12px; font-weight:700; text-shadow:0 2px 4px #000;}
+.wave-mini__model {height:clamp(38px,7vw,56px);width:clamp(38px,7vw,56px);border-radius:50%;border:3px solid rgba(255,255,255,.8);box-shadow:0 4px 8px rgba(0,0,0,.3),inset 0 6px 9px rgba(255,255,255,.17); }
+.wave-mini__model[data-mini-hit="true"] {filter:brightness(1.8);outline:3px solid #fff2ac;}
+.wave-mini__actor span {padding:3px 5px; background:rgba(9,17,24,.7);border-radius:6px;white-space:nowrap;}
+.wave-mini__actor small {display:block;color:#e7ffa4;font-size:11px;}
+.wave-mini__actor--player {left:20%;top:40%;}
+.wave-mini__actor--ally {left:28%;top:76%;}
+.wave-mini__actor--opponent {left:58%;top:30%;}
+.wave-mini__actor--opponent-b {left:79%;top:67%;}
+.wave-mini__actor--player .wave-mini__model {background:radial-gradient(circle at 25% 20%,#ffe6b7,#ef6728 52%,#872b20);}
+.wave-mini__actor--ally .wave-mini__model {background:radial-gradient(circle at 25% 20%,#c4ffc9,#41a777 52%,#16644d);}
+.wave-mini__actor--opponent .wave-mini__model {background:radial-gradient(circle at 25% 20%,#e9e8ff,#8587ca 52%,#48377a);}
+.wave-mini__actor--opponent-b .wave-mini__model {background:radial-gradient(circle at 25% 20%,#fee3f5,#bb62a5 52%,#62275a);}
+.wave-mini__controls {display:flex;flex-wrap:wrap;gap:9px; margin-top:12px;}
+.wave-mini__controls button {flex:1 1 180px;padding:12px 10px;border:1px solid #6383aa;border-radius:10px;background:#274e76;color:white;font:700 13px system-ui;cursor:pointer;}
+.wave-mini__controls button:disabled {opacity:.5;cursor:default;}
+.wave-mini__controls .wave-mini__reset {flex:0 1 140px;background:#243847;}
+.wave-mini__status {display:block;margin:12px 0 7px;font-size:14px;font-weight:650;color:#e6f5a6;min-height:22px;}
+.wave-mini__note {color:#bdcce0;font-size:12px;margin:7px 0 0;}
+.wave-mini__stage .skill-fx--expanding-wave {z-index:2;}
+.wave-mini__stage .skill-fx--expanding-wave .skill-fx__tactical-fallback {opacity:.56;}
+@media(orientation:portrait) {
+  .wave-mini__stage {height:clamp(320px,48vh,520px);}
+  .wave-mini__header {align-items:flex-start;}
+}
+@media(max-height:500px) and (orientation:landscape) {
+ .wave-mini__stage {height:clamp(175px,49vh,320px);}
+ .wave-mini__controls button {padding:8px 7px;}
+ .wave-mini__note {font-size:11px;}
+}
