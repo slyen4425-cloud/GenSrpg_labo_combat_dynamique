@@ -59,13 +59,13 @@ async function scenario(source){
   return {mask,origin:{x:r.left,y:r.top},
    axisX:{x:r.right,y:r.top},axisY:{x:r.left,y:r.bottom}};
  }});
- let runtime=null,releaseShell=null;
+ let runtime=null,releaseShell=null,samples=0;
  const contacts=[],resolutions=[];
  const fx=createDomSkillFxRenderer({
    arena,anchors,targetAnchors:anchors,presentationForSkill:()=>null,
    // Headless Chromium's virtual-time budget can suspend normal RAF paint.
    // Only the test scheduler uses ticks; sampling remains real DOM/WAAPI.
-   requestFrame:callback=>setTimeout(callback,16),
+   requestFrame:callback=>setTimeout(()=>{samples++;callback()},16),
    cancelFrame:handle=>clearTimeout(handle),
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
@@ -95,7 +95,11 @@ async function scenario(source){
   const style=getComputedStyle(releaseShell);
   check(style.getPropertyValue("--tactical-edge").includes("0.52"),"shared wave palette preserved");
   await new Promise(resolve=>setTimeout(resolve,1750));
-  check(contacts.filter(x=>x.waveMultiTarget).length===2,"two distinct visible ring crossings: "+contacts.map(x=>x.targetId).join(","));
+  check(contacts.filter(x=>x.waveMultiTarget).length===2,
+   "two distinct visible ring crossings: "+contacts.map(x=>x.targetId).join(",")+
+   " samples="+samples+" ring="+JSON.stringify(releaseShell&&{left:releaseShell.getBoundingClientRect().left,top:releaseShell.getBoundingClientRect().top,width:releaseShell.getBoundingClientRect().width})+
+   " actor="+JSON.stringify({left:anchors[enemies[0]].getBoundingClientRect().left,top:anchors[enemies[0]].getBoundingClientRect().top})+
+   " state="+runtime.hasActiveAction);
   check(new Set(contacts.map(x=>x.targetId)).size===2,"no repeated enemy contact");
   check(resolutions.length===2,"two distinct Runtime resolutions");
   check(resolutions.every(x=>x.outcome==="hit"&&x.waveContact===true),"canonical successful hits");
