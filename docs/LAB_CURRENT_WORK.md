@@ -2516,3 +2516,9 @@ Propositions seulement, hors lot : répétition configurable du son de déplacem
 - Tests RED puis GREEN : ennemi non-roster vivant/KO et joueur rappelé, ciblage capable d'activer Griffe/Boule de feu, IA non-roster, fin de combat single-fire et retour ; contrôle Chromium Encounter d'au moins une capacité réellement utilisable, bouton plein écran et CSS canonique ; trois jobs CI Combat + sentinelles Exploration/PDF non requis. Documentation, checkpoint prévalidation, nouvelle preview Pages par PR infrastructure seule après passes.
 - Hors lot : assets/sprites, formules de combat, réglages des capacités, moteur Capture éditeur, Zombicide-40k, carte/terrain/Builder, autres branches, Combat `gh-pages` en évolution.
 - **GREEN technique et publication bloqués jusqu'aux vraies gates** ; validation Android créateur distincte.
+
+
+### 2026-10-16 — Encounter Android : prévalidation technique
+- Correctif du propriétaire `RosterController.isPresent` : pour un acteur non-roster, lire exclusivement `CombatSession.fighters[actorId].hp`. Aucun faux membre/roster créé. Le test natif vérifie ennemi sauvage vivant puis KO. L'UI garde `spec.skillIds` pour l'IA sans roster ; KO d'un acteur sauvage utilise `CombatState`/end callback natif, jamais `RosterSession.replaceKnockedOut` sans membre.
+- Le point d'entrée Encounter affiche une commande explicite de demande `requestFullscreen` via le seul propriétaire `CapturePreviewDisplayModeV1`, sur geste utilisateur ; fallback informatif quand le navigateur refuse.
+- Code sous revue `ae8ff1c5995522ed497cbaf64d1fcf25fdf498e7` ; trois jobs du CI Combat `38846780448` **SUCCESS**. Vérification intégrée au vrai navigateur Chromium Exploration `38846986665` **SUCCESS** : Griffe réellement cliquée, préparation native observée, bouton fullscreen disponible, HUD et carte conservés. Checkpoint technique à figer ; Android utilisateur non revalidé, pas de GREEN final.
