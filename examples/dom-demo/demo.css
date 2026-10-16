@@ -770,7 +770,8 @@ button.reserve-card {
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  border: 1px solid rgba(244, 215, 155, 0.52);
+  border: 1.5px solid var(--tactical-edge, rgba(245, 225, 185, 0.78));
+  box-shadow: 0 0 0.3rem var(--tactical-halo, rgba(245, 225, 185, 0.24));
   border-radius: 50%;
   background: transparent;
   pointer-events: none;
@@ -779,7 +780,7 @@ button.reserve-card {
 .skill-fx__tactical-wave-inner {
   position: absolute;
   box-sizing: border-box;
-  border: 1px solid rgba(244, 215, 155, 0.2);
+  border: 1px solid var(--tactical-inner, rgba(245, 225, 185, 0.3));
   border-radius: 50%;
   pointer-events: none;
 }
@@ -803,10 +804,10 @@ button.reserve-card {
   width: clamp(6rem, 20vw, 12rem);
   aspect-ratio: 1;
   box-sizing: border-box;
-  border: 1px solid rgba(244, 215, 155, 0.48);
+  border: 1.5px solid var(--tactical-edge, rgba(245, 225, 185, 0.78));
   border-radius: 50%;
-  background: transparent;
-  box-shadow: 0 0 0 0.5px rgba(244, 215, 155, 0.1);
+  background: var(--tactical-fill, rgba(245, 225, 185, 0.035));
+  box-shadow: 0 0 0.32rem var(--tactical-halo, rgba(245, 225, 185, 0.24));
   pointer-events: none;
 }
 
@@ -817,6 +818,114 @@ button.reserve-card {
 .skill-fx--tactical-zone.skill-fx--tactical-full-arena {
   border-radius: 6px;
   aspect-ratio: auto;
+}
+
+/* Element is already owned by the released skill or CombatState persistent
+   zone; selectors only color the thin noninteractive tactical boundaries. */
+.skill-fx--tactical-zone::after { display: none; }
+
+.skill-fx--tactical-zone[data-element="fire"],
+.skill-fx--expanding-wave[data-element="fire"] {
+  --tactical-edge: rgba(255, 91, 64, 0.88);
+  --tactical-halo: rgba(255, 50, 44, 0.32);
+  --tactical-inner: rgba(255, 91, 64, 0.35);
+  --tactical-fill: rgba(255, 91, 64, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="water"],
+.skill-fx--expanding-wave[data-element="water"] {
+  --tactical-edge: rgba(70, 182, 255, 0.88);
+  --tactical-halo: rgba(55, 145, 245, 0.32);
+  --tactical-inner: rgba(70, 182, 255, 0.35);
+  --tactical-fill: rgba(70, 182, 255, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="ice"],
+.skill-fx--expanding-wave[data-element="ice"] {
+  --tactical-edge: rgba(112, 225, 255, 0.88);
+  --tactical-halo: rgba(67, 188, 245, 0.32);
+  --tactical-inner: rgba(112, 225, 255, 0.35);
+  --tactical-fill: rgba(112, 225, 255, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="nature"],
+.skill-fx--expanding-wave[data-element="nature"] {
+  --tactical-edge: rgba(109, 226, 116, 0.88);
+  --tactical-halo: rgba(60, 190, 85, 0.32);
+  --tactical-inner: rgba(109, 226, 116, 0.35);
+  --tactical-fill: rgba(109, 226, 116, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="electric"],
+.skill-fx--expanding-wave[data-element="electric"] {
+  --tactical-edge: rgba(255, 224, 90, 0.88);
+  --tactical-halo: rgba(240, 192, 35, 0.32);
+  --tactical-inner: rgba(255, 224, 90, 0.35);
+  --tactical-fill: rgba(255, 224, 90, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="earth"],
+.skill-fx--expanding-wave[data-element="earth"] {
+  --tactical-edge: rgba(211, 167, 101, 0.88);
+  --tactical-halo: rgba(158, 126, 65, 0.32);
+  --tactical-inner: rgba(211, 167, 101, 0.35);
+  --tactical-fill: rgba(211, 167, 101, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="air"],
+.skill-fx--expanding-wave[data-element="air"] {
+  --tactical-edge: rgba(148, 224, 228, 0.88);
+  --tactical-halo: rgba(105, 191, 205, 0.32);
+  --tactical-inner: rgba(148, 224, 228, 0.35);
+  --tactical-fill: rgba(148, 224, 228, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="poison"],
+.skill-fx--expanding-wave[data-element="poison"] {
+  --tactical-edge: rgba(175, 117, 236, 0.88);
+  --tactical-halo: rgba(146, 86, 212, 0.32);
+  --tactical-inner: rgba(175, 117, 236, 0.35);
+  --tactical-fill: rgba(175, 117, 236, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="light"],
+.skill-fx--expanding-wave[data-element="light"] {
+  --tactical-edge: rgba(255, 237, 154, 0.88);
+  --tactical-halo: rgba(255, 210, 96, 0.32);
+  --tactical-inner: rgba(255, 237, 154, 0.35);
+  --tactical-fill: rgba(255, 237, 154, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="shadow"],
+.skill-fx--expanding-wave[data-element="shadow"] {
+  --tactical-edge: rgba(173, 125, 229, 0.88);
+  --tactical-halo: rgba(118, 71, 183, 0.32);
+  --tactical-inner: rgba(173, 125, 229, 0.35);
+  --tactical-fill: rgba(173, 125, 229, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="steel"],
+.skill-fx--expanding-wave[data-element="steel"] {
+  --tactical-edge: rgba(164, 198, 221, 0.88);
+  --tactical-halo: rgba(121, 157, 184, 0.32);
+  --tactical-inner: rgba(164, 198, 221, 0.35);
+  --tactical-fill: rgba(164, 198, 221, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="psy"],
+.skill-fx--expanding-wave[data-element="psy"] {
+  --tactical-edge: rgba(246, 139, 208, 0.88);
+  --tactical-halo: rgba(215, 87, 168, 0.32);
+  --tactical-inner: rgba(246, 139, 208, 0.35);
+  --tactical-fill: rgba(246, 139, 208, 0.035);
+}
+
+.skill-fx--tactical-zone[data-element="spirit"],
+.skill-fx--expanding-wave[data-element="spirit"] {
+  --tactical-edge: rgba(197, 181, 245, 0.88);
+  --tactical-halo: rgba(157, 134, 222, 0.32);
+  --tactical-inner: rgba(197, 181, 245, 0.35);
+  --tactical-fill: rgba(197, 181, 245, 0.035);
 }
 
 .skill-fx--clash-impact {
