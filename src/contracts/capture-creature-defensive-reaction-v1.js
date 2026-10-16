@@ -19,7 +19,7 @@ export function normalizeCaptureCreatureDefensiveReactionV1(raw) {
   }
   const allowed = new Set([
     "type", "maxCharges", "rechargeMs",
-    "activeWindowMs", "damageReductionPct"
+    "activeWindowMs", "damageReductionPct", "iconAssetId"
   ]);
   for (const key of Object.keys(raw)) {
     if (!allowed.has(key)) {
@@ -47,7 +47,12 @@ export function normalizeCaptureCreatureDefensiveReactionV1(raw) {
       damageReductionPct < 0 || damageReductionPct > 100) {
     throw new RangeError("creature reaction damageReductionPct must be within 0..100");
   }
+  const iconAssetId = raw.iconAssetId ?? null;
+  if (iconAssetId !== null && (typeof iconAssetId !== "string" || !/^[A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)+$/.test(iconAssetId.trim()))) {
+    throw new TypeError("creature reaction iconAssetId must be a stable asset ID");
+  }
   return Object.freeze({
+    ...(iconAssetId === null ? {} : { iconAssetId: iconAssetId.trim() }),
     type: raw.type,
     maxCharges,
     rechargeMs,
