@@ -1952,12 +1952,29 @@ export function createDomSkillFxRenderer({
       const offsetY =
         Number(visual.offsetY) || 0;
 
-      record.node.style.left =
-        `${source.x + offsetX}px`;
-      record.node.style.top =
-        `${source.y + offsetY}px`;
-      record.node.style.transform =
-        `translate(-50%, -50%) scale(${effectiveScaleX}, ${effectiveScaleY})`;
+      // Native "long" is *the entire battlefield*, not the 1.9x ellipse.
+      // The same persistent-zone sprite must reflect that authoritative
+      // reach: otherwise foes take damage outside the visible fire.
+      // This is visual projection only. For short/medium, the very same
+      // original sprite bounds remain the single native occupancy sample.
+      if (zone.radius === "long") {
+        record.node.style.left = "50%";
+        record.node.style.top = "50%";
+        record.node.style.width = "100%";
+        record.node.style.height = "100%";
+        record.node.style.aspectRatio = "auto";
+        record.node.style.transform = "translate(-50%, -50%)";
+      } else {
+        // Reset all full-field properties for radius changes without
+        // re-creating the authored frame animation or its runtime owner.
+        record.node.style.width = "";
+        record.node.style.height = "";
+        record.node.style.aspectRatio = "";
+        record.node.style.left = `${source.x + offsetX}px`;
+        record.node.style.top = `${source.y + offsetY}px`;
+        record.node.style.transform =
+          `translate(-50%, -50%) scale(${effectiveScaleX}, ${effectiveScaleY})`;
+      }
       record.node.style.opacity =
         String(visual.opacity ?? 1);
       record.node.dataset.zoneRadius =
