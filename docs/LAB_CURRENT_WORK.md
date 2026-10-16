@@ -2559,3 +2559,12 @@ Le test navigateur existant `tests/browser/firestorm-zone-growth-smoke.mjs` est 
 - Code, tests et documentation au commit `68491fcc29c4fad2e23f8bc22267b011c582b0c4` ; workflow `38847723464` **3/3 SUCCESS** : Foundation **1838/1838** (0 FAIL), Firestorm Chromium (huit scénarios 1v1/2v2 et joueur/IA), Creature Library Chromium. Le test navigateur réel vérifie le trait 1 px, l'ordre visuel sous le sprite, les bornes court/moyen, le plein champ long et le cleanup à expiration.
 - Diff audité : changements circonscrits au renderer, CSS, tests et docs ; aucun contrat de dégâts, skill auteur, dépendance au dépôt principal, autre labo ou asset binaire. Aucun résultat Android physique n'est revendiqué.
 - Ce commit documentaire doit passer ses propres vérifications sur SHA exact **avant** checkpoint GREEN, branche preview et publication sous lease de `gh-pages`.
+
+
+## 2026-10-16 — Lot A : restitution du preset auteur Vague incendiaire
+
+- Base exacte `gh-pages@34acc1c4fb59a44a95403704487bd91f54b1012a`. Checkpoint `checkpoint/lab-start-fire-wave-author-preset-2026-10-16` et branche `work/lab-fire-wave-author-preset-2026-10-16` ; charte / roadmap / current work / architecture / checkpoint policy LIVE consultés.
+- Objectif : remplacer **exactement**, sans transformer ni améliorer, la fiche active `data/capture/showcase/cap_fire_atk_5.capture-skill-transfer-v1.json` par l'export utilisateur `gensrpg-capture-skill-cap_fire_atk_5(1).json` ; ID stable `cap_fire_atk_5`, emplacement Dracendre `slot-4` inchangé, ancienne fiche supprimée par remplacement unique (pas de doublon).
+- Propriétaires : `configuredSkills` (entrée unique indexée ID) et chargeur showcase existant. Aucun code moteur/FX ou autre compétence modifié ; aucun autre dépôt et ni `main` ni `global-assets`.
+- Fichiers autorisés : JSON de transfert ci-dessus, nouveau `tests/integration/fire-wave-author-showcase-v1.test.mjs`, `docs/LAB_FIRE_WAVE_AUTHOR_PRESET_V1.md`, ce journal. Test : intégrité de tout l'export auteur, roundtrip via import canonique, exactitude expanding wave 8/65/8, coût/45 s, puissance 4, sprite assetId, dégâts/DoT, identité avec le loadout Dracendre et sans seconde fiche, validation CI Foundation + deux Chromium, checkpoint GREEN au SHA final avant publication sous lease.
+- Risques : cache mobile auteur / media CDN non chargé, ancien test historique de projectile direct, délai de CI, possible conflit si gh-pages avance. Android manuel reste à confirmer.
