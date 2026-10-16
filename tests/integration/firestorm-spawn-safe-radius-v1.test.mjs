@@ -65,7 +65,14 @@ function arenaFixture(draft){
     const contains=visiblePersistentZoneRelationV1({sample,zoneId:zone.id,sourceActorId:"player",radius:zone.radius,candidateId:"opponent"});
     const marker=arena.nodes.find(x=>x.className?.includes("skill-fx--tactical-zone"));
     const sprite=arena.nodes.find(x=>x.className?.includes("skill-fx--persistent-zone"));
-    assert.equal(marker?.style.transform,sprite?.style.transform,"same native bounds/contour");
+    if(zone.radius==="long"){
+      assert.match(marker.className,/skill-fx--tactical-full-arena/,
+        "long is full battlefield, so the marker outlines the arena");
+      assert.equal(marker.style.transform,"none");
+    }else{
+      assert.equal(marker?.style.transform,sprite?.style.transform,
+        "short/medium marker uses same sampled native ellipse");
+    }
     const hpBefore=state.fighters.opponent.hp;
     // Real persistent-zone damage owner; this sample must be the same as the
     // visible contour and the author skill's radius.
