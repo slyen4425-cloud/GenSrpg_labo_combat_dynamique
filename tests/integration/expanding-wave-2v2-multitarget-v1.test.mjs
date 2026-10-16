@@ -18,7 +18,7 @@ const fighter=id=>({
   id,maxHp:100,initialHp:100,maxEnergy:20,initialEnergy:20,
   energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0
 });
-const wave=()=>normalizeSkillDefinition({
+const wave=(damage=20)=>normalizeSkillDefinition({
   id:"wave-2v2",name:"Onde expansive",category:"offensive",form:"projectile",
   projectileTargeting:"expanding_wave",
   expandingWave:{startRadiusPct:3,endRadiusPct:65,thicknessPct:6},
@@ -26,7 +26,7 @@ const wave=()=>normalizeSkillDefinition({
   travelMs:1000,recoveryMs:0,cooldownMs:0,
   hitPresenceStates:["surface","airborne"],
   targetRelations:["enemy"],allowedDistances:["short","medium","long"],
-  effect:{damage:20,heal:0,tags:[]}
+  effect:{damage,heal:0,tags:[]}
 });
 function clock(){
   let time=0,sequence=0;
@@ -81,6 +81,25 @@ test("one 2v2 expanding wave contacts two enemy slots only, each once, with one 
   assert.equal(game.session.snapshot().fighters.player.energy,17);
   assert.deepEqual(game.resolutions.map(x=>x.targetId),["opponent","opponent-b"]);
   assert.ok(game.resolutions.every(x=>x.waveContact===true));
+  game.runtime.dispose();
+});
+
+test("the first enemy can be KO without cancelling the released wave before it reaches the second",()=>{
+  const game=runtimeFixture();
+  assert.equal(game.runtime.startSkill({
+    actorId:"player",targetId:"opponent",skill:wave(100)
+  }).ok,true);
+  game.timer.setTime(250);
+  assert.equal(game.runtime.reportExpandingWaveTargetContact({
+    actorId:"player",targetId:"opponent",skillId:"wave-2v2"
+  }).ok,true);
+  assert.equal(game.session.snapshot().fighters.opponent.hp,0);
+  game.timer.setTime(550);
+  assert.equal(game.runtime.reportExpandingWaveTargetContact({
+    actorId:"player",targetId:"opponent-b",skillId:"wave-2v2"
+  }).ok,true);
+  assert.equal(game.session.snapshot().fighters["opponent-b"].hp,0);
+  assert.equal(game.resolutions.length,2);
   game.runtime.dispose();
 });
 
