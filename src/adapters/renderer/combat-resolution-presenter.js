@@ -489,7 +489,7 @@ export function createCombatResolutionPresenter({
     let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
 
-    cancelTravelAudio(actorSlot);
+    if (resolution.waveContact !== true) cancelTravelAudio(actorSlot);
     // Finish aerial loop/repeats on semantic arrival; old one-shot
     // footsteps retain their historical natural end.
     if(repeatingMovementByActor.has(actorSlot))cancelFootfallAudio(actorSlot);
@@ -509,7 +509,8 @@ export function createCombatResolutionPresenter({
 
     if (
       ["projectile", "beam"].includes(releaseEvent?.form) &&
-      resolution.outcome !== "clashed"
+      resolution.outcome !== "clashed" &&
+      resolution.waveContact !== true
     ) {
       // On an actual wave contact, let the same sprite shell finish
       // expanding visually. The hit has already been resolved by Combat
