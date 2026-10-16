@@ -1,0 +1,6 @@
+# Vague incendiaire — restauration du preset auteur (16 octobre 2026)
+
+- Source : transfert exact fourni par l'auteur `gensrpg-capture-skill-cap_fire_atk_5(1).json` (SHA256 du contenu : `9e940251a53f66fd2d04e40c1bf4fb09d5abcbfdce074f47e674e29a382ee3c3`), devenu l'unique preset `data/capture/showcase/cap_fire_atk_5.capture-skill-transfer-v1.json`.
+- Il est chargé par `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` dans `configuredSkills`, à ID inchangé `cap_fire_atk_5` ; Dracendre conserve le même `slot-4`. Aucun double enregistrement, aucun changement de créature.
+- Pas de réinterprétation de l'export : `projectileTargeting=expanding_wave`, géométrie 8/65/8 %, sprite `pack:capture:sprite-fire-bubble-expansion-01`, alpha 1, puissance 4, durée de trajet 2500 ms, cooldown 45000 ms, 25 dégâts feu + statut 8 feu toutes les 2 secondes 10 secondes. Aucun moteur ni asset modifié.
+- Sentinelle d'intégrité byte-for-byte + roundtrip de transfert et liaison loadout ; tests généraux Foundation / Firestorm / Creature Library Chromium requis avant checkpoint GREEN puis promotion sous lease. Test visuel Android à confirmer par l'auteur ; la présence d'un ID d'asset n'est pas une preuve de chargement média sur téléphone.
