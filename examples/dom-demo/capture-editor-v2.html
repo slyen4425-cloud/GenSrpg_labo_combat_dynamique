@@ -190,6 +190,15 @@
                 <option value="none">Aucune réaction</option>
               </select>
             </label>
+            <label>Icône du bouton en combat
+              <select data-creature-reaction-icon data-asset-role="icon">
+                <option value="">Icône par défaut selon le type</option>
+              </select>
+            </label>
+            <div class="preview-box preview-box--icon" aria-label="Aperçu de l’icône de réaction">
+              <img data-preview-reaction-icon alt="Aperçu du bouton" data-empty="true">
+              <span>Icône du bouton</span>
+            </div>
             <label>Charges
               <input type="number" min="1" max="99" step="1" value="2" data-creature-reaction-charges>
             </label>
@@ -1884,6 +1893,7 @@
             data-combat-dodge
             hidden
           >
+            <img data-combat-reaction-icon class="combat-dodge-action__icon" alt="" aria-hidden="true" hidden>
             <strong>Esquive</strong>
             <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
             <small data-combat-dodge-recharge hidden></small>
