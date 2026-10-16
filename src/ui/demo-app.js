@@ -540,6 +540,15 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "hidden" });
     }
 
+    if (type === "defense") {
+      // Reuse the creature's own dodge FX sprite, but not Dodge's vanish
+      // animation. Defense keeps the model visible and CombatDamage owns
+      // the reduction; this branch is presentation-only.
+      return Promise.resolve(
+        playDodgeAppearanceFx(slotKey, metadata?.durationMs).finished
+      );
+    }
+
     const activeApproach = activeApproachBySlot.get(slotKey);
     if (type === "hit" && activeApproach) {
       return Promise.resolve(activeApproach.finished).then(
