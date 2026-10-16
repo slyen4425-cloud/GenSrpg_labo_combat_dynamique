@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 153,
-    "icons": 57,
+    "assets": 155,
+    "icons": 59,
     "sprites": 80,
     "fx": 2,
     "portraits": 9,
@@ -5017,6 +5017,66 @@
         "frameCount": 20,
         "frameMs": 55,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-reaction-dodge-01",
+      "label": "Réaction — Esquive (cyan)",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "reaction",
+      "tags": [
+        "reaction",
+        "dodge",
+        "capture",
+        "ui"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/reactions/icon_reaction_dodge_cyan_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-reaction-defense-01",
+      "label": "Réaction — Défense (doré)",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "reaction",
+      "tags": [
+        "reaction",
+        "defense",
+        "capture",
+        "ui"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/reactions/icon_reaction_defense_gold_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [
