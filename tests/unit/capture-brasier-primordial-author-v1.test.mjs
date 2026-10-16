@@ -62,15 +62,17 @@ test("Brasier primordial: 3 original meteorite 20-frame asset IDs and the native
 test("canonical Capture transfer replaces Brasier primordial once and preserves Dracendre loadout",async()=>{
   const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
   const progression=normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
-  const dracendre=importCaptureTransferJsonV1(await read("data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json"),{statRegistry:registry}).value;
+  const creatureBytes=await read("data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json");
+  const dracendre=importCaptureTransferJsonV1(creatureBytes,{statRegistry:registry}).value;
   const skillTransfer=await load();
-  const creatureRecord={draft:dracendre.draft,loadout:dracendre.loadout,statValues:dracendre.statValues};
-  const configuredCreatures=new Map([[dracendre.draft.id,creatureRecord]]);
+  // The published stable Dracendre transfer already has every authored
+  // loadout reference. The skill-only transaction need not reimport it.
+  const configuredCreatures=new Map();
   const oldSkill={...skillTransfer.value.draft,
     definition:{...skillTransfer.value.draft.definition,projectileTargeting:"direct"},
     presentation:null};
   const configuredSkills=new Map([["cap_fire_atk_7",oldSkill]]);
-  const creatureBefore=JSON.stringify(configuredCreatures.get("crea_dracendre"));
+  const creatureBefore=creatureBytes;
   const beforeSize=configuredSkills.size;
   const plan=planCaptureTransferImportV1({
     currentDatabase:buildCaptureEditorDatabaseV1({
@@ -86,6 +88,6 @@ test("canonical Capture transfer replaces Brasier primordial once and preserves 
   assert.equal(configuredSkills.size,beforeSize);
   assert.deepEqual(configuredSkills.get("cap_fire_atk_7"),skillTransfer.value.draft);
   assert.equal(configuredSkills.get("cap_fire_atk_7").presentation.version,10);
-  assert.equal(JSON.stringify(configuredCreatures.get("crea_dracendre")),creatureBefore);
+  assert.equal(await read("data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json"),creatureBefore);
   assert.ok(dracendre.loadout.slots.some(slot=>slot.skillId==="cap_fire_atk_7"));
 });
