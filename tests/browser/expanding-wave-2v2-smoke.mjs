@@ -59,13 +59,21 @@ async function scenario(source){
   return {mask,origin:{x:r.left,y:r.top},
    axisX:{x:r.right,y:r.top},axisY:{x:r.left,y:r.bottom}};
  }});
- let runtime=null,releaseShell=null,samples=0;
+ let runtime=null,releaseShell=null,samples=0,waveStartAt=0;
  const contacts=[],resolutions=[];
  const fx=createDomSkillFxRenderer({
    arena,anchors,targetAnchors:anchors,presentationForSkill:()=>null,
-   // Headless Chromium's virtual-time budget can suspend normal RAF paint.
-   // Only the test scheduler uses ticks; sampling remains real DOM/WAAPI.
-   requestFrame:callback=>setTimeout(()=>{samples++;callback()},16),
+   // Chromium virtual time advances JS timers but can freeze compositor
+   // animations. Drive the REAL Web Animation's currentTime explicitly;
+   // the renderer still samples its browser-computed DOM bounds.
+   requestFrame:callback=>setTimeout(()=>{
+     const motion=releaseShell?.getAnimations?.()?.[0];
+     if(motion){
+       motion.pause();
+       motion.currentTime=Math.min(1200,Math.max(0,performance.now()-waveStartAt));
+     }
+     samples++;callback();
+   },16),
    cancelFrame:handle=>clearTimeout(handle),
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
@@ -85,6 +93,7 @@ async function scenario(source){
      check(plan.length===1,"single wave release plan");
      check(fx.play(plan[0]).status==="running","live animated wave");
      releaseShell=arena.querySelector(".skill-fx--expanding-wave");
+     waveStartAt=performance.now();
    },
    onResolved(result){resolutions.push(result);}
  });
