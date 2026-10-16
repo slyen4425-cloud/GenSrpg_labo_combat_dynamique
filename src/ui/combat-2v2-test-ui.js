@@ -1,3 +1,4 @@
+import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import {
@@ -621,6 +622,8 @@ export async function mountCoop2v2Test({
   const dodgeButton =
     root.querySelector("[data-combat-dodge]");
   const reactionIcon = dodgeButton?.querySelector("[data-combat-reaction-icon]") ?? null;
+  const reactionColorIcon = dodgeButton?.querySelector("[data-combat-reaction-icon-color]") ?? null;
+  const reactionIconShell = dodgeButton?.querySelector("[data-combat-reaction-icon-shell]") ?? null;
   const dodgeCharges =
     root.querySelector(
       "[data-combat-dodge-charges]"
@@ -1205,6 +1208,11 @@ export async function mountCoop2v2Test({
       const reaction = defensiveActionFor(controlledActorId());
       const enabled = reaction !== null;
       dodgeButton.hidden = !enabled;
+      if (!enabled) {
+        dodgeButton.dataset.cooldownActive = "false";
+        dodgeButton.dataset.cooldownExhausted = "false";
+        dodgeButton.style.setProperty("--cooldown-progress", "1");
+      }
       if (enabled) {
         const label = dodgeButton.querySelector("strong");
         if (label) label.textContent = reaction.label;
@@ -1213,9 +1221,15 @@ export async function mountCoop2v2Test({
           const asset = iconId && typeof presentationAssets?.asset === "function"
             ? presentationAssets.asset(iconId) : null;
           const url = asset?.url;
-          reactionIcon.hidden = !(typeof url === "string" && url !== "");
-          if (reactionIcon.hidden) reactionIcon.removeAttribute("src");
-          else if (reactionIcon.src !== url) reactionIcon.src = url;
+          const hasIcon = typeof url === "string" && url !== "";
+          reactionIcon.hidden = !hasIcon;
+          if (reactionColorIcon) reactionColorIcon.hidden = !hasIcon;
+          if (reactionIconShell) reactionIconShell.hidden = !hasIcon;
+          for (const icon of [reactionIcon, reactionColorIcon]) {
+            if (!icon) continue;
+            if (!hasIcon) icon.removeAttribute("src");
+            else if (icon.getAttribute("src") !== url) icon.src = url;
+          }
         }
         const availability =
           runtime.rechargeableActionAvailability({
@@ -1243,6 +1257,12 @@ export async function mountCoop2v2Test({
           windowStatus.active
             ? "true"
             : "false";
+        // Same clockwise color-return fraction as ordinary skill buttons.
+        // A charge still recharges while remaining charges are usable.
+        const clock = captureReactionRechargeClockV1(availability);
+        dodgeButton.dataset.cooldownActive = clock.active ? "true" : "false";
+        dodgeButton.dataset.cooldownExhausted = clock.exhausted ? "true" : "false";
+        dodgeButton.style.setProperty("--cooldown-progress", String(clock.progress));
 
         if (dodgeCharges) {
           dodgeCharges.textContent =
