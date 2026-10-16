@@ -12,7 +12,8 @@ import {
 } from "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js?rev=exploration-current-combat-2026-10-15";
 import {
   readExplorationCombatHandoffV1,
-  completeExplorationCombatHandoffV1
+  completeExplorationCombatHandoffV1,
+  notifyExplorationCombatParentV1
 } from "../../src/ui/exploration-encounter-handoff-v1.js?rev=exploration-current-combat-2026-10-15";
 import {
   fallbackEncounterCreatureMetaV1,
@@ -496,9 +497,14 @@ Promise.resolve()
               : "Défaite — retour à l’exploration…"
           );
 
-          window.location.assign(
-            completed.returnUrl
-          );
+          if (!notifyExplorationCombatParentV1({
+            windowRef: window,
+            result: completed.result
+          })) {
+            window.location.assign(
+              completed.returnUrl
+            );
+          }
         }
       });
 
