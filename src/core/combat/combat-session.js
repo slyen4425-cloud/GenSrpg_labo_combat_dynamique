@@ -345,6 +345,43 @@ export function createCombatSession({
     return withReserveSkillEffects(committed, action.actorId, action.skill);
   }
 
+  // A wave pays its energy/use/cooldown exactly once at startSkill.
+  // Every genuine visual contact is resolved by the SAME combat resolver,
+  // without ending the caster's action or ticking owner-action statuses again.
+  function completeExpandingWaveTarget({
+    action, targetId, reaction = null,
+    targetActionContext = null, resolutionAtMs = null
+  }) {
+    const sourceTeam = battleFormat?.teamOf?.(action?.actorId);
+    const targetTeam = battleFormat?.teamOf?.(targetId);
+    if (
+      action?.actionType !== "skill" ||
+      action.skill?.projectileTargeting !== "expanding_wave" ||
+      action.skill?.category !== "offensive" ||
+      sourceTeam == null || targetTeam == null ||
+      sourceTeam === targetTeam ||
+      !state.fighters[targetId] ||
+      Number(state.fighters[targetId].hp) <= 0 ||
+      // Global and reserve scopes would otherwise duplicate their effects.
+      action.skill.effects?.some(effect =>
+        ["all_enemies", "all_allies", "all_except_self",
+          "all_enemy_reserves", "all_ally_reserves"].includes(effect.targetScope)
+      )
+    ) {
+      return Object.freeze({ ok:false, outcome:"invalid_wave_target", state });
+    }
+    const result = resolveSkillCompletion({
+      state,
+      action: Object.freeze({ ...action, targetId }),
+      reaction,
+      targetActionContext,
+      battleFormat,
+      resolutionAtMs
+    });
+    if (result.ok) state = result.state;
+    return result;
+  }
+
   function completeCommand({ action }) {
     const result = resolveCommandCompletion({
       state,
@@ -504,6 +541,7 @@ export function createCombatSession({
     previewRechargeableReaction,
     reactWithRechargeableAction,
     completeSkill,
+    completeExpandingWaveTarget,
     completeCommand,
     completeAction,
     advanceMs,
