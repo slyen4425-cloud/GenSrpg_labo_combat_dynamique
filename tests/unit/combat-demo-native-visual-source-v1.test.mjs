@@ -90,3 +90,24 @@ test("native visual source validates arrays without inventing data", async () =>
     /creatureMetas.*array/i
   );
 });
+
+
+test("second Encounter cached/fallback image never runs ready callback before its VisualActor exists", async () => {
+  // A cached bitmap or data: SVG may be complete synchronously.
+  // loadRuntimeAsset calls markReady immediately in this situation, and
+  // markReady reads actor.profile to update the shadow model geometry.
+  const { readFile } = await import("node:fs/promises");
+  const source = await readFile(new URL("../../src/ui/demo-app.js", import.meta.url), "utf8");
+  const setCreature = source.slice(
+    source.indexOf("  function setCreature(nextMeta, displayName = null) {"),
+    source.indexOf("  function setVisible(nextVisible) {")
+  );
+  assert.ok(setCreature.includes("loadRuntimeAsset(runtimeUrl)"));
+  assert.ok(setCreature.includes("rebuildActor(runtimeUrl)"));
+  assert.ok(
+    setCreature.indexOf("rebuildActor(runtimeUrl)") <
+    setCreature.indexOf("loadRuntimeAsset(runtimeUrl)"),
+    "the actor and its renderer must exist before an already cached image synchronously calls markReady"
+  );
+  assert.match(source, /image\.complete && image\.naturalWidth > 0/);
+});
