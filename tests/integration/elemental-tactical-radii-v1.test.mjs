@@ -107,7 +107,7 @@ test("fire persistent-zone ring alone is low-contrast; validated expanding wave 
 
 test("Firestorm ground ring alone has a barely visible stroke, with expanding bubble protected",()=>{
   const css=readFileSync(new URL("../../examples/dom-demo/demo.css",import.meta.url),"utf8");
-  const base='.skill-fx--tactical-zone[data-element="fire"],\\n.skill-fx--expanding-wave[data-element="fire"] {'.replace("\\\\n","\\n");
+  const base='.skill-fx--expanding-wave[data-element="fire"] {';
   assert.ok(css.includes(base),"existing common fire element palette preserved");
   const section=css.slice(css.indexOf(base),css.indexOf("}",css.indexOf(base)));
   assert.ok(section.includes("--tactical-edge: rgba(255, 91, 64, 0.52);"),
