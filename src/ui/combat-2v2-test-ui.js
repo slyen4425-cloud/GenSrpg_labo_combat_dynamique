@@ -821,13 +821,23 @@ export async function mountCoop2v2Test({
   const fx = createDomSkillFxRenderer({
     arena,
     onProjectileContact(contact) {
-      runtime?.reportActionContact(contact);
+      return contact.waveMultiTarget === true
+        ? runtime?.reportExpandingWaveTargetContact(contact) ?? null
+        : runtime?.reportActionContact(contact) ?? null;
     },
     onProjectileClashContact(contact) {
       return runtime?.reportProjectileClashContact(contact) ?? null;
     },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
+    },
+    waveTargetsFor(fromSlot) {
+      // This is only a list of visible opponent models. The Runtime
+      // independently enforces valid active enemy targets.
+      if (previewFormat.enemyActorIds.length !== 2) return [];
+      return format.actors
+        .filter(actor => format.teamOf(actor.actorId) !== format.teamOf(fromSlot))
+        .map(actor => actor.actorId);
     },
     anchors: motionAnchors,
     targetAnchors: fighterContainers,
@@ -1589,6 +1599,7 @@ export async function mountCoop2v2Test({
 
   runtime = createCombatRuntime({
     session,
+    enableExpandingWaveMultiTarget: previewFormat.enemyActorIds.length === 2,
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       impactHealthCue.clear();
@@ -1708,8 +1719,12 @@ export async function mountCoop2v2Test({
         targetSlot: resolution.targetId
       });
 
-      setCharge(resolution.actorId);
-      actionRefs[resolution.actorId].textContent = "Prêt";
+      // Each wave hit resolves immediately, but the one action and its
+      // visible growth keep running until the native travel deadline.
+      if (resolution.waveContact !== true) {
+        setCharge(resolution.actorId);
+        actionRefs[resolution.actorId].textContent = "Prêt";
+      }
 
       const actor = actorMeta(resolution.actorId);
       const target = actorMeta(resolution.targetId);
@@ -1736,11 +1751,13 @@ export async function mountCoop2v2Test({
         if (!disposed) renderState();
       });
 
-      aiReadyAt.set(
-        resolution.actorId,
-        Number(session.snapshot().elapsedMs) + 900
-      );
-      queueAiDecisions();
+      if (resolution.waveContact !== true) {
+        aiReadyAt.set(
+          resolution.actorId,
+          Number(session.snapshot().elapsedMs) + 900
+        );
+        queueAiDecisions();
+      }
     },
     onInterrupted(result) {
       const actorId = result.action?.actorId;
