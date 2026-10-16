@@ -2572,3 +2572,9 @@ Le test navigateur existant `tests/browser/firestorm-zone-growth-smoke.mjs` est 
 ### Extension strictement nécessaire — sentinelles du preset historique
 
 La CI RED confirme que `tests/unit/capture-vague-incendiaire-author-v1.test.mjs` et `tests/integration/expanding-sphere-wave-v1.test.mjs` attendent encore l'**ancienne fiche** `direct` (hash 2440 octets, cooldown 45 ms, aucun sprite), ce qui contredit explicitement le nouveau transfert auteur. Autorisation de modifier **uniquement ces deux sentinelles** pour refléter l'export fourni et vérifier le vrai chemin d'onde en conservant un test de projectile direct séparé. Aucun ajustement au moteur ni aux autres données auteur.
+
+### Vérification technique du lot Vague incendiaire
+
+- Le preset a été remplacé avec un octet-pour-octet issu du transfert auteur (SHA256 `9e940251a53f66fd2d04e40c1bf4fb09d5abcbfdce074f47e674e29a382ee3c3`). `configuredSkills` conserve l'ID unique et Dracendre le slot-4. Aucun changement de paramètres auteur, aucune duplication.
+- Les deux sentinelles historiques qui attendaient `direct`/45ms ont été adaptées explicitement à `expanding_wave`/45000ms ; la sentinelle de projectile direct est conservée avec sa propre fixture, et un test de contact réel Runtime couvre dégâts 25 et DoT 8.
+- CI du code `38867715027` **SUCCESS 3/3** sur `ec6c09f7a8056df25c41f03cfb46234e39ae30c7` (Foundation, Firestorm Chromium, Creature Library Chromium). Cette note doit recevoir sa propre CI verte avant checkpoint et promotion, la validation visuelle Android n'est pas revendiquée.
