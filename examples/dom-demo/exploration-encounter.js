@@ -5,6 +5,9 @@ import {
   mountCoop2v2Test
 } from "../../src/ui/combat-2v2-test-ui.js?rev=exploration-current-combat-2026-10-15";
 import {
+  createCapturePreviewDisplayModeV1
+} from "../../src/ui/capture-preview-display-mode-v1.js";
+import {
   buildExplorationEncounterCombatSourceV1
 } from "../../src/adapters/input/capture/exploration-encounter-combat-source-v1.js?rev=exploration-current-combat-2026-10-15";
 import {
@@ -40,6 +43,40 @@ const previewHost =
   document.querySelector("[data-capture-preview-host]");
 const bridgeStatus =
   document.querySelector("[data-bridge-status]");
+const fullscreenControl =
+  document.querySelector("[data-encounter-fullscreen]");
+const displayMode = createCapturePreviewDisplayModeV1({
+  documentRef: document,
+  screenRef: globalThis.screen,
+  fullscreenHost: document.documentElement,
+  previewShell: document.querySelector("[data-capture-preview-shell]")
+});
+
+function syncFullscreenControl() {
+  fullscreenControl.hidden = document.fullscreenElement != null;
+}
+
+async function requestEncounterFullscreen() {
+  fullscreenControl.disabled = true;
+  try {
+    // A real tap is required by Android fullscreen permissions. This
+    // directly reuses the existing Capture display owner from the editor.
+    const result = await displayMode.enter({ enabled: true });
+    if (!result.fullscreen) {
+      setBridgeStatus(
+        "Plein écran refusé par ce navigateur. Ouvre le jeu dans Chrome, puis réessaie.",
+        "error"
+      );
+    }
+  } finally {
+    fullscreenControl.disabled = false;
+    syncFullscreenControl();
+  }
+}
+
+fullscreenControl.addEventListener("click", requestEncounterFullscreen);
+document.addEventListener("fullscreenchange", syncFullscreenControl);
+syncFullscreenControl();
 let root = null;
 let arena = null;
 
@@ -489,6 +526,9 @@ Promise.resolve()
 window.addEventListener(
   "pagehide",
   () => {
+    fullscreenControl.removeEventListener("click", requestEncounterFullscreen);
+    document.removeEventListener("fullscreenchange", syncFullscreenControl);
+    void displayMode.dispose();
     mountedCombat?.dispose?.();
     mountedVisuals?.dispose?.();
   },
