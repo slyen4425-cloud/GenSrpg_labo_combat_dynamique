@@ -1,3 +1,4 @@
+import { normalizeCaptureCreatureDefensiveReactionV1 } from "../../../contracts/capture-creature-defensive-reaction-v1.js";
 import {
   normalizeStatEffectRulesByIdV1
 } from "../../../contracts/stat-effect-rules-v1.js";
@@ -207,6 +208,11 @@ export function adaptCaptureCreatureToFighterConfig(
     maxHp,
     maxEnergy
   };
+
+  if (combat.reaction != null) {
+    output.defensiveReaction = normalizeCaptureCreatureDefensiveReactionV1(combat.reaction);
+    output.defensiveCreatureId = creatureId;
+  }
 
   copyOptionalNonNegative(combat, output, "initialHp");
   copyOptionalNonNegative(combat, output, "initialEnergy");
