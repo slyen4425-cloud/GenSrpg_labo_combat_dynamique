@@ -839,6 +839,15 @@ button.reserve-card {
   --tactical-fill: rgba(255, 91, 64, 0.012);
 }
 
+/* The persistent FIRE FIELD alone must be a faint tactical guide.
+   Keep the validated expanding fire bubble and all other elements unchanged. */
+.skill-fx--tactical-zone[data-element="fire"] {
+  --tactical-edge: rgba(255, 91, 64, 0.18);
+  --tactical-halo: rgba(255, 50, 44, 0);
+  --tactical-fill: transparent;
+  border-width: 1px;
+}
+
 .skill-fx--tactical-zone[data-element="water"],
 .skill-fx--expanding-wave[data-element="water"] {
   --tactical-edge: rgba(70, 182, 255, 0.52);
