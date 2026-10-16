@@ -54,7 +54,17 @@ const displayMode = createCapturePreviewDisplayModeV1({
 });
 
 function syncFullscreenControl() {
-  fullscreenControl.hidden = document.fullscreenElement != null;
+  let embeddedInExploration = false;
+  try {
+    embeddedInExploration = window.parent !== window &&
+      window.parent.location.origin === window.location.origin;
+  } catch {
+    embeddedInExploration = false;
+  }
+  // When hosted inside Exploration, its parent is already the full-viewport
+  // fullscreen owner. No redundant per-combat button is necessary.
+  fullscreenControl.hidden =
+    embeddedInExploration || document.fullscreenElement != null;
 }
 
 async function requestEncounterFullscreen() {
