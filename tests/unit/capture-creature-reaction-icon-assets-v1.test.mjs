@@ -66,5 +66,5 @@ test("library icons have existing generic asset role and creature editor and nat
   assert.match(editor,/captureReactionIconAssetIdV1/);
   assert.match(app,/presentationAssets\.asset\(iconId\)/);
   assert.match(preview,/asset\(assetId\) \{ return resolvePreviewPresentationAsset\(assetId\); \}/);
-  assert.equal((html.match(/data-combat-dodge\b/g)||[]).length,1);
+  assert.equal((html.match(/\sdata-combat-dodge\s/g)||[]).length,1);
 });
