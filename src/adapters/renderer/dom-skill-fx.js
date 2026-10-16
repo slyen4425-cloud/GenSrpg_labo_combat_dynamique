@@ -1913,7 +1913,6 @@ export function createDomSkillFxRenderer({
         const tacticalMarker = arena.ownerDocument.createElement("span");
         tacticalMarker.dataset.tacticalRadius = "persistent-zone";
         tacticalMarker.dataset.zoneId = zoneId;
-        arena.append(tacticalMarker);
 
         const spriteVisual = applySpriteVisual(
           node,
@@ -1926,6 +1925,7 @@ export function createDomSkillFxRenderer({
           presentation?.feedback?.glow
         );
         arena.append(node);
+        arena.append(tacticalMarker);
 
         record = {
           node,
@@ -1968,7 +1968,7 @@ export function createDomSkillFxRenderer({
       // long: the native contract includes every battlefield actor, so only
       // an arena-wide edge is honest (a smaller circle would mislead).
       const marker = record.tacticalMarker;
-      marker.className = "skill-fx skill-fx--persistent-zone skill-fx--tactical-zone" +
+      marker.className = "skill-fx skill-fx--tactical-zone" +
         (presentation?.persistentZoneLayer === "behind" ? " skill-fx--layer-behind" : "") +
         (zone.radius === "long" ? " skill-fx--tactical-full-arena" : "");
       if (zone.radius === "long") {
