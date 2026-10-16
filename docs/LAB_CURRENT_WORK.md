@@ -2553,3 +2553,9 @@ La nouvelle bordure purement visuelle crée un deuxième élément DOM pour un s
 ### Vérification navigateur réel des limites tactiques
 
 Le test navigateur existant `tests/browser/firestorm-zone-growth-smoke.mjs` est inclus dans le périmètre pour vérifier en Chromium, sur la vraie chaîne 1v1/2v2, que le contour persistant a des `bounds` alignés au sprite d'origine en `short/medium`, qu'il reste non interactif et un pixel d'épaisseur, qu'il représente toute l'arène en `long` et qu'aucun marqueur ne survit à expiration. Pas de changement de code moteur autorisé à ce titre.
+
+### Résultat technique vérifié — Tactical Radius Overlay V1
+
+- Code, tests et documentation au commit `68491fcc29c4fad2e23f8bc22267b011c582b0c4` ; workflow `38847723464` **3/3 SUCCESS** : Foundation **1838/1838** (0 FAIL), Firestorm Chromium (huit scénarios 1v1/2v2 et joueur/IA), Creature Library Chromium. Le test navigateur réel vérifie le trait 1 px, l'ordre visuel sous le sprite, les bornes court/moyen, le plein champ long et le cleanup à expiration.
+- Diff audité : changements circonscrits au renderer, CSS, tests et docs ; aucun contrat de dégâts, skill auteur, dépendance au dépôt principal, autre labo ou asset binaire. Aucun résultat Android physique n'est revendiqué.
+- Ce commit documentaire doit passer ses propres vérifications sur SHA exact **avant** checkpoint GREEN, branche preview et publication sous lease de `gh-pages`.
