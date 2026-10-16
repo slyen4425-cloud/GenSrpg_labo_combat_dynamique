@@ -97,3 +97,11 @@ test("mountCoop2v2Test keeps an explicit onBattleEnd callback contract", async (
   assert.ok(callbackMentions.length >= 2);
   assert.match(source, /battleEnded\s*=\s*true/);
 });
+
+
+test("Encounter combat UI keeps native skills and terminal KO for non-roster enemies", async () => {
+  const source = await readFile(new URL("../../src/ui/combat-2v2-test-ui.js", import.meta.url), "utf8");
+  assert.match(source, /const ids = rosterController\?\.snapshot\(\)\?\.\[spec\.actorId\]/);
+  assert.match(source, /finishBattleFromNativeState\(actorId\)/);
+  assert.match(source, /rosterController\.snapshot\(\)\?\.\[actorId\]/);
+});
