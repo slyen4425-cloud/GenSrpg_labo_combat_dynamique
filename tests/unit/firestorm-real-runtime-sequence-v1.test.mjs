@@ -421,7 +421,7 @@ test("Firestorm player and AI use the same real Runtime reinforcement and render
         assert.equal(zone.radius, radius, owner + " must reach " + radius);
         assert.equal(zone.activations, snapshots.length + 1);
         assert.equal(zone.id, actorId + ":" + skill.id + ":zone");
-        const node = arena.children.at(-1);
+        const node = arena.children.filter(x=>x.dataset.skillFx==="persistent-zone").at(-1);
         assert.equal(node.dataset.zoneRadius, radius);
         snapshots.push({ node, transform: node.style.transform, zone });
       }
