@@ -731,6 +731,60 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
+    // A real Chrome probe for the creator's per-creature guard controls.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-creature-reaction")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const library=document.querySelector("[data-creature-library-select]");
+          if(!library?.querySelector('option[value="crea_foudrillon"]') ||
+             !library?.querySelector('option[value="crea_mossback"]')){
+            if(++attempts>105){clearInterval(timer);document.body.dataset.creatureReactionProbe="timeout";}
+            return;
+          }
+          clearInterval(timer);
+          try{
+            const q=s=>document.querySelector(s);
+            const field=s=>q("[data-creature-reaction-"+s+"]");
+            const set=(e,v)=>{if(!e)throw Error("control missing");e.value=String(v);
+              e.dispatchEvent(new Event("change",{bubbles:true}));};
+            const selectCreature=id=>{set(library,id);};
+            selectCreature("crea_foudrillon");
+            if(field("type").value!=="legacy")throw Error("old author export must stay legacy");
+            if(!q("[data-creature-reaction-defense-field]").hidden)
+              throw Error("guard-only field displayed on legacy");
+            set(field("type"),"defense");
+            if(q("[data-creature-reaction-defense-field]").hidden ||
+               field("reduction").disabled)throw Error("defense reduction not editable");
+            set(field("charges"),3);
+            set(field("recharge"),26);
+            set(field("window"),0.55);
+            set(field("reduction"),60);
+            q("[data-creature-update]").click();
+            if(!q("[data-creature-library-state]").textContent.includes("mise à jour"))
+              throw Error("real update refused: "+q("[data-editor-status]")?.textContent?.slice(0,120));
+            selectCreature("crea_mossback");
+            if(field("type").value!=="legacy")
+              throw Error("Foudrillon settings leaked to other creature");
+            selectCreature("crea_foudrillon");
+            if(field("type").value!=="defense" || field("charges").value!=="3" ||
+               field("recharge").value!=="26" || field("window").value!=="0.55" ||
+               field("reduction").value!=="60" ||
+               q("[data-creature-reaction-defense-field]").hidden)
+              throw Error("saved guard fields not roundtripped in real editor");
+            set(field("type"),"dodge");
+            if(!q("[data-creature-reaction-defense-field]").hidden)
+              throw Error("reduction must be hidden in Dodge");
+            document.body.dataset.creatureReactionProbe="ok:legacy:defense:60:three:26000:550:dodge";
+          }catch(e){document.body.dataset.creatureReactionProbe="fail:"+e.message;}
+        },100);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -910,6 +964,12 @@ try {
   if(elementProbe!=="ok:103:multi:skill:asset")
     throw Error("Real editor element grouping / identity regression: "+elementProbe);
   console.log("Element library UI: 103 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
+  const guardDom=await dumpDom(url+"?verify-creature-reaction=1");
+  assertCreatures(guardDom,"per-creature reaction real browser bootstrap");
+  const guardProbe=guardDom.match(/data-creature-reaction-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(guardProbe!=="ok:legacy:defense:60:three:26000:550:dodge")
+    throw Error("Real creature reaction settings did not persist: "+guardProbe);
+  console.log("Creature reaction editor: Chrome verified legacy -> Defense 60%, 3 charges, 26s recharge, 0.55s window, save/reselect and Dodge visibility");
   const reflectionDom=await dumpDom(url+"?verify-damage-reflection=1");
   assertCreatures(reflectionDom,"damage reflection real editor bootstrap");
   const reflectionProbe=reflectionDom.match(/data-damage-reflection-probe="([^"]+)"/)?.[1] ?? "missing";
