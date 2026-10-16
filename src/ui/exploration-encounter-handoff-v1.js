@@ -108,3 +108,31 @@ export function completeExplorationCombatHandoffV1({
     returnUrl
   });
 }
+
+export const EXPLORATION_COMBAT_COMPLETE_MESSAGE_V1 =
+  "gensrpg.capture.combat-complete.v1";
+
+// A same-origin parent is merely told that the CombatResult was committed.
+// The parent validates the stored result before applying it to World state.
+// Standalone Combat retains its existing return URL navigation.
+export function notifyExplorationCombatParentV1({
+  windowRef,
+  result
+}) {
+  const parent = windowRef?.parent;
+  if (!parent || parent === windowRef ||
+      typeof parent.postMessage !== "function") return false;
+  try {
+    if (parent.location.origin !== windowRef.location.origin) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+  parent.postMessage({
+    type: EXPLORATION_COMBAT_COMPLETE_MESSAGE_V1,
+    encounterId: result.encounterId,
+    returnToken: result.returnToken
+  }, windowRef.location.origin);
+  return true;
+}
