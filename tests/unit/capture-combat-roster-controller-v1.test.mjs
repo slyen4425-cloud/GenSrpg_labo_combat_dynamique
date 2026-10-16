@@ -71,3 +71,34 @@ test("disposed preview controller no longer changes native roster or visuals", a
   assert.equal(h.changed.length, 0);
   h.runtime.dispose();
 });
+
+
+test("a wild Encounter actor without a roster stays present while alive and becomes absent at KO", async () => {
+  const base = JSON.parse(await readFile(new URL("../../data/combat/fighters/maraileron.combat.json", import.meta.url), "utf8"));
+  const first = { ...base, id: "first", initialHp: 100, maxHp: 100, initialEnergy: 12, maxEnergy: 12 };
+  const session = createCombatSession({
+    distance: "medium",
+    fighters: [{ ...first, id: "local-1" }, { ...first, id: "enemy-1" }]
+  });
+  const controller = createCaptureCombatRosterControllerV1({
+    session,
+    rosterDefinition: {
+      teams: {
+        "local-1": {
+          slotId: "local-1",
+          activeMemberId: "member-first",
+          members: [{ id: "member-first", creatureId: "first", displayName: "First", fighterConfigId: "first" }]
+        }
+      }
+    },
+    fighterConfigs: { first },
+    skillIdsByCreature: { first: ["claw"] },
+    visuals: { setCreatureFor() {}, setSlotVisible() {} }
+  });
+  assert.equal(controller.isPresent("local-1"), true);
+  assert.equal(controller.activeMember("enemy-1"), null);
+  assert.equal(controller.isPresent("enemy-1"), true, "a living wild enemy cannot be hidden by the local roster");
+  session.replaceFighter("enemy-1", { ...first, id: "enemy-1", initialHp: 0 });
+  assert.equal(controller.isPresent("enemy-1"), false, "a defeated wild enemy is no longer present");
+  controller.dispose();
+});
