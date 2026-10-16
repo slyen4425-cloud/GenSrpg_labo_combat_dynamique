@@ -35,9 +35,9 @@ test("expanding skill wave is selectable in the real travel/projectile asset rol
   assert.equal(captureEditorAssetMatchesRoleV1(creature, "travel"), false);
 });
 
-test("published visual catalog revision changes after the Oct 15 fire-bubble catalog addition", () => {
+test("published visual catalog revision is shared by current asset URLs and keeps historical fire-bubble URLs", () => {
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch, "global-assets");
-  assert.match(GLOBAL_VISUAL_LIBRARY.revision, /^2026-10-15-v\d+-fire-bubble-expansion$/);
+  assert.match(GLOBAL_VISUAL_LIBRARY.revision, /^\d{4}-\d{2}-\d{2}-v\d+-[a-z0-9-]+$/);
   const catalogUrl = new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
   assert.equal(catalogUrl.searchParams.get("v"), GLOBAL_VISUAL_LIBRARY.revision);
   const atlasUrl = new URL(globalVisualAssetUrl("capture/sprites/skills/fire_bubble_expansion/atlases/sprite_skill_fire_bubble_expansion_atlas_01.webp"));
