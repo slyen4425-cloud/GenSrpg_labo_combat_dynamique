@@ -481,6 +481,8 @@ export function createDomSkillFxRenderer({
       record.contactFrameId = null;
     }
     record.frameAnimation?.cancel?.();
+    record.alphaAnimation?.cancel?.();
+    record.tacticalMarker?.remove?.();
     record.node.remove?.();
   }
 
@@ -1906,6 +1908,13 @@ export function createDomSkillFxRenderer({
         node.dataset.skillId = skillId;
         node.dataset.zoneId = zoneId;
 
+        // A presentation-only radius beneath the zone art. The original FX
+        // node still supplies the SAME bounds to native occupancy sampling.
+        const tacticalMarker = arena.ownerDocument.createElement("span");
+        tacticalMarker.dataset.tacticalRadius = "persistent-zone";
+        tacticalMarker.dataset.zoneId = zoneId;
+        arena.append(tacticalMarker);
+
         const spriteVisual = applySpriteVisual(
           node,
           visual,
@@ -1920,6 +1929,7 @@ export function createDomSkillFxRenderer({
 
         record = {
           node,
+          tacticalMarker,
           animation: null,
           frameAnimation:
             spriteVisual.frameAnimation,
@@ -1952,6 +1962,28 @@ export function createDomSkillFxRenderer({
         String(visual.opacity ?? 1);
       record.node.dataset.zoneRadius =
         String(zone.radius);
+
+      // short/medium: this line shares the *exact transform and CSS size*
+      // of the sprite node whose rendered bounds are read by Combat Rules.
+      // long: the native contract includes every battlefield actor, so only
+      // an arena-wide edge is honest (a smaller circle would mislead).
+      const marker = record.tacticalMarker;
+      marker.className = "skill-fx skill-fx--persistent-zone skill-fx--tactical-zone" +
+        (presentation?.persistentZoneLayer === "behind" ? " skill-fx--layer-behind" : "") +
+        (zone.radius === "long" ? " skill-fx--tactical-full-arena" : "");
+      if (zone.radius === "long") {
+        marker.style.left = "2px";
+        marker.style.top = "2px";
+        marker.style.width = "calc(100% - 4px)";
+        marker.style.height = "calc(100% - 4px)";
+        marker.style.transform = "none";
+      } else {
+        marker.style.left = record.node.style.left;
+        marker.style.top = record.node.style.top;
+        marker.style.width = "";
+        marker.style.height = "";
+        marker.style.transform = record.node.style.transform;
+      }
     }
 
     for (
@@ -2500,9 +2532,21 @@ export function createDomSkillFxRenderer({
       node.style.borderRadius = "50%";
       node.style.pointerEvents = "none";
 
+      // The visible tactical edge is the outer border of this SAME shell,
+      // not a separate radius/hitbox. The faint inner edge mirrors the
+      // collision band's real thickness. Both expand with the shell.
+      node.className += " skill-fx--sprite-shell";
+      const tacticalRadius = arena.ownerDocument.createElement("span");
+      tacticalRadius.className = "skill-fx__tactical-radius";
+      const innerRadius = arena.ownerDocument.createElement("span");
+      innerRadius.className = "skill-fx__tactical-wave-inner";
+      innerRadius.style.inset = (100 * thicknessEndPx / (2 * endRadiusPx)) + "%";
+      tacticalRadius.append(innerRadius);
+      node.append(tacticalRadius);
+
       let frameAnimation = null;
+      let opacityNode;
       if (hasSpriteVisual(travelVisual)) {
-        node.className += " skill-fx--sprite-shell";
         node.dataset.assetId = travelVisual.assetId ?? "";
         const spriteNode = arena.ownerDocument.createElement("span");
         spriteNode.className = "skill-fx__sprite";
@@ -2510,14 +2554,19 @@ export function createDomSkillFxRenderer({
           spriteNode, travelVisual, durationMs, animate
         );
         frameAnimation = playback.frameAnimation;
+        opacityNode = spriteNode;
         node.append(spriteNode);
       } else {
-        // Visible fallback when the user has not yet imported their sprite.
-        // Not an authored asset, never catalogued as one.
-        node.style.border = Math.max(2, thicknessEndPx) +
-          "px solid rgba(255,111,15,0.85)";
-        node.style.background =
+        // Only decoration uses this fallback. It cannot become a hitbox.
+        const fallback = arena.ownerDocument.createElement("span");
+        fallback.className = "skill-fx__tactical-fallback";
+        fallback.style.boxSizing = "border-box";
+        fallback.style.border = Math.max(2, thicknessEndPx) +
+          "px solid rgba(255,111,15,0.75)";
+        fallback.style.background =
           "radial-gradient(circle, transparent 55%, rgba(255,78,0,0.2) 75%, transparent 100%)";
+        opacityNode = fallback;
+        node.append(fallback);
       }
       applyPresentationGlow(node, presentation?.feedback?.glow);
       arena.append(node);
@@ -2538,12 +2587,20 @@ export function createDomSkillFxRenderer({
       const animation = animate(
         node,
         [
-          { transform: "translate(-50%, -50%) scale(" + (startRadiusPx / endRadiusPx) + ")", opacity: 0.4 * waveOpacity },
-          { transform: "translate(-50%, -50%) scale(1)", opacity: waveOpacity }
+          { transform: "translate(-50%, -50%) scale(" + (startRadiusPx / endRadiusPx) + ")" },
+          { transform: "translate(-50%, -50%) scale(1)" }
         ],
         { duration, easing: "linear", fill: "forwards" }
       );
       record.animation = animation;
+      // Alpha animates only the artwork. At 0% opacity the same native
+      // shell and its tactical boundary remain readable to the player.
+      record.alphaAnimation = animate(
+        opacityNode,
+        [{opacity:0.4 * waveOpacity},{opacity:waveOpacity}],
+        {duration,easing:"linear",fill:"forwards"}
+      );
+      Promise.resolve(record.alphaAnimation?.finished).catch(() => {});
 
       const collisionModel = onProjectileContact && targetCollisionModelFor
         ? targetCollisionModelFor(targetSlot) : null;
