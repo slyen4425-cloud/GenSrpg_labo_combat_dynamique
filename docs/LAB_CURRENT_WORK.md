@@ -2690,3 +2690,9 @@ La CI du correctif ciblé relève deux assertions anciennes à `2.5` désormais 
 - Conditions GREEN : aperçu mobile paysage, vrai chemin testé, tests existants 4/4 + nouvelle sentinelle, checkpoint SHA exact puis publication `gh-pages` sous lease. Validation physique Android auteur distincte.
 
 - Test navigateur réel ajouté au lot H avant validation : `tests/browser/expanding-wave-mini-preview-smoke.mjs` et job dédié dans `.github/workflows/ci.yml` pour vérifier le chargement et le lancement de la page publique sur Chromium. Le gameplay demeure soumis aux tests du lot G, eux-mêmes conservés dans cette CI.
+
+### Résultat technique — mini-preview 2v2
+
+- Trois nouveaux fichiers isolés en `examples/dom-demo/expanding-wave-2v2-preview.*` : scène responsive paysage avec quatre mannequins CSS, bouton d'onde depuis chaque équipe, PV/retours natifs et reset. Le vrai `CombatRuntime` appelle `CombatSession`, et la collision provient du vrai `DomSkillFxRenderer` avec silhouettes opaques synchronisées au DOM. Aucun damage bypass UI.
+- La démo classique `coop-2v2.html` et les loadouts historiques n'ont pas été modifiés. L'aperçu signale clairement son anneau CSS provisoire (distinct du sprite auteur), et conserve le lien vers l'éditeur pour contrôler le trait discret de Tempête de flammes.
+- Chromium bootstrap du HTML réel, action depuis Dragon et shell natif validés; cinq jobs CI requis désormais : foundation, creature-library-browser, firestorm-zone-growth-browser, expanding-wave-2v2-browser et expanding-wave-mobile-preview-browser. Attendre GREEN 5/5 sur ce SHA documentaire exact, puis checkpoint et déploiement Pages.
