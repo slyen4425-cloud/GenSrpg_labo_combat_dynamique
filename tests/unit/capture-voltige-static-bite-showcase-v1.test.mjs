@@ -67,7 +67,7 @@ test("Crocs statiques retains exported real stack threshold, stun, sound and aut
  assert.equal(s.definition.form,"contact");
  assert.equal(s.definition.energyCost,3);
  assert.equal(s.definition.cooldownMs,6000);
- assert.equal(s.definition.effects[0].amount,4);
+ assert.equal(s.definition.effects[0].amount,8);
  assert.equal(s.definition.effects[0].channel,"electric");
  const status=s.definition.effects[1].status;
  assert.equal(status.kind,"stack_counter");
@@ -75,7 +75,7 @@ test("Crocs statiques retains exported real stack threshold, stun, sound and aut
  assert.equal(status.onStackThreshold.count,3);
  assert.equal(status.onStackThreshold.effects[0].status.kind,"stun");
  assert.equal(status.onStackThreshold.effects[0].status.durationMs,3000);
- assert.equal(s.presentation.visual.icon.assetId,"pack:capture:icon-skill-burning-bite-01");
+ assert.equal(s.presentation.visual.icon.assetId,"pack:capture:icon-skill-croc-electrique-01");
  assert.equal(s.presentation.visual.impact.assetId,"pack:capture:sprite-impact-electric-01");
  assert.equal(s.presentation.audio.impact.assetId,"gensrpg:sound:genrpg-pack2-af938ec6");
  const round=importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(s));
