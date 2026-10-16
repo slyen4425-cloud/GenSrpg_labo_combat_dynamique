@@ -95,7 +95,8 @@ test("the author can edit and transfer a wave via the canonical skill editor wit
  const roundtripFields=humanSkillEditorFieldsFromDraftV1(transferred);
  assert.equal(roundtripFields.presentation.travelTrajectoryMode,"expanding_wave");
  assert.equal(roundtripFields.presentation.waveEndRadiusPct,80);
- assert.equal(native.definition.projectileTargeting,"direct");
+ assert.equal(native.definition.projectileTargeting,"expanding_wave");
+ assert.deepEqual(native.definition.expandingWave,{startRadiusPct:8,endRadiusPct:65,thicknessPct:8});
 });
 
 test("uncontacted wave can never auto-hit at its travel deadline",()=>{
@@ -127,8 +128,11 @@ test("an opaque-wave contact during expansion resolves exactly one hit from Comb
 test("visual + rules are coupled only for wave; old direct projectile, skyfall and target presence stay unchanged",()=>{
  const waveSkill=wave();
  assert.deepEqual(waveSkill.hitPresenceStates,["surface","airborne"]);
- const previous=fixture().draft.definition;
- const direct=normalizeSkillDefinition(previous);
+ const author=fixture().draft.definition;
+ // The showcase author is now a real wave; prove the ordinary direct mode
+ // remains supported through its own independent contract fixture.
+ assert.equal(author.projectileTargeting,"expanding_wave");
+ const direct=normalizeSkillDefinition({...author,id:"control-direct",projectileTargeting:"direct",expandingWave:undefined});
  assert.equal(direct.projectileTargeting,"direct");
  assert.equal(direct.expandingWave,undefined);
  assert.deepEqual(direct.hitPresenceStates,["surface","airborne"]);
