@@ -5,6 +5,7 @@ import {
   buildCaptureDodgeReactionSkillV1,
   captureDodgeActiveWindowMsV1
 } from "../contracts/capture-game-options-v1.js";
+import { captureCreatureReactionActionIdV1 } from "../contracts/capture-creature-defensive-reaction-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
@@ -626,26 +627,52 @@ export async function mountCoop2v2Test({
     root.querySelector(
       "[data-combat-dodge-recharge]"
     );
-  const dodgeSkill =
-    buildCaptureDodgeReactionSkillV1(
-      gameOptions
-    );
-  const dodgeRechargeConfig =
-    dodgeSkill === null
-      ? null
-      : Object.freeze({
-          actionId: dodgeSkill.id,
-          maxCharges:
-            gameOptions.dodge.maxCharges,
-          rechargeMs:
-            gameOptions.dodge.rechargeMs
-        });
-  const dodgeActiveWindowMs =
-    dodgeSkill === null
-      ? 0
-      : captureDodgeActiveWindowMsV1(
-          gameOptions
-        );
+  // Resolve at the moment of use: roster recall and solo-dual control both
+  // change which creature owns the action. No global dodge singleton.
+  function defensiveActionFor(actorId) {
+    const creatureId = actorMeta(actorId)?.creatureId;
+    const personal = creatureId == null ? null :
+      fighterConfigs?.[creatureId]?.defensiveReaction ?? null;
+    if (personal !== null) {
+      if (personal.type === "none") return null;
+      const actionId = captureCreatureReactionActionIdV1(
+        creatureId, personal.type
+      );
+      return Object.freeze({
+        type: personal.type,
+        label: personal.type === "defense" ? "Défense" : "Esquive",
+        skill: personal.type === "dodge" ?
+          buildCaptureDodgeReactionSkillV1({
+            ...gameOptions,
+            dodge: {
+              enabled: true,
+              maxCharges: personal.maxCharges,
+              rechargeMs: personal.rechargeMs,
+              activeWindowMs: personal.activeWindowMs
+            }
+          }) : null,
+        recharge: Object.freeze({
+          actionId,
+          maxCharges: personal.maxCharges,
+          rechargeMs: personal.rechargeMs
+        }),
+        activeWindowMs: personal.activeWindowMs
+      });
+    }
+    // Unedited legacy creature exports retain the old global rules.
+    const legacySkill = buildCaptureDodgeReactionSkillV1(gameOptions);
+    return legacySkill === null ? null : Object.freeze({
+      type: "dodge",
+      label: "Esquive",
+      skill: legacySkill,
+      recharge: Object.freeze({
+        actionId: legacySkill.id,
+        maxCharges: gameOptions.dodge.maxCharges,
+        rechargeMs: gameOptions.dodge.rechargeMs
+      }),
+      activeWindowMs: captureDodgeActiveWindowMsV1(gameOptions)
+    });
+  }
 
   const previewFormat =
     resolveCombatPreviewFormatV1(format);
@@ -1171,17 +1198,17 @@ export async function mountCoop2v2Test({
     }
 
     if (dodgeButton) {
-      const enabled =
-        dodgeSkill !== null &&
-        dodgeRechargeConfig !== null;
+      const reaction = defensiveActionFor(controlledActorId());
+      const enabled = reaction !== null;
       dodgeButton.hidden = !enabled;
-
       if (enabled) {
+        const label = dodgeButton.querySelector("strong");
+        if (label) label.textContent = reaction.label;
         const availability =
           runtime.rechargeableActionAvailability({
             actorId:
               controlledActorId(),
-            ...dodgeRechargeConfig
+            ...reaction.recharge
           });
 
         const windowStatus =
@@ -1189,9 +1216,9 @@ export async function mountCoop2v2Test({
             actorId:
               controlledActorId(),
             recharge:
-              dodgeRechargeConfig,
+              reaction.recharge,
             activeWindowMs:
-              dodgeActiveWindowMs
+              reaction.activeWindowMs
           });
 
         dodgeButton.disabled =
@@ -1302,35 +1329,27 @@ export async function mountCoop2v2Test({
       dodgeButton,
       "click",
       () => {
-        if (
-          dodgeSkill === null ||
-          dodgeRechargeConfig === null
-        ) {
-          return;
-        }
+        const reaction = defensiveActionFor(controlledActorId());
+        if (reaction === null) return;
 
-        const result =
-          runtime.activateRechargeableReaction(
-            dodgeSkill,
-            {
-              actorId:
-                controlledActorId(),
-              recharge:
-                dodgeRechargeConfig,
-              activeWindowMs:
-                dodgeActiveWindowMs
-            }
-          );
+        const result = runtime.activateRechargeableReaction(
+          reaction.skill,
+          {
+            actorId: controlledActorId(),
+            recharge: reaction.recharge,
+            activeWindowMs: reaction.activeWindowMs
+          }
+        );
 
         if (!result.ok) {
           setStatus(
             result.outcome ===
               "no_charges"
-              ? "Aucune charge d’esquive disponible."
+              ? "Aucune charge de réaction disponible."
               : result.outcome ===
                   "already_active"
-                ? "Esquive déjà active."
-                : "Esquive impossible : " +
+                ? "Réaction déjà active."
+                : "Réaction impossible : " +
                   result.outcome +
                   ".",
             "warn"
@@ -1347,11 +1366,11 @@ export async function mountCoop2v2Test({
           visuals
             .playEventFor(
               controlledActorId(),
-              "dodge",
+              reaction.type === "defense" ? "hit" : "dodge",
               {
                 metadata: {
-                  durationMs:
-                    visualDurationMs
+                  durationMs: visualDurationMs,
+                  defensiveReaction: reaction.type
                 }
               }
             )
@@ -1359,12 +1378,8 @@ export async function mountCoop2v2Test({
         }
 
         setStatus(
-          "Esquive active pendant " +
-            (
-              dodgeActiveWindowMs /
-              1000
-            ).toFixed(1) +
-            " s.",
+          reaction.label + " active pendant " +
+            (reaction.activeWindowMs / 1000).toFixed(1) + " s.",
           "accent"
         );
         renderAvailability();
@@ -1781,11 +1796,14 @@ export async function mountCoop2v2Test({
       aiControllers.push(createBattleActorAiController({
         session, runtime, actorId: spec.actorId, targetIds: targets, allyIds, skillIds: ids, skillsById,
         tactics: CAPTURE_AI_TACTICS_V1_DEFAULT,
-        dodge: dodgeSkill === null ? null : {
-          skill: dodgeSkill,
-          recharge: dodgeRechargeConfig,
-          activeWindowMs: dodgeActiveWindowMs
-        }
+        dodge: (() => {
+          const reaction = defensiveActionFor(spec.actorId);
+          return reaction?.type === "dodge" ? {
+            skill: reaction.skill,
+            recharge: reaction.recharge,
+            activeWindowMs: reaction.activeWindowMs
+          } : null;
+        })()
       }));
     }
   }
