@@ -821,9 +821,8 @@ export async function mountCoop2v2Test({
   const fx = createDomSkillFxRenderer({
     arena,
     onProjectileContact(contact) {
-      return contact.waveMultiTarget === true
-        ? runtime?.reportExpandingWaveTargetContact(contact) ?? null
-        : runtime?.reportActionContact(contact) ?? null;
+      if (!contact.waveMultiTarget) return runtime?.reportActionContact(contact) ?? null;
+      return runtime?.reportExpandingWaveTargetContact(contact) ?? null;
     },
     onProjectileClashContact(contact) {
       return runtime?.reportProjectileClashContact(contact) ?? null;
