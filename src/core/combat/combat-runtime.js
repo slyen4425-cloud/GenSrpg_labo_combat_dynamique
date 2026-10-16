@@ -659,7 +659,9 @@ export function createCombatRuntime({
       const [key, armed] of
       armedRechargeableReactions
     ) {
-      if (armed.actorId !== action.targetId) {
+      if (armed.actorId !== action.targetId || armed.reactionSkill === null) {
+        // Defense uses this very same recharge clock but reduces damage in
+        // CombatDamage; it never intercepts as a zero-damage dodge or block.
         continue;
       }
 
