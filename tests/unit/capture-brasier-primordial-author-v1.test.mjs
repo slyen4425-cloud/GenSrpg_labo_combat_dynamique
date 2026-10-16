@@ -64,7 +64,8 @@ test("canonical Capture transfer replaces Brasier primordial once and preserves 
   const progression=normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
   const dracendre=importCaptureTransferJsonV1(await read("data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json"),{statRegistry:registry}).value;
   const skillTransfer=await load();
-  const configuredCreatures=new Map([[dracendre.draft.id,dracendre]]);
+  const creatureRecord={draft:dracendre.draft,loadout:dracendre.loadout,statValues:dracendre.statValues};
+  const configuredCreatures=new Map([[dracendre.draft.id,creatureRecord]]);
   const oldSkill={...skillTransfer.value.draft,
     definition:{...skillTransfer.value.draft.definition,projectileTargeting:"direct"},
     presentation:null};
