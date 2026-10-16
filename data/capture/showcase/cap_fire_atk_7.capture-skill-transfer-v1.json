@@ -15,13 +15,13 @@
       "name": "Brasier primordial",
       "category": "offensive",
       "form": "projectile",
-      "projectileTargeting": "direct",
+      "projectileTargeting": "fixed_point",
       "loadoutSlot": "ultimate",
       "element": "fire",
       "approachMode": "none",
       "energyCost": 0,
-      "preparationMs": 0,
-      "travelMs": 0,
+      "preparationMs": 3500,
+      "travelMs": 1000,
       "recoveryMs": 0,
       "cooldownMs": 0,
       "maxUsesPerCombat": null,
@@ -69,14 +69,139 @@
       "effects": [
         {
           "kind": "damage",
-          "targetScope": "target",
-          "amount": 10,
+          "targetScope": "all_enemies",
+          "amount": 50,
           "channel": "fire",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "damage",
+          "targetScope": "all_enemy_reserves",
+          "amount": 50,
+          "channel": null,
           "ignoreResistancePct": 0,
           "ignoreDamageReductionPct": 0
         }
       ]
     },
-    "presentation": null
+    "presentation": {
+      "id": "skill:cap_fire_atk_7",
+      "version": 10,
+      "subjectType": "skill",
+      "subjectId": "cap_fire_atk_7",
+      "visual": {
+        "cast": {
+          "assetId": "pack:capture:sprite-fluide-meteorite-cast-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.4,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-fluide-meteorite-projectile-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "skyfall",
+          "fallHeightPx": 400,
+          "fallOffsetXPx": 0
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-fluide-meteorite-impact-01",
+          "displayScale": 1.4,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "durationMs": 800,
+          "rotationDeg": 0,
+          "opacity": 0.7,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.85,
+          "radiusPx": 32
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 9,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 7,
+          "lengthPx": 56,
+          "sizePx": 7,
+          "opacity": 0.8,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 12,
+          "spreadPx": 72,
+          "sizePx": 9,
+          "durationMs": 380,
+          "opacity": 0.9
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 6,
+          "spreadPx": 58,
+          "sizePx": 36,
+          "risePx": 56,
+          "durationMs": 1250,
+          "opacity": 0.64
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 7,
+          "spreadPx": 48,
+          "sizePx": 7,
+          "risePx": 34,
+          "durationMs": 580,
+          "opacity": 0.8
+        }
+      }
+    }
   }
 }
