@@ -29,6 +29,7 @@ export function createCombatRuntime({
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   readZoneSpatialContext = null,
+  enableExpandingWaveMultiTarget = false,
   onState = () => {},
   onHealthDelta = () => {},
   onClock = () => {},
@@ -544,7 +545,10 @@ export function createCombatRuntime({
       const matchesTarget =
         includeTargeted &&
         !record.resolved &&
-        record.action.targetId === actorId;
+        record.action.targetId === actorId &&
+        // A released expanding wave keeps travelling even when the
+        // initially selected enemy is KO; the other target is independent.
+        !(record.multiTargetWave && record.released);
 
       if (!matchesActor && !matchesTarget) {
         continue;
@@ -709,6 +713,21 @@ export function createCombatRuntime({
       record.resolved
     ) {
       return null;
+    }
+
+    // Once any 2v2 wave target is contacted, each defender has already
+    // been resolved independently. End the single paid action at its
+    // natural deadline without adding a duplicate hit or a fake miss.
+    if (record.multiTargetWave && record.waveTargetsResolved.size > 0) {
+      enterRecovery(record, {
+        resolvedAtMs: record.action.impactAtMs,
+        atNowMs
+      });
+      emitStateIfChanged({ force: true });
+      return Object.freeze({
+        ok: true, outcome: "wave_finished",
+        actorId: record.action.actorId
+      });
     }
 
     const requestedImpactAtMs =
@@ -1126,7 +1145,12 @@ export function createCombatRuntime({
       released: false,
       resolved: false,
       resolvedAtMs: null,
-      sequence: sequence++
+      sequence: sequence++,
+      multiTargetWave:
+        enableExpandingWaveMultiTarget === true &&
+        result.action.actionType === "skill" &&
+        result.action.skill?.projectileTargeting === "expanding_wave",
+      waveTargetsResolved: new Set()
     };
 
     activeByActor.set(actorId, record);
@@ -1592,6 +1616,80 @@ export function createCombatRuntime({
     });
   }
 
+  // The renderer may report each opaque enemy as the single visible ring
+  // crosses it. Rules, teams, states, statuses and damage belong here and
+  // to CombatSession, never to the visual sensor or 2v2 UI.
+  function reportExpandingWaveTargetContact({
+    actorId, targetId, skillId = null
+  }) {
+    if (disposed) return Object.freeze({ok:false,outcome:"disposed"});
+    const current = now();
+    advanceSessionToClock(current);
+    settleDue(current);
+    const record = activeByActor.get(actorId);
+    if (!record || !record.multiTargetWave || record.resolved) {
+      return Object.freeze({ok:false,outcome:"no_action"});
+    }
+    if (skillId != null && String(skillId) !== String(record.action.skill?.id)) {
+      return Object.freeze({ok:false,outcome:"skill_mismatch"});
+    }
+    if (!record.released || current < absoluteReleaseAt(record)) {
+      return Object.freeze({ok:false,outcome:"not_released"});
+    }
+    if (current > absoluteResolutionAt(record)) {
+      return Object.freeze({ok:false,outcome:"travel_finished"});
+    }
+    if (record.waveTargetsResolved.has(targetId)) {
+      return Object.freeze({ok:false,outcome:"already_contacted"});
+    }
+    const targetRecord = activeByActor.get(targetId) ?? null;
+    const targetActionContext =
+      targetRecord && targetRecord !== record && !targetRecord.resolved
+        ? Object.freeze({
+            action: targetRecord.action,
+            elapsedMs: elapsedFor(targetRecord, current)
+          })
+        : null;
+    const impactAtMs = Math.min(record.action.impactAtMs,
+      Math.max(record.action.releaseAtMs, elapsedFor(record,current)));
+    const aimedAction = Object.freeze({
+      ...record.action, targetId,
+      travelMs: impactAtMs - record.action.releaseAtMs,
+      impactAtMs
+    });
+    const reaction = targetId === record.action.targetId
+      ? record.reaction
+      : armedRechargeableReactionFor({
+          record: {...record, reaction:null},
+          action: aimedAction,
+          impactAtMs
+        });
+    const resolution = session.completeExpandingWaveTarget({
+      action:aimedAction, targetId, reaction, targetActionContext,
+      resolutionAtMs:record.startedAtCombatMs + impactAtMs
+    });
+    if (!resolution.ok) {
+      return Object.freeze({ok:false,outcome:"invalid_target"});
+    }
+    record.waveTargetsResolved.add(targetId);
+    applyResolutionInterrupt(resolution);
+    stopImmobilizedApproaches();
+    const koActorId = koActorIdFromResolution(resolution);
+    if (koActorId) {
+      cancelActionsForActor(koActorId,{
+        includeTargeted:true,reason:"ko"
+      });
+    }
+    const presented = Object.freeze({...resolution,waveContact:true});
+    onResolved(presented);
+    emitStateIfChanged({force:true});
+    return Object.freeze({
+      ok:true,outcome:"contact_resolved",
+      actorId,targetId,skillId:record.action.skill?.id,
+      resolution:presented
+    });
+  }
+
   function reportActionContact({
     actorId,
     targetId,
@@ -1767,6 +1865,7 @@ export function createCombatRuntime({
     interruptActive,
     applyResolutionInterrupt,
     reportActionContact,
+    reportExpandingWaveTargetContact,
     reportProjectileClashContact,
     cancelActionsForActor,
     cancelActive,
