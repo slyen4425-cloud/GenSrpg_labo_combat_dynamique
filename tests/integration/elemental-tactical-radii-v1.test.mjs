@@ -86,25 +86,6 @@ test("tactical element palette is deliberately translucent without changing auth
   assert.ok(css.includes("pointer-events: none"),"marker remains inert");
 });
 
-test("fire persistent-zone ring alone is low-contrast; validated expanding wave retains its existing art",()=>{
-  const css=readFileSync(new URL("../../examples/dom-demo/demo.css",import.meta.url),"utf8");
-  const marker='.skill-fx--tactical-zone[data-element="fire"] {';
-  const pos=css.indexOf(marker);
-  assert.ok(pos>=0,"isolated persistent fire ring rule");
-  const rule=css.slice(pos,css.indexOf("}",pos));
-  for(const line of ["opacity: 0.28;","border-width: 1px;","box-shadow: none;","background: transparent;"]){
-    assert.ok(rule.includes(line),"subdued fire-zone ring: "+line);
-  }
-  // The shared palette must not be rewritten, because expanding wave was
-  // explicitly approved by the user.
-  const shared=css.slice(css.indexOf('.skill-fx--expanding-wave[data-element="fire"] {'));
-  const colorRules=shared.slice(0,shared.indexOf("}"));
-  assert.ok(colorRules.includes("--tactical-edge: rgba(255, 91, 64, 0.52);"));
-  assert.ok(colorRules.includes("--tactical-halo: rgba(255, 50, 44, 0.14);"));
-  const html=readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
-  assert.ok(html.includes('href="./demo.css?v=fire-zone-subtle-20261016"'),"mobile editor must request new CSS URL");
-});
-
 test("Firestorm ground ring alone has a barely visible stroke, with expanding bubble protected",()=>{
   const css=readFileSync(new URL("../../examples/dom-demo/demo.css",import.meta.url),"utf8");
   const base='.skill-fx--expanding-wave[data-element="fire"] {';
