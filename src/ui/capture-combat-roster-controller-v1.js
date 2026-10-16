@@ -27,7 +27,14 @@ export function createCaptureCombatRosterControllerV1({
     previewSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.previewSkillOnTarget(options); },
     useSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.useSkillOnTarget(options); },
     activeMember,
-    isPresent: actorId => activeMember(actorId) !== null,
+    isPresent: actorId => {
+      // Wild Encounter actors have a CombatSession slot but no reserve roster.
+      // Only the canonical CombatState owns their alive/dead presence.
+      const rosterSlot = roster.snapshot()[actorId];
+      return rosterSlot
+        ? activeMember(actorId) !== null
+        : Number(session.snapshot().fighters[actorId]?.hp) > 0;
+    },
     skillIdsFor(actorId) {
       const member = activeMember(actorId);
       return member === null ? [] : skillIdsByCreature[member.creatureId] ?? [];
