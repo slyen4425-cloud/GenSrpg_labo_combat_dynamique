@@ -1968,6 +1968,9 @@ export function createDomSkillFxRenderer({
       // long: the native contract includes every battlefield actor, so only
       // an arena-wide edge is honest (a smaller circle would mislead).
       const marker = record.tacticalMarker;
+      // The CombatState zone already owns its canonical element. This is
+      // presentation metadata only; no parallel hit, range or asset lookup.
+      marker.dataset.element = String(zone.skillElement ?? "");
       marker.className = "skill-fx skill-fx--tactical-zone" +
         (presentation?.persistentZoneLayer === "behind" ? " skill-fx--layer-behind" : "") +
         (zone.radius === "long" ? " skill-fx--tactical-full-arena" : "");
