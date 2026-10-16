@@ -2679,3 +2679,12 @@ La CI du correctif ciblé relève deux assertions anciennes à `2.5` désormais 
 - La première cible mise K.O. ne supprime plus l'onde avant qu'elle touche la deuxième ; les alliés restent exclus. Aucun changement de palette, du cercle feu à 18 %, ni de projectile direct, ni du sprite auteur.
 - Tests RED initiaux puis GREEN ; CI sur commit code + contrat `00cf3ac27bb5e9617a5292319a2538508a989527`, run `38915180817`, **SUCCESS 4/4** : Foundation, Firestorm Chromium réel, Creature Library Chromium réel, et nouveau wave 2v2 Chromium DOM/WAAPI, équipes joueur et adversaire.
 - Ce commit de journal final doit réussir lui aussi les quatre jobs au SHA exact, avant création du checkpoint GREEN et promotion fast-forward de `gh-pages` sous lease. La validation physique Android reste ouverte.
+
+
+## 2026-10-16 — Lot H : mini-preview mobile isolée de l'onde 2v2
+
+- Base exacte `gh-pages@dc8b5ec401f3e040f3c781ba3c26834683763fcb`, checkpoint `checkpoint/lab-start-wave-2v2-mobile-preview-2026-10-16`, branche `work/lab-wave-2v2-mobile-preview-2026-10-16`. Charte/roadmap/architecture/checkpoint policy consultées.
+- Motif : la page historique `coop-2v2.html` ne propose pas la capacité `expanding_wave` dans les loadouts de démonstration ; pour tester directement depuis Android sans modifier les compétences auteur, créer un **mini aperçu séparé** branché au vrai `CombatSession`, `CombatRuntime` et `DomSkillFxRenderer`.
+- UI de démo uniquement : quatre modèles CSS locaux avec masque opaque synchronisé à leurs bounds DOM, une sphère feu lancée par le joueur ou l'ennemi, 2 PV indépendants, reset, feedback sur l'impact. Le renderer et la règle gardent l'autorité ; aucune simulation de dégâts par l'UI.
+- Périmètre : `examples/dom-demo/expanding-wave-2v2-preview.html`, `examples/dom-demo/expanding-wave-2v2-preview.css`, `examples/dom-demo/expanding-wave-2v2-preview.js`, sentinelle de tests dédiée et ce journal. Aucune retouche des moteurs/exports/assets/loadouts/charte ni dépôt principal.
+- Conditions GREEN : aperçu mobile paysage, vrai chemin testé, tests existants 4/4 + nouvelle sentinelle, checkpoint SHA exact puis publication `gh-pages` sous lease. Validation physique Android auteur distincte.
