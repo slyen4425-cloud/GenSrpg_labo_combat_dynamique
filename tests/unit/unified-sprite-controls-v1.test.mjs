@@ -96,7 +96,9 @@ test("persistent zone stretches to Runtime duration without restart on refresh o
   assert.equal(nodes[0].style.animationIterationCount, "1"); assert.equal(nodes[0].style.animationDuration, "4000ms");
   assert.equal(nodes[0].className.includes("layer-behind"), false);
   renderer.syncPersistentZones([{ ...zone, radius: "medium", appliedAtMs: 2100, expiresAtMs: 6100 }]);
-  assert.equal(nodes.length, 1); assert.equal(nodes[0].style.animationDuration, "6000ms");
+  assert.equal(nodes.filter(x=>x.dataset.skillFx==="persistent-zone").length, 1);
+  assert.equal(nodes.filter(x=>x.dataset.tacticalRadius==="persistent-zone").length, 1);
+  assert.equal(nodes[0].style.animationDuration, "6000ms");
   renderer.syncPersistentZones([]); assert.equal(nodes[0].removed, true); assert.equal(renderer.activeCount, 0);
 });
 
@@ -244,7 +246,8 @@ test("persistent zone hold-last survives editor export and shows final atlas fra
   assert.equal(sprite.style.animationTimingFunction,"steps(7, end)");
   assert.equal(sprite.style.opacity,"0.75");
   renderer.syncPersistentZones([{...zone,expiresAtMs:8100,radius:"medium"}]);
-  assert.equal(nodes.length,1,"refresh does not restart or duplicate sprite");
+  assert.equal(nodes.filter(x=>x.dataset.skillFx==="persistent-zone").length,1,"refresh does not restart or duplicate sprite");
+  assert.equal(nodes.filter(x=>x.dataset.tacticalRadius==="persistent-zone").length,1,"refresh keeps only one thin contour");
   assert.equal(sprite.style.animationDuration,"720ms","hold-last does not stretch with zone lifetime");
   assert.equal(sprite.removed,undefined);
   renderer.syncPersistentZones([]);
