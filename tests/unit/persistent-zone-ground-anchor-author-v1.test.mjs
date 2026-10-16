@@ -51,7 +51,8 @@ test("fixed-source zones freeze immediately, mobile/source zones follow, recall 
  for(const [attachment,expected] of [["source","320px"],["fixed-source","100px"]]){
   const h=makeFx(presentation(attachment));
   h.renderer.syncPersistentZones([zone("player:test:mist")]);
-  assert.equal(h.arena.children.length,1);
+  assert.equal(h.arena.children.filter(x=>x.dataset.skillFx==="persistent-zone").length,1);
+  assert.equal(h.arena.children.filter(x=>x.dataset.tacticalRadius==="persistent-zone").length,1);
   const node=h.arena.children[0];
   assert.equal(node.style.left,"100px");
   assert.equal(node.style.top,"200px");
