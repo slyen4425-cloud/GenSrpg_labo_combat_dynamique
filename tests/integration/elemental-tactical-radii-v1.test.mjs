@@ -61,27 +61,27 @@ test("tactical element palette is deliberately translucent without changing auth
   const css=readFileSync(new URL("../../examples/dom-demo/demo.css",import.meta.url),"utf8");
   const elements=["fire","water","ice","nature","electric","earth","air","poison","light","shadow","steel","psy","spirit"];
   for(const element of elements){
-    // The same CSS custom properties tint waves and persistent zones.
+    // These variables tint both waves and persistent zones.
     const selector='.skill-fx--expanding-wave[data-element="'+element+'"] {';
     const start=css.indexOf(selector);
     assert.ok(start>=0,"wave/zone selector for "+element);
-    const rules=css.slice(start,css.indexOf("}",start));
+    const rules=css.slice(start,css.indexOf("}",start)).split("\n");
     for(const [property,alpha] of [
       ["--tactical-edge","0.52"],["--tactical-halo","0.14"],
       ["--tactical-inner","0.18"],["--tactical-fill","0.012"]
     ]){
-      const match=rules.match(new RegExp(property+":\\\\s*rgba\\\\([^)]*,\\\\s*([0-9.]+)\\\\)"));
-      assert.ok(match,property+" missing in "+element);
-      assert.equal(match[1],alpha,property+" is too bright for "+element);
+      const line=rules.find(line=>line.includes(property+":"));
+      assert.ok(line,property+" missing in "+element);
+      assert.ok(line.trim().endsWith(", "+alpha+");"),property+" is too bright for "+element+": "+line);
     }
   }
-  // The neutral palette must also respect the same subdued defaults.
-  assert.match(css,/--tactical-edge, rgba\\(245, 225, 185, 0\\.52\\)/);
-  assert.match(css,/--tactical-halo, rgba\\(245, 225, 185, 0\\.12\\)/);
-  assert.match(css,/--tactical-inner, rgba\\(245, 225, 185, 0\\.16\\)/);
-  assert.match(css,/--tactical-fill, rgba\\(245, 225, 185, 0\\.012\\)/);
-  // Size, hitbox and renderer are out of scope. Preserve a thin,
-  // non-interactive, independent overlay.
-  assert.match(css,/border: 1\\.5px solid var\\(--tactical-edge/);
-  assert.match(css,/pointer-events: none/);
+  // The fallback for unknown elements must be subdued as well.
+  for(const [property,alpha] of [
+    ["--tactical-edge","0.52"],["--tactical-halo","0.12"],
+    ["--tactical-inner","0.16"],["--tactical-fill","0.012"]
+  ]){
+    assert.ok(css.includes(property+", rgba(245, 225, 185, "+alpha+")"),property+" neutral opacity");
+  }
+  assert.ok(css.includes("border: 1.5px solid var(--tactical-edge"),"stroke width preserved");
+  assert.ok(css.includes("pointer-events: none"),"marker remains inert");
 });
