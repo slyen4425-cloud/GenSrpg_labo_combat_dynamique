@@ -47,7 +47,9 @@ function arenaFixture(draft){
   const fighter=id=>({id,maxHp:500,initialHp:500,maxEnergy:40,initialEnergy:40,
     energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,
     chargeTimeModifierPct:0});
-  const session=createCombatSession({distance:"long",fighters:[fighter("player"),fighter("opponent")]});
+  const battleFormat={actors:[{actorId:"player"},{actorId:"opponent"}],
+    teamOf:id=>id==="player"?"local":id==="opponent"?"enemy":null};
+  const session=createCombatSession({distance:"long",battleFormat,fighters:[fighter("player"),fighter("opponent")]});
   let state=session.snapshot();
   const read=(zones)=>{
     fx.syncPersistentZones(zones);
@@ -67,7 +69,7 @@ function arenaFixture(draft){
     const hpBefore=state.fighters.opponent.hp;
     // Real persistent-zone damage owner; this sample must be the same as the
     // visible contour and the author skill's radius.
-    const ticked=advancePersistentZonesV1({state,deltaMs:1000,zoneSpatialContext:{visibleZones:sample}});
+    const ticked=advancePersistentZonesV1({state,deltaMs:1000,battleFormat,zoneSpatialContext:{visibleZones:sample}});
     assert.equal(ticked.fighters.opponent.hp<hpBefore,contains || zone.radius==="long",
       "native damage must agree with displayed boundary");
     return {radius:zone.radius,contains,damaged:ticked.fighters.opponent.hp<hpBefore,marker,sprite};
