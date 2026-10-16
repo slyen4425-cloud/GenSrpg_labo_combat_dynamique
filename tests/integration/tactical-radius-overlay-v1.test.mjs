@@ -78,7 +78,7 @@ test("persistent ground zone marker shares the native sampled ellipse but never 
   const s=scene();
   const area=zone("player:field:one","short");
   s.fx.syncPersistentZones([area]);
-  const [marker,spriteNode]=s.arena.nodes;
+  const [spriteNode,marker]=s.arena.nodes;
   assert.ok(marker.className.includes("skill-fx--tactical-zone"));
   assert.ok(spriteNode.className.includes("skill-fx--persistent-zone"));
   assert.equal(marker.style.left,spriteNode.style.left);
@@ -106,7 +106,7 @@ test("full-battlefield long zones show a subtle arena boundary, not a misleading
   const s=scene();
   const area=zone("player:field:long","long");
   s.fx.syncPersistentZones([area]);
-  const [marker,spriteNode]=s.arena.nodes;
+  const [spriteNode,marker]=s.arena.nodes;
   assert.match(marker.className,/skill-fx--tactical-full-arena/);
   assert.equal(marker.style.width,"calc(100% - 4px)");
   assert.equal(marker.style.height,"calc(100% - 4px)");
