@@ -171,7 +171,13 @@ test("canonical Transfer batch replaces the native Foudrillon and skill without 
   assert.deepEqual(action.actions.map(x=>x.action),["replace-skill","replace-creature"]);
   assert.equal(configuredCreatures.size,beforeCreatureSize);
   assert.equal(configuredSkills.size,beforeSkillSize);
-  assert.deepEqual(configuredCreatures.get("crea_foudrillon"),creature().value);
+  // configuredCreatures owns the CreatureRecord, not its export envelope
+  // (schema/version remain on the transfer file).
+  const installedCreature=configuredCreatures.get("crea_foudrillon");
+  const exportedCreature=creature().value;
+  assert.deepEqual(installedCreature.draft,exportedCreature.draft);
+  assert.deepEqual(installedCreature.statValues,exportedCreature.statValues);
+  assert.deepEqual(installedCreature.loadout,exportedCreature.loadout);
   assert.deepEqual(configuredSkills.get("lib_static_bite"),skill().value.draft);
   assert.deepEqual(configuredCreatures.get("crea_foudrillon").loadout.slots.map(x=>x.skillId),
     ["lib_gust","lib_static_bite","lib_tailwind","lib_chain_lightning","cap_air_atk_7"]);
