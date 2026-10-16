@@ -763,6 +763,13 @@ button.reserve-card {
   z-index: 1;
 }
 
+/* Long native zones own the entire field. Their SINGLE artwork node fills
+   the arena; individually imported 1:1 frames crop rather than pillarbox on
+   16:9. Short/medium keep the original authored object-fit and bounds. */
+.skill-fx--persistent-zone[data-zone-radius="long"] .skill-fx__loop-frame {
+  object-fit: cover;
+}
+
 /* One-pixel gameplay readability, never another collision or effect clock.
    Wave edges inherit the EXACT transformed shell; their alpha stays stable
    even if the decorative sprite fades to 0%. */
