@@ -2167,6 +2167,22 @@ export function buildHumanCreatureDraftV2(fields) {
 }
 
 
+export function syncHumanCreatureReactionControlsV1(root) {
+  const type = root.querySelector("[data-creature-reaction-type]")?.value ?? "legacy";
+  const editable = type !== "none" && type !== "legacy";
+  for (const selector of [
+    "[data-creature-reaction-charges]",
+    "[data-creature-reaction-recharge]",
+    "[data-creature-reaction-window]",
+    "[data-creature-reaction-reduction]"
+  ]) {
+    const element = root.querySelector(selector);
+    if (element) element.disabled = !editable || (selector.includes("reduction") && type !== "defense");
+  }
+  const reductionField = root.querySelector("[data-creature-reaction-defense-field]");
+  if (reductionField) reductionField.hidden = type !== "defense";
+}
+
 export function buildHumanCreatureDraftV3(fields) {
   const base = buildHumanCreatureDraftV2(fields);
   const displayScale = finiteNumber(
@@ -3977,6 +3993,7 @@ function writeCreatureRecordFields(
   for (const [selector, value] of fields) {
     setFieldValue(root, selector, value);
   }
+  syncHumanCreatureReactionControlsV1(root);
 
   one(
     root,
@@ -4158,6 +4175,7 @@ function prepareNewCreatureDraftFields(
     setFieldValue(root, selector, value);
   }
 
+  syncHumanCreatureReactionControlsV1(root);
   one(root, "[data-capturable]").checked = true;
   one(
     root,
@@ -10020,6 +10038,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
 
   setTab(root, "creature");
+
+  const reactionType = one(root, "[data-creature-reaction-type]");
+  listen(reactionType, "change", () => syncHumanCreatureReactionControlsV1(root));
+  syncHumanCreatureReactionControlsV1(root);
 
   const mobilityPreset = one(
     root,
