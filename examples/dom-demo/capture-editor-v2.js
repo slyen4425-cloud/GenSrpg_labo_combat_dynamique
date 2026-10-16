@@ -364,6 +364,7 @@ function buildPreviewPresentationAssets(
     });
 
   return Object.freeze({
+    asset(assetId) { return resolvePreviewPresentationAsset(assetId); },
     presentationForArena(arenaId) {
       return demoPresentationAssets.presentationForArena(
         arenaId
