@@ -69,6 +69,7 @@ import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
 } from "../assets/global-visual-library.js";
+import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
 } from "../catalogs/capture-portable-native-skill-catalog-v1.js";
@@ -2181,6 +2182,27 @@ export function syncHumanCreatureReactionControlsV1(root) {
   }
   const reductionField = root.querySelector("[data-creature-reaction-defense-field]");
   if (reductionField) reductionField.hidden = type !== "defense";
+  const iconSelect = root.querySelector("[data-creature-reaction-icon]");
+  if (iconSelect) iconSelect.disabled = !editable;
+  const previewImage = root.querySelector("[data-preview-reaction-icon]");
+  if (previewImage) {
+    const assetId = captureReactionIconAssetIdV1({
+      type: type === "legacy" ? "dodge" : type,
+      iconAssetId: iconSelect?.value || undefined
+    });
+    const asset = (EDITOR_VISUAL_ASSETS_BY_ROOT.get(root) ?? [])
+      .find(entry => entry.id === assetId);
+    const url = asset?.resource?.runtimeUrl ||
+      (asset?.resource?.file ? globalVisualAssetUrl(asset.resource.file) : null);
+    if (url) {
+      previewImage.src = url;
+      previewImage.dataset.empty = "false";
+      previewImage.alt = asset.label || "Réaction défensive";
+    } else {
+      previewImage.removeAttribute("src");
+      previewImage.dataset.empty = "true";
+    }
+  }
 }
 
 export function buildHumanCreatureDraftV3(fields) {
@@ -3942,6 +3964,7 @@ function writeCreatureRecordFields(
     ["[data-creature-reaction-recharge]", (draft.combat?.reaction?.rechargeMs ?? 30000) / 1000],
     ["[data-creature-reaction-window]", (draft.combat?.reaction?.activeWindowMs ?? 250) / 1000],
     ["[data-creature-reaction-reduction]", draft.combat?.reaction?.damageReductionPct ?? 50],
+    ["[data-creature-reaction-icon]", draft.combat?.reaction?.iconAssetId ?? ""],
     [
       "[data-creature-dodge-fx]",
       presentation?.visual?.dodge?.assetId ?? ""
@@ -4156,6 +4179,7 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-reaction-recharge]", 30],
     ["[data-creature-reaction-window]", 0.25],
     ["[data-creature-reaction-reduction]", 50],
+    ["[data-creature-reaction-icon]", ""],
     ["[data-creature-dodge-fx]", ""],
     ["[data-creature-dodge-scale]", 1],
     ["[data-creature-dodge-duration]", 700],
@@ -8126,6 +8150,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       select.dataset.assetRole
     );
   }
+  syncHumanCreatureReactionControlsV1(root);
 
   function preview(select, image) {
     const asset = byId.get(select.value);
@@ -8212,6 +8237,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
         select.dataset.assetRole
       );
     }
+    syncHumanCreatureReactionControlsV1(root);
   }
 
   function mountCreatorVisualImporter(
@@ -8738,7 +8764,10 @@ function readCreatureFields(
           maxCharges: numericValue(root, "[data-creature-reaction-charges]"),
           rechargeMs: numericValue(root, "[data-creature-reaction-recharge]") * 1000,
           activeWindowMs: numericValue(root, "[data-creature-reaction-window]") * 1000,
-          damageReductionPct: numericValue(root, "[data-creature-reaction-reduction]")
+          damageReductionPct: numericValue(root, "[data-creature-reaction-reduction]"),
+          ...(selectedValue(root, "[data-creature-reaction-icon]") ? {
+            iconAssetId: selectedValue(root, "[data-creature-reaction-icon]")
+          } : {})
         }
       })
     },
@@ -10041,6 +10070,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   const reactionType = one(root, "[data-creature-reaction-type]");
   listen(reactionType, "change", () => syncHumanCreatureReactionControlsV1(root));
+  listen(one(root, "[data-creature-reaction-icon]"), "change", () => syncHumanCreatureReactionControlsV1(root));
   syncHumanCreatureReactionControlsV1(root);
 
   const mobilityPreset = one(
