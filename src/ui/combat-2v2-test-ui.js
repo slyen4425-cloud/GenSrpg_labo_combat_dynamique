@@ -1622,7 +1622,9 @@ export async function mountCoop2v2Test({
     onState(state) {
       impactHealthCue.clear();
       if (rosterController) for (const actor of format.actors) {
-        if (Number(state.fighters[actor.actorId]?.hp) <= 0 && rosterController.isPresent(actor.actorId)) {
+        const rosterOwned = Boolean(rosterController.snapshot()?.[actor.actorId]);
+        if (Number(state.fighters[actor.actorId]?.hp) <= 0 &&
+            (rosterOwned ? rosterController.isPresent(actor.actorId) : !koSettled.has(actor.actorId))) {
           queueKoReplacement(actor.actorId);
         }
       }
@@ -1785,7 +1787,9 @@ export async function mountCoop2v2Test({
   function refreshAiControllers() {
     aiControllers.splice(0);
     for (const spec of aiControllerSpecs) {
-      const ids = rosterController?.skillIdsFor(spec.actorId) ?? spec.skillIds;
+      const ids = rosterController?.snapshot()?.[spec.actorId]
+        ? rosterController.skillIdsFor(spec.actorId)
+        : spec.skillIds;
       const targets = spec.targetIds.filter(id => isAlive(id));
       if (!isAlive(spec.actorId) || ids.length === 0 || targets.length === 0) continue;
       const allyIds = format.actors
@@ -1830,6 +1834,18 @@ export async function mountCoop2v2Test({
     void Promise.resolve(completion).then(() => {
       if (disposed || battleEnded) return;
       runtime.cancelActionsForActor(actorId, { includeTargeted: true, reason: "ko" });
+      // A wild opponent has no RosterSession team to replace. Its terminal
+      // knockout is decided from the authoritative CombatState instead.
+      if (!rosterController.snapshot()?.[actorId]) {
+        koTransitions.delete(actorId);
+        koSettled.add(actorId);
+        finishBattleFromNativeState(actorId);
+        if (!disposed && !battleEnded) {
+          renderState();
+          queueAiDecisions();
+        }
+        return;
+      }
       const result = rosterController.replaceKnockedOut(actorId);
       koTransitions.delete(actorId);
       if (result.outcome === "team_defeated") {
