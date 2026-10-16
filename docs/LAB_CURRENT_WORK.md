@@ -2592,3 +2592,9 @@ La CI RED confirme que `tests/unit/capture-vague-incendiaire-author-v1.test.mjs`
 ### Sentinelles historiques à synchroniser pour la largeur du preset
 
 La CI du correctif ciblé relève deux assertions anciennes à `2.5` désormais incompatibles avec la demande explicite de l'auteur de réduire l'emprise au palier 2. Périmètre supplémentaire **uniquement pour leurs deux assertions de donnée auteur**, sans désactiver de tests : `tests/unit/capture-showcase-skill-presets-v1.test.mjs` (conservation intégrale de la fiche, dont nouvelles dimensions) et `tests/unit/capture-skill-editor-active-library-v1.test.mjs` (hydratation du contrôle réel à `1.6`). Les tests natifs de dégâts et d'édition restent inchangés.
+
+### Résultat technique — portée Tempête de flammes
+
+- Correction autorisée : seul `presentation.visual.aura.displayScaleX` de `cap_fire_atk_6` est passé de 2.5 à 1.6. Les trois activations restent `short/medium/long` et leurs dégâts 5/tick toutes les 1000 ms restent intacts. Les autres valeurs du preset auteur et toutes les autres compétences sont conservées.
+- Test RED démontré sur le vrai propriétaire `advancePersistentZonesV1` : au palier 2 l'ancienne largeur recouvrait l'ennemi de départ. Test GREEN : palier 1 hors portée, palier 2 hors portée et sans dégâts sur cible immobile, palier 2 affecte une cible qui entre, palier 3 touche à la position de départ ; repère et sample spatial restent synchronisés. Deux sentinelles auteur historiques 2.5 actualisées explicitement, tous les autres chemins conservés.
+- CI `38868707027` **SUCCESS 3/3** au SHA `ffa5e7e82dbcce87424b6a7cfd65e1b545abc7cc` : Foundation, Firestorm Chromium, Creature Library Chromium. Le commit documentaire final doit lui aussi réussir sur son SHA exact avant checkpoint GREEN, preview, puis publication sous lease. Test visuel physique Android de l'auteur non revendiqué.
