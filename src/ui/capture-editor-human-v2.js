@@ -7516,8 +7516,11 @@ function populateSelect(select, assets, role) {
 
   select.textContent = "";
 
+  const reactionIcons =
+    select.matches?.("[data-creature-reaction-icon]") === true;
   if (allowEmpty) {
-    createOption(select, "", "Aucun");
+    createOption(select, "", reactionIcons
+      ? "Icône par défaut (Esquive / Défense)" : "Aucun");
   }
 
   const matchingAssets = assets.filter(
@@ -7527,7 +7530,25 @@ function populateSelect(select, assets, role) {
         role
       )
   );
-  const libraryGroups = [
+  // Mobile native menus: no optgroup nesting for this specific chooser.
+  // Include EVERY compatible icon from the one shared GenSrpG catalog,
+  // including personal session imports. Keep other selectors unchanged.
+  if (reactionIcons) {
+    const unique = [...new Map(
+      matchingAssets.map(asset => [asset.id, asset])
+    ).values()].sort((a, b) =>
+      String(a.label || a.id).localeCompare(
+        String(b.label || b.id), "fr", { sensitivity: "base" }
+      )
+    );
+    for (const asset of unique) {
+      const library = captureEditorAssetLibraryGroupV1(asset) === "user"
+        ? "Mes assets" : "GenSrpG";
+      createOption(select, asset.id, library + " · " + (asset.label || asset.id));
+    }
+    select.dataset.availableIcons = String(unique.length);
+  }
+  const libraryGroups = reactionIcons ? [] : [
     {
       id: "gensrpg",
       label: "Bibliothèque GenSrpG"
