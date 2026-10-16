@@ -72,8 +72,14 @@ test("the single animated wave shell respects authored opacity rather than overr
     const scene=rendererScene(opacity);
     const shellAnim=scene.animated.find(a=>a.node===scene.shell);
     assert.ok(shellAnim);
-    assert.equal(shellAnim.keyframes[0].opacity,0.4*opacity);
-    assert.equal(shellAnim.keyframes[1].opacity,opacity);
+    const sprite=scene.shell.children.find(child=>child.dataset.assetId==="test:fire-wave");
+    const alphaAnim=scene.animated.find(a=>a.node===sprite && a.keyframes.some(frame=>frame.opacity !== undefined));
+    const marker=scene.shell.children.find(child=>child.className==="skill-fx__tactical-radius");
+    assert.ok(marker && alphaAnim);
+    assert.ok(scene.shell.children.indexOf(marker)<scene.shell.children.indexOf(sprite));
+    assert.equal(shellAnim.keyframes[0].opacity,undefined, "the tactical shell stays visible");
+    assert.equal(alphaAnim.keyframes[0].opacity,0.4*opacity);
+    assert.equal(alphaAnim.keyframes[1].opacity,opacity);
     assert.equal(scene.shell.style.width,"1300px");
     assert.equal(scene.shell.dataset.waveMode,"expanding_wave");
     scene.fx.dispose();
