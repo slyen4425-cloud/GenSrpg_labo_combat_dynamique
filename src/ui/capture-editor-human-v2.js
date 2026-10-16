@@ -2202,6 +2202,12 @@ export function buildHumanCreatureDraftV3(fields) {
   return normalizeCaptureCreatureEditorDraftV3({
     ...base,
     schema: "capture-creature-editor-draft-v3",
+    combat: {
+      ...base.combat,
+      ...(fields?.combat?.reaction === undefined ? {} : {
+        reaction: fields.combat.reaction
+      })
+    },
     presentation:
       base.presentation === null
         ? null
@@ -3915,6 +3921,11 @@ function writeCreatureRecordFields(
       "[data-creature-icon-select]",
       presentation?.visual?.icon?.assetId ?? ""
     ],
+    ["[data-creature-reaction-type]", draft.combat?.reaction?.type ?? "legacy"],
+    ["[data-creature-reaction-charges]", draft.combat?.reaction?.maxCharges ?? 2],
+    ["[data-creature-reaction-recharge]", (draft.combat?.reaction?.rechargeMs ?? 30000) / 1000],
+    ["[data-creature-reaction-window]", (draft.combat?.reaction?.activeWindowMs ?? 250) / 1000],
+    ["[data-creature-reaction-reduction]", draft.combat?.reaction?.damageReductionPct ?? 50],
     [
       "[data-creature-dodge-fx]",
       presentation?.visual?.dodge?.assetId ?? ""
@@ -4123,6 +4134,11 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-front-select]", ""],
     ["[data-creature-back-select]", ""],
     ["[data-creature-icon-select]", ""],
+    ["[data-creature-reaction-type]", "dodge"],
+    ["[data-creature-reaction-charges]", 2],
+    ["[data-creature-reaction-recharge]", 30],
+    ["[data-creature-reaction-window]", 0.25],
+    ["[data-creature-reaction-reduction]", 50],
     ["[data-creature-dodge-fx]", ""],
     ["[data-creature-dodge-scale]", 1],
     ["[data-creature-dodge-duration]", 700],
@@ -8697,7 +8713,16 @@ function readCreatureFields(
         numericValue(
           root,
           "[data-creature-approach-time-modifier]"
-        )
+        ),
+      ...(selectedValue(root, "[data-creature-reaction-type]") === "legacy" ? {} : {
+        reaction: {
+          type: selectedValue(root, "[data-creature-reaction-type]"),
+          maxCharges: numericValue(root, "[data-creature-reaction-charges]"),
+          rechargeMs: numericValue(root, "[data-creature-reaction-recharge]") * 1000,
+          activeWindowMs: numericValue(root, "[data-creature-reaction-window]") * 1000,
+          damageReductionPct: numericValue(root, "[data-creature-reaction-reduction]")
+        }
+      })
     },
     linkedSkillIds: [
       selectedValue(root, "[data-skill-id]")
