@@ -44,8 +44,8 @@ test("long native full-field damage stage projects the SAME author sprite over t
   const marker=s.arena.nodes.find(n=>n.dataset.tacticalRadius==="persistent-zone");
   assert.ok(sprite&&marker);
   assert.match(sprite.style.transform,/scale\(/);
-  assert.equal(sprite.style.width,undefined);
-  assert.equal(sprite.style.height,undefined);
+  assert.equal(sprite.style.width,"");
+  assert.equal(sprite.style.height,"");
   s.fx.syncPersistentZones([s.zone("medium")]);
   assert.match(sprite.style.transform,/scale\(/);
   assert.equal(sprite.dataset.zoneRadius,"medium");
