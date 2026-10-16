@@ -688,10 +688,10 @@
         <p class="note">1× est le rythme de référence. Le rappel reste gratuit et prend 2 secondes par défaut. Après un changement volontaire, le prochain est bloqué pendant 45 secondes par défaut (0 = sans délai). Une relève après KO est toujours immédiate et ne subit pas ce verrou.</p>
 
         <fieldset class="game-option-group">
-          <legend>Esquive</legend>
+          <legend>Esquive — anciennes créatures sans réglage individuel</legend>
           <label class="switch-line">
             <input type="checkbox" data-game-dodge-enabled checked>
-            <span>Activer la touche Esquive en combat</span>
+            <span>Esquive par défaut pour les créatures anciennes non configurées</span>
           </label>
           <div class="grid three">
             <label>Nombre de charges
@@ -704,7 +704,7 @@
               <input type="number" min="0.05" step="0.05" value="0.25" data-game-dodge-active-seconds>
             </label>
           </div>
-          <p class="note">Une activation consomme une charge immédiatement. Pendant la durée active, les techniques esquivables qui touchent sont évitées. Chaque charge revient après le délai indiqué ; une technique marquée non esquivable traverse la fenêtre.</p>
+          <p class="note">Compatibilité : ces réglages ne s’appliquent qu’aux anciennes fiches dont la réaction individuelle est encore sur « Ancienne règle globale ». Pour toute nouvelle créature, configure Esquive ou Défense dans son onglet Créature, à côté du sprite. Une activation consomme une charge ; les attaques non esquivables traversent l’Esquive.</p>
         </fieldset>
       </article>
     </section>
