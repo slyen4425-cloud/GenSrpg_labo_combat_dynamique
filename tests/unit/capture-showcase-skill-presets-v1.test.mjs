@@ -79,7 +79,7 @@ test("Tempete de flammes showcase transfer preserves the editor export with six 
   );
   assert.equal(draft.presentation.version, 8);
   assert.equal(draft.presentation.visual.aura.displayScale, 1.2);
-  assert.equal(draft.presentation.visual.aura.displayScaleX, 2.5);
+  assert.equal(draft.presentation.visual.aura.displayScaleX, 1.6);
   assert.equal(draft.presentation.visual.aura.displayScaleY, 0.8);
   assert.equal(draft.presentation.visual.aura.offsetX, 0);
   assert.equal(draft.presentation.visual.aura.offsetY, 0);
