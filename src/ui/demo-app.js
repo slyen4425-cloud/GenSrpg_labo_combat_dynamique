@@ -1154,8 +1154,10 @@ function createSlot({
       runtimeAsset
     );
 
-    loadRuntimeAsset(runtimeUrl);
+    // Cached images can trigger markReady synchronously. The actor/profile
+    // must already exist when the image's visible collision mask is read.
     rebuildActor(runtimeUrl);
+    loadRuntimeAsset(runtimeUrl);
   }
 
   function setVisible(nextVisible) {
