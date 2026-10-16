@@ -764,8 +764,15 @@ const server = createServer(async (req, res) => {
             set(field("window"),0.55);
             set(field("reduction"),60);
             const iconId="pack:capture:icon-reaction-defense-01";
-            if(![...field("icon").options].some(o=>o.value===iconId))
-              throw Error("reaction icon missing from GenSrpG assets");
+            const allIcons=[...field("icon").options].map(o=>o.value).filter(Boolean);
+            if(allIcons.length<50 || new Set(allIcons).size!==allIcons.length)
+              throw Error("reaction chooser does not expose all GenSrpG icon assets");
+            if(!allIcons.includes(iconId) || !allIcons.includes("core:icon-skill-fireball-01"))
+              throw Error("reaction chooser excludes other library icons");
+            if(field("icon").querySelector("optgroup"))
+              throw Error("reaction icon list must be flat on mobile");
+            if(field("icon").dataset.availableIcons!==String(allIcons.length))
+              throw Error("reaction icon count and chooser mismatch");
             set(field("icon"),iconId);
             const preview=q("[data-preview-reaction-icon]");
             if(!preview?.src.includes("icon_reaction_defense_01.webp") || preview.dataset.empty==="true")
