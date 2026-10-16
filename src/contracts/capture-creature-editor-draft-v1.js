@@ -1,3 +1,5 @@
+import { normalizeCaptureCreatureDefensiveReactionV1 } from "./capture-creature-defensive-reaction-v1.js";
+
 export const CAPTURE_CREATURE_EDITOR_DRAFT_SCHEMA =
   "capture-creature-editor-draft-v1";
 
@@ -48,7 +50,8 @@ const COMBAT_FIELDS = new Set([
   "energyChargeIntervalMs",
   "movementEnergyPerStep",
   "chargeTimeModifierPct",
-  "approachTimeModifierPct"
+  "approachTimeModifierPct",
+  "reaction"
 ]);
 
 const RESISTANCE_FIELDS = new Set([
@@ -317,6 +320,9 @@ function normalizeCombat(raw) {
     );
   }
 
+  if (hasOwn(value, "reaction")) {
+    output.reaction = normalizeCaptureCreatureDefensiveReactionV1(value.reaction);
+  }
   return Object.freeze(output);
 }
 
