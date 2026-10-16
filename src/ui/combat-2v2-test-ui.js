@@ -1644,8 +1644,8 @@ export async function mountCoop2v2Test({
       renderAvailability();
       for (const controller of aiControllers) {
         const decision = controller.maybeDodge({ elapsedMs: state.elapsedMs });
-        if (decision.status === "dodged") {
-          void Promise.resolve(visuals.playEventFor(decision.actorId, "dodge", {
+        if (decision.status === "dodged" || decision.status === "defended") {
+          void Promise.resolve(visuals.playEventFor(decision.actorId, decision.status === "defended" ? "defense" : "dodge", {
             metadata: { durationMs: decision.durationMs }
           })).catch(() => {});
         }
@@ -1798,11 +1798,12 @@ export async function mountCoop2v2Test({
         tactics: CAPTURE_AI_TACTICS_V1_DEFAULT,
         dodge: (() => {
           const reaction = defensiveActionFor(spec.actorId);
-          return reaction?.type === "dodge" ? {
+          return reaction === null ? null : {
+            type: reaction.type,
             skill: reaction.skill,
             recharge: reaction.recharge,
             activeWindowMs: reaction.activeWindowMs
-          } : null;
+          };
         })()
       }));
     }
