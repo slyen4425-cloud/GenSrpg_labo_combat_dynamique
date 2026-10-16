@@ -142,9 +142,27 @@ test("canonical Transfer batch replaces the native Foudrillon and skill without 
     loadout:builtLoadout.loadout
   }]]);
   const beforeCreatureSize=configuredCreatures.size;
+  const authorSkill=skill().value.draft;
+  // Recreate the already published pre-import skill, not the new
+  // showcase file; otherwise the canonical planner rightly says noop.
+  const oldSkill=normalizeCaptureSkillEditorDraftV1({
+    ...authorSkill,
+    definition:{
+      ...authorSkill.definition,
+      effects: authorSkill.definition.effects.map((effect,index)=>
+        index===0?{...effect,amount:4}:effect
+      )
+    },
+    presentation:{
+      ...authorSkill.presentation,
+      visual:{
+        ...authorSkill.presentation.visual,
+        icon:{assetId:"pack:capture:icon-skill-burning-bite-01"}
+      }
+    }
+  });
+  configuredSkills.set("lib_static_bite",oldSkill);
   const beforeSkillSize=configuredSkills.size;
-  const oldSkill=JSON.parse(read(skillPath)).draft;
-  assert.notEqual(oldSkill.definition.effects[0].amount,4);
   const action=applyCaptureTransferBatchToEditorStateV1({
     transfers:[skill(),creature()],configuredCreatures,configuredSkills,
     statRegistry:registry,progressionRules,mode:"replace"
