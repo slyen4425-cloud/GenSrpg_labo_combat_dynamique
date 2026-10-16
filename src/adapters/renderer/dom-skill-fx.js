@@ -359,6 +359,7 @@ export function createDomSkillFxRenderer({
   onProjectileContact = null,
   onProjectileClashContact = null,
   targetCollisionModelFor = null,
+  waveTargetsFor = null,
   playCameraFx = null
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
@@ -396,6 +397,9 @@ export function createDomSkillFxRenderer({
   if (onProjectileClashContact !== null &&
       typeof onProjectileClashContact !== "function") {
     throw new TypeError("onProjectileClashContact must be a function");
+  }
+  if (waveTargetsFor !== null && typeof waveTargetsFor !== "function") {
+    throw new TypeError("waveTargetsFor must be a function when supplied");
   }
   if (
     onProjectileContact !== null &&
@@ -2527,6 +2531,14 @@ export function createDomSkillFxRenderer({
       // *same object*. The Combat Runtime remains the only damage owner.
       // Percentages refer to arena width, so the reach adapts in landscape.
       const wave = expandingWave;
+      // Only the 2v2 UI supplies more than one visible enemy candidate.
+      // Runtime rechecks ownership, team and eligibility for each contact.
+      const candidateSlots = waveTargetsFor?.(fromSlot, targetSlot) ?? [];
+      const waveTargetSlots = [...new Set([
+        targetSlot,
+        ...(Array.isArray(candidateSlots) ? candidateSlots : [])
+      ])];
+      const multiTargetWave = waveTargetSlots.length > 1;
       const endRadiusPx = arenaRect.width * wave.endRadiusPct / 100;
       const startRadiusPx = arenaRect.width * wave.startRadiusPct / 100;
       const thicknessEndPx = arenaRect.width * wave.thicknessPct / 100;
@@ -2594,6 +2606,8 @@ export function createDomSkillFxRenderer({
         node, animation: null, frameAnimation, type: "projectile",
         skillId, fromSlot, targetSlot,
         contactFrameId: null, contactReported: false,
+        multiTargetWave, waveTargetsHit: new Set(),
+        previousTargetFrames: new Map(),
         previousRadiusPx: startRadiusPx,
         previousTargetFrame: null,
         expandingWave: wave,
@@ -2627,15 +2641,25 @@ export function createDomSkillFxRenderer({
       if (collisionModel && typeof collisionModel.snapshot === "function") {
         record.previousTargetFrame = collisionModel.snapshot();
       }
+      const waveCollisionModels = new Map(
+        multiTargetWave && onProjectileContact && targetCollisionModelFor
+          ? waveTargetSlots.map(slot => [slot, targetCollisionModelFor(slot)])
+            .filter(([,model]) => typeof model?.snapshot === "function")
+          : []
+      );
+      for (const [slot, model] of waveCollisionModels) {
+        record.previousTargetFrames.set(slot, model.snapshot());
+      }
       if ((collisionModel && typeof collisionModel.snapshot === "function") ||
-          onProjectileClashContact) {
+          waveCollisionModels.size > 0 || onProjectileClashContact) {
         const center = Object.freeze({
           x: arenaRect.left + position.x,
           y: arenaRect.top + position.y
         });
         const observe = () => {
           record.contactFrameId = null;
-          if (disposed || !active.has(record) || record.contactReported) return;
+          if (disposed || !active.has(record) ||
+              (record.contactReported && !record.multiTargetWave)) return;
           const rect = node.getBoundingClientRect();
           const radiusPx = Math.max(
             record.previousRadiusPx,
@@ -2678,6 +2702,36 @@ export function createDomSkillFxRenderer({
             }
           }
           if (!active.has(record)) return;
+          if (record.multiTargetWave) {
+            // One shell, one RAF, one real swept edge per visible enemy.
+            // No second animation or full-model hitbox approximation.
+            for (const [slot, model] of waveCollisionModels) {
+              if (!active.has(record)) break;
+              if (record.waveTargetsHit.has(slot)) continue;
+              const frame = model.snapshot();
+              const hit = frame && sweptExpandingWaveHitsOpaqueMaskV1({
+                center,
+                previousRadiusPx: record.previousRadiusPx,
+                radiusPx,
+                thicknessPx,
+                previousFrame: record.previousTargetFrames.get(slot) ?? null,
+                frame
+              });
+              record.previousTargetFrames.set(slot, frame);
+              if (!hit) continue;
+              const result = onProjectileContact(Object.freeze({
+                actorId: fromSlot, targetId: slot, skillId,
+                contactPoint: center, waveMultiTarget: true
+              }));
+              if (result?.ok === true) {
+                record.waveTargetsHit.add(slot);
+                record.contactReported = true;
+              }
+            }
+            record.previousRadiusPx = radiusPx;
+            if (active.has(record)) record.contactFrameId = requestFrame(observe);
+            return;
+          }
           const targetFrame = collisionModel?.snapshot?.() ?? null;
           const hit = targetFrame && onProjectileContact &&
             sweptExpandingWaveHitsOpaqueMaskV1({
@@ -2704,7 +2758,10 @@ export function createDomSkillFxRenderer({
       }
 
       const finished = Promise.resolve(animation.finished)
-        .then(() => ({ status: "arrived" }))
+        .then(() => {
+          if (record.multiTargetWave) cleanup(record);
+          return { status: "arrived" };
+        })
         .catch(error => {
           cleanup(record);
           if (error?.name === "AbortError") return { status: "cancelled" };
