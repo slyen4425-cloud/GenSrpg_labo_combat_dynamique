@@ -798,8 +798,10 @@ button.reserve-card {
 
 /* Persistent zones: ellipse cloned from the *native sampled FX bounds*.
    The one-pixel line is deliberately quieter than the authored VFX. */
-.skill-fx--persistent-zone.skill-fx--tactical-zone {
+.skill-fx--tactical-zone {
   z-index: 5;
+  width: clamp(6rem, 20vw, 12rem);
+  aspect-ratio: 1;
   box-sizing: border-box;
   border: 1px solid rgba(244, 215, 155, 0.48);
   border-radius: 50%;
@@ -808,11 +810,11 @@ button.reserve-card {
   pointer-events: none;
 }
 
-.skill-fx--persistent-zone.skill-fx--tactical-zone.skill-fx--layer-behind {
+.skill-fx--tactical-zone.skill-fx--layer-behind {
   z-index: 0;
 }
 
-.skill-fx--persistent-zone.skill-fx--tactical-full-arena {
+.skill-fx--tactical-zone.skill-fx--tactical-full-arena {
   border-radius: 6px;
   aspect-ratio: auto;
 }
