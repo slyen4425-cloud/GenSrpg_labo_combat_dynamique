@@ -1,3 +1,5 @@
+import { rechargeableActionWindowStatusV1 } from "./rechargeable-action-v1.js";
+import { captureCreatureReactionActionIdV1 } from "../../contracts/capture-creature-defensive-reaction-v1.js";
 import {
   projectStatusStatEffectsV1
 } from "./status-effect-projection-v1.js";
@@ -78,6 +80,19 @@ export function computeCombatDamageV1({
       ) || 0
     );
 
+  // A guard is an active, charged, per-creature reaction. Read the same
+  // combat-clock history as Dodge, with no UI or alternate damage owner.
+  const guard = target.defensiveReaction;
+  const guarded = guard?.type === "defense" &&
+    rechargeableActionWindowStatusV1({
+      state,
+      actorId: targetId,
+      actionId: captureCreatureReactionActionIdV1(
+        target.defensiveCreatureId ?? targetId, "defense"
+      ),
+      activeWindowMs: guard.activeWindowMs,
+      atMs
+    }).active;
   const damageReductionPct =
     Math.max(
       0,
@@ -92,7 +107,8 @@ export function computeCombatDamageV1({
           Number(
             targetStatus.damageReductionPct ?? 0
           ) || 0
-        )
+        ) +
+        (guarded ? guard.damageReductionPct : 0)
       )
     );
 
