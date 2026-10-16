@@ -70,7 +70,7 @@
         {
           "kind": "damage",
           "targetScope": "target",
-          "amount": 4,
+          "amount": 8,
           "channel": "electric",
           "ignoreResistancePct": 0,
           "ignoreDamageReductionPct": 0
@@ -118,7 +118,7 @@
       "subjectId": "lib_static_bite",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-burning-bite-01"
+          "assetId": "pack:capture:icon-skill-croc-electrique-01"
         },
         "impact": {
           "assetId": "pack:capture:sprite-impact-electric-01",
