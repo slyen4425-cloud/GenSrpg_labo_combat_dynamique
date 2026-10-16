@@ -133,9 +133,12 @@ test("150% is BOTH the sprite-shell radius and the exact swept-hit radius, not a
   assert.equal(shell.style.width,"3000px");
   assert.equal(shell.style.height,"3000px");
   assert.match(shell.className,/skill-fx--sprite-shell/);
-  assert.equal(shell.children[0].dataset.assetId,"test:fire-sphere");
-  assert.equal(shell.children[0].style.backgroundSize,"100% 100%");
-  assert.equal(shell.children[0].style.width,undefined); // CSS sizes child to full shell
+  const tacticalLine=shell.children.find(child=>child.className==="skill-fx__tactical-radius");
+  const authoredSprite=shell.children.find(child=>child.dataset.assetId==="test:fire-sphere");
+  assert.ok(tacticalLine && authoredSprite);
+  assert.ok(shell.children.indexOf(tacticalLine)<shell.children.indexOf(authoredSprite));
+  assert.equal(authoredSprite.style.backgroundSize,"100% 100%");
+  assert.equal(authoredSprite.style.width,undefined); // CSS sizes child to full shell
   assert.match(anim.keyframes[0].transform,/scale\(0\.02\)/);
   assert.equal(anim.keyframes[1].transform,"translate(-50%, -50%) scale(1)");
   scene.dispose();
