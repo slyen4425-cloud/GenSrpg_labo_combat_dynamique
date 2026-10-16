@@ -6,6 +6,7 @@ import {
   captureDodgeActiveWindowMsV1
 } from "../contracts/capture-game-options-v1.js";
 import { captureCreatureReactionActionIdV1 } from "../contracts/capture-creature-defensive-reaction-v1.js";
+import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
@@ -619,6 +620,7 @@ export async function mountCoop2v2Test({
   });
   const dodgeButton =
     root.querySelector("[data-combat-dodge]");
+  const reactionIcon = dodgeButton?.querySelector("[data-combat-reaction-icon]") ?? null;
   const dodgeCharges =
     root.querySelector(
       "[data-combat-dodge-charges]"
@@ -640,6 +642,7 @@ export async function mountCoop2v2Test({
       );
       return Object.freeze({
         type: personal.type,
+        iconAssetId: personal.iconAssetId ?? null,
         label: personal.type === "defense" ? "Défense" : "Esquive",
         skill: personal.type === "dodge" ?
           buildCaptureDodgeReactionSkillV1({
@@ -663,6 +666,7 @@ export async function mountCoop2v2Test({
     const legacySkill = buildCaptureDodgeReactionSkillV1(gameOptions);
     return legacySkill === null ? null : Object.freeze({
       type: "dodge",
+      iconAssetId: null,
       label: "Esquive",
       skill: legacySkill,
       recharge: Object.freeze({
@@ -1204,6 +1208,15 @@ export async function mountCoop2v2Test({
       if (enabled) {
         const label = dodgeButton.querySelector("strong");
         if (label) label.textContent = reaction.label;
+        if (reactionIcon) {
+          const iconId = captureReactionIconAssetIdV1(reaction);
+          const asset = iconId && typeof presentationAssets?.asset === "function"
+            ? presentationAssets.asset(iconId) : null;
+          const url = asset?.url;
+          reactionIcon.hidden = !(typeof url === "string" && url !== "");
+          if (reactionIcon.hidden) reactionIcon.removeAttribute("src");
+          else if (reactionIcon.src !== url) reactionIcon.src = url;
+        }
         const availability =
           runtime.rechargeableActionAvailability({
             actorId:
