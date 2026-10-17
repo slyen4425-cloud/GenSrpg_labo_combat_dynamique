@@ -28,7 +28,7 @@ test('Capture simplified icon originals: real 8 transparent WebP files, exact pr
   assert.equal(b[20]&16,16,'WebP alpha required');
   assert.deepEqual([1+b.readUIntLE(24,3),1+b.readUIntLE(27,3)],[128,128]);
   assert.equal(createHash('sha256').update(b).digest('hex'),item.derivedSha256);
-  const h=createHash('sha1').update('blob '+b.length+'\\0').update(b).digest('hex');
+  const h=createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');
   assert.equal(h,item.gitBlobSHA,'Verify REAL bytes against expected Git blob SHA');
  }
  assert.equal(new Set(manifest.assets.map(a=>a.assetId)).size,8);
