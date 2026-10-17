@@ -34,6 +34,7 @@ export function normalizeCaptureMarkerV1(input) {
   }
   const status = normalizeStatusEffectV1({
     id: CAPTURE_MARKER_ID_PREFIX_V1 + id,
+    label: input.name.trim(),
     kind: "stack_counter",
     polarity: input.polarity ?? "neutral",
     durationMs: input.durationMs ?? 10000,
@@ -57,6 +58,7 @@ export function markerStatusDefinitionV1(marker) {
   const entry = normalizeCaptureMarkerV1(marker);
   return normalizeStatusEffectV1({
     id: CAPTURE_MARKER_ID_PREFIX_V1 + entry.id,
+    label: entry.name,
     kind: "stack_counter",
     polarity: entry.polarity,
     durationMs: entry.durationMs,
