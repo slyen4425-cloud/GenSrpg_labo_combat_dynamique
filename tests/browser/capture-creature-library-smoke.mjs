@@ -89,7 +89,7 @@ const server = createServer(async (req, res) => {
       const probe=`<script>
         document.addEventListener("DOMContentLoaded",()=>{
           let attempts=0;
-          const timer=setInterval(()=>{
+          const timer=setInterval(async()=>{
             const lib=document.querySelector("[data-skill-library-select]");
             const ready=document.querySelector("[data-creature-library-state]")
               ?.textContent?.includes("3 modèles vitrine chargés");
@@ -117,6 +117,25 @@ const server = createServer(async (req, res) => {
                   authoredMarker.querySelector("[data-skill-marker-pick]")?.value!=="venin-static"||
                   authoredMarker.querySelector("[data-skill-marker-charges]")?.value!=="1")
                 throw Error("Dard static Venin placement not rendered from canonical skill");
+              // The user's actual export was markers:[] despite this skill
+              // containing Venin. Inspect the REAL JSON Blob downloaded from
+              // the existing "Exporter la bibliothèque" button.
+              const originalCreate=URL.createObjectURL;
+              let captured=null;
+              try {
+                URL.createObjectURL=blob=>{captured=blob;return originalCreate.call(URL,blob);};
+                get("marker-export").click();
+              } finally {URL.createObjectURL=originalCreate;}
+              if(!captured)throw Error("marker export generated no JSON blob despite authored skill");
+              const exported=JSON.parse(await captured.text());
+              const author=exported.markers?.find(x=>x.id==="venin-static");
+              if(exported.schema!=="capture-markers-v1"||!author||
+                 author.permanent!==true||author.maxStacks!==20||
+                 author.periodic?.amount!==2||author.periodic?.intervalMs!==5000||
+                 author.periodic?.channel!=="electric"||
+                 author.onStackThreshold?.count!==20||
+                 author.onStackThreshold?.effects?.[0]?.kind!=="knockout")
+                throw Error("real marker-library export omitted or changed Venin from Dard static");
               fill("marker-library-select","venin-static");
               if(!get("marker-permanent").checked||
                   get("marker-max").value!=="20"||
