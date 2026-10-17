@@ -36,7 +36,7 @@ test("RED: reserve status must normalize using the original SkillEffectV1 owner"
  const effect=normalizeSkillEffectV1({kind:"apply_status",targetScope:"all_ally_reserves",status});
  assert.equal(effect.status.modifierPct,50);
  assert.equal(effect.targetScope,"all_ally_reserves");
- assert.throws(()=>normalizeSkillEffectV1({...effect,targetScope:"all_enemy_reserves",kind:"energy_restore",amount:3}),/Reserve effect scopes/);
+ assert.throws(()=>normalizeSkillEffectV1({kind:"energy_restore",targetScope:"all_enemy_reserves",amount:3}),/Reserve effect scopes/);
 });
 test("RED: three author skill IDs remain unique and author parameters are preserved",async()=>{
  for(const path of paths)assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===path).length,1,path);
