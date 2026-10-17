@@ -10,16 +10,23 @@ import { shouldTestSavedCreatureWhenEvolutionIncompleteV1 } from "../../src/ui/c
 const path = "data/capture/showcase/cap_light_special_1.capture-skill-transfer-v1.json";
 const file = new URL("../../" + path, import.meta.url);
 
-test("Soin lumineux preserves the exact creator export, unique canonical ID, heals 35 and consumes all markers", async () => {
-  const raw = await readFile(file);
-  assert.equal(raw.length, 4166);
-  assert.equal(createHash("sha256").update(raw).digest("hex"),
+test("Soin lumineux preserves the exact creator export in source archive and changes only enemy authorization", async () => {
+  const original = await readFile(new URL("../../data/capture/source-exports/gensrpg-capture-skill-cap_light_special_1-2026-10-17.json", import.meta.url));
+  assert.equal(original.length, 4166);
+  assert.equal(createHash("sha256").update(original).digest("hex"),
     "395adeb9b56af9a1b518a99e3f746fbcaa2f7199b239b702347b5415e9fb01cf");
+  const raw = await readFile(file);
+  const author = JSON.parse(original.toString("utf8"));
+  const active = JSON.parse(raw.toString("utf8"));
+  assert.deepEqual({...active, draft:{...active.draft,
+    definition:{...active.draft.definition,targetRelations:["enemy","ally","self"]}}}, author,
+    "Only the authorized target relations may change from the original file");
   const transfer = importCaptureTransferJsonV1(raw.toString("utf8"));
   assert.equal(transfer.kind, "skill");
   const draft = transfer.value.draft;
   assert.equal(draft.id, "cap_light_special_1");
   assert.equal(draft.definition.name, "Soin lumineux");
+  assert.deepEqual(draft.definition.targetRelations, ["ally", "self"]);
   assert.equal(draft.requiredLevel, 10);
   assert.equal(draft.definition.form, "self");
   assert.equal(draft.definition.energyCost, 5);
