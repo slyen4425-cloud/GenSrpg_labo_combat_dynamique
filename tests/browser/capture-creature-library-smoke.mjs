@@ -82,6 +82,72 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",plugin+"</head>"));
     }
+    // Real marker authoring through the existing skill editor and active configuredSkills.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-markers")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          let attempts=0;
+          const timer=setInterval(()=>{
+            const lib=document.querySelector("[data-skill-library-select]");
+            const ready=document.querySelector("[data-creature-library-state]")
+              ?.textContent?.includes("3 modèles vitrine chargés");
+            if(!ready || !lib?.querySelector('option[value="lib_aqua_heal"]')){
+              if(++attempts>70){clearInterval(timer);document.body.dataset.markerProbe="timeout";}
+              return;
+            }
+            clearInterval(timer);
+            try{
+              const get=key=>document.querySelector("[data-"+key+"]");
+              const fill=(key,v)=>{const node=get(key);if(!node)throw Error("field "+key+" absent");
+                node.value=String(v);node.dispatchEvent(new Event("change",{bubbles:true}));};
+              fill("marker-id","poison");
+              fill("marker-name","Poison");
+              fill("marker-max",10);
+              fill("marker-duration",10);
+              get("marker-threshold-enabled").checked=true;
+              fill("marker-threshold-count",10);
+              fill("marker-threshold-effect","damage");
+              fill("marker-threshold-amount",90);
+              get("marker-save").click();
+              if(!get("marker-library-state").textContent.includes("enregistré"))throw Error("marker library save failed: "+get("marker-library-state").textContent);
+              lib.value="lib_aqua_heal";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              const add=()=>{get("skill-effect-add").click();return [...document.querySelectorAll("[data-skill-effect-row]")].at(-1);};
+              const kind=(row,v)=>{const sel=row.querySelector("[data-skill-effect-kind]");
+                sel.value=v;sel.dispatchEvent(new Event("change",{bubbles:true}));};
+              let row=add();kind(row,"apply_marker");
+              const marker=row.querySelector("[data-skill-marker-pick]");
+              if(!marker?.querySelector('option[value="poison"]'))throw Error("marker not in ability picker");
+              marker.value="poison";
+              row.querySelector("[data-skill-marker-charges]").value="3";
+              row=add();kind(row,"consume_marker");
+              row.querySelector("[data-skill-consume-marker-pick]").value="*";
+              row.querySelector("[data-marker-consume-mode]").value="all";
+              row.querySelector("[data-marker-result-kind]").value="heal";
+              row.querySelector("[data-marker-result-amount]").value="7";
+              get("skill-update").click();
+              const status=document.querySelector("[data-skill-library-state]")?.textContent??"";
+              if(!status.includes("sauvegardée"))throw Error("native configuredSkills save failed: "+status);
+              lib.value="cap_fire_atk_6";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              lib.value="lib_aqua_heal";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              const rows=[...document.querySelectorAll("[data-skill-effect-row]")];
+              const place=rows.find(n=>n.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+              const spend=rows.find(n=>n.querySelector("[data-skill-effect-kind]")?.value==="consume_marker");
+              if(!place||!spend)throw Error("saved marker effects did not round-trip");
+              if(place.querySelector("[data-skill-marker-pick]").value!=="poison"||
+                 place.querySelector("[data-skill-marker-charges]").value!=="3")throw Error("placement round-trip differs");
+              if(spend.querySelector("[data-skill-consume-marker-pick]").value!=="*"||
+                 spend.querySelector("[data-marker-result-kind]").value!=="heal")throw Error("consumer round-trip differs");
+              get("editor-validate").click();
+              if(get("editor-summary").textContent.includes("Corrige"))throw Error("combat exporter rejects new marker skill");
+              document.body.dataset.markerProbe="ok:library:placement:consume:roundtrip:combat-export";
+            }catch(error){document.body.dataset.markerProbe="fail:"+error.message;}
+          },100);
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     // Real editor interaction: choosing FX style must NOT edit a skill until Appliquer.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-fx-quick")) {
@@ -980,6 +1046,12 @@ try {
   if(elementProbe!=="ok:103:multi:skill:asset")
     throw Error("Real editor element grouping / identity regression: "+elementProbe);
   console.log("Element library UI: 103 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
+  const markerDom=await dumpDom(url+"?verify-markers=1");
+  assertCreatures(markerDom,"marker library and active skill editor real browser bootstrap");
+  const markerProbe=markerDom.match(/data-marker-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(markerProbe!=="ok:library:placement:consume:roundtrip:combat-export")
+    throw Error("Native marker authoring / skill roundtrip regression: "+markerProbe);
+  console.log("Shared marker library and skill UI: real Chrome authoring, 103 creatures, placement/consume and combat export");
   const guardDom=await dumpDom(url+"?verify-creature-reaction=1");
   assertCreatures(guardDom,"per-creature reaction real browser bootstrap");
   const guardProbe=guardDom.match(/data-creature-reaction-probe="([^"]+)"/)?.[1] ?? "missing";
