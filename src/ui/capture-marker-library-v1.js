@@ -34,6 +34,10 @@ export function captureMarkerRefreshReferenceChoicesV1(root){
     selectChoices(select,captureMarkerChannelOptionsV1(root,current),
       select.dataset.markerOptional==="true"?"Même élément que la capacité":null,current);
   }
+  for(const select of root.querySelectorAll("[data-marker-result-tag-choice]")){
+    const current=select.value;
+    selectChoices(select,captureMarkerStatusTagOptionsV1(root,current),"Tous les statuts",current);
+  }
   const iconSelect=find(root,"marker-icon");
   if(iconSelect){
     const current=iconSelect.value;
@@ -191,6 +195,7 @@ function refresh(root,newMarkerId=null){
     for(const marker of items){const option=elem("option",marker.name);option.value=marker.id;select.append(option);}
     select.value=current&&[...select.options].some(o=>o.value===current)?current:"*";
   }
+  captureMarkerRefreshReferenceChoicesV1(root);
 }
 export function captureMarkerOptionsV1(root){return [...(sessions.get(root)?.markers.values()??[])];}
 export function captureMarkerStatusTemplatesV1(root){
@@ -209,6 +214,22 @@ export function captureMarkerStatusTemplatesV1(root){
       choices.set(id,{status,label:(skill.definition?.name??skill.id)+" · "+status.id+" ("+status.kind+")"});
     }
   }
+  return [...choices.values()].sort((a,b)=>a.label.localeCompare(b.label,"fr"));
+}
+export function captureMarkerStatusTagOptionsV1(root,selectedTag=""){
+  const choices=new Map();
+  const add=(tag,label)=>{
+    if(typeof tag==="string" && tag.trim() && !choices.has(tag.trim()))
+      choices.set(tag.trim(),{id:tag.trim(),label:label || tag.trim()});
+  };
+  for(const entry of captureMarkerStatusTemplatesV1(root)){
+    for(const tag of entry.status.tags??[])add(tag,tag);
+  }
+  for(const marker of captureMarkerOptionsV1(root)){
+    add("marker:"+marker.id,"Marqueur : "+marker.name);
+  }
+  if(captureMarkerOptionsV1(root).length) add("gensrpg:marker:v1","Tous les marqueurs");
+  if(selectedTag) add(selectedTag,selectedTag+" (référence importée conservée)");
   return [...choices.values()].sort((a,b)=>a.label.localeCompare(b.label,"fr"));
 }
 export function captureMarkerDefinitionV1(root,id){
