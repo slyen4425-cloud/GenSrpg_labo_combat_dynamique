@@ -18,7 +18,7 @@ export function normalizeCaptureMarkerV1(input) {
     throw new TypeError("Capture marker must be an object");
   }
   const allowed = new Set([
-    "id", "name", "polarity", "durationMs", "maxStacks",
+    "id", "name", "polarity", "durationMs", "permanent", "maxStacks",
     "iconAssetId", "onStackThreshold", "periodic"
   ]);
   for (const key of Object.keys(input)) {
@@ -32,12 +32,21 @@ export function normalizeCaptureMarkerV1(input) {
   if (iconAssetId !== null && !iconAssetId) {
     throw new TypeError("Marker iconAssetId cannot be empty");
   }
+  if (input.permanent != null && typeof input.permanent !== "boolean") {
+    throw new TypeError("Marker permanent must be boolean");
+  }
+  if (input.permanent === true && input.durationMs != null) {
+    throw new RangeError("A permanent marker must not also specify durationMs");
+  }
+  const duration = input.permanent === true
+    ? {durationModel:"permanent"}
+    : {durationMs:input.durationMs ?? 10000};
   const status = normalizeStatusEffectV1({
     id: CAPTURE_MARKER_ID_PREFIX_V1 + id,
     label: input.name.trim(),
     kind: "stack_counter",
     polarity: input.polarity ?? "neutral",
-    durationMs: input.durationMs ?? 10000,
+    ...duration,
     stacking: "stack",
     maxStacks: input.maxStacks ?? 10,
     tags: [CAPTURE_MARKER_TAG_V1, CAPTURE_MARKER_ID_PREFIX_V1 + id],
@@ -48,7 +57,8 @@ export function normalizeCaptureMarkerV1(input) {
     id,
     name: input.name.trim(),
     polarity: status.polarity,
-    durationMs: status.durationMs,
+    ...(status.durationModel === "permanent"
+      ? {permanent:true} : {durationMs:status.durationMs}),
     maxStacks: status.maxStacks,
     ...(iconAssetId === null ? {} : {iconAssetId}),
     ...(status.periodic == null ? {} : {periodic: status.periodic}),
@@ -63,7 +73,8 @@ export function markerStatusDefinitionV1(marker) {
     label: entry.name,
     kind: "stack_counter",
     polarity: entry.polarity,
-    durationMs: entry.durationMs,
+    ...(entry.permanent === true
+      ? {durationModel:"permanent"} : {durationMs:entry.durationMs}),
     stacking: "stack",
     maxStacks: entry.maxStacks,
     tags: [CAPTURE_MARKER_TAG_V1, CAPTURE_MARKER_ID_PREFIX_V1 + entry.id],
