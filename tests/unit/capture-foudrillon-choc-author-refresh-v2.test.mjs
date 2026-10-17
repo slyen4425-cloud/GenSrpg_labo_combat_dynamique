@@ -82,15 +82,17 @@ test("Choc venimeux: author timing and 10 electric damage per real consumed Veni
 
 test("both existing IDs are replaced atomically in the same configured owners, not duplicated or auto-re-equipped",async()=>{
   const ct=await importRecord(CREATURE),st=await importRecord(SKILL);
+  const unchanged=await importRecord("data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json");
+  const dard=await importRecord("data/capture/showcase/lib_paralyze.capture-skill-transfer-v1.json");
   const beforeCreature={
     ...ct.value,
     draft:{...ct.value.draft,skillIds:ct.value.draft.skillIds.filter(id=>id!=="choc_venin")},
     loadout:{...ct.value.loadout,slots:ct.value.loadout.slots.map(slot=>slot.id==="slot-2"?{...slot,skillId:"lib_static_bite"}:slot)}
   };
   const beforeSkill={...st.value.draft,definition:{...st.value.draft.definition,cooldownMs:0}};
-  const creatures=new Map([["crea_foudrillon",beforeCreature],["other",{...beforeCreature,draft:{...beforeCreature.draft,id:"other",displayName:"Other"}}]]);
-  const skills=new Map([["choc_venin",beforeSkill],["lib_paralyze",{...beforeSkill,id:"lib_paralyze",definition:{...beforeSkill.definition,id:"lib_paralyze"}}]]);
-  const sentinel=creatures.get("other"),originalDard=skills.get("lib_paralyze");
+  const creatures=new Map([["crea_foudrillon",beforeCreature],["crea_ailevent",unchanged.value]]);
+  const skills=new Map([["choc_venin",beforeSkill],["lib_paralyze",dard.value.draft]]);
+  const sentinel=creatures.get("crea_ailevent"),originalDard=skills.get("lib_paralyze");
   const applied=applyCaptureTransferBatchToEditorStateV1({
     transfers:[st,ct],configuredCreatures:creatures,configuredSkills:skills,
     statRegistry:registry,progressionRules,mode:"replace"
@@ -99,7 +101,7 @@ test("both existing IDs are replaced atomically in the same configured owners, n
   assert.deepEqual(applied.actions.map(x=>x.action),["replace-skill","replace-creature"]);
   assert.deepEqual(creatures.get("crea_foudrillon"),ct.value);
   assert.deepEqual(skills.get("choc_venin"),st.value.draft);
-  assert.equal(creatures.get("other"),sentinel);
+  assert.equal(creatures.get("crea_ailevent"),sentinel);
   assert.equal(skills.get("lib_paralyze"),originalDard);
   assert.equal([...creatures.keys()].filter(x=>x==="crea_foudrillon").length,1);
   assert.equal([...skills.keys()].filter(x=>x==="choc_venin").length,1);
