@@ -126,6 +126,43 @@ const server = createServer(async (req, res) => {
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
+    // Real Chrome validation of the exact skill that previously blocked test.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url,"http://localhost").searchParams.has("verify-solar-reserve-status")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          let polls=0;
+          const q=s=>document.querySelector(s);
+          const timer=setInterval(()=>{
+            const creature=q("[data-creature-library-select]");
+            const skill=q("[data-skill-library-select]");
+            if(!q("[data-creature-library-state]")?.textContent?.includes("3 modèles vitrine chargés") ||
+               !creature?.querySelector('option[value="crea_lumilo"]') ||
+               !skill?.querySelector('option[value="cap_light_atk_3"]')) {
+              if(++polls>100){clearInterval(timer);document.body.dataset.solarReserveProbe="timeout";}
+              return;
+            }
+            clearInterval(timer);
+            try {
+              const change=(el,id)=>{el.value=id;el.dispatchEvent(new Event("change",{bubbles:true}));};
+              change(creature,"crea_lumilo");
+              change(skill,"cap_light_atk_3");
+              if(q("[data-skill-name]")?.value!=="Charge solaire")throw Error("skill not loaded");
+              q("[data-editor-validate]").click();
+              const message=q("[data-editor-status]")?.textContent??"";
+              if(!message.includes("Configuration valide") && !message.includes("Test de capacité prêt"))
+                throw Error("Solar reserve status rejected: "+message.slice(0,220));
+              document.body.dataset.solarReserveProbe="ok:solar:status:reserve:valid";
+            } catch(e) {
+              document.body.dataset.solarReserveProbe="fail:"+e.message;
+            }
+          },100);
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
+
     // Real marker authoring through the existing skill editor and active configuredSkills.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-markers")) {
@@ -1433,6 +1470,12 @@ try {
   if(healEvolutionProbe!=="ok:heal:preserve:creature")
     throw Error("Actual Soin lumineux combat test blocked or creature saved draft mutated: "+healEvolutionProbe);
   console.log("Heal browser: real Soin lumineux testing bypasses only the incomplete unsaved evolution, preserving the saved creature");
+  const solarDom=await dumpDom(url+"?verify-solar-reserve-status=1");
+  assertCreatures(solarDom,"Charge solaire reserve status validation browser bootstrap");
+  const solarProbe=solarDom.match(/data-solar-reserve-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(solarProbe!=="ok:solar:status:reserve:valid")
+    throw Error("Actual Charge solaire editor validation still rejects reserve status: "+solarProbe);
+  console.log("Charge solaire reserve status: real Chrome editor accepts new author skill and reserve buff");
   const reflectionDom=await dumpDom(url+"?verify-damage-reflection=1");
   assertCreatures(reflectionDom,"damage reflection real editor bootstrap");
   const reflectionProbe=reflectionDom.match(/data-damage-reflection-probe="([^"]+)"/)?.[1] ?? "missing";
