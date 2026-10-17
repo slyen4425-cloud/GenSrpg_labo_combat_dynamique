@@ -117,7 +117,7 @@ export function normalizeStatusEffectRuntimeInstanceV1(
   }
 
   const nextTickAtMs =
-    definition.durationModel === "time_ms"
+    ["time_ms","permanent"].includes(definition.durationModel)
       ? optionalNonNegative(
           value.nextTickAtMs,
           field + ".nextTickAtMs"
@@ -177,7 +177,8 @@ export function isStatusEffectRuntimeInstanceActiveV1(
   return (
     Number.isFinite(time) &&
     instance.appliedAtMs <= time &&
-    time < instance.expiresAtMs
+    (instance.definition.durationModel === "permanent" ||
+      time < instance.expiresAtMs)
   );
 }
 
@@ -199,8 +200,9 @@ export function createStatusEffectRuntimeInstanceV1({
   );
   const timed =
     definition.durationModel === "time_ms";
+  const clocked = timed || definition.durationModel === "permanent";
   const tickIntervalMs =
-    timed &&
+    clocked &&
     (
       definition.kind === "damage_over_time" ||
       definition.kind === "heal_over_time" ||
@@ -220,9 +222,9 @@ export function createStatusEffectRuntimeInstanceV1({
         ? applied + definition.durationMs
         : null,
     remainingActionEnds:
-      timed
-        ? null
-        : definition.durationActions,
+      definition.durationModel === "owner_action_end"
+        ? definition.durationActions
+        : null,
     nextTickAtMs:
       tickIntervalMs === null
         ? null
