@@ -23,7 +23,7 @@
       "preparationMs": 500,
       "travelMs": 0,
       "recoveryMs": 0,
-      "cooldownMs": 45000,
+      "cooldownMs": 30000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
@@ -80,7 +80,14 @@
           "markerId": "*",
           "count": "all",
           "minimum": 1,
-          "effects": []
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 10,
+              "channel": null
+            }
+          ]
         }
       ]
     },
