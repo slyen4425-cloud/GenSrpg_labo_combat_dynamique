@@ -10100,7 +10100,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
-  const markerLibraryController = mountCaptureMarkerLibraryV1({root, listen, configuredSkills, getStatRegistry:()=>statRegistry});
+  const markerLibraryController = mountCaptureMarkerLibraryV1({
+    root,listen,configuredSkills,getStatRegistry:()=>statRegistry,
+    // The skill transfer button exports the live editor draft without saving.
+    // Give marker export the same visibility, but only parse the live draft
+    // when it actually contains a marker effect (unrelated incomplete new
+    // skill forms must not block the standalone library export).
+    getCurrentSkillDraft:()=>{
+      const pending=[...root.querySelectorAll("[data-skill-effect-row]")].some(row=>
+        row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+      return pending ? buildHumanSkillDraftV1(readSkillFields(root)) : null;
+    }
+  });
   listen(one(root,"[data-skill-marker-cost-enabled]"),"change",() => {
     one(root,"[data-skill-marker-cost-fields]").hidden =
       !one(root,"[data-skill-marker-cost-enabled]").checked;
