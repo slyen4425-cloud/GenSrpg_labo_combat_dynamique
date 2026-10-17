@@ -203,9 +203,10 @@ export function createStatusEffectRuntimeInstanceV1({
     timed &&
     (
       definition.kind === "damage_over_time" ||
-      definition.kind === "heal_over_time"
+      definition.kind === "heal_over_time" ||
+      (definition.kind === "stack_counter" && definition.periodic != null)
     )
-      ? definition.tickIntervalMs
+      ? (definition.periodic?.intervalMs ?? definition.tickIntervalMs)
       : null;
 
   return normalizeStatusEffectRuntimeInstanceV1({
