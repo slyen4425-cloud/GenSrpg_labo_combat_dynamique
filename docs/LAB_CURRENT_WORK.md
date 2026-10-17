@@ -1,5 +1,20 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## 2026-10-17 — Bouclier lumière / Cast et Barrière — LOT PARTIEL en cours
+
+- **Demande** : intégrer deux planches utilisateur de 20 images en deux sprites Capture (Cast lumière, Barrière lumière) avec maintien de la dernière frame pour la barrière.
+- **Propriétaire** : Asset Input Capture, bibliothèque canonique `global-assets` + catalogue unique `data/assets/catalog/global-visual-assets.v1.json`; ni moteur combat ni éditeur de compétences modifiés dans ce lot.
+- **Base GREEN contrôlée** : `a4f8604d339ecc8ab4951d6affa92a6a57f0a698` (CI Laboratory SUCCESS) ; checkpoint de départ : `checkpoint/lab-start-light-shield-sprites-2026-10-17`.
+- **Travail** : `work/lab-light-shield-sprites-2026-10-17`, branche isolée ; `main`, `gh-pages`, `Zombicide-40k`, gameplay, autres assets et routines protégés.
+- **Fichiers autorisés** : `assets/library/capture/sprites/skills/light_shield/` (40 vrais PNG + deux WebP + manifeste/provenance/README), deux nouvelles entrées `assetId` dans catalogue existant, test dédié, docs, script/workflow d'import.
+- **Source locale réellement préparée** : 2 planches PNG RGBA 1402×1122, 5×4, 40 frames exportées en PNG RGBA 512×512 (agrandissement de cellules ~280×280, non native 512), deux atlas 7680×384 ; inspection des 40 frames en aperçu et frame finale barrière.
+- **Livrable local** : `bouclier_lumiere_40_frames_github.zip` 13,4 Mo, 45 fichiers. **Pas encore téléchargé/commité dans GitHub.**
+- **Protocole GitHub** : déposer uniquement l'archive dans `_incoming/bouclier_lumiere_40_frames_github.zip` sur cette branche ; workflow d'import vérifie des octets réels, extrait, ajoute les deux entrées au catalogue et la sentinelle, lance la CI avant commit.
+- **Identifiants prévus** : `pack:capture:sprite-light-shield-cast-01` (release) et `pack:capture:sprite-light-shield-barrier-01` (skill) ; chacun 20 frames ; barrière `once` et `holdLastFrame=true` comme métadonnée ; l'option du runtime éditeur doit être validée sur vraie preview.
+- **Risques** : mauvais sprites binaires, PNG alpha, dernier écran incomplet, doublons catalogue, écrasement concurrent de `global-assets`, lecture runtime non validée, résolution native 512 faussement revendiquée.
+- **Tests attendus** : ZIP/provenance SHA-256/images RGBA/atlas/dernier écran, tests Node/Catalogue/CI, comparaison vrai chemin éditeur, test smartphone avant GREEN utilisateur.
+- **État** : PARTIEL ; aucun checkpoint GREEN ni publication `global-assets` avant livraison binaire réelle et CI vérifiées.
+
 ## Chantier 2026-10-17 — 8 icônes épurées Monster Capture — GREEN technique (CI validée)
 
 - **Objet** : livrer les 8 vrais médias approuvés par l'utilisateur : Poison, Toxine, Dard électrique, Fleuraison, Brûlure, Gel, Paralysie, Bulle de feu.
