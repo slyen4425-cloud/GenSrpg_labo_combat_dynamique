@@ -32,7 +32,6 @@
         "long"
       ],
       "targetRelations": [
-        "enemy",
         "ally",
         "self"
       ],
