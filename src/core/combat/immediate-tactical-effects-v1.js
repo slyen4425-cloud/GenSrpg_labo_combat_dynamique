@@ -32,6 +32,7 @@ const SUPPORTED_KINDS = new Set([
   "energy_restore",
   "energy_drain",
   "life_steal",
+  "knockout",
   "apply_status",
   "apply_marker",
   "consume_marker",
@@ -256,10 +257,11 @@ export function applyImmediateTacticalEffectsV1({
     skill.form !== "self" &&
     (skill.effects ?? []).some(item =>
       ["all_enemies", "all_except_self"].includes(item.targetScope) &&
-      ["damage", "apply_status", "apply_marker", "energy_drain", "dispel"].includes(item.kind)
+      ["damage", "knockout", "apply_status", "apply_marker", "energy_drain", "dispel"].includes(item.kind)
     );
   const isHostileEffect = effect =>
     effect.kind === "damage" ||
+    effect.kind === "knockout" ||
     effect.kind === "energy_drain" ||
     effect.kind === "dispel" ||
     (effect.kind === "apply_status" &&
@@ -353,6 +355,33 @@ export function applyImmediateTacticalEffectsV1({
           continue;
         }
       }
+      if (effect.kind === "knockout") {
+        const victim=fighterOf(nextState,affectedId);
+        const activeShields=victim.statusEffects.filter(entry=>
+          entry.definition.kind==="shield" &&
+          entry.appliedAtMs<=combatAtMs &&
+          (entry.expiresAtMs==null || entry.expiresAtMs>combatAtMs));
+        const shieldTotal=activeShields.reduce((sum,entry)=>
+          sum+Math.max(0,Number(entry.shieldRemaining)||0),0);
+        const applied=applyCombatDamageV1({
+          state:nextState,sourceActorId:actorId,targetActorId:affectedId,
+          damage:Math.max(0,victim.hp)+shieldTotal,
+          atMs:combatAtMs,hitsIntangible:skill.hitsIntangible===true,
+          incomingKind:skill.form??"other"
+        });
+        nextState=applied.state;
+        events.push(Object.freeze({
+          type:"hit",atMs,actorId:affectedId,
+          sourceActorId:actorId,skillId:skill.id,tacticalEffect:true,
+          markerKnockout:true,
+          damage:applied.requestedDamage,appliedDamage:applied.appliedDamage,
+          absorbedByShield:applied.absorbedByShield,
+          hpBefore:applied.hpBefore,hpAfter:applied.hpAfter,
+          protectingStatusIds:applied.protectingStatusIds??[]
+        }));
+        continue;
+      }
+
       if (effect.kind === "damage") {
         const applied = applyDamageEffect({
           state: nextState,
