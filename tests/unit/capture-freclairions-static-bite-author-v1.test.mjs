@@ -27,8 +27,8 @@ const creature = () => importCaptureTransferJsonV1(read(creaturePath).toString("
 const skill = () => importCaptureTransferJsonV1(read(skillPath).toString("utf8"));
 
 test("Freclairions + Crocs statiques retain the exact uploaded author files and unique stable IDs",()=>{
-  assert.equal(read(creaturePath).length,5024);
-  assert.equal(sha256(read(creaturePath)),"54893dce6c212afe6907593babf57c989416a97b4858ab75df42a91735c22fce");
+  assert.equal(read(creaturePath).length,5054);
+  assert.equal(sha256(read(creaturePath)),"75c41b16850972b102396595b221ba2a161239466b626d0b464d067753bfaba9");
   assert.equal(read(skillPath).length,4163);
   assert.equal(sha256(read(skillPath)),"4e49c4e48fc83727d100c5beabc3df72c12e7e121376dfdb260de7c1be6b3a99");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===creaturePath).length,1);
@@ -76,7 +76,7 @@ test("Crocs statiques preserves author's 8 electric damage, stun after 3 stacks 
   assert.equal(p.audio.impact.assetId,"gensrpg:sound:genrpg-pack2-af938ec6");
 });
 
-test("Freclairions preserves authored historical ID, 24 learned entries, five slots and exact presentation",()=>{
+test("Freclairions preserves authored historical ID, 26 learned entries, five slots and exact presentation",()=>{
   const c=creature().value,d=c.draft;
   assert.equal(d.id,"crea_foudrillon");
   assert.equal(d.displayName,"Freclairions");
@@ -94,12 +94,14 @@ test("Freclairions preserves authored historical ID, 24 learned entries, five sl
   assert.equal(d.combat.approachTimeModifierPct,-40);
   assert.equal(c.statValues.values.health,120);
   assert.equal(c.statValues.values.speed,15);
-  assert.equal(d.skillIds.length,24);
+  assert.equal(d.skillIds.length,26);
+   assert.ok(d.skillIds.includes("vol_eclaire"));
+   assert.ok(d.skillIds.includes("Nid_frelon"));
    assert.ok(d.skillIds.includes("lib_paralyze"));
    assert.ok(d.skillIds.includes("choc_venin"));
   assert.ok(d.skillIds.includes("lib_static_bite"));
   assert.deepEqual(c.loadout.slots.map(x=>x.skillId),
-    ["lib_paralyze","choc_venin","lib_tailwind","lib_chain_lightning","cap_air_atk_7"]);
+    ["lib_paralyze","choc_venin","lib_tailwind","vol_eclaire","Nid_frelon"]);
   assert.equal(d.presentation.profileId,"flying");
   assert.equal(d.presentation.visual.front.assetId,"pack:capture:creature-guepe-cybernetique-opponent-01");
   assert.equal(d.presentation.visual.back.assetId,"pack:capture:creature-guepe-cybernetique-player-01");
@@ -182,7 +184,7 @@ test("canonical Transfer batch replaces the native Foudrillon and skill without 
   assert.deepEqual(installedCreature.loadout,exportedCreature.loadout);
   assert.deepEqual(configuredSkills.get("lib_static_bite"),skill().value.draft);
   assert.deepEqual(configuredCreatures.get("crea_foudrillon").loadout.slots.map(x=>x.skillId),
-    ["lib_paralyze","choc_venin","lib_tailwind","lib_chain_lightning","cap_air_atk_7"]);
+    ["lib_paralyze","choc_venin","lib_tailwind","vol_eclaire","Nid_frelon"]);
   const database=buildCaptureEditorDatabaseV1({
     statRegistry:registry,progressionRules,configuredCreatures,configuredSkills
   });
