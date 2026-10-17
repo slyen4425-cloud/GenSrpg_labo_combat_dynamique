@@ -35,7 +35,7 @@ async function importedPreset(file) {
   );
 }
 
-test("showcase preset catalog discovers seven transfer files without duplicating creature ids", () => {
+test("showcase preset catalog discovers eight transfer files without duplicating creature ids", () => {
   assert.deepEqual(
     CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1,
     [
@@ -45,7 +45,8 @@ test("showcase preset catalog discovers seven transfer files without duplicating
       "data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_voltik.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json",
-      "data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json"
+      "data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json",
+      "data/capture/showcase/crea_lumilo.capture-creature-transfer-v1.json"
     ]
   );
 });
