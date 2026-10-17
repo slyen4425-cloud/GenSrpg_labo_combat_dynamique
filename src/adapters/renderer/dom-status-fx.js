@@ -3,6 +3,7 @@ import {
   statusEffectInfoTextV1
 } from "./status-effect-info-v1.js";
 import { applySpriteVisual, spriteOwnerDurationMs } from "./dom-skill-fx.js";
+import { isCaptureMarkerStatusV1 } from "../../contracts/capture-marker-v1.js";
 
 function requiredFunction(value, field) {
   if (typeof value !== "function") {
@@ -408,6 +409,7 @@ export function createDomStatusFxRenderer({
         : resolveSkillDefinition(
             sourceSkillId
           );
+    const isMarker=isCaptureMarkerStatusV1(instance);
     const info = projectStatusEffectInfoV1({
       instance,
       elapsedMs,
@@ -421,13 +423,13 @@ export function createDomStatusFxRenderer({
     const sprite =
       presentation?.sprite ?? null;
     const spritePreviewUrl = sprite?.url || sprite?.frames?.[Math.floor((sprite.frames.length - 1) / 2)];
-    const hudVisual =
-      sourceSkillIcon?.url
-        ? sourceSkillIcon
-        : spritePreviewUrl
-          ? sprite
-          : null;
+    // Markers have their own stable identity: never borrow the icon of the
+    // last skill that happened to place another charge.
+    const hudVisual = isMarker ? null
+      : sourceSkillIcon?.url ? sourceSkillIcon
+      : spritePreviewUrl ? sprite : null;
 
+    record.node.dataset.marker=isMarker?"true":"false";
     record.node.dataset.polarity =
       polarity;
     record.node.dataset.stacks =
@@ -435,7 +437,7 @@ export function createDomStatusFxRenderer({
     record.node.dataset.sourceSkillId =
       sourceSkillId ?? "";
     record.node.title =
-      info.typeLabel +
+      (isMarker?"Marqueur":info.typeLabel) +
       " · " +
       info.statusName + (thresholdCount ? " · " + stacks + "/" + thresholdCount + " stacks" : "");
     record.node.setAttribute?.(
@@ -478,10 +480,10 @@ export function createDomStatusFxRenderer({
       record.node.style.backgroundPosition = "center";
       record.node.dataset.assetId = "";
       record.glyphNode.textContent =
-        polarityGlyph(polarity);
+        isMarker ? "◆" : polarityGlyph(polarity);
     }
 
-    if (stacks > 1 || thresholdCount !== null) {
+    if (isMarker || stacks > 1 || thresholdCount !== null) {
       if (!record.stackNode) {
         const stackNode =
           target.statusHost.ownerDocument
@@ -492,7 +494,8 @@ export function createDomStatusFxRenderer({
         record.stackNode = stackNode;
       }
       record.stackNode.textContent =
-        thresholdCount === null ? String(stacks) : stacks + "/" + thresholdCount;
+        isMarker ? stacks + "/" + (thresholdCount??instance.definition.maxStacks)
+        : thresholdCount === null ? String(stacks) : stacks + "/" + thresholdCount;
     } else if (record.stackNode) {
       record.stackNode.remove?.();
       record.stackNode = null;
@@ -502,7 +505,7 @@ export function createDomStatusFxRenderer({
     // Status Runtime when another charge arrives. Show that native expiry
     // rather than inventing separate per-charge clocks or JS timers.
     const showExpiry =
-      thresholdCount !== null &&
+      (isMarker || thresholdCount !== null) &&
       instance?.definition?.durationModel === "time_ms" &&
       Boolean(info.remainingLabel);
     if (showExpiry) {
