@@ -774,7 +774,7 @@
                 <option value="energy_restore">Récupérer de l'énergie</option>
                 <option value="energy_drain">Drainer de l'énergie</option>
                 <option value="stun">Étourdir (durée en secondes)</option>
-                <option value="knockout">K.O. par dégâts décisifs (respecte les protections)</option>
+                <option value="knockout">K.O. via le moteur natif (immunités respectées)</option>
               </select>
             </label>
             <label>Valeur de l'effet
@@ -785,7 +785,7 @@
             </label>
           </div>
         </div>
-        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le chemin de dégâts et respecte les protections : une immunité peut l'empêcher. Les marqueurs sans seuil n'ont aucun effet propre.</p>
+        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le moteur natif de dégâts et de crédit des K.O. : les boucliers sont absorbés et l'immunité aux dégâts protège. Les marqueurs sans seuil n'ont aucun effet propre.</p>
         <div class="skill-save-actions">
           <button type="button" class="secondary-action" data-marker-new>Nouveau</button>
           <button type="button" class="primary-action" data-marker-save>Enregistrer le marqueur</button>
