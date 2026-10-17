@@ -1,4 +1,4 @@
-import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1, captureMarkerStatusTemplatesV1, captureMarkerChannelOptionsV1} from "./capture-marker-library-v1.js";
+import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1, captureMarkerStatusTemplatesV1, captureMarkerChannelOptionsV1, captureMarkerStatusTagOptionsV1} from "./capture-marker-library-v1.js";
 
 const field=(name)=>{const node=document.createElement("label");node.textContent=name;return node;};
 function choice(name,options,value){
@@ -69,10 +69,26 @@ function appendConsumeResultV1(host,effect=null,editorRoot=null){
   }
   if(effect?.kind==="apply_status")statusSelect.value=JSON.stringify(effect.status);
   status.append(statusSelect);
-  const tags=field("Tags du statut (facultatif)");
-  const tagInput=document.createElement("input");tagInput.type="text";
-  tagInput.dataset.markerResultTags="true";tagInput.value=(effect?.statusTags??[]).join(", ");
-  tags.append(tagInput);
+  const tags=field("Filtrer les statuts à nettoyer / dissiper (facultatif)");
+  const tagsHost=document.createElement("div");tagsHost.className="skill-status-config__grid";
+  function addTagPicker(current=""){
+    const entry=document.createElement("div");entry.className="skill-status-config__grid";
+    const select=document.createElement("select");
+    select.dataset.markerResultTagChoice="true";
+    const empty=document.createElement("option");empty.value="";empty.textContent="Tous les statuts";select.append(empty);
+    for(const option of captureMarkerStatusTagOptionsV1(editorRoot??host.closest("[data-capture-editor-human]")??document,current)){
+      const item=document.createElement("option");item.value=option.id;item.textContent=option.label;select.append(item);
+    }
+    select.value=current;
+    const remove=document.createElement("button");remove.type="button";remove.className="small-action";remove.textContent="Retirer ce filtre";
+    remove.addEventListener("click",()=>entry.remove());
+    entry.append(select,remove);tagsHost.append(entry);
+  }
+  for(const tag of effect?.statusTags??[])addTagPicker(tag);
+  if(!effect?.statusTags?.length)addTagPicker();
+  const addTag=document.createElement("button");addTag.type="button";addTag.className="secondary-action";
+  addTag.textContent="+ Ajouter un filtre";addTag.addEventListener("click",()=>addTagPicker());
+  tags.append(tagsHost,addTag);
   const remove=document.createElement("button");remove.type="button";remove.className="small-action";
   remove.textContent="Supprimer cet effet";remove.addEventListener("click",()=>row.remove());
   row.append(type[0],scope[0],amount[0],channel,status,tags,remove);
@@ -138,7 +154,7 @@ export function readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope){
     if(childKind==="apply_status")return [{kind:"apply_status",targetScope:target,
       status:JSON.parse(read(item,"marker-result-status").value)}];
     if(["cleanse","dispel"].includes(childKind))return [{kind:childKind,targetScope:target,
-      statusTags:read(item,"marker-result-tags").value.split(",").map(s=>s.trim()).filter(Boolean)}];
+      statusTags:[...item.querySelectorAll("[data-marker-result-tag-choice]")].map(select=>select.value).filter(Boolean)}];
     const output={kind:childKind,targetScope:target,amount:Number(read(item,"marker-result-amount").value)};
     if(childKind==="damage")output.channel=read(item,"marker-result-channel").value.trim()||null;
     return [output];
