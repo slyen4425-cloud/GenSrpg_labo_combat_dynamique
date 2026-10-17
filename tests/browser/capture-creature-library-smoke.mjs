@@ -222,6 +222,10 @@ const server = createServer(async (req, res) => {
               if(tagPicker?.tagName!=="SELECT" || !values(tagPicker).includes("marker:poison"))
                 throw Error("cleanse status-tag filter is still a typed reference");
               tagPicker.value="marker:poison";
+              const kindsBeforeSave=[...row.querySelectorAll("[data-marker-consume-result]")].map(e=>
+                e.querySelector("[data-marker-result-kind]")?.value);
+              if(kindsBeforeSave.join(",")!=="heal,cleanse")
+                throw Error("nested editor rows already lost effect before save: "+kindsBeforeSave.join(","));
               get("skill-update").click();
               const status=document.querySelector("[data-skill-library-state]")?.textContent??"";
               if(!status.includes("sauvegardée"))throw Error("native configuredSkills save failed: "+status);
