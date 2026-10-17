@@ -88,6 +88,7 @@ const IMMUNITY_DOMAIN_SET = new Set(
 
 const COMMON_FIELDS = new Set([
   "id",
+  "label",
   "kind",
   "polarity",
   "durationModel",
@@ -351,6 +352,10 @@ export function normalizeStatusEffectV1(input) {
       "StatusEffectV1.tags"
     )
   };
+
+  if (value.label != null) {
+    output.label = requiredString(value.label, "StatusEffectV1.label");
+  }
 
   if (value.onStackThreshold != null) {
     if (stacking !== "stack") {
