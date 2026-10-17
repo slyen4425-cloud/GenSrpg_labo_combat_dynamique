@@ -10,6 +10,14 @@ const say=(root,message,tone="info")=>{
   if(node){node.textContent=message;node.dataset.tone=tone;}
 };
 const elem=(tag,text="")=>{const node=document.createElement(tag);node.textContent=text;return node;};
+// Author convenience only: the stored/portable marker ID remains the strict
+// immutable CaptureMarkerV1 slug, never a display name or runtime fallback.
+export function captureMarkerAuthorSlugV1(value) {
+  return String(value ?? "").normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"").slice(0,64).replace(/-+$/g,"");
+}
 function fill(select,items,placeholder){
   if(!select)return;
   const current=select.value;
@@ -31,7 +39,9 @@ function thresholdEffect(root,id){
     ...(kind==="damage"?{channel:value(root,"marker-threshold-channel")||null}:{})};
 }
 function markerFromFields(root){
-  const id=value(root,"marker-id").trim();
+  const name=value(root,"marker-name").trim();
+  const id=captureMarkerAuthorSlugV1(value(root,"marker-id").trim() || name);
+  if (!id) throw new RangeError("Donne un nom au marqueur pour créer son identifiant.");
   const on=selected(root,"marker-threshold-enabled")?.checked===true;
   const effect=on?thresholdEffect(root,id):null;
   if(on && !effect)throw new RangeError("Choisis un effet de seuil ou désactive le seuil");
@@ -99,17 +109,22 @@ function syncVisibility(root){
   const amount=selected(root,"marker-threshold-amount")?.closest("label");
   if(amount)amount.hidden=value(root,"marker-threshold-effect")==="knockout";
 }
-function refresh(root){
+function refresh(root,newMarkerId=null){
   const state=sessions.get(root);
   if(!state)return;
   const items=[...state.markers.values()].sort((a,b)=>a.name.localeCompare(b.name,"fr"));
   fill(find(root,"marker-library-select"),items,"Nouveau marqueur");
   for(const select of root.querySelectorAll("[data-skill-marker-pick]")){
+    const before=select.value;
     fill(select,items,"Choisir un marqueur");
+    // Only fill an empty author selector after the first successful save.
+    // Never change an existing choice belonging to another skill.
+    if(newMarkerId && !before)select.value=newMarkerId;
   }
   for(const select of root.querySelectorAll("[data-skill-marker-cost-id]")){
     const before=select.value;
     fill(select,items,"Choisir un marqueur");
+    if(newMarkerId && !before)select.value=newMarkerId;
     // Do not silently erase an imported skill's cost if its marker library is missing.
     if(before && !items.some(marker=>marker.id===before)){
       const missing=elem("option","Marqueur manquant : "+before);
@@ -188,7 +203,21 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
   }
   listen(find(root,"marker-library-select"),"change",()=>{
     const marker=markers.get(value(root,"marker-library-select"));
-    if(marker)loadFields(root,marker);
+    if(marker){
+      loadFields(root,marker);
+      selected(root,"marker-id").readOnly=true;
+    }
+  });
+  listen(find(root,"marker-name"),"input",()=>{
+    const id=selected(root,"marker-id");
+    if(value(root,"marker-library-select")==="" && !id.dataset.manualMarkerId) {
+      id.value=captureMarkerAuthorSlugV1(value(root,"marker-name"));
+    }
+  });
+  listen(find(root,"marker-id"),"input",()=>{
+    if(value(root,"marker-library-select")===""){
+      selected(root,"marker-id").dataset.manualMarkerId="true";
+    }
   });
   for(const key of ["marker-periodic-enabled","marker-periodic-kind","marker-periodic-mode"]) {
     listen(find(root,key),"change",()=>syncVisibility(root));
@@ -198,12 +227,20 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
   listen(find(root,"marker-new"),"click",()=>{
     const sel=selected(root,"marker-library-select");sel.value="";
     loadFields(root,{id:"",name:"",maxStacks:10,polarity:"neutral",durationMs:10000});
-    say(root,"Nouveau marqueur. Donne un identifiant unique en minuscules.","info");
+    const input=selected(root,"marker-id");
+    input.readOnly=false;
+    delete input.dataset.manualMarkerId;
+    selected(root,"marker-name").focus();
+    say(root,"Nouveau marqueur : saisis simplement un nom. L'identifiant sera créé automatiquement.","info");
   });
   listen(find(root,"marker-save"),"click",()=>{
     try{
       const marker=markerFromFields(root);
       const existing=markers.get(marker.id);
+      const chosen=value(root,"marker-library-select");
+      if(existing && chosen!==marker.id){
+        throw new RangeError("Ce nom correspond au marqueur déjà enregistré « "+existing.name+" ». Sélectionne-le dans la liste pour le modifier, ou choisis un autre nom.");
+      }
       // The compact form cannot represent complex, imported multi-effect
       // thresholds. Never silently erase advanced author configurations.
       if (existing?.onStackThreshold?.effects?.length > 1) {
@@ -211,8 +248,12 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
       }
       const linked=propagateMarker(root,marker);
       markers.set(marker.id,marker);
-      refresh(root);find(root,"marker-library-select").value=marker.id;
-      say(root,"« "+marker.name+" » enregistré. "+linked+" capacité(s) synchronisée(s).","ok");
+      refresh(root,marker.id);
+      find(root,"marker-library-select").value=marker.id;
+      selected(root,"marker-id").value=marker.id;
+      selected(root,"marker-id").readOnly=true;
+      delete selected(root,"marker-id").dataset.manualMarkerId;
+      say(root,"« "+marker.name+" » enregistré (ID : "+marker.id+"). Disponible dans les effets des capacités. "+linked+" capacité(s) synchronisée(s).","ok");
     }catch(error){say(root,error.message,"error");}
   });
   listen(find(root,"marker-export"),"click",()=>{
