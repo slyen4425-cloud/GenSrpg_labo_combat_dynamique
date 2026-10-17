@@ -25,7 +25,7 @@ function thresholdEffect(root,id){
   if(kind==="stun")return {kind:"apply_status",targetScope:"target",
     status:{id:"marker-stun-"+id,kind:"stun",polarity:"detrimental",
       durationMs:Math.max(100,amount*1000),stacking:"replace"}};
-  if(kind==="knockout")return {kind:"damage",targetScope:"target",amount:1000000};
+  if(kind==="knockout")return {kind:"knockout",targetScope:"target"};
   if(!Number.isFinite(amount)||amount<0)throw new RangeError("Valeur de seuil invalide");
   return {kind,targetScope:"target",amount,
     ...(kind==="damage"?{channel:value(root,"marker-threshold-channel")||null}:{})};
