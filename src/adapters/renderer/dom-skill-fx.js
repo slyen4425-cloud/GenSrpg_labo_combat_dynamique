@@ -540,8 +540,18 @@ export function createDomSkillFxRenderer({
       const targetFrame =
         collisionModel.snapshot();
 
+      const mirrorRect = mirrorSurface()?.getBoundingClientRect?.() ?? null;
+      const spriteContactPoint = mirrorRect
+        ? sweptPointHitsSpriteEllipseV1({
+            previousPoint: record.previousProjectilePoint,
+            point: projectilePoint,
+            previousRect: record.previousMirrorRect ?? mirrorRect,
+            rect: mirrorRect
+          })
+        : null;
       const contacted =
-        targetFrame !== null &&
+        spriteContactPoint !== null ||
+        (targetFrame !== null &&
         sweptPointHitsOpaqueMask({
           mask: targetFrame.mask,
           previousPoint:
@@ -551,12 +561,13 @@ export function createDomSkillFxRenderer({
             record.previousTargetFrame ??
             targetFrame,
           frame: targetFrame
-        });
+        }));
 
       record.previousProjectilePoint =
         projectilePoint;
       record.previousTargetFrame =
         targetFrame;
+      record.previousMirrorRect = mirrorRect;
 
       if (contacted) {
         record.contactReported = true;
