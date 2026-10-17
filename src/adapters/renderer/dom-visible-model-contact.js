@@ -584,6 +584,52 @@ export function sweptVisibleModelsOverlap({
   );
 }
 
+/**
+ * Entry point into the ellipse fitted to the live STATUS SPRITE'S rendered
+ * bounds, not the creature's opaque model. The rect is sampled from the
+ * existing status FX DOM node after authored scale / offsets / view changes.
+ * The two endpoints are measured in each frame's local surface coordinates:
+ * this also catches high-speed shots and a shield moving between frames.
+ *
+ * This is a conservative visible ellipse approximation for spherical barrier
+ * artwork, not a claim to reproduce arbitrary transparent image pixel masks.
+ * Runtime/status own whether this surface actually reflects a projectile.
+ */
+export function sweptPointHitsSpriteEllipseV1({
+  previousPoint, point, previousRect, rect
+}) {
+  const validRect = r => r &&
+    [r.left,r.top,r.width,r.height].every(v => Number.isFinite(Number(v))) &&
+    Number(r.width) > 0 && Number(r.height) > 0;
+  const validScreenPoint = p => p &&
+    Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y));
+  if (!validScreenPoint(previousPoint) || !validScreenPoint(point) ||
+      !validRect(rect)) return null;
+  const before = validRect(previousRect) ? previousRect : rect;
+  const coordinates = (p,r) => ({
+    x: (Number(p.x) - Number(r.left) - Number(r.width)/2) / (Number(r.width)/2),
+    y: (Number(p.y) - Number(r.top) - Number(r.height)/2) / (Number(r.height)/2)
+  });
+  const a = coordinates(previousPoint,before);
+  const z = coordinates(point,rect);
+  const startDistance = a.x*a.x + a.y*a.y;
+  // A projectile already inside a shield has not ENTERED its outer surface.
+  if (startDistance <= 1) return null;
+  const dx = z.x-a.x, dy = z.y-a.y;
+  const quadraticA = dx*dx+dy*dy;
+  if (quadraticA < 1e-12) return null;
+  const quadraticB = 2*(a.x*dx+a.y*dy);
+  const quadraticC = startDistance-1;
+  const delta = quadraticB*quadraticB-4*quadraticA*quadraticC;
+  if (delta < 0) return null;
+  const entry = (-quadraticB-Math.sqrt(Math.max(0,delta)))/(2*quadraticA);
+  if (entry < 0 || entry > 1) return null;
+  return Object.freeze({
+    x: Number(previousPoint.x)+(Number(point.x)-Number(previousPoint.x))*entry,
+    y: Number(previousPoint.y)+(Number(point.y)-Number(previousPoint.y))*entry
+  });
+}
+
 export function sweptPointHitsOpaqueMask({
   mask,
   previousPoint,
