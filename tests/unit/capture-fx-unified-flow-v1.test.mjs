@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-test("Capture FX has one ordered style -> intensity -> personalization journey, with legacy controls intact", async () => {
+test("Capture FX keeps style -> intensity -> personalization following icon and form", async () => {
   const html = await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url), "utf8");
   const start = html.indexOf('data-skill-fx-unified-flow');
   const importer = html.indexOf('data-creator-visual-importer data-skill-visual-importer');
@@ -25,9 +25,9 @@ test("Capture FX has one ordered style -> intensity -> personalization journey, 
     assert.ok(index >= cursor, term + " absent or out of beginner workflow order");
     cursor = index + term.length;
   }
-  assert.match(flow, /1\.\s*Choisir un style/);
-  assert.match(flow, /2\.\s*Choisir l.intensité/);
-  assert.match(flow, /3\.\s*Personnaliser/);
+  assert.match(flow, /3\.\s*Choisir un style/);
+  assert.match(flow, /4\.\s*Choisir l.intensité/);
+  assert.match(flow, /5\.\s*Personnaliser/);
   assert.match(flow, /<details[^>]*data-skill-fx-personalize/);
   assert.doesNotMatch(flow, /Mode simple — Pack FX GenSrpG|Réglages faciles — Choisis l.intensité/);
   for (const marker of [
