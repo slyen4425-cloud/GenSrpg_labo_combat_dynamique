@@ -375,7 +375,7 @@ export function normalizeStatusEffectV1(input) {
     }
     const effects = threshold.effects.map(rawEffect => {
       const effect = normalizeSkillEffectV1(rawEffect);
-      if (!["damage", "heal", "energy_restore", "energy_drain",
+      if (!["damage", "heal", "energy_restore", "energy_drain", "knockout",
           "apply_status", "cleanse", "dispel"].includes(effect.kind)) {
         throw new RangeError("Unsupported onStackThreshold effect: " + effect.kind);
       }
