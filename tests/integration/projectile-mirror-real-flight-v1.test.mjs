@@ -203,3 +203,38 @@ test("the real returning record is eligible for the existing projectile clash sc
     ["opponent","player"], "return flight must actually collide and cancel with a new projectile");
   h.runtime.dispose();
 });
+
+test("visible mirrored shield only bounces on its surface, NOT on an uncovered creature body", () => {
+  const h=scenario({fighterIds:["player","opponent"],attackerId:"player",defenderId:"opponent"});
+  h.advanceTo(250);
+  const hit=h.runtime.reportActionContact({
+    actorId:"player",targetId:"opponent",skillId:"direct-bolt",
+    contactPoint:{x:133,y:81},
+    mirrorSpritePresent:true,mirrorSpriteContact:false
+  });
+  assert.equal(hit.ok,true);
+  assert.equal(h.releases.length,1,"no reverse sprite launched from an uncovered model");
+  assert.equal(h.session.snapshot().fighters.opponent.hp,80,
+    "a real model hit outside an offset mirror sprite can hurt the defender");
+  assert.equal(h.session.snapshot().fighters.player.hp,100);
+  h.runtime.dispose();
+
+  const s=scenario({fighterIds:["player","opponent"],attackerId:"player",defenderId:"opponent"});
+  s.advanceTo(250);
+  const surface={x:145.5,y:92};
+  const mirrored=s.runtime.reportActionContact({
+    actorId:"player",targetId:"opponent",skillId:"direct-bolt",
+    contactPoint:surface,mirrorSpritePresent:true,mirrorSpriteContact:true
+  });
+  assert.equal(mirrored.ok,true);
+  assert.equal(s.releases.length,2);
+  assert.deepEqual(s.releases[1].action.mirrorReturn.contactPoint,surface);
+  assert.equal(s.session.snapshot().fighters.opponent.hp,100);
+  assert.equal(s.session.snapshot().fighters.player.hp,100);
+  s.advanceTo(450);
+  assert.equal(s.runtime.reportActionContact({
+    actorId:"opponent",targetId:"player",skillId:"direct-bolt"
+  }).ok,true);
+  assert.equal(s.session.snapshot().fighters.player.hp,80);
+  s.runtime.dispose();
+});
