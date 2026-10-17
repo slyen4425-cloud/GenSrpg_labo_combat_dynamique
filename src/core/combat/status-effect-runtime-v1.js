@@ -22,6 +22,12 @@ import { isCaptureMarkerStatusV1, CAPTURE_MARKER_ID_PREFIX_V1 } from "../../cont
  // The runtime identity is therefore (sourceSkillId, definition.id), not id alone.
 function sameStatusSourceV1(entry, statusId, sourceSkillId, definition = null) {
   if (entry.definition.id !== statusId) return false;
+  // Shared markers are keyed by their canonical library ID across skills.
+  // Keep the *actual* last casting skill for feedback and attribution.
+  if (isCaptureMarkerStatusV1(entry) &&
+      statusId.startsWith(CAPTURE_MARKER_ID_PREFIX_V1)) {
+    return definition === null || isCaptureMarkerStatusV1({definition});
+  }
   if ((entry.sourceSkillId ?? null) === (sourceSkillId ?? null)) return true;
   // Preserve established cross-skill stacking/refresh for truly identical
   // authored status definitions; distinct kinds/settings must never collide.
