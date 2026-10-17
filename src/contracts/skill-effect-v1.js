@@ -77,7 +77,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "status"
   ]),
   apply_marker: new Set([...COMMON_FIELDS, "marker", "charges"]),
-  consume_marker: new Set([...COMMON_FIELDS, "markerId", "count", "minimum", "effects"]),
+  consume_marker: new Set([...COMMON_FIELDS, "markerId", "count", "minimum", "perCharge", "effects"]),
   cleanse: new Set([
     ...COMMON_FIELDS,
     "statusTags"
@@ -278,6 +278,11 @@ export function normalizeSkillEffectV1(input) {
     output.count = value.count ?? "all";
     if (output.count !== "all") output.count = positiveInteger(output.count, "SkillEffectV1.count");
     output.minimum = positiveInteger(value.minimum ?? 1, "SkillEffectV1.minimum");
+    // Optional opt-in: older authored marker consumers keep fixed child amounts.
+    if (value.perCharge !== undefined && typeof value.perCharge !== "boolean") {
+      throw new TypeError("consume_marker.perCharge must be a boolean");
+    }
+    if (value.perCharge === true) output.perCharge = true;
     if (output.count !== "all" && output.minimum > output.count) {
       throw new RangeError("Marker minimum exceeds the maximum charges consumed");
     }
