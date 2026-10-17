@@ -24,7 +24,7 @@ const registry=normalizeCaptureStatRegistryV1(await json("data/capture/monster-c
 
 test("RED: original author transfers are byte-exact and uniquely activated without duplicate IDs",async()=>{
   for(const [p,len,hash] of [
-    [bolt,5453,"a7d7d7c3d5e2fef9156ecffc22f645c93fbad4fd78bde4f573c28f3c5764f4b2"],
+    ["data/capture/source-exports/gensrpg-capture-skill-lib_light_bolt-2026-10-18.json",5456,"68035a9810ce441725e699b1c47ea9e592edb8df5078a1c6c7dc95cb7d86256f"],
     [lumilo,5499,"8780a18b840ccbb59fa85396c52b03851bcb6d95b5375577eb4206aa8688e3a2"],
     [original,1992,"55b6115d35d1b29b8199aff907a38d81892d78da2e0eefbbb93485ab5a68dd8a"]
   ]){
@@ -39,17 +39,18 @@ test("RED: original author transfers are byte-exact and uniquely activated witho
   assert.equal(new Set(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1).size,CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.length);
 });
 
-test("Rayon lumineux stays EXACTLY the author projectile: 8 light, skill timing, FX and sounds",async()=>{
+test("Rayon lumineux stays EXACTLY the latest author projectile: 14 light, skill timing, FX and sounds",async()=>{
   const transfer=importCaptureTransferJsonV1((await read(bolt)).toString("utf8"));
   assert.equal(transfer.kind,"skill");
   const d=transfer.value.draft;
   assert.equal(d.id,"lib_light_bolt");
+  assert.deepEqual(await read(bolt),await read("data/capture/source-exports/gensrpg-capture-skill-lib_light_bolt-2026-10-18.json"));
   assert.equal(d.definition.name,"Rayon lumineux");
   assert.deepEqual([d.requiredLevel,d.definition.energyCost,d.definition.preparationMs,
     d.definition.travelMs,d.definition.cooldownMs,d.definition.projectileClash.power],
     [1,3,600,600,8000,1]);
   assert.deepEqual(d.definition.effects.map(x=>[x.kind,x.targetScope,x.amount,x.channel]),
-    [["damage","target",8,"light"]]);
+    [["damage","target",14,"light"]]);
   assert.equal(d.presentation.visual.travel.assetId,"pack:capture:sprite-projectile-light-01");
   assert.equal(d.presentation.audio.impact.assetId,"gensrpg:sound:genrpg-pack2-f75d0d8f");
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(d)).value.draft,d);
