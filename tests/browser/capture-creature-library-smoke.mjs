@@ -102,6 +102,21 @@ const server = createServer(async (req, res) => {
               const get=key=>document.querySelector("[data-"+key+"]");
               const fill=(key,v)=>{const node=get(key);if(!node)throw Error("field "+key+" absent");
                 node.value=String(v);node.dispatchEvent(new Event("change",{bubbles:true}));};
+              // The canonical creature selector must reload the newly authored skill loadout.
+              const creature=get("creature-library-select");
+              if(!creature?.querySelector('option[value="crea_foudrillon"]')||
+                 !creature?.querySelector('option[value="crea_ailevent"]'))
+                throw Error("Foudrillon or Ailevent missing from canonical creature menu");
+              creature.value="crea_foudrillon";creature.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("creature-name")?.value!=="Freclairions"||get("creature-level")?.value!=="1")
+                throw Error("Freclairions did not load from configuredCreatures");
+              const equipped=[...document.querySelectorAll("[data-loadout-slot]")].map(n=>n.value);
+              if(equipped.join(",")!=="lib_paralyze,choc_venin,lib_tailwind,lib_chain_lightning,cap_air_atk_7")
+                throw Error("Freclairions authored 5-slot loadout was not reloaded: "+equipped.join(","));
+              creature.value="crea_ailevent";creature.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("creature-name")?.value!=="Ailevent")
+                throw Error("Ailevent active menu reference disappeared");
+              creature.value="crea_foudrillon";creature.dispatchEvent(new Event("change",{bubbles:true}));
               // Author's real Dard static transfer: the uploaded marker-library JSON
               // is empty; the skill's single canonical apply_marker must populate it.
               if(!lib.querySelector('option[value="lib_paralyze"]'))
@@ -122,7 +137,10 @@ const server = createServer(async (req, res) => {
                  throw Error("Choc venimeux missing from active configuredSkills options");
                lib.value="choc_venin";lib.dispatchEvent(new Event("change",{bubbles:true}));
                if(get("skill-name").value!=="Choc venimeux" ||
-                   get("skill-icon").value!=="pack:capture:icon-skill-paralysie-01")
+                   get("skill-icon").value!=="pack:capture:icon-skill-paralysie-01" ||
+                   get("skill-preparation").value!=="700" ||
+                   get("skill-cooldown").value!=="45000" ||
+                   get("skill-required-level").value!=="5")
                  throw Error("Choc venimeux author name/icon not loaded");
                const consumeRow=[...document.querySelectorAll("[data-skill-effect-row]")]
                  .find(row=>row.querySelector("[data-skill-effect-kind]")?.value==="consume_marker");
@@ -130,7 +148,8 @@ const server = createServer(async (req, res) => {
                    consumeRow.querySelector("[data-skill-consume-marker-pick]")?.value!=="venin-static"||
                    !consumeRow.querySelector("[data-marker-consume-per-charge]")?.checked||
                    consumeRow.querySelector("[data-marker-consume-minimum]")?.value!=="1"||
-                   consumeRow.querySelector("[data-marker-result-amount]")?.value!=="10")
+                   consumeRow.querySelector("[data-marker-result-amount]")?.value!=="10"||
+                   consumeRow.querySelector("[data-marker-result-channel]")?.value!=="electric")
                  throw Error("Choc venimeux per-charge form was not mounted correctly");
                let skillBlob=null;
                const originalSkillUrl=URL.createObjectURL;
