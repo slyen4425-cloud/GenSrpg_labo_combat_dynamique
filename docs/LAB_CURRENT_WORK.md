@@ -1,5 +1,18 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## Chantier 2026-10-17 — 8 icônes épurées Monster Capture — EN COURS
+
+- **Objet** : livrer les 8 vrais médias approuvés par l'utilisateur : Poison, Toxine, Dard électrique, Fleuraison, Brûlure, Gel, Paralysie, Bulle de feu.
+- **Propriétaire unique** : bibliothèque visuelle Capture, branche `global-assets`, `assets/library/capture/icons/skills/` et catalogue `data/assets/catalog/global-visual-assets.v1.json`.
+- **SHA de base** : `ed6144ab7a93bd661bb6a60fa47d901eb71fef72`; checkpoint de départ : `checkpoint/lab-start-capture-simple-icons-2026-10-17`.
+- **Branche de travail** : `work/lab-capture-simple-icons-2026-10-17`; 1 lot = 1 branche ; `main` et GenSrpG principal protégés.
+- **Fichiers autorisés** : 8 WebP 128x128 transparents, 1 manifeste de provenance, le catalogue unique, une sentinelle de test, documentation de ce lot et CURRENT_WORK.
+- **Sources** : 8 vrais PNG RGBA simplifiés 1254×1254 générés dans ce fil et contrôlés visuellement à 128/48 px ; export WebP 128x128 optimisé pour UI mobile.
+- **Risques** : références de média cassées, ID dupliqué, confusion avec les capacités existantes (ex. Fleuraison énergie), écriture concurrente sur global-assets, binaire absent malgré catalogue.
+- **Tests prévus** : inspecter les véritables octets WebP et alpha/dimensions, SHA256 et provenance, comparer rendu 128/48, unicité des 8 `assetId`, cohérence catalogue/chemin, npm run ci, état GitHub final.
+- **Critère de sortie** : les 8 octets réels dans GitHub, les 8 entrées du catalogue, CI GREEN ; checkpoint au SHA publié. Présentation réelle dans le jeu à confirmer sur smartphone avant GREEN utilisateur.
+- **Statut** : préparation locale confirmée ; attente de validation GitHub de tous les binaires et du catalogue ; aucun média fictif autorisé.
+
 ## 2026-10-15 — Intégration du pack Fluide météorite (propriétaire global-assets)
 
 - Le ZIP source validé a été déposé et extrait : 60 PNG RGBA 512×512, trois atlas WebP 7680×384, manifeste et provenance, dans `assets/library/capture/sprites/skills/fluide_meteorite`.
