@@ -102,6 +102,62 @@ const server = createServer(async (req, res) => {
               const get=key=>document.querySelector("[data-"+key+"]");
               const fill=(key,v)=>{const node=get(key);if(!node)throw Error("field "+key+" absent");
                 node.value=String(v);node.dispatchEvent(new Event("change",{bubbles:true}));};
+              // The three new author sheets must be read back from their
+              // active owner after startup, never a native/legacy fallback.
+              const lumiloSelect=get("creature-library-select");
+              if(!lumiloSelect?.querySelector('option[value="crea_lumilo"]'))
+                throw Error("Lumilo missing from canonical creature selector");
+              lumiloSelect.value="crea_lumilo";
+              lumiloSelect.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("creature-name")?.value!=="Lumilo" ||
+                 get("creature-level")?.value!=="1")
+                throw Error("Lumilo authored draft not reloaded");
+              const lumiloSlots=[...document.querySelectorAll("[data-loadout-slot]")].map(x=>x.value);
+              if(lumiloSlots.join(",")!=="lib_light_bolt,lib_magic_barrier,cap_light_special_1,cap_light_atk_4,cap_light_atk_5")
+                throw Error("Lumilo five authored slots lost on reload: "+lumiloSlots.join(","));
+              if(!lib.querySelector('option[value="lib_light_bolt"]')||
+                 !lib.querySelector('option[value="cap_light_atk_5"]')||
+                 !lib.querySelector('option[value="Nid_frelon"]'))
+                throw Error("new light skill entries missing or prior Nid vanished");
+              lib.value="lib_light_bolt";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name")?.value!=="Rayon lumineux"||
+                 get("skill-preparation")?.value!=="600"||
+                 get("skill-travel-time")?.value!=="600"||
+                 get("skill-cooldown")?.value!=="8000"||
+                 get("skill-required-level")?.value!=="1"||
+                 get("skill-icon")?.value!=="core:icon-skill-holy-beam-01")
+                throw Error("Rayon lumineux authored projectile not loaded correctly");
+              lib.value="cap_light_atk_5";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name")?.value!=="Onde lumineuse"||
+                 get("skill-required-level")?.value!=="20")
+                throw Error("corrected Onde lumineuse ultimate not loaded");
+              const healing=[...document.querySelectorAll("[data-skill-effect-row]")]
+                .map(row=>({
+                  kind:row.querySelector("[data-skill-effect-kind]")?.value,
+                  scope:row.querySelector("[data-skill-effect-scope]")?.value,
+                  amount:row.querySelector("[data-skill-effect-amount]")?.value
+                }));
+              if(healing.length!==2||healing[0].kind!=="heal"||
+                 healing[0].scope!=="all_allies"||healing[0].amount!=="100"||
+                 healing[1].kind!=="heal"||healing[1].scope!=="all_ally_reserves"||
+                 healing[1].amount!=="100")
+                throw Error("Onde lumineuse 100 HP ally active/reserve healing not restored: "+JSON.stringify(healing));
+              let waveBlob=null;
+              const createWaveBlob=URL.createObjectURL;
+              try{
+                URL.createObjectURL=blob=>{waveBlob=blob;return createWaveBlob.call(URL,blob);};
+                get("export-current-skill").click();
+              }finally{URL.createObjectURL=createWaveBlob;}
+              const savedWave=waveBlob?JSON.parse(await waveBlob.text()):null;
+              const savedEffects=savedWave?.draft?.definition?.effects;
+              if(savedEffects?.length!==2||savedEffects.some(e=>e.kind!=="heal"||e.amount!==100)||
+                 savedEffects[0].targetScope!=="all_allies"||
+                 savedEffects[1].targetScope!=="all_ally_reserves")
+                throw Error("real Onde lumineuse skill export changed 100 HP reserve heal");
+              lumiloSelect.value="crea_foudrillon";
+              lumiloSelect.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("creature-name")?.value!=="Freclairions")
+                throw Error("prior Freclairions was replaced by Lumilo accidentally");
               // The canonical creature selector must reload the newly authored skill loadout.
               const creature=get("creature-library-select");
               if(!creature?.querySelector('option[value="crea_foudrillon"]')||
