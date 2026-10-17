@@ -48,13 +48,13 @@ const skill=effects=>normalizeSkillDefinition({
 });
 const stacks=(fighterState)=>fighterState.statusEffects.find(x=>x.definition.id==="marker:venin-static")?.stacks??0;
 
-test("RED: marker reserve scopes are permitted but energy/status/other unsupported kinds remain rejected",()=>{
+test("reserve marker and status scopes are allowed; energy remains rejected",()=>{
   assert.equal(normalizeSkillEffectV1(targeted("all_enemy_reserves")).targetScope,"all_enemy_reserves");
   assert.equal(normalizeSkillEffectV1(targeted("all_ally_reserves")).targetScope,"all_ally_reserves");
   assert.throws(()=>normalizeSkillEffectV1({kind:"energy_drain",targetScope:"all_enemy_reserves",amount:1}),/reserve/i);
-  assert.throws(()=>normalizeSkillEffectV1({kind:"apply_status",targetScope:"all_enemy_reserves",status:{
+  assert.equal(normalizeSkillEffectV1({kind:"apply_status",targetScope:"all_enemy_reserves",status:{
     id:"x",kind:"stun",polarity:"detrimental",durationMs:1000,stacking:"replace"
-  }}),/reserve/i);
+  }}).status.kind,"stun");
 });
 test("Nid effects reach active enemy and EACH enemy reserve exactly 5 charges with ONE native cast",()=>{
   const {session,roster}=harness();
