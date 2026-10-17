@@ -175,3 +175,21 @@ export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatur
     dispose() { if (disposed) return; disposed = true; listeners.splice(0).forEach(remove => remove()); }
   });
 }
+
+// A combat test may use a previously saved creature when the separate
+// creature editor has an incomplete evolution target. This never repairs,
+// stages or saves the invalid draft; the explicit creature save keeps its
+// original strict validation.
+export function shouldTestSavedCreatureWhenEvolutionIncompleteV1({
+  selectedCreatureId,
+  hasUnsavedCreatureChanges,
+  evolutionEnabled,
+  evolutionTargetId,
+  configuredCreatures
+}) {
+  return hasUnsavedCreatureChanges === true &&
+    typeof selectedCreatureId === "string" &&
+    configuredCreatures?.has?.(selectedCreatureId) === true &&
+    evolutionEnabled === true &&
+    String(evolutionTargetId ?? "").trim() === "";
+}
