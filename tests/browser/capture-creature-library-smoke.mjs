@@ -86,7 +86,7 @@ const server = createServer(async (req, res) => {
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-heal-evolution-isolation")) {
       const html=contents.toString("utf8");
-      const probe=\`<script>
+      const probe=`<script>
         document.addEventListener("DOMContentLoaded",()=>{
           let polls=0;
           const timer=setInterval(()=>{
@@ -122,7 +122,7 @@ const server = createServer(async (req, res) => {
             }catch(err){document.body.dataset.healEvolutionProbe="fail:"+err.message;}
           },100);
         });
-      </script>\`;
+      </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
