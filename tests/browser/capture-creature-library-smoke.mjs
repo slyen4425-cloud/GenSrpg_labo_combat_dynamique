@@ -212,7 +212,11 @@ const server = createServer(async (req, res) => {
                 throw Error("consumed-marker nested damage channel is still a typed ID");
               row.querySelector("[data-marker-result-kind]").value="heal";
               row.querySelector("[data-marker-result-amount]").value="7";
-              const addNested=[...row.querySelectorAll("button")].find(x=>x.textContent.includes("Ajouter un effet"));
+              // This skill row also owns HIDDEN stack/zone add buttons:
+              // scope the click to the consume-marker card, never the first
+              // unrelated "Ajouter un effet" anywhere in the row.
+              const consumeCard=row.querySelector('[data-skill-effect-config-kind="consume_marker"]');
+              const addNested=[...consumeCard.querySelectorAll("button")].find(x=>x.textContent.includes("Ajouter un effet"));
               if(!addNested)throw Error("no nested marker-effect add button");
               addNested.click();
               const extra=[...row.querySelectorAll("[data-marker-consume-result]")].at(-1);
@@ -247,9 +251,7 @@ const server = createServer(async (req, res) => {
               if(place.querySelector("[data-skill-marker-pick]").value!=="poison"||
                  place.querySelector("[data-skill-marker-charges]").value!=="3")throw Error("placement round-trip differs");
               if(spend.querySelector("[data-skill-consume-marker-pick]").value!=="*"||
-                 spend.querySelector("[data-marker-result-kind]").value!=="heal")throw Error("consumer round-trip differs: type="+spend.querySelector("[data-marker-result-kind]")?.value+
-                 " marker="+spend.querySelector("[data-skill-consume-marker-pick]")?.value+
-                 " results="+[...spend.querySelectorAll("[data-marker-result-kind]")].map(x=>x.value).join(","));
+                 spend.querySelector("[data-marker-result-kind]").value!=="heal")throw Error("consumer round-trip differs");
               if(![...spend.querySelectorAll("[data-marker-consume-result]")].some(e=>
                 e.querySelector("[data-marker-result-kind]")?.value==="cleanse" &&
                 e.querySelector("[data-marker-result-tag-choice]")?.value==="marker:poison"))
