@@ -67,7 +67,7 @@ test("minimum condition is atomic per target, and consumption never triggers a s
   const thresholdMarker={...marker,onStackThreshold:{count:5,consume:"reset",
     effects:[{kind:"damage",targetScope:"target",amount:20}]}};
   let state=cast(start(),place("fang",thresholdMarker,4)).state;
-  const notEnough=cast(state,consume("consume",{count:4,minimum:5,effects:[]}));
+  const notEnough=cast(state,consume("consume",{count:"all",minimum:5,effects:[]}));
   assert.equal(entries(notEnough.state)[0].stacks,4);
   const take=cast(state,consume("consume",{count:4,minimum:4,effects:[]}));
   assert.equal(entries(take.state).length,0);
