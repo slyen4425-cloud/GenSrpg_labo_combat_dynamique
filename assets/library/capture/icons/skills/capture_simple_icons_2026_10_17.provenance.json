@@ -1,0 +1,106 @@
+{
+  "schema": "capture-simple-skill-icon-provenance-v1",
+  "date": "2026-10-17",
+  "owner": "global-assets",
+  "sourceType": "ChatGPT user-approved simplified originals, resized to RGBA WebP",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "format": "image/webp VP8X alpha RGBA",
+  "settings": {
+    "library": "Pillow",
+    "resampling": "LANCZOS",
+    "quality": 15,
+    "method": 6,
+    "exact": true
+  },
+  "license": "project-internal",
+  "sourceVerified": "Visually reviewed at 128 and 48 pixels; original PNG has RGBA alpha",
+  "assets": [
+    {
+      "assetId": "pack:capture:icon-skill-poison-01",
+      "label": "Poison",
+      "source": "goutte_toxique_au_crâne_luminescent.png",
+      "sourceSha256": "1be4a4058db6f48b532cba4125c75b555f55c3e564ba0f60e2648ef29767fad9",
+      "derivedFile": "capture/icons/skills/icon_skill_poison_01.webp",
+      "derivedSha256": "1adc2f6aa79d3942b64d82d6489dd0a62cdb4802ffd067c9e85e73f5bea2ab39",
+      "gitBlobSHA": "fa3b18b5f2c80a1456e20c6e94e154b5b1e5ddf5",
+      "bytes": 4374
+    },
+    {
+      "assetId": "pack:capture:icon-skill-toxine-01",
+      "label": "Toxine",
+      "source": "médaillon_de_potion_toxique_lumineuse.png",
+      "sourceSha256": "23e45b786850b7ecdd4b8abca049c9763f0ab785ab29340b8dd669aefe4a69e6",
+      "derivedFile": "capture/icons/skills/icon_skill_toxine_01.webp",
+      "derivedSha256": "30361d6a865a1582e6e963e117daee7190b9efbc1b49cdaea8f346a60985c099",
+      "gitBlobSHA": "b62d7eedf3e2cadcaee5548f57741ef824e73081",
+      "bytes": 4388
+    },
+    {
+      "assetId": "pack:capture:icon-skill-dard-electrique-01",
+      "label": "Dard électrique",
+      "source": "icône_dorée_de_dard_électrique.png",
+      "sourceSha256": "5e24434652d238e4fa908b95ff3fe42d7d8d3a0b8c4b2db4e118e948b1e9feb7",
+      "derivedFile": "capture/icons/skills/icon_skill_dard_electrique_01.webp",
+      "derivedSha256": "86c1b410f17cea4390485bd2c930e0fd00fda4df7f22351f60903e181f1500a9",
+      "gitBlobSHA": "913d95fde458e5e6ad4bc7f2d78520e93ef28366",
+      "bytes": 4536
+    },
+    {
+      "assetId": "pack:capture:icon-skill-fleuraison-01",
+      "label": "Fleuraison",
+      "source": "emblème_floral_magique_aux_gemmes_vertes.png",
+      "sourceSha256": "1f02e9bf2559829eeaa782bbf8c9ba16ce292a9e9a73900db6fd4e177d502037",
+      "derivedFile": "capture/icons/skills/icon_skill_fleuraison_01.webp",
+      "derivedSha256": "5b7e90a3f16fdd78c7367843c9984128d200790acde0935a268cce792ae28b5b",
+      "gitBlobSHA": "2bdac203d4128a49b0be20ed094acb8ba8766796",
+      "bytes": 4058
+    },
+    {
+      "assetId": "pack:capture:icon-skill-brulure-01",
+      "label": "Brûlure",
+      "source": "emblème_de_brûlure_enflammée.png",
+      "sourceSha256": "9b9ef9cb3b3931df3eb788c168556e5951e70eaca3d7a9a35c6ffff99d133a23",
+      "derivedFile": "capture/icons/skills/icon_skill_brulure_01.webp",
+      "derivedSha256": "1263ec4e9742f9b47ff9d54a391ed21360921ca955c5660864894adb9035009e",
+      "gitBlobSHA": "f1140c9849a51555c34309a0726619ef124899ac",
+      "bytes": 4320
+    },
+    {
+      "assetId": "pack:capture:icon-skill-gel-01",
+      "label": "Gel",
+      "source": "médaillon_de_glace_enchanté.png",
+      "sourceSha256": "bfa889c2bb73ac5d083344fd6e587f7b732efc8473aee148c8ad9a8436de114b",
+      "derivedFile": "capture/icons/skills/icon_skill_gel_01.webp",
+      "derivedSha256": "03e840d8a983ddd7534ec497bd250ec771cd5be27f09832b4a1778be03f6ff8e",
+      "gitBlobSHA": "749d4e24e57e23e046a6fb6b6079674bf8d083a8",
+      "bytes": 4540
+    },
+    {
+      "assetId": "pack:capture:icon-skill-paralysie-01",
+      "label": "Paralysie",
+      "source": "orbe_doré_électrifié_et_scellé.png",
+      "sourceSha256": "5ba5fce171ea370e97115c7e81bdee0411225af32a56b28a93c369f32f08f463",
+      "derivedFile": "capture/icons/skills/icon_skill_paralysie_01.webp",
+      "derivedSha256": "905e9092fa94768c342d230edbf6c173e45354cf6f8fc1617ea0efb090780d05",
+      "gitBlobSHA": "cd2301ae2d6df4eafd147b3ff14d7ad0acb257ac",
+      "bytes": 4306
+    },
+    {
+      "assetId": "pack:capture:icon-skill-bulle-de-feu-01",
+      "label": "Bulle de feu",
+      "source": "emblème_de_feu_aux_gemmes_émeraude.png",
+      "sourceSha256": "32e11aa25b29912bb7a33e68db4d23afe318b3b235f1c7d8f11d09a3c685c50e",
+      "derivedFile": "capture/icons/skills/icon_skill_bulle_de_feu_01.webp",
+      "derivedSha256": "1cac3ecd82be76001f7d108b489a217483c3162a048446d1824e0e3827e73f2b",
+      "gitBlobSHA": "0f35a6c28f7df2429cb00eb238430d2ca1201595",
+      "bytes": 4286
+    }
+  ]
+}
