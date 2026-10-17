@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {normalizeCaptureMarkerV1, markerStatusDefinitionV1} from "../../src/contracts/capture-marker-v1.js";
 import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
-import {consumeCaptureMarkerStacksV1, applyStatusEffectV1} from "../../src/core/combat/status-effect-runtime-v1.js";
+import {consumeCaptureMarkerStacksV1, applyStatusEffectV1, advanceStatusEffectsV1} from "../../src/core/combat/status-effect-runtime-v1.js";
 
 const fighter=id=>({id,maxHp:120,initialHp:120,maxEnergy:20,initialEnergy:20,
   energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0});
@@ -51,6 +51,10 @@ test("venom 5 damage per stack each 5 sec; cross-skill placement preserves one t
   const next=applyStatusEffectV1({state:consumed.state,sourceActorId:"a",targetActorId:"b",
     sourceSkillId:"fang",status:markerStatusDefinitionV1(venom),atMs:5000});
   assert.equal(next.fighters.b.statusEffects.find(x=>x.definition.id==="marker:venin").stacks,2);
+  const partialTick=advanceStatusEffectsV1({state:consumed.state,deltaMs:5000});
+  assert.equal(partialTick.fighters.b.hp,100,"one remaining charge deals 5, not the old 15");
+  const restackedTick=advanceStatusEffectsV1({state:next,deltaMs:5000});
+  assert.equal(restackedTick.fighters.b.hp,95,"adding a new charge before the next tick deals 10");
 });
 
 test("markers do not create ticks when absent and native status expiration removes them",()=>{
@@ -103,5 +107,17 @@ test("heal variant and native immunity to damage remain available to marker auth
   const withVenom=applyStatusEffectV1({state:native,targetActorId:"b",sourceActorId:"a",
     sourceSkillId:"venom",status:markerStatusDefinitionV1(venom)});
   assert.equal(withVenom.fighters.b.statusEffects.length,2);
-  assert.equal(normalizeCaptureMarkerV1({...venom,periodic:{kind:"heal",amount:2,intervalMs:2000}}).periodic.kind,"heal");
+  const shielded=advanceStatusEffectsV1({state:withVenom,deltaMs:5000});
+  assert.equal(shielded.fighters.b.hp,120,"native shield absorbs the venom tick");
+  assert.equal(shielded.fighters.b.statusEffects.find(s=>s.definition.id==="shield").shieldRemaining,5);
+  const immune={id:"immune-damage",kind:"immunity",polarity:"beneficial",
+    durationMs:15000,stacking:"replace",domains:["damage"]};
+  const defended=applyStatusEffectV1({state:s.snapshot(),targetActorId:"b",sourceActorId:"b",status:immune});
+  const poisoned=applyStatusEffectV1({state:defended,targetActorId:"b",sourceActorId:"a",
+    sourceSkillId:"venom",status:markerStatusDefinitionV1(venom)});
+  assert.equal(advanceStatusEffectsV1({state:poisoned,deltaMs:5000}).fighters.b.hp,120,
+    "damage immunity applies to marker ticks");
+  const heal=normalizeCaptureMarkerV1({...venom,id:"care",polarity:"beneficial",
+    periodic:{kind:"heal",amount:2,intervalMs:2000}});
+  assert.equal(heal.periodic.kind,"heal");
 });
