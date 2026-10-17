@@ -250,8 +250,8 @@ export function normalizeSkillEffectV1(input) {
     throw new RangeError("all_active is only valid for marker effects");
   }
 
-  if (isReserveEffectTargetScopeV2(targetScope) && !["damage", "heal"].includes(kind)) {
-    throw new RangeError("Reserve effect scopes support damage/heal only: " + kind);
+  if (isReserveEffectTargetScopeV2(targetScope) && !["damage", "heal", "apply_marker"].includes(kind)) {
+    throw new RangeError("Reserve effect scopes support damage/heal/apply_marker only: " + kind);
   }
 
   if (kind === "life_steal" && targetScope !== "self") {
