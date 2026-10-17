@@ -577,7 +577,9 @@ export function createDomSkillFxRenderer({
             targetId: record.targetSlot,
             skillId: record.skillId ?? null,
             // Coordinates describe only the hit location for follow-up visual FX.
-            contactPoint: spriteContactPoint ?? Object.freeze({ x: projectilePoint.x, y: projectilePoint.y })
+            contactPoint: spriteContactPoint ?? Object.freeze({ x: projectilePoint.x, y: projectilePoint.y }),
+            mirrorSpritePresent: mirrorRect !== null,
+            mirrorSpriteContact: spriteContactPoint !== null
           })
         );
         return;
