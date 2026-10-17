@@ -32,7 +32,7 @@ export function captureMarkerRefreshReferenceChoicesV1(root){
   for(const select of root.querySelectorAll("[data-marker-channel-choice]")){
     const current=select.value;
     selectChoices(select,captureMarkerChannelOptionsV1(root,current),
-      select.dataset.markerOptional==="true"?"Même élément que la capacité":null,current);
+      select.dataset.markerOptional==="true"?(select.dataset.markerOptionalLabel || "Même élément que la capacité"):null,current);
   }
   for(const select of root.querySelectorAll("[data-marker-result-tag-choice]")){
     const current=select.value;
