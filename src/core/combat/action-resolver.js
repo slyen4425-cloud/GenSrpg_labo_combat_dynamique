@@ -1,5 +1,6 @@
 import { movementEnergyCost, isSkillInRange } from "./distance.js";
 import { isReserveEffectTargetScopeV2 } from "../../contracts/skill-effect-v1.js";
+import { isSkillTargetAllowed } from "./targeting.js";
 import {
   skillCooldownRemainingMs,
   skillUseCount,
@@ -448,6 +449,24 @@ export function resolveSkillStart({
   const effectiveTargetId =
     tauntSource ?? targetId;
   fighterOf(state, effectiveTargetId);
+
+  // One canonical target permission for both the 1v1/2v2 picker and
+  // direct Runtime / AI calls. Keep pre-format legacy sessions intact.
+  if (battleFormat !== null && !isSkillTargetAllowed({
+    format: battleFormat, actorId, targetId: effectiveTargetId, skill
+  }).ok) {
+    return Object.freeze({
+      ok: false,
+      outcome: "invalid_target_relation",
+      state,
+      events: Object.freeze([event("skill-rejected", 0, {
+        actorId,
+        targetId: effectiveTargetId,
+        skillId: skill.id,
+        reason: "invalid_target_relation"
+      })])
+    });
+  }
 
   if (!isSkillInRange(skill, state.distance)) {
     return Object.freeze({
