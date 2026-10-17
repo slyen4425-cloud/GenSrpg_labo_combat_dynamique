@@ -19,7 +19,7 @@ export function normalizeCaptureMarkerV1(input) {
   }
   const allowed = new Set([
     "id", "name", "polarity", "durationMs", "maxStacks",
-    "iconAssetId", "onStackThreshold"
+    "iconAssetId", "onStackThreshold", "periodic"
   ]);
   for (const key of Object.keys(input)) {
     if (!allowed.has(key)) throw new TypeError("Unknown marker field: " + key);
@@ -41,6 +41,7 @@ export function normalizeCaptureMarkerV1(input) {
     stacking: "stack",
     maxStacks: input.maxStacks ?? 10,
     tags: [CAPTURE_MARKER_TAG_V1, CAPTURE_MARKER_ID_PREFIX_V1 + id],
+    ...(input.periodic == null ? {} : {periodic:input.periodic}),
     ...(input.onStackThreshold == null ? {} : {onStackThreshold: input.onStackThreshold})
   });
   return Object.freeze({
@@ -50,6 +51,7 @@ export function normalizeCaptureMarkerV1(input) {
     durationMs: status.durationMs,
     maxStacks: status.maxStacks,
     ...(iconAssetId === null ? {} : {iconAssetId}),
+    ...(status.periodic == null ? {} : {periodic: status.periodic}),
     ...(status.onStackThreshold == null ? {} : {onStackThreshold: status.onStackThreshold})
   });
 }
@@ -65,6 +67,7 @@ export function markerStatusDefinitionV1(marker) {
     stacking: "stack",
     maxStacks: entry.maxStacks,
     tags: [CAPTURE_MARKER_TAG_V1, CAPTURE_MARKER_ID_PREFIX_V1 + entry.id],
+    ...(entry.periodic == null ? {} : {periodic:entry.periodic}),
     ...(entry.onStackThreshold == null ? {} : {onStackThreshold: entry.onStackThreshold})
   });
 }
