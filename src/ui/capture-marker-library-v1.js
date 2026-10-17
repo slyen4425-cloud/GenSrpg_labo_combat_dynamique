@@ -35,10 +35,21 @@ function markerFromFields(root){
   const on=selected(root,"marker-threshold-enabled")?.checked===true;
   const effect=on?thresholdEffect(root,id):null;
   if(on && !effect)throw new RangeError("Choisis un effet de seuil ou désactive le seuil");
+  const periodicOn=selected(root,"marker-periodic-enabled")?.checked===true;
+  const periodic=periodicOn ? {
+    kind:value(root,"marker-periodic-kind"),
+    amount:Number(value(root,"marker-periodic-amount")),
+    intervalMs:Math.round(Number(value(root,"marker-periodic-seconds"))*1000),
+    ...(value(root,"marker-periodic-kind")==="damage" ? {
+      damageMode:value(root,"marker-periodic-mode"),
+      channel:value(root,"marker-periodic-channel").trim()||"physical"
+    } : {})
+  } : null;
   return normalizeCaptureMarkerV1({
     id,name:value(root,"marker-name"),polarity:value(root,"marker-polarity"),
     durationMs:Math.round(Number(value(root,"marker-duration"))*1000),
     maxStacks:Number(value(root,"marker-max")),
+    ...(periodic == null ? {} : {periodic}),
     ...(value(root,"marker-icon").trim()?{iconAssetId:value(root,"marker-icon").trim()}:{}),
     ...(effect?{onStackThreshold:{
       count:Number(value(root,"marker-threshold-count")),
@@ -50,6 +61,12 @@ function loadFields(root,marker){
   set("marker-id",marker.id);set("marker-name",marker.name);
   set("marker-polarity",marker.polarity);set("marker-duration",marker.durationMs/1000);
   set("marker-max",marker.maxStacks);set("marker-icon",marker.iconAssetId??"");
+  selected(root,"marker-periodic-enabled").checked=marker.periodic!=null;
+  set("marker-periodic-kind",marker.periodic?.kind??"damage");
+  set("marker-periodic-amount",marker.periodic?.amount??5);
+  set("marker-periodic-seconds",(marker.periodic?.intervalMs??5000)/1000);
+  set("marker-periodic-mode",marker.periodic?.damageMode??"fixed");
+  set("marker-periodic-channel",marker.periodic?.channel??"physical");
   const toggle=selected(root,"marker-threshold-enabled");
   toggle.checked=marker.onStackThreshold!=null;
   set("marker-threshold-count",marker.onStackThreshold?.count??2);
@@ -66,6 +83,14 @@ function loadFields(root,marker){
   syncVisibility(root);
 }
 function syncVisibility(root){
+  const periodic=selected(root,"marker-periodic-enabled")?.checked===true;
+  const periodicFields=find(root,"marker-periodic-fields");
+  if(periodicFields)periodicFields.hidden=!periodic;
+  const showDamage=value(root,"marker-periodic-kind")==="damage";
+  const mode=selected(root,"marker-periodic-damage-setting");
+  const channel=selected(root,"marker-periodic-channel-setting");
+  if(mode)mode.hidden=!showDamage;
+  if(channel)channel.hidden=!showDamage||value(root,"marker-periodic-mode")!=="combat";
   const on=selected(root,"marker-threshold-enabled")?.checked;
   const field=find(root,"marker-threshold-fields");
   if(field)field.hidden=!on;
@@ -81,6 +106,15 @@ function refresh(root){
   fill(find(root,"marker-library-select"),items,"Nouveau marqueur");
   for(const select of root.querySelectorAll("[data-skill-marker-pick]")){
     fill(select,items,"Choisir un marqueur");
+  }
+  for(const select of root.querySelectorAll("[data-skill-marker-cost-id]")){
+    const before=select.value;
+    fill(select,items,"Choisir un marqueur");
+    // Do not silently erase an imported skill's cost if its marker library is missing.
+    if(before && !items.some(marker=>marker.id===before)){
+      const missing=elem("option","Marqueur manquant : "+before);
+      missing.value=before;select.append(missing);select.value=before;
+    }
   }
   for(const select of root.querySelectorAll("[data-skill-consume-marker-pick]")){
     const current=select.value;
@@ -156,6 +190,9 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
     const marker=markers.get(value(root,"marker-library-select"));
     if(marker)loadFields(root,marker);
   });
+  for(const key of ["marker-periodic-enabled","marker-periodic-kind","marker-periodic-mode"]) {
+    listen(find(root,key),"change",()=>syncVisibility(root));
+  }
   listen(find(root,"marker-threshold-enabled"),"change",()=>syncVisibility(root));
   listen(find(root,"marker-threshold-effect"),"change",()=>syncVisibility(root));
   listen(find(root,"marker-new"),"click",()=>{
