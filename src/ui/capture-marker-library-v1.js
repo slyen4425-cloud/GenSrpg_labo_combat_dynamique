@@ -91,6 +91,24 @@ function refresh(root){
   }
 }
 export function captureMarkerOptionsV1(root){return [...(sessions.get(root)?.markers.values()??[])];}
+export function captureMarkerStatusTemplatesV1(root){
+  const configuredSkills=sessions.get(root)?.configuredSkills;
+  const choices=new Map();
+  if(!configuredSkills)return [];
+  for(const skill of configuredSkills.values()){
+    const effects=skill?.definition?.effects??[];
+    for(const effect of effects){
+      const status=effect.kind==="apply_status" ? effect.status
+        : effect.kind==="persistent_zone" && effect.tickEffect?.kind==="apply_status"
+          ? effect.tickEffect.status : null;
+      if(!status)continue;
+      const id=JSON.stringify(status);
+      if(choices.has(id))continue;
+      choices.set(id,{status,label:(skill.definition?.name??skill.id)+" · "+status.id+" ("+status.kind+")"});
+    }
+  }
+  return [...choices.values()].sort((a,b)=>a.label.localeCompare(b.label,"fr"));
+}
 export function captureMarkerDefinitionV1(root,id){
   const definition=sessions.get(root)?.markers.get(id);
   if(!definition)throw new RangeError("Marqueur introuvable : "+id);
