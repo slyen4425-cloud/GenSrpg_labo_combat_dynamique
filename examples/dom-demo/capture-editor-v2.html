@@ -369,6 +369,34 @@
         </div>
       </article>
 
+      <article class="card" data-marker-cost-card>
+        <div class="card-title">
+          <span class="step">3bis</span>
+          <div>
+            <h2>Coût en marqueurs</h2>
+            <p>La capacité nécessite et consomme ces charges dès son lancement, avant le temps de préparation. Sans assez de charges, elle est refusée sans coûter d'énergie.</p>
+          </div>
+        </div>
+        <label class="switch-line"><input type="checkbox" data-skill-marker-cost-enabled>
+          <span>Exiger des marqueurs pour activer cette capacité</span>
+        </label>
+        <div class="grid two" data-skill-marker-cost-fields hidden>
+          <label>Marqueur nécessaire
+            <select data-skill-marker-cost-id><option value="">Choisir un marqueur</option></select>
+          </label>
+          <label>Où prélever les charges ?
+            <select data-skill-marker-cost-source>
+              <option value="self">Sur le lanceur</option>
+              <option value="target">Sur la cible</option>
+            </select>
+          </label>
+          <label>Nombre de charges consommées
+            <input data-skill-marker-cost-count type="number" min="1" max="99" step="1" value="3">
+          </label>
+        </div>
+        <p class="note">Exemple : exige 3 Venin sur la cible, consomme ces 3 charges dès le début de l'action, puis lance normalement les dégâts, soins et autres effets configurés dans la capacité. Ne pas ajouter un second effet « Consommer » pour payer deux fois.</p>
+      </article>
+
       <article class="card">
         <div class="card-title">
           <span class="step">4</span>
@@ -754,6 +782,36 @@
             <input data-marker-icon type="text" placeholder="Laisser vide pour icône de statut">
           </label>
         </div>
+        <details class="skill-activation-config" data-marker-periodic-card>
+          <summary>Effet périodique par charge (facultatif)</summary>
+          <label class="switch-line"><input type="checkbox" data-marker-periodic-enabled>
+            <span>Activer un effet répété sur le porteur</span>
+          </label>
+          <div class="grid two" data-marker-periodic-fields hidden>
+            <label>Effet
+              <select data-marker-periodic-kind>
+                <option value="damage">Dégâts par charge</option>
+                <option value="heal">Soin par charge</option>
+              </select>
+            </label>
+            <label>Valeur par charge
+              <input data-marker-periodic-amount type="number" min="0.1" step="0.1" value="5">
+            </label>
+            <label>Toutes les (secondes)
+              <input data-marker-periodic-seconds type="number" min="0.1" step="0.5" value="5">
+            </label>
+            <label data-marker-periodic-damage-setting>Calcul des dégâts
+              <select data-marker-periodic-mode>
+                <option value="fixed">Valeur fixe (bouclier et immunité actifs)</option>
+                <option value="combat">Calcul combat (résistances comprises)</option>
+              </select>
+            </label>
+            <label data-marker-periodic-channel-setting>Élément si calcul combat
+              <input data-marker-periodic-channel type="text" value="physical" placeholder="physical">
+            </label>
+          </div>
+          <p class="note">Exemple Venin : 3 charges × 5 dégâts = 15 dégâts toutes les 5 s, tant que le marqueur est actif. Les dégâts utilisent l'horloge et les protections du combat, même après un changement de capacité.</p>
+        </details>
         <label class="switch-line"><input type="checkbox" data-marker-threshold-enabled>
           <span>Déclencher un effet automatiquement à un nombre de charges</span></label>
         <div data-marker-threshold-fields hidden>
