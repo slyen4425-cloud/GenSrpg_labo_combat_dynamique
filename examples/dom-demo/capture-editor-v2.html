@@ -783,6 +783,7 @@
           </label>
           <label>Icône du marqueur (bibliothèque GenSrpG)
             <select data-marker-icon><option value="">Aucune icône personnalisée</option></select>
+            <small class="note">Le choix est exporté ; le HUD de combat utilise encore son losange de marqueur.</small>
           </label>
         </div>
         <p class="note">Un marqueur permanent ne perd pas ses charges avec le temps. S'il produit des dégâts/soins périodiques, ceux-ci continuent selon l'horloge combat tant qu'il est présent. La case illimitée désactive le champ de durée en secondes.</p>
@@ -844,7 +845,7 @@
               <input data-marker-threshold-amount type="number" min="0" step="1" value="10">
             </label>
             <label>Élément des dégâts au seuil (facultatif)
-              <select data-marker-threshold-channel data-marker-channel-choice data-marker-optional="true"><option value="">Même élément que la capacité</option></select>
+              <select data-marker-threshold-channel data-marker-channel-choice data-marker-optional="true" data-marker-optional-label="Canal par défaut du moteur"><option value="">Canal par défaut du moteur</option></select>
             </label>
           </div>
         </div>
