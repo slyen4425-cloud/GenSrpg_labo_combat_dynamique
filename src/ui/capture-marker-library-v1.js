@@ -1,5 +1,6 @@
 import {normalizeCaptureMarkerV1, normalizeCaptureMarkerLibraryV1} from "../contracts/capture-marker-v1.js";
 import {normalizeCaptureSkillEditorDraftV1} from "../contracts/capture-skill-editor-draft-v1.js";
+import {captureMarkerChannelChoicesV1, captureMarkerIconChoicesV1} from "./capture-marker-reference-choices-v1.js";
 
 const sessions = new WeakMap();
 const find=(root,key)=>root.querySelector("[data-"+key+"]");
@@ -10,6 +11,39 @@ const say=(root,message,tone="info")=>{
   if(node){node.textContent=message;node.dataset.tone=tone;}
 };
 const elem=(tag,text="")=>{const node=document.createElement(tag);node.textContent=text;return node;};
+
+export function captureMarkerChannelOptionsV1(root,selectedId=""){
+  const nativeSelect=root.querySelector("[data-skill-element]");
+  const nativeElements=[...(nativeSelect?.options??[])].filter(o=>o.value).map(o=>({id:o.value,label:o.textContent}));
+  const statRegistry=sessions.get(root)?.getStatRegistry?.()??null;
+  return captureMarkerChannelChoicesV1({nativeElements,statRegistry,selectedId});
+}
+
+// Reference-only dropdowns: retain an imported ID as a visible choice if the
+// current author registry has not loaded it. Never silently erase author data.
+function selectChoices(select,options,emptyLabel=null,chosen=select.value){
+  if(!select)return;
+  select.textContent="";
+  if(emptyLabel!==null){const opt=elem("option",emptyLabel);opt.value="";select.append(opt);}
+  for(const entry of options){const option=elem("option",entry.label+" · "+entry.id);option.value=entry.id;select.append(option);}
+  select.value=chosen??"";
+}
+export function captureMarkerRefreshReferenceChoicesV1(root){
+  for(const select of root.querySelectorAll("[data-marker-channel-choice]")){
+    const current=select.value;
+    selectChoices(select,captureMarkerChannelOptionsV1(root,current),
+      select.dataset.markerOptional==="true"?"Même élément que la capacité":null,current);
+  }
+  const iconSelect=find(root,"marker-icon");
+  if(iconSelect){
+    const current=iconSelect.value;
+    const source=root.querySelector("[data-creature-reaction-icon]");
+    const options=[...(source?.options??[])].filter(o=>o.value).map(o=>({id:o.value,label:o.textContent}));
+    selectChoices(iconSelect,captureMarkerIconChoicesV1({catalogOptions:options,selectedId:current}),
+      "Aucune icône personnalisée",current);
+  }
+}
+
 // Author convenience only: the stored/portable marker ID remains the strict
 // immutable CaptureMarkerV1 slug, never a display name or runtime fallback.
 export function captureMarkerAuthorSlugV1(value) {
@@ -69,7 +103,18 @@ function markerFromFields(root){
   });
 }
 function loadFields(root,marker){
-  const set=(key,content)=>{const node=find(root,key);if(node)node.value=String(content??"");};
+  const set=(key,content)=>{
+    const node=find(root,key);if(!node)return;
+    const chosen=String(content??"");
+    if(node.matches("select[data-marker-channel-choice]") ||
+       node.matches("select[data-marker-icon]")){
+      if(chosen && ![...node.options].some(o=>o.value===chosen)){
+        const fallback=elem("option",chosen+" (référence importée conservée)");
+        fallback.value=chosen;node.append(fallback);
+      }
+    }
+    node.value=chosen;
+  };
   set("marker-id",marker.id);set("marker-name",marker.name);
   set("marker-polarity",marker.polarity);
   selected(root,"marker-permanent").checked=marker.permanent===true;
@@ -94,6 +139,7 @@ function loadFields(root,marker){
     set("marker-threshold-amount",effect.amount??10);
     set("marker-threshold-channel",effect.channel??"");
   }
+  captureMarkerRefreshReferenceChoicesV1(root);
   syncVisibility(root);
 }
 function syncVisibility(root){
@@ -197,9 +243,9 @@ function propagateMarker(root,definition){
   for(const [id,draft] of updates)state.configuredSkills.set(id,draft);
   return updates.length;
 }
-export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
+export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getStatRegistry=()=>null}){
   const markers=new Map();
-  const controller={markers,configuredSkills};
+  const controller={markers,configuredSkills,getStatRegistry};
   sessions.set(root,controller);
   function indexSkills(){
     for(const draft of configuredSkills.values()){
@@ -290,7 +336,7 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
     }catch(error){say(root,error.message,"error");}
     finally{e.target.value="";}
   });
-  indexSkills();refresh(root);syncVisibility(root);
+  indexSkills();refresh(root);captureMarkerRefreshReferenceChoicesV1(root);syncVisibility(root);
   return Object.freeze({
     indexSkills,
     dispose(){sessions.delete(root);}
