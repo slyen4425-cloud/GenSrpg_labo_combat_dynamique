@@ -106,6 +106,12 @@ const server = createServer(async (req, res) => {
               fill("marker-name","Poison");
               fill("marker-max",10);
               fill("marker-duration",10);
+              get("marker-periodic-enabled").checked=true;
+              get("marker-periodic-enabled").dispatchEvent(new Event("change",{bubbles:true}));
+              fill("marker-periodic-kind","damage");
+              fill("marker-periodic-amount",5);
+              fill("marker-periodic-seconds",5);
+              fill("marker-periodic-mode","fixed");
               get("marker-threshold-enabled").checked=true;
               fill("marker-threshold-count",10);
               fill("marker-threshold-effect","damage");
@@ -113,6 +119,11 @@ const server = createServer(async (req, res) => {
               get("marker-save").click();
               if(!get("marker-library-state").textContent.includes("enregistré"))throw Error("marker library save failed: "+get("marker-library-state").textContent);
               lib.value="lib_aqua_heal";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              get("skill-marker-cost-enabled").checked=true;
+              get("skill-marker-cost-enabled").dispatchEvent(new Event("change",{bubbles:true}));
+              fill("skill-marker-cost-id","poison");
+              fill("skill-marker-cost-source","target");
+              fill("skill-marker-cost-count",2);
               const add=()=>{get("skill-effect-add").click();return [...document.querySelectorAll("[data-skill-effect-row]")].at(-1);};
               const kind=(row,v)=>{const sel=row.querySelector("[data-skill-effect-kind]");
                 sel.value=v;sel.dispatchEvent(new Event("change",{bubbles:true}));};
@@ -135,13 +146,18 @@ const server = createServer(async (req, res) => {
               const place=rows.find(n=>n.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
               const spend=rows.find(n=>n.querySelector("[data-skill-effect-kind]")?.value==="consume_marker");
               if(!place||!spend)throw Error("saved marker effects did not round-trip");
+              if(!get("skill-marker-cost-enabled").checked||get("skill-marker-cost-id").value!=="poison"||
+                 get("skill-marker-cost-source").value!=="target"||get("skill-marker-cost-count").value!=="2")
+                throw Error("marker activation cost did not round-trip");
+              if(!get("marker-periodic-enabled").checked || get("marker-periodic-seconds").value!=="5")
+                throw Error("marker periodic authoring lost its configuration");
               if(place.querySelector("[data-skill-marker-pick]").value!=="poison"||
                  place.querySelector("[data-skill-marker-charges]").value!=="3")throw Error("placement round-trip differs");
               if(spend.querySelector("[data-skill-consume-marker-pick]").value!=="*"||
                  spend.querySelector("[data-marker-result-kind]").value!=="heal")throw Error("consumer round-trip differs");
               get("editor-validate").click();
               if(get("editor-summary").textContent.includes("Corrige"))throw Error("combat exporter rejects new marker skill");
-              document.body.dataset.markerProbe="ok:library:placement:consume:roundtrip:combat-export";
+              document.body.dataset.markerProbe="ok:library:periodic:cost:placement:consume:roundtrip:combat-export";
             }catch(error){document.body.dataset.markerProbe="fail:"+error.message;}
           },100);
         });
@@ -1049,7 +1065,7 @@ try {
   const markerDom=await dumpDom(url+"?verify-markers=1");
   assertCreatures(markerDom,"marker library and active skill editor real browser bootstrap");
   const markerProbe=markerDom.match(/data-marker-probe="([^"]+)"/)?.[1] ?? "missing";
-  if(markerProbe!=="ok:library:placement:consume:roundtrip:combat-export")
+  if(markerProbe!=="ok:library:periodic:cost:placement:consume:roundtrip:combat-export")
     throw Error("Native marker authoring / skill roundtrip regression: "+markerProbe);
   console.log("Shared marker library and skill UI: real Chrome authoring, 103 creatures, placement/consume and combat export");
   const guardDom=await dumpDom(url+"?verify-creature-reaction=1");
