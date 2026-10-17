@@ -1,5 +1,5 @@
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
-import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1 } from "./capture-marker-library-v1.js";
+import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js";
 import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1 } from "./capture-marker-effect-fields-v1.js";
 import { captureEditorElementChannelChoicesV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
@@ -7188,6 +7188,7 @@ function renderHumanStatRegistryV1(
     host.append(row);
   }
   refreshHumanElementChannelSelectsV1(root,normalized);
+  captureMarkerRefreshReferenceChoicesV1(root);
 }
 
 function readHumanStatRegistryV1(root) {
@@ -8225,6 +8226,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     );
   }
   syncHumanCreatureReactionControlsV1(root);
+  captureMarkerRefreshReferenceChoicesV1(root);
 
   function preview(select, image) {
     const asset = byId.get(select.value);
@@ -8312,6 +8314,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       );
     }
     syncHumanCreatureReactionControlsV1(root);
+    captureMarkerRefreshReferenceChoicesV1(root);
   }
 
   function mountCreatorVisualImporter(
@@ -10097,7 +10100,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
-  const markerLibraryController = mountCaptureMarkerLibraryV1({root, listen, configuredSkills});
+  const markerLibraryController = mountCaptureMarkerLibraryV1({root, listen, configuredSkills, getStatRegistry:()=>statRegistry});
   listen(one(root,"[data-skill-marker-cost-enabled]"),"change",() => {
     one(root,"[data-skill-marker-cost-fields]").hidden =
       !one(root,"[data-skill-marker-cost-enabled]").checked;
