@@ -1,6 +1,7 @@
 import {
   projectStatusStatEffectsV1
 } from "../../core/combat/status-effect-projection-v1.js";
+import { isCaptureMarkerStatusV1 } from "../../contracts/capture-marker-v1.js";
 
 const POLARITY_LABELS = Object.freeze({
   beneficial: "Buff",
@@ -502,18 +503,18 @@ export function projectStatusEffectInfoV1({
   return Object.freeze({
     statusId,
     statusName:
-      definition.kind === "outgoing_damage_modifier"
+      definition.label ?? (definition.kind === "outgoing_damage_modifier"
         ? "Dégâts infligés"
         : definition.kind === "energy_regen_modifier"
         ? "Régénération d’énergie"
         : definition.kind === "skill_cooldown_rate_modifier"
           ? "Recharge des compétences"
-          : humanIdentifier(statusId),
+          : humanIdentifier(statusId)),
     sourceSkillId,
     sourceSkillName,
     typeLabel:
-      POLARITY_LABELS[definition.polarity] ??
-      "Statut",
+      isCaptureMarkerStatusV1(instance) ? "Marqueur"
+        : POLARITY_LABELS[definition.polarity] ?? "Statut",
     remainingLabel: remainingLabelFor(
       definition,
       instance,
@@ -540,7 +541,7 @@ export function statusEffectInfoTextV1(info) {
   }
 
   const lines = [
-    "Statut : " + info.statusName,
+    (info.typeLabel === "Marqueur" ? "Marqueur : " : "Statut : ") + info.statusName,
     info.typeLabel
   ];
 
