@@ -15,6 +15,7 @@ import {
   activeStatusEffectsV1,
   applyStatusEffectV1,
   removeStatusEffectsV1,
+  consumeCaptureMarkerStacksV1,
   validateStatusEffectForTargetV1
 } from "./status-effect-runtime-v1.js";
 import {
@@ -23,6 +24,7 @@ import {
 import {
   scheduleSkillEffectV1
 } from "./scheduled-effect-runtime-v1.js";
+import { markerStatusDefinitionV1 } from "../../contracts/capture-marker-v1.js";
 
 const SUPPORTED_KINDS = new Set([
   "damage",
@@ -31,6 +33,8 @@ const SUPPORTED_KINDS = new Set([
   "energy_drain",
   "life_steal",
   "apply_status",
+  "apply_marker",
+  "consume_marker",
   "cleanse",
   "dispel",
   "persistent_zone",
@@ -252,14 +256,16 @@ export function applyImmediateTacticalEffectsV1({
     skill.form !== "self" &&
     (skill.effects ?? []).some(item =>
       ["all_enemies", "all_except_self"].includes(item.targetScope) &&
-      ["damage", "apply_status", "energy_drain", "dispel"].includes(item.kind)
+      ["damage", "apply_status", "apply_marker", "energy_drain", "dispel"].includes(item.kind)
     );
   const isHostileEffect = effect =>
     effect.kind === "damage" ||
     effect.kind === "energy_drain" ||
     effect.kind === "dispel" ||
     (effect.kind === "apply_status" &&
-      effect.status.polarity === "detrimental");
+      effect.status.polarity === "detrimental") ||
+    (effect.kind === "apply_marker" &&
+      effect.marker.polarity === "detrimental");
   // The originating ActionResolver has already applied this skill's direct hit.
   // Only real HP lost counts, not damage requested, shields or later reflected HP.
   let lifeStealDamage = actorId !== targetId
@@ -311,8 +317,9 @@ export function applyImmediateTacticalEffectsV1({
       continue;
     }
 
-    const affectedIds =
-      targetIdsForEffect({
+    const affectedIds = effect.targetScope === "all_active"
+      ? Object.keys(nextState.fighters)
+      : targetIdsForEffect({
         state: nextState,
         actorId,
         targetId,
@@ -432,6 +439,77 @@ export function applyImmediateTacticalEffectsV1({
           energyBefore: before,
           energyAfter: after
         }));
+        continue;
+      }
+
+      if (effect.kind === "apply_marker") {
+        const definition = markerStatusDefinitionV1(effect.marker);
+        const protection = definition.polarity === "detrimental"
+          ? combatProtectionForIncomingV1({
+              state: nextState, targetActorId: affectedId,
+              domain: "negative_status", atMs: combatAtMs,
+              hitsIntangible: skill.hitsIntangible === true
+            })
+          : {protected: false, protectingStatusIds: []};
+        if (protection.protected) {
+          events.push(Object.freeze({
+            type: "status-immune", atMs, actorId: affectedId,
+            sourceActorId: actorId, skillId: skill.id,
+            statusId: definition.id, statusKind: definition.kind,
+            protectingStatusIds: protection.protectingStatusIds
+          }));
+          continue;
+        }
+        for (let index = 0; index < effect.charges; index += 1) {
+          const thresholdEvents = [];
+          nextState = applyStatusEffectV1({
+            state: nextState,
+            targetActorId: affectedId,
+            sourceActorId: actorId,
+            sourceSkillId: skill.id,
+            status: definition,
+            atMs: combatAtMs,
+            hitsIntangible: skill.hitsIntangible === true,
+            thresholdDepth,
+            eventAtMs: atMs,
+            onThresholdEvents: more => thresholdEvents.push(...more)
+          });
+          events.push(...thresholdEvents);
+        }
+        events.push(Object.freeze({
+          type: "marker-applied", atMs, actorId: affectedId,
+          sourceActorId: actorId, skillId: skill.id,
+          markerId: effect.marker.id, charges: effect.charges
+        }));
+        continue;
+      }
+
+      if (effect.kind === "consume_marker") {
+        const consumed = consumeCaptureMarkerStacksV1({
+          state: nextState, targetActorId: affectedId,
+          markerId: effect.markerId, count: effect.count,
+          minimum: effect.minimum, atMs: combatAtMs
+        });
+        if (consumed.consumed === 0) continue;
+        nextState = consumed.state;
+        events.push(Object.freeze({
+          type: "markers-consumed", atMs, actorId: affectedId,
+          sourceActorId: actorId, skillId: skill.id,
+          markerId: effect.markerId, charges: consumed.consumed,
+          removed: consumed.removed
+        }));
+        if (effect.effects.length > 0) {
+          const triggered = applyImmediateTacticalEffectsV1({
+            state: nextState,
+            actorId, targetId: affectedId,
+            skill: {...skill, effects: effect.effects},
+            atMs, combatAtMs, battleFormat,
+            thresholdDepth: thresholdDepth + 1,
+            allowLifeSteal: false
+          });
+          nextState = triggered.state;
+          events.push(...triggered.events);
+        }
         continue;
       }
 
