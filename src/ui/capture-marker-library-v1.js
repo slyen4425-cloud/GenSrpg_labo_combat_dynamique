@@ -148,6 +148,12 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
   listen(find(root,"marker-save"),"click",()=>{
     try{
       const marker=markerFromFields(root);
+      const existing=markers.get(marker.id);
+      // The compact form cannot represent complex, imported multi-effect
+      // thresholds. Never silently erase advanced author configurations.
+      if (existing?.onStackThreshold?.effects?.length > 1) {
+        throw new RangeError("Ce marqueur possède plusieurs effets de seuil : édition rapide bloquée pour éviter toute perte. Le JSON exporté reste intact.");
+      }
       const linked=propagateMarker(root,marker);
       markers.set(marker.id,marker);
       refresh(root);find(root,"marker-library-select").value=marker.id;
