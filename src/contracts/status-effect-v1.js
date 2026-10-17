@@ -97,7 +97,8 @@ const COMMON_FIELDS = new Set([
   "stacking",
   "maxStacks",
   "tags",
-  "onStackThreshold"
+  "onStackThreshold",
+  "periodic"
 ]);
 
 const FIELDS_BY_KIND = Object.freeze({
@@ -391,6 +392,38 @@ export function normalizeStatusEffectV1(input) {
     });
     output.onStackThreshold = Object.freeze({
       count, consume, effects: Object.freeze(effects)
+    });
+  }
+
+  // Shared markers reuse this native stack counter for periodic damage/heal.
+  // Other statuses must keep their original, independent effect definitions.
+  if (value.periodic != null) {
+    if (kind !== "stack_counter" || !output.tags.includes("gensrpg:marker:v1") ||
+        duration.durationModel !== "time_ms") {
+      throw new RangeError("periodic effects are supported only on timed shared markers");
+    }
+    const periodic = objectValue(value.periodic, "StatusEffectV1.periodic");
+    assertKnownFields(periodic, new Set(["kind", "amount", "intervalMs", "channel", "damageMode"]), "periodic");
+    const periodicKind = requiredString(periodic.kind, "periodic.kind");
+    if (!["damage", "heal"].includes(periodicKind)) {
+      throw new RangeError("periodic.kind must be damage or heal");
+    }
+    if (periodicKind === "heal" && (periodic.channel != null || periodic.damageMode != null)) {
+      throw new RangeError("heal periodic markers cannot specify damage settings");
+    }
+    const damageMode = periodicKind === "damage"
+      ? requiredString(periodic.damageMode ?? "fixed", "periodic.damageMode") : null;
+    if (damageMode !== null && !DAMAGE_MODE_SET.has(damageMode)) {
+      throw new RangeError("Unsupported marker periodic damage mode");
+    }
+    output.periodic = Object.freeze({
+      kind: periodicKind,
+      amount: positiveNumber(periodic.amount, "periodic.amount"),
+      intervalMs: positiveNumber(periodic.intervalMs, "periodic.intervalMs"),
+      ...(periodicKind === "damage" ? {
+        damageMode,
+        channel: requiredString(periodic.channel ?? "physical", "periodic.channel")
+      } : {})
     });
   }
 
