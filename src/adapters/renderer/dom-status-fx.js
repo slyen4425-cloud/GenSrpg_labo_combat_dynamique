@@ -233,6 +233,9 @@ export function createDomStatusFxRenderer({
       records.set(key, record);
     }
 
+    // Same native status owner, exposed to the existing projectile contact
+    // watcher. No separate shield state or collision scheduler.
+    record.node.dataset.statusKind = instance?.definition?.kind ?? "";
     record.node.dataset.assetId =
       sprite.assetId ?? "";
     record.node.style.opacity =
