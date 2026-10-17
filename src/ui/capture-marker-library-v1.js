@@ -1,4 +1,5 @@
 import {normalizeCaptureMarkerV1, normalizeCaptureMarkerLibraryV1} from "../contracts/capture-marker-v1.js";
+import {captureMarkerExportSnapshotV1} from "./capture-marker-export-v1.js";
 import {normalizeCaptureSkillEditorDraftV1} from "../contracts/capture-skill-editor-draft-v1.js";
 import {captureMarkerChannelChoicesV1, captureMarkerIconChoicesV1} from "./capture-marker-reference-choices-v1.js";
 
@@ -264,7 +265,7 @@ function propagateMarker(root,definition){
   for(const [id,draft] of updates)state.configuredSkills.set(id,draft);
   return updates.length;
 }
-export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getStatRegistry=()=>null}){
+export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getStatRegistry=()=>null,getCurrentSkillDraft=()=>null}){
   const markers=new Map();
   const controller={markers,configuredSkills,getStatRegistry};
   sessions.set(root,controller);
@@ -327,10 +328,17 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
   });
   listen(find(root,"marker-export"),"click",()=>{
     try{
-      const data=JSON.stringify({schema:"capture-markers-v1",markers:normalizeCaptureMarkerLibraryV1([...markers.values()])},null,2);
+      const entries=captureMarkerExportSnapshotV1({
+        markers,configuredSkills,currentDraft:getCurrentSkillDraft()
+      });
+      if(entries.length===0){
+        say(root,"Aucun marqueur à exporter. Enregistre un marqueur ou configure une capacité qui en pose un. Aucun fichier vide n'a été créé.","warning");
+        return;
+      }
+      const data=JSON.stringify({schema:"capture-markers-v1",markers:entries},null,2);
       const url=URL.createObjectURL(new Blob([data],{type:"application/json"}));
       const link=elem("a");link.href=url;link.download="gensrpg-marqueurs.json";link.click();URL.revokeObjectURL(url);
-      say(root,"Bibliothèque exportée avec "+markers.size+" marqueur(s).","ok");
+      say(root,"Bibliothèque exportée avec "+entries.length+" marqueur(s), y compris ceux des capacités configurées ou en cours d'édition.","ok");
     }catch(error){say(root,error.message,"error");}
   });
   listen(find(root,"marker-import"),"change",async e=>{
