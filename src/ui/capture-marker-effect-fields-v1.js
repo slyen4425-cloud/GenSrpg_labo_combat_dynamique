@@ -1,4 +1,4 @@
-import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1} from "./capture-marker-library-v1.js";
+import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1, captureMarkerStatusTemplatesV1} from "./capture-marker-library-v1.js";
 
 const field=(name)=>{const node=document.createElement("label");node.textContent=name;return node;};
 function choice(name,options,value){
@@ -44,14 +44,19 @@ function appendConsumeResultV1(host,effect=null){
   channelInput.value=effect?.channel??"";channelInput.dataset.markerResultChannel="true";channel.append(channelInput);
   const status=field("Statut à appliquer (copié depuis une compétence)");
   const statusSelect=document.createElement("select");statusSelect.dataset.markerResultStatus="true";
-  const known=[
-    {id:"stun-marqueur",kind:"stun",polarity:"detrimental",durationMs:2000,stacking:"replace"},
-    ...(effect?.kind==="apply_status"&&effect.status?[effect.status]:[])
+  const defaultStun={id:"stun-marqueur",kind:"stun",polarity:"detrimental",durationMs:2000,stacking:"replace"};
+  const templates=[
+    {status:defaultStun,label:"Étourdissement 2 s"},
+    ...captureMarkerStatusTemplatesV1(host.closest("[data-capture-editor-human]")??document),
+    ...(effect?.kind==="apply_status"&&effect.status?[{status:effect.status,label:"Statut enregistré : "+effect.status.id}]:[])
   ];
-  for(const template of known){
-    const option=document.createElement("option");option.value=JSON.stringify(template);
-    option.textContent=template.kind==="stun"?"Étourdissement 2 s":template.id+" (« "+template.kind+" »)";
-    statusSelect.append(option);
+  const seen=new Set();
+  for(const entry of templates){
+    const key=JSON.stringify(entry.status);
+    if(seen.has(key))continue;
+    seen.add(key);
+    const option=document.createElement("option");option.value=key;
+    option.textContent=entry.label;statusSelect.append(option);
   }
   if(effect?.kind==="apply_status")statusSelect.value=JSON.stringify(effect.status);
   status.append(statusSelect);
