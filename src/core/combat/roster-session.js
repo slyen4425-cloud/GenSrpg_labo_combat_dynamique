@@ -698,11 +698,23 @@ export function createRosterSession({
 
     const currentState =
       combatSession.snapshot();
+    // The chosen reserve member was already relation-checked above. When
+    // targeting one's own bench, team.slotId is only the caster's active
+    // placeholder (self), while the real reserve relation is ally.
+    // Expand permission on this ephemeral zero-effect action only.
+    // Never mutate the authored skill or the true reserve target check.
+    const stagedSkill = zeroEffectSkill(skill);
+    const anchorSkill = team.slotId === actorId && relation === "ally"
+      ? Object.freeze({
+          ...stagedSkill,
+          targetRelations: Object.freeze([...new Set([...skill.targetRelations, "self"])])
+        })
+      : stagedSkill;
     const started = resolveSkillStart({
       state: currentState,
       actorId,
       targetId: team.slotId,
-      skill: zeroEffectSkill(skill),
+      skill: anchorSkill,
       skillSpeedMultiplier:
         combatSession.skillSpeedMultiplier,
       battleFormat
