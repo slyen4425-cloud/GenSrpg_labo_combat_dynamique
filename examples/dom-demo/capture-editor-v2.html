@@ -763,7 +763,7 @@
             <input data-marker-name type="text" placeholder="Exemple : Venin" autocomplete="off">
           </label>
           <label>Identifiant technique (créé automatiquement)
-            <input data-marker-id type="text" placeholder="venin" autocomplete="off" spellcheck="false">
+            <input data-marker-id type="text" placeholder="Créé depuis le nom" autocomplete="off" spellcheck="false" readonly>
           </label>
           <label>Nature
             <select data-marker-polarity>
@@ -781,12 +781,12 @@
           <label>Maximum de charges
             <input data-marker-max type="number" min="1" max="999" step="1" value="10">
           </label>
-          <label>Référence d’icône (assetId, exportée ; affichage spécifique ultérieur)
-            <input data-marker-icon type="text" placeholder="Laisser vide pour icône de statut">
+          <label>Icône du marqueur (bibliothèque GenSrpG)
+            <select data-marker-icon><option value="">Aucune icône personnalisée</option></select>
           </label>
         </div>
         <p class="note">Un marqueur permanent ne perd pas ses charges avec le temps. S'il produit des dégâts/soins périodiques, ceux-ci continuent selon l'horloge combat tant qu'il est présent. La case illimitée désactive le champ de durée en secondes.</p>
-        <p class="note">Pour créer un marqueur, saisis seulement son nom puis touche « Enregistrer le marqueur ».  L'identifiant se crée automatiquement (sans accents ni espaces) et reste stable pour toutes les capacités. Pour modifier un marqueur existant, sélectionne-le dans la liste ci-dessus.</p>
+        <p class="note">Pour créer un marqueur, saisis seulement son nom puis touche « Enregistrer le marqueur ».  L'identifiant est créé automatiquement (sans accents ni espaces) et reste stable pour toutes les capacités. Les éléments et icônes se choisissent dans les listes existantes : aucun identifiant à recopier. Pour modifier un marqueur existant, sélectionne-le dans la liste ci-dessus.</p>
         <details class="skill-activation-config" data-marker-periodic-card>
           <summary>Effet périodique par charge (facultatif)</summary>
           <label class="switch-line"><input type="checkbox" data-marker-periodic-enabled>
@@ -812,7 +812,7 @@
               </select>
             </label>
             <label data-marker-periodic-channel-setting>Élément si calcul combat
-              <input data-marker-periodic-channel type="text" value="physical" placeholder="physical">
+              <select data-marker-periodic-channel data-marker-channel-choice><option value="physical">Physique</option></select>
             </label>
           </div>
           <p class="note">Exemple Venin : 3 charges × 5 dégâts = 15 dégâts toutes les 5 s, tant que le marqueur est actif. Les dégâts utilisent l'horloge et les protections du combat, même après un changement de capacité.</p>
@@ -843,8 +843,8 @@
             <label>Valeur de l'effet
               <input data-marker-threshold-amount type="number" min="0" step="1" value="10">
             </label>
-            <label>Canal des dégâts (facultatif)
-              <input data-marker-threshold-channel type="text" placeholder="poison">
+            <label>Élément des dégâts au seuil (facultatif)
+              <select data-marker-threshold-channel data-marker-channel-choice data-marker-optional="true"><option value="">Même élément que la capacité</option></select>
             </label>
           </div>
         </div>
