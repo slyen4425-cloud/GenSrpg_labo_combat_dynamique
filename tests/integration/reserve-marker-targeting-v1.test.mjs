@@ -108,3 +108,68 @@ test("no roster: reserve marker splash is refused before payment",()=>{
   assert.equal(result.outcome,"reserve_roster_required");
   assert.equal(session.snapshot().fighters.player.energy,40);
 });
+
+test("two opposing active slots and their benches each receive exactly five charges",()=>{
+  const {session,roster}=harnessWithSecondEnemy();
+  const nid=skill([targeted("all_enemies"),targeted("all_enemy_reserves")]);
+  const result=roster.useSkillOnTarget({actorId:"player",
+    targetRef:{scope:"active",actorId:"opponent"},skill:nid});
+  assert.equal(result.ok,true);
+  assert.equal(stacks(session.snapshot().fighters.opponent),5);
+  assert.equal(stacks(session.snapshot().fighters.enemy2),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("opponent","e1")),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("opponent","e2")),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("enemy2","e4")),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("player","p1")),0);
+  assert.equal(session.snapshot().fighters.player.energy,32);
+  assert.equal(session.snapshot().fighters.player.skillUseCounts[nid.id],1);
+});
+
+test("allied reserve marker scope affects same-team benches, not enemy benches",()=>{
+  const {session,roster}=harness();
+  const nid=skill([targeted("all_ally_reserves")]);
+  assert.equal(roster.useSkillOnTarget({actorId:"player",
+    targetRef:{scope:"active",actorId:"opponent"},skill:nid}).ok,true);
+  assert.equal(stacks(roster.reserveMemberSnapshot("player","p1")),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("ally","a1")),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("opponent","e1")),0);
+  assert.equal(session.snapshot().fighters.player.skillUseCounts[nid.id],1);
+});
+test("bench negative-status immunity prevents Venin placement on exactly its owner",()=>{
+  const {session,roster}=harness();
+  const shield=normalizeSkillDefinition({
+    id:"bench-immunity-skill",name:"Bench immunity",category:"buff_debuff",
+    form:"aura",energyCost:0,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+    allowedDistances:["medium"],targetRelations:["ally"],targetLocations:["reserve"],
+    effects:[{kind:"apply_status",targetScope:"target",status:{
+      id:"bench-immunity",kind:"immunity",polarity:"beneficial",durationMs:5000,
+      stacking:"refresh",domains:["negative_status"]
+    }}]
+  });
+  assert.equal(roster.useSkillOnTarget({actorId:"opponent",
+    targetRef:{scope:"reserve",teamId:"opponent",memberId:"e1"},skill:shield}).ok,true);
+  const nid=skill([targeted("all_enemy_reserves")]);
+  assert.equal(roster.useSkillOnTarget({actorId:"player",
+    targetRef:{scope:"active",actorId:"opponent"},skill:nid}).ok,true);
+  assert.equal(stacks(roster.reserveMemberSnapshot("opponent","e1")),0);
+  assert.equal(stacks(roster.reserveMemberSnapshot("opponent","e2")),5);
+  assert.equal(session.snapshot().fighters.player.energy,32);
+});
+
+function harnessWithSecondEnemy(){
+  const extended={actors:[...format.actors,{actorId:"enemy2",teamId:"villains"}],
+    teamOf(id){return this.actors.find(a=>a.actorId===id)?.teamId??null;}};
+  const ids=["p0","p1","a0","a1","e0","e1","e2","e3","e4"];
+  const configs=Object.fromEntries(ids.map(id=>[id,fighter(id)]));
+  const session=createCombatSession({distance:"medium",battleFormat:extended,
+    fighters:[{...configs.p0,id:"player"},{...configs.a0,id:"ally"},
+      {...configs.e0,id:"opponent"},{...configs.e3,id:"enemy2"}]});
+  const team=(slotId,ids)=>({slotId,activeMemberId:ids[0],
+    members:ids.map((id,i)=>({id,creatureId:slotId+"-"+i,displayName:id,fighterConfigId:id}))});
+  const roster=createRosterSession({combatSession:session,battleFormat:extended,fighterConfigs:configs,
+    roster:{teams:{player:team("player",["p0","p1"]),
+      ally:team("ally",["a0","a1"]),
+      opponent:team("opponent",["e0","e1","e2"]),
+      enemy2:team("enemy2",["e3","e4"])}}});
+  return {session,roster};
+}
