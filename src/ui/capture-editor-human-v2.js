@@ -485,7 +485,7 @@ export function buildHumanTacticalSkillEffectsV1(
       "Cible d’effet tactique"
     );
 
-    if (kind === "apply_marker" || kind === "consume_marker") {
+    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout") {
       return normalizeSkillEffectV1(effect);
     }
 
@@ -4495,6 +4495,7 @@ function tacticalEffectKindLabelV1(kind) {
     energy_restore: "Gain d’énergie",
     energy_drain: "Drain d’énergie",
     life_steal: "Drain de vie — % des PV retirés",
+    knockout: "K.O. (immunités respectées)",
     apply_status: "Buff / Debuff / Statut",
     apply_marker: "Poser des marqueurs",
     consume_marker: "Consommer des marqueurs → effets",
@@ -6424,6 +6425,7 @@ function readHumanSkillEffectsV1(root) {
     if (kind === "apply_marker" || kind === "consume_marker") {
       return readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope);
     }
+    if (kind === "knockout") return {kind,targetScope};
 
     if (kind === "persistent_zone") {
       const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
