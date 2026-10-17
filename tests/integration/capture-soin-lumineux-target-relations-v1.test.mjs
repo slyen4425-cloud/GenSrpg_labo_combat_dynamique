@@ -34,7 +34,7 @@ test("RED: Soin lumineux author skill keeps its effects but cannot target enemie
   assert.equal(skill.category,"heal");
   assert.deepEqual(skill.effects.map(effect=>effect.kind),["heal","consume_marker"]);
   assert.equal(skill.effects[0].amount,35);
-  assert.deepEqual([skill.energyCost,skill.preparationMs,skill.cooldownMs],[5,500,45000]);
+  assert.deepEqual([skill.energyCost,skill.preparationMs,skill.cooldownMs],[5,500,30000]);
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(path=>path===skillPath).length,1);
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft,draft);
 });
