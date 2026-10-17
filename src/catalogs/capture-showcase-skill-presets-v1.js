@@ -18,6 +18,8 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/lib_static_bite.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_paralyze.capture-skill-transfer-v1.json",
     "data/capture/showcase/choc_venin.capture-skill-transfer-v1.json",
+    "data/capture/showcase/vol_eclaire.capture-skill-transfer-v1.json",
+    "data/capture/showcase/Nid_frelon.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_chain_lightning.capture-skill-transfer-v1.json",
     "data/capture/showcase/teleport-strike.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_fire_special_1.capture-skill-transfer-v1.json",
