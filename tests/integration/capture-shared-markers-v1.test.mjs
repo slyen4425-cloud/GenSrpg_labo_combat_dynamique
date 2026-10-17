@@ -131,3 +131,26 @@ test("marker KO is prevented by damage immunity without bypassing the native pro
   assert.equal(result.events.find(e=>e.markerKnockout===true)?.appliedDamage,0);
   assert.equal(entries(result.state).length,0);
 });
+
+test("native status HUD identifies a marker with 1/10 charges and a stable icon, not the placing skill icon",async()=>{
+  const {createDomStatusFxRenderer}=await import("../../src/adapters/renderer/dom-status-fx.js");
+  const doc={createElement(){
+    const node={className:"",dataset:{},style:{},hidden:false,textContent:"",children:[],ownerDocument:doc,
+      append(...values){this.children.push(...values)},remove(){this.removed=true},setAttribute(){}};
+    return node;
+  }};
+  const host=doc.createElement("div");
+  const hud=createDomStatusFxRenderer({
+    targetFor:()=>({statusHost:host}),
+    statusPresentationFor:()=>null,skillPresentationFor:()=>({icon:{url:"other-skill-icon.png"}}),
+    skillDefinitionFor:()=>null
+  });
+  const state=cast(start(),place("fang",marker)).state;
+  hud.sync(state);
+  const node=host.children.find(x=>x.dataset?.statusFx==="hud-icon"&&!x.removed);
+  assert.equal(node.dataset.marker,"true");
+  assert.equal(node.children.find(x=>x.className==="status-icon__glyph").textContent,"◆");
+  assert.equal(node.children.find(x=>x.className==="status-icon__stack").textContent,"1/10");
+  assert.equal(node.dataset.assetId,"");
+  hud.dispose();
+});
