@@ -259,6 +259,29 @@ function normalizeActivationRequirements(raw) {
   });
 }
 
+function normalizeSkillMarkerCostV1(input) {
+  if (input == null) return null;
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError("markerCost must be an object");
+  }
+  for (const key of Object.keys(input)) {
+    if (!["markerId", "count", "source"].includes(key)) {
+      throw new TypeError("Unknown markerCost field: " + key);
+    }
+  }
+  const markerId = nonEmptyString(input.markerId, "markerCost.markerId");
+  if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(markerId)) {
+    throw new RangeError("markerCost.markerId must be a stable shared marker slug");
+  }
+  const count = positiveIntegerOrNull(input.count, "markerCost.count");
+  if (count === null || count > 99) throw new RangeError("markerCost.count must be 1..99");
+  const source = nonEmptyString(input.source ?? "self", "markerCost.source");
+  if (!["self", "target"].includes(source)) {
+    throw new RangeError("markerCost.source must be self or target");
+  }
+  return Object.freeze({markerId, count, source});
+}
+
 export function normalizeSkillDefinition(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new TypeError("SkillDefinition must be an object");
@@ -496,6 +519,7 @@ export function normalizeSkillDefinition(input) {
       normalizeActivationRequirements(
         input.activationRequirements
       ),
+    ...(input.markerCost == null ? {} : {markerCost: normalizeSkillMarkerCostV1(input.markerCost)}),
     evasion: Object.freeze({
       window: evasionWindow,
       incomingForms: evasionIncomingForms
