@@ -117,7 +117,9 @@
       "lib_static_bite",
       "lib_chain_lightning",
       "lib_paralyze",
-      "choc_venin"
+      "choc_venin",
+      "vol_eclaire",
+      "Nid_frelon"
     ],
     "presentation": {
       "id": "creature:crea_foudrillon",
@@ -227,11 +229,11 @@
       },
       {
         "id": "slot-4",
-        "skillId": "lib_chain_lightning"
+        "skillId": "vol_eclaire"
       },
       {
         "id": "slot-ultimate",
-        "skillId": "cap_air_atk_7"
+        "skillId": "Nid_frelon"
       }
     ]
   }
