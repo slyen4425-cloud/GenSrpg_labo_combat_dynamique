@@ -1,4 +1,4 @@
-import { sweptPointHitsOpaqueMask, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js";
+import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js";
 
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
