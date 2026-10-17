@@ -720,6 +720,82 @@
     </section>
 
     <section class="editor-panel" data-editor-panel="skills" hidden>
+      <article class="card" data-marker-authoring>
+        <div class="card-title">
+          <span class="step">◆</span>
+          <div><h2>Bibliothèque de marqueurs</h2>
+            <p>Crée un marqueur une fois, puis utilise-le dans plusieurs capacités. Un marqueur peut être sans effet, ou déclencher un effet lorsqu'il atteint son seuil. Les buffs/debuffs existants restent séparés.</p>
+          </div>
+        </div>
+        <label>Marqueurs enregistrés
+          <select data-marker-library-select><option value="">Nouveau marqueur</option></select>
+        </label>
+        <div class="grid two">
+          <label>Identifiant stable (minuscules)
+            <input data-marker-id type="text" placeholder="poison" autocomplete="off">
+          </label>
+          <label>Nom affiché
+            <input data-marker-name type="text" placeholder="Poison" autocomplete="off">
+          </label>
+          <label>Nature
+            <select data-marker-polarity>
+              <option value="neutral">Neutre</option>
+              <option value="detrimental">Négatif (immunités aux malus respectées)</option>
+              <option value="beneficial">Bénéfique</option>
+            </select>
+          </label>
+          <label>Durée des charges (secondes)
+            <input data-marker-duration type="number" min="0.1" step="0.5" value="10">
+          </label>
+          <label>Maximum de charges
+            <input data-marker-max type="number" min="1" max="999" step="1" value="10">
+          </label>
+          <label>Icône personnalisée (assetId facultatif)
+            <input data-marker-icon type="text" placeholder="Laisser vide pour icône de statut">
+          </label>
+        </div>
+        <label class="switch-line"><input type="checkbox" data-marker-threshold-enabled>
+          <span>Déclencher un effet automatiquement à un nombre de charges</span></label>
+        <div data-marker-threshold-fields hidden>
+          <div class="grid two">
+            <label>Seuil de charges
+              <input data-marker-threshold-count type="number" min="1" step="1" value="10">
+            </label>
+            <label>Après le seuil
+              <select data-marker-threshold-consume>
+                <option value="reset">Consommer les charges et recommencer à 0</option>
+                <option value="keep">Conserver les charges (une seule activation)</option>
+              </select>
+            </label>
+            <label>Effet au seuil
+              <select data-marker-threshold-effect>
+                <option value="damage">Dégâts</option>
+                <option value="heal">Soin</option>
+                <option value="energy_restore">Récupérer de l'énergie</option>
+                <option value="energy_drain">Drainer de l'énergie</option>
+                <option value="stun">Étourdir (durée en secondes)</option>
+                <option value="knockout">K.O. par dégâts décisifs (respecte les protections)</option>
+              </select>
+            </label>
+            <label>Valeur de l'effet
+              <input data-marker-threshold-amount type="number" min="0" step="1" value="10">
+            </label>
+            <label>Canal des dégâts (facultatif)
+              <input data-marker-threshold-channel type="text" placeholder="poison">
+            </label>
+          </div>
+        </div>
+        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le chemin de dégâts et respecte les protections : une immunité peut l'empêcher. Les marqueurs sans seuil n'ont aucun effet propre.</p>
+        <div class="skill-save-actions">
+          <button type="button" class="secondary-action" data-marker-new>Nouveau</button>
+          <button type="button" class="primary-action" data-marker-save>Enregistrer le marqueur</button>
+          <button type="button" class="secondary-action" data-marker-export>Exporter la bibliothèque JSON</button>
+          <label>Importer des marqueurs JSON
+            <input type="file" accept=".json,application/json" data-marker-import>
+          </label>
+        </div>
+        <p class="note" data-marker-library-state data-tone="info">Aucun marqueur enregistré. Un marqueur n'est ni une nouvelle mécanique de dégâts ni un statut converti automatiquement.</p>
+      </article>
       <article class="card">
         <div class="card-title">
           <span class="step">1</span>
