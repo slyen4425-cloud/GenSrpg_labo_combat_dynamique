@@ -212,6 +212,16 @@ const server = createServer(async (req, res) => {
                 throw Error("consumed-marker nested damage channel is still a typed ID");
               row.querySelector("[data-marker-result-kind]").value="heal";
               row.querySelector("[data-marker-result-amount]").value="7";
+              const addNested=[...row.querySelectorAll("button")].find(x=>x.textContent.includes("Ajouter un effet"));
+              if(!addNested)throw Error("no nested marker-effect add button");
+              addNested.click();
+              const extra=[...row.querySelectorAll("[data-marker-consume-result]")].at(-1);
+              const nestedKind=extra.querySelector("[data-marker-result-kind]");
+              nestedKind.value="cleanse";nestedKind.dispatchEvent(new Event("change",{bubbles:true}));
+              const tagPicker=extra.querySelector("[data-marker-result-tag-choice]");
+              if(tagPicker?.tagName!=="SELECT" || !values(tagPicker).includes("marker:poison"))
+                throw Error("cleanse status-tag filter is still a typed reference");
+              tagPicker.value="marker:poison";
               get("skill-update").click();
               const status=document.querySelector("[data-skill-library-state]")?.textContent??"";
               if(!status.includes("sauvegardée"))throw Error("native configuredSkills save failed: "+status);
@@ -234,6 +244,10 @@ const server = createServer(async (req, res) => {
                  place.querySelector("[data-skill-marker-charges]").value!=="3")throw Error("placement round-trip differs");
               if(spend.querySelector("[data-skill-consume-marker-pick]").value!=="*"||
                  spend.querySelector("[data-marker-result-kind]").value!=="heal")throw Error("consumer round-trip differs");
+              if(![...spend.querySelectorAll("[data-marker-consume-result]")].some(e=>
+                e.querySelector("[data-marker-result-kind]")?.value==="cleanse" &&
+                e.querySelector("[data-marker-result-tag-choice]")?.value==="marker:poison"))
+                throw Error("multi-effect marker tag picker did not round-trip");
               get("editor-validate").click();
               if(get("editor-summary").textContent.includes("Corrige"))throw Error("combat exporter rejects new marker skill");
               // Live owner update, not a copied list: creating a new stat with
