@@ -238,3 +238,99 @@ test("visible mirrored shield only bounces on its surface, NOT on an uncovered c
   assert.equal(s.session.snapshot().fighters.player.hp,80);
   s.runtime.dispose();
 });
+
+
+test("real Boule de feu, Cendre aveuglante and Rayon lumineux reflect with a nonzero browser clock", async (t) => {
+  // Combat elapsed time starts at zero even if a browser tab has been open for hours.
+  // The previous resolver compared timed mirror statuses with performance.now(),
+  // silently rejecting each real mirror contact on an ordinary browser session.
+  const { readFile } = await import("node:fs/promises");
+  const { importCaptureTransferJsonV1 } = await import(
+    "../../src/adapters/input/capture/capture-entity-transfer-v1.js"
+  );
+  const loadSkill = async (id) => {
+    const raw = await readFile(
+      new URL("../../data/capture/showcase/" + id + ".capture-skill-transfer-v1.json", import.meta.url),
+      "utf8"
+    );
+    return importCaptureTransferJsonV1(raw).value.draft.definition;
+  };
+  const barrier = await loadSkill("lib_magic_barrier");
+  for (const skillId of ["fireball", "cap_fire_special_1", "lib_light_bolt"]) {
+    await t.test(skillId + " bounces from the shield sprite while combat time remains under 30s", async () => {
+      const incoming = await loadSkill(skillId);
+      const session = createCombatSession({
+        distance: "medium",
+        fighters: ["player", "opponent"].map(fighter)
+      });
+      const apply = session.useSkill({
+        actorId: "opponent", targetId: "opponent", skill: barrier
+      });
+      assert.equal(apply.ok, true, "real barrier ability must apply its mirror status");
+      assert.equal(
+        session.snapshot().fighters.opponent.statusEffects.some(
+          (entry) => entry.definition.kind === "projectile_mirror"
+        ), true
+      );
+
+      const originClockMs = 1_200_000;
+      let clock = originClockMs;
+      let pending = null;
+      let timerId = 0;
+      const releases = [];
+      const resolutions = [];
+      const runtime = createCombatRuntime({
+        session, tickMs: 25, now: () => clock,
+        setTimer(callback) { pending = callback; return ++timerId; },
+        clearTimer() { pending = null; },
+        onRelease(payload) { releases.push(payload); },
+        onResolved(payload) { resolutions.push(payload); }
+      });
+      const advance = (nextClock) => {
+        clock = nextClock;
+        const callback = pending;
+        pending = null;
+        assert.equal(typeof callback, "function");
+        callback();
+      };
+      try {
+        runtime.start();
+        assert.equal(runtime.startSkill({
+          actorId: "player", targetId: "opponent", skill: incoming
+        }).ok, true);
+        const impactBeforeNominal =
+          incoming.preparationMs + Math.max(1, Math.floor(incoming.travelMs * 0.7));
+        advance(originClockMs + impactBeforeNominal);
+        const point = {x: 155, y: 70};
+        const result = runtime.reportActionContact({
+          actorId: "player", targetId: "opponent", skillId,
+          contactPoint: point, mirrorSpritePresent: true, mirrorSpriteContact: true
+        });
+        assert.equal(result.ok, true, "contact with actual mirror sprite must be accepted");
+        assert.equal(session.snapshot().fighters.opponent.hp, 100,
+          "the reflector must not take incoming damage");
+        assert.equal(resolutions[0]?.outcome, "mirrored",
+          "the real ability should be caught regardless of performance.now origin");
+        assert.equal(releases.length, 2,
+          "a returning projectile must be released from the mirror");
+        assert.deepEqual(releases[1].action.mirrorReturn.contactPoint, point);
+        assert.equal(releases[1].action.actorId, "opponent");
+        assert.equal(releases[1].action.targetId, "player");
+        assert.equal(session.snapshot().fighters.player.hp, 100,
+          "returning projectile must not deal damage before visual contact");
+        const reverse = runtime.reportActionContact({
+          actorId: "opponent", targetId: "player", skillId
+        });
+        assert.equal(reverse.ok, true);
+        if (skillId !== "cap_fire_special_1") {
+          assert.ok(session.snapshot().fighters.player.hp < 100);
+        } else {
+          assert.ok(session.snapshot().fighters.player.statusEffects.length > 0,
+            "blinding status should apply only on the return target");
+        }
+      } finally {
+        runtime.dispose();
+      }
+    });
+  }
+});
