@@ -37,7 +37,8 @@ import {
 } from "./persistent-zone-runtime-v1.js";
 import {
   activeTauntSourceActorIdV1,
-  hasActiveStatusKindV1
+  hasActiveStatusKindV1,
+  consumeCaptureMarkerStacksV1
 } from "./status-effect-runtime-v1.js";
 import {
   skillPresenceReachV1
@@ -50,6 +51,19 @@ function fighterOf(state, fighterId) {
     throw new RangeError(`Unknown fighter: ${fighterId}`);
   }
   return fighter;
+}
+
+function paidMarkerCostV1(state, actorId, targetId, skill) {
+  if (skill.markerCost == null) return {state, consumed:0};
+  const cost = skill.markerCost;
+  return consumeCaptureMarkerStacksV1({
+    state,
+    targetActorId:cost.source === "target" ? targetId : actorId,
+    markerId:cost.markerId,
+    count:cost.count,
+    minimum:cost.count,
+    atMs:state.elapsedMs
+  });
 }
 
 function spendEnergy(state, fighterId, amount) {
@@ -577,6 +591,19 @@ export function resolveSkillStart({
     });
   }
 
+  const markerPayment = paidMarkerCostV1(state, actorId, effectiveTargetId, skill);
+  if (skill.markerCost && markerPayment.consumed !== skill.markerCost.count) {
+    return Object.freeze({
+      ok:false, outcome:"insufficient_markers", state,
+      skillId:skill.id, markerCost:skill.markerCost,
+      availableMarkers:markerPayment.available,
+      events:Object.freeze([event("skill-rejected", 0, {
+        actorId, skillId:skill.id, reason:"insufficient_markers",
+        markerCost:skill.markerCost, availableMarkers:markerPayment.available
+      })])
+    });
+  }
+
   const preparationMs = preparationFor(
     state,
     actorId,
@@ -614,7 +641,7 @@ export function resolveSkillStart({
   });
 
   const spent = spendEnergy(
-    state,
+    markerPayment.state,
     actorId,
     skill.energyCost
   );
@@ -649,6 +676,11 @@ export function resolveSkillStart({
             ]
           : []
       ),
+      ...(skill.markerCost ? [event("marker-cost-paid", 0, {
+        actorId, targetId:skill.markerCost.source === "self" ? actorId : effectiveTargetId,
+        skillId:skill.id, markerId:skill.markerCost.markerId,
+        consumed:markerPayment.consumed
+      })] : []),
       event("skill-start", 0, {
         actorId,
         targetId: effectiveTargetId,
