@@ -25,7 +25,7 @@ function selectChoices(select,options,emptyLabel=null,chosen=select.value){
   if(!select)return;
   select.textContent="";
   if(emptyLabel!==null){const opt=elem("option",emptyLabel);opt.value="";select.append(opt);}
-  for(const entry of options){const option=elem("option",entry.label+" · "+entry.id);option.value=entry.id;select.append(option);}
+  for(const entry of options){const option=elem("option",entry.label);option.value=entry.id;select.append(option);}
   select.value=chosen??"";
 }
 export function captureMarkerRefreshReferenceChoicesV1(root){
@@ -267,11 +267,6 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
       id.value=captureMarkerAuthorSlugV1(value(root,"marker-name"));
     }
   });
-  listen(find(root,"marker-id"),"input",()=>{
-    if(value(root,"marker-library-select")===""){
-      selected(root,"marker-id").dataset.manualMarkerId="true";
-    }
-  });
   for(const key of ["marker-permanent","marker-periodic-enabled","marker-periodic-kind","marker-periodic-mode"]) {
     listen(find(root,key),"change",()=>syncVisibility(root));
   }
@@ -281,7 +276,7 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
     const sel=selected(root,"marker-library-select");sel.value="";
     loadFields(root,{id:"",name:"",maxStacks:10,polarity:"neutral",durationMs:10000});
     const input=selected(root,"marker-id");
-    input.readOnly=false;
+    input.readOnly=true;
     delete input.dataset.manualMarkerId;
     selected(root,"marker-name").focus();
     say(root,"Nouveau marqueur : saisis simplement un nom. L'identifiant sera créé automatiquement.","info");
