@@ -117,7 +117,32 @@ const server = createServer(async (req, res) => {
                   authoredMarker.querySelector("[data-skill-marker-pick]")?.value!=="venin-static"||
                   authoredMarker.querySelector("[data-skill-marker-charges]")?.value!=="1")
                 throw Error("Dard static Venin placement not rendered from canonical skill");
-              // The user's actual export was markers:[] despite this skill
+              // Two author transfers are canonical: Dard places Venin, Choc spends it.
+               if(!lib.querySelector('option[value="choc_venin"]'))
+                 throw Error("Choc venimeux missing from active configuredSkills options");
+               lib.value="choc_venin";lib.dispatchEvent(new Event("change",{bubbles:true}));
+               if(get("skill-name").value!=="Choc venimeux" ||
+                   get("skill-icon").value!=="pack:capture:icon-skill-paralysie-01")
+                 throw Error("Choc venimeux author name/icon not loaded");
+               const consumeRow=[...document.querySelectorAll("[data-skill-effect-row]")]
+                 .find(row=>row.querySelector("[data-skill-effect-kind]")?.value==="consume_marker");
+               if(!consumeRow ||
+                   consumeRow.querySelector("[data-skill-consume-marker-pick]")?.value!=="venin-static"||
+                   !consumeRow.querySelector("[data-marker-consume-per-charge]")?.checked||
+                   consumeRow.querySelector("[data-marker-consume-minimum]")?.value!=="1"||
+                   consumeRow.querySelector("[data-marker-result-amount]")?.value!=="10")
+                 throw Error("Choc venimeux per-charge form was not mounted correctly");
+               let skillBlob=null;
+               const originalSkillUrl=URL.createObjectURL;
+               try{
+                 URL.createObjectURL=blob=>{skillBlob=blob;return originalSkillUrl.call(URL,blob);};
+                 get("export-current-skill").click();
+               }finally{URL.createObjectURL=originalSkillUrl;}
+               const chocTransfer=skillBlob?JSON.parse(await skillBlob.text()):null;
+               if(chocTransfer?.draft?.definition?.effects?.[0]?.perCharge!==true)
+                 throw Error("Choc venimeux did not export its per-charge flag");
+               lib.value="lib_paralyze";lib.dispatchEvent(new Event("change",{bubbles:true}));
+               // The user's actual export was markers:[] despite this skill
               // containing Venin. Inspect the REAL JSON Blob downloaded from
               // the existing "Exporter la bibliothèque" button.
               const originalCreate=URL.createObjectURL;
