@@ -31,7 +31,7 @@ test("Vague incendiaire is the exact uploaded transfer and the only active autho
  assert.equal(bytes.length,3352);
  assert.equal(sha256(bytes),"9e940251a53f66fd2d04e40c1bf4fb09d5abcbfdce074f47e674e29a382ee3c3");
  assert.equal(presetFiles.filter(p=>p===path).length,1);
- assert.equal(presetFiles.length,34);
+ assert.equal(presetFiles.length,35);
  assert.equal(new Set(presetFiles).size,presetFiles.length);
  const t=transfer();
  assert.equal(t.kind,"skill");
