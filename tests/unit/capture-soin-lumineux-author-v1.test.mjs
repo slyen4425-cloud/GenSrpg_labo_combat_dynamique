@@ -16,11 +16,8 @@ test("Soin lumineux preserves the exact creator export in source archive and cha
   assert.equal(createHash("sha256").update(original).digest("hex"),
     "395adeb9b56af9a1b518a99e3f746fbcaa2f7199b239b702347b5415e9fb01cf");
   const raw = await readFile(file);
-  const author = JSON.parse(original.toString("utf8"));
-  const active = JSON.parse(raw.toString("utf8"));
-  assert.deepEqual({...active, draft:{...active.draft,
-    definition:{...active.draft.definition,targetRelations:["enemy","ally","self"]}}}, author,
-    "Only the authorized target relations may change from the original file");
+  const currentAuthor = await readFile(new URL("../../data/capture/source-exports/gensrpg-capture-skill-cap_light_special_1-2026-10-18.json", import.meta.url));
+  assert.deepEqual(raw,currentAuthor,"current Soin lumineux must remain byte-exact to latest author export");
   const transfer = importCaptureTransferJsonV1(raw.toString("utf8"));
   assert.equal(transfer.kind, "skill");
   const draft = transfer.value.draft;
@@ -30,17 +27,18 @@ test("Soin lumineux preserves the exact creator export in source archive and cha
   assert.equal(draft.requiredLevel, 10);
   assert.equal(draft.definition.form, "self");
   assert.equal(draft.definition.energyCost, 5);
-  assert.equal(draft.definition.cooldownMs, 45000);
+  assert.equal(draft.definition.cooldownMs, 30000);
   assert.deepEqual(draft.definition.effects.map(({kind}) => kind), ["heal", "consume_marker"]);
   assert.equal(draft.definition.effects[0].amount, 35);
   assert.equal(draft.definition.effects[1].markerId, "*");
   assert.equal(draft.definition.effects[1].count, "all");
   assert.equal(draft.definition.effects[1].minimum, 1);
+  assert.equal(draft.definition.effects[1].effects[0].amount,10);
   assert.equal(draft.presentation.visual.impact.assetId,
     "pack:capture:sprite-status-healing-aura-01");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(item => item === path).length, 1);
-  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length, 36);
-  assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size, 36);
+  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length, 37);
+  assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size, 37);
 });
 
 test("Combat skill test can reuse a saved creature when an independent unsaved evolution is incomplete", () => {
