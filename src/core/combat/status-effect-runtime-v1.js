@@ -110,7 +110,7 @@ export function activeStatusEffectsV1(
 export function resumeStatusEffectsV1(statusEffects, atMs) {
   return Object.freeze(statusEffects.filter(instance => isStatusEffectRuntimeInstanceActiveV1(instance, atMs)).map(instance => {
     if (instance.nextTickAtMs == null || instance.nextTickAtMs > atMs) return instance;
-    const interval = instance.definition.tickIntervalMs;
+    const interval = instance.definition.periodic?.intervalMs ?? instance.definition.tickIntervalMs;
     return Object.freeze({ ...instance, nextTickAtMs: instance.nextTickAtMs
       + (Math.floor((atMs - instance.nextTickAtMs) / interval) + 1) * interval });
   }));
@@ -741,27 +741,23 @@ export function advanceStatusEffectsV1({
       ) {
         const tickAt =
           instance.nextTickAtMs;
-        const amount =
-          (
-            instance.definition.amount ??
-            0
-          ) * instance.stacks;
+        const periodic = isCaptureMarkerStatusV1(instance)
+          ? instance.definition.periodic ?? null : null;
+        const amount = (periodic?.amount ?? instance.definition.amount ?? 0) * instance.stacks;
 
-        if (
-          instance.definition.kind ===
-          "damage_over_time"
-        ) {
+        if (instance.definition.kind === "damage_over_time" || periodic?.kind === "damage") {
+          // Delegate to the same DoT damage owner, including shield, immunity,
+          // resistance when configured, and knockout attribution.
           nextState = applyDotTick({
-            state: nextState,
-            fighterId,
-            instance,
-            amount,
-            atMs: tickAt
+            state: nextState, fighterId, amount, atMs: tickAt,
+            instance: periodic ? {
+              ...instance,
+              definition: {...instance.definition,
+                damageMode: periodic.damageMode,
+                channel: periodic.channel}
+            } : instance
           });
-        } else if (
-          instance.definition.kind ===
-          "heal_over_time"
-        ) {
+        } else if (instance.definition.kind === "heal_over_time" || periodic?.kind === "heal") {
           nextState = applyHotTick({
             state: nextState,
             targetActorId: fighterId,
@@ -783,8 +779,7 @@ export function advanceStatusEffectsV1({
         }
 
         const nextTickAtMs =
-          tickAt +
-          instance.definition.tickIntervalMs;
+          tickAt + (instance.definition.periodic?.intervalMs ?? instance.definition.tickIntervalMs);
         nextState = updateTickSchedule(
           nextState,
           fighterId,
