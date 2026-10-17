@@ -119,6 +119,31 @@ const server = createServer(async (req, res) => {
                  !lib.querySelector('option[value="cap_light_atk_5"]')||
                  !lib.querySelector('option[value="Nid_frelon"]'))
                 throw Error("new light skill entries missing or prior Nid vanished");
+              lib.value="lib_magic_barrier";
+              lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name")?.value!=="Barrière lumineuse"||
+                 get("skill-required-level")?.value!=="5"||
+                 get("skill-cooldown")?.value!=="50000")
+                throw Error("author Barrière lumineuse not loaded from canonical library");
+              const barrierRow=[...document.querySelectorAll("[data-skill-effect-row]")]
+                .find(row=>row.querySelector("[data-skill-status-kind]")?.value==="projectile_mirror");
+              if(!barrierRow||
+                 barrierRow.querySelector("[data-skill-status-duration-seconds]")?.value!=="30"||
+                 barrierRow.querySelector("[data-skill-status-visual-mode]")?.value!=="sprite"||
+                 barrierRow.querySelector("[data-skill-status-visual-asset]")?.value!=="pack:capture:sprite-status-energy-shield-01"||
+                 barrierRow.querySelector("[data-skill-status-visual-scale]")?.value!=="2.5"||
+                 barrierRow.querySelector("[data-skill-status-visual-opacity]")?.value!=="70")
+                throw Error("Barrière 30-second mirror status, scale 2.5 and its bound sprite lost in editor");
+              let barrierBlob=null;
+              const originalBarrierUrl=URL.createObjectURL;
+              try {
+                URL.createObjectURL=blob=>{barrierBlob=blob;return originalBarrierUrl.call(URL,blob);};
+                get("export-current-skill").click();
+              } finally {URL.createObjectURL=originalBarrierUrl;}
+              const barrierExport=barrierBlob?JSON.parse(await barrierBlob.text()):null;
+              if(barrierExport?.draft?.definition?.effects?.[0]?.status?.kind!=="projectile_mirror"||
+                 barrierExport?.draft?.presentation?.statusVisuals?.["lib_magic_barrier:0"]?.sprite?.displayScale!==2.5)
+                throw Error("real Barrier export lost mirror status or visual sprite surface");
               lib.value="lib_light_bolt";lib.dispatchEvent(new Event("change",{bubbles:true}));
               if(get("skill-name")?.value!=="Rayon lumineux"||
                  get("skill-preparation")?.value!=="600"||
