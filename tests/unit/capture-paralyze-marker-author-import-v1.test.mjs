@@ -20,7 +20,7 @@ test("authored Dard static is the one canonical active Capture transfer without 
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===FILE).length,1);
   const raw=await read(FILE);
   assert.equal(createHash("sha256").update(raw).digest("hex"),
-    "afc60fb2b91d711cc19fe13c728e0268496ac363fd3f31b93a172c764698b48c");
+    "6771adb3fc61790ba5d86c5f607e7d62669d02be44b8a8ccd222c606dac6f522");
   const transfer=importCaptureTransferJsonV1(raw);
   assert.equal(transfer.kind,"skill");
   const d=transfer.value.draft;
@@ -43,6 +43,7 @@ test("authored Dard static is the one canonical active Capture transfer without 
   assert.equal(marker.onStackThreshold.consume,"reset");
   assert.equal(marker.onStackThreshold.effects[0].kind,"knockout");
   assert.equal(marker.iconAssetId,"pack:capture:icon-skill-toxine-01");
+  assert.equal(d.presentation.visual.icon.assetId,"pack:capture:icon-skill-dard-electrique-01");
   assert.equal(d.presentation.visual.impact.assetId,"pack:capture:sprite-impact-electric-01");
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(d)).value.draft,d);
 });
