@@ -1780,3 +1780,23 @@ html {
   [data-marker-authoring] .skill-save-actions > * {max-width:100%;}
   [data-marker-consume-result] {grid-template-columns: minmax(0,1fr);}
 }
+
+/* Parcours FX : choix canonique de l'icône et de la forme avant les presets. */
+.fx-first-choices {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0.85rem 0 1rem;
+}
+.fx-first-choices__step {
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid rgba(138, 223, 235, 0.33);
+  border-radius: 0.8rem;
+  background: rgba(81, 174, 197, 0.08);
+}
+.fx-first-choices__step h3 {
+  margin: 0 0 0.55rem;
+  font-size: clamp(0.9rem, 2.7vw, 1rem);
+  color: #e6fbff;
+}
+.fx-first-choices__step .note { margin-bottom: 0; }
