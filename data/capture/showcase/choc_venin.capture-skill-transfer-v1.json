@@ -20,10 +20,10 @@
       "element": "electric",
       "approachMode": "none",
       "energyCost": 4,
-      "preparationMs": 0,
+      "preparationMs": 700,
       "travelMs": 0,
       "recoveryMs": 0,
-      "cooldownMs": 0,
+      "cooldownMs": 45000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
@@ -73,15 +73,15 @@
           "markerId": "venin-static",
           "count": "all",
           "minimum": 1,
+          "perCharge": true,
           "effects": [
             {
               "kind": "damage",
               "targetScope": "target",
               "amount": 10,
-              "channel": null
+              "channel": "electric"
             }
-          ],
-          "perCharge": true
+          ]
         }
       ]
     },
