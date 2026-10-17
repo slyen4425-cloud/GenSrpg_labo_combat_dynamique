@@ -113,6 +113,9 @@
       "subjectType": "skill",
       "subjectId": "lib_paralyze",
       "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-dard-electrique-01"
+        },
         "impact": {
           "assetId": "pack:capture:sprite-impact-electric-01",
           "displayScale": 2,
