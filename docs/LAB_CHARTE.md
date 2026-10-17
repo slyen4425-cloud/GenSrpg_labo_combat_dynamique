@@ -769,3 +769,15 @@ Dans ce cas, l'assistant doit :
 6. reprendre l'intégration seulement quand le livrable réel est disponible.
 
 Cette section prime sur toute ancienne procédure qui considérerait l'existence d'un chemin, d'un catalogue ou d'un test structurel comme preuve suffisante qu'un asset final a été réellement livré.
+
+## 35. Ergonomie de référence — aucun identifiant existant à taper (17 octobre 2026)
+
+**Règle obligatoire pour tout nouveau contrôle d'auteur GenSrpG :** lorsqu'une valeur représente une référence vers un **élément, statistique, statut, marqueur, effet ou média existant**, l'éditeur présente un choix avec des noms lisibles depuis **le propriétaire de registre/catalogue actuel**. Il ne demande **jamais** à l'auteur de retaper le slug, `assetId`, canal de dégâts, ID de statistique ou ID de statut.
+
+- Les choix intègrent les valeurs natives, importées, et celles ajoutées pendant la session via le registre existant. Les menus sont rafraîchis lors des changements de ce registre ; **aucune liste de choix dupliquée ou codée en dur** qui exclurait les futurs ajouts.
+- Création d'une **nouvelle définition** : demander le nom libre à l'auteur, générer automatiquement un ID stable distinct de son libellé, et conserver l'ID à l'édition. La saisie libre d'un nom, d'une description ou d'une valeur numérique n'est pas une saisie de référence.
+- Import d'une référence historique absente du catalogue actif : préserver visiblement la valeur comme **« référence conservée/manquante »**, sans la remplacer ni l'effacer silencieusement.
+- Les relations multi-valeurs demandent un choix multiple ergonomique ou plusieurs menus explicites, **pas** une liste d'IDs séparés par des virgules à saisir. Préserver les données de l'auteur.
+- Toujours tester la sélection et le rechargement en navigateur réel, notamment Android paysage ; une sentinelle qui renseigne artificiellement un ID technique sans passer par le menu ne suffit pas.
+
+Toute UI d'édition encore équipée d'une référence texte historique doit être migrée par lots contrôlés, en respectant l'unique owner des registres concernés, **sans** multiplier les autorités ni modifier la mécanique du combat.
