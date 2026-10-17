@@ -426,6 +426,7 @@ function remainingLabelFor(
   instance,
   elapsedMs
 ) {
+  if (definition.durationModel === "permanent") return "Permanent";
   if (
     definition.durationModel ===
     "owner_action_end"
