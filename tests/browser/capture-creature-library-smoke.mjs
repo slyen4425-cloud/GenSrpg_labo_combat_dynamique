@@ -236,6 +236,17 @@ const server = createServer(async (req, res) => {
                  spend.querySelector("[data-marker-result-kind]").value!=="heal")throw Error("consumer round-trip differs");
               get("editor-validate").click();
               if(get("editor-summary").textContent.includes("Corrige"))throw Error("combat exporter rejects new marker skill");
+              // Live owner update, not a copied list: creating a new stat with
+              // a new damage channel must immediately expand marker selectors.
+              fill("stat-custom-id","arcane_venin");
+              fill("stat-custom-label","Venin arcanique");
+              if(!values(get("stat-custom-damage-channel")).includes("arcane_venin"))
+                throw Error("canonical stat builder did not offer its proposed new channel");
+              fill("stat-custom-damage-channel","arcane_venin");
+              get("stat-custom-add").click();
+              if(!values(get("marker-periodic-channel")).includes("arcane_venin") ||
+                 !values(get("marker-threshold-channel")).includes("arcane_venin"))
+                throw Error("marker dropdowns were not refreshed from the new live stat registry");
               document.body.dataset.markerProbe="ok:library:periodic:cost:placement:consume:roundtrip:combat-export:permanent";
             }catch(error){document.body.dataset.markerProbe="fail:"+error.message;}
           },100);
