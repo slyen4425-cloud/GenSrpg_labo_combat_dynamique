@@ -78,7 +78,9 @@ test("permanent charges can be partially consumed; no next ticks after complete 
   const removed=consumeCaptureMarkerStacksV1({state,targetActorId:"b",markerId:"venin",count:2,minimum:2});
   assert.equal(removed.consumed,2);
   assert.equal(removed.state.fighters.b.statusEffects[0].stacks,1);
-  state=advanceStatusEffectsV1({state:removed.state,deltaMs:5000});
+  // The combat session owns elapsedMs; this pure status-tick helper never
+  // advances it. Emulate the external CombatState clock between calls.
+  state=advanceStatusEffectsV1({state:{...removed.state,elapsedMs:5000},deltaMs:5000});
   assert.equal(state.fighters.b.hp,230);
   state=consumeCaptureMarkerStacksV1({state,targetActorId:"b",markerId:"venin",count:"all",minimum:1}).state;
   assert.equal(state.fighters.b.statusEffects.length,0);
