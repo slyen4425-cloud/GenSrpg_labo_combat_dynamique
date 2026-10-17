@@ -140,6 +140,25 @@ const server = createServer(async (req, res) => {
                 throw Error("new marker with existing ID silently overwrites prior author definition");
               fill("marker-library-select","poison");
               if(!get("marker-id").readOnly)throw Error("existing marker ID must be immutable");
+              // Real Android workflow: permanence is a checkbox, NOT durationMs=0.
+              get("marker-new").click();
+              fill("marker-name","Éternel");
+              const eternal=get("marker-permanent");
+              eternal.checked=true;
+              eternal.dispatchEvent(new Event("change",{bubbles:true}));
+              if(!get("marker-duration").disabled)throw Error("permanent should disable seconds input");
+              fill("marker-duration",0);
+              get("marker-save").click();
+              if(!get("marker-library-state").textContent.includes("enregistré"))
+                throw Error("permanent marker save rejected zero duration: "+get("marker-library-state").textContent);
+              if(get("marker-id").value!=="eternel")throw Error("accented permanent marker slug invalid");
+              fill("marker-library-select","poison");
+              if(get("marker-permanent").checked || get("marker-duration").disabled)
+                throw Error("loading timed marker must restore ordinary duration field");
+              fill("marker-library-select","eternel");
+              if(!get("marker-permanent").checked || !get("marker-duration").disabled)
+                throw Error("loading permanent marker lost unchecked duration model");
+              fill("marker-library-select","poison");
               lib.value="lib_aqua_heal";lib.dispatchEvent(new Event("change",{bubbles:true}));
               get("skill-marker-cost-enabled").checked=true;
               get("skill-marker-cost-enabled").dispatchEvent(new Event("change",{bubbles:true}));
@@ -154,6 +173,9 @@ const server = createServer(async (req, res) => {
               if(!marker?.querySelector('option[value="poison"]'))throw Error("marker not in ability picker");
               marker.value="poison";
               row.querySelector("[data-skill-marker-charges]").value="3";
+              row=add();kind(row,"apply_marker");
+              row.querySelector("[data-skill-marker-pick]").value="eternel";
+              row.querySelector("[data-skill-marker-charges]").value="2";
               row=add();kind(row,"consume_marker");
               row.querySelector("[data-skill-consume-marker-pick]").value="*";
               row.querySelector("[data-marker-consume-mode]").value="all";
@@ -167,7 +189,11 @@ const server = createServer(async (req, res) => {
               const rows=[...document.querySelectorAll("[data-skill-effect-row]")];
               const place=rows.find(n=>n.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
               const spend=rows.find(n=>n.querySelector("[data-skill-effect-kind]")?.value==="consume_marker");
-              if(!place||!spend)throw Error("saved marker effects did not round-trip");
+              const permanentPlace=rows.find(n=>n.querySelector("[data-skill-effect-kind]")?.value==="apply_marker" &&
+                n.querySelector("[data-skill-marker-pick]")?.value==="eternel");
+              if(!place||!spend||!permanentPlace)throw Error("saved marker effects did not round-trip");
+              if(!get("marker-permanent") || !get("marker-permanent").matches('input[type="checkbox"]'))
+                throw Error("permanent marker author checkbox missing");
               if(!get("skill-marker-cost-enabled").checked||get("skill-marker-cost-id").value!=="poison"||
                  get("skill-marker-cost-source").value!=="target"||get("skill-marker-cost-count").value!=="2")
                 throw Error("marker activation cost did not round-trip");
@@ -179,7 +205,7 @@ const server = createServer(async (req, res) => {
                  spend.querySelector("[data-marker-result-kind]").value!=="heal")throw Error("consumer round-trip differs");
               get("editor-validate").click();
               if(get("editor-summary").textContent.includes("Corrige"))throw Error("combat exporter rejects new marker skill");
-              document.body.dataset.markerProbe="ok:library:periodic:cost:placement:consume:roundtrip:combat-export";
+              document.body.dataset.markerProbe="ok:library:periodic:cost:placement:consume:roundtrip:combat-export:permanent";
             }catch(error){document.body.dataset.markerProbe="fail:"+error.message;}
           },100);
         });
@@ -1087,7 +1113,7 @@ try {
   const markerDom=await dumpDom(url+"?verify-markers=1");
   assertCreatures(markerDom,"marker library and active skill editor real browser bootstrap");
   const markerProbe=markerDom.match(/data-marker-probe="([^"]+)"/)?.[1] ?? "missing";
-  if(markerProbe!=="ok:library:periodic:cost:placement:consume:roundtrip:combat-export")
+  if(markerProbe!=="ok:library:periodic:cost:placement:consume:roundtrip:combat-export:permanent")
     throw Error("Native marker authoring / skill roundtrip regression: "+markerProbe);
   console.log("Shared marker library and skill UI: real Chrome authoring, 103 creatures, placement/consume and combat export");
   const guardDom=await dumpDom(url+"?verify-creature-reaction=1");
