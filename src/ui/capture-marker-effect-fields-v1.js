@@ -125,6 +125,13 @@ export function captureMarkerEffectFieldsV1(root,effect){
   max[1].dataset.markerConsumeCount="true";
   const minimum=numberField("Charges nécessaires pour activer l'effet",effect?.minimum??1,1);
   minimum[1].dataset.markerConsumeMinimum="true";
+  const perCharge=document.createElement("input");
+  perCharge.type="checkbox";
+  perCharge.dataset.markerConsumePerCharge="true";
+  perCharge.checked=effect?.perCharge===true;
+  const perChargeLabel=field("Multiplier dégâts, soins et énergie par charge réellement retirée");
+  perChargeLabel.className="check";
+  perChargeLabel.prepend(perCharge);
   const results=document.createElement("div");results.dataset.markerConsumeResults="true";
   if(effect?.effects?.length){for(const child of effect.effects)appendConsumeResultV1(results,child,root);}
   else appendConsumeResultV1(results,null,root);
@@ -132,9 +139,9 @@ export function captureMarkerEffectFieldsV1(root,effect){
   add.textContent="+ Ajouter un effet";add.addEventListener("click",()=>appendConsumeResultV1(results,null,root));
   const sync=()=>{max[0].hidden=count[1].value!=="number";};
   count[1].addEventListener("change",sync);sync();
-  consume.append(wrapSelect("Quels marqueurs consommer ?",pick),count[0],max[0],minimum[0],results,add);
+  consume.append(wrapSelect("Quels marqueurs consommer ?",pick),count[0],max[0],minimum[0],perChargeLabel,results,add);
   const note=document.createElement("small");note.className="note";
-  note.textContent="Sans charges suffisantes : rien n'est retiré ni déclenché. Retirer des marqueurs ne déclenche pas leur propre seuil. La portée « Toutes les créatures en jeu » vise les acteurs actifs, pas les réserves.";
+  note.textContent="Sans charges suffisantes : aucun effet. Coche « par charge » pour infliger par exemple 5 × 10 = 50 dégâts avec cinq charges consommées. Sans cette case, 10 reste 10 au total (compatibilité). Boucliers et résistances restent calculés par le combat."
   consume.append(note);
   return {applyBox:apply,consumeBox:consume};
 }
@@ -161,5 +168,6 @@ export function readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope){
   });
   return {kind:"consume_marker",targetScope,markerId:read(row,"skill-consume-marker-pick").value,
     count:all?"all":Number(read(row,"marker-consume-count").value),
-    minimum:Number(read(row,"marker-consume-minimum").value),effects:results};
+    minimum:Number(read(row,"marker-consume-minimum").value),
+    ...(read(row,"marker-consume-per-charge")?.checked?{perCharge:true}:{}),effects:results};
 }
