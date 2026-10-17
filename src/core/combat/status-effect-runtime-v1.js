@@ -16,6 +16,7 @@ import {
   combatProtectionForIncomingV1
 } from "./combat-protection-v1.js";
 import { applyImmediateTacticalEffectsV1 } from "./immediate-tactical-effects-v1.js";
+import { isCaptureMarkerStatusV1, CAPTURE_MARKER_ID_PREFIX_V1 } from "../../contracts/capture-marker-v1.js";
 
 // Status IDs are authored locally to each skill (often "status-1").
  // The runtime identity is therefore (sourceSkillId, definition.id), not id alone.
@@ -297,6 +298,11 @@ export function applyStatusEffectV1({
         sameStatusSourceV1(entry, status.id, sourceSkillId, status)
     ) ?? null;
 
+  if (isCaptureMarkerStatusV1({definition: status}) && existing !== null &&
+      JSON.stringify(existing.definition) !== JSON.stringify(status)) {
+    throw new RangeError("Conflicting marker definition: " + status.id);
+  }
+
   if (
     existing === null ||
     status.stacking === "replace"
@@ -361,6 +367,62 @@ export function applyStatusEffectV1({
   return resolveStackThresholdV1({state: applied, status, sourceActorId, targetActorId,
     sourceSkillId, atMs: now, eventAtMs, hitsIntangible, before: existing.stacks,
     after: nextStacks, thresholdDepth, onThresholdEvents });
+}
+
+// Consume only shared marker counters. Buffs, debuffs, ordinary stack counters,
+// shields and immunity statuses are untouched. No threshold callback runs on
+// removal: thresholds belong strictly to placing/stacking, never consuming.
+export function consumeCaptureMarkerStacksV1({
+  state,
+  targetActorId,
+  markerId = "*",
+  count = "all",
+  minimum = 1,
+  atMs = state.elapsedMs
+}) {
+  const fighter = fighterOf(state, targetActorId);
+  if (markerId !== "*" &&
+      (typeof markerId !== "string" || !/^[a-z0-9][a-z0-9_-]{0,63}$/.test(markerId))) {
+    throw new RangeError("Invalid marker ID");
+  }
+  if (count !== "all" && (!Number.isInteger(count) || count < 1)) {
+    throw new RangeError("count must be 'all' or a positive integer");
+  }
+  if (!Number.isInteger(minimum) || minimum < 1 ||
+      (count !== "all" && minimum > count)) {
+    throw new RangeError("minimum must be positive and not exceed count");
+  }
+  const eligible = fighter.statusEffects.filter(item =>
+    isCaptureMarkerStatusV1(item) &&
+    isStatusEffectRuntimeInstanceActiveV1(item, atMs) &&
+    (markerId === "*" || item.definition.id === CAPTURE_MARKER_ID_PREFIX_V1 + markerId)
+  ).sort((a, b) => a.definition.id.localeCompare(b.definition.id));
+  const total = eligible.reduce((sum, entry) => sum + entry.stacks, 0);
+  if (total < minimum) {
+    return Object.freeze({state, consumed: 0, available: total, removed: Object.freeze([])});
+  }
+  let remaining = count === "all" ? total : Math.min(total, count);
+  const applied = new Map();
+  const removed = [];
+  for (const entry of eligible) {
+    if (remaining === 0) break;
+    const taken = Math.min(entry.stacks, remaining);
+    remaining -= taken;
+    applied.set(entry, taken);
+    removed.push(Object.freeze({id:entry.definition.id.slice(CAPTURE_MARKER_ID_PREFIX_V1.length), count:taken}));
+  }
+  const next = fighter.statusEffects.flatMap(entry => {
+    const spent = applied.get(entry) ?? 0;
+    if (spent === 0) return [entry];
+    if (spent === entry.stacks) return [];
+    return [Object.freeze({...entry, stacks:entry.stacks - spent})];
+  });
+  return Object.freeze({
+    state: withFighterStatusEffects(state, targetActorId, next),
+    consumed: removed.reduce((sum, entry) => sum + entry.count, 0),
+    available: total,
+    removed: Object.freeze(removed)
+  });
 }
 
 function tagsMatch(definition, tags) {
