@@ -45,7 +45,7 @@ test("the two uploaded skill transfers are byte-exact, importable and uniquely a
   const roundtrip=importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(skill.value.draft));
   assert.deepEqual(roundtrip.value,skill.value);
  }
- assert.equal(presets.length,34);
+ assert.equal(presets.length,35);
  assert.equal(new Set(presets).size,presets.length);
  const fire=burn();
  assert.equal(fire.definition.name,"Surchauffe");
