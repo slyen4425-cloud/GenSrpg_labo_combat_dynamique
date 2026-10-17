@@ -1737,3 +1737,46 @@ html {
   text-overflow:ellipsis;
 }
 .coop-controls__controlled-name[hidden] { display:none; }
+
+/* Shared marker authoring uses the current editor layout, not a competing HUD. */
+[data-marker-authoring] .grid.two > label,
+[data-skill-effect-config-kind="apply_marker"] > label,
+[data-skill-effect-config-kind="consume_marker"] > label {
+  min-width:0;
+}
+[data-marker-authoring] input,
+[data-marker-authoring] select,
+[data-skill-effect-config-kind="apply_marker"] input,
+[data-skill-effect-config-kind="consume_marker"] input,
+[data-skill-effect-config-kind="apply_marker"] select,
+[data-skill-effect-config-kind="consume_marker"] select {
+  max-width:100%;
+}
+[data-marker-authoring] [data-marker-threshold-fields] {
+  padding:.7rem;
+  margin:.6rem 0;
+  border:1px solid rgba(117,210,226,.2);
+  border-radius:.65rem;
+}
+[data-marker-authoring] [data-marker-library-state][data-tone="error"] {
+  color:#ffb3a3;
+}
+[data-marker-consume-result] {
+  padding:.7rem;
+  border:1px solid rgba(117,210,226,.22);
+  border-radius:.65rem;
+  margin:.5rem 0;
+  min-width:0;
+}
+[data-marker-consume-result] > button {
+  width:fit-content;
+}
+[data-marker-authoring] [hidden],
+[data-marker-consume-result] [hidden],
+[data-skill-effect-config-kind="apply_marker"][hidden],
+[data-skill-effect-config-kind="consume_marker"][hidden] {display:none!important;}
+@media(max-width:620px) {
+  [data-marker-authoring] .skill-save-actions {flex-wrap:wrap;}
+  [data-marker-authoring] .skill-save-actions > * {max-width:100%;}
+  [data-marker-consume-result] {grid-template-columns: minmax(0,1fr);}
+}
