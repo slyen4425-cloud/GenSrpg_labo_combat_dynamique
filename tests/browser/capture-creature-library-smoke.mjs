@@ -102,8 +102,19 @@ const server = createServer(async (req, res) => {
               const get=key=>document.querySelector("[data-"+key+"]");
               const fill=(key,v)=>{const node=get(key);if(!node)throw Error("field "+key+" absent");
                 node.value=String(v);node.dispatchEvent(new Event("change",{bubbles:true}));};
-              fill("marker-id","poison");
-              fill("marker-name","Poison");
+              // Android author path: a marker must be savable using its NAME only.
+              // Previous smoke artificially supplied a valid technical ID and
+              // therefore did not detect the reported mobile regression.
+              lib.value="lib_aqua_heal";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              get("skill-effect-add").click();
+              const preRow=[...document.querySelectorAll("[data-skill-effect-row]")].at(-1);
+              const preKind=preRow.querySelector("[data-skill-effect-kind]");
+              preKind.value="apply_marker";preKind.dispatchEvent(new Event("change",{bubbles:true}));
+              const prePicker=preRow.querySelector("[data-skill-marker-pick]");
+              if(!prePicker)throw Error("marker effect picker not mounted");
+              get("marker-new").click();
+              fill("marker-name","Poïson");
+              if(get("marker-id").value!=="")throw Error("new marker must not require a prefilled technical ID");
               fill("marker-max",10);
               fill("marker-duration",10);
               get("marker-periodic-enabled").checked=true;
@@ -118,6 +129,17 @@ const server = createServer(async (req, res) => {
               fill("marker-threshold-amount",90);
               get("marker-save").click();
               if(!get("marker-library-state").textContent.includes("enregistré"))throw Error("marker library save failed: "+get("marker-library-state").textContent);
+              if(get("marker-id").value!=="poison"||!get("marker-id").readOnly)
+                throw Error("name-only author save failed to create and lock canonical poison ID");
+              if(!prePicker.querySelector('option[value="poison"]')||prePicker.value!=="poison")
+                throw Error("new marker was not offered in an ALREADY OPEN ability effect picker");
+              get("marker-new").click();
+              fill("marker-name","Poïson");
+              get("marker-save").click();
+              if(!get("marker-library-state").textContent.includes("déjà enregistré"))
+                throw Error("new marker with existing ID silently overwrites prior author definition");
+              fill("marker-library-select","poison");
+              if(!get("marker-id").readOnly)throw Error("existing marker ID must be immutable");
               lib.value="lib_aqua_heal";lib.dispatchEvent(new Event("change",{bubbles:true}));
               get("skill-marker-cost-enabled").checked=true;
               get("skill-marker-cost-enabled").dispatchEvent(new Event("change",{bubbles:true}));
