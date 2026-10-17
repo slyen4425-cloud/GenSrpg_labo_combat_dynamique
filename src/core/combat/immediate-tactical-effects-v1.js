@@ -528,10 +528,20 @@ export function applyImmediateTacticalEffectsV1({
           removed: consumed.removed
         }));
         if (effect.effects.length > 0) {
+          // Multiply numeric child amounts once from the actual native stack count.
+          // One downstream damage event keeps shields, immunity and resistance native.
+          // Missing perCharge preserves every historical flat child amount.
+          const childEffects = effect.perCharge === true
+            ? effect.effects.map(child => (
+                ["damage", "heal", "energy_restore", "energy_drain"].includes(child.kind)
+                  ? {...child, amount: child.amount * consumed.consumed}
+                  : child
+              ))
+            : effect.effects;
           const triggered = applyImmediateTacticalEffectsV1({
             state: nextState,
             actorId, targetId: affectedId,
-            skill: {...skill, effects: effect.effects},
+            skill: {...skill, effects: childEffects},
             atMs, combatAtMs, battleFormat,
             thresholdDepth: thresholdDepth + 1,
             allowLifeSteal: false
