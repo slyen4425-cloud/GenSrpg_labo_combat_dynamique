@@ -577,7 +577,7 @@ export function createDomSkillFxRenderer({
             targetId: record.targetSlot,
             skillId: record.skillId ?? null,
             // Coordinates describe only the hit location for follow-up visual FX.
-            contactPoint: Object.freeze({ x: projectilePoint.x, y: projectilePoint.y })
+            contactPoint: spriteContactPoint ?? Object.freeze({ x: projectilePoint.x, y: projectilePoint.y })
           })
         );
         return;
@@ -3149,7 +3149,8 @@ export function createDomSkillFxRenderer({
       targetSlot,
       contactFrameId: null,
       contactReported: false,
-      projectilePower: Math.max(0,Number(projectilePower)||0)
+      projectilePower: Math.max(0,Number(projectilePower)||0),
+      mirrorSurfaceEligible: !skyfall
     };
     active.add(record);
 
