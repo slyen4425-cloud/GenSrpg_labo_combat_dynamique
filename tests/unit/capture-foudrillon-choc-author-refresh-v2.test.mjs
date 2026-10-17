@@ -9,6 +9,8 @@ import {
 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
+import {capturePortableNativeSkillDraftsV1} from "../../src/catalogs/capture-portable-native-skill-catalog-v1.js";
+import {captureComplexNativeSkillDraftsV1} from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
 import {
   applyCaptureTransferBatchToEditorStateV1,
   buildCaptureEditorDatabaseV1
@@ -93,7 +95,16 @@ test("both existing IDs are replaced atomically in the same configured owners, n
   };
   const beforeSkill={...st.value.draft,definition:{...st.value.draft.definition,cooldownMs:0}};
   const creatures=new Map([["crea_foudrillon",beforeCreature],["crea_ailevent",unchangedRecord]]);
-  const skills=new Map([["choc_venin",beforeSkill],["lib_paralyze",dard.value.draft]]);
+  // Seed all canonical native + showcased skills: a creature transfer is
+  // validated against the complete configuredSkills owner, never a two-item mock.
+  const skills=new Map();
+  for(const draft of [...capturePortableNativeSkillDraftsV1(),...captureComplexNativeSkillDraftsV1()])
+    if(!skills.has(draft.id))skills.set(draft.id,draft);
+  for(const file of CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1){
+    const transfer=await importRecord(file);
+    skills.set(transfer.value.draft.id,transfer.value.draft);
+  }
+  skills.set("choc_venin",beforeSkill);
   const sentinel=creatures.get("crea_ailevent"),originalDard=skills.get("lib_paralyze");
   const applied=applyCaptureTransferBatchToEditorStateV1({
     transfers:[st,ct],configuredCreatures:creatures,configuredSkills:skills,
