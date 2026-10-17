@@ -112,8 +112,24 @@ const server = createServer(async (req, res) => {
               preKind.value="apply_marker";preKind.dispatchEvent(new Event("change",{bubbles:true}));
               const prePicker=preRow.querySelector("[data-skill-marker-pick]");
               if(!prePicker)throw Error("marker effect picker not mounted");
+              const periodicChannel=get("marker-periodic-channel");
+              const thresholdChannel=get("marker-threshold-channel");
+              const iconPicker=get("marker-icon");
+              const values=select=>[...select.options].map(x=>x.value);
+              if(periodicChannel.tagName!=="SELECT" ||
+                 thresholdChannel.tagName!=="SELECT" ||
+                 !values(periodicChannel).includes("physical") ||
+                 !values(periodicChannel).includes("fire") ||
+                 !values(periodicChannel).includes("poison") ||
+                 !values(thresholdChannel).includes("poison"))
+                throw Error("native element menu missing from marker references");
+              if(iconPicker.tagName!=="SELECT" ||
+                 ![...iconPicker.options].some(x=>x.value))
+                throw Error("marker icon chooser did not reuse global asset catalog");
+              const iconId=[...iconPicker.options].find(x=>x.value)?.value;
               get("marker-new").click();
               fill("marker-name","Poïson");
+              if(!get("marker-id").readOnly)throw Error("marker technical ID must never need manual entry");
               if(get("marker-id").value!=="")throw Error("new marker must not require a prefilled technical ID");
               fill("marker-max",10);
               fill("marker-duration",10);
@@ -122,15 +138,22 @@ const server = createServer(async (req, res) => {
               fill("marker-periodic-kind","damage");
               fill("marker-periodic-amount",5);
               fill("marker-periodic-seconds",5);
-              fill("marker-periodic-mode","fixed");
+              fill("marker-periodic-mode","combat");
+              fill("marker-periodic-channel","poison");
+              fill("marker-icon",iconId);
               get("marker-threshold-enabled").checked=true;
               fill("marker-threshold-count",10);
               fill("marker-threshold-effect","damage");
               fill("marker-threshold-amount",90);
+              fill("marker-threshold-channel","fire");
               get("marker-save").click();
               if(!get("marker-library-state").textContent.includes("enregistré"))throw Error("marker library save failed: "+get("marker-library-state").textContent);
               if(get("marker-id").value!=="poison"||!get("marker-id").readOnly)
                 throw Error("name-only author save failed to create and lock canonical poison ID");
+              if(get("marker-periodic-channel").value!=="poison"||
+                 get("marker-threshold-channel").value!=="fire"||
+                 get("marker-icon").value!==iconId)
+                throw Error("marker dropdown selections lost on save");
               if(!prePicker.querySelector('option[value="poison"]')||prePicker.value!=="poison")
                 throw Error("new marker was not offered in an ALREADY OPEN ability effect picker");
               get("marker-new").click();
@@ -155,6 +178,10 @@ const server = createServer(async (req, res) => {
               fill("marker-library-select","poison");
               if(get("marker-permanent").checked || get("marker-duration").disabled)
                 throw Error("loading timed marker must restore ordinary duration field");
+              if(get("marker-periodic-channel").value!=="poison" ||
+                 get("marker-threshold-channel").value!=="fire" ||
+                 get("marker-icon").value!==iconId)
+                throw Error("marker reference dropdowns did not roundtrip");
               fill("marker-library-select","eternel");
               if(!get("marker-permanent").checked || !get("marker-duration").disabled)
                 throw Error("loading permanent marker lost unchecked duration model");
@@ -179,6 +206,10 @@ const server = createServer(async (req, res) => {
               row=add();kind(row,"consume_marker");
               row.querySelector("[data-skill-consume-marker-pick]").value="*";
               row.querySelector("[data-marker-consume-mode]").value="all";
+              const nestedChannel=row.querySelector("[data-marker-result-channel]");
+              if(!nestedChannel || nestedChannel.tagName!=="SELECT" ||
+                 !values(nestedChannel).includes("fire"))
+                throw Error("consumed-marker nested damage channel is still a typed ID");
               row.querySelector("[data-marker-result-kind]").value="heal";
               row.querySelector("[data-marker-result-amount]").value="7";
               get("skill-update").click();
