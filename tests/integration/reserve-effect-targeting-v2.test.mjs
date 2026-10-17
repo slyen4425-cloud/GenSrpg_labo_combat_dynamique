@@ -105,7 +105,7 @@ test("single chosen enemy reserve damage and chosen ally reserve healing retain 
   assert.equal(hp("player","p1"),75);
   assert.equal(hp("player","p2"),60);
 });
-test("reserve supplemental scopes are restricted to damage/heal and require an active anchor",()=>{
+test("reserve supplemental scopes allow damage/heal/markers (not energy) and require an active anchor",()=>{
   assert.throws(()=>skill({effects:[{kind:"energy_drain",targetScope:"all_enemy_reserves",amount:5}]}),/reserve|damage|heal/i);
   assert.throws(()=>skill({locations:["reserve"],effects:[damage(10,"all_enemy_reserves")]}),/active|reserve/i);
 });
