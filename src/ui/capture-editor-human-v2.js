@@ -741,6 +741,13 @@ function targetRelationsForTargetScopedEffectV1(effect) {
     case "cleanse":
       return ["ally", "self"];
 
+    // Consuming markers does not decide whether the target is hostile.
+    // A companion heal or damage effect owns that relation. When marker
+    // consumption is the only targeted effect, the existing form fallback
+    // in humanSkillTargetRelationsFromTacticalEffectsV1 still applies.
+    case "consume_marker":
+      return [];
+
     case "apply_status": {
       const polarity =
         effect.status?.polarity ?? "neutral";
