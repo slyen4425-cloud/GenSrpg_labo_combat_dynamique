@@ -11,6 +11,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/lib_aqua_heal.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_light_bolt.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_magic_barrier.capture-skill-transfer-v1.json",
+    "data/capture/showcase/cap_light_atk_3.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_light_atk_5.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_light_special_1.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_earth_guard.capture-skill-transfer-v1.json",
