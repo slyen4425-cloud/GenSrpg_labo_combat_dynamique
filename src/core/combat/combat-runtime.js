@@ -808,7 +808,14 @@ export function createCombatRuntime({
           })
         : null;
 
-    const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionClockMs, visibleContact,
+    // Status durations belong to CombatState.elapsedMs, not the browser
+    // performance.now() clock. Using resolutionClockMs here makes every
+    // timed mirror appear expired on a long-running browser tab.
+    const resolutionCombatMs = record.startedAtCombatMs +
+      (effectiveReaction?.outcome === "countered"
+        ? effectiveReaction.readyAtMs
+        : effectiveAction.impactAtMs);
+    const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionCombatMs, visibleContact,
       {mirrorSpritePresent, mirrorSpriteContact});
     // An uncaught returning projectile cannot inflict damage at a timer boundary.
     const forcedOutcome = mirrorContact ? "mirrored" :
