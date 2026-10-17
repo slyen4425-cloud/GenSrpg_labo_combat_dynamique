@@ -12,7 +12,7 @@ const originals = [
   {id:"cap_air_atk_4",file:"cap_air_atk_4",hash:"c090b3c52a1e5ab4ae16bb9e10370fa320846f8cb5b83b002931f693928e9f89"}
 ];
 test("the exact three current creator skill exports each replace one stable showcase ID",async()=>{
-  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,29);
+  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,30);
   for(const {id,file,hash} of originals){
     const path="data/capture/showcase/"+file+".capture-skill-transfer-v1.json";
     assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x===path).length,1);
