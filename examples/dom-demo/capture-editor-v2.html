@@ -772,7 +772,10 @@
               <option value="beneficial">Bénéfique</option>
             </select>
           </label>
-          <label>Durée des charges (secondes)
+          <label class="switch-line"><input data-marker-permanent type="checkbox">
+            <span>Durée illimitée — jusqu'au retrait ou à la consommation</span>
+          </label>
+          <label>Durée des charges (secondes) — si temporaires
             <input data-marker-duration type="number" min="0.1" step="0.5" value="10">
           </label>
           <label>Maximum de charges
@@ -782,7 +785,8 @@
             <input data-marker-icon type="text" placeholder="Laisser vide pour icône de statut">
           </label>
         </div>
-        <p class="note">Pour créer un marqueur, saisis seulement son nom puis touche « Enregistrer le marqueur ». L'identifiant se crée automatiquement (sans accents ni espaces) et reste stable pour toutes les capacités. Pour modifier un marqueur existant, sélectionne-le dans la liste ci-dessus.</p>
+        <p class="note">Un marqueur permanent ne perd pas ses charges avec le temps. S'il produit des dégâts/soins périodiques, ceux-ci continuent selon l'horloge combat tant qu'il est présent. La case illimitée désactive le champ de durée en secondes.</p>
+        <p class="note">Pour créer un marqueur, saisis seulement son nom puis touche « Enregistrer le marqueur ».  L'identifiant se crée automatiquement (sans accents ni espaces) et reste stable pour toutes les capacités. Pour modifier un marqueur existant, sélectionne-le dans la liste ci-dessus.</p>
         <details class="skill-activation-config" data-marker-periodic-card>
           <summary>Effet périodique par charge (facultatif)</summary>
           <label class="switch-line"><input type="checkbox" data-marker-periodic-enabled>
