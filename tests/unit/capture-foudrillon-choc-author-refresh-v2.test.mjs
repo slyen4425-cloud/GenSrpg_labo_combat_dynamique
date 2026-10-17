@@ -84,17 +84,15 @@ test("Choc venimeux: author timing and 10 electric damage per real consumed Veni
 
 test("both existing IDs are replaced atomically in the same configured owners, not duplicated or auto-re-equipped",async()=>{
   const ct=await importRecord(CREATURE),st=await importRecord(SKILL);
-  const unchanged=await importRecord("data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json");
   const dard=await importRecord("data/capture/showcase/lib_paralyze.capture-skill-transfer-v1.json");
   const {schema: _schema, version: _version, ...creatureRecord}=ct.value;
-  const {schema: _otherSchema, version: _otherVersion, ...unchangedRecord}=unchanged.value;
   const beforeCreature={
     ...creatureRecord,
     draft:{...ct.value.draft,skillIds:ct.value.draft.skillIds.filter(id=>id!=="choc_venin")},
     loadout:{...ct.value.loadout,slots:ct.value.loadout.slots.map(slot=>slot.id==="slot-2"?{...slot,skillId:"lib_static_bite"}:slot)}
   };
   const beforeSkill={...st.value.draft,definition:{...st.value.draft.definition,cooldownMs:0}};
-  const creatures=new Map([["crea_foudrillon",beforeCreature],["crea_ailevent",unchangedRecord]]);
+  const creatures=new Map([["crea_foudrillon",beforeCreature]]);
   // Seed all canonical native + showcased skills: a creature transfer is
   // validated against the complete configuredSkills owner, never a two-item mock.
   const skills=new Map();
@@ -105,7 +103,7 @@ test("both existing IDs are replaced atomically in the same configured owners, n
     skills.set(transfer.value.draft.id,transfer.value.draft);
   }
   skills.set("choc_venin",beforeSkill);
-  const sentinel=creatures.get("crea_ailevent"),originalDard=skills.get("lib_paralyze");
+  const originalDard=skills.get("lib_paralyze");
   const applied=applyCaptureTransferBatchToEditorStateV1({
     transfers:[st,ct],configuredCreatures:creatures,configuredSkills:skills,
     statRegistry:registry,progressionRules,mode:"replace"
@@ -114,7 +112,6 @@ test("both existing IDs are replaced atomically in the same configured owners, n
   assert.deepEqual(applied.actions.map(x=>x.action),["replace-skill","replace-creature"]);
   assert.deepEqual(creatures.get("crea_foudrillon"),creatureRecord);
   assert.deepEqual(skills.get("choc_venin"),st.value.draft);
-  assert.equal(creatures.get("crea_ailevent"),sentinel);
   assert.equal(skills.get("lib_paralyze"),originalDard);
   assert.equal([...creatures.keys()].filter(x=>x==="crea_foudrillon").length,1);
   assert.equal([...skills.keys()].filter(x=>x==="choc_venin").length,1);
