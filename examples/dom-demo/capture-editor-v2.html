@@ -759,11 +759,11 @@
           <select data-marker-library-select><option value="">Nouveau marqueur</option></select>
         </label>
         <div class="grid two">
-          <label>Identifiant stable (minuscules)
-            <input data-marker-id type="text" placeholder="poison" autocomplete="off">
+          <label>Nom du marqueur
+            <input data-marker-name type="text" placeholder="Exemple : Venin" autocomplete="off">
           </label>
-          <label>Nom affiché
-            <input data-marker-name type="text" placeholder="Poison" autocomplete="off">
+          <label>Identifiant technique (créé automatiquement)
+            <input data-marker-id type="text" placeholder="venin" autocomplete="off" spellcheck="false">
           </label>
           <label>Nature
             <select data-marker-polarity>
@@ -782,6 +782,7 @@
             <input data-marker-icon type="text" placeholder="Laisser vide pour icône de statut">
           </label>
         </div>
+        <p class="note">Pour créer un marqueur, saisis seulement son nom puis touche « Enregistrer le marqueur ». L'identifiant se crée automatiquement (sans accents ni espaces) et reste stable pour toutes les capacités. Pour modifier un marqueur existant, sélectionne-le dans la liste ci-dessus.</p>
         <details class="skill-activation-config" data-marker-periodic-card>
           <summary>Effet périodique par charge (facultatif)</summary>
           <label class="switch-line"><input type="checkbox" data-marker-periodic-enabled>
