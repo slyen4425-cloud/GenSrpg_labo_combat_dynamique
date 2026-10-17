@@ -70,7 +70,7 @@
         {
           "kind": "damage",
           "targetScope": "target",
-          "amount": 8,
+          "amount": 14,
           "channel": "light",
           "ignoreResistancePct": 0,
           "ignoreDamageReductionPct": 0
@@ -107,7 +107,7 @@
         },
         "travel": {
           "assetId": "pack:capture:sprite-projectile-light-01",
-          "displayScale": 1,
+          "displayScale": 2.5,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "trajectory",
