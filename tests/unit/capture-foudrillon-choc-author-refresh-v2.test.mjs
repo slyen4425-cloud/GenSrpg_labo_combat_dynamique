@@ -84,13 +84,15 @@ test("both existing IDs are replaced atomically in the same configured owners, n
   const ct=await importRecord(CREATURE),st=await importRecord(SKILL);
   const unchanged=await importRecord("data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json");
   const dard=await importRecord("data/capture/showcase/lib_paralyze.capture-skill-transfer-v1.json");
+  const {schema: _schema, version: _version, ...creatureRecord}=ct.value;
+  const {schema: _otherSchema, version: _otherVersion, ...unchangedRecord}=unchanged.value;
   const beforeCreature={
-    ...ct.value,
+    ...creatureRecord,
     draft:{...ct.value.draft,skillIds:ct.value.draft.skillIds.filter(id=>id!=="choc_venin")},
     loadout:{...ct.value.loadout,slots:ct.value.loadout.slots.map(slot=>slot.id==="slot-2"?{...slot,skillId:"lib_static_bite"}:slot)}
   };
   const beforeSkill={...st.value.draft,definition:{...st.value.draft.definition,cooldownMs:0}};
-  const creatures=new Map([["crea_foudrillon",beforeCreature],["crea_ailevent",unchanged.value]]);
+  const creatures=new Map([["crea_foudrillon",beforeCreature],["crea_ailevent",unchangedRecord]]);
   const skills=new Map([["choc_venin",beforeSkill],["lib_paralyze",dard.value.draft]]);
   const sentinel=creatures.get("crea_ailevent"),originalDard=skills.get("lib_paralyze");
   const applied=applyCaptureTransferBatchToEditorStateV1({
@@ -99,7 +101,7 @@ test("both existing IDs are replaced atomically in the same configured owners, n
   });
   assert.equal(applied.actions.length,2);
   assert.deepEqual(applied.actions.map(x=>x.action),["replace-skill","replace-creature"]);
-  assert.deepEqual(creatures.get("crea_foudrillon"),ct.value);
+  assert.deepEqual(creatures.get("crea_foudrillon"),creatureRecord);
   assert.deepEqual(skills.get("choc_venin"),st.value.draft);
   assert.equal(creatures.get("crea_ailevent"),sentinel);
   assert.equal(skills.get("lib_paralyze"),originalDard);
