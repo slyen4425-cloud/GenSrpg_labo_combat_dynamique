@@ -1,6 +1,6 @@
 # Laboratoire Combat Dynamique — Current Work
 
-## Chantier 2026-10-17 — 8 icônes épurées Monster Capture — EN COURS
+## Chantier 2026-10-17 — 8 icônes épurées Monster Capture — GREEN technique (CI validée)
 
 - **Objet** : livrer les 8 vrais médias approuvés par l'utilisateur : Poison, Toxine, Dard électrique, Fleuraison, Brûlure, Gel, Paralysie, Bulle de feu.
 - **Propriétaire unique** : bibliothèque visuelle Capture, branche `global-assets`, `assets/library/capture/icons/skills/` et catalogue `data/assets/catalog/global-visual-assets.v1.json`.
@@ -11,7 +11,7 @@
 - **Risques** : références de média cassées, ID dupliqué, confusion avec les capacités existantes (ex. Fleuraison énergie), écriture concurrente sur global-assets, binaire absent malgré catalogue.
 - **Tests prévus** : inspecter les véritables octets WebP et alpha/dimensions, SHA256 et provenance, comparer rendu 128/48, unicité des 8 `assetId`, cohérence catalogue/chemin, npm run ci, état GitHub final.
 - **Critère de sortie** : les 8 octets réels dans GitHub, les 8 entrées du catalogue, CI GREEN ; checkpoint au SHA publié. Présentation réelle dans le jeu à confirmer sur smartphone avant GREEN utilisateur.
-- **Statut** : préparation locale confirmée ; attente de validation GitHub de tous les binaires et du catalogue ; aucun média fictif autorisé.
+- **Statut** : 8 vrais WebP 128×128 transparents, 8 entrées stables dans le catalogue Capture, 1 provenance, sentinelle permanente et documentation Git ; tous les objets Git correspondent aux SHA1 locaux et aux SHA256 déclarés. CI `foundation` SUCCESS sur `1c900a0b62312210e57651fa5d7ceec69fb61d90` (run `39014489224`). Publication propriétaire `global-assets` et checkpoint fin de lot à vérifier lors de la clôture. Validation visuelle manuelle smartphone non revendiquée.
 
 ## 2026-10-15 — Intégration du pack Fluide météorite (propriétaire global-assets)
 
