@@ -103,3 +103,31 @@ test("two definitions with the same marker ID cannot silently diverge",()=>{
   const base=cast(start(),place("alpha",marker)).state;
   assert.throws(()=>cast(base,place("beta",{...marker,durationMs:3000})),/Conflicting marker definition/);
 });
+
+test("ten poison markers produce native KO and credit, even through a finite shield",()=>{
+  const fatal={...marker,onStackThreshold:{
+    count:10,consume:"reset",
+    effects:[{kind:"knockout",targetScope:"target"}]}};
+  const barrier=normalizeStatusEffectV1({id:"barrier",kind:"shield",polarity:"beneficial",
+    durationMs:10000,stacking:"replace",amount:500});
+  let s=applyStatusEffectV1({state:start(),targetActorId:"b",sourceActorId:"b",
+    sourceSkillId:"barrier",status:barrier});
+  s=cast(s,place("poison-fang",fatal,10)).state;
+  assert.equal(s.fighters.b.hp,0);
+  assert.equal(s.fighters.a.knockoutsTotal,1);
+  assert.equal(entries(s).length,0);
+  assert.equal(s.fighters.b.statusEffects.find(x=>x.definition.id==="barrier").shieldRemaining,0);
+});
+
+test("marker KO is prevented by damage immunity without bypassing the native protection owner",()=>{
+  const fatal={...marker,onStackThreshold:{
+    count:10,consume:"reset",effects:[{kind:"knockout",targetScope:"target"}]}};
+  const immune=normalizeStatusEffectV1({id:"immune-damage",kind:"immunity",polarity:"beneficial",
+    durationMs:10000,stacking:"replace",domains:["damage"]});
+  let s=applyStatusEffectV1({state:start(),targetActorId:"b",sourceActorId:"b",status:immune});
+  const result=cast(s,place("poison-fang",fatal,10));
+  assert.equal(result.state.fighters.b.hp,120);
+  assert.equal(result.state.fighters.a.knockoutsTotal,0);
+  assert.equal(result.events.find(e=>e.markerKnockout===true)?.appliedDamage,0);
+  assert.equal(entries(result.state).length,0);
+});
