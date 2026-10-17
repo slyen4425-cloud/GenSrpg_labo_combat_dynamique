@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { importCaptureTransferJsonV1,exportCaptureSkillTransferJsonV1 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import { CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 } from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 import { normalizeSkillEffectV1 } from "../../src/contracts/skill-effect-v1.js";
 import { createCombatState } from "../../src/core/combat/combat-state.js";
 import { applyImmediateTacticalEffectsV1 } from "../../src/core/combat/immediate-tactical-effects-v1.js";
@@ -75,6 +78,23 @@ test("perCharge uses same native damage owner for a shield or immunity", () => {
     assert.equal(stacks(result.state),0);
   }
 });
+test("author raw Choc is archived exactly and its modified active transfer is portable",async () => {
+  const read=p=>readFile(new URL("../../"+p,import.meta.url),"utf8");
+  const authored=await read("data/capture/source-exports/gensrpg-capture-skill-choc_venin-2026-10-17.json");
+  assert.equal(createHash("sha256").update(authored).digest("hex"),
+    "98dd680fc2ed374b5d319321bd83f4d16d5ac1c8e3b5b7b7636d8aa2832fe8ac");
+  const original=importCaptureTransferJsonV1(authored).value.draft;
+  assert.equal(original.definition.effects[0].perCharge,undefined);
+  const path="data/capture/showcase/choc_venin.capture-skill-transfer-v1.json";
+  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x===path).length,1);
+  const exported=importCaptureTransferJsonV1(await read(path)).value.draft;
+  assert.equal(exported.definition.effects[0].perCharge,true);
+  assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(exported)).value.draft,exported);
+  assert.throws(()=>normalizeSkillEffectV1({
+    kind:"consume_marker",targetScope:"target",markerId:"venin-static",
+    count:"all",minimum:1,perCharge:"true",effects:[]}),/boolean/);
+});
+
 test("Choc user transfer and Dard static share venin-static identity",async () => {
   const choc=JSON.parse(await readFile(new URL("../../data/capture/showcase/choc_venin.capture-skill-transfer-v1.json",import.meta.url),"utf8")).draft;
   const dard=JSON.parse(await readFile(new URL("../../data/capture/showcase/lib_paralyze.capture-skill-transfer-v1.json",import.meta.url),"utf8")).draft;
