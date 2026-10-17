@@ -55,9 +55,11 @@ function markerFromFields(root){
       channel:value(root,"marker-periodic-channel").trim()||"physical"
     } : {})
   } : null;
+  const permanent=selected(root,"marker-permanent")?.checked===true;
   return normalizeCaptureMarkerV1({
     id,name:value(root,"marker-name"),polarity:value(root,"marker-polarity"),
-    durationMs:Math.round(Number(value(root,"marker-duration"))*1000),
+    ...(permanent ? {permanent:true}
+      : {durationMs:Math.round(Number(value(root,"marker-duration"))*1000)}),
     maxStacks:Number(value(root,"marker-max")),
     ...(periodic == null ? {} : {periodic}),
     ...(value(root,"marker-icon").trim()?{iconAssetId:value(root,"marker-icon").trim()}:{}),
@@ -69,7 +71,9 @@ function markerFromFields(root){
 function loadFields(root,marker){
   const set=(key,content)=>{const node=find(root,key);if(node)node.value=String(content??"");};
   set("marker-id",marker.id);set("marker-name",marker.name);
-  set("marker-polarity",marker.polarity);set("marker-duration",marker.durationMs/1000);
+  set("marker-polarity",marker.polarity);
+  selected(root,"marker-permanent").checked=marker.permanent===true;
+  set("marker-duration",(marker.durationMs??10000)/1000);
   set("marker-max",marker.maxStacks);set("marker-icon",marker.iconAssetId??"");
   selected(root,"marker-periodic-enabled").checked=marker.periodic!=null;
   set("marker-periodic-kind",marker.periodic?.kind??"damage");
@@ -93,6 +97,9 @@ function loadFields(root,marker){
   syncVisibility(root);
 }
 function syncVisibility(root){
+  const permanent=selected(root,"marker-permanent")?.checked===true;
+  const duration=selected(root,"marker-duration");
+  if(duration)duration.disabled=permanent;
   const periodic=selected(root,"marker-periodic-enabled")?.checked===true;
   const periodicFields=find(root,"marker-periodic-fields");
   if(periodicFields)periodicFields.hidden=!periodic;
@@ -219,7 +226,7 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills}){
       selected(root,"marker-id").dataset.manualMarkerId="true";
     }
   });
-  for(const key of ["marker-periodic-enabled","marker-periodic-kind","marker-periodic-mode"]) {
+  for(const key of ["marker-permanent","marker-periodic-enabled","marker-periodic-kind","marker-periodic-mode"]) {
     listen(find(root,key),"change",()=>syncVisibility(root));
   }
   listen(find(root,"marker-threshold-enabled"),"change",()=>syncVisibility(root));
