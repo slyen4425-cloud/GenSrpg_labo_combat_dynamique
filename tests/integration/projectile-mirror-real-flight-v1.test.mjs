@@ -295,9 +295,10 @@ test("real Boule de feu, Cendre aveuglante and Rayon lumineux reflect with a non
       };
       try {
         runtime.start();
-        assert.equal(runtime.startSkill({
+        const started = runtime.startSkill({
           actorId: "player", targetId: "opponent", skill: incoming
-        }).ok, true);
+        });
+        assert.equal(started.ok, true, JSON.stringify(started));
         const impactBeforeNominal =
           incoming.preparationMs + Math.max(1, Math.floor(incoming.travelMs * 0.7));
         advance(originClockMs + impactBeforeNominal);
