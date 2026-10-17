@@ -12,7 +12,7 @@ import {
   snapshotCaptureBeamPresetControlsV1,
   restoreCaptureBeamPresetControlsV1
 } from "./capture-editor-beam-visual-pack-v1.js";
-import { buildCaptureEditorCombatTestV1, prepareCaptureEditorCombatEditsV1, mountCaptureEditorCombatTeamControlsV1 } from "./capture-editor-combat-test-v1.js";
+import { buildCaptureEditorCombatTestV1, prepareCaptureEditorCombatEditsV1, mountCaptureEditorCombatTeamControlsV1, shouldTestSavedCreatureWhenEvolutionIncompleteV1 } from "./capture-editor-combat-test-v1.js";
 import {
   skillSpriteControlsFromFieldsV1,
   skillSpriteControlFieldsFromVisualsV1,
@@ -12856,6 +12856,13 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   function validate() {
     try {
+      const useSavedCreatureForTest = shouldTestSavedCreatureWhenEvolutionIncompleteV1({
+        selectedCreatureId,
+        hasUnsavedCreatureChanges: creatureDirty,
+        evolutionEnabled: one(root, "[data-evolution-enabled]").checked,
+        evolutionTargetId: selectedValue(root, "[data-evolution-target]"),
+        configuredCreatures
+      });
       if (selectedLegacyState !== null && !selectedLegacyState.runtimeReady) {
         throw new Error("La capacité sélectionnée n’est pas encore utilisable en combat.");
       }
@@ -12865,8 +12872,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         selectedCreatureId,
         readSkillDraft: () => currentSkillHasUnsavedChanges()
           ? buildHumanSkillDraftV1(readSkillFields(root)) : null,
-        readCreatureRecord: () => creatureDirty || selectedCreatureId === null
-          ? currentCreatureRecord() : null,
+        readCreatureRecord: () => useSavedCreatureForTest
+          ? null
+          : creatureDirty || selectedCreatureId === null
+            ? currentCreatureRecord() : null,
         buildExport: () => buildCaptureEditorCombatTestV1({
           configuredCreatures, configuredSkills,
           ...combatTeamControls.read(),
@@ -12900,9 +12909,11 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       );
       one(root, "[data-editor-summary]").textContent =
         teamSizes.join(" contre ") + " monstres · " + lastExport.actors.length + " actifs";
-      setStatus(root, result.skillDraft !== null || result.creatureRecord !== null
-        ? "Configuration valide. Modifications enregistrées pour le test."
-        : "Configuration valide. Le combat de test est prêt.", "ok");
+      setStatus(root, useSavedCreatureForTest
+        ? "Test de capacité prêt avec la créature enregistrée. Le brouillon créature reste inchangé : choisis une cible d'évolution ou décoche Évolution avant de l'enregistrer."
+        : result.skillDraft !== null || result.creatureRecord !== null
+          ? "Configuration valide. Modifications enregistrées pour le test."
+          : "Configuration valide. Le combat de test est prêt.", useSavedCreatureForTest ? "warning" : "ok");
       return lastExport;
     } catch (error) {
       lastExport = null;
