@@ -1,4 +1,4 @@
-import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1, captureMarkerStatusTemplatesV1} from "./capture-marker-library-v1.js";
+import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1, captureMarkerStatusTemplatesV1, captureMarkerChannelOptionsV1} from "./capture-marker-library-v1.js";
 
 const field=(name)=>{const node=document.createElement("label");node.textContent=name;return node;};
 function choice(name,options,value){
@@ -40,9 +40,17 @@ function appendConsumeResultV1(host,effect=null,editorRoot=null){
   scope[1].dataset.markerResultScope="true";
   const amount=numberField("Valeur",effect?.amount??10);
   amount[1].dataset.markerResultAmount="true";
-  const channel=field("Élément des dégâts (vide = celui de la capacité)");
-  const channelInput=document.createElement("input");channelInput.type="text";
-  channelInput.value=effect?.channel??"";channelInput.dataset.markerResultChannel="true";channel.append(channelInput);
+  const channel=field("Élément des dégâts");
+  const channelInput=document.createElement("select");
+  channelInput.dataset.markerResultChannel="true";
+  channelInput.dataset.markerChannelChoice="true";
+  channelInput.dataset.markerOptional="true";
+  const empty=document.createElement("option");empty.value="";empty.textContent="Même élément que la capacité";channelInput.append(empty);
+  const channelValue=effect?.channel??"";
+  for(const entry of captureMarkerChannelOptionsV1(editorRoot??host.closest("[data-capture-editor-human]")??document,channelValue)){
+    const option=document.createElement("option");option.value=entry.id;option.textContent=entry.label;channelInput.append(option);
+  }
+  channelInput.value=channelValue;channel.append(channelInput);
   const status=field("Statut à appliquer (copié depuis une compétence)");
   const statusSelect=document.createElement("select");statusSelect.dataset.markerResultStatus="true";
   const defaultStun={id:"stun-marqueur",kind:"stun",polarity:"detrimental",durationMs:2000,stacking:"replace"};
