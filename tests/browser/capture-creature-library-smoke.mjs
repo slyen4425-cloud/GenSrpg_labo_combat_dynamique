@@ -541,6 +541,10 @@ const server = createServer(async (req, res) => {
         'const f=document.querySelector("[data-skill-form]");' +
         'f.value="beam";f.dispatchEvent(new Event("change",{bubbles:true}));' +
         'const h=document.querySelector("[data-skill-beam-stage-editor]");' +
+        'const choices=document.querySelector("[data-skill-fx-first-choices]");' +
+        'const controls=[...document.querySelectorAll("[data-skill-icon],[data-skill-form],[data-skill-trajectory-mode]")];' +
+        'const order=controls.map(x=>x.hasAttribute("data-skill-icon")?"icon":x.hasAttribute("data-skill-form")?"form":"trajectory").join(",");' +
+        'h.dataset.fxOrderProbe=order+":"+(choices&&controls.length===3&&controls.every(x=>choices.contains(x))?"visible":"misplaced");' +
         'h.dataset.beamProbe=["start","body","impact"].map(x=>' +
         'document.querySelectorAll("[data-beam-stage-fields="+x+"] label").length).join(",");' +
         '});</script>';
@@ -1244,6 +1248,9 @@ try {
   console.log("Native area status authoring: defense while inside, poison on entry, original skill preserved");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
+  if (!/data-fx-order-probe="icon,form,trajectory:visible"/.test(rayonDom)) {
+    throw new Error("FX browser UI did not show icon, form and trajectory first as canonical controls");
+  }
   if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
       !/data-beam-active="true"/.test(rayonDom)) {
     throw new Error("Rayon browser UI did not move the original 15 controls (including skill sounds) into 3 phases");
