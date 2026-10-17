@@ -514,6 +514,15 @@ export function createDomSkillFxRenderer({
     record.previousTargetFrame =
       collisionModel.snapshot();
 
+    // The native status renderer already owns and mounts this live sprite.
+    // Observe its actual scaled/offset screen bounds on the same FX frame.
+    const mirrorSurface = () => record.mirrorSurfaceEligible !== false
+      ? anchors[record.targetSlot]?.querySelector?.(
+          '[data-status-fx="sprite"][data-status-kind="projectile_mirror"]'
+        ) ?? null
+      : null;
+    record.previousMirrorRect = mirrorSurface()?.getBoundingClientRect?.() ?? null;
+
     const check = () => {
       record.contactFrameId = null;
 
