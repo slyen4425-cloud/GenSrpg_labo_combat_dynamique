@@ -64,3 +64,24 @@ test("Editor only bypasses incomplete evolution for combat preview, never saves 
   assert.match(source,/readCreatureRecord: \(\) => useSavedCreatureForTest\s*\? null/);
   assert.match(source,/Le brouillon créature reste inchangé/);
 });
+
+
+test("Soin lumineux heals through native CombatSession, not just an editable JSON field", async () => {
+  const { createCombatSession } = await import("../../src/core/combat/combat-session.js");
+  const raw = await readFile(file,"utf8");
+  const skill = importCaptureTransferJsonV1(raw).value.draft.definition;
+  const fighter = (id, initialHp) => ({
+    id, maxHp:100, initialHp, maxEnergy:15, initialEnergy:15,
+    energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:1,
+    chargeTimeModifierPct:0
+  });
+  const session = createCombatSession({
+    distance:"short",fighters:[fighter("player",40),fighter("opponent",100)]
+  });
+  const result = session.useSkill({actorId:"player",targetId:"player",skill});
+  assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(session.snapshot().fighters.player.hp,75,
+    "35 HP must be applied by the real native effect executor");
+  assert.equal(session.snapshot().fighters.opponent.hp,100);
+  assert.equal(session.snapshot().fighters.player.energy,10);
+});
