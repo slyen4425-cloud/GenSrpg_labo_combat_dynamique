@@ -1,6 +1,7 @@
 import {
   normalizeStatusEffectV1
 } from "./status-effect-v1.js";
+import { normalizeCaptureMarkerV1 } from "./capture-marker-v1.js";
 
 export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "damage",
@@ -9,6 +10,8 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "energy_drain",
   "life_steal",
   "apply_status",
+  "apply_marker",
+  "consume_marker",
   "cleanse",
   "dispel",
   "persistent_zone",
@@ -23,7 +26,8 @@ export const SKILL_EFFECT_V1_TARGET_SCOPES =
     "all_allies",
     "all_except_self",
     "all_enemy_reserves",
-    "all_ally_reserves"
+    "all_ally_reserves",
+    "all_active"
   ]);
 
 export const RESERVE_EFFECT_TARGET_SCOPES_V2 = Object.freeze(["all_enemy_reserves", "all_ally_reserves"]);
@@ -70,6 +74,8 @@ const FIELDS_BY_KIND = Object.freeze({
     ...COMMON_FIELDS,
     "status"
   ]),
+  apply_marker: new Set([...COMMON_FIELDS, "marker", "charges"]),
+  consume_marker: new Set([...COMMON_FIELDS, "markerId", "count", "minimum", "effects"]),
   cleanse: new Set([
     ...COMMON_FIELDS,
     "statusTags"
@@ -238,6 +244,10 @@ export function normalizeSkillEffectV1(input) {
     );
   }
 
+  if (targetScope === "all_active" && !["apply_marker", "consume_marker"].includes(kind)) {
+    throw new RangeError("all_active is only valid for marker effects");
+  }
+
   if (isReserveEffectTargetScopeV2(targetScope) && !["damage", "heal"].includes(kind)) {
     throw new RangeError("Reserve effect scopes support damage/heal only: " + kind);
   }
@@ -250,6 +260,36 @@ export function normalizeSkillEffectV1(input) {
     kind,
     targetScope
   };
+
+  if (kind === "apply_marker") {
+    output.marker = normalizeCaptureMarkerV1(value.marker);
+    output.charges = positiveInteger(value.charges ?? 1, "SkillEffectV1.charges");
+    if (output.charges > 99) throw new RangeError("Marker placement is limited to 99 charges per effect");
+  }
+
+  if (kind === "consume_marker") {
+    const markerId = value.markerId ?? "*";
+    if (markerId !== "*" && (typeof markerId !== "string" || !/^[a-z0-9][a-z0-9_-]{0,63}$/.test(markerId))) {
+      throw new RangeError("consume_marker.markerId must be * or a stable marker ID");
+    }
+    output.markerId = markerId;
+    output.count = value.count ?? "all";
+    if (output.count !== "all") output.count = positiveInteger(output.count, "SkillEffectV1.count");
+    output.minimum = positiveInteger(value.minimum ?? 1, "SkillEffectV1.minimum");
+    if (output.count !== "all" && output.minimum > output.count) {
+      throw new RangeError("Marker minimum exceeds the maximum charges consumed");
+    }
+    if (!Array.isArray(value.effects) || value.effects.length > 12) {
+      throw new RangeError("consume_marker.effects requires an array of up to 12 effects");
+    }
+    output.effects = Object.freeze(value.effects.map(normalizeSkillEffectV1));
+    for (const child of output.effects) {
+      if (!["damage", "heal", "energy_restore", "energy_drain", "apply_status", "cleanse", "dispel"].includes(child.kind) ||
+          !["target", "self"].includes(child.targetScope)) {
+        throw new RangeError("Unsupported nested effect for marker consumption");
+      }
+    }
+  }
 
   if (kind === "life_steal") {
     output.percent = penetrationPercentV1(value.percent, "SkillEffectV1.percent");
