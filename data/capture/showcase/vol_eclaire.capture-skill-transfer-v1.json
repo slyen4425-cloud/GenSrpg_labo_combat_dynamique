@@ -1,0 +1,158 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vol_eclaire",
+    "description": "Vol , frappe, place 3 marqueur venin.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vol_eclaire",
+      "name": "Vol éclaire",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "electric",
+      "approachMode": "aerial",
+      "energyCost": 6,
+      "preparationMs": 900,
+      "travelMs": 750,
+      "recoveryMs": 0,
+      "cooldownMs": 20000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 20,
+          "channel": "electric",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "venin-static",
+            "name": "venin static",
+            "polarity": "detrimental",
+            "permanent": true,
+            "maxStacks": 20,
+            "iconAssetId": "pack:capture:icon-skill-toxine-01",
+            "periodic": {
+              "kind": "damage",
+              "amount": 2,
+              "intervalMs": 5000,
+              "damageMode": "combat",
+              "channel": "electric"
+            },
+            "onStackThreshold": {
+              "count": 20,
+              "consume": "reset",
+              "effects": [
+                {
+                  "kind": "knockout",
+                  "targetScope": "target"
+                }
+              ]
+            }
+          },
+          "charges": 2
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vol_eclaire",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vol_eclaire",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-reaction-dodge-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-electric-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.6,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-af938ec6",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
