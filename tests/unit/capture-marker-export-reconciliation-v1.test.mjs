@@ -52,7 +52,7 @@ test("an unsaved skill marker is included and unrelated standalone markers survi
 });
 test("different definitions with identical marker ID are never silently reconciled",async()=>{
   const draft=normalizeCaptureSkillTransferV1(JSON.parse(await read(path))).draft;
-  const altered={...draft.definition.effects[1].marker,maxStacks:19};
+  const altered={...draft.definition.effects[1].marker,maxStacks:21};
   assert.throws(()=>captureMarkerExportSnapshotV1({
     markers:[altered],configuredSkills:new Map([["lib_paralyze",draft]])
   }),/conflit|conflit|conflict/i);
