@@ -21,7 +21,7 @@ import {normalizeCaptureProgressionRulesV1} from "../../src/contracts/capture-pr
 const CREATURE="data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json";
 const SKILL="data/capture/showcase/choc_venin.capture-skill-transfer-v1.json";
 const originals=[
-  {path:CREATURE,bytes:5024,sha256:"54893dce6c212afe6907593babf57c989416a97b4858ab75df42a91735c22fce"},
+  {path:CREATURE,bytes:5054,sha256:"75c41b16850972b102396595b221ba2a161239466b626d0b464d067753bfaba9"},
   {path:SKILL,bytes:3730,sha256:"071f2b06eb12b2aa03f8d160092841a03cfae36ba184896c1b32dd1cc4d65051"}
 ];
 const read=relative=>readFile(new URL("../../"+relative,import.meta.url));
@@ -49,11 +49,13 @@ test("Freclairions: native transfer retains author level, 24 skills, equipment, 
   assert.equal(c.draft.id,"crea_foudrillon");
   assert.equal(c.draft.displayName,"Freclairions");
   assert.equal(c.draft.level,1);
-  assert.equal(c.draft.skillIds.length,24);
+  assert.equal(c.draft.skillIds.length,26);
+  assert.ok(c.draft.skillIds.includes("vol_eclaire"));
+  assert.ok(c.draft.skillIds.includes("Nid_frelon"));
   assert.ok(c.draft.skillIds.includes("lib_paralyze"));
   assert.ok(c.draft.skillIds.includes("choc_venin"));
   assert.deepEqual(c.loadout.slots.map(s=>s.skillId),
-    ["lib_paralyze","choc_venin","lib_tailwind","lib_chain_lightning","cap_air_atk_7"]);
+    ["lib_paralyze","choc_venin","lib_tailwind","vol_eclaire","Nid_frelon"]);
   assert.deepEqual(c.statValues.values,{health:120,speed:15,physical:0,defense:0,fire:0,water:0,
     earth:0,air:10,electric:10,light:0,shadow:0,poison:0});
   assert.equal(c.draft.combat.approachTimeModifierPct,-40);
