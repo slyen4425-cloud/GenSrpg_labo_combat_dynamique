@@ -1,4 +1,6 @@
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
+import { mountCaptureMarkerLibraryV1 } from "./capture-marker-library-v1.js";
+import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1 } from "./capture-marker-effect-fields-v1.js";
 import { captureEditorElementChannelChoicesV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
@@ -482,6 +484,10 @@ export function buildHumanTacticalSkillEffectsV1(
       effect.targetScope,
       "Cible d’effet tactique"
     );
+
+    if (kind === "apply_marker" || kind === "consume_marker") {
+      return normalizeSkillEffectV1(effect);
+    }
 
     if (kind === "scheduled_effect") {
       const delayMs =
@@ -4490,6 +4496,8 @@ function tacticalEffectKindLabelV1(kind) {
     energy_drain: "Drain d’énergie",
     life_steal: "Drain de vie — % des PV retirés",
     apply_status: "Buff / Debuff / Statut",
+    apply_marker: "Poser des marqueurs",
+    consume_marker: "Consommer des marqueurs → effets",
     cleanse: "Nettoyage",
     dispel: "Dissipation",
     persistent_zone: "Zone persistante",
@@ -4505,7 +4513,8 @@ function tacticalTargetScopeLabelV1(scope) {
     all_allies: "Tous les alliés",
     all_except_self: "Tous sauf soi",
     all_enemy_reserves: "Tous les ennemis en réserve",
-    all_ally_reserves: "Toutes les réserves alliées"
+    all_ally_reserves: "Toutes les réserves alliées",
+    all_active: "Toutes les créatures en jeu (actives)"
   }[scope] ?? scope;
 }
 
@@ -5037,6 +5046,9 @@ function syncHumanSkillEffectRowV1(
     "[data-skill-effect-scope]"
   );
   if (scope) {
+    const allActive=Array.from(scope.options).find(option=>option.value==="all_active");
+    if(allActive)allActive.hidden=!["apply_marker","consume_marker"].includes(kind);
+    if(scope.value==="all_active"&&allActive?.hidden)scope.value="target";
     if (kind === "scheduled_effect" || kind === "life_steal") {
       scope.value = kind === "life_steal" ? "self" : "target";
       scope.disabled = true;
@@ -5203,6 +5215,7 @@ function appendHumanSkillEffectV1(
 
   const config = document.createElement("div");
   config.className = "skill-effect-row__config";
+  const markerFields = captureMarkerEffectFieldsV1(root,effect);
 
   const amount = tacticalNumberInputV1(
     "skillEffectAmount",
@@ -6304,7 +6317,9 @@ function appendHumanSkillEffectV1(
     filterTagsField,
     statusBox,
     scheduledBox,
-    zoneBox
+    zoneBox,
+    markerFields.applyBox,
+    markerFields.consumeBox
   );
   row.append(header, config);
   host.append(row);
@@ -6405,6 +6420,10 @@ function readHumanSkillEffectsV1(root) {
     const targetScope = row.querySelector(
       "[data-skill-effect-scope]"
     ).value;
+
+    if (kind === "apply_marker" || kind === "consume_marker") {
+      return readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope);
+    }
 
     if (kind === "persistent_zone") {
       const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
@@ -10043,6 +10062,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
+  const markerLibraryController = mountCaptureMarkerLibraryV1({root, listen, configuredSkills});
+
   const contextualHelp = mountCaptureContextualHelpV1({
     root, listen, getStatRegistry: () => statRegistry
   });
@@ -13561,6 +13582,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         return;
       }
       disposed = true;
+      markerLibraryController.dispose();
       beamStageLayout.dispose();
       combatTeamControls.dispose();
       for (const remove of listeners.splice(0)) {
