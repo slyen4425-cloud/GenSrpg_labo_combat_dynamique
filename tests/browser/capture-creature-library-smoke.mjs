@@ -111,12 +111,36 @@ const server = createServer(async (req, res) => {
               if(get("creature-name")?.value!=="Freclairions"||get("creature-level")?.value!=="1")
                 throw Error("Freclairions did not load from configuredCreatures");
               const equipped=[...document.querySelectorAll("[data-loadout-slot]")].map(n=>n.value);
-              if(equipped.join(",")!=="lib_paralyze,choc_venin,lib_tailwind,lib_chain_lightning,cap_air_atk_7")
+              if(equipped.join(",")!=="lib_paralyze,choc_venin,lib_tailwind,vol_eclaire,Nid_frelon")
                 throw Error("Freclairions authored 5-slot loadout was not reloaded: "+equipped.join(","));
               creature.value="crea_ailevent";creature.dispatchEvent(new Event("change",{bubbles:true}));
               if(get("creature-name")?.value!=="Ailevent")
                 throw Error("Ailevent active menu reference disappeared");
               creature.value="crea_foudrillon";creature.dispatchEvent(new Event("change",{bubbles:true}));
+              // Author files from 17 Oct: Vol eclaire and Nid de frelon
+              // are actual library entries, never UI-only local defaults.
+              if(!lib.querySelector('option[value="vol_eclaire"]')||
+                 !lib.querySelector('option[value="Nid_frelon"]'))
+                throw Error("Vol eclaire / Nid de frelon missing from active skill selector");
+              lib.value="vol_eclaire";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name")?.value!=="Vol éclaire" ||
+                 get("skill-required-level")?.value!=="15")
+                throw Error("Vol eclaire new author skill not reloaded");
+              const volMarker=[...document.querySelectorAll("[data-skill-effect-row]")]
+                .find(row=>row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+              if(volMarker?.querySelector("[data-skill-marker-charges]")?.value!=="2")
+                throw Error("Vol eclaire native two charges lost from author export");
+              lib.value="Nid_frelon";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name")?.value!=="Nid de frelon" ||
+                 get("skill-required-level")?.value!=="20")
+                throw Error("Nid de frelon ultimate not selected from active skill owner");
+              const nidMarkers=[...document.querySelectorAll("[data-skill-effect-row]")]
+                .filter(row=>row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+              const nidScopes=nidMarkers.map(row=>row.querySelector("[data-skill-effect-scope]")?.value);
+              if(nidScopes.join(",")!=="all_enemies,all_enemy_reserves" ||
+                 nidMarkers.some(row=>row.querySelector("[data-skill-marker-charges]")?.value!=="5" ||
+                   row.querySelector("[data-skill-marker-pick]")?.value!=="venin-static"))
+                throw Error("Nid de frelon active & reserve 5-charge marker scopes not rendered");
               // Author's real Dard static transfer: the uploaded marker-library JSON
               // is empty; the skill's single canonical apply_marker must populate it.
               if(!lib.querySelector('option[value="lib_paralyze"]'))
