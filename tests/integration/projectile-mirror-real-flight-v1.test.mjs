@@ -261,7 +261,22 @@ test("real Boule de feu, Cendre aveuglante and Rayon lumineux reflect with a non
       const incoming = await loadSkill(skillId);
       const session = createCombatSession({
         distance: "medium",
-        fighters: ["player", "opponent"].map(fighter)
+        fighters: ["player", "opponent"].map((id) => ({
+          ...fighter(id),
+          statValuesById: { speed: 5, physical: 5 },
+          statEffectRulesById: {
+            speed: {
+              damageChannel: null, resistanceChannel: null, damagePctPerPoint: 0,
+              resistancePctPerPoint: 0, chargeTimeReductionPctPerPoint: 1,
+              damageReductionPctPerPoint: 0
+            },
+            physical: {
+              damageChannel: "physical", resistanceChannel: "physical", damagePctPerPoint: 1,
+              resistancePctPerPoint: 1, chargeTimeReductionPctPerPoint: 0,
+              damageReductionPctPerPoint: 0
+            }
+          }
+        }))
       });
       const apply = session.useSkill({
         actorId: "opponent", targetId: "opponent", skill: barrier
