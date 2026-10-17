@@ -240,6 +240,8 @@ const server = createServer(async (req, res) => {
               // a new damage channel must immediately expand marker selectors.
               fill("stat-custom-id","arcane_venin");
               fill("stat-custom-label","Venin arcanique");
+              get("stat-custom-id").dispatchEvent(new Event("input",{bubbles:true}));
+              get("stat-custom-label").dispatchEvent(new Event("input",{bubbles:true}));
               if(!values(get("stat-custom-damage-channel")).includes("arcane_venin"))
                 throw Error("canonical stat builder did not offer its proposed new channel");
               fill("stat-custom-damage-channel","arcane_venin");
