@@ -9,7 +9,7 @@ const read=path=>readFile(new URL("../../"+path,import.meta.url),"utf8");
 const path="data/capture/showcase/lib_paralyze.capture-skill-transfer-v1.json";
 
 test("author's empty markers file must NOT erase a marker embedded in an exported skill",async()=>{
-  const uploaded=JSON.parse(await read("data/capture/showcase/gensrpg-marqueurs-2.original.json"));
+  const uploaded=JSON.parse(await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-17.json"));
   assert.deepEqual(uploaded,{schema:"capture-markers-v1",markers:[]});
   const ability=normalizeCaptureSkillTransferV1(JSON.parse(await read(path))).draft;
   const original=JSON.stringify(ability);
