@@ -149,6 +149,7 @@ test("native status HUD identifies a marker with 1/10 charges and a stable icon,
   hud.sync(state);
   const node=host.children.find(x=>x.dataset?.statusFx==="hud-icon"&&!x.removed);
   assert.equal(node.dataset.marker,"true");
+  assert.match(node.title,/Poison/,"marker HUD uses the author-defined name, not a technical skill ID");
   assert.equal(node.children.find(x=>x.className==="status-icon__glyph").textContent,"◆");
   assert.equal(node.children.find(x=>x.className==="status-icon__stack").textContent,"1/10");
   assert.equal(node.dataset.assetId,"");
