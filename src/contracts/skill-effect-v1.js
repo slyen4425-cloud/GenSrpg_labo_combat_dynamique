@@ -9,6 +9,7 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "energy_restore",
   "energy_drain",
   "life_steal",
+  "knockout",
   "apply_status",
   "apply_marker",
   "consume_marker",
@@ -70,6 +71,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "percent",
     "maxHeal"
   ]),
+  knockout: COMMON_FIELDS,
   apply_status: new Set([
     ...COMMON_FIELDS,
     "status"
@@ -284,7 +286,7 @@ export function normalizeSkillEffectV1(input) {
     }
     output.effects = Object.freeze(value.effects.map(normalizeSkillEffectV1));
     for (const child of output.effects) {
-      if (!["damage", "heal", "energy_restore", "energy_drain", "apply_status", "cleanse", "dispel"].includes(child.kind) ||
+      if (!["damage", "heal", "energy_restore", "energy_drain", "knockout", "apply_status", "cleanse", "dispel"].includes(child.kind) ||
           !["target", "self"].includes(child.targetScope)) {
         throw new RangeError("Unsupported nested effect for marker consumption");
       }
