@@ -173,3 +173,23 @@ function harnessWithSecondEnemy(){
       enemy2:team("enemy2",["e3","e4"])}}});
   return {session,roster};
 }
+
+test("the actual authored Nid de frelon preset reaches native reserve roster on a real cast",async()=>{
+  const raw=JSON.parse(await readFile(new URL(
+    "../../data/capture/showcase/Nid_frelon.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
+  const nid=normalizeSkillDefinition(raw.draft.definition);
+  assert.equal(nid.id,"Nid_frelon");
+  assert.equal(nid.maxUsesPerCombat,1);
+  const {session,roster}=harness();
+  const hit=roster.useSkillOnTarget({actorId:"player",
+    targetRef:{scope:"active",actorId:"opponent"},skill:nid});
+  assert.equal(hit.ok,true,"source SkillDefinition should resolve, not just synthetic marker fixture");
+  assert.equal(stacks(session.snapshot().fighters.opponent),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("opponent","e1")),5);
+  assert.equal(stacks(roster.reserveMemberSnapshot("opponent","e2")),5);
+  assert.equal(session.snapshot().fighters.player.energy,32);
+  assert.equal(session.snapshot().fighters.player.skillUseCounts[nid.id],1);
+  const repeated=roster.useSkillOnTarget({actorId:"player",
+    targetRef:{scope:"active",actorId:"opponent"},skill:nid});
+  assert.equal(repeated.ok,false,"one-use ultimate must not cast twice");
+});
