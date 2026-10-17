@@ -250,8 +250,11 @@ export function normalizeSkillEffectV1(input) {
     throw new RangeError("all_active is only valid for marker effects");
   }
 
-  if (isReserveEffectTargetScopeV2(targetScope) && !["damage", "heal", "apply_marker"].includes(kind)) {
-    throw new RangeError("Reserve effect scopes support damage/heal/apply_marker only: " + kind);
+  // Reserve scopes are executed by the existing RosterSession owner on a
+  // temporary native CombatState: status application shares the exact same
+  // clock, immunity and status lifetime rules as active combat.
+  if (isReserveEffectTargetScopeV2(targetScope) && !["damage", "heal", "apply_marker", "apply_status"].includes(kind)) {
+    throw new RangeError("Reserve effect scopes support damage/heal/apply_marker/apply_status only: " + kind);
   }
 
   if (kind === "life_steal" && targetScope !== "self") {
