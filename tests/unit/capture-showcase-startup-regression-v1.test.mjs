@@ -36,6 +36,9 @@ import {
   CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
 } from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {
+  CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1
+} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
+import {
   importCaptureTransferJsonV1,
   planCaptureTransferImportV1
 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
@@ -98,6 +101,15 @@ test("startup library remains complete while showcase presets are applied throug
     }
   }
 
+  // Mirror the real Human Editor ordering: hydrate skill presets first.
+  // Foudrillon now explicitly references authored Choc venimeux, so its
+  // stable ID must exist in configuredSkills before creature validation.
+  for (const file of CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1) {
+    const transfer=importCaptureTransferJsonV1(
+      await readFile(new URL("../../"+file,import.meta.url),"utf8")
+    );
+    configuredSkills.set(transfer.value.draft.id,transfer.value.draft);
+  }
   const runtimeSkillIds = new Set(configuredSkills.keys());
   const configuredCreatures = new Map();
 
