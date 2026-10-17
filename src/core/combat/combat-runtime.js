@@ -282,7 +282,14 @@ export function createCombatRuntime({
     );
   }
 
-  function mirrorCanIntercept(record, action, atMs, visibleContact) {
+  function mirrorCanIntercept(record, action, atMs, visibleContact, {
+    mirrorSpritePresent = false,
+    mirrorSpriteContact = false
+  } = {}) {
+    // If the status has a visible barrier surface, a creature-body hit
+    // outside that sprite MUST NOT be treated as a mirror rebound.
+    // Legacy mirrors without a sprite keep their body-contact behavior.
+    if (mirrorSpritePresent === true && mirrorSpriteContact !== true) return false;
     return visibleContact &&
       action.actionType === "skill" &&
       action.skill?.form === "projectile" &&
@@ -708,7 +715,8 @@ export function createCombatRuntime({
   function processResolution(
     record,
     atNowMs,
-    { impactAtMs = null, visibleContact = false, contactPoint = null } = {}
+    { impactAtMs = null, visibleContact = false, contactPoint = null,
+      mirrorSpritePresent = false, mirrorSpriteContact = false } = {}
   ) {
     if (
       !recordIsActive(record) ||
@@ -800,7 +808,8 @@ export function createCombatRuntime({
           })
         : null;
 
-    const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionClockMs, visibleContact);
+    const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionClockMs, visibleContact,
+      {mirrorSpritePresent, mirrorSpriteContact});
     // An uncaught returning projectile cannot inflict damage at a timer boundary.
     const forcedOutcome = mirrorContact ? "mirrored" :
       (record.mirrorReturn && !visibleContact ? "evaded" :
@@ -1696,7 +1705,9 @@ export function createCombatRuntime({
     actorId,
     targetId,
     skillId = null,
-    contactPoint = null
+    contactPoint = null,
+    mirrorSpritePresent = false,
+    mirrorSpriteContact = false
   }) {
     if (disposed) {
       return Object.freeze({
@@ -1799,7 +1810,8 @@ export function createCombatRuntime({
     const resolution = processResolution(
       record,
       current,
-      { impactAtMs: contactImpactAtMs, visibleContact: true, contactPoint: visualPoint }
+      { impactAtMs: contactImpactAtMs, visibleContact: true, contactPoint: visualPoint,
+        mirrorSpritePresent, mirrorSpriteContact }
     );
 
     if (!resolution) {
