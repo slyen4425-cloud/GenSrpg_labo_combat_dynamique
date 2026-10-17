@@ -24,7 +24,7 @@ function markerSelect(root,value,includeAll=false){
 }
 function wrapSelect(text,node){const l=field(text);l.append(node);return l;}
 
-function appendConsumeResultV1(host,effect=null){
+function appendConsumeResultV1(host,effect=null,editorRoot=null){
   const row=document.createElement("div");
   row.dataset.markerConsumeResult="true";row.className="skill-status-config__grid";
   const type=choice("Effet après consommation",[
@@ -47,7 +47,7 @@ function appendConsumeResultV1(host,effect=null){
   const defaultStun={id:"stun-marqueur",kind:"stun",polarity:"detrimental",durationMs:2000,stacking:"replace"};
   const templates=[
     {status:defaultStun,label:"Étourdissement 2 s"},
-    ...captureMarkerStatusTemplatesV1(host.closest("[data-capture-editor-human]")??document),
+    ...captureMarkerStatusTemplatesV1(editorRoot??host.closest("[data-capture-editor-human]")??document),
     ...(effect?.kind==="apply_status"&&effect.status?[{status:effect.status,label:"Statut enregistré : "+effect.status.id}]:[])
   ];
   const seen=new Set();
@@ -101,10 +101,10 @@ export function captureMarkerEffectFieldsV1(root,effect){
   const minimum=numberField("Charges nécessaires pour activer l'effet",effect?.minimum??1,1);
   minimum[1].dataset.markerConsumeMinimum="true";
   const results=document.createElement("div");results.dataset.markerConsumeResults="true";
-  if(effect?.effects?.length){for(const child of effect.effects)appendConsumeResultV1(results,child);}
-  else appendConsumeResultV1(results);
+  if(effect?.effects?.length){for(const child of effect.effects)appendConsumeResultV1(results,child,root);}
+  else appendConsumeResultV1(results,null,root);
   const add=document.createElement("button");add.type="button";add.className="secondary-action";
-  add.textContent="+ Ajouter un effet";add.addEventListener("click",()=>appendConsumeResultV1(results));
+  add.textContent="+ Ajouter un effet";add.addEventListener("click",()=>appendConsumeResultV1(results,null,root));
   const sync=()=>{max[0].hidden=count[1].value!=="number";};
   count[1].addEventListener("change",sync);sync();
   consume.append(wrapSelect("Quels marqueurs consommer ?",pick),count[0],max[0],minimum[0],results,add);
