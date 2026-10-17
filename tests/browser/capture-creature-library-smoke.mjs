@@ -82,6 +82,50 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",plugin+"</head>"));
     }
+    // Real healing-capability test despite an unrelated unsaved evolution target.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-heal-evolution-isolation")) {
+      const html=contents.toString("utf8");
+      const probe=\`<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          let polls=0;
+          const timer=setInterval(()=>{
+            const q=(s)=>document.querySelector(s);
+            const creature=q("[data-creature-library-select]");
+            const skill=q("[data-skill-library-select]");
+            if(!q("[data-creature-library-state]")?.textContent?.includes("3 modèles vitrine chargés") ||
+               !creature?.querySelector('option[value="crea_lumilo"]') ||
+               !skill?.querySelector('option[value="cap_light_special_1"]')){
+              if(++polls>100){clearInterval(timer);document.body.dataset.healEvolutionProbe="timeout";}
+              return;
+            }
+            clearInterval(timer);
+            try{
+              const change=(node,value)=>{node.value=value;node.dispatchEvent(new Event("change",{bubbles:true}));};
+              change(creature,"crea_lumilo");
+              const target=q("[data-evolution-target]");
+              const enabled=q("[data-evolution-enabled]");
+              if(!enabled.checked || !target.value) throw Error("saved Lumilo evolution missing");
+              change(target,"");
+              if(target.value!=="")throw Error("incomplete evolution not staged");
+              change(skill,"cap_light_special_1");
+              if(q("[data-skill-name]")?.value!=="Soin lumineux") throw Error("real Soin lumineux not loaded");
+              q("[data-editor-validate]").click();
+              const state=q("[data-editor-status]")?.textContent??"";
+              if(!state.includes("Test de capacité prêt avec la créature enregistrée"))
+                throw Error("skill testing blocked by unrelated evolution: "+state.slice(0,190));
+              if(target.value!=="") throw Error("unsaved evolution was silently overwritten");
+              change(creature,"crea_lumilo");
+              if(q("[data-evolution-target]").value!=="crea_solarys")
+                throw Error("saved creature evolution was mutated by test");
+              document.body.dataset.healEvolutionProbe="ok:heal:preserve:creature";
+            }catch(err){document.body.dataset.healEvolutionProbe="fail:"+err.message;}
+          },100);
+        });
+      </script>\`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
+
     // Real marker authoring through the existing skill editor and active configuredSkills.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-markers")) {
@@ -1383,6 +1427,12 @@ try {
   if(guardProbe!=="ok:legacy:defense:60:three:26000:550:dodge")
     throw Error("Real creature reaction settings did not persist: "+guardProbe);
   console.log("Creature reaction editor: Chrome verified legacy -> Defense 60%, 3 charges, 26s recharge, 0.55s window, save/reselect and Dodge visibility");
+  const healEvolutionDom=await dumpDom(url+"?verify-heal-evolution-isolation=1");
+  assertCreatures(healEvolutionDom, "healing skill evolution validation browser bootstrap");
+  const healEvolutionProbe=healEvolutionDom.match(/data-heal-evolution-probe="([^"]+)"/)?.[1] ?? "missing";
+  if(healEvolutionProbe!=="ok:heal:preserve:creature")
+    throw Error("Actual Soin lumineux combat test blocked or creature saved draft mutated: "+healEvolutionProbe);
+  console.log("Heal browser: real Soin lumineux testing bypasses only the incomplete unsaved evolution, preserving the saved creature");
   const reflectionDom=await dumpDom(url+"?verify-damage-reflection=1");
   assertCreatures(reflectionDom,"damage reflection real editor bootstrap");
   const reflectionProbe=reflectionDom.match(/data-damage-reflection-probe="([^"]+)"/)?.[1] ?? "missing";
