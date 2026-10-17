@@ -1168,24 +1168,24 @@
           <div class="fx-first-choices__step">
             <h3>1. Choisir l'icône</h3>
             <div class="grid two">
-            <label>Icône
-              <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
-            </label>
+              <label>Icône
+                <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
+              </label>
             </div>
           </div>
           <div class="fx-first-choices__step">
             <h3>2. Choisir la forme et le type de projectile</h3>
             <div class="grid two">
-            <label>Forme de la capacité
-              <select data-skill-form>
-                <option value="contact">Contact</option>
-                <option value="projectile" selected>Projectile</option>
-                <option value="beam">Rayon</option>
-                <option value="area">Zone</option>
-                <option value="self">Sur soi</option>
-                <option value="aura">Aura</option>
-              </select>
-            </label>
+              <label>Forme de la capacité
+                <select data-skill-form>
+                  <option value="contact">Contact</option>
+                  <option value="projectile" selected>Projectile</option>
+                  <option value="beam">Rayon</option>
+                  <option value="area">Zone</option>
+                  <option value="self">Sur soi</option>
+                  <option value="aura">Aura</option>
+                </select>
+              </label>
               <label>Trajectoire (pour les projectiles)
                 <select data-skill-trajectory-mode>
                   <option value="linear" selected>Lanceur → cible (classique)</option>
@@ -1464,7 +1464,7 @@
               </label>
               <p class="note">Choisis « Onde sphérique expansive ». Le sprite « Projectile / trajet » s'agrandit du rayon initial au final pendant « Vers la cible (ms) ». La collision suit le bord de l'anneau au lieu du centre d'un projectile. Pour toucher le sol et les créatures en vol, active les deux présences dans les réglages de cible. Version initiale : collision avec la cible sélectionnée, pas encore de dégâts multi-cibles 2v2.</p>
             </fieldset>
-            <p class="note">Pour « Chute de pierre » : choisis Style « Projectile », puis « Chute du ciel ». Le projectile apparaît au-dessus de la cible, descend durant « Vers la cible (ms) » et déclenche l’impact habituel. Utilise ton sprite de pierre dans « Projectile / trajet » ; l’option ne change ni les dégâts, ni le ciblage, ni la collision des autres compétences.</p>
+            <p class="note">Pour « Chute de pierre » : choisis « Projectile », puis « Chute du ciel » à l'étape 2. Le projectile apparaît au-dessus de la cible, descend durant « Vers la cible (ms) » et déclenche l’impact habituel. Utilise ton sprite de pierre dans « Projectile / trajet » ; l’option ne change ni les dégâts, ni le ciblage, ni la collision des autres compétences.</p>
           </fieldset>
           <label>Charge — vue joueur
             <select data-skill-cast-layer-player>
