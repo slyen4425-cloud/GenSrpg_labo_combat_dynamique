@@ -177,8 +177,8 @@ const server = createServer(async (req, res) => {
                  get("marker-threshold-channel").value!=="fire"||
                  get("marker-icon").value!==iconId)
                 throw Error("marker dropdown selections lost on save");
-              if(!prePicker.querySelector('option[value="poison"]')||prePicker.value!=="poison")
-                throw Error("new marker was not offered in an ALREADY OPEN ability effect picker");
+              if(!prePicker.querySelector('option[value="poison"]')||prePicker.value!=="venin-static")
+                throw Error("new marker was not offered, or existing Venin choice was silently overwritten");
               get("marker-new").click();
               fill("marker-name","Poïson");
               get("marker-save").click();
