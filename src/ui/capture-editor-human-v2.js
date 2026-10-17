@@ -11589,6 +11589,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   function refreshSkillLibraryOptions(
     preferredId = null
   ) {
+    markerLibraryController.indexSkills();
     const previous =
       preferredId ?? librarySelect.value;
 
