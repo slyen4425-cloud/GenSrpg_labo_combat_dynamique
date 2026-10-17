@@ -1,5 +1,5 @@
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
-import { mountCaptureMarkerLibraryV1 } from "./capture-marker-library-v1.js";
+import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1 } from "./capture-marker-library-v1.js";
 import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1 } from "./capture-marker-effect-fields-v1.js";
 import { captureEditorElementChannelChoicesV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
@@ -2627,6 +2627,7 @@ export function humanSkillEditorFieldsFromDraftV1(
       definition.maxUsesPerCombat ?? null,
     activationRequirements:
       definition.activationRequirements,
+    markerCost:definition.markerCost ?? null,
     effects: [...(definition.effects ?? [])],
     reaction: definition.reaction,
     evasion: definition.evasion,
@@ -2992,6 +2993,7 @@ export function buildHumanSkillDraftV1(fields) {
           mode: "all",
           conditions: []
         },
+      ...(fields.markerCost == null ? {} : {markerCost:fields.markerCost}),
       reaction: {
         blockForms: stableIds(reaction.blockForms),
         reflectForms: stableIds(reaction.reflectForms),
@@ -3459,6 +3461,8 @@ function writeSkillTemplateFields(
       fields.activationRequirements
     );
   }
+  if(Object.prototype.hasOwnProperty.call(fields,"markerCost"))
+    renderHumanSkillMarkerCostV1(root, fields.markerCost);
 
   renderHumanSkillEffectsV1(
     root,
@@ -3714,6 +3718,7 @@ function writeSkillDraftFields(
     root,
     fields.activationRequirements
   );
+  renderHumanSkillMarkerCostV1(root,fields.markerCost);
   renderHumanSkillEffectsV1(
     root,
     fields.effects,
@@ -3842,6 +3847,7 @@ function prepareNewSkillDraftFields(
       conditions: []
     }
   );
+  renderHumanSkillMarkerCostV1(root,null);
   renderHumanSkillEffectsV1(
     root,
     [],
@@ -4403,6 +4409,32 @@ function appendHumanSkillActivationConditionV1(
   );
 
   return row;
+}
+
+function renderHumanSkillMarkerCostV1(root, markerCost) {
+  const toggle=one(root,"[data-skill-marker-cost-enabled]");
+  const config=one(root,"[data-skill-marker-cost-fields]");
+  const select=one(root,"[data-skill-marker-cost-id]");
+  toggle.checked=markerCost!=null;
+  config.hidden=!toggle.checked;
+  select.textContent="";
+  createOption(select,"","Choisir un marqueur");
+  const markers=captureMarkerOptionsV1(root).sort((a,b)=>a.name.localeCompare(b.name,"fr"));
+  for(const marker of markers)createOption(select,marker.id,marker.name);
+  if(markerCost && !markers.some(marker=>marker.id===markerCost.markerId))
+    createOption(select,markerCost.markerId,"Marqueur manquant : "+markerCost.markerId);
+  select.value=markerCost?.markerId??"";
+  one(root,"[data-skill-marker-cost-source]").value=markerCost?.source??"self";
+  one(root,"[data-skill-marker-cost-count]").value=String(markerCost?.count??3);
+}
+
+function readHumanSkillMarkerCostV1(root) {
+  if(!one(root,"[data-skill-marker-cost-enabled]").checked)return null;
+  const markerId=selectedValue(root,"[data-skill-marker-cost-id]");
+  if(!markerId)throw new RangeError("Choisis un marqueur pour le coût d'activation.");
+  return {markerId,
+    source:selectedValue(root,"[data-skill-marker-cost-source]"),
+    count:numericValue(root,"[data-skill-marker-cost-count]")};
 }
 
 function renderHumanSkillActivationRequirementsV1(
@@ -8989,6 +9021,7 @@ function readSkillFields(root) {
       readHumanSkillActivationRequirementsV1(
         root
       ),
+    markerCost:readHumanSkillMarkerCostV1(root),
     effects: readHumanSkillEffectsV1(root),
     reaction: {
       blockForms: [],
@@ -10065,6 +10098,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
 
   const markerLibraryController = mountCaptureMarkerLibraryV1({root, listen, configuredSkills});
+  listen(one(root,"[data-skill-marker-cost-enabled]"),"change",() => {
+    one(root,"[data-skill-marker-cost-fields]").hidden =
+      !one(root,"[data-skill-marker-cost-enabled]").checked;
+  });
 
   const contextualHelp = mountCaptureContextualHelpV1({
     root, listen, getStatRegistry: () => statRegistry
