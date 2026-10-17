@@ -33,8 +33,8 @@ test("all three user uploads are preserved, original Nid is archived, and canoni
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===creature).length,1);
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===vol).length,1);
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===nid).length,1);
-  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,34);
-  assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size,34);
+  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,35);
+  assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size,35);
 });
 
 test("Vol eclaire imported as authored: 20 electric damage, TWO actual charges, not description's three",async()=>{
