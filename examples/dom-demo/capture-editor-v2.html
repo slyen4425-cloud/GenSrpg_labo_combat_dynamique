@@ -910,7 +910,7 @@
         </div>
         <label>Description<textarea data-skill-description rows="2">Projectile de feu.</textarea></label>
 
-        <div class="grid three">
+        <div class="grid two">
           <label>Type
             <select data-skill-category>
               <option value="offensive" selected>Attaque</option>
@@ -918,16 +918,6 @@
               <option value="heal">Soin</option>
               <option value="buff_debuff">Buff / Debuff</option>
               <option value="counter">Contre</option>
-            </select>
-          </label>
-          <label>Style
-            <select data-skill-form>
-              <option value="contact">Contact</option>
-              <option value="projectile" selected>Projectile</option>
-              <option value="beam">Rayon</option>
-              <option value="area">Zone</option>
-              <option value="self">Sur soi</option>
-              <option value="aura">Aura</option>
             </select>
           </label>
           <label>Élément
@@ -1170,9 +1160,43 @@
           <span class="step">7</span>
           <div>
             <h2>Effets visuels</h2>
-            <p>Un seul parcours : style visuel, intensité, puis personnalisation facultative.</p>
+            <p>Icône, forme de la capacité et trajectoire éventuelle d'abord ; puis choix des animations et de leurs réglages.</p>
           </div>
         </div>
+
+        <section class="fx-first-choices" data-skill-fx-first-choices aria-label="Premiers choix des effets visuels">
+          <div class="fx-first-choices__step">
+            <h3>1. Choisir l'icône</h3>
+            <div class="grid two">
+            <label>Icône
+              <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
+            </label>
+            </div>
+          </div>
+          <div class="fx-first-choices__step">
+            <h3>2. Choisir la forme et le type de projectile</h3>
+            <div class="grid two">
+            <label>Forme de la capacité
+              <select data-skill-form>
+                <option value="contact">Contact</option>
+                <option value="projectile" selected>Projectile</option>
+                <option value="beam">Rayon</option>
+                <option value="area">Zone</option>
+                <option value="self">Sur soi</option>
+                <option value="aura">Aura</option>
+              </select>
+            </label>
+              <label>Trajectoire (pour les projectiles)
+                <select data-skill-trajectory-mode>
+                  <option value="linear" selected>Lanceur → cible (classique)</option>
+                  <option value="skyfall">Chute du ciel (vers la cible)</option>
+                  <option value="expanding_wave">Onde sphérique expansive (depuis la créature)</option>
+                </select>
+              </label>
+            </div>
+            <p class="note">Projectile classique, Rayon continu, Zone, Contact… ce choix garde exactement ses règles de combat actuelles. Pour un projectile, précise si le trajet est direct, tombe du ciel ou s'étend en onde. Les réglages d'animation sont ensuite disponibles ci-dessous.</p>
+          </div>
+        </section>
 
         <details class="editor-context-help"><summary>ⓘ À quoi servent les effets visuels ?</summary>
           <p class="note">Cast = animation de lancement ; Trajet = projectile ou corps du rayon ; Impact = effet à l’arrivée ; Zone = animation persistante. Échelle, décalage, opacité et calques ne changent jamais les valeurs de dégâts dans le moteur.</p>
@@ -1180,7 +1204,7 @@
         <section class="fx-unified-flow" data-skill-fx-unified-flow aria-label="Parcours simplifié des effets visuels">
           <p class="note">Choisis un style ou une intensité rapidement. Pour choisir précisément les sprites et positions Cast / Projectile / Impact, utilise ensuite la section « Personnaliser les animations ».</p>
         <div class="fx-flow-step" data-skill-fx-starter>
-          <h3>1. Choisir un style</h3>
+          <h3>3. Choisir un style visuel (facultatif)</h3>
           <p class="note">Choisis une base visuelle (feu, eau, soin…). Pour une capacité existante, tes sprites, sons et ancrages restent conservés. Pour une nouvelle capacité vide, le style peut également ajouter un cast, un trajet et un impact.</p>
           <div class="grid two">
             <label>Style de départ
@@ -1200,7 +1224,7 @@
         </div>
 
         <div class="fx-flow-step fx-quick-card" data-skill-fx-quick>
-          <h3>2. Choisir l'intensité</h3>
+          <h3>4. Choisir l'intensité</h3>
           <p class="note">Après le style, ajuste en un clic la lueur, la traînée, la fumée et la secousse. Choisir une intensité affiche un aperçu, sans rien appliquer avant ton clic.</p>
           <div class="grid two">
             <label>Je veux un effet…
@@ -1226,7 +1250,7 @@
           <p class="note">Pour aller plus loin, ouvre « Personnaliser les animations » puis, si nécessaire, les détails Glow et fumée. Les valeurs fines restent repliées.</p>
         </div>
         <details class="fx-flow-personalize" data-skill-fx-personalize>
-          <summary>3. Personnaliser — Glow et particules (optionnel)</summary>
+          <summary>5. Personnaliser — Glow et particules (facultatif)</summary>
           <p class="note">Facultatif : adapte indépendamment la lumière et les particules. Ces réglages remplacent uniquement les valeurs concernées, sans modifier le style, les sprites ou les sons.</p>
           <div class="grid two">
             <label>Présence du glow
@@ -1265,7 +1289,7 @@
           <h3>Rayon continu — 3 phases</h3>
           <p>Un clic prépare les 3 phases : départ / charge à la bouche, corps continu et impact. Ensuite, choisis tes propres sprites, tailles et sons ci-dessous. Le même modèle reste accessible même si la capacité est actuellement de style Projectile.</p>
         </div>
-        <p class="note">Pour un rayon personnalisé sans modèle Eau, sélectionne simplement « Rayon » dans le champ Style : les trois phases apparaîtront ici. Dans les deux cas, les dégâts, l'énergie et le cooldown sont inchangés.</p>
+        <p class="note">Pour un rayon personnalisé sans modèle Eau, choisis simplement « Rayon » à l'étape 2 : les trois phases apparaîtront ici. Dans les deux cas, les dégâts, l'énergie et le cooldown sont inchangés.</p>
         <div data-skill-beam-pack>
           <button type="button" class="primary-action" data-skill-beam-pack-apply disabled>
             Appliquer le modèle de rayon d’eau
@@ -1273,7 +1297,7 @@
           <button type="button" class="secondary-action" data-skill-beam-pack-undo disabled>Annuler le modèle — retrouver mes réglages</button>
           <p class="note" data-skill-beam-pack-state data-tone="info">Chargement des visuels du rayon…</p>
         </div>
-        <p class="note" data-beam-four-stage-help>Le bouton prépare automatiquement le rayon complet et active le style Rayon ; tu peux ensuite choisir chaque asset. Ou sélectionne Style : Rayon pour partir de tes réglages existants.</p>
+        <p class="note" data-beam-four-stage-help>Le bouton prépare automatiquement le rayon complet et active le style Rayon ; tu peux ensuite choisir chaque asset. Ou choisis « Rayon » à l'étape 2 pour partir de tes réglages existants.</p>
         <div class="grid two">
           <fieldset class="editor-choice-group" data-beam-stage="start" hidden>
             <legend>1 — Charge à la bouche et départ</legend>
@@ -1328,9 +1352,6 @@
           <p class="note">Les animations et leurs positions se règlent ici, indépendamment des préréglages rapides. Les détails Glow, traînée et fumée restent repliés plus bas.</p>
 
         <div class="grid two">
-          <label>Icône
-            <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
-          </label>
           <label>Point de sortie de cette capacité
             <select data-skill-socket>
               <option value="">Centre par défaut</option>
@@ -1420,14 +1441,7 @@
           <p class="note">Pour Tornade : choisis « Boucler pendant le trajet », puis augmente « Vitesse de boucle » à 2× ou 3×. Cela accélère les images, sans accélérer le projectile. Réglage conseillé : ratio 0.25 pour une tornade, ou 1 sans effet de profondeur (si l'ancienne perspective est à 0).</p>
           <p class="note">Adapter répartit les phases sur tout le trajet. Boucler répète l’animation jusqu’au contact. La vitesse de déplacement se règle dans « Vers la cible ».</p>
           <fieldset class="editor-choice-group" data-skill-skyfall-settings>
-            <legend>Trajectoire du projectile</legend>
-            <label>Mode de déplacement
-              <select data-skill-trajectory-mode>
-                <option value="linear" selected>Lanceur → cible (classique)</option>
-                <option value="skyfall">Chute du ciel (vers la cible)</option>
-                <option value="expanding_wave">Onde sphérique expansive (depuis la créature)</option>
-              </select>
-            </label>
+            <legend>Réglages des trajectoires spéciales</legend>
             <label>Hauteur de départ — chute du ciel (px)
               <input type="number" min="1" max="1400" step="10" value="400" data-skill-fall-height>
             </label>
