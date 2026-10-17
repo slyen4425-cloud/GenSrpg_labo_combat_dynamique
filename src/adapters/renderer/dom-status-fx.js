@@ -504,9 +504,11 @@ export function createDomStatusFxRenderer({
     // A stacked status has ONE shared lifetime, refreshed by the canonical
     // Status Runtime when another charge arrives. Show that native expiry
     // rather than inventing separate per-charge clocks or JS timers.
+    const permanent = isMarker &&
+      instance?.definition?.durationModel === "permanent";
     const showExpiry =
       (isMarker || thresholdCount !== null) &&
-      instance?.definition?.durationModel === "time_ms" &&
+      (instance?.definition?.durationModel === "time_ms" || permanent) &&
       Boolean(info.remainingLabel);
     if (showExpiry) {
       if (!record.expiryNode) {
@@ -516,17 +518,25 @@ export function createDomStatusFxRenderer({
         record.node.append(expiryNode);
         record.expiryNode = expiryNode;
       }
-      if (!record.expiryTrack) {
-        const track = target.statusHost.ownerDocument.createElement("span");
-        track.className = "status-icon__expiry-track";
-        const fill = target.statusHost.ownerDocument.createElement("span");
-        fill.className = "status-icon__expiry-fill";
-        track.append(fill);
-        record.node.append(track);
-        record.expiryTrack = track;
-        record.expiryFillNode = fill;
+      if (permanent) {
+        record.expiryNode.textContent = "∞";
+        // A permanent marker has no percentage countdown; never show a 0% bar.
+        record.expiryTrack?.remove?.();
+        record.expiryTrack = null;
+        record.expiryFillNode = null;
+      } else {
+        if (!record.expiryTrack) {
+          const track = target.statusHost.ownerDocument.createElement("span");
+          track.className = "status-icon__expiry-track";
+          const fill = target.statusHost.ownerDocument.createElement("span");
+          fill.className = "status-icon__expiry-fill";
+          track.append(fill);
+          record.node.append(track);
+          record.expiryTrack = track;
+          record.expiryFillNode = fill;
+        }
+        refreshStackExpiryHud(record, instance, elapsedMs);
       }
-      refreshStackExpiryHud(record, instance, elapsedMs);
     } else if (record.expiryNode) {
       record.expiryNode.remove?.();
       record.expiryTrack?.remove?.();
