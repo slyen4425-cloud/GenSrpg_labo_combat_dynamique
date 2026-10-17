@@ -1,0 +1,49 @@
+name: Import real Light Shield Sprites
+on:
+  push:
+    branches:
+      - work/lab-light-shield-sprites-2026-10-17
+    paths:
+      - _incoming/bouclier_lumiere_40_frames_github.zip
+permissions:
+  contents: write
+jobs:
+  verify-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: present
+        name: Detect upload rather than follow-up ZIP cleanup
+        shell: bash
+        run: |
+          if test -f _incoming/bouclier_lumiere_40_frames_github.zip; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.present.outputs.present == 'true'
+        with:
+          python-version: '3.12'
+      - name: Install image validator
+        if: steps.present.outputs.present == 'true'
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Verify real files, extract media, register asset IDs and tests
+        if: steps.present.outputs.present == 'true'
+        run: python scripts/import_light_shield_pack.py
+      - uses: actions/setup-node@v4
+        if: steps.present.outputs.present == 'true'
+        with:
+          node-version: 22
+      - name: Run full laboratory CI before committing
+        if: steps.present.outputs.present == 'true'
+        run: npm run ci
+      - name: Commit verified assets and remove temporary ZIP
+        if: steps.present.outputs.present == 'true'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- assets/library/capture/sprites/skills/light_shield data/assets/catalog/global-visual-assets.v1.json tests/unit/capture-light-shield-assets-v1.test.mjs docs/LAB_LIGHT_SHIELD_SPRITES_V1.md docs/LAB_CURRENT_WORK.md _incoming/bouclier_lumiere_40_frames_github.zip
+          git commit -m 'assets(capture): add real 40-frame light shield cast and barrier'
+          git push origin HEAD:work/lab-light-shield-sprites-2026-10-17
