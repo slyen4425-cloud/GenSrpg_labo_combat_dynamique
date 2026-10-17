@@ -209,6 +209,9 @@ export function validateStatusEffectForTargetV1({
 }
 
 function refreshedLifetime(existing, now) {
+  if (existing.definition.durationModel === "permanent") {
+    return {expiresAtMs:null,remainingActionEnds:null};
+  }
   if (
     existing.definition.durationModel ===
     "owner_action_end"
@@ -714,8 +717,7 @@ export function advanceStatusEffectsV1({
       ].statusEffects
         .filter(
           (instance) =>
-            instance.definition.durationModel ===
-            "time_ms"
+            ["time_ms","permanent"].includes(instance.definition.durationModel)
         )
         .map(
           (instance) => ({id:instance.definition.id,sourceSkillId:instance.sourceSkillId})
@@ -736,8 +738,8 @@ export function advanceStatusEffectsV1({
         instance &&
         instance.nextTickAtMs !== null &&
         instance.nextTickAtMs <= endMs &&
-        instance.nextTickAtMs <=
-          instance.expiresAtMs
+        (instance.expiresAtMs === null ||
+          instance.nextTickAtMs <= instance.expiresAtMs)
       ) {
         const tickAt =
           instance.nextTickAtMs;
