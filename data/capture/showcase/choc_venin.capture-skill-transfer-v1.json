@@ -1,0 +1,150 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "choc_venin",
+    "description": "Retire les marqueur : inflige 10 dégât par marqueur .",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "choc_venin",
+      "name": "Choc venimeux",
+      "category": "buff_debuff",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "electric",
+      "approachMode": "none",
+      "energyCost": 4,
+      "preparationMs": 0,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "consume_marker",
+          "targetScope": "target",
+          "markerId": "venin-static",
+          "count": "all",
+          "minimum": 1,
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 10,
+              "channel": null
+            }
+          ],
+          "perCharge": true
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:choc_venin",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "choc_venin",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-paralysie-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-electric-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.6,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-cast-electric-01",
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "durationMs": 500,
+          "rotationDeg": 0,
+          "opacity": 0.8,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
