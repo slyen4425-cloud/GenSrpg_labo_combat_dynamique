@@ -29,6 +29,7 @@ function appendConsumeResultV1(host,effect=null,editorRoot=null){
   row.dataset.markerConsumeResult="true";row.className="skill-status-config__grid";
   const type=choice("Effet après consommation",[
     ["none","Aucun (retrait seulement)"],
+    ["knockout","K.O. (si la cible n’est pas immunisée)"],
     ["damage","Dégâts"],["heal","Soin"],
     ["energy_restore","Récupérer de l'énergie"],
     ["energy_drain","Drainer de l'énergie"],
@@ -124,6 +125,7 @@ export function readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope){
   const results=[...row.querySelectorAll("[data-marker-consume-result]")].flatMap(item=>{
     const childKind=read(item,"marker-result-kind").value;
     if(childKind==="none")return [];
+    if(childKind==="knockout")return [{kind:"knockout",targetScope:target}];
     const target=read(item,"marker-result-scope").value;
     if(childKind==="apply_status")return [{kind:"apply_status",targetScope:target,
       status:JSON.parse(read(item,"marker-result-status").value)}];
