@@ -73,3 +73,39 @@ test("RED: actual Combat Rules and 2v2 targeting refuse enemies, still permit al
   assert.equal(s.snapshot().fighters.enemy.hp,40);
   assert.equal(s.snapshot().fighters.player.energy,20);
 });
+
+
+test("Soin lumineux reserve target: own and ally bench succeed, opponent bench rejected before energy cost",async()=>{
+  const {definition:skill}=await loadSkill();
+  const {createRosterSession}=await import("../../src/core/combat/roster-session.js");
+  const member=(id)=>({id,creatureId:id,displayName:id,fighterConfigId:id});
+  const pairs=[["player","p0","p1"],["ally","a0","a1"],["enemy","e0","e1"],["enemy-2","e20","e21"]];
+  const conf=Object.fromEntries(pairs.flatMap(([,a,b])=>[a,b]).map(id=>[id,fighter(id)]));
+  const makeHarness=()=>{
+    const combat=createCombatSession({distance:"medium",battleFormat:format,
+      fighters:pairs.map(([slot,a])=>({...conf[a],id:slot}))});
+    const rosters=Object.fromEntries(pairs.map(([slot,a,b])=>[slot,{
+      slotId:slot,activeMemberId:a,members:[member(a),member(b)]
+    }]));
+    const roster=createRosterSession({combatSession:combat,fighterConfigs:conf,
+      battleFormat:format,roster:{teams:rosters}});
+    return {combat,roster};
+  };
+  for(const [teamId,memberId] of [["enemy","e1"],["enemy-2","e21"]]){
+    const {combat,roster}=makeHarness();
+    const result=roster.useSkillOnTarget({actorId:"player",
+      targetRef:{scope:"reserve",teamId,memberId},skill});
+    assert.equal(result.ok,false,teamId+" reserve cannot receive healing");
+    assert.equal(combat.snapshot().fighters.player.energy,25);
+    assert.equal(roster.reserveMemberSnapshot(teamId,memberId).hp,40);
+  }
+  for(const [teamId,memberId] of [["player","p1"],["ally","a1"]]){
+    const {combat,roster}=makeHarness();
+    const result=roster.useSkillOnTarget({actorId:"player",
+      targetRef:{scope:"reserve",teamId,memberId},skill});
+    assert.equal(result.ok,true,teamId+" allied reserve should be healable: "+result.outcome);
+    assert.equal(roster.reserveMemberSnapshot(teamId,memberId).hp,75);
+    assert.equal(roster.reserveMemberSnapshot("enemy","e1").hp,40);
+    assert.equal(combat.snapshot().fighters.player.energy,20);
+  }
+});
