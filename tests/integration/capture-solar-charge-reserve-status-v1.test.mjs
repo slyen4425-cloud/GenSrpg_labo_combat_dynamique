@@ -95,3 +95,30 @@ test("RED: no roster cannot cast supplemental all_ally_reserves status",async()=
  assert.equal(cast.outcome,"reserve_roster_required");
  assert.equal(session.snapshot().fighters.player.energy,40);
 });
+
+test("Charge solaire 1v1: a repeated cast refreshes the same bench status for 30 combat seconds",async()=>{
+ const skill=importCaptureTransferJsonV1(await readFile(new URL("../../"+paths[0],import.meta.url),"utf8")).value.draft.definition;
+ const format1v1={actors:[{actorId:"player",teamId:"us"},{actorId:"opponent",teamId:"them"}],
+   teamOf(id){return this.actors.find(a=>a.actorId===id)?.teamId??null;}};
+ const configs=Object.fromEntries(["p0","p1","e0","e1"].map(id=>[id,fighter(id)]));
+ const session=createCombatSession({distance:"medium",battleFormat:format1v1,
+   fighters:[{...configs.p0,id:"player"},{...configs.e0,id:"opponent"}]});
+ const members=(slotId,ids)=>({slotId,activeMemberId:ids[0],members:ids.map(id=>({
+    id,creatureId:id,displayName:id,fighterConfigId:id}))});
+ const roster=createRosterSession({combatSession:session,fighterConfigs:configs,battleFormat:format1v1,
+   roster:{teams:{player:members("player",["p0","p1"]),opponent:members("opponent",["e0","e1"])}}});
+ const cast=()=>roster.useSkillOnTarget({actorId:"player",targetRef:{scope:"active",actorId:"player"},skill});
+ assert.equal(cast().ok,true);
+ let statuses=roster.reserveMemberSnapshot("player","p1").statusEffects.filter(x=>x.sourceSkillId===skill.id);
+ assert.equal(statuses.length,1);
+ assert.equal(statuses[0].expiresAtMs,30000);
+ session.advanceMs(10000);
+ assert.equal(cast().ok,true);
+ statuses=roster.reserveMemberSnapshot("player","p1").statusEffects.filter(x=>x.sourceSkillId===skill.id);
+ assert.equal(statuses.length,1,"refresh, never stack duplicate reserve buffs");
+ assert.equal(statuses[0].expiresAtMs,40000);
+ assert.equal(roster.reserveMemberSnapshot("opponent","e1").statusEffects.length,0);
+ assert.equal(session.snapshot().fighters.player.energy,34,"each of two casts charges energy once");
+ session.advanceMs(30001);
+ assert.equal(roster.reserveMemberSnapshot("player","p1").statusEffects.length,0);
+});
