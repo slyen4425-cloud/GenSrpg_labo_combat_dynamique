@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {normalizeCaptureMarkerV1, markerStatusDefinitionV1} from "../../src/contracts/capture-marker-v1.js";
 import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
+import {withFighterHp} from "../../src/core/combat/combat-state.js";
 import {consumeCaptureMarkerStacksV1, applyStatusEffectV1, advanceStatusEffectsV1} from "../../src/core/combat/status-effect-runtime-v1.js";
 
 const fighter=id=>({id,maxHp:120,initialHp:120,maxEnergy:20,initialEnergy:20,
@@ -120,4 +121,17 @@ test("heal variant and native immunity to damage remain available to marker auth
   const heal=normalizeCaptureMarkerV1({...venom,id:"care",polarity:"beneficial",
     periodic:{kind:"heal",amount:2,intervalMs:2000}});
   assert.equal(heal.periodic.kind,"heal");
+});
+
+test("periodic marker healing also scales with stacks on the same native clock",()=>{
+  let state=withFighterHp(session().snapshot(),"b",80);
+  const healing={id:"renewal",name:"Renouveau",polarity:"beneficial",durationMs:7000,maxStacks:6,
+    periodic:{kind:"heal",amount:3,intervalMs:2000}};
+  for(let i=0;i<3;i++){
+    state=applyStatusEffectV1({state,targetActorId:"b",sourceActorId:"a",
+      sourceSkillId:"healing-cast",status:markerStatusDefinitionV1(healing),atMs:0});
+  }
+  assert.equal(state.fighters.b.statusEffects[0].stacks,3);
+  state=advanceStatusEffectsV1({state,deltaMs:2000});
+  assert.equal(state.fighters.b.hp,89,"3×3 points de soin");
 });
