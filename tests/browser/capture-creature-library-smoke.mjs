@@ -102,6 +102,29 @@ const server = createServer(async (req, res) => {
               const get=key=>document.querySelector("[data-"+key+"]");
               const fill=(key,v)=>{const node=get(key);if(!node)throw Error("field "+key+" absent");
                 node.value=String(v);node.dispatchEvent(new Event("change",{bubbles:true}));};
+              // Author's real Dard static transfer: the uploaded marker-library JSON
+              // is empty; the skill's single canonical apply_marker must populate it.
+              if(!lib.querySelector('option[value="lib_paralyze"]'))
+                throw Error("Dard static missing from active configuredSkills options");
+              if(!get("marker-library-select").querySelector('option[value="venin-static"]'))
+                throw Error("Venin static not indexed from authored skill");
+              lib.value="lib_paralyze";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name").value!=="Dard static")
+                throw Error("Dard static author name not roundtripped");
+              const authoredMarker=[...document.querySelectorAll("[data-skill-effect-row]")]
+                .find(row=>row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+              if(!authoredMarker||
+                  authoredMarker.querySelector("[data-skill-marker-pick]")?.value!=="venin-static"||
+                  authoredMarker.querySelector("[data-skill-marker-charges]")?.value!=="1")
+                throw Error("Dard static Venin placement not rendered from canonical skill");
+              fill("marker-library-select","venin-static");
+              if(!get("marker-permanent").checked||
+                  get("marker-max").value!=="20"||
+                  get("marker-periodic-amount").value!=="2"||
+                  get("marker-periodic-seconds").value!=="5"||
+                  get("marker-threshold-count").value!=="20"||
+                  get("marker-threshold-effect").value!=="knockout")
+                throw Error("Dard static Venin permanent/periodic/KO author settings not reloaded");
               // Android author path: a marker must be savable using its NAME only.
               // Previous smoke artificially supplied a valid technical ID and
               // therefore did not detect the reported mobile regression.
