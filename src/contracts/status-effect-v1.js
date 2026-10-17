@@ -41,7 +41,8 @@ export const STATUS_EFFECT_V1_STACKING = Object.freeze([
 export const STATUS_EFFECT_V1_DURATION_MODELS =
   Object.freeze([
     "time_ms",
-    "owner_action_end"
+    "owner_action_end",
+    "permanent"
   ]);
 
 export const STATUS_EFFECT_V1_STAT_MODIFIER_MODES =
@@ -271,6 +272,13 @@ function normalizeDuration(value) {
     });
   }
 
+  if (durationModel === "permanent") {
+    if (value.durationMs != null || value.durationActions != null) {
+      throw new TypeError("Permanent statuses cannot specify durationMs or durationActions");
+    }
+    return Object.freeze({durationModel});
+  }
+
   if (value.durationMs != null) {
     throw new TypeError(
       "StatusEffectV1.durationMs is only valid for time_ms"
@@ -331,6 +339,13 @@ export function normalizeStatusEffectV1(input) {
   }
 
   const duration = normalizeDuration(value);
+  if (duration.durationModel === "permanent" &&
+      (kind !== "stack_counter" ||
+       !Array.isArray(value.tags) ||
+       !value.tags.includes("gensrpg:marker:v1") ||
+       !String(value.id).startsWith("marker:"))) {
+    throw new RangeError("Permanent duration is reserved for shared markers");
+  }
 
   const output = {
     id: requiredString(
@@ -399,8 +414,8 @@ export function normalizeStatusEffectV1(input) {
   // Other statuses must keep their original, independent effect definitions.
   if (value.periodic != null) {
     if (kind !== "stack_counter" || !output.tags.includes("gensrpg:marker:v1") ||
-        duration.durationModel !== "time_ms") {
-      throw new RangeError("periodic effects are supported only on timed shared markers");
+        !["time_ms","permanent"].includes(duration.durationModel)) {
+      throw new RangeError("periodic effects are supported only on clocked shared markers");
     }
     const periodic = objectValue(value.periodic, "StatusEffectV1.periodic");
     assertKnownFields(periodic, new Set(["kind", "amount", "intervalMs", "channel", "damageMode"]), "periodic");
