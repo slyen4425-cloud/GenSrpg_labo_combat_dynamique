@@ -26,12 +26,14 @@ const action=(skill,actorId,targetId)=>({actionType:"skill",actorId,targetId,ski
   preparationMs:skill.preparationMs,releaseAtMs:skill.preparationMs,travelMs:skill.travelMs,
   impactAtMs:skill.preparationMs+skill.travelMs,recoveryMs:skill.recoveryMs});
 
-test("RED: real Charge solaire must never move its model into itself for instant self buff",async()=>{
+test("real Charge solaire must never move its model into itself for a self-targeted beneficial cast",async()=>{
   const skill=await solar();
   assert.equal(skill.category,"offensive","the exact user-exported author category remains intact");
   assert.equal(skill.approachMode,"ground");
   assert.equal(skill.travelMs,0);
-  assert.deepEqual(skill.effects.map(e=>e.kind),["apply_status","apply_status","apply_status"]);
+  assert.deepEqual(skill.effects.map(e=>e.kind),["apply_status","apply_status"]);
+  assert.equal(skill.preparationMs,800);
+  assert.equal(skill.cooldownMs,45000);
   const {approaches,presenter}=presentation();
   presenter.presentRelease({action:action(skill,"local-1","local-1"),actorSlot:"local-1",targetSlot:"local-1"});
   assert.deepEqual(approaches,[],"an instant ally/self buff must not start same-model melee collision animation");
@@ -54,7 +56,7 @@ test("Hostile physical contact attack still uses native approach and contact wat
   assert.equal(approaches[0][2],"opponent-1");
   presenter.dispose();
 });
-test("Real zero-time native Runtime completes Charge solaire and permits a following hostile attack",async()=>{
+test("Real native Runtime completes Charge solaire after 800ms and permits a following hostile attack",async()=>{
   const skill=await solar();
   const fighter=id=>({id,maxHp:100,initialHp:100,maxEnergy:30,initialEnergy:30,
     energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0});
@@ -79,7 +81,10 @@ test("Real zero-time native Runtime completes Charge solaire and permits a follo
   try {
     runtime.start();
     assert.equal(runtime.startSkill({actorId:"player",targetId:"ally",skill}).ok,true);
-    assert.equal(runtime.hasActiveAction,false,"no permanent action/recovery after zero-time buff");
+    assert.equal(runtime.hasActiveAction,true,"new author version prepares for 800 ms");
+    clock+=800;
+    pending();
+    assert.equal(runtime.hasActiveAction,false,"no permanent action/recovery after 800ms buff");
     assert.equal(approaches.length,0,"visual cannot start contact movement for beneficent buff");
     assert.equal(results.length,1);
     assert.equal(session.snapshot().fighters.ally.statusEffects.some(e=>e.definition.kind==="outgoing_damage_modifier"),true);
