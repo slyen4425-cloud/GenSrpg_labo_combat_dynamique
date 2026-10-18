@@ -1,0 +1,121 @@
+{
+  "id": "pack:capture:sprite-light-shield-01",
+  "type": "capture_skill_sprite_sequences",
+  "label": "Bouclier de lumière",
+  "element": "light",
+  "frame_size": [
+    512,
+    512
+  ],
+  "source_grid": [
+    5,
+    4
+  ],
+  "source_note": "Source 1402x1122; 5x4 grid; each ~280.4x280.5 px cell upscaled to 512x512. Not native 512px.",
+  "sequences": {
+    "cast": {
+      "label": "Cast lumière",
+      "category": "cast",
+      "frame_count": 20,
+      "frame_ms": 70,
+      "loop": false,
+      "playback_mode": "once",
+      "hold_last_frame": false,
+      "hold_frame_index": null,
+      "frames": [
+        "frames/sprite_skill_light_shield_cast_01.png",
+        "frames/sprite_skill_light_shield_cast_02.png",
+        "frames/sprite_skill_light_shield_cast_03.png",
+        "frames/sprite_skill_light_shield_cast_04.png",
+        "frames/sprite_skill_light_shield_cast_05.png",
+        "frames/sprite_skill_light_shield_cast_06.png",
+        "frames/sprite_skill_light_shield_cast_07.png",
+        "frames/sprite_skill_light_shield_cast_08.png",
+        "frames/sprite_skill_light_shield_cast_09.png",
+        "frames/sprite_skill_light_shield_cast_10.png",
+        "frames/sprite_skill_light_shield_cast_11.png",
+        "frames/sprite_skill_light_shield_cast_12.png",
+        "frames/sprite_skill_light_shield_cast_13.png",
+        "frames/sprite_skill_light_shield_cast_14.png",
+        "frames/sprite_skill_light_shield_cast_15.png",
+        "frames/sprite_skill_light_shield_cast_16.png",
+        "frames/sprite_skill_light_shield_cast_17.png",
+        "frames/sprite_skill_light_shield_cast_18.png",
+        "frames/sprite_skill_light_shield_cast_19.png",
+        "frames/sprite_skill_light_shield_cast_20.png"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_light_shield_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384
+      },
+      "source": {
+        "file": "planche_d_animation_du_bouclier_sacré.png",
+        "pixel_size": [
+          1402,
+          1122
+        ],
+        "sha256": "983dffc6bf5e0b36103929cb07465a13b9a98236f0e3dcdb6dfafff284558a28",
+        "upscaled": true,
+        "frame_cell_approx": [
+          280.4,
+          280.5
+        ]
+      }
+    },
+    "barrier": {
+      "label": "Barrière de lumière",
+      "category": "skill",
+      "frame_count": 20,
+      "frame_ms": 80,
+      "loop": false,
+      "playback_mode": "once",
+      "hold_last_frame": true,
+      "hold_frame_index": 19,
+      "frames": [
+        "frames/sprite_skill_light_shield_barrier_01.png",
+        "frames/sprite_skill_light_shield_barrier_02.png",
+        "frames/sprite_skill_light_shield_barrier_03.png",
+        "frames/sprite_skill_light_shield_barrier_04.png",
+        "frames/sprite_skill_light_shield_barrier_05.png",
+        "frames/sprite_skill_light_shield_barrier_06.png",
+        "frames/sprite_skill_light_shield_barrier_07.png",
+        "frames/sprite_skill_light_shield_barrier_08.png",
+        "frames/sprite_skill_light_shield_barrier_09.png",
+        "frames/sprite_skill_light_shield_barrier_10.png",
+        "frames/sprite_skill_light_shield_barrier_11.png",
+        "frames/sprite_skill_light_shield_barrier_12.png",
+        "frames/sprite_skill_light_shield_barrier_13.png",
+        "frames/sprite_skill_light_shield_barrier_14.png",
+        "frames/sprite_skill_light_shield_barrier_15.png",
+        "frames/sprite_skill_light_shield_barrier_16.png",
+        "frames/sprite_skill_light_shield_barrier_17.png",
+        "frames/sprite_skill_light_shield_barrier_18.png",
+        "frames/sprite_skill_light_shield_barrier_19.png",
+        "frames/sprite_skill_light_shield_barrier_20.png"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_light_shield_barrier_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384
+      },
+      "source": {
+        "file": "sprite_de_bouclier_magique_сия大小规律.png",
+        "pixel_size": [
+          1402,
+          1122
+        ],
+        "sha256": "5d02b91d09cc4fa6f0eb1c94d8deb9df6bdda8d945bbaf7c4e8d9c035f2647a3",
+        "upscaled": true,
+        "frame_cell_approx": [
+          280.4,
+          280.5
+        ]
+      }
+    }
+  }
+}

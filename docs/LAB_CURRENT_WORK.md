@@ -1,5 +1,9 @@
 # Laboratoire Combat Dynamique — Current Work
 
+### Oct 17 — Bouclier lumière: MEDIA BINAIRES IMPORTES; CI et validation UI en attente
+- ZIP réel importé avec vérification SHA-256 / dimensions / alpha et 2 atlas WebP. Deux assetId insérés dans le catalogue unique, après contrôle des collisions.
+- Compétence, dommages, runtime, main et gh-pages non modifiés. Aucune validation de preview en combat revendiquée tant que le test utilisateur n'est pas fait.
+
 ## 2026-10-17 — Bouclier lumière / Cast et Barrière — LOT PARTIEL en cours
 
 - **Demande** : intégrer deux planches utilisateur de 20 images en deux sprites Capture (Cast lumière, Barrière lumière) avec maintien de la dernière frame pour la barrière.

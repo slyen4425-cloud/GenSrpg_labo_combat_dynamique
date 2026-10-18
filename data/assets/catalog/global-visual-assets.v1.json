@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 163,
+    "assets": 165,
     "icons": 67,
-    "sprites": 80,
+    "sprites": 82,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -5336,6 +5336,81 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_bulle_de_feu_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-light-shield-cast-01",
+      "label": "Bouclier de lumière — Cast lumière",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "skill",
+        "light",
+        "magic",
+        "shield",
+        "capture",
+        "animated",
+        "cast"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/light_shield/atlases/sprite_skill_light_shield_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-light-shield-barrier-01",
+      "label": "Bouclier de lumière — Barrière de lumière",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "light",
+        "magic",
+        "shield",
+        "capture",
+        "animated",
+        "barrier"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/light_shield/atlases/sprite_skill_light_shield_barrier_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 80,
+        "playbackMode": "once",
+        "holdLastFrame": true
       },
       "compatibility": {
         "uses": [
