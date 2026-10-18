@@ -11,7 +11,7 @@ import { capturePortableNativeSkillDraftsV1 } from "../../src/catalogs/capture-p
 import { captureComplexNativeSkillDraftsV1 } from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
 
 const fixtures = [
-  { id: "lib_lifesteal_strike", name: "Frappe vampirique", hash: "6da43fd88ef0f34e09df2a6ba9e180c939be5f4152f8f7cc29e800b53be6ce39", source: "gensrpg-capture-skill-lib_lifesteal_strike-2026-10-18.json", damage: 18, icon: "core:icon-skill-arcane-seal-01" },
+  { id: "lib_lifesteal_strike", name: "Frappe vampirique", hash: "05837ae77fd87d7281179c9f0f8fae3d91dc4f38154b6455617f2b22eae3dec9", source: "gensrpg-capture-skill-lib_lifesteal_strike-2026-10-18-r2.json", damage: 18, icon: "core:icon-skill-arcane-seal-01" },
   { id: "cap_shadow_atk_1", name: "Ombre vive", hash: "eaa07086056b89e75efb8bb7909ccbb2f6f4ce61f79bb023d4a83f9ac9f64346", source: "gensrpg-capture-skill-cap_shadow_atk_1-2026-10-18.json", damage: 12, icon: "core:icon-skill-speed-dash-01" }
 ];
 const read = p => readFile(new URL("../../" + p, import.meta.url), "utf8");
@@ -42,7 +42,7 @@ test("Frappe vampirique has exact author's 50% life steal before 18 damage; Ombr
   assert.equal(vampire.definition.effects[0].percent, 50);
   assert.equal(vampire.definition.energyCost, 4);
   assert.equal(vampire.definition.cooldownMs, 25000);
-  assert.equal(vampire.presentation.visual.impact.assetId, "pack:capture:sprite-impact-blade-01");
+  assert.equal(vampire.presentation.visual.impact.assetId, "pack:capture:sprite-life-drain-impact-01");
   assert.equal(vampire.presentation.audio.impact.assetId, "gensrpg:sound:effect-ee93278c");
   const shadow = importCaptureTransferJsonV1(await read(path("cap_shadow_atk_1"))).value.draft;
   assert.equal(shadow.definition.approachMode, "teleport");

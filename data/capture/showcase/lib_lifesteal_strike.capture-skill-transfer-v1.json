@@ -93,8 +93,8 @@
           "assetId": "core:icon-skill-arcane-seal-01"
         },
         "impact": {
-          "assetId": "pack:capture:sprite-impact-blade-01",
-          "displayScale": 2,
+          "assetId": "pack:capture:sprite-life-drain-impact-01",
+          "displayScale": 1,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
@@ -102,9 +102,9 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "impact",
-          "playbackMode": "once",
+          "playbackMode": "stretch",
           "rotationDeg": 0,
-          "opacity": 0.7,
+          "opacity": 0.5,
           "layerByView": {
             "player": "front",
             "opponent": "front"
