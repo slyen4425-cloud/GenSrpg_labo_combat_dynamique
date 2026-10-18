@@ -1,3 +1,12 @@
+## 2026-10-18 — Icônes Acier, réconciliation sur catalogue global-assets actuel
+- Travail réel créé depuis `f92814097634e0a80b3b8dfc1fbc6631a1a988e1`, source média SHA `eada059dcf5842b5c1024393505c576c588d7bc4` (quatre vrais WebP RGB 128×128 originaux, source ZIP SHA256 7f89231542fb2fc1933a6b7f5212f837e4f9dc8d0376f9b07e6b2b02263b6fc2, import validé avec CI SUCCESS).
+- La branche `global-assets` ayant avancé simultanément avec des sprites acier distincts, nouvelle base exacte : `65c62b35fc7a984605702d5ccc63481583873049` et checkpoint `checkpoint/lab-start-steel-icons-reconcile-2026-10-18`, branche `work/lab-steel-icons-reconcile-2026-10-18`.
+- Propriétaire unique : Asset Input Capture / `global-assets`, 4 blobs réels repris par Git SHA (sans substitution), 4 nouveaux ID, provenance, sentinelle, journal et note. Total attendu au moment de cette réconciliation : 190 assets / 74 icônes (inclut les ajouts concurrents).
+- Périmètre : `assets/library/capture/icons/skills/icon_skill_{carapace_acier,lame_acier,tourbillons_rouille,aile_acier}_01.webp`, `assets/library/capture/icons/skills/capture_four_steel_icons_2026_10_18.provenance.json`, `data/assets/catalog/global-visual-assets.v1.json`, `docs/LAB_CAPTURE_STEEL_ICONS_2026_10_18.md`, `tests/unit/capture-steel-icons-2026-10-18.test.mjs`, sentinelle ancienne des icônes Ombre (test du minimum historique plutôt qu'un compte figé), ce journal.
+- Protégés : `main`, `gh-pages` (jusqu'à lot cache dédié), `Zombicide-40k`, gameplay, compétences enregistrées, objets et médias concurrents. Aucune remise à l'état ancien du catalogue ; aucun duplicat ID.
+- Tests : vrais octets / SHA / WebP / RGB128 déjà vérifiés, tests Node ciblés et `npm run ci` complet sur la réconciliation, CI GitHub, publication par avance rapide sous lease, checkpoint GREEN uniquement après validations ; ensuite rafraîchissement cache de l'éditeur sur un lot indépendant et essai visuel mobile.
+- Statut : en cours de réconciliation ; publication officielle à confirmer.
+
 ## 2026-10-18 — FX acier et rouille (lot 5 séquences de 20 frames)
 
 - **Source** : 5 planches réellement générées en conversation, 1402×1122 RGBA (5×4). Carapace d'acier normale, Carapace d'acier maintien, Impact aile acier, Cast tourbillon de rouille, Projectile aile acier.

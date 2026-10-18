@@ -1,0 +1,70 @@
+{
+  "schema": "capture-four-steel-icons-v1",
+  "sourceArchive": "icons_acier_labo_combat_webp_128.zip",
+  "sourceArchiveSha256": "7f89231542fb2fc1933a6b7f5212f837e4f9dc8d0376f9b07e6b2b02263b6fc2",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "format": "WebP RGB VP8 opaque",
+  "settings": {
+    "resampling": "LANCZOS",
+    "quality": 30,
+    "method": 6
+  },
+  "assets": [
+    {
+      "assetId": "pack:capture:icon-skill-carapace-acier-01",
+      "label": "Carapace d’acier",
+      "sourceSha256": "3a6a15bdde3270fd1dff25a5b91bb948a487e811965439e3ff4797e4630dcbad",
+      "originalPixels": [
+        1254,
+        1254
+      ],
+      "derivedFile": "icon_skill_carapace_acier_01.webp",
+      "derivedSha256": "332456455798aa06e1984f3522ae8daed6540d2c6033c3749ba5436ab762c375",
+      "bytes": 2362
+    },
+    {
+      "assetId": "pack:capture:icon-skill-lame-acier-01",
+      "label": "Lame d’acier",
+      "sourceSha256": "bb2b3140dd5b4ac6d7446cac71a795d6c4188f7ade142d1bc8a334860d42dc54",
+      "originalPixels": [
+        1254,
+        1254
+      ],
+      "derivedFile": "icon_skill_lame_acier_01.webp",
+      "derivedSha256": "6dd807852e19262846d2ae5a5836a090f7057a26f3d6841f0fa0f4bf804bb99a",
+      "bytes": 2512
+    },
+    {
+      "assetId": "pack:capture:icon-skill-tourbillons-rouille-01",
+      "label": "Tourbillons de rouille",
+      "sourceSha256": "71660daa5f12cb622c17a8a31de28d7c9a17b542782ce3f0f1e80e0ed2a778b2",
+      "originalPixels": [
+        1254,
+        1254
+      ],
+      "derivedFile": "icon_skill_tourbillons_rouille_01.webp",
+      "derivedSha256": "37e7e61f3e4d633c48dbbd6721941185a4b93ebfb1696f4484948583396a09dc",
+      "bytes": 2806
+    },
+    {
+      "assetId": "pack:capture:icon-skill-aile-acier-01",
+      "label": "Aile d’acier",
+      "sourceSha256": "b87d2ff7474f5599345579b0e7fe0fee327efa23bc80c44c0b8e97dcd14d3911",
+      "originalPixels": [
+        1254,
+        1254
+      ],
+      "derivedFile": "icon_skill_aile_acier_01.webp",
+      "derivedSha256": "0cce9bc316c97d3c08b5790bc5577c0ca34748a302b66dfb46ae88c814944225",
+      "bytes": 2596
+    }
+  ],
+  "license": "project-internal"
+}
