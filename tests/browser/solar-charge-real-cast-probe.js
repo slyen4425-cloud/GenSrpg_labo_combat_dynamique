@@ -20,7 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
       clearInterval(ready);
       change(q("[data-creature-library-select]"),"crea_lumilo");
       const slots=qa("[data-loadout-slot]").filter(el=>el.dataset.loadoutSlotType==="standard");
-      const solar=slots.find(el=>el.querySelector('[value="cap_light_atk_3"]'));
+      // Keep slot 1 (Rayon lumineux) as the follow-up action;
+      // replace the third standard slot only for this ephemeral browser test.
+      const solar=slots[2]?.querySelector('[value="cap_light_atk_3"]') ? slots[2] : null;
       if(!solar) throw Error("Solar skill not available in saved Lumilo loadout slots");
       change(solar,"cap_light_atk_3");
       if(solar.value!=="cap_light_atk_3")throw Error("Solar not selected");
