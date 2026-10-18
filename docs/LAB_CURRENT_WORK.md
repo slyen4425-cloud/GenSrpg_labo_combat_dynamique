@@ -1,3 +1,13 @@
+## 2026-10-18 — Import auteur Impact spectral (cap_shadow_atk_4)
+- Objectif : intégrer l'export de capacité Ombre livré par l'auteur exactement et sous son ID stable, dans l'éditeur Capture puis le combat.
+- Propriétaire unique : `configuredSkills` via `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` et le chemin d'import Capture existants.
+- Base : `gh-pages@4cd02d31e5a683b7f274a3dd98173d37b9299362`. Checkpoint de départ : `checkpoint/lab-start-impact-spectral-author-2026-10-18`. Branche : `work/lab-impact-spectral-author-2026-10-18`.
+- Périmètre autorisé : `data/capture/showcase/cap_shadow_atk_4.capture-skill-transfer-v1.json`, archive source `data/capture/source-exports/gensrpg-capture-skill-cap_shadow_atk_4-2026-10-18.json`, `src/catalogs/capture-showcase-skill-presets-v1.js`, `tests/unit/capture-impact-spectral-author-2026-10-18.test.mjs`, rapport `docs/LAB_IMPACT_SPECTRAL_AUTHOR_2026-10-18.md`, ce document.
+- Fonctions protégées : tous les autres skills, UI, Combat Rules, Animation, FX, assets globaux, créatures et loadouts, branche main, dépôt GenSrpG.
+- Tests : RED archive+showcase+registre, puis hash exact, roundtrip, effet dégâts 15 Ombre / ignore 100% reduction / stun 2.5s, niveau 15, sources VFX, import réel et unicité dans configuredSkills, sentinelles historiques et CI complète.
+- Risques : collision avec l'ID natif existant, sélecteur périmé, sprites mal raccordés, confusion entre description « niveau 16 » et requiredLevel 15. Préserver les deux telles qu'exportées ; aucun ajustement sans accord.
+- Critères : 5 checks CI GREEN, checkpoint GREEN au SHA exact, publication Pages vérifiée. Le rendu sur smartphone sera à confirmer par l'utilisateur.
+
 ## 2026-10-18 — Frappe vampirique r2 / Affaiblissement nocturne, transferts auteur
 - Base publique exacte : gh-pages 646f7d097ed83eb4f5204781351f7853efd89f26, CI et Pages GREEN ; checkpoint de départ checkpoint/lab-start-shadow-skills-author-r2-2026-10-18 ; branche work/lab-shadow-skills-author-r2-2026-10-18.
 - Objectif : remplacer la seule fiche lib_lifesteal_strike et ajouter cap_shadow_atk_3 depuis deux exports auteur 100 % intacts ; conserver cap_shadow_atk_1 et toutes les autres capacités.
