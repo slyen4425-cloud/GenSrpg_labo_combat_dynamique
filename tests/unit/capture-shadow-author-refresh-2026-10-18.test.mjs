@@ -78,7 +78,7 @@ test("canonical configuredSkills import replaces Frappe by ID and adds debuff wi
   const t=importCaptureTransferJsonV1(await read(path(a.id)));
   const beforeSize=configuredSkills.size;
   const plan=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),transfer:t,mode:"replace"});
-  assert.equal(plan.action,a.id==="lib_lifesteal_strike"?"replace-skill":"add-skill");
+  assert.equal(plan.action,"replace-skill","both stable IDs already exist in the native configuredSkills baseline");
   applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures,configuredSkills,statRegistry,progressionRules});
   assert.equal(configuredSkills.size,beforeSize+(plan.action==="add-skill"?1:0));
   assert.deepEqual(configuredSkills.get(a.id),t.value.draft);
