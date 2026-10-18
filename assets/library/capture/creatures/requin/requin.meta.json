@@ -1,0 +1,99 @@
+{
+  "id": "requin",
+  "name": "Requin (glace/eau)",
+  "profile": "massive",
+  "views": {
+    "player": "runtime/requin_player.webp",
+    "opponent": "runtime/requin_opponent.webp",
+    "icon": "runtime/requin_icon.webp"
+  },
+  "runtimePreview": {
+    "player": "runtime/requin_player.webp",
+    "opponent": "runtime/requin_opponent.webp",
+    "icon": "runtime/requin_icon.webp"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      1024,
+      1024
+    ],
+    "icon": [
+      384,
+      384
+    ]
+  },
+  "displayScale": {
+    "player": 1.1,
+    "opponent": 0.9
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "87%"
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Requin fantastique cristallin bleu, vues face/dos et icone approuvees dans la conversation.",
+  "fxAnchors": {
+    "opponent": {
+      "head": {
+        "x": 0.24,
+        "y": 0.35
+      },
+      "mouth": {
+        "x": 0.18,
+        "y": 0.39999999999999997
+      },
+      "handLeft": {
+        "x": 0.34,
+        "y": 0.68
+      },
+      "handRight": {
+        "x": 0.64,
+        "y": 0.68
+      },
+      "tail": {
+        "x": 0.78,
+        "y": 0.55
+      }
+    },
+    "player": {
+      "head": {
+        "x": 0.8,
+        "y": 0.34
+      },
+      "mouth": {
+        "x": 0.8500000000000001,
+        "y": 0.39
+      },
+      "handLeft": {
+        "x": 0.29,
+        "y": 0.62
+      },
+      "handRight": {
+        "x": 0.75,
+        "y": 0.64
+      },
+      "tail": {
+        "x": 0.5,
+        "y": 0.8
+      }
+    }
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-requin-opponent-01",
+    "player": "pack:capture:creature-requin-player-01",
+    "icon": "pack:capture:creature-requin-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  }
+}

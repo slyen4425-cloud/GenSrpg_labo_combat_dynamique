@@ -1,0 +1,99 @@
+{
+  "id": "scarabacier",
+  "name": "Scarabacier",
+  "profile": "massive",
+  "views": {
+    "player": "runtime/scarabacier_player.webp",
+    "opponent": "runtime/scarabacier_opponent.webp",
+    "icon": "runtime/scarabacier_icon.webp"
+  },
+  "runtimePreview": {
+    "player": "runtime/scarabacier_player.webp",
+    "opponent": "runtime/scarabacier_opponent.webp",
+    "icon": "runtime/scarabacier_icon.webp"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      1024,
+      1024
+    ],
+    "icon": [
+      384,
+      384
+    ]
+  },
+  "displayScale": {
+    "player": 1.1,
+    "opponent": 0.9
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "87%"
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Scarabee fantastique acier a exosquelette metallique, vues face/dos et icone approuvees dans la conversation.",
+  "fxAnchors": {
+    "opponent": {
+      "head": {
+        "x": 0.3,
+        "y": 0.36
+      },
+      "mouth": {
+        "x": 0.24,
+        "y": 0.41
+      },
+      "handLeft": {
+        "x": 0.34,
+        "y": 0.68
+      },
+      "handRight": {
+        "x": 0.64,
+        "y": 0.68
+      },
+      "tail": {
+        "x": 0.78,
+        "y": 0.55
+      }
+    },
+    "player": {
+      "head": {
+        "x": 0.82,
+        "y": 0.3
+      },
+      "mouth": {
+        "x": 0.87,
+        "y": 0.35
+      },
+      "handLeft": {
+        "x": 0.29,
+        "y": 0.62
+      },
+      "handRight": {
+        "x": 0.75,
+        "y": 0.64
+      },
+      "tail": {
+        "x": 0.5,
+        "y": 0.8
+      }
+    }
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-scarabacier-opponent-01",
+    "player": "pack:capture:creature-scarabacier-player-01",
+    "icon": "pack:capture:creature-scarabacier-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  }
+}

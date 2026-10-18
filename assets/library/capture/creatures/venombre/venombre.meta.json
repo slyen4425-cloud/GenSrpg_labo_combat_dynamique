@@ -1,0 +1,99 @@
+{
+  "id": "venombre",
+  "name": "Venombre",
+  "profile": "serpentine",
+  "views": {
+    "player": "runtime/venombre_player.webp",
+    "opponent": "runtime/venombre_opponent.webp",
+    "icon": "runtime/venombre_icon.webp"
+  },
+  "runtimePreview": {
+    "player": "runtime/venombre_player.webp",
+    "opponent": "runtime/venombre_opponent.webp",
+    "icon": "runtime/venombre_icon.webp"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      1024,
+      1024
+    ],
+    "icon": [
+      384,
+      384
+    ]
+  },
+  "displayScale": {
+    "player": 1.1,
+    "opponent": 0.9
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "87%"
+  },
+  "scale": 1,
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "notes": "Creature venimeuse noire et violette aux pointes vertes, vues face/dos et icone approuvees dans la conversation.",
+  "fxAnchors": {
+    "opponent": {
+      "head": {
+        "x": 0.21,
+        "y": 0.36
+      },
+      "mouth": {
+        "x": 0.15,
+        "y": 0.41
+      },
+      "handLeft": {
+        "x": 0.34,
+        "y": 0.68
+      },
+      "handRight": {
+        "x": 0.64,
+        "y": 0.68
+      },
+      "tail": {
+        "x": 0.78,
+        "y": 0.55
+      }
+    },
+    "player": {
+      "head": {
+        "x": 0.8,
+        "y": 0.32
+      },
+      "mouth": {
+        "x": 0.8500000000000001,
+        "y": 0.37
+      },
+      "handLeft": {
+        "x": 0.29,
+        "y": 0.62
+      },
+      "handRight": {
+        "x": 0.75,
+        "y": 0.64
+      },
+      "tail": {
+        "x": 0.5,
+        "y": 0.8
+      }
+    }
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-venombre-opponent-01",
+    "player": "pack:capture:creature-venombre-player-01",
+    "icon": "pack:capture:creature-venombre-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  }
+}

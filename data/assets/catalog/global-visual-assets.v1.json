@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 172,
+    "assets": 181,
     "icons": 70,
-    "sprites": 86,
+    "sprites": 92,
     "fx": 2,
-    "portraits": 9,
+    "portraits": 12,
     "backgrounds": 5,
-    "creatures": 18
+    "creatures": 24
   },
   "assets": [
     {
@@ -5650,6 +5650,285 @@
       },
       "resource": {
         "file": "capture/icons/skills/icon_skill_malediction_feline_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-requin-opponent-01",
+      "label": "Requin (glace/eau) — face adversaire",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "requin",
+        "water",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/requin/runtime/requin_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-requin-player-01",
+      "label": "Requin (glace/eau) — dos joueur",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "requin",
+        "water",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/requin/runtime/requin_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-requin-icon-01",
+      "label": "Requin (glace/eau) — icône",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "requin",
+        "water",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/requin/runtime/requin_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-opponent-01",
+      "label": "Scarabacier — face adversaire",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "scarabacier",
+        "steel",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/runtime/scarabacier_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-player-01",
+      "label": "Scarabacier — dos joueur",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "scarabacier",
+        "steel",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/runtime/scarabacier_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-icon-01",
+      "label": "Scarabacier — icône",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "scarabacier",
+        "steel",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/runtime/scarabacier_icon.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-venombre-opponent-01",
+      "label": "Venombre — face adversaire",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "venombre",
+        "poison",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/venombre/runtime/venombre_opponent.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-venombre-player-01",
+      "label": "Venombre — dos joueur",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "venombre",
+        "poison",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/venombre/runtime/venombre_player.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-venombre-icon-01",
+      "label": "Venombre — icône",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "venombre",
+        "poison",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (visuel approuvé utilisateur)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/venombre/runtime/venombre_icon.webp",
         "mime": "image/webp"
       },
       "compatibility": {

@@ -6967,3 +6967,17 @@ Les familles CASTS et STATUS gardent leur état antérieur : aucun de leurs anci
 - **Tests prévus** : 20 WebP RGBA différents 512×512, ordre/identifiants, alpha, atlas WebP 7680×384, unicité de l'assetId, référence catalogue et compteurs, sentinelles de tests existants, revue des fichiers et CI.
 - **Risques** : source initiale 1402×1122 en grille 5×4 (agrandissement à 512 et non résolution source native 512) ; atlas horizontal 7680px ; usages en combat dépendant d'un réglage séparé de capacité.
 - **Fin** : publication contrôlée et vérification CI ; GREEN uniquement si la CI est verte, la source runtime est mise à jour et la validation visuelle requise faite. Ne pas revendiquer un test mobile non effectué.
+
+
+## 2026-10-18 — Requin, Scarabacier et Venombre : assets Capture (lot de trois)
+
+- **Objectif** : déposer 9 fichiers image WebP réels issus des 3 planches approuvées : 3 face (opponent), 3 dos (player), 3 icônes ; ajouter les métadonnées et 9 IDs au catalogue.
+- **Base SHA** : `1f78ef9a71841836391e7d298b27b23e1854e13e` sur `global-assets` avant modification.
+- **Checkpoint de départ** : `checkpoint/global-assets-before-three-creatures-2026-10-18`.
+- **Branche chantier** : `work/global-assets-three-creatures-2026-10-18`.
+- **Propriétaire** : Capture Visual Asset Library / Asset Input, aucune modification Combat Rules ou du runtime.
+- **Fichiers autorisés** : `assets/library/capture/creatures/{requin,scarabacier,venombre}/**`, `data/assets/catalog/global-visual-assets.v1.json`, `docs/LAB_THREE_CREATURES_ASSETS_2026-10-18.md`, `tests/unit/capture-three-creatures-assets.test.mjs`, ce bloc.
+- **Zones protégées** : `main`, le moteur, les créatures déjà publiées, `Zombicide-40k`.
+- **Tests** : présence et signature des 9 binaires ; dimension, canal alpha, unicité IDs, résolution catalogue et preview réelle, revue du diff, CI si disponible.
+- **Risques** : cadrage des extrémités fines lors du découpage des planches ; ajustement optionnel ultérieur des `fxAnchors` sur essais réels.
+- **Fin** : publication sur `global-assets` après vérification ; GREEN uniquement avec validations complètes.
