@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { importCaptureTransferJsonV1 } from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import { createCombatResolutionPresenter } from "../../src/adapters/renderer/combat-resolution-presenter.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
+import { createRosterSession } from "../../src/core/combat/roster-session.js";
 import { createCombatRuntime } from "../../src/core/combat/combat-runtime.js";
 import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
 
@@ -59,6 +60,15 @@ test("Real zero-time native Runtime completes Charge solaire and permits a follo
     energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0});
   const format={teamOf:id=>id==="enemy"?"opposing":"local"};
   const session=createCombatSession({distance:"medium",fighters:["player","ally","enemy"].map(fighter),battleFormat:format});
+  // Exercise the authored reserve distribution through the actual Roster
+  // instead of passing a skill requiring reserve effects to an orphan Session.
+  const configs=Object.fromEntries(["player","ally","enemy","bench"].map(id=>[id,fighter(id)]));
+  const team=(id,ids)=>({slotId:id,activeMemberId:ids[0],members:ids.map(memberId=>({
+    id:memberId,creatureId:memberId,displayName:memberId,fighterConfigId:memberId
+  }))});
+  const roster=createRosterSession({combatSession:session,battleFormat:format,fighterConfigs:configs,
+    roster:{teams:{player:team("player",["player","bench"]),
+      ally:team("ally",["ally"]),enemy:team("enemy",["enemy"])}}});
   const {approaches,presenter}=presentation();
   let clock=1000;let pending=()=>{};const results=[];
   const runtime=createCombatRuntime({session,tickMs:25,now:()=>clock,
