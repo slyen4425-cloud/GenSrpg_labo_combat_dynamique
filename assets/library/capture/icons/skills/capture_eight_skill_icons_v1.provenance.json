@@ -62,11 +62,11 @@
     {
       "assetId": "pack:capture:icon-skill-drain-de-vie-01",
       "label": "Drain de vie",
-      "source": "siphon_d_âme_infernal.png",
-      "sourceSha256": "f2b7cd0a8402c8a1b1d0913ba695dd732d8f45b507f243606beba1e700d9f3fd",
+      "source": "siphon_d_âme_écarlate.png",
+      "sourceSha256": "732ca34ea0ab2ab0bd4086fd9586cfe8cd23fd38c48d896f3018556376c3fe59",
       "derivedFile": "capture/icons/skills/icon_skill_drain_de_vie_01.webp",
-      "derivedSha256": "4823240c81bb46bedcfe6123ba33f9e15396e685ca6878a5495793cb21ee9ca4",
-      "bytes": 2252
+      "derivedSha256": "a1b3062e855012686c06b852aa6be8076c0ab1a5d38af61b649e3b5bb15fc03d",
+      "bytes": 1934
     },
     {
       "assetId": "pack:capture:icon-skill-comete-01",
@@ -85,6 +85,26 @@
       "derivedFile": "capture/icons/skills/icon_skill_pique_de_pierre_01.webp",
       "derivedSha256": "a36389c1844b9ee8b0503f15064333ed6cef56d57adfa864eb80002ac7e783fc",
       "bytes": 2890
+    }
+  ],
+  "revisions": [
+    {
+      "date": "2026-10-18",
+      "assetId": "pack:capture:icon-skill-drain-de-vie-01",
+      "reason": "User-approved icon refresh with framed background; stable ID and path retained",
+      "previous": {
+        "source": "siphon_d_âme_infernal.png",
+        "sourceSha256": "f2b7cd0a8402c8a1b1d0913ba695dd732d8f45b507f243606beba1e700d9f3fd",
+        "derivedSha256": "4823240c81bb46bedcfe6123ba33f9e15396e685ca6878a5495793cb21ee9ca4",
+        "bytes": 2252
+      },
+      "current": {
+        "source": "siphon_d_âme_écarlate.png",
+        "sourceSha256": "732ca34ea0ab2ab0bd4086fd9586cfe8cd23fd38c48d896f3018556376c3fe59",
+        "derivedSha256": "a1b3062e855012686c06b852aa6be8076c0ab1a5d38af61b649e3b5bb15fc03d",
+        "bytes": 1934
+      },
+      "newProvenance": "capture_four_shadow_icons_2026_10_18.provenance.json"
     }
   ]
 }

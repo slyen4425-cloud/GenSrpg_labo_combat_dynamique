@@ -1,0 +1,113 @@
+{
+  "schema": "capture-four-shadow-icons-provenance-v1",
+  "date": "2026-10-18",
+  "owner": "global-assets",
+  "sourceType": "ChatGPT user-validated final icon generation with opaque background and purple border",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "format": "image/webp VP8 RGB (opaque)",
+  "settings": {
+    "library": "Pillow",
+    "resampling": "LANCZOS",
+    "quality": 30,
+    "method": 6
+  },
+  "license": "project-internal",
+  "note": "Drain de vie replaces media bytes for a pre-existing assetId; three other icons are catalog additions. No skill gameplay altered.",
+  "assets": [
+    {
+      "assetId": "pack:capture:icon-skill-attaque-ombre-01",
+      "label": "Attaque d’ombre",
+      "source": "frappe_spectrale_violette.png",
+      "sourceSha256": "6f25d95c6927143da7505a8ed618c1fb3004d9705ebc63e9db977803b217ad6a",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "derivedFile": "capture/icons/skills/icon_skill_attaque_ombre_01.webp",
+      "derivedSha256": "3d4b431d26cf0a0ce3e25f2e04a035a775acd128a47774fc6b423dd8e90a29e0",
+      "gitBlobSHA": "87bb18c8391f18bc8fb41f90576cab6e0f87a6e7",
+      "bytes": 2096,
+      "tags": [
+        "skill",
+        "capture",
+        "shadow",
+        "attack",
+        "magic",
+        "damage"
+      ]
+    },
+    {
+      "assetId": "pack:capture:icon-skill-drain-de-vie-01",
+      "label": "Drain de vie",
+      "source": "siphon_d_âme_écarlate.png",
+      "sourceSha256": "732ca34ea0ab2ab0bd4086fd9586cfe8cd23fd38c48d896f3018556376c3fe59",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "derivedFile": "capture/icons/skills/icon_skill_drain_de_vie_01.webp",
+      "derivedSha256": "a1b3062e855012686c06b852aa6be8076c0ab1a5d38af61b649e3b5bb15fc03d",
+      "gitBlobSHA": "0eb282ee6ff7e47b420313bcd162ab3dbea43e44",
+      "bytes": 1934,
+      "tags": [
+        "skill",
+        "capture",
+        "shadow",
+        "life",
+        "drain",
+        "heal"
+      ]
+    },
+    {
+      "assetId": "pack:capture:icon-skill-voile-ombre-01",
+      "label": "Voile d’ombre",
+      "source": "silhouette_mystique_dans_un_voile_violet.png",
+      "sourceSha256": "ad7280a9bd56dbd075037eb423f66c32c5c1d0449bdfbf9c006b6f1a2ad51e07",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "derivedFile": "capture/icons/skills/icon_skill_voile_ombre_01.webp",
+      "derivedSha256": "d7ea5d60aa0bc664f243e7049360a1bfc226248e8f13441e96ffb8bfe01c0085",
+      "gitBlobSHA": "d91cb0a67e4e0e12142182523ec7f9a14a78f99b",
+      "bytes": 2094,
+      "tags": [
+        "skill",
+        "capture",
+        "shadow",
+        "veil",
+        "buff",
+        "defense"
+      ]
+    },
+    {
+      "assetId": "pack:capture:icon-skill-malediction-feline-01",
+      "label": "Malédiction féline",
+      "source": "masque_félin_mystique_aux_runes_violettes.png",
+      "sourceSha256": "6d3bf1c536c69f4b9b944fddceeb124e086134f921e532022031fe7c535ac8ca",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "derivedFile": "capture/icons/skills/icon_skill_malediction_feline_01.webp",
+      "derivedSha256": "add43de46a03e240e6a6a75a76eb971f94c9de1efca30f9efa8fa3d60987503b",
+      "gitBlobSHA": "41c32ae75ac66a7dd871488e78d49342c5636b19",
+      "bytes": 2482,
+      "tags": [
+        "skill",
+        "capture",
+        "shadow",
+        "curse",
+        "feline",
+        "debuff"
+      ]
+    }
+  ]
+}
