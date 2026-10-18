@@ -63,14 +63,18 @@ export function impactVisualDelayForCameraShakeV1(shake) {
 const BEAM_CAP_BASE_SIZE_PX = 96;
 const BEAM_CAP_OVERLAP_RATIO = 0.35;
 
+// The medium reach of a *growing* zone must read as a genuine second
+// level, before long becomes the full battlefield. Static medium zones keep
+// their historical scale. These bounds are sampled by native occupancy too.
 const PERSISTENT_ZONE_RADIUS_SCALE = Object.freeze({
   short: 1,
   medium: 1.45,
   long: 1.9
 });
 
-function persistentZoneRadiusScale(radius) {
-  const scale = PERSISTENT_ZONE_RADIUS_SCALE[radius];
+function persistentZoneRadiusScale(radius, {radiusGrowthSteps = 0} = {}) {
+  const scale = radius === "medium" && Number(radiusGrowthSteps) > 0
+    ? 1.65 : PERSISTENT_ZONE_RADIUS_SCALE[radius];
   if (scale == null) {
     throw new RangeError(
       "Unsupported persistent zone radius: " + radius
@@ -1908,7 +1912,7 @@ export function createDomSkillFxRenderer({
         Number(visual.displayScaleY) || 1
       );
       const radiusScale =
-        persistentZoneRadiusScale(zone.radius);
+        persistentZoneRadiusScale(zone.radius, zone);
       const effectiveScaleX =
         displayScale *
         displayScaleX *
