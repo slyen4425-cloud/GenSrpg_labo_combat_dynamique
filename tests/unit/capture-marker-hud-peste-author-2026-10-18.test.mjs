@@ -51,3 +51,34 @@ test("saved standalone marker is displayed by real editor startup without export
  const hud=await read("src/adapters/renderer/dom-status-fx.js");
  assert.match(hud,/statusEffectInfoTextV1\(info\)/);
 });
+
+test("actual combat HUD title and tapped details render periodic marker data without export",async()=>{
+ const {createDomStatusFxRenderer}=await import("../../src/adapters/renderer/dom-status-fx.js");
+ const marker=JSON.parse(await read(showcase)).markers.find(x=>x.id==="peste");
+ const instance=createStatusEffectRuntimeInstanceV1({definition:markerStatusDefinitionV1(marker),
+   sourceActorId:"caster",sourceSkillId:"test",appliedAtMs:0,stacks:2});
+ const doc={createElement(){
+   return {className:"",dataset:{},style:{},hidden:false,textContent:"",children:[],ownerDocument:doc,
+     append(...values){this.children.push(...values);},remove(){this.removed=true;},setAttribute(){}};
+ }};
+ const host=doc.createElement("div");
+ const hud=createDomStatusFxRenderer({
+   targetFor:()=>({statusHost:host}),
+   statusPresentationFor:()=>null,
+   skillPresentationFor:()=>null,
+   skillDefinitionFor:()=>null
+ });
+ hud.sync({elapsedMs:5000,fighters:{victim:{statusEffects:[instance]}}});
+ const node=host.children.find(x=>x.dataset.statusFx==="hud-icon"&&!x.removed);
+ assert.ok(node);
+ assert.match(node.title,/15 dégâts Ombre/);
+ assert.match(node.title,/toutes les 30 s/);
+ assert.match(node.title,/30 pour 2 charges/);
+ assert.match(node.title,/Prochain effet dans 25 s/);
+ node.onclick({stopPropagation(){}});
+ const details=node.children.find(x=>x.dataset.statusFx==="hud-details");
+ assert.equal(details.hidden,false);
+ assert.match(details.textContent,/15 dégâts Ombre/);
+ assert.match(details.textContent,/Prochain effet dans 25 s/);
+ hud.dispose();
+});
