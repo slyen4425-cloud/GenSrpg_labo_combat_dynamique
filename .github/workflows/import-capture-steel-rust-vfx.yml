@@ -1,0 +1,37 @@
+name: Import Capture steel and rust VFX media
+on:
+  push:
+    branches:
+      - work/lab-capture-steel-rust-vfx-2026-10-18
+    paths:
+      - 'assets/library/capture/sprites/source/steel_rust_vfx_20261018/**'
+      - 'scripts/import_capture_steel_rust_vfx.py'
+permissions:
+  contents: write
+concurrency:
+  group: capture-steel-rust-vfx-import
+  cancel-in-progress: false
+jobs:
+  import-media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=10,<13'
+      - name: Validate real source sheets and import 100 RGBA frames + atlases
+        run: python scripts/import_capture_steel_rust_vfx.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run complete laboratory CI before publication
+        run: npm run ci
+      - name: Commit verified media and catalogue
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/sprites/skills/steel_carapace assets/library/capture/sprites/skills/steel_wing_impact assets/library/capture/sprites/skills/rust_whirlwind assets/library/capture/sprites/skills/steel_wing_projectile data/assets/catalog/global-visual-assets.v1.json tests/unit/capture-steel-rust-vfx-20261018.test.mjs
+          if git diff --cached --quiet; then echo 'No generated files' >&2; exit 1; fi
+          git commit -m 'assets(capture): import 100 verified steel and rust VFX frames'
+          git push origin HEAD:work/lab-capture-steel-rust-vfx-2026-10-18

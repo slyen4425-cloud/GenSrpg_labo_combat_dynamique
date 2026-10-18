@@ -1,0 +1,55 @@
+{
+  "schema": "gensrpg-steel-rust-source-transport-v1",
+  "date": "2026-10-18",
+  "grid": [
+    5,
+    4
+  ],
+  "sourceSize": [
+    1402,
+    1122
+  ],
+  "encoding": "WEBP RGBA quality85 method3 exact (lossy compressed copy of original PNGs)",
+  "sheets": [
+    {
+      "key": "steel_carapace_fade",
+      "file": "steel_carapace_fade.webp",
+      "sourceFile": "sprite_de_carapace_d_acier_magique.png",
+      "originalPngSha256": "98f7c28cdc62859326e26def3d9e8e1931796161c458ce9f2982fb76723ed23d",
+      "transportSha256": "904b9e8a88a5d263c3d5c71a8ac4efae61b72a8e7a8652c6b32a2081efb09bdf",
+      "bytes": 1039924
+    },
+    {
+      "key": "steel_carapace_hold",
+      "file": "steel_carapace_hold.webp",
+      "sourceFile": "animation_de_carapace_métallique_magique.png",
+      "originalPngSha256": "7264be046aaf44e56421cd779fcb3d08480e300bc93202dbc8bae11e0fd342fc",
+      "transportSha256": "6c4cf060931d3b600ee56df75f579dff9a2665758a849c10a498fe319069ae57",
+      "bytes": 940756
+    },
+    {
+      "key": "steel_wing_impact_impact",
+      "file": "steel_wing_impact_impact.webp",
+      "sourceFile": "planche_d_animation_d_impact_ailé_métallique.png",
+      "originalPngSha256": "05a89a488781876884d69c19f5b78e5f881ea469d4a008c96fb61b4b6e3ef8f4",
+      "transportSha256": "62b8796a72516ad7a1a0d40a71e0af46e824804d47c4355a955cdcce9d25ab33",
+      "bytes": 957242
+    },
+    {
+      "key": "rust_whirlwind_cast",
+      "file": "rust_whirlwind_cast.webp",
+      "sourceFile": "planche_d_animation_tourbillon_de_rouille.png",
+      "originalPngSha256": "3ae0de352f6f294358c9ce107d23efedf7e68eaa1ddae3c728be6798663e8a37",
+      "transportSha256": "760a2f150216ed9dc0709e4530a31b304134028bcd7f1cf95f4a7b182180fa2d",
+      "bytes": 1088012
+    },
+    {
+      "key": "steel_wing_projectile_projectile",
+      "file": "steel_wing_projectile_projectile.webp",
+      "sourceFile": "sprite_sheet_de_projectile_ailé_lumineux.png",
+      "originalPngSha256": "87fecf3588998b2d21ecccc524deed5b161f1d137ce141cca672a4d57d268d93",
+      "transportSha256": "0ae68336d14eefb1d4394e554748498dbb722260163658e3ac4e2fb3c691c733",
+      "bytes": 731370
+    }
+  ]
+}
