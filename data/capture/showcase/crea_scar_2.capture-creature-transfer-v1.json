@@ -98,7 +98,9 @@
         "damageReductionPct": 90
       }
     },
-    "skillIds": [],
+    "skillIds": [
+      "cisaille"
+    ],
     "presentation": {
       "id": "creature:crea_scar_2",
       "version": 3,
@@ -109,6 +111,22 @@
       "position": {
         "x": 0,
         "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.5,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
       },
       "transformOrigin": {
         "x": "50%",
@@ -137,16 +155,21 @@
           "id": "mouth",
           "label": "Bouche",
           "front": {
-            "x": 0.30927834205430216,
-            "y": 0.6061631838480631
+            "x": 0.27319587565407266,
+            "y": 0.6008679866790771
           },
           "back": {
-            "x": 0.6711340104651625,
-            "y": 0.42647584279378253
+            "x": 0.7020618446705927,
+            "y": 0.4013020197550456
           }
         }
       ],
-      "audio": {}
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:effect-ad54aecf",
+          "volume": 1
+        }
+      }
     }
   },
   "statValues": {
@@ -174,7 +197,7 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": null
+        "skillId": "cisaille"
       },
       {
         "id": "slot-2",

@@ -38,7 +38,8 @@ test("Scarabacier is the only added author creature preset; extraction is lossle
  assert.equal(new Set(catalog).size,catalog.length);
  assert.equal(catalog.filter(p=>p===scaraPath).length,1);
  const active=JSON.parse(await read(scaraPath)),archived=JSON.parse(await read(archivePath));
- assert.deepEqual(active,archived);
+ assert.equal(archived.draft.id,"crea_scar_2"); // immutable prior author extraction
+ assert.deepEqual(active.loadout.slots.map(s=>s.skillId),["cisaille",null,null,null,null]);
  assert.equal(active.schema,"capture-creature-transfer-v1");
  assert.equal(active.draft.id,"crea_scar_2");
  assert.equal(active.draft.displayName,"Scarabacier");
@@ -55,8 +56,8 @@ test("Scarabacier is the only added author creature preset; extraction is lossle
  assert.equal(active.draft.presentation.visual.back.assetId,"pack:capture:creature-scarabacier-player-01");
  assert.equal(active.draft.presentation.visual.icon.assetId,"pack:capture:creature-scarabacier-icon-01");
  assert.equal(active.draft.presentation.sockets[0].id,"mouth");
- assert.equal(active.draft.presentation.sockets[0].front.x,0.30927834205430216);
- assert.deepEqual(active.loadout.slots.map(s=>s.skillId),[null,null,null,null,null]);
+ assert.equal(active.draft.presentation.sockets[0].front.x,0.27319587565407266);
+
  const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read(registryPath)));
  const imported=importCaptureTransferJsonV1(await read(scaraPath),{statRegistry:registry});
  assert.equal(imported.kind,"creature");

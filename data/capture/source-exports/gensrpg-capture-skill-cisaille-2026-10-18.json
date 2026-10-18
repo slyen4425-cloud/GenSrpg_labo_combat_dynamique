@@ -1,0 +1,133 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cisaille",
+    "description": "Frappe et réduit énergie de l ennemie.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cisaille",
+      "name": "Cisaille",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "steel",
+      "approachMode": "ground",
+      "energyCost": 3,
+      "preparationMs": 900,
+      "travelMs": 1100,
+      "recoveryMs": 0,
+      "cooldownMs": 10000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 12,
+          "channel": null,
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "energy_drain",
+          "targetScope": "target",
+          "amount": 2
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cisaille",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cisaille",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-claw-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-blade-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.7,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:effect-ff9cee8c",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
