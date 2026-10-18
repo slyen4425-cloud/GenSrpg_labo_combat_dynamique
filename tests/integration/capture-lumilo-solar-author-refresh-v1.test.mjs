@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {readFile} from "node:fs/promises";
 import {importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import {normalizeCaptureStatRegistryV1} from "../../src/contracts/capture-stat-registry-v1.js";
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
@@ -17,13 +18,14 @@ const entries=[
    kind:"skill",id:"cap_light_atk_3",catalog:CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1}
 ];
 const read=async p=>readFile(new URL("../../"+p,import.meta.url));
+const registry=normalizeCaptureStatRegistryV1(JSON.parse((await read("data/capture/monster-capture-stat-registry.v1.json")).toString("utf8")));
 test("RED: Lumilo and Charge solaire exports are archived and active byte-exact, once per canonical catalog",async()=>{
   for(const item of entries){
     const [source,active]=await Promise.all([read(item.archive),read(item.active)]);
     assert.equal(createHash("sha256").update(source).digest("hex"),item.sha);
     assert.deepEqual(active,source,"active transfer must match author export without extra repairs");
     assert.equal(item.catalog.filter(x=>x===item.active).length,1);
-    const parsed=importCaptureTransferJsonV1(active.toString("utf8"));
+    const parsed=importCaptureTransferJsonV1(active.toString("utf8"), item.kind==="creature"?{statRegistry:registry}:{});
     assert.equal(parsed.kind,item.kind);
     assert.equal(parsed.value.draft.id,item.id);
   }
@@ -40,7 +42,7 @@ test("RED: new Charge solaire author timings, targeting and visuals preserved",a
   assert.equal(skill.presentation.audio.impact.assetId,"gensrpg:sound:conflux-43060f16");
 });
 test("RED: Lumilo canonical loadout selects Charge solaire in slot 4, preserving evolution, visuals and reactions",async()=>{
-  const creature=importCaptureTransferJsonV1((await read(entries[0].active)).toString("utf8")).value;
+  const creature=importCaptureTransferJsonV1((await read(entries[0].active)).toString("utf8"),{statRegistry:registry}).value;
   const bySlot=Object.fromEntries(creature.loadout.slots.map(x=>[x.id,x.skillId]));
   assert.equal(bySlot["slot-4"],"cap_light_atk_3");
   assert.equal(creature.draft.capture.evolution.targetId,"crea_solarys");
