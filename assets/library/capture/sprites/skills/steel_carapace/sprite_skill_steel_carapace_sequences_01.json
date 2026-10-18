@@ -1,0 +1,161 @@
+{
+  "schema": "capture-steel-rust-sprite-sequences-v1",
+  "sequences": {
+    "fade": {
+      "assetId": "pack:capture:sprite-steel-carapace-fade-01",
+      "label": "Carapace d’acier — formation puis dissipation",
+      "category": "skill",
+      "sourceSheet": "steel_carapace_fade.webp",
+      "sourcePngSha256": "98f7c28cdc62859326e26def3d9e8e1931796161c458ce9f2982fb76723ed23d",
+      "sourceWebpSha256": "904b9e8a88a5d263c3d5c71a8ac4efae61b72a8e7a8652c6b32a2081efb09bdf",
+      "sourceGrid": [
+        5,
+        4
+      ],
+      "nativeSourceSize": [
+        1402,
+        1122
+      ],
+      "frameSize": [
+        512,
+        512
+      ],
+      "native512": false,
+      "frameCount": 20,
+      "frameMs": 85,
+      "playbackMode": "once",
+      "holdLastFrame": false,
+      "holdFrameIndex": null,
+      "frames": [
+        "frames/sprite_skill_steel_carapace_fade_01.png",
+        "frames/sprite_skill_steel_carapace_fade_02.png",
+        "frames/sprite_skill_steel_carapace_fade_03.png",
+        "frames/sprite_skill_steel_carapace_fade_04.png",
+        "frames/sprite_skill_steel_carapace_fade_05.png",
+        "frames/sprite_skill_steel_carapace_fade_06.png",
+        "frames/sprite_skill_steel_carapace_fade_07.png",
+        "frames/sprite_skill_steel_carapace_fade_08.png",
+        "frames/sprite_skill_steel_carapace_fade_09.png",
+        "frames/sprite_skill_steel_carapace_fade_10.png",
+        "frames/sprite_skill_steel_carapace_fade_11.png",
+        "frames/sprite_skill_steel_carapace_fade_12.png",
+        "frames/sprite_skill_steel_carapace_fade_13.png",
+        "frames/sprite_skill_steel_carapace_fade_14.png",
+        "frames/sprite_skill_steel_carapace_fade_15.png",
+        "frames/sprite_skill_steel_carapace_fade_16.png",
+        "frames/sprite_skill_steel_carapace_fade_17.png",
+        "frames/sprite_skill_steel_carapace_fade_18.png",
+        "frames/sprite_skill_steel_carapace_fade_19.png",
+        "frames/sprite_skill_steel_carapace_fade_20.png"
+      ],
+      "frameSha256": [
+        "f715643b5d33dc5c9cad09266d6d39232b5cfb0918d376ff38eded4d44ce6706",
+        "b16d88701c3d9add9e03bd173971cf00a6ece01228a6e94f7904dc4786561da3",
+        "f2daae934953bb4618f210b4a59a51a38d694e98ca888341fabced8c76b4f8d1",
+        "cf394bddc3ae629fb9a69be5f5dcb5c1044f2aa7b2d77a486bbb4908a07e59e1",
+        "8d8ccc81510956d4bfd7b14db858976aa3a7c5e68b201d794fd915862bb3f496",
+        "232e74046a82fa3a19b0976eada591136d7325299ef0bb8ccdd71317dfbd8e9e",
+        "f870a31ec8c22a22d335c718c7b16141e155b99ca5cc43e003e2941551ff5192",
+        "949aca70a34ba5961c161e9288fa9deb9d26de92551bab4013a10325710050c8",
+        "fe78d2ffc6fb6e19773b65da0584bdf838231e49ad6d1a1c8d36fffd7400fad7",
+        "413aa271ca9c177775920c08e515bcdf6479d6ed69debd9f135bfa3b6ae8c867",
+        "abea636054c08dd6110003266880f353fad9d488f05065bd5d6ba2ed876cdc55",
+        "4078ba25a19ca2653d164bbd70bf24b339f8273f022f1ac082f55e6a18b2018b",
+        "4fb860d2ac120b76e8954ffd35dbd967a025bce22f38a780caf00a46a64f3199",
+        "653d7d7ba992b26aa48dc46a946d71567929835826cbd91c18133f9316b07300",
+        "d34287c48537ffe99b63ece844bf2249a19bf129d10613f6317bbc76c96f03c8",
+        "357f0b4072d80e4ecb4588af5f7542875213e3ad0882c442fc70df56ac69ee90",
+        "bbf09079b6a138510b942f579ed6950b22e38d61af958c4f259b4555536e0e5d",
+        "88b293df731d670c2ce316f80098a4f46b2dc1c11e248894166a52b2d1d531a9",
+        "e3199e7a6c602c6923e75397e0b86f9e18bbce7e242dc32a4b2bda3636e9a2ec",
+        "906e26fe90e222d0954969f047433ae00d8e1bd8dec9e2b981d3d7246447c10b"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_steel_carapace_fade_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384,
+        "sha256": "d56bc46906e42cd76e9e205a4106f46fd0a18263a5fe1f204699467e85acdb93"
+      }
+    },
+    "hold": {
+      "assetId": "pack:capture:sprite-steel-carapace-hold-01",
+      "label": "Carapace d’acier — formation et maintien",
+      "category": "skill",
+      "sourceSheet": "steel_carapace_hold.webp",
+      "sourcePngSha256": "7264be046aaf44e56421cd779fcb3d08480e300bc93202dbc8bae11e0fd342fc",
+      "sourceWebpSha256": "6c4cf060931d3b600ee56df75f579dff9a2665758a849c10a498fe319069ae57",
+      "sourceGrid": [
+        5,
+        4
+      ],
+      "nativeSourceSize": [
+        1402,
+        1122
+      ],
+      "frameSize": [
+        512,
+        512
+      ],
+      "native512": false,
+      "frameCount": 20,
+      "frameMs": 85,
+      "playbackMode": "once",
+      "holdLastFrame": true,
+      "holdFrameIndex": 19,
+      "frames": [
+        "frames/sprite_skill_steel_carapace_hold_01.png",
+        "frames/sprite_skill_steel_carapace_hold_02.png",
+        "frames/sprite_skill_steel_carapace_hold_03.png",
+        "frames/sprite_skill_steel_carapace_hold_04.png",
+        "frames/sprite_skill_steel_carapace_hold_05.png",
+        "frames/sprite_skill_steel_carapace_hold_06.png",
+        "frames/sprite_skill_steel_carapace_hold_07.png",
+        "frames/sprite_skill_steel_carapace_hold_08.png",
+        "frames/sprite_skill_steel_carapace_hold_09.png",
+        "frames/sprite_skill_steel_carapace_hold_10.png",
+        "frames/sprite_skill_steel_carapace_hold_11.png",
+        "frames/sprite_skill_steel_carapace_hold_12.png",
+        "frames/sprite_skill_steel_carapace_hold_13.png",
+        "frames/sprite_skill_steel_carapace_hold_14.png",
+        "frames/sprite_skill_steel_carapace_hold_15.png",
+        "frames/sprite_skill_steel_carapace_hold_16.png",
+        "frames/sprite_skill_steel_carapace_hold_17.png",
+        "frames/sprite_skill_steel_carapace_hold_18.png",
+        "frames/sprite_skill_steel_carapace_hold_19.png",
+        "frames/sprite_skill_steel_carapace_hold_20.png"
+      ],
+      "frameSha256": [
+        "70fd3278f6797ac7053fd6d2fe809d135dbb761a77d5ba6f84a5d761e19f3f94",
+        "9d1abe623152af997b32808c294f3a039bc6bbc97be512201044cae31cace20f",
+        "fa51c749ef913f1dd7b9f7e269d95bcd9e3821f644201f7bc045f3885ec57b85",
+        "f2f029eb226d45d338d7a8c43a00174a8df62579970965e4ca059ad297c8bf47",
+        "0ca7636f0300f56017dd5c14cf078c16eddb4d1f922c2f0108973c2b795b46bb",
+        "393f9d529aa5326ed32fe151c8a654ba518474377795c3a4a165058b6395dd5b",
+        "7a2c5ac707e20d77aa707ea2c976e12392314846e90cc45b15821ce8e7b66e06",
+        "3913b14641e0cdd4bd2195fa5de231979f047daa5421a72cd8f3e8a667381715",
+        "3f09f9024657d4ece689446fca6d79188104cfffa607b184a6888ba4de84da2f",
+        "3b86d8772b1536df63fe1caf72af3242c3e8cad5da8c8798edddbe1e447c9634",
+        "f664ee458a4e8d97f0721f8a97fda4abafa33efe97e65c0e81e3b70a5b0861a6",
+        "fae472da451cf15919348c84b306e5946f78edc93deafe26e7392ff534daf6ac",
+        "2c33639a2b15f99487bc1e472aafc0b7458d24ec45d7b98c2bab62a0ada6de07",
+        "b7c7a9aac21c74d52b2dad4710edb50afcd45df2a3e385a5c0ba5ad4e5b57759",
+        "253064849b2a3753e55876ec42ed96cf4bfa4284009dd1b25c03502012a4044e",
+        "a083fe2aa30aeac5ec19808fe0ae5700b6a88984ba0406275dbd57014a6827a8",
+        "8d527501751536cad0ce733ee33dd00d311f5fd47a132e50e48b2f82ab1c313c",
+        "cee3a58ab0d9fa86040f9d771a141e700513d2bf93ca65f756628bba5e5ebd65",
+        "74115d1a5f00644ddc096cba89eba9bb0f857f800ce5ade3d3c43a2ee0f5c68e",
+        "9580c1e180c15a4f34e16064f51824739624864143f56ba69a08799caeefb677"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_steel_carapace_hold_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384,
+        "sha256": "4eba0931a0d96180539cb69118b384cf84cfb7c17a72041f1bab78ec32cfd613"
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "capture-steel-rust-sprite-sequences-v1",
+  "sequences": {
+    "cast": {
+      "assetId": "pack:capture:sprite-rust-whirlwind-cast-01",
+      "label": "Tourbillon de rouille — Cast",
+      "category": "release",
+      "sourceSheet": "rust_whirlwind_cast.webp",
+      "sourcePngSha256": "3ae0de352f6f294358c9ce107d23efedf7e68eaa1ddae3c728be6798663e8a37",
+      "sourceWebpSha256": "760a2f150216ed9dc0709e4530a31b304134028bcd7f1cf95f4a7b182180fa2d",
+      "sourceGrid": [
+        5,
+        4
+      ],
+      "nativeSourceSize": [
+        1402,
+        1122
+      ],
+      "frameSize": [
+        512,
+        512
+      ],
+      "native512": false,
+      "frameCount": 20,
+      "frameMs": 75,
+      "playbackMode": "once",
+      "holdLastFrame": false,
+      "holdFrameIndex": null,
+      "frames": [
+        "frames/sprite_skill_rust_whirlwind_cast_01.png",
+        "frames/sprite_skill_rust_whirlwind_cast_02.png",
+        "frames/sprite_skill_rust_whirlwind_cast_03.png",
+        "frames/sprite_skill_rust_whirlwind_cast_04.png",
+        "frames/sprite_skill_rust_whirlwind_cast_05.png",
+        "frames/sprite_skill_rust_whirlwind_cast_06.png",
+        "frames/sprite_skill_rust_whirlwind_cast_07.png",
+        "frames/sprite_skill_rust_whirlwind_cast_08.png",
+        "frames/sprite_skill_rust_whirlwind_cast_09.png",
+        "frames/sprite_skill_rust_whirlwind_cast_10.png",
+        "frames/sprite_skill_rust_whirlwind_cast_11.png",
+        "frames/sprite_skill_rust_whirlwind_cast_12.png",
+        "frames/sprite_skill_rust_whirlwind_cast_13.png",
+        "frames/sprite_skill_rust_whirlwind_cast_14.png",
+        "frames/sprite_skill_rust_whirlwind_cast_15.png",
+        "frames/sprite_skill_rust_whirlwind_cast_16.png",
+        "frames/sprite_skill_rust_whirlwind_cast_17.png",
+        "frames/sprite_skill_rust_whirlwind_cast_18.png",
+        "frames/sprite_skill_rust_whirlwind_cast_19.png",
+        "frames/sprite_skill_rust_whirlwind_cast_20.png"
+      ],
+      "frameSha256": [
+        "2e00d298599ee33c6d5950b1c0e4736b5e7d916d7ea8c046d03891e4a7792e53",
+        "0071b2c75a73848163720414faec2eca5c74d1c88a291d1a137c2fc7df15545d",
+        "ed3e81bd48a8856f15cc14de073f164d709c9243f70782ca45381db5f3e5f2e8",
+        "59121a553101ee7adf18fd338758ed714af1d30b326302b18ae649ce86102147",
+        "e59c80fdcbb4de1eef1160761ae6c9612bc6bf214f7ab51a6b740d671f8c85dd",
+        "af7ffe8386937aca39ab8bba648f3b7210d46bf1d5ded37b211d50e7d71b7206",
+        "7583a15a798f43bf2fd33c4ee8ef8781182fd8bbea6bbfce87afe8690165fa5c",
+        "7c6394f92d2ace2b5635d4bbf80d2b90d206b93123fad12dece74b65670c460c",
+        "b41397bddfd90572d276eebaeb6d0f9bc5d326e255789a550f93c59508f07ff9",
+        "58d2d66a2cc47bed01c8891986b7e6286b931d89ad2ccaa3a009e9eaa32554c7",
+        "819916d685279f64b24708fd64c51a12388bee0f80a613db372e5a95ec00cd5c",
+        "41245b7aaa34ee2d97308ed44ffc0394813deba6522792b18b3e4fac693837fb",
+        "af1a84fc7e6987b6a24d58243224de05066ffbfacf32b078149499b6cb99868c",
+        "e77b31561702a6c829c9a0c3726b34800c589800f450c0d91992565c08a9ab47",
+        "5b3d9f317209bef00d35438054a8918bd5fc81d0e17d76db399d6d36d0547b2e",
+        "c8eb7da3f84f233e7ea8bb90549a86446992f0f3fee4e38dcf3406948c314e81",
+        "b5ea33ae130f901d60fe6d4bf63e1f74f0b960f0d3741f1edfff59529f4cc3ce",
+        "92118f21204b4f3dfa32962697acb2327f8580bf1764a24c4f3411fbf79f04fa",
+        "03f8745484f288d4e1b6195b9178aad95d71e1b56a6ebe0d90da6d412093997b",
+        "7406ea0316e63296d4f88e01c2e70316907c079850547a1ecb2d27fcc43fcb9f"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_rust_whirlwind_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384,
+        "sha256": "d9269db0a562276079cd2961db86f7a1d9616fd99354c30931a84214e118d30a"
+      }
+    }
+  }
+}

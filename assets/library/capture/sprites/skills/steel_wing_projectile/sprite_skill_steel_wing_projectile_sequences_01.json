@@ -1,0 +1,83 @@
+{
+  "schema": "capture-steel-rust-sprite-sequences-v1",
+  "sequences": {
+    "projectile": {
+      "assetId": "pack:capture:sprite-steel-wing-projectile-01",
+      "label": "Aile acier — Projectile",
+      "category": "travel",
+      "sourceSheet": "steel_wing_projectile_projectile.webp",
+      "sourcePngSha256": "87fecf3588998b2d21ecccc524deed5b161f1d137ce141cca672a4d57d268d93",
+      "sourceWebpSha256": "0ae68336d14eefb1d4394e554748498dbb722260163658e3ac4e2fb3c691c733",
+      "sourceGrid": [
+        5,
+        4
+      ],
+      "nativeSourceSize": [
+        1402,
+        1122
+      ],
+      "frameSize": [
+        512,
+        512
+      ],
+      "native512": false,
+      "frameCount": 20,
+      "frameMs": 65,
+      "playbackMode": "once",
+      "holdLastFrame": false,
+      "holdFrameIndex": null,
+      "frames": [
+        "frames/sprite_skill_steel_wing_projectile_projectile_01.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_02.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_03.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_04.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_05.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_06.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_07.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_08.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_09.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_10.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_11.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_12.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_13.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_14.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_15.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_16.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_17.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_18.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_19.png",
+        "frames/sprite_skill_steel_wing_projectile_projectile_20.png"
+      ],
+      "frameSha256": [
+        "253a516bdfa1c4609f5091eb10bdc5ab249547afe1177a6e913f199effeb1365",
+        "7cee1a28965fdf69ba23297792dd77372f25f46f80669e8f0b24fdaa5444ab35",
+        "bedad103df76bcb1e5a186095abf03e26376c59ab21f31e9539996df75c642b5",
+        "b169a57938d54976be6278751fcca08011463f034961abd5880b19f90a26d718",
+        "a03d4d7b10b80a4a81744d72dc85dd665579ab80e70ee4bd563861f5e2fd5d0d",
+        "9a35e422a481e59bc2deb3e30d94f9dc670fbd7f09702174df7faf1d0b15ee52",
+        "84d33805391a8b6e6c47f6b65e18c693cd0534492adc129dc903e9bd242d3daa",
+        "ca4e9770afd9b35b64a9a4a82b13b7e4f56ae5a9a60de7d67fb3269f8e566eab",
+        "50ee6f9a3286c17c101275d0778643ca70e3eea27db7ff9e48d58e8c1e9f3ae6",
+        "861b0fd80c36d54a9c2d74deb27ef9edc95949cc7bdeb67e75d6f097133b7d1e",
+        "7ec756c6c22483eee76e06b9e024678c5f2d9a5e6dc46047f0fe9d9fc7d05111",
+        "504f8db0aa1c76211e25cf6ab356e1bca94541ac27bab540139edeb63641a239",
+        "7507af2fa3bfa11e1644e2ffebf5c14c5e1dec690203936b6dd3b2804bfb17ec",
+        "52d8da13823659aa96b35210206f72c3970065629ad521c787f441eb18fe4b76",
+        "d411133b2cf0d976a76e1278c0f61ce216db992cf731c98a443087d7d3edadae",
+        "3a8e0ea1b6a7a80cbd974862bc6cffa82c8e0a7f470f3bdf6492e63170ff681d",
+        "d3ff76c59c8580440edbced8f01eeb2edc41efd7e7a6d1666218f5ccfbc85558",
+        "d983e688aa7eb34321476f703613106dab591626a927535d0bd14377b9623302",
+        "1e60ab4f341879ded23839575e4f4a28dea6aa63611f52ffa28bc73cdb73a5de",
+        "f88e1c75c3fef499abcfe6a5292db84e97da354fd7d5bb261929c8b80bbcc767"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_steel_wing_projectile_projectile_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384,
+        "sha256": "c9f482d978f95f88328f570ebc70d2b49ce0489f3810211515141bdfef7bcc22"
+      }
+    }
+  }
+}
