@@ -32,6 +32,7 @@
         "long"
       ],
       "targetRelations": [
+        "enemy",
         "self"
       ],
       "targetLocations": [
@@ -83,6 +84,14 @@
               "buff"
             ]
           }
+        },
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 0,
+          "channel": null,
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
         }
       ]
     },
@@ -94,6 +103,24 @@
       "visual": {
         "icon": {
           "assetId": "core:icon-skill-barrier-dome-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-light-shield-cast-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.4,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
         }
       },
       "audio": {},
@@ -105,10 +132,11 @@
           "tintColor": "#9b59d0",
           "tintOpacity": 0.35,
           "sprite": {
-            "playbackMode": "hold-last",
-            "assetId": "pack:capture:sprite-status-energy-shield-01",
-            "displayScale": 2.5,
-            "opacity": 0.7
+            "playbackMode": "loop",
+            "offsetY": -40,
+            "assetId": "pack:capture:sprite-light-shield-barrier-01",
+            "displayScale": 2.7,
+            "opacity": 0.5
           }
         }
       }
