@@ -503,6 +503,11 @@ export async function mountCombatDemo({
       finalBoundaryMs: durationMs
     });
 
+    const movementAppearance = slot.playMovementAppearance(
+      slot.meta?.movementFx ?? null,
+      durationMs,
+      slot.view === "player" ? 1 : -1
+    );
     const handle = slot.renderer.play(plan);
     const finished = handle.finished
       .then((result) => {
@@ -518,6 +523,7 @@ export async function mountCombatDemo({
       })
       .finally(() => {
         cueSchedule.clear();
+        movementAppearance?.cancel?.();
       });
 
     return Object.freeze({
