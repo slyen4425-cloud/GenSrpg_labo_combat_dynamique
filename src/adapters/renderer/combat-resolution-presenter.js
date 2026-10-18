@@ -343,7 +343,27 @@ export function createCombatResolutionPresenter({
     cancelFootfallAudio(actorSlot);
 
     const approachMode = action.skill?.approachMode ?? "none";
+    // Charge solaire and similar authored support skills may keep legacy
+    // contact/ground presentation metadata, even when every effect is a
+    // beneficial ally/self status. Never turn those into a live-model
+    // collision or a one-millisecond self-approach. Only the Presentation
+    // owner opts out; Combat Rules and the author's export remain unchanged.
+    const skill = action.skill;
+    const supportiveOnly = skill &&
+      Array.isArray(skill.targetRelations) &&
+      skill.targetRelations.length > 0 &&
+      skill.targetRelations.every(relation => relation === "self" || relation === "ally") &&
+      Number(skill.effect?.damage ?? 0) === 0 &&
+      Array.isArray(skill.effects) &&
+      skill.effects.length > 0 &&
+      skill.effects.every(effect =>
+        (effect.kind === "apply_status" && effect.status?.polarity === "beneficial") ||
+        effect.kind === "heal" ||
+        effect.kind === "energy_restore" ||
+        effect.kind === "cleanse"
+      );
     if (
+      !supportiveOnly &&
       ["ground", "teleport", "aerial", "burrow"].includes(approachMode) &&
       typeof visuals.playApproachFor === "function"
     ) {
