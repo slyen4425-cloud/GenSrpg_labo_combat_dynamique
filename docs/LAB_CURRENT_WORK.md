@@ -4,6 +4,7 @@
 - Propriétaire unique : configuredSkills via importCaptureTransferJsonV1 et hydratation showcase existante ; aucun moteur, UI, asset, créature, main ou Zombicide-40k modifié.
 - Valeurs et octets utilisateur intégraux conservés, IDs stables, sans interpréter ou réordonner les effets.
 - Tests : RED sur existence/intégrité/hydratation, ensuite import/export, remplacement ou ajout ID, non-régression + CI Github ; GREEN uniquement si CI réussie, publication gh-pages après contrôle.
+- Extension de périmètre après CI RED : 7 tests historiques supposaient 37 entrées, valeur devenue obsolète avec 2 nouvelles capacités. Corriger uniquement les assertions de cardinalité fixe en invariants d'unicité, sans toucher aux fiches, au moteur ni aux autres assertions.
 
 ## 2026-10-18 — Noctigriffe / Barrière lumineuse / sélecteurs combat / coût marqueurs
 - Base publique gh-pages 5015456b1b2ea3de09ec0432a3d0abce17ad9323 ; checkpoint checkpoint/lab-start-author-noctigriffe-barrier-combat-ui-2026-10-18 ; branche work/lab-author-noctigriffe-barrier-combat-ui-2026-10-18.

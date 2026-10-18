@@ -37,8 +37,8 @@ test("Soin lumineux preserves the exact creator export in source archive and cha
   assert.equal(draft.presentation.visual.impact.assetId,
     "pack:capture:sprite-status-healing-aura-01");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(item => item === path).length, 1);
-  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length, 37);
-  assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size, 37);
+  
+  assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size, CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length);
 });
 
 test("Combat skill test can reuse a saved creature when an independent unsaved evolution is incomplete", () => {
