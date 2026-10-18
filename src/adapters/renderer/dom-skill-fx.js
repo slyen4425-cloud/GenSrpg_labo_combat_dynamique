@@ -63,9 +63,12 @@ export function impactVisualDelayForCameraShakeV1(shake) {
 const BEAM_CAP_BASE_SIZE_PX = 96;
 const BEAM_CAP_OVERLAP_RATIO = 0.35;
 
+// Level 2 must be visually legible between the initial fire ellipse and
+// the full-field level 3. These are the SAME bounds sampled by the native
+// zone occupancy owner; never create a disconnected decorative radius.
 const PERSISTENT_ZONE_RADIUS_SCALE = Object.freeze({
   short: 1,
-  medium: 1.45,
+  medium: 1.75,
   long: 1.9
 });
 
