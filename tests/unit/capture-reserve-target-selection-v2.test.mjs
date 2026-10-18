@@ -48,18 +48,31 @@ function node() {
   return {dataset:{},children:[],disabled:false,append(...kids){this.children.push(...kids);},
     replaceChildren(...kids){this.children=kids;},setAttribute(name,value){this[name]=value;}};
 }
-test("real roster panel selects one enemy bench target without changing voluntary recall choice",()=>{
+test("real Rappel menu is allied-only; enemy reserve skill uses its separate panel",()=>{
   const elements=[];const listeners={};let recallSelection=null;let activated=null;
-  const host=node(),summary=node();
+  const host=node(),summary=node(),enemyHost=node(),enemySummary=node();
   const panel={
     querySelector(selector) {return selector==="[data-combat-team-rosters]"?host:summary;},
     querySelectorAll(){return[];},
-    addEventListener(kind,handler){listeners[kind]=handler;},
+    addEventListener(kind,handler){listeners["local-"+kind]=handler;},
     removeEventListener(){}
   };
-  const root={querySelector(){return panel;},ownerDocument:{createElement(){
-    const n=node();elements.push(n);return n;
-  }}};
+  const enemyPanel={
+    tagName:"details",hidden:true,open:false,
+    querySelector(selector){
+      return selector==="[data-combat-enemy-reserves-list]"?enemyHost:
+        selector==="[data-combat-enemy-reserves-summary]"?enemySummary:null;
+    },
+    addEventListener(kind,handler){listeners["enemy-"+kind]=handler;},
+    removeEventListener(){}
+  };
+  const root={
+    querySelector(selector) {
+      return selector==="[data-combat-team-menu]"?panel:
+        selector==="[data-combat-enemy-reserves]"?enemyPanel:null;
+    },
+    ownerDocument:{createElement(){const n=node();elements.push(n);return n;}}
+  };
   const snapshot=roster();
   const controller={
     snapshot(){return snapshot;},
@@ -76,16 +89,22 @@ test("real roster panel selects one enemy bench target without changing voluntar
   });
   try {
     ui.render();
-    const enemyBench=elements.find(n=>n.dataset.rosterMemberId==="e1");
-    const enemyKO=elements.find(n=>n.dataset.rosterMemberId==="e2");
+    assert.equal(host.children.length,1,"only one allied roster group");
     const localBench=elements.find(n=>n.dataset.rosterMemberId==="p1");
-    assert.equal(enemyBench.disabled,false);
+    assert.ok(localBench);
+    assert.equal(elements.some(n=>n.dataset.rosterMemberId==="e1"),false,
+      "enemy reserves never appear in allied Rappel menu");
+    const enemyBench=elements.find(n=>n.dataset.enemyReserveMemberId==="e1");
+    const enemyKO=elements.find(n=>n.dataset.enemyReserveMemberId==="e2");
+    assert.equal(enemyBench.disabled,false,"enemy reserve remains skill-targetable");
     assert.equal(enemyBench.dataset.skillReserveCandidate,"true");
     assert.equal(enemyKO.disabled,true);
-    listeners.click({target:{closest:selector=>selector.includes("roster-member-id")?enemyBench:null}});
+    ui.openEnemyForSkill();
+    assert.equal(enemyPanel.open,true);
+    listeners["enemy-click"]({target:{closest:selector=>selector.includes("enemy-reserve-member-id")?enemyBench:null}});
     assert.deepEqual(activated,{scope:"reserve",teamId:"opponent",memberId:"e1"});
     assert.equal(recallSelection,null);
-    listeners.click({target:{closest:selector=>selector.includes("roster-member-id")?localBench:null}});
+    listeners["local-click"]({target:{closest:selector=>selector.includes("roster-member-id")?localBench:null}});
     assert.deepEqual(recallSelection,["player","p1"]);
   } finally {ui.dispose();}
 });
