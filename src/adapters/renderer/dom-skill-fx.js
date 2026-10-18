@@ -74,7 +74,7 @@ const PERSISTENT_ZONE_RADIUS_SCALE = Object.freeze({
 
 function persistentZoneRadiusScale(radius, {radiusGrowthSteps = 0} = {}) {
   const scale = radius === "medium" && Number(radiusGrowthSteps) > 0
-    ? 1.75 : PERSISTENT_ZONE_RADIUS_SCALE[radius];
+    ? 1.65 : PERSISTENT_ZONE_RADIUS_SCALE[radius];
   if (scale == null) {
     throw new RangeError(
       "Unsupported persistent zone radius: " + radius
