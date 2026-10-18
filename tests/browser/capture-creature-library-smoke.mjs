@@ -126,6 +126,14 @@ const server = createServer(async (req, res) => {
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
+    // Actual editor/preview roster rendering, not a simulated roster.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url,"http://localhost").searchParams.has("verify-roster-menu-teams")) {
+      const html=contents.toString("utf8");
+      const script='<script src="/tests/browser/roster-menu-visibility-probe.js"></script>';
+      contents=Buffer.from(html.replace("</head>",script+"</head>"));
+    }
+
     // Real Chrome validation of the exact skill that previously blocked test.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url,"http://localhost").searchParams.has("verify-solar-reserve-status")) {
@@ -1485,6 +1493,12 @@ try {
   if(healEvolutionProbe!=="ok:heal:preserve:creature")
     throw Error("Actual Soin lumineux combat test blocked or creature saved draft mutated: "+healEvolutionProbe);
   console.log("Heal browser: real Soin lumineux testing bypasses only the incomplete unsaved evolution, preserving the saved creature");
+  const rosterDom=await dumpDom(url+"?verify-roster-menu-teams=1");
+  assertCreatures(rosterDom,"allied Recall and hostile separate reserve panel");
+  const rosterProbe=rosterDom.match(/data-roster-visibility-probe="([^"]+)"/)?.[1]??"missing";
+  if(rosterProbe!=="ok:allied:enemy-separated:skill")
+    throw Error("Real roster menu contamination: "+rosterProbe);
+  console.log("Recall menu real Chrome: allied-only, hostile bench separate, allied reserve skill preserved");
   const solarDom=await dumpDom(url+"?verify-solar-reserve-status=1");
   assertCreatures(solarDom,"Charge solaire reserve status validation browser bootstrap");
   const solarProbe=solarDom.match(/data-solar-reserve-probe="([^"]+)"/)?.[1] ?? "missing";
