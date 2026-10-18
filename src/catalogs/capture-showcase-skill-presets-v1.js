@@ -36,6 +36,8 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/cap_air_atk_7.capture-skill-transfer-v1.json",
     "data/capture/showcase/lib_gust.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_electric_special_2.capture-skill-transfer-v1.json",
+    "data/capture/showcase/lib_lifesteal_strike.capture-skill-transfer-v1.json",
+    "data/capture/showcase/cap_shadow_atk_1.capture-skill-transfer-v1.json",
     "data/capture/showcase/dodge.capture-skill-transfer-v1.json"
   ]);
 
