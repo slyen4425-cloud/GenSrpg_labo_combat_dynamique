@@ -17,3 +17,9 @@ L'auteur associe facultativement **un asset image ou une bande de frames horizon
 - Aucun changement de coût, effet, dégât, vitesse, onContact, compétence, points d'ancrage, autres créatures, audio ou bibliothèque globale.
 - Tests V4, éditeur, assets personnels, copie de draft, swap de collision réel et annulation du renderer, sentinelles historiques et CI complète exigés avant GREEN.
 - Validation tactile/visuelle finale utilisateur distincte de la CI ; aucune image importée dans ce lot.
+
+## Validation technique de la branche
+- Commit fonctionnel + sentinelles de vrai adaptateur : `3a0d96eebe860310696facc06ff8a1ff0a1db4c1`.
+- Workflow **Laboratory CI** : `39167003595` — **SUCCESS**, 5 jobs : Foundation, Firestorm Chromium, Expanding Wave Chromium, Mobile Preview Chromium, Creature Library Chromium.
+- 2004 tests Node environ, y compris changement de silhouette et restauration de masque sur image fixe et sprite horizontal. Les premiers cycles de mocks ont été corrigés avant cette CI finale.
+- Publication Pages, checkpoint technique et essai sur Android : à vérifier séparément après promotion depuis un HEAD public non modifié.

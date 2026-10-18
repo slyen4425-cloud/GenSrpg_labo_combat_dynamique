@@ -1,3 +1,9 @@
+### Résultat technique — apparence de déplacement (18/10/2026)
+- Branchement de la forme alternative (image/atlas, roll/sprite/fixe) sur l'approche au sol et le mouvement générique, dans la présentation de la créature via V4. Aucun effet sur Combat Rules, dégâts, temps ou compétences.
+- Silhouette de collision basée sur la forme alternative (ou première frame pour atlas) ; rollback fin/interruption/changement de combattant ; anciens exports V1-V3 inchangés.
+- Run `39167003595` sur `3a0d96eebe860310696facc06ff8a1ff0a1db4c1` : **5/5 SUCCESS** Foundation + 4 Chromium. Checkpoint GREEN et publication à réaliser sur la nouvelle révision documentaire testée. Validation visuelle/tactile utilisateur séparée.
+- Pas d'asset de Scarabacier importé ni d'activation automatique sur sa fiche. Voir `docs/LAB_CREATURE_MOVEMENT_APPEARANCE_V1.md`.
+
 ## 2026-10-18 — Apparence de déplacement par créature (roulement / sprite)
 - Base publique : gh-pages@2e516d61ff83eba8b937daf66834903618cfceff ; checkpoint départ checkpoint/lab-start-creature-movement-appearance-v1-2026-10-18 ; travail work/lab-creature-movement-appearance-v1-2026-10-18.
 - But : ajouter dans Créature > Apparence un visuel alternatif avec image fixe/atlas animé, roulement, taille, rotation, transition et retour propre. Le Runtime garde mouvement, contact, dégâts et vitesse.
