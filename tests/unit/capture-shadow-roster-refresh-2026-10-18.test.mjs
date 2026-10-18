@@ -57,7 +57,8 @@ const read=p=>readFile(new URL("../../"+p,import.meta.url),"utf8");
 const showcase=f=>"data/capture/showcase/"+f.id+".capture-"+f.kind+"-transfer-v1.json";
 const source=f=>"data/capture/source-exports/"+f.filename;
 const oldSource=f=>"data/capture/source-exports/"+f.prior;
-const unpack=async(f,p=showcase(f))=>importCaptureTransferJsonV1(await read(p));
+const statRegistryForTransfers=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
+const unpack=async(f,p=showcase(f))=>importCaptureTransferJsonV1(await read(p),f.kind==="creature"?{statRegistry:statRegistryForTransfers}:{});
 
 test("five user files are intact, archived, unique in the canonical showcase registries",async()=>{
  for(const f of fixtures){
