@@ -1,0 +1,65 @@
+name: Import four real Steel Skill Icons
+on:
+  push:
+    branches:
+      - work/lab-capture-steel-icons-2026-10-18
+    paths:
+      - .github/workflows/import-capture-steel-icons.yml
+      - scripts/import_capture_steel_icons.py
+      - _incoming/icons_acier_labo_combat_webp_128.zip
+permissions:
+  contents: write
+concurrency:
+  group: import-capture-steel-icons-2026-10-18
+  cancel-in-progress: false
+jobs:
+  media-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check actual user archive availability
+        id: gate
+        shell: bash
+        run: |
+          if test -f _incoming/icons_acier_labo_combat_webp_128.zip; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Archive already imported or not yet provided."
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          python-version: '3.12'
+      - name: Install media verifier
+        if: steps.gate.outputs.ready == 'true'
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Verify exact media and import in canonical paths
+        if: steps.gate.outputs.ready == 'true'
+        run: python scripts/import_capture_steel_icons.py
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          node-version: '22'
+      - name: Run full laboratory CI before committing
+        if: steps.gate.outputs.ready == 'true'
+        run: npm run ci
+      - name: Commit only real verified media, catalog, tests and provenance
+        if: steps.gate.outputs.ready == 'true'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- \
+            assets/library/capture/icons/skills/icon_skill_carapace_acier_01.webp \
+            assets/library/capture/icons/skills/icon_skill_lame_acier_01.webp \
+            assets/library/capture/icons/skills/icon_skill_tourbillons_rouille_01.webp \
+            assets/library/capture/icons/skills/icon_skill_aile_acier_01.webp \
+            assets/library/capture/icons/skills/capture_four_steel_icons_2026_10_18.provenance.json \
+            data/assets/catalog/global-visual-assets.v1.json \
+            docs/LAB_CAPTURE_STEEL_ICONS_2026_10_18.md \
+            docs/LAB_CURRENT_WORK.md \
+            tests/unit/capture-steel-icons-2026-10-18.test.mjs \
+            _incoming/icons_acier_labo_combat_webp_128.zip
+          git commit -m 'assets(capture): import verified four steel skill icons'
+          git push origin HEAD:work/lab-capture-steel-icons-2026-10-18
