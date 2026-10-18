@@ -67,7 +67,7 @@ function fixture() {
         getContext(){return {drawImage(){}}},
         toDataURL(){return "data:image/png;base64,AAAA"}
       };
-      const el={ownerDocument:document,className:"",style:{},naturalWidth:100,naturalHeight:100,complete:true,
+      const el={ownerDocument:document,className:"",style:{},dataset:{},naturalWidth:100,naturalHeight:100,complete:true,
         children:[],append(child){this.children.push(child)},remove(){this.removed=true},
         animate(frames,options){this.lastAnimation={frames,options};return {finished:Promise.resolve(),cancel(){}}}
       };
