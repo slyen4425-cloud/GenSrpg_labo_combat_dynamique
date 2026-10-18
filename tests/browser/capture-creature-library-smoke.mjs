@@ -1387,6 +1387,13 @@ try {
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
   assertAquaHealSkill(normalDom, "normal browser bootstrap");
+  const liveSolarDom=await dumpDom(url+"?verify-solar-live-cast=1", ["--virtual-time-budget=30000"]);
+  const liveSolar=liveSolarDom.match(/data-solar-live-cast-probe="([^"]*)"/)?.[1]??"missing";
+  if(liveSolar!=="ok:solar:next-skill:unfrozen")
+    throw Error("Real Charge solaire runtime/presenter combat freeze: "+liveSolar+
+      " JS="+(liveSolarDom.match(/data-bootstrap-error="([^"]*)"/)?.[1]??"none"));
+  console.log("Charge solaire: actual skill button remains responsive; next skill usable after status applied");
+
   for (const marker of [
     "data-skill-effect-ignore-resistance-pct",
     "data-skill-effect-ignore-damage-reduction-pct",
@@ -1484,12 +1491,6 @@ try {
   if(solarProbe!=="ok:solar:status:reserve:valid")
     throw Error("Actual Charge solaire editor validation still rejects reserve status: "+solarProbe);
   console.log("Charge solaire reserve status: real Chrome editor accepts new author skill and reserve buff");
-  const liveSolarDom=await dumpDom(url+"?verify-solar-live-cast=1", ["--virtual-time-budget=30000"]);
-  const liveSolar=liveSolarDom.match(/data-solar-live-cast-probe="([^"]*)"/)?.[1]??"missing";
-  if(liveSolar!=="ok:solar:next-skill:unfrozen")
-    throw Error("Real Charge solaire runtime/presenter combat freeze: "+liveSolar+
-      " JS="+(liveSolarDom.match(/data-bootstrap-error="([^"]*)"/)?.[1]??"none"));
-  console.log("Charge solaire: actual skill button remains responsive; next skill usable after status applied");
 
   const reflectionDom=await dumpDom(url+"?verify-damage-reflection=1");
   assertCreatures(reflectionDom,"damage reflection real editor bootstrap");
