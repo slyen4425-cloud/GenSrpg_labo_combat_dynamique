@@ -1,3 +1,13 @@
+## 2026-10-18 — Scarabacier : correction de la vue dos (lot image isolé)
+
+- **Objectif** : remplacer la vue arrière joueur défaillante de Scarabacier (orientation corps/tête et position des pattes), sans modifier face, icône ni mécanique de combat.
+- **Owner** : Capture Visual Asset Input, branche `global-assets` ; `main`, `gh-pages`, GenSrpG principal, moteur, capacités, autres assets et catalogue unique protégés.
+- **Base** : `65c62b35fc7a984605702d5ccc63481583873049` ; checkpoint `checkpoint/lab-start-scarabacier-player-rear-fix-2026-10-18` ; travail `work/lab-scarabacier-player-rear-fix-2026-10-18`.
+- **Fichiers autorisés** : `assets/library/capture/creatures/scarabacier/runtime/scarabacier_player.webp` ; `docs/LAB_SCARABACIER_PLAYER_REAR_FIX_2026-10-18.md` ; ce journal. Aucun nouvel assetId.
+- **Source** : planche corrigée générée dans la conversation et vérifiée ; recadrage de la seule vue dos avec canal alpha, WebP 1024×1024, sans face ni icône.
+- **Tests attendus** : octets physiques et empreinte Git, dimension/transparence/inspection du média, correspondance catalogue `pack:capture:creature-scarabacier-player-01`, sentinelle Capture trois créatures et CI ; relecture joueur en jeu par l'utilisateur distincte de la CI.
+- **Publication** : branche de travail puis `global-assets` uniquement après contrôles ; checkpoint GREEN seulement si tests/CI passent.
+
 ## 2026-10-18 — FX acier et rouille (lot 5 séquences de 20 frames)
 
 - **Source** : 5 planches réellement générées en conversation, 1402×1122 RGBA (5×4). Carapace d'acier normale, Carapace d'acier maintien, Impact aile acier, Cast tourbillon de rouille, Projectile aile acier.
