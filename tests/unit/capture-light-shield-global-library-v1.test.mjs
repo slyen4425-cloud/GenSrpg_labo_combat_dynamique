@@ -40,7 +40,8 @@ const publishedAssets = [
 test("Light Shield Cast and Barrier: editor assetId resolver uses global-assets and freshly versioned URLs",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.repository,"slyen4425-cloud/GenSrpg_labo_combat_dynamique");
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-18-v34-light-shield-cast-barrier");
+ assert.match(GLOBAL_VISUAL_LIBRARY.revision,/^20\d{2}-\d{2}-\d{2}-v\d+-/);
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=34, "Never roll back Light Shield visual catalog");
  assert.equal(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl).searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);
  const resolveAsset=createGlobalPresentationAssetResolverV1({
    assetCatalog:{assets:publishedAssets},

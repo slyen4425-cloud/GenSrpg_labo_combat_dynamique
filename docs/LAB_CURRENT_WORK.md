@@ -1,3 +1,14 @@
+## 2026-10-18 — Ombre / Drain de vie : raccord catalogue du labo (source de vérité globale)
+
+- Objectif : rendre les 4 animations sélectionnables via les menus existants de l'éditeur (aucune modification automatique des compétences).
+- Base gh-pages 633c74fd3bde843440eb6361737a6a1e41074391 ; checkpoint départ `checkpoint/lab-start-shadow-life-drain-editor-cache-2026-10-18` ; branche `work/lab-shadow-life-drain-editor-cache-2026-10-18`.
+- Média propriétaire `global-assets` au SHA `5faf0bc4ae2551afe2466d6c0e893f710b27aa27`; 80 PNG réels, 4 atlas, 4 assetId, CI import SUCCESS.
+- Fichiers autorisés : `src/assets/global-visual-library.js`, `tests/unit/capture-shadow-life-drain-global-library-v1.test.mjs`, `tests/unit/capture-light-shield-global-library-v1.test.mjs` (garde-fou cache), `docs/LAB_SHADOW_LIFE_DRAIN_EDITOR_CACHE_V1.md` et `docs/LAB_CURRENT_WORK.md`.
+- Domaines protégés : gameplay, moteur, capacités utilisateur, catalogues secondaires, ressources binaires côté gh-pages, `main`, GenSrpG principal.
+- Risques : cache obsolète, régression des tests lumière, sélection incorrecte des quatre IDs; sentinelles, CI complète, déploiement Pages et essai Android requis.
+- État : publication gh-pages et gate tests à confirmer; aucune validation visuelle utilisateur prétendue.
+- Rapport : `docs/LAB_SHADOW_LIFE_DRAIN_EDITOR_CACHE_V1.md`.
+
 ## 2026-10-18 — Frappe vampirique / Ombre vive : imports auteur Capture
 - Base : gh-pages b07a55f8180d69a6a98322902bc1909a1a8d7d0b ; départ : checkpoint/lab-start-shadow-skills-author-2026-10-18 ; travail : work/lab-shadow-skills-author-2026-10-18.
 - Périmètre : deux exports auteur fournis (lib_lifesteal_strike, cap_shadow_atk_1), fiches vitrine data/capture/showcase, archives source-exports, registre src/catalogs/capture-showcase-skill-presets-v1.js, sentinelle unitaire, rapport et cette entrée.
