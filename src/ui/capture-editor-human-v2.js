@@ -10094,7 +10094,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   let progressionRules = null;
   const combatTeamControls = mountCaptureEditorCombatTeamControlsV1({
     root, configuredCreatures,
-    getSelectedCreatureId: () => selectedValue(root, "[data-creature-id]")
+    getSelectedCreatureId: () => selectedValue(root, "[data-creature-id]"),
+    groupCreatures: humanCreatureSelectorGroupsV1
   });
 
   function listen(target, type, handler) {

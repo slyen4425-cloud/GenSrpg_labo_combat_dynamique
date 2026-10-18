@@ -1,3 +1,13 @@
+## 2026-10-18 — Noctigriffe / Barrière lumineuse / sélecteurs combat / coût marqueurs
+- Base publique gh-pages 5015456b1b2ea3de09ec0432a3d0abce17ad9323 ; checkpoint checkpoint/lab-start-author-noctigriffe-barrier-combat-ui-2026-10-18 ; branche work/lab-author-noctigriffe-barrier-combat-ui-2026-10-18.
+- Propriétaires : showcase exports -> configuredCreatures / configuredSkills ; UI équipes du test -> projection des groupes par élément humanCreatureSelectorGroupsV1 ; éditeur des coûts en marqueurs -> seul onglet Capacités.
+- Fichiers permis : data/capture/showcase et source-exports de deux IDs, registre créatures, src/ui/capture-editor-combat-test-v1.js, src/ui/capture-editor-human-v2.js, examples/dom-demo/capture-editor-v2.html, sentinelle, cette entrée, rapport de lot.
+- JSON utilisateur conservés sans réinterpréter les valeurs ; créature créée sous ID stable ; capacité existante remplacée sous ID stable ; aucune altération des loadouts voisins.
+- Travail UI : groupes déjà existants injectés aux sélecteurs équipe joueur/adverse, sans deuxième référentiel ; coût en marqueurs déplacé dans Capacités, contrôles et identifiants DOM préservés.
+- Protégés : main, Zombicide-40k, Combat Rules, combat FX, audio, bibliothèque global-assets ; aucun changement de moteur.
+- Tests : sentinelle groupements / préservation ID / rechargement ; position du coût ; intégrité des exports et références assets ; npm run ci / CI GitHub, publication et essai Android requis pour GREEN utilisateur.
+- Risques : édition de la grosse page HTML, consommateur ancien de sélecteurs, branche gh-pages mouvante ; publication à refuser si CI non GREEN.
+
 ## 2026-10-18 — Catalogue light shield / raccord éditeur par cache versionné
 
 - Lot visuel déjà publié sur `global-assets` : commit `df7422758a0149937763c4ffd187dd8aabc75220` (40 PNG, 2 WebP, manifeste, provenance et deux entrées catalogue).

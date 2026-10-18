@@ -116,7 +116,7 @@ export function prepareCaptureEditorCombatEditsV1({
   }
 }
 
-export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatures, getSelectedCreatureId }) {
+export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatures, getSelectedCreatureId, groupCreatures = null }) {
   const localCount = root.querySelector("[data-test-local-team-size]");
   const opponentCount = root.querySelector("[data-test-opponent-team-size]");
   const active = root.querySelector("[data-active-per-team]");
@@ -145,11 +145,27 @@ export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatur
     for (const select of [...localSelects, ...opponentSelects]) {
       const previous = select.value;
       select.textContent = "";
-      for (const record of configuredCreatures.values()) {
-        const option = root.ownerDocument.createElement("option");
-        option.value = record.draft.id;
-        option.textContent = record.draft.displayName + " · " + record.draft.id;
-        select.append(option);
+      // Reuse the creature-library grouping owner; no parallel type catalog.
+      // The optional flat mode preserves older standalone clients.
+      if (groupCreatures) {
+        for (const group of groupCreatures([...configuredCreatures.values()])) {
+          const optgroup = root.ownerDocument.createElement("optgroup");
+          optgroup.label = group.label;
+          for (const entry of group.entries) {
+            const option = root.ownerDocument.createElement("option");
+            option.value = entry.id;
+            option.textContent = entry.name + " · " + entry.id;
+            optgroup.append(option);
+          }
+          select.append(optgroup);
+        }
+      } else {
+        for (const record of configuredCreatures.values()) {
+          const option = root.ownerDocument.createElement("option");
+          option.value = record.draft.id;
+          option.textContent = record.draft.displayName + " · " + record.draft.id;
+          select.append(option);
+        }
       }
       select.value = configuredCreatures.has(previous) ? previous : configuredCreatures.keys().next().value ?? "";
     }
