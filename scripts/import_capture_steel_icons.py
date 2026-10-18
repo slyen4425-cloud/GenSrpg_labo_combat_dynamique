@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Strict, idempotence-protected import of four real approved Capture steel skill icons."""
+"""Strict, idempotence-protected import of four real approved Capture steel skill icons.
+The additive catalog must preserve previous icon counts and allow subsequent packs.
+"""
 import hashlib, io, json, zipfile
 from pathlib import Path
 from PIL import Image
