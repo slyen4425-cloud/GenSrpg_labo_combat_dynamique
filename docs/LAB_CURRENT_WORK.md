@@ -1,3 +1,16 @@
+
+
+## 2026-10-18 — Quatre icônes finales Ombre / Drain de vie — lot isolé
+
+- **Demande validée** : intégration des quatre dernières images utilisateur acceptées, aucune nouvelle génération : Attaque d’ombre, Drain de vie, Voile d’ombre, Malédiction féline.
+- **Base** : `5faf0bc4ae2551afe2466d6c0e893f710b27aa27` sur `global-assets` ; checkpoint de départ : `checkpoint/lab-start-capture-shadow-four-icons-2026-10-18` ; branche : `work/lab-capture-shadow-four-icons-2026-10-18`.
+- **Autorité** : Asset Input + catalogue Capture sur `global-assets` uniquement. Publication de 4 vraies images WebP 128×128 RGB avec fond encadré (source PNG RGB 1254×1254), redimensionnées via LANCZOS.
+- **Attention identité existante** : `pack:capture:icon-skill-drain-de-vie-01` existe déjà. Remplacer son seul média à chemin/ID inchangé et mettre à jour son manifeste historique de provenance et sa sentinelle existante par les nouveaux hash ; **aucun doublon / assetId bis**. Ajouter 3 nouveaux identifiants de compétences.
+- **Fichiers autorisés** : `assets/library/capture/icons/skills/icon_skill_{attaque_ombre,drain_de_vie,voile_ombre,malediction_feline}_01.webp` ; manifeste nouveau `capture_four_shadow_icons_2026_10_18.provenance.json`, manifeste historique `capture_eight_skill_icons_v1.provenance.json` (drain seulement), catalogue unique `data/assets/catalog/global-visual-assets.v1.json`, nouveau test sentinelle `tests/unit/capture-four-shadow-icons-2026-10-18.test.mjs`, note `docs/LAB_CAPTURE_FOUR_SHADOW_ICONS_2026_10_18.md`, ce journal.
+- **Protégé** : `main`, `gh-pages`, `Zombicide-40k`, gameplay, skill data, les autres médias et domaines FX/règles.
+- **Vérifications** : quatre vrais WebP RGB 128×128, checksum source/binaire/git, unique IDs/catalogue, maintien exact des invariants des huit anciennes icônes (sauf mise à jour documentée du seul Drain), `npm run ci`, branche et publication fast-forward, checkpoint GREEN seulement sur CI verte.
+- **Validation utilisateur** : les visuels ont été acceptés dans la conversation ; sélection dans l'éditeur / test réel sur smartphone restent des validations séparées non présumées.
+
 ## 2026-10-18 — Ombre / Drain de vie : 80 médias réellement importés
 
 - ZIP strictement contrôlés avec SHA-256, 80 PNG RGBA, 4 atlas, 4 assetId uniques. CI et publication officialisées après tests; preview utilisateur encore nécessaire.
