@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 165,
+    "assets": 169,
     "icons": 67,
-    "sprites": 82,
+    "sprites": 86,
     "fx": 2,
     "portraits": 9,
     "backgrounds": 5,
@@ -5411,6 +5411,150 @@
         "frameMs": 80,
         "playbackMode": "once",
         "holdLastFrame": true
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-shadow-spell-cast-01",
+      "label": "Sort d’ombre — Cast",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "skill",
+        "shadow",
+        "magic",
+        "animated",
+        "cast"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/shadow_spell/atlases/sprite_skill_shadow_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-shadow-spell-impact-01",
+      "label": "Sort d’ombre — Impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "skill",
+        "shadow",
+        "magic",
+        "animated",
+        "impact"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/shadow_spell/atlases/sprite_skill_shadow_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 65,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-life-drain-cast-01",
+      "label": "Drain de vie — Cast",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "skill",
+        "shadow",
+        "magic",
+        "animated",
+        "cast"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/life_drain/atlases/sprite_skill_life_drain_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-life-drain-impact-01",
+      "label": "Drain de vie — Impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "skill",
+        "shadow",
+        "magic",
+        "animated",
+        "impact"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/life_drain/atlases/sprite_skill_life_drain_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 65,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

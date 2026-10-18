@@ -1,3 +1,7 @@
+## 2026-10-18 — Ombre / Drain de vie : 80 médias réellement importés
+
+- ZIP strictement contrôlés avec SHA-256, 80 PNG RGBA, 4 atlas, 4 assetId uniques. CI et publication officialisées après tests; preview utilisateur encore nécessaire.
+
 # Laboratoire Combat Dynamique — Current Work
 
 ## 2026-10-18 — 4 sprites Ombre / Drain de vie — import en cours (NON GREEN)
