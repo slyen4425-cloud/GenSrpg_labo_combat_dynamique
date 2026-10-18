@@ -106,19 +106,21 @@ test("status sprite removed or wrong status type: native opaque creature remains
   assert.equal(h.contacts.length,1);
 });
 
-test("author's real Barrière lumineuse 30s mirror / scale 2.5 / hold-last survives canonical import",async()=>{
+test("author's refreshed Barrière lumineuse 30s mirror / cast + barrier visual survives canonical import",async()=>{
   const p="data/capture/showcase/lib_magic_barrier.capture-skill-transfer-v1.json";
   const raw=await readFile(new URL("../../"+p,import.meta.url));
-  assert.equal(raw.length,2824);
-  assert.equal(createHash("sha256").update(raw).digest("hex"),"324546d0b687a8422f80da80a44cecf095985ed36f6dd8ee3bd9548244b7b270");
+  assert.equal(raw.length,3597);
+  assert.equal(createHash("sha256").update(raw).digest("hex"),"429c0bb7b32baecc7fe325a81aaf75d93a1435b45a91cbb106a1067bd3f9f8d1");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(v=>v===p).length,1);
   const record=importCaptureTransferJsonV1(raw.toString("utf8")).value.draft;
   assert.equal(record.id,"lib_magic_barrier");
   assert.equal(record.definition.effects[0].status.kind,"projectile_mirror");
   assert.equal(record.definition.effects[0].status.durationMs,30000);
   const sprite=record.presentation.statusVisuals["lib_magic_barrier:0"].sprite;
-  assert.equal(sprite.displayScale,2.5);
-  assert.equal(sprite.opacity,0.7);
-  assert.equal(sprite.playbackMode,"hold-last");
+  assert.equal(sprite.assetId,"pack:capture:sprite-light-shield-barrier-01");
+  assert.equal(sprite.displayScale,2.7);
+  assert.equal(sprite.opacity,0.5);
+  assert.equal(sprite.playbackMode,"loop");
+  assert.equal(record.presentation.visual.cast.assetId,"pack:capture:sprite-light-shield-cast-01");
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(record)).value.draft,record);
 });
