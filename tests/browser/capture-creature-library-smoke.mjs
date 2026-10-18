@@ -202,6 +202,16 @@ const server = createServer(async (req, res) => {
               // The three new author sheets must be read back from their
               // active owner after startup, never a native/legacy fallback.
               const lumiloSelect=get("creature-library-select");
+              if(!lumiloSelect?.querySelector('option[value="crea_ombre_2"]'))
+                throw Error("Noctigriffe missing from configured creature owner");
+              const teamSelect=get("test-opponent-creature");
+              if(!document.querySelector('[data-test-opponent-creature] optgroup option[value="crea_ombre_2"]')||
+                 ![...document.querySelectorAll('[data-test-opponent-creature] optgroup')]
+                   .some(group=>group.label==="Ombre"&&group.querySelector('option[value="crea_ombre_2"]')))
+                throw Error("Opponent combat selector must group Noctigriffe under Ombre");
+              if(!document.querySelector('[data-editor-panel="skills"] [data-marker-cost-card]')||
+                  document.querySelector('[data-editor-panel="creature"] [data-marker-cost-card]'))
+                throw Error("Charge cost editor must be under Capacités, never Créature");
               if(!lumiloSelect?.querySelector('option[value="crea_lumilo"]'))
                 throw Error("Lumilo missing from canonical creature selector");
               lumiloSelect.value="crea_lumilo";
@@ -227,10 +237,10 @@ const server = createServer(async (req, res) => {
               if(!barrierRow||
                  barrierRow.querySelector("[data-skill-status-duration-seconds]")?.value!=="30"||
                  barrierRow.querySelector("[data-skill-status-visual-mode]")?.value!=="sprite"||
-                 barrierRow.querySelector("[data-skill-status-visual-asset]")?.value!=="pack:capture:sprite-status-energy-shield-01"||
-                 barrierRow.querySelector("[data-skill-status-visual-scale]")?.value!=="2.5"||
-                 barrierRow.querySelector("[data-skill-status-visual-opacity]")?.value!=="70")
-                throw Error("Barrière 30-second mirror status, scale 2.5 and its bound sprite lost in editor");
+                 barrierRow.querySelector("[data-skill-status-visual-asset]")?.value!=="pack:capture:sprite-light-shield-barrier-01"||
+                 barrierRow.querySelector("[data-skill-status-visual-scale]")?.value!=="2.7"||
+                 barrierRow.querySelector("[data-skill-status-visual-opacity]")?.value!=="50")
+                throw Error("Barrière 30-second mirror status, scale 2.7 and the authored light shield sprite lost in editor");
               let barrierBlob=null;
               const originalBarrierUrl=URL.createObjectURL;
               try {
@@ -239,7 +249,7 @@ const server = createServer(async (req, res) => {
               } finally {URL.createObjectURL=originalBarrierUrl;}
               const barrierExport=barrierBlob?JSON.parse(await barrierBlob.text()):null;
               if(barrierExport?.draft?.definition?.effects?.[0]?.status?.kind!=="projectile_mirror"||
-                 barrierExport?.draft?.presentation?.statusVisuals?.["lib_magic_barrier:0"]?.sprite?.displayScale!==2.5)
+                 barrierExport?.draft?.presentation?.statusVisuals?.["lib_magic_barrier:0"]?.sprite?.displayScale!==2.7)
                 throw Error("real Barrier export lost mirror status or visual sprite surface");
               lib.value="lib_light_bolt";lib.dispatchEvent(new Event("change",{bubbles:true}));
               if(get("skill-name")?.value!=="Rayon lumineux"||
