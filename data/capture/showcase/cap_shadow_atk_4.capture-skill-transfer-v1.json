@@ -120,8 +120,8 @@
           "offsetMode": "same"
         },
         "travel": {
-          "assetId": "pack:capture:sprite-ash-smoke-projectile-01",
-          "displayScale": 2,
+          "assetId": "pack:capture:sprite-projectile-shadow-01",
+          "displayScale": 2.5,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "trajectory",
@@ -138,7 +138,7 @@
           },
           "offsetMode": "same",
           "trajectoryMode": "linear",
-          "frameSpeedMultiplier": 1.5,
+          "frameSpeedMultiplier": 2,
           "perspectiveAmount": 0
         },
         "impact": {
@@ -161,7 +161,23 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-03b2807d",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-9320854b",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-ebe64290",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {},
       "feedback": {
         "glow": {

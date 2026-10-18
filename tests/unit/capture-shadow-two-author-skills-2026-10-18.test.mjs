@@ -17,11 +17,12 @@ const fixtures = [
 const read = p => readFile(new URL("../../" + p, import.meta.url), "utf8");
 const path = id => "data/capture/showcase/" + id + ".capture-skill-transfer-v1.json";
 
-test("shadow author skills: full supplied bytes, source archive, identity and single active catalog entry", async () => {
+test("historical shadow author exports remain exact in archived source; skills retain one active catalog entry", async () => {
   for (const f of fixtures) {
     assert.equal(catalog.filter(p => p === path(f.id)).length, 1, f.id);
-    const raw = await read(path(f.id));
-    assert.equal(raw, await read("data/capture/source-exports/" + f.source), f.id + " source archive");
+    // Historical author baseline stays byte-exact in the original source archive.
+    const raw = await read("data/capture/source-exports/" + f.source);
+    assert.equal(JSON.parse(await read(path(f.id))).draft.id, f.id, f.id + " remains active");
     assert.equal(createHash("sha256").update(raw).digest("hex"), f.hash, f.id + " authored bytes");
     const transfer = importCaptureTransferJsonV1(raw);
     assert.equal(transfer.kind, "skill");

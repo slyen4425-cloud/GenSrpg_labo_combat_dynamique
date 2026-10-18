@@ -90,7 +90,7 @@
       "subjectId": "lib_lifesteal_strike",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-arcane-seal-01"
+          "assetId": "pack:capture:icon-skill-drain-de-vie-01"
         },
         "impact": {
           "assetId": "pack:capture:sprite-life-drain-impact-01",

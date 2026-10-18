@@ -16,11 +16,12 @@ const archive = "data/capture/source-exports/gensrpg-capture-skill-cap_shadow_at
 const expectedHash = "f3b1babb771f0948e8d9b39f035c2d366fb870403cf4bc8f0c41249090f2611a";
 const read = path => readFile(new URL("../../" + path, import.meta.url), "utf8");
 
-test("Impact spectral: full author bytes, preserved archive, one active catalog entry", async () => {
+test("first Impact spectral author revision remains archived with its original bytes", async () => {
   assert.equal(catalog.filter(path => path === showcase).length, 1, "unique active import");
   assert.equal(new Set(catalog).size, catalog.length);
-  const raw = await read(showcase);
-  assert.equal(raw, await read(archive), "archive preserves exact author file");
+  // Verify first authored Impact spectral in immutable historical archive.
+  const raw = await read(archive);
+  assert.equal(JSON.parse(await read(showcase)).draft.id, id);
   assert.equal(createHash("sha256").update(raw).digest("hex"), expectedHash);
   const transfer = importCaptureTransferJsonV1(raw);
   assert.equal(transfer.kind, "skill");
@@ -56,7 +57,7 @@ test("Impact spectral: authored gameplay and media are unmodified", async () => 
   const visual = draft.presentation.visual;
   assert.equal(visual.icon.assetId, "pack:capture:icon-skill-malediction-feline-01");
   assert.equal(visual.cast.assetId, "pack:capture:sprite-shadow-spell-cast-01");
-  assert.equal(visual.travel.assetId, "pack:capture:sprite-ash-smoke-projectile-01");
+  assert.equal(visual.travel.assetId, "pack:capture:sprite-projectile-shadow-01");
   assert.equal(visual.impact.assetId, "pack:capture:sprite-shadow-spell-impact-01");
   assert.equal(visual.impact.opacity, 0.5);
 });

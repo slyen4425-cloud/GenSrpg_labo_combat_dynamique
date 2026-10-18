@@ -1,0 +1,219 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_shadow_atk_3",
+    "description": "Attaque Ombre de puissance 5. Disponible au niveau 10.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_shadow_atk_3",
+      "name": "Affaiblissement nocturne",
+      "category": "buff_debuff",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "shadow",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 650,
+      "travelMs": 700,
+      "recoveryMs": 0,
+      "cooldownMs": 60000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 25000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": -60
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_shadow_atk_3",
+      "version": 11,
+      "subjectType": "skill",
+      "subjectId": "cap_shadow_atk_3",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-voile-ombre-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-shadow-spell-cast-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.6,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-projectile-shadow-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 1.5,
+          "perspectiveAmount": 0
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-3e95d6c6",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-cc66c3dd",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:conflux-74460178",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-shadow-spell-cast-01",
+            "displayScale": 2,
+            "opacity": 0.2,
+            "offsetMode": "same"
+          }
+        }
+      },
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.65,
+          "radiusPx": 22
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 5,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 5,
+          "lengthPx": 40,
+          "sizePx": 6,
+          "opacity": 0.65,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 8,
+          "spreadPx": 52,
+          "sizePx": 7,
+          "durationMs": 320,
+          "opacity": 0.75
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 4,
+          "spreadPx": 42,
+          "sizePx": 30,
+          "risePx": 42,
+          "durationMs": 950,
+          "opacity": 0.5
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 5,
+          "spreadPx": 38,
+          "sizePx": 6,
+          "risePx": 26,
+          "durationMs": 500,
+          "opacity": 0.65
+        }
+      }
+    }
+  }
+}

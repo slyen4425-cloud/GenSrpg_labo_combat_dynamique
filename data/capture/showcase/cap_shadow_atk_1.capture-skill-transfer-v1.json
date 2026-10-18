@@ -84,7 +84,7 @@
       "subjectId": "cap_shadow_atk_1",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-speed-dash-01"
+          "assetId": "pack:capture:icon-skill-attaque-ombre-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-projectile-shadow-01",

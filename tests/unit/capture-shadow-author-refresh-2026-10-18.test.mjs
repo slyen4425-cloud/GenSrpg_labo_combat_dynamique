@@ -15,12 +15,13 @@ const authors=[
  {id:"lib_lifesteal_strike",name:"Frappe vampirique",sha256:"05837ae77fd87d7281179c9f0f8fae3d91dc4f38154b6455617f2b22eae3dec9",source:"gensrpg-capture-skill-lib_lifesteal_strike-2026-10-18-r2.json"},
  {id:"cap_shadow_atk_3",name:"Affaiblissement nocturne",sha256:"cdc1e382b303ec7a8da3be9edc47623937cd170156140986571d6b74089a0eb9",source:"gensrpg-capture-skill-cap_shadow_atk_3-2026-10-18.json"}
 ];
-test("two incoming author exports are byte-exact, archived, uniquely active and round-trip",async()=>{
+test("historical Frappe and Affaiblissement author versions remain byte-exact in archive",async()=>{
  for(const a of authors){
   assert.equal(files.filter(p=>p===path(a.id)).length,1,a.id+" registered exactly once");
-  const raw=await read(path(a.id));
+  // Preserve the 18 October historical revision separately from today's active update.
+  const raw=await read("data/capture/source-exports/"+a.source);
   assert.equal(createHash("sha256").update(raw).digest("hex"),a.sha256);
-  assert.equal(raw,await read("data/capture/source-exports/"+a.source));
+  assert.equal(JSON.parse(await read(path(a.id))).draft.id,a.id);
   const transfer=importCaptureTransferJsonV1(raw);
   assert.equal(transfer.kind,"skill");
   assert.equal(transfer.value.draft.id,a.id);

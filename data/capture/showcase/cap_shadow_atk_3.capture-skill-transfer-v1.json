@@ -18,7 +18,7 @@
       "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "shadow",
-      "approachMode": "ground",
+      "approachMode": "none",
       "energyCost": 3,
       "preparationMs": 650,
       "travelMs": 700,
@@ -91,7 +91,7 @@
       "subjectId": "cap_shadow_atk_3",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-toxine-01"
+          "assetId": "pack:capture:icon-skill-voile-ombre-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-shadow-spell-cast-01",
