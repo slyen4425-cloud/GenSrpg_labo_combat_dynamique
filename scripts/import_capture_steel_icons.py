@@ -123,4 +123,4 @@ test("Four real user-approved Steel skill icons: unique catalog IDs and expected
  }
 });
 '''
-if __name__==="__main__":main()
+if __name__=="__main__": main()
