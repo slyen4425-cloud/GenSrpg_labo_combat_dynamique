@@ -71,7 +71,7 @@ function fixture() {
         children:[],append(child){this.children.push(child)},remove(){this.removed=true},
         animate(frames,options){this.lastAnimation={frames,options};return {finished:Promise.resolve(),cancel(){}}}
       };
-      Object.defineProperty(el,"src",{get(){return this._src||""},set(value){this._src=value;this.onload?.()}});
+      Object.defineProperty(el,"src",{configurable:true,get(){return this._src||""},set(value){this._src=value;this.onload?.()}});
       return el;
     }
   };
