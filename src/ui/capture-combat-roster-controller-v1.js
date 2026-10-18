@@ -105,7 +105,11 @@ export function mountCaptureCombatRosterPanelV1({
   const memberRefs = new Map();
   const initial = controller.snapshot();
   host.replaceChildren();
+  const alliedBattleTeam = format.teamOf(getControlledActorId());
   for (const actor of format.actors) {
+    // The Rappel menu only owns our team's benches. Enemy reserves already
+    // have their own distinct panel for skills that can legitimately hit them.
+    if (format.teamOf(actor.actorId) !== alliedBattleTeam) continue;
     const team = initial[actor.actorId];
     if (!team) continue;
     const group = root.ownerDocument.createElement("section");
