@@ -1,3 +1,13 @@
+## 2026-10-18 — Reprise auteur Ombre / Noctigriffe : cinq remplacements synchronisés
+- Objectif : remplacer quatre capacités et la créature Noctigriffe par les cinq transferts auteur fournis le 18 octobre 2026, octet pour octet, sous IDs inchangés.
+- Base exact gh-pages `db3122ef3e79697c92f0aa2a00f173533d6035cd` (CI et Pages GREEN), checkpoint départ `checkpoint/lab-start-shadow-roster-refresh-2026-10-18`, branche `work/lab-shadow-roster-refresh-2026-10-18`.
+- Autorités uniques : `configuredSkills` et `configuredCreatures` via les deux catalogues showcase existants, sans changer la résolution ni créer de second propriétaire.
+- Périmètre autorisé : cinq fichiers `data/capture/showcase/*` des IDs `cap_shadow_atk_4`, `cap_shadow_atk_1`, `lib_lifesteal_strike`, `cap_shadow_atk_3`, `crea_ombre_2` ; cinq nouvelles archives de source `data/capture/source-exports/*-r2/r3.json` ; nouvelle sentinelle `tests/unit/capture-shadow-roster-refresh-2026-10-18.test.mjs`, maintien à jour des trois sentinelles auteur précédentes, rapport et présent suivi.
+- Domaines protégés : autres capacités, créatures, UI, moteur de combat, renderer, assets globaux, `main` et GenSrpG principal. Pas de nouveau catalogue ni changement d'auto-équipement.
+- Audit : les cinq IDs existent déjà ; le catalogue des capacités et celui des créatures les répertorient déjà une fois. Les quatre icônes et sprites sont référencés dans le catalogue `global-assets` ; tous les ID audio fournis sont physiquement présents sur gh-pages. Noctigriffe équipe désormais `cap_shadow_atk_1`, `lib_lifesteal_strike`, `cap_shadow_atk_3`, `cap_shadow_atk_4`.
+- Tests RED puis GREEN : intégrité cryptographique des cinq fichiers, archivage source versionné, identifiants/showcase/catalogue, visuels et audio, effets, vrai chemin de remplacement par ID de `configuredSkills`/`configuredCreatures`, préservation du loadout et des fiches non concernées ; CI complète 5/5, contrôle Pages.
+- Risques : anciennes sentinelles auteur verrouillées sur hashes/iconographies précédentes, conflit de branche publique, valeurs du créateur ne doivent pas être corrigées silencieusement. Conserver anciennes archives et déplacer la vérification historique dessus. Critère GREEN technique : CI 5/5 et commit exact publié ; validation visuelle smartphone demeure à faire par l'utilisateur.
+
 ## 2026-10-18 — Import auteur Impact spectral (cap_shadow_atk_4)
 - Objectif : intégrer l'export de capacité Ombre livré par l'auteur exactement et sous son ID stable, dans l'éditeur Capture puis le combat.
 - Propriétaire unique : `configuredSkills` via `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` et le chemin d'import Capture existants.
