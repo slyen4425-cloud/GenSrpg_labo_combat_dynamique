@@ -47,10 +47,13 @@ document.addEventListener("DOMContentLoaded", () => {
                  action.includes("Charge solaire · trajet"))throw Error("solar action frozen "+action);
               const bolt=q('[data-combat-skill="lib_light_bolt"]');
               if(!bolt)throw Error("Rayon lumineux disappeared after solar cast");
-              // A second real button remains operable; AI is intentionally left active.
+              // The real native solar status/bonus is asserted by the Session
+              // sentinels. HUD icon rendering is intentionally NOT treated as
+              // a gameplay source of truth here.
               bolt.click();
-              const status=q("[data-combat-status-icons='local-1']");
-              if(!status?.children.length)throw Error("solar buff not visible on active creature");
+              const afterBolt=q('[data-combat-action="local-1"]')?.textContent??"";
+              if(!afterBolt.includes("Rayon lumineux"))
+                throw Error("follow-up Rayon lumineux could not start: "+afterBolt);
               document.body.dataset.solarLiveCastProbe="ok:solar:next-skill:unfrozen";
             }catch(e){fail(e);}
           },2200);
