@@ -5,6 +5,7 @@ import { normalizeCreaturePresentationBinding } from "../../src/contracts/creatu
 import { buildHumanCreatureDraftV3, captureEditorAssetMatchesRoleV1 } from "../../src/ui/capture-editor-human-v2.js";
 import { CREATOR_VISUAL_ROLES_V1 } from "../../src/assets/creator-visual-asset-session-v1.js";
 import { createDomCreatureMovementVisualV1 } from "../../src/adapters/renderer/dom-creature-movement-visual-v1.js";
+import { adaptCaptureExportToNativeVisualSourceV1 } from "../../src/adapters/input/capture/capture-export-to-native-visual-source-v1.js";
 
 function binding() {
   return {
@@ -114,4 +115,45 @@ test("animated strip uses frame-one collision silhouette and restores on interru
  assert.equal(f.motion.node.removed,true);
  assert.equal(f.collision.scale,1);
  f.visual.dispose();
+});
+
+test("V4 presentation survives the real Capture export-to-native visual source and preserves legacy actor",()=>{
+ const b=binding();
+ const baseCombat={maxHp:100,initialHp:100,maxEnergy:1,initialEnergy:1,energyChargeAmount:0,energyChargeIntervalMs:1000,movementEnergyPerStep:0,chargeTimeModifierPct:0};
+ const exported={
+  schema:"capture-combat-export-v1",battle:{id:"roll-preview",localActorId:"player"},
+  teams:{players:["player"],enemies:["enemy"]},
+  actors:[
+   {actorId:"player",teamId:"players",creatureId:"unit",displayName:"Roller",controllerId:"human-local"},
+   {actorId:"enemy",teamId:"enemies",creatureId:"ordinary",displayName:"Legacy",controllerId:"ai-enemy"}
+  ],
+  creatures:[
+   {id:"unit",displayName:"Roller",combat:baseCombat,skillIds:[],presentationId:"creature:unit",metadata:{}},
+   {id:"ordinary",displayName:"Legacy",combat:baseCombat,skillIds:[],presentationId:"creature:ordinary",metadata:{}}
+  ],skills:[],rosters:[],
+  presentation:{creatures:{
+   "creature:unit":b,
+   "creature:ordinary":{
+     id:"creature:ordinary",version:1,subjectType:"creature",subjectId:"ordinary",profileId:"biped",
+     visual:{front:{assetId:"pack:test:front"},back:null,icon:null},sockets:[],audio:{}
+   }
+  }},metadata:{}
+ };
+ const catalog={assets:[
+  {id:"pack:test:front",resource:{file:"front.png"}},
+  {id:"pack:test:ball",resource:{file:"ball.png",frameCount:20}}
+ ]};
+ const result=adaptCaptureExportToNativeVisualSourceV1({
+  exported,assetCatalog:catalog,
+  profiles:[{id:"quadruped",idle:{},attack:{},hit:{},ko:{}},{id:"biped",idle:{},attack:{},hit:{},ko:{}}],
+  assetUrlForFile:file=>"https://example.test/"+file
+ });
+ const roller=result.creatureMetas.find(x=>x.id==="unit");
+ const normal=result.creatureMetas.find(x=>x.id==="ordinary");
+ assert.equal(roller.movementFx.assetId,"pack:test:ball");
+ assert.equal(roller.movementFx.url,"https://example.test/ball.png");
+ assert.equal(roller.movementFx.frameCount,20);
+ assert.equal(roller.movementFx.mode,"roll");
+ assert.equal(normal.movementFx,null);
+ assert.equal(roller.runtimePreview.player,"https://example.test/front.png");
 });
