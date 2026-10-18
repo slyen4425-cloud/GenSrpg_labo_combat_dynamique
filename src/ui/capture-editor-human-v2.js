@@ -1228,7 +1228,7 @@ function audioSlots(raw) {
   }
 
   const output = {};
-  for (const role of ["attack", "hit", "ko", "movement"]) {
+  for (const role of ["attack", "hit", "ko", "movement", "dodge", "defense"]) {
     const entry = raw[role];
     if (entry == null || entry === "") {
       continue;
@@ -4030,7 +4030,9 @@ function writeCreatureRecordFields(
       creatureAudioAssetId(
         presentation?.audio?.ko
       )
-    ]
+    ],
+    ["[data-creature-audio-dodge]",creatureAudioAssetId(presentation?.audio?.dodge)],
+    ["[data-creature-audio-defense]",creatureAudioAssetId(presentation?.audio?.defense)]
   ];
 
   for (const [selector, value] of fields) {
@@ -4211,6 +4213,8 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-audio-movement-interval]", 400],
     ["[data-creature-audio-hit]", ""],
     ["[data-creature-audio-ko]", ""],
+    ["[data-creature-audio-dodge]", ""],
+    ["[data-creature-audio-defense]", ""],
     ["[data-capture-rate]", 30],
     ["[data-spawn-chance]", 10],
   ];
@@ -8943,7 +8947,9 @@ function readCreatureFields(
       ko: selectedValue(
         root,
         "[data-creature-audio-ko]"
-      )
+      ),
+      dodge: selectedValue(root,"[data-creature-audio-dodge]"),
+      defense: selectedValue(root,"[data-creature-audio-defense]")
     }
   };
 }

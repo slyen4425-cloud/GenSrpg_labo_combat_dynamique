@@ -37,7 +37,9 @@ const AUDIO_FIELDS = new Set([
   "attack",
   "hit",
   "ko",
-  "movement"
+  "movement",
+  "dodge",
+  "defense"
 ]);
 
 const AUDIO_SLOT_FIELDS = new Set([

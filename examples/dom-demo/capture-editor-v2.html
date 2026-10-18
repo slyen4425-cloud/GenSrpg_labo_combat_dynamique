@@ -403,6 +403,12 @@
           <label>KO / mort
             <select data-creature-audio-ko data-private-audio data-audio-roles="death"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
           </label>
+          <label>Esquive — son lors de l'activation réussie
+            <select data-creature-audio-dodge data-private-audio data-audio-roles="dodge,movement"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Défense — son lors de l'activation réussie
+            <select data-creature-audio-defense data-private-audio data-audio-roles="defense,impact"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
         </div>
         <div class="creator-audio-import" data-creator-audio-importer>
           <h3>Importer un son personnel</h3>
@@ -415,6 +421,8 @@
                 <option value="impact">Touché / impact</option>
                 <option value="death">KO / mort</option>
                 <option value="movement">Pas / déplacement</option>
+                <option value="dodge">Esquive</option>
+                <option value="defense">Défense</option>
               </select>
             </label>
             <label>Nom

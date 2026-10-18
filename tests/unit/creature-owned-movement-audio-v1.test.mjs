@@ -91,7 +91,7 @@ test("editor saves creature movement sound and retains skill travel only for pro
   assert.match(editor,/\["data-creature-audio-movement"\]|\[data-creature-audio-movement\]/);
   assert.match(editor,/data-creature-audio-movement-mode/);
   assert.match(editor,/data-creature-audio-movement-interval/);
-  assert.match(editor,/for \(const role of \["attack", "hit", "ko", "movement"\]/);
+  assert.match(editor,/for \(const role of \["attack", "hit", "ko", "movement", "dodge", "defense"\]/);
   assert.match(source,/audio: binding\.audio/);
   assert.match(visual,/getCreatureAudioFor/);
   for(const ui of [ui1,ui2])assert.match(ui,/presentationForCreature/);

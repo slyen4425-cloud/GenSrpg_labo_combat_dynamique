@@ -1391,6 +1391,11 @@ export async function mountCoop2v2Test({
           return;
         }
 
+        // Successful activation only; never play for rejected actions.
+
+
+        combatAudio.play({type:reaction.type,actorSlot:controlledActorId(),loop:false});
+
         const visualDurationMs =
           Number(
             result.window?.remainingMs ?? 0
@@ -1678,6 +1683,7 @@ export async function mountCoop2v2Test({
       for (const controller of aiControllers) {
         const decision = controller.maybeDodge({ elapsedMs: state.elapsedMs });
         if (decision.status === "dodged" || decision.status === "defended") {
+          combatAudio.play({type:decision.status === "defended"?"defense":"dodge",actorSlot:decision.actorId,loop:false});
           void Promise.resolve(visuals.playEventFor(decision.actorId, decision.status === "defended" ? "defense" : "dodge", {
             metadata: { durationMs: decision.durationMs }
           })).catch(() => {});

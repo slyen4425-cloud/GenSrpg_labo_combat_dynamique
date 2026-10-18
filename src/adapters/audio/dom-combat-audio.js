@@ -23,6 +23,10 @@ function soundFor(presentation, type, phase) {
       return presentation?.travelSound ?? null;
     case "movement":
       return presentation?.movement ?? null;
+    case "dodge":
+      return presentation?.dodge ?? null;
+    case "defense":
+      return presentation?.defense ?? null;
     case "impact":
       return presentation?.impactSound ?? null;
     case "aura":
@@ -61,7 +65,8 @@ export function createDomCombatAudio({
     phase = null,
     loop = null
   }) {
-    if (disposed || (type === "movement" ? !actorSlot : !skillId)) {
+    const creatureSound = type === "movement" || type === "dodge" || type === "defense";
+    if (disposed || (creatureSound ? !actorSlot : !skillId)) {
       return Object.freeze({
         status: disposed ? "disposed" : "ignored",
         finished: Promise.resolve({
@@ -70,7 +75,7 @@ export function createDomCombatAudio({
       });
     }
 
-    const presentation = type === "movement"
+    const presentation = creatureSound
       ? presentationForCreature(actorSlot, {
           audioType: type,
           sourceView: actorSlot,
