@@ -163,6 +163,14 @@ const server = createServer(async (req, res) => {
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
+    // Real Charge solaire animation path, not just validation of the editor form.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-solar-live-cast")) {
+      const html=contents.toString("utf8");
+      contents=Buffer.from(html.replace("</head>",
+        '<script src="/tests/browser/solar-charge-real-cast-probe.js"></script></head>'));
+    }
+
     // Real marker authoring through the existing skill editor and active configuredSkills.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-markers")) {
@@ -1476,6 +1484,13 @@ try {
   if(solarProbe!=="ok:solar:status:reserve:valid")
     throw Error("Actual Charge solaire editor validation still rejects reserve status: "+solarProbe);
   console.log("Charge solaire reserve status: real Chrome editor accepts new author skill and reserve buff");
+  const liveSolarDom=await dumpDom(url+"?verify-solar-live-cast=1", ["--virtual-time-budget=30000"]);
+  const liveSolar=liveSolarDom.match(/data-solar-live-cast-probe="([^"]*)"/)?.[1]??"missing";
+  if(liveSolar!=="ok:solar:next-skill:unfrozen")
+    throw Error("Real Charge solaire runtime/presenter combat freeze: "+liveSolar+
+      " JS="+(liveSolarDom.match(/data-bootstrap-error="([^"]*)"/)?.[1]??"none"));
+  console.log("Charge solaire: actual skill button remains responsive; next skill usable after status applied");
+
   const reflectionDom=await dumpDom(url+"?verify-damage-reflection=1");
   assertCreatures(reflectionDom,"damage reflection real editor bootstrap");
   const reflectionProbe=reflectionDom.match(/data-damage-reflection-probe="([^"]+)"/)?.[1] ?? "missing";
