@@ -1,3 +1,13 @@
+## 2026-10-18 — Cisaille, Scarabacier et sons d'Esquive/Défense
+- Base publique exacte : `gh-pages@d3acb8c4164027f66fc400ea90a193e76a848ac3`; branche `work/lab-cisaille-scarabacier-reaction-audio-2026-10-18`; checkpoint de départ `checkpoint/lab-start-cisaille-scarabacier-reaction-audio-2026-10-18`.
+- Objectif : intégrer les deux exports auteur intacts `cisaille` et `crea_scar_2`, sans toucher la statistique `acier` déjà intégrée ; créer un choix de son de réaction défensive/esquive utilisable en jeu.
+- Propriétaires uniques : capacités `configuredSkills` via preset showcase ; créature `configuredCreatures` via remplacement de preset ; audio créature `presentation.audio` avec Audio Adapter existant. Pas de second registre ni d'asset inventé.
+- Périmètre autorisé : `data/capture/showcase/cisaille.capture-skill-transfer-v1.json`, `data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json` ; nouvelles archives `data/capture/source-exports/gensrpg-capture-*-2026-10-18*.json` ; catalogue capacités ; contrat audio de la présentation créature et audio runtime de réaction ; formulaire creature editor HTML + lecture/enregistrement JS, tests et documentation de ce lot.
+- Protégés : tout autre skill, autre créature, loadout, progression, ancienne fiche Scarabacier, stat `acier`, animation/combat damage, assets réels et main, dépôt principal Zombicide-40k.
+- Sentinelles : identité/hash SHA256 des deux exports, archive=showcase, ID stable et unicité, vrai remplacement `configuredCreatures` ; dégât 12 + drain énergie 2 pour Cisaille ; slot1 pour Scarabacier, Défense 90 %, PV190, Acier 15, socket et sons conservés ; enregistrement/relecture et événement runtime de la réaction avec audio facultatif, aucun double effet.
+- Risques : sauvegarde de sons non encore prise en charge, absence de branchement de l'événement de défense, anciens tests liés à l'ancien preset Scarabacier, collision de branche publique ; préservation stricte des valeurs auteur et de tous les autres assets.
+- Critère GREEN technique : sentinelles de chemin réel et CI 5/5, checkpoint au SHA exact, pages déployé ; validation visuelle et sonore utilisateur séparée.
+
 ## 2026-10-18 — Ajout ciblé de la statistique Acier et fiche Scarabacier
 - Source : export auteur `gensrpg-capture-database-v1.json` (639132 octets, SHA-256 `cc6533e8931d5e602cfd6cd62270af6c3f044b3c439d18abd4d84baaf67a2857`). Importer uniquement `statRegistry.stats[id=acier]` et `creatures[draft.id=crea_scar_2]`. Le nom exact est « Scarabacier » dans la source.
 - Base : `gh-pages@eb11c053fbe391a33c975586a55bea72f3a58f3f` ; branche `work/lab-acier-scarabacier-2026-10-18`, checkpoint `checkpoint/lab-start-acier-scarabacier-2026-10-18`.
