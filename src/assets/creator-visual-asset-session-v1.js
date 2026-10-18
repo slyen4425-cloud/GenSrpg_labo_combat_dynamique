@@ -10,7 +10,8 @@ const CREATOR_VISUAL_ROLES_V1 = Object.freeze([
   "impact",
   "zone",
   "status",
-  "dodge"
+  "dodge",
+  "movement"
 ]);
 
 function defaultCreateId() {

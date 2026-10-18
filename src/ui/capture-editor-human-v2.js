@@ -2228,6 +2228,15 @@ export function buildHumanCreatureDraftV3(fields) {
   const dodgeAssetId = optionalText(
     fields?.visual?.dodgeAssetId
   );
+  const movementAssetId = optionalText(fields?.visual?.movementAssetId);
+  const movementVisual = movementAssetId === null ? null : {
+    assetId: movementAssetId,
+    mode: fields?.visual?.movementMode ?? "roll",
+    displayScale: finiteNumber(fields?.visual?.movementDisplayScale ?? 1, "Taille mouvement"),
+    rotationTurns: finiteNumber(fields?.visual?.movementRotationTurns ?? 3, "Tours du roulement"),
+    frameCount: finiteNumber(fields?.visual?.movementFrameCount ?? 1, "Frames mouvement"),
+    transitionMs: finiteNumber(fields?.visual?.movementTransitionMs ?? 80, "Transition mouvement")
+  };
   const dodgeVisual =
     dodgeAssetId === null
       ? null
@@ -2266,9 +2275,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              dodgeVisual === null
-                ? 2
-                : 3,
+              movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3),
             displayScale,
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
@@ -2281,14 +2288,13 @@ export function buildHumanCreatureDraftV3(fields) {
                 x: "50%",
                 y: "50%"
               },
-            ...(dodgeVisual === null
-              ? {}
-              : {
-                  visual: {
-                    ...base.presentation.visual,
-                    dodge: dodgeVisual
-                  }
-                })
+            ...((dodgeVisual === null && movementVisual === null) ? {} : {
+              visual: {
+                ...base.presentation.visual,
+                ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
+                ...(movementVisual === null ? {} : { movement: movementVisual })
+              }
+            })
           }
   });
 }
@@ -4005,6 +4011,12 @@ function writeCreatureRecordFields(
       "[data-creature-dodge-offset-y]",
       presentation?.visual?.dodge?.offsetY ?? 0
     ],
+    ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
+    ["[data-creature-movement-mode]", presentation?.visual?.movement?.mode ?? "roll"],
+    ["[data-creature-movement-scale]", presentation?.visual?.movement?.displayScale ?? 1],
+    ["[data-creature-movement-turns]", presentation?.visual?.movement?.rotationTurns ?? 3],
+    ["[data-creature-movement-frames]", presentation?.visual?.movement?.frameCount ?? 1],
+    ["[data-creature-movement-transition]", presentation?.visual?.movement?.transitionMs ?? 80],
     [
       "[data-creature-audio-attack]",
       creatureAudioAssetId(
@@ -4207,6 +4219,12 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-dodge-duration]", 700],
     ["[data-creature-dodge-offset-x]", 0],
     ["[data-creature-dodge-offset-y]", 0],
+    ["[data-creature-movement-visual]", ""],
+    ["[data-creature-movement-mode]", "roll"],
+    ["[data-creature-movement-scale]", 1],
+    ["[data-creature-movement-turns]", 3],
+    ["[data-creature-movement-frames]", 1],
+    ["[data-creature-movement-transition]", 80],
     ["[data-creature-audio-attack]", ""],
     ["[data-creature-audio-movement]", ""],
     ["[data-creature-audio-movement-mode]", "once"],
@@ -7448,6 +7466,14 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
   if (role === "icon") {
     return asset.assetType === "icon";
   }
+  if (role === "movement") {
+    return asset.mediaType === "image" && (
+      asset.category === "creature" ||
+      asset.assetType === "portrait" ||
+      asset.assetType === "sprite" ||
+      asset.assetType === "fx"
+    );
+  }
 
   if (
     role === "cast" ||
@@ -8921,7 +8947,13 @@ function readCreatureFields(
       dodgeOffsetY: numericValue(
         root,
         "[data-creature-dodge-offset-y]"
-      )
+      ),
+      movementAssetId: selectedValue(root, "[data-creature-movement-visual]"),
+      movementMode: selectedValue(root, "[data-creature-movement-mode]"),
+      movementDisplayScale: numericValue(root, "[data-creature-movement-scale]"),
+      movementRotationTurns: numericValue(root, "[data-creature-movement-turns]"),
+      movementFrameCount: numericValue(root, "[data-creature-movement-frames]"),
+      movementTransitionMs: numericValue(root, "[data-creature-movement-transition]")
     },
     sockets: socketList(sockets),
     audio: {
