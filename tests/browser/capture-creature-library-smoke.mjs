@@ -410,6 +410,11 @@ const server = createServer(async (req, res) => {
               preKind.value="apply_marker";preKind.dispatchEvent(new Event("change",{bubbles:true}));
               const prePicker=preRow.querySelector("[data-skill-marker-pick]");
               if(!prePicker)throw Error("marker effect picker not mounted");
+              // The showcase now offers Peste as well as Venin: select the
+              // known pre-existing Venin explicitly, not by option ordering.
+              prePicker.value="venin-static";
+              prePicker.dispatchEvent(new Event("change",{bubbles:true}));
+              if(prePicker.value!=="venin-static")throw Error("existing Venin marker unavailable");
               const periodicChannel=get("marker-periodic-channel");
               const thresholdChannel=get("marker-threshold-channel");
               const iconPicker=get("marker-icon");
