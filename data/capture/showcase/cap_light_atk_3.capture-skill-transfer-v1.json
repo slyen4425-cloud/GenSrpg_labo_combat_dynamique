@@ -20,10 +20,10 @@
       "element": "light",
       "approachMode": "ground",
       "energyCost": 3,
-      "preparationMs": 0,
+      "preparationMs": 800,
       "travelMs": 0,
       "recoveryMs": 0,
-      "cooldownMs": 0,
+      "cooldownMs": 45000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
@@ -85,21 +85,6 @@
         },
         {
           "kind": "apply_status",
-          "targetScope": "self",
-          "status": {
-            "id": "status-2",
-            "kind": "outgoing_damage_modifier",
-            "polarity": "beneficial",
-            "durationModel": "time_ms",
-            "durationMs": 30000,
-            "stacking": "refresh",
-            "maxStacks": 1,
-            "tags": [],
-            "modifierPct": 50
-          }
-        },
-        {
-          "kind": "apply_status",
           "targetScope": "all_ally_reserves",
           "status": {
             "id": "status-3",
@@ -122,7 +107,7 @@
       "subjectId": "cap_light_atk_3",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-aerial-dive-01"
+          "assetId": "pack:capture:icon-skill-healing-wave-01"
         },
         "impact": {
           "assetId": "pack:capture:sprite-electric-yellow-beam-cast-01",
@@ -144,17 +129,15 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:conflux-43060f16",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {
         "status-1": {
-          "mode": "tint",
-          "tintBlinkEnabled": true,
-          "tintBlinkPeriodMs": 2000,
-          "tintColor": "#ffcb13",
-          "tintOpacity": 0.8,
-          "sprite": null
-        },
-        "status-2": {
           "mode": "tint",
           "tintBlinkEnabled": true,
           "tintBlinkPeriodMs": 2000,
