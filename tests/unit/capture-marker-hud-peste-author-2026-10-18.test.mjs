@@ -43,11 +43,11 @@ test("native combat HUD clearly explains base periodic damage, stacks, clock and
 });
 test("saved standalone marker is displayed by real editor startup without exports and combat HUD uses live projection",async()=>{
  const editor=await read("src/ui/capture-editor-human-v2.js");
- assert.match(editor,/markers\\.capture-markers-v1\\.json/);
- assert.match(editor,/markerLibraryController\\.seedMarkers/);
+ assert.match(editor,/markers\.capture-markers-v1\.json/);
+ assert.match(editor,/markerLibraryController\.seedMarkers/);
  const library=await read("src/ui/capture-marker-library-v1.js");
  assert.match(library,/marker-save/);
- assert.match(library,/marker\\.periodic/);
+ assert.match(library,/marker\.periodic/);
  const hud=await read("src/adapters/renderer/dom-status-fx.js");
- assert.match(hud,/statusEffectInfoTextV1\\(info\\)/);
+ assert.match(hud,/statusEffectInfoTextV1\(info\)/);
 });
