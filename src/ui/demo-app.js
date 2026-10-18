@@ -3,6 +3,7 @@ import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
+import { createDomCreatureMovementVisualV1 } from "../adapters/renderer/dom-creature-movement-visual-v1.js";
 import {
   shadowGeometryFromOpaqueMaskV2
 } from "../adapters/renderer/dom-ground-shadow-v2.js";
@@ -731,6 +732,13 @@ export async function mountCombatDemo({
 
     slot.setApproachActive(true, approachDepth);
 
+    const movementAppearance = approachMode === "ground"
+      ? slot.playMovementAppearance(
+          slot.meta?.movementFx ?? null,
+          travelMs,
+          targetCenterX >= actorCenterX ? 1 : -1
+        )
+      : null;
     const handle = slot.renderer.play(plan);
     // Flight/gliding/teleport have no footfalls: one travel sound at takeoff.
     if (onFootfall && !(plan.cues ?? []).some(cue => cue.type === "footfall")) {
@@ -835,6 +843,7 @@ export async function mountCombatDemo({
         if (activeApproachBySlot.get(slotKey) === approachRecord) {
           activeApproachBySlot.delete(slotKey);
         }
+        movementAppearance?.cancel?.();
         slot.setApproachActive(false);
         for (const timerId of phaseTimers) {
           globalThis.clearTimeout(timerId);
@@ -850,6 +859,7 @@ export async function mountCombatDemo({
     activeApproachBySlot.delete(slotKey);
     cancelDodgeAppearanceFx(slotKey);
     slot.setApproachActive(false);
+    slot.cancelMovementAppearance();
     slot.renderer.cancel();
     if (slot.visible) {
       startIdleFor(slotKey);
@@ -1014,6 +1024,9 @@ function createSlot({
       motion,
       image
     });
+  const movementAppearance = createDomCreatureMovementVisualV1({
+    motion, image, collisionModel
+  });
 
   let meta = null;
   let actor = null;
@@ -1163,6 +1176,7 @@ function createSlot({
       runtimeAsset
     );
 
+    movementAppearance.prepare(meta.movementFx ?? null, runtimeUrl);
     loadRuntimeAsset(runtimeUrl);
     rebuildActor(runtimeUrl);
   }
@@ -1172,6 +1186,7 @@ function createSlot({
     slotContainer.hidden = !visible;
     image.hidden = !visible || !assetReady;
     if (!visible) {
+      movementAppearance.cancel();
       slotContainer.removeAttribute("data-approach-active");
       slotContainer.removeAttribute("data-approach-depth");
       renderer?.cancel();
@@ -1221,6 +1236,8 @@ function createSlot({
     setCreature,
     setVisible,
     setApproachActive,
+    playMovementAppearance: movementAppearance.play,
+    cancelMovementAppearance: movementAppearance.cancel,
     getFxAnchor,
     collisionModel,
     get meta() {
@@ -1239,6 +1256,7 @@ function createSlot({
       slotContainer.removeAttribute("data-approach-active");
       slotContainer.removeAttribute("data-approach-depth");
       renderer?.dispose();
+      movementAppearance.dispose();
       collisionModel.dispose();
       image.removeAttribute("src");
     }

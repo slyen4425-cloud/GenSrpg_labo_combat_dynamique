@@ -887,6 +887,7 @@ export function createDomVisibleModelCollisionModel({
   let mask = null;
   let naturalWidth = 0;
   let naturalHeight = 0;
+  let displayScale = 1;
   let disposed = false;
 
   function clear() {
@@ -993,12 +994,16 @@ export function createDomVisibleModelCollisionModel({
       return false;
     }
 
-    originMarker.style.left = box.left + "px";
-    originMarker.style.top = box.top + "px";
-    xMarker.style.left = box.left + box.width + "px";
-    xMarker.style.top = box.top + "px";
-    yMarker.style.left = box.left + "px";
-    yMarker.style.top = box.top + box.height + "px";
+    const width = box.width * displayScale;
+    const height = box.height * displayScale;
+    const left = box.left + (box.width - width) / 2;
+    const top = box.top + (box.height - height) / 2;
+    originMarker.style.left = left + "px";
+    originMarker.style.top = top + "px";
+    xMarker.style.left = left + width + "px";
+    xMarker.style.top = top + "px";
+    yMarker.style.left = left + "px";
+    yMarker.style.top = top + height + "px";
     return true;
   }
 
@@ -1036,6 +1041,10 @@ export function createDomVisibleModelCollisionModel({
   return Object.freeze({
     clear,
     refreshFromImage,
+    setPresentationScale(scale = 1) {
+      if (!Number.isFinite(scale) || scale <= 0) throw new RangeError("collision scale must be positive");
+      displayScale = scale;
+    },
     snapshot,
     visibleRect() {
       return visibleModelOpaqueRect(snapshot());

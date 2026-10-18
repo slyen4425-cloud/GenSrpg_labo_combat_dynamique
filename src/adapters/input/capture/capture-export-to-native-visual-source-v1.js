@@ -167,6 +167,19 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   }
 
+  function movementFxFor(binding) {
+    const slot = binding.version >= 4 ? binding.visual?.movement ?? null : null;
+    if (!slot) return null;
+    const asset = assetById.get(slot.assetId);
+    if (!asset) throw new RangeError("unknown creature movement asset: " + slot.assetId);
+    const resource = asset.resource ?? {};
+    return Object.freeze({
+      ...slot,
+      url: assetUrl(slot.assetId),
+      frameCount: Math.max(slot.frameCount, Number(resource.frameCount) || 1)
+    });
+  }
+
   const creatureById = new Map(
     captureExport.creatures.map((creature) => [
       creature.id,
@@ -201,7 +214,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         runtimePreview: Object.freeze({ player: marker, opponent: marker, icon: marker }),
         assetBaseUrl: new URL(".", import.meta.url).href, displayScale: Object.freeze({ player: 1, opponent: 1 }),
         fxAnchors: Object.freeze({ player: {}, opponent: {} }),
-        dodgeFx: null
+        dodgeFx: null,
+        movementFx: null
       });
     }
 
@@ -300,7 +314,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         )
       }),
       audio: binding.audio,
-      dodgeFx: dodgeFxFor(binding)
+      dodgeFx: dodgeFxFor(binding),
+      movementFx: movementFxFor(binding)
     });
   });
 
