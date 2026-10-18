@@ -20,12 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
       clearInterval(ready);
       change(q("[data-creature-library-select]"),"crea_lumilo");
       const slots=qa("[data-loadout-slot]").filter(el=>el.dataset.loadoutSlotType==="standard");
-      // Keep slot 1 (Rayon lumineux) as the follow-up action;
-      // replace the third standard slot only for this ephemeral browser test.
-      const solar=slots[2]?.querySelector('[value="cap_light_atk_3"]') ? slots[2] : null;
-      if(!solar) throw Error("Solar skill not available in saved Lumilo loadout slots");
-      change(solar,"cap_light_atk_3");
-      if(solar.value!=="cap_light_atk_3")throw Error("Solar not selected");
+      // Current authored Lumilo already equips Charge solaire in standard
+      // slot 4. Do not duplicate it in slot 3: the native loadout owner
+      // explicitly rejects duplicate equipped skill IDs.
+      const solar=slots.find(el=>el.value==="cap_light_atk_3");
+      if(!solar) throw Error("Latest Lumilo author loadout did not equip Solar charge");
+      if(slots.filter(el=>el.value==="cap_light_atk_3").length!==1)
+        throw Error("Charge solaire equipped more than once");
+      if(slots[0]?.value!=="lib_light_bolt")
+        throw Error("Rayon lumineux missing from authored slot 1");
       q("[data-editor-test-combat]").click();
       let tries=0;
       const awaiting=setInterval(()=>{
