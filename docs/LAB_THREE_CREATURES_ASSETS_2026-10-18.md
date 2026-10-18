@@ -18,3 +18,7 @@ Sources : 3 planches créées dans la conversation et approuvées visuellement ;
 - Chaque métadonnée doit pointer vers des fichiers présents ; chaque assetId doit figurer exactement une fois dans le catalogue.
 - Inspecter visuellement toutes les vues, confirmer la transparence réelle, puis tester la résolution depuis `global-assets`.
 - Ne déclarer GREEN qu'avec les vérifications pertinentes et CI satisfaisante. Le catalogue ne remplace jamais l'examen des médias réels.
+
+## CI du lot et réparation de sentinelle
+
+La première exécution du workflow a identifié une assertion historique de taille de catalogue figée à 172 entrées dans le test des quatre icônes Ombre. Cette assertion est indépendante de la conservation réelle de ces icônes et bloque tout ajout futur. La réparation conserve les contrôles de 70 icônes, d'identifiants uniques, de provenance et de fichiers binaires, mais remplace le total figé par un seuil minimal append-only. Aucun gameplay n'est changé.
