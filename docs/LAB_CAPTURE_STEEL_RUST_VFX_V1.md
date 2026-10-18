@@ -27,3 +27,11 @@
 ## Acceptance
 - Real binary inspection, five source checksums and 100 frame SHA-256/PNG RGBA/size checks, WebP 5 atlases checks, unique catalog IDs, safe fast-forward, GitHub CI success.
 - `npm run ci` through normal Laboratory workflow; validate on a real smartphone/skill editor separately; passing structural/media checks is **not** proof that any existing skill's presentation binding was automatically changed.
+## Vérification d'import GitHub
+
+- Commit contenant les médias réels : `927dd1df8c7c2331a84ce07cc56eca1bb569679b`.
+- Import automatisé `39168798429` : `SUCCESS` ; script SHA/alpha et CI complète exécutés avant commit.
+- Revue de l'arbre Git : 100 PNG RGBA physiques, 5 atlas WebP physiques, 4 manifestes de séquences, 4 fichiers de provenance, soit 113 fichiers générés dans les quatre dossiers de compétences.
+- Catalogue autoritaire : 186 assets, dont 97 sprites ; cinq nouveaux `assetId` uniques, y compris les deux Carapaces.
+- Les sources WebP utilisées pour le transport sont des versions compressées à perte des planches originales ; sources PNG inchangées fournies dans l'archive utilisateur. 512×512 est la résolution d'export, pas la résolution source native.
+- CI normale sur ce commit documentaire : en attente au moment de cette note. Le contrôle éditeur / jeu réel Android n'est pas revendiqué.
