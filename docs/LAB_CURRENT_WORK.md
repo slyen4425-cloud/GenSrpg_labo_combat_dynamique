@@ -1,5 +1,18 @@
 # Laboratoire Combat Dynamique — Current Work
 
+## 2026-10-18 — 4 sprites Ombre / Drain de vie — import en cours (NON GREEN)
+
+- **Demande** : Cast Ombre, Impact Ombre, Cast Drain de vie, Impact Drain de vie, 20 PNG RGBA 512×512 chacun, soit 80 frames et 4 atlas WebP.
+- **Propriétaire unique** : Asset Input Capture sur `global-assets`, bibliothèque `assets/library/capture/sprites/skills/{shadow_spell,life_drain}/` et catalogue `data/assets/catalog/global-visual-assets.v1.json`.
+- **Base exacte GREEN** : `df7422758a0149937763c4ffd187dd8aabc75220` (CI GitHub SUCCESS), checkpoint `checkpoint/lab-start-shadow-life-drain-vfx-2026-10-18`, branche de travail `work/lab-shadow-life-drain-vfx-2026-10-18`.
+- **Source réellement créée et inspectée** : 4 PNG RGBA 1402×1122 générés dans la conversation; recadrage grilles 5×4, 80 PNG 512×512 agrandis (résolution non native), 4 atlas WebP 7680×384; 2 archives ZIP distinctes (~12,93 et ~14,02 MiB), SHA-256 connus.
+- **Fichiers autorisés** : `_incoming/capture_shadow_spell_vfx_40frames.zip`, `_incoming/capture_life_drain_vfx_40frames.zip`; `scripts/import_shadow_life_drain_vfx.py`; `.github/workflows/import-shadow-life-drain-vfx.yml`; `assets/library/capture/sprites/skills/shadow_spell/` et `assets/library/capture/sprites/skills/life_drain/`; catalogue unique, `tests/unit/capture-shadow-life-drain-assets-v1.test.mjs`, note `docs/LAB_SHADOW_LIFE_DRAIN_VFX_V1.md`, présent journal.
+- **Domaines protégés** : `main`, `gh-pages` avant les médias validés, GenSrpG/Zombicide, gameplay, capacités configurées, énergie/dégâts, moteur FX/renderer existants, autres ressources du catalogue.
+- **Identifiants prévus** : `pack:capture:sprite-shadow-spell-cast-01`, `pack:capture:sprite-shadow-spell-impact-01`, `pack:capture:sprite-life-drain-cast-01`, `pack:capture:sprite-life-drain-impact-01` ; deux phases release, deux impact, 20 frames chacune, `playbackMode=once`.
+- **Tests et risques** : vérification vrais octets et source SHA, ZIP CRC, transparence, noms, dimensions PNG/atlas, séquences et provenance, unicité `assetId`, sentinelle de résolution, `npm run ci`, contrôle global-assets/publication fast-forward, puis cache `gh-pages` et essai réel de preview Android. Ne pas modifier automatiquement le loadout ou les capacités auteur.
+- **Statut** : **PARTIEL** tant que les ZIP ne sont pas réellement commitées/importées via GitHub et que la CI n'a pas validé la branche. Un manifeste ou des chemins sans vrais octets ne prouvent pas la livraison.
+- **Suite** : deux ZIP identiques à ceux produits dans le chat sont à importer simultanément sous `_incoming/` dans la branche de travail; le workflow extrait seulement si les deux sont présents. Après contrôle CI, publier `global-assets`, puis rafraîchir le cache éditeur `gh-pages` sur un lot isolé.
+
 ### Oct 17 — Bouclier lumière: MEDIA BINAIRES IMPORTES; CI et validation UI en attente
 - ZIP réel importé avec vérification SHA-256 / dimensions / alpha et 2 atlas WebP. Deux assetId insérés dans le catalogue unique, après contrôle des collisions.
 - Compétence, dommages, runtime, main et gh-pages non modifiés. Aucune validation de preview en combat revendiquée tant que le test utilisateur n'est pas fait.
