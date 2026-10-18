@@ -66,7 +66,7 @@ test("Scarabacier and Cisaille travel the canonical configured owner path, leavi
    currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),
    transfer,mode:"replace"
   });
-  assert.equal(plan.action,transfer.kind==="skill"?(configuredSkills.has("cisaille")?"replace-skill":"add-skill"):"replace-creature");
+  assert.equal(plan.action,transfer.kind==="skill"?(configuredSkills.has("cisaille")?"replace-skill":"insert-skill"):"replace-creature");
   applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures,configuredSkills,statRegistry,progressionRules});
  }
  assert.equal(configuredCreatures.size,2);

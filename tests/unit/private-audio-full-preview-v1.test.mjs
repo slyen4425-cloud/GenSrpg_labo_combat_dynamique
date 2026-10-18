@@ -71,8 +71,8 @@ test("every private audio selector has a prelisten action and dedicated controll
 
   assert.equal(
     selectorCount,
-    8,
-    "cast, projectile travel, impact, persistent-zone and all four creature audio selectors must expose preview"
+    10,
+    "all six creature audio selectors and four skill audio selectors must expose preview"
   );
   assert.equal(previewCount, selectorCount);
 

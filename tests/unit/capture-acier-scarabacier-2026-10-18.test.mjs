@@ -76,6 +76,12 @@ test("Scarabacier replaces the native creature via canonical configuredCreatures
  const originalOther=configuredCreatures.get("crea_scar_1");
  const configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(x=>[x.id,x]));
  for(const skill of captureComplexNativeSkillDraftsV1())if(!configuredSkills.has(skill.id))configuredSkills.set(skill.id,skill);
+ // This later Scarabacier revision intentionally equips the newly authored Cisaille.
+ // Seed the canonical configuredSkills owner before planning the creature update.
+ const newAbility=importCaptureTransferJsonV1(await read("data/capture/showcase/cisaille.capture-skill-transfer-v1.json"),{statRegistry});
+ const addSkill=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),transfer:newAbility,mode:"replace"});
+ assert.equal(addSkill.action,"insert-skill");
+ applyCaptureTransferPlanToEditorStateV1({plan:addSkill,configuredCreatures,configuredSkills,statRegistry,progressionRules});
  const initialSkillSize=configuredSkills.size;
  const imported=importCaptureTransferJsonV1(await read(scaraPath),{statRegistry});
  const plan=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),transfer:imported,mode:"replace"});
