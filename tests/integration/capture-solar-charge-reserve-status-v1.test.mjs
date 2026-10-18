@@ -44,7 +44,7 @@ test("RED: three author skill IDs remain unique and author parameters are preser
  const solar=(await read(paths[0])).draft;
  assert.equal(solar.definition.name,"Charge solaire");
  assert.deepEqual(solar.definition.effects.map(x=>[x.kind,x.targetScope,x.status?.modifierPct,x.status?.durationMs]),[
-   ["apply_status","target",50,30000],["apply_status","self",50,30000],["apply_status","all_ally_reserves",50,30000]
+   ["apply_status","target",50,30000],["apply_status","all_ally_reserves",50,30000]
  ]);
  assert.deepEqual(solar.definition.targetRelations,["ally","self"]);
  const heal=(await read(paths[1])).draft;
@@ -63,7 +63,7 @@ test("RED: Charge solaire +50% persists on all allied bench and never hostile; r
  assert.equal(session.snapshot().fighters.player.energy,37);
  assert.equal(session.snapshot().fighters.player.skillUseCounts[skill.id],1);
  const buff=s=>s.statusEffects.filter(x=>x.definition.kind==="outgoing_damage_modifier"&&x.sourceSkillId===skill.id);
- assert.equal(buff(session.snapshot().fighters.player).length,1,"caster keeps existing self buff");
+ assert.equal(buff(session.snapshot().fighters.player).length,0,"author removed separate self buff when ally is targeted");
  assert.equal(buff(session.snapshot().fighters.ally).length,1,"selected ally keeps existing buff");
  for(const [slot,member] of [["player","p1"],["player","p2"],["ally","a1"]]){
    const b=buff(roster.reserveMemberSnapshot(slot,member));
@@ -96,7 +96,7 @@ test("RED: no roster cannot cast supplemental all_ally_reserves status",async()=
  assert.equal(session.snapshot().fighters.player.energy,40);
 });
 
-test("Charge solaire 1v1: a repeated cast refreshes the same bench status for 30 combat seconds",async()=>{
+test("Charge solaire 1v1: authored 45s recharge prevents early recast, reserve buff expires at 30s",async()=>{
  const skill=importCaptureTransferJsonV1(await readFile(new URL("../../"+paths[0],import.meta.url),"utf8")).value.draft.definition;
  const format1v1={actors:[{actorId:"player",teamId:"us"},{actorId:"opponent",teamId:"them"}],
    teamOf(id){return this.actors.find(a=>a.actorId===id)?.teamId??null;}};
@@ -113,12 +113,18 @@ test("Charge solaire 1v1: a repeated cast refreshes the same bench status for 30
  assert.equal(statuses.length,1);
  assert.equal(statuses[0].expiresAtMs,30000);
  session.advanceMs(10000);
- assert.equal(cast().ok,true);
- statuses=roster.reserveMemberSnapshot("player","p1").statusEffects.filter(x=>x.sourceSkillId===skill.id);
- assert.equal(statuses.length,1,"refresh, never stack duplicate reserve buffs");
- assert.equal(statuses[0].expiresAtMs,40000);
+ const premature=cast();
+ assert.equal(premature.ok,false,"new authored 45s cooldown blocks a second launch");
+ assert.equal(premature.outcome,"cooldown");
+ assert.equal(roster.reserveMemberSnapshot("player","p1").statusEffects.length,1);
+ assert.equal(session.snapshot().fighters.player.energy,37,"rejected cast must not consume energy");
+ session.advanceMs(20001);
+ assert.equal(roster.reserveMemberSnapshot("player","p1").statusEffects.length,0,"buff expires after authored 30s");
  assert.equal(roster.reserveMemberSnapshot("opponent","e1").statusEffects.length,0);
- assert.equal(session.snapshot().fighters.player.energy,34,"each of two casts charges energy once");
- session.advanceMs(30001);
- assert.equal(roster.reserveMemberSnapshot("player","p1").statusEffects.length,0);
+ session.advanceMs(15000);
+ assert.equal(cast().ok,true,"cooldown expired after authored 45s");
+ statuses=roster.reserveMemberSnapshot("player","p1").statusEffects.filter(x=>x.sourceSkillId===skill.id);
+ assert.equal(statuses.length,1,"fresh buff after cooldown");
+ assert.equal(statuses[0].expiresAtMs,75001);
+ assert.equal(session.snapshot().fighters.player.energy,34,"two valid casts charge energy twice");
 });
