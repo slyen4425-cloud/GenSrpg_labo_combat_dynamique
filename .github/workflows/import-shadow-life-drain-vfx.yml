@@ -1,0 +1,51 @@
+name: Import real Shadow and Life Drain VFX
+on:
+  push:
+    branches:
+      - work/lab-shadow-life-drain-vfx-2026-10-18
+    paths:
+      - _incoming/capture_shadow_spell_vfx_40frames.zip
+      - _incoming/capture_life_drain_vfx_40frames.zip
+permissions:
+  contents: write
+concurrency:
+  group: shadow-life-drain-vfx-import
+  cancel-in-progress: false
+jobs:
+  import-media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check both ZIP archives
+        id: zip
+        shell: bash
+        run: |
+          if test -f _incoming/capture_shadow_spell_vfx_40frames.zip && test -f _incoming/capture_life_drain_vfx_40frames.zip; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.zip.outputs.ready == 'true'
+        with:
+          python-version: '3.12'
+      - if: steps.zip.outputs.ready == 'true'
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Inspect, validate and import actual source media
+        if: steps.zip.outputs.ready == 'true'
+        run: python scripts/import_shadow_life_drain_vfx.py
+      - uses: actions/setup-node@v4
+        if: steps.zip.outputs.ready == 'true'
+        with:
+          node-version: '22'
+      - name: Full laboratory CI before commit
+        if: steps.zip.outputs.ready == 'true'
+        run: npm run ci
+      - name: Publish validated files and remove archives
+        if: steps.zip.outputs.ready == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- assets/library/capture/sprites/skills/shadow_spell assets/library/capture/sprites/skills/life_drain data/assets/catalog/global-visual-assets.v1.json tests/unit/capture-shadow-life-drain-assets-v1.test.mjs docs/LAB_SHADOW_LIFE_DRAIN_VFX_V1.md docs/LAB_CURRENT_WORK.md _incoming/capture_shadow_spell_vfx_40frames.zip _incoming/capture_life_drain_vfx_40frames.zip
+          git commit -m 'assets(capture): import verified Shadow and Life Drain VFX'
+          git push origin HEAD:work/lab-shadow-life-drain-vfx-2026-10-18
