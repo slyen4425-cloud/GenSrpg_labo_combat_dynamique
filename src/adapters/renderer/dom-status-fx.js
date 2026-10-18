@@ -439,10 +439,8 @@ export function createDomStatusFxRenderer({
       String(stacks);
     record.node.dataset.sourceSkillId =
       sourceSkillId ?? "";
-    record.node.title =
-      (isMarker?"Marqueur":info.typeLabel) +
-      " · " +
-      info.statusName + (thresholdCount ? " · " + stacks + "/" + thresholdCount + " stacks" : "");
+    record.node.title = statusEffectInfoTextV1(info) +
+      (thresholdCount ? " · " + stacks + "/" + thresholdCount + " stacks" : "");
     record.node.setAttribute?.(
       "aria-label",
       statusEffectInfoTextV1(info) + (thresholdCount ? " · " + stacks + "/" + thresholdCount + " stacks" : "")

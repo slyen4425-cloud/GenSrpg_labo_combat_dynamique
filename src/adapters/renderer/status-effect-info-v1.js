@@ -300,6 +300,40 @@ function effectLinesFor(
       ]);
     }
 
+    case "stack_counter": {
+      if (!isCaptureMarkerStatusV1(instance)) return Object.freeze([]);
+      const lines = [];
+      const periodic = definition.periodic;
+      if (periodic) {
+        const stacks = Math.max(1, finiteNumber(instance.stacks, 1));
+        const amount = finiteNumber(periodic.amount);
+        const baseLabel = periodic.kind === "damage"
+          ? compactNumber(amount) + " dégâts " + channelLabel(periodic.channel) +
+            (periodic.damageMode === "combat" ? " de base" : "")
+          : compactNumber(amount) + " PV soignés";
+        lines.push(baseLabel + " par charge toutes les " +
+          secondsLabel(periodic.intervalMs) + " (" +
+          compactNumber(amount * stacks) + " pour " + compactNumber(stacks) +
+          (stacks > 1 ? " charges" : " charge") +
+          (periodic.damageMode === "combat" ? ", avant défenses" : "") + ")");
+        if (instance.nextTickAtMs != null &&
+            Number.isFinite(Number(instance.nextTickAtMs))) {
+          lines.push("Prochain effet dans " +
+            secondsLabel(Math.max(0, instance.nextTickAtMs - elapsedMs)));
+        }
+      }
+      if (definition.onStackThreshold != null) {
+        const threshold = definition.onStackThreshold;
+        const effects = threshold.effects ?? [];
+        const trigger = effects.some(e => e.kind === "knockout")
+          ? "KO"
+          : effects.map(e => e.kind).join(", ") || "effet configuré";
+        lines.push("À " + threshold.count + " charges : " + trigger +
+          (threshold.consume === "reset" ? " (charges réinitialisées)" : ""));
+      }
+      return Object.freeze(lines);
+    }
+
     case "damage_over_time":
       return Object.freeze([
         compactNumber(definition.amount) +

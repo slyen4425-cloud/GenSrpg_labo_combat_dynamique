@@ -1,5 +1,6 @@
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js";
+import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
 import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1 } from "./capture-marker-effect-fields-v1.js";
 import { captureEditorElementChannelChoicesV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
@@ -8006,6 +8007,15 @@ async function hydrateMonsterCaptureCreatureCatalog(
   );
 }
 
+async function hydrateCaptureShowcaseMarkersV1(){
+  const filename="data/capture/showcase/markers.capture-markers-v1.json";
+  const response=await fetch(new URL("../../"+filename,import.meta.url),{cache:"no-store"});
+  if(!response.ok)throw new Error("Marqueurs vitrine indisponibles : "+response.status);
+  const payload=await response.json();
+  if(payload.schema!=="capture-markers-v1")throw new RangeError("Format de bibliothèque de marqueurs invalide");
+  return normalizeCaptureMarkerLibraryV1(payload.markers);
+}
+
 async function hydrateCaptureShowcaseSkillPresetsV1() {
   const transfers = await Promise.all(
     CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.map(
@@ -13531,6 +13541,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           await hydrateCaptureShowcaseCreaturePresetsV1(
             statRegistry
           );
+        const showcaseMarkers=await hydrateCaptureShowcaseMarkersV1();
         const showcasePresets = [
           ...showcaseSkillPresets,
           ...showcaseCreaturePresets
@@ -13560,6 +13571,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         refreshSkillLibraryOptions(
           librarySelect.value
         );
+        markerLibraryController.seedMarkers(showcaseMarkers);
         refreshLoadoutOptions();
         if (reloadSelectedSkillAfterPresets) {
           const selectedSkill = configuredSkills.get(librarySelect.value);

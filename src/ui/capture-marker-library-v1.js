@@ -248,6 +248,28 @@ export function captureMarkerRegisterFromSkillV1(root,definition){
   }
   if(!existing){session.markers.set(marker.id,marker);refresh(root);}
 }
+// Load authored presets into the unique library Map; reject divergent skill-owned markers.
+export function captureMarkerSeedLibraryV1(markers,incoming){
+  const normalized=normalizeCaptureMarkerLibraryV1(incoming);
+  for(const marker of normalized){
+    const old=markers.get(marker.id);
+    if(old && JSON.stringify(normalizeCaptureMarkerV1(old))!==JSON.stringify(marker))
+      throw new RangeError("Conflit de définition du marqueur « "+marker.id+" » avec une capacité.");
+  }
+  let added=0;
+  for(const marker of normalized)if(!markers.has(marker.id)){
+    markers.set(marker.id,marker);added++;
+  }
+  return added;
+}
+function markerPeriodicSaveSummaryV1(marker){
+  const periodic=marker.periodic;
+  if(!periodic)return "Aucun effet périodique.";
+  const seconds=(Math.round(periodic.intervalMs/100)/10).toLocaleString("fr-FR");
+  return periodic.amount+" "+(periodic.kind==="damage"?"dégâts":"PV soignés")+
+    " par charge toutes les "+seconds+" s"+
+    (periodic.damageMode==="combat"?" (avant défenses)":"")+".";
+}
 function propagateMarker(root,definition){
   const state=sessions.get(root);
   // Explicit save updates every *configured* skill referencing this shared ID.
@@ -323,7 +345,7 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
       selected(root,"marker-id").value=marker.id;
       selected(root,"marker-id").readOnly=true;
       delete selected(root,"marker-id").dataset.manualMarkerId;
-      say(root,"« "+marker.name+" » enregistré (ID : "+marker.id+"). Disponible dans les effets des capacités. "+linked+" capacité(s) synchronisée(s).","ok");
+      say(root,"« "+marker.name+" » enregistré (ID : "+marker.id+"). "+markerPeriodicSaveSummaryV1(marker)+" Disponible dans les effets des capacités. "+linked+" capacité(s) synchronisée(s).","ok");
     }catch(error){say(root,error.message,"error");}
   });
   listen(find(root,"marker-export"),"click",()=>{
@@ -347,14 +369,7 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
       const parsed=JSON.parse(await file.text());
       if(parsed.schema!=="capture-markers-v1")throw new RangeError("Format de bibliothèque non reconnu");
       const imported=normalizeCaptureMarkerLibraryV1(parsed.markers);
-      // Transactional import: do not silently overwrite existing author data.
-      for(const marker of imported){
-        const old=markers.get(marker.id);
-        if(old && JSON.stringify(old)!==JSON.stringify(marker)){
-          throw new RangeError("Conflit : « "+marker.id+" » existe déjà avec d'autres réglages");
-        }
-      }
-      for(const marker of imported)markers.set(marker.id,marker);
+      captureMarkerSeedLibraryV1(markers,imported);
       refresh(root);
       say(root,imported.length+" marqueur(s) importé(s) sans écraser les existants.","ok");
     }catch(error){say(root,error.message,"error");}
@@ -363,6 +378,11 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
   indexSkills();refresh(root);captureMarkerRefreshReferenceChoicesV1(root);syncVisibility(root);
   return Object.freeze({
     indexSkills,
+    seedMarkers(incoming){
+      const added=captureMarkerSeedLibraryV1(markers,incoming);
+      refresh(root);
+      return added;
+    },
     dispose(){sessions.delete(root);}
   });
 }
