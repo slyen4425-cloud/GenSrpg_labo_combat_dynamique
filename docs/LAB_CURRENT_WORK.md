@@ -1,3 +1,11 @@
+## 2026-10-18 — Marqueurs : Peste, périodicité lisible en combat dès sauvegarde
+- Base `gh-pages@ff8c4ba16fb4b13d3b691e592fc8a55646115e05` ; branche `work/lab-marker-hud-peste-2026-10-18`, checkpoint initial `checkpoint/lab-start-marker-hud-peste-2026-10-18`.
+- Objectif : préserver l'export des deux marqueurs (venin-static, peste), rendre Peste disponible dans la bibliothèque active sans import manuel, afficher dégâts/tick/prochaine échéance par marqueur en combat, et récapitulatif dès l'enregistrement dans l'éditeur.
+- Autorités : Status Effect Runtime conserve le calcul des ticks et des dégâts, `configuredSkills` les capacités liées, bibliothèque existante de marqueurs pour les définitions isolées. Le catalogue livré initialise cette bibliothèque, ne remplace jamais les versions de skills divergentes.
+- Périmètre autorisé : `data/capture/source-exports/gensrpg-marqueurs-2026-10-18.json`, `data/capture/showcase/markers.capture-markers-v1.json`, `src/ui/capture-marker-library-v1.js`, `src/ui/capture-editor-human-v2.js`, `src/adapters/renderer/status-effect-info-v1.js`, `src/adapters/renderer/dom-status-fx.js` (tooltip seulement), tests sentinelles dédiés, rapport et ce journal.
+- Domaines protégés : calcul de dégâts et timers, moteur Combat Rules, statuts non marqueurs, données des compétences et des créatures, sons et atlas, autres dépôts.
+- Risques : double définition de venin-static déjà inclus dans lib_paralyze, confusion entre dégâts de base et dégâts après résistance, perte des marqueurs autonomes au rechargement, UI tactile. Test RED puis vraie projection vers HUD ; charge sauvegardée sans export, import initial avec collision stricte et sentinelles complètes ; CI 5/5, checkpoint et Pages avant déclaration GREEN technique. Validation tactile utilisateur distincte.
+
 ## 2026-10-18 — Reprise auteur Ombre / Noctigriffe : cinq remplacements synchronisés
 - Objectif : remplacer quatre capacités et la créature Noctigriffe par les cinq transferts auteur fournis le 18 octobre 2026, octet pour octet, sous IDs inchangés.
 - Base exact gh-pages `db3122ef3e79697c92f0aa2a00f173533d6035cd` (CI et Pages GREEN), checkpoint départ `checkpoint/lab-start-shadow-roster-refresh-2026-10-18`, branche `work/lab-shadow-roster-refresh-2026-10-18`.
