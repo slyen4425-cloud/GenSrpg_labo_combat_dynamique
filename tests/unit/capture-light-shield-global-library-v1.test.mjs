@@ -68,5 +68,7 @@ test("Light Shield Barrier: existing authored hold-last control and real FX rend
  const controls=readFileSync(fileURLToPath(new URL("../../src/ui/capture-editor-sprite-controls-v1.js",import.meta.url)),"utf8");
  const renderer=readFileSync(fileURLToPath(new URL("../../src/adapters/renderer/dom-status-fx.js",import.meta.url)),"utf8");
  assert.match(controls,/\["hold-last", "Jouer une fois puis garder la dernière image/);
- assert.match(renderer,/hold-last/);
+ assert.match(renderer,/applySpriteVisual\\s*\\(/, "Status renderer delegates to the canonical sprite owner");
+ const spriteOwner=readFileSync(fileURLToPath(new URL("../../src/adapters/renderer/dom-skill-fx.js",import.meta.url)),"utf8");
+ assert.match(spriteOwner,/hold-last/, "Canonical FX renderer supports hold-last");
 });
