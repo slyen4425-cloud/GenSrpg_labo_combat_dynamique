@@ -1,3 +1,13 @@
+## 2026-10-18 — FX acier et rouille (lot 5 séquences de 20 frames)
+
+- **Source** : 5 planches réellement générées en conversation, 1402×1122 RGBA (5×4). Carapace d'acier normale, Carapace d'acier maintien, Impact aile acier, Cast tourbillon de rouille, Projectile aile acier.
+- **Autorité** : Asset Input Capture sur `global-assets`; aucun changement du gameplay, créatures, compétences, FX Core, renderer, `gh-pages`, `main` ou GenSrpG.
+- **Base** : `f92814097634e0a80b3b8dfc1fbc6631a1a988e1`; checkpoint `checkpoint/lab-start-capture-steel-rust-vfx-2026-10-18`; branche `work/lab-capture-steel-rust-vfx-2026-10-18`.
+- **Périmètre** : sources compressées dans `_incoming/capture_steel_rust_vfx_20261018/`, script d'import et workflow dédiés, médias dans `assets/library/capture/sprites/skills/{steel_carapace,steel_wing_impact,rust_whirlwind,steel_wing_projectile}/`, catalogue autoritaire, tests ciblés, doc et ce journal.
+- **Sortie** : 100 vrais PNG RGBA 512×512 (agrandissement non natif), 5 atlases WebP 7680×384, manifests/provenance avec hashes source, identifiants stables sans doublons. Carapace maintien = dernier état complet, `holdLastFrame=true`, distinct de la séquence dissipative.
+- **Transport** : source PNG originale conservée dans la conversation/ZIP utilisateur. Pour éviter des transferts de ~20–40 Mo, sources WebP RGBA qualité 85 encapsulées et authentifiées SHA-256 avant découpe dans un workflow GitHub déterministe ; il s'agit d'une transformation à perte, explicitement signalée, non d'une résolution native.
+- **Tests** : vérifier la réalité des octets, alpha, 100 frames distinctes dans leur séquence, CRC des fichiers, atlas et métadonnées, unicité du catalogue, `npm run ci`, branche stable et validation preview en jeu distincte. Pas de statut GREEN sans vérifications complètes.
+
 
 
 ## 2026-10-18 — Quatre icônes finales Ombre / Drain de vie — lot isolé
