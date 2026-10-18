@@ -65,7 +65,10 @@ test("canonical configuredSkills import replaces Frappe by ID and adds debuff wi
  const configuredCreatures=new Map(),configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(s=>[s.id,s]));
  for(const s of captureComplexNativeSkillDraftsV1())if(!configuredSkills.has(s.id))configuredSkills.set(s.id,s);
  for(const id of ["lib_lifesteal_strike","cap_shadow_atk_1"]){
-  const t=importCaptureTransferJsonV1(await read(path(id)));
+  const priorPath=id==="lib_lifesteal_strike"
+   ? "data/capture/source-exports/gensrpg-capture-skill-lib_lifesteal_strike-2026-10-18.json"
+   : path(id);
+  const t=importCaptureTransferJsonV1(await read(priorPath));
   const plan=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),transfer:t,mode:"replace"});
   applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures,configuredSkills,statRegistry,progressionRules});
  }
