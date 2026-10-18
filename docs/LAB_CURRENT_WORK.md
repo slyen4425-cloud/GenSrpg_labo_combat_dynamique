@@ -1,3 +1,10 @@
+## 2026-10-18 — Icônes Acier : quatre médias physiques importés sous ownership global-assets
+
+- Source originale importée : ZIP SHA-256 7f89231542fb2fc1933a6b7f5212f837e4f9dc8d0376f9b07e6b2b02263b6fc2 ; 4 WebP RGB 128×128 réels, 4 nouveaux assetIds uniques ; provenance et test de vrais octets.
+- Domaine protégé : combat, éditeur, compétences auteur, main, Zombicide et autres médias intacts.
+- Lot démarré sur f92814097634e0a80b3b8dfc1fbc6631a1a988e1 ; branche work/lab-capture-steel-icons-2026-10-18 ; checkpoint lab-start-capture-steel-icons-2026-10-18.
+- Prochaine action : CI complète, publication fast-forward global-assets, cache du labo gh-pages, preview mobile.
+
 
 
 ## 2026-10-18 — Quatre icônes finales Ombre / Drain de vie — lot isolé
