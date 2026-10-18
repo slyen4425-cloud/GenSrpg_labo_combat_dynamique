@@ -202,7 +202,7 @@ const server = createServer(async (req, res) => {
                  get("creature-level")?.value!=="1")
                 throw Error("Lumilo authored draft not reloaded");
               const lumiloSlots=[...document.querySelectorAll("[data-loadout-slot]")].map(x=>x.value);
-              if(lumiloSlots.join(",")!=="lib_light_bolt,lib_magic_barrier,cap_light_special_1,cap_light_atk_4,cap_light_atk_5")
+              if(lumiloSlots.join(",")!=="lib_light_bolt,lib_magic_barrier,cap_light_special_1,cap_light_atk_3,cap_light_atk_5")
                 throw Error("Lumilo five authored slots lost on reload: "+lumiloSlots.join(","));
               if(!lib.querySelector('option[value="lib_light_bolt"]')||
                  !lib.querySelector('option[value="cap_light_atk_5"]')||
