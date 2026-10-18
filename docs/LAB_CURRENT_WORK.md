@@ -1,3 +1,13 @@
+## 2026-10-18 — Catalogue light shield / raccord éditeur par cache versionné
+
+- Lot visuel déjà publié sur `global-assets` : commit `df7422758a0149937763c4ffd187dd8aabc75220` (40 PNG, 2 WebP, manifeste, provenance et deux entrées catalogue).
+- Labo éditeur consommateur : base `gh-pages` `86be8a555dc05fbef2b65c932253d88a9994a23f`, checkpoint `checkpoint/lab-start-light-shield-runtime-cache-2026-10-18`, branche `work/lab-light-shield-runtime-cache-2026-10-18`.
+- Domaine : Asset Input / cache du catalogue visuel. Révision de cache `2026-10-18-v34-light-shield-cast-barrier`, test du résolveur existant et sentinelle du mode statut `hold-last`. Pas de changement moteur / éditeur d'effets, aucune compétence auteur modifiée.
+- Périmètre : `src/assets/global-visual-library.js`, `tests/unit/capture-light-shield-global-library-v1.test.mjs`, `docs/LAB_LIGHT_SHIELD_RUNTIME_CACHE_V1.md`, `docs/LAB_CURRENT_WORK.md`.
+- Invariants : bibliothèque unique `global-assets`, ID canonique, pas de copie binaire sur gh-pages, `main` et `Zombicide-40k` protégés.
+- Tests prévus : `npm run ci` (suite complète), CI Github, Pages, essai Android des deux nouveaux choix et maintien de la frame 20 dans le statut.
+- État à cet instant : branche isolée ; CI et publication gh-pages à confirmer ; validation utilisateur non acquise. Détail : `docs/LAB_LIGHT_SHIELD_RUNTIME_CACHE_V1.md`.
+
 # Point de reprise courant — 2026-10-08
 
 ## Lot techniquement GREEN
