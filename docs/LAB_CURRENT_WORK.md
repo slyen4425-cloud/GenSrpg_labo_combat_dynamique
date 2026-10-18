@@ -1,3 +1,12 @@
+## 2026-10-18 — Apparence de déplacement par créature (roulement / sprite)
+- Base publique : gh-pages@2e516d61ff83eba8b937daf66834903618cfceff ; checkpoint départ checkpoint/lab-start-creature-movement-appearance-v1-2026-10-18 ; travail work/lab-creature-movement-appearance-v1-2026-10-18.
+- But : ajouter dans Créature > Apparence un visuel alternatif avec image fixe/atlas animé, roulement, taille, rotation, transition et retour propre. Le Runtime garde mouvement, contact, dégâts et vitesse.
+- Propriétaires : contrat CreaturePresentationBinding V4 optionnel, asset catalog existant, Capture Native Visual Adapter et renderer unique par slot ; pas de deuxième source de vérité, ni retouche des exports auteur.
+- Fichiers : contrat/router, menu éditeur, session visuelle, adaptateur, contrôleur visuel, renderer, modèle de collision, sentinelles et documentation. main, global-assets, jeu principal, FX capacités et autres créatures protégés.
+- Particularité V1 : un atlas animé utilise sa première frame comme masque durant le trajet, conseillé pour une forme à silhouette stable (boule). Pas de nouvelle image fournie.
+- Statut initial : tests unité + CI 5/5 + Pages et checkpoint GREEN requis avant publication; essai Android utilisateur à part.
+- Rapport : docs/LAB_CREATURE_MOVEMENT_APPEARANCE_V1.md.
+
 ## 2026-10-18 — Cisaille, Scarabacier et sons d'Esquive/Défense
 - Base publique exacte : `gh-pages@d3acb8c4164027f66fc400ea90a193e76a848ac3`; branche `work/lab-cisaille-scarabacier-reaction-audio-2026-10-18`; checkpoint de départ `checkpoint/lab-start-cisaille-scarabacier-reaction-audio-2026-10-18`.
 - Objectif : intégrer les deux exports auteur intacts `cisaille` et `crea_scar_2`, sans toucher la statistique `acier` déjà intégrée ; créer un choix de son de réaction défensive/esquive utilisable en jeu.
