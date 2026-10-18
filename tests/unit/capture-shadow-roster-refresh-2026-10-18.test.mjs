@@ -10,6 +10,9 @@ import {normalizeCaptureStatRegistryV1} from "../../src/contracts/capture-stat-r
 import {normalizeCaptureProgressionRulesV1} from "../../src/contracts/capture-progression-rules-v1.js";
 import {capturePortableNativeSkillDraftsV1} from "../../src/catalogs/capture-portable-native-skill-catalog-v1.js";
 import {captureComplexNativeSkillDraftsV1} from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
+import {importMonsterCaptureCreatureRecordV1} from "../../src/adapters/input/capture/monster-capture-creature-import-v1.js";
+import {importMonsterCaptureStatValuesV1} from "../../src/adapters/input/capture/monster-capture-stat-values-v1.js";
+
 
 const fixtures=[
   {
@@ -126,6 +129,16 @@ test("actual Transfer planner replaces all five IDs in configured owners without
  const statRegistry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
  const progressionRules=normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
  const configuredCreatures=new Map();
+ // The real editor hydrates the historical creature catalog before showcase imports.
+ // Use the actual native evolution target, never an invented fixture or bypass.
+ const nativeCatalog=JSON.parse(await read("data/capture/monster-capture-creatures.v1.json"));
+ const nativeTarget=nativeCatalog.entries.find(e=>e.id==="crea_ombre_3");
+ assert.ok(nativeTarget,"real historical Éclipsar evolution target");
+ configuredCreatures.set(nativeTarget.id,{
+  ...importMonsterCaptureCreatureRecordV1(nativeTarget),
+  statValues:importMonsterCaptureStatValuesV1(nativeTarget,statRegistry)
+ });
+ const protectedTarget=configuredCreatures.get(nativeTarget.id);
  const configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(s=>[s.id,s]));
  for(const s of captureComplexNativeSkillDraftsV1())if(!configuredSkills.has(s.id))configuredSkills.set(s.id,s);
  const apply=(t)=>{const plan=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),transfer:t,mode:"replace"});applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures,configuredSkills,statRegistry,progressionRules});return plan;};
@@ -143,5 +156,6 @@ test("actual Transfer planner replaces all five IDs in configured owners without
   else {assert.deepEqual(configuredCreatures.get(f.id).draft,t.value.draft);assert.deepEqual(configuredCreatures.get(f.id).loadout,t.value.loadout);}
  }
  for(const [id,obj] of previous)if(!fixtures.some(f=>f.id===id))assert.equal(configuredSkills.get(id),obj,id+" preserved");
+ assert.equal(configuredCreatures.get("crea_ombre_3"),protectedTarget,"Éclipsar native evolution remains unchanged");
  assert.deepEqual(configuredCreatures.get("crea_ombre_2").loadout.slots.map(s=>s.skillId),["cap_shadow_atk_1","lib_lifesteal_strike","cap_shadow_atk_3","cap_shadow_atk_4",null]);
 });
