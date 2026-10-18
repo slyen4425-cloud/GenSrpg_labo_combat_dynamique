@@ -1,3 +1,10 @@
+## 2026-10-18 — Frappe vampirique / Ombre vive : imports auteur Capture
+- Base : gh-pages b07a55f8180d69a6a98322902bc1909a1a8d7d0b ; départ : checkpoint/lab-start-shadow-skills-author-2026-10-18 ; travail : work/lab-shadow-skills-author-2026-10-18.
+- Périmètre : deux exports auteur fournis (lib_lifesteal_strike, cap_shadow_atk_1), fiches vitrine data/capture/showcase, archives source-exports, registre src/catalogs/capture-showcase-skill-presets-v1.js, sentinelle unitaire, rapport et cette entrée.
+- Propriétaire unique : configuredSkills via importCaptureTransferJsonV1 et hydratation showcase existante ; aucun moteur, UI, asset, créature, main ou Zombicide-40k modifié.
+- Valeurs et octets utilisateur intégraux conservés, IDs stables, sans interpréter ou réordonner les effets.
+- Tests : RED sur existence/intégrité/hydratation, ensuite import/export, remplacement ou ajout ID, non-régression + CI Github ; GREEN uniquement si CI réussie, publication gh-pages après contrôle.
+
 ## 2026-10-18 — Noctigriffe / Barrière lumineuse / sélecteurs combat / coût marqueurs
 - Base publique gh-pages 5015456b1b2ea3de09ec0432a3d0abce17ad9323 ; checkpoint checkpoint/lab-start-author-noctigriffe-barrier-combat-ui-2026-10-18 ; branche work/lab-author-noctigriffe-barrier-combat-ui-2026-10-18.
 - Propriétaires : showcase exports -> configuredCreatures / configuredSkills ; UI équipes du test -> projection des groupes par élément humanCreatureSelectorGroupsV1 ; éditeur des coûts en marqueurs -> seul onglet Capacités.
