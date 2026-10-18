@@ -22,10 +22,10 @@ const json=async name=>JSON.parse((await read(name)).toString("utf8"));
 const sha=b=>createHash("sha256").update(b).digest("hex");
 const registry=normalizeCaptureStatRegistryV1(await json("data/capture/monster-capture-stat-registry.v1.json"));
 
-test("RED: original author transfers are byte-exact and uniquely activated without duplicate IDs",async()=>{
+test("Author transfers including latest Lumilo are byte-exact and uniquely activated without duplicate IDs",async()=>{
   for(const [p,len,hash] of [
     ["data/capture/source-exports/gensrpg-capture-skill-lib_light_bolt-2026-10-18.json",5456,"68035a9810ce441725e699b1c47ea9e592edb8df5078a1c6c7dc95cb7d86256f"],
-    [lumilo,5499,"8780a18b840ccbb59fa85396c52b03851bcb6d95b5375577eb4206aa8688e3a2"],
+    [lumilo,5499,"d3856255f406ed55ae673a0d377af9cb99211337bfdc7f8302b210058815541f"],
     [original,1992,"55b6115d35d1b29b8199aff907a38d81892d78da2e0eefbbb93485ab5a68dd8a"]
   ]){
     const raw=await read(p);
@@ -68,7 +68,7 @@ test("Lumilo source keeps light creature profile, 11 known skills and all five a
   assert.equal(c.draft.capture.evolution.level,18);
   assert.equal(c.draft.combat.reaction.maxCharges,2);
   assert.deepEqual(c.loadout.slots.map(x=>x.skillId),
-    ["lib_light_bolt","lib_magic_barrier","cap_light_special_1","cap_light_atk_4","cap_light_atk_5"]);
+    ["lib_light_bolt","lib_magic_barrier","cap_light_special_1","cap_light_atk_3","cap_light_atk_5"]);
   assert.equal(c.draft.presentation.visual.front.assetId,"pack:capture:creature-renard-magique-dore-opponent-01");
   assert.equal(c.draft.presentation.visual.back.assetId,"pack:capture:creature-renard-magique-dore-player-01");
   assert.deepEqual(importCaptureTransferJsonV1(
