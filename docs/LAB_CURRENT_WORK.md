@@ -1,3 +1,12 @@
+## 2026-10-18 — Frappe vampirique r2 / Affaiblissement nocturne, transferts auteur
+- Base publique exacte : gh-pages 646f7d097ed83eb4f5204781351f7853efd89f26, CI et Pages GREEN ; checkpoint de départ checkpoint/lab-start-shadow-skills-author-r2-2026-10-18 ; branche work/lab-shadow-skills-author-r2-2026-10-18.
+- Objectif : remplacer la seule fiche lib_lifesteal_strike et ajouter cap_shadow_atk_3 depuis deux exports auteur 100 % intacts ; conserver cap_shadow_atk_1 et toutes les autres capacités.
+- Propriétaire : données showcase => hydratation via configuredSkills existant ; aucun moteur, seconde autorité ni modification d'assets.
+- Périmètre autorisé : JSON showcase des deux IDs, nouvelles archives dans data/capture/source-exports, registre src/catalogs/capture-showcase-skill-presets-v1.js, tests/unit/capture-shadow-two-author-skills-2026-10-18.test.mjs (invariants auteur historique), nouvelle sentinelle cap_shadow_atk_3, rapport et cette note.
+- Protégés : main, Zombicide-40k, global-assets, moteur Combat Rules / Animation / FX, UX de l'éditeur ; les sprites ombre/drain déjà publiés et leurs assetIds restent inchangés.
+- Test RED : exigence d'exports exacts + archives + inscription unique et préservation des autres IDs ; puis vraies importations via propriétaire, CI complète, contrôle de l'ensemble des cinq jobs, checkpoint GREEN et publication Pages.
+- Risques : ancienne sentinelle Frappe vampirique liée à l'impact précédent, cache média et branche publique potentiellement modifiée en parallèle ; publication avec expected_sha exclusivement.
+
 ## 2026-10-18 — Ombre / Drain de vie : raccord catalogue du labo (source de vérité globale)
 
 - Objectif : rendre les 4 animations sélectionnables via les menus existants de l'éditeur (aucune modification automatique des compétences).
