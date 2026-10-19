@@ -139,6 +139,9 @@
           </div>
         </div>
 
+        <details class="creature-appearance-group" data-creature-appearance-group="views" open>
+          <summary><strong>1. Visuels de la créature</strong><small>Face · dos · icône</small></summary>
+          <div class="creature-appearance-group__body">
         <div class="asset-trio">
           <div class="asset-card">
             <div class="preview-box">
@@ -179,6 +182,12 @@
           </div>
         </div>
 
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="defense">
+          <summary><strong>2. Réactions défensives</strong><small>Esquive · défense · apparence</small></summary>
+          <div class="creature-appearance-group__body">
         <fieldset data-creature-defensive-reaction>
           <legend>Réaction défensive de cette créature</legend>
           <div class="grid two">
@@ -255,6 +264,12 @@
           Cet effet appartient à la créature. En Esquive elle disparaît temporairement ; en Défense elle reste visible. Même sélection de sprite et mêmes réglages, sans changement automatique selon l’élément.
         </p>
 
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="animations" open>
+          <summary><strong>3. Animations</strong><small>Déplacement · attaques à distance</small></summary>
+          <div class="creature-appearance-group__body">
         <fieldset data-creature-movement-appearance>
           <legend>Animation de déplacement (propre à la créature)</legend>
           <div class="grid two">
@@ -283,9 +298,44 @@
           </div>
           <p class="note">S'applique à l'approche au sol, sans modifier la vitesse ni les dégâts. Le visuel normal revient automatiquement après l'approche ou son interruption. Le sprite peut être une bande horizontale ou une image fixe.</p>
         </fieldset>
+        <fieldset data-creature-ranged-attack-appearance>
+          <legend>Animation de la créature — attaque à distance</legend>
+          <div class="grid two">
+            <label>Sprite / image pendant le tir
+              <select data-creature-ranged-attack-visual data-asset-role="movement"><option value="">Animation normale de combat</option></select>
+            </label>
+            <label>Type de visuel
+              <select data-creature-ranged-attack-mode>
+                <option value="sprite">Sprite animé (bande horizontale)</option>
+                <option value="static">Image fixe (pose de tir)</option>
+                <option value="roll">Image roulante / rotation</option>
+              </select>
+            </label>
+            <label>Taille du visuel
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-ranged-attack-scale>
+            </label>
+            <label>Nombre de frames (1 pour image fixe)
+              <input type="number" min="1" max="120" step="1" value="1" data-creature-ranged-attack-frames>
+            </label>
+            <label>Tours complets si rotation
+              <input type="number" min="0" max="20" step="0.5" value="0" data-creature-ranged-attack-turns>
+            </label>
+            <label>Transition (ms)
+              <input type="number" min="0" max="350" step="10" value="80" data-creature-ranged-attack-transition>
+            </label>
+          </div>
+          <p class="note">Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature prend ce visuel pendant son animation de frappe, puis retrouve sa pose normale. Le sprite de capacité (cast / projectile / impact) et son timing restent inchangés. La mêlée conserve l’animation d’approche puis le contact réel.</p>
+        </fieldset>
+
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="imports">
+          <summary><strong>4. Bibliothèque de visuels</strong><small>Importer et choisir mes sprites</small></summary>
+          <div class="creature-appearance-group__body">
         <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
           <h3>Mes visuels / Importer</h3>
-          <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut / Esquive. La persistance projet sera un lot séparé.</p>
+          <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut / Esquive / Animation. La persistance projet sera un lot séparé.</p>
           <div class="grid three">
             <label>Usage
               <select data-creator-visual-role>
@@ -311,6 +361,12 @@
           <p class="note" data-creator-visual-state data-tone="info">Aucun visuel personnel importé.</p>
         </div>
 
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="position">
+          <summary><strong>5. Posture et perspective</strong><small>Style · vitesse · taille · placement</small></summary>
+          <div class="creature-appearance-group__body">
         <label>Style de position
           <select data-creature-profile>
             <option value="biped">Bipède</option>
@@ -364,6 +420,9 @@
           <label>Décalage Y — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-y></label>
         </div>
         <p class="note">Sans personnalisation, les deux vues utilisent la taille commune. Les réglages par vue ajustent les images face/dos ; la perspective des déplacements reste automatique.</p>
+          </div>
+        </details>
+
       </article>
 
       <article class="card">

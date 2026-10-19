@@ -1,3 +1,12 @@
+## 2026-10-19 — Créature : animation attaque à distance et sous-chapitres Apparence
+- Base publique gh-pages@84f839e8c89c98cecb2fefc1ae7cf5578221bbf6; checkpoint checkpoint/lab-start-ranged-appearance-ux-2026-10-19 ; branche work/lab-ranged-appearance-ux-2026-10-19.
+- Contrat V5 optionnel visual.rangedAttack, paramètres communs au mouvement V4 validés par le même contrat ; versions V1-V4 préservées.
+- Sprite fixe, animation horizontale ou rotation de la créature au tir (projectile/rayon/zone), sans modifier le cast ni les projectiles/impacts des capacités ; personnage restauré après la séquence et lors d'annulation.
+- La mêlée garde l'approche existante puis la frappe au contact gérée par l'Animation Core / Combat Rules ; aucun double impact, aucun changement du timing.
+- Apparence devient 5 groupes HTML details : vues, défense, animations, bibliothèque d'assets, posture/perspective. Contrôles historiques inchangés ; ergonomie tactile/native et style visible.
+- Vérification obligatoire : sentinelles normalisation, import/export, UI, rendu, régressions, CI 5/5 ; checkpoint GREEN puis publication sous lease. Tests smartphone utilisateur séparés.
+- Protégés : Zombicide-40k, labo exploration, main, global-assets, données Scarabacier et toutes compétences.
+
 ## 2026-10-19 — Scarabacier : teinte sur le roulé-boulé + armure durant le déplacement
 - Base gh-pages@43600557ce107e77270d6ec6460d5585fef1e9a3 ; branche work/lab-roll-tint-moving-defense-2026-10-19 ; checkpoint départ checkpoint/lab-start-roll-tint-moving-defense-2026-10-19.
 - L'affichage de colorisation suit désormais le shell animé de la vraie forme roulante (image fixe ou sprite animé) : le masque et l'échelle suivent le sprite, puis reviennent à la silhouette normale.

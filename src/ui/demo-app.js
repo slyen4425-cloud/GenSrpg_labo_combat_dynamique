@@ -595,6 +595,17 @@ export async function mountCombatDemo({
         profile: profiles.get(slot.actor.profile)
       });
 
+      const rangedAppearance =
+        type === "attack" &&
+        metadata?.useRangedAppearance === true &&
+        slot.meta?.rangedAttackFx?.url
+          ? slot.playMovementAppearance(
+              slot.meta.rangedAttackFx,
+              plan.segments.reduce((sum, segment) => sum + segment.durationMs, 0),
+              slot.view === "player" ? 1 : -1
+            )
+          : null;
+
       const dodgeAppearance =
         type === "dodge"
           ? playDodgeAppearanceFx(
@@ -608,6 +619,7 @@ export async function mountCombatDemo({
         handle = slot.renderer.play(plan);
       } catch (error) {
         dodgeAppearance?.cancel?.();
+        rangedAppearance?.cancel?.();
         throw error;
       }
 
@@ -621,7 +633,7 @@ export async function mountCombatDemo({
           startIdleFor(slotKey);
         }
         return result;
-      });
+      }).finally(() => rangedAppearance?.cancel?.());
     } catch (error) {
       return Promise.reject(error);
     }
@@ -1185,7 +1197,7 @@ function createSlot({
       runtimeAsset
     );
 
-    movementAppearance.prepare(meta.movementFx ?? null, runtimeUrl);
+    movementAppearance.prepare(meta.movementFx ?? null, runtimeUrl, meta.rangedAttackFx ?? null);
     loadRuntimeAsset(runtimeUrl);
     rebuildActor(runtimeUrl);
   }

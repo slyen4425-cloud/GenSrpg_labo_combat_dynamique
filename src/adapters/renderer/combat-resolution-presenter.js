@@ -426,8 +426,15 @@ export function createCombatResolutionPresenter({
           }
         });
     } else if (!action.mirrorReturn) {
+      // Only an explicitly authored ranged creature pose replaces the
+      // default attacking silhouette; FX projectiles/beams remain unchanged.
       visuals
-        .playEventFor(actorSlot, "attack", { targetSlot })
+        .playEventFor(actorSlot, "attack", {
+          targetSlot,
+          metadata: {
+            useRangedAppearance: ["projectile", "beam", "area"].includes(action.skill?.form)
+          }
+        })
         .catch(() => {});
     }
 

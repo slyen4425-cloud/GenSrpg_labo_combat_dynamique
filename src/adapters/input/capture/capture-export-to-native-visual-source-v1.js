@@ -180,6 +180,15 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   }
 
+  function rangedAttackFxFor(binding) {
+    if (binding.version < 5 || !binding.visual?.rangedAttack) return null;
+    // One canonical resolver for images and sprite strips in both use cases.
+    return movementFxFor({
+      version: 4,
+      visual: { movement: binding.visual.rangedAttack }
+    });
+  }
+
   const creatureById = new Map(
     captureExport.creatures.map((creature) => [
       creature.id,
@@ -215,7 +224,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         assetBaseUrl: new URL(".", import.meta.url).href, displayScale: Object.freeze({ player: 1, opponent: 1 }),
         fxAnchors: Object.freeze({ player: {}, opponent: {} }),
         dodgeFx: null,
-        movementFx: null
+        movementFx: null,
+        rangedAttackFx: null
       });
     }
 
@@ -315,7 +325,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       }),
       audio: binding.audio,
       dodgeFx: dodgeFxFor(binding),
-      movementFx: movementFxFor(binding)
+      movementFx: movementFxFor(binding),
+      rangedAttackFx: rangedAttackFxFor(binding)
     });
   });
 

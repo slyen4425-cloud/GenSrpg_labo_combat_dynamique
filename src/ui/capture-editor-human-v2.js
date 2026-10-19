@@ -2229,6 +2229,15 @@ export function buildHumanCreatureDraftV3(fields) {
   const dodgeAssetId = optionalText(
     fields?.visual?.dodgeAssetId
   );
+  const rangedAttackAssetId = optionalText(fields?.visual?.rangedAttackAssetId);
+  const rangedAttackVisual = rangedAttackAssetId === null ? null : {
+    assetId: rangedAttackAssetId,
+    mode: fields?.visual?.rangedAttackMode ?? "sprite",
+    displayScale: finiteNumber(fields?.visual?.rangedAttackDisplayScale ?? 1, "Taille de l'animation distance"),
+    rotationTurns: finiteNumber(fields?.visual?.rangedAttackRotationTurns ?? 0, "Tours de l'animation distance"),
+    frameCount: finiteNumber(fields?.visual?.rangedAttackFrameCount ?? 1, "Frames de l'animation distance"),
+    transitionMs: finiteNumber(fields?.visual?.rangedAttackTransitionMs ?? 80, "Transition de l'animation distance")
+  };
   const movementAssetId = optionalText(fields?.visual?.movementAssetId);
   const movementVisual = movementAssetId === null ? null : {
     assetId: movementAssetId,
@@ -2276,7 +2285,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3),
+              rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)),
             displayScale,
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
@@ -2289,11 +2298,12 @@ export function buildHumanCreatureDraftV3(fields) {
                 x: "50%",
                 y: "50%"
               },
-            ...((dodgeVisual === null && movementVisual === null) ? {} : {
+            ...((dodgeVisual === null && movementVisual === null && rangedAttackVisual === null) ? {} : {
               visual: {
                 ...base.presentation.visual,
                 ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
-                ...(movementVisual === null ? {} : { movement: movementVisual })
+                ...(movementVisual === null ? {} : { movement: movementVisual }),
+                ...(rangedAttackVisual === null ? {} : { rangedAttack: rangedAttackVisual })
               }
             })
           }
@@ -4018,6 +4028,12 @@ function writeCreatureRecordFields(
     ["[data-creature-movement-turns]", presentation?.visual?.movement?.rotationTurns ?? 3],
     ["[data-creature-movement-frames]", presentation?.visual?.movement?.frameCount ?? 1],
     ["[data-creature-movement-transition]", presentation?.visual?.movement?.transitionMs ?? 80],
+    ["[data-creature-ranged-attack-visual]", presentation?.visual?.rangedAttack?.assetId ?? ""],
+    ["[data-creature-ranged-attack-mode]", presentation?.visual?.rangedAttack?.mode ?? "sprite"],
+    ["[data-creature-ranged-attack-scale]", presentation?.visual?.rangedAttack?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-turns]", presentation?.visual?.rangedAttack?.rotationTurns ?? 0],
+    ["[data-creature-ranged-attack-frames]", presentation?.visual?.rangedAttack?.frameCount ?? 1],
+    ["[data-creature-ranged-attack-transition]", presentation?.visual?.rangedAttack?.transitionMs ?? 80],
     [
       "[data-creature-audio-attack]",
       creatureAudioAssetId(
@@ -4226,6 +4242,12 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-movement-turns]", 3],
     ["[data-creature-movement-frames]", 1],
     ["[data-creature-movement-transition]", 80],
+    ["[data-creature-ranged-attack-visual]", ""],
+    ["[data-creature-ranged-attack-mode]", "sprite"],
+    ["[data-creature-ranged-attack-scale]", 1],
+    ["[data-creature-ranged-attack-turns]", 0],
+    ["[data-creature-ranged-attack-frames]", 1],
+    ["[data-creature-ranged-attack-transition]", 80],
     ["[data-creature-audio-attack]", ""],
     ["[data-creature-audio-movement]", ""],
     ["[data-creature-audio-movement-mode]", "once"],
@@ -8962,7 +8984,13 @@ function readCreatureFields(
       movementDisplayScale: numericValue(root, "[data-creature-movement-scale]"),
       movementRotationTurns: numericValue(root, "[data-creature-movement-turns]"),
       movementFrameCount: numericValue(root, "[data-creature-movement-frames]"),
-      movementTransitionMs: numericValue(root, "[data-creature-movement-transition]")
+      movementTransitionMs: numericValue(root, "[data-creature-movement-transition]"),
+      rangedAttackAssetId: selectedValue(root, "[data-creature-ranged-attack-visual]"),
+      rangedAttackMode: selectedValue(root, "[data-creature-ranged-attack-mode]"),
+      rangedAttackDisplayScale: numericValue(root, "[data-creature-ranged-attack-scale]"),
+      rangedAttackRotationTurns: numericValue(root, "[data-creature-ranged-attack-turns]"),
+      rangedAttackFrameCount: numericValue(root, "[data-creature-ranged-attack-frames]"),
+      rangedAttackTransitionMs: numericValue(root, "[data-creature-ranged-attack-transition]")
     },
     sockets: socketList(sockets),
     audio: {

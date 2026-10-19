@@ -6,7 +6,7 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
   if (!motion || !image || !collisionModel) throw new TypeError("motion/image/collisionModel required");
   let active = null;
   let sourceUrl = null;
-  let prepared = null;
+  const preparedByUrl = new Map();
   let disposed = false;
   const originalOpacity = image.style.opacity;
   const originalTransform = image.style.transform;
@@ -35,8 +35,14 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
   function prepare(visual, normalUrl) {
     cancel();
     sourceUrl = normalUrl;
-    prepared = null;
-    if (!visual?.url) return;
+    preparedByUrl.clear();
+    for (const item of [visual, ...Array.prototype.slice.call(arguments, 2)]) {
+      preload(item);
+    }
+  }
+
+  function preload(visual) {
+    if (!visual?.url || preparedByUrl.has(visual.url)) return;
     const source = image.ownerDocument.createElement("img");
     source.crossOrigin = "anonymous";
     const ready = new Promise(resolve => {
@@ -61,18 +67,18 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       };
       source.onerror = () => resolve(null);
     });
-    prepared = { url: visual.url, ready };
+    preparedByUrl.set(visual.url, { ready });
     source.src = visual.url;
     if (source.complete && source.naturalWidth > 0) source.onload?.();
   }
 
   function play(visual, durationMs, direction = 1) {
     if (disposed || !visual?.url || !sourceUrl) return null;
-    if (!prepared || prepared.url !== visual.url) prepare(visual, sourceUrl);
+    if (!preparedByUrl.has(visual.url)) preload(visual);
     const record = { node: null, spin: null, frame: null, swapped: false, tintMaskUrl: null };
     active = record;
     const duration = Math.max(1, Number(durationMs) || 1);
-    Promise.resolve(prepared?.ready).then(frame => {
+    Promise.resolve(preparedByUrl.get(visual.url)?.ready).then(frame => {
       if (disposed || active !== record || !frame) return;
       const transition = Number(visual.transitionMs) || 0;
       image.style.transition = transition ? "opacity " + transition + "ms ease" : "";
@@ -136,6 +142,6 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
         ? Object.freeze({ host: active.node, maskUrl: active.tintMaskUrl })
         : Object.freeze({ host: motion, maskUrl: null });
     },
-    dispose() { cancel(); prepared = null; disposed = true; }
+    dispose() { cancel(); preparedByUrl.clear(); disposed = true; }
   });
 }
