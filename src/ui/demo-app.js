@@ -21,6 +21,11 @@ import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
 // Pure presentation choice: slot "player" sees the creature's back,
 // slot "opponent" sees its front. V5 single-sprite authors retain fallback.
+export function creatureMovementAppearanceForViewV1(meta, view) {
+  if (!["player","opponent"].includes(view)) throw new RangeError("unknown creature view");
+  return meta?.movementFxByView?.[view] ?? meta?.movementFx ?? null;
+}
+
 export function creatureRangedAppearanceForViewV1(meta, view) {
   if (view === "player") return meta?.rangedAttackBackFx ?? meta?.rangedAttackFx ?? null;
   if (view === "opponent") return meta?.rangedAttackFx ?? null;
@@ -512,7 +517,7 @@ export async function mountCombatDemo({
     });
 
     const movementAppearance = slot.playMovementAppearance(
-      slot.meta?.movementFx ?? null,
+      creatureMovementAppearanceForViewV1(slot.meta, slot.view),
       durationMs,
       slot.view === "player" ? 1 : -1
     );
@@ -763,7 +768,7 @@ export async function mountCombatDemo({
 
     const movementAppearance = approachMode === "ground"
       ? slot.playMovementAppearance(
-          slot.meta?.movementFx ?? null,
+          creatureMovementAppearanceForViewV1(slot.meta, slot.view),
           travelMs,
           targetCenterX >= actorCenterX ? 1 : -1
         )
@@ -1171,6 +1176,14 @@ function createSlot({
           geometry.heightPct.toFixed(2) + "%";
         shadowElement.dataset.shadowFootprint =
           geometry.opaqueWidthRatio.toFixed(3);
+        // Align the shadow's centre to the resting model's opaque feet,
+        // rather than to its transparent image canvas.
+        if (geometry.contactYRatio !== null) {
+          const bottom = Math.max(0, Math.min(60,
+            (1 - geometry.contactYRatio) * 100 - geometry.heightPct / 2
+          ));
+          slotContainer.style?.setProperty?.("--creature-shadow-bottom", bottom.toFixed(2) + "%");
+        }
       }
 
       assetReady = true;
@@ -1209,7 +1222,7 @@ function createSlot({
     );
 
     movementAppearance.prepare(
-      meta.movementFx ?? null,
+      creatureMovementAppearanceForViewV1(meta, view),
       runtimeUrl,
       meta.rangedAttackFx ?? null,
       meta.rangedAttackBackFx ?? null

@@ -123,7 +123,7 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       image.style.opacity = "0";
       const playback = applySpriteVisual(sprite, {
         ...visual, frameCount: frame.count,
-        playbackMode: frame.count > 1 ? "loop" : "once"
+        playbackMode: visual.playbackMode ?? (frame.count > 1 ? "loop" : "once")
       }, duration);
       record.frame = playback;
       // Keep the fighter's actual motion transform, collision owner and

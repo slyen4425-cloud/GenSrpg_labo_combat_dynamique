@@ -180,6 +180,22 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   }
 
+  function movementFxForView(binding, view) {
+    const base = movementFxFor(binding);
+    if (!base || binding.version < 8) return base;
+    const scale = binding.visual?.movementScaleByView?.[view];
+    const playback = binding.visual?.movementPlayback;
+    if (scale === undefined && playback == null) return base;
+    return Object.freeze({
+      ...base,
+      ...(scale === undefined ? {} : { displayScale: scale }),
+      ...(playback == null ? {} : {
+        ...(playback.frameMs > 0 ? { frameMs: playback.frameMs } : {}),
+        playbackMode: playback.mode
+      })
+    });
+  }
+
   function rangedAttackFxFor(binding, view = "front") {
     const slot = view === "back"
       ? (binding.version >= 6 ? binding.visual?.rangedAttackBack ?? null : null)
@@ -190,8 +206,13 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     const placement = binding.version >= 7
       ? binding.visual?.rangedAttackPlacement?.[view] ?? null
       : null;
-    return placement === null ? source : Object.freeze({
-      ...source, offsetX: placement.x, offsetY: placement.y
+    const scale = binding.version >= 8
+      ? binding.visual?.rangedAttackScaleByView?.[view === "back" ? "player" : "opponent"]
+      : undefined;
+    return Object.freeze({
+      ...source,
+      ...(placement === null ? {} : { offsetX: placement.x, offsetY: placement.y }),
+      ...(scale === undefined ? {} : { displayScale: scale })
     });
   }
 
@@ -333,6 +354,10 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       audio: binding.audio,
       dodgeFx: dodgeFxFor(binding),
       movementFx: movementFxFor(binding),
+      movementFxByView: Object.freeze({
+        player: movementFxForView(binding, "player"),
+        opponent: movementFxForView(binding, "opponent")
+      }),
       rangedAttackFx: rangedAttackFxFor(binding),
       rangedAttackBackFx: rangedAttackFxFor(binding, "back")
     });

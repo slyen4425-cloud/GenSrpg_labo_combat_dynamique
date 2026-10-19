@@ -270,6 +270,8 @@
         <details class="creature-appearance-group" data-creature-appearance-group="animations" open>
           <summary><strong>3. Animations</strong><small>Déplacement · attaques à distance</small></summary>
           <div class="creature-appearance-group__body">
+        <section class="creature-animation-chapter" aria-label="Réglages déplacement">
+        <h3 class="creature-animation-title">DÉPLACEMENT <small>forme · taille · lecture</small></h3>
         <fieldset data-creature-movement-appearance>
           <legend>Animation de déplacement (propre à la créature)</legend>
           <div class="grid two">
@@ -283,8 +285,24 @@
                 <option value="static">Image alternative fixe</option>
               </select>
             </label>
-            <label>Taille de la forme mobile
+            <label>Taille de base (compatibilité)
               <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-movement-scale>
+            </label>
+            <label>Taille DÉPLACEMENT — joueur / dos
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-movement-player-scale>
+            </label>
+            <label>Taille DÉPLACEMENT — adversaire / face
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-movement-opponent-scale>
+            </label>
+            <label>Vitesse du sprite : millisecondes par frame (0 = auto)
+              <input type="number" min="0" max="500" step="10" value="0" data-creature-movement-frame-ms>
+            </label>
+            <label>Lecture du sprite de déplacement
+              <select data-creature-movement-playback>
+                <option value="loop">Boucle pendant le mouvement</option>
+                <option value="once">Une seule lecture</option>
+                <option value="hold-last">Une lecture, rester sur la dernière frame</option>
+              </select>
             </label>
             <label>Tours pendant le trajet
               <input type="number" min="0" max="20" step="0.5" value="3" data-creature-movement-turns>
@@ -297,8 +315,12 @@
             </label>
           </div>
           <p class="note">S'applique à l'approche au sol, sans modifier la vitesse ni les dégâts. Le visuel normal revient automatiquement après l'approche ou son interruption. Le sprite peut être une bande horizontale ou une image fixe.</p>
+          <p class="note">La vitesse de lecture change seulement les frames, jamais la vitesse réelle. Sur une image fixe ou une boule à une frame, ce réglage n'a aucun effet.</p>
           <p class="note">Ce sélecteur propose uniquement les animations de déplacement (et les modèles fixes compatibles), jamais les projectiles, casts ou impacts de capacité.</p>
         </fieldset>
+        </section>
+        <section class="creature-animation-chapter creature-animation-chapter--attack" aria-label="Réglages attaque">
+        <h3 class="creature-animation-title">ATTAQUE À DISTANCE <small>face · dos · alignement</small></h3>
         <fieldset data-creature-ranged-attack-appearance>
           <legend>Animation de la créature — attaque à distance</legend>
           <div class="grid two">
@@ -327,8 +349,14 @@
                 <option value="roll">Image roulante / rotation</option>
               </select>
             </label>
-            <label>Taille du visuel
+            <label>Taille de base (compatibilité)
               <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-ranged-attack-scale>
+            </label>
+            <label>Taille ATTAQUE — joueur / dos
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-ranged-attack-player-scale>
+            </label>
+            <label>Taille ATTAQUE — adversaire / face
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-ranged-attack-opponent-scale>
             </label>
             <label>Nombre de frames (1 pour image fixe)
               <input type="number" min="1" max="120" step="1" value="1" data-creature-ranged-attack-frames>
@@ -342,6 +370,7 @@
           </div>
           <p class="note">Deux sprites indépendants : FACE pour l'adversaire et DOS pour le joueur. Les décalages X/Y corrigent seulement l'alignement de l'image pendant l'attaque (X négatif = gauche, positif = droite ; Y négatif = haut, positif = bas). Pour un sprite joueur trop à droite, essaie X DOS = -20 puis ajuste ; la position du combattant et ses collisions restent inchangées. Les réglages de durée et d'animation restent communs aux deux. Sans sprite DOS, les anciennes créatures reprennent leur sprite FACE comme avant. Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature revient à sa pose normale après l'animation ; cast, projectile, impact et contact de mêlée restent inchangés. Pour importer les images, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
         </fieldset>
+        </section>
 
           </div>
         </details>

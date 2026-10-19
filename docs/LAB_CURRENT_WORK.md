@@ -1,3 +1,12 @@
+## 2026-10-19 — Apparence V8 : ombres au contact, scales par camp, lecture déplacement et sous-sections
+- Base gh-pages@8b175388d1d54bb105dd54a5b076877829816cae ; checkpoint checkpoint/lab-start-creature-appearance-v8-2026-10-19 ; branche work/lab-creature-appearance-v8-2026-10-19.
+- Contrat optionnel V8 : visual.movementScaleByView, visual.rangedAttackScaleByView, visual.movementPlayback (frameMs=0 auto, mode boucle/une fois/garder la dernière). V1–V7 conservés.
+- L'adaptateur Capture est seule autorité de résolution par camp ; visual renderer lit fréquence des frames uniquement, sans changer vitesse réelle/dégâts/temps de mouvement.
+- Ombre de repos projetée depuis le bord inférieur robuste de la silhouette du sprite normal (et non un pourcentage fixe), tandis que Animation Core garde propriétaire du trajet/vol/retour.
+- Deux sous-sections Déplacement et Attaque très visibles, agrandissement local des petits textes sur mobile. Pas de refonte entière de l'UI.
+- Fiche Scarabacier V7 auteur reçue ; remplacement vitrine à valider en lot séparé (IDs, skills, statValues, sans perte).
+- Protéger main, Zombicide-40k, labo exploration, global-assets, compétences. CI complète 5/5 et validation smartphone distincte.
+
 ## 2026-10-19 — Correction alignement sprite d'attaque DOS (joueur)
 - Base publique gh-pages@55b38230a0f12c4cc6f956b40e3ea7ee1ae213aa ; checkpoint départ checkpoint/lab-start-ranged-pose-alignment-2026-10-19 ; branche work/lab-ranged-pose-alignment-2026-10-19.
 - Symptôme auteur : pendant l'animation d'attaque joueur/dos, la silhouette apparaît trop à droite, donnant l'impression d'une courte téléportation ; attaque ennemi/face correcte.

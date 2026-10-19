@@ -1814,3 +1814,15 @@ html {
 .creature-appearance-group__body { padding:.8rem; min-width:0; }
 .creature-appearance-group__body > fieldset { margin:.7rem 0; }
 @media(max-width:620px) { .creature-appearance-group > summary { align-items:flex-start; } .creature-appearance-group > summary small { width:100%; margin:0 0 0 1.3rem; } .creature-appearance-group__body { padding:.6rem; } }
+
+/* Separate movement and attack visually without changing existing chapters. */
+.creature-animation-chapter { margin: .6rem 0 1.1rem; padding: .9rem; border: 2px solid rgba(103,210,232,.53); border-radius: .82rem; background: rgba(25,85,106,.18); }
+.creature-animation-chapter--attack { border-color: rgba(236,166,91,.64); background: rgba(107,62,29,.16); }
+.creature-animation-title { font-size: clamp(1.1rem,2.3vw,1.35rem); margin: 0 0 .8rem; letter-spacing: .04em; font-weight: 950; }
+.creature-animation-title small { display:block; font-size: .8rem; font-weight: 600; opacity: .8; letter-spacing:0; }
+@media(max-width:700px) {
+  .creature-appearance-group__body label, .creature-appearance-group__body .note,
+  .creature-appearance-group__body select, .creature-appearance-group__body input { font-size: max(.92rem,14px); }
+  .creature-appearance-group>summary { font-size: 1.03rem; }
+  .creature-animation-chapter { padding: .65rem; }
+}

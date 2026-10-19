@@ -107,7 +107,8 @@ export function shadowGeometryFromOpaqueMaskV2(
       widthPct: 58,
       heightPct: 10,
       opaqueWidthRatio: 0,
-      opaqueHeightRatio: 0
+      opaqueHeightRatio: 0,
+      contactYRatio: null
     });
   }
 
@@ -152,6 +153,7 @@ export function shadowGeometryFromOpaqueMaskV2(
     widthPct,
     heightPct,
     opaqueWidthRatio,
-    opaqueHeightRatio
+    opaqueHeightRatio,
+    contactYRatio: (yBounds.end + 0.5) / mask.height
   });
 }

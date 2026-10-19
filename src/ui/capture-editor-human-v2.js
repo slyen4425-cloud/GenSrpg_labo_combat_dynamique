@@ -2264,6 +2264,26 @@ export function buildHumanCreatureDraftV3(fields) {
     frameCount: finiteNumber(fields?.visual?.movementFrameCount ?? 1, "Frames mouvement"),
     transitionMs: finiteNumber(fields?.visual?.movementTransitionMs ?? 80, "Transition mouvement")
   };
+  const movementScaleByView = movementVisual === null ? null : {
+    player: finiteNumber(fields?.visual?.movementPlayerScale ?? movementVisual.displayScale, "Taille déplacement joueur"),
+    opponent: finiteNumber(fields?.visual?.movementOpponentScale ?? movementVisual.displayScale, "Taille déplacement adversaire")
+  };
+  const attackScaleByView = (rangedAttackVisual === null && rangedAttackBackVisual === null) ? null : {
+    player: finiteNumber(fields?.visual?.rangedAttackPlayerScale ?? rangedAttackBackVisual?.displayScale ?? rangedAttackVisual?.displayScale ?? 1, "Taille attaque joueur"),
+    opponent: finiteNumber(fields?.visual?.rangedAttackOpponentScale ?? rangedAttackVisual?.displayScale ?? rangedAttackBackVisual?.displayScale ?? 1, "Taille attaque adversaire")
+  };
+  const movementFrameMs = finiteNumber(fields?.visual?.movementFrameMs ?? 0, "Durée frame déplacement");
+  const movementPlaybackMode = fields?.visual?.movementPlaybackMode ?? "loop";
+  const movementPlayback = movementVisual === null ? null : { frameMs: movementFrameMs, mode: movementPlaybackMode };
+  const hasAppearanceV8 = (
+    (movementScaleByView !== null && (
+      movementScaleByView.player !== movementVisual.displayScale ||
+      movementScaleByView.opponent !== movementVisual.displayScale)) ||
+    (attackScaleByView !== null && (
+      attackScaleByView.player !== (rangedAttackBackVisual?.displayScale ?? rangedAttackVisual?.displayScale) ||
+      attackScaleByView.opponent !== (rangedAttackVisual?.displayScale ?? rangedAttackBackVisual?.displayScale))) ||
+    (movementPlayback !== null && (movementFrameMs !== 0 || movementPlaybackMode !== "loop"))
+  );
   const dodgeVisual =
     dodgeAssetId === null
       ? null
@@ -2302,7 +2322,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)))),
+              hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))))),
             displayScale,
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
@@ -2322,7 +2342,10 @@ export function buildHumanCreatureDraftV3(fields) {
                 ...(movementVisual === null ? {} : { movement: movementVisual }),
                 ...(rangedAttackVisual === null ? {} : { rangedAttack: rangedAttackVisual }),
                 ...(rangedAttackBackVisual === null ? {} : { rangedAttackBack: rangedAttackBackVisual }),
-                ...(hasAttackPlacement ? { rangedAttackPlacement: attackPlacement } : {})
+                ...(hasAttackPlacement ? { rangedAttackPlacement: attackPlacement } : {}),
+                ...(hasAppearanceV8 && movementScaleByView !== null ? { movementScaleByView } : {}),
+                ...(hasAppearanceV8 && attackScaleByView !== null ? { rangedAttackScaleByView: attackScaleByView } : {}),
+                ...(hasAppearanceV8 && movementPlayback !== null ? { movementPlayback } : {})
               }
             })
           }
@@ -4044,6 +4067,10 @@ function writeCreatureRecordFields(
     ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
     ["[data-creature-movement-mode]", presentation?.visual?.movement?.mode ?? "roll"],
     ["[data-creature-movement-scale]", presentation?.visual?.movement?.displayScale ?? 1],
+    ["[data-creature-movement-player-scale]", presentation?.visual?.movementScaleByView?.player ?? presentation?.visual?.movement?.displayScale ?? 1],
+    ["[data-creature-movement-opponent-scale]", presentation?.visual?.movementScaleByView?.opponent ?? presentation?.visual?.movement?.displayScale ?? 1],
+    ["[data-creature-movement-frame-ms]", presentation?.visual?.movementPlayback?.frameMs ?? 0],
+    ["[data-creature-movement-playback]", presentation?.visual?.movementPlayback?.mode ?? "loop"],
     ["[data-creature-movement-turns]", presentation?.visual?.movement?.rotationTurns ?? 3],
     ["[data-creature-movement-frames]", presentation?.visual?.movement?.frameCount ?? 1],
     ["[data-creature-movement-transition]", presentation?.visual?.movement?.transitionMs ?? 80],
@@ -4055,6 +4082,8 @@ function writeCreatureRecordFields(
     ["[data-creature-ranged-back-offset-y]", presentation?.visual?.rangedAttackPlacement?.back?.y ?? 0],
     ["[data-creature-ranged-attack-mode]", presentation?.visual?.rangedAttack?.mode ?? "sprite"],
     ["[data-creature-ranged-attack-scale]", presentation?.visual?.rangedAttack?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-player-scale]", presentation?.visual?.rangedAttackScaleByView?.player ?? presentation?.visual?.rangedAttackBack?.displayScale ?? presentation?.visual?.rangedAttack?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-opponent-scale]", presentation?.visual?.rangedAttackScaleByView?.opponent ?? presentation?.visual?.rangedAttack?.displayScale ?? presentation?.visual?.rangedAttackBack?.displayScale ?? 1],
     ["[data-creature-ranged-attack-turns]", presentation?.visual?.rangedAttack?.rotationTurns ?? 0],
     ["[data-creature-ranged-attack-frames]", presentation?.visual?.rangedAttack?.frameCount ?? 1],
     ["[data-creature-ranged-attack-transition]", presentation?.visual?.rangedAttack?.transitionMs ?? 80],
@@ -4263,6 +4292,10 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-movement-visual]", ""],
     ["[data-creature-movement-mode]", "roll"],
     ["[data-creature-movement-scale]", 1],
+    ["[data-creature-movement-player-scale]", 1],
+    ["[data-creature-movement-opponent-scale]", 1],
+    ["[data-creature-movement-frame-ms]", 0],
+    ["[data-creature-movement-playback]", "loop"],
     ["[data-creature-movement-turns]", 3],
     ["[data-creature-movement-frames]", 1],
     ["[data-creature-movement-transition]", 80],
@@ -4274,6 +4307,8 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-ranged-back-offset-y]", 0],
     ["[data-creature-ranged-attack-mode]", "sprite"],
     ["[data-creature-ranged-attack-scale]", 1],
+    ["[data-creature-ranged-attack-player-scale]", 1],
+    ["[data-creature-ranged-attack-opponent-scale]", 1],
     ["[data-creature-ranged-attack-turns]", 0],
     ["[data-creature-ranged-attack-frames]", 1],
     ["[data-creature-ranged-attack-transition]", 80],
@@ -9041,6 +9076,10 @@ function readCreatureFields(
       movementAssetId: selectedValue(root, "[data-creature-movement-visual]"),
       movementMode: selectedValue(root, "[data-creature-movement-mode]"),
       movementDisplayScale: numericValue(root, "[data-creature-movement-scale]"),
+      movementPlayerScale: numericValue(root, "[data-creature-movement-player-scale]"),
+      movementOpponentScale: numericValue(root, "[data-creature-movement-opponent-scale]"),
+      movementFrameMs: numericValue(root, "[data-creature-movement-frame-ms]"),
+      movementPlaybackMode: selectedValue(root, "[data-creature-movement-playback]"),
       movementRotationTurns: numericValue(root, "[data-creature-movement-turns]"),
       movementFrameCount: numericValue(root, "[data-creature-movement-frames]"),
       movementTransitionMs: numericValue(root, "[data-creature-movement-transition]"),
@@ -9052,6 +9091,8 @@ function readCreatureFields(
       rangedAttackBackOffsetY: numericValue(root, "[data-creature-ranged-back-offset-y]"),
       rangedAttackMode: selectedValue(root, "[data-creature-ranged-attack-mode]"),
       rangedAttackDisplayScale: numericValue(root, "[data-creature-ranged-attack-scale]"),
+      rangedAttackPlayerScale: numericValue(root, "[data-creature-ranged-attack-player-scale]"),
+      rangedAttackOpponentScale: numericValue(root, "[data-creature-ranged-attack-opponent-scale]"),
       rangedAttackRotationTurns: numericValue(root, "[data-creature-ranged-attack-turns]"),
       rangedAttackFrameCount: numericValue(root, "[data-creature-ranged-attack-frames]"),
       rangedAttackTransitionMs: numericValue(root, "[data-creature-ranged-attack-transition]")
