@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 187,
+    "assets": 189,
     "icons": 70,
-    "sprites": 98,
+    "sprites": 100,
     "fx": 2,
     "portraits": 12,
     "backgrounds": 5,
@@ -6148,6 +6148,82 @@
         "frameCount": 16,
         "frameMs": 85,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-attack-face-v5",
+      "label": "Scarabacier — attaque ailes V5 (face adversaire, 20 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "scarabacier",
+        "steel",
+        "attack",
+        "animated",
+        "face",
+        "wing"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / user-approved 2026-10-19",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/animations/attack_wings_v5/face/atlases/scarabacier_attack_wings_face_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 83,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-attack-dos-v5",
+      "label": "Scarabacier — attaque ailes V5 (dos joueur, 20 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "scarabacier",
+        "steel",
+        "attack",
+        "animated",
+        "dos",
+        "wing"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / user-approved 2026-10-19",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/animations/attack_wings_v5/dos/atlases/scarabacier_attack_wings_dos_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 83,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [
