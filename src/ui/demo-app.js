@@ -595,12 +595,17 @@ export async function mountCombatDemo({
         profile: profiles.get(slot.actor.profile)
       });
 
+      // The slot's real camera view chooses the pose. A V5 single-sprite
+      // creature continues using its original rangedAttackFx for both sides.
+      const rangedVisual = slot.view === "player"
+        ? (slot.meta?.rangedAttackBackFx ?? slot.meta?.rangedAttackFx)
+        : slot.meta?.rangedAttackFx;
       const rangedAppearance =
         type === "attack" &&
         metadata?.useRangedAppearance === true &&
-        slot.meta?.rangedAttackFx?.url
+        rangedVisual?.url
           ? slot.playMovementAppearance(
-              slot.meta.rangedAttackFx,
+              rangedVisual,
               plan.segments.reduce((sum, segment) => sum + segment.durationMs, 0),
               slot.view === "player" ? 1 : -1
             )
@@ -1197,7 +1202,12 @@ function createSlot({
       runtimeAsset
     );
 
-    movementAppearance.prepare(meta.movementFx ?? null, runtimeUrl, meta.rangedAttackFx ?? null);
+    movementAppearance.prepare(
+      meta.movementFx ?? null,
+      runtimeUrl,
+      meta.rangedAttackFx ?? null,
+      meta.rangedAttackBackFx ?? null
+    );
     loadRuntimeAsset(runtimeUrl);
     rebuildActor(runtimeUrl);
   }

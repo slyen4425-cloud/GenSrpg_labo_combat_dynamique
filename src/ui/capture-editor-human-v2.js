@@ -2230,14 +2230,19 @@ export function buildHumanCreatureDraftV3(fields) {
     fields?.visual?.dodgeAssetId
   );
   const rangedAttackAssetId = optionalText(fields?.visual?.rangedAttackAssetId);
-  const rangedAttackVisual = rangedAttackAssetId === null ? null : {
-    assetId: rangedAttackAssetId,
+  const rangedAttackBackAssetId = optionalText(fields?.visual?.rangedAttackBackAssetId);
+  const rangedAttackSettings = {
     mode: fields?.visual?.rangedAttackMode ?? "sprite",
     displayScale: finiteNumber(fields?.visual?.rangedAttackDisplayScale ?? 1, "Taille de l'animation distance"),
     rotationTurns: finiteNumber(fields?.visual?.rangedAttackRotationTurns ?? 0, "Tours de l'animation distance"),
     frameCount: finiteNumber(fields?.visual?.rangedAttackFrameCount ?? 1, "Frames de l'animation distance"),
     transitionMs: finiteNumber(fields?.visual?.rangedAttackTransitionMs ?? 80, "Transition de l'animation distance")
   };
+  // Same settings, independent stable asset IDs per camera view.
+  const rangedAttackVisual = rangedAttackAssetId === null
+    ? null : { assetId: rangedAttackAssetId, ...rangedAttackSettings };
+  const rangedAttackBackVisual = rangedAttackBackAssetId === null
+    ? null : { assetId: rangedAttackBackAssetId, ...rangedAttackSettings };
   const movementAssetId = optionalText(fields?.visual?.movementAssetId);
   const movementVisual = movementAssetId === null ? null : {
     assetId: movementAssetId,
@@ -2285,7 +2290,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)),
+              rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))),
             displayScale,
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
@@ -2298,12 +2303,13 @@ export function buildHumanCreatureDraftV3(fields) {
                 x: "50%",
                 y: "50%"
               },
-            ...((dodgeVisual === null && movementVisual === null && rangedAttackVisual === null) ? {} : {
+            ...((dodgeVisual === null && movementVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
               visual: {
                 ...base.presentation.visual,
                 ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
                 ...(movementVisual === null ? {} : { movement: movementVisual }),
-                ...(rangedAttackVisual === null ? {} : { rangedAttack: rangedAttackVisual })
+                ...(rangedAttackVisual === null ? {} : { rangedAttack: rangedAttackVisual }),
+                ...(rangedAttackBackVisual === null ? {} : { rangedAttackBack: rangedAttackBackVisual })
               }
             })
           }
@@ -4029,6 +4035,7 @@ function writeCreatureRecordFields(
     ["[data-creature-movement-frames]", presentation?.visual?.movement?.frameCount ?? 1],
     ["[data-creature-movement-transition]", presentation?.visual?.movement?.transitionMs ?? 80],
     ["[data-creature-ranged-attack-visual]", presentation?.visual?.rangedAttack?.assetId ?? ""],
+    ["[data-creature-ranged-attack-back-visual]", presentation?.visual?.rangedAttackBack?.assetId ?? ""],
     ["[data-creature-ranged-attack-mode]", presentation?.visual?.rangedAttack?.mode ?? "sprite"],
     ["[data-creature-ranged-attack-scale]", presentation?.visual?.rangedAttack?.displayScale ?? 1],
     ["[data-creature-ranged-attack-turns]", presentation?.visual?.rangedAttack?.rotationTurns ?? 0],
@@ -4243,6 +4250,7 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-movement-frames]", 1],
     ["[data-creature-movement-transition]", 80],
     ["[data-creature-ranged-attack-visual]", ""],
+    ["[data-creature-ranged-attack-back-visual]", ""],
     ["[data-creature-ranged-attack-mode]", "sprite"],
     ["[data-creature-ranged-attack-scale]", 1],
     ["[data-creature-ranged-attack-turns]", 0],
@@ -9016,6 +9024,7 @@ function readCreatureFields(
       movementFrameCount: numericValue(root, "[data-creature-movement-frames]"),
       movementTransitionMs: numericValue(root, "[data-creature-movement-transition]"),
       rangedAttackAssetId: selectedValue(root, "[data-creature-ranged-attack-visual]"),
+      rangedAttackBackAssetId: selectedValue(root, "[data-creature-ranged-attack-back-visual]"),
       rangedAttackMode: selectedValue(root, "[data-creature-ranged-attack-mode]"),
       rangedAttackDisplayScale: numericValue(root, "[data-creature-ranged-attack-scale]"),
       rangedAttackRotationTurns: numericValue(root, "[data-creature-ranged-attack-turns]"),

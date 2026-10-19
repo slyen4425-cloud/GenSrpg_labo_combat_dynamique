@@ -180,13 +180,13 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   }
 
-  function rangedAttackFxFor(binding) {
-    if (binding.version < 5 || !binding.visual?.rangedAttack) return null;
-    // One canonical resolver for images and sprite strips in both use cases.
-    return movementFxFor({
-      version: 4,
-      visual: { movement: binding.visual.rangedAttack }
-    });
+  function rangedAttackFxFor(binding, view = "front") {
+    const slot = view === "back"
+      ? (binding.version >= 6 ? binding.visual?.rangedAttackBack ?? null : null)
+      : (binding.version >= 5 ? binding.visual?.rangedAttack ?? null : null);
+    if (!slot) return null;
+    // Both camera poses resolve through the ONE existing asset catalog.
+    return movementFxFor({ version: 4, visual: { movement: slot } });
   }
 
   const creatureById = new Map(
@@ -225,7 +225,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         fxAnchors: Object.freeze({ player: {}, opponent: {} }),
         dodgeFx: null,
         movementFx: null,
-        rangedAttackFx: null
+        rangedAttackFx: null,
+        rangedAttackBackFx: null
       });
     }
 
@@ -326,7 +327,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       audio: binding.audio,
       dodgeFx: dodgeFxFor(binding),
       movementFx: movementFxFor(binding),
-      rangedAttackFx: rangedAttackFxFor(binding)
+      rangedAttackFx: rangedAttackFxFor(binding),
+      rangedAttackBackFx: rangedAttackFxFor(binding, "back")
     });
   });
 
