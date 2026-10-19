@@ -19,6 +19,14 @@ import {
 import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
+// Pure presentation choice: slot "player" sees the creature's back,
+// slot "opponent" sees its front. V5 single-sprite authors retain fallback.
+export function creatureRangedAppearanceForViewV1(meta, view) {
+  if (view === "player") return meta?.rangedAttackBackFx ?? meta?.rangedAttackFx ?? null;
+  if (view === "opponent") return meta?.rangedAttackFx ?? null;
+  throw new RangeError("unknown creature view");
+}
+
 const DATA_URLS = Object.freeze({
   profiles: Object.freeze({
     serpentine: new URL(
@@ -597,9 +605,7 @@ export async function mountCombatDemo({
 
       // The slot's real camera view chooses the pose. A V5 single-sprite
       // creature continues using its original rangedAttackFx for both sides.
-      const rangedVisual = slot.view === "player"
-        ? (slot.meta?.rangedAttackBackFx ?? slot.meta?.rangedAttackFx)
-        : slot.meta?.rangedAttackFx;
+      const rangedVisual = creatureRangedAppearanceForViewV1(slot.meta, slot.view);
       const rangedAppearance =
         type === "attack" &&
         metadata?.useRangedAppearance === true &&

@@ -6,6 +6,7 @@ import { buildHumanCreatureDraftV3, captureEditorAssetMatchesRoleV1 } from "../.
 import { adaptCaptureExportToNativeVisualSourceV1 } from "../../src/adapters/input/capture/capture-export-to-native-visual-source-v1.js";
 import { createCombatResolutionPresenter } from "../../src/adapters/renderer/combat-resolution-presenter.js";
 import { createDomCreatureMovementVisualV1 } from "../../src/adapters/renderer/dom-creature-movement-visual-v1.js";
+import { creatureRangedAppearanceForViewV1 } from "../../src/ui/demo-app.js";
 
 const motion = {
   assetId:"pack:test:shoot", mode:"sprite", displayScale:1.25, rotationTurns:0, frameCount:12, transitionMs:80
@@ -189,4 +190,156 @@ test("one preloaded shell swaps safely between shot sprite and rolling image",as
   b.cancel();
   assert.equal(f.image.src,normal);
   f.visual.dispose();
+});
+
+
+test("V6 stores distinct FACE/DOS ranged poses; V1-V5 contracts stay untouched", () => {
+  const legacy = normalizeCreaturePresentationBinding(binding());
+  assert.equal(legacy.version, 5);
+  assert.equal(legacy.visual.rangedAttackBack, undefined);
+  const back = { ...motion, assetId: "pack:test:shoot-back" };
+  const upgraded = normalizeCreaturePresentationBinding({
+    ...binding(), version: 6,
+    visual: { ...binding().visual, rangedAttackBack: back }
+  });
+  assert.equal(upgraded.version, 6);
+  assert.deepEqual(upgraded.visual.rangedAttack, motion);
+  assert.deepEqual(upgraded.visual.rangedAttackBack, back);
+  assert.deepEqual(normalizeCreaturePresentationBinding(upgraded), upgraded);
+  assert.deepEqual(legacy, normalizeCreaturePresentationBinding(binding()));
+  // Optional front: author can supply only a back view without fabricating a front.
+  const backOnly = normalizeCreaturePresentationBinding({
+    ...binding(4), version: 6,
+    visual: { ...binding(4).visual, rangedAttackBack: back }
+  });
+  assert.equal(backOnly.visual.rangedAttack, undefined);
+  assert.equal(backOnly.visual.rangedAttackBack.assetId, "pack:test:shoot-back");
+  for (const invalid of [{ assetId: "bad" }, { frameCount: 0 }, { mode: "teleport" }, { displayScale: 0 }]) {
+    assert.throws(() => normalizeCreaturePresentationBinding({
+      ...upgraded, visual: {
+        ...upgraded.visual, rangedAttackBack: { ...back, ...invalid }
+      }
+    }));
+  }
+  assert.throws(() => normalizeCreaturePresentationBinding({
+    ...legacy, visual: { ...legacy.visual, rangedAttackBack: back }
+  }), /unknown visual key/);
+});
+
+test("author saves front and back independently, keeps the original combat and V5 fallback", () => {
+  const fields = creatureFields();
+  const original = buildHumanCreatureDraftV3(fields);
+  const settings = {
+    rangedAttackMode: "sprite",
+    rangedAttackDisplayScale: 1.25,
+    rangedAttackRotationTurns: 0,
+    rangedAttackFrameCount: 12,
+    rangedAttackTransitionMs: 80
+  };
+  const v5 = buildHumanCreatureDraftV3({
+    ...fields, visual: { ...fields.visual, ...settings, rangedAttackAssetId: "pack:test:shoot" }
+  });
+  assert.equal(v5.presentation.version, 5);
+  assert.equal(v5.presentation.visual.rangedAttackBack, undefined);
+  const both = buildHumanCreatureDraftV3({
+    ...fields, visual: { ...fields.visual, ...settings,
+      rangedAttackAssetId: "pack:test:shoot",
+      rangedAttackBackAssetId: "pack:test:shoot-back"
+    }
+  });
+  assert.equal(both.presentation.version, 6);
+  assert.equal(both.presentation.visual.rangedAttack.assetId, "pack:test:shoot");
+  assert.equal(both.presentation.visual.rangedAttackBack.assetId, "pack:test:shoot-back");
+  assert.deepEqual(both.presentation.visual.movement, original.presentation.visual.movement);
+  assert.deepEqual(both.combat, original.combat);
+  assert.deepEqual(both.presentation.sockets, original.presentation.sockets);
+  const onlyBack = buildHumanCreatureDraftV3({
+    ...fields, visual: { ...fields.visual, ...settings,
+      rangedAttackBackAssetId: "pack:test:shoot-back"
+    }
+  });
+  assert.equal(onlyBack.presentation.version, 6);
+  assert.equal(onlyBack.presentation.visual.rangedAttack, undefined);
+  assert.equal(onlyBack.presentation.visual.rangedAttackBack.assetId, "pack:test:shoot-back");
+});
+
+test("native Capture export resolves both assets and the actual slot camera selects the right one", () => {
+  const front = motion;
+  const back = { ...motion, assetId: "pack:test:shoot-back" };
+  const presentation = normalizeCreaturePresentationBinding({
+    ...binding(), version: 6,
+    visual: { ...binding().visual, rangedAttack: front, rangedAttackBack: back }
+  });
+  const fighter = { maxHp: 100, initialHp: 100, maxEnergy: 5, initialEnergy: 5,
+    energyChargeAmount: 0, energyChargeIntervalMs: 1000,
+    movementEnergyPerStep: 0, chargeTimeModifierPct: 0 };
+  const exported = {
+    schema: "capture-combat-export-v1", battle: { id: "dual-ranged", localActorId: "local" },
+    teams: { heroes: ["local"], foes: ["enemy"] },
+    actors: [
+      { actorId: "local", teamId: "heroes", creatureId: "shooter", displayName: "Tireur", controllerId: "human-local" },
+      { actorId: "enemy", teamId: "foes", creatureId: "old", displayName: "Ancien", controllerId: "ai-enemy" }
+    ],
+    creatures: [
+      { id: "shooter", displayName: "Tireur", combat: fighter, skillIds: [],
+        presentationId: "creature:shooter", metadata: {} },
+      { id: "old", displayName: "Ancien", combat: fighter, skillIds: [],
+        presentationId: "creature:old", metadata: {} }
+    ],
+    skills: [], rosters: [],
+    presentation: { creatures: {
+      "creature:shooter": presentation,
+      "creature:old": {
+        id: "creature:old", version: 1, subjectType: "creature",
+        subjectId: "old", profileId: "biped",
+        visual: { front: { assetId: "pack:test:front" }, back: null, icon: null },
+        sockets: [], audio: {}
+      }
+    } }, metadata: {}
+  };
+  const catalog = { assets: [
+    { id: "pack:test:front", resource: { file: "front.png" } },
+    { id: "pack:test:roll", resource: { file: "roll.png" } },
+    { id: "pack:test:shoot", resource: { file: "face.png", frameCount: 12 } },
+    { id: "pack:test:shoot-back", resource: { file: "dos.png", frameCount: 20 } }
+  ] };
+  const build = () => adaptCaptureExportToNativeVisualSourceV1({
+    exported, assetCatalog: catalog,
+    profiles: [{ id: "quadruped", idle: {}, attack: {}, hit: {}, ko: {} },
+      { id: "biped", idle: {}, attack: {}, hit: {}, ko: {} }],
+    assetUrlForFile: file => "https://example.test/" + file
+  });
+  const metas = build().creatureMetas;
+  const shooter = metas.find(x => x.id === "shooter");
+  const old = metas.find(x => x.id === "old");
+  assert.equal(shooter.rangedAttackFx.assetId, "pack:test:shoot");
+  assert.equal(shooter.rangedAttackBackFx.assetId, "pack:test:shoot-back");
+  assert.equal(creatureRangedAppearanceForViewV1(shooter, "player").url, "https://example.test/dos.png");
+  assert.equal(creatureRangedAppearanceForViewV1(shooter, "opponent").url, "https://example.test/face.png");
+  assert.equal(shooter.rangedAttackFx.frameCount, 12);
+  assert.equal(shooter.rangedAttackBackFx.frameCount, 20);
+  assert.equal(old.rangedAttackFx, null);
+  assert.equal(creatureRangedAppearanceForViewV1(old, "player"), null);
+  exported.presentation.creatures["creature:shooter"] = binding();
+  const legacy = build().creatureMetas.find(x => x.id === "shooter");
+  assert.equal(legacy.rangedAttackBackFx, null);
+  assert.equal(creatureRangedAppearanceForViewV1(legacy, "player").url, "https://example.test/face.png");
+  assert.equal(creatureRangedAppearanceForViewV1(legacy, "opponent").url, "https://example.test/face.png");
+  assert.throws(() => creatureRangedAppearanceForViewV1(shooter, "side"), /unknown creature view/);
+});
+
+test("the two new selectors share the attack-only asset catalog, remain inside Animations", () => {
+  const html = readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url), "utf8");
+  const fragment = html.split('data-creature-appearance-group="animations"')[1].split("</details>")[0];
+  assert.match(fragment, /data-creature-ranged-attack-visual data-asset-role="attack"/);
+  assert.match(fragment, /data-creature-ranged-attack-back-visual data-asset-role="attack"/);
+  assert.equal((html.match(/data-creature-ranged-attack-back-visual/g) ?? []).length, 1);
+  assert.match(fragment, /FACE \(adversaire\)/);
+  assert.match(fragment, /DOS \(joueur\)/);
+  const js = readFileSync(new URL("../../src/ui/capture-editor-human-v2.js", import.meta.url), "utf8");
+  for (const marker of ["rangedAttackBackAssetId", "data-creature-ranged-attack-back-visual"]) {
+    assert.match(js, new RegExp(marker));
+  }
+  const badFx = { category: "travel", assetType: "sprite", mediaType: "image", compatibility: { uses: ["editor"] } };
+  assert.equal(captureEditorAssetMatchesRoleV1(badFx, "attack"), false);
 });
