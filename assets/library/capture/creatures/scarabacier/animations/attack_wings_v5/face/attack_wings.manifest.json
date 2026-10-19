@@ -1,0 +1,126 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "scarabacier",
+  "action": "attack_wings",
+  "view": "face",
+  "sourceZip": "_incoming/Scarabacier_ATTAQUE_V5_FACE_20FRAMES_POUR_GITHUB.zip",
+  "sourceSha256": "bae11b8e055aa8eed906d863233a88653f7a9dc7022fcacfd0e6f30f2bbdaf0a",
+  "assetId": "pack:capture:creature-scarabacier-attack-face-v5",
+  "frameCount": 20,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/scarabacier_attack_wings_face_01.png",
+      "sha256": "f7b153a5ef037dbba5ba06eb348f6e9aee3681beedf8d5c6733852e583b7e0c0"
+    },
+    {
+      "index": 1,
+      "file": "frames/scarabacier_attack_wings_face_02.png",
+      "sha256": "6a32ea3554c82748c2b8f8e6a490654b25a945e6edab6279907f94c958a3ecfc"
+    },
+    {
+      "index": 2,
+      "file": "frames/scarabacier_attack_wings_face_03.png",
+      "sha256": "45a274bcde9999fb16626be9a9f9781dffedcbcee55e6a5d6d5ec8c055880dde"
+    },
+    {
+      "index": 3,
+      "file": "frames/scarabacier_attack_wings_face_04.png",
+      "sha256": "038cc4f3d70c64faaaac939b2f81b610511949ba300e65a92871db3037715ace"
+    },
+    {
+      "index": 4,
+      "file": "frames/scarabacier_attack_wings_face_05.png",
+      "sha256": "bca956978b48c279bf891708bf537dbcf8c71546404dd9a56612ab46594abad0"
+    },
+    {
+      "index": 5,
+      "file": "frames/scarabacier_attack_wings_face_06.png",
+      "sha256": "780282c34f268189b48a4652eabacd8a44505ee0ac5cb880df1ce80d74c8c4f1"
+    },
+    {
+      "index": 6,
+      "file": "frames/scarabacier_attack_wings_face_07.png",
+      "sha256": "c709659df616552f47c82a049f417d97ebae5f66163e6d700e7a49a098cdec7c"
+    },
+    {
+      "index": 7,
+      "file": "frames/scarabacier_attack_wings_face_08.png",
+      "sha256": "edf71e5f6cb4acd87c4de49927537f0957132457ae1c4dc176d9a557009ce2cf"
+    },
+    {
+      "index": 8,
+      "file": "frames/scarabacier_attack_wings_face_09.png",
+      "sha256": "8909ed34b70a87424906c6a22d2fbae1237bbbe4c7d7f426d322442e5b52b4ce"
+    },
+    {
+      "index": 9,
+      "file": "frames/scarabacier_attack_wings_face_10.png",
+      "sha256": "a5559c5ac722269e39dbf4a9106aa70d550c89ddfa814d23f095769d0a9d5f13"
+    },
+    {
+      "index": 10,
+      "file": "frames/scarabacier_attack_wings_face_11.png",
+      "sha256": "970a37c17829438a306e104f9e094fcb2d62d13703416e59f0c2b5e849e6e7f2"
+    },
+    {
+      "index": 11,
+      "file": "frames/scarabacier_attack_wings_face_12.png",
+      "sha256": "4af30bc2d29099a154c4c82b346d27e70417132753b698f533a5e1fef2752aa7"
+    },
+    {
+      "index": 12,
+      "file": "frames/scarabacier_attack_wings_face_13.png",
+      "sha256": "f82a5e0a7ae6f03278495e0655b06d9f32d07d8f947a6ac32e892dbf220b86cd"
+    },
+    {
+      "index": 13,
+      "file": "frames/scarabacier_attack_wings_face_14.png",
+      "sha256": "83355614a03b7116267a341a9067a7f97a53b6277ee9741a4c8305348e6e6efe"
+    },
+    {
+      "index": 14,
+      "file": "frames/scarabacier_attack_wings_face_15.png",
+      "sha256": "8a295ba9631068fbded53ec5d0cbe4d785879dc37937cfcf3c699990d4a7d6b7"
+    },
+    {
+      "index": 15,
+      "file": "frames/scarabacier_attack_wings_face_16.png",
+      "sha256": "1f0a87387affbbe71d99e378860ec83f85fb233b3113d9c5c7ec3bab008c2f28"
+    },
+    {
+      "index": 16,
+      "file": "frames/scarabacier_attack_wings_face_17.png",
+      "sha256": "70b106f94c5715ea4d28cac4398106fd4e352c4e4904ce4b5dd4e689a3fa7472"
+    },
+    {
+      "index": 17,
+      "file": "frames/scarabacier_attack_wings_face_18.png",
+      "sha256": "22b024a86eba62d6ee2914c5f076bdef27f8a7f718feac5f664a3cb3d7c45b02"
+    },
+    {
+      "index": 18,
+      "file": "frames/scarabacier_attack_wings_face_19.png",
+      "sha256": "6b982ea313de7929011797f542490dac3b1d4548b3351c6f9896235a5ca2f455"
+    },
+    {
+      "index": 19,
+      "file": "frames/scarabacier_attack_wings_face_20.png",
+      "sha256": "95325df360ee71a9e4b8219b40498513c18212f1173abc285402df206dee00f6"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/scarabacier_attack_wings_face_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 20,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "9bfafd2789cfee372eebe179dc7dec27da73d59c4342be00a20e2b29f87ba813"
+  },
+  "status": "awaiting_runtime_and_master_pixel_review",
+  "authorApprovedMovementV5": true
+}

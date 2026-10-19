@@ -1,0 +1,56 @@
+name: Import approved Scarabacier attack face and back V5
+on:
+  push:
+    branches:
+      - "work/global-assets-scarabacier-attack-v5-2026-10-19"
+    paths:
+      - "_incoming/Scarabacier_ATTAQUE_V5_FACE_20FRAMES_POUR_GITHUB.zip"
+      - "_incoming/Scarabacier_ATTAQUE_V5_DOS_20FRAMES_POUR_GITHUB.zip"
+      - "scripts/import_scarabacier_attack_v5.py"
+      - ".github/workflows/import-scarabacier-attack-v5.yml"
+permissions:
+  contents: write
+concurrency:
+  group: scarabacier-attack-v5-review
+  cancel-in-progress: false
+jobs:
+  import:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install media validator
+        run: python -m pip install "Pillow>=10,<13"
+      - name: Import two source ZIPs when both have arrived
+        run: python scripts/import_scarabacier_attack_v5.py
+      - name: Check for actual 40 original PNGs and two atlases
+        id: media
+        run: |
+          if test -f assets/library/capture/creatures/scarabacier/animations/attack_wings_v5/face/atlases/scarabacier_attack_wings_face_atlas.webp &&
+             test -f assets/library/capture/creatures/scarabacier/animations/attack_wings_v5/dos/atlases/scarabacier_attack_wings_dos_atlas.webp; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Media not delivered. No placeholder is created."
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.media.outputs.present == 'true'
+        with:
+          node-version: "22"
+      - name: Run catalog and runtime sentinels
+        if: steps.media.outputs.present == 'true'
+        run: npm run ci
+      - name: Commit actual approved frames / atlases to review branch
+        if: steps.media.outputs.present == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/scarabacier/animations/attack_wings_v5 data/assets/catalog/global-visual-assets.v1.json
+          if git diff --cached --quiet; then echo 'No new media changes'; exit 0; fi
+          git commit -m 'assets(capture): deliver approved V5 Scarabacier attack face and back sprites'
+          git push origin HEAD:refs/heads/work/global-assets-scarabacier-attack-v5-2026-10-19

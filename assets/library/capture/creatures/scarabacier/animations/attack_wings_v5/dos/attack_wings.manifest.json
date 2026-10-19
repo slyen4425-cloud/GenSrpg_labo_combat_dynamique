@@ -1,0 +1,126 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "scarabacier",
+  "action": "attack_wings",
+  "view": "dos",
+  "sourceZip": "_incoming/Scarabacier_ATTAQUE_V5_DOS_20FRAMES_POUR_GITHUB.zip",
+  "sourceSha256": "35db08e5b0cb7001a72891d3b02a303a1b24a9efc8972031d1d8e129e2418dee",
+  "assetId": "pack:capture:creature-scarabacier-attack-dos-v5",
+  "frameCount": 20,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/scarabacier_attack_wings_dos_01.png",
+      "sha256": "0982951b84593756cf97b067cd8a4c4be13922a2f8ffffa25ae3b563b10d2853"
+    },
+    {
+      "index": 1,
+      "file": "frames/scarabacier_attack_wings_dos_02.png",
+      "sha256": "c3127487ff3568694bf6d34a3ca74a6a277acab5ccaac99df7099377d4de31a5"
+    },
+    {
+      "index": 2,
+      "file": "frames/scarabacier_attack_wings_dos_03.png",
+      "sha256": "52c0ff6d454308e1e3823c315bfc098fbecb9aa2ebe2da8cc3288dc4e7837b41"
+    },
+    {
+      "index": 3,
+      "file": "frames/scarabacier_attack_wings_dos_04.png",
+      "sha256": "925e6ade33c18b848d0fcfc74d73f059038f1a83a20a1d48b2cd93d03898c575"
+    },
+    {
+      "index": 4,
+      "file": "frames/scarabacier_attack_wings_dos_05.png",
+      "sha256": "968e0ba9767b7650d4b1dd8d480f8cb341610e0a440953d6d3a5316873d889c1"
+    },
+    {
+      "index": 5,
+      "file": "frames/scarabacier_attack_wings_dos_06.png",
+      "sha256": "a49ed5f80557e3c55ec4dd23de301e6e33e9de469f9b0d41f8380a76bc6ebfc2"
+    },
+    {
+      "index": 6,
+      "file": "frames/scarabacier_attack_wings_dos_07.png",
+      "sha256": "5f6844997b58e64c468e8a0caffcf7a4e8e3e1f7549f6e8ef9e5a133b00d03a2"
+    },
+    {
+      "index": 7,
+      "file": "frames/scarabacier_attack_wings_dos_08.png",
+      "sha256": "db9989ad564a0a86a7be86452f1f331baa0466e3ebee2078901612953a73d157"
+    },
+    {
+      "index": 8,
+      "file": "frames/scarabacier_attack_wings_dos_09.png",
+      "sha256": "21948a2274fefafadb522ab8af93d895bf7974ba2e28719946da040c8a6b9799"
+    },
+    {
+      "index": 9,
+      "file": "frames/scarabacier_attack_wings_dos_10.png",
+      "sha256": "18d19c2917bd96c8d2ebaaf349f3ddca25bb775348d1c5bb20a4cdc5bbb4c0f5"
+    },
+    {
+      "index": 10,
+      "file": "frames/scarabacier_attack_wings_dos_11.png",
+      "sha256": "70b4fc88e0234286bc0aaa07fcdc1de76ce4a59ed0e4ebd0c99b5360d5fd145c"
+    },
+    {
+      "index": 11,
+      "file": "frames/scarabacier_attack_wings_dos_12.png",
+      "sha256": "7b49c161e1ed085fe989b92fc5265beb72714fbc484fd16e90248824e36e1657"
+    },
+    {
+      "index": 12,
+      "file": "frames/scarabacier_attack_wings_dos_13.png",
+      "sha256": "db3ba973f89d12921b4d171ecea3aaee775e081350334737d622076a8c38601d"
+    },
+    {
+      "index": 13,
+      "file": "frames/scarabacier_attack_wings_dos_14.png",
+      "sha256": "eccb5c27e964941dc4fdc3bac0e7ef45e433818aaef5aa3031d61f7f3bbf4053"
+    },
+    {
+      "index": 14,
+      "file": "frames/scarabacier_attack_wings_dos_15.png",
+      "sha256": "9114938cec4040bb8a6387f5f1f1a5d080e691a78a1836008e8b21d90b7b8eed"
+    },
+    {
+      "index": 15,
+      "file": "frames/scarabacier_attack_wings_dos_16.png",
+      "sha256": "a8f22c58adfe473488cbd5191d5a2c2c1aedc5fd0b49eb576cdcebe26ee68d91"
+    },
+    {
+      "index": 16,
+      "file": "frames/scarabacier_attack_wings_dos_17.png",
+      "sha256": "2732a4382027a4e3601f8abe8fb208410212a8f2c4845d7657177deed841761d"
+    },
+    {
+      "index": 17,
+      "file": "frames/scarabacier_attack_wings_dos_18.png",
+      "sha256": "2b19449055968f02140c54d8bc698abe28b235fc8e2e3f24821a8c1342b22622"
+    },
+    {
+      "index": 18,
+      "file": "frames/scarabacier_attack_wings_dos_19.png",
+      "sha256": "bf1be17a68c13d5d6096fb62d49cdb9a2c28fa20ec58f77023235fd67658bc00"
+    },
+    {
+      "index": 19,
+      "file": "frames/scarabacier_attack_wings_dos_20.png",
+      "sha256": "a9feee78b65216d083369cc5c9e7da578ba85e5a09af12b1d9c136be377227c9"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/scarabacier_attack_wings_dos_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 20,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "4ccf46d6e20d3120d90571440022c20cb0f951d399e3d4a67c2b10536e54af1a"
+  },
+  "status": "awaiting_runtime_and_master_pixel_review",
+  "authorApprovedMovementV5": true
+}
