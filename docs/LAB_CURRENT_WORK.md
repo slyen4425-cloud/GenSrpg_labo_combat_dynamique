@@ -1,3 +1,15 @@
+## 2026-10-19 — Scarabacier : 16 frames de boule roulante (import asset isolé)
+
+- **But** : importer pour premier test la vraie animation de déplacement en boule de Scarabacier, 16 PNG RGBA transparents 512×512 générés à partir de la planche 1254×1254, découpée en grille 4×4. Résolution 512 obtenue par redimensionnement, pas native.
+- **Dépôt** : `slyen4425-cloud/GenSrpg_labo_combat_dynamique`, propriétaire Asset Input Capture sur `global-assets` ; aucune modification `gh-pages`, `main`, GenSrpG, runtime combat ni règle de déplacement.
+- **Base** : `675760e54b1e53207ceff4f1be941c4d8826516d` ; checkpoint de départ `checkpoint/lab-start-scarabacier-roll-sprite-2026-10-19` ; branche `work/lab-scarabacier-roll-sprite-2026-10-19`.
+- **Archive physique déposée** : `_incoming/scarabacier_roll_frames_16_ready.zip` (2 583 630 octets), SHA256 `e082f9da7d8eb5604d2e3b2e1177808ae53f9408cb644ec9e4659e0564c631e4`, 16 véritables fichiers PNG RGBA 512×512, CRC OK. Vérification de contenu visuel requise avant GREEN.
+- **Fichiers autorisés** : l'archive source sous `_incoming/`, le script d'import et workflow ponctuel, médias et manifeste sous `assets/library/capture/creatures/scarabacier/animations/roll/`, `data/assets/catalog/global-visual-assets.v1.json`, metadata unique Scarabacier (nouvelle référence animation facultative, sans toucher aux vues), test ciblé, doc de lot et ce journal.
+- **Identifiant stable proposé** : `pack:capture:creature-scarabacier-roll-01`. Animation loop 16 frames, destinée au futur profil de déplacement, **pas encore déclenchée automatiquement par le runtime** dans ce lot.
+- **Protections** : vues player, opponent et icône inchangées ; aucun autre asset, FX, skill, socket ou comportement moteur modifié.
+- **Tests** : signature ZIP, SHA256 source, CRC, aucun nom inattendu, 16 vrais PNG RGBA 512, alpha, atlas WebP RGBA, metadata, unicité d'assetId, présence réelle, sentinelles et `npm run ci`. Confirmation de preview mobile séparée.
+- **Statut** : archive livrée sur la branche, import en préparation ; ni GREEN ni raccord runtime revendiqués à ce stade.
+
 ## Bilan technique — 2026-10-19 — Scarabacier griffe arrière
 
 - **Fait** : nettoyage ciblé de la griffe flottante de la seule vue player/dos, image réelle WebP RGBA 1024×1024, 217104 octets ; SHA256 `2f6475c0b2b26be1fe67aaaa93c2d34bcc319fab2d181aa6e3fabe77d2e505a3`.
