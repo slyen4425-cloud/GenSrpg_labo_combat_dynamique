@@ -17,7 +17,8 @@ const skillPath="data/capture/showcase/cisaille.capture-skill-transfer-v1.json";
 const creaturePath="data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json";
 const archiveSkill="data/capture/source-exports/gensrpg-capture-skill-cisaille-2026-10-18.json";
 const archiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-18-r2.json";
-const currentArchiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-19-v7.json";
+const previousArchiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-19-v7.json";
+const currentArchiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-19-v8.json";
 const author = [
   {id:"cisaille",path:skillPath,archive:archiveSkill,sha:"ee715faf21ace2fb14f2bbfce1c363574a1f257f0be3403f34c17b632becb417"},
   {id:"crea_scar_2",path:creaturePath,archive:archiveCreature,sha:"cb075e8e4133611f0e915af34ec55d0c53494215c9cee275415f851bb99c17c4"}
@@ -35,8 +36,12 @@ test("Cisaille and Scarabacier are exact author bytes, safely archived and uniqu
    assert.equal(createHash("sha256").update(historical).digest("hex"),f.sha,
      "historical author export remains immutable");
    assert.equal(raw,await read(currentArchiveCreature),
-     "new active preset comes from the exact current author export");
+     "active Scarabacier must preserve the exact, newest author V8 export");
+   const previous=JSON.parse(await read(previousArchiveCreature));
+   assert.equal(previous.draft.presentation.version,7,"previous V7 author export is immutable");
+   assert.equal(JSON.parse(raw).draft.presentation.version,8,"active Scarabacier is V8");
    assert.notEqual(raw,historical,"new export must not be silently replaced by old template");
+   assert.notEqual(raw,await read(previousArchiveCreature),"V8 must replace the previous V7");
   } else {
    assert.equal(raw,await read(f.archive));
    assert.equal(createHash("sha256").update(raw).digest("hex"),f.sha);
@@ -84,10 +89,22 @@ test("Scarabacier and Cisaille travel the canonical configured owner path, leavi
  assert.equal(configuredSkills.get("lib_lifesteal_strike"),originalOtherSkill);
  assert.equal(configuredSkills.get("cisaille").definition.effects[1].amount,2);
  const actual=configuredCreatures.get("crea_scar_2");
- assert.equal(actual.draft.presentation.visual.dodge.assetId,"pack:capture:sprite-status-stone-shell-01");
+ assert.equal(actual.draft.presentation.version,8);
+ assert.equal(actual.draft.presentation.visual.dodge.assetId,"pack:capture:sprite-steel-carapace-hold-01");
+ assert.equal(actual.draft.presentation.visual.dodge.displayScale,1);
+ assert.deepEqual(actual.draft.presentation.visual.movementScaleByView,{player:1,opponent:1.2});
+ assert.deepEqual(actual.draft.presentation.visual.rangedAttackScaleByView,{player:.8,opponent:1});
+ assert.deepEqual(actual.draft.presentation.visual.movementPlayback,{frameMs:0,mode:"loop"});
+ assert.deepEqual(actual.draft.presentation.visual.rangedAttackPlacement.back,{x:-20,y:-20});
+ assert.equal(actual.draft.presentation.visual.rangedAttackBack.assetId,"pack:capture:creature-scarabacier-attack-dos-v5");
+ assert.equal(actual.draft.presentation.viewOverrides.player.displayScale,1.7);
+ assert.deepEqual(actual.draft.presentation.viewOverrides.opponent.position,{x:0,y:50});
+ assert.deepEqual(actual.draft.presentation.sockets[0].front,{x:0.27319587565407266,y:0.6008679866790771});
+ assert.deepEqual(actual.draft.presentation.sockets[0].back,{x:0.7020618446705927,y:0.4013020197550456});
  assert.equal(actual.draft.presentation.audio.movement.assetId,"gensrpg:sound:effect-ad54aecf");
  assert.equal(actual.draft.combat.reaction.type,"defense");
- assert.equal(actual.draft.combat.reaction.damageReductionPct,90);
+ assert.equal(actual.draft.combat.reaction.damageReductionPct,80);
+ assert.equal(actual.draft.combat.reaction.activeWindowMs,700);
  assert.equal(actual.statValues.values.acier,15);
  assert.equal(actual.statValues.values.defense,20);
  assert.deepEqual(actual.loadout.slots.map(x=>x.skillId),["cisaille","cap_water_atk_1",null,null,null]);
