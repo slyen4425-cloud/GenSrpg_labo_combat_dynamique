@@ -1826,3 +1826,5 @@ html {
   .creature-appearance-group>summary { font-size: 1.03rem; }
   .creature-animation-chapter { padding: .65rem; }
 }
+
+.creature-animation-chapter label[hidden] { display: none !important; }
