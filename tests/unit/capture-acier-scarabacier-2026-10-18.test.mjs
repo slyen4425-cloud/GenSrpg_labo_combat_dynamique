@@ -46,7 +46,8 @@ test("Scarabacier is the only added author creature preset; extraction is lossle
  assert.equal(active.draft.elements[0],"steel");
  assert.equal(active.draft.level,1);
  assert.equal(active.draft.combat.reaction.type,"defense");
- assert.equal(active.draft.combat.reaction.damageReductionPct,90);
+ assert.equal(active.draft.combat.reaction.damageReductionPct,80);
+ assert.equal(active.draft.combat.reaction.activeWindowMs,700);
  assert.equal(active.draft.combat.approachTimeModifierPct,25);
  assert.equal(active.statValues.values.health,190);
  assert.equal(active.statValues.values.defense,20);
@@ -95,9 +96,13 @@ test("Scarabacier replaces the native creature via canonical configuredCreatures
  assert.equal(configuredSkills.size,initialSkillSize,"no imported ability nor auto-equip");
 });
 
-test("Latest Scarabacier V7 author transfer keeps two attack poses and native moving visual settings",async()=>{
+test("Latest Scarabacier V8 author transfer keeps two attack poses, movement playback and both team scales",async()=>{
  const active=JSON.parse(await read(scaraPath));
- assert.equal(active.draft.presentation.version,7);
+ assert.equal(active.draft.presentation.version,8);
+ assert.deepEqual(active.draft.presentation.visual.movementScaleByView,{player:1,opponent:1.2});
+ assert.deepEqual(active.draft.presentation.visual.rangedAttackScaleByView,{player:0.8,opponent:1});
+ assert.deepEqual(active.draft.presentation.visual.movementPlayback,{frameMs:0,mode:"loop"});
+ assert.equal(active.draft.presentation.visual.dodge.assetId,"pack:capture:sprite-steel-carapace-hold-01");
  assert.deepEqual(active.draft.presentation.viewOverrides.player,{displayScale:1.7,position:{x:0,y:10}});
  assert.deepEqual(active.draft.presentation.viewOverrides.opponent,{displayScale:0.95,position:{x:0,y:50}});
  assert.equal(active.draft.presentation.visual.movement.assetId,"pack:capture:creature-scarabacier-roll-01");

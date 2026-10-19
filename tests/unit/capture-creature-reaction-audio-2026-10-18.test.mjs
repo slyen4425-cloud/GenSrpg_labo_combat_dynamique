@@ -26,7 +26,8 @@ test("reaction audio belongs to creature presentation, keeps author preset intac
  assert.deepEqual(roundtrip.value.draft.presentation.audio,norm.audio);
  assert.deepEqual(roundtrip.value.loadout,raw.loadout,"equipped Cisaille preserved");
  assert.equal(roundtrip.value.draft.combat.reaction.type,"defense");
- assert.equal(roundtrip.value.draft.combat.reaction.damageReductionPct,90);
+ assert.equal(roundtrip.value.draft.combat.reaction.damageReductionPct,80);
+ assert.equal(roundtrip.value.draft.combat.reaction.activeWindowMs,700);
 });
 test("combat audio resolves dodge and defense only through currently active creature slot",async()=>{
  const events=[];
