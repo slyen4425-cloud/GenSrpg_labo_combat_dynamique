@@ -32,7 +32,7 @@ jobs:
           j=json.loads(p.read_text())
           assert j["assetId"] == "pack:capture:creature-scarabacier-roll-01"
           assert j["frameCount"] == 16
-          assert j["cleanup"]["status"] == "preview_required_not_yet_approved"
+          assert j["cleanup"]["status"] == "ready_for_author_ingame_review"
           print("Validated roll contract and approval hold")
           PY
       - name: Commit corrected review media on working branch only
