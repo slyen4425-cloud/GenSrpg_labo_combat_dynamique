@@ -1,3 +1,11 @@
+## 2026-10-19 — Scarabacier : teinte sur le roulé-boulé + armure durant le déplacement
+- Base gh-pages@43600557ce107e77270d6ec6460d5585fef1e9a3 ; branche work/lab-roll-tint-moving-defense-2026-10-19 ; checkpoint départ checkpoint/lab-start-roll-tint-moving-defense-2026-10-19.
+- L'affichage de colorisation suit désormais le shell animé de la vraie forme roulante (image fixe ou sprite animé) : le masque et l'échelle suivent le sprite, puis reviennent à la silhouette normale.
+- Dans l'éditeur de compétence, stat_modifier propose activationCondition=moving. +50 Défense -> +10% de réduction pendant une approche combat native, si le buff est actif ; aucun bonus pendant la charge ni la récupération ou si interrompu.
+- Runtime seule autorité de movementActive, lu par StatEffects ; aucun changement de dégâts, d'asset, de fiche Scarabacier ni d'autre dépôt.
+- Sentinelles créature/joueur-adversaire et import auteur, CI complète 5/5, checkpoint et déploiement à valider au SHA final ; test tactile utilisateur distinct.
+- Rapport docs/LAB_ROLL_TINT_MOVING_DEFENSE_2026-10-19.md.
+
 ### Résultat technique — apparence de déplacement (18/10/2026)
 - Branchement de la forme alternative (image/atlas, roll/sprite/fixe) sur l'approche au sol et le mouvement générique, dans la présentation de la créature via V4. Aucun effet sur Combat Rules, dégâts, temps ou compétences.
 - Silhouette de collision basée sur la forme alternative (ou première frame pour atlas) ; rollback fin/interruption/changement de combattant ; anciens exports V1-V3 inchangés.
