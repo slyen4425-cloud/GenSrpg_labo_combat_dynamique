@@ -32,17 +32,21 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
     }
   }
 
-  function prepare(visual, normalUrl) {
+  function preparedKey(visual) {
+    return String(visual.url) + "::frames=" + Math.max(1, Math.floor(Number(visual.frameCount) || 1));
+  }
+
+  function prepare(visual, normalUrl, ...additionalVisuals) {
     cancel();
     sourceUrl = normalUrl;
     preparedByUrl.clear();
-    for (const item of [visual, ...Array.prototype.slice.call(arguments, 2)]) {
+    for (const item of [visual, ...additionalVisuals]) {
       preload(item);
     }
   }
 
   function preload(visual) {
-    if (!visual?.url || preparedByUrl.has(visual.url)) return;
+    if (!visual?.url || preparedByUrl.has(preparedKey(visual))) return;
     const source = image.ownerDocument.createElement("img");
     source.crossOrigin = "anonymous";
     const ready = new Promise(resolve => {
@@ -67,18 +71,19 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       };
       source.onerror = () => resolve(null);
     });
-    preparedByUrl.set(visual.url, { ready });
+    preparedByUrl.set(preparedKey(visual), { ready });
     source.src = visual.url;
     if (source.complete && source.naturalWidth > 0) source.onload?.();
   }
 
   function play(visual, durationMs, direction = 1) {
     if (disposed || !visual?.url || !sourceUrl) return null;
-    if (!preparedByUrl.has(visual.url)) preload(visual);
+    if (active) cancel();
+    if (!preparedByUrl.has(preparedKey(visual))) preload(visual);
     const record = { node: null, spin: null, frame: null, swapped: false, tintMaskUrl: null };
     active = record;
     const duration = Math.max(1, Number(durationMs) || 1);
-    Promise.resolve(preparedByUrl.get(visual.url)?.ready).then(frame => {
+    Promise.resolve(preparedByUrl.get(preparedKey(visual))?.ready).then(frame => {
       if (disposed || active !== record || !frame) return;
       const transition = Number(visual.transitionMs) || 0;
       image.style.transition = transition ? "opacity " + transition + "ms ease" : "";
