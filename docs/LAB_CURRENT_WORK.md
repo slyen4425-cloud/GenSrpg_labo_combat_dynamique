@@ -1,3 +1,11 @@
+## Bilan technique — 2026-10-19 — Scarabacier griffe arrière
+
+- **Fait** : nettoyage ciblé de la griffe flottante de la seule vue player/dos, image réelle WebP RGBA 1024×1024, 217104 octets ; SHA256 `2f6475c0b2b26be1fe67aaaa93c2d34bcc319fab2d181aa6e3fabe77d2e505a3`.
+- **Référence stable** : `pack:capture:creature-scarabacier-player-01`, chemin catalogue inchangé ; vues adversaire/icône intactes.
+- **Branche / base** : `work/lab-scarabacier-claw-2026-10-19` issue de `8e1d09fce0debf5b3a5a6a95c86091a78a38845e`. Checkpoint initial `checkpoint/lab-start-scarabacier-claw-2026-10-19`.
+- **Vérification** : source originale identifiée par hash, contrôle réel alpha/dimensions/zone corrigée ; workflow GitHub `39206148362` SUCCESS, test permanent ciblé ajouté, CI finale et publication à vérifier avant checkpoint GREEN.
+- **Documentation** : `docs/LAB_SCARABACIER_PLAYER_CLAW_REPAIR_2026_10_19.md`. Preview en jeu côté utilisateur encore à tester.
+
 ## 2026-10-19 — Scarabacier : réparation locale de la griffe arrière — LOT CIBLÉ
 
 - **Objectif** : supprimer uniquement un fragment de griffe tronqué et détaché, visible en bas à gauche de la vue joueur/dos. Ne pas changer le personnage ni ses autres vues.
