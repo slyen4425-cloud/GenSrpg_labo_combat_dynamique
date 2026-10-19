@@ -1,3 +1,14 @@
+## 2026-10-19 — Charte de production des modèles, animations et icônes Monster Capture
+
+- Objectif : formaliser la référence artistique Scarabacier et interdire les animations face/dos qui dérivent de la pose et de la perspective approuvées ; exiger l'aperçu animé AVANT intégration.
+- Base exacte : `gh-pages@9aa272962451996c4877ccb86d417cdf78fb24f1` ; checkpoint départ `checkpoint/lab-start-capture-visual-charter-v1-2026-10-19` ; branche `work/lab-capture-visual-charter-v1-2026-10-19`.
+- Périmètre autorisé **exclusivement documentaire** : `docs/LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md`, `docs/LAB_CHARTE.md` (référence §36) et `docs/LAB_CURRENT_WORK.md` (présent suivi).
+- Propriétaire : charte artistique des nouveaux médias uniquement ; respect des propriétaires techniques existants Asset Input/Asset Catalog/Animation Core/Render Adapter. Aucun changement runtime.
+- Protégés : `main`, `Zombicide-40k`, laboratoire exploration, médias originaux et médias rejetés, animations, créatures, capacités, catalogues, UI, gameplay, anciennes données auteur.
+- Contrats principaux : master FACE/DOS validé ; frame 01 pixel-identique au maître de même vue ; angle dos/face constant ; 16–20 PNG transparents 512² ; preview animée et planche pour chaque vue ; approbation auteur bloquante ; distinction source master icône 512 et livrable HUD 128 WebP selon contrat réel.
+- Vérifications : contenu de charte, liens internes, liste exacte des fichiers modifiés et absence de fichiers moteur/assets ; CI GitHub si applicable. Aucun média n'est déclaré livré ; aucune validation artistique nouvelle n'est inventée.
+- Risque : collision sur la branche publique lors de futurs travaux ; publier depuis la branche dédiée par revue, sans forcer gh-pages. Un checkpoint GREEN technique ne peut être déclaré qu'après vérification.
+
 ## 2026-10-19 — Créature : animation attaque à distance et sous-chapitres Apparence
 - Base publique gh-pages@84f839e8c89c98cecb2fefc1ae7cf5578221bbf6; checkpoint checkpoint/lab-start-ranged-appearance-ux-2026-10-19 ; branche work/lab-ranged-appearance-ux-2026-10-19.
 - Contrat V5 optionnel visual.rangedAttack, paramètres communs au mouvement V4 validés par le même contrat ; versions V1-V4 préservées.
