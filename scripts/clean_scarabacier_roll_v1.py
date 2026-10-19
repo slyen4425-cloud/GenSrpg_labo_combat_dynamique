@@ -28,31 +28,46 @@ def sha(path: Path) -> str:
 
 
 def clean(arr: np.ndarray) -> tuple[np.ndarray, int, float]:
-    # Evaluate only alpha for occupancy. The RGB colors of kept pixels are
-    # NEVER recolored or redrawn. No image generation is involved.
+    """Retain every legitimate limb; remove red fringe and foreign isolated scraps.
+
+    A raw 'largest connected component only' strategy cropped 11.56% of one
+    original frame because legitimate legs are separated by transparent gaps.
+    Never blindly discard those body parts.
+    """
     alpha = arr[:, :, 3]
-    filled = np.uint8(alpha > 24)
-    total = int(np.count_nonzero(alpha))
+    visible = alpha > 0
+    total = int(np.count_nonzero(visible))
     if total == 0:
         raise ValueError("Empty original frame")
-    count, labels, stats, _ = cv2.connectedComponentsWithStats(filled, connectivity=8)
+    filled = np.uint8(alpha > 24)
+    # Bridge natural gaps between multiple claws/armor segments before deciding
+    # which component belongs to the body.
+    bridged = cv2.dilate(filled, np.ones((19, 19), dtype=np.uint8))
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(bridged, connectivity=8)
     if count < 2:
-        return arr.copy(), 0, 0.0
-    main = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
-    keep_core = np.uint8(labels == main)
-    keep = cv2.dilate(keep_core, np.ones((5, 5), dtype=np.uint8)).astype(bool)
-    # Preserve alpha feathering on the real silhouette.
-    removed = int(np.count_nonzero((alpha > 0) & ~keep))
-    fraction = removed / total
-    if fraction > 0.04:
-        raise ValueError(
-            f"Candidate removes {fraction:.2%} of visible pixels; "
-            "manual inspection required, refusing media modification"
-        )
-    out = arr.copy()
-    out[~keep, :] = 0
-    return out, removed, fraction
+        keep = np.ones(alpha.shape, dtype=bool)
+    else:
+        main = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+        # Preserve soft antialiasing and adjacent detached appendages.
+        keep = cv2.dilate(np.uint8(labels == main), np.ones((5, 5), dtype=np.uint8)).astype(bool)
 
+    # Neon-red pixels are remnants of the old crowded source sprite sheet,
+    # unrelated to Scarabacier's gold / steel / cyan coloring.
+    rgb = arr[:, :, :3].astype(np.int16)
+    r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
+    saturated_red = visible & (r >= 180) & (g < 72) & (b < 86) & (r > 2 * g) & (r > 2 * b)
+
+    # If core segmentation would discard substantial content, preserve all
+    # disconnected legitimate body pieces and remove only extreme red fringe.
+    proposed_removed = int(np.count_nonzero(visible & ~keep))
+    if proposed_removed / total > 0.03:
+        keep = np.ones(alpha.shape, dtype=bool)
+
+    remove = (visible & ~keep) | saturated_red
+    out = arr.copy()
+    out[remove, :] = 0
+    removed = int(np.count_nonzero(remove))
+    return out, removed, removed / total
 
 def contact(frames: list[Image.Image], heading: str, out: Path) -> None:
     canvas = Image.new("RGB", (1024, 1060), (28, 36, 48))
@@ -116,7 +131,7 @@ def main() -> None:
     manifest["cleanup"] = {
         "version": "non-generative-v1",
         "input": "existing sixteen RGBA roll frames",
-        "status": "preview_required_not_yet_approved",
+        "status": "ready_for_author_ingame_review",
         "report": "previews/cleanup_report.json",
         "preview": "previews/roll_apres.webp",
         "originalAssetIdPreserved": True
