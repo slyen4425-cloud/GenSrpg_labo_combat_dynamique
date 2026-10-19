@@ -1,0 +1,42 @@
+name: Import real Scarabacier rolling movement frames
+on:
+  push:
+    branches:
+      - 'work/lab-scarabacier-roll-sprite-2026-10-19'
+    paths:
+      - '_incoming/scarabacier_roll_frames_16_ready.zip'
+      - 'scripts/import_scarabacier_roll.py'
+      - 'scripts/scarabacier_roll_asset.test.template.mjs'
+      - '.github/workflows/import-scarabacier-roll.yml'
+permissions:
+  contents: write
+concurrency:
+  group: scarabacier-roll-asset-import-2026-10-19
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Pillow
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Validate original ZIP and import real 16 RGBA frames
+        run: python scripts/import_scarabacier_roll.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run all laboratory sentinels before committing generated media
+        run: npm run ci
+      - name: Commit actual PNGs, atlas, manifest, catalog and sentry
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/scarabacier/animations/roll data/assets/catalog/global-visual-assets.v1.json tests/unit/capture-scarabacier-roll-asset-20261019.test.mjs
+          if git diff --cached --quiet; then echo 'No media output: refusing fake delivery' >&2; exit 1; fi
+          git commit -m 'assets(capture): import 16 real Scarabacier roll frames and atlas'
+          git push origin HEAD:refs/heads/work/lab-scarabacier-roll-sprite-2026-10-19
