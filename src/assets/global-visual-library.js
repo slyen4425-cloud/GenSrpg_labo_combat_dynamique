@@ -1,6 +1,6 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
-const REVISION = "2026-10-18-v35-shadow-life-drain-vfx";
+const REVISION = "2026-10-19-v36-scarabacier-v5-roll-clean";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
