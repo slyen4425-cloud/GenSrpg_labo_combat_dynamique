@@ -16,3 +16,7 @@ Le modèle vu de face (adversaire) et celui vu de dos (joueur) disposent de sél
 - Deux sélecteurs HTML sous `Animations`, tous deux filtrés sur `attack`.
 - CI complète (foundation et navigateurs), checkpoint GREEN et Pages au SHA exact à confirmer par GitHub Actions.
 - Test visuel réel sur smartphone séparé de la validation technique.
+
+## Vérification réelle du lot technique
+- Run GitHub Actions `39290933321` sur `338b74b9d6d378d35444fe30d2891daf71e129eb` : **5/5 SUCCESS** (Foundation et 4 navigateurs).
+- Checkpoint final `checkpoint/lab-ranged-front-back-green-2026-10-19`; publication `gh-pages` à vérifier au SHA après commit documentaire.

@@ -4,7 +4,7 @@
 - Contrat V6 additif `visual.rangedAttackBack` et V5 `visual.rangedAttack` conservé comme face ; V1–V5 intacts, ancien V5 utilisé pour les deux vues pour compatibilité.
 - Le formulaire hydratera un ancien V5 avec le même asset dans les deux listes pour éviter toute perte visuelle lors d'un nouvel enregistrement ; une nouvelle fiche V6 incomplète revient à l'apparence normale sur la vue non renseignée.
 - Asset catalog inchangé ; filtre attack conservé, adaptateur natif distribue par vue ; renderer visual-only, sans changement d'impacts, d'animation de mêlée ou de dégâts.
-- Sentinelle RED `tests/unit/capture-ranged-front-back-2026-10-19.test.mjs` ; valider UI/contrat/draft/export/player/opponent/compatibilité, CI 5/5 puis checkpoint GREEN et publication sous lease. Essai Android reste à l'auteur.
+- Sentinelle initialement RED `tests/unit/capture-ranged-front-back-2026-10-19.test.mjs` puis GREEN avec le code ; UI/contrat/draft/export/player/opponent et compatibilité vérifiés. CI code `39290933321` sur `338b74b9d6d378d35444fe30d2891daf71e129eb` : 5/5 succès ; checkpoint `checkpoint/lab-ranged-front-back-green-2026-10-19`, publication Pages au SHA final à vérifier. Essai Android reste à l'auteur.
 - Protégés : médias de `global-assets`, fiches et capacités Scarabacier, `main`, `Zombicide-40k`, labo exploration.
 
 ## 2026-10-19 — Raccord catalogue après publication des médias Scarabacier
