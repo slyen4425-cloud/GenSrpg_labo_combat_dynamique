@@ -1,0 +1,63 @@
+name: Generate Loup volcanique review animations
+on:
+  push:
+    branches:
+      - "work/global-assets-loup-volcanique-sprites-preview-2026-10-19"
+    paths:
+      - "scripts/create_loup_volcanique_preview_20261019.py"
+      - ".github/workflows/preview-loup-volcanique-four-sprites-2026-10-19.yml"
+permissions:
+  contents: write
+concurrency:
+  group: loup-volcanique-preview-2026-10-19
+  cancel-in-progress: false
+jobs:
+  render:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pillow NumPy and OpenCV (preview only)
+        run: python -m pip install "Pillow>=10,<13" "numpy>=2,<3" "opencv-python-headless>=4.10,<5"
+      - name: Produce 4 x 20 512px transparent frames, atlas and WebP previews
+        run: python scripts/create_loup_volcanique_preview_20261019.py
+      - name: Assert four real preview sequences and exact 1st frame
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          from PIL import Image, ImageChops
+          root=Path("assets/library/capture/creatures/loup_volcanique/review_animation_20261019")
+          m=json.loads((root/"preview_manifest.json").read_text())
+          assert len(m["animations"])==4
+          assert m["reviewStatus"]=="PREVIEW_READY_NOT_AUTHORIZED_FOR_CATALOG"
+          for action in ("attaque","deplacement"):
+              for side in ("face","dos"):
+                  d=root/"animations"/action/side
+                  frames=sorted((d/"frames").glob("*.png"))
+                  assert len(frames)==20
+                  original=Image.open(root/"masters"/f"loup_volcanique_{side}_candidate_master_512.png").convert("RGBA")
+                  for n,f in enumerate(frames):
+                      im=Image.open(f)
+                      assert im.size==(512,512) and im.mode=="RGBA", f
+                      assert im.getpixel((0,0))[3]==0
+                  assert ImageChops.difference(original,Image.open(frames[0]).convert("RGBA")).getbbox() is None
+                  assert ImageChops.difference(original,Image.open(frames[-1]).convert("RGBA")).getbbox() is None
+                  assert (d/"previews"/f"loup_volcanique_{action}_{side}_preview.webp").is_file()
+                  assert (d/"atlas"/f"loup_volcanique_{action}_{side}_5x4.png").is_file()
+          assert (root/"loup_volcanique_four_animations_review.zip").stat().st_size > 10000
+          print("PASS 80 RGBA frames, 4 previews, 4 atlases and exact candidate master boundaries")
+          PY
+      - name: Commit images on preview branch only (NO catalog change)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/library/capture/creatures/loup_volcanique/review_animation_20261019
+          if git diff --cached --quiet; then echo "No binary outputs: failing" >&2; exit 1; fi
+          git commit -m "assets(review): four source-anchored Loup volcanique preview animations"
+          git push origin HEAD:refs/heads/work/global-assets-loup-volcanique-sprites-preview-2026-10-19
