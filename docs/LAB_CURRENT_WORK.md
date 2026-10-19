@@ -1,3 +1,12 @@
+## 2026-10-19 — Animation d'attaque de créature FACE / DOS (V6)
+- Base publique `gh-pages@552f4020d767a6b10848da755d6a1ebb9ce1b5ea` ; checkpoint `checkpoint/lab-start-ranged-front-back-2026-10-19` ; branche `work/lab-ranged-front-back-2026-10-19`.
+- Demande : dans Créature > Apparence > Animations, sélectionner indépendamment le sprite d'attaque de face (adversaire) et de dos (joueur).
+- Contrat V6 additif `visual.rangedAttackBack` et V5 `visual.rangedAttack` conservé comme face ; V1–V5 intacts, ancien V5 utilisé pour les deux vues pour compatibilité.
+- Le formulaire hydratera un ancien V5 avec le même asset dans les deux listes pour éviter toute perte visuelle lors d'un nouvel enregistrement ; une nouvelle fiche V6 incomplète revient à l'apparence normale sur la vue non renseignée.
+- Asset catalog inchangé ; filtre attack conservé, adaptateur natif distribue par vue ; renderer visual-only, sans changement d'impacts, d'animation de mêlée ou de dégâts.
+- Sentinelle RED `tests/unit/capture-ranged-front-back-2026-10-19.test.mjs` ; valider UI/contrat/draft/export/player/opponent/compatibilité, CI 5/5 puis checkpoint GREEN et publication sous lease. Essai Android reste à l'auteur.
+- Protégés : médias de `global-assets`, fiches et capacités Scarabacier, `main`, `Zombicide-40k`, labo exploration.
+
 ## 2026-10-19 — Raccord catalogue après publication des médias Scarabacier
 - Base `gh-pages@00352371c18283178e84a9e7ea0c738a00ff0790` ; checkpoint de départ `checkpoint/lab-start-scarabacier-asset-catalog-refresh-2026-10-19` ; branche `work/lab-scarabacier-asset-catalog-refresh-2026-10-19`.
 - Autorité médias déjà publiée : `global-assets@a94829e4892aa5260d8747de0a9f50c4893f6be0` (PR #22 roulade nettoyée et PR #23 attaques V5 face/dos).

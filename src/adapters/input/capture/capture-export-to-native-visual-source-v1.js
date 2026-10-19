@@ -180,12 +180,27 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   }
 
+  function rangedAttackFxFromSlot(slot) {
+    if (!slot) return null;
+    // Reuse the canonical movement media resolver; no duplicate asset owner.
+    return movementFxFor({ version: 4, visual: { movement: slot } });
+  }
+
   function rangedAttackFxFor(binding) {
-    if (binding.version < 5 || !binding.visual?.rangedAttack) return null;
-    // One canonical resolver for images and sprite strips in both use cases.
-    return movementFxFor({
-      version: 4,
-      visual: { movement: binding.visual.rangedAttack }
+    return binding.version >= 5
+      ? rangedAttackFxFromSlot(binding.visual?.rangedAttack)
+      : null;
+  }
+
+  function rangedAttackFxByViewFor(binding) {
+    const opponent = rangedAttackFxFor(binding);
+    return Object.freeze({
+      opponent,
+      // V1-V5 rangedAttack was intentionally shared by both views.
+      // V6 separates back and front, without falling back to the wrong angle.
+      player: binding.version >= 6
+        ? rangedAttackFxFromSlot(binding.visual?.rangedAttackBack)
+        : opponent
     });
   }
 
@@ -225,7 +240,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         fxAnchors: Object.freeze({ player: {}, opponent: {} }),
         dodgeFx: null,
         movementFx: null,
-        rangedAttackFx: null
+        rangedAttackFx: null,
+        rangedAttackFxByView: Object.freeze({ player: null, opponent: null })
       });
     }
 
@@ -326,7 +342,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       audio: binding.audio,
       dodgeFx: dodgeFxFor(binding),
       movementFx: movementFxFor(binding),
-      rangedAttackFx: rangedAttackFxFor(binding)
+      rangedAttackFx: rangedAttackFxFor(binding),
+      rangedAttackFxByView: rangedAttackFxByViewFor(binding)
     });
   });
 

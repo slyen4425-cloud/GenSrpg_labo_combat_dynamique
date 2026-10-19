@@ -63,6 +63,18 @@ async function fetchCreatureMeta(url, fetchImpl) {
 }
 
 
+// Select the authored attack pose by camp; preserve legacy single-pose
+// metadata only when an explicit per-view projection is absent.
+export function creatureRangedAppearanceForViewV1(meta, view) {
+  if (!["player", "opponent"].includes(view)) {
+    throw new RangeError("unknown creature view");
+  }
+  if (meta?.rangedAttackFxByView) {
+    return meta.rangedAttackFxByView[view] ?? null;
+  }
+  return meta?.rangedAttackFx ?? null;
+}
+
 export async function loadCombatDemoVisualSource({
   nativeVisualSource = null,
   fetchImpl = fetch
@@ -595,12 +607,13 @@ export async function mountCombatDemo({
         profile: profiles.get(slot.actor.profile)
       });
 
+      const rangedVisual = creatureRangedAppearanceForViewV1(slot.meta, slot.view);
       const rangedAppearance =
         type === "attack" &&
         metadata?.useRangedAppearance === true &&
-        slot.meta?.rangedAttackFx?.url
+        rangedVisual?.url
           ? slot.playMovementAppearance(
-              slot.meta.rangedAttackFx,
+              rangedVisual,
               plan.segments.reduce((sum, segment) => sum + segment.durationMs, 0),
               slot.view === "player" ? 1 : -1
             )
@@ -1197,7 +1210,10 @@ function createSlot({
       runtimeAsset
     );
 
-    movementAppearance.prepare(meta.movementFx ?? null, runtimeUrl, meta.rangedAttackFx ?? null);
+    movementAppearance.prepare(
+      meta.movementFx ?? null, runtimeUrl,
+      creatureRangedAppearanceForViewV1(meta, view)
+    );
     loadRuntimeAsset(runtimeUrl);
     rebuildActor(runtimeUrl);
   }

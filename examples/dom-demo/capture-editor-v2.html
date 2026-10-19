@@ -302,8 +302,11 @@
         <fieldset data-creature-ranged-attack-appearance>
           <legend>Animation de la créature — attaque à distance</legend>
           <div class="grid two">
-            <label>Sprite / image pendant le tir
+            <label>Attaque de face — adversaire
               <select data-creature-ranged-attack-visual data-asset-role="attack"><option value="">Animation normale de combat</option></select>
+            </label>
+            <label>Attaque de dos — joueur
+              <select data-creature-ranged-attack-back-visual data-asset-role="attack"><option value="">Animation normale de combat</option></select>
             </label>
             <label>Type de visuel
               <select data-creature-ranged-attack-mode>
@@ -325,7 +328,7 @@
               <input type="number" min="0" max="350" step="10" value="80" data-creature-ranged-attack-transition>
             </label>
           </div>
-          <p class="note">Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature prend ce visuel pendant son animation de frappe, puis retrouve sa pose normale. Le sprite de capacité (cast / projectile / impact) et son timing restent inchangés. La mêlée conserve l’animation d’approche puis le contact réel. Pour importer une animation de tir, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
+          <p class="note">Lors du tir d’un projectile, rayon ou attaque de zone à distance, chaque camp utilise son sprite : face pour l’adversaire, dos pour le joueur. Sans sprite pour une vue, l’apparence normale reste visible. Les réglages d’animation ci-dessus sont communs aux deux vues. La créature reprend sa pose normale après la frappe. Le sprite de capacité (cast / projectile / impact) et son timing restent inchangés. La mêlée conserve l’animation d’approche puis le contact réel. Pour importer une animation de tir, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
         </fieldset>
 
           </div>
