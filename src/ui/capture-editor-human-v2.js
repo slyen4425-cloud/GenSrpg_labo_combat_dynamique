@@ -7479,6 +7479,21 @@ function syncEvolutionControlsV1(root) {
   ).disabled = !enabled;
 }
 
+// Deterministic navigation metadata from the ONE asset catalog (never a parallel list).
+// Skill cast/travel/impact FX do not belong in a creature animation chooser.
+export function captureEditorCreatureVisualKindV1(asset) {
+  const tags = Array.isArray(asset?.tags) ? asset.tags : [];
+  if (asset?.mediaType !== "image") return null;
+  const creatureOwned = asset.category === "creature" ||
+    asset.category === "movement" ||
+    asset.assetType === "portrait" && tags.includes("creature") ||
+    tags.includes("creature") && (tags.includes("attack") || tags.includes("movement"));
+  if (!creatureOwned) return null;
+  if (asset.category === "movement" || tags.includes("movement") || tags.includes("roll")) return "movement";
+  if (asset.category === "attack" || tags.includes("attack")) return "attack";
+  return "model";
+}
+
 export function captureEditorAssetMatchesRoleV1(asset, role) {
   if (!asset?.compatibility?.uses?.includes("editor")) {
     return false;
@@ -7497,13 +7512,9 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
   if (role === "icon") {
     return asset.assetType === "icon";
   }
-  if (role === "movement") {
-    return asset.mediaType === "image" && (
-      asset.category === "creature" ||
-      asset.assetType === "portrait" ||
-      asset.assetType === "sprite" ||
-      asset.assetType === "fx"
-    );
+  if (role === "movement" || role === "attack") {
+    const kind = captureEditorCreatureVisualKindV1(asset);
+    return kind === role || kind === "model"; // static model remains available for older configs
   }
 
   if (
@@ -7682,6 +7693,7 @@ function populateSelect(select, assets, role) {
     }
   ];
 
+  const creatureAnimationSelector = role === "movement" || role === "attack";
   for (const libraryGroup of libraryGroups) {
     const groupAssets =
       matchingAssets.filter(
@@ -7692,6 +7704,24 @@ function populateSelect(select, assets, role) {
       );
 
     if (groupAssets.length === 0) {
+      continue;
+    }
+
+    if (creatureAnimationSelector) {
+      // Mobile-native categories; distinguish animations from fallback models.
+      const wanted = role === "movement" ? "movement" : "attack";
+      for (const [kind, label] of [[wanted, role === "movement" ? "Déplacement" : "Attaque de créature"], ["model", "Modèles fixes (compatibilité)"]]) {
+        const items = groupAssets.filter(asset => captureEditorCreatureVisualKindV1(asset) === kind);
+        if (!items.length) continue;
+        const group = document.createElement("optgroup");
+        group.label = libraryGroup.label + " · " + label;
+        group.dataset.assetOrigin = libraryGroup.id;
+        group.dataset.assetKind = kind;
+        for (const asset of items.sort((a, b) => String(a.label || a.id).localeCompare(String(b.label || b.id), "fr"))) {
+          createOption(group, asset.id, asset.label || asset.id);
+        }
+        select.append(group);
+      }
       continue;
     }
 
