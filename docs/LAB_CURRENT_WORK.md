@@ -1,3 +1,12 @@
+## 2026-10-19 — Classement des visuels propres aux créatures (attaque / déplacement)
+- Base `gh-pages@3e9d2ddf88c50c2b1bfe58534bf5629b6e88c956` ; checkpoint départ `checkpoint/lab-start-creature-asset-roles-2026-10-19` ; branche `work/lab-creature-asset-roles-2026-10-19`.
+- Objet : séparer dans Apparence les sélecteurs d'animation de déplacement et d'attaque de créature, en excluant les casts / projectiles / impacts de capacités. Conserver les modèles fixes comme anciens choix compatibles.
+- Propriétaire : catalogue des AssetDefinition inchangé ; filtrage UI à partir de category/tags réels, import utilisateur au même propriétaire avec nouveau rôle `attack`.
+- Périmètre : `src/assets/creator-visual-asset-session-v1.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html`, sentinelle `tests/unit/capture-creature-visual-selector-roles-2026-10-19.test.mjs`, `docs/LAB_CURRENT_WORK.md` et rapport spécifique.
+- Protégés : `main`, jeu principal, laboratoire exploration, `global-assets`, données auteur, anciens ID, gameplay, Combat Rules, animation et renderer. Les deux animations V5 Scarabacier seront un lot média séparé.
+- Tests : rôle/import, exclusion des FX des deux menus, compatibilité des modèles fixes, structure HTML et CI complète (foundation + navigateurs). Validation Android auteur distincte.
+- Risques : anciens sélecteurs mélangeaient sprite générique avec FX; garder l'ID sauvegardé même si le catalogage précédent était erroné. Pas de reclassification silencieuse des assets historiques.
+
 ## 2026-10-19 — Charte de production des modèles, animations et icônes Monster Capture
 
 - Objectif : formaliser la référence artistique Scarabacier et interdire les animations face/dos qui dérivent de la pose et de la perspective approuvées ; exiger l'aperçu animé AVANT intégration.
