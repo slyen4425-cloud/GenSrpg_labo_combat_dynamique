@@ -1,3 +1,13 @@
+## 2026-10-19 — Animation d'attaque propre à chaque vue (face / dos)
+- Base publique `gh-pages@552f4020d767a6b10848da755d6a1ebb9ce1b5ea` ; checkpoint de départ `checkpoint/lab-start-creature-attack-face-back-2026-10-19` ; branche `work/lab-creature-attack-face-back-2026-10-19`.
+- Demande : deux sélecteurs dans Créature > Apparence > Animations, attaque face (adversaire) et attaque dos (joueur), en conservant le sélecteur V5 comme face ; réglages de l'animation partagés. Aucun sprite nouveau créé dans ce lot.
+- Autorité unique : CreaturePresentationBinding V6 additif pour `visual.rangedAttackBack` optionnel ; l'adaptateur Capture résout les deux assets via le catalogue existant ; le renderer choisit uniquement selon la vue de slot existante et restaure le modèle.
+- Compatibilité : données V1–V5 inchangées, V5 conserve le même sprite dans les deux vues ; dos spécifique facultatif ; sans sprite d'attaque pour une vue, animation d'origine. L'export/import ne doit pas perdre le slot dos.
+- Périmètre : contrat et router, éditeur UI + HTML, adaptateur visuel natif, démonstrateur/render existant, tests unitaires et navigateur existants si utiles, documentation. Ne pas changer les assets, catégories ni compétence/Combat Rules/impact.
+- Protégés : `main`, `global-assets`, Scarabacier, capacités, `Zombicide-40k`, labo exploration, autres branches de travail.
+- Vérification : test contrat V6 + V5, sauvegarde/rehydratation, export→native, choix joueur vs adversaire, sprite image fixe/bande, annulation, CI 5/5 ; checkpoint GREEN au SHA identique et déploiement gh-pages contrôlé.
+- Risques : ancienne fiche V5 mono-vue, assets mêmes URLs/frames différents, CI publique concurrente. Validation visuelle sur Android par utilisateur séparée.
+
 ## 2026-10-19 — Raccord catalogue après publication des médias Scarabacier
 - Base `gh-pages@00352371c18283178e84a9e7ea0c738a00ff0790` ; checkpoint de départ `checkpoint/lab-start-scarabacier-asset-catalog-refresh-2026-10-19` ; branche `work/lab-scarabacier-asset-catalog-refresh-2026-10-19`.
 - Autorité médias déjà publiée : `global-assets@a94829e4892aa5260d8747de0a9f50c4893f6be0` (PR #22 roulade nettoyée et PR #23 attaques V5 face/dos).
