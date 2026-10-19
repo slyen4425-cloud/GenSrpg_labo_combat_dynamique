@@ -297,12 +297,13 @@
             </label>
           </div>
           <p class="note">S'applique à l'approche au sol, sans modifier la vitesse ni les dégâts. Le visuel normal revient automatiquement après l'approche ou son interruption. Le sprite peut être une bande horizontale ou une image fixe.</p>
+          <p class="note">Ce sélecteur propose uniquement les animations de déplacement (et les modèles fixes compatibles), jamais les projectiles, casts ou impacts de capacité.</p>
         </fieldset>
         <fieldset data-creature-ranged-attack-appearance>
           <legend>Animation de la créature — attaque à distance</legend>
           <div class="grid two">
             <label>Sprite / image pendant le tir
-              <select data-creature-ranged-attack-visual data-asset-role="movement"><option value="">Animation normale de combat</option></select>
+              <select data-creature-ranged-attack-visual data-asset-role="attack"><option value="">Animation normale de combat</option></select>
             </label>
             <label>Type de visuel
               <select data-creature-ranged-attack-mode>
@@ -347,7 +348,8 @@
                 <option value="zone">Zone / aura</option>
                 <option value="status">Statut</option>
                 <option value="dodge">Esquive / disparition</option>
-                <option value="movement">Animation de créature (déplacement / attaque à distance)</option>
+                <option value="movement">Animation de déplacement de créature</option>
+                <option value="attack">Animation d’attaque de créature</option>
               </select>
             </label>
             <label>Nom
