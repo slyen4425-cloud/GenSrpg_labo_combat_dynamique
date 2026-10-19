@@ -1,3 +1,14 @@
+## 2026-10-19 — Scarabacier : réparation locale de la griffe arrière — LOT CIBLÉ
+
+- **Objectif** : supprimer uniquement un fragment de griffe tronqué et détaché, visible en bas à gauche de la vue joueur/dos. Ne pas changer le personnage ni ses autres vues.
+- **Propriétaire** : Asset Input Capture sur `global-assets`, média physique `assets/library/capture/creatures/scarabacier/runtime/scarabacier_player.webp`.
+- **Base** : `8e1d09fce0debf5b3a5a6a95c86091a78a38845e` ; checkpoint `checkpoint/lab-start-scarabacier-claw-2026-10-19` ; travail `work/lab-scarabacier-claw-2026-10-19`.
+- **Périmètre** : seul média player, workflow déterministe de réparation binaire de ce média, test sentinelle ciblé, `docs/LAB_CURRENT_WORK.md` et note de lot.
+- **Protégé** : les vues opponent et icon, tous les identifiants catalogue, autres créatures et FX, règles du combat, `gh-pages`, `main`, GenSrpG.
+- **Technique** : correction masquée minimale de la partie flottante, à partir des vrais octets du WebP publié ; signature source SHA256 imposée, sortie WebP RGBA 1024² avec transparence. Contrôles visuels avant/après, test sentinelle géométrique, `npm run ci`.
+- **Critère de sortie** : octets corrects dans GitHub, CI verte, publication fast-forward sur `global-assets`, checkpoint GREEN au SHA exact. Preview smartphone distincte.
+- **État** : en cours, pas GREEN tant que l'asset n'est pas physiquement commité et revérifié.
+
 ## 2026-10-18 — Scarabacier : correction de la vue dos (lot image isolé)
 
 - **Objectif** : remplacer la vue arrière joueur défaillante de Scarabacier (orientation corps/tête et position des pattes), sans modifier face, icône ni mécanique de combat.
