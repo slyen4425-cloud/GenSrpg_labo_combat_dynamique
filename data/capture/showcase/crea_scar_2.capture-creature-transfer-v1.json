@@ -99,11 +99,12 @@
       }
     },
     "skillIds": [
-      "cisaille"
+      "cisaille",
+      "cap_water_atk_1"
     ],
     "presentation": {
       "id": "creature:crea_scar_2",
-      "version": 3,
+      "version": 7,
       "subjectType": "creature",
       "subjectId": "crea_scar_2",
       "profileId": "biped",
@@ -114,17 +115,17 @@
       },
       "viewOverrides": {
         "player": {
-          "displayScale": 1.5,
+          "displayScale": 1.7,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 10
           }
         },
         "opponent": {
-          "displayScale": 1,
+          "displayScale": 0.95,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 50
           }
         }
       },
@@ -148,6 +149,40 @@
           "durationMs": 700,
           "offsetX": 0,
           "offsetY": 0
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-scarabacier-roll-01",
+          "mode": "roll",
+          "displayScale": 1.2,
+          "rotationTurns": 6,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-scarabacier-attack-face-v5",
+          "mode": "sprite",
+          "displayScale": 0.8,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-scarabacier-attack-dos-v5",
+          "mode": "sprite",
+          "displayScale": 0.8,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackPlacement": {
+          "front": {
+            "x": 0,
+            "y": 0
+          },
+          "back": {
+            "x": -20,
+            "y": -20
+          }
         }
       },
       "sockets": [
@@ -201,7 +236,7 @@
       },
       {
         "id": "slot-2",
-        "skillId": null
+        "skillId": "cap_water_atk_1"
       },
       {
         "id": "slot-3",

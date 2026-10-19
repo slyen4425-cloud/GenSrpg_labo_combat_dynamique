@@ -39,7 +39,7 @@ test("Scarabacier is the only added author creature preset; extraction is lossle
  assert.equal(catalog.filter(p=>p===scaraPath).length,1);
  const active=JSON.parse(await read(scaraPath)),archived=JSON.parse(await read(archivePath));
  assert.equal(archived.draft.id,"crea_scar_2"); // immutable prior author extraction
- assert.deepEqual(active.loadout.slots.map(s=>s.skillId),["cisaille",null,null,null,null]);
+ assert.deepEqual(active.loadout.slots.map(s=>s.skillId),["cisaille","cap_water_atk_1",null,null,null]);
  assert.equal(active.schema,"capture-creature-transfer-v1");
  assert.equal(active.draft.id,"crea_scar_2");
  assert.equal(active.draft.displayName,"Scarabacier");
@@ -93,4 +93,22 @@ test("Scarabacier replaces the native creature via canonical configuredCreatures
  assert.deepEqual(configuredCreatures.get("crea_scar_2").statValues,imported.value.statValues);
  assert.deepEqual(configuredCreatures.get("crea_scar_2").loadout,imported.value.loadout);
  assert.equal(configuredSkills.size,initialSkillSize,"no imported ability nor auto-equip");
+});
+
+test("Latest Scarabacier V7 author transfer keeps two attack poses and native moving visual settings",async()=>{
+ const active=JSON.parse(await read(scaraPath));
+ assert.equal(active.draft.presentation.version,7);
+ assert.deepEqual(active.draft.presentation.viewOverrides.player,{displayScale:1.7,position:{x:0,y:10}});
+ assert.deepEqual(active.draft.presentation.viewOverrides.opponent,{displayScale:0.95,position:{x:0,y:50}});
+ assert.equal(active.draft.presentation.visual.movement.assetId,"pack:capture:creature-scarabacier-roll-01");
+ assert.equal(active.draft.presentation.visual.movement.rotationTurns,6);
+ assert.equal(active.draft.presentation.visual.rangedAttack.assetId,"pack:capture:creature-scarabacier-attack-face-v5");
+ assert.equal(active.draft.presentation.visual.rangedAttackBack.assetId,"pack:capture:creature-scarabacier-attack-dos-v5");
+ assert.deepEqual(active.draft.presentation.visual.rangedAttackPlacement.back,{x:-20,y:-20});
+ assert.equal(active.draft.presentation.sockets[0].front.x,0.27319587565407266);
+ assert.equal(active.draft.presentation.sockets[0].back.x,0.7020618446705927);
+ assert.equal(active.statValues.values.acier,15);
+ assert.deepEqual(active.draft.skillIds,["cisaille","cap_water_atk_1"]);
+ const skills=await Promise.all(["cisaille","cap_water_atk_1"].map(id=>read("data/capture/showcase/"+id+".capture-skill-transfer-v1.json")));
+ assert.deepEqual(skills.map(s=>JSON.parse(s).draft.id),["cisaille","cap_water_atk_1"]);
 });

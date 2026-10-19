@@ -1,3 +1,10 @@
+## 2026-10-19 — Scarabacier : publication du dernier export auteur (V7)
+- Base publiée gh-pages@2df354568ba472c6b17f56975e5fd91af4bafe3e ; checkpoint départ checkpoint/lab-start-scarabacier-author-v7-2026-10-19 ; branche work/lab-scarabacier-author-v7-2026-10-19.
+- Source unique : export utilisateur `gensrpg-capture-creature-crea_scar_2.json`, ID stable `crea_scar_2`. Remplacer seulement `data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json` (pas une seconde fiche).
+- Respect intégral : vue joueur 1.7 position (0,10), opposant .95 position (0,50), roule 6 tours, animations attaque face/dos, décalage dos (-20,-20), stats Acier 15, résistance steel 35, socket mouth, réactions et audio.
+- Skills existantes confirmées dans le dépôt : cisaille et cap_water_atk_1 ; loadout slot-1 et slot-2 conservé ; aucun skill modifié.
+- Test de chargement, remplacement, non-duplication, statValues et export/import. CI 5/5 obligatoire, test réel téléphone distinct. main, assets originaux et autres créatures protégés.
+
 ## 2026-10-19 — Apparence V8 : ombres au contact, scales par camp, lecture déplacement et sous-sections
 - Base gh-pages@8b175388d1d54bb105dd54a5b076877829816cae ; checkpoint checkpoint/lab-start-creature-appearance-v8-2026-10-19 ; branche work/lab-creature-appearance-v8-2026-10-19.
 - Contrat optionnel V8 : visual.movementScaleByView, visual.rangedAttackScaleByView, visual.movementPlayback (frameMs=0 auto, mode boucle/une fois/garder la dernière). V1–V7 conservés.
