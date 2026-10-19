@@ -63,21 +63,21 @@ def warped_reference(master, action, side, index):
     if action=="deplacement":
         # A believable run cycle: feet alternate while back flexes and
         # head counterbalances; source orientation NEVER rotates.
-        dy+=2.8*(1-math.cos(2*theta))*chest
-        dx+=11*math.sin(theta)*fleg-10*math.sin(theta)*hleg
-        dy+=5*math.cos(theta)*fleg-4*math.cos(theta)*hleg
-        dy+=2.5*math.sin(theta+0.7)*head
-        dx+=8*(math.sin(theta+0.6)-math.sin(0.6))*tailf
-        dy+=5*(math.sin(theta+1.2)-math.sin(1.2))*tailf
+        dy+=4.5*(1-math.cos(2*theta))*chest
+        dx+=19*math.sin(theta)*fleg-18*math.sin(theta)*hleg
+        dy+=9*math.cos(theta)*fleg-8*math.cos(theta)*hleg
+        dy+=5*(math.sin(theta+0.7)-math.sin(0.7))*head
+        dx+=14*(math.sin(theta+0.6)-math.sin(0.6))*tailf
+        dy+=8*(math.sin(theta+1.2)-math.sin(1.2))*tailf
     else:
         # Head darts in the direction it ALREADY faces; never flips.
         envelope=max(0.0,math.sin(math.pi*(index-2)/15))**1.55 if 2<index<17 else 0
         direction=-1 if target_left else 1
-        dx+=7*direction*envelope*head
-        dy+=-4*envelope*head
-        dy+=4*envelope*chest
-        dx+=4*direction*envelope*fleg
-        dx+=5*(math.sin(theta+0.6)-math.sin(0.6))*tailf
+        dx+=19*direction*envelope*head
+        dy+=-10*envelope*head
+        dy+=9*envelope*chest
+        dx+=11*direction*envelope*fleg
+        dx+=11*(math.sin(theta+0.6)-math.sin(0.6))*tailf
     mapx=(xx-dx).astype(np.float32)
     mapy=(yy-dy).astype(np.float32)
     warped=cv2.remap(arr,mapx,mapy,cv2.INTER_LINEAR,
@@ -96,7 +96,7 @@ def ignite(base,side,index):
     fx=Image.new("RGBA",base.size)
     halo=Image.new("RGBA",base.size)
     hd=ImageDraw.Draw(halo); d=ImageDraw.Draw(fx)
-    reach=17+65*power
+    reach=20+68*power
     # Three attached and progressively narrowing tongues of hot gas.
     for k in range(3):
         step=reach*(0.79+0.12*k)
@@ -106,12 +106,13 @@ def ignite(base,side,index):
         y0=origin[1]+(k-1)*5
         x1=x0+direction*step
         y1=y0+yshift+bend
-        widths=[(11+9*power),(7+5*power),(3+3*power)]
+        widths=[(13+10*power),(10+6*power),(5+4*power)]
         col=[(236,56,11,125),(255,132,19,180),(255,225,88,215)][k]
         pts=[(x0,y0-widths[k]),(x0+direction*step*.43,y0-(widths[k]*.7)),
              (x1,y1),(x0+direction*step*.42,y0+widths[k]*.75),
              (x0,y0+widths[k])]
         hd.polygon(pts,fill=col)
+        d.polygon(pts,fill=(col[0],col[1],col[2],int(col[3]*.65)))
         d.line([(x0,y0),(x0+direction*step*.6,y0+yshift*.5),(x1,y1)],fill=col,width=max(2,7-k*2))
     halo=halo.filter(ImageFilter.GaussianBlur(7))
     merged=Image.alpha_composite(base,halo)
