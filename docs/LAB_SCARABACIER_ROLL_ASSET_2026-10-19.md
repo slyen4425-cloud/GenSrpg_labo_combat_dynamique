@@ -28,3 +28,14 @@ ZIP SHA256 + CRC, 16 PNG RGBA distincts 512×512, alpha, atlas réel avec transp
 catalogue autoritaire sans doublons, tests sentinelles et CI GitHub.
 Aucun statut GREEN si les fichiers réels n'ont pas été committés et vérifiés.
 Preview et ressenti visuel sur smartphone à confirmer par l'utilisateur.
+
+## Import physique vérifié en branche
+
+- Commit de médias réel : `2df5ba2912f0fa9e9c8d5553ddb8ff9a2c476c22`.
+- **16 PNG 512×512** distincts, **1 WebP transparent 6144×384** (469244 octets), **1 manifeste JSON**, fichier ZIP source conservé dans `_incoming/`.
+- SHA256 de l'atlas : `04a49f4235e3137cc98202bd6f277c0a6f0f41d65a2545c15242bcf1c237b48f`.
+- Identifiant unique `pack:capture:creature-scarabacier-roll-01` ; catalogue 187 assets / 98 sprites.
+- Workflow d'import `39231386319` SUCCESS ; `npm run ci` complet y compris sentinelle Scarabacier et cinq anciennes séquences acier.
+- Correction nécessaire au test historique : total de 97 sprites et 186 assets auparavant fixé ; seuls les deux totaux deviennent des **minimums append-only**. Vérification intégrale des anciennes sources, frames, atlas et identifiants maintenue.
+- Raccord de données : catalogue Global Assets utilisable par le sélecteur V4 `Créature > Apparence > Animation de déplacement`, sous réserve d'actualisation du catalogue chargé. La fiche auteur doit choisir le visuel et `frameCount: 16`. Aucun changement automatique à la fiche joueur n'a été appliqué.
+- Publication et checkpoint contrôlés séparément ; essai réel sur smartphone non revendiqué.
