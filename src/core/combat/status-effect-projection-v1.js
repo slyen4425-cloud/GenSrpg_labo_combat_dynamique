@@ -70,7 +70,10 @@ export function projectStatusStatEffectsV1({
     const instance of
     fighter.statusEffects ?? []
   ) {
-    if (!isStatusEffectRuntimeInstanceActiveV1(instance,time))continue;
+    if (!isStatusEffectRuntimeInstanceActiveV1(instance,time)) continue;
+    if (instance.definition.kind === "stat_modifier" &&
+        instance.definition.activationCondition === "moving" &&
+        fighter.movementActive !== true) continue;
     if(instance.definition.kind==="outgoing_damage_modifier"){
       outgoingDamagePct += instance.definition.modifierPct * instance.stacks;
       continue;

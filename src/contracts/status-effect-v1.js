@@ -122,7 +122,8 @@ const FIELDS_BY_KIND = Object.freeze({
     "statId",
     "modifierMode",
     "deltaPoints",
-    "percent"
+    "percent",
+    "activationCondition"
   ]),
   damage_over_time: new Set([
     ...COMMON_FIELDS,
@@ -443,6 +444,14 @@ export function normalizeStatusEffectV1(input) {
   }
 
   if (kind === "stat_modifier") {
+    const activationCondition = requiredString(
+      value.activationCondition ?? "always",
+      "StatusEffectV1.activationCondition"
+    );
+    if (!["always", "moving"].includes(activationCondition)) {
+      throw new RangeError("Unsupported stat modifier activationCondition: " + activationCondition);
+    }
+    if (activationCondition !== "always") output.activationCondition = activationCondition;
     output.statId = requiredString(
       value.statId,
       "StatusEffectV1.statId"

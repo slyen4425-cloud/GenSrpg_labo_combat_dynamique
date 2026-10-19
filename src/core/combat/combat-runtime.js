@@ -267,6 +267,10 @@ export function createCombatRuntime({
   }
 
   function removeRecord(record) {
+    if (record.mirrorReturn !== true && record.action?.actorId &&
+        typeof session.setMovementActiveV1 === "function") {
+      session.setMovementActiveV1(record.action.actorId, false);
+    }
     if (record.mirrorReturn === true) {
       returningProjectiles.delete(record.sequence);
     } else {
@@ -480,6 +484,9 @@ export function createCombatRuntime({
       Number(record.action.recoveryMs) || 0
     );
 
+    if (!record.mirrorReturn && typeof session.setMovementActiveV1 === "function") {
+      session.setMovementActiveV1(record.action.actorId, false);
+    }
     record.resolved = true;
     record.resolvedAtMs = Math.max(
       0,
@@ -632,6 +639,15 @@ export function createCombatRuntime({
     record.released = true;
 
     if (!earlyCounter) {
+      // One combat-owned movement gate, not a sprite timer or HUD guess.
+      const action = record.action;
+      if (!record.mirrorReturn &&
+          action?.actionType === "skill" &&
+          ["ground", "aerial", "burrow"].includes(action.skill?.approachMode) &&
+          Number(action.travelMs) > 0 &&
+          typeof session.setMovementActiveV1 === "function") {
+        session.setMovementActiveV1(action.actorId, true);
+      }
       onRelease(Object.freeze({
         action: record.action,
         elapsedMs: record.action.releaseAtMs
@@ -1845,14 +1861,13 @@ export function createCombatRuntime({
       if (!record) {
         return false;
       }
-      activeByActor.delete(actorId);
+      removeRecord(record);
       onProgress(idleProgress(actorId));
       return true;
     }
 
     const records = activeRecords();
-    activeByActor.clear();
-    returningProjectiles.clear();
+    for (const record of records) removeRecord(record);
 
     for (const record of records) {
       if (!record.mirrorReturn) onProgress(idleProgress(record.action.actorId));

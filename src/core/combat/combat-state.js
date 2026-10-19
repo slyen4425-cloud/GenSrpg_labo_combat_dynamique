@@ -238,6 +238,8 @@ function normalizeFighter(input) {
       input.movementEnergyPerStep ?? 0,
       `${id}.movementEnergyPerStep`
     ),
+    // CombatRuntime is the sole owner of this transient projection.
+    movementActive: input.movementActive === true,
     damageDealtTotal: finiteNonNegative(
       input.damageDealtTotal ?? 0,
       `${id}.damageDealtTotal`
@@ -335,6 +337,20 @@ export function createCombatState({
     fighters: Object.freeze(Object.fromEntries(entries)),
     persistentZones: Object.freeze([]),
     scheduledEffects: Object.freeze([])
+  });
+}
+
+export function withFighterMovementActiveV1(state, fighterId, active) {
+  const fighter = state?.fighters?.[fighterId];
+  if (!fighter) throw new RangeError("Unknown fighter: " + fighterId);
+  const value = active === true;
+  if (fighter.movementActive === value) return state;
+  return Object.freeze({
+    ...state,
+    fighters: Object.freeze({
+      ...state.fighters,
+      [fighterId]: Object.freeze({ ...fighter, movementActive: value })
+    })
   });
 }
 

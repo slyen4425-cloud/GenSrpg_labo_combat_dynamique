@@ -373,6 +373,7 @@ function humanTacticalStatusToContractV1(
     output.modifierPct=finiteNumber(status.modifierPct,"Variation dégâts infligés (%)");
   }
   if (output.kind === "stat_modifier") {
+    if (status.activationCondition === "moving") output.activationCondition = "moving";
     output.statId = requiredText(
       status.statId,
       "Statistique du statut"
@@ -5517,6 +5518,11 @@ function appendHumanSkillEffectV1(
       status.deltaPoints ?? 0,
       { step: "0.1" }
     );
+  const movingCondition = document.createElement("select");
+  movingCondition.dataset.skillStatusActivationCondition = "true";
+  createOption(movingCondition, "always", "Toujours pendant le buff");
+  createOption(movingCondition, "moving", "Uniquement pendant le déplacement réel");
+  movingCondition.value = status.activationCondition ?? "always";
   const statConfig = document.createElement("div");
   statConfig.className =
     "skill-status-config__specific";
@@ -5524,10 +5530,11 @@ function appendHumanSkillEffectV1(
     "stat_modifier";
   statConfig.append(
     tacticalFieldV1("Statistique", statId),
-    tacticalFieldV1(
-      "Variation en points",
-      deltaPoints
-    )
+    tacticalFieldV1("Variation en points", deltaPoints),
+    tacticalFieldV1("Activation du bonus", movingCondition),
+    (() => { const note = document.createElement("small"); note.className = "note";
+      note.textContent = "Armure de roulement : Statistique = Défense, variation = +50 (10 % de réduction en plus), activation = déplacement. Le buff doit être actif : bonus pendant le trajet, jamais à l'arrêt.";
+      return note; })()
   );
 
   const outgoingDamagePctInput=tacticalNumberInputV1(
@@ -6613,6 +6620,8 @@ function readHumanSkillEffectsV1(root) {
       };
 
       if (statusKind === "stat_modifier") {
+        const activation = row.querySelector("[data-skill-status-activation-condition]")?.value ?? "always";
+        if (activation === "moving") status.activationCondition = "moving";
         status.statId = row.querySelector(
           "[data-skill-status-stat-id]"
         ).value;

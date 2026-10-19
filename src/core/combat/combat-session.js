@@ -3,6 +3,7 @@ import {
   addChargeTimeEffect,
   advanceCombatTime,
   createCombatState,
+  withFighterMovementActiveV1,
   replaceFighter as replaceCombatFighter
 } from "./combat-state.js";
 import {
@@ -75,6 +76,11 @@ export function createCombatSession({
   });
 
   function snapshot() {
+    return state;
+  }
+
+  function setMovementActiveV1(actorId, active) {
+    state = withFighterMovementActiveV1(state, actorId, active);
     return state;
   }
 
@@ -525,6 +531,7 @@ export function createCombatSession({
       return normalizedSkillSpeedMultiplier;
     },
     snapshot,
+    setMovementActiveV1,
     registerReserveSkillResolver,
     previewMovement,
     previewSkill,
