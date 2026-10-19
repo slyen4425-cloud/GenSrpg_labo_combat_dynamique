@@ -351,6 +351,9 @@ function effectLinesFor(
       ]);
 
     case "stat_modifier": {
+      const conditionSuffix = definition.activationCondition === "moving"
+        ? " (uniquement pendant le déplacement)"
+        : "";
       const semanticLines =
         semanticStatModifierLines({
           definition,
@@ -362,7 +365,7 @@ function effectLinesFor(
         semanticLines &&
         semanticLines.length > 0
       ) {
-        return semanticLines;
+        return Object.freeze(semanticLines.map(line => line + conditionSuffix));
       }
 
       const stat =
@@ -374,7 +377,7 @@ function effectLinesFor(
             signedNumber(
               definition.percent,
               " %"
-            )
+            ) + conditionSuffix
         ]);
       }
       return Object.freeze([
@@ -383,7 +386,7 @@ function effectLinesFor(
           signedNumber(
             definition.deltaPoints,
             " pt"
-          )
+          ) + conditionSuffix
       ]);
     }
 
