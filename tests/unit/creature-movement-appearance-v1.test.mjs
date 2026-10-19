@@ -33,9 +33,11 @@ test("Créature > Apparence uses existing media library and allows optional ani
   const html=await readFile(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
   for(const selector of ["data-creature-movement-appearance","data-creature-movement-visual","data-creature-movement-mode","data-creature-movement-scale","data-creature-movement-turns","data-creature-movement-frames","data-creature-movement-transition"])assert.match(html,new RegExp(selector));
   assert.ok(CREATOR_VISUAL_ROLES_V1.includes("movement"));
-  for(const kind of [{category:"creature",assetType:"portrait"},{category:"movement",assetType:"sprite"},{category:"skill",assetType:"fx"}]){
+  // Compatibility remains for actual creature visuals; skill FX must not appear in movement.
+  for(const kind of [{category:"creature",assetType:"portrait"},{category:"movement",assetType:"sprite"}]){
     assert.equal(captureEditorAssetMatchesRoleV1({ ...kind,mediaType:"image",compatibility:{uses:["editor"]}},"movement"),true);
   }
+  assert.equal(captureEditorAssetMatchesRoleV1({category:"skill",assetType:"fx",mediaType:"image",compatibility:{uses:["editor"]}},"movement"),false);
   assert.equal(captureEditorAssetMatchesRoleV1({assetType:"icon",mediaType:"image",compatibility:{uses:["editor"]}},"movement"),false);
 });
 test("Human Creature Draft V3 retains optional V4 movement presentation and legacy draft default",()=>{
