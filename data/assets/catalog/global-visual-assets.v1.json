@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 186,
+    "assets": 187,
     "icons": 70,
-    "sprites": 97,
+    "sprites": 98,
     "fx": 2,
     "portraits": 12,
     "backgrounds": 5,
@@ -6111,6 +6111,43 @@
         "frameCount": 20,
         "frameMs": 65,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-roll-01",
+      "label": "Scarabacier — boule roulante (déplacement, 16 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "scarabacier",
+        "steel",
+        "movement",
+        "roll",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/animations/roll/atlases/scarabacier_roll_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 16,
+        "frameMs": 85,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

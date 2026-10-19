@@ -1,0 +1,115 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "scarabacier",
+  "animation": "roll",
+  "assetId": "pack:capture:creature-scarabacier-roll-01",
+  "sourceZip": "_incoming/scarabacier_roll_frames_16_ready.zip",
+  "sourceSha256": "e082f9da7d8eb5604d2e3b2e1177808ae53f9408cb644ec9e4659e0564c631e4",
+  "sourceSheetSize": [
+    1254,
+    1254
+  ],
+  "sourceGrid": [
+    4,
+    4
+  ],
+  "frameCount": 16,
+  "frameSize": [
+    512,
+    512
+  ],
+  "native512": false,
+  "frameMs": 85,
+  "playbackMode": "loop",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/scarabacier_roll_01.png",
+      "sha256": "489061e7701cca35d53223e135c2a787c1a3a5b43b2821b87dd101a246e5c22a"
+    },
+    {
+      "index": 1,
+      "file": "frames/scarabacier_roll_02.png",
+      "sha256": "9847c845f5e5d9a146028fc23a7d486fa1f78b9444ba7b5329eb8723329a2026"
+    },
+    {
+      "index": 2,
+      "file": "frames/scarabacier_roll_03.png",
+      "sha256": "8dc0bfd3a83827a12a89ad552c93f40b948245844f1b12c1f37f13b457e72014"
+    },
+    {
+      "index": 3,
+      "file": "frames/scarabacier_roll_04.png",
+      "sha256": "11f099200fc5124cbcb8e5fbc944bd082aeb1916a83c5316ebc379f1ff011616"
+    },
+    {
+      "index": 4,
+      "file": "frames/scarabacier_roll_05.png",
+      "sha256": "2f54da7fa73629b5bc915d7468b4d1b69a25843d7b997043fe5ae989dd3b27d8"
+    },
+    {
+      "index": 5,
+      "file": "frames/scarabacier_roll_06.png",
+      "sha256": "f53bc3482499bddd4beabef4215a38ce8f0246ea0ba3135099158c39f9bc7a15"
+    },
+    {
+      "index": 6,
+      "file": "frames/scarabacier_roll_07.png",
+      "sha256": "1c32c09b53db78efd36a5c772ad5076cee8e09baedf499caf11d652b2ca558f1"
+    },
+    {
+      "index": 7,
+      "file": "frames/scarabacier_roll_08.png",
+      "sha256": "ff48d0fadf227f74c226119208a73f3582c9fa795549d5239e11b64d34df3de9"
+    },
+    {
+      "index": 8,
+      "file": "frames/scarabacier_roll_09.png",
+      "sha256": "1947fa0f49b6d83e30cf4937a49bc4ae893b00248397819d468a01ba436b3ffc"
+    },
+    {
+      "index": 9,
+      "file": "frames/scarabacier_roll_10.png",
+      "sha256": "110592e0dcc5bf61a5312b4eb138e579178ff05f289a4b48aa772660726718fa"
+    },
+    {
+      "index": 10,
+      "file": "frames/scarabacier_roll_11.png",
+      "sha256": "447b1e7ff845c612847b9987a901ccf989be0e81ce2fdda98e183308dd33f385"
+    },
+    {
+      "index": 11,
+      "file": "frames/scarabacier_roll_12.png",
+      "sha256": "38f39ef7bda1639a7d23290db133a082909ea42c78fef9da8897853b9108402c"
+    },
+    {
+      "index": 12,
+      "file": "frames/scarabacier_roll_13.png",
+      "sha256": "321980405471572d65ca2573bcc2d7e958dcd16820f8189d82618881394e700d"
+    },
+    {
+      "index": 13,
+      "file": "frames/scarabacier_roll_14.png",
+      "sha256": "3706318b694b9fd3a6492b36a3eea2b385ce6b1b2388e0880c12a8833f82fe97"
+    },
+    {
+      "index": 14,
+      "file": "frames/scarabacier_roll_15.png",
+      "sha256": "80093092252888a1a1a51bbe8ddfc0824975dff485529bd16bcc05e662ce5f3f"
+    },
+    {
+      "index": 15,
+      "file": "frames/scarabacier_roll_16.png",
+      "sha256": "281d40d4d50c4121125b9db05b9959b3aa145a57fa5d36717b49807d20e79cad"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/scarabacier_roll_atlas.webp",
+    "format": "sprite-strip",
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "frameCount": 16,
+    "sha256": "04a49f4235e3137cc98202bd6f277c0a6f0f41d65a2545c15242bcf1c237b48f"
+  },
+  "note": "Only asset catalog: runtime binding for the movement transformation is separate."
+}
