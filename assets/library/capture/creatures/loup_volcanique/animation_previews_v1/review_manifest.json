@@ -1,0 +1,495 @@
+{
+  "schema": "capture-creature-animation-review-v1",
+  "creatureId": "loup_volcanique",
+  "status": "PREVIEW_READY_AWAITING_AUTHOR_APPROVAL",
+  "catalogChanged": false,
+  "runtimeIntegrated": false,
+  "baseSource": "global-assets canonical creature models 320x320 RGBA",
+  "frameMaster": "canonical model upscaled to 512x512 and saved as approved-origin candidate",
+  "technique": "non-generative deformable 2D motion prototype; fixed 3/4 viewpoint; no skeletal reconstruction",
+  "frame1": "exact RGBA pixels of saved master 512",
+  "frameCount": 20,
+  "notes": [
+    "No creature orientation inversion, rotation or replacement",
+    "Locomotion is a provisional run-in-place; attack is a provisional fiery lunge",
+    "User review and approval of both actions and both perspectives is REQUIRED before any catalog import"
+  ],
+  "outputs": [
+    {
+      "action": "attack",
+      "view": "face",
+      "frameCount": 20,
+      "canvas": [
+        512,
+        512
+      ],
+      "sourceCanonical": "assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_opponent.webp",
+      "sourceSha256": "9fd0a948075b673d2cd6a12156082612e0cddbe9999f3c6710be2f1bcc1a79c1",
+      "master": "masters/loup_volcanique_face_master_512.png",
+      "masterSha256": "b9c4be35654d1fcf055430df70104d074b18ce1bea871559e561e3f9c875f3e8",
+      "frameOneExact": true,
+      "atlas": "attack/face/loup_volcanique_attack_face_atlas_5x4.png",
+      "preview": "attack/face/loup_volcanique_attack_face_preview.webp",
+      "contact": "attack/face/loup_volcanique_attack_face_contact.jpg",
+      "frames": [
+        {
+          "frame": 1,
+          "file": "attack/face/frames/loup_volcanique_attack_face_01.png",
+          "sha256": "b9c4be35654d1fcf055430df70104d074b18ce1bea871559e561e3f9c875f3e8"
+        },
+        {
+          "frame": 2,
+          "file": "attack/face/frames/loup_volcanique_attack_face_02.png",
+          "sha256": "7511cfc8fd9a4d7124dc8d3d40b6af50d68fef9bc0c8ea348428dc9a337245ae"
+        },
+        {
+          "frame": 3,
+          "file": "attack/face/frames/loup_volcanique_attack_face_03.png",
+          "sha256": "4877c496aa16719dada7364a2f714873a60323b28910abf26be2974f8346ccd6"
+        },
+        {
+          "frame": 4,
+          "file": "attack/face/frames/loup_volcanique_attack_face_04.png",
+          "sha256": "b2c3ea0822f6ce8a3d35e08d877b991ff7228b578c39d1fc73b76f3228d4242a"
+        },
+        {
+          "frame": 5,
+          "file": "attack/face/frames/loup_volcanique_attack_face_05.png",
+          "sha256": "fc9795ba07e423e818c51cc706f8b18545cda0b1ba97c486c013fd150a6ed4e9"
+        },
+        {
+          "frame": 6,
+          "file": "attack/face/frames/loup_volcanique_attack_face_06.png",
+          "sha256": "2b29a4679ddf105f052205415130909540936bfa2eb1f7317b8b797aef3287ae"
+        },
+        {
+          "frame": 7,
+          "file": "attack/face/frames/loup_volcanique_attack_face_07.png",
+          "sha256": "e2530e4f462561732158cf6ef905657713159361a201afb9b42bb16895dc32f1"
+        },
+        {
+          "frame": 8,
+          "file": "attack/face/frames/loup_volcanique_attack_face_08.png",
+          "sha256": "6c77b2dcbe1fb429eb9f88db551ae9cef3cf47d0f2298cd20bb97c6f72ced2be"
+        },
+        {
+          "frame": 9,
+          "file": "attack/face/frames/loup_volcanique_attack_face_09.png",
+          "sha256": "8d8769e3762e302429d4e5634e852b5f333fa05170c57a7b99978281ffeec705"
+        },
+        {
+          "frame": 10,
+          "file": "attack/face/frames/loup_volcanique_attack_face_10.png",
+          "sha256": "e785b7132b79879f389cba22e433ff675b24ea664655b449cf03a7f1e792587e"
+        },
+        {
+          "frame": 11,
+          "file": "attack/face/frames/loup_volcanique_attack_face_11.png",
+          "sha256": "aabeda3ad0cc90f1ed386df9a87d136979df0b43a6f406aac27a543b28357110"
+        },
+        {
+          "frame": 12,
+          "file": "attack/face/frames/loup_volcanique_attack_face_12.png",
+          "sha256": "8fbf103fcacb7ce563840139fc7ac9956ec572b2b67eb38da755f671ff3b9683"
+        },
+        {
+          "frame": 13,
+          "file": "attack/face/frames/loup_volcanique_attack_face_13.png",
+          "sha256": "4e93557730f82f042b3c126b862c3c9d75550ea6470ec6149e514993e7274bf7"
+        },
+        {
+          "frame": 14,
+          "file": "attack/face/frames/loup_volcanique_attack_face_14.png",
+          "sha256": "3b192bb523e553d07d74a4ced158e494169f9d8e94c828292ff6169a77ba2493"
+        },
+        {
+          "frame": 15,
+          "file": "attack/face/frames/loup_volcanique_attack_face_15.png",
+          "sha256": "ff317c4889902a4b029bc8804934dfcabcebc859a3fd489984b8156d359b974a"
+        },
+        {
+          "frame": 16,
+          "file": "attack/face/frames/loup_volcanique_attack_face_16.png",
+          "sha256": "aeb8c7ef1e934aed4716db7eef122d5248a1cf67d789f91988a5c8b871bf68fd"
+        },
+        {
+          "frame": 17,
+          "file": "attack/face/frames/loup_volcanique_attack_face_17.png",
+          "sha256": "fa1e4d890374ba5e81156bdbbf027d1104fd9ab50222a46440d4ca699fe23862"
+        },
+        {
+          "frame": 18,
+          "file": "attack/face/frames/loup_volcanique_attack_face_18.png",
+          "sha256": "b47f12d1a085baac5d367e3d6d1ae3146f7c8f8dab9b19825476b29acdb72025"
+        },
+        {
+          "frame": 19,
+          "file": "attack/face/frames/loup_volcanique_attack_face_19.png",
+          "sha256": "e54e70962a59e7ac81bb045b65fbd152710e71b49604814d7c9d144bcb858ad7"
+        },
+        {
+          "frame": 20,
+          "file": "attack/face/frames/loup_volcanique_attack_face_20.png",
+          "sha256": "b9c4be35654d1fcf055430df70104d074b18ce1bea871559e561e3f9c875f3e8"
+        }
+      ]
+    },
+    {
+      "action": "movement",
+      "view": "face",
+      "frameCount": 20,
+      "canvas": [
+        512,
+        512
+      ],
+      "sourceCanonical": "assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_opponent.webp",
+      "sourceSha256": "9fd0a948075b673d2cd6a12156082612e0cddbe9999f3c6710be2f1bcc1a79c1",
+      "master": "masters/loup_volcanique_face_master_512.png",
+      "masterSha256": "b9c4be35654d1fcf055430df70104d074b18ce1bea871559e561e3f9c875f3e8",
+      "frameOneExact": true,
+      "atlas": "movement/face/loup_volcanique_movement_face_atlas_5x4.png",
+      "preview": "movement/face/loup_volcanique_movement_face_preview.webp",
+      "contact": "movement/face/loup_volcanique_movement_face_contact.jpg",
+      "frames": [
+        {
+          "frame": 1,
+          "file": "movement/face/frames/loup_volcanique_movement_face_01.png",
+          "sha256": "b9c4be35654d1fcf055430df70104d074b18ce1bea871559e561e3f9c875f3e8"
+        },
+        {
+          "frame": 2,
+          "file": "movement/face/frames/loup_volcanique_movement_face_02.png",
+          "sha256": "4384b1f8cecde6c2169b2cdddf0c4b70d212c4af4159f57301292b79c621c49d"
+        },
+        {
+          "frame": 3,
+          "file": "movement/face/frames/loup_volcanique_movement_face_03.png",
+          "sha256": "5b84000538c2b304f63595cffe0d675048497e4236f59759be8c14f6a48dc39a"
+        },
+        {
+          "frame": 4,
+          "file": "movement/face/frames/loup_volcanique_movement_face_04.png",
+          "sha256": "64d77cc2edf95f9ba19b9ae892203976747d32f42b01251a09874daac4194f38"
+        },
+        {
+          "frame": 5,
+          "file": "movement/face/frames/loup_volcanique_movement_face_05.png",
+          "sha256": "53d22a2dcb19dea9b9ec8f89ce6d705616422564180f79ec2efa8fff6701b626"
+        },
+        {
+          "frame": 6,
+          "file": "movement/face/frames/loup_volcanique_movement_face_06.png",
+          "sha256": "5d5470fec1634d2b897cb77284b8d04defa09324425b5d826fdde85d94c6bb21"
+        },
+        {
+          "frame": 7,
+          "file": "movement/face/frames/loup_volcanique_movement_face_07.png",
+          "sha256": "ac2400538f718ed70a5059eab92484ad9eb82cca7fa20839ec7d78e4432002f3"
+        },
+        {
+          "frame": 8,
+          "file": "movement/face/frames/loup_volcanique_movement_face_08.png",
+          "sha256": "11e221664258798a25720c23cd5b7b44153ec4164cba3c8b3dac8f31d5699f05"
+        },
+        {
+          "frame": 9,
+          "file": "movement/face/frames/loup_volcanique_movement_face_09.png",
+          "sha256": "96831324434f92eaad31114769e9f85d29bea99c1f29f76f9607fda04075d792"
+        },
+        {
+          "frame": 10,
+          "file": "movement/face/frames/loup_volcanique_movement_face_10.png",
+          "sha256": "28d1949ba053a9eca63ebf6eafd687266c97003e34809c9927bdeb4177a17b48"
+        },
+        {
+          "frame": 11,
+          "file": "movement/face/frames/loup_volcanique_movement_face_11.png",
+          "sha256": "014a33eccf70ea974140b29c20e5167da187b6165b8db9c263723a7978195507"
+        },
+        {
+          "frame": 12,
+          "file": "movement/face/frames/loup_volcanique_movement_face_12.png",
+          "sha256": "936a255fb8229dca99acfa447aa64eb5ea58a9027c2e35194446f630625b976e"
+        },
+        {
+          "frame": 13,
+          "file": "movement/face/frames/loup_volcanique_movement_face_13.png",
+          "sha256": "c152518b2660b2737f444f99b01d093caa4cc2c01f6e449ff6bb209104fefbc7"
+        },
+        {
+          "frame": 14,
+          "file": "movement/face/frames/loup_volcanique_movement_face_14.png",
+          "sha256": "01790b8eded80f57c2f97f2a2427bf433aa2f8e7079a997eb009b603d738366d"
+        },
+        {
+          "frame": 15,
+          "file": "movement/face/frames/loup_volcanique_movement_face_15.png",
+          "sha256": "36abb6761b0663c27d00a076a2379c80100986fb405a06076093cf7c65961419"
+        },
+        {
+          "frame": 16,
+          "file": "movement/face/frames/loup_volcanique_movement_face_16.png",
+          "sha256": "cd97bd34cec4cc1aad03ea19af53c740f2e09ec79cdd35a62564e343d3967be3"
+        },
+        {
+          "frame": 17,
+          "file": "movement/face/frames/loup_volcanique_movement_face_17.png",
+          "sha256": "15d0b4aa3662e61fbe6066b35cf2fb096e00303eaade01c0cce1e8f52f5987b4"
+        },
+        {
+          "frame": 18,
+          "file": "movement/face/frames/loup_volcanique_movement_face_18.png",
+          "sha256": "d22dbdbf7e509b38cdf617118426ef6ff947266c5b3105bbc056dfbeb788385d"
+        },
+        {
+          "frame": 19,
+          "file": "movement/face/frames/loup_volcanique_movement_face_19.png",
+          "sha256": "d7accd2482a14c5f489269a90177c5ee371a17d7692e1ad913c232c9f1e7fe87"
+        },
+        {
+          "frame": 20,
+          "file": "movement/face/frames/loup_volcanique_movement_face_20.png",
+          "sha256": "b9c4be35654d1fcf055430df70104d074b18ce1bea871559e561e3f9c875f3e8"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "view": "dos",
+      "frameCount": 20,
+      "canvas": [
+        512,
+        512
+      ],
+      "sourceCanonical": "assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_player.webp",
+      "sourceSha256": "5d769bc14112fd4e36d7da48f7089aa5f086704b82c6e5efcb121f8f3d42ae0b",
+      "master": "masters/loup_volcanique_dos_master_512.png",
+      "masterSha256": "4d8d445c4cc0dd3f3e29160131d389d1b293ddd9dd252c62552daeb910c129ea",
+      "frameOneExact": true,
+      "atlas": "attack/dos/loup_volcanique_attack_dos_atlas_5x4.png",
+      "preview": "attack/dos/loup_volcanique_attack_dos_preview.webp",
+      "contact": "attack/dos/loup_volcanique_attack_dos_contact.jpg",
+      "frames": [
+        {
+          "frame": 1,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_01.png",
+          "sha256": "4d8d445c4cc0dd3f3e29160131d389d1b293ddd9dd252c62552daeb910c129ea"
+        },
+        {
+          "frame": 2,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_02.png",
+          "sha256": "9372391c7a50fc15b9b796c967861a0da00965571b15a2240c47931e43a5c1a3"
+        },
+        {
+          "frame": 3,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_03.png",
+          "sha256": "e8b750e7575673c509c08c1ee3f85f4361c5450baad71447277131858e44cc67"
+        },
+        {
+          "frame": 4,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_04.png",
+          "sha256": "eb8e20c5e6162e61de1c5778a5e86ab2e85334dbb5b35cad1adfe2dce5ba6ea3"
+        },
+        {
+          "frame": 5,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_05.png",
+          "sha256": "9a6c42eed306bf9a003021c25760c7a00788062837df1ea1813794b32f1f061a"
+        },
+        {
+          "frame": 6,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_06.png",
+          "sha256": "edbae35cbe6d98f25dd90e441a183c1bac3dc37ee94fb57fb8eaafa6f0712997"
+        },
+        {
+          "frame": 7,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_07.png",
+          "sha256": "13e7620ce9527610b6b9edc04eb1a76b8eaf6db8461fee5aa5902ef484befc99"
+        },
+        {
+          "frame": 8,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_08.png",
+          "sha256": "ba51b7c13bbb54e327fd8020772e748ee9c4f91433526463d61e5aa12ddff047"
+        },
+        {
+          "frame": 9,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_09.png",
+          "sha256": "ef2845a58ddd3b7b0bfd4a35fb9b0fcc8b6b971361d4c9e5846411c12e3d5701"
+        },
+        {
+          "frame": 10,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_10.png",
+          "sha256": "778cb7573313b40c0a2de7a26d9ebc77b46492aef0acf102e502f08e06291cd6"
+        },
+        {
+          "frame": 11,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_11.png",
+          "sha256": "ccb58da1254a67c84b5ccc5d950f0b07d5270658aa5f2bb5cebcab49d5cb7fa5"
+        },
+        {
+          "frame": 12,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_12.png",
+          "sha256": "ff533ed69a373335933a1b2e57213a8c257431519abc82e8dc08e13f5a3a50ff"
+        },
+        {
+          "frame": 13,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_13.png",
+          "sha256": "9210f42c79cc947b62baadb6ee31390fed1956d544afaf3af525a8a6f94a6ec0"
+        },
+        {
+          "frame": 14,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_14.png",
+          "sha256": "e21dd393c34b732e3fa86704fe7a70eaabecb0773bb01492fcae88f0caca3810"
+        },
+        {
+          "frame": 15,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_15.png",
+          "sha256": "767c4ed59b5747a67bd33e4c934eed834abd3ae848602870086d73b1b5a67819"
+        },
+        {
+          "frame": 16,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_16.png",
+          "sha256": "9cf193075808360aa147e82c7897069df333f238b06ba1c718d8ab51640d6c97"
+        },
+        {
+          "frame": 17,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_17.png",
+          "sha256": "b49d44a5132489a12bb513e103a1b9c2a8c86edbe6822ebddcbc6abc9523ffae"
+        },
+        {
+          "frame": 18,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_18.png",
+          "sha256": "47fb61103b8caac5424e6c9b39ddbbcc7e222268c5d1899228484dcf8fde7841"
+        },
+        {
+          "frame": 19,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_19.png",
+          "sha256": "30e5fc5814969d9e019bf06da7e6f36fd4a77804126c2972dc9713ed968ef945"
+        },
+        {
+          "frame": 20,
+          "file": "attack/dos/frames/loup_volcanique_attack_dos_20.png",
+          "sha256": "4d8d445c4cc0dd3f3e29160131d389d1b293ddd9dd252c62552daeb910c129ea"
+        }
+      ]
+    },
+    {
+      "action": "movement",
+      "view": "dos",
+      "frameCount": 20,
+      "canvas": [
+        512,
+        512
+      ],
+      "sourceCanonical": "assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_player.webp",
+      "sourceSha256": "5d769bc14112fd4e36d7da48f7089aa5f086704b82c6e5efcb121f8f3d42ae0b",
+      "master": "masters/loup_volcanique_dos_master_512.png",
+      "masterSha256": "4d8d445c4cc0dd3f3e29160131d389d1b293ddd9dd252c62552daeb910c129ea",
+      "frameOneExact": true,
+      "atlas": "movement/dos/loup_volcanique_movement_dos_atlas_5x4.png",
+      "preview": "movement/dos/loup_volcanique_movement_dos_preview.webp",
+      "contact": "movement/dos/loup_volcanique_movement_dos_contact.jpg",
+      "frames": [
+        {
+          "frame": 1,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_01.png",
+          "sha256": "4d8d445c4cc0dd3f3e29160131d389d1b293ddd9dd252c62552daeb910c129ea"
+        },
+        {
+          "frame": 2,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_02.png",
+          "sha256": "a825890900b305efaa3927bfac2bc55fb5f2968e64384d8bcdf9f5a88430744e"
+        },
+        {
+          "frame": 3,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_03.png",
+          "sha256": "497d7c58ce4ba99ab0cf8f2f7df899b5ef0e962c8055a1cdac83313d08b4482a"
+        },
+        {
+          "frame": 4,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_04.png",
+          "sha256": "a3ebc4cdf5db200a27ec1db1f5c1cca2811c9554a8ba6ca7497f0eb948e29833"
+        },
+        {
+          "frame": 5,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_05.png",
+          "sha256": "3671552646310f8bbc766d144be5e01caca47ed582d46caf2d5fd65705487c64"
+        },
+        {
+          "frame": 6,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_06.png",
+          "sha256": "4388508b53ebd1f207122e1d60ed94df299e5336def7f290d37040902a010123"
+        },
+        {
+          "frame": 7,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_07.png",
+          "sha256": "0a21f2cf0434996c33a68b08315cb740941bf3e5ec097c039e77692bc55b3b38"
+        },
+        {
+          "frame": 8,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_08.png",
+          "sha256": "6e75d167c31a9fad05ff010c5c2bf662393310a411cd2bd68df76c62d4b3eb8f"
+        },
+        {
+          "frame": 9,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_09.png",
+          "sha256": "8bf8ecc0b98ff3200aabba5164c2e6d9a865551076e75baca918216cc97a1687"
+        },
+        {
+          "frame": 10,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_10.png",
+          "sha256": "a21e3c3d151e330c11b853487d96bf58f5fa89a7a9e9bb8bed4bebc9b1f9289d"
+        },
+        {
+          "frame": 11,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_11.png",
+          "sha256": "567136c9ffbaa68ef93ac5c46527ca6d729e95fbdf35dc963e61a8c0fd04d4bf"
+        },
+        {
+          "frame": 12,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_12.png",
+          "sha256": "cda55c31753cb7607a3c1ae4c3cfe1f68b0d6c90316d180ecd095dc9a7e2f7c0"
+        },
+        {
+          "frame": 13,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_13.png",
+          "sha256": "36bf77cb4236ccce8b0f888d986125db1c49572d2b02019083f95867efbc43ab"
+        },
+        {
+          "frame": 14,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_14.png",
+          "sha256": "750861a614aa43531ec10b24f011d7c3b30f8d6337ee7de2ff0c8184f3529c13"
+        },
+        {
+          "frame": 15,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_15.png",
+          "sha256": "43da6e5fcec63ab2987894b23216280a9324ee8f0f30ab6bd30152246f5cdf70"
+        },
+        {
+          "frame": 16,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_16.png",
+          "sha256": "c28b33d5635f0c428233fd96ecda1307fffb703592c9ac70852db80b256396d9"
+        },
+        {
+          "frame": 17,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_17.png",
+          "sha256": "5c75aa67f740ce15093c4bd00a4b1f59dc0b711dc595c86aadc8e5cf45a63a36"
+        },
+        {
+          "frame": 18,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_18.png",
+          "sha256": "a4bbe1424615793d0699a3b67728706484835d1611900756c6e68cc8de9341ad"
+        },
+        {
+          "frame": 19,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_19.png",
+          "sha256": "2c546a19b126a4e37daeb02386ecdefffbd7c11ababbb7b604361419c97dccec"
+        },
+        {
+          "frame": 20,
+          "file": "movement/dos/frames/loup_volcanique_movement_dos_20.png",
+          "sha256": "4d8d445c4cc0dd3f3e29160131d389d1b293ddd9dd252c62552daeb910c129ea"
+        }
+      ]
+    }
+  ]
+}
