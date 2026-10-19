@@ -11,7 +11,8 @@ const CREATOR_VISUAL_ROLES_V1 = Object.freeze([
   "zone",
   "status",
   "dodge",
-  "movement"
+  "movement",
+  "attack"
 ]);
 
 function defaultCreateId() {
@@ -71,6 +72,22 @@ function definitionFor({
       tags: Object.freeze([
         "creator",
         "creature"
+      ])
+    });
+  }
+
+  // Creature attack animations are not skill cast/projectile sprites.
+  // One shared AssetDefinition and importer remain authoritative.
+  if (role === "attack") {
+    return Object.freeze({
+      ...common,
+      assetType: "sprite",
+      category: "creature",
+      tags: Object.freeze([
+        "creator",
+        "creature",
+        "attack",
+        "animated"
       ])
     });
   }
