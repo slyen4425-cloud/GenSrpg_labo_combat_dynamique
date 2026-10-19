@@ -186,7 +186,13 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       : (binding.version >= 5 ? binding.visual?.rangedAttack ?? null : null);
     if (!slot) return null;
     // Both camera poses resolve through the ONE existing asset catalog.
-    return movementFxFor({ version: 4, visual: { movement: slot } });
+    const source = movementFxFor({ version: 4, visual: { movement: slot } });
+    const placement = binding.version >= 7
+      ? binding.visual?.rangedAttackPlacement?.[view] ?? null
+      : null;
+    return placement === null ? source : Object.freeze({
+      ...source, offsetX: placement.x, offsetY: placement.y
+    });
   }
 
   const creatureById = new Map(

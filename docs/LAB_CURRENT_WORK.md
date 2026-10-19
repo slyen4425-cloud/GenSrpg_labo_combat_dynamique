@@ -1,3 +1,11 @@
+## 2026-10-19 — Correction alignement sprite d'attaque DOS (joueur)
+- Base publique gh-pages@55b38230a0f12c4cc6f956b40e3ea7ee1ae213aa ; checkpoint départ checkpoint/lab-start-ranged-pose-alignment-2026-10-19 ; branche work/lab-ranged-pose-alignment-2026-10-19.
+- Symptôme auteur : pendant l'animation d'attaque joueur/dos, la silhouette apparaît trop à droite, donnant l'impression d'une courte téléportation ; attaque ennemi/face correcte.
+- Hypothèse vérifiée structurellement : le renderer ancre le sprite temporaire au cadre du modèle de base, indépendamment du cadrage interne des frames importées ; aucun réglage de correction du sprite n'existait.
+- Solution : contrat V7 optionnel visual.rangedAttackPlacement avec offsets de présentation X/Y indépendants pour front/back (±400px), uniquement sur le shell du sprite d'attaque ; V1-V6 inchangés, offsets zéro sans nouvelle version, pas de changement du plan de mouvement, des dégâts ni du modèle de collision.
+- Sentinelle RED puis GREEN tests/unit/capture-ranged-pose-alignment-2026-10-19.test.mjs : normalisation, editor roundtrip, export natif, rendu shell et restauration, UI. CI 5/5 + checkpoint GREEN + Pages obligatoires avant déclaration publiée ; validation visuelle Android réservée à l'auteur.
+- Périmètre : contrat, UI, adaptateur natif, render shell commun, tests et doc. Protégés : global-assets, données créature/skills, main, Zombicide-40k, labo exploration.
+
 ## 2026-10-19 — Animation d'attaque propre à chaque vue (face / dos)
 - Base publique `gh-pages@552f4020d767a6b10848da755d6a1ebb9ce1b5ea` ; checkpoint de départ `checkpoint/lab-start-creature-attack-face-back-2026-10-19` ; branche `work/lab-creature-attack-face-back-2026-10-19`.
 - Demande : deux sélecteurs dans Créature > Apparence > Animations, attaque face (adversaire) et attaque dos (joueur), en conservant le sélecteur V5 comme face ; réglages de l'animation partagés. Aucun sprite nouveau créé dans ce lot.

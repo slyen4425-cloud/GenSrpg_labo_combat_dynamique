@@ -2243,6 +2243,18 @@ export function buildHumanCreatureDraftV3(fields) {
     ? null : { assetId: rangedAttackAssetId, ...rangedAttackSettings };
   const rangedAttackBackVisual = rangedAttackBackAssetId === null
     ? null : { assetId: rangedAttackBackAssetId, ...rangedAttackSettings };
+  const attackPlacement = {
+    front: {
+      x: finiteNumber(fields?.visual?.rangedAttackFrontOffsetX ?? 0, "Décalage X de l'attaque face"),
+      y: finiteNumber(fields?.visual?.rangedAttackFrontOffsetY ?? 0, "Décalage Y de l'attaque face")
+    },
+    back: {
+      x: finiteNumber(fields?.visual?.rangedAttackBackOffsetX ?? 0, "Décalage X de l'attaque dos"),
+      y: finiteNumber(fields?.visual?.rangedAttackBackOffsetY ?? 0, "Décalage Y de l'attaque dos")
+    }
+  };
+  const hasAttackPlacement = (rangedAttackVisual !== null || rangedAttackBackVisual !== null) &&
+    Object.values(attackPlacement).some(point => point.x !== 0 || point.y !== 0);
   const movementAssetId = optionalText(fields?.visual?.movementAssetId);
   const movementVisual = movementAssetId === null ? null : {
     assetId: movementAssetId,
@@ -2290,7 +2302,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))),
+              hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)))),
             displayScale,
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
@@ -2309,7 +2321,8 @@ export function buildHumanCreatureDraftV3(fields) {
                 ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
                 ...(movementVisual === null ? {} : { movement: movementVisual }),
                 ...(rangedAttackVisual === null ? {} : { rangedAttack: rangedAttackVisual }),
-                ...(rangedAttackBackVisual === null ? {} : { rangedAttackBack: rangedAttackBackVisual })
+                ...(rangedAttackBackVisual === null ? {} : { rangedAttackBack: rangedAttackBackVisual }),
+                ...(hasAttackPlacement ? { rangedAttackPlacement: attackPlacement } : {})
               }
             })
           }
@@ -4036,6 +4049,10 @@ function writeCreatureRecordFields(
     ["[data-creature-movement-transition]", presentation?.visual?.movement?.transitionMs ?? 80],
     ["[data-creature-ranged-attack-visual]", presentation?.visual?.rangedAttack?.assetId ?? ""],
     ["[data-creature-ranged-attack-back-visual]", presentation?.visual?.rangedAttackBack?.assetId ?? ""],
+    ["[data-creature-ranged-front-offset-x]", presentation?.visual?.rangedAttackPlacement?.front?.x ?? 0],
+    ["[data-creature-ranged-front-offset-y]", presentation?.visual?.rangedAttackPlacement?.front?.y ?? 0],
+    ["[data-creature-ranged-back-offset-x]", presentation?.visual?.rangedAttackPlacement?.back?.x ?? 0],
+    ["[data-creature-ranged-back-offset-y]", presentation?.visual?.rangedAttackPlacement?.back?.y ?? 0],
     ["[data-creature-ranged-attack-mode]", presentation?.visual?.rangedAttack?.mode ?? "sprite"],
     ["[data-creature-ranged-attack-scale]", presentation?.visual?.rangedAttack?.displayScale ?? 1],
     ["[data-creature-ranged-attack-turns]", presentation?.visual?.rangedAttack?.rotationTurns ?? 0],
@@ -4251,6 +4268,10 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-movement-transition]", 80],
     ["[data-creature-ranged-attack-visual]", ""],
     ["[data-creature-ranged-attack-back-visual]", ""],
+    ["[data-creature-ranged-front-offset-x]", 0],
+    ["[data-creature-ranged-front-offset-y]", 0],
+    ["[data-creature-ranged-back-offset-x]", 0],
+    ["[data-creature-ranged-back-offset-y]", 0],
     ["[data-creature-ranged-attack-mode]", "sprite"],
     ["[data-creature-ranged-attack-scale]", 1],
     ["[data-creature-ranged-attack-turns]", 0],
@@ -9025,6 +9046,10 @@ function readCreatureFields(
       movementTransitionMs: numericValue(root, "[data-creature-movement-transition]"),
       rangedAttackAssetId: selectedValue(root, "[data-creature-ranged-attack-visual]"),
       rangedAttackBackAssetId: selectedValue(root, "[data-creature-ranged-attack-back-visual]"),
+      rangedAttackFrontOffsetX: numericValue(root, "[data-creature-ranged-front-offset-x]"),
+      rangedAttackFrontOffsetY: numericValue(root, "[data-creature-ranged-front-offset-y]"),
+      rangedAttackBackOffsetX: numericValue(root, "[data-creature-ranged-back-offset-x]"),
+      rangedAttackBackOffsetY: numericValue(root, "[data-creature-ranged-back-offset-y]"),
       rangedAttackMode: selectedValue(root, "[data-creature-ranged-attack-mode]"),
       rangedAttackDisplayScale: numericValue(root, "[data-creature-ranged-attack-scale]"),
       rangedAttackRotationTurns: numericValue(root, "[data-creature-ranged-attack-turns]"),

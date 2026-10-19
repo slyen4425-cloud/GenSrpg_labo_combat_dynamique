@@ -126,11 +126,20 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
         playbackMode: frame.count > 1 ? "loop" : "once"
       }, duration);
       record.frame = playback;
-      shell.style.transform = "scale(" + visual.displayScale + ")";
+      // Keep the fighter's actual motion transform, collision owner and
+      // gameplay coordinates untouched. Only the presentation shell is nudged,
+      // to compensate for off-centre artwork in individual attack strips.
+      const offsetX = Number(visual.offsetX) || 0;
+      const offsetY = Number(visual.offsetY) || 0;
+      const poseOrigin = offsetX || offsetY
+        ? "translate(" + offsetX + "px, " + offsetY + "px) "
+        : "";
+      const poseScale = poseOrigin + "scale(" + visual.displayScale + ")";
+      shell.style.transform = poseScale;
       if (visual.mode === "roll" && visual.rotationTurns > 0) {
         record.spin = shell.animate([
-          { transform: "scale(" + visual.displayScale + ") rotate(0deg)" },
-          { transform: "scale(" + visual.displayScale + ") rotate(" + (360 * visual.rotationTurns * direction) + "deg)" }
+          { transform: poseScale + " rotate(0deg)" },
+          { transform: poseScale + " rotate(" + (360 * visual.rotationTurns * direction) + "deg)" }
         ], { duration, easing: "linear", iterations: 1, fill: "forwards" });
         Promise.resolve(record.spin.finished).catch(() => {});
       }

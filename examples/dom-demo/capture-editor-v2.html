@@ -308,6 +308,18 @@
             <label>Sprite d'attaque — DOS (joueur)
               <select data-creature-ranged-attack-back-visual data-asset-role="attack"><option value="">Même sprite que la face (si défini)</option></select>
             </label>
+            <label>Position FACE — horizontal X (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-front-offset-x>
+            </label>
+            <label>Position FACE — vertical Y (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-front-offset-y>
+            </label>
+            <label>Position DOS — horizontal X (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-back-offset-x>
+            </label>
+            <label>Position DOS — vertical Y (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-back-offset-y>
+            </label>
             <label>Type de visuel
               <select data-creature-ranged-attack-mode>
                 <option value="sprite">Sprite animé (bande horizontale)</option>
@@ -328,7 +340,7 @@
               <input type="number" min="0" max="350" step="10" value="80" data-creature-ranged-attack-transition>
             </label>
           </div>
-          <p class="note">Deux sprites indépendants : FACE pour l'adversaire et DOS pour le joueur. Les réglages d'animation ci-dessus sont communs aux deux. Sans sprite DOS, les anciennes créatures reprennent leur sprite FACE comme avant. Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature revient à sa pose normale après l'animation ; cast, projectile, impact et contact de mêlée restent inchangés. Pour importer les images, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
+          <p class="note">Deux sprites indépendants : FACE pour l'adversaire et DOS pour le joueur. Les décalages X/Y corrigent seulement l'alignement de l'image pendant l'attaque (X négatif = gauche, positif = droite ; Y négatif = haut, positif = bas). Pour un sprite joueur trop à droite, essaie X DOS = -20 puis ajuste ; la position du combattant et ses collisions restent inchangées. Les réglages de durée et d'animation restent communs aux deux. Sans sprite DOS, les anciennes créatures reprennent leur sprite FACE comme avant. Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature revient à sa pose normale après l'animation ; cast, projectile, impact et contact de mêlée restent inchangés. Pour importer les images, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
         </fieldset>
 
           </div>
