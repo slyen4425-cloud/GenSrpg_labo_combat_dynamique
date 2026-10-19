@@ -126,7 +126,7 @@ def main() -> None:
     atlas.save(ATLAS, "WEBP", quality=87, method=5, exact=True)
 
     for i, entry in enumerate(manifest["frames"]):
-        entry["sha256"] = sha(FRAMES / entry["file"])
+        entry["sha256"] = sha(BASE / entry["file"])
     manifest["atlas"]["sha256"] = sha(ATLAS)
     manifest["cleanup"] = {
         "version": "non-generative-v1",
