@@ -17,6 +17,7 @@ const skillPath="data/capture/showcase/cisaille.capture-skill-transfer-v1.json";
 const creaturePath="data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json";
 const archiveSkill="data/capture/source-exports/gensrpg-capture-skill-cisaille-2026-10-18.json";
 const archiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-18-r2.json";
+const currentArchiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-19-v7.json";
 const author = [
   {id:"cisaille",path:skillPath,archive:archiveSkill,sha:"ee715faf21ace2fb14f2bbfce1c363574a1f257f0be3403f34c17b632becb417"},
   {id:"crea_scar_2",path:creaturePath,archive:archiveCreature,sha:"cb075e8e4133611f0e915af34ec55d0c53494215c9cee275415f851bb99c17c4"}
@@ -29,8 +30,17 @@ test("Cisaille and Scarabacier are exact author bytes, safely archived and uniqu
   assert.equal(cat.filter(x=>x===f.path).length,1);
   assert.equal(new Set(cat).size,cat.length);
   const raw=await read(f.path);
-  assert.equal(raw,await read(f.archive));
-  assert.equal(createHash("sha256").update(raw).digest("hex"),f.sha);
+  if(f.id==="crea_scar_2") {
+   const historical=await read(f.archive);
+   assert.equal(createHash("sha256").update(historical).digest("hex"),f.sha,
+     "historical author export remains immutable");
+   assert.equal(raw,await read(currentArchiveCreature),
+     "new active preset comes from the exact current author export");
+   assert.notEqual(raw,historical,"new export must not be silently replaced by old template");
+  } else {
+   assert.equal(raw,await read(f.archive));
+   assert.equal(createHash("sha256").update(raw).digest("hex"),f.sha);
+  }
   const transfer=importCaptureTransferJsonV1(raw, f.id==="cisaille"?{}:{statRegistry:registry});
   assert.equal(transfer.value.draft.id,f.id);
  }
@@ -80,6 +90,6 @@ test("Scarabacier and Cisaille travel the canonical configured owner path, leavi
  assert.equal(actual.draft.combat.reaction.damageReductionPct,90);
  assert.equal(actual.statValues.values.acier,15);
  assert.equal(actual.statValues.values.defense,20);
- assert.deepEqual(actual.loadout.slots.map(x=>x.skillId),["cisaille",null,null,null,null]);
+ assert.deepEqual(actual.loadout.slots.map(x=>x.skillId),["cisaille","cap_water_atk_1",null,null,null]);
  assert.ok(actual.draft.skillIds.includes("cisaille"));
 });
