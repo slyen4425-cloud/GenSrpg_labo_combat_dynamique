@@ -131,24 +131,29 @@ export function createDomStatusFxRenderer({
 
     let record =
       records.get(key) ?? null;
-    if (record && record.motion !== target.motion) {
+    // The visible shape is the color authority: move the tint into the
+    // rolling sprite's animated shell, not the hidden standing image.
+    const tintHost = target.tintHost ?? target.motion;
+    if (record && (record.motion !== target.motion || record.tintHost !== tintHost)) {
       removeRecord(key);
       record = null;
     }
     if (!record) {
       const node =
-        target.motion.ownerDocument
+        tintHost.ownerDocument
           .createElement("span");
       node.className =
         "status-fx status-fx--tint";
       node.dataset.statusFx = "tint";
       node.dataset.statusId = statusId;
-      target.motion.append(node);
-      record = { node, motion: target.motion, pulseSignature: null, frameAnimation: null };
+      tintHost.append(node);
+      record = { node, motion: target.motion, tintHost, pulseSignature: null, frameAnimation: null };
       records.set(key, record);
     }
 
-    const mask = maskUrl(target.image);
+    const mask = target.tintMaskUrl
+      ? 'url("' + String(target.tintMaskUrl).replace(/"/g, "\\\"") + '")'
+      : maskUrl(target.image);
     record.node.style.backgroundColor =
       presentation.tintColor;
     record.node.style.opacity =

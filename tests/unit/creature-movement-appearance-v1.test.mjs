@@ -93,10 +93,13 @@ test("real image silhouette replaces collision image during roll, then cancels a
  assert.equal(f.image.src,"https://assets.test/ball.png");
  assert.equal(f.collision.scale,.8);
  assert.ok(f.collision.refreshes>0);
- assert.equal(f.image.lastAnimation.options.duration,900);
+ assert.equal(f.motion.node.lastAnimation.options.duration,900);
+ assert.equal(f.visual.tintTarget().host, f.motion.node);
+ assert.equal(f.visual.tintTarget().maskUrl, "https://assets.test/ball.png");
  h.cancel();
  assert.equal(f.image.src,"https://assets.test/normal.png");
  assert.equal(f.collision.scale,1);
+ assert.equal(f.visual.tintTarget().host, f.motion);
  f.visual.dispose();
 });
 test("animated strip uses frame-one collision silhouette and restores on interruption",async()=>{

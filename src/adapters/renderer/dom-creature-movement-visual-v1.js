@@ -69,7 +69,7 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
   function play(visual, durationMs, direction = 1) {
     if (disposed || !visual?.url || !sourceUrl) return null;
     if (!prepared || prepared.url !== visual.url) prepare(visual, sourceUrl);
-    const record = { node: null, spin: null, frame: null, swapped: false };
+    const record = { node: null, spin: null, frame: null, swapped: false, tintMaskUrl: null };
     active = record;
     const duration = Math.max(1, Number(durationMs) || 1);
     Promise.resolve(prepared?.ready).then(frame => {
@@ -90,18 +90,8 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       image.src = frame.maskSource;
       if (image.complete && image.naturalWidth > 0) onLoad();
 
-      if (frame.count === 1) {
-        image.style.transform = "scale(" + visual.displayScale + ")";
-        if (visual.mode === "roll" && visual.rotationTurns > 0) {
-          record.spin = image.animate([
-            { transform: "scale(" + visual.displayScale + ") rotate(0deg)" },
-            { transform: "scale(" + visual.displayScale + ") rotate(" + (360 * visual.rotationTurns * direction) + "deg)" }
-          ], { duration, easing: "linear", iterations: 1, fill: "forwards" });
-          Promise.resolve(record.spin.finished).catch(() => {});
-        }
-        return;
-      }
-
+      // Both a single PNG and a sprite-strip use the SAME animated shell.
+      // Status tint is rendered inside it so the color follows its rotation.
       const shell = image.ownerDocument.createElement("span");
       shell.dataset.creatureMovementVisual = "true";
       Object.assign(shell.style, {
@@ -118,9 +108,11 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       shell.append(sprite);
       motion.append(shell);
       record.node = shell;
+      record.tintMaskUrl = frame.maskSource;
       image.style.opacity = "0";
       const playback = applySpriteVisual(sprite, {
-        ...visual, playbackMode: "loop"
+        ...visual, frameCount: frame.count,
+        playbackMode: frame.count > 1 ? "loop" : "once"
       }, duration);
       record.frame = playback;
       shell.style.transform = "scale(" + visual.displayScale + ")";
@@ -139,6 +131,11 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
 
   return Object.freeze({
     prepare, play, cancel,
+    tintTarget() {
+      return active?.node
+        ? Object.freeze({ host: active.node, maskUrl: active.tintMaskUrl })
+        : Object.freeze({ host: motion, maskUrl: null });
+    },
     dispose() { cancel(); prepared = null; disposed = true; }
   });
 }

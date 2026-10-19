@@ -964,9 +964,12 @@ export async function mountCombatDemo({
     },
     getStatusPresentationTargetFor(slotKey) {
       const slot = slotOf(slotKey);
+      const tinted = slot.getMovementTintTarget();
       return Object.freeze({
         motion: slot.motion,
-        image: slot.image
+        image: slot.image,
+        tintHost: tinted.host,
+        tintMaskUrl: tinted.maskUrl
       });
     },
     getCreatureFor(slotKey) {
@@ -1244,6 +1247,7 @@ function createSlot({
     setApproachActive,
     playMovementAppearance: movementAppearance.play,
     cancelMovementAppearance: movementAppearance.cancel,
+    getMovementTintTarget: movementAppearance.tintTarget,
     getFxAnchor,
     collisionModel,
     get meta() {
