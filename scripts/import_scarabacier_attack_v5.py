@@ -100,6 +100,10 @@ def main():
         if len(ids)>1:raise ValueError("Duplicate canonical assetId")
         if ids:j["assets"][ids[0]]=definition
         else:j["assets"].append(definition)
+    # These authoritative derived counts are sentinels for all historical
+    # sprite packs. Update them whenever the one catalog gains assets.
+    j["counts"]["assets"] = len(j["assets"])
+    j["counts"]["sprites"] = sum(a.get("assetType") == "sprite" for a in j["assets"])
     CATALOG.write_text(json.dumps(j,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(outputs,ensure_ascii=False))
 
