@@ -1,3 +1,10 @@
+## 2026-10-19 — Raccord catalogue après publication des médias Scarabacier
+- Base `gh-pages@00352371c18283178e84a9e7ea0c738a00ff0790` ; checkpoint de départ `checkpoint/lab-start-scarabacier-asset-catalog-refresh-2026-10-19` ; branche `work/lab-scarabacier-asset-catalog-refresh-2026-10-19`.
+- Autorité médias déjà publiée : `global-assets@a94829e4892aa5260d8747de0a9f50c4893f6be0` (PR #22 roulade nettoyée et PR #23 attaques V5 face/dos).
+- Objet exclusif : actualiser `src/assets/global-visual-library.js` revision → `2026-10-19-v36-scarabacier-v5-roll-clean` pour que le navigateur recharge le catalogue et les images au lieu d'une ancienne version cache.
+- Scope protégé : aucune écriture de médias ici, pas de moteur, pas de règles de combat, pas de catalogue parallèle, pas de données auteur ; `main` et `Zombicide-40k` exclus.
+- CI complète requise avant fusion. Vérifier après publication les nouvelles entrées d'attaque et l'assetId stable du roulé-boulé en combat. Validation visuelle et Android utilisateur après publication, non présumée.
+
 ## 2026-10-19 — Classement des visuels propres aux créatures (attaque / déplacement)
 - Base `gh-pages@3e9d2ddf88c50c2b1bfe58534bf5629b6e88c956` ; checkpoint départ `checkpoint/lab-start-creature-asset-roles-2026-10-19` ; branche `work/lab-creature-asset-roles-2026-10-19`.
 - Objet : séparer dans Apparence les sélecteurs d'animation de déplacement et d'attaque de créature, en excluant les casts / projectiles / impacts de capacités. Conserver les modèles fixes comme anciens choix compatibles.
