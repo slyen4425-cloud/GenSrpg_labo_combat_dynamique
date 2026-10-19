@@ -223,7 +223,7 @@ test("V6 stores distinct FACE/DOS ranged poses; V1-V5 contracts stay untouched",
   }
   assert.throws(() => normalizeCreaturePresentationBinding({
     ...legacy, visual: { ...legacy.visual, rangedAttackBack: back }
-  }), /unknown visual key/);
+  }), /unknown field/);
 });
 
 test("author saves front and back independently, keeps the original combat and V5 fallback", () => {
