@@ -1,3 +1,12 @@
+## 2026-10-19 — Scarabacier : remplacement exact par le dernier export V8
+
+- Base publique `gh-pages@eb94aba5f2b9ea81b4b1385306d511525e99c184`, checkpoint `checkpoint/lab-start-scarabacier-author-v8-2026-10-19`, branche `work/lab-scarabacier-author-v8-2026-10-19`.
+- Source d'autorité unique : fichier reçu `gensrpg-capture-creature-crea_scar_2(1).json`, SHA256 `05cb2efd62220c4e9aa58d8b6ee9bbae6c2326d494c013d9816d069c3b73f7aa`, données reprises sans transformation.
+- Mise à jour de l'unique vitrine `data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json` ; archive du même fichier d'origine `data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-19-v8.json`. Archives V7 et 18 octobre intouchées.
+- Changements auteur : V8 (tailles de déplacement et d'attaque distinctes par camp, boucle de déplacement), défense 80 % / 700 ms, FX esquive carapace acier. Maintien exact des autres paramètres de la fiche.
+- Contrat V8 du moteur déjà publié. Contrôle disponibilité des assets via `global-assets` et des compétences `cisaille` / `cap_water_atk_1` : OK. Aucun autre asset/skill/creature modifié.
+- Sentinelle du propriétaire actif, non-duplication, sélection et archive, chargement, combat et 5/5 CI obligatoires avant GREEN / publication. Essai smartphone utilisateur séparé.
+
 ## 2026-10-19 — Scarabacier : publication du dernier export auteur (V7)
 - Base publiée gh-pages@2df354568ba472c6b17f56975e5fd91af4bafe3e ; checkpoint départ checkpoint/lab-start-scarabacier-author-v7-2026-10-19 ; branche work/lab-scarabacier-author-v7-2026-10-19.
 - Source unique : export utilisateur `gensrpg-capture-creature-crea_scar_2.json`, ID stable `crea_scar_2`. Remplacer seulement `data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json` (pas une seconde fiche).

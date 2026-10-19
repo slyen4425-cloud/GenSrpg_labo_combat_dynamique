@@ -94,8 +94,8 @@
         "type": "defense",
         "maxCharges": 1,
         "rechargeMs": 20000,
-        "activeWindowMs": 500,
-        "damageReductionPct": 90
+        "activeWindowMs": 700,
+        "damageReductionPct": 80
       }
     },
     "skillIds": [
@@ -104,7 +104,7 @@
     ],
     "presentation": {
       "id": "creature:crea_scar_2",
-      "version": 7,
+      "version": 8,
       "subjectType": "creature",
       "subjectId": "crea_scar_2",
       "profileId": "biped",
@@ -144,8 +144,8 @@
           "assetId": "pack:capture:creature-scarabacier-icon-01"
         },
         "dodge": {
-          "assetId": "pack:capture:sprite-status-stone-shell-01",
-          "displayScale": 2,
+          "assetId": "pack:capture:sprite-steel-carapace-hold-01",
+          "displayScale": 1,
           "durationMs": 700,
           "offsetX": 0,
           "offsetY": 0
@@ -183,6 +183,18 @@
             "x": -20,
             "y": -20
           }
+        },
+        "movementScaleByView": {
+          "player": 1,
+          "opponent": 1.2
+        },
+        "rangedAttackScaleByView": {
+          "player": 0.8,
+          "opponent": 1
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
         }
       },
       "sockets": [
