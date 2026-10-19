@@ -154,6 +154,22 @@ function fixture(){
   return {image,motionHost,visual:createDomCreatureMovementVisualV1({motion:motionHost,image,collisionModel})};
 }
 async function flush(){await Promise.resolve();await Promise.resolve();await Promise.resolve()}
+test("the same imported image can use one frame for movement and many frames for ranged attacks",async()=>{
+  const f=fixture(),normal="https://example.test/normal.png",url="https://example.test/shared.png";
+  f.image.src=normal;
+  const roll={url,mode:"roll",rotationTurns:3,frameCount:1,displayScale:1,transitionMs:0};
+  const shot={url,mode:"sprite",rotationTurns:0,frameCount:12,displayScale:1,transitionMs:0};
+  f.visual.prepare(roll,normal,shot);
+  const a=f.visual.play(shot,600,1);
+  await flush();
+  assert.equal(f.image.src,"data:image/png;base64,AAAA","ranged uses cropped first frame as collision silhouette");
+  a.cancel();
+  const b=f.visual.play(roll,600,1);
+  await flush();
+  assert.equal(f.image.src,url,"movement uses the full single PNG when its frame count is one");
+  b.cancel();f.visual.dispose();
+});
+
 test("one preloaded shell swaps safely between shot sprite and rolling image",async()=>{
   const f=fixture(),normal="https://example.test/normal.png";
   f.image.src=normal;
