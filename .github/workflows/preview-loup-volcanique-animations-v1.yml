@@ -1,0 +1,64 @@
+name: Loup volcanique four animation previews (author review)
+on:
+  push:
+    branches:
+      - "work/global-assets-loup-volcanique-animations-preview-2026-10-19"
+    paths:
+      - "scripts/preview_loup_volcanique_animations_v1.py"
+      - ".github/workflows/preview-loup-volcanique-animations-v1.yml"
+permissions:
+  contents: write
+jobs:
+  preview:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install image-processing dependencies
+        run: python -m pip install "Pillow>=10,<13" "numpy>=2,<3" "opencv-python-headless>=4.10,<5"
+      - name: Build exact-master pose-preserving previews for 4 animations
+        run: python scripts/preview_loup_volcanique_animations_v1.py
+      - name: Validate all 80 real frames and no catalog mutation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          import numpy as np
+          root=Path("assets/library/capture/creatures/loup_volcanique/animation_previews_v1")
+          manifest=json.loads((root/"review_manifest.json").read_text())
+          assert manifest["catalogChanged"] is False
+          assert manifest["runtimeIntegrated"] is False
+          assert len(manifest["outputs"])==4
+          assert sum(x["frameCount"] for x in manifest["outputs"])==80
+          for item in manifest["outputs"]:
+              master=np.asarray(Image.open(root/item["master"]).convert("RGBA"))
+              assert master.shape==(512,512,4)
+              assert len(item["frames"])==20
+              for i,f in enumerate(item["frames"]):
+                  p=root/f["file"]
+                  img=np.asarray(Image.open(p).convert("RGBA"))
+                  assert img.shape==(512,512,4)
+                  assert img[:,:,3].min()==0
+                  if i==0: assert np.array_equal(master,img)
+              for attr in ("atlas","preview","contact"):
+                  assert (root/item[attr]).is_file()
+          print("OK: four 20-frame actions; RGBA; frame 1 EXACT master; previews present")
+          PY
+      - name: Commit review-only animation media
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/loup_volcanique/animation_previews_v1
+          if git diff --cached --quiet; then
+            echo "Missing generated preview media" >&2
+            exit 1
+          fi
+          git commit -m "assets(capture): generate four Loup volcanique preview animations for author validation"
+          git push origin HEAD:refs/heads/work/global-assets-loup-volcanique-animations-preview-2026-10-19
