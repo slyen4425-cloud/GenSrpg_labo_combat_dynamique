@@ -28,3 +28,14 @@ conservation de la patte et des autres vues, sentinelles existantes et
 `npm run ci`. Publication du média binaire réel sur GitHub et vérification de
 son SHA avant GREEN. Vérification visuelle utilisateur toujours distincte.
 
+
+## Résultat contrôlé
+
+- Source Git WebP avant retouche : blob `bcc9a7585155bb7a3a3bf3795644af356a17f382` ; SHA256 `1a36c39c1af33d649fba0e5f8ee4753bf011be3f2b0cbd76e6035ef9868b7c0d`.
+- WebP corrigé réel : blob `6c9d564d1e0347db4f9941b92856fa1eabdfdc88`, 217104 octets, SHA256 `2f6475c0b2b26be1fe67aaaa93c2d34bcc319fab2d181aa6e3fabe77d2e505a3`.
+- Fichier inchangé en dimensions (1024×1024), canal alpha conservé, une image physique remplacée.
+- Vérification source stricte et contour de griffe après traitement avec Pillow, sans conversion du reste du modèle ; workflow de réparation `39206148362` conclu SUCCESS.
+- Test permanent `tests/unit/scarabacier-player-claw-repair-2026-10-19.test.mjs`, vérifiant le contenu binaire exact, et sentinelle historique des trois créatures.
+- Workflow de conversion ponctuelle retiré après succès ; script de provenance reproductible conservé.
+- Le modèle de face, l’icône, les métadonnées et le catalogue autoritaire n'ont pas été changés.
+- **Limite** : rendu en combat sur smartphone non revendiqué ; validation visuelle finale utilisateur distincte.
