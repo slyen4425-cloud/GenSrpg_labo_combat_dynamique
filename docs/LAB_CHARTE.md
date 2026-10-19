@@ -781,3 +781,21 @@ Cette section prime sur toute ancienne procédure qui considérerait l'existence
 - Toujours tester la sélection et le rechargement en navigateur réel, notamment Android paysage ; une sentinelle qui renseigne artificiellement un ID technique sans passer par le menu ne suffit pas.
 
 Toute UI d'édition encore équipée d'une référence texte historique doit être migrée par lots contrôlés, en respectant l'unique owner des registres concernés, **sans** multiplier les autorités ni modifier la mécanique du combat.
+
+
+## 36. Charte artistique Capture — modèles, animations et icônes (19 octobre 2026)
+
+Pour toute création nouvelle de modèle, d'icône ou d'animation de créature pour Monster Capture, consulter et appliquer obligatoirement :
+
+**[docs/LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md](LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md)**
+
+Règles bloquantes :
+
+1. Modèles FACE et DOS **distincts, approuvés** ; première frame d'animation exactement identique (pixels RGBA décodés) à son maître de la vue correspondante ;
+2. la perspective du modèle maître est **verrouillée pendant toutes les frames**, notamment pour le dos légèrement de trois-quarts : aucune rotation, inversion, mutation anatomique ou réinterprétation ;
+3. PNG transparents RGBA 512 × 512, séquence de 16 à 20 frames par vue, ancrage stable ;
+4. **visualisation réellement animée et planche de poses séparées pour face ET dos avant tout raccord** et validation explicite de l'auteur requise pour chaque vue ;
+5. toute génération non conforme ou refusée reste un brouillon, jamais une ressource publiée/green par effet de bord ;
+6. format des icônes confirmé auprès de l'autorité réelle des médias (sources de production vs exports HUD), sans nouveau propriétaire d'asset.
+
+Cette règle complète les sections 6, 14, 33 et 34 et ne change aucune mécanique de combat.
