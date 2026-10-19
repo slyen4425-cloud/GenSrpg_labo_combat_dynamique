@@ -1,3 +1,5 @@
+**Extension sentinelle motivée (2026-10-19)** : le premier import vérifié est bloqué par une assertion historique figée à 97 sprites / 186 assets dans `tests/unit/capture-steel-rust-vfx-20261018.test.mjs`. Cette assertion ne porte pas sur les 100 frames acier protégées ; remplacement strict des deux égalités par des minimums append-only, sans toucher aux vérifications de médias anciens, avant relance. Ce fichier entre dans le périmètre autorisé du présent lot en tant que réparation de sentinelle rendue nécessaire par l'ajout canonique.
+
 ## 2026-10-19 — Scarabacier : 16 frames de boule roulante (import asset isolé)
 
 - **But** : importer pour premier test la vraie animation de déplacement en boule de Scarabacier, 16 PNG RGBA transparents 512×512 générés à partir de la planche 1254×1254, découpée en grille 4×4. Résolution 512 obtenue par redimensionnement, pas native.
