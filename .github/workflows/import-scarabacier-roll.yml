@@ -7,6 +7,7 @@ on:
       - '_incoming/scarabacier_roll_frames_16_ready.zip'
       - 'scripts/import_scarabacier_roll.py'
       - 'scripts/scarabacier_roll_asset.test.template.mjs'
+      - 'tests/unit/capture-steel-rust-vfx-20261018.test.mjs'
       - '.github/workflows/import-scarabacier-roll.yml'
 permissions:
   contents: write
