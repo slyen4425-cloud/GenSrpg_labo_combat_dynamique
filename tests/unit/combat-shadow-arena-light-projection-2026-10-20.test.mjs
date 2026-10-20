@@ -52,7 +52,7 @@ test("silhouette comes from accepted collision alpha, not a second image fetch",
   const svg = decodeURIComponent(encodedSvg);
   assert.match(svg, /viewBox="0 0 16 16"/);
   assert.match(svg, /<path fill="white" d="M/);
-  assert.doesNotMatch(svg, /<image|https?:|script/);
+  assert.doesNotMatch(svg, /<image|<script|<foreignObject|href=/);
   const empty = { width: 4, height: 4, opaque: new Uint8Array(16) };
   assert.equal(shadowSilhouetteUrlFromOpaqueMaskV1(empty), null);
   assert.throws(() => shadowSilhouetteUrlFromOpaqueMaskV1({width:4,height:4,opaque:[]}), TypeError);
