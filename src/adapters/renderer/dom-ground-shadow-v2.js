@@ -157,3 +157,30 @@ export function shadowGeometryFromOpaqueMaskV2(
     contactYRatio: (yBounds.end + 0.5) / mask.height
   });
 }
+
+/**
+ * Single ground-shadow geometry owner for a creature slot.
+ * Animation Core/Renderer own motion and transforms; this function only
+ * resolves static footprint and contact from the resting model's opaque mask.
+ * Profile bottom is a fallback for empty masks, never a competing override.
+ */
+export function groundShadowLayoutFromOpaqueMaskV2(
+  mask,
+  profileShadow = {}
+) {
+  const geometry = shadowGeometryFromOpaqueMaskV2(mask, {
+    widthMultiplier: profileShadow.widthMultiplier ?? 1.12
+  });
+  const fallbackBottom = Number(profileShadow.bottomPct);
+  const bottomPct = geometry.contactYRatio === null
+    ? clamp(Number.isFinite(fallbackBottom) ? fallbackBottom : 8, 0, 60)
+    : clamp((1 - geometry.contactYRatio) * 100 - geometry.heightPct / 2, 0, 60);
+  const opacity = Number(profileShadow.opacity);
+  return Object.freeze({
+    widthPct: geometry.widthPct,
+    heightPct: geometry.heightPct,
+    bottomPct,
+    opacity: Number.isFinite(opacity) ? clamp(opacity, 0, 1) : 0.42,
+    opaqueWidthRatio: geometry.opaqueWidthRatio
+  });
+}
