@@ -5,7 +5,7 @@ Date : 20 octobre 2026
 La photo du Loup volcanique côté joueur montrait une silhouette noire dont les proportions et la projection semblaient plausibles mais dont le point d'appui restait décalé. Le prototype PR #40 utilisait pour les silhouettes de taille 100% la propriété `bottomPct` conçue pour une petite ellipse, tout en écrasant son pseudo-masque depuis `center bottom`. L'origine de projection ne correspondait donc pas aux pattes du masque alpha, surtout pour les poses basses et asymétriques.
 
 ## Correction sans autorité supplémentaire
-- Le modèle `groundShadowLayoutFromOpaqueMaskV2` retourne `contactYPct` avec le `centerXPct` qu'il calcule déjà depuis le même masque alpha de collision. `bottomPct` reste inchangé pour les anciennes ellipses.
+- Le modèle `groundShadowLayoutFromOpaqueMaskV2` retourne `contactYPct` et `contactXPct` depuis les pixels les plus bas du même masque alpha de collision. Le `centerXPct` historique de l'ellipse reste inchangé. `bottomPct` reste inchangé pour les anciennes ellipses.
 - En mode silhouette, le seul élément `[data-demo-shadow]` occupe le cadre du sprite et revient à `bottom:0%` : on n'applique pas une seconde fois le décalage prévu pour l'ellipse.
 - Le pseudo-élément SVG conserve l'unique projection 2.5D existante, mais son origine de transformation est le contact calculé `(centerXPct,contactYPct)`, et non le bas géométrique de l'image. Le trajet de l'ombre animé par `DomActorRenderer` n'est pas modifié.
 - Modes `soft`/`contact` : largeur, hauteur, position, opacité et animation antérieures inchangées. Vol : même calcul de masque + décalage lumineux existant, sans deuxième logique.
