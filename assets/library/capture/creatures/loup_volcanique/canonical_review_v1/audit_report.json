@@ -194,9 +194,47 @@
           ]
         }
       ],
-      "candidateRemoved": null,
-      "candidateChanged": false,
-      "candidateSha256": "b5811b298ba7866c74706185be99ca0e0dbc4bdd643b670d1e1782749305b8da"
+      "candidateRemoved": {
+        "manualProtectedPolygon": [
+          [
+            223,
+            78
+          ],
+          [
+            233,
+            79
+          ],
+          [
+            244,
+            89
+          ],
+          [
+            253,
+            102
+          ],
+          [
+            249,
+            108
+          ],
+          [
+            238,
+            111
+          ],
+          [
+            221,
+            103
+          ],
+          [
+            217,
+            91
+          ]
+        ],
+        "removedNonTransparentPixels": 431,
+        "note": "Exact stray dark-rock scrap only. Other separated fire embers retained.",
+        "approvedForRuntime": false
+      },
+      "candidateChanged": true,
+      "candidateSha256": "00987b87c0ae3fd484c77b66a01b8f9a9d0e4e3f40a06580cfc9703392c61c35"
     },
     {
       "view": "face",
