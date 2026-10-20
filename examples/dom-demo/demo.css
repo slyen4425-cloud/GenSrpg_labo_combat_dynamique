@@ -191,7 +191,8 @@ summary {
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  transform-origin: center bottom;
+  /* The same alpha-contact pivot is used by player, opponent and flight. */
+  transform-origin: var(--shadow-light-foot-x, 50%) var(--shadow-light-foot-y, 88%);
   transform:
     translate(var(--shadow-light-cast-x, 0%), var(--shadow-light-cast-y, 0%))
     skewX(var(--shadow-light-skew, 0deg))

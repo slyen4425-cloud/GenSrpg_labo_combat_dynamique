@@ -1120,7 +1120,11 @@ function createSlot({
     shadowElement.style.height = projected ? "100%" : lastShadowLayout.heightPct.toFixed(2) + "%";
     shadowElement.style.filter = projected ? "none" : "blur(" + projection.blurPx.toFixed(2) + "px)";
     slotContainer.style?.setProperty?.("--creature-shadow-left", (projected ? 50 : lastShadowLayout.centerXPct).toFixed(2) + "%");
-    slotContainer.style?.setProperty?.("--creature-shadow-bottom", lastShadowLayout.bottomPct.toFixed(2) + "%");
+    // The small ellipse's bottom offset is not the full alpha canvas origin.
+    // Preserve the real sprite-frame alignment and pivot on its ground contact.
+    slotContainer.style?.setProperty?.("--creature-shadow-bottom", (projected ? 0 : lastShadowLayout.bottomPct).toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--shadow-light-foot-x", lastShadowLayout.contactXPct.toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--shadow-light-foot-y", (lastShadowLayout.contactYPct ?? (100 - lastShadowLayout.bottomPct - lastShadowLayout.heightPct / 2)).toFixed(2) + "%");
     slotContainer.style?.setProperty?.("--creature-shadow-opacity", String(settings.mode === "contact" ? lastShadowLayout.opacity : projection.opacity));
     slotContainer.style?.setProperty?.("--shadow-light-cast-x", projection.castXPct.toFixed(2) + "%");
     slotContainer.style?.setProperty?.("--shadow-light-cast-y", projection.castYPct.toFixed(2) + "%");
