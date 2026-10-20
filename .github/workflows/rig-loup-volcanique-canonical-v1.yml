@@ -5,6 +5,7 @@ on:
       - work/global-assets-wolf-canonical-rig-2026-10-20
     paths:
       - scripts/rig_loup_volcanique_canonical_v1.py
+      - scripts/check_loup_volcanique_rig_qa_v1.py
       - .github/workflows/rig-loup-volcanique-canonical-v1.yml
 permissions:
   contents: write
@@ -22,6 +23,15 @@ jobs:
         run: python -m pip install "Pillow>=10,<13" "numpy>=2,<3"
       - name: Create articulated leg and attack previews from existing approved art only
         run: python scripts/rig_loup_volcanique_canonical_v1.py
+      - name: Read latest published canonical runtime sprites for independent fidelity comparison
+        run: |
+          set -eu
+          mkdir -p /tmp/wolf-published-canonical
+          git fetch --depth=1 origin global-assets
+          git show FETCH_HEAD:assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_player.webp > /tmp/wolf-published-canonical/loup_volcanique_player.webp
+          git show FETCH_HEAD:assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_opponent.webp > /tmp/wolf-published-canonical/loup_volcanique_opponent.webp
+      - name: Publish four-up animation preview and fail if models diverge from published source
+        run: python scripts/check_loup_volcanique_rig_qa_v1.py /tmp/wolf-published-canonical
       - name: Validate each frame 01 exactly equals its official-derived master
         run: |
           python - <<'PY'
