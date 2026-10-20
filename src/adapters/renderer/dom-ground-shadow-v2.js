@@ -109,7 +109,8 @@ export function shadowGeometryFromOpaqueMaskV2(
       opaqueWidthRatio: 0,
       opaqueHeightRatio: 0,
       contactYRatio: null,
-      centerXRatio: 0.5
+      centerXRatio: 0.5,
+      contactXRatio: 0.5
     });
   }
 
@@ -170,13 +171,33 @@ export function shadowGeometryFromOpaqueMaskV2(
     ? clamp(lowerXSum / (lowerOpaqueCount * mask.width), 0, 1)
     : 0.5;
 
+  // Ground-contact pivot uses the lowest 30% of the accepted silhouette
+  // rather than the torso-weighted half used by the historical ellipse.
+  // No second mask, no special species IDs and no change to ellipse geometry.
+  const contactStartY = Math.floor(
+    yBounds.start + (yBounds.end - yBounds.start) * 0.7
+  );
+  let contactOpaqueCount = 0;
+  let contactXSum = 0;
+  for (let y = contactStartY; y <= yBounds.end; y += 1) {
+    for (let x = xBounds.start; x <= xBounds.end; x += 1) {
+      if (mask.opaque[y * mask.width + x] !== 1) continue;
+      contactOpaqueCount += 1;
+      contactXSum += x + 0.5;
+    }
+  }
+  const contactXRatio = contactOpaqueCount > 0
+    ? clamp(contactXSum / (contactOpaqueCount * mask.width), 0, 1)
+    : centerXRatio;
+
   return Object.freeze({
     widthPct,
     heightPct,
     opaqueWidthRatio,
     opaqueHeightRatio,
     contactYRatio: (yBounds.end + 0.5) / mask.height,
-    centerXRatio
+    centerXRatio,
+    contactXRatio
   });
 }
 
@@ -203,6 +224,7 @@ export function groundShadowLayoutFromOpaqueMaskV2(
     heightPct: geometry.heightPct,
     bottomPct,
     centerXPct: geometry.centerXRatio * 100,
+    contactXPct: geometry.contactXRatio * 100,
     // One alpha-owned foot pivot for the full projected silhouette.
     contactYPct: geometry.contactYRatio === null ? null : geometry.contactYRatio * 100,
     opacity: Number.isFinite(opacity) ? clamp(opacity, 0, 1) : 0.42,
