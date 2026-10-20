@@ -33,7 +33,8 @@ def verify_official():
         canonical=open_rgba(path)
         if canonical.size!=(320,320):raise AssertionError(f"Unexpected canonical shape: {path}")
         master=open_rgba(MASTERS/f"{view}_master_512.png")
-        ideal=canonical.resize((512,512),Image.Resampling.LANCZOS)
+        ideal=Image.new("RGBA",(512,512),(0,0,0,0))
+        ideal.alpha_composite(canonical.resize((448,448),Image.Resampling.LANCZOS),(32,32))
         same=np.array_equal(np.asarray(ideal),np.asarray(master))
         checked[view]=bool(same)
         if not same:
