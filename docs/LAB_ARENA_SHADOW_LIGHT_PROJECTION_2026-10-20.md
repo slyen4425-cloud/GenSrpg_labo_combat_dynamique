@@ -28,6 +28,8 @@ Le profil `locomotion.style="flight"` utilise une hauteur de vol simulée et don
 - Pas de changement à `main`, `global-assets`, aux exports, au moteur de dégâts, aux profils, au catalogue d'assets, au moteur de collision ni au plan de mouvement.
 
 ## Validation
+**Navigateur réel** : `tests/browser/shadow-light-fixture.html` monte `mountCombatDemo` avec deux vrais sprites SVG alpha (sol + vol), les profils `biped` / `flying` et le CSS de l'arène. `tests/browser/shadow-light-real-render-smoke.mjs` vérifie sous Chromium la silhouette masquée du pseudo-élément, le décalage de vol, l'inversion directionnelle et le basculement réversible vers l'ancienne ombre. La CI conserve cinq jobs : cette sentinelle s'exécute après l'amorçage Chrome de la bibliothèque. Ne pas appeler « validation artistique téléphone » une simple réussite de ce test.
+
 Sentinelles `combat-shadow-arena-light-projection-2026-10-20` : modèle pur, directions inversées, élévation, vol, alpha SVG local, modes, propriétaire unique, UI, 1v1/2v2, ancien bug « arène masquée ». Les sentinelles précédentes sont adaptées à la relocalisation du *propriétaire CSS*, sans perdre leur exigence de garantie unique. CI complète 5 jobs et Pages puis essai Android à valider par l'auteur avec Scarabacier, volant, 1v1/2v2, mouvement, esquive, attaque et rappel.
 
 **Limitation annoncée** : la projection est une approximation 2.5D, non une simulation des volumes des pattes ; le point d'appui individuel par vue et la persistance des réglages devront faire l'objet d'un lot contractuel distinct si nécessaire.
