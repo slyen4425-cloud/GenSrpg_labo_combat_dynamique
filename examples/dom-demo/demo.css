@@ -152,7 +152,7 @@ summary {
 .fighter__shadow {
   position: absolute;
   z-index: 0;
-  left: 50%;
+  left: var(--creature-shadow-left, 50%);
   bottom: var(--creature-shadow-bottom, 8%);
   display: block;
   width: 62%;

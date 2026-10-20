@@ -108,7 +108,8 @@ export function shadowGeometryFromOpaqueMaskV2(
       heightPct: 10,
       opaqueWidthRatio: 0,
       opaqueHeightRatio: 0,
-      contactYRatio: null
+      contactYRatio: null,
+      centerXRatio: 0.5
     });
   }
 
@@ -149,12 +150,33 @@ export function shadowGeometryFromOpaqueMaskV2(
     15
   );
 
+  // Determine the centre of the weight-bearing lower silhouette instead
+  // of using the image box's fixed 50% centre. Wide, leaning creatures can
+  // have their torso and feet off-axis within their transparent canvas.
+  // Reuse the already-trimmed opaque bounds to exclude sparse FX/stray pixels.
+  const lowerStartY = Math.floor(
+    yBounds.start + (yBounds.end - yBounds.start) * 0.42
+  );
+  let lowerOpaqueCount = 0;
+  let lowerXSum = 0;
+  for (let y = lowerStartY; y <= yBounds.end; y += 1) {
+    for (let x = xBounds.start; x <= xBounds.end; x += 1) {
+      if (mask.opaque[y * mask.width + x] !== 1) continue;
+      lowerOpaqueCount += 1;
+      lowerXSum += x + 0.5;
+    }
+  }
+  const centerXRatio = lowerOpaqueCount > 0
+    ? clamp(lowerXSum / (lowerOpaqueCount * mask.width), 0, 1)
+    : 0.5;
+
   return Object.freeze({
     widthPct,
     heightPct,
     opaqueWidthRatio,
     opaqueHeightRatio,
-    contactYRatio: (yBounds.end + 0.5) / mask.height
+    contactYRatio: (yBounds.end + 0.5) / mask.height,
+    centerXRatio
   });
 }
 
@@ -180,6 +202,7 @@ export function groundShadowLayoutFromOpaqueMaskV2(
     widthPct: geometry.widthPct,
     heightPct: geometry.heightPct,
     bottomPct,
+    centerXPct: geometry.centerXRatio * 100,
     opacity: Number.isFinite(opacity) ? clamp(opacity, 0, 1) : 0.42,
     opaqueWidthRatio: geometry.opaqueWidthRatio
   });

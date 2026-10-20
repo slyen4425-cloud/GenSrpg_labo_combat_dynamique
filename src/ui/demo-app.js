@@ -1145,6 +1145,9 @@ function createSlot({
         "--creature-shadow-bottom", layout.bottomPct.toFixed(2) + "%"
       );
       slotContainer.style?.setProperty?.(
+        "--creature-shadow-left", layout.centerXPct.toFixed(2) + "%"
+      );
+      slotContainer.style?.setProperty?.(
         "--creature-shadow-opacity", String(layout.opacity)
       );
       settled = true;
