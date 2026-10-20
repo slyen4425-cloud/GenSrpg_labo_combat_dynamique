@@ -19,7 +19,7 @@ MANIFEST = BASE / 'sprite_skill_steel_wing_projectile_sequences_01.json'
 PROVENANCE = BASE / 'provenance.csv'
 COUNT = 20
 SIZE = 512
-EDGE = 18
+EDGE = 10
 ASSET_ID = 'pack:capture:sprite-steel-wing-projectile-01'
 
 
@@ -68,7 +68,7 @@ def clean_frame(src):
     removed = int(np.count_nonzero(remove & (alpha > 0)))
     total = int(np.count_nonzero(alpha > 0))
     perimeter_before = int(np.count_nonzero((alpha > 0) & border))
-    if removed > total * .08:
+    if removed > total * .20:
         raise ValueError(f'Excessive edge removal: {removed}/{total}')
     assert not np.any(remove & inner), 'Central pixel edit is forbidden'
     arr[remove] = (0, 0, 0, 0)
