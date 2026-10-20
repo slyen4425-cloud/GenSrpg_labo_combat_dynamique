@@ -1,3 +1,11 @@
+## 2026-10-20 — Correction des traces de cadre du projectile Aile d’acier (média uniquement)
+- Base canonique `global-assets@a989443b9985b3f444f5ea3b4c26f9c215ae04e4`; checkpoint départ `checkpoint/lab-start-steel-wing-border-clean-2026-10-20`; branche `work/lab-steel-wing-border-clean-2026-10-20`.
+- Objectif : retirer uniquement les pixels d’encadrement issus du découpage original du sprite `pack:capture:sprite-steel-wing-projectile-01` sur les 20 PNG 512px et reconstruire l’unique atlas WebP de la même compétence. Ne pas régénérer le dessin ni modifier le timing et l’assetId.
+- Propriétaire : médiathèque `global-assets` ; fichiers autorisés : `assets/library/capture/sprites/skills/steel_wing_projectile/**`, `scripts/cleanup_steel_wing_border_v1.py`, workflow de correction isolé, journal et rapport de test. Source originale `assets/library/capture/sprites/source/steel_rust_vfx_20261018/**` interdite d’écriture.
+- Protégés : `main`, `gh-pages`, `Zombicide-40k`, moteur de collision, gameplay, autres quatre sprites Acier/Rouille, catalogue/ID des médias et créatures.
+- Diagnostic vérifié : traits rectilignes et restes bleus/gris dans les PNG 1/5/10/20 ; contrôle pour les vingt PNG, validateur de centre inchangé, SHA de provenance, vrai atlas et CI. Aperçus avant/après et animation après disponibles pour revue.
+- Critère de fin : revue des aperçus, CI et sentinelles vertes, aucun asset tiers touché, validation visuelle utilisateur avant GREEN final ou actualisation du cache public sur `gh-pages`.
+
 ## 2026-10-20 — REPRISE : Quatre icônes Acier / réconciliation propre (LOT EN COURS)
 - Demande originale : intégrer 4 icônes WebP réelles (Carapace d’acier, Lame d’acier, Tourbillons de rouille, Aile d’acier) et les raccorder aux sélecteurs du labo combat.
 - Source approuvée : ZIP ChatGPT utilisateur `icons_acier_labo_combat_webp_128.zip`, SHA-256 `7f89231542fb2fc1933a6b7f5212f837e4f9dc8d0376f9b07e6b2b02263b6fc2`. Import strict déjà réussi sur branche `work/lab-capture-steel-icons-2026-10-18` au SHA `eada059dcf5842b5c1024393505c576c588d7bc4`, inspecté : 4 octets WebP RGB 128x128 distincts, 4 SHA des blobs vrais, provenance et tests.
