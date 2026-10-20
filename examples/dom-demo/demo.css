@@ -176,6 +176,12 @@ summary {
 /* One shadow node: the existing animation renderer owns its motion.
    Only the shape is projected on its internal pseudo-element. */
 .fighter__shadow[data-shadow-mode="silhouette"] {
+  /* Same square as fighter__motion, not 100% of the fighter article.
+     The fighter can be taller due to UI/layout; anchoring to bottom:0
+     displaced the shadow from the sprite, especially at player scale 1.7. */
+  top: 0;
+  bottom: auto;
+  aspect-ratio: 1;
   background: none;
   border-radius: 0;
 }
