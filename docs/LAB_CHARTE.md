@@ -797,5 +797,6 @@ Règles bloquantes :
 4. **visualisation réellement animée et planche de poses séparées pour face ET dos avant tout raccord** et validation explicite de l'auteur requise pour chaque vue ;
 5. toute génération non conforme ou refusée reste un brouillon, jamais une ressource publiée/green par effet de bord ;
 6. format des icônes confirmé auprès de l'autorité réelle des médias (sources de production vs exports HUD), sans nouveau propriétaire d'asset.
+7. **Espacement à la génération obligatoire (20/10/2026)** : poses totalement isolées **avant la découpe** ; privilégier un PNG indépendant par pose. Sinon, générer sur cellules source suffisamment grandes avec marges transparentes mesurées (exemple : pose 512 dans cellule 640 px, 64 px de marge par côté et 128 px entre silhouettes). Inclure pattes, queue, ailes, flammes et effets ; toute planche serrée, chevauchée ou contaminée est **refusée et refaite**, jamais maquillée à l'aveugle. L'atlas final 512 × 512 reste sans gouttières. Voir §3 de la charte artistique.
 
 Cette règle complète les sections 6, 14, 33 et 34 et ne change aucune mécanique de combat.
