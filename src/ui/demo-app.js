@@ -1121,7 +1121,11 @@ function createSlot({
     const resolvedMode = projected ? "silhouette" : settings.mode === "silhouette" ? "soft" : settings.mode;
     shadowElement.dataset.shadowMode = resolvedMode;
     shadowElement.style.width = projected ? "100%" : lastShadowLayout.widthPct.toFixed(2) + "%";
-    shadowElement.style.height = projected ? "100%" : lastShadowLayout.heightPct.toFixed(2) + "%";
+    // The model paints into the motion's square image frame. An absolute
+    // 100% HEIGHT shadow instead measures the taller fighter container,
+    // detaching the shadow from scaled player sprites (e.g. 1.7x).
+    // In projected mode CSS aspect-ratio copies the same square image frame.
+    shadowElement.style.height = projected ? "auto" : lastShadowLayout.heightPct.toFixed(2) + "%";
     shadowElement.style.filter = projected ? "none" : "blur(" + projection.blurPx.toFixed(2) + "px)";
     slotContainer.style?.setProperty?.("--creature-shadow-left", (projected ? 50 : lastShadowLayout.centerXPct).toFixed(2) + "%");
     // The small ellipse's bottom offset is not the full alpha canvas origin.
