@@ -1,0 +1,169 @@
+{
+  "assetId": "pack:capture:sprite-steel-wing-projectile-01",
+  "frames": [
+    {
+      "removedPixels": 2002,
+      "visiblePerimeterBefore": 2002,
+      "visiblePerimeterAfter": 0,
+      "originalVisiblePixels": 111614,
+      "frame": 1,
+      "previousSha256": "253a516bdfa1c4609f5091eb10bdc5ab249547afe1177a6e913f199effeb1365"
+    },
+    {
+      "removedPixels": 4189,
+      "visiblePerimeterBefore": 4189,
+      "visiblePerimeterAfter": 0,
+      "originalVisiblePixels": 104459,
+      "frame": 2,
+      "previousSha256": "7cee1a28965fdf69ba23297792dd77372f25f46f80669e8f0b24fdaa5444ab35"
+    },
+    {
+      "removedPixels": 2054,
+      "visiblePerimeterBefore": 2054,
+      "visiblePerimeterAfter": 0,
+      "originalVisiblePixels": 96523,
+      "frame": 3,
+      "previousSha256": "bedad103df76bcb1e5a186095abf03e26376c59ab21f31e9539996df75c642b5"
+    },
+    {
+      "removedPixels": 2715,
+      "visiblePerimeterBefore": 2715,
+      "visiblePerimeterAfter": 0,
+      "originalVisiblePixels": 86083,
+      "frame": 4,
+      "previousSha256": "b169a57938d54976be6278751fcca08011463f034961abd5880b19f90a26d718"
+    },
+    {
+      "removedPixels": 2513,
+      "visiblePerimeterBefore": 2518,
+      "visiblePerimeterAfter": 5,
+      "originalVisiblePixels": 65636,
+      "frame": 5,
+      "previousSha256": "a03d4d7b10b80a4a81744d72dc85dd665579ab80e70ee4bd563861f5e2fd5d0d"
+    },
+    {
+      "removedPixels": 3225,
+      "visiblePerimeterBefore": 3323,
+      "visiblePerimeterAfter": 98,
+      "originalVisiblePixels": 100828,
+      "frame": 6,
+      "previousSha256": "9a35e422a481e59bc2deb3e30d94f9dc670fbd7f09702174df7faf1d0b15ee52"
+    },
+    {
+      "removedPixels": 5144,
+      "visiblePerimeterBefore": 5162,
+      "visiblePerimeterAfter": 18,
+      "originalVisiblePixels": 81165,
+      "frame": 7,
+      "previousSha256": "84d33805391a8b6e6c47f6b65e18c693cd0534492adc129dc903e9bd242d3daa"
+    },
+    {
+      "removedPixels": 2669,
+      "visiblePerimeterBefore": 3353,
+      "visiblePerimeterAfter": 684,
+      "originalVisiblePixels": 81617,
+      "frame": 8,
+      "previousSha256": "ca4e9770afd9b35b64a9a4a82b13b7e4f56ae5a9a60de7d67fb3269f8e566eab"
+    },
+    {
+      "removedPixels": 4104,
+      "visiblePerimeterBefore": 4206,
+      "visiblePerimeterAfter": 102,
+      "originalVisiblePixels": 75274,
+      "frame": 9,
+      "previousSha256": "50ee6f9a3286c17c101275d0778643ca70e3eea27db7ff9e48d58e8c1e9f3ae6"
+    },
+    {
+      "removedPixels": 2523,
+      "visiblePerimeterBefore": 2644,
+      "visiblePerimeterAfter": 121,
+      "originalVisiblePixels": 70911,
+      "frame": 10,
+      "previousSha256": "861b0fd80c36d54a9c2d74deb27ef9edc95949cc7bdeb67e75d6f097133b7d1e"
+    },
+    {
+      "removedPixels": 5787,
+      "visiblePerimeterBefore": 6062,
+      "visiblePerimeterAfter": 275,
+      "originalVisiblePixels": 79347,
+      "frame": 11,
+      "previousSha256": "7ec756c6c22483eee76e06b9e024678c5f2d9a5e6dc46047f0fe9d9fc7d05111"
+    },
+    {
+      "removedPixels": 7667,
+      "visiblePerimeterBefore": 7872,
+      "visiblePerimeterAfter": 205,
+      "originalVisiblePixels": 73414,
+      "frame": 12,
+      "previousSha256": "504f8db0aa1c76211e25cf6ab356e1bca94541ac27bab540139edeb63641a239"
+    },
+    {
+      "removedPixels": 5841,
+      "visiblePerimeterBefore": 6456,
+      "visiblePerimeterAfter": 615,
+      "originalVisiblePixels": 80457,
+      "frame": 13,
+      "previousSha256": "7507af2fa3bfa11e1644e2ffebf5c14c5e1dec690203936b6dd3b2804bfb17ec"
+    },
+    {
+      "removedPixels": 7406,
+      "visiblePerimeterBefore": 8304,
+      "visiblePerimeterAfter": 898,
+      "originalVisiblePixels": 87246,
+      "frame": 14,
+      "previousSha256": "52d8da13823659aa96b35210206f72c3970065629ad521c787f441eb18fe4b76"
+    },
+    {
+      "removedPixels": 5785,
+      "visiblePerimeterBefore": 6683,
+      "visiblePerimeterAfter": 898,
+      "originalVisiblePixels": 89230,
+      "frame": 15,
+      "previousSha256": "d411133b2cf0d976a76e1278c0f61ce216db992cf731c98a443087d7d3edadae"
+    },
+    {
+      "removedPixels": 2431,
+      "visiblePerimeterBefore": 3644,
+      "visiblePerimeterAfter": 1213,
+      "originalVisiblePixels": 105748,
+      "frame": 16,
+      "previousSha256": "3a8e0ea1b6a7a80cbd974862bc6cffa82c8e0a7f470f3bdf6492e63170ff681d"
+    },
+    {
+      "removedPixels": 4185,
+      "visiblePerimeterBefore": 4903,
+      "visiblePerimeterAfter": 718,
+      "originalVisiblePixels": 113380,
+      "frame": 17,
+      "previousSha256": "d3ff76c59c8580440edbced8f01eeb2edc41efd7e7a6d1666218f5ccfbc85558"
+    },
+    {
+      "removedPixels": 2258,
+      "visiblePerimeterBefore": 3449,
+      "visiblePerimeterAfter": 1191,
+      "originalVisiblePixels": 119742,
+      "frame": 18,
+      "previousSha256": "d983e688aa7eb34321476f703613106dab591626a927535d0bd14377b9623302"
+    },
+    {
+      "removedPixels": 6193,
+      "visiblePerimeterBefore": 8213,
+      "visiblePerimeterAfter": 2020,
+      "originalVisiblePixels": 172625,
+      "frame": 19,
+      "previousSha256": "1e60ab4f341879ded23839575e4f4a28dea6aa63611f52ffa28bc73cdb73a5de"
+    },
+    {
+      "removedPixels": 5225,
+      "visiblePerimeterBefore": 8568,
+      "visiblePerimeterAfter": 3343,
+      "originalVisiblePixels": 217113,
+      "frame": 20,
+      "previousSha256": "f88e1c75c3fef499abcfe6a5292db84e97da354fd7d5bb261929c8b80bbcc767"
+    }
+  ],
+  "totalRemovedPixels": 83916,
+  "framesModified": 20,
+  "atlasSha256": "b438a76f056201b8615b0f350dacf685712f1b81b53517b48caedb1e1242c9e9",
+  "requiresAuthorIngameTest": true
+}
