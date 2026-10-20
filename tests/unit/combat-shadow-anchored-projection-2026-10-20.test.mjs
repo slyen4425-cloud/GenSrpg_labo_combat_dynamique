@@ -48,7 +48,7 @@ test("the same one shadow renderer keeps motion; no hidden image, second timer o
  assert.match(slot,/shadowSilhouetteUrlFromOpaqueMaskV1\(opaqueMask\)/);
  assert.match(slot,/lastShadowLayout\.contactXPct/);
  assert.match(slot,/lastShadowLayout\.contactYPct/);
- assert.match(css,/\.fighter__shadow\\s*\\{/);
+ assert.match(css,/\.fighter__shadow\s*\{/);
  assert.doesNotMatch(slot,/requestAnimationFrame\(|new Image\(/);
  assert.match(source("src/adapters/renderer/dom-keyframes.js"),/composeDomShadowTransform\(actor, segment\.ground\)/);
 });
