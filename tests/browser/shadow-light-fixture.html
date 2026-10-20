@@ -87,7 +87,19 @@ try {
           motionRect:player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON(),
           fighterRect:player.getBoundingClientRect().toJSON(),
           dimensions:{shadowWidth:a.clientWidth,shadowHeight:a.clientHeight,
-            motionHeight:player.querySelector("[data-demo-motion]").clientHeight}}));
+            motionHeight:player.querySelector("[data-demo-motion]").clientHeight,
+            fighterHeight:player.clientHeight,
+            motionOffsetTop:player.querySelector("[data-demo-motion]").offsetTop,
+            shadowOffsetTop:a.offsetTop,
+            fighterPadding:getComputedStyle(player).padding,
+            motionTransform:getComputedStyle(player.querySelector("[data-demo-motion]")).transform,
+            shadowTransform:getComputedStyle(a).transform,
+            motionInlineTransform:player.querySelector("[data-demo-motion]").style.transform,
+            shadowInlineTransform:a.style.transform,
+            motionOrigin:getComputedStyle(player.querySelector("[data-demo-motion]")).transformOrigin,
+            shadowOrigin:getComputedStyle(a).transformOrigin,
+            motionAnimation:player.querySelector("[data-demo-motion]").getAnimations().length,
+            shadowAnimation:a.getAnimations().length}}));
       }
       const pivotPx = String(pseudo.transformOrigin).split(" ").map(Number.parseFloat);
       if (Math.abs(pivotPx[0] - a.clientWidth * originX / 100) > 1.5 ||
