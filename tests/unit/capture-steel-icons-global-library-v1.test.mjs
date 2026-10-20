@@ -48,7 +48,7 @@ const publishedIcons = [
 
 test("steel skill icon library: all four canonical assets resolve via editor without author skill mutation",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\\d+)-/)?.[1])>=37,"steel icons must keep at least catalog revision v37");
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=37,"steel icons must keep at least catalog revision v37");
  const catalogUrl=new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
  assert.ok(catalogUrl.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
  assert.equal(catalogUrl.searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);
