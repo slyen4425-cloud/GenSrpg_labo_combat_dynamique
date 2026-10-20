@@ -68,7 +68,8 @@ function robustAxisBounds({
 function lowerEnvelopeSupportsV3(bottomByColumn, width, height, xBounds, yBounds, fallbackX, fallbackY) {
   const toleranceY = Math.max(2, Math.ceil(height * 0.025));
   const supported = new Uint8Array(width);
-  const groundCandidates = [];
+  const groundHistogram = new Uint32Array(height);
+  let groundCandidateCount = 0;
   const bottom = (x) => x < xBounds.start || x > xBounds.end ? -1 : bottomByColumn[x];
   const lowerRegionStart = yBounds.start + (yBounds.end - yBounds.start) * 0.45;
 
@@ -79,13 +80,20 @@ function lowerEnvelopeSupportsV3(bottomByColumn, width, height, xBounds, yBounds
     if (Math.abs(y - bottom(x - 1)) > toleranceY &&
         Math.abs(y - bottom(x + 1)) > toleranceY) continue;
     supported[x] = 1;
-    groundCandidates.push(y);
+    groundHistogram[y] += 1;
+    groundCandidateCount += 1;
   }
 
-  if (!groundCandidates.length) return { xRatio: fallbackX, yRatio: fallbackY };
-  groundCandidates.sort((a, b) => a - b);
+  if (!groundCandidateCount) return { xRatio: fallbackX, yRatio: fallbackY };
+  // Linear-time percentile histogram rather than sorting columns on mobile.
   // The 95th percentile resists very low claws/noise from a few columns.
-  const floorY = groundCandidates[Math.floor((groundCandidates.length - 1) * 0.95)];
+  const cutoff = Math.floor((groundCandidateCount - 1) * 0.95);
+  let seen = 0;
+  let floorY = 0;
+  for (let y = 0; y < height; y += 1) {
+    seen += groundHistogram[y];
+    if (seen > cutoff) { floorY = y; break; }
+  }
   const floorBand = Math.max(2, Math.ceil(height * 0.045));
   const minWidth = Math.min(12, Math.max(2, Math.ceil(
     (xBounds.end - xBounds.start + 1) * 0.025
