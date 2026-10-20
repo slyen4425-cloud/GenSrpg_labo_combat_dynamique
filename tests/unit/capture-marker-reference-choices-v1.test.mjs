@@ -21,7 +21,7 @@ test("marker channels reuse the native element and live author stat owners",()=>
   const imported=captureMarkerChannelChoicesV1({
     nativeElements,statRegistry:{stats:[]},selectedId:"legacy-custom-damage"
   });
-  assert.equal(imported.find(x=>x.id==="legacy-custom-damage").label,"legacy-custom-damage (conservé)");
+  assert.equal(imported.find(x=>x.id==="legacy-custom-damage").label,"legacy-custom-damage — choix importé");
 });
 
 test("marker icon choices always follow the shared author catalog and keep imported unavailable IDs",()=>{
