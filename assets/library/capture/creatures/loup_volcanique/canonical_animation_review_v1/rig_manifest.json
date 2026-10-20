@@ -1,0 +1,50 @@
+{
+  "model": "loup_volcanique",
+  "status": "DRAFT_AUTHOR_REVIEW",
+  "runtimeIntegrated": false,
+  "generatedCreatureArt": false,
+  "method": "rigid pixel cutouts of exact official wolf master; jointed animation prototype",
+  "warnings": [
+    "Visible seam risk at shoulder/hips; artist approval required",
+    "Model player has isolated polygon artifact surgically removed in candidate master",
+    "Needs visual examination of all 80 frames; not a production animation yet"
+  ],
+  "actions": [
+    {
+      "view": "face",
+      "action": "movement",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "897f2ea77bf26434db1891dccb79c3849e4182921587dccfdf3a0433bf278964",
+      "path": "movement/face",
+      "preview": "preview.webp"
+    },
+    {
+      "view": "face",
+      "action": "attack",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "897f2ea77bf26434db1891dccb79c3849e4182921587dccfdf3a0433bf278964",
+      "path": "attack/face",
+      "preview": "preview.webp"
+    },
+    {
+      "view": "dos",
+      "action": "movement",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "241289ac5afc56bdf92e7c53e8d2e3a2cca5004ce3b8b41703a13427ed782092",
+      "path": "movement/dos",
+      "preview": "preview.webp"
+    },
+    {
+      "view": "dos",
+      "action": "attack",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "241289ac5afc56bdf92e7c53e8d2e3a2cca5004ce3b8b41703a13427ed782092",
+      "path": "attack/dos",
+      "preview": "preview.webp"
+    }
+  ]
+}
