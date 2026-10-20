@@ -1,3 +1,9 @@
+## 2026-10-20 — Ombre au sol : publication du propriétaire unique (après UI française)
+- Base canonique `gh-pages@0511765842dceab3bfd2553cc86dac9539b7bc81`, checkpoint `checkpoint/lab-start-shadow-single-owner-final-2026-10-20`, branche `work/lab-shadow-single-owner-final-2026-10-20`. Reprend sans régression le chantier `work/lab-shadow-single-grounding-publish-2026-10-20`.
+- Cause : deux écrivains de `--creature-shadow-bottom` (profil au rebuild vs masque lors d'onload) et chargement de sprite avant reconstruction de l'acteur (race cache). Correctif soustractif : rebuild avant load ; calcul statique unique `groundShadowLayoutFromOpaqueMaskV2` après validation image, `DomActorRenderer` seul propriétaire temporel.
+- Périmètre : `src/ui/demo-app.js`, `src/adapters/renderer/dom-ground-shadow-v2.js`, tests `combat-shadow-single-grounding-2026-10-20` et `creature-motion-profiles-v1`, doc `LAB_SHADOW_SINGLE_GROUNDING_2026-10-20.md`, ce journal. `main`, `global-assets`, gameplay, compétences auteur et UI de création protégés.
+- Vérifier CI complète, Pages, checkpoint GREEN technique ; smartphone 1v1/2v2/joueur/opposant à tester par l'auteur. Aucun camouflage, second timer ni seconde timeline.
+
 ## 2026-10-20 — Éditeur Capture : pas d'identifiants techniques à saisir
 - Base publique `gh-pages@1acc0b583179362ab1a02b3c4f7973b641516764`, checkpoint `checkpoint/lab-start-author-friendly-identifiers-2026-10-20`, branche `work/lab-author-friendly-identifiers-2026-10-20`.
 - Problèmes attestés : sélection d'élément montrant l'ID moteur en parenthèses (`Acier (steel)`), formulaire « Ajouter une stat » exigeant `ID stable`, et champs libres `ID statut` / `ID de zone` alors qu'il s'agit d'identifiants privés. L'éditeur fournissait déjà les éléments natifs traduits et une valeur vide « Même élément que la capacité » pour les dégâts.
