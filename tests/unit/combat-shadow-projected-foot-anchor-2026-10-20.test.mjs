@@ -23,8 +23,10 @@ test("projected shadow retains the actual foot contact (incl. off-centre posture
   ]));
   assert.ok(centered.contactYPct > 80 && centered.contactYPct < 95);
   assert.ok(leaning.contactYPct > 80 && leaning.contactYPct < 95);
-  assert.ok(leaning.centerXPct > centered.centerXPct,
-    "foot anchor must respond to lower silhouette, not image frame 50%");
+  assert.ok(leaning.contactXPct > centered.contactXPct,
+    "projected foot pivot must follow the contact pixels instead of torso");
+  assert.ok(Number.isFinite(leaning.centerXPct),
+    "legacy ellipse centre must remain independently available");
   assert.ok(centered.bottomPct >= 0 && leaning.bottomPct >= 0,
     "old small-ellipse positioning still exists");
 });
