@@ -183,7 +183,8 @@ export function restingTargetCenterForApproachV1(targetSlot) {
 export async function mountCombatDemo({
   root,
   fetchImpl = fetch,
-  nativeVisualSource = null
+  nativeVisualSource = null,
+  initialArenaLight = null
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -239,6 +240,9 @@ export async function mountCombatDemo({
   // projects it using the collision-owned alpha of its current sprite.
   const lightControls = arena.querySelector?.("[data-shadow-light-controls]") ?? null;
   function readLightControls() {
+    // The Capture Combat tab supplies its lighting at preview mount time.
+    // Keep embedded controls for standalone lab fixtures and old integrations.
+    if (!lightControls) return normalizeArenaShadowLightV1(initialArenaLight ?? {});
     const field = (name, fallback) =>
       lightControls?.querySelector?.("[data-shadow-light-" + name + "]")?.value ?? fallback;
     return normalizeArenaShadowLightV1({
