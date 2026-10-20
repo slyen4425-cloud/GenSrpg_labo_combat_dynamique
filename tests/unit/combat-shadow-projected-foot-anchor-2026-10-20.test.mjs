@@ -37,7 +37,7 @@ test("same shadow node switches foot pivot only in projected mode", () => {
   const pure = source("src/adapters/renderer/dom-shadow-light-v1.js");
   const slot = app.slice(app.indexOf("function createSlot("));
   assert.match(slot, /projected \? 0 : lastShadowLayout\.bottomPct/);
-  assert.match(slot, /"--shadow-light-foot-x", lastShadowLayout\.centerXPct/);
+  assert.match(slot, /"--shadow-light-foot-x", lastShadowLayout\.contactXPct/);
   assert.match(slot, /"--shadow-light-foot-y", \(lastShadowLayout\.contactYPct/);
   assert.match(css, /transform-origin: var\(--shadow-light-foot-x, 50%\) var\(--shadow-light-foot-y, 88%\)/);
   assert.match(css, /\[data-shadow-mode="silhouette"\]::before/);
