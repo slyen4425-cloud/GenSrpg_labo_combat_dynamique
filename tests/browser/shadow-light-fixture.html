@@ -18,6 +18,7 @@
 </section></main>
 <script type="module">
 import { mountCombatDemo } from "../../src/ui/demo-app.js";
+import { mountCaptureCombatPreviewV1 } from "../../src/ui/capture-combat-preview-v1.js";
 const query = selector => document.querySelector(selector);
 const fail = message => { document.body.dataset.shadowProbe = "fail:" + message; };
 try {
@@ -36,15 +37,16 @@ try {
     runtimePreview: { player: image, opponent: image },
     displayScale: { player: 1, opponent: 1 }
   });
+  const visualSource = { profiles, creatureMetas: [meta("grounded", "biped"), meta("airborne", "flying")] };
   const demo = await mountCombatDemo({
     root: query("[data-combat-demo]"),
-    nativeVisualSource: { profiles, creatureMetas: [meta("grounded", "biped"), meta("airborne", "flying")] }
+    nativeVisualSource: visualSource
   });
   const player = query('[data-demo-slot="player"]');
   const flying = query('[data-demo-slot="opponent"]');
   const controls = query("[data-shadow-light-controls]");
   let attempts = 0;
-  const timer = setInterval(() => {
+  const timer = setInterval(async () => {
     try {
       if (++attempts > 120) throw Error("shadow image never reached its accepted mask");
       const a = player.querySelector("[data-demo-shadow]");
@@ -87,7 +89,33 @@ try {
       if (a.dataset.shadowMode !== "silhouette") throw Error("silhouette restoration failed");
       clearInterval(timer);
       demo.dispose();
-      document.body.dataset.shadowProbe = "ok:silhouette:flight:direction:contact:restore";
+      // Capture editor: no floating lighting panel during the battle. Mount
+      // the real Capture->visuals handoff with editor-supplied scene settings.
+      controls.remove();
+      const reloaded = await mountCaptureCombatPreviewV1({
+        root: query("[data-combat-demo]"),
+        nativeCombatSource: {},
+        nativeVisualSource: visualSource,
+        arenaLight: {
+          mode: "contact", azimuthDeg: 270, elevationDeg: 58,
+          softness: 0.2, intensity: 0.7, flightHeightPx: 74
+        },
+        mountCombat: async () => ({ dispose() {} })
+      });
+      await new Promise(resolve => setTimeout(resolve, 180));
+      if (a.style.visibility !== "visible" || b.style.visibility !== "visible" ||
+          a.dataset.shadowMode !== "contact" || b.dataset.shadowMode !== "contact") {
+        reloaded.dispose();
+        throw Error("Capture Combat settings were not mounted without console");
+      }
+      const castA = Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x"));
+      const castB = Number.parseFloat(flying.style.getPropertyValue("--shadow-light-cast-x"));
+      if (!(castA < 0 && castB < castA)) {
+        reloaded.dispose();
+        throw Error("Capture editor azimuth or flying projection ignored");
+      }
+      reloaded.dispose();
+      document.body.dataset.shadowProbe = "ok:silhouette:flight:direction:contact:restore:editor";
     } catch (error) {
       clearInterval(timer);
       fail(error.message);
