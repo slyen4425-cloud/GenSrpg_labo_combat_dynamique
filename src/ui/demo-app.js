@@ -5,7 +5,7 @@ import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
 import { createDomCreatureMovementVisualV1 } from "../adapters/renderer/dom-creature-movement-visual-v1.js";
 import {
-  shadowGeometryFromOpaqueMaskV2
+  groundShadowLayoutFromOpaqueMaskV2
 } from "../adapters/renderer/dom-ground-shadow-v2.js";
 import {
   createDomVisibleModelCollisionModel,
@@ -1092,37 +1092,8 @@ function createSlot({
       String(actor.scale)
     );
 
-    const profilePresentation =
-      profiles.get(actor.profile).presentation ?? {};
-    const shadow = profilePresentation.shadow ?? {};
-    const shadowBottomPct = Number(shadow.bottomPct);
-    const shadowOpacity = Number(shadow.opacity);
-
-    if (Number.isFinite(shadowBottomPct)) {
-      slotContainer.style?.setProperty?.(
-        "--creature-shadow-bottom",
-        String(shadow.bottomPct) + "%"
-      );
-    } else {
-      slotContainer.style?.removeProperty?.(
-        "--creature-shadow-bottom"
-      );
-    }
-
-    if (
-      Number.isFinite(shadowOpacity) &&
-      shadowOpacity >= 0 &&
-      shadowOpacity <= 1
-    ) {
-      slotContainer.style?.setProperty?.(
-        "--creature-shadow-opacity",
-        String(shadow.opacity)
-      );
-    } else {
-      slotContainer.style?.removeProperty?.(
-        "--creature-shadow-opacity"
-      );
-    }
+    // Ground shadow layout is set once, from the accepted resting image.
+    // The profile must not independently overwrite contact position.
 
     renderer = createDomActorRenderer({
       element: motion,
@@ -1136,12 +1107,14 @@ function createSlot({
     assetReady = false;
     collisionModel.clear();
     image.hidden = true;
+    shadowElement.style.visibility = "hidden";
     slotContainer.dataset.visibleCollisionReady = "false";
     image.removeAttribute("src");
     image.crossOrigin = "anonymous";
 
+    let settled = false;
     const markReady = () => {
-      if (token !== imageLoadToken) {
+      if (token !== imageLoadToken || settled) {
         return;
       }
 
@@ -1155,37 +1128,24 @@ function createSlot({
       }
 
       const frame = collisionModel.snapshot();
-      if (frame?.mask) {
-        const profilePresentation =
-          profiles.get(actor.profile).presentation ??
-          {};
-        const profileShadow =
-          profilePresentation.shadow ?? {};
-        const geometry =
-          shadowGeometryFromOpaqueMaskV2(
-            frame.mask,
-            {
-              widthMultiplier:
-                profileShadow.widthMultiplier ??
-                1.12
-            }
-          );
-        shadowElement.style.width =
-          geometry.widthPct.toFixed(2) + "%";
-        shadowElement.style.height =
-          geometry.heightPct.toFixed(2) + "%";
-        shadowElement.dataset.shadowFootprint =
-          geometry.opaqueWidthRatio.toFixed(3);
-        // Align the shadow's centre to the resting model's opaque feet,
-        // rather than to its transparent image canvas.
-        if (geometry.contactYRatio !== null) {
-          const bottom = Math.max(0, Math.min(60,
-            (1 - geometry.contactYRatio) * 100 - geometry.heightPct / 2
-          ));
-          slotContainer.style?.setProperty?.("--creature-shadow-bottom", bottom.toFixed(2) + "%");
-        }
-      }
-
+      if (!frame?.mask) return;
+      const profileShadow =
+        profiles.get(actor.profile).presentation?.shadow ?? {};
+      const layout = groundShadowLayoutFromOpaqueMaskV2(
+        frame.mask, profileShadow
+      );
+      shadowElement.style.width = layout.widthPct.toFixed(2) + "%";
+      shadowElement.style.height = layout.heightPct.toFixed(2) + "%";
+      shadowElement.dataset.shadowFootprint =
+        layout.opaqueWidthRatio.toFixed(3);
+      slotContainer.style?.setProperty?.(
+        "--creature-shadow-bottom", layout.bottomPct.toFixed(2) + "%"
+      );
+      slotContainer.style?.setProperty?.(
+        "--creature-shadow-opacity", String(layout.opacity)
+      );
+      settled = true;
+      shadowElement.style.visibility = "visible";
       assetReady = true;
       slotContainer.dataset.visibleCollisionReady = "true";
       image.hidden = !visible;
@@ -1227,8 +1187,10 @@ function createSlot({
       meta.rangedAttackFx ?? null,
       meta.rangedAttackBackFx ?? null
     );
-    loadRuntimeAsset(runtimeUrl);
+    // The actor/profile must exist before a cached image may fire onload.
+    // A late callback from an older sprite cannot become a second owner.
     rebuildActor(runtimeUrl);
+    loadRuntimeAsset(runtimeUrl);
   }
 
   function setVisible(nextVisible) {
