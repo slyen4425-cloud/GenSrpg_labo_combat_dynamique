@@ -109,6 +109,7 @@ export function animationPlanToDomTimeline(plan, actor) {
   const shadowKeyframes = [{
     offset: 0,
     transform: composeDomShadowTransform(actor),
+    ...(planOrigin ? { transformOrigin: planOrigin } : {}),
     opacity: 1,
     easing: plan.segments[0].easing ?? "linear"
   }];
@@ -118,6 +119,7 @@ export function animationPlanToDomTimeline(plan, actor) {
     shadowKeyframes.push({
       offset: elapsed / totalDurationMs,
       transform: composeDomShadowTransform(actor, segment.ground),
+      ...(planOrigin ? { transformOrigin: planOrigin } : {}),
       opacity: segment.opacity ?? 1,
       easing: plan.segments[index + 1]?.easing ?? "linear"
     });
