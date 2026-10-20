@@ -1,3 +1,10 @@
+## 2026-10-20 — Tempête de rouille : import auteur sans conversion forcée de « acier »
+- Source exacte `gensrpg-capture-skill-tempete_rouille.json` SHA256 `e154956cbb52c957da5487ee8704d8a13112ed9787e172a9454316a5e5e7e8cf` ; identifiant stable `tempete_rouille` et canal du tick `acier` préservés à la lettre.
+- Base `gh-pages@0261b2fa8b88af8a1048beb656b9f97b200dcfe0`, checkpoint `checkpoint/lab-start-tempete-rouille-author-2026-10-20`, branche `work/lab-tempete-rouille-author-2026-10-20`.
+- Propriétaire `configuredSkills` via catalogue de presets existant, ajout unique `data/capture/showcase/tempete_rouille.capture-skill-transfer-v1.json` et archive passive `data/capture/source-exports/gensrpg-capture-skill-tempete_rouille-2026-10-20.json` ; test `tests/unit/capture-tempete-rouille-author-2026-10-20.test.mjs`, rapport `docs/LAB_TEMPETE_ROUILLE_AUTHOR_2026-10-20.md`, journal.
+- Aucun changement aux règles, moteur, interface, visuels, à `main` ni à `global-assets`. Préserver les 20 dégâts de zone toutes les secondes pendant 20 s, recharge 40 s, catégorie counter, coûts, portée, sprite, icône. Pas d'équipement automatique d'une créature.
+- Tests import strict SHA/contrats/ré-import, sentinelles, CI complète, publication Pages après validation. L'audit sémantique des canaux et la simplification des IDs éditeur feront l'objet d'un lot séparé sans réécriture silencieuse des données auteur.
+
 ## 2026-10-20 — Charte : espacement des sprites source et contrôle anti-découpe
 
 - Base `gh-pages@2586119261725ed1b3f3b84b985ccdef6d60ef06`; checkpoint `checkpoint/lab-start-animation-sprite-gutter-v1-2026-10-20`, branche `work/lab-animation-sprite-gutter-v1-2026-10-20`.
