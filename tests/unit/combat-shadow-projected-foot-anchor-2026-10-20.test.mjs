@@ -53,5 +53,6 @@ test("empty alpha mask exposes no invented foot contact", () => {
   const layout = groundShadowLayoutFromOpaqueMaskV2(mask(16,16,[]), { bottomPct: 9 });
   assert.equal(layout.contactYPct, null);
   assert.equal(layout.centerXPct, 50);
+  assert.equal(layout.contactXPct, 50);
   assert.equal(layout.bottomPct, 9);
 });
