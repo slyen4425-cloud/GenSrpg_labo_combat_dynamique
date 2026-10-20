@@ -43,6 +43,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/cap_shadow_atk_5.capture-skill-transfer-v1.json",
     "data/capture/showcase/cisaille.capture-skill-transfer-v1.json",
     "data/capture/showcase/carapce_acier.capture-skill-transfer-v1.json",
+    "data/capture/showcase/Tempete_metallique.capture-skill-transfer-v1.json",
     "data/capture/showcase/dodge.capture-skill-transfer-v1.json"
   ]);
 
