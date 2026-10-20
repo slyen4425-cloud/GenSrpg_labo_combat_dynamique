@@ -1,3 +1,10 @@
+## 2026-10-20 — Capacité auteur Carapace d'acier (carapce_acier)
+- Base publique `gh-pages@abd5dfd87f7a271a2d317b9121c7bef8bedf348d`, checkpoint `checkpoint/lab-start-carapce-acier-author-2026-10-20`, branche `work/lab-carapce-acier-author-2026-10-20`.
+- Export auteur strict `gensrpg-capture-skill-carapce_acier.json` SHA256 `b9c51205f4dbf2c3c6c88dd86d2015fa4bcc99bc2ee86f12e7f925e2b752fad4`. Identifiant `carapce_acier`, pas de correction orthographique imposée. Nouvelle compétence : aucun ancien preset actif du même ID dans le dépôt.
+- Seule entrée active : `data/capture/showcase/carapce_acier.capture-skill-transfer-v1.json` référencée une fois dans `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` et insérée par `configuredSkills` ; copie de provenance `data/capture/source-exports/gensrpg-capture-skill-carapce_acier-2026-10-20.json` non chargée dans le jeu.
+- Configuration intégrale maintenue : défense +500 points, 15 s, auto, coût 4, CD 30 s, cast 2,5 s, requiredLevel 5, statusVisuel `hold-last`; l'icône `icon-skill-armure-de-pointe-01` est conservée exactement bien que `icon-skill-carapace-acier-01` soit également disponible. Les deux assets de l'export existent dans la bibliothèque unique `global-assets`.
+- Tests RED de référence `tests/unit/capture-carapce-acier-author-2026-10-20.test.mjs`, validation contrat/owner/aller-retour et régressions ; CI 5/5, checkpoint GREEN et déploiement Pages requis. Aucun changement aux règles, capacités existantes, créatures ou bibliothèque d'assets.
+
 ## 2026-10-20 — Quatre icônes Acier : raccord catalogue éditeur par cache
 - Objectif : exposer les 4 vraies icônes Carapace d’acier, Lame d’acier, Tourbillons de rouille, Aile d’acier dans le sélecteur existant du labo combat via catalogue unique `global-assets` ; aucune compétence auteur modifiée.
 - Propriétaire médias `global-assets`, SHA `a989443b9985b3f444f5ea3b4c26f9c215ae04e4`, quatre WebP RGB 128x128 réellement importés et vérifiés avec provenance/CI ; quatre ID `pack:capture:icon-skill-{carapace-acier,lame-acier,tourbillons-rouille,aile-acier}-01`.
