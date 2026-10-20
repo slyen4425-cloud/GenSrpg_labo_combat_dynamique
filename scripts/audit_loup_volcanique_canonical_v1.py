@@ -46,29 +46,24 @@ def audit(view, source):
     diagnostic.convert("RGB").save(REVIEW/f"{view}_components_audit.jpg",quality=95)
     target=None;candidate=baseline.copy()
     if view=="dos":
-        # Suspect fragment floating above wolf head, around image coord (229,85).
-        # Safe to remove ONLY a small fully disconnected component here.
-        suspects=[c for c in comps if 196<=c["center"][0]<=256 and
-                  60<=c["center"][1]<=112 and c["area"]<=350 and
-                  c["bbox"][2]<45 and c["bbox"][3]<43]
-        if suspects:
-            target=sorted(suspects,key=lambda c:
-                abs(c["center"][0]-228)+abs(c["center"][1]-85))[0]
-            if target["area"]>=8:
-                # Preserve glowing flame particles: only remove dark stone-like
-                # RGB pixels inside chosen component. If mixed colors, refuse.
-                region=(l==target["label"])
-                colors=rgba[:,:,:3][region]
-                is_dark=((colors[:,0]<165)&(colors[:,1]<125)).mean() if len(colors) else 0
-                if is_dark > .8:
-                    # Remove entire component and 1px feather ring, not body.
-                    region=cv2.dilate(region.astype("uint8"),np.ones((3,3),np.uint8)).astype(bool)
-                    arr=rgba.copy()
-                    arr[region]=0
-                    candidate=Image.fromarray(arr,"RGBA")
-                    target={**target,"removedPixels":int(region.sum()),"darkFraction":float(is_dark)}
-                else:
-                    target={**target,"refusalReason":f"Selected component is not dark (fraction {is_dark:.3f})"}
+        # The rogue dark stone shard visible above the player's mane is an
+        # integrated scrap from the original import, not a separately thresholded
+        # alpha component. The component audit proves raw CC deletion will fail.
+        # Remove this *exact small polygon*, leaving all adjacent lava/fur intact.
+        # DO NOT discard general small detached components: many are real embers.
+        vertices=[(223,78),(233,79),(244,89),(253,102),
+                  (249,108),(238,111),(221,103),(217,91)]
+        polygon=Image.new("L",(320,320),0)
+        ImageDraw.Draw(polygon).polygon(vertices,fill=255)
+        region=np.array(polygon)>0
+        removed=int(np.count_nonzero((alpha>0)&region))
+        arr=rgba.copy()
+        arr[region,:]=0
+        candidate=Image.fromarray(arr,"RGBA")
+        target={"manualProtectedPolygon":vertices,
+                "removedNonTransparentPixels":removed,
+                "note":"Exact stray dark-rock scrap only. Other separated fire embers retained.",
+                "approvedForRuntime":False}
     candidate.save(REVIEW/f"{view}_candidate_320.png")
     # Also save canonical-based 512px *masters* for frame 01 equality tests.
     candidate.resize((512,512),Image.Resampling.LANCZOS).save(REVIEW/f"{view}_master_512.png")
