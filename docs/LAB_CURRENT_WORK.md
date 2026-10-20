@@ -1,3 +1,12 @@
+## 2026-10-20 — Charte : espacement des sprites source et contrôle anti-découpe
+
+- Base `gh-pages@2586119261725ed1b3f3b84b985ccdef6d60ef06`; checkpoint `checkpoint/lab-start-animation-sprite-gutter-v1-2026-10-20`, branche `work/lab-animation-sprite-gutter-v1-2026-10-20`.
+- Objet : rendre obligatoire une marge interne >=32 px de chaque côté dans la source et >=64 px entre deux silhouettes adjacentes, en incluant flammes/queues/museaux/ailes. Rejeter plutôt que couper une vraie partie du modèle.
+- Périmètre strictement documentaire : `docs/LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md`, `docs/LAB_CURRENT_WORK.md`. Aucun sprite ni catalogue ni code moteur modifié.
+- Cas réel Loup volcanique : déplacements FACE + DOS (20 frames chacun) acceptés, **copiés à l'identique** dans une révision de revue locale V3 ; attaques face/dos corrigées par redécoupage sans génération, mais l'attaque face frame 12 reste marquée comme **risque de coupe dans la planche source**. Ne pas considérer les 80 frames comme GREEN ni importer avant revue artistique explicite.
+- Les deux attaques et leurs previews restent des **fichiers de revue** tant que les masters et la continuité/cadrage ne sont pas validés. La charte technique LAB_CHARTE et les autres dépôts sont protégés.
+- Vérification : contenu markdown, règles non contradictoires, comparaison exacte des déplacements V2/V3 (SHA), 20 frames RGBA 512² par action, rapport des marges. Validation téléphone auteur distincte.
+
 ## 2026-10-20 — Intégration auteur Tempête métallique (`Tempete_metallique`)
 - Base publique `gh-pages@420afc97d42d0f0ee06262f99c64dc71a765c6f7`, checkpoint de départ `checkpoint/lab-start-tempete-metallique-author-2026-10-20`, branche isolée `work/lab-tempete-metallique-author-2026-10-20`.
 - Export utilisateur `gensrpg-capture-skill-Tempete_metallique.json`, SHA256 original `f4c590274169e6f6201b206aa7f625ed871b73cd09ef1de503db3e9cbe8eaf27`, contrat `capture-skill-transfer-v1`. Identifiants `Tempete_metallique` exacts (casse et orthographe), nom affiché Tempête métallique ; aucune entrée préalable du même identifiant dans `data/capture/showcase`.
