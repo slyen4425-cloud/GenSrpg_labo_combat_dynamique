@@ -17,6 +17,11 @@ La nouvelle sentinelle réel navigateur avec silhouette synthétique et échelle
 
 Correction supplémentaire dans le même propriétaire de rendu : `shadowElement.style.height='auto'` en mode silhouette, et `top:0;bottom:auto;aspect-ratio:1` sur le **même** shadow node (largeur 100 %). Cette géométrie correspond à l'image carrée sans changer les modes historiques ellipse/contact, ni les styles des acteurs. Sentinelle : comparer en pixels les centres alpha depuis `getBoundingClientRect()` des deux boîtes à l'échelle 1,7, sans se contenter d'une inspection CSS statique. Aucun alignement codé selon le nom du modèle.
 
+## Correction supplémentaire, origine des transformations Animation Core
+L'instrumentation réelle a prouvé que l'idle du profil `biped` utilise l'origine `50% 92%` pour le sprite (transform calculé à 1,7×), tandis que l'ombre était toujours à `50% 50%`. Même avec deux boîtes carrées de 262×262px et un décalage de translation nul sur le pseudo-masque, les deux cadres se séparaient de 55,7px en Y. L'étiquette visible de l'ancienne fixture ajoutait également une rangée grille 19px absente du Capture de production.
+
+Le changement d'autorité concerné a donc été explicitement recadré AVANT d'y toucher (journal), avec les seuls `dom-keyframes.js` et `dom-actor-renderer.js` : `animationPlanToDomTimeline` répercute désormais le même `planOrigin` sur les keyframes du shadow et celles du body ; `DomActorRenderer` rétablit aussi l'origine de base partagée à la fin / annulation / retour. Pas de nouvel owner, pas de nouvelle trajectoire. La fixture reflète le véritable `class="visually-hidden"` des étiquettes. Test supplémentaire : `tests/unit/combat-shadow-transform-origin-parity-2026-10-20.test.mjs`.
+
 ## Correction architecture
 - Garder le calcul d'appuis PR #43 et le mode 1 silhouette/1 mask/1 shadow node.
 - Garder `transform-origin` au pivot de contact. En mode silhouette, **supprimer la translation rigide** du pseudo-masque.
