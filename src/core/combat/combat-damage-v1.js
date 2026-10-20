@@ -4,6 +4,58 @@ import {
   projectStatusStatEffectsV1
 } from "./status-effect-projection-v1.js";
 
+// Sole Combat Rules resolver for equivalent native element labels and IDs.
+// Historical authored channels are not migrated or rewritten. Unknown custom
+// channel names remain distinct to avoid merging unrelated user-created types.
+const NATIVE_ELEMENT_CHANNEL_ALIASES_V1 = Object.freeze({
+  physique: "physical",
+  physical: "physical",
+  feu: "fire",
+  fire: "fire",
+  eau: "water",
+  water: "water",
+  terre: "earth",
+  earth: "earth",
+  air: "air",
+  electricite: "electric",
+  electric: "electric",
+  lumiere: "light",
+  light: "light",
+  ombre: "shadow",
+  shadow: "shadow",
+  nature: "nature",
+  glace: "ice",
+  ice: "ice",
+  poison: "poison",
+  acier: "steel",
+  steel: "steel",
+  psy: "psy",
+  esprit: "spirit",
+  spirit: "spirit"
+});
+
+export function canonicalCombatDamageChannelV1(value) {
+  const original = typeof value === "string" && value.trim()
+    ? value.trim()
+    : "physical";
+  const normalized = original.toLocaleLowerCase("fr")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return NATIVE_ELEMENT_CHANNEL_ALIASES_V1[normalized] ?? original;
+}
+
+// Aggregate all contributions to one semantic element. In historical data
+// natural steel resistance is 'steel' while the author's Acier stat is
+// 'acier'; reading only one would silently discard either contribution.
+function channelPercentV1(percents, canonicalChannel) {
+  let total = 0;
+  for (const [channel, percentage] of Object.entries(percents ?? {})) {
+    if (canonicalCombatDamageChannelV1(channel) === canonicalChannel) {
+      total += Number(percentage) || 0;
+    }
+  }
+  return total;
+}
+
 function fighterOf(state, fighterId) {
   const fighter = state?.fighters?.[fighterId];
   if (!fighter) {
@@ -46,39 +98,16 @@ export function computeCombatDamageV1({
       atMs
     });
 
+  const canonicalChannel = canonicalCombatDamageChannelV1(damageChannel);
   const damageBonusPct =
-    (
-      Number(
-        attacker.damagePctByChannel?.[
-          damageChannel
-        ] ?? 0
-      ) || 0
-    ) +
-    (
-      Number(
-        attackerStatus.damagePctByChannel?.[
-          damageChannel
-        ] ?? 0
-      ) || 0
-    );
+    channelPercentV1(attacker.damagePctByChannel, canonicalChannel) +
+    channelPercentV1(attackerStatus.damagePctByChannel, canonicalChannel);
   const outgoingDamagePct =
     (Number(attacker.outgoingDamagePct ?? 0) || 0) +
     (Number(attackerStatus.outgoingDamagePct ?? 0) || 0);
   const resistancePct =
-    (
-      Number(
-        target.resistancePctByChannel?.[
-          damageChannel
-        ] ?? 0
-      ) || 0
-    ) +
-    (
-      Number(
-        targetStatus.resistancePctByChannel?.[
-          damageChannel
-        ] ?? 0
-      ) || 0
-    );
+    channelPercentV1(target.resistancePctByChannel, canonicalChannel) +
+    channelPercentV1(targetStatus.resistancePctByChannel, canonicalChannel);
 
   // A guard is an active, charged, per-creature reaction. Read the same
   // combat-clock history as Dodge, with no UI or alternate damage owner.
