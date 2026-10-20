@@ -66,7 +66,7 @@ const canonicalAssets = [
 test("80-frame Shadow and Life Drain pack: all four assets selectable through one canonical editor resolver",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.repository,"slyen4425-cloud/GenSrpg_labo_combat_dynamique");
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-19-v36-scarabacier-v5-roll-clean");
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1])>=36,"Shadow/Life Drain must never roll back its catalog revision");
  const catalogUrl=new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
  assert.ok(catalogUrl.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
  assert.equal(catalogUrl.searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);

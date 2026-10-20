@@ -1,3 +1,12 @@
+## 2026-10-20 — Quatre icônes Acier : raccord catalogue éditeur par cache
+- Objectif : exposer les 4 vraies icônes Carapace d’acier, Lame d’acier, Tourbillons de rouille, Aile d’acier dans le sélecteur existant du labo combat via catalogue unique `global-assets` ; aucune compétence auteur modifiée.
+- Propriétaire médias `global-assets`, SHA `a989443b9985b3f444f5ea3b4c26f9c215ae04e4`, quatre WebP RGB 128x128 réellement importés et vérifiés avec provenance/CI ; quatre ID `pack:capture:icon-skill-{carapace-acier,lame-acier,tourbillons-rouille,aile-acier}-01`.
+- Base `gh-pages` SHA `e1ffa2f3ad649d632308dcdbf7a8cbce437637cb`, checkpoint `checkpoint/lab-start-steel-icons-editor-cache-2026-10-20` et branche isolée `work/lab-steel-icons-editor-cache-2026-10-20`.
+- Fichiers autorisés : `src/assets/global-visual-library.js`, `tests/unit/capture-steel-icons-global-library-v1.test.mjs`, sentinelle legacy `tests/unit/capture-shadow-life-drain-global-library-v1.test.mjs` (révision monotone plutôt qu’exacte), `docs/LAB_STEEL_ICONS_EDITOR_CACHE_V1.md`, ce journal.
+- Protégés : `main`, `Zombicide-40k`, Combat Rules, FX/Animation Core, éditeur et capacités auteur, médias d’autres lots, `global-assets` désormais propriétaire unique des fichiers.
+- Révision du cache `2026-10-20-v37-four-steel-skill-icons`, aucune duplication de catalogue ni d'images sur `gh-pages`. Tests de résolution, CI complète, déploiement Pages, contrôle smartphone utilisateur requis.
+- GREEN technique seulement si CI, vrai catalogue et Pages vérifiés ; preview manuelle non revendiquée.
+
 ## 2026-10-19 — Scarabacier : remplacement exact par le dernier export V8
 
 - Base publique `gh-pages@eb94aba5f2b9ea81b4b1385306d511525e99c184`, checkpoint `checkpoint/lab-start-scarabacier-author-v8-2026-10-19`, branche `work/lab-scarabacier-author-v8-2026-10-19`.
