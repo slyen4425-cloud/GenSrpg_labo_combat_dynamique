@@ -1,3 +1,11 @@
+## 2026-10-20 — Publication du projectile Aile d’acier nettoyé dans Capture (révision cache v38)
+- Validation auteur des planches visuelles « ça a l'air propre, tu peux remplacer » ; PR média #26 fusionnée sur `global-assets@d8ad7ec060efe767b9f62c06314c1ac4f578e4e5`, CI du média au vert ; 20 PNG et atlas remplacés à ID et chemins inchangés (`pack:capture:sprite-steel-wing-projectile-01`).
+- Base publication `gh-pages@9710e785bb3de25af3ed5a8a046a48476f9f2a1c`, checkpoint `checkpoint/lab-start-steel-wing-media-cache-v38-2026-10-20`, branche `work/lab-steel-wing-media-cache-v38-2026-10-20`.
+- Objet : invalidation explicite du cache d'asset unique via `src/assets/global-visual-library.js` v38 ; conserver intégralement le catalogue, les propriétés de compétence et les IDs stables. Aucun média copié sur `gh-pages` ; `global-assets` est le propriétaire unique.
+- Fichiers autorisés : `src/assets/global-visual-library.js`, sentinelle d'icônes Acier `tests/unit/capture-steel-icons-global-library-v1.test.mjs`, test propre `tests/unit/capture-steel-wing-media-cache-v38.test.mjs`, `docs/LAB_STEEL_WING_MEDIA_CACHE_V38.md`, ce journal.
+- Protégés : `main`, jeu principal, moteur règles/collisions/rendu, éditeur, créatures, compétences auteur, autres médias et catalogue global ; aucune modification indirecte.
+- Critères : tests RED/GREEN de l'unique résolveur catalogue, CI complète, vérification Pages du nouveau SHA ; validation visuelle du tir en jeu sur smartphone distincte de la revue des planches et du GREEN technique.
+
 ## 2026-10-20 — Capacité auteur Carapace d'acier (carapce_acier)
 - Base publique `gh-pages@abd5dfd87f7a271a2d317b9121c7bef8bedf348d`, checkpoint `checkpoint/lab-start-carapce-acier-author-2026-10-20`, branche `work/lab-carapce-acier-author-2026-10-20`.
 - Export auteur strict `gensrpg-capture-skill-carapce_acier.json` SHA256 `b9c51205f4dbf2c3c6c88dd86d2015fa4bcc99bc2ee86f12e7f925e2b752fad4`. Identifiant `carapce_acier`, pas de correction orthographique imposée. Nouvelle compétence : aucun ancien preset actif du même ID dans le dépôt.
