@@ -66,7 +66,11 @@ def audit(view, source):
                 "approvedForRuntime":False}
     candidate.save(REVIEW/f"{view}_candidate_320.png")
     # Also save canonical-based 512px *masters* for frame 01 equality tests.
-    candidate.resize((512,512),Image.Resampling.LANCZOS).save(REVIEW/f"{view}_master_512.png")
+    # Safe-canvas master: original 320x320 artwork, uniformly scaled to 448px,
+    # centered on transparent 512x512 with 32px margin before any limb motion.
+    master=Image.new("RGBA",(512,512),(0,0,0,0))
+    master.alpha_composite(candidate.resize((448,448),Image.Resampling.LANCZOS),(32,32))
+    master.save(REVIEW/f"{view}_master_512.png")
     orig=baseline.resize((512,512),Image.Resampling.LANCZOS)
     cand=candidate.resize((512,512),Image.Resampling.LANCZOS)
     canvas=Image.new("RGB",(1070,566),(24,30,40))
