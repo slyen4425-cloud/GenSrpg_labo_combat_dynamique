@@ -58,6 +58,19 @@ try {
       if (pseudo.content === "none" || !String(pseudo.maskImage || pseudo.webkitMaskImage).includes("data:image/svg+xml")) {
         throw Error("silhouette missing from painted CSS pseudo-element");
       }
+      const originX = Number.parseFloat(player.style.getPropertyValue("--shadow-light-foot-x"));
+      const originY = Number.parseFloat(player.style.getPropertyValue("--shadow-light-foot-y"));
+      if (!(originX > 0 && originX < 100 && originY > 0 && originY <= 100)) {
+        throw Error("ground contact pivot missing from accepted alpha mask");
+      }
+      if (player.style.getPropertyValue("--creature-shadow-bottom") !== "0.00%") {
+        throw Error("projected silhouette must share the full sprite frame origin");
+      }
+      const pivotPx = String(pseudo.transformOrigin).split(" ").map(Number.parseFloat);
+      if (Math.abs(pivotPx[0] - a.clientWidth * originX / 100) > 1.5 ||
+          Math.abs(pivotPx[1] - a.clientHeight * originY / 100) > 1.5) {
+        throw Error("painted silhouette is not pivoted on the model's alpha contact");
+      }
       const groundX = Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x"));
       const airX = Number.parseFloat(flying.style.getPropertyValue("--shadow-light-cast-x"));
       if (!(airX > groundX)) throw Error("flying shadow must project further than grounded shadow");
