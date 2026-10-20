@@ -61,6 +61,26 @@ Chaque créature destinée au combat nécessite, au minimum :
 
 **Aucune légende, aucun numéro, aucun encadrement, aucune couleur de fond sur les frames ou l'atlas de production.** Ces éléments sont autorisés uniquement dans une planche de revue séparée.
 
+### Espacement des poses à la GÉNÉRATION — obligatoire (ajout du 20 octobre 2026)
+
+**Pourquoi :** des planches de Scarabacier puis du Loup volcanique ont placé des créatures trop proches les unes des autres. Une découpe géométriquement correcte peut alors importer une corne, une patte, une flamme ou des pixels appartenant à la pose voisine. **Ce défaut est un défaut de génération et de disposition, pas seulement de nettoyage.**
+
+**Règle absolue : une pose = une zone indépendante, entièrement contenue, avec un espace transparent mesurable avant découpe.** Elle s'applique à l'attaque, au déplacement, aux autres animations face/dos et à tout appendice mobile (queue, aile, corne, patte, flamme, projectile solidaire).
+
+1. **Méthode prioritaire :** créer chaque pose **individuellement** sur un canevas RGBA spacieux, la recentrer et la normaliser en frame 512 × 512. Assembler la planche **après** la validation des frames individuelles. Ne jamais demander 20 poses collées serrées uniquement pour faire rentrer toute l'animation sur une image.
+2. **Si une grande planche est nécessaire à la génération :** chaque pose a sa propre **cellule source de 640 × 640 px minimum pour un sujet occupant au plus 512 × 512 px** (ratio de référence : cellule = sujet + 64 px de marge de chaque côté). La largeur de la planche dépend du nombre de colonnes ; **ne pas réduire les gouttières pour caser davantage de poses**. Augmenter le canevas ou découper la production en plusieurs planches au besoin.
+3. **Gouttières :** réserver **au moins 64 px transparents entre la boîte réelle de chaque pose et chaque bord de sa cellule de génération** dans cet exemple à 640 px ; cela produit **au moins 128 px libres entre deux silhouettes voisines**. Les pattes, ailes, pointes de queue, cornes, flammes, particules et traînées sont **toutes incluses** dans la boîte réelle (canal alpha). Ajuster proportionnellement si la résolution source diffère.
+4. **Marge de sécurité dans la frame définitive 512 × 512 :** viser **au minimum 24 px totalement transparents sur les quatre côtés** (ou marge équivalente adaptée à une pose très étendue, explicitement validée). Si l'intégralité du sujet, effets compris, ne tient pas, **réduire/recentrer la pose ou choisir un canevas de génération plus grand** ; ne pas couper les extrémités.
+5. **Découpe fiable :** enregistrer et documenter la grille de génération (taille des cellules, coordonnées, colonnes/lignes). Découper chaque cellule **par ses limites exactes, jamais avec une estimation basée sur l'emplacement des personnages**. Supprimer les gouttières de génération **seulement après** contrôle et normalisation de chaque pose.
+6. **Contrôle visuel préalable obligatoire :** afficher la planche source avec grille et marges, zoomer les **quatre bords** de chaque cellule et vérifier l'absence de toute intrusion (morceau de voisin, reflet, ombre, flamme, trace rouge). Si la pose touche la limite ou qu'une cellule contient des morceaux d'une autre, marquer **REFUSÉE** et **refaire la planche en espaçant**. Interdit de la déclarer « corrigée » avec un détourage automatique qui pourrait retirer des membres valides.
+7. **Contrôle automatisable :** vérifier avant découpe la transparence des bandes de sécurité de chaque cellule et, après découpe, la taille 512 × 512, les marges, l'alpha, la continuité de la silhouette et la comparaison frame 01 / maître. Les contrôles automatisés n'exemptent pas de la revue humaine image par image.
+8. **Aucune altération du modèle :** les espaces supplémentaires ne changent ni le cadrage relatif approuvé, ni l'angle FACE/DOS, ni l'identité de la créature, ni les mouvements réels (pattes pour course, tête/épaules pour morsure). **Un zoom ou une déformation globale ne remplace pas une animation de pattes / tête conforme au besoin.**
+9. **Retours et refus :** une planche trop serrée ou contaminée **n'entre ni dans la bibliothèque ni dans le jeu**. Repartir des modèles maîtres et reproduire les mêmes poses avec un meilleur espacement, fournir de **nouvelles previews animées**, puis attendre la validation auteur.
+
+**Différence importante :** les « 64 px / 128 px » concernent exclusivement **la planche de génération avec gouttières**. Les **atlas de production** restent **sans gouttière** (grille finale 5 × 4 de frames validées 512 × 512) conformément au contrat du moteur. Ne pas modifier les extracteurs/runtime pour introduire les marges de génération.
+
+**Application immédiate au Loup volcanique :** les planches créées pendant l'essai du 20/10 sont des **brouillons à contrôler**, pas des sprites validés. Elles présentent une proximité de poses et des résidus colorés dans les zones vides. Ne pas les découper directement en livrables : les reproduire avec poses espacées, véritables cycles de pattes/mouvements de tête, puis soumettre quatre previews distinctes (attaque et déplacement × FACE et DOS).
+
 ### Exemple recommandé d'attaque ailée en 20 frames (pour chaque vue)
 
 - **01–03 :** modèle approuvé au repos, tension légère, aucune dérive de perspective ;
@@ -178,7 +198,7 @@ Un statut n'implique **pas** le suivant. `GREEN` artistique exige la validation 
 3. Relever la branche, le SHA de base et les domaines protégés avant toute action sur les dépôts ; une branche et un checkpoint par lot selon la charte du labo.
 4. Définir l'action et les parties autorisées à bouger (ex. ailes et pinces), sa durée, sa perspective et l'ancrage.
 5. Produire la vue FACE depuis le maître FACE et la vue DOS depuis le maître DOS, sans changement d'angle ; ne pas utiliser l'une comme miroir de l'autre.
-6. Inspecter chaque frame (dimensions, transparence, continuité, orientation, frame 01 exacte), corriger les écarts.
+6. Avant tout découpage, contrôler **l'espacement réel des poses et les gouttières de génération** selon la section 3 ; refuser/reproduire toute planche empiétée. Puis inspecter chaque frame (dimensions, transparence, continuité, orientation, frame 01 exacte), corriger les écarts.
 7. Fournir **systématiquement** deux animations lisibles + planches de poses + comparaison des maîtres ; **demander approbation**.
 8. Après approbation des **deux** vues, préparer frames finales, atlas et métadonnées ; refaire les tests de qualité.
 9. Déposer les médias dans l'autorité média vérifiée, référencer par `assetId` stable et raccorder via la chaîne existante ; aucun changement des règles gameplay.
@@ -186,6 +206,10 @@ Un statut n'implique **pas** le suivant. `GREEN` artistique exige la validation 
 11. Fournir le rapport : lien des sources/aperçus, nombre de fichiers, noms, chemins, SHA, validations FACE/DOS, détails des contrôles. Signaler honnêtement les étapes en attente.
 
 ## 8. Checklist de blocage avant publication
+
+- [ ] Chaque pose a été **générée avec une marge de sécurité et des gouttières suffisantes** (64 px/côté source dans l'exemple 640 px, 128 px entre silhouettes voisines)
+- [ ] Les cellules source ont été contrôlées **avant découpe** ; aucun élément voisin ne touche une autre cellule
+- [ ] Aucun artefact ou membre coupé dans les 512 × 512 ; la planche trop serrée a été **refaite**, pas masquée par un nettoyage aveugle
 
 - [ ] Source modèle FACE exacte, version approuvée
 - [ ] Source modèle DOS exacte, version approuvée
