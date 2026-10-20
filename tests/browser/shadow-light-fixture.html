@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Vérification ombre / lumière</title><link rel="stylesheet" href="../../examples/dom-demo/demo.css"></head>
+<body><main class="game" data-combat-demo><section class="arena" data-combat-arena>
+<details class="shadow-light-console" data-shadow-light-controls><summary>☀ Lumière / ombres</summary><div class="shadow-light-console__panel">
+<select data-shadow-light-mode><option value="silhouette" selected>Silhouette</option><option value="contact">Contact</option><option value="soft">Douce</option></select>
+<input data-shadow-light-azimuth value="50" type="range" min="0" max="360">
+<input data-shadow-light-elevation value="48" type="range" min="15" max="85">
+<input data-shadow-light-softness value="50" type="range" min="0" max="100">
+<input data-shadow-light-intensity value="60" type="range" min="0" max="100">
+<input data-shadow-light-flight-height value="38" type="range" min="0" max="120">
+</div></details>
+<article class="fighter fighter--player" data-demo-slot="player" data-demo-view="player" data-demo-creature="grounded">
+<span data-demo-label>Grounded</span><span data-demo-shadow class="fighter__shadow"></span>
+<div data-demo-motion class="fighter__motion"><img data-demo-image class="fighter__image" alt=""></div></article>
+<article class="fighter fighter--opponent" data-demo-slot="opponent" data-demo-view="opponent" data-demo-creature="airborne">
+<span data-demo-label>Airborne</span><span data-demo-shadow class="fighter__shadow"></span>
+<div data-demo-motion class="fighter__motion"><img data-demo-image class="fighter__image" alt=""></div></article>
+</section></main>
+<script type="module">
+import { mountCombatDemo } from "../../src/ui/demo-app.js";
+const query = selector => document.querySelector(selector);
+const fail = message => { document.body.dataset.shadowProbe = "fail:" + message; };
+try {
+  const profiles = await Promise.all(["biped", "flying"].map(async id => {
+    const response = await fetch("../../data/profiles/" + id + ".profile.json");
+    if (!response.ok) throw Error("profile missing: " + id);
+    return response.json();
+  }));
+  const image = "data:image/svg+xml," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">' +
+    '<path fill="#324453" d="M9 48Q10 14 50 22Q82 28 79 68L68 70 66 85 57 85 54 67 29 69 26 89 17 87 18 66Z"/></svg>'
+  );
+  const meta = (id, profile) => ({
+    id, name: id, profile, assetBaseUrl: location.origin + "/",
+    views: { player: image, opponent: image },
+    runtimePreview: { player: image, opponent: image },
+    displayScale: { player: 1, opponent: 1 }
+  });
+  const demo = await mountCombatDemo({
+    root: query("[data-combat-demo]"),
+    nativeVisualSource: { profiles, creatureMetas: [meta("grounded", "biped"), meta("airborne", "flying")] }
+  });
+  const player = query('[data-demo-slot="player"]');
+  const flying = query('[data-demo-slot="opponent"]');
+  const controls = query("[data-shadow-light-controls]");
+  let attempts = 0;
+  const timer = setInterval(() => {
+    try {
+      if (++attempts > 120) throw Error("shadow image never reached its accepted mask");
+      const a = player.querySelector("[data-demo-shadow]");
+      const b = flying.querySelector("[data-demo-shadow]");
+      if (!a || !b) throw Error("missing shadow");
+      if (a.style.visibility !== "visible" || b.style.visibility !== "visible") return;
+      if (a.dataset.shadowMode !== "silhouette" || b.dataset.shadowMode !== "silhouette") throw Error("silhouette mode missing");
+      const mask = player.style.getPropertyValue("--shadow-light-mask");
+      if (!mask.startsWith('url("data:image/svg+xml,')) throw Error("no accepted alpha silhouette URL");
+      const pseudo = getComputedStyle(a, "::before");
+      if (pseudo.content === "none" || !String(pseudo.maskImage || pseudo.webkitMaskImage).includes("data:image/svg+xml")) {
+        throw Error("silhouette missing from painted CSS pseudo-element");
+      }
+      const groundX = Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x"));
+      const airX = Number.parseFloat(flying.style.getPropertyValue("--shadow-light-cast-x"));
+      if (!(airX > groundX)) throw Error("flying shadow must project further than grounded shadow");
+      const direction = controls.querySelector("[data-shadow-light-azimuth]");
+      direction.value = "270";
+      direction.dispatchEvent(new Event("input", { bubbles: true }));
+      if (!(Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x")) < 0)) throw Error("live lighting direction failed");
+      const mode = controls.querySelector("[data-shadow-light-mode]");
+      mode.value = "contact";
+      mode.dispatchEvent(new Event("change", { bubbles: true }));
+      if (a.dataset.shadowMode !== "contact" || b.dataset.shadowMode !== "contact") throw Error("old contact shadow not switchable");
+      mode.value = "silhouette";
+      mode.dispatchEvent(new Event("change", { bubbles: true }));
+      if (a.dataset.shadowMode !== "silhouette") throw Error("silhouette restoration failed");
+      clearInterval(timer);
+      demo.dispose();
+      document.body.dataset.shadowProbe = "ok:silhouette:flight:direction:contact:restore";
+    } catch (error) {
+      clearInterval(timer);
+      fail(error.message);
+    }
+  }, 60);
+} catch (error) {
+  fail(error.message);
+}
+</script>
+</body></html>
