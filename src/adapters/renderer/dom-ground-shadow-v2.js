@@ -59,6 +59,79 @@ function robustAxisBounds({
   });
 }
 
+
+/**
+ * Approximate ground supports from the lower silhouette envelope, not from
+ * the mass of the abdomen. Single alpha mask, O(width) extra work after the
+ * existing scan; contacts are visual estimates, not anatomical landmarks.
+ */
+function lowerEnvelopeSupportsV3(bottomByColumn, width, height, xBounds, yBounds, fallbackX, fallbackY) {
+  const toleranceY = Math.max(2, Math.ceil(height * 0.025));
+  const supported = new Uint8Array(width);
+  const groundCandidates = [];
+  const bottom = (x) => x < xBounds.start || x > xBounds.end ? -1 : bottomByColumn[x];
+  const lowerRegionStart = yBounds.start + (yBounds.end - yBounds.start) * 0.45;
+
+  for (let x = xBounds.start; x <= xBounds.end; x += 1) {
+    const y = bottomByColumn[x];
+    if (y < lowerRegionStart) continue;
+    // Isolated outline / one-pixel alpha artefacts are not supports.
+    if (Math.abs(y - bottom(x - 1)) > toleranceY &&
+        Math.abs(y - bottom(x + 1)) > toleranceY) continue;
+    supported[x] = 1;
+    groundCandidates.push(y);
+  }
+
+  if (!groundCandidates.length) return { xRatio: fallbackX, yRatio: fallbackY };
+  groundCandidates.sort((a, b) => a - b);
+  // The 95th percentile resists very low claws/noise from a few columns.
+  const floorY = groundCandidates[Math.floor((groundCandidates.length - 1) * 0.95)];
+  const floorBand = Math.max(2, Math.ceil(height * 0.045));
+  const minWidth = Math.min(12, Math.max(2, Math.ceil(
+    (xBounds.end - xBounds.start + 1) * 0.025
+  )));
+  const groups = [];
+  let start = -1;
+  let count = 0;
+  let xSum = 0;
+  let ySum = 0;
+  const flush = () => {
+    if (count >= minWidth) groups.push({ count, x: xSum / count, y: ySum / count });
+    start = -1; count = 0; xSum = 0; ySum = 0;
+  };
+
+  for (let x = xBounds.start; x <= xBounds.end + 1; x += 1) {
+    const y = x <= xBounds.end ? bottomByColumn[x] : -1;
+    const selected = x <= xBounds.end && supported[x] === 1 &&
+      Math.abs(y - floorY) <= floorBand;
+    if (!selected) {
+      if (start >= 0) flush();
+      continue;
+    }
+    if (start < 0) start = x;
+    count += 1;
+    xSum += x + 0.5;
+    ySum += y + 0.5;
+  }
+  if (!groups.length) return { xRatio: fallbackX, yRatio: fallbackY };
+
+  // Each visible paw/foot participates; the broadest shell cannot silently
+  // outweigh all the small feet as in a pixel-mass average.
+  let weightSum = 0;
+  let supportX = 0;
+  let supportY = 0;
+  for (const group of groups) {
+    const weight = Math.sqrt(group.count);
+    weightSum += weight;
+    supportX += group.x * weight;
+    supportY += group.y * weight;
+  }
+  return {
+    xRatio: clamp(supportX / weightSum / width, 0, 1),
+    yRatio: clamp(supportY / weightSum / height, 0, 1)
+  };
+}
+
 export function shadowGeometryFromOpaqueMaskV2(
   mask,
   {
@@ -76,6 +149,7 @@ export function shadowGeometryFromOpaqueMaskV2(
     new Uint32Array(mask.width);
   const yCounts =
     new Uint32Array(mask.height);
+  const bottomByColumn = new Int32Array(mask.width).fill(-1);
   let total = 0;
 
   for (
@@ -99,6 +173,7 @@ export function shadowGeometryFromOpaqueMaskV2(
       total += 1;
       xCounts[x] += 1;
       yCounts[y] += 1;
+      bottomByColumn[x] = y;
     }
   }
 
@@ -171,24 +246,11 @@ export function shadowGeometryFromOpaqueMaskV2(
     ? clamp(lowerXSum / (lowerOpaqueCount * mask.width), 0, 1)
     : 0.5;
 
-  // Ground-contact pivot uses the lowest 30% of the accepted silhouette
-  // rather than the torso-weighted half used by the historical ellipse.
-  // No second mask, no special species IDs and no change to ellipse geometry.
-  const contactStartY = Math.floor(
-    yBounds.start + (yBounds.end - yBounds.start) * 0.7
+  const supports = lowerEnvelopeSupportsV3(
+    bottomByColumn, mask.width, mask.height,
+    xBounds, yBounds, centerXRatio,
+    (yBounds.end + 0.5) / mask.height
   );
-  let contactOpaqueCount = 0;
-  let contactXSum = 0;
-  for (let y = contactStartY; y <= yBounds.end; y += 1) {
-    for (let x = xBounds.start; x <= xBounds.end; x += 1) {
-      if (mask.opaque[y * mask.width + x] !== 1) continue;
-      contactOpaqueCount += 1;
-      contactXSum += x + 0.5;
-    }
-  }
-  const contactXRatio = contactOpaqueCount > 0
-    ? clamp(contactXSum / (contactOpaqueCount * mask.width), 0, 1)
-    : centerXRatio;
 
   return Object.freeze({
     widthPct,
@@ -197,7 +259,8 @@ export function shadowGeometryFromOpaqueMaskV2(
     opaqueHeightRatio,
     contactYRatio: (yBounds.end + 0.5) / mask.height,
     centerXRatio,
-    contactXRatio
+    contactXRatio: supports.xRatio,
+    supportYRatio: supports.yRatio
   });
 }
 
@@ -226,7 +289,7 @@ export function groundShadowLayoutFromOpaqueMaskV2(
     centerXPct: geometry.centerXRatio * 100,
     contactXPct: geometry.contactXRatio * 100,
     // One alpha-owned foot pivot for the full projected silhouette.
-    contactYPct: geometry.contactYRatio === null ? null : geometry.contactYRatio * 100,
+    contactYPct: geometry.contactYRatio === null ? null : geometry.supportYRatio * 100,
     opacity: Number.isFinite(opacity) ? clamp(opacity, 0, 1) : 0.42,
     opaqueWidthRatio: geometry.opaqueWidthRatio
   });
