@@ -1,0 +1,45 @@
+{
+  "assetId": "pack:capture:creature-loup-volcanique-player-01",
+  "cleanedArtifact": "dark detached shard above player mane",
+  "source": "official 320x320 player.webp",
+  "removedNonTransparentPixels": 431,
+  "polygon": [
+    [
+      223,
+      78
+    ],
+    [
+      233,
+      79
+    ],
+    [
+      244,
+      89
+    ],
+    [
+      253,
+      102
+    ],
+    [
+      249,
+      108
+    ],
+    [
+      238,
+      111
+    ],
+    [
+      221,
+      103
+    ],
+    [
+      217,
+      91
+    ]
+  ],
+  "pixelPerfectOutsidePolygon": true,
+  "faceViewUntouched": true,
+  "iconUntouched": true,
+  "otherAssetIdsUnchanged": true,
+  "sha256": "6e2c45afe21cb0bb0313e36cc57f6531fad75f434e9fa1ce1750fee3363a47fd"
+}
