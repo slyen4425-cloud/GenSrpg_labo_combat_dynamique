@@ -1127,12 +1127,15 @@ function createSlot({
         return;
       }
 
-      const frame = collisionModel.snapshot();
-      if (!frame?.mask) return;
+      // The collision mask is already available after refreshFromImage().
+      // A DOM snapshot can still be null when this arena is initially
+      // hidden: ground-shadow layout must not depend on screen geometry.
+      const opaqueMask = collisionModel.opaqueMask;
+      if (!opaqueMask) return;
       const profileShadow =
         profiles.get(actor.profile).presentation?.shadow ?? {};
       const layout = groundShadowLayoutFromOpaqueMaskV2(
-        frame.mask, profileShadow
+        opaqueMask, profileShadow
       );
       shadowElement.style.width = layout.widthPct.toFixed(2) + "%";
       shadowElement.style.height = layout.heightPct.toFixed(2) + "%";

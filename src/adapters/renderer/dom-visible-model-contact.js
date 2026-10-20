@@ -1041,6 +1041,12 @@ export function createDomVisibleModelCollisionModel({
   return Object.freeze({
     clear,
     refreshFromImage,
+    // Read the collision owner's existing opaque silhouette even while the
+    // preview has no measurable DOM geometry (e.g. an initially hidden arena).
+    // Contact's snapshot() still requires actual screen-space marker positions.
+    get opaqueMask() {
+      return mask;
+    },
     setPresentationScale(scale = 1) {
       if (!Number.isFinite(scale) || scale <= 0) throw new RangeError("collision scale must be positive");
       displayScale = scale;
