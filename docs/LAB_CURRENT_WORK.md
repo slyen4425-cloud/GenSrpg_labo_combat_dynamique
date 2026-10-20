@@ -1,3 +1,14 @@
+## 2026-10-20 — REPRISE : Quatre icônes Acier / réconciliation propre (LOT EN COURS)
+- Demande originale : intégrer 4 icônes WebP réelles (Carapace d’acier, Lame d’acier, Tourbillons de rouille, Aile d’acier) et les raccorder aux sélecteurs du labo combat.
+- Source approuvée : ZIP ChatGPT utilisateur `icons_acier_labo_combat_webp_128.zip`, SHA-256 `7f89231542fb2fc1933a6b7f5212f837e4f9dc8d0376f9b07e6b2b02263b6fc2`. Import strict déjà réussi sur branche `work/lab-capture-steel-icons-2026-10-18` au SHA `eada059dcf5842b5c1024393505c576c588d7bc4`, inspecté : 4 octets WebP RGB 128x128 distincts, 4 SHA des blobs vrais, provenance et tests.
+- Echec précédent : branche `work/lab-steel-icons-reconcile-2026-10-18` au SHA `d1b21262e4ecd5e7c83a9ebcfb5fc2ee4fc12e75` CI rouge par compte statique 186, alors que de nouveaux assets étaient légitimement présents. Ne pas promouvoir cette ancienne branche.
+- Base GREEN officielle actualisée : `a94829e4892aa5260d8747de0a9f50c4893f6be0` sur `global-assets`, CI SUCCESS ; checkpoint départ `checkpoint/lab-start-steel-icons-reconcile-2026-10-20` ; branche isolée `work/lab-steel-icons-reconcile-2026-10-20`.
+- Propriétaire : Asset Input Capture / `global-assets` ; bibliothèque unique `assets/library/capture/icons/skills/` + `data/assets/catalog/global-visual-assets.v1.json`. Ajouter seulement quatre `assetId` stables, sans écraser aucun autre asset, copie des seuls blobs Git déjà validés.
+- Fichiers autorisés : 4 nouveaux WebP, `assets/library/capture/icons/skills/capture_four_steel_icons_2026_10_18.provenance.json`, catalogue unique, `tests/unit/capture-steel-icons-2026-10-18.test.mjs`, correction ciblée `tests/unit/capture-four-shadow-icons-2026-10-18.test.mjs` (conserver minimum 70 plutôt que geler la taille), `docs/LAB_CAPTURE_STEEL_ICONS_2026_10_18.md`, et `docs/LAB_CURRENT_WORK.md`.
+- Protégés : moteurs, capacités auteurs, registre des skills, `gh-pages` avant média GREEN, `main`, Zombicide-40k, sprites Acier contemporains, tous autres assets, chemins et tests non concernés.
+- Gates : SHA/bytes des vrais WebP, unicité IDs / compteurs, tests sentinelles et `npm run ci` complet, CI GitHub GREEN, promotion fast-forward avec vérification de lease SHA, checkpoint final, puis lot éditeur cache sur branche dédiée et CI/Pages. Preview réelle mobile encore à valider par utilisateur.
+- Statut : PARTIEL en cours. Ne pas prétendre que les icônes sont publiées tant que la branche officielle ne les contient pas.
+
 ## 2026-10-19 — Scarabacier roll : médias importés et publiés (GREEN technique asset ; preview mobile à faire)
 
 - **Réalisé** : ZIP utilisateur exact `e082f9da7d8eb5604d2e3b2e1177808ae53f9408cb644ec9e4659e0564c631e4` importé, 16 vrais PNG 512×512 RGBA conservés sans réencodage, 1 atlas WebP RGBA 6144×384, 1 manifeste de provenance, 1 nouvel `assetId` canonique `pack:capture:creature-scarabacier-roll-01` ; 187 assets et 98 sprites sans doublon.
