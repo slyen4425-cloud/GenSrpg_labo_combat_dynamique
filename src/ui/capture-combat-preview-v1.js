@@ -30,6 +30,7 @@ export async function mountCaptureCombatPreviewV1({
   nativeCombatSource,
   nativeVisualSource,
   presentationAssets = null,
+  arenaLight = null,
   mountVisuals = mountCombatDemo,
   mountCombat = mountCoop2v2Test
 }) {
@@ -45,7 +46,8 @@ export async function mountCaptureCombatPreviewV1({
   const visuals = disposableOwner(
     await mountVisualOwner({
       root,
-      nativeVisualSource
+      nativeVisualSource,
+      ...(arenaLight === null ? {} : { initialArenaLight: arenaLight })
     }),
     "mountVisuals"
   );
