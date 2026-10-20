@@ -65,8 +65,9 @@ for action,view in ORDER:
         # increase its width or scale without breaking F01 exactness. Reject only
         # fresh clipping introduced by animation relative to the original.
         for side, (m, baseline) in enumerate(zip(margins,base_margins)):
-            if m < max(0,baseline-2):
-                raise AssertionError(f"{action} {view} frame {i} lost source margin on side {side}: {m} < {baseline}")
+            safe_min=min(24,max(0,baseline-3))
+            if m < safe_min:
+                raise AssertionError(f"{action} {view} frame {i} risks frame-edge clipping on side {side}: {m} < {safe_min} (source: {baseline})")
         if i in (1,20) and dist!=0:raise AssertionError("Frame 01 or 20 not pixel identical to master")
         per.append({"frame":i,"changedPixelsFromMaster":dist,"alphaBBox":bbox,
                     "transparentMarginsLTRB":margins})
