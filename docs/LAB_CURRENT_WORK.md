@@ -1,3 +1,11 @@
+## 2026-10-20 — Espacement obligatoire des poses lors de la génération de sprites
+- Base `gh-pages@abd5dfd87f7a271a2d317b9121c7bef8bedf348d`; checkpoint départ `checkpoint/lab-start-art-sprite-spacing-v2-2026-10-20`; branche `work/lab-art-sprite-spacing-v2-2026-10-20`.
+- Demande auteur : ne plus générer des planches trop serrées : les morceaux voisins s'infiltrent pendant la découpe et laissent des cornes, pattes, flammes ou débris parasites. Cette règle s'applique immédiatement aux quatre animations du Loup volcanique.
+- Mise à jour contractuelle : chaque pose produite sur une cellule distincte, de préférence PNG individuel. Sinon exemple 640×640 source pour sujet au plus 512×512, marges de sécurité 64px de chaque côté, donc au moins 128px de vide entre sujets ; toute la silhouette, queue, pattes, ailes, flammes et effets doivent respecter ces limites. Après validation seulement, exporter chaque frame en 512×512 RGBA et assembler atlas runtime **sans gouttières**.
+- Vérification avant découpage : contrôler marges alpha et non-chevauchement, inspection zoom cellule par cellule ; si une planche est empiétée, refaire la génération, jamais masquer automatiquement au risque d'effacer des membres.
+- Périmètre documentaire uniquement : `docs/LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md`, `docs/LAB_CHARTE.md`, `docs/LAB_CURRENT_WORK.md`. Aucun moteur, média ni catalogue touché ; aucun effet rétroactif sur les assets précédemment validés.
+- Validation : relecture du contrat, diff strict des 3 fichiers, CI, publication dans `gh-pages`. Une charte publiée ne vaut pas approbation artistique des animations du Loup volcanique en cours.
+
 ## 2026-10-20 — Quatre icônes Acier : raccord catalogue éditeur par cache
 - Objectif : exposer les 4 vraies icônes Carapace d’acier, Lame d’acier, Tourbillons de rouille, Aile d’acier dans le sélecteur existant du labo combat via catalogue unique `global-assets` ; aucune compétence auteur modifiée.
 - Propriétaire médias `global-assets`, SHA `a989443b9985b3f444f5ea3b4c26f9c215ae04e4`, quatre WebP RGB 128x128 réellement importés et vérifiés avec provenance/CI ; quatre ID `pack:capture:icon-skill-{carapace-acier,lame-acier,tourbillons-rouille,aile-acier}-01`.
