@@ -18,7 +18,7 @@ test("French element labels selected without requiring English IDs; imported aut
  assert.equal(choices.find(x=>x.id==="acier").label,"Acier — choix importé");
  assert.equal(choices.filter(x=>x.id==="acier").length,1);
 });
-test("status and zone IDs allocated automatically and imported IDs are preserved",()=>{
+test("status and zone IDs allocated automatically and imported IDs are preserved",async()=>{
  assert.equal(nextHumanTacticalStatusIdV1(["status-1","status-2"]),"status-3");
  assert.equal(nextHumanTacticalZoneIdV1(["zone-1","zone-2"]),"zone-3");
  const js=await read("src/ui/capture-editor-human-v2.js");
