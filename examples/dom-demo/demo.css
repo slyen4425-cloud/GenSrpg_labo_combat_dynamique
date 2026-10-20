@@ -176,6 +176,12 @@ summary {
 /* One shadow node: the existing animation renderer owns its motion.
    Only the shape is projected on its internal pseudo-element. */
 .fighter__shadow[data-shadow-mode="silhouette"] {
+  /* Same square as fighter__motion, not 100% of the fighter article.
+     The fighter can be taller due to UI/layout; anchoring to bottom:0
+     displaced the shadow from the sprite, especially at player scale 1.7. */
+  top: 0;
+  bottom: auto;
+  aspect-ratio: 1;
   background: none;
   border-radius: 0;
 }
@@ -193,8 +199,10 @@ summary {
   mask-repeat: no-repeat;
   /* The same alpha-contact pivot is used by player, opponent and flight. */
   transform-origin: var(--shadow-light-foot-x, 50%) var(--shadow-light-foot-y, 88%);
+  /* A rigid light translation moved even the paws, making grounded models
+     appear airborne. The silhouette now shears AROUND its alpha foot pivot,
+     preserving contact while the upper shape casts directionally. */
   transform:
-    translate(var(--shadow-light-cast-x, 0%), var(--shadow-light-cast-y, 0%))
     skewX(var(--shadow-light-skew, 0deg))
     scaleY(var(--shadow-light-flatten, 0.2));
   filter: blur(var(--shadow-light-blur, 4px));

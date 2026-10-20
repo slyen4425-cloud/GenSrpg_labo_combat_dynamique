@@ -61,6 +61,8 @@ export function createDomActorRenderer({
     if (shadowElement?.style) {
       shadowElement.style.transform =
         composeDomShadowTransform(actor);
+      shadowElement.style.transformOrigin =
+        actor.transformOrigin.x + " " + actor.transformOrigin.y;
       shadowElement.style.opacity = "1";
     }
   }
@@ -81,6 +83,8 @@ export function createDomActorRenderer({
           actor,
           finalSegment?.ground
         );
+      shadowElement.style.transformOrigin =
+        actor.transformOrigin.x + " " + actor.transformOrigin.y;
       shadowElement.style.opacity =
         String(finalSegment?.opacity ?? 1);
     }
@@ -113,7 +117,10 @@ export function createDomActorRenderer({
         ? String(computed.filter)
         : "none";
 
-    return Object.freeze({ transform, opacity, filter });
+    return Object.freeze({
+      transform, opacity, filter,
+      transformOrigin: computed?.transformOrigin ?? "50% 50%"
+    });
   }
 
   function returnActiveToBaseFromCurrent() {
@@ -168,8 +175,7 @@ export function createDomActorRenderer({
       [
         {
           transform: bodyStart.transform,
-          transformOrigin:
-            `${actor.transformOrigin.x} ${actor.transformOrigin.y}`,
+          transformOrigin: bodyStart.transformOrigin,
           opacity: bodyStart.opacity,
           filter: bodyStart.filter
         },
@@ -203,10 +209,12 @@ export function createDomActorRenderer({
           [
             {
               transform: shadowStart.transform,
+              transformOrigin: shadowStart.transformOrigin,
               opacity: shadowStart.opacity
             },
             {
               transform: composeDomShadowTransform(actor),
+              transformOrigin: actor.transformOrigin.x + " " + actor.transformOrigin.y,
               opacity: "1"
             }
           ],

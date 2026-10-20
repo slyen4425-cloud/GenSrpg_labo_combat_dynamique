@@ -10,10 +10,10 @@
 <input data-shadow-light-flight-height value="38" type="range" min="0" max="120">
 </div></details>
 <article class="fighter fighter--player" data-demo-slot="player" data-demo-view="player" data-demo-creature="grounded">
-<span data-demo-label>Grounded</span><span data-demo-shadow class="fighter__shadow"></span>
+<span class="visually-hidden" data-demo-label>Grounded</span><span data-demo-shadow class="fighter__shadow"></span>
 <div data-demo-motion class="fighter__motion"><img data-demo-image class="fighter__image" alt=""></div></article>
 <article class="fighter fighter--opponent" data-demo-slot="opponent" data-demo-view="opponent" data-demo-creature="airborne">
-<span data-demo-label>Airborne</span><span data-demo-shadow class="fighter__shadow"></span>
+<span class="visually-hidden" data-demo-label>Airborne</span><span data-demo-shadow class="fighter__shadow"></span>
 <div data-demo-motion class="fighter__motion"><img data-demo-image class="fighter__image" alt=""></div></article>
 </section></main>
 <script type="module">
@@ -35,7 +35,7 @@ try {
     id, name: id, profile, assetBaseUrl: location.origin + "/",
     views: { player: image, opponent: image },
     runtimePreview: { player: image, opponent: image },
-    displayScale: { player: 1, opponent: 1 }
+    displayScale: { player: id === "grounded" ? 1.7 : 1, opponent: id === "airborne" ? 0.95 : 1 }
   });
   const visualSource = { profiles, creatureMetas: [meta("grounded", "biped"), meta("airborne", "flying")] };
   const demo = await mountCombatDemo({
@@ -68,6 +68,39 @@ try {
       if (player.style.getPropertyValue("--creature-shadow-bottom") !== "0.00%") {
         throw Error("projected silhouette must share the full sprite frame origin");
       }
+      // Real rendered projection: translation components must remain zero.
+      // This catches the displaced paws in the user's scaled Scarabacier view.
+      const pseudoMatrix = new DOMMatrixReadOnly(pseudo.transform);
+      if (Math.abs(pseudoMatrix.e) > 0.3 || Math.abs(pseudoMatrix.f) > 0.3) {
+        throw Error("projected caster translates the paw contact: " + pseudo.transform);
+      }
+      const actorImageRect = player.querySelector("[data-demo-image]").getBoundingClientRect();
+      const shadowRect = a.getBoundingClientRect();
+      const footImageX = actorImageRect.left + actorImageRect.width * originX / 100;
+      const footImageY = actorImageRect.top + actorImageRect.height * originY / 100;
+      const footShadowX = shadowRect.left + shadowRect.width * originX / 100;
+      const footShadowY = shadowRect.top + shadowRect.height * originY / 100;
+      if (Math.abs(footImageX - footShadowX) > 2 || Math.abs(footImageY - footShadowY) > 2) {
+        throw Error("scaled 1.7 player: visible actor and shadow foot coordinate diverge " +
+          JSON.stringify({footImageX,footImageY,footShadowX,footShadowY,
+          imageRect:actorImageRect.toJSON(),shadowRect:shadowRect.toJSON(),
+          motionRect:player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON(),
+          fighterRect:player.getBoundingClientRect().toJSON(),
+          dimensions:{shadowWidth:a.clientWidth,shadowHeight:a.clientHeight,
+            motionHeight:player.querySelector("[data-demo-motion]").clientHeight,
+            fighterHeight:player.clientHeight,
+            motionOffsetTop:player.querySelector("[data-demo-motion]").offsetTop,
+            shadowOffsetTop:a.offsetTop,
+            fighterPadding:getComputedStyle(player).padding,
+            motionTransform:getComputedStyle(player.querySelector("[data-demo-motion]")).transform,
+            shadowTransform:getComputedStyle(a).transform,
+            motionInlineTransform:player.querySelector("[data-demo-motion]").style.transform,
+            shadowInlineTransform:a.style.transform,
+            motionOrigin:getComputedStyle(player.querySelector("[data-demo-motion]")).transformOrigin,
+            shadowOrigin:getComputedStyle(a).transformOrigin,
+            motionAnimation:player.querySelector("[data-demo-motion]").getAnimations().length,
+            shadowAnimation:a.getAnimations().length}}));
+      }
       const pivotPx = String(pseudo.transformOrigin).split(" ").map(Number.parseFloat);
       if (Math.abs(pivotPx[0] - a.clientWidth * originX / 100) > 1.5 ||
           Math.abs(pivotPx[1] - a.clientHeight * originY / 100) > 1.5) {
@@ -80,6 +113,12 @@ try {
       direction.value = "270";
       direction.dispatchEvent(new Event("input", { bubbles: true }));
       if (!(Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x")) < 0)) throw Error("live lighting direction failed");
+      const reversedMatrix = new DOMMatrixReadOnly(getComputedStyle(a, "::before").transform);
+      if (!(pseudoMatrix.c < 0 && reversedMatrix.c > 0)) {
+        throw Error("head cast shear should reverse with light, keeping the paw pivot");
+      }
+      if (Math.abs(reversedMatrix.e) > 0.3 || Math.abs(reversedMatrix.f) > 0.3)
+        throw Error("reversed light must not translate the paw pivot");
       const mode = controls.querySelector("[data-shadow-light-mode]");
       mode.value = "contact";
       mode.dispatchEvent(new Event("change", { bubbles: true }));

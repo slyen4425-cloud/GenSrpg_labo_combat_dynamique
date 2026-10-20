@@ -35,11 +35,19 @@ export function projectArenaShadowLightV1(light, { flying = false } = {}) {
   // Stylized directional projection onto a fixed 2.5D ground plane.
   // The nonzero grounded term models a sprite's volume above its feet.
   const distance = clamp((13 + altitude * 0.7) / Math.tan(elevation), 0, 92);
+  const castXPct = Math.round(Math.sin(azimuth) * distance * 100) / 100;
+  const castYPct = Math.round(Math.cos(azimuth) * distance * 0.42 * 100) / 100;
+  const flatten = Math.round((0.2 + altitude / 600) * 1000) / 1000;
+  // The foot pivot is NOT moved with the cast. Project altitude as a
+  // shearing deformation of the single alpha silhouette around that pivot:
+  // upper model pixels shift with the light, ground-contact pixels do not.
+  // 0.75 is the neutral upright alpha height above the detected support.
+  const shear = -Math.atan(castXPct / (75 * flatten)) * 180 / Math.PI;
   return Object.freeze({
-    castXPct: Math.round(Math.sin(azimuth) * distance * 100) / 100,
-    castYPct: Math.round(Math.cos(azimuth) * distance * 0.42 * 100) / 100,
-    skewDeg: Math.round(Math.sin(azimuth) * 17 * 100) / 100,
-    flatten: Math.round((0.2 + altitude / 600) * 1000) / 1000,
+    castXPct,
+    castYPct,
+    skewDeg: Math.round(shear * 100) / 100,
+    flatten,
     blurPx: Math.round((2 + settings.softness * 5 + altitude * 0.075) * 100) / 100,
     opacity: Math.round(clamp(settings.intensity * (1 - settings.softness * 0.2) * (flying ? 0.72 : 1), 0, 1) * 1000) / 1000
   });
