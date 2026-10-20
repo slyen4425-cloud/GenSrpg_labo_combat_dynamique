@@ -35,7 +35,7 @@ try {
     id, name: id, profile, assetBaseUrl: location.origin + "/",
     views: { player: image, opponent: image },
     runtimePreview: { player: image, opponent: image },
-    displayScale: { player: 1, opponent: 1 }
+    displayScale: { player: id === "grounded" ? 1.7 : 1, opponent: id === "airborne" ? 0.95 : 1 }
   });
   const visualSource = { profiles, creatureMetas: [meta("grounded", "biped"), meta("airborne", "flying")] };
   const demo = await mountCombatDemo({
@@ -68,6 +68,22 @@ try {
       if (player.style.getPropertyValue("--creature-shadow-bottom") !== "0.00%") {
         throw Error("projected silhouette must share the full sprite frame origin");
       }
+      // Real rendered projection: translation components must remain zero.
+      // This catches the displaced paws in the user's scaled Scarabacier view.
+      const pseudoMatrix = new DOMMatrixReadOnly(pseudo.transform);
+      if (Math.abs(pseudoMatrix.e) > 0.3 || Math.abs(pseudoMatrix.f) > 0.3) {
+        throw Error("projected caster translates the paw contact: " + pseudo.transform);
+      }
+      const actorImageRect = player.querySelector("[data-demo-image]").getBoundingClientRect();
+      const shadowRect = a.getBoundingClientRect();
+      const footImageX = actorImageRect.left + actorImageRect.width * originX / 100;
+      const footImageY = actorImageRect.top + actorImageRect.height * originY / 100;
+      const footShadowX = shadowRect.left + shadowRect.width * originX / 100;
+      const footShadowY = shadowRect.top + shadowRect.height * originY / 100;
+      if (Math.abs(footImageX - footShadowX) > 2 || Math.abs(footImageY - footShadowY) > 2) {
+        throw Error("scaled 1.7 player: visible actor and shadow foot coordinate diverge " +
+          JSON.stringify({footImageX,footImageY,footShadowX,footShadowY}));
+      }
       const pivotPx = String(pseudo.transformOrigin).split(" ").map(Number.parseFloat);
       if (Math.abs(pivotPx[0] - a.clientWidth * originX / 100) > 1.5 ||
           Math.abs(pivotPx[1] - a.clientHeight * originY / 100) > 1.5) {
@@ -80,6 +96,12 @@ try {
       direction.value = "270";
       direction.dispatchEvent(new Event("input", { bubbles: true }));
       if (!(Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x")) < 0)) throw Error("live lighting direction failed");
+      const reversedMatrix = new DOMMatrixReadOnly(getComputedStyle(a, "::before").transform);
+      if (!(pseudoMatrix.c < 0 && reversedMatrix.c > 0)) {
+        throw Error("head cast shear should reverse with light, keeping the paw pivot");
+      }
+      if (Math.abs(reversedMatrix.e) > 0.3 || Math.abs(reversedMatrix.f) > 0.3)
+        throw Error("reversed light must not translate the paw pivot");
       const mode = controls.querySelector("[data-shadow-light-mode]");
       mode.value = "contact";
       mode.dispatchEvent(new Event("change", { bubbles: true }));
