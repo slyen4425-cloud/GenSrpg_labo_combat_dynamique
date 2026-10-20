@@ -1,3 +1,10 @@
+## 2026-10-20 — Ombre sol : propriétaire unique et course image en cache
+- Base `gh-pages@0261b2fa8b88af8a1048beb656b9f97b200dcfe0`, checkpoint `checkpoint/lab-start-shadow-single-grounding-2026-10-20`, branche `work/lab-shadow-single-grounding-2026-10-20`.
+- Diagnostic confirmé dans `src/ui/demo-app.js` : `setCreature()` appelait `loadRuntimeAsset()` avant `rebuildActor()`, donc une image mise en cache pouvait déclencher `markReady` avec un acteur ancien/inexistant. Deux écrivains concurrents modifiaient `--creature-shadow-bottom` : `rebuildActor` avec le profil et `markReady` avec le contact opaque.
+- Fix propriétaire unique : projection pure `groundShadowLayoutFromOpaqueMaskV2` dans `src/adapters/renderer/dom-ground-shadow-v2.js` (géométrie opaque + paramètres du profil), application une fois uniquement à l'acceptation du bon sprite de repos ; plus aucun écrit de position dans `rebuildActor`, qui précède désormais le chargement. Masquer seulement l'ombre transitoire tant que l'asset lui-même n'est pas valide (pas un camouflage du défaut). DOM Actor Renderer reste seul propriétaire des déplacements/transforms de l'ombre au cours des animations.
+- Fichiers autorisés : `src/ui/demo-app.js`, `src/adapters/renderer/dom-ground-shadow-v2.js`, `tests/unit/combat-shadow-single-grounding-2026-10-20.test.mjs`, `docs/LAB_SHADOW_SINGLE_GROUNDING_2026-10-20.md`, ce journal. Pas de nouveaux timers/listeners ou plans concurrents.
+- Protégés : `main`, autres labs, `global-assets`, combats/dégâts/états, animations, créatures auteur et éditeur de capacités. Tests : variation géométrique, profil fallback, cached/onload, écriture unique et CI complète ; vraie observation sur Android requise après publication.
+
 ## 2026-10-20 — Charte : espacement des sprites source et contrôle anti-découpe
 
 - Base `gh-pages@2586119261725ed1b3f3b84b985ccdef6d60ef06`; checkpoint `checkpoint/lab-start-animation-sprite-gutter-v1-2026-10-20`, branche `work/lab-animation-sprite-gutter-v1-2026-10-20`.
