@@ -1,3 +1,11 @@
+## 2026-10-20 — Éditeur Capture : pas d'identifiants techniques à saisir
+- Base publique `gh-pages@1acc0b583179362ab1a02b3c4f7973b641516764`, checkpoint `checkpoint/lab-start-author-friendly-identifiers-2026-10-20`, branche `work/lab-author-friendly-identifiers-2026-10-20`.
+- Problèmes attestés : sélection d'élément montrant l'ID moteur en parenthèses (`Acier (steel)`), formulaire « Ajouter une stat » exigeant `ID stable`, et champs libres `ID statut` / `ID de zone` alors qu'il s'agit d'identifiants privés. L'éditeur fournissait déjà les éléments natifs traduits et une valeur vide « Même élément que la capacité » pour les dégâts.
+- Correction dans les propriétaires existants seulement : `capture-editor-element-channel-select-v1.js` génère l'ID de stat à partir du nom français et résout les collisions ; `capture-editor-human-v2.js` masque les IDs statut/zone déjà générés et attribue des IDs distincts de zone ; sélection avec libellé seulement, ID stocké inchangé ; HTML cache l'ID de stat ; anciennes données importées restent telles quelles.
+- Fichiers autorisés : les deux modules UI, `examples/dom-demo/capture-editor-v2.html`, tests unitaires et navigateur concernés, `docs/LAB_EDITOR_FRIENDLY_IDS_2026-10-20.md`, ce journal. `main`, jeu principal, données de skills/créatures auteur, moteur Combat Rules, assets et autres modes protégés.
+- Tests : ID stable unique avec accents, « Acier » en français sans exposer `steel`, conservation de `channel:acier` d'un export ancien, statut/zone IDs automatiques, création effective de stat via navigateur, sentinelles d'import/export, CI 5 jobs et déploiement Pages. Ne pas inférer que `acier` et `steel` ont des résistances identiques dans les règles : audit indépendant.
+- Critère de fin : CI et vrai chemin éditeur verts, checkpoint GREEN, publication Pages, validation tactile Android ensuite.
+
 ## 2026-10-20 — Tempête de rouille : import auteur sans conversion forcée de « acier »
 - Source exacte `gensrpg-capture-skill-tempete_rouille.json` SHA256 `e154956cbb52c957da5487ee8704d8a13112ed9787e172a9454316a5e5e7e8cf` ; identifiant stable `tempete_rouille` et canal du tick `acier` préservés à la lettre.
 - Base `gh-pages@0261b2fa8b88af8a1048beb656b9f97b200dcfe0`, checkpoint `checkpoint/lab-start-tempete-rouille-author-2026-10-20`, branche `work/lab-tempete-rouille-author-2026-10-20`.
