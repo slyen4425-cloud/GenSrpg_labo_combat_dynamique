@@ -39,7 +39,7 @@ def sha(p:Path):
 
 def poly_mask(poly):
     m=Image.new("L",(CANVAS,CANVAS),0)
-    xy=[(round(x*CANVAS/320),round(y*CANVAS/320)) for x,y in poly]
+    xy=[(round(32+x*448/320),round(32+y*448/320)) for x,y in poly]
     ImageDraw.Draw(m).polygon(xy,fill=255)
     return m
 
@@ -58,7 +58,7 @@ def pieces(master,view,action):
         layer.paste(master,(0,0),mask=mask)
         # Do not turn exact source textures into blurry painted limbs.
         px,py=part["pivot"]
-        pivot=(round(px*CANVAS/320),round(py*CANVAS/320))
+        pivot=(round(32+px*448/320),round(32+py*448/320))
         # Remove old distal leg/foot only, keep the torso and pivot intact.
         # Head/jaw: tightly scoped action, direct cutout with a soft overlap
         # so cranial texture remains stable at the neck.
@@ -112,7 +112,7 @@ manifest={"model":"loup_volcanique","status":"DRAFT_AUTHOR_REVIEW",
           "runtimeIntegrated":False,"generatedCreatureArt":False,
           "method":"rigid pixel cutouts of exact official wolf master; jointed animation prototype",
           "warnings":["Visible seam risk at shoulder/hips; artist approval required",
-                      "Model player has isolated polygon artifact surgically removed in candidate master",
+                      "Official player model has been published with the isolated rogue shard cleaned",
                       "Needs visual examination of all 80 frames; not a production animation yet"],
           "actions":[]}
 for view in ("face","dos"):
