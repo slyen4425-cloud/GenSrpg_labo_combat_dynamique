@@ -203,6 +203,8 @@ export function groundShadowLayoutFromOpaqueMaskV2(
     heightPct: geometry.heightPct,
     bottomPct,
     centerXPct: geometry.centerXRatio * 100,
+    // One alpha-owned foot pivot for the full projected silhouette.
+    contactYPct: geometry.contactYRatio === null ? null : geometry.contactYRatio * 100,
     opacity: Number.isFinite(opacity) ? clamp(opacity, 0, 1) : 0.42,
     opaqueWidthRatio: geometry.opaqueWidthRatio
   });
