@@ -63,7 +63,7 @@ test("skill follows the existing configuredSkills owner and round trips through 
  assert.deepEqual(active,input.value.draft);
  assert.deepEqual(buildHumanSkillDraftV1(humanSkillEditorFieldsFromDraftV1(active)),active);
  const again=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry:registry,progressionRules,configuredSkills,configuredCreatures}),transfer:input,mode:"replace"});
- assert.equal(again.action,"replace-skill");
+ assert.equal(again.action,"noop","re-importing the identical authored skill must not duplicate or replace it");
  applyCaptureTransferPlanToEditorStateV1({plan:again,configuredSkills,configuredCreatures,statRegistry:registry,progressionRules});
  assert.equal(configuredSkills.size,1);
 });
