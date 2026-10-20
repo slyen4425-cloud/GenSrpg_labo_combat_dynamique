@@ -1,0 +1,38 @@
+name: Clean canonical volcanic wolf player fragment
+on:
+  push:
+    branches:
+      - work/global-assets-wolf-player-clean-2026-10-20
+    paths:
+      - scripts/clean_loup_volcanique_player_canonical_2026_10_20.py
+      - .github/workflows/clean-loup-volcanique-player-2026-10-20.yml
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image dependencies
+        run: python -m pip install "Pillow>=10,<13" "numpy>=2,<3"
+      - name: Remove exact isolated rock scrap and prove other pixels unchanged
+        run: python scripts/clean_loup_volcanique_player_canonical_2026_10_20.py
+      - name: Verify no other runtime or catalog mutation
+        run: |
+          set -eu
+          git diff --exit-code -- assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_opponent.webp
+          git diff --exit-code -- assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_icon.webp
+          git diff --exit-code -- data/assets/catalog/global-visual-assets.v1.json
+      - name: Commit the tiny corrected original only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/loup_volcanique/runtime/loup_volcanique_player.webp
+          git add -- assets/library/capture/creatures/loup_volcanique/loup_volcanique.meta.json
+          git add -- assets/library/capture/creatures/loup_volcanique/player_cleanup_2026_10_20
+          git commit -m 'fix(capture): clean isolated rock scrap from official wolf player'
+          git push origin HEAD:refs/heads/work/global-assets-wolf-player-clean-2026-10-20
