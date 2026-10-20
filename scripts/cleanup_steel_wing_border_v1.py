@@ -44,12 +44,12 @@ def clean_frame(src):
     count, labels, _, _ = cv2.connectedComponentsWithStats(
         np.uint8(alpha >= 19), connectivity=8)
     inner = ~border
-    for label in range(1, count):
-        member = labels == label
-        if np.any(member & inner):
-            continue
-        # Preserve components that genuinely reach the central sprite.
-        remove |= member & border
+    central_labels = np.unique(labels[EDGE:-EDGE, EDGE:-EDGE])
+    eligible = np.ones(count, dtype=bool)
+    eligible[0] = False
+    eligible[central_labels] = False
+    # Vectorized: a perimeter-only component is never part of central artwork.
+    remove |= eligible[labels] & border
     # Strip long, isolated horizontal/vertical cell guidelines, not wings.
     for y in list(range(EDGE)) + list(range(SIZE - EDGE, SIZE)):
         width = np.count_nonzero(alpha[y, :] >= 19)
