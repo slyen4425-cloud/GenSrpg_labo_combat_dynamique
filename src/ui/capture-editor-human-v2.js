@@ -2,7 +2,7 @@ import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
 import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1 } from "./capture-marker-effect-fields-v1.js";
-import { captureEditorElementChannelChoicesV1 } from "./capture-editor-element-channel-select-v1.js";
+import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
   syncCaptureBeamStageLayoutV1
@@ -4774,7 +4774,7 @@ function populateHumanElementChannelSelectV1(root,select,statRegistry,selectedId
   });
   select.textContent="";
   createOption(select,"",sameSkill?"Même élément que la capacité":"Aucun canal");
-  for(const {id,label} of options)createOption(select,id,label+" ("+id+")");
+  for(const {id,label} of options)createOption(select,id,label);
   select.value=selectedId??"";
 }
 function humanElementChannelSelectV1(root,statRegistry,datasetKey,selectedId,{sameSkill=false,customBuilder=false}={}) {
@@ -4815,7 +4815,7 @@ function fillStatusStatSelectV1(
       createOption(
         select,
         stat.id,
-        stat.label + " (" + stat.id + ")"
+        stat.label
       );
     }
   }
@@ -5311,6 +5311,13 @@ export function nextHumanTacticalStatusIdV1(existingIds = []) {
   return "status-" + next;
 }
 
+export function nextHumanTacticalZoneIdV1(existingIds = []) {
+  const taken = new Set(existingIds.map(id => String(id ?? "").trim()));
+  let next = 1;
+  while (taken.has("zone-" + next)) next += 1;
+  return "zone-" + next;
+}
+
 function appendHumanSkillEffectV1(
   root,
   effect = null,
@@ -5508,6 +5515,8 @@ function appendHumanSkillEffectV1(
         .map((input) => input.value)
     )
   );
+  // Existing author IDs remain stable, but are not an editing requirement.
+  statusId.type = "hidden";
   const statusKind =
     document.createElement("select");
   statusKind.dataset.skillStatusKind = "true";
@@ -5583,7 +5592,7 @@ function appendHumanSkillEffectV1(
   const common = document.createElement("div");
   common.className = "skill-status-config__grid";
   common.append(
-    tacticalFieldV1("ID statut", statusId),
+    statusId,
     tacticalFieldV1("Type de statut", statusKind),
     tacticalFieldV1("Polarité", polarity),
     tacticalFieldV1("Durée (secondes)", duration),
@@ -6213,8 +6222,12 @@ function appendHumanSkillEffectV1(
 
   const zoneId = tacticalTextInputV1(
     "skillZoneId",
-    effect?.zoneId ?? "zone"
+    effect?.zoneId ?? nextHumanTacticalZoneIdV1(
+      [...host.querySelectorAll("[data-skill-zone-id]")]
+        .map(input => input.value)
+    )
   );
+  zoneId.type = "hidden";
 
   const zoneRadius =
     document.createElement("select");
@@ -6423,10 +6436,7 @@ function appendHumanSkillEffectV1(
   zoneGrid.className =
     "skill-status-config__grid";
   zoneGrid.append(
-    tacticalFieldV1(
-      "ID de zone",
-      zoneId
-    ),
+    zoneId,
     tacticalFieldV1(
       "Rayon initial",
       zoneRadius
@@ -12560,6 +12570,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           );
         }
 
+        syncCustomStatIdentifier();
+
         const creatureId = selectedValue(
           root,
           "[data-creature-id]"
@@ -12601,12 +12613,15 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
   );
 
-  // Offer the pending custom stat ID immediately, even before saving it.
-  for (const selector of ["[data-stat-custom-id]","[data-stat-custom-label]"]) {
-    listen(one(root,selector),"input",()=>{
-      refreshHumanElementChannelSelectsV1(root,statRegistry);
-    });
+  // User types a French stat name; its private stable ID is automatic.
+  function syncCustomStatIdentifier() {
+    const label = one(root, "[data-stat-custom-label]").value.trim();
+    one(root, "[data-stat-custom-id]").value = label
+      ? captureEditorGeneratedStatIdV1(label, statRegistry?.stats ?? [])
+      : "";
+    refreshHumanElementChannelSelectsV1(root, statRegistry);
   }
+  listen(one(root, "[data-stat-custom-label]"), "input", syncCustomStatIdentifier);
 
   listen(
     statCustomAddButton,

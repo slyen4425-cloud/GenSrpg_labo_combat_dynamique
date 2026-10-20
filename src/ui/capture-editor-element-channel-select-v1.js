@@ -34,6 +34,31 @@ export function captureEditorElementChannelChoicesV1({
   if (customStat) add(customStat.id, customStat.label);
   // Imported author channels can pre-date the current registry. Keep them
   // selectable instead of silently blanking or changing the authored value.
-  add(selectedId, idOf(selectedId) + " (conservé)");
+  const imported = idOf(selectedId);
+  const matchingLabel = result.find(choice =>
+    choice.label.toLocaleLowerCase("fr") === imported.toLocaleLowerCase("fr")
+  )?.label;
+  add(imported, (matchingLabel ?? imported) + " — choix importé");
   return Object.freeze(result);
+}
+
+/**
+ * Generate a private stable stat ID from the visible French name.
+ * Existing stat IDs are never rewritten; collisions only get a new suffix.
+ * The player must not be asked to type an internal identifier.
+ */
+export function captureEditorGeneratedStatIdV1(label, existingStats = []) {
+  const base = String(label ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("fr")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "stat";
+  const taken = new Set(existingStats.map(stat =>
+    (typeof stat === "string" ? stat : stat?.id) ?? ""
+  ));
+  let id = base;
+  let suffix = 2;
+  while (taken.has(id)) id = base + "-" + suffix++;
+  return id;
 }

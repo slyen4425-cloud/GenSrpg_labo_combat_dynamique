@@ -563,16 +563,18 @@ const server = createServer(async (req, res) => {
               if(get("editor-summary").textContent.includes("Corrige"))throw Error("combat exporter rejects new marker skill");
               // Live owner update, not a copied list: creating a new stat with
               // a new damage channel must immediately expand marker selectors.
-              fill("stat-custom-id","arcane_venin");
+              // Player never types an ID: the French name generates one.
               fill("stat-custom-label","Venin arcanique");
-              get("stat-custom-id").dispatchEvent(new Event("input",{bubbles:true}));
               get("stat-custom-label").dispatchEvent(new Event("input",{bubbles:true}));
-              if(!values(get("stat-custom-damage-channel")).includes("arcane_venin"))
+              const generatedId = get("stat-custom-id").value;
+              if(generatedId !== "venin-arcanique")
+                throw Error("stat stable ID was not generated from the displayed name");
+              if(!values(get("stat-custom-damage-channel")).includes(generatedId))
                 throw Error("canonical stat builder did not offer its proposed new channel");
-              fill("stat-custom-damage-channel","arcane_venin");
+              fill("stat-custom-damage-channel",generatedId);
               get("stat-custom-add").click();
-              if(!values(get("marker-periodic-channel")).includes("arcane_venin") ||
-                 !values(get("marker-threshold-channel")).includes("arcane_venin"))
+              if(!values(get("marker-periodic-channel")).includes(generatedId) ||
+                 !values(get("marker-threshold-channel")).includes(generatedId))
                 throw Error("marker dropdowns were not refreshed from the new live stat registry");
               document.body.dataset.markerProbe="ok:library:periodic:cost:placement:consume:roundtrip:combat-export:permanent";
             }catch(error){document.body.dataset.markerProbe="fail:"+error.message;}
