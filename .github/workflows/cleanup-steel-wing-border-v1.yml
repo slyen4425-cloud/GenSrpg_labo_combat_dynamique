@@ -1,0 +1,58 @@
+name: Steel wing projectile border cleanup preview
+on:
+  push:
+    branches:
+      - work/lab-steel-wing-border-clean-2026-10-20
+    paths:
+      - .github/workflows/cleanup-steel-wing-border-v1.yml
+      - scripts/cleanup_steel_wing_border_v1.py
+permissions:
+  contents: write
+concurrency:
+  group: steel-wing-border-v1-preview
+  cancel-in-progress: false
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing media validation dependencies
+        run: python -m pip install 'Pillow>=10,<13' 'numpy>=2,<3' 'opencv-python-headless>=4.10,<5'
+      - name: Correct only isolated border residue on 20 existing frames
+        run: python scripts/cleanup_steel_wing_border_v1.py
+      - name: Verify immutable source and canonical asset ID
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base=Path('assets/library/capture/sprites/skills/steel_wing_projectile')
+          m=json.loads((base/'sprite_skill_steel_wing_projectile_sequences_01.json').read_text())['sequences']['projectile']
+          assert m['assetId']=='pack:capture:sprite-steel-wing-projectile-01'
+          assert m['frameCount']==20 and m['frameSize']==[512,512]
+          assert m['atlas']['frameCount']==20
+          assert m['borderCleanup']['centralPixelsUnchanged'] is True
+          assert m['borderCleanup']['status']=='awaiting-author-ingame-validation'
+          print('Confirmed isolated media-only repair and approval hold')
+          PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run all laboratory sentinels including existing atlas checks
+        run: npm run ci
+      - name: Commit frames, provenance, atlas and review previews to work branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/sprites/skills/steel_wing_projectile
+          if git diff --cached --quiet; then
+            echo 'No border artifacts removed, refusing to claim a fix' >&2
+            exit 1
+          fi
+          git commit -m 'assets(capture): remove steel wing frame border noise and rebuild atlas'
+          git push origin HEAD:refs/heads/work/lab-steel-wing-border-clean-2026-10-20
