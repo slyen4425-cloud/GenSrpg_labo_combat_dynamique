@@ -8,6 +8,11 @@ import {
   groundShadowLayoutFromOpaqueMaskV2
 } from "../adapters/renderer/dom-ground-shadow-v2.js";
 import {
+  normalizeArenaShadowLightV1,
+  projectArenaShadowLightV1,
+  shadowSilhouetteUrlFromOpaqueMaskV1
+} from "../adapters/renderer/dom-shadow-light-v1.js";
+import {
   createDomVisibleModelCollisionModel,
   visibleModelOpaqueRect,
   watchVisibleModelContact
@@ -230,6 +235,23 @@ export async function mountCombatDemo({
   });
   const movementCueTimers = new Set();
 
+  // One lighting state for the whole arena; each existing shadow slot
+  // projects it using the collision-owned alpha of its current sprite.
+  const lightControls = arena.querySelector?.("[data-shadow-light-controls]") ?? null;
+  function readLightControls() {
+    const field = (name, fallback) =>
+      lightControls?.querySelector?.("[data-shadow-light-" + name + "]")?.value ?? fallback;
+    return normalizeArenaShadowLightV1({
+      mode: field("mode", "silhouette"),
+      azimuthDeg: field("azimuth", 50),
+      elevationDeg: field("elevation", 48),
+      softness: Number(field("softness", 50)) / 100,
+      intensity: Number(field("intensity", 60)) / 100,
+      flightHeightPx: field("flight-height", 38)
+    });
+  }
+  let arenaLight = readLightControls();
+
   const slotElements =
     typeof root.querySelectorAll === "function"
       ? [...root.querySelectorAll("[data-demo-slot]")]
@@ -282,11 +304,19 @@ export async function mountCombatDemo({
           root,
           profiles,
           container,
-          initialVisible: container.hidden !== true
+          initialVisible: container.hidden !== true,
+          getArenaLight: () => arenaLight
         })
       ];
     })
   );
+  const onLightControlInput = () => {
+    arenaLight = readLightControls();
+    for (const slot of Object.values(slots)) slot.applyShadowLight(arenaLight);
+  };
+  lightControls?.addEventListener?.("input", onLightControlInput);
+  lightControls?.addEventListener?.("change", onLightControlInput);
+
   const activeApproachBySlot = new Map();
   const activeDodgeFxBySlot = new Map();
 
@@ -1014,6 +1044,8 @@ export async function mountCombatDemo({
         return;
       }
       disposed = true;
+      lightControls?.removeEventListener?.("input", onLightControlInput);
+      lightControls?.removeEventListener?.("change", onLightControlInput);
       activeApproachBySlot.clear();
       for (
         const handle of
@@ -1041,7 +1073,8 @@ function createSlot({
   root,
   profiles,
   container = null,
-  initialVisible = true
+  initialVisible = true,
+  getArenaLight = () => normalizeArenaShadowLightV1()
 }) {
   const slotContainer =
     container ??
@@ -1071,6 +1104,31 @@ function createSlot({
   let visible = Boolean(initialVisible);
   let assetReady = false;
   let imageLoadToken = 0;
+  let lastShadowLayout = null;
+  let silhouetteMaskUrl = null;
+
+  function applyShadowLight(light = getArenaLight()) {
+    if (!lastShadowLayout) return;
+    const settings = normalizeArenaShadowLightV1(light);
+    const profile = profiles.get(actor.profile);
+    const flying = profile?.locomotion?.style === "flight" || actor.profile === "flying";
+    const projection = projectArenaShadowLightV1(settings, { flying });
+    const projected = settings.mode === "silhouette" && silhouetteMaskUrl !== null;
+    const resolvedMode = projected ? "silhouette" : settings.mode === "silhouette" ? "soft" : settings.mode;
+    shadowElement.dataset.shadowMode = resolvedMode;
+    shadowElement.style.width = projected ? "100%" : lastShadowLayout.widthPct.toFixed(2) + "%";
+    shadowElement.style.height = projected ? "100%" : lastShadowLayout.heightPct.toFixed(2) + "%";
+    shadowElement.style.filter = projected ? "none" : "blur(" + projection.blurPx.toFixed(2) + "px)";
+    slotContainer.style?.setProperty?.("--creature-shadow-left", (projected ? 50 : lastShadowLayout.centerXPct).toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--creature-shadow-bottom", lastShadowLayout.bottomPct.toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--creature-shadow-opacity", String(settings.mode === "contact" ? lastShadowLayout.opacity : projection.opacity));
+    slotContainer.style?.setProperty?.("--shadow-light-cast-x", projection.castXPct.toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--shadow-light-cast-y", projection.castYPct.toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--shadow-light-skew", projection.skewDeg.toFixed(2) + "deg");
+    slotContainer.style?.setProperty?.("--shadow-light-flatten", String(projection.flatten));
+    slotContainer.style?.setProperty?.("--shadow-light-blur", projection.blurPx.toFixed(2) + "px");
+    slotContainer.style?.setProperty?.("--shadow-light-mask", silhouetteMaskUrl ?? "none");
+  }
 
   function rebuildActor(asset) {
     renderer?.dispose();
@@ -1106,6 +1164,8 @@ function createSlot({
     const token = ++imageLoadToken;
     assetReady = false;
     collisionModel.clear();
+    lastShadowLayout = null;
+    silhouetteMaskUrl = null;
     image.hidden = true;
     shadowElement.style.visibility = "hidden";
     slotContainer.dataset.visibleCollisionReady = "false";
@@ -1137,19 +1197,10 @@ function createSlot({
       const layout = groundShadowLayoutFromOpaqueMaskV2(
         opaqueMask, profileShadow
       );
-      shadowElement.style.width = layout.widthPct.toFixed(2) + "%";
-      shadowElement.style.height = layout.heightPct.toFixed(2) + "%";
-      shadowElement.dataset.shadowFootprint =
-        layout.opaqueWidthRatio.toFixed(3);
-      slotContainer.style?.setProperty?.(
-        "--creature-shadow-bottom", layout.bottomPct.toFixed(2) + "%"
-      );
-      slotContainer.style?.setProperty?.(
-        "--creature-shadow-left", layout.centerXPct.toFixed(2) + "%"
-      );
-      slotContainer.style?.setProperty?.(
-        "--creature-shadow-opacity", String(layout.opacity)
-      );
+      lastShadowLayout = layout;
+      silhouetteMaskUrl = shadowSilhouetteUrlFromOpaqueMaskV1(opaqueMask);
+      shadowElement.dataset.shadowFootprint = layout.opaqueWidthRatio.toFixed(3);
+      applyShadowLight();
       settled = true;
       shadowElement.style.visibility = "visible";
       assetReady = true;
@@ -1254,6 +1305,7 @@ function createSlot({
     setCreature,
     setVisible,
     setApproachActive,
+    applyShadowLight,
     playMovementAppearance: movementAppearance.play,
     cancelMovementAppearance: movementAppearance.cancel,
     getMovementTintTarget: movementAppearance.tintTarget,

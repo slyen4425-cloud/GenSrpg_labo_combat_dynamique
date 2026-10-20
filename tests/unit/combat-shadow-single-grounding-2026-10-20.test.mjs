@@ -30,8 +30,10 @@ test("cached and async image follow identical source after actor rebuild, with o
  const rebuild=source.slice(source.indexOf("  function rebuildActor("),source.indexOf("  function loadRuntimeAsset("));
  assert.doesNotMatch(rebuild,/--creature-shadow-bottom|--creature-shadow-opacity/,"profile rebuild may not override measured shadow");
  const load=source.slice(source.indexOf("  function loadRuntimeAsset("),start);
- assert.equal((load.match(/--creature-shadow-bottom/g)||[]).length,1);
- assert.equal((load.match(/--creature-shadow-opacity/g)||[]).length,1);
+ const apply = source.slice(source.indexOf("  function applyShadowLight("),source.indexOf("  function rebuildActor("));
+ assert.equal((apply.match(/--creature-shadow-bottom/g)||[]).length,1);
+ assert.equal((apply.match(/--creature-shadow-opacity/g)||[]).length,1);
+ assert.doesNotMatch(load,/--creature-shadow-bottom|--creature-shadow-opacity/,"load only delegates to the single lighting owner");
  assert.match(load,/token !== imageLoadToken \|\| settled/);
  assert.match(load,/shadowElement\.style\.visibility = "hidden"/);
  assert.match(load,/shadowElement\.style\.visibility = "visible"/);

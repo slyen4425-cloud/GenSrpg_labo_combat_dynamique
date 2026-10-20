@@ -23,6 +23,8 @@ jobs:
           node-version: 22
       - name: Real Chromium creature library startup smoke
         run: node tests/browser/capture-creature-library-smoke.mjs
+      - name: Real Chromium 2.5D arena shadow and flying light projection
+        run: node tests/browser/shadow-light-real-render-smoke.mjs
 
   firestorm-zone-growth-browser:
     runs-on: ubuntu-latest

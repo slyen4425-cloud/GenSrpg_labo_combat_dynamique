@@ -81,8 +81,10 @@ test("shadow left coordinate is authored exactly once by accepted alpha mask; an
   const rebuild=ui.slice(ui.indexOf("  function rebuildActor("),ui.indexOf("  function loadRuntimeAsset("));
   assert.doesNotMatch(rebuild,/--creature-shadow-bottom|--creature-shadow-left/);
   const load=ui.slice(ui.indexOf("  function loadRuntimeAsset("),ui.indexOf("  function setCreature(nextMeta"));
-  assert.equal((load.match(/--creature-shadow-left/g)||[]).length,1);
-  assert.match(load,/--creature-shadow-left", layout\.centerXPct\.toFixed\(2\)/);
+  const apply = ui.slice(ui.indexOf("  function applyShadowLight("),ui.indexOf("  function rebuildActor("));
+  assert.equal((apply.match(/--creature-shadow-left/g)||[]).length,1);
+  assert.match(apply,/--creature-shadow-left", \(projected \? 50 : lastShadowLayout\.centerXPct\)/);
+  assert.doesNotMatch(load,/--creature-shadow-left/,"load delegates horizontal contact to the sole light owner");
   assert.match(load,/collisionModel\.opaqueMask/);
   assert.doesNotMatch(load,/collisionModel\.snapshot\(\)/,
     "hidden-arena bug PR37 must not return");
