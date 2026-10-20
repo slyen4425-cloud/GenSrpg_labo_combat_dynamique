@@ -24,11 +24,20 @@ jobs:
       - name: Install Pillow
         run: python -m pip install "Pillow>=10,<13"
       - name: Validate author ZIP and publish four art-review previews to work branch
-        run: python scripts/import_loup_volcanique_preview_v3.py
+        run: |
+          if test -f _incoming/Loup_volcanique_4_animations_PREVIEW_V3_sans_generation.zip; then
+            python scripts/import_loup_volcanique_preview_v3.py
+          else
+            echo "Waiting for the actual V3 review ZIP; no images published"
+          fi
       - name: Commit only review media, never game catalog
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if test ! -d assets/library/capture/creatures/loup_volcanique/animation_previews_v3; then
+            echo "Nothing to stage before ZIP arrival"
+            exit 0
+          fi
           git add -- assets/library/capture/creatures/loup_volcanique/animation_previews_v3
           if ! git diff --cached --quiet; then
             git commit -m 'assets(capture): stage wolf V3 4 animation previews for review only'
