@@ -861,6 +861,41 @@
           <p class="note">Compatibilité : ces réglages ne s’appliquent qu’aux anciennes fiches dont la réaction individuelle est encore sur « Ancienne règle globale ». Pour toute nouvelle créature, configure Esquive ou Défense dans son onglet Créature, à côté du sprite. Une activation consomme une charge ; les attaques non esquivables traversent l’Esquive.</p>
         </fieldset>
       </article>
+
+      <article class="card" data-combat-light-settings>
+        <div class="card-title">
+          <span class="step">5</span>
+          <div>
+            <h2>Éclairage et ombres de l'arène</h2>
+            <p>Une seule lumière commune à tous les combattants, au sol comme en vol.</p>
+          </div>
+        </div>
+        <div class="grid two" data-shadow-light-controls>
+          <label>Type d’ombre
+            <select data-shadow-light-mode>
+              <option value="silhouette" selected>Silhouette projetée</option>
+              <option value="soft">Ombre douce (ellipse)</option>
+              <option value="contact">Ombre de contact (ancienne)</option>
+            </select>
+          </label>
+          <label>Direction de la lumière
+            <input data-shadow-light-azimuth type="range" min="0" max="360" step="5" value="50">
+          </label>
+          <label>Hauteur de la lumière
+            <input data-shadow-light-elevation type="range" min="15" max="85" step="5" value="48">
+          </label>
+          <label>Douceur de l’ombre
+            <input data-shadow-light-softness type="range" min="0" max="100" step="5" value="50">
+          </label>
+          <label>Intensité de l’ombre
+            <input data-shadow-light-intensity type="range" min="0" max="100" step="5" value="60">
+          </label>
+          <label>Hauteur de vol simulée
+            <input data-shadow-light-flight-height type="range" min="0" max="120" step="5" value="38">
+          </label>
+        </div>
+        <p class="note">Réglages de la prévisualisation : choisis les valeurs puis lance « Tester en combat ». Ils restent disponibles quand tu reviens dans cet onglet, sans modifier les créatures ni les sauvegardes. La persistance des options d'arène sera traitée après validation du rendu.</p>
+      </article>
     </section>
 
     <section class="editor-panel" data-editor-panel="skills" hidden>
@@ -1961,34 +1996,7 @@
       <main class="game game--coop-2v2" data-combat-demo>
         <section class="arena arena--coop-2v2" data-combat-arena aria-label="Prévisualisation du combat Capture">
           <div class="arena__ground" aria-hidden="true"></div>
-          <details class="shadow-light-console" data-shadow-light-controls>
-            <summary>☀ Lumière / ombres</summary>
-            <div class="shadow-light-console__panel">
-              <label>Type d’ombre
-                <select data-shadow-light-mode>
-                  <option value="silhouette" selected>Silhouette projetée</option>
-                  <option value="soft">Ombre douce (ellipse)</option>
-                  <option value="contact">Ombre de contact (ancienne)</option>
-                </select>
-              </label>
-              <label>Direction de la lumière
-                <input data-shadow-light-azimuth type="range" min="0" max="360" step="5" value="50">
-              </label>
-              <label>Hauteur de la lumière
-                <input data-shadow-light-elevation type="range" min="15" max="85" step="5" value="48">
-              </label>
-              <label>Douceur de l’ombre
-                <input data-shadow-light-softness type="range" min="0" max="100" step="5" value="50">
-              </label>
-              <label>Intensité de l’ombre
-                <input data-shadow-light-intensity type="range" min="0" max="100" step="5" value="60">
-              </label>
-              <label>Hauteur de vol simulée
-                <input data-shadow-light-flight-height type="range" min="0" max="120" step="5" value="38">
-              </label>
-              <p>Réglages de la prévisualisation uniquement. La lumière est commune à toute l’arène ; les ombres suivent la trajectoire de sol existante, y compris pendant les vols et les sauts.</p>
-            </div>
-          </details>
+
 
           <article
             class="fighter fighter--player"

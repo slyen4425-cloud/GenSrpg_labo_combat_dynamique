@@ -74,11 +74,11 @@ try {
   }
   const dom = Buffer.concat(chunks).toString("utf8");
   const probe = dom.match(/data-shadow-probe="([^"]+)"/)?.[1] ?? "missing";
-  if (probe !== "ok:silhouette:flight:direction:contact:restore") {
+  if (probe !== "ok:silhouette:flight:direction:contact:restore:editor") {
     throw new Error("Real DOM mask/light/flying controls failed: " + probe +
       "; html tail=" + dom.slice(-1600));
   }
-  console.log("Real Chrome light projection: alpha silhouette painted, airborne cast, reversible direction, old contact/restore.");
+  console.log("Real Chrome shadow lighting: alpha projected and flying contact, standalone direction/restore, Capture editor injection without preview console.");
 } finally {
   server.close();
 }

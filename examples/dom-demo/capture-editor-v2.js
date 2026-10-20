@@ -205,6 +205,22 @@ Promise.all([
   editorStatus.dataset.tone = "error";
 });
 
+function readCombatLightEditor() {
+  // Preview-only arena settings from the Combat tab; never exported as
+  // authored creature data or copied into another runtime registry.
+  const controls = root.querySelector("[data-combat-light-settings] [data-shadow-light-controls]");
+  if (!controls) throw new Error("Réglages d'éclairage introuvables dans l'onglet Combat");
+  const value = name => controls.querySelector("[data-shadow-light-" + name + "]")?.value;
+  return Object.freeze({
+    mode: value("mode"),
+    azimuthDeg: value("azimuth"),
+    elevationDeg: value("elevation"),
+    softness: Number(value("softness")) / 100,
+    intensity: Number(value("intensity")) / 100,
+    flightHeightPx: value("flight-height")
+  });
+}
+
 function setMode(mode) {
   const preview = mode === "preview";
   root.hidden = preview;
@@ -445,6 +461,7 @@ const session = createCaptureEditorPreviewSessionV2({
       root: previewRoot,
       nativeCombatSource,
       nativeVisualSource,
+      arenaLight: readCombatLightEditor(),
       presentationAssets:
         buildPreviewPresentationAssets(
           nativeCombatSource
