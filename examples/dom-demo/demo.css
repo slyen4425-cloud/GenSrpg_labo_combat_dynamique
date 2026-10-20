@@ -173,6 +173,81 @@ summary {
   pointer-events: none;
 }
 
+/* One shadow node: the existing animation renderer owns its motion.
+   Only the shape is projected on its internal pseudo-element. */
+.fighter__shadow[data-shadow-mode="silhouette"] {
+  background: none;
+  border-radius: 0;
+}
+.fighter__shadow[data-shadow-mode="silhouette"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(0, 0, 0, var(--creature-shadow-opacity, 0.42));
+  -webkit-mask-image: var(--shadow-light-mask, none);
+  mask-image: var(--shadow-light-mask, none);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  transform-origin: center bottom;
+  transform:
+    translate(var(--shadow-light-cast-x, 0%), var(--shadow-light-cast-y, 0%))
+    skewX(var(--shadow-light-skew, 0deg))
+    scaleY(var(--shadow-light-flatten, 0.2));
+  filter: blur(var(--shadow-light-blur, 4px));
+}
+.fighter__shadow[data-shadow-mode="soft"] {
+  border-radius: 50%;
+}
+
+/* Preview-only lighting console: controls do not alter skill or creature data. */
+.shadow-light-console {
+  position: absolute;
+  z-index: 15;
+  top: 4.2rem;
+  left: 0.75rem;
+  max-width: min(17rem, calc(100% - 1.5rem));
+  color: #eaf5fc;
+  font-size: 0.8rem;
+}
+.shadow-light-console > summary {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgba(174, 210, 230, 0.45);
+  border-radius: 0.7rem;
+  background: rgba(6, 22, 34, 0.93);
+  cursor: pointer;
+  font-weight: 700;
+}
+.shadow-light-console__panel {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+  padding: 0.65rem;
+  max-height: min(67svh, 23rem);
+  overflow: auto;
+  border: 1px solid rgba(174, 210, 230, 0.35);
+  border-radius: 0.65rem;
+  background: rgba(7, 22, 34, 0.97);
+  box-shadow: 0 0.7rem 1.8rem rgba(0, 0, 0, 0.3);
+}
+.shadow-light-console__panel label {
+  display: grid;
+  gap: 0.15rem;
+}
+.shadow-light-console__panel input,
+.shadow-light-console__panel select {
+  width: 100%;
+  accent-color: #86d8f5;
+}
+.shadow-light-console__panel p {
+  margin: 0;
+  color: #a9c7d3;
+  font-size: 0.73rem;
+}
+
 .fighter__motion {
   position: relative;
   z-index: 1;
