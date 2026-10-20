@@ -1,3 +1,9 @@
+## 2026-10-20 — Publication indépendante de l'ombre : calculateur unique et chargements déterministes
+- Base `gh-pages@1acc0b583179362ab1a02b3c4f7973b641516764`, checkpoint `checkpoint/lab-start-shadow-publish-current-2026-10-20`, branche `work/lab-shadow-single-grounding-publish-2026-10-20`, issue du lot testé `work/lab-shadow-single-grounding-2026-10-20` (GREEN technique).
+- Correction de la cause : `setCreature` doit reconstruire l'acteur avant `loadRuntimeAsset`, en cas de cache synchrone ; un seul calcul statique `groundShadowLayoutFromOpaqueMaskV2` dérive le contact et l'opacité depuis le modèle opaque et le profil, plus aucune écriture concurrencée du bottom. `DomActorRenderer` reste autorité unique des transformations temporelles.
+- Fichiers autorisés : `src/ui/demo-app.js`, `src/adapters/renderer/dom-ground-shadow-v2.js`, `tests/unit/combat-shadow-single-grounding-2026-10-20.test.mjs`, sentinelle `tests/unit/creature-motion-profiles-v1.test.mjs`, `docs/LAB_SHADOW_SINGLE_GROUNDING_2026-10-20.md`, ce journal. `main`, `global-assets`, `Zombicide-40k`, capacités et combats protégés.
+- Tests CI et navigateur réel avant GREEN définitif, publication Pages, validation visuelle Android distincte. Retirer le conflit de documentation de la branche originale sans écraser le lot Tempête de rouille.
+
 ## 2026-10-20 — Tempête de rouille : import auteur sans conversion forcée de « acier »
 - Source exacte `gensrpg-capture-skill-tempete_rouille.json` SHA256 `e154956cbb52c957da5487ee8704d8a13112ed9787e172a9454316a5e5e7e8cf` ; identifiant stable `tempete_rouille` et canal du tick `acier` préservés à la lettre.
 - Base `gh-pages@0261b2fa8b88af8a1048beb656b9f97b200dcfe0`, checkpoint `checkpoint/lab-start-tempete-rouille-author-2026-10-20`, branche `work/lab-tempete-rouille-author-2026-10-20`.
