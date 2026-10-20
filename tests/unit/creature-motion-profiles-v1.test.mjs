@@ -222,7 +222,12 @@ test("contact shadow derives scale from actor and optional offset/opacity from p
   );
   assert.match(
     demoApp,
-    /profilePresentation[\s\S]*\.shadow[\s\S]*--creature-shadow-bottom[\s\S]*--creature-shadow-opacity/
+    /groundShadowLayoutFromOpaqueMaskV2[\s\S]*--creature-shadow-bottom[\s\S]*--creature-shadow-opacity/,
+    "one mask/profile resolver must own both shadow style values"
+  );
+  assert.ok(
+    demoApp.indexOf("rebuildActor(runtimeUrl)") < demoApp.indexOf("loadRuntimeAsset(runtimeUrl)"),
+    "actor must be built before cached-image callbacks"
   );
   assert.equal(typeof flying.presentation?.shadow?.bottomPct, "number");
   assert.equal(typeof flying.presentation?.shadow?.opacity, "number");
