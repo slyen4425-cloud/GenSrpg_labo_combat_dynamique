@@ -28,8 +28,8 @@ const heavyArthropod = () => mask(120, 120, [
   [63,77,72,106]               // second load-bearing paw
 ]);
 const quadruped = () => mask(120, 120, [
-  [20,25,87,62],
-  [24,58,32,103], [42,58,49,103], [63,58,71,103], [82,58,89,103]
+  [20,25,99,62],
+  [25,58,32,103], [44,58,51,103], [68,58,75,103], [87,58,94,103]
 ]);
 test("massive leaning creature: foot clusters beat torso and hanging pincers",()=>{
  const g=groundShadowLayoutFromOpaqueMaskV2(heavyArthropod());
