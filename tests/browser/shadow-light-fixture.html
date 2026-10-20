@@ -82,7 +82,12 @@ try {
       const footShadowY = shadowRect.top + shadowRect.height * originY / 100;
       if (Math.abs(footImageX - footShadowX) > 2 || Math.abs(footImageY - footShadowY) > 2) {
         throw Error("scaled 1.7 player: visible actor and shadow foot coordinate diverge " +
-          JSON.stringify({footImageX,footImageY,footShadowX,footShadowY}));
+          JSON.stringify({footImageX,footImageY,footShadowX,footShadowY,
+          imageRect:actorImageRect.toJSON(),shadowRect:shadowRect.toJSON(),
+          motionRect:player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON(),
+          fighterRect:player.getBoundingClientRect().toJSON(),
+          dimensions:{shadowWidth:a.clientWidth,shadowHeight:a.clientHeight,
+            motionHeight:player.querySelector("[data-demo-motion]").clientHeight}}));
       }
       const pivotPx = String(pseudo.transformOrigin).split(" ").map(Number.parseFloat);
       if (Math.abs(pivotPx[0] - a.clientWidth * originX / 100) > 1.5 ||
