@@ -1,0 +1,61 @@
+name: Loup volcanique four canonical rig previews
+on:
+  push:
+    branches:
+      - work/global-assets-wolf-canonical-rig-2026-10-20
+    paths:
+      - scripts/rig_loup_volcanique_canonical_v1.py
+      - .github/workflows/rig-loup-volcanique-canonical-v1.yml
+permissions:
+  contents: write
+jobs:
+  rig-preview:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact model media tooling
+        run: python -m pip install "Pillow>=10,<13" "numpy>=2,<3"
+      - name: Create articulated leg and attack previews from existing approved art only
+        run: python scripts/rig_loup_volcanique_canonical_v1.py
+      - name: Validate each frame 01 exactly equals its official-derived master
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import numpy as np,json
+          p=Path("assets/library/capture/creatures/loup_volcanique")
+          manifest=json.loads((p/"canonical_animation_review_v1/rig_manifest.json").read_text())
+          assert len(manifest["actions"])==4
+          assert manifest["generatedCreatureArt"] is False
+          assert manifest["runtimeIntegrated"] is False
+          for record in manifest["actions"]:
+              key=record["view"]; action=record["action"]
+              master=np.asarray(Image.open(p/"canonical_review_v1"/f"{key}_master_512.png").convert("RGBA"))
+              d=p/"canonical_animation_review_v1"/action/key
+              files=sorted((d/"frames").glob("*.png"))
+              assert len(files)==20
+              for f in files:
+                  with Image.open(f) as img:
+                      assert img.mode=="RGBA" and img.size==(512,512)
+              frame1=np.asarray(Image.open(files[0]).convert("RGBA"))
+              assert np.array_equal(frame1,master),(key,action)
+              with Image.open(d/"atlas.png") as atlas:
+                  assert atlas.size==(2560,2048)
+              with Image.open(d/"preview.webp") as anim:
+                  assert anim.n_frames==20
+          print("Four strictly original-model pixel-backed previews; no runtime changes")
+          PY
+      - name: Commit candidate preview assets on branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/loup_volcanique/canonical_animation_review_v1
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets(capture): publish wolf canonical articulated 4-animation DRAFT previews'
+            git push origin HEAD:refs/heads/work/global-assets-wolf-canonical-rig-2026-10-20
+          fi
