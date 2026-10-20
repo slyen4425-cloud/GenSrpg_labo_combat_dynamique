@@ -88,6 +88,21 @@ Vérifier manuellement et, si possible, par tests automatiques :
 
 Si un seul contrôle essentiel échoue : **REFUSÉ / À CORRIGER**, pas de raccord.
 
+### Espacement obligatoire des poses avant découpe (20 octobre 2026)
+
+Cette règle concerne **toutes** les nouvelles planches de sprites de créatures, d'attaque ou de déplacement. Elle fait suite aux artefacts Scarabacier et aux coupes de queue/museau du Loup volcanique.
+
+- **Une pose = une case indépendante.** Réserver une zone de sécurité transparente d'au moins **32 px entre la silhouette réelle (flammes, queue, museau, cornes, ailes, particules comprises) et chacune des quatre limites de la case**, à la résolution de travail de la planche. Pour les poses très étendues, agrandir le canevas ou réduire proportionnellement toutes les poses : ne jamais rogner.
+- Entre deux silhouettes de cases voisines, viser **au moins 64 px de séparation transparente effective** (32 px par case), y compris pour les flammes/traînées. Le nombre de pixels peut évoluer si le format de génération change ; les marges et la distance mesurées dans le **fichier source** font autorité.
+- **Avant découpe**, contrôler les 20 cases et la zone de sécurité complète. Tout pixel opaque de la créature qui atteint une frontière, ou toute silhouette voisine qui déborde dans une case, implique **rejet du lot** et révision de la planche ; aucun découpage automatique ne doit masquer cette anomalie.
+- Un tracé de grille, une légende ou un repère peut être présent dans un **gabarit de contrôle distinct**, jamais sur la planche de production ou les frames exportées. Si la source générée comporte une grille incrustée, la retirer avant de valider le fond transparent et vérifier l'absence de résidus.
+- La découpe doit utiliser les coordonnées réelles de la grille, vérifier dimensions/alpha, et produire une **planche de poses + un aperçu animé pour chaque vue**. Vérifier les 4 coins et les 4 bords, puis la continuité anatomique frame par frame (queue, museau, pattes, appendices).
+- **Ne jamais réparer une partie réellement coupée** par une simple suppression de pixels, un zoom/recentrage ou un remplissage artificiel en la déclarant « restaurée ». Si la pointe de la queue ou du museau n'existe pas dans le fichier source, la frame est **à refaire depuis le modèle maître validé**, en conservant l'angle exact, puis l'animation repasse en attente de validation.
+- La distance entre les poses sur la planche source est **indépendante** de l'atlas final de production : l'atlas peut rester un 5×4 de cellules **512 × 512 sans gouttière**, puisque chaque cellule contient déjà une pose avec une marge interne vérifiée.
+- Les deux animations de déplacement du Loup volcanique validées verbalement le 20/10 sont **protégées** : ne pas les régénérer ni les modifier dans le lot de correction des attaques. Aucun média non approuvé ne doit devenir un asset runtime par défaut.
+
+**Sentinelle recommandée :** calculer la boîte englobante des pixels RGBA de chaque pose, y compris effets, et refuser toute frame dont la marge gauche/droite/haut/bas descend sous 32 px sur la source. Conserver le rapport des 20 poses dans le dossier de revue.
+
 ## 4. Icônes — modèle, capacité, statut
 
 Les icônes partagent une identité visuelle « Monster Capture » : sujet principal unique, silhouette immédiatement distincte des autres, contraste marqué et **fond clair lisible lorsqu'il fait partie de la direction artistique** ; ne pas produire plusieurs pictogrammes presque identiques ni un enchevêtrement d'effets.
