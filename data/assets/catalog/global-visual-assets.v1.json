@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 197,
+    "assets": 199,
     "icons": 74,
-    "sprites": 104,
+    "sprites": 106,
     "fx": 2,
     "portraits": 12,
     "backgrounds": 5,
-    "creatures": 28
+    "creatures": 30
   },
   "assets": [
     {
@@ -6497,6 +6497,82 @@
       },
       "resource": {
         "file": "capture/creatures/loup_volcanique/animations/attack/dos/atlases/loup_volcanique_attack_dos_sprite_strip.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-movement-face-12-v1",
+      "label": "Golem moussu — course face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "golem_moussu",
+        "earth",
+        "nature",
+        "movement",
+        "animated",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / animations visuelles approuvées 2026-10-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/animations/movement/face/atlases/golem_moussu_movement_face_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 85,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-attack-face-12-v1",
+      "label": "Golem moussu — attaque face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "golem_moussu",
+        "earth",
+        "nature",
+        "attack",
+        "animated",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / animations visuelles approuvées 2026-10-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/animations/attack/face/atlases/golem_moussu_attack_face_12_atlas.webp",
         "format": "sprite-strip",
         "mime": "image/webp",
         "frameCount": 12,

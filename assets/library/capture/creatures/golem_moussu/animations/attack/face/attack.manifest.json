@@ -1,0 +1,216 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "golem_moussu",
+  "action": "attack",
+  "view": "face",
+  "assetId": "pack:capture:creature-golem-moussu-attack-face-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "once",
+  "authorApproved": true,
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/golem_moussu_attack_face_01.png",
+      "sha256": "a7119df74cfda28ab536c71061cf3d8d4f1d4faa8a2d722c35f84dcb68b16513",
+      "marginsLTRB": [
+        88,
+        143,
+        89,
+        64
+      ],
+      "sourceGridCell": [
+        0,
+        0
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/golem_moussu_attack_face_02.png",
+      "sha256": "9762c99bcfb9565adf0de0356a67eac0b5a24806a489e0008989b334e72560a2",
+      "marginsLTRB": [
+        82,
+        162,
+        83,
+        64
+      ],
+      "sourceGridCell": [
+        1,
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/golem_moussu_attack_face_03.png",
+      "sha256": "9a9506101b36fea680dc25443d3303acd48530e33db236cc50fc867d4e6d2ff7",
+      "marginsLTRB": [
+        81,
+        155,
+        81,
+        64
+      ],
+      "sourceGridCell": [
+        2,
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/golem_moussu_attack_face_04.png",
+      "sha256": "7b197b3cddb5e0c62c786ffeb0f3da87bde1c22a60f287ee850abaccc9716fbe",
+      "marginsLTRB": [
+        82,
+        156,
+        82,
+        64
+      ],
+      "sourceGridCell": [
+        3,
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/golem_moussu_attack_face_05.png",
+      "sha256": "ccd6c581dee010eb6f5e084f2e08d3f4060cac4b2a99512ffb7630ef811328dd",
+      "marginsLTRB": [
+        84,
+        146,
+        85,
+        64
+      ],
+      "sourceGridCell": [
+        0,
+        1
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/golem_moussu_attack_face_06.png",
+      "sha256": "06587a9d5ff683a6d7222e83862bc22ad30a672b2774396817d5a3ab6aed5fee",
+      "marginsLTRB": [
+        77,
+        157,
+        77,
+        64
+      ],
+      "sourceGridCell": [
+        1,
+        1
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/golem_moussu_attack_face_07.png",
+      "sha256": "fbde72cec5018eaad4312fa931292bbece58db5cbe4c3516c407571bc0cfba4b",
+      "marginsLTRB": [
+        78,
+        163,
+        78,
+        64
+      ],
+      "sourceGridCell": [
+        2,
+        1
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/golem_moussu_attack_face_08.png",
+      "sha256": "27d346575981258ffa5fcef087117c95d88ae7e31032029102de94c468974f47",
+      "marginsLTRB": [
+        82,
+        161,
+        83,
+        64
+      ],
+      "sourceGridCell": [
+        3,
+        1
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/golem_moussu_attack_face_09.png",
+      "sha256": "2c5eadfe0b4ebb8653d031b8c85129b1a599b35113a104686b055b9113edf4fc",
+      "marginsLTRB": [
+        82,
+        167,
+        83,
+        64
+      ],
+      "sourceGridCell": [
+        0,
+        2
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/golem_moussu_attack_face_10.png",
+      "sha256": "1f580f07e2112cdabff06b0e61532f051841b2379e8cc6d1130043412d042995",
+      "marginsLTRB": [
+        80,
+        170,
+        81,
+        64
+      ],
+      "sourceGridCell": [
+        1,
+        2
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/golem_moussu_attack_face_11.png",
+      "sha256": "1d9fbdde804056222b5ec3fd0f0c60c10f1c5167b93bd3f4b2cca8a991b1a717",
+      "marginsLTRB": [
+        82,
+        152,
+        83,
+        64
+      ],
+      "sourceGridCell": [
+        2,
+        2
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/golem_moussu_attack_face_12.png",
+      "sha256": "0b3d46e677af018c16f06da62a6245aabda1b2a257281b941927329380966d9a",
+      "marginsLTRB": [
+        89,
+        162,
+        89,
+        64
+      ],
+      "sourceGridCell": [
+        3,
+        2
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/golem_moussu_attack_face_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "a08349ad0216edd2b5e84358deff5d1ff691d3c635d77c9bea5aadebe04ac8cd"
+  },
+  "preview": "previews/golem_moussu_attack_face_12_preview.gif",
+  "previews": {
+    "gif": "previews/golem_moussu_attack_face_12_preview.gif",
+    "webp": "previews/golem_moussu_attack_face_12_preview.webp",
+    "planche": "previews/golem_moussu_attack_face_12_planche.png"
+  },
+  "sourceSpriteSheet": "a_clean_high_resolution_game_art_sprite_sheet_on_2.png",
+  "sourceSpriteSheetSha256": "28478939ee52d1276131b5220f9f056bba64b50c2893312f318445ea8e00bdbe",
+  "technicalReview": "corrected source grid row boundaries to avoid cropping paws; all official runtime unaffected",
+  "sourceArchive": "GOLEM_MOUSSU_FACE_12_COURSE_ATTAQUE_GITHUB.zip",
+  "sourceArchiveSha256": "ad9f4717721346a99a9c6a5a469a7e1ef81e930353204dc7273fda87e615a42c"
+}

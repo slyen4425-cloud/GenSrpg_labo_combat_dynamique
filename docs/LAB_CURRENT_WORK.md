@@ -1,3 +1,17 @@
+## 2026-10-21 — Golem moussu FACE 12 frames — publication bibliothèque (lot actif)
+- Objectif : publier deux séquences de 12 frames (mouvement et attaque, vue adversaire), 512×512 RGBA ; modèles originaux inchangés.
+- Source : ZIP déjà déposé dans _incoming/GOLEM_MOUSSU_FACE_12_COURSE_ATTAQUE_GITHUB.zip, empreinte SHA256 ad9f4717721346a99a9c6a5a469a7e1ef81e930353204dc7273fda87e615a42c.
+- Import initial : branche work/global-assets-golem-moussu-face12-2026-10-21, Action import 39635452666 et CI réussies.
+- Divergence résolue : la branche initiale ne contenait pas la dernière gouvernance AGENTS.md et charte §32 ; médias et catalogue seuls repris sur la version officielle actualisée.
+- Base : global-assets@783e461cbbd868f8957928f45f4facd1f8ec8743. Départ : checkpoint/global-assets-start-golem-moussu-face12-publish-2026-10-21. Travail : work/global-assets-golem-moussu-face12-publish-2026-10-21.
+- Périmètre : assets/library/capture/creatures/golem_moussu/animations/{movement,attack}/face/**, catalogue global, archive et script source, sentinelle, documents du lot.
+- IDs : pack:capture:creature-golem-moussu-movement-face-12-v1 et pack:capture:creature-golem-moussu-attack-face-12-v1.
+- Protection : aucune modification aux modèles runtime, aux animations du loup, au moteur, à main, aux autres créatures, à Zombicide-40k.
+- Critères : QA visuelle source, vérifications 24 PNG + 2 atlas, CI réelle sur la nouvelle branche et revue diff, checkpoint GREEN seulement si tout passe ; publication global-assets après succès.
+- Limite : catalogage dans la bibliothèque ne prouve pas l'affectation automatique de la fiche créature au combat.
+- Statut : publication en préparation, CI de ce nouveau lot à vérifier.
+
+---
 ## 2026-10-21 — Gouvernance assistant : accès et outils (documentation permanente)
 
 - **Demande auteur** : consigner durablement sa règle d'utilisation des accès et outils configurés ; éviter de réclamer manuellement des opérations GitHub sans avoir testé les connecteurs accessibles.
