@@ -1,4 +1,4 @@
-## 2026-10-21 — Loup volcanique : course + attaque face 12 frames (MÉDIAS IMPORTÉS / VALIDATION CI)
+## 2026-10-21 — Loup volcanique : course + attaque face 12 frames (ASSETS PUBLIÉS, GREEN)
 
 - **Source validée** : deux animations face côté adversaire, mouvement/course en boucle et attaque une fois, 12 PNG 512×512 RGBA chacune ; auteur a validé les deux GIF et la planche le 21 octobre 2026.
 - **Objectif** : placer uniquement les nouvelles séquences dans `assets/library/capture/creatures/loup_volcanique/animations/{movement,attack}/face/` ; catalogue unique : `data/assets/catalog/global-visual-assets.v1.json`.
@@ -12,7 +12,7 @@
 - **Zones protégées** : `assets/library/capture/creatures/loup_volcanique/runtime/**`, master/portrait/icon, toutes les vues dos/joueur, sprites Scarabacier, Combat Rules, Animation Core, ID existants.
 - **Contrôles** : SHA-256 archive/source/images/atlas, CRC, 12 frames distinctes par animation, PNG RGBA 512x512, atlas WebP RIFF, catalogue sans doublons, `npm run ci`, revue réelle des médias, checkpoint GREEN seulement après CI et confirmation du commit.
 - **Point de vigilance** : quelques images de course ont du contenu alpha jusqu'au bord droit du carré 512 (marge intérieure minimum 0 px). Ne pas prétendre que l'image originale possède une marge de 40 px ; le cycle a néanmoins été approuvé visuellement.
-- **Statut** : ZIP source reçu ; import effectué sur la branche isolée (commit médias `10cd02d6e8ebd505b9bbb783c45dff8f77aa005e`), catalogue étendu de 193 à 195 assets et de 100 à 102 sprites. Deux atlas, 24 PNG, deux GIF et manifests contrôlés. Sentinelle permanente `tests/unit/volcanic-wolf-face12-assets.test.mjs` ajoutée ; note de lot `docs/LAB_LOUP_VOLCANIQUE_FACE12_ANIMATIONS_2026-10-21.md`. **Publication globale et GREEN conditionnés à la CI du dernier commit** ; aucune assignation automatique à la fiche du loup.
+- **Statut** : ZIP source reçu ; import effectué sur la branche isolée (commit médias `10cd02d6e8ebd505b9bbb783c45dff8f77aa005e`), catalogue étendu de 193 à 195 assets et de 100 à 102 sprites. Deux atlas, 24 PNG, deux GIF et manifests contrôlés. Sentinelle permanente `tests/unit/volcanic-wolf-face12-assets.test.mjs` ajoutée ; note de lot `docs/LAB_LOUP_VOLCANIQUE_FACE12_ANIMATIONS_2026-10-21.md`. **CI du lot validée** : `Laboratory CI` run `39577773069` SUCCESS sur `aec86f6d40256bb422c85ba0e7df85fffb908bf6`. Publication fast-forward réussie sur `global-assets`, checkpoint `checkpoint/global-assets-loup-volcanique-face12-green-2026-10-21`. Catalogue : 195 assets dont 102 sprites. **Aucune assignation automatique à la fiche du loup** : le test en combat reste séparé.
 
 ---
 
