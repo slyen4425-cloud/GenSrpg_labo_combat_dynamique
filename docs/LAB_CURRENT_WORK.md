@@ -14,6 +14,9 @@
 - Domaines protégés : `main`, `global-assets`, moteurs Combat/Animation/FX, UI et exports, fiches créatures, loadouts, charte ombres approuvée, nature/ac ier et sérialisation des effets. Pas de second catalogue.
 - Validation : tests RED de présence exacte depuis fichiers auteurs, hachages des deux sources, normalisation/roundtrip V1, `configuredSkills` un seul ID, éditeur select et replacement, test chemin Combat Sangsue et zone rouille, CI cinq jobs & navigateur et Pages ; checkpoint GREEN uniquement sur SHA testé. Visuels Android et ombres non revalidés par ce lot.
 
+### Extension de sentinelle réelle (avant écriture)
+- Les tests purs et la CI PR initiale sont 5/5 GREEN. Pour satisfaire la charte §35, recadrage autorisé sur le lanceur navigateur existant `tests/browser/capture-creature-library-smoke.mjs`, **exclusivement** pour ajouter une sonde `verify-movement-face-back` pilotant les deux véritables `<select>` de déplacement du Loup, l'export effectif via bouton actuel et le rechargement de la créature après mise à jour. Ne jamais créer de moteur ou menu concurrent et ne pas toucher aux autres sondes. Rerun CI cinq jobs sur le SHA étendu.
+
 ## 2026-10-21 — Sangsue : éditeur des effets maintenus (lot 3)
 - Objectif : rendre `skill.contactHold` opt-in accessible dans l'éditeur Capture, importable, enregistrable et exportable. Auteur : approche au corps-à-corps, maintien, pulses de dégâts, drain PV/énergie, soin et statuts existants, retour à blessure. Corps/ombre PR #48 GREEN, core PR #47 GREEN.
 - Base publique `gh-pages@008b97814374e11db648a27387de28a5d9a6a55d`, checkpoint `checkpoint/lab-start-melee-contact-hold-editor-2026-10-21`, branche `work/lab-melee-contact-hold-editor-2026-10-21`. Lot séparé d'interface et transfert ; `main`, `global-assets`, moteur de dégâts, Animation Core et ombres protégés.
