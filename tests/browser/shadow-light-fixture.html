@@ -54,6 +54,33 @@ try {
       if (!a || !b) throw Error("missing shadow");
       if (a.style.visibility !== "visible" || b.style.visibility !== "visible") return;
       if (a.dataset.shadowMode !== "silhouette" || b.dataset.shadowMode !== "silhouette") throw Error("silhouette mode missing");
+      // The existing flying idle WAAPI owner must animate BOTH tracks with
+      // identical phase timing: body floats 8 px, ground shadow only ~1.4 px.
+      const flyingMotion = flying.querySelector("[data-demo-motion]");
+      const bodyIdle = flyingMotion.getAnimations().find(anim =>
+        anim.effect?.getKeyframes()?.length >= 3);
+      const groundIdle = b.getAnimations().find(anim =>
+        anim.effect?.getKeyframes()?.length >= 3);
+      if (!bodyIdle || !groundIdle) throw Error("flight idle is not using the two existing WAAPI tracks");
+      const bodyFrames = bodyIdle.effect.getKeyframes();
+      const groundFrames = groundIdle.effect.getKeyframes();
+      if (bodyFrames.length !== groundFrames.length ||
+          bodyIdle.effect.getTiming().duration !== groundIdle.effect.getTiming().duration) {
+        throw Error("flight idle shadow is out of phase with body");
+      }
+      const verticalOf = frame => Number(String(frame.transform)
+        .match(/translate3d\\([^,]+, (-?[\\d.]+)px, 0\\)/)?.[1]);
+      const scaleOf = frame => Number(String(frame.transform)
+        .match(/scale\\(([-\\d.]+)\\)/)?.[1]);
+      const bodyRise = verticalOf(bodyFrames[1]) - verticalOf(bodyFrames[0]);
+      const shadowRise = verticalOf(groundFrames[1]) - verticalOf(groundFrames[0]);
+      if (!(bodyRise < -7.5 && shadowRise < -0.7 && shadowRise > -2 &&
+            scaleOf(groundFrames[1]) < scaleOf(groundFrames[0]))) {
+        throw Error("flight idle shadow does not follow hovering subtly");
+      }
+      if (groundFrames.at(-1).transform !== groundFrames[0].transform) {
+        throw Error("flight idle shadow did not return exactly to ground base");
+      }
       const mask = player.style.getPropertyValue("--shadow-light-mask");
       if (!mask.startsWith('url("data:image/svg+xml,')) throw Error("no accepted alpha silhouette URL");
       const pseudo = getComputedStyle(a, "::before");
