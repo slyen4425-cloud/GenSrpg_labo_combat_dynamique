@@ -12,6 +12,7 @@ export function createSoundtrackSessionV1({catalog, project, output, clock, rand
   if (typeof random !== "function") throw new TypeError("random required");
   const channels = ["music","ambience"];
   const slots = {music:null, ambience:null};
+  const voices = new Set(); // includes voices still fading after a scene switch
   const timers = new Set();
   let disposed = false;
   let sceneId = null;
@@ -29,7 +30,8 @@ export function createSoundtrackSessionV1({catalog, project, output, clock, rand
     timers.clear();
   }
   function halt(slot) {
-    if (!slot) return;
+    if (!slot || !voices.has(slot)) return;
+    voices.delete(slot);
     slot.active = false;
     try { slot.voice.stop(); } catch { /* stop is best-effort during disposal */ }
   }
@@ -52,13 +54,14 @@ export function createSoundtrackSessionV1({catalog, project, output, clock, rand
     if (typeof voice?.setVolume !== "function" || typeof voice.stop !== "function" ||
         typeof voice.onEnded !== "function") throw new TypeError("invalid soundtrack output handle");
     const slot = {voice,playlist,index,assetId,active:true,generation:currentGeneration};
+    voices.add(slot);
     voice.onEnded(() => {
       if (disposed || !slot.active || slots[ch] !== slot || slot.generation !== generation) return;
       const isLast = playlist.order === "sequence" && index === playlist.tracks.length - 1;
-      if (isLast && !playlist.repeat) { slot.active = false; slots[ch] = null; return; }
+      if (isLast && !playlist.repeat) { slots[ch] = null; halt(slot); return; }
       if (!playlist.repeat && playlist.order === "shuffle" && slot.playedCount >= playlist.tracks.length) {
-        slot.active = false;
         slots[ch] = null;
+        halt(slot);
         return;
       }
       const next = start(ch, playlist, index, playlist.volume, generation);
@@ -96,6 +99,10 @@ export function createSoundtrackSessionV1({catalog, project, output, clock, rand
     if (nextSceneId === sceneId) return snapshot();
     generation++;
     cancelTimers();
+    // Abort voices from previously interrupted fades before starting new ones.
+    for (const voice of [...voices]) {
+      if (!Object.values(slots).includes(voice)) halt(voice);
+    }
     const nextScene = nextSceneId === null ? null : manifest.scenes[nextSceneId];
     for (const ch of channels) {
       const oldSlot = slots[ch];
@@ -123,7 +130,8 @@ export function createSoundtrackSessionV1({catalog, project, output, clock, rand
     disposed = true;
     generation++;
     cancelTimers();
-    for (const ch of channels) { halt(slots[ch]); slots[ch]=null; }
+    for (const voice of [...voices]) halt(voice);
+    for (const ch of channels) slots[ch]=null;
     sceneId = null;
   }
   return Object.freeze({transitionTo,snapshot,dispose});
