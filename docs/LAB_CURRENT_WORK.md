@@ -1,3 +1,16 @@
+### Recadrage sentinelle navigateur (avant modification)
+- Pour valider le montage et le clic réel de l'onglet Musiques dans le même éditeur Chromium que les capacités et le Loup, autoriser une extension bornée de `tests/browser/capture-creature-library-smoke.mjs`. Ajouter seulement un paramètre `verify-soundtrack-authoring` qui exerce tab + nouveau projet + scène silencieuse + save. Pas de changement aux autres sondes, au mécanisme réseau, ni aux modèles Combat. Runner déjà propriétaire de la vraie chaîne navigateur ; pas de nouveau moteur de test ni de nouveau workflow.
+
+## 2026-10-21 — Audio B : édition de bandes-son dans Combat (sans médias)
+- Décision auteur : bibliothèque partagée d'identifiants, bandes-son par jeu, réglages de playlists/fondus/volume et scène de combat ; import/stockage des sons des joueurs hors lot, les menus Shell hors lot.
+- Base GREEN technique `gh-pages@bcc504b1362780f7f5737b4861f572c95553c623` (lot architecture A CI cinq jobs), checkpoint START `checkpoint/lab-start-soundtrack-authoring-v1-2026-10-21` et branche isolée `work/lab-soundtrack-authoring-v1-2026-10-21`.
+- Périmètre : nouveau `src/ui/soundtrack-editor-v1.js` (producteur d'un SoundtrackProjectV1 + lecteur catalogue, export/import JSON, aucune mutation gameplay), panneau Muisques dans `examples/dom-demo/capture-editor-v2.html`, raccord d'initialisation isolé dans `examples/dom-demo/capture-editor-v2.js`, tests `tests/unit/soundtrack-authoring-v1.test.mjs`, docs dédiées et présent journal. Si sentinelle navigateur nécessaire, la décrire avant modification.
+- Propriétaires : modèle `SoundtrackProjectV1` conserve projet/scènes, catalogue `SoundtrackCatalogV1` identifie les pistes et leur origine ; UI seule édite les choix. Le système Combat existant ne change pas. Aucune lecture de nouveaux médias en jeu tant qu'ils n'ont pas été fournis et autorisés.
+- Gel : `main`, `global-assets`, audio privé, Loup V9, SFX de capacité/déplacement, `CombatRuntime`, ombres, collisions, CSS non nécessaire, autres panneaux Capture, labo Exploration.
+- Tests : page montre onglet Musiques, playlists et réglages accessibles/tactiles, classements d'origine, import/roundtrip/rejet ID inconnu, pas d'URL dans JSON gameplay, CI cinq jobs + Chromium initialisation ; validation Android UX distincte.
+
+---
+
 ## 2026-10-21 — Lot Audio A : contrat, lecteur et sortie navigateur (réaligné après Loup #52)
 - Décision auteur : commencer par architecture réutilisable avec **Combat et Exploration seulement**, avant l'ajout des pistes de vitrine. Plusieurs jeux peuvent accéder à la banque universelle et conserver des bandes-son/volumes/transitions distincts. Imports personnels stockés ultérieurement ; dépôt audio privé inchangé.
 - Checkpoint de départ initial sur `gh-pages@3150fd9` ; correction de conflit documentaire induit par Loup #52 : nouveau checkpoint `checkpoint/lab-start-soundtrack-architecture-sync-v1-2026-10-21` sur **`gh-pages@89678c95e4ecdbee9afa164b2f4ae6e6f6df0ae7`**, branche isolée `work/lab-soundtrack-architecture-sync-v1-2026-10-21`. Ancienne branche/PR #53 conservée historique, ne pas fusionner. Aucun changement Loup inclus dans diff du lot audio.
