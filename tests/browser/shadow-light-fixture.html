@@ -154,6 +154,30 @@ try {
       mode.dispatchEvent(new Event("change", { bubbles: true }));
       if (a.dataset.shadowMode !== "silhouette") throw Error("silhouette restoration failed");
       clearInterval(timer);
+      // One real collision in Chromium: pause the existing body+shadow WAAPI
+      // tracks at contact, then return them together without a second owner.
+      let touchCount = 0;
+      const contactPromise = demo.playApproachFor("player", "ground", {
+        travelMs: 850, targetSlot: "opponent", holdOnContact: true,
+        onContact() { touchCount += 1; return { outcome: "contact_held" }; }
+      });
+      const startedWaitingAt = performance.now();
+      while (touchCount === 0 && performance.now() - startedWaitingAt < 2300) {
+        await new Promise(resolve => setTimeout(resolve, 35));
+      }
+      if (touchCount !== 1) throw Error("real melee contact did not engage exactly once");
+      const bodyTracks = player.querySelector("[data-demo-motion]").getAnimations();
+      const shadowTracks = a.getAnimations();
+      if (!bodyTracks.some(x => x.playState === "paused") ||
+          !shadowTracks.some(x => x.playState === "paused")) {
+        throw Error("both WAAPI tracks must be paused while attached");
+      }
+      if (!demo.releaseHeldApproachFor("player")) throw Error("native return was not started");
+      const result = await Promise.race([
+        contactPromise, new Promise((_,reject)=>setTimeout(()=>reject(Error("held return timeout")),2200))
+      ]);
+      if (result?.status !== "finished") throw Error("attached approach did not return naturally");
+      if (demo.releaseHeldApproachFor("player")) throw Error("double release must be ignored");
       demo.dispose();
       // Capture editor: no floating lighting panel during the battle. Mount
       // the real Capture->visuals handoff with editor-supplied scene settings.
