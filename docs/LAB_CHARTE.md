@@ -452,6 +452,8 @@ Chaîne autorisée :
 
 ## 32. Accès GitHub depuis ChatGPT — vérification obligatoire avant refus
 
+**Rappel permanent explicite de l'auteur (21/10/2026)** : il a configuré les accès et outils nécessaires aux travaux. L'assistant doit **découvrir et tester tous les connecteurs pertinents de la session** avant de déclarer un accès indisponible, en particulier GitHub via `functions.exec` / `ALL_TOOLS` / `mcp__GitHub__`. Les difficultés d'un navigateur public ou du réseau local ne prouvent pas que le connecteur GitHub soit indisponible. Ne pas déléguer une action à l'auteur si un outil disponible permet de la faire directement. Cette attente, avec ses limites réelles et la procédure de reprise, est consignée à la racine dans **`AGENTS.md`**. Elle ne garantit pas des permissions sans limites ; chaque opération doit être effectivement vérifiée.
+
 Dans les fils de travail GenSrpG / Laboratoire où le connecteur GitHub est disponible, l'assistant doit considérer GitHub comme accessible jusqu'à preuve contraire.
 
 Procédure obligatoire avant d'affirmer qu'un dépôt ou une branche est inaccessible :
