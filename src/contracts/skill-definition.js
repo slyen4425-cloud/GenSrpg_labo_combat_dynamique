@@ -2,6 +2,7 @@ import {
   normalizeSkillEffectV1,
   isReserveEffectTargetScopeV2
 } from "./skill-effect-v1.js";
+import { normalizeContactHoldV1 } from "./contact-hold-v1.js";
 import {
   normalizeProjectilePowerV1
 } from "./projectile-power-v1.js";
@@ -351,6 +352,11 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError(`Unsupported skill approachMode: ${approachMode}`);
   }
 
+  const contactHold = input.contactHold == null ? null : normalizeContactHoldV1(input.contactHold);
+  if (contactHold && (form !== "contact" || approachMode !== "ground")) {
+    throw new RangeError("contactHold requires contact form and ground approach");
+  }
+
   const allowedDistances = stringArray(
     input.allowedDistances ?? COMBAT_DISTANCES,
     "allowedDistances",
@@ -494,6 +500,7 @@ export function normalizeSkillDefinition(input) {
     loadoutSlot,
     element,
     approachMode,
+    ...(contactHold ? { contactHold } : {}),
     energyCost: nonNegativeNumber(input.energyCost, "energyCost"),
     preparationMs: nonNegativeNumber(input.preparationMs, "preparationMs"),
     travelMs: nonNegativeNumber(input.travelMs, "travelMs"),
