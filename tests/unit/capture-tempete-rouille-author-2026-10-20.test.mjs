@@ -12,15 +12,19 @@ const archive="data/capture/source-exports/gensrpg-capture-skill-tempete_rouille
 const text=p=>readFile(new URL("../../"+p,import.meta.url),"utf8");
 const hash=v=>createHash("sha256").update(v).digest("hex");
 test("author Tempête de rouille stays byte-exact, French channel included, loaded once",async()=>{
- const [a,b]=await Promise.all([text(active),text(archive)]);
- assert.equal(hash(a),"e154956cbb52c957da5487ee8704d8a13112ed9787e172a9454316a5e5e7e8cf");
- assert.equal(a,b);
+ const [a,b,newSource]=await Promise.all([text(active),text(archive),text("data/capture/source-exports/gensrpg-capture-skill-tempete_rouille-2026-10-21.json")]);
+ assert.equal(hash(b),"e154956cbb52c957da5487ee8704d8a13112ed9787e172a9454316a5e5e7e8cf", "preserve October 20 historical source");
+ assert.equal(hash(a),"d26de89a321526f9c69b64e9e9383e524f1396e20ed7574ab67013616f1a3bc8", "new October 21 source");
+ assert.equal(a,newSource);
+ assert.notEqual(a,b, "historical revision must remain archived, not active");
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===active).length,1);
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===archive).length,0);
  const d=importCaptureTransferJsonV1(a).value.draft;
  assert.equal(d.id,"tempete_rouille");
  assert.equal(d.definition.id,d.id);
  assert.equal(d.presentation.subjectId,d.id);
+ assert.equal(d.requiredLevel,20);
+ assert.equal(d.definition.loadoutSlot,"ultimate");
  assert.equal(d.definition.category,"counter");
  assert.equal(d.definition.element,"steel");
  assert.equal(d.definition.energyCost,6);
@@ -30,7 +34,7 @@ test("author Tempête de rouille stays byte-exact, French channel included, load
  assert.equal(d.definition.effects[0].tickEffect.channel,"acier");
  assert.equal(d.definition.effects[0].tickEffect.amount,20);
  assert.equal(d.definition.effects[0].tickIntervalMs,1000);
- assert.equal(d.definition.effects[0].durationMs,20000);
+ assert.equal(d.definition.effects[0].durationMs,15000);
  assert.equal(d.presentation.visual.aura.assetId,"pack:capture:sprite-rust-whirlwind-cast-01");
  assert.equal(d.presentation.visual.icon.assetId,"pack:capture:icon-skill-tourbillons-rouille-01");
 });

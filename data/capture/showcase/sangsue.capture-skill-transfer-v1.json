@@ -1,0 +1,92 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "sangsue",
+    "description": "S accroche a l'ennemi et draine les pv",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "sangsue",
+      "name": "Sangsue",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "ground",
+      "contactHold": {
+        "tickIntervalMs": 1000,
+        "maxDurationMs": 0,
+        "effects": [
+          {
+            "kind": "damage",
+            "targetScope": "target",
+            "amount": 6,
+            "channel": "nature",
+            "ignoreResistancePct": 0,
+            "ignoreDamageReductionPct": 0
+          },
+          {
+            "kind": "life_steal",
+            "targetScope": "self",
+            "percent": 100
+          }
+        ]
+      },
+      "energyCost": 2,
+      "preparationMs": 350,
+      "travelMs": 700,
+      "recoveryMs": 0,
+      "cooldownMs": 3000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": []
+    },
+    "presentation": null
+  }
+}
