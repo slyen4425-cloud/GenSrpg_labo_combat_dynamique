@@ -355,25 +355,29 @@ export function planAnimation({ event, actor, profile }) {
                 label: "idle-right",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: awayTransform(1)
+                transform: awayTransform(1),
+                ...(awayGround ? { ground: awayGround } : {})
               },
               {
                 label: "idle-center-1",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: homeTransform
+                transform: homeTransform,
+                ...(homeGround ? { ground: homeGround } : {})
               },
               {
                 label: "idle-left",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: awayTransform(-1)
+                transform: awayTransform(-1),
+                ...(awayGround ? { ground: awayGround } : {})
               },
               {
                 label: "idle-home",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: homeTransform
+                transform: homeTransform,
+                ...(homeGround ? { ground: homeGround } : {})
               }
             ]
           : [
@@ -381,13 +385,15 @@ export function planAnimation({ event, actor, profile }) {
                 label: "idle-out",
                 durationMs: cfg.durationMs / 2,
                 easing: "ease-in-out",
-                transform: awayTransform(1)
+                transform: awayTransform(1),
+                ...(awayGround ? { ground: awayGround } : {})
               },
               {
                 label: "idle-home",
                 durationMs: cfg.durationMs / 2,
                 easing: "ease-in-out",
-                transform: homeTransform
+                transform: homeTransform,
+                ...(homeGround ? { ground: homeGround } : {})
               }
             ];
 
