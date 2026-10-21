@@ -123,6 +123,16 @@ export function createDomActorRenderer({
     });
   }
 
+  // Pause BOTH existing WAAPI tracks on actual melee contact. The owner and
+  // timeline remain available for returnActiveToBaseFromCurrent(): no second
+  // animation, no global timer, no synthetic position changes.
+  function pauseActive() {
+    assertActiveRenderer();
+    if (!active) return false;
+    for (const animation of active.animations) animation.pause?.();
+    return true;
+  }
+
   function returnActiveToBaseFromCurrent() {
     assertActiveRenderer();
 
@@ -400,6 +410,7 @@ export function createDomActorRenderer({
 
   return Object.freeze({
     play,
+    pauseActive,
     returnActiveToBaseFromCurrent,
     cancel,
     dispose,

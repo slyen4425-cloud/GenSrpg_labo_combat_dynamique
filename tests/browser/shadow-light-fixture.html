@@ -154,6 +154,76 @@ try {
       mode.dispatchEvent(new Event("change", { bubbles: true }));
       if (a.dataset.shadowMode !== "silhouette") throw Error("silhouette restoration failed");
       clearInterval(timer);
+      // One real collision in Chromium: pause the existing body+shadow WAAPI
+      // tracks at contact, then return them together without a second owner.
+      let touchCount = 0;
+      const originalOpponentLeft = flying.style.left;
+      const originalOpponentTop = flying.style.top;
+      const originalOpponentTransition = flying.style.transition;
+      // This fixture previously tested a distant flying model. For the
+      // contact-hold case, place its accepted alpha mask in the real player's
+      // vicinity, with no delayed CSS-position transition.
+      flying.style.transition = "none";
+      flying.style.left = getComputedStyle(player).left;
+      flying.style.top = getComputedStyle(player).top;
+      // Force geometry before the existing contact watcher samples it.
+      void flying.offsetWidth;
+      const contactPromise = demo.playApproachFor("player", "ground", {
+        travelMs: 850, targetSlot: "opponent", holdOnContact: true,
+        onContact() { touchCount += 1; return { outcome: "contact_held" }; }
+      });
+      const startedWaitingAt = performance.now();
+      let nearestDistance=Infinity;
+      let sourceSnapshotCount=0;
+      let targetSnapshotCount=0;
+      while (touchCount === 0 && performance.now() - startedWaitingAt < 2300) {
+        const src=demo.getCollisionModelFor("player");
+        const dst=demo.getCollisionModelFor("opponent");
+        const s=src?.visibleRect?.(), d=dst?.visibleRect?.();
+        if(src?.snapshot?.()) sourceSnapshotCount++;
+        if(dst?.snapshot?.()) targetSnapshotCount++;
+        if(s&&d)nearestDistance=Math.min(nearestDistance,Math.hypot(
+         (s.left+s.width/2)-(d.left+d.width/2),
+         (s.top+s.height/2)-(d.top+d.height/2)
+        ));
+        await new Promise(resolve => setTimeout(resolve, 35));
+      }
+      if (touchCount !== 1) throw Error("real contact count="+touchCount+" closest="+nearestDistance+" sourceSnapshots="+sourceSnapshotCount+" targetSnapshots="+targetSnapshotCount+" actor="+JSON.stringify(player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON())+" target="+JSON.stringify(flying.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON()));
+      const bodyTracks = player.querySelector("[data-demo-motion]").getAnimations();
+      const shadowTracks = a.getAnimations();
+      if (!bodyTracks.some(x => x.playState === "paused") ||
+          !shadowTracks.some(x => x.playState === "paused")) {
+        throw Error("both WAAPI tracks must be paused while attached");
+      }
+      if (!demo.releaseHeldApproachFor("player")) throw Error("native return was not started");
+      // Headless virtual JS time keeps moving while freshly resumed WAAPI
+      // effects can remain pending after a pause. Validate their real Chrome
+      // keyframes, then finish these same renderer-owned tracks explicitly.
+      const returnBody = player.querySelector("[data-demo-motion]").getAnimations();
+      const returnShadow = a.getAnimations();
+      if (returnBody.length !== 1 || returnShadow.length !== 1)
+        throw Error("held return must own exactly one body and one shadow track");
+      const rb = returnBody[0].effect.getKeyframes();
+      const rs = returnShadow[0].effect.getKeyframes();
+      if (rb.length !== 2 || rs.length !== 2 ||
+          returnBody[0].effect.getTiming().iterations !== 1 ||
+          returnShadow[0].effect.getTiming().iterations !== 1 ||
+          !String(rb[1].transform).includes("translate3d(") ||
+          !String(rs[1].transform).includes("translate3d(")) {
+        throw Error("native return must interpolate frozen body and shadow to their resting bases");
+      }
+      returnBody[0].finish();
+      returnShadow[0].finish();
+      const result = await Promise.race([
+        contactPromise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(Error("held return did not settle after real WAAPI finish")), 350))
+      ]);
+      if (result?.status !== "finished") throw Error("attached approach did not return naturally");
+      if (demo.releaseHeldApproachFor("player")) throw Error("double release must be ignored");
+      flying.style.left = originalOpponentLeft;
+      flying.style.top = originalOpponentTop;
+      flying.style.transition = originalOpponentTransition;
       demo.dispose();
       // Capture editor: no floating lighting panel during the battle. Mount
       // the real Capture->visuals handoff with editor-supplied scene settings.
