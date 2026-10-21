@@ -1677,6 +1677,16 @@ export async function mountCoop2v2Test({
         damageFeedback?.flash(feedback.actorId, { delayMs });
       }
     },
+    onContactHoldStart({actorId}) {
+      if (actionRefs[actorId]) actionRefs[actorId].textContent = "Au contact";
+    },
+    onContactHoldEnd({actorId,reason}) {
+      if (reason === "ko_or_absent") visuals.cancelFor(actorId);
+      else visuals.releaseHeldApproachFor?.(actorId);
+      if (actionRefs[actorId]) actionRefs[actorId].textContent = "Prêt";
+      renderState();
+      queueAiDecisions();
+    },
     onClock(state) {
       statusFx?.syncCountdowns(state);
       renderAvailability();
