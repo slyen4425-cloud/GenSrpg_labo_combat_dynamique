@@ -5,7 +5,7 @@
     "schema": "capture-skill-editor-draft-v1",
     "id": "tempete_rouille",
     "description": "Zone de rouille qui inflige des dégâts a l assaillant.",
-    "requiredLevel": 15,
+    "requiredLevel": 20,
     "usageScopes": [
       "capture",
       "combat"
@@ -16,7 +16,7 @@
       "category": "counter",
       "form": "contact",
       "projectileTargeting": "direct",
-      "loadoutSlot": "standard",
+      "loadoutSlot": "ultimate",
       "element": "steel",
       "approachMode": "none",
       "energyCost": 6,
@@ -72,7 +72,7 @@
           "targetScope": "all_enemies",
           "zoneId": "zone",
           "radius": "short",
-          "durationMs": 20000,
+          "durationMs": 15000,
           "tickIntervalMs": 1000,
           "reactivation": "refresh",
           "maxActivations": 1,
