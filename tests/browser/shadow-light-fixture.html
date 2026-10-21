@@ -69,9 +69,9 @@ try {
         throw Error("flight idle shadow is out of phase with body");
       }
       const verticalOf = frame => Number(String(frame.transform)
-        .match(/translate3d\\([^,]+, (-?[\\d.]+)px, 0\\)/)?.[1]);
+        .match(/translate3d\([^,]+, (-?[\d.]+)px, 0\)/)?.[1]);
       const scaleOf = frame => Number(String(frame.transform)
-        .match(/scale\\(([-\\d.]+)\\)/)?.[1]);
+        .match(/scale\(([-\d.]+)\)/)?.[1]);
       const bodyRise = verticalOf(bodyFrames[1]) - verticalOf(bodyFrames[0]);
       const shadowRise = verticalOf(groundFrames[1]) - verticalOf(groundFrames[0]);
       if (!(bodyRise < -7.5 && shadowRise < -0.7 && shadowRise > -2 &&
