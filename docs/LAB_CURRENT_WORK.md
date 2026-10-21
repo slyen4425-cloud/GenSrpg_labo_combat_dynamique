@@ -1,3 +1,21 @@
+## 2026-10-21 — Loup volcanique : course + attaque face 12 frames (IMPORT EN ATTENTE DES BINAIRES)
+
+- **Source validée** : deux animations face côté adversaire, mouvement/course en boucle et attaque une fois, 12 PNG 512×512 RGBA chacune ; auteur a validé les deux GIF et la planche le 21 octobre 2026.
+- **Objectif** : placer uniquement les nouvelles séquences dans `assets/library/capture/creatures/loup_volcanique/animations/{movement,attack}/face/` ; catalogue unique : `data/assets/catalog/global-visual-assets.v1.json`.
+- **Propriétaire** : Asset Input / Global Assets, jamais les moteurs de combat ou le runtime.
+- **Base vérifiée** : SHA `79d60fc49baa91cba25b129ec0de922ede9c8979` sur `global-assets`, avant ce lot.
+- **Checkpoint départ** : `checkpoint/global-assets-start-loup-volcanique-face12-2026-10-21`.
+- **Branche isolée** : `work/global-assets-loup-volcanique-face12-2026-10-21`. Pas d'écriture sur `main`, `gh-pages`, `Zombicide-40k` ni sur la branche `global-assets` avant validation.
+- **ZIP de transfert à déposer sur la branche isolée** : `_incoming/LOUP_VOLCANIQUE_COURSE_ATTAQUE_FACE_12_FRAMES_GITHUB.zip` SHA-256 `68286ad0546f5a129637b7338e079fe54d6607aa4a5c4b0417bd083bafc40951`.
+- **Script propriétaire d'import** : `scripts/import_loup_volcanique_face12.py` ; workflow `.github/workflows/import-loup-volcanique-face12.yml`.
+- **Assets à créer uniquement après validation du ZIP** : 12 PNG/course, 12 PNG/attaque, 2 atlases WebP RGBA sprite-strip, 2 GIF previews, 2 manifestes ; ID : `pack:capture:creature-loup-volcanique-movement-face-12-v1` et `pack:capture:creature-loup-volcanique-attack-face-12-v1`.
+- **Zones protégées** : `assets/library/capture/creatures/loup_volcanique/runtime/**`, master/portrait/icon, toutes les vues dos/joueur, sprites Scarabacier, Combat Rules, Animation Core, ID existants.
+- **Contrôles** : SHA-256 archive/source/images/atlas, CRC, 12 frames distinctes par animation, PNG RGBA 512x512, atlas WebP RIFF, catalogue sans doublons, `npm run ci`, revue réelle des médias, checkpoint GREEN seulement après CI et confirmation du commit.
+- **Point de vigilance** : quelques images de course ont du contenu alpha jusqu'au bord droit du carré 512 (marge intérieure minimum 0 px). Ne pas prétendre que l'image originale possède une marge de 40 px ; le cycle a néanmoins été approuvé visuellement.
+- **Statut** : préparation d'import sur branche effectuée ; **aucun média de ce nouveau lot n'est encore déposé sur GitHub**, attente de transfert binaire. Aucun état GREEN annoncé.
+
+---
+
 ## 2026-10-20 — Correction des traces de cadre du projectile Aile d’acier (média uniquement)
 - Base canonique `global-assets@a989443b9985b3f444f5ea3b4c26f9c215ae04e4`; checkpoint départ `checkpoint/lab-start-steel-wing-border-clean-2026-10-20`; branche `work/lab-steel-wing-border-clean-2026-10-20`.
 - Objectif : retirer uniquement les pixels d’encadrement issus du découpage original du sprite `pack:capture:sprite-steel-wing-projectile-01` sur les 20 PNG 512px et reconstruire l’unique atlas WebP de la même compétence. Ne pas régénérer le dessin ni modifier le timing et l’assetId.
