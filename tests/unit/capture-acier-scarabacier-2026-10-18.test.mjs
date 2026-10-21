@@ -17,10 +17,10 @@ const registryPath="data/capture/monster-capture-stat-registry.v1.json";
 const archivePath="data/capture/source-exports/gensrpg-capture-database-creature-crea_scar_2-2026-10-18.json";
 const statSource="data/capture/source-exports/gensrpg-capture-database-stat-acier-2026-10-18.json";
 
-test("Acier: sole new authored stat from database; existing 12 IDs kept in order",async()=>{
+test("Acier 2026-10-18 preserved; Nature 2026-10-21 appended without changing earlier stat IDs",async()=>{
  const current=JSON.parse(await read(registryPath));
  const ids=current.stats.map(x=>x.id);
- assert.deepEqual(ids,["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier"]);
+ assert.deepEqual(ids,["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier","nature"]);
  const authorStat=JSON.parse(await read(statSource));
  assert.deepEqual(current.stats.find(x=>x.id==="acier"),authorStat);
  assert.equal(authorStat.label,"Acier");
@@ -29,8 +29,10 @@ test("Acier: sole new authored stat from database; existing 12 IDs kept in order
  assert.equal(authorStat.damagePctPerPoint,1);
  assert.equal(authorStat.resistancePctPerPoint,1);
  assert.equal(authorStat.damageReductionPctPerPoint,0);
- assert.equal(new Set(ids).size,13);
- assert.equal(normalizeCaptureStatRegistryV1(current).stats.length,13);
+ assert.equal(new Set(ids).size,14);
+ assert.equal(normalizeCaptureStatRegistryV1(current).stats.length,14);
+ assert.deepEqual(ids.slice(0,13),["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier"]);
+ assert.equal(current.stats.find(x=>x.id==="nature")?.damageChannel,"nature");
 });
 
 test("Scarabacier is the only added author creature preset; extraction is lossless",async()=>{
@@ -39,7 +41,9 @@ test("Scarabacier is the only added author creature preset; extraction is lossle
  assert.equal(catalog.filter(p=>p===scaraPath).length,1);
  const active=JSON.parse(await read(scaraPath)),archived=JSON.parse(await read(archivePath));
  assert.equal(archived.draft.id,"crea_scar_2"); // immutable prior author extraction
- assert.deepEqual(active.loadout.slots.map(s=>s.skillId),["cisaille","cap_water_atk_1",null,null,null]);
+ assert.deepEqual(active.loadout.slots.map(s=>s.skillId),["cisaille","carapce_acier","Tempete_metallique","sangsue","tempete_rouille"]);
+ assert.equal(active.statValues.values.nature,0);
+ assert.equal(archived.loadout.slots[1].skillId,null,"historical 18 October archive remains unchanged");
  assert.equal(active.schema,"capture-creature-transfer-v1");
  assert.equal(active.draft.id,"crea_scar_2");
  assert.equal(active.draft.displayName,"Scarabacier");
@@ -77,12 +81,18 @@ test("Scarabacier replaces the native creature via canonical configuredCreatures
  const originalOther=configuredCreatures.get("crea_scar_1");
  const configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(x=>[x.id,x]));
  for(const skill of captureComplexNativeSkillDraftsV1())if(!configuredSkills.has(skill.id))configuredSkills.set(skill.id,skill);
- // This later Scarabacier revision intentionally equips the newly authored Cisaille.
- // Seed the canonical configuredSkills owner before planning the creature update.
- const newAbility=importCaptureTransferJsonV1(await read("data/capture/showcase/cisaille.capture-skill-transfer-v1.json"),{statRegistry});
- const addSkill=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),transfer:newAbility,mode:"replace"});
- assert.equal(addSkill.action,"insert-skill");
- applyCaptureTransferPlanToEditorStateV1({plan:addSkill,configuredCreatures,configuredSkills,statRegistry,progressionRules});
+ // True author import requires all referenced active skills to be available first.
+ // Load them through the SAME canonical transfer path; never bypass reference validation.
+ for (const id of ["cisaille","carapce_acier","Tempete_metallique","sangsue","tempete_rouille"]) {
+   const transfer=importCaptureTransferJsonV1(await read("data/capture/showcase/"+id+".capture-skill-transfer-v1.json"),{statRegistry});
+   const wasPresent=configuredSkills.has(id);
+   const plan=planCaptureTransferImportV1({
+     currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),
+     transfer,mode:"replace"
+   });
+   assert.equal(plan.action,wasPresent?"replace-skill":"insert-skill",id);
+   applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures,configuredSkills,statRegistry,progressionRules});
+ }
  const initialSkillSize=configuredSkills.size;
  const imported=importCaptureTransferJsonV1(await read(scaraPath),{statRegistry});
  const plan=planCaptureTransferImportV1({currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),transfer:imported,mode:"replace"});
@@ -113,7 +123,8 @@ test("Latest Scarabacier V8 author transfer keeps two attack poses, movement pla
  assert.equal(active.draft.presentation.sockets[0].front.x,0.27319587565407266);
  assert.equal(active.draft.presentation.sockets[0].back.x,0.7020618446705927);
  assert.equal(active.statValues.values.acier,15);
- assert.deepEqual(active.draft.skillIds,["cisaille","cap_water_atk_1"]);
- const skills=await Promise.all(["cisaille","cap_water_atk_1"].map(id=>read("data/capture/showcase/"+id+".capture-skill-transfer-v1.json")));
- assert.deepEqual(skills.map(s=>JSON.parse(s).draft.id),["cisaille","cap_water_atk_1"]);
+ assert.deepEqual(active.draft.skillIds,["cisaille","cap_water_atk_1","carapce_acier","Tempete_metallique","sangsue","tempete_rouille"]);
+ const expectedSkills=["cisaille","cap_water_atk_1","carapce_acier","Tempete_metallique","sangsue","tempete_rouille"];
+ const skills=await Promise.all(expectedSkills.map(id=>read("data/capture/showcase/"+id+".capture-skill-transfer-v1.json")));
+ assert.deepEqual(skills.map(s=>JSON.parse(s).draft.id),expectedSkills);
 });
