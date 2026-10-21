@@ -1,3 +1,12 @@
+## 2026-10-21 — Lot Audio A : contrat, lecteur et sortie navigateur (réaligné après Loup #52)
+- Décision auteur : commencer par architecture réutilisable avec **Combat et Exploration seulement**, avant l'ajout des pistes de vitrine. Plusieurs jeux peuvent accéder à la banque universelle et conserver des bandes-son/volumes/transitions distincts. Imports personnels stockés ultérieurement ; dépôt audio privé inchangé.
+- Checkpoint de départ initial sur `gh-pages@3150fd9` ; correction de conflit documentaire induit par Loup #52 : nouveau checkpoint `checkpoint/lab-start-soundtrack-architecture-sync-v1-2026-10-21` sur **`gh-pages@89678c95e4ecdbee9afa164b2f4ae6e6f6df0ae7`**, branche isolée `work/lab-soundtrack-architecture-sync-v1-2026-10-21`. Ancienne branche/PR #53 conservée historique, ne pas fusionner. Aucun changement Loup inclus dans diff du lot audio.
+- Propriétaires : `src/contracts/soundtrack-project-v1.js` valide catalogue abstrait et configuration par `projectId`/`sceneId`; `src/core/audio/soundtrack-session-v1.js` est seule autorité des canaux continus music/ambience ; `src/adapters/audio/dom-soundtrack-output-v1.js` résout les médias autorisés via callback ; sons des capacités restent séparés et inchangés.
+- Fichiers autorisés : trois nouveaux modules, tests `tests/unit/soundtrack-architecture-v1.test.mjs`, docs `docs/LAB_SOUNDTRACK_ARCHITECTURE_V1.md` et présent journal. Protections : `main`, `global-assets`, gameplay, catalogues créatures/capacités, audio privé, Loup V9, ombres/collisions, exploration, menus Shell ; pas de stockage utilisateur.
+- Critères : aucune URL privée persistée, `assetId` réutilisable, projet isolé, son absent silencieux, transitions/fondus/playlists/shuffle/stop/dispose, pas de fuite de voix, tests Node, CI 5 jobs, checkpoint GREEN technique ; UI éditable et raccord runtime sont des lots ultérieurs distincts après GREEN.
+
+---
+
 ## 2026-10-21 — Export auteur Loup volcanique V9 (remplacement unique)
 - Demande auteur : remplacer la fiche Loup `crea-loup` par l'export `gensrpg-capture-creature-crea-loup.json` fourni le 21/10, en conservant les quatre animations FACE/DOS et l'intégralité de sa configuration. Retour couleur légèrement saturée : acceptée pour l'élément Feu ; **aucun** traitement d'image/asset.
 - Base publique exacte : `gh-pages@3150fd9fb8711c00e8aceaa9c3ec3cac29ed83d1`; checkpoint départ `checkpoint/lab-start-author-loup-v9-2026-10-21`; branche `work/lab-author-loup-v9-2026-10-21`. Ne modifier ni `main`, ni `global-assets`, ni la branche audio en cours.
