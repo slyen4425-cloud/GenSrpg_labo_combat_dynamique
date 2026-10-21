@@ -2,6 +2,9 @@ import {
   mountSoundtrackAuthoringV1
 } from "../../src/ui/soundtrack-editor-v1.js";
 import {
+  createCombatSoundtrackPreviewBridgeV1
+} from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
+import {
   mountCaptureEditorHumanV2
 } from "../../src/ui/capture-editor-human-v2.js";
 import {
@@ -478,6 +481,26 @@ const session = createCaptureEditorPreviewSessionV2({
         )
     });
 
+    // Opt-in authored soundtrack. No entry means silence and never blocks
+    // existing battle audio. The combat session exclusively owns skill SFX.
+    let soundtrack = null;
+    try {
+      soundtrack = createCombatSoundtrackPreviewBridgeV1({
+        project:soundtrackEditor.snapshot(),
+        catalog:soundtrackEditor.catalog(),
+        resolveAudioAsset:resolveEditorAudioAsset,
+        onAudioError(error) {
+          // A missing/blocked music file does not invalidate gameplay.
+          console.warn("Soundtrack indisponible en prévisualisation", error);
+        }
+      });
+      soundtrack.transitionTo("capture:combat:normal");
+    } catch (error) {
+      console.warn("Musique de prévisualisation désactivée",error);
+      soundtrack?.dispose();
+      soundtrack=null;
+    }
+
     let disposed = false;
     return Object.freeze({
       dispose() {
@@ -485,6 +508,7 @@ const session = createCaptureEditorPreviewSessionV2({
           return;
         }
         disposed = true;
+        soundtrack?.dispose();
         mounted.dispose();
         previewHost.replaceChildren();
       }
