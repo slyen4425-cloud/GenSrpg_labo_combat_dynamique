@@ -275,8 +275,11 @@
         <fieldset data-creature-movement-appearance>
           <legend>Animation de déplacement (propre à la créature)</legend>
           <div class="grid two">
-            <label>Image / sprite de déplacement
+            <label>Sprite de déplacement — FACE (adversaire)
               <select data-creature-movement-visual data-asset-role="movement"><option value="">Apparence normale</option></select>
+            </label>
+            <label>Sprite de déplacement — DOS (joueur)
+              <select data-creature-movement-back-visual data-asset-role="movement"><option value="">Même sprite que la face (si défini)</option></select>
             </label>
             <label>Mode d'animation
               <select data-creature-movement-mode>
@@ -314,6 +317,7 @@
               <input type="number" min="0" max="350" step="10" value="80" data-creature-movement-transition>
             </label>
           </div>
+          <p class="note">Choisis les animations face et dos séparément. Si DOS est vide, le joueur réutilise la FACE pour garder la compatibilité des anciennes créatures. Les deux menus utilisent uniquement les animations de déplacement déjà présentes dans la bibliothèque.</p>
           <p class="note">S'applique à l'approche au sol, sans modifier la vitesse ni les dégâts. Le visuel normal revient automatiquement après l'approche ou son interruption. Le sprite peut être une bande horizontale ou une image fixe.</p>
           <p class="note">La vitesse de lecture change seulement les frames, jamais la vitesse réelle. Sur une image fixe ou une boule à une frame, ce réglage n'a aucun effet.</p>
           <p class="note">Ce sélecteur propose uniquement les animations de déplacement (et les modèles fixes compatibles), jamais les projectiles, casts ou impacts de capacité.</p>

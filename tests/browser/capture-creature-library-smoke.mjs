@@ -126,6 +126,77 @@ const server = createServer(async (req, res) => {
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
+    // Author's real two movement selectors on the full Capture editor page.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url,"http://localhost").searchParams.has("verify-movement-face-back")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          let attempts=0;
+          const timer=setInterval(async()=>{
+            const get=s=>document.querySelector(s);
+            const lib=get("[data-creature-library-select]");
+            const face=get("[data-creature-movement-visual]");
+            const back=get("[data-creature-movement-back-visual]");
+            const choices=[...face?.querySelectorAll('optgroup[data-asset-kind="movement"] option')??[]]
+              .map(n=>n.value).filter(Boolean);
+            if(!lib?.querySelector('option[value="crea-loup"]') || !face || !back ||
+               choices.length < 2 || ![...back.options].some(n=>n.value===choices[1])){
+              if(++attempts>95){clearInterval(timer);document.body.dataset.movementFaceBackProbe="timeout:missing-real-catalog"; }
+              return;
+            }
+            clearInterval(timer);
+            try {
+              const change=(node,value)=>{
+                if(!node) throw Error("missing field");
+                node.value=String(value);
+                node.dispatchEvent(new Event("change",{bubbles:true}));
+              };
+              change(lib,"crea-loup");
+              if(get("[data-creature-name]")?.value!=="Loup volcanique")
+                throw Error("real authored Loup not opened");
+              change(face,choices[0]);
+              change(back,choices[1]);
+              change(get("[data-creature-movement-mode]"),"sprite");
+              change(get("[data-creature-movement-frames]"),"12");
+              change(get("[data-creature-movement-frame-ms]"),"80");
+              change(get("[data-creature-movement-player-scale]"),"1.3");
+              change(get("[data-creature-movement-opponent-scale]"),"0.9");
+              get("[data-creature-update]").click();
+              const savedState=get("[data-editor-status]")?.textContent??"";
+              if(get("[data-editor-status]")?.dataset.tone==="error")
+                throw Error("save rejected "+savedState.slice(0,180));
+              change(lib,"crea_mossback");
+              change(lib,"crea-loup");
+              if(face.value!==choices[0] || back.value!==choices[1] ||
+                 get("[data-creature-movement-frame-ms]").value!=="80" ||
+                 get("[data-creature-movement-player-scale]").value!=="1.3" ||
+                 get("[data-creature-movement-opponent-scale]").value!=="0.9")
+                throw Error("saved face/back sprites lost when switching creature");
+              let blob=null;
+              const original=URL.createObjectURL;
+              try{
+                URL.createObjectURL=value=>{blob=value;return original.call(URL,value);};
+                get("[data-export-current-creature]").click();
+              }finally{URL.createObjectURL=original;}
+              const exported=blob?JSON.parse(await blob.text()):null;
+              const p=exported?.draft?.presentation;
+              if(p?.version!==9 || p.visual.movement?.assetId!==choices[0] ||
+                 p.visual.movementBack?.assetId!==choices[1] ||
+                 p.visual.movementPlayback?.frameMs!==80 ||
+                 p.visual.movementScaleByView?.player!==1.3 ||
+                 p.visual.movementScaleByView?.opponent!==0.9)
+                throw Error("real exported movement FACE/DOS not persisted");
+              document.body.dataset.movementFaceBackProbe="ok:two-selects:save:reload:export";
+            }catch(error){
+              document.body.dataset.movementFaceBackProbe="fail:"+String(error.message??error).slice(0,160);
+            }
+          },100);
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
+
     // Actual editor/preview roster rendering, not a simulated roster.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url,"http://localhost").searchParams.has("verify-roster-menu-teams")) {
@@ -1412,6 +1483,13 @@ try {
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
   assertAquaHealSkill(normalDom, "normal browser bootstrap");
+  const movementDom=await dumpDom(url+"?verify-movement-face-back=1");
+  assertCreatures(movementDom,"Loup movement FACE/DOS authoring real Chrome");
+  const movementProbe=movementDom.match(/data-movement-face-back-probe="([^"]+)"/)?.[1]??"missing";
+  if(movementProbe!=="ok:two-selects:save:reload:export")
+    throw Error("Real creature movement FACE/DOS editor roundtrip failed: "+movementProbe+
+      " JS="+(movementDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Loup movement FACE/DOS: native catalog menus, save, reload and author export verified in Chromium");
   const liveSolarDom=await dumpDom(url+"?verify-solar-live-cast=1", ["--virtual-time-budget=30000"]);
   const liveSolar=liveSolarDom.match(/data-solar-live-cast-probe="([^"]*)"/)?.[1]??"missing";
   if(liveSolar!=="ok:solar:next-skill:unfrozen")
