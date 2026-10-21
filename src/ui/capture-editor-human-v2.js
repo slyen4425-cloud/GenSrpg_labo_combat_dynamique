@@ -3499,6 +3499,15 @@ export function readHumanProjectilePowerV1(
   };
 }
 
+function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVisuals = {}) {
+  one(root, "[data-skill-contact-hold-enabled]").checked = hold !== null && hold !== undefined;
+  one(root, "[data-skill-contact-hold-settings]").hidden = hold === null || hold === undefined;
+  one(root, "[data-skill-contact-hold-interval]").value = String(hold?.tickIntervalMs ?? 1000);
+  one(root, "[data-skill-contact-hold-duration]").value = String(hold?.maxDurationMs ?? 0);
+  renderHumanSkillEffectsV1(root, hold?.effects ?? [], statRegistry, statusVisuals,
+    "[data-skill-contact-hold-effects-host]");
+}
+
 function writeSkillTemplateFields(
   root,
   fields,
@@ -3802,6 +3811,8 @@ function writeSkillDraftFields(
     statRegistry,
     fields.presentation.statusVisuals
   );
+  writeHumanContactHoldFieldsV1(root, fields.contactHold, statRegistry,
+    fields.presentation.statusVisuals);
   renderHumanProjectilePowerV1(
     root,
     fields.projectileClash
@@ -3930,6 +3941,7 @@ function prepareNewSkillDraftFields(
     [],
     statRegistry
   );
+  writeHumanContactHoldFieldsV1(root, null, statRegistry);
   writeSkillFeedbackControlsV1(
     root,
     {}
@@ -9183,6 +9195,13 @@ function readSkillFields(root) {
       root,
       "[data-skill-approach]"
     ),
+    contactHold: one(root, "[data-skill-contact-hold-enabled]").checked
+      ? {
+          tickIntervalMs: numericValue(root, "[data-skill-contact-hold-interval]"),
+          maxDurationMs: numericValue(root, "[data-skill-contact-hold-duration]"),
+          effects: readHumanSkillEffectsV1(root, "[data-skill-contact-hold-effects-host]")
+        }
+      : null,
     hitPresenceStates:
       one(
         root,
@@ -10491,6 +10510,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-effect-add]"
   );
+  const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
+  const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
+  const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
+  const contactHoldEffectAddButton = one(root, "[data-skill-contact-hold-effect-add]");
   const creatureLibrarySelect = one(
     root,
     "[data-creature-library-select]"
