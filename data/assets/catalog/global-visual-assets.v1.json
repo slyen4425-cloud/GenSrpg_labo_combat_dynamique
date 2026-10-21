@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 193,
+    "assets": 195,
     "icons": 74,
-    "sprites": 100,
+    "sprites": 102,
     "fx": 2,
     "portraits": 12,
     "backgrounds": 5,
-    "creatures": 24
+    "creatures": 26
   },
   "assets": [
     {
@@ -6348,6 +6348,82 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_aile_acier_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-loup-volcanique-movement-face-12-v1",
+      "label": "Loup volcanique — course face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "loup-volcanique",
+        "fire",
+        "lava",
+        "movement",
+        "animated",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / user-approved 2026-10-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/loup_volcanique/animations/movement/face/atlases/loup_volcanique_movement_face_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 80,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-loup-volcanique-attack-face-12-v1",
+      "label": "Loup volcanique — attaque face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "loup-volcanique",
+        "fire",
+        "lava",
+        "attack",
+        "animated",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / user-approved 2026-10-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/loup_volcanique/animations/attack/face/atlases/loup_volcanique_attack_face_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 99,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

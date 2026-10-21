@@ -1,0 +1,233 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "loup_volcanique",
+  "action": "movement",
+  "view": "face",
+  "sourceArchive": "loup_volcanique_course_face_12_PREVIEW.zip",
+  "sourceSha256": "03cb93ce2c1742833cf7af73088da3008083f091d4b27315030cd8d589b56ecd",
+  "authorApproved": true,
+  "assetId": "pack:capture:creature-loup-volcanique-movement-face-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 80,
+  "playbackMode": "loop",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/loup_volcanique_movement_face_01.png",
+      "sha256": "ac124ed57630b988b8ed79325434b5dc526a2ca31e1b13e9f5638b5fbd12506b",
+      "alphaBBoxLTRB": [
+        66,
+        91,
+        502,
+        446
+      ],
+      "marginsLTRB": [
+        66,
+        91,
+        10,
+        66
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/loup_volcanique_movement_face_02.png",
+      "sha256": "df42b7bca18d0ee4bcbfba06030506fd1ce3d4069c26ee9c7d86e0cdd2961866",
+      "alphaBBoxLTRB": [
+        41,
+        61,
+        511,
+        460
+      ],
+      "marginsLTRB": [
+        41,
+        61,
+        1,
+        52
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/loup_volcanique_movement_face_03.png",
+      "sha256": "4fad3f6d904dd1d44bbc8f6ac75c254ba1c26e5a43ed8a0c327e6fb025034e34",
+      "alphaBBoxLTRB": [
+        32,
+        105,
+        511,
+        461
+      ],
+      "marginsLTRB": [
+        32,
+        105,
+        1,
+        51
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/loup_volcanique_movement_face_04.png",
+      "sha256": "05db54f8beb3aa06c7d3a6feb762ee1d9706f2cc9ca29a65cd1294cd4ce8911e",
+      "alphaBBoxLTRB": [
+        50,
+        79,
+        449,
+        446
+      ],
+      "marginsLTRB": [
+        50,
+        79,
+        63,
+        66
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/loup_volcanique_movement_face_05.png",
+      "sha256": "999190032ef884016dde29b8211e19bee6dcbcc9d12c95f2665c5f6af6e08553",
+      "alphaBBoxLTRB": [
+        51,
+        53,
+        512,
+        458
+      ],
+      "marginsLTRB": [
+        51,
+        53,
+        0,
+        54
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/loup_volcanique_movement_face_06.png",
+      "sha256": "6fdc8e2662681ece80fe1ac2be4ef8280972b8e5733873368a9466ebe99d9c20",
+      "alphaBBoxLTRB": [
+        52,
+        51,
+        506,
+        461
+      ],
+      "marginsLTRB": [
+        52,
+        51,
+        6,
+        51
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/loup_volcanique_movement_face_07.png",
+      "sha256": "3f9b5065f87d14ef7f8b2a0b910309e2b57c63c84a6537e174394951c09feb67",
+      "alphaBBoxLTRB": [
+        52,
+        51,
+        495,
+        460
+      ],
+      "marginsLTRB": [
+        52,
+        51,
+        17,
+        52
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/loup_volcanique_movement_face_08.png",
+      "sha256": "cb77c8bd8dc9cc0a28e19cf05ba46dbaaf819a6910ceff85f7794a8e8a7962a3",
+      "alphaBBoxLTRB": [
+        57,
+        71,
+        460,
+        460
+      ],
+      "marginsLTRB": [
+        57,
+        71,
+        52,
+        52
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/loup_volcanique_movement_face_09.png",
+      "sha256": "3d52c728f41992e450cd51f7f6e6d26a2d3237c6116836b589b93c2653ef038d",
+      "alphaBBoxLTRB": [
+        51,
+        55,
+        506,
+        438
+      ],
+      "marginsLTRB": [
+        51,
+        55,
+        6,
+        74
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/loup_volcanique_movement_face_10.png",
+      "sha256": "fadc77d0d677d28f3d5d2ff08662163cbb1e83c79266adabb23838691a8cef05",
+      "alphaBBoxLTRB": [
+        43,
+        51,
+        500,
+        461
+      ],
+      "marginsLTRB": [
+        43,
+        51,
+        12,
+        51
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/loup_volcanique_movement_face_11.png",
+      "sha256": "bb6a43a1e86c55bd610c42ed8de8456a8f81b8f558d3229adcad58c0633e3881",
+      "alphaBBoxLTRB": [
+        43,
+        51,
+        511,
+        461
+      ],
+      "marginsLTRB": [
+        43,
+        51,
+        1,
+        51
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/loup_volcanique_movement_face_12.png",
+      "sha256": "6e0f5840ad5f75cbaf50c98c811abce4bbe38f28665fa2c4c8fbb0ff2396e9dc",
+      "alphaBBoxLTRB": [
+        25,
+        54,
+        461,
+        434
+      ],
+      "marginsLTRB": [
+        25,
+        54,
+        51,
+        78
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/loup_volcanique_movement_face_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "8696596eb4f94e29c5d207d838d7ee5638da1c4f8cc1048fd9da7faa2a6f861e"
+  },
+  "preview": "previews/loup_volcanique_movement_face_12_preview.gif",
+  "releaseStatus": "user-approved-awaiting-repository-import"
+}

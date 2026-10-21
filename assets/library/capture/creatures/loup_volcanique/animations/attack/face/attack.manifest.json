@@ -1,0 +1,233 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "loup_volcanique",
+  "action": "attack",
+  "view": "face",
+  "sourceArchive": "loup_volcanique_attaque_face_12_PREVIEW.zip",
+  "sourceSha256": "375619e1fdee6e6ba2fdbf81d224fa9e5f3daeb9203d349795423db96fe53b25",
+  "authorApproved": true,
+  "assetId": "pack:capture:creature-loup-volcanique-attack-face-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 99,
+  "playbackMode": "once",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/loup_volcanique_attack_face_01.png",
+      "sha256": "f6bb60cce2be0312fe1b7458ea0578a4794f27ccc8997187fce0af582df01bb4",
+      "alphaBBoxLTRB": [
+        86,
+        135,
+        425,
+        404
+      ],
+      "marginsLTRB": [
+        86,
+        135,
+        87,
+        108
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/loup_volcanique_attack_face_02.png",
+      "sha256": "db57c2ef8e85074d5ff99acc490cd52329c55a5037ce6dd98be5cd4680480901",
+      "alphaBBoxLTRB": [
+        94,
+        134,
+        418,
+        405
+      ],
+      "marginsLTRB": [
+        94,
+        134,
+        94,
+        107
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/loup_volcanique_attack_face_03.png",
+      "sha256": "0bd8f66c08f7a1ca7d6d610754697e33341c361d2881cb05580b06baf356387a",
+      "alphaBBoxLTRB": [
+        81,
+        139,
+        430,
+        402
+      ],
+      "marginsLTRB": [
+        81,
+        139,
+        82,
+        110
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/loup_volcanique_attack_face_04.png",
+      "sha256": "e78bbe36b5aa1a8cda727c821a7fc7b95ff008ec9bf172c89828793bdb3fc697",
+      "alphaBBoxLTRB": [
+        84,
+        132,
+        430,
+        408
+      ],
+      "marginsLTRB": [
+        84,
+        132,
+        82,
+        104
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/loup_volcanique_attack_face_05.png",
+      "sha256": "1fa9e88ca0496fcd709dff25d63f8c6826894c12199fc765251b6b9cfd3fedd0",
+      "alphaBBoxLTRB": [
+        70,
+        146,
+        440,
+        394
+      ],
+      "marginsLTRB": [
+        70,
+        146,
+        72,
+        118
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/loup_volcanique_attack_face_06.png",
+      "sha256": "2c9b32762a2749764c2b144bc24017a3382a415b84572affdf808e7a5a300562",
+      "alphaBBoxLTRB": [
+        48,
+        152,
+        463,
+        388
+      ],
+      "marginsLTRB": [
+        48,
+        152,
+        49,
+        124
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/loup_volcanique_attack_face_07.png",
+      "sha256": "914c954ec8b1a9404e39f28cf9ff7969460601b44a41bd9046dca547b4792efc",
+      "alphaBBoxLTRB": [
+        40,
+        118,
+        473,
+        422
+      ],
+      "marginsLTRB": [
+        40,
+        118,
+        39,
+        90
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/loup_volcanique_attack_face_08.png",
+      "sha256": "7071d649d8feb3cdc951abe97f3cb3ebaf13247eef5d6e1037463337812d30b3",
+      "alphaBBoxLTRB": [
+        91,
+        115,
+        420,
+        425
+      ],
+      "marginsLTRB": [
+        91,
+        115,
+        92,
+        87
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/loup_volcanique_attack_face_09.png",
+      "sha256": "c63c65c902d2b89f6957d9d411ae0fe9d7cab1f48d8ab335cf2da29b42397a4b",
+      "alphaBBoxLTRB": [
+        77,
+        146,
+        435,
+        395
+      ],
+      "marginsLTRB": [
+        77,
+        146,
+        77,
+        117
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/loup_volcanique_attack_face_10.png",
+      "sha256": "b469498365bfa161d5bb28f0b6d8565b1b21989c5094d52ec1521a674928edfe",
+      "alphaBBoxLTRB": [
+        85,
+        137,
+        426,
+        405
+      ],
+      "marginsLTRB": [
+        85,
+        137,
+        86,
+        107
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/loup_volcanique_attack_face_11.png",
+      "sha256": "5efffa256c4af923b4fcddc79c926d019e42cc4f09733f9b0ff9924e07b626fc",
+      "alphaBBoxLTRB": [
+        77,
+        136,
+        435,
+        404
+      ],
+      "marginsLTRB": [
+        77,
+        136,
+        77,
+        108
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/loup_volcanique_attack_face_12.png",
+      "sha256": "506ff0cfa80894c3fe2977267977c298bb7e4f1c784eca3d5b614e54b834bf63",
+      "alphaBBoxLTRB": [
+        90,
+        133,
+        423,
+        406
+      ],
+      "marginsLTRB": [
+        90,
+        133,
+        89,
+        106
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/loup_volcanique_attack_face_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "1d6017c02cdd69a086a1877b0144cafb778a711ddd90965e1c67afd3372dfd7f"
+  },
+  "preview": "previews/loup_volcanique_attack_face_12_preview.gif",
+  "releaseStatus": "user-approved-awaiting-repository-import"
+}
