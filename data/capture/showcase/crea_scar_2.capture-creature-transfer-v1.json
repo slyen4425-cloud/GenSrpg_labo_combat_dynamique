@@ -100,7 +100,11 @@
     },
     "skillIds": [
       "cisaille",
-      "cap_water_atk_1"
+      "cap_water_atk_1",
+      "carapce_acier",
+      "Tempete_metallique",
+      "sangsue",
+      "tempete_rouille"
     ],
     "presentation": {
       "id": "creature:crea_scar_2",
@@ -235,7 +239,8 @@
       "light": 0,
       "shadow": 0,
       "poison": 0,
-      "acier": 15
+      "acier": 15,
+      "nature": 0
     }
   },
   "loadout": {
@@ -248,19 +253,19 @@
       },
       {
         "id": "slot-2",
-        "skillId": "cap_water_atk_1"
+        "skillId": "carapce_acier"
       },
       {
         "id": "slot-3",
-        "skillId": null
+        "skillId": "Tempete_metallique"
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "sangsue"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "tempete_rouille"
       }
     ]
   }
