@@ -1197,6 +1197,30 @@
           Ajouter un effet
         </button>
 
+        <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
+          <h3>Sangsue / Maintien au contact</h3>
+          <label><input type="checkbox" data-skill-contact-hold-enabled>
+            Rester au corps à corps après l'impact et appliquer des effets régulièrement
+          </label>
+          <p class="note">Nécessite la forme « Contact » et le déplacement « Sol ». La créature reste accrochée jusqu'à sa première perte réelle de PV, à sa mise K.O. ou à la durée maximale. La cible peut continuer à attaquer.</p>
+          <div data-skill-contact-hold-settings hidden>
+            <div class="grid two">
+              <label>Intervalle entre les effets (ms)
+                <input type="number" data-skill-contact-hold-interval min="100" max="60000" step="100" value="1000">
+              </label>
+              <label>Durée maximale (ms, 0 = jusqu'aux dégâts)
+                <input type="number" data-skill-contact-hold-duration min="0" max="120000" step="100" value="0">
+              </label>
+            </div>
+            <p class="note">Les effets ci-dessous sont répétés à chaque pulsation pendant le contact. Ils sont indépendants des effets immédiats de la capacité ci-dessus.</p>
+            <div class="skill-effects-list" data-skill-contact-hold-effects-host></div>
+            <button type="button" class="secondary-action" data-skill-contact-hold-effect-add>
+              Ajouter un effet répété
+            </button>
+            <p class="note">Les effets périodiques utilisent le moteur de combat existant (dégâts, drain, soins, statuts…). Les zones persistantes et les programmations différées ne peuvent pas être imbriquées ici.</p>
+          </div>
+        </section>
+
         <p class="note">
           Chaque effet possède sa propre portée. Les durées de statut sont réglées en secondes ici puis converties vers le contrat gameplay.
         </p>

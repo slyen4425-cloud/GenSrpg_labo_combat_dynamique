@@ -2676,6 +2676,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     element: definition.element,
     approachMode:
       definition.approachMode ?? "none",
+    contactHold: definition.contactHold ?? null,
     hitPresenceStates:
       definition.hitPresenceStates == null
         ? null
@@ -2999,6 +3000,15 @@ export function buildHumanSkillDraftV1(fields) {
         fields.approachMode ?? "none",
         "Déplacement"
       ),
+      ...(fields.contactHold ? {
+        contactHold: {
+          tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
+          maxDurationMs: finiteNumber(fields.contactHold.maxDurationMs ?? 0, "Durée maximale au contact"),
+          effects: buildHumanTacticalSkillEffectsV1(fields.contactHold.effects ?? [], {
+            defaultDamageChannel: fields.element ?? null
+          })
+        }
+      } : {}),
       hitPresenceStates:
         fields.hitPresenceStates == null
           ? null
@@ -3489,6 +3499,15 @@ export function readHumanProjectilePowerV1(
   };
 }
 
+function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVisuals = {}) {
+  one(root, "[data-skill-contact-hold-enabled]").checked = hold !== null && hold !== undefined;
+  one(root, "[data-skill-contact-hold-settings]").hidden = hold === null || hold === undefined;
+  one(root, "[data-skill-contact-hold-interval]").value = String(hold?.tickIntervalMs ?? 1000);
+  one(root, "[data-skill-contact-hold-duration]").value = String(hold?.maxDurationMs ?? 0);
+  renderHumanSkillEffectsV1(root, hold?.effects ?? [], statRegistry, statusVisuals,
+    "[data-skill-contact-hold-effects-host]");
+}
+
 function writeSkillTemplateFields(
   root,
   fields,
@@ -3792,6 +3811,8 @@ function writeSkillDraftFields(
     statRegistry,
     fields.presentation.statusVisuals
   );
+  writeHumanContactHoldFieldsV1(root, fields.contactHold, statRegistry,
+    fields.presentation.statusVisuals);
   renderHumanProjectilePowerV1(
     root,
     fields.projectileClash
@@ -3920,6 +3941,7 @@ function prepareNewSkillDraftFields(
     [],
     statRegistry
   );
+  writeHumanContactHoldFieldsV1(root, null, statRegistry);
   writeSkillFeedbackControlsV1(
     root,
     {}
@@ -5322,12 +5344,10 @@ function appendHumanSkillEffectV1(
   root,
   effect = null,
   statRegistry = null,
-  statusPresentation = null
+  statusPresentation = null,
+  hostSelector = "[data-skill-effects-host]"
 ) {
-  const host = one(
-    root,
-    "[data-skill-effects-host]"
-  );
+  const host = one(root, hostSelector);
   const row = document.createElement("div");
   row.className = "skill-effect-row";
   row.dataset.skillEffectRow = "true";
@@ -5343,6 +5363,11 @@ function appendHumanSkillEffectV1(
       value,
       tacticalEffectKindLabelV1(value)
     );
+  }
+  if (hostSelector === "[data-skill-contact-hold-effects-host]") {
+    for (const option of kind.options) {
+      if (["persistent_zone", "scheduled_effect"].includes(option.value)) option.disabled = true;
+    }
   }
 
   const scope = document.createElement("select");
@@ -6522,12 +6547,10 @@ function renderHumanSkillEffectsV1(
   root,
   effects,
   statRegistry = null,
-  statusVisuals = {}
+  statusVisuals = {},
+  hostSelector = "[data-skill-effects-host]"
 ) {
-  const host = one(
-    root,
-    "[data-skill-effects-host]"
-  );
+  const host = one(root, hostSelector);
   host.textContent = "";
 
   for (const effect of effects ?? []) {
@@ -6542,7 +6565,8 @@ function renderHumanSkillEffectsV1(
       statRegistry,
       statusId
         ? statusVisuals?.[statusId] ?? null
-        : null
+        : null,
+      hostSelector
     );
   }
 }
@@ -6572,9 +6596,9 @@ function commaValuesV1(value) {
     .filter(Boolean);
 }
 
-function readHumanSkillEffectsV1(root) {
+function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]") {
   const rows = [
-    ...root.querySelectorAll(
+    ...one(root, hostSelector).querySelectorAll(
       "[data-skill-effect-row]"
     )
   ];
@@ -9176,6 +9200,13 @@ function readSkillFields(root) {
       root,
       "[data-skill-approach]"
     ),
+    contactHold: one(root, "[data-skill-contact-hold-enabled]").checked
+      ? {
+          tickIntervalMs: numericValue(root, "[data-skill-contact-hold-interval]"),
+          maxDurationMs: numericValue(root, "[data-skill-contact-hold-duration]"),
+          effects: readHumanSkillEffectsV1(root, "[data-skill-contact-hold-effects-host]")
+        }
+      : null,
     hitPresenceStates:
       one(
         root,
@@ -10484,6 +10515,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-effect-add]"
   );
+  const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
+  const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
+  const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
+  const contactHoldEffectAddButton = one(root, "[data-skill-contact-hold-effect-add]");
   const creatureLibrarySelect = one(
     root,
     "[data-creature-library-select]"
@@ -12391,65 +12426,41 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
   );
 
-  listen(
-    skillEffectAddButton,
-    "click",
-    () => {
-      appendHumanSkillEffectV1(
-        root,
-        null,
-        statRegistry
-      );
-    }
-  );
-
-  listen(
-    skillEffectsHost,
-    "change",
-    (event) => {
-      const row =
-        event.target?.closest?.(
-          "[data-skill-effect-row]"
-        );
-      if (!row) {
-        return;
-      }
-
-      if (
-        event.target.matches(
-          "[data-skill-effect-kind], " +
-          "[data-skill-status-kind], " +
-          "[data-skill-status-stacking], " +
-          "[data-stack-threshold-enabled], " +
-          "[data-skill-status-intangible], " +
-          "[data-skill-status-visual-mode], " +
-          "[data-skill-zone-effect-kind], " +
-          "[data-skill-zone-status-kind], " +
-          "[data-skill-zone-status-stacking], " +
-          "[data-skill-zone-status-behavior]"
-        )
-      ) {
-        syncHumanSkillEffectRowV1(row);
-      }
-    }
-  );
-
-  listen(
-    skillEffectsHost,
-    "click",
-    (event) => {
-      const remove =
-        event.target?.closest?.(
-          "[data-skill-effect-remove]"
-        );
-      if (!remove) {
-        return;
-      }
-      remove.closest(
-        "[data-skill-effect-row]"
-      )?.remove();
-    }
-  );
+  listen(skillEffectAddButton, "click", () => {
+    appendHumanSkillEffectV1(root, null, statRegistry);
+  });
+  listen(contactHoldEnabled, "change", () => {
+    contactHoldSettings.hidden = !contactHoldEnabled.checked;
+  });
+  listen(contactHoldEffectAddButton, "click", () => {
+    appendHumanSkillEffectV1(root, null, statRegistry, null,
+      "[data-skill-contact-hold-effects-host]");
+  });
+  // The same tactical row owner handles both lists, but each host is a
+  // separate explicit source. A repeated effect cannot silently become an
+  // immediate impact effect (or vice versa).
+  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost]) {
+    listen(effectsHost, "change", event => {
+      const row = event.target?.closest?.("[data-skill-effect-row]");
+      if (!row) return;
+      if (event.target.matches(
+        "[data-skill-effect-kind], " +
+        "[data-skill-status-kind], " +
+        "[data-skill-status-stacking], " +
+        "[data-stack-threshold-enabled], " +
+        "[data-skill-status-intangible], " +
+        "[data-skill-status-visual-mode], " +
+        "[data-skill-zone-effect-kind], " +
+        "[data-skill-zone-status-kind], " +
+        "[data-skill-zone-status-stacking], " +
+        "[data-skill-zone-status-behavior]"
+      )) syncHumanSkillEffectRowV1(row);
+    });
+    listen(effectsHost, "click", event => {
+      const remove = event.target?.closest?.("[data-skill-effect-remove]");
+      if (remove) remove.closest("[data-skill-effect-row]")?.remove();
+    });
+  }
 
   const creatureOwnedSelectors = [
     '[data-editor-panel="creature"] input',
