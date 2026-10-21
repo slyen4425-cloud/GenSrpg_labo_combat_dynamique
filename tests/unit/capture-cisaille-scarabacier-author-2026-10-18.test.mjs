@@ -19,6 +19,7 @@ const archiveSkill="data/capture/source-exports/gensrpg-capture-skill-cisaille-2
 const archiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-18-r2.json";
 const previousArchiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-19-v7.json";
 const currentArchiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-19-v8.json";
+const latestArchiveCreature="data/capture/source-exports/gensrpg-capture-creature-crea_scar_2-2026-10-21.json";
 const author = [
   {id:"cisaille",path:skillPath,archive:archiveSkill,sha:"ee715faf21ace2fb14f2bbfce1c363574a1f257f0be3403f34c17b632becb417"},
   {id:"crea_scar_2",path:creaturePath,archive:archiveCreature,sha:"cb075e8e4133611f0e915af34ec55d0c53494215c9cee275415f851bb99c17c4"}
@@ -35,11 +36,15 @@ test("Cisaille and Scarabacier are exact author bytes, safely archived and uniqu
    const historical=await read(f.archive);
    assert.equal(createHash("sha256").update(historical).digest("hex"),f.sha,
      "historical author export remains immutable");
-   assert.equal(raw,await read(currentArchiveCreature),
-     "active Scarabacier must preserve the exact, newest author V8 export");
+   assert.equal(raw,await read(latestArchiveCreature),
+     "active Scarabacier must preserve the exact 21 October author extraction");
+   const priorV8=JSON.parse(await read(currentArchiveCreature));
+   assert.equal(priorV8.draft.presentation.version,8,"19 October V8 archive stays immutable");
+   assert.deepEqual(priorV8.draft.skillIds,["cisaille","cap_water_atk_1"],"19 October author archive is untouched");
    const previous=JSON.parse(await read(previousArchiveCreature));
    assert.equal(previous.draft.presentation.version,7,"previous V7 author export is immutable");
-   assert.equal(JSON.parse(raw).draft.presentation.version,8,"active Scarabacier is V8");
+   assert.equal(JSON.parse(raw).draft.presentation.version,8,"new author Scarabacier remains presentation V8");
+   assert.notEqual(raw,await read(currentArchiveCreature),"21 October source replaces old active preset without altering historical archive");
    assert.notEqual(raw,historical,"new export must not be silently replaced by old template");
    assert.notEqual(raw,await read(previousArchiveCreature),"V8 must replace the previous V7");
   } else {
@@ -75,13 +80,22 @@ test("Scarabacier and Cisaille travel the canonical configured owner path, leavi
  const configuredSkills=new Map(capturePortableNativeSkillDraftsV1().map(x=>[x.id,x]));
  for(const x of captureComplexNativeSkillDraftsV1())if(!configuredSkills.has(x.id))configuredSkills.set(x.id,x);
  const originalOtherSkill=configuredSkills.get("lib_lifesteal_strike");
- for(const source of [skillPath,creaturePath]){
+ // Seed every required author skill through canonical transfer, not a test-only bypass.
+ for(const source of [
+   skillPath,
+   "data/capture/showcase/carapce_acier.capture-skill-transfer-v1.json",
+   "data/capture/showcase/Tempete_metallique.capture-skill-transfer-v1.json",
+   "data/capture/showcase/sangsue.capture-skill-transfer-v1.json",
+   "data/capture/showcase/tempete_rouille.capture-skill-transfer-v1.json",
+   creaturePath
+ ]){
   const transfer=importCaptureTransferJsonV1(await read(source),{statRegistry});
+  const alreadyDefined=transfer.kind==="skill"&&configuredSkills.has(transfer.value.draft.id);
   const plan=planCaptureTransferImportV1({
    currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),
    transfer,mode:"replace"
   });
-  assert.equal(plan.action,transfer.kind==="skill"?(configuredSkills.has("cisaille")?"replace-skill":"insert-skill"):"replace-creature");
+  assert.equal(plan.action,transfer.kind==="skill"?(alreadyDefined?"replace-skill":"insert-skill"):"replace-creature");
   applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures,configuredSkills,statRegistry,progressionRules});
  }
  assert.equal(configuredCreatures.size,2);
@@ -107,6 +121,7 @@ test("Scarabacier and Cisaille travel the canonical configured owner path, leavi
  assert.equal(actual.draft.combat.reaction.activeWindowMs,700);
  assert.equal(actual.statValues.values.acier,15);
  assert.equal(actual.statValues.values.defense,20);
- assert.deepEqual(actual.loadout.slots.map(x=>x.skillId),["cisaille","cap_water_atk_1",null,null,null]);
+ assert.deepEqual(actual.loadout.slots.map(x=>x.skillId),["cisaille","carapce_acier","Tempete_metallique","sangsue","tempete_rouille"]);
+ assert.equal(actual.statValues.values.nature,0);
  assert.ok(actual.draft.skillIds.includes("cisaille"));
 });
