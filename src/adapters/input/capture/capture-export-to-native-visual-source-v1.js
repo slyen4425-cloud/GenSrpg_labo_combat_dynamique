@@ -167,8 +167,10 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   }
 
-  function movementFxFor(binding) {
-    const slot = binding.version >= 4 ? binding.visual?.movement ?? null : null;
+  function movementFxFor(binding, overrideSlot = undefined) {
+    const slot = overrideSlot === undefined
+      ? (binding.version >= 4 ? binding.visual?.movement ?? null : null)
+      : overrideSlot;
     if (!slot) return null;
     const asset = assetById.get(slot.assetId);
     if (!asset) throw new RangeError("unknown creature movement asset: " + slot.assetId);
@@ -181,7 +183,12 @@ export function adaptCaptureExportToNativeVisualSourceV1({
   }
 
   function movementFxForView(binding, view) {
-    const base = movementFxFor(binding);
+    // V9 keeps front/opponent as the original movement slot and adds a
+    // player/back pose. Older bindings retain their one-sprite fallback.
+    const viewSlot = view === "player" && binding.version >= 9
+      ? binding.visual?.movementBack ?? binding.visual?.movement ?? null
+      : binding.visual?.movement ?? null;
+    const base = movementFxFor(binding, viewSlot);
     if (!base || binding.version < 8) return base;
     const scale = binding.visual?.movementScaleByView?.[view];
     const playback = binding.visual?.movementPlayback;
