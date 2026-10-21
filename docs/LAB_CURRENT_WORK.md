@@ -1,3 +1,18 @@
+## 2026-10-21 — Golem moussu FACE 12 frames (préparation d'import ; ZIP attendu)
+
+- **Objectif** : enregistrer deux animations 12 frames transparentes du Golem moussu en vue adversaire (mouvement/course et attaque), sans modifier les modèles officiels.
+- **Base officielle** : `global-assets@01345ccd13581e7d93b7d975ae679e87ca2e2985`. Checkpoint départ `checkpoint/global-assets-start-golem-moussu-face12-2026-10-21`. Branche du lot : `work/global-assets-golem-moussu-face12-2026-10-21`.
+- **Source attendue** : `_incoming/GOLEM_MOUSSU_FACE_12_COURSE_ATTAQUE_GITHUB.zip`, SHA256 `ad9f4717721346a99a9c6a5a469a7e1ef81e930353204dc7273fda87e615a42c`.
+- **Note artistique** : premier découpage d'attaque tronquait les pattes ; recadrage corrigé avant packaging (source non régénérée). 24 PNG RGBA 512², marge alpha min 64 px.
+- **Périmètre propriétaire** : seulement `assets/library/capture/creatures/golem_moussu/animations/{movement,attack}/face/**`, catalogue `data/assets/catalog/global-visual-assets.v1.json`, script/workflow import, documentation et tests.
+- **Zones protégées** : `assets/library/capture/creatures/golem_moussu/runtime/**`, dos joueur, moteur/combat/UI, autres créatures, `main` et `Zombicide-40k`.
+- **Préparation GitHub** : `scripts/import_golem_moussu_face12.py` et `.github/workflows/import-golem-moussu-face12.yml` créés, import automatique au dépôt de l'archive.
+- **Déclaration honnête** : jusqu'au commit ZIP et à l'Action d'import, **médias non présents sur GitHub**, aucun checkpoint GREEN ni publication `global-assets` pour ce lot.
+- **Contrôles prévus** : ZIP CRC + SHA, 24 PNG/atlas/manifests, catalogue IDs uniques, CI et sentinelles sur vrais fichiers.
+- **Détail** : `docs/LAB_GOLEM_MOUSSU_FACE12_ANIMATIONS_2026-10-21.md`.
+
+---
+
 ## 2026-10-21 — Loup volcanique DOS 12 frames (publié sur global-assets, validation en jeu à faire)
 
 - **Objectif** : importer course et attaque côté joueur/dos, deux séquences 12 PNG RGBA 512² ; course provisoire pour test en jeu, attaque approuvée.
