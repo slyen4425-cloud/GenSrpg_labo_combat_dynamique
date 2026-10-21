@@ -663,7 +663,7 @@ export function planAnimation({ event, actor, profile }) {
             ground: {
               translateX: target.x * apexProgress,
               translateY: target.y * apexProgress,
-              scale: 1 + (perspectiveScale - 1) * apexProgress
+              scale: (1 + (perspectiveScale - 1) * apexProgress) * shadowApexScale
             },
             transform: {
               translateX: target.x * apexProgress,
