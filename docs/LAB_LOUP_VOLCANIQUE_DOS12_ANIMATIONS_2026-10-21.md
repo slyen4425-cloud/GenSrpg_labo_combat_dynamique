@@ -34,7 +34,7 @@ Les 2 animations peuvent être proposées au catalogue pour essai. Le raccord au
 
 ## Asset Catalog — ajout append-only
 
-Les deux IDs suivants seront créés uniquement après dépôt et vérification du vrai ZIP :
+Les deux IDs suivants ont été créés après dépôt et vérification du ZIP réel :
 
 - `pack:capture:creature-loup-volcanique-movement-dos-12-v1`
 - `pack:capture:creature-loup-volcanique-attack-dos-12-v1`
@@ -44,7 +44,7 @@ Les ressources officielles de face `movement-face-12-v1` et `attack-face-12-v1` 
 
 ## Gates et sortie GREEN
 
-1. Recevoir le ZIP au chemin `_incoming/` de la branche de lot, SHA256 et ZIP CRC vérifiés.
+1. Reçu et contrôlé : ZIP au chemin `_incoming/` de la branche de lot, SHA256 et ZIP CRC vérifiés.
 2. Valider PNG RGBA 512×512, marges, hashes et 12 frames distinctes par animation.
 3. Produire fichiers `frames/`, `atlases/`, `previews/`, manifestes et ajouter seulement deux IDs au catalogue.
 4. Contrôler catalogue et tests de non-régression, exécuter `npm run ci` et CI GitHub sur médias réels.
@@ -52,4 +52,11 @@ Les ressources officielles de face `movement-face-12-v1` et `attack-face-12-v1` 
 6. Promouvoir la branche `global-assets` par fast-forward et créer checkpoint GREEN du jalon technique.
 7. **Ne pas dire « validé en jeu » pour la course avant test utilisateur.**
 
-Aucun transfert binaire ni GREEN ne peut être revendiqué tant que le ZIP n'est pas réellement committé et importé.
+## État d'import (21 octobre 2026)
+
+- ZIP reçu sur la branche dédiée, import automatisé confirmé par workflow GitHub run `39606938888` : **SUCCESS**.
+- Commit médias : `441f7eaf3c06e6d15fbe9f7fc4d1470c35adf6ef`.
+- Présents : 24 PNG 512² RGBA, deux atlases WebP 12×384 px, deux manifestes, deux previews GIF, deux WebP animés et deux planches de contrôle.
+- Catalogue : **197 assets / 104 sprites** ; deux nouveaux IDs uniques ajoutés sans changer les trois modèles officiels.
+- Sentinelle de non-régression : `tests/unit/volcanic-wolf-dos12-assets.test.mjs` ; vérification de la source/sha et du statut `approved_for_ingame_trial` pour la course.
+- Les CI de publication et le checkpoint GREEN final restent à vérifier après documentation. L'affectation automatique à la fiche du loup n'a pas été modifiée ; le test en jeu demeure distinct.
