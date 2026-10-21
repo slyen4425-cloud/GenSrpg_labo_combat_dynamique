@@ -76,7 +76,7 @@ try {
       const shadowRise = verticalOf(groundFrames[1]) - verticalOf(groundFrames[0]);
       if (!(bodyRise < -7.5 && shadowRise < -0.7 && shadowRise > -2 &&
             scaleOf(groundFrames[1]) < scaleOf(groundFrames[0]))) {
-        throw Error("flight idle shadow does not follow hovering subtly");
+        throw Error("flight idle probe bodyRise="+bodyRise+" shadowRise="+shadowRise+" scaleBase="+scaleOf(groundFrames[0])+" scaleApex="+scaleOf(groundFrames[1])+" body0="+String(bodyFrames[0].transform)+" body1="+String(bodyFrames[1].transform)+" shadow0="+String(groundFrames[0].transform)+" shadow1="+String(groundFrames[1].transform));
       }
       if (groundFrames.at(-1).transform !== groundFrames[0].transform) {
         throw Error("flight idle shadow did not return exactly to ground base");
