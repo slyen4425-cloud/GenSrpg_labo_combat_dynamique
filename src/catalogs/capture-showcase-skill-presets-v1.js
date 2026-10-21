@@ -45,6 +45,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/carapce_acier.capture-skill-transfer-v1.json",
     "data/capture/showcase/Tempete_metallique.capture-skill-transfer-v1.json",
     "data/capture/showcase/tempete_rouille.capture-skill-transfer-v1.json",
+    "data/capture/showcase/sangsue.capture-skill-transfer-v1.json",
     "data/capture/showcase/dodge.capture-skill-transfer-v1.json"
   ]);
 
