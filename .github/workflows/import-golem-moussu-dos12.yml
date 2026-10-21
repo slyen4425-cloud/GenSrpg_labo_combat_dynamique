@@ -1,0 +1,44 @@
+name: Import Golem moussu dos 12 frames
+
+on:
+  push:
+    branches:
+      - work/global-assets-golem-moussu-dos12-2026-10-21
+    paths:
+      - _incoming/GOLEM_MOUSSU_DOS_12_COURSE_ATTAQUE_PREVIEW.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: golem-moussu-dos12-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  import:
+    if: github.ref == 'refs/heads/work/global-assets-golem-moussu-dos12-2026-10-21'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Importer les 24 PNG DOS originaux avec contrôles SHA et alpha
+        run: python3 scripts/import_golem_moussu_dos12.py
+      - name: Tester les vrais médias et les régressions
+        run: npm run ci
+      - name: Committer les médias DOS sans modifier le runtime
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/library/capture/creatures/golem_moussu/animations/movement/dos
+          git add assets/library/capture/creatures/golem_moussu/animations/attack/dos
+          git add data/assets/catalog/global-visual-assets.v1.json
+          git add tests/unit/golem-moussu-dos12-assets.test.mjs
+          git diff --cached --check
+          git commit -m "assets(capture): publier attaque et mouvement dos Golem moussu"
+          git push origin HEAD:work/global-assets-golem-moussu-dos12-2026-10-21
