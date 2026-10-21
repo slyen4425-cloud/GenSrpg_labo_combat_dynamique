@@ -1,4 +1,4 @@
-## 2026-10-21 — Golem moussu FACE 12 frames — publication bibliothèque (lot actif)
+## 2026-10-21 — Golem moussu FACE 12 frames — BIBLIOTHÈQUE PUBLIÉE / CI VALIDÉE
 - Objectif : publier deux séquences de 12 frames (mouvement et attaque, vue adversaire), 512×512 RGBA ; modèles originaux inchangés.
 - Source : ZIP déjà déposé dans _incoming/GOLEM_MOUSSU_FACE_12_COURSE_ATTAQUE_GITHUB.zip, empreinte SHA256 ad9f4717721346a99a9c6a5a469a7e1ef81e930353204dc7273fda87e615a42c.
 - Import initial : branche work/global-assets-golem-moussu-face12-2026-10-21, Action import 39635452666 et CI réussies.
@@ -9,7 +9,7 @@
 - Protection : aucune modification aux modèles runtime, aux animations du loup, au moteur, à main, aux autres créatures, à Zombicide-40k.
 - Critères : QA visuelle source, vérifications 24 PNG + 2 atlas, CI réelle sur la nouvelle branche et revue diff, checkpoint GREEN seulement si tout passe ; publication global-assets après succès.
 - Limite : catalogage dans la bibliothèque ne prouve pas l'affectation automatique de la fiche créature au combat.
-- Statut : publication en préparation, CI de ce nouveau lot à vérifier.
+- État final technique : CI GitHub 39643949492 SUCCESS sur commit de médias 3b7cc98f12ec20939e0fb317d5bc1aecc62e6c1a. Publication fast-forward sur global-assets confirmée ; checkpoint checkpoint/global-assets-golem-moussu-face12-green-2026-10-21. 34 médias et manifests dans le dossier animations, 199 assets / 106 sprites, IDs uniques. Prochaine phase : sprites dos à partir du modèle officiel ; liaison automatique de la fiche au moteur non démontrée.
 
 ---
 ## 2026-10-21 — Gouvernance assistant : accès et outils (documentation permanente)
