@@ -1,4 +1,7 @@
 import {
+  mountSoundtrackAuthoringV1
+} from "../../src/ui/soundtrack-editor-v1.js";
+import {
   mountCaptureEditorHumanV2
 } from "../../src/ui/capture-editor-human-v2.js";
 import {
@@ -107,6 +110,13 @@ for (
   arenaSelect.append(element);
 }
 arenaSelect.value = "city";
+
+// Independent per-game soundtrack authoring. No coupling to creature drafts,
+// skill FX, test-runtime timing or user-upload storage.
+const soundtrackEditor = mountSoundtrackAuthoringV1({
+  root: root.querySelector("[data-soundtrack-editor]")
+});
+
 
 const creatorVisualAssets =
   createCreatorVisualAssetSessionV1();
