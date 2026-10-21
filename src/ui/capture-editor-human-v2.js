@@ -2350,7 +2350,7 @@ export function buildHumanCreatureDraftV3(fields) {
                 x: "50%",
                 y: "50%"
               },
-            ...((dodgeVisual === null && movementVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
+            ...((dodgeVisual === null && movementVisual === null && movementBackVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
               visual: {
                 ...base.presentation.visual,
                 ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
