@@ -379,6 +379,7 @@ export function createCombatResolutionPresenter({
           // Visual movement planning and cue dispatch require positive
           // duration: use a 1ms visual-only envelope, never mutate action.
           travelMs: Math.max(1, Number(action.travelMs) || 0),
+          holdOnContact: Boolean(action.skill?.contactHold),
           targetSlot,
           onFootfall: footfallToken ? () => playFootfallAudio({
             actorSlot, targetSlot, token: footfallToken, approachMode
