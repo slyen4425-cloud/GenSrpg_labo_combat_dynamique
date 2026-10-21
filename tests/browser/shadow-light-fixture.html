@@ -166,7 +166,8 @@ try {
       flying.style.transition = "none";
       flying.style.left = getComputedStyle(player).left;
       flying.style.top = getComputedStyle(player).top;
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      // Force geometry before the existing contact watcher samples it.
+      void flying.offsetWidth;
       const contactPromise = demo.playApproachFor("player", "ground", {
         travelMs: 850, targetSlot: "opponent", holdOnContact: true,
         onContact() { touchCount += 1; return { outcome: "contact_held" }; }
