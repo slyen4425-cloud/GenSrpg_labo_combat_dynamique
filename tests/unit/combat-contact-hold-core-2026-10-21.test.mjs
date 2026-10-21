@@ -104,3 +104,31 @@ test("bounded channel expires exactly; dispose or target KO cancels without leak
  assert.equal(h.runtime.hasContactHoldFor("a"),false);
  h.runtime.dispose();
 });
+
+test("shield-only absorption does not detach; first subsequent real HP loss detaches",()=>{
+ const h=createHarness(),latch=definition("shield-leech");
+ const shield=normalizeSkillDefinition({id:"wall",name:"wall",category:"defensive",
+  form:"self",approachMode:"none",energyCost:0,preparationMs:0,travelMs:0,
+  recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
+  targetRelations:["self"],effect:{damage:0,heal:0,tags:[]},
+  effects:[{kind:"apply_status",targetScope:"self",status:{
+   id:"wall-status",kind:"shield",polarity:"beneficial",durationMs:20000,
+   stacking:"replace",amount:10
+  }}]});
+ const strike=normalizeSkillDefinition({id:"strike-shield",name:"strike",category:"offensive",
+  form:"contact",approachMode:"none",energyCost:0,preparationMs:0,travelMs:0,
+  recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
+  effect:{damage:6,heal:0,tags:[]}});
+ try{
+  assert.equal(h.session.useSkill({actorId:"a",targetId:"a",skill:shield}).ok,true);
+  h.begin(latch);
+  h.session.useSkill({actorId:"b",targetId:"a",skill:strike});
+  h.step(101);
+  assert.equal(h.session.snapshot().fighters.a.hp,50);
+  assert.equal(h.runtime.hasContactHoldFor("a"),true);
+  h.session.useSkill({actorId:"b",targetId:"a",skill:strike});
+  h.step(102);
+  assert.equal(h.runtime.hasContactHoldFor("a"),false);
+  assert.equal(h.ended[0].reason,"damage_taken");
+ }finally{h.runtime.dispose();}
+});
