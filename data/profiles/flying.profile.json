@@ -4,6 +4,10 @@
   "description": "Profil générique pour créatures volantes en suspension, avec oscillation verticale et déplacement aérien fluide.",
   "idle": {
     "bobY": 8,
+    "shadowResponse": {
+      "verticalFollowFraction": 0.18,
+      "apexScale": 0.975
+    },
     "swayRotate": 0.2,
     "swayX": 0,
     "scaleXDelta": -0.003,
