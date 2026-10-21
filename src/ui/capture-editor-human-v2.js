@@ -2676,6 +2676,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     element: definition.element,
     approachMode:
       definition.approachMode ?? "none",
+    contactHold: definition.contactHold ?? null,
     hitPresenceStates:
       definition.hitPresenceStates == null
         ? null
@@ -2999,6 +3000,15 @@ export function buildHumanSkillDraftV1(fields) {
         fields.approachMode ?? "none",
         "Déplacement"
       ),
+      ...(fields.contactHold ? {
+        contactHold: {
+          tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
+          maxDurationMs: finiteNumber(fields.contactHold.maxDurationMs ?? 0, "Durée maximale au contact"),
+          effects: buildHumanTacticalSkillEffectsV1(fields.contactHold.effects ?? [], {
+            defaultDamageChannel: fields.element ?? null
+          })
+        }
+      } : {}),
       hitPresenceStates:
         fields.hitPresenceStates == null
           ? null
@@ -5322,12 +5332,10 @@ function appendHumanSkillEffectV1(
   root,
   effect = null,
   statRegistry = null,
-  statusPresentation = null
+  statusPresentation = null,
+  hostSelector = "[data-skill-effects-host]"
 ) {
-  const host = one(
-    root,
-    "[data-skill-effects-host]"
-  );
+  const host = one(root, hostSelector);
   const row = document.createElement("div");
   row.className = "skill-effect-row";
   row.dataset.skillEffectRow = "true";
@@ -6522,12 +6530,10 @@ function renderHumanSkillEffectsV1(
   root,
   effects,
   statRegistry = null,
-  statusVisuals = {}
+  statusVisuals = {},
+  hostSelector = "[data-skill-effects-host]"
 ) {
-  const host = one(
-    root,
-    "[data-skill-effects-host]"
-  );
+  const host = one(root, hostSelector);
   host.textContent = "";
 
   for (const effect of effects ?? []) {
@@ -6542,7 +6548,8 @@ function renderHumanSkillEffectsV1(
       statRegistry,
       statusId
         ? statusVisuals?.[statusId] ?? null
-        : null
+        : null,
+      hostSelector
     );
   }
 }
@@ -6572,9 +6579,9 @@ function commaValuesV1(value) {
     .filter(Boolean);
 }
 
-function readHumanSkillEffectsV1(root) {
+function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]") {
   const rows = [
-    ...root.querySelectorAll(
+    ...one(root, hostSelector).querySelectorAll(
       "[data-skill-effect-row]"
     )
   ];
