@@ -1,0 +1,292 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "golem_moussu",
+  "action": "attack",
+  "view": "dos",
+  "assetId": "pack:capture:creature-golem-moussu-attack-dos-12-v1",
+  "status": "asset_approved",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "playbackMode": "once",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/golem_moussu_attack_dos_01.png",
+      "sha256": "3af329cc6c5e5ed5dd90d005e06dc59b03de97c6452b308d622445495d92b396",
+      "marginsLTRB": [
+        89,
+        150,
+        89,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        22,
+        76,
+        354,
+        364
+      ],
+      "sourceGridCell": [
+        0,
+        0
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/golem_moussu_attack_dos_02.png",
+      "sha256": "7e7fc5e2c714b70befb798d3021714669187a276fd67eeb93e99a86a738475ae",
+      "marginsLTRB": [
+        88,
+        134,
+        89,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        387,
+        58,
+        720,
+        362
+      ],
+      "sourceGridCell": [
+        1,
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/golem_moussu_attack_dos_03.png",
+      "sha256": "ddb475a849554ae6c82b2ac8d22fc09b71f3659382c1a2b8dd62d66aa8df5f66",
+      "marginsLTRB": [
+        93,
+        103,
+        94,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        754,
+        24,
+        1077,
+        359
+      ],
+      "sourceGridCell": [
+        2,
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/golem_moussu_attack_dos_04.png",
+      "sha256": "a1a505ace3be1356f6668d18f9cb1b2bb7e69c559b0c923e5e9f07bd87449201",
+      "marginsLTRB": [
+        97,
+        87,
+        97,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        1116,
+        3,
+        1432,
+        354
+      ],
+      "sourceGridCell": [
+        3,
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/golem_moussu_attack_dos_05.png",
+      "sha256": "a120672464270916fe4202a004431fdebfca5d5d390a7f0eada2a164ef06cfa8",
+      "marginsLTRB": [
+        84,
+        96,
+        85,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        27,
+        373,
+        368,
+        715
+      ],
+      "sourceGridCell": [
+        0,
+        1
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/golem_moussu_attack_dos_06.png",
+      "sha256": "9c517b32417394d34b57a34cd3e6d219e3ef409b9fdd988645ac21df15b98efa",
+      "marginsLTRB": [
+        81,
+        97,
+        81,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        390,
+        374,
+        738,
+        715
+      ],
+      "sourceGridCell": [
+        1,
+        1
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/golem_moussu_attack_dos_07.png",
+      "sha256": "4508347d953ac96d5acf979cff27d3f5b4031fad643ad43f2dccdbabf3e46ab6",
+      "marginsLTRB": [
+        86,
+        116,
+        87,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        752,
+        404,
+        1089,
+        726
+      ],
+      "sourceGridCell": [
+        2,
+        1
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/golem_moussu_attack_dos_08.png",
+      "sha256": "4e2cb64c8dcc30d04fb05ae9fb1fbce4ae55bed9f9ac6086bd0c0e4d9a62517d",
+      "marginsLTRB": [
+        85,
+        138,
+        85,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        1095,
+        427,
+        1435,
+        727
+      ],
+      "sourceGridCell": [
+        3,
+        1
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/golem_moussu_attack_dos_09.png",
+      "sha256": "15a993c8ec52549106b2aa99a619ebbfcbed259b4e4b3c568f773121531fa83b",
+      "marginsLTRB": [
+        70,
+        146,
+        71,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        18,
+        784,
+        387,
+        1076
+      ],
+      "sourceGridCell": [
+        0,
+        2
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/golem_moussu_attack_dos_10.png",
+      "sha256": "4e825f9cdb12ed6d85509dd94d7b4846f0ec12c867186e14229a5ddd4807b206",
+      "marginsLTRB": [
+        88,
+        137,
+        89,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        390,
+        776,
+        723,
+        1077
+      ],
+      "sourceGridCell": [
+        1,
+        2
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/golem_moussu_attack_dos_11.png",
+      "sha256": "56e22a321123d389953e1da7994a05cf43e63a5d06a17255741daf801ff60ee8",
+      "marginsLTRB": [
+        81,
+        146,
+        82,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        736,
+        785,
+        1083,
+        1077
+      ],
+      "sourceGridCell": [
+        2,
+        2
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/golem_moussu_attack_dos_12.png",
+      "sha256": "31335077b6d1b70b98406daef341c06581dd5e3dab173a6fb1e05cf31d61e0b3",
+      "marginsLTRB": [
+        90,
+        153,
+        90,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        1108,
+        792,
+        1438,
+        1077
+      ],
+      "sourceGridCell": [
+        3,
+        2
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/golem_moussu_attack_dos_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "5e0eaf18fec16d7f2f3283a1fc5a98db872cea9a9c3d05c471c700d8b6272429"
+  },
+  "preview": "previews/golem_moussu_attack_dos_12_preview.gif",
+  "previews": {
+    "gif": "previews/golem_moussu_attack_dos_12_preview.gif",
+    "webp": "previews/golem_moussu_attack_dos_12_preview_transparent.webp",
+    "planche": "previews/golem_moussu_attack_dos_12_planche.png"
+  },
+  "sourceSpriteSheet": "sprite_animé_du_golem_tortue_moussu.png",
+  "sourceSpriteSheetSha256": "ebf81df7673ad98e137a995a9317fa1e6ac05391f4e3a2f59fc5391f4aa10628",
+  "sourceModel": "golem_moussu_player.webp",
+  "sourceModelSha256": "96b8bf45ef3bb5db6d78cffb93ff7bee8982e5eea66f2d148bd7388d310db12d",
+  "notes": "Movement: reduced rear leg lifting; Attack: lift upper body then two front feet slam with near-stationary rear feet. No edited combat engine.",
+  "authorApproved": true,
+  "approvalStatus": "approved",
+  "sourceArchive": "GOLEM_MOUSSU_DOS_12_COURSE_ATTAQUE_PREVIEW.zip",
+  "sourceArchiveSha256": "e8045798cfaa6c8b1eb73b09687e8fb4792d8536387de407bf8c89fdc6433155"
+}

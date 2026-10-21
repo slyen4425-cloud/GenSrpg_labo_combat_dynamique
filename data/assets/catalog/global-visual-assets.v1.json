@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 199,
+    "assets": 201,
     "icons": 74,
-    "sprites": 106,
+    "sprites": 108,
     "fx": 2,
     "portraits": 12,
     "backgrounds": 5,
-    "creatures": 30
+    "creatures": 32
   },
   "assets": [
     {
@@ -6577,6 +6577,84 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 100,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-movement-dos-12-v1",
+      "label": "Golem moussu — mouvement dos (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "golem_moussu",
+        "earth",
+        "nature",
+        "movement",
+        "animated",
+        "dos",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / validation visuelle 2026-10-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/animations/movement/dos/atlases/golem_moussu_movement_dos_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-attack-dos-12-v1",
+      "label": "Golem moussu — attaque dos (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "golem_moussu",
+        "earth",
+        "nature",
+        "attack",
+        "animated",
+        "dos",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / validation visuelle 2026-10-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/animations/attack/dos/atlases/golem_moussu_attack_dos_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 110,
         "playbackMode": "once"
       },
       "compatibility": {

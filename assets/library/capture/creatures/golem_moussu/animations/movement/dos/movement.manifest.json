@@ -1,0 +1,292 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "golem_moussu",
+  "action": "movement",
+  "view": "dos",
+  "assetId": "pack:capture:creature-golem-moussu-movement-dos-12-v1",
+  "status": "ingame_trial_pending",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 90,
+  "playbackMode": "loop",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/golem_moussu_movement_dos_01.png",
+      "sha256": "f8b92f18e7ee9aa53c367e094fabad271d875663ba584074c5a056433e57faaa",
+      "marginsLTRB": [
+        80,
+        121,
+        81,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        19,
+        34,
+        368,
+        351
+      ],
+      "sourceGridCell": [
+        0,
+        0
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/golem_moussu_movement_dos_02.png",
+      "sha256": "7953996fe72e2d46d008eb8ff5ec26bd39f22dd9c7d4480a867a2ed6f56e06dc",
+      "marginsLTRB": [
+        85,
+        122,
+        85,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        388,
+        34,
+        728,
+        350
+      ],
+      "sourceGridCell": [
+        1,
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/golem_moussu_movement_dos_03.png",
+      "sha256": "92a589bcc3889b74fcee9eb875331bac5efada06542a4097f303d861e132cf8e",
+      "marginsLTRB": [
+        85,
+        123,
+        86,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        747,
+        32,
+        1086,
+        347
+      ],
+      "sourceGridCell": [
+        2,
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/golem_moussu_movement_dos_04.png",
+      "sha256": "0bfb63aa0653fb885d3a85f2bd853b413d8aff0c8859f7f53a3fe2f4026a37a1",
+      "marginsLTRB": [
+        85,
+        121,
+        86,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        1108,
+        32,
+        1447,
+        349
+      ],
+      "sourceGridCell": [
+        3,
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/golem_moussu_movement_dos_05.png",
+      "sha256": "54ca57ade9d5c3f2bce82f12f9e598273b7cb1e8898fc322cd36120b1cc22ae6",
+      "marginsLTRB": [
+        80,
+        119,
+        80,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        20,
+        390,
+        370,
+        709
+      ],
+      "sourceGridCell": [
+        0,
+        1
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/golem_moussu_movement_dos_06.png",
+      "sha256": "b0346e4dd56dcb77204c9ee841c2afc2c2917a8a2d535b8fd0f624e90fb710c5",
+      "marginsLTRB": [
+        86,
+        118,
+        87,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        393,
+        390,
+        730,
+        710
+      ],
+      "sourceGridCell": [
+        1,
+        1
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/golem_moussu_movement_dos_07.png",
+      "sha256": "a48947cb3dfafb03dfb79d4ef545d3191834c3fe2e2df3ec8e519defd7cb1935",
+      "marginsLTRB": [
+        81,
+        124,
+        81,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        740,
+        394,
+        1088,
+        708
+      ],
+      "sourceGridCell": [
+        2,
+        1
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/golem_moussu_movement_dos_08.png",
+      "sha256": "4b5a6f2d448c11a55c1282aadc658e7b88a35a5a29ed157515400a472599e7af",
+      "marginsLTRB": [
+        83,
+        125,
+        84,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        1104,
+        396,
+        1448,
+        709
+      ],
+      "sourceGridCell": [
+        3,
+        1
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/golem_moussu_movement_dos_09.png",
+      "sha256": "936f726e57ba187ee9481f3e7ade3557bb0488da40945fb45a7226c641983d4c",
+      "marginsLTRB": [
+        83,
+        117,
+        83,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        25,
+        749,
+        369,
+        1070
+      ],
+      "sourceGridCell": [
+        0,
+        2
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/golem_moussu_movement_dos_10.png",
+      "sha256": "5ddcd2ce67ed0ce20391561cd13b570d9e59b8bd29d18cbecf65189628cd97ef",
+      "marginsLTRB": [
+        79,
+        117,
+        80,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        380,
+        749,
+        731,
+        1070
+      ],
+      "sourceGridCell": [
+        1,
+        2
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/golem_moussu_movement_dos_11.png",
+      "sha256": "385b384bdc3b2157d5d43179f3f396176c097558a9f1fd5c043f91f748d7397c",
+      "marginsLTRB": [
+        81,
+        122,
+        82,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        749,
+        754,
+        1096,
+        1070
+      ],
+      "sourceGridCell": [
+        2,
+        2
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/golem_moussu_movement_dos_12.png",
+      "sha256": "549a3a498ea2a8c7b2dcfc243851c4a31019d0aead78fd5c3d1120274881c615",
+      "marginsLTRB": [
+        84,
+        126,
+        85,
+        72
+      ],
+      "sourceBoundingBoxLTRB": [
+        1106,
+        756,
+        1447,
+        1068
+      ],
+      "sourceGridCell": [
+        3,
+        2
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/golem_moussu_movement_dos_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "62fa5dee4742a1ec3c2e24fd770f32549aa1ccf6cfe61423c726452e53556f45"
+  },
+  "preview": "previews/golem_moussu_movement_dos_12_preview.gif",
+  "previews": {
+    "gif": "previews/golem_moussu_movement_dos_12_preview.gif",
+    "webp": "previews/golem_moussu_movement_dos_12_preview_transparent.webp",
+    "planche": "previews/golem_moussu_movement_dos_12_planche.png"
+  },
+  "sourceSpriteSheet": "planche_de_sprites_golem_de_pierre_moussu_en_mar.png",
+  "sourceSpriteSheetSha256": "4849d65a35c2dacb78988934f994bd40c3bc3e0626e7b2ceecc79081108ba3e9",
+  "sourceModel": "golem_moussu_player.webp",
+  "sourceModelSha256": "96b8bf45ef3bb5db6d78cffb93ff7bee8982e5eea66f2d148bd7388d310db12d",
+  "notes": "Movement: reduced rear leg lifting; Attack: lift upper body then two front feet slam with near-stationary rear feet. No edited combat engine.",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceArchive": "GOLEM_MOUSSU_DOS_12_COURSE_ATTAQUE_PREVIEW.zip",
+  "sourceArchiveSha256": "e8045798cfaa6c8b1eb73b09687e8fb4792d8536387de407bf8c89fdc6433155"
+}
