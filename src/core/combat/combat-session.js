@@ -492,6 +492,36 @@ export function createCombatSession({
     return advanceMs(Number(seconds) * 1000);
   }
 
+  // Pulse effects are resolved through the SINGLE native tactical HP/status
+  // application path. ContactHold does not own a private damage calculator.
+  function applyContactHoldTickV1({ actorId, targetId, skill, atMs }) {
+    if (!skill?.contactHold || !state.fighters[actorId] ||
+        !state.fighters[targetId] ||
+        Number(state.fighters[actorId].hp) <= 0 ||
+        Number(state.fighters[targetId].hp) <= 0) {
+      return Object.freeze({ ok: false, outcome: "contact_not_alive", state });
+    }
+    const result = applyImmediateTacticalEffectsV1({
+      state,
+      actorId,
+      targetId,
+      skill: {
+        id: skill.id,
+        category: skill.category,
+        form: "contact",
+        element: skill.element,
+        hitsIntangible: skill.hitsIntangible,
+        effects: skill.contactHold.effects
+      },
+      atMs,
+      combatAtMs: atMs,
+      battleFormat
+    });
+    state = result.state;
+    return Object.freeze({ ok: true, outcome: "contact_tick", state,
+      events: result.events });
+  }
+
   function addChargeEffect(fighterId, effect) {
     state = addChargeTimeEffect(state, fighterId, effect);
     return state;
@@ -553,6 +583,7 @@ export function createCombatSession({
     completeAction,
     advanceMs,
     advance,
+    applyContactHoldTickV1,
     addChargeEffect,
     replaceFighter,
     departFighter,

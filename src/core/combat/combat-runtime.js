@@ -37,7 +37,10 @@ export function createCombatRuntime({
   onStarted = () => {},
   onRelease = () => {},
   onResolved = () => {},
-  onInterrupted = () => {}
+  onInterrupted = () => {},
+  onContactHoldStart = () => {},
+  onContactHoldTick = () => {},
+  onContactHoldEnd = () => {}
 }) {
   if (!session || typeof session.advanceMs !== "function") {
     throw new TypeError("session with advanceMs() is required");
@@ -55,6 +58,7 @@ export function createCombatRuntime({
   let lastStateSignal = null;
   let lastFeedbackState = null;
   const activeByActor = new Map();
+  const contactHoldsByActor = new Map();
   // Returning shots share the authoritative scheduler without occupying the defender action slot.
   const returningProjectiles = new Map();
   const MAX_MIRROR_BOUNCES = 2;
@@ -81,7 +85,54 @@ export function createCombatRuntime({
     });
   }
 
+  function endContactHold(actorId, reason = "cancelled") {
+    const record = contactHoldsByActor.get(actorId);
+    if (!record) return false;
+    contactHoldsByActor.delete(actorId);
+    onContactHoldEnd(Object.freeze({ actorId, targetId:record.targetId,
+      skillId:record.skill.id, reason }));
+    return true;
+  }
+  function syncContactHoldsWithState(state) {
+    for(const hold of [...contactHoldsByActor.values()]){
+      const source=state.fighters[hold.actorId], target=state.fighters[hold.targetId];
+      const taken=Number(source?.damageTakenTotal);
+      if(!source||!target||source.hp<=0||target.hp<=0)
+        endContactHold(hold.actorId,"ko_or_absent");
+      else if(!Number.isFinite(taken)||taken<hold.damageTakenTotalAtStart)
+        endContactHold(hold.actorId,"actor_replaced");
+      else if(taken>hold.damageTakenTotalAtStart)
+        endContactHold(hold.actorId,"damage_taken");
+    }
+  }
+  function pulseContactHolds(atNowMs) {
+    for(const hold of [...contactHoldsByActor.values()]){
+      if(contactHoldsByActor.get(hold.actorId)!==hold)continue;
+      const duration=hold.skill.contactHold.maxDurationMs;
+      const endAt=duration?hold.startedAtClockMs+duration:Infinity;
+      const until=Math.min(endAt,atNowMs);
+      let count=0;
+      while(contactHoldsByActor.get(hold.actorId)===hold &&
+          hold.nextTickClockMs<=until){
+        const result=session.applyContactHoldTickV1({
+          actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,
+          atMs:Math.max(0,Number(session.snapshot().elapsedMs)-
+            (atNowMs-hold.nextTickClockMs))
+        });
+        if(!result.ok){endContactHold(hold.actorId,result.outcome);break;}
+        hold.nextTickClockMs+=hold.skill.contactHold.tickIntervalMs;
+        onContactHoldTick(Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
+          skillId:hold.skill.id,events:result.events}));
+        syncContactHoldsWithState(session.snapshot());
+        if(++count>2000)throw new Error("contactHold max pulse safety exceeded");
+      }
+      if(contactHoldsByActor.get(hold.actorId)===hold&&atNowMs>=endAt)
+        endContactHold(hold.actorId,"duration_expired");
+    }
+  }
+
   function emitStateIfChanged({ force = false } = {}) {
+    syncContactHoldsWithState(session.snapshot());
     const state = session.snapshot();
     const signal = stateSignal(state);
     if (force || signal !== lastStateSignal) {
@@ -423,6 +474,8 @@ export function createCombatRuntime({
       if (fighter.hp <= 0) cancelActionsForActor(fighter.id, { includeTargeted: true, reason: "ko" });
     }
     stopImmobilizedApproaches();
+    syncContactHoldsWithState(session.snapshot());
+    pulseContactHolds(current);
     emitStateIfChanged();
     return true;
   }
@@ -553,6 +606,12 @@ export function createCombatRuntime({
   ) {
     const current = now();
     const cancelled = [];
+    let endedContactHolds = 0;
+    for (const hold of [...contactHoldsByActor.values()]) {
+      if (hold.actorId === actorId || (includeTargeted && hold.targetId === actorId)) {
+        if (endContactHold(hold.actorId, reason)) endedContactHolds++;
+      }
+    }
 
     for (const record of activeRecords()) {
       const matchesActor = record.action.actorId === actorId;
@@ -598,9 +657,9 @@ export function createCombatRuntime({
     }
 
     return Object.freeze({
-      ok: cancelled.length > 0,
+      ok: cancelled.length > 0 || endedContactHolds > 0,
       outcome:
-        cancelled.length > 0
+        cancelled.length > 0 || endedContactHolds > 0
           ? "actions_cancelled"
           : "no_action",
       actorId,
@@ -1131,6 +1190,8 @@ export function createCombatRuntime({
         outcome: "disposed"
       });
     }
+    if (contactHoldsByActor.has(actorId))
+      return Object.freeze({ok:false,outcome:"contact_hold_active"});
     if (activeByActor.has(actorId)) {
       const record =
         activeByActor.get(actorId);
@@ -1844,9 +1905,27 @@ export function createCombatRuntime({
       });
     }
 
+    if (resolution.ok && resolution.outcome === "hit" &&
+        record.action.skill?.contactHold &&
+        Number(session.snapshot().fighters[actorId]?.hp) > 0 &&
+        Number(session.snapshot().fighters[targetId]?.hp) > 0 &&
+        !contactHoldsByActor.has(actorId)) {
+      const hold = {
+        actorId, targetId, skill: record.action.skill,
+        startedAtClockMs: current,
+        nextTickClockMs: current + record.action.skill.contactHold.tickIntervalMs,
+        damageTakenTotalAtStart:
+          Number(session.snapshot().fighters[actorId].damageTakenTotal) || 0
+      };
+      contactHoldsByActor.set(actorId, hold);
+      onContactHoldStart(Object.freeze({
+        actorId, targetId, skillId: hold.skill.id
+      }));
+    }
+
     return Object.freeze({
       ok: true,
-      outcome: "contact_resolved",
+      outcome: contactHoldsByActor.has(actorId) ? "contact_held" : "contact_resolved",
       actorId,
       targetId,
       skillId: record.action.skill?.id ?? null,
@@ -1857,10 +1936,9 @@ export function createCombatRuntime({
 
   function cancelActive(actorId = null) {
     if (actorId !== null) {
+      const held = endContactHold(actorId, "cancelled");
       const record = activeByActor.get(actorId);
-      if (!record) {
-        return false;
-      }
+      if (!record) return held;
       removeRecord(record);
       onProgress(idleProgress(actorId));
       return true;
@@ -1868,12 +1946,15 @@ export function createCombatRuntime({
 
     const records = activeRecords();
     for (const record of records) removeRecord(record);
+    const heldCount = contactHoldsByActor.size;
+    for (const hold of [...contactHoldsByActor.values()])
+      endContactHold(hold.actorId, "cancelled");
 
     for (const record of records) {
       if (!record.mirrorReturn) onProgress(idleProgress(record.action.actorId));
     }
 
-    return records.length > 0;
+    return records.length > 0 || heldCount > 0;
   }
 
   function dispose() {
@@ -1906,8 +1987,11 @@ export function createCombatRuntime({
     cancelActionsForActor,
     cancelActive,
     dispose,
+    hasContactHoldFor(actorId) {
+      return contactHoldsByActor.has(actorId);
+    },
     hasActiveActionFor(actorId) {
-      return activeByActor.has(actorId);
+      return activeByActor.has(actorId) || contactHoldsByActor.has(actorId);
     },
     activeActionFor(actorId) {
       const record =
