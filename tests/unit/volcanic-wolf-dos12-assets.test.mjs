@@ -74,8 +74,7 @@ for (const [action, frameMs, playbackMode] of [
     assert.equal(manifest.atlas.frameCount, 12);
     assert.equal(manifest.atlas.frameWidth, 384);
     assert.equal(manifest.atlas.frameHeight, 384);
-    const imageSize = (atlas.indexOf(Buffer.from('VP8X')) >= 0) ? true : atlas.length > 1000;
-    assert.ok(imageSize);
+    assert.ok(atlas.length > 1000, 'atlas WebP réel');
     const gif = read(`${folder}/${manifest.preview}`);
     assert.match(gif.toString('ascii',0,6), /^GIF8[79]a$/);
   });
