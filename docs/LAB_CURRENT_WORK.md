@@ -1,3 +1,17 @@
+## 2026-10-21 — Gouvernance assistant : accès et outils (documentation permanente)
+
+- **Demande auteur** : consigner durablement sa règle d'utilisation des accès et outils configurés ; éviter de réclamer manuellement des opérations GitHub sans avoir testé les connecteurs accessibles.
+- **Propriétaire** : gouvernance documentaire, aucun changement moteur, média, runtime ou catalogue.
+- **Base officielle** : `global-assets@01345ccd13581e7d93b7d975ae679e87ca2e2985`.
+- **Checkpoint de départ** : `checkpoint/global-assets-start-assistant-tool-access-2026-10-21`.
+- **Branche** : `work/global-assets-assistant-tool-access-2026-10-21`.
+- **Fichiers autorisés** : `AGENTS.md`, `docs/LAB_CHARTE.md` (§32), ce journal. Aucun autre fichier.
+- **Règle** : lire la charte, découvrir `functions.exec`/`ALL_TOOLS`, vérifier `mcp__GitHub__` et les autres outils adaptés, tester les accès réels avant toute affirmation d'indisponibilité. Ne pas promettre une permission non testée.
+- **Gate** : revue diff, `npm run ci` via Actions sur la branche, checkpoint GREEN documentaire, publication fast-forward sur `global-assets` seulement si CI verte.
+- **Statut** : documentation créée sur branche isolée ; CI et publication à vérifier.
+
+---
+
 ## 2026-10-21 — Loup volcanique DOS 12 frames (publié sur global-assets, validation en jeu à faire)
 
 - **Objectif** : importer course et attaque côté joueur/dos, deux séquences 12 PNG RGBA 512² ; course provisoire pour test en jeu, attaque approuvée.
