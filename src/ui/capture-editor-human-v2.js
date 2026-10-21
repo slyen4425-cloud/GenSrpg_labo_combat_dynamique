@@ -5364,6 +5364,11 @@ function appendHumanSkillEffectV1(
       tacticalEffectKindLabelV1(value)
     );
   }
+  if (hostSelector === "[data-skill-contact-hold-effects-host]") {
+    for (const option of kind.options) {
+      if (["persistent_zone", "scheduled_effect"].includes(option.value)) option.disabled = true;
+    }
+  }
 
   const scope = document.createElement("select");
   scope.dataset.skillEffectScope = "true";
@@ -12421,65 +12426,41 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
   );
 
-  listen(
-    skillEffectAddButton,
-    "click",
-    () => {
-      appendHumanSkillEffectV1(
-        root,
-        null,
-        statRegistry
-      );
-    }
-  );
-
-  listen(
-    skillEffectsHost,
-    "change",
-    (event) => {
-      const row =
-        event.target?.closest?.(
-          "[data-skill-effect-row]"
-        );
-      if (!row) {
-        return;
-      }
-
-      if (
-        event.target.matches(
-          "[data-skill-effect-kind], " +
-          "[data-skill-status-kind], " +
-          "[data-skill-status-stacking], " +
-          "[data-stack-threshold-enabled], " +
-          "[data-skill-status-intangible], " +
-          "[data-skill-status-visual-mode], " +
-          "[data-skill-zone-effect-kind], " +
-          "[data-skill-zone-status-kind], " +
-          "[data-skill-zone-status-stacking], " +
-          "[data-skill-zone-status-behavior]"
-        )
-      ) {
-        syncHumanSkillEffectRowV1(row);
-      }
-    }
-  );
-
-  listen(
-    skillEffectsHost,
-    "click",
-    (event) => {
-      const remove =
-        event.target?.closest?.(
-          "[data-skill-effect-remove]"
-        );
-      if (!remove) {
-        return;
-      }
-      remove.closest(
-        "[data-skill-effect-row]"
-      )?.remove();
-    }
-  );
+  listen(skillEffectAddButton, "click", () => {
+    appendHumanSkillEffectV1(root, null, statRegistry);
+  });
+  listen(contactHoldEnabled, "change", () => {
+    contactHoldSettings.hidden = !contactHoldEnabled.checked;
+  });
+  listen(contactHoldEffectAddButton, "click", () => {
+    appendHumanSkillEffectV1(root, null, statRegistry, null,
+      "[data-skill-contact-hold-effects-host]");
+  });
+  // The same tactical row owner handles both lists, but each host is a
+  // separate explicit source. A repeated effect cannot silently become an
+  // immediate impact effect (or vice versa).
+  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost]) {
+    listen(effectsHost, "change", event => {
+      const row = event.target?.closest?.("[data-skill-effect-row]");
+      if (!row) return;
+      if (event.target.matches(
+        "[data-skill-effect-kind], " +
+        "[data-skill-status-kind], " +
+        "[data-skill-status-stacking], " +
+        "[data-stack-threshold-enabled], " +
+        "[data-skill-status-intangible], " +
+        "[data-skill-status-visual-mode], " +
+        "[data-skill-zone-effect-kind], " +
+        "[data-skill-zone-status-kind], " +
+        "[data-skill-zone-status-stacking], " +
+        "[data-skill-zone-status-behavior]"
+      )) syncHumanSkillEffectRowV1(row);
+    });
+    listen(effectsHost, "click", event => {
+      const remove = event.target?.closest?.("[data-skill-effect-remove]");
+      if (remove) remove.closest("[data-skill-effect-row]")?.remove();
+    });
+  }
 
   const creatureOwnedSelectors = [
     '[data-editor-panel="creature"] input',
