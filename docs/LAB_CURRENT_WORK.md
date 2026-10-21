@@ -1,3 +1,16 @@
+## 2026-10-21 — Loup volcanique DOS 12 frames (préparation import ; attente du ZIP)
+
+- **Objectif** : importer course et attaque côté joueur/dos, deux séquences 12 PNG RGBA 512² ; course provisoire pour test en jeu, attaque approuvée.
+- **Gouvernance** : propriétaire Asset Input global-assets, base `25310eee861f9b2e8f4e929cb8e50f158eeb09d1` ; checkpoint `checkpoint/global-assets-start-loup-volcanique-dos12-2026-10-21`, branche `work/global-assets-loup-volcanique-dos12-2026-10-21`.
+- **Binaires attendus** : `_incoming/LOUP_VOLCANIQUE_DOS_12_COURSE_ATTAQUE_PREVIEW.zip`, SHA256 `bebd0e3735eccc6e33e510b1daf9657682081f7997e4b1304f42b3376c47eafe`, 41 entrées ZIP, 24 PNG uniques et 2 atlas WebP ; marqueurs alpha min 52px.
+- **Autorisé** : `assets/library/capture/creatures/loup_volcanique/animations/{movement,attack}/dos/**`, catalogue global, script/workflow import, sentinelles d'intégrité et docs.
+- **Protégé** : modèles `runtime/`, animation face GREEN, UI/moteur, `main`, `gh-pages`, `Zombicide-40k`.
+- **Procédure** : importer les vrais PNG inchangés, enregistrer 2 assetIds `movement-dos-12-v1` et `attack-dos-12-v1`, tester `npm run ci`, publier seulement après CI verte, checkpoint GREEN sans préjuger du test visuel en jeu.
+- **État** : script et workflow GitHub préparés ; **aucun binaire dos importé sur la branche à cette étape**, aucune publication officielle effectuée.
+- Détails : `docs/LAB_LOUP_VOLCANIQUE_DOS12_ANIMATIONS_2026-10-21.md`.
+
+---
+
 ## 2026-10-21 — Loup volcanique : course + attaque face 12 frames (ASSETS PUBLIÉS, GREEN)
 
 - **Source validée** : deux animations face côté adversaire, mouvement/course en boucle et attaque une fois, 12 PNG 512×512 RGBA chacune ; auteur a validé les deux GIF et la planche le 21 octobre 2026.
