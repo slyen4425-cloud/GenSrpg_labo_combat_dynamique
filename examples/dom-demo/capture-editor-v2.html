@@ -37,6 +37,10 @@
         <span>Capacités</span>
         <small>Effets · timing · FX</small>
       </button>
+      <button type="button" data-editor-tab="music">
+        <span>Musiques</span>
+        <small>Bandes-son · ambiances</small>
+      </button>
     </nav>
 
     <section class="card transfer-card" aria-label="Import et export Capture">
@@ -73,6 +77,85 @@
       <p class="note" data-transfer-state data-tone="info">
         Par défaut, un import refuse d’écraser un ID existant différent.
       </p>
+    </section>
+
+    <section class="editor-panel" data-editor-panel="music" hidden>
+      <article class="card" data-soundtrack-editor>
+        <div class="card-title">
+          <span class="step">♫</span>
+          <div>
+            <h2>Musiques et ambiances du jeu</h2>
+            <p>Chaque jeu possède ses propres choix. La bibliothèque peut réunir les sons de l'application, les sons personnels et ceux du projet. Ce panneau produit seulement la configuration JSON, sans copier ni publier de média.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>Identifiant du jeu
+            <input data-soundtrack-project-id value="capture-demo" autocomplete="off" spellcheck="false" aria-label="Identifiant du jeu">
+          </label>
+          <div>
+            <button type="button" class="secondary-action" data-soundtrack-new-project>Nouveau jeu avec cet identifiant</button>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>Contexte sonore
+            <input data-soundtrack-scene-id value="capture:combat:normal" list="soundtrack-scene-suggestions" autocomplete="off" spellcheck="false">
+            <datalist id="soundtrack-scene-suggestions">
+              <option value="capture:combat:normal">Combat standard</option>
+              <option value="capture:combat:boss">Combat de boss</option>
+              <option value="capture:combat:victory">Victoire</option>
+              <option value="capture:combat:defeat">Défaite</option>
+            </datalist>
+          </label>
+          <label>Canal sonore
+            <select data-soundtrack-channel>
+              <option value="music">Musique</option>
+              <option value="ambience">Ambiance continue</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid two">
+          <label>Choisir une piste de la bibliothèque
+            <select data-soundtrack-asset-id aria-label="Piste audio"></select>
+          </label>
+          <div>
+            <button type="button" class="secondary-action" data-soundtrack-add>Ajouter à la liste</button>
+          </div>
+        </div>
+        <p class="note">Les pistes peuvent être communes à tous les modes, mais leurs paramètres sont enregistrés séparément par jeu et par contexte. Les effets de compétences restent gérés dans leurs sections actuelles.</p>
+        <h3>Liste de lecture</h3>
+        <ol data-soundtrack-track-list></ol>
+        <div class="grid two">
+          <label>Ordre des pistes
+            <select data-soundtrack-order>
+              <option value="sequence">À la suite</option>
+              <option value="shuffle">Aléatoire (sans répétition immédiate)</option>
+            </select>
+          </label>
+          <label>Fondu de transition (secondes)
+            <input data-soundtrack-fade type="number" min="0" max="10" step="0.1" value="0.7">
+          </label>
+          <label>Volume du canal (0-100 %)
+            <input data-soundtrack-volume type="range" min="0" max="100" step="1" value="75">
+          </label>
+          <label class="switch-line">
+            <input data-soundtrack-repeat type="checkbox" checked>
+            <span>Rejouer les pistes en boucle</span>
+          </label>
+        </div>
+        <div class="skill-save-actions">
+          <button type="button" class="primary-action" data-soundtrack-save>Enregistrer ce contexte</button>
+          <button type="button" class="secondary-action" data-soundtrack-export>Exporter la bande-son JSON</button>
+        </div>
+        <div class="grid two">
+          <label>Charger un catalogue sonore (JSON)
+            <input type="file" accept=".json,application/json" data-soundtrack-catalog-file>
+          </label>
+          <label>Réimporter la bande-son d'un jeu (JSON)
+            <input type="file" accept=".json,application/json" data-soundtrack-project-file>
+          </label>
+        </div>
+        <p class="note" data-soundtrack-status data-tone="info" role="status">Aucun média encore intégré : le catalogue musical de vitrine sera raccordé après sa fourniture. Tu peux déjà préparer et exporter les configurations.</p>
+      </article>
     </section>
 
     <section class="editor-panel" data-editor-panel="creature">
