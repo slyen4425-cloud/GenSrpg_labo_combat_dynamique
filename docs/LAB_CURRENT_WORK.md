@@ -1,4 +1,4 @@
-## 2026-10-21 — Loup volcanique DOS 12 frames (médias importés, validation finale en cours)
+## 2026-10-21 — Loup volcanique DOS 12 frames (publié sur global-assets, validation en jeu à faire)
 
 - **Objectif** : importer course et attaque côté joueur/dos, deux séquences 12 PNG RGBA 512² ; course provisoire pour test en jeu, attaque approuvée.
 - **Gouvernance** : propriétaire Asset Input global-assets, base `25310eee861f9b2e8f4e929cb8e50f158eeb09d1` ; checkpoint `checkpoint/global-assets-start-loup-volcanique-dos12-2026-10-21`, branche `work/global-assets-loup-volcanique-dos12-2026-10-21`.
@@ -7,7 +7,8 @@
 - **Protégé** : modèles `runtime/`, animation face GREEN, UI/moteur, `main`, `gh-pages`, `Zombicide-40k`.
 - **Procédure** : importer les vrais PNG inchangés, enregistrer 2 assetIds `movement-dos-12-v1` et `attack-dos-12-v1`, tester `npm run ci`, publier seulement après CI verte, checkpoint GREEN sans préjuger du test visuel en jeu.
 - **État vérifié** : archive déposée par l'auteur et import automatique terminé avec SUCCESS (`39606938888`). 24 PNG RGBA 512×512, 2 atlas WebP, 2 manifestes et previews présents physiquement en branche. Catalogue : **197 assets, 104 sprites**, IDs sans doublon. Sentinelle permanente ajoutée `tests/unit/volcanic-wolf-dos12-assets.test.mjs`, contrôle des SHA source/frame/atlas, de la transparence et du statut provisoire du cycle de course.
-- **Publication** : encore conditionnée au SUCCESS de la CI sur la documentation finale, diff limité au lot, puis checkpoint GREEN technique. Le test en jeu de la course reste à faire ; aucune preuve de raccord automatique de la fiche créature.
+- **Publication contrôlée** : CI médias et sentinelles successives SUCCESS (runs `39606938888`, `39607226980`, `39607271795`, `39607355896`). Diff strictement limité aux assets DOS, catalogue, script/workflow, tests et documentation. Fast-forward `global-assets` effectué sur `b869d733be4299bbcc7cb322b9a5e20827424bf6`, à confirmer par CI sur l'état final avant checkpoint GREEN technique.
+- **Essai en jeu** : course `approved_for_ingame_trial`, pas de validation de la course en combat ; aucun changement de moteur ni de fiche créature (pas de raccord automatique affirmé).
 - Détails : `docs/LAB_LOUP_VOLCANIQUE_DOS12_ANIMATIONS_2026-10-21.md`.
 
 ---
