@@ -121,6 +121,17 @@
       "chargeTimeReductionPctPerPoint": 0,
       "maxHpPerPoint": 0,
       "damageReductionPctPerPoint": 0
+    },
+    {
+      "id": "nature",
+      "label": "Nature",
+      "damageChannel": "nature",
+      "resistanceChannel": "nature",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 0,
+      "damageReductionPctPerPoint": 0
     }
   ]
 }
