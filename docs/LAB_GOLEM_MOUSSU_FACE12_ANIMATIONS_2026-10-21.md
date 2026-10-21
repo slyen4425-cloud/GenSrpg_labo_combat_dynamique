@@ -44,3 +44,13 @@ Le lot concerne **Asset Input / bibliothèque globale uniquement** et ne crée a
 - Catalogue enrichi de deux IDs ; ni les modèles runtime ni les moteurs ne sont modifiés.
 - La publication globale exige la CI sur la nouvelle branche, puis checkpoint technique GREEN.
 - Le raccord de bibliothèque ne constitue pas une preuve d'affectation automatique dans le runtime.
+
+
+## Publication et contrôles réalisés
+
+- Import du ZIP auteur : workflow 39635452666 (SUCCESS), médias préservés octet pour octet via SHA Git.
+- Branche de publication rebasée par copie contrôlée : `work/global-assets-golem-moussu-face12-publish-2026-10-21` ; base conservant la charte et `AGENTS.md`.
+- Commit de médias et tests : `3b7cc98f12ec20939e0fb317d5bc1aecc62e6c1a` ; CI 39643949492 (SUCCESS).
+- `global-assets` fast-forward exécuté, checkpoint `checkpoint/global-assets-golem-moussu-face12-green-2026-10-21` créé.
+- 34 fichiers dans `animations/` (24 PNG, 2 atlas, 2 manifestes, 6 previews), 2 IDs stables catalogués. Modèles runtime et animations du loup non modifiés.
+- **Raccord effectué : bibliothèque / catalogue.** L'affectation automatique aux mouvements et attaques de la fiche en combat n'a pas été prétendue ni testée dans ce lot.
