@@ -1,4 +1,4 @@
-## 2026-10-21 — Golem moussu DOS 12 frames (chantier actif ; attente des médias pour import)
+## 2026-10-21 — Golem moussu DOS 12 frames (ZIP et 24 frames importés, publication à valider)
 
 - **Décision** : publier mouvement + attaque DOS, 12 PNG 512×512 chacune, utilisateur valide l'attaque et autorise l'essai en jeu du mouvement sans le valider définitivement.
 - **Base exacte** : `global-assets@73532470b2429222ec10a178146b8f941be7b648` ; checkpoint `checkpoint/global-assets-start-golem-moussu-dos12-2026-10-21` ; branche isolée `work/global-assets-golem-moussu-dos12-2026-10-21`.
@@ -7,7 +7,9 @@
 - **Zones protégées** : vues/runtime officielles, animations FACE, toutes autres créatures, UI/moteur/règles, `main`, `Zombicide-40k`.
 - **Procédure** : script `scripts/import_golem_moussu_dos12.py`, workflow `.github/workflows/import-golem-moussu-dos12.yml`; sentinelle installée seulement lorsque le ZIP réel arrive.
 - **Contrôles** : archive SHA+CRC, 24 frames distinctes, marges, 2 atlas WebP, 2 assetIds, unicité, CI sur médias, contrôle diff, checkpoint GREEN seulement après réussite.
-- **État réel** : connecteur GitHub testé et écriture de la préparation effectuée. **Les médias DOS ne sont pas encore présents sur GitHub** au moment de cette ligne ; ni CI sur médias ni publication officielle annoncées.
+- **État vérifié le 21 octobre** : archive reçue sur la branche et import GitHub Actions `39665471395` **SUCCESS** ; 24 PNG réels, 2 atlas, 2 manifestes et previews présents dans `animations/{movement,attack}/dos`. Catalogue 201 assets / 108 sprites, 201 IDs uniques. Sentinelle `tests/unit/golem-moussu-dos12-assets.test.mjs` physiquement présente. Le diff de branche est strictement en avance de 7 commits sur `global-assets` (behind 0) ; aucune modification des modèles runtime/face.
+- **Validation artistique** : attaque DOS approuvée ; mouvement DOS `approved_for_ingame_trial`, à confirmer seulement par test en jeu.
+- **Gate de clôture** : obtenir CI SUCCESS sur le dernier HEAD, revue finale, publication par fast-forward sur `global-assets` puis checkpoint GREEN technique. Le moteur et l'affectation automatique à la fiche combat restent hors périmètre.
 - **Détails** : `docs/LAB_GOLEM_MOUSSU_DOS12_ANIMATIONS_2026-10-21.md`.
 
 ---
