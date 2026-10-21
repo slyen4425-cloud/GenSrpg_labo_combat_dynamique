@@ -2256,6 +2256,7 @@ export function buildHumanCreatureDraftV3(fields) {
   const hasAttackPlacement = (rangedAttackVisual !== null || rangedAttackBackVisual !== null) &&
     Object.values(attackPlacement).some(point => point.x !== 0 || point.y !== 0);
   const movementAssetId = optionalText(fields?.visual?.movementAssetId);
+  const movementBackAssetId = optionalText(fields?.visual?.movementBackAssetId);
   const movementVisual = movementAssetId === null ? null : {
     assetId: movementAssetId,
     mode: fields?.visual?.movementMode ?? "roll",
@@ -2264,9 +2265,22 @@ export function buildHumanCreatureDraftV3(fields) {
     frameCount: finiteNumber(fields?.visual?.movementFrameCount ?? 1, "Frames mouvement"),
     transitionMs: finiteNumber(fields?.visual?.movementTransitionMs ?? 80, "Transition mouvement")
   };
-  const movementScaleByView = movementVisual === null ? null : {
-    player: finiteNumber(fields?.visual?.movementPlayerScale ?? movementVisual.displayScale, "Taille déplacement joueur"),
-    opponent: finiteNumber(fields?.visual?.movementOpponentScale ?? movementVisual.displayScale, "Taille déplacement adversaire")
+  // Both movement views use the same validated frame and playback
+  // settings; separate asset IDs never introduce a second animation engine.
+  const movementBackVisual = movementBackAssetId === null ? null : {
+    ...(movementVisual ?? {
+      mode: fields?.visual?.movementMode ?? "roll",
+      displayScale: finiteNumber(fields?.visual?.movementDisplayScale ?? 1, "Taille mouvement"),
+      rotationTurns: finiteNumber(fields?.visual?.movementRotationTurns ?? 3, "Tours du roulement"),
+      frameCount: finiteNumber(fields?.visual?.movementFrameCount ?? 1, "Frames mouvement"),
+      transitionMs: finiteNumber(fields?.visual?.movementTransitionMs ?? 80, "Transition mouvement")
+    }),
+    assetId: movementBackAssetId
+  };
+  const commonMovement = movementVisual ?? movementBackVisual;
+  const movementScaleByView = commonMovement === null ? null : {
+    player: finiteNumber(fields?.visual?.movementPlayerScale ?? commonMovement.displayScale, "Taille déplacement joueur"),
+    opponent: finiteNumber(fields?.visual?.movementOpponentScale ?? commonMovement.displayScale, "Taille déplacement adversaire")
   };
   const attackScaleByView = (rangedAttackVisual === null && rangedAttackBackVisual === null) ? null : {
     player: finiteNumber(fields?.visual?.rangedAttackPlayerScale ?? rangedAttackBackVisual?.displayScale ?? rangedAttackVisual?.displayScale ?? 1, "Taille attaque joueur"),
@@ -2274,11 +2288,12 @@ export function buildHumanCreatureDraftV3(fields) {
   };
   const movementFrameMs = finiteNumber(fields?.visual?.movementFrameMs ?? 0, "Durée frame déplacement");
   const movementPlaybackMode = fields?.visual?.movementPlaybackMode ?? "loop";
-  const movementPlayback = movementVisual === null ? null : { frameMs: movementFrameMs, mode: movementPlaybackMode };
+  const movementPlayback = commonMovement === null ? null : { frameMs: movementFrameMs, mode: movementPlaybackMode };
+  const hasAppearanceV9 = movementBackVisual !== null;
   const hasAppearanceV8 = (
     (movementScaleByView !== null && (
-      movementScaleByView.player !== movementVisual.displayScale ||
-      movementScaleByView.opponent !== movementVisual.displayScale)) ||
+      movementScaleByView.player !== commonMovement.displayScale ||
+      movementScaleByView.opponent !== commonMovement.displayScale)) ||
     (attackScaleByView !== null && (
       attackScaleByView.player !== (rangedAttackBackVisual?.displayScale ?? rangedAttackVisual?.displayScale) ||
       attackScaleByView.opponent !== (rangedAttackVisual?.displayScale ?? rangedAttackBackVisual?.displayScale))) ||
@@ -2322,7 +2337,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))))),
+              hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)))))),
             displayScale,
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
@@ -2340,12 +2355,13 @@ export function buildHumanCreatureDraftV3(fields) {
                 ...base.presentation.visual,
                 ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
                 ...(movementVisual === null ? {} : { movement: movementVisual }),
+                ...(movementBackVisual === null ? {} : { movementBack: movementBackVisual }),
                 ...(rangedAttackVisual === null ? {} : { rangedAttack: rangedAttackVisual }),
                 ...(rangedAttackBackVisual === null ? {} : { rangedAttackBack: rangedAttackBackVisual }),
                 ...(hasAttackPlacement ? { rangedAttackPlacement: attackPlacement } : {}),
-                ...(hasAppearanceV8 && movementScaleByView !== null ? { movementScaleByView } : {}),
+                ...((hasAppearanceV8 || hasAppearanceV9) && movementScaleByView !== null ? { movementScaleByView } : {}),
                 ...(hasAppearanceV8 && attackScaleByView !== null ? { rangedAttackScaleByView: attackScaleByView } : {}),
-                ...(hasAppearanceV8 && movementPlayback !== null ? { movementPlayback } : {})
+                ...((hasAppearanceV8 || hasAppearanceV9) && movementPlayback !== null ? { movementPlayback } : {})
               }
             })
           }
@@ -4087,6 +4103,7 @@ function writeCreatureRecordFields(
       presentation?.visual?.dodge?.offsetY ?? 0
     ],
     ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
+    ["[data-creature-movement-back-visual]", presentation?.visual?.movementBack?.assetId ?? ""],
     ["[data-creature-movement-mode]", presentation?.visual?.movement?.mode ?? "roll"],
     ["[data-creature-movement-scale]", presentation?.visual?.movement?.displayScale ?? 1],
     ["[data-creature-movement-player-scale]", presentation?.visual?.movementScaleByView?.player ?? presentation?.visual?.movement?.displayScale ?? 1],
@@ -4312,6 +4329,7 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-dodge-offset-x]", 0],
     ["[data-creature-dodge-offset-y]", 0],
     ["[data-creature-movement-visual]", ""],
+    ["[data-creature-movement-back-visual]", ""],
     ["[data-creature-movement-mode]", "roll"],
     ["[data-creature-movement-scale]", 1],
     ["[data-creature-movement-player-scale]", 1],
@@ -9108,6 +9126,7 @@ function readCreatureFields(
         "[data-creature-dodge-offset-y]"
       ),
       movementAssetId: selectedValue(root, "[data-creature-movement-visual]"),
+      movementBackAssetId: selectedValue(root, "[data-creature-movement-back-visual]"),
       movementMode: selectedValue(root, "[data-creature-movement-mode]"),
       movementDisplayScale: numericValue(root, "[data-creature-movement-scale]"),
       movementPlayerScale: numericValue(root, "[data-creature-movement-player-scale]"),
