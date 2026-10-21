@@ -165,7 +165,7 @@ try {
       while (touchCount === 0 && performance.now() - startedWaitingAt < 2300) {
         await new Promise(resolve => setTimeout(resolve, 35));
       }
-      if (touchCount !== 1) throw Error("real melee contact did not engage exactly once");
+      if (touchCount !== 1) throw Error("real melee contact count="+touchCount+" actor="+JSON.stringify(player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON())+" target="+JSON.stringify(flying.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON()));
       const bodyTracks = player.querySelector("[data-demo-motion]").getAnimations();
       const shadowTracks = a.getAnimations();
       if (!bodyTracks.some(x => x.playState === "paused") ||
