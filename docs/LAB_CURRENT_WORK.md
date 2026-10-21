@@ -1,3 +1,13 @@
+## 2026-10-21 — Audio D : lecture de scène dans la preview Combat (lot isolé)
+- Décision auteur : Architecture sonore en place avant fichiers de vitrine ; son présent uniquement si un média autorisé et résolvable existe, sinon **silence sans bloquer Combat**. L'audio doit s'arrêter proprement au retour de test et au `pagehide`.
+- Base GREEN technique `gh-pages@ce4ddd47389ab1c5fa16f12b4cc3b52bcdcd39ce` (UI Musiques CI cinq jobs), START `checkpoint/lab-start-soundtrack-preview-runtime-v1-2026-10-21`, branche `work/lab-soundtrack-preview-runtime-v1-2026-10-21`.
+- Périmètre : nouveau module `src/adapters/audio/combat-soundtrack-preview-bridge-v1.js` (raccorder `SoundtrackSession` à `SoundtrackProject` avec validation des médias disponibles), branchement strict du cycle `mountPreview/dispose` dans `examples/dom-demo/capture-editor-v2.js`, tests `tests/unit/combat-soundtrack-preview-bridge-v1.test.mjs`, documentation et journal. Le son de combat standard ne démarre que si la scène existe et possède des pistes autorisées, sans modifier Combat Runtime ou interface Skills/Creature.
+- Propriétaires : sortie DOM `createDomSoundtrackOutputV1` et session musique continue existantes; `DomCombatAudio` reste propriétaire exclusif des FX de capacités et créatures. Adaptateur consulte `soundtrackEditor.snapshot()`, `soundtrackEditor.catalog()` en lecture seule. Toute erreur audio (média refusé, autoplay bloqué) ne doit jamais empêcher l'accès au combat.
+- Gel : `main`, `global-assets`, données/audios privés, sortie FX existante, champs créatures, Loup, ombres, collisions, temps, dégâts, UI hors deux imports et `mountPreview`, Explorer/Builder, menu Shell.
+- Tests : silence sans scène, métadonnées sans binaire, musique autorisée seulement, transition standard/boss, stop/dispose idempotents, absence de ghost audio, lancement combat réel Chromium et CI 5 jobs. Victoire/défaite jouées sur événements réels nécessitent un raccord ultérieur spécifique (pas de résultat deviné). Pas de GREEN sonore Android avant fourniture médias.
+
+---
+
 ### Recadrage sentinelle navigateur (avant modification)
 - Pour valider le montage et le clic réel de l'onglet Musiques dans le même éditeur Chromium que les capacités et le Loup, autoriser une extension bornée de `tests/browser/capture-creature-library-smoke.mjs`. Ajouter seulement un paramètre `verify-soundtrack-authoring` qui exerce tab + nouveau projet + scène silencieuse + save. Pas de changement aux autres sondes, au mécanisme réseau, ni aux modèles Combat. Runner déjà propriétaire de la vraie chaîne navigateur ; pas de nouveau moteur de test ni de nouveau workflow.
 
