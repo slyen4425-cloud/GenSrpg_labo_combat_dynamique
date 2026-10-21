@@ -37,7 +37,10 @@ export function createCombatRuntime({
   onStarted = () => {},
   onRelease = () => {},
   onResolved = () => {},
-  onInterrupted = () => {}
+  onInterrupted = () => {},
+  onContactHoldStart = () => {},
+  onContactHoldTick = () => {},
+  onContactHoldEnd = () => {}
 }) {
   if (!session || typeof session.advanceMs !== "function") {
     throw new TypeError("session with advanceMs() is required");
@@ -55,6 +58,7 @@ export function createCombatRuntime({
   let lastStateSignal = null;
   let lastFeedbackState = null;
   const activeByActor = new Map();
+  const contactHoldsByActor = new Map();
   // Returning shots share the authoritative scheduler without occupying the defender action slot.
   const returningProjectiles = new Map();
   const MAX_MIRROR_BOUNCES = 2;
@@ -81,7 +85,54 @@ export function createCombatRuntime({
     });
   }
 
+  function endContactHold(actorId, reason = "cancelled") {
+    const record = contactHoldsByActor.get(actorId);
+    if (!record) return false;
+    contactHoldsByActor.delete(actorId);
+    onContactHoldEnd(Object.freeze({ actorId, targetId:record.targetId,
+      skillId:record.skill.id, reason }));
+    return true;
+  }
+  function syncContactHoldsWithState(state) {
+    for(const hold of [...contactHoldsByActor.values()]){
+      const source=state.fighters[hold.actorId], target=state.fighters[hold.targetId];
+      const taken=Number(source?.damageTakenTotal);
+      if(!source||!target||source.hp<=0||target.hp<=0)
+        endContactHold(hold.actorId,"ko_or_absent");
+      else if(!Number.isFinite(taken)||taken<hold.damageTakenTotalAtStart)
+        endContactHold(hold.actorId,"actor_replaced");
+      else if(taken>hold.damageTakenTotalAtStart)
+        endContactHold(hold.actorId,"damage_taken");
+    }
+  }
+  function pulseContactHolds(atNowMs) {
+    for(const hold of [...contactHoldsByActor.values()]){
+      if(contactHoldsByActor.get(hold.actorId)!==hold)continue;
+      const duration=hold.skill.contactHold.maxDurationMs;
+      const endAt=duration?hold.startedAtClockMs+duration:Infinity;
+      const until=Math.min(endAt,atNowMs);
+      let count=0;
+      while(contactHoldsByActor.get(hold.actorId)===hold &&
+          hold.nextTickClockMs<=until){
+        const result=session.applyContactHoldTickV1({
+          actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,
+          atMs:Math.max(0,Number(session.snapshot().elapsedMs)-
+            (atNowMs-hold.nextTickClockMs))
+        });
+        if(!result.ok){endContactHold(hold.actorId,result.outcome);break;}
+        hold.nextTickClockMs+=hold.skill.contactHold.tickIntervalMs;
+        onContactHoldTick(Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
+          skillId:hold.skill.id,events:result.events}));
+        syncContactHoldsWithState(session.snapshot());
+        if(++count>2000)throw new Error("contactHold max pulse safety exceeded");
+      }
+      if(contactHoldsByActor.get(hold.actorId)===hold&&atNowMs>=endAt)
+        endContactHold(hold.actorId,"duration_expired");
+    }
+  }
+
   function emitStateIfChanged({ force = false } = {}) {
+    syncContactHoldsWithState(session.snapshot());
     const state = session.snapshot();
     const signal = stateSignal(state);
     if (force || signal !== lastStateSignal) {
