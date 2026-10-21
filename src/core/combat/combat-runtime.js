@@ -474,6 +474,8 @@ export function createCombatRuntime({
       if (fighter.hp <= 0) cancelActionsForActor(fighter.id, { includeTargeted: true, reason: "ko" });
     }
     stopImmobilizedApproaches();
+    syncContactHoldsWithState(session.snapshot());
+    pulseContactHolds(current);
     emitStateIfChanged();
     return true;
   }
@@ -604,6 +606,10 @@ export function createCombatRuntime({
   ) {
     const current = now();
     const cancelled = [];
+    for (const hold of [...contactHoldsByActor.values()]) {
+      if (hold.actorId === actorId || (includeTargeted && hold.targetId === actorId))
+        endContactHold(hold.actorId, reason);
+    }
 
     for (const record of activeRecords()) {
       const matchesActor = record.action.actorId === actorId;
@@ -1182,6 +1188,8 @@ export function createCombatRuntime({
         outcome: "disposed"
       });
     }
+    if (contactHoldsByActor.has(actorId))
+      return Object.freeze({ok:false,outcome:"contact_hold_active"});
     if (activeByActor.has(actorId)) {
       const record =
         activeByActor.get(actorId);
@@ -1908,10 +1916,9 @@ export function createCombatRuntime({
 
   function cancelActive(actorId = null) {
     if (actorId !== null) {
+      const held = endContactHold(actorId, "cancelled");
       const record = activeByActor.get(actorId);
-      if (!record) {
-        return false;
-      }
+      if (!record) return held;
       removeRecord(record);
       onProgress(idleProgress(actorId));
       return true;
@@ -1919,12 +1926,15 @@ export function createCombatRuntime({
 
     const records = activeRecords();
     for (const record of records) removeRecord(record);
+    const heldCount = contactHoldsByActor.size;
+    for (const hold of [...contactHoldsByActor.values()])
+      endContactHold(hold.actorId, "cancelled");
 
     for (const record of records) {
       if (!record.mirrorReturn) onProgress(idleProgress(record.action.actorId));
     }
 
-    return records.length > 0;
+    return records.length > 0 || heldCount > 0;
   }
 
   function dispose() {
@@ -1957,8 +1967,11 @@ export function createCombatRuntime({
     cancelActionsForActor,
     cancelActive,
     dispose,
+    hasContactHoldFor(actorId) {
+      return contactHoldsByActor.has(actorId);
+    },
     hasActiveActionFor(actorId) {
-      return activeByActor.has(actorId);
+      return activeByActor.has(actorId) || contactHoldsByActor.has(actorId);
     },
     activeActionFor(actorId) {
       const record =
