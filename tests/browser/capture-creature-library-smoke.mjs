@@ -197,6 +197,31 @@ const server = createServer(async (req, res) => {
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
+    // Soundtrack UI: exercise the real tab and saved silent scene with no uploaded media.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-soundtrack-authoring")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          try {
+            const tab=document.querySelector('[data-editor-tab="music"]');
+            const panel=document.querySelector('[data-editor-panel="music"]');
+            if(!tab||!panel) throw Error("missing music tab");
+            tab.click();
+            if(panel.hidden||tab.dataset.active!=="true")throw Error("tab not activated");
+            const pick=selector=>panel.querySelector('[data-soundtrack-'+selector+']');
+            if(!pick("track-list").textContent.includes("silencieux"))throw Error("audio editor did not mount");
+            pick("project-id").value="capture-browser-test";
+            pick("new-project").click();
+            pick("save").click();
+            if(!pick("status").textContent.includes("Configuration enregistrée"))
+              throw Error("silent scene not saved");
+            document.documentElement.dataset.soundtrackAuthoringProbe="ok:tab:new-project:silent-save";
+          }catch(error){document.documentElement.dataset.soundtrackAuthoringProbe="ERROR:"+error.message;}
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     // Actual editor/preview roster rendering, not a simulated roster.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url,"http://localhost").searchParams.has("verify-roster-menu-teams")) {
@@ -1483,6 +1508,12 @@ try {
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
   assertAquaHealSkill(normalDom, "normal browser bootstrap");
+  const soundtrackDom=await dumpDom(url+"?verify-soundtrack-authoring=1");
+  assertCreatures(soundtrackDom,"soundtrack authoring real Chrome");
+  const soundtrackProbe=soundtrackDom.match(/data-soundtrack-authoring-probe="([^"]+)"/)?.[1]??"missing";
+  if(soundtrackProbe!=="ok:tab:new-project:silent-save")
+    throw Error("Real Capture music tab / project config save failed: "+soundtrackProbe);
+  console.log("Soundtrack authoring Chrome: music tab, new independent game, silent-scene save verified");
   const movementDom=await dumpDom(url+"?verify-movement-face-back=1");
   assertCreatures(movementDom,"Loup movement FACE/DOS authoring real Chrome");
   const movementProbe=movementDom.match(/data-movement-face-back-probe="([^"]+)"/)?.[1]??"missing";
