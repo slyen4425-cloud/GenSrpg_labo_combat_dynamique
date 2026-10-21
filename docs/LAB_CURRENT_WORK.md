@@ -8,7 +8,7 @@
 - **Fichiers autorisés** : `AGENTS.md`, `docs/LAB_CHARTE.md` (§32), ce journal. Aucun autre fichier.
 - **Règle** : lire la charte, découvrir `functions.exec`/`ALL_TOOLS`, vérifier `mcp__GitHub__` et les autres outils adaptés, tester les accès réels avant toute affirmation d'indisponibilité. Ne pas promettre une permission non testée.
 - **Gate** : revue diff, `npm run ci` via Actions sur la branche, checkpoint GREEN documentaire, publication fast-forward sur `global-assets` seulement si CI verte.
-- **Statut** : documentation créée sur branche isolée ; CI et publication à vérifier.
+- **Statut** : documentation permanente créée et contrôlée dans `AGENTS.md` et la charte §32 ; CI du lot documentaire SUCCESS sur `2931b03d7c80fcba197a01527a1e9c03b613b0a0` (run `39637182971`). Publication `global-assets` et checkpoint GREEN après nouvelle CI du commit de clôture.
 
 ---
 
