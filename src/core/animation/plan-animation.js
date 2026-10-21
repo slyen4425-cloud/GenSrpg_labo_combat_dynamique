@@ -621,6 +621,11 @@ export function planAnimation({ event, actor, profile }) {
       if (!cfg) {
         throw new RangeError(`Profile ${profile.id} has no aerial preset`);
       }
+      const shadowApexScale = Number(cfg.shadowApexScale ?? 0.86);
+      if (!Number.isFinite(shadowApexScale) ||
+          shadowApexScale < 0.65 || shadowApexScale > 1) {
+        throw new RangeError("specialMoves.aerial.shadowApexScale must be 0.65..1");
+      }
 
       const target = visualTarget(event);
       const perspectiveScale =
@@ -658,7 +663,7 @@ export function planAnimation({ event, actor, profile }) {
             ground: {
               translateX: target.x * apexProgress,
               translateY: target.y * apexProgress,
-              scale: 1 + (perspectiveScale - 1) * apexProgress
+              scale: (1 + (perspectiveScale - 1) * apexProgress) * shadowApexScale
             },
             transform: {
               translateX: target.x * apexProgress,
