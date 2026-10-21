@@ -1903,9 +1903,27 @@ export function createCombatRuntime({
       });
     }
 
+    if (resolution.ok && resolution.outcome === "hit" &&
+        record.action.skill?.contactHold &&
+        Number(session.snapshot().fighters[actorId]?.hp) > 0 &&
+        Number(session.snapshot().fighters[targetId]?.hp) > 0 &&
+        !contactHoldsByActor.has(actorId)) {
+      const hold = {
+        actorId, targetId, skill: record.action.skill,
+        startedAtClockMs: current,
+        nextTickClockMs: current + record.action.skill.contactHold.tickIntervalMs,
+        damageTakenTotalAtStart:
+          Number(session.snapshot().fighters[actorId].damageTakenTotal) || 0
+      };
+      contactHoldsByActor.set(actorId, hold);
+      onContactHoldStart(Object.freeze({
+        actorId, targetId, skillId: hold.skill.id
+      }));
+    }
+
     return Object.freeze({
       ok: true,
-      outcome: "contact_resolved",
+      outcome: contactHoldsByActor.has(actorId) ? "contact_held" : "contact_resolved",
       actorId,
       targetId,
       skillId: record.action.skill?.id ?? null,
