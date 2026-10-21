@@ -158,9 +158,15 @@ try {
       // tracks at contact, then return them together without a second owner.
       let touchCount = 0;
       const originalOpponentLeft = flying.style.left;
-      // A nearby real target is necessary for this synthetic alpha fixture;
-      // the live arena positions are not changed by the test.
-      flying.style.left = "42%";
+      const originalOpponentTop = flying.style.top;
+      const originalOpponentTransition = flying.style.transition;
+      // This fixture previously tested a distant flying model. For the
+      // contact-hold case, place its accepted alpha mask in the real player's
+      // vicinity, with no delayed CSS-position transition.
+      flying.style.transition = "none";
+      flying.style.left = getComputedStyle(player).left;
+      flying.style.top = getComputedStyle(player).top;
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const contactPromise = demo.playApproachFor("player", "ground", {
         travelMs: 850, targetSlot: "opponent", holdOnContact: true,
         onContact() { touchCount += 1; return { outcome: "contact_held" }; }
@@ -195,6 +201,8 @@ try {
       if (result?.status !== "finished") throw Error("attached approach did not return naturally");
       if (demo.releaseHeldApproachFor("player")) throw Error("double release must be ignored");
       flying.style.left = originalOpponentLeft;
+      flying.style.top = originalOpponentTop;
+      flying.style.transition = originalOpponentTransition;
       demo.dispose();
       // Capture editor: no floating lighting panel during the battle. Mount
       // the real Capture->visuals handoff with editor-supplied scene settings.
