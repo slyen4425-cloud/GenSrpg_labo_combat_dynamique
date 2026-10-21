@@ -284,6 +284,41 @@ export function planAnimation({ event, actor, profile }) {
         );
       }
 
+      const airborne = profile.locomotion?.style === "flight" &&
+        Number(cfg.bobY) > 0;
+      const shadowResponse = airborne
+        ? {
+            verticalFollowFraction: Number(
+              cfg.shadowResponse?.verticalFollowFraction ??
+                DEFAULT_FLIGHT_IDLE_SHADOW_RESPONSE.verticalFollowFraction
+            ),
+            apexScale: Number(
+              cfg.shadowResponse?.apexScale ??
+                DEFAULT_FLIGHT_IDLE_SHADOW_RESPONSE.apexScale
+            )
+          }
+        : null;
+      if (shadowResponse && (
+        !Number.isFinite(shadowResponse.verticalFollowFraction) ||
+        shadowResponse.verticalFollowFraction < 0 ||
+        shadowResponse.verticalFollowFraction > 0.35 ||
+        !Number.isFinite(shadowResponse.apexScale) ||
+        shadowResponse.apexScale < 0.85 ||
+        shadowResponse.apexScale > 1
+      )) {
+        throw new RangeError("idle.shadowResponse must remain a subtle ground reaction");
+      }
+      const awayGround = shadowResponse
+        ? {
+            translateY: -scaled(cfg.bobY, intensity) *
+              shadowResponse.verticalFollowFraction,
+            scale: Math.max(0.85, 1 - (1 - shadowResponse.apexScale) * intensity)
+          }
+        : null;
+      const homeGround = shadowResponse
+        ? { translateY: 0, scale: 1 }
+        : null;
+
       const awayTransform = (direction = 1) => ({
         translateX:
           directed(
