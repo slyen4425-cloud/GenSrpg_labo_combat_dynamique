@@ -12,6 +12,7 @@ import { normalizeCreaturePresentationBindingV5 } from "./creature-presentation-
 import { normalizeCreaturePresentationBindingV6 } from "./creature-presentation-binding-v6.js";
 import { normalizeCreaturePresentationBindingV7 } from "./creature-presentation-binding-v7.js";
 import { normalizeCreaturePresentationBindingV8 } from "./creature-presentation-binding-v8.js";
+import { normalizeCreaturePresentationBindingV9 } from "./creature-presentation-binding-v9.js";
 
 export function normalizeCreaturePresentationBinding(
   input
@@ -49,6 +50,7 @@ export function normalizeCreaturePresentationBinding(
   if (input.version === 6) return normalizeCreaturePresentationBindingV6(input);
   if (input.version === 7) return normalizeCreaturePresentationBindingV7(input);
   if (input.version === 8) return normalizeCreaturePresentationBindingV8(input);
+  if (input.version === 9) return normalizeCreaturePresentationBindingV9(input);
 
   throw new RangeError(
     "Unsupported creature presentation version: " +
