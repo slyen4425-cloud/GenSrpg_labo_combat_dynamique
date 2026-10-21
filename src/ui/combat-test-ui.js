@@ -1184,6 +1184,19 @@ export async function mountCombatTest({
     onClock(state) {
       statusFx?.syncCountdowns(state);
     },
+    onContactHoldStart({actorId}) {
+      setStatus(actorId === "player"
+        ? "Votre créature reste au contact de l'adversaire."
+        : "La créature adverse reste au contact.", "accent");
+    },
+    onContactHoldEnd({actorId,reason}) {
+      if (reason === "ko_or_absent") visuals.cancelFor(actorId);
+      else visuals.releaseHeldApproachFor?.(actorId);
+      setStatus(reason === "damage_taken"
+        ? "Contact rompu par les dégâts reçus : retour."
+        : "Maintien au contact terminé.", "info");
+      render();
+    },
     onHealthDelta(feedback) {
       if (!["damage", "heal"].includes(feedback.kind)) return;
       const delayMs = impactHealthCue.delayFor(feedback);
