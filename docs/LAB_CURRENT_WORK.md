@@ -1,3 +1,10 @@
+## 2026-10-21 — Ombre durant l'envol d'attaque (apex aérien)
+- Auteur : positions toutes VALIDÉES, oscillation idle volant VALIDÉE ; pendant une attaque à décollage `aerial-attack` seulement, l'ombre doit rétrécir légèrement à l'apex puis revenir à la taille prévue au contact, sans décaler ses appuis.
+- Base publique `gh-pages@ea8cd9e179fd77827a1fc2ef3bdf9a7f2b250a8c` ; checkpoint `checkpoint/lab-start-aerial-shadow-apex-2026-10-21`, branche `work/lab-aerial-shadow-apex-2026-10-21`. Un seul lot/une seule PR.
+- Propriétaire `planAnimation` (Animation Core) : dans le **ground.scale** du segment `aerial-arc-apex` existant, multiplier la perspective au sommet par `cfg.shadowApexScale` (défaut 0,86, borné 0,65–1). Ne changer ni phase, ni durée, ni retour, ni ombre idle. Réutiliser le renderer et timeline uniques, pas de nouvelle propriété CSS / boucle.
+- Fichiers autorisés : `src/core/animation/plan-animation.js`, `data/profiles/flying.profile.json` (preset facultatif), nouveau test `tests/unit/combat-aerial-shadow-apex-2026-10-21.test.mjs`, `docs/LAB_AERIAL_SHADOW_APEX_2026-10-21.md`, ce journal. Protégés : UI, états Combat, dégâts, définition des créatures/skills, `main`, `global-assets`, ombres validées, idle volant et autres profils.
+- Tests : exact même position sol en apex et contact, échelle contractée uniquement en apex, retour natif, profils joueur/adversaire/vol et profil terrestre, aucune modification de l'animation body, sentinelles CI 5 jobs. Checkpoint GREEN et fusion seulement après tous les contrôles verts. Visuel Android final distinct.
+
 ## 2026-10-21 — Volants : synchroniser l'ombre avec le flottement idle (sans seconde animation)
 - Retour visuel auteur : la **position** des ombres projetées PR #44 est explicitement VALIDÉE sur les créatures au sol. Seul le petit mouvement vertical idle des créatures volantes paraît décorrélé de l'ombre ; corriger sans bouger l'ancrage récemment validé.
 - Base exacte et publiée `gh-pages@5f0533b3360cd49cd89a59f98d2cf17886637810`, checkpoint de départ `checkpoint/lab-start-flying-idle-shadow-sync-2026-10-21`, branche isolée `work/lab-flying-idle-shadow-sync-2026-10-21`.
