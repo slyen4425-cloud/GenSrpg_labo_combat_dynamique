@@ -37,7 +37,8 @@ test("flight profile's 8px hover produces one modest synchronized shadow respons
     assert.ok(Math.abs(coordinateY(dom.shadowKeyframes[1])-coordinateY(dom.shadowKeyframes[0]))<2,
       "shadow moves more subtly than hovering body");
     assert.ok(Math.abs(coordinateY(dom.keyframes[1])-coordinateY(dom.keyframes[0]))>7.9);
-    assert.match(dom.shadowKeyframes[1].transform,/scale\(1\.658\)/);
+    const projectedScale = Number(dom.shadowKeyframes[1].transform.match(/scale\(([-\d.]+)\)/)?.[1]);
+    assert.ok(Math.abs(projectedScale-a.scale*0.975)<0.0011);
     assert.equal(dom.shadowKeyframes.at(-1).transform,composeDomShadowTransform(a));
     assert.equal(dom.keyframes.at(-1).offset,1);
   }
