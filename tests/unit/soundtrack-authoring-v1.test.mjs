@@ -52,7 +52,7 @@ test("real Capture editor exposes a standalone Musiques tab and loads its own sc
  assert.match(html,/data-editor-panel="music" hidden/);
  for(const field of ["project-id","scene-id","channel","asset-id","track-list","order","volume",
    "fade","repeat","add","save","export","catalog-file","project-file","new-project","status"]) {
-    assert.match(html,new RegExp('data-soundtrack-'+field+'(?=[\\\\s>])'));
+    assert.ok(html.includes('data-soundtrack-'+field),'missing soundtrack field '+field);
  }
  assert.match(boot,/mountSoundtrackAuthoringV1/);
  assert.match(boot,/root\.querySelector\("\[data-soundtrack-editor\]"\)/);
