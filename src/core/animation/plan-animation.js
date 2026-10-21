@@ -9,6 +9,13 @@ import {
   burrowVisualDurationsV1
 } from "../profiles/burrow-visual-profile-v1.js";
 
+// Hover shadow shares Animation Core's existing idle timeline. Flight profiles
+// can override these two visual-only values; no second animator or shadow.
+const DEFAULT_FLIGHT_IDLE_SHADOW_RESPONSE = Object.freeze({
+  verticalFollowFraction: 0.18,
+  apexScale: 0.975
+});
+
 function facingSign(actor) {
   return actor.facing === "right" ? 1 : -1;
 }
