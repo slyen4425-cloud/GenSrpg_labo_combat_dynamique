@@ -9,6 +9,13 @@ import {
   burrowVisualDurationsV1
 } from "../profiles/burrow-visual-profile-v1.js";
 
+// Hover shadow shares Animation Core's existing idle timeline. Flight profiles
+// can override these two visual-only values; no second animator or shadow.
+const DEFAULT_FLIGHT_IDLE_SHADOW_RESPONSE = Object.freeze({
+  verticalFollowFraction: 0.18,
+  apexScale: 0.975
+});
+
 function facingSign(actor) {
   return actor.facing === "right" ? 1 : -1;
 }
@@ -277,6 +284,41 @@ export function planAnimation({ event, actor, profile }) {
         );
       }
 
+      const airborne = profile.locomotion?.style === "flight" &&
+        Number(cfg.bobY) > 0;
+      const shadowResponse = airborne
+        ? {
+            verticalFollowFraction: Number(
+              cfg.shadowResponse?.verticalFollowFraction ??
+                DEFAULT_FLIGHT_IDLE_SHADOW_RESPONSE.verticalFollowFraction
+            ),
+            apexScale: Number(
+              cfg.shadowResponse?.apexScale ??
+                DEFAULT_FLIGHT_IDLE_SHADOW_RESPONSE.apexScale
+            )
+          }
+        : null;
+      if (shadowResponse && (
+        !Number.isFinite(shadowResponse.verticalFollowFraction) ||
+        shadowResponse.verticalFollowFraction < 0 ||
+        shadowResponse.verticalFollowFraction > 0.35 ||
+        !Number.isFinite(shadowResponse.apexScale) ||
+        shadowResponse.apexScale < 0.85 ||
+        shadowResponse.apexScale > 1
+      )) {
+        throw new RangeError("idle.shadowResponse must remain a subtle ground reaction");
+      }
+      const awayGround = shadowResponse
+        ? {
+            translateY: -scaled(cfg.bobY, intensity) *
+              shadowResponse.verticalFollowFraction,
+            scale: Math.max(0.85, 1 - (1 - shadowResponse.apexScale) * intensity)
+          }
+        : null;
+      const homeGround = shadowResponse
+        ? { translateY: 0, scale: 1 }
+        : null;
+
       const awayTransform = (direction = 1) => ({
         translateX:
           directed(
@@ -313,25 +355,29 @@ export function planAnimation({ event, actor, profile }) {
                 label: "idle-right",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: awayTransform(1)
+                transform: awayTransform(1),
+                ...(awayGround ? { ground: awayGround } : {})
               },
               {
                 label: "idle-center-1",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: homeTransform
+                transform: homeTransform,
+                ...(homeGround ? { ground: homeGround } : {})
               },
               {
                 label: "idle-left",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: awayTransform(-1)
+                transform: awayTransform(-1),
+                ...(awayGround ? { ground: awayGround } : {})
               },
               {
                 label: "idle-home",
                 durationMs: cfg.durationMs / 4,
                 easing: "ease-in-out",
-                transform: homeTransform
+                transform: homeTransform,
+                ...(homeGround ? { ground: homeGround } : {})
               }
             ]
           : [
@@ -339,13 +385,15 @@ export function planAnimation({ event, actor, profile }) {
                 label: "idle-out",
                 durationMs: cfg.durationMs / 2,
                 easing: "ease-in-out",
-                transform: awayTransform(1)
+                transform: awayTransform(1),
+                ...(awayGround ? { ground: awayGround } : {})
               },
               {
                 label: "idle-home",
                 durationMs: cfg.durationMs / 2,
                 easing: "ease-in-out",
-                transform: homeTransform
+                transform: homeTransform,
+                ...(homeGround ? { ground: homeGround } : {})
               }
             ];
 
