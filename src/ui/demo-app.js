@@ -697,7 +697,8 @@ export async function mountCombatDemo({
       targetSlot = null,
       onPhase = null,
       onContact = null,
-      onFootfall = null
+      onFootfall = null,
+      holdOnContact = false
     } = {}
   ) {
     if (disposed) {
@@ -815,6 +816,7 @@ export async function mountCombatDemo({
     const phaseTimers = [];
     let contactReturnHandle = null;
     let contactStoppedOutbound = false;
+    let heldAtContact = false;
 
     const contactWatcher =
       approachMode !== "burrow" &&
@@ -836,8 +838,18 @@ export async function mountCombatDemo({
                 }
                 phaseTimers.length = 0;
 
-                contactReturnHandle =
-                  slot.renderer.returnActiveToBaseFromCurrent();
+                const paused = holdOnContact === true &&
+                  typeof slot.renderer.pauseActive === "function" &&
+                  slot.renderer.pauseActive();
+                const contactResult = onContact();
+                if (paused && contactResult?.outcome === "contact_held") {
+                  heldAtContact = true;
+                  contactWatcher?.cancel();
+                } else {
+                  contactReturnHandle =
+                    slot.renderer.returnActiveToBaseFromCurrent();
+                }
+                return;
               }
 
               onContact();
@@ -856,7 +868,14 @@ export async function mountCombatDemo({
       handle,
       finished,
       contactWatcher,
-      approachMode
+      approachMode,
+      releaseHold() {
+        if (!heldAtContact || contactReturnHandle) return false;
+        heldAtContact = false;
+        contactReturnHandle =
+          slot.renderer.returnActiveToBaseFromCurrent();
+        return true;
+      }
     });
     activeApproachBySlot.set(slotKey, approachRecord);
 
@@ -917,6 +936,11 @@ export async function mountCombatDemo({
           globalThis.clearTimeout(timerId);
         }
       });
+  }
+
+  function releaseHeldApproachFor(slotKey) {
+    const active = activeApproachBySlot.get(slotKey);
+    return active?.releaseHold?.() === true;
   }
 
   function cancelFor(slotKey) {
@@ -996,6 +1020,7 @@ export async function mountCombatDemo({
     playEventFor,
     playMovementFor,
     playApproachFor,
+    releaseHeldApproachFor,
     cancelFor,
     startIdleFor,
     setCreatureFor,
