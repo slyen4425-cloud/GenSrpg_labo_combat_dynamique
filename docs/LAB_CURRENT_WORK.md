@@ -1,4 +1,4 @@
-## 2026-10-21 — Golem moussu DOS 12 frames (ZIP et 24 frames importés, publication à valider)
+## 2026-10-21 — Golem moussu DOS 12 frames (PUBLIÉ, GREEN technique ; essai course en jeu à faire)
 
 - **Décision** : publier mouvement + attaque DOS, 12 PNG 512×512 chacune, utilisateur valide l'attaque et autorise l'essai en jeu du mouvement sans le valider définitivement.
 - **Base exacte** : `global-assets@73532470b2429222ec10a178146b8f941be7b648` ; checkpoint `checkpoint/global-assets-start-golem-moussu-dos12-2026-10-21` ; branche isolée `work/global-assets-golem-moussu-dos12-2026-10-21`.
@@ -9,7 +9,7 @@
 - **Contrôles** : archive SHA+CRC, 24 frames distinctes, marges, 2 atlas WebP, 2 assetIds, unicité, CI sur médias, contrôle diff, checkpoint GREEN seulement après réussite.
 - **État vérifié le 21 octobre** : archive reçue sur la branche et import GitHub Actions `39665471395` **SUCCESS** ; 24 PNG réels, 2 atlas, 2 manifestes et previews présents dans `animations/{movement,attack}/dos`. Catalogue 201 assets / 108 sprites, 201 IDs uniques. Sentinelle `tests/unit/golem-moussu-dos12-assets.test.mjs` physiquement présente. Le diff de branche est strictement en avance de 7 commits sur `global-assets` (behind 0) ; aucune modification des modèles runtime/face.
 - **Validation artistique** : attaque DOS approuvée ; mouvement DOS `approved_for_ingame_trial`, à confirmer seulement par test en jeu.
-- **Gate de clôture** : obtenir CI SUCCESS sur le dernier HEAD, revue finale, publication par fast-forward sur `global-assets` puis checkpoint GREEN technique. Le moteur et l'affectation automatique à la fiche combat restent hors périmètre.
+- **Clôture technique vérifiée** : CI GitHub `39666293475` SUCCESS sur `b2671115d6301b675c31bd6f7634cb6b497e4a75`; comparaison `ahead 8, behind 0`, 42 fichiers modifiés liés au lot, sans changement des modèles runtime/animations face. Fast-forward `global-assets` effectué ; checkpoint `checkpoint/global-assets-golem-moussu-dos12-green-2026-10-21` créé. Le mouvement DOS reste **en test en jeu**, non validé artistiquement ; pas d'affectation automatique à la fiche combat démontrée.
 - **Détails** : `docs/LAB_GOLEM_MOUSSU_DOS12_ANIMATIONS_2026-10-21.md`.
 
 ---
