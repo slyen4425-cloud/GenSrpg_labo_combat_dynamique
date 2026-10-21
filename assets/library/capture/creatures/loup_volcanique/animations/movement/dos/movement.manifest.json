@@ -1,0 +1,180 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "loup_volcanique",
+  "action": "movement",
+  "view": "dos",
+  "sourceSheet": "sprite_sheet_du_loup_de_lave_en_course.png",
+  "sourceSheetSha256": "48a89bcf528bc75140fa5bddc9e32bf4de03024c4339791e27ea6dbb6133b068",
+  "status": "ingame_trial_pending",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 80,
+  "playbackMode": "loop",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/loup_volcanique_movement_dos_01.png",
+      "sha256": "55aedf591b592073de78b18caefac319fd47a3de2878148286d4cf02c1ebaab6",
+      "marginsLTRB": [
+        75,
+        120,
+        57,
+        80
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/loup_volcanique_movement_dos_02.png",
+      "sha256": "1208bf765c7ea5d75aefeeab645970d9028404b5a1d7f24c1def698e857dde9e",
+      "marginsLTRB": [
+        75,
+        128,
+        74,
+        80
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/loup_volcanique_movement_dos_03.png",
+      "sha256": "49b85abc4de984bd6a14749000e1614dc6be47b1bcd44aa9dbbe9120a41af4d2",
+      "marginsLTRB": [
+        56,
+        140,
+        68,
+        80
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/loup_volcanique_movement_dos_04.png",
+      "sha256": "10ea20b39f0d065c010a39d48785dcc375873cce535ddd3c772969ece978d460",
+      "marginsLTRB": [
+        54,
+        147,
+        64,
+        80
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/loup_volcanique_movement_dos_05.png",
+      "sha256": "c27b60a693d14642d1b019bb68fb262ab3f9a8cfa6f6ee3c7de3438716877fc0",
+      "marginsLTRB": [
+        68,
+        123,
+        55,
+        80
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/loup_volcanique_movement_dos_06.png",
+      "sha256": "431ec6ed6de54f3a6ada0a8f37a2618a7202b62eac3c5f844e811624d2abb77d",
+      "marginsLTRB": [
+        66,
+        128,
+        59,
+        80
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/loup_volcanique_movement_dos_07.png",
+      "sha256": "2bfe6ef761409380fe430e5412b53798c11a196a05bad7ca58709ad49f92a493",
+      "marginsLTRB": [
+        69,
+        143,
+        52,
+        80
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/loup_volcanique_movement_dos_08.png",
+      "sha256": "fffeeba5f8040245be00c815d770778feca5799ea6235f0fd5942d814f8d09e5",
+      "marginsLTRB": [
+        74,
+        103,
+        69,
+        80
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/loup_volcanique_movement_dos_09.png",
+      "sha256": "c197684e4934064337a58b8a7776f15d843ea7ebf8d9b3cdb7fc867f318c0ef3",
+      "marginsLTRB": [
+        77,
+        122,
+        63,
+        80
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/loup_volcanique_movement_dos_10.png",
+      "sha256": "be61480c8cbd788c2dec20c455cc76e7c535db23703893978c41634ba3fd90dc",
+      "marginsLTRB": [
+        65,
+        138,
+        64,
+        80
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/loup_volcanique_movement_dos_11.png",
+      "sha256": "354e4460fb07c8b100bc76fb31635d0e8d9c683d6c2855f3f174c6fbff97855b",
+      "marginsLTRB": [
+        66,
+        158,
+        61,
+        80
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/loup_volcanique_movement_dos_12.png",
+      "sha256": "b8cc8b7ec6c87a7971ae95653d407dac191449fed2fb477c5dfe117e89f33fc6",
+      "marginsLTRB": [
+        77,
+        122,
+        67,
+        80
+      ]
+    }
+  ],
+  "previews": {
+    "gif": "previews/loup_volcanique_movement_dos_12_preview.gif",
+    "webp": "previews/loup_volcanique_movement_dos_12_preview_transparent.webp",
+    "planche": "previews/loup_volcanique_movement_dos_12_planche_preview.jpg"
+  },
+  "minimumMarginsPx": 52,
+  "uniformScale": 1.1147540983606556,
+  "extraction": "alpha-mask + adaptive seams + component cleaning + recenter",
+  "atlas": {
+    "file": "atlases/loup_volcanique_movement_dos_sprite_strip.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "bba443d7efcc4a2766c592b3ac5b33cf498aa7c17ec782f57d3a1db30ff5020c"
+  },
+  "contactSheetAtlas": {
+    "file": "atlases/loup_volcanique_movement_dos_atlas.webp",
+    "format": "grid-4x3",
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "gapPx": 64,
+    "sha256": "408dfe6012c06af7c1effba96fde72683ea7da1c5070c951f7363df595f5c4a9"
+  },
+  "assetId": "pack:capture:creature-loup-volcanique-movement-dos-12-v1",
+  "sourceArchive": "LOUP_VOLCANIQUE_DOS_12_COURSE_ATTAQUE_PREVIEW.zip",
+  "sourceArchiveSha256": "bebd0e3735eccc6e33e510b1daf9657682081f7997e4b1304f42b3376c47eafe",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "preview": "previews/loup_volcanique_movement_dos_12_preview.gif"
+}
