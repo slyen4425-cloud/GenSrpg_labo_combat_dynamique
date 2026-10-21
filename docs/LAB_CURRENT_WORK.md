@@ -1,3 +1,6 @@
+### Recadrage sentinelle navigateur (avant modification)
+- Pour valider le montage et le clic réel de l'onglet Musiques dans le même éditeur Chromium que les capacités et le Loup, autoriser une extension bornée de `tests/browser/capture-creature-library-smoke.mjs`. Ajouter seulement un paramètre `verify-soundtrack-authoring` qui exerce tab + nouveau projet + scène silencieuse + save. Pas de changement aux autres sondes, au mécanisme réseau, ni aux modèles Combat. Runner déjà propriétaire de la vraie chaîne navigateur ; pas de nouveau moteur de test ni de nouveau workflow.
+
 ## 2026-10-21 — Audio B : édition de bandes-son dans Combat (sans médias)
 - Décision auteur : bibliothèque partagée d'identifiants, bandes-son par jeu, réglages de playlists/fondus/volume et scène de combat ; import/stockage des sons des joueurs hors lot, les menus Shell hors lot.
 - Base GREEN technique `gh-pages@bcc504b1362780f7f5737b4861f572c95553c623` (lot architecture A CI cinq jobs), checkpoint START `checkpoint/lab-start-soundtrack-authoring-v1-2026-10-21` et branche isolée `work/lab-soundtrack-authoring-v1-2026-10-21`.
