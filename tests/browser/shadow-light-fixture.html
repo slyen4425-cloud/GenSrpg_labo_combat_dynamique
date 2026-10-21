@@ -197,7 +197,7 @@ try {
       }
       if (!demo.releaseHeldApproachFor("player")) throw Error("native return was not started");
       const result = await Promise.race([
-        contactPromise, new Promise((_,reject)=>setTimeout(()=>reject(Error("held return timeout; bodyTracks="+JSON.stringify(player.querySelector("[data-demo-motion]").getAnimations().map(x=>({state:x.playState,time:x.currentTime,pending:x.pending})))+" shadowTracks="+JSON.stringify(a.getAnimations().map(x=>({state:x.playState,time:x.currentTime,pending:x.pending})))+" repeatRelease="+demo.releaseHeldApproachFor("player"))),2200))
+        contactPromise, new Promise((_,reject)=>setTimeout(()=>reject(Error("held return timeout; bodyTracks="+JSON.stringify(player.querySelector("[data-demo-motion]").getAnimations().map(x=>({state:x.playState,time:x.currentTime,pending:x.pending})))+" shadowTracks="+JSON.stringify(a.getAnimations().map(x=>({state:x.playState,time:x.currentTime,pending:x.pending})))+" elapsed="+performance.now()+" visibility="+document.visibilityState+" repeatRelease="+demo.releaseHeldApproachFor("player"))),2200))
       ]);
       if (result?.status !== "finished") throw Error("attached approach did not return naturally");
       if (demo.releaseHeldApproachFor("player")) throw Error("double release must be ignored");
