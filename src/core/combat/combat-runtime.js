@@ -606,9 +606,11 @@ export function createCombatRuntime({
   ) {
     const current = now();
     const cancelled = [];
+    let endedContactHolds = 0;
     for (const hold of [...contactHoldsByActor.values()]) {
-      if (hold.actorId === actorId || (includeTargeted && hold.targetId === actorId))
-        endContactHold(hold.actorId, reason);
+      if (hold.actorId === actorId || (includeTargeted && hold.targetId === actorId)) {
+        if (endContactHold(hold.actorId, reason)) endedContactHolds++;
+      }
     }
 
     for (const record of activeRecords()) {
@@ -655,9 +657,9 @@ export function createCombatRuntime({
     }
 
     return Object.freeze({
-      ok: cancelled.length > 0,
+      ok: cancelled.length > 0 || endedContactHolds > 0,
       outcome:
-        cancelled.length > 0
+        cancelled.length > 0 || endedContactHolds > 0
           ? "actions_cancelled"
           : "no_action",
       actorId,
