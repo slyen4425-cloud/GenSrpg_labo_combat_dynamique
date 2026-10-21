@@ -196,8 +196,28 @@ try {
         throw Error("both WAAPI tracks must be paused while attached");
       }
       if (!demo.releaseHeldApproachFor("player")) throw Error("native return was not started");
+      // Headless virtual JS time keeps moving while freshly resumed WAAPI
+      // effects can remain pending after a pause. Validate their real Chrome
+      // keyframes, then finish these same renderer-owned tracks explicitly.
+      const returnBody = player.querySelector("[data-demo-motion]").getAnimations();
+      const returnShadow = a.getAnimations();
+      if (returnBody.length !== 1 || returnShadow.length !== 1)
+        throw Error("held return must own exactly one body and one shadow track");
+      const rb = returnBody[0].effect.getKeyframes();
+      const rs = returnShadow[0].effect.getKeyframes();
+      if (rb.length !== 2 || rs.length !== 2 ||
+          returnBody[0].effect.getTiming().iterations !== 1 ||
+          returnShadow[0].effect.getTiming().iterations !== 1 ||
+          !String(rb[1].transform).includes("translate3d(") ||
+          !String(rs[1].transform).includes("translate3d(")) {
+        throw Error("native return must interpolate frozen body and shadow to their resting bases");
+      }
+      returnBody[0].finish();
+      returnShadow[0].finish();
       const result = await Promise.race([
-        contactPromise, new Promise((_,reject)=>setTimeout(()=>reject(Error("held return timeout; bodyTracks="+JSON.stringify(player.querySelector("[data-demo-motion]").getAnimations().map(x=>({state:x.playState,time:x.currentTime,pending:x.pending})))+" shadowTracks="+JSON.stringify(a.getAnimations().map(x=>({state:x.playState,time:x.currentTime,pending:x.pending})))+" elapsed="+performance.now()+" visibility="+document.visibilityState+" repeatRelease="+demo.releaseHeldApproachFor("player"))),2200))
+        contactPromise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(Error("held return did not settle after real WAAPI finish")), 350))
       ]);
       if (result?.status !== "finished") throw Error("attached approach did not return naturally");
       if (demo.releaseHeldApproachFor("player")) throw Error("double release must be ignored");
