@@ -1,3 +1,17 @@
+## 2026-10-21 — Golem moussu DOS 12 frames (chantier actif ; attente des médias pour import)
+
+- **Décision** : publier mouvement + attaque DOS, 12 PNG 512×512 chacune, utilisateur valide l'attaque et autorise l'essai en jeu du mouvement sans le valider définitivement.
+- **Base exacte** : `global-assets@73532470b2429222ec10a178146b8f941be7b648` ; checkpoint `checkpoint/global-assets-start-golem-moussu-dos12-2026-10-21` ; branche isolée `work/global-assets-golem-moussu-dos12-2026-10-21`.
+- **Source binaire attendue** : `_incoming/GOLEM_MOUSSU_DOS_12_COURSE_ATTAQUE_PREVIEW.zip`, SHA256 `e8045798cfaa6c8b1eb73b09687e8fb4792d8536387de407bf8c89fdc6433155`; 36 fichiers, PNG RGBA, marges >=70 px.
+- **Propriétaire** : Asset Input, bibliothèque globale Capture. Zones autorisées : animations `golem_moussu/animations/{movement,attack}/dos/**`, catalogue, scripts/workflow/tests/doc propres au lot.
+- **Zones protégées** : vues/runtime officielles, animations FACE, toutes autres créatures, UI/moteur/règles, `main`, `Zombicide-40k`.
+- **Procédure** : script `scripts/import_golem_moussu_dos12.py`, workflow `.github/workflows/import-golem-moussu-dos12.yml`; sentinelle installée seulement lorsque le ZIP réel arrive.
+- **Contrôles** : archive SHA+CRC, 24 frames distinctes, marges, 2 atlas WebP, 2 assetIds, unicité, CI sur médias, contrôle diff, checkpoint GREEN seulement après réussite.
+- **État réel** : connecteur GitHub testé et écriture de la préparation effectuée. **Les médias DOS ne sont pas encore présents sur GitHub** au moment de cette ligne ; ni CI sur médias ni publication officielle annoncées.
+- **Détails** : `docs/LAB_GOLEM_MOUSSU_DOS12_ANIMATIONS_2026-10-21.md`.
+
+---
+
 ## 2026-10-21 — Golem moussu FACE 12 frames — BIBLIOTHÈQUE PUBLIÉE / CI VALIDÉE
 - Objectif : publier deux séquences de 12 frames (mouvement et attaque, vue adversaire), 512×512 RGBA ; modèles originaux inchangés.
 - Source : ZIP déjà déposé dans _incoming/GOLEM_MOUSSU_FACE_12_COURSE_ATTAQUE_GITHUB.zip, empreinte SHA256 ad9f4717721346a99a9c6a5a469a7e1ef81e930353204dc7273fda87e615a42c.
