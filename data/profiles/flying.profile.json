@@ -50,6 +50,7 @@
       "returnMs": 150
     },
     "aerial": {
+      "shadowApexScale": 0.86,
       "riseRatio": 0.42,
       "repositionRatio": 0.1,
       "riseY": -260,
