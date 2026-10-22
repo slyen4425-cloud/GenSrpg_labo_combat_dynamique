@@ -65,18 +65,184 @@ function fill(select,items,placeholder){
   for(const entry of items){const opt=elem("option",entry.name+" · "+entry.id);opt.value=entry.id;select.append(opt);}
   if(items.some(entry=>entry.id===current))select.value=current;
 }
-function thresholdEffect(root,id){
-  const kind=value(root,"marker-threshold-effect");
-  const amount=Number(value(root,"marker-threshold-amount"));
-  if(kind==="none")return null;
-  if(kind==="stun")return {kind:"apply_status",targetScope:"target",
-    status:{id:"marker-stun-"+id,kind:"stun",polarity:"detrimental",
-      durationMs:Math.max(100,amount*1000),stacking:"replace"}};
-  if(kind==="knockout")return {kind:"knockout",targetScope:"target"};
-  if(!Number.isFinite(amount)||amount<0)throw new RangeError("Valeur de seuil invalide");
-  return {kind,targetScope:"target",amount,
-    ...(kind==="damage"?{channel:value(root,"marker-threshold-channel")||null}:{})};
+// The library authors existing native StatusEffectV1 kinds, never a second buff engine.
+const ADVANCED_MARKER_STATUS_KINDS_V1 = Object.freeze({
+  slow_movement: ["approach_time_modifier", 1],
+  boost_movement: ["approach_time_modifier", -1],
+  slow_cooldown: ["skill_cooldown_rate_modifier", -1],
+  boost_cooldown: ["skill_cooldown_rate_modifier", 1],
+  slow_energy: ["energy_regen_modifier", -1],
+  boost_energy: ["energy_regen_modifier", 1],
+  reduce_damage: ["outgoing_damage_modifier", -1],
+  boost_damage: ["outgoing_damage_modifier", 1],
+  reduce_stat: ["stat_modifier", -1],
+  increase_stat: ["stat_modifier", 1],
+  stun: ["stun", 0],
+  silence: ["silence", 0],
+  immobilize: ["immobilize", 0]
+});
+
+export function captureMarkerAdvancedThresholdEffectV1({
+  id, kind, amount = 0, durationSeconds = 5, statId = "",
+  statMode = "points", maxStacks = 1, repeat = false,
+  index = 0, targetScope = "target", channel = "",
+  original = null
+}) {
+  if (kind === "none") return null;
+  if (kind === "preserve") {
+    if (!original || typeof original !== "object") throw new RangeError("Effet importé original introuvable");
+    return original;
+  }
+  if (!["target", "self"].includes(targetScope)) throw new RangeError("Cible de marqueur invalide");
+  const n = Number(amount);
+  if (!Number.isFinite(n) || n < 0) throw new RangeError("Valeur de marqueur invalide");
+  if (kind === "knockout") return {kind:"knockout",targetScope};
+  if (["damage", "heal", "energy_restore", "energy_drain"].includes(kind)) {
+    return {kind,targetScope,amount:n,
+      ...(kind === "damage" ? {channel:channel || null} : {})};
+  }
+  const spec = ADVANCED_MARKER_STATUS_KINDS_V1[kind];
+  if (!spec) throw new RangeError("Effet de seuil inconnu : " + kind);
+  const duration = Number(durationSeconds) * 1000;
+  if (!(duration > 0) || !Number.isFinite(duration)) throw new RangeError("Durée de malus/buff invalide");
+  const [statusKind, sign] = spec;
+  // Historical simple 'stun' used the value field as seconds; keep exports stable.
+  const timedMs = kind === "stun" ? Math.max(100, n * 1000) : Math.round(duration);
+  const status = {
+    id: kind === "stun" && index === 0 ? "marker-stun-" + id : "marker-effect-" + id + "-" + index,
+    kind: statusKind,
+    polarity: kind.startsWith("boost_") || kind === "increase_stat" ? "beneficial" : "detrimental",
+    durationMs: timedMs,
+    stacking: repeat ? "stack" : kind === "stun" ? "replace" : "refresh",
+    ...(repeat ? {maxStacks:Number(maxStacks)} : {})
+  };
+  if (statusKind === "stat_modifier") {
+    if (!statId) throw new RangeError("Choisis la caractéristique depuis le registre");
+    if (!["points", "percent"].includes(statMode)) throw new RangeError("Mode de caractéristique inconnu");
+    status.statId = statId;
+    status.modifierMode = statMode;
+    if (statMode === "points") status.deltaPoints = sign * n;
+    else status.percent = sign * n;
+  } else if (sign !== 0) {
+    status.modifierPct = sign * n;
+  }
+  return {kind:"apply_status",targetScope,status};
 }
+
+export function captureMarkerStatOptionsV1(root,selectedId="") {
+  const registry=sessions.get(root)?.getStatRegistry?.();
+  const entries=(registry?.stats??[]).map(stat=>({id:stat.id,label:stat.label}));
+  if (selectedId && !entries.some(stat=>stat.id===selectedId))
+    entries.push({id:selectedId,label:selectedId+" (référence importée conservée)"});
+  return entries;
+}
+
+function markerThresholdFieldsForEffectV1(effect) {
+  if (!effect) return {kind:"damage",amount:10,durationSeconds:5,statId:"",statMode:"points",targetScope:"target",channel:""};
+  if (effect.kind !== "apply_status") return {
+    kind:["damage","heal","energy_restore","energy_drain","knockout"].includes(effect.kind) ? effect.kind : "preserve",
+    amount:effect.amount??10,durationSeconds:5,statId:"",statMode:"points",
+    targetScope:effect.targetScope??"target",channel:effect.channel??"",original:effect
+  };
+  const st=effect.status??{},pct=Number(st.modifierPct??0);
+  const byKind={
+    approach_time_modifier: pct < 0 ? "boost_movement":"slow_movement",
+    skill_cooldown_rate_modifier: pct < 0 ? "slow_cooldown":"boost_cooldown",
+    energy_regen_modifier: pct < 0 ? "slow_energy":"boost_energy",
+    outgoing_damage_modifier: pct < 0 ? "reduce_damage":"boost_damage",
+    stat_modifier:(Number(st[st.modifierMode==="percent"?"percent":"deltaPoints"])||0) < 0 ? "reduce_stat":"increase_stat",
+    stun:"stun", silence:"silence", immobilize:"immobilize"
+  };
+  const kind=byKind[st.kind]??"preserve";
+  const sourceStat=Number(st[st.modifierMode==="percent"?"percent":"deltaPoints"]??0);
+  return {
+    kind,
+    amount:st.kind==="stat_modifier"?Math.abs(sourceStat)
+      :st.kind==="stun"?Number(st.durationMs??2000)/1000:Math.abs(pct),
+    durationSeconds:Number(st.durationMs??5000)/1000,
+    statId:st.statId??"",statMode:st.modifierMode??"points",
+    targetScope:effect.targetScope??"target",channel:"",original:effect
+  };
+}
+
+function thresholdEffect(root,id){
+  const pick=find(root,"marker-threshold-effect");
+  const repeat=selected(root,"marker-threshold-repeat")?.checked===true;
+  return captureMarkerAdvancedThresholdEffectV1({
+    id,kind:pick.value,amount:value(root,"marker-threshold-amount"),
+    durationSeconds:value(root,"marker-threshold-status-duration"),
+    statId:value(root,"marker-threshold-stat"),
+    statMode:value(root,"marker-threshold-stat-mode"),
+    maxStacks:Number(value(root,"marker-max")),repeat,index:0,
+    targetScope:"target",channel:value(root,"marker-threshold-channel"),
+    original:pick.dataset.markerOriginal?JSON.parse(pick.dataset.markerOriginal):null
+  });
+}
+
+function appendMarkerThresholdExtraV1(root,existing=null) {
+  const host=find(root,"marker-threshold-extra-host");
+  if (!host) return null;
+  const row=elem("div");row.dataset.markerThresholdExtra="true";
+  row.className="skill-status-config__grid";
+  const details=markerThresholdFieldsForEffectV1(existing);
+  row.dataset.markerOriginal=existing?JSON.stringify(existing):"";
+  const labeled=(title,node)=>{const label=elem("label",title);label.append(node);return label;};
+  const makeNumber=(key,title,n,minimum=null)=>{
+    const input=elem("input");input.type="number";input.step="any";
+    if(minimum!==null)input.min=String(minimum);
+    input.value=String(n);input.dataset[key]="true";
+    row.append(labeled(title,input));return input;
+  };
+  const makeSelect=(key,title,options,chosen)=>{
+    const pick=elem("select");pick.dataset[key]="true";
+    for(const [id,label] of options){const option=elem("option",label);option.value=id;pick.append(option);}
+    pick.value=chosen;row.append(labeled(title,pick));return pick;
+  };
+  const template=find(root,"marker-threshold-effect");
+  const options=[...template.options].map(o=>[o.value,o.textContent]);
+  const kind=makeSelect("markerExtraKind","Type d'effet",options,details.kind);
+  makeSelect("markerExtraTarget","Sur",[["target","Porteur des charges"],["self","Lanceur"]],details.targetScope);
+  makeNumber("markerExtraAmount","Valeur (points ou %)",details.amount,0);
+  makeNumber("markerExtraDuration","Durée du statut (secondes)",details.durationSeconds,0.1);
+  makeSelect("markerExtraStatMode","Variation de stat",[["points","Points"],["percent","% de la base"]],details.statMode);
+  const statOptions=captureMarkerStatOptionsV1(root,details.statId).map(x=>[x.id,x.label]);
+  makeSelect("markerExtraStat","Statistique",[["","Choisir une stat"],...statOptions],details.statId);
+  const channel=makeSelect("markerExtraChannel","Élément des dégâts",[
+    ["","Canal par défaut du moteur"],
+    ...captureMarkerChannelOptionsV1(root,details.channel).map(x=>[x.id,x.label])
+  ],details.channel);
+  channel.dataset.markerChannelChoice="true";
+  channel.dataset.markerOptional="true";
+  channel.dataset.markerOptionalLabel="Canal par défaut du moteur";
+  const remove=elem("button","Supprimer cet effet");
+  remove.type="button";remove.className="small-action";
+  remove.addEventListener("click",()=>row.remove());
+  row.append(remove);
+  const toggle=()=>{
+    const current=kind.value;
+    row.querySelector("[data-marker-extra-stat]").closest("label").hidden=!["reduce_stat","increase_stat"].includes(current);
+    row.querySelector("[data-marker-extra-stat-mode]").closest("label").hidden=!["reduce_stat","increase_stat"].includes(current);
+    channel.closest("label").hidden=current!=="damage";
+    row.querySelector("[data-marker-extra-duration]").closest("label").hidden=!Object.hasOwn(ADVANCED_MARKER_STATUS_KINDS_V1,current)||current==="stun";
+    row.querySelector("[data-marker-extra-amount]").closest("label").hidden=["knockout","silence","immobilize","preserve","none"].includes(current);
+  };
+  kind.addEventListener("change",toggle);toggle();
+  host.append(row);return row;
+}
+
+function thresholdExtraEffectV1(root,row,id,index) {
+  const get=key=>row.querySelector("[data-"+key+"]")?.value??"";
+  return captureMarkerAdvancedThresholdEffectV1({
+    id,index,kind:get("marker-extra-kind"),amount:get("marker-extra-amount"),
+    durationSeconds:get("marker-extra-duration"),
+    statId:get("marker-extra-stat"),statMode:get("marker-extra-stat-mode"),
+    targetScope:get("marker-extra-target"),channel:get("marker-extra-channel"),
+    repeat:selected(root,"marker-threshold-repeat")?.checked===true,
+    maxStacks:Number(value(root,"marker-max")),
+    original:row.dataset.markerOriginal?JSON.parse(row.dataset.markerOriginal):null
+  });
+}
+
 function markerFromFields(root){
   const name=value(root,"marker-name").trim();
   const id=captureMarkerAuthorSlugV1(value(root,"marker-id").trim() || name);
